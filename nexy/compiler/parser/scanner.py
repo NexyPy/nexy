@@ -9,12 +9,16 @@ class Scanner:
     def scan(self, source: str) -> ScanResult:
         match = self._PATTERN.match(source)
 
-        if match is None:
-            raise ValueError("Nexy format error: Frontmatter delimiters '---' are missing")
+        if match:
+            return ScanResult(
+                logic_block=match.group("frontmatter").strip(),
+                template_block=match.group("template").strip(),
+            )
 
+        # If no frontmatter, treat the entire source as the template block
         return ScanResult(
-            logic_block=match.group("frontmatter").strip(),
-            template_block=match.group("template").strip(),
+            logic_block="",
+            template_block=source.strip(),
         )
 
     def process(self, source: str) -> ScanResult:

@@ -1,0 +1,18 @@
+---
+from "@/components/sections/home/Hero.nexy" import Hero as HeroSection
+from "@/components/sections/home/ContentBar.nexy" import ContentBar
+from "@/components/sections/home/BaseSection.nexy" import BaseSection
+from "@/components/sections/home/WhatSection.nexy" import WhatSection
+from "@/components/sections/home/WhySection.nexy" import WhySection
+from "@/components/sections/home/IntegrationSection.nexy" import IntegrationSection
+
+---
+<HeroSection/>
+<ContentBar/>
+<WhatSection/>
+<ContentBar/>
+<WhySection/>
+<ContentBar/>
+<BaseSection/>
+<ContentBar/>
+<IntegrationSection/>

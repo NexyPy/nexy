@@ -10,7 +10,7 @@ class LogicSanitizer:
     Handles custom import syntaxes like 'from "./file.nexy" import Comp' 
     or 'import "./data.json" as data' and converts them to valid Python code.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.aliases = Config.ALIASES
         self.namespace = Config.NAMESPACE
         
@@ -82,7 +82,7 @@ class LogicSanitizer:
         # Replace non-alphanumeric characters with underscores
         return re.sub(r'[^a-zA-Z0-9_]', '_', name)
 
-    def _replace_from(self, match: Match, current_file: str) -> str:
+    def _replace_from(self, match: Match[str], current_file: str) -> str:
         """Callback for 'from "path" import targets' transformation."""
         path_str = match.group("path")
         targets_raw = match.group("targets")
@@ -116,7 +116,7 @@ class LogicSanitizer:
 
         return "\n".join(import_lines)
 
-    def _replace_import(self, match: Match, current_file: str) -> str:
+    def _replace_import(self, match: Match[str], current_file: str) -> str:
         """Callback for 'import "path" [as alias]' transformation."""
         path_str = match.group("path")
         alias = match.group("alias")

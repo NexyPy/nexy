@@ -1,0 +1,16 @@
+---
+from "@/components/codeblock.nexy" import Codeblock
+
+---
+Hello
+# Nexy
+## Installation
+
+```js
+function User(){}
+```
+
+```bash
+npm install @nexyjs/core
+```
+

@@ -1,0 +1,34 @@
+---
+caller:prop[callable]
+code = caller()
+---
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" /> -->
+<section class=" flex w-fit border border-border border-dashed rounded-2xl corner p-1">
+    <aside class="bg-[#222427] rounded-xl p-4 corner w-fit">
+        
+        {{code  |safe}}
+    </aside>
+</section>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
+
+<!-- and it's easy to individually load additional languages -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/go.min.js"></script>
+
+<script></script>
+<script>
+    // Ce script force Prism à colorer même si la structure HTML est complexe
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('.codehilite pre').forEach((block) => {
+            // On ajoute la classe manquante pour Prism
+            block.querySelector('code').classList.add('language-js');
+            // hljs.theme = 'agate';
+            // hljs.mode = 'dark';
+        });
+        // hljs.highlightAuto();
+        console.log("hjdhjhj",hljs);
+        
+    });
+</script>

@@ -1,0 +1,9 @@
+---
+children:prop[str]
+---
+<section class="flex gap-4">
+<menu> dhjdh </menu>
+<aside>
+{{children | safe}}
+</aside>
+</section>

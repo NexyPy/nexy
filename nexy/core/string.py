@@ -24,7 +24,7 @@ class Pathname:
         cleaned = re.sub(r'/\([^)]+\)', '', target)
         return cleaned if cleaned else "/"
 
-    def _normalize_pathname(self, path: str = None) -> str:
+    def _normalize_pathname(self, path: str | None = None) -> str:
         target = path or self.pathname
         # Next.js : /docs/index -> /docs et /index -> /
         if target.endswith("/index"):

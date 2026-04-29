@@ -10,7 +10,7 @@ from .utils.ports import get_vite_port
 class Template:
     """Classe pour gérer le rendu des templates Jinja2 et Markdown."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialise le renderer avec la configuration Nexy."""
         self.config =  Config()
         

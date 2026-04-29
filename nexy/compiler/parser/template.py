@@ -5,22 +5,32 @@ class NexyParserError(Exception):
 
 class TemplateFormatter:
     """Helper pour le formatage Jinja."""
-    _ATTR_REGEX = re.compile(r'(\w+)=(["\'])(.*?)\2')
+    _ATTR_REGEX = re.compile(r'(\w+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+))')
 
     @classmethod
     def format_attributes(cls, attr_str: str) -> str:
         """Convertit les attrs HTML (foo="bar") en kwargs Python (foo="bar")."""
         if not attr_str or not attr_str.strip():
             return ""
-        # Capture simple des paires clé=valeur
-        pairs = [f'{k}={q}{v}{q}' for k, q, v in cls._ATTR_REGEX.findall(attr_str)]
+        matches = cls._ATTR_REGEX.findall(attr_str)
+        pairs = []
+        for match in matches:
+            key = match[0]
+            quoted_value = match[1] or match[2]
+            unquoted_value = match[3]
+            value = quoted_value if quoted_value else unquoted_value
+            if value:
+                if quoted_value:
+                    pairs.append(f'{key}="{value}"')
+                else:
+                    pairs.append(f'{key}={value}')
         return ", ".join(pairs)
 
 
 class TemplateValidator:
     """Helper pour la validation structurelle."""
     @staticmethod
-    def ensure_imports_declared(content: str, known_components: set[str]):
+    def ensure_imports_declared(content: str, known_components: set[str]) -> None:
         """Vérifie que chaque Tag PascalCase est importé."""
         # On ne valide pas ce qui est en commentaire (déjà strippé par l'appelant idéalement)
         used_tags = set(re.findall(r'<([A-Z][a-zA-Z0-9_]*)', content))
@@ -33,7 +43,7 @@ class TemplateValidator:
             )
 
     @staticmethod
-    def check_balance(content: str):
+    def check_balance(content: str) -> None:
         """Vérification rudimentaire des balises ouvrantes/fermantes orphelines."""
         # Balise ouvrante orpheline (très simple check)
         open_match = re.search(r'<([A-Z]\w+)(?!.*</\1>)', content, re.DOTALL)
@@ -56,8 +66,8 @@ class TemplateParser:
     _SELF_CLOSING_REGEX = re.compile(r'<([A-Z]\w*)\s*([^>]*?)\s*/>')
     _BLOCK_REGEX = re.compile(r'<([A-Z]\w*)\s*([^>]*?)>(.*?)</\1>', re.DOTALL)
 
-    def __init__(self):
-        self.known_components = set()
+    def __init__(self) -> None:
+        self.known_components: set[str] = set()
 
     def parse(self, html: str, known_components: set[str] | None = None) -> str:
         # 1. Nettoyage
@@ -83,12 +93,12 @@ class TemplateParser:
 
         return content
 
-    def _replace_self_closing(self, match: re.Match) -> str:
+    def _replace_self_closing(self, match: re.Match[str]) -> str:
         tag, attrs = match.group(1), match.group(2)
         formatted_attrs = TemplateFormatter.format_attributes(attrs)
         return f'{{{{ {tag}({formatted_attrs}) }}}}'
 
-    def _replace_block(self, match: re.Match) -> str:
+    def _replace_block(self, match: re.Match[str]) -> str:
         tag, attrs, inner_html = match.group(1), match.group(2), match.group(3)
         formatted_attrs = TemplateFormatter.format_attributes(attrs)
         # .strip() sur inner_html uniquement si on veut virer les espaces blancs contigus aux balises

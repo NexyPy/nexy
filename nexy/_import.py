@@ -10,44 +10,6 @@ from pathlib import Path as _Path
 
 
 class Import:
-    def __new__(cls, path: str, framework: str, symbol: str) -> Callable[..., str]:
-        ext = Path(path).suffix.lower()
-
-        # Cas 1 : JSON → valeur Python directement exploitable dans le frontmatter / template
-        if ext == ".json":
-            try:
-                p = Path(path)
-                if not p.is_absolute():
-                    p = Path(Config.PROJECT_ROOT).joinpath(path)
-                with p.open("r", encoding="utf-8") as f:
-                    return json.load(f)
-            except Exception:
-                return {}
-
-        # Cas 2 : CSS → déjà géré à la compilation (injection automatique)
-        if ext == ".css":
-            return ""
-
-        # Cas 3 : image → data URL base64
-        if ext in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}:
-            try:
-                p = Path(path)
-                if not p.is_absolute():
-                    p = Path(Config.PROJECT_ROOT).joinpath(path)
-                data = p.read_bytes()
-                mime, _ = mimetypes.guess_type(str(p))
-                if not mime:
-                    mime = "application/octet-stream"
-                b64 = base64.b64encode(data).decode("ascii")
-                return f"data:{mime};base64,{b64}"
-            except Exception:
-                return ""
-
-        # Cas 3 : composant frontend → placeholder HTML
-        return _Importer(path=path, framework=framework, symbol=symbol)
-
-
-class _Importer:
     def __init__(self, path: str, framework: str, symbol: str) -> None:
         self.path = path
         self.framework = framework.lower()
@@ -100,15 +62,13 @@ class _Importer:
         esc_symbol = _html_escape(self.symbol, quote=True)
         esc_fw = _html_escape(framework, quote=True)
         esc_url = _html_escape(url, quote=True)
-        # Mode hash en prod: éviter d'exposer la structure de fichiers
-        
+
         prod_marker = _Path("__nexy__/nexy.prod").is_file()
         if framework == "vue" or framework == "svelte":
             default = _Path(f"__nexy__/client/static{esc_url}.html")
-        else :
-            default = _Path(f"__nexy__/client/static{esc_url.replace(".tsx","")}.Default.html")
-        export = _Path(f"__nexy__/client/static{esc_url.replace(".tsx","")}.{esc_symbol}.html")
-
+        else:
+            default = _Path(f"__nexy__/client/static{esc_url.replace('.tsx','')}.Default.html")
+        export = _Path(f"__nexy__/client/static{esc_url.replace('.tsx','')}.{esc_symbol}.html")
 
         if export.is_file():
             content = export.read_text(encoding="utf-8")
@@ -116,10 +76,9 @@ class _Importer:
             content = default.read_text(encoding="utf-8")
         else:
             content = ""
-        
+
         if prod_marker:
             key_src = url
-            # Hash stable basé sur le chemin module (pas symbol)
             h = hashlib.md5(key_src.encode("utf-8")).hexdigest()
             return (
                 f'<ncc id="{mount_id}" '
@@ -130,10 +89,9 @@ class _Importer:
                 f'data-nexy-props="{esc_props}">{content}</ncc>'
             )
         else:
-            # Dev: conserver le chemin source lisible et ajouter en plus la clé hashée
             key_src = url
             h = hashlib.md5(key_src.encode("utf-8")).hexdigest()
-            
+
             return (
                 f'<ncc id="{mount_id}" '
                 f'data-nexy-fw="{esc_fw}" '
@@ -143,3 +101,37 @@ class _Importer:
                 f'data-nexy-symbol="{esc_symbol}" '
                 f'data-nexy-props="{esc_props}">{content}</ncc>'
             )
+
+
+def __Import(path: str, framework: str, symbol: str) -> Callable[..., Any]:
+    ext = Path(path).suffix.lower()
+
+    if ext == ".json":
+        try:
+            p = Path(path)
+            if not p.is_absolute():
+                p = Path(Config.PROJECT_ROOT).joinpath(path)
+            with p.open("r", encoding="utf-8") as f:
+                result: Any = json.load(f)
+                return lambda: result
+        except Exception:
+            return lambda: {}
+
+    if ext == ".css":
+        return lambda: ""
+
+    if ext in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}:
+        try:
+            p = Path(path)
+            if not p.is_absolute():
+                p = Path(Config.PROJECT_ROOT).joinpath(path)
+            data = p.read_bytes()
+            mime, _ = mimetypes.guess_type(str(p))
+            if not mime:
+                mime = "application/octet-stream"
+            b64 = base64.b64encode(data).decode("ascii")
+            return lambda: f"data:{mime};base64,{b64}"
+        except Exception:
+            return lambda: ""
+
+    return Import(path=path, framework=framework, symbol=symbol)

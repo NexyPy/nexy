@@ -1,0 +1,114 @@
+---
+placeholder : prop[str] = "Search documentation..."
+shortcut : prop[str] = "Ctrl+K"
+---
+<div class="relative w-full max-w-md">
+    <button 
+        onclick="window.toggleSearchModal()"
+        class="flex h-10 w-full items-center gap-2 rounded-lg border border-border/50 bg-muted/30 px-4 text-sm text-muted-foreground transition-all hover:border-primary/50 hover:bg-muted/50 focus:outline-none"
+    >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+        </svg>
+        <span>{{placeholder}}</span>
+        <kbd class="pointer-events-none ml-auto flex items-center gap-1 rounded border border-border bg-background px-2 py-0.5 text-[10px] font-mono opacity-60">
+            {{shortcut}}
+        </kbd>
+    </button>
+</div>
+
+<!-- Search Modal -->
+<div id="search-modal" class="fixed inset-0 z-[100] hidden items-start justify-center pt-[15vh] px-4 sm:px-6">
+    <div class="fixed inset-0 bg-background/80 backdrop-blur-sm" onclick="window.toggleSearchModal()"></div>
+    <div class="relative w-full max-w-2xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
+        <div class="flex items-center border-b border-border p-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted-foreground">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input 
+                id="search-input"
+                type="text" 
+                placeholder="Search everything..."
+                class="flex-1 bg-transparent px-4 py-2 text-lg focus:outline-none"
+                oninput="window.handleSearch(this.value)"
+            >
+            <button class="rounded-md border border-border px-2 py-1 text-xs" onclick="window.toggleSearchModal()">ESC</button>
+        </div>
+        
+        <div id="search-results" class="max-h-[60vh] overflow-y-auto p-4 space-y-2">
+            <!-- Results will appear here -->
+            <p class="text-center text-sm text-muted-foreground py-8">Start typing to search...</p>
+        </div>
+        
+        <div class="flex items-center justify-between border-t border-border bg-muted/30 px-4 py-3 text-[10px] text-muted-foreground">
+            <div class="flex gap-4">
+                <span class="flex items-center gap-1"><kbd class="rounded border border-border bg-background px-1">↑↓</kbd> to navigate</span>
+                <span class="flex items-center gap-1"><kbd class="rounded border border-border bg-background px-1">ENTER</kbd> to select</span>
+            </div>
+            <span>Search by FlexSearch</span>
+        </div>
+    </div>
+</div>
+
+<script>
+let searchIndex = [];
+
+// Load search index
+fetch('/src/search_index.json')
+    .then(res => res.json())
+    .then(data => {
+        searchIndex = data;
+    });
+
+window.toggleSearchModal = () => {
+    const modal = document.getElementById('search-modal');
+    modal.classList.toggle('hidden');
+    modal.classList.toggle('flex');
+    if (modal.classList.contains('flex')) {
+        document.getElementById('search-input').focus();
+    }
+};
+
+window.handleSearch = (query) => {
+    const resultsContainer = document.getElementById('search-results');
+    if (!query || query.length < 2) {
+        resultsContainer.innerHTML = '<p class="text-center text-sm text-muted-foreground py-8">Start typing to search...</p>';
+        return;
+    }
+    
+    // Simple filter search
+    const results = searchIndex.filter(item => 
+        item.title.toLowerCase().includes(query.toLowerCase()) || 
+        item.content.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 8);
+    
+    if (results.length === 0) {
+        resultsContainer.innerHTML = '<p class="text-center text-sm text-muted-foreground py-8">No results found for "' + query + '"</p>';
+        return;
+    }
+    
+    resultsContainer.innerHTML = results.map(item => `
+        <a href="${item.href}" class="block group rounded-lg border border-transparent p-4 hover:border-primary/50 hover:bg-primary/5 transition-all">
+            <div class="flex items-center justify-between">
+                <h3 class="font-semibold text-foreground group-hover:text-primary">${item.title}</h3>
+                <span class="text-[10px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">${item.lang}</span>
+            </div>
+            <p class="text-sm text-muted-foreground line-clamp-1 mt-1">${item.content}</p>
+        </a>
+    `).join('');
+};
+
+// Keyboard shortcut
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        window.toggleSearchModal();
+    }
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('search-modal');
+        if (modal.classList.contains('flex')) {
+            window.toggleSearchModal();
+        }
+    }
+});
+</script>

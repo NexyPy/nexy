@@ -1,6 +1,7 @@
 import logging
 import os
 import traceback
+from typing import cast
 
 C = {
     "reset": "\033[0m",
@@ -36,46 +37,52 @@ status_emojis = {
 }
 
 class NexyFilter(logging.Filter):
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         msg = record.getMessage()
         return not any(ignored in msg for ignored in IGNORED_MESSAGES)
 
 class NexyAccessFormatter(logging.Formatter):
-    def format(self, record):
-        # Sécurité : on vérifie les arguments
+    def format(self, record: logging.LogRecord) -> str:
         if not record.args or len(record.args) < 5:
             return f"  {C['blue']}ŋ{C['reset']} {C['dim']}[Info]{C['reset']} {record.getMessage()}"
 
         args = record.args
-        # Extraction Host et Port
-        addr = str(args[0])
+        if isinstance(args, tuple):
+            arg0, arg1, arg2, arg_last = args[0], args[1], args[2], args[-1]
+        elif isinstance(args, dict):
+            arg0 = args.get("a", "")
+            arg1 = args.get("b", "")
+            arg2 = args.get("c", "")
+            arg_last = args.get("d", 0)
+        else:
+            return f"  {C['blue']}ŋ{C['reset']} {record.getMessage()}"
+
+        addr = str(arg0)
         host = addr.split(":")[0] if ":" in addr else addr
         port = addr.split(":")[-1] if ":" in addr else "3000"
-        
-        method = args[1]
-        path = args[2]
-        status_code = args[-1] 
 
-        # Logique de couleur selon le code
+        method = str(arg1)
+        path = str(arg2)
+        status_code = int(cast(int, arg_last))
+
         color = C["green"]
-        if isinstance(status_code, int):
-            if 300 <= status_code < 400: color = C["cyan"]
-            elif 400 <= status_code < 500: color = C["yellow"]
-            elif status_code >= 500: color = C["red"]
+        if 300 <= status_code < 400:
+            color = C["cyan"]
+        elif 400 <= status_code < 500:
+            color = C["yellow"]
+        elif status_code >= 500:
+            color = C["red"]
 
-        # Détection Socket
         is_socket = "ws" in path or "socket" in path or status_code == 101
         label = f"{C['magenta']}ws{C['reset']} »" if is_socket else f"{color}{method}{C['reset']} »"
 
-        # --- LE CORRECTIF EST ICI ---
-        # On utilise .get(code, default) pour éviter le KeyError
         emoji = status_emojis.get(status_code, "⚠️")
         
 
         return f"{label} {C['dim']}{host}{C['reset']}:{C['blue']}{port}{C['reset']}{color}{path}{C['reset']} , {color}{status_code}{C['reset']} © {emoji}"
 
 class NexyDefaultFormatter(logging.Formatter):
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         msg = record.getMessage()
         # Filtrer les messages système inutiles
         if any(ignored in msg for ignored in IGNORED_MESSAGES):
@@ -99,9 +106,9 @@ class NexyDefaultFormatter(logging.Formatter):
             # Seulement le dernier frame (fichier avec l'erreur)
             tb_frames = traceback.extract_tb(record.exc_info[2])
             if tb_frames:
-                frame = tb_frames[-1]  # Dernier frame = fichier avec l'erreur
+                frame = tb_frames[-1]
                 file_name = os.path.basename(frame.filename)
-                line_no = frame.lineno
+                line_no = frame.lineno or 0
                 line_text = frame.line.rstrip("\n") if frame.line else ""
                 
                 # Construire l'affichage façon traceback Python, mais coloré en rouge
