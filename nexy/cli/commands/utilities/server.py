@@ -1,13 +1,27 @@
 import subprocess
 import shutil
+import socket
 from pathlib import Path
 import sys
-from typing import Optional
+from typing import Any, Optional
+from subprocess import Popen
 import uvicorn as _uvicorn
 from nexy.core.config import Config
 from nexy.cli.commands.utilities.find_port import find_port
-from nexy.utils import console
+from nexy.cli.commands.utilities.console import console as print_console
 from nexy.utils.ports import get_client_port
+
+
+def _is_port_available(host: str, port: int) -> bool:
+    """Check if a port is available for binding."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind((host, port))
+        sock.close()
+        return True
+    except OSError:
+        sock.close()
+        return False
 
 
 
@@ -15,7 +29,7 @@ from nexy.utils.ports import get_client_port
 
 class Server:
     @staticmethod
-    def check_nexy_prod(delete: bool = False):
+    def check_nexy_prod(delete: bool = False) -> None:
         path = Path("__nexy__/nexy.prod")
         if delete:
             path.unlink(missing_ok=True)
@@ -45,16 +59,24 @@ class Server:
         return selected
 
     @staticmethod
-    def uvicorn(host: Optional[str] = None, port: Optional[int] = None, reload: bool = False, as_process: bool = False) -> Optional[subprocess.Popen]:
+    def uvicorn(host: Optional[str] = None, port: Optional[int] = None, reload: bool = False, as_process: bool = False) -> Optional[Popen[Any]]:
         run_host = host or "127.0.0.1"
         run_port = port or 3000
-        
+
+        if not _is_port_available(run_host, run_port):
+            print_console.print(f"[yellow]»[/yellow] Port [bold]{run_port}[/bold] is in use, finding next available...")
+            new_port = find_port(run_port + 1, run_host)
+            if new_port != run_port:
+                print_console.print(f"[green]»[/green] Using port [bold]{new_port}[/bold] instead of [dim]{run_port}[/dim]")
+                run_port = new_port
+            else:
+                print_console.print(f"[red]✘ Error:[/red] Could not find an available port")
+                return None
+
         try:
-            # Ensure temporary directory exists
             Path("__nexy__").mkdir(exist_ok=True)
 
             if as_process:
-                # Generate a mini-launcher to preserve Nexy's logging configuration
                 launcher_code = (
                     "import uvicorn\n"
                     "try:\n"
@@ -64,10 +86,10 @@ class Server:
                     "except Exception as e:\n"
                     "    print(f'Critical error in Nexy subprocess: {e}')\n"
                 )
-                
+
                 return subprocess.Popen(
                     [sys.executable, "-c", launcher_code],
-                    stdout=None,  # Inherit terminal for direct logging
+                    stdout=None,
                     stderr=subprocess.STDOUT
                 )
             
@@ -77,27 +99,28 @@ class Server:
                     from nexy.cli.commands.utilities.uvicorn_config import NEXY_LOG_CONFIG
                     
                     _uvicorn.run(
-                        "nexy.routers.app:_server", 
-                        host=run_host, 
-                        port=run_port, 
+                        "nexy.routers.app:_server",
+                        host=run_host,
+                        port=run_port,
                         log_config=NEXY_LOG_CONFIG,
                         log_level="info"
                     )
+                    return None  # type: ignore[unreachable]
                 except ImportError:
-                    console.print("[red]✘ Error:[/red] Could not find [bold]NEXY_LOG_CONFIG[/bold].")
+                    print_console.print("[red]✘ Error:[/red] Could not find [bold]NEXY_LOG_CONFIG[/bold].")
                 except Exception as e:
-                    console.print(f"[red]✘ Server launch failed:[/red] {e}")
-                
+                    print_console.print(f"[red]✘ Server launch failed:[/red] {e}")
+
                 return None
 
         except PermissionError:
-            console.print(f"[red]✘ Error:[/red] Insufficient permissions to create [bold]__nexy__[/bold] directory.")
+            print_console.print(f"[red]✘ Error:[/red] Insufficient permissions to create [bold]__nexy__[/bold] directory.")
         except Exception as e:
-            console.print(f"[red]✘ An unexpected error occurred:[/red] {e}")
+            print_console.print(f"[red]✘ An unexpected error occurred:[/red] {e}")
             return None
 
     @staticmethod
-    def vite(port: Optional[int] = None, build: bool = False) -> subprocess.Popen:
+    def vite(port: Optional[int] = None, build: bool = False) -> Popen[Any]:
         pm = next((c for c in ("pnpm", "bun", "yarn", "npm.cmd", "npm") if shutil.which(c)), "npm")
         is_npm = pm not in ("pnpm", "yarn", "bun")
         cmd = "build" if build else "dev"
@@ -115,4 +138,4 @@ class Server:
                 args.append("--")
             args.extend(["--port", str(vite_port), "--host"])
                 
-        return subprocess.Popen(args)
+        return subprocess.Popen(args)  # type: ignore[return-value]

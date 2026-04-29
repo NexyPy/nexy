@@ -20,7 +20,7 @@ def dev(port: Optional[int] = None, host: Optional[str] = None) -> None:
     api_proc = None
     vite_proc = None
 
-    def restart_api():
+    def restart_api() -> None:
         """Tue l'ancien Uvicorn et en lance un nouveau."""
         nonlocal api_proc
         if api_proc:

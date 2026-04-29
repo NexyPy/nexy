@@ -1,0 +1,84 @@
+---
+import os
+import re
+
+def get_dynamic_sidebar(current_lang: str):
+    base_path = "_docs"
+    lang_path = os.path.join(base_path, current_lang)
+    
+    # Fallback to English if the language folder doesn't exist
+    if not os.path.exists(lang_path):
+        lang_path = os.path.join(base_path, "en")
+        current_lang = "en"
+        
+    if not os.path.exists(lang_path):
+        return []
+
+    sidebar_items = []
+    
+    # List and sort items to respect numbering (e.g., 01. Introduction)
+    try:
+        entries = sorted(os.listdir(lang_path))
+    except Exception:
+        return []
+
+    for entry in entries:
+        entry_path = os.path.join(lang_path, entry)
+        
+        # Clean label (remove 01. and extension)
+        label = re.sub(r'^\d+\.\s*', '', entry).replace('.mdx', '').replace('.md', '')
+        slug_part = label.lower().replace(' ', '-')
+        
+        if os.path.isdir(entry_path):
+            section = {
+                "title": label,
+                "items": []
+            }
+            # Look for files in subdirectories
+            sub_entries = sorted(os.listdir(entry_path))
+            for sub in sub_entries:
+                if sub.endswith(('.md', '.mdx')):
+                    sub_label = re.sub(r'^\d+\.\s*', '', sub).replace('.mdx', '').replace('.md', '')
+                    sub_slug = sub_label.lower().replace(' ', '-')
+                    section["items"].append({
+                        "label": sub_label,
+                        "href": f"/docs/{current_lang}/{slug_part}/{sub_slug}"
+                    })
+            if section["items"]:
+                sidebar_items.append(section)
+        elif entry.endswith(('.md', '.mdx')):
+            sidebar_items.append({
+                "label": label,
+                "href": f"/docs/{current_lang}/{slug_part}"
+            })
+            
+    return sidebar_items
+
+lang : prop[str] = "en"
+items = get_dynamic_sidebar(lang)
+---
+<nav class="space-y-6">
+    {% for section in items %}
+    <div>
+        {% if section.title %}
+        <h4 class="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">{{section.title}}</h4>
+        {% endif %}
+        
+        {% if section.items %}
+        <ul class="space-y-1">
+            {% for item in section.items %}
+            <li>
+                <a href="{{item.href}}" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/50 hover:text-foreground">
+                    <span class="flex-1">{{item.label}}</span>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <a href="{{section.href}}" class="group flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/50 hover:text-foreground">
+            <span class="flex-1">{{section.label}}</span>
+        </a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</nav>

@@ -1,0 +1,77 @@
+@import url("../public/fonts/font.css");
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+
+
+:root {
+  color-scheme: light;
+  font-family: "Inter";
+  --background: light-dark(white, #09160D);
+  --background-second: light-dark(#09160D, lab(35.03% -8.77 -8.15 / 0.21));
+  --foreground: light-dark(#09160D, lab(100% 0.01 -0.01));
+  --foreground-second: light-dark(lab(100% 0.01 -0.01), #09160D);
+  --border: light-dark(#C2C6D0, lab(100% 0.01 -0.01 / 0.226));
+  --border-second: light-dark(lab(100% 0.01 -0.01 / 0.226), #c2c6d05a);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-border-second: var(--border-second);
+  --color-back-1: radial-gradient(50% 50% at 50% 50%, rgba(43, 89, 83, 0.03) 1.92%, rgba(60, 88, 85, 0.03) 100%),
+    radial-gradient(76.87% 74.03% at 47.85% 54.6%, rgba(108, 109, 153, 0.0832) 0%, rgba(255, 255, 255, 0.2176) 100%)
+  ;
+
+
+  --spacing-slider-left: 2px;
+  --spacing-slider-width: 40px;
+}
+
+
+@layer base {
+  .corner,.corder {
+    corner-shape: superellipse(1.5);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: "Geist";
+    font-weight: "800"
+  }
+}
+
+.back-1 {
+
+  background:
+    radial-gradient(50% 50% at 50% 50%, rgba(43, 89, 83, 0.03) 1.92%, rgba(60, 88, 85, 0.03) 100%),
+    radial-gradient(76.87% 74.03% at 47.85% 54.6%, rgba(108, 109, 153, 0.322) 0%, rgba(255, 255, 255, 0.527) 100%)
+  ;
+
+}
+
+@layer components {
+  .w-container {
+    @apply max-w-6xl mx-auto;
+  }
+
+  .ease {
+    @apply transition-all duration-300 ease-in-out;
+  }
+}

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Union
+from typing import Generator, List, Union
 
 from nexy.core.config import Config
 
@@ -24,7 +24,7 @@ class Discovery:
         
         return list(self._walk(root))
 
-    def _walk(self, current_path: Path):
+    def _walk(self, current_path: Path) -> Generator[Path, None, None]:
         """Générateur interne pour parcourir l'arborescence."""
         try:
             for item in current_path.iterdir():

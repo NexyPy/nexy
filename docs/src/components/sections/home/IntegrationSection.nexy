@@ -1,0 +1,11 @@
+---
+---
+<section class="w-full w-container bg-background-second  md:border-x border-border border-dashed p-24 space-y-4">
+    <h2 class="text-3xl font-medium">Maximum Flexibility</h2>
+    <p class="text-base font-light max-w-xl leading-6">
+        Nexy upports every major UI framework. Bring your existing components and take advantage of Astro's optimized client build performance.
+    </p>
+    <aside>
+        
+    </aside>
+</section>

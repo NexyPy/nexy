@@ -18,7 +18,7 @@ C = {
     "magenta": "\033[35m",
 }
 class WatchHandler(PatternMatchingEventHandler):
-    def __init__(self, on_reload_api: Optional[Callable] = None, min_interval: float = 0.5, **kwargs: Any) -> None:
+    def __init__(self, on_reload_api: Optional[Callable[[], None]] = None, min_interval: float = 0.5, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.on_reload_api = on_reload_api
         self._last_event_time: float = 0.0
@@ -28,13 +28,14 @@ class WatchHandler(PatternMatchingEventHandler):
 
     def _should_trigger(self, path: str) -> bool:
         current_time = time.time()
+        
         if path == self._last_path and (current_time - self._last_event_time) < self._min_interval:
             return False
         self._last_event_time = current_time
         self._last_path = path
         return True
 
-    def _normalize(self, p: str) -> str:
+    def _normalize(self, p: str | bytes) -> str:
         return (p.decode() if isinstance(p, bytes) else p).replace("\\", "/").lstrip("./")
 
     def on_modified(self, event: FileSystemEvent) -> None:
@@ -48,6 +49,7 @@ class WatchHandler(PatternMatchingEventHandler):
 
         # 1. Compilation si nécessaire
         if path.endswith((".nexy", ".mdx")):
+            print("modie")
             start_time = time.perf_counter()
             self.compiler.compile(path)
             elapsed = time.perf_counter() - start_time
@@ -71,7 +73,7 @@ class WatchHandler(PatternMatchingEventHandler):
             # Suppression des fichiers générés...
             if self.on_reload_api: self.on_reload_api()
 
-def create_observer(path: str, patterns: list[str], ignore_patterns: list[str], on_reload_api: Callable) -> Observer:
+def create_observer(path: str, patterns: list[str], ignore_patterns: list[str], on_reload_api: Callable[[], None]):
     event_handler = WatchHandler(
         patterns=patterns,
         ignore_patterns=ignore_patterns,
