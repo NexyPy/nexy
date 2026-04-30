@@ -1,96 +1,90 @@
 import re
+from typing import Optional, Set
 
 class NexyParserError(Exception):
+    """Custom exception for Nexy template parsing errors."""
     pass
 
 class TemplateFormatter:
-    """Helper pour le formatage Jinja."""
+    """Helper class to format HTML-style attributes into Python/Jinja arguments."""
+    
+    # Matches key = "value" with optional spaces around the '='
     _ATTR_REGEX = re.compile(r'(\w+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+))')
 
     @classmethod
     def format_attributes(cls, attr_str: str) -> str:
-        """Convertit les attrs HTML (foo="bar") en kwargs Python (foo="bar")."""
         if not attr_str or not attr_str.strip():
             return ""
+        
         matches = cls._ATTR_REGEX.findall(attr_str)
         pairs = []
+        
         for match in matches:
             key = match[0]
-            quoted_value = match[1] or match[2]
-            unquoted_value = match[3]
-            value = quoted_value if quoted_value else unquoted_value
-            if value:
-                if quoted_value:
-                    pairs.append(f'{key}="{value}"')
-                else:
-                    pairs.append(f'{key}={value}')
+            # Capture value from any quote type or unquoted string
+            value = match[1] or match[2] or match[3]
+            if not value:
+                continue
+
+            if "{{" in value:
+                # Handle dynamic strings: "/user/{{ id }}" -> "/user/" ~ (id)
+                expr = re.sub(r'\{\{\s*(.*?)\s*\}\}', r'" ~ (\1) ~ "', value)
+                # Clean up empty string concatenations
+                expr = f'"{expr}"'.replace('"" ~ ', '').replace(' ~ ""', '')
+                pairs.append(f'{key}={expr}')
+            else:
+                # Static string
+                pairs.append(f'{key}="{value}"')
+                
         return ", ".join(pairs)
 
-
-class TemplateValidator:
-    """Helper pour la validation structurelle."""
-    @staticmethod
-    def ensure_imports_declared(content: str, known_components: set[str]) -> None:
-        """Vérifie que chaque Tag PascalCase est importé."""
-        # On ne valide pas ce qui est en commentaire (déjà strippé par l'appelant idéalement)
-        used_tags = set(re.findall(r'<([A-Z][a-zA-Z0-9_]*)', content))
-        
-        unknowns = used_tags - known_components
-        if unknowns:
-            missing = list(unknowns)[0]
-            raise NexyParserError(
-                f"Missing Import: <{missing}> used but not declared/imported."
-            )
-
-    @staticmethod
-    def check_balance(content: str) -> None:
-        """Vérification rudimentaire des balises ouvrantes/fermantes orphelines."""
-        # Balise ouvrante orpheline (très simple check)
-        open_match = re.search(r'<([A-Z]\w+)(?!.*</\1>)', content, re.DOTALL)
-        if open_match:
-             # Attention: ce check regex est fragile sur des gros fichiers imbriqués.
-             # En mode KISS Regex, on accepte cette limitation ou on la retire.
-             pass 
-
-        # Balise fermante sans ouverture
-        close_match = re.search(r'</([A-Z]\w+)>', content)
-        if close_match:
-            tag = close_match.group(1)
-            # Vérifier grossièrement si on a un open avant
-            if f"<{tag}" not in content:
-                raise NexyParserError(f"Orphan closing tag: </{tag}> found without opener.")
-
-
 class TemplateParser:
-    _COMMENT_REGEX = re.compile(r'<!--.*?-->', re.DOTALL)
-    _SELF_CLOSING_REGEX = re.compile(r'<([A-Z]\w*)\s*([^>]*?)\s*/>')
-    _BLOCK_REGEX = re.compile(r'<([A-Z]\w*)\s*([^>]*?)>(.*?)</\1>', re.DOTALL)
+    """
+    Parses Nexy templates. 
+    1. Removes ALL comments (HTML & Jinja2) from the entire document.
+    2. Converts PascalCase tags (<User />) to Jinja2 syntax.
+    """
+
+    # Robust Regex for comments with re.DOTALL to handle multiple lines
+    _HTML_COMMENT_RE = re.compile(r'', re.DOTALL)
+    _JINJA_COMMENT_RE = re.compile(r'\{#.*?#\}', re.DOTALL)
+    
+    # PascalCase components detection
+    _SELF_CLOSING_RE = re.compile(r'<([A-Z]\w*)\s*([^>]*?)\s*/>')
+    _BLOCK_RE = re.compile(r'<([A-Z]\w*)\s*([^>]*?)>(.*?)</\1>', re.DOTALL)
 
     def __init__(self) -> None:
-        self.known_components: set[str] = set()
+        self.known_components: Set[str] = set()
 
-    def parse(self, html: str, known_components: set[str] | None = None) -> str:
-        # 1. Nettoyage
-        content = self._COMMENT_REGEX.sub('', html).strip()
+    def parse(self, html: str, known_components: Optional[Set[str]] = None) -> str:
+        # STEP 1: GLOBAL COMMENT STRIPPING
+        # This removes comments everywhere, including inside <header> or <ul>
+        content = self._HTML_COMMENT_RE.sub('', html)
+        content = self._JINJA_COMMENT_RE.sub('', content).strip()
+        
         if known_components:
             self.known_components.update(known_components)
 
-        # 2. Validation
-        TemplateValidator.ensure_imports_declared(content, self.known_components)
+        # STEP 2: PASCALCASE TAG VALIDATION
+        # Ensure tags like <Image /> are actually imported/known
+        used_tags = set(re.findall(r'<([A-Z][a-zA-Z0-9_]*)', content))
+        if self.known_components:
+            unknowns = used_tags - self.known_components
+            if unknowns:
+                raise NexyParserError(f"Missing Import: <{list(unknowns)[0]}> used but not declared.")
         
-        # 3. Transformation : Auto-fermants (<Comp /> -> {{ Comp() }})
-        content = self._SELF_CLOSING_REGEX.sub(self._replace_self_closing, content)
+        # STEP 3: PASCALCASE TRANSFORMATIONS
+        
+        # Self-closing: <User name="Loém" /> -> {{ User(name="Loém") }}
+        content = self._SELF_CLOSING_RE.sub(self._replace_self_closing, content)
 
-        # 4. Transformation : Blocs (<Comp>...</Comp> -> {% call Comp() %}...{% endcall %})
-        # Note : On boucle tant qu'il y a des balises imbriquées à transformer
+        # Blocks: <Layout>...</Layout> -> {% call Layout() %}...{% endcall %}
+        # Loop handles nested components within each other
         prev_content = None
         while content != prev_content:
             prev_content = content
-            content = self._BLOCK_REGEX.sub(self._replace_block, content)
+            content = self._BLOCK_RE.sub(self._replace_block, content)
         
-        # 5. Validation finale structurelle
-        TemplateValidator.check_balance(content)
-
         return content
 
     def _replace_self_closing(self, match: re.Match[str]) -> str:
@@ -101,5 +95,4 @@ class TemplateParser:
     def _replace_block(self, match: re.Match[str]) -> str:
         tag, attrs, inner_html = match.group(1), match.group(2), match.group(3)
         formatted_attrs = TemplateFormatter.format_attributes(attrs)
-        # .strip() sur inner_html uniquement si on veut virer les espaces blancs contigus aux balises
         return f'{{% call {tag}({formatted_attrs}) %}}{inner_html}{{% endcall %}}'

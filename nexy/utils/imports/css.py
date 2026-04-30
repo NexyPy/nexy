@@ -1,5 +1,8 @@
+from typing import Callable
+
 class CSS:
-    def __init__(self, path):
-        pass
-    def load(self):
-        pass
+    @staticmethod
+    def create(path: str) -> Callable[[], str]:
+        # CSS imports in Nexy logic usually return empty strings 
+        # as they are injected in the head during compilation
+        return lambda: ""

@@ -7,11 +7,11 @@ from nexy.cli.commands.utilities.server import Server
 def start(port: Optional[int] = None, host: Optional[str] = None) -> None:
     # 1. Initialisation et vérification
     version = __Version__().get()
-    Server.check_nexy_prod()
+    # Server.check_nexy_prod()
     
     config = Config()
     run_host = host or getattr(config, "useHost", "0.0.0.0")
-    run_port = Server.resolve_port(run_host, port or getattr(config, "usePort", 3000))
+    run_port,_ = Server.resolve_ports(run_host, port or getattr(config, "usePort", 3000))
 
     # 2. Affichage du header
     console.print(f"nexy@{version} [dim]starting in production...[/dim]\n")
