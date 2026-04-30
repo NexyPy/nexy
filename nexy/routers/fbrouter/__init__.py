@@ -93,14 +93,13 @@ class FBRouter:
                         # Metadata extraction
                         r_meta = getattr(handler, "__nexy_route_meta__", None)
                         resp_meta = getattr(handler, "__nexy_response_meta__", None)
-
                         self.router.add_api_route(
                             path=path,
                             endpoint=handler,
                             methods=[method],
                             dependencies=deps or None,
-                            name=r_meta.name if r_meta else None,
-                            tags=r_meta.tags if r_meta else None,
+                            name=method,
+                            tags=[path],
                             status_code=resp_meta.status_code if resp_meta else None
                             # ... (other response_meta fields)
                         )
@@ -113,7 +112,10 @@ class FBRouter:
                     self.router.get(
                         path, 
                         response_class=HTMLResponse,
-                        dependencies=folder_deps or None
+                        dependencies=folder_deps or None,
+                        name=component.__name__,
+                        description=component.__doc__ or "",
+                        tags=[path]
                     )(component)
 
         # Final catch-all for 404

@@ -61,7 +61,6 @@ class Parser:
         if current_file.endswith(".mdx"):
             jinja_code = markdown.markdown(jinja_code, extensions=self.config.MARKDOWN_EXTENSIONS)
             jinja_code = self._clean_jinja_wrapping(jinja_code)
-            print(jinja_code)
 
         return PaserModel(
             frontmatter=logic_result.python_code,

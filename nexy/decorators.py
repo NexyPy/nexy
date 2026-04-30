@@ -326,10 +326,11 @@ def _register_controller(ctrl_cls: Type[Any], parent_router: APIRouter) -> None:
 
 
 
-def action():
-    2/0
-    def decorator(func: Callable):
-        print(f"Action registered: {func.__name__}")
-        ACTIONS_STORE.register(func)
-        return func
-    return decorator
+def action(func: Optional[Callable] = None):
+    def decorator(f: Callable):
+        ACTIONS_STORE.register(f)
+        return f
+    if func is None:
+        return decorator
+    
+    return decorator(func)

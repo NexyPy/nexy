@@ -49,18 +49,19 @@ class LogicGenerator:
         props = self._resolve_props()
     
         is_layout_file = self.source_path.endswith("layout.nexy")
-        # print("source path:", self.source_path)
-        print("is layout file:", is_layout_file)
         layout_import = RouteLayout.get_closest_import(self.source_path, is_layout=is_layout_file)
-        
         
         layout_header = ""
         render_wrapper = "rendered"
+        layout_children = ""
         
         if layout_import:
             layout_header = f"from {layout_import} import Layout as __Layout\n"
             render_wrapper = "str(__Layout(children=rendered))"
         # -----------------------
+
+        if is_layout_file :
+            layout_children = f"""children = f"<nslot  style='display:contents;'>{"{children}"}</nslot>" """
 
         # Extraction des identifiants Python (AST)
         idents = set()
@@ -102,7 +103,8 @@ NexyElement = Union[callable, __JinjaTemplate]
 {layout_header}
 def {self.func_name}({props}) -> str:
 {LOGIC}
-    
+
+    {layout_children}
     context = {{{context_items}}}
     rendered = str(__Template().render("{self.template_path}", context))
     styles = \"\"\"{css_injection}\"\"\"

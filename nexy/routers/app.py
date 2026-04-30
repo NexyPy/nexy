@@ -2,6 +2,7 @@ import os
 from typing import Optional, Union, Type
 from fastapi import FastAPI, APIRouter, Response
 from fastapi.staticfiles import StaticFiles
+from scalar_fastapi import get_scalar_api_reference
 
 from nexy.__version__ import __Version__
 from nexy.core.config import Config
@@ -17,12 +18,22 @@ class AppServer:
         
         # Internal configuration state
         self._docs_url, self._redocs_url = self._resolve_docs_settings()
+  
+    async def scalar_html(self):
+        return get_scalar_api_reference(
+            scalar_favicon_url="/favicon.ico",
+            openapi_url=self.server.openapi_url,
+            title="Nexy - scalar API",
+            telemetry=True,
+            dark_mode=True,
+            hide_models=True,
+            scalar_proxy_url="https://proxy.scalar.com",
 
+        )
     def _resolve_docs_settings(self):
         """KISS: Logic extracted to a single specialized method."""
         conf = self.config.nexy_config
         if not conf or not getattr(conf, "useDocs", True):
-            print("not")
             console.print("[yellow]API documentation is desactived[reset]")
             return None, None
         
@@ -57,6 +68,12 @@ class AppServer:
         router_source = self.config.nexy_config.useRouter if self.config.nexy_config else None
         
         # 1. Direct APIRouter or Class
+        
+        if self._docs_url:
+            self.server.get(self._docs_url,include_in_schema=False)( self.scalar_html)
+        
+        ACTION_ENGINE.include_router(self.server)
+
         if isinstance(router_source, (APIRouter, type)) and (isinstance(router_source, APIRouter) or issubclass(router_source, APIRouter)):
             self.server.include_router(router_source if isinstance(router_source, APIRouter) else router_source())
         
@@ -79,20 +96,17 @@ class AppServer:
 
     def run(self) -> FastAPI:
         """Main entry point to assemble the application."""
-        print(self._docs_url)
         self.server = FastAPI(
             title="Nexy", 
             version=self.version, 
-            docs_url=self._docs_url, 
-            redoc_url=self._redocs_url
+            docs_url=None, 
+            redoc_url=None
         )
 
+        
         self._setup_favicon()
         self._setup_static_files()
         self._resolve_router()
-
-        # Connect the Action Engine
-        ACTION_ENGINE.include_router(self.server)
         
         return self.server
 
