@@ -326,7 +326,7 @@ def _register_controller(ctrl_cls: Type[Any], parent_router: APIRouter) -> None:
 
 
 
-def action(func: Optional[Callable] = None):
+def Action(func: Optional[Callable] = None):
     def decorator(f: Callable):
         ACTIONS_STORE.register(f)
         return f
@@ -334,3 +334,6 @@ def action(func: Optional[Callable] = None):
         return decorator
     
     return decorator(func)
+
+def Task(func: Optional[Callable] = None): pass
+def Job(func: Optional[Callable] = None): pass

@@ -77,7 +77,8 @@ class WatchHandler(PatternMatchingEventHandler):
         # 2. Python files logic
         elif path.endswith(".py"):
             needs_reload = True
-            print(f"{C['blue']}hmr{C['reset']} » {C['green']}update{C['reset']} {C['dim']}{path}{C['reset']} {C['green']}↺{C['reset']}")
+            if not path.startswith("__nexy__/"):
+                print(f"{C['blue']}hmr{C['reset']} » {C['green']}update{C['reset']} {C['dim']}{path}{C['reset']} {C['green']}↺{C['reset']}")
 
         # 3. Trigger Uvicorn Reload
         if needs_reload and self.on_reload_api:

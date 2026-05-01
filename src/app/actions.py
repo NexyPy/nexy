@@ -1,6 +1,6 @@
-from nexy.decorators import action
+from nexy.decorators import Action
 
 
-@action()
+@Action()
 def createUser():
     return ["espoir ok"]

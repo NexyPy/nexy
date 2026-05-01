@@ -14,7 +14,7 @@ def build() -> None:
     Server.check_nexy_prod()
     console.print(f"nexy@{version} build")
     with console.status("\n[green]nsc[/green] » compile...", spinner="dots"):
-        FrontendGenerator().generate()
+        FrontendGenerator().generate(ssg=True)
         Builder().build(showlog=True)
     
     if getattr(config, "useVite", False):

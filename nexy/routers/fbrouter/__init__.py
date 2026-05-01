@@ -1,4 +1,5 @@
 import importlib
+import traceback
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, FastAPI
 from fastapi.responses import HTMLResponse
@@ -49,8 +50,10 @@ class FBRouter:
             else:
                 m_type = "api"
                 import_path = path_str.replace("/", ".").removesuffix(".py")
-
-            module = importlib.import_module(import_path)
+            try:
+                module = importlib.import_module(import_path)
+            except ImportError:
+                traceback.print_exc()
             
             # 2. Process Pathname
             clean = path_str.replace(f"{Config.NAMESPACE}src/routes", "").replace("src/routes", "").split(".")[0]
