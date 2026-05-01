@@ -34,6 +34,14 @@ def dev(port: Optional[int] = None, host: Optional[str] = None) -> None:
         
         api_proc = Server.uvicorn(host=run_host, port=run_port, as_process=True)
 
+    try:
+        FrontendGenerator().generate()
+        if getattr(config, "useVite", False):
+            vite_proc = Server.vite(port=client_port)
+            time.sleep(.05)
+    except Exception as e:
+        console.print(f"\n[red]✘ Error starting Vite:[/red] {e}")
+        vite_proc = None
     # Initialisation du Watcher avec le callback de restart
     observer = create_observer(
         path=".", 
@@ -45,11 +53,8 @@ def dev(port: Optional[int] = None, host: Optional[str] = None) -> None:
     try:
         # Lancement initial des services
         console.print(f"nexy@{version} dev using : \n")
+
         restart_api()
-        
-        if getattr(config, "useVite", False):
-            vite_proc = Server.vite(port=client_port)
-            time.sleep(.05)
 
         console.print(f"  [dim]»»[/dim] [green]Uvicorn[/green] on port [green]{run_port}[/green]")
         if vite_proc:
@@ -61,7 +66,6 @@ def dev(port: Optional[int] = None, host: Optional[str] = None) -> None:
         with console.status("\n[green]nsc[/green] » compile...", spinner="dots"):
             start_time = time.perf_counter()
             Builder().build()
-            FrontendGenerator().generate()
             elapsed = time.perf_counter() - start_time
             timer = f"{elapsed:.2f}s"
             time.sleep(.03)

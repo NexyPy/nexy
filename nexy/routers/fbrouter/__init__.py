@@ -51,9 +51,12 @@ class FBRouter:
                 m_type = "api"
                 import_path = path_str.replace("/", ".").removesuffix(".py")
             try:
+                
                 module = importlib.import_module(import_path)
             except ImportError:
+                module = None
                 traceback.print_exc()
+
             
             # 2. Process Pathname
             clean = path_str.replace(f"{Config.NAMESPACE}src/routes", "").replace("src/routes", "").split(".")[0]
