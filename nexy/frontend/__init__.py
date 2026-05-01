@@ -11,10 +11,11 @@ from .solid import solid
 class FrontendGenerator:
     def __init__(self) -> None:
         self.config = Config()
-    def generate(self) -> None:
+    def generate(self, ssg: bool = False) -> None:
         self._generate_vite_entry()
         self._generate_vite_config()
-        self._generate_ssg()
+        if ssg:
+            self._generate_ssg()
 
 
     def _generate_ssg(self) -> None:
