@@ -87,6 +87,12 @@ class WatchHandler(PatternMatchingEventHandler):
             except Exception as e:
                 console.print(f"[red]hmr[/red] » [red]error[/red] failed to reload server: {str(e)}")
 
+    def on_any_event(self, event):
+        path = self._normalize(event.src_path)
+        if path.endswith((".nexy", ".mdx", ".py")):
+            # Logic for cleaning up generated files can go here
+            if self.on_reload_api:
+                self.on_reload_api()
     def on_deleted(self, event: FileSystemEvent) -> None:
         path = self._normalize(event.src_path)
         if path.endswith((".nexy", ".mdx")):

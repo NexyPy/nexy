@@ -16,7 +16,7 @@ class Config:
     TARGET_EXTENSIONS: list[str] = [".nexy", ".mdx"]
     FF_REGISTRY: dict[str, object] = {}
     ROUTE_FILE_EXTENSIONS: list[str] = [".nexy", ".mdx", ".py"]
-    ROUTE_FILE_EXCEPTIONS: list[str] = ["__init__.py", "layout.nexy"]
+    ROUTE_FILE_EXCEPTIONS: list[str] = ["__init__.py", "layout.nexy","dependencies.py"]
     ROUTE_FILE_DEFAULT: list[str] = ["index.py", "index.nexy", "index.mdx"]
     PROJECT_ROOT: str = "."
     ROUTER_PATH: str = "src/routes"

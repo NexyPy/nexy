@@ -132,7 +132,8 @@ class Server:
                     stdout=None,
                     stderr=subprocess.STDOUT,
                 )
-
+            
+                
         except Exception as exc:
             print_console.print(f"[red]✘ Échec du lancement du serveur :[/red] {exc}")
             return None
