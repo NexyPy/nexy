@@ -1,9 +1,9 @@
 [project]
-name = "nexy-app"
+name = "Nexy-App"
 version = "0.1.0"
 description = "A Nexy Web App"
 dependencies = [
-    "nexy>=2.0.0",
+    "nexy>=2.0.5",
 ]
 requires-python = ">=3.12"
 
