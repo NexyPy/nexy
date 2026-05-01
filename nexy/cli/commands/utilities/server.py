@@ -8,6 +8,7 @@ from subprocess import Popen
 import uvicorn as _uvicorn
 
 from nexy.core.config import Config
+from nexy.cli.commands.utilities.uvicorn_config import NEXY_LOG_CONFIG
 from nexy.cli.commands.utilities.console import console as print_console
 
 _NEXY_DIR = Path("__nexy__")
@@ -132,6 +133,9 @@ class Server:
                     stdout=None,
                     stderr=subprocess.STDOUT,
                 )
+            else:
+                _uvicorn.run('nexy.routers.app:_server', host=host, port= port, log_config=NEXY_LOG_CONFIG, log_level='info')
+                return True
             
                 
         except Exception as exc:
