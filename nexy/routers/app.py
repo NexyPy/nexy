@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from scalar_fastapi import get_scalar_api_reference
 
 from nexy.__version__ import __Version__
+from nexy.cli.commands.utilities.pycache import pycache
 from nexy.core.config import Config
 from nexy.routers.actions.engine import ACTION_ENGINE
 from nexy.routers.fbrouter import FBRouter
@@ -96,6 +97,8 @@ class AppServer:
 
     def run(self) -> FastAPI:
         """Main entry point to assemble the application."""
+        pycache()
+        
         self.server = FastAPI(
             title="Nexy", 
             version=self.version, 
@@ -107,7 +110,6 @@ class AppServer:
         self._setup_favicon()
         self._setup_static_files()
         self._resolve_router()
-        
         return self.server
 
 _server = AppServer().run()
