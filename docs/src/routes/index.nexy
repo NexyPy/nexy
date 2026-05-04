@@ -5,6 +5,8 @@ from "@/components/sections/home/BaseSection.nexy" import BaseSection
 from "@/components/sections/home/WhatSection.nexy" import WhatSection
 from "@/components/sections/home/WhySection.nexy" import WhySection
 from "@/components/sections/home/IntegrationSection.nexy" import IntegrationSection
+from "@/components/sections/home/sponsor.nexy" import Sponsor
+from "@/components/sections/home/community.nexy" import Community
 
 ---
 <HeroSection/>
@@ -16,3 +18,7 @@ from "@/components/sections/home/IntegrationSection.nexy" import IntegrationSect
 <BaseSection/>
 <ContentBar/>
 <IntegrationSection/>
+<ContentBar/>
+<Sponsor/>
+<ContentBar/>
+<Community/>

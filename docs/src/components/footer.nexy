@@ -7,18 +7,18 @@ Resources = [
     {"label":"Learn","href":"/learn"},
     {"label":"Showcase","href":"/showcase"},
     {"label":"Blog","href":"/blog"},
-    {"label":"Team","href":"/team"},    
 ]
 
-More = [
-    {"label":"Community","href":"/community"},
-    {"label":"Governance","href":"/governance"},
+Community = [
+    {"label":"Team","href":"/community/team"},
+    {"label":"Governance","href":"/community/governance"},
+    {"label":"Contributors","href":"/community/contributor"},
     {"label":"GitHub","href":"https://github.com/NexyPy/nexy"},  
 ]
 
 Items = [
     {"title":"Resources","items":Resources},
-    {"title":"More","items":More},
+    {"title":"Community","items":Community},
 ]
 es= 89
 ---

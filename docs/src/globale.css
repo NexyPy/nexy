@@ -74,4 +74,20 @@
   .ease {
     @apply transition-all duration-300 ease-in-out;
   }
+
+  .mdx-content {
+    
+    & h1 {
+      @apply text-3xl font-semibold mb-8;
+    }
+    & h2 {
+      @apply text-xl font-medium mb-4;
+    }
+    & p {
+      @apply w-full mb-4;
+    }
+    & hr {
+      @apply my-12 opacity-20  ;
+    }
+  }
 }
