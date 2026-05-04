@@ -2,7 +2,6 @@
 import typer
 from nexy.__version__ import __Version__
 from nexy.cli.commands import dev, init, start, build
-from nexy.cli.commands.utilities.pycache import pycache
 from nexy.utils.console import console
 from nexy.i18n import t
 
@@ -27,7 +26,6 @@ def main(
         console.print(VERSION)
         typer.echo(f" {t('cli.no_command', 'Use nx/nexy --help to see commands.')}")
 
-pycache()
 CLI.command()(dev)
 CLI.command()(start)
 CLI.command()(build)
