@@ -1,0 +1,32 @@
+---
+from "@/components/sections/otherHero.nexy" import OtherHero
+
+title = "Real-world Web Applications built with Nexy"
+description = """Explore inspiring websites, apps, and digital experiences made by developers and companies around the
+world."""
+children:prop[str]
+---
+
+<OtherHero title={{title}} description={{description}} />
+<main class="border-t border-border border-dashed">
+    <section class="w-container mx-auto flex">
+        <aside class="w-72 py-12 px-6 border-r border-border border-dashed ">
+            <h2 class="text-2xl font-bold">Community</h2>
+            <ul>
+                <li>
+                    <a href="/community">Community</a>
+                </li>
+                 <li>
+                    <a href="/community/team">Team</a>
+                </li>
+                 <li>
+                    <a href="/community/governance">Governance</a>
+                </li>
+            </ul>
+        </aside>
+        <aside class="p-12 flex-1">
+            {{children}}
+        </aside>
+        <aside class="w-24  border-border border-dashed "></aside>
+    </section>
+</main>

@@ -3,7 +3,7 @@ import { useState } from "react";
 function Form({use=2}:{use:any}) {
     
     const [name, setName] = useState("");
-    console.log("use", use);
+    
 
     return (
         <form onSubmit={(e) => e.preventDefault()} className="max-w-80 border border-border dark:border-border/70 bg-gray-100/20 dark:bg-black/10  rounded-xl p-1 flex items-center ">
