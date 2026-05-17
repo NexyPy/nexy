@@ -13,6 +13,8 @@
     "vite": "^8.0.10",
     "@tailwindcss/vite": "^4.2.4",
     "tailwindcss": "^4.2.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
     "typescript": "~5.9.3"
   }
 }
