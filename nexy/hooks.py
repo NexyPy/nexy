@@ -62,7 +62,7 @@ def useViews(path: str, context: dict[str, Any] | None = None) -> HTMLResponse:
 
     if path.endswith(PYTHON_VIEWS):
         mapped = str_tools.normalize_route_path_for_namespace(path)
-        import_path = f"{Config.NAMESPACE}{mapped}".replace("/", ".").rsplit(".", 1)[0]
+        import_path = f"{Config.NAMESPACE.strip('/')}/{mapped}".replace("/", ".").rsplit(".", 1)[0]
 
         try:
             module = importlib.import_module(import_path)

@@ -1,3 +1,4 @@
+import hashlib
 import os
 from pathlib import Path
 
@@ -10,6 +11,7 @@ class VFS:
 
     _instance = None
     _files: dict[str, str] = {}
+    _disk_hashes: dict[str, str] = {}
 
     def __new__(cls):
         if cls._instance is None:
@@ -47,11 +49,37 @@ class VFS:
         if path in self._files:
             del self._files[path]
 
+    @staticmethod
+    def _content_hash(content: str) -> str:
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _file_hash(path: Path) -> str | None:
+        try:
+            return hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError:
+            return None
+
+    def _skip_write(self, path: Path, content: str) -> bool:
+        key = path.as_posix()
+        cached = self._disk_hashes.get(key)
+        content_h = self._content_hash(content)
+        if cached == content_h:
+            return True
+        disk_h = self._file_hash(path)
+        if disk_h == content_h:
+            self._disk_hashes[key] = content_h
+            return True
+        return False
+
     def flush_to_disk(self, prefix: str = "__nexy__") -> None:
         """Writes all VFS files under prefix to the physical filesystem."""
         for path, content in self._files.items():
             if not path.startswith(prefix):
                 continue
             disk_path = Path(path)
+            if self._skip_write(disk_path, content):
+                continue
             disk_path.parent.mkdir(parents=True, exist_ok=True)
             disk_path.write_text(content, encoding="utf-8")
+            self._disk_hashes[disk_path.as_posix()] = self._content_hash(content)

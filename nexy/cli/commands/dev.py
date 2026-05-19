@@ -1,4 +1,6 @@
+import subprocess
 import time
+from pathlib import Path
 
 from nexy.__version__ import __Version__
 from nexy.builder import Builder
@@ -7,6 +9,24 @@ from nexy.frontend import FrontendGenerator
 from nexy.utils.common.console import console
 from nexy.utils.dev.watcher import create_observer
 from nexy.utils.server.server import Server
+
+
+def _resolve_tsx() -> str:
+    try:
+        import importlib.util
+
+        spec = importlib.util.find_spec("tsx")
+        if spec and spec.origin:
+            return Path(spec.origin).as_uri()
+    except ModuleNotFoundError:
+        pass
+    result = subprocess.run(
+        ["node", "-e", "console.log(require.resolve('tsx'))"],
+        capture_output=True, text=True, check=False,
+    )
+    if result.returncode == 0:
+        return Path(result.stdout.strip()).as_uri()
+    raise RuntimeError("tsx is required. Run: pnpm add -D tsx")
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:
@@ -19,15 +39,12 @@ def dev(port: int | None = None, host: str | None = None) -> None:
         run_port, client_port = Server.resolve_ports(run_host, port or config.usePort)
     Server.check_nexy_prod(delete=True)
 
-    vite_proc = None
+    dev_proc: subprocess.Popen | None = None
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
     ssl_enabled = bool(ssl_keyfile and ssl_certfile)
     protocol = "https" if ssl_enabled else "http"
 
     def hmr_signal() -> None:
-        """Signal that a reload happened (optional)."""
-        # With true HMR, we don't need to restart anything.
-        # Just logging or notifying the browser via WebSocket could happen here.
         pass
 
     startup_start = time.perf_counter()
@@ -50,13 +67,19 @@ def dev(port: int | None = None, host: str | None = None) -> None:
         if not result.failed:
             FrontendGenerator().generate()
             if config.useVite:
-                vite_proc = Server.vite(port=client_port, ssl=ssl_enabled)
-                time.sleep(0.05)
+                tsx_path = _resolve_tsx()
+                dev_server_script = Path("__nexy__/scripts") / "dev-server.ts"
+                dev_proc = subprocess.Popen(
+                    ["node", "--import", tsx_path, str(dev_server_script), str(client_port)],
+                    stdout=subprocess.PIPE, stderr=None,
+                )
+                dev_proc.stdout.readline()
     except Exception as e:
         console.print(f"\n[red]Error during initialization:[/red] {e}")
-        vite_proc = None
+        if dev_proc:
+            dev_proc.terminate()
+            dev_proc = None
 
-    # Watcher initialization (now handles in-memory HMR)
     observer = create_observer(
         path=".",
         patterns=config.WATCH_EXTENSIONS_GLOB,
@@ -72,9 +95,9 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     try:
         console.print(f"nexy@{version} dev using : \n")
         console.print(f"  [dim]»»[/dim] [green]Uvicorn[/green] on port [green]{run_port}[/green]")
-        if vite_proc:
+        if dev_proc:
             console.print(
-                f"  [dim]»»[/dim] [green]Vite[/green] on port [green]{client_port}[/green]"
+                f"  [dim]»»[/dim] [green]esbuild[/green] on port [green]{client_port}[/green]"
             )
         console.print(f"  [dim]»»[/dim] Local: [green]{protocol}://localhost:{run_port}[/green]")
         if network_ip != "127.0.0.1" and network_ip != "localhost":
@@ -84,8 +107,6 @@ def dev(port: int | None = None, host: str | None = None) -> None:
         console.print(f"  [dim]»»[/dim] ready in [green]{startup_timer}[/green]")
         console.print("  [dim]»»[/dim] press [dim]Ctrl+C[/dim] to stop")
 
-        # Start Uvicorn in the SAME process (blocks)
-        # This ensures they share the same VFS and sys.modules
         Server.uvicorn(
             host=run_host,
             port=run_port,
@@ -99,6 +120,6 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     finally:
         observer.stop()
         observer.join()
-        if vite_proc:
-            vite_proc.terminate()
+        if dev_proc:
+            dev_proc.terminate()
         console.print("[red]nexy » exited [reset]")

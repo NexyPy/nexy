@@ -51,7 +51,8 @@ class FBRouter:
             if path_str.endswith((".nexy", ".mdx")):
                 m_type = "component"
                 mapped = self.str_tools.normalize_route_path_for_namespace(path_str)
-                import_path = f"{Config.NAMESPACE}{mapped}".replace("/", ".").rsplit(".", 1)[0]
+                ns = Config.NAMESPACE.strip("/")
+                import_path = f"{ns}/{mapped}".replace("/", ".").rsplit(".", 1)[0]
             else:
                 m_type = "api"
                 import_path = path_str.replace("/", ".").removesuffix(".py")

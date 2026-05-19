@@ -7,8 +7,6 @@ from pathlib import Path
 from subprocess import Popen
 from typing import Any
 
-import uvicorn as _uvicorn
-
 from nexy.core.config import Config
 from nexy.utils.common.console import console as print_console
 from nexy.utils.fs.vfs import VFS
@@ -127,6 +125,8 @@ class Server:
                     stderr=subprocess.STDOUT,
                 )
             else:
+                import uvicorn as _uvicorn
+
                 _uvicorn.run(
                     "nexy.routers.app:_server",
                     host=host,

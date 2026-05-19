@@ -1,4 +1,5 @@
 import json
+import os
 import subprocess
 import sys
 import time
@@ -10,6 +11,45 @@ from nexy.core.config import Config
 from nexy.frontend import FrontendGenerator
 from nexy.utils.common.console import console
 from nexy.utils.server.server import Server
+
+_TSX: str | None = None
+
+
+def _resolve_tsx() -> str:
+    global _TSX
+    if _TSX is not None:
+        return _TSX
+    try:
+        import importlib.util
+
+        spec = importlib.util.find_spec("tsx")
+        if spec and spec.origin:
+            _TSX = Path(spec.origin).as_uri()
+            return _TSX
+    except ModuleNotFoundError:
+        pass
+    result = subprocess.run(
+        ["node", "-e", "console.log(require.resolve('tsx'))"],
+        capture_output=True, text=True, check=False,
+    )
+    if result.returncode == 0:
+        _TSX = Path(result.stdout.strip()).as_uri()
+        return _TSX
+    raise RuntimeError("tsx is required. Run: pnpm add -D tsx")
+
+
+def _run_tsx(script: str, cwd: str | None = None) -> bool:
+    tsx_path = _resolve_tsx()
+    proc = subprocess.run(
+        ["node", "--import", tsx_path, script],
+        cwd=cwd or os.getcwd(),
+        capture_output=True, text=True,
+    )
+    if proc.stdout:
+        console.print(proc.stdout)
+    if proc.returncode != 0 and proc.stderr:
+        console.print(f"[red]{proc.stderr}[/red]")
+    return proc.returncode == 0
 
 
 def build(check: bool = False) -> None:
@@ -23,7 +63,7 @@ def build(check: bool = False) -> None:
     with console.status("  compiling server components ..."):
         from nexy.utils.fs.vfs import VFS
 
-        FrontendGenerator().generate(ssg=True)
+        FrontendGenerator().generate()
         build_result = Builder().build(showlog=False)
         VFS().flush_to_disk()
     server_ko = len(build_result.failed)
@@ -36,12 +76,21 @@ def build(check: bool = False) -> None:
     ssg_entries: list[dict] = []
     if config.useVite:
         with console.status("  building client bundle ..."):
-            vite_proc = Server.vite(build=True, suppress_output=True)
-            _, err = vite_proc.communicate()
-            if vite_proc.returncode != 0:
-                console.print("  [red]✘[/red] client build failed")
-                if err:
-                    console.print(f"[red]{err.decode()}[/red]")
+            scripts_dir = Path("__nexy__/scripts")
+
+            ok = _run_tsx(str(scripts_dir / "entries.ts"))
+            if not ok:
+                console.print("  [red]✘[/red] entries generation failed")
+                sys.exit(1)
+
+            ok = _run_tsx(str(scripts_dir / "bundle.ts"))
+            if not ok:
+                console.print("  [red]✘[/red] client bundle failed")
+                sys.exit(1)
+
+            ok = _run_tsx(str(scripts_dir / "ssg.ts"))
+            if not ok:
+                console.print("  [red]✘[/red] SSG failed")
                 sys.exit(1)
 
             report_path = Path("__nexy__/client/ssg-report.json")

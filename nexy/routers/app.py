@@ -59,7 +59,11 @@ class AppServer:
 
     def _setup_static_files(self):
         """Mounts directories if they exist."""
-        mounts = {"/public": "public", "/assets": "__nexy__/client/assets"}
+        mounts = {
+            "/public": "public",
+            "/assets": "__nexy__/client/assets",
+            "/__nexy__/client": "__nexy__/client",
+        }
         for path, directory in mounts.items():
             if os.path.isdir(directory):
                 self.server.mount(path, StaticFiles(directory=directory), name=directory)

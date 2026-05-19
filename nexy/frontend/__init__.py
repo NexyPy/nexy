@@ -15,13 +15,12 @@ class FrontendGenerator:
     def __init__(self) -> None:
         self.config = Config()
 
-    def generate(self, ssg: bool = False) -> None:
+    def generate(self, _ssg: bool = False) -> None:
         self._generate_vite_entry()
         self._generate_vite_config()
-        if ssg:
-            self._generate_ssg()
+        self._copy_scripts()
 
-    def _generate_ssg(self) -> None:
+    def _copy_scripts(self) -> None:
         try:
             import nexy.frontend as frontend
 

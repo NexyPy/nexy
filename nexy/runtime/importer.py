@@ -25,21 +25,15 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
     def find_spec(
         self, fullname: str, path: list[str] | None, target: object | None = None
     ) -> importlib.machinery.ModuleSpec | None:
-        # We only intercept imports starting with __nexy__
         if not fullname.startswith("__nexy__"):
             return None
 
-        # Convert module name to virtual path
-        # __nexy__.src.routes.index -> __nexy__/src/routes/index.py
         parts = fullname.split(".")
 
-        # Check if it's a package or a module
-        # Try as a module first (.py)
         py_path = "/".join(parts) + ".py"
         if self.vfs.exists(py_path):
             return importlib.util.spec_from_loader(fullname, NexyVFSLoader(py_path))
 
-        # Try as a package (__init__.py)
         init_path = "/".join(parts) + "/__init__.py"
         if self.vfs.exists(init_path):
             return importlib.util.spec_from_loader(
@@ -50,6 +44,5 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
 
 
 def install_vfs_importer() -> None:
-    """Installs the Nexy VFS importer into sys.meta_path."""
     if not any(isinstance(finder, NexyVFSFinder) for finder in sys.meta_path):
         sys.meta_path.insert(0, NexyVFSFinder())

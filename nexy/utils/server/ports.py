@@ -51,10 +51,16 @@ def find_available_port(
 def _read_port_file(path: str | Path) -> int | None:
     vfs = VFS()
     path_str = str(path).replace("\\", "/")
-    if not vfs.exists(path_str):
+    txt = None
+    if vfs.exists(path_str):
+        txt = vfs.read(path_str).strip()
+    else:
+        p = Path(path_str)
+        if p.is_file():
+            txt = p.read_text(encoding="utf-8").strip()
+    if txt is None:
         return None
     try:
-        txt = vfs.read(path_str).strip()
         n = int(txt)
         return n if n > 0 else None
     except Exception:

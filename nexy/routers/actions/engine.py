@@ -132,4 +132,4 @@ class ActionEngine:
 
 
 ACTION_ENGINE = ActionEngine(output_dir="./actions")
-ACTION_ENGINE.discover("./")
+ACTION_ENGINE.discover("src")
