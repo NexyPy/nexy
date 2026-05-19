@@ -111,11 +111,24 @@ class DependencyInstaller:
                 + t("init.installing_node", "Installing Node.js dependencies..."),
                 spinner="dots",
             ):
-                self._run(cmd, "Node.js dependencies installation")
-                console.print(
-                    "[green]nexy[/green] » "
-                    + t("init.node_installed", "Node.js dependencies installed.")
-                )
+                ok = self._run(cmd, "Node.js dependencies installation")
+                if not ok:
+                    console.print(
+                        "[yellow]nexy[/yellow] » "
+                        + t(
+                            "init.node_retry",
+                            "Retrying with --legacy-peer-deps...",
+                        )
+                    )
+                    ok = self._run(
+                        cmd + ["--legacy-peer-deps"],
+                        "Node.js dependencies installation (legacy-peer-deps)",
+                    )
+                if ok:
+                    console.print(
+                        "[green]nexy[/green] » "
+                        + t("init.node_installed", "Node.js dependencies installed.")
+                    )
 
     def install_python_dependencies(self) -> None:
         pyproject = self.directory / "pyproject.toml"

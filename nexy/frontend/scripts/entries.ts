@@ -20,14 +20,22 @@ async function loadModuleExports(file: string, framework: Framework): Promise<st
   const fileName = path.basename(file, ext)
   const outFile = path.join(tempDir, `${fileName}-${Date.now()}.mjs`)
 
+  const jsxConfig: Record<string, unknown> =
+    framework === 'preact' ? { jsx: 'automatic', jsxImportSource: 'preact' } :
+    framework === 'solid'  ? { jsx: 'automatic', jsxImportSource: 'solid-js' } :
+    {}
+
   await esbuild.build({
     entryPoints: [path.resolve(file)],
     outfile: outFile,
     bundle: true,
     format: 'esm',
     platform: 'node',
-    external: ['react', 'preact', 'solid-js'],
+    external: framework === 'preact' ? ['preact', 'preact/jsx-runtime', 'preact/hooks'] :
+              framework === 'solid'  ? ['solid-js', 'solid-js/web'] :
+              ['react', 'react-dom'],
     logLevel: 'silent',
+    ...jsxConfig,
   })
 
   const mod = await import(`${pathToFileURL(outFile).href}?t=${Date.now()}`)
@@ -107,6 +115,11 @@ async function generateEntries() {
   const entriesDir = path.resolve(process.cwd(), '__nexy__/client/entries')
   fs.mkdirSync(entriesDir, { recursive: true })
 
+  const tsxInstalled = ['react', 'preact', 'solid'].filter(f =>
+    installedFrameworks.has(f as Framework)
+  ) as Framework[]
+  const primaryTsx = tsxInstalled.length === 1 ? tsxInstalled[0] : null
+
   for (const file of files) {
     const relativePath = path.dirname(file)
     const ext = path.extname(file)
@@ -115,7 +128,7 @@ async function generateEntries() {
     let framework: Framework | null = null
     if (file.endsWith('.vue')) framework = 'vue'
     else if (file.endsWith('.svelte')) framework = 'svelte'
-    else framework = detectTsxFramework(path.resolve(process.cwd(), file))
+    else framework = primaryTsx ?? detectTsxFramework(path.resolve(process.cwd(), file))
 
     if (!framework || !installedFrameworks.has(framework)) continue
 
@@ -125,15 +138,11 @@ async function generateEntries() {
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
 
-      // Analyse simplifiée de la cause
-      let reason = "internal error";
-      if (message.includes("require")) reason = "CommonJS/AMD compatibility ";
-      if (message.includes("is not defined")) reason = "missing browser-only global (window/document)";
+      let reason = "client-only";
+      if (message.includes("require")) reason = "CommonJS/AMD not supported";
+      if (message.includes("is not defined")) reason = "missing browser-only global";
 
-      console.warn(`[Nexy SSG] Skipping "${file}": Nexy cannot render this component because of ${reason}.`);
-
-      // On peut ajouter une petite note pour le debug si besoin
-      // console.debug(`Full error: ${message.split('\n')[0]}`);
+      console.warn(`${c.yellow}⚠ client-only: ${file} — ${reason}, no server HTML (client bundle only)${c.reset}`);
 
       continue;
     }

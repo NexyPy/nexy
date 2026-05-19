@@ -101,7 +101,11 @@ export async function run(): Promise<SSGResult> {
       writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
       result.entries.push({ file, component: 'Default', status: 'success' })
     } catch (e) {
-      result.entries.push({ file, component: 'Default', status: 'failed' })
+      console.warn(`${c.yellow}⚠ client-only: ${file} — SSR failed, using client placeholder (no server HTML)${c.reset}`)
+      const entryId = getEntryId(fileName, 'Default', 'svelte')
+      const { css } = getAssetTags(manifest, fileName)
+      writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
+      result.entries.push({ file, component: 'Default', status: 'not_supported' })
     }
   }
 

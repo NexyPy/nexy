@@ -41,23 +41,21 @@ async function run() {
   }).length > 0
 
   if (hasTsx) {
-    if (installedFrameworks.has('react')) {
-      const { run } = await import('./ssg.react')
-      results.push(await run())
-    }
-    if (installedFrameworks.has('preact')) {
-      const { run } = await import('./ssg.preact')
-      results.push(await run())
-    }
-    if (installedFrameworks.has('solid')) {
-      const { run } = await import('./ssg.solid')
-      results.push(await run())
-    }
-    if (
-      !installedFrameworks.has('react') &&
-      !installedFrameworks.has('preact') &&
-      !installedFrameworks.has('solid')
-    ) {
+    const tsxInstalled = ['react', 'preact', 'solid'].filter(f =>
+      installedFrameworks.has(f as Framework)
+    ) as Framework[]
+
+    if (tsxInstalled.length === 1) {
+      const framework = tsxInstalled[0]
+      const { run } = await import(`./ssg.${framework}`)
+      results.push(await run({ primary: true }))
+    } else if (tsxInstalled.length > 1) {
+      for (const framework of tsxInstalled) {
+        const { run } = await import(`./ssg.${framework}`)
+        results.push(await run())
+      }
+    } else {
+      console.warn(`${c.yellow}⚠ .tsx/.jsx files found but no React/Preact/Solid framework detected — treating as client-only bundles${c.reset}`)
       const { run } = await import('./ssg.html')
       results.push(await run())
     }

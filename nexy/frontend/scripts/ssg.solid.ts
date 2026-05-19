@@ -18,13 +18,16 @@ import {
   c
 } from './utils'
 
-export async function run(): Promise<SSGResult> {
+export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
   const result: SSGResult = { entries: [] }
   const manifest = getManifest()
-  const files = glob.sync('**/*.{tsx,jsx}', {
+  const allFiles = glob.sync('**/*.{tsx,jsx}', {
     cwd: process.cwd(),
     ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
-  }).filter(f => detectTsxFramework(path.resolve(process.cwd(), f)) === 'solid')
+  })
+  const files = options?.primary
+    ? allFiles
+    : allFiles.filter(f => detectTsxFramework(path.resolve(process.cwd(), f)) === 'solid')
 
   if (!files.length) return result
 
@@ -103,7 +106,10 @@ export async function run(): Promise<SSGResult> {
         writeComponent(relativeDir, entryId, `${css}${out}`, snippets)
         result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'success' })
       } catch (e) {
-        result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'failed' })
+        console.warn(`${c.yellow}⚠ client-only: ${file} — SSR failed, using client placeholder (no server HTML)${c.reset}`)
+        const { css } = getAssetTags(manifest, fileName)
+        writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
+        result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'not_supported' })
       }
     }
     if (!hasComponent) {

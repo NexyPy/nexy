@@ -6,6 +6,7 @@ import {
   saveSnippets,
   writeComponent,
   type SSGResult,
+  c,
 } from './utils'
 
 export async function run(): Promise<SSGResult> {
@@ -26,6 +27,8 @@ export async function run(): Promise<SSGResult> {
     const fileName = path.basename(file, ext)
 
     const { css } = getAssetTags(manifest, fileName)
+
+    console.warn(`${c.yellow}⚠ client-only: ${file} — no server HTML, rendering client placeholder${c.reset}`)
 
     const entryId = `${fileName}.Default`
     const finalContent = `${css}<div id="${entryId}-root"></div>`

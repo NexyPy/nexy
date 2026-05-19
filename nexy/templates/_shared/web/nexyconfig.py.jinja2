@@ -5,12 +5,10 @@ from nexy.core.models import NexyConfigModel
 class NexyConfig(NexyConfigModel):
 {%- if client_framework != "none" %}
     useFF = [{{ client_framework }}()]
-    useAliases = {"@": "src"}
 {%- endif %}
     useTitle = "Nexy Web ({{ 'FBR' if FBRouter else 'Modular' }}{{ ' + ' + client_framework.capitalize() if client_framework != 'none' else '' }})"
-{%- if client_framework != "none" %}
-    useVite = True
-{%- endif %}
 {%- if not FBRouter %}
     useRouter = AppModule
 {%- endif %}
+    useAliases = {"@": "src"}
+    useVite = True

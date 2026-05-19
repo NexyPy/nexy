@@ -1,4 +1,5 @@
 {% if client_framework == "vue" %}
+{% raw %}
 <script setup lang="ts">
 import { ref } from 'vue'
 import Button from './button.vue'
@@ -24,6 +25,7 @@ const decrement = () => count.value--
     </div>
   </div>
 </template>
+{% endraw %}
 {% elif client_framework == "svelte" %}
 <script lang="ts">
   import Button from './button.svelte';
@@ -45,6 +47,7 @@ const decrement = () => count.value--
   </div>
 </div>
 {% elif client_framework == "none" %}
+{% raw %}
 ---
 from "./button.nexy" import Button
 from "./addIcon.nexy" import AddIcon
@@ -70,4 +73,5 @@ count = 0
   document.addEventListener('DOMContentLoaded', function() { $counter.textContent = counter; });
   function update(new_count) { counter = new_count; $counter.textContent = counter; }
 </script>
+{% endraw %}
 {% endif %}

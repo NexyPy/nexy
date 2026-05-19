@@ -28,19 +28,20 @@
     {%- if client_framework == "react" %}
     "@vitejs/plugin-react": "^5.2.0",
     {%- elif client_framework == "vue" %}
-    "@vitejs/plugin-vue": "^5.2.0",
+    "@vitejs/plugin-vue": "^6.0.0",
     {%- elif client_framework == "svelte" %}
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     {%- elif client_framework == "solid" %}
     "vite-plugin-solid": "^2.11.0",
     {%- elif client_framework == "preact" %}
-    "@preact/preset-vite": "^2.11.0",
+    "@preact/preset-vite": "^2.10.1",
+    "preact-render-to-string": "^6.7.0",
     {%- endif %}
     "esbuild": "^0.28.0",
     "glob": "^13.0.6",
     "jsdom": "^29.1.1",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
-    "vite": "^8.0.10"
+    "vite": "^6.3.5"
   }
 }
