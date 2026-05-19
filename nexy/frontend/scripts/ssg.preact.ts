@@ -2,6 +2,7 @@ import { glob } from 'glob'
 import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
+import os from 'os'
 import esbuild from 'esbuild'
 import {
   detectTsxFramework,
@@ -35,33 +36,39 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
   fs.mkdirSync(tempDir, { recursive: true })
 
   const modules = new Map<string, Record<string, any>>()
-  const ts = Date.now()
+  let idx = 0
 
-  for (let i = 0; i < files.length; i++) {
-    const outFile = path.join(tempDir, `_c${i}.mjs`)
-    try {
-      await esbuild.build({
-        entryPoints: { [`_c${i}`]: path.resolve(process.cwd(), files[i]) },
-        outdir: tempDir,
-        bundle: true,
-        format: 'esm',
-        platform: 'node',
-        jsx: 'automatic',
-        jsxImportSource: 'preact',
-        external: ['preact', 'preact/jsx-runtime'],
-        logLevel: 'silent',
-        outExtension: { '.js': '.mjs' },
-      })
-
-      if (fs.existsSync(outFile)) {
-        const mod = await import(`${pathToFileURL(outFile).href}?t=${ts}`)
-        modules.set(files[i], mod)
+  const worker = async () => {
+    while (idx < files.length) {
+      const i = idx++
+      const file = files[i]
+      const outFile = path.join(tempDir, `_c${i}.mjs`)
+      try {
+        await esbuild.build({
+          entryPoints: { [`_c${i}`]: path.resolve(process.cwd(), file) },
+          outdir: tempDir,
+          bundle: true,
+          format: 'esm',
+          platform: 'node',
+          jsx: 'automatic',
+          jsxImportSource: 'preact',
+          external: ['preact', 'preact/jsx-runtime'],
+          logLevel: 'silent',
+          outExtension: { '.js': '.mjs' },
+        })
+        if (fs.existsSync(outFile)) {
+          const mod = await import(`${pathToFileURL(outFile).href}?t=${Date.now()}`)
+          modules.set(file, mod)
+        }
+      } catch (e) {
+        const errMsg = e instanceof Error ? e.message : String(e)
+        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, no server HTML (client bundle only)${c.reset}`)
       }
-    } catch (e) {
-      const errMsg = e instanceof Error ? e.message : String(e)
-      console.warn(`${c.yellow}⚠ client-only: ${files[i]} — ${errMsg}, no server HTML (client bundle only)${c.reset}`)
     }
   }
+
+  const concurrency = Math.min(os.cpus().length, files.length)
+  await Promise.all(Array.from({ length: concurrency }, () => worker()))
 
   fs.rmSync(tempDir, { recursive: true, force: true })
 
