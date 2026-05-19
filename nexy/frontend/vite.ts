@@ -96,11 +96,13 @@ function nexyPlugin(): Plugin {
       nexySSGDone = false
       const isDev = process.env.NODE_ENV === 'development'
       if (!isDev) {
+        console.log(`${c.dim}[nexy] Building server components...${c.reset}`)
         const tsxPath = getTsxPath()
         execSync(`node --import "${tsxPath}" __nexy__/scripts/entries.ts`, {
           stdio: 'inherit',
           cwd: process.cwd()
         })
+        console.log(`${c.green}[nexy] Server components built${c.reset}`)
       }
     },
 
@@ -109,12 +111,13 @@ function nexyPlugin(): Plugin {
       if (isSSRBuild || nexySSGDone) return
       nexySSGDone = true
 
+      console.log(`${c.dim}[nexy] Building client bundles...${c.reset}`)
       const tsxPath = getTsxPath()
-      // console.log(`${c.dim}Running Static Site Generation...${c.reset}`)
       execSync(`node --import "${tsxPath}" __nexy__/scripts/ssg.ts`, {
         stdio: 'inherit',
         cwd: process.cwd()
       })
+      console.log(`${c.green}[nexy] Client bundles built${c.reset}`)
     }
   }
 }

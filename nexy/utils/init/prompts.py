@@ -63,7 +63,7 @@ class ProjectPrompter:
         if use_client:
             framework = questionary.select(
                 t("init.ask.framework", "Choose the client framework"),
-                choices=["React", "Vue", "Svelte", "Preact", "None"],
+                choices=["React", "Vue", "Svelte", "Solid", "Preact", "None"],
                 pointer="ʋ",
                 qmark="»",
             ).ask()

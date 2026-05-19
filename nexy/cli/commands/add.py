@@ -24,13 +24,14 @@ def fetch_remote_component(url: str) -> str | None:
         return None
 
 
-def install_dependencies(deps: list[str]) -> None:
+def install_dependencies(deps: list[str], dest: Path | None = None) -> None:
     """Installs node dependencies using the available package manager."""
     if not deps:
         return
 
-    pnpm_lock = Path("pnpm-lock.yaml")
-    yarn_lock = Path("yarn.lock")
+    dest = (dest or Path(".")).resolve()
+    pnpm_lock = dest / "pnpm-lock.yaml"
+    yarn_lock = dest / "yarn.lock"
 
     if pnpm_lock.exists() and shutil.which("pnpm"):
         cmd = ["pnpm", "add"]
@@ -49,7 +50,7 @@ def install_dependencies(deps: list[str]) -> None:
         f"[yellow]nexy[/yellow] » Installing dependencies: {', '.join(deps)}...", spinner="dots"
     ):
         try:
-            subprocess.run(cmd + deps, check=True, capture_output=True, shell=(os.name == "nt"))
+            subprocess.run(cmd + deps, check=True, capture_output=True, cwd=dest, shell=(os.name == "nt"))
         except subprocess.CalledProcessError as e:
             console.print(f"[red]Error:[/red] Failed to install dependencies: {e}")
 

@@ -3,15 +3,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
+{% set color = "#0E2126" %}
+{% if client_framework == "vue" %}
+{% set color = "#0E261E" %}
+{% elif client_framework == "svelte" or client_framework == "none" %}
+{% set color = "#0E2625" %}
+{% elif client_framework == "solid" %}
+{% set color = "#091D24" %}
+{% elif client_framework == "preact" %}
+{% set color = "#0E1026" %}
+{% endif %}
 
 :root {
   color-scheme: light dark;
   font-family: "Inter";
-  --background: light-dark(white, #0E2126);
-  --background-second: light-dark(#0E2126, lab(35.03% -8.77 -8.15 / 0.21));
-  --foreground: light-dark(#0E2126, lab(100% 0.01 -0.01));
-  --foreground-second: light-dark(lab(100% 0.01 -0.01), #0E2126);
+  --background: light-dark(white, {{ color }});
+  --background-second: light-dark({{ color }}, lab(35.03% -8.77 -8.15 / 0.21));
+  --foreground: light-dark({{ color }}, lab(100% 0.01 -0.01));
+  --foreground-second: light-dark(lab(100% 0.01 -0.01), {{ color }});
   --border: light-dark(#C2C6D0, lab(100% 0.01 -0.01 / 0.226));
   --border-second: light-dark(lab(100% 0.01 -0.01 / 0.226), #c2c6d05a);
 }
@@ -35,6 +44,7 @@
 
 
 @layer base {
+  /**{corner-shape: superellipse(1.5);} apple corner */
   body {
     background-color: var(--background);
     color: var(--foreground);

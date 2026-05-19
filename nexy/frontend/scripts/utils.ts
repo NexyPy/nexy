@@ -40,8 +40,13 @@ export function getProjectFrameworks(): Set<Framework> {
         frameworks.add('solid')
       } else if (content.includes("from 'preact'") || content.includes('from "preact"')) {
         frameworks.add('preact')
-      } else {
+      } else if (
+        content.includes("from 'react'") || content.includes('from "react"') ||
+        content.includes("from 'react-dom'") || content.includes('from "react-dom"')
+      ) {
         frameworks.add('react')
+      } else {
+        console.warn(`${c.yellow}⚠ client-only: ${file} — no framework imports detected, client bundle only (no SSR)${c.reset}`)
       }
     }
   }

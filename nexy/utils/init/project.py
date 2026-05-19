@@ -52,7 +52,7 @@ class InitProject:
             dest.mkdir(parents=True, exist_ok=True)
             os.chdir(str(dest))
         else:
-            dest = Path(".")
+            dest = Path(".").resolve()
 
         if show_title:
             title = t("init.title", "nexy {version} {command}").format(

@@ -18,44 +18,48 @@ import {
   c,
 } from './utils'
 
-export async function run(): Promise<SSGResult> {
+export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
   const result: SSGResult = { entries: [] }
   const manifest = getManifest()
-  const files = glob.sync('**/*.{tsx,jsx}', {
+  const allFiles = glob.sync('**/*.{tsx,jsx}', {
     cwd: process.cwd(),
     ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
-  }).filter(f => detectTsxFramework(path.resolve(process.cwd(), f)) === 'preact')
+  })
+  const files = options?.primary
+    ? allFiles
+    : allFiles.filter(f => detectTsxFramework(path.resolve(process.cwd(), f)) === 'preact')
 
   if (!files.length) return result
 
   const tempDir = path.resolve(process.cwd(), 'node_modules/.nexy-temp-ssg')
   fs.mkdirSync(tempDir, { recursive: true })
-  const entries: Record<string, string> = {}
 
-  for (let i = 0; i < files.length; i++) {
-    entries[`_c${i}`] = path.resolve(process.cwd(), files[i])
-  }
-
-  await esbuild.build({
-    entryPoints: entries,
-    outdir: tempDir,
-    bundle: true,
-    format: 'esm',
-    platform: 'node',
-    jsx: 'automatic',
-    jsxImportSource: 'preact',
-    external: ['preact', 'preact/jsx-runtime'],
-    logLevel: 'silent',
-    outExtension: { '.js': '.mjs' },
-  })
-
-  const ts = Date.now()
   const modules = new Map<string, Record<string, any>>()
+  const ts = Date.now()
+
   for (let i = 0; i < files.length; i++) {
     const outFile = path.join(tempDir, `_c${i}.mjs`)
-    if (fs.existsSync(outFile)) {
-      const mod = await import(`${pathToFileURL(outFile).href}?t=${ts}`)
-      modules.set(files[i], mod)
+    try {
+      await esbuild.build({
+        entryPoints: { [`_c${i}`]: path.resolve(process.cwd(), files[i]) },
+        outdir: tempDir,
+        bundle: true,
+        format: 'esm',
+        platform: 'node',
+        jsx: 'automatic',
+        jsxImportSource: 'preact',
+        external: ['preact', 'preact/jsx-runtime'],
+        logLevel: 'silent',
+        outExtension: { '.js': '.mjs' },
+      })
+
+      if (fs.existsSync(outFile)) {
+        const mod = await import(`${pathToFileURL(outFile).href}?t=${ts}`)
+        modules.set(files[i], mod)
+      }
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : String(e)
+      console.warn(`${c.yellow}⚠ client-only: ${files[i]} — ${errMsg}, no server HTML (client bundle only)${c.reset}`)
     }
   }
 
@@ -93,7 +97,11 @@ export async function run(): Promise<SSGResult> {
         writeComponent(relativeDir, entryId, `${css}${out}`, snippets)
         result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'success' })
       } catch (e) {
-        result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'failed' })
+        const errMsg = e instanceof Error ? e.message : String(e)
+        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, using client placeholder (no server HTML)${c.reset}`)
+        const { css } = getAssetTags(manifest, fileName)
+        writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
+        result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'not_supported' })
       }
     }
     if (!hasComponent) {
