@@ -95,8 +95,17 @@ uv pip install -e ".[dev]"
 - Added `active = 'system'` to frontmatter (was missing → `{{active}}` rendered empty string)
 - Changed `--spacing-slider-left`/`--spacing-slider-width` → `--slider-left`/`--slider-width` (was inconsistent with vue/svelte/tsx — all use `--slider-*`)
 
+**SSG unified on per-file esbuild builds — parallèle**:
+- `ssg.preact.ts`: revu vers worker pool parallèle avec `os.cpus().length`
+- `ssg.react.ts`: supprimé Vite + `@vitejs/plugin-react` → esbuild per-file parallèle
+- `ssg.solid.ts`: supprimé Vite + `vite-plugin-solid` → esbuild per-file parallèle
+- Workers partagent un compteur atomique `let idx = 0` ; `Math.min(os.cpus().length, files.length)` workers en parallèle
+- `Promise.allSettled` implicite via worker pool — chaque fichier buildé indépendamment, un échec ne bloque pas les autres
+- Messages d'erreur réels maintenant inclus dans les warnings catch-blocks (React/Solid avaient `"SSR failed"` générique)
+
 ### Key findings
 - `.nexy` files rendered via standard Jinja2 `Environment` (no sandbox) — `range()` works in `{% for %}`
 - Icon SVGs ARE identical across frameworks (same Heroicons path data, only attribute naming differs: `fill-rule`/`fillRule`)
 - 28/32 tests pass (4 pre-existing `TemplateFormatter.format_attributes` failures unrelated)
 - Ruff errors on `.jinja2` files are expected (mixed HTML/JS/Python, not valid Python)
+- No Vite dependency in production SSG pipeline — esbuild seul pour React, Preact, Solid SSR builds

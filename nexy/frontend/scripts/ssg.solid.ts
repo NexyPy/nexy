@@ -2,7 +2,8 @@ import { glob } from 'glob'
 import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
-import { build } from 'vite'
+import os from 'os'
+import esbuild from 'esbuild'
 import {
   detectTsxFramework,
   extractPropPaths,
@@ -33,45 +34,41 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
 
   const tempDir = path.resolve(process.cwd(), 'node_modules/.nexy-temp-ssg')
   fs.mkdirSync(tempDir, { recursive: true })
-  const timestamp = Date.now()
-  const entries: Record<string, string> = {}
-
-  for (let i = 0; i < files.length; i++) {
-    entries[`_c${i}`] = path.resolve(process.cwd(), files[i])
-  }
-
-  const { default: viteSolidPlugin } = await import('vite-plugin-solid')
-  await build({
-    logLevel: 'silent',
-    configFile: false,
-    plugins: [
-      viteSolidPlugin({
-        ssr: true
-      })
-    ],
-    build: {
-      ssr: true,
-      outDir: tempDir,
-      emptyOutDir: true,
-      rollupOptions: {
-        input: entries,
-        output: {
-          entryFileNames: `[name].mjs`,
-          format: 'esm'
-        },
-        external: ['solid-js', 'solid-js/web', 'solid-js/store']
-      }
-    }
-  })
 
   const modules = new Map<string, Record<string, any>>()
-  for (let i = 0; i < files.length; i++) {
-    const outFile = path.join(tempDir, `_c${i}.mjs`)
-    if (fs.existsSync(outFile)) {
-      const mod = await import(`${pathToFileURL(outFile).href}?t=${timestamp}`)
-      modules.set(files[i], mod)
+  let idx = 0
+
+  const worker = async () => {
+    while (idx < files.length) {
+      const i = idx++
+      const file = files[i]
+      const outFile = path.join(tempDir, `_c${i}.mjs`)
+      try {
+        await esbuild.build({
+          entryPoints: { [`_c${i}`]: path.resolve(process.cwd(), file) },
+          outdir: tempDir,
+          bundle: true,
+          format: 'esm',
+          platform: 'node',
+          jsx: 'automatic',
+          jsxImportSource: 'solid-js',
+          external: ['solid-js', 'solid-js/web', 'solid-js/store'],
+          logLevel: 'silent',
+          outExtension: { '.js': '.mjs' },
+        })
+        if (fs.existsSync(outFile)) {
+          const mod = await import(`${pathToFileURL(outFile).href}?t=${Date.now()}`)
+          modules.set(file, mod)
+        }
+      } catch (e) {
+        const errMsg = e instanceof Error ? e.message : String(e)
+        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, no server HTML (client bundle only)${c.reset}`)
+      }
     }
   }
+
+  const concurrency = Math.min(os.cpus().length, files.length)
+  await Promise.all(Array.from({ length: concurrency }, () => worker()))
 
   fs.rmSync(tempDir, { recursive: true, force: true })
 
@@ -106,7 +103,8 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
         writeComponent(relativeDir, entryId, `${css}${out}`, snippets)
         result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'success' })
       } catch (e) {
-        console.warn(`${c.yellow}⚠ client-only: ${file} — SSR failed, using client placeholder (no server HTML)${c.reset}`)
+        const errMsg = e instanceof Error ? e.message : String(e)
+        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, using client placeholder (no server HTML)${c.reset}`)
         const { css } = getAssetTags(manifest, fileName)
         writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
         result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'not_supported' })
