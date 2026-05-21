@@ -1,71 +1,128 @@
-from functools import wraps
+import functools
 import inspect
-from typing import Any, Type, List, Dict, Set, Iterable, Callable, Optional, Mapping, AbstractSet
+from collections.abc import Callable, Iterable, Mapping
+from contextvars import ContextVar
+from enum import Enum
+from threading import RLock
+from typing import AbstractSet, Any
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
-from threading import RLock
 
 from nexy.routers.actions.store import ACTIONS_STORE
 
-HTTP_METHODS: Set[str] = {"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"}
+HTTP_METHODS: set[str] = {"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"}
 
-# --- 1. DÉCORATEUR INJECTABLE (Doit être défini avant le Container pour référence) ---
-def Injectable() -> Callable[[type[Any]], type[Any]]:
-    """Marque une classe comme service injectable"""
+
+class Scope(Enum):
+    SINGLETON = "singleton"
+    REQUEST = "request"
+    TRANSIENT = "transient"
+
+
+def Injectable(scope: Scope = Scope.SINGLETON) -> Callable[[type[Any]], type[Any]]:
     def wrapper(cls: type[Any]) -> type[Any]:
-        setattr(cls, "__injectable__", True)
-        return cls
-    return wrapper
+        cls.__injectable__ = True
+        cls.__injectable_scope__ = scope
 
-# --- 2. SYSTEME D'INJECTION (CONTAINER INTELLIGENT) ---
+        if cls.__init__ is not object.__init__:
+            original_init = cls.__init__
+
+            @functools.wraps(original_init)
+            def _guarded_init(self, *args: Any, **kwargs: Any) -> None:
+                if not Container._di_context.get():
+                    raise TypeError(
+                        f"{cls.__name__} is managed by Nexy. "
+                        f"Use Container.resolve() or inject it via another service/controller."
+                    )
+                original_init(self, *args, **kwargs)
+
+            cls.__init__ = _guarded_init
+
+        return cls
+
+    return wrapper
 
 
 class Container:
-    _instances: Dict[type[Any], Any] = {}
+    _instances: dict[type[Any], Any] = {}
     _lock = RLock()
-    _resolving: Set[type[Any]] = set()
+    _resolving: set[type[Any]] = set()
+    _request_store: ContextVar = ContextVar("_request_store", default=None)
+    _di_context: ContextVar[bool] = ContextVar("_di_context", default=False)
 
     @classmethod
-    def resolve(cls, target_cls: Type[Any]) -> Any:
-        """1. Accès rapide (Fast path) sans verrou"""
+    def resolve(cls, target_cls: type[Any]) -> Any:
+        scope = getattr(target_cls, "__injectable_scope__", Scope.SINGLETON)
+
+        if scope == Scope.REQUEST:
+            return cls._resolve_request(target_cls)
+        if scope == Scope.TRANSIENT:
+            return cls._create(target_cls)
+
+        return cls._resolve_singleton(target_cls)
+
+    @classmethod
+    def _resolve_singleton(cls, target_cls: type[Any]) -> Any:
         if target_cls in cls._instances:
             return cls._instances[target_cls]
 
         with cls._lock:
-            # 2. Double-check locking
             if target_cls in cls._instances:
                 return cls._instances[target_cls]
+            instance = cls._create(target_cls)
+            cls._instances[target_cls] = instance
+            return instance
 
-            # 3. Détection de cycle (Dépendances circulaires)
-            if target_cls in cls._resolving:
-                raise RecursionError(f"Cycle détecté pour {target_cls.__name__}")
-            
-            cls._resolving.add(target_cls)
+    @classmethod
+    def _resolve_request(cls, target_cls: type[Any]) -> Any:
+        store = cls._request_store.get()
+        if store is None:
+            store = {}
+        if target_cls not in store:
+            store[target_cls] = cls._create(target_cls)
+            cls._request_store.set(store)
+        return store[target_cls]
+
+    @classmethod
+    def clear_request_scope(cls) -> None:
+        cls._request_store.set(None)
+
+    @classmethod
+    def _create(cls, target_cls: type[Any]) -> Any:
+        if target_cls in cls._resolving:
+            raise RecursionError(f"Cycle detected for {target_cls.__name__}")
+
+        cls._resolving.add(target_cls)
+        try:
+            if "__init__" not in target_cls.__dict__:
+                return target_cls()
+
+            deps: list[Any] = []
+            init = target_cls.__init__
+            for name, param in inspect.signature(init).parameters.items():
+                if name == "self":
+                    continue
+                dep_type = param.annotation
+                if hasattr(dep_type, "__injectable__"):
+                    deps.append(cls.resolve(dep_type))
+                elif param.default is inspect.Parameter.empty:
+                    raise ValueError(
+                        f"Dependency {name}: {dep_type} is not injectable in {target_cls.__name__}"
+                    )
+
+            token = cls._di_context.set(True)
             try:
-                # 4. Résolution simplifiée
-                init = target_cls.__init__
-                if init is object.__init__:
-                    instance = target_cls()
-                else:
-                    deps = []
-                    params = inspect.signature(init).parameters
-                    for name, param in params.items():
-                        if name == "self":
-                            continue
-                        dep_type = param.annotation
-                        if hasattr(dep_type, "__injectable__"):
-                            deps.append(cls.resolve(dep_type))
-                        elif param.default is inspect.Parameter.empty:
-                            raise ValueError(f"Dépendance {name}: {dep_type} non injectable dans {target_cls.__name__}")
-                    
-                    instance = target_cls(*deps)
-
-                cls._instances[target_cls] = instance
-                return instance
+                instance = target_cls(*deps)
             finally:
-                cls._resolving.remove(target_cls)
+                cls._di_context.reset(token)
+            return instance
+        finally:
+            cls._resolving.discard(target_cls)
 
-# --- 3. AUTRES DÉCORATEURS ---
+
+# --- 3. OTHER DECORATORS ---
+
 
 def Controller(prefix: str = "", tags: list[str] | None = None) -> Callable[[type[Any]], type[Any]]:
     def wrapper(cls: type[Any]) -> type[Any]:
@@ -73,6 +130,7 @@ def Controller(prefix: str = "", tags: list[str] | None = None) -> Callable[[typ
         cls.__controller_prefix__ = prefix
         cls.__controller_tags__ = tags or [cls.__name__]
         return cls
+
     return wrapper
 
 
@@ -81,28 +139,30 @@ def UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]:
         existing = getattr(target, "__nexy_guards__", ())
         target.__nexy_guards__ = tuple(existing) + tuple(guards)
         return target
+
     return wrapper
 
 
-def UseMiddleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]:
+def Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]:
     def wrapper(target: Any) -> Any:
         existing = getattr(target, "__nexy_middlewares__", ())
         target.__nexy_middlewares__ = tuple(existing) + tuple(middlewares)
         return target
+
     return wrapper
 
 
 class RouteMeta:
     def __init__(
         self,
-        name: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-        summary: Optional[str] = None,
-        description: Optional[str] = None,
-        deprecated: Optional[bool] = None,
-        include_in_schema: Optional[bool] = None,
-        operation_id: Optional[str] = None,
-        openapi_extra: Optional[Dict[str, Any]] = None,
+        name: str | None = None,
+        tags: list[str] | None = None,
+        summary: str | None = None,
+        description: str | None = None,
+        deprecated: bool | None = None,
+        include_in_schema: bool | None = None,
+        operation_id: str | None = None,
+        openapi_extra: dict[str, Any] | None = None,
     ) -> None:
         self.name = name
         self.tags = tags
@@ -117,17 +177,17 @@ class RouteMeta:
 class ResponseMeta:
     def __init__(
         self,
-        status_code: Optional[int] = None,
-        response_class: Optional[type[Response]] = None,
-        response_model: Optional[type[Any]] = None,
-        responses: Optional[Dict[int | str, Any]] = None,
-        response_description: Optional[str] = None,
-        response_model_include: Optional[AbstractSet[str] | Mapping[str, Any]] = None,
-        response_model_exclude: Optional[AbstractSet[str] | Mapping[str, Any]] = None,
-        response_model_by_alias: Optional[bool] = None,
-        response_model_exclude_unset: Optional[bool] = None,
-        response_model_exclude_defaults: Optional[bool] = None,
-        response_model_exclude_none: Optional[bool] = None,
+        status_code: int | None = None,
+        response_class: type[Response] | None = None,
+        response_model: type[Any] | None = None,
+        responses: dict[int | str, Any] | None = None,
+        response_description: str | None = None,
+        response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+        response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+        response_model_by_alias: bool | None = None,
+        response_model_exclude_unset: bool | None = None,
+        response_model_exclude_defaults: bool | None = None,
+        response_model_exclude_none: bool | None = None,
     ) -> None:
         self.status_code = status_code
         self.response_class = response_class
@@ -143,14 +203,14 @@ class ResponseMeta:
 
 
 def UseRoute(
-    name: Optional[str] = None,
-    tags: Optional[List[str]] = None,
-    summary: Optional[str] = None,
-    description: Optional[str] = None,
-    deprecated: Optional[bool] = None,
-    include_in_schema: Optional[bool] = None,
-    operation_id: Optional[str] = None,
-    openapi_extra: Optional[Dict[str, Any]] = None,
+    name: str | None = None,
+    tags: list[str] | None = None,
+    summary: str | None = None,
+    description: str | None = None,
+    deprecated: bool | None = None,
+    include_in_schema: bool | None = None,
+    operation_id: str | None = None,
+    openapi_extra: dict[str, Any] | None = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     meta = RouteMeta(
         name=name,
@@ -164,21 +224,21 @@ def UseRoute(
     )
 
     def wrapper(handler: Callable[..., Any]) -> Callable[..., Any]:
-        setattr(handler, "__nexy_route_meta__", meta)
+        handler.__nexy_route_meta__ = meta
         return handler
 
     return wrapper
 
 
 def useRoute(
-    name: Optional[str] = None,
-    tags: Optional[List[str]] = None,
-    summary: Optional[str] = None,
-    description: Optional[str] = None,
-    deprecated: Optional[bool] = None,
-    include_in_schema: Optional[bool] = None,
-    operation_id: Optional[str] = None,
-    openapi_extra: Optional[Dict[str, Any]] = None,
+    name: str | None = None,
+    tags: list[str] | None = None,
+    summary: str | None = None,
+    description: str | None = None,
+    deprecated: bool | None = None,
+    include_in_schema: bool | None = None,
+    operation_id: str | None = None,
+    openapi_extra: dict[str, Any] | None = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     return UseRoute(
         name=name,
@@ -193,17 +253,17 @@ def useRoute(
 
 
 def UseResponse(
-    status_code: Optional[int] = None,
-    response_class: Optional[type[Response]] = None,
-    response_model: Optional[type[Any]] = None,
-    responses: Optional[Dict[int | str, Any]] = None,
-    response_description: Optional[str] = None,
-    response_model_include: Optional[AbstractSet[str] | Mapping[str, Any]] = None,
-    response_model_exclude: Optional[AbstractSet[str] | Mapping[str, Any]] = None,
-    response_model_by_alias: Optional[bool] = None,
-    response_model_exclude_unset: Optional[bool] = None,
-    response_model_exclude_defaults: Optional[bool] = None,
-    response_model_exclude_none: Optional[bool] = None,
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     meta = ResponseMeta(
         status_code=status_code,
@@ -220,56 +280,73 @@ def UseResponse(
     )
 
     def wrapper(handler: Callable[..., Any]) -> Callable[..., Any]:
-        setattr(handler, "__nexy_response_meta__", meta)
+        handler.__nexy_response_meta__ = meta
         return handler
 
     return wrapper
 
-def Module(prefix: str = "") -> Callable[[type[Any]], APIRouter]:
+
+def Module(
+    prefix: str = "",
+) -> Callable[[type[Any]], APIRouter]:
     def wrapper(cls: type[Any]) -> APIRouter:
         controllers_list = getattr(cls, "controllers", [])
         providers_list = getattr(cls, "providers", [])
         imports_list = getattr(cls, "imports", [])
+        exports_list = getattr(cls, "exports", [])
         if not controllers_list:
-            raise ValueError(f"Module {cls.__name__} doit avoir au moins un controller")
-        
+            raise ValueError(f"Module {cls.__name__} must have at least one controller")
+
         module_router = APIRouter(prefix=prefix)
-        
+        module_router.__module_exports__ = exports_list
+
+        for sub_router in imports_list:
+            for exported_cls in getattr(sub_router, "__module_exports__", []):
+                if hasattr(exported_cls, "__injectable__"):
+                    Container.resolve(exported_cls)
+
         for provider_cls in providers_list:
             if not hasattr(provider_cls, "__injectable__"):
-                raise ValueError(f"{provider_cls.__name__} doit être @Injectable()")
+                raise ValueError(f"{provider_cls.__name__} must be @Injectable()")
             Container.resolve(provider_cls)
-        
+
         if imports_list:
             for sub_router in imports_list:
                 module_router.include_router(sub_router)
-        
+
         for ctrl_cls in controllers_list:
             _register_controller(ctrl_cls, module_router)
-        
+
         return module_router
+
     return wrapper
 
-def _register_controller(ctrl_cls: Type[Any], parent_router: APIRouter) -> None:
-    ctrl_prefix = getattr(ctrl_cls, '__controller_prefix__', '')
-    ctrl_tags = getattr(ctrl_cls, '__controller_tags__', [])
-    ctrl_router = APIRouter(prefix=ctrl_prefix, tags=ctrl_tags)
-    
-    # ICI : Container.resolve va analyser le Controller, voir qu'il a besoin d'un Service,
-    # vérifier si le Service est @Injectable, et le créer à la volée.
+
+def _register_controller(ctrl_cls: type[Any], parent_router: APIRouter) -> None:
+    ctrl_prefix = getattr(ctrl_cls, "__controller_prefix__", "")
+    path_tag = parent_router.prefix + ctrl_prefix if (parent_router.prefix or ctrl_prefix) else "/"
+    ctrl_router = APIRouter(prefix=ctrl_prefix, tags=[path_tag])
+
+    # Container.resolve analyzes the Controller, resolves its Service dependency
     ctrl_instance = Container.resolve(ctrl_cls)
     class_guards: Iterable[Callable[..., Any]] = getattr(ctrl_cls, "__nexy_guards__", ())
     class_middlewares: Iterable[Callable[..., Any]] = getattr(ctrl_cls, "__nexy_middlewares__", ())
-    seen_http_methods: Set[str] = set()
+    seen_http_methods: set[str] = set()
     for method_name, method_func in inspect.getmembers(ctrl_instance, predicate=inspect.ismethod):
         method_upper = method_name.upper()
         if method_upper in HTTP_METHODS:
             if method_upper in seen_http_methods:
                 print(f"{ctrl_cls.__name__} has multiple handlers for HTTP method {method_upper} ")
-                raise ValueError(f"Controller {ctrl_cls.__name__} has multiple handlers for HTTP method {method_upper}")
+                raise ValueError(
+                    f"Controller {ctrl_cls.__name__} has multiple handlers for HTTP method {method_upper}"
+                )
             seen_http_methods.add(method_upper)
-            method_guards: Iterable[Callable[..., Any]] = getattr(method_func, "__nexy_guards__", ())
-            method_middlewares: Iterable[Callable[..., Any]] = getattr(method_func, "__nexy_middlewares__", ())
+            method_guards: Iterable[Callable[..., Any]] = getattr(
+                method_func, "__nexy_guards__", ()
+            )
+            method_middlewares: Iterable[Callable[..., Any]] = getattr(
+                method_func, "__nexy_middlewares__", ()
+            )
             dependencies = [
                 Depends(dep)
                 for dep in (
@@ -280,21 +357,21 @@ def _register_controller(ctrl_cls: Type[Any], parent_router: APIRouter) -> None:
                 )
             ]
             route_meta: RouteMeta | None = getattr(method_func, "__nexy_route_meta__", None)
-            response_meta: ResponseMeta | None = getattr(method_func, "__nexy_response_meta__", None)
+            response_meta: ResponseMeta | None = getattr(
+                method_func, "__nexy_response_meta__", None
+            )
             route_name = f"{ctrl_cls.__name__}.{method_name}"
             if route_meta is not None and route_meta.name:
                 route_name = route_meta.name
-            route_tags = ctrl_tags
-            if route_meta is not None and route_meta.tags is not None:
-                route_tags = route_meta.tags
-            route_kwargs: Dict[str, Any] = {
+            route_kwargs: dict[str, Any] = {
                 "path": "/",
                 "endpoint": method_func,
                 "methods": [method_upper],
                 "name": route_name,
                 "dependencies": dependencies or None,
-                "tags": route_tags,
             }
+            if route_meta is not None and route_meta.tags is not None:
+                route_kwargs["tags"] = route_meta.tags
             if response_meta is not None:
                 if response_meta.status_code is not None:
                     route_kwargs["status_code"] = response_meta.status_code
@@ -313,27 +390,38 @@ def _register_controller(ctrl_cls: Type[Any], parent_router: APIRouter) -> None:
                 if response_meta.response_model_by_alias is not None:
                     route_kwargs["response_model_by_alias"] = response_meta.response_model_by_alias
                 if response_meta.response_model_exclude_unset is not None:
-                    route_kwargs["response_model_exclude_unset"] = response_meta.response_model_exclude_unset
+                    route_kwargs["response_model_exclude_unset"] = (
+                        response_meta.response_model_exclude_unset
+                    )
                 if response_meta.response_model_exclude_defaults is not None:
-                    route_kwargs["response_model_exclude_defaults"] = response_meta.response_model_exclude_defaults
+                    route_kwargs["response_model_exclude_defaults"] = (
+                        response_meta.response_model_exclude_defaults
+                    )
                 if response_meta.response_model_exclude_none is not None:
-                    route_kwargs["response_model_exclude_none"] = response_meta.response_model_exclude_none
+                    route_kwargs["response_model_exclude_none"] = (
+                        response_meta.response_model_exclude_none
+                    )
             ctrl_router.add_api_route(**route_kwargs)
         elif method_upper == "SOCKET":
             ctrl_router.add_api_websocket_route(path="/", endpoint=method_func)
-    
+
     parent_router.include_router(ctrl_router)
 
 
-
-def Action(func: Optional[Callable] = None):
+def Action(func: Callable | None = None):
     def decorator(f: Callable):
         ACTIONS_STORE.register(f)
         return f
+
     if func is None:
         return decorator
-    
+
     return decorator(func)
 
-def Task(func: Optional[Callable] = None): pass
-def Job(func: Optional[Callable] = None): pass
+
+def Task(func: Callable | None = None):
+    pass
+
+
+def Job(func: Callable | None = None):
+    pass

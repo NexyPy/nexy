@@ -1,10 +1,9 @@
-from nexy.core.models import PaserModel
+from nexy.utils.fs.vfs import VFS
 
 
 class TemplateGenerator:
     def __init__(self) -> None:
-        pass
+        self.vfs = VFS()
 
     def generate(self, output: str, source: str) -> None:
-        with open(output, "w", encoding="utf-8") as file:
-            file.write(source)
+        self.vfs.write(output, source)

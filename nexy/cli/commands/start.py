@@ -1,35 +1,52 @@
-from typing import Optional
+import time
 
-import uvicorn
 from nexy.__version__ import __Version__
-from nexy.cli.commands.utilities.console import console
 from nexy.core.config import Config
-from nexy.cli.commands.utilities.server import Server
+from nexy.i18n import t
+from nexy.utils.common.console import console
+from nexy.utils.server.server import Server
 
-def start(port: Optional[int] = None, host: Optional[str] = None) -> None:
-    # 1. Initialisation et vérification
+
+def start(port: int | None = None, host: str | None = None) -> None:
+    startup_start = time.perf_counter()
     version = __Version__().get()
-    # Server.check_nexy_prod()
-    
+
     config = Config()
-    run_host = host or getattr(config, "useHost", "0.0.0.0")
-    run_port,_ = Server.resolve_ports(run_host, port or getattr(config, "usePort", 3000))
+    run_host = host or config.useHost
+    run_port, _ = Server.resolve_ports(run_host, port or config.usePort)
+    ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
+    ssl_enabled = bool(ssl_keyfile and ssl_certfile)
+    protocol = "https" if ssl_enabled else "http"
+
+    startup_elapsed = time.perf_counter() - startup_start
+    startup_timer = f"{startup_elapsed:.2f}s"
+
+    network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host
 
     try:
-        console.print(f"nexy@{version} [dim]starting in production...[/dim]\n")
-        
-        console.print(f"  [dim]»»[/dim] [green]Uvicorn[/green] running on port [yellow]{run_port}[/yellow]")
-        console.print(f"  [dim]»»[/dim] Local:   [green]http://localhost:{run_port}[/green]")
-        if run_host != "127.0.0.1" and run_host != "localhost":
-            console.print(f"  [dim]»»[/dim] Network: [green]http://{run_host}:{run_port}[/green]")
-        
-        console.print(f"  [dim]»»[/dim] Press [dim]Ctrl+C[/dim] to stop\n")
+        console.print(t("start.banner", "nexy@{version} starting in production...").format(version=version))
 
-        Server.uvicorn(host=run_host, port=run_port)
-        
-    except (KeyboardInterrupt, SystemExit) as e:
-        console.print("[red]nexy » exited [reset]")
+        console.print(
+            f"  [dim]\u00bb\u00bb[/dim] [green]{t('start.uvicorn', 'Uvicorn')}[/green]"
+            f" {t('start.uvicorn_on', 'running on port')} [yellow]{run_port}[/yellow]"
+        )
+        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.local', 'Local:')} [green]{protocol}://localhost:{run_port}[/green]")
+        if network_ip != "127.0.0.1" and network_ip != "localhost":
+            console.print(
+                f"  [dim]\u00bb\u00bb[/dim] {t('start.network', 'Network:')} [green]{protocol}://{network_ip}:{run_port}[/green]"
+            )
+
+        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.ready', 'ready in')} [green]{startup_timer}[/green]")
+        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.stop', 'Press Ctrl+C to stop')}\n")
+
+        Server.uvicorn(
+            host=run_host,
+            port=run_port,
+            ssl_keyfile=ssl_keyfile,
+            ssl_certfile=ssl_certfile,
+        )
+
+    except (KeyboardInterrupt, SystemExit):
+        console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")
     finally:
-        console.print("[red]nexy » exited [reset]")
-        
-    
+        console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")

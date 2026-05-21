@@ -1,0 +1,23 @@
+{
+  "add": {
+    "fetching": "Fetching remote component from",
+    "fetch_failed": "Failed to fetch component from",
+    "installing": "Installing dependencies",
+    "install_failed": "Failed to install dependencies",
+    "no_pm": "No package manager found. Please install dependencies manually:",
+    "warning": "Warning:",
+    "error": "Error:",
+    "usage": "Usage:",
+    "usage_text": "nexy add [COMPONENT_NAME or URL]...",
+    "available": "Available UI components:",
+    "not_found": "Component '{name}' not found in registry.",
+    "skipping": "Skipping:",
+    "exists": "already exists.",
+    "added": "Added:",
+    "write_failed": "Failed to write",
+    "help_components": "Components to add (registry names or URLs)",
+    "help_ui": "Force treatment as UI components",
+    "help_url": "Force treatment as URLs",
+    "help_all": "Add all available components from registry"
+  }
+}

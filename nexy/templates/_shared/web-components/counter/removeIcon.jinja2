@@ -1,0 +1,11 @@
+{% if client_framework in ["vue", "svelte", "none"] %}
+{% if client_framework == "vue" %}
+<template>
+{% endif %}
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5">
+    <path d="M5 12h14" />
+  </svg>
+{% if client_framework == "vue" %}
+</template>
+{% endif %}
+{% endif %}

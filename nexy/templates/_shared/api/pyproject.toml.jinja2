@@ -1,0 +1,8 @@
+[project]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = "A Nexy RESTful API{% if orm != 'None' %} with {{ orm }}{% endif %}"
+dependencies = [
+    "nexy>=2.0.0",
+]
+requires-python = ">=3.12"

@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, List, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter
-
 
 
 @dataclass
@@ -14,8 +13,8 @@ class Node:
 @dataclass
 class ComponentNode(Node):
     name: str
-    props: Dict[str, str]
-    children: List[Node] = field(default_factory=list)
+    props: dict[str, str]
+    children: list[Node] = field(default_factory=list)
 
 
 @dataclass
@@ -27,7 +26,7 @@ class TextNode(Node):
 class NexyModule:
     name: str
     frontmatter: str
-    template: List[Node]
+    template: list[Node]
 
 
 @dataclass
@@ -56,7 +55,7 @@ class Binding:
 class NexyProp:
     name: str
     type: str
-    default: Optional[str] = None
+    default: str | None = None
 
 
 class ComponentType(Enum):
@@ -64,6 +63,8 @@ class ComponentType(Enum):
     VUE = "vue"
     SVELTE = "svelte"
     REACT = "react"
+    SOLID = "solid"
+    PREACT = "preact"
     JSON = "json"
     MDX = "mdx"
     UNKNOWN = "unknown"
@@ -72,8 +73,8 @@ class ComponentType(Enum):
 @dataclass
 class NexyImport:
     path: str
-    symbol: Optional[str] = None
-    alias: Optional[str] = None
+    symbol: str | None = None
+    alias: str | None = None
     raw_source: str = ""
     extension: str = ""
     comp_type: ComponentType = ComponentType.UNKNOWN
@@ -81,10 +82,10 @@ class NexyImport:
 
 @dataclass
 class LogicResult:
-    nexy_imports: List[NexyImport] = field(default_factory=list)
-    props: List[NexyProp] = field(default_factory=list)
+    nexy_imports: list[NexyImport] = field(default_factory=list)
+    props: list[NexyProp] = field(default_factory=list)
     python_code: str = ""
-    css_imports: List[str] = field(default_factory=list)
+    css_imports: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -107,18 +108,20 @@ class ContextModel:
 
 
 @dataclass
-class PaserModel:
+class ParserModel:
     frontmatter: str
     template: str
     props: list[NexyProp]
     context: list[ContextModel] = field(default_factory=list)
     styles: list[str] = field(default_factory=list)
 
+
 @dataclass
 class FFModel:
     name: str
     render: str
     extension: list[str] = field(default_factory=list)
+
 
 class NexyConfigModel:
     useAliases: dict[str, str] | None = None
@@ -131,9 +134,15 @@ class NexyConfigModel:
     useDocs: bool = True
     useVite: bool = False
     useViteDevUrl: str | None = None
-    useFF: list[FFModel] = field(default_factory=list)
+    useFF: list[FFModel] = []
     useMarkdownExtensions: list[str] = []
     excludeDirs: list[str] = []
-    useMiddlewares: list[Any] = field(default_factory=list)
-
-    
+    useMiddlewares: list[Any] = []
+    useCORS: dict | None = None
+    useGZip: dict | None = None
+    useTrustedHost: dict | None = None
+    useHTTPSRedirect: bool = False
+    useSession: dict | None = None
+    useAuth: dict | None = None
+    useSslKeyfile: str | None = None
+    useSslCertfile: str | None = None

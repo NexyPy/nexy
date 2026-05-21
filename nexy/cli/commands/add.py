@@ -1,2 +1,165 @@
-def add() -> None:
-    print("> nexy add")
+import os
+import shutil
+import subprocess
+import urllib.request
+from pathlib import Path
+
+import typer
+
+from nexy.core.config import Config
+from nexy.i18n import t
+from nexy.utils.common.console import console
+from nexy.utils.init.registry import COMPONENT_REGISTRY
+
+
+def fetch_remote_component(url: str) -> str | None:
+    """Fetches component source from a remote URL."""
+    try:
+        with console.status(
+            f"[yellow]nexy[/yellow] \u00bb {t('add.fetching', 'Fetching remote component from')} {url}...",
+            spinner="dots",
+        ):
+            with urllib.request.urlopen(url) as response:
+                return response.read().decode("utf-8")
+    except Exception as e:
+        console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.fetch_failed', 'Failed to fetch component from')} {url}: {e}")
+        return None
+
+
+def install_dependencies(deps: list[str], dest: Path | None = None) -> None:
+    """Installs node dependencies using the available package manager."""
+    if not deps:
+        return
+
+    dest = (dest or Path(".")).resolve()
+    pnpm_lock = dest / "pnpm-lock.yaml"
+    yarn_lock = dest / "yarn.lock"
+
+    if pnpm_lock.exists() and shutil.which("pnpm"):
+        cmd = ["pnpm", "add"]
+    elif yarn_lock.exists() and shutil.which("yarn"):
+        cmd = ["yarn", "add"]
+    elif shutil.which("npm"):
+        cmd = ["npm", "install"]
+    else:
+        console.print(
+            f"[yellow]{t('add.warning', 'Warning:')}[/yellow] {t('add.no_pm', 'No package manager found. Please install dependencies manually:')} "
+            + ", ".join(deps)
+        )
+        return
+
+    with console.status(
+        f"[yellow]nexy[/yellow] \u00bb {t('add.installing', 'Installing dependencies')}: {', '.join(deps)}...",
+        spinner="dots",
+    ):
+        try:
+            subprocess.run(cmd + deps, check=True, capture_output=True, cwd=dest, shell=(os.name == "nt"))
+        except subprocess.CalledProcessError as e:
+            console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.install_failed', 'Failed to install dependencies')}: {e}")
+
+
+def add(
+    components: list[str] = typer.Argument(None, help=t("add.help_components", "Components to add (registry names or URLs)")),
+    ui: bool = typer.Option(False, "--ui", help=t("add.help_ui", "Force treatment as UI components")),
+    url: bool = typer.Option(False, "--url", help=t("add.help_url", "Force treatment as URLs")),
+    all: bool = typer.Option(
+        False, "--all", "-a", help=t("add.help_all", "Add all available components from registry")
+    ),
+) -> None:
+    config = Config()
+
+    framework = "react"
+    ff_list = config.useFF
+    if ff_list:
+        framework = ff_list[0].name.lower()
+
+    if all:
+        components = list(COMPONENT_REGISTRY.keys())
+
+    if not components:
+        console.print(f"[yellow]{t('add.usage', 'Usage:')}[/yellow] {t('add.usage_text', 'nexy add [COMPONENT_NAME or URL]...')}")
+        console.print(
+            f"{t('add.available', 'Available UI components:')} [cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
+        )
+        raise typer.Exit()
+
+    target_dir = Path("src/components/ui")
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    all_deps = set()
+
+    for item in components:
+        content = None
+        component_name = item
+        framework_to_use = framework
+
+        is_url = item.startswith(("http://", "https://")) or url
+
+        if is_url:
+            content = fetch_remote_component(item)
+            if not content:
+                continue
+
+            url_path = Path(item)
+            component_name = url_path.stem
+            ext = url_path.suffix.lower()
+
+            if ext == ".vue":
+                framework_to_use = "vue"
+            elif ext == ".svelte":
+                framework_to_use = "svelte"
+            elif ext in (".tsx", ".jsx"):
+                framework_to_use = "react"
+            elif ext == ".solid":
+                framework_to_use = "solid"
+            elif ext == ".preact":
+                framework_to_use = "preact"
+            elif ext == ".nexy":
+                framework_to_use = "nexy"
+            else:
+                framework_to_use = "react"
+
+        else:
+            name_lower = item.lower()
+            if name_lower not in COMPONENT_REGISTRY:
+                console.print(
+                    f"[red]{t('add.error', 'Error:')}[/red] {t('add.not_found', "Component '{name}' not found in registry.").format(name=item)}"
+                )
+                continue
+
+            entry = COMPONENT_REGISTRY[name_lower]
+            component_name = entry.name
+
+            if framework not in entry.framework_code:
+                available = list(entry.framework_code.keys())
+                framework_to_use = available[0]
+            else:
+                framework_to_use = framework
+
+            content = entry.framework_code[framework_to_use]
+            all_deps.update(entry.dependencies)
+
+        _write_nexy_component(target_dir, component_name, content, framework_to_use)
+
+    if all_deps:
+        install_dependencies(list(all_deps))
+
+
+def _write_nexy_component(target_dir: Path, name: str, content: str, framework: str) -> None:
+    """Helper to write a .nexy file with optional framework wrapper."""
+    file_path = target_dir / f"{name}.nexy"
+
+    if file_path.exists():
+        console.print(f"[yellow]{t('add.skipping', 'Skipping:')}[/yellow] {file_path} {t('add.exists', 'already exists.')}")
+        return
+
+    if framework != "nexy" and not content.strip().startswith("<script"):
+        final_content = f'<script framework="{framework}">\n{content}\n</script>'
+    else:
+        final_content = content
+
+    try:
+        file_path.write_text(final_content, encoding="utf-8")
+        console.print(f"[green]{t('add.added', 'Added:')}[/green] {file_path}")
+    except Exception as e:
+        console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.write_failed', 'Failed to write')} {file_path}: {e}")

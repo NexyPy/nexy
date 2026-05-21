@@ -2,7 +2,8 @@ import { glob } from 'glob'
 import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
-import { build } from 'vite'
+import os from 'os'
+import esbuild from 'esbuild'
 import {
   detectTsxFramework,
   extractPropPaths,
@@ -14,58 +15,62 @@ import {
   saveSnippets,
   writeComponent,
   getEntryId,
+  type SSGResult,
   c
 } from './utils'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function loadModule(file: string): Promise<Record<string, any>> {
-  const tempDir = path.resolve(process.cwd(), 'node_modules/.nexy-temp')
-  fs.mkdirSync(tempDir, { recursive: true })
-
-  const timestamp = Date.now()
-  const ext = path.extname(file)
-  const fileName = path.basename(file, ext)
-  const absoluteFile = path.resolve(process.cwd(), file)
-  const outFile = path.join(tempDir, `${fileName}-${timestamp}.mjs`)
-
-  const { default: reactPlugin } = await import('@vitejs/plugin-react')
-
-  await build({
-    logLevel: 'silent',
-    configFile: false,
-    plugins: [reactPlugin()],
-    build: {
-      ssr: true,
-      outDir: path.dirname(outFile),
-      emptyOutDir: false,
-      rollupOptions: {
-        input: { [fileName]: absoluteFile },
-        output: {
-          entryFileNames: `${fileName}-${timestamp}.mjs`,
-          format: 'esm'
-        },
-        external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime']
-      }
-    }
-  })
-
-  if (!fs.existsSync(outFile)) {
-    throw new Error(` Vite failed to produce output for ${fileName}`)
-  }
-
-  const mod = await import(`${pathToFileURL(outFile).href}?t=${timestamp}`)
-  fs.rmSync(outFile, { force: true })
-  return mod
-}
-
-export async function run(): Promise<number> {
+export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
+  const result: SSGResult = { entries: [] }
   const manifest = getManifest()
-  const files = glob.sync('**/*.{tsx,jsx}', {
+  const allFiles = glob.sync('**/*.{tsx,jsx}', {
     cwd: process.cwd(),
     ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
-  }).filter(f => detectTsxFramework(path.resolve(process.cwd(), f)) === 'react')
+  })
+  const files = options?.primary
+    ? allFiles
+    : allFiles.filter(f => detectTsxFramework(path.resolve(process.cwd(), f)) === 'react')
 
-  if (!files.length) return 0
+  if (!files.length) return result
+
+  const tempDir = path.resolve(process.cwd(), 'node_modules/.nexy-temp-ssg')
+  fs.mkdirSync(tempDir, { recursive: true })
+
+  const modules = new Map<string, Record<string, any>>()
+  let idx = 0
+
+  const worker = async () => {
+    while (idx < files.length) {
+      const i = idx++
+      const file = files[i]
+      const outFile = path.join(tempDir, `_c${i}.mjs`)
+      try {
+        await esbuild.build({
+          entryPoints: { [`_c${i}`]: path.resolve(process.cwd(), file) },
+          outdir: tempDir,
+          bundle: true,
+          format: 'esm',
+          platform: 'node',
+          jsx: 'automatic',
+          jsxImportSource: 'react',
+          external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+          logLevel: 'silent',
+          outExtension: { '.js': '.mjs' },
+        })
+        if (fs.existsSync(outFile)) {
+          const mod = await import(`${pathToFileURL(outFile).href}?t=${Date.now()}`)
+          modules.set(file, mod)
+        }
+      } catch (e) {
+        const errMsg = e instanceof Error ? e.message : String(e)
+        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, no server HTML (client bundle only)${c.reset}`)
+      }
+    }
+  }
+
+  const concurrency = Math.min(os.cpus().length, files.length)
+  await Promise.all(Array.from({ length: concurrency }, () => worker()))
+
+  fs.rmSync(tempDir, { recursive: true, force: true })
 
   const snippets: Record<string, string> = {}
 
@@ -77,39 +82,40 @@ export async function run(): Promise<number> {
     const propPaths = extractPropPaths(path.resolve(process.cwd(), file))
     const jinjaProps = createJinjaProps(propPaths)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let mod: Record<string, any>
-    try {
-      mod = await loadModule(file)
-    } catch (err) {
-      console.error(`${c.red} Failed to load ${file}:${c.reset}`, err)
+    const mod = modules.get(file)
+    if (!mod) {
+      result.entries.push({ file, component: '*', status: 'not_supported' })
       continue
     }
 
+    let hasComponent = false
     for (const [exportName, Component] of Object.entries(mod)) {
       if (!isComponent(exportName, Component, fileName)) continue
+      hasComponent = true
 
       const entryId = getEntryId(fileName, exportName, 'react')
 
-      let html = ''
       try {
         const { renderToString } = await import('react-dom/server')
         const { createElement } = await import('react')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        html = renderToString(createElement(Component as any, jinjaProps))
-        html = restoreJinjaVars(html, propPaths)
+        const html = renderToString(createElement(Component as any, jinjaProps))
+        const out = restoreJinjaVars(html, propPaths)
+        const { css } = getAssetTags(manifest, fileName)
+        writeComponent(relativeDir, entryId, `${css}${out}`, snippets)
+        result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'success' })
       } catch (e) {
-        // console.error(`${c.red} Failed to render ${entryId}:${c.reset}`, e)
-        console.error(`${c.red} Failed to render  ${entryId}${c.reset} in server`)
-        continue
+        const errMsg = e instanceof Error ? e.message : String(e)
+        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, using client placeholder (no server HTML)${c.reset}`)
+        const { css } = getAssetTags(manifest, fileName)
+        writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
+        result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'not_supported' })
       }
-
-      const { css } = getAssetTags(manifest, fileName)
-      writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
+    }
+    if (!hasComponent) {
+      result.entries.push({ file, component: '*', status: 'not_supported' })
     }
   }
 
-  fs.rmSync(path.resolve(process.cwd(), 'node_modules/.nexy-temp'), { recursive: true, force: true })
   saveSnippets(snippets)
-  return Object.keys(snippets).length
+  return result
 }
