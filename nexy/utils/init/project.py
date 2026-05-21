@@ -96,6 +96,7 @@ class InitProject:
         orm = config.get("orm", "None")
         db_url = config.get("db_url")
         project_dir_name = dest.name if dest != Path(".") else None
+        project_name = project_dir_name or dest.resolve().name
 
         try:
             # Use spinner during initialization
@@ -108,13 +109,17 @@ class InitProject:
                     cloner = GitClone()
                     cloner.clone(cloner.repo, cloner.branch, dest, subdir=subdir)
                 else:
+                    from nexy.i18n import _detect_locale
+
                     local_src = _TEMPLATES_DIR / template_name
                     context = {
                         "orm": orm,
                         "db_url": db_url,
+                        "project_name": project_name,
                         "project_type": config.get("project_type", "web"),
                         "FBRouter": config.get("FBRouter", False),
                         "client_framework": config.get("client_framework", "none"),
+                        "locale": _detect_locale(),
                     }
                     renderer = TemplateRenderer(local_src, dest, context)
                     renderer.render()
@@ -130,6 +135,15 @@ class InitProject:
                             if src.is_dir():
                                 tgt = dest / rel_dest if rel_dest != "." else dest
                                 TemplateRenderer(src, tgt, context).render()
+
+                        favicon = dest / "favicon.ico"
+                        if favicon.exists():
+                            if template_name.endswith("-fbr"):
+                                (dest / "src" / "routes").mkdir(parents=True, exist_ok=True)
+                                shutil.move(str(favicon), str(dest / "src" / "routes" / "favicon.ico"))
+                            else:
+                                (dest / "public").mkdir(parents=True, exist_ok=True)
+                                shutil.move(str(favicon), str(dest / "public" / "favicon.ico"))
 
                         root_globale = dest / "globale.css"
                         if root_globale.exists():
@@ -286,7 +300,7 @@ class InitProject:
 
     def _print_success_message(self, project_dir_name: str | None = None) -> None:
         console.print(
-            "\n[green]nexy[/green] » "
+            "\n[green]nexy[/green] \u00bb "
             + t("init.success_title", "Project initialized successfully!")
         )
         console.print("\n" + t("init.next_steps", "Next steps:"))
@@ -294,6 +308,17 @@ class InitProject:
         step = 1
         if project_dir_name:
             console.print(f"  {step}. [cyan]cd {project_dir_name}[/cyan]")
+            step += 1
+
+        if project_dir_name:
+            import sys as _sys
+            is_win = _sys.platform == "win32"
+            activate = ".venv\\Scripts\\activate" if is_win else "source .venv/bin/activate"
+            venv_msg = t(
+                "init.step_activate_venv",
+                "Activate the virtual environment",
+            )
+            console.print(f"  {step}. [cyan]{activate}[/cyan] {venv_msg}")
             step += 1
 
         console.print(

@@ -1,0 +1,23 @@
+{
+  "add": {
+    "fetching": "Récupération du composant distant depuis",
+    "fetch_failed": "Échec de la récupération du composant depuis",
+    "installing": "Installation des dépendances",
+    "install_failed": "Échec de l'installation des dépendances",
+    "no_pm": "Aucun gestionnaire de paquets trouvé. Veuillez installer les dépendances manuellement :",
+    "warning": "Attention :",
+    "error": "Erreur :",
+    "usage": "Utilisation :",
+    "usage_text": "nexy add [NOM_DU_COMPOSANT or URL]...",
+    "available": "Composants UI disponibles :",
+    "not_found": "Le composant '{name}' est introuvable dans le registre.",
+    "skipping": "Ignoré :",
+    "exists": "existe déjà.",
+    "added": "Ajouté :",
+    "write_failed": "Échec de l'écriture de",
+    "help_components": "Composants à ajouter (noms du registre ou URLs)",
+    "help_ui": "Forcer le traitement comme composants UI",
+    "help_url": "Forcer le traitement comme URLs",
+    "help_all": "Ajouter tous les composants disponibles du registre"
+  }
+}

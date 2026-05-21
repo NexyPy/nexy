@@ -51,28 +51,25 @@ def main(
         console.print(f"[green]nexy[/green] {VERSION}")
         raise typer.Exit()
     if ctx.invoked_subcommand is None:
-        # Build polished welcome banner with brand identity and clear next steps
         console.print()
         console.print(f"[bold green]nexy[/bold green] [dim]{VERSION}[/dim]")
         console.print()
-        console.print("[italic]The modern full-stack framework that just works[/italic]")
+        console.print(f"[italic]{t('cli.tagline', 'The modern full-stack framework that just works')}[/italic]")
         console.print()
-        console.print("[bold cyan]Available Commands:[/bold cyan]")
-        # Format core commands with aligned descriptions for professional readability
+        console.print(f"[bold cyan]{t('cli.commands_header', 'Available Commands:')}[/bold cyan]")
         commands = [
-            ("new [dim]<project-name>[/dim]", "Create a new project in a new directory"),
-            ("init", "Initialize Nexy in the current directory"),
-            ("dev", "Start local development server with hot reload"),
-            ("start", "Start production server"),
-            ("build", "Compile project for production deployment"),
-            ("migrate", "Run ORM migrations (auto-detects ORM)"),
+            ("new [dim]<project-name>[/dim]", t("cli.cmd.new", "Create a new project in a new directory")),
+            ("init", t("cli.cmd.init", "Initialize Nexy in the current directory")),
+            ("dev", t("cli.cmd.dev", "Start local development server with hot reload")),
+            ("start", t("cli.cmd.start", "Start production server")),
+            ("build", t("cli.cmd.build", "Compile project for production deployment")),
+            ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
         ]
-        # Calculate max command length for perfect alignment
         max_cmd_len = max(len(cmd) for cmd, _ in commands)
         for cmd, desc in commands:
             console.print(f"  [yellow]{cmd.ljust(max_cmd_len)}[/yellow]  {desc}")
         console.print()
-        console.print("[dim]Run [bold]nx or nexy <command> --help[/bold] for detailed usage[/dim]")
+        console.print(f"[dim]{t('cli.usage', 'Run nx or nexy <command> --help for detailed usage')}[/dim]")
         console.print()
 
 

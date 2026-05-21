@@ -1,0 +1,12 @@
+{
+  "dev": {
+    "compiling": "compilation",
+    "init_error": "Erreur lors de l'initialisation :",
+    "banner": "nexy@{version} dev utilise :",
+    "local": "Local :",
+    "network": "Réseau :",
+    "ready": "prêt en",
+    "stop": "appuyez sur Ctrl+C pour arrêter",
+    "exited": "arrêté"
+  }
+}

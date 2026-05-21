@@ -25,6 +25,12 @@ IGNORED_MESSAGES = [
     "Finished server process",
     "Stopping reloader process",
     "Will watch for changes",
+    "Shutting down",
+    "connection closed",
+    "connection open",
+    "Waiting for application shutdown",
+    "Application shutdown complete",
+    "/_nexy/hmr",
 ]
 
 # Signs associated with main HTTP status codes (no emojis)

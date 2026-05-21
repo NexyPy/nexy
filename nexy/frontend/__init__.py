@@ -53,11 +53,10 @@ class FrontendGenerator:
         frameworks: set[str] = {
             getattr(ff, "name", "").lower() for ff in ff_list if hasattr(ff, "name")
         }
-        if frameworks:
-            console.print(
-                "[dim][nexy][/dim] Generating client entry point"
-                f" [dim](frameworks: {', '.join(sorted(frameworks))})[/dim]"
-            )
+        # if frameworks:
+        #     console.print(
+        #         f"nexy[dim]»[/dim] use [green]{', '.join(sorted(f.capitalize() for f in frameworks))}[/green] on this project"
+        #     )
         dest_dir = Path("__nexy__")
         src_dir = dest_dir / "src"
         dest_dir.mkdir(parents=True, exist_ok=True)

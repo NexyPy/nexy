@@ -12,13 +12,13 @@ from nexy.utils.init import InitProject
 
 def new(
     project_name: str | None = typer.Argument(
-        None, help="Name of the project to create (creates a new directory)"
+        None, help=t("cli.new.help_arg", "Name of the project to create (creates a new directory)")
     ),
     template: str | None = typer.Option(
         None,
         "--template",
         "-t",
-        help="Initialize from a registered template (silent clone).",
+        help=t("cli.new.help_template", "Initialize from a registered template (silent clone)."),
     ),
 ) -> None:
     title = t("init.title", "nexy {version} {command}").format(
@@ -41,7 +41,7 @@ def new(
 
 def _ask_project_name() -> str | None:
     name = questionary.text(
-        "Project name:",
+        t("cli.new.prompt", "Project name:"),
         qmark="»",
         validate=lambda val: _validate_name(val),
     ).ask()
@@ -52,11 +52,11 @@ def _ask_project_name() -> str | None:
 
 def _validate_name(name: str) -> bool | str:
     if not name.strip():
-        return "Project name cannot be empty."
+        return t("cli.new.error_empty", "Project name cannot be empty.")
     if not name[0].isalpha():
-        return "Project name must start with a letter."
+        return t("cli.new.error_letter", "Project name must start with a letter.")
     if not all(c.isalnum() or c in "-_" for c in name):
-        return "Use only letters, numbers, hyphens, underscores."
+        return t("cli.new.error_chars", "Use only letters, numbers, hyphens, underscores.")
     if Path(name).exists():
-        return f"Directory '{name}' already exists."
+        return t("cli.new.error_exists", "Directory '{name}' already exists.").format(name=name)
     return True
