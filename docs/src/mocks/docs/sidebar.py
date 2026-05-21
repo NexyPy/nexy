@@ -1,34 +1,33 @@
-GETTING_STARTED:list[dict[str,str]] = [
-    {"label":"Introduction","href":"", "status":"active"},
-    {"label":"Create a Projet","href":"#", "status":"active"},
-    {"label":"Projet Structure","href":"#", "status":"active"},
-    {"label":"Build and Deploy","href":"#", "status":"active"},
+GETTING_STARTED: list[dict[str, str]] = [
+    {"label": "Architecture", "href": "/getting-started", "status": "active"},
 ]
 
-FB_ROUTERS:list[dict[str,str]] = [
-    {"label":"Introduction","href":"", "status":"active"},
-    {"label":"Pages","href":"", "status":"active"},
-    {"label":"Layouts","href":"", "status":"active"},
-    {"label":"Dependencies","href":"", "status":"active"},
-    {"label":"Middlewares","href":"", "status":"active"},
-    {"label":"Route Handlers","href":"", "status":"active"},
-    {"label":"Route Parameters","href":"", "status":"active"},
-    {"label":"Query Parameters","href":"", "status":"active"},
-] 
+FBR: list[dict[str, str]] = [
+    {"label": "How FBR works", "href": "/FBR/overview", "status": "active"},
+]
 
-COMPONENTS:list[dict[str,str]] = [
-    {"label":"Introduction","href":"", "status":"active"},
-    {"label":"Create a Component","href":"", "status":"active"},
-    {"label":"Writing markup with nexy","href":"", "status":"active"},
-    {"label":"Python in nexy template","href":"", "status":"active"},
-    {"label":"Add Properties","href":"", "status":"active"},
-    {"label":"Conditional Rendering","href":"", "status":"active"},
-    {"label":"nexy modules system","href":"", "status":"active"},
+MODULAR: list[dict[str, str]] = [
+    {"label": "How Modular works", "href": "/Modular/overview", "status": "active"},
+]
+
+NEXY_FILE: list[dict[str, str]] = [
+    {"label": "File Format", "href": "/nexy-file/file-format", "status": "active"},
+]
+
+FRONTEND: list[dict[str, str]] = [
+    {"label": "Framework Integration", "href": "/frontend/overview", "status": "active"},
+]
+
+REFERENCE: list[dict[str, str]] = [
+    {"label": "CLI & Config", "href": "/reference/cli", "status": "active"},
+    {"label": "Project Structure", "href": "/reference/structure", "status": "active"},
 ]
 
 SIDE_BAR = [
-    {"caption":"BIBIN", "title":"Getting Started","href":"","items":GETTING_STARTED},
-    {"caption":"FBR", "title":"File based routing","href":"","items":FB_ROUTERS},
-    {"caption":"UI Components", "title":"Describing the UI","href":"","items":COMPONENTS}
+    {"caption": "START", "title": "Getting Started", "href": "", "items": GETTING_STARTED},
+    {"caption": "FBR", "title": "File Based Routing", "href": "", "items": FBR},
+    {"caption": "MODULAR", "title": "Modular Router", "href": "", "items": MODULAR},
+    {"caption": ".NEXY", "title": "File Format", "href": "", "items": NEXY_FILE},
+    {"caption": "FRONTEND", "title": "Frontend", "href": "", "items": FRONTEND},
+    {"caption": "REF", "title": "Reference", "href": "", "items": REFERENCE},
 ]
-

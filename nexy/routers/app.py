@@ -72,9 +72,16 @@ class AppServer:
 
         @self.server.get("/favicon.ico", include_in_schema=False)
         async def favicon():
+
             try:
-                with open(favicon_path, "rb") as f:
-                    return Response(content=f.read(), media_type="image/x-icon")
+                favicon_data = svg.encode("utf-8")  # Default to SVG if no ICO found
+                if os.path.isfile(favicon_path):
+                    with open(favicon_path, "rb") as f:
+                        favicon_data = f.read()
+                else:
+                    with open("public/favicon.ico", "rb") as f:
+                        favicon_data = f.read() 
+                return Response(content=favicon_data, media_type="image/x-icon")
             except FileNotFoundError:
                 return Response(content=svg.encode("utf-8"), media_type="image/x-icon")
 

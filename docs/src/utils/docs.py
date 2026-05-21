@@ -20,7 +20,6 @@ def find_doc_file(language, path_parts):
             
         match = None
         for item in items:
-            # Clean item name (remove numbering and extension)
             clean_item = re.sub(r"^\d+\.\s*", "", item).lower().replace(" ", "-")
             if clean_item == part or clean_item.split(".")[0] == part:
                 match = item
@@ -42,7 +41,6 @@ def get_doc_content(lang, slug):
         
     slug_parts = slug.strip("/").split("/")
     
-    # Try requested lang, then fallback to English
     file_path = find_doc_file(lang, slug_parts)
     if not file_path and lang != "en":
         file_path = find_doc_file("en", slug_parts)
@@ -51,11 +49,9 @@ def get_doc_content(lang, slug):
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
             
-            # Extract title
             title_match = re.search(r"^title\s*:\s*(.+)$", content, re.MULTILINE)
             title = title_match.group(1).strip().strip("'").strip('"') if title_match else "Documentation"
             
-            # Clean and render
             clean_content = re.sub(r"^---.*?---", "", content, flags=re.DOTALL)
             conf = Config()
             html = markdown.markdown(clean_content, extensions=conf.MARKDOWN_EXTENSIONS + ["toc"])

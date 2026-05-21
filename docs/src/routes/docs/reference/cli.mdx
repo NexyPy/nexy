@@ -1,0 +1,25 @@
+# CLI and Config Reference
+
+## CLI (`nx` / `nexy`)
+
+- `nx new` — Create a new project (interactive prompts)
+- `nx dev` — Start dev server with HMR
+- `nx build` — Build for production
+- `nx start` — Start production server
+- `nx init` — Init Nexy in an existing project
+
+`nx dev` flags: `--host`, `--port`, `--vite-port`
+
+## nexyconfig.py
+
+```python
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+class NexyConfig(NexyConfigModel):
+    useFF = [react()]         # Frontend frameworks
+    useAliases = {"@": "src"} # Import aliases
+    useTitle = "My App"       # Default <title>
+```
+
+All fields optional. Config is loaded once at startup and validated against the model schema. Aliases are resolved by the compiler when processing `from "@/..."` imports.

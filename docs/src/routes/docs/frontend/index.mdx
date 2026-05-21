@@ -1,0 +1,26 @@
+# Frontend Framework Integration
+
+Nexy supports React, Vue, Svelte, Solid, and Preact. Each framework gets:
+
+- SSR via esbuild (per-file, parallel workers)
+- HMR via Vite dev server during development
+- Automatic entry point generation
+
+## How it works
+
+1. `nexyconfig.py` lists enabled frameworks: `useFF = [react()]`
+2. The build script (`nexy/frontend/vite.py`) detects actual usage by scanning imports in `.tsx`/`.jsx` files
+3. During `nexy dev`, Vite starts on a separate port, proxies through the main server
+4. During `nexy build`, esbuild compiles each entry point in parallel using a worker pool (`os.cpus().length` workers)
+
+## SSR
+
+Server-side rendering uses esbuild directly — no Vite dependency in production. Each `.tsx`/`.jsx` file becomes an SSR function that returns HTML. On failure, a client-only placeholder is rendered instead:
+
+```html
+<div id="my-entry-root"></div>
+```
+
+## Vite config
+
+Generated automatically at `__nexy__/vite.ts`. Override via `vite.config.ts` at project root — Nexy merges custom config on top of the generated one.

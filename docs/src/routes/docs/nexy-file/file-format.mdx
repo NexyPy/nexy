@@ -1,0 +1,57 @@
+# .nexy File Format
+
+A `.nexy` file is a single-file component with frontmatter + template:
+
+```
+===
+from &quot;@/components/card.nexy&quot; import Card
+items: prop[list] = []
+===
+&lt;div class=&quot;card&quot;&gt;
+    {% for item in items %}
+        &lt;span&gt;{{ item.name }}&lt;/span&gt;
+    {% endfor %}
+&lt;/div&gt;
+```
+
+The `===` delimiter (written as `---` in actual files) separates Python frontmatter from the HTML template.
+
+## Frontmatter
+
+The `---` block runs Python at compile time. Use it to:
+- Import other components
+- Declare props with `prop[type]`
+- Define page data
+- Access hooks: `usePathname()`, `useSearchParams()`, etc.
+
+## Props
+
+```
+name : prop[str]           # Required string
+count : prop[int] = 0      # Optional int
+items : prop[list] = []    # Optional list
+user : prop[UserModel]     # Pydantic model
+```
+
+Props are passed as element attributes.
+
+## Slot
+
+The `Slot` component projects children into a component.
+
+```
+&lt;div class=&quot;card&quot;&gt;
+    &lt;h2&gt;{{ title }}&lt;/h2&gt;
+    &lt;Slot/&gt;
+&lt;/div&gt;
+```
+
+Usage:
+
+```
+&lt;Card title=&quot;Hello&quot;&gt;&lt;p&gt;Child content&lt;/p&gt;&lt;/Card&gt;
+```
+
+## Compilation
+
+The `.nexy` file is parsed by `nexy/compiler/parser/` into an AST, then the generator outputs a Python function + HTML template. The Python function handles the route logic; the template is rendered by Jinja2 at runtime.

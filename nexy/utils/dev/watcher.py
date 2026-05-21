@@ -21,7 +21,6 @@ class WatchHandler(PatternMatchingEventHandler):
         self._last_event_time: float = 0.0
         self._last_path: str = ""
         self._min_interval = min_interval
-        self.compiler = Compiler()
 
     def _should_trigger(self, path: str) -> bool:
         current_time = time.time()
@@ -35,20 +34,31 @@ class WatchHandler(PatternMatchingEventHandler):
         s = (p.decode() if isinstance(p, bytes) else p).replace("\\", "/")
         try:
             from pathlib import Path as _Path
+
             cwd = _Path.cwd().as_posix()
             if s.startswith(cwd):
-                s = s[len(cwd) + 1:]
+                s = s[len(cwd) + 1 :]
         except Exception:
             pass
         return s.lstrip("./")
 
     def _skip(self, path: str) -> bool:
-        ignored = (".git/", "venv", "/venv", ".venv/", "/.venv", "__nexy__/", "/__nexy__", "__pycache__/", "node_modules/")
+        ignored = (
+            ".git/",
+            "venv",
+            "/venv",
+            ".venv/",
+            "/.venv",
+            "__nexy__/",
+            "/__nexy__",
+            "__pycache__/",
+            "node_modules/",
+        )
         return any(seg in path for seg in ignored)
 
     def _compile_and_log(self, path: str) -> None:
         start = time.perf_counter()
-        self.compiler.compile(path)
+        Compiler().compile(path)
         elapsed = time.perf_counter() - start
         console.print(
             f"[green]nsc[/green] » [green]compile[/green]"
@@ -63,7 +73,9 @@ class WatchHandler(PatternMatchingEventHandler):
             try:
                 self.on_reload_api()
             except Exception as e:
-                console.print(f"[red]hmr[/red] » [red]error[/red] failed to restart server: {str(e)}")
+                console.print(
+                    f"[red]hmr[/red] » [red]error[/red] failed to restart server: {str(e)}"
+                )
 
     def on_modified(self, event: FileSystemEvent) -> None:
         if event.is_directory:
@@ -95,9 +107,7 @@ class WatchHandler(PatternMatchingEventHandler):
             try:
                 self._compile_and_log(path)
             except Exception as e:
-                console.print(
-                    f"[red]nsc[/red] » [red]error[/red] while creating [dim]{path}[/dim]"
-                )
+                console.print(f"[red]nsc[/red] » [red]error[/red] while creating [dim]{path}[/dim]")
                 console.print(f"[red]│[/red] [bold]{type(e).__name__}:[/bold] {str(e)}")
                 return
 

@@ -1,0 +1,37 @@
+# Project Structure
+
+A typical Nexy project:
+
+```
+my-project/
++-- nexyconfig.py        # Framework config
++-- pyproject.toml       # Python deps
++-- src/
+|   +-- routes/          # FBR pages and API (FBR mode)
+|   |   +-- index.nexy
+|   |   +-- api/
+|   +-- apps/            # Modular controllers (Modular mode)
+|   |   +-- app_module.py
+|   |   +-- auth/
+|   +-- components/      # Shared .nexy components
++-- public/              # Static assets (Modular) or src/routes/ (FBR)
++-- __nexy__/            # Compiled output (gitignored)
++-- vite.config.ts       # Vite overrides (optional)
++-- .nexy/               # Generated project metadata
+```
+
+## nexyconfig.py
+
+The single config file controls routing mode, frontend frameworks, build settings, and server options. See `/docs/reference/cli` for the config model fields.
+
+## Compilation output
+
+`__nexy__/` mirrors the source structure. Each `.nexy` file produces a `.py` module and an `.html` Jinja2 template. The `.py` files are loaded as FastAPI route handlers.
+
+## Startup
+
+`nexy dev`:
+1. Scans source directory
+2. Compiles all files to `__nexy__/`
+3. Builds the route tree
+4. Starts uvicorn + watcher + Vite (if frontend framework detected)

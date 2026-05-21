@@ -1,0 +1,1 @@
+pre: use { CodeBlock } from "@/components/codeblock.nexy"
