@@ -1,13 +1,21 @@
 # Contributing to Nexy
 
-Thank you for your interest in contributing to Nexy. We welcome contributions
-of all kinds: bug reports, feature requests, documentation improvements, and
-code changes.
+**First time here?** Check out [good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+— curated for new contributors.
+
+<p align="center">
+  <a href="https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
+    <img src="https://img.shields.io/github/issues/NexyPy/nexy/good%20first%20issue?color=%2334D058&label=good%20first%20issues" alt="Good first issues">
+  </a>
+  <a href="CODE_OF_CONDUCT.md">
+    <img src="https://img.shields.io/badge/code%20of-conduct-%2334D058" alt="Code of Conduct">
+  </a>
+</p>
 
 ## Table of contents
 
 - [Code of conduct](#code-of-conduct)
-- [Getting started](#getting-started)
+- [Quick start](#quick-start)
 - [Development setup](#development-setup)
 - [Project structure](#project-structure)
 - [Development workflow](#development-workflow)
@@ -15,13 +23,31 @@ code changes.
 - [Testing](#testing)
 - [Pull request process](#pull-request-process)
 - [Release process](#release-process)
+- [Getting help](#getting-help)
 
 ## Code of conduct
 
 This project is governed by the [Contributor Covenant](CODE_OF_CONDUCT.md).
-By participating, you are expected to uphold this code.
+By participating, you agree to uphold this code.
 
-## Getting started
+## Quick start
+
+```bash
+# 1. Fork and clone
+git clone https://github.com/YOUR_USERNAME/nexy.git
+cd nexy
+
+# 2. Set up Python
+uv venv && source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+uv pip install -e ".[dev]"
+
+# 3. Verify everything works
+ruff check nexy/ && ruff format nexy/ --check && python -m mypy nexy --strict && python -m pytest tests/ -v
+```
+
+**Total time: ~2 minutes.**
+
+## Development setup
 
 ### Prerequisites
 
@@ -30,85 +56,66 @@ By participating, you are expected to uphold this code.
 - **uv** package manager (recommended) or pip
 - **pnpm** (for JavaScript dependencies)
 
-### Fork and clone
-
-1. Fork the repository on GitHub.
-2. Clone your fork:
-
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/nexy.git
-   cd nexy
-   ```
-
-3. Add the upstream remote:
-
-   ```bash
-   git remote add upstream https://github.com/NexyPy/nexy.git
-   ```
-
-## Development setup
-
 ### Python environment
 
 ```bash
-# Create and activate a virtual environment
+# Create and activate
 uv venv
-# On Windows: .venv\Scripts\activate
-# On Unix/macOS: source .venv/bin/activate
+# Windows: .venv\Scripts\activate
+# Unix/macOS: source .venv/bin/activate
 
-# Install the package in editable mode with development dependencies
+# Install in editable mode with dev deps
 uv pip install -e ".[dev]"
 ```
 
 ### JavaScript dependencies (optional)
 
-Only needed if working on the VS Code extension or frontend packages:
+Only needed for the VS Code extension:
 
 ```bash
 pnpm install --frozen-lockfile
 ```
 
-### Verify the setup
+### Verify your setup
 
 ```bash
-# Run quality gates (in this order)
+# Lint → Format → Typecheck → Test (in this order)
 ruff check nexy/
 ruff format nexy/ --check
 python -m mypy nexy --strict
 python -m pytest tests/ -v
 ```
 
-All tests should pass. If you see failures in `test_format_attributes_*`,
-these are pre-existing and unrelated to your changes.
+All tests should pass. Pre-existing failures in `test_format_attributes_*` are
+known and unrelated to your changes.
 
 ## Project structure
 
 ```
 nexy/
-├── nexy/                   # Main package
-│   ├── cli/                # Typer CLI (nx, nexy commands)
-│   │   └── commands/       # dev, start, build, init, new
-│   ├── compiler/           # .nexy parsing and code generation
-│   │   ├── parser/         # scanner, sanitizer, template, logic
-│   │   └── generator/      # Python output generation
-│   ├── core/               # Config, models, types
+├── nexy/                   # Main Python package
+│   ├── cli/                # CLI commands (dev, build, start, new)
+│   ├── compiler/           # .nexy → Jinja2 pipeline
 │   ├── routers/            # AppServer, FBRouter, ModularRouter
-│   ├── frontend/           # Framework integrations (React, Vue, etc.)
-│   ├── utils/              # Dev server, init, server config
-│   ├── i18n/               # Internationalization strings
-│   ├── vfs/                # Virtual file system (PEP 302)
+│   ├── frontend/           # React, Vue, Svelte, Solid, Preact
+│   ├── vfs/                # Virtual File System
 │   └── templates/          # Project scaffold templates
-├── tests/                  # Test suite
-├── extensions/vscode/      # VS Code extension
-├── docs/                   # Documentation site (separate repository)
-└── skills/                 # Development philosophy docs (KISS, SOLID, TDD)
+├── tests/                  # pytest suite
+├── extensions/vscode/      # VS Code extension (LSP)
+└── docs/                   # Documentation site (separate repo)
 ```
 
-For a detailed architectural overview, see [ARCHITECTURE.md](ARCHITECTURE.md).
+See [ARCHITECTURE.md](ARCHITECTURE.md) for a deep dive.
 
 ## Development workflow
 
-### Branch naming
+### 1. Pick an issue
+
+Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+or discuss your idea in [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
+before opening a PR for a new feature.
+
+### 2. Create a branch
 
 | Branch pattern | Purpose |
 |---------------|---------|
@@ -116,37 +123,44 @@ For a detailed architectural overview, see [ARCHITECTURE.md](ARCHITECTURE.md).
 | `fix/*` | Bug fixes |
 | `docs/*` | Documentation |
 | `refactor/*` | Code refactoring |
-| `perf/*` | Performance improvements |
-| `test/*` | Test additions or changes |
+| `perf/*` | Performance |
+| `test/*` | Tests |
 
 ```bash
 git checkout -b feature/my-feature
 ```
 
-### Commit messages
+### 3. Make changes
 
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
+Follow the [coding standards](#coding-standards) and write tests first (TDD).
+
+### 4. Commit
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 <type>(<scope>): <description>
 
 [optional body]
-
-[optional footer]
 ```
 
-Types: `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `chore`, `style`, `ci`
-
-Examples:
+Types: `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `chore`
 
 ```
 feat(router): add wildcard route support
-fix(compiler): handle empty frontmatter gracefully
-docs: update README with new CLI commands
-refactor(vfs): simplify module finder logic
+fix(compiler): handle empty frontmatter
+docs: update README with CLI examples
 ```
 
-### Keep your fork up to date
+### 5. Push and open a PR
+
+```bash
+git push origin feature/my-feature
+```
+
+Then open a pull request on GitHub. Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md).
+
+### Stay updated
 
 ```bash
 git fetch upstream
@@ -157,59 +171,55 @@ git rebase upstream/main
 
 ### Python
 
-- **Formatter**: Ruff (line length 100, target Python 3.12)
-- **Linter**: Ruff (all default rules enabled)
-- **Type checker**: mypy with `--strict` mode
-- **Docstrings**: Google style (required for public APIs)
+- **Formatter**: Ruff (line-length=100, target-version=py312)
+- **Linter**: Ruff (all rules)
+- **Type checker**: mypy `--strict`
+- **Docstrings**: Google style (public APIs)
 
 ```bash
-# Check before committing
+# Quality gates
 ruff check nexy/
 ruff format nexy/ --check
 python -m mypy nexy --strict
-
-# Auto-fix
-ruff check nexy/ --fix
-ruff format nexy/
 ```
 
 ### TypeScript (VS Code extension)
 
-- **Linter**: ESLint
-- **Type checker**: `tsc -b`
+- **Linter**: ESLint (via `tsc -b`)
+- **Format**: Prettier (via ESLint)
 
-Rules:
+### General rules
 
-- All code in English (no comments or variable names in other languages)
-- Functions under 20 lines where possible
-- Classes under 10 methods
+- All code in English
+- Functions < 20 lines, classes < 10 methods
 - No premature abstraction
+- KISS before clever
 
 ## Testing
 
-### Python tests
+### Python
 
 ```bash
-# Run all tests
+# All tests
 python -m pytest tests/ -v
 
-# Run a specific test file
+# Single file
 python -m pytest tests/unit/nexy/parser/test_scanner.py -v
 
-# Run with coverage
+# Coverage
 python -m pytest tests/ --cov=nexy --cov-report=term
 ```
 
 **Coverage target**: 95% per module.
 
-### Test conventions
+### Conventions
 
-- Write the test first (TDD: red → green → refactor)
-- One assertion per test
+- **TDD**: test first (red → green → refactor)
+- one assertion per test
 - Naming: `test_<thing>_<scenario>`
-- Place tests in `tests/unit/` matching the module path
+- Tests in `tests/unit/` mirroring the module path
 
-### JavaScript/TypeScript tests (VS Code extension)
+### TypeScript
 
 ```bash
 cd extensions/vscode
@@ -218,72 +228,46 @@ npm run test
 
 ## Pull request process
 
-### Before submitting
+### Checklist
 
-1. Ensure your code builds and passes all quality gates:
+- [ ] `python -m pytest tests/ -v` — tests pass
+- [ ] `ruff check nexy/` — lint passes
+- [ ] `ruff format nexy/ --check` — formatting correct
+- [ ] `python -m mypy nexy --strict` — type checks
+- [ ] New tests cover my changes
+- [ ] Documentation updated (if public API change)
+- [ ] Conventional commit messages
+- [ ] One module/feature per PR
 
-   ```bash
-   ruff check nexy/
-   ruff format nexy/ --check
-   python -m mypy nexy --strict
-   python -m pytest tests/ -v
-   ```
+### Review
 
-2. Write tests for your changes (new feature = new tests, bug fix = test that
-   reproduces the bug before the fix).
-
-3. Update documentation if you change public APIs.
-
-4. Keep your PR focused on a single concern. One module/feature per PR.
-
-### PR checklist
-
-When you open a pull request, ensure:
-
-- [ ] Tests pass (`python -m pytest tests/ -v`)
-- [ ] Lint passes (`ruff check nexy/`)
-- [ ] Type checking passes (`python -m mypy nexy --strict`)
-- [ ] Formatting is correct (`ruff format nexy/ --check`)
-- [ ] New tests cover the changes
-- [ ] Documentation is updated (if applicable)
-- [ ] Commit messages follow conventional commits
-- [ ] PR description explains the change and motivation
-- [ ] No breaking changes without discussion in an issue first
-
-### Review process
-
-1. At least one maintainer review is required.
-2. Address review feedback with additional commits (no force-pushing during review).
-3. Once approved, maintainers will merge your PR.
+1. At least one maintainer review required
+2. Address feedback with additional commits (no force-push during review)
+3. Maintainers squash-merge approved PRs
 
 ## Release process
 
 For maintainers only:
 
-1. Update version in `nexy/__version__.py` and `pyproject.toml`.
-2. Update `CHANGELOG.md`:
+```bash
+# 1. Bump version in nexy/__version__.py + pyproject.toml
 
-   ```bash
-   npx git-cliff -o CHANGELOG.md
-   ```
+# 2. Update changelog
+npx git-cliff -o CHANGELOG.md
 
-3. Create a git tag:
+# 3. Tag and push
+git tag v<version>
+git push origin v<version>
 
-   ```bash
-   git tag v<version>
-   git push origin v<version>
-   ```
+# 4. Publish to PyPI
+uv build && uv publish
 
-4. Publish to PyPI:
+# 5. Create GitHub Release
+```
 
-   ```bash
-   uv build
-   uv publish
-   ```
+## Getting help
 
-5. Create a GitHub Release from the tag.
-
-## Questions?
-
-If you have questions or need help, open a [Discussion](https://github.com/NexyPy/nexy/discussions)
-or join our community chat (coming soon).
+- **Bug reports**: open a [GitHub Issue](https://github.com/NexyPy/nexy/issues/new/choose)
+- **Questions**: [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
+- **Security issues**: see [SECURITY.md](SECURITY.md)
+- **Everything else**: see [SUPPORT.md](SUPPORT.md)
