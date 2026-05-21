@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Nexy Documentation
+    url: https://nexy.ai/docs
+    about: Check the documentation for answers to common questions.
+  - name: GitHub Discussions
+    url: https://github.com/NexyPy/nexy/discussions
+    about: Ask questions and discuss ideas with the community.

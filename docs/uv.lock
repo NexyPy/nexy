@@ -224,21 +224,23 @@ wheels = [
 
 [[package]]
 name = "nexy"
-version = "2.0.7"
+version = "2.0.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi" },
     { name = "jinja2" },
     { name = "markdown" },
+    { name = "pygments" },
+    { name = "pymdown-extensions" },
     { name = "questionary" },
     { name = "scalar-fastapi" },
     { name = "typer" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/5b/59141a1b6903b453dcecc9e6b6d0bf26123f64416e02f0f6c441e67f15b8/nexy-2.0.7.tar.gz", hash = "sha256:269415990a93898dfbbee812b45b8db4fd1753fd34d0579a12f11349db7ea326", size = 58201, upload_time = "2026-05-04T23:34:36.107Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7f/b5/39c5f8989430ba1f56db18f25c1411deef358be20bb7a948328031d42f74/nexy-2.0.9.tar.gz", hash = "sha256:e10c80ca156880f4e81ab5a771db820371a7990c676962938f3e88f22e85e58d", size = 11051625, upload_time = "2026-05-21T01:22:21.277Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/fd/69b31d3eb09b54ef44dce211b0fdb818d987d0442335989929da61f4d179/nexy-2.0.7-py3-none-any.whl", hash = "sha256:5ea62b14e954b8d9e64fd2794771409f401b514a4fad69b3e83f7743792f85eb", size = 96483, upload_time = "2026-05-04T23:34:34.561Z" },
+    { url = "https://files.pythonhosted.org/packages/e3/28/afaef94d7e5e3508d292ebbd6570e0ada86dff7ec447f3e312ed425d3ed3/nexy-2.0.9-py3-none-any.whl", hash = "sha256:594e47116ff9304d279a203406c7edb38aaa3cc912e7256ddf76bc9c778a1cda", size = 11163679, upload_time = "2026-05-21T01:21:56.926Z" },
 ]
 
 [[package]]
@@ -255,7 +257,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "markdown", specifier = ">=3.10.2" },
-    { name = "nexy", specifier = ">=2.0.7" },
+    { name = "nexy", specifier = ">=2.0.9" },
     { name = "pygments", specifier = ">=2.20.0" },
     { name = "pymdown-extensions", specifier = ">=10.21.2" },
 ]
