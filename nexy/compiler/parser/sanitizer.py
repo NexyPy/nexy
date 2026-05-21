@@ -14,14 +14,25 @@ class LogicSanitizer:
     """
 
     def __init__(self) -> None:
-        self.aliases = Config.ALIASES
-        self.namespace = Config.NAMESPACE
-
         # Regex for: from "path" import targets
         self.RE_NEXY_FROM = re.compile(
             r'^\s*from\s+["\'](?P<path>[^"\']+)["\']\s+import\s+(?P<targets>.+?)(?=\n\S|$)',
             re.M | re.S,
         )
+
+        # Regex for: import "path" [as alias]
+        self.RE_NEXY_IMPORT = re.compile(
+            r'^\s*import\s+["\'](?P<path>[^"\']+)["\'](?:\s+as\s+(?P<alias>\w+))?(?=\n\S|$)',
+            re.M | re.S,
+        )
+
+    @property
+    def aliases(self) -> dict[str, str]:
+        return Config.ALIASES
+
+    @property
+    def namespace(self) -> str:
+        return Config.NAMESPACE
 
         # Regex for: import "path" [as alias]
         self.RE_NEXY_IMPORT = re.compile(
@@ -39,9 +50,7 @@ class LogicSanitizer:
         if first_ch in ("@", "$", "~") and not any(
             import_str.startswith(alias) for alias in self.aliases
         ):
-            raise ImportError(
-                f"Alias '{import_str.split('/')[0]}' not configured."
-            )
+            raise ImportError(f"Alias '{import_str.split('/')[0]}' not configured.")
 
         is_relative = import_str.startswith("./") or import_str.startswith("../")
         is_alias = any(import_str.startswith(alias) for alias in self.aliases)

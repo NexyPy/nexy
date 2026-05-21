@@ -1,16 +1,20 @@
 ---
 tabs:prop[Union[str, list]]= ''
+language:prop[str] = ''
+title:prop[str] = ''
+filename:prop[str] = ''
 is_str = isinstance(tabs, str)
-#print(Slot())
+tab_label = tabs or title or filename or language
+print("tab_label:",tab_label)
 ---
 <article class=" flex w-full max-w-142 border border-border/40 bg-white/6  backdrop-blur-xs rounded-4xl corner p-1">
     <aside class="bg-[#222c25]  dark:bg-[#060e09] rounded-3xl  corner w-full codeblock overflow-hidden relative">
         
-            <ul id="tabs" {{"hidden" if tabs=="" else ""}} class="px-4 pt-2  text-white *:p-2 flex">
+            <ul id="tabs" {{"hidden" if tab_label=="" else ""}} class="px-4 pt-2  text-white *:p-2 flex">
                 {% if is_str %}
-                    <li class="w-fit  text-sm" >{{tabs}}</li>
+                    <li class="w-fit  text-sm" >{{tab_label}}</li>
                 {% else %}
-                    {% for _tab in tabs %}
+                    {% for _tab in tab_label %}
                         <li class="w-fit  text-sm cursor-pointer {{loop.index == 1 and 'border-b-2 border-[#ACE8AE]' or ''}}" tabname="{{_tab}}">{{_tab}}</li>
                     {% endfor %}
                 {% endif %}
@@ -25,6 +29,8 @@ is_str = isinstance(tabs, str)
                 </svg>
 
             </button>
-        <Slot/>
+            <Slot/>
+
+        
     </aside>
 </article>

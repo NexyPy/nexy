@@ -1,10 +1,5 @@
----
-from "@/components/codeblock.nexy" import Codeblock
 
----
-
-<Codeblock tabs='{{["index.nexy", "users.py","dependencies.py"]}}'>
-```python
+```{.python filename="app.py"}
 from src.services.users import UserService
 from src.models.users import User
 
@@ -19,11 +14,9 @@ def POST(user: User):
     return response
     
 ```
-</Codeblock>
 
-<Codeblock tabs='{{["uv", "poetry","pip"]}}'>
-```bash
-uv init && uvx nexy init
+```{.bash tabs="[uvx, poetry, pip]" filename="app.py"}
+uvx nexy new
 ```
-</Codeblock>
+
 

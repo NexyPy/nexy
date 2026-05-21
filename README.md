@@ -24,6 +24,9 @@
   <a href="https://github.com/NexyPy/nexy/commits/main">
     <img src="https://img.shields.io/github/last-commit/NexyPy/nexy?color=%2334D058" alt="Last commit">
   </a>
+  <a href="https://github.com/NexyPy/nexy/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/NexyPy/nexy/ci.yml?branch=main&color=%2334D058" alt="CI">
+  </a>
 </p>
 
 ---

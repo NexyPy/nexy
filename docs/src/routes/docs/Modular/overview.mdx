@@ -1,0 +1,48 @@
+# Modular Router
+
+The Modular Router uses decorators to organise code into controllers, services, and modules.
+
+## Module hierarchy
+
+```
+AppModule (src/apps/app_module.py)
++-- AuthModule
+|   +-- AuthController
+|   +-- AuthService (injectable)
++-- DashboardModule
+|   +-- DashboardController
+|   +-- DashboardService (injectable)
++-- AppController
+```
+
+## Dependency injection
+
+Services are decorated with `@Injectable()` and injected into controllers via constructor:
+
+```python
+@Injectable(scope="singleton")
+class AuthService:
+    ...
+
+@Controller()
+class AuthController:
+    def __init__(self, auth: AuthService):
+        self.auth = auth
+```
+
+Scopes:
+- `singleton` — one instance for app lifetime
+- `request` — new instance per request
+- `transient` — new instance per injection
+
+## Guards and Middleware
+
+`@UseGuard(AuthGuard)` protects controllers or individual methods. Guards return `True` or raise `HTTPException`.
+
+`@Middleware()` classes sit in the request pipeline before the controller.
+
+## Registration
+
+Modules export their public providers via `exports = [AuthGuard]`. Child modules import parent modules and their exports become available for injection.
+
+The module tree is resolved at startup — circular dependencies raise an error immediately.

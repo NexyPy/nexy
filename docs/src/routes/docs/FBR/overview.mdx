@@ -1,0 +1,46 @@
+# FBR — File-Based Routing
+
+The FBR maps your `src/routes/` directory to URL paths.
+
+```
+src/routes/
++-- index.nexy          -> /
++-- about.nexy          -> /about
++-- blog/
+|   +-- index.nexy      -> /blog
+|   +-- [slug].nexy     -> /blog/:slug
++-- api/
+|   +-- posts.py        -> /api/posts (GET)
+|   +-- posts/[id].py   -> /api/posts/:id
++-- layout.nexy         -> layout for all pages
+```
+
+## File to URL rules
+
+- `index.nexy` -> `/`
+- `about.nexy` -> `/about`
+- `blog/[slug].nexy` -> `/blog/:slug`
+- `api/posts.py` -> `/api/posts`
+- `layout.nexy` -> wraps siblings
+
+## .py route handlers
+
+Python files in `src/routes/` become API endpoints. Each HTTP method is a function:
+
+```python
+def GET():
+    return {"message": "Hello"}
+
+def POST(data: dict):
+    return {"received": data}
+```
+
+Dynamic segments become function parameters. Query params come from `useSearchParams()`.
+
+## Layout nesting
+
+Layouts cascade. A `layout.nexy` wraps all routes in its directory and subdirectories. The `{{ children }}` variable receives the page content.
+
+## Compilation
+
+The FB Router's compiler (`nexy/routers/fbrouter/`) scans `src/routes/`, builds a `RouteTree`, and registers FastAPI routes from the compiled `.py` files in `__nexy__/`.

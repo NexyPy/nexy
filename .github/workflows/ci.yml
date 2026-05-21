@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - ".github/**"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Lint
+        run: uv run ruff check nexy/
+
+      - name: Format check
+        run: uv run ruff format nexy/ --check
+
+      - name: Typecheck
+        run: uv run python -m mypy nexy --strict
+
+      - name: Test
+        run: uv run python -m pytest tests/ -v
+
+      - name: Build
+        run: uv build

@@ -1,0 +1,36 @@
+# Architecture
+
+Nexy sits between your code and FastAPI. When you run `nexy dev`, three things happen:
+
+## Compilation pipeline
+
+```
+.nexy / .mdx / .py files
+    -> Parser (scanner -> sanitizer -> template -> validator)
+    -> Generator (Python + HTML + assets)
+    -> __nexy__/ directory
+    -> FastAPI routes registered
+```
+
+The compiler lives in `nexy/compiler/` and runs on every file change. Layouts, slots, props, and imports are resolved at compile time — not runtime.
+
+## Server loop
+
+```
+Watch files -> compile changed file -> regenerate module
+    -> clear sys.modules (nexy.*, routers)
+    -> uvicorn restart (should_exit flag)
+```
+
+The watcher (`nexy/utils/dev/watcher.py`) normalises paths, skips `__pycache__`/`.git`/`node_modules`, and triggers a compile + restart. Only `.nexy`, `.mdx`, `.py`, `.css`, `.js` files trigger a rebuild.
+
+## Two routers
+
+- FBR (`src/routes/`) — Pages, APIs, prototypes
+- Modular (`src/apps/`) — Large apps, DI, teams
+
+Both compile to the same FastAPI route registration. The choice is purely developer experience.
+
+## VFS (Virtual File System)
+
+All compiled output lives in an in-memory singleton. After the watcher compiles a file, the VFS is updated immediately — the next HTTP request serves fresh content without a full restart.
