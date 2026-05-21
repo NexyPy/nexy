@@ -1,0 +1,43 @@
+name: Documentation
+description: Report a documentation issue or suggest an improvement
+labels: [documentation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us make Nexy's documentation better. Tell us what's missing, unclear, or incorrect.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - Missing documentation
+        - Unclear or incorrect documentation
+        - Typo or formatting issue
+        - Code example issue
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: Where did you find the issue? (URL, file path, or section name)
+      placeholder: e.g. README.md, ARCHITECTURE.md, or https://nexy.ai/docs/routing
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What should be changed or added?
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested content
+      description: If you have a specific suggestion for the text or code example, paste it here.
+      render: markdown
