@@ -40,8 +40,13 @@ export function getProjectFrameworks(): Set<Framework> {
         frameworks.add('solid')
       } else if (content.includes("from 'preact'") || content.includes('from "preact"')) {
         frameworks.add('preact')
-      } else {
+      } else if (
+        content.includes("from 'react'") || content.includes('from "react"') ||
+        content.includes("from 'react-dom'") || content.includes('from "react-dom"')
+      ) {
         frameworks.add('react')
+      } else {
+        console.warn(`${c.yellow}⚠ client-only: ${file} — no framework imports detected, client bundle only (no SSR)${c.reset}`)
       }
     }
   }
@@ -240,7 +245,6 @@ export function writeComponent(
   const snippetKey = path.join(relativeDir, `${entryId}.html`).replace(/\\/g, '/')
   snippets[snippetKey] = finalContent
 
-  console.log(`${c.dim} __nexy__/client/static/${snippetKey}${c.reset}`)
 }
 
 
@@ -255,6 +259,23 @@ export function getEntryId(
 
   // React, Preact, Solid → filename.Default.html / filename.MyComp.html
   return `${fileName}.${exportName === 'default' ? 'Default' : exportName}`
+}
+
+export interface SSGEntry {
+  file: string;
+  component: string;
+  status: 'success' | 'failed' | 'not_supported';
+}
+
+export interface SSGResult {
+  entries: SSGEntry[];
+}
+
+export function writeReport(results: SSGResult[]) {
+  const all: SSGEntry[] = results.flatMap(r => r.entries)
+  const reportPath = path.resolve(process.cwd(), '__nexy__/client/ssg-report.json')
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true })
+  fs.writeFileSync(reportPath, JSON.stringify(all, null, 2))
 }
 
 export function getTempDir(): string {

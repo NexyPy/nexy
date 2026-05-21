@@ -1,0 +1,36 @@
+# {{ project_name }}
+
+{{ project_type | capitalize }} application built with [Nexy](https://github.com/NexyPy/nexy){% if client_framework != "none"%}, using **{{ client_framework | capitalize }}** for client components{% endif %}.
+
+## Getting started
+
+```bash
+# Install dependencies
+uv sync
+
+# Start development server
+nexy dev
+```
+
+## Project structure
+
+```
+src/
+{%- if FBRouter %}
+  routes/          # File-based routes
+{%- else %}
+  apps/            # Modular application modules
+{%- endif %}
+  components/      # Shared UI components{% if orm != "None" %}
+  models/          # Data models{% endif %}
+  configs/         # Application configuration
+public/            # Static assets
+```
+
+## Commands
+
+| Command          | Description         |
+|------------------|---------------------|
+| `nexy dev`       | Start dev server    |
+| `nexy build`     | Build for production|
+| `nexy start`     | Start in production |

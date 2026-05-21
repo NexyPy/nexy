@@ -83,8 +83,17 @@ function nexyPlugin(): Plugin {
         path.resolve(process.cwd(), '**/*.mdx')
       ])
 
+      const reloadExts = (file: string) =>
+        file.endsWith('.py') || file.endsWith('.nexy') || file.endsWith('.mdx')
+
       server.watcher.on('change', (file) => {
-        if (file.endsWith('.py') || file.endsWith('.nexy') || file.endsWith('.mdx')) {
+        if (reloadExts(file)) {
+          server.ws.send({ type: 'full-reload', path: '*' })
+        }
+      })
+
+      server.watcher.on('add', (file) => {
+        if (reloadExts(file)) {
           server.ws.send({ type: 'full-reload', path: '*' })
         }
       })
@@ -96,12 +105,13 @@ function nexyPlugin(): Plugin {
       nexySSGDone = false
       const isDev = process.env.NODE_ENV === 'development'
       if (!isDev) {
+        console.log(`${c.dim}[nexy] Building server components...${c.reset}`)
         const tsxPath = getTsxPath()
-        console.log(`${c.dim}Preparing Vite ...${c.reset}`)
         execSync(`node --import "${tsxPath}" __nexy__/scripts/entries.ts`, {
           stdio: 'inherit',
           cwd: process.cwd()
         })
+        console.log(`${c.green}[nexy] Server components built${c.reset}`)
       }
     },
 
@@ -110,12 +120,13 @@ function nexyPlugin(): Plugin {
       if (isSSRBuild || nexySSGDone) return
       nexySSGDone = true
 
+      console.log(`${c.dim}[nexy] Building client bundles...${c.reset}`)
       const tsxPath = getTsxPath()
-      // console.log(`${c.dim}Running Static Site Generation...${c.reset}`)
       execSync(`node --import "${tsxPath}" __nexy__/scripts/ssg.ts`, {
         stdio: 'inherit',
         cwd: process.cwd()
       })
+      console.log(`${c.green}[nexy] Client bundles built${c.reset}`)
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "start": {
+    "banner": "nexy@{version} démarrage en production...",
+    "uvicorn": "Uvicorn",
+    "uvicorn_on": "sur le port",
+    "local": "Local :",
+    "network": "Réseau :",
+    "ready": "prêt en",
+    "stop": "Appuyez sur Ctrl+C pour arrêter",
+    "exited": "arrêté"
+  }
+}

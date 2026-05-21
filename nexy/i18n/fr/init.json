@@ -1,6 +1,6 @@
 {
   "init": {
-    "title": "nexy@{version} init",
+    "title": "nexy@{version} {command}",
     "ask": {
       "router": "Souhaitez‑vous utiliser le routeur basé sur les fichiers ?",
       "project_type": "Choisissez le type de projet",
@@ -40,6 +40,7 @@
     "initializing": "Initialisation de {name}...",
     "success_title": "Projet initialisé avec succès !",
     "happy_coding": "Bon codage avec Nexy !",
+    "step_activate_venv": "Activez l'environnement virtuel",
     "step_run_dev": "Démarrer le serveur de développement",
     "step_help": "Explorer les commandes disponibles",
     "installing_node": "Installation des dépendances Node.js...",

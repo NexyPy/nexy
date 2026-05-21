@@ -1,0 +1,81 @@
+name: Bug Report
+description: Report a bug to help us improve Nexy
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report. Please provide as much detail as possible.
+
+  - type: input
+    id: version
+    attributes:
+      label: Nexy version
+      description: What version of Nexy are you running? (run `nexy --version` or check `pyproject.toml`)
+      placeholder: e.g. 2.0.9
+    validations:
+      required: true
+
+  - type: input
+    id: python_version
+    attributes:
+      label: Python version
+      description: What Python version are you using?
+      placeholder: e.g. 3.12.3
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: What OS are you on?
+      placeholder: e.g. Windows 11, macOS 14.5, Ubuntu 24.04
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the bug.
+      placeholder: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Run `nx n` to create a project
+        2. Set client framework to React
+        3. Run `nx dev`
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Copy and paste any relevant terminal output. This will be automatically formatted.
+      render: shell
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: If relevant, paste your `nexyconfig.py` file.
+      render: python
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Validation
+      options:
+        - label: I have searched existing issues and this is not a duplicate.
+          required: true
+        - label: I have provided clear steps to reproduce the issue.
+          required: true

@@ -1,0 +1,12 @@
+{
+  "dev": {
+    "compiling": "compiling",
+    "init_error": "Error during initialization:",
+    "banner": "nexy@{version} dev using :",
+    "local": "Local:",
+    "network": "Network:",
+    "ready": "ready in",
+    "stop": "press Ctrl+C to stop",
+    "exited": "exited"
+  }
+}

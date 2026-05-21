@@ -1,5 +1,15 @@
 {
   "build": {
-    "vite_failed": "Échec du build Vite. {error}"
+    "vite_failed": "Échec du build Vite. {error}",
+    "creating": "Création du build de production optimisé",
+    "compiling_server": "compilation des composants serveur ...",
+    "building_client": "construction du bundle client ...",
+    "failed_components": "{count} composant(s) en échec",
+    "failed_client": "échec du build client",
+    "success_build": "build en {time}",
+    "success_label": "Build réussi",
+    "failed_label": "Build échoué",
+    "checks_failed": "vérifications échouées",
+    "checks_passed": "toutes les vérifications ont réussi"
   }
 }
