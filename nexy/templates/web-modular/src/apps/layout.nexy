@@ -6,7 +6,7 @@ from nexy import Vite
 children:prop[NexyElement]
 ---
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="{{ locale }}" class="dark">
 
 <head>
     <meta charset="UTF-8">

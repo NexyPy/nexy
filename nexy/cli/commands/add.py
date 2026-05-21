@@ -7,6 +7,7 @@ from pathlib import Path
 import typer
 
 from nexy.core.config import Config
+from nexy.i18n import t
 from nexy.utils.common.console import console
 from nexy.utils.init.registry import COMPONENT_REGISTRY
 
@@ -15,12 +16,13 @@ def fetch_remote_component(url: str) -> str | None:
     """Fetches component source from a remote URL."""
     try:
         with console.status(
-            f"[yellow]nexy[/yellow] » Fetching remote component from {url}...", spinner="dots"
+            f"[yellow]nexy[/yellow] \u00bb {t('add.fetching', 'Fetching remote component from')} {url}...",
+            spinner="dots",
         ):
             with urllib.request.urlopen(url) as response:
                 return response.read().decode("utf-8")
     except Exception as e:
-        console.print(f"[red]Error:[/red] Failed to fetch component from {url}: {e}")
+        console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.fetch_failed', 'Failed to fetch component from')} {url}: {e}")
         return None
 
 
@@ -41,39 +43,31 @@ def install_dependencies(deps: list[str], dest: Path | None = None) -> None:
         cmd = ["npm", "install"]
     else:
         console.print(
-            "[yellow]Warning:[/yellow] No package manager found. Please install dependencies manually: "
+            f"[yellow]{t('add.warning', 'Warning:')}[/yellow] {t('add.no_pm', 'No package manager found. Please install dependencies manually:')} "
             + ", ".join(deps)
         )
         return
 
     with console.status(
-        f"[yellow]nexy[/yellow] » Installing dependencies: {', '.join(deps)}...", spinner="dots"
+        f"[yellow]nexy[/yellow] \u00bb {t('add.installing', 'Installing dependencies')}: {', '.join(deps)}...",
+        spinner="dots",
     ):
         try:
             subprocess.run(cmd + deps, check=True, capture_output=True, cwd=dest, shell=(os.name == "nt"))
         except subprocess.CalledProcessError as e:
-            console.print(f"[red]Error:[/red] Failed to install dependencies: {e}")
+            console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.install_failed', 'Failed to install dependencies')}: {e}")
 
 
 def add(
-    components: list[str] = typer.Argument(None, help="Components to add (registry names or URLs)"),
-    ui: bool = typer.Option(False, "--ui", help="Force treatment as UI components"),
-    url: bool = typer.Option(False, "--url", help="Force treatment as URLs"),
+    components: list[str] = typer.Argument(None, help=t("add.help_components", "Components to add (registry names or URLs)")),
+    ui: bool = typer.Option(False, "--ui", help=t("add.help_ui", "Force treatment as UI components")),
+    url: bool = typer.Option(False, "--url", help=t("add.help_url", "Force treatment as URLs")),
     all: bool = typer.Option(
-        False, "--all", "-a", help="Add all available components from registry"
+        False, "--all", "-a", help=t("add.help_all", "Add all available components from registry")
     ),
 ) -> None:
-    """
-    Add components to your project as .nexy files.
-
-    Example:
-    nexy add button input
-    nexy add --ui button input
-    nexy add https://raw.githubusercontent.com/.../Button.tsx
-    """
     config = Config()
 
-    # Determine default target framework from config
     framework = "react"
     ff_list = config.useFF
     if ff_list:
@@ -83,9 +77,9 @@ def add(
         components = list(COMPONENT_REGISTRY.keys())
 
     if not components:
-        console.print("[yellow]Usage:[/yellow] nexy add [COMPONENT_NAME or URL]...")
+        console.print(f"[yellow]{t('add.usage', 'Usage:')}[/yellow] {t('add.usage_text', 'nexy add [COMPONENT_NAME or URL]...')}")
         console.print(
-            f"Available UI components: [cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
+            f"{t('add.available', 'Available UI components:')} [cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
         )
         raise typer.Exit()
 
@@ -99,7 +93,6 @@ def add(
         component_name = item
         framework_to_use = framework
 
-        # Detection logic
         is_url = item.startswith(("http://", "https://")) or url
 
         if is_url:
@@ -111,7 +104,6 @@ def add(
             component_name = url_path.stem
             ext = url_path.suffix.lower()
 
-            # Framework inference for URL
             if ext == ".vue":
                 framework_to_use = "vue"
             elif ext == ".svelte":
@@ -125,13 +117,13 @@ def add(
             elif ext == ".nexy":
                 framework_to_use = "nexy"
             else:
-                framework_to_use = "react"  # Default fallback
+                framework_to_use = "react"
 
         else:
             name_lower = item.lower()
             if name_lower not in COMPONENT_REGISTRY:
                 console.print(
-                    f"[red]Error:[/red] Component '[bold]{item}[/bold]' not found in registry."
+                    f"[red]{t('add.error', 'Error:')}[/red] {t('add.not_found', "Component '{name}' not found in registry.").format(name=item)}"
                 )
                 continue
 
@@ -158,10 +150,9 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
     file_path = target_dir / f"{name}.nexy"
 
     if file_path.exists():
-        console.print(f"[yellow]Skipping:[/yellow] {file_path} already exists.")
+        console.print(f"[yellow]{t('add.skipping', 'Skipping:')}[/yellow] {file_path} {t('add.exists', 'already exists.')}")
         return
 
-    # Wrap framework code in <script framework="..."> if it's not already a .nexy file
     if framework != "nexy" and not content.strip().startswith("<script"):
         final_content = f'<script framework="{framework}">\n{content}\n</script>'
     else:
@@ -169,7 +160,6 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
 
     try:
         file_path.write_text(final_content, encoding="utf-8")
-        console.print(f"[green]Added:[/green] {file_path}")
+        console.print(f"[green]{t('add.added', 'Added:')}[/green] {file_path}")
     except Exception as e:
-        console.print(f"[red]Error:[/red] Failed to write {file_path}: {e}")
-        console.print("[green]✔[/green] All dependencies installed.")
+        console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.write_failed', 'Failed to write')} {file_path}: {e}")

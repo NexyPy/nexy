@@ -83,8 +83,17 @@ function nexyPlugin(): Plugin {
         path.resolve(process.cwd(), '**/*.mdx')
       ])
 
+      const reloadExts = (file: string) =>
+        file.endsWith('.py') || file.endsWith('.nexy') || file.endsWith('.mdx')
+
       server.watcher.on('change', (file) => {
-        if (file.endsWith('.py') || file.endsWith('.nexy') || file.endsWith('.mdx')) {
+        if (reloadExts(file)) {
+          server.ws.send({ type: 'full-reload', path: '*' })
+        }
+      })
+
+      server.watcher.on('add', (file) => {
+        if (reloadExts(file)) {
           server.ws.send({ type: 'full-reload', path: '*' })
         }
       })

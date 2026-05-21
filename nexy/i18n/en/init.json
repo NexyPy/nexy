@@ -40,6 +40,7 @@
     "initializing": "Initializing {name}...",
     "success_title": "Project initialized successfully!",
     "happy_coding": "Happy coding with Nexy!",
+    "step_activate_venv": "Activate the virtual environment",
     "step_run_dev": "Start the development server",
     "step_help": "Explore available commands",
     "installing_node": "Installing Node.js dependencies...",

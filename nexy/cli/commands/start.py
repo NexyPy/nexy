@@ -2,6 +2,7 @@ import time
 
 from nexy.__version__ import __Version__
 from nexy.core.config import Config
+from nexy.i18n import t
 from nexy.utils.common.console import console
 from nexy.utils.server.server import Server
 
@@ -23,19 +24,20 @@ def start(port: int | None = None, host: str | None = None) -> None:
     network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host
 
     try:
-        console.print(f"nexy@{version} [dim]starting in production...[/dim]\n")
+        console.print(t("start.banner", "nexy@{version} starting in production...").format(version=version))
 
         console.print(
-            f"  [dim]»»[/dim] [green]Uvicorn[/green] running on port [yellow]{run_port}[/yellow]"
+            f"  [dim]\u00bb\u00bb[/dim] [green]{t('start.uvicorn', 'Uvicorn')}[/green]"
+            f" {t('start.uvicorn_on', 'running on port')} [yellow]{run_port}[/yellow]"
         )
-        console.print(f"  [dim]»»[/dim] Local:   [green]{protocol}://localhost:{run_port}[/green]")
+        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.local', 'Local:')} [green]{protocol}://localhost:{run_port}[/green]")
         if network_ip != "127.0.0.1" and network_ip != "localhost":
             console.print(
-                f"  [dim]»»[/dim] Network: [green]{protocol}://{network_ip}:{run_port}[/green]"
+                f"  [dim]\u00bb\u00bb[/dim] {t('start.network', 'Network:')} [green]{protocol}://{network_ip}:{run_port}[/green]"
             )
 
-        console.print(f"  [dim]»»[/dim] ready in [green]{startup_timer}[/green]")
-        console.print("  [dim]»»[/dim] Press [dim]Ctrl+C[/dim] to stop\n")
+        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.ready', 'ready in')} [green]{startup_timer}[/green]")
+        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.stop', 'Press Ctrl+C to stop')}\n")
 
         Server.uvicorn(
             host=run_host,
@@ -45,6 +47,6 @@ def start(port: int | None = None, host: str | None = None) -> None:
         )
 
     except (KeyboardInterrupt, SystemExit):
-        console.print("[red]nexy » exited [reset]")
+        console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")
     finally:
-        console.print("[red]nexy » exited [reset]")
+        console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")

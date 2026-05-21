@@ -1,6 +1,26 @@
 {
   "cli": {
     "help": "Nexy CLI - The Modular Meta-Framework",
-    "no_command": "Use nx/nexy --help to see available commands."
+    "no_command": "Use nx/nexy --help to see available commands.",
+    "tagline": "The modern full-stack framework that just works",
+    "commands_header": "Available Commands:",
+    "usage": "Run nx or nexy <command> --help for detailed usage",
+    "cmd": {
+      "new": "Create a new project in a new directory",
+      "init": "Initialize Nexy in the current directory",
+      "dev": "Start local development server with hot reload",
+      "start": "Start production server",
+      "build": "Compile project for production deployment",
+      "migrate": "Run ORM migrations (auto-detects ORM)"
+    },
+    "new": {
+      "prompt": "Project name:",
+      "error_empty": "Project name cannot be empty.",
+      "error_letter": "Project name must start with a letter.",
+      "error_chars": "Use only letters, numbers, hyphens, underscores.",
+      "error_exists": "Directory '{name}' already exists.",
+      "help_arg": "Name of the project to create (creates a new directory)",
+      "help_template": "Initialize from a registered template (silent clone)."
+    }
   }
 }

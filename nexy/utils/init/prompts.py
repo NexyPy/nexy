@@ -47,7 +47,7 @@ class ProjectPrompter:
     def ask_orm(self) -> None:
         self.config["orm"] = questionary.select(
             t("init.ask.orm", "Choose an ORM"),
-            choices=["None", "SQLModel", "SQLAlchemy", "Tortoise-ORM"],
+            choices=["SQLModel", "SQLAlchemy", "Tortoise-ORM", "None"],
             pointer="ʋ",
             qmark="»",
             default="None",

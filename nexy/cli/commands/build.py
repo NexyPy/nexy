@@ -8,6 +8,7 @@ from nexy.__version__ import __Version__
 from nexy.builder import Builder
 from nexy.core.config import Config
 from nexy.frontend import FrontendGenerator
+from nexy.i18n import t
 from nexy.utils.common.console import console
 from nexy.utils.server.server import Server
 
@@ -17,10 +18,10 @@ def build(check: bool = False) -> None:
     config = Config()
     version = __Version__().get()
     Server.check_nexy_prod()
-    console.print(f"nexy@{version} build\n")
-    console.print("Creating an optimized production build\n")
+    console.print(f"nexy@{version} {t('build.label', 'build')}\n")
+    console.print(f"{t('build.creating', 'Creating an optimized production build')}\n")
 
-    with console.status("  compiling server components ..."):
+    with console.status(f"  {t('build.compiling_server', 'compiling server components')} ..."):
         from nexy.utils.fs.vfs import VFS
 
         FrontendGenerator().generate(ssg=True)
@@ -28,18 +29,18 @@ def build(check: bool = False) -> None:
         VFS().flush_to_disk()
     server_ko = len(build_result.failed)
     if server_ko:
-        console.print(f"  [red]✘[/red] {server_ko} component(s) failed")
+        console.print(f"  [red]\u2718[/red] {t('build.failed_components', '{count} component(s) failed').format(count=server_ko)}")
         for p in build_result.failed:
             console.print(f"     {p}")
         sys.exit(1)
 
     ssg_entries: list[dict] = []
     if config.useVite:
-        with console.status("  building client bundle ..."):
+        with console.status(f"  {t('build.building_client', 'building client bundle')} ..."):
             vite_proc = Server.vite(build=True, suppress_output=True)
             _, err = vite_proc.communicate()
             if vite_proc.returncode != 0:
-                console.print("  [red]✘[/red] client build failed")
+                console.print(f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}")
                 if err:
                     console.print(f"[red]{err.decode()}[/red]")
                 sys.exit(1)
@@ -54,13 +55,13 @@ def build(check: bool = False) -> None:
     _show_summary(build_result, ssg_entries)
 
     build_elapsed = time.perf_counter() - build_start
-    console.print(f"\n  [green]✓[/green] build in [bold]{build_elapsed:.2f}s[/bold]")
+    console.print(f"\n  [green]\u2713[/green] {t('build.success_build', 'build in {time}').format(time=f'{build_elapsed:.2f}s')}")
 
 
 def _show_summary(build_result, ssg_entries: list[dict]) -> None:
-    _print_section("server components", build_result.success, build_result.failed, "green", "red")
+    _print_section(t("build.server_components", "server components"), build_result.success, build_result.failed, "green", "red")
     _print_section(
-        "client components",
+        t("build.client_components", "client components"),
         _ssg_success(ssg_entries),
         _ssg_failed(ssg_entries),
         "cyan",
@@ -94,8 +95,8 @@ def _print_section(
     console.print("[dim]\u2502[/dim]")
 
     groups: list[tuple[str, list[str], str, str]] = [
-        ("Build success", success, ok_style, "\u2713"),
-        ("Build Failed", failed, fail_style, "\u2717"),
+        (t("build.success_label", "Build success"), success, ok_style, "\u2713"),
+        (t("build.failed_label", "Build Failed"), failed, fail_style, "\u2717"),
     ]
     for gi, (gname, gfiles, gstyle, mark) in enumerate(groups):
         is_last_group = gi == len(groups) - 1
@@ -151,15 +152,15 @@ def _run_checks() -> None:
         with console.status(f"  {name} ..."):
             r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode == 0:
-            console.print(f"  [green]✓[/green] {name}")
+            console.print(f"  [green]\u2713[/green] {name}")
         else:
-            console.print(f"  [red]✘[/red] {name}")
+            console.print(f"  [red]\u2718[/red] {name}")
             if r.stdout:
                 console.print(r.stdout)
             if r.stderr:
                 console.print(f"[red]{r.stderr}[/red]")
             failed = True
     if failed:
-        console.print("\n  [red]checks failed[/red]")
+        console.print(f"\n  [red]{t('build.checks_failed', 'checks failed')}[/red]")
         sys.exit(1)
-    console.print("\n  [green]✓[/green] all checks passed")
+    console.print(f"\n  [green]\u2713[/green] {t('build.checks_passed', 'all checks passed')}")
