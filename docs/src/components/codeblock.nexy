@@ -6,7 +6,6 @@ filename:prop[str] = ''
 is_str = isinstance(tabs, str)
 tab_label = tabs or title or filename or language
 
-#print(Slot())
 ---
 <article class=" md:codeblock flex-1 h-fit flex w-full md:min-w-116 max-w-142 border border-border/40 bg-white/6  backdrop-blur-xs rounded-4xl corner p-1">
     <aside class="bg-[#222c25]  dark:bg-[#060e09] rounded-3xl  corner w-full codeblock overflow-hidden relative">
