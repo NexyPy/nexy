@@ -6,6 +6,7 @@ from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
 
 from nexy.compiler import Compiler
+from nexy.runtime.hmr import HMR_MANAGER
 from nexy.utils.common.console import console
 
 
@@ -59,6 +60,13 @@ class WatchHandler(PatternMatchingEventHandler):
         )
         return any(seg in path for seg in ignored)
 
+    def _is_frontend_file(self, path: str) -> bool:
+        frontend_extensions = (".js", ".jsx", ".ts", ".tsx", ".vue", ".svelte", ".css", ".scss", ".less")
+        return path.endswith(frontend_extensions) or (
+            "node_modules/" not in path
+            and not path.endswith((".py", ".nexy", ".mdx"))
+        )
+
     def _compile_and_log(self, path: str) -> None:
         start = time.perf_counter()
         self.compiler.compile(path)
@@ -71,8 +79,17 @@ class WatchHandler(PatternMatchingEventHandler):
     def _needs_restart(self, path: str) -> bool:
         return path.endswith((".nexy", ".mdx", ".py")) and not self._skip(path)
 
-    def _trigger_reload(self, _path: str) -> None:
-        if self.on_reload_api:
+    def _trigger_reload(self, path: str) -> None:
+        if self._is_frontend_file(path):
+            # Seulement broadcast HMR pour modifications frontend
+            if HMR_MANAGER.loop:
+                import asyncio
+                asyncio.run_coroutine_threadsafe(
+                    HMR_MANAGER.broadcast_reload(path),
+                    HMR_MANAGER.loop
+                )
+        elif self.on_reload_api:
+            # Redémarrer Uvicorn seulement pour modifications backend
             try:
                 self.on_reload_api()
             except Exception as e:

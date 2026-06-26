@@ -34,7 +34,7 @@ class LocaleMiddleware(BaseHTTPMiddleware):
         m = self._prefix_re.match(path)
         if m:
             locale = m.group(1)
-            rest = path[m.end():]
+            rest = path[m.end() :]
             if not rest:
                 rest = "/"
             else:

@@ -7,16 +7,27 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+**/node_modules/**
+
+# Build / dist
 dist
 dist-ssr
-*.local
-tasks
-session.ai
+target/
+**/target/
+*.egg-info/
+
+# Cache
 __pycache__
 **/__pycache__/**
-**/__nexy__/**
-**/node_modules/**
+*.pyc
+*.pyo
+.mypy_cache
+.pytest_cache
+.coverage
+.coverage.*
+.cache
 
 # Editor directories and files
 .vscode/*
@@ -29,25 +40,43 @@ __pycache__
 *.sln
 *.sw?
 
+# Binary artifacts (should never be committed)
+*.rlib
+*.pdb
+*.dll
+*.exe
+*.so
+*.dylib
+*.o
+*.obj
+*.class
 
+# VS Code test binaries
+.vscode-test/
+**/.vscode-test/
+
+# Python
 .venv
 **/.venv/**
-*/__pycache__/*
 *.pyc
 *.pyo
-.mypy_cache
-.pytest_cache
-.coverage
-.coverage.*
-.cache
+
+# Nexy
 __nexy__/
 **/__nexy__/**
-**/bun.lock/**
-.**/pnpm-lock.yaml/**
-**/node_modules/**
+tasks
+session.ai
 
-
+# Env / deploy
 .vercel
 .env
+*.local
 
-.**/public/font/**
+# Lock files (files, not directories)
+bun.lock
+**/bun.lock
+pnpm-lock.yaml
+**/pnpm-lock.yaml
+
+# Fonts (local)
+**/public/font/

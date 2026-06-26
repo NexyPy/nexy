@@ -69,7 +69,6 @@ class LocaleManager:
         with self._lock:
             if self._loaded:
                 return
-            import traceback as _tb
             merged: dict[str, dict[str, Any]] = {}
             if self._project_dir:
                 i18n_py = self._project_dir / "i18n.py"

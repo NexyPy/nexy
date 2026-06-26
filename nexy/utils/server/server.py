@@ -1,8 +1,10 @@
 import contextlib
+import os
 import shutil
 import socket
 import subprocess
 import sys
+import time
 import traceback
 from pathlib import Path
 from subprocess import Popen
@@ -113,16 +115,46 @@ class Server:
         return None, None
 
     @staticmethod
+    def stop_process(proc: Popen | None, timeout: int = 5) -> None:
+        """Arrête proprement un processus (Windows ou Unix)."""
+        if not proc or proc.poll() is not None:
+            return
+        try:
+            if sys.platform == "win32":
+                # Windows: tuer l'arborescence de processus
+                subprocess.run(
+                    ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                    capture_output=True,
+                    timeout=timeout,
+                    check=False
+                )
+            else:
+                # Unix: terminate puis kill si nécessaire
+                proc.terminate()
+                try:
+                    proc.wait(timeout=timeout)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait(timeout=timeout)
+        except Exception:
+            pass
+
+    @staticmethod
     def uvicorn(
         host: str | None = None,
         port: int = 3000,
         as_process: bool = False,
         ssl_keyfile: str | None = None,
         ssl_certfile: str | None = None,
+        workers: int | None = None,
     ) -> Popen[Any] | None:
-        """Starts the FastAPI/Uvicorn server."""
+        """Starts the FastAPI/Uvicorn server with optional workers."""
+        cfg = Config()
         run_host = host or "127.0.0.1"
-
+        
+        # Nombre de workers auto si non spécifié (CPU count)
+        num_workers = workers or (cfg.useWorkers if hasattr(cfg, "useWorkers") else os.cpu_count())
+        
         _write_port_file("server", port)
 
         ssl_args = {}
@@ -133,6 +165,7 @@ class Server:
             if as_process:
                 ssl_kw = ", ".join(f"{k}='{v}'" for k, v in ssl_args.items())
                 ssl_part = f", {ssl_kw}" if ssl_kw else ""
+                workers_part = f", workers={num_workers}" if num_workers and num_workers > 1 else ""
                 launcher_code = (
                     "import uvicorn\n"
                     "import sys\n"
@@ -140,7 +173,7 @@ class Server:
                     "    from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG\n"
                     f"    uvicorn.run('nexy.routers.app:_server', host='{run_host}',"
                     f" port={port}, log_config=NEXY_LOG_CONFIG,"
-                    f" log_level='info'{ssl_part})\n"
+                    f" log_level='info'{ssl_part}{workers_part})\n"
                     "except Exception as e:\n"
                     "    print(f'Critical error in Nexy subprocess: {e}')\n"
                     "    sys.exit(1)\n"
@@ -152,6 +185,7 @@ class Server:
                     stderr=subprocess.STDOUT,
                 )
             else:
+                workers_kwargs = {"workers": num_workers} if num_workers and num_workers > 1 else {}
                 _uvicorn.run(
                     "nexy.routers.app:_server",
                     host=host,
@@ -159,6 +193,7 @@ class Server:
                     log_config=NEXY_LOG_CONFIG,
                     log_level="info",
                     **ssl_args,
+                    **workers_kwargs,
                 )
                 return True
 
@@ -168,17 +203,37 @@ class Server:
             return None
 
     @staticmethod
+    def wait_for_vite_ready(
+        port: int, host: str = "localhost", timeout: int = 30, ssl: bool = False) -> bool:
+        """Attend que Vite soit prêt à répondre aux requêtes."""
+        import urllib.request
+        
+        protocol = "https" if ssl else "http"
+        start_time = time.time()
+        
+        while time.time() - start_time < timeout:
+            try:
+                url = f"{protocol}://{host}:{port}/@vite/client"
+                with urllib.request.urlopen(url, timeout=1):
+                    return True
+            except Exception:
+                time.sleep(0.2)
+        return False
+
+    @staticmethod
     def vite(
         port: int = 5173,
         build: bool = False,
         ssl: bool = False,
-        suppress_output: bool = False,
+        suppress_output: bool = True,
     ) -> Popen[Any]:
         """Lance le client Vite."""
         pm, is_npm = _detect_pm()
         cmd = "build" if build else "dev"
 
-        args = [pm, "--silent"]
+        args = [pm]
+        if build:
+            args.append("--silent")
         args += ["run", cmd] if is_npm else [cmd]
 
         if not build:
@@ -189,7 +244,7 @@ class Server:
             if ssl:
                 args.append("--https")
 
-        stdout = subprocess.DEVNULL if suppress_output else None
-        stderr = subprocess.PIPE if suppress_output else None
+        stdout = subprocess.DEVNULL
+        stderr = subprocess.DEVNULL
 
         return subprocess.Popen(args, stdout=stdout, stderr=stderr)

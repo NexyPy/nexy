@@ -47,6 +47,8 @@ def start(port: int | None = None, host: str | None = None) -> None:
         )
         console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.stop', 'Press Ctrl+C to stop')}\n")
 
+        Server.check_nexy_prod(delete=False)
+
         Server.uvicorn(
             host=run_host,
             port=run_port,
@@ -57,4 +59,5 @@ def start(port: int | None = None, host: str | None = None) -> None:
     except (KeyboardInterrupt, SystemExit):
         console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")
     finally:
+        Server.check_nexy_prod(delete=True)
         console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")

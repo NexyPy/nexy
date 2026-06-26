@@ -1,5 +1,8 @@
 import contextlib
+import os
+import signal
 import subprocess
+import sys
 import time
 
 from nexy.__version__ import __version__
@@ -14,6 +17,17 @@ from nexy.utils.fs.vfs import VFS
 from nexy.utils.server.server import Server
 
 
+def _stop_observer(observer) -> None:
+    """Arrête proprement le watcher watchdog."""
+    if not observer:
+        return
+    try:
+        observer.stop()
+        observer.join(timeout=2)
+    except Exception as e:
+        console.print(f"  [dim]Warning: Could not stop watcher cleanly: {e}[/dim]")
+
+
 def dev(port: int | None = None, host: str | None = None) -> None:
     pycache()
     config = Config()
@@ -26,7 +40,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     run_port, client_port = Server.resolve_ports(run_host, run_port)
     Server.check_nexy_prod(delete=True)
 
-    vite_proc = None
+    vite_proc: subprocess.Popen | None = None
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
     ssl_enabled = bool(ssl_keyfile and ssl_certfile)
     protocol = "https" if ssl_enabled else "http"
@@ -52,16 +66,14 @@ def dev(port: int | None = None, host: str | None = None) -> None:
             FrontendGenerator().generate()
             if config.useVite:
                 vite_proc = Server.vite(port=client_port, ssl=ssl_enabled)
-                time.sleep(0.5)
-                if vite_proc.poll() is not None:
-                    console.print(f"  [red]\u2718[/red] Vite exited (code {vite_proc.returncode})")
-                    vite_proc = None
     except Exception as e:
         console.print(f"\n[red]{t('dev.init_error', 'Error during initialization:')}[/red] {e}")
-        vite_proc = None
+        Server.stop_process(vite_proc)
+        sys.exit(1)
 
     _restart_requested = False
     _server_instance = None
+    observer = None
 
     def _reload_uvicorn() -> None:
         nonlocal _restart_requested, _server_instance
@@ -69,22 +81,22 @@ def dev(port: int | None = None, host: str | None = None) -> None:
         if _server_instance is not None:
             _server_instance.should_exit = True
 
-    observer = create_observer(
-        path=".",
-        patterns=config.WATCH_EXTENSIONS_GLOB,
-        ignore_patterns=config.WATCH_EXCLUDE_PATTERNS,
-        on_reload_api=_reload_uvicorn,
-    )
-
-    startup_elapsed = time.perf_counter() - startup_start
-    startup_timer = f"{startup_elapsed:.2f}s"
-
-    network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host
-
     try:
+        observer = create_observer(
+            path=".",
+            patterns=config.WATCH_EXTENSIONS_GLOB,
+            ignore_patterns=config.WATCH_EXCLUDE_PATTERNS,
+            on_reload_api=_reload_uvicorn,
+        )
+
+        startup_elapsed = time.perf_counter() - startup_start
+        startup_timer = f"{startup_elapsed:.2f}s"
+
+        network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host
+
         console.print(t("dev.banner", "nexy@{version} dev using :").format(version=version))
         console.print(
-            f"  [dim]\u00bb\u00bb[/dim] [green]Uvicorn[/green]  {"and [green]Vite[/green]" if vite_proc else ""}"
+            f"  [dim]\u00bb\u00bb[/dim] [green]Uvicorn[/green]  {'and [green]Vite[/green]' if vite_proc else ''}"
         )
         console.print(
             f"  [dim]\u00bb\u00bb[/dim] {t('dev.local', 'Local:')} [green]{protocol}://localhost:{run_port}[/green]"
@@ -98,20 +110,18 @@ def dev(port: int | None = None, host: str | None = None) -> None:
         )
         console.print(f"  [dim]\u00bb\u00bb[/dim] {t('dev.stop', 'press Ctrl+C to stop')}")
 
-        import sys as _sys
-
         import uvicorn as _uvicorn
 
         from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG
 
         while True:
             _restart_requested = False
-            for _name in list(_sys.modules.keys()):
+            for _name in list(sys.modules.keys()):
                 if _name.startswith("__nexy__") or _name in (
                     "nexy.routers.app",
                     "nexy.routers.fbrouter",
                 ):
-                    del _sys.modules[_name]
+                    del sys.modules[_name]
             _uvicorn_config = _uvicorn.Config(
                 "nexy.routers.app:_server",
                 host=run_host,
@@ -127,20 +137,15 @@ def dev(port: int | None = None, host: str | None = None) -> None:
             if not _restart_requested:
                 break
 
-    except (KeyboardInterrupt, SystemExit):
+    except KeyboardInterrupt:
+        console.print("\n  [dim]Stopping servers...[/dim]")
+    except SystemExit:
         pass
+    except Exception as e:
+        console.print(f"\n  [red]Error: {e}[/red]")
     finally:
+        console.print("  [dim]Cleaning up...[/dim]")
         _server_instance = None
-        observer.stop()
-        observer.join(timeout=2)
-        if vite_proc:
-            vite_proc.terminate()
-            try:
-                vite_proc.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                vite_proc.kill()
+        _stop_observer(observer)
+        Server.stop_process(vite_proc)
         console.print(f"[red]nexy \u00bb {t('dev.exited', 'exited')} [reset]")
-        with contextlib.suppress(Exception):
-            import os as _os
-
-            _os._exit(0)

@@ -182,8 +182,18 @@ export const createJinjaProps = (propPaths: string[]): Record<string, any> => {
   return result
 }
 
+export const normalizeClassWhitespace = (html: string): string => {
+  return html.replace(
+    /(\sclass(?:Name)?=")([^"]+)(")/g,
+    (_, prefix, classes, suffix) => {
+      const normalized = classes.trim().replace(/\s+/g, ' ')
+      return `${prefix}${normalized}${suffix}`
+    }
+  )
+}
+
 export const restoreJinjaVars = (html: string, propPaths: string[]): string => {
-  let result = html
+  let result = normalizeClassWhitespace(html)
   const sorted = [...propPaths].sort((a, b) => b.length - a.length)
   for (const propPath of sorted) {
     const placeholder = `${PLACEHOLDER_PREFIX}${propPath.replace(/\./g, 'DOT')}`

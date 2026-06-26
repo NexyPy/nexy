@@ -30,7 +30,7 @@ def _make_locale_handler(
     base_component: Callable[..., str], variants: dict[str, Callable[..., str]]
 ) -> Callable[..., Any]:
     """Create a locale-aware route handler that dispatches to variant components.
-    
+
     Uses request.path_params instead of **kwargs to avoid FastAPI
     validation treating kwargs as a required query parameter.
     """
@@ -95,14 +95,10 @@ class FBRouter:
             try:
                 module = importlib.import_module(import_path)
             except ImportError as imp_exc:
-                console.print(
-                    f"  [yellow]WARN[/yellow] {app_path.name} ({app_path}): {imp_exc}"
-                )
+                console.print(f"  [yellow]WARN[/yellow] {app_path.name} ({app_path}): {imp_exc}")
                 continue
             except Exception as exc:
-                console.print(
-                    f"  [red]ERROR[/red] {app_path.name} ({app_path}): {exc}"
-                )
+                console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {exc}")
                 continue
 
             # 2. Process Pathname
@@ -163,8 +159,7 @@ class FBRouter:
             module = meta["module"]
             if module is None:
                 console.print(
-                    f"  [yellow]WARN[/yellow] Route skipped — "
-                    f"module is None: {meta['source']}"
+                    f"  [yellow]WARN[/yellow] Route skipped — module is None: {meta['source']}"
                 )
                 continue
             path, source = meta["pathname"], meta["source"]
