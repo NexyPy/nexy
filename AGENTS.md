@@ -69,9 +69,20 @@ uv pip install -e ".[dev]"
 - **i18n**: English default; extract strings to `nexy/i18n/en/`
 - **Coverage target**: ≥95% per module (CONTRIBUTING.md)
 
-## Session Progress (May 2026)
+## Session Progress (June 2026)
 
-### Completed
+### Completed — TOC via generated code (no template.py injection)
+
+**`template.py`**: stripped TOC auto-injection (`{toc_html}` placeholder replacement, `TOC_AUTO` fallback). `render()` now returns pure rendered content — no TOC awareness at all.
+
+**`logic.py`**: TOC is fully generated-code concern:
+- Layout files get `toc_html: str = ''` auto-appended to their NexyProps (visible to both function params and Jinja2 context)
+- `.md` pages with a layout import `_build_toc_html`, extract TOC post-render, and pass `toc_html=toc_html` to `__Layout(children=rendered, toc_html=toc_html)`
+- Non-layout `.md` pages still get the `toc_html` variable in scope (can be used directly in template), with empty string default
+
+**`table_of_contents.nexy`**: updated to render `{{ toc_html | safe if toc_html else '' }}`
+
+### Previously completed
 
 **Template rewrites** (counter.tsx.jinja2, card.tsx.jinja2, theme.tsx.jinja2):
 - Extracted `Button`/`AddIcon`/`RemoveIcon` sub-components in counter
@@ -103,9 +114,23 @@ uv pip install -e ".[dev]"
 - `Promise.allSettled` implicite via worker pool — chaque fichier buildé indépendamment, un échec ne bloque pas les autres
 - Messages d'erreur réels maintenant inclus dans les warnings catch-blocks (React/Solid avaient `"SSR failed"` générique)
 
+### MDX translation & file reorganization (June 10)
+
+**`docs/scripts/translate_mdx.py`**: recreated standalone script (was lost after robocopy cleanup). Parses MDX into segments (frontmatter, fenced code blocks, text), protects inline elements with `%%pN%%` placeholders, batch-translates via `deep_translator.GoogleTranslator.translate_batch()`, restores placeholders, writes locale variant.
+
+**Translation re-run (5 top-level pages)**: `build_and_deploy.mdx`, `create_a_projet.mdx`, `index.mdx`, `projet_structure.mdx`, `router-choice.mdx` → 50 locale variants created (10 locales each). 0 errors, 1 transient connection reset handled gracefully by individual fallback.
+
+**File reorganization**: 55 files (5 base + 50 locale) moved into `(name)/` group dirs. Top-level `src/routes/docs/` now clean (only `__init__.py` + `layout.nexy`). Subdirectory pages (cli, components, config, … ~130 pages) were already properly organized from previous session.
+
+### Blocked → Done
+- `vsce package` failed under pnpm (npm dependency resolution in shallow pnpm store), resolved with `--no-dependencies` flag: `npx vsce package --no-dependencies`
+
 ### Key findings
 - `.nexy` files rendered via standard Jinja2 `Environment` (no sandbox) — `range()` works in `{% for %}`
 - Icon SVGs ARE identical across frameworks (same Heroicons path data, only attribute naming differs: `fill-rule`/`fillRule`)
 - 28/32 tests pass (4 pre-existing `TemplateFormatter.format_attributes` failures unrelated)
 - Ruff errors on `.jinja2` files are expected (mixed HTML/JS/Python, not valid Python)
 - No Vite dependency in production SSG pipeline — esbuild seul pour React, Preact, Solid SSR builds
+- Pylance delegation requires **real `.py` on disk** (`.nexy-virt/`) — Pylance ignores non-`file://` schemes for imports
+- CSS/JS/HTML delegation works with custom virtual scheme URIs (`nexy-embed-*://`) — only color provider needs untitled docs
+- vsce packaging needs `--no-dependencies` when running under pnpm's strict node_modules layout

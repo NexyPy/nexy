@@ -1,0 +1,71 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# páginas
+
+Uma página é uma rota que retorna HTML. No Nexy, as páginas são arquivos `.nexy` ou `.mdx` em `src/routes/`.
+
+> As páginas são distintas de **Route Handlers** (arquivos `.py`) que retornam JSON ou dados brutos.
+
+---
+
+## Criando uma página
+
+Coloque um arquivo `.nexy` ou `.mdx` em `src/routes/`:
+```bash
+src/
+└── routes/
+    └── index.nexy       →  /
+```
+```html
+<!-- index.nexy -->
+<h1>Hello Nexy!</h1>
+```
+Não é necessário registro de rota — o arquivo **é** a rota.
+
+---
+
+## Páginas em `.nexy`
+
+Um arquivo `.nexy` pode conter frontmatter Python e um modelo HTML:
+```
+---
+items: prop[list] = []
+---
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## Páginas em `.mdx`
+
+Os arquivos `.mdx` combinam Markdown com componentes Nexy:
+```mdx
+---
+from "@components/link.nexy" import Link
+---
+
+# My Article
+
+<Link href="/docs">Back to docs</Link>
+```
+Esta página que você está lendo é em si um arquivo `.mdx` — o sumário, a barra lateral e a localização atual são manipulados pelo layout.
+
+---
+
+## Arquivos especiais não roteáveis
+
+Alguns arquivos dentro de `routes/` não criam rotas:
+
+| Arquivo | Função |
+|---|---|
+| `__init__.py` | Marcador de pacote Python |
+| `layout.nexy` | Wrapper de layout compartilhado |
+| `dependencies.py` | Dependências compartilhadas |
+<Link href="/docs/fbrouters/layouts">Next: Layouts →</Link>

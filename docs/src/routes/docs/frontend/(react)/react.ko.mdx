@@ -1,0 +1,73 @@
+# 반응하다
+
+`nexyconfig.py`에 React를 추가하세요:
+
+```python
+from nexy.frontend import react
+
+class NexyConfig(NexyConfigModel):
+    useFF = [react()]
+```
+
+---
+
+## 컴포넌트 생성
+
+`src/`에 `.tsx` 또는 `.jsx` 확장자가 있는 파일은 React 구성 요소로 처리됩니다.
+
+```tsx
+// src/components/Counter.tsx
+import { useState } from 'react'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## .nexy 페이지에서 사용
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+소품은 Jinja2 `{{ }}` 구문을 통해 전달됩니다. JSON 값에는 이중 중괄호를 사용하세요.
+
+---
+
+## 어린이/슬롯 콘텐츠
+
+Nexy는 하위 콘텐츠를 `children` prop으로 전달합니다. 구성 요소는 이를 렌더링할 수 있습니다.
+
+```tsx
+export default function Card({ title, children }) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## SSR
+
+React 구성 요소는 `hydrateRoot`를 사용하여 서버 측에서 렌더링됩니다. 서버는 HTML을 생성한 다음 React는 클라이언트에서 수화됩니다. 추가 구성이 필요하지 않습니다.

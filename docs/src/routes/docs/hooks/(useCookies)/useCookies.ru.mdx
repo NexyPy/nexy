@@ -1,0 +1,36 @@
+# использовать файлы cookie
+
+Возвращает файлы cookie из текущего запроса в виде словаря.
+
+```python
+from nexy import useCookies
+
+cookies = useCookies()
+```
+
+---
+
+## Возвращаемое значение
+
+`dict` — все файлы cookie, отправленные с запросом.
+
+---
+
+## Пример
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+locale = cookies.get("nexy-locale", "en")
+---
+<html lang="{{ locale }}">
+```
+
+---
+
+## Примечания по использованию
+
+- Только чтение — используйте `useSession` для настройки файлов cookie.
+- Значения файлов cookie представляют собой строки.
+- Эквивалент `request.cookies` в FastAPI

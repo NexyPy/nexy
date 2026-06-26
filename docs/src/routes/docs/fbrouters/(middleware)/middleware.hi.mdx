@@ -1,0 +1,45 @@
+# "@मिडलवेयर (एफबीआर)
+
+रूट फ़ंक्शन पर मिडलवेयर कॉलेबल्स लागू करें।
+
+## मिडलवेयर अनुबंध
+
+एक मिडलवेयर `__call__(self, request)` के साथ कॉल करने योग्य है। यह FastAPI `Request` ऑब्जेक्ट प्राप्त करता है और हैंडलर से पहले चलता है।
+
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+
+## किसी फ़ंक्शन पर मिडलवेयर
+
+```python
+from nexy.decorators import Middleware
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+```
+
+## एकाधिक मिडलवेयर
+
+```python
+from nexy.decorators import Middleware
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+```
+
+## हस्ताक्षर
+
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+
+मिडलवेयर फास्टएपीआई `Depends` के रूप में चलता है - यह हैंडलर से पहले चलता है। गार्ड के विपरीत, मिडलवेयर साइड इफेक्ट्स (लॉगिंग, टाइमिंग) के लिए है, अनुरोधों को अवरुद्ध करने के लिए नहीं (हालांकि यह `HTTPException` बढ़ा सकता है)।
+
+---
+
+यह भी देखें: [Middlewares](/docs/fbrouters/middlewares), ["@Middleware reference](/docs/decorators/middleware)

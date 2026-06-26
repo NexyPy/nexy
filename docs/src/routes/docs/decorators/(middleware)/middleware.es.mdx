@@ -1,0 +1,75 @@
+# "@Middleware
+
+Aplicar elementos invocables de middleware a una clase de controlador o método de controlador.
+
+## Contrato de middleware
+
+Un middleware es cualquier invocable con `__call__(self, request)`. Recibe el objeto FastAPI `Request` y se ejecuta antes que el controlador.
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## Middleware en una ruta
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## Múltiples middleware
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+## Firma
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## Guardias vs Middleware
+
+| | Guardias | Software intermedio |
+|---|--------|-----------|
+| Propósito | Autorización | Efectos secundarios (registro, momento) |
+| Solicitud de bloques | Sí (genera HTTPException) | No (a menos que subas) |
+| Se ejecuta como | API rápida `Depends` | API rápida `Depends` |
+| Orden | Guardias de clase → guardias de método | Middleware de clase → middleware de método |
+
+Ambos se ejecutan como dependencias FastAPI `Depends`. Orden: guardias de clase → middleware de clase → guardias de método → middleware de método.

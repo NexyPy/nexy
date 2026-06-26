@@ -1,0 +1,69 @@
+# Tareas en segundo plano (modulares)
+
+Ejecute el código *después* de enviar la respuesta en los controladores.
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## Tarea única
+
+```python
+from nexy.decorators import Controller
+from fastapi import BackgroundTasks
+
+def send_email(email: str, body: str):
+    ...
+
+"@Controller("/contact")
+class ContactController:
+    def post(self, data: ContactForm, tasks: BackgroundTasks):
+        tasks.add_task(send_email, data.email, "Thanks!")
+        return {"status": "sent"}
+```
+
+## Múltiples tareas
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def get(self, tasks: BackgroundTasks):
+        tasks.add_task(log_visit)
+        tasks.add_task(notify_admin)
+        tasks.add_task(warm_cache)
+        return {"ok": True}
+```
+
+## Tarea con DI
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller, Injectable
+from src.db import Database
+
+"@Injectable()
+class Logger:
+    def write(self, msg: str):
+        ...
+
+"@Controller("/logs")
+class LogController:
+    def __init__(self, logger: Logger, tasks: BackgroundTasks):
+        self.logger = logger
+        self.tasks = tasks
+
+    def post(self):
+        self.tasks.add_task(self.logger.write, "action logged")
+        return {"ok": True}
+```
+
+## Importante
+
+- Las tareas se ejecutan **después** de enviar la respuesta: el cliente no espera
+- Se ejecutan en el mismo proceso: las tareas largas bloquean el bucle de eventos
+- Para trabajos pesados, utilice una cola de tareas (Apio, ARQ, RQ, etc.)
+- Los errores en las tareas se tragan silenciosamente: agregue try/except dentro de la función de tarea
+- Las tareas reciben **copias** de objetos mutables; las mutaciones no afectarán la respuesta

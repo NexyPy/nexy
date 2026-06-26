@@ -34,7 +34,7 @@ class FrontendGenerator:
     def _generate_vite_config(self) -> None:
         """Copies the frontend vite config from nexy/frontend/vite.ts to __nexy__/vite.ts."""
         try:
-            # On récupère le chemin du fichier source dans le package nexy
+            # Get source file path from nexy package
             import nexy.frontend as frontend
 
             source = Path(frontend.__file__).parent / "vite.ts"
@@ -53,17 +53,13 @@ class FrontendGenerator:
         frameworks: set[str] = {
             getattr(ff, "name", "").lower() for ff in ff_list if hasattr(ff, "name")
         }
-        # if frameworks:
-        #     console.print(
-        #         f"nexy[dim]»[/dim] use [green]{', '.join(sorted(f.capitalize() for f in frameworks))}[/green] on this project"
-        #     )
         dest_dir = Path("__nexy__")
         src_dir = dest_dir / "src"
         dest_dir.mkdir(parents=True, exist_ok=True)
         src_dir.mkdir(parents=True, exist_ok=True)
         dest = dest_dir / "main.ts"
 
-        # Génère les clients useFF (export default run) et l'agrégat ff.auto.ts (imports par défaut + invocation)
+        # Generate useFF clients and ff.auto.ts aggregate
         imports: list[str] = []
         invocations: list[str] = []
         for ff in ff_list:
@@ -91,11 +87,11 @@ class FrontendGenerator:
         exts = (".tsx", ".jsx", ".ts", ".js", ".vue", ".svelte")
         src_root = Path("src")
         if src_root.is_dir():
-            for p in src_root.rglob("*"):
-                if p.is_file() and p.suffix.lower() in exts:
-                    rel = "/" + p.as_posix().lstrip("/")
-                    import hashlib as _h
+            import hashlib as _h
 
+            for ext in exts:
+                for p in src_root.glob(f"**/*{ext}"):
+                    rel = "/" + p.as_posix().lstrip("/")
                     mapping[_h.md5(rel.encode("utf-8")).hexdigest()] = rel
         lines = ["export const __NEXY_KEYS: Record<string,string> = {"]
         for k, v in mapping.items():
@@ -130,7 +126,7 @@ class FrontendGenerator:
         runtime_content = "\n".join(runtime_lines) + "\n"
         if not runtime.exists() or runtime.read_text(encoding="utf-8") != runtime_content:
             runtime.write_text(runtime_content, encoding="utf-8")
-        # main.ts minimal: styles globaux + agrégat des clients useFF
+        # Minimal main.ts: global styles + useFF client aggregate
         # Dans _generate_vite_entry
         preamble = ""
         if "react" in frameworks:
@@ -144,7 +140,7 @@ class FrontendGenerator:
                 "}\n"
             )
 
-        # IMPORTANT : Le préambule doit être TOUT EN HAUT, avant même les CSS
+        # IMPORTANT: Preamble must be at the very top, before CSS
         minimal = (
             f"{preamble}\n"
             f'import "/src/globale.css";\n'

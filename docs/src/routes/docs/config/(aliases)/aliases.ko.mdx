@@ -1,0 +1,78 @@
+# 별칭
+
+`.nexy` 파일에서 더 깔끔한 가져오기를 위한 가져오기 경로 별칭을 구성합니다.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useAliases = {
+        ""@": "src",
+        ""@components": "src/components",
+        ""@lib": "src/lib",
+    }
+```
+
+---
+
+## 사용법
+
+대신에 위의 구성을 사용하면:
+
+```python
+from src.components.card.nexy import Card
+from src.lib.utils import format_date
+```
+
+다음과 같이 작성할 수 있습니다.
+
+```python
+from "@components/card.nexy import Card
+from "@lib/utils import format_date
+```
+
+---
+
+## 작동 방식
+
+별칭은 컴파일 타임에 해결됩니다. VFS 네임스페이스는 별칭 접두사를 확장된 경로에 매핑합니다. Frontmatter 가져오기와 템플릿 `__Import` 호출 모두에서 작동합니다.
+
+`"@` 기호는 필수 사항이 아니라 관례입니다. 어떤 접두사든 사용할 수 있습니다.
+
+```python
+useAliases = {
+    "~": "src",
+    "#components": "src/components",
+}
+```
+
+---
+
+## 제한사항
+
+- 별칭은 `.nexy` 및 `.mdx` 파일에서만 작동합니다.
+- 클라이언트 구성 요소의 JavaScript/TypeScript 가져오기에는 적용되지 **않습니다**(이 경우 `vite.config.ts` 경로 별칭을 사용하세요)
+- 별칭은 현재 파일이 아닌 프로젝트 루트를 기준으로 확인됩니다.
+
+---
+
+## Vite 별칭과 결합
+
+전체 스택 프로젝트의 경우 Nexy 별칭(`.nexy` 가져오기용)과 Vite 별칭(JS/TS 가져오기용)을 모두 구성합니다.
+
+```python
+# nexyconfig.py
+useAliases = {""@": "src"}
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { resolve } from "path";
+
+export default defineConfig({
+    resolve: {
+        alias: { ""@": resolve(__dirname, "src") },
+    },
+});
+```

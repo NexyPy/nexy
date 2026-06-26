@@ -35,7 +35,7 @@ class ActionEngine:
             sys.path.append(str(base_path.parent))
 
         # walk_packages starts scanning
-        for loader, name, is_pkg in pkgutil.walk_packages([str(base_path)]):
+        for _loader, name, _is_pkg in pkgutil.walk_packages([str(base_path)]):
             # Optimization: check if any part of the module path is in ignore_folders
             # Example: 'src.node_modules.test' -> ['src', 'node_modules', 'test']
             parts = name.split(".")

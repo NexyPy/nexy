@@ -1,0 +1,49 @@
+# Flask から Nexy への移行
+
+フラスコは最小限です。 Nexy も最小限ですが、最新の非同期、型、OpenAPI が組み込まれています。
+
+## 概念マッピング
+
+|フラスコ |ネクシー |
+|------|------|
+| `"@app.route("/")` | `src/routes/` または `"@Controller` のファイル |
+| `render_template()` | `.nexy` ファイル |
+| `request.args` |関数シグネチャ内のクエリパラメータ |
+| `request.json` |関数シグネチャの本体パラメータ |
+| `g` | `request.state` |
+| `flask run` | `nx dev` |
+| `config.py` | `nexyconfig.py` |
+|ブループリント | `"@Module` または `src/routes/` サブディレクトリ |
+
+＃＃ 例
+
+```python
+# Flask
+"@app.route("/api/users/<int:id>")
+def get_user(id):
+    return jsonify({"id": id})
+
+# Nexy FBR: src/routes/api/users/[id].py
+async def get(id: int):
+    return {"id": id}
+```
+
+## 得られるもの
+
+- **非同期サポート** — ハッキングではなくネイティブ
+- **型検証** — Pydantic、自動 422 エラー
+- **OpenAPI ドキュメント** — `flasgger` は必要ありません
+- **DI システム** — グローバル シングルトンを使用せずにサービスを挿入します
+- **CLI** — `nx build`、`nx start`、`nx migrate`
+
+## 移行手順
+
+1. **足場** — `nx new my-app`
+2. **ポート ルート** — `"@app.route()` → `src/routes/` または `"@Controller` のファイル
+3. **ポート テンプレート** — Flask `render_template()` → `.nexy` ファイル
+4. **ポートリクエストの処理** — `request.args`/`request.json` → 型付き関数パラメータ
+5. **ポート ブループリント** → `"@Module` または FBR のサブディレクトリ
+
+## 残るもの
+
+シンプルなルート、最小限の定型文、完全な制御。最新の Python を使用するだけです。

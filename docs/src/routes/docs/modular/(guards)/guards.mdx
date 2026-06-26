@@ -1,0 +1,193 @@
+# Guards
+
+Guards determine whether a request should reach the route handler. They execute **before the controller method** — perfect for authentication, authorization, rate limiting, and access control.
+
+Nexy's guards are **FastAPI dependencies**. They're callables (classes with `__call__` or standalone functions) that receive the request and either pass or raise an HTTPException.
+
+## Why Guards?
+
+Without guards, you'd check auth in every controller method:
+
+```python
+class AdminController:
+    def GET(self):
+        if not is_authenticated(request):
+            raise HTTPException(401)
+        return {"role": "admin"}
+
+    def delete(self, id: int):
+        if not is_authenticated(request):
+            raise HTTPException(401)
+        return None
+```
+
+A guard extracts this into a reusable callable:
+
+```python
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization")
+        if not token:
+            raise HTTPException(401)
+```
+
+Applied once, protects every route in the controller:
+
+```python
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+```
+
+## Creating a Guard
+
+A guard is a callable that takes a `Request` and returns `None` or raises:
+
+```python
+from starlette.exceptions import HTTPException
+from starlette.requests import Request
+
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization")
+        if not token or not token.startswith("Bearer "):
+            raise HTTPException(401, "Missing or invalid token")
+```
+
+The guard raises `HTTPException` to block the request. If it returns normally, the request proceeds.
+
+**Gotcha**: `__call__` can be sync or async — the router handles both. Use async when your guard needs to call a database or external API.
+
+## Applying Guards
+
+### Controller-level — protects all routes
+
+```python
+from nexy.decorators import Controller, UseGuard
+
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+
+    def delete(self, id: int):
+        return None
+```
+
+### Method-level — protects specific routes
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@UseGuard(AuthGuard())
+    def GET(self):
+        return {"email": "user"@example.com"}
+
+    # No guard on public routes
+    def post(self, data: dict):
+        return {"message": "No auth required"}
+```
+
+### Multiple guards — all must pass
+
+```python
+"@Controller("/admin")
+"@UseGuard(AuthGuard(), RateLimitGuard())
+class AdminController:
+    ...
+```
+
+Guards execute in the order they're listed. If `AuthGuard` raises, `RateLimitGuard` never runs.
+
+**Gotcha**: Method-level guards run AFTER controller-level guards — and only if controller-level guards pass.
+
+## Guards with Parameters
+
+Create a guard factory for parameterized guards:
+
+```python
+class RoleGuard:
+    def __init__(self, required_role: str):
+        self.required_role = required_role
+
+    async def __call__(self, request: Request):
+        user_role = request.headers.get("X-Role", "guest")
+        if user_role != self.required_role:
+            raise HTTPException(403, f"Requires {self.required_role} role")
+```
+
+Apply with arguments:
+
+```python
+"@Controller("/admin")
+"@UseGuard(RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+```
+
+## Guards as Functions
+
+Simple guards can be standalone functions:
+
+```python
+async def rate_limit(request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    if is_rate_limited(client_ip):
+        raise HTTPException(429, "Too many requests")
+
+"@Controller("/api")
+"@UseGuard(rate_limit)
+class ApiController:
+    def GET(self):
+        return {"data": [...]}
+```
+
+## Guard Context
+
+Guards receive the full Starlette `Request` object, giving access to headers, query params, session, and more.
+
+Set request state in a guard for downstream use:
+
+```python
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization", "").removeprefix("Bearer ")
+        user = await verify_token(token)
+        if not user:
+            raise HTTPException(401)
+        request.state.user = user
+
+# In the controller:
+class UsersController:
+    def GET(self, request: Request):
+        return {"user": request.state.user}
+```
+
+## Guard vs Middleware
+
+| Aspect | Guard | Middleware |
+|--------|-------|------------|
+| Executes | Before handler, after middleware | Before guards and handler |
+| Purpose | Auth, authorization, access control | Logging, header manipulation, CORS |
+| Return | `None` or raise `HTTPException` | `None` or raise `HTTPException` |
+| Request access | Full via `Request` parameter | Full via `Request` parameter |
+
+**When to choose a guard vs middleware**: If the logic determines "should this request proceed?" (auth, role check, rate limit), use a guard. If the logic modifies the request/response regardless (logging, CORS), use middleware.
+
+## Best Practices
+
+1. **One guard per concern** — `AuthGuard`, `RoleGuard`, `RateLimitGuard`. Not `SecurityGuard` that does everything.
+2. **Use descriptive status codes** — 401 for missing/invalid auth, 403 for insufficient permissions, 429 for rate limiting.
+3. **Avoid side effects** — guards should check permissions, not modify state (except `request.state`).
+4. **Cache expensive checks** — singleton guard instances with in-memory caches.
+5. **Test guards in isolation** — create a mock `Request`, call the guard, assert it raises or passes.
+
+## Next Steps
+
+- [Middleware](/docs/modular/middleware) — request pipeline hooks
+- [Controllers](/docs/modular/controllers) — define route handlers
+- [Modules](/docs/modular/modules) — organize into feature modules

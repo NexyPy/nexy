@@ -1,0 +1,17 @@
+# 데코레이터
+
+Nexy는 Python 데코레이터를 사용하여 경로, 컨트롤러, 미들웨어 및 종속성 주입을 확장합니다. 이러한 데코레이터는 FBR 및 모듈러 라우팅 모드 모두에서 작동합니다.
+
+## FBR 데코레이터
+
+- [@Action](/docs/decorators/action) — 양식 제출 처리
+- [@UseGuard](/docs/decorators/useguard) — 경로 가드 연결
+- [@Middleware](/docs/decorators/middleware) — 경로에 미들웨어 추가
+
+## 모듈식 데코레이터(추가)
+
+- [@Controller](/docs/decorators/controller) — 컨트롤러 클래스 정의
+- [@Module](/docs/decorators/module) — 애플리케이션 모듈 선언
+- [@Injectable](/docs/decorators/injectable) — 종속성 주입 공급자 등록
+- [@UseRoute](/docs/decorators/useroute) — 사용자 정의 경로 바인딩
+- [@UseResponse](/docs/decorators/useresponse) — 사용자 정의 응답 핸들러

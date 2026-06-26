@@ -1,0 +1,51 @@
+#राउटर का उपयोग करें
+
+वर्तमान अनुरोध के लिए रूटिंग संदर्भ के साथ एक ऑब्जेक्ट लौटाता है।
+
+```python
+from nexy import useRouter
+
+router = useRouter()
+```
+
+---
+
+## वापसी मूल्य
+
+निम्नलिखित कुंजियों के साथ `dict`:
+
+| कुंजी | प्रकार | विवरण |
+|----|------|----|
+| `path` | `str` | वर्तमान यूआरएल पथ |
+| `base_url` | `str` | सर्वर का बेस यूआरएल |
+| `url_for` | `callable \| None` | रिवर्स यूआरएल लुकअप के लिए फास्टएपीआई का `url_for` फ़ंक्शन |
+
+---
+
+## उदाहरण
+
+```nexy
+---
+from nexy import useRouter
+router = useRouter()
+---
+<p>Current path: {{ router.path }}</p>
+<p>Base URL: {{ router.base_url }}</p>
+```
+
+---
+
+## रिवर्स यूआरएल लुकअप
+
+```python
+router = useRouter()
+if router.url_for:
+    url = router.url_for("read_article", slug="hello-world")
+```
+
+---
+
+## उपयोग नोट्स
+
+- `url_for` अनुरोध संदर्भ के बाहर `None` हो सकता है
+- हुड के नीचे फास्टएपीआई के `request.app.url_for` का उपयोग करता है

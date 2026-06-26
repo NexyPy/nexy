@@ -1,0 +1,49 @@
+# 从 Next.js 迁移到 Nexy
+
+Next.js 普及了基于文件的路由和服务器组件。 Nexy 为 Python 带来了相同的 DX。
+
+## 概念图
+
+| Next.js |内克西 |
+|---------|------|
+| `app/` 目录 | `src/routes/` 目录 |
+| `page.tsx` | `.nexy` 或 `.mdx` 文件 |
+| `layout.tsx` | `layout.nexy` |
+| `loading.tsx` | `dependencies.py` |
+| `route.ts`（API）| `.py` 文件包含 `get()`、`post()` 等 |
+| `next.config.js` | `nexyconfig.py` |
+|服务器操作 | `"@Action` 装饰器 |
+| React 服务器组件 | `.nexy` 组件 (Python + Jinja2) |
+| `getStaticProps` | `.nexy` 中的 Frontmatter 逻辑 |
+
+＃＃ 例子
+
+```python
+# Next.js: app/users/[id]/page.tsx
+export default async function Page({ params }) {
+    const user = await db.user.findUnique(params.id);
+    return <div>{user.name}</div>;
+}
+
+# Nexy: src/routes/users/[id]/index.nexy
+---
+user = db.user.find_unique(id)
+---
+<h1>{{ user.name }}</h1>
+```
+
+## 迁移步骤
+
+1. **脚手架** — `nx new my-app`
+2. **端口页面** — `page.tsx` → `.nexy` 或 `.mdx` 文件
+3. **端口布局** — `layout.tsx` → `layout.nexy`
+4. **端口 API 路由** — `route.ts` → `.py` 文件，包含 `get()`、`post()` 等。
+5. **端口服务器操作** — 服务器操作 → `"@Action` 装饰器
+
+## 主要区别
+
+- **服务器上的 Python** — 不需要 JavaScript/TypeScript
+- **页面没有构建步骤** — `.nexy` 文件在开发时编译
+- **多个前端框架** — React、Vue、Svelte、Solid、Preact
+- **FastAPI 底层** — 异步、OpenAPI、类型安全
+- **两种路由策略** — 基于文件（如 Next.js Pages）或模块化（如 NestJS）

@@ -1,0 +1,85 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# بايثون في قالب Nexy
+
+يقوم الجزء الأمامي (`---`) بتشغيل لغة Python في وقت الترجمة وعند كل طلب.
+
+---
+
+## ما يمكنك فعله
+
+### استيراد الوحدات
+```python
+---
+import json
+from datetime import datetime
+from nexy import usePathname
+from "@components/card.nexy" import Card
+---
+```
+### تشغيل التعبيرات
+```python
+---
+items = [1, 2, 3]
+now = datetime.now()
+is_admin = user.role == "admin"
+---
+```
+### استخدم الخطافات
+```python
+---
+from nexy import usePathname, useSearchParams, useCookies
+pathname = usePathname()
+params = useSearchParams()
+cookies = useCookies()
+---
+```
+### بيانات طلب الوصول
+```python
+---
+from fastapi import Request
+# request is injected automatically
+---
+```
+---
+
+## وقت الترجمة مقابل وقت التشغيل
+
+| عملية | متى | مثال |
+|---|---|---|
+| `import` | تجميع | استيراد المكونات |
+| `prop[type]` | تجميع | الدعائم التي تم فحصها من النوع |
+| خطاف | طلب | `usePathname()` |
+| المتغيرات | طلب | `user = request.user` |
+
+المتغيرات المحددة في المادة الأمامية متوفرة في القالب:
+```python
+---
+from datetime import datetime
+year = datetime.now().year
+---
+<footer>&copy; {{ year }} Nexy</footer>
+```
+---
+
+## المنطق المشترك
+
+للحصول على منطق بايثون القابل لإعادة الاستخدام، قم بإنشاء ملف `.py` عادي:
+```python
+# src/utils/helpers.py
+def format_date(dt):
+    return dt.strftime("%B %d, %Y")
+```
+الاستيراد من أي مكون:
+```python
+---
+from src.utils.helpers import format_date
+from datetime import datetime
+---
+<p>{{ format_date(datetime.now()) }}</p>
+```
+<Link href="/docs/components/properties">Next: Properties →</Link>

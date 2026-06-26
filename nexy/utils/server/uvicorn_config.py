@@ -5,7 +5,7 @@ import traceback
 from typing import cast
 
 # ANSI colors for terminal
-C = {
+COLORS = {
     "reset": "\033[0m",
     "dim": "\033[2m",
     "blue": "\033[34m",
@@ -60,7 +60,9 @@ class NexyAccessFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         msg = record.getMessage()
         if not record.args or len(record.args) < 5:
-            return f"  {C['blue']}ŋ{C['reset']} {C['dim']}[Info]{C['reset']} {msg}"
+            return (
+                f"  {COLORS['blue']}ŋ{COLORS['reset']} {COLORS['dim']}[Info]{COLORS['reset']} {msg}"
+            )
 
         args = record.args
         if isinstance(args, tuple):
@@ -71,7 +73,7 @@ class NexyAccessFormatter(logging.Formatter):
             arg2 = args.get("c", "")
             arg_last = args.get("d", 0)
         else:
-            return f"  {C['blue']}ŋ{C['reset']} {msg}"
+            return f"  {COLORS['blue']}ŋ{COLORS['reset']} {msg}"
 
         addr = str(arg0) if arg0 else "unknown"
         host = addr.split(":")[0] if ":" in addr else addr
@@ -85,20 +87,24 @@ class NexyAccessFormatter(logging.Formatter):
         except (ValueError, TypeError):
             status_code = 200
 
-        color = C["green"]
+        color = COLORS["green"]
         if 300 <= status_code < 400:
-            color = C["cyan"]
+            color = COLORS["cyan"]
         elif 400 <= status_code < 500:
-            color = C["yellow"]
+            color = COLORS["yellow"]
         elif status_code >= 500:
-            color = C["red"]
+            color = COLORS["red"]
 
         is_socket = "ws" in path or "socket" in path or status_code == 101
-        label = f"{C['magenta']}ws{C['reset']} »" if is_socket else f"{color}{method}{C['reset']} »"
+        label = (
+            f"{COLORS['magenta']}ws{COLORS['reset']} »"
+            if is_socket
+            else f"{color}{method}{COLORS['reset']} »"
+        )
 
         indicator = status_indicators.get(status_code, "!")
 
-        return f"{label} {C['dim']}{host}{C['reset']}:{C['blue']}{port}{C['reset']} {color}{path}{C['reset']} , {color}{status_code}{C['reset']} © {indicator}"
+        return f"{label} {COLORS['dim']}{host}{COLORS['reset']}:{COLORS['blue']}{port}{COLORS['reset']} {color}{path}{COLORS['reset']} , {color}{status_code}{COLORS['reset']} © {indicator}"
 
 
 class NexyDefaultFormatter(logging.Formatter):
@@ -108,8 +114,8 @@ class NexyDefaultFormatter(logging.Formatter):
         msg = record.getMessage()
         level = record.levelname.capitalize()
 
-        color = C["red"] if record.levelno >= 40 else C["dim"]
-        prefix = f"{color}{level}{C['reset']} »"
+        color = COLORS["red"] if record.levelno >= 40 else COLORS["dim"]
+        prefix = f"{color}{level}{COLORS['reset']} »"
         result = f"{prefix} {msg}"
 
         if record.exc_info:
@@ -127,13 +133,13 @@ class NexyDefaultFormatter(logging.Formatter):
 
                 result += f'\n  File "{file_name}", line {line_no}, in {scope_name}\n'
 
-                # --- STRATÉGIE DE DÉTECTION DU BLOC CONTEXTUEL ---
+                # --- CONTEXTUAL BLOCK DETECTION ---
                 start_line = line_no
                 block_indent = None
                 is_global_scope = scope_name == "<module>"
 
                 if not is_global_scope:
-                    # On remonte pour chercher le début de la fonction ou de la classe
+                    # Walk up to find function or class start
                     while start_line > 1:
                         prev_line = linecache.getline(frame.filename, start_line).rstrip("\n")
                         stripped = prev_line.lstrip()
@@ -142,12 +148,12 @@ class NexyDefaultFormatter(logging.Formatter):
                             break
                         start_line -= 1
 
-                # Si on est au niveau global du module ou qu'aucune structure n'a été trouvée
+                # Module-level scope or no structure found
                 if block_indent is None:
                     start_line = max(1, line_no - 4)
                     end_line = line_no + 4
                 else:
-                    # On descend pour trouver la fin de la fonction ou de la classe basée sur l'indentation
+                    # Walk down to find function or class end based on indentation
                     end_line = line_no
                     while True:
                         next_line = linecache.getline(frame.filename, end_line + 1)
@@ -155,19 +161,19 @@ class NexyDefaultFormatter(logging.Formatter):
                             break
 
                         next_stripped = next_line.rstrip("\n")
-                        if next_stripped.strip():  # Ignore les lignes vides pour le calcul
+                        if next_stripped.strip():  # Skip empty lines for indentation calculation
                             current_indent = len(next_stripped) - len(next_stripped.lstrip())
-                            # Fin du bloc si l'indentation baisse ou revient au niveau de la fonction/classe
+                            # Block ends when indentation drops to function/class level
                             if current_indent <= block_indent and end_line >= line_no:
                                 break
                         end_line += 1
 
-                # Garde-fou visuel : Si le bloc (fonction/classe) est trop massif, on restreint la vue
+                # Safety limit: cap large blocks to avoid excessive output
                 if (end_line - start_line) > 16:
                     start_line = max(1, line_no - 4)
                     end_line = line_no + 4
 
-                # --- RENDU DE L'EXTRAIT DE CODE ---
+                # --- CODE SNIPPET RENDERING ---
                 for current_line in range(start_line, end_line + 1):
                     raw_line = linecache.getline(frame.filename, current_line)
                     if not raw_line:
@@ -181,17 +187,15 @@ class NexyDefaultFormatter(logging.Formatter):
                         caret_indent = " " * (indent + 6)
                         caret = "~" * max(1, len(code_part)) + "^~"
 
-                        result += (
-                            f"    {C['red']}➔{C['reset']}  {C['red']}{clean_line}{C['reset']}\n"
-                        )
-                        result += f"{caret_indent}{C['red']}{caret}{C['reset']}\n"
+                        result += f"    {COLORS['red']}➔{COLORS['reset']}  {COLORS['red']}{clean_line}{COLORS['reset']}\n"
+                        result += f"{caret_indent}{COLORS['red']}{caret}{COLORS['reset']}\n"
                     else:
-                        result += f"       {C['dim']}{clean_line}{C['reset']}\n"
+                        result += f"       {COLORS['dim']}{clean_line}{COLORS['reset']}\n"
 
         return result.rstrip("\n")
 
 
-# Configuration prête pour uvicorn.run()
+# Config ready for uvicorn.run()
 NEXY_LOG_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,

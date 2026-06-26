@@ -1,0 +1,85 @@
+# FBR 또는 모듈형 라우터
+
+Nexy는 **두 가지 라우팅 전략**을 제공합니다. 프로젝트 생성 시 선택하면 이 사이드바 상단의 토글이 그에 따라 문서를 전환합니다.
+
+## 파일 기반 라우팅(FBR)
+
+경로는 `src/routes/` 아래의 파일 트리에 의해 정의됩니다.
+
+```text
+src/routes/
+
+├── index.nexy        →  /
+
+├── about.nexy        →  /about
+
+├── blog/
+
+│   ├── index.nexy    →  /blog
+
+│   └── [slug].nexy   →  /blog/{slug}
+
+└── layout.nexy       →  shared layout
+```
+
+**다음과 같은 경우 FBR을 선택하세요**:
+
+- 구성보다 규칙을 원함
+- 간단한 사이트, 문서 또는 MVP를 구축하고 있습니다.
+- 앱이 명확한 페이지 계층 구조에 적합합니다.
+- 상용구가 적은 것을 선호합니다.
+
+## 모듈형 라우터
+
+경로는 `src/apps/`의 Python 데코레이터를 통해 정의됩니다.
+
+```text
+src/apps/
+
+├── app_module.py     →  "@Module(root module)
+
+├── app_controller.py →  "@Controller("/")
+
+├── app_view.nexy     →  template
+
+├── users/
+
+│   ├── user_module.py
+
+│   ├── user_controller.py
+
+│   └── user_service.py
+
+└── layout.nexy       →  shared layout
+```
+
+**다음과 같은 경우 모듈식을 선택하세요**:
+
+- 귀하의 애플리케이션은 명확한 도메인 경계를 가지고 있으며 규모가 큽니다.
+- 종속성 주입 및 테스트 가능한 서비스를 원합니다.
+- NestJS/Angular 출신이며 데코레이터를 선호합니다.
+- 여러 팀이 서로 다른 기능 모듈을 소유하고 있습니다.
+
+## 하나의 프로젝트에서 둘 다
+
+`nexyconfig.py`는 사용할 라우터를 제어합니다.
+
+```python
+# FBR — no explicit router config needed
+
+class NexyConfig(NexyConfigModel):
+
+    pass
+```
+
+```python
+# Modular — import the APIRouter from your root "@Module
+
+from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
+
+class NexyConfig(NexyConfigModel):
+
+    useRouter = AppModule
+```
+
+하나의 프로젝트에 두 가지를 모두 혼합할 수는 없습니다. 팀과 규모에 맞는 프로젝트를 선택하세요.

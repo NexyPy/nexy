@@ -1,0 +1,100 @@
+# 模块系统
+
+Nexy 的模块系统允许您在项目中导入和导出组件。
+
+---
+
+## 导入组件
+
+在 frontmatter 中使用 `import` 语法：
+
+```python
+---
+from "@components/card.nexy" import Card
+from "@components/button.nexy" import Button
+---
+```
+
+`"@` 别名解析为 `src/`（可在 `nexyconfig.py` 中配置）。
+
+---
+
+## 命名导出
+
+默认情况下，`.nexy` 文件将其模板导出为以该文件命名的组件：
+
+|文件 |出口名称 |
+|---|---|
+| `card.nexy` | `Card` |
+| `button.nexy` | `Button` |
+| `table_of_contents.nexy` | `Table_of_contents` |
+
+---
+
+## 老虎机（儿童）
+
+`Slot` 组件呈现在开始/结束标记之间传递的子内容：
+
+```nexy
+<div class="card">
+    <h2>{{ title }}</h2>
+    <Slot />
+</div>
+```
+
+用法：
+
+```html
+<Card title="Hello">
+    <p>This goes into the Slot.</p>
+</Card>
+```
+
+---
+
+## 导入别名
+
+使用 `as` 避免命名冲突：
+
+```python
+---
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+---
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+---
+
+## 再导出
+
+创建一个聚合组件的索引文件：
+
+```python
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+其他文件从这个桶导入：
+
+```python
+---
+from "@components/index.nexy" import Card, Button
+---
+```
+
+-----
+
+## 动态导入
+
+对于客户端框架（React、Solid），Nexy 在构建过程中自动生成导入树。您不需要手动管理入口点 - 编译器会检测 `.tsx`/`.jsx` 使用情况并相应地连接 Vite 或 esbuild。
+

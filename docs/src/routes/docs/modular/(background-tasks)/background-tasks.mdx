@@ -1,0 +1,69 @@
+# Background Tasks (Modular)
+
+Run code *after* sending the response in controllers.
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## Single task
+
+```python
+from nexy.decorators import Controller
+from fastapi import BackgroundTasks
+
+def send_email(email: str, body: str):
+    ...
+
+"@Controller("/contact")
+class ContactController:
+    def post(self, data: ContactForm, tasks: BackgroundTasks):
+        tasks.add_task(send_email, data.email, "Thanks!")
+        return {"status": "sent"}
+```
+
+## Multiple tasks
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def get(self, tasks: BackgroundTasks):
+        tasks.add_task(log_visit)
+        tasks.add_task(notify_admin)
+        tasks.add_task(warm_cache)
+        return {"ok": True}
+```
+
+## Task with DI
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller, Injectable
+from src.db import Database
+
+"@Injectable()
+class Logger:
+    def write(self, msg: str):
+        ...
+
+"@Controller("/logs")
+class LogController:
+    def __init__(self, logger: Logger, tasks: BackgroundTasks):
+        self.logger = logger
+        self.tasks = tasks
+
+    def post(self):
+        self.tasks.add_task(self.logger.write, "action logged")
+        return {"ok": True}
+```
+
+## Important
+
+- Tasks run **after** the response is sent — the client doesn't wait
+- They run in the same process — long tasks block the event loop
+- For heavy work, use a task queue (Celery, ARQ, RQ, etc.)
+- Errors in tasks are silently swallowed — add try/except inside the task function
+- Tasks receive **copies** of mutable objects — mutations won't affect the response

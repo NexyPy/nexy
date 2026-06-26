@@ -1,0 +1,65 @@
+# OpenAPI-Webhooks und Rückrufe
+
+Definieren Sie Webhooks und Rückrufe in Ihrem OpenAPI-Schema, damit Verbraucher wissen, was Ihre API an sie sendet.
+
+## Webhooks
+
+Webhooks sind ausgehende Ereignisse, die Ihre API an externe URLs sendet.
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+Dadurch wird ein Webhook im OpenAPI-Schema registriert. Verbraucher sehen die erwartete Nutzlastform in `/docs`.
+
+## Rückrufe
+
+Rückrufe beschreiben Anfragen, die Ihre API an den Server des Verbrauchers stellt.
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+Übergeben Sie den Callback-Router an eine Route:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+Dadurch werden zusätzliche Pfade in der OpenAPI-Spezifikation generiert, die zeigen, was Ihre API an die externe URL POSTET.
+
+## Warum sie verwenden?
+
+- Automatisch generierte Dokumentation für API-Konsumenten
+- Typsichere Vertragsdefinition
+- Funktioniert mit jedem OpenAPI-Client-Generator
+- Kein Laufzeiteffekt – dient lediglich der Dokumentation

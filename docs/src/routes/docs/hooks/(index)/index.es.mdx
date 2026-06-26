@@ -1,0 +1,20 @@
+# Ganchos
+
+Los ganchos son funciones reactivas que brindan acceso al contexto de la solicitud y al estado del navegador dentro de sus componentes y diseños `.nexy`. Reflejan el concepto de los marcos frontend modernos pero se ejecutan en el servidor.
+
+Todos los anzuelos son importados de `nexy`:
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## Ganchos disponibles
+
+- [usePathname](/docs/hooks/usePathname) — ruta URL actual
+- [useSearchParams](/docs/hooks/useSearchParams) — parámetros de cadena de consulta
+- [useRouter](/docs/hooks/useRouter) — navegación programática
+- [useQuery](/docs/hooks/useQuery) — parámetros de consulta analizados
+- [useSession](/docs/hooks/useSession) — acceso a datos de sesión
+- [useCookies](/docs/hooks/useCookies) — lectura/escritura de cookies
+- [useToc](/docs/hooks/useToc) — extracción del índice
+- [useViews](/docs/hooks/useViews) — gestión de vistas componibles

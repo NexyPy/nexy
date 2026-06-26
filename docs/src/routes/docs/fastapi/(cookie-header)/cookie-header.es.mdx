@@ -1,0 +1,97 @@
+# Cookies y encabezados
+
+Lea las cookies y los encabezados HTTP utilizando los parámetros `Cookie` y `Header` de FastAPI.
+
+---
+
+## Parámetro de cookie
+```python
+---
+from fastapi import Cookie
+
+def GET(session_id: str | None = Cookie(None)):
+    return {"session_id": session_id}
+---
+```
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/profile")
+class ProfileController:
+    def GET(self, session_id: str | None = Cookie(None)):
+        return {"session_id": session_id}
+```
+## Múltiples cookies
+```python
+---
+from fastapi import Cookie
+
+def GET(
+    session_id: str | None = Cookie(None),
+    theme: str = Cookie("light"),
+):
+    return {"session": session_id, "theme": theme}
+---
+```
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/settings")
+class SettingsController:
+    def GET(self, session_id: str | None = Cookie(None), theme: str = Cookie("light")):
+        return {"session": session_id, "theme": theme}
+```
+## Parámetro de encabezado
+```python
+---
+from fastapi import Header
+
+def GET(user_agent: str | None = Header(None)):
+    return {"ua": user_agent}
+---
+```
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/info")
+class InfoController:
+    def GET(self, user_agent: str | None = Header(None)):
+        return {"ua": user_agent}
+```
+## Alias de encabezado personalizado
+
+Los nombres de los encabezados están en minúsculas con guiones bajos de forma predeterminada. Utilice `alias` para nombres de encabezado personalizados:
+```python
+---
+from fastapi import Header
+
+def GET(x_token: str = Header(alias="X-Token")):
+    return {"token": x_token}
+---
+```
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/secure")
+class SecureController:
+    def GET(self, x_token: str = Header(alias="X-Token")):
+        return {"token": x_token}
+```
+## Leer cookies en plantillas
+
+En las plantillas `.nexy`, utilice el gancho `useCookies()`:
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+## Ver también
+
+- [useCookies hook](/docs/hooks/useCookies) — para leer cookies en plantillas
+- [Session config](/docs/config/session) — configuración del middleware de sesión

@@ -1,0 +1,207 @@
+# Proveedores e inyección de dependencia
+
+Los proveedores encapsulan la lógica empresarial, el acceso a datos o las integraciones externas. Están decorados con `"@Injectable()` y se inyectan automáticamente en los controladores (u otros proveedores) a través de los parámetros del constructor.
+
+## ¿Por qué proveedores?
+
+Sin DI, cada controlador crea manualmente sus dependencias:
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+Con DI, el contenedor crea una instancia de dependencias y las inyecta:
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+Beneficios: capacidad de prueba (simulación de `UserService` en pruebas), uso compartido único (misma instancia entre controladores), control de alcance (nuevo por solicitud cuando sea necesario).
+
+## Creando un proveedor
+
+Decora cualquier clase con `"@Injectable()`:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+`"@Injectable()` evita la creación de instancias directas: llamar a `UserService()` fuera de DI genera `TypeError`. Esto le obliga a utilizar el contenedor, lo que garantiza que los ámbitos y las dependencias se resuelvan correctamente.
+
+## Inyectar en un controlador
+
+Declare la dependencia como parámetro del constructor con una sugerencia de tipo:
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+El contenedor DI hace coincidir la sugerencia de tipo (`UserService`) con un proveedor registrado. Si ningún proveedor coincide, genera `ValueError` al inicio.
+
+**Te tengo**: Los nombres de los parámetros del constructor no importan, solo las sugerencias de tipo sí. `service: UserService` y `s: UserService` se resuelven con el mismo proveedor.
+
+## Inyectar proveedores a otros proveedores
+
+Los proveedores pueden depender de otros proveedores: el contenedor resuelve el árbol completo:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+Las dependencias circulares (`A → B → A`) aumentan `RecursionError` al inicio. Refactorice para extraer la lógica compartida a un tercer proveedor.
+
+## Visores de inyección
+
+Duración del proveedor de control de ámbitos:
+
+| Alcance | Toda la vida | Caso de uso |
+|-------|----------|----------|
+| `Scope.SINGLETON` (predeterminado) | Una instancia para toda la aplicación | Conexiones de bases de datos, configuración, cachés |
+| `Scope.REQUEST` | Nueva instancia por solicitud HTTP | Estado por solicitud, registros de auditoría |
+| `Scope.TRANSIENT` | Nueva instancia cada inyección | Utilidades sin estado, funciones puras |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`** es la opción predeterminada y más segura. Utilice **`Scope.REQUEST`** solo cuando necesite un estado por solicitud (por ejemplo, almacenar el usuario actual de un guardia). Utilice **`Scope.TRANSIENT`** cuando el proveedor tenga un estado mutable que no deba compartirse.
+
+**Entendido**: Los proveedores transitorios inyectados en un proveedor singleton se convierten efectivamente en singleton: se crean una vez cuando el singleton se resuelve por primera vez. Si necesita un transitorio nuevo por solicitud, inyéctelo en un proveedor con alcance de solicitud.
+
+## Proveedores personalizados con `useValue` y `useFactory`
+
+Para dependencias que no son de clase (cadenas, configuraciones, lambdas), use la sintaxis dict en el módulo:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+Registre proveedores directamente en la lista `providers` del módulo:
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+Inyectar por tipo de sugerencia:
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## Dependencias opcionales
+
+Utilice `None` como valor predeterminado para la inyección opcional:
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+Si `Logger` no está registrado en ningún módulo, el contenedor lo omite y pasa a `None`. Esto es útil para funciones opcionales como el registro o las métricas que no deberían fallar si se desconfiguran.
+
+## Pruebas con proveedores
+
+DI simplifica las pruebas: crea una instancia del controlador con un simulacro:
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+No es necesario iniciar el servidor ni configurar el contenedor DI completo. Ésta es la principal ventaja de la inyección de constructor: pruebas unitarias puras.
+
+## Mejores prácticas
+
+1. **Prefiere la inyección de constructor**: llamar manualmente a `Container.resolve()` es poco común; Deje que el contenedor se inyecte automáticamente.
+2. **Mantener a los proveedores sin estado** (alcance único): el estado pertenece a bases de datos o proveedores con alcance de solicitud.
+3. **Una responsabilidad por proveedor**: `UserService` maneja los usuarios, `EmailService` maneja los correos electrónicos.
+4. **Registre todos los proveedores explícitamente** en la lista `providers` del módulo; los registros explícitos se autodocumentan.
+5. **Utilice `Scope.REQUEST` con moderación**: cada proveedor con ámbito de solicitud agrega gastos generales de asignación.
+
+## Próximos pasos
+
+- [Modules](/docs/modular/modules): organiza proveedores en módulos de funciones
+- [Guards](/docs/modular/guards) — agregar autenticación y autorización
+- [Middleware](/docs/modular/middleware): intercepta las solicitudes antes de que lleguen a los controladores

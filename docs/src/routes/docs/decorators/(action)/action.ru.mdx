@@ -1,0 +1,75 @@
+# "@Действие
+
+Превратите функцию Python в конечную точку сервера, вызываемую из браузера — без регистрации маршрутизатора и анализа запросов.
+
+```python
+from nexy.decorators import Action
+
+"@Action
+def submit_comment(post_id: int, body: str) -> dict:
+    return {"status": "ok"}
+```
+
+---
+
+## Подпись
+
+```python
+Action(func: Callable | None = None) -> Callable
+```
+
+Используется с круглыми скобками или без них:
+
+```python
+"@Action
+def fn(): ...
+
+"@Action()
+def fn(): ...
+```
+
+---
+
+## Как это работает
+
+1. Регистрирует функцию в `ActionsStore`.
+2. При запуске `ActionEngine` обнаруживает все действия и монтирует их как `POST /_nx_{hash}`.
+3. Хэш URL-адреса = `sha256(func_name + "salt2026")[:12]` — детерминированный для каждого развертывания.
+4. Аргументы, анализируемые из тела JSON, вставленные по имени.
+5. Возвращаемое значение, сериализованное в формате JSON.
+
+---
+
+## Типы параметров
+
+| Тип | Источник | Пример |
+|------|--------|---------|
+| `str`, `int`, `float`, `bool` | Тело JSON | `post_id: int` |
+| `list`, `dict` | Тело JSON | `tags: list[str]` |
+| Пидантические модели | Тело JSON (проверено) | `data: CreateComment` |
+| `Request` | Инъекция FastAPI | `request: Request` |
+
+---
+
+## Типы возвращаемых значений
+
+| Вернуться | Ответ |
+|--------|----------|
+| `dict` | `JSONResponse` |
+| `list` | `JSONResponse` |
+| `str` | `PlainTextResponse` |
+| `int`, `float`, `bool` | `JSONResponse` |
+| `BaseModel` | `JSONResponse` |
+| `None` | `JSONResponse({"ok": True})` |
+
+---
+
+## Ограничения
+
+- Только POST
+- Только тело JSON (без данных формы, составное)
+- Хэш-соль жестко запрограммирована — URL-адрес стабилен в пределах развертывания.
+
+---
+
+См. [Server Actions guide](/docs/guides/actions) для примеров использования и интеграции клиента.

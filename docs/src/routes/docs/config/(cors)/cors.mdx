@@ -1,0 +1,68 @@
+# CORS
+
+Configure Cross-Origin Resource Sharing for your Nexy application using Starlette's `CORSMiddleware`.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## Common options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` | Allowed origins. Use `["*"]` to allow all (development only). |
+| `allow_origins_regex` | `str` | `None` | Regex pattern for allowed origins (e.g. `"https://.*\.example\.com"`). |
+| `allow_methods` | `list[str]` | `["GET"]` | Allowed HTTP methods. `["*"]` allows all. |
+| `allow_headers` | `list[str]` | `[]` | Allowed request headers. `["*"]` allows all. |
+| `allow_credentials` | `bool` | `False` | Allow cookies and authorization headers. |
+| `expose_headers` | `list[str]` | `[]` | Headers exposed to the browser. |
+| `max_age` | `int` | `600` | Preflight cache duration in seconds. |
+
+---
+
+## Development setup
+
+For local development, allow all origins:
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## Production setup
+
+Be explicit about origins and methods:
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+When `allow_credentials` is `True`, you cannot use `"*"` for `allow_origins` — list origins explicitly.
+
+---
+
+## Behind a proxy
+
+If your app runs behind a reverse proxy (nginx, Cloudflare), ensure forwarded headers are configured so CORS middleware sees the correct origin.

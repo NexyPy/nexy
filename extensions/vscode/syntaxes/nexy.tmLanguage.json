@@ -29,19 +29,29 @@
           "name": "punctuation.definition.header.end.nexy"
         }
       },
-      "patterns": [
-        {
-          "include": "source.python"
-        },
-        {
-          "name": "keyword.control.import.python.fallback.nexy",
-          "match": "\\b(import|from|as|with|def|class|return|True|False|None)\\b"
-        },
+        "patterns": [
         { "include": "#python-import-from" },
         { "include": "#python-import-list" },
         { "include": "#python-assignment" },
+        { "include": "#nexy-prop" },
+        { "include": "#nexy-prop-decl" },
+        { "include": "#py-dict-key" },
+        { "include": "#py-triple-single" },
+        { "include": "#py-triple-double" },
+        { "include": "#py-string-double" },
+        { "include": "#py-string-single" },
+        { "include": "#py-fstring-double" },
+        { "include": "#py-fstring-single" },
+        { "include": "#py-number" },
+        { "include": "#py-builtins" },
+        { "include": "#py-keywords" },
+        { "include": "#py-function-call" },
+        { "include": "#py-op-comparison" },
+        { "include": "#py-op-math" },
+        { "include": "#py-identifier" },
         {
-          "include": "#nexy-prop"
+          "name": "keyword.control.import.python.fallback.nexy",
+          "match": "\\b(import|from|as|with|def|class|return|True|False|None)\\b"
         }
       ]
     },
@@ -118,6 +128,119 @@
         { "match": "[^\\]]+", "name": "support.type.nexy" }
       ]
     },
+    "py-dict-key": {
+      "match": "(?<=\\{|\\,)\\s*(\"[^\"]*\"|'[^']*')\\s*(:)",
+      "captures": {
+        "1": { "name": "entity.other.attribute-name.python" },
+        "2": { "name": "punctuation.separator.key-value.python" }
+      }
+    },
+    "py-triple-single": {
+      "name": "string.quoted.single.multiline.python",
+      "begin": "'''",
+      "end": "'''",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        { "include": "#jinja-expression" },
+        { "include": "#jinja-block" },
+        { "include": "#jinja-comment" }
+      ]
+    },
+    "py-triple-double": {
+      "name": "string.quoted.double.multiline.python",
+      "begin": "\"\"\"",
+      "end": "\"\"\"",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        { "include": "#jinja-expression" },
+        { "include": "#jinja-block" },
+        { "include": "#jinja-comment" }
+      ]
+    },
+    "py-string-single": {
+      "name": "string.quoted.single.python",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        { "include": "#jinja-expression" },
+        { "include": "#jinja-block" },
+        { "include": "#jinja-comment" }
+      ]
+    },
+    "py-string-double": {
+      "name": "string.quoted.double.python",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        { "include": "#jinja-expression" },
+        { "include": "#jinja-block" },
+        { "include": "#jinja-comment" }
+      ]
+    },
+    "py-fstring-single": {
+      "name": "string.quoted.single.fstring.python",
+      "begin": "f'",
+      "end": "'",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [ { "include": "#py-identifier" }, { "include": "#py-function-call" }, { "include": "#py-number" } ]
+        },
+        { "include": "#jinja-expression" },
+        { "include": "#jinja-block" },
+        { "include": "#jinja-comment" }
+      ]
+    },
+    "py-fstring-double": {
+      "name": "string.quoted.double.fstring.python",
+      "begin": "f\"",
+      "end": "\"",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [ { "include": "#py-identifier" }, { "include": "#py-function-call" }, { "include": "#py-number" } ]
+        },
+        { "include": "#jinja-expression" },
+        { "include": "#jinja-block" },
+        { "include": "#jinja-comment" }
+      ]
+    },
+    "py-number": {
+      "match": "\\b(?:0[bBoOxX][0-9a-fA-F]+|\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)\\b",
+      "name": "constant.numeric.python"
+    },
+    "py-builtins": {
+      "match": "\\b(abs|all|any|bool|callable|dict|enumerate|float|int|len|list|max|min|print|range|set|str|sum|tuple|zip|type|isinstance|hasattr|getattr|setattr|delattr|super|object|property|staticmethod|classmethod|reversed|sorted|filter|map|open|file|input|iter|next|repr|id|ord|chr|hex|oct|bin|pow|round|hash|slice|vars|dir|locals|globals|__import__|compile|eval|exec|__file__|__name__|__doc__|__dict__)\\b",
+      "name": "support.function.builtin.python"
+    },
+    "py-keywords": {
+      "match": "\\b(and|or|not|is|in|as|if|else|elif|for|while|break|continue|return|yield|import|from|class|def|with|try|except|finally|raise|pass|del|global|nonlocal|lambda|assert|async|await|True|False|None)\\b",
+      "name": "keyword.control.python"
+    },
+    "py-function-call": {
+      "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+      "captures": {
+        "1": { "name": "entity.name.function.python" }
+      }
+    },
+    "py-op-comparison": {
+      "match": "==|!=|<=|>=|<>|(?:\\bis\\b|\\bin\\b)",
+      "name": "keyword.operator.comparison.python"
+    },
+    "py-op-math": {
+      "match": "\\+|\\-|\\*|\\/|\\%|\\*\\*|\\/\\/|\\|\\||&&|\\||\\^|~|<<|>>|&|=|:",
+      "name": "keyword.operator.arithmetic.python"
+    },
+    "py-identifier": {
+      "match": "\\b[_A-Za-z][_A-Za-z0-9]*\\b",
+      "name": "variable.other.readwrite.python"
+    },
     "template": {
       "name": "meta.template.nexy",
       "begin": "(?<=^---)\\s*$|(?:^(?!---))",
@@ -154,7 +277,7 @@
       "beginCaptures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
         "2": { "name": "entity.name.tag.style.html" },
-        "3": { "name": "entity.other.attribute-name.html" },
+        "3": { "name": "string.quoted.html" },
         "4": { "name": "punctuation.definition.tag.end.html" }
       },
       "end": "(</)(style)(>)",
@@ -183,6 +306,12 @@
           "include": "source.css.less"
         },
         {
+          "begin": "(?<=<style\\s+lang=[\"']postcss[\"']>)",
+          "end": "(?=</style>)",
+          "contentName": "source.css.postcss",
+          "include": "source.css"
+        },
+        {
           "begin": "(?<=<style>)",
           "end": "(?=</style>)",
           "contentName": "source.css",
@@ -196,7 +325,7 @@
       "beginCaptures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
         "2": { "name": "entity.name.tag.script.html" },
-        "3": { "name": "entity.other.attribute-name.html" },
+        "3": { "name": "string.quoted.html" },
         "4": { "name": "punctuation.definition.tag.end.html" }
       },
       "end": "(</)(script)(>)",
@@ -217,6 +346,12 @@
           "end": "(?=</script>)",
           "contentName": "source.tsx",
           "include": "source.tsx"
+        },
+        {
+          "begin": "(?<=<script\\s+lang=[\"']jsx[\"']>)",
+          "end": "(?=</script>)",
+          "contentName": "source.jsx",
+          "include": "source.jsx"
         },
         {
           "begin": "(?<=<script\\s+lang=[\"']rust[\"']>)",
@@ -249,11 +384,46 @@
       },
       "patterns": [
         {
-          "include": "source.python"
+          "match": "\\|\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "support.function.jinja2.nexy" }
+          }
         },
         {
-          "name": "variable.other.readwrite.fallback.nexy",
-          "match": "\\b[_A-Za-z][_A-Za-z0-9]*\\b"
+          "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "punctuation.separator.period.python" },
+            "2": { "name": "variable.other.object.property.python" }
+          }
+        },
+        {
+          "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.separator.period.python" },
+            "2": { "name": "variable.other.object.property.python" }
+          }
+        },
+        {
+          "match": "\\b(True|False|None|not|and|or|in|is|as)\\b",
+          "name": "keyword.control.python"
+        },
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.python" }
+          }
+        },
+        { "include": "#py-string-single" },
+        { "include": "#py-string-double" },
+        { "include": "#py-fstring-single" },
+        { "include": "#py-fstring-double" },
+        { "include": "#py-number" },
+        { "include": "#py-builtins" },
+        { "include": "#py-op-comparison" },
+        { "include": "#py-op-math" },
+        {
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+          "name": "variable.other.readwrite.python"
         }
       ]
     },
@@ -273,11 +443,50 @@
       },
       "patterns": [
         {
-          "match": "\\b(if|elif|else|endif|for|endfor|block|endblock|extends|include|macro|endmacro|call|endcall|filter|endfilter|set|del|raw|endraw|with|endwith|without|context|import|from|as|not|and|or|in|is)\\b",
-          "name": "keyword.control.jinja2"
+          "match": "\\b(if|elif|else|for|not|and|or|in|is|as|import|from|True|False|None)\\b",
+          "name": "keyword.control.python"
         },
         {
-          "include": "source.python"
+          "match": "\\b(endif|endfor|endblock|endmacro|endcall|endfilter|endwith|endraw|block|extends|include|macro|call|filter|set|del|raw|with|without|context)\\b",
+          "name": "keyword.control.python"
+        },
+        {
+          "match": "\\|\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "support.function.jinja2.nexy" }
+          }
+        },
+        {
+          "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "punctuation.separator.period.python" },
+            "2": { "name": "variable.other.object.property.python" }
+          }
+        },
+        {
+          "match": "(\\.)\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.separator.period.python" },
+            "2": { "name": "variable.other.object.property.python" }
+          }
+        },
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+          "captures": {
+            "1": { "name": "entity.name.function.python" }
+          }
+        },
+        { "include": "#py-string-single" },
+        { "include": "#py-string-double" },
+        { "include": "#py-fstring-single" },
+        { "include": "#py-fstring-double" },
+        { "include": "#py-number" },
+        { "include": "#py-builtins" },
+        { "include": "#py-op-comparison" },
+        { "include": "#py-op-math" },
+        {
+          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+          "name": "variable.other.readwrite.python"
         }
       ]
     },
@@ -300,12 +509,12 @@
       "name": "meta.tag.component.start.nexy",
       "begin": "(<)([A-Z][A-Za-z0-9]*)",
       "beginCaptures": {
-        "1": { "name": "punctuation.definition.tag.begin.nexy" },
-        "2": { "name": "entity.name.tag.component.nexy support.class.component.nexy" }
+        "1": { "name": "punctuation.definition.tag.begin.html" },
+        "2": { "name": "support.class.component.html" }
       },
       "end": "(\\/?>)",
       "endCaptures": {
-        "1": { "name": "punctuation.definition.tag.end.nexy" }
+        "1": { "name": "punctuation.definition.tag.end.html" }
       },
       "patterns": [
         { "include": "#component-attributes" },
@@ -316,39 +525,45 @@
       "name": "meta.tag.attributes.nexy",
       "patterns": [
         {
-          "name": "entity.other.attribute-name.nexy",
+          "name": "entity.other.attribute-name.html",
           "match": "(?<=\\s)([@:\\w][\\w:.-]*)(?=\\s*=|\\s|\\/?>)"
         },
         {
-          "name": "keyword.operator.assignment.nexy",
+          "name": "keyword.operator.assignment.html",
           "match": "="
         },
         {
-          "name": "string.quoted.double.nexy",
+          "name": "string.quoted.double.html",
           "begin": "\"",
           "end": "\"",
           "patterns": [
-            { "include": "#jinja-expression" }
+            { "match": "\\\\.", "name": "constant.character.escape.html" },
+            { "include": "#jinja-expression" },
+            { "include": "#jinja-block" },
+            { "include": "#jinja-comment" }
           ]
         },
         {
-          "name": "string.quoted.single.nexy",
+          "name": "string.quoted.single.html",
           "begin": "'",
           "end": "'",
           "patterns": [
-            { "include": "#jinja-expression" }
+            { "match": "\\\\.", "name": "constant.character.escape.html" },
+            { "include": "#jinja-expression" },
+            { "include": "#jinja-block" },
+            { "include": "#jinja-comment" }
           ]
         },
         {
-          "name": "constant.language.boolean.nexy",
+          "name": "constant.language.boolean.html",
           "match": "\\b(true|false)\\b"
         },
         {
-          "name": "constant.numeric.nexy",
+          "name": "constant.numeric.html",
           "match": "\\b\\d+(?:\\.\\d+)?\\b"
         },
         {
-          "name": "variable.other.attribute.unquoted.nexy",
+          "name": "variable.other.attribute.unquoted.html",
           "match": "(?<=\\=)(?![\"'])([^\\s>]+)"
         }
       ]
@@ -357,9 +572,9 @@
       "name": "meta.tag.component.end.nexy",
       "match": "(</)([A-Z][A-Za-z0-9]*)(>)",
       "captures": {
-        "1": { "name": "punctuation.definition.tag.begin.nexy" },
-        "2": { "name": "entity.name.tag.component.nexy support.class.component.nexy" },
-        "3": { "name": "punctuation.definition.tag.end.nexy" }
+        "1": { "name": "punctuation.definition.tag.begin.html" },
+        "2": { "name": "support.class.component.html" },
+        "3": { "name": "punctuation.definition.tag.end.html" }
       }
     }
   }

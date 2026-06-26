@@ -1,0 +1,76 @@
+#त्रुटि प्रबंधन
+
+नेक्सी अंतर्निहित 404 और 500 त्रुटि पृष्ठ प्रदान करता है। उन्हें कस्टम `.nexy` फ़ाइलों के साथ ओवरराइड करें।
+
+## डिफ़ॉल्ट त्रुटि पृष्ठ
+
+जब कोई पेज नहीं मिलता (404) या कोई हैंडल न की गई त्रुटि (500) होती है, तो नेक्सी एक सरल स्टाइल वाला HTML पेज लौटाता है।
+
+## कस्टम त्रुटि पृष्ठ
+
+उस दायरे के लिए त्रुटि पृष्ठों को ओवरराइड करने के लिए किसी भी रूट निर्देशिका में `error.nexy` या `notfound.nexy` फ़ाइलें रखें:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # Custom 404 for /admin/*
+|   +-- error.nexy      # Custom 500 for /admin/*
++-- notfound.nexy       # Global custom 404
++-- error.nexy          # Global custom 500
+```
+
+### उदाहरण: `notfound.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-yellow-500">404</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Page not found</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Sorry, we couldn't find the page you're looking for.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+### उदाहरण: `error.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-red-500">500</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Something went wrong</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Please try again later.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+## स्कोप्ड त्रुटि पृष्ठ
+
+उपनिर्देशिकाओं में रखे गए त्रुटि पृष्ठ केवल उस निर्देशिका के मार्गों पर लागू होते हैं। इससे आपको अपनी साइट के विभिन्न अनुभागों के लिए अलग-अलग त्रुटि पृष्ठ मिलते हैं:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # /admin/* — "Admin page not found"
++-- blog/
+|   +-- notfound.nexy   # /blog/* — "Blog post not found"
++-- notfound.nexy       # All other routes
+```
+
+##संबंधित
+
+- [Authorization / Guards](/docs/security/authorization) - मार्गों को अनधिकृत पहुंच से बचाना
+- [Authentication](/docs/security/authentication) - ऑथ मिडलवेयर को कॉन्फ़िगर करना

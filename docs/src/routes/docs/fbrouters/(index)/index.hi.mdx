@@ -1,0 +1,56 @@
+# फ़ाइल-आधारित रूटिंग अवलोकन
+
+नेक्सी की फ़ाइल-आधारित रूटिंग (FBR) `src/routes/` के अंतर्गत आपके फ़ाइल ट्री से स्वचालित रूप से रूट बनाती है। प्रत्येक `.nexy`, `.mdx`, और `.py` फ़ाइल एक HTTP रूट बन जाती है - किसी रूट पंजीकरण की आवश्यकता नहीं है।
+
+यदि आपने Next.js पेज राउटर, PHP, या एक स्थिर HTML सर्वर के साथ काम किया है, तो यह अवधारणा परिचित है: फ़ाइल पथ URL पथ है।
+
+---
+
+## यह काम किस प्रकार करता है
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+प्रत्येक फ़ाइल `src/routes/` उपसर्ग और फ़ाइल एक्सटेंशन को हटाकर एक URL पथ पर मैप होती है। `index` नाम की फ़ाइलें निर्देशिका रूट के रूप में कार्य करती हैं - `/blog/index.nexy` `/blog` पर कार्य करती हैं।
+
+---
+
+## आरक्षित फ़ाइल नाम
+
+कुछ फ़ाइल नामों में विशेष व्यवहार होता है और उन्हें रूट के रूप में नहीं माना जाता है:
+
+| फ़ाइल | उद्देश्य |
+|------|---------|
+| `layout.nexy` | सहोदर और बाल मार्गों के लिए साझा लेआउट |
+| `dependencies.py` | साझा निर्भरता इंजेक्शन |
+| `__init__.py` | पायथन पैकेज मार्कर |
+
+---
+
+## मार्ग प्राथमिकता
+
+यदि आप विभिन्न प्रारूपों में एक ही पथ के लिए एकाधिक फ़ाइलें बनाते हैं, तो Nexy प्राथमिकता को इस प्रकार हल करता है: `.py` > `.nexy` > `.mdx`।
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## अगले चरण
+
+- [Pages & Layouts](/docs/fbrouters/pages) - पेज और साझा लेआउट बनाना
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) - पायथन के साथ REST API रूट
+- [Dynamic URLs](/docs/fbrouters/route_parameters) - पथ पैरामीटर जैसे `[slug]`

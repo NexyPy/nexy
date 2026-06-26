@@ -1,0 +1,275 @@
+# नियंत्रक
+
+नियंत्रक एक सामान्य उपसर्ग के अंतर्गत संबंधित HTTP समापन बिंदुओं को समूहित करते हैं। फ़ाइलों में मार्गों को बिखेरने के बजाय, एक नियंत्रक एक संसाधन के लिए प्रत्येक समापन बिंदु को एक वर्ग में रखता है।
+
+## नियंत्रक क्यों?
+
+FBR में, आप `users/index.nexy`, `users/[id].nexy`, `users/create.nexy` बनाते हैं। प्रत्येक फ़ाइल एक URL संभालती है। यह तब तक काम करता है जब तक एक पृष्ठ को दूसरे से डेटा की आवश्यकता नहीं होती है, या आप 10 उपयोगकर्ता मार्गों पर प्रमाणीकरण तर्क साझा नहीं करते हैं।
+
+एक नियंत्रक सभी `/users/*` मार्गों को एक वर्ग में रखता है। साझा निर्भरताएँ कंस्ट्रक्टर में जाती हैं। प्रत्येक विधि में मार्ग-विशिष्ट तर्क चलता है।
+
+## एक नियंत्रक बनाना
+
+कक्षा को `"@Controller(prefix)` से सजाएँ:
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+
+    def post(self, data: dict):
+        return {"id": 3, **data}
+```
+
+**विधि नाम HTTP विधि को परिभाषित करते हैं।** Nexy विधि नाम को अपरकेस करता है और इसे मानक HTTP विधियों से मेल खाता है। `GET` → ​​प्राप्त करें, `post` → पोस्ट करें, `Put` → डालें।
+
+इस नियंत्रक में सभी मार्ग `/users/` पर हैं:
+- `GET /users/` → `GET()`
+- `POST /users/` → `post(data)`
+
+**समझ गया**: आपके पास प्रति नियंत्रक प्रति HTTP विधि केवल एक विधि हो सकती है। `def GET(self): ... def get(self): ...` स्टार्टअप पर `ValueError` बढ़ाएगा।
+
+## रूट मेथड मैपिंग
+
+| विधि का नाम | HTTP विधि | उदाहरण |
+|---|---|---|
+| `GET`, `get`, `Get` | प्राप्त करें | संसाधन पढ़ें |
+| `post`, `POST`, `Post` | पोस्ट | संसाधन बनाएं |
+| `put`, `PUT`, `Put` | डालो | संसाधन बदलें |
+| `delete`, `DELETE`, `Delete` | हटाएं | संसाधन हटाएँ |
+| `patch`, `PATCH`, `Patch` | पैच | आंशिक अद्यतन |
+| `options`, `OPTIONS`, `Options` | विकल्प | सीओआरएस प्रीफ्लाइट |
+| `head`, `HEAD`, `Head` | सिर | केवल प्रतिक्रिया शीर्षलेख |
+| `SOCKET`, `socket`, `Socket` | वेबसॉकेट | वास्तविक समय संचार |
+
+**सम्मेलन**: रीड ऑपरेशन के लिए अपरकेस (`GET`), म्यूटेशन के लिए लोअरकेस (`post`, `put`, `delete`) का उपयोग करें। इससे नियंत्रक को स्कैन करना आसान हो जाता है - आप HTTP क्रियाओं को एक नज़र में देखते हैं।
+
+## पथ पैरामीटर
+
+पथ पैरामीटर **नियंत्रक उपसर्ग** में जाते हैं, व्यक्तिगत तरीकों में नहीं:
+
+```python
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {"id": id, "name": "Charlie"}
+
+    def delete(self, id: int):
+        return {"deleted": id}
+```
+
+पथ पैरामीटर **टाइप-कोर्स्ड** हैं - राउटर टाइप संकेत पढ़ता है और यूआरएल से स्ट्रिंग को परिवर्तित करता है। समर्थित प्रकार: `int`, `float`, `str`, `uuid.UUID`, `datetime.datetime`।
+
+**समझ गया**: यदि जबरदस्ती विफल हो जाती है (उदाहरण के लिए, `GET /users/abc` जहां `id: int`), तो राउटर 422 सत्यापन त्रुटि देता है, 404 नहीं। यह क्लाइंट को बताता है कि पैरामीटर प्रारूप गलत है, न कि संसाधन मौजूद नहीं है।
+
+### एकाधिक पथ पैरामीटर
+
+```python
+"@Controller("/users/{userId}/posts/{postId}")
+class UserPostController:
+    def GET(self, userId: int, postId: int):
+        return {"user": userId, "post": postId}
+```
+
+## क्वेरी पैरामीटर्स
+
+क्वेरी स्ट्रिंग पैरामीटर डिफ़ॉल्ट के साथ फ़ंक्शन कीवर्ड तर्क के रूप में उपलब्ध हैं:
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self, q: str | None = None, page: int = 1):
+        return {"query": q, "page": page}
+```
+
+फास्टएपीआई की निर्भरता इंजेक्शन प्रणाली स्वचालित रूप से क्वेरी पैरामीटर पार्सिंग को संभालती है। जो पैरामीटर पथ पैरामीटर नहीं हैं, उन्हें क्वेरी पैरामीटर के रूप में समझा जाता है।
+
+आप `request.query_params` के माध्यम से क्वेरी पैरामीटर्स तक भी पहुंच सकते हैं:
+
+```python
+from fastapi import Request
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, request: Request):
+        q = request.query_params.get("q")
+        page = int(request.query_params.get("page", 1))
+        return {"query": q, "page": page}
+```
+
+**समझ गया**: `useQuery` पथ पैरामीटर लौटाता है, क्वेरी पैरामीटर नहीं। क्वेरी पैरामीटर के लिए, उन्हें फ़ंक्शन कीवर्ड तर्क के रूप में घोषित करें या `request.query_params` का उपयोग करें।
+
+## अनुरोध निकाय
+
+POST, PUT और PATCH विधियाँ स्वचालित रूप से अनुरोध निकाय को पार्स करती हैं। एक प्रकार का संकेत घोषित करें:
+
+```python
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"id": 4, **body.model_dump()}
+```
+
+डिफ़ॉल्ट रूप से बॉडी को JSON के रूप में पार्स किया जाता है। पाइडेंटिक मॉडल स्वचालित सत्यापन प्रदान करते हैं - अमान्य फ़ील्ड फ़ील्ड-स्तरीय त्रुटियों के साथ 422 लौटाते हैं।
+
+**समझ गया**: यदि आप प्रकार संकेत के रूप में `dict` का उपयोग करते हैं, तो आप सत्यापन खो देते हैं। उपयोगकर्ता-सामना वाले समापन बिंदुओं के लिए हमेशा पाइडेंटिक को प्राथमिकता दें।
+
+## ओवरराइडिंग स्थिति कोड
+
+डिफ़ॉल्ट स्थिति कोड को ओवरराइड करने के लिए `"@UseResponse(status_code=...)` का उपयोग करें:
+
+```python
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201)
+    def post(self, data: dict):
+        return {"id": 5}
+```
+
+डिफ़ॉल्ट स्थिति कोड: `GET` → 200, `POST` → 201, `DELETE` → 204, अन्य → 200।
+
+`"@UseResponse` प्रतिक्रिया मॉडल, प्रतिक्रिया वर्ग, प्रतिक्रिया विवरण और अन्य फास्टएपीआई-संगत विकल्पों का भी समर्थन करता है:
+
+```python
+from nexy.decorators import UseResponse
+from fastapi.responses import HTMLResponse
+
+"@UseResponse(
+    status_code=200,
+    response_class=HTMLResponse,
+    response_model=None,
+    response_description="User profile page",
+)
+def GET(self):
+    ...
+```
+
+## रूट मेटाडेटा
+
+`"@UseRoute` के साथ OpenAPI मेटाडेटा जोड़ें:
+
+```python
+from nexy.decorators import Controller, UseRoute
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(summary="List all users", description="Returns paginated user list")
+    def GET(self):
+        return [...]
+
+    "@UseRoute(summary="Create a user", deprecated=True)
+    def post(self, data: dict):
+        return [...]
+```
+
+`"@UseRoute` समर्थन करता है: `name`, `tags`, `summary`, `description`, `deprecated`, `include_in_schema`, `operation_id`, `openapi_extra`।
+
+## एसिंक हैंडलर
+
+नियंत्रक सिंक और एसिंक हैंडलर दोनों का समर्थन करते हैं:
+
+```python
+"@Controller("/users")
+class UsersController:
+    async def GET(self):
+        users = await db.fetch_all()
+        return users
+
+    def post(self, data: dict):
+        # Sync is fine for CPU-bound work
+        return process_sync(data)
+```
+
+नेक्सी स्वचालित रूप से एसिंक हैंडलर की प्रतीक्षा करती है। सिंक हैंडलर थ्रेडपूल में चलते हैं। I/O-बाउंड एंडपॉइंट (डेटाबेस, HTTP कॉल) के लिए async को प्राथमिकता दें।
+
+## त्रुटि प्रबंधन
+
+त्रुटि प्रतिक्रियाओं के लिए HTTP अपवाद बढ़ाएँ:
+
+```python
+from starlette.exceptions import HTTPException
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        if id < 1:
+            raise HTTPException(400, "ID must be positive")
+        user = find_user(id)
+        if not user:
+            raise HTTPException(404, "User not found")
+        return user
+```
+
+मानक HTTP स्थिति कोड का उपयोग करें. नेक्सी स्टारलेट से अपवादों को पुनः निर्यात करता है।
+
+## एक नियंत्रक, एक पथ
+
+एक मूलभूत बाधा: **नियंत्रक में सभी विधियाँ समान पथ साझा करती हैं**। पथ नियंत्रक उपसर्ग द्वारा निर्धारित किया जाता है. आप प्रति विधि उप-पथ परिभाषित नहीं कर सकते।
+
+यदि आपको `/users` और `/users/{id}` की आवश्यकता है, तो दो नियंत्रक बनाएं:
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [...]          # GET /users/
+
+    def post(self, data: dict):
+        return {...}          # POST /users/
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {...}          # GET /users/42
+
+    def delete(self, id: int):
+        return None           # DELETE /users/42
+```
+
+दोनों नियंत्रक एक ही मॉड्यूल में हो सकते हैं। यह पृथक्करण जानबूझकर किया गया है - प्रत्येक नियंत्रक एक संसाधन पथ को संभालता है।
+
+## मॉड्यूल एकीकरण
+
+नियंत्रक `controllers` वर्ग विशेषता के माध्यम से एक मॉड्यूल में पंजीकृत होते हैं:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+```
+
+मॉड्यूल एक उपसर्ग सेट कर सकता है जो उसके सभी नियंत्रकों पर लागू होता है:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+    # → GET /api/v1/users/, DELETE /api/v1/users/42
+```
+
+## सर्वोत्तम प्रथाएँ
+
+1. **प्रति नियंत्रक एक संसाधन** - `UsersController`, `PostsController`। एक भी `ApiController` नहीं।
+2. **तरीकों को केंद्रित रखें** - प्रत्येक विधि एक काम करती है।
+3. **निर्भरता इंजेक्शन का उपयोग करें** - विधि निकाय में सेवाओं को तुरंत चालू न करें।
+4. **अनुरोध निकायों के लिए पाइडेंटिक को प्राथमिकता दें** - `body: dict` एक कोड गंध है।
+5. **उपसर्ग नियंत्रक सार्थक रूप से** - `/users`, `/posts`, `/auth`।
+
+## अगले चरण
+
+- [Providers & DI](/docs/modular/providers) - अपने नियंत्रकों में सेवाएँ इंजेक्ट करें
+- [Modules](/docs/modular/modules) - नियंत्रकों को फीचर मॉड्यूल में व्यवस्थित करें
+- [Guards](/docs/modular/guards) - प्राधिकरण के साथ मार्गों की सुरक्षा करें

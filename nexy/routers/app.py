@@ -11,25 +11,28 @@ from fastapi.staticfiles import StaticFiles
 from scalar_fastapi import get_scalar_api_reference
 from starlette.exceptions import HTTPException
 
-from nexy.__version__ import __Version__
-
-# from nexy.utils.dev.pycache import pycache
+from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.decorators import Container
 from nexy.errors import InternalServerError, NotFound
+from nexy.i18n import L as LocaleManager
+from nexy.i18n.middleware import LocaleMiddleware
 from nexy.routers.actions.engine import ACTION_ENGINE
 from nexy.routers.context import current_request
 from nexy.routers.fbrouter import FBRouter
 from nexy.runtime.hmr import HMR_MANAGER
 from nexy.runtime.importer import install_vfs_importer
 from nexy.utils.common.console import console
+from nexy.utils.dev.pycache import pycache
 
 
 class AppServer:
+    _docs_disabled_printed = False
+
     def __init__(self):
         install_vfs_importer()
         self.config = Config()
-        self.version = __Version__().get()
+        self.version = __version__
         self.server: FastAPI | None = None
         self.fb_router: FBRouter | None = None
 
@@ -51,7 +54,9 @@ class AppServer:
         """KISS: Logic extracted to a single specialized method."""
         conf = self.config
         if not conf.useDocs:
-            console.print("[yellow]API documentation is disabled[/yellow]")
+            if not AppServer._docs_disabled_printed:
+                console.print("[yellow]API documentation is disabled[/yellow]")
+                AppServer._docs_disabled_printed = True
             return None, None
 
         d_url = conf.useDocsUrl
@@ -80,7 +85,7 @@ class AppServer:
                         favicon_data = f.read()
                 else:
                     with open("public/favicon.ico", "rb") as f:
-                        favicon_data = f.read() 
+                        favicon_data = f.read()
                 return Response(content=favicon_data, media_type="image/x-icon")
             except FileNotFoundError:
                 return Response(content=svg.encode("utf-8"), media_type="image/x-icon")
@@ -113,7 +118,7 @@ class AppServer:
             current_request.reset(token)
             Container.clear_request_scope()
 
-    def _register_error_handlers(self, request: Request, exc: HTTPException) -> Response:
+    def _register_error_handlers(self, _request: Request, exc: HTTPException) -> Response:
         """Registers custom error handlers for 404 and 500 errors."""
         if exc.status_code == status.HTTP_404_NOT_FOUND:
             # Handle 404 error
@@ -183,10 +188,18 @@ class AppServer:
 
     def run(self) -> FastAPI:
         """Main entry point to assemble the application."""
-        # pycache()
+        pycache()
 
         self.server = FastAPI(title="Nexy", version=self.version, docs_url=None, redoc_url=None)
 
+        LocaleManager.configure(
+            available=self.config.useLocales or ["en"],
+            default=self.config.useDefaultLocale or "en",
+            project_locales_dir=str(Path(os.getcwd()) / (self.config.useLocalesDir or "locales")),
+        )
+        loc_count = len(self.config.useLocales or ["en"])
+        console.print(f"[dim][nexy][/dim] Translations preloaded for [bold]{loc_count}[/bold] locales")
+        self.server.add_middleware(LocaleMiddleware)
         self.server.middleware("http")(self.PathMiddleware)
         self._setup_favicon()
         self._setup_static_files()

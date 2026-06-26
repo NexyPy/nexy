@@ -1,0 +1,73 @@
+# Depuração
+
+Os aplicativos Nexy são Python padrão – use suas ferramentas de depuração habituais.
+
+## `breakpoint()`
+
+Insira `breakpoint()` em qualquer lugar do seu manipulador de rotas:
+
+```python
+def GET():
+    x = 42
+    breakpoint()  # drops into pdb
+    return {"x": x}
+```
+
+Execute `nx dev` e siga a rota — o terminal cai em `pdb`.
+
+## Código VS
+
+1. Defina pontos de interrupção no VS Code clicando na medianiz
+2. Crie um `.vscode/launch.json`:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Nexy Dev",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nexy.cli",
+            "args": ["dev"],
+            "jinja": true
+        }
+    ]
+}
+```
+
+3. Pressione `F5` para iniciar a depuração — os pontos de interrupção funcionam em arquivos `.nexy` frontmatter e `.py`.
+
+## Depuração de impressão
+
+```python
+---
+print(f"Request params: {params}")  # appears in the terminal
+---
+```
+
+## Registro do console
+
+Nexy registra todas as solicitações no terminal por padrão. Adicione seus próprios registros:
+
+```python
+import logging
+logger = logging.getLogger("nexy")
+
+def GET():
+    logger.info("Home page loaded")
+    return {"ok": True}
+```
+
+## recarga de uvicórnio
+
+`nx dev` executa o uvicorn com `--reload` — alterações nos arquivos `.py`, `.nexy`, `.mdx` acionam uma reinicialização automática.
+
+## Problemas comuns
+
+| Sintoma | Causa provável |
+|--------|-------------|
+| Rota retorna 405 | Método HTTP incorreto ou `python-multipart` ausente |
+| O corpo é `None` | Modelo Pydantic ausente ou anotação de tipo |
+| 422 Erro de validação | Incompatibilidade de tipo nos parâmetros de caminho/consulta |
+| Módulo não encontrado | Cache VFS obsoleto - reinicie `nx dev` |

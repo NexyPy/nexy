@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# URL dinámicas (parámetros de ruta)
+
+Los parámetros dinámicos capturan segmentos de URL variables. Nexy usa la sintaxis de corchetes `[param]`.
+
+---
+
+## Sintaxis
+```bash
+routes/
+├── blog/
+│   ├── index.nexy          →  /blog
+│   └── [slug].nexy         →  /blog/{slug}
+└── users/
+    └── [userId].py         →  /users/{userId}
+```
+---
+
+## En una página `.nexy`
+
+El parámetro está disponible a través de las propiedades del frontmatter:
+```
+---
+slug: prop[str]
+---
+<h1>Article: {{ slug }}</h1>
+```
+---
+
+## En un controlador `.py`
+```python
+# routes/users/[userId].py
+from fastapi import Request
+
+async def get(request: Request, userId: int):
+    return {"user_id": userId}
+```
+Los tipos se convierten automáticamente (`int`, `str`, `UUID`, etc.).
+
+---
+
+## Múltiples parámetros
+```bash
+routes/
+└── blog/
+    └── [year]/[month]/[slug].nexy
+```
+```nexy
+---
+year: prop[int]
+month: prop[int]
+slug: prop[str]
+---
+<article>
+    <time>{{ year }}-{{ month }}</time>
+    <h1>{{ slug | replace("-", " ") }}</h1>
+</article>
+```
+---
+
+## Parámetros generales
+```bash
+routes/
+└── docs/
+    └── [...path].nexy      →  /docs/{path+}
+```
+```nexy
+---
+path: prop[list[str]]
+---
+<pre>{{ path | join("/") }}</pre>
+```
+La variable `path` recibe **todos** los segmentos de URL restantes como una lista.
+<Link href="/docs/fbrouters/query_parameters">Next: Query Parameters →</Link>

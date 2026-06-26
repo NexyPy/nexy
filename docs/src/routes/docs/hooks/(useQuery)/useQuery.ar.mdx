@@ -1,0 +1,49 @@
+# استعلام الاستخدام
+
+إرجاع معلمات المسار الديناميكي (معلمات المسار) من عنوان URL الحالي.
+
+```python
+from nexy import useQuery
+
+query = useQuery()
+```
+
+---
+
+## القيمة المرتجعة
+
+`dict` — معلمات المسار المستخرجة من عنوان URL (على سبيل المثال `{"slug": "hello-world"}` لمسار `[slug]`).
+
+---
+
+## مثال
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<h1>Article: {{ params.slug }}</h1>
+```
+
+---
+
+## مع معلمات متعددة
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<article>
+    <h1>{{ params.title }}</h1>
+    <p>Year: {{ params.year }}, Month: {{ params.month }}</p>
+</article>
+```
+
+---
+
+## ملاحظات الاستخدام
+
+- القيم هي سلاسل افتراضيًا - ينطبق تحويل نوع FastAPI في معالجات `.py`
+- يعادل `request.path_params` في FastAPI

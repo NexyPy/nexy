@@ -1,0 +1,43 @@
+# useSearchParams
+
+Gibt die aktuellen URL-Abfrageparameter als Wörterbuch zurück.
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## Rückgabewert
+
+`dict` – Abfrageparameter aus der Anforderungs-URL (z. B. `{"q": "nexy", "page": "2"}`).
+
+---
+
+## Beispiel
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## Methoden
+
+Das zurückgegebene Diktat unterstützt Standard-Wörterbuchoperationen: `.get(key, default)`, `.keys()`, `.items()`.
+
+---
+
+## Nutzungshinweise
+
+- Alle Werte sind Zeichenfolgen – konvertieren mit `int()`, `bool()` usw.
+– Verwenden Sie für API-Handler stattdessen die native Parameterinjektion von FastAPI

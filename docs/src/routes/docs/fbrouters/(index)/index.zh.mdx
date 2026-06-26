@@ -1,0 +1,56 @@
+# 基于文件的路由概述
+
+Nexy 的基于文件的路由 (FBR) 自动从 `src/routes/` 下的文件树创建路由。每个 `.nexy`、`.mdx` 和 `.py` 文件都会成为 HTTP 路由 — 无需注册路由。
+
+如果您使用过 Next.js Pages Router、PHP 或静态 HTML 服务器，那么这个概念很熟悉：文件路径就是 URL 路径。
+
+---
+
+## 它是如何工作的
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+每个文件通过删除 `src/routes/` 前缀和文件扩展名来映射到 URL 路径。名为 `index` 的文件用作目录根 — `/blog/index.nexy` 位于 `/blog`。
+
+---
+
+## 保留文件名
+
+某些文件名具有特殊行为，不被视为路由：
+
+|文件 |目的|
+|------|---------|
+| `layout.nexy` |兄弟路线和子路线的共享布局|
+| `dependencies.py` |共享依赖注入 |
+| `__init__.py` | Python 包标记 |
+
+---
+
+## 路由优先级
+
+如果您以不同的格式为同一路径创建多个文件，Nexy 会将优先级解析为：`.py` > `.nexy` > `.mdx`。
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## 后续步骤
+
+- [Pages & Layouts](/docs/fbrouters/pages) — 创建页面和共享布局
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) — 使用 Python 的 REST API 路由
+- [Dynamic URLs](/docs/fbrouters/route_parameters) — 路径参数，如 `[slug]`

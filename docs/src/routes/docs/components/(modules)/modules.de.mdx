@@ -1,0 +1,100 @@
+# Modulsystem
+
+Mit dem Modulsystem von Nexy können Sie Komponenten in Ihrem Projekt importieren und exportieren.
+
+---
+
+## Importieren einer Komponente
+
+Verwenden Sie im Frontmatter die `import`-Syntax:
+
+```python
+---
+from "@components/card.nexy" import Card
+from "@components/button.nexy" import Button
+---
+```
+
+Der Alias ​​`"@` wird in `src/` aufgelöst (konfigurierbar in `nexyconfig.py`).
+
+---
+
+## Benannte Exporte
+
+Standardmäßig exportiert eine `.nexy`-Datei ihre Vorlage als Komponente, die nach der Datei benannt ist:
+
+| Datei | Exportname |
+|---|---|
+| `card.nexy` | `Card` |
+| `button.nexy` | `Button` |
+| `table_of_contents.nexy` | `Table_of_contents` |
+
+---
+
+## Slot (Kinder)
+
+Die `Slot`-Komponente rendert untergeordnete Inhalte, die zwischen öffnenden/schließenden Tags übergeben werden:
+
+```nexy
+<div class="card">
+    <h2>{{ title }}</h2>
+    <Slot />
+</div>
+```
+
+Verwendung:
+
+```html
+<Card title="Hello">
+    <p>This goes into the Slot.</p>
+</Card>
+```
+
+---
+
+## Aliase importieren
+
+Verwenden Sie `as`, um Namenskonflikte zu vermeiden:
+
+```python
+---
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+---
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+---
+
+## Wiederexportieren
+
+Erstellen Sie eine Indexdatei, die Komponenten aggregiert:
+
+```python
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+Andere Dateien werden aus diesem Fass importiert:
+
+```python
+---
+from "@components/index.nexy" import Card, Button
+---
+```
+
+-----
+
+## Dynamische Importe
+
+Für clientseitige Frameworks (React, Solid) generiert Nexy den Importbaum automatisch während des Builds. Sie müssen Einstiegspunkte nicht manuell verwalten – der Compiler erkennt die Nutzung von `.tsx`/`.jsx` und verbindet Vite oder esbuild entsprechend.
+

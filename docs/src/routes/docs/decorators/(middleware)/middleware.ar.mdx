@@ -1,0 +1,75 @@
+# "@البرامج الوسيطة
+
+قم بتطبيق استدعاءات البرامج الوسيطة على فئة وحدة التحكم أو طريقة المعالج.
+
+## عقد الوسيطة
+
+يمكن استدعاء البرنامج الوسيط باستخدام `__call__(self, request)`. يتلقى كائن FastAPI `Request` ويعمل قبل المعالج.
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## البرامج الوسيطة على الطريق
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## برمجيات وسيطة متعددة
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+## إمضاء
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## الحراس مقابل البرمجيات الوسيطة
+
+| | حراس | الوسيطة |
+|---|--------|-----------|-------|
+| الغرض | إذن | الآثار الجانبية (التسجيل، التوقيت) |
+| طلب الكتل | نعم (يثير HTTPException) | كلا ( إلا أن ترفع ) |
+| يعمل كـ | FastAPI `Depends` | FastAPI `Depends` |
+| اطلب | حراس الطبقة → حراس الطريقة | فئة الوسيطة → طريقة الوسيطة |
+
+يعمل كلاهما كتبعيات FastAPI `Depends`. الترتيب: حراس الفئة → البرامج الوسيطة للفئة → حراس الطريقة → البرامج الوسيطة للطريقة.

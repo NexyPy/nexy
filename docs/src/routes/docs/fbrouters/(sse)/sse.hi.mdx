@@ -1,0 +1,54 @@
+# सर्वर-भेजे गए इवेंट (FBR)
+
+HTTP पर सर्वर से क्लाइंट तक वास्तविक समय की घटनाओं को स्ट्रीम करें।
+
+## स्थापित करना
+
+```bash
+pip install sse-starlette
+```
+
+## समापन बिंदु
+
+```python
+# src/routes/events.py
+import asyncio
+from sse_starlette.sse import EventSourceResponse
+
+async def event_generator():
+    for i in range(10):
+        await asyncio.sleep(1)
+        yield {"event": "ping", "data": str(i)}
+
+async def GET():
+    return EventSourceResponse(event_generator())
+```
+
+## गतिशील घटना धारा
+
+```python
+import asyncio
+from sse_starlette.sse import EventSourceResponse
+
+async def GET(count: int = 5, interval: float = 0.5):
+    async def gen():
+        for i in range(count):
+            await asyncio.sleep(interval)
+            yield {"event": "tick", "data": str(i)}
+    return EventSourceResponse(gen())
+```
+
+## ग्राहक
+
+```javascript
+const evtSource = new EventSource("/events");
+evtSource.addEventListener("ping", (e) => {
+    console.log(e.data);
+});
+```
+
+## सीमाएँ
+
+- SSE **यूनिडायरेक्शनल** है (सर्वर → क्लाइंट) - द्विदिशात्मक के लिए WebSocket का उपयोग करें
+- `sse-starlette` डिफ़ॉल्ट रूप से शामिल नहीं है - `pip install sse-starlette`
+- प्रत्येक कनेक्शन में एक खुला HTTP कनेक्शन होता है - अपने सर्वर की सीमाओं की निगरानी करें

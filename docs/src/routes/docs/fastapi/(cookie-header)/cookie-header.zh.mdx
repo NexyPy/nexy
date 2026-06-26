@@ -1,0 +1,97 @@
+# Cookie 和标头
+
+使用 FastAPI 的 `Cookie` 和 `Header` 参数读取 HTTP cookie 和标头。
+
+---
+
+## Cookie 参数
+```python
+---
+from fastapi import Cookie
+
+def GET(session_id: str | None = Cookie(None)):
+    return {"session_id": session_id}
+---
+```
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/profile")
+class ProfileController:
+    def GET(self, session_id: str | None = Cookie(None)):
+        return {"session_id": session_id}
+```
+## 多个cookie
+```python
+---
+from fastapi import Cookie
+
+def GET(
+    session_id: str | None = Cookie(None),
+    theme: str = Cookie("light"),
+):
+    return {"session": session_id, "theme": theme}
+---
+```
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/settings")
+class SettingsController:
+    def GET(self, session_id: str | None = Cookie(None), theme: str = Cookie("light")):
+        return {"session": session_id, "theme": theme}
+```
+## 标头参数
+```python
+---
+from fastapi import Header
+
+def GET(user_agent: str | None = Header(None)):
+    return {"ua": user_agent}
+---
+```
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/info")
+class InfoController:
+    def GET(self, user_agent: str | None = Header(None)):
+        return {"ua": user_agent}
+```
+## 自定义标头别名
+
+默认情况下，标头名称为小写字母，连字符为下划线。使用 `alias` 作为自定义标头名称：
+```python
+---
+from fastapi import Header
+
+def GET(x_token: str = Header(alias="X-Token")):
+    return {"token": x_token}
+---
+```
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/secure")
+class SecureController:
+    def GET(self, x_token: str = Header(alias="X-Token")):
+        return {"token": x_token}
+```
+## 读取模板中的cookie
+
+在 `.nexy` 模板中，使用 `useCookies()` 钩子：
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+## 另请参阅
+
+- [useCookies hook](/docs/hooks/useCookies) — 用于读取模板中的 cookie
+- [Session config](/docs/config/session) — 会话中间件设置

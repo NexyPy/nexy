@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from nexy.core.models import ParserModel
 from nexy.errors import NexyCompileError
@@ -31,7 +30,7 @@ class Generator:
             return True
         except Exception as e:
             console.print(f"[red]nsc[/red] » Error writing to file '{output}': {e}")
-            raise NexyCompileError(source_path=output, message=str(e))
+            raise NexyCompileError(source_path=output, message=str(e)) from e
 
     def _generate_init(self, directory: str) -> None:
         parts = directory.replace("\\", "/").split("/")

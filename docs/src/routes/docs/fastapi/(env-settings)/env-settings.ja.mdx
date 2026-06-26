@@ -1,0 +1,72 @@
+# 環境と設定
+
+環境変数と `.env` ファイルを使用して構成を管理します。
+
+## `.env` ファイル
+
+Nexy は、起動時に `.env` ファイルを自動的に読み取ります (`python-dotenv` 経由)。
+
+```env
+# .env
+DATABASE_URL=postgresql://localhost/mydb
+SECRET_KEY=change-me-in-production
+DEBUG=true
+```
+
+`os.environ` 経由でアクセスします。
+
+```python
+import os
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+```
+
+## ピダンティックな設定
+
+検証を伴う型指定された設定の場合:
+
+```bash
+pip install pydantic-settings
+```
+
+```python
+# src/settings.py
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str = "sqlite:///dev.db"
+    secret_key: str = "dev-key"
+    debug: bool = True
+
+    model_config = {"env_file": ".env"}
+
+settings = Settings()
+```
+
+次に、どこでも使用します。
+
+```python
+from src.settings import settings
+
+def GET():
+    return {"db": settings.database_url}
+```
+
+## NexyConfig の環境変数
+
+`os.getenv` を使用して環境変数を [Nexy config](/docs/config/nexy) に渡します。
+
+```python
+import os
+
+class NexyConfig(NexyConfigModel):
+    usePort = int(os.getenv("PORT", "3000"))
+    useTitle = os.getenv("SITE_TITLE", "My App")
+```
+
+## 本番環境のベスト プラクティス
+
+- `.env` を git にコミットしないでください — `.gitignore` に追加します
+- クラウド プロバイダーのシークレット マネージャーまたは CI/CD シークレットを運用環境に使用します。
+- 衝突を避けるために、環境変数に接頭辞を付けます (例: `NEXY_`、`APP_`)。
+- 検証と型強制には `pydantic-settings` を使用します

@@ -1,0 +1,55 @@
+---
+from nexy import usePathname, useSearchParams
+from "@components/link.nexy" import Link
+pathname = usePathname()
+params = useSearchParams()
+---
+
+# Parâmetros de consulta
+
+Os parâmetros de consulta são os pares `?key=value` em uma URL. Nexy os expõe via `useSearchParams()` no frontmatter ou `request.query_params` em um manipulador.
+
+---
+
+## Em uma página `.nexy`
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Results for: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+O objeto `params` se comporta como um dicionário: `.get(key, default)`, `.keys()`, `.items()`.
+
+---
+
+## Em um manipulador `.py`
+```python
+# routes/search.py
+from fastapi import Request
+
+async def get(request: Request, q: str = "", page: int = 1):
+    results = search_database(q, page=page)
+    return {"results": results, "page": page}
+```
+FastAPI resolve parâmetros de consulta digitados automaticamente.
+
+---
+
+## Parâmetros da página atual
+
+Esta página usa `useSearchParams()` em seu frontmatter. Os parâmetros de consulta atuais são:
+```json
+{{ params | safe }}
+```
+---
+
+## Melhores práticas
+
+- Use `useSearchParams()` em componentes `.nexy` para páginas renderizadas pelo servidor
+- Use `request.query_params` em manipuladores `.py` para APIs
+- Os valores são sempre strings — converta com `int()`, `bool()`, etc.
+<Link href="/docs/components">Next: Views →</Link>

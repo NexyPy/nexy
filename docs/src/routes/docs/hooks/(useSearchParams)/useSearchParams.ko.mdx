@@ -1,0 +1,43 @@
+# useSearchParams
+
+현재 URL 쿼리 매개변수를 사전으로 반환합니다.
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## 반환 값
+
+`dict` — 요청 URL의 쿼리 매개변수(예: `{"q": "nexy", "page": "2"}`)
+
+---
+
+## 예
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## 방법
+
+반환된 dict는 표준 사전 작업(`.get(key, default)`, `.keys()`, `.items()`)을 지원합니다.
+
+---
+
+## 사용 참고사항
+
+- 모든 값은 문자열입니다. `int()`, `bool()` 등으로 변환합니다.
+- API 핸들러의 경우 FastAPI의 기본 매개변수 주입을 대신 사용하세요.

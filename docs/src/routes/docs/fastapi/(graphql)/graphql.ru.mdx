@@ -1,0 +1,66 @@
+# ГрафQL
+
+Nexy поддерживает GraphQL через библиотеку `strawberry`.
+
+## Установить
+
+```bash
+pip install strawberry-graphql
+```
+
+## Схема
+
+```python
+# src/graphql.py
+import strawberry
+
+"@strawberry.type
+class User:
+    id: int
+    name: str
+
+"@strawberry.type
+class Query:
+    "@strawberry.field
+    def user(self, id: int) -> User:
+        return User(id=id, name="Alice")
+
+schema = strawberry.Schema(query=Query)
+```
+
+## Маунт в Некси
+
+```python
+# In any startup file or nexyconfig.py
+from nexy import app
+from strawberry.fastapi import GraphQLRouter
+from src.graphql import schema
+
+graphql_app = GraphQLRouter(schema)
+app.include_router(graphql_app, prefix="/graphql")
+```
+
+## Запрос от клиента
+
+```graphql
+query {
+    user(id: 1) {
+        id
+        name
+    }
+}
+```
+
+## С авторизацией
+
+```python
+from nexy import app
+from strawberry.fastapi import GraphQLRouter
+
+async def get_context(request):
+    return {"user": request.user}
+
+graphql_app = GraphQLRouter(schema, context_getter=get_context)
+```
+
+Полную документацию смотрите в [strawberry.rocks](https://strawberry.rocks).

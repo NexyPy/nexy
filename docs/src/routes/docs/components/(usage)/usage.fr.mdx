@@ -1,0 +1,191 @@
+
+# Utiliser des composants
+
+Les composants sont des fichiers `.nexy` dans `src/components/` que vous importez dans des pages et d'autres composants.
+
+## Création d'un composant
+
+Un composant est n'importe quel fichier `.nexy`. Le composant le plus simple possible n'a pas de contenu, juste du HTML :
+
+```nexy
+<!-- src/components/Hello.nexy -->
+---
+---
+<h1>Hello Nexy!</h1>
+```
+
+Mais la plupart des composants ont des accessoires, une logique et un modèle.
+
+## Importation de composants
+
+Utilisez la syntaxe d'importation de composants de Nexy, qui prend en charge les chemins relatifs et les alias configurés :
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+from "@components/Button.nexy" import Button
+---
+```
+
+Le chemin d'importation est relatif au fichier actuel. `"@/` correspond à `src/` par défaut (ou à ce que vous configurez dans `useAliases`).
+
+**Pourquoi cette syntaxe spéciale ?** Parce que le compilateur doit savoir au moment de la construction quelles balises PascalCase sont des composants par rapport aux éléments HTML inconnus. Le désinfectant transforme ces importations avant que l'analyseur AST de Python ne les voie, afin qu'elles ne provoquent jamais d'erreurs de syntaxe.
+
+## Composants de rendu
+
+Dans le modèle, utilisez le nom importé comme balise HTML :
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<Card title="Hello" count={5} />
+```
+
+Le compilateur convertit les balises PascalCase en appels de fonction Jinja2 :
+
+| Modèle | Sortie compilée |
+|--------------|----------------|
+| `&lt;Card /&gt;` | `{{Card() }}` |
+| `&lt;Card title="Hi" /&gt;` | `{{ Card(title="Hi") }}` |
+| `&lt;Card count={5} /&gt;` | `{{ Card(count=5) }}` |
+| `&lt;Card&gt;content&lt;/Card&gt;` | `{% call Card() %}content{% endcall %}` |
+
+**Exigence de dénomination** : les noms de composants **doivent** commencer par une lettre majuscule. Si vous utilisez des minuscules, le compilateur le traite comme un élément HTML normal et n'appelle pas la fonction du composant. Ceci est cohérent avec la convention de la plateforme Web (les éléments personnalisés doivent avoir un trait d'union ; PascalCase est réservé aux composants du framework).
+
+## Passer des accessoires
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<!-- Static string -->
+<Card title="Hello" />
+
+<!-- Dynamic Jinja2 expression -->
+<Card title="{{ page_title }}" />
+
+<!-- Unquoted value (expression, not string) -->
+<Card count={5} active={true} items={["a", "b"]} />
+
+<!-- Mixed -->
+<Card title="{{ page_title }}" count={items|length} />
+```
+
+**Règles de transmission d'attributs** :
+
+| Syntaxe | Type de valeur | Sortie du modèle |
+|--------|-----------|----------------|
+| `title="Hello"` | Chaîne | `Card(title="Hello")` |
+| `title="{{ var }}"` | Expression Jinja2 | `Card(title=var)` |
+| `count={5}` | Expression Python | `Card(count=5)` |
+| `active=true` | Mot-clé (booléen Python) | `Card(active=True)` |
+| `items={["a"]}` | Expression Python | `Card(items=["a"])` |
+
+Les valeurs non citées qui correspondent aux littéraux Python (`true`, `false`, `none`, nombres) sont transmises telles quelles. Tout le reste est une chaîne.
+
+**Je vous ai eu** : `count={0}` transmet l'entier 0. `count="0"` transmet la chaîne `"0"`. Dans les modèles Jinja2, `{% if count %}` évalue différemment `0` (faux) et `"0"` (véridique). Utilisez `{0}` lorsque vous avez besoin d'un zéro numérique.
+
+## Slot / Enfants
+
+Les composants qui encapsulent le contenu utilisent `<slot />` pour définir où vont les enfants :
+
+```nexy
+<!-- Card.nexy -->
+---
+title:prop[str] = ""
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <div class="card-body">
+    <slot />
+  </div>
+</div>
+```
+
+```nexy
+<!-- Usage -->
+---
+from "./Card.nexy" import Card
+---
+<Card title="My Card">
+  <p>This appears inside the slot.</p>
+</Card>
+```
+
+**Comment fonctionnent les slots** : le compilateur encapsule les enfants dans un bloc `{% call %}`. Le composant les reçoit en fonction `caller`. `<slot />` appelle `caller()` et affiche le résultat.
+
+**Limites** :
+- Un seul emplacement sans nom par composant
+- Pas d'emplacements limités (passez les fonctions comme accessoires à la place)
+- Les emplacements ne fonctionnent que dans les fichiers `.nexy`, pas dans les modèles Jinja2 bruts
+
+## Fermeture automatique ou emballage
+
+Composants à fermeture automatique (pas d'enfants) :
+
+```nexy
+<Header title="Blog" />
+<Separator />
+<Spacer size={16} />
+```
+
+Composants d'emballage (avec enfants) :
+
+```nexy
+<Card title="Post">
+  <p>Content here</p>
+</Card>
+
+<Layout>
+  <Header />
+  <main>Page content</main>
+  <Footer />
+</Layout>
+```
+
+Le compilateur détecte les balises à fermeture automatique (`&lt;Card /&gt;`) par rapport aux balises avec enfants (`&lt;Card&gt;...&lt;/Card&gt;`) et génère la syntaxe Jinja2 appropriée.
+
+## Retours anticipés / Rendu conditionnel
+
+Puisque le composant est une fonction Python, vous pouvez revenir plus tôt dans le sujet :
+
+```nexy
+---
+title:prop[str] = ""
+if not title:
+    print("Warning: Card rendered without title")
+    # Return early — the template still runs but title is empty
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <slot />
+</div>
+```
+
+Pour le rendu conditionnel dans le modèle, utilisez Jinja2 `{% if %}` :
+
+```nexy
+---
+show_header:prop[bool] = true
+---
+{% if show_header %}
+  <header>
+    <slot />
+  </header>
+{% endif %}
+```
+
+## meilleures pratiques
+
+- **Un composant par fichier** — nom clair, facile à trouver
+- **Conservez les modèles sous 50 lignes** — s'ils sont plus longs, extrayez les sous-composants
+- **Utilisez des accessoires au lieu du codage en dur** — rend les composants réutilisables
+- **Nommer les fichiers dans PascalCase** — `BlogCard.nexy` et non `blog_card.nexy`
+- **Accessoires par défaut pour les valeurs facultatives** — `title:prop[str] = ""` et non `title:prop[str]`
+
+## Suivant
+
+- [Markup](/docs/components/markup) : syntaxe du modèle, attributs dynamiques, conventions HTML
+- [Properties](/docs/components/properties) : accessoires typés, valeurs par défaut, modèles de validation

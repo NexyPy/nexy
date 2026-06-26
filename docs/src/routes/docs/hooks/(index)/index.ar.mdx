@@ -1,0 +1,20 @@
+# خطاف
+
+الخطافات هي وظائف تفاعلية توفر الوصول إلى سياق الطلب وحالة المتصفح داخل مكونات وتخطيطات `.nexy`. إنها تعكس المفهوم من أطر عمل الواجهة الأمامية الحديثة ولكنها تعمل على الخادم.
+
+يتم استيراد كافة الخطافات من `nexy`:
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## الخطافات المتاحة
+
+- [usePathname](/docs/hooks/usePathname) — مسار URL الحالي
+- [useSearchParams](/docs/hooks/useSearchParams) — معلمات سلسلة الاستعلام
+- [useRouter](/docs/hooks/useRouter) — التنقل البرمجي
+- [useQuery](/docs/hooks/useQuery) — معلمات الاستعلام التي تم تحليلها
+- [useSession](/docs/hooks/useSession) — الوصول إلى بيانات الجلسة
+- [useCookies](/docs/hooks/useCookies) — قراءة/كتابة ملف تعريف الارتباط
+- [useToc](/docs/hooks/useToc) — جدول استخراج المحتويات
+- [useViews](/docs/hooks/useViews) — إدارة العرض القابلة للتركيب

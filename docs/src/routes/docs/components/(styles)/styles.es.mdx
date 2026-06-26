@@ -1,0 +1,67 @@
+# Estilos en archivos .nexy
+
+Las plantillas Nexy admiten CSS de la misma manera que lo hace HTML: a través de etiquetas `<style>`, importaciones externas o marcos de utilidades como Tailwind.
+
+## Etiqueta `<style>` en línea
+
+La forma más directa de agregar estilos. Agregue un bloque `<style>` en cualquier lugar de la sección de plantilla.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+</style>
+```
+
+Los estilos **no tienen alcance**; se aplican globalmente. Utilice una convención de nomenclatura (BEM, clases de servicios públicos) o atributos de datos para evitar colisiones.
+
+## CSS externo a través de `__Import`
+
+Cada archivo `.nexy` tiene `__Import` disponible automáticamente (inyectado por el compilador). Para archivos CSS, lee el archivo y lo envuelve en una etiqueta `<style>`:
+
+```nexy
+---
+global_css = __Import("/styles/global.css", "", "")()
+---
+{{ global_css }}
+<div class="layout">...</div>
+```
+
+`__Import(path, framework, symbol)` toma tres argumentos. Para CSS, el segundo y el tercero no se utilizan: pase cadenas vacías. El `()` final llama al invocable devuelto inmediatamente, generando la cadena `<style>...</style>`.
+
+## CSS de viento de cola
+
+Nexy funciona con Tailwind desde el primer momento. Las clases de utilidad en los atributos de su plantilla se procesan normalmente:
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Configure Tailwind en `nexyconfig.py` o `tailwind.config.*`.
+
+## Importaciones CSS a través de Vite
+
+Si Vite está habilitado (`useVite: true`), puede usar declaraciones CSS estándar `"@import` o `import` en sus componentes de interfaz. Vite los procesa a través de PostCSS, módulos CSS y cualquier complemento configurado.
+
+## Mejores prácticas
+
+| Enfoque | Cuándo utilizar |
+|----------|-------------|
+| `<style>` en plantilla | Estilos de componentes específicos, pequeños proyectos |
+| `__Import()` CSS externo | Compartir estilos entre componentes |
+| CSS de viento de cola | Diseño que prioriza la utilidad, creación rápida de prototipos |
+| Canalización CSS de Vite | Cadena de herramientas de compilación completa, módulos CSS, PostCSS |

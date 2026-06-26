@@ -1,0 +1,38 @@
+# 静态文件
+
+Nexy 从项目根目录的 `public/` 目录提供静态文件。
+
+## 它是如何工作的
+
+放置在 `public/` 中的任何文件都在根 URL 路径中提供：
+
+```text
+public/
+├── logo.svg           →  /logo.svg
+├── images/
+│   └── hero.jpg       →  /images/hero.jpg
+├── fonts/
+│   └── inter.woff2    →  /fonts/inter.woff2
+└── robots.txt         →  /robots.txt
+```
+
+无需配置。 `public/` 中的文件会自动提供。
+
+## 资产目录
+
+对于已编译的资源（CSS、Vite 中的 JS），请使用 `assets/` 目录或在 `vite.config.ts` 中配置输出。 Nexy 将它们安装在 `/assets/`。
+
+## 引用静态文件
+
+在 `.nexy` 模板中：
+
+```nexy
+<img src="/logo.svg" alt="Logo" />
+<link rel="stylesheet" href="/styles/global.css" />
+```
+
+在 Python frontmatter 或路由处理程序中，路径是相对于项目根目录的。
+
+## 生产
+
+在 `nx build` 期间，`public/` 目录被复制到 `__nexy__/public/`。您的生产服务器直接提供这些文件 - 无需编译。

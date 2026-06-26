@@ -1,0 +1,76 @@
+#“@UseGuard
+
+将守卫可调用对象应用于控制器类或单个处理程序方法。
+
+## 守卫合同
+
+守卫可以用 `__call__(self, request)` 调用。它接收 FastAPI `Request` 对象。提高 `HTTPException` 阻止，返回 `None` 允许。
+```python
+from fastapi import HTTPException
+
+class RoleGuard:
+    def __init__(self, role: str):
+        self.role = role
+
+    def __call__(self, request) -> None:
+        if request.user.role != self.role:
+            raise HTTPException(403)
+```
+---
+
+## 守卫路线
+```python
+---
+from nexy.decorators import UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import UseGuard, Controller
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@Controller("/users")
+"@UseGuard(AuthGuard())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+
+    "@UseGuard(AdminGuard())
+    def delete(self, user_id: int) -> dict:
+        ...
+```
+## 多个守卫
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+＃＃ 签名
+```python
+UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## 订单
+
+类级防护在方法级防护之前运行。全部作为 FastAPI `Depends` 运行。

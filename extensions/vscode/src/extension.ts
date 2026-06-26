@@ -23,17 +23,23 @@ async function checkNexyProject(): Promise<boolean> {
   if (!workspaceFolders) return false;
 
   for (const folder of workspaceFolders) {
-    // Détection stricte d'un projet Nexy
+    // Full Nexy project: needs nexyconfig.py + ___nexy__/
     const configUri = vscode.Uri.joinPath(folder.uri, "nexyconfig.py");
     const internalUri = vscode.Uri.joinPath(folder.uri, "___nexy__");
 
     try {
-      // Un projet Nexy doit avoir nexyconfig.py ET ___nexy__/
       await vscode.workspace.fs.stat(configUri);
       await vscode.workspace.fs.stat(internalUri);
       return true;
     } catch {
-      continue;
+      // MDX-only project: check for src/mdxconfig
+      const mdxConfigUri = vscode.Uri.joinPath(folder.uri, "src", "mdxconfig");
+      try {
+        await vscode.workspace.fs.stat(mdxConfigUri);
+        return true;
+      } catch {
+        continue;
+      }
     }
   }
   return false;
@@ -110,6 +116,25 @@ export async function activate(context: vscode.ExtensionContext) {
   const nexyFiles = await vscode.workspace.findFiles("**/*.nexy", null, 1);
   if (nexyFiles.length > 0) {
     vscode.window.showInformationMessage("Nexy is ready to lift off! 🚀 Happy coding!");
+  }
+
+  // 8. Suggest Nexy icon theme (once per machine)
+  const ICON_THEME_KEY = "nexy.iconThemeSuggested";
+  if (!context.globalState.get<boolean>(ICON_THEME_KEY)) {
+    const currentTheme = vscode.workspace.getConfiguration("workbench").get<string>("iconTheme");
+    if (currentTheme !== "nexy-icons") {
+      const nexyOrMdxFiles = await vscode.workspace.findFiles("**/*.{nexy,mdx}", null, 1);
+      if (nexyOrMdxFiles.length > 0) {
+        const choice = await vscode.window.showInformationMessage(
+          "Enable Nexy file icons in the explorer?",
+          "Enable"
+        );
+        if (choice === "Enable") {
+          await vscode.workspace.getConfiguration("workbench").update("iconTheme", "nexy-icons", vscode.ConfigurationTarget.Global);
+        }
+        context.globalState.update(ICON_THEME_KEY, true);
+      }
+    }
   }
 
   registerSemanticTokens(context);

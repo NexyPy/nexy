@@ -1,0 +1,72 @@
+---
+
+---
+
+# Governance
+
+Nexy is an open-source project governed by its maintainers. This document describes how decisions are made and how the project is managed.
+
+## Core principles
+
+- **Community first** — changes must benefit the broader ecosystem
+- **Backward compatibility** — breaking changes require deprecation warnings and migration guides
+- **Minimal standard library** — prefer composable primitives over monolithic features
+- **Performance matters** — every feature must justify its cost in startup time, build time, and runtime overhead
+
+## Decision-making
+
+### Day-to-day decisions
+
+Routine changes (bug fixes, small features, documentation) follow the standard PR process:
+
+1. Submit a PR
+2. At least one maintainer reviews
+3. All quality gates pass (lint, format, typecheck, tests)
+4. Maintainer merges via squash-merge
+
+### Significant changes
+
+Major features, breaking changes, and architecture decisions go through an RFC (Request for Comments) process:
+
+1. **Proposal** — open a GitHub Discussion with the RFC template
+2. **Discussion** — community and maintainers provide feedback (minimum 1 week)
+3. **Refinement** — proposal author addresses feedback
+4. **Decision** — maintainers reach consensus and vote if needed
+5. **Implementation** — RFC is accepted and implemented via PR
+
+### Voting
+
+When consensus cannot be reached, maintainers vote:
+
+- Simple majority for most decisions
+- Supermajority (2/3) for changes to governance or core principles
+- The project lead has veto power on architecture decisions
+
+## Maintainer roles
+
+### Core maintainers
+
+Full commit access and responsibility for the project. Core maintainers:
+
+- Review and merge PRs
+- Triage and label issues
+- Manage releases and versioning
+- Set project direction
+
+### Becoming a maintainer
+
+Contributors who demonstrate sustained, high-quality contributions may be invited to become maintainers. There is no fixed timeline — it depends on the depth and consistency of contributions.
+
+## Release process
+
+Nexy follows [Semantic Versioning](https://semver.org/):
+
+- **Patch** — bug fixes and minor improvements (no breaking changes)
+- **Minor** — new features, deprecations (no breaking changes)
+- **Major** — breaking changes (always preceded by deprecation warnings)
+
+Releases are cut by maintainers following the [release workflow](/community/contributor#release-process-maintainers-only).
+
+## Code of conduct
+
+All participants in the Nexy community are expected to follow the [Code of Conduct](https://github.com/NexyPy/nexy/blob/main/CODE_OF_CONDUCT.md). Violations should be reported to the maintainers.

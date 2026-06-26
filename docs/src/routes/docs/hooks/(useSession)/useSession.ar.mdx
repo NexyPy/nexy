@@ -1,0 +1,62 @@
+# جلسة الاستخدام
+
+إرجاع قاموس الجلسة للطلب الحالي. يتم دعم الجلسات بواسطة ملفات تعريف الارتباط الموقعة - ولا يوجد تخزين على جانب الخادم.
+
+```python
+from nexy import useSession
+
+session = useSession()
+```
+
+---
+
+## القيمة المرتجعة
+
+`dict` — بيانات الجلسة من ملف تعريف الارتباط الموقع. إرجاع إملاء فارغ في حالة عدم وجود جلسة.
+
+---
+
+## مثال
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+user_id = session.get("user_id")
+---
+{% if user_id %}
+    <p>Logged in as user {{ user_id }}</p>
+{% else %}
+    <p>Guest</p>
+{% endif %}
+```
+
+---
+
+## كتابة بيانات الجلسة
+
+```python
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+del session["_flash"]
+```
+
+---
+
+## نمط رسائل فلاش
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append("Item saved!")
+session["_flashes"] = flashes
+```
+
+---
+
+## ملاحظات الاستخدام
+
+- يتطلب تكوين `useSession` في `nexyconfig.py`
+- بيانات الجلسة موقعة ولكنها **غير مشفرة**
+- لا يوجد تخزين على جانب الخادم - كل شيء موجود في ملف تعريف الارتباط

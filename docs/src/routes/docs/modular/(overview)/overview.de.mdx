@@ -1,0 +1,102 @@
+# Modularer Router – Architekturübersicht
+
+Der Modular Router bringt Architektur im NestJS-Stil in Python. Anstatt dass Dateien zu Routen (FBR) werden, organisieren Sie Code in **Controller**, **Anbieter**, **Module**, **Guards** und **Middleware**.
+
+## Warum modular?
+
+File-Based Routing (FBR) eignet sich perfekt für kleine bis mittlere Apps. Aber wenn Ihre App wächst:
+
+| Problem | FBR | Modularer Router |
+|---------|-----|----------------|
+| Querschnittsthemen | Duplizierte Middleware pro Datei | Guard/Middleware auf Controller- oder Modulebene |
+| Abhängigkeitsinjektion | Manuelle Importe überall | `"@Injectable` mit automatischer Auflösung |
+| Code-Organisation | Über Dateien verstreut | Gruppiert in Funktionsmodule |
+| Testbarkeit | Enge Kopplung an Dateipfade | Controller akzeptieren injizierte Abhängigkeiten |
+| Koordination großer Teams | Dateikonflikte, unklare Grenzen | Durch Klassenattribute erzwungene Modulgrenzen |
+
+## Architektur
+
+```
+AppModule  ("@Module)
+├── AuthModule  ("@Module)
+│   ├── AuthController   ("@Controller)
+│   │   ├── def GET(self)       → GET /auth/
+│   │   └── def post(self, ...)  → POST /auth/
+│   └── AuthService      ("@Injectable)
+├── UsersModule  ("@Module(prefix="/users"))
+│   └── UsersController  ("@Controller)
+│       ├── def GET(self)       → GET /users/
+│       └── def post(self, ...)  → POST /users/
+└── └── UserService      ("@Injectable)
+```
+
+### Methodennamen definieren HTTP-Verben
+
+Nexy ordnet **Methodennamen** HTTP-Methoden zu – keine `"@Get`/`"@Post` Dekoratoren erforderlich:
+
+| Methodenname | HTTP-Methode |
+|-------------|-------------|
+| `GET`, `get`, `Get` | GET |
+| `post`, `POST`, `Post` | POST |
+| `put`, `PUT`, `Put` | PUT |
+| `delete`, `DELETE`, `Delete` | LÖSCHEN |
+| `patch`, `PATCH`, `Patch` | PATCH |
+| `options`, `OPTIONS`, `Options` | OPTIONEN |
+| `head`, `HEAD`, `Head` | KOPF |
+| `SOCKET`, `socket`, `Socket` | WebSocket |
+
+## Schnellstart
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module, Controller
+
+"@Controller("/ping")
+class PingController:
+    def GET(self):
+        return {"status": "ok"}
+
+"@Module()
+class AppModule:
+    controllers = [PingController]
+```
+
+Konfigurieren Sie in `nexyconfig.py`:
+
+```python
+from nexy import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useModular = "src.apps.app_module.AppModule"
+```
+
+## Wann sollte man sich für Modular anstelle von FBR entscheiden?
+
+**Wählen Sie Modular, wenn:**
+- Sie haben mehr als 5 Routendateien, die Abhängigkeiten teilen
+- Sie benötigen eine Abhängigkeitsinjektion (Dienste, Datenbanken, Konfiguration)
+– Ihr Team hat klare Funktionsgrenzen (Authentifizierung, Abrechnung, Benutzer)
+
+**Wählen Sie FBR, wenn:**
+- Sie haben weniger als 10 Routen
+- Sie bevorzugen Konvention statt Konfiguration
+- Sie erstellen eine überwiegend statische Website
+- Sie möchten eine möglichst einfache Einrichtung
+
+## Die fünf Konzepte
+
+| Konzept | Dekorateur | Zweck |
+|---------|-----------|---------|
+| Controller | `"@Controller(prefix)` | Gruppiert verwandte Routen unter einem Pfadpräfix |
+| Anbieter | `"@Injectable()` | Geschäftslogik, in Controller einfügbar |
+| Modul | `"@Module()` | Verbindet Controller und Anbieter über Klassenattribute |
+| Wache | `"@UseGuard(...)` | Autorisierung – wird vor dem Handler | ausgeführt
+| Middleware | `"@Middleware(...)` | Anforderungs-/Antwortpipeline – wird vor Wächtern ausgeführt |
+
+## Nächste Schritte
+
+- [Controllers](/docs/modular/controllers) – Behandeln Sie HTTP-Anfragen mit Methodennamen-Routing
+- [Providers & DI](/docs/modular/providers) – Dienste in Controller einspeisen
+- [Modules](/docs/modular/modules) – Organisieren Sie Controller und Anbieter in Funktionsmodulen
+- [Guards](/docs/modular/guards) – Routen mit Autorisierung schützen
+- [Middleware](/docs/modular/middleware) – Anfragen vor Handlern abfangen

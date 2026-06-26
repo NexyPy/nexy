@@ -1,0 +1,71 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# الصفحات
+
+الصفحة عبارة عن مسار يُرجع HTML. في Nexy، تكون الصفحات عبارة عن ملفات `.nexy` أو `.mdx` ضمن `src/routes/`.
+
+> تختلف الصفحات عن **معالجات التوجيه** (ملفات `.py`) التي تعرض بيانات JSON أو بيانات أولية.
+
+---
+
+## إنشاء صفحة
+
+ضع ملف `.nexy` أو `.mdx` في `src/routes/`:
+```bash
+src/
+└── routes/
+    └── index.nexy       →  /
+```
+```html
+<!-- index.nexy -->
+<h1>Hello Nexy!</h1>
+```
+ليست هناك حاجة لتسجيل المسار — الملف **هو** المسار.
+
+---
+
+## الصفحات في `.nexy`
+
+يمكن أن يحتوي الملف `.nexy` على مادة Python الأمامية وقالب HTML:
+```
+---
+items: prop[list] = []
+---
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## الصفحات في `.mdx`
+
+تجمع ملفات `.mdx` بين Markdown ومكونات Nexy:
+```mdx
+---
+from "@components/link.nexy" import Link
+---
+
+# My Article
+
+<Link href="/docs">Back to docs</Link>
+```
+هذه الصفحة التي تقرأها هي في حد ذاتها ملف `.mdx` — يتم التعامل مع جدول المحتويات والشريط الجانبي ومسار التنقل من خلال التخطيط.
+
+---
+
+## ملفات خاصة غير قابلة للتوجيه
+
+بعض الملفات الموجودة داخل `routes/` لا تنشئ مسارات:
+
+| ملف | الدور |
+|---|---|
+| `__init__.py` | علامة حزمة بايثون |
+| `layout.nexy` | غلاف التخطيط المشترك |
+| `dependencies.py` | التبعيات المشتركة |
+<Link href="/docs/fbrouters/layouts">Next: Layouts →</Link>

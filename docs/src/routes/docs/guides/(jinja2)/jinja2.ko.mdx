@@ -1,0 +1,83 @@
+# 진자2
+
+Nexy는 템플릿 엔진으로 **Jinja2**를 사용합니다. 모든 `.nexy` 파일의 템플릿 블록은 Jinja2 템플릿으로 렌더링됩니다.
+
+---
+
+## 구문
+
+```nexy
+---
+title = "Hello"
+items = [1, 2, 3]
+---
+<h1>{{ title }}</h1>
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+{% if user %}
+    <p>Welcome, {{ user.name }}</p>
+{% endif %}
+```
+
+---
+
+## 템플릿 컨텍스트
+
+템플릿 컨텍스트에는 다음이 포함됩니다.
+
+- 서문에 선언된 모든 소품(`item: prop[type]`)
+- 자동 주입된 도우미: `Slot`, `trans`, `t`, `__current_locale`, `__Import`, `__Template`
+- 추가 소품: `caller`, `children`
+
+---
+
+## 필터
+
+모든 Jinja2 내장 필터를 사용할 수 있습니다:
+
+```nexy
+<p>{{ description | truncate(100) }}</p>
+<p>{{ created_at | date(format="short") }}</p>
+<p>{{ content | safe }}</p>
+<p>{{ name | title }}</p>
+```
+
+---
+
+## 매크로
+
+Jinja2 매크로는 `.nexy` 파일에서 작동합니다:
+
+```nexy
+{% macro input(name, type="text", value="") %}
+    <input type="{{ type }}" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
+
+<form>
+    {{ input("username") }}
+    {{ input("password", type="password") }}
+</form>
+```
+
+---
+
+## 마크다운
+
+`.mdx` 파일은 Markdown으로 렌더링된 후 레이아웃 템플릿에 래핑됩니다. 표준 Jinja2 구문은 `.mdx` 내에서도 작동합니다.
+
+---
+
+## 공백 제어
+
+Jinja2의 공백 제어는 `.nexy` 파일에서 작동합니다.
+
+```nexy
+{%- for item in items -%}
+    <span>{{ item }}</span>
+{%- endfor -%}
+```
+
+제어 블록 주위의 공백을 제거하려면 `{%-` 및 `-%}`를 사용하십시오.

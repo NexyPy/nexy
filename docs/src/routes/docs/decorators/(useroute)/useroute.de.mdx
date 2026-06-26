@@ -1,0 +1,47 @@
+# "@UseRoute
+
+Legen Sie OpenAPI-Metadaten für eine Handler-Methode fest – Name, Zusammenfassung, Beschreibung, Tags usw.
+```python
+from nexy.decorators import UseRoute, Controller
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(
+        summary="List all users",
+        description="Returns paginated list of users",
+        deprecated=False,
+        tags=["users"],
+    )
+    def GET(self) -> list[dict]:
+        ...
+```
+## Unterschrift
+```python
+UseRoute(
+    name: str | None = None,
+    tags: list[str] | None = None,
+    summary: str | None = None,
+    description: str | None = None,
+    deprecated: bool | None = None,
+    include_in_schema: bool | None = None,
+    operation_id: str | None = None,
+    openapi_extra: dict[str, Any] | None = None,
+) -> Callable
+```
+## Alle Parameter
+
+| Param | Geben Sie | ein Beschreibung |
+|-------|------|-------------|
+| `name` | `str` | Routenname (standardmäßig `ClassName.method_name`) |
+| `tags` | `list[str]` | OpenAPI-Tags (überschreiben Controller-Tags) |
+| `summary` | `str` | OpenAPI-Zusammenfassung |
+| `description` | `str` | OpenAPI-Beschreibung |
+| `deprecated` | `bool` | In OpenAPI | als veraltet markieren
+| `include_in_schema` | `bool` | Aus OpenAPI-Schema ausblenden |
+| `operation_id` | `str` | OpenAPI-Operations-ID |
+| `openapi_extra` | `dict` | Zusätzliche OpenAPI-Felder |
+
+## Alias
+```python
+from nexy.decorators import useRoute  # lowercase alias, identical API
+```

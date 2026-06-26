@@ -1,0 +1,33 @@
+# VITE 통합
+
+`nexyconfig.py`에서 Vite 활성화:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## 개발자 모드
+
+`nexy dev`는 Nexy 서버와 함께 Vite 개발 서버를 자동으로 시작합니다. Vite는 다음을 제공합니다:
+- 핫 모듈 교체(HMR)
+- 프레임워크 구성 요소에 대한 빠른 새로 고침
+- TypeScript 및 JSX 컴파일
+- CSS 전처리
+
+Nexy 서버는 Vite의 개발 URL을 프록시하므로 모든 것이 단일 포트에서 작동합니다.
+
+## 생산
+
+`nexy build`는 Vite 프로덕션 빌드를 실행합니다. 출력은 `__nexy__/client/`로 진행됩니다. `Vite()` 함수는 매니페스트를 읽고 올바른 CSS 및 스크립트 태그를 내보냅니다.
+
+## 사용자 정의 Vite 구성
+
+Nexy는 `vite.config.ts`를 자체 기본값과 병합합니다. 플러그인, 별칭 및 기타 Vite 옵션을 정상적으로 추가할 수 있습니다.
+
+## 구성 참조
+
+| 옵션 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useVite` | `bool` | `False` | Vite 활성화 |
+| `useViteDevUrl` | `str \| None` | `None` | 사용자 정의 Vite 개발 URL |

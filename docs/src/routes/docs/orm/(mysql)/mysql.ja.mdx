@@ -1,0 +1,29 @@
+# MySQL と MariaDB
+
+MySQL と MariaDB は、すべての Nexy ORM でサポートされる信頼性の高い運用データベースです。
+
+＃＃ 繋がり
+
+```python
+# MySQL
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+
+# MariaDB (same driver, compatible)
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+```
+
+MariaDB は MySQL のドロップイン代替品であり、同じドライバー、同じ接続文字列を使用します。
+
+## ORM を使用する場合
+
+| ORM |ドライバー |接続文字列 |
+|-----|--------|------|
+| SQLモデル / SQLAlchemy | `asyncmy` | `mysql+asyncmy://user:pass"@localhost/db` |
+|トータス-ORM | `asyncmy` | `mysql://user:pass"@localhost/db` |
+
+## 注意事項
+
+- 非同期サポートには `aiomysql` または `asyncmy` を使用します
+- データベースサーバーが非同期接続をサポートしていることを確認してください
+- 実稼働ワークロードの接続プーリングを構成する
+- MySQL ↔ MariaDB: コードは同じままで、サーバーのみが変更されます。

@@ -1,0 +1,36 @@
+# Черепаха-ОРМ
+
+**Tortoise-ORM** — это асинхронный ORM, созданный на основе ORM Django. Легко освоить, хорошо работает с FastAPI/Nexy.
+
+## Конфигурация
+
+```python
+TORTOISE_ORM = {
+    "connections": {"default": "sqlite://dev.db"},
+    "apps": {"models": {"models": ["models", "aerich.models"], "default_connection": "default"}},
+}
+```
+
+## Пример
+
+```python
+from tortoise import fields
+from tortoise.models import Model
+
+class User(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=100)
+    email = fields.CharField(max_length=100)
+```
+
+## Миграции
+
+Tortoise-ORM использует **Aerich** (настраивается через `nx migrate`):
+
+```bash
+nx migrate --init    # Initialize Aerich (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+Tortoise-ORM — отличный выбор, если вы перешли с Django и хотите знакомый API с поддержкой асинхронности.

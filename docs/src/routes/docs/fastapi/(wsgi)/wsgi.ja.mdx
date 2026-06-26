@@ -1,0 +1,55 @@
+# WSGI (Flask、Django)
+
+Nexy ルートと一緒に WSGI アプリケーション (Flask、Django、Pyramid) をマウントします。
+
+## フラスコ
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+Flask ルートは `/legacy/hello` で利用できるようになりました。すべての Nexy 機能 (認証、ミドルウェア) は引き続き親アプリに適用されます。
+
+## ジャンゴ
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## 仕組み
+
+- `WSGIMiddleware` は、呼び出し可能な WSGI を ASGI としてラップします。
+- サブアプリケーションはスレッド プールで実行されます。イベント ループはブロックされません。
+- パス プレフィックス (`/legacy`、`/django`) は、WSGI アプリに到達する前に削除されます。
+- Nexy ミドルウェア (認証、セッション、CORS) はマウントされた WSGI アプリには**適用されません** - そこで個別に構成します
+
+## 制限事項
+
+- リクエスト/レスポンス サイクルのみ — WebSocket はサポートされません
+- WSGI アプリは Nexy フックまたは依存関係を使用できません
+- パフォーマンスはスレッド プールによって制限されます。ネイティブ Nexy ルートへの移行を検討してください。

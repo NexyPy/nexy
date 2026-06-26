@@ -116,4 +116,5 @@ class NexyHTMLParser(HTMLParser):
         self.root = []
         self.stack = []
         self.feed(html)
+        self.close()
         return self.root

@@ -1,0 +1,51 @@
+#nx移行
+
+構成された ORM の移行ツールを使用してデータベースの移行を管理します。
+
+```bash
+nx migrate
+```
+
+---
+
+## 仕組み
+
+Nexy は、`nexyconfig.py` から構成された ORM を検出し、適切なツールに委任します。
+
+| ORM |移行ツール |設定フィールド |
+|-----|--------------|--------------|
+| SQLAlchemy |アレンビック | `useORM` |
+| SQLモデル |アレンビック | `useORM` |
+|トータス-ORM |エアリッヒ | `useORM` |
+
+---
+
+## コマンド
+
+|コマンド |説明 |
+|----------|---------------|
+| `nx migrate` |新しい移行を作成します (変更を自動検出します) |
+| `nx migrate --init` |移行ツールの初期化 (Alembic/Aerich) |
+| `nx migrate --upgrade` / `-u` |保留中の移行を適用する |
+| `nx migrate -m "message"` |メッセージを使用して移行を作成します |
+
+ - -
+
+＃＃ 例
+
+```bash
+# Initialize Alembic (first time)
+nx migrate --init
+
+# Create a migration after model changes
+nx migrate -m "add user table"
+
+# Apply to database
+nx migrate --upgrade
+```
+
+---
+
+## エイリアス
+
+`nx m`

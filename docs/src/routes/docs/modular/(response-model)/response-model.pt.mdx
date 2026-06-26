@@ -1,0 +1,80 @@
+# Resposta (Modular)
+
+Controle a serialização de respostas, códigos de status e tipos de respostas em controladores.
+
+## Modelo de resposta Pydantic
+
+```python
+from nexy.decorators import Controller
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice", email="alice"@example.com")]
+```
+
+## Listar resposta
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice")]
+```
+
+## HTMLResposta
+
+```python
+from fastapi.responses import HTMLResponse
+from nexy.decorators import Controller
+
+"@Controller("/page")
+class PageController:
+    def GET(self) -> HTMLResponse:
+        return HTMLResponse("<h1>Hello</h1>")
+```
+
+## StreamingResposta
+
+```python
+from fastapi.responses import StreamingResponse
+from nexy.decorators import Controller
+import io
+
+"@Controller("/export")
+class ExportController:
+    def GET(self) -> StreamingResponse:
+        return StreamingResponse(io.StringIO("data..."), media_type="text/csv")
+```
+
+## Resposta direta com status personalizado
+
+```python
+from fastapi.responses import JSONResponse
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/items")
+class ItemsController:
+    "@UseResponse(status_code=201)
+    def post(self, item: Item):
+        return {"created": True}
+```
+
+## Tipos de resposta suportados
+
+| Classe | Tipo de conteúdo | Caso de uso |
+|-------|------------|----------|
+| `JSONResponse` | `application/json` | Dados JSON (padrão) |
+| `HTMLResponse` | `text/html` | Sequências HTML |
+| `PlainTextResponse` | `text/plain` | Texto bruto |
+| `RedirectResponse` | — | Redirecionamentos |
+| `StreamingResponse` | varia | Transmitir dados |
+| `FileResponse` | varia | Downloads de arquivos |
+
+Consulte ["@UseResponse](/docs/decorators/useresponse) para opções de código de status.

@@ -1,0 +1,71 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 页数
+
+页面是返回 HTML 的路由。在 Nexy 中，页面是 `src/routes/` 下的 `.nexy` 或 `.mdx` 文件。
+
+> 页面与返回 JSON 或原始数据的**路由处理程序**（`.py` 文件）不同。
+
+---
+
+## 创建页面
+
+将 `.nexy` 或 `.mdx` 文件放入 `src/routes/` 中：
+```bash
+src/
+└── routes/
+    └── index.nexy       →  /
+```
+```html
+<!-- index.nexy -->
+<h1>Hello Nexy!</h1>
+```
+无需注册路线 - 文件**就是**路线。
+
+---
+
+## `.nexy` 中的页面
+
+`.nexy` 文件可以包含 Python frontmatter 和 HTML 模板：
+```
+---
+items: prop[list] = []
+---
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## `.mdx` 中的页面
+
+`.mdx` 文件将 Markdown 与 Nexy 组件结合起来：
+```mdx
+---
+from "@components/link.nexy" import Link
+---
+
+# My Article
+
+<Link href="/docs">Back to docs</Link>
+```
+您正在阅读的此页面本身就是一个 `.mdx` 文件 — 目录、侧边栏和面包屑由布局处理。
+
+---
+
+## 不可路由的特殊文件
+
+`routes/` 内的某些文件不会创建路由：
+
+|文件 |角色 |
+|---|---|
+| `__init__.py` | Python 包标记 |
+| `layout.nexy` |共享布局包装器 |
+| `dependencies.py` |共享依赖项 |
+<Link href="/docs/fbrouters/layouts">Next: Layouts →</Link>

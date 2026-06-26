@@ -1,0 +1,62 @@
+# useSession
+
+Gibt das Sitzungswörterbuch für die aktuelle Anfrage zurück. Sitzungen werden durch signierte Cookies gesichert – keine serverseitige Speicherung.
+
+```python
+from nexy import useSession
+
+session = useSession()
+```
+
+---
+
+## Rückgabewert
+
+`dict` – die Sitzungsdaten aus dem signierten Cookie. Gibt ein leeres Diktat zurück, wenn keine Sitzung vorhanden ist.
+
+---
+
+## Beispiel
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+user_id = session.get("user_id")
+---
+{% if user_id %}
+    <p>Logged in as user {{ user_id }}</p>
+{% else %}
+    <p>Guest</p>
+{% endif %}
+```
+
+---
+
+## Sitzungsdaten schreiben
+
+```python
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+del session["_flash"]
+```
+
+---
+
+## Flash-Nachrichtenmuster
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append("Item saved!")
+session["_flashes"] = flashes
+```
+
+---
+
+## Nutzungshinweise
+
+- Erfordert `useSession`-Konfiguration in `nexyconfig.py`
+- Sitzungsdaten sind signiert, aber **nicht verschlüsselt**
+- Keine serverseitige Speicherung – alles ist im Cookie

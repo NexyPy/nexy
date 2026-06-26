@@ -1,0 +1,35 @@
+# نظرة عامة على الأمن
+
+يوفر Nexy برامج وسيطة للمصادقة وحراس المسار ودعم الجلسة. تغطي مكتبة Python القياسية وحزم الطرف الثالث التشفير والتجزئة وJWT وإنشاء المعرفات.
+
+---
+
+## مصفوفة الميزات
+
+| ميزة | نيكسي API | الخلفية |
+|---------|---------|---------|
+| المصادقة | تكوين `useAuth` + واجهة خلفية مخصصة | ستارليت `AuthenticationMiddleware` |
+| حماية الطريق | `"@UseGuard(*guards)` | FastAPI `Depends` |
+| جلسات | `useSession` ربط + `useSession()` | ستارليت `SessionMiddleware` |
+| إذن | حراس مخصصون + فحص الأدوار | FastAPI `Depends` |
+| التشفير / التجزئة | بايثون القياسية | `hashlib`، `bcrypt`، `cryptography` |
+| جوت | طرف ثالث | `PyJWT` |
+| المعرف الفريد | بايثون القياسية | `uuid`، `secrets` |
+
+---
+
+## روابط سريعة
+
+- [Authentication](/docs/security/authentication) — تكوين الواجهات الخلفية للمصادقة وتدفقات تسجيل الدخول
+- [Authorization](/docs/security/authorization) — التحكم في الوصول على أساس الدور مع الحراس
+- [Encryption & Hashing](/docs/security/encryption-hashing) — تجزئة كلمة المرور، وتشفير البيانات
+- [JWT](/docs/security/jwt) — إنشاء رمز ويب JSON والتحقق منه
+- [UID](/docs/security/uid) — إستراتيجيات إنشاء المعرفات الفريدة
+
+---
+
+## ذات صلة
+
+- [Guides / Auth](/docs/guides/auth) — إرشادات عملية لتدفق المصادقة
+- [Config / Session](/docs/config/session) — تكوين البرامج الوسيطة للجلسة
+- [Decorators / "@UseGuard](/docs/decorators/useguard) — مرجع مصمم الديكور

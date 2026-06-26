@@ -1,0 +1,101 @@
+#i18n
+
+تكوين التدويل - الكشف عن اللغة، وملفات الترجمة، ودعم RTL.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "es"]
+    useDefaultLocale = "en"
+    useLocaleCookieName = "nexy-locale"
+    useLocaleDetection = {"header": True, "cookie": True}
+    useRTL = False
+```
+
+---
+
+## الحقول
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` | اللغات المتاحة. تم اكتشافه تلقائيًا من `nexy/i18n/` إذا `None`. |
+| `useDefaultLocale` | `str` | `"en"` | لغة احتياطية عند فشل الكشف. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | اسم ملف تعريف الارتباط للاستمرار في اختيار لغة المستخدم. |
+| `useLocaleDetection` | `dict \| None` | `None` | استراتيجيات الكشف: `header`، `cookie`، `path`. |
+| `useRTL` | `bool` | `False` | تمكين دعم التخطيط من اليمين إلى اليسار. |
+
+---
+
+## ملفات الترجمة
+
+ضع ملفات ترجمة JSON في `nexy/i18n/<locale>/`:
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+    "welcome": "Welcome",
+    "greeting": "Hello!"
+}
+```
+
+```json
+// nexy/i18n/fr/common.json
+{
+    "welcome": "Bienvenue",
+    "greeting": "Bonjour !"
+}
+```
+
+---
+
+## الاستخدام في القوالب
+
+```nexy
+---
+from nexy.i18n import t
+welcome = t("welcome")
+---
+<h1>{{ welcome }}</h1>
+```
+
+---
+
+## الاستخدام في بايثون
+
+```python
+from nexy.i18n import trans, t
+
+msg = trans("welcome")            # explicit
+msg = t("welcome")                # shorthand
+msg = t("missing_key", default="Fallback")
+```
+
+---
+
+## التبديل المحلي
+
+```python
+from nexy.i18n import useLocale
+locale = useLocale()
+print(locale["locale"])       # "fr"
+print(locale["is_rtl"])       # False
+print(locale["available"])    # ["en", "fr", "es"]
+```
+
+---
+
+## دعم RTL
+
+عندما `useRTL = True`، يقوم Nexy بتعيين السمة `dir="rtl"` على العنصر `<html>` ويقوم بتحميل أوراق الأنماط المعدلة بواسطة RTL للأطر المدعومة.

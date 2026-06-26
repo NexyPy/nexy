@@ -1,0 +1,20 @@
+# Hooks
+
+Hooks are reactive functions that provide access to request context and browser state inside your `.nexy` components and layouts. They mirror the concept from modern frontend frameworks but run on the server.
+
+All hooks are imported from `nexy`:
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## Available hooks
+
+- [usePathname](/docs/hooks/usePathname) — current URL path
+- [useSearchParams](/docs/hooks/useSearchParams) — query string parameters
+- [useRouter](/docs/hooks/useRouter) — programmatic navigation
+- [useQuery](/docs/hooks/useQuery) — parsed query parameters
+- [useSession](/docs/hooks/useSession) — session data access
+- [useCookies](/docs/hooks/useCookies) — cookie read/write
+- [useToc](/docs/hooks/useToc) — table of contents extraction
+- [useViews](/docs/hooks/useViews) — composable view management

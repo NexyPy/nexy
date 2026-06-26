@@ -1,7 +1,7 @@
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
 
 
-def vue() -> FFModel:
+def vue() -> FrontendFramework:
     render_script = """
     (async function() {
         const w = window;
@@ -20,7 +20,7 @@ def vue() -> FFModel:
 
         async function m(el) {
             if (!el || el.dataset.nexyMounted === "1") return;
-            
+
             const key = el.getAttribute("data-nexy-key") || "";
             const path = el.dataset.nexyPath || "";
             const symbol = el.getAttribute("data-nexy-symbol") || "";
@@ -28,8 +28,8 @@ def vue() -> FFModel:
             const serverHTML = el.innerHTML;
 
             let props = {};
-            try { 
-                props = JSON.parse(propsStr); 
+            try {
+                props = JSON.parse(propsStr);
             } catch(e) {}
 
             let slots = {};
@@ -47,7 +47,7 @@ def vue() -> FFModel:
 
             try {
                 const mod = await gi(ref);
-                
+
                 // ENHANCED VUE COMPONENT RESOLUTION
                 let Comp = null;
                 if (symbol && mod[symbol]) {
@@ -93,7 +93,7 @@ def vue() -> FFModel:
     })();
     """
 
-    return FFModel(
+    return FrontendFramework(
         name="vue",
         render=render_script,
         extension=["vue"],

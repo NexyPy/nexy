@@ -1,0 +1,159 @@
+# WebSocket (Modular)
+
+Define a WebSocket endpoint inside a controller using `async def SOCKET(self, websocket)`.
+
+---
+
+## Basic echo
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/chat")
+class ChatController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await websocket.send_text(f"Echo: {data}")
+        except WebSocketDisconnect:
+            pass
+```
+
+The `SOCKET` method name maps to a WebSocket endpoint. All methods in a controller share the `"@Controller` prefix — so this is `GET /chat` as a WebSocket.
+
+---
+
+## Receive JSON
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/events")
+class EventsController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_json()
+                await websocket.send_json({"echo": data})
+        except WebSocketDisconnect:
+            pass
+```
+
+---
+
+## Room pattern with DI
+
+Use a dedicated service to manage connections:
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class ConnectionManager:
+    def __init__(self):
+        self.connections: list[WebSocket] = []
+
+    def add(self, ws: WebSocket):
+        self.connections.append(ws)
+
+    def remove(self, ws: WebSocket):
+        self.connections.remove(ws)
+
+    async def broadcast(self, message: str):
+        for conn in self.connections:
+            await conn.send_text(message)
+
+"@Controller("/chat")
+class ChatController:
+    def __init__(self, manager: ConnectionManager):
+        self.manager = manager
+
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        self.manager.add(websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.manager.broadcast(data)
+        except WebSocketDisconnect:
+            self.manager.remove(websocket)
+```
+
+The `ConnectionManager` is a singleton `"@Injectable()` — all controller instances share the same manager.
+
+---
+
+## Named rooms with DI
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class RoomManager:
+    def __init__(self):
+        self.rooms: dict[str, list[WebSocket]] = {}
+
+    def join(self, room: str, ws: WebSocket):
+        self.rooms.setdefault(room, []).append(ws)
+
+    def leave(self, room: str, ws: WebSocket):
+        self.rooms[room].remove(ws)
+        if not self.rooms[room]:
+            del self.rooms[room]
+
+    async def broadcast(self, room: str, message: str):
+        for conn in self.rooms.get(room, []):
+            await conn.send_text(message)
+
+"@Controller("/rooms/{room_id}")
+class RoomController:
+    def __init__(self, rooms: RoomManager):
+        self.rooms = rooms
+
+    async def SOCKET(self, websocket: WebSocket, room_id: str):
+        await websocket.accept()
+        self.rooms.join(room_id, websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.rooms.broadcast(room_id, data)
+        except WebSocketDisconnect:
+            self.rooms.leave(room_id, websocket)
+```
+
+---
+
+## Connection lifecycle
+
+| Event | What happens |
+|-------|-------------|
+| Client connects | `websocket.accept()` — must be called first |
+| Message received | `receive_text()` / `receive_json()` / `receive_bytes()` |
+| Client disconnects | `WebSocketDisconnect` raised — clean up in `except` |
+| Server closes | `await websocket.close(code=1000)` |
+
+---
+
+## Client
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## See also
+
+- [Controllers](/docs/modular/controllers) — route handlers in Modular
+- [Providers & DI](/docs/modular/providers) — injectable services
+- [Guards](/docs/modular/guards) — protect WebSocket endpoints
+- [WebSocket Guide](/docs/guides/websocket) — conceptual overview

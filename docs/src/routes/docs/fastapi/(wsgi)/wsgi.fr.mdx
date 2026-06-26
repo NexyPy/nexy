@@ -1,0 +1,55 @@
+# WSGI (Flacon, Django)
+
+Montez les applications WSGI (Flask, Django, Pyramid) aux côtés des routes Nexy.
+
+## Flacon
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+Les itinéraires de flacons sont désormais disponibles à `/legacy/hello`. Toutes les fonctionnalités de Nexy (authentification, middleware) s'appliquent toujours à l'application parent.
+
+## Django
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## Comment ça marche
+
+- `WSGIMiddleware` encapsule tout WSGI appelable en ASGI
+- La sous-application s'exécute dans un pool de threads — elle ne bloque pas la boucle d'événements
+- Le préfixe du chemin (`/legacy`, `/django`) est supprimé avant d'atteindre l'application WSGI
+- Le middleware Nexy (auth, session, CORS) ne s'applique **pas** à l'application WSGI montée — configurez-le séparément
+
+## Limites
+
+- Cycle de requête/réponse uniquement — WebSocket non pris en charge
+- Les applications WSGI ne peuvent pas utiliser les hooks ou les dépendances Nexy
+- Les performances sont limitées par le pool de threads : envisagez de migrer vers les routes Nexy natives.

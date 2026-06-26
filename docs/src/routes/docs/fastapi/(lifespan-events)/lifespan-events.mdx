@@ -1,0 +1,65 @@
+# Lifespan Events
+
+Run code before the app starts serving or when it shuts down.
+
+## Using `nexy.app`
+
+```python
+# In any file loaded at startup (e.g., nexyconfig.py, src/events.py)
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("App starting...")
+    await db.connect()
+
+"@app.on_event("shutdown")
+async def shutdown():
+    print("App shutting down...")
+    await db.disconnect()
+```
+
+## Context manager lifespan (FastAPI 3.0+)
+
+```python
+from contextlib import asynccontextmanager
+from nexy import app
+
+"@asynccontextmanager
+async def lifespan():
+    print("Startup")
+    await db.connect()
+    yield
+    print("Shutdown")
+    await db.disconnect()
+
+app.router.lifespan_context = lifespan
+```
+
+## When to use lifespan events
+
+| Use case | Event |
+|----------|-------|
+| Database connection pool | `startup` |
+| Cache warming | `startup` |
+| Load ML models | `startup` |
+| Close connections | `shutdown` |
+| Flush queues | `shutdown` |
+
+## Multiple event handlers
+
+```python
+"@app.on_event("startup")
+async def first():
+    ...
+
+"@app.on_event("startup")
+async def second():
+    ...
+```
+
+## Note
+
+- Lifespan events are **not** per‑request — they run once at app start/stop
+- In development (`nx dev`), events run on every reload
+- Use `nx start` for production — events run once at launch

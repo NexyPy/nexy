@@ -1,0 +1,76 @@
+# Fehlerbehandlung
+
+Nexy bietet integrierte 404- und 500-Fehlerseiten. Überschreiben Sie sie mit benutzerdefinierten `.nexy`-Dateien.
+
+## Standardfehlerseiten
+
+Wenn eine Seite nicht gefunden wird (404) oder ein nicht behandelter Fehler auftritt (500), gibt Nexy eine einfach gestaltete HTML-Seite zurück.
+
+## Benutzerdefinierte Fehlerseiten
+
+Platzieren Sie `error.nexy`- oder `notfound.nexy`-Dateien in einem beliebigen Routenverzeichnis, um Fehlerseiten für diesen Bereich zu überschreiben:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # Custom 404 for /admin/*
+|   +-- error.nexy      # Custom 500 for /admin/*
++-- notfound.nexy       # Global custom 404
++-- error.nexy          # Global custom 500
+```
+
+### Beispiel: `notfound.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-yellow-500">404</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Page not found</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Sorry, we couldn't find the page you're looking for.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+### Beispiel: `error.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-red-500">500</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Something went wrong</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Please try again later.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+## Bereichsbezogene Fehlerseiten
+
+In Unterverzeichnissen platzierte Fehlerseiten gelten nur für Routen innerhalb dieses Verzeichnisses. Dadurch können Sie für verschiedene Abschnitte Ihrer Website unterschiedliche Fehlerseiten einrichten:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # /admin/* — "Admin page not found"
++-- blog/
+|   +-- notfound.nexy   # /blog/* — "Blog post not found"
++-- notfound.nexy       # All other routes
+```
+
+## Verwandte
+
+- [Authorization / Guards](/docs/security/authorization) – Routen vor unbefugtem Zugriff schützen
+- [Authentication](/docs/security/authentication) – Konfigurieren der Authentifizierungs-Middleware

@@ -1,0 +1,55 @@
+---
+from nexy import usePathname, useSearchParams
+from "@components/link.nexy" import Link
+pathname = usePathname()
+params = useSearchParams()
+---
+
+# क्वेरी पैरामीटर
+
+क्वेरी पैरामीटर URL में `?key=value` जोड़े हैं। नेक्सी उन्हें फ्रंटमैटर में `useSearchParams()`, या हैंडलर में `request.query_params` के माध्यम से उजागर करता है।
+
+---
+
+## `.nexy` पेज में
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Results for: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+`params` ऑब्जेक्ट एक शब्दकोश की तरह व्यवहार करता है: `.get(key, default)`, `.keys()`, `.items()`।
+
+---
+
+## `.py` हैंडलर में
+```python
+# routes/search.py
+from fastapi import Request
+
+async def get(request: Request, q: str = "", page: int = 1):
+    results = search_database(q, page=page)
+    return {"results": results, "page": page}
+```
+फास्टएपीआई टाइप किए गए क्वेरी पैरामीटर को स्वचालित रूप से हल करता है।
+
+---
+
+## वर्तमान पृष्ठ पैरामीटर
+
+यह पृष्ठ अपने फ्रंटमैटर में `useSearchParams()` का उपयोग करता है। वर्तमान क्वेरी पैरामीटर हैं:
+```json
+{{ params | safe }}
+```
+---
+
+## सर्वोत्तम प्रथाएँ
+
+- सर्वर-रेंडर पृष्ठों के लिए `.nexy` घटकों में `useSearchParams()` का उपयोग करें
+- एपीआई के लिए `.py` हैंडलर में `request.query_params` का उपयोग करें
+- मान हमेशा स्ट्रिंग होते हैं - `int()`, `bool()`, आदि के साथ कनवर्ट करें।
+<Link href="/docs/components">Next: Views →</Link>

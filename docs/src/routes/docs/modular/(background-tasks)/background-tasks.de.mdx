@@ -1,0 +1,69 @@
+# Hintergrundaufgaben (modular)
+
+Führen Sie den Code *nach* dem Senden der Antwort in den Controllern aus.
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## Einzelaufgabe
+
+```python
+from nexy.decorators import Controller
+from fastapi import BackgroundTasks
+
+def send_email(email: str, body: str):
+    ...
+
+"@Controller("/contact")
+class ContactController:
+    def post(self, data: ContactForm, tasks: BackgroundTasks):
+        tasks.add_task(send_email, data.email, "Thanks!")
+        return {"status": "sent"}
+```
+
+## Mehrere Aufgaben
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def get(self, tasks: BackgroundTasks):
+        tasks.add_task(log_visit)
+        tasks.add_task(notify_admin)
+        tasks.add_task(warm_cache)
+        return {"ok": True}
+```
+
+## Aufgabe mit DI
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller, Injectable
+from src.db import Database
+
+"@Injectable()
+class Logger:
+    def write(self, msg: str):
+        ...
+
+"@Controller("/logs")
+class LogController:
+    def __init__(self, logger: Logger, tasks: BackgroundTasks):
+        self.logger = logger
+        self.tasks = tasks
+
+    def post(self):
+        self.tasks.add_task(self.logger.write, "action logged")
+        return {"ok": True}
+```
+
+## Wichtig
+
+– Aufgaben werden **nachdem** die Antwort gesendet wurde – der Client wartet nicht
+- Sie werden im selben Prozess ausgeführt – lange Aufgaben blockieren die Ereignisschleife
+- Verwenden Sie für schwere Arbeiten eine Aufgabenwarteschlange (Celery, ARQ, RQ usw.)
+- Fehler in Aufgaben werden stillschweigend verschluckt – fügen Sie try/exclusive innerhalb der Aufgabenfunktion hinzu
+– Aufgaben erhalten **Kopien** veränderlicher Objekte – Mutationen haben keinen Einfluss auf die Antwort

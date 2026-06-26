@@ -27,7 +27,7 @@ class RouteLayout:
                         raw_path = layout_candidate.as_posix()
 
                     # 2. Normalize the path while slashes still exist
-                    # This ensures (article) becomes article_ngp
+                    # This ensures (article) becomes article_group
                     normalized_path = StringTransform.normalize_route_path_for_namespace(raw_path)
 
                     # 3. Strip extension and convert to Python module dots

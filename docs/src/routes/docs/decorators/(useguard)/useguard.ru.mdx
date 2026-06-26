@@ -1,0 +1,76 @@
+# "@UseGuard
+
+Примените защитные вызовы к классу контроллера или отдельному методу обработчика.
+
+## Контракт охраны
+
+Охранником является любой объект, вызываемый с помощью `__call__(self, request)`. Он получает объект FastAPI `Request`. Поднимите `HTTPException`, чтобы заблокировать, верните `None`, чтобы разрешить.
+```python
+from fastapi import HTTPException
+
+class RoleGuard:
+    def __init__(self, role: str):
+        self.role = role
+
+    def __call__(self, request) -> None:
+        if request.user.role != self.role:
+            raise HTTPException(403)
+```
+---
+
+## Охранник на маршруте
+```python
+---
+from nexy.decorators import UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import UseGuard, Controller
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@Controller("/users")
+"@UseGuard(AuthGuard())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+
+    "@UseGuard(AdminGuard())
+    def delete(self, user_id: int) -> dict:
+        ...
+```
+## Несколько охранников
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## Подпись
+```python
+UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## Заказ
+
+Охранники на уровне класса выполняются раньше, чем меры защиты на уровне метода. Все запускаются как FastAPI `Depends`.

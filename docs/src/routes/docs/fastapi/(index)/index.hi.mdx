@@ -1,0 +1,61 @@
+नेक्सी में # फास्टएपीआई
+
+नेक्सी **FastAPI** और **Starlette** पर बनी है। प्रत्येक फास्टएपीआई सुविधा नेक्सी में उपलब्ध है - कोई रैपर नहीं, कोई अमूर्तता नहीं। `fastapi` से सीधे आयात करें।
+
+## क्या उपलब्ध है
+
+| फ़ीचर | आयात | में काम करता है |
+|------|-------||-------|
+| अनुरोध निकाय (पाइडेंटिक) | `from pydantic import BaseModel` | दोनों |
+| पथ पैरामीटर | `from fastapi import Path` | दोनों |
+| क्वेरी पैरामीटर | `from fastapi import Query` | दोनों |
+| कुकी पैरामीटर | `from fastapi import Cookie` | दोनों |
+| हेडर पैरामीटर | `from fastapi import Header` | दोनों |
+| फॉर्म डेटा | `from fastapi import Form` | दोनों |
+| फ़ाइल अपलोड | `from fastapi import File, UploadFile` | दोनों |
+| निर्भरताएँ | `from fastapi import Depends` | दोनों |
+| पृष्ठभूमि कार्य | `from fastapi import BackgroundTasks` | दोनों |
+| HTTP त्रुटियाँ | `from fastapi import HTTPException` | दोनों |
+| स्थिति कोड | `from fastapi import status` | दोनों |
+| वेबसॉकेट | `from fastapi import WebSocket` | दोनों |
+| निवेदन | `from fastapi import Request` | दोनों |
+| प्रतिक्रियाएँ | `from fastapi.responses import ...` | दोनों |
+| मिडलवेयर | `from starlette.middleware import Middleware` | दोनों |
+| कॉर्स | `from fastapi.middleware.cors import CORSMiddleware` | दोनों |
+| एपीआईराउटर | `from fastapi import APIRouter` | केवल मॉड्यूलर |
+| परीक्षण ग्राहक | `from fastapi.testclient import TestClient` | दोनों |
+
+---
+
+## मूल मार्ग
+```python
+# src/routes/users/[id].nexy
+---
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+def POST(body: CreateUser):
+    return {"name": body.name}
+---
+```
+```python
+from nexy.decorators import Controller
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"name": body.name}
+```
+## नेक्सी क्या जोड़ता है?
+
+नेक्सी फास्टएपीआई को फ़ाइल-आधारित रूटिंग, `.nexy` घटकों, मॉड्यूलर डीआई और फ्रंटएंड फ्रेमवर्क एकीकरण के साथ लपेटता है। लेकिन यह **फास्टएपीआई को कभी नहीं छुपाता** - `nexy.app` एक फास्टएपीआई `APIRouter` है, कॉन्फ़िगरेशन सभी स्टारलेट मिडलवेयर को उजागर करता है, और प्रत्येक फास्टएपीआई निर्भरता/प्रतिक्रिया/अपवाद अपरिवर्तित काम करता है।

@@ -1,0 +1,101 @@
+#i18n
+
+国際化の構成 — ロケール検出、翻訳ファイル、および RTL サポート。
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "es"]
+    useDefaultLocale = "en"
+    useLocaleCookieName = "nexy-locale"
+    useLocaleDetection = {"header": True, "cookie": True}
+    useRTL = False
+```
+
+---
+
+## フィールド
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useLocales` | `list[str] \| None` | `None` |利用可能なロケール。 `None` の場合は `nexy/i18n/` から自動検出されます。 |
+| `useDefaultLocale` | `str` | `"en"` |検出が失敗した場合のフォールバック ロケール。 |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` |ユーザーのロケール選択を保持するための Cookie 名。 |
+| `useLocaleDetection` | `dict \| None` | `None` |検出戦略: `header`、`cookie`、`path`。 |
+| `useRTL` | `bool` | `False` |右から左へのレイアウトのサポートを有効にします。 |
+
+---
+
+## 翻訳ファイル
+
+JSON 翻訳ファイルを `nexy/i18n/<locale>/` に配置します。
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+    "welcome": "Welcome",
+    "greeting": "Hello!"
+}
+```
+
+```json
+// nexy/i18n/fr/common.json
+{
+    "welcome": "Bienvenue",
+    "greeting": "Bonjour !"
+}
+```
+
+---
+
+## テンプレートでの使用法
+
+```nexy
+---
+from nexy.i18n import t
+welcome = t("welcome")
+---
+<h1>{{ welcome }}</h1>
+```
+
+---
+
+## Python での使用法
+
+```python
+from nexy.i18n import trans, t
+
+msg = trans("welcome")            # explicit
+msg = t("welcome")                # shorthand
+msg = t("missing_key", default="Fallback")
+```
+
+---
+
+## ロケールの切り替え
+
+```python
+from nexy.i18n import useLocale
+locale = useLocale()
+print(locale["locale"])       # "fr"
+print(locale["is_rtl"])       # False
+print(locale["available"])    # ["en", "fr", "es"]
+```
+
+---
+
+## RTL サポート
+
+`useRTL = True` の場合、Nexy は `<html>` 要素に `dir="rtl"` 属性を設定し、サポートされているフレームワークの RTL 調整されたスタイルシートをロードします。

@@ -1,0 +1,87 @@
+# Pruebas
+
+Las aplicaciones Nexy son aplicaciones FastAPI internas: pruébalas con `TestClient` de Starlette.
+
+```bash
+pip install httpx pytest-anyio  # httpx for TestClient, anyio for async tests
+```
+
+## Configuración de prueba
+
+```python
+# tests/test_app.py
+from fastapi.testclient import TestClient
+from nexy.app import app
+
+client = TestClient(app)
+
+def test_home():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"Hello": "World"}
+```
+
+## Rutas de prueba
+
+```python
+def test_create_user():
+    response = client.post("/users", json={"name": "Alice", "email": "a"@b.com"})
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == "Alice"
+```
+
+## Prueba con autenticación
+
+```python
+def test_protected_route():
+    response = client.get("/admin", headers={"Authorization": "Bearer test-token"})
+    assert response.status_code == 200
+```
+
+## Accesorios con pytest
+
+```python
+# conftest.py
+import pytest
+from fastapi.testclient import TestClient
+from nexy.app import app
+
+"@pytest.fixture
+def client():
+    return TestClient(app)
+
+# test_users.py
+def test_list_users(client):
+    resp = client.get("/users")
+    assert resp.status_code == 200
+```
+
+## Probando WebSocket
+
+```python
+def test_ws():
+    with client.websocket_connect("/ws") as ws:
+        ws.send_json({"type": "ping"})
+        data = ws.receive_json()
+        assert data["type"] == "pong"
+```
+
+## Pruebas asíncronas
+
+```python
+import pytest
+
+"@pytest.mark.anyio
+async def test_async_route():
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get("/")
+        assert response.status_code == 200
+```
+
+## Consejos
+
+- Utilice `TestClient` como administrador de contexto si su aplicación tiene eventos de vida útil
+- Simular servicios externos con `httpx.MockTransport` o `responses`
+- Ejecute pruebas con `pytest tests/ -v` (no se necesita ningún comando especial de Nexy)
+- TestClient utiliza `httpx` internamente: la misma API que `requests`

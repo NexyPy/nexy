@@ -1,0 +1,47 @@
+# ग्राहक उत्पन्न करें
+
+अपने OpenAPI स्कीमा से टाइप-सुरक्षित क्लाइंट SDK जेनरेट करें।
+
+## फास्टएपीआई ने क्लाइंट तैयार किया
+
+फास्टएपीआई में एक `generate_client` कमांड शामिल है जो टाइपस्क्रिप्ट/जावास्क्रिप्ट क्लाइंट को आउटपुट करता है:
+
+```bash
+pip install fastapi
+fastapi-codegen --input openapi.json --output ./client
+```
+
+या `openapi-generator` का उपयोग करें:
+
+```bash
+npm install "@openapitools/openapi-generator-cli
+npx openapi-generator-cli generate \
+    -i http://localhost:3000/openapi.json \
+    -g typescript-fetch \
+    -o ./client
+```
+
+## नेक्सी + लिबलैब
+
+[नेक्सी ओपनएपीआई यूआरएल] → [liblab](https://liblab.com) कई भाषाओं में एसडीके उत्पन्न करता है।
+
+## मैनुअल फ़ेच
+
+साधारण मामलों के लिए, सीधे `fetch` का उपयोग करें:
+
+```typescript
+const res = await fetch("/api/items/1");
+const item = await res.json();
+```
+
+## क्लाइंट लाइब्रेरी
+
+नेक्सी `./actions/` में [Actions](/docs/guides/actions) के लिए टाइपस्क्रिप्ट रैपर उत्पन्न करता है। रूट हैंडलर के लिए, अपने पसंदीदा HTTP क्लाइंट (`fetch`, `axios`, `httpx`) का उपयोग करें।
+
+## भाषाएँ
+
+| उपकरण | भाषाएँ |
+|------|--------|
+| `openapi-generator` | टाइपस्क्रिप्ट, पायथन, जावा, गो, सी#, रस्ट, 50+ |
+| `liblab` | टाइपस्क्रिप्ट, पायथन, गो, जावा, कोटलिन, सी# |
+| `fastapi-codegen` | टाइपस्क्रिप्ट (फ़ेच/एक्सियोस) |

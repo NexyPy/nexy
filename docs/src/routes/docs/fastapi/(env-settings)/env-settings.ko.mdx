@@ -1,0 +1,72 @@
+# 환경 및 설정
+
+환경 변수 및 `.env` 파일을 사용하여 구성을 관리합니다.
+
+## `.env` 파일
+
+Nexy는 시작 시 `.env` 파일을 자동으로 읽습니다(`python-dotenv`를 통해).
+
+```env
+# .env
+DATABASE_URL=postgresql://localhost/mydb
+SECRET_KEY=change-me-in-production
+DEBUG=true
+```
+
+`os.environ`를 통해 액세스하세요:
+
+```python
+import os
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+```
+
+## 피단틱 설정
+
+유효성 검사를 통해 입력된 설정의 경우:
+
+```bash
+pip install pydantic-settings
+```
+
+```python
+# src/settings.py
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str = "sqlite:///dev.db"
+    secret_key: str = "dev-key"
+    debug: bool = True
+
+    model_config = {"env_file": ".env"}
+
+settings = Settings()
+```
+
+그런 다음 어디에서나 사용할 수 있습니다.
+
+```python
+from src.settings import settings
+
+def GET():
+    return {"db": settings.database_url}
+```
+
+## NexyConfig의 환경 변수
+
+`os.getenv`를 사용하여 환경 변수를 [Nexy config](/docs/config/nexy)에 전달합니다.
+
+```python
+import os
+
+class NexyConfig(NexyConfigModel):
+    usePort = int(os.getenv("PORT", "3000"))
+    useTitle = os.getenv("SITE_TITLE", "My App")
+```
+
+## 제작 모범 사례
+
+- 절대 `.env`를 git에 커밋하지 마세요 — `.gitignore`에 추가하세요
+- 클라우드 제공업체의 비밀 관리자 또는 CI/CD 비밀을 프로덕션에 사용하세요.
+- 충돌을 피하기 위해 환경 변수(예: `NEXY_`, `APP_`) 접두사를 붙입니다.
+- 유효성 검사 및 유형 강제를 위해 `pydantic-settings`를 사용합니다.

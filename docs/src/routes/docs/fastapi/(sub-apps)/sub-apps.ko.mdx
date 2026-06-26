@@ -1,0 +1,51 @@
+# 하위 애플리케이션 및 마운트
+
+하위 경로에 독립적인 ASGI 또는 WSGI 애플리케이션을 마운트합니다.
+
+## 서브앱 마운트
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+이제 `/sub/`는 하위 애플리케이션을 제공합니다. 자체 경로, 미들웨어 및 수명이 있습니다.
+
+## Starlette 하위 앱
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## WSGI 하위 앱(Flask, Django)
+
+[WSGI](/docs/fastapi/wsgi)를 참조하세요.
+
+## 마운트 작동 방식
+
+- 요청이 하위 앱에 도달하기 전에 마운트 **접두사가 제거됩니다**
+- 하위 앱에는 **자체 미들웨어 스택**이 있습니다. — Nexy 인증/미들웨어는 적용되지 않습니다.
+- 하위 앱은 모든 ASGI 애플리케이션(FastAPI, Starlette, Litestar 등)일 수 있습니다.
+- 탈것을 주문하면 첫 번째 경기에서 승리합니다.
+
+## 제한사항
+
+- WebSocket은 마운트 전체에서 지원되지 않습니다.
+- 수명 이벤트는 앱별로 진행됩니다.
+- OpenAPI 문서는 루트 앱만 다룹니다. 하위 앱 문서는 별도의 설정이 필요합니다.

@@ -1,0 +1,51 @@
+# التطبيقات الفرعية والتركيبات
+
+قم بتحميل تطبيقات ASGI أو WSGI المستقلة على مسار فرعي.
+
+## تركيب تطبيق فرعي
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+الآن `/sub/` يخدم التطبيق الفرعي. لديها طرقها الخاصة، والوسيطة، وعمرها.
+
+## التطبيق الفرعي Starlette
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## تطبيق WSGI الفرعي (Flask، Django)
+
+انظر [WSGI](/docs/fastapi/wsgi).
+
+## طريقة عمل التركيبات
+
+- يتم تجريد التثبيت **البادئة** قبل أن تصل الطلبات إلى التطبيق الفرعي
+- تحتوي التطبيقات الفرعية على **مجموعة البرامج الوسيطة الخاصة بها** — لا تنطبق برامج المصادقة/البرامج الوسيطة Nexy
+- يمكن أن تكون التطبيقات الفرعية أي تطبيق ASGI (FastAPI، Starlette، Litestar، وما إلى ذلك)
+- يتم ترتيب الجبال - الفوز بالمباراة الأولى
+
+## القيود
+
+- WebSocket غير مدعوم عبر الحوامل
+- أحداث العمر لكل تطبيق
+- تغطي مستندات OpenAPI التطبيق الجذر فقط - وتحتاج مستندات التطبيقات الفرعية إلى إعداد منفصل

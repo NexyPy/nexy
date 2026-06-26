@@ -1,0 +1,126 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Обработчики маршрутов (API)
+
+Обработчик маршрута — это файл `.py` в `src/routes/`, который предоставляет конечную точку API. В отличие от страниц (`.nexy`/`.mdx`), обработчики возвращают JSON или необработанные данные.
+
+---
+
+## Создание обработчика
+```bash
+routes/
+└── api/
+    └── hello.py           →  GET /api/hello
+```
+```python
+# api/hello.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"message": "Hello from Nexy!"}
+```
+
+Nexy maps function names to HTTP methods: `GET` , `POST`, `PUT`, `PATCH`, `DELETE`.
+
+---
+
+## Доступные методы HTTP
+
+Определите одну функцию для каждого метода в одном файле:
+```python
+# routes/api/items.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"items": []}
+
+async def POST(request: Request):
+    data = await request.json()
+    return {"created": data}
+
+async def DELETE(request: Request, id: int):
+    return {"deleted": id}
+```
+
+Каждая функция соответствует `GET`, `POST`, `DELETE` на `/api/items`.
+
+---
+
+## Тело запроса
+```python
+# routes/api/users.py
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+async def POST(request: Request, body: CreateUser):
+    return {"name": body.name, "email": body.email}
+```
+FastAPI автоматически проверяет тело — возвращает 422 при неверном вводе.
+
+---
+
+## Коды состояния
+
+Верните `status_code` с помощью `JSONResponse`:
+```python
+from fastapi.responses import JSONResponse
+
+async def POST(request: Request):
+    return JSONResponse({"created": True}, status_code=201)
+```
+---
+
+## Параметры маршрута
+```python
+# routes/api/users/[id].py
+from fastapi import Request
+
+async def GET(request: Request, id: int):
+    return {"user_id": id}
+```
+Динамические сегменты (`[id]`) вводятся как аргументы ключевых слов с автоматическим преобразованием типов.
+
+---
+
+## Зависимости
+
+`Depends`, `Header`, `Query`, `Cookie` FastAPI работают изначально:
+```python
+from fastapi import Depends, Header, Query
+
+def get_db():
+    return {"connection": "ok"}
+
+async def GET(request: Request, db=Depends(get_db), x_api_key: str = Header(None)):
+    return {"db": db, "api_key": x_api_key}
+```
+---
+
+## ответов
+
+| Тип возврата | Ответ |
+|-------------|----------|
+| `dict` | `application/json` |
+| `list` | `application/json` |
+| `str` | `text/plain` |
+| `BaseModel` | `application/json` |
+| `Response` | Пользовательский (любой) |
+| `None` | `200 OK` пусто |
+
+---
+
+## Лучшие практики
+
+- Один файл `.py` = один путь маршрута.
+- Используйте имена функций, соответствующие методам HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
+- Используйте модели Pydantic для проверки запросов.
+- Используйте `JSONResponse` для пользовательских кодов состояния.
+- Информацию о мутациях, вызванных клиентом, см. в [Actions](/docs/guides/actions).
+

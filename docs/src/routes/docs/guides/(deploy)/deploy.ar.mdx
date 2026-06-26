@@ -1,0 +1,51 @@
+# نشر
+
+يقوم `nx build` بتجميع تطبيقك، بينما يقوم `nx start` بتقديمه في الإنتاج. راجع [CLI build](/docs/cli/build) و[CLI start](/docs/cli/start) للأعلام.
+
+## عامل الميناء
+
+```dockerfile
+FROM python:3.13-slim
+WORKDIR /app
+COPY . .
+RUN pip install nexy && nx build
+CMD ["nx", "start"]
+```
+
+---
+
+## متغيرات البيئة
+
+| متغير | الافتراضي | الوصف |
+|----------|--------|-------------|
+| `NEXY_PORT` | `3000` | منفذ الخادم |
+| `NEXY_HOST` | `0.0.0.0` | ربط العنوان |
+| `NEXY_DEBUG` | `false` | وضع التصحيح |
+| `NEXY_INLINE_CLIENT` | `false` | مضمنة CSS/JS في HTML |
+
+---
+
+## أدلة المنصة
+
+### الخادم الافتراضي الخاص
+
+```bash
+uv sync
+nx build
+nx start --host 0.0.0.0 --port 80
+```
+
+### مقدمي الخدمات السحابية
+
+يتم نشر Nexy على أي نظام أساسي يدعم تطبيقات Python ASGI:
+
+- **السكك الحديدية** — يكتشف تلقائيًا `nx start` عبر Procfile
+- **Fly.io** — استخدم `CMD ["nx", "start"]` في Dockerfile
+- **العرض** — اضبط أمر البدء على `nx start`
+- **Hetzner / DigitalOcean** — خدمة Docker أو systemd
+
+---
+
+## تصدير ثابت
+
+بالنسبة للمواقع الثابتة بالكامل، يمكن لـ Nexy عرض كل صفحة مسبقًا إلى `__nexy__/static/` أثناء الإنشاء. يمكنك العمل مع أي خادم ملفات ثابت (Nginx، Caddy، S3، Cloudflare Pages).

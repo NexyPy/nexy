@@ -1,0 +1,275 @@
+# Controllers
+
+Controllers group related HTTP endpoints under a common prefix. Instead of scattering routes across files, a controller keeps every endpoint for a resource in one class.
+
+## Why Controllers?
+
+In FBR, you create `users/index.nexy`, `users/[id].nexy`, `users/create.nexy`. Each file handles one URL. That works until one page needs data from another, or you share auth logic across 10 user routes.
+
+A controller puts all `/users/*` routes in one class. Shared dependencies go in the constructor. Route-specific logic goes in each method.
+
+## Creating a Controller
+
+Decorate a class with `"@Controller(prefix)`:
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+
+    def post(self, data: dict):
+        return {"id": 3, **data}
+```
+
+**Method names define the HTTP method.** Nexy uppercases the method name and matches it against standard HTTP methods. `GET` → GET, `post` → POST, `Put` → PUT.
+
+All routes in this controller are at `/users/`:
+- `GET /users/` → `GET()`
+- `POST /users/` → `post(data)`
+
+**Gotcha**: You can only have ONE method per HTTP method per controller. `def GET(self): ... def get(self): ...` would raise a `ValueError` at startup.
+
+## Route Method Mapping
+
+| Method Name | HTTP Method | Example |
+|-------------|-------------|---------|
+| `GET`, `get`, `Get` | GET | Read resources |
+| `post`, `POST`, `Post` | POST | Create resources |
+| `put`, `PUT`, `Put` | PUT | Replace resources |
+| `delete`, `DELETE`, `Delete` | DELETE | Remove resources |
+| `patch`, `PATCH`, `Patch` | PATCH | Partial update |
+| `options`, `OPTIONS`, `Options` | OPTIONS | CORS preflight |
+| `head`, `HEAD`, `Head` | HEAD | Response headers only |
+| `SOCKET`, `socket`, `Socket` | WebSocket | Real-time communication |
+
+**Convention**: Use uppercase for read operations (`GET`), lowercase for mutations (`post`, `put`, `delete`). This makes the controller easier to scan — you see the HTTP verbs at a glance.
+
+## Path Parameters
+
+Path parameters go in the **controller prefix**, not in individual methods:
+
+```python
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {"id": id, "name": "Charlie"}
+
+    def delete(self, id: int):
+        return {"deleted": id}
+```
+
+Path parameters are **type-coerced** — the router reads the type hint and converts the string from the URL. Supported types: `int`, `float`, `str`, `uuid.UUID`, `datetime.datetime`.
+
+**Gotcha**: If coercion fails (e.g., `GET /users/abc` where `id: int`), the router returns a 422 validation error, not a 404. This tells the client the parameter format is wrong, not that the resource doesn't exist.
+
+### Multiple path parameters
+
+```python
+"@Controller("/users/{userId}/posts/{postId}")
+class UserPostController:
+    def GET(self, userId: int, postId: int):
+        return {"user": userId, "post": postId}
+```
+
+## Query Parameters
+
+Query string parameters are available as function keyword arguments with defaults:
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self, q: str | None = None, page: int = 1):
+        return {"query": q, "page": page}
+```
+
+FastAPI's dependency injection system handles query parameter parsing automatically. Parameters that are not path parameters are interpreted as query parameters.
+
+You can also access query params via `request.query_params`:
+
+```python
+from fastapi import Request
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, request: Request):
+        q = request.query_params.get("q")
+        page = int(request.query_params.get("page", 1))
+        return {"query": q, "page": page}
+```
+
+**Gotcha**: `useQuery` returns path parameters, not query parameters. For query params, declare them as function keyword arguments or use `request.query_params`.
+
+## Request Body
+
+POST, PUT, and PATCH methods automatically parse the request body. Declare a type hint:
+
+```python
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"id": 4, **body.model_dump()}
+```
+
+Body is parsed as JSON by default. Pydantic models provide automatic validation — invalid fields return a 422 with field-level errors.
+
+**Gotcha**: If you use `dict` as the type hint, you lose validation. Always prefer Pydantic for user-facing endpoints.
+
+## Overriding Status Codes
+
+Use `"@UseResponse(status_code=...)` to override the default status code:
+
+```python
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201)
+    def post(self, data: dict):
+        return {"id": 5}
+```
+
+Default status codes: `GET` → 200, `POST` → 201, `DELETE` → 204, others → 200.
+
+`"@UseResponse` also supports response model, response class, response description, and other FastAPI-compatible options:
+
+```python
+from nexy.decorators import UseResponse
+from fastapi.responses import HTMLResponse
+
+"@UseResponse(
+    status_code=200,
+    response_class=HTMLResponse,
+    response_model=None,
+    response_description="User profile page",
+)
+def GET(self):
+    ...
+```
+
+## Route Metadata
+
+Add OpenAPI metadata with `"@UseRoute`:
+
+```python
+from nexy.decorators import Controller, UseRoute
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(summary="List all users", description="Returns paginated user list")
+    def GET(self):
+        return [...]
+
+    "@UseRoute(summary="Create a user", deprecated=True)
+    def post(self, data: dict):
+        return [...]
+```
+
+`"@UseRoute` supports: `name`, `tags`, `summary`, `description`, `deprecated`, `include_in_schema`, `operation_id`, `openapi_extra`.
+
+## Async Handlers
+
+Controllers support both sync and async handlers:
+
+```python
+"@Controller("/users")
+class UsersController:
+    async def GET(self):
+        users = await db.fetch_all()
+        return users
+
+    def post(self, data: dict):
+        # Sync is fine for CPU-bound work
+        return process_sync(data)
+```
+
+Nexy automatically awaits async handlers. Sync handlers run in a threadpool. Prefer async for I/O-bound endpoints (database, HTTP calls).
+
+## Error Handling
+
+Raise HTTP exceptions for error responses:
+
+```python
+from starlette.exceptions import HTTPException
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        if id < 1:
+            raise HTTPException(400, "ID must be positive")
+        user = find_user(id)
+        if not user:
+            raise HTTPException(404, "User not found")
+        return user
+```
+
+Use standard HTTP status codes. Nexy re-exports exceptions from Starlette.
+
+## One Controller, One Path
+
+A fundamental constraint: **all methods in a controller share the same path**. The path is determined by the controller prefix. You cannot define sub-paths per method.
+
+If you need `/users` and `/users/{id}`, create two controllers:
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [...]          # GET /users/
+
+    def post(self, data: dict):
+        return {...}          # POST /users/
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {...}          # GET /users/42
+
+    def delete(self, id: int):
+        return None           # DELETE /users/42
+```
+
+Both controllers can be in the same module. This separation is intentional — each controller handles one resource path.
+
+## Module Integration
+
+Controllers are registered in a module via the `controllers` class attribute:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+```
+
+The module can set a prefix that applies to all its controllers:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+    # → GET /api/v1/users/, DELETE /api/v1/users/42
+```
+
+## Best Practices
+
+1. **One resource per controller** — `UsersController`, `PostsController`. Not a single `ApiController`.
+2. **Keep methods focused** — each method does one thing.
+3. **Use dependency injection** — don't instantiate services in the method body.
+4. **Prefer Pydantic for request bodies** — `body: dict` is a code smell.
+5. **Prefix controllers meaningfully** — `/users`, `/posts`, `/auth`.
+
+## Next Steps
+
+- [Providers & DI](/docs/modular/providers) — inject services into your controllers
+- [Modules](/docs/modular/modules) — organize controllers into feature modules
+- [Guards](/docs/modular/guards) — protect routes with authorization

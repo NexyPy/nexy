@@ -1,0 +1,61 @@
+# Aperçu de la base de données
+
+Nexy ne fournit pas d'abstraction de base de données intégrée. Vous choisissez votre ORM et le configurez comme vous le feriez dans n’importe quel projet FastAPI.
+
+---
+
+## ORM pris en charge
+
+| ORM | Style | Asynchrone | Outil de migration |
+|-----|-------|-------|----------------|
+| Modèle SQL | Pydantique-natif | Oui | Alambic |
+| SQLAlchimie | Complet et mature | Oui | Alambic |
+| Tortue-ORM | Comme Django | Oui | Aerich |
+
+---
+
+## Modèle général
+
+1. Installez l'ORM et le pilote de votre choix
+2. Configurez la connexion dans votre application
+3. Définir des modèles
+4. Créer et appliquer des migrations
+5. Utilisez l'ORM dans vos gestionnaires de route
+
+---
+
+## Modèle d'injection de dépendances
+
+Créez une dépendance de base de données à utiliser sur vos itinéraires :
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+Injectez ensuite dans les gestionnaires de routes :
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## Étapes suivantes
+
+- [SQLModel](/docs/orm/sqlmodel) — recommandé pour les nouveaux projets
+- [SQLAlchemy](/docs/orm/sqlalchemy) — contrôle total et flexibilité
+- [Tortoise-ORM](/docs/orm/tortoise) — ORM asynchrone de type Django

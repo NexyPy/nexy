@@ -3,19 +3,8 @@ name: CI
 on:
   push:
     branches: [main, develop]
-    paths-ignore:
-      - "docs/**"
-      - "*.md"
-      - ".github/**"
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "docs/**"
-      - "*.md"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   quality:
@@ -29,25 +18,22 @@ jobs:
 
       - uses: astral-sh/setup-uv@v5
         with:
-          enable-cache: true
+          python-version: ${{ matrix.python-version }}
 
-      - name: Set up Python ${{ matrix.python-version }}
-        run: uv python install ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        run: uv sync --group dev
+      - name: Install deps
+        run: uv pip install -e ".[dev]"
 
       - name: Lint
-        run: uv run ruff check nexy/
+        run: ruff check nexy/
 
-      - name: Format check
-        run: uv run ruff format nexy/ --check
+      - name: Format
+        run: ruff format nexy/ --check
 
       - name: Typecheck
-        run: uv run python -m mypy nexy --strict
+        run: python -m mypy nexy --strict
 
       - name: Test
-        run: uv run python -m pytest tests/ -v
+        run: python -m pytest tests/ -v --tb=short
 
-      - name: Build
-        run: uv build
+      - name: Test coverage
+        run: python -m pytest tests/ --cov=nexy --cov-report=term-missing

@@ -1,0 +1,55 @@
+# WSGI (قارورة، جانغو)
+
+قم بتثبيت تطبيقات WSGI (Flask، Django، Pyramid) جنبًا إلى جنب مع مسارات Nexy.
+
+##قارورة
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+مسارات القارورة متاحة الآن عند `/legacy/hello`. لا تزال جميع ميزات Nexy (المصادقة والبرامج الوسيطة) سارية على التطبيق الأصلي.
+
+##جانجو
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## كيف يعمل
+
+- `WSGIMiddleware` يغلف أي WSGI قابل للاستدعاء كـ ASGI
+- يعمل التطبيق الفرعي في تجمع مؤشرات الترابط — ولا يمنع حلقة الحدث
+- تتم إزالة بادئة المسار (`/legacy`، `/django`) قبل الوصول إلى تطبيق WSGI
+- لا تنطبق البرامج الوسيطة Nexy (المصادقة، الجلسة، CORS) على تطبيق WSGI المثبت - قم بتكوينها هناك بشكل منفصل
+
+## القيود
+
+- دورة الطلب/الاستجابة فقط - WebSocket غير مدعوم
+- لا يمكن لتطبيقات WSGI استخدام خطافات Nexy أو تبعياتها
+- الأداء مقيد بتجمع مؤشرات الترابط — فكر في الانتقال إلى مسارات Nexy الأصلية

@@ -1,0 +1,123 @@
+# Inicio rápido
+
+Cree un proyecto Nexy en segundos: no se requiere instalación global.
+
+## Requisitos previos
+
+- **Python 3.11+**
+- **[uv](https://docs.astral.sh/uv/)** (administrador de paquetes)
+- **Node.js 18+** (para componentes del cliente y Tailwind CSS)
+
+## Crear un proyecto
+
+```bash
+uvx nexy new
+```
+
+O especifique un nombre directamente:
+
+```bash
+uvx nexy new my-app
+```
+
+`uvx` descarga y ejecuta Nexy sobre la marcha: no hay nada que instalar globalmente.
+
+## Indicaciones interactivas
+
+Después de ejecutar el comando, Nexy lo guiará a través de la configuración del proyecto:
+
+### 1. Enrutador
+
+```text
+
+» Use file-based router? (Y/n)
+```
+
+- **Sí** — Enrutamiento basado en archivos (FBR): las páginas son archivos en `routes/`
+- **No** — Enrutamiento modular: controladores y módulos con decoradores
+
+### 2. Tipo de proyecto
+
+```text
+
+» Choose the type of project
+
+  ʋ Web (monolith web app)
+
+    API (RESTful API)
+```
+
+### 3. Marco del cliente (solo web)
+
+```text
+
+» Use a client component? (Y/n)
+```
+
+En caso afirmativo:
+
+```text
+
+» Choose the client framework
+
+  ʋ React
+
+    Vue
+
+    Svelte
+
+    Solid
+
+    Preact
+
+    None
+```
+
+Tailwind CSS se configura automáticamente cuando se selecciona un marco de cliente.
+
+### 4. ORM y base de datos
+
+```text
+
+» Choose an ORM
+
+  ʋ SQLModel
+
+    SQLAlchemy
+
+    Tortoise-ORM
+
+    None
+```
+
+Si se selecciona un ORM:
+
+```text
+
+» Choose database
+
+  ʋ SQLite
+
+    PostgreSQL
+
+    MySQL
+
+» Database URL (sqlite:///dev.db)
+```
+
+## Inicie el servidor de desarrollo
+
+```bash
+cd my-app
+
+nexy dev
+```
+
+Abre [http://localhost:3000](http://localhost:3000) para ver tu aplicación.
+
+## Próximos pasos
+
+Tu proyecto está listo. Dirígete a [Project Structure](/docs/projet_structure) para comprender el diseño o salta directamente al edificio:
+
+- [Your First Page](/docs/fbrouters/pages) — Enrutamiento basado en archivos
+- [Your First Controller](/docs/modular/controllers) — Enrutamiento modular

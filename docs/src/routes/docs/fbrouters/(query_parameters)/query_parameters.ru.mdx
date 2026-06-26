@@ -1,0 +1,55 @@
+---
+from nexy import usePathname, useSearchParams
+from "@components/link.nexy" import Link
+pathname = usePathname()
+params = useSearchParams()
+---
+
+# Параметры запроса
+
+Параметры запроса — это пары `?key=value` в URL-адресе. Nexy предоставляет их через `useSearchParams()` во вступительной части или `request.query_params` в обработчике.
+
+---
+
+## На странице `.nexy`
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Results for: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+Объект `params` ведет себя как словарь: `.get(key, default)`, `.keys()`, `.items()`.
+
+---
+
+## В обработчике `.py`
+```python
+# routes/search.py
+from fastapi import Request
+
+async def get(request: Request, q: str = "", page: int = 1):
+    results = search_database(q, page=page)
+    return {"results": results, "page": page}
+```
+FastAPI автоматически разрешает типизированные параметры запроса.
+
+---
+
+## Параметры текущей страницы
+
+Эта страница использует `useSearchParams()` во вступительной части. Текущие параметры запроса:
+```json
+{{ params | safe }}
+```
+---
+
+## Лучшие практики
+
+- Используйте `useSearchParams()` в компонентах `.nexy` для страниц, отображаемых на сервере.
+- Используйте `request.query_params` в обработчиках `.py` для API.
+- Значения всегда являются строками — преобразуйте их с помощью `int()`, `bool()` и т. д.
+<Link href="/docs/components">Next: Views →</Link>

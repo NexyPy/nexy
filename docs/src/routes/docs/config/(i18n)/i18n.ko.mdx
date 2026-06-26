@@ -1,0 +1,101 @@
+#i18n
+
+국제화 구성 - 로케일 감지, 번역 파일 및 RTL 지원.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "es"]
+    useDefaultLocale = "en"
+    useLocaleCookieName = "nexy-locale"
+    useLocaleDetection = {"header": True, "cookie": True}
+    useRTL = False
+```
+
+---
+
+## 필드
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` | 사용 가능한 로케일. `None`인 경우 `nexy/i18n/`에서 자동 감지됩니다. |
+| `useDefaultLocale` | `str` | `"en"` | 감지 실패 시 대체 로캘입니다. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | 사용자의 로케일 선택을 유지하기 위한 쿠키 이름입니다. |
+| `useLocaleDetection` | `dict \| None` | `None` | 탐지 전략: `header`, `cookie`, `path`. |
+| `useRTL` | `bool` | `False` | 오른쪽에서 왼쪽 레이아웃 지원을 활성화합니다. |
+
+---
+
+## 번역 파일
+
+JSON 번역 파일을 `nexy/i18n/<locale>/`에 배치합니다.
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+    "welcome": "Welcome",
+    "greeting": "Hello!"
+}
+```
+
+```json
+// nexy/i18n/fr/common.json
+{
+    "welcome": "Bienvenue",
+    "greeting": "Bonjour !"
+}
+```
+
+---
+
+## 템플릿에서의 사용법
+
+```nexy
+---
+from nexy.i18n import t
+welcome = t("welcome")
+---
+<h1>{{ welcome }}</h1>
+```
+
+---
+
+## 파이썬에서의 사용법
+
+```python
+from nexy.i18n import trans, t
+
+msg = trans("welcome")            # explicit
+msg = t("welcome")                # shorthand
+msg = t("missing_key", default="Fallback")
+```
+
+---
+
+## 로케일 전환
+
+```python
+from nexy.i18n import useLocale
+locale = useLocale()
+print(locale["locale"])       # "fr"
+print(locale["is_rtl"])       # False
+print(locale["available"])    # ["en", "fr", "es"]
+```
+
+---
+
+## RTL 지원
+
+`useRTL = True`인 경우 Nexy는 `<html>` 요소에 `dir="rtl"` 속성을 설정하고 지원되는 프레임워크에 대해 RTL 조정 스타일시트를 로드합니다.

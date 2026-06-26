@@ -1,0 +1,191 @@
+
+# 구성 요소 사용
+
+구성 요소는 페이지 및 기타 구성 요소로 가져오는 `src/components/`의 `.nexy` 파일입니다.
+
+## 구성요소 생성
+
+구성 요소는 `.nexy` 파일입니다. 가장 간단한 가능한 구성 요소에는 머리말이 없습니다. HTML만 있습니다.
+
+```nexy
+<!-- src/components/Hello.nexy -->
+---
+---
+<h1>Hello Nexy!</h1>
+```
+
+그러나 대부분의 구성 요소에는 소품, 논리 및 템플릿이 있습니다.
+
+## 구성 요소 가져오기
+
+상대 경로와 구성된 별칭을 지원하는 Nexy의 구성 요소 가져오기 구문을 사용하세요.
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+from "@components/Button.nexy" import Button
+---
+```
+
+가져오기 경로는 현재 파일을 기준으로 합니다. `"@/`는 기본적으로 `src/`(또는 `useAliases`에서 구성한 항목)에 매핑됩니다.
+
+**특수 구문이 필요한 이유는 무엇입니까?** 컴파일러는 빌드 시 어떤 PascalCase 태그가 구성요소인지 알 수 없는 HTML 요소인지 알아야 하기 때문입니다. 새니타이저는 Python의 AST 구문 분석기가 보기 전에 이러한 가져오기를 변환하므로 구문 오류가 발생하지 않습니다.
+
+## 렌더링 구성요소
+
+템플릿에서 가져온 이름을 HTML 태그로 사용합니다.
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<Card title="Hello" count={5} />
+```
+
+컴파일러는 PascalCase 태그를 Jinja2 함수 호출로 변환합니다.
+
+| 템플릿 | 컴파일된 출력 |
+|----------|---|
+| `&lt;Card /&gt;` | `{{Card() }}` |
+| `&lt;Card title="Hi" /&gt;` | `{{ Card(title="Hi") }}` |
+| `&lt;Card count={5} /&gt;` | `{{ Card(count=5) }}` |
+| `&lt;Card&gt;content&lt;/Card&gt;` | `{% call Card() %}content{% endcall %}` |
+
+**이름 지정 요구 사항**: 구성 요소 이름은 **반드시** 대문자로 시작해야 합니다. 소문자를 사용하면 컴파일러는 이를 일반 HTML 요소로 처리하고 구성 요소 함수를 호출하지 않습니다. 이는 웹 플랫폼 규칙과 일치합니다(사용자 정의 요소에는 하이픈이 있어야 하며 PascalCase는 프레임워크 구성 요소용으로 예약되어 있습니다).
+
+## 소품 전달
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<!-- Static string -->
+<Card title="Hello" />
+
+<!-- Dynamic Jinja2 expression -->
+<Card title="{{ page_title }}" />
+
+<!-- Unquoted value (expression, not string) -->
+<Card count={5} active={true} items={["a", "b"]} />
+
+<!-- Mixed -->
+<Card title="{{ page_title }}" count={items|length} />
+```
+
+**속성 전달 규칙**:
+
+| 구문 | 값 유형 | 템플릿 출력 |
+|---------|------------|---|
+| `title="Hello"` | 문자열 | `Card(title="Hello")` |
+| `title="{{ var }}"` | 진자2 표현 | `Card(title=var)` |
+| `count={5}` | 파이썬 표현 | `Card(count=5)` |
+| `active=true` | 키워드(Python bool) | `Card(active=True)` |
+| `items={["a"]}` | 파이썬 표현 | `Card(items=["a"])` |
+
+Python 리터럴(`true`, `false`, `none`, 숫자)과 일치하는 따옴표가 없는 값은 있는 그대로 전달됩니다. 다른 모든 것은 문자열입니다.
+
+**알겠습니다**: `count={0}`는 정수 0을 전달합니다. `count="0"`는 문자열 `"0"`를 전달합니다. Jinja2 템플릿에서 `{% if count %}`는 `0`(거짓)과 `"0"`(진실)에 대해 다르게 평가됩니다. 숫자 0이 필요한 경우 `{0}`를 사용하세요.
+
+## 슬롯/어린이
+
+콘텐츠를 래핑하는 구성 요소는 `<slot />`를 사용하여 자식이 이동할 위치를 정의합니다.
+
+```nexy
+<!-- Card.nexy -->
+---
+title:prop[str] = ""
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <div class="card-body">
+    <slot />
+  </div>
+</div>
+```
+
+```nexy
+<!-- Usage -->
+---
+from "./Card.nexy" import Card
+---
+<Card title="My Card">
+  <p>This appears inside the slot.</p>
+</Card>
+```
+
+**슬롯 작동 방식**: 컴파일러는 하위 항목을 `{% call %}` 블록으로 래핑합니다. 구성 요소는 이를 `caller` 함수로 받습니다. `<slot />`는 `caller()`를 호출하고 결과를 출력합니다.
+
+**제한사항**:
+- 구성요소당 이름이 지정되지 않은 슬롯은 하나만 있습니다.
+- 범위가 지정된 슬롯 없음(대신 함수를 소품으로 전달)
+- 슬롯은 원시 Jinja2 템플릿이 아닌 `.nexy` 파일에서만 작동합니다.
+
+## 자동 폐쇄 vs 포장
+
+자동 폐쇄 구성요소(하위 없음):
+
+```nexy
+<Header title="Blog" />
+<Separator />
+<Spacer size={16} />
+```
+
+구성요소 감싸기(하위 포함):
+
+```nexy
+<Card title="Post">
+  <p>Content here</p>
+</Card>
+
+<Layout>
+  <Header />
+  <main>Page content</main>
+  <Footer />
+</Layout>
+```
+
+컴파일러는 자체 닫는 태그(`&lt;Card /&gt;`)와 하위 태그(`&lt;Card&gt;...&lt;/Card&gt;`)를 감지하고 적절한 Jinja2 구문을 생성합니다.
+
+## 조기 반품 / 조건부 렌더링
+
+구성 요소는 Python 함수이므로 앞 부분에서 반환할 수 있습니다.
+
+```nexy
+---
+title:prop[str] = ""
+if not title:
+    print("Warning: Card rendered without title")
+    # Return early — the template still runs but title is empty
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <slot />
+</div>
+```
+
+템플릿의 조건부 렌더링에는 Jinja2 `{% if %}`를 사용합니다.
+
+```nexy
+---
+show_header:prop[bool] = true
+---
+{% if show_header %}
+  <header>
+    <slot />
+  </header>
+{% endif %}
+```
+
+## 모범 사례
+
+- **파일당 하나의 구성요소** — 명확한 이름 지정, 찾기 쉬움
+- **템플릿을 50줄 미만으로 유지** — 길이가 길면 하위 구성 요소를 추출하세요.
+- **하드코딩 대신 소품 사용** — 구성 요소를 재사용 가능하게 만듭니다.
+- **PascalCase의 파일 이름 지정** — `blog_card.nexy`가 아닌 `BlogCard.nexy`
+- **선택적 값에 대한 기본 속성** — `title:prop[str]`가 아닌 `title:prop[str] = ""`
+
+## 다음
+
+- [Markup](/docs/components/markup): 템플릿 구문, 동적 속성, HTML 규칙
+- [Properties](/docs/components/properties): 입력된 소품, 기본값, 유효성 검사 패턴

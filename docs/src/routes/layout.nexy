@@ -1,7 +1,7 @@
 ---
-from "@/components/header.nexy" import Header
-from "@/components/footer.nexy" import Footer
-from "@/components/vercel.tsx" import VercelAnalytics
+from "@components/header.nexy" import Header
+from "@components/footer.nexy" import Footer
+from "@components/vercel.tsx" import VercelAnalytics
 
 from nexy import Vite
 
@@ -9,13 +9,44 @@ children:prop[NexyElement]
 ---
 
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="{{__locale}}" class="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexy & React | App </title>
     <Vite />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght"@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <style>
+        #nexy-loading-bar { position: fixed; top: 0; left: 0; z-index: 9999; width: 100%; height: 3px; pointer-events: none; opacity: 0; transition: opacity .2s; }
+        #nexy-loading-bar .bar { background: linear-gradient(90deg,#3b82f6,#8b5cf6); position: absolute; inset: 0; transform: translateX(-100%); }
+        #nexy-loading-bar.active { opacity: 1; }
+        #nexy-loading-bar.active .bar { animation: nexy-loading-indeterminate 1.5s infinite ease-in-out; }
+        @keyframes nexy-loading-indeterminate { 0% { transform: translateX(-100%); } 50% { transform: translateX(100%); } 100% { transform: translateX(200%); } }
+    </style>
+    <div id="nexy-loading-bar"><div class="bar"></div></div>
+    <script>
+        window.__nprogress = {
+            _el: document.getElementById('nexy-loading-bar'),
+            _timer: null,
+            start: function() {
+                var self = this;
+                if (self._timer) clearTimeout(self._timer);
+                self._el.classList.add('active');
+            },
+            done: function() {
+                var self = this;
+                self._el.classList.add('active');
+                self._timer = setTimeout(function() {
+                    self._el.classList.remove('active');
+                }, 200);
+            }
+        };
+    </script>
+    <script>window.__NEXY_LOCALES={{ _locale_info() | tojson }}</script>
     <script type="module">
         const TABS = [...document.querySelectorAll("#tabs")];
         TABS.forEach((tabs) => {
@@ -52,12 +83,10 @@ children:prop[NexyElement]
 
 </head>
 
-<body class="  antialiased min-h-dvh flex flex-col ">
+<body class="  antialiased min-h-dvh flex flex-col inter ">
     <VercelAnalytics />
     <Header />
-    <main class=" overflow-x-hidden">
-        {{children | safe}}
-    </main>
+    {{children | safe }}
     <Footer />
 </body>
 
@@ -270,10 +299,15 @@ children:prop[NexyElement]
 
                 event.preventDefault()
 
+                if (window.__nprogress) window.__nprogress.start()
+
                 const link = event.currentTarget
                 const url = getURL(link)
 
-                if (!url) return
+                if (!url) {
+                    if (window.__nprogress) window.__nprogress.done()
+                    return
+                }
 
                 const key = url.pathname + url.search
 
@@ -286,6 +320,7 @@ children:prop[NexyElement]
                     }
 
                     if (!html) {
+                        if (window.__nprogress) window.__nprogress.done()
                         window.location.href = url.href
                         return
                     }
@@ -297,6 +332,7 @@ children:prop[NexyElement]
                     const currentMain = document.querySelector("main")
 
                     if (!newMain || !currentMain) {
+                        if (window.__nprogress) window.__nprogress.done()
                         window.location.href = url.href
                         return
                     }
@@ -325,9 +361,12 @@ children:prop[NexyElement]
 
                     initLinks(document)
 
+                    if (window.__nprogress) window.__nprogress.done()
+
                 } catch (err) {
 
                     console.error("Navigation error:", err)
+                    if (window.__nprogress) window.__nprogress.done()
                     window.location.href = url.href
                 }
             }
@@ -340,6 +379,8 @@ children:prop[NexyElement]
 
             window.addEventListener("popstate", async () => {
 
+                if (window.__nprogress) window.__nprogress.start()
+
                 const url = new URL(location.href)
                 const key = url.pathname + url.search
 
@@ -349,7 +390,10 @@ children:prop[NexyElement]
                     html = await fetchPage(url)
                 }
 
-                if (!html) return
+                if (!html) {
+                    if (window.__nprogress) window.__nprogress.done()
+                    return
+                }
 
                 const parser = new DOMParser()
                 const doc = parser.parseFromString(html, "text/html")
@@ -357,13 +401,18 @@ children:prop[NexyElement]
                 const newMain = doc.querySelector("main")
                 const currentMain = document.querySelector("main")
 
-                if (!newMain || !currentMain) return
+                if (!newMain || !currentMain) {
+                    if (window.__nprogress) window.__nprogress.done()
+                    return
+                }
 
                 swapContent(newMain, currentMain)
 
                 document.title = doc.title
 
                 initLinks(document)
+
+                if (window.__nprogress) window.__nprogress.done()
             })
 
         })()

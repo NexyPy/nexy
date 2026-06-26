@@ -1,0 +1,20 @@
+# Крючки
+
+Хуки — это реактивные функции, которые обеспечивают доступ к контексту запроса и состоянию браузера внутри ваших компонентов и макетов `.nexy`. Они отражают концепцию современных интерфейсных фреймворков, но работают на сервере.
+
+Все хуки импортируются из `nexy`:
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## Доступные хуки
+
+- [usePathname](/docs/hooks/usePathname) — текущий URL-путь
+- [useSearchParams](/docs/hooks/useSearchParams) — параметры строки запроса
+- [useRouter](/docs/hooks/useRouter) — программная навигация
+- [useQuery](/docs/hooks/useQuery) — анализируемые параметры запроса
+- [useSession](/docs/hooks/useSession) — доступ к данным сеанса
+- [useCookies](/docs/hooks/useCookies) — чтение/запись cookie
+- [useToc](/docs/hooks/useToc) — извлечение оглавления
+- [useViews](/docs/hooks/useViews) — управление составными представлениями

@@ -1,0 +1,20 @@
+# Crochets
+
+Les hooks sont des fonctions réactives qui permettent d'accéder au contexte de la demande et à l'état du navigateur dans vos composants et mises en page `.nexy`. Ils reflètent le concept des frameworks frontend modernes mais s'exécutent sur le serveur.
+
+Tous les hooks sont importés de `nexy` :
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## Crochets disponibles
+
+- [usePathname](/docs/hooks/usePathname) — chemin de l'URL actuel
+- [useSearchParams](/docs/hooks/useSearchParams) — paramètres de chaîne de requête
+- [useRouter](/docs/hooks/useRouter) — navigation programmatique
+- [useQuery](/docs/hooks/useQuery) — paramètres de requête analysés
+- [useSession](/docs/hooks/useSession) — accès aux données de session
+- [useCookies](/docs/hooks/useCookies) — lecture/écriture des cookies
+- [useToc](/docs/hooks/useToc) — extraction de la table des matières
+- [useViews](/docs/hooks/useViews) — gestion des vues composables

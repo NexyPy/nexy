@@ -1,0 +1,80 @@
+# Redirecciones
+
+Redirigir las solicitudes entrantes a otras URL utilizando `RedirectResponse` de FastAPI.
+
+---
+
+## Redirección básica
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+## Con código de estado
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    # 301 — Permanent (tells browsers to cache)
+    return RedirectResponse("/new-page", status_code=301)
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+## Redirección condicional
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+## Referencia del código de estado
+
+| Código | Nombre | Caso de uso |
+|------|------|----------|
+| 301 | Se mudó permanentemente | Cambio de URL permanente: los navegadores lo almacenan en caché |
+| 302 | Encontrado (predeterminado) | Redirección temporal |
+| 307 | Redirección temporal | Como 302 pero conserva el método HTTP |
+| 308 | Redirección permanente | Como 301 pero conserva el método HTTP |
+
+## Patrones comunes
+
+- **Redireccionamiento de autenticación**: usuarios no autenticados → `/login`
+- **URL heredadas**: rutas antiguas → rutas nuevas (301)
+- **Redireccionamiento posterior al envío**: después del formulario POST → página de éxito (303)
+- **Redireccionamiento local**: `/` → `/{locale}/` según el idioma del navegador

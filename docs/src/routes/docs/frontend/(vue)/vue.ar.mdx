@@ -1,0 +1,73 @@
+# فيو
+
+أضف Vue إلى `nexyconfig.py`:
+
+```python
+from nexy.frontend import vue
+
+class NexyConfig(NexyConfigModel):
+    useFF = [vue()]
+```
+
+---
+
+## إنشاء مكون
+
+يتم التعامل مع الملفات ذات الامتداد `.vue` كمكونات ملف واحد:
+
+```vue
+<!-- src/components/Counter.vue -->
+<script setup>
+import { ref } from 'vue'
+const props = defineProps({ initial: { type: Number, default: 0 } })
+const count = ref(props.initial)
+</script>
+
+<template>
+  <div>
+    <p>Count: {{ count }}</p>
+    <button "@click="count++">+</button>
+  </div>
+</template>
+```
+
+---
+
+## الاستخدام في صفحة .nexy
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+يتم تمرير الدعائم عبر بناء جملة Jinja2 `{{ }}` — استخدم الأقواس المزدوجة لقيم JSON.
+
+---
+
+## محتوى الأطفال / الفتحة
+
+يقوم Nexy بتمرير محتوى الطفل باعتباره الفتحة الافتراضية:
+
+```vue
+<!-- Card.vue -->
+<template>
+  <div class="card">
+    <h2>{{ title }}</h2>
+    <slot />
+  </div>
+</template>
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as the default slot</p>
+</Card>
+```
+
+---
+
+## الاشتراكية السوفياتية
+
+تستخدم مكونات Vue `createSSRApp` للترطيب. يتم ترطيب HTML المقدم من الخادم على العميل تلقائيًا.

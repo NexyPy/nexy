@@ -1,0 +1,102 @@
+# モジュラールーター — アーキテクチャの概要
+
+Modular Router は、NestJS スタイルのアーキテクチャを Python にもたらします。ファイルがルート (FBR) になる代わりに、コードを **コントローラー**、**プロバイダー**、**モジュール**、**ガード**、**ミドルウェア**に編成します。
+
+## なぜモジュラーなのか?
+
+ファイルベース ルーティング (FBR) は小規模から中規模のアプリに最適です。しかし、アプリが成長するにつれて、次のようになります。
+
+|問題 | FBR |モジュラールーター |
+|----------|-----|-----|
+|横断的な懸念事項 |ファイルごとにミドルウェアを複製する |コントローラーまたはモジュールレベルのガード/ミドルウェア |
+|依存関係の注入 |どこでも手動インポート | `"@Injectable` (自動解決あり) |
+|コード構成 |ファイル全体に散在 |機能モジュールにグループ化 |
+|テスト容易性 |ファイルパスとの密結合 |コントローラーは挿入された依存関係を受け入れます。
+|大規模なチームの調整 |ファイルの競合、境界が不明瞭 |クラス属性によって強制されるモジュール境界 |
+
+＃＃ 建築
+
+```
+AppModule  ("@Module)
+├── AuthModule  ("@Module)
+│   ├── AuthController   ("@Controller)
+│   │   ├── def GET(self)       → GET /auth/
+│   │   └── def post(self, ...)  → POST /auth/
+│   └── AuthService      ("@Injectable)
+├── UsersModule  ("@Module(prefix="/users"))
+│   └── UsersController  ("@Controller)
+│       ├── def GET(self)       → GET /users/
+│       └── def post(self, ...)  → POST /users/
+└── └── UserService      ("@Injectable)
+```
+
+### メソッド名は HTTP 動詞を定義します
+
+Nexy は **メソッド名** を HTTP メソッドにマップします。`"@Get`/`"@Post` デコレータは必要ありません。
+
+|メソッド名 | HTTPメソッド |
+|---------------|---------------|
+| `GET`、`get`、`Get` |入手 |
+| `post`、`POST`、`Post` |投稿 |
+| `put`、`PUT`、`Put` |置く |
+| `delete`、`DELETE`、`Delete` |削除 |
+| `patch`、`PATCH`、`Patch` |パッチ |
+| `options`、`OPTIONS`、`Options` |オプション |
+| `head`、`HEAD`、`Head` |頭 |
+| `SOCKET`、`socket`、`Socket` |ウェブソケット |
+
+## クイックスタート
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module, Controller
+
+"@Controller("/ping")
+class PingController:
+    def GET(self):
+        return {"status": "ok"}
+
+"@Module()
+class AppModule:
+    controllers = [PingController]
+```
+
+`nexyconfig.py` で構成します:
+
+```python
+from nexy import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useModular = "src.apps.app_module.AppModule"
+```
+
+## FBR ではなくモジュラーを選択する場合
+
+**次の場合にはモジュラーを選択してください**
+- 依存関係を共有する 5 つ以上のルート ファイルがある
+- 依存関係の注入が必要です (サービス、データベース、構成)
+- チームには明確な機能境界 (認証、請求、ユーザー) がある
+
+**次の場合に FBR を選択してください。**
+- ルートが 10 未満です
+- 設定よりも規約を好む場合
+- ほとんど静的なサイトを構築している
+- 可能な限りシンプルなセットアップが必要な場合
+
+## 5 つのコンセプト
+
+|コンセプト |デコレーター |目的 |
+|----------|-----------|----------|
+|コントローラー | `"@Controller(prefix)` |関連するルートをパス プレフィックスの下にグループ化します。
+|プロバイダー | `"@Injectable()` |ビジネス ロジック、コントローラーに挿入可能 |
+|モジュール | `"@Module()` |クラス属性を介してコントローラーとプロバイダーを接続する |
+|ガード | `"@UseGuard(...)` |認可 — ハンドラーの前に実行されます。
+|ミドルウェア | `"@Middleware(...)` |リクエスト/レスポンス パイプライン — ガードの前に実行 |
+
+## 次のステップ
+
+- [Controllers](/docs/modular/controllers) — メソッド名ルーティングを使用して HTTP リクエストを処理します
+- [Providers & DI](/docs/modular/providers) — コントローラーにサービスを挿入します
+- [Modules](/docs/modular/modules) — コントローラーとプロバイダーを機能モジュールに編成します
+- [Guards](/docs/modular/guards) — 承認によりルートを保護します
+- [Middleware](/docs/modular/middleware) — ハンドラーの前にリクエストをインターセプトします

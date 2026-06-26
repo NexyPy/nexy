@@ -1,0 +1,51 @@
+# Déployer
+
+`nx build` compile votre application, `nx start` la sert en production. Voir [CLI build](/docs/cli/build) et [CLI start](/docs/cli/start) pour les indicateurs.
+
+## Docker
+
+```dockerfile
+FROM python:3.13-slim
+WORKDIR /app
+COPY . .
+RUN pip install nexy && nx build
+CMD ["nx", "start"]
+```
+
+---
+
+## Variables d'environnement
+
+| Variables | Par défaut | Descriptif |
+|--------------|---------|-------------|
+| `NEXY_PORT` | `3000` | Port du serveur |
+| `NEXY_HOST` | `0.0.0.0` | Lier l'adresse |
+| `NEXY_DEBUG` | `false` | Mode débogage |
+| `NEXY_INLINE_CLIENT` | `false` | Inline CSS/JS dans HTML |
+
+---
+
+## Guides de la plateforme
+
+###VPS
+
+```bash
+uv sync
+nx build
+nx start --host 0.0.0.0 --port 80
+```
+
+### Fournisseurs de cloud
+
+Nexy se déploie sur n'importe quelle plateforme prenant en charge les applications Python ASGI :
+
+- **Chemin de fer** — détecte automatiquement `nx start` via Procfile
+- **Fly.io** — utilisez `CMD ["nx", "start"]` dans Dockerfile
+- **Render** — définit la commande de démarrage sur `nx start`
+- **Hetzner / DigitalOcean** — Service Docker ou systemd
+
+---
+
+## Exportation statique
+
+Pour les sites entièrement statiques, Nexy peut pré-afficher chaque page à `__nexy__/static/` pendant la construction. Servez avec n'importe quel serveur de fichiers statiques (Nginx, Caddy, S3, Cloudflare Pages).

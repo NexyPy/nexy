@@ -1,0 +1,73 @@
+# Debugging
+
+Nexy apps are standard Python — use your usual debugging tools.
+
+## `breakpoint()`
+
+Insert `breakpoint()` anywhere in your route handler:
+
+```python
+def GET():
+    x = 42
+    breakpoint()  # drops into pdb
+    return {"x": x}
+```
+
+Run `nx dev` and hit the route — the terminal drops into `pdb`.
+
+## VS Code
+
+1. Set breakpoints in VS Code by clicking the gutter
+2. Create a `.vscode/launch.json`:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Nexy Dev",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nexy.cli",
+            "args": ["dev"],
+            "jinja": true
+        }
+    ]
+}
+```
+
+3. Press `F5` to start debugging — breakpoints work in `.nexy` frontmatter and `.py` files.
+
+## Print debugging
+
+```python
+---
+print(f"Request params: {params}")  # appears in the terminal
+---
+```
+
+## Console logging
+
+Nexy logs all requests to the terminal by default. Add your own logs:
+
+```python
+import logging
+logger = logging.getLogger("nexy")
+
+def GET():
+    logger.info("Home page loaded")
+    return {"ok": True}
+```
+
+## uvicorn reload
+
+`nx dev` runs uvicorn with `--reload` — changes to `.py`, `.nexy`, `.mdx` files trigger an automatic restart.
+
+## Common issues
+
+| Symptom | Likely cause |
+|---------|-------------|
+| Route returns 405 | Wrong HTTP method or missing `python-multipart` |
+| Body is `None` | Missing Pydantic model or type annotation |
+| 422 Validation Error | Type mismatch in path/query params |
+| Module not found | VFS cache stale — restart `nx dev` |

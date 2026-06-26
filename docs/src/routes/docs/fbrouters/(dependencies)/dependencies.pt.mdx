@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Dependências
+
+Um arquivo `dependencies.py` dentro de `src/routes/` coleta dependências FastAPI comuns que se aplicam automaticamente a cada rota na árvore de diretórios.
+
+---
+
+## `dependencies = [...]`
+
+Defina callables e liste-os em uma variável `dependencies` em nível de módulo:
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+Somente os itens listados em `dependencies` são aplicados — funções básicas são ignoradas.
+
+---
+
+## Herança (mesclagem, não substituição)
+
+Nexy **sobe** do arquivo de rota para `src/routes/` e **mescla** cada lista `dependencies` encontrada:
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+Arquivos filhos `dependencies.py` **não substituem** os pais. Todas as listas são combinadas. Se o mesmo nome de dependência aparecer em ambos, FastAPI gera `ValueError` na inicialização (parâmetro duplicado).
+
+---
+
+## Usando em uma página
+
+Nas páginas `.nexy`, as dependências são executadas automaticamente antes da renderização — você não precisa importá-las ou chamá-las:
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+Os valores resolvidos **não** estão disponíveis como variáveis ​​de modelo. As dependências são executadas para efeitos colaterais (verificações de autenticação, registro, configuração de conexão de banco de dados).
+
+Para manipuladores `.py`, as dependências são executadas como efeitos colaterais — seus valores de retorno **não** são injetados no manipulador. Para acessar o valor de uma dependência, adicione `Depends()` na assinatura da função:
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+Se o mesmo chamável estiver listado em `dependencies = [...]` e na assinatura do manipulador, FastAPI o executará uma vez e compartilhará o resultado.
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

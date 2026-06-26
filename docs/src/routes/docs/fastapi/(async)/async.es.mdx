@@ -1,0 +1,66 @@
+# Asíncrono y concurrencia
+
+Nexy se basa en FastAPI, que admite controladores de ruta `async` y `def` automáticamente.
+
+## `async def` frente a `def`
+
+| Tipo de controlador | Ejecución | Cuándo utilizar |
+|-------------|-----------|-------------|
+| `def` | Grupo de subprocesos (bloqueo) | Trabajo de CPU, sincronización de llamadas de base de datos, bloqueo de E/S |
+| `async def` | Bucle de eventos | Base de datos asíncrona, llamadas HTTP, WebSocket, sondeo largo |
+
+---
+
+## Ruta asíncrona
+```python
+---
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+---
+```
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+## Sincronización mixta y asíncrona en un archivo
+```python
+---
+def GET():          # runs in thread pool
+    return {"type": "sync"}
+
+async def GET_async():  # runs in event loop
+    return {"type": "async"}
+---
+```
+```python
+from nexy.decorators import Controller
+
+"@Controller("/demo")
+class DemoController:
+    def GET(self):          # runs in thread pool
+        return {"type": "sync"}
+
+    async def async_get(self):  # runs in event loop
+        return {"type": "async"}
+```
+## Tareas en segundo plano
+
+Para un trabajo instantáneo después de la respuesta, utilice `BackgroundTasks` (compatible con sincronización). Para un verdadero trabajo asíncrono en segundo plano, utilice `asyncio.create_task`.
+
+## Advertencias
+
+- **No** llame a `async` funciones desde `def` controladores con `await`: use `asyncio.run()` o haga que el controlador sea `async def`
+- **No** llamar a funciones de bloqueo (como `time.sleep()`, `requests.get()`) desde `async def` — use `asyncio.sleep()`, `httpx.AsyncClient`
+- `nx dev` de Nexy ejecuta un trabajador uvicorn de forma predeterminada: los controladores asíncronos brillan aquí
+- Para producción, utilice varios trabajadores (`nx start --workers 4`) para los controladores de sincronización.

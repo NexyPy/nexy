@@ -1,0 +1,55 @@
+# WSGI（Flask、Django）
+
+沿着 Nexy 路由安装 WSGI 应用程序（Flask、Django、Pyramid）。
+
+## 烧瓶
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+Flask 路线现已在 `/legacy/hello` 提供。所有 Nexy 功能（身份验证、中间件）仍然适用于父应用程序。
+
+## 姜戈
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## 它是如何工作的
+
+- `WSGIMiddleware` 包装任何可调用为 ASGI 的 WSGI
+- 子应用程序在线程池中运行 - 它不会阻塞事件循环
+- 路径前缀（`/legacy`、`/django`）在到达 WSGI 应用程序之前被删除
+- Nexy 中间件（auth、session、CORS）**不适用于**已安装的 WSGI 应用程序 — 单独配置它
+
+## 限制
+
+- 仅请求/响应周期 - 不支持 WebSocket
+- WSGI 应用程序不能使用 Nexy 挂钩或依赖项
+- 性能受到线程池的限制 - 考虑迁移到本机 Nexy 路由

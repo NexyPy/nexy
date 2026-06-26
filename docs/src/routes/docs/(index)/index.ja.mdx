@@ -1,0 +1,130 @@
+# はじめに
+
+**Nexy** (`nek:si` と発音) は、**FastAPI** と **Starlette** 上に構築されたフルスタック Python Web フレームワークです。 Next.js や NestJS などの最新のフレームワークの開発者エクスペリエンスを Python にもたらします。
+
+名前の由来は、**N**ew **Ex**perience for P**y**thon — Python で Web アプリケーションを構築するための新しいアプローチです。
+
+> Nexy は車輪の再発明をしません。 FastAPI のパワーを維持しながら、Python Web 開発を根本的に簡素化します。
+
+---
+
+## 2 つのルーター、1 つのフレームワーク
+
+Nexy は **2 つのルーティング戦略**を提供しています。プロジェクトに合ったものを選択してください。
+
+### Routes ルーター (ファイルベースのルーティング)
+
+ルートはファイル ツリーによって定義されます。`src/routes/` 内のすべての `.nexy`、`.mdx`、または `.py` ファイルは自動的に HTTP ルートになります。
+
+```text
+src/routes/
+
+├── index.nexy          →  /
+
+├── about.nexy          →  /about
+
+├── blog/
+
+│   ├── index.nexy      →  /blog
+
+│   └── [slug].nexy     →  /blog/{slug}
+
+└── api/
+
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+**最適な用途**: シンプルなサイト、ドキュメント、MVP、API のみのプロジェクト、構成よりも規則を好むチーム。
+
+詳細: [File-Based Routing →](/docs/fbrouters)
+
+### モジュラールーター (デコレータベース)
+
+ルートは Python デコレーターによって定義されます。NestJS パターンに従って、コードを **コントローラー**、**プロバイダー**、**モジュール**に編成します。
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+
+class UsersController:
+
+    def __init__(self, service: UserService):
+
+        self.service = service
+
+    def GET(self):
+
+        return self.service.find_all()
+```
+
+**最適な用途**: 大規模なアプリケーション、ドメイン駆動設計、依存関係の挿入と厳密なコード編成の恩恵を受けるプロジェクト。
+
+詳細: [Modular Router →](/docs/modular/overview)
+
+> サイドバーの上部にある **ルーター セレクター** を使用して、各ルーターのドキュメント ビューを切り替えます。
+
+---
+
+## FastAPI はエンジンです
+
+Next.js が内部では **React** であるのと同じように、Nexy は内部では **FastAPI** です。すべてのルート、すべての応答、すべてのミドルウェアは FastAPI と Starlette を通じて実行されます。
+
+```python
+# FastAPI patterns that work unchanged in Nexy
+
+from fastapi import Request, Depends
+
+from fastapi.responses import JSONResponse, HTMLResponse
+
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+
+    id: int
+
+    name: str
+
+    email: str
+
+def GET(request: Request, db=Depends(get_db)):
+
+    return db.query(User).all()
+```
+
+**変わらない点:** `Request`、`Depends`、`HTTPException`、`BaseModel`、`JSONResponse`、`HTMLResponse`、`RedirectResponse`、`WebSocket`、`UploadFile`、`Form`、`Header`、`Cookie`、`Query`、 `status` — すべて `fastapi` から。
+
+**Nexy の追加内容:** `.nexy`/`.mdx` ファイル → FastAPI ルートにコンパイル、`"@Action` → 自動生成された POST ルート、`"@Controller`/`"@Module` → FastAPI `APIRouter` ビルダー、フック → FastAPI の `Request` 上のリクエスト スコープのヘルパー。
+
+Nexy は FastAPI であるため、すべてのルートは `/docs` (Swagger UI) および `/redoc` で **OpenAPI ドキュメント**を自動的に生成します。
+
+---
+
+## なぜネクシーなのか?
+
+- **内部の FastAPI** — 非同期、自動 OpenAPI ドキュメント、タイプセーフ、実戦テスト済み
+- **コンポーネントベースの UI** — Python + Jinja2 テンプレートを使用してコンポーネントを作成するか、React/Vue/Svelte/Solid/Preact を使用します
+- **ファイルベースおよびモジュラールーティング** — プロジェクトに適切なツールを選択してください
+- **定型文ゼロ** — 手動ルート登録や接続する設定ファイルは不要です
+- **組み込みの i18n、HMR、ミドルウェア、ガード** — 初日から本番稼働可能
+
+---
+
+## ネクシーはあなたにぴったりですか?
+
+次のような場合は Nexy を使用してください。
+
+- Next.js や Laravel と同じ速さでフルスタック Python アプリを構築
+- NestJS の構造と Python のシンプルさを備えた REST API を作成します
+- Python バックエンドから React/Vue/Svelte コンポーネントを使用する
+- プロジェクトの再構築と定型パッケージのインストールを停止する
+
+---
+
+## 何を学ぶか
+
+- Nexy プロジェクトの作成と構成
+- 両方のルーティング戦略を理解する
+- 具体的な例を使用して最初のアプリケーションを構築します
+- 本番展開のベスト プラクティスに従ってください
+

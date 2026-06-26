@@ -1,0 +1,49 @@
+# रीडायरेक्ट (एफबीआर)
+
+FastAPI के `RedirectResponse` का उपयोग करके आने वाले अनुरोधों को अन्य URL पर पुनर्निर्देशित करें।
+
+## मूल पुनर्निर्देशन
+
+```python
+# src/routes/redirect.py
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+```
+
+## स्टेटस कोड के साथ
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/new-page", status_code=301)
+```
+
+## सशर्त पुनर्निर्देशन
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+```
+
+## स्थिति कोड संदर्भ
+
+| कोड | नाम | उपयोग का मामला |
+|------|------|----------|
+| 301 | स्थायी रूप से स्थानांतरित | स्थायी यूआरएल परिवर्तन |
+| 302 | मिला (डिफ़ॉल्ट) | अस्थायी पुनर्निर्देशन |
+| 307 | अस्थायी रीडायरेक्ट | HTTP पद्धति को सुरक्षित रखता है |
+| 308 | स्थायी पुनर्निर्देशन | HTTP पद्धति को सुरक्षित रखता है |
+
+## सामान्य पैटर्न
+
+- प्रामाणिक रीडायरेक्ट: अप्रमाणित उपयोगकर्ता → `/login`
+- लीगेसी यूआरएल: पुराने रास्ते → नये रास्ते (301)
+- पोस्ट-सबमिट रीडायरेक्ट: फॉर्म पोस्ट के बाद → सफलता पृष्ठ (303)
+- लोकेल रीडायरेक्ट: `/` → `/{locale}/` ब्राउज़र भाषा पर आधारित

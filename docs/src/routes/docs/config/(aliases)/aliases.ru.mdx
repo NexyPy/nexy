@@ -1,0 +1,78 @@
+# Псевдонимы
+
+Настройте псевдонимы путей импорта для более чистого импорта в файлах `.nexy`.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useAliases = {
+        ""@": "src",
+        ""@components": "src/components",
+        ""@lib": "src/lib",
+    }
+```
+
+---
+
+## Использование
+
+С приведенной выше конфигурацией вместо:
+
+```python
+from src.components.card.nexy import Card
+from src.lib.utils import format_date
+```
+
+Вы можете написать:
+
+```python
+from "@components/card.nexy import Card
+from "@lib/utils import format_date
+```
+
+---
+
+## Как это работает
+
+Псевдонимы разрешаются во время компиляции. Пространство имен VFS сопоставляет префиксы псевдонимов с их расширенными путями. Они работают как при импорте заголовка, так и при вызове шаблона `__Import`.
+
+Символ `"@` — это соглашение, а не требование — вы можете использовать любой префикс:
+
+```python
+useAliases = {
+    "~": "src",
+    "#components": "src/components",
+}
+```
+
+---
+
+## Ограничения
+
+- Псевдонимы работают только в файлах `.nexy` и `.mdx`.
+- Они **не** применяются к импорту JavaScript/TypeScript в клиентских компонентах (для этого используйте псевдонимы путей `vite.config.ts`)
+- Псевдонимы разрешаются относительно корня проекта, а не текущего файла.
+
+---
+
+## В сочетании с псевдонимами Vite
+
+Для полнофункциональных проектов настройте псевдонимы Nexy (для импорта `.nexy`) и псевдонимы Vite (для импорта JS/TS):
+
+```python
+# nexyconfig.py
+useAliases = {""@": "src"}
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { resolve } from "path";
+
+export default defineConfig({
+    resolve: {
+        alias: { ""@": resolve(__dirname, "src") },
+    },
+});
+```

@@ -1,0 +1,111 @@
+# CSS 및 자바스크립트
+
+Nexy는 스타일링과 스크립팅에 대한 완전한 자유를 제공합니다. 인라인, 가져오기, 유틸리티 우선 또는 사용자 정의 번들링 등 모든 접근 방식이 작동합니다.
+
+## CSS 접근 방식
+
+### 1. `.nexy` 템플릿의 인라인 `<style>`
+
+템플릿 섹션에 `<style>` 태그를 직접 추가하세요. 스타일은 기본적으로 전역적입니다. BEM, 데이터 속성 또는 유틸리티 클래스를 사용하여 수동으로 범위를 지정합니다.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+</style>
+```
+
+### 2. `__Import`를 통해 외부 CSS 가져오기
+
+모든 `.nexy` 파일에는 자동으로 `__Import` 사용 가능(컴파일러에 의해 주입됨)이 있습니다. 외부 CSS, JSON 또는 이미지를 인라인하는 데 사용합니다.
+
+```nexy
+---
+css_block = __Import("/styles/global.css", "", "")()
+---
+<div class="wrapper">
+  {{ css_block }}
+  <main>...</main>
+</div>
+```
+
+`__Import(path, framework, symbol)`는 파일 확장자로 전달됩니다.
+
+| 확장 | 반품 |
+|------------|---------|
+| `.css` | 파일 내용이 인라인된 `<style>...</style>` 문자열 |
+| `.png`, `.jpg`, `.svg` 등 | base64 데이터 URI 문자열 |
+| `.json` | 구문 분석된 JSON 데이터 |
+| `.tsx`, `.vue`, `.svelte` 등 | 클라이언트 구성 요소 래퍼(`<ncc>` 태그) |
+
+CSS의 경우 두 번째 및 세 번째 인수는 사용되지 않습니다. 빈 문자열을 전달합니다.
+
+### 3. 순풍 CSS
+
+Nexy에는 프로젝트 초기화 시 Tailwind CSS 지원이 포함되어 있습니다. 템플릿의 유틸리티 클래스는 정상적으로 처리됩니다.
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+`tailwind.config.*` 또는 `nexyconfig.py`에서 Tailwind를 구성합니다.
+
+### 4. Vite CSS 번들링
+
+Vite가 활성화되면(구성에서 `useVite: true`) 프런트엔드 구성 요소에서 `.css` 파일을 가져올 수 있으며 이 파일은 PostCSS, CSS 모듈 및 HMR을 포함하여 Vite의 파이프라인과 함께 번들로 제공됩니다.
+
+## 클라이언트 측 JavaScript
+
+`.nexy` 템플릿에 `<script>` 태그를 직접 추가하세요.
+
+```nexy
+---
+---
+<button id="greet-btn">Greet</button>
+
+<script>
+document.getElementById('greet-btn').addEventListener('click', () => {
+  alert('Hello from Nexy!')
+})
+</script>
+```
+
+## 타입스크립트
+
+Vite를 활성화하면 `.ts` 파일이 자동으로 컴파일됩니다. 프런트엔드 구성 요소 또는 `<script>` 태그를 통해 가져옵니다.
+
+```typescript
+// src/scripts/utils.ts
+export function greet(name: string): string {
+  return `Hello ${name}`
+}
+```
+
+`public/`의 스크립트는 정적으로 제공됩니다. `src/`의 스크립트는 Vite(활성화된 경우)에 의해 처리되거나 개발 시 원시로 제공됩니다.
+
+## 번들링
+
+| 모드 | CSS | JS/TS |
+|------|-----|-------|
+| **개발** | 원시 또는 Vite HMR을 통해 제공됨 | 원시 또는 Vite HMR을 통해 제공됨 |
+| **생산량(`nexy build`)** | 인라인 또는 Vite 번들 | Vite가 축소하고 번들로 제공 |
+
+Vite가 꺼져 있으면 `<style>` 태그의 CSS가 HTML 출력에 직접 인라인됩니다. Vite가 켜져 있으면 모든 자산은 최적의 번들링 및 코드 분할을 위해 Vite의 빌드 파이프라인을 통과합니다.

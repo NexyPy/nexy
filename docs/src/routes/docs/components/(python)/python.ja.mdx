@@ -1,0 +1,85 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Nexy テンプレートの Python
+
+フロントマター (`---`) は、コンパイル時およびリクエストごとに Python を実行します。
+
+---
+
+## あなたにできること
+
+### モジュールをインポートする
+```python
+---
+import json
+from datetime import datetime
+from nexy import usePathname
+from "@components/card.nexy" import Card
+---
+```
+### 式を実行する
+```python
+---
+items = [1, 2, 3]
+now = datetime.now()
+is_admin = user.role == "admin"
+---
+```
+### フックを使用する
+```python
+---
+from nexy import usePathname, useSearchParams, useCookies
+pathname = usePathname()
+params = useSearchParams()
+cookies = useCookies()
+---
+```
+### アクセス要求データ
+```python
+---
+from fastapi import Request
+# request is injected automatically
+---
+```
+---
+
+## コンパイル時間と実行時間
+
+|操作 |いつ |例 |
+|---|---|---|
+| `import` |コンパイル |コンポーネントのインポート |
+| `prop[type]` |コンパイル |型チェックされた小道具 |
+|フック |リクエスト | `usePathname()` |
+|変数 |リクエスト | `user = request.user` |
+
+フロントマターで定義された変数は、テンプレートで使用できます。
+```python
+---
+from datetime import datetime
+year = datetime.now().year
+---
+<footer>&copy; {{ year }} Nexy</footer>
+```
+---
+
+## 共有ロジック
+
+再利用可能な Python ロジックの場合は、通常の `.py` ファイルを作成します。
+```python
+# src/utils/helpers.py
+def format_date(dt):
+    return dt.strftime("%B %d, %Y")
+```
+任意のコンポーネントからインポートします。
+```python
+---
+from src.utils.helpers import format_date
+from datetime import datetime
+---
+<p>{{ format_date(datetime.now()) }}</p>
+```
+<Link href="/docs/components/properties">Next: Properties →</Link>

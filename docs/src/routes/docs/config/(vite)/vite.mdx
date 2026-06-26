@@ -1,0 +1,45 @@
+# Config: Vite
+
+Nexy integrates with **Vite** for client-side bundling. Configuration goes in `nexyconfig.py` and `vite.config.ts`.
+
+## Enabling Vite
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## Vite config fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useVite` | `bool` | `False` | Enable Vite bundling. |
+| `useViteDevUrl` | `str \| None` | `None` | Custom Vite dev server URL. Auto-detected if `None`. |
+
+## vite.config.ts
+
+Nexy generates a `vite.config.ts` at project root during `nx init`. You can customize it like any Vite project:
+
+```ts
+import { defineConfig } from "vite";
+import react from ""@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: "__nexy__/client",
+    },
+});
+```
+
+## Dev mode
+
+When `useVite = True`, `nx dev` starts a Vite dev server alongside uvicorn. Nexy injects HMR scripts automatically.
+
+## Production
+
+During `nx build`, Vite produces optimized bundles in `__nexy__/client/`. Nexy reads the manifest and injects the correct CSS/JS tags.
+
+## Inline mode
+
+Set `NEXY_INLINE_CLIENT=1` to inline CSS/JS directly into HTML (useful for email, AMP, or self-contained pages).

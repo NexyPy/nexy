@@ -1,0 +1,93 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 条件付きレンダリング
+
+Jinja2 の `{{ '' }}` および `{{ '' }}` を使用して、条件に基づいてレンダリングする内容を制御します。
+
+---
+
+## If / elif / else
+```
+---
+is_logged_in: prop[bool] = False
+---
+{% if is_logged_in %}
+    <p>Welcome back!</p>
+{% else %}
+    <a href="/login">Sign in</a>
+{% endif %}
+```
+---
+
+## 3 進数
+```html
+<span>{{ "Admin" if user.role == "admin" else "User" }}</span>
+```
+---
+
+## for ループ
+```
+---
+tags: prop[list] = []
+---
+<ul>
+{% for tag in tags %}
+    <li>{{ tag }}</li>
+{% else %}
+    <li>No tags</li>
+{% endfor %}
+</ul>
+```
+`{{ '' }}` はリストが空の場合にレンダリングします。
+
+---
+
+## 条件付き属性
+```html
+<button {{ "disabled" if not can_submit else "" }}>
+    Submit
+</button>
+```
+---
+
+## CSS の可視性
+
+クライアント側で切り替えるには、JavaScript と組み合わせます。
+```
+---
+---
+<div id="toggle-me" class="hidden">Content</div>
+<button onclick="document.getElementById('toggle-me').classList.toggle('hidden')">
+    Toggle
+</button>
+<style>
+.hidden { display: none; }
+</style>
+```
+---
+
+## パターン: 状態ベースのレンダリング
+
+プロップ、条件、ループを組み合わせて強力な UI を実現します。
+```
+---
+items: prop[list] = []
+empty_message: prop[str] = "No items"
+---
+{% if items %}
+    <ul>
+    {% for item in items %}
+        <li class="{{ 'active' if item.active else '' }}">
+            {{ item.name }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p class="empty">{{ empty_message }}</p>
+{% endif %}
+```
+<Link href="/docs/components/modules">Next: Module System →</Link>

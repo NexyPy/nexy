@@ -1,0 +1,78 @@
+#i18n
+
+`nexyconfig.py`에서 로캘을 구성합니다.
+
+```python
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "ar", "es", "hi", "zh"]
+    useDefaultLocale = "en"
+```
+
+## 번역 파일
+
+JSON 번역 파일을 `nexy/i18n/<locale>/`에 배치합니다.
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+  "nav.docs": "Documentation",
+  "nav.blog": "Blog",
+  "home.hero": "Build faster with Nexy"
+}
+```
+
+전체 참조는 [Config / i18n](/docs/config/i18n)를 참조하세요.
+
+## 템플릿에서 번역 사용
+
+```nexy
+---
+---
+<h1>{{ trans("home.hero", "Build faster with Nexy") }}</h1>
+<p>{{ t("nav.docs", "Docs") }}</p>
+```
+
+- `trans(key, default)` — 전체 기능
+- `t(key, default)` — 약칭 별칭
+
+## 로케일 감지
+
+Nexy는 다음에서 순서대로 사용자의 로케일을 감지합니다.
+
+1. **URL 접두어**: `/fr/docs/`, `/en/docs/`
+2. **쿠키**: `nexy-locale`
+3. **Accept-Language 헤더**: 브라우저 기본 설정
+
+감지된 로케일은 `current_locale` 또는 `useLocale()`를 통해 액세스할 수 있는 요청 범위 ContextVar로 설정됩니다.
+
+## RTL 지원
+
+아랍어(`ar`) 및 기타 RTL 언어는 자동으로 감지됩니다. `useLocale()`를 사용하여 다음을 확인하세요.
+
+```nexy
+---
+from nexy import useLocale
+locale = useLocale()
+---
+<html lang="{{locale.locale}}" dir="{{ 'rtl' if locale.is_rtl else 'ltr' }}">
+```
+
+## 구성 참조
+
+| 옵션 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useLocales` | `list[str]` | `None` | 사용 가능한 로케일 |
+| `useDefaultLocale` | `str` | `"en"` | 대체 로케일 |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | 로케일 쿠키 이름 |
+| `useRTL` | `bool` | `False` | RTL 레이아웃 활성화 |

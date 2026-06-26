@@ -1,0 +1,193 @@
+# modules
+
+Les modules regroupent les contrôleurs, fournisseurs et sous-modules associés dans une unité cohérente. Chaque application modulaire possède un module racine qui importe des modules de fonctionnalités.
+
+## Pourquoi des modules ?
+
+Sans modules, vous enregistreriez chaque contrôleur et fournisseur dans une seule liste plate. À mesure que l’application s’allonge, cette liste devient ingérable : 50 fournisseurs sans propriété claire.
+
+Les modules restaurent les limites : `UsersModule` possède `UsersController` et `UserService`. Chaque module est une unité autonome.
+
+## Module racine
+
+Chaque application a besoin d'un module racine. Le module racine est référencé dans `nexyconfig.py` :
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+Le décorateur `"@Module` construit une FastAPI `APIRouter` à partir de la classe. Il lit trois attributs de classe :
+
+| Attribut | Tapez | Descriptif |
+|---------------|------|-------------|
+| `controllers` | `list[type]` | Classes de contrôleurs à inscrire |
+| `imports` | `list[APIRouter]` | Sous-modules (à partir de `"@Module`) à inclure |
+| `providers` | `list[type]` | Classes injectables à enregistrer auprès du conteneur |
+| `exports` | `list[type]` | Fournisseurs visibles lors de l'importation de modules |
+
+**Je vous ai eu** : `"@Module()` nécessite au moins un contrôleur. Une liste `controllers` vide génère `ValueError`.
+
+## Modules de fonctionnalités
+
+Les modules de fonctionnalités encapsulent un domaine :
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+Importez-le dans le module racine :
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### Préfixe du module
+
+Définissez un préfixe qui s'applique à toutes les routes du module :
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+Les préfixes du contrôleur sont RELATIFS au préfixe du module. Si `"@Module(prefix="/users")` et `"@Controller("/{id}")`, le chemin effectif est `/users/{id}`.
+
+## Inscription du fournisseur
+
+Les prestataires doivent être inscrits dans un module pour être disponibles pour l’injection :
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+Le `DatabaseService` est résolu au démarrage lorsque le module est chargé. Si les dépendances d'un fournisseur ne peuvent pas être résolues, l'erreur est générée immédiatement, et non au moment de la demande.
+
+### Exportations
+
+L'attribut `exports` contrôle quels fournisseurs sont visibles pour les modules d'importation :
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+Sans `exports`, AUCUN fournisseur n'est visible pour les modules importateurs. C'est intentionnel : cela vous oblige à déclarer explicitement l'API publique de votre module.
+
+## Modules partagés
+
+Les modules sont des singletons. L'importation du même module à plusieurs endroits partage les mêmes instances de fournisseur :
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+C'est ainsi que vous partagez une connexion à une base de données dans votre application.
+
+## Structure du projet
+
+Un projet modulaire typique suit cette convention :
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+Cette structure s'étend à des centaines de modules. Chaque répertoire de module est autonome.
+
+## Résolution du module
+
+La résolution des modules suit trois règles :
+
+1. **Tri topologique** — les modules s'initialisent dans l'ordre des dépendances (importations en premier)
+2. **Détection circulaire** — les dépendances circulaires entre les modules augmentent `RecursionError` au démarrage
+3. **Portée du fournisseur** — les fournisseurs conservent leur portée d'origine quel que soit le module qui les importe
+
+Si le module A importe le module B et que le module B importe le module A, le conteneur détecte le cycle au démarrage :
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**Pourquoi est-ce important** : les dépendances circulaires indiquent souvent un problème de conception. Extrayez la dépendance partagée dans un troisième module.
+
+## meilleures pratiques
+
+1. **Une fonctionnalité par module** — utilisateurs, authentification, facturation. Pas des "utilitaires".
+2. **Gardez les importations de modules superficielles** — un module qui importe plus de 10 autres en fait trop
+3. **Utilisez `exports` intentionnellement** — exportez uniquement ce dont les autres modules ont réellement besoin
+4. **Nommer les modules après les domaines** — `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Toujours fournir un `prefix` lors de la gestion des versions** — `"@Module(prefix="/api/v1")`
+
+## Prochaines étapes
+
+- [Guards](/docs/modular/guards) — protège les routes des modules
+- [Middleware](/docs/modular/middleware) — demander des hooks de pipeline
+- [Controllers](/docs/modular/controllers) — définir les gestionnaires d'itinéraire

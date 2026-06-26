@@ -1,0 +1,85 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Python in der Nexy-Vorlage
+
+Der Frontmatter (`---`) führt Python zur Kompilierungszeit und bei jeder Anfrage aus.
+
+---
+
+## Was Sie tun können
+
+### Module importieren
+```python
+---
+import json
+from datetime import datetime
+from nexy import usePathname
+from "@components/card.nexy" import Card
+---
+```
+### Ausdrücke ausführen
+```python
+---
+items = [1, 2, 3]
+now = datetime.now()
+is_admin = user.role == "admin"
+---
+```
+### Verwenden Sie Haken
+```python
+---
+from nexy import usePathname, useSearchParams, useCookies
+pathname = usePathname()
+params = useSearchParams()
+cookies = useCookies()
+---
+```
+### Zugriff auf Anforderungsdaten
+```python
+---
+from fastapi import Request
+# request is injected automatically
+---
+```
+---
+
+## Kompilierungszeit vs. Laufzeit
+
+| Betrieb | Wann | Beispiel |
+|---|---|---|
+| `import` | Kompilieren | Komponenten importieren |
+| `prop[type]` | Kompilieren | Typgeprüfte Requisiten |
+| Haken | Anfrage | `usePathname()` |
+| Variablen | Anfrage | `user = request.user` |
+
+In frontmatter definierte Variablen sind in der Vorlage verfügbar:
+```python
+---
+from datetime import datetime
+year = datetime.now().year
+---
+<footer>&copy; {{ year }} Nexy</footer>
+```
+---
+
+## Gemeinsame Logik
+
+Erstellen Sie für wiederverwendbare Python-Logik eine reguläre `.py`-Datei:
+```python
+# src/utils/helpers.py
+def format_date(dt):
+    return dt.strftime("%B %d, %Y")
+```
+Import aus einer beliebigen Komponente:
+```python
+---
+from src.utils.helpers import format_date
+from datetime import datetime
+---
+<p>{{ format_date(datetime.now()) }}</p>
+```
+<Link href="/docs/components/properties">Next: Properties →</Link>

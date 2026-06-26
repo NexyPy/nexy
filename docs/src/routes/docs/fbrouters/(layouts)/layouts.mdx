@@ -1,0 +1,72 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Layouts
+
+A layout is a `layout.nexy` file that wraps all pages in its directory. It prevents repeating the same header, sidebar, or footer on every page.
+
+---
+
+## How it works
+
+Place `layout.nexy` inside a `routes/` directory. Nexy applies it automatically to all sibling pages (without creating a route itself):
+```bash
+routes/
+├── layout.nexy           ← Applied to / and /about
+├── index.nexy
+├── about.nexy
+└── blog/
+    ├── layout.nexy       ← Applied to /blog/...
+    ├── index.nexy
+    └── [slug].nexy
+```
+---
+
+## Syntax
+
+The layout receives its child content via `children:prop[str]`:
+```
+---
+children: prop[str]
+---
+<header class="site-header">
+    <nav>...</nav>
+</header>
+<main>
+    {{ children | safe }}
+</main>
+<footer>...</footer>
+```
+---
+
+## Nested layouts
+
+Layouts nest hierarchically. A page at `blog/[slug].nexy` receives `blog/layout.nexy` first, then the root `layout.nexy`:
+```bash
+routes/
+├── layout.nexy           ← Global layout (header, footer)
+└── blog/
+    ├── layout.nexy       ← Blog layout (category sidebar)
+    └── [slug].nexy       ← Page → blog/layout → root/layout
+```
+---
+
+## Real-world example
+
+The layout for these docs (`src/routes/docs/layout.nexy`) uses `usePathname`, `Sidebar`, and `Table_of_contents`:
+```python
+from nexy import usePathname
+from "@components/docs/sidebar.nexy" import Sidebar
+from "@components/docs/table_of_contents.nexy" import Table_of_contents
+```
+```html
+<main>
+    <Sidebar />
+    <aside>{{ children | safe }}</aside>
+    <Table_of_contents />
+</main>
+```
+<Link href="/docs/fbrouters/dependencies">Next: Dependencies →</Link>

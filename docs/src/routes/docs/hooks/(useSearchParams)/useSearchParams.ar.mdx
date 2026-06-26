@@ -1,0 +1,43 @@
+# استخدامSearchParams
+
+إرجاع معلمات استعلام URL الحالية كقاموس.
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## القيمة المرتجعة
+
+`dict` — معلمات الاستعلام من عنوان URL للطلب (على سبيل المثال `{"q": "nexy", "page": "2"}`).
+
+---
+
+## مثال
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## طرق
+
+يدعم الإملاء الذي تم إرجاعه عمليات القاموس القياسية: `.get(key, default)`، `.keys()`، `.items()`.
+
+---
+
+## ملاحظات الاستخدام
+
+- جميع القيم عبارة عن سلاسل — قم بالتحويل باستخدام `int()`، و`bool()`، وما إلى ذلك.
+- بالنسبة لمعالجات واجهة برمجة التطبيقات (API)، استخدم حقن المعلمات الأصلية لـ FastAPI بدلاً من ذلك

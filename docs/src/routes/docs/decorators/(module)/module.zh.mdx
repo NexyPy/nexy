@@ -1,0 +1,58 @@
+#“@模块
+
+将控制器、提供程序和子模块组装到 FastAPI `APIRouter` 中。
+```python
+from nexy.decorators import Module, Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1}]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [UsersController]
+    providers = [DatabaseService]
+    imports = [AuthModule]
+    exports = [UsersController]
+```
+＃＃ 签名
+```python
+Module(prefix: str = "") -> Callable[[type], APIRouter]
+```
+## 类属性
+
+|属性 |类型 |必填|描述 |
+|------------|------|----------|----------|
+| `controllers` | `list[type]` |是的 |要注册的控制器类 |
+| `providers` | `list[type]` |没有 |在 DI 容器中注册的可注入服务 |
+| `imports` | `list[APIRouter]` |没有 |子模块（由 `"@Module` 返回）包括 |
+| `exports` | `list[type]` |没有 |导出以供导入模块使用的提供程序 |
+
+## 它是如何工作的
+
+1.Provider通过`Container.resolve()`实例化
+2. 导入的子模块包含在父路由器上
+3.导出存储在`router.__module_exports__`
+4.将每个控制器的方法注册为路由
+
+## 导入/导出示例
+```python
+from nexy.decorators import Injectable, Module
+
+"@Injectable()
+class SharedService:
+    def get_data(self) -> str:
+        return "shared"
+
+"@Module(prefix="/shared")
+class SharedModule:
+    controllers = [SharedController]
+    providers = [SharedService]
+    exports = [SharedService]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [AppController]
+    imports = [SharedModule]  # SharedModule router included
+```

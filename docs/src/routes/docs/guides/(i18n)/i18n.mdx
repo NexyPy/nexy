@@ -1,0 +1,78 @@
+# i18n
+
+Configure locales in `nexyconfig.py`:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "ar", "es", "hi", "zh"]
+    useDefaultLocale = "en"
+```
+
+## Translation Files
+
+Place JSON translation files in `nexy/i18n/<locale>/`:
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+  "nav.docs": "Documentation",
+  "nav.blog": "Blog",
+  "home.hero": "Build faster with Nexy"
+}
+```
+
+See [Config / i18n](/docs/config/i18n) for the full reference.
+
+## Using Translations in Templates
+
+```nexy
+---
+---
+<h1>{{ trans("home.hero", "Build faster with Nexy") }}</h1>
+<p>{{ t("nav.docs", "Docs") }}</p>
+```
+
+- `trans(key, default)` — full function
+- `t(key, default)` — shorthand alias
+
+## Locale Detection
+
+Nexy detects the user's locale from (in order):
+
+1. **URL prefix**: `/fr/docs/`, `/en/docs/`
+2. **Cookie**: `nexy-locale`
+3. **Accept-Language header**: browser preference
+
+The detected locale is set as a request-scoped ContextVar, accessible via `current_locale` or `useLocale()`.
+
+## RTL Support
+
+Arabic (`ar`) and other RTL languages are detected automatically. Use `useLocale()` to check:
+
+```nexy
+---
+from nexy import useLocale
+locale = useLocale()
+---
+<html lang="{{locale.locale}}" dir="{{ 'rtl' if locale.is_rtl else 'ltr' }}">
+```
+
+## Config Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `useLocales` | `list[str]` | `None` | Available locales |
+| `useDefaultLocale` | `str` | `"en"` | Fallback locale |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | Locale cookie name |
+| `useRTL` | `bool` | `False` | Enable RTL layout |

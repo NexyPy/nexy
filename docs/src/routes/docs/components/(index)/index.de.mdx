@@ -1,0 +1,95 @@
+# Komponentenübersicht
+
+Komponenten sind die Bausteine einer Nexy-Anwendung. Eine Komponente ist eine `.nexy`-Datei, die Python-Logik mit einer HTML-Vorlage kombiniert – wie die `.vue`-Dateien von Vue oder die `.svelte`-Dateien von Svelte.
+
+## Komponententypen
+
+Nexy hat zwei Kategorien von Komponenten:
+
+### 1. Seitenkomponenten (in `src/routes/`)
+
+Jede `.nexy`-Datei in `src/routes/` wird zu einer Route. Der Dateipfad bestimmt die URL.
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   └── [slug].nexy     →  /blog/:slug
+```
+
+Seitenkomponenten sind direkt über URL erreichbar. Sie können Hooks wie `useQuery()` und `usePathname()` verwenden, da sie in einem Anforderungskontext ausgeführt werden.
+
+### 2. Wiederverwendbare Komponenten (in `src/components/`)
+
+Komponenten in `src/components/` sind keine Routen – sie werden importiert und von Seiten und anderen Komponenten verwendet.
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+---
+<Header title="My Site" />
+<Card title="Hello">
+  <p>Card content</p>
+</Card>
+```
+
+Diese Komponenten akzeptieren Requisiten, verwenden Slots und kapseln HTML + Logik in einer wiederverwendbaren Einheit.
+
+## Anatomie einer Komponente
+
+Jede `.nexy`-Komponente hat drei mögliche Abschnitte:
+
+```nexy
+---
+# 1. Frontmatter: Python code
+title:prop[str] = "Default"
+count = 0
+---
+<!-- 2. Template: HTML + Jinja2 -->
+<div class="card">
+  <h2>{{ title }}</h2>
+  <p>Count: {{ count }}</p>
+  <slot />
+</div>
+
+<style>
+/* 3. Styles (global) */
+.card { border: 1px solid #ddd; padding: 1rem; }
+</style>
+```
+
+**1. Frontmatter** – Python-Code zwischen `---` Trennzeichen. Deklariert Requisiten, importiert Module, führt Hooks aus und verarbeitet Daten.
+
+**2. Vorlage** – HTML mit Jinja2-Ausdrücken. Gibt Variablen aus, durchläuft Daten und rendert untergeordnete Komponenten.
+
+**3. Stile** – `<style>`-Tags (irgendwo in der Vorlage). Stile sind global und haben keinen Gültigkeitsbereich. Verwenden Sie BEM oder Utility-Klassen zur Kapselung.
+
+## Komponentenregeln
+
+- **Name muss PascalCase sein**: `BlogCard`, `Header`, `CommentForm`
+- **Eine Datei = eine Komponente**: Keine mehrfachen Exporte pro Datei
+- **Requisiten im Voraus erklärt**: `title:prop[str] = "Default"`
+- **Importe oben**: Vor jeglicher Logik oder Hooks
+- **Keine Nebenwirkungen auf Modulebene**: Der Frontmatter wird auf Anfrage ausgeführt. Öffnen Sie keine Dateien und erstellen Sie keine Verbindungen außerhalb von Funktionen
+
+## Wann sollte eine Komponente erstellt werden?
+
+Erstellen Sie eine Komponente, wenn:
+
+- Sie verwenden dasselbe HTML-Muster an mehreren Stellen wieder (Karte, Schaltfläche, Kopfzeile).
+- Sie möchten die Logik mit ihrer Vorlage (CommentForm mit Validierung) kapseln.
+- Sie müssen Daten von einer Seite an einen Unterabschnitt übergeben (Seitenleiste mit aktivem Element).
+- Sie möchten die Layoutstruktur über Routen hinweg teilen (Layout, Wrapper).
+
+Wenn Sie denselben HTML-Code zweimal schreiben, extrahieren Sie ihn in eine Komponente.
+
+## Nächste Schritte
+
+- [Component Usage](/docs/components/usage): Übergabe von Requisiten, Slots, Rendering
+- [Markup](/docs/components/markup): HTML-Syntax, Komponenten-Tags, dynamische Attribute
+- [Python](/docs/components/python): Frontmatter-Logik, Importe, Hooks
+- [Properties](/docs/components/properties): typisierte Requisiten, Standardeinstellungen, Validierung
+- [Styles](/docs/components/styles): CSS in Komponenten

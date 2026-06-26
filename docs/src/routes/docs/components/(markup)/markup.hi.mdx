@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# नेक्सी के साथ मार्कअप लिखना
+
+गतिशील सामग्री के लिए नेक्सी टेम्प्लेट **HTML** + **Jinja2** का उपयोग करते हैं।
+यदि आप HTML और Jinja2 जानते हैं, तो आप Nexy टेम्प्लेट पहले से ही जानते हैं।
+
+---
+
+## पाठ प्रक्षेप
+```html
+<h1>{{ title }}</h1>
+<p>{{ description }}</p>
+```
+वेरिएबल फ्रंटमैटर से या प्रॉप्स से आते हैं।
+
+---
+
+## फ़िल्टर
+
+Jinja2 फ़िल्टर मानों को परिवर्तित करते हैं:
+```html
+<p>{{ content | safe }}</p>
+<p>{{ name | upper }}</p>
+<p>{{ price | round(2) }}</p>
+```
+`| safe` एक स्ट्रिंग को सुरक्षित HTML (कोई स्वचालित-एस्केपिंग नहीं) के रूप में चिह्नित करता है।
+
+---
+
+## लूप के लिए
+```html
+<ul>
+{% for item in items %}
+    <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## यदि/अन्यथा
+```html
+{% if user %}
+    <p>Welcome, {{ user.name }}!</p>
+{% else %}
+    <a href="/login">Sign in</a>
+{% endif %}
+```
+---
+
+## टेम्पलेट्स में घटक
+
+घटकों का उपयोग HTML तत्वों की तरह किया जाता है:
+```html
+<div class="card">
+    <Card title="Hello">
+        <p>Child content</p>
+    </Card>
+</div>
+```
+`Slot` घटक बच्चों को प्रस्तुत करता है (मॉड्यूल देखें)।
+
+---
+
+## कच्चे जेएस ब्लॉक
+
+`{{ '{{' }}` को Jinja2 पार्सिंग से बचाने के लिए `{{ '' }}` का उपयोग करें (JS फ्रेमवर्क को एम्बेड करते समय आवश्यक):
+```html
+{% raw %}
+<script>
+const data = {{ json_data }};
+</script>
+{% endraw %}
+```
+<Link href="/docs/components/python">Next: Python in template →</Link>

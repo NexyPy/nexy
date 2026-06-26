@@ -1,0 +1,75 @@
+# "@Middleware
+
+Apply middleware callables to a controller class or handler method.
+
+## Middleware contract
+
+A middleware is any callable with `__call__(self, request)`. It receives the FastAPI `Request` object and runs before the handler.
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## Middleware on a route
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## Multiple middleware
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+## Signature
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## Guards vs Middleware
+
+| | Guards | Middleware |
+|---|--------|-----------|
+| Purpose | Authorization | Side effects (logging, timing) |
+| Blocks request | Yes (raises HTTPException) | No (unless you raise) |
+| Runs as | FastAPI `Depends` | FastAPI `Depends` |
+| Order | Class guards → method guards | Class middleware → method middleware |
+
+Both run as FastAPI `Depends` dependencies. Order: class guards → class middleware → method guards → method middleware.

@@ -1,0 +1,95 @@
+# Components Overview
+
+Components are the building blocks of a Nexy application. A component is a `.nexy` file that combines Python logic with an HTML template — like Vue's `.vue` files or Svelte's `.svelte` files.
+
+## Component Types
+
+Nexy has two categories of components:
+
+### 1. Page Components (in `src/routes/`)
+
+Every `.nexy` file in `src/routes/` becomes a route. The file path determines the URL.
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   └── [slug].nexy     →  /blog/:slug
+```
+
+Page components are directly accessible via URL. They can use hooks like `useQuery()` and `usePathname()` because they run in a request context.
+
+### 2. Reusable Components (in `src/components/`)
+
+Components in `src/components/` are not routes — they're imported and used by pages and other components.
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+---
+<Header title="My Site" />
+<Card title="Hello">
+  <p>Card content</p>
+</Card>
+```
+
+These components accept props, use slots, and encapsulate HTML + logic in a reusable unit.
+
+## Anatomy of a Component
+
+Every `.nexy` component has three possible sections:
+
+```nexy
+---
+# 1. Frontmatter: Python code
+title:prop[str] = "Default"
+count = 0
+---
+<!-- 2. Template: HTML + Jinja2 -->
+<div class="card">
+  <h2>{{ title }}</h2>
+  <p>Count: {{ count }}</p>
+  <slot />
+</div>
+
+<style>
+/* 3. Styles (global) */
+.card { border: 1px solid #ddd; padding: 1rem; }
+</style>
+```
+
+**1. Frontmatter** — Python code between `---` delimiters. Declares props, imports modules, runs hooks, processes data.
+
+**2. Template** — HTML with Jinja2 expressions. Outputs variables, loops over data, renders child components.
+
+**3. Styles** — `<style>` tags (anywhere in the template). Styles are global, not scoped. Use BEM or utility classes for encapsulation.
+
+## Component Rules
+
+- **Name must be PascalCase**: `BlogCard`, `Header`, `CommentForm`
+- **One file = one component**: No multiple exports per file
+- **Props declared upfront**: `title:prop[str] = "Default"`
+- **Imports at the top**: Before any logic or hooks
+- **No side effects at module level**: The frontmatter runs per-request. Don't open files or create connections outside of functions
+
+## When to Create a Component
+
+Create a component when:
+
+- You reuse the same HTML pattern in multiple places (Card, Button, Header)
+- You want to encapsulate logic with its template (CommentForm with validation)
+- You need to pass data from a page to a sub-section (Sidebar with active item)
+- You want to share layout structure across routes (Layout, Wrapper)
+
+If you're writing the same HTML twice, extract it into a component.
+
+## Next Steps
+
+- [Component Usage](/docs/components/usage): passing props, slots, rendering
+- [Markup](/docs/components/markup): HTML syntax, component tags, dynamic attributes
+- [Python](/docs/components/python): frontmatter logic, imports, hooks
+- [Properties](/docs/components/properties): typed props, defaults, validation
+- [Styles](/docs/components/styles): CSS in components

@@ -1,0 +1,48 @@
+# "@UseResponse
+
+Defina metadados de resposta em um método manipulador – código de status, modelo de resposta, classe de resposta, etc.
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## Assinatura
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## Todos os parâmetros
+
+| Parâmetro | Tipo | Descrição |
+|-------|------|-------------|
+| `status_code` | `int` | Código de status HTTP |
+| `response_class` | `type[Response]` | Classe de resposta personalizada (por exemplo, `HTMLResponse`) |
+| `response_model` | `type` | Modelo Pydantic para serialização de respostas |
+| `responses` | `dict` | Respostas adicionais do OpenAPI |
+| `response_description` | `str` | Descrição da resposta no OpenAPI |
+| `response_model_include` | definir/mapear | Campos a incluir na resposta |
+| `response_model_exclude` | definir/mapear | Campos a excluir da resposta |
+| `response_model_by_alias` | `bool` | Use nomes alternativos em resposta |
+| `response_model_exclude_unset` | `bool` | Excluir campos não definidos |
+| `response_model_exclude_defaults` | `bool` | Excluir campos com valor padrão |
+| `response_model_exclude_none` | `bool` | Excluir campos sem valor |

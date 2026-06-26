@@ -1,0 +1,15 @@
+# 구성
+
+Nexy는 프로젝트 루트의 `nexyconfig.py` 파일을 통해 구성됩니다. 이 파일은 라우팅, 별칭, i18n, CORS, 세션 등 프레임워크의 모든 측면을 제어합니다.
+
+구성 시스템은 검증 기능이 내장된 Pydantic 모델을 사용합니다. 모든 필드에는 적절한 기본값이 있으므로 `nexyconfig.py`에서는 재정의하려는 항목만 지정하면 됩니다.
+
+## 빠른 링크
+
+- [Nexy Config](/docs/config/nexy) — 프로젝트 수준 설정 참조
+- [Vite Config](/docs/config/vite) — 프런트엔드 빌드 도구 구성
+- [CORS](/docs/config/cors) — 교차 출처 리소스 공유
+- [Aliases](/docs/config/aliases) — 경로 별칭 가져오기
+- [Session](/docs/config/session) — 세션 미들웨어 설정
+- [i18n](/docs/config/i18n) — 국제화 구성
+- [TOC](/docs/config/toc) — 목차 자동 생성

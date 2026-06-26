@@ -1,0 +1,75 @@
+# "@미들웨어
+
+컨트롤러 클래스 또는 핸들러 메서드에 미들웨어 호출 가능 항목을 적용합니다.
+
+## 미들웨어 계약
+
+미들웨어는 `__call__(self, request)`로 호출할 수 있습니다. FastAPI `Request` 객체를 수신하고 핸들러보다 먼저 실행됩니다.
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## 경로의 미들웨어
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## 다중 미들웨어
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+## 서명
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## 가드 대 미들웨어
+
+| | 경비원 | 미들웨어 |
+|---|---------|------------|
+| 목적 | 승인 | 부작용(로깅, 타이밍) |
+| 요청 차단 | 예(HTTPException 발생) | 아니요(모금하지 않는 한) |
+| 다음으로 실행 | FastAPI `Depends` | FastAPI `Depends` |
+| 주문 | 클래스 가드 → 메소드 가드 | 클래스 미들웨어 → 메소드 미들웨어 |
+
+둘 다 FastAPI `Depends` 종속성으로 실행됩니다. 순서: 클래스 가드 → 클래스 미들웨어 → 메소드 가드 → 메소드 미들웨어.

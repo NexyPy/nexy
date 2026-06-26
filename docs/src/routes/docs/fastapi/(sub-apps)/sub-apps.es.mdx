@@ -1,0 +1,51 @@
+# Subaplicaciones y montajes
+
+Monte aplicaciones ASGI o WSGI independientes en una subruta.
+
+## Montar una subaplicación
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+Ahora `/sub/` atiende la subaplicación. Tiene sus propias rutas, middleware y vida útil.
+
+## Subaplicación Starlette
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## Subaplicación WSGI (Flask, Django)
+
+Ver [WSGI](/docs/fastapi/wsgi).
+
+## Cómo funcionan los soportes
+
+- El **prefijo de montaje se elimina** antes de que las solicitudes lleguen a la subaplicación.
+- Las subaplicaciones tienen su **propia pila de middleware**: la autenticación/middleware de Nexy no se aplica
+- Las subaplicaciones pueden ser cualquier aplicación ASGI (FastAPI, Starlette, Litestar, etc.)
+- Se ordenan las monturas: gana el primer partido.
+
+## Restricciones
+
+- WebSocket no es compatible con todos los soportes.
+- Los eventos de duración son por aplicación
+- Los documentos de OpenAPI solo cubren la aplicación raíz; los documentos de las subaplicaciones necesitan una configuración separada

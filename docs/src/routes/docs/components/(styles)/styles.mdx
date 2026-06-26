@@ -1,0 +1,67 @@
+# Styles in .nexy Files
+
+Nexy templates support CSS the same way HTML does — through `<style>` tags, external imports, or utility frameworks like Tailwind.
+
+## Inline `<style>` Tag
+
+The most direct way to add styles. Add a `<style>` block anywhere in the template section.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+</style>
+```
+
+Styles are **not scoped** — they apply globally. Use a naming convention (BEM, utility classes) or data attributes to avoid collisions.
+
+## External CSS via `__Import`
+
+Every `.nexy` file has `__Import` available automatically (injected by the compiler). For CSS files, it reads the file and wraps it in a `<style>` tag:
+
+```nexy
+---
+global_css = __Import("/styles/global.css", "", "")()
+---
+{{ global_css }}
+<div class="layout">...</div>
+```
+
+`__Import(path, framework, symbol)` takes three arguments. For CSS, the 2nd and 3rd are unused — pass empty strings. The trailing `()` calls the returned callable immediately, producing the `<style>...</style>` string.
+
+## Tailwind CSS
+
+Nexy works with Tailwind out of the box. Utility classes in your template attributes are processed normally:
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Configure Tailwind in `nexyconfig.py` or `tailwind.config.*`.
+
+## CSS Imports via Vite
+
+If Vite is enabled (`useVite: true`), you can use standard CSS `"@import` or `import` statements in your frontend components. Vite processes them through PostCSS, CSS modules, and any configured plugins.
+
+## Best Practices
+
+| Approach | When to use |
+|----------|-------------|
+| `<style>` in template | Component-specific styles, small projects |
+| `__Import()` external CSS | Sharing styles across components |
+| Tailwind CSS | Utility-first design, rapid prototyping |
+| Vite CSS pipeline | Full build toolchain, CSS modules, PostCSS |

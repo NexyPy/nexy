@@ -1,0 +1,50 @@
+# التزامن والتزامن (معياري)
+
+تم بناء Nexy على FastAPI الذي يدعم كلاً من `async` و`def` في وحدات التحكم.
+
+## `async def` مقابل `def`
+
+| نوع المعالج | تنفيذ | متى تستخدم |
+|-------------|-----------|-------------|
+| `def` | تجمع الخيوط (الحظر) | عمل وحدة المعالجة المركزية، ومزامنة مكالمات قاعدة البيانات، وحظر الإدخال/الإخراج |
+| `async def` | حلقة الحدث | قاعدة بيانات غير متزامنة، مكالمات HTTP، الاستقصاء الطويل |
+
+## وحدة تحكم غير متزامنة
+
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+
+## مزامنة مختلطة وغير متزامنة
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/sync")
+class SyncController:
+    def GET(self):             # runs in thread pool
+        return {"type": "sync"}
+
+"@Controller("/async")
+class AsyncController:
+    async def GET(self):       # runs in event loop
+        return {"type": "async"}
+```
+
+## مهام الخلفية
+
+بالنسبة إلى عمل "أطلق وانسى" بعد الرد، استخدم `BackgroundTasks`. للحصول على عمل غير متزامن في الخلفية، استخدم `asyncio.create_task`.
+
+##محاذير
+
+- لا تستدعي وظائف `async` من معالجات `def` مع `await` — استخدم `asyncio.run()` أو اجعل المعالج `async def`
+- لا تستدعي وظائف الحظر (`time.sleep()`، `requests.get()`) من `async def` — استخدم `asyncio.sleep()`، `httpx.AsyncClient`
+- بالنسبة للإنتاج، استخدم عوامل متعددة لمعالجات المزامنة

@@ -1,0 +1,62 @@
+# useSession
+
+Returns the session dictionary for the current request. Sessions are backed by signed cookies — no server-side storage.
+
+```python
+from nexy import useSession
+
+session = useSession()
+```
+
+---
+
+## Return value
+
+`dict` — the session data from the signed cookie. Returns an empty dict if no session exists.
+
+---
+
+## Example
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+user_id = session.get("user_id")
+---
+{% if user_id %}
+    <p>Logged in as user {{ user_id }}</p>
+{% else %}
+    <p>Guest</p>
+{% endif %}
+```
+
+---
+
+## Writing session data
+
+```python
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+del session["_flash"]
+```
+
+---
+
+## Flash messages pattern
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append("Item saved!")
+session["_flashes"] = flashes
+```
+
+---
+
+## Usage notes
+
+- Requires `useSession` config in `nexyconfig.py`
+- Session data is signed but **not encrypted**
+- No server-side storage — everything is in the cookie

@@ -1,0 +1,17 @@
+# Декораторы
+
+Nexy использует декораторы Python для расширения маршрутов, контроллеров, промежуточного программного обеспечения и внедрения зависимостей. Эти декораторы работают как в режимах FBR, так и в модульном режиме маршрутизации.
+
+## FBR-декораторы
+
+- [@Action](/docs/decorators/action) — обработка отправки форм
+- [@UseGuard](/docs/decorators/useguard) — прикрепить защиту маршрута
+- [@Middleware](/docs/decorators/middleware) — добавить промежуточное программное обеспечение в маршрут
+
+## Модульные декораторы (дополнительно)
+
+- [@Controller](/docs/decorators/controller) — определить класс контроллера
+- [@Module](/docs/decorators/module) — объявить модуль приложения
+- [@Injectable](/docs/decorators/injectable) — зарегистрировать провайдера внедрения зависимостей
+- [@UseRoute](/docs/decorators/useroute) — привязка пользовательского маршрута
+- [@UseResponse](/docs/decorators/useresponse) — обработчик пользовательского ответа

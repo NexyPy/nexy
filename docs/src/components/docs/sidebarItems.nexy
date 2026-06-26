@@ -1,0 +1,60 @@
+---
+SIDE_BAR_Items:prop[list]
+className:prop[str]
+from nexy import usePathname
+pathname = usePathname()
+---
+{% if SIDE_BAR_Items %}
+<div class="{{className}}">
+    {% for _items in SIDE_BAR_Items %}
+        {% if _items.get("type") == "link" %}
+            {% set section_path = '/docs' + _items.get("href") %}
+            {% set is_active = pathname == section_path %}
+            <a href="{{section_path}}" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium {% if is_active %}text-gray-900 dark:text-gray-100 border-l-2 border-dashed border-yellow-500 bg-yellow-500/10{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors hover:bg-black/5 dark:hover:bg-white/5 rounded-none mx-2">
+                {{_items.get("title")}}
+            
+            </a>
+        {% elif _items.get("collapsible", True) %}
+            {% set section_prefix = '/docs' + _items.get("href") %}
+            {% set section_active = pathname.startswith(section_prefix) and section_prefix != '/docs' %}
+            <details open class="collapse collapse-arrow " name="sidebar-accordion">
+                <summary class="collapse-title ml-2 px-0! text-sm font-medium min-h-0 py-1.5 {% if section_active %}text-gray-900 dark:text-gray-100{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %}">{{_items.get("title")}}</summary>
+                <div class="collapse-content px-0 pb-1">
+                    <ul class="space-y-0.5 ml-2.5 border-l border-dashed border-border">
+                        {% for ch in _items.get("items") %}
+                            {% set item_path = '/docs' + _items.get("href") + ch.get("href") %}
+                            {% set is_active = pathname == item_path %}
+                            <li class="hover:bg-black/5 dark:hover:bg-white/5 {% if is_active %} bg-yellow-500/10 border-l-2  border-yellow-500{% endif %}">
+                                <a href="{{item_path}}" class="flex items-center gap-2 px-2 py-1 text-sm {% if is_active %}text-gray-900 dark:text-gray-100{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors  mx-2">
+                                    {{ch.get("label")}}
+                                    {% if ch.get("badge") %}
+                                    <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 font-medium">{{ch.get("badge")}}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </details>
+        {% else %}
+            <div class="px-2 pt-1 pb-0.5">
+                <div class="text-sm font-medium text-neutral-800 dark:text-neutral-200 mb-1">{{_items.get("title")}}</div>
+                <ul class="space-y-0.5 border-l border-dashed border-border ml-0.5">
+                    {% for ch in _items.get("items") %}
+                        {% set item_path = '/docs' + _items.get("href") + ch.get("href") if ch.get("href") != '/' else '/docs' + _items.get("href")  %}
+                        {% set is_active = pathname == item_path %}
+                        <li class="{% if is_active %}border-yellow-500 border-l-2 bg-yellow-500/10{% endif %}">
+                            <a href="{{item_path}}" class="flex items-center gap-2 px-3 py-1 text-sm {% if is_active %}text-gray-900 dark:text-gray-100{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+                                {{ch.get("label")}}
+                                {% if ch.get("badge") %}
+                                    <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 font-medium">{{ch.get("badge")}}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}

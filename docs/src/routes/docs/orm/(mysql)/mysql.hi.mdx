@@ -1,0 +1,29 @@
+# MySQL और मारियाडीबी
+
+MySQL और MariaDB विश्वसनीय उत्पादन डेटाबेस हैं जो सभी Nexy ORM द्वारा समर्थित हैं।
+
+## कनेक्शन
+
+```python
+# MySQL
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+
+# MariaDB (same driver, compatible)
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+```
+
+MariaDB MySQL के लिए एक ड्रॉप-इन प्रतिस्थापन है - समान ड्राइवर, समान कनेक्शन स्ट्रिंग।
+
+## ओआरएम के साथ
+
+| ओआरएम | ड्राइवर | कनेक्शन स्ट्रिंग |
+|----|--------|------------------|
+| SQLModel / SQLAlchemy | `asyncmy` | `mysql+asyncmy://user:pass"@localhost/db` |
+| कछुआ-ओआरएम | `asyncmy` | `mysql://user:pass"@localhost/db` |
+
+## नोट्स
+
+- एसिंक समर्थन के लिए `aiomysql` या `asyncmy` का उपयोग करें
+- सुनिश्चित करें कि आपका डेटाबेस सर्वर एसिंक कनेक्शन का समर्थन करता है
+- उत्पादन कार्यभार के लिए कनेक्शन पूलिंग कॉन्फ़िगर करें
+- MySQL ↔ MariaDB: आपका कोड वही रहता है, केवल सर्वर बदलता है

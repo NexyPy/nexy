@@ -1,0 +1,53 @@
+# सामग्री तालिका
+
+मार्कडाउन पृष्ठों के लिए स्वतः-निर्मित सामग्री तालिका कॉन्फ़िगर करें।
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTocDepth = "2-6"
+    useTocTitle = "Table of Contents"
+    useTocAuto = True
+```
+
+---
+
+## फ़ील्ड्स
+
+| फ़ील्ड | प्रकार | डिफ़ॉल्ट | विवरण |
+|-------|------|------|----|
+| `useTocDepth` | `str` | `"2-6"` | शामिल करने के लिए शीर्षक स्तर (उदाहरण के लिए h2 से h4 के लिए `"2-4"`)। |
+| `useTocTitle` | `str` | `"On this page"` | शीर्षक टीओसी के ऊपर प्रदर्शित होता है। |
+| `useTocAuto` | `bool` | `True` | `.mdx` पृष्ठों के लिए स्वतः TOC जनरेट करें। अक्षम करने के लिए `False` पर सेट करें. |
+
+---
+
+## टेम्पलेट्स में उपयोग
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc()
+---
+<aside class="toc">
+    {{ toc_html | safe }}
+</aside>
+```
+
+---
+
+## कस्टम गहराई
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc(depth_range="1-4")
+---
+```
+
+केवल h3 से h5 शामिल करें:
+
+```nexy
+toc_html = useToc(depth_range="3-5")
+```

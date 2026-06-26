@@ -1,0 +1,73 @@
+# Autorisierung
+
+Schützen Sie Routen mithilfe von `"@UseGuard`-Dekoratoren mit Guard-Callables.
+
+## Wachvertrag
+
+Ein Wächter kann mit `__call__(self, request)` aufgerufen werden. Erhöhen Sie `HTTPException` zum Blockieren, geben Sie `None` zurück, um es zuzulassen.
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+---
+
+## Wache auf einer Route
+```python
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+```
+```python
+from nexy.decorators import Controller, UseGuard
+from starlette.authentication import requires
+
+"@Controller("/admin")
+"@UseGuard(requires("authenticated"))
+class AdminController:
+    def GET(self, request):
+        return {"user": request.user.username}
+```
+## Mehrere Wachen
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RateLimitGuard())
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## Verwendung von `requires` von Starlette
+```python
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+```
+Funktioniert sowohl in FBR als auch in Modular – `requires` gibt einen gültigen Guard-Callable zurück.
+
+---
+
+## Verwandte
+
+- ["@UseGuard reference](/docs/decorators/useguard) – vollständige Dekorator-API
+- [Guards (Modular)](/docs/modular/guards) – Schutzinjektion in Modular DI
+- [Authentication](/docs/security/authentication) – Einrichten von Authentifizierungs-Backends

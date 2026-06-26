@@ -1,0 +1,65 @@
+# OpenAPI 웹훅 및 콜백
+
+OpenAPI 스키마에 웹후크와 콜백을 정의하면 소비자가 API에서 보내는 내용을 알 수 있습니다.
+
+## 웹훅
+
+웹후크는 API가 외부 URL로 보내는 나가는 이벤트입니다.
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+OpenAPI 스키마에 웹훅을 등록합니다. 소비자는 예상되는 페이로드 형태를 `/docs`로 확인합니다.
+
+## 콜백
+
+콜백은 API가 소비자 서버에 보내는 요청을 설명합니다.
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+콜백 라우터를 경로에 전달합니다.
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+그러면 API가 외부 URL에 게시할 내용을 보여주는 OpenAPI 사양에 추가 경로가 생성됩니다.
+
+## 왜 사용하는가?
+
+- API 소비자를 위한 자동 생성 문서
+- 유형이 안전한 계약 정의
+- 모든 OpenAPI 클라이언트 생성기와 함께 작동
+- 런타임 효과 없음 — 순전히 문서화용

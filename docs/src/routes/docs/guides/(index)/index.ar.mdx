@@ -1,0 +1,24 @@
+# أدلة
+
+إرشادات عملية لاستخدام Nexy مع أطر عمل الواجهة الأمامية وتحميل البيانات والمصادقة والتدويل والنشر.
+
+## تكامل إطار الواجهة الأمامية
+
+- [React in Nexy](/docs/frontend/react)
+- [Vue in Nexy](/docs/frontend/vue)
+- [Svelte in Nexy](/docs/frontend/svelte)
+- [Solid in Nexy](/docs/frontend/solid)
+- [Preact in Nexy](/docs/frontend/preact)
+- [Vite & SSR](/docs/frontend/vite)
+
+## الأدلة الأساسية
+
+- [Jinja2](/docs/guides/jinja2) — استخدام محرك القالب
+- [Data Loading](/docs/guides/data-loading) — جلب البيانات وتخزينها مؤقتًا
+- [Error Handling](/docs/guides/error-handling) — صفحات الخطأ ومعالجة الاستثناءات
+- [Actions](/docs/guides/actions) — أشكال الأفعال والطفرات
+- [Auth](/docs/guides/auth) — تدفقات المصادقة
+- [i18n](/docs/guides/i18n) — التدويل
+- [CSS & JS](/docs/guides/css-js) — الأصول الثابتة والتجميع
+- [Real-Time](/docs/guides/websocket) — WebSocket وSSE
+- [Deploy](/docs/guides/deploy) — نشر الإنتاج

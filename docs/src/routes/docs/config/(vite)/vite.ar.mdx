@@ -1,0 +1,45 @@
+# التكوين: فيت
+
+يتكامل Nexy مع **Vite** للتجميع من جانب العميل. يتم التكوين في `nexyconfig.py` و`vite.config.ts`.
+
+## تمكين فايت
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## حقول التكوين Vite
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useVite` | `bool` | `False` | تمكين تجميع Vite. |
+| `useViteDevUrl` | `str \| None` | `None` | عنوان URL المخصص لخادم Vite dev. تم اكتشافه تلقائيًا إذا كان `None`. |
+
+## vite.config.ts
+
+يقوم Nexy بإنشاء `vite.config.ts` في جذر المشروع أثناء `nx init`. يمكنك تخصيصه مثل أي مشروع Vite:
+
+```ts
+import { defineConfig } from "vite";
+import react from ""@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: "__nexy__/client",
+    },
+});
+```
+
+## وضع التطوير
+
+عندما يبدأ `useVite = True`، `nx dev` خادم Vite dev جنبًا إلى جنب مع uvicorn. يقوم Nexy بإدخال نصوص HMR تلقائيًا.
+
+##الإنتاج
+
+خلال `nx build`، ينتج Vite حزمًا محسّنة في `__nexy__/client/`. يقرأ Nexy البيان ويدخل علامات CSS/JS الصحيحة.
+
+## الوضع المضمن
+
+قم بتعيين `NEXY_INLINE_CLIENT=1` لتضمين CSS/JS مباشرة في HTML (مفيد للبريد الإلكتروني أو AMP أو الصفحات المستقلة).

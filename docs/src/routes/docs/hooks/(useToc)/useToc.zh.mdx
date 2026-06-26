@@ -1,0 +1,47 @@
+# 使用目录
+
+从当前页面的标题生成 HTML 目录。
+
+```python
+from nexy import useToc
+
+toc_html = useToc()
+toc_html = useToc(depth_range="1-4")
+```
+
+---
+
+## 参数
+
+|参数|类型 |默认 |描述 |
+|------------|------|---------|------------|
+| `depth_range` | `str` | `"2-6"` |要包含的标题级别（例如 h2 到 h4 的 `"2-4"`）|
+
+---
+
+## 返回值
+
+`str` — 目录的 HTML 字符串，如果没有标题则为空字符串。
+
+ - -
+
+＃＃ 例子
+
+```nexy
+---
+from nexy import useToc
+toc = useToc()
+---
+<aside class="toc">
+    <h3>On this page</h3>
+    {{ toc | safe }}
+</aside>
+```
+
+---
+
+## 使用说明
+
+- 从渲染的页面内容中解析 Markdown 标题
+- 对于没有标题的页面返回空字符串
+- 深度范围格式：`"2-6"` 表示 h2 到 h6，`"1-3"` 表示 h1 到 h3

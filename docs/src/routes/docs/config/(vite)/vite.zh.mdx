@@ -1,0 +1,45 @@
+# 配置：Vite
+
+Nexy 与 **Vite** 集成以进行客户端捆绑。配置位于 `nexyconfig.py` 和 `vite.config.ts` 中。
+
+## 开启Vite
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## Vite配置字段
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useVite` | `bool` | `False` |启用Vite捆绑。 |
+| `useViteDevUrl` | `str \| None` | `None` |自定义 Vite 开发服务器 URL。如果 `None`，则自动检测。 |
+
+## vite.config.ts
+
+Nexy 在 `nx init` 期间在项目根目录生成 `vite.config.ts`。您可以像任何 Vite 项目一样对其进行自定义：
+
+```ts
+import { defineConfig } from "vite";
+import react from ""@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: "__nexy__/client",
+    },
+});
+```
+
+## 开发模式
+
+当`useVite = True`时，`nx dev`与uvicorn一起启动Vite开发服务器。 Nexy 自动注入 HMR 脚本。
+
+## 生产
+
+在`nx build`期间，Vite在`__nexy__/client/`期间生成优化的捆绑包。 Nexy 读取清单并注入正确的 CSS/JS 标签。
+
+## 内联模式
+
+设置 `NEXY_INLINE_CLIENT=1` 将 CSS/JS 直接内联到 HTML 中（对于电子邮件、AMP 或独立页面有用）。

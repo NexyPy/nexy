@@ -1,0 +1,85 @@
+# FBR أو جهاز التوجيه المعياري
+
+تقدم Nexy **استراتيجيتين للتوجيه**. يمكنك الاختيار عند إنشاء المشروع - ويقوم التبديل الموجود أعلى هذا الشريط الجانبي بتبديل الوثائق وفقًا لذلك.
+
+## التوجيه المستند إلى الملف (FBR)
+
+يتم تحديد المسارات بواسطة شجرة الملفات الخاصة بك ضمن `src/routes/`.
+
+```text
+src/routes/
+
+├── index.nexy        →  /
+
+├── about.nexy        →  /about
+
+├── blog/
+
+│   ├── index.nexy    →  /blog
+
+│   └── [slug].nexy   →  /blog/{slug}
+
+└── layout.nexy       →  shared layout
+```
+
+**اختر FBR عندما**:
+
+- تريد الاصطلاح على التكوين
+- أنت تقوم بإنشاء موقع بسيط أو مستندات أو MVP
+- يتناسب تطبيقك مع تسلسل هرمي واضح للصفحة
+- أنت تفضل كمية أقل من التقليد
+
+## جهاز التوجيه المعياري
+
+يتم تعريف المسارات عبر أدوات تزيين Python في `src/apps/`.
+
+```text
+src/apps/
+
+├── app_module.py     →  "@Module(root module)
+
+├── app_controller.py →  "@Controller("/")
+
+├── app_view.nexy     →  template
+
+├── users/
+
+│   ├── user_module.py
+
+│   ├── user_controller.py
+
+│   └── user_service.py
+
+└── layout.nexy       →  shared layout
+```
+
+**اختر نمطيًا عندما**:
+
+- تطبيقك كبير الحجم وله حدود نطاق واضحة
+- تريد حقن التبعية وخدمات قابلة للاختبار
+- أنت قادم من NestJS/Angular وتفضل مصممي الديكور
+- تمتلك فرق متعددة وحدات ميزات مختلفة
+
+## كلاهما في مشروع واحد
+
+يتحكم `nexyconfig.py` في جهاز التوجيه الذي سيتم استخدامه:
+
+```python
+# FBR — no explicit router config needed
+
+class NexyConfig(NexyConfigModel):
+
+    pass
+```
+
+```python
+# Modular — import the APIRouter from your root "@Module
+
+from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
+
+class NexyConfig(NexyConfigModel):
+
+    useRouter = AppModule
+```
+
+لا يمكنك الجمع بين الاثنين في مشروع واحد — اختر المشروع الذي يناسب فريقك وحجمه.

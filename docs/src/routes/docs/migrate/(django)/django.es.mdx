@@ -1,0 +1,60 @@
+# Migrar de Django a Nexy
+
+Django incluye pilas. Nexy es enfocado y modular: usted trae lo que necesita.
+
+## Mapeo de conceptos
+
+| Django | Nexy |
+|--------|------|
+| `views.py` | Archivos `.nexy` (FBR) o `"@Controller` (Modular) |
+| `urls.py` | Árbol de archivos (FBR) o `"@Module` (Modular) |
+| `models.py` | SQLModel / SQLAlchemy (tu elección) |
+| `admin.py` | Documentos de OpenAPI en `/docs` |
+| `manage.py` | `nx` CLI |
+| `settings.py` | `nexyconfig.py` |
+| ORM de Django | SQLModel, SQLAlchemy o Tortoise-ORM |
+| Plantillas (DTL) | Jinja2 (archivos `.nexy`) |
+| Vistas basadas en clases | Archivos `"@Controller` (Modular) o `.nexy` (FBR) |
+| Software intermedio | `"@Middleware` o middleware FastAPI |
+| `request.user` | `request.state.user` o guardias |
+
+## Ejemplo
+```python
+# src/routes/users/index.nexy
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET():
+    return {"users": [u.model_dump() for u in User.find_all()]}
+---
+```
+```python
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return {"users": [u.model_dump() for u in User.find_all()]}
+```
+## Pasos de migración
+
+1. **Crear un nuevo proyecto Nexy** — `nx new my-app`
+2. **Modelos de puerto**: traduce los modelos de Django a SQLModel/SQLAlchemy
+3. **Vistas de puertos** — convierte vistas de funciones/clases de Django a archivos `.nexy` (FBR) o `"@Controller` (Modular)
+4. **Configuraciones de URL del puerto**: los patrones `urls.py` se convierten en árbol de archivos (FBR) o `"@Module` (Modular)
+5. **Plantillas de puerto** — Plantillas DTL → Jinja2 en archivos `.nexy`
+6. **Middleware de puerto** — Middleware Django → Starlette `BaseHTTPMiddleware`
+
+## ¿Por qué cambiar?
+
+- **Sin configuraciones monolíticas**: configura solo lo que usas
+- **Async por defecto** — FastAPI/Starlette bajo el capó
+- **Documentos OpenAPI**: automático, no se necesita `drf-spectacular`
+- **UI basada en componentes**: mezcla Python + Jinja2 en un archivo
+- **Elección del marco**: React, Vue, Svelte, Solid o Preact para la interfaz

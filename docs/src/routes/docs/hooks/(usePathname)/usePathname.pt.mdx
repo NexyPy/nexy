@@ -1,0 +1,40 @@
+#usePathname
+
+Retorna o caminho da URL atual como uma string.
+
+```python
+from nexy import usePathname
+
+pathname = usePathname()
+```
+
+---
+
+## Valor de retorno
+
+`str` — o componente do caminho do URL de solicitação atual (por exemplo, `/docs/hooks/usePathname`).
+
+---
+
+## Exemplo
+
+```nexy
+---
+from nexy import usePathname
+path = usePathname()
+---
+<nav class="breadcrumb">
+    {% set segments = path.strip('/').split('/') %}
+    {% for seg in segments %}
+        <span>/ {{ seg }}</span>
+    {% endfor %}
+</nav>
+```
+
+---
+
+## Notas de uso
+
+- Disponível em frontmatter `.nexy` e `.mdx`
+- Também disponível em manipuladores de rota `.py` via `request.url.path`
+- Retorna apenas o caminho — sem string de consulta, sem fragmento

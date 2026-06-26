@@ -1,0 +1,48 @@
+# "@UseResponse
+
+ハンドラー メソッドに応答メタデータ (ステータス コード、応答モデル、応答クラスなど) を設定します。
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+＃＃ サイン
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## すべてのパラメータ
+
+|パラム |タイプ |説明 |
+|------|------|---------------|
+| `status_code` | `int` | HTTPステータスコード |
+| `response_class` | `type[Response]` |カスタム応答クラス (例: `HTMLResponse`) |
+| `response_model` | `type` |応答シリアル化のための Pydantic モデル |
+| `responses` | `dict` |追加の OpenAPI 応答 |
+| `response_description` | `str` | OpenAPI での応答の説明 |
+| `response_model_include` |セット/マッピング |応答に含めるフィールド |
+| `response_model_exclude` |セット/マッピング |応答から除外するフィールド |
+| `response_model_by_alias` | `bool` |応答でエイリアス名を使用する |
+| `response_model_exclude_unset` | `bool` |未設定のフィールドを除外する |
+| `response_model_exclude_defaults` | `bool` |デフォルト値フィールドを除外する |
+| `response_model_exclude_none` | `bool` |値のないフィールドを除外する |

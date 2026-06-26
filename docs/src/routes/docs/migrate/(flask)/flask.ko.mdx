@@ -1,0 +1,49 @@
+# Flask에서 Nexy로 마이그레이션
+
+플라스크는 최소화됩니다. Nexy도 최소한이지만 최신 비동기, 유형 및 OpenAPI가 내장되어 있습니다.
+
+## 개념 매핑
+
+| 플라스크 | 넥시 |
+|-------|------|
+| `"@app.route("/")` | `src/routes/` 또는 `"@Controller`의 파일 |
+| `render_template()` | `.nexy` 파일 |
+| `request.args` | 함수 서명의 쿼리 매개변수 |
+| `request.json` | 함수 서명의 본문 매개변수 |
+| `g` | `request.state` |
+| `flask run` | `nx dev` |
+| `config.py` | `nexyconfig.py` |
+| 청사진 | `"@Module` 또는 `src/routes/` 하위 디렉터리 |
+
+## 예
+
+```python
+# Flask
+"@app.route("/api/users/<int:id>")
+def get_user(id):
+    return jsonify({"id": id})
+
+# Nexy FBR: src/routes/api/users/[id].py
+async def get(id: int):
+    return {"id": id}
+```
+
+## 당신이 얻는 것
+
+- **비동기 지원** — 해킹을 통하지 않는 기본
+- **유형 검증** — Pydantic, 자동 422 오류
+- **OpenAPI 문서** — `flasgger` 필요 없음
+- **DI 시스템** — 글로벌 싱글톤 없이 서비스 주입
+- **CLI** — `nx build`, `nx start`, `nx migrate`
+
+## 마이그레이션 단계
+
+1. **비계** — `nx new my-app`
+2. **포트 경로** — `"@app.route()` → `src/routes/` 또는 `"@Controller`에 파일
+3. **포트 템플릿** — Flask `render_template()` → `.nexy` 파일
+4. **포트 요청 처리** — `request.args`/`request.json` → 입력된 함수 매개변수
+5. **포트 블루프린트** → `"@Module` 또는 FBR의 하위 디렉터리
+
+## 남는 것
+
+간단한 경로, 최소한의 상용구, 완전한 제어. 최신 Python을 사용하면 됩니다.

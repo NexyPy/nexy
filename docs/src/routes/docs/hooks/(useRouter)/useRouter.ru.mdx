@@ -1,0 +1,51 @@
+# использоватьRouter
+
+Возвращает объект с контекстом маршрутизации для текущего запроса.
+
+```python
+from nexy import useRouter
+
+router = useRouter()
+```
+
+---
+
+## Возвращаемое значение
+
+`dict` со следующими ключами:
+
+| Ключ | Тип | Описание |
+|-----|------|-------------|
+| `path` | `str` | Текущий URL-путь |
+| `base_url` | `str` | Базовый URL сервера |
+| `url_for` | `callable \| None` | Функция `url_for` FastAPI для обратного поиска URL |
+
+---
+
+## Пример
+
+```nexy
+---
+from nexy import useRouter
+router = useRouter()
+---
+<p>Current path: {{ router.path }}</p>
+<p>Base URL: {{ router.base_url }}</p>
+```
+
+---
+
+## Обратный поиск URL-адреса
+
+```python
+router = useRouter()
+if router.url_for:
+    url = router.url_for("read_article", slug="hello-world")
+```
+
+---
+
+## Примечания по использованию
+
+- `url_for` может быть `None` вне контекста запроса.
+- Использует `request.app.url_for` FastAPI под капотом.

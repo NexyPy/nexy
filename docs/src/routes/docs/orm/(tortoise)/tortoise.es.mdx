@@ -1,0 +1,36 @@
+# Tortuga-ORM
+
+**Tortoise-ORM** es un ORM nativo asíncrono inspirado en el ORM de Django. Fácil de aprender, funciona bien con FastAPI/Nexy.
+
+## Configuración
+
+```python
+TORTOISE_ORM = {
+    "connections": {"default": "sqlite://dev.db"},
+    "apps": {"models": {"models": ["models", "aerich.models"], "default_connection": "default"}},
+}
+```
+
+## Ejemplo
+
+```python
+from tortoise import fields
+from tortoise.models import Model
+
+class User(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=100)
+    email = fields.CharField(max_length=100)
+```
+
+## Migraciones
+
+Tortoise-ORM usa **Aerich** (configurado a través de `nx migrate`):
+
+```bash
+nx migrate --init    # Initialize Aerich (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+Tortoise-ORM es una excelente opción si vienes de Django y quieres una API familiar con soporte asíncrono.

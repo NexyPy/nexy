@@ -1,0 +1,69 @@
+# 요청 본문(모듈식)
+
+컨트롤러에서 Pydantic 모델을 사용하여 JSON 요청 본문을 수신합니다.
+
+## 기본 모델
+
+```python
+from nexy.decorators import Controller
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+
+## `embed`가 포함된 본문 필드
+
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+
+## 다중 신체 매개변수
+
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+
+## 중첩 모델
+
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+
+FastAPI는 유효성 검사를 처리하고 잘못된 입력 시 422를 반환합니다.
+
+---
+
+참조: [Controllers](/docs/modular/controllers), [FastAPI Request Body](/docs/fastapi/request-body)

@@ -1,0 +1,85 @@
+# एफबीआर या मॉड्यूलर राउटर
+
+नेक्सी **दो रूटिंग रणनीतियाँ** प्रदान करता है। आप प्रोजेक्ट निर्माण का चयन करते हैं - और इस साइडबार के शीर्ष पर स्थित टॉगल तदनुसार दस्तावेज़ को स्विच करता है।
+
+## फ़ाइल-आधारित रूटिंग (FBR)
+
+रूट आपके फ़ाइल ट्री द्वारा `src/routes/` के अंतर्गत परिभाषित किए गए हैं।
+
+```text
+src/routes/
+
+├── index.nexy        →  /
+
+├── about.nexy        →  /about
+
+├── blog/
+
+│   ├── index.nexy    →  /blog
+
+│   └── [slug].nexy   →  /blog/{slug}
+
+└── layout.nexy       →  shared layout
+```
+
+**FBR तब चुनें जब**:
+
+- आप कॉन्फ़िगरेशन पर कन्वेंशन चाहते हैं
+- आप एक साधारण साइट, दस्तावेज़ या एमवीपी बना रहे हैं
+- आपका ऐप एक स्पष्ट पृष्ठ पदानुक्रम में फिट बैठता है
+- आप कम बॉयलरप्लेट पसंद करते हैं
+
+## मॉड्यूलर राउटर
+
+मार्गों को पायथन डेकोरेटर्स के माध्यम से `src/apps/` में परिभाषित किया गया है।
+
+```text
+src/apps/
+
+├── app_module.py     →  "@Module(root module)
+
+├── app_controller.py →  "@Controller("/")
+
+├── app_view.nexy     →  template
+
+├── users/
+
+│   ├── user_module.py
+
+│   ├── user_controller.py
+
+│   └── user_service.py
+
+└── layout.nexy       →  shared layout
+```
+
+**मॉड्यूलर तब चुनें जब**:
+
+- आपका एप्लिकेशन स्पष्ट डोमेन सीमाओं के साथ बड़ा है
+- आप निर्भरता इंजेक्शन और परीक्षण योग्य सेवाएँ चाहते हैं
+- आप NestJS/Angular से आते हैं और डेकोरेटर पसंद करते हैं
+- कई टीमों के पास अलग-अलग फीचर मॉड्यूल हैं
+
+## दोनों एक ही प्रोजेक्ट में
+
+आपका `nexyconfig.py` नियंत्रित करता है कि किस राउटर का उपयोग करना है:
+
+```python
+# FBR — no explicit router config needed
+
+class NexyConfig(NexyConfigModel):
+
+    pass
+```
+
+```python
+# Modular — import the APIRouter from your root "@Module
+
+from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
+
+class NexyConfig(NexyConfigModel):
+
+    useRouter = AppModule
+```
+
+आप दोनों को एक ही प्रोजेक्ट में नहीं मिला सकते - वह चुनें जो आपकी टीम और पैमाने के अनुकूल हो।

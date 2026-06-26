@@ -2,9 +2,20 @@
   "name": "nexy",
   "displayName": "nexy",
   "description": "Syntax highlighting and basic language configuration for Nexy (.nexy) files",
-  "version": "0.0.1",
-  "engines": { "vscode": "^1.109.0" },
-  "categories": ["Programming Languages"],
+  "icon": "fileicons/nexy.png",
+  "license": "MIT",
+  "version": "0.0.19",
+  "publisher": "nexy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NexyPy/nexy.git"
+  },
+  "engines": {
+    "vscode": "^1.109.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
   "activationEvents": [
     "onLanguage:nexy",
     "onLanguage:mdx"
@@ -14,14 +25,24 @@
     "languages": [
       {
         "id": "nexy",
-        "aliases": ["Nexy", "nexy"],
-        "extensions": [".nexy"],
+        "aliases": [
+          "Nexy",
+          "nexy"
+        ],
+        "extensions": [
+          ".nexy"
+        ],
         "configuration": "./language-configuration.json"
       },
       {
         "id": "mdx",
-        "aliases": ["MDX", "mdx"],
-        "extensions": [".mdx"],
+        "aliases": [
+          "MDX",
+          "mdx"
+        ],
+        "extensions": [
+          ".mdx"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -42,6 +63,15 @@
         "language": "mdx",
         "scopeName": "source.mdx",
         "path": "./syntaxes/mdx.tmLanguage.json"
+      },
+      {
+        "scopeName": "jinja2.injection.nexy",
+        "path": "./syntaxes/jinja2-injection.json",
+        "injectTo": [
+          "text.html.basic",
+          "string.quoted.double.html",
+          "string.quoted.single.html"
+        ]
       }
     ],
     "snippets": [
@@ -75,6 +105,11 @@
         "command": "nexy.restartLSP",
         "title": "Nexy: Restart language server",
         "category": "Nexy"
+      },
+      {
+        "command": "nexy.toggleComment",
+        "title": "Nexy: Toggle comment (header: #, template: {# #})",
+        "category": "Nexy"
       }
     ],
     "configuration": {
@@ -93,6 +128,14 @@
       }
     },
     "configurationDefaults": {
+      "emmet.includeLanguages": {
+        "nexy": "html",
+        "mdx": "html"
+      },
+      "tailwindCSS.includeLanguages": {
+        "nexy": "html",
+        "mdx": "html"
+      },
       "editor.tokenColorCustomizations": {
         "textMateRules": [
           {
@@ -107,6 +150,26 @@
           },
           {
             "scope": [
+              "punctuation.definition.template-block.begin.jinja2",
+              "punctuation.definition.template-block.end.jinja2"
+            ],
+            "settings": {
+              "foreground": "#433f20"
+            }
+          },
+          {
+            "scope": [
+              "punctuation.definition.template-expression.begin.jinja2",
+              "punctuation.definition.template-expression.end.jinja2",
+              "punctuation.definition.comment.begin.jinja2",
+              "punctuation.definition.comment.end.jinja2"
+            ],
+            "settings": {
+              "foreground": "#555555"
+            }
+          },
+          {
+            "scope": [
               "storage.type.nexy"
             ],
             "settings": {
@@ -116,7 +179,8 @@
           {
             "scope": [
               "variable.other.readwrite.python.nexy",
-              "variable.other.readwrite.nexy"
+              "variable.other.readwrite.nexy",
+              "variable.other.readwrite.fallback.nexy"
             ],
             "settings": {
               "foreground": "#E5C07B"
@@ -150,10 +214,22 @@
           }
         ]
       }
-    }
+    },
+    "keybindings": [
+      {
+        "command": "-editor.action.commentLine",
+        "key": "ctrl+/",
+        "when": "editorLangId == nexy && editorTextFocus"
+      },
+      {
+        "command": "nexy.toggleComment",
+        "key": "ctrl+/",
+        "when": "editorLangId == nexy && editorTextFocus"
+      }
+    ]
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run package",
+    "vscode:prepublish": "pnpm run check-types && node esbuild.js --production",
     "compile": "pnpm run check-types && node esbuild.js",
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
@@ -164,20 +240,22 @@
     "test": "vscode-test"
   },
   "dependencies": {
+    "@vscode/vsce": "^3.9.1",
+    "vscode-html-languageservice": "^5.3.1",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",
-    "vscode-languageserver-textdocument": "^1.0.12",
-    "vscode-html-languageservice": "^5.3.1"
+    "vscode-languageserver-textdocument": "^1.0.12"
   },
   "devDependencies": {
-    "@types/vscode": "^1.109.0",
     "@types/node": "22.x",
-    "typescript-eslint": "^8.54.0",
-    "eslint": "^9.39.2",
+    "@types/vscode": "^1.109.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.2",
+    "eslint": "^9.39.2",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "typescript-eslint": "^8.54.0",
+    "vitest": "^4.1.8"
   }
 }

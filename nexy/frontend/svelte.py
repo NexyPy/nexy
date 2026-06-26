@@ -1,8 +1,8 @@
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
 
 
-def svelte() -> FFModel:
-    return FFModel(
+def svelte() -> FrontendFramework:
+    return FrontendFramework(
         name="svelte",
         render=(
             "(function(){"

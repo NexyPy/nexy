@@ -1,0 +1,76 @@
+# معالجة الأخطاء
+
+يوفر Nexy صفحات خطأ 404 و500 مضمنة. قم بتجاوزها بملفات `.nexy` مخصصة.
+
+## صفحات الخطأ الافتراضية
+
+عندما لا يتم العثور على صفحة (404) أو يحدث خطأ لم تتم معالجته (500)، يقوم Nexy بإرجاع صفحة HTML ذات نمط بسيط.
+
+## صفحات الخطأ المخصصة
+
+ضع ملفات `error.nexy` أو `notfound.nexy` في أي دليل مسار لتجاوز صفحات الخطأ لهذا النطاق:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # Custom 404 for /admin/*
+|   +-- error.nexy      # Custom 500 for /admin/*
++-- notfound.nexy       # Global custom 404
++-- error.nexy          # Global custom 500
+```
+
+### مثال: `notfound.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-yellow-500">404</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Page not found</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Sorry, we couldn't find the page you're looking for.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+### مثال: `error.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-red-500">500</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Something went wrong</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Please try again later.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+## صفحات الخطأ ذات النطاق
+
+تنطبق صفحات الخطأ الموضوعة في الدلائل الفرعية فقط على المسارات الموجودة داخل هذا الدليل. يتيح لك ذلك الحصول على صفحات خطأ مختلفة لأقسام مختلفة من موقعك:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # /admin/* — "Admin page not found"
++-- blog/
+|   +-- notfound.nexy   # /blog/* — "Blog post not found"
++-- notfound.nexy       # All other routes
+```
+
+## ذات صلة
+
+- [Authorization / Guards](/docs/security/authorization) — حماية المسارات من الوصول غير المصرح به
+- [Authentication](/docs/security/authentication) — تكوين البرامج الوسيطة للمصادقة

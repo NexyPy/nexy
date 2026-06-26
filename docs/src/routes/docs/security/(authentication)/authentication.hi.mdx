@@ -1,0 +1,54 @@
+#प्रमाणीकरण
+
+नेक्सी स्टारलेट के `AuthenticationMiddleware` के माध्यम से मिडलवेयर-आधारित प्रमाणीकरण प्रदान करता है। इसे विश्व स्तर पर `nexyconfig.py` में कॉन्फ़िगर करें।
+
+## सत्र-आधारित प्रमाणीकरण
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+```python
+# nexyconfig.py
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+## टोकन-आधारित प्रमाणीकरण
+
+```python
+class TokenAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        token = conn.headers.get("Authorization", "").removeprefix("Bearer ")
+        user = await verify_token(token)
+        if user:
+            return AuthCredentials(["authenticated"]), SimpleUser(user.id)
+        return None
+```
+
+## हैंडलर में उपयोगकर्ता तक पहुंचें
+
+```python
+def GET(request):
+    return {"user": request.user.username}
+```
+
+## कॉन्फ़िग संदर्भ
+
+| फ़ील्ड | प्रकार | डिफ़ॉल्ट | विवरण |
+|-------|------|------|----|
+| `useAuth` | `dict \| None` | `None` | क्वार्ग्स ने स्टारलेट के `AuthenticationMiddleware` को अग्रेषित किया |
+| `useSession` | `dict \| None` | `None` | क्वार्ग्स ने स्टारलेट के `SessionMiddleware` को अग्रेषित किया |
+
+---
+
+यह भी देखें: [Authorization](/docs/security/authorization), [JWT](/docs/security/jwt), [Auth Guide](/docs/guides/auth)

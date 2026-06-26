@@ -1,0 +1,66 @@
+# एसिंक और कॉनकरेंसी
+
+नेक्सी फास्टएपीआई पर बनाया गया है जो `async` और `def` रूट हैंडलर दोनों को स्वचालित रूप से सपोर्ट करता है।
+
+## `async def` बनाम `def`
+
+| हैंडलर प्रकार | निष्पादन | कब उपयोग करें |
+|---|----|---|
+| `def` | थ्रेड पूल (अवरुद्ध करना) | सीपीयू कार्य, डीबी कॉल को सिंक करना, I/O को ब्लॉक करना |
+| `async def` | इवेंट लूप | Async DB, HTTP कॉल, WebSocket, लॉन्ग-पोलिंग |
+
+---
+
+## एसिंक मार्ग
+```python
+---
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+---
+```
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+## एक फ़ाइल में मिश्रित सिंक और एसिंक
+```python
+---
+def GET():          # runs in thread pool
+    return {"type": "sync"}
+
+async def GET_async():  # runs in event loop
+    return {"type": "async"}
+---
+```
+```python
+from nexy.decorators import Controller
+
+"@Controller("/demo")
+class DemoController:
+    def GET(self):          # runs in thread pool
+        return {"type": "sync"}
+
+    async def async_get(self):  # runs in event loop
+        return {"type": "async"}
+```
+## पृष्ठभूमि कार्य
+
+प्रतिक्रिया के बाद आग लगाओ और भूल जाओ कार्य के लिए, `BackgroundTasks` (सिंक-अनुकूल) का उपयोग करें। वास्तविक एसिंक पृष्ठभूमि कार्य के लिए, `asyncio.create_task` का उपयोग करें।
+
+## चेतावनियाँ
+
+- `def` हैंडलर से `await` के साथ `async` फ़ंक्शन को कॉल न करें - `asyncio.run()` का उपयोग करें या हैंडलर को `async def` बनाएं
+- `async def` से ब्लॉकिंग फ़ंक्शन (जैसे `time.sleep()`, `requests.get()`) को कॉल न करें - `asyncio.sleep()`, `httpx.AsyncClient` का उपयोग करें
+- नेक्सी का `nx dev` डिफ़ॉल्ट रूप से एक यूविकॉर्न वर्कर चलाता है - एसिंक हैंडलर यहां चमकते हैं
+- उत्पादन के लिए, सिंक हैंडलर के लिए एकाधिक श्रमिकों (`nx start --workers 4`) का उपयोग करें

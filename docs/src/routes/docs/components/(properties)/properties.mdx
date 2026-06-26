@@ -1,0 +1,202 @@
+# Properties (Props)
+
+Props are how data flows into a component. They make components reusable — the same `Card` component can render different content based on the props it receives.
+
+## Declaring Props
+
+Props are declared in the frontmatter using the `:prop[type]` syntax:
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+Each declaration becomes a parameter of the generated Python function with the corresponding type annotation.
+
+## Required vs Optional
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+If a required prop is not passed when the component is used, Python raises a `TypeError` at render time. The error message includes the component name and the missing argument.
+
+**When to make a prop required**: When the component is meaningless without it. A `BlogCard` without a `title` is broken — make it required. A `Button` without a `variant` can default to `"primary"`.
+
+## Supported Types
+
+| Type | Default literal | Notes |
+|------|----------------|-------|
+| `str` | `""` | String values |
+| `int` | `0` | Integer values |
+| `float` | `0.0` | Float values |
+| `bool` | `false` | `true`/`false` (not `True`/`False`) |
+| `list` | `[]` | List values |
+| `dict` | `{}` | Dict values |
+| `Any` | `None` | Any type |
+
+The type annotation is used for documentation and IDE support. At runtime, Python is dynamically typed — the annotation doesn't enforce the type. If you pass a string where an int is expected, it will fail when the template tries to use it arithmetically, not at the prop declaration level.
+
+## Passing Props from Parents
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**Rules**:
+
+- **String values** use `key="value"` or `key="{{ jinja_expr }}"`
+- **Expressions** use `key={expr}` — no quotes, the value is parsed as Python
+- **Booleans**: use `active=true` (lowercase), not `active=True` or `active="true"`
+- **Lists/dicts**: `items={["a", "b"]}` or `settings={"key": "val"}`
+
+## Default Values and Mutable Objects
+
+A common Python gotcha: **don't use mutable defaults** that are shared across calls:
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy handles this for you. The generated function uses `None` as the internal default and creates a fresh copy per call:
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+So `items:prop[list] = []` is safe to use — each component call gets its own list.
+
+## Dynamic Props with `{{ }}`
+
+Use Jinja2 expressions for dynamic values:
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+The compiler converts attribute values containing `{{ }}` into Jinja2 string concatenation:
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+For unquoted `{...}` values, the content is passed as a Python expression directly.
+
+## Props in MDX Pages
+
+Pages (`.mdx` files in `src/routes/`) can also declare props:
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+Page props are typically set by the layout or passed via `useViews()`. They're less common than component props because pages usually get data from hooks and database queries instead.
+
+## Spread Props
+
+Pass a dict as multiple props using Jinja2 spread syntax in the template:
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+This works via the compiler's shorthand detection: when it sees `{{ ...props }}` in an attribute key, it expands it to `**props`.
+
+## Complete Example: Button Component
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+Usage:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## Next
+
+- [Conditional Rendering](/docs/components/conditional): if/for in templates
+- [Component Modules](/docs/components/modules): organizing components

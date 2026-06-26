@@ -1,0 +1,49 @@
+# 리디렉션(FBR)
+
+FastAPI의 `RedirectResponse`를 사용하여 들어오는 요청을 다른 URL로 리디렉션합니다.
+
+## 기본 리디렉션
+
+```python
+# src/routes/redirect.py
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+```
+
+## 상태 코드 포함
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/new-page", status_code=301)
+```
+
+## 조건부 리디렉션
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+```
+
+## 상태 코드 참조
+
+| 코드 | 이름 | 사용 사례 |
+|------|------|----------|
+| 301 | 영구 이전 | 영구 URL 변경 |
+| 302 | 발견됨(기본값) | 임시 리디렉션 |
+| 307 | 임시 리디렉션 | HTTP 메소드 유지 |
+| 308 | 영구 리디렉션 | HTTP 메소드 유지 |
+
+## 일반적인 패턴
+
+- 인증 리디렉션: 인증되지 않은 사용자 → `/login`
+- 기존 URL: 이전 경로 → 새 경로(301)
+- 제출 후 리디렉션: POST 이후 → 성공 페이지(303)
+- 로캘 리디렉션: 브라우저 언어에 따라 `/` → `/{locale}/`

@@ -1,0 +1,85 @@
+# FBR or Modular Router
+
+Nexy offers **two routing strategies**. You choose at project creation — and the toggle at the top of this sidebar switches the documentation accordingly.
+
+## File-Based Routing (FBR)
+
+Routes are defined by your file tree under `src/routes/`.
+
+```text
+src/routes/
+
+├── index.nexy        →  /
+
+├── about.nexy        →  /about
+
+├── blog/
+
+│   ├── index.nexy    →  /blog
+
+│   └── [slug].nexy   →  /blog/{slug}
+
+└── layout.nexy       →  shared layout
+```
+
+**Pick FBR when**:
+
+- You want convention over configuration
+- You're building a simple site, docs, or MVP
+- Your app fits a clear page hierarchy
+- You prefer less boilerplate
+
+## Modular Router
+
+Routes are defined via Python decorators in `src/apps/`.
+
+```text
+src/apps/
+
+├── app_module.py     →  "@Module(root module)
+
+├── app_controller.py →  "@Controller("/")
+
+├── app_view.nexy     →  template
+
+├── users/
+
+│   ├── user_module.py
+
+│   ├── user_controller.py
+
+│   └── user_service.py
+
+└── layout.nexy       →  shared layout
+```
+
+**Pick Modular when**:
+
+- Your application is large with clear domain boundaries
+- You want dependency injection and testable services
+- You come from NestJS / Angular and prefer decorators
+- Multiple teams own different feature modules
+
+## Both in one project
+
+Your `nexyconfig.py` controls which router to use:
+
+```python
+# FBR — no explicit router config needed
+
+class NexyConfig(NexyConfigModel):
+
+    pass
+```
+
+```python
+# Modular — import the APIRouter from your root "@Module
+
+from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
+
+class NexyConfig(NexyConfigModel):
+
+    useRouter = AppModule
+```
+
+You can't mix both in a single project — choose the one that fits your team and scale.

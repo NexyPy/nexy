@@ -1,0 +1,26 @@
+from nexy.i18n import i18n
+
+@i18n()
+class FbrRouterI18n:
+    title = "Routeur"
+    introduction = "Introduction"
+    pages = "Pages"
+    layouts = "Layouts"
+    rest_routes = "Routes REST"
+    request_body = "Corps de requête"
+    cookies_headers = "Cookies & En-têtes"
+    response_model = "Modèle de réponse"
+    background_tasks = "Tâches de fond"
+    async_ = "Async / Concurrence"
+    sse = "SSE"
+    websocket = "WebSocket"
+    redirects = "Redirections"
+    authorization = "Autorisation"
+    useguard = "@UseGuard"
+    middleware_decorator = "@Middleware"
+    error_handling = "Gestion des erreurs"
+    static_files = "Fichiers statiques"
+    dependencies = "Dépendances"
+    middlewares = "Middlewares"
+    dynamic_urls = "URLs dynamiques"
+    query_params = "Paramètres de requête"

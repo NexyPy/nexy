@@ -128,30 +128,13 @@ class NexySemanticTokensProvider implements vscode.DocumentSemanticTokensProvide
   }
 
   static tokensTemplateLine(
-    builder: vscode.SemanticTokensBuilder,
-    lineIndex: number,
-    line: string,
+    _builder: vscode.SemanticTokensBuilder,
+    _lineIndex: number,
+    _line: string,
   ) {
-    let m: RegExpExecArray | null;
-    const compOpen = /<([A-Z][A-Za-z0-9]*)/g;
-    while ((m = compOpen.exec(line))) {
-      this.push(builder, lineIndex, m.index + 1, m[1].length, "class");
-    }
-
-    const attr = /\s([:@\w][\w:.-]*)(?=\s*=|\s|\/?>)/g;
-    while ((m = attr.exec(line))) {
-      this.push(builder, lineIndex, m.index + 1, m[1].length, "property");
-    }
-
-    const eq = /=/g;
-    while ((m = eq.exec(line))) {
-      this.push(builder, lineIndex, m.index, 1, "operator");
-    }
-
-    const str = /"[^"]*"|'[^']*'/g;
-    while ((m = str.exec(line))) {
-      this.push(builder, lineIndex, m.index, m[0].length, "string");
-    }
+    // Template coloring is handled entirely by the TextMate grammar.
+    // Semantic tokens would override Jinja2/python/HTML scopes and
+    // produce flat/monochrome coloring.
   }
 }
 

@@ -38,7 +38,7 @@ Nexy follows a layered architecture:
   - `[id].py` -> `/{id}`
   - `(group)/path.nexy` -> `/path`
 - **Actions**: Server-side functions callable from the client via a hashed POST endpoint.
-  - Registered via `@action` decorator.
+  - Registered via `"@action` decorator.
   - Managed by `ActionEngine`.
 
 ### 2.3. Frontend Integration

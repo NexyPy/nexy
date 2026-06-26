@@ -1,0 +1,95 @@
+# コンポーネントの概要
+
+コンポーネントは、Nexy アプリケーションの構成要素です。コンポーネントは、Vue の `.vue` ファイルや Svelte の `.svelte` ファイルなど、Python ロジックと HTML テンプレートを組み合わせた `.nexy` ファイルです。
+
+## コンポーネントの種類
+
+Nexy には 2 つのカテゴリのコンポーネントがあります。
+
+### 1. ページコンポーネント (`src/routes/` 内)
+
+`src/routes/` 内のすべての `.nexy` ファイルがルートになります。ファイル パスによって URL が決まります。
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   └── [slug].nexy     →  /blog/:slug
+```
+
+ページ コンポーネントには URL 経由で直接アクセスできます。 `useQuery()` や `usePathname()` などのフックはリクエスト コンテキストで実行されるため、使用できます。
+
+### 2. 再利用可能なコンポーネント (`src/components/` 内)
+
+`src/components/` のコンポーネントはルートではありません。これらはインポートされ、ページや他のコンポーネントによって使用されます。
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+---
+<Header title="My Site" />
+<Card title="Hello">
+  <p>Card content</p>
+</Card>
+```
+
+これらのコンポーネントは、小道具を受け入れ、スロットを使用し、HTML + ロジックを再利用可能なユニットにカプセル化します。
+
+## コンポーネントの構造
+
+すべての `.nexy` コンポーネントには、次の 3 つのセクションがあります。
+
+```nexy
+---
+# 1. Frontmatter: Python code
+title:prop[str] = "Default"
+count = 0
+---
+<!-- 2. Template: HTML + Jinja2 -->
+<div class="card">
+  <h2>{{ title }}</h2>
+  <p>Count: {{ count }}</p>
+  <slot />
+</div>
+
+<style>
+/* 3. Styles (global) */
+.card { border: 1px solid #ddd; padding: 1rem; }
+</style>
+```
+
+**1. Frontmatter** — `---` 区切り記号間の Python コード。 props を宣言し、モジュールをインポートし、フックを実行し、データを処理します。
+
+**2.テンプレート** — Jinja2 式を含む HTML。変数を出力し、データをループし、子コンポーネントをレンダリングします。
+
+**3.スタイル** — `<style>` タグ (テンプレート内の任意の場所)。スタイルはグローバルであり、スコープはありません。カプセル化には BEM またはユーティリティ クラスを使用します。
+
+## コンポーネントのルール
+
+- **名前は PascalCase である必要があります**: `BlogCard`、`Header`、`CommentForm`
+- **1 ファイル = 1 コンポーネント**: ファイルごとに複数のエクスポートはできません
+- **事前に宣言されたプロパティ**: `title:prop[str] = "Default"`
+- **先頭にインポート**: ロジックまたはフックの前
+- **モジュール レベルでの副作用なし**: フロントマターはリクエストごとに実行されます。関数の外でファイルを開いたり接続を作成したりしないでください
+
+## コンポーネントを作成する場合
+
+次の場合にコンポーネントを作成します。
+
+- 同じ HTML パターンを複数の場所 (カード、ボタン、ヘッダー) で再利用します。
+- ロジックをテンプレート (検証付きの CommentForm) でカプセル化したい場合
+- ページからサブセクション (アクティブな項目のあるサイドバー) にデータを渡す必要があります。
+- ルート間でレイアウト構造を共有したい（レイアウト、ラッパー）
+
+同じ HTML を 2 回記述する場合は、それをコンポーネントに抽出します。
+
+## 次のステップ
+
+- [Component Usage](/docs/components/usage): 小道具、スロット、レンダリングを渡す
+- [Markup](/docs/components/markup): HTML 構文、コンポーネント タグ、動的属性
+- [Python](/docs/components/python): フロントマター ロジック、インポート、フック
+- [Properties](/docs/components/properties): 型指定されたプロパティ、デフォルト、検証
+- [Styles](/docs/components/styles): コンポーネント内の CSS

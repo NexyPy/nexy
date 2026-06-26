@@ -1,0 +1,11 @@
+# 迁移到 Nexy
+
+将现有应用程序从其他框架迁移到 Nexy。每个指南都涵盖了主要差异、项目结构映射和分步迁移。
+
+## 可用指南
+
+- [FastAPI](/docs/migrate/fastapi) — 从 FastAPI 到 Nexy
+- [Django](/docs/migrate/django) — 从 Django 到 Nexy
+- [NestJS](/docs/migrate/nestjs) — 从 NestJS 到 Nexy
+- [Flask](/docs/migrate/flask) — 从 Flask 到 Nexy
+- [Next.js](/docs/migrate/nextjs) — 从 Next.js 到 Nexy

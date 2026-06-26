@@ -1,0 +1,53 @@
+# جدول المحتويات
+
+قم بتكوين جدول المحتويات الذي تم إنشاؤه تلقائيًا لصفحات Markdown.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTocDepth = "2-6"
+    useTocTitle = "Table of Contents"
+    useTocAuto = True
+```
+
+---
+
+## الحقول
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | مستويات العناوين المراد تضمينها (على سبيل المثال `"2-4"` من h2 إلى h4). |
+| `useTocTitle` | `str` | `"On this page"` | العنوان المعروض أعلى جدول المحتويات. |
+| `useTocAuto` | `bool` | `True` | إنشاء جدول محتويات تلقائيًا لصفحات `.mdx`. اضبط على `False` للتعطيل. |
+
+---
+
+## الاستخدام في القوالب
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc()
+---
+<aside class="toc">
+    {{ toc_html | safe }}
+</aside>
+```
+
+---
+
+## عمق مخصص
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc(depth_range="1-4")
+---
+```
+
+قم بتضمين h3 إلى h5 فقط:
+
+```nexy
+toc_html = useToc(depth_range="3-5")
+```

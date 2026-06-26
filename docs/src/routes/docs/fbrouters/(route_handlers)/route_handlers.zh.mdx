@@ -1,0 +1,126 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 路由处理程序 (API)
+
+路由处理程序是 `src/routes/` 中的 `.py` 文件，它公开 API 端点。与页面 (`.nexy` / `.mdx`) 不同，处理程序返回 JSON 或原始数据。
+
+---
+
+## 创建处理程序
+```bash
+routes/
+└── api/
+    └── hello.py           →  GET /api/hello
+```
+```python
+# api/hello.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"message": "Hello from Nexy!"}
+```
+
+Nexy 将函数名称映射到 HTTP 方法：`GET`、`POST`、`PUT`、`PATCH`、`DELETE`。
+
+---
+
+## 可用的 HTTP 方法
+
+在单个文件中为每个方法定义一个函数：
+```python
+# routes/api/items.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"items": []}
+
+async def POST(request: Request):
+    data = await request.json()
+    return {"created": data}
+
+async def DELETE(request: Request, id: int):
+    return {"deleted": id}
+```
+
+每个功能对应于`/api/items` 上的`GET`、`POST`、`DELETE`。
+
+---
+
+## 请求正文
+```python
+# routes/api/users.py
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+async def POST(request: Request, body: CreateUser):
+    return {"name": body.name, "email": body.email}
+```
+FastAPI 自动验证正文 — 如果输入无效，则返回 422。
+
+---
+
+## 状态码
+
+返回 `status_code` 和 `JSONResponse`：
+```python
+from fastapi.responses import JSONResponse
+
+async def POST(request: Request):
+    return JSONResponse({"created": True}, status_code=201)
+```
+---
+
+## 路由参数
+```python
+# routes/api/users/[id].py
+from fastapi import Request
+
+async def GET(request: Request, id: int):
+    return {"user_id": id}
+```
+动态段 (`[id]`) 作为关键字参数注入，并具有自动类型转换。
+
+---
+
+## 依赖关系
+
+FastAPI 的 `Depends`、`Header`、`Query`、`Cookie` 在本机工作：
+```python
+from fastapi import Depends, Header, Query
+
+def get_db():
+    return {"connection": "ok"}
+
+async def GET(request: Request, db=Depends(get_db), x_api_key: str = Header(None)):
+    return {"db": db, "api_key": x_api_key}
+```
+---
+
+## 回应
+
+|返回类型 |回应 |
+|----------|----------|
+| `dict` | `application/json` |
+| `list` | `application/json` |
+| `str` | `text/plain` |
+| `BaseModel` | `application/json` |
+| `Response` |定制（任何）|
+| `None` | `200 OK` 空 |
+
+---
+
+## 最佳实践
+
+- 1 个 `.py` 文件 = 1 个路由路径
+- 使用与 HTTP 方法匹配的函数名称（`GET`、`POST`、`PUT`、`PATCH`、`DELETE`）
+- 使用 Pydantic 模型进行请求验证
+- 使用`JSONResponse`作为自定义状态代码
+- 对于客户端触发的突变，请参阅[Actions](/docs/guides/actions)
+

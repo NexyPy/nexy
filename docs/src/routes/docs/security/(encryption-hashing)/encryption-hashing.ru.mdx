@@ -1,0 +1,56 @@
+# Шифрование и хеширование
+
+Nexy не предлагает собственную криптографию — используйте стандартную библиотеку Python и проверенные сторонние пакеты.
+
+## Хеширование
+
+### хеш-библиотека (stdlib)
+
+```python
+import hashlib
+
+hash = hashlib.sha256(b"data").hexdigest()
+```
+
+### шифрование
+
+```bash
+pip install bcrypt
+```
+
+```python
+import bcrypt
+
+hashed = bcrypt.hashpw(b"password", bcrypt.gensalt())
+bcrypt.checkpw(b"password", hashed)  # True
+```
+
+## Шифрование
+
+### криптография (симметричная по Ферне)
+
+```bash
+pip install cryptography
+```
+
+```python
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key()
+cipher = Fernet(key)
+
+token = cipher.encrypt(b"secret data")
+cipher.decrypt(token)  # b"secret data"
+```
+
+## Переменные среды
+
+Никогда не кодируйте ключи жестко. Используйте переменные среды:
+
+```python
+import os
+
+secret = os.environ["SECRET_KEY"]
+```
+
+Для разработки Nexy автоматически читает файлы `.env`.

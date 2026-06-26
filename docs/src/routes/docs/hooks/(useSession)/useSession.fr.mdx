@@ -1,0 +1,62 @@
+# utiliserSession
+
+Renvoie le dictionnaire de session pour la requête en cours. Les sessions sont sauvegardées par des cookies signés – pas de stockage côté serveur.
+
+```python
+from nexy import useSession
+
+session = useSession()
+```
+
+---
+
+## Valeur de retour
+
+`dict` — les données de session du cookie signé. Renvoie un dict vide si aucune session n'existe.
+
+---
+
+## Exemple
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+user_id = session.get("user_id")
+---
+{% if user_id %}
+    <p>Logged in as user {{ user_id }}</p>
+{% else %}
+    <p>Guest</p>
+{% endif %}
+```
+
+---
+
+## Écriture des données de session
+
+```python
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+del session["_flash"]
+```
+
+---
+
+## Modèle de messages Flash
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append("Item saved!")
+session["_flashes"] = flashes
+```
+
+---
+
+## Notes d'utilisation
+
+- Nécessite une configuration `useSession` dans `nexyconfig.py`
+- Les données de session sont signées mais **non chiffrées**
+- Pas de stockage côté serveur : tout est dans le cookie

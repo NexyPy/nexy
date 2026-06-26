@@ -1,1 +1,43 @@
-hdh
+---
+
+---
+
+# Team
+
+Nexy is maintained by a small core team and supported by community contributors.
+
+## Core maintainers
+
+- **Anomaly** — creator and lead maintainer. Responsible for project direction, architecture decisions, and final review of all major changes.
+
+## Maintainers
+
+We are looking for additional maintainers. If you have made substantial contributions and are interested in joining the team, reach out on [GitHub Discussions](https://github.com/NexyPy/nexy/discussions).
+
+## Contributors
+
+See the [GitHub contributors page](https://github.com/NexyPy/nexy/graphs/contributors) for the full list of people who have contributed to Nexy.
+
+## Roles
+
+### Maintainer
+- Review PRs and triage issues
+- Guide project direction and architecture
+- Vote on RFCs and breaking changes
+- Onboard new contributors
+
+### Contributor
+- Submit bug fixes, features, and documentation
+- Participate in discussions and code reviews
+- Help other community members
+
+## Join the team
+
+The path from contributor to maintainer is based on sustained, high-quality contributions. We look for:
+
+- Consistent, well-tested PRs
+- Thoughtful code reviews
+- Active participation in discussions
+- Understanding of the project's architecture and philosophy
+
+If that sounds like you, keep contributing — we'd love to have you.

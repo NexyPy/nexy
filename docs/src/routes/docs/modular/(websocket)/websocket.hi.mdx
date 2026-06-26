@@ -1,0 +1,159 @@
+# वेबसॉकेट (मॉड्यूलर)
+
+`async def SOCKET(self, websocket)` का उपयोग करके नियंत्रक के अंदर एक वेबसॉकेट एंडपॉइंट को परिभाषित करें।
+
+---
+
+## मूल प्रतिध्वनि
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/chat")
+class ChatController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await websocket.send_text(f"Echo: {data}")
+        except WebSocketDisconnect:
+            pass
+```
+
+`SOCKET` विधि का नाम वेबसॉकेट एंडपॉइंट पर मैप होता है। नियंत्रक में सभी विधियाँ `"@Controller` उपसर्ग साझा करती हैं - इसलिए यह वेबसॉकेट के रूप में `GET /chat` है।
+
+---
+
+## JSON प्राप्त करें
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/events")
+class EventsController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_json()
+                await websocket.send_json({"echo": data})
+        except WebSocketDisconnect:
+            pass
+```
+
+---
+
+## डीआई के साथ कमरे का पैटर्न
+
+कनेक्शन प्रबंधित करने के लिए एक समर्पित सेवा का उपयोग करें:
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class ConnectionManager:
+    def __init__(self):
+        self.connections: list[WebSocket] = []
+
+    def add(self, ws: WebSocket):
+        self.connections.append(ws)
+
+    def remove(self, ws: WebSocket):
+        self.connections.remove(ws)
+
+    async def broadcast(self, message: str):
+        for conn in self.connections:
+            await conn.send_text(message)
+
+"@Controller("/chat")
+class ChatController:
+    def __init__(self, manager: ConnectionManager):
+        self.manager = manager
+
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        self.manager.add(websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.manager.broadcast(data)
+        except WebSocketDisconnect:
+            self.manager.remove(websocket)
+```
+
+`ConnectionManager` एक सिंगलटन `"@Injectable()` है - सभी नियंत्रक उदाहरण एक ही प्रबंधक साझा करते हैं।
+
+---
+
+## डीआई के साथ नामित कमरे
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class RoomManager:
+    def __init__(self):
+        self.rooms: dict[str, list[WebSocket]] = {}
+
+    def join(self, room: str, ws: WebSocket):
+        self.rooms.setdefault(room, []).append(ws)
+
+    def leave(self, room: str, ws: WebSocket):
+        self.rooms[room].remove(ws)
+        if not self.rooms[room]:
+            del self.rooms[room]
+
+    async def broadcast(self, room: str, message: str):
+        for conn in self.rooms.get(room, []):
+            await conn.send_text(message)
+
+"@Controller("/rooms/{room_id}")
+class RoomController:
+    def __init__(self, rooms: RoomManager):
+        self.rooms = rooms
+
+    async def SOCKET(self, websocket: WebSocket, room_id: str):
+        await websocket.accept()
+        self.rooms.join(room_id, websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.rooms.broadcast(room_id, data)
+        except WebSocketDisconnect:
+            self.rooms.leave(room_id, websocket)
+```
+
+---
+
+## कनेक्शन जीवनचक्र
+
+| घटना | क्या होता है |
+|-------|----||
+| ग्राहक जुड़ता है | `websocket.accept()` - पहले बुलाया जाना चाहिए |
+| संदेश प्राप्त हुआ | `receive_text()` / `receive_json()` / `receive_bytes()` |
+| क्लाइंट डिस्कनेक्ट हो जाता है | `WebSocketDisconnect` बढ़ा - `except` में साफ़ करें |
+| सर्वर बंद हो जाता है | `await websocket.close(code=1000)` |
+
+---
+
+## ग्राहक
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## यह भी देखें
+
+- [Controllers](/docs/modular/controllers) - मॉड्यूलर में रूट हैंडलर
+- [Providers & DI](/docs/modular/providers) - इंजेक्शन योग्य सेवाएँ
+- [Guards](/docs/modular/guards) - वेबसॉकेट एंडपॉइंट की सुरक्षा करें
+- [WebSocket Guide](/docs/guides/websocket) — वैचारिक अवलोकन

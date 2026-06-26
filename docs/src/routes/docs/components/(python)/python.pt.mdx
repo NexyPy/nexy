@@ -1,0 +1,85 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Python no modelo Nexy
+
+O frontmatter (`---`) executa Python em tempo de compilação e em cada solicitação.
+
+---
+
+## O que você pode fazer
+
+### Importar módulos
+```python
+---
+import json
+from datetime import datetime
+from nexy import usePathname
+from "@components/card.nexy" import Card
+---
+```
+### Executar expressões
+```python
+---
+items = [1, 2, 3]
+now = datetime.now()
+is_admin = user.role == "admin"
+---
+```
+### Use ganchos
+```python
+---
+from nexy import usePathname, useSearchParams, useCookies
+pathname = usePathname()
+params = useSearchParams()
+cookies = useCookies()
+---
+```
+### Dados de solicitação de acesso
+```python
+---
+from fastapi import Request
+# request is injected automatically
+---
+```
+---
+
+## Tempo de compilação versus tempo de execução
+
+| Operação | Quando | Exemplo |
+|---|---|---|
+| `import` | Compilar | Importação de componentes |
+| `prop[type]` | Compilar | Adereços verificados por tipo |
+| Ganchos | Solicitação | `usePathname()` |
+| Variáveis ​​| Solicitação | `user = request.user` |
+
+As variáveis ​​definidas no frontmatter estão disponíveis no template:
+```python
+---
+from datetime import datetime
+year = datetime.now().year
+---
+<footer>&copy; {{ year }} Nexy</footer>
+```
+---
+
+## Lógica compartilhada
+
+Para lógica Python reutilizável, crie um arquivo `.py` normal:
+```python
+# src/utils/helpers.py
+def format_date(dt):
+    return dt.strftime("%B %d, %Y")
+```
+Importe de qualquer componente:
+```python
+---
+from src.utils.helpers import format_date
+from datetime import datetime
+---
+<p>{{ format_date(datetime.now()) }}</p>
+```
+<Link href="/docs/components/properties">Next: Properties →</Link>

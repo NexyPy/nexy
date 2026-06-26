@@ -1,0 +1,53 @@
+# construction nx
+
+Compile le projet pour la production : compilation `.nexy`/`.mdx`, SSG et regroupement de clients.
+
+```bash
+nx build
+```
+
+---
+
+## Ce que ça fait
+
+1. Compile tous les fichiers `.nexy`/`.mdx` en `__nexy__/` (parallèle, multithread)
+2. Génère des pages SSG (génération de site statique) – pré-rend le HTML pour les routes statiques
+3. Exécute la version de production Vite pour les composants clients (si configurés)
+4. Génère l'arborescence des routes compilée pour l'application FastAPI
+
+La sortie va à `__nexy__/` :
+
+```text
+__nexy__/
+├── server/          — Compiled Python routes
+├── client/          — Bundled JS/CSS (Vite)
+├── static/          — Pre-rendered HTML (SSG)
+└── manifest.json    — Build manifest
+```
+
+---
+
+##Options
+
+| Drapeau | Par défaut | Descriptif |
+|------|---------|-------------|
+| `--check` | `false` | Exécutez ruff + mypy après la compilation |
+| `--static` | `false` | Exportation de site statique complète (sans serveur) |
+
+---
+
+## Exemple
+
+```bash
+# Build with type checking
+nx build --check
+
+# Build as static site
+nx build --static
+```
+
+---
+
+## Alias
+
+`nx b`

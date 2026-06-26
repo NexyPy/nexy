@@ -1,0 +1,15 @@
+# Configuración
+
+Nexy se configura a través de un archivo `nexyconfig.py` en la raíz de su proyecto. Este archivo controla todos los aspectos del marco: enrutamiento, alias, i18n, CORS, sesiones y más.
+
+El sistema de configuración utiliza modelos Pydantic con validación incorporada. Cada campo tiene un valor predeterminado sensato, por lo que su `nexyconfig.py` solo necesita especificar lo que desea anular.
+
+## Enlaces rápidos
+
+- [Nexy Config](/docs/config/nexy) — referencia de configuración a nivel de proyecto
+- [Vite Config](/docs/config/vite) — configuración de la herramienta de compilación frontend
+- [CORS](/docs/config/cors): intercambio de recursos entre orígenes
+- [Aliases](/docs/config/aliases) — importar alias de ruta
+- [Session](/docs/config/session) — configuración del middleware de sesión
+- [i18n](/docs/config/i18n) — configuración de internacionalización
+- [TOC](/docs/config/toc) — generación automática de tabla de contenidos

@@ -1,0 +1,68 @@
+# 跨域资源共享
+
+使用 Starlette 的 `CORSMiddleware` 为您的 Nexy 应用程序配置跨源资源共享。
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## 常用选项
+
+|选项 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` |允许的来源。使用 `["*"]` 允许所有（仅限开发）。 |
+| `allow_origins_regex` | `str` | `None` |允许来源的正则表达式模式（例如 `"%%U0%%"`）。 |
+| `allow_methods` | `list[str]` | `["GET"]` |允许的 HTTP 方法。 `["*"]` 允许所有。 |
+| `allow_headers` | `list[str]` | `[]` |允许的请求标头。 `["*"]` 允许所有。 |
+| `allow_credentials` | `bool` | `False` |允许 cookie 和授权标头。 |
+| `expose_headers` | `list[str]` | `[]` |向浏览器公开的标头。 |
+| `max_age` | `int` | `600` |预检缓存持续时间（以秒为单位）。 |
+
+---
+
+## 开发设置
+
+对于本地开发，允许所有来源：
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## 生产设置
+
+明确起源和方法：
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+当 `allow_credentials` 是 `True` 时，您不能将 `"*"` 用于 `allow_origins` — 明确列出来源。
+
+---
+
+## 在代理后面
+
+如果您的应用程序在反向代理（nginx、Cloudflare）后面运行，请确保配置转发标头，以便 CORS 中间件看到正确的来源。

@@ -1,0 +1,111 @@
+# CSS と JavaScript
+
+Nexy では、スタイルとスクリプトを完全に自由に設定できます。インライン、インポート、ユーティリティファースト、カスタム バンドルなど、あらゆるアプローチが機能します。
+
+## CSS アプローチ
+
+### 1. `.nexy` テンプレートのインライン `<style>`
+
+`<style>` タグをテンプレート セクションに直接追加します。スタイルはデフォルトでグローバルです。BEM、データ属性、またはユーティリティ クラスを使用してスタイルの範囲を手動で設定します。
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+</style>
+```
+
+### 2. `__Import` 経由で外部 CSS をインポートする
+
+すべての `.nexy` ファイルには、`__Import` が自動的に使用可能になります (コンパイラによって挿入されます)。外部 CSS、JSON、または画像をインライン化するために使用します。
+
+```nexy
+---
+css_block = __Import("/styles/global.css", "", "")()
+---
+<div class="wrapper">
+  {{ css_block }}
+  <main>...</main>
+</div>
+```
+
+`__Import(path, framework, symbol)` はファイル拡張子別にディスパッチします:
+
+|拡張子 |返品 |
+|----------|----------|
+| `.css` |ファイルの内容をインライン化した `<style>...</style>` 文字列 |
+| `.png`、`.jpg`、`.svg` など | Base64 データ URI 文字列 |
+| `.json` |解析された JSON データ |
+| `.tsx`、`.vue`、`.svelte` など |クライアント コンポーネント ラッパー (`<ncc>` タグ) |
+
+CSS の場合、2 番目と 3 番目の引数は使用されず、空の文字列を渡します。
+
+### 3. 追い風 CSS
+
+Nexy には、プロジェクトの初期化時に Tailwind CSS サポートが含まれています。テンプレート内のユーティリティ クラスは通常どおり処理されます。
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Tailwind を `tailwind.config.*` または `nexyconfig.py` で構成します。
+
+### 4. Vite CSS バンドル
+
+Vite が有効になっている場合 (構成で `useVite: true`)、フロントエンド コンポーネントから `.css` ファイルをインポートでき、それらは PostCSS、CSS モジュール、HMR を含む Vite のパイプラインにバンドルされます。
+
+## クライアントサイドの JavaScript
+
+`<script>` タグを `.nexy` テンプレートに直接追加します。
+
+```nexy
+---
+---
+<button id="greet-btn">Greet</button>
+
+<script>
+document.getElementById('greet-btn').addEventListener('click', () => {
+  alert('Hello from Nexy!')
+})
+</script>
+```
+
+## TypeScript
+
+Vite を有効にすると、`.ts` ファイルが自動的にコンパイルされます。これらをフロントエンド コンポーネントまたは `<script>` タグ経由でインポートします。
+
+```typescript
+// src/scripts/utils.ts
+export function greet(name: string): string {
+  return `Hello ${name}`
+}
+```
+
+`public/` のスクリプトは静的に提供されます。 `src/` のスクリプトは、Vite (有効な場合) によって処理されるか、開発中にそのまま提供されます。
+
+## バンドル
+
+|モード | CSS | JS/TS |
+|------|-----|------|
+| **開発** |生または Vite HMR 経由で提供 |生または Vite HMR 経由で提供 |
+| **生産 (`nexy build`)** |インラインまたは Vite バンドル | Vite によって縮小されバンドルされています |
+
+Vite がオフの場合、`<style>` タグ内の CSS は HTML 出力に直接インライン化されます。 Vite がオンになっている場合、すべてのアセットは最適なバンドルとコード分割のために Vite のビルド パイプラインを通過します。

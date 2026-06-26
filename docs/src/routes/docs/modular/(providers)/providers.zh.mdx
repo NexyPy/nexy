@@ -1,0 +1,207 @@
+# 提供者和依赖注入
+
+提供者封装业务逻辑、数据访问或外部集成。它们用 `"@Injectable()` 装饰，并通过构造函数参数自动注入控制器（或其他提供程序）。
+
+## 为什么是提供商？
+
+如果没有 DI，每个控制器都会手动创建其依赖项：
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+通过 DI，容器实例化依赖项并注入它们：
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+优点：可测试性（测试中模拟 `UserService`）、单例共享（跨控制器的同一实例）、范围控制（需要时每个请求新）。
+
+## 创建一个提供者
+
+用 `"@Injectable()` 装饰任何类：
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+`"@Injectable()` 阻止直接实例化 — 在 DI 外部调用 `UserService()` 会引发 `TypeError`。这迫使您使用容器，以确保正确解析范围和依赖项。
+
+## 注入控制器
+
+将依赖项声明为带有类型提示的构造函数参数：
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+DI 容器将类型提示 (`UserService`) 与已注册的提供程序相匹配。如果没有提供者匹配，则会在启动时引发 `ValueError`。
+
+**陷阱**：构造函数参数名称并不重要——只有类型提示才重要。 `service: UserService` 和 `s: UserService` 均解析为同一提供者。
+
+## 将提供程序注入其他提供程序
+
+提供者可以依赖其他提供者——容器解析完整的树：
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+循环依赖项 (`A → B → A`) 在启动时引发 `RecursionError`。重构以将共享逻辑提取到第三个提供程序中。
+
+## 注射范围
+
+范围控制提供者的生命周期：
+
+|范围 |终身|使用案例|
+|--------|----------|----------|
+| `Scope.SINGLETON`（默认）|整个应用程序的一个实例 |数据库连接、配置、缓存 |
+| `Scope.REQUEST` |每个 HTTP 请求的新实例 |每个请求的状态、审核日志 |
+| `Scope.TRANSIENT` |每次注入新实例 |无状态实用程序，纯函数 |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`** 是默认且最安全的选择。仅当您需要每个请求状态时（例如，存储来自守卫的当前用户），才使用 **`Scope.REQUEST`**。当提供程序具有不应共享的可变状态时，请使用 **`Scope.TRANSIENT`**。
+
+**陷阱**：注入单例提供程序的瞬态提供程序实际上成为单例 - 它们在单例首次解析时创建一次。如果每个请求需要一个新的瞬态，请将其注入请求范围的提供程序中。
+
+## 带有 `useValue` 和 `useFactory` 的自定义提供程序
+
+对于非类依赖项（字符串、配置、lambda），请在模块中使用 dict 语法：
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+直接在模块的 `providers` 列表中注册提供程序：
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+按类型提示注入：
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## 可选依赖项
+
+使用 `None` 作为可选注入的默认值：
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+如果 `Logger` 未在任何模块中注册，则容器会跳过它并传递 `None`。这对于可选功能（例如日志记录或指标）非常有用，如果未配置，这些功能不应崩溃。
+
+## 与提供商一起测试
+
+DI 使测试变得简单 - 使用模拟实例化控制器：
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+无需启动服务器或设置完整的 DI 容器。这是构造函数注入的主要优点——纯单元测试。
+
+## 最佳实践
+
+1. **更喜欢构造函数注入**——手动调用 `Container.resolve()` 很少见；让容器自动注入。
+2. **保持提供程序无状态**（单例范围）——状态属于数据库或请求范围的提供程序。
+3. **每个提供商承担一项责任** — `UserService` 处理用户，`EmailService` 处理电子邮件。
+4. **在模块的 `providers` 列表中显式注册所有提供程序** — 显式注册是自记录的。
+5. **谨慎使用 `Scope.REQUEST`** — 每个请求范围的提供程序都会增加分配开销。
+
+## 后续步骤
+
+- [Modules](/docs/modular/modules) — 将提供者组织到功能模块中
+- [Guards](/docs/modular/guards) — 添加身份验证和授权
+- [Middleware](/docs/modular/middleware) — 在请求到达控制器之前拦截请求

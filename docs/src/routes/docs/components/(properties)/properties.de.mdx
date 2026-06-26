@@ -1,0 +1,202 @@
+# Eigenschaften (Requisiten)
+
+Requisiten sind die Art und Weise, wie Daten in eine Komponente fließen. Sie machen Komponenten wiederverwendbar – dieselbe `Card`-Komponente kann je nach den empfangenen Requisiten unterschiedliche Inhalte rendern.
+
+## Requisiten deklarieren
+
+Requisiten werden im Frontmatter mit der `:prop[type]`-Syntax deklariert:
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+Jede Deklaration wird zu einem Parameter der generierten Python-Funktion mit der entsprechenden Typanmerkung.
+
+## Erforderlich vs. optional
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+Wenn eine erforderliche Requisite bei Verwendung der Komponente nicht übergeben wird, löst Python beim Rendern einen `TypeError` aus. Die Fehlermeldung enthält den Komponentennamen und das fehlende Argument.
+
+**Wann ist eine Requisite erforderlich?**: Wenn die Komponente ohne sie bedeutungslos ist. A `BlogCard` without a `title` is broken — make it required. Ein `Button` ohne `variant` kann standardmäßig auf `"primary"` gesetzt werden.
+
+## Unterstützte Typen
+
+| Geben Sie | ein Standardliteral | Notizen |
+|------|----------------|-------|
+| `str` | `""` | String-Werte |
+| `int` | `0` | Ganzzahlige Werte |
+| `float` | `0.0` | Float-Werte |
+| `bool` | `false` | `true`/`false` (nicht `True`/`False`) |
+| `list` | `[]` | Werte auflisten |
+| `dict` | `{}` | Diktwerte |
+| `Any` | `None` | Jeder Typ |
+
+Die Typanmerkung wird zur Dokumentation und IDE-Unterstützung verwendet. Zur Laufzeit wird Python dynamisch typisiert – die Annotation erzwingt den Typ nicht. Wenn Sie eine Zeichenfolge dort übergeben, wo ein int erwartet wird, schlägt dies fehl, wenn die Vorlage versucht, sie arithmetisch zu verwenden, nicht auf der Ebene der Prop-Deklaration.
+
+## Weitergabe von Requisiten von den Eltern
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**Regeln**:
+
+- **String-Werte** verwenden `key="value"` oder `key="{{ jinja_expr }}"`
+- **Ausdrücke** verwenden `key={expr}` – keine Anführungszeichen, der Wert wird als Python analysiert
+- **Boolesche Werte**: `active=true` (Kleinbuchstaben) verwenden, nicht `active=True` oder `active="true"`
+- **Listen/Diktate**: `items={["a", "b"]}` oder `settings={"key": "val"}`
+
+## Standardwerte und veränderliche Objekte
+
+Ein häufiger Fallstrick in Python: **Verwenden Sie keine veränderlichen Standardwerte**, die von allen Aufrufen gemeinsam genutzt werden:
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy erledigt das für Sie. Die generierte Funktion verwendet `None` als internen Standard und erstellt bei jedem Aufruf eine neue Kopie:
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+Daher ist die Verwendung von `items:prop[list] = []` sicher – jeder Komponentenaufruf erhält seine eigene Liste.
+
+## Dynamische Requisiten mit `{{ }}`
+
+Verwenden Sie Jinja2-Ausdrücke für dynamische Werte:
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+Der Compiler konvertiert Attributwerte, die `{{ }}` enthalten, in die Jinja2-String-Verkettung:
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+Für `{...}`-Werte ohne Anführungszeichen wird der Inhalt direkt als Python-Ausdruck übergeben.
+
+## Requisiten in MDX-Seiten
+
+Seiten (`.mdx` Dateien in `src/routes/`) können auch Requisiten deklarieren:
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+Seiten-Requisiten werden normalerweise durch das Layout festgelegt oder über `useViews()` übergeben. Sie sind weniger verbreitet als Komponenten-Requisiten, da Seiten Daten normalerweise stattdessen von Hooks und Datenbankabfragen erhalten.
+
+## Requisiten verteilen
+
+Übergeben Sie ein Diktat als mehrere Requisiten mithilfe der Jinja2-Spread-Syntax in der Vorlage:
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+Dies funktioniert über die Kurzschrifterkennung des Compilers: Wenn er `{{ ...props }}` in einem Attributschlüssel sieht, erweitert er ihn auf `**props`.
+
+## Vollständiges Beispiel: Schaltflächenkomponente
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+Verwendung:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## Weiter
+
+- [Conditional Rendering](/docs/components/conditional): wenn/für in Vorlagen
+- [Component Modules](/docs/components/modules): Komponenten organisieren

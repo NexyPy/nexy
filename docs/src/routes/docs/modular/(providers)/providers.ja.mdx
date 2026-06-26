@@ -1,0 +1,207 @@
+# プロバイダーと依存関係の注入
+
+プロバイダーは、ビジネス ロジック、データ アクセス、または外部統合をカプセル化します。これらは `"@Injectable()` で修飾され、コンストラクター パラメーターを介してコントローラー (または他のプロバイダー) に自動的に挿入されます。
+
+## なぜプロバイダーなのか?
+
+DI を使用しない場合、すべてのコントローラーは依存関係を手動で作成します。
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+DI を使用すると、コンテナーは依存関係をインスタンス化し、それらを注入します。
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+利点: テスト容易性 (テストでのモック `UserService`)、シングルトン共有 (コントローラー間で同じインスタンス)、スコープ制御 (必要に応じてリクエストごとに新規)。
+
+## プロバイダーの作成
+
+任意のクラスを `"@Injectable()` で装飾します。
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+`"@Injectable()` は直接インスタンス化を防止します。DI の外で `UserService()` を呼び出すと、`TypeError` が発生します。これにより、コンテナーを使用することが強制され、スコープと依存関係が正しく解決されることが保証されます。
+
+## コントローラーへの注入
+
+型ヒントを使用して依存関係をコンストラクター パラメーターとして宣言します。
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+DI コンテナは、タイプ ヒント (`UserService`) を登録されたプロバイダーと照合します。一致するプロバイダーがない場合は、起動時に `ValueError` が発生します。
+
+**注意事項**: コンストラクターのパラメーター名は重要ではありません。重要なのは型ヒントだけです。 `service: UserService` と `s: UserService` はどちらも同じプロバイダーに解決されます。
+
+## プロバイダーを他のプロバイダーに挿入する
+
+プロバイダーは他のプロバイダーに依存できます。コンテナーはツリー全体を解決します。
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+循環依存関係 (`A → B → A`) により、起動時に `RecursionError` が発生します。リファクタリングして共有ロジックを 3 番目のプロバイダーに抽出します。
+
+## インジェクションスコープ
+
+スコープはプロバイダーの有効期間を制御します。
+
+|範囲 |生涯 |ユースケース |
+|----------|----------|----------|
+| `Scope.SINGLETON` (デフォルト) |アプリ全体に 1 つのインスタンス |データベース接続、構成、キャッシュ |
+| `Scope.REQUEST` | HTTP リクエストごとの新しいインスタンス |リクエストごとの状態、監査ログ |
+| `Scope.TRANSIENT` |注入ごとに新しいインスタンス |ステートレス ユーティリティ、純粋関数 |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`** はデフォルトで最も安全な選択です。 **`Scope.REQUEST`** は、リクエストごとの状態が必要な場合 (ガードから現在のユーザーを保存する場合など) にのみ使用してください。プロバイダーに共有すべきでない変更可能な状態がある場合は、**`Scope.TRANSIENT`** を使用します。
+
+**注意事項**: シングルトン プロバイダーに挿入された一時プロバイダーは、事実上シングルトンになります。シングルトンが最初に解決されるときに、一時プロバイダーが一度作成されます。リクエストごとに新しいトランジェントが必要な場合は、代わりにそれをリクエストスコープのプロバイダーに挿入します。
+
+## `useValue` および `useFactory` のカスタム プロバイダー
+
+非クラス依存関係 (文字列、構成、ラムダ) の場合は、モジュールで dict 構文を使用します。
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+モジュールの `providers` リストにプロバイダーを直接登録します。
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+タイプによる注入のヒント:
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## オプションの依存関係
+
+オプションの注入のデフォルト値として `None` を使用します。
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+`Logger` がどのモジュールにも登録されていない場合、コンテナはそれをスキップして `None` を渡します。これは、未構成の場合でもクラッシュしないようにするロギングやメトリクスなどのオプション機能に役立ちます。
+
+## プロバイダーによるテスト
+
+DI によりテストが簡単になります。モックを使用してコントローラーをインスタンス化します。
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+サーバーを起動したり、完全な DI コンテナをセットアップしたりする必要はありません。これがコンストラクター インジェクション、つまり純粋な単体テストの主な利点です。
+
+## ベストプラクティス
+
+1. **コンストラクター インジェクションを優先します** — `Container.resolve()` を手動で呼び出すことはまれです。コンテナに自動的に注入させます。
+2. **プロバイダーをステートレスに保つ** (シングルトン スコープ) — 状態はデータベースまたはリクエスト スコープのプロバイダーに属します。
+3. **プロバイダーごとに 1 つの責任** - `UserService` がユーザーを処理し、`EmailService` が電子メールを処理します。
+4. **すべてのプロバイダーをモジュールの `providers` リストに明示的に登録します**。明示的な登録は自己文書化されます。
+5. **`Scope.REQUEST` は慎重に使用してください** — リクエスト スコープのプロバイダーごとに割り当てオーバーヘッドが追加されます。
+
+## 次のステップ
+
+- [Modules](/docs/modular/modules) — プロバイダーを機能モジュールに編成します
+- [Guards](/docs/modular/guards) — 認証と認可を追加します
+- [Middleware](/docs/modular/middleware) — リクエストがコントローラーに到達する前にインターセプトします

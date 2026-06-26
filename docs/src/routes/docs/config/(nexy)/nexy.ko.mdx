@@ -1,0 +1,97 @@
+# 구성: 넥시
+
+Nexy는 프로젝트 루트에서 `nexyconfig.py`를 통해 구성됩니다. 파일은 `NexyConfigModel`를 확장하는 클래스를 정의합니다.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    usePort = 3000
+    useTitle = "My App"
+```
+
+## 모든 필드
+
+### 라우터
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useRouter` | `APIRouter \| None` | `None` | 모듈형 라우터 루트 모듈. 설정되면 모듈식 라우팅을 사용합니다. `None`일 때 FBR을 사용합니다. |
+| `excludeDirs` | `list[str]` | `[]` | FBR 스캐닝에서 제외할 디렉터리입니다. |
+
+### 서버
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `usePort` | `int` | `3000` | 개발/프로덕션 서버용 포트입니다. |
+| `useHost` | `str` | `"0.0.0.0"` | 바인딩할 호스트입니다. |
+| `useSslKeyfile` | `str \| None` | `None` | HTTPS용 SSL 키 파일 경로입니다. |
+| `useSslCertfile` | `str \| None` | `None` | HTTPS용 SSL 인증서 파일 경로입니다. |
+
+### OpenAPI 문서
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useDocs` | `bool` | `True` | OpenAPI 문서를 활성화/비활성화합니다. |
+| `useDocsUrl` | `str` | `"/docs"` | Swagger UI의 URL입니다. |
+| `useRedocsUrl` | `str \| None` | `"/redocs"` | ReDoc의 URL입니다. 비활성화하려면 `None`로 설정하세요. |
+| `useTitle` | `str` | `"Nexy"` | OpenAPI 스키마의 제목입니다. |
+
+### 프론트엔드
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useVite` | `bool` | `False` | 클라이언트 구성 요소에 대해 Vite 번들링을 활성화합니다. |
+| `useViteDevUrl` | `str \| None` | `None` | Custom Vite dev server URL (auto-detected if `None`). |
+| `useFF` | `list[FrontendFramework]` | `[]` | 활성화할 프런트엔드 프레임워크(React, Vue, Svelte, Solid, Preact) 프로젝트에서 자동 감지됩니다. |
+| `useMarkdownExtensions` | `list[str]` | `[]` | `.mdx` 파일용 Python-Markdown 확장입니다. |
+
+### 미들웨어
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useMiddlewares` | `list[Any]` | `[]` | 사용자 정의 ASGI 미들웨어 클래스. |
+| `useCORS` | `dict \| None` | `None` | CORS 미들웨어 구성(Starlette `CORSMiddleware` kwargs). |
+| `useGZip` | `dict \| None` | `None` | GZip 미들웨어 구성(Starlette `GZipMiddleware` kwargs). |
+| `useTrustedHost` | `dict \| None` | `None` | 신뢰할 수 있는 호스트 미들웨어 구성. |
+| `useHTTPSRedirect` | `bool` | `False` | HTTP를 HTTPS로 리디렉션합니다. |
+| `useSession` | `dict \| None` | `None` | 세션 미들웨어 구성(Starlette `SessionMiddleware` kwargs). |
+| `useAuth` | `dict \| None` | `None` | 인증 미들웨어 구성. |
+
+### i18n
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` | 사용 가능한 로케일(예: `["en", "fr"]`) `None`인 경우 `nexy/i18n/`에서 자동 감지됩니다. |
+| `useDefaultLocale` | `str` | `"en"` | 기본 로케일. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | 로케일 저장을 위한 쿠키 이름입니다. |
+| `useLocaleDetection` | `dict[str, bool] \| None` | `None` | 로케일 감지 설정. |
+| `useRTL` | `bool` | `False` | RTL 지원을 활성화합니다. |
+
+### 목차
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | 목차에 포함할 제목 수준(예: h2-h4의 경우 `"2-4"`) |
+| `useTocTitle` | `str` | `"Table of Contents"` | TOC 섹션 제목. |
+| `useTocAuto` | `bool` | `True` | `.mdx` 페이지에 대한 목차를 자동 생성합니다. |
+
+---
+
+## FastAPI 앱에 액세스
+
+Nexy는 `nexy.app`를 통해 기본 FastAPI 인스턴스를 노출합니다. 이는 Nexy의 라우팅 시스템 외부에 사용자 정의 경로, 미들웨어 또는 이벤트 핸들러를 추가하는 데 유용합니다.
+
+```python
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("Server starting...")
+
+"@app.get("/health")
+def health():
+    return {"status": "ok"}
+```
+
+`app` 개체는 `AppServer`에 의해 마운트되는 완전히 구성된 FastAPI `APIRouter`입니다. FastAPI/Starlette 기능을 사용할 수 있습니다.

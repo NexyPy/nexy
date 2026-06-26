@@ -1,0 +1,73 @@
+#प्रतिक्रिया
+
+अपने `nexyconfig.py` में प्रतिक्रिया जोड़ें:
+
+```python
+from nexy.frontend import react
+
+class NexyConfig(NexyConfigModel):
+    useFF = [react()]
+```
+
+---
+
+## एक घटक बनाना
+
+`src/` में `.tsx` या `.jsx` एक्सटेंशन वाली फ़ाइलों को रिएक्ट घटकों के रूप में माना जाता है:
+
+```tsx
+// src/components/Counter.tsx
+import { useState } from 'react'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## .nexy पेज में उपयोग करना
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+प्रॉप्स को Jinja2 `{{ }}` सिंटैक्स के माध्यम से पारित किया जाता है - JSON मानों के लिए डबल ब्रेसिज़ का उपयोग करें।
+
+---
+
+## बच्चे/स्लॉट सामग्री
+
+नेक्सी चाइल्ड कंटेंट को `children` प्रोप के रूप में पास करता है। घटक इसे प्रस्तुत कर सकता है:
+
+```tsx
+export default function Card({ title, children }) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## एसएसआर
+
+रिएक्ट घटक `hydrateRoot` के साथ सर्वर-साइड रेंडर किए गए हैं। सर्वर HTML उत्पन्न करता है, फिर क्लाइंट पर रिएक्ट हाइड्रेट करता है। किसी अतिरिक्त कॉन्फ़िगरेशन की आवश्यकता नहीं है.

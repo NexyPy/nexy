@@ -1,0 +1,67 @@
+# .nexy 파일의 스타일
+
+Nexy 템플릿은 `<style>` 태그, 외부 가져오기 또는 Tailwind와 같은 유틸리티 프레임워크를 통해 HTML과 동일한 방식으로 CSS를 지원합니다.
+
+## 인라인 `<style>` 태그
+
+스타일을 추가하는 가장 직접적인 방법입니다. 템플릿 섹션의 아무 곳에나 `<style>` 블록을 추가하세요.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+</style>
+```
+
+스타일은 **범위가 지정되지 않습니다**. 전역적으로 적용됩니다. 충돌을 방지하려면 명명 규칙(BEM, 유틸리티 클래스) 또는 데이터 속성을 사용하세요.
+
+## `__Import`를 통한 외부 CSS
+
+모든 `.nexy` 파일에는 자동으로 사용할 수 있는 `__Import`가 있습니다(컴파일러에 의해 주입됨). CSS 파일의 경우 파일을 읽고 `<style>` 태그로 래핑합니다.
+
+```nexy
+---
+global_css = __Import("/styles/global.css", "", "")()
+---
+{{ global_css }}
+<div class="layout">...</div>
+```
+
+`__Import(path, framework, symbol)`는 세 개의 인수를 사용합니다. CSS의 경우 두 번째와 세 번째는 사용되지 않습니다. 빈 문자열을 전달합니다. 후행 `()`는 반환된 콜러블을 즉시 호출하여 `<style>...</style>` 문자열을 생성합니다.
+
+## 순풍 CSS
+
+Nexy는 즉시 Tailwind와 협력합니다. 템플릿 속성의 유틸리티 클래스는 정상적으로 처리됩니다.
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+`nexyconfig.py` 또는 `tailwind.config.*`에서 Tailwind를 구성합니다.
+
+## Vite를 통한 CSS 가져오기
+
+Vite가 활성화된 경우(`useVite: true`) 프런트엔드 구성 요소에서 표준 CSS `"@import` 또는 `import` 문을 사용할 수 있습니다. Vite는 PostCSS, CSS 모듈 및 구성된 플러그인을 통해 이를 처리합니다.
+
+## 모범 사례
+
+| 접근 | 사용 시기 |
+|----------|-------------|
+| 템플릿의 `<style>` | 구성요소별 스타일, 소규모 프로젝트 |
+| `__Import()` 외부 CSS | 구성 요소 간 스타일 공유 |
+| 순풍 CSS | 유틸리티 우선 디자인, 신속한 프로토타이핑 |
+| Vite CSS 파이프라인 | 전체 빌드 툴체인, CSS 모듈, PostCSS |

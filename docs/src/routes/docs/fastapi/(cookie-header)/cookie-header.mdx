@@ -1,0 +1,97 @@
+# Cookies & Headers
+
+Read HTTP cookies and headers using FastAPI's `Cookie` and `Header` parameters.
+
+---
+
+## Cookie parameter
+```python
+---
+from fastapi import Cookie
+
+def GET(session_id: str | None = Cookie(None)):
+    return {"session_id": session_id}
+---
+```
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/profile")
+class ProfileController:
+    def GET(self, session_id: str | None = Cookie(None)):
+        return {"session_id": session_id}
+```
+## Multiple cookies
+```python
+---
+from fastapi import Cookie
+
+def GET(
+    session_id: str | None = Cookie(None),
+    theme: str = Cookie("light"),
+):
+    return {"session": session_id, "theme": theme}
+---
+```
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/settings")
+class SettingsController:
+    def GET(self, session_id: str | None = Cookie(None), theme: str = Cookie("light")):
+        return {"session": session_id, "theme": theme}
+```
+## Header parameter
+```python
+---
+from fastapi import Header
+
+def GET(user_agent: str | None = Header(None)):
+    return {"ua": user_agent}
+---
+```
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/info")
+class InfoController:
+    def GET(self, user_agent: str | None = Header(None)):
+        return {"ua": user_agent}
+```
+## Custom header alias
+
+Header names are lowercase with hyphens as underscores by default. Use `alias` for custom header names:
+```python
+---
+from fastapi import Header
+
+def GET(x_token: str = Header(alias="X-Token")):
+    return {"token": x_token}
+---
+```
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/secure")
+class SecureController:
+    def GET(self, x_token: str = Header(alias="X-Token")):
+        return {"token": x_token}
+```
+## Reading cookies in templates
+
+In `.nexy` templates, use the `useCookies()` hook:
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+## See also
+
+- [useCookies hook](/docs/hooks/useCookies) — for reading cookies in templates
+- [Session config](/docs/config/session) — session middleware setup

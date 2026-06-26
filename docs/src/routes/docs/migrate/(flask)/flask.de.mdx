@@ -1,0 +1,49 @@
+# Von Flask nach Nexy migrieren
+
+Flasche ist minimal. Nexy ist ebenfalls minimalistisch – aber mit integrierter moderner Asynchronität, Typen und OpenAPI.
+
+## Konzeptzuordnung
+
+| Flasche | Nexy |
+|-------|------|
+| `"@app.route("/")` | Datei in `src/routes/` oder `"@Controller` |
+| `render_template()` | `.nexy` Datei |
+| `request.args` | Abfrageparameter in Funktionssignatur |
+| `request.json` | Körperparameter in Funktionssignatur |
+| `g` | `request.state` |
+| `flask run` | `nx dev` |
+| `config.py` | `nexyconfig.py` |
+| Blaupausen | `"@Module` oder `src/routes/` Unterverzeichnisse |
+
+## Beispiel
+
+```python
+# Flask
+"@app.route("/api/users/<int:id>")
+def get_user(id):
+    return jsonify({"id": id})
+
+# Nexy FBR: src/routes/api/users/[id].py
+async def get(id: int):
+    return {"id": id}
+```
+
+## Was Sie gewinnen
+
+- **Async-Unterstützung** – nativ, nicht durch Hacks
+- **Typvalidierung** – Pydantic, automatische 422-Fehler
+- **OpenAPI-Dokumente** – kein `flasgger` erforderlich
+- **DI-System** – Dienste ohne globale Singletons einspeisen
+- **CLI** – `nx build`, `nx start`, `nx migrate`
+
+## Migrationsschritte
+
+1. **Gerüst** – `nx new my-app`
+2. **Portrouten** – `"@app.route()` → Datei in `src/routes/` oder `"@Controller`
+3. **Port-Vorlagen** – Flask-Dateien `render_template()` → `.nexy`
+4. **Handhabung von Portanfragen** – `request.args`/`request.json` → typisierte Funktionsparameter
+5. **Port Blueprints** → `"@Module` oder Unterverzeichnisse in FBR
+
+## Was bleibt
+
+Einfache Routen, minimaler Boilerplate, volle Kontrolle. Nur mit modernem Python.

@@ -1,0 +1,130 @@
+# Introducción
+
+**Nexy** (pronunciado `nek:si`) es un marco web Python de pila completa creado sobre **FastAPI** y **Starlette**. Aporta la experiencia de desarrollador de marcos modernos como Next.js y NestJS a Python.
+
+El nombre proviene de: **N**ew **Ex**perience for P**y**thon: un nuevo enfoque para crear aplicaciones web en Python.
+
+> Nexy no reinventa la rueda. Hace que el desarrollo web de Python sea radicalmente más simple y al mismo tiempo mantiene el poder de FastAPI.
+
+---
+
+## Dos enrutadores, un marco
+
+Nexy ofrece **dos estrategias de enrutamiento**: elija la que se adapte a su proyecto:
+
+### Enrutador de rutas (enrutamiento basado en archivos)
+
+Las rutas están definidas por su árbol de archivos: cada archivo `.nexy`, `.mdx` o `.py` en `src/routes/` se convierte automáticamente en una ruta HTTP.
+
+```text
+src/routes/
+
+├── index.nexy          →  /
+
+├── about.nexy          →  /about
+
+├── blog/
+
+│   ├── index.nexy      →  /blog
+
+│   └── [slug].nexy     →  /blog/{slug}
+
+└── api/
+
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+**Mejor para**: sitios simples, documentación, MVP, proyectos solo de API, equipos que prefieren las convenciones a la configuración.
+
+Más información: [File-Based Routing →](/docs/fbrouters)
+
+### Enrutador modular (basado en decorador)
+
+Las rutas se definen mediante decoradores de Python: organice el código en **Controladores**, **Proveedores** y **Módulos** siguiendo el patrón NestJS.
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+
+class UsersController:
+
+    def __init__(self, service: UserService):
+
+        self.service = service
+
+    def GET(self):
+
+        return self.service.find_all()
+```
+
+**Mejor para**: aplicaciones grandes, diseño basado en dominios, proyectos que se benefician de la inyección de dependencias y una organización estricta del código.
+
+Más información: [Modular Router →](/docs/modular/overview)
+
+> Utilice el **selector de enrutador** en la parte superior de la barra lateral para cambiar entre vistas de documentación para cada enrutador.
+
+---
+
+## FastAPI es el motor
+
+Así como Next.js **es React** debajo del capó, Nexy **es FastAPI** debajo del capó. Cada ruta, cada respuesta, cada middleware pasa por FastAPI y Starlette.
+
+```python
+# FastAPI patterns that work unchanged in Nexy
+
+from fastapi import Request, Depends
+
+from fastapi.responses import JSONResponse, HTMLResponse
+
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+
+    id: int
+
+    name: str
+
+    email: str
+
+def GET(request: Request, db=Depends(get_db)):
+
+    return db.query(User).all()
+```
+
+**Lo que permanece igual:** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` - todos de `fastapi`.
+
+**Lo que agrega Nexy:** Archivos `.nexy`/`.mdx` → compilados en rutas FastAPI, `"@Action` → rutas POST generadas automáticamente, `"@Controller`/`"@Module` → constructores FastAPI `APIRouter`, Hooks → ayudantes con alcance de solicitud además de `Request` de FastAPI.
+
+Debido a que Nexy es FastAPI, cada ruta produce **documentos OpenAPI** automáticamente en `/docs` (Swagger UI) y `/redoc`.
+
+---
+
+## ¿Por qué Nexy?
+
+- **FastAPI bajo el capó**: asíncrono, documentos OpenAPI automáticos, con seguridad de escritura, probados en batalla
+- **UI basada en componentes**: escriba componentes con plantillas Python + Jinja2, o use React/Vue/Svelte/Solid/Preact
+- **Enrutamiento modular Y basado en archivos**: elija la herramienta adecuada para su proyecto
+- **Repetición cero**: sin registro de ruta manual, sin archivos de configuración para conectar
+- **I18n, HMR, middleware y guardias integrados**: listo para producción desde el primer día
+
+---
+
+## ¿Nexy es para ti?
+
+Utilice Nexy si desea:
+
+- Cree una aplicación Python de pila completa tan rápido como Next.js o Laravel
+- Crear una API REST con la estructura de NestJS pero la simplicidad de Python
+- Usar componentes React/Vue/Svelte desde un backend de Python
+- Dejar de reestructurar proyectos e instalar paquetes repetitivos.
+
+---
+
+## Lo que aprenderás
+
+- Crear y configurar un proyecto Nexy
+- Comprender ambas estrategias de enrutamiento.
+- Cree su primera aplicación con ejemplos concretos
+- Seguir las mejores prácticas para implementaciones de producción.
+

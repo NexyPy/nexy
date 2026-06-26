@@ -1,0 +1,75 @@
+#“@Middleware
+
+将中间件可调用对象应用于控制器类或处理程序方法。
+
+## 中间件合约
+
+中间件可以用 `__call__(self, request)` 调用。它接收 FastAPI `Request` 对象并在处理程序之前运行。
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## 路由上的中间件
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## 多个中间件
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+＃＃ 签名
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## 警卫与中间件
+
+| |卫兵|中间件|
+|---|--------|------------|
+|目的|授权|副作用（日志记录、计时）|
+|阻止请求 |是（引发 HTTPException）|否（除非您加注）|
+|运行为 | FastAPI `Depends` | FastAPI `Depends` |
+|订单|类守卫→方法守卫|类中间件 → 方法中间件 |
+
+两者都作为 FastAPI `Depends` 依赖项运行。顺序：类守卫→类中间件→方法守卫→方法中间件。

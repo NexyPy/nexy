@@ -1,0 +1,114 @@
+# 项目结构
+
+本页概述了 Nexy 的文件和文件夹约定，以及如何组织您的项目。
+
+```text
+my-app/
+├── .venv/
+├── node_modules/          (optional — client framework only)
+├── public/
+├── src/
+│   ├── components/
+│   ├── routes/            (FBR) — or apps/ (Modular)
+│   └── layout.nexy
+├── .gitignore
+├── nexyconfig.py
+├── pyproject.toml
+├── package.json           (optional)
+├── vite.config.ts         (optional)
+└── tsconfig.json          (optional)
+```
+
+---
+
+## 顶级目录
+
+### `public/`
+
+放置在此处的静态资源在根 `/` URL 处提供。图像、字体、图标、robots.txt — 任何您希望无需路由即可公开访问的内容。
+
+### `src/`
+
+您的应用程序源代码位于此处。 Nexy 观察 `src/` 开发中的变化，并从这里编译生产中的所有内容。
+
+---
+
+## 里面 `src/`
+
+```text
+src/
+├── components/     — reusable Nexy components (optional)
+├── routes/         — FBR: file-based routing tree
+├── apps/           — Modular: controllers, modules, providers
+├── layout.nexy     — root layout (optional, FBR only)
+└── global.css      — global styles (optional)
+```
+
+### `src/components/`
+
+可重用 `.nexy` 组件的可选目录。 Nexy 不强制使用特定的组件目录 - 您可以使用任何名称或结构。组件通过 `from "@components/..." import ...` 导入。
+
+### `src/routes/`（基于文件的路由）
+
+`src/routes/` 下的每个 `.py`、`.nexy` 和 `.mdx` 文件都成为 HTTP 路由，特殊文件名除外：
+
+|文件 |行为 |
+|------|----------|
+| `index.nexy` / `index.py` / `index.mdx` |服务于父路径 (`/users/index.nexy` → `/users`) |
+| `layout.nexy` |兄弟路由和子路由的共享布局（不可路由）|
+| `__init__.py` | Python 包标记（不可路由）|
+| `dependencies.py` |共享依赖项（不可路由）|
+
+```text
+routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     —  shared layout for /blog/*
+└── api/
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+### `src/apps/`（模块化路由）
+
+使用模块化路由器时，您的应用程序代码被组织成功能模块：
+
+```text
+apps/
+├── app_module.py       →  "@Module(root module)
+├── app_controller.py   →  "@Controller("/")
+├── app_view.nexy       →  template
+├── users/
+│   ├── user_module.py
+│   ├── user_controller.py
+│   └── user_service.py
+└── layout.nexy         →  shared layout
+```
+
+---
+
+## 配置文件
+
+|文件 |目的|
+|------|---------|
+| `nexyconfig.py` |主要 Nexy 配置：路由器、插件、应用程序设置 |
+| `pyproject.toml` | Python 项目元数据、依赖项、构建系统 |
+| `package.json` | JavaScript 依赖项（使用客户端框架时存在）|
+| `vite.config.ts` |用于捆绑客户端代码的 Vite 配置 |
+| `tsconfig.json` | TypeScript 编译器选项 |
+| `.gitignore` |从版本控制中排除的文件和目录 |
+
+---
+
+## 组织你的项目
+
+除了上述约定之外，Nexy 对如何构建源代码没有任何意见。一些效果很好的模式：
+
+- **功能文件夹**：按功能对相关页面、组件和实用程序进行分组
+- **共享组件**：将真正可重用的组件保留在`src/components/`中
+- **路由组**：在 `src/routes/` 中嵌套目录以镜像您的 URL 结构
+- **Monorepo**：将 `src/apps/` 模块视为可独立部署的单元
+
+重要的是 `src/routes/` (FBR) 下或 `"@Module` (Modular) 引用的每个文件都遵循上述命名约定。

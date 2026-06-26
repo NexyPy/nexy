@@ -1,0 +1,57 @@
+# "@Injectable
+
+クラスを Nexy の依存関係注入コンテナーによって管理されるものとしてマークします。
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str) -> list[dict]:
+        ...
+```
+＃＃ サイン
+```python
+Injectable(scope: Scope = Scope.SINGLETON) -> Callable[[type], type]
+```
+## 範囲
+
+|範囲 |行動 |
+|------|-----------|
+| `Scope.SINGLETON` (デフォルト) |アプリ全体で共有される 1 つのインスタンス |
+| `Scope.REQUEST` | HTTP リクエストごとの新しいインスタンス |
+| `Scope.TRANSIENT` |解決されるたびに新しいインスタンス |
+```python
+from nexy.decorators import Injectable, Scope
+
+"@Injectable(Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.user_id: str | None = None
+```
+## 依存関係の注入
+
+コンストラクターのパラメーターは、型が注入可能である場合に自動的に解決されます。
+```python
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):  # DatabaseService resolved by Container
+        self.db = db
+
+"@Injectable()
+class DatabaseService:
+    def connect(self) -> None:
+        ...
+```
+## コンテナ
+
+必要に応じてコンテナに直接アクセスします。
+```python
+from nexy.decorators import Container
+
+service = Container.resolve(DatabaseService)
+```
+## 制限事項
+
+- `"@Injectable()` クラスは DI コンテキスト外で手動でインスタンス化できません
+- 循環依存関係により `RecursionError` が発生します
+- デフォルトのないコンストラクター パラメーターは注入可能な型である必要があります

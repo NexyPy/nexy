@@ -1,0 +1,161 @@
+# 서버 작업
+
+서버 액션을 사용하면 클라이언트에서 Python 함수를 POST 엔드포인트로 호출할 수 있습니다. 경로 등록이나 직렬화 상용구가 필요하지 않습니다.
+
+---
+
+## 액션 정의
+
+`"@Action`로 모든 기능을 장식하세요.
+
+```python
+# src/actions/vote.py
+from nexy.decorators import Action
+
+"@Action
+def vote(post_id: str, direction: int) -> dict:
+    return {"success": True, "post_id": post_id, "votes": 42}
+```
+
+이 함수는 JSON 본문 매개변수를 키워드 인수로 받습니다. JSON 직렬화 가능 값을 반환합니다.
+
+---
+
+## 액션 파일을 넣을 위치
+
+작업은 프로젝트의 **어디서나**( `src/actions/`, `src/routes/` 또는 루트에서 직접) 존재할 수 있습니다. `ActionEngine`는 시작 시 전체 프로젝트 디렉터리를 검색합니다.
+
+```text
+my-app/
+├── src/
+│   └── actions/
+│       ├── vote.py        ← "@Action
+│       └── comment.py     ← "@Action
+├── actions/
+│   ├── vote.ts            ← Generated TypeScript client
+│   └── comment.ts
+```
+
+검색 및 엔드포인트 생성 작동 방식은 ["@Action reference](/docs/decorators/action)를 참조하세요.
+
+---
+
+## 실제 사례
+
+### 양식 제출
+
+```python
+# src/actions/contact.py
+from nexy.decorators import Action
+from pydantic import BaseModel, EmailStr
+
+class ContactForm(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
+
+"@Action
+def submit_contact(data: ContactForm) -> dict:
+    # Save to database, send email, etc.
+    return {"ok": True, "name": data.name}
+```
+
+```nexy
+---
+---
+<form id="contact">
+  <input name="name" required />
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+
+<script>
+document.getElementById('contact').onsubmit = async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const res = await fetch('/_nx_a1b2c3d4e5f6', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.fromEntries(fd))
+  });
+  const data = await res.json();
+  if (data.ok) alert('Message sent!');
+};
+</script>
+```
+
+### 데이터베이스 작업
+
+```python
+# src/actions/create_user.py
+from nexy.decorators import Action
+from pydantic import BaseModel
+from src.database import get_session
+from src.models import User
+
+class CreateUserBody(BaseModel):
+    name: str
+    email: str
+
+"@Action
+def create_user(body: CreateUserBody) -> dict:
+    db = next(get_session())
+    user = User(name=body.name, email=body.email)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"id": user.id, "name": user.name}
+```
+
+### 오류 처리 작업
+
+```python
+# src/actions/delete_item.py
+from nexy.decorators import Action
+from fastapi import HTTPException
+from src.database import get_session
+
+"@Action
+def delete_item(item_id: int) -> dict:
+    db = next(get_session())
+    item = db.get(Item, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    db.delete(item)
+    db.commit()
+    return {"deleted": item_id}
+```
+
+---
+
+## 생성된 TypeScript 클라이언트
+
+`nx build` 또는 `nx dev`는 `./actions/`에서 유형이 안전한 TypeScript 래퍼를 생성합니다.
+
+```typescript
+// Generated: ./actions/vote.ts
+import { transport } from '"@/nexy/client';
+
+export const vote = async (post_id: string, direction: number): Promise<dict> => {
+  return await transport.call('/_nx_a1b2c3d4e5f6', { post_id, direction });
+};
+```
+
+생성된 각 함수는 적절한 TypeScript 유형을 사용하여 Python 서명을 미러링합니다.
+
+---
+
+## 모범 사례
+
+- 작업 기능에 집중하고 멱등성을 유지하세요.
+- 작업 내부의 입력 유효성을 검사하고 이를 신뢰할 수 없는 것으로 처리합니다.
+- 복잡한 요청 본문에는 Pydantic 모델을 사용하세요.
+- 작업은 POST 전용입니다. 다른 HTTP 메서드의 경우 경로 처리기를 사용하세요.
+- 인증을 위해 가드나 미들웨어를 사용하세요.
+
+---
+
+## 참조
+
+전체 API 참조(매개변수 유형, 반환 유형, 제한 사항)는 ["@Action decorator](/docs/decorators/action)를 참조하세요.

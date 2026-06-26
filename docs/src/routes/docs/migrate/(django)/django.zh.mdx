@@ -1,0 +1,60 @@
+# 从 Django 迁移到 Nexy
+
+Django 包含电池。 Nexy 是专注且模块化的——您可以带来您需要的东西。
+
+## 概念图
+
+|姜戈 |内克西 |
+|--------|------|
+| `views.py` | `.nexy` 文件 (FBR) 或 `"@Controller`（模块化）|
+| `urls.py` |文件树 (FBR) 或 `"@Module`（模块化）|
+| `models.py` | SQLModel / SQLAlchemy（您的选择）|
+| `admin.py` | OpenAPI 文档位于 `/docs` |
+| `manage.py` | `nx` CLI |
+| `settings.py` | `nexyconfig.py` |
+| Django ORM | SQLModel、SQLAlchemy 或 Tortoise-ORM |
+|模板（DTL）| Jinja2（`.nexy` 文件）|
+|基于类的视图 | `"@Controller`（模块化）或 `.nexy` 文件 (FBR) |
+|中间件| `"@Middleware` 或 FastAPI 中间件 |
+| `request.user` | `request.state.user` 或守卫 |
+
+＃＃ 例子
+```python
+# src/routes/users/index.nexy
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET():
+    return {"users": [u.model_dump() for u in User.find_all()]}
+---
+```
+```python
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return {"users": [u.model_dump() for u in User.find_all()]}
+```
+## 迁移步骤
+
+1. **搭建一个新的 Nexy 项目** — `nx new my-app`
+2. **端口模型** — 将 Django 模型转换为 SQLModel/SQLAlchemy
+3. **端口视图** — 将 Django 函数/类视图转换为 `.nexy` 文件 (FBR) 或 `"@Controller` （模块化）
+4. **端口 URL 配置** — `urls.py` 模式成为文件树 (FBR) 或 `"@Module`（模块化）
+5. **端口模板** — DTL 模板 → Jinja2 在 `.nexy` 文件中
+6. **端口中间件** — Django 中间件 → Starlette `BaseHTTPMiddleware`
+
+## 为什么要切换
+
+- **没有整体设置** — 仅配置您使用的内容
+- **默认异步** - FastAPI/Starlette 底层
+- **OpenAPI 文档** — 自动，不需要 `drf-spectacular`
+- **基于组件的 UI** — 将 Python + Jinja2 混合在一个文件中
+- **框架选择** - 用于前端的 React、Vue、Svelte、Solid 或 Preact

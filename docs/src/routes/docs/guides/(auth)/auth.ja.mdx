@@ -1,0 +1,129 @@
+# 認証のチュートリアル
+
+このガイドでは、セッションベースの認証を使用して、ログイン、ログアウト、保護されたダッシュボードを最初から構築します。
+
+## 1. セッションミドルウェアを有効にする
+
+`nexyconfig.py` で、`useSession` を有効にします — Starlette の署名付き Cookie セッション:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me-in-production"}
+```
+
+オプションについては、[Session config](/docs/config/session) を参照してください。
+
+## 2. 認証バックエンドと構成
+
+セッションからユーザー ID を読み取るバックエンドを作成します。
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+それを構成に追加します。
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+その他のバックエンド タイプ (トークン、JWT) については、[Authentication reference](/docs/security/authentication) を参照してください。
+
+## 3. ログインページ
+
+```nexy
+# src/routes/login.nexy
+---
+from nexy import useSession
+from src.db import authenticate_user
+
+def POST(username: str, password: str):
+    user = authenticate_user(username, password)
+    if not user:
+        return {"error": "Invalid credentials"}
+    session = useSession()
+    session["user_id"] = user.id
+    return Redirect("/dashboard")
+---
+<form method="POST">
+  <input name="username" placeholder="Username">
+  <input name="password" type="password" placeholder="Password">
+  <button>Sign in</button>
+</form>
+```
+
+## 4. 保護されたダッシュボード
+
+ダッシュボードをガードで保護します。認証された場合は `{"user": ...}` を返し、そうでない場合は 401 を返します。
+
+```nexy
+# src/routes/dashboard.nexy
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+<h1>Dashboard</h1>
+<p>Welcome, {{ user }}!</p>
+```
+
+カスタム ガードと ["@UseGuard reference](/docs/decorators/useguard) の作成については、[Authorization](/docs/security/authorization) を参照してください。
+
+## 5. ログアウト
+
+セッションをクリアしてサインアウトします。
+
+```nexy
+# src/routes/logout.nexy
+---
+from nexy import useSession
+
+def POST():
+    session = useSession()
+    session.clear()
+    return Redirect("/login")
+---
+```
+
+## 6. テンプレートの条件付き UI
+
+`.nexy` テンプレートでセッションを直接確認します。
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+---
+<header>
+  {% if session.get("user_id") %}
+    <a href="/dashboard">Dashboard</a>
+    <form method="POST" action="/logout">
+      <button>Sign out</button>
+    </form>
+  {% else %}
+    <a href="/login">Sign in</a>
+  {% endif %}
+</header>
+```
+
+[useSession hook](/docs/hooks/useSession)を参照してください。
+
+## 次は何でしょうか?
+
+- [Authentication reference](/docs/security/authentication) — 認証バックエンド、JWT、OAuth
+- [Authorization / Guards](/docs/security/authorization) — カスタム ガード、スコープ
+- [JWT](/docs/security/jwt) — トークンベースの認証
+- [Session config](/docs/config/session)

@@ -1,0 +1,65 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 미들웨어
+
+미들웨어는 모든 요청 전후에 실행되는 계층으로, 로깅, 인증, CORS 헤더 및 기타 글로벌 문제에 유용합니다.
+
+---
+
+## 미들웨어 생성
+
+Nexy에서 미들웨어는 Starlette의 `BaseHTTPMiddleware`를 통해 또는 호출 가능 항목으로 정의됩니다.
+```python
+# src/middlewares.py
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        print(f"→ {request.method} {request.url.path}")
+        response = await call_next(request)
+        print(f"← {response.status_code}")
+        return response
+```
+---
+
+## 미들웨어 등록
+
+`nexyconfig.py`에서 `(MiddlewareClass, kwargs_dict)` 튜플 목록을 전달합니다.
+```python
+from nexy.core.models import NexyConfigModel
+from src.middlewares import LoggingMiddleware
+
+class NexyConfig(NexyConfigModel):
+    useMiddlewares = [
+        (LoggingMiddleware, {}),
+    ]
+```
+---
+
+## 실행 순서
+
+미들웨어는 선언 순서에 따라 실행되어 **스택**을 형성합니다(예: Starlette).
+```text
+Request → MW1 → MW2 → Route → MW2 → MW1 → Response
+```
+---
+
+## 디렉터리 수준 미들웨어(FBR)
+
+FBR을 사용하면 디렉토리 내의 `dependencies.py`에 미들웨어 로직을 배치할 수 있습니다.
+```python
+# routes/api/dependencies.py
+from fastapi import Request
+
+async def verify_api_key(request: Request):
+    if request.headers.get("X-API-Key") != "secret":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403)
+```
+`/api/` 아래의 모든 페이지는 이 검사를 자동으로 상속합니다.
+<Link href="/docs/fbrouters/route_handlers">Next: Route Handlers →</Link>

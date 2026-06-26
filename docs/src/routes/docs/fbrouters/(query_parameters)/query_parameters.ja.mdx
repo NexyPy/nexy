@@ -1,0 +1,55 @@
+---
+from nexy import usePathname, useSearchParams
+from "@components/link.nexy" import Link
+pathname = usePathname()
+params = useSearchParams()
+---
+
+# クエリパラメータ
+
+クエリ パラメーターは、URL 内の `?key=value` ペアです。 Nexy は、frontmatter の `useSearchParams()` またはハンドラーの `request.query_params` を介してそれらを公開します。
+
+---
+
+## `.nexy` ページ内
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Results for: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+`params` オブジェクトは、`.get(key, default)`、`.keys()`、`.items()` の辞書のように動作します。
+
+---
+
+## `.py` ハンドラー内
+```python
+# routes/search.py
+from fastapi import Request
+
+async def get(request: Request, q: str = "", page: int = 1):
+    results = search_database(q, page=page)
+    return {"results": results, "page": page}
+```
+FastAPI は、型指定されたクエリ パラメーターを自動的に解決します。
+
+---
+
+## 現在のページのパラメータ
+
+このページは前付で `useSearchParams()` を使用しています。現在のクエリパラメータは次のとおりです。
+```json
+{{ params | safe }}
+```
+---
+
+## ベストプラクティス
+
+- サーバーでレンダリングされるページの `.nexy` コンポーネントで `useSearchParams()` を使用する
+- API の `.py` ハンドラーで `request.query_params` を使用する
+- 値は常に文字列です。`int()`、`bool()` などで変換します。
+<Link href="/docs/components">Next: Views →</Link>

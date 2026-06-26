@@ -1,0 +1,55 @@
+# WSGI (Flasche, Django)
+
+Mounten Sie WSGI-Anwendungen (Flask, Django, Pyramid) neben Nexy-Routen.
+
+## Flasche
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+Flask-Routen sind jetzt unter `/legacy/hello` verfügbar. Alle Nexy-Funktionen (Authentifizierung, Middleware) gelten weiterhin für die übergeordnete App.
+
+##Django
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## Wie es funktioniert
+
+– `WSGIMiddleware` umschließt alle aufrufbaren WSGIs als ASGI
+– Die Unteranwendung wird in einem Thread-Pool ausgeführt – sie blockiert nicht die Ereignisschleife
+– Das Pfadpräfix (`/legacy`, `/django`) wird entfernt, bevor es die WSGI-App erreicht
+– Nexy-Middleware (Authentifizierung, Sitzung, CORS) gilt **nicht** für die gemountete WSGI-App – konfigurieren Sie sie dort separat
+
+## Einschränkungen
+
+– Nur Anforderungs-/Antwortzyklus – WebSocket wird nicht unterstützt
+– WSGI-Apps können keine Nexy-Hooks oder -Abhängigkeiten verwenden
+– Die Leistung wird durch den Thread-Pool begrenzt – erwägen Sie eine Migration auf native Nexy-Routen

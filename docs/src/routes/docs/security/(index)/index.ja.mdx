@@ -1,0 +1,35 @@
+# セキュリティの概要
+
+Nexy は、認証ミドルウェア、ルート ガード、セッション サポートを提供します。 Python の標準ライブラリとサードパーティ パッケージは、暗号化、ハッシュ、JWT、ID 生成をカバーしています。
+
+---
+
+## 特徴マトリックス
+
+|特集 |ネクシーAPI |バックエンド |
+|----------|----------|----------|
+|認証 | `useAuth` 構成 + カスタム バックエンド |スターレット `AuthenticationMiddleware` |
+|ルート保護 | `"@UseGuard(*guards)` | FastAPI `Depends` |
+|セッション | `useSession` 構成 + `useSession()` フック |スターレット `SessionMiddleware` |
+|認可 |カスタムガード + ロールチェック | FastAPI `Depends` |
+|暗号化/ハッシュ |標準の Python | `hashlib`、`bcrypt`、`cryptography` |
+| JWT |サードパーティ | `PyJWT` |
+| UID |標準の Python | `uuid`、`secrets` |
+
+---
+
+## クイックリンク
+
+- [Authentication](/docs/security/authentication) — 認証バックエンドとログイン フローを構成します
+- [Authorization](/docs/security/authorization) — ガードによる役割ベースのアクセス制御
+- [Encryption & Hashing](/docs/security/encryption-hashing) — パスワードのハッシュ化、データの暗号化
+- [JWT](/docs/security/jwt) — JSON Web トークンの作成と検証
+- [UID](/docs/security/uid) — 一意の ID 生成戦略
+
+---
+
+## 関連
+
+- [Guides / Auth](/docs/guides/auth) — 実用的な認証フローのチュートリアル
+- [Config / Session](/docs/config/session) — セッションミドルウェア構成
+- [Decorators / "@UseGuard](/docs/decorators/useguard) — ガード デコレータのリファレンス

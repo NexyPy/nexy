@@ -1,0 +1,48 @@
+# "@UseResponse
+
+हैंडलर विधि पर प्रतिक्रिया मेटाडेटा सेट करें - स्थिति कोड, प्रतिक्रिया मॉडल, प्रतिक्रिया वर्ग, आदि।
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## हस्ताक्षर
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## सभी पैरामीटर
+
+| परम | प्रकार | विवरण |
+|------|------|----------------|
+| `status_code` | `int` | HTTP स्थिति कोड |
+| `response_class` | `type[Response]` | कस्टम प्रतिक्रिया वर्ग (उदा. `HTMLResponse`) |
+| `response_model` | `type` | प्रतिक्रिया क्रमांकन के लिए पाइडेंटिक मॉडल |
+| `responses` | `dict` | अतिरिक्त OpenAPI प्रतिक्रियाएँ |
+| `response_description` | `str` | OpenAPI में प्रतिक्रिया विवरण |
+| `response_model_include` | सेट/मैपिंग | प्रतिक्रिया में शामिल करने योग्य फ़ील्ड |
+| `response_model_exclude` | सेट/मैपिंग | प्रतिक्रिया से बाहर करने योग्य फ़ील्ड |
+| `response_model_by_alias` | `bool` | प्रतिक्रिया में उपनाम नामों का प्रयोग करें |
+| `response_model_exclude_unset` | `bool` | अनसेट फ़ील्ड्स को बाहर निकालें |
+| `response_model_exclude_defaults` | `bool` | डिफ़ॉल्ट-मूल्य वाले फ़ील्ड बहिष्कृत करें |
+| `response_model_exclude_none` | `bool` | गैर-मूल्यवान फ़ील्ड को बाहर निकालें |

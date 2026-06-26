@@ -1,0 +1,85 @@
+# Modèle de réponse (FBR)
+
+Contrôlez la sérialisation des réponses, les codes d’état et les types de réponses.
+
+## Modèle de réponse pydantique
+
+```python
+# src/routes/users.py
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET() -> UserOut:
+    return UserOut(id=1, name="Alice", email="alice"@example.com")
+```
+
+## Liste des réponses
+
+```python
+def GET() -> list[UserOut]:
+    return [UserOut(id=1, name="Alice")]
+```
+
+## Types de réponses
+
+Importer depuis `fastapi.responses` :
+
+```python
+from fastapi.responses import (
+    JSONResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    StreamingResponse,
+    FileResponse,
+    ORJSONResponse,
+)
+```
+
+### HTMLRéponse
+
+```python
+from fastapi.responses import HTMLResponse
+
+def GET() -> HTMLResponse:
+    return HTMLResponse("<h1>Hello</h1>")
+```
+
+### Réponse en streaming
+
+```python
+from fastapi.responses import StreamingResponse
+import io
+
+def GET() -> StreamingResponse:
+    return StreamingResponse(io.StringIO("large CSV data..."), media_type="text/csv")
+```
+
+## Réponse directe avec statut personnalisé
+
+```python
+from fastapi.responses import JSONResponse
+
+def GET() -> JSONResponse:
+    return JSONResponse(
+        content={"msg": "created"},
+        status_code=201,
+        headers={"X-Custom": "value"},
+    )
+```
+
+## Types de réponses pris en charge
+
+| Classe | Type de contenu | Cas d'utilisation |
+|-------|-------------|--------------|
+| `JSONResponse` | `application/json` | Données JSON (par défaut) |
+| `HTMLResponse` | `text/html` | Chaînes HTML |
+| `PlainTextResponse` | `text/plain` | Texte brut |
+| `RedirectResponse` | — | Redirections |
+| `StreamingResponse` | varie | Flux de données |
+| `FileResponse` | varie | Téléchargements de fichiers |
+| `ORJSONResponse` | `application/json` | JSON plus rapide (nécessite `orjson`) |

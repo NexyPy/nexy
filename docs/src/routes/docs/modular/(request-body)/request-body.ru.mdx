@@ -1,0 +1,69 @@
+# Тело запроса (модульное)
+
+Получайте тела запросов JSON, используя модели Pydantic в контроллерах.
+
+## Базовая модель
+
+```python
+from nexy.decorators import Controller
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+
+## Поле тела с `embed`
+
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+
+## Несколько параметров тела
+
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+
+## Вложенные модели
+
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+
+FastAPI обрабатывает проверку и возвращает 422 при недопустимом вводе.
+
+---
+
+См. также: [Controllers](/docs/modular/controllers), [FastAPI Request Body](/docs/fastapi/request-body)

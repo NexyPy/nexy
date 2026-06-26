@@ -1,0 +1,11 @@
+#ネクシーに移行
+
+既存のアプリケーションを他のフレームワークから Nexy に移行します。各ガイドでは、主な違い、プロジェクト構造のマッピング、段階的な移行について説明しています。
+
+## 利用可能なガイド
+
+- [FastAPI](/docs/migrate/fastapi) — FastAPI から Nexy へ
+- [Django](/docs/migrate/django) — Django から Nexy へ
+- [NestJS](/docs/migrate/nestjs) — NestJS から Nexy へ
+- [Flask](/docs/migrate/flask) — Flask から Nexy へ
+- [Next.js](/docs/migrate/nextjs) — Next.js から Nexy へ

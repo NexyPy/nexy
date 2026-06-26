@@ -1,0 +1,120 @@
+# 빠른 시작
+
+몇 초 만에 Nexy 프로젝트를 생성할 수 있습니다. 전역 설치가 필요하지 않습니다.
+
+## 전제 조건
+
+- **파이썬 3.11+**
+- **[uv](https://docs.astral.sh/uv/)** (패키지 관리자)
+- **Node.js 18+**(클라이언트 구성 요소 및 Tailwind CSS용)
+
+## 프로젝트 생성
+
+```bash
+uvx nexy new
+```
+
+또는 이름을 직접 지정하십시오.
+
+```bash
+uvx nexy new my-app
+```
+
+`uvx`는 즉시 Nexy를 다운로드하고 실행합니다. 전역적으로 설치할 필요는 없습니다.
+
+## 대화형 프롬프트
+
+명령을 실행한 후 Nexy는 프로젝트 설정 과정을 안내합니다.
+
+### 1. 라우터
+
+```text
+» Use file-based router? (Y/n)
+```
+
+- **예** — 파일 기반 라우팅(FBR): 페이지는 `routes/`의 파일입니다.
+- **아니요** — 모듈식 라우팅: 데코레이터가 있는 컨트롤러 및 모듈
+
+### 2. 프로젝트 유형
+
+```text
+» Choose the type of project
+
+  ʋ Web (monolith web app)
+
+    API (RESTful API)
+```
+
+### 3. 클라이언트 프레임워크(웹 전용)
+
+```text
+» Use a client component? (Y/n)
+```
+
+그렇다면:
+
+```text
+
+» Choose the client framework
+
+  ʋ React
+
+    Vue
+
+    Svelte
+
+    Solid
+
+    Preact
+
+    None
+```
+
+Tailwind CSS는 클라이언트 프레임워크가 선택되면 자동으로 구성됩니다.
+
+### 4. ORM 및 데이터베이스
+
+```text
+
+» Choose an ORM
+
+  ʋ SQLModel
+
+    SQLAlchemy
+
+    Tortoise-ORM
+
+    None
+```
+
+ORM을 선택한 경우:
+
+```text
+
+» Choose database
+
+  ʋ SQLite
+
+    PostgreSQL
+
+    MySQL
+
+» Database URL (sqlite:///dev.db)
+```
+
+## 개발 서버 시작
+
+```bash
+cd my-app
+
+nexy dev
+```
+
+[http://localhost:3000](http://localhost:3000)를 열어 앱을 확인하세요.
+
+## 다음 단계
+
+프로젝트가 준비되었습니다. 레이아웃을 이해하려면 [Project Structure](/docs/projet_structure)로 가거나 곧바로 구축을 시작하세요.
+
+- [Your First Page](/docs/fbrouters/pages) — 파일 기반 라우팅
+- [Your First Controller](/docs/modular/controllers) — 모듈식 라우팅

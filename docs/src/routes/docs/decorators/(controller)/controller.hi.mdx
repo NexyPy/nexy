@@ -1,0 +1,50 @@
+# "@नियंत्रक
+
+किसी क्लास को फास्टएपीआई नियंत्रक के रूप में चिह्नित करता है। विधि नाम HTTP क्रियाओं को परिभाषित करते हैं।
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## हस्ताक्षर
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## पैरामीटर्स
+
+| परम | प्रकार | डिफ़ॉल्ट | विवरण |
+|-------|------|------|----|
+| `prefix` | `str` | `""` | इस नियंत्रक में सभी मार्गों के लिए यूआरएल उपसर्ग |
+| `tags` | `list[str]` | `None` | ओपनएपीआई टैग (डिफ़ॉल्ट `[ClassName]`) |
+
+## HTTP क्रियाएँ
+
+विधि नाम केस-असंवेदनशील हैं। प्रति क्रिया प्रति नियंत्रक एक विधि।
+
+| विधि का नाम | HTTP क्रिया |
+|---|----|
+| `def GET(self)` | प्राप्त करें |
+| `def post(self)` | पोस्ट |
+| `def Put(self)` | डालो |
+| `def delete(self)` | हटाएं |
+| `def patch(self)` | पैच |
+| `def options(self)` | विकल्प |
+| `def head(self)` | सिर |
+| `def SOCKET(self)` | वेबसॉकेट |
+
+सभी हैंडलर विधियों को `"/"` पर मैप किया गया है - पथ पैरामीटर `"@Controller` उपसर्ग में जाते हैं।
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

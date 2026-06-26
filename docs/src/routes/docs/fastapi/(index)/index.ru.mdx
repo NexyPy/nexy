@@ -1,0 +1,61 @@
+# FastAPI в Nexy
+
+Nexy построен на основе **FastAPI** и **Starlette**. В Nexy доступна каждая функция FastAPI — никаких оболочек и абстракций. Импортируйте напрямую из `fastapi`.
+
+## Что доступно
+
+| Особенность | Импорт | Работает в |
+|---------|--------|----------|
+| Тело запроса (Pydantic) | `from pydantic import BaseModel` | Оба |
+| Параметры пути | `from fastapi import Path` | Оба |
+| Параметры запроса | `from fastapi import Query` | Оба |
+| Параметры cookie | `from fastapi import Cookie` | Оба |
+| Параметры заголовка | `from fastapi import Header` | Оба |
+| Данные формы | `from fastapi import Form` | Оба |
+| Загрузка файлов | `from fastapi import File, UploadFile` | Оба |
+| Зависимости | `from fastapi import Depends` | Оба |
+| Фоновые задачи | `from fastapi import BackgroundTasks` | Оба |
+| Ошибки HTTP | `from fastapi import HTTPException` | Оба |
+| Коды состояния | `from fastapi import status` | Оба |
+| Вебсокет | `from fastapi import WebSocket` | Оба |
+| Запрос | `from fastapi import Request` | Оба |
+| Ответы | `from fastapi.responses import ...` | Оба |
+| Промежуточное ПО | `from starlette.middleware import Middleware` | Оба |
+| КОРС | `from fastapi.middleware.cors import CORSMiddleware` | Оба |
+| APIМаршрутизатор | `from fastapi import APIRouter` | Только модульное |
+| Тестовый клиент | `from fastapi.testclient import TestClient` | Оба |
+
+---
+
+## Основной маршрут
+```python
+# src/routes/users/[id].nexy
+---
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+def POST(body: CreateUser):
+    return {"name": body.name}
+---
+```
+```python
+from nexy.decorators import Controller
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"name": body.name}
+```
+## Что добавляет Nexy?
+
+Nexy объединяет FastAPI с маршрутизацией на основе файлов, компонентами `.nexy`, модульным внедрением зависимостей и интеграцией с интерфейсной платформой. Но он **никогда не скрывает FastAPI** — `nexy.app` — это FastAPI `APIRouter`, конфигурация предоставляет все промежуточное ПО Starlette, и каждая зависимость/ответ/исключение FastAPI работает без изменений.

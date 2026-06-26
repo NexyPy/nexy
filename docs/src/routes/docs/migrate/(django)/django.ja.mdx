@@ -1,0 +1,60 @@
+# Django から Nexy への移行
+
+Django には電池が付属しています。 Nexy は焦点を絞ったモジュール式です。必要なものをすべてお持ちいただけます。
+
+## 概念マッピング
+
+|ジャンゴ |ネクシー |
+|------|------|
+| `views.py` | `.nexy` ファイル (FBR) または `"@Controller` (モジュラー) |
+| `urls.py` |ファイル ツリー (FBR) または `"@Module` (モジュラー) |
+| `models.py` | SQLModel / SQLAlchemy (任意の選択) |
+| `admin.py` | OpenAPI ドキュメント (`/docs`) |
+| `manage.py` | `nx` CLI |
+| `settings.py` | `nexyconfig.py` |
+|ジャンゴ ORM | SQLModel、SQLAlchemy、または Tortoise-ORM |
+|テンプレート (DTL) | Jinja2 (`.nexy` ファイル) |
+|クラスベースのビュー | `"@Controller` (モジュラー) または `.nexy` ファイル (FBR) |
+|ミドルウェア | `"@Middleware` または FastAPI ミドルウェア |
+| `request.user` | `request.state.user` またはガード |
+
+＃＃ 例
+```python
+# src/routes/users/index.nexy
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET():
+    return {"users": [u.model_dump() for u in User.find_all()]}
+---
+```
+```python
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return {"users": [u.model_dump() for u in User.find_all()]}
+```
+## 移行手順
+
+1. **新しい Nexy プロジェクトの足場を構築** — `nx new my-app`
+2. **ポート モデル** — Django モデルを SQLModel/SQLAlchemy に変換します。
+3. **ポート ビュー** — Django 関数/クラス ビューを `.nexy` ファイル (FBR) または `"@Controller` (モジュラー) に変換します。
+4. **ポート URL 構成** — `urls.py` パターンはファイル ツリー (FBR) または `"@Module` (モジュラー) になります
+5. **ポート テンプレート** — DTL テンプレート → `.nexy` ファイルの Jinja2
+6. **ポートミドルウェア** — Django ミドルウェア → Starlette `BaseHTTPMiddleware`
+
+## 切り替える理由
+
+- **モノリシック設定なし** — 使用するもののみを構成します
+- **デフォルトでは非同期** — 内部の FastAPI/Starlette
+- **OpenAPI ドキュメント** — 自動、`drf-spectacular` は必要ありません
+- **コンポーネントベースの UI** — Python と Jinja2 を 1 つのファイルに混在させる
+- **フレームワークの選択** — フロントエンドの React、Vue、Svelte、Solid、または Preact

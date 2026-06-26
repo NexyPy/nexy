@@ -1,0 +1,85 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Python в шаблоне Nexy
+
+Вводная часть (`---`) запускает Python во время компиляции и при каждом запросе.
+
+---
+
+## Что ты можешь сделать
+
+### Импорт модулей
+```python
+---
+import json
+from datetime import datetime
+from nexy import usePathname
+from "@components/card.nexy" import Card
+---
+```
+### Запуск выражений
+```python
+---
+items = [1, 2, 3]
+now = datetime.now()
+is_admin = user.role == "admin"
+---
+```
+### Используйте хуки
+```python
+---
+from nexy import usePathname, useSearchParams, useCookies
+pathname = usePathname()
+params = useSearchParams()
+cookies = useCookies()
+---
+```
+### Данные запроса доступа
+```python
+---
+from fastapi import Request
+# request is injected automatically
+---
+```
+---
+
+## Время компиляции и время выполнения
+
+| Операция | Когда | Пример |
+|---|---|---|
+| `import` | Компилировать | Импорт компонентов |
+| `prop[type]` | Компилировать | Проверенный тип реквизита |
+| Крючки | Запрос | `usePathname()` |
+| Переменные | Запрос | `user = request.user` |
+
+Переменные, определенные в frontmatter, доступны в шаблоне:
+```python
+---
+from datetime import datetime
+year = datetime.now().year
+---
+<footer>&copy; {{ year }} Nexy</footer>
+```
+---
+
+## Общая логика
+
+Для многократного использования логики Python создайте обычный файл `.py`:
+```python
+# src/utils/helpers.py
+def format_date(dt):
+    return dt.strftime("%B %d, %Y")
+```
+Импорт из любого компонента:
+```python
+---
+from src.utils.helpers import format_date
+from datetime import datetime
+---
+<p>{{ format_date(datetime.now()) }}</p>
+```
+<Link href="/docs/components/properties">Next: Properties →</Link>

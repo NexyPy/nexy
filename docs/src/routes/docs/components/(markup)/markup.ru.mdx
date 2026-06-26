@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Написание разметки с помощью Nexy
+
+Шаблоны Nexy используют **HTML** + **Jinja2** для динамического контента.
+Если вы знаете HTML и Jinja2, вы уже знакомы с шаблонами Nexy.
+
+---
+
+## Интерполяция текста
+```html
+<h1>{{ title }}</h1>
+<p>{{ description }}</p>
+```
+Переменные берутся из фронтальной части или реквизита.
+
+---
+
+## Фильтры
+
+Фильтры Jinja2 преобразуют значения:
+```html
+<p>{{ content | safe }}</p>
+<p>{{ name | upper }}</p>
+<p>{{ price | round(2) }}</p>
+```
+`| safe` помечает строку как безопасный HTML (без автоматического экранирования).
+
+---
+
+## Для циклов
+```html
+<ul>
+{% for item in items %}
+    <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## Если/иначе
+```html
+{% if user %}
+    <p>Welcome, {{ user.name }}!</p>
+{% else %}
+    <a href="/login">Sign in</a>
+{% endif %}
+```
+---
+
+## Компоненты в шаблонах
+
+Компоненты используются как элементы HTML:
+```html
+<div class="card">
+    <Card title="Hello">
+        <p>Child content</p>
+    </Card>
+</div>
+```
+Компонент `Slot` отображает дочерние элементы (см. Модули).
+
+---
+
+## Необработанные блоки JS
+
+Используйте `{{ '' }}` для защиты `{{ '{{' }}` от анализа Jinja2 (необходимо при встраивании JS-фреймворков):
+```html
+{% raw %}
+<script>
+const data = {{ json_data }};
+</script>
+{% endraw %}
+```
+<Link href="/docs/components/python">Next: Python in template →</Link>

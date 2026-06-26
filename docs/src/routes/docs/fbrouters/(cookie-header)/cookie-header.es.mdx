@@ -1,0 +1,61 @@
+# Cookies y encabezados (FBR)
+
+Lea las cookies y los encabezados HTTP utilizando los parámetros `Cookie` y `Header` de FastAPI.
+
+## Parámetro de cookie
+
+```python
+# src/routes/profile.py
+from fastapi import Cookie
+
+def GET(session_id: str | None = Cookie(None)):
+    return {"session_id": session_id}
+```
+
+## Múltiples cookies
+
+```python
+from fastapi import Cookie
+
+def GET(
+    session_id: str | None = Cookie(None),
+    theme: str = Cookie("light"),
+):
+    return {"session": session_id, "theme": theme}
+```
+
+## Parámetro de encabezado
+
+```python
+from fastapi import Header
+
+def GET(user_agent: str | None = Header(None)):
+    return {"ua": user_agent}
+```
+
+## Alias ​​de encabezado personalizado
+
+```python
+from fastapi import Header
+
+def GET(x_token: str = Header(alias="X-Token")):
+    return {"token": x_token}
+```
+
+Los nombres de los encabezados están en minúsculas con guiones bajos de forma predeterminada. Utilice `alias` para nombres personalizados.
+
+## Leer cookies en plantillas
+
+En las plantillas `.nexy`, utilice el gancho `useCookies()`:
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+
+---
+
+Ver también: [Session config](/docs/config/session)

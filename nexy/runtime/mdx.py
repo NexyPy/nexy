@@ -13,6 +13,7 @@ from nexy.compiler.parser.logic import LogicParser
 from nexy.compiler.parser.scanner import Scanner
 from nexy.compiler.parser.template import TemplateParser
 from nexy.core.config import Config
+from nexy.core.sandbox import sandboxed_exec
 from nexy.runtime.mdxconfig import MdxCompConfig, MdxComponentMapping
 
 _VOID_ELEMENTS = frozenset(
@@ -169,7 +170,7 @@ class _MdxReplacer(HTMLParser):
             rel = str(resolved.relative_to(root)).replace("\\", "/") if resolved else mapping.source
             ext = resolved.suffix.lower() if resolved else ""
             fw = Config.FRONTEND_EXTENSIONS.get(ext)
-            replacement = _emit_ncc(mapping.symbol, rel, fw, props)
+            replacement = _emit_client_component(mapping.symbol, rel, fw, props)
 
         self.output.append(replacement)
 
@@ -184,7 +185,9 @@ class _MdxReplacer(HTMLParser):
         return raw[first_gt : -len(end_tag)]
 
 
-def _emit_ncc(symbol: str, source_rel: str, framework: str | None, props: dict[str, Any]) -> str:
+def _emit_client_component(
+    symbol: str, source_rel: str, framework: str | None, props: dict[str, Any]
+) -> str:
     safe_props: dict[str, str] = {}
     for k, v in props.items():
         if isinstance(v, (str, int, float, bool)):
@@ -246,7 +249,7 @@ def _render_nexy_template(source_path: str, props: dict[str, Any]) -> str:
                 namespace[p.name] = p.default
 
     if logic_result.python_code:
-        exec(logic_result.python_code, namespace)
+        sandboxed_exec(logic_result.python_code, namespace)
 
     parser = TemplateParser()
     jinja_source = parser.parse(scan_result.template_block, known_components=set())

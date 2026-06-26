@@ -1,0 +1,202 @@
+# 속성(Prop)
+
+소품은 데이터가 구성 요소로 흐르는 방식입니다. 이는 구성 요소를 재사용 가능하게 만듭니다. 동일한 `Card` 구성 요소가 수신하는 props에 따라 다른 콘텐츠를 렌더링할 수 있습니다.
+
+## 소품 선언
+
+Props는 `:prop[type]` 구문을 사용하여 머리말에 선언됩니다.
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+각 선언은 해당 유형 주석이 포함된 생성된 Python 함수의 매개변수가 됩니다.
+
+## 필수 vs 선택
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+구성 요소를 사용할 때 필수 속성이 전달되지 않으면 Python은 렌더링 시 `TypeError`를 발생시킵니다. 오류 메시지에는 구성 요소 이름과 누락된 인수가 포함됩니다.
+
+**소품을 필수로 만들어야 하는 경우**: 소품이 없으면 구성 요소가 의미가 없는 경우. `title`가 없는 `BlogCard`는 손상되었습니다. 필수 항목으로 만드세요. `variant`가 없는 `Button`는 기본적으로 `"primary"`로 설정될 수 있습니다.
+
+## 지원되는 유형
+
+| 유형 | 기본 리터럴 | 메모 |
+|------|---|-------|
+| `str` | `""` | 문자열 값 |
+| `int` | `0` | 정수 값 |
+| `float` | `0.0` | 부동 값 |
+| `bool` | `false` | `true`/`false` (`True`/`False` 아님) |
+| `list` | `[]` | 값 나열 |
+| `dict` | `{}` | 사전 값 |
+| `Any` | `None` | 모든 유형 |
+
+유형 주석은 문서화 및 IDE 지원에 사용됩니다. 런타임 시 Python은 동적으로 유형이 지정됩니다. 주석은 유형을 강제하지 않습니다. int가 필요한 문자열을 전달하는 경우 템플릿이 이를 prop 선언 수준이 아닌 산술적으로 사용하려고 하면 실패합니다.
+
+## 부모로부터 소품 전달하기
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**규칙**:
+
+- **문자열 값**은 `key="value"` 또는 `key="{{ jinja_expr }}"`를 사용합니다.
+- **표현식**은 `key={expr}`를 사용합니다. — 따옴표가 없으며 값은 Python으로 구문 분석됩니다.
+- **부울**: `active=True` 또는 `active="true"`가 아닌 `active=true`(소문자)를 사용합니다.
+- **목록/딕셔너리**: `items={["a", "b"]}` 또는 `settings={"key": "val"}`
+
+## 기본값 및 변경 가능한 객체
+
+일반적인 Python 문제: 호출 간에 공유되는 **변경 가능한 기본값을 사용하지 마세요**:
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy가 대신 처리해 드립니다. 생성된 함수는 `None`를 내부 기본값으로 사용하고 호출마다 새로운 복사본을 생성합니다.
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+따라서 `items:prop[list] = []`는 사용하기에 안전합니다. 각 구성 요소 호출은 자체 목록을 갖습니다.
+
+## `{{ }}`를 사용한 동적 속성
+
+동적 값에는 Jinja2 표현식을 사용합니다.
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+컴파일러는 `{{ }}`를 포함하는 속성 값을 Jinja2 문자열 연결로 변환합니다.
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+따옴표가 없는 `{...}` 값의 경우 콘텐츠가 Python 표현식으로 직접 전달됩니다.
+
+## MDX 페이지의 소품
+
+페이지(`src/routes/`의 `.mdx` 파일)도 props를 선언할 수 있습니다.
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+페이지 소품은 일반적으로 레이아웃에 의해 설정되거나 `useViews()`를 통해 전달됩니다. 페이지는 일반적으로 후크 및 데이터베이스 쿼리에서 데이터를 가져오기 때문에 구성 요소 소품보다 덜 일반적입니다.
+
+## 스프레드 소품
+
+템플릿에서 Jinja2 스프레드 구문을 사용하여 dict를 여러 prop으로 전달합니다.
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+이는 컴파일러의 단축 감지를 통해 작동합니다. 속성 키에서 `{{ ...props }}`를 발견하면 이를 `**props`로 확장합니다.
+
+## 전체 예: 버튼 구성요소
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+용법:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## 다음
+
+- [Conditional Rendering](/docs/components/conditional): 템플릿의 if/for
+- [Component Modules](/docs/components/modules): 구성요소 정리

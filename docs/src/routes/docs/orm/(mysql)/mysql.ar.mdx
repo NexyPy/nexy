@@ -1,0 +1,29 @@
+# ماي إس كيو إل و ماريا دي بي
+
+تعد MySQL وMariaDB قاعدتي بيانات إنتاجية موثوقتين تدعمهما جميع أنظمة Nexy ORM.
+
+## اتصال
+
+```python
+# MySQL
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+
+# MariaDB (same driver, compatible)
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+```
+
+يعد MariaDB بديلاً مباشرًا لـ MySQL - نفس برامج التشغيل ونفس سلاسل الاتصال.
+
+## مع ORMs
+
+| أو آر إم | سائق | سلسلة الاتصال |
+|-----|--------|------------------|
+| SQLModel / SQLAlchemy | `asyncmy` | `mysql+asyncmy://user:pass"@localhost/db` |
+| السلحفاة-ORM | `asyncmy` | `mysql://user:pass"@localhost/db` |
+
+## ملاحظات
+
+- استخدم `aiomysql` أو `asyncmy` لدعم غير المتزامن
+- تأكد من أن خادم قاعدة البيانات لديك يدعم الاتصالات غير المتزامنة
+- تكوين تجمع الاتصالات لأحمال عمل الإنتاج
+- MySQL ↔ MariaDB: يظل الكود الخاص بك كما هو، ويتغير الخادم فقط

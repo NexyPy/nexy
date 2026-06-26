@@ -1,0 +1,40 @@
+# 使用路径名
+
+以字符串形式返回当前 URL 路径。
+
+```python
+from nexy import usePathname
+
+pathname = usePathname()
+```
+
+---
+
+## 返回值
+
+`str` — 当前请求 URL 的路径组成部分（例如 `/docs/hooks/usePathname`）。
+
+ - -
+
+＃＃ 例子
+
+```nexy
+---
+from nexy import usePathname
+path = usePathname()
+---
+<nav class="breadcrumb">
+    {% set segments = path.strip('/').split('/') %}
+    {% for seg in segments %}
+        <span>/ {{ seg }}</span>
+    {% endfor %}
+</nav>
+```
+
+---
+
+## 使用说明
+
+- 可在 `.nexy` 和 `.mdx` frontmatter 中使用
+- 也可通过 `request.url.path` 在 `.py` 路由处理程序中使用
+- 仅返回路径 - 没有查询字符串，没有片段

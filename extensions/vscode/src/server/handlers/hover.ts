@@ -9,7 +9,7 @@ import {
   type NexyImport,
   type NexyProp,
 } from "../../shared/nexy.parser";
-import { parseNexyConfig, resolveWithAlias } from "../../shared/nexy.config.parser";
+import { findWorkspaceRoot, parseNexyConfig, resolveWithAlias } from "../../shared/nexy.config.parser";
 import * as fs from "fs";
 import { fileURLToPath } from "url";
 import * as path from "path";
@@ -50,11 +50,7 @@ export class HoverHandler {
     // Résolution du chemin avec alias
     const docPath = fileURLToPath(doc.uri);
     const currentDir = path.dirname(docPath);
-    let workspaceRoot = currentDir;
-    while (workspaceRoot !== path.parse(workspaceRoot).root) {
-      if (fs.existsSync(path.join(workspaceRoot, "nexyconfig.py"))) break;
-      workspaceRoot = path.dirname(workspaceRoot);
-    }
+    const workspaceRoot = findWorkspaceRoot(currentDir) ?? currentDir;
     const config = parseNexyConfig(workspaceRoot);
     const aliasResolved = resolveWithAlias(imp.path, workspaceRoot, config.useAliases);
     const finalPath = aliasResolved || path.resolve(currentDir, imp.path);
@@ -71,7 +67,7 @@ export class HoverHandler {
             value += `\n\n**Props**:\n${propsLines.join("\n")}`;
           }
         }
-      } catch {}
+      } catch { /* ignore */ }
     }
 
     return { contents: { kind: MarkupKind.Markdown, value } };

@@ -1,0 +1,67 @@
+# .nexy 文件中的样式
+
+Nexy 模板支持 CSS 的方式与 HTML 相同 - 通过 `<style>` 标签、外部导入或 Tailwind 等实用框架。
+
+## 内联 `<style>` 标签
+
+添加样式最直接的方法。在模板部分的任意位置添加 `<style>` 块。
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+</style>
+```
+
+样式**没有范围**——它们适用于全球。使用命名约定（BEM、实用程序类）或数据属性来避免冲突。
+
+## 通过 `__Import` 外部 CSS
+
+每个 `.nexy` 文件都有 `__Import` 自动可用（由编译器注入）。对于 CSS 文件，它读取文件并将其包装在 `<style>` 标记中：
+
+```nexy
+---
+global_css = __Import("/styles/global.css", "", "")()
+---
+{{ global_css }}
+<div class="layout">...</div>
+```
+
+`__Import(path, framework, symbol)` 采用三个参数。对于 CSS，第二个和第三个未使用 - 传递空字符串。尾随的 `()` 立即调用返回的可调用对象，生成 `<style>...</style>` 字符串。
+
+## 顺风 CSS
+
+Nexy 与 Tailwind 开箱即用。模板属性中的实用程序类会正常处理：
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+在 `nexyconfig.py` 或 `tailwind.config.*` 中配置 Tailwind。
+
+## 通过 Vite 导入 CSS
+
+如果启用了 Vite (`useVite: true`)，您可以在前端组件中使用标准 CSS `"@import` 或 `import` 语句。 Vite 通过 PostCSS、CSS 模块和任何配置的插件来处理它们。
+
+## 最佳实践
+
+|方法|何时使用 |
+|----------|-------------|
+|模板中的 `<style>` |组件特定样式、小型项目 |
+| `__Import()` 外部 CSS |跨组件共享样式 |
+|顺风 CSS |实用至上的设计，快速原型制作 |
+| Vite CSS 管道 |完整的构建工具链、CSS 模块、PostCSS |

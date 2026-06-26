@@ -1,0 +1,64 @@
+# 守卫和授权（模块化）
+
+使用 `"@UseGuard` 和防护可调用程序来保护控制器和路由。
+
+## 守卫合同
+
+守卫可以用 `__call__(self, request)` 调用。提高 `HTTPException` 阻止，返回 `None` 允许。
+
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+
+## 控制器级守卫
+
+```python
+from nexy.decorators import Controller, UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self, request):
+        return {"user": request.user.username}
+```
+
+## 多个守卫
+
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+
+类级防护在方法级防护之前运行。全部作为 FastAPI `Depends` 运行。
+
+## 方法级保护
+
+```python
+from nexy.decorators import Controller, UseGuard
+
+"@Controller("/users")
+class UsersController:
+    "@UseGuard(AuthGuard())
+    def GET(self, request):
+        return {"user": request.user.username}
+```
+
+在控制器和方法级别工作。
+
+---
+
+另请参阅：[Guards](/docs/modular/guards)、["@UseGuard reference](/docs/decorators/useguard)、[Authentication](/docs/security/authentication)

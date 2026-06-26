@@ -1,0 +1,51 @@
+# nx 마이그레이션
+
+구성된 ORM의 마이그레이션 도구를 사용하여 데이터베이스 마이그레이션을 관리합니다.
+
+```bash
+nx migrate
+```
+
+---
+
+## 작동 방식
+
+Nexy는 `nexyconfig.py`에서 구성된 ORM을 감지하고 적절한 도구에 위임합니다.
+
+| ORM | 마이그레이션 도구 | 구성 필드 |
+|------|---------------|-------------|
+| SQLAlchemy | 증류기 | `useORM` |
+| SQL모델 | 증류기 | `useORM` |
+| 거북이-ORM | 에어리치 | `useORM` |
+
+---
+
+## 명령
+
+| 명령 | 설명 |
+|---------|-------------|
+| `nx migrate` | 새 마이그레이션 만들기(변경 사항 자동 감지) |
+| `nx migrate --init` | 마이그레이션 도구 초기화(Alembic/Aerich) |
+| `nx migrate --upgrade` / `-u` | 보류 중인 마이그레이션 적용 |
+| `nx migrate -m "message"` | 메시지로 마이그레이션 만들기 |
+
+---
+
+## 예
+
+```bash
+# Initialize Alembic (first time)
+nx migrate --init
+
+# Create a migration after model changes
+nx migrate -m "add user table"
+
+# Apply to database
+nx migrate --upgrade
+```
+
+---
+
+## 별칭
+
+`nx m`

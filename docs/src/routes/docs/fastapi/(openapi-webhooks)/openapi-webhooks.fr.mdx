@@ -1,0 +1,65 @@
+# Webhooks et rappels OpenAPI
+
+Définissez des webhooks et des rappels dans votre schéma OpenAPI afin que les consommateurs sachent ce que votre API leur envoie.
+
+## Webhooks
+
+Les webhooks sont des événements sortants que votre API envoie à des URL externes.
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+Cela enregistre un webhook dans le schéma OpenAPI. Les consommateurs voient la forme attendue de la charge utile en `/docs`.
+
+## Rappels
+
+Les rappels décrivent les requêtes que votre API fera au serveur du consommateur.
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+Transmettez le routeur de rappel à une route :
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+Cela génère des chemins supplémentaires dans la spécification OpenAPI indiquant ce que votre API POSTera sur l'URL externe.
+
+## Pourquoi les utiliser
+
+- Documentation générée automatiquement pour les consommateurs d'API
+- Définition du contrat de type sécurisé
+- Fonctionne avec n'importe quel générateur de client OpenAPI
+- Aucun effet d'exécution - uniquement à des fins de documentation

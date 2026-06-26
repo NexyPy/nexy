@@ -1,0 +1,53 @@
+# Inhaltsverzeichnis
+
+Konfigurieren Sie automatisch generierte Inhaltsverzeichnisse für Markdown-Seiten.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTocDepth = "2-6"
+    useTocTitle = "Table of Contents"
+    useTocAuto = True
+```
+
+---
+
+## Felder
+
+| Feld | Geben Sie | ein Standard | Beschreibung |
+|-------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | Einzuschließende Überschriftenebenen (z. B. `"2-4"` für h2 bis h4). |
+| `useTocTitle` | `str` | `"On this page"` | Der Titel wird über dem Inhaltsverzeichnis angezeigt. |
+| `useTocAuto` | `bool` | `True` | Inhaltsverzeichnis für `.mdx` Seiten automatisch generieren. Zum Deaktivieren auf `False` einstellen. |
+
+---
+
+## Verwendung in Vorlagen
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc()
+---
+<aside class="toc">
+    {{ toc_html | safe }}
+</aside>
+```
+
+---
+
+## Benutzerdefinierte Tiefe
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc(depth_range="1-4")
+---
+```
+
+Schließen Sie nur h3 bis h5 ein:
+
+```nexy
+toc_html = useToc(depth_range="3-5")
+```

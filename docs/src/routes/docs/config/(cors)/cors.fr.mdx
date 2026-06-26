@@ -1,0 +1,68 @@
+# CORS
+
+Configurez le partage de ressources cross-origine pour votre application Nexy à l'aide du `CORSMiddleware` de Starlette.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## Options communes
+
+| Options | Tapez | Par défaut | Descriptif |
+|--------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` | Origines autorisées. Utilisez `["*"]` pour tout autoriser (développement uniquement). |
+| `allow_origins_regex` | `str` | `None` | Modèle Regex pour les origines autorisées (par exemple `"%%U0%%"`). |
+| `allow_methods` | `list[str]` | `["GET"]` | Méthodes HTTP autorisées. `["*"]` autorise tout. |
+| `allow_headers` | `list[str]` | `[]` | En-têtes de requête autorisés. `["*"]` autorise tout. |
+| `allow_credentials` | `bool` | `False` | Autoriser les cookies et les en-têtes d'autorisation. |
+| `expose_headers` | `list[str]` | `[]` | En-têtes exposés au navigateur. |
+| `max_age` | `int` | `600` | Durée du cache de contrôle en amont en secondes. |
+
+---
+
+## Configuration du développement
+
+Pour le développement local, autoriser toutes les origines :
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## Configuration de la production
+
+Soyez explicite sur les origines et les méthodes :
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+Lorsque `allow_credentials` est `True`, vous ne pouvez pas utiliser `"*"` pour `allow_origins` — répertorier explicitement les origines.
+
+---
+
+## Derrière un proxy
+
+Si votre application s'exécute derrière un proxy inverse (nginx, Cloudflare), assurez-vous que les en-têtes transférés sont configurés afin que le middleware CORS voie l'origine correcte.

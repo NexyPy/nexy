@@ -1,0 +1,58 @@
+# जेडब्ल्यूटी
+
+Nexy अपना स्वयं का JWT समर्थन शिप नहीं करता है - `PyJWT` लाइब्रेरी का उपयोग करें।
+
+## स्थापना
+
+```bash
+pip install pyjwt
+```
+
+## एक टोकन बनाएं
+
+```python
+import jwt
+from datetime import datetime, timedelta
+
+SECRET = os.environ["JWT_SECRET"]
+
+def create_token(user_id: str) -> str:
+    payload = {
+        "sub": user_id,
+        "iat": datetime.utcnow(),
+        "exp": datetime.utcnow() + timedelta(hours=24),
+    }
+    return jwt.encode(payload, SECRET, algorithm="HS256")
+```
+
+## एक टोकन सत्यापित करें
+
+```python
+def verify_token(token: str) -> dict | None:
+    try:
+        return jwt.decode(token, SECRET, algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+```
+
+## जेडब्ल्यूटी ऑथ बैकएंड
+
+```python
+class JWTAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        auth = conn.headers.get("Authorization", "")
+        token = auth.removeprefix("Bearer ")
+        payload = verify_token(token)
+        if payload:
+            return AuthCredentials(["authenticated"]), SimpleUser(payload["sub"])
+        return None
+```
+
+## कॉन्फिग
+
+```python
+class NexyConfig(NexyConfigModel):
+    useAuth = {"backend": JWTAuthBackend()}
+```

@@ -1,0 +1,207 @@
+# مقدمي الخدمات وحقن التبعية
+
+يقوم الموفرون بتغليف منطق الأعمال أو الوصول إلى البيانات أو عمليات التكامل الخارجية. لقد تم تزيينها بـ `"@Injectable()` ويتم حقنها تلقائيًا في وحدات التحكم (أو الموفرين الآخرين) عبر معلمات المُنشئ.
+
+## لماذا مقدمو الخدمة؟
+
+بدون DI، تقوم كل وحدة تحكم بإنشاء تبعياتها يدويًا:
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+باستخدام DI، تقوم الحاوية بإنشاء مثيل للتبعيات وحقنها:
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+الفوائد: قابلية الاختبار (`UserService` وهمية في الاختبارات)، والمشاركة الفردية (نفس المثيل عبر وحدات التحكم)، والتحكم في النطاق (جديد لكل طلب عند الحاجة).
+
+## إنشاء مزود
+
+تزيين أي فصل بـ `"@Injectable()`:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+يمنع `"@Injectable()` إنشاء مثيل مباشر — يؤدي الاتصال بـ `UserService()` خارج DI إلى زيادة `TypeError`. وهذا يفرض عليك استخدام الحاوية، مما يضمن حل النطاقات والتبعيات بشكل صحيح.
+
+## الحقن في وحدة التحكم
+
+قم بتعريف التبعية كمعلمة منشئة باستخدام تلميح النوع:
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+تطابق حاوية DI تلميح النوع (`UserService`) مع الموفر المسجل. إذا لم يتطابق أي موفر، فسيتم رفع `ValueError` عند بدء التشغيل.
+
+**مسكتك**: أسماء معلمات المُنشئ ليست مهمة — فقط تلميحات الكتابة هي التي تهم. يتم حل كل من `service: UserService` و`s: UserService` إلى نفس الموفر.
+
+## إدخال مقدمي الخدمة في مقدمي الخدمات الآخرين
+
+يمكن أن يعتمد مقدمو الخدمة على مقدمي خدمات آخرين — حيث تحل الحاوية الشجرة الكاملة:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+التبعيات الدائرية (`A → B → A`) ترفع `RecursionError` عند بدء التشغيل. إعادة البناء لاستخراج المنطق المشترك إلى مزود ثالث.
+
+## نطاقات الحقن
+
+نطاقات التحكم في عمر موفر الخدمة:
+
+| النطاق | العمر | حالة الاستخدام |
+|-------|----------|----------|
+| `Scope.SINGLETON` (افتراضي) | مثيل واحد للتطبيق بأكمله | اتصالات قاعدة البيانات، التكوين، ذاكرات التخزين المؤقت |
+| `Scope.REQUEST` | مثيل جديد لكل طلب HTTP | حالة لكل طلب، سجلات التدقيق |
+| `Scope.TRANSIENT` | مثيل جديد كل حقنة | المرافق عديمة الحالة، وظائف نقية |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`** هو الخيار الافتراضي والأكثر أمانًا. استخدم **`Scope.REQUEST`** فقط عندما تحتاج إلى حالة لكل طلب (على سبيل المثال، تخزين المستخدم الحالي من حارس). استخدم **`Scope.TRANSIENT`** عندما يكون لدى الموفر حالة قابلة للتغيير ولا ينبغي مشاركتها.
+
+**مسكتك**: الموفرون العابرون الذين تم إدخالهم في موفر فردي يصبحون فرديين بشكل فعال - يتم إنشاؤهم مرة واحدة عند حل الحالة الفردية لأول مرة. إذا كنت بحاجة إلى عابر جديد لكل طلب، فقم بإدخاله في موفر نطاق الطلب بدلاً من ذلك.
+
+## موفرو مخصصون مع `useValue` و`useFactory`
+
+بالنسبة للتبعيات غير الفئوية (السلاسل النصية، والإعدادات، و lambdas)، استخدم صيغة dict في الوحدة:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+قم بتسجيل الموفرين مباشرةً في قائمة `providers` الخاصة بالوحدة:
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+حقن حسب نوع التلميح:
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## التبعيات الاختيارية
+
+استخدم `None` كقيمة افتراضية للحقن الاختياري:
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+إذا لم يتم تسجيل `Logger` في أي وحدة، فستتخطاها الحاوية وتمرر `None`. يعد هذا مفيدًا للميزات الاختيارية مثل التسجيل أو المقاييس التي لا ينبغي أن تتعطل إذا لم يتم تكوينها.
+
+## الاختبار مع مقدمي الخدمة
+
+تجعل شركة DI الاختبار سهلاً - قم بإنشاء مثيل لوحدة التحكم باستخدام نموذج وهمي:
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+لا حاجة لبدء تشغيل الخادم أو إعداد حاوية DI الكاملة. هذه هي الميزة الرئيسية لحقن المنشئ - اختبارات الوحدة النقية.
+
+## أفضل الممارسات
+
+1. **تفضيل حقن المُنشئ** — من النادر الاتصال يدويًا بـ `Container.resolve()`؛ دع الحاوية تحقن تلقائيًا.
+2. **إبقاء مقدمي الخدمة عديمي الجنسية** (نطاق فردي) — تنتمي الحالة إلى قواعد البيانات أو موفري الخدمة ذوي نطاق الطلب.
+3. **مسؤولية واحدة لكل مزود** — يتولى `UserService` التعامل مع المستخدمين، ويتولى `EmailService` التعامل مع رسائل البريد الإلكتروني.
+4. **قم بتسجيل كافة الموفرين بشكل صريح** في قائمة `providers` الخاصة بالوحدة — التسجيلات الصريحة يتم توثيقها ذاتيًا.
+5. **استخدم `Scope.REQUEST` باعتدال** — يضيف كل موفر ضمن نطاق الطلب أعباء التخصيص.
+
+## الخطوات التالية
+
+- [Modules](/docs/modular/modules) — تنظيم الموفرين في وحدات الميزات
+- [Guards](/docs/modular/guards) — إضافة المصادقة والترخيص
+- [Middleware](/docs/modular/middleware) — اعتراض الطلبات قبل وصولها إلى وحدات التحكم

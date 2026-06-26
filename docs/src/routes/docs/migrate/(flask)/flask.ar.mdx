@@ -1,0 +1,49 @@
+# الهجرة من قارورة إلى Nexy
+
+القارورة ضئيلة. Nexy هو الحد الأدنى أيضًا - ولكن مع المزامنة الحديثة والأنواع وOpenAPI المضمنة.
+
+## رسم خرائط المفاهيم
+
+| قارورة | نكسي |
+|-------|------|
+| `"@app.route("/")` | الملف في `src/routes/` أو `"@Controller` |
+| `render_template()` | `.nexy` ملف |
+| `request.args` | معلمات الاستعلام في توقيع الوظيفة |
+| `request.json` | معلمة الجسم في توقيع الوظيفة |
+| `g` | `request.state` |
+| `flask run` | `nx dev` |
+| `config.py` | `nexyconfig.py` |
+| المخططات | `"@Module` أو `src/routes/` الدلائل الفرعية |
+
+## مثال
+
+```python
+# Flask
+"@app.route("/api/users/<int:id>")
+def get_user(id):
+    return jsonify({"id": id})
+
+# Nexy FBR: src/routes/api/users/[id].py
+async def get(id: int):
+    return {"id": id}
+```
+
+##ما تكسبه
+
+- **دعم غير متزامن** — أصلي، وليس من خلال الاختراق
+- **التحقق من صحة النوع** — Pydantic، أخطاء 422 تلقائية
+- **مستندات OpenAPI** — لا حاجة إلى `flasgger`
+- **نظام DI** — إدخال الخدمات بدون المفردات العالمية
+- **CLI** — `nx build`، `nx start`، `nx migrate`
+
+## خطوات الهجرة
+
+1. **السقالة** — `nx new my-app`
+2. **طرق المنفذ** — `"@app.route()` → الملف في `src/routes/` أو `"@Controller`
+3. **قوالب المنافذ** — القارورة `render_template()` → `.nexy` من الملفات
+4. **التعامل مع طلب المنفذ** — `request.args`/`request.json` → معلمات الوظائف المكتوبة
+5. **مخططات المنافذ** → `"@Module` أو الدلائل الفرعية في FBR
+
+## ما يبقى
+
+طرق بسيطة، الحد الأدنى من النموذج، التحكم الكامل. فقط مع بايثون الحديثة.

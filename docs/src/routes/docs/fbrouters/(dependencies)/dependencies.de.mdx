@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Abhängigkeiten
+
+Eine `dependencies.py`-Datei in `src/routes/` sammelt allgemeine FastAPI-Abhängigkeiten, die automatisch auf jede Route im Verzeichnisbaum angewendet werden.
+
+---
+
+## `dependencies = [...]`
+
+Definieren Sie aufrufbare Elemente und listen Sie sie in einer `dependencies`-Variable auf Modulebene auf:
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+Es werden nur die in `dependencies` aufgeführten Elemente angewendet – bloße Funktionen werden ignoriert.
+
+---
+
+## Vererbung (zusammenführen, nicht überschreiben)
+
+Nexy geht von der Routendatei **nach oben** zu `src/routes/` und **fügt** jede gefundene `dependencies`-Liste zusammen:
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+Untergeordnete `dependencies.py`-Dateien **überschreiben** nicht die übergeordneten Dateien. Alle Listen werden zusammengefasst. Wenn in beiden derselbe Abhängigkeitsname vorkommt, erhöht FastAPI beim Start `ValueError` (doppelter Parameter).
+
+---
+
+## Verwendung auf einer Seite
+
+Auf `.nexy`-Seiten werden Abhängigkeiten vor dem Rendern automatisch ausgeführt – Sie müssen sie nicht importieren oder aufrufen:
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+Die aufgelösten Werte sind **nicht** als Vorlagenvariablen verfügbar. Abhängigkeiten werden wegen Nebenwirkungen ausgeführt (Authentifizierungsprüfungen, Protokollierung, Einrichtung der DB-Verbindung).
+
+Bei `.py`-Handlern werden Abhängigkeiten als Nebeneffekte ausgeführt – ihre Rückgabewerte werden **nicht** in den Handler eingefügt. Um auf den Wert einer Abhängigkeit zuzugreifen, fügen Sie `Depends()` in die Funktionssignatur ein:
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+Wenn derselbe Callable sowohl in `dependencies = [...]` als auch in der Handler-Signatur aufgeführt ist, führt FastAPI ihn einmal aus und gibt das Ergebnis weiter.
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

@@ -1,0 +1,108 @@
+# 请求正文
+
+使用 Pydantic 模型接收 JSON 请求正文。
+
+---
+
+## 基本模型
+```python
+---
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+def POST(item: Item):
+    return {"name": item.name, "price": item.price}
+---
+```
+```python
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+## 正文字段带有 `embed`
+
+覆盖字段名称或注入额外的 JSON 字段：
+```python
+---
+from fastapi import Body
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+def POST(
+    item: Item,
+    important: str = Body(embed=True),
+):
+    # Expects: {"item": {...}, "important": "x"}
+    ...
+---
+```
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+## 多个身体参数
+
+传递多个模型 - FastAPI 将它们嵌套在其参数名称下：
+```python
+---
+def POST(item: Item, user: User):
+    # Expects: {"item": {...}, "user": {...}}
+    ...
+---
+```
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+## 嵌套模型
+
+模型可以包含其他模型、列表和可选字段：
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+与路由器无关——相同的 Pydantic 模型可以在 FBR 和 Modular 中工作。
+
+## 限制
+
+- 当您键入注释 Pydantic 模型参数时，正文会自动解析
+- FastAPI 处理验证并在无效输入时返回 422
+- 不需要 `"@Body()` 装饰器——标准 FastAPI 行为

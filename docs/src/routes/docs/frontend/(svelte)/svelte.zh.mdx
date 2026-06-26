@@ -1,0 +1,72 @@
+# 苗条
+
+将 Svelte 添加到您的 `nexyconfig.py`：
+
+```python
+from nexy.frontend import svelte
+
+class NexyConfig(NexyConfigModel):
+    useFF = [svelte()]
+```
+
+---
+
+## 创建组件
+
+扩展名为 `.svelte` 的文件被视为 Svelte 组件：
+
+```svelte
+<!-- src/components/Counter.svelte -->
+<script>
+  export let initial = 0
+  let count = initial
+</script>
+
+<div>
+  <p>Count: {count}</p>
+  <button on:click={() => count += 1}>+</button>
+</div>
+```
+
+---
+
+## 在 .nexy 页面中使用
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Props 通过 Jinja2 `{{ }}` 语法传递 - 对 JSON 值使用双括号。
+
+---
+
+## 儿童/老虎机内容
+
+Nexy 将子内容作为 Svelte 槽传递：
+
+```svelte
+<!-- Card.svelte -->
+<script>
+  export let title
+</script>
+
+<div class="card">
+  <h2>{title}</h2>
+  <slot />
+</div>
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as a slot</p>
+</Card>
+```
+
+---
+
+## 服务端SR
+
+当服务器预渲染 HTML 时，Svelte 组件使用 `hydrate`，或者仅在客户端渲染时使用 `mount`。

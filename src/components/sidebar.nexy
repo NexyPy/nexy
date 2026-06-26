@@ -1,5 +1,6 @@
 ---
 from "./data.py" import menu
+
 ---
 <nav class="w-64 bg-slate-950 min-h-screen shadow-lg">
     <div class="p-6">
@@ -12,9 +13,9 @@ from "./data.py" import menu
             class="flex items-center px-4 py-3 text-slate-200 rounded-md transition-colors hover:bg-slate-800 hover:text-white font-medium"
             nexy-prefetch
             >
-                {{ i.get("label") }}
+              {{ i.get("label") }}
             </a>
-        </li>
+        </li> 
         {% endfor %}
     </ul>
 </nav>

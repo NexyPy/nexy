@@ -1,0 +1,130 @@
+# Introduction
+
+**Nexy** (pronounced `nek:si`) is a full-stack Python web framework built on top of **FastAPI** and **Starlette**. It brings the developer experience of modern frameworks like Next.js and NestJS to Python.
+
+The name comes from: **N**ew **Ex**perience for P**y**thon — a fresh approach to building web applications in Python.
+
+> Nexy doesn't reinvent the wheel. It makes Python web development radically simpler while keeping the power of FastAPI.
+
+---
+
+## Two routers, one framework
+
+Nexy offers **two routing strategies** — choose the one that fits your project:
+
+### Routes Router (File-Based Routing)
+
+Routes are defined by your file tree — every `.nexy`, `.mdx`, or `.py` file in `src/routes/` becomes an HTTP route automatically.
+
+```text
+src/routes/
+
+├── index.nexy          →  /
+
+├── about.nexy          →  /about
+
+├── blog/
+
+│   ├── index.nexy      →  /blog
+
+│   └── [slug].nexy     →  /blog/{slug}
+
+└── api/
+
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+**Best for**: simple sites, documentation, MVPs, API-only projects, teams that prefer convention over configuration.
+
+Learn more: [File-Based Routing →](/docs/fbrouters)
+
+### Modular Router (Decorator-Based)
+
+Routes are defined via Python decorators — organize code into **Controllers**, **Providers**, and **Modules** following the NestJS pattern.
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+
+class UsersController:
+
+    def __init__(self, service: UserService):
+
+        self.service = service
+
+    def GET(self):
+
+        return self.service.find_all()
+```
+
+**Best for**: large applications, domain-driven design, projects that benefit from dependency injection and strict code organization.
+
+Learn more: [Modular Router →](/docs/modular/overview)
+
+> Use the **router selector** at the top of the sidebar to switch between documentation views for each router.
+
+---
+
+## FastAPI is the Engine
+
+Just as Next.js **is React** under the hood, Nexy **is FastAPI** under the hood. Every route, every response, every middleware runs through FastAPI and Starlette.
+
+```python
+# FastAPI patterns that work unchanged in Nexy
+
+from fastapi import Request, Depends
+
+from fastapi.responses import JSONResponse, HTMLResponse
+
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+
+    id: int
+
+    name: str
+
+    email: str
+
+def GET(request: Request, db=Depends(get_db)):
+
+    return db.query(User).all()
+```
+
+**What stays the same:** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` — all from `fastapi`.
+
+**What Nexy adds:** `.nexy`/`.mdx` files → compiled to FastAPI routes, `"@Action` → auto-generated POST routes, `"@Controller`/`"@Module` → FastAPI `APIRouter` builders, Hooks → request-scoped helpers on top of FastAPI's `Request`.
+
+Because Nexy is FastAPI, every route produces **OpenAPI docs** automatically at `/docs` (Swagger UI) and `/redoc`.
+
+---
+
+## Why Nexy?
+
+- **FastAPI under the hood** — async, automatic OpenAPI docs, type-safe, battle-tested
+- **Component-based UI** — write components with Python + Jinja2 templates, or use React/Vue/Svelte/Solid/Preact
+- **File-based AND modular routing** — pick the right tool for your project
+- **Zero boilerplate** — no manual route registration, no config files to wire up
+- **Built-in i18n, HMR, middleware, guards** — production-ready from day one
+
+---
+
+## Is Nexy for you?
+
+Use Nexy if you want to:
+
+- Build a full-stack Python app as fast as Next.js or Laravel
+- Create a REST API with the structure of NestJS but the simplicity of Python
+- Use React/Vue/Svelte components from a Python backend
+- Stop restructuring projects and installing boilerplate packages
+
+---
+
+## What you'll learn
+
+- Create and configure a Nexy project
+- Understand both routing strategies
+- Build your first application with concrete examples
+- Follow best practices for production deployments
+

@@ -1,0 +1,66 @@
+# Asynchrone et concurrence
+
+Nexy est construit sur FastAPI qui prend automatiquement en charge les gestionnaires de routes `async` et `def`.
+
+## `async def` contre `def`
+
+| Type de gestionnaire | Exécution | Quand utiliser |
+|-------------|-----------|-------------|
+| `def` | Pool de threads (blocage) | Travail du processeur, synchronisation des appels de base de données, blocage des E/S |
+| `async def` | Boucle d'événement | Base de données asynchrone, appels HTTP, WebSocket, interrogation longue |
+
+---
+
+## Route asynchrone
+```python
+---
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+---
+```
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+## Synchronisation mixte et asynchrone dans un seul fichier
+```python
+---
+def GET():          # runs in thread pool
+    return {"type": "sync"}
+
+async def GET_async():  # runs in event loop
+    return {"type": "async"}
+---
+```
+```python
+from nexy.decorators import Controller
+
+"@Controller("/demo")
+class DemoController:
+    def GET(self):          # runs in thread pool
+        return {"type": "sync"}
+
+    async def async_get(self):  # runs in event loop
+        return {"type": "async"}
+```
+## Tâches en arrière-plan
+
+Pour un travail de type « feu et oubli » après la réponse, utilisez `BackgroundTasks` (compatible avec la synchronisation). Pour un véritable travail en arrière-plan asynchrone, utilisez `asyncio.create_task`.
+
+## Mises en garde
+
+- **N'appelez pas** les fonctions `async` à partir des gestionnaires `def` avec `await` — utilisez `asyncio.run()` ou créez le gestionnaire `async def`
+- **Ne** appelez pas les fonctions de blocage (comme `time.sleep()`, `requests.get()`) à partir de `async def` — utilisez `asyncio.sleep()`, `httpx.AsyncClient`
+- `nx dev` de Nexy exécute un travailleur uvicorn par défaut — les gestionnaires asynchrones brillent ici
+- Pour la production, utilisez plusieurs travailleurs (`nx start --workers 4`) pour les gestionnaires de synchronisation

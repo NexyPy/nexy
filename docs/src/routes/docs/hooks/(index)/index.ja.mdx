@@ -1,0 +1,20 @@
+# フック
+
+フックは、`.nexy` コンポーネントおよびレイアウト内のリクエスト コンテキストおよびブラウザー状態へのアクセスを提供するリアクティブ関数です。これらは最新のフロントエンド フレームワークの概念を反映していますが、サーバー上で実行されます。
+
+すべてのフックは `nexy` からインポートされます。
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## 利用可能なフック
+
+- [usePathname](/docs/hooks/usePathname) — 現在の URL パス
+- [useSearchParams](/docs/hooks/useSearchParams) — クエリ文字列パラメータ
+- [useRouter](/docs/hooks/useRouter) — プログラムによるナビゲーション
+- [useQuery](/docs/hooks/useQuery) — 解析されたクエリパラメータ
+- [useSession](/docs/hooks/useSession) — セッション データ アクセス
+- [useCookies](/docs/hooks/useCookies) — クッキーの読み取り/書き込み
+- [useToc](/docs/hooks/useToc) — 目次の抽出
+- [useViews](/docs/hooks/useViews) — コンポーザブル ビューの管理

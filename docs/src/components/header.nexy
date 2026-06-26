@@ -1,15 +1,17 @@
 ---
-from nexy import  usePathname
+from "@/locales/components/header" import HeaderI18n as HeaderLocale
+from nexy import usePathname
 from "./language.tsx" import Language
 from "./search.tsx" import Search
-from "@/components/Image.nexy" import Image
-from "@/components/link.nexy" import Link
+from "@components/Image.nexy" import Image
+from "@components/link.nexy" import Link
 pathname = usePathname()
+h = HeaderLocale()
 items = [
-        {"label":"Docs","href":"/docs"},
-        {"label":"showcase","href":"/showcase"},
-        {"label":"Blog","href":"/blog"},
-        {"label":"Community","href":"/community"}
+        {"label":h.docs,"href":"/docs"},
+        {"label":h.showcase,"href":"/showcase"},
+        {"label":h.blog,"href":"/blog"},
+        {"label":h.community,"href":"/community"}
     ]
 ---
 
@@ -36,7 +38,7 @@ items = [
             <Search/>
             <Language/>
             <Link href="/learn" className="hidden md:inline-flex bg-foreground text-white dark:text-gray-950 ease uppercase text-sm font-mono px-4 py-1.5 rounded-full flex items-center gap-2">
-                Learn
+                {{h.learn}}
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
                     class="lucide lucide-graduation-cap-icon lucide-graduation-cap">

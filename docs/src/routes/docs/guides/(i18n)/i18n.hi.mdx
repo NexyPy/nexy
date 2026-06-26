@@ -1,0 +1,78 @@
+#आई18एन
+
+`nexyconfig.py` में स्थान कॉन्फ़िगर करें:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "ar", "es", "hi", "zh"]
+    useDefaultLocale = "en"
+```
+
+## अनुवाद फ़ाइलें
+
+JSON अनुवाद फ़ाइलों को `nexy/i18n/<locale>/` में रखें:
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+  "nav.docs": "Documentation",
+  "nav.blog": "Blog",
+  "home.hero": "Build faster with Nexy"
+}
+```
+
+संपूर्ण संदर्भ के लिए [Config / i18n](/docs/config/i18n) देखें।
+
+## टेम्पलेट्स में अनुवाद का उपयोग करना
+
+```nexy
+---
+---
+<h1>{{ trans("home.hero", "Build faster with Nexy") }}</h1>
+<p>{{ t("nav.docs", "Docs") }}</p>
+```
+
+- `trans(key, default)` - पूर्ण फ़ंक्शन
+- `t(key, default)` - शॉर्टहैंड उपनाम
+
+## स्थान का पता लगाना
+
+नेक्सी उपयोगकर्ता के स्थान का पता लगाता है (क्रम में):
+
+1. **यूआरएल उपसर्ग**: `/fr/docs/`, `/en/docs/`
+2. **कुकी**: `nexy-locale`
+3. **स्वीकार-भाषा शीर्षलेख**: ब्राउज़र प्राथमिकता
+
+पता लगाए गए स्थान को अनुरोध-स्कोप्ड कॉन्टेक्स्टवार के रूप में सेट किया गया है, जो `current_locale` या `useLocale()` के माध्यम से पहुंच योग्य है।
+
+## आरटीएल समर्थन
+
+अरबी (`ar`) और अन्य RTL भाषाओं का स्वचालित रूप से पता लगाया जाता है। जांचने के लिए `useLocale()` का उपयोग करें:
+
+```nexy
+---
+from nexy import useLocale
+locale = useLocale()
+---
+<html lang="{{locale.locale}}" dir="{{ 'rtl' if locale.is_rtl else 'ltr' }}">
+```
+
+## कॉन्फ़िग संदर्भ
+
+| विकल्प | प्रकार | डिफ़ॉल्ट | विवरण |
+|--------|------|------|----|
+| `useLocales` | `list[str]` | `None` | उपलब्ध स्थान |
+| `useDefaultLocale` | `str` | `"en"` | फ़ॉलबैक लोकेल |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | स्थानीय कुकी नाम |
+| `useRTL` | `bool` | `False` | आरटीएल लेआउट सक्षम करें |

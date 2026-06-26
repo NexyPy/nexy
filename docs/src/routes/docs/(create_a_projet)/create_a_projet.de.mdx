@@ -1,0 +1,123 @@
+# Schnellstart
+
+Erstellen Sie in Sekundenschnelle ein Nexy-Projekt – keine globale Installation erforderlich.
+
+## Voraussetzungen
+
+- **Python 3.11+**
+- **[uv](https://docs.astral.sh/uv/)** (Paketmanager)
+- **Node.js 18+** (für Client-Komponenten und Tailwind CSS)
+
+## Erstellen Sie ein Projekt
+
+```bash
+uvx nexy new
+```
+
+Oder geben Sie direkt einen Namen an:
+
+```bash
+uvx nexy new my-app
+```
+
+`uvx` lädt Nexy im Handumdrehen herunter und führt es aus – es muss nichts global installiert werden.
+
+## Interaktive Eingabeaufforderungen
+
+Nachdem Sie den Befehl ausgeführt haben, führt Sie Nexy durch die Projekteinrichtung:
+
+### 1. Router
+
+```text
+
+» Use file-based router? (Y/n)
+```
+
+- **Ja** – File-Based Routing (FBR): Seiten sind Dateien in `routes/`
+- **Nein** – Modulares Routing: Controller und Module mit Dekoratoren
+
+### 2. Projekttyp
+
+```text
+
+» Choose the type of project
+
+  ʋ Web (monolith web app)
+
+    API (RESTful API)
+```
+
+### 3. Client-Framework (nur Web)
+
+```text
+
+» Use a client component? (Y/n)
+```
+
+Wenn ja:
+
+```text
+
+» Choose the client framework
+
+  ʋ React
+
+    Vue
+
+    Svelte
+
+    Solid
+
+    Preact
+
+    None
+```
+
+Tailwind CSS wird automatisch konfiguriert, wenn ein Client-Framework ausgewählt wird.
+
+### 4. ORM & Datenbank
+
+```text
+
+» Choose an ORM
+
+  ʋ SQLModel
+
+    SQLAlchemy
+
+    Tortoise-ORM
+
+    None
+```
+
+Wenn ein ORM ausgewählt ist:
+
+```text
+
+» Choose database
+
+  ʋ SQLite
+
+    PostgreSQL
+
+    MySQL
+
+» Database URL (sqlite:///dev.db)
+```
+
+## Starten Sie den Entwicklungsserver
+
+```bash
+cd my-app
+
+nexy dev
+```
+
+Öffnen Sie [http://localhost:3000](http://localhost:3000), um Ihre App anzuzeigen.
+
+## Nächste Schritte
+
+Ihr Projekt ist fertig. Gehen Sie zu [Project Structure](/docs/projet_structure), um das Layout zu verstehen, oder beginnen Sie direkt mit dem Aufbau:
+
+- [Your First Page](/docs/fbrouters/pages) – Dateibasiertes Routing
+- [Your First Controller](/docs/modular/controllers) – Modulares Routing

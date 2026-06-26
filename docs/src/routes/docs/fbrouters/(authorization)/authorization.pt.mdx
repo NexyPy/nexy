@@ -1,0 +1,60 @@
+# Autorização (FBR)
+
+Proteja rotas usando decoradores `"@UseGuard` com chamadas de guarda.
+
+## Contrato de guarda
+
+Um guarda pode ser chamado com `__call__(self, request)`. Aumente `HTTPException` para bloquear, retorne `None` para permitir.
+
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+
+## Guarda em uma rota
+
+```python
+# src/routes/admin.py
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+```
+
+## Usando `requires` da Starlette
+
+```python
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+```
+
+## Vários guardas
+
+```python
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+```
+
+---
+
+Veja também: ["@UseGuard reference](/docs/decorators/useguard), [Authentication](/docs/security/authentication)

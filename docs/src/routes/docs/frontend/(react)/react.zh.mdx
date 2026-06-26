@@ -1,0 +1,73 @@
+# 反应
+
+将 React 添加到你的 `nexyconfig.py` 中：
+
+```python
+from nexy.frontend import react
+
+class NexyConfig(NexyConfigModel):
+    useFF = [react()]
+```
+
+---
+
+## 创建组件
+
+`src/` 中带有 `.tsx` 或 `.jsx` 扩展名的文件被视为 React 组件：
+
+```tsx
+// src/components/Counter.tsx
+import { useState } from 'react'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## 在 .nexy 页面中使用
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Props 通过 Jinja2 `{{ }}` 语法传递 - 对 JSON 值使用双括号。
+
+---
+
+## 儿童/老虎机内容
+
+Nexy 将子内容作为 `children` 属性传递。该组件可以渲染它：
+
+```tsx
+export default function Card({ title, children }) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## 服务端SR
+
+React 组件是使用 `hydrateRoot` 在服务器端渲染的。服务器生成 HTML，然后 React 在客户端上进行水合。无需额外配置。

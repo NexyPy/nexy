@@ -1,0 +1,123 @@
+# Быстрый старт
+
+Создайте проект Nexy за считанные секунды — глобальная установка не требуется.
+
+## Предварительные условия
+
+- **Питон 3.11+**
+- **[uv](https://docs.astral.sh/uv/)** (менеджер пакетов)
+- **Node.js 18+** (для клиентских компонентов и CSS Tailwind)
+
+## Создать проект
+
+```bash
+uvx nexy new
+```
+
+Или укажите имя напрямую:
+
+```bash
+uvx nexy new my-app
+```
+
+`uvx` загружает и запускает Nexy на лету — глобально устанавливать нечего.
+
+## Интерактивные подсказки
+
+После запуска команды Nexy проведет вас через настройку проекта:
+
+### 1. Маршрутизатор
+
+```text
+
+» Use file-based router? (Y/n)
+```
+
+- **Да** — Маршрутизация на основе файлов (FBR): страницы представляют собой файлы в `routes/`
+- **Нет** — Модульная маршрутизация: контроллеры и модули с декораторами
+
+### 2. Тип проекта
+
+```text
+
+» Choose the type of project
+
+  ʋ Web (monolith web app)
+
+    API (RESTful API)
+```
+
+### 3. Клиентская платформа (только в Интернете)
+
+```text
+
+» Use a client component? (Y/n)
+```
+
+Если да:
+
+```text
+
+» Choose the client framework
+
+  ʋ React
+
+    Vue
+
+    Svelte
+
+    Solid
+
+    Preact
+
+    None
+```
+
+Tailwind CSS автоматически настраивается при выборе клиентской платформы.
+
+### 4. ORM и база данных
+
+```text
+
+» Choose an ORM
+
+  ʋ SQLModel
+
+    SQLAlchemy
+
+    Tortoise-ORM
+
+    None
+```
+
+Если выбран ORM:
+
+```text
+
+» Choose database
+
+  ʋ SQLite
+
+    PostgreSQL
+
+    MySQL
+
+» Database URL (sqlite:///dev.db)
+```
+
+## Запускаем сервер разработки
+
+```bash
+cd my-app
+
+nexy dev
+```
+
+Откройте [http://localhost:3000](http://localhost:3000), чтобы увидеть свое приложение.
+
+## Следующие шаги
+
+Ваш проект готов. Перейдите в [Project Structure](/docs/projet_structure), чтобы понять планировку, или сразу приступайте к строительству:
+
+- [Your First Page](/docs/fbrouters/pages) — маршрутизация на основе файлов
+- [Your First Controller](/docs/modular/controllers) — Модульная маршрутизация

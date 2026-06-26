@@ -1,0 +1,24 @@
+# मार्गदर्शक
+
+फ्रंटएंड फ्रेमवर्क, डेटा लोडिंग, प्रमाणीकरण, अंतर्राष्ट्रीयकरण और तैनाती के साथ नेक्सी का उपयोग करने के लिए व्यावहारिक पूर्वाभ्यास।
+
+## फ्रंटएंड फ्रेमवर्क एकीकरण
+
+- [React in Nexy](/docs/frontend/react)
+- [Vue in Nexy](/docs/frontend/vue)
+- [Svelte in Nexy](/docs/frontend/svelte)
+- [Solid in Nexy](/docs/frontend/solid)
+- [Preact in Nexy](/docs/frontend/preact)
+- [Vite & SSR](/docs/frontend/vite)
+
+## मुख्य मार्गदर्शक
+
+- [Jinja2](/docs/guides/jinja2) - टेम्पलेट इंजन का उपयोग
+- [Data Loading](/docs/guides/data-loading) - डेटा लाना और कैशिंग करना
+- [Error Handling](/docs/guides/error-handling) - त्रुटि पृष्ठ और अपवाद प्रबंधन
+- [Actions](/docs/guides/actions) - क्रियाएं और उत्परिवर्तन बनाएं
+- [Auth](/docs/guides/auth) - प्रमाणीकरण प्रवाह
+- [i18n](/docs/guides/i18n) — अंतर्राष्ट्रीयकरण
+- [CSS & JS](/docs/guides/css-js) - स्थिर संपत्ति और बंडलिंग
+- [Real-Time](/docs/guides/websocket) - वेबसॉकेट और एसएसई
+- [Deploy](/docs/guides/deploy) - उत्पादन परिनियोजन

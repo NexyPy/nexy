@@ -1,0 +1,50 @@
+# "@컨트롤러
+
+클래스를 FastAPI 컨트롤러로 표시합니다. 메소드 이름은 HTTP 동사를 정의합니다.
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## 서명
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## 매개변수
+
+| 파람 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `prefix` | `str` | `""` | 이 컨트롤러의 모든 경로에 대한 URL 접두사 |
+| `tags` | `list[str]` | `None` | OpenAPI 태그(기본값은 `[ClassName]`) |
+
+## HTTP 동사
+
+메소드 이름은 대소문자를 구분합니다. 컨트롤러당 동사당 하나의 메서드입니다.
+
+| 메소드 이름 | HTTP 동사 |
+|-------------|------------|
+| `def GET(self)` | 받기 |
+| `def post(self)` | 포스트 |
+| `def Put(self)` | 넣어 |
+| `def delete(self)` | 삭제 |
+| `def patch(self)` | 패치 |
+| `def options(self)` | 옵션 |
+| `def head(self)` | 머리 |
+| `def SOCKET(self)` | 웹소켓 |
+
+모든 핸들러 메소드는 `"/"`에 매핑됩니다. 경로 매개변수는 `"@Controller` 접두사에 들어갑니다.
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

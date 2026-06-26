@@ -1,0 +1,51 @@
+# useRouter
+
+Returns an object with routing context for the current request.
+
+```python
+from nexy import useRouter
+
+router = useRouter()
+```
+
+---
+
+## Return value
+
+`dict` with the following keys:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `path` | `str` | Current URL path |
+| `base_url` | `str` | Base URL of the server |
+| `url_for` | `callable \| None` | FastAPI's `url_for` function for reverse URL lookup |
+
+---
+
+## Example
+
+```nexy
+---
+from nexy import useRouter
+router = useRouter()
+---
+<p>Current path: {{ router.path }}</p>
+<p>Base URL: {{ router.base_url }}</p>
+```
+
+---
+
+## Reverse URL lookup
+
+```python
+router = useRouter()
+if router.url_for:
+    url = router.url_for("read_article", slug="hello-world")
+```
+
+---
+
+## Usage notes
+
+- `url_for` may be `None` outside of request context
+- Uses FastAPI's `request.app.url_for` under the hood

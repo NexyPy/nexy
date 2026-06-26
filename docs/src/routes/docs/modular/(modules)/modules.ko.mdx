@@ -1,0 +1,193 @@
+# 모듈
+
+모듈은 관련 컨트롤러, 공급자 및 하위 모듈을 응집력 있는 단위로 그룹화합니다. 모든 모듈식 앱에는 기능 모듈을 가져오는 루트 모듈이 있습니다.
+
+## 왜 모듈인가?
+
+모듈이 없으면 모든 컨트롤러와 공급자를 하나의 단순 목록에 등록하게 됩니다. 앱이 성장함에 따라 그 목록은 관리하기 어려워집니다. 명확한 소유권이 없는 50개의 공급자입니다.
+
+모듈은 경계를 복원합니다. `UsersModule`는 `UsersController` 및 `UserService`를 소유합니다. 각 모듈은 독립된 단위입니다.
+
+## 루트 모듈
+
+모든 앱에는 하나의 루트 모듈이 필요합니다. 루트 모듈은 `nexyconfig.py`에서 참조됩니다.
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+`"@Module` 데코레이터는 클래스에서 FastAPI `APIRouter`를 빌드합니다. 세 가지 클래스 속성을 읽습니다.
+
+| 속성 | 유형 | 설명 |
+|------------|------|-------------|
+| `controllers` | `list[type]` | 등록할 컨트롤러 클래스 |
+| `imports` | `list[APIRouter]` | 포함할 하위 모듈(`"@Module`부터) |
+| `providers` | `list[type]` | 컨테이너에 등록할 주입 가능한 클래스 |
+| `exports` | `list[type]` | 모듈을 가져오는 데 표시되는 공급자 |
+
+**알겠습니다**: `"@Module()`에는 컨트롤러가 하나 이상 필요합니다. 빈 `controllers` 목록은 `ValueError`를 발생시킵니다.
+
+## 기능 모듈
+
+기능 모듈은 도메인을 캡슐화합니다.
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+루트 모듈에서 가져옵니다.
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### 모듈 접두어
+
+모듈의 모든 경로에 적용되는 접두사를 설정합니다.
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+컨트롤러 접두사는 모듈 접두사와 관련이 있습니다. `"@Module(prefix="/users")` 및 `"@Controller("/{id}")`인 경우 유효 경로는 `/users/{id}`입니다.
+
+## 공급자 등록
+
+주입에 사용할 수 있으려면 공급자를 모듈에 등록해야 합니다.
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+`DatabaseService`는 모듈이 로드될 때 시작 시 해결됩니다. 공급자의 종속성을 해결할 수 없는 경우 요청 시점이 아닌 즉시 오류가 발생합니다.
+
+### 수출
+
+`exports` 속성은 모듈 가져오기에 표시되는 공급자를 제어합니다.
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+`exports`가 없으면 가져오는 모듈에 공급자가 표시되지 않습니다. 이는 의도적인 것입니다. 즉, 모듈의 공개 API를 명시적으로 선언해야 합니다.
+
+## 공유 모듈
+
+모듈은 싱글톤입니다. 여러 위치에서 동일한 모듈을 가져오면 동일한 공급자 인스턴스를 공유합니다.
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+이것이 앱 전체에서 데이터베이스 연결을 공유하는 방법입니다.
+
+## 프로젝트 구조
+
+일반적인 모듈식 프로젝트는 다음 규칙을 따릅니다.
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+이 구조는 수백 개의 모듈로 확장됩니다. 각 모듈 디렉터리는 독립적입니다.
+
+## 모듈 해상도
+
+모듈 확인은 세 가지 규칙을 따릅니다.
+
+1. **토폴로지 정렬** — 모듈은 종속성 순서로 초기화됩니다(가져오기 먼저).
+2. **순환 감지** — 모듈 간의 순환 종속성은 시작 시 `RecursionError`를 증가시킵니다.
+3. **제공자 범위** — 제공자는 어떤 모듈을 가져오든 관계없이 원래 범위를 유지합니다.
+
+모듈 A가 모듈 B를 가져오고 모듈 B가 모듈 A를 가져오는 경우 컨테이너는 시작 시 주기를 감지합니다.
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**중요한 이유**: 순환 종속성은 종종 디자인 문제를 나타냅니다. 공유 종속성을 세 번째 모듈로 추출합니다.
+
+## 모범 사례
+
+1. **모듈당 하나의 기능** — 사용자, 인증, 청구. "유틸리티"가 아닙니다.
+2. **모듈 가져오기를 얕게 유지** — 10개 이상의 다른 모듈을 가져오는 모듈이 너무 많은 작업을 수행합니다.
+3. **`exports`를 의도적으로 사용** — 다른 모듈에 실제로 필요한 것만 내보냅니다.
+4. **도메인 뒤에 모듈 이름 지정** — `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **버전 관리 시 항상 `prefix`를 제공하세요** — `"@Module(prefix="/api/v1")`
+
+## 다음 단계
+
+- [Guards](/docs/modular/guards) — 모듈 경로 보호
+- [Middleware](/docs/modular/middleware) — 파이프라인 후크 요청
+- [Controllers](/docs/modular/controllers) — 경로 핸들러 정의

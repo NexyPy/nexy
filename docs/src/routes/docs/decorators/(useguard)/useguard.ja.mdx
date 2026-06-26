@@ -1,0 +1,76 @@
+# "@UseGuard
+
+ガード呼び出し可能オブジェクトをコントローラー クラスまたは個々のハンドラー メソッドに適用します。
+
+## ガード契約
+
+ガードは、`__call__(self, request)` で呼び出すことができます。 FastAPI `Request` オブジェクトを受け取ります。ブロックするには `HTTPException` を上げ、許可するには `None` を返します。
+```python
+from fastapi import HTTPException
+
+class RoleGuard:
+    def __init__(self, role: str):
+        self.role = role
+
+    def __call__(self, request) -> None:
+        if request.user.role != self.role:
+            raise HTTPException(403)
+```
+---
+
+## ルート上のガード
+```python
+---
+from nexy.decorators import UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import UseGuard, Controller
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@Controller("/users")
+"@UseGuard(AuthGuard())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+
+    "@UseGuard(AdminGuard())
+    def delete(self, user_id: int) -> dict:
+        ...
+```
+## 複数のガード
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+＃＃ サイン
+```python
+UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## 注文
+
+クラス レベルのガードはメソッド レベルのガードより前に実行されます。すべて FastAPI `Depends` として実行されます。

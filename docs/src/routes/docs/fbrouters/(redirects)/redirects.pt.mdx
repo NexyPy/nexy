@@ -1,0 +1,49 @@
+# Redirecionamentos (FBR)
+
+Redirecione solicitações recebidas para outros URLs usando `RedirectResponse` do FastAPI.
+
+## Redirecionamento básico
+
+```python
+# src/routes/redirect.py
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+```
+
+## Com código de status
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/new-page", status_code=301)
+```
+
+## Redirecionamento condicional
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+```
+
+## Referência do código de status
+
+| Código | Nome | Caso de uso |
+|------|------|----------|
+| 301 | Movido permanentemente | Alteração permanente de URL |
+| 302 | Encontrado (padrão) | Redirecionamento temporário |
+| 307 | Redirecionamento temporário | Preserva o método HTTP |
+| 308 | Redirecionamento Permanente | Preserva o método HTTP |
+
+## Padrões comuns
+
+- Redirecionamento de autenticação: usuários não autenticados → `/login`
+- URLs legados: caminhos antigos → novos caminhos (301)
+- Redirecionamento pós-envio: após o formulário POST → página de sucesso (303)
+- Redirecionamento de localidade: `/` → `/{locale}/` com base no idioma do navegador

@@ -1,0 +1,61 @@
+# 在代理后面
+
+在 Nginx、Caddy、Cloudflare 或负载均衡器后面运行时，将 Nexy 配置为信任转发的标头。
+
+## 转发的标头
+
+```python
+# nexyconfig.py
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTrustedHost = {
+        "allowed_hosts": ["*"],
+    }
+```
+
+## 独角兽
+
+当使用 `nx start` 或直接使用 uvicorn 运行时，传递 `--proxy-headers` 标志：
+
+```bash
+nx start --proxy-headers
+
+# or
+uvicorn nexy.app:app --proxy-headers --forwarded-allow-ips="*"
+```
+
+## 根路径
+
+如果您的应用程序安装在子路径（例如，`https://example.com/myapp/`):
+
+```python
+# nexyconfig.py
+from nexy import app
+
+app.root_path = "/myapp"
+```
+
+## Nginx 示例
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## 效果
+
+正确配置后：
+- `request.url` 反映原始 URL，而不是内部 URL
+- 重定向使用正确的方案 (https)
+- 速率限制和客户端IP检测使用真实客户端IP
+- OpenAPI 文档 URL 已正确生成

@@ -1,7 +1,7 @@
 ---
-from "@/components/card.nexy" import Card
-from "@/components/link.nexy" import Link
-from "@/components/background.nexy" import Background
+from "@components/card.nexy" import Card
+from "@components/link.nexy" import Link
+from "@components/background.nexy" import Background
 from "./heroright.mdx" import Heroright
 
 ---

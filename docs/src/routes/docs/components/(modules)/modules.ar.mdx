@@ -1,0 +1,100 @@
+#نظام الوحدة
+
+يتيح لك نظام وحدة Nexy استيراد المكونات وتصديرها عبر مشروعك.
+
+---
+
+## استيراد مكون
+
+استخدم بناء الجملة `import` في المادة الأمامية:
+
+```python
+---
+from "@components/card.nexy" import Card
+from "@components/button.nexy" import Button
+---
+```
+
+يتحول الاسم المستعار `"@` إلى `src/` (قابل للتكوين في `nexyconfig.py`).
+
+---
+
+## الصادرات المسماة
+
+افتراضيًا، يقوم الملف `.nexy` بتصدير القالب الخاص به كمكون مسمى باسم الملف:
+
+| ملف | اسم التصدير |
+|---|---|
+| `card.nexy` | `Card` |
+| `button.nexy` | `Button` |
+| `table_of_contents.nexy` | `Table_of_contents` |
+
+---
+
+## فتحة (الأطفال)
+
+يعرض المكون `Slot` المحتوى الفرعي الذي تم تمريره بين علامات الفتح/الإغلاق:
+
+```nexy
+<div class="card">
+    <h2>{{ title }}</h2>
+    <Slot />
+</div>
+```
+
+الاستخدام:
+
+```html
+<Card title="Hello">
+    <p>This goes into the Slot.</p>
+</Card>
+```
+
+---
+
+## استيراد الأسماء المستعارة
+
+استخدم `as` لتجنب تعارض الأسماء:
+
+```python
+---
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+---
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+---
+
+## إعادة التصدير
+
+قم بإنشاء ملف فهرس يجمع المكونات:
+
+```python
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+يتم استيراد الملفات الأخرى من هذا البرميل:
+
+```python
+---
+from "@components/index.nexy" import Card, Button
+---
+```
+
+-----
+
+## الواردات الديناميكية
+
+بالنسبة لأطر العمل من جانب العميل (React وSolid)، يقوم Nexy بإنشاء شجرة الاستيراد تلقائيًا أثناء الإنشاء. لا تحتاج إلى إدارة نقاط الإدخال يدويًا - يكتشف المترجم استخدام `.tsx`/`.jsx` ويقوم بتوصيل Vite أو esbuild وفقًا لذلك.
+

@@ -1,0 +1,38 @@
+# Statische Dateien
+
+Nexy stellt statische Dateien aus dem Verzeichnis `public/` im Stammverzeichnis Ihres Projekts bereit.
+
+## Wie es funktioniert
+
+Jede in `public/` platzierte Datei wird im Stamm-URL-Pfad bereitgestellt:
+
+```text
+public/
+├── logo.svg           →  /logo.svg
+├── images/
+│   └── hero.jpg       →  /images/hero.jpg
+├── fonts/
+│   └── inter.woff2    →  /fonts/inter.woff2
+└── robots.txt         →  /robots.txt
+```
+
+Keine Konfiguration erforderlich. Dateien in `public/` werden automatisch bereitgestellt.
+
+## Assets-Verzeichnis
+
+Für kompilierte Assets (CSS, JS von Vite) verwenden Sie das Verzeichnis `assets/` oder konfigurieren Sie die Ausgabe in `vite.config.ts`. Nexy mountet diese bei `/assets/`.
+
+## Referenzierung statischer Dateien
+
+In `.nexy`-Vorlagen:
+
+```nexy
+<img src="/logo.svg" alt="Logo" />
+<link rel="stylesheet" href="/styles/global.css" />
+```
+
+In Python-Frontmatter- oder Route-Handlern sind Pfade relativ zum Projektstamm.
+
+## Produktion
+
+Während `nx build` wird das Verzeichnis `public/` nach `__nexy__/public/` kopiert. Ihr Produktionsserver stellt diese Dateien direkt bereit – keine Kompilierung erforderlich.

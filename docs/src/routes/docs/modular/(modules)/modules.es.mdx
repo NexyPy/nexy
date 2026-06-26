@@ -1,0 +1,193 @@
+# Módulos
+
+Los módulos agrupan controladores, proveedores y submódulos relacionados en una unidad cohesiva. Cada aplicación modular tiene un módulo raíz que importa módulos de funciones.
+
+## ¿Por qué módulos?
+
+Sin módulos, registraría todos los controladores y proveedores en una lista plana. A medida que la aplicación crece, esa lista se vuelve inmanejable: 50 proveedores sin un propietario claro.
+
+Los módulos restauran los límites: `UsersModule` posee `UsersController` y `UserService`. Cada módulo es una unidad autónoma.
+
+## Módulo raíz
+
+Cada aplicación necesita un módulo raíz. Se hace referencia al módulo raíz en `nexyconfig.py`:
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+El decorador `"@Module` crea una FastAPI `APIRouter` a partir de la clase. Lee tres atributos de clase:
+
+| Atributo | Tipo | Descripción |
+|-----------|------|-------------|
+| `controllers` | `list[type]` | Clases de controlador para registrarse |
+| `imports` | `list[APIRouter]` | Submódulos (de `"@Module`) para incluir |
+| `providers` | `list[type]` | Clases de inyectables para registrarse en el contenedor |
+| `exports` | `list[type]` | Proveedores visibles para importar módulos |
+
+**Te tengo**: `"@Module()` requiere al menos un controlador. Una lista `controllers` vacía genera `ValueError`.
+
+## Módulos de funciones
+
+Los módulos de funciones encapsulan un dominio:
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+Importarlo en el módulo raíz:
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### Prefijo del módulo
+
+Establezca un prefijo que se aplique a todas las rutas del módulo:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+Los prefijos del controlador son RELATIVOS al prefijo del módulo. Si `"@Module(prefix="/users")` y `"@Controller("/{id}")`, la ruta efectiva es `/users/{id}`.
+
+## Registro de proveedor
+
+Los proveedores deben estar registrados en un módulo para estar disponibles para inyección:
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+El `DatabaseService` se resuelve al inicio cuando se carga el módulo. Si las dependencias de un proveedor no se pueden resolver, el error se genera inmediatamente, no en el momento de la solicitud.
+
+### Exportaciones
+
+El atributo `exports` controla qué proveedores son visibles para los módulos de importación:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+Sin `exports`, NINGÚN proveedor es visible para los módulos de importación. Esto es intencional: te obliga a declarar explícitamente la API pública de tu módulo.
+
+## Módulos compartidos
+
+Los módulos son únicos. Importar el mismo módulo en varios lugares comparte las mismas instancias de proveedor:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+Así es como compartes una conexión de base de datos en tu aplicación.
+
+## Estructura del proyecto
+
+Un proyecto modular típico sigue esta convención:
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+Esta estructura se escala a cientos de módulos. Cada directorio de módulo es autónomo.
+
+## Resolución del módulo
+
+La resolución del módulo sigue tres reglas:
+
+1. **Clasificación topológica**: los módulos se inicializan en orden de dependencia (las importaciones primero)
+2. **Detección circular**: las dependencias circulares entre módulos aumentan `RecursionError` al inicio
+3. **Alcance del proveedor**: los proveedores conservan su alcance original independientemente del módulo que los importe.
+
+Si el módulo A importa el módulo B y el módulo B importa el módulo A, el contenedor detecta el ciclo al inicio:
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**Por qué esto es importante**: las dependencias circulares a menudo indican un problema de diseño. Extraiga la dependencia compartida en un tercer módulo.
+
+## Mejores prácticas
+
+1. **Una función por módulo**: usuarios, autenticación, facturación. No "utilidades".
+2. **Mantenga las importaciones de módulos superficiales**: un módulo que importa más de 10 módulos más está haciendo demasiado
+3. **Utilice `exports` intencionalmente**: exporte solo lo que otros módulos realmente necesitan
+4. **Nombrar módulos después de dominios** — `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Proporcione siempre un `prefix` al realizar versiones** — `"@Module(prefix="/api/v1")`
+
+## Próximos pasos
+
+- [Guards](/docs/modular/guards) — protege las rutas del módulo
+- [Middleware](/docs/modular/middleware) — solicitar ganchos de canalización
+- [Controllers](/docs/modular/controllers): define controladores de ruta

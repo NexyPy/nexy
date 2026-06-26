@@ -1,0 +1,129 @@
+# Authentication Walkthrough
+
+This guide builds login, logout, and a protected dashboard from scratch using session-based auth.
+
+## 1. Enable session middleware
+
+In `nexyconfig.py`, enable `useSession` — Starlette's signed cookie sessions:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me-in-production"}
+```
+
+See [Session config](/docs/config/session) for options.
+
+## 2. Auth backend & config
+
+Create a backend that reads the user ID from the session:
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+Add it to config:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+See [Authentication reference](/docs/security/authentication) for more backend types (token, JWT).
+
+## 3. Login page
+
+```nexy
+# src/routes/login.nexy
+---
+from nexy import useSession
+from src.db import authenticate_user
+
+def POST(username: str, password: str):
+    user = authenticate_user(username, password)
+    if not user:
+        return {"error": "Invalid credentials"}
+    session = useSession()
+    session["user_id"] = user.id
+    return Redirect("/dashboard")
+---
+<form method="POST">
+  <input name="username" placeholder="Username">
+  <input name="password" type="password" placeholder="Password">
+  <button>Sign in</button>
+</form>
+```
+
+## 4. Protected dashboard
+
+Protect the dashboard with a guard — returns `{"user": ...}` if authenticated, 401 otherwise:
+
+```nexy
+# src/routes/dashboard.nexy
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+<h1>Dashboard</h1>
+<p>Welcome, {{ user }}!</p>
+```
+
+See [Authorization](/docs/security/authorization) for writing custom guards and ["@UseGuard reference](/docs/decorators/useguard).
+
+## 5. Logout
+
+Clear the session to sign out:
+
+```nexy
+# src/routes/logout.nexy
+---
+from nexy import useSession
+
+def POST():
+    session = useSession()
+    session.clear()
+    return Redirect("/login")
+---
+```
+
+## 6. Conditional UI in templates
+
+Check the session directly in any `.nexy` template:
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+---
+<header>
+  {% if session.get("user_id") %}
+    <a href="/dashboard">Dashboard</a>
+    <form method="POST" action="/logout">
+      <button>Sign out</button>
+    </form>
+  {% else %}
+    <a href="/login">Sign in</a>
+  {% endif %}
+</header>
+```
+
+See [useSession hook](/docs/hooks/useSession).
+
+## What's next?
+
+- [Authentication reference](/docs/security/authentication) — auth backends, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) — custom guards, scopes
+- [JWT](/docs/security/jwt) — token-based auth
+- [Session config](/docs/config/session)

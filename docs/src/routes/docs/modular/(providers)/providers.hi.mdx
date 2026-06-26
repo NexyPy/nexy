@@ -1,0 +1,207 @@
+# प्रदाता और निर्भरता इंजेक्शन
+
+प्रदाता व्यावसायिक तर्क, डेटा पहुंच, या बाहरी एकीकरण को समाहित करते हैं। वे `"@Injectable()` से सजाए गए हैं और कंस्ट्रक्टर पैरामीटर के माध्यम से स्वचालित रूप से नियंत्रकों (या अन्य प्रदाताओं) में इंजेक्ट किए जाते हैं।
+
+## प्रदाता क्यों?
+
+DI के बिना, प्रत्येक नियंत्रक मैन्युअल रूप से अपनी निर्भरताएँ बनाता है:
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+DI के साथ, कंटेनर निर्भरता को तुरंत चालू करता है और उन्हें इंजेक्ट करता है:
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+लाभ: परीक्षण योग्यता (परीक्षणों में नकली `UserService`), सिंगलटन शेयरिंग (नियंत्रकों में एक ही उदाहरण), स्कोप नियंत्रण (जरूरत पड़ने पर प्रति अनुरोध नया)।
+
+## एक प्रदाता बनाना
+
+किसी भी कक्षा को `"@Injectable()` से सजाएँ:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+`"@Injectable()` प्रत्यक्ष इंस्टेंटेशन को रोकता है - DI के बाहर `UserService()` को कॉल करने से `TypeError` बढ़ जाता है। यह आपको कंटेनर का उपयोग करने के लिए मजबूर करता है, जो सुनिश्चित करता है कि दायरे और निर्भरताएं सही ढंग से हल हो गई हैं।
+
+## एक नियंत्रक में इंजेक्शन लगाना
+
+प्रकार संकेत के साथ निर्भरता को कंस्ट्रक्टर पैरामीटर के रूप में घोषित करें:
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+DI कंटेनर एक पंजीकृत प्रदाता के प्रकार संकेत (`UserService`) से मेल खाता है। यदि कोई प्रदाता मेल नहीं खाता है, तो यह स्टार्टअप पर `ValueError` बढ़ा देता है।
+
+**समझ गया**: कंस्ट्रक्टर पैरामीटर नाम मायने नहीं रखते - केवल प्रकार के संकेत मायने रखते हैं। `service: UserService` और `s: UserService` दोनों एक ही प्रदाता को हल करते हैं।
+
+## प्रदाताओं को अन्य प्रदाताओं में इंजेक्ट करना
+
+प्रदाता अन्य प्रदाताओं पर निर्भर हो सकते हैं - कंटेनर पूर्ण ट्री का समाधान करता है:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+सर्कुलर निर्भरताएँ (`A → B → A`) स्टार्टअप पर `RecursionError` बढ़ाती हैं। किसी तीसरे प्रदाता में साझा तर्क निकालने के लिए रिफैक्टर।
+
+## इंजेक्शन के दायरे
+
+कार्यक्षेत्र नियंत्रण प्रदाता जीवनकाल:
+
+| दायरा | जीवनकाल | केस का प्रयोग करें |
+|-------|----------|----------|
+| `Scope.SINGLETON` (डिफ़ॉल्ट) | संपूर्ण ऐप के लिए एक उदाहरण | डेटाबेस कनेक्शन, कॉन्फ़िगरेशन, कैश |
+| `Scope.REQUEST` | प्रति HTTP अनुरोध नया उदाहरण | प्रति-अनुरोध स्थिति, ऑडिट लॉग |
+| `Scope.TRANSIENT` | हर इंजेक्शन का नया उदाहरण | स्टेटलेस उपयोगिताएँ, शुद्ध कार्य |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`** डिफ़ॉल्ट और सबसे सुरक्षित विकल्प है। **`Scope.REQUEST`** का उपयोग केवल तभी करें जब आपको प्रति-अनुरोध स्थिति की आवश्यकता हो (उदाहरण के लिए, वर्तमान उपयोगकर्ता को गार्ड से संग्रहीत करना)। Use **`Scope.TRANSIENT`** when the provider has mutable state that shouldn't be shared.
+
+**समझ गया**: एक सिंगलटन प्रदाता में इंजेक्ट किए गए क्षणिक प्रदाता प्रभावी रूप से सिंगलटन बन जाते हैं - जब सिंगलटन का पहली बार समाधान किया जाता है तो वे एक बार बनाए जाते हैं। यदि आपको प्रति अनुरोध एक ताज़ा क्षणिक की आवश्यकता है, तो इसके बजाय इसे अनुरोध-दायरे वाले प्रदाता में इंजेक्ट करें।
+
+## `useValue` और `useFactory` के साथ कस्टम प्रदाता
+
+गैर-वर्ग निर्भरताओं (स्ट्रिंग्स, कॉन्फ़िगरेशन, लैम्ब्डा) के लिए, मॉड्यूल में तानाशाही सिंटैक्स का उपयोग करें:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+प्रदाताओं को सीधे मॉड्यूल की `providers` सूची में पंजीकृत करें:
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+प्रकार संकेत द्वारा इंजेक्ट करें:
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## वैकल्पिक निर्भरताएँ
+
+वैकल्पिक इंजेक्शन के लिए डिफ़ॉल्ट मान के रूप में `None` का उपयोग करें:
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+यदि `Logger` किसी मॉड्यूल में पंजीकृत नहीं है, तो कंटेनर इसे छोड़ देता है और `None` पास कर देता है। यह लॉगिंग या मेट्रिक्स जैसी वैकल्पिक सुविधाओं के लिए उपयोगी है जो कॉन्फ़िगर न होने पर क्रैश नहीं होनी चाहिए।
+
+## प्रदाताओं के साथ परीक्षण
+
+DI परीक्षण को सरल बनाता है - नियंत्रक को मॉक के साथ इंस्टेंट करें:
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+सर्वर प्रारंभ करने या पूर्ण DI कंटेनर सेट करने की कोई आवश्यकता नहीं है। यह कंस्ट्रक्टर इंजेक्शन का मुख्य लाभ है - शुद्ध इकाई परीक्षण।
+
+## सर्वोत्तम प्रथाएँ
+
+1. **कन्स्ट्रक्टर इंजेक्शन को प्राथमिकता दें** - `Container.resolve()` को मैन्युअल रूप से कॉल करना दुर्लभ है; कंटेनर को स्वचालित रूप से इंजेक्ट करने दें।
+2. **प्रदाताओं को स्टेटलेस रखें** (सिंगलटन स्कोप) - राज्य डेटाबेस या अनुरोध-स्कोप वाले प्रदाताओं से संबंधित है।
+3. **प्रति प्रदाता एक जिम्मेदारी** - `UserService` उपयोगकर्ताओं को संभालता है, `EmailService` ईमेल को संभालता है।
+4. **मॉड्यूल की `providers` सूची में सभी प्रदाताओं को स्पष्ट रूप से पंजीकृत करें** - स्पष्ट पंजीकरण स्व-दस्तावेजीकरण हैं।
+5. **`Scope.REQUEST` का संयम से उपयोग करें** - प्रत्येक अनुरोध-दायरे वाला प्रदाता आवंटन ओवरहेड जोड़ता है।
+
+## अगले चरण
+
+- [Modules](/docs/modular/modules) - प्रदाताओं को फीचर मॉड्यूल में व्यवस्थित करें
+- [Guards](/docs/modular/guards) - प्रमाणीकरण और प्राधिकरण जोड़ें
+- [Middleware](/docs/modular/middleware) - नियंत्रकों तक पहुंचने से पहले अनुरोधों को रोकें

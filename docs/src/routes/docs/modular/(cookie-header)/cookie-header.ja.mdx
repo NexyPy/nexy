@@ -1,0 +1,69 @@
+# Cookie とヘッダー (モジュール式)
+
+コントローラーで FastAPI の `Cookie` および `Header` を使用して、HTTP Cookie とヘッダーを読み取ります。
+
+## クッキーパラメータ
+
+```python
+from nexy.decorators import Controller
+from fastapi import Cookie
+
+"@Controller("/profile")
+class ProfileController:
+    def GET(self, session_id: str | None = Cookie(None)):
+        return {"session_id": session_id}
+```
+
+## 複数の Cookie
+
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/settings")
+class SettingsController:
+    def GET(self, session_id: str | None = Cookie(None), theme: str = Cookie("light")):
+        return {"session": session_id, "theme": theme}
+```
+
+## ヘッダーパラメータ
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/info")
+class InfoController:
+    def GET(self, user_agent: str | None = Header(None)):
+        return {"ua": user_agent}
+```
+
+## カスタムヘッダーエイリアス
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/secure")
+class SecureController:
+    def GET(self, x_token: str = Header(alias="X-Token")):
+        return {"token": x_token}
+```
+
+デフォルトでは、ヘッダー名は小文字でハイフンがアンダースコアとして使用されます。カスタム名には `alias` を使用します。
+
+## テンプレート内の Cookie の読み取り
+
+`.nexy` テンプレートでは、`useCookies()` フックを使用します。
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+
+---
+
+関連項目: [useCookies hook](/docs/hooks/useCookies)、[Session config](/docs/config/session)

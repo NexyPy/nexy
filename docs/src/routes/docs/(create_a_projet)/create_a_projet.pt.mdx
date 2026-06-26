@@ -1,0 +1,123 @@
+# Início rápido
+
+Crie um projeto Nexy em segundos – não é necessária instalação global.
+
+## Pré-requisitos
+
+- **Python 3.11+**
+- **[uv](https://docs.astral.sh/uv/)** (gerenciador de pacotes)
+- **Node.js 18+** (para componentes do cliente e Tailwind CSS)
+
+## Crie um projeto
+
+```bash
+uvx nexy new
+```
+
+Ou especifique um nome diretamente:
+
+```bash
+uvx nexy new my-app
+```
+
+`uvx` baixa e executa o Nexy instantaneamente – nada para instalar globalmente.
+
+## Prompts interativos
+
+Depois de executar o comando, Nexy orienta você na configuração do projeto:
+
+### 1. Roteador
+
+```text
+
+» Use file-based router? (Y/n)
+```
+
+- **Sim** — Roteamento baseado em arquivo (FBR): as páginas são arquivos em `routes/`
+- **Não** — Roteamento Modular: controladores e módulos com decoradores
+
+### 2. Tipo de projeto
+
+```text
+
+» Choose the type of project
+
+  ʋ Web (monolith web app)
+
+    API (RESTful API)
+```
+
+### 3. Estrutura do cliente (somente Web)
+
+```text
+
+» Use a client component? (Y/n)
+```
+
+Se sim:
+
+```text
+
+» Choose the client framework
+
+  ʋ React
+
+    Vue
+
+    Svelte
+
+    Solid
+
+    Preact
+
+    None
+```
+
+Tailwind CSS é configurado automaticamente quando uma estrutura de cliente é selecionada.
+
+### 4. ORM e banco de dados
+
+```text
+
+» Choose an ORM
+
+  ʋ SQLModel
+
+    SQLAlchemy
+
+    Tortoise-ORM
+
+    None
+```
+
+Se um ORM for selecionado:
+
+```text
+
+» Choose database
+
+  ʋ SQLite
+
+    PostgreSQL
+
+    MySQL
+
+» Database URL (sqlite:///dev.db)
+```
+
+## Inicie o servidor de desenvolvimento
+
+```bash
+cd my-app
+
+nexy dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000) para ver seu aplicativo.
+
+##Próximas etapas
+
+Seu projeto está pronto. Vá para [Project Structure](/docs/projet_structure) para entender o layout ou vá direto para a construção:
+
+- [Your First Page](/docs/fbrouters/pages) — Roteamento baseado em arquivo
+- [Your First Controller](/docs/modular/controllers) — Roteamento Modular

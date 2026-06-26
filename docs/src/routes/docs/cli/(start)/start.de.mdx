@@ -1,0 +1,46 @@
+# nx start
+
+Führt den Produktionsserver mit der kompilierten Ausgabe von `nx build` aus.
+
+```bash
+nx start
+```
+
+---
+
+## Was es tut
+
+Startet einen **uvicorn**-Server, der die kompilierte FastAPI-App von `__nexy__/` aus bereitstellt. Kein automatisches Neuladen, kein Vite-Entwicklungsserver – nur Produktion.
+
+---
+
+## Optionen
+
+| Flagge | Standard | Beschreibung |
+|------|---------|-------------|
+| `--port` | `3000` | Server-Port |
+| `--host` | `127.0.0.1` | Serverbindungsadresse |
+
+---
+
+## Umgebungsvariablen
+
+| Variable | Standard | Beschreibung |
+|----------|---------|-------------|
+| `NEXY_PORT` | `3000` | Server-Port |
+| `NEXY_HOST` | `127.0.0.1` | Adresse binden |
+| `NEXY_DEBUG` | `false` | Debug-Modus aktivieren |
+---
+
+## Beispiel
+
+```bash
+# Production with custom host/port
+nx start --host 0.0.0.0 --port 8080
+```
+
+---
+
+## Alias
+
+`nx s`

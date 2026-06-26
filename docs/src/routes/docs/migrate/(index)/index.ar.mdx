@@ -1,0 +1,11 @@
+# الهجرة إلى Nexy
+
+قم بترحيل تطبيقاتك الحالية إلى Nexy من أطر عمل أخرى. يغطي كل دليل الاختلافات الرئيسية، ورسم خرائط هيكل المشروع، والترحيل خطوة بخطوة.
+
+## الأدلة المتاحة
+
+- [FastAPI](/docs/migrate/fastapi) — من FastAPI إلى Nexy
+- [Django](/docs/migrate/django) — من Django إلى Nexy
+- [NestJS](/docs/migrate/nestjs) — من NestJS إلى Nexy
+- [Flask](/docs/migrate/flask) — من Flask إلى Nexy
+- [Next.js](/docs/migrate/nextjs) — من Next.js إلى Nexy

@@ -1,0 +1,65 @@
+# usar vistas
+
+Representa una plantilla de vista (`.nexy`, `.mdx` o componente de interfaz) con un contexto determinado y devuelve un `HTMLResponse`.
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## Parámetros
+
+| Parámetro | Tipo | Predeterminado | Descripción |
+|-----------|------|---------|-------------|
+| `path` | `str` | requerido | Ruta al archivo de visualización (relativa al proyecto) |
+| `context` | `dict \| None` | `None` | Variables para pasar a la plantilla |
+
+---
+
+## Valor de retorno
+
+`HTMLResponse`: el HTML renderizado con recursos de Vite inyectados.
+
+---
+
+## Ejemplo
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## Componentes de la interfaz
+
+Para las vistas `.tsx`, `.vue`, `.svelte` y `.jsx`, `useViews` devuelve un contenedor hidratable:
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+El contenedor incluye atributos `data-nexy-fw`, `data-nexy-path` y `data-nexy-props` para la hidratación del lado del cliente.
+
+---
+
+## Extensiones compatibles
+
+| Ampliación | Comportamiento |
+|-----------|----------|
+| `.nexy` | Plantilla compilada → HTML renderizado |
+| `.mdx` | Markdown + componentes → HTML renderizado |
+| `.tsx` | Contenedor hidratable (React/Solid/Preact) |
+| `.vue` | Contenedor hidratable |
+| `.svelte` | Contenedor hidratable |
+| `.jsx` | Contenedor hidratable |

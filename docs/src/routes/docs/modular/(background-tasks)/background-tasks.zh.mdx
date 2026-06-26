@@ -1,0 +1,69 @@
+# 后台任务（模块化）
+
+在控制器中发送响应*之后*运行代码。
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## 单任务
+
+```python
+from nexy.decorators import Controller
+from fastapi import BackgroundTasks
+
+def send_email(email: str, body: str):
+    ...
+
+"@Controller("/contact")
+class ContactController:
+    def post(self, data: ContactForm, tasks: BackgroundTasks):
+        tasks.add_task(send_email, data.email, "Thanks!")
+        return {"status": "sent"}
+```
+
+## 多个任务
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def get(self, tasks: BackgroundTasks):
+        tasks.add_task(log_visit)
+        tasks.add_task(notify_admin)
+        tasks.add_task(warm_cache)
+        return {"ok": True}
+```
+
+## DI 任务
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller, Injectable
+from src.db import Database
+
+"@Injectable()
+class Logger:
+    def write(self, msg: str):
+        ...
+
+"@Controller("/logs")
+class LogController:
+    def __init__(self, logger: Logger, tasks: BackgroundTasks):
+        self.logger = logger
+        self.tasks = tasks
+
+    def post(self):
+        self.tasks.add_task(self.logger.write, "action logged")
+        return {"ok": True}
+```
+
+## 重要
+
+- 任务在发送响应后**运行 - 客户端不等待
+- 它们在同一个进程中运行 - 长任务会阻塞事件循环
+- 对于繁重的工作，使用任务队列（Celery、ARQ、RQ 等）
+- 任务中的错误会被悄悄吞掉——在任务函数中添加 try/ except
+- 任务接收可变对象的**副本**——突变不会影响响应

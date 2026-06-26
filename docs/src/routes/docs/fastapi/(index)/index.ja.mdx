@@ -1,0 +1,61 @@
+# Nexy の FastAPI
+
+Nexy は **FastAPI** と **Starlette** に基づいて構築されています。すべての FastAPI 機能は Nexy で利用できます。ラッパーや抽象化は必要ありません。 `fastapi` から直接インポートします。
+
+## 利用可能なもの
+
+|特集 |インポート |で働く |
+|----------|----------|----------|
+|リクエスト本文 (Pydantic) | `from pydantic import BaseModel` |両方 |
+|パスパラメータ | `from fastapi import Path` |両方 |
+|クエリパラメータ | `from fastapi import Query` |両方 |
+|クッキーパラメータ | `from fastapi import Cookie` |両方 |
+|ヘッダーパラメータ | `from fastapi import Header` |両方 |
+|フォームデータ | `from fastapi import Form` |両方 |
+|ファイルのアップロード | `from fastapi import File, UploadFile` |両方 |
+|依存関係 | `from fastapi import Depends` |両方 |
+|バックグラウンドタスク | `from fastapi import BackgroundTasks` |両方 |
+| HTTP エラー | `from fastapi import HTTPException` |両方 |
+|ステータスコード | `from fastapi import status` |両方 |
+|ウェブソケット | `from fastapi import WebSocket` |両方 |
+|リクエスト | `from fastapi import Request` |両方 |
+|回答 | `from fastapi.responses import ...` |両方 |
+|ミドルウェア | `from starlette.middleware import Middleware` |両方 |
+|コルス | `from fastapi.middleware.cors import CORSMiddleware` |両方 |
+| APIルーター | `from fastapi import APIRouter` |モジュラーのみ |
+|テストクライアント | `from fastapi.testclient import TestClient` |両方 |
+
+---
+
+## 基本ルート
+```python
+# src/routes/users/[id].nexy
+---
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+def POST(body: CreateUser):
+    return {"name": body.name}
+---
+```
+```python
+from nexy.decorators import Controller
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"name": body.name}
+```
+## Nexy は何を追加しますか?
+
+Nexy は、ファイルベースのルーティング、`.nexy` コンポーネント、モジュラー DI、フロントエンド フレームワーク統合を使用して FastAPI をラップします。ただし、**FastAPI を隠すことはありません** — `nexy.app` は FastAPI `APIRouter` であり、構成はすべての Starlette ミドルウェアを公開し、すべての FastAPI 依存関係/応答/例外は変更されずに動作します。

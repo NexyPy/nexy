@@ -1,0 +1,76 @@
+# 오류 처리
+
+Nexy는 내장된 404 및 500 오류 페이지를 제공합니다. 사용자 정의 `.nexy` 파일로 재정의하세요.
+
+## 기본 오류 페이지
+
+페이지를 찾을 수 없거나(404) 처리되지 않은 오류가 발생하면(500) Nexy는 간단한 스타일의 HTML 페이지를 반환합니다.
+
+## 사용자 정의 오류 페이지
+
+해당 범위에 대한 오류 페이지를 재정의하려면 경로 디렉터리에 `error.nexy` 또는 `notfound.nexy` 파일을 배치하세요.
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # Custom 404 for /admin/*
+|   +-- error.nexy      # Custom 500 for /admin/*
++-- notfound.nexy       # Global custom 404
++-- error.nexy          # Global custom 500
+```
+
+### 예시: `notfound.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-yellow-500">404</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Page not found</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Sorry, we couldn't find the page you're looking for.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+### 예시: `error.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-red-500">500</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Something went wrong</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Please try again later.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+## 범위가 지정된 오류 페이지
+
+하위 디렉터리에 있는 오류 페이지는 해당 디렉터리 내의 경로에만 적용됩니다. 이를 통해 사이트의 여러 섹션에 대해 서로 다른 오류 페이지를 가질 수 있습니다.
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # /admin/* — "Admin page not found"
++-- blog/
+|   +-- notfound.nexy   # /blog/* — "Blog post not found"
++-- notfound.nexy       # All other routes
+```
+
+## 관련
+
+- [Authorization / Guards](/docs/security/authorization) — 무단 액세스로부터 경로를 보호합니다.
+- [Authentication](/docs/security/authentication) — 인증 미들웨어 구성

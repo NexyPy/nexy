@@ -1,0 +1,68 @@
+# كورس
+
+قم بتكوين مشاركة الموارد عبر الأصل لتطبيق Nexy الخاص بك باستخدام `CORSMiddleware` الخاص بـ Starlette.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## الخيارات المشتركة
+
+| الخيار | اكتب | الافتراضي | الوصف |
+|--------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` | الأصول المسموح بها استخدم `["*"]` للسماح للجميع (التطوير فقط). |
+| `allow_origins_regex` | `str` | `None` | نمط Regex للأصول المسموح بها (على سبيل المثال `"%%U0%%"`). |
+| `allow_methods` | `list[str]` | `["GET"]` | طرق HTTP المسموح بها. `["*"]` يسمح بالجميع. |
+| `allow_headers` | `list[str]` | `[]` | رؤوس الطلبات المسموح بها `["*"]` يسمح بالجميع. |
+| `allow_credentials` | `bool` | `False` | السماح بملفات تعريف الارتباط ورؤوس التفويض. |
+| `expose_headers` | `list[str]` | `[]` | الرؤوس المكشوفة للمتصفح. |
+| `max_age` | `int` | `600` | مدة ذاكرة التخزين المؤقت للاختبار المبدئي بالثواني. |
+
+---
+
+## إعداد التطوير
+
+للتنمية المحلية السماح لجميع الأصول:
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## إعداد الإنتاج
+
+كن صريحًا بشأن الأصول والأساليب:
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+عندما تكون `allow_credentials` هي `True`، لا يمكنك استخدام `"*"` لـ `allow_origins` — أصول القائمة بشكل صريح.
+
+---
+
+## خلف وكيل
+
+إذا كان تطبيقك يعمل خلف وكيل عكسي (nginx، Cloudflare)، فتأكد من تكوين الرؤوس المعاد توجيهها بحيث ترى البرامج الوسيطة لـ CORS المصدر الصحيح.

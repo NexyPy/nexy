@@ -1,0 +1,14 @@
+#Interface de linha de comando
+
+Nexy vem com uma CLI completa. O binário é `nx` (ou `nexy`) e expõe comandos para desenvolvimento, construção, estrutura de projeto e migração.
+
+Cada comando aceita `--help` para uso detalhado.
+
+## Links rápidos
+
+- [dev](/docs/cli/dev) — inicia o servidor de desenvolvimento
+- [start](/docs/cli/start) — servidor de produção
+- [build](/docs/cli/build) — construção de produção
+- [new](/docs/cli/new) — estruturar um novo projeto
+- [init](/docs/cli/init) — inicializa Nexy em um projeto existente
+- [migrate](/docs/cli/migrate) — migrar de outros frameworks

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Form({use=2}:{use:any}) {
+function Form() {
     
     const [name, setName] = useState("");
     

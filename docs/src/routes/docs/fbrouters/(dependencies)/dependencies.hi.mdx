@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# निर्भरता
+
+`src/routes/` के अंदर एक `dependencies.py` फ़ाइल सामान्य फास्टएपीआई निर्भरता एकत्र करती है जो निर्देशिका ट्री में प्रत्येक रूट पर स्वचालित रूप से लागू होती है।
+
+---
+
+## `dependencies = [...]`
+
+कॉलेबल्स को परिभाषित करें और उन्हें मॉड्यूल-स्तर `dependencies` वेरिएबल में सूचीबद्ध करें:
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+केवल `dependencies` में सूचीबद्ध आइटम लागू किए जाते हैं - नंगे कार्यों को नजरअंदाज कर दिया जाता है।
+
+---
+
+## विरासत (विलय, ओवरराइड नहीं)
+
+नेक्सी रूट फ़ाइल से `src/routes/` तक **ऊपर** चलती है और पाई गई प्रत्येक `dependencies` सूची को **विलय** करती है:
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+चाइल्ड `dependencies.py` फ़ाइलें **माता-पिता को ओवरराइड न करें**। सभी सूचियाँ संयुक्त हैं. यदि दोनों में समान निर्भरता नाम दिखाई देता है, तो फास्टएपीआई स्टार्टअप (डुप्लिकेट पैरामीटर) पर `ValueError` बढ़ा देता है।
+
+---
+
+## एक पेज में उपयोग करना
+
+`.nexy` पृष्ठों में, निर्भरताएं रेंडर से पहले स्वचालित रूप से चलती हैं - आपको उन्हें आयात करने या कॉल करने की आवश्यकता नहीं है:
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+हल किए गए मान टेम्प्लेट वेरिएबल के रूप में **नहीं** उपलब्ध हैं। निर्भरताएँ साइड इफेक्ट्स (ऑथ चेक, लॉगिंग, डीबी कनेक्शन सेटअप) के लिए चलती हैं।
+
+`.py` हैंडलर के लिए, निर्भरताएं साइड इफेक्ट के रूप में चलती हैं - उनके रिटर्न मान हैंडलर में **नहीं** इंजेक्ट किए जाते हैं। किसी निर्भरता के मान तक पहुंचने के लिए, फ़ंक्शन हस्ताक्षर में `Depends()` जोड़ें:
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+यदि समान कॉल करने योग्य `dependencies = [...]` और हैंडलर हस्ताक्षर दोनों में सूचीबद्ध है, तो फास्टएपीआई इसे एक बार चलाता है और परिणाम साझा करता है।
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

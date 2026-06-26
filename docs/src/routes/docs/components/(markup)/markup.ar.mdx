@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# كتابة العلامات مع Nexy
+
+تستخدم قوالب Nexy **HTML** + **Jinja2** للمحتوى الديناميكي.
+إذا كنت تعرف HTML وJinja2، فأنت تعرف بالفعل قوالب Nexy.
+
+---
+
+## استيفاء النص
+```html
+<h1>{{ title }}</h1>
+<p>{{ description }}</p>
+```
+تأتي المتغيرات من المادة الأمامية أو من الدعائم.
+
+---
+
+## المرشحات
+
+تقوم مرشحات Jinja2 بتحويل القيم:
+```html
+<p>{{ content | safe }}</p>
+<p>{{ name | upper }}</p>
+<p>{{ price | round(2) }}</p>
+```
+يقوم `| safe` بوضع علامة على السلسلة على أنها HTML آمن (بدون هروب تلقائي).
+
+---
+
+## للحلقات
+```html
+<ul>
+{% for item in items %}
+    <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+##إذا/إلا
+```html
+{% if user %}
+    <p>Welcome, {{ user.name }}!</p>
+{% else %}
+    <a href="/login">Sign in</a>
+{% endif %}
+```
+---
+
+## المكونات في القوالب
+
+يتم استخدام المكونات مثل عناصر HTML:
+```html
+<div class="card">
+    <Card title="Hello">
+        <p>Child content</p>
+    </Card>
+</div>
+```
+يعرض المكون `Slot` الأطفال (انظر الوحدات).
+
+---
+
+## كتل JS الخام
+
+استخدم `{{ '' }}` لحماية `{{ '{{' }}` من تحليل Jinja2 (مطلوب عند تضمين أطر عمل JS):
+```html
+{% raw %}
+<script>
+const data = {{ json_data }};
+</script>
+{% endraw %}
+```
+<Link href="/docs/components/python">Next: Python in template →</Link>

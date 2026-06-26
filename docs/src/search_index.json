@@ -485,7 +485,7 @@
   {
     "id": 69,
     "title": "Modular Router (App Router)",
-    "content": "Modular Router (App Router)\n\nModular Router（位于 src/app/）专为企业级架构设计。它基于控制器、模块和依赖注入系统。\n\n与其他框架不同，Nexy 使用基于类方法的方法来定义路由，而不是像 @Get 这样的每种方法都要用的装饰器。\n\n1. 控制器 (Controllers)\n\n控制器是一个使用 @Controller() 装饰的类。路由由类中对应于 ",
+    "content": "Modular Router (App Router)\n\nModular Router（位于 src/app/）专为企业级架构设计。它基于控制器、模块和依赖注入系统。\n\n与其他框架不同，Nexy 使用基于类方法的方法来定义路由，而不是像 "@Get 这样的每种方法都要用的装饰器。\n\n1. 控制器 (Controllers)\n\n控制器是一个使用 "@Controller() 装饰的类。路由由类中对应于 ",
     "href": "/docs/zh/路由/modular-router/模块与控制器",
     "lang": "zh"
   },
@@ -527,7 +527,7 @@
   {
     "id": 75,
     "title": "API 参考",
-    "content": "API 参考\n\n本页面列出了 Nexy 中可用的所有公共 API、装饰器和实用工具。\n\n装饰器 (nexy.decorators)\n\nNexy 使用类装饰器来构建您的应用程序并管理依赖关系。\n\n@Controller(prefix: str = \"\", tags: List[str] = None)\n定义一个路由控制器。类中以 HTTP 动词（get、post 等）命名的方法或用于 WebSock",
+    "content": "API 参考\n\n本页面列出了 Nexy 中可用的所有公共 API、装饰器和实用工具。\n\n装饰器 (nexy.decorators)\n\nNexy 使用类装饰器来构建您的应用程序并管理依赖关系。\n\n"@Controller(prefix: str = \"\", tags: List[str] = None)\n定义一个路由控制器。类中以 HTTP 动词（get、post 等）命名的方法或用于 WebSock",
     "href": "/docs/zh/参考/api",
     "lang": "zh"
   }

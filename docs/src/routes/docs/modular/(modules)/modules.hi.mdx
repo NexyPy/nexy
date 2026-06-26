@@ -1,0 +1,193 @@
+#मॉड्यूल
+
+मॉड्यूल संबंधित नियंत्रकों, प्रदाताओं और उप-मॉड्यूल को एक सामंजस्यपूर्ण इकाई में समूहित करते हैं। प्रत्येक मॉड्यूलर ऐप में एक रूट मॉड्यूल होता है जो फीचर मॉड्यूल आयात करता है।
+
+## मॉड्यूल क्यों?
+
+मॉड्यूल के बिना, आप प्रत्येक नियंत्रक और प्रदाता को एक फ्लैट सूची में पंजीकृत करेंगे। जैसे-जैसे ऐप बढ़ता है, वह सूची अप्रबंधनीय हो जाती है - 50 प्रदाता जिनके पास कोई स्पष्ट स्वामित्व नहीं है।
+
+मॉड्यूल सीमाओं को पुनर्स्थापित करते हैं: `UsersModule` `UsersController` और `UserService` का स्वामी है। प्रत्येक मॉड्यूल एक स्व-निहित इकाई है।
+
+## रूट मॉड्यूल
+
+प्रत्येक ऐप को एक रूट मॉड्यूल की आवश्यकता होती है। रूट मॉड्यूल `nexyconfig.py` में संदर्भित है:
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+`"@Module` डेकोरेटर क्लास से एक फास्टएपीआई `APIRouter` बनाता है। यह तीन वर्ग विशेषताएँ पढ़ता है:
+
+| विशेषता | प्रकार | विवरण |
+|----|------|----|
+| `controllers` | `list[type]` | नियंत्रक वर्ग रजिस्टर करने के लिए |
+| `imports` | `list[APIRouter]` | | शामिल करने के लिए उप-मॉड्यूल (`"@Module` से)।
+| `providers` | `list[type]` | कंटेनर के साथ पंजीकरण करने के लिए इंजेक्टेबल कक्षाएं |
+| `exports` | `list[type]` | मॉड्यूल आयात करने के लिए दृश्यमान प्रदाता |
+
+**समझ गया**: `"@Module()` को कम से कम एक नियंत्रक की आवश्यकता है। एक खाली `controllers` सूची `ValueError` बढ़ा देती है।
+
+## फ़ीचर मॉड्यूल
+
+फ़ीचर मॉड्यूल एक डोमेन को इनकैप्सुलेट करते हैं:
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+इसे रूट मॉड्यूल में आयात करें:
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### मॉड्यूल उपसर्ग
+
+एक उपसर्ग सेट करें जो मॉड्यूल में सभी मार्गों पर लागू होता है:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+नियंत्रक उपसर्ग मॉड्यूल उपसर्ग से संबंधित हैं। यदि `"@Module(prefix="/users")` और `"@Controller("/{id}")`, तो प्रभावी पथ `/users/{id}` है।
+
+## प्रदाता पंजीकरण
+
+इंजेक्शन के लिए उपलब्ध होने के लिए प्रदाताओं को एक मॉड्यूल में पंजीकृत होना चाहिए:
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+मॉड्यूल लोड होने पर `DatabaseService` को स्टार्टअप पर हल किया जाता है। यदि किसी प्रदाता की निर्भरता का समाधान नहीं किया जा सकता है, तो त्रुटि तुरंत उत्पन्न हो जाती है - अनुरोध समय पर नहीं।
+
+### निर्यात
+
+`exports` विशेषता नियंत्रित करती है कि कौन से प्रदाता मॉड्यूल आयात करने के लिए दृश्यमान हैं:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+`exports` के बिना, कोई भी प्रदाता मॉड्यूल आयात करने के लिए दृश्यमान नहीं है। यह जानबूझकर किया गया है - यह आपको अपने मॉड्यूल की सार्वजनिक एपीआई को स्पष्ट रूप से घोषित करने के लिए मजबूर करता है।
+
+## साझा मॉड्यूल
+
+मॉड्यूल सिंगलटन हैं। एक ही मॉड्यूल को कई स्थानों पर आयात करने से एक ही प्रदाता उदाहरण साझा होता है:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+इस प्रकार आप अपने ऐप पर डेटाबेस कनेक्शन साझा करते हैं।
+
+## परियोजना संरचना
+
+एक विशिष्ट मॉड्यूलर परियोजना इस परिपाटी का अनुसरण करती है:
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+यह संरचना सैकड़ों मॉड्यूल तक फैली हुई है। प्रत्येक मॉड्यूल निर्देशिका स्व-निहित है।
+
+## मॉड्यूल संकल्प
+
+मॉड्यूल रिज़ॉल्यूशन तीन नियमों का पालन करता है:
+
+1. **टोपोलॉजिकल सॉर्ट** - मॉड्यूल निर्भरता क्रम में प्रारंभ होते हैं (पहले आयात करें)
+2. **सर्कुलर डिटेक्शन** - स्टार्टअप पर मॉड्यूल के बीच सर्कुलर निर्भरता `RecursionError` बढ़ जाती है
+3. **प्रदाता दायरा** - प्रदाता अपना मूल दायरा बरकरार रखते हैं, भले ही उन्हें कौन सा मॉड्यूल आयात करता है
+
+यदि मॉड्यूल ए मॉड्यूल बी आयात करता है, और मॉड्यूल बी मॉड्यूल ए आयात करता है, तो कंटेनर स्टार्टअप पर चक्र का पता लगाता है:
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**यह क्यों मायने रखता है**: परिपत्र निर्भरताएँ अक्सर एक डिज़ाइन समस्या का संकेत देती हैं। साझा निर्भरता को तीसरे मॉड्यूल में निकालें।
+
+## सर्वोत्तम प्रथाएँ
+
+1. **प्रति मॉड्यूल एक सुविधा** - उपयोगकर्ता, प्राधिकरण, बिलिंग। "यूटिल्स" नहीं।
+2. **मॉड्यूल आयात को कम रखें** - 10+ अन्य को आयात करने वाला एक मॉड्यूल बहुत अधिक कर रहा है
+3. **जानबूझकर `exports` का उपयोग करें** - केवल वही निर्यात करें जिसकी अन्य मॉड्यूल को वास्तव में आवश्यकता है
+4. **डोमेन के बाद मॉड्यूल का नाम** - `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **संस्करण करते समय हमेशा `prefix` प्रदान करें** - `"@Module(prefix="/api/v1")`
+
+## अगले चरण
+
+- [Guards](/docs/modular/guards) - मॉड्यूल मार्गों की सुरक्षा करें
+- [Middleware](/docs/modular/middleware) - पाइपलाइन हुक का अनुरोध करें
+- [Controllers](/docs/modular/controllers) - रूट हैंडलर को परिभाषित करें

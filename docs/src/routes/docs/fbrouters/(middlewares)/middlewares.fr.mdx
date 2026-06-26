@@ -1,0 +1,65 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Intergiciels
+
+Un middleware est une couche qui s'exécute avant et après chaque requête, utile pour la journalisation, l'authentification, les en-têtes CORS et d'autres problèmes globaux.
+
+---
+
+## Création d'un middleware
+
+Dans Nexy, les middlewares sont définis via le `BaseHTTPMiddleware` de Starlette ou sous forme d'appelables :
+```python
+# src/middlewares.py
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        print(f"→ {request.method} {request.url.path}")
+        response = await call_next(request)
+        print(f"← {response.status_code}")
+        return response
+```
+---
+
+## Enregistrement d'un middleware
+
+Dans `nexyconfig.py`, transmettez une liste de tuples `(MiddlewareClass, kwargs_dict)` :
+```python
+from nexy.core.models import NexyConfigModel
+from src.middlewares import LoggingMiddleware
+
+class NexyConfig(NexyConfigModel):
+    useMiddlewares = [
+        (LoggingMiddleware, {}),
+    ]
+```
+---
+
+## Ordre d'exécution
+
+Les middlewares s'exécutent dans l'ordre de déclaration, formant une **pile** (comme Starlette) :
+```text
+Request → MW1 → MW2 → Route → MW2 → MW1 → Response
+```
+---
+
+## Middleware au niveau du répertoire (FBR)
+
+Avec FBR, vous pouvez placer la logique middleware dans un `dependencies.py` au sein d'un répertoire :
+```python
+# routes/api/dependencies.py
+from fastapi import Request
+
+async def verify_api_key(request: Request):
+    if request.headers.get("X-API-Key") != "secret":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403)
+```
+Chaque page sous `/api/` hérite automatiquement de cette vérification.
+<Link href="/docs/fbrouters/route_handlers">Next: Route Handlers →</Link>

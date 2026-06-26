@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# عناوين URL الديناميكية (معلمات المسار)
+
+تلتقط المعلمات الديناميكية مقاطع URL المتغيرة. يستخدم Nexy بناء جملة القوس `[param]`.
+
+---
+
+## بناء الجملة
+```bash
+routes/
+├── blog/
+│   ├── index.nexy          →  /blog
+│   └── [slug].nexy         →  /blog/{slug}
+└── users/
+    └── [userId].py         →  /users/{userId}
+```
+---
+
+## في صفحة `.nexy`
+
+المعلمة متاحة عبر خصائص المادة الأمامية:
+```
+---
+slug: prop[str]
+---
+<h1>Article: {{ slug }}</h1>
+```
+---
+
+## في معالج `.py`
+```python
+# routes/users/[userId].py
+from fastapi import Request
+
+async def get(request: Request, userId: int):
+    return {"user_id": userId}
+```
+يتم تحويل الأنواع تلقائيًا (`int`، `str`، `UUID`، وما إلى ذلك).
+
+---
+
+## معلمات متعددة
+```bash
+routes/
+└── blog/
+    └── [year]/[month]/[slug].nexy
+```
+```nexy
+---
+year: prop[int]
+month: prop[int]
+slug: prop[str]
+---
+<article>
+    <time>{{ year }}-{{ month }}</time>
+    <h1>{{ slug | replace("-", " ") }}</h1>
+</article>
+```
+---
+
+## معلمات الالتقاط
+```bash
+routes/
+└── docs/
+    └── [...path].nexy      →  /docs/{path+}
+```
+```nexy
+---
+path: prop[list[str]]
+---
+<pre>{{ path | join("/") }}</pre>
+```
+يتلقى المتغير `path` **جميع** أجزاء URL المتبقية كقائمة.
+<Link href="/docs/fbrouters/query_parameters">Next: Query Parameters →</Link>

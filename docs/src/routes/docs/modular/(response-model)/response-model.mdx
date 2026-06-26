@@ -1,0 +1,80 @@
+# Response (Modular)
+
+Control response serialisation, status codes, and response types in controllers.
+
+## Pydantic response model
+
+```python
+from nexy.decorators import Controller
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice", email="alice"@example.com")]
+```
+
+## List response
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice")]
+```
+
+## HTMLResponse
+
+```python
+from fastapi.responses import HTMLResponse
+from nexy.decorators import Controller
+
+"@Controller("/page")
+class PageController:
+    def GET(self) -> HTMLResponse:
+        return HTMLResponse("<h1>Hello</h1>")
+```
+
+## StreamingResponse
+
+```python
+from fastapi.responses import StreamingResponse
+from nexy.decorators import Controller
+import io
+
+"@Controller("/export")
+class ExportController:
+    def GET(self) -> StreamingResponse:
+        return StreamingResponse(io.StringIO("data..."), media_type="text/csv")
+```
+
+## Direct Response with custom status
+
+```python
+from fastapi.responses import JSONResponse
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/items")
+class ItemsController:
+    "@UseResponse(status_code=201)
+    def post(self, item: Item):
+        return {"created": True}
+```
+
+## Supported response types
+
+| Class | Content-Type | Use case |
+|-------|-------------|----------|
+| `JSONResponse` | `application/json` | JSON data (default) |
+| `HTMLResponse` | `text/html` | HTML strings |
+| `PlainTextResponse` | `text/plain` | Raw text |
+| `RedirectResponse` | — | Redirects |
+| `StreamingResponse` | varies | Stream data |
+| `FileResponse` | varies | File downloads |
+
+See ["@UseResponse](/docs/decorators/useresponse) for status code options.

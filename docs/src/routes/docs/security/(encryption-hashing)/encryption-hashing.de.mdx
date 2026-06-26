@@ -1,0 +1,56 @@
+# Verschlüsselung und Hashing
+
+Nexy liefert keine eigene Krypto – verwenden Sie die Standardbibliothek von Python und vertrauenswürdige Pakete von Drittanbietern.
+
+## Hashing
+
+### hashlib (stdlib)
+
+```python
+import hashlib
+
+hash = hashlib.sha256(b"data").hexdigest()
+```
+
+### bcrypt
+
+```bash
+pip install bcrypt
+```
+
+```python
+import bcrypt
+
+hashed = bcrypt.hashpw(b"password", bcrypt.gensalt())
+bcrypt.checkpw(b"password", hashed)  # True
+```
+
+## Verschlüsselung
+
+### Kryptographie (Fernet-symmetrisch)
+
+```bash
+pip install cryptography
+```
+
+```python
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key()
+cipher = Fernet(key)
+
+token = cipher.encrypt(b"secret data")
+cipher.decrypt(token)  # b"secret data"
+```
+
+## Umgebungsvariablen
+
+Schlüssel niemals fest codieren. Umgebungsvariablen verwenden:
+
+```python
+import os
+
+secret = os.environ["SECRET_KEY"]
+```
+
+Für die Entwicklung liest Nexy `.env`-Dateien automatisch.

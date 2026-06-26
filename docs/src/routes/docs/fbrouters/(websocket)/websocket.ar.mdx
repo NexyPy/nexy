@@ -1,0 +1,126 @@
+# ويب سوكيت (FBR)
+
+حدد نقطة نهاية WebSocket عن طريق إنشاء ملف `.py` مع وظيفة `async def SOCKET`.
+
+---
+
+## الصدى الأساسي
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Echo: {data}")
+    except WebSocketDisconnect:
+        pass
+```
+
+يتم تعيين اسم الوظيفة `SOCKET` (غير حساس لحالة الأحرف) إلى نقطة نهاية Starlette WebSocket. يحدد مسار الملف عنوان URL — `/chat` في هذا المثال.
+
+---
+
+## تلقي JSON
+
+```python
+# src/routes/events.py
+from fastapi import WebSocket, WebSocketDisconnect
+import json
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_json()
+            await websocket.send_json({"echo": data})
+    except WebSocketDisconnect:
+        pass
+```
+
+---
+
+## نمط الغرفة
+
+بث الرسائل إلى جميع العملاء المتصلين:
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+connections: list[WebSocket] = []
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    connections.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in connections:
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        connections.remove(websocket)
+```
+
+توجد القائمة `connections` على مستوى الوحدة النمطية — حيث يشترك جميع العملاء في نفس القائمة.
+
+---
+
+## الغرف المسماة
+
+اتصالات المجموعة حسب اسم الغرفة:
+
+```python
+# src/routes/rooms/{room_id}.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+rooms: dict[str, list[WebSocket]] = {}
+
+async def SOCKET(websocket: WebSocket, room_id: str):
+    await websocket.accept()
+    rooms.setdefault(room_id, []).append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in rooms.get(room_id, []):
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        rooms[room_id].remove(websocket)
+        if not rooms[room_id]:
+            del rooms[room_id]
+```
+
+يتم إدخال معلمة URL `{room_id}` تلقائيًا من اسم الملف.
+
+---
+
+## دورة حياة الاتصال
+
+| الحدث | ماذا يحدث |
+|-------|------------|
+| يتصل العميل | `websocket.accept()` — يجب الاتصال به أولاً |
+| وصلت الرسالة | `receive_text()` / `receive_json()` / `receive_bytes()` |
+| قطع اتصال العميل | تم رفع `WebSocketDisconnect` — التنظيف في `except` |
+| يغلق الخادم | `await websocket.close(code=1000)` |
+
+قم دائمًا بلف حلقة الرسالة في `try/except WebSocketDisconnect` لتنظيف الاتصالات.
+
+---
+
+## عميل
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## أنظر أيضا
+
+- [Route Handlers](/docs/fbrouters/route_handlers) — نقاط نهاية REST في FBR
+- [WebSocket Guide](/docs/guides/websocket) — نظرة عامة مفاهيمية

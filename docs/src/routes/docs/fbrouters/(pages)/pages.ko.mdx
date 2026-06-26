@@ -1,0 +1,71 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+#페이지
+
+페이지는 HTML을 반환하는 경로입니다. Nexy에서 페이지는 `src/routes/` 아래의 `.nexy` 또는 `.mdx` 파일입니다.
+
+> 페이지는 JSON 또는 원시 데이터를 반환하는 **경로 처리기**(`.py` 파일)와 다릅니다.
+
+---
+
+## 페이지 만들기
+
+`.nexy` 또는 `.mdx` 파일을 `src/routes/`에 배치합니다.
+```bash
+src/
+└── routes/
+    └── index.nexy       →  /
+```
+```html
+<!-- index.nexy -->
+<h1>Hello Nexy!</h1>
+```
+경로 등록이 필요하지 않습니다. 파일이 경로입니다**.
+
+---
+
+## `.nexy`의 페이지
+
+`.nexy` 파일에는 Python 머리말과 HTML 템플릿이 포함될 수 있습니다.
+```
+---
+items: prop[list] = []
+---
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## `.mdx`의 페이지
+
+`.mdx` 파일은 Markdown과 Nexy 구성 요소를 결합합니다.
+```mdx
+---
+from "@components/link.nexy" import Link
+---
+
+# My Article
+
+<Link href="/docs">Back to docs</Link>
+```
+당신이 읽고 있는 이 페이지 자체는 `.mdx` 파일입니다. 목차, 사이드바, 이동 경로는 레이아웃에 의해 처리됩니다.
+
+---
+
+## 라우팅할 수 없는 특수 파일
+
+`routes/` 내부의 일부 파일은 경로를 생성하지 않습니다:
+
+| 파일 | 역할 |
+|---|---|
+| `__init__.py` | Python 패키지 마커 |
+| `layout.nexy` | 공유 레이아웃 래퍼 |
+| `dependencies.py` | 공유 종속성 |
+<Link href="/docs/fbrouters/layouts">Next: Layouts →</Link>

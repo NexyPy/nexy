@@ -1,0 +1,65 @@
+# OpenAPI Webhook とコールバック
+
+OpenAPI スキーマで Webhook とコールバックを定義して、API が何を送信するかを消費者が認識できるようにします。
+
+## Webhook
+
+Webhook は、API が外部 URL に送信する送信イベントです。
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+これにより、OpenAPI スキーマに Webhook が登録されます。消費者には、`/docs` で予想されるペイロードの形状が表示されます。
+
+## コールバック
+
+コールバックは、API がコンシューマーのサーバーに対して行うリクエストを記述します。
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+コールバック ルーターをルートに渡します。
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+これにより、API が外部 URL に何を POST するかを示す追加のパスが OpenAPI 仕様内に生成されます。
+
+## 使用する理由
+
+- API コンシューマー向けの自動生成ドキュメント
+- タイプセーフなコントラクト定義
+- あらゆる OpenAPI クライアント ジェネレーターで動作します
+- 実行時効果なし - 純粋にドキュメント化のため

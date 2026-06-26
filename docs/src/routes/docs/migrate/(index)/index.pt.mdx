@@ -1,0 +1,11 @@
+# Migrar para Nexy
+
+Migre seus aplicativos existentes de outras estruturas para Nexy. Cada guia aborda as principais diferenças, mapeamento da estrutura do projeto e migração passo a passo.
+
+## Guias disponíveis
+
+- [FastAPI](/docs/migrate/fastapi) — de FastAPI para Nexy
+- [Django](/docs/migrate/django) — de Django para Nexy
+- [NestJS](/docs/migrate/nestjs) — de NestJS para Nexy
+- [Flask](/docs/migrate/flask) — do Flask para Nexy
+- [Next.js](/docs/migrate/nextjs) — de Next.js para Nexy

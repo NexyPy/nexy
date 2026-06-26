@@ -1,0 +1,56 @@
+リダイレクト数 (モジュール式)
+
+受信リクエストをコントローラー内の他の URL にリダイレクトします。
+
+## 基本的なリダイレクト
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+
+## ステータスコードあり
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+
+## 条件付きリダイレクト
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+
+## ステータスコードのリファレンス
+
+|コード |名前 |使用例 |
+|------|------|----------|
+| 301 |永久に移動されました | URL の永続的な変更 |
+| 302 |見つかりました (デフォルト) |一時的なリダイレクト |
+| 307 |一時的なリダイレクト | HTTP メソッドを保持します |
+| 308 |永続的なリダイレクト | HTTP メソッドを保持します |
+
+## よくあるパターン
+
+- 認証リダイレクト: 認証されていないユーザー → `/login`
+- レガシー URL: 古いパス → 新しいパス (301)
+- 送信後のリダイレクト: フォーム POST 後 → 成功ページ (303)

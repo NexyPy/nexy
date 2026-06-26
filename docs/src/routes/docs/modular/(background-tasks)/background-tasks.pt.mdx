@@ -1,0 +1,69 @@
+# Tarefas em segundo plano (modulares)
+
+Execute o código *após* enviar a resposta nos controladores.
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## Tarefa única
+
+```python
+from nexy.decorators import Controller
+from fastapi import BackgroundTasks
+
+def send_email(email: str, body: str):
+    ...
+
+"@Controller("/contact")
+class ContactController:
+    def post(self, data: ContactForm, tasks: BackgroundTasks):
+        tasks.add_task(send_email, data.email, "Thanks!")
+        return {"status": "sent"}
+```
+
+## Múltiplas tarefas
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def get(self, tasks: BackgroundTasks):
+        tasks.add_task(log_visit)
+        tasks.add_task(notify_admin)
+        tasks.add_task(warm_cache)
+        return {"ok": True}
+```
+
+## Tarefa com DI
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller, Injectable
+from src.db import Database
+
+"@Injectable()
+class Logger:
+    def write(self, msg: str):
+        ...
+
+"@Controller("/logs")
+class LogController:
+    def __init__(self, logger: Logger, tasks: BackgroundTasks):
+        self.logger = logger
+        self.tasks = tasks
+
+    def post(self):
+        self.tasks.add_task(self.logger.write, "action logged")
+        return {"ok": True}
+```
+
+## Importante
+
+- As tarefas são executadas **após** o envio da resposta — o cliente não espera
+- Eles são executados no mesmo processo – tarefas longas bloqueiam o loop de eventos
+- Para trabalhos pesados, use uma fila de tarefas (Celery, ARQ, RQ, etc.)
+- Erros em tarefas são engolidos silenciosamente — adicione try/except dentro da função de tarefa
+- As tarefas recebem **cópias** de objetos mutáveis — as mutações não afetarão a resposta

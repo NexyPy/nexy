@@ -9,16 +9,16 @@ class RouteDiscovery:
         self.router_path = Path(self.config.ROUTER_PATH)
 
     def scan(self) -> list[Path]:
-        """Scan the directory recursively and return valid route files."""
         if not self.router_path.is_dir():
             raise FileNotFoundError(f"Directory {self.router_path} not found")
 
-        # Optimized scanning using rglob and centralized validation
-        return [path for path in self.router_path.rglob("*") if self._is_valid_route(path)]
+        patterns = [f"**/*{ext}" for ext in self.config.ROUTE_FILE_EXTENSIONS]
+        files: list[Path] = []
+        for pattern in patterns:
+            files.extend(self.router_path.glob(pattern))
+        return sorted(f for f in files if self._is_valid_route(f))
 
     def _is_valid_route(self, path: Path) -> bool:
-        """Centralized validation logic for file-based routing."""
-        # Check if it's a file with allowed extensions and not in exceptions
         if (
             not path.is_file()
             or path.suffix not in self.config.ROUTE_FILE_EXTENSIONS
@@ -26,10 +26,5 @@ class RouteDiscovery:
         ):
             return False
 
-        # Ignore files or directories starting with '_'
-        # relative_to ensures we only check segments within the router directory
         relative_parts = path.relative_to(self.router_path).parts
-        if any(part.startswith("_") for part in relative_parts):
-            return False
-
-        return True
+        return not any(part.startswith("_") or part.startswith(".") for part in relative_parts)

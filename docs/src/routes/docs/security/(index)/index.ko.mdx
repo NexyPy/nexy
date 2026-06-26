@@ -1,0 +1,35 @@
+# 보안 개요
+
+Nexy는 인증 미들웨어, 경로 보호 및 세션 지원을 제공합니다. Python의 표준 라이브러리와 타사 패키지는 암호화, 해싱, JWT 및 ID 생성을 다룹니다.
+
+---
+
+## 기능 매트릭스
+
+| 기능 | 넥시 API | 백엔드 |
+|---------|----------|---------|
+| 인증 | `useAuth` 구성 + 사용자 정의 백엔드 | 작은 별 `AuthenticationMiddleware` |
+| 경로 보호 | `"@UseGuard(*guards)` | FastAPI `Depends` |
+| 세션 | `useSession` 구성 + `useSession()` 후크 | 작은 별 `SessionMiddleware` |
+| 승인 | 맞춤형 가드 + 역할 확인 | FastAPI `Depends` |
+| 암호화/해싱 | 표준 파이썬 | `hashlib`, `bcrypt`, `cryptography` |
+| JWT | 제3자 | `PyJWT` |
+| UID | 표준 파이썬 | `uuid`, `secrets` |
+
+---
+
+## 빠른 링크
+
+- [Authentication](/docs/security/authentication) — 인증 백엔드 및 로그인 흐름 구성
+- [Authorization](/docs/security/authorization) — 경비원을 통한 역할 기반 액세스 제어
+- [Encryption & Hashing](/docs/security/encryption-hashing) — 비밀번호 해싱, 데이터 암호화
+- [JWT](/docs/security/jwt) — JSON 웹 토큰 생성 및 확인
+- [UID](/docs/security/uid) — 고유 ID 생성 전략
+
+---
+
+## 관련
+
+- [Guides / Auth](/docs/guides/auth) — 실용적인 인증 흐름 연습
+- [Config / Session](/docs/config/session) — 세션 미들웨어 구성
+- [Decorators / "@UseGuard](/docs/decorators/useguard) — 가드 데코레이터 참조

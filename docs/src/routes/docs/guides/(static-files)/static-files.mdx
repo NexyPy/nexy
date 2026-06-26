@@ -1,0 +1,38 @@
+# Static Files
+
+Nexy serves static files from the `public/` directory at your project root.
+
+## How it works
+
+Any file placed in `public/` is served at the root URL path:
+
+```text
+public/
+├── logo.svg           →  /logo.svg
+├── images/
+│   └── hero.jpg       →  /images/hero.jpg
+├── fonts/
+│   └── inter.woff2    →  /fonts/inter.woff2
+└── robots.txt         →  /robots.txt
+```
+
+No configuration needed. Files in `public/` are served automatically.
+
+## Assets directory
+
+For compiled assets (CSS, JS from Vite), use the `assets/` directory or configure the output in `vite.config.ts`. Nexy mounts these at `/assets/`.
+
+## Referencing static files
+
+In `.nexy` templates:
+
+```nexy
+<img src="/logo.svg" alt="Logo" />
+<link rel="stylesheet" href="/styles/global.css" />
+```
+
+In Python frontmatter or route handlers, paths are relative to the project root.
+
+## Production
+
+During `nx build`, the `public/` directory is copied to `__nexy__/public/`. Your production server serves these files directly — no compilation needed.

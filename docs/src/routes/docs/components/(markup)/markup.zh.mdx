@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 使用 Nexy 编写标记
+
+Nexy 模板使用 **HTML** + **Jinja2** 来呈现动态内容。
+如果您了解 HTML 和 Jinja2，那么您就已经了解 Nexy 模板。
+
+---
+
+## 文本插值
+```html
+<h1>{{ title }}</h1>
+<p>{{ description }}</p>
+```
+变量来自 frontmatter 或 props。
+
+---
+
+## 过滤器
+
+Jinja2 过滤变换值：
+```html
+<p>{{ content | safe }}</p>
+<p>{{ name | upper }}</p>
+<p>{{ price | round(2) }}</p>
+```
+`| safe` 将字符串标记为安全 HTML（无自动转义）。
+
+---
+
+## For 循环
+```html
+<ul>
+{% for item in items %}
+    <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## 如果/否则
+```html
+{% if user %}
+    <p>Welcome, {{ user.name }}!</p>
+{% else %}
+    <a href="/login">Sign in</a>
+{% endif %}
+```
+---
+
+## 模板中的组件
+
+组件的使用方式与 HTML 元素类似：
+```html
+<div class="card">
+    <Card title="Hello">
+        <p>Child content</p>
+    </Card>
+</div>
+```
+`Slot` 组件渲染子组件（请参阅模块）。
+
+---
+
+## 原始 JS 块
+
+使用 `{{ '' }}` 保护 `{{ '{{' }}` 免受 Jinja2 解析（嵌入 JS 框架时需要）：
+```html
+{% raw %}
+<script>
+const data = {{ json_data }};
+</script>
+{% endraw %}
+```
+<Link href="/docs/components/python">Next: Python in template →</Link>

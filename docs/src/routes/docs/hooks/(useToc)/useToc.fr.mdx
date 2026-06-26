@@ -1,0 +1,47 @@
+# utiliserToc
+
+Génère une table des matières HTML à partir des titres de la page actuelle.
+
+```python
+from nexy import useToc
+
+toc_html = useToc()
+toc_html = useToc(depth_range="1-4")
+```
+
+---
+
+## Paramètres
+
+| Paramètre | Tapez | Par défaut | Descriptif |
+|---------------|------|---------|-------------|
+| `depth_range` | `str` | `"2-6"` | Niveaux de titre à inclure (par exemple `"2-4"` pour h2 à h4) |
+
+---
+
+## Valeur de retour
+
+`str` — Chaîne HTML de la table des matières, ou chaîne vide s'il n'y a pas de titre.
+
+---
+
+## Exemple
+
+```nexy
+---
+from nexy import useToc
+toc = useToc()
+---
+<aside class="toc">
+    <h3>On this page</h3>
+    {{ toc | safe }}
+</aside>
+```
+
+---
+
+## Notes d'utilisation
+
+- Analyse les en-têtes de démarque du contenu de la page rendue
+- Renvoie une chaîne vide pour les pages sans titres
+- Format de plage de profondeur : `"2-6"` signifie h2 à h6, `"1-3"` signifie h1 à h3

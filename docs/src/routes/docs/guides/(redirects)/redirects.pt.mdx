@@ -1,0 +1,80 @@
+# Redirecionamentos
+
+Redirecione solicitações recebidas para outros URLs usando `RedirectResponse` do FastAPI.
+
+---
+
+## Redirecionamento básico
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+## Com código de status
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    # 301 — Permanent (tells browsers to cache)
+    return RedirectResponse("/new-page", status_code=301)
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+## Redirecionamento condicional
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+## Referência do código de status
+
+| Código | Nome | Caso de uso |
+|------|------|----------|
+| 301 | Movido permanentemente | Mudança permanente de URL – os navegadores armazenam em cache |
+| 302 | Encontrado (padrão) | Redirecionamento temporário |
+| 307 | Redirecionamento temporário | Como 302, mas preserva o método HTTP |
+| 308 | Redirecionamento Permanente | Como 301, mas preserva o método HTTP |
+
+## Padrões comuns
+
+- **Redirecionamento de autenticação**: usuários não autenticados → `/login`
+- **URLs legados**: caminhos antigos → novos caminhos (301)
+- **Redirecionamento pós-envio**: após o formulário POST → página de sucesso (303)
+- **Redirecionamento de localidade**: `/` → `/{locale}/` com base no idioma do navegador

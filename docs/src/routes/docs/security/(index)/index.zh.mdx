@@ -1,0 +1,35 @@
+# 安全概述
+
+Nexy 提供身份验证中间件、路由防护和会话支持。 Python 的标准库和第三方包涵盖了加密、哈希、JWT 和 ID 生成。
+
+---
+
+## 特征矩阵
+
+|特色 | Nexy API |后端|
+|---------|----------|---------|
+|认证| `useAuth` 配置 + 自定义后端 |星星`AuthenticationMiddleware` |
+|路由保护| `"@UseGuard(*guards)` | FastAPI `Depends` |
+|会议 | `useSession` 配置 + `useSession()` 钩子 |星星 `SessionMiddleware` |
+|授权|自定义守卫+角色检查| FastAPI `Depends` |
+|加密/散列|标准Python | `hashlib`、`bcrypt`、`cryptography` |
+|智威汤逊 |第三方| `PyJWT` |
+| UID |标准Python | `uuid`、`secrets` |
+
+---
+
+## 快速链接
+
+- [Authentication](/docs/security/authentication) — 配置身份验证后端和登录流程
+- [Authorization](/docs/security/authorization) — 带警卫的基于角色的访问控制
+- [Encryption & Hashing](/docs/security/encryption-hashing) — 密码散列、数据加密
+- [JWT](/docs/security/jwt) — JSON Web 令牌创建和验证
+- [UID](/docs/security/uid) — 独特的 ID 生成策略
+
+---
+
+## 相关
+
+- [Guides / Auth](/docs/guides/auth) — 实用的身份验证流程演练
+- [Config / Session](/docs/config/session) — 会话中间件配置
+- [Decorators / "@UseGuard](/docs/decorators/useguard) — 防护装饰器参考

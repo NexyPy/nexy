@@ -1,0 +1,55 @@
+# WSGI(플라스크, 장고)
+
+Nexy 경로와 함께 WSGI 애플리케이션(Flask, Django, Pyramid)을 마운트합니다.
+
+## 플라스크
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+이제 Flask 경로를 `/legacy/hello`에서 사용할 수 있습니다. 모든 Nexy 기능(인증, 미들웨어)은 상위 앱에 계속 적용됩니다.
+
+## 장고
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## 작동 방식
+
+- `WSGIMiddleware`는 호출 가능한 모든 WSGI를 ASGI로 래핑합니다.
+- 하위 애플리케이션은 스레드 풀에서 실행되며 이벤트 루프를 차단하지 않습니다.
+- WSGI 앱에 도달하기 전에 경로 접두사(`/legacy`, `/django`)가 제거됩니다.
+- Nexy 미들웨어(auth, session, CORS)는 마운트된 WSGI 앱에 적용되지 **않습니다** - 별도로 구성합니다.
+
+## 제한사항
+
+- 요청/응답 주기만 — WebSocket은 지원되지 않음
+- WSGI 앱은 Nexy 후크 또는 종속성을 사용할 수 없습니다.
+- 성능은 스레드 풀에 의해 제한됩니다. 기본 Nexy 경로로 마이그레이션하는 것을 고려하세요.

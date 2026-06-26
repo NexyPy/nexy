@@ -1,0 +1,101 @@
+# 国际化
+
+配置国际化 — 区域设置检测、翻译文件和 RTL 支持。
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "es"]
+    useDefaultLocale = "en"
+    useLocaleCookieName = "nexy-locale"
+    useLocaleDetection = {"header": True, "cookie": True}
+    useRTL = False
+```
+
+---
+
+## 字段
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` |可用的区域设置。如果 `None`，则从 `nexy/i18n/` 自动检测。 |
+| `useDefaultLocale` | `str` | `"en"` |检测失败时的后备区域设置。 |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` |用于保留用户区域设置选择的 Cookie 名称。 |
+| `useLocaleDetection` | `dict \| None` | `None` |检测策略：`header`、`cookie`、`path`。 |
+| `useRTL` | `bool` | `False` |启用从右到左布局支持。 |
+
+---
+
+## 翻译文件
+
+将 JSON 翻译文件放入 `nexy/i18n/<locale>/` 中：
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+    "welcome": "Welcome",
+    "greeting": "Hello!"
+}
+```
+
+```json
+// nexy/i18n/fr/common.json
+{
+    "welcome": "Bienvenue",
+    "greeting": "Bonjour !"
+}
+```
+
+---
+
+## 模板中的用法
+
+```nexy
+---
+from nexy.i18n import t
+welcome = t("welcome")
+---
+<h1>{{ welcome }}</h1>
+```
+
+---
+
+## Python 中的用法
+
+```python
+from nexy.i18n import trans, t
+
+msg = trans("welcome")            # explicit
+msg = t("welcome")                # shorthand
+msg = t("missing_key", default="Fallback")
+```
+
+---
+
+## 语言环境切换
+
+```python
+from nexy.i18n import useLocale
+locale = useLocale()
+print(locale["locale"])       # "fr"
+print(locale["is_rtl"])       # False
+print(locale["available"])    # ["en", "fr", "es"]
+```
+
+---
+
+## RTL 支持
+
+当 `useRTL = True` 时，Nexy 在 `<html>` 元素上设置 `dir="rtl"` 属性，并加载受支持框架的 RTL 调整样式表。

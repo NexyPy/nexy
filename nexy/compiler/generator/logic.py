@@ -26,16 +26,13 @@ class LogicGenerator:
         self.source = source
         self.source_path = source_path
         self.template_path = template_path
-        names = template_path.split("/")
-        stem = names[-1].replace(".md", "").replace(".html", "")
+        tp = Path(template_path)
+        stem = tp.stem
         raw_name = self._string_transform.get_component_name(stem)
 
         self.func_name = re.sub(r"[^a-zA-Z0-9_]", "_", raw_name)
 
-        if template_path.endswith(".html"):
-            self.output = template_path.replace(".html", ".py")
-        else:
-            self.output = template_path.replace(".md", ".py")
+        self.output = tp.with_suffix(".py").as_posix()
 
         self.FRONTMATTER = self._component_model()
         self.vfs.write(self.output, self.FRONTMATTER)
@@ -63,15 +60,12 @@ class LogicGenerator:
             if import_nodes:
                 module_imports = ast.unparse(ast.Module(body=import_nodes, type_ignores=[]))
                 function_body = (
-                    ast.unparse(ast.Module(body=body_nodes, type_ignores=[]))
-                    if body_nodes
-                    else ""
+                    ast.unparse(ast.Module(body=body_nodes, type_ignores=[])) if body_nodes else ""
                 )
         except SyntaxError:
             pass
 
-        LOGIC = textwrap.indent(function_body, "    ")
-        props = self._resolve_props()
+        logic = textwrap.indent(function_body, "    ")
 
         use_layout = Config.useRouter is None
         is_layout_file = self.source_path.endswith("layout.nexy") if use_layout else False
@@ -86,7 +80,13 @@ class LogicGenerator:
         layout_children = ""
 
         if layout_import:
-            layout_header = f"from {layout_import} import Layout as __Layout\n"
+            layout_header = (
+                f"try:\n"
+                f"    from {layout_import} import Layout as __Layout\n"
+                f"except ImportError:\n"
+                f"    def __Layout(children: str = '', **kwargs) -> str:\n"
+                f"        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
+            )
             render_wrapper = "str(__Layout(children=rendered))"
         # -----------------------
 
@@ -94,6 +94,8 @@ class LogicGenerator:
             layout_children = (
                 f"""children = f"<nslot  style='display:contents;'>{"{children}"}</nslot>" """
             )
+
+        props = self._resolve_props()
 
         # Extraction des identifiants Python (AST)
         idents = set()
@@ -113,21 +115,24 @@ class LogicGenerator:
                             idents.add(t.id)
                 elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                     idents.add(node.name)
-        except:
+        except SyntaxError:
             pass
 
         for p in self.source.props:
             idents.add(p.name)
-        names = [n for n in sorted(idents) if not n.startswith("_")]
+        names = [n for n in idents if not n.startswith("_")]
 
         context_items = ", ".join([f'"{n}": {n}' for n in names])
         # All Nexy components should support children/slots
-        Slot = "Slot = caller if (locals().get('caller') and callable(caller)) else (lambda: children if locals().get('children') else '')"
+        slot = "Slot = caller if (locals().get('caller') and callable(caller)) else (lambda: children if locals().get('children') else '')"
 
+        extras = "'trans': __trans, '__locale': __current_locale.get()"
         if context_items != "":
-            context_items += ", 'Slot': Slot"
+            context_items += f", 'Slot': Slot, {extras}"
         else:
-            context_items = "'Slot': Slot"
+            context_items = f"'Slot': Slot, {extras}"
+
+        t_local = "trans = __trans\n    t = __trans"
 
         # Safe props injection: check if they already exist in source.props
         existing_props = [p.name for p in self.source.props]
@@ -144,30 +149,23 @@ class LogicGenerator:
             else:
                 props = ", ".join(extra_props)
 
-        # Gestion CSS
-        css_blocks = []
-        for css_path in self.source.styles:
-            p = Path(css_path)
-            if p.exists():
-                css_blocks.append(f"<style>\n{p.read_text(encoding='utf-8')}\n</style>")
-        css_injection = "\n".join(css_blocks)
-
         return f"""from typing import *
 from fastapi import *
 from pathlib import Path as __Path
-from nexy import Template as __Template , Import as __Import
+from nexy import Template as __Template
+from nexy.i18n.core import current_locale as __current_locale
+from nexy.i18n.core import trans as __trans
+from nexy.utils.imports.component_import import _Import as __Import
 from jinja2 import Template as __JinjaTemplate
 NexyElement = Union[callable, __JinjaTemplate]
 {layout_header}
 {module_imports}
 def {self.func_name}({props}) -> str:
-    {Slot}
-{LOGIC}
+    {slot}
+    {t_local}
+{logic}
     {layout_children}
     context = {{{context_items}}}
     rendered = str(__Template().render("{self.template_path}", context))
-    styles = \"\"\"{css_injection}\"\"\"
-    
-    # Rendu final (potentiellement enveloppé par le Layout)
-    return {render_wrapper} + styles
+    return {render_wrapper}
 """

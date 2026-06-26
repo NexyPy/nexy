@@ -1,0 +1,50 @@
+# "@Controlador
+
+Marca uma classe como um controlador FastAPI. Os nomes dos métodos definem verbos HTTP.
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## Assinatura
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## Parâmetros
+
+| Parâmetro | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `prefix` | `str` | `""` | Prefixo de URL para todas as rotas neste controlador |
+| `tags` | `list[str]` | `None` | Tags OpenAPI (o padrão é `[ClassName]`) |
+
+## Verbos HTTP
+
+Os nomes dos métodos não diferenciam maiúsculas de minúsculas. Um método por verbo por controlador.
+
+| Nome do método | Verbo HTTP |
+|------------|-----------|
+| `def GET(self)` | OBTER |
+| `def post(self)` | POSTAR |
+| `def Put(self)` | COLOCAR |
+| `def delete(self)` | EXCLUIR |
+| `def patch(self)` | REMENDO |
+| `def options(self)` | OPÇÕES |
+| `def head(self)` | CABEÇA |
+| `def SOCKET(self)` | WebSocket |
+
+Todos os métodos manipuladores são mapeados para `"/"` — os parâmetros do caminho vão no prefixo `"@Controller`.
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

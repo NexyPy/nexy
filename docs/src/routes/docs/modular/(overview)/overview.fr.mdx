@@ -1,0 +1,102 @@
+# Routeur modulaire — Présentation de l'architecture
+
+Le routeur modulaire apporte une architecture de style NestJS à Python. Au lieu que les fichiers deviennent des routes (FBR), vous organisez le code en **contrôleurs**, **fournisseurs**, **modules**, **gardes** et **middleware**.
+
+## Pourquoi modulaire ?
+
+Le routage basé sur des fichiers (FBR) est parfait pour les applications de petite et moyenne taille. Mais à mesure que votre application se développe :
+
+| Problème | FBR | Routeur modulaire |
+|---------|-----|----------------|
+| Préoccupations transversales | Middleware en double par fichier | Guard/Middleware au niveau du contrôleur ou du module |
+| Injection de dépendances | Importations manuelles partout | `"@Injectable` avec résolution automatique |
+| Organisation du code | Dispersé dans les fichiers | Regroupés en modules de fonctionnalités |
+| Testabilité | Couplage étroit avec les chemins de fichiers | Les contrôleurs acceptent les dépendances injectées |
+| Coordination d'une grande équipe | Conflits de fichiers, limites floues | Limites des modules appliquées par les attributs de classe |
+
+## Architecture
+
+```
+AppModule  ("@Module)
+├── AuthModule  ("@Module)
+│   ├── AuthController   ("@Controller)
+│   │   ├── def GET(self)       → GET /auth/
+│   │   └── def post(self, ...)  → POST /auth/
+│   └── AuthService      ("@Injectable)
+├── UsersModule  ("@Module(prefix="/users"))
+│   └── UsersController  ("@Controller)
+│       ├── def GET(self)       → GET /users/
+│       └── def post(self, ...)  → POST /users/
+└── └── UserService      ("@Injectable)
+```
+
+### Les noms de méthodes définissent les verbes HTTP
+
+Nexy mappe les **noms de méthodes** aux méthodes HTTP — aucun décorateur `"@Get`/`"@Post` n'est nécessaire :
+
+| Nom de la méthode | Méthode HTTP |
+|-------------|-------------|
+| `GET`, `get`, `Get` | OBTENIR |
+| `post`, `POST`, `Post` | POSTER |
+| `put`, `PUT`, `Put` | METTRE |
+| `delete`, `DELETE`, `Delete` | SUPPRIMER |
+| `patch`, `PATCH`, `Patch` | PATCH |
+| `options`, `OPTIONS`, `Options` | OPTIONS |
+| `head`, `HEAD`, `Head` | TÊTE |
+| `SOCKET`, `socket`, `Socket` | WebSocket |
+
+## Démarrage rapide
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module, Controller
+
+"@Controller("/ping")
+class PingController:
+    def GET(self):
+        return {"status": "ok"}
+
+"@Module()
+class AppModule:
+    controllers = [PingController]
+```
+
+Configurer dans `nexyconfig.py` :
+
+```python
+from nexy import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useModular = "src.apps.app_module.AppModule"
+```
+
+## Quand choisir modulaire plutôt que FBR
+
+**Choisissez Modulaire quand :**
+- Vous disposez de plus de 5 fichiers de route qui partagent des dépendances
+- Vous avez besoin d'une injection de dépendances (services, bases de données, config)
+- Votre équipe a des limites de fonctionnalités distinctes (authentification, facturation, utilisateurs)
+
+**Choisissez FBR quand :**
+- Vous avez moins de 10 itinéraires
+- Vous préférez les conventions à la configuration
+- Vous construisez un site principalement statique
+- Vous souhaitez la configuration la plus simple possible
+
+## Les cinq concepts
+
+| Concepts | Décorateur | Objectif |
+|---------|-----------|---------|
+| Contrôleur | `"@Controller(prefix)` | Regroupe les itinéraires associés sous un préfixe de chemin |
+| Fournisseur | `"@Injectable()` | Logique métier, injectable dans les contrôleurs |
+| Module | `"@Module()` | Câbler les contrôleurs et les fournisseurs via les attributs de classe |
+| Garde | `"@UseGuard(...)` | Autorisation - s'exécute avant le gestionnaire |
+| Intergiciel | `"@Middleware(...)` | Pipeline de requêtes/réponses — s'exécute avant les gardes |
+
+## Prochaines étapes
+
+- [Controllers](/docs/modular/controllers) — gère les requêtes HTTP avec le routage du nom de méthode
+- [Providers & DI](/docs/modular/providers) — injecter des services dans les contrôleurs
+- [Modules](/docs/modular/modules) — organisez les contrôleurs et les fournisseurs en modules de fonctionnalités
+- [Guards](/docs/modular/guards) — protège les itinéraires avec autorisation
+- [Middleware](/docs/modular/middleware) — intercepte les requêtes avant les gestionnaires

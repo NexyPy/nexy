@@ -1,0 +1,100 @@
+# Система модулей
+
+Система модулей Nexy позволяет импортировать и экспортировать компоненты вашего проекта.
+
+---
+
+## Импорт компонента
+
+Используйте синтаксис `import` во вступительной части:
+
+```python
+---
+from "@components/card.nexy" import Card
+from "@components/button.nexy" import Button
+---
+```
+
+Псевдоним `"@` разрешается в `src/` (настраивается в `nexyconfig.py`).
+
+---
+
+## Именованный экспорт
+
+По умолчанию файл `.nexy` экспортирует свой шаблон как компонент, названный в честь файла:
+
+| Файл | Имя экспорта |
+|---|---|
+| `card.nexy` | `Card` |
+| `button.nexy` | `Button` |
+| `table_of_contents.nexy` | `Table_of_contents` |
+
+---
+
+## Слот (детский)
+
+Компонент `Slot` отображает дочерний контент, передаваемый между открывающими/закрывающими тегами:
+
+```nexy
+<div class="card">
+    <h2>{{ title }}</h2>
+    <Slot />
+</div>
+```
+
+Использование:
+
+```html
+<Card title="Hello">
+    <p>This goes into the Slot.</p>
+</Card>
+```
+
+---
+
+## Импортировать псевдонимы
+
+Используйте `as`, чтобы избежать конфликтов имен:
+
+```python
+---
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+---
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+---
+
+## Реэкспорт
+
+Создайте индексный файл, объединяющий компоненты:
+
+```python
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+Другие файлы импортируются из этой бочки:
+
+```python
+---
+from "@components/index.nexy" import Card, Button
+---
+```
+
+-----
+
+## Динамический импорт
+
+Для клиентских фреймворков (React, Solid) Nexy автоматически генерирует дерево импорта во время сборки. Вам не нужно управлять точками входа вручную — компилятор определяет использование `.tsx`/`.jsx` и соответствующим образом подключает Vite или esbuild.
+

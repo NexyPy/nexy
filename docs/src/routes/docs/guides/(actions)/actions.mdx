@@ -1,0 +1,161 @@
+# Server Actions
+
+Server actions let you call Python functions from the client as POST endpoints — no route registration, no serialization boilerplate.
+
+---
+
+## Defining an action
+
+Decorate any function with `"@Action`:
+
+```python
+# src/actions/vote.py
+from nexy.decorators import Action
+
+"@Action
+def vote(post_id: str, direction: int) -> dict:
+    return {"success": True, "post_id": post_id, "votes": 42}
+```
+
+The function receives JSON body parameters as keyword arguments. Return any JSON-serializable value.
+
+---
+
+## Where to put action files
+
+Actions can live **anywhere** in your project — `src/actions/`, `src/routes/`, or directly in the root. The `ActionEngine` scans the entire project directory at startup.
+
+```text
+my-app/
+├── src/
+│   └── actions/
+│       ├── vote.py        ← "@Action
+│       └── comment.py     ← "@Action
+├── actions/
+│   ├── vote.ts            ← Generated TypeScript client
+│   └── comment.ts
+```
+
+See ["@Action reference](/docs/decorators/action) for how discovery and endpoint generation work.
+
+---
+
+## Practical examples
+
+### Form submission
+
+```python
+# src/actions/contact.py
+from nexy.decorators import Action
+from pydantic import BaseModel, EmailStr
+
+class ContactForm(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
+
+"@Action
+def submit_contact(data: ContactForm) -> dict:
+    # Save to database, send email, etc.
+    return {"ok": True, "name": data.name}
+```
+
+```nexy
+---
+---
+<form id="contact">
+  <input name="name" required />
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+
+<script>
+document.getElementById('contact').onsubmit = async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const res = await fetch('/_nx_a1b2c3d4e5f6', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.fromEntries(fd))
+  });
+  const data = await res.json();
+  if (data.ok) alert('Message sent!');
+};
+</script>
+```
+
+### Database action
+
+```python
+# src/actions/create_user.py
+from nexy.decorators import Action
+from pydantic import BaseModel
+from src.database import get_session
+from src.models import User
+
+class CreateUserBody(BaseModel):
+    name: str
+    email: str
+
+"@Action
+def create_user(body: CreateUserBody) -> dict:
+    db = next(get_session())
+    user = User(name=body.name, email=body.email)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"id": user.id, "name": user.name}
+```
+
+### Action with error handling
+
+```python
+# src/actions/delete_item.py
+from nexy.decorators import Action
+from fastapi import HTTPException
+from src.database import get_session
+
+"@Action
+def delete_item(item_id: int) -> dict:
+    db = next(get_session())
+    item = db.get(Item, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    db.delete(item)
+    db.commit()
+    return {"deleted": item_id}
+```
+
+---
+
+## Generated TypeScript client
+
+`nx build` or `nx dev` generates type-safe TypeScript wrappers in `./actions/`:
+
+```typescript
+// Generated: ./actions/vote.ts
+import { transport } from '"@/nexy/client';
+
+export const vote = async (post_id: string, direction: number): Promise<dict> => {
+  return await transport.call('/_nx_a1b2c3d4e5f6', { post_id, direction });
+};
+```
+
+Each generated function mirrors the Python signature with proper TypeScript types.
+
+---
+
+## Best practices
+
+- Keep action functions focused and idempotent
+- Validate inputs inside the action — treat them as untrusted
+- Use Pydantic models for complex request bodies
+- Actions are POST-only — for other HTTP methods, use route handlers
+- Use guards or middleware for authorization
+
+---
+
+## Reference
+
+See ["@Action decorator](/docs/decorators/action) for the full API reference (parameter types, return types, limitations).

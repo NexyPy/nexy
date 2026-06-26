@@ -1,4 +1,64 @@
-
-<aside class="w-50 border-l border-border/40 border-dashed py-12 px-4">
-    <h3 class=" text-xs uppercase">On this page</h3>
+---
+from "@/locales/routes/docs/layout" import DocsLayoutI18n
+from nexy import useToc
+toc_html = useToc()
+dl = DocsLayoutI18n()
+---
+<aside class="sidebar gap-2! w-50! border-0 border-l border-border/40 border-dashed py-12 px-0! hidden lg:block">
+    <h3 class="text-xs uppercase px-4">{{dl.on_this_page}}</h3>
+    {{ toc_html  }}
 </aside>
+<script>
+(function() {
+    var links = document.querySelectorAll('.toc-link');
+    if (!links.length) return;
+
+    var headings = [];
+    for (var i = 0; i < links.length; i++) {
+        var id = links[i].getAttribute('href').slice(1);
+        headings.push(document.getElementById(id));
+    }
+
+    var activeLink = null;
+    function setActive(link) {
+        if (activeLink) activeLink.classList.remove('toc-link--active');
+        activeLink = link;
+        if (activeLink) activeLink.classList.add('toc-link--active');
+    }
+
+    var observer = new IntersectionObserver(function(entries) {
+        var visible = [];
+        for (var i = 0; i < entries.length; i++) {
+            if (entries[i].isIntersecting) {
+                visible.push(entries[i].target);
+            }
+        }
+        if (visible.length) {
+            var topMost = visible[0];
+            for (var i = 0; i < headings.length; i++) {
+                if (headings[i] === topMost) {
+                    setActive(links[i]);
+                    break;
+                }
+            }
+        }
+    }, { rootMargin: '-64px 0px -75% 0px', threshold: 0 });
+
+    for (var i = 0; i < headings.length; i++) {
+        if (headings[i]) observer.observe(headings[i]);
+    }
+
+    for (var i = 0; i < links.length; i++) {
+        links[i].addEventListener('click', function(e) {
+            e.preventDefault();
+            var id = this.getAttribute('href').slice(1);
+            var el = document.getElementById(id);
+            if (el) {
+                var top = el.getBoundingClientRect().top + window.scrollY - 80;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+            }
+            setActive(this);
+        });
+    }
+})();
+</script>

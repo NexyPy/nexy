@@ -1,0 +1,56 @@
+# Cifrado y hash
+
+Nexy no envía su propia criptografía: utilice la biblioteca estándar de Python y paquetes de terceros confiables.
+
+## Hash
+
+### hashlib (stdlib)
+
+```python
+import hashlib
+
+hash = hashlib.sha256(b"data").hexdigest()
+```
+
+### bcrypt
+
+```bash
+pip install bcrypt
+```
+
+```python
+import bcrypt
+
+hashed = bcrypt.hashpw(b"password", bcrypt.gensalt())
+bcrypt.checkpw(b"password", hashed)  # True
+```
+
+## Cifrado
+
+### criptografía (Fernet simétrica)
+
+```bash
+pip install cryptography
+```
+
+```python
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key()
+cipher = Fernet(key)
+
+token = cipher.encrypt(b"secret data")
+cipher.decrypt(token)  # b"secret data"
+```
+
+## Variables de entorno
+
+Nunca codifique las claves. Utilice variables de entorno:
+
+```python
+import os
+
+secret = os.environ["SECRET_KEY"]
+```
+
+Para el desarrollo, Nexy lee archivos `.env` automáticamente.

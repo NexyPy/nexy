@@ -1,0 +1,69 @@
+# पृष्ठभूमि कार्य (मॉड्यूलर)
+
+नियंत्रकों में प्रतिक्रिया भेजने के *बाद* कोड चलाएँ।
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## एकल कार्य
+
+```python
+from nexy.decorators import Controller
+from fastapi import BackgroundTasks
+
+def send_email(email: str, body: str):
+    ...
+
+"@Controller("/contact")
+class ContactController:
+    def post(self, data: ContactForm, tasks: BackgroundTasks):
+        tasks.add_task(send_email, data.email, "Thanks!")
+        return {"status": "sent"}
+```
+
+## अनेक कार्य
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def get(self, tasks: BackgroundTasks):
+        tasks.add_task(log_visit)
+        tasks.add_task(notify_admin)
+        tasks.add_task(warm_cache)
+        return {"ok": True}
+```
+
+## डीआई के साथ कार्य
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller, Injectable
+from src.db import Database
+
+"@Injectable()
+class Logger:
+    def write(self, msg: str):
+        ...
+
+"@Controller("/logs")
+class LogController:
+    def __init__(self, logger: Logger, tasks: BackgroundTasks):
+        self.logger = logger
+        self.tasks = tasks
+
+    def post(self):
+        self.tasks.add_task(self.logger.write, "action logged")
+        return {"ok": True}
+```
+
+## महत्वपूर्ण
+
+- कार्य प्रतिक्रिया भेजे जाने के **बाद** चलते हैं - ग्राहक प्रतीक्षा नहीं करता है
+- वे एक ही प्रक्रिया में चलते हैं - लंबे कार्य ईवेंट लूप को अवरुद्ध करते हैं
+- भारी काम के लिए, कार्य कतार (अजवाइन, एआरक्यू, आरक्यू, आदि) का उपयोग करें।
+- कार्यों में त्रुटियाँ चुपचाप निगल ली जाती हैं - कार्य फ़ंक्शन के अंदर प्रयास/छोड़कर जोड़ें
+- कार्यों को परिवर्तनशील वस्तुओं की **प्रतियाँ** प्राप्त होती हैं - उत्परिवर्तन प्रतिक्रिया को प्रभावित नहीं करेंगे

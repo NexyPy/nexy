@@ -1,0 +1,275 @@
+# 控制器
+
+控制器将相关的 HTTP 端点分组到一个公共前缀下。控制器不会将路由分散到文件中，而是将资源的每个端点保留在一个类中。
+
+## 为什么需要控制器？
+
+在 FBR 中，您创建 `users/index.nexy`、`users/[id].nexy`、`users/create.nexy`。每个文件处理一个 URL。直到一个页面需要来自另一页面的数据，或者您在 10 个用户路由之间共享身份验证逻辑时，这种情况才会起作用。
+
+控制器将所有 `/users/*` 路由归为一类。共享依赖项位于构造函数中。每个方法中都包含特定于路由的逻辑。
+
+## 创建控制器
+
+用 `"@Controller(prefix)` 装饰一个类：
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+
+    def post(self, data: dict):
+        return {"id": 3, **data}
+```
+
+**方法名称定义 HTTP 方法。** Nexy 将方法名称大写并将其与标准 HTTP 方法进行匹配。 `GET` →​​ 获取，`post` → 发布，`Put` → 放置。
+
+该控制器中的所有路由均位于 `/users/`：
+- `GET /users/` → `GET()`
+- `POST /users/` → `post(data)`
+
+**陷阱**：每个控制器的每个 HTTP 方法只能有一个方法。 `def GET(self): ... def get(self): ...` 将在启动时提高 `ValueError`。
+
+## 路由方法映射
+
+|方法名称 | HTTP 方法 |示例|
+|-------------|-------------|---------|
+| `GET`、`get`、`Get` |获取 |阅读资源 |
+| `post`、`POST`、`Post` |发布 |创建资源 |
+| `put`、`PUT`、`Put` |放置 |更换资源|
+| `delete`、`DELETE`、`Delete` |删除|删除资源 |
+| `patch`、`PATCH`、`Patch` |补丁 |部分更新 |
+| `options`、`OPTIONS`、`Options` |选项 | CORS 飞行前 |
+| `head`、`HEAD`、`Head` |头|仅响应标头 |
+| `SOCKET`、`socket`、`Socket` | WebSocket |实时沟通 |
+
+**约定**：使用大写字母表示读取操作 (`GET`)，使用小写字母表示突变 (`post`、`put`、`delete`)。这使得控制器更容易扫描——您可以一目了然地看到 HTTP 动词。
+
+## 路径参数
+
+路径参数位于 **控制器前缀** 中，而不是单个方法中：
+
+```python
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {"id": id, "name": "Charlie"}
+
+    def delete(self, id: int):
+        return {"deleted": id}
+```
+
+路径参数是 **类型强制** — 路由器读取类型提示并从 URL 转换字符串。支持的类型：`int`、`float`、`str`、`uuid.UUID`、`datetime.datetime`。
+
+**陷阱**：如果强制转换失败（例如，`GET /users/abc` 其中 `id: int`），路由器将返回 422 验证错误，而不是 404。这告诉客户端参数格式错误，而不是资源不存在。
+
+### 多个路径参数
+
+```python
+"@Controller("/users/{userId}/posts/{postId}")
+class UserPostController:
+    def GET(self, userId: int, postId: int):
+        return {"user": userId, "post": postId}
+```
+
+## 查询参数
+
+查询字符串参数可用作具有默认值的函数关键字参数：
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self, q: str | None = None, page: int = 1):
+        return {"query": q, "page": page}
+```
+
+FastAPI 的依赖注入系统自动处理查询参数解析。非路径参数的参数将被解释为查询参数。
+
+您还可以通过 `request.query_params` 访问查询参数：
+
+```python
+from fastapi import Request
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, request: Request):
+        q = request.query_params.get("q")
+        page = int(request.query_params.get("page", 1))
+        return {"query": q, "page": page}
+```
+
+**陷阱**：`useQuery` 返回路径参数，而不是查询参数。对于查询参数，将它们声明为函数关键字参数或使用 `request.query_params`。
+
+## 请求正文
+
+POST、PUT 和 PATCH 方法会自动解析请求正文。声明类型提示：
+
+```python
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"id": 4, **body.model_dump()}
+```
+
+Body 默认解析为 JSON。 Pydantic 模型提供自动验证 - 无效字段返回带有字段级错误的 422。
+
+**陷阱**：如果您使用 `dict` 作为类型提示，您将失去验证。对于面向用户的端点，始终更喜欢 Pydantic。
+
+## 覆盖状态代码
+
+使用 `"@UseResponse(status_code=...)` 覆盖默认状态代码：
+
+```python
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201)
+    def post(self, data: dict):
+        return {"id": 5}
+```
+
+默认状态码：`GET` → 200，`POST` → 201，`DELETE` → 204，其他 → 200。
+
+`"@UseResponse` 还支持响应模型、响应类、响应描述和其他 FastAPI 兼容选项：
+
+```python
+from nexy.decorators import UseResponse
+from fastapi.responses import HTMLResponse
+
+"@UseResponse(
+    status_code=200,
+    response_class=HTMLResponse,
+    response_model=None,
+    response_description="User profile page",
+)
+def GET(self):
+    ...
+```
+
+## 路由元数据
+
+使用 `"@UseRoute` 添加 OpenAPI 元数据：
+
+```python
+from nexy.decorators import Controller, UseRoute
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(summary="List all users", description="Returns paginated user list")
+    def GET(self):
+        return [...]
+
+    "@UseRoute(summary="Create a user", deprecated=True)
+    def post(self, data: dict):
+        return [...]
+```
+
+`"@UseRoute` 支持：`name`、`tags`、`summary`、`description`、`deprecated`、`include_in_schema`、`operation_id`、`openapi_extra`。
+
+## 异步处理程序
+
+控制器支持同步和异步处理程序：
+
+```python
+"@Controller("/users")
+class UsersController:
+    async def GET(self):
+        users = await db.fetch_all()
+        return users
+
+    def post(self, data: dict):
+        # Sync is fine for CPU-bound work
+        return process_sync(data)
+```
+
+Nexy 自动等待异步处理程序。同步处理程序在线程池中运行。对于 I/O 绑定端点（数据库、HTTP 调用），首选异步。
+
+## 错误处理
+
+引发错误响应的 HTTP 异常：
+
+```python
+from starlette.exceptions import HTTPException
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        if id < 1:
+            raise HTTPException(400, "ID must be positive")
+        user = find_user(id)
+        if not user:
+            raise HTTPException(404, "User not found")
+        return user
+```
+
+使用标准 HTTP 状态代码。 Nexy 从 Starlette 重新导出例外。
+
+## 一个控制器，一条路径
+
+一个基本约束：**控制器中的所有方法共享相同的路径**。该路径由控制器前缀确定。您不能为每个方法定义子路径。
+
+如果您需要 `/users` 和 `/users/{id}`，请创建两个控制器：
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [...]          # GET /users/
+
+    def post(self, data: dict):
+        return {...}          # POST /users/
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {...}          # GET /users/42
+
+    def delete(self, id: int):
+        return None           # DELETE /users/42
+```
+
+两个控制器可以位于同一模块中。这种分离是有意为之的——每个控制器处理一个资源路径。
+
+## 模块集成
+
+控制器通过 `controllers` 类属性在模块中注册：
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+```
+
+该模块可以设置适用于其所有控制器的前缀：
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+    # → GET /api/v1/users/, DELETE /api/v1/users/42
+```
+
+## 最佳实践
+
+1. **每个控制器一个资源** — `UsersController`、`PostsController`。一个`ApiController`都没有。
+2. **保持方法的重点** - 每个方法只做一件事。
+3. **使用依赖注入**——不要在方法体中实例化服务。
+4. **对于请求主体更喜欢 Pydantic** — `body: dict` 是一种代码味道。
+5. **有意义地为控制器添加前缀** — `/users`、`/posts`、`/auth`。
+
+## 后续步骤
+
+- [Providers & DI](/docs/modular/providers) — 将服务注入您的控制器
+- [Modules](/docs/modular/modules) — 将控制器组织成功能模块
+- [Guards](/docs/modular/guards) — 通过授权保护路由

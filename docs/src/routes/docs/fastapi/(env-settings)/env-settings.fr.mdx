@@ -1,0 +1,72 @@
+# Environnement et paramètres
+
+Gérez la configuration avec les variables d'environnement et les fichiers `.env`.
+
+## `.env` fichiers
+
+Nexy lit automatiquement les fichiers `.env` au démarrage (via `python-dotenv`).
+
+```env
+# .env
+DATABASE_URL=postgresql://localhost/mydb
+SECRET_KEY=change-me-in-production
+DEBUG=true
+```
+
+Accédez-y via `os.environ` :
+
+```python
+import os
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+```
+
+## Paramètres pydantiques
+
+Pour les paramètres saisis avec validation :
+
+```bash
+pip install pydantic-settings
+```
+
+```python
+# src/settings.py
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str = "sqlite:///dev.db"
+    secret_key: str = "dev-key"
+    debug: bool = True
+
+    model_config = {"env_file": ".env"}
+
+settings = Settings()
+```
+
+Ensuite, utilisez-le n'importe où :
+
+```python
+from src.settings import settings
+
+def GET():
+    return {"db": settings.database_url}
+```
+
+## Variables d'environnement dans NexyConfig
+
+Utilisez `os.getenv` pour transmettre les variables d'environnement dans votre [Nexy config](/docs/config/nexy) :
+
+```python
+import os
+
+class NexyConfig(NexyConfigModel):
+    usePort = int(os.getenv("PORT", "3000"))
+    useTitle = os.getenv("SITE_TITLE", "My App")
+```
+
+## Bonnes pratiques de production
+
+- Ne commettez jamais `.env` dans git — ajoutez à `.gitignore`
+- Utilisez le gestionnaire de secrets de votre fournisseur de cloud ou les secrets CI/CD pour la production
+- Préfixez vos variables d'environnement (par exemple, `NEXY_`, `APP_`) pour éviter les collisions
+- Utiliser `pydantic-settings` pour la validation et la coercition de type

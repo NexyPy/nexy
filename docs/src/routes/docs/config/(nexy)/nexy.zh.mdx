@@ -1,0 +1,97 @@
+# 配置：Nexy
+
+Nexy 通过项目根目录下的 `nexyconfig.py` 进行配置。该文件定义了一个扩展 `NexyConfigModel` 的类：
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    usePort = 3000
+    useTitle = "My App"
+```
+
+## 所有字段
+
+### 路由器
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useRouter` | `APIRouter \| None` | `None` |模块化路由器根模块。设置后，使用模块化路由。当`None`时，使用FBR。 |
+| `excludeDirs` | `list[str]` | `[]` |要从 FBR 扫描中排除的目录。 |
+
+### 服务器
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `usePort` | `int` | `3000` |开发/生产服务器的端口。 |
+| `useHost` | `str` | `"0.0.0.0"` |要绑定的主机。 |
+| `useSslKeyfile` | `str \| None` | `None` | HTTPS 的 SSL 密钥文件路径。 |
+| `useSslCertfile` | `str \| None` | `None` | HTTPS 的 SSL 证书文件路径。 |
+
+### OpenAPI 文档
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useDocs` | `bool` | `True` |启用/禁用 OpenAPI 文档。 |
+| `useDocsUrl` | `str` | `"/docs"` | Swagger UI 的 URL。 |
+| `useRedocsUrl` | `str \| None` | `"/redocs"` | ReDoc 的 URL。设置为 `None` 以禁用。 |
+| `useTitle` | `str` | `"Nexy"` | OpenAPI 架构的标题。 |
+
+### 前端
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useVite` | `bool` | `False` |为客户端组件启用 Vite 捆绑。 |
+| `useViteDevUrl` | `str \| None` | `None` |自定义 Vite 开发服务器 URL（如果 `None` 则自动检测）。 |
+| `useFF` | `list[FrontendFramework]` | `[]` |要启用的前端框架（React、Vue、Svelte、Solid、Preact）。从项目中自动检测到。 |
+| `useMarkdownExtensions` | `list[str]` | `[]` | `.mdx` 文件的 Python-Markdown 扩展。 |
+
+### 中间件
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useMiddlewares` | `list[Any]` | `[]` |自定义 ASGI 中间件类。 |
+| `useCORS` | `dict \| None` | `None` | CORS 中间件配置（Starlette `CORSMiddleware` kwargs）。 |
+| `useGZip` | `dict \| None` | `None` | GZip 中间件配置（Starlette `GZipMiddleware` kwargs）。 |
+| `useTrustedHost` | `dict \| None` | `None` |可信主机中间件配置。 |
+| `useHTTPSRedirect` | `bool` | `False` |将 HTTP 重定向到 HTTPS。 |
+| `useSession` | `dict \| None` | `None` |会话中间件配置（Starlette `SessionMiddleware` kwargs）。 |
+| `useAuth` | `dict \| None` | `None` |身份验证中间件配置。 |
+
+### 国际化
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` |可用区域设置（例如 `["en", "fr"]`）。如果 `None`，则从 `nexy/i18n/` 自动检测。 |
+| `useDefaultLocale` | `str` | `"en"` |默认区域设置。 |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` |区域设置存储的 Cookie 名称。 |
+| `useLocaleDetection` | `dict[str, bool] \| None` | `None` |区域设置检测设置。 |
+| `useRTL` | `bool` | `False` |启用 RTL 支持。 |
+
+### 目录
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | TOC 中包含的标题级别（例如 h2-h4 的 `"2-4"`）。 |
+| `useTocTitle` | `str` | `"Table of Contents"` | TOC 部分标题。 |
+| `useTocAuto` | `bool` | `True` |自动生成 `.mdx` 页的目录。 |
+
+---
+
+## 访问 FastAPI 应用程序
+
+Nexy 通过 `nexy.app` 公开底层 FastAPI 实例。这对于在 Nexy 路由系统之外添加自定义路由、中间件或事件处理程序非常有用。
+
+```python
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("Server starting...")
+
+"@app.get("/health")
+def health():
+    return {"status": "ok"}
+```
+
+`app` 对象是完全配置的 FastAPI `APIRouter`，由 `AppServer` 装载。您可以在其上使用任何 FastAPI/Starlette 功能。

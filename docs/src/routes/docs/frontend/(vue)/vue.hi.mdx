@@ -1,0 +1,73 @@
+# व्यू
+
+अपने `nexyconfig.py` में Vue जोड़ें:
+
+```python
+from nexy.frontend import vue
+
+class NexyConfig(NexyConfigModel):
+    useFF = [vue()]
+```
+
+---
+
+## एक घटक बनाना
+
+`.vue` एक्सटेंशन वाली फ़ाइलों को एकल-फ़ाइल घटकों के रूप में माना जाता है:
+
+```vue
+<!-- src/components/Counter.vue -->
+<script setup>
+import { ref } from 'vue'
+const props = defineProps({ initial: { type: Number, default: 0 } })
+const count = ref(props.initial)
+</script>
+
+<template>
+  <div>
+    <p>Count: {{ count }}</p>
+    <button "@click="count++">+</button>
+  </div>
+</template>
+```
+
+---
+
+## .nexy पेज में उपयोग करना
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+प्रॉप्स को Jinja2 `{{ }}` सिंटैक्स के माध्यम से पारित किया जाता है - JSON मानों के लिए डबल ब्रेसिज़ का उपयोग करें।
+
+---
+
+## बच्चे/स्लॉट सामग्री
+
+नेक्सी चाइल्ड कंटेंट को डिफ़ॉल्ट स्लॉट के रूप में पास करता है:
+
+```vue
+<!-- Card.vue -->
+<template>
+  <div class="card">
+    <h2>{{ title }}</h2>
+    <slot />
+  </div>
+</template>
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as the default slot</p>
+</Card>
+```
+
+---
+
+## एसएसआर
+
+Vue घटक जलयोजन के लिए `createSSRApp` का उपयोग करते हैं। सर्वर-रेंडर HTML क्लाइंट पर स्वचालित रूप से हाइड्रेटेड होता है।

@@ -1,0 +1,71 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Seiten
+
+Eine Seite ist eine Route, die HTML zurückgibt. In Nexy sind Seiten `.nexy` oder `.mdx` Dateien unter `src/routes/`.
+
+> Seiten unterscheiden sich von **Route Handlern** (`.py` Dateien), die JSON oder Rohdaten zurückgeben.
+
+---
+
+## Eine Seite erstellen
+
+Platzieren Sie eine `.nexy`- oder `.mdx`-Datei in `src/routes/`:
+```bash
+src/
+└── routes/
+    └── index.nexy       →  /
+```
+```html
+<!-- index.nexy -->
+<h1>Hello Nexy!</h1>
+```
+Keine Routenregistrierung erforderlich – die Datei **ist** die Route.
+
+---
+
+## Seiten in `.nexy`
+
+Eine `.nexy`-Datei kann Python-Frontmatter und eine HTML-Vorlage enthalten:
+```
+---
+items: prop[list] = []
+---
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## Seiten in `.mdx`
+
+`.mdx`-Dateien kombinieren Markdown mit Nexy-Komponenten:
+```mdx
+---
+from "@components/link.nexy" import Link
+---
+
+# My Article
+
+<Link href="/docs">Back to docs</Link>
+```
+Die Seite, die Sie gerade lesen, ist selbst eine `.mdx`-Datei – das Inhaltsverzeichnis, die Seitenleiste und der Breadcrumb werden vom Layout verwaltet.
+
+---
+
+## Nicht weiterleitbare Spezialdateien
+
+Einige Dateien in `routes/` erstellen keine Routen:
+
+| Datei | Rolle |
+|---|---|
+| `__init__.py` | Python-Paketmarkierung |
+| `layout.nexy` | Gemeinsamer Layout-Wrapper |
+| `dependencies.py` | Gemeinsame Abhängigkeiten |
+<Link href="/docs/fbrouters/layouts">Next: Layouts →</Link>

@@ -1,0 +1,62 @@
+# उपयोगसत्र
+
+वर्तमान अनुरोध के लिए सत्र शब्दकोश लौटाता है। सत्र हस्ताक्षरित कुकीज़ द्वारा समर्थित हैं - कोई सर्वर-साइड संग्रहण नहीं।
+
+```python
+from nexy import useSession
+
+session = useSession()
+```
+
+---
+
+## वापसी मूल्य
+
+`dict` - हस्ताक्षरित कुकी से सत्र डेटा। यदि कोई सत्र मौजूद नहीं है तो एक खाली निर्देश लौटाता है।
+
+---
+
+## उदाहरण
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+user_id = session.get("user_id")
+---
+{% if user_id %}
+    <p>Logged in as user {{ user_id }}</p>
+{% else %}
+    <p>Guest</p>
+{% endif %}
+```
+
+---
+
+## सत्र डेटा लिखना
+
+```python
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+del session["_flash"]
+```
+
+---
+
+## फ़्लैश संदेश पैटर्न
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append("Item saved!")
+session["_flashes"] = flashes
+```
+
+---
+
+## उपयोग नोट्स
+
+- `nexyconfig.py` में `useSession` कॉन्फ़िगरेशन की आवश्यकता है
+- सत्र डेटा हस्ताक्षरित है लेकिन **एन्क्रिप्टेड नहीं**
+- कोई सर्वर-साइड स्टोरेज नहीं - सब कुछ कुकी में है

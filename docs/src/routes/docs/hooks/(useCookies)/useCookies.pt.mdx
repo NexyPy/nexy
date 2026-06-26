@@ -1,0 +1,36 @@
+#useCookies
+
+Retorna os cookies da solicitação atual como um dicionário.
+
+```python
+from nexy import useCookies
+
+cookies = useCookies()
+```
+
+---
+
+## Valor de retorno
+
+`dict` — todos os cookies enviados com a solicitação.
+
+---
+
+## Exemplo
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+locale = cookies.get("nexy-locale", "en")
+---
+<html lang="{{ locale }}">
+```
+
+---
+
+## Notas de uso
+
+- Somente leitura — use `useSession` para definir cookies
+- Os valores dos cookies são strings
+- Equivalente a `request.cookies` em FastAPI

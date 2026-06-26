@@ -1,0 +1,65 @@
+# useViews
+
+Renders a view template (`.nexy`, `.mdx`, or frontend component) with a given context, returning an `HTMLResponse`.
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `path` | `str` | required | Path to the view file (relative to project) |
+| `context` | `dict \| None` | `None` | Variables to pass to the template |
+
+---
+
+## Return value
+
+`HTMLResponse` — the rendered HTML with Vite assets injected.
+
+---
+
+## Example
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## Frontend components
+
+For `.tsx`, `.vue`, `.svelte`, and `.jsx` views, `useViews` returns a hydratable container:
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+The container includes `data-nexy-fw`, `data-nexy-path`, and `data-nexy-props` attributes for client-side hydration.
+
+---
+
+## Supported extensions
+
+| Extension | Behavior |
+|-----------|----------|
+| `.nexy` | Compiled template → rendered HTML |
+| `.mdx` | Markdown + components → rendered HTML |
+| `.tsx` | Hydratable container (React/Solid/Preact) |
+| `.vue` | Hydratable container |
+| `.svelte` | Hydratable container |
+| `.jsx` | Hydratable container |

@@ -1,0 +1,53 @@
+# 목차
+
+Markdown 페이지에 대해 자동 생성된 목차를 구성합니다.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTocDepth = "2-6"
+    useTocTitle = "Table of Contents"
+    useTocAuto = True
+```
+
+---
+
+## 필드
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | 포함할 제목 수준(예: h2~h4의 경우 `"2-4"`) |
+| `useTocTitle` | `str` | `"On this page"` | 목차 위에 제목이 표시됩니다. |
+| `useTocAuto` | `bool` | `True` | `.mdx` 페이지에 대한 목차를 자동 생성합니다. 비활성화하려면 `False`로 설정하세요. |
+
+---
+
+## 템플릿에서의 사용법
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc()
+---
+<aside class="toc">
+    {{ toc_html | safe }}
+</aside>
+```
+
+---
+
+## 사용자 정의 깊이
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc(depth_range="1-4")
+---
+```
+
+h3부터 h5까지만 포함:
+
+```nexy
+toc_html = useToc(depth_range="3-5")
+```

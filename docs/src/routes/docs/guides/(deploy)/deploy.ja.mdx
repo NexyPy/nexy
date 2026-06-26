@@ -1,0 +1,51 @@
+# デプロイ
+
+`nx build` がアプリをコンパイルし、`nx start` がそれを運用環境で提供します。フラグについては、[CLI build](/docs/cli/build) および [CLI start](/docs/cli/start) を参照してください。
+
+## ドッカー
+
+```dockerfile
+FROM python:3.13-slim
+WORKDIR /app
+COPY . .
+RUN pip install nexy && nx build
+CMD ["nx", "start"]
+```
+
+---
+
+## 環境変数
+
+|変数 |デフォルト |説明 |
+|----------|-----------|---------------|
+| `NEXY_PORT` | `3000` |サーバーポート |
+| `NEXY_HOST` | `0.0.0.0` |バインドアドレス |
+| `NEXY_DEBUG` | `false` |デバッグモード |
+| `NEXY_INLINE_CLIENT` | `false` | CSS/JS を HTML にインライン化する |
+
+---
+
+## プラットフォーム ガイド
+
+### VPS
+
+```bash
+uv sync
+nx build
+nx start --host 0.0.0.0 --port 80
+```
+
+### クラウドプロバイダー
+
+Nexy は、Python ASGI アプリをサポートする任意のプラットフォームにデプロイされます。
+
+- **鉄道** — Procfile 経由で `nx start` を自動検出します
+- **Fly.io** — Dockerfile で `CMD ["nx", "start"]` を使用します
+- **レンダリング** — 開始コマンドを `nx start` に設定します
+- **Hetzner / DigitalOcean** — Docker または systemd サービス
+
+---
+
+## 静的エクスポート
+
+完全に静的なサイトの場合、Nexy はビルド中にすべてのページを `__nexy__/static/` に事前レンダリングできます。任意の静的ファイルサーバー (Nginx、Caddy、S3、Cloudflare Pages) でサービスを提供します。

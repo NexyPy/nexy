@@ -1,0 +1,54 @@
+# 서버에서 보낸 이벤트(FBR)
+
+HTTP를 통해 서버에서 클라이언트로 실시간 이벤트를 스트리밍합니다.
+
+## 설치하다
+
+```bash
+pip install sse-starlette
+```
+
+## 엔드포인트
+
+```python
+# src/routes/events.py
+import asyncio
+from sse_starlette.sse import EventSourceResponse
+
+async def event_generator():
+    for i in range(10):
+        await asyncio.sleep(1)
+        yield {"event": "ping", "data": str(i)}
+
+async def GET():
+    return EventSourceResponse(event_generator())
+```
+
+## 동적 이벤트 스트림
+
+```python
+import asyncio
+from sse_starlette.sse import EventSourceResponse
+
+async def GET(count: int = 5, interval: float = 0.5):
+    async def gen():
+        for i in range(count):
+            await asyncio.sleep(interval)
+            yield {"event": "tick", "data": str(i)}
+    return EventSourceResponse(gen())
+```
+
+## 고객
+
+```javascript
+const evtSource = new EventSource("/events");
+evtSource.addEventListener("ping", (e) => {
+    console.log(e.data);
+});
+```
+
+## 제한사항
+
+- SSE는 **단방향**(서버 → 클라이언트)입니다. 양방향에는 WebSocket을 사용합니다.
+- `sse-starlette`는 기본적으로 포함되지 않음 — `pip install sse-starlette`
+- 각 연결에는 공개 HTTP 연결이 있습니다. 서버 제한을 모니터링하세요.

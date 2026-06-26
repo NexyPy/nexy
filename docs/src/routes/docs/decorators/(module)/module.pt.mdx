@@ -1,0 +1,58 @@
+# "@Módulo
+
+Monta controladores, provedores e submódulos em um FastAPI `APIRouter`.
+```python
+from nexy.decorators import Module, Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1}]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [UsersController]
+    providers = [DatabaseService]
+    imports = [AuthModule]
+    exports = [UsersController]
+```
+## Assinatura
+```python
+Module(prefix: str = "") -> Callable[[type], APIRouter]
+```
+## Atributos de classe
+
+| Atributo | Tipo | Obrigatório | Descrição |
+|-----------|------|----------|------------|
+| `controllers` | `list[type]` | Sim | Classes de controlador para registrar |
+| `providers` | `list[type]` | Não | Serviços injetáveis ​​para registrar no container DI |
+| `imports` | `list[APIRouter]` | Não | Submódulos (retornados por `"@Module`) a serem incluídos |
+| `exports` | `list[type]` | Não | Provedores exportarão para uso na importação de módulos |
+
+##Como funciona
+
+1. Os provedores são instanciados via `Container.resolve()`
+2. Submódulos importados estão incluídos no roteador pai
+3. As exportações são armazenadas em `router.__module_exports__`
+4. Os métodos de cada controlador são registrados como rotas
+
+## Exemplo com importações/exportações
+```python
+from nexy.decorators import Injectable, Module
+
+"@Injectable()
+class SharedService:
+    def get_data(self) -> str:
+        return "shared"
+
+"@Module(prefix="/shared")
+class SharedModule:
+    controllers = [SharedController]
+    providers = [SharedService]
+    exports = [SharedService]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [AppController]
+    imports = [SharedModule]  # SharedModule router included
+```

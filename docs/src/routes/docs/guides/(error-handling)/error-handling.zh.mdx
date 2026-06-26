@@ -1,0 +1,76 @@
+# 错误处理
+
+Nexy 提供内置的 404 和 500 错误页面。使用自定义 `.nexy` 文件覆盖它们。
+
+## 默认错误页面
+
+当找不到页面 (404) 或发生未处理的错误 (500) 时，Nexy 返回一个简单样式的 HTML 页面。
+
+## 自定义错误页面
+
+将 `error.nexy` 或 `notfound.nexy` 文件放置在任何路由目录中以覆盖该范围的错误页面：
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # Custom 404 for /admin/*
+|   +-- error.nexy      # Custom 500 for /admin/*
++-- notfound.nexy       # Global custom 404
++-- error.nexy          # Global custom 500
+```
+
+### 示例：`notfound.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-yellow-500">404</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Page not found</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Sorry, we couldn't find the page you're looking for.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+### 示例：`error.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-red-500">500</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Something went wrong</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Please try again later.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+## 范围错误页面
+
+放置在子目录中的错误页面仅适用于该目录中的路由。这使您可以为网站的不同部分提供不同的错误页面：
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # /admin/* — "Admin page not found"
++-- blog/
+|   +-- notfound.nexy   # /blog/* — "Blog post not found"
++-- notfound.nexy       # All other routes
+```
+
+## 相关
+
+- [Authorization / Guards](/docs/security/authorization) — 保护路由免遭未经授权的访问
+- [Authentication](/docs/security/authentication) — 配置身份验证中间件

@@ -1,0 +1,60 @@
+# Django से Nexy पर माइग्रेट करें
+
+Django में बैटरी शामिल है। नेक्सी केंद्रित और मॉड्यूलर है - आप जो चाहते हैं वह लाते हैं।
+
+## अवधारणाओं का मानचित्रण
+
+| जैंगो | नेक्सी |
+|--------|------|
+| `views.py` | `.nexy` फ़ाइलें (FBR) या `"@Controller` (मॉड्यूलर) |
+| `urls.py` | फ़ाइल ट्री (FBR) या `"@Module` (मॉड्यूलर) |
+| `models.py` | SQLModel / SQLAlchemy (आपकी पसंद) |
+| `admin.py` | OpenAPI दस्तावेज़ `/docs` | पर
+| `manage.py` | `nx` सीएलआई |
+| `settings.py` | `nexyconfig.py` |
+| जैंगो ओआरएम | SQLModel, SQLAlchemy, या Tortoise-ORM |
+| टेम्प्लेट (डीटीएल) | जिंजा2 (`.nexy` फ़ाइलें) |
+| वर्ग आधारित विचार | `"@Controller` (मॉड्यूलर) या `.nexy` फ़ाइलें (FBR) |
+| मिडलवेयर | `"@Middleware` या फास्टएपीआई मिडलवेयर |
+| `request.user` | `request.state.user` या गार्ड |
+
+## उदाहरण
+```python
+# src/routes/users/index.nexy
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET():
+    return {"users": [u.model_dump() for u in User.find_all()]}
+---
+```
+```python
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return {"users": [u.model_dump() for u in User.find_all()]}
+```
+## प्रवास के चरण
+
+1. **एक नया नेक्सी प्रोजेक्ट तैयार करें** — `nx new my-app`
+2. **पोर्ट मॉडल** - Django मॉडल का SQLModel/SQLAlchemy में अनुवाद करें
+3. **पोर्ट व्यू** - Django फ़ंक्शन/क्लास व्यू को `.nexy` फ़ाइलों (FBR) या `"@Controller` (मॉड्यूलर) में कनवर्ट करें
+4. **पोर्ट यूआरएल कॉन्फ़िगरेशन** - `urls.py` पैटर्न फ़ाइल ट्री (FBR) या `"@Module` (मॉड्यूलर) बन जाते हैं
+5. **पोर्ट टेम्प्लेट** — डीटीएल टेम्प्लेट → `.nexy` फ़ाइलों में Jinja2
+6. **पोर्ट मिडलवेयर** — Django मिडलवेयर → स्टारलेट `BaseHTTPMiddleware`
+
+## स्विच क्यों करें
+
+- **कोई अखंड सेटिंग नहीं** - केवल वही कॉन्फ़िगर करें जिसका आप उपयोग करते हैं
+- **डिफ़ॉल्ट रूप से Async** - हुड के नीचे फास्टएपीआई/स्टारलेट
+- **OpenAPI दस्तावेज़** — स्वचालित, कोई `drf-spectacular` आवश्यक नहीं
+- **घटक-आधारित यूआई** - एक फ़ाइल में Python + Jinja2 को मिलाएं
+- **फ़्रेमवर्क विकल्प** - फ्रंटएंड के लिए रिएक्ट, व्यू, स्वेल्ट, सॉलिड, या प्रीएक्ट

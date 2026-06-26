@@ -1,0 +1,100 @@
+#मॉड्यूल प्रणाली
+
+नेक्सी का मॉड्यूल सिस्टम आपको अपने प्रोजेक्ट में घटकों को आयात और निर्यात करने देता है।
+
+---
+
+## एक घटक आयात करना
+
+फ्रंटमैटर में `import` सिंटैक्स का उपयोग करें:
+
+```python
+---
+from "@components/card.nexy" import Card
+from "@components/button.nexy" import Button
+---
+```
+
+`"@` उपनाम `src/` (`nexyconfig.py` में कॉन्फ़िगर करने योग्य) में हल हो जाता है।
+
+---
+
+## नामित निर्यात
+
+डिफ़ॉल्ट रूप से, `.nexy` फ़ाइल अपने टेम्पलेट को फ़ाइल के नाम वाले घटक के रूप में निर्यात करती है:
+
+| फ़ाइल | निर्यात नाम |
+|---|---|
+| `card.nexy` | `Card` |
+| `button.nexy` | `Button` |
+| `table_of_contents.nexy` | `Table_of_contents` |
+
+---
+
+## स्लॉट (बच्चे)
+
+`Slot` घटक टैग खोलने/बंद करने के बीच पारित बाल सामग्री को प्रस्तुत करता है:
+
+```nexy
+<div class="card">
+    <h2>{{ title }}</h2>
+    <Slot />
+</div>
+```
+
+उपयोग:
+
+```html
+<Card title="Hello">
+    <p>This goes into the Slot.</p>
+</Card>
+```
+
+---
+
+## उपनाम आयात करें
+
+नामकरण विवादों से बचने के लिए `as` का उपयोग करें:
+
+```python
+---
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+---
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+---
+
+## पुनः निर्यात करना
+
+एक इंडेक्स फ़ाइल बनाएं जो घटकों को एकत्रित करती है:
+
+```python
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+अन्य फ़ाइलें इस बैरल से आयात होती हैं:
+
+```python
+---
+from "@components/index.nexy" import Card, Button
+---
+```
+
+-----
+
+## गतिशील आयात
+
+क्लाइंट-साइड फ्रेमवर्क (रिएक्ट, सॉलिड) के लिए, नेक्सी बिल्ड के दौरान स्वचालित रूप से आयात ट्री उत्पन्न करता है। आपको प्रवेश बिंदुओं को मैन्युअल रूप से प्रबंधित करने की आवश्यकता नहीं है - कंपाइलर `.tsx`/`.jsx` उपयोग का पता लगाता है और तदनुसार Vite या esbuild को तार देता है।
+

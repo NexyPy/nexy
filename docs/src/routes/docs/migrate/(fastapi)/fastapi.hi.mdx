@@ -1,0 +1,58 @@
+# फास्टएपीआई से नेक्सी पर माइग्रेट करें
+
+आप फास्टएपीआई को पहले से ही जानते हैं। इसका मतलब है कि आप नेक्सी के बारे में ज्यादातर पहले से ही जानते हैं।
+
+## जो वही रहता है
+```python
+from fastapi import Request, Depends
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+```
+फास्टएपीआई में जो कुछ भी काम करता है वह नेक्सी में काम करता है - समान एसिंक समर्थन, समान प्रकार का सत्यापन, समान ओपनएपीआई दस्तावेज़।
+
+## क्या बदलता है
+
+### रूट → फ़ाइलें या डेकोरेटर
+```python
+# FastAPI
+"@router.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+
+# Nexy FBR: src/routes/users/[id].py
+async def GET(id: int):
+    return {"id": id}
+```
+```python
+# FastAPI
+"@router.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, id: int):
+        return {"id": id}
+```
+### टेम्प्लेट → `.nexy` फ़ाइलें
+
+`Jinja2Templates` + `TemplateResponse` के बजाय, `.nexy` फ़ाइलें फ्रंटमैटर लॉजिक + टेम्पलेट के साथ लिखें।
+
+### कोई मैन्युअल राउटर पंजीकरण नहीं
+
+नेक्सी स्वचालित रूप से मार्ग खोजता है - तार लगाने के लिए कोई `include_router` नहीं, कोई `APIRouter` नहीं।
+
+## मुख्य अंतर
+
+| फास्टएपीआई | नेक्सी |
+|------|------|
+| `"@app.get("/")` | `src/routes/` (FBR) या `"@Controller` (मॉड्यूलर) | में फ़ाइल करें
+| `TemplateResponse` | `.nexy` फ़ाइल फ्रंटमैटर के साथ |
+| मैनुअल `include_router` | स्वतः खोज |
+| `Depends()` हस्ताक्षर में | वही, लेकिन `"@UseGuard`/`"@Middleware` |
+| कोई अंतर्निहित सीएलआई नहीं | `nx dev`, `nx build`, `nx start` |
+
+आपका फास्टएपीआई कौशल सीधे स्थानांतरित होता है। नेक्सी बॉयलरप्लेट को हटा देता है।

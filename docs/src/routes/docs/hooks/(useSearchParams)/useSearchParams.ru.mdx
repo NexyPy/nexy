@@ -1,0 +1,43 @@
+# использоватьSearchParams
+
+Возвращает текущие параметры запроса URL-адреса в виде словаря.
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## Возвращаемое значение
+
+`dict` — параметры запроса из URL-адреса запроса (например, `{"q": "nexy", "page": "2"}`).
+
+---
+
+## Пример
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## Методы
+
+Возвращенный dict поддерживает стандартные словарные операции: `.get(key, default)`, `.keys()`, `.items()`.
+
+---
+
+## Примечания по использованию
+
+- Все значения являются строками — преобразуйте их с помощью `int()`, `bool()` и т. д.
+- Для обработчиков API вместо этого используйте встроенное внедрение параметров FastAPI.

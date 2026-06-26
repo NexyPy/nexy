@@ -1,0 +1,31 @@
+# ビルドとデプロイ
+
+`nx build` は、実稼働用にプロジェクトをコンパイルします。 `nx start` は運用サーバーを実行します。
+
+＃＃ 建てる
+
+```bash
+nx build
+```
+
+`.nexy`/`.mdx` ファイルをコンパイルし、フロントエンド アセットをバンドルし、ルート ツリーを生成します。出力は `__nexy__/` に送られます。
+
+フラグとオプションについては、[CLI: build](/docs/cli/build) を参照してください。
+
+＃＃ 始める
+
+```bash
+nx start
+```
+
+実稼働 Uvicorn サーバーを起動します。
+
+フラグについては、[CLI: start](/docs/cli/start) (`--port`、`--host`、`--env`) を参照してください。
+
+## デプロイ
+
+Docker、VPS、Fly.io、Railway、Render — プラットフォーム固有の手順については、[Deploy guide](/docs/guides/deploy) を参照してください。
+
+## 静的エクスポート
+
+完全に静的なサイトの場合、各ページは構築中に HTML に事前レンダリングされます。 `__nexy__/static/` を任意の静的ファイル サーバーで提供します。

@@ -1,0 +1,51 @@
+# nx migrer
+
+Gère les migrations de bases de données à l'aide de l'outil de migration de l'ORM configuré.
+
+```bash
+nx migrate
+```
+
+---
+
+## Comment ça marche
+
+Nexy détecte l'ORM configuré à partir de `nexyconfig.py` et délègue à l'outil approprié :
+
+| ORM | Outil de migration | Champ de configuration |
+|-----|---------------|--------------|
+| SQLAlchimie | Alambic | `useORM` |
+| Modèle SQL | Alambic | `useORM` |
+| Tortue-ORM | Aerich | `useORM` |
+
+---
+
+## Commandes
+
+| Commande | Descriptif |
+|---------|-------------|
+| `nx migrate` | Créer une nouvelle migration (détection automatique des modifications) |
+| `nx migrate --init` | Initialiser l'outil de migration (Alembic/Aerich) |
+| `nx migrate --upgrade` / `-u` | Appliquer les migrations en attente |
+| `nx migrate -m "message"` | Créer une migration avec un message |
+
+---
+
+## Exemple
+
+```bash
+# Initialize Alembic (first time)
+nx migrate --init
+
+# Create a migration after model changes
+nx migrate -m "add user table"
+
+# Apply to database
+nx migrate --upgrade
+```
+
+---
+
+## Alias
+
+`nx m`

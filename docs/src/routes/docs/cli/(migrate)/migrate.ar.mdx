@@ -1,0 +1,51 @@
+# نإكس ترحيل
+
+يدير عمليات ترحيل قاعدة البيانات باستخدام أداة ترحيل ORM التي تم تكوينها.
+
+```bash
+nx migrate
+```
+
+---
+
+## كيف يعمل
+
+يكتشف Nexy ORM الذي تم تكوينه من `nexyconfig.py` ويفوضه إلى الأداة المناسبة:
+
+| أو آر إم | أداة الهجرة | حقل التكوين |
+|-----|--------------|--------------|
+| SQLAlchemy | الإنبيك | `useORM` |
+| سكلموديل | الإنبيك | `useORM` |
+| السلحفاة-ORM | ايريش | `useORM` |
+
+---
+
+##الأوامر
+
+| الأمر | الوصف |
+|---------|------------|
+| `nx migrate` | إنشاء ترحيل جديد (يكتشف التغييرات تلقائيًا) |
+| `nx migrate --init` | تهيئة أداة الترحيل (Alembic/Aerich) |
+| `nx migrate --upgrade` / `-u` | تطبيق عمليات الترحيل المعلقة |
+| `nx migrate -m "message"` | أنشئ ترحيلًا برسالة |
+
+---
+
+## مثال
+
+```bash
+# Initialize Alembic (first time)
+nx migrate --init
+
+# Create a migration after model changes
+nx migrate -m "add user table"
+
+# Apply to database
+nx migrate --upgrade
+```
+
+---
+
+## الاسم المستعار
+
+`nx m`

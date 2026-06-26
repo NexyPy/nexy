@@ -1,0 +1,58 @@
+# Server-Sent Events (Modular)
+
+Stream real-time events from server to client over HTTP using controllers.
+
+## Install
+
+```bash
+pip install sse-starlette
+```
+
+## Endpoint
+
+```python
+from nexy.decorators import Controller
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+
+"@Controller("/events")
+class EventsController:
+    async def GET(self):
+        async def gen():
+            for i in range(10):
+                await asyncio.sleep(1)
+                yield {"event": "ping", "data": str(i)}
+        return EventSourceResponse(gen())
+```
+
+## Dynamic event stream
+
+```python
+from nexy.decorators import Controller
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+
+"@Controller("/ticks")
+class TickController:
+    async def GET(self, count: int = 5, interval: float = 0.5):
+        async def gen():
+            for i in range(count):
+                await asyncio.sleep(interval)
+                yield {"event": "tick", "data": str(i)}
+        return EventSourceResponse(gen())
+```
+
+## Client
+
+```javascript
+const evtSource = new EventSource("/events");
+evtSource.addEventListener("ping", (e) => {
+    console.log(e.data);
+});
+```
+
+## Limitations
+
+- SSE is **unidirectional** (server → client) — use WebSocket for bidirectional
+- `sse-starlette` not included by default — `pip install sse-starlette`
+- Each connection holds an open HTTP connection — monitor your server limits

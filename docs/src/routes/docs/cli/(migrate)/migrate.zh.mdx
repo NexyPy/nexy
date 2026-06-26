@@ -1,0 +1,51 @@
+#nx迁移
+
+使用配置的 ORM 迁移工具管理数据库迁移。
+
+```bash
+nx migrate
+```
+
+---
+
+## 它是如何工作的
+
+Nexy 从 `nexyconfig.py` 检测配置的 ORM 并委托给适当的工具：
+
+|对象关系管理 |迁移工具|配置字段 |
+|-----|----------------|--------------|
+| SQLAlchemy |蒸馏器| `useORM` |
+| SQL模型|蒸馏器| `useORM` |
+|乌龟-ORM |艾里奇| `useORM` |
+
+---
+
+## 命令
+
+|命令|描述 |
+|---------|-------------|
+| `nx migrate` |创建新的迁移（自动检测更改）|
+| `nx migrate --init` |初始化迁移工具（Alembic/Aerich）|
+| `nx migrate --upgrade` / `-u` |应用待处理的迁移 |
+| `nx migrate -m "message"` |通过消息创建迁移 |
+
+ - -
+
+＃＃ 例子
+
+```bash
+# Initialize Alembic (first time)
+nx migrate --init
+
+# Create a migration after model changes
+nx migrate -m "add user table"
+
+# Apply to database
+nx migrate --upgrade
+```
+
+---
+
+## 别名
+
+`nx m`

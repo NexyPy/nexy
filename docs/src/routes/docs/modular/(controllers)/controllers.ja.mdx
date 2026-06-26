@@ -1,0 +1,275 @@
+# コントローラー
+
+コントローラーは、関連する HTTP エンドポイントを共通のプレフィックスの下にグループ化します。コントローラーはファイル間でルートを分散させるのではなく、リソースのすべてのエンドポイントを 1 つのクラスに保持します。
+
+## なぜコントローラーなのか?
+
+FBR では、`users/index.nexy`、`users/[id].nexy`、`users/create.nexy` を作成します。各ファイルは 1 つの URL を処理します。これは、あるページが別のページからのデータを必要とするか、10 のユーザー ルート間で認証ロジックを共有するまで機能します。
+
+コントローラーはすべての `/users/*` ルートを 1 つのクラスに置きます。共有依存関係はコンストラクターに入れられます。ルート固有のロジックが各メソッドに組み込まれます。
+
+## コントローラーの作成
+
+`"@Controller(prefix)` でクラスを装飾します。
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+
+    def post(self, data: dict):
+        return {"id": 3, **data}
+```
+
+**メソッド名は HTTP メソッドを定義します。** Nexy はメソッド名を大文字にし、標準の HTTP メソッドと照合します。 `GET` →​​ GET、`post` → POST、`Put` → PUT。
+
+このコントローラのすべてのルートは `/users/` にあります。
+- `GET /users/` → `GET()`
+- `POST /users/` → `post(data)`
+
+**注意点**: コントローラーごとに HTTP メソッドごとにメソッドは 1 つだけ使用できます。 `def GET(self): ... def get(self): ...` は起動時に `ValueError` を生成します。
+
+## ルートメソッドのマッピング
+
+|メソッド名 | HTTP メソッド |例 |
+|---------------|---------------|----------|
+| `GET`、`get`、`Get` |入手 |リソースを読む |
+| `post`、`POST`、`Post` |投稿 |リソースを作成する |
+| `put`、`PUT`、`Put` |置く |リソースを置き換える |
+| `delete`、`DELETE`、`Delete` |削除 |リソースを削除する |
+| `patch`、`PATCH`、`Patch` |パッチ |部分更新 |
+| `options`、`OPTIONS`、`Options` |オプション | CORS プリフライト |
+| `head`、`HEAD`、`Head` |頭 |応答ヘッダーのみ |
+| `SOCKET`、`socket`、`Socket` |ウェブソケット |リアルタイムコミュニケーション |
+
+**規則**: 読み取り操作 (`GET`) には大文字を使用し、突然変異 (`post`、`put`、`delete`) には小文字を使用します。これにより、コントローラーのスキャンが容易になり、HTTP 動詞が一目でわかるようになります。
+
+## パスパラメータ
+
+パス パラメーターは、個々のメソッドではなく、**コントローラー プレフィックス**に入れられます。
+
+```python
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {"id": id, "name": "Charlie"}
+
+    def delete(self, id: int):
+        return {"deleted": id}
+```
+
+パス パラメーターは **型強制**です。ルーターは型ヒントを読み取り、URL から文字列を変換します。サポートされているタイプ: `int`、`float`、`str`、`uuid.UUID`、`datetime.datetime`。
+
+**注意点**: 強制が失敗した場合 (例: `GET /users/abc` が `id: int`)、ルーターは 404 ではなく 422 検証エラーを返します。 これは、リソースが存在しないということではなく、パラメーターの形式が間違っていることをクライアントに伝えます。
+
+### 複数のパスパラメータ
+
+```python
+"@Controller("/users/{userId}/posts/{postId}")
+class UserPostController:
+    def GET(self, userId: int, postId: int):
+        return {"user": userId, "post": postId}
+```
+
+## クエリパラメータ
+
+クエリ文字列パラメータは、デフォルトの関数キーワード引数として使用できます。
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self, q: str | None = None, page: int = 1):
+        return {"query": q, "page": page}
+```
+
+FastAPI の依存関係注入システムは、クエリ パラメーターの解析を自動的に処理します。パスパラメータではないパラメータはクエリパラメータとして解釈されます。
+
+`request.query_params` 経由でクエリ パラメータにアクセスすることもできます。
+
+```python
+from fastapi import Request
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, request: Request):
+        q = request.query_params.get("q")
+        page = int(request.query_params.get("page", 1))
+        return {"query": q, "page": page}
+```
+
+**注意事項**: `useQuery` はクエリ パラメーターではなくパス パラメーターを返します。クエリ パラメータの場合は、関数のキーワード引数として宣言するか、`request.query_params` を使用します。
+
+## リクエスト本文
+
+POST、PUT、および PATCH メソッドは、リクエスト本文を自動的に解析します。型ヒントを宣言します。
+
+```python
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"id": 4, **body.model_dump()}
+```
+
+本文はデフォルトで JSON として解析されます。 Pydantic モデルは自動検証を提供します。無効なフィールドはフィールドレベルのエラーを含む 422 を返します。
+
+**注意事項**: `dict` を型ヒントとして使用すると、検証が失われます。ユーザー向けのエンドポイントには常に Pydantic を優先します。
+
+## ステータス コードのオーバーライド
+
+`"@UseResponse(status_code=...)` を使用してデフォルトのステータス コードをオーバーライドします。
+
+```python
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201)
+    def post(self, data: dict):
+        return {"id": 5}
+```
+
+デフォルトのステータス コード: `GET` → 200、`POST` → 201、`DELETE` → 204、その他 → 200。
+
+`"@UseResponse` は、応答モデル、応答クラス、応答の説明、およびその他の FastAPI 互換オプションもサポートしています。
+
+```python
+from nexy.decorators import UseResponse
+from fastapi.responses import HTMLResponse
+
+"@UseResponse(
+    status_code=200,
+    response_class=HTMLResponse,
+    response_model=None,
+    response_description="User profile page",
+)
+def GET(self):
+    ...
+```
+
+## ルートのメタデータ
+
+`"@UseRoute` を使用して OpenAPI メタデータを追加します。
+
+```python
+from nexy.decorators import Controller, UseRoute
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(summary="List all users", description="Returns paginated user list")
+    def GET(self):
+        return [...]
+
+    "@UseRoute(summary="Create a user", deprecated=True)
+    def post(self, data: dict):
+        return [...]
+```
+
+`"@UseRoute` は、`name`、`tags`、`summary`、`description`、`deprecated`、`include_in_schema`、`operation_id`、`openapi_extra` をサポートします。
+
+## 非同期ハンドラー
+
+コントローラーは同期ハンドラーと非同期ハンドラーの両方をサポートします。
+
+```python
+"@Controller("/users")
+class UsersController:
+    async def GET(self):
+        users = await db.fetch_all()
+        return users
+
+    def post(self, data: dict):
+        # Sync is fine for CPU-bound work
+        return process_sync(data)
+```
+
+Nexy は、非同期ハンドラーを自動的に待機します。同期ハンドラーはスレッドプールで実行されます。 I/O バウンドのエンドポイント (データベース、HTTP 呼び出し) には非同期を優先します。
+
+## エラー処理
+
+エラー応答に対して HTTP 例外を発生させます。
+
+```python
+from starlette.exceptions import HTTPException
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        if id < 1:
+            raise HTTPException(400, "ID must be positive")
+        user = find_user(id)
+        if not user:
+            raise HTTPException(404, "User not found")
+        return user
+```
+
+標準の HTTP ステータス コードを使用します。 Nexy は Starlette から例外を再エクスポートします。
+
+## 1 つのコントローラー、1 つのパス
+
+基本的な制約: **コントローラー内のすべてのメソッドは同じパスを共有します**。パスはコントローラーのプレフィックスによって決まります。メソッドごとにサブパスを定義することはできません。
+
+`/users` と `/users/{id}` が必要な場合は、2 つのコントローラーを作成します。
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [...]          # GET /users/
+
+    def post(self, data: dict):
+        return {...}          # POST /users/
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {...}          # GET /users/42
+
+    def delete(self, id: int):
+        return None           # DELETE /users/42
+```
+
+両方のコントローラーを同じモジュール内に含めることができます。この分離は意図的なものであり、各コントローラーは 1 つのリソース パスを処理します。
+
+## モジュールの統合
+
+コントローラーは、`controllers` クラス属性を介してモジュールに登録されます。
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+```
+
+モジュールは、すべてのコントローラーに適用されるプレフィックスを設定できます。
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+    # → GET /api/v1/users/, DELETE /api/v1/users/42
+```
+
+## ベストプラクティス
+
+1. **コントローラーごとに 1 つのリソース** — `UsersController`、`PostsController`。 `ApiController` は 1 つもありません。
+2. **メソッドに焦点を当て続ける** — 各メソッドは 1 つのことを行います。
+3. **依存関係の挿入を使用する** — メソッド本体でサービスをインスタンス化しないでください。
+4. **リクエストボディには Pydantic を優先します** — `body: dict` はコードの臭いです。
+5. **コントローラーに意味のある接頭辞を付けます** — `/users`、`/posts`、`/auth`。
+
+## 次のステップ
+
+- [Providers & DI](/docs/modular/providers) — コントローラーにサービスを挿入します
+- [Modules](/docs/modular/modules) — コントローラーを機能モジュールに編成します
+- [Guards](/docs/modular/guards) — 承認によりルートを保護します

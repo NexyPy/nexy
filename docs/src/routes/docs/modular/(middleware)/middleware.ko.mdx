@@ -1,0 +1,192 @@
+# 미들웨어
+
+미들웨어는 요청이 컨트롤러에 도달하기 전에 요청을 가로챕니다(그리고 그 후에 응답합니다). 로깅, 타이밍, CORS, 압축, 헤더 조작 등 다양한 경로에 적용되는 교차 문제에 사용하세요.
+
+가드와 마찬가지로 Nexy의 미들웨어는 요청/응답을 수정하거나 요청을 중단할 수 있는 호출 가능 항목인 **FastAPI 종속성**입니다.
+
+## 왜 미들웨어인가?
+
+모든 컨트롤러 메소드에 로깅을 추가할 수 있습니다.
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+미들웨어는 이를 한 번 적용되는 단일 호출 가능 항목으로 추출합니다.
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## 미들웨어 생성
+
+미들웨어는 `Request`를 취하는 콜러블입니다. `request.state`을 수정하거나 `HTTPException`를 발생시켜 중단하거나 `None`를 반환하여 통과할 수 있습니다.
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+타이밍을 위해 `request.state`를 사용하여 응답에 데이터를 전달할 수 있습니다.
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+그런 다음 FastAPI의 `Response` 매개변수를 통해 응답 후크를 추가합니다.
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**알겠습니다**: `call_next` 패턴은 전체 요청/응답 주기를 래핑하는 미들웨어에 작동합니다. 핸들러 이전에만 실행되는 간단한 미들웨어는 `request`를 사용합니다.
+
+## 미들웨어 적용
+
+### 컨트롤러 수준
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### 메소드 수준
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### 모듈 수준
+
+모든 경로에 대해 모듈에 미들웨어를 등록합니다.
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+모듈 수준 미들웨어는 `"@Module()` 속성을 통해 직접 지원되지 않습니다. 모든 경로에 적용되는 미들웨어의 경우 메서드 또는 컨트롤러 수준을 사용하거나 `nexyconfig.py`를 통해 전역적으로 등록하세요.
+
+## 글로벌 미들웨어
+
+`nexyconfig.py`를 통해 앱의 모든 경로에 대한 미들웨어를 등록합니다.
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+각 항목은 `(middleware_class, kwargs)`의 튜플입니다. kwargs는 미들웨어 생성자에 전달됩니다.
+
+## 내장 미들웨어
+
+Nexy에는 `nexyconfig.py`를 통해 구성할 수 있는 여러 내장 미들웨어가 포함되어 있습니다.
+
+| 구성 키 | 미들웨어 | 설명 |
+|------------|------------|-------------|
+| `useCORS` | `CORSMiddleware` | 교차 출처 리소스 공유 |
+| `useGZip` | `GZipMiddleware` | 응답 압축 |
+| `useTrustedHost` | `TrustedHostMiddleware` | 호스트 헤더 유효성 검사 |
+| `useSession` | `SessionMiddleware` | 쿠키 기반 세션 |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` | 강제 HTTPS |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+내장 미들웨어는 사용자 정의 미들웨어보다 먼저 전역 수준에서 실행됩니다.
+
+## 미들웨어 대 가드
+
+| 측면 | 미들웨어 | 가드 |
+|---------|------------|-------|
+| 실행 | 핸들러 이전 | 핸들러 전(미들웨어 후) |
+| 주요 목적 | 로깅, 헤더, 압축 | 인증, 권한 부여, 접근 제어 |
+| 패턴 | `__call__(self, request)` | `__call__(self, request)` |
+| 중단 | `HTTPException` 올리기 | `HTTPException` 올리기 |
+| 데이터 전달 | `request.state` | `request.state` |
+
+실제로 미들웨어와 가드는 동일한 방식으로 구현됩니다(FastAPI 종속성). 차이점은 개념적입니다. 미들웨어는 요청/응답을 수정하고 경비원은 액세스 제어 결정을 내립니다.
+
+## 미들웨어의 오류 처리
+
+미들웨어는 `call_next` 패턴을 사용하여 오류를 포착하고 사용자 정의 응답을 반환할 수 있습니다.
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## 모범 사례
+
+1. **미들웨어당 하나의 관심사** — 로깅, 타이밍, CORS. 하나의 "큰 미들웨어"가 아닙니다.
+2. **미들웨어를 빠르게 유지** — 미들웨어가 요청을 차단합니다. 값비싼 작업은 핸들러에 속합니다.
+3. **데이터 전달에 `request.state` 사용** — 이는 미들웨어, 가드 및 핸들러 간에 데이터를 공유하는 표준 방법입니다.
+4. **인증을 위해 가드를 선호** — 액세스 제어를 위해 미들웨어보다 개념적으로 더 명확합니다.
+5. **격리하여 미들웨어 테스트** — 모의 `Request`를 만들고, 미들웨어를 호출하고, 부작용을 확인합니다.
+
+## 다음 단계
+
+- [Guards](/docs/modular/guards) — 인증 및 승인
+- [Controllers](/docs/modular/controllers) — 경로 핸들러 정의
+- [Modules](/docs/modular/modules) — 기능 모듈로 구성

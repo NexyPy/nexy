@@ -1,63 +1,25 @@
 ---
-from src.mocks.docs.sidebar import SIDE_BAR
-from "@/components/link.nexy" import Link
-
+from "@components/docs/sidebarItems.nexy" import SidebarItems
+from "@components/docs/routerToggle.nexy" import RouterToggle
+from src.mocks.docs.sidebar import build_sections
+from src.locales.routes.docs.sidebar import SidebarI18n
+from nexy import usePathname
+pathname = usePathname()
+is_modular = pathname.startswith('/docs/modular')
+s = SidebarI18n()
 ---
-<aside class="sticky top-0 flex flex-col gap-8 py-12 w-64 border-r border-dashed border-border pr-8 ">
-    <menu class="space-y-4">
-        <div class="flex gap-3 items-center">
-            <div class="border p-2 rounded-xl corner ">
-                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path
-                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                    <circle cx="12" cy="12" r="4" />
-                </svg>
-            </div>
-            <div class=" flex-1">
-                <h2 class=" font-medium">FB Routeur</h2>
-                <p class="text-xs text-gray-500">File based routing</p>
-            </div>
-            <svg class="size-4 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round"
-            >
-                <path d="m7 15 5 5 5-5" />
-                <path d="m7 9 5-5 5 5" />
-            </svg>
-        </div>
-        <div class="flex gap-3 items-center">
-            <div class="border p-2 rounded-xl corner ">
-                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round"
-                >
-                    <circle cx="18" cy="18" r="3" />
-                    <circle cx="6" cy="6" r="3" />
-                    <path d="M6 21V9a9 9 0 0 0 9 9" />
-                </svg>
-            </div>
-            <div class=" flex-1">
-                <h2 class=" font-medium">Latest Version</h2>
-                <p class="text-xs text-gray-500">2.0.5</p>
-            </div>
-            <svg class="size-4 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round"
-            >
-                <path d="m7 15 5 5 5-5" />
-                <path d="m7 9 5-5 5 5" />
-            </svg>
-        </div>
-    </menu>
-    {% for _items in SIDE_BAR %}
-    <menu class="space-y-2">
-        <h3 class="text-xs text-gray-500 uppercase font-mono font-stretch-95%">{{_items.get("caption")}}</h3>
-        <h2 class=" text-lg ">{{_items.get("title")}}</h2>
-        <ul class="border-l text-[14px]  border-dashed border-border *:px-4 space-y-1">
-            {% for ch in _items.get("items") %}
-                <li class="">
-                    <Link href='/docs{{_items.get("href")+ch.get("href")}}''>{{ch.get("label")}}</Link>
-                </li>
-            {% endfor %}
-        </ul>
-    </menu>
-    {% endfor %}
+<script>
+function switchRouter(modular) {
+    window.__router = modular;
+    document.querySelectorAll('.router-section, .route-mode').forEach(function(el) {
+        el.classList.toggle('hidden', el.dataset.router !== (modular ? 'modular' : 'fbr'));
+    });
+}
+</script>
+<aside class="sidebar p-0! pr-2! py-6! flex flex-col gap-1 max-lg:fixed max-lg:top-0 max-lg:-left-72 max-lg:bottom-0 max-lg:z-50 max-lg:w-72 max-lg:h-dvh max-lg:pt-20 max-lg:bg-background max-lg:border-r max-lg:shadow-xl max-lg:transition-all max-lg:duration-300 max-lg:overflow-hidden" id="docs-sidebar">
+    <RouterToggle/>
+
+    <aside class="overflow-y-auto flex flex-col gap-4 py-2 pr-2 flex-1">
+        <SidebarItems SIDE_BAR_Items={{build_sections(s, "fbr" if not is_modular else "modular")}}/>
+    </aside>
 </aside>

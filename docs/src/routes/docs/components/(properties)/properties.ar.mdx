@@ -1,0 +1,202 @@
+#الخصائص (الدعائم)
+
+الدعائم هي كيفية تدفق البيانات إلى مكون. إنها تجعل المكونات قابلة لإعادة الاستخدام - نفس المكون `Card` يمكنه تقديم محتوى مختلف بناءً على الدعائم التي يتلقاها.
+
+## إعلان الدعائم
+
+يتم الإعلان عن الخاصيات في المادة الأمامية باستخدام بناء الجملة `:prop[type]`:
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+يصبح كل إعلان معلمة لوظيفة Python التي تم إنشاؤها مع التعليق التوضيحي للنوع المقابل.
+
+## مطلوب مقابل اختياري
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+إذا لم يتم تمرير الخاصية المطلوبة عند استخدام المكون، فستقوم Python برفع `TypeError` في وقت العرض. تتضمن رسالة الخطأ اسم المكون والوسيطة المفقودة.
+
+**متى يتم إنشاء الدعامة المطلوبة**: عندما يصبح المكون بلا معنى بدونه. `BlogCard` بدون `title` معطل - اجعله مطلوبًا. يمكن أن يكون `Button` بدون `variant` افتراضيًا إلى `"primary"`.
+
+## الأنواع المدعومة
+
+| اكتب | الحرفي الافتراضي | ملاحظات |
+|------|----------------|-------|
+| `str` | `""` | قيم السلسلة |
+| `int` | `0` | قيم عددية |
+| `float` | `0.0` | تعويم القيم |
+| `bool` | `false` | `true`/`false` (ليس `True`/`False`) |
+| `list` | `[]` | قائمة القيم |
+| `dict` | `{}` | قيم الإملاء |
+| `Any` | `None` | أي نوع |
+
+يتم استخدام التعليق التوضيحي للنوع للتوثيق ودعم IDE. في وقت التشغيل، تتم كتابة Python ديناميكيًا - ولا يفرض التعليق التوضيحي الكتابة. إذا قمت بتمرير سلسلة حيث من المتوقع وجود int، فسوف تفشل عندما يحاول القالب استخدامها حسابيًا، وليس على مستوى إعلان الخاصية.
+
+## تمرير الدعائم من الوالدين
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**القواعد**:
+
+- **قيم السلسلة** تستخدم `key="value"` أو `key="{{ jinja_expr }}"`
+- **التعبيرات** تستخدم `key={expr}` — بدون علامات اقتباس، ويتم تحليل القيمة على أنها Python
+- **القيم المنطقية**: استخدم `active=true` (أحرف صغيرة)، وليس `active=True` أو `active="true"`
+- **القوائم/الإملاءات**: `items={["a", "b"]}` أو `settings={"key": "val"}`
+
+## القيم الافتراضية والكائنات القابلة للتغيير
+
+مشكلة شائعة في لغة بايثون: **لا تستخدم الإعدادات الافتراضية القابلة للتغيير** والتي تتم مشاركتها عبر المكالمات:
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy يتولى هذا نيابة عنك. تستخدم الوظيفة التي تم إنشاؤها `None` كإعداد افتراضي داخلي وتقوم بإنشاء نسخة جديدة لكل مكالمة:
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+لذا فإن `items:prop[list] = []` آمن للاستخدام — حيث يحصل كل استدعاء مكون على قائمته الخاصة.
+
+## الدعائم الديناميكية مع `{{ }}`
+
+استخدم تعبيرات Jinja2 للقيم الديناميكية:
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+يقوم المترجم بتحويل قيم السمات التي تحتوي على `{{ }}` إلى سلسلة سلسلة Jinja2:
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+بالنسبة لقيم `{...}` غير المقتبسة، يتم تمرير المحتوى كتعبير Python مباشرة.
+
+## الدعائم في صفحات MDX
+
+يمكن للصفحات (ملفات `.mdx` في `src/routes/`) أيضًا أن تعلن عن الدعائم:
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+عادةً ما يتم تعيين دعائم الصفحة بواسطة التخطيط أو تمريرها عبر `useViews()`. إنها أقل شيوعًا من سمات المكونات لأن الصفحات عادةً ما تحصل على البيانات من الخطافات واستعلامات قاعدة البيانات بدلاً من ذلك.
+
+## انتشار الدعائم
+
+قم بتمرير الإملاء كدعائم متعددة باستخدام بناء جملة انتشار Jinja2 في القالب:
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+يعمل هذا من خلال الكشف المختصر للمترجم: عندما يرى `{{ ...props }}` في مفتاح السمة، فإنه يوسعه إلى `**props`.
+
+## مثال كامل: مكون الزر
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+الاستخدام:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## التالي
+
+- [Conditional Rendering](/docs/components/conditional): إذا/ل في القوالب
+-[Component Modules](/docs/components/modules): تنظيم المكونات

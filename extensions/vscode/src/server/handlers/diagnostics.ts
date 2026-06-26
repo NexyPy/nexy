@@ -14,12 +14,14 @@ import {
   type NexyImport,
   type NexyProp,
 } from "../../shared/nexy.parser";
-import { parseNexyConfig, resolveWithAlias } from "../../shared/nexy.config.parser";
+import { extractJinjaExpressions } from "../../shared/parser/jinja";
+import { JINJA_FILTERS } from "../../shared/types";
+import { findWorkspaceRoot, parseNexyConfig, resolvePythonModulePath, resolveWithAlias } from "../../shared/nexy.config.parser";
 import * as fs from "fs";
 import { fileURLToPath } from "url";
 import * as path from "path";
 
-const JINJA_FILTERS = ["abs","attr","batch","capitalize","center","count","default","dictsort","escape","filesizeformat","first","float","forceescape","format","groupby","indent","int","items","join","last","length","list","lower","map","max","min","pprint","random","reject","rejectattr","replace","reverse","round","safe","select","selectattr","slice","sort","string","striptags","sum","title","tojson","trim","truncate","unique","upper","urlencode","urlize","wordcount","wordwrap"];
+const FILTER_RE = /\|\s*([a-zA-Z_][a-zA-Z0-9_]*)/g;
 
 export class DiagnosticHandler {
   private builtins = ["print", "len", "range", "str", "int", "float", "bool", "list", "dict", "set", "tuple", "enumerate", "zip", "sum", "min", "max", "abs", "any", "all", "callable", "loop", "self"];
@@ -44,17 +46,32 @@ export class DiagnosticHandler {
 
   private checkUndefinedSymbols(doc: TextDocument, text: string, imports: NexyImport[], props: NexyProp[], diags: Diagnostic[]) {
     const pythonKeywords = ["from", "import", "as", "if", "else", "elif", "for", "in", "while", "def", "class", "return", "True", "False", "None", "not", "and", "or", "is", "prop"];
+    const jinjaGlobals = ["range", "dict", "lipsum", "cycler", "joiner", "namespace", "g", "request", "csrf_token", "url_for"];
     const usageRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\b(?:\s*\()?/g;
-    
+
     const definedSymbols = new Set([
       ...imports.map(i => i.name),
       ...props.map(p => p.name),
       ...this.builtins,
-      ...pythonKeywords
+      ...pythonKeywords,
+      ...jinjaGlobals,
     ]);
 
+    // 0. Scan Template for {% for x in y %} and {% set x = ... %} to add loop/set variables
+    const template = getTemplate(text);
+    const templateStartOffset = text.indexOf(template);
+    if (templateStartOffset !== -1) {
+      const templateLines = template.split('\n');
+      for (const line of templateLines) {
+        const forMatch = line.match(/\{%\s*for\s+(\w+)\s+/);
+        if (forMatch) definedSymbols.add(forMatch[1]);
+        const setMatch = line.match(/\{%\s*set\s+(\w+)\s*=/);
+        if (setMatch) definedSymbols.add(setMatch[1]);
+      }
+    }
+
     // 1. Scan Header for definitions and usages
-    const headerMatch = text.match(/^\s*---\s*\n([\s\S]*?)\n\s*---\s*/m);
+    const headerMatch = text.match(/^\s*---[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*---[ \t]*(?=\r?\n|$)/m);
     if (headerMatch) {
       const header = headerMatch[1];
       const headerOffset = headerMatch.index! + headerMatch[0].indexOf(header);
@@ -66,22 +83,17 @@ export class DiagnosticHandler {
         definedSymbols.add(defMatch[1] || defMatch[2]);
       }
 
-      // Check usages in header
+      // Strip string contents and import module paths before checking symbols
+      const cleaned = header
+        .replace(/"[^"]*"/g, (m) => ' '.repeat(m.length))
+        .replace(/'[^']*'/g, (m) => ' '.repeat(m.length))
+        .replace(/^[ \t]*from\s+.*$/gm, (m) => ' '.repeat(m.length));
+
       let match: RegExpExecArray | null;
-      while ((match = usageRegex.exec(header)) !== null) {
+      while ((match = usageRegex.exec(cleaned)) !== null) {
         const symbol = match[1];
         const fullMatch = match[0];
         const isCall = fullMatch.endsWith("(");
-        
-        // Skip if it's a prop declaration line (name : prop[type])
-        const lineStart = header.lastIndexOf("\n", match.index) + 1;
-        const lineEnd = header.indexOf("\n", match.index);
-        const line = header.slice(lineStart, lineEnd === -1 ? header.length : lineEnd);
-        if (line.includes(":") && line.includes("prop[")) {
-          const propNameMatch = line.match(/^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/);
-          if (propNameMatch && propNameMatch[1] === symbol) continue;
-          if (symbol === "prop") continue;
-        }
 
         if (!definedSymbols.has(symbol)) {
           const start = headerOffset + match.index;
@@ -96,8 +108,7 @@ export class DiagnosticHandler {
     }
 
     // 2. Scan Template for usages in Jinja expressions {{ ... }}
-    const template = getTemplate(text);
-    const templateStartOffset = text.indexOf(template);
+    if (templateStartOffset === -1) return;
     const jinjaRegex = /\{\{([\s\S]*?)\}\}/g;
     let jinjaMatch: RegExpExecArray | null;
 
@@ -105,11 +116,23 @@ export class DiagnosticHandler {
       const expression = jinjaMatch[1];
       const expressionOffset = jinjaMatch.index + 2; // +2 for {{
 
+      // Strip string contents so "label" inside {{ link.get("label") }} is not checked
+      const cleanedExpression = expression
+        .replace(/"[^"]*"/g, (m) => ' '.repeat(m.length))
+        .replace(/'[^']*'/g, (m) => ' '.repeat(m.length));
+
       let symbolMatch: RegExpExecArray | null;
-      while ((symbolMatch = usageRegex.exec(expression)) !== null) {
+      while ((symbolMatch = usageRegex.exec(cleanedExpression)) !== null) {
         const symbol = symbolMatch[1];
         const fullMatch = symbolMatch[0];
         const isCall = fullMatch.endsWith("(");
+
+        // Skip symbols that are method/property access (after a dot)
+        const beforePos = symbolMatch.index;
+        if (beforePos > 0 && cleanedExpression[beforePos - 1] === '.') continue;
+
+        // Skip Jinja2 filters (after a pipe)
+        if (beforePos > 0 && cleanedExpression[beforePos - 1] === '|') continue;
 
         if (!definedSymbols.has(symbol)) {
           const start = templateStartOffset + expressionOffset + symbolMatch.index;
@@ -133,10 +156,14 @@ export class DiagnosticHandler {
     const config = parseNexyConfig(workspaceRoot);
 
     imports.forEach(imp => {
-      // Skip system/library imports (don't start with . or @ or /)
-      if (!imp.path.startsWith(".") && !imp.path.startsWith("@") && !imp.path.startsWith("/") && !imp.path.includes("/")) {
+      // Skip system/library imports (don't start with . or @ or /, no dots)
+      if (!imp.path.startsWith(".") && !imp.path.startsWith("@") && !imp.path.startsWith("/") && !imp.path.includes("/") && !imp.path.includes(".")) {
         return; 
       }
+
+      // Python module path: src.components.X → src/components/X
+      const pyResolved = resolvePythonModulePath(imp.path, workspaceRoot);
+      if (pyResolved) return;
 
       let resolvedPath = path.resolve(currentDir, imp.path);
       
@@ -177,7 +204,7 @@ export class DiagnosticHandler {
     const templateStartOffset = text.indexOf(template);
     if (templateStartOffset === -1) return;
 
-    const componentUsageRegex = /<([A-Z][A-Za-z0-9]*)\s+([^>]*)\/?>/g;
+    const componentUsageRegex = /<([A-Z][A-Za-z0-9_]*)\s+([^>]*)\/?>/g;
     let match: RegExpExecArray | null;
 
     while ((match = componentUsageRegex.exec(template)) !== null) {
@@ -210,7 +237,7 @@ export class DiagnosticHandler {
               }
             });
           }
-        } catch {}
+        } catch { /* ignore */ }
 
         const componentProps = this.getComponentProps(doc, imp);
         const attrRegex = /([a-zA-Z0-9-]+)="([^"]*)"/g;
@@ -265,12 +292,7 @@ export class DiagnosticHandler {
 
   private getWorkspaceRoot(doc: TextDocument): string {
     const docPath = fileURLToPath(doc.uri);
-    let workspaceRoot = path.dirname(docPath);
-    while (workspaceRoot !== path.parse(workspaceRoot).root) {
-      if (fs.existsSync(path.join(workspaceRoot, "nexyconfig.py"))) break;
-      workspaceRoot = path.dirname(workspaceRoot);
-    }
-    return workspaceRoot;
+    return findWorkspaceRoot(path.dirname(docPath)) ?? path.dirname(docPath);
   }
 
   private getComponentProps(doc: TextDocument, imp: NexyImport): NexyProp[] {
@@ -392,17 +414,21 @@ export class DiagnosticHandler {
 
   private checkJinjaFilters(doc: TextDocument, text: string, template: string, diags: Diagnostic[]) {
     const templateStartOffset = text.indexOf(template);
-    const filterRegex = /\|\s*([a-zA-Z_][a-zA-Z0-9_]*)/g;
-    let match: RegExpExecArray | null;
-    while ((match = filterRegex.exec(template)) !== null) {
-      if (!JINJA_FILTERS.includes(match[1])) {
-        const start = templateStartOffset + match.index + match[0].indexOf(match[1]);
-        diags.push({
-          severity: DiagnosticSeverity.Warning,
-          range: Range.create(doc.positionAt(start), doc.positionAt(start + match[1].length)),
-          message: `Unknown Jinja2 filter "${match[1]}".`,
-          source: "nexy",
-        });
+    const expressions = extractJinjaExpressions(template);
+    // Only match filters inside Jinja blocks, not in raw HTML/JS/CSS
+    for (const expr of expressions) {
+      const rawBlock = template.slice(expr.start, expr.end);
+      let match: RegExpExecArray | null;
+      while ((match = FILTER_RE.exec(rawBlock)) !== null) {
+        if (!JINJA_FILTERS.has(match[1])) {
+          const globalStart = templateStartOffset + expr.start + match.index + match[0].indexOf(match[1]);
+          diags.push({
+            severity: DiagnosticSeverity.Warning,
+            range: Range.create(doc.positionAt(globalStart), doc.positionAt(globalStart + match[1].length)),
+            message: `Unknown Jinja2 filter "${match[1]}".`,
+            source: "nexy",
+          });
+        }
       }
     }
   }

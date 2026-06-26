@@ -1,0 +1,20 @@
+# Haken
+
+Hooks sind reaktive Funktionen, die Zugriff auf den Anforderungskontext und den Browserstatus in Ihren `.nexy`-Komponenten und -Layouts ermöglichen. Sie spiegeln das Konzept moderner Frontend-Frameworks wider, laufen aber auf dem Server.
+
+Alle Hooks werden von `nexy` importiert:
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## Verfügbare Haken
+
+- [usePathname](/docs/hooks/usePathname) – aktueller URL-Pfad
+- [useSearchParams](/docs/hooks/useSearchParams) – Zeichenfolgenparameter abfragen
+- [useRouter](/docs/hooks/useRouter) – programmatische Navigation
+- [useQuery](/docs/hooks/useQuery) – analysierte Abfrageparameter
+- [useSession](/docs/hooks/useSession) – Zugriff auf Sitzungsdaten
+- [useCookies](/docs/hooks/useCookies) – Lesen/Schreiben von Cookies
+- [useToc](/docs/hooks/useToc) – Extraktion des Inhaltsverzeichnisses
+- [useViews](/docs/hooks/useViews) – Verwaltung zusammensetzbarer Ansichten

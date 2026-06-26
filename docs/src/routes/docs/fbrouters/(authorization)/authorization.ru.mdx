@@ -1,0 +1,60 @@
+# Авторизация (FBR)
+
+Защитите маршруты с помощью декораторов `"@UseGuard` с вызываемыми объектами защиты.
+
+## Контракт охраны
+
+Охранником является любой вызываемый с помощью `__call__(self, request)`. Поднимите `HTTPException`, чтобы заблокировать, верните `None`, чтобы разрешить.
+
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+
+## Охранник на маршруте
+
+```python
+# src/routes/admin.py
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+```
+
+## Использование `requires` от Starlette
+
+```python
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+```
+
+## Несколько охранников
+
+```python
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+```
+
+---
+
+См. также: ["@UseGuard reference](/docs/decorators/useguard), [Authentication](/docs/security/authentication)

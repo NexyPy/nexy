@@ -1,0 +1,48 @@
+# "@UseResponse
+
+Legen Sie Antwortmetadaten für eine Handlermethode fest – Statuscode, Antwortmodell, Antwortklasse usw.
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## Unterschrift
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## Alle Parameter
+
+| Param | Geben Sie | ein Beschreibung |
+|-------|------|-------------|
+| `status_code` | `int` | HTTP-Statuscode |
+| `response_class` | `type[Response]` | Benutzerdefinierte Antwortklasse (z. B. `HTMLResponse`) |
+| `response_model` | `type` | Pydantisches Modell zur Antwortserialisierung |
+| `responses` | `dict` | Zusätzliche OpenAPI-Antworten |
+| `response_description` | `str` | Antwortbeschreibung in OpenAPI |
+| `response_model_include` | set/mapping | In die Antwort einzubeziehende Felder |
+| `response_model_exclude` | set/mapping | Von der Antwort auszuschließende Felder |
+| `response_model_by_alias` | `bool` | Als Antwort Aliasnamen verwenden |
+| `response_model_exclude_unset` | `bool` | Nicht festgelegte Felder ausschließen |
+| `response_model_exclude_defaults` | `bool` | Standardwertfelder ausschließen |
+| `response_model_exclude_none` | `bool` | Nichtwertige Felder ausschließen |

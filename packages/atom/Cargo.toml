@@ -1,0 +1,83 @@
+[package]
+name = "nexy-atom"
+version = "2.0.9"
+edition = "2021"
+description = "Nexy core engine in Rust — compiler, router, builder, CLI, ASGI bridge"
+authors = ["Nexy Team"]
+license = "MIT"
+repository = "https://github.com/nexy/nexy"
+
+[lib]
+crate-type = ["lib", "cdylib"]
+name = "nexy_atom"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+thiserror = "2"
+dashmap = "6"
+once_cell = "1"
+sha2 = "0.10"
+uuid = { version = "1", features = ["v4"] }
+chrono = "0.4"
+regex = "1"
+
+# Compiler / parsing
+pest = "2"
+pest_derive = "2"
+html5ever = "0.29"
+tendril = "0.4"
+tera = "1"
+
+# Async
+tokio = { version = "1", features = ["full"], optional = true }
+
+# HTTP server (axum-based, replaces FastAPI + Uvicorn)
+axum = { version = "0.7", features = ["ws"], optional = true }
+tower = { version = "0.4", optional = true }
+tower-http = { version = "0.5", features = ["cors", "compression-gzip"], optional = true }
+hyper = { version = "1", features = ["full"], optional = true }
+
+# CLI
+clap = { version = "4", features = ["derive"], optional = true }
+colored = { version = "2", optional = true }
+indicatif = { version = "0.17", optional = true }
+
+# File watching
+notify = { version = "6", optional = true }
+
+# File system utilities
+walkdir = "2"
+glob = "0.3"
+
+# Logging / tracing
+tracing = { version = "0.1", optional = true }
+tracing-subscriber = { version = "0.3", features = ["env-filter"], optional = true }
+
+# Python bindings (ASGI bridge)
+pyo3 = { version = "0.21", features = ["extension-module"], optional = true }
+
+[features]
+default = []
+full = ["server", "cli", "watcher", "tracing"]
+server = ["tokio", "axum", "tower", "tower-http", "hyper"]
+cli = ["clap", "colored", "indicatif", "tokio"]
+watcher = ["notify", "tokio"]
+python = ["pyo3"]
+
+[[bin]]
+name = "nx"
+path = "src/bin/nx.rs"
+required-features = ["cli"]
+
+[[bin]]
+name = "nexy"
+path = "src/bin/nexy.rs"
+required-features = ["cli"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

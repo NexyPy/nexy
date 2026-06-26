@@ -1,0 +1,72 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 布局
+
+布局是一个 `layout.nexy` 文件，包含其目录中的所有页面。它可以防止在每个页面上重复相同的页眉、侧边栏或页脚。
+
+---
+
+## 它是如何工作的
+
+将 `layout.nexy` 放入 `routes/` 目录中。 Nexy 自动将其应用到所有同级页面（无需创建路由本身）：
+```bash
+routes/
+├── layout.nexy           ← Applied to / and /about
+├── index.nexy
+├── about.nexy
+└── blog/
+    ├── layout.nexy       ← Applied to /blog/...
+    ├── index.nexy
+    └── [slug].nexy
+```
+---
+
+## 语法
+
+布局通过 `children:prop[str]` 接收其子内容：
+```
+---
+children: prop[str]
+---
+<header class="site-header">
+    <nav>...</nav>
+</header>
+<main>
+    {{ children | safe }}
+</main>
+<footer>...</footer>
+```
+---
+
+## 嵌套布局
+
+布局分层嵌套。位于 `blog/[slug].nexy` 的页面首先接收 `blog/layout.nexy`，然后是根 `layout.nexy`：
+```bash
+routes/
+├── layout.nexy           ← Global layout (header, footer)
+└── blog/
+    ├── layout.nexy       ← Blog layout (category sidebar)
+    └── [slug].nexy       ← Page → blog/layout → root/layout
+```
+---
+
+## 现实世界的例子
+
+这些文档的布局 (`src/routes/docs/layout.nexy`) 使用 `usePathname`、`Sidebar` 和 `Table_of_contents`：
+```python
+from nexy import usePathname
+from "@components/docs/sidebar.nexy" import Sidebar
+from "@components/docs/table_of_contents.nexy" import Table_of_contents
+```
+```html
+<main>
+    <Sidebar />
+    <aside>{{ children | safe }}</aside>
+    <Table_of_contents />
+</main>
+```
+<Link href="/docs/fbrouters/dependencies">Next: Dependencies →</Link>

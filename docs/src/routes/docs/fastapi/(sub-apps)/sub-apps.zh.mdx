@@ -1,0 +1,51 @@
+# 子应用程序和安装
+
+在子路径上挂载独立的 ASGI 或 WSGI 应用程序。
+
+##挂载子应用
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+现在 `/sub/` 为子应用程序提供服务。它有自己的路由、中间件和生命周期。
+
+## Starlette 子应用程序
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## WSGI 子应用程序（Flask、Django）
+
+请参阅[WSGI](/docs/fastapi/wsgi)。
+
+## 安装如何工作
+
+- 在请求到达子应用程序之前，安装**前缀被剥离**
+- 子应用程序有自己的**自己的中间件堆栈** - Nexy 身份验证/中间件不适用
+- 子应用程序可以是任何 ASGI 应用程序（FastAPI、Starlette、Litestar 等）
+- 坐骑已订购——首场比赛获胜
+
+## 限制
+
+- 不支持跨安装的 WebSocket
+- 生命周期事件是针对每个应用程序的
+- OpenAPI 文档仅涵盖根应用程序 - 子应用程序文档需要单独设置

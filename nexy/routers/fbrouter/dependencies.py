@@ -27,7 +27,7 @@ class RouteDependencies:
 
             while str(current).startswith(str(limit_dir)):
                 chain.append(current)
-                if current == root or current == limit_dir:
+                if current in (root, limit_dir):
                     break
                 current = current.parent
 

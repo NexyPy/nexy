@@ -1,8 +1,8 @@
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
 
 
-def solid() -> FFModel:
-    return FFModel(
+def solid() -> FrontendFramework:
+    return FrontendFramework(
         name="solid",
         render=(
             "(function(){"
@@ -18,14 +18,14 @@ def solid() -> FFModel:
             "let props={};"
             "try{props=JSON.parse(propsStr)}catch(e){}"
             "const ref=key||path;"
-            # OPTIMISATION : Chargement parallèle du composant et de Solid
+            # OPTIMISATION: Parallel load of component and Solid
             "const [mod, sw, {createComponent}] = await Promise.all(["
             "gi(ref),"
             'import("solid-js/web"),'
             'import("solid-js")'
             "]);"
             "const Comp=(mod&&mod.default)!==undefined?mod.default:(symbol&&mod&&mod[symbol]);"
-            # REMPLACEMENT : On vide l'élément pour garantir que Solid prend le contrôle total (évite l'erreur .done)
+            # Clear element to ensure Solid takes full control (avoids .done error)
             'el.innerHTML="";'
             "sw.render(() => createComponent(Comp, props), el);"
             "}"

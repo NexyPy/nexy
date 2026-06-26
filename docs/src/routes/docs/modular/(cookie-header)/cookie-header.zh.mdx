@@ -1,0 +1,69 @@
+# Cookie 和标头（模块化）
+
+在控制器中使用 FastAPI 的 `Cookie` 和 `Header` 读取 HTTP cookie 和标头。
+
+## Cookie 参数
+
+```python
+from nexy.decorators import Controller
+from fastapi import Cookie
+
+"@Controller("/profile")
+class ProfileController:
+    def GET(self, session_id: str | None = Cookie(None)):
+        return {"session_id": session_id}
+```
+
+## 多个cookie
+
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/settings")
+class SettingsController:
+    def GET(self, session_id: str | None = Cookie(None), theme: str = Cookie("light")):
+        return {"session": session_id, "theme": theme}
+```
+
+## 标头参数
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/info")
+class InfoController:
+    def GET(self, user_agent: str | None = Header(None)):
+        return {"ua": user_agent}
+```
+
+## 自定义标头别名
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/secure")
+class SecureController:
+    def GET(self, x_token: str = Header(alias="X-Token")):
+        return {"token": x_token}
+```
+
+默认情况下，标头名称为小写字母，连字符为下划线。使用 `alias` 作为自定义名称。
+
+## 读取模板中的cookie
+
+在 `.nexy` 模板中，使用 `useCookies()` 钩子：
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+
+---
+
+另请参阅：[useCookies hook](/docs/hooks/useCookies)、[Session config](/docs/config/session)

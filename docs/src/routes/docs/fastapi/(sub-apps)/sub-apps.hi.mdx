@@ -1,0 +1,51 @@
+# उप अनुप्रयोग और माउंट
+
+उप-पथ पर स्वतंत्र ASGI या WSGI एप्लिकेशन माउंट करें।
+
+## एक उप-ऐप माउंट करना
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+अब `/sub/` उप-एप्लिकेशन परोसता है। इसके अपने मार्ग, मिडलवेयर और जीवनकाल हैं।
+
+## स्टारलेट उप-ऐप
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## डब्लूएसजीआई उप-ऐप (फ्लास्क, डीजेंगो)
+
+[WSGI](/docs/fastapi/wsgi) देखें.
+
+## माउंट कैसे काम करते हैं
+
+- अनुरोध उप-ऐप तक पहुंचने से पहले माउंट **उपसर्ग हटा दिया जाता है**
+- उप-ऐप्स का अपना **अपना मिडलवेयर स्टैक** होता है - नेक्सी ऑथ/मिडलवेयर लागू नहीं होता है
+- उप-ऐप्स कोई भी ASGI एप्लिकेशन (FastAPI, Starlette, Litestar, आदि) हो सकते हैं।
+- माउंट का ऑर्डर दिया गया है - पहला मैच जीतता है
+
+## प्रतिबंध
+
+- वेबसॉकेट सभी माउंट पर समर्थित नहीं है
+- जीवनकाल की घटनाएँ प्रति-ऐप हैं
+- ओपनएपीआई दस्तावेज़ केवल रूट ऐप को कवर करते हैं - उप-ऐप दस्तावेज़ों को अलग सेटअप की आवश्यकता होती है

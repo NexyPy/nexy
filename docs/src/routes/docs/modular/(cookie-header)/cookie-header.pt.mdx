@@ -1,0 +1,69 @@
+# Cookies e cabeçalhos (modulares)
+
+Leia cookies e cabeçalhos HTTP usando `Cookie` e `Header` do FastAPI em controladores.
+
+## Parâmetro de cookie
+
+```python
+from nexy.decorators import Controller
+from fastapi import Cookie
+
+"@Controller("/profile")
+class ProfileController:
+    def GET(self, session_id: str | None = Cookie(None)):
+        return {"session_id": session_id}
+```
+
+## Vários cookies
+
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/settings")
+class SettingsController:
+    def GET(self, session_id: str | None = Cookie(None), theme: str = Cookie("light")):
+        return {"session": session_id, "theme": theme}
+```
+
+## Parâmetro de cabeçalho
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/info")
+class InfoController:
+    def GET(self, user_agent: str | None = Header(None)):
+        return {"ua": user_agent}
+```
+
+## Alias ​​de cabeçalho personalizado
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/secure")
+class SecureController:
+    def GET(self, x_token: str = Header(alias="X-Token")):
+        return {"token": x_token}
+```
+
+Os nomes dos cabeçalhos são minúsculos com hífens como sublinhados por padrão. Use `alias` para nomes personalizados.
+
+## Lendo cookies em modelos
+
+Nos modelos `.nexy`, use o gancho `useCookies()`:
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+
+---
+
+Veja também: [useCookies hook](/docs/hooks/useCookies), [Session config](/docs/config/session)

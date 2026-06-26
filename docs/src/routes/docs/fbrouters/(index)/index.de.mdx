@@ -1,0 +1,56 @@
+# Übersicht über dateibasiertes Routing
+
+Das File-Based Routing (FBR) von Nexy erstellt automatisch Routen aus Ihrem Dateibaum unter `src/routes/`. Jede `.nexy`-, `.mdx`- und `.py`-Datei wird zu einer HTTP-Route – keine Routenregistrierung erforderlich.
+
+Wenn Sie mit Next.js Pages Router, PHP oder einem statischen HTML-Server gearbeitet haben, ist Ihnen das Konzept bekannt: Der Dateipfad ist der URL-Pfad.
+
+---
+
+## Wie es funktioniert
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+Jede Datei wird einem URL-Pfad zugeordnet, indem das Präfix `src/routes/` und die Dateierweiterung entfernt werden. Dateien mit dem Namen `index` dienen als Verzeichnisstamm – `/blog/index.nexy` dient als Verzeichnis `/blog`.
+
+---
+
+## Reservierte Dateinamen
+
+Einige Dateinamen weisen ein besonderes Verhalten auf und werden nicht als Routen behandelt:
+
+| Datei | Zweck |
+|------|---------|
+| `layout.nexy` | Gemeinsames Layout für Geschwister- und Kinderrouten |
+| `dependencies.py` | Gemeinsame Abhängigkeitsinjektion |
+| `__init__.py` | Python-Paketmarkierung |
+
+---
+
+## Routenpriorität
+
+Wenn Sie mehrere Dateien für denselben Pfad in unterschiedlichen Formaten erstellen, löst Nexy die Priorität wie folgt auf: `.py` > `.nexy` > `.mdx`.
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## Nächste Schritte
+
+- [Pages & Layouts](/docs/fbrouters/pages) – Seiten und gemeinsame Layouts erstellen
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) – REST-API-Routen mit Python
+- [Dynamic URLs](/docs/fbrouters/route_parameters) – Pfadparameter wie `[slug]`

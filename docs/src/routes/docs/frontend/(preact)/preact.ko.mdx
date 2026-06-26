@@ -1,0 +1,73 @@
+# Preact
+
+`nexyconfig.py`에 Preact를 추가하세요:
+
+```python
+from nexy.frontend import preact
+
+class NexyConfig(NexyConfigModel):
+    useFF = [preact()]
+```
+
+---
+
+## 컴포넌트 생성
+
+Preact는 React와 동일한 API를 사용하지만 설치 공간은 더 작습니다.
+
+```tsx
+// src/components/Counter.tsx
+import { useState } from 'preact/hooks'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## .nexy 페이지에서 사용
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+소품은 Jinja2 `{{ }}` 구문을 통해 전달됩니다. JSON 값에는 이중 중괄호를 사용하세요.
+
+---
+
+## 어린이/슬롯 콘텐츠
+
+Nexy는 하위 콘텐츠를 `children` prop으로 전달합니다.
+
+```tsx
+export default function Card({ title, children }) {
+  return (
+    <div class="card">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## SSR
+
+Preact는 서버에서 렌더링되고 클라이언트에서 자동으로 수화됩니다.

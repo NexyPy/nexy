@@ -1,0 +1,17 @@
+# 装饰器
+
+Nexy 使用 Python 装饰器来扩展路由、控制器、中间件和依赖项注入。这些装饰器在 FBR 和模块化路由模式下工作。
+
+## FBR 装饰器
+
+- [@Action](/docs/decorators/action) — 处理表单提交
+- [@UseGuard](/docs/decorators/useguard) — 附加路线守卫
+- [@Middleware](/docs/decorators/middleware) — 将中间件添加到路由
+
+## 模块化装饰器（附加）
+
+- [@Controller](/docs/decorators/controller) — 定义控制器类
+- [@Module](/docs/decorators/module) — 声明一个应用程序模块
+- [@Injectable](/docs/decorators/injectable) — 注册依赖注入提供程序
+- [@UseRoute](/docs/decorators/useroute) — 自定义路由绑定
+- [@UseResponse](/docs/decorators/useresponse) — 自定义响应处理程序

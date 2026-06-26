@@ -1,0 +1,26 @@
+#PostgreSQL
+
+PostgreSQL は、Nexy アプリケーションに推奨される運用データベースです。
+
+## 接続
+
+プロジェクトのデータベース構成で PostgreSQL 接続を構成します。
+
+```python
+# configs/database.py or .env
+DATABASE_URL = "postgresql+asyncpg://user:password"@localhost:5432/mydb"
+```
+
+## ORM を使用する場合
+
+| ORM |ドライバー |接続文字列 |
+|-----|--------|------|
+| SQLモデル / SQLAlchemy | `asyncpg` | `postgresql+asyncpg://user:pass"@localhost/db` |
+|トータス-ORM | `asyncpg` | `postgres://user:pass"@localhost/db` |
+
+## PostgreSQL と Nexy を併用する理由
+
+- `asyncpg` による完全な非同期サポート
+- 柔軟なスキーマ用のネイティブ JSON/JSONB 列
+- 実稼働環境への導入に最適
+- サポートされているすべての ORM で動作します

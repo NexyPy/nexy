@@ -1,0 +1,65 @@
+# useViews
+
+지정된 컨텍스트로 뷰 템플릿(`.nexy`, `.mdx` 또는 프런트엔드 구성 요소)을 렌더링하고 `HTMLResponse`를 반환합니다.
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## 매개변수
+
+| 매개변수 | 유형 | 기본값 | 설명 |
+|------------|------|---------|-------------|
+| `path` | `str` | 필수 | 뷰 파일 경로(프로젝트 기준) |
+| `context` | `dict \| None` | `None` | 템플릿에 전달할 변수 |
+
+---
+
+## 반환 값
+
+`HTMLResponse` — Vite 자산이 삽입된 렌더링된 HTML입니다.
+
+---
+
+## 예
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## 프런트엔드 구성 요소
+
+`.tsx`, `.vue`, `.svelte` 및 `.jsx` 보기의 경우 `useViews`는 수화 가능한 컨테이너를 반환합니다.
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+컨테이너에는 클라이언트 측 하이드레이션을 위한 `data-nexy-fw`, `data-nexy-path` 및 `data-nexy-props` 속성이 포함되어 있습니다.
+
+---
+
+## 지원되는 확장 프로그램
+
+| 확장 | 행동 |
+|------------|----------|
+| `.nexy` | 컴파일된 템플릿 → 렌더링된 HTML |
+| `.mdx` | 마크다운 + 구성 요소 → 렌더링된 HTML |
+| `.tsx` | 수화용기(React/Solid/Preact) |
+| `.vue` | 수화 가능한 용기 |
+| `.svelte` | 수화 가능한 용기 |
+| `.jsx` | 수화 가능한 용기 |

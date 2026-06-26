@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 의존성
+
+`src/routes/` 내의 `dependencies.py` 파일은 디렉터리 트리의 모든 경로에 자동으로 적용되는 일반적인 FastAPI 종속성을 수집합니다.
+
+---
+
+## `dependencies = [...]`
+
+콜러블을 정의하고 모듈 수준 `dependencies` 변수에 나열합니다.
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+`dependencies`에 나열된 항목만 적용되며 기본 기능은 무시됩니다.
+
+---
+
+## 상속(재정의가 아닌 병합)
+
+Nexy는 경로 파일에서 `src/routes/`까지 **위로** 이동하여 발견된 모든 `dependencies` 목록을 **병합**합니다.
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+하위 `dependencies.py` 파일은 **상위 항목을 재정의하지 않습니다**. 모든 목록이 결합됩니다. If the same dependency name appears in both, FastAPI raises `ValueError` at startup (duplicate parameter).
+
+---
+
+## 페이지에서 사용하기
+
+`.nexy` 페이지에서는 렌더링 전에 종속성이 자동으로 실행됩니다. 이를 가져오거나 호출할 필요가 없습니다.
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+확인된 값은 템플릿 변수로 사용할 수 **없습니다**. 부작용(인증 확인, 로깅, DB 연결 설정)에 대한 종속성이 실행됩니다.
+
+`.py` 핸들러의 경우 종속성은 부작용으로 실행됩니다. 해당 반환 값은 핸들러에 주입되지 **않습니다**. 종속성 값에 액세스하려면 함수 서명에 `Depends()`를 추가하세요.
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+동일한 호출 가능 항목이 `dependencies = [...]` 및 핸들러 서명 모두에 나열되면 FastAPI는 이를 한 번 실행하고 결과를 공유합니다.
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

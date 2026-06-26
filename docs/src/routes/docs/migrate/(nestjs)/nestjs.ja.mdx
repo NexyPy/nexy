@@ -1,0 +1,44 @@
+# NestJS から Nexy に移行する
+
+Nexy のモジュラー ルーターは、NestJS (デコレーター、DI、モジュール、ガード、ミドルウェア) からインスピレーションを受けています。概念はほぼ 1 対 1 で伝達されます。
+
+## 概念マッピング
+
+|ネストJS |ネクシー |
+|------|------|
+| `"@Controller()` | `"@Controller()` |
+| `"@Injectable()` | `"@Injectable()` |
+| `"@Module()` | `"@Module()` |
+| `"@Get()` | `def GET(self)` |
+| `"@Post()` | `def POST(self)` |
+| `"@UseGuards()` | `"@UseGuard()` |
+| `"@UseInterceptors()` | `"@Middleware()` |
+| `constructor(private svc: Svc)` | `def __init__(self, svc: Svc)` |
+| `APP_INTERCEPTOR` |構成内の `useMiddlewares` |
+| `app.module.ts` | `app_module.py` |
+
+＃＃ 例
+```python
+# NestJS equivalent
+"@Controller("/users")
+export class UsersController {
+    constructor(private service: UserService) {}
+    "@Get()
+    findAll() { return this.service.findAll(); }
+}
+
+# Nexy
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+## 主な違い
+
+- **メソッド名は HTTP 動詞を定義します** — `"@Get`/`"@Post`/`"@Put`/`"@Delete` デコレータはありません
+- **1 つのモジュール内のすべてのデコレータ** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **いいえ `"@Global`** — スコープは `Injectable(scope=Scope.SINGLETON)` 経由で処理されます
+- **ガードとミドルウェアは呼び出し可能です** — 拡張する基本クラスはなく、`__call__(self, request)` だけです

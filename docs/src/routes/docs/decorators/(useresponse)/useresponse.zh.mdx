@@ -1,0 +1,48 @@
+#“@UseResponse
+
+在处理程序方法上设置响应元数据 - 状态代码、响应模型、响应类等。
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+＃＃ 签名
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## 所有参数
+
+|参数|类型 |描述 |
+|--------|------|-------------|
+| `status_code` | `int` | HTTP 状态码 |
+| `response_class` | `type[Response]` |自定义响应类别（例如`HTMLResponse`）|
+| `response_model` | `type` |用于响应序列化的 Pydantic 模型 |
+| `responses` | `dict` |其他 OpenAPI 响应 |
+| `response_description` | `str` | OpenAPI 中的响应描述 |
+| `response_model_include` |设置/映射 |响应中包含的字段 |
+| `response_model_exclude` |设置/映射 |从响应中排除的字段 |
+| `response_model_by_alias` | `bool` |在响应中使用别名 |
+| `response_model_exclude_unset` | `bool` |排除未设置的字段 |
+| `response_model_exclude_defaults` | `bool` |排除默认值字段 |
+| `response_model_exclude_none` | `bool` |排除无值字段 |

@@ -1,0 +1,73 @@
+# उपदेश
+
+अपने `nexyconfig.py` में Preact जोड़ें:
+
+```python
+from nexy.frontend import preact
+
+class NexyConfig(NexyConfigModel):
+    useFF = [preact()]
+```
+
+---
+
+## एक घटक बनाना
+
+Preact, React के समान API का उपयोग करता है लेकिन छोटे फ़ुटप्रिंट के साथ:
+
+```tsx
+// src/components/Counter.tsx
+import { useState } from 'preact/hooks'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## .nexy पेज में उपयोग करना
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+प्रॉप्स को Jinja2 `{{ }}` सिंटैक्स के माध्यम से पारित किया जाता है - JSON मानों के लिए डबल ब्रेसिज़ का उपयोग करें।
+
+---
+
+## बच्चे/स्लॉट सामग्री
+
+नेक्सी चाइल्ड कंटेंट को `children` प्रोप के रूप में पास करता है:
+
+```tsx
+export default function Card({ title, children }) {
+  return (
+    <div class="card">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## एसएसआर
+
+Preact सर्वर-रेंडर होता है और क्लाइंट पर स्वचालित रूप से हाइड्रेटेड होता है।

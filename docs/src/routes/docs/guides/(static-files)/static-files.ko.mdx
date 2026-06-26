@@ -1,0 +1,38 @@
+# 정적 파일
+
+Nexy는 프로젝트 루트의 `public/` 디렉터리에서 정적 파일을 제공합니다.
+
+## 작동 방식
+
+`public/`에 있는 모든 파일은 루트 URL 경로에서 제공됩니다.
+
+```text
+public/
+├── logo.svg           →  /logo.svg
+├── images/
+│   └── hero.jpg       →  /images/hero.jpg
+├── fonts/
+│   └── inter.woff2    →  /fonts/inter.woff2
+└── robots.txt         →  /robots.txt
+```
+
+구성이 필요하지 않습니다. `public/`의 파일은 자동으로 제공됩니다.
+
+## 자산 디렉토리
+
+컴파일된 자산(CSS, Vite의 JS)의 경우 `assets/` 디렉터리를 사용하거나 `vite.config.ts`에서 출력을 구성합니다. Nexy는 이를 `/assets/`에 마운트합니다.
+
+## 정적 파일 참조
+
+`.nexy` 템플릿에서:
+
+```nexy
+<img src="/logo.svg" alt="Logo" />
+<link rel="stylesheet" href="/styles/global.css" />
+```
+
+Python Frontmatter 또는 경로 핸들러에서 경로는 프로젝트 루트를 기준으로 합니다.
+
+## 생산
+
+`nx build` 동안 `public/` 디렉터리가 `__nexy__/public/`로 복사됩니다. 프로덕션 서버는 이러한 파일을 직접 제공하므로 컴파일이 필요하지 않습니다.

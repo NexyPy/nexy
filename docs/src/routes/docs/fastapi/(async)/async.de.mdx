@@ -1,0 +1,66 @@
+# Asynchronität und Parallelität
+
+Nexy basiert auf FastAPI, das die Routenhandler `async` und `def` automatisch unterstützt.
+
+## `async def` vs. `def`
+
+| Handlertyp | Ausführung | Wann sollte | verwendet werden?
+|-------------|-----------|-------------|
+| `def` | Thread-Pool (blockierend) | CPU-Arbeit, DB-Aufrufe synchronisieren, I/O blockieren |
+| `async def` | Ereignisschleife | Asynchrone Datenbank, HTTP-Aufrufe, WebSocket, lange Abfrage |
+
+---
+
+## Asynchrone Route
+```python
+---
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+---
+```
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+## Gemischte Synchronisierung und Asynchronisierung in einer Datei
+```python
+---
+def GET():          # runs in thread pool
+    return {"type": "sync"}
+
+async def GET_async():  # runs in event loop
+    return {"type": "async"}
+---
+```
+```python
+from nexy.decorators import Controller
+
+"@Controller("/demo")
+class DemoController:
+    def GET(self):          # runs in thread pool
+        return {"type": "sync"}
+
+    async def async_get(self):  # runs in event loop
+        return {"type": "async"}
+```
+## Hintergrundaufgaben
+
+Für Fire-and-Forget-Arbeiten nach der Antwort verwenden Sie `BackgroundTasks` (synchronisierungsfreundlich). Für echte asynchrone Hintergrundarbeit verwenden Sie `asyncio.create_task`.
+
+## Vorbehalte
+
+- Rufen Sie `async`-Funktionen nicht** von `def`-Handlern mit `await` auf – verwenden Sie `asyncio.run()` oder machen Sie den Handler zu `async def`
+- Rufen Sie **keine** Blockierungsfunktionen (wie `time.sleep()`, `requests.get()`) von `async def` auf – verwenden Sie `asyncio.sleep()`, `httpx.AsyncClient`
+- Nexys `nx dev` führt standardmäßig einen Uvicorn-Worker aus – asynchrone Handler glänzen hier
+– Verwenden Sie für die Produktion mehrere Worker (`nx start --workers 4`) für Synchronisierungshandler

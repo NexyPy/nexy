@@ -1,0 +1,43 @@
+# useSearchParams
+
+Devuelve los parámetros de consulta de URL actuales como un diccionario.
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## Valor de retorno
+
+`dict`: parámetros de consulta de la URL de solicitud (por ejemplo, `{"q": "nexy", "page": "2"}`).
+
+---
+
+## Ejemplo
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## Métodos
+
+El dict devuelto admite operaciones de diccionario estándar: `.get(key, default)`, `.keys()`, `.items()`.
+
+---
+
+## Notas de uso
+
+- Todos los valores son cadenas: convierta con `int()`, `bool()`, etc.
+- Para los controladores de API, utilice la inyección de parámetros nativos de FastAPI en su lugar.

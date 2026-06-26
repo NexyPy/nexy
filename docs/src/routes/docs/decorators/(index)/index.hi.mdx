@@ -1,0 +1,17 @@
+# डेकोरेटर
+
+नेक्सी मार्गों, नियंत्रकों, मिडलवेयर और निर्भरता इंजेक्शन का विस्तार करने के लिए पायथन डेकोरेटर्स का उपयोग करता है। ये डेकोरेटर एफबीआर और मॉड्यूलर रूटिंग मोड दोनों में काम करते हैं।
+
+## एफबीआर डेकोरेटर्स
+
+- [@Action](/docs/decorators/action) - फॉर्म सबमिशन संभालें
+- [@UseGuard](/docs/decorators/useguard) - रूट गार्ड संलग्न करें
+- [@Middleware](/docs/decorators/middleware) - रूट में मिडलवेयर जोड़ें
+
+## मॉड्यूलर डेकोरेटर (अतिरिक्त)
+
+- [@Controller](/docs/decorators/controller) - एक नियंत्रक वर्ग को परिभाषित करें
+- [@Module](/docs/decorators/module) - एक एप्लिकेशन मॉड्यूल घोषित करें
+- [@Injectable](/docs/decorators/injectable) - एक निर्भरता इंजेक्शन प्रदाता पंजीकृत करें
+- [@UseRoute](/docs/decorators/useroute) - कस्टम रूट बाइंडिंग
+- [@UseResponse](/docs/decorators/useresponse) - कस्टम प्रतिक्रिया हैंडलर

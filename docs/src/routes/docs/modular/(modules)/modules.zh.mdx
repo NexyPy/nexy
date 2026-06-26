@@ -1,0 +1,193 @@
+# 模块
+
+模块将相关的控制器、提供者和子模块分组为一个内聚单元。每个模块化应用程序都有一个导入功能模块的根模块。
+
+## 为什么是模块？
+
+如果没有模块，您将在一个平面列表中注册每个控制器和提供程序。随着应用程序的增长，该列表变得难以管理——50 个提供商没有明确的所有权。
+
+模块恢复边界：`UsersModule` 拥有 `UsersController` 和 `UserService`。每个模块都是一个独立的单元。
+
+## 根模块
+
+每个应用程序都需要一个根模块。根模块在`nexyconfig.py`中被引用：
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+`"@Module` 装饰器从类构建 FastAPI `APIRouter`。它读取三个类属性：
+
+|属性 |类型 |描述 |
+|------------|------|-------------|
+| `controllers` | `list[type]` |要注册的控制器类 |
+| `imports` | `list[APIRouter]` |要包含的子模块（来自 `"@Module`）|
+| `providers` | `list[type]` |向容器注册的可注入类 |
+| `exports` | `list[type]` |提供者对导入模块可见 |
+
+**陷阱**：`"@Module()` 需要至少一个控制器。空的 `controllers` 列表引发 `ValueError`。
+
+## 功能模块
+
+功能模块封装了一个域：
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+将其导入根模块：
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### 模块前缀
+
+设置适用于模块中所有路由的前缀：
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+控制器前缀与模块前缀相关。如果`"@Module(prefix="/users")`和`"@Controller("/{id}")`，则有效路径是`/users/{id}`。
+
+## 提供商注册
+
+提供者必须在模块中注册才能用于注入：
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+当加载模块时，`DatabaseService` 在启动时解析。如果无法解析提供程序的依赖项，则会立即引发错误，而不是在请求时引发错误。
+
+### 出口
+
+`exports` 属性控制哪些提供程序对导入模块可见：
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+如果没有 `exports`，则导入模块无法看到任何提供者。这是有意为之的——它迫使您显式声明模块的公共 API。
+
+## 共享模块
+
+模块是单例的。在多个位置导入相同的模块共享相同的提供程序实例：
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+这就是您在应用程序中共享数据库连接的方式。
+
+## 项目结构
+
+典型的模块化项目遵循以下约定：
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+该结构可扩展到数百个模块。每个模块目录都是独立的。
+
+## 模块解析
+
+模块解析遵循三个规则：
+
+1. **拓扑排序** — 模块按依赖顺序初始化（首先导入）
+2. **循环检测** - 模块之间的循环依赖在启动时引发`RecursionError`
+3. **提供程序范围** - 提供程序保留其原始范围，无论哪个模块导入它们
+
+如果模块A导入模块B，模块B导入模块A，容器在启动时检测到循环：
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**为什么这很重要**：循环依赖通常表明存在设计问题。将共享依赖项提取到第三个模块中。
+
+## 最佳实践
+
+1. **每个模块一个功能** — 用户、身份验证、计费。不是“实用程序”。
+2. **保持模块导入浅** - 导入 10 多个其他模块的模块做得太多了
+3. **有意使用`exports`** - 只导出其他模块真正需要的内容
+4. **在域之后命名模块** — `UsersModule`、`OrdersModule`、`PaymentsModule`
+5. **版本控制时始终提供 `prefix`** — `"@Module(prefix="/api/v1")`
+
+## 后续步骤
+
+- [Guards](/docs/modular/guards) — 保护模块路由
+- [Middleware](/docs/modular/middleware) — 请求管道挂钩
+- [Controllers](/docs/modular/controllers) — 定义路由处理程序

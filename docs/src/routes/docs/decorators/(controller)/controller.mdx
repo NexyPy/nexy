@@ -1,0 +1,50 @@
+# "@Controller
+
+Marks a class as a FastAPI controller. Method names define HTTP verbs.
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## Signature
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## Parameters
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `prefix` | `str` | `""` | URL prefix for all routes in this controller |
+| `tags` | `list[str]` | `None` | OpenAPI tags (defaults to `[ClassName]`) |
+
+## HTTP verbs
+
+Method names are case-insensitive. One method per verb per controller.
+
+| Method name | HTTP verb |
+|-------------|-----------|
+| `def GET(self)` | GET |
+| `def post(self)` | POST |
+| `def Put(self)` | PUT |
+| `def delete(self)` | DELETE |
+| `def patch(self)` | PATCH |
+| `def options(self)` | OPTIONS |
+| `def head(self)` | HEAD |
+| `def SOCKET(self)` | WebSocket |
+
+All handler methods are mapped to `"/"` — path parameters go in `"@Controller` prefix.
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

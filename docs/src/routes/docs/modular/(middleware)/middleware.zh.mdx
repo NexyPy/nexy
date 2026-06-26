@@ -1,0 +1,192 @@
+# 中间件
+
+中间件在请求到达控制器之前拦截请求（并在请求之后响应）。使用它来解决适用于许多路由的横切问题：日志记录、计时、CORS、压缩、标头操作。
+
+与守卫一样，Nexy 中的中间件是 **FastAPI 依赖项** — 可以修改请求/响应或中止请求的可调用项。
+
+## 为什么是中间件？
+
+您可以在每个控制器方法中添加日志记录：
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+中间件将其提取到应用一次的单个可调用对象中：
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## 创建中间件
+
+中间件是一个可调用的，需要 `Request`。它可以修改 `request.state`，提高 `HTTPException` 来中止，或者通过返回 `None` 来通过：
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+对于计时，您可以使用 `request.state` 将数据传递给响应：
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+然后通过FastAPI的`Response`参数添加响应钩子：
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**陷阱**：`call_next` 模式适用于包装整个请求/响应周期的中间件。仅在处理程序之前运行的简单中间件只需 `request`。
+
+## 应用中间件
+
+### 控制器级
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### 方法级
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### 模块级
+
+在模块中为所有路由注册中间件：
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+不直接通过 `"@Module()` 属性支持模块级中间件。对于适用于所有路由的中间件，请使用方法或控制器级别，或通过`nexyconfig.py`进行全局注册。
+
+## 全局中间件
+
+通过 `nexyconfig.py` 为应用程序中的每个路由注册中间件：
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+每个条目都是 `(middleware_class, kwargs)` 的元组。 kwargs 被传递给中间件的构造函数。
+
+## 内置中间件
+
+Nexy 包括几个可通过 `nexyconfig.py` 配置的内置中间件：
+
+|配置键 |中间件|描述 |
+|------------|------------|-------------|
+| `useCORS` | `CORSMiddleware` |跨域资源共享|
+| `useGZip` | `GZipMiddleware` |响应压缩|
+| `useTrustedHost` | `TrustedHostMiddleware` |主机标头验证 |
+| `useSession` | `SessionMiddleware` |基于 Cookie 的会话 |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` |强制 HTTPS |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+内置中间件在全局级别运行，先于任何自定义中间件。
+
+## 中间件与守卫
+
+|方面|中间件|守卫|
+|--------|------------|--------|
+|执行|在处理程序之前 |处理程序之前（中间件之后）|
+|主要目的 |日志记录、标头、压缩 |身份验证、授权、访问控制 |
+|图案| `__call__(self, request)` | `__call__(self, request)` |
+|中止 |提高 `HTTPException` |提高 `HTTPException` |
+|传递数据| `request.state` | `request.state` |
+
+在实践中，中间件和防护程序以相同的方式实现（FastAPI 依赖项）。区别是概念性的：中间件修改请求/响应，警卫做出访问控制决策。
+
+## 中间件中的错误处理
+
+中间件可以捕获错误并使用 `call_next` 模式返回自定义响应：
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## 最佳实践
+
+1. **每个中间件一个问题** — 日志记录、计时、CORS。没有一个“大型中间件”。
+2. **保持中间件快速** - 中间件阻止请求。昂贵的操作属于处理程序。
+3. **使用 `request.state` 传递数据** — 这是在中间件、防护程序和处理程序之间共享数据的标准方法。
+4. **首选警卫进行身份验证** - 概念上比访问控制中间件更清晰。
+5. **隔离测试中间件** — 创建一个模拟 `Request`，调用中间件，断言副作用。
+
+## 后续步骤
+
+- [Guards](/docs/modular/guards) — 身份验证和授权
+- [Controllers](/docs/modular/controllers) — 定义路由处理程序
+- [Modules](/docs/modular/modules) — 组织成功能模块

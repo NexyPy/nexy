@@ -1,0 +1,80 @@
+# Перенаправления
+
+Перенаправляйте входящие запросы на другие URL-адреса, используя `RedirectResponse` FastAPI.
+
+---
+
+## Базовое перенаправление
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+## С кодом состояния
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    # 301 — Permanent (tells browsers to cache)
+    return RedirectResponse("/new-page", status_code=301)
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+## Условное перенаправление
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+## Ссылка на код состояния
+
+| Код | Имя | Вариант использования |
+|------|------|----------|
+| 301 | Переехал навсегда | Постоянное изменение URL-адреса — браузеры его кэшируют |
+| 302 | Найдено (по умолчанию) | Временное перенаправление |
+| 307 | Временное перенаправление | Как 302, но сохраняет метод HTTP |
+| 308 | Постоянное перенаправление | Как 301, но сохраняет метод HTTP |
+
+## Общие шаблоны
+
+- **Перенаправление аутентификации**: неаутентифицированные пользователи → `/login`
+– **Устаревшие URL-адреса**: старые пути → новые пути (301).
+- **Перенаправление после отправки**: после формы POST → страница успеха (303).
+- **Перенаправление локали**: `/` → `/{locale}/` в зависимости от языка браузера.

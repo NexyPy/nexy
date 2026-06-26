@@ -1,0 +1,58 @@
+# 从 FastAPI 迁移到 Nexy
+
+您已经了解 FastAPI。这意味着您已经了解 Nexy 的大部分内容。
+
+## 什么保持不变
+```python
+from fastapi import Request, Depends
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+```
+FastAPI 中适用的所有功能也适用于 Nexy — 相同的异步支持、相同的类型验证、相同的 OpenAPI 文档。
+
+## 有什么变化
+
+### 路由 → 文件或装饰器
+```python
+# FastAPI
+"@router.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+
+# Nexy FBR: src/routes/users/[id].py
+async def GET(id: int):
+    return {"id": id}
+```
+```python
+# FastAPI
+"@router.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, id: int):
+        return {"id": id}
+```
+### 模板 → `.nexy` 文件
+
+使用 frontmatter 逻辑 + 模板编写 `.nexy` 文件，而不是 `Jinja2Templates` + `TemplateResponse`。
+
+### 无需手动注册路由器
+
+Nexy 自动发现路线 — 无需连接 `include_router`，无需连接 `APIRouter`。
+
+## 主要区别
+
+|快速API |内克西 |
+|---------|------|
+| `"@app.get("/")` |文件位于 `src/routes/` (FBR) 或 `"@Controller`（模块化）|
+| `TemplateResponse` |带有 frontmatter 的 `.nexy` 文件 |
+|手册 `include_router` |自动发现 |
+|签名中的 `Depends()` |相同，但还有 `"@UseGuard`/`"@Middleware` |
+|没有内置 CLI | `nx dev`、`nx build`、`nx start` |
+
+您的 FastAPI 技能直接转移。 Nexy 删除了样板文件。

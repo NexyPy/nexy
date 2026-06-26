@@ -1,0 +1,97 @@
+# التكوين: نكسي
+
+تم تكوين Nexy عبر `nexyconfig.py` في جذر مشروعك. يعرّف الملف فئة تمتد `NexyConfigModel`:
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    usePort = 3000
+    useTitle = "My App"
+```
+
+## جميع الحقول
+
+### جهاز التوجيه
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useRouter` | `APIRouter \| None` | `None` | وحدة جذر جهاز التوجيه المعيارية. عند التعيين، يستخدم التوجيه المعياري. عندما يستخدم `None` FBR. |
+| `excludeDirs` | `list[str]` | `[]` | الدلائل المراد استبعادها من مسح FBR. |
+
+### الخادم
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `usePort` | `int` | `3000` | منفذ لخادم التطوير/الإنتاج. |
+| `useHost` | `str` | `"0.0.0.0"` | المضيف للربط. |
+| `useSslKeyfile` | `str \| None` | `None` | مسار ملف مفتاح SSL لـ HTTPS. |
+| `useSslCertfile` | `str \| None` | `None` | مسار ملف شهادة SSL لـ HTTPS. |
+
+### مستندات OpenAPI
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useDocs` | `bool` | `True` | تمكين/تعطيل مستندات OpenAPI. |
+| `useDocsUrl` | `str` | `"/docs"` | عنوان URL لواجهة مستخدم Swagger. |
+| `useRedocsUrl` | `str \| None` | `"/redocs"` | عنوان URL لـ ReDoc. اضبط على `None` للتعطيل. |
+| `useTitle` | `str` | `"Nexy"` | عنوان لمخطط OpenAPI. |
+
+### الواجهة الأمامية
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useVite` | `bool` | `False` | تمكين تجميع Vite لمكونات العميل. |
+| `useViteDevUrl` | `str \| None` | `None` | عنوان URL المخصص لخادم Vite dev (يتم اكتشافه تلقائيًا إذا كان `None`). |
+| `useFF` | `list[FrontendFramework]` | `[]` | أطر عمل الواجهة الأمامية للتمكين (React، Vue، Svelte، Solid، Preact). تم اكتشافه تلقائيًا من المشروع. |
+| `useMarkdownExtensions` | `list[str]` | `[]` | امتدادات Python-Markdown لملفات `.mdx`. |
+
+###الوسيطة
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useMiddlewares` | `list[Any]` | `[]` | فئات البرمجيات الوسيطة ASGI المخصصة. |
+| `useCORS` | `dict \| None` | `None` | تكوين البرامج الوسيطة لـ CORS (Starlette `CORSMiddleware` kwargs). |
+| `useGZip` | `dict \| None` | `None` | تكوين البرنامج الوسيط GZip (Starlette `GZipMiddleware` kwargs). |
+| `useTrustedHost` | `dict \| None` | `None` | تكوين البرامج الوسيطة للمضيف الموثوق به |
+| `useHTTPSRedirect` | `bool` | `False` | إعادة توجيه HTTP إلى HTTPS. |
+| `useSession` | `dict \| None` | `None` | تكوين البرامج الوسيطة للجلسة (Starlette `SessionMiddleware` kwargs). |
+| `useAuth` | `dict \| None` | `None` | تكوين البرامج الوسيطة للمصادقة |
+
+###i18n
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` | اللغات المتاحة (على سبيل المثال `["en", "fr"]`). تم اكتشافه تلقائيًا من `nexy/i18n/` إذا `None`. |
+| `useDefaultLocale` | `str` | `"en"` | اللغة الافتراضية. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | اسم ملف تعريف الارتباط للتخزين المحلي. |
+| `useLocaleDetection` | `dict[str, bool] \| None` | `None` | إعدادات الكشف عن اللغة. |
+| `useRTL` | `bool` | `False` | تمكين دعم RTL. |
+
+### جدول المحتويات
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | مستويات العناوين المطلوب تضمينها في جدول المحتويات (على سبيل المثال `"2-4"` لـ h2-h4). |
+| `useTocTitle` | `str` | `"Table of Contents"` | عنوان قسم جدول المحتويات. |
+| `useTocAuto` | `bool` | `True` | إنشاء جدول محتويات تلقائيًا لصفحات `.mdx`. |
+
+---
+
+## الوصول إلى تطبيق FastAPI
+
+يعرض Nexy مثيل FastAPI الأساسي عبر `nexy.app`. يعد هذا مفيدًا لإضافة مسارات مخصصة أو برامج وسيطة أو معالجات أحداث خارج نظام التوجيه الخاص بـ Nexy.
+
+```python
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("Server starting...")
+
+"@app.get("/health")
+def health():
+    return {"status": "ok"}
+```
+
+الكائن `app` عبارة عن FastAPI `APIRouter` تم تكوينه بالكامل ويتم تثبيته بواسطة `AppServer`. يمكنك استخدام أي ميزة FastAPI/Starlette عليه.

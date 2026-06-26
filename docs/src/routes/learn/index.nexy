@@ -1,11 +1,13 @@
 ---
-from "@/components/sections/otherHero.nexy" import OtherHero 
+from "@/locales/routes/learn" import Learn
+from "@components/sections/otherHero.nexy" import OtherHero 
 
-title  = "Real-world Web Applications built with Nexy"
-description = "Explore inspiring websites, apps, and digital experiences made by developers and companies around the world."
+l = Learn()
+title  = l.title
+description = l.description
 
 ---
-
+<main class=" overflow-x-hidden">
 <OtherHero
     title={{title}}
     description={{description}}
@@ -14,11 +16,11 @@ description = "Explore inspiring websites, apps, and digital experiences made by
     <aside class="w-container py-16 space-y-6">
         <div>
             <ul class="flex gap-4 items-center">
-                <li class="bg-foreground text-foreground-second px-4 py-1 rounded-full ">All</li>
-                <li>Marketing & Media</li>
-                <li>Platform Engineering</li>
-                <li>AI </li>
-                <li>Web App</li>
+                <li class="bg-foreground text-foreground-second px-4 py-1 rounded-full ">{{l.filter_all}}</li>
+                <li>{{l.filter_marketing}}</li>
+                <li>{{l.filter_platform_engineering}}</li>
+                <li>{{l.filter_ai}}</li>
+                <li>{{l.filter_web_app}}</li>
             </ul>
             <ul>
 
@@ -27,3 +29,4 @@ description = "Explore inspiring websites, apps, and digital experiences made by
         <hr class="opacity-10">
     </aside>
 </section>
+</main>

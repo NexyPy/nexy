@@ -1,0 +1,65 @@
+# 生命周期事件
+
+在应用程序开始服务之前或关闭时运行代码。
+
+## 使用 `nexy.app`
+
+```python
+# In any file loaded at startup (e.g., nexyconfig.py, src/events.py)
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("App starting...")
+    await db.connect()
+
+"@app.on_event("shutdown")
+async def shutdown():
+    print("App shutting down...")
+    await db.disconnect()
+```
+
+## 上下文管理器的生命周期（FastAPI 3.0+）
+
+```python
+from contextlib import asynccontextmanager
+from nexy import app
+
+"@asynccontextmanager
+async def lifespan():
+    print("Startup")
+    await db.connect()
+    yield
+    print("Shutdown")
+    await db.disconnect()
+
+app.router.lifespan_context = lifespan
+```
+
+## 何时使用生命周期事件
+
+|使用案例 |活动 |
+|----------|--------|
+|数据库连接池| `startup` |
+|缓存预热 | `startup` |
+|加载 ML 模型 | `startup` |
+|紧密联系 | `shutdown` |
+|刷新队列 | `shutdown` |
+
+## 多个事件处理程序
+
+```python
+"@app.on_event("startup")
+async def first():
+    ...
+
+"@app.on_event("startup")
+async def second():
+    ...
+```
+
+## 注意
+
+- 生命周期事件**不是**每个请求 - 它们在应用程序启动/停止时运行一次
+- 在开发中（`nx dev`），事件在每次重新加载时运行
+- 使用 `nx start` 进行生产 — 事件在启动时运行一次

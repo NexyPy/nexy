@@ -1,0 +1,52 @@
+#المعرف الفريد
+
+لا تقوم Nexy بشحن مولد UID مخصص. تغطي مكتبة بايثون القياسية معظم حالات الاستخدام.
+
+## UUID (ستدليب)
+
+```python
+import uuid
+
+uuid.uuid4()          # Random UUID → "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+uuid.uuid4().hex      # Without dashes → "f47ac10b58cc4372a5670e02b2c3d479"
+uuid.uuid7()          # Time-ordered (Python 3.14+) → "018f3a6e-1b3c-7b00-a567-0e02b2c3d479"
+```
+
+## الأسرار (stdlib، URL الآمن)
+
+```python
+import secrets
+
+secrets.token_hex(16)    # → "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+secrets.token_urlsafe(8) # → "xYZabcDE_fg"
+```
+
+## NanoID (طرف ثالث)
+
+```bash
+pip install nanoid
+```
+
+```python
+from nanoid import generate
+
+generate()          # → "V1StGXR8_Z5jdHi6B-myT"
+generate(size=21)   # default length
+```
+
+## معرفات قاعدة البيانات التي يتم إنشاؤها تلقائيًا
+
+| قاعدة البيانات | اكتب | تلقائي |
+|----|------|------|
+| بوستجرس كيو ال | `UUID` أو `SERIAL` | `gen_random_uuid()` أو `SERIAL` |
+| سكليتي | `INTEGER PRIMARY KEY` | الزيادة التلقائية |
+| ماي إس كيو إل | `INT AUTO_INCREMENT` أو `UUID` | `AUTO_INCREMENT` أو `UUID()` |
+
+## متى تستخدم ماذا
+
+| حالة الاستخدام | الحل |
+|----------|---------|
+| مفتاح قاعدة البيانات الأساسي | الزيادة التلقائية في قاعدة البيانات أو `uuid.uuid4()` |
+| المعرف المواجه للعامة (المستخدم، المنشور) | `secrets.token_urlsafe()` أو NanoID |
+| رمز الجلسة/واجهة برمجة التطبيقات | `secrets.token_hex()` |
+| المعرفات المطلوبة | `uuid.uuid7()` (Python 3.14+) أو ULID |

@@ -1,0 +1,11 @@
+# Миграция на Nexy
+
+Перенесите существующие приложения на Nexy из других фреймворков. В каждом руководстве описаны ключевые различия, сопоставление структуры проекта и пошаговая миграция.
+
+## Доступные руководства
+
+- [FastAPI](/docs/migrate/fastapi) — из FastAPI в Nexy
+- [Django](/docs/migrate/django) — от Django до Nexy
+— [NestJS](/docs/migrate/nestjs) — от NestJS до Nexy
+- [Flask](/docs/migrate/flask) — от Flask до Nexy
+— [Next.js](/docs/migrate/nextjs) — от Next.js до Nexy

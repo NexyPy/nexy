@@ -1,0 +1,202 @@
+# Propriedades (adereços)
+
+Props são como os dados fluem para um componente. Eles tornam os componentes reutilizáveis ​​- o mesmo componente `Card` pode renderizar conteúdos diferentes com base nos acessórios que recebe.
+
+## Declarando adereços
+
+Props são declarados no frontmatter usando a sintaxe `:prop[type]`:
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+Cada declaração se torna um parâmetro da função Python gerada com a anotação de tipo correspondente.
+
+## Obrigatório x Opcional
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+Se uma propriedade obrigatória não for passada quando o componente for usado, o Python gerará um `TypeError` no momento da renderização. A mensagem de erro inclui o nome do componente e o argumento ausente.
+
+**Quando fazer um adereço necessário**: Quando o componente não tem sentido sem ele. Um `BlogCard` sem `title` está quebrado — torne-o obrigatório. Um `Button` sem `variant` pode ser padronizado como `"primary"`.
+
+## Tipos Suportados
+
+| Tipo | Literal padrão | Notas |
+|------|----------------|-------|
+| `str` | `""` | Valores de sequência |
+| `int` | `0` | Valores inteiros |
+| `float` | `0.0` | Valores flutuantes |
+| `bool` | `false` | `true`/`false` (não `True`/`False`) |
+| `list` | `[]` | Listar valores |
+| `dict` | `{}` | Valores de ditado |
+| `Any` | `None` | Qualquer tipo |
+
+A anotação de tipo é usada para documentação e suporte IDE. Em tempo de execução, Python é digitado dinamicamente — a anotação não impõe o tipo. Se você passar uma string onde um int é esperado, ela falhará quando o modelo tentar usá-la aritmeticamente, não no nível da declaração prop.
+
+## Passando acessórios dos pais
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**Regras**:
+
+- **Valores de string** use `key="value"` ou `key="{{ jinja_expr }}"`
+- **Expressões** usam `key={expr}` — sem aspas, o valor é analisado como Python
+- **Booleanos**: use `active=true` (minúsculas), não `active=True` ou `active="true"`
+- **Listas/dictos**: `items={["a", "b"]}` ou `settings={"key": "val"}`
+
+## Valores padrão e objetos mutáveis
+
+Uma pegadinha comum do Python: **não use padrões mutáveis** que são compartilhados entre chamadas:
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy cuida disso para você. A função gerada usa `None` como padrão interno e cria uma nova cópia por chamada:
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+Portanto, `items:prop[list] = []` é seguro de usar — ​​cada chamada de componente recebe sua própria lista.
+
+## Adereços Dinâmicos com `{{ }}`
+
+Use expressões Jinja2 para valores dinâmicos:
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+O compilador converte valores de atributos contendo `{{ }}` em concatenação de strings Jinja2:
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+Para valores `{...}` sem aspas, o conteúdo é passado diretamente como uma expressão Python.
+
+## Adereços em páginas MDX
+
+As páginas (arquivos `.mdx` em `src/routes/`) também podem declarar adereços:
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+Os adereços de página normalmente são definidos pelo layout ou passados ​​por `useViews()`. Eles são menos comuns que os adereços de componentes porque as páginas geralmente obtêm dados de ganchos e consultas de banco de dados.
+
+## Espalhe adereços
+
+Passe um dict como vários adereços usando a sintaxe de propagação Jinja2 no modelo:
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+Isso funciona por meio da detecção abreviada do compilador: quando ele vê `{{ ...props }}` em uma chave de atributo, ele a expande para `**props`.
+
+## Exemplo completo: componente de botão
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+Uso:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## Próximo
+
+- [Conditional Rendering](/docs/components/conditional): if/for em modelos
+- [Component Modules](/docs/components/modules): organização de componentes

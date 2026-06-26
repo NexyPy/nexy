@@ -1,0 +1,130 @@
+#Présentation
+
+**Nexy** (prononcé `nek:si`) est un framework Web Python complet construit sur **FastAPI** et **Starlette**. Il apporte à Python l'expérience des développeurs de frameworks modernes tels que Next.js et NestJS.
+
+Le nom vient de : **N**ew **Ex**perience for P**y**thon — une nouvelle approche de la création d'applications Web en Python.
+
+> Nexy ne réinvente pas la roue. Cela simplifie radicalement le développement Web Python tout en conservant la puissance de FastAPI.
+
+---
+
+## Deux routeurs, un framework
+
+Nexy propose **deux stratégies de routage** — choisissez celle qui correspond à votre projet :
+
+### Routeurs Routeurs (routage basé sur des fichiers)
+
+Les routes sont définies par votre arborescence de fichiers : chaque fichier `.nexy`, `.mdx` ou `.py` dans `src/routes/` devient automatiquement une route HTTP.
+
+```text
+src/routes/
+
+├── index.nexy          →  /
+
+├── about.nexy          →  /about
+
+├── blog/
+
+│   ├── index.nexy      →  /blog
+
+│   └── [slug].nexy     →  /blog/{slug}
+
+└── api/
+
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+**Idéal pour** : sites simples, documentation, MVP, projets API uniquement, équipes qui préfèrent les conventions à la configuration.
+
+En savoir plus : [File-Based Routing →](/docs/fbrouters)
+
+### Routeur modulaire (basé sur un décorateur)
+
+Les routes sont définies via des décorateurs Python : organisez le code en **Contrôleurs**, **Fournisseurs** et **Modules** selon le modèle NestJS.
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+
+class UsersController:
+
+    def __init__(self, service: UserService):
+
+        self.service = service
+
+    def GET(self):
+
+        return self.service.find_all()
+```
+
+**Idéal pour** : applications volumineuses, conception axée sur le domaine, projets bénéficiant de l'injection de dépendances et d'une organisation stricte du code.
+
+En savoir plus : [Modular Router →](/docs/modular/overview)
+
+> Utilisez le **sélecteur de routeur** en haut de la barre latérale pour basculer entre les vues de documentation pour chaque routeur.
+
+---
+
+## FastAPI est le moteur
+
+Tout comme Next.js **est React** sous le capot, Nexy **est FastAPI** sous le capot. Chaque itinéraire, chaque réponse, chaque middleware passe par FastAPI et Starlette.
+
+```python
+# FastAPI patterns that work unchanged in Nexy
+
+from fastapi import Request, Depends
+
+from fastapi.responses import JSONResponse, HTMLResponse
+
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+
+    id: int
+
+    name: str
+
+    email: str
+
+def GET(request: Request, db=Depends(get_db)):
+
+    return db.query(User).all()
+```
+
+**Ce qui reste le même :** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` — tous de `fastapi`.
+
+**Ce que Nexy ajoute :** `.nexy`/`.mdx` fichiers → compilés sur les routes FastAPI, `"@Action` → routes POST générées automatiquement, `"@Controller`/`"@Module` → Générateurs FastAPI `APIRouter`, Hooks → assistants à l'échelle des requêtes en plus des `Request` de FastAPI.
+
+Étant donné que Nexy est FastAPI, chaque route produit automatiquement des **documents OpenAPI** à `/docs` (interface utilisateur Swagger) et `/redoc`.
+
+---
+
+## Pourquoi Nexy ?
+
+- **FastAPI sous le capot** — documents OpenAPI asynchrones et automatiques, de type sécurisé, testés au combat
+- **Interface utilisateur basée sur les composants** — écrivez des composants avec les modèles Python + Jinja2 ou utilisez React/Vue/Svelte/Solid/Preact
+- **Routage basé sur des fichiers ET modulaire** — choisissez le bon outil pour votre projet
+- **Zéro passe-partout** — pas d'enregistrement manuel de l'itinéraire, pas de fichiers de configuration à câbler
+- **I18n, HMR, middleware et gardes intégrés** — prêt pour la production dès le premier jour
+
+---
+
+## Nexy est-il fait pour vous ?
+
+Utilisez Nexy si vous souhaitez :
+
+- Créez une application Python full-stack aussi rapidement que Next.js ou Laravel
+- Créer une API REST avec la structure de NestJS mais la simplicité de Python
+- Utiliser les composants React/Vue/Svelte depuis un backend Python
+- Arrêter les projets de restructuration et l'installation de packages passe-partout
+
+---
+
+## Ce que vous apprendrez
+
+- Créer et configurer un projet Nexy
+- Comprendre les deux stratégies de routage
+- Construisez votre première application avec des exemples concrets
+- Suivre les bonnes pratiques pour les déploiements de production
+

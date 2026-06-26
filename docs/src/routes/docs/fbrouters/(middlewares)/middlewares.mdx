@@ -1,0 +1,65 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Middlewares
+
+A middleware is a layer that runs before and after every request — useful for logging, authentication, CORS headers, and other global concerns.
+
+---
+
+## Creating a middleware
+
+In Nexy, middlewares are defined via Starlette's `BaseHTTPMiddleware` or as callables:
+```python
+# src/middlewares.py
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        print(f"→ {request.method} {request.url.path}")
+        response = await call_next(request)
+        print(f"← {response.status_code}")
+        return response
+```
+---
+
+## Registering a middleware
+
+In `nexyconfig.py`, pass a list of `(MiddlewareClass, kwargs_dict)` tuples:
+```python
+from nexy.core.models import NexyConfigModel
+from src.middlewares import LoggingMiddleware
+
+class NexyConfig(NexyConfigModel):
+    useMiddlewares = [
+        (LoggingMiddleware, {}),
+    ]
+```
+---
+
+## Execution order
+
+Middlewares run in declaration order, forming a **stack** (like Starlette):
+```text
+Request → MW1 → MW2 → Route → MW2 → MW1 → Response
+```
+---
+
+## Directory-level middleware (FBR)
+
+With FBR, you can place middleware logic in a `dependencies.py` within a directory:
+```python
+# routes/api/dependencies.py
+from fastapi import Request
+
+async def verify_api_key(request: Request):
+    if request.headers.get("X-API-Key") != "secret":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403)
+```
+Every page under `/api/` inherits this check automatically.
+<Link href="/docs/fbrouters/route_handlers">Next: Route Handlers →</Link>

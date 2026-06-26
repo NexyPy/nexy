@@ -1,0 +1,52 @@
+#UID
+
+Nexy no envía un generador de UID dedicado. La biblioteca estándar de Python cubre la mayoría de los casos de uso.
+
+## UUID (libra estándar)
+
+```python
+import uuid
+
+uuid.uuid4()          # Random UUID → "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+uuid.uuid4().hex      # Without dashes → "f47ac10b58cc4372a5670e02b2c3d479"
+uuid.uuid7()          # Time-ordered (Python 3.14+) → "018f3a6e-1b3c-7b00-a567-0e02b2c3d479"
+```
+
+## secretos (stdlib, seguro para URL)
+
+```python
+import secrets
+
+secrets.token_hex(16)    # → "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+secrets.token_urlsafe(8) # → "xYZabcDE_fg"
+```
+
+## NanoID (de terceros)
+
+```bash
+pip install nanoid
+```
+
+```python
+from nanoid import generate
+
+generate()          # → "V1StGXR8_Z5jdHi6B-myT"
+generate(size=21)   # default length
+```
+
+## ID generados automáticamente en la base de datos
+
+| Base de datos | Tipo | Automático |
+|----|------|------|
+| PostgreSQL | `UUID` o `SERIAL` | `gen_random_uuid()` o `SERIAL` |
+| SQLite | `INTEGER PRIMARY KEY` | Incremento automático |
+| MySQL | `INT AUTO_INCREMENT` o `UUID` | `AUTO_INCREMENT` o `UUID()` |
+
+## Cuándo usar qué
+
+| Caso de uso | Solución |
+|----------|----------|
+| Clave primaria de la base de datos | Incremento automático de base de datos o `uuid.uuid4()` |
+| Identificación pública (usuario, publicación) | `secrets.token_urlsafe()` o NanoID |
+| Token de sesión/API | `secrets.token_hex()` |
+| ID ordenados | `uuid.uuid7()` (Python 3.14+) o ULID |

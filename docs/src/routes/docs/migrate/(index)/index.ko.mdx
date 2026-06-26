@@ -1,0 +1,11 @@
+# 넥시로 마이그레이션
+
+기존 애플리케이션을 다른 프레임워크에서 Nexy로 마이그레이션하세요. 각 가이드에서는 주요 차이점, 프로젝트 구조 매핑 및 단계별 마이그레이션을 다룹니다.
+
+## 사용 가능한 가이드
+
+- [FastAPI](/docs/migrate/fastapi) — FastAPI에서 Nexy로
+- [Django](/docs/migrate/django) — Django에서 Nexy로
+- [NestJS](/docs/migrate/nestjs) — NestJS에서 Nexy로
+- [Flask](/docs/migrate/flask) — Flask에서 Nexy로
+- [Next.js](/docs/migrate/nextjs) — Next.js에서 Nexy로

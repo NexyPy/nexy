@@ -1,0 +1,61 @@
+# Nexy의 FastAPI
+
+Nexy는 **FastAPI** 및 **Starlette**를 기반으로 구축되었습니다. 모든 FastAPI 기능은 Nexy에서 사용할 수 있습니다. 래퍼도 추상화도 없습니다. `fastapi`에서 직접 가져옵니다.
+
+## 이용 가능한 것
+
+| 기능 | 가져오기 | 다음에서 작동 |
+|---------|---------|---------|
+| 요청 본문(Pydantic) | `from pydantic import BaseModel` | 둘 다 |
+| 경로 매개변수 | `from fastapi import Path` | 둘 다 |
+| 쿼리 매개변수 | `from fastapi import Query` | 둘 다 |
+| 쿠키 매개변수 | `from fastapi import Cookie` | 둘 다 |
+| 헤더 매개변수 | `from fastapi import Header` | 둘 다 |
+| 양식 데이터 | `from fastapi import Form` | 둘 다 |
+| 파일 업로드 | `from fastapi import File, UploadFile` | 둘 다 |
+| 종속성 | `from fastapi import Depends` | 둘 다 |
+| 백그라운드 작업 | `from fastapi import BackgroundTasks` | 둘 다 |
+| HTTP 오류 | `from fastapi import HTTPException` | 둘 다 |
+| 상태 코드 | `from fastapi import status` | 둘 다 |
+| 웹소켓 | `from fastapi import WebSocket` | 둘 다 |
+| 요청 | `from fastapi import Request` | 둘 다 |
+| 응답 | `from fastapi.responses import ...` | 둘 다 |
+| 미들웨어 | `from starlette.middleware import Middleware` | 둘 다 |
+| 코스 | `from fastapi.middleware.cors import CORSMiddleware` | 둘 다 |
+| API라우터 | `from fastapi import APIRouter` | 모듈형 전용 |
+| 테스트 클라이언트 | `from fastapi.testclient import TestClient` | 둘 다 |
+
+---
+
+## 기본 경로
+```python
+# src/routes/users/[id].nexy
+---
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+def POST(body: CreateUser):
+    return {"name": body.name}
+---
+```
+```python
+from nexy.decorators import Controller
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"name": body.name}
+```
+## 넥시는 무엇을 추가하나요?
+
+Nexy는 파일 기반 라우팅, `.nexy` 구성 요소, 모듈식 DI 및 프런트엔드 프레임워크 통합으로 FastAPI를 래핑합니다. 하지만 **FastAPI를 숨기지 않습니다** — `nexy.app`는 FastAPI `APIRouter`이고 구성은 모든 Starlette 미들웨어를 노출하며 모든 FastAPI 종속성/응답/예외는 변경되지 않고 작동합니다.

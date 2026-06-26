@@ -1,0 +1,73 @@
+# 反応する
+
+React を `nexyconfig.py` に追加します。
+
+```python
+from nexy.frontend import react
+
+class NexyConfig(NexyConfigModel):
+    useFF = [react()]
+```
+
+---
+
+## コンポーネントの作成
+
+`src/` 内の `.tsx` または `.jsx` 拡張子を持つファイルは、React コンポーネントとして扱われます。
+
+```tsx
+// src/components/Counter.tsx
+import { useState } from 'react'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## .nexy ページでの使用
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Props は、Jinja2 `{{ }}` 構文を介して渡されます。JSON 値には二重中括弧を使用します。
+
+---
+
+## 子供 / スロットの内容
+
+Nexy は、子コンテンツを `children` prop として渡します。コンポーネントはそれをレンダリングできます。
+
+```tsx
+export default function Card({ title, children }) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## SSR
+
+React コンポーネントは、`hydrateRoot` を使用してサーバー側でレンダリングされます。サーバーが HTML を生成し、React がクライアント上でハイドレートします。追加の構成は必要ありません。

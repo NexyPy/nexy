@@ -1,0 +1,80 @@
+# पुनर्निर्देशन
+
+FastAPI के `RedirectResponse` का उपयोग करके आने वाले अनुरोधों को अन्य URL पर पुनर्निर्देशित करें।
+
+---
+
+## मूल पुनर्निर्देशन
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+## स्टेटस कोड के साथ
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    # 301 — Permanent (tells browsers to cache)
+    return RedirectResponse("/new-page", status_code=301)
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+## सशर्त पुनर्निर्देशन
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+## स्थिति कोड संदर्भ
+
+| कोड | नाम | उपयोग का मामला |
+|------|------|----------|
+| 301 | स्थायी रूप से स्थानांतरित | स्थायी यूआरएल परिवर्तन - ब्राउज़र इसे कैश करते हैं |
+| 302 | मिला (डिफ़ॉल्ट) | अस्थायी पुनर्निर्देशन |
+| 307 | अस्थायी रीडायरेक्ट | 302 की तरह लेकिन HTTP पद्धति को सुरक्षित रखता है |
+| 308 | स्थायी पुनर्निर्देशन | 301 की तरह लेकिन HTTP विधि को सुरक्षित रखता है |
+
+## सामान्य पैटर्न
+
+- **प्रामाणिक रीडायरेक्ट**: अप्रमाणित उपयोगकर्ता → `/login`
+- **विरासत URL**: पुराने पथ → नए पथ (301)
+- **पोस्ट-सबमिट रीडायरेक्ट**: फॉर्म पोस्ट के बाद → सफलता पृष्ठ (303)
+- **लोकेल रीडायरेक्ट**: `/` → `/{locale}/` ब्राउज़र भाषा पर आधारित

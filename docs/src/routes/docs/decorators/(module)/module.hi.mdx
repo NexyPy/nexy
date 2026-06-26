@@ -1,0 +1,58 @@
+# "@मॉड्यूल
+
+नियंत्रकों, प्रदाताओं और उप-मॉड्यूल को एक फास्टएपीआई `APIRouter` में इकट्ठा करता है।
+```python
+from nexy.decorators import Module, Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1}]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [UsersController]
+    providers = [DatabaseService]
+    imports = [AuthModule]
+    exports = [UsersController]
+```
+## हस्ताक्षर
+```python
+Module(prefix: str = "") -> Callable[[type], APIRouter]
+```
+## वर्ग विशेषताएँ
+
+| विशेषता | प्रकार | आवश्यक | विवरण |
+|----|------|---|---||
+| `controllers` | `list[type]` | हाँ | नियंत्रक वर्ग रजिस्टर करने के लिए |
+| `providers` | `list[type]` | नहीं | डीआई कंटेनर में पंजीकरण करने के लिए इंजेक्टेबल सेवाएं |
+| `imports` | `list[APIRouter]` | नहीं | शामिल करने के लिए उप-मॉड्यूल (`"@Module` द्वारा लौटाया गया)।
+| `exports` | `list[type]` | नहीं | आयातित मॉड्यूल में उपयोग के लिए निर्यात करने वाले प्रदाता |
+
+## यह कैसे काम करता है
+
+1. प्रदाताओं को `Container.resolve()` के माध्यम से त्वरित किया जाता है
+2. आयातित उप-मॉड्यूल मूल राउटर पर शामिल हैं
+3. निर्यात `router.__module_exports__` पर संग्रहीत हैं
+4. प्रत्येक नियंत्रक की विधियाँ मार्गों के रूप में पंजीकृत हैं
+
+## आयात/निर्यात के साथ उदाहरण
+```python
+from nexy.decorators import Injectable, Module
+
+"@Injectable()
+class SharedService:
+    def get_data(self) -> str:
+        return "shared"
+
+"@Module(prefix="/shared")
+class SharedModule:
+    controllers = [SharedController]
+    providers = [SharedService]
+    exports = [SharedService]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [AppController]
+    imports = [SharedModule]  # SharedModule router included
+```

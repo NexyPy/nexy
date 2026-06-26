@@ -1,0 +1,65 @@
+# जीवन काल की घटनाएँ
+
+ऐप की सेवा शुरू होने से पहले या उसके बंद होने पर कोड चलाएँ।
+
+## `nexy.app` का उपयोग करना
+
+```python
+# In any file loaded at startup (e.g., nexyconfig.py, src/events.py)
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("App starting...")
+    await db.connect()
+
+"@app.on_event("shutdown")
+async def shutdown():
+    print("App shutting down...")
+    await db.disconnect()
+```
+
+## संदर्भ प्रबंधक जीवनकाल (FastAPI 3.0+)
+
+```python
+from contextlib import asynccontextmanager
+from nexy import app
+
+"@asynccontextmanager
+async def lifespan():
+    print("Startup")
+    await db.connect()
+    yield
+    print("Shutdown")
+    await db.disconnect()
+
+app.router.lifespan_context = lifespan
+```
+
+## जीवन काल की घटनाओं का उपयोग कब करें
+
+| उपयोग का मामला | घटना |
+|-------|-------|
+| डेटाबेस कनेक्शन पूल | `startup` |
+| कैश वार्मिंग | `startup` |
+| एमएल मॉडल लोड करें | `startup` |
+| कनेक्शन बंद करें | `shutdown` |
+| फ्लश कतारें | `shutdown` |
+
+## एकाधिक इवेंट हैंडलर
+
+```python
+"@app.on_event("startup")
+async def first():
+    ...
+
+"@app.on_event("startup")
+async def second():
+    ...
+```
+
+## नोट
+
+- जीवनकाल की घटनाएं अनुरोध के अनुसार **नहीं** होती हैं - वे ऐप शुरू/बंद होने पर एक बार चलती हैं
+- In development (`nx dev`), events run on every reload
+- उत्पादन के लिए `nx start` का उपयोग करें - इवेंट लॉन्च के समय एक बार चलते हैं

@@ -1,0 +1,49 @@
+# использовать запрос
+
+Возвращает параметры динамического маршрута (параметры пути) из текущего URL-адреса.
+
+```python
+from nexy import useQuery
+
+query = useQuery()
+```
+
+---
+
+## Возвращаемое значение
+
+`dict` — параметры пути, извлеченные из URL-адреса (например, `{"slug": "hello-world"}` для маршрута `[slug]`).
+
+---
+
+## Пример
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<h1>Article: {{ params.slug }}</h1>
+```
+
+---
+
+## С несколькими параметрами
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<article>
+    <h1>{{ params.title }}</h1>
+    <p>Year: {{ params.year }}, Month: {{ params.month }}</p>
+</article>
+```
+
+---
+
+## Примечания по использованию
+
+— Значения по умолчанию являются строками — преобразование типов FastAPI применяется в обработчиках `.py`.
+- Эквивалент `request.path_params` в FastAPI

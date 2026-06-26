@@ -1,0 +1,68 @@
+#कोर्स
+
+Starlette के `CORSMiddleware` का उपयोग करके अपने Nexy एप्लिकेशन के लिए क्रॉस-ओरिजिनल रिसोर्स शेयरिंग कॉन्फ़िगर करें।
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## सामान्य विकल्प
+
+| विकल्प | प्रकार | डिफ़ॉल्ट | विवरण |
+|--------|------|------|----|
+| `allow_origins` | `list[str]` | `[]` | अनुमत उत्पत्ति. सभी (केवल विकास) की अनुमति देने के लिए `["*"]` का उपयोग करें। |
+| `allow_origins_regex` | `str` | `None` | अनुमत उत्पत्ति के लिए रेगेक्स पैटर्न (जैसे `"%%U0%%"`)। |
+| `allow_methods` | `list[str]` | `["GET"]` | अनुमत HTTP विधियाँ। `["*"]` सभी की अनुमति देता है। |
+| `allow_headers` | `list[str]` | `[]` | अनुमत अनुरोध शीर्षलेख. `["*"]` सभी की अनुमति देता है। |
+| `allow_credentials` | `bool` | `False` | कुकीज़ और प्राधिकरण शीर्षलेखों की अनुमति दें. |
+| `expose_headers` | `list[str]` | `[]` | हेडर ब्राउज़र के सामने आ गए. |
+| `max_age` | `int` | `600` | प्रीफ़्लाइट कैश अवधि सेकंड में। |
+
+---
+
+## विकास सेटअप
+
+स्थानीय विकास के लिए, सभी मूलों की अनुमति दें:
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## उत्पादन सेटअप
+
+उत्पत्ति और विधियों के बारे में स्पष्ट रहें:
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+जब `allow_credentials`, `True` है, तो आप `allow_origins` के लिए `"*"` का उपयोग नहीं कर सकते - स्पष्ट रूप से मूल की सूची बनाएं।
+
+---
+
+## एक प्रॉक्सी के पीछे
+
+यदि आपका ऐप रिवर्स प्रॉक्सी (nginx, Cloudflare) के पीछे चलता है, तो सुनिश्चित करें कि अग्रेषित हेडर कॉन्फ़िगर किए गए हैं ताकि CORS मिडलवेयर सही मूल देख सके।

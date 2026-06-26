@@ -1,0 +1,159 @@
+# WebSocket (モジュラー)
+
+`async def SOCKET(self, websocket)` を使用して、コントローラー内で WebSocket エンドポイントを定義します。
+
+---
+
+## 基本的なエコー
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/chat")
+class ChatController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await websocket.send_text(f"Echo: {data}")
+        except WebSocketDisconnect:
+            pass
+```
+
+`SOCKET` メソッド名は WebSocket エンドポイントにマップされます。コントローラー内のすべてのメソッドは `"@Controller` プレフィックスを共有します。つまり、これは WebSocket としては `GET /chat` になります。
+
+---
+
+## JSONを受信する
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/events")
+class EventsController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_json()
+                await websocket.send_json({"echo": data})
+        except WebSocketDisconnect:
+            pass
+```
+
+---
+
+## DI を使用した部屋のパターン
+
+専用のサービスを使用して接続を管理します。
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class ConnectionManager:
+    def __init__(self):
+        self.connections: list[WebSocket] = []
+
+    def add(self, ws: WebSocket):
+        self.connections.append(ws)
+
+    def remove(self, ws: WebSocket):
+        self.connections.remove(ws)
+
+    async def broadcast(self, message: str):
+        for conn in self.connections:
+            await conn.send_text(message)
+
+"@Controller("/chat")
+class ChatController:
+    def __init__(self, manager: ConnectionManager):
+        self.manager = manager
+
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        self.manager.add(websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.manager.broadcast(data)
+        except WebSocketDisconnect:
+            self.manager.remove(websocket)
+```
+
+`ConnectionManager` はシングルトン `"@Injectable()` です。すべてのコントローラー インスタンスは同じマネージャーを共有します。
+
+---
+
+## DI 付きの名前付きルーム
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class RoomManager:
+    def __init__(self):
+        self.rooms: dict[str, list[WebSocket]] = {}
+
+    def join(self, room: str, ws: WebSocket):
+        self.rooms.setdefault(room, []).append(ws)
+
+    def leave(self, room: str, ws: WebSocket):
+        self.rooms[room].remove(ws)
+        if not self.rooms[room]:
+            del self.rooms[room]
+
+    async def broadcast(self, room: str, message: str):
+        for conn in self.rooms.get(room, []):
+            await conn.send_text(message)
+
+"@Controller("/rooms/{room_id}")
+class RoomController:
+    def __init__(self, rooms: RoomManager):
+        self.rooms = rooms
+
+    async def SOCKET(self, websocket: WebSocket, room_id: str):
+        await websocket.accept()
+        self.rooms.join(room_id, websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.rooms.broadcast(room_id, data)
+        except WebSocketDisconnect:
+            self.rooms.leave(room_id, websocket)
+```
+
+---
+
+## 接続のライフサイクル
+
+|イベント |何が起こるか |
+|------|-----------|
+|クライアントが接続します | `websocket.accept()` — 最初に呼び出す必要があります |
+|メッセージを受信しました | `receive_text()` / `receive_json()` / `receive_bytes()` |
+|クライアントが切断します | `WebSocketDisconnect` が発生しました — `except` でクリーンアップ |
+|サーバーが閉じます | `await websocket.close(code=1000)` |
+
+ - -
+
+＃＃ クライアント
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## も参照
+
+- [Controllers](/docs/modular/controllers) — モジュラーのルート ハンドラー
+- [Providers & DI](/docs/modular/providers) — 注入可能なサービス
+- [Guards](/docs/modular/guards) — WebSocket エンドポイントを保護します
+- [WebSocket Guide](/docs/guides/websocket) — 概念的な概要

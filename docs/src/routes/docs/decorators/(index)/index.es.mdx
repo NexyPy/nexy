@@ -1,0 +1,17 @@
+# Decoradores
+
+Nexy utiliza decoradores de Python para ampliar rutas, controladores, middleware e inyección de dependencias. Estos decoradores funcionan en modos de enrutamiento FBR y Modular.
+
+## decoradores FBR
+
+- [@Action](/docs/decorators/action) — manejar envíos de formularios
+- [@UseGuard](/docs/decorators/useguard) — adjuntar guardias de ruta
+- [@Middleware](/docs/decorators/middleware): agrega middleware a una ruta
+
+## Decoradores modulares (adicionales)
+
+- [@Controller](/docs/decorators/controller): define una clase de controlador
+- [@Module](/docs/decorators/module) — declarar un módulo de aplicación
+- [@Injectable](/docs/decorators/injectable): registra un proveedor de inyección de dependencia
+- [@UseRoute](/docs/decorators/useroute) — enlace de ruta personalizado
+- [@UseResponse](/docs/decorators/useresponse) — controlador de respuesta personalizado

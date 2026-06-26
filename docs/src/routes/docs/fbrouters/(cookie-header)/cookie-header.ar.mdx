@@ -1,0 +1,61 @@
+# ملفات تعريف الارتباط والعناوين (FBR)
+
+اقرأ ملفات تعريف الارتباط والرؤوس الخاصة بـ HTTP باستخدام معلمات FastAPI `Cookie` و`Header`.
+
+## معلمة ملفات تعريف الارتباط
+
+```python
+# src/routes/profile.py
+from fastapi import Cookie
+
+def GET(session_id: str | None = Cookie(None)):
+    return {"session_id": session_id}
+```
+
+## ملفات تعريف الارتباط المتعددة
+
+```python
+from fastapi import Cookie
+
+def GET(
+    session_id: str | None = Cookie(None),
+    theme: str = Cookie("light"),
+):
+    return {"session": session_id, "theme": theme}
+```
+
+## معلمة الرأس
+
+```python
+from fastapi import Header
+
+def GET(user_agent: str | None = Header(None)):
+    return {"ua": user_agent}
+```
+
+## الاسم المستعار للرأس المخصص
+
+```python
+from fastapi import Header
+
+def GET(x_token: str = Header(alias="X-Token")):
+    return {"token": x_token}
+```
+
+تكون أسماء الرؤوس بأحرف صغيرة مع وجود واصلات كشرطات سفلية بشكل افتراضي. استخدم `alias` للأسماء المخصصة.
+
+## قراءة ملفات تعريف الارتباط في القوالب
+
+في قوالب `.nexy`، استخدم الخطاف `useCookies()`:
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+
+---
+
+أنظر أيضا: [Session config](/docs/config/session)

@@ -1,0 +1,58 @@
+#JWT
+
+Nexy는 자체 JWT 지원을 제공하지 않습니다. `PyJWT` 라이브러리를 사용하세요.
+
+## 설치
+
+```bash
+pip install pyjwt
+```
+
+## 토큰 생성
+
+```python
+import jwt
+from datetime import datetime, timedelta
+
+SECRET = os.environ["JWT_SECRET"]
+
+def create_token(user_id: str) -> str:
+    payload = {
+        "sub": user_id,
+        "iat": datetime.utcnow(),
+        "exp": datetime.utcnow() + timedelta(hours=24),
+    }
+    return jwt.encode(payload, SECRET, algorithm="HS256")
+```
+
+## 토큰 확인
+
+```python
+def verify_token(token: str) -> dict | None:
+    try:
+        return jwt.decode(token, SECRET, algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+```
+
+## JWT 인증 백엔드
+
+```python
+class JWTAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        auth = conn.headers.get("Authorization", "")
+        token = auth.removeprefix("Bearer ")
+        payload = verify_token(token)
+        if payload:
+            return AuthCredentials(["authenticated"]), SimpleUser(payload["sub"])
+        return None
+```
+
+## 구성
+
+```python
+class NexyConfig(NexyConfigModel):
+    useAuth = {"backend": JWTAuthBackend()}
+```

@@ -1,0 +1,73 @@
+# الصلبة
+
+أضف الصلبة إلى `nexyconfig.py` الخاص بك:
+
+```python
+from nexy.frontend import solid
+
+class NexyConfig(NexyConfigModel):
+    useFF = [solid()]
+```
+
+---
+
+## إنشاء مكون
+
+الملفات ذات الامتداد `.tsx` أو `.jsx` المستخدمة مع إشارات الاستخدام الثابت للحالة:
+
+```tsx
+// src/components/Counter.tsx
+import { createSignal } from 'solid-js'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = createSignal(initial)
+  return (
+    <div>
+      <p>Count: {count()}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## الاستخدام في صفحة .nexy
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+يتم تمرير الدعائم عبر بناء جملة Jinja2 `{{ }}` — استخدم الأقواس المزدوجة لقيم JSON.
+
+---
+
+## محتوى الأطفال / الفتحة
+
+يقوم Nexy بتمرير المحتوى الفرعي باعتباره الخاصية `children`:
+
+```tsx
+export default function Card(props) {
+  return (
+    <div class="card">
+      <h2>{props.title}</h2>
+      <div>{props.children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## الاشتراكية السوفياتية
+
+يستخدم Solid `renderToString` لـ SSR ويرطب بنسبة `hydrate` على العميل.

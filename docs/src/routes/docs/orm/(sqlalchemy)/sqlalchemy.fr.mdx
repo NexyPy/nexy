@@ -1,0 +1,40 @@
+# SQLAlchimie
+
+**SQLAlchemy** est l'ORM mature et complet pour Python. Utilisez-le lorsque vous avez besoin de requêtes complexes, de plusieurs bases de données ou de projets SQLAlchemy existants.
+
+##Configuration
+
+```python
+# configs/database.py
+from sqlalchemy.ext.asyncio import create_async_engine
+
+engine = create_async_engine("sqlite+aiosqlite:///dev.db")
+```
+
+## Exemple
+
+```python
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    email = Column(String)
+```
+
+## Migration
+
+Utiliser Alambic (configuré via `nx migrate`) :
+
+```bash
+nx migrate --init    # Initialize Alembic (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+SQLAlchemy vous donne un contrôle total sur les requêtes, les relations et le regroupement de connexions.

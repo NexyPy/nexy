@@ -1,0 +1,100 @@
+# 모듈 시스템
+
+Nexy의 모듈 시스템을 사용하면 프로젝트 전반에 걸쳐 구성 요소를 가져오고 내보낼 수 있습니다.
+
+---
+
+## 구성요소 가져오기
+
+머리말에 `import` 구문을 사용하세요:
+
+```python
+---
+from "@components/card.nexy" import Card
+from "@components/button.nexy" import Button
+---
+```
+
+`"@` 별칭은 `src/`로 확인됩니다(`nexyconfig.py`에서 구성 가능).
+
+---
+
+## 명명된 내보내기
+
+기본적으로 `.nexy` 파일은 해당 템플릿을 파일 이름을 딴 구성 요소로 내보냅니다.
+
+| 파일 | 내보내기 이름 |
+|---|---|
+| `card.nexy` | `Card` |
+| `button.nexy` | `Button` |
+| `table_of_contents.nexy` | `Table_of_contents` |
+
+---
+
+## 슬롯(하위)
+
+`Slot` 구성 요소는 열기/닫기 태그 사이에 전달된 하위 콘텐츠를 렌더링합니다.
+
+```nexy
+<div class="card">
+    <h2>{{ title }}</h2>
+    <Slot />
+</div>
+```
+
+용법:
+
+```html
+<Card title="Hello">
+    <p>This goes into the Slot.</p>
+</Card>
+```
+
+---
+
+## 별칭 가져오기
+
+이름 충돌을 방지하려면 `as`를 사용하세요.
+
+```python
+---
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+---
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+---
+
+## 다시 내보내는 중
+
+구성 요소를 집계하는 색인 파일을 만듭니다.
+
+```python
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+이 배럴에서 다른 파일을 가져옵니다.
+
+```python
+---
+from "@components/index.nexy" import Card, Button
+---
+```
+
+-----
+
+## 동적 가져오기
+
+클라이언트 측 프레임워크(React, Solid)의 경우 Nexy는 빌드 중에 가져오기 트리를 자동으로 생성합니다. 진입점을 수동으로 관리할 필요가 없습니다. 컴파일러는 `.tsx`/`.jsx` 사용량을 감지하고 이에 따라 Vite 또는 esbuild를 연결합니다.
+

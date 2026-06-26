@@ -5,10 +5,11 @@ import sys
 import typer
 import typer.rich_utils
 
-from nexy.__version__ import __Version__
+from nexy.__version__ import __version__
 from nexy.cli.commands import build, dev, init, start
 from nexy.cli.commands.migrate import migrate
 from nexy.cli.commands.new import new
+from nexy.cli.commands.translate import translate
 from nexy.i18n import t
 from nexy.utils.common.console import console
 
@@ -33,7 +34,7 @@ def _nexy_get_console(stderr: bool = False):
 
 typer.rich_utils._get_rich_console = _nexy_get_console
 
-VERSION = __Version__().get()
+VERSION = __version__
 
 CLI = typer.Typer(
     help=t("cli.help", "Nexy CLI"),
@@ -54,22 +55,30 @@ def main(
         console.print()
         console.print(f"[bold green]nexy[/bold green] [dim]{VERSION}[/dim]")
         console.print()
-        console.print(f"[italic]{t('cli.tagline', 'The modern full-stack framework that just works')}[/italic]")
+        console.print(
+            f"[italic]{t('cli.tagline', 'The modern full-stack framework that just works')}[/italic]"
+        )
         console.print()
         console.print(f"[bold cyan]{t('cli.commands_header', 'Available Commands:')}[/bold cyan]")
         commands = [
-            ("new [dim]<project-name>[/dim]", t("cli.cmd.new", "Create a new project in a new directory")),
+            (
+                "new [dim]<project-name>[/dim]",
+                t("cli.cmd.new", "Create a new project in a new directory"),
+            ),
             ("init", t("cli.cmd.init", "Initialize Nexy in the current directory")),
             ("dev", t("cli.cmd.dev", "Start local development server with hot reload")),
             ("start", t("cli.cmd.start", "Start production server")),
             ("build", t("cli.cmd.build", "Compile project for production deployment")),
             ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
+            ("translate", t("cli.cmd.translate", "Translate locale source (i18n.py) to all configured languages")),
         ]
         max_cmd_len = max(len(cmd) for cmd, _ in commands)
         for cmd, desc in commands:
             console.print(f"  [yellow]{cmd.ljust(max_cmd_len)}[/yellow]  {desc}")
         console.print()
-        console.print(f"[dim]{t('cli.usage', 'Run nx or nexy <command> --help for detailed usage')}[/dim]")
+        console.print(
+            f"[dim]{t('cli.usage', 'Run nx or nexy <command> --help for detailed usage')}[/dim]"
+        )
         console.print()
 
 
@@ -85,6 +94,10 @@ CLI.command()(new)
 CLI.command(name="n", hidden=True)(new)
 CLI.command()(migrate)
 CLI.command(name="m", hidden=True)(migrate)
+CLI.command()(translate)
+CLI.command(name="ts", hidden=True)(translate)
+CLI.command(name="trans")(translate)
+CLI.command(name="t", hidden=True)(translate)
 # CLI.command(name="a", hidden=True)(add)
 # CLI.command()(add)
 

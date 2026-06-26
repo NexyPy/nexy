@@ -1,0 +1,58 @@
+# "@Модуль
+
+Собирает контроллеры, провайдеры и подмодули в FastAPI `APIRouter`.
+```python
+from nexy.decorators import Module, Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1}]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [UsersController]
+    providers = [DatabaseService]
+    imports = [AuthModule]
+    exports = [UsersController]
+```
+## Подпись
+```python
+Module(prefix: str = "") -> Callable[[type], APIRouter]
+```
+## Атрибуты класса
+
+| Атрибут | Тип | Требуется | Описание |
+|-----------|------|----------|-------------|
+| `controllers` | `list[type]` | Да | Классы контроллеров для регистрации |
+| `providers` | `list[type]` | Нет | Инъекционные сервисы для регистрации в контейнере DI |
+| `imports` | `list[APIRouter]` | Нет | Подмодули (возвращаемые `"@Module`) для включения |
+| `exports` | `list[type]` | Нет | Поставщики для экспорта для использования при импорте модулей |
+
+## Как это работает
+
+1. Поставщики создаются через `Container.resolve()`.
+2. Импортированные субмодули включены в родительский маршрутизатор.
+3. Экспорт хранится в `router.__module_exports__`.
+4. Методы каждого контроллера регистрируются как маршруты.
+
+## Пример с импортом/экспортом
+```python
+from nexy.decorators import Injectable, Module
+
+"@Injectable()
+class SharedService:
+    def get_data(self) -> str:
+        return "shared"
+
+"@Module(prefix="/shared")
+class SharedModule:
+    controllers = [SharedController]
+    providers = [SharedService]
+    exports = [SharedService]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [AppController]
+    imports = [SharedModule]  # SharedModule router included
+```

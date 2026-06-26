@@ -1,0 +1,53 @@
+# Содержание
+
+Настройте автоматически создаваемое оглавление для страниц Markdown.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTocDepth = "2-6"
+    useTocTitle = "Table of Contents"
+    useTocAuto = True
+```
+
+---
+
+## Поля
+
+| Поле | Тип | По умолчанию | Описание |
+|-------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | Уровни заголовков, которые необходимо включить (например, `"2-4"` для h2–h4). |
+| `useTocTitle` | `str` | `"On this page"` | Название отображается над оглавлением. |
+| `useTocAuto` | `bool` | `True` | Автоматическое создание содержания для страниц `.mdx`. Установите `False` для отключения. |
+
+---
+
+## Использование в шаблонах
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc()
+---
+<aside class="toc">
+    {{ toc_html | safe }}
+</aside>
+```
+
+---
+
+## Пользовательская глубина
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc(depth_range="1-4")
+---
+```
+
+Включайте только h3–h5:
+
+```nexy
+toc_html = useToc(depth_range="3-5")
+```

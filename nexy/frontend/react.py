@@ -1,7 +1,7 @@
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
 
 
-def react() -> FFModel:
+def react() -> FrontendFramework:
     render_script = """
     (async function() {
         const w = window;
@@ -23,7 +23,7 @@ def react() -> FFModel:
 
         async function m(el) {
             if (!el || el.dataset.nexyMounted === "1") return;
-            
+
             const key = el.getAttribute("data-nexy-key") || "";
             const path = el.dataset.nexyPath || "";
             const symbol = el.getAttribute("data-nexy-symbol") || "";
@@ -31,8 +31,8 @@ def react() -> FFModel:
             const serverHTML = el.innerHTML;
 
             let props = {};
-            try { 
-                props = JSON.parse(propsStr); 
+            try {
+                props = JSON.parse(propsStr);
             } catch(e) {
                 console.error("[Nexy] Failed to parse props:", e);
             }
@@ -51,7 +51,7 @@ def react() -> FFModel:
 
             try {
                 const mod = await gi(ref);
-                
+
                 // Robust Export Resolution
                 let Comp = null;
                 if (symbol && mod[symbol]) {
@@ -68,8 +68,8 @@ def react() -> FFModel:
                 }
 
                 const element = React.createElement(
-                    React.StrictMode, 
-                    null, 
+                    React.StrictMode,
+                    null,
                     React.createElement(Comp, props)
                 );
 
@@ -97,7 +97,7 @@ def react() -> FFModel:
     })();
     """
 
-    return FFModel(
+    return FrontendFramework(
         name="react",
         render=render_script,
         extension=["jsx", "tsx"],

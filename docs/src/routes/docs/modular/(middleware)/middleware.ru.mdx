@@ -1,0 +1,192 @@
+# Промежуточное ПО
+
+Промежуточное программное обеспечение перехватывает запросы до того, как они достигнут контроллера (и ответы после). Используйте его для решения сквозных задач, применимых ко многим маршрутам: ведение журнала, синхронизация, CORS, сжатие, манипулирование заголовками.
+
+Как и охранники, промежуточное программное обеспечение в Nexy представляет собой **зависимости FastAPI** — вызываемые объекты, которые могут изменить запрос/ответ или прервать запрос.
+
+## Почему промежуточное ПО?
+
+Вы можете добавить регистрацию в каждый метод контроллера:
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+Промежуточное программное обеспечение извлекает это в один вызываемый объект, применяемый один раз:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## Создание промежуточного программного обеспечения
+
+Промежуточное программное обеспечение — это вызываемый объект, который принимает `Request`. Он может изменить `request.state`, вызвать `HTTPException` для прерывания или пройти, вернув `None`:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+Для определения времени вы можете использовать `request.state` для передачи данных в ответ:
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+Затем добавьте перехватчик ответа через параметр `Response` FastAPI:
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**Попался**: шаблон `call_next` работает для промежуточного программного обеспечения, которое охватывает весь цикл запроса/ответа. Простое промежуточное программное обеспечение, которое запускается только до того, как обработчик возьмет `request`.
+
+## Применение промежуточного программного обеспечения
+
+### Уровень контроллера
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### Уровень метода
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### Уровень модуля
+
+Зарегистрируйте промежуточное программное обеспечение в модуле для всех маршрутов:
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+Промежуточное программное обеспечение уровня модуля не поддерживается напрямую через атрибуты `"@Module()`. Для промежуточного программного обеспечения, которое применяется ко всем маршрутам, используйте уровень метода или контроллера или зарегистрируйтесь глобально через `nexyconfig.py`.
+
+## Глобальное промежуточное ПО
+
+Зарегистрируйте промежуточное ПО для каждого маршрута в приложении через `nexyconfig.py`:
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+Каждая запись представляет собой кортеж `(middleware_class, kwargs)`. Кварги передаются конструктору промежуточного программного обеспечения.
+
+## Встроенное промежуточное ПО
+
+Nexy включает в себя несколько встроенных промежуточных программ, настраиваемых через `nexyconfig.py`:
+
+| Конфигурационный ключ | Промежуточное ПО | Описание |
+|------------|-----------|-------------|
+| `useCORS` | `CORSMiddleware` | Совместное использование ресурсов между источниками |
+| `useGZip` | `GZipMiddleware` | Сжатие ответа |
+| `useTrustedHost` | `TrustedHostMiddleware` | Проверка заголовка хоста |
+| `useSession` | `SessionMiddleware` | Сеансы на основе файлов cookie |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` | Принудительно использовать HTTPS |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+Встроенное промежуточное ПО работает на глобальном уровне раньше, чем любое пользовательское промежуточное ПО.
+
+## Промежуточное ПО против охранников
+
+| Аспект | Промежуточное ПО | Охранник |
+|--------|-----------|-------|
+| Выполняет | Перед обработчиком | Перед обработчиком (после промежуточного программного обеспечения) |
+| Основная цель | Журналирование, заголовки, сжатие | Аутентификация, авторизация, контроль доступа |
+| Узор | `__call__(self, request)` | `__call__(self, request)` |
+| Прервать | Поднимите `HTTPException` | Поднять `HTTPException` |
+| Передать данные | `request.state` | `request.state` |
+
+На практике промежуточное ПО и средства защиты реализуются одинаково (зависимости FastAPI). Различие концептуальное: промежуточное программное обеспечение изменяет запросы/ответы, охранники принимают решения по управлению доступом.
+
+## Обработка ошибок в промежуточном программном обеспечении
+
+Промежуточное программное обеспечение может обнаруживать ошибки и возвращать специальные ответы, используя шаблон `call_next`:
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## Лучшие практики
+
+1. **Одна задача для каждого промежуточного программного обеспечения** — ведение журнала, синхронизация, CORS. Ни одного «большого промежуточного программного обеспечения».
+2. **Держите промежуточное программное обеспечение быстрым** — промежуточное программное обеспечение блокирует запрос. Дорогостоящие операции принадлежат обработчику.
+3. **Используйте `request.state` для передачи данных** — это стандартный способ обмена данными между промежуточным программным обеспечением, средствами защиты и обработчиками.
+4. **Предпочитайте защиту для аутентификации** — концептуально более понятно, чем промежуточное программное обеспечение для контроля доступа.
+5. **Протестируйте промежуточное программное обеспечение изолированно** — создайте макет `Request`, вызовите промежуточное программное обеспечение, определите побочные эффекты.
+
+## Следующие шаги
+
+- [Guards](/docs/modular/guards) — аутентификация и авторизация
+- [Controllers](/docs/modular/controllers) — определить обработчики маршрутов
+- [Modules](/docs/modular/modules) — организовать в функциональные модули.

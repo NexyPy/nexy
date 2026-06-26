@@ -1,0 +1,159 @@
+# WebSocket（模块化）
+
+使用 `async def SOCKET(self, websocket)` 在控制器内定义 WebSocket 端点。
+
+---
+
+## 基本回显
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/chat")
+class ChatController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await websocket.send_text(f"Echo: {data}")
+        except WebSocketDisconnect:
+            pass
+```
+
+`SOCKET` 方法名称映射到 WebSocket 端点。控制器中的所有方法共享 `"@Controller` 前缀 — 因此这是作为 WebSocket 的 `GET /chat`。
+
+---
+
+## 接收 JSON
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/events")
+class EventsController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_json()
+                await websocket.send_json({"echo": data})
+        except WebSocketDisconnect:
+            pass
+```
+
+---
+
+## 带 DI 的房间模式
+
+使用专用服务来管理连接：
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class ConnectionManager:
+    def __init__(self):
+        self.connections: list[WebSocket] = []
+
+    def add(self, ws: WebSocket):
+        self.connections.append(ws)
+
+    def remove(self, ws: WebSocket):
+        self.connections.remove(ws)
+
+    async def broadcast(self, message: str):
+        for conn in self.connections:
+            await conn.send_text(message)
+
+"@Controller("/chat")
+class ChatController:
+    def __init__(self, manager: ConnectionManager):
+        self.manager = manager
+
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        self.manager.add(websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.manager.broadcast(data)
+        except WebSocketDisconnect:
+            self.manager.remove(websocket)
+```
+
+`ConnectionManager` 是一个单例 `"@Injectable()` — 所有控制器实例共享同一个管理器。
+
+---
+
+## 用 DI 命名的房间
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class RoomManager:
+    def __init__(self):
+        self.rooms: dict[str, list[WebSocket]] = {}
+
+    def join(self, room: str, ws: WebSocket):
+        self.rooms.setdefault(room, []).append(ws)
+
+    def leave(self, room: str, ws: WebSocket):
+        self.rooms[room].remove(ws)
+        if not self.rooms[room]:
+            del self.rooms[room]
+
+    async def broadcast(self, room: str, message: str):
+        for conn in self.rooms.get(room, []):
+            await conn.send_text(message)
+
+"@Controller("/rooms/{room_id}")
+class RoomController:
+    def __init__(self, rooms: RoomManager):
+        self.rooms = rooms
+
+    async def SOCKET(self, websocket: WebSocket, room_id: str):
+        await websocket.accept()
+        self.rooms.join(room_id, websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.rooms.broadcast(room_id, data)
+        except WebSocketDisconnect:
+            self.rooms.leave(room_id, websocket)
+```
+
+---
+
+## 连接生命周期
+
+|活动 |会发生什么 |
+|--------|-------------|
+|客户端连接| `websocket.accept()` — 必须首先调用 |
+|收到消息 | `receive_text()` / `receive_json()` / `receive_bytes()` |
+|客户端断开连接 | `WebSocketDisconnect` 引发 — 清理 `except` |
+|服务器关闭 | `await websocket.close(code=1000)` |
+
+ - -
+
+＃＃ 客户
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## 另请参阅
+
+- [Controllers](/docs/modular/controllers) — 模块化中的路由处理程序
+- [Providers & DI](/docs/modular/providers) — 可注入服务
+- [Guards](/docs/modular/guards) — 保护 WebSocket 端点
+- [WebSocket Guide](/docs/guides/websocket) — 概念概述

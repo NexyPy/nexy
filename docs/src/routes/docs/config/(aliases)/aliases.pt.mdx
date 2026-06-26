@@ -1,0 +1,78 @@
+# Aliases
+
+Configure aliases de caminho de importação para importações mais limpas em seus arquivos `.nexy`.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useAliases = {
+        ""@": "src",
+        ""@components": "src/components",
+        ""@lib": "src/lib",
+    }
+```
+
+---
+
+## Uso
+
+Com a configuração acima, em vez de:
+
+```python
+from src.components.card.nexy import Card
+from src.lib.utils import format_date
+```
+
+Você pode escrever:
+
+```python
+from "@components/card.nexy import Card
+from "@lib/utils import format_date
+```
+
+---
+
+##Como funciona
+
+Os aliases são resolvidos em tempo de compilação. O namespace VFS mapeia prefixos de alias para seus caminhos expandidos. Eles funcionam tanto nas importações de frontmatter quanto nas chamadas de modelo `__Import`.
+
+O símbolo `"@` é uma convenção, não um requisito — você pode usar qualquer prefixo:
+
+```python
+useAliases = {
+    "~": "src",
+    "#components": "src/components",
+}
+```
+
+---
+
+## Limitações
+
+- Aliases funcionam somente em arquivos `.nexy` e `.mdx`
+- Eles **não** se aplicam a importações de JavaScript/TypeScript em componentes do cliente (use aliases de caminho `vite.config.ts` para isso)
+- Os aliases são resolvidos em relação à raiz do projeto, não ao arquivo atual
+
+---
+
+## Combinado com aliases do Vite
+
+Para projetos full-stack, configure os aliases Nexy (para importações `.nexy`) e os aliases Vite (para importações JS/TS):
+
+```python
+# nexyconfig.py
+useAliases = {""@": "src"}
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { resolve } from "path";
+
+export default defineConfig({
+    resolve: {
+        alias: { ""@": resolve(__dirname, "src") },
+    },
+});
+```

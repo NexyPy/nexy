@@ -1,0 +1,202 @@
+# プロパティ (小道具)
+
+プロップは、データがコンポーネントにどのように流れ込むかです。これらにより、コンポーネントが再利用可能になります。同じ `Card` コンポーネントは、受け取った props に基づいて異なるコンテンツをレンダリングできます。
+
+## 小道具の宣言
+
+小道具は、`:prop[type]` 構文を使用してフロントマターで宣言されます。
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+各宣言は、対応する型アノテーションが付いた、生成された Python 関数のパラメーターになります。
+
+## 必須とオプション
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+コンポーネントの使用時に必要な prop が渡されない場合、Python はレンダリング時に `TypeError` を発生させます。エラー メッセージには、コンポーネント名と不足している引数が含まれています。
+
+**プロップを必要とする場合**: プロップなしではコンポーネントに意味がない場合。 `title` のない `BlogCard` は壊れています。必須にします。 `variant` のない `Button` は、デフォルトで `"primary"` になります。
+
+## サポートされているタイプ
+
+|タイプ |デフォルトのリテラル |メモ |
+|------|-----|------|
+| `str` | `""` |文字列値 |
+| `int` | `0` |整数値 |
+| `float` | `0.0` |浮動小数点値 |
+| `bool` | `false` | `true`/`false` (`True`/`False` ではありません) |
+| `list` | `[]` |リスト値 |
+| `dict` | `{}` |辞書の値 |
+| `Any` | `None` |任意のタイプ |
+
+型アノテーションは、ドキュメントと IDE サポートに使用されます。実行時に、Python は動的に型指定されます。アノテーションは型を強制しません。 int が期待される場所に文字列を渡すと、テンプレートがそれを prop 宣言レベルではなく算術的に使用しようとすると失敗します。
+
+## 親からプロップを渡す
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**ルール**:
+
+- **文字列値**は `key="value"` または `key="{{ jinja_expr }}"` を使用します
+- **式** は `key={expr}` を使用します — 引用符なし、値は Python として解析されます
+- **ブール値**: `active=True` や `active="true"` ではなく、`active=true` (小文字) を使用します。
+- **リスト/辞書**: `items={["a", "b"]}` または `settings={"key": "val"}`
+
+## デフォルト値と変更可能なオブジェクト
+
+Python の一般的な注意事項: **呼び出し間で共有される変更可能なデフォルトを使用しないでください**。
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy がこれを処理します。生成された関数は、内部デフォルトとして `None` を使用し、呼び出しごとに新しいコピーを作成します。
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+したがって、`items:prop[list] = []` は安全に使用できます。各コンポーネント呼び出しは独自のリストを取得します。
+
+## `{{ }}` を使用した動的プロップ
+
+動的値には Jinja2 式を使用します。
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+コンパイラは、`{{ }}` を含む属性値を Jinja2 文字列連結に変換します。
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+引用符で囲まれていない `{...}` 値の場合、内容は Python 式として直接渡されます。
+
+## MDX ページの小道具
+
+ページ (`src/routes/` 内の `.mdx` ファイル) も props を宣言できます。
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+ページプロパティは通常、レイアウトによって設定されるか、`useViews()` 経由で渡されます。ページは通常、代わりにフックやデータベース クエリからデータを取得するため、これらはコンポーネント プロパティほど一般的ではありません。
+
+## スプレッドプロップ
+
+テンプレートで Jinja2 スプレッド構文を使用して、辞書を複数のプロパティとして渡します。
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+これはコンパイラの省略表現検出によって機能します。属性キーに `{{ ...props }}` が見つかると、それが `**props` に展開されます。
+
+## 完全な例: ボタン コンポーネント
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+使用法：
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## 次へ
+
+- [Conditional Rendering](/docs/components/conditional): テンプレート内の if/for
+- [Component Modules](/docs/components/modules): コンポーネントを整理しています

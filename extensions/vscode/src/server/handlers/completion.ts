@@ -13,13 +13,11 @@ import {
   type NexyImport,
   type NexyProp,
 } from "../../shared/nexy.parser";
-import { parseNexyConfig, resolveWithAlias } from "../../shared/nexy.config.parser";
+import { findWorkspaceRoot, parseNexyConfig, resolveWithAlias } from "../../shared/nexy.config.parser";
+import { JINJA_KEYWORDS, JINJA_FILTERS } from "../../shared/types";
 import * as fs from "fs";
 import { fileURLToPath } from "url";
 import * as path from "path";
-
-const JINJA_KEYWORDS = ["if","elif","else","endif","for","endfor","in","block","endblock","extends","include","macro","endmacro","set","with","endwith","raw","endraw","import","from","as","not","and","or","is","true","false","none"];
-const JINJA_FILTERS = ["abs","attr","batch","capitalize","center","count","default","dictsort","escape","filesizeformat","first","float","forceescape","format","groupby","indent","int","items","join","last","length","list","lower","map","max","min","pprint","random","reject","rejectattr","replace","reverse","round","safe","select","selectattr","slice","sort","string","striptags","sum","title","tojson","trim","truncate","unique","upper","urlencode","urlize","wordcount","wordwrap"];
 
 export class CompletionHandler {
   constructor(private htmlLanguageService: HtmlLanguageService) {}
@@ -65,11 +63,7 @@ export class CompletionHandler {
       const currentDir = path.dirname(docPath);
       
       // Trouver la racine du projet pour les alias
-      let workspaceRoot = currentDir;
-      while (workspaceRoot !== path.parse(workspaceRoot).root) {
-        if (fs.existsSync(path.join(workspaceRoot, "nexyconfig.py"))) break;
-        workspaceRoot = path.dirname(workspaceRoot);
-      }
+      const workspaceRoot = findWorkspaceRoot(currentDir) ?? currentDir;
 
       const config = parseNexyConfig(workspaceRoot);
       let searchDir = currentDir;
@@ -140,7 +134,7 @@ export class CompletionHandler {
     }
 
     // Si on est dans un composant PascalCase, on gère les props spécifiques
-    const componentMatch = lineText.match(/<([A-Z][A-Za-z0-9]*)\s/);
+    const componentMatch = lineText.match(/<([A-Z][A-Za-z0-9_]*)\s/);
     if (componentMatch) {
       const imp = imports.find(i => i.name === componentMatch[1]);
       if (imp) {
@@ -179,7 +173,7 @@ export class CompletionHandler {
       label: p.name, kind: CompletionItemKind.Variable, detail: `prop[${p.type}]`
     }));
     if (/\|\s*\w*$/.test(lineText)) {
-      JINJA_FILTERS.forEach(f => items.push({ label: f, kind: CompletionItemKind.Function, detail: "Jinja2 Filter" }));
+      for (const f of JINJA_FILTERS) items.push({ label: f, kind: CompletionItemKind.Function, detail: "Jinja2 Filter" });
     }
     return items;
   }
@@ -189,12 +183,7 @@ export class CompletionHandler {
       const docPath = fileURLToPath(doc.uri);
       const currentDir = path.dirname(docPath);
       
-      // Trouver la racine du projet pour les alias
-      let workspaceRoot = currentDir;
-      while (workspaceRoot !== path.parse(workspaceRoot).root) {
-        if (fs.existsSync(path.join(workspaceRoot, "nexyconfig.py"))) break;
-        workspaceRoot = path.dirname(workspaceRoot);
-      }
+      const workspaceRoot = findWorkspaceRoot(currentDir) ?? currentDir;
       const config = parseNexyConfig(workspaceRoot);
       const aliasResolved = resolveWithAlias(imp.path, workspaceRoot, config.useAliases);
       const resolvedPath = aliasResolved || path.resolve(currentDir, imp.path);

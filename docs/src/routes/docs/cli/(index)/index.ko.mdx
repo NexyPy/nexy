@@ -1,0 +1,14 @@
+# 명령줄 인터페이스
+
+Nexy는 모든 기능을 갖춘 CLI와 함께 제공됩니다. 바이너리는 `nx`(또는 `nexy`)이며 개발, 빌드, 프로젝트 스캐폴딩 및 마이그레이션을 위한 명령을 노출합니다.
+
+모든 명령은 자세한 사용법을 위해 `--help`를 허용합니다.
+
+## 빠른 링크
+
+- [dev](/docs/cli/dev) — 개발 서버 시작
+- [start](/docs/cli/start) — 프로덕션 서버
+- [build](/docs/cli/build) — 프로덕션 빌드
+- [new](/docs/cli/new) — 새 프로젝트의 발판
+- [init](/docs/cli/init) — 기존 프로젝트에서 Nexy를 초기화합니다.
+- [migrate](/docs/cli/migrate) — 다른 프레임워크에서 마이그레이션

@@ -1,0 +1,51 @@
+# nx migrieren
+
+Verwaltet Datenbankmigrationen mithilfe des konfigurierten ORM-Migrationstools.
+
+```bash
+nx migrate
+```
+
+---
+
+## Wie es funktioniert
+
+Nexy erkennt das konfigurierte ORM von `nexyconfig.py` und delegiert es an das entsprechende Tool:
+
+| ORM | Migrationstool | Konfigurationsfeld |
+|-----|---------------|--------------|
+| SQLAlchemy | Destillierkolben | `useORM` |
+| SQLModel | Destillierkolben | `useORM` |
+| Schildkröte-ORM | Aerich | `useORM` |
+
+---
+
+## Befehle
+
+| Befehl | Beschreibung |
+|---------|-------------|
+| `nx migrate` | Erstellen Sie eine neue Migration (Änderungen werden automatisch erkannt) |
+| `nx migrate --init` | Migrationstool initialisieren (Alembic/Aerich) |
+| `nx migrate --upgrade` / `-u` | Ausstehende Migrationen anwenden |
+| `nx migrate -m "message"` | Migration mit einer Nachricht erstellen |
+
+---
+
+## Beispiel
+
+```bash
+# Initialize Alembic (first time)
+nx migrate --init
+
+# Create a migration after model changes
+nx migrate -m "add user table"
+
+# Apply to database
+nx migrate --upgrade
+```
+
+---
+
+## Alias
+
+`nx m`

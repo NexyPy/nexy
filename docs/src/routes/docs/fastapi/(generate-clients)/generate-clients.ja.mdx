@@ -1,0 +1,47 @@
+# クライアントを生成する
+
+OpenAPI スキーマからタイプセーフなクライアント SDK を生成します。
+
+## FastAPI の生成クライアント
+
+FastAPI には、TypeScript/JavaScript クライアントを出力する `generate_client` コマンドが含まれています。
+
+```bash
+pip install fastapi
+fastapi-codegen --input openapi.json --output ./client
+```
+
+または、`openapi-generator` を使用します。
+
+```bash
+npm install "@openapitools/openapi-generator-cli
+npx openapi-generator-cli generate \
+    -i http://localhost:3000/openapi.json \
+    -g typescript-fetch \
+    -o ./client
+```
+
+## ネクシー + liblab
+
+[Nexy OpenAPI URL] → [liblab](https://liblab.com) は複数の言語で SDK を生成します。
+
+## 手動フェッチ
+
+単純な場合は、`fetch` を直接使用します。
+
+```typescript
+const res = await fetch("/api/items/1");
+const item = await res.json();
+```
+
+## クライアントライブラリ
+
+Nexy は、`./actions/` の [Actions](/docs/guides/actions) の TypeScript ラッパーを生成します。ルート ハンドラーには、優先 HTTP クライアント (`fetch`、`axios`、`httpx`) を使用します。
+
+## 言語
+
+|ツール |言語 |
+|------|-----------|
+| `openapi-generator` | TypeScript、Python、Java、Go、C#、Rust、50+ |
+| `liblab` | TypeScript、Python、Go、Java、Kotlin、C# |
+| `fastapi-codegen` | TypeScript (フェッチ / Axios) |

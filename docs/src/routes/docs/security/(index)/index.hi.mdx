@@ -1,0 +1,35 @@
+# सुरक्षा अवलोकन
+
+नेक्सी प्रमाणीकरण मिडलवेयर, रूट गार्ड और सत्र समर्थन प्रदान करता है। पायथन की मानक लाइब्रेरी और तृतीय-पक्ष पैकेज एन्क्रिप्शन, हैशिंग, जेडब्ल्यूटी और आईडी पीढ़ी को कवर करते हैं।
+
+---
+
+## फ़ीचर मैट्रिक्स
+
+| फ़ीचर | नेक्सी एपीआई | बैकएंड |
+|---------|----------|---------|
+| प्रमाणीकरण | `useAuth` कॉन्फ़िगरेशन + कस्टम बैकएंड | स्टारलेट `AuthenticationMiddleware` |
+| मार्ग सुरक्षा | `"@UseGuard(*guards)` | फास्टएपीआई `Depends` |
+| सत्र | `useSession` कॉन्फ़िगरेशन + `useSession()` हुक | स्टारलेट `SessionMiddleware` |
+| प्राधिकरण | कस्टम गार्ड + भूमिका जांच | फास्टएपीआई `Depends` |
+| एन्क्रिप्शन/हैशिंग | मानक पायथन | `hashlib`, `bcrypt`, `cryptography` |
+| जेडब्ल्यूटी | तृतीय पक्ष | `PyJWT` |
+| यूआईडी | मानक पायथन | `uuid`, `secrets` |
+
+---
+
+## त्वरित लिंक
+
+- [Authentication](/docs/security/authentication) - ऑथ बैकएंड और लॉगिन प्रवाह कॉन्फ़िगर करें
+- [Authorization](/docs/security/authorization) - गार्ड के साथ भूमिका-आधारित अभिगम नियंत्रण
+- [Encryption & Hashing](/docs/security/encryption-hashing) - पासवर्ड हैशिंग, डेटा एन्क्रिप्शन
+- [JWT](/docs/security/jwt) - JSON वेब टोकन निर्माण और सत्यापन
+- [UID](/docs/security/uid) - अद्वितीय आईडी जनरेशन रणनीतियाँ
+
+---
+
+##संबंधित
+
+- [Guides / Auth](/docs/guides/auth) - व्यावहारिक प्रमाणीकरण प्रवाह पूर्वाभ्यास
+- [Config / Session](/docs/config/session) - सत्र मिडलवेयर कॉन्फ़िगरेशन
+- [Decorators / "@UseGuard](/docs/decorators/useguard) - गार्ड डेकोरेटर संदर्भ

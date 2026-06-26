@@ -1,0 +1,56 @@
+# पृष्ठभूमि कार्य (एफबीआर)
+
+प्रतिक्रिया भेजने के *बाद* में कोड चलाएँ - लॉगिंग, नोटिफिकेशन, कैश वार्मिंग के लिए।
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## एकल कार्य
+
+```python
+# src/routes/log.py
+from fastapi import BackgroundTasks
+
+def write_log(message: str):
+    with open("app.log", "a") as f:
+        f.write(message + "\n")
+
+def GET(tasks: BackgroundTasks):
+    tasks.add_task(write_log, "Page visited")
+    return {"status": "ok"}
+```
+
+## अनेक कार्य
+
+```python
+from fastapi import BackgroundTasks
+
+def GET(tasks: BackgroundTasks):
+    tasks.add_task(log_visit)
+    tasks.add_task(notify_admin)
+    tasks.add_task(warm_cache)
+    return {"ok": True}
+```
+
+## निर्भरता के साथ कार्य
+
+```python
+from fastapi import BackgroundTasks, Depends
+from src.db import get_db
+
+def cleanup_old_records(db=Depends(get_db)):
+    db.query(Log).delete()
+
+def GET(tasks: BackgroundTasks):
+    tasks.add_task(cleanup_old_records)
+    return {"status": "cleaning"}
+```
+
+## महत्वपूर्ण
+
+- कार्य प्रतिक्रिया भेजे जाने के **बाद** चलते हैं - ग्राहक प्रतीक्षा नहीं करता है
+- वे एक ही प्रक्रिया में चलते हैं - लंबे कार्य ईवेंट लूप को अवरुद्ध करते हैं
+- भारी काम के लिए, कार्य कतार (अजवाइन, एआरक्यू, आरक्यू, आदि) का उपयोग करें।
+- कार्यों में त्रुटियाँ चुपचाप निगल ली जाती हैं - कार्य फ़ंक्शन के अंदर प्रयास/छोड़कर जोड़ें
+- कार्यों को परिवर्तनशील वस्तुओं की **प्रतियाँ** प्राप्त होती हैं - उत्परिवर्तन प्रतिक्रिया को प्रभावित नहीं करेंगे
