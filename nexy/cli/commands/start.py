@@ -9,7 +9,7 @@ from nexy.utils.server.server import Server
 
 
 def start(port: int | None = None, host: str | None = None) -> None:
-    pycache()
+    # pycache()
     startup_start = time.perf_counter()
     version = __version__
 

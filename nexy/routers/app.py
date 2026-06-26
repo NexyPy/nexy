@@ -188,7 +188,7 @@ class AppServer:
 
     def run(self) -> FastAPI:
         """Main entry point to assemble the application."""
-        pycache()
+        # pycache()
 
         self.server = FastAPI(title="Nexy", version=self.version, docs_url=None, redoc_url=None)
 
