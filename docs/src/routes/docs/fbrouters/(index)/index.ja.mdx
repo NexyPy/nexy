@@ -1,0 +1,56 @@
+# ファイルベースのルーティングの概要
+
+Nexy のファイルベース ルーティング (FBR) は、`src/routes/` の下のファイル ツリーからルートを自動的に作成します。すべての `.nexy`、`.mdx`、および `.py` ファイルは HTTP ルートになります。ルートの登録は必要ありません。
+
+Next.js Pages Router、PHP、または静的 HTML サーバーを使用したことがある場合は、ファイル パスが URL パスであるという概念に馴染みがあるでしょう。
+
+---
+
+## 仕組み
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+各ファイルは、`src/routes/` プレフィックスとファイル拡張子を削除することで URL パスにマップされます。 `index` という名前のファイルはディレクトリ ルートとして機能します。`/blog/index.nexy` は `/blog` として機能します。
+
+---
+
+## 予約されたファイル名
+
+一部のファイル名には特別な動作があり、ルートとして扱われません。
+
+|ファイル |目的 |
+|-----|----------|
+| `layout.nexy` |兄弟ルートと子ルートの共有レイアウト |
+| `dependencies.py` |共有依存関係の注入 |
+| `__init__.py` | Python パッケージ マーカー |
+
+---
+
+## ルートの優先順位
+
+同じパスに異なる形式で複数のファイルを作成する場合、Nexy は優先順位を `.py` > `.nexy` > `.mdx` として解決します。
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## 次のステップ
+
+- [Pages & Layouts](/docs/fbrouters/pages) — ページと共有レイアウトの作成
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) — Python を使用した REST API ルート
+- [Dynamic URLs](/docs/fbrouters/route_parameters) — `[slug]` のようなパス パラメータ

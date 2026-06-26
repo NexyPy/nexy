@@ -1,0 +1,80 @@
+# Data Loading
+
+Nexy provides two layers for loading data: **compile-time** in `.nexy` frontmatter, and **request-time** via hooks.
+
+## Compile-time data (frontmatter)
+
+The `---` block in `.nexy` files is Python that executes at compile time. Variables defined there are available in the template:
+
+```nexy
+---
+import json
+from src.data import get_items
+items = get_items()
+total = len(items)
+---
+<ul>
+{% for item in items %}
+  <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+<p>Total: {{ total }} items</p>
+```
+
+You can also import JSON data directly:
+
+```nexy
+---
+import "./data.json" as data
+---
+<pre>{{ data | tojson }}</pre>
+```
+
+## Request-time data (hooks)
+
+Hooks run during the HTTP request and have access to request context:
+
+```python
+from nexy import useQuery, useSearchParams, useSession, useCookies
+
+# URL path parameters (from [param] in filename)
+id = useQuery("id")
+
+# Query string parameters
+params = useSearchParams()  # {"page": "1", "sort": "asc"}
+
+# Session data (requires session middleware)
+user = useSession().get("user")
+
+# Cookies
+token = useCookies().get("token")
+```
+
+## API route handlers
+
+For data that comes from a database or external API, create a dedicated API handler in a `.py` file:
+
+```python
+# src/routes/api/items.py
+from myapp.db import get_items
+
+def GET():
+    return get_items()
+
+def POST(data: dict):
+    # data is parsed from request body automatically
+    return {"created": True, "id": data.get("id")}
+```
+
+Then call it from your page via `fetch` or server-side include.
+
+## Dynamic includes with `useViews`
+
+Render another page's component inside the current page at request time:
+
+```python
+from nexy import useViews
+sidebar = useViews("/components/sidebar.nexy", {"active": "docs"})
+```
+
+Returns an `HTMLResponse` that you can embed in your template.

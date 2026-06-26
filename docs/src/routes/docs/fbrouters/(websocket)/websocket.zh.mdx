@@ -1,0 +1,126 @@
+# WebSocket (FBR)
+
+通过创建具有 `async def SOCKET` 函数的 `.py` 文件来定义 WebSocket 端点。
+
+---
+
+## 基本回显
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Echo: {data}")
+    except WebSocketDisconnect:
+        pass
+```
+
+函数名称 `SOCKET`（不区分大小写）映射到 Starlette WebSocket 端点。文件路径决定 URL — 在此示例中为 `/chat`。
+
+---
+
+## 接收 JSON
+
+```python
+# src/routes/events.py
+from fastapi import WebSocket, WebSocketDisconnect
+import json
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_json()
+            await websocket.send_json({"echo": data})
+    except WebSocketDisconnect:
+        pass
+```
+
+---
+
+## 房间格局
+
+向所有连接的客户端广播消息：
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+connections: list[WebSocket] = []
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    connections.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in connections:
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        connections.remove(websocket)
+```
+
+`connections` 列表位于模块级别 — 所有客户端共享相同的列表。
+
+---
+
+## 命名房间
+
+按房间名称对连接进行分组：
+
+```python
+# src/routes/rooms/{room_id}.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+rooms: dict[str, list[WebSocket]] = {}
+
+async def SOCKET(websocket: WebSocket, room_id: str):
+    await websocket.accept()
+    rooms.setdefault(room_id, []).append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in rooms.get(room_id, []):
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        rooms[room_id].remove(websocket)
+        if not rooms[room_id]:
+            del rooms[room_id]
+```
+
+URL 参数 `{room_id}` 是从文件名自动注入的。
+
+---
+
+## 连接生命周期
+
+|活动 |会发生什么 |
+|--------|-------------|
+|客户端连接| `websocket.accept()` — 必须首先调用 |
+|收到消息 | `receive_text()` / `receive_json()` / `receive_bytes()` |
+|客户端断开连接 | `WebSocketDisconnect` 引发 — 清理 `except` |
+|服务器关闭 | `await websocket.close(code=1000)` |
+
+始终将消息循环包装在 `try/except WebSocketDisconnect` 中以清理连接。
+
+ - -
+
+＃＃ 客户
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## 另请参阅
+
+- [Route Handlers](/docs/fbrouters/route_handlers) — FBR 中的 REST 端点
+- [WebSocket Guide](/docs/guides/websocket) — 概念概述

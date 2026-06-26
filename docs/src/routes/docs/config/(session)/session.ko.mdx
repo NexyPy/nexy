@@ -1,0 +1,74 @@
+# 세션
+
+서명된 쿠키 세션을 위한 세션 미들웨어를 구성합니다. 서버 측 저장소가 필요하지 않습니다.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useSession = {
+        "secret_key": "your-secret-key",
+        "max_age": 3600,
+        "same_site": "lax",
+        "https_only": False,
+    }
+```
+
+내부적으로는 Starlette의 `SessionMiddleware`를 사용합니다.
+
+---
+
+## 필드
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `secret_key` | `str` | 필수 | 세션 쿠키 서명을 위한 비밀 키 |
+| `max_age` | `int` | `1209600` (14일) | 세션 쿠키 최대 수명(초) |
+| `same_site` | `str` | `"lax"` | SameSite 정책(`"lax"`, `"strict"`, `"none"`) |
+| `https_only` | `bool` | `False` | HTTPS를 통해서만 쿠키 보내기 |
+
+---
+
+## 용법
+
+```python
+from nexy import useSession
+
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+```
+
+세션은 사전처럼 동작합니다. 할당, 읽기, 삭제:
+
+```python
+session = useSession()
+user_id = session.get("user_id")
+del session["user_id"]
+```
+
+---
+
+## 플래시 메시지 패턴
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append({"type": "success", "text": "Saved!"})
+session["_flashes"] = flashes
+```
+
+그런 다음 템플릿을 읽고 지웁니다.
+
+```python
+session = useSession()
+flashes = session.pop("_flashes", [])
+```
+
+---
+
+## 보안 참고사항
+
+- 세션 데이터는 서명되었지만 **암호화되지 않음** — 민감한 데이터를 저장하지 마세요.
+- 프로덕션에서 주기적으로 `secret_key` 순환
+- 프로덕션에서는 `https_only=True`를 사용합니다.

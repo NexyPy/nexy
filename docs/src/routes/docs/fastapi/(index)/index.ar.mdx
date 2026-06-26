@@ -1,0 +1,61 @@
+# FastAPI في Nexy
+
+تم بناء Nexy على **FastAPI** و**Starlette**. تتوفر كل ميزة FastAPI في Nexy - بدون أغلفة أو تجريدات. الاستيراد مباشرة من `fastapi`.
+
+## ما هو متاح
+
+| ميزة | استيراد | يعمل في |
+|---------|-------|----------|
+| هيئة الطلب (Pydantic) | `from pydantic import BaseModel` | كلاهما |
+| معلمات المسار | `from fastapi import Path` | كلاهما |
+| معلمات الاستعلام | `from fastapi import Query` | كلاهما |
+| معلمات ملفات تعريف الارتباط | `from fastapi import Cookie` | كلاهما |
+| معلمات الرأس | `from fastapi import Header` | كلاهما |
+| بيانات النموذج | `from fastapi import Form` | كلاهما |
+| رفع الملفات | `from fastapi import File, UploadFile` | كلاهما |
+| التبعيات | `from fastapi import Depends` | كلاهما |
+| مهام الخلفية | `from fastapi import BackgroundTasks` | كلاهما |
+| أخطاء HTTP | `from fastapi import HTTPException` | كلاهما |
+| رموز الحالة | `from fastapi import status` | كلاهما |
+| ويب سوكيت | `from fastapi import WebSocket` | كلاهما |
+| طلب | `from fastapi import Request` | كلاهما |
+| الردود | `from fastapi.responses import ...` | كلاهما |
+| الوسيطة | `from starlette.middleware import Middleware` | كلاهما |
+| كورس | `from fastapi.middleware.cors import CORSMiddleware` | كلاهما |
+| أبي راوتر | `from fastapi import APIRouter` | وحدات فقط |
+| اختبار العميل | `from fastapi.testclient import TestClient` | كلاهما |
+
+---
+
+## الطريق الأساسي
+```python
+# src/routes/users/[id].nexy
+---
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+def POST(body: CreateUser):
+    return {"name": body.name}
+---
+```
+```python
+from nexy.decorators import Controller
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"name": body.name}
+```
+## ماذا يضيف نيكسي؟
+
+يقوم Nexy بتغليف FastAPI من خلال التوجيه المعتمد على الملفات، ومكونات `.nexy`، وDI المعياري، وتكامل إطار عمل الواجهة الأمامية. ولكنه **لا يخفي FastAPI أبدًا** — `nexy.app` هو FastAPI `APIRouter`، ويكشف التكوين جميع برامج Starlette الوسيطة، وكل تبعية/استجابة/استثناء لـ FastAPI تعمل دون تغيير.

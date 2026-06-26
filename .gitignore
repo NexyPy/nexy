@@ -11,6 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+tasks
+session.ai
+__pycache__
+**/__pycache__/**
+**/__nexy__/**
+**/node_modules/**
 
 # Editor directories and files
 .vscode/*
@@ -25,6 +31,7 @@ dist-ssr
 
 
 .venv
+**/.venv/**
 */__pycache__/*
 *.pyc
 *.pyo
@@ -42,3 +49,5 @@ __nexy__/
 
 .vercel
 .env
+
+.**/public/font/**

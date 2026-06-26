@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 
@@ -10,6 +9,7 @@ class VFS:
 
     _instance = None
     _files: dict[str, str] = {}
+    _dev_mode: bool = False
 
     def __new__(cls):
         if cls._instance is None:
@@ -37,6 +37,10 @@ class VFS:
         """Returns a list of all files in the VFS."""
         return list(self._files.keys())
 
+    @classmethod
+    def set_dev_mode(cls, dev: bool = True) -> None:
+        cls._dev_mode = dev
+
     def clear(self) -> None:
         """Clears all files from the VFS."""
         self._files.clear()
@@ -48,7 +52,8 @@ class VFS:
             del self._files[path]
 
     def flush_to_disk(self, prefix: str = "__nexy__") -> None:
-        """Writes all VFS files under prefix to the physical filesystem."""
+        if self._dev_mode:
+            return
         for path, content in self._files.items():
             if not path.startswith(prefix):
                 continue

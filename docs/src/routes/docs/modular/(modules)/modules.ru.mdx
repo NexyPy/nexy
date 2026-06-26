@@ -1,0 +1,193 @@
+# Модулей
+
+Модули группируют связанные контроллеры, провайдеры и подмодули в единый блок. Каждое модульное приложение имеет корневой модуль, который импортирует функциональные модули.
+
+## Почему модули?
+
+Без модулей вы бы зарегистрировали каждый контроллер и провайдера в одном плоском списке. По мере роста приложения этот список становится неуправляемым — 50 провайдеров без четкого права собственности.
+
+Модули восстанавливают границы: `UsersModule` владеет `UsersController` и `UserService`. Каждый модуль представляет собой самостоятельную единицу.
+
+## Корневой модуль
+
+Каждому приложению нужен один корневой модуль. Корневой модуль упоминается в `nexyconfig.py`:
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+Декоратор `"@Module` создает FastAPI `APIRouter` из класса. Он считывает три атрибута класса:
+
+| Атрибут | Тип | Описание |
+|-----------|------|-------------|
+| `controllers` | `list[type]` | Классы контроллеров для регистрации |
+| `imports` | `list[APIRouter]` | Подмодули (от `"@Module`) для включения |
+| `providers` | `list[type]` | Инъекционные классы для регистрации в контейнере |
+| `exports` | `list[type]` | Поставщики, видимые для импортирующих модулей |
+
+**Попался**: для `"@Module()` требуется хотя бы один контроллер. Пустой список `controllers` вызывает `ValueError`.
+
+## Функциональные модули
+
+Функциональные модули инкапсулируют домен:
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+Импортируйте его в корневой модуль:
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### Префикс модуля
+
+Установите префикс, который будет применяться ко всем маршрутам в модуле:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+Префиксы контроллера ОТНОСИТЕЛЬНО префикса модуля. Если `"@Module(prefix="/users")` и `"@Controller("/{id}")`, эффективный путь — `/users/{id}`.
+
+## Регистрация провайдера
+
+Чтобы быть доступными для внедрения, провайдеры должны быть зарегистрированы в модуле:
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+`DatabaseService` разрешается при запуске, когда модуль загружается. Если зависимости поставщика не могут быть разрешены, ошибка возникает немедленно, а не во время запроса.
+
+### Экспорт
+
+Атрибут `exports` определяет, какие поставщики будут видны импортирующим модулям:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+Без `exports` НИКАКИЕ поставщики не видны импортирующим модулям. Это сделано намеренно — это заставляет вас явно объявлять общедоступный API вашего модуля.
+
+## Общие модули
+
+Модули являются синглтонами. Импорт одного и того же модуля в несколько мест использует одни и те же экземпляры поставщика:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+Вот как вы разделяете подключение к базе данных в своем приложении.
+
+## Структура проекта
+
+Типичный модульный проект следует этому соглашению:
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+Эта структура масштабируется до сотен модулей. Каждый каталог модуля является автономным.
+
+## Разрешение модуля
+
+Разрешение модуля следует трем правилам:
+
+1. **Топологическая сортировка** — модули инициализируются в порядке зависимости (сначала импортируется)
+2. **Циклическое обнаружение** — циклические зависимости между модулями повышают `RecursionError` при запуске.
+3. **Область поставщика** — поставщики сохраняют свою первоначальную область действия независимо от того, какой модуль их импортирует.
+
+Если модуль A импортирует модуль B, а модуль B импортирует модуль A, контейнер обнаруживает цикл при запуске:
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**Почему это важно**. Циклические зависимости часто указывают на проблему проектирования. Извлеките общую зависимость в третий модуль.
+
+## Лучшие практики
+
+1. **Одна функция на модуль** — пользователи, аутентификация, выставление счетов. Не «утилиты».
+2. **Сохраняйте неглубокий импорт модулей** — модуль, импортирующий более 10 других модулей, делает слишком много
+3. **Используйте `exports` намеренно** — экспортируйте только то, что действительно нужно другим модулям.
+4. **Назовите модули по именам доменов** — `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Всегда указывайте `prefix` при создании версий** — `"@Module(prefix="/api/v1")`
+
+## Следующие шаги
+
+- [Guards](/docs/modular/guards) — защитить маршруты модулей
+- [Middleware](/docs/modular/middleware) — запросить перехваты конвейера
+- [Controllers](/docs/modular/controllers) — определить обработчики маршрутов

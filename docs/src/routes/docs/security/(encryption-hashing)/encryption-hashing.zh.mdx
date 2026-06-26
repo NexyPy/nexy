@@ -1,0 +1,56 @@
+# 加密和散列
+
+Nexy 不提供自己的加密货币——使用 Python 的标准库和可信的第三方包。
+
+## 哈希
+
+### 哈希库（stdlib）
+
+```python
+import hashlib
+
+hash = hashlib.sha256(b"data").hexdigest()
+```
+
+### bcrypt
+
+```bash
+pip install bcrypt
+```
+
+```python
+import bcrypt
+
+hashed = bcrypt.hashpw(b"password", bcrypt.gensalt())
+bcrypt.checkpw(b"password", hashed)  # True
+```
+
+## 加密
+
+### 密码学（Fernet 对称）
+
+```bash
+pip install cryptography
+```
+
+```python
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key()
+cipher = Fernet(key)
+
+token = cipher.encrypt(b"secret data")
+cipher.decrypt(token)  # b"secret data"
+```
+
+## 环境变量
+
+切勿对密钥进行硬编码。使用环境变量：
+
+```python
+import os
+
+secret = os.environ["SECRET_KEY"]
+```
+
+对于开发，Nexy 自动读取 `.env` 文件。

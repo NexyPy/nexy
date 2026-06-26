@@ -1,4 +1,19 @@
 import * as vscode from "vscode";
+
+/**
+ * Strip Jinja2 from a string, replacing inline expressions with a single space
+ * and removing block-level syntax entirely. This lets CSS/JS/HTML language services
+ * see clean code without {{ }} / {% %} / {# #} noise.
+ */
+function stripJinja2(text: string): string {
+  // Block-level: {% %} and {# #} → remove entirely (they span lines)
+  let result = text
+    .replace(/\{%[\s\S]*?%\}/g, '')
+    .replace(/\{#[\s\S]*?#\}/g, '');
+  // Inline: {{ }} → single space (preserves general structure)
+  result = result.replace(/\{\{[\s\S]*?\}\}/g, ' ');
+  return result;
+}
 import { getTemplate } from "../../shared/nexy.parser";
 
 export const PY_SCHEME = "nexy-embed-python";
@@ -29,15 +44,37 @@ export interface RegionInfo {
   end: number;
 }
 
+/**
+ * Transform a Nexy header into valid Python for Pylance.
+ * - Lines with `from "..." import ...` are replaced with spaces
+ *   (invalid Python syntax otherwise — Nexy-specific import sugar).
+ * - All other lines are kept as-is for full Pylance analysis.
+ * Character positions are preserved so diagnostic remapping stays correct.
+ */
+function sanitizeHeaderForPython(header: string): string {
+  return header
+    .split('\n')
+    .map(line => {
+      // Quoted imports (from "...") are invalid Python — replace with spaces
+      if (/^\s*from\s+["']/.test(line)) {
+        return ' '.repeat(line.length);
+      }
+      // Python-native imports (from module import ...) are valid Python —
+      // keep them so Pylance can resolve and provide completions.
+      return line;
+    })
+    .join('\n');
+}
+
 export function getDocumentRegions(document: vscode.TextDocument): RegionInfo[] {
   const fullText = document.getText();
   const regions: RegionInfo[] = [];
 
   // Header Python
-  const headerMatch = fullText.match(/^---\s*\n([\s\S]*?)\n---/m);
+  const headerMatch = fullText.match(/^---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?=\r?\n|$)/m);
   if (headerMatch && headerMatch.index !== undefined) {
     const start = headerMatch.index + headerMatch[0].indexOf("\n") + 1;
-    const content = headerMatch[1];
+    const content = sanitizeHeaderForPython(headerMatch[1]);
     regions.push({ languageId: "python", scheme: PY_SCHEME, content, start, end: start + content.length });
   }
 
@@ -51,34 +88,38 @@ export function getDocumentRegions(document: vscode.TextDocument): RegionInfo[] 
     let m: RegExpExecArray | null;
     while ((m = styleRegex.exec(tmplText)) !== null) {
       const lang = m.groups?.lang || "css";
-      const content = m.groups?.content || "";
+      const rawContent = m.groups?.content || "";
+      const content = stripJinja2(rawContent);
+      const contentStart = m.index + m[0].indexOf(rawContent);
       regions.push({
         languageId: lang === "scss" ? "scss" : lang === "sass" ? "sass" : lang === "less" ? "less" : "css",
         scheme: CSS_SCHEME,
         content: content,
-        start: templateStart + m.index + m[0].indexOf(content),
-        end: templateStart + m.index + m[0].indexOf(content) + content.length,
+        start: templateStart + contentStart,
+        end: templateStart + contentStart + content.length,
       });
     }
 
     while ((m = scriptRegex.exec(tmplText)) !== null) {
       const lang = m.groups?.lang || "javascript";
-      const content = m.groups?.content || "";
+      const rawContent = m.groups?.content || "";
+      const content = stripJinja2(rawContent);
+      const contentStart = m.index + m[0].indexOf(rawContent);
       regions.push({
         languageId: lang === "ts" ? "typescript" : lang === "tsx" ? "typescriptreact" : lang === "jsx" ? "javascriptreact" : lang === "rust" ? "rust" : "javascript",
         scheme: JS_SCHEME,
         content: content,
-        start: templateStart + m.index + m[0].indexOf(content),
-        end: templateStart + m.index + m[0].indexOf(content) + content.length,
+        start: templateStart + contentStart,
+        end: templateStart + contentStart + content.length,
       });
     }
 
-    // Le reste est considéré comme HTML ou Markdown
+    // Le reste est considéré comme HTML ou Markdown — strip Jinja2 for clean delegation
     const languageId = document.languageId === "mdx" ? "markdown" : "html";
     regions.push({
       languageId: languageId,
       scheme: HTML_SCHEME,
-      content: tmplText,
+      content: stripJinja2(tmplText),
       start: templateStart,
       end: templateStart + tmplText.length,
     });

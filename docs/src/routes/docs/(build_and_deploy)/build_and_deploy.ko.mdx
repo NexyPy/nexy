@@ -1,0 +1,31 @@
+# 빌드 및 배포
+
+`nx build`는 프로덕션용 프로젝트를 컴파일합니다. `nx start`는 프로덕션 서버를 실행합니다.
+
+## 짓다
+
+```bash
+nx build
+```
+
+`.nexy`/`.mdx` 파일을 컴파일하고 프런트엔드 자산을 번들링하며 경로 트리를 생성합니다. 출력은 `__nexy__/`로 진행됩니다.
+
+플래그와 옵션은 [CLI: build](/docs/cli/build)를 참조하세요.
+
+## 시작
+
+```bash
+nx start
+```
+
+프로덕션 Uvicorn 서버를 시작합니다.
+
+플래그(`--port`, `--host`, `--env`)는 [CLI: start](/docs/cli/start)를 참조하세요.
+
+## 배포
+
+Docker, VPS, Fly.io, Railway, Render — 플랫폼별 지침은 [Deploy guide](/docs/guides/deploy)를 참조하세요.
+
+## 정적 내보내기
+
+완전 정적 사이트의 경우 각 페이지는 빌드 중에 HTML로 사전 렌더링됩니다. 정적 파일 서버로 `__nexy__/static/`를 제공합니다.

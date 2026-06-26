@@ -1,0 +1,129 @@
+# प्रमाणीकरण वॉकथ्रू
+
+यह मार्गदर्शिका सत्र-आधारित प्रमाणीकरण का उपयोग करके स्क्रैच से लॉगिन, लॉगआउट और एक संरक्षित डैशबोर्ड बनाती है।
+
+## 1. सत्र मिडलवेयर सक्षम करें
+
+`nexyconfig.py` में, `useSession` सक्षम करें - स्टारलेट के हस्ताक्षरित कुकी सत्र:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me-in-production"}
+```
+
+विकल्पों के लिए [Session config](/docs/config/session) देखें।
+
+## 2. प्रामाणिक बैकएंड और कॉन्फ़िगरेशन
+
+एक बैकएंड बनाएं जो सत्र से उपयोगकर्ता आईडी को पढ़े:
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+config में इसे जोड़ें:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+अधिक बैकएंड प्रकार (टोकन, JWT) के लिए [Authentication reference](/docs/security/authentication) देखें।
+
+## 3. लॉगिन पेज
+
+```nexy
+# src/routes/login.nexy
+---
+from nexy import useSession
+from src.db import authenticate_user
+
+def POST(username: str, password: str):
+    user = authenticate_user(username, password)
+    if not user:
+        return {"error": "Invalid credentials"}
+    session = useSession()
+    session["user_id"] = user.id
+    return Redirect("/dashboard")
+---
+<form method="POST">
+  <input name="username" placeholder="Username">
+  <input name="password" type="password" placeholder="Password">
+  <button>Sign in</button>
+</form>
+```
+
+## 4. संरक्षित डैशबोर्ड
+
+डैशबोर्ड को गार्ड से सुरक्षित रखें - प्रमाणित होने पर `{"user": ...}` लौटाता है, अन्यथा 401 लौटाता है:
+
+```nexy
+# src/routes/dashboard.nexy
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+<h1>Dashboard</h1>
+<p>Welcome, {{ user }}!</p>
+```
+
+कस्टम गार्ड लिखने के लिए [Authorization](/docs/security/authorization) और ["@UseGuard reference](/docs/decorators/useguard) देखें।
+
+## 5. लॉगआउट
+
+साइन आउट करने के लिए सत्र साफ़ करें:
+
+```nexy
+# src/routes/logout.nexy
+---
+from nexy import useSession
+
+def POST():
+    session = useSession()
+    session.clear()
+    return Redirect("/login")
+---
+```
+
+## 6. टेम्पलेट्स में सशर्त यूआई
+
+किसी भी `.nexy` टेम्पलेट में सीधे सत्र की जाँच करें:
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+---
+<header>
+  {% if session.get("user_id") %}
+    <a href="/dashboard">Dashboard</a>
+    <form method="POST" action="/logout">
+      <button>Sign out</button>
+    </form>
+  {% else %}
+    <a href="/login">Sign in</a>
+  {% endif %}
+</header>
+```
+
+[useSession hook](/docs/hooks/useSession) देखें.
+
+## आगे क्या होगा?
+
+- [Authentication reference](/docs/security/authentication) - ऑथ बैकएंड, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) - कस्टम गार्ड, स्कोप
+- [JWT](/docs/security/jwt) - टोकन-आधारित प्रमाणीकरण
+- [Session config](/docs/config/session)

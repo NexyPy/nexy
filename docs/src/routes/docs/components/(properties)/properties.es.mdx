@@ -1,0 +1,202 @@
+# Propiedades (Accesorios)
+
+Los accesorios son la forma en que los datos fluyen hacia un componente. Hacen que los componentes sean reutilizables: el mismo componente `Card` puede representar contenido diferente según los accesorios que recibe.
+
+## Declaración de accesorios
+
+Los accesorios se declaran en el frontmatter usando la sintaxis `:prop[type]`:
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+Cada declaración se convierte en un parámetro de la función Python generada con la anotación de tipo correspondiente.
+
+## Requerido vs Opcional
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+Si no se pasa una propiedad requerida cuando se usa el componente, Python genera un `TypeError` en el momento del renderizado. El mensaje de error incluye el nombre del componente y el argumento que falta.
+
+**Cuándo se requiere hacer un accesorio**: Cuando el componente no tiene sentido sin él. Un `BlogCard` sin `title` está roto; hágalo obligatorio. Un `Button` sin un `variant` puede tener por defecto `"primary"`.
+
+## Tipos admitidos
+
+| Tipo | Literal predeterminado | Notas |
+|------|----------------|-------|
+| `str` | `""` | Valores de cadena |
+| `int` | `0` | Valores enteros |
+| `float` | `0.0` | Valores flotantes |
+| `bool` | `false` | `true`/`false` (no `True`/`False`) |
+| `list` | `[]` | Valores de lista |
+| `dict` | `{}` | Valores dictados |
+| `Any` | `None` | Cualquier tipo |
+
+La anotación de tipo se utiliza para documentación y soporte IDE. En tiempo de ejecución, Python se escribe dinámicamente: la anotación no impone el tipo. Si pasa una cadena donde se espera un int, fallará cuando la plantilla intente usarla aritméticamente, no en el nivel de declaración de propiedad.
+
+## Pasando accesorios de los padres
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**Reglas**:
+
+- **Valores de cadena** use `key="value"` o `key="{{ jinja_expr }}"`
+- **Expresiones** usan `key={expr}`: sin comillas, el valor se analiza como Python
+- **Booleanos**: use `active=true` (minúsculas), no `active=True` o `active="true"`
+- **Listas/dictados**: `items={["a", "b"]}` o `settings={"key": "val"}`
+
+## Valores predeterminados y objetos mutables
+
+Un problema común de Python: **no utilice valores predeterminados mutables** que se comparten entre llamadas:
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy se encarga de esto por ti. La función generada utiliza `None` como valor predeterminado interno y crea una copia nueva por llamada:
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+Por lo tanto, `items:prop[list] = []` es seguro de usar: cada llamada de componente obtiene su propia lista.
+
+## Accesorios dinámicos con `{{ }}`
+
+Utilice expresiones Jinja2 para valores dinámicos:
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+El compilador convierte valores de atributos que contienen `{{ }}` en concatenación de cadenas Jinja2:
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+Para valores `{...}` sin comillas, el contenido se pasa directamente como una expresión de Python.
+
+## Accesorios en páginas MDX
+
+Las páginas (archivos `.mdx` en `src/routes/`) también pueden declarar accesorios:
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+Los accesorios de página generalmente se establecen mediante el diseño o se pasan a través de `useViews()`. Son menos comunes que los accesorios de componentes porque las páginas generalmente obtienen datos de enlaces y consultas de bases de datos.
+
+## Propagación de accesorios
+
+Pase un dict como múltiples accesorios usando la sintaxis extendida de Jinja2 en la plantilla:
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+Esto funciona mediante la detección abreviada del compilador: cuando ve `{{ ...props }}` en una clave de atributo, la expande a `**props`.
+
+## Ejemplo completo: componente de botón
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+Uso:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## Siguiente
+
+- [Conditional Rendering](/docs/components/conditional): si/para en plantillas
+- [Component Modules](/docs/components/modules): organizar componentes

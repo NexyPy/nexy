@@ -1,0 +1,202 @@
+# 属性（道具）
+
+Props 是数据流入组件的方式。它们使组件可重用——相同的 `Card` 组件可以根据它接收到的 props 渲染不同的内容。
+
+## 声明道具
+
+props 使用 `:prop[type]` 语法在 frontmatter 中声明：
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+每个声明都成为生成的 Python 函数的参数，并带有相应的类型注释。
+
+## 必需与可选
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+如果使用组件时未传递必需的 prop，Python 将在渲染时引发 `TypeError`。错误消息包括组件名称和缺少的参数。
+
+**何时需要使用 prop**：当没有它时组件就没有意义。没有 `title` 的 `BlogCard` 被破坏 - 使其成为必需的。没有 `variant` 的 `Button` 可以默认为 `"primary"`。
+
+## 支持的类型
+
+|类型 |默认文字|笔记|
+|------|----------------|--------|
+| `str` | `""` |字符串值 |
+| `int` | `0` |整数值 |
+| `float` | `0.0` |浮点值 |
+| `bool` | `false` | `true`/`false`（不是`True`/`False`）|
+| `list` | `[]` |列出值 |
+| `dict` | `{}` |字典值 |
+| `Any` | `None` |任何类型 |
+
+类型注释用于文档和 IDE 支持。在运行时，Python 是动态类型的——注释不强制类型。如果您在需要 int 的位置传递一个字符串，则当模板尝试以算术方式（而不是在 prop 声明级别）使用它时，它将失败。
+
+## 传递父母的道具
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**规则**：
+
+- **字符串值**使用 `key="value"` 或 `key="{{ jinja_expr }}"`
+- **表达式** 使用 `key={expr}` — 无引号，该值被解析为 Python
+- **布尔值**：使用 `active=true`（小写），而不是 `active=True` 或 `active="true"`
+- **列表/字典**：`items={["a", "b"]}` 或 `settings={"key": "val"}`
+
+## 默认值和可变对象
+
+一个常见的 Python 陷阱：**不要使用在调用之间共享的可变默认值**：
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy 会为您处理这件事。生成的函数使用 `None` 作为内部默认值，并在每次调用时创建一个新副本：
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+因此 `items:prop[list] = []` 可以安全使用——每个组件调用都有自己的列表。
+
+## 带有 `{{ }}` 的动态道具
+
+使用 Jinja2 表达式表示动态值：
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+编译器将包含 `{{ }}` 的属性值转换为 Jinja2 字符串连接：
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+对于不带引号的 `{...}` 值，内容直接作为 Python 表达式传递。
+
+## MDX 页面中的道具
+
+页面（`src/routes/` 中的 `.mdx` 文件）也可以声明 props：
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+页面属性通常由布局设置或通过 `useViews()` 传递。它们不如组件 props 常见，因为页面通常从钩子和数据库查询获取数据。
+
+## 传播道具
+
+在模板中使用 Jinja2 扩展语法将字典作为多个 props 传递：
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+这是通过编译器的速记检测来实现的：当它在属性键中看到 `{{ ...props }}` 时，会将其扩展为 `**props`。
+
+## 完整示例：按钮组件
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+用法：
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## 下一步
+
+- [Conditional Rendering](/docs/components/conditional)：模板中的 if/for
+- [Component Modules](/docs/components/modules)：组织组件

@@ -4,7 +4,7 @@ from pathlib import Path
 import questionary
 import typer
 
-from nexy.__version__ import __Version__
+from nexy.__version__ import __version__
 from nexy.i18n import t
 from nexy.utils.common.console import console
 from nexy.utils.init import InitProject
@@ -21,9 +21,7 @@ def new(
         help=t("cli.new.help_template", "Initialize from a registered template (silent clone)."),
     ),
 ) -> None:
-    title = t("init.title", "nexy {version} {command}").format(
-        version=__Version__().get(), command="new"
-    )
+    title = t("init.title", "nexy {version} {command}").format(version=__version__, command="new")
     console.print(title)
 
     try:

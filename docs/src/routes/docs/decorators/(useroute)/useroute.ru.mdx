@@ -1,0 +1,47 @@
+# "@UseRoute
+
+Установите метаданные OpenAPI для метода-обработчика — имя, сводку, описание, теги и т. д.
+```python
+from nexy.decorators import UseRoute, Controller
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(
+        summary="List all users",
+        description="Returns paginated list of users",
+        deprecated=False,
+        tags=["users"],
+    )
+    def GET(self) -> list[dict]:
+        ...
+```
+## Подпись
+```python
+UseRoute(
+    name: str | None = None,
+    tags: list[str] | None = None,
+    summary: str | None = None,
+    description: str | None = None,
+    deprecated: bool | None = None,
+    include_in_schema: bool | None = None,
+    operation_id: str | None = None,
+    openapi_extra: dict[str, Any] | None = None,
+) -> Callable
+```
+## Все параметры
+
+| Парам | Тип | Описание |
+|-------|------|-------------|
+| `name` | `str` | Имя маршрута (по умолчанию `ClassName.method_name`) |
+| `tags` | `list[str]` | Теги OpenAPI (переопределяют теги контроллера) |
+| `summary` | `str` | Обзор OpenAPI |
+| `description` | `str` | Описание OpenAPI |
+| `deprecated` | `bool` | Отметить как устаревший в OpenAPI |
+| `include_in_schema` | `bool` | Скрыть из схемы OpenAPI |
+| `operation_id` | `str` | Идентификатор операции OpenAPI |
+| `openapi_extra` | `dict` | Дополнительные поля OpenAPI |
+
+## Псевдоним
+```python
+from nexy.decorators import useRoute  # lowercase alias, identical API
+```

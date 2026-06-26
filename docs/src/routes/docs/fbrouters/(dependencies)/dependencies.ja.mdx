@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 依存関係
+
+`src/routes/` 内の `dependencies.py` ファイルは、ディレクトリ ツリー内のすべてのルートに自動的に適用される共通の FastAPI 依存関係を収集します。
+
+---
+
+## `dependencies = [...]`
+
+Define callables and list them in a module-level `dependencies` variable:
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+`dependencies` にリストされている項目のみが適用されます。裸の関数は無視されます。
+
+---
+
+## 継承 (オーバーライドではなくマージ)
+
+Nexy は、ルート ファイルから `src/routes/` まで**上に移動し、見つかったすべての `dependencies` リストを**マージ**します。
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+子 `dependencies.py` ファイルは **親をオーバーライドしません**。すべてのリストが結合されます。同じ依存関係名が両方に存在する場合、FastAPI は起動時に `ValueError` を生成します (パラメーターが重複します)。
+
+---
+
+## ページ内での使用
+
+`.nexy` ページでは、依存関係はレンダリング前に自動的に実行されます。依存関係をインポートしたり呼び出したりする必要はありません。
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+解決された値はテンプレート変数として使用できません**。依存関係は副作用 (認証チェック、ロギング、DB 接続セットアップ) のために実行されます。
+
+`.py` ハンドラーの場合、依存関係は副作用として実行されます。依存関係の戻り値はハンドラーに挿入されません**。依存関係の値にアクセスするには、関数シグネチャに `Depends()` を追加します。
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+同じ呼び出し可能オブジェクトが `dependencies = [...]` とハンドラー署名の両方にリストされている場合、FastAPI はそれを 1 回実行し、結果を共有します。
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

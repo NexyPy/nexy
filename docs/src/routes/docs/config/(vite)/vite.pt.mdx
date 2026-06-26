@@ -1,0 +1,45 @@
+#Configuração: Vite
+
+Nexy se integra ao **Vite** para agrupamento do lado do cliente. A configuração vai em `nexyconfig.py` e `vite.config.ts`.
+
+## Ativando o Vite
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## Campos de configuração do Vite
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `useVite` | `bool` | `False` | Ative o pacote Vite. |
+| `useViteDevUrl` | `str \| None` | `None` | URL personalizado do servidor de desenvolvimento Vite. Detectado automaticamente se `None`. |
+
+## vite.config.ts
+
+Nexy gera um `vite.config.ts` na raiz do projeto durante `nx init`. Você pode personalizá-lo como qualquer projeto Vite:
+
+```ts
+import { defineConfig } from "vite";
+import react from ""@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: "__nexy__/client",
+    },
+});
+```
+
+## Modo desenvolvedor
+
+Quando `useVite = True`, `nx dev` inicia um servidor de desenvolvimento Vite junto com o uvicorn. Nexy injeta scripts HMR automaticamente.
+
+## Produção
+
+Durante `nx build`, Vite produz pacotes otimizados em `__nexy__/client/`. Nexy lê o manifesto e injeta as tags CSS/JS corretas.
+
+## Modo embutido
+
+Defina `NEXY_INLINE_CLIENT=1` para CSS/JS embutido diretamente em HTML (útil para e-mail, AMP ou páginas independentes).

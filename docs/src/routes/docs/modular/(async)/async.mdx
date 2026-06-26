@@ -1,0 +1,50 @@
+# Async & Concurrency (Modular)
+
+Nexy is built on FastAPI which supports both `async` and `def` in controllers.
+
+## `async def` vs `def`
+
+| Handler type | Execution | When to use |
+|-------------|-----------|-------------|
+| `def` | Thread pool (blocking) | CPU work, sync DB calls, blocking I/O |
+| `async def` | Event loop | Async DB, HTTP calls, long-polling |
+
+## Async controller
+
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+
+## Mixed sync and async
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/sync")
+class SyncController:
+    def GET(self):             # runs in thread pool
+        return {"type": "sync"}
+
+"@Controller("/async")
+class AsyncController:
+    async def GET(self):       # runs in event loop
+        return {"type": "async"}
+```
+
+## Background tasks
+
+For fire-and-forget work after the response, use `BackgroundTasks`. For true async background work, use `asyncio.create_task`.
+
+## Caveats
+
+- Don't call `async` functions from `def` handlers with `await` — use `asyncio.run()` or make the handler `async def`
+- Don't call blocking functions (`time.sleep()`, `requests.get()`) from `async def` — use `asyncio.sleep()`, `httpx.AsyncClient`
+- For production, use multiple workers for sync handlers

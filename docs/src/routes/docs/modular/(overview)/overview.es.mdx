@@ -1,0 +1,102 @@
+# Enrutador modular: descripción general de la arquitectura
+
+Modular Router lleva la arquitectura estilo NestJS a Python. En lugar de que los archivos se conviertan en rutas (FBR), organiza el código en **controladores**, **proveedores**, **módulos**, **protectores** y **middleware**.
+
+## ¿Por qué modular?
+
+El enrutamiento basado en archivos (FBR) es perfecto para aplicaciones pequeñas y medianas. Pero a medida que tu aplicación crece:
+
+| Problema | FBR | Enrutador modular |
+|---------|-----|----------------|
+| Preocupaciones transversales | Middleware duplicado por archivo | Guard/Middleware a nivel de controlador o módulo |
+| Inyección de dependencia | Importaciones manuales en todas partes | `"@Injectable` con resolución automática |
+| Organización del código | Dispersos en archivos | Agrupados en módulos de funciones |
+| Comprobabilidad | Estrecho acoplamiento a las rutas de archivos | Los controladores aceptan dependencias inyectadas |
+| Coordinación de grandes equipos | Conflictos de archivos, límites poco claros | Límites del módulo impuestos por atributos de clase |
+
+## Arquitectura
+
+```
+AppModule  ("@Module)
+├── AuthModule  ("@Module)
+│   ├── AuthController   ("@Controller)
+│   │   ├── def GET(self)       → GET /auth/
+│   │   └── def post(self, ...)  → POST /auth/
+│   └── AuthService      ("@Injectable)
+├── UsersModule  ("@Module(prefix="/users"))
+│   └── UsersController  ("@Controller)
+│       ├── def GET(self)       → GET /users/
+│       └── def post(self, ...)  → POST /users/
+└── └── UserService      ("@Injectable)
+```
+
+### Los nombres de los métodos definen los verbos HTTP
+
+Nexy asigna **nombres de métodos** a métodos HTTP; no se necesitan decoradores `"@Get`/`"@Post`:
+
+| Nombre del método | Método HTTP |
+|-------------|-------------|
+| `GET`, `get`, `Get` | OBTENER |
+| `post`, `POST`, `Post` | PUBLICAR |
+| `put`, `PUT`, `Put` | PONER |
+| `delete`, `DELETE`, `Delete` | BORRAR |
+| `patch`, `PATCH`, `Patch` | PARCHE |
+| `options`, `OPTIONS`, `Options` | OPCIONES |
+| `head`, `HEAD`, `Head` | CABEZA |
+| `SOCKET`, `socket`, `Socket` | WebSocket |
+
+## Inicio rápido
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module, Controller
+
+"@Controller("/ping")
+class PingController:
+    def GET(self):
+        return {"status": "ok"}
+
+"@Module()
+class AppModule:
+    controllers = [PingController]
+```
+
+Configurar en `nexyconfig.py`:
+
+```python
+from nexy import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useModular = "src.apps.app_module.AppModule"
+```
+
+## Cuándo elegir Modular en lugar de FBR
+
+**Elija Modular cuando:**
+- Tienes más de 5 archivos de ruta que comparten dependencias
+- Necesita inyección de dependencia (servicios, bases de datos, configuración)
+- Su equipo tiene límites de funciones distintos (autenticación, facturación, usuarios)
+
+**Elija FBR cuando:**
+- Tienes menos de 10 rutas.
+- Prefieres la convención a la configuración
+- Estás creando un sitio mayoritariamente estático.
+- Quieres la configuración más simple posible
+
+## Los cinco conceptos
+
+| Concepto | Decorador | Propósito |
+|---------|-----------|---------|
+| Controlador | `"@Controller(prefix)` | Agrupa rutas relacionadas bajo un prefijo de ruta |
+| Proveedor | `"@Injectable()` | Lógica empresarial, inyectable en controladores |
+| Módulo | `"@Module()` | Controladores y proveedores de cables a través de atributos de clase |
+| Guardia | `"@UseGuard(...)` | Autorización: se ejecuta antes del controlador |
+| Software intermedio | `"@Middleware(...)` | Canalización de solicitud/respuesta: se ejecuta antes que los guardias |
+
+## Próximos pasos
+
+- [Controllers](/docs/modular/controllers): maneja solicitudes HTTP con enrutamiento de nombre de método
+- [Providers & DI](/docs/modular/providers): inyecta servicios en los controladores
+- [Modules](/docs/modular/modules): organiza controladores y proveedores en módulos de funciones
+- [Guards](/docs/modular/guards) — proteger rutas con autorización
+- [Middleware](/docs/modular/middleware) — intercepta solicitudes antes que los manejadores

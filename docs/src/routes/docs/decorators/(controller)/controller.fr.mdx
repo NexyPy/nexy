@@ -1,0 +1,50 @@
+# "@Contrôleur
+
+Marque une classe comme contrôleur FastAPI. Les noms de méthodes définissent les verbes HTTP.
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## Signature
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## Paramètres
+
+| Paramètres | Tapez | Par défaut | Descriptif |
+|-------|------|---------|-------------|
+| `prefix` | `str` | `""` | Préfixe d'URL pour toutes les routes de ce contrôleur |
+| `tags` | `list[str]` | `None` | Balises OpenAPI (par défaut `[ClassName]`) |
+
+## Verbes HTTP
+
+Les noms de méthodes ne sont pas sensibles à la casse. Une méthode par verbe et par contrôleur.
+
+| Nom de la méthode | Verbe HTTP |
+|-------------|-----------|
+| `def GET(self)` | OBTENIR |
+| `def post(self)` | POSTER |
+| `def Put(self)` | METTRE |
+| `def delete(self)` | SUPPRIMER |
+| `def patch(self)` | PATCH |
+| `def options(self)` | OPTIONS |
+| `def head(self)` | TÊTE |
+| `def SOCKET(self)` | WebSocket |
+
+Toutes les méthodes du gestionnaire sont mappées sur `"/"` — les paramètres de chemin vont dans le préfixe `"@Controller`.
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

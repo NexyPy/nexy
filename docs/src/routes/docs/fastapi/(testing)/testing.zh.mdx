@@ -1,0 +1,87 @@
+# 测试
+
+Nexy 应用程序是底层的 FastAPI 应用程序 - 使用 Starlette 的 `TestClient` 测试它们。
+
+```bash
+pip install httpx pytest-anyio  # httpx for TestClient, anyio for async tests
+```
+
+## 测试设置
+
+```python
+# tests/test_app.py
+from fastapi.testclient import TestClient
+from nexy.app import app
+
+client = TestClient(app)
+
+def test_home():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.json() == {"Hello": "World"}
+```
+
+## 测试路线
+
+```python
+def test_create_user():
+    response = client.post("/users", json={"name": "Alice", "email": "a"@b.com"})
+    assert response.status_code == 201
+    data = response.json()
+    assert data["name"] == "Alice"
+```
+
+## 使用身份验证进行测试
+
+```python
+def test_protected_route():
+    response = client.get("/admin", headers={"Authorization": "Bearer test-token"})
+    assert response.status_code == 200
+```
+
+## 使用 pytest 进行测试
+
+```python
+# conftest.py
+import pytest
+from fastapi.testclient import TestClient
+from nexy.app import app
+
+"@pytest.fixture
+def client():
+    return TestClient(app)
+
+# test_users.py
+def test_list_users(client):
+    resp = client.get("/users")
+    assert resp.status_code == 200
+```
+
+## 测试 WebSocket
+
+```python
+def test_ws():
+    with client.websocket_connect("/ws") as ws:
+        ws.send_json({"type": "ping"})
+        data = ws.receive_json()
+        assert data["type"] == "pong"
+```
+
+## 异步测试
+
+```python
+import pytest
+
+"@pytest.mark.anyio
+async def test_async_route():
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        response = await ac.get("/")
+        assert response.status_code == 200
+```
+
+## 提示
+
+- 如果您的应用程序有生命周期事件，请使用 `TestClient` 作为上下文管理器
+- 使用 `httpx.MockTransport` 或 `responses` 模拟外部服务
+- 使用 `pytest tests/ -v` 运行测试（不需要特殊的 Nexy 命令）
+- TestClient 在内部使用 `httpx` — 与 `requests` 相同的 API

@@ -1,0 +1,30 @@
+# 实时通讯
+
+Nexy 支持 WebSocket、服务器发送事件 (SSE) 和长轮询以实现实时通信。
+
+## 使用哪一个
+
+|特色 |最适合 |方向 |
+|--------|----------|------------|
+| **WebSocket** |双向、低延迟（聊天、游戏、协作）|客户端 ↔ 服务器 |
+| **上交所** |服务器 → 客户端事件（通知、实时反馈）|服务器→客户端|
+| **长轮询** |当上述不可用时进行简单轮询 |客户端→服务器|
+
+## WebSocket
+
+通过单个 TCP 连接进行全双工通信。 Nexy 将 `SOCKET` 函数/方法名称映射到 Starlette WebSocket 端点。
+
+- [FBR WebSocket](/docs/fbrouters/websocket) — 基于文件的路由示例
+- [Modular WebSocket](/docs/modular/websocket) — 基于控制器的 DI 示例
+
+## 服务器发送的事件 (SSE)
+
+单向服务器 → 客户端通过 HTTP 进行流式传输。当您只需要服务器推送时，比 WebSocket 更轻。
+
+请参阅 [SSE](/docs/fastapi/sse) 了解实施细节。
+
+## 何时选择
+
+- **WebSocket**：聊天应用程序、实时协作、游戏、金融行情
+- **SSE**：实时通知、提要更新、进度条、日志流
+- **长轮询**：阻止 WebSocket（企业代理）的环境的回退

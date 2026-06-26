@@ -1,0 +1,95 @@
+# 구성 요소 개요
+
+구성 요소는 Nexy 애플리케이션의 구성 요소입니다. 구성 요소는 Vue의 `.vue` 파일 또는 Svelte의 `.svelte` 파일과 같이 Python 논리와 HTML 템플릿을 결합한 `.nexy` 파일입니다.
+
+## 구성 요소 유형
+
+Nexy에는 두 가지 범주의 구성 요소가 있습니다.
+
+### 1. 페이지 구성 요소(`src/routes/`)
+
+`src/routes/`의 모든 `.nexy` 파일은 경로가 됩니다. 파일 경로에 따라 URL이 결정됩니다.
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   └── [slug].nexy     →  /blog/:slug
+```
+
+페이지 구성 요소는 URL을 통해 직접 액세스할 수 있습니다. 요청 컨텍스트에서 실행되기 때문에 `useQuery()` 및 `usePathname()`와 같은 후크를 사용할 수 있습니다.
+
+### 2. 재사용 가능한 구성 요소(`src/components/`)
+
+`src/components/`의 구성 요소는 경로가 아닙니다. 페이지 및 기타 구성 요소에서 가져오고 사용합니다.
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+---
+<Header title="My Site" />
+<Card title="Hello">
+  <p>Card content</p>
+</Card>
+```
+
+이러한 구성 요소는 소품을 받아들이고, 슬롯을 사용하고, HTML + 로직을 재사용 가능한 단위로 캡슐화합니다.
+
+## 구성요소 분석
+
+모든 `.nexy` 구성 요소에는 세 가지 가능한 섹션이 있습니다.
+
+```nexy
+---
+# 1. Frontmatter: Python code
+title:prop[str] = "Default"
+count = 0
+---
+<!-- 2. Template: HTML + Jinja2 -->
+<div class="card">
+  <h2>{{ title }}</h2>
+  <p>Count: {{ count }}</p>
+  <slot />
+</div>
+
+<style>
+/* 3. Styles (global) */
+.card { border: 1px solid #ddd; padding: 1rem; }
+</style>
+```
+
+**1. Frontmatter** — `---` 구분 기호 사이의 Python 코드입니다. 소품을 선언하고, 모듈을 가져오고, 후크를 실행하고, 데이터를 처리합니다.
+
+**2. 템플릿** — Jinja2 표현식이 포함된 HTML. 변수를 출력하고, 데이터를 반복하고, 하위 구성 요소를 렌더링합니다.
+
+**3. 스타일** — `<style>` 태그(템플릿의 모든 위치). 스타일은 범위가 지정되지 않고 전역적입니다. 캡슐화에는 BEM 또는 유틸리티 클래스를 사용하십시오.
+
+## 구성요소 규칙
+
+- **이름은 PascalCase여야 합니다**: `BlogCard`, `Header`, `CommentForm`
+- **파일 1개 = 구성 요소 1개**: 파일당 여러 번 내보내기가 불가능합니다.
+- **선언된 Props**: `title:prop[str] = "Default"`
+- **상단에서 가져오기**: 로직이나 후크 이전
+- **모듈 수준에서는 부작용이 없습니다**: 머리말은 요청별로 실행됩니다. 파일을 열거나 기능 외부에서 연결을 만들지 마세요.
+
+## 구성요소를 생성하는 시기
+
+다음과 같은 경우 구성 요소를 만듭니다.
+
+- 여러 위치(카드, 버튼, 헤더)에서 동일한 HTML 패턴을 재사용합니다.
+- 템플릿을 사용하여 로직을 캡슐화하려는 경우(검증 기능이 있는 CommentForm)
+- 페이지에서 하위 섹션(활성 항목이 있는 사이드바)으로 데이터를 전달해야 합니다.
+- 여러 경로(Layout, Wrapper)에서 레이아웃 구조를 공유하고 싶습니다.
+
+동일한 HTML을 두 번 작성하는 경우 이를 구성 요소로 추출하세요.
+
+## 다음 단계
+
+- [Component Usage](/docs/components/usage): 소품, 슬롯, 렌더링 전달
+- [Markup](/docs/components/markup): HTML 구문, 구성요소 태그, 동적 속성
+- [Python](/docs/components/python): 서문 논리, 가져오기, 후크
+- [Properties](/docs/components/properties): 입력된 소품, 기본값, 유효성 검사
+- [Styles](/docs/components/styles): 구성 요소의 CSS

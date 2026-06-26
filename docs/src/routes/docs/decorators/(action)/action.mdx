@@ -1,0 +1,75 @@
+# "@Action
+
+Turn a Python function into a server endpoint callable from the browser — no router registration, no request parsing.
+
+```python
+from nexy.decorators import Action
+
+"@Action
+def submit_comment(post_id: int, body: str) -> dict:
+    return {"status": "ok"}
+```
+
+---
+
+## Signature
+
+```python
+Action(func: Callable | None = None) -> Callable
+```
+
+Used with or without parentheses:
+
+```python
+"@Action
+def fn(): ...
+
+"@Action()
+def fn(): ...
+```
+
+---
+
+## How it works
+
+1. Registers the function in `ActionsStore`
+2. On startup, `ActionEngine` discovers all actions and mounts them as `POST /_nx_{hash}`
+3. URL hash = `sha256(func_name + "salt2026")[:12]` — deterministic per deployment
+4. Arguments parsed from JSON body, injected by name
+5. Return value serialized as JSON
+
+---
+
+## Parameter types
+
+| Type | Source | Example |
+|------|--------|---------|
+| `str`, `int`, `float`, `bool` | JSON body | `post_id: int` |
+| `list`, `dict` | JSON body | `tags: list[str]` |
+| Pydantic models | JSON body (validated) | `data: CreateComment` |
+| `Request` | FastAPI injection | `request: Request` |
+
+---
+
+## Return types
+
+| Return | Response |
+|--------|----------|
+| `dict` | `JSONResponse` |
+| `list` | `JSONResponse` |
+| `str` | `PlainTextResponse` |
+| `int`, `float`, `bool` | `JSONResponse` |
+| `BaseModel` | `JSONResponse` |
+| `None` | `JSONResponse({"ok": True})` |
+
+---
+
+## Limitations
+
+- POST-only
+- JSON body only (no form data, multipart)
+- Hash salt is hardcoded — URL stable within a deployment
+
+---
+
+See [Server Actions guide](/docs/guides/actions) for usage examples and client integration.

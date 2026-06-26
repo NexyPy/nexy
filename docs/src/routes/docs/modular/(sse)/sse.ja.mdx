@@ -1,0 +1,58 @@
+# サーバー送信イベント (モジュール式)
+
+コントローラーを使用して、HTTP 経由でサーバーからクライアントにリアルタイム イベントをストリーミングします。
+
+＃＃ インストール
+
+```bash
+pip install sse-starlette
+```
+
+＃＃ 終点
+
+```python
+from nexy.decorators import Controller
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+
+"@Controller("/events")
+class EventsController:
+    async def GET(self):
+        async def gen():
+            for i in range(10):
+                await asyncio.sleep(1)
+                yield {"event": "ping", "data": str(i)}
+        return EventSourceResponse(gen())
+```
+
+## 動的イベントストリーム
+
+```python
+from nexy.decorators import Controller
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+
+"@Controller("/ticks")
+class TickController:
+    async def GET(self, count: int = 5, interval: float = 0.5):
+        async def gen():
+            for i in range(count):
+                await asyncio.sleep(interval)
+                yield {"event": "tick", "data": str(i)}
+        return EventSourceResponse(gen())
+```
+
+＃＃ クライアント
+
+```javascript
+const evtSource = new EventSource("/events");
+evtSource.addEventListener("ping", (e) => {
+    console.log(e.data);
+});
+```
+
+## 制限事項
+
+- SSE は **単方向** (サーバー → クライアント) — 双方向には WebSocket を使用します
+- `sse-starlette` はデフォルトでは含まれません — `pip install sse-starlette`
+- 各接続はオープンな HTTP 接続を保持します - サーバーの制限を監視してください

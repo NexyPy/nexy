@@ -21,6 +21,7 @@ class WatchHandler(PatternMatchingEventHandler):
         self._last_event_time: float = 0.0
         self._last_path: str = ""
         self._min_interval = min_interval
+        self.compiler = Compiler()
 
     def _should_trigger(self, path: str) -> bool:
         current_time = time.time()
@@ -51,6 +52,8 @@ class WatchHandler(PatternMatchingEventHandler):
             "/.venv",
             "__nexy__/",
             "/__nexy__",
+            ".nexy-virt/",
+            "/.nexy-virt",
             "__pycache__/",
             "node_modules/",
         )
@@ -58,7 +61,7 @@ class WatchHandler(PatternMatchingEventHandler):
 
     def _compile_and_log(self, path: str) -> None:
         start = time.perf_counter()
-        Compiler().compile(path)
+        self.compiler.compile(path)
         elapsed = time.perf_counter() - start
         console.print(
             f"[green]nsc[/green] » [green]compile[/green]"
@@ -68,7 +71,7 @@ class WatchHandler(PatternMatchingEventHandler):
     def _needs_restart(self, path: str) -> bool:
         return path.endswith((".nexy", ".mdx", ".py")) and not self._skip(path)
 
-    def _trigger_reload(self, path: str) -> None:
+    def _trigger_reload(self, _path: str) -> None:
         if self.on_reload_api:
             try:
                 self.on_reload_api()

@@ -1,0 +1,68 @@
+# КОРС
+
+Настройте совместное использование ресурсов между источниками для вашего приложения Nexy, используя `CORSMiddleware` от Starlette.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## Общие параметры
+
+| Вариант | Тип | По умолчанию | Описание |
+|--------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` | Разрешенное происхождение. Используйте `["*"]`, чтобы разрешить все (только для разработчиков). |
+| `allow_origins_regex` | `str` | `None` | Шаблон регулярного выражения для разрешенных источников (например, `"%%U0%%"`). |
+| `allow_methods` | `list[str]` | `["GET"]` | Разрешенные методы HTTP. `["*"]` позволяет все. |
+| `allow_headers` | `list[str]` | `[]` | Разрешенные заголовки запросов. `["*"]` позволяет все. |
+| `allow_credentials` | `bool` | `False` | Разрешить использование файлов cookie и заголовков авторизации. |
+| `expose_headers` | `list[str]` | `[]` | Заголовки, доступные браузеру. |
+| `max_age` | `int` | `600` | Продолжительность предполетного кэша в секундах. |
+
+---
+
+## Настройка разработки
+
+Для локальной разработки разрешите все источники:
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## Настройка производства
+
+Будьте откровенны в отношении происхождения и методов:
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+Если `allow_credentials` равен `True`, вы не можете использовать `"*"` для `allow_origins` — укажите источники явно.
+
+---
+
+## За прокси
+
+Если ваше приложение работает через обратный прокси-сервер (nginx, Cloudflare), убедитесь, что пересылаемые заголовки настроены, чтобы промежуточное ПО CORS видело правильный источник.

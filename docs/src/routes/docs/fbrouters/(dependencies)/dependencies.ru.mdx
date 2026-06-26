@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Зависимости
+
+Файл `dependencies.py` внутри `src/routes/` собирает общие зависимости FastAPI, которые автоматически применяются к каждому маршруту в дереве каталогов.
+
+---
+
+## `dependencies = [...]`
+
+Определите вызываемые объекты и перечислите их в переменной `dependencies` уровня модуля:
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+Применяются только элементы, перечисленные в `dependencies` — голые функции игнорируются.
+
+---
+
+## Наследование (объединение, а не переопределение)
+
+Nexy **подходит** от файла маршрута к `src/routes/` и **объединяет** каждый найденный список `dependencies`:
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+Дочерние файлы `dependencies.py` **не переопределяют** родительские файлы. Все списки объединены. Если в обоих присутствует одно и то же имя зависимости, FastAPI вызывает `ValueError` при запуске (дубликат параметра).
+
+---
+
+## Использование на странице
+
+На страницах `.nexy` зависимости запускаются автоматически перед рендерингом — вам не нужно их импортировать или вызывать:
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+Разрешенные значения **не** доступны в качестве переменных шаблона. Зависимости выполняются для побочных эффектов (проверка аутентификации, ведение журнала, настройка подключения к БД).
+
+Для обработчиков `.py` зависимости выполняются как побочный эффект — их возвращаемые значения **не** внедряются в обработчик. Чтобы получить доступ к значению зависимости, добавьте `Depends()` в сигнатуру функции:
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+Если один и тот же вызываемый объект указан как в `dependencies = [...]`, так и в сигнатуре обработчика, FastAPI запускает его один раз и передает результат.
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

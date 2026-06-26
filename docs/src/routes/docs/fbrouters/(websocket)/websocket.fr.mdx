@@ -1,0 +1,126 @@
+# WebSocket (FBR)
+
+Définissez un point de terminaison WebSocket en créant un fichier `.py` avec une fonction `async def SOCKET`.
+
+---
+
+## Écho de base
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Echo: {data}")
+    except WebSocketDisconnect:
+        pass
+```
+
+Le nom de la fonction `SOCKET` (insensible à la casse) correspond à un point de terminaison Starlette WebSocket. Le chemin du fichier détermine l'URL — `/chat` dans cet exemple.
+
+---
+
+## Recevoir JSON
+
+```python
+# src/routes/events.py
+from fastapi import WebSocket, WebSocketDisconnect
+import json
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_json()
+            await websocket.send_json({"echo": data})
+    except WebSocketDisconnect:
+        pass
+```
+
+---
+
+## Modèle de pièce
+
+Diffusez des messages à tous les clients connectés :
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+connections: list[WebSocket] = []
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    connections.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in connections:
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        connections.remove(websocket)
+```
+
+La liste `connections` se trouve au niveau du module : tous les clients partagent la même liste.
+
+---
+
+## Pièces nommées
+
+Regrouper les connexions par nom de salle :
+
+```python
+# src/routes/rooms/{room_id}.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+rooms: dict[str, list[WebSocket]] = {}
+
+async def SOCKET(websocket: WebSocket, room_id: str):
+    await websocket.accept()
+    rooms.setdefault(room_id, []).append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in rooms.get(room_id, []):
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        rooms[room_id].remove(websocket)
+        if not rooms[room_id]:
+            del rooms[room_id]
+```
+
+Le paramètre URL `{room_id}` est injecté automatiquement à partir du nom de fichier.
+
+---
+
+## Cycle de vie de la connexion
+
+| Événement | Que se passe-t-il |
+|-------|-------------|
+| Le client se connecte | `websocket.accept()` — doit être appelé en premier |
+| Message reçu | `receive_text()` / `receive_json()` / `receive_bytes()` |
+| Le client se déconnecte | `WebSocketDisconnect` augmenté — nettoyage dans `except` |
+| Le serveur se ferme | `await websocket.close(code=1000)` |
+
+Enveloppez toujours la boucle de messages dans `try/except WebSocketDisconnect` pour nettoyer les connexions.
+
+---
+
+## Client
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## Voir aussi
+
+- [Route Handlers](/docs/fbrouters/route_handlers) — Points de terminaison REST dans FBR
+- [WebSocket Guide](/docs/guides/websocket) — aperçu conceptuel

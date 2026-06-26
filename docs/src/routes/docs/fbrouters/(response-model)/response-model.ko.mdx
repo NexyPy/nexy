@@ -1,0 +1,85 @@
+# 응답 모델(FBR)
+
+응답 직렬화, 상태 코드 및 응답 유형을 제어합니다.
+
+## Pydantic 응답 모델
+
+```python
+# src/routes/users.py
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET() -> UserOut:
+    return UserOut(id=1, name="Alice", email="alice"@example.com")
+```
+
+## 목록 응답
+
+```python
+def GET() -> list[UserOut]:
+    return [UserOut(id=1, name="Alice")]
+```
+
+## 응답 유형
+
+`fastapi.responses`에서 가져오기:
+
+```python
+from fastapi.responses import (
+    JSONResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    StreamingResponse,
+    FileResponse,
+    ORJSONResponse,
+)
+```
+
+### HTML응답
+
+```python
+from fastapi.responses import HTMLResponse
+
+def GET() -> HTMLResponse:
+    return HTMLResponse("<h1>Hello</h1>")
+```
+
+### 스트리밍응답
+
+```python
+from fastapi.responses import StreamingResponse
+import io
+
+def GET() -> StreamingResponse:
+    return StreamingResponse(io.StringIO("large CSV data..."), media_type="text/csv")
+```
+
+## 사용자 정의 상태를 통한 직접 응답
+
+```python
+from fastapi.responses import JSONResponse
+
+def GET() -> JSONResponse:
+    return JSONResponse(
+        content={"msg": "created"},
+        status_code=201,
+        headers={"X-Custom": "value"},
+    )
+```
+
+## 지원되는 응답 유형
+
+| 수업 | 콘텐츠 유형 | 사용 사례 |
+|-------|-------------|---------|
+| `JSONResponse` | `application/json` | JSON 데이터(기본값) |
+| `HTMLResponse` | `text/html` | HTML 문자열 |
+| `PlainTextResponse` | `text/plain` | 원시 텍스트 |
+| `RedirectResponse` | — | 리디렉션 |
+| `StreamingResponse` | 다양하다 | 데이터 스트리밍 |
+| `FileResponse` | 다양하다 | 파일 다운로드 |
+| `ORJSONResponse` | `application/json` | 더 빠른 JSON(`orjson` 필요) |

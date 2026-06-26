@@ -1,0 +1,192 @@
+#الوسيطة
+
+تعترض البرامج الوسيطة الطلبات قبل وصولها إلى وحدة التحكم (والاستجابات بعدها). استخدمه للمخاوف الشاملة التي تنطبق على العديد من المسارات: التسجيل، والتوقيت، وCORS، والضغط، ومعالجة الرأس.
+
+مثل الحراس، تعد البرامج الوسيطة في Nexy **تبعيات FastAPI** — قابلة للاستدعاء يمكنها تعديل الطلب/الاستجابة أو إحباط الطلب.
+
+## لماذا البرامج الوسيطة؟
+
+يمكنك إضافة تسجيل الدخول في كل طريقة تحكم:
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+تقوم البرمجيات الوسيطة باستخراج هذا في كائن واحد قابل للاستدعاء يتم تطبيقه مرة واحدة:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## إنشاء البرمجيات الوسيطة
+
+الوسيطة عبارة عن أداة قابلة للاستدعاء وتستغرق `Request`. يمكنه تعديل `request.state`، أو رفع `HTTPException` للإجهاض، أو المرور عبر إرجاع `None`:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+بالنسبة للتوقيت، يمكنك استخدام `request.state` لتمرير البيانات إلى الاستجابة:
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+ثم قم بإضافة ربط استجابة عبر معلمة `Response` الخاصة بـ FastAPI:
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**مسكتك**: يعمل النمط `call_next` مع البرامج الوسيطة التي تغطي دورة الطلب/الاستجابة بأكملها. برنامج وسيط بسيط يعمل فقط قبل أن يأخذ المعالج `request`.
+
+## تطبيق الوسيطة
+
+### مستوى وحدة التحكم
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### مستوى الطريقة
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### على مستوى الوحدة
+
+قم بتسجيل البرامج الوسيطة في الوحدة لجميع المسارات:
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+البرامج الوسيطة على مستوى الوحدة النمطية غير مدعومة عبر سمات `"@Module()` مباشرة. بالنسبة للبرامج الوسيطة التي تنطبق على جميع المسارات، استخدم مستوى الأسلوب أو وحدة التحكم، أو قم بالتسجيل عالميًا عبر `nexyconfig.py`.
+
+##الوسيطة العالمية
+
+قم بتسجيل البرامج الوسيطة لكل مسار في التطبيق عبر `nexyconfig.py`:
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+كل إدخال عبارة عن صف `(middleware_class, kwargs)`. يتم تمرير kwargs إلى منشئ البرامج الوسيطة.
+
+## البرامج الوسيطة المدمجة
+
+يتضمن Nexy العديد من البرامج الوسيطة المضمنة القابلة للتكوين عبر `nexyconfig.py`:
+
+| مفتاح التكوين | الوسيطة | الوصف |
+|------------|-----------|-------------|
+| `useCORS` | `CORSMiddleware` | مشاركة الموارد عبر الأصل |
+| `useGZip` | `GZipMiddleware` | ضغط الاستجابة |
+| `useTrustedHost` | `TrustedHostMiddleware` | التحقق من صحة رأس المضيف |
+| `useSession` | `SessionMiddleware` | جلسات تعتمد على ملفات تعريف الارتباط |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` | فرض HTTPS |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+تعمل البرامج الوسيطة المضمنة على المستوى العالمي، قبل أي برامج وسيطة مخصصة.
+
+## البرمجيات الوسيطة مقابل الحراس
+
+| الجانب | الوسيطة | الحرس |
+|--------|----------|-------|
+| ينفذ | قبل المعالج | قبل المعالج (بعد البرامج الوسيطة) |
+| الغرض الأساسي | التسجيل والرؤوس والضغط | المصادقة والترخيص والتحكم في الوصول |
+| نمط | `__call__(self, request)` | `__call__(self, request)` |
+| إحباط | ارفع `HTTPException` | رفع `HTTPException` |
+| تمرير البيانات | `request.state` | `request.state` |
+
+من الناحية العملية، يتم تنفيذ البرامج الوسيطة والحراس بنفس الطريقة (تبعيات FastAPI). الفرق مفاهيمي: تقوم البرمجيات الوسيطة بتعديل الطلبات/الاستجابات، ويتخذ الحراس قرارات التحكم في الوصول.
+
+## معالجة الأخطاء في البرامج الوسيطة
+
+يمكن للبرمجيات الوسيطة اكتشاف الأخطاء وإرجاع استجابات مخصصة باستخدام النمط `call_next`:
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## أفضل الممارسات
+
+1. **أحد المخاوف المتعلقة بالبرامج الوسيطة** — التسجيل، والتوقيت، وCORS. ليست "وسيطة كبيرة" واحدة.
+2. **الحفاظ على سرعة البرامج الوسيطة** — تقوم البرامج الوسيطة بحظر الطلب. العمليات باهظة الثمن تنتمي إلى المعالج.
+3. **استخدم `request.state` لتمرير البيانات** — إنها الطريقة القياسية لمشاركة البيانات بين البرامج الوسيطة والحراس والمعالجين.
+4. **تفضيل الحراس للمصادقة** — أكثر وضوحًا من الناحية المفاهيمية من البرامج الوسيطة للتحكم في الوصول.
+5. **اختبار البرامج الوسيطة بشكل منفصل** — أنشئ نموذجًا وهميًا `Request`، واستدعاء البرنامج الوسيط، وتأكد من الآثار الجانبية.
+
+## الخطوات التالية
+
+- [Guards](/docs/modular/guards) — المصادقة والترخيص
+- [Controllers](/docs/modular/controllers) — تحديد معالجات المسار
+- [Modules](/docs/modular/modules) — التنظيم في وحدات الميزات

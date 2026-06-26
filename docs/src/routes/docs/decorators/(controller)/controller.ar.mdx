@@ -1,0 +1,50 @@
+# "@وحدة التحكم
+
+وضع علامة على فئة كوحدة تحكم FastAPI. تحدد أسماء الأساليب أفعال HTTP.
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## إمضاء
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## المعلمات
+
+| بارام | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `prefix` | `str` | `""` | بادئة URL لكافة المسارات في وحدة التحكم هذه |
+| `tags` | `list[str]` | `None` | علامات OpenAPI (القيمة الافتراضية هي `[ClassName]`) |
+
+## أفعال HTTP
+
+أسماء الأساليب غير حساسة لحالة الأحرف. طريقة واحدة لكل فعل لكل وحدة تحكم.
+
+| اسم الطريقة | فعل HTTP |
+|-------------|-----------|
+| `def GET(self)` | احصل على |
+| `def post(self)` | مشاركة |
+| `def Put(self)` | ضع |
+| `def delete(self)` | حذف |
+| `def patch(self)` | التصحيح |
+| `def options(self)` | خيارات |
+| `def head(self)` | رئيس |
+| `def SOCKET(self)` | ويب سوكيت |
+
+يتم تعيين جميع أساليب المعالج إلى `"/"` — تدخل معلمات المسار في البادئة `"@Controller`.
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

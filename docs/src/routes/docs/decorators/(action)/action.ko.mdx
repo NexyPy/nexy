@@ -1,0 +1,75 @@
+#"@액션
+
+Python 함수를 브라우저에서 호출할 수 있는 서버 엔드포인트로 전환하세요. 라우터 등록이나 요청 구문 분석이 필요하지 않습니다.
+
+```python
+from nexy.decorators import Action
+
+"@Action
+def submit_comment(post_id: int, body: str) -> dict:
+    return {"status": "ok"}
+```
+
+---
+
+## 서명
+
+```python
+Action(func: Callable | None = None) -> Callable
+```
+
+괄호와 함께 또는 없이 사용:
+
+```python
+"@Action
+def fn(): ...
+
+"@Action()
+def fn(): ...
+```
+
+---
+
+## 작동 방식
+
+1. `ActionsStore`에 함수를 등록합니다.
+2. 시작 시 `ActionEngine`는 모든 작업을 검색하고 이를 `POST /_nx_{hash}`로 마운트합니다.
+3. URL 해시 = `sha256(func_name + "salt2026")[:12]` — 배포별로 결정적
+4. JSON 본문에서 구문 분석되고 이름으로 삽입된 인수
+5. JSON으로 직렬화된 반환 값
+
+---
+
+## 매개변수 유형
+
+| 유형 | 소스 | 예 |
+|------|---------|---------|
+| `str`, `int`, `float`, `bool` | JSON 본문 | `post_id: int` |
+| `list`, `dict` | JSON 본문 | `tags: list[str]` |
+| Pydantic 모델 | JSON 본문(검증됨) | `data: CreateComment` |
+| `Request` | FastAPI 주입 | `request: Request` |
+
+---
+
+## 반환 유형
+
+| 반품 | 응답 |
+|---------|----------|
+| `dict` | `JSONResponse` |
+| `list` | `JSONResponse` |
+| `str` | `PlainTextResponse` |
+| `int`, `float`, `bool` | `JSONResponse` |
+| `BaseModel` | `JSONResponse` |
+| `None` | `JSONResponse({"ok": True})` |
+
+---
+
+## 제한사항
+
+- POST 전용
+- JSON 본문만(양식 데이터 없음, 멀티파트)
+- 해시 솔트가 하드코딩되어 있습니다. 배포 내에서 URL이 안정적입니다.
+
+---
+
+사용 예 및 클라이언트 통합은 [Server Actions guide](/docs/guides/actions)를 참조하세요.

@@ -1,16 +1,17 @@
 import importlib
 import json
 import traceback
+from contextvars import ContextVar
 from typing import Any
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
 
-from nexy import Vite
 from nexy.core.config import Config
 from nexy.core.string import StringTransform
+from nexy.vite import Vite
 
-str_tools = StringTransform()
+string_transform = StringTransform()
 
 
 def _get_req() -> Request:
@@ -53,6 +54,18 @@ def useCookies() -> dict:
     return _get_req().cookies
 
 
+_toc_storage: ContextVar[str] = ContextVar("_toc_storage", default="")
+
+
+def useToc(depth_range: str = "2-6") -> str:
+    from nexy.template import _build_toc_html
+
+    html = _toc_storage.get()
+    if not html:
+        return ""
+    return _build_toc_html(html, depth_range)
+
+
 PYTHON_VIEWS = (".nexy", ".mdx")
 FRONTEND_VIEWS = (".tsx", ".vue", ".svelte", ".jsx")
 
@@ -61,14 +74,14 @@ def useViews(path: str, context: dict[str, Any] | None = None) -> HTMLResponse:
     ctx = context or {}
 
     if path.endswith(PYTHON_VIEWS):
-        mapped = str_tools.normalize_route_path_for_namespace(path)
+        mapped = string_transform.normalize_route_path_for_namespace(path)
         import_path = f"{Config.NAMESPACE}{mapped}".replace("/", ".").rsplit(".", 1)[0]
 
         try:
             module = importlib.import_module(import_path)
 
             file_name = path.split("/")[-1].split(".", 1)[0]
-            func_name = str_tools.get_component_name(file_name)
+            func_name = string_transform.get_component_name(file_name)
             component_func = getattr(module, func_name)
             return HTMLResponse(Vite() + component_func(**ctx))
 

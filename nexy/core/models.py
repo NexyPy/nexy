@@ -6,30 +6,6 @@ from fastapi import APIRouter
 
 
 @dataclass
-class Node:
-    pass
-
-
-@dataclass
-class ComponentNode(Node):
-    name: str
-    props: dict[str, str]
-    children: list[Node] = field(default_factory=list)
-
-
-@dataclass
-class TextNode(Node):
-    content: str
-
-
-@dataclass
-class NexyModule:
-    name: str
-    frontmatter: str
-    template: list[Node]
-
-
-@dataclass
 class ScanResult:
     logic_block: str
     template_block: str
@@ -117,7 +93,7 @@ class ParserModel:
 
 
 @dataclass
-class FFModel:
+class FrontendFramework:
     name: str
     render: str
     extension: list[str] = field(default_factory=list)
@@ -134,7 +110,7 @@ class NexyConfigModel:
     useDocs: bool = True
     useVite: bool = False
     useViteDevUrl: str | None = None
-    useFF: list[FFModel] = []
+    useFF: list[FrontendFramework] = []
     useMarkdownExtensions: list[str] = []
     excludeDirs: list[str] = []
     useMiddlewares: list[Any] = []
@@ -146,3 +122,13 @@ class NexyConfigModel:
     useAuth: dict | None = None
     useSslKeyfile: str | None = None
     useSslCertfile: str | None = None
+    useLocales: list[str] | None = None
+    useLocalesDir: str | None = None
+    useLocalesSourceDir: str | None = None
+    useDefaultLocale: str = "en"
+    useLocaleCookieName: str = "nexy-locale"
+    useLocaleDetection: dict[str, bool] | None = None
+    useRTL: bool = False
+    useTocDepth: str = "2-6"
+    useTocTitle: str = "Table of Contents"
+    useTocAuto: bool = True

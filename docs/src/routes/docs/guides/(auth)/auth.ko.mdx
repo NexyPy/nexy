@@ -1,0 +1,129 @@
+# 인증 연습
+
+이 가이드에서는 세션 기반 인증을 사용하여 처음부터 로그인, 로그아웃 및 보호된 대시보드를 구축합니다.
+
+## 1. 세션 미들웨어 활성화
+
+`nexyconfig.py`에서 `useSession` — Starlette의 서명된 쿠키 세션을 활성화합니다.
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me-in-production"}
+```
+
+옵션은 [Session config](/docs/config/session)를 참조하세요.
+
+## 2. 인증 백엔드 및 구성
+
+세션에서 사용자 ID를 읽는 백엔드를 만듭니다.
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+구성에 추가하십시오.
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+더 많은 백엔드 유형(토큰, JWT)은 [Authentication reference](/docs/security/authentication)를 참조하세요.
+
+## 3. 로그인 페이지
+
+```nexy
+# src/routes/login.nexy
+---
+from nexy import useSession
+from src.db import authenticate_user
+
+def POST(username: str, password: str):
+    user = authenticate_user(username, password)
+    if not user:
+        return {"error": "Invalid credentials"}
+    session = useSession()
+    session["user_id"] = user.id
+    return Redirect("/dashboard")
+---
+<form method="POST">
+  <input name="username" placeholder="Username">
+  <input name="password" type="password" placeholder="Password">
+  <button>Sign in</button>
+</form>
+```
+
+## 4. 보호된 대시보드
+
+가드로 대시보드를 보호하세요. 인증되면 `{"user": ...}`를 반환하고 그렇지 않으면 401을 반환합니다.
+
+```nexy
+# src/routes/dashboard.nexy
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+<h1>Dashboard</h1>
+<p>Welcome, {{ user }}!</p>
+```
+
+사용자 정의 가드 작성에 대해서는 [Authorization](/docs/security/authorization) 및 ["@UseGuard reference](/docs/decorators/useguard)를 참조하세요.
+
+## 5. 로그아웃
+
+로그아웃하려면 세션을 지우세요.
+
+```nexy
+# src/routes/logout.nexy
+---
+from nexy import useSession
+
+def POST():
+    session = useSession()
+    session.clear()
+    return Redirect("/login")
+---
+```
+
+## 6. 템플릿의 조건부 UI
+
+`.nexy` 템플릿에서 직접 세션을 확인하세요.
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+---
+<header>
+  {% if session.get("user_id") %}
+    <a href="/dashboard">Dashboard</a>
+    <form method="POST" action="/logout">
+      <button>Sign out</button>
+    </form>
+  {% else %}
+    <a href="/login">Sign in</a>
+  {% endif %}
+</header>
+```
+
+[useSession hook](/docs/hooks/useSession)를 참조하세요.
+
+## 다음은 무엇입니까?
+
+- [Authentication reference](/docs/security/authentication) — 인증 백엔드, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) — 사용자 정의 가드, 범위
+- [JWT](/docs/security/jwt) — 토큰 기반 인증
+- [Session config](/docs/config/session)

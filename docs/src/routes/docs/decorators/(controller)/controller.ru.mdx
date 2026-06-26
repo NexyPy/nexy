@@ -1,0 +1,50 @@
+# "@Контроллер
+
+Отмечает класс как контроллер FastAPI. Имена методов определяют HTTP-глаголы.
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## Подпись
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## Параметры
+
+| Парам | Тип | По умолчанию | Описание |
+|-------|------|---------|-------------|
+| `prefix` | `str` | `""` | Префикс URL для всех маршрутов в этом контроллере |
+| `tags` | `list[str]` | `None` | Теги OpenAPI (по умолчанию `[ClassName]`) |
+
+## HTTP-глаголы
+
+Имена методов не чувствительны к регистру. Один метод для каждого глагола для каждого контроллера.
+
+| Имя метода | HTTP-глагол |
+|-------------|-----------|
+| `def GET(self)` | ПОЛУЧИТЬ |
+| `def post(self)` | ПОСТ |
+| `def Put(self)` | ПУТЬ |
+| `def delete(self)` | УДАЛИТЬ |
+| `def patch(self)` | ПАТЧ |
+| `def options(self)` | ОПЦИИ |
+| `def head(self)` | ГОЛОВА |
+| `def SOCKET(self)` | Вебсокет |
+
+Все методы-обработчики сопоставлены с `"/"` — параметры пути указываются в префиксе `"@Controller`.
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

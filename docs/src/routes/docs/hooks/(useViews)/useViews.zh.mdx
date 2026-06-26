@@ -1,0 +1,65 @@
+# 使用视图
+
+使用给定上下文渲染视图模板（`.nexy`、`.mdx` 或前端组件），返回 `HTMLResponse`。
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## 参数
+
+|参数|类型 |默认 |描述 |
+|------------|------|---------|------------|
+| `path` | `str` |必填|视图文件的路径（相对于项目）|
+| `context` | `dict \| None` | `None` |传递给模板的变量 |
+
+---
+
+## 返回值
+
+`HTMLResponse` — 注入 Vite 资源后渲染的 HTML。
+
+ - -
+
+＃＃ 例子
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## 前端组件
+
+对于 `.tsx`、`.vue`、`.svelte` 和 `.jsx` 视图，`useViews` 返回可水合的容器：
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+该容器包含用于客户端水合的 `data-nexy-fw`、`data-nexy-path` 和 `data-nexy-props` 属性。
+
+---
+
+## 支持的扩展
+
+|扩展|行为 |
+|------------|----------|
+| `.nexy` |编译模板 → 渲染 HTML |
+| `.mdx` | Markdown + 组件 → 渲染 HTML |
+| `.tsx` |可水合容器（React/Solid/Preact）|
+| `.vue` |可水化容器|
+| `.svelte` |可水化容器|
+| `.jsx` |可水化容器|

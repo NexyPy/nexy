@@ -1,0 +1,24 @@
+# Guías
+
+Tutoriales prácticos para usar Nexy con marcos frontend, carga de datos, autenticación, internacionalización e implementación.
+
+## Integración del marco frontend
+
+-[React in Nexy](/docs/frontend/react)
+-[Vue in Nexy](/docs/frontend/vue)
+-[Svelte in Nexy](/docs/frontend/svelte)
+-[Solid in Nexy](/docs/frontend/solid)
+-[Preact in Nexy](/docs/frontend/preact)
+-[Vite & SSR](/docs/frontend/vite)
+
+## Guías principales
+
+- [Jinja2](/docs/guides/jinja2) — uso del motor de plantillas
+- [Data Loading](/docs/guides/data-loading): obtención y almacenamiento en caché de datos
+- [Error Handling](/docs/guides/error-handling) — páginas de error y manejo de excepciones
+- [Actions](/docs/guides/actions) — formar acciones y mutaciones
+- [Auth](/docs/guides/auth) — flujos de autenticación
+- [i18n](/docs/guides/i18n) — internacionalización
+- [CSS & JS](/docs/guides/css-js) — activos estáticos y agrupación
+- [Real-Time](/docs/guides/websocket) — WebSocket y SSE
+- [Deploy](/docs/guides/deploy) — implementación de producción

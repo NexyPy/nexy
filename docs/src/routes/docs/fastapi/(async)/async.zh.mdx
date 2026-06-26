@@ -1,0 +1,66 @@
+# 异步与并发
+
+Nexy 基于 FastAPI 构建，自动支持 `async` 和 `def` 路由处理程序。
+
+## `async def` 与 `def`
+
+|处理程序类型 |执行 |何时使用 |
+|------------|------------|------------|
+| `def` |线程池（阻塞）| CPU 工作、同步数据库调用、阻塞 I/O |
+| `async def` |事件循环|异步数据库、HTTP 调用、WebSocket、长轮询 |
+
+---
+
+## 异步路由
+```python
+---
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+---
+```
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+## 在一个文件中混合同步和异步
+```python
+---
+def GET():          # runs in thread pool
+    return {"type": "sync"}
+
+async def GET_async():  # runs in event loop
+    return {"type": "async"}
+---
+```
+```python
+from nexy.decorators import Controller
+
+"@Controller("/demo")
+class DemoController:
+    def GET(self):          # runs in thread pool
+        return {"type": "sync"}
+
+    async def async_get(self):  # runs in event loop
+        return {"type": "async"}
+```
+## 后台任务
+
+对于响应后的即发即忘工作，请使用 `BackgroundTasks`（同步友好）。对于真正的异步后台工作，请使用 `asyncio.create_task`。
+
+## 注意事项
+
+- **不要**使用 `await` 从 `def` 处理程序调用 `async` 函数 — 使用 `asyncio.run()` 或使处理程序 `async def`
+- **不要**从 `async def` 调用阻塞函数（如 `time.sleep()`、`requests.get()`）——使用 `asyncio.sleep()`、`httpx.AsyncClient`
+- Nexy 的 `nx dev` 默认运行一个 uvicorn 工作线程 — 异步处理程序在这里大放异彩
+- 对于生产，使用多个工作线程 (`nx start --workers 4`) 作为同步处理程序

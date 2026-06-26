@@ -1,0 +1,49 @@
+# 从 Flask 迁移到 Nexy
+
+烧瓶是最小的。 Nexy 也很小，但内置了现代异步、类型和 OpenAPI。
+
+## 概念图
+
+|烧瓶 |内克西 |
+|--------|------|
+| `"@app.route("/")` |文件位于 `src/routes/` 或 `"@Controller` |
+| `render_template()` | `.nexy` 文件 |
+| `request.args` |函数签名中的查询参数 |
+| `request.json` |函数签名中的主体参数 |
+| `g` | `request.state` |
+| `flask run` | `nx dev` |
+| `config.py` | `nexyconfig.py` |
+|蓝图| `"@Module` 或 `src/routes/` 子目录 |
+
+＃＃ 例子
+
+```python
+# Flask
+"@app.route("/api/users/<int:id>")
+def get_user(id):
+    return jsonify({"id": id})
+
+# Nexy FBR: src/routes/api/users/[id].py
+async def get(id: int):
+    return {"id": id}
+```
+
+## 你将获得什么
+
+- **异步支持** - 原生，而不是通过黑客
+- **类型验证** — Pydantic，自动 422 错误
+- **OpenAPI docs** — no `flasgger` needed
+- **DI 系统** — 无需全局单例即可注入服务
+- **CLI** — `nx build`、`nx start`、`nx migrate`
+
+## 迁移步骤
+
+1. **脚手架** — `nx new my-app`
+2. **港口航线** — `"@app.route()` → 文件在`src/routes/`或`"@Controller`
+3. **端口模板** — Flask `render_template()` → `.nexy` 文件
+4. **端口请求处理** — `request.args`/`request.json` → 类型化函数参数
+5. **端口蓝图** → `"@Module` 或 FBR 中的子目录
+
+## 留下什么
+
+简单的路线，最少的样板，完全控制。就用现代Python。

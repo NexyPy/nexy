@@ -20,12 +20,49 @@ export function registerNexyCommands(context: vscode.ExtensionContext, isNexyPro
         return insertHeaderCommand();
       }
     }),
+    vscode.commands.registerCommand("nexy.insertImport", (componentName: string, filePath: string) => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || (editor.document.languageId !== "nexy" && editor.document.languageId !== "mdx")) return;
+      const doc = editor.document;
+      const text = doc.getText();
+      const importLine = `from "${filePath}" import ${componentName}`;
+      if (/^---\s*$/m.test(text)) {
+        const match = text.match(/^---[ \t]*\r?\n/s);
+        const headerLines = text.slice(match![0].length).split("\n");
+        let insertPos = match![0].length;
+        let i = 0;
+        while (i < headerLines.length && !/^---\s*$/.test(headerLines[i])) {
+          insertPos += headerLines[i].length + 1;
+          i++;
+        }
+        editor.edit((eb) => eb.insert(doc.positionAt(insertPos), importLine + "\n"));
+      } else {
+        editor.edit((eb) => eb.insert(new vscode.Position(0, 0), "---\n" + importLine + "\n---\n\n"));
+      }
+    }),
     vscode.commands.registerCommand("nexy.wrapWithComponent", () => {
       if (vscode.window.activeTextEditor && isEligible(vscode.window.activeTextEditor.document)) {
         return wrapWithComponentCommand();
       }
     }),
     vscode.commands.registerCommand("nexy.openDocs", openDocsCommand),
+    vscode.commands.registerCommand("nexy.toggleComment", () => {
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || !isEligible(editor.document)) return;
+      const doc = editor.document;
+      const text = doc.getText();
+      const offset = doc.offsetAt(editor.selection.active);
+      const headerMatch = text.match(/^---[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*---[ \t]*(?=\r?\n|$)/m);
+      if (headerMatch) {
+        const headerStart = headerMatch.index!;
+        const headerEnd = headerStart + headerMatch[0].length;
+        if (offset >= headerStart && offset < headerEnd) {
+          vscode.commands.executeCommand("editor.action.commentLine");
+          return;
+        }
+      }
+      vscode.commands.executeCommand("editor.action.blockComment");
+    }),
   );
 }
 

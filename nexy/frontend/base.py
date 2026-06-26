@@ -1,19 +1,15 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
 
 
 class BaseFrontendGenerator(ABC):
-    """Abstract base class for frontend framework generators."""
-
     @abstractmethod
     def generate(self) -> None:
-        """Generate frontend configuration and entry files."""
         pass
 
-    def _get_ff_list(self) -> list[FFModel]:
-        """Get the list of frontend frameworks from config."""
+    def _get_ff_list(self) -> list[FrontendFramework]:
         from nexy.core.config import Config
 
         config = Config()

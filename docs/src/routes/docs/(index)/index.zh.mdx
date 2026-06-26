@@ -1,0 +1,130 @@
+# 简介
+
+**Nexy**（发音为 `nek:si`）是一个构建在 **FastAPI** 和 **Starlette** 之上的全栈 Python Web 框架。它将 Next.js 和 NestJS 等现代框架的开发人员体验带到了 Python 中。
+
+该名称来自：**N**ew **Ex**perience for P**y**thon — 一种用 Python 构建 Web 应用程序的全新方法。
+
+> Nexy 不会重新发明轮子。它使 Python Web 开发变得更加简单，同时保留了 FastAPI 的强大功能。
+
+---
+
+## 两个路由器，一个框架
+
+Nexy 提供**两种路由策略** — 选择适合您项目的一种：
+
+### 路由路由器（基于文件的路由）
+
+路由由文件树定义 - `src/routes/` 中的每个 `.nexy`、`.mdx` 或 `.py` 文件自动成为 HTTP 路由。
+
+```text
+src/routes/
+
+├── index.nexy          →  /
+
+├── about.nexy          →  /about
+
+├── blog/
+
+│   ├── index.nexy      →  /blog
+
+│   └── [slug].nexy     →  /blog/{slug}
+
+└── api/
+
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+**最适合**：简单的站点、文档、MVP、仅限 API 的项目、喜欢约定而不是配置的团队。
+
+了解更多：[File-Based Routing →](/docs/fbrouters)
+
+### 模块化路由器（基于装饰器）
+
+路由是通过 Python 装饰器定义的 - 按照 NestJS 模式将代码组织到 **控制器**、**提供程序** 和 **模块**。
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+
+class UsersController:
+
+    def __init__(self, service: UserService):
+
+        self.service = service
+
+    def GET(self):
+
+        return self.service.find_all()
+```
+
+**最适合**：大型应用程序、领域驱动设计、受益于依赖注入和严格代码组织的项目。
+
+了解更多：[Modular Router →](/docs/modular/overview)
+
+> 使用侧边栏顶部的 **路由器选择器** 在每个路由器的文档视图之间切换。
+
+---
+
+## FastAPI 是引擎
+
+正如 Next.js **本质上是 React** 一样，Nexy **本质上是 FastAPI** 。每一条路线、每一个响应、每一个中间件都通过 FastAPI 和 Starlette 运行。
+
+```python
+# FastAPI patterns that work unchanged in Nexy
+
+from fastapi import Request, Depends
+
+from fastapi.responses import JSONResponse, HTMLResponse
+
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+
+    id: int
+
+    name: str
+
+    email: str
+
+def GET(request: Request, db=Depends(get_db)):
+
+    return db.query(User).all()
+```
+
+**保持不变的内容：** `Request`、`Depends`、`HTTPException`、`BaseModel`、`JSONResponse`、`HTMLResponse`、`RedirectResponse`、`WebSocket`、`UploadFile`、`Form`、`Header`、`Cookie`、`Query`、 `status` — 全部来自 `fastapi`。
+
+**Nexy 添加的内容：** `.nexy`/`.mdx` 文件 → 编译为 FastAPI 路由，`"@Action` → 自动生成的 POST 路由，`"@Controller`/`"@Module` → FastAPI `APIRouter` 构建器，挂钩 → FastAPI `Request` 之上的请求范围帮助器。
+
+由于 Nexy 是 FastAPI，因此每个路由都会在 `/docs` (Swagger UI) 和 `/redoc` 自动生成 **OpenAPI 文档**。
+
+---
+
+## 为什么是内克西？
+
+- **FastAPI 底层** — 异步、自动 OpenAPI 文档、类型安全、经过实战测试
+- **基于组件的 UI** — 使用 Python + Jinja2 模板编写组件，或使用 React/Vue/Svelte/Solid/Preact
+- **基于文件和模块化路由** — 为您的项目选择正确的工具
+- **零样板** - 无需手动路由注册，无需连接配置文件
+- **内置 i18n、HMR、中间件、防护** — 从第一天起就可以投入生产
+
+---
+
+## Nexy 适合你吗？
+
+如果您想执行以下操作，请使用 Nexy：
+
+- 构建全栈 Python 应用程序的速度与 Next.js 或 Laravel 一样快
+- 创建具有 NestJS 结构但具有 Python 简单性的 REST API
+- 使用 Python 后端的 React/Vue/Svelte 组件
+- 停止重组项目和安装样板包
+
+---
+
+## 你将学到什么
+
+- 创建并配置 Nexy 项目
+- 了解两种路由策略
+- 使用具体示例构建您的第一个应用程序
+- 遵循生产部署的最佳实践
+

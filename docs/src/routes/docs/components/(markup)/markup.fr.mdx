@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Écrire du balisage avec Nexy
+
+Les modèles Nexy utilisent **HTML** + **Jinja2** pour le contenu dynamique.
+Si vous connaissez HTML et Jinja2, vous connaissez déjà les modèles Nexy.
+
+---
+
+## Interpolation de texte
+```html
+<h1>{{ title }}</h1>
+<p>{{ description }}</p>
+```
+Les variables proviennent du frontmatter ou des accessoires.
+
+---
+
+## Filtres
+
+Les filtres Jinja2 transforment les valeurs :
+```html
+<p>{{ content | safe }}</p>
+<p>{{ name | upper }}</p>
+<p>{{ price | round(2) }}</p>
+```
+`| safe` marque une chaîne comme HTML sécurisé (pas d'échappement automatique).
+
+---
+
+## Pour les boucles
+```html
+<ul>
+{% for item in items %}
+    <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## Si/sinon
+```html
+{% if user %}
+    <p>Welcome, {{ user.name }}!</p>
+{% else %}
+    <a href="/login">Sign in</a>
+{% endif %}
+```
+---
+
+## Composants dans les modèles
+
+Les composants sont utilisés comme des éléments HTML :
+```html
+<div class="card">
+    <Card title="Hello">
+        <p>Child content</p>
+    </Card>
+</div>
+```
+Le composant `Slot` restitue les enfants (voir Modules).
+
+---
+
+## Blocs JS bruts
+
+Utilisez `{{ '' }}` pour protéger `{{ '{{' }}` de l'analyse Jinja2 (nécessaire lors de l'intégration de frameworks JS) :
+```html
+{% raw %}
+<script>
+const data = {{ json_data }};
+</script>
+{% endraw %}
+```
+<Link href="/docs/components/python">Next: Python in template →</Link>

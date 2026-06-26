@@ -1,0 +1,73 @@
+# Réagir
+
+Ajoutez React à votre `nexyconfig.py` :
+
+```python
+from nexy.frontend import react
+
+class NexyConfig(NexyConfigModel):
+    useFF = [react()]
+```
+
+---
+
+## Création d'un composant
+
+Les fichiers avec l'extension `.tsx` ou `.jsx` dans `src/` sont traités comme des composants React :
+
+```tsx
+// src/components/Counter.tsx
+import { useState } from 'react'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = useState(initial)
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## Utilisation dans une page .nexy
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Les accessoires sont transmis via la syntaxe Jinja2 `{{ }}` — utilisez des doubles accolades pour les valeurs JSON.
+
+---
+
+## Enfants / contenu des machines à sous
+
+Nexy transmet le contenu enfant en tant qu'accessoire `children`. Le composant peut le restituer :
+
+```tsx
+export default function Card({ title, children }) {
+  return (
+    <div className="card">
+      <h2>{title}</h2>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## RSS
+
+Les composants React sont rendus côté serveur avec `hydrateRoot`. Le serveur génère du HTML, puis React s'hydrate sur le client. Aucune configuration supplémentaire nécessaire.

@@ -1,0 +1,159 @@
+# 웹소켓(모듈형)
+
+`async def SOCKET(self, websocket)`를 사용하여 컨트롤러 내부에 WebSocket 엔드포인트를 정의합니다.
+
+---
+
+## 기본 에코
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/chat")
+class ChatController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await websocket.send_text(f"Echo: {data}")
+        except WebSocketDisconnect:
+            pass
+```
+
+`SOCKET` 메서드 이름은 WebSocket 엔드포인트에 매핑됩니다. 컨트롤러의 모든 메소드는 `"@Controller` 접두사를 공유하므로 이는 WebSocket으로서 `GET /chat`입니다.
+
+---
+
+## JSON 수신
+
+```python
+from nexy.decorators import Controller
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Controller("/events")
+class EventsController:
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        try:
+            while True:
+                data = await websocket.receive_json()
+                await websocket.send_json({"echo": data})
+        except WebSocketDisconnect:
+            pass
+```
+
+---
+
+## DI를 사용한 방 패턴
+
+전용 서비스를 사용하여 연결을 관리하세요.
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class ConnectionManager:
+    def __init__(self):
+        self.connections: list[WebSocket] = []
+
+    def add(self, ws: WebSocket):
+        self.connections.append(ws)
+
+    def remove(self, ws: WebSocket):
+        self.connections.remove(ws)
+
+    async def broadcast(self, message: str):
+        for conn in self.connections:
+            await conn.send_text(message)
+
+"@Controller("/chat")
+class ChatController:
+    def __init__(self, manager: ConnectionManager):
+        self.manager = manager
+
+    async def SOCKET(self, websocket: WebSocket):
+        await websocket.accept()
+        self.manager.add(websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.manager.broadcast(data)
+        except WebSocketDisconnect:
+            self.manager.remove(websocket)
+```
+
+`ConnectionManager`는 싱글톤 `"@Injectable()`입니다. 모든 컨트롤러 인스턴스는 동일한 관리자를 공유합니다.
+
+---
+
+## DI가 있는 명명된 방
+
+```python
+from nexy.decorators import Controller, Injectable
+from fastapi import WebSocket, WebSocketDisconnect
+
+"@Injectable()
+class RoomManager:
+    def __init__(self):
+        self.rooms: dict[str, list[WebSocket]] = {}
+
+    def join(self, room: str, ws: WebSocket):
+        self.rooms.setdefault(room, []).append(ws)
+
+    def leave(self, room: str, ws: WebSocket):
+        self.rooms[room].remove(ws)
+        if not self.rooms[room]:
+            del self.rooms[room]
+
+    async def broadcast(self, room: str, message: str):
+        for conn in self.rooms.get(room, []):
+            await conn.send_text(message)
+
+"@Controller("/rooms/{room_id}")
+class RoomController:
+    def __init__(self, rooms: RoomManager):
+        self.rooms = rooms
+
+    async def SOCKET(self, websocket: WebSocket, room_id: str):
+        await websocket.accept()
+        self.rooms.join(room_id, websocket)
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.rooms.broadcast(room_id, data)
+        except WebSocketDisconnect:
+            self.rooms.leave(room_id, websocket)
+```
+
+---
+
+## 연결 수명주기
+
+| 이벤트 | 무슨 일이 일어나는가 |
+|-------|-------------|
+| 클라이언트 연결 | `websocket.accept()` — 먼저 호출되어야 함 |
+| 메시지 수신됨 | `receive_text()` / `receive_json()` / `receive_bytes()` |
+| 클라이언트 연결 끊김 | `WebSocketDisconnect` 발생 — `except`에서 정리 |
+| 서버 종료 | `await websocket.close(code=1000)` |
+
+---
+
+## 고객
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## 참고하세요
+
+- [Controllers](/docs/modular/controllers) — 모듈식 경로 핸들러
+- [Providers & DI](/docs/modular/providers) — 주입 가능한 서비스
+- [Guards](/docs/modular/guards) — WebSocket 엔드포인트를 보호합니다.
+- [WebSocket Guide](/docs/guides/websocket) — 개념 개요

@@ -1,0 +1,111 @@
+# CSS & JavaScript
+
+Nexy gives you full freedom over styling and scripting. Every approach works — inline, imported, utility-first, or custom bundling.
+
+## CSS Approaches
+
+### 1. Inline `<style>` in `.nexy` Templates
+
+Add a `<style>` tag directly in the template section. Styles are global by default — scope them manually with BEM, data attributes, or utility classes.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+</style>
+```
+
+### 2. Import External CSS via `__Import`
+
+Every `.nexy` file automatically has `__Import` available (injected by the compiler). Use it to inline external CSS, JSON, or images.
+
+```nexy
+---
+css_block = __Import("/styles/global.css", "", "")()
+---
+<div class="wrapper">
+  {{ css_block }}
+  <main>...</main>
+</div>
+```
+
+`__Import(path, framework, symbol)` dispatches by file extension:
+
+| Extension | Returns |
+|-----------|---------|
+| `.css` | A `<style>...</style>` string with the file content inlined |
+| `.png`, `.jpg`, `.svg`, etc. | A base64 data URI string |
+| `.json` | Parsed JSON data |
+| `.tsx`, `.vue`, `.svelte`, etc. | A client component wrapper (`<ncc>` tag) |
+
+For CSS, the 2nd and 3rd arguments are unused — pass empty strings.
+
+### 3. Tailwind CSS
+
+Nexy includes Tailwind CSS support at project initialization. Utility classes in your template are processed normally.
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Configure Tailwind in `tailwind.config.*` or `nexyconfig.py`.
+
+### 4. Vite CSS Bundling
+
+When Vite is enabled (`useVite: true` in config), you can import `.css` files from your frontend components and they will be bundled with Vite's pipeline — including PostCSS, CSS modules, and HMR.
+
+## Client-Side JavaScript
+
+Add `<script>` tags directly in `.nexy` templates:
+
+```nexy
+---
+---
+<button id="greet-btn">Greet</button>
+
+<script>
+document.getElementById('greet-btn').addEventListener('click', () => {
+  alert('Hello from Nexy!')
+})
+</script>
+```
+
+## TypeScript
+
+With Vite enabled, `.ts` files are compiled automatically. Import them in your frontend components or via `<script>` tags.
+
+```typescript
+// src/scripts/utils.ts
+export function greet(name: string): string {
+  return `Hello ${name}`
+}
+```
+
+Scripts in `public/` are served statically. Scripts in `src/` are processed by Vite (if enabled) or served raw in development.
+
+## Bundling
+
+| Mode | CSS | JS/TS |
+|------|-----|-------|
+| **Development** | Served raw or via Vite HMR | Served raw or via Vite HMR |
+| **Production (`nexy build`)** | Inlined or Vite-bundled | Minified and bundled by Vite |
+
+When Vite is off, CSS in `<style>` tags is inlined directly in the HTML output. When Vite is on, all assets go through Vite's build pipeline for optimal bundling and code splitting.

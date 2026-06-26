@@ -1,0 +1,65 @@
+# Webhooks e retornos de chamada OpenAPI
+
+Defina webhooks e retornos de chamada em seu esquema OpenAPI para que os consumidores saibam o que sua API envia para eles.
+
+## Webhooks
+
+Webhooks são eventos de saída que sua API envia para URLs externos.
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+Isso registra um webhook no esquema OpenAPI. Os consumidores veem o formato de carga útil esperado em `/docs`.
+
+## Retornos de chamada
+
+Os retornos de chamada descrevem as solicitações que sua API fará ao servidor do consumidor.
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+Passe o roteador de retorno de chamada para uma rota:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+Isso gera caminhos adicionais na especificação OpenAPI mostrando o que sua API irá POST para o URL externo.
+
+## Por que usá-los
+
+- Documentação gerada automaticamente para consumidores de API
+- Definição de contrato seguro de tipo
+- Funciona com qualquer gerador de cliente OpenAPI
+- Sem efeito de tempo de execução — apenas para documentação

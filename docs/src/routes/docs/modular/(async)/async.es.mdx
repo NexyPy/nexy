@@ -1,0 +1,50 @@
+# Asíncrono y concurrencia (modular)
+
+Nexy se basa en FastAPI que admite `async` y `def` en controladores.
+
+## `async def` frente a `def`
+
+| Tipo de controlador | Ejecución | Cuándo utilizar |
+|-------------|-----------|-------------|
+| `def` | Grupo de subprocesos (bloqueo) | Trabajo de CPU, sincronización de llamadas de base de datos, bloqueo de E/S |
+| `async def` | Bucle de eventos | Base de datos asíncrona, llamadas HTTP, sondeo largo |
+
+## Controlador asíncrono
+
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+
+## Sincronización mixta y asíncrona
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/sync")
+class SyncController:
+    def GET(self):             # runs in thread pool
+        return {"type": "sync"}
+
+"@Controller("/async")
+class AsyncController:
+    async def GET(self):       # runs in event loop
+        return {"type": "async"}
+```
+
+## Tareas en segundo plano
+
+Para trabajos de disparar y olvidar después de la respuesta, utilice `BackgroundTasks`. Para un verdadero trabajo asíncrono en segundo plano, utilice `asyncio.create_task`.
+
+## Advertencias
+
+- No llames a `async` funciones desde `def` controladores con `await` - usa `asyncio.run()` o haz que el controlador sea `async def`
+- No llames a funciones de bloqueo (`time.sleep()`, `requests.get()`) desde `async def` — usa `asyncio.sleep()`, `httpx.AsyncClient`
+- Para producción, utilice varios trabajadores para los controladores de sincronización.

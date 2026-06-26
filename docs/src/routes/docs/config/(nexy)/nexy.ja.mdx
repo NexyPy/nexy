@@ -1,0 +1,97 @@
+# 構成: ネクシー
+
+Nexy は、プロジェクト ルートの `nexyconfig.py` を介して構成されます。このファイルは、`NexyConfigModel` を拡張するクラスを定義します。
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    usePort = 3000
+    useTitle = "My App"
+```
+
+## すべてのフィールド
+
+### ルーター
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useRouter` | `APIRouter \| None` | `None` |モジュラールーターのルートモジュール。設定すると、モジュラー ルーティングが使用されます。 `None` の場合、FBR を使用します。 |
+| `excludeDirs` | `list[str]` | `[]` | FBR スキャンから除外するディレクトリ。 |
+
+### サーバー
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `usePort` | `int` | `3000` |開発/運用サーバーのポート。 |
+| `useHost` | `str` | `"0.0.0.0"` |バインド先のホスト。 |
+| `useSslKeyfile` | `str \| None` | `None` | HTTPS の SSL キー ファイル パス。 |
+| `useSslCertfile` | `str \| None` | `None` | HTTPS の SSL 証明書ファイルのパス。 |
+
+### OpenAPI ドキュメント
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useDocs` | `bool` | `True` | OpenAPI ドキュメントを有効/無効にします。 |
+| `useDocsUrl` | `str` | `"/docs"` | Swagger UI の URL。 |
+| `useRedocsUrl` | `str \| None` | `"/redocs"` | ReDoc の URL。無効にするには、`None` に設定します。 |
+| `useTitle` | `str` | `"Nexy"` | OpenAPI スキーマのタイトル。 |
+
+### フロントエンド
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useVite` | `bool` | `False` |クライアント コンポーネントの Vite バンドルを有効にします。 |
+| `useViteDevUrl` | `str \| None` | `None` |カスタム Vite 開発サーバー URL (`None` の場合は自動検出)。 |
+| `useFF` | `list[FrontendFramework]` | `[]` |有効にするフロントエンド フレームワーク (React、Vue、Svelte、Solid、Preact)。プロジェクトから自動検出されます。 |
+| `useMarkdownExtensions` | `list[str]` | `[]` | `.mdx` ファイル用の Python-Markdown 拡張機能。 |
+
+### ミドルウェア
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useMiddlewares` | `list[Any]` | `[]` |カスタム ASGI ミドルウェア クラス。 |
+| `useCORS` | `dict \| None` | `None` | CORS ミドルウェア構成 (Starlette `CORSMiddleware` kwargs)。 |
+| `useGZip` | `dict \| None` | `None` | GZip ミドルウェア構成 (Starlette `GZipMiddleware` kwargs)。 |
+| `useTrustedHost` | `dict \| None` | `None` |信頼できるホストのミドルウェア構成。 |
+| `useHTTPSRedirect` | `bool` | `False` | HTTP を HTTPS にリダイレクトします。 |
+| `useSession` | `dict \| None` | `None` |セッションミドルウェア構成 (Starlette `SessionMiddleware` kwargs)。 |
+| `useAuth` | `dict \| None` | `None` |認証ミドルウェアの構成。 |
+
+### i18n
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useLocales` | `list[str] \| None` | `None` |利用可能なロケール (例: `["en", "fr"]`)。 `None` の場合は `nexy/i18n/` から自動検出されます。 |
+| `useDefaultLocale` | `str` | `"en"` |デフォルトのロケール。 |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` |ロケールストレージの Cookie 名。 |
+| `useLocaleDetection` | `dict[str, bool] \| None` | `None` |ロケール検出設定。 |
+| `useRTL` | `bool` | `False` | RTL サポートを有効にします。 |
+
+### 目次
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useTocDepth` | `str` | `"2-6"` |目次に含める見出しレベル (例: h2-h4 の `"2-4"`)。 |
+| `useTocTitle` | `str` | `"Table of Contents"` |目次セクションのタイトル。 |
+| `useTocAuto` | `bool` | `True` | `.mdx` ページの目次を自動生成します。 |
+
+---
+
+## FastAPI アプリへのアクセス
+
+Nexy は、`nexy.app` を介して基盤となる FastAPI インスタンスを公開します。これは、Nexy のルーティング システムの外部にカスタム ルート、ミドルウェア、またはイベント ハンドラーを追加する場合に便利です。
+
+```python
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("Server starting...")
+
+"@app.get("/health")
+def health():
+    return {"status": "ok"}
+```
+
+`app` オブジェクトは、`AppServer` によってマウントされる、完全に構成された FastAPI `APIRouter` です。任意の FastAPI/Starlette 機能を使用できます。

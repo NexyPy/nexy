@@ -1,0 +1,76 @@
+# "@UseGuard
+
+नियंत्रक वर्ग या व्यक्तिगत हैंडलर विधि में गार्ड कॉलेबल्स लागू करें।
+
+## गार्ड का अनुबंध
+
+एक गार्ड `__call__(self, request)` के साथ कॉल करने योग्य है। यह FastAPI `Request` ऑब्जेक्ट प्राप्त करता है। ब्लॉक करने के लिए `HTTPException` बढ़ाएँ, अनुमति देने के लिए `None` लौटाएँ।
+```python
+from fastapi import HTTPException
+
+class RoleGuard:
+    def __init__(self, role: str):
+        self.role = role
+
+    def __call__(self, request) -> None:
+        if request.user.role != self.role:
+            raise HTTPException(403)
+```
+---
+
+## एक मार्ग पर पहरा देना
+```python
+---
+from nexy.decorators import UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import UseGuard, Controller
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@Controller("/users")
+"@UseGuard(AuthGuard())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+
+    "@UseGuard(AdminGuard())
+    def delete(self, user_id: int) -> dict:
+        ...
+```
+## एकाधिक रक्षक
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## हस्ताक्षर
+```python
+UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## आदेश
+
+क्लास-स्तरीय गार्ड विधि-स्तरीय गार्ड से पहले चलते हैं। सभी FastAPI `Depends` के रूप में चलते हैं।

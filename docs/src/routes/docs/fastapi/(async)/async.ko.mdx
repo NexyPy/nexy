@@ -1,0 +1,66 @@
+# 비동기 및 동시성
+
+Nexy는 `async` 및 `def` 경로 핸들러를 자동으로 지원하는 FastAPI를 기반으로 구축되었습니다.
+
+## `async def` 대 `def`
+
+| 핸들러 유형 | 실행 | 사용 시기 |
+|-------------|------------|-------------|
+| `def` | 스레드 풀(차단) | CPU 작업, DB 호출 동기화, I/O 차단 |
+| `async def` | 이벤트 루프 | 비동기 DB, HTTP 호출, WebSocket, 롱 폴링 |
+
+---
+
+## 비동기 경로
+```python
+---
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+---
+```
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+## 하나의 파일에 동기화와 비동기가 혼합되어 있습니다.
+```python
+---
+def GET():          # runs in thread pool
+    return {"type": "sync"}
+
+async def GET_async():  # runs in event loop
+    return {"type": "async"}
+---
+```
+```python
+from nexy.decorators import Controller
+
+"@Controller("/demo")
+class DemoController:
+    def GET(self):          # runs in thread pool
+        return {"type": "sync"}
+
+    async def async_get(self):  # runs in event loop
+        return {"type": "async"}
+```
+## 백그라운드 작업
+
+응답 후 실행 후 삭제 작업을 수행하려면 `BackgroundTasks`(동기화 친화적)를 사용하세요. 진정한 비동기 백그라운드 작업을 위해서는 `asyncio.create_task`를 사용하세요.
+
+## 주의사항
+
+- **`await`를 사용하여 `def` 핸들러에서 `async` 함수를 호출하지 마세요** — `asyncio.run()`를 사용하거나 핸들러를 `async def`로 만드세요.
+- **`async def`에서 차단 함수(예: `time.sleep()`, `requests.get()`)를 호출하지 마세요** — `asyncio.sleep()`, `httpx.AsyncClient`를 사용하세요.
+- Nexy의 `nx dev`는 기본적으로 하나의 uvicorn 작업자를 실행합니다. 여기에서는 비동기 처리기가 빛납니다.
+- 프로덕션의 경우 동기화 핸들러에 여러 작업자(`nx start --workers 4`)를 사용합니다.

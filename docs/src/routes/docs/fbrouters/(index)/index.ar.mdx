@@ -1,0 +1,56 @@
+# نظرة عامة على التوجيه المستند إلى الملف
+
+يقوم التوجيه المستند إلى الملفات (FBR) الخاص بـ Nexy بإنشاء مسارات تلقائيًا من شجرة الملفات الخاصة بك ضمن `src/routes/`. يصبح كل ملف `.nexy` و`.mdx` و`.py` مسار HTTP - ولا يلزم تسجيل المسار.
+
+إذا كنت قد عملت مع Next.js Pages Router، أو PHP، أو خادم HTML ثابت، فإن المفهوم مألوف: مسار الملف هو مسار URL.
+
+---
+
+## كيف يعمل
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+يتم تعيين كل ملف إلى مسار URL عن طريق إزالة البادئة `src/routes/` وامتداد الملف. تعمل الملفات المسماة `index` كجذر الدليل — `/blog/index.nexy` تعمل في `/blog`.
+
+---
+
+## أسماء الملفات المحجوزة
+
+بعض أسماء الملفات لها سلوك خاص ولا يتم التعامل معها كمسارات:
+
+| ملف | الغرض |
+|------|---------|
+| `layout.nexy` | تخطيط مشترك لمسارات الأخوة والأبناء |
+| `dependencies.py` | حقن التبعية المشتركة |
+| `__init__.py` | علامة حزمة بايثون |
+
+---
+
+## أولوية الطريق
+
+إذا قمت بإنشاء ملفات متعددة لنفس المسار بتنسيقات مختلفة، فسيحل Nexy الأولوية على النحو التالي: `.py` > `.nexy` > `.mdx`.
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## الخطوات التالية
+
+- [Pages & Layouts](/docs/fbrouters/pages) — إنشاء الصفحات والتخطيطات المشتركة
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) — مسارات REST API باستخدام Python
+- [Dynamic URLs](/docs/fbrouters/route_parameters) — معلمات المسار مثل `[slug]`

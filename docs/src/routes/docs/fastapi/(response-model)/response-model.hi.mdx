@@ -1,0 +1,135 @@
+# प्रतिक्रिया मॉडल
+
+प्रतिक्रिया क्रमांकन, स्थिति कोड और प्रतिक्रिया प्रकार को नियंत्रित करें।
+
+---
+
+## पाइडेंटिक प्रतिक्रिया मॉडल
+```python
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET() -> UserOut:
+    return UserOut(id=1, name="Alice", email="alice"@example.com")
+---
+```
+```python
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice", email="alice"@example.com")]
+```
+## सूची प्रतिक्रिया
+```python
+---
+def GET() -> list[UserOut]:
+    return [UserOut(id=1, name="Alice")]
+---
+```
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice")]
+```
+## प्रतिक्रिया प्रकार
+
+`fastapi.responses` से आयात:
+```python
+from fastapi.responses import (
+    JSONResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    StreamingResponse,
+    FileResponse,
+    ORJSONResponse,   # requires orjson
+)
+```
+### HTMLप्रतिक्रिया
+```python
+---
+from fastapi.responses import HTMLResponse
+
+def GET() -> HTMLResponse:
+    return HTMLResponse("<h1>Hello</h1>")
+---
+```
+```python
+from fastapi.responses import HTMLResponse
+from nexy.decorators import Controller
+
+"@Controller("/page")
+class PageController:
+    def GET(self) -> HTMLResponse:
+        return HTMLResponse("<h1>Hello</h1>")
+```
+### स्ट्रीमिंगरिस्पॉन्स
+```python
+---
+from fastapi.responses import StreamingResponse
+import io
+
+def GET() -> StreamingResponse:
+    return StreamingResponse(io.StringIO("large CSV data..."), media_type="text/csv")
+---
+```
+```python
+from fastapi.responses import StreamingResponse
+from nexy.decorators import Controller
+import io
+
+"@Controller("/export")
+class ExportController:
+    def GET(self) -> StreamingResponse:
+        return StreamingResponse(io.StringIO("data..."), media_type="text/csv")
+```
+## कस्टम स्थिति के साथ सीधी प्रतिक्रिया
+```python
+---
+from fastapi.responses import JSONResponse
+
+def GET() -> JSONResponse:
+    return JSONResponse(
+        content={"msg": "created"},
+        status_code=201,
+        headers={"X-Custom": "value"},
+    )
+---
+```
+```python
+from fastapi.responses import JSONResponse
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/items")
+class ItemsController:
+    "@UseResponse(status_code=201)
+    def post(self, item: Item):
+        return {"created": True}
+```
+## समर्थित प्रतिक्रिया प्रकार
+
+| क्लास | सामग्री-प्रकार | उपयोग का मामला |
+|-------|----|---|
+| `JSONResponse` | `application/json` | JSON डेटा (डिफ़ॉल्ट) |
+| `HTMLResponse` | `text/html` | HTML स्ट्रिंग्स |
+| `PlainTextResponse` | `text/plain` | कच्चा पाठ |
+| `RedirectResponse` | — | रीडायरेक्ट |
+| `StreamingResponse` | बदलता रहता है | स्ट्रीम डेटा |
+| `FileResponse` | बदलता रहता है | फ़ाइल डाउनलोड |
+| `ORJSONResponse` | `application/json` | तेज़ JSON (`orjson` की आवश्यकता है) |
+
+मॉड्यूलर नियंत्रकों में स्थिति कोड सेट करने के लिए ["@UseResponse](/docs/decorators/useresponse) देखें।

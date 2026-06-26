@@ -1,0 +1,51 @@
+# 自定义文档用户界面
+
+Nexy 默认使用 Swagger UI 和 ReDoc。自定义或自行托管它们。
+
+## 配置 Swagger UI
+
+```python
+from nexy import app
+
+app.swagger_ui_parameters = {
+    "docExpansion": "none",        # collapse all sections
+    "defaultModelsExpandDepth": -1, # hide schemas section
+    "tryItOutEnabled": True,
+}
+```
+
+## 自托管 Swagger UI
+
+```python
+from nexy import app
+from fastapi.openapi.docs import (
+    get_swagger_ui_html,
+    get_swagger_ui_oauth2_redirect_html,
+)
+
+"@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title="My API",
+        swagger_js_url="/static/swagger-ui-bundle.js",
+        swagger_css_url="/static/swagger-ui.css",
+    )
+```
+
+## 有条件的 OpenAPI
+
+在生产中禁用 OpenAPI：
+
+```python
+import os
+
+"@app.get("/openapi.json", include_in_schema=False)
+async def openapi():
+    if os.getenv("ENV") == "production":
+        return {"openapi": "3.1.0", "info": {"title": "My API", "version": "1.0.0"}}
+```
+
+## 控制文档 URL
+
+在 [nexyconfig.py](/docs/config/nexy) 中配置文档端点 — 请参阅 `useDocs`、`useDocsUrl`、`useRedocsUrl` 字段。

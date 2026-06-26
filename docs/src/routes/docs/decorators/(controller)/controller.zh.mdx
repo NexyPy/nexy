@@ -1,0 +1,50 @@
+#“@控制器
+
+将类标记为 FastAPI 控制器。方法名称定义 HTTP 动词。
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+＃＃ 签名
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## 参数
+
+|参数|类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `prefix` | `str` | `""` |此控制器中所有路由的 URL 前缀 |
+| `tags` | `list[str]` | `None` | OpenAPI 标签（默认为 `[ClassName]`）|
+
+## HTTP 动词
+
+方法名称不区分大小写。每个控制器每个动词一种方法。
+
+|方法名称 | HTTP 动词 |
+|------------|------------|
+| `def GET(self)` |获取 |
+| `def post(self)` |发布 |
+| `def Put(self)` |放置 |
+| `def delete(self)` |删除|
+| `def patch(self)` |补丁 |
+| `def options(self)` |选项 |
+| `def head(self)` |头|
+| `def SOCKET(self)` | WebSocket |
+
+所有处理程序方法都映射到 `"/"` — 路径参数位于 `"@Controller` 前缀中。
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

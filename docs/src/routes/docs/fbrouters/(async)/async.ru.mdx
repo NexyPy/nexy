@@ -1,0 +1,43 @@
+# Асинхронность и параллелизм (FBR)
+
+Nexy построен на FastAPI, который поддерживает обработчики маршрутов `async` и `def`.
+
+## `async def` против `def`
+
+| Тип обработчика | Исполнение | Когда использовать |
+|-------------|-----------|-------------|
+| `def` | Пул потоков (блокировка) | Работа ЦП, синхронизация вызовов БД, блокировка ввода-вывода |
+| `async def` | Цикл событий | Асинхронная БД, HTTP-вызовы, WebSocket, длительный опрос |
+
+## Асинхронный маршрут
+
+```python
+# src/routes/proxy.py
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+```
+
+## Смешанная синхронизация и асинхронность в одном файле
+
+```python
+def GET():             # runs in thread pool
+    return {"type": "sync"}
+
+async def GET():       # runs in event loop
+    return {"type": "async"}
+```
+
+## Фоновые задачи
+
+Для работы по принципу «выпустил и забыл» после ответа используйте `BackgroundTasks`. Для настоящей асинхронной фоновой работы используйте `asyncio.create_task`.
+
+## Предостережения
+
+- Не вызывайте функции `async` из обработчиков `def` с помощью `await` — используйте `asyncio.run()` или создайте обработчик `async def`
+- Не вызывать функции блокировки (`time.sleep()`, `requests.get()`) из `async def` — используйте `asyncio.sleep()`, `httpx.AsyncClient`
+- `nx dev` Nexy по умолчанию запускает одного работника uvicorn — здесь отлично работают асинхронные обработчики.
+- Для производства используйте несколько рабочих (`nx start --workers 4`) для обработчиков синхронизации.

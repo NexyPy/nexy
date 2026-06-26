@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 依赖关系
+
+`src/routes/` 内的 `dependencies.py` 文件收集常见的 FastAPI 依赖项，这些依赖项自动应用于目录树中的每个路由。
+
+---
+
+## `dependencies = [...]`
+
+定义可调用对象并将它们列在模块级 `dependencies` 变量中：
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+仅应用 `dependencies` 中列出的项目 — 忽略裸函数。
+
+---
+
+## 继承（合并，而不是覆盖）
+
+Nexy 从路线文件**向上**走到 `src/routes/` 并**合并**找到的每个 `dependencies` 列表：
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+子 `dependencies.py` 文件**不覆盖**父文件。所有列表均已合并。如果两者中出现相同的依赖项名称，FastAPI 将在启动时引发 `ValueError`（重复参数）。
+
+---
+
+## 在页面中使用
+
+在 `.nexy` 页面中，依赖项会在渲染之前自动运行 - 您不需要导入或调用它们：
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+解析值**不能**用作模板变量。依赖项运行会产生副作用（身份验证检查、日志记录、数据库连接设置）。
+
+对于 `.py` 处理程序，依赖项作为副作用运行 - 它们的返回值**不**注入到处理程序中。要访问依赖项的值，请在函数签名中添加 `Depends()`：
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+如果 `dependencies = [...]` 和处理程序签名中都列出了相同的可调用对象，则 FastAPI 会运行一次并共享结果。
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

@@ -1,0 +1,14 @@
+# 命令行界面
+
+Nexy 附带了功能齐全的 CLI。二进制文件是`nx`（或`nexy`），并公开用于开发、构建、项目脚手架和迁移的命令。
+
+每个命令都接受 `--help` 以了解详细用法。
+
+## 快速链接
+
+- [dev](/docs/cli/dev) — 启动开发服务器
+- [start](/docs/cli/start) — 生产服务器
+- [build](/docs/cli/build) — 生产版本
+- [new](/docs/cli/new) — 搭建一个新项目
+- [init](/docs/cli/init) — 在现有项目中初始化 Nexy
+- [migrate](/docs/cli/migrate) — 从其他框架迁移

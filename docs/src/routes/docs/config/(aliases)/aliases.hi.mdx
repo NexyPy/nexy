@@ -1,0 +1,78 @@
+# उपनाम
+
+अपनी `.nexy` फ़ाइलों में क्लीनर आयात के लिए आयात पथ उपनाम कॉन्फ़िगर करें।
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useAliases = {
+        ""@": "src",
+        ""@components": "src/components",
+        ""@lib": "src/lib",
+    }
+```
+
+---
+
+## उपयोग
+
+उपरोक्त कॉन्फ़िगरेशन के साथ, इसके बजाय:
+
+```python
+from src.components.card.nexy import Card
+from src.lib.utils import format_date
+```
+
+आप लिख सकते हो:
+
+```python
+from "@components/card.nexy import Card
+from "@lib/utils import format_date
+```
+
+---
+
+## यह कैसे काम करता है
+
+संकलन समय पर उपनामों का समाधान किया जाता है। वीएफएस नेमस्पेस उपनाम उपसर्गों को उनके विस्तारित पथों पर मैप करता है। वे फ्रंटमैटर आयात और टेम्पलेट `__Import` कॉल दोनों में काम करते हैं।
+
+`"@` प्रतीक एक परंपरा है, कोई आवश्यकता नहीं - आप किसी भी उपसर्ग का उपयोग कर सकते हैं:
+
+```python
+useAliases = {
+    "~": "src",
+    "#components": "src/components",
+}
+```
+
+---
+
+## सीमाएँ
+
+- उपनाम केवल `.nexy` और `.mdx` फ़ाइलों में काम करते हैं
+- वे क्लाइंट घटकों में जावास्क्रिप्ट/टाइपस्क्रिप्ट आयात पर **नहीं** लागू होते हैं (उसके लिए `vite.config.ts` पथ उपनाम का उपयोग करें)
+- उपनामों का समाधान प्रोजेक्ट रूट के सापेक्ष किया जाता है, वर्तमान फ़ाइल के आधार पर नहीं
+
+---
+
+## विटे उपनामों के साथ संयुक्त
+
+पूर्ण-स्टैक परियोजनाओं के लिए, नेक्सी उपनाम (`.nexy` आयात के लिए) और वाइट उपनाम (जेएस/टीएस आयात के लिए) दोनों को कॉन्फ़िगर करें:
+
+```python
+# nexyconfig.py
+useAliases = {""@": "src"}
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { resolve } from "path";
+
+export default defineConfig({
+    resolve: {
+        alias: { ""@": resolve(__dirname, "src") },
+    },
+});
+```

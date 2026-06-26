@@ -1,0 +1,24 @@
+# 指南
+
+将 Nexy 与前端框架、数据加载、身份验证、国际化和部署结合使用的实用演练。
+
+## 前端框架集成
+
+- [React in Nexy](/docs/frontend/react)
+- [Vue in Nexy](/docs/frontend/vue)
+- [Svelte in Nexy](/docs/frontend/svelte)
+- [Solid in Nexy](/docs/frontend/solid)
+- [Preact in Nexy](/docs/frontend/preact)
+- [Vite & SSR](/docs/frontend/vite)
+
+## 核心指南
+
+- [Jinja2](/docs/guides/jinja2) — 模板引擎使用情况
+- [Data Loading](/docs/guides/data-loading) — 获取和缓存数据
+- [Error Handling](/docs/guides/error-handling) — 错误页面和异常处理
+- [Actions](/docs/guides/actions) — 形成动作和突变
+- [Auth](/docs/guides/auth) — 身份验证流程
+- [i18n](/docs/guides/i18n) — 国际化
+- [CSS & JS](/docs/guides/css-js) — 静态资产和捆绑
+- [Real-Time](/docs/guides/websocket) — WebSocket 和 SSE
+- [Deploy](/docs/guides/deploy) — 生产部署

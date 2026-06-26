@@ -1,0 +1,135 @@
+# 응답 모델
+
+응답 직렬화, 상태 코드 및 응답 유형을 제어합니다.
+
+---
+
+## Pydantic 응답 모델
+```python
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET() -> UserOut:
+    return UserOut(id=1, name="Alice", email="alice"@example.com")
+---
+```
+```python
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice", email="alice"@example.com")]
+```
+## 목록 응답
+```python
+---
+def GET() -> list[UserOut]:
+    return [UserOut(id=1, name="Alice")]
+---
+```
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice")]
+```
+## 응답 유형
+
+`fastapi.responses`에서 가져오기:
+```python
+from fastapi.responses import (
+    JSONResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    StreamingResponse,
+    FileResponse,
+    ORJSONResponse,   # requires orjson
+)
+```
+### HTML응답
+```python
+---
+from fastapi.responses import HTMLResponse
+
+def GET() -> HTMLResponse:
+    return HTMLResponse("<h1>Hello</h1>")
+---
+```
+```python
+from fastapi.responses import HTMLResponse
+from nexy.decorators import Controller
+
+"@Controller("/page")
+class PageController:
+    def GET(self) -> HTMLResponse:
+        return HTMLResponse("<h1>Hello</h1>")
+```
+### 스트리밍응답
+```python
+---
+from fastapi.responses import StreamingResponse
+import io
+
+def GET() -> StreamingResponse:
+    return StreamingResponse(io.StringIO("large CSV data..."), media_type="text/csv")
+---
+```
+```python
+from fastapi.responses import StreamingResponse
+from nexy.decorators import Controller
+import io
+
+"@Controller("/export")
+class ExportController:
+    def GET(self) -> StreamingResponse:
+        return StreamingResponse(io.StringIO("data..."), media_type="text/csv")
+```
+## 사용자 정의 상태를 통한 직접 응답
+```python
+---
+from fastapi.responses import JSONResponse
+
+def GET() -> JSONResponse:
+    return JSONResponse(
+        content={"msg": "created"},
+        status_code=201,
+        headers={"X-Custom": "value"},
+    )
+---
+```
+```python
+from fastapi.responses import JSONResponse
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/items")
+class ItemsController:
+    "@UseResponse(status_code=201)
+    def post(self, item: Item):
+        return {"created": True}
+```
+## 지원되는 응답 유형
+
+| 수업 | 콘텐츠 유형 | 사용 사례 |
+|-------|-------------|---------|
+| `JSONResponse` | `application/json` | JSON 데이터(기본값) |
+| `HTMLResponse` | `text/html` | HTML 문자열 |
+| `PlainTextResponse` | `text/plain` | 원시 텍스트 |
+| `RedirectResponse` | — | 리디렉션 |
+| `StreamingResponse` | 다양하다 | 데이터 스트리밍 |
+| `FileResponse` | 다양하다 | 파일 다운로드 |
+| `ORJSONResponse` | `application/json` | 더 빠른 JSON(`orjson` 필요) |
+
+모듈형 컨트롤러의 상태 코드 설정은 ["@UseResponse](/docs/decorators/useresponse)를 참조하세요.

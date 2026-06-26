@@ -22,7 +22,9 @@ def fetch_remote_component(url: str) -> str | None:
             with urllib.request.urlopen(url) as response:
                 return response.read().decode("utf-8")
     except Exception as e:
-        console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.fetch_failed', 'Failed to fetch component from')} {url}: {e}")
+        console.print(
+            f"[red]{t('add.error', 'Error:')}[/red] {t('add.fetch_failed', 'Failed to fetch component from')} {url}: {e}"
+        )
         return None
 
 
@@ -53,14 +55,22 @@ def install_dependencies(deps: list[str], dest: Path | None = None) -> None:
         spinner="dots",
     ):
         try:
-            subprocess.run(cmd + deps, check=True, capture_output=True, cwd=dest, shell=(os.name == "nt"))
+            subprocess.run(
+                cmd + deps, check=True, capture_output=True, cwd=dest, shell=(os.name == "nt")
+            )
         except subprocess.CalledProcessError as e:
-            console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.install_failed', 'Failed to install dependencies')}: {e}")
+            console.print(
+                f"[red]{t('add.error', 'Error:')}[/red] {t('add.install_failed', 'Failed to install dependencies')}: {e}"
+            )
 
 
 def add(
-    components: list[str] = typer.Argument(None, help=t("add.help_components", "Components to add (registry names or URLs)")),
-    ui: bool = typer.Option(False, "--ui", help=t("add.help_ui", "Force treatment as UI components")),
+    components: list[str] = typer.Argument(
+        None, help=t("add.help_components", "Components to add (registry names or URLs)")
+    ),
+    ui: bool = typer.Option(
+        False, "--ui", help=t("add.help_ui", "Force treatment as UI components")
+    ),
     url: bool = typer.Option(False, "--url", help=t("add.help_url", "Force treatment as URLs")),
     all: bool = typer.Option(
         False, "--all", "-a", help=t("add.help_all", "Add all available components from registry")
@@ -77,7 +87,9 @@ def add(
         components = list(COMPONENT_REGISTRY.keys())
 
     if not components:
-        console.print(f"[yellow]{t('add.usage', 'Usage:')}[/yellow] {t('add.usage_text', 'nexy add [COMPONENT_NAME or URL]...')}")
+        console.print(
+            f"[yellow]{t('add.usage', 'Usage:')}[/yellow] {t('add.usage_text', 'nexy add [COMPONENT_NAME or URL]...')}"
+        )
         console.print(
             f"{t('add.available', 'Available UI components:')} [cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
         )
@@ -150,7 +162,9 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
     file_path = target_dir / f"{name}.nexy"
 
     if file_path.exists():
-        console.print(f"[yellow]{t('add.skipping', 'Skipping:')}[/yellow] {file_path} {t('add.exists', 'already exists.')}")
+        console.print(
+            f"[yellow]{t('add.skipping', 'Skipping:')}[/yellow] {file_path} {t('add.exists', 'already exists.')}"
+        )
         return
 
     if framework != "nexy" and not content.strip().startswith("<script"):
@@ -162,4 +176,6 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
         file_path.write_text(final_content, encoding="utf-8")
         console.print(f"[green]{t('add.added', 'Added:')}[/green] {file_path}")
     except Exception as e:
-        console.print(f"[red]{t('add.error', 'Error:')}[/red] {t('add.write_failed', 'Failed to write')} {file_path}: {e}")
+        console.print(
+            f"[red]{t('add.error', 'Error:')}[/red] {t('add.write_failed', 'Failed to write')} {file_path}: {e}"
+        )

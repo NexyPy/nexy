@@ -17,6 +17,19 @@ class TemplateFormatter:
     _ATTR_REGEX = re.compile(r'(\w+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+))')
 
     @classmethod
+    def format_attributes(cls, raw: str) -> str:
+        """Takes a raw attribute string and normalizes it.
+
+        Input:  foo = "bar" baz = "qux"
+        Output: foo="bar", baz="qux"
+        """
+        matches = cls._ATTR_REGEX.finditer(raw)
+        formatted = [
+            f'{m.group(1)}="{m.group(2) or m.group(3) or m.group(4) or ""}"' for m in matches
+        ]
+        return ", ".join(formatted)
+
+    @classmethod
     def format_dict(cls, attrs: dict[str, str]) -> str:
         if not attrs:
             return ""
@@ -111,6 +124,10 @@ class TemplateParser:
         self.known_components: set[str] = set()
         self.parser = NexyHTMLParser()
         self.placeholders: list[str] = []
+        self.standalone_placeholders: list[str] = []
+
+    # Match standalone {{ or {% that have NO matching close delimiter
+    _STANDALONE_JINJA_RE = re.compile(r"\{\{|\{%")
 
     def _protect_jinja(self, html: str) -> str:
         self.placeholders = []
@@ -120,34 +137,42 @@ class TemplateParser:
             self.placeholders.append(match.group(0))
             return placeholder
 
-        return self._JINJA_BLOCK_RE.sub(replace, html)
+        # Pass 1: protect complete Jinja2 blocks ({{...}}, {%...%}, {#...#})
+        result = self._JINJA_BLOCK_RE.sub(replace, html)
+
+        # Pass 2: protect standalone openers without matching close
+        # These would cause TemplateSyntaxError if passed to Jinja2 raw
+        self.standalone_placeholders = []
+
+        def replace_standalone(match):
+            placeholder = f"NXPSA{len(self.standalone_placeholders)}Z"
+            self.standalone_placeholders.append(match.group(0))
+            return placeholder
+
+        return self._STANDALONE_JINJA_RE.sub(replace_standalone, result)
 
     def _unprotect_jinja(self, html: str) -> str:
         for i, original in enumerate(self.placeholders):
             html = html.replace(f"NXYPJ{i}Z", original)
+        for i, original in enumerate(self.standalone_placeholders):
+            html = html.replace(f"NXPSA{i}Z", f"{{% raw %}}{original}{{% endraw %}}")
         return html
 
     def parse(self, html: str, known_components: set[str] | None = None) -> str:
-        # STEP 1: GLOBAL COMMENT STRIPPING
         content = self._HTML_COMMENT_RE.sub("", html)
         content = self._JINJA_COMMENT_RE.sub("", content).strip()
 
-        # STEP 2: PROTECT JINJA2 BLOCKS
         content = self._protect_jinja(content)
 
         if known_components:
             self.known_components.update(known_components)
 
-        # STEP 3: PARSE TO AST
         nodes = self.parser.parse(content)
 
-        # STEP 4: VALIDATE COMPONENTS
         self._validate_components(nodes)
 
-        # STEP 5: RENDER AST TO JINJA2
         jinja_template = self._render_nodes(nodes)
 
-        # STEP 6: UNPROTECT JINJA2 BLOCKS
         return self._unprotect_jinja(jinja_template)
 
     def _validate_components(self, nodes: list[Node]) -> None:

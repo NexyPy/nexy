@@ -4,19 +4,21 @@ import sys
 import time
 from pathlib import Path
 
-from nexy.__version__ import __Version__
+from nexy.__version__ import __version__
 from nexy.builder import Builder
 from nexy.core.config import Config
 from nexy.frontend import FrontendGenerator
 from nexy.i18n import t
 from nexy.utils.common.console import console
+from nexy.utils.dev.pycache import pycache
 from nexy.utils.server.server import Server
 
 
 def build(check: bool = False) -> None:
+    pycache()
     build_start = time.perf_counter()
     config = Config()
-    version = __Version__().get()
+    version = __version__
     Server.check_nexy_prod()
     console.print(f"nexy@{version} {t('build.label', 'build')}\n")
     console.print(f"{t('build.creating', 'Creating an optimized production build')}\n")
@@ -29,7 +31,9 @@ def build(check: bool = False) -> None:
         VFS().flush_to_disk()
     server_ko = len(build_result.failed)
     if server_ko:
-        console.print(f"  [red]\u2718[/red] {t('build.failed_components', '{count} component(s) failed').format(count=server_ko)}")
+        console.print(
+            f"  [red]\u2718[/red] {t('build.failed_components', '{count} component(s) failed').format(count=server_ko)}"
+        )
         for p in build_result.failed:
             console.print(f"     {p}")
         sys.exit(1)
@@ -40,7 +44,9 @@ def build(check: bool = False) -> None:
             vite_proc = Server.vite(build=True, suppress_output=True)
             _, err = vite_proc.communicate()
             if vite_proc.returncode != 0:
-                console.print(f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}")
+                console.print(
+                    f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}"
+                )
                 if err:
                     console.print(f"[red]{err.decode()}[/red]")
                 sys.exit(1)
@@ -55,11 +61,19 @@ def build(check: bool = False) -> None:
     _show_summary(build_result, ssg_entries)
 
     build_elapsed = time.perf_counter() - build_start
-    console.print(f"\n  [green]\u2713[/green] {t('build.success_build', 'build in {time}').format(time=f'{build_elapsed:.2f}s')}")
+    console.print(
+        f"\n  [green]\u2713[/green] {t('build.success_build', 'build in {time}').format(time=f'{build_elapsed:.2f}s')}"
+    )
 
 
 def _show_summary(build_result, ssg_entries: list[dict]) -> None:
-    _print_section(t("build.server_components", "server components"), build_result.success, build_result.failed, "green", "red")
+    _print_section(
+        t("build.server_components", "server components"),
+        build_result.success,
+        build_result.failed,
+        "green",
+        "red",
+    )
     _print_section(
         t("build.client_components", "client components"),
         _ssg_success(ssg_entries),

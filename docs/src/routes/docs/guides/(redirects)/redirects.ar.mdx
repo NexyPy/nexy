@@ -1,0 +1,80 @@
+# عمليات إعادة التوجيه
+
+أعد توجيه الطلبات الواردة إلى عناوين URL أخرى باستخدام `RedirectResponse` الخاص بـ FastAPI.
+
+---
+
+## إعادة التوجيه الأساسية
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+## مع رمز الحالة
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET():
+    # 301 — Permanent (tells browsers to cache)
+    return RedirectResponse("/new-page", status_code=301)
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+## إعادة التوجيه المشروط
+```python
+---
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+---
+```
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+## مرجع رمز الحالة
+
+| الكود | الاسم | حالة الاستخدام |
+|------|------|----------|
+| 301 | انتقل نهائيا | تغيير عنوان URL الدائم — تقوم المتصفحات بتخزينه مؤقتًا |
+| 302 | تم العثور عليه (افتراضي) | إعادة توجيه مؤقتة |
+| 307 | إعادة توجيه مؤقتة | مثل 302 ولكنه يحافظ على طريقة HTTP |
+| 308 | إعادة توجيه دائمة | مثل 301 ولكنه يحافظ على طريقة HTTP |
+
+## الأنماط الشائعة
+
+- **إعادة توجيه المصادقة**: المستخدمون غير المصادق عليهم → `/login`
+- **عناوين URL القديمة**: المسارات القديمة ← المسارات الجديدة (301)
+- **إعادة التوجيه بعد الإرسال**: بعد النموذج POST → صفحة النجاح (303)
+- **إعادة توجيه اللغة**: `/` → `/{locale}/` بناءً على لغة المتصفح

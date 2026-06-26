@@ -1,0 +1,51 @@
+# 배포
+
+`nx build`는 앱을 컴파일하고, `nx start`는 프로덕션 환경에서 앱을 제공합니다. 플래그는 [CLI build](/docs/cli/build) 및 [CLI start](/docs/cli/start)를 참조하세요.
+
+## 도커
+
+```dockerfile
+FROM python:3.13-slim
+WORKDIR /app
+COPY . .
+RUN pip install nexy && nx build
+CMD ["nx", "start"]
+```
+
+---
+
+## 환경 변수
+
+| 변수 | 기본값 | 설명 |
+|------------|---------|-------------|
+| `NEXY_PORT` | `3000` | 서버 포트 |
+| `NEXY_HOST` | `0.0.0.0` | 주소 바인딩 |
+| `NEXY_DEBUG` | `false` | 디버그 모드 |
+| `NEXY_INLINE_CLIENT` | `false` | CSS/JS를 HTML에 인라인 |
+
+---
+
+## 플랫폼 가이드
+
+### VPS
+
+```bash
+uv sync
+nx build
+nx start --host 0.0.0.0 --port 80
+```
+
+### 클라우드 제공업체
+
+Nexy는 Python ASGI 앱을 지원하는 모든 플랫폼에 배포됩니다.
+
+- **철도** — Procfile을 통해 `nx start` 자동 감지
+- **Fly.io** — Dockerfile에서 `CMD ["nx", "start"]` 사용
+- **렌더링** — 시작 명령을 `nx start`로 설정
+- **Hetzner / DigitalOcean** — Docker 또는 systemd 서비스
+
+---
+
+## 정적 내보내기
+
+완전 정적 사이트의 경우 Nexy는 빌드 중에 모든 페이지를 `__nexy__/static/`로 사전 렌더링할 수 있습니다. 모든 정적 파일 서버(Nginx, Caddy, S3, Cloudflare Pages)와 함께 제공됩니다.

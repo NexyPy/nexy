@@ -1,0 +1,81 @@
+# Eventos enviados por el servidor (SSE)
+
+Transmita eventos en tiempo real desde el servidor al cliente a través de HTTP.
+
+## Instalar
+```bash
+pip install sse-starlette
+```
+---
+
+## Punto final
+```python
+---
+import asyncio
+from sse_starlette.sse import EventSourceResponse
+
+async def event_generator():
+    for i in range(10):
+        await asyncio.sleep(1)
+        yield {"event": "ping", "data": str(i)}
+
+async def GET():
+    return EventSourceResponse(event_generator())
+---
+```
+```python
+from nexy.decorators import Controller
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+
+"@Controller("/events")
+class EventsController:
+    async def GET(self):
+        async def gen():
+            for i in range(10):
+                await asyncio.sleep(1)
+                yield {"event": "ping", "data": str(i)}
+        return EventSourceResponse(gen())
+```
+## Cliente
+```javascript
+const evtSource = new EventSource("/events");
+evtSource.addEventListener("ping", (e) => {
+    console.log(e.data);
+});
+```
+## Flujo de eventos dinámico
+
+Pase un parámetro de consulta para personalizar la transmisión:
+```python
+---
+import asyncio
+from sse_starlette.sse import EventSourceResponse
+
+async def GET(count: int = 5, interval: float = 0.5):
+    async def gen():
+        for i in range(count):
+            await asyncio.sleep(interval)
+            yield {"event": "tick", "data": str(i)}
+    return EventSourceResponse(gen())
+---
+```
+```python
+from nexy.decorators import Controller
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+
+"@Controller("/ticks")
+class TickController:
+    async def GET(self, count: int = 5, interval: float = 0.5):
+        async def gen():
+            for i in range(count):
+                await asyncio.sleep(interval)
+                yield {"event": "tick", "data": str(i)}
+        return EventSourceResponse(gen())
+```
+## Limitaciones
+
+- SSE es **unidireccional** (servidor → cliente): use WebSocket para bidireccional
+- `sse-starlette` no incluido por defecto — `pip install sse-starlette`
+- Cada conexión tiene una conexión HTTP abierta: controle los límites de su servidor

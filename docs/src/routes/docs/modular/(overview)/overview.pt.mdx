@@ -1,0 +1,102 @@
+# Roteador Modular — Visão Geral da Arquitetura
+
+O Modular Router traz a arquitetura estilo NestJS para Python. Em vez de os arquivos se tornarem rotas (FBR), você organiza o código em **controladores**, **provedores**, **módulos**, **guardas** e **middleware**.
+
+## Por que Modular?
+
+O roteamento baseado em arquivo (FBR) é perfeito para aplicativos de pequeno a médio porte. Mas à medida que seu aplicativo cresce:
+
+| Problema | FBR | Roteador Modular |
+|--------|-----|----------------|
+| Preocupações transversais | Middleware duplicado por arquivo | Guard/Middleware em nível de controlador ou módulo |
+| Injeção de dependência | Importações manuais em todos os lugares | `"@Injectable` com resolução automática |
+| Organização do código | Espalhados por arquivos | Agrupados em módulos de recursos |
+| Testabilidade | Acoplamento forte a caminhos de arquivos | Controladores aceitam dependências injetadas |
+| Coordenação de grandes equipes | Conflitos de arquivos, limites pouco claros | Limites de módulo impostos por atributos de classe |
+
+## Arquitetura
+
+```
+AppModule  ("@Module)
+├── AuthModule  ("@Module)
+│   ├── AuthController   ("@Controller)
+│   │   ├── def GET(self)       → GET /auth/
+│   │   └── def post(self, ...)  → POST /auth/
+│   └── AuthService      ("@Injectable)
+├── UsersModule  ("@Module(prefix="/users"))
+│   └── UsersController  ("@Controller)
+│       ├── def GET(self)       → GET /users/
+│       └── def post(self, ...)  → POST /users/
+└── └── UserService      ("@Injectable)
+```
+
+### Nomes de métodos definem verbos HTTP
+
+Nexy mapeia **nomes de métodos** para métodos HTTP — não são necessários decoradores `"@Get`/`"@Post`:
+
+| Nome do método | Método HTTP |
+|------------|------------|
+| `GET`, `get`, `Get` | OBTER |
+| `post`, `POST`, `Post` | POSTAR |
+| `put`, `PUT`, `Put` | COLOCAR |
+| `delete`, `DELETE`, `Delete` | EXCLUIR |
+| `patch`, `PATCH`, `Patch` | REMENDO |
+| `options`, `OPTIONS`, `Options` | OPÇÕES |
+| `head`, `HEAD`, `Head` | CABEÇA |
+| `SOCKET`, `socket`, `Socket` | WebSocket |
+
+## Início rápido
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module, Controller
+
+"@Controller("/ping")
+class PingController:
+    def GET(self):
+        return {"status": "ok"}
+
+"@Module()
+class AppModule:
+    controllers = [PingController]
+```
+
+Configurar em `nexyconfig.py`:
+
+```python
+from nexy import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useModular = "src.apps.app_module.AppModule"
+```
+
+## Quando escolher modular em vez de FBR
+
+**Escolha Modular quando:**
+- Você tem mais de 5 arquivos de rota que compartilham dependências
+- Você precisa de injeção de dependência (serviços, bancos de dados, configuração)
+- Sua equipe tem limites de recursos distintos (autenticação, cobrança, usuários)
+
+**Escolha FBR quando:**
+- Você tem menos de 10 rotas
+- Você prefere convenção à configuração
+- Você está construindo um site quase todo estático
+- Você quer a configuração mais simples possível
+
+## Os Cinco Conceitos
+
+| Conceito | Decorador | Finalidade |
+|--------|-----------|---------|
+| Controlador | `"@Controller(prefix)` | Agrupa rotas relacionadas sob um prefixo de caminho |
+| Provedor | `"@Injectable()` | Lógica de negócios, injetável em controladores |
+| Módulo | `"@Module()` | Conecta controladores e provedores por meio de atributos de classe |
+| Guarda | `"@UseGuard(...)` | Autorização — é executado antes do manipulador |
+| Middleware | `"@Middleware(...)` | Pipeline de solicitação/resposta — executado antes dos guardas |
+
+## Próximas etapas
+
+- [Controllers](/docs/modular/controllers) — lida com solicitações HTTP com roteamento de nome de método
+- [Providers & DI](/docs/modular/providers) — injeta serviços em controladores
+- [Modules](/docs/modular/modules) — organize controladores e provedores em módulos de recursos
+- [Guards](/docs/modular/guards) — proteja rotas com autorização
+- [Middleware](/docs/modular/middleware) — intercepta solicitações antes dos manipuladores

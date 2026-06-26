@@ -1,0 +1,56 @@
+# Descripción general del enrutamiento basado en archivos
+
+El enrutamiento basado en archivos (FBR) de Nexy crea rutas automáticamente desde su árbol de archivos en `src/routes/`. Cada archivo `.nexy`, `.mdx` y `.py` se convierte en una ruta HTTP; no es necesario registrar la ruta.
+
+Si ha trabajado con Next.js Pages Router, PHP o un servidor HTML estático, el concepto le resulta familiar: la ruta del archivo es la ruta URL.
+
+---
+
+## Cómo funciona
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+Cada archivo se asigna a una ruta URL eliminando el prefijo `src/routes/` y la extensión del archivo. Los archivos denominados `index` sirven como directorio raíz; `/blog/index.nexy` sirve en `/blog`.
+
+---
+
+## Nombres de archivos reservados
+
+Algunos nombres de archivos tienen un comportamiento especial y no se tratan como rutas:
+
+| Archivo | Propósito |
+|------|---------|
+| `layout.nexy` | Diseño compartido para rutas entre hermanos e hijos |
+| `dependencies.py` | Inyección de dependencia compartida |
+| `__init__.py` | Marcador de paquete Python |
+
+---
+
+## Prioridad de ruta
+
+Si crea varios archivos para la misma ruta en diferentes formatos, Nexy resuelve la prioridad como: `.py` > `.nexy` > `.mdx`.
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## Próximos pasos
+
+- [Pages & Layouts](/docs/fbrouters/pages): creación de páginas y diseños compartidos
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) — Rutas API REST con Python
+- [Dynamic URLs](/docs/fbrouters/route_parameters) — parámetros de ruta como `[slug]`

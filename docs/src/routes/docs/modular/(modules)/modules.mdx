@@ -1,0 +1,193 @@
+# Modules
+
+Modules group related controllers, providers, and sub-modules into a cohesive unit. Every modular app has a root module that imports feature modules.
+
+## Why Modules?
+
+Without modules, you'd register every controller and provider in one flat list. As the app grows, that list becomes unmanageable — 50 providers with no clear ownership.
+
+Modules restore boundaries: `UsersModule` owns `UsersController` and `UserService`. Each module is a self-contained unit.
+
+## Root Module
+
+Every app needs one root module. The root module is referenced in `nexyconfig.py`:
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+The `"@Module` decorator builds a FastAPI `APIRouter` from the class. It reads three class attributes:
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `controllers` | `list[type]` | Controller classes to register |
+| `imports` | `list[APIRouter]` | Sub-modules (from `"@Module`) to include |
+| `providers` | `list[type]` | Injectable classes to register with the container |
+| `exports` | `list[type]` | Providers visible to importing modules |
+
+**Gotcha**: `"@Module()` requires at least one controller. An empty `controllers` list raises `ValueError`.
+
+## Feature Modules
+
+Feature modules encapsulate a domain:
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+Import it in the root module:
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### Module Prefix
+
+Set a prefix that applies to all routes in the module:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+Controller prefixes are RELATIVE to the module prefix. If `"@Module(prefix="/users")` and `"@Controller("/{id}")`, the effective path is `/users/{id}`.
+
+## Provider Registration
+
+Providers must be registered in a module to be available for injection:
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+The `DatabaseService` is resolved at startup when the module is loaded. If a provider's dependencies can't be resolved, the error is raised immediately — not at request time.
+
+### Exports
+
+The `exports` attribute controls which providers are visible to importing modules:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+Without `exports`, NO providers are visible to importing modules. This is intentional — it forces you to explicitly declare your module's public API.
+
+## Shared Modules
+
+Modules are singletons. Importing the same module in multiple places shares the same provider instances:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+This is how you share a database connection across your app.
+
+## Project Structure
+
+A typical modular project follows this convention:
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+This structure scales to hundreds of modules. Each module directory is self-contained.
+
+## Module Resolution
+
+Module resolution follows three rules:
+
+1. **Topological sort** — modules initialize in dependency order (imports first)
+2. **Circular detection** — circular dependencies between modules raise `RecursionError` at startup
+3. **Provider scope** — providers retain their original scope regardless of which module imports them
+
+If module A imports module B, and module B imports module A, the container detects the cycle at startup:
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**Why this matters**: Circular dependencies often indicate a design issue. Extract the shared dependency into a third module.
+
+## Best Practices
+
+1. **One feature per module** — users, auth, billing. Not "utils".
+2. **Keep module imports shallow** — a module importing 10+ others is doing too much
+3. **Use `exports` intentionally** — only export what other modules genuinely need
+4. **Name modules after domains** — `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Always provide a `prefix` when versioning** — `"@Module(prefix="/api/v1")`
+
+## Next Steps
+
+- [Guards](/docs/modular/guards) — protect module routes
+- [Middleware](/docs/modular/middleware) — request pipeline hooks
+- [Controllers](/docs/modular/controllers) — define route handlers

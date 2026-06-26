@@ -1,0 +1,102 @@
+# Modular Router — Architecture Overview
+
+The Modular Router brings NestJS-style architecture to Python. Instead of files becoming routes (FBR), you organize code into **controllers**, **providers**, **modules**, **guards**, and **middleware**.
+
+## Why Modular?
+
+File-Based Routing (FBR) is perfect for small-to-medium apps. But as your app grows:
+
+| Problem | FBR | Modular Router |
+|---------|-----|----------------|
+| Cross-cutting concerns | Duplicate middleware per file | Guard/Middleware at controller or module level |
+| Dependency injection | Manual imports everywhere | `"@Injectable` with automatic resolution |
+| Code organization | Scattered across files | Grouped into feature modules |
+| Testability | Tight coupling to file paths | Controllers accept injected dependencies |
+| Large team coordination | File conflicts, unclear boundaries | Module boundaries enforced by class attributes |
+
+## Architecture
+
+```
+AppModule  ("@Module)
+├── AuthModule  ("@Module)
+│   ├── AuthController   ("@Controller)
+│   │   ├── def GET(self)       → GET /auth/
+│   │   └── def post(self, ...)  → POST /auth/
+│   └── AuthService      ("@Injectable)
+├── UsersModule  ("@Module(prefix="/users"))
+│   └── UsersController  ("@Controller)
+│       ├── def GET(self)       → GET /users/
+│       └── def post(self, ...)  → POST /users/
+└── └── UserService      ("@Injectable)
+```
+
+### Method names define HTTP verbs
+
+Nexy maps **method names** to HTTP methods — no `"@Get`/`"@Post` decorators needed:
+
+| Method name | HTTP method |
+|-------------|-------------|
+| `GET`, `get`, `Get` | GET |
+| `post`, `POST`, `Post` | POST |
+| `put`, `PUT`, `Put` | PUT |
+| `delete`, `DELETE`, `Delete` | DELETE |
+| `patch`, `PATCH`, `Patch` | PATCH |
+| `options`, `OPTIONS`, `Options` | OPTIONS |
+| `head`, `HEAD`, `Head` | HEAD |
+| `SOCKET`, `socket`, `Socket` | WebSocket |
+
+## Quick Start
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module, Controller
+
+"@Controller("/ping")
+class PingController:
+    def GET(self):
+        return {"status": "ok"}
+
+"@Module()
+class AppModule:
+    controllers = [PingController]
+```
+
+Configure in `nexyconfig.py`:
+
+```python
+from nexy import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useModular = "src.apps.app_module.AppModule"
+```
+
+## When to Choose Modular Over FBR
+
+**Choose Modular when:**
+- You have 5+ route files that share dependencies
+- You need dependency injection (services, databases, config)
+- Your team has distinct feature boundaries (auth, billing, users)
+
+**Choose FBR when:**
+- You have fewer than 10 routes
+- You prefer convention-over-configuration
+- You're building a mostly-static site
+- You want the simplest possible setup
+
+## The Five Concepts
+
+| Concept | Decorator | Purpose |
+|---------|-----------|---------|
+| Controller | `"@Controller(prefix)` | Groups related routes under a path prefix |
+| Provider | `"@Injectable()` | Business logic, injectable into controllers |
+| Module | `"@Module()` | Wires controllers and providers via class attributes |
+| Guard | `"@UseGuard(...)` | Authorization — runs before the handler |
+| Middleware | `"@Middleware(...)` | Request/response pipeline — runs before guards |
+
+## Next Steps
+
+- [Controllers](/docs/modular/controllers) — handle HTTP requests with method-name routing
+- [Providers & DI](/docs/modular/providers) — inject services into controllers
+- [Modules](/docs/modular/modules) — organize controllers and providers into feature modules
+- [Guards](/docs/modular/guards) — protect routes with authorization
+- [Middleware](/docs/modular/middleware) — intercept requests before handlers

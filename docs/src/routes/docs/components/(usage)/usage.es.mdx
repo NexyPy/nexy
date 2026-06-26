@@ -1,0 +1,191 @@
+
+# Usando componentes
+
+Los componentes son archivos `.nexy` en `src/components/` que se importan a páginas y otros componentes.
+
+## Creando un componente
+
+Un componente es cualquier archivo `.nexy`. El componente más simple posible no tiene contenido frontal, solo HTML:
+
+```nexy
+<!-- src/components/Hello.nexy -->
+---
+---
+<h1>Hello Nexy!</h1>
+```
+
+Pero la mayoría de los componentes tienen accesorios, lógica y una plantilla.
+
+## Importación de componentes
+
+Utilice la sintaxis de importación de componentes de Nexy, que admite rutas relativas y alias configurados:
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+from "@components/Button.nexy" import Button
+---
+```
+
+La ruta de importación es relativa al archivo actual. `"@/` se asigna a `src/` de forma predeterminada (o lo que configure en `useAliases`).
+
+**¿Por qué la sintaxis especial?** Porque el compilador necesita saber en el momento de la compilación qué etiquetas PascalCase son componentes y qué elementos HTML desconocidos. El desinfectante transforma estas importaciones antes de que el analizador AST de Python las vea, por lo que nunca causan errores de sintaxis.
+
+## Componentes de renderizado
+
+En la plantilla, utilice el nombre importado como etiqueta HTML:
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<Card title="Hello" count={5} />
+```
+
+El compilador convierte etiquetas PascalCase en llamadas a funciones Jinja2:
+
+| Plantilla | Salida compilada |
+|----------|----------------|
+| `&lt;Card /&gt;` | `{{Card() }}` |
+| `&lt;Card title="Hi" /&gt;` | `{{ Card(title="Hi") }}` |
+| `&lt;Card count={5} /&gt;` | `{{ Card(count=5) }}` |
+| `&lt;Card&gt;content&lt;/Card&gt;` | `{% call Card() %}content{% endcall %}` |
+
+**Requisito de denominación**: los nombres de los componentes **deben** comenzar con una letra mayúscula. Si usa minúsculas, el compilador lo trata como un elemento HTML normal y no llama a la función del componente. Esto es coherente con la convención de la plataforma web (los elementos personalizados deben tener un guión; PascalCase está reservado para los componentes del marco).
+
+## Pasando accesorios
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<!-- Static string -->
+<Card title="Hello" />
+
+<!-- Dynamic Jinja2 expression -->
+<Card title="{{ page_title }}" />
+
+<!-- Unquoted value (expression, not string) -->
+<Card count={5} active={true} items={["a", "b"]} />
+
+<!-- Mixed -->
+<Card title="{{ page_title }}" count={items|length} />
+```
+
+**Reglas de aprobación de atributos**:
+
+| Sintaxis | Tipo de valor | Salida de plantilla |
+|--------|-----------|----------------|
+| `title="Hello"` | Cadena | `Card(title="Hello")` |
+| `title="{{ var }}"` | Expresión Jinja2 | `Card(title=var)` |
+| `count={5}` | Expresión de Python | `Card(count=5)` |
+| `active=true` | Palabra clave (Python bool) | `Card(active=True)` |
+| `items={["a"]}` | Expresión de Python | `Card(items=["a"])` |
+
+Los valores sin comillas que coinciden con los literales de Python (`true`, `false`, `none`, números) se pasan tal cual. Todo lo demás es una cuerda.
+
+**Te tengo**: `count={0}` pasa el número entero 0. `count="0"` pasa la cadena `"0"`. En las plantillas Jinja2, `{% if count %}` evalúa de manera diferente `0` (falso) vs `"0"` (verdadero). Utilice `{0}` cuando necesite un cero numérico.
+
+## Tragamonedas / Niños
+
+Los componentes que envuelven contenido usan `<slot />` para definir dónde van los niños:
+
+```nexy
+<!-- Card.nexy -->
+---
+title:prop[str] = ""
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <div class="card-body">
+    <slot />
+  </div>
+</div>
+```
+
+```nexy
+<!-- Usage -->
+---
+from "./Card.nexy" import Card
+---
+<Card title="My Card">
+  <p>This appears inside the slot.</p>
+</Card>
+```
+
+**Cómo funcionan las ranuras**: el compilador envuelve los elementos secundarios en un bloque `{% call %}`. El componente los recibe como una función `caller`. `<slot />` llama a `caller()` y genera el resultado.
+
+**Limitaciones**:
+- Sólo una ranura sin nombre por componente
+- Sin espacios con alcance (en su lugar, pase funciones como accesorios)
+- Las ranuras solo funcionan en archivos `.nexy`, no en plantillas Jinja2 sin formato.
+
+## Cierre automático versus envoltura
+
+Componentes de cierre automático (sin niños):
+
+```nexy
+<Header title="Blog" />
+<Separator />
+<Spacer size={16} />
+```
+
+Componentes de embalaje (con niños):
+
+```nexy
+<Card title="Post">
+  <p>Content here</p>
+</Card>
+
+<Layout>
+  <Header />
+  <main>Page content</main>
+  <Footer />
+</Layout>
+```
+
+El compilador detecta etiquetas de cierre automático (`&lt;Card /&gt;`) frente a etiquetas con hijos (`&lt;Card&gt;...&lt;/Card&gt;`) y genera la sintaxis Jinja2 adecuada.
+
+## Devoluciones anticipadas / Representación condicional
+
+Dado que el componente es una función de Python, puede regresar al principio del tema:
+
+```nexy
+---
+title:prop[str] = ""
+if not title:
+    print("Warning: Card rendered without title")
+    # Return early — the template still runs but title is empty
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <slot />
+</div>
+```
+
+Para renderizado condicional en la plantilla, use Jinja2 `{% if %}`:
+
+```nexy
+---
+show_header:prop[bool] = true
+---
+{% if show_header %}
+  <header>
+    <slot />
+  </header>
+{% endif %}
+```
+
+## Mejores prácticas
+
+- **Un componente por archivo**: nombres claros, fáciles de encontrar
+- **Mantenga las plantillas en menos de 50 líneas**; si son más largas, extraiga los subcomponentes
+- **Usa accesorios en lugar de codificación**: hace que los componentes sean reutilizables
+- **Nombre de archivos en PascalCase** — `BlogCard.nexy` no `blog_card.nexy`
+- **Accesorios predeterminados para valores opcionales** — `title:prop[str] = ""` no `title:prop[str]`
+
+## Siguiente
+
+- [Markup](/docs/components/markup): sintaxis de plantilla, atributos dinámicos, convenciones HTML
+- [Properties](/docs/components/properties): accesorios escritos, valores predeterminados, patrones de validación

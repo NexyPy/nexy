@@ -1,0 +1,126 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# معالجات الطريق (API)
+
+معالج المسار هو ملف `.py` في `src/routes/` يكشف عن نقطة نهاية API. على عكس الصفحات (`.nexy` / `.mdx`)، تقوم المعالجات بإرجاع بيانات JSON أو البيانات الأولية.
+
+---
+
+## إنشاء المعالج
+```bash
+routes/
+└── api/
+    └── hello.py           →  GET /api/hello
+```
+```python
+# api/hello.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"message": "Hello from Nexy!"}
+```
+
+يقوم Nexy بتعيين أسماء الوظائف لطرق HTTP: `GET`، `POST`، `PUT`، `PATCH`، `DELETE`.
+
+---
+
+## طرق HTTP المتاحة
+
+حدد دالة واحدة لكل طريقة في ملف واحد:
+```python
+# routes/api/items.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"items": []}
+
+async def POST(request: Request):
+    data = await request.json()
+    return {"created": data}
+
+async def DELETE(request: Request, id: int):
+    return {"deleted": id}
+```
+
+تتوافق كل وظيفة مع `GET`، `POST`، `DELETE` على `/api/items`.
+
+---
+
+## نص الطلب
+```python
+# routes/api/users.py
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+async def POST(request: Request, body: CreateUser):
+    return {"name": body.name, "email": body.email}
+```
+يقوم FastAPI بالتحقق من صحة النص تلقائيًا — ويعيد 422 عند إدخال غير صالح.
+
+---
+
+## رموز الحالة
+
+قم بإرجاع `status_code` مع `JSONResponse`:
+```python
+from fastapi.responses import JSONResponse
+
+async def POST(request: Request):
+    return JSONResponse({"created": True}, status_code=201)
+```
+---
+
+## معلمات الطريق
+```python
+# routes/api/users/[id].py
+from fastapi import Request
+
+async def GET(request: Request, id: int):
+    return {"user_id": id}
+```
+يتم إدخال المقاطع الديناميكية (`[id]`) كوسيطات للكلمات الرئيسية مع تحويل النوع التلقائي.
+
+---
+
+## التبعيات
+
+تعمل `Depends` و`Header` و`Query` و`Cookie` الخاصة بـ FastAPI بشكل أصلي:
+```python
+from fastapi import Depends, Header, Query
+
+def get_db():
+    return {"connection": "ok"}
+
+async def GET(request: Request, db=Depends(get_db), x_api_key: str = Header(None)):
+    return {"db": db, "api_key": x_api_key}
+```
+---
+
+## الردود
+
+| نوع الإرجاع | الرد |
+|-------------|----------|
+| `dict` | `application/json` |
+| `list` | `application/json` |
+| `str` | `text/plain` |
+| `BaseModel` | `application/json` |
+| `Response` | مخصص (أي) |
+| `None` | `200 OK` فارغ |
+
+---
+
+## أفضل الممارسات
+
+- ملف `.py` واحد = مسار مسار واحد
+- استخدم أسماء الوظائف المطابقة لأساليب HTTP (`GET`، `POST`، `PUT`، `PATCH`، `DELETE`)
+- استخدام نماذج Pydantic للتحقق من صحة الطلب
+- استخدم `JSONResponse` لرموز الحالة المخصصة
+- بالنسبة للطفرات التي يثيرها العميل، راجع [Actions](/docs/guides/actions)
+

@@ -417,11 +417,3 @@ def Action(func: Callable | None = None):
         return decorator
 
     return decorator(func)
-
-
-def Task(func: Callable | None = None):
-    pass
-
-
-def Job(func: Callable | None = None):
-    pass

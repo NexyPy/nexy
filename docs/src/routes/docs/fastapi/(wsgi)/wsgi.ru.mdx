@@ -1,0 +1,55 @@
+# WSGI (Flask, Джанго)
+
+Монтируйте приложения WSGI (Flask, Django, Pyramid) рядом с маршрутами Nexy.
+
+## Колба
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+Маршруты Flask теперь доступны по адресу `/legacy/hello`. Все функции Nexy (аутентификация, промежуточное ПО) по-прежнему применяются к родительскому приложению.
+
+## Джанго
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## Как это работает
+
+- `WSGIMiddleware` оборачивает любой вызываемый WSGI как ASGI
+- Подприложение работает в пуле потоков — оно не блокирует цикл событий.
+- Префикс пути (`/legacy`, `/django`) удаляется до достижения приложения WSGI.
+- Промежуточное программное обеспечение Nexy (аутентификация, сеанс, CORS) **не** применяется к смонтированному приложению WSGI — настройте его там отдельно.
+
+## Ограничения
+
+— Только цикл запроса/ответа — WebSocket не поддерживается.
+- Приложения WSGI не могут использовать хуки или зависимости Nexy.
+- Производительность ограничена пулом потоков — рассмотрите возможность перехода на собственные маршруты Nexy.

@@ -1,0 +1,35 @@
+# Security Overview
+
+Nexy provides authentication middleware, route guards, and session support. Python's standard library and third-party packages cover encryption, hashing, JWT, and ID generation.
+
+---
+
+## Feature matrix
+
+| Feature | Nexy API | Backend |
+|---------|----------|---------|
+| Authentication | `useAuth` config + custom backend | Starlette `AuthenticationMiddleware` |
+| Route protection | `"@UseGuard(*guards)` | FastAPI `Depends` |
+| Sessions | `useSession` config + `useSession()` hook | Starlette `SessionMiddleware` |
+| Authorization | Custom guards + role checking | FastAPI `Depends` |
+| Encryption / Hashing | Standard Python | `hashlib`, `bcrypt`, `cryptography` |
+| JWT | Third-party | `PyJWT` |
+| UID | Standard Python | `uuid`, `secrets` |
+
+---
+
+## Quick links
+
+- [Authentication](/docs/security/authentication) — configure auth backends and login flows
+- [Authorization](/docs/security/authorization) — role-based access control with guards
+- [Encryption & Hashing](/docs/security/encryption-hashing) — password hashing, data encryption
+- [JWT](/docs/security/jwt) — JSON Web Token creation and verification
+- [UID](/docs/security/uid) — unique ID generation strategies
+
+---
+
+## Related
+
+- [Guides / Auth](/docs/guides/auth) — practical auth flow walkthrough
+- [Config / Session](/docs/config/session) — session middleware configuration
+- [Decorators / "@UseGuard](/docs/decorators/useguard) — guard decorator reference

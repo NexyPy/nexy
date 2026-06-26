@@ -1,0 +1,61 @@
+# 데이터베이스 개요
+
+Nexy는 내장된 데이터베이스 추상화를 제공하지 않습니다. FastAPI 프로젝트에서와 마찬가지로 ORM을 선택하고 구성합니다.
+
+---
+
+## 지원되는 ORM
+
+| ORM | 스타일 | 비동기 | 마이그레이션 도구 |
+|------|---------|-------|---|
+| SQL모델 | Pydantic 원주민 | 예 | 증류기 |
+| SQLAlchemy | 모든 기능을 갖춘 성숙한 | 예 | 증류기 |
+| 거북이-ORM | 장고와 유사한 | 예 | 에어리치 |
+
+---
+
+## 일반 패턴
+
+1. 선택한 ORM 및 드라이버를 설치합니다.
+2. 앱에서 연결 구성
+3. 모델 정의
+4. 마이그레이션 생성 및 적용
+5. 경로 핸들러에서 ORM을 사용하세요
+
+---
+
+## 의존성 주입 패턴
+
+경로 전체에서 사용할 데이터베이스 종속성을 만듭니다.
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+그런 다음 경로 핸들러에 삽입합니다.
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## 다음 단계
+
+- [SQLModel](/docs/orm/sqlmodel) — 새 프로젝트에 권장됩니다.
+- [SQLAlchemy](/docs/orm/sqlalchemy) — 완전한 제어 및 유연성
+- [Tortoise-ORM](/docs/orm/tortoise) — Django와 유사한 비동기 ORM

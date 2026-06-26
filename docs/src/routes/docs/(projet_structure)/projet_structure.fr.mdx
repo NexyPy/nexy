@@ -1,0 +1,114 @@
+# Structure du projet
+
+Cette page donne un aperçu des conventions de fichiers et dossiers de Nexy, et comment organiser votre projet.
+
+```text
+my-app/
+├── .venv/
+├── node_modules/          (optional — client framework only)
+├── public/
+├── src/
+│   ├── components/
+│   ├── routes/            (FBR) — or apps/ (Modular)
+│   └── layout.nexy
+├── .gitignore
+├── nexyconfig.py
+├── pyproject.toml
+├── package.json           (optional)
+├── vite.config.ts         (optional)
+└── tsconfig.json          (optional)
+```
+
+---
+
+## Répertoires de niveau supérieur
+
+### `public/`
+
+Les ressources statiques placées ici sont diffusées à l'URL racine `/`. Images, polices, favicons, robots.txt — tout ce que vous souhaitez rendre accessible au public sans itinéraire.
+
+### `src/`
+
+Le code source de votre application réside ici. Nexy surveille `src/` les changements en cours de développement et compile tout à partir d'ici en production.
+
+---
+
+## Intérieur `src/`
+
+```text
+src/
+├── components/     — reusable Nexy components (optional)
+├── routes/         — FBR: file-based routing tree
+├── apps/           — Modular: controllers, modules, providers
+├── layout.nexy     — root layout (optional, FBR only)
+└── global.css      — global styles (optional)
+```
+
+### `src/components/`
+
+Répertoire facultatif pour les composants `.nexy` réutilisables. Nexy n'impose pas de répertoire de composants spécifique — vous pouvez utiliser n'importe quel nom ou structure. Les composants sont importés avec `from "@components/..." import ...`.
+
+### `src/routes/` (routage basé sur des fichiers)
+
+Chaque fichier `.py`, `.nexy` et `.mdx` sous `src/routes/` devient une route HTTP, avec des exceptions pour les noms de fichiers spéciaux :
+
+| Fichier | Comportement |
+|------|----------|
+| `index.nexy` / `index.py` / `index.mdx` | Servi sur le chemin parent (`/users/index.nexy` → `/users`) |
+| `layout.nexy` | Disposition partagée pour les itinéraires frères et enfants (non routables) |
+| `__init__.py` | Marqueur de package Python (non routable) |
+| `dependencies.py` | Dépendances partagées (non routables) |
+
+```text
+routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     —  shared layout for /blog/*
+└── api/
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+### `src/apps/` (Routage modulaire)
+
+Lorsque vous utilisez le routeur modulaire, votre code d'application est organisé en modules de fonctionnalités :
+
+```text
+apps/
+├── app_module.py       →  "@Module(root module)
+├── app_controller.py   →  "@Controller("/")
+├── app_view.nexy       →  template
+├── users/
+│   ├── user_module.py
+│   ├── user_controller.py
+│   └── user_service.py
+└── layout.nexy         →  shared layout
+```
+
+---
+
+## Fichiers de configuration
+
+| Fichier | Objectif |
+|------|--------------|
+| `nexyconfig.py` | Configuration principale de Nexy : routeur, plugins, paramètres de l'application |
+| `pyproject.toml` | Métadonnées du projet Python, dépendances, système de build |
+| `package.json` | Dépendances JavaScript (présentes lors de l'utilisation d'un framework client) |
+| `vite.config.ts` | Configuration Vite pour regrouper le code côté client |
+| `tsconfig.json` | Options du compilateur TypeScript |
+| `.gitignore` | Fichiers et répertoires à exclure du contrôle de version |
+
+---
+
+## Organiser votre projet
+
+Au-delà des conventions ci-dessus, Nexy n'a aucune opinion sur la manière dont vous structurez votre code source. Quelques modèles qui fonctionnent bien :
+
+- **Dossiers de fonctionnalités** : regroupez les pages, composants et utilitaires associés par fonctionnalité
+- **Composants partagés** : conservez les composants véritablement réutilisables dans `src/components/`
+- **Groupes de routage** : imbriquer les répertoires dans `src/routes/` pour refléter la structure de votre URL
+- **Monorepo** : traite les modules `src/apps/` comme des unités déployables indépendamment
+
+Ce qui compte, c'est que chaque fichier sous `src/routes/` (FBR) ou référencé par `"@Module` (Modulaire) respecte les conventions de dénomination ci-dessus.

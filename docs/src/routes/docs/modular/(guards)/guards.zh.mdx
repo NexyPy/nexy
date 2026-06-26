@@ -1,0 +1,193 @@
+# 守卫
+
+守卫确定请求是否应该到达路由处理程序。它们**在控制器方法之前**执行——非常适合身份验证、授权、速率限制和访问控制。
+
+Nexy 的守卫是 **FastAPI 依赖项**。它们是可调用对象（具有 `__call__` 的类或独立函数），接收请求并传递或引发 HTTPException。
+
+## 为什么是守卫？
+
+如果没有警卫，您将在每个控制器方法中检查身份验证：
+
+```python
+class AdminController:
+    def GET(self):
+        if not is_authenticated(request):
+            raise HTTPException(401)
+        return {"role": "admin"}
+
+    def delete(self, id: int):
+        if not is_authenticated(request):
+            raise HTTPException(401)
+        return None
+```
+
+守卫将其提取为可重用的可调用对象：
+
+```python
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization")
+        if not token:
+            raise HTTPException(401)
+```
+
+应用一次，保护控制器中的每条路由：
+
+```python
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+```
+
+## 创建守卫
+
+守卫是一个可调用函数，它接受 `Request` 并返回 `None` 或引发：
+
+```python
+from starlette.exceptions import HTTPException
+from starlette.requests import Request
+
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization")
+        if not token or not token.startswith("Bearer "):
+            raise HTTPException(401, "Missing or invalid token")
+```
+
+警卫提出 `HTTPException` 以阻止该请求。如果正常返回，则请求继续。
+
+**陷阱**：`__call__` 可以是同步的，也可以是异步的——路由器处理两者。当您的守卫需要调用数据库或外部 API 时，请使用异步。
+
+## 应用守卫
+
+### 控制器级 — 保护所有路由
+
+```python
+from nexy.decorators import Controller, UseGuard
+
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+
+    def delete(self, id: int):
+        return None
+```
+
+### 方法级 — 保护特定路由
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@UseGuard(AuthGuard())
+    def GET(self):
+        return {"email": "user"@example.com"}
+
+    # No guard on public routes
+    def post(self, data: dict):
+        return {"message": "No auth required"}
+```
+
+### 多个守卫——所有人都必须通过
+
+```python
+"@Controller("/admin")
+"@UseGuard(AuthGuard(), RateLimitGuard())
+class AdminController:
+    ...
+```
+
+警卫按照列出的顺序执行。如果 `AuthGuard` 上升，`RateLimitGuard` 永远不会运行。
+
+**陷阱**：方法级防护在控制器级防护之后运行 - 并且仅当控制器级防护通过时才运行。
+
+## 带参数的守卫
+
+为参数化守卫创建一个守卫工厂：
+
+```python
+class RoleGuard:
+    def __init__(self, required_role: str):
+        self.required_role = required_role
+
+    async def __call__(self, request: Request):
+        user_role = request.headers.get("X-Role", "guest")
+        if user_role != self.required_role:
+            raise HTTPException(403, f"Requires {self.required_role} role")
+```
+
+带参数应用：
+
+```python
+"@Controller("/admin")
+"@UseGuard(RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+```
+
+## 作为函数的守卫
+
+简单的守卫可以是独立的功能：
+
+```python
+async def rate_limit(request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    if is_rate_limited(client_ip):
+        raise HTTPException(429, "Too many requests")
+
+"@Controller("/api")
+"@UseGuard(rate_limit)
+class ApiController:
+    def GET(self):
+        return {"data": [...]}
+```
+
+## 保护上下文
+
+Guards 接收完整的 Starlette `Request` 对象，从而可以访问标头、查询参数、会话等。
+
+在守卫中设置请求状态以供下游使用：
+
+```python
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization", "").removeprefix("Bearer ")
+        user = await verify_token(token)
+        if not user:
+            raise HTTPException(401)
+        request.state.user = user
+
+# In the controller:
+class UsersController:
+    def GET(self, request: Request):
+        return {"user": request.state.user}
+```
+
+## 防护与中间件
+
+|方面|守卫|中间件|
+|--------|--------|------------|
+|执行|处理程序之前，中间件之后 |在警卫和处理员面前|
+|目的|身份验证、授权、访问控制 |日志记录、标头操作、CORS |
+|返回 | `None` 或提高 `HTTPException` | `None` 或提高 `HTTPException` |
+|请求访问 |完全通过 `Request` 参数 |完全通过 `Request` 参数 |
+
+**何时选择防护与中间件**：如果逻辑确定“该请求应该继续吗？” （身份验证、角色检查、速率限制），使用守卫。如果逻辑无论如何都会修改请求/响应（日志记录、CORS），请使用中间件。
+
+## 最佳实践
+
+1. **每个关注点一名警卫** — `AuthGuard`、`RoleGuard`、`RateLimitGuard`。不是 `SecurityGuard` 能做所有事情。
+2. **使用描述性状态代码** — 401 表示缺少/无效身份验证，403 表示权限不足，429 表示速率限制。
+3. **避免副作用** - 守卫应该检查权限，而不是修改状态（`request.state` 除外）。
+4. **缓存昂贵的检查** - 具有内存缓存的单例保护实例。
+5. **隔离测试守卫** — 创建一个模拟 `Request`，调用守卫，断言它引发或通过。
+
+## 后续步骤
+
+- [Middleware](/docs/modular/middleware) — 请求管道挂钩
+- [Controllers](/docs/modular/controllers) — 定义路由处理程序
+- [Modules](/docs/modular/modules) — 组织成功能模块

@@ -1,0 +1,30 @@
+# Comunicación en tiempo real
+
+Nexy admite WebSocket, eventos enviados por servidor (SSE) y sondeos prolongados para comunicación en tiempo real.
+
+## Cuál usar
+
+| Característica | Lo mejor para | Dirección |
+|---------|----------|-----------|
+| **WebSocket** | Bidireccional, baja latencia (chat, juegos, colaboración) | Cliente ↔ Servidor |
+| **ESE** | Servidor → eventos del cliente (notificaciones, transmisiones en vivo) | Servidor → Cliente |
+| **Encuestas largas** | Encuesta simple cuando lo anterior no está disponible | Cliente → Servidor |
+
+## WebSocket
+
+Comunicación full-duplex a través de una única conexión TCP. Nexy asigna el nombre de función/método `SOCKET` a un punto final Starlette WebSocket.
+
+- [FBR WebSocket](/docs/fbrouters/websocket): ejemplos de enrutamiento basado en archivos
+- [Modular WebSocket](/docs/modular/websocket) — ejemplos basados en controlador con DI
+
+## Eventos enviados por el servidor (SSE)
+
+Servidor unidireccional → cliente streaming a través de HTTP. Más liviano que WebSocket cuando solo necesita la inserción del servidor.
+
+Consulte [SSE](/docs/fastapi/sse) para obtener detalles de implementación.
+
+## Cuándo elegir
+
+- **WebSocket**: aplicaciones de chat, colaboración en vivo, juegos, tickers financieros
+- **SSE**: notificaciones en vivo, actualizaciones de feeds, barras de progreso, transmisión de registros
+- **Encuesta larga**: alternativa para entornos que bloquean WebSocket (proxies corporativos)

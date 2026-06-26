@@ -1,0 +1,55 @@
+# डब्लूएसजीआई (फ्लास्क, डीजेंगो)
+
+नेक्सी मार्गों के साथ-साथ डब्लूएसजीआई अनुप्रयोगों (फ्लास्क, डीजेंगो, पिरामिड) को माउंट करें।
+
+## कुप्पी
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+फ्लास्क मार्ग अब `/legacy/hello` पर उपलब्ध हैं। सभी नेक्सी सुविधाएं (ऑथ, मिडलवेयर) अभी भी मूल ऐप पर लागू होती हैं।
+
+## डीजेंगो
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## यह कैसे काम करता है
+
+- `WSGIMiddleware` कॉल करने योग्य किसी भी WSGI को ASGI के रूप में लपेटता है
+- उप-एप्लिकेशन थ्रेड पूल में चलता है - यह इवेंट लूप को ब्लॉक नहीं करता है
+- डब्लूएसजीआई ऐप तक पहुंचने से पहले पथ उपसर्ग (`/legacy`, `/django`) हटा दिया जाता है
+- नेक्सी मिडलवेयर (ऑथ, सेशन, सीओआरएस) माउंटेड डब्लूएसजीआई ऐप पर **नहीं** लागू होता है - इसे वहां अलग से कॉन्फ़िगर करें
+
+## सीमाएँ
+
+- केवल अनुरोध/प्रतिक्रिया चक्र - वेबसॉकेट समर्थित नहीं है
+- डब्लूएसजीआई ऐप्स नेक्सी हुक या निर्भरता का उपयोग नहीं कर सकते
+- प्रदर्शन थ्रेड पूल द्वारा सीमित है - देशी नेक्सी मार्गों पर माइग्रेट करने पर विचार करें

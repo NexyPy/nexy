@@ -1,0 +1,67 @@
+# Estilos em arquivos .nexy
+
+Os modelos Nexy suportam CSS da mesma forma que HTML - por meio de tags `<style>`, importações externas ou estruturas utilitárias como Tailwind.
+
+## Etiqueta `<style>` embutida
+
+A maneira mais direta de adicionar estilos. Adicione um bloco `<style>` em qualquer lugar da seção de modelo.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+</style>
+```
+
+Os estilos **não têm escopo** — eles se aplicam globalmente. Use uma convenção de nomenclatura (BEM, classes utilitárias) ou atributos de dados para evitar colisões.
+
+## CSS externo via `__Import`
+
+Cada arquivo `.nexy` tem `__Import` disponível automaticamente (injetado pelo compilador). Para arquivos CSS, ele lê o arquivo e o envolve em uma tag `<style>`:
+
+```nexy
+---
+global_css = __Import("/styles/global.css", "", "")()
+---
+{{ global_css }}
+<div class="layout">...</div>
+```
+
+`__Import(path, framework, symbol)` leva três argumentos. Para CSS, o 2º e o 3º não são utilizados – passam strings vazias. O `()` final chama o callable retornado imediatamente, produzindo a string `<style>...</style>`.
+
+## Tailwind CSS
+
+Nexy funciona com Tailwind pronto para uso. As classes utilitárias nos atributos do seu modelo são processadas normalmente:
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Configure o Tailwind em `nexyconfig.py` ou `tailwind.config.*`.
+
+## Importações CSS via Vite
+
+Se o Vite estiver ativado (`useVite: true`), você poderá usar instruções CSS padrão `"@import` ou `import` em seus componentes frontend. Vite os processa por meio de PostCSS, módulos CSS e quaisquer plug-ins configurados.
+
+## Melhores práticas
+
+| Abordagem | Quando usar |
+|----------|------------|
+| `<style>` no modelo | Estilos específicos de componentes, pequenos projetos |
+| `__Import()` CSS externo | Compartilhando estilos entre componentes |
+| CSS de vento favorável | Design utilitário, prototipagem rápida |
+| Pipeline CSS Vite | Conjunto de ferramentas de construção completo, módulos CSS, PostCSS |

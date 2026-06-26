@@ -30,7 +30,7 @@ class Config(NexyConfigModel):
         "pymdownx.tabbed",
     ]
     TARGET_EXTENSIONS: list[str] = [".nexy", ".mdx"]
-    FF_REGISTRY: dict[str, object] = {}
+    FRAMEWORK_REGISTRY: dict[str, object] = {}
     ROUTE_FILE_EXTENSIONS: list[str] = [".nexy", ".mdx", ".py"]
     ROUTE_FILE_EXCEPTIONS: list[str] = ["__init__.py", "layout.nexy", "dependencies.py"]
     ROUTE_FILE_DEFAULT: list[str] = ["index.py", "index.nexy", "index.mdx"]
@@ -46,6 +46,9 @@ class Config(NexyConfigModel):
         "*/node_modules/*",
         "*.tmp",
     ]
+    TOC_DEPTH: str = "2-6"
+    TOC_TITLE: str = "Table of Contents"
+    TOC_AUTO: bool = True
     FRONTEND_EXTENSIONS: dict[str, str] = {
         ".tsx": "react",
         ".jsx": "react",
@@ -83,6 +86,7 @@ class Config(NexyConfigModel):
         except Exception as e:
             Config._load_error = f"nexyconfig.py failed to load: {e}"
             import traceback as _tb
+
             _tb.print_exc()
             return
 
@@ -99,15 +103,24 @@ class Config(NexyConfigModel):
         if Config.useMarkdownExtensions:
             Config.MARKDOWN_EXTENSIONS = Config.useMarkdownExtensions
 
+        if Config.useTocDepth:
+            Config.TOC_DEPTH = Config.useTocDepth
+        if Config.useTocTitle:
+            Config.TOC_TITLE = Config.useTocTitle
+        if hasattr(nc, "useTocAuto") and Config.useTocAuto is not None:
+            Config.TOC_AUTO = Config.useTocAuto
+
         watch_ext = getattr(nc, "useWatchExtensions", None)
         if watch_ext:
             Config.WATCH_EXTENSIONS_GLOB = watch_ext
+        else:
+            Config.WATCH_EXTENSIONS_GLOB = [f"*{ext}" for ext in Config.ROUTE_FILE_EXTENSIONS]
 
         watch_exclude = getattr(nc, "useWatchExcludePatterns", None)
         if watch_exclude:
             Config.WATCH_EXCLUDE_PATTERNS = watch_exclude
 
-        ff_list = Config.useFF
+        ff_list = Config.useFF or []
         if ff_list:
             mapping: dict[str, str] = dict(Config.FRONTEND_EXTENSIONS)
             registry: dict[str, object] = {}
@@ -120,7 +133,6 @@ class Config(NexyConfigModel):
                         e = ext if ext.startswith(".") else f".{ext}"
                         mapping[e.lower()] = name.lower()
             Config.FRONTEND_EXTENSIONS = mapping
-            Config.FF_REGISTRY = registry
+            Config.FRAMEWORK_REGISTRY = registry
 
-        Config.WATCH_EXTENSIONS_GLOB = [f"*{ext}" for ext in Config.ROUTE_FILE_EXTENSIONS]
         Config._load_error = None

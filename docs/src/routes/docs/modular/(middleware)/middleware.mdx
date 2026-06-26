@@ -1,0 +1,192 @@
+# Middleware
+
+Middleware intercepts requests before they reach the controller (and responses after). Use it for cross-cutting concerns that apply to many routes: logging, timing, CORS, compression, header manipulation.
+
+Like guards, middleware in Nexy are **FastAPI dependencies** — callables that can modify the request/response or abort the request.
+
+## Why Middleware?
+
+You could add logging in every controller method:
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+Middleware extracts this into a single callable applied once:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## Creating Middleware
+
+Middleware is a callable that takes a `Request`. It can modify `request.state`, raise `HTTPException` to abort, or pass through by returning `None`:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+For timing, you can use `request.state` to pass data to the response:
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+Then add a response hook via FastAPI's `Response` parameter:
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**Gotcha**: The `call_next` pattern works for middleware that wraps the entire request/response cycle. Simple middleware that only runs before the handler just takes `request`.
+
+## Applying Middleware
+
+### Controller-level
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### Method-level
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### Module-level
+
+Register middleware in the module for all routes:
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+Module-level middleware isn't supported via `"@Module()` attributes directly. For middleware that applies to all routes, use the method or controller level, or register globally via `nexyconfig.py`.
+
+## Global Middleware
+
+Register middleware for every route in the app via `nexyconfig.py`:
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+Each entry is a tuple of `(middleware_class, kwargs)`. The kwargs are passed to the middleware's constructor.
+
+## Built-in Middleware
+
+Nexy includes several built-in middleware configurable via `nexyconfig.py`:
+
+| Config Key | Middleware | Description |
+|------------|-----------|-------------|
+| `useCORS` | `CORSMiddleware` | Cross-Origin Resource Sharing |
+| `useGZip` | `GZipMiddleware` | Response compression |
+| `useTrustedHost` | `TrustedHostMiddleware` | Host header validation |
+| `useSession` | `SessionMiddleware` | Cookie-based sessions |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` | Force HTTPS |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+Built-in middleware runs at the global level, before any custom middleware.
+
+## Middleware vs Guards
+
+| Aspect | Middleware | Guard |
+|--------|-----------|-------|
+| Executes | Before the handler | Before the handler (after middleware) |
+| Primary purpose | Logging, headers, compression | Auth, authorization, access control |
+| Pattern | `__call__(self, request)` | `__call__(self, request)` |
+| Abort | Raise `HTTPException` | Raise `HTTPException` |
+| Pass data | `request.state` | `request.state` |
+
+In practice, middleware and guards are implemented the same way (FastAPI dependencies). The distinction is conceptual: middleware modifies requests/responses, guards make access control decisions.
+
+## Error Handling in Middleware
+
+Middleware can catch errors and return custom responses using the `call_next` pattern:
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## Best Practices
+
+1. **One concern per middleware** — logging, timing, CORS. Not a single "big middleware."
+2. **Keep middleware fast** — middleware blocks the request. Expensive operations belong in the handler.
+3. **Use `request.state` for passing data** — it's the standard way to share data between middleware, guards, and handlers.
+4. **Prefer guards for auth** — conceptually clearer than middleware for access control.
+5. **Test middleware in isolation** — create a mock `Request`, call the middleware, assert side effects.
+
+## Next Steps
+
+- [Guards](/docs/modular/guards) — authentication and authorization
+- [Controllers](/docs/modular/controllers) — define route handlers
+- [Modules](/docs/modular/modules) — organize into feature modules

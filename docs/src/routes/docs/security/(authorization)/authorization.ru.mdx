@@ -1,0 +1,73 @@
+# Авторизация
+
+Защитите маршруты с помощью декораторов `"@UseGuard` с вызываемыми объектами защиты.
+
+## Контракт охраны
+
+Охранником является любой вызываемый с помощью `__call__(self, request)`. Поднимите `HTTPException`, чтобы заблокировать, верните `None`, чтобы разрешить.
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+---
+
+## Охранник на маршруте
+```python
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+```
+```python
+from nexy.decorators import Controller, UseGuard
+from starlette.authentication import requires
+
+"@Controller("/admin")
+"@UseGuard(requires("authenticated"))
+class AdminController:
+    def GET(self, request):
+        return {"user": request.user.username}
+```
+## Несколько охранников
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RateLimitGuard())
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## Использование `requires` из Starlette
+```python
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+```
+Работает как в FBR, так и в модульном режиме — `requires` возвращает действительный вызываемый объект защиты.
+
+---
+
+## Похожие
+
+- ["@UseGuard reference](/docs/decorators/useguard) — полный API декоратора
+- [Guards (Modular)](/docs/modular/guards) — защитная инъекция в модульном DI
+- [Authentication](/docs/security/authentication) — настройка бэкендов аутентификации

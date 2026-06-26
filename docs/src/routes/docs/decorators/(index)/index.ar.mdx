@@ -1,0 +1,17 @@
+#مصممي الديكور
+
+يستخدم Nexy أدوات تزيين Python لتوسيع المسارات ووحدات التحكم والبرامج الوسيطة وحقن التبعيات. تعمل أدوات الديكور هذه في وضعي التوجيه FBR وModular.
+
+## ديكورات FBR
+
+- [@Action](/docs/decorators/action) — التعامل مع عمليات إرسال النماذج
+- [@UseGuard](/docs/decorators/useguard) — قم بإرفاق حراس الطريق
+- [@Middleware](/docs/decorators/middleware) — إضافة برامج وسيطة إلى المسار
+
+## وحدات ديكور (إضافية)
+
+- [@Controller](/docs/decorators/controller) — حدد فئة وحدة التحكم
+- [@Module](/docs/decorators/module) — أعلن عن وحدة التطبيق
+- [@Injectable](/docs/decorators/injectable) — قم بتسجيل مزود حقن التبعية
+- [@UseRoute](/docs/decorators/useroute) — ربط المسار المخصص
+- [@UseResponse](/docs/decorators/useresponse) — معالج الاستجابة المخصص

@@ -1,0 +1,85 @@
+# FBR или модульный маршрутизатор
+
+Nexy предлагает **две стратегии маршрутизации**. Вы выбираете при создании проекта — и переключатель в верхней части боковой панели соответствующим образом переключает документацию.
+
+## Маршрутизация на основе файлов (FBR)
+
+Маршруты определяются вашим файловым деревом в `src/routes/`.
+
+```text
+src/routes/
+
+├── index.nexy        →  /
+
+├── about.nexy        →  /about
+
+├── blog/
+
+│   ├── index.nexy    →  /blog
+
+│   └── [slug].nexy   →  /blog/{slug}
+
+└── layout.nexy       →  shared layout
+```
+
+**Выбирайте FBR, когда**:
+
+- Вы предпочитаете соглашение, а не конфигурацию
+- Вы создаете простой сайт, документацию или MVP.
+- Ваше приложение соответствует четкой иерархии страниц.
+- Вы предпочитаете меньше шаблонов
+
+## Модульный маршрутизатор
+
+Маршруты определяются с помощью декораторов Python в `src/apps/`.
+
+```text
+src/apps/
+
+├── app_module.py     →  "@Module(root module)
+
+├── app_controller.py →  "@Controller("/")
+
+├── app_view.nexy     →  template
+
+├── users/
+
+│   ├── user_module.py
+
+│   ├── user_controller.py
+
+│   └── user_service.py
+
+└── layout.nexy       →  shared layout
+```
+
+**Выбирайте модульный вариант, если**:
+
+- Ваше приложение большое, с четкими границами домена.
+- Вам нужны инъекции зависимостей и тестируемые сервисы.
+- Вы пришли из NestJS/Angular и предпочитаете декораторы
+- Несколько команд имеют разные функциональные модули.
+
+## Оба в одном проекте
+
+Ваш `nexyconfig.py` контролирует, какой маршрутизатор использовать:
+
+```python
+# FBR — no explicit router config needed
+
+class NexyConfig(NexyConfigModel):
+
+    pass
+```
+
+```python
+# Modular — import the APIRouter from your root "@Module
+
+from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
+
+class NexyConfig(NexyConfigModel):
+
+    useRouter = AppModule
+```
+
+Вы не можете совмещать оба проекта в одном проекте — выберите тот, который подходит вашей команде и масштабируется.

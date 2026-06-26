@@ -1,0 +1,56 @@
+# 파일 기반 라우팅 개요
+
+Nexy의 FBR(파일 기반 라우팅)은 `src/routes/` 아래의 파일 트리에서 자동으로 경로를 생성합니다. 모든 `.nexy`, `.mdx` 및 `.py` 파일은 HTTP 경로가 됩니다. 경로 등록이 필요하지 않습니다.
+
+Next.js 페이지 라우터, PHP 또는 정적 HTML 서버로 작업해 본 적이 있다면 개념이 익숙할 것입니다. 파일 경로는 URL 경로입니다.
+
+---
+
+## 작동 방식
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+각 파일은 `src/routes/` 접두사와 파일 확장자를 제거하여 URL 경로에 매핑됩니다. `index`라는 이름의 파일은 디렉토리 루트로 사용됩니다. `/blog/index.nexy`는 `/blog`에서 사용됩니다.
+
+---
+
+## 예약된 파일 이름
+
+일부 파일 이름은 특별한 동작을 가지며 경로로 처리되지 않습니다.
+
+| 파일 | 목적 |
+|------|---------|
+| `layout.nexy` | 형제 및 하위 경로에 대한 공유 레이아웃 |
+| `dependencies.py` | 공유 종속성 주입 |
+| `__init__.py` | Python 패키지 마커 |
+
+---
+
+## 경로 우선순위
+
+동일한 경로에 대해 서로 다른 형식의 여러 파일을 생성하는 경우 Nexy는 `.py` > `.nexy` > `.mdx`로 우선순위를 결정합니다.
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## 다음 단계
+
+- [Pages & Layouts](/docs/fbrouters/pages) — 페이지 및 공유 레이아웃 생성
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) — Python을 사용한 REST API 라우팅
+- [Dynamic URLs](/docs/fbrouters/route_parameters) — `[slug]`와 같은 경로 매개변수

@@ -1,0 +1,83 @@
+# جينجا2
+
+يستخدم Nexy **Jinja2** كمحرك القالب الخاص به. يتم عرض كل قالب قالب لملف `.nexy` كقالب Jinja2.
+
+---
+
+## بناء الجملة
+
+```nexy
+---
+title = "Hello"
+items = [1, 2, 3]
+---
+<h1>{{ title }}</h1>
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+{% if user %}
+    <p>Welcome, {{ user.name }}</p>
+{% endif %}
+```
+
+---
+
+## سياق القالب
+
+يتضمن سياق القالب ما يلي:
+
+- تم الإعلان عن جميع الدعائم في المادة الأمامية (`item: prop[type]`)
+- المساعدون الذين تم حقنهم تلقائيًا: `Slot`، `trans`، `t`، `__current_locale`، `__Import`، `__Template`
+- الدعائم الإضافية: `caller`، `children`
+
+---
+
+## المرشحات
+
+تتوفر جميع مرشحات Jinja2 المدمجة:
+
+```nexy
+<p>{{ description | truncate(100) }}</p>
+<p>{{ created_at | date(format="short") }}</p>
+<p>{{ content | safe }}</p>
+<p>{{ name | title }}</p>
+```
+
+---
+
+## وحدات الماكرو
+
+تعمل وحدات ماكرو Jinja2 في ملفات `.nexy`:
+
+```nexy
+{% macro input(name, type="text", value="") %}
+    <input type="{{ type }}" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
+
+<form>
+    {{ input("username") }}
+    {{ input("password", type="password") }}
+</form>
+```
+
+---
+
+## تخفيض السعر
+
+يتم عرض ملفات `.mdx` على شكل Markdown ثم يتم تغليفها في قالب التخطيط. يعمل بناء جملة Jinja2 القياسي داخل `.mdx` أيضًا.
+
+---
+
+## التحكم في المسافة البيضاء
+
+يعمل التحكم بالمسافات البيضاء في Jinja2 في ملفات `.nexy`:
+
+```nexy
+{%- for item in items -%}
+    <span>{{ item }}</span>
+{%- endfor -%}
+```
+
+استخدم `{%-` و`-%}` لإزالة المسافات البيضاء حول كتل التحكم.

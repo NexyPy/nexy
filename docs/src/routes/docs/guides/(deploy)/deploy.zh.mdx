@@ -1,0 +1,51 @@
+# 部署
+
+`nx build` 编译您的应用程序，`nx start` 在生产环境中提供服务。请参阅 [CLI build](/docs/cli/build) 和 [CLI start](/docs/cli/start) 了解标志。
+
+## 码头工人
+
+```dockerfile
+FROM python:3.13-slim
+WORKDIR /app
+COPY . .
+RUN pip install nexy && nx build
+CMD ["nx", "start"]
+```
+
+---
+
+## 环境变量
+
+|变量|默认 |描述 |
+|----------|---------|-------------|
+| `NEXY_PORT` | `3000` |服务器端口|
+| `NEXY_HOST` | `0.0.0.0` |绑定地址 |
+| `NEXY_DEBUG` | `false` |调试模式|
+| `NEXY_INLINE_CLIENT` | `false` |将 CSS/JS 内联到 HTML |
+
+---
+
+## 平台指南
+
+### 虚拟专用服务器
+
+```bash
+uv sync
+nx build
+nx start --host 0.0.0.0 --port 80
+```
+
+### 云提供商
+
+Nexy 部署到支持 Python ASGI 应用程序的任何平台：
+
+- **铁路** — 通过 Procfile 自动检测 `nx start`
+- **Fly.io** — 在 Dockerfile 中使用 `CMD ["nx", "start"]`
+- **渲染** — 将启动命令设置为 `nx start`
+- **Hetzner / DigitalOcean** — Docker 或 systemd 服务
+
+---
+
+## 静态导出
+
+对于完全静态的站点，Nexy 可以在构建期间将每个页面预渲染到 `__nexy__/static/`。与任何静态文件服务器（Nginx、Caddy、S3、Cloudflare Pages）一起使用。

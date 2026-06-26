@@ -1,0 +1,114 @@
+# プロジェクトの構造
+
+このページでは、Nexy のファイルとフォルダーの規則の概要と、プロジェクトを編成する方法を説明します。
+
+```text
+my-app/
+├── .venv/
+├── node_modules/          (optional — client framework only)
+├── public/
+├── src/
+│   ├── components/
+│   ├── routes/            (FBR) — or apps/ (Modular)
+│   └── layout.nexy
+├── .gitignore
+├── nexyconfig.py
+├── pyproject.toml
+├── package.json           (optional)
+├── vite.config.ts         (optional)
+└── tsconfig.json          (optional)
+```
+
+---
+
+## 最上位ディレクトリ
+
+### `public/`
+
+ここに配置された静的アセットは、ルート `/` URL で提供されます。画像、フォント、ファビコン、robots.txt — ルートなしでパブリックにアクセスできるようにしたいものすべて。
+
+### `src/`
+
+アプリケーションのソースコードはここにあります。 Nexy は開発中の変更を `src/` 監視し、本番環境ですべてをコンパイルします。
+
+---
+
+## `src/` 内
+
+```text
+src/
+├── components/     — reusable Nexy components (optional)
+├── routes/         — FBR: file-based routing tree
+├── apps/           — Modular: controllers, modules, providers
+├── layout.nexy     — root layout (optional, FBR only)
+└── global.css      — global styles (optional)
+```
+
+### `src/components/`
+
+再利用可能な `.nexy` コンポーネント用のオプションのディレクトリ。 Nexy は特定のコンポーネント ディレクトリを強制しません。任意の名前や構造を使用できます。コンポーネントは `from "@components/..." import ...` でインポートされます。
+
+### `src/routes/` (ファイルベースのルーティング)
+
+`src/routes/` にあるすべての `.py`、`.nexy`、および `.mdx` ファイルは、特殊なファイル名を除き、HTTP ルートになります。
+
+|ファイル |行動 |
+|------|----------|
+| `index.nexy` / `index.py` / `index.mdx` |親パスで提供されます (`/users/index.nexy` → `/users`) |
+| `layout.nexy` |兄弟ルートと子ルートの共有レイアウト (ルーティング不可) |
+| `__init__.py` | Python パッケージ マーカー (ルーティング不可) |
+| `dependencies.py` |共有依存関係 (ルーティング不可) |
+
+```text
+routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     —  shared layout for /blog/*
+└── api/
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+### `src/apps/` (モジュラールーティング)
+
+モジュラー ルーターを使用する場合、アプリケーション コードは機能モジュールに編成されます。
+
+```text
+apps/
+├── app_module.py       →  "@Module(root module)
+├── app_controller.py   →  "@Controller("/")
+├── app_view.nexy       →  template
+├── users/
+│   ├── user_module.py
+│   ├── user_controller.py
+│   └── user_service.py
+└── layout.nexy         →  shared layout
+```
+
+---
+
+## 設定ファイル
+
+|ファイル |目的 |
+|-----|----------|
+| `nexyconfig.py` | Nexy の主な構成: ルーター、プラグイン、アプリ設定 |
+| `pyproject.toml` | Python プロジェクトのメタデータ、依存関係、ビルド システム |
+| `package.json` | JavaScript の依存関係 (クライアント フレームワークを使用する場合に存在します) |
+| `vite.config.ts` |クライアント側コードをバンドルするための Vite 構成 |
+| `tsconfig.json` | TypeScript コンパイラ オプション |
+| `.gitignore` |バージョン管理から除外するファイルとディレクトリ |
+
+---
+
+## プロジェクトを整理する
+
+上記の規則を超えて、Nexy はソース コードの構造について意見を持ちません。うまく機能するいくつかのパターン:
+
+- **機能フォルダー**: 関連するページ、コンポーネント、ユーティリティを機能ごとにグループ化します。
+- **共有コンポーネント**: 真に再利用可能なコンポーネントを `src/components/` に保持します
+- **ルート グループ**: URL 構造をミラーリングするために `src/routes/` にディレクトリをネストします
+- **Monorepo**: `src/apps/` モジュールを独立して展開可能なユニットとして扱います
+
+重要なのは、`src/routes/` (FBR) の下にあるすべてのファイル、または `"@Module` (モジュラー) によって参照されるすべてのファイルが上記の命名規則に従っていることです。

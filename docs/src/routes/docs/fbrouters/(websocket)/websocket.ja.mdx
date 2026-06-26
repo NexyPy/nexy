@@ -1,0 +1,126 @@
+# Webソケット(FBR)
+
+`async def SOCKET` 関数を使用して `.py` ファイルを作成して、WebSocket エンドポイントを定義します。
+
+---
+
+## 基本的なエコー
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Echo: {data}")
+    except WebSocketDisconnect:
+        pass
+```
+
+関数名 `SOCKET` (大文字と小文字は区別されません) は Starlette WebSocket エンドポイントにマップされます。ファイル パスによって URL が決まります (この例では `/chat`)。
+
+---
+
+## JSONを受信する
+
+```python
+# src/routes/events.py
+from fastapi import WebSocket, WebSocketDisconnect
+import json
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_json()
+            await websocket.send_json({"echo": data})
+    except WebSocketDisconnect:
+        pass
+```
+
+---
+
+## 部屋のパターン
+
+接続されているすべてのクライアントにメッセージをブロードキャストします。
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+connections: list[WebSocket] = []
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    connections.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in connections:
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        connections.remove(websocket)
+```
+
+`connections` リストはモジュール レベルで存在し、すべてのクライアントが同じリストを共有します。
+
+---
+
+## 名前付きルーム
+
+ルーム名ごとに接続をグループ化します。
+
+```python
+# src/routes/rooms/{room_id}.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+rooms: dict[str, list[WebSocket]] = {}
+
+async def SOCKET(websocket: WebSocket, room_id: str):
+    await websocket.accept()
+    rooms.setdefault(room_id, []).append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in rooms.get(room_id, []):
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        rooms[room_id].remove(websocket)
+        if not rooms[room_id]:
+            del rooms[room_id]
+```
+
+URL パラメータ `{room_id}` はファイル名から自動的に挿入されます。
+
+---
+
+## 接続のライフサイクル
+
+|イベント |何が起こるか |
+|------|-----------|
+|クライアントが接続します | `websocket.accept()` — 最初に呼び出す必要があります |
+|メッセージを受信しました | `receive_text()` / `receive_json()` / `receive_bytes()` |
+|クライアントが切断します | `WebSocketDisconnect` が発生しました — `except` でクリーンアップ |
+|サーバーが閉じます | `await websocket.close(code=1000)` |
+
+接続をクリーンアップするには、常にメッセージ ループを `try/except WebSocketDisconnect` でラップしてください。
+
+ - -
+
+＃＃ クライアント
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## も参照
+
+- [Route Handlers](/docs/fbrouters/route_handlers) — FBR の REST エンドポイント
+- [WebSocket Guide](/docs/guides/websocket) — 概念的な概要

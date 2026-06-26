@@ -1,0 +1,80 @@
+# Загрузка данных
+
+Nexy предоставляет два уровня для загрузки данных: **время компиляции** во фронтальной части `.nexy` и **время запроса** через перехватчики.
+
+## Данные времени компиляции (вступление)
+
+Блок `---` в файлах `.nexy` — это Python, который выполняется во время компиляции. Переменные, определенные там, доступны в шаблоне:
+
+```nexy
+---
+import json
+from src.data import get_items
+items = get_items()
+total = len(items)
+---
+<ul>
+{% for item in items %}
+  <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+<p>Total: {{ total }} items</p>
+```
+
+Вы также можете напрямую импортировать данные JSON:
+
+```nexy
+---
+import "./data.json" as data
+---
+<pre>{{ data | tojson }}</pre>
+```
+
+## Данные времени запроса (перехватчики)
+
+Хуки запускаются во время HTTP-запроса и имеют доступ к контексту запроса:
+
+```python
+from nexy import useQuery, useSearchParams, useSession, useCookies
+
+# URL path parameters (from [param] in filename)
+id = useQuery("id")
+
+# Query string parameters
+params = useSearchParams()  # {"page": "1", "sort": "asc"}
+
+# Session data (requires session middleware)
+user = useSession().get("user")
+
+# Cookies
+token = useCookies().get("token")
+```
+
+## Обработчики маршрутов API
+
+Для данных, поступающих из базы данных или внешнего API, создайте специальный обработчик API в файле `.py`:
+
+```python
+# src/routes/api/items.py
+from myapp.db import get_items
+
+def GET():
+    return get_items()
+
+def POST(data: dict):
+    # data is parsed from request body automatically
+    return {"created": True, "id": data.get("id")}
+```
+
+Затем вызовите его со своей страницы через `fetch` или включение на стороне сервера.
+
+## Динамическое подключение с помощью `useViews`
+
+Отобразите компонент другой страницы внутри текущей страницы во время запроса:
+
+```python
+from nexy import useViews
+sidebar = useViews("/components/sidebar.nexy", {"active": "docs"})
+```
+
+Возвращает `HTMLResponse`, который вы можете встроить в свой шаблон.

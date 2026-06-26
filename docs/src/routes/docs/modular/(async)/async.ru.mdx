@@ -1,0 +1,50 @@
+# Асинхронность и параллелизм (модульный)
+
+Nexy построен на FastAPI, который поддерживает в контроллерах как `async`, так и `def`.
+
+## `async def` против `def`
+
+| Тип обработчика | Исполнение | Когда использовать |
+|-------------|-----------|-------------|
+| `def` | Пул потоков (блокировка) | Работа ЦП, синхронизация вызовов БД, блокировка ввода-вывода |
+| `async def` | Цикл событий | Асинхронная БД, HTTP-вызовы, длительный опрос |
+
+## Асинхронный контроллер
+
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+
+## Смешанная синхронизация и асинхронность
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/sync")
+class SyncController:
+    def GET(self):             # runs in thread pool
+        return {"type": "sync"}
+
+"@Controller("/async")
+class AsyncController:
+    async def GET(self):       # runs in event loop
+        return {"type": "async"}
+```
+
+## Фоновые задачи
+
+Для работы по принципу «выпустил и забыл» после ответа используйте `BackgroundTasks`. Для настоящей асинхронной фоновой работы используйте `asyncio.create_task`.
+
+## Предостережения
+
+- Не вызывайте функции `async` из обработчиков `def` с помощью `await` — используйте `asyncio.run()` или создайте обработчик `async def`
+- Не вызывать функции блокировки (`time.sleep()`, `requests.get()`) из `async def` — используйте `asyncio.sleep()`, `httpx.AsyncClient`
+- Для производства используйте несколько рабочих для обработчиков синхронизации.

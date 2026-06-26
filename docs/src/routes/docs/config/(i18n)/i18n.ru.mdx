@@ -1,0 +1,101 @@
+# i18n
+
+Настройте интернационализацию — определение локали, файлы перевода и поддержку RTL.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "es"]
+    useDefaultLocale = "en"
+    useLocaleCookieName = "nexy-locale"
+    useLocaleDetection = {"header": True, "cookie": True}
+    useRTL = False
+```
+
+---
+
+## Поля
+
+| Поле | Тип | По умолчанию | Описание |
+|-------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` | Доступные локали. Автоматически определяется из `nexy/i18n/`, если `None`. |
+| `useDefaultLocale` | `str` | `"en"` | Резервная локаль при сбое обнаружения. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | Имя файла cookie для сохранения выбора локали пользователя. |
+| `useLocaleDetection` | `dict \| None` | `None` | Стратегии обнаружения: `header`, `cookie`, `path`. |
+| `useRTL` | `bool` | `False` | Включите поддержку макета справа налево. |
+
+---
+
+## Файлы перевода
+
+Поместите файлы перевода JSON в `nexy/i18n/<locale>/`:
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+    "welcome": "Welcome",
+    "greeting": "Hello!"
+}
+```
+
+```json
+// nexy/i18n/fr/common.json
+{
+    "welcome": "Bienvenue",
+    "greeting": "Bonjour !"
+}
+```
+
+---
+
+## Использование в шаблонах
+
+```nexy
+---
+from nexy.i18n import t
+welcome = t("welcome")
+---
+<h1>{{ welcome }}</h1>
+```
+
+---
+
+## Использование в Python
+
+```python
+from nexy.i18n import trans, t
+
+msg = trans("welcome")            # explicit
+msg = t("welcome")                # shorthand
+msg = t("missing_key", default="Fallback")
+```
+
+---
+
+## Переключение локали
+
+```python
+from nexy.i18n import useLocale
+locale = useLocale()
+print(locale["locale"])       # "fr"
+print(locale["is_rtl"])       # False
+print(locale["available"])    # ["en", "fr", "es"]
+```
+
+---
+
+## Поддержка RTL
+
+Когда `useRTL = True`, Nexy устанавливает атрибут `dir="rtl"` для элемента `<html>` и загружает таблицы стилей, настроенные с учетом RTL, для поддерживаемых платформ.

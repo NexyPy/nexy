@@ -1,0 +1,75 @@
+# "@Middleware
+
+Примените вызовы промежуточного программного обеспечения к классу контроллера или методу обработчика.
+
+## Контракт промежуточного программного обеспечения
+
+Промежуточное программное обеспечение — это любое вызываемое с помощью `__call__(self, request)`. Он получает объект FastAPI `Request` и запускается перед обработчиком.
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## Промежуточное ПО на маршруте
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## Несколько промежуточных программ
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+## Подпись
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## Охранники против промежуточного программного обеспечения
+
+| | Охранники | Промежуточное ПО |
+|---|--------|-----------|
+| Цель | Авторизация | Побочные эффекты (ведение журнала, время) |
+| Блокирует запрос | Да (вызывает HTTPException) | Нет (если вы не сделаете рейз) |
+| Работает как | FastAPI `Depends` | ФастAPI `Depends` |
+| Заказать | Охранники классов → охранники методов | Промежуточное ПО класса → Промежуточное ПО метода |
+
+Оба работают как зависимости FastAPI `Depends`. Порядок: охранники класса → промежуточное ПО класса → охранники метода → промежуточное ПО метода.

@@ -59,7 +59,7 @@ class GitClone:
                                 "init.template_not_found",
                                 "Template or branch '{branch}' not found on remote.",
                             ).format(branch=branch)
-                        )
+                        ) from e
                     raise e
 
             # Extraction logic (sparse or merge)
@@ -77,13 +77,13 @@ class GitClone:
                         check=True,
                         shell=self.is_windows,
                     )
-                except subprocess.CalledProcessError:
+                except subprocess.CalledProcessError as e:
                     raise Exception(
                         t(
                             "init.checkout_failed",
                             "Failed to extract files from template '{path}'.",
                         ).format(path=checkout_path)
-                    )
+                    ) from e
 
                 # If we used a subdir, move files to root and cleanup
                 if subdir:
@@ -109,22 +109,22 @@ class GitClone:
                             check=True,
                             shell=self.is_windows,
                         )
-                    except subprocess.CalledProcessError:
+                    except subprocess.CalledProcessError as e:
                         raise Exception(
                             t(
                                 "init.checkout_failed",
                                 "Failed to extract files from template '{path}'.",
                             ).format(path=checkout_path)
-                        )
+                        ) from e
 
                 if subdir:
                     self._move_subdir_to_root(dest, Path(subdir))
 
         finally:
-            # Suppression radicale du dossier .git du template pour couper tout lien (origin)
+            # Remove template .git directory to sever origin link
             self._cleanup_git(dest)
 
-            # Restauration du dépôt git de l'utilisateur s'il existait
+            # Restore user's git repo if it existed
             if has_user_git:
                 self._restore_git_repo()
 
@@ -165,7 +165,7 @@ class GitClone:
         """Removes the .git directory to cut any link with the remote repository."""
 
         def on_rm_error(
-            func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+            func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
         ) -> None:
             os.chmod(path, stat.S_IWRITE)
             func(path)
@@ -174,7 +174,7 @@ class GitClone:
         if gitdir.exists():
             shutil.rmtree(gitdir, onerror=on_rm_error)
 
-        # Supprime également .github si présent (souvent spécifique au dépôt du template)
+        # Also remove .github if present (often template-specific)
         githubdir = dest / ".github"
         if githubdir.exists():
             shutil.rmtree(githubdir, onerror=on_rm_error)
@@ -189,7 +189,7 @@ class GitClone:
         if backup.exists():
 
             def on_rm_error(
-                func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+                func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
             ) -> None:
                 os.chmod(path, stat.S_IWRITE)
                 func(path)
@@ -205,7 +205,7 @@ class GitClone:
                     shutil.copytree(gitdir, backup, dirs_exist_ok=True)
 
                     def on_rm_error(
-                        func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+                        func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
                     ) -> None:
                         os.chmod(path, stat.S_IWRITE)
                         func(path)
@@ -233,7 +233,7 @@ class GitClone:
             except Exception:
                 # Fallback to copy and delete
                 def on_rm_error(
-                    func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+                    func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
                 ) -> None:
                     os.chmod(path, stat.S_IWRITE)
                     func(path)

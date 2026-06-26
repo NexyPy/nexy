@@ -1,0 +1,207 @@
+# Providers & Dependency Injection
+
+Providers encapsulate business logic, data access, or external integrations. They're decorated with `"@Injectable()` and automatically injected into controllers (or other providers) via constructor parameters.
+
+## Why Providers?
+
+Without DI, every controller manually creates its dependencies:
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+With DI, the container instantiates dependencies and injects them:
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+Benefits: testability (mock `UserService` in tests), singleton sharing (same instance across controllers), scope control (new per request when needed).
+
+## Creating a Provider
+
+Decorate any class with `"@Injectable()`:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+`"@Injectable()` prevents direct instantiation — calling `UserService()` outside of DI raises `TypeError`. This forces you to use the container, which ensures scopes and dependencies are correctly resolved.
+
+## Injecting into a Controller
+
+Declare the dependency as a constructor parameter with a type hint:
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+The DI container matches the type hint (`UserService`) to a registered provider. If no provider matches, it raises `ValueError` at startup.
+
+**Gotcha**: Constructor parameter names don't matter — only type hints do. `service: UserService` and `s: UserService` both resolve to the same provider.
+
+## Injecting Providers into Other Providers
+
+Providers can depend on other providers — the container resolves the full tree:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+Circular dependencies (`A → B → A`) raise `RecursionError` at startup. Refactor to extract shared logic into a third provider.
+
+## Injection Scopes
+
+Scopes control provider lifetime:
+
+| Scope | Lifetime | Use Case |
+|-------|----------|----------|
+| `Scope.SINGLETON` (default) | One instance for the entire app | Database connections, config, caches |
+| `Scope.REQUEST` | New instance per HTTP request | Per-request state, audit logs |
+| `Scope.TRANSIENT` | New instance every injection | Stateless utilities, pure functions |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`** is the default and safest choice. Use **`Scope.REQUEST`** only when you need per-request state (e.g., storing the current user from a guard). Use **`Scope.TRANSIENT`** when the provider has mutable state that shouldn't be shared.
+
+**Gotcha**: Transient providers injected into a singleton provider become effectively singleton — they're created once when the singleton is first resolved. If you need a fresh transient per request, inject it into a request-scoped provider instead.
+
+## Custom Providers with `useValue` and `useFactory`
+
+For non-class dependencies (strings, configs, lambdas), use the dict syntax in the module:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+Register providers directly in the module's `providers` list:
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+Inject by type hint:
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## Optional Dependencies
+
+Use `None` as the default value for optional injection:
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+If `Logger` is not registered in any module, the container skips it and passes `None`. This is useful for optional features like logging or metrics that shouldn't crash if unconfigured.
+
+## Testing with Providers
+
+DI makes testing straightforward — instantiate the controller with a mock:
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+No need to start the server or set up the full DI container. This is the main advantage of constructor injection — pure unit tests.
+
+## Best Practices
+
+1. **Prefer constructor injection** — manually calling `Container.resolve()` is rare; let the container inject automatically.
+2. **Keep providers stateless** (singleton scope) — state belongs in databases or request-scoped providers.
+3. **One responsibility per provider** — `UserService` handles users, `EmailService` handles emails.
+4. **Register all providers explicitly** in the module's `providers` list — explicit registrations are self-documenting.
+5. **Use `Scope.REQUEST` sparingly** — each request-scoped provider adds allocation overhead.
+
+## Next Steps
+
+- [Modules](/docs/modular/modules) — organize providers into feature modules
+- [Guards](/docs/modular/guards) — add authentication and authorization
+- [Middleware](/docs/modular/middleware) — intercept requests before they reach controllers

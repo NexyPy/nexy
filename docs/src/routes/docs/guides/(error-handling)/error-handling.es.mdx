@@ -1,0 +1,76 @@
+# Manejo de errores
+
+Nexy proporciona páginas de error 404 y 500 integradas. Anúlelos con archivos `.nexy` personalizados.
+
+## Páginas de error predeterminadas
+
+Cuando no se encuentra una página (404) o se produce un error no controlado (500), Nexy devuelve una página HTML con un estilo simple.
+
+## Páginas de error personalizadas
+
+Coloque archivos `error.nexy` o `notfound.nexy` en cualquier directorio de ruta para anular las páginas de error para ese alcance:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # Custom 404 for /admin/*
+|   +-- error.nexy      # Custom 500 for /admin/*
++-- notfound.nexy       # Global custom 404
++-- error.nexy          # Global custom 500
+```
+
+### Ejemplo: `notfound.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-yellow-500">404</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Page not found</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Sorry, we couldn't find the page you're looking for.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+### Ejemplo: `error.nexy`
+
+```nexy
+---
+---
+<main class="grid min-h-full place-items-center px-6 py-24 sm:py-32">
+  <div class="text-center">
+    <p class="text-base font-semibold text-red-500">500</p>
+    <h1 class="mt-4 text-3xl font-bold tracking-tight">Something went wrong</h1>
+    <p class="mt-6 text-base leading-7 text-gray-600">
+      Please try again later.
+    </p>
+    <a href="/" class="mt-10 text-sm font-semibold text-yellow-500 hover:text-yellow-400">
+      Go back home →
+    </a>
+  </div>
+</main>
+```
+
+## Páginas de error con alcance
+
+Las páginas de error ubicadas en subdirectorios solo se aplican a rutas dentro de ese directorio. Esto le permite tener diferentes páginas de error para diferentes secciones de su sitio:
+
+```
+src/routes/
++-- admin/
+|   +-- notfound.nexy   # /admin/* — "Admin page not found"
++-- blog/
+|   +-- notfound.nexy   # /blog/* — "Blog post not found"
++-- notfound.nexy       # All other routes
+```
+
+## Relacionado
+
+- [Authorization / Guards](/docs/security/authorization): protección de rutas contra accesos no autorizados
+- [Authentication](/docs/security/authentication): configuración del middleware de autenticación

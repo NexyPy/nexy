@@ -1,0 +1,31 @@
+# 构建和部署
+
+`nx build` 编译您的项目以进行生产。 `nx start` 运行生产服务器。
+
+＃＃ 建造
+
+```bash
+nx build
+```
+
+编译 `.nexy`/`.mdx` 文件，捆绑前端资源，生成路由树。输出转到`__nexy__/`。
+
+有关标志和选项，请参阅 [CLI: build](/docs/cli/build)。
+
+＃＃ 开始
+
+```bash
+nx start
+```
+
+启动生产 Uvicorn 服务器。
+
+请参阅 [CLI: start](/docs/cli/start) 了解标志（`--port`、`--host`、`--env`）。
+
+## 部署
+
+Docker、VPS、Fly.io、Railway、Render — 请参阅 [Deploy guide](/docs/guides/deploy) 了解特定于平台的说明。
+
+## 静态导出
+
+对于完全静态的网站，每个页面在构建期间都会预先呈现为 HTML。使用任何静态文件服务器为 `__nexy__/static/` 提供服务。

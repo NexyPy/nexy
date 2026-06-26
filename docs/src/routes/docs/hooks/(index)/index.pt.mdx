@@ -1,0 +1,20 @@
+# Ganchos
+
+Hooks são funções reativas que fornecem acesso ao contexto da solicitação e ao estado do navegador dentro de seus componentes e layouts `.nexy`. Eles refletem o conceito de estruturas front-end modernas, mas são executados no servidor.
+
+Todos os ganchos são importados de `nexy`:
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## Ganchos disponíveis
+
+- [usePathname](/docs/hooks/usePathname) — caminho da URL atual
+- [useSearchParams](/docs/hooks/useSearchParams) — parâmetros de string de consulta
+- [useRouter](/docs/hooks/useRouter) — navegação programática
+- [useQuery](/docs/hooks/useQuery) — parâmetros de consulta analisados
+- [useSession](/docs/hooks/useSession) — acesso aos dados da sessão
+- [useCookies](/docs/hooks/useCookies) — leitura/gravação de cookies
+- [useToc](/docs/hooks/useToc) — extração do índice
+- [useViews](/docs/hooks/useViews) — gerenciamento de visualizações que podem ser compostas

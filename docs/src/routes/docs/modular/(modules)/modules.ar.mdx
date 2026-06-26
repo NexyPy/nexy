@@ -1,0 +1,193 @@
+# الوحدات
+
+تقوم الوحدات بتجميع وحدات التحكم والموفرين والوحدات الفرعية ذات الصلة في وحدة متماسكة. يحتوي كل تطبيق معياري على وحدة جذرية تستورد وحدات الميزات.
+
+## لماذا الوحدات؟
+
+بدون الوحدات النمطية، يمكنك تسجيل كل وحدة تحكم وموفر في قائمة مسطحة واحدة. مع نمو التطبيق، تصبح هذه القائمة غير قابلة للإدارة - 50 مزودًا ليس لديهم ملكية واضحة.
+
+تستعيد الوحدات الحدود: `UsersModule` يمتلك `UsersController` و`UserService`. كل وحدة هي وحدة قائمة بذاتها.
+
+## وحدة الجذر
+
+يحتاج كل تطبيق إلى وحدة جذرية واحدة. تتم الإشارة إلى الوحدة الجذرية في `nexyconfig.py`:
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+يقوم مصمم الديكور `"@Module` ببناء FastAPI `APIRouter` من الفئة. يقرأ ثلاث سمات الطبقة:
+
+| السمة | اكتب | الوصف |
+|-----------|------|-------------|
+| `controllers` | `list[type]` | فئات المراقب للتسجيل |
+| `imports` | `list[APIRouter]` | الوحدات الفرعية (من `"@Module`) لتشمل |
+| `providers` | `list[type]` | فئات قابلة للحقن للتسجيل في الحاوية |
+| `exports` | `list[type]` | الموفرون مرئيون لاستيراد الوحدات |
+
+**مسكتك**: `"@Module()` يتطلب وحدة تحكم واحدة على الأقل. قائمة `controllers` الفارغة ترفع `ValueError`.
+
+## وحدات الميزة
+
+تقوم وحدات الميزات بتغليف المجال:
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+قم باستيراده في الوحدة الجذرية:
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### بادئة الوحدة
+
+قم بتعيين بادئة تنطبق على جميع المسارات في الوحدة:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+بادئات وحدة التحكم مرتبطة ببادئة الوحدة النمطية. إذا كان `"@Module(prefix="/users")` و`"@Controller("/{id}")`، فإن المسار الفعال هو `/users/{id}`.
+
+## تسجيل المزود
+
+يجب أن يتم تسجيل مقدمي الخدمة في الوحدة النمطية ليكونوا متاحين للحقن:
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+يتم حل `DatabaseService` عند بدء التشغيل عند تحميل الوحدة. إذا تعذر حل تبعيات الموفر، فسيظهر الخطأ على الفور - وليس في وقت الطلب.
+
+### الصادرات
+
+تتحكم السمة `exports` في الموفرين المرئيين لاستيراد الوحدات:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+بدون `exports`، لن يكون هناك موفرين مرئيين لاستيراد الوحدات. هذا أمر مقصود، فهو يفرض عليك الإعلان بشكل صريح عن واجهة برمجة التطبيقات العامة لوحدتك.
+
+## الوحدات المشتركة
+
+الوحدات هي مفردة. يؤدي استيراد نفس الوحدة في أماكن متعددة إلى مشاركة نفس مثيلات الموفر:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+هذه هي الطريقة التي تشارك بها اتصال قاعدة البيانات عبر تطبيقك.
+
+## هيكل المشروع
+
+يتبع المشروع المعياري النموذجي هذه الاتفاقية:
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+يتدرج هذا الهيكل إلى مئات الوحدات. كل دليل وحدة مستقل بذاته.
+
+## دقة الوحدة
+
+يتبع دقة الوحدة ثلاث قواعد:
+
+1. **الفرز الطوبولوجي** — تتم تهيئة الوحدات بترتيب التبعية (الاستيراد أولاً)
+2. **الكشف الدائري** — تزيد التبعيات الدائرية بين الوحدات `RecursionError` عند بدء التشغيل
+3. **نطاق الموفر** — يحتفظ الموفرون بنطاقهم الأصلي بغض النظر عن الوحدة التي تستوردهم
+
+إذا كانت الوحدة A تستورد الوحدة B، وتستورد الوحدة B الوحدة A، فإن الحاوية تكتشف الدورة عند بدء التشغيل:
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**سبب أهمية ذلك**: غالبًا ما تشير التبعيات الدائرية إلى مشكلة في التصميم. استخراج التبعية المشتركة إلى وحدة ثالثة.
+
+## أفضل الممارسات
+
+1. **ميزة واحدة لكل وحدة** — المستخدمون، والمصادقة، والفوترة. ليس "يستخدم".
+2. **احتفظ بواردات الوحدات بشكل سطحي** — الوحدة التي تستورد أكثر من 10 وحدات أخرى تفعل الكثير
+3. **استخدم `exports` عمدًا** — قم فقط بتصدير ما تحتاجه الوحدات الأخرى حقًا
+4. **تسمية الوحدات بأسماء النطاقات** — `UsersModule`، `OrdersModule`، `PaymentsModule`
+5. **قدم دائمًا `prefix` عند الإصدار** — `"@Module(prefix="/api/v1")`
+
+## الخطوات التالية
+
+- [Guards](/docs/modular/guards) — حماية مسارات الوحدة
+- [Middleware](/docs/modular/middleware) — طلب خطافات خط الأنابيب
+- [Controllers](/docs/modular/controllers) — تحديد معالجات المسار

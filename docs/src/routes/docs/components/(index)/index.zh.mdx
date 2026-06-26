@@ -1,0 +1,95 @@
+# 组件概述
+
+组件是 Nexy 应用程序的构建块。组件是一个将 Python 逻辑与 HTML 模板相结合的 `.nexy` 文件，例如 Vue 的 `.vue` 文件或 Svelte 的 `.svelte` 文件。
+
+## 组件类型
+
+Nexy 有两类组件：
+
+### 1. 页面组件（在`src/routes/`中）
+
+`src/routes/` 中的每个 `.nexy` 文件都成为一条路由。文件路径决定 URL。
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   └── [slug].nexy     →  /blog/:slug
+```
+
+页面组件可通过 URL 直接访问。它们可以使用 `useQuery()` 和 `usePathname()` 等挂钩，因为它们在请求上下文中运行。
+
+### 2.可重用组件（在`src/components/`中）
+
+`src/components/` 中的组件不是路由——它们是由页面和其他组件导入和使用的。
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+---
+<Header title="My Site" />
+<Card title="Hello">
+  <p>Card content</p>
+</Card>
+```
+
+这些组件接受 props、使用槽并将 HTML + 逻辑封装在可重用单元中。
+
+## 组件剖析
+
+每个 `.nexy` 组件都有三个可能的部分：
+
+```nexy
+---
+# 1. Frontmatter: Python code
+title:prop[str] = "Default"
+count = 0
+---
+<!-- 2. Template: HTML + Jinja2 -->
+<div class="card">
+  <h2>{{ title }}</h2>
+  <p>Count: {{ count }}</p>
+  <slot />
+</div>
+
+<style>
+/* 3. Styles (global) */
+.card { border: 1px solid #ddd; padding: 1rem; }
+</style>
+```
+
+**1. Frontmatter** — `---` 分隔符之间的 Python 代码。声明 props、导入模块、运行钩子、处理数据。
+
+**2.模板** — 带有 Jinja2 表达式的 HTML。输出变量，循环数据，渲染子组件。
+
+**3.样式** — `<style>` 标签（模板中的任何位置）。样式是全局的，没有范围。使用 BEM 或实用程序类进行封装。
+
+## 组件规则
+
+- **名称必须为 PascalCase**：`BlogCard`、`Header`、`CommentForm`
+- **一个文件=一个组件**：每个文件不能多次导出
+- **预先声明的道具**：`title:prop[str] = "Default"`
+- **在顶部导入**：在任何逻辑或挂钩之前
+- **模块级别没有副作用**：frontmatter 根据请求运行。不要在函数之外打开文件或创建连接
+
+## 何时创建组件
+
+在以下情况下创建组件：
+
+- 您在多个位置（卡片、按钮、标题）重复使用相同的 HTML 模式
+- 您想用其模板封装逻辑（带有验证的CommentForm）
+- 您需要将数据从页面传递到子部分（带有活动项目的侧边栏）
+- 你想跨路由共享布局结构（Layout、Wrapper）
+
+如果您要编写相同的 HTML 两次，请将其提取到组件中。
+
+## 后续步骤
+
+- [Component Usage](/docs/components/usage)：传递道具、插槽、渲染
+- [Markup](/docs/components/markup)：HTML语法、组件标签、动态属性
+- [Python](/docs/components/python)：frontmatter 逻辑、导入、挂钩
+- [Properties](/docs/components/properties)：输入的道具、默认值、验证
+- [Styles](/docs/components/styles)：组件中的 CSS

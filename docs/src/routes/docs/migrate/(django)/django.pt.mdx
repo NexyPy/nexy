@@ -1,0 +1,60 @@
+# Migrar do Django para Nexy
+
+Django vem com baterias incluídas. Nexy é focado e modular – você traz o que precisa.
+
+## Mapeamento de conceitos
+
+| Django | Nexy |
+|--------|------|
+| `views.py` | Arquivos `.nexy` (FBR) ou `"@Controller` (Modular) |
+| `urls.py` | Árvore de arquivos (FBR) ou `"@Module` (Modular) |
+| `models.py` | SQLModel/SQLAlchemy (sua escolha) |
+| `admin.py` | Documentos OpenAPI em `/docs` |
+| `manage.py` | `nx`CLI |
+| `settings.py` | `nexyconfig.py` |
+| Django ORM | SQLModel, SQLAlchemy ou Tortoise-ORM |
+| Modelos (DTL) | Jinja2 (`.nexy` arquivos) |
+| Visualizações baseadas em classe | Arquivos `"@Controller` (modulares) ou `.nexy` (FBR) |
+| Middleware | `"@Middleware` ou middleware FastAPI |
+| `request.user` | `request.state.user` ou guardas |
+
+## Exemplo
+```python
+# src/routes/users/index.nexy
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET():
+    return {"users": [u.model_dump() for u in User.find_all()]}
+---
+```
+```python
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return {"users": [u.model_dump() for u in User.find_all()]}
+```
+## Etapas de migração
+
+1. **Estruture um novo projeto Nexy** — `nx new my-app`
+2. **Modelos de porta** — traduza modelos Django para SQLModel/SQLAlchemy
+3. **Visualizações de porta** — converte visualizações de função/classe do Django em arquivos `.nexy` (FBR) ou `"@Controller` (Modular)
+4. **Configurações de URL da porta** — Os padrões `urls.py` tornam-se árvore de arquivos (FBR) ou `"@Module` (Modular)
+5. **Modelos de porta** — Modelos DTL → Jinja2 em arquivos `.nexy`
+6. **Middleware de porta** — Middleware Django → Starlette `BaseHTTPMiddleware`
+
+## Por que mudar
+
+- **Sem configurações monolíticas** — configure apenas o que você usa
+- **Assíncrono por padrão** — FastAPI/Starlette nos bastidores
+- **Documentos OpenAPI** — automático, sem necessidade de `drf-spectacular`
+- **IU baseada em componentes** — misture Python + Jinja2 em um arquivo
+- **Escolha de estrutura** — React, Vue, Svelte, Solid ou Preact para o frontend

@@ -1,0 +1,61 @@
+# نظرة عامة على قاعدة البيانات
+
+لا يقوم Nexy بشحن تجريد قاعدة البيانات المضمنة. يمكنك اختيار ORM الخاص بك وتكوينه كما تفعل في أي مشروع FastAPI.
+
+---
+
+## ORMs المدعومة
+
+| أو آر إم | النمط | غير متزامن | أداة الهجرة |
+|-----|-------|------|----------------|
+| سكلموديل | Pydantic الأصلي | نعم | الإنبيك |
+| SQLAlchemy | كامل المواصفات، ناضجة | نعم | الإنبيك |
+| السلحفاة-ORM | جانغو مثل | نعم | ايريش |
+
+---
+
+## النمط العام
+
+1. قم بتثبيت ORM وبرنامج التشغيل الذي اخترته
+2. قم بتكوين الاتصال في تطبيقك
+3. تحديد النماذج
+4. إنشاء وتطبيق عمليات الترحيل
+5. استخدم ORM في معالجات المسار الخاصة بك
+
+---
+
+## نمط حقن التبعية
+
+قم بإنشاء تبعية قاعدة بيانات لاستخدامها عبر مساراتك:
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+ثم أدخل في معالجات الطريق:
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## الخطوات التالية
+
+- [SQLModel](/docs/orm/sqlmodel) — موصى به للمشاريع الجديدة
+- [SQLAlchemy](/docs/orm/sqlalchemy) — التحكم الكامل والمرونة
+- [Tortoise-ORM](/docs/orm/tortoise) — ORM غير متزامن يشبه Django

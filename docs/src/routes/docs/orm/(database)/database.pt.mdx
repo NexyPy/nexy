@@ -1,0 +1,61 @@
+# Visão geral do banco de dados
+
+Nexy não fornece uma abstração de banco de dados integrada. Você escolhe seu ORM e o configura como faria em qualquer projeto FastAPI.
+
+---
+
+## ORMs suportados
+
+| ORM | Estilo | Assíncrono | Ferramenta de migração |
+|-----|-------|-------|----------------|
+| Modelo SQL | Nativo Pydantic | Sim | Alambique |
+| SQLAlquimia | Completo, maduro | Sim | Alambique |
+| Tartaruga-ORM | Tipo Django | Sim | Aerich |
+
+---
+
+## Padrão geral
+
+1. Instale o ORM e o driver escolhidos
+2. Configure a conexão em seu aplicativo
+3. Defina modelos
+4. Crie e aplique migrações
+5. Use o ORM em seus manipuladores de rota
+
+---
+
+## Padrão de injeção de dependência
+
+Crie uma dependência de banco de dados para uso em suas rotas:
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+Em seguida, injete nos manipuladores de rota:
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+##Próximas etapas
+
+- [SQLModel](/docs/orm/sqlmodel) — recomendado para novos projetos
+- [SQLAlchemy](/docs/orm/sqlalchemy) — controle total e flexibilidade
+- [Tortoise-ORM](/docs/orm/tortoise) — ORM assíncrono semelhante ao Django

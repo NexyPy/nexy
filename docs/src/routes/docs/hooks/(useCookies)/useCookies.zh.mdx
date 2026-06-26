@@ -1,0 +1,36 @@
+# 使用Cookies
+
+以字典形式返回当前请求中的 cookie。
+
+```python
+from nexy import useCookies
+
+cookies = useCookies()
+```
+
+---
+
+## 返回值
+
+`dict` — 随请求发送的所有 cookie。
+
+ - -
+
+＃＃ 例子
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+locale = cookies.get("nexy-locale", "en")
+---
+<html lang="{{ locale }}">
+```
+
+---
+
+## 使用说明
+
+- 只读 — 使用 `useSession` 设置 cookie
+- Cookie 值是字符串
+- 相当于FastAPI中的`request.cookies`

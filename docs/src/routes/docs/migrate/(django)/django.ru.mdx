@@ -1,0 +1,60 @@
+# Мигрируем с Django на Nexy
+
+В комплект поставки Django входят батарейки. Nexy является целенаправленным и модульным — вы берете с собой все, что вам нужно.
+
+## Сопоставление концепций
+
+| Джанго | Некси |
+|--------|------|
+| `views.py` | Файлы `.nexy` (FBR) или `"@Controller` (модульный) |
+| `urls.py` | Дерево файлов (FBR) или `"@Module` (модульный) |
+| `models.py` | SQLModel/SQLAlchemy (на ваш выбор) |
+| `admin.py` | Документы OpenAPI на `/docs` |
+| `manage.py` | `nx` CLI |
+| `settings.py` | `nexyconfig.py` |
+| Джанго ОРМ | SQLModel, SQLAlchemy или Tortoise-ORM |
+| Шаблоны (DTL) | Jinja2 (файлы `.nexy`) |
+| Представления на основе классов | Файлы `"@Controller` (модульный) или `.nexy` (FBR) |
+| Промежуточное ПО | `"@Middleware` или промежуточное ПО FastAPI |
+| `request.user` | `request.state.user` или охранники |
+
+## Пример
+```python
+# src/routes/users/index.nexy
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET():
+    return {"users": [u.model_dump() for u in User.find_all()]}
+---
+```
+```python
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return {"users": [u.model_dump() for u in User.find_all()]}
+```
+## Этапы миграции
+
+1. **Создайте новый проект Nexy** — `nx new my-app`
+2. **Модели портов** — преобразуйте модели Django в SQLModel/SQLAlchemy.
+3. **Представления портов** — конвертируйте представления функций/классов Django в файлы `.nexy` (FBR) или `"@Controller` (модульные).
+4. **Port URL configs** — `urls.py` patterns become file tree (FBR) or `"@Module` (Modular)
+5. **Шаблоны портов** — шаблоны DTL → Jinja2 в файлах `.nexy`
+6. **Промежуточное программное обеспечение порта** — Промежуточное программное обеспечение Django → Starlette `BaseHTTPMiddleware`
+
+## Зачем переключаться
+
+- **Нет монолитных настроек** — настраивайте только то, что используете
+- **Асинхронность по умолчанию** — FastAPI/Starlette под капотом
+- **Документация OpenAPI** — автоматически, `drf-spectacular` не требуется.
+- **Компонентный пользовательский интерфейс** — смешайте Python + Jinja2 в одном файле.
+- **Выбор фреймворка** — React, Vue, Svelte, Solid или Preact для внешнего интерфейса.

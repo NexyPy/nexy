@@ -1,0 +1,49 @@
+# الترحيل من Next.js إلى Nexy
+
+قام Next.js بنشر مكونات التوجيه والخادم المستندة إلى الملفات. يجلب Nexy نفس DX إلى Python.
+
+## رسم خرائط المفاهيم
+
+| التالي.js | نكسي |
+|---------|------|
+| دليل `app/` | دليل `src/routes/` |
+| `page.tsx` | `.nexy` أو `.mdx` ملف |
+| `layout.tsx` | `layout.nexy` |
+| `loading.tsx` | `dependencies.py` |
+| `route.ts` (واجهة برمجة التطبيقات) | ملف `.py` مع `get()`، `post()`، وما إلى ذلك |
+| `next.config.js` | `nexyconfig.py` |
+| إجراءات الخادم | `"@Action` ديكور |
+| رد فعل مكونات الخادم | مكونات `.nexy` (Python + Jinja2) |
+| `getStaticProps` | منطق المادة الأمامية في `.nexy` |
+
+## مثال
+
+```python
+# Next.js: app/users/[id]/page.tsx
+export default async function Page({ params }) {
+    const user = await db.user.findUnique(params.id);
+    return <div>{user.name}</div>;
+}
+
+# Nexy: src/routes/users/[id]/index.nexy
+---
+user = db.user.find_unique(id)
+---
+<h1>{{ user.name }}</h1>
+```
+
+## خطوات الهجرة
+
+1. **السقالة** — `nx new my-app`
+2. **صفحات المنفذ** — ملفات `page.tsx` → `.nexy` أو `.mdx`
+3. **تخطيطات المنافذ** — `layout.tsx` → `layout.nexy`
+4. **مسارات واجهة برمجة تطبيقات المنفذ** — `route.ts` → `.py` ملفات مع `get()`، `post()`، وما إلى ذلك.
+5. **إجراءات خادم المنفذ** — إجراءات الخادم → `"@Action` ديكور
+
+## الاختلافات الرئيسية
+
+- **Python على الخادم** - لا يلزم وجود JavaScript/TypeScript
+- **لا توجد خطوة إنشاء للصفحات** — يتم تجميع ملفات `.nexy` في وقت التطوير
+- **أطر عمل الواجهة الأمامية المتعددة** — React وVue وSvelte وSolid وPreact
+- **FastAPI تحت الغطاء** — غير متزامن، OpenAPI، آمن للنوع
+- **استراتيجيتان للتوجيه** — تعتمد على الملفات (مثل صفحات Next.js) أو معيارية (مثل NestJS)

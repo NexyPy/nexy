@@ -1,0 +1,74 @@
+#جلسة
+
+قم بتكوين البرامج الوسيطة للجلسة لجلسات ملفات تعريف الارتباط الموقعة - لا يلزم التخزين على جانب الخادم.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useSession = {
+        "secret_key": "your-secret-key",
+        "max_age": 3600,
+        "same_site": "lax",
+        "https_only": False,
+    }
+```
+
+يستخدم `SessionMiddleware` الخاص بـ Starlette أسفل الغطاء.
+
+---
+
+## الحقول
+
+| المجال | اكتب | الافتراضي | الوصف |
+|-------|------|---------|-------------|
+| `secret_key` | `str` | مطلوب | المفتاح السري لتوقيع ملفات تعريف الارتباط للجلسة |
+| `max_age` | `int` | `1209600` (14 يومًا) | الحد الأقصى لعمر ملف تعريف الارتباط للجلسة بالثواني |
+| `same_site` | `str` | `"lax"` | سياسة SameSite (`"lax"`، `"strict"`، `"none"`) |
+| `https_only` | `bool` | `False` | أرسل ملف تعريف الارتباط فقط عبر HTTPS |
+
+---
+
+## الاستخدام
+
+```python
+from nexy import useSession
+
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+```
+
+تتصرف الجلسة مثل القاموس - تعيين وقراءة وحذف:
+
+```python
+session = useSession()
+user_id = session.get("user_id")
+del session["user_id"]
+```
+
+---
+
+## نمط رسائل فلاش
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append({"type": "success", "text": "Saved!"})
+session["_flashes"] = flashes
+```
+
+ثم اقرأ وامسح في القالب الخاص بك:
+
+```python
+session = useSession()
+flashes = session.pop("_flashes", [])
+```
+
+---
+
+## ملاحظات أمنية
+
+- بيانات الجلسة موقعة ولكنها **غير مشفرة** — لا تقم بتخزين البيانات الحساسة
+- تدوير `secret_key` بشكل دوري في الإنتاج
+- استخدم `https_only=True` في الإنتاج

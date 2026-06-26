@@ -1,0 +1,85 @@
+# Модель ответа (FBR)
+
+Управляйте сериализацией ответов, кодами состояния и типами ответов.
+
+## Пидантическая модель ответа
+
+```python
+# src/routes/users.py
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET() -> UserOut:
+    return UserOut(id=1, name="Alice", email="alice"@example.com")
+```
+
+## Получение списка ответов
+
+```python
+def GET() -> list[UserOut]:
+    return [UserOut(id=1, name="Alice")]
+```
+
+## Типы ответов
+
+Импорт из `fastapi.responses`:
+
+```python
+from fastapi.responses import (
+    JSONResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    StreamingResponse,
+    FileResponse,
+    ORJSONResponse,
+)
+```
+
+### HTML-ответ
+
+```python
+from fastapi.responses import HTMLResponse
+
+def GET() -> HTMLResponse:
+    return HTMLResponse("<h1>Hello</h1>")
+```
+
+### Потоковый ответ
+
+```python
+from fastapi.responses import StreamingResponse
+import io
+
+def GET() -> StreamingResponse:
+    return StreamingResponse(io.StringIO("large CSV data..."), media_type="text/csv")
+```
+
+## Прямой ответ с пользовательским статусом
+
+```python
+from fastapi.responses import JSONResponse
+
+def GET() -> JSONResponse:
+    return JSONResponse(
+        content={"msg": "created"},
+        status_code=201,
+        headers={"X-Custom": "value"},
+    )
+```
+
+## Поддерживаемые типы ответов
+
+| Класс | Тип контента | Вариант использования |
+|-------|-------------|----------|
+| `JSONResponse` | `application/json` | Данные JSON (по умолчанию) |
+| `HTMLResponse` | `text/html` | HTML-строки |
+| `PlainTextResponse` | `text/plain` | Необработанный текст |
+| `RedirectResponse` | — | Перенаправления |
+| `StreamingResponse` | варьируется | Потоковые данные |
+| `FileResponse` | варьируется | Загрузка файлов |
+| `ORJSONResponse` | `application/json` | Более быстрый JSON (требуется `orjson`) |

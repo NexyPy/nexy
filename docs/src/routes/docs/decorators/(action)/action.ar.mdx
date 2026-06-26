@@ -1,0 +1,75 @@
+# "@أكشن
+
+تحويل وظيفة Python إلى نقطة نهاية خادم يمكن الاتصال بها من المتصفح - لا يوجد تسجيل لجهاز التوجيه، ولا يوجد تحليل للطلب.
+
+```python
+from nexy.decorators import Action
+
+"@Action
+def submit_comment(post_id: int, body: str) -> dict:
+    return {"status": "ok"}
+```
+
+---
+
+## إمضاء
+
+```python
+Action(func: Callable | None = None) -> Callable
+```
+
+تستخدم مع أو بدون قوسين:
+
+```python
+"@Action
+def fn(): ...
+
+"@Action()
+def fn(): ...
+```
+
+---
+
+## كيف يعمل
+
+1. يسجل الوظيفة في `ActionsStore`
+2. عند بدء التشغيل، يكتشف `ActionEngine` جميع الإجراءات ويقوم بتحميلها كـ `POST /_nx_{hash}`
+3. تجزئة عنوان URL = `sha256(func_name + "salt2026")[:12]` — حتمية لكل عملية نشر
+4. الوسيطات التي تم تحليلها من نص JSON، والتي تم إدخالها بالاسم
+5. قيمة الإرجاع متسلسلة كـ JSON
+
+---
+
+## أنواع المعلمات
+
+| اكتب | المصدر | مثال |
+|------|--------|---------|
+| `str`، `int`، `float`، `bool` | هيئة JSON | `post_id: int` |
+| `list`، `dict` | هيئة JSON | `tags: list[str]` |
+| نماذج بيانية | نص JSON (تم التحقق من صحته) | `data: CreateComment` |
+| `Request` | حقن FastAPI | `request: Request` |
+
+---
+
+## أنواع الإرجاع
+
+| العودة | الرد |
+|--------|---------|
+| `dict` | `JSONResponse` |
+| `list` | `JSONResponse` |
+| `str` | `PlainTextResponse` |
+| `int`، `float`، `bool` | `JSONResponse` |
+| `BaseModel` | `JSONResponse` |
+| `None` | `JSONResponse({"ok": True})` |
+
+---
+
+## القيود
+
+- ما بعد فقط
+- نص JSON فقط (لا توجد بيانات نموذج، متعدد الأجزاء)
+- تم ترميز ملح التجزئة بشكل ثابت — عنوان URL ثابت أثناء عملية النشر
+
+---
+
+راجع [Server Actions guide](/docs/guides/actions) للحصول على أمثلة الاستخدام وتكامل العميل.

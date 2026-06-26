@@ -7,9 +7,7 @@ from typing import Any
 from nexy.core.config import Config
 
 
-class NCC:
-    """Nexy Client Component placeholder generator."""
-
+class NexyClientComponent:
     def __init__(self, path: str, framework: str, symbol: str) -> None:
         self.path = path
         self.framework = framework.lower()

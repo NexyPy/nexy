@@ -1,0 +1,24 @@
+# 가이드
+
+프런트엔드 프레임워크, 데이터 로딩, 인증, 국제화 및 배포와 함께 Nexy를 사용하기 위한 실제 연습입니다.
+
+## 프론트엔드 프레임워크 통합
+
+- [React in Nexy](/docs/frontend/react)
+- [Vue in Nexy](/docs/frontend/vue)
+- [Svelte in Nexy](/docs/frontend/svelte)
+- [Solid in Nexy](/docs/frontend/solid)
+- [Preact in Nexy](/docs/frontend/preact)
+- [Vite & SSR](/docs/frontend/vite)
+
+## 핵심 가이드
+
+- [Jinja2](/docs/guides/jinja2) — 템플릿 엔진 사용량
+- [Data Loading](/docs/guides/data-loading) — 데이터 가져오기 및 캐싱
+- [Error Handling](/docs/guides/error-handling) — 오류 페이지 및 예외 처리
+- [Actions](/docs/guides/actions) — 양식 동작 및 돌연변이
+- [Auth](/docs/guides/auth) — 인증 흐름
+- [i18n](/docs/guides/i18n) — 국제화
+- [CSS & JS](/docs/guides/css-js) — 정적 자산 및 번들링
+- [Real-Time](/docs/guides/websocket) — WebSocket 및 SSE
+- [Deploy](/docs/guides/deploy) — 프로덕션 배포

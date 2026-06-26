@@ -1,0 +1,17 @@
+# デコレータ
+
+Nexy は Python デコレーターを使用して、ルート、コントローラー、ミドルウェア、依存関係の注入を拡張します。これらのデコレータは、FBR ルーティング モードとモジュラー ルーティング モードの両方で動作します。
+
+## FBR デコレータ
+
+- [@Action](/docs/decorators/action) — フォームの送信を処理します
+- [@UseGuard](/docs/decorators/useguard) — ルート ガードを接続します
+- [@Middleware](/docs/decorators/middleware) — ミドルウェアをルートに追加します
+
+## モジュール式デコレータ (追加)
+
+- [@Controller](/docs/decorators/controller) — コントローラー クラスを定義します
+- [@Module](/docs/decorators/module) — アプリケーションモジュールを宣言します
+- [@Injectable](/docs/decorators/injectable) — 依存関係注入プロバイダーを登録します
+- [@UseRoute](/docs/decorators/useroute) — カスタム ルート バインディング
+- [@UseResponse](/docs/decorators/useresponse) — カスタム応答ハンドラー

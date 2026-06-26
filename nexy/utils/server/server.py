@@ -1,3 +1,4 @@
+import contextlib
 import shutil
 import socket
 import subprocess
@@ -14,6 +15,30 @@ from nexy.utils.common.console import console as print_console
 from nexy.utils.fs.vfs import VFS
 from nexy.utils.server.ports import find_available_port
 from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG
+
+
+def _patch_win_asyncio() -> None:
+    """Suppress ConnectionResetError in asyncio proactor on Windows."""
+    if sys.platform != "win32":
+        return
+    if getattr(_patch_win_asyncio, "_applied", False):
+        return
+    try:
+        import asyncio.proactor_events as _pe
+
+        orig = _pe._ProactorBasePipeTransport._call_connection_lost
+
+        def _safe_call_connection_lost(self, exc=None):
+            with contextlib.suppress(ConnectionResetError):
+                orig(self, exc)
+
+        _pe._ProactorBasePipeTransport._call_connection_lost = _safe_call_connection_lost
+        _patch_win_asyncio._applied = True
+    except Exception:
+        pass
+
+
+_patch_win_asyncio()
 
 _NEXY_DIR = Path("__nexy__")
 

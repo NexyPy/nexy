@@ -1,0 +1,193 @@
+モジュール数
+
+モジュールは、関連するコントローラー、プロバイダー、およびサブモジュールを 1 つのまとまりのあるユニットにグループ化します。すべてのモジュラー アプリには、機能モジュールをインポートするルート モジュールがあります。
+
+## なぜモジュールなのか?
+
+モジュールを使用しない場合、すべてのコントローラーとプロバイダーを 1 つのフラット リストに登録することになります。アプリが成長するにつれて、そのリストは管理不能になり、明確な所有権のない 50 のプロバイダーが含まれます。
+
+モジュールは境界を復元します: `UsersModule` は `UsersController` と `UserService` を所有します。各モジュールは自己完結型のユニットです。
+
+## ルートモジュール
+
+すべてのアプリには 1 つのルート モジュールが必要です。ルート モジュールは `nexyconfig.py` で参照されます。
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+`"@Module` デコレータは、クラスから FastAPI `APIRouter` を構築します。次の 3 つのクラス属性を読み取ります。
+
+|属性 |タイプ |説明 |
+|----------|------|---------------|
+| `controllers` | `list[type]` |登録するコントローラー クラス |
+| `imports` | `list[APIRouter]` |含めるサブモジュール (`"@Module` から) |
+| `providers` | `list[type]` |コンテナに登録する注入可能なクラス |
+| `exports` | `list[type]` |モジュールのインポートに表示されるプロバイダー |
+
+**注意事項**: `"@Module()` には少なくとも 1 つのコントローラーが必要です。空の `controllers` リストは `ValueError` を生成します。
+
+## 機能モジュール
+
+機能モジュールはドメインをカプセル化します。
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+それをルートモジュールにインポートします。
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### モジュールプレフィックス
+
+モジュール内のすべてのルートに適用されるプレフィックスを設定します。
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+コントローラーのプレフィックスはモジュールのプレフィックスと相対的です。 `"@Module(prefix="/users")` および `"@Controller("/{id}")` の場合、有効なパスは `/users/{id}` です。
+
+## プロバイダーの登録
+
+インジェクションに使用できるようにするには、プロバイダーをモジュールに登録する必要があります。
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+`DatabaseService` は、モジュールがロードされる起動時に解決されます。プロバイダーの依存関係を解決できない場合、リクエスト時ではなく、すぐにエラーが発生します。
+
+### 輸出
+
+`exports` 属性は、インポートするモジュールにどのプロバイダーが表示されるかを制御します。
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+`exports` を使用しないと、モジュールをインポートするときにプロバイダーが表示されません。これは意図的なもので、モジュールのパブリック API を明示的に宣言する必要があります。
+
+## 共有モジュール
+
+モジュールはシングルトンです。同じモジュールを複数の場所にインポートすると、同じプロバイダー インスタンスが共有されます。
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+これは、アプリ全体でデータベース接続を共有する方法です。
+
+## プロジェクトの構造
+
+典型的なモジュール型プロジェクトは、次の規則に従います。
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+この構造は数百のモジュールに拡張できます。各モジュール ディレクトリは自己完結型です。
+
+## モジュールの解像度
+
+モジュールの解決は、次の 3 つのルールに従います。
+
+1. **トポロジカルソート** — モジュールは依存関係の順序で初期化されます (最初にインポート)
+2. **循環検出** — モジュール間の循環依存関係により、起動時に `RecursionError` が発生します
+3. **プロバイダー スコープ** — プロバイダーは、どのモジュールがインポートするかに関係なく、元のスコープを保持します。
+
+モジュール A がモジュール B をインポートし、モジュール B がモジュール A をインポートする場合、コンテナーは起動時にサイクルを検出します。
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**これが重要な理由**: 循環依存関係は、設計上の問題を示すことがよくあります。共有依存関係を 3 番目のモジュールに抽出します。
+
+## ベストプラクティス
+
+1. **モジュールごとに 1 つの機能** - ユーザー、認証、請求。 「ユーティリティ」ではありません。
+2. **モジュールのインポートは浅くしてください** — 10 個以上の他のモジュールをインポートするモジュールはやりすぎです
+3. **`exports` を意図的に使用します** — 他のモジュールが本当に必要とするもののみをエクスポートします
+4. **ドメインの後にモジュールに名前を付けます** — `UsersModule`、`OrdersModule`、`PaymentsModule`
+5. **バージョン管理時には常に `prefix` を指定してください** — `"@Module(prefix="/api/v1")`
+
+## 次のステップ
+
+- [Guards](/docs/modular/guards) — モジュールのルートを保護します
+- [Middleware](/docs/modular/middleware) — パイプラインフックをリクエストします
+- [Controllers](/docs/modular/controllers) — ルート ハンドラーを定義します

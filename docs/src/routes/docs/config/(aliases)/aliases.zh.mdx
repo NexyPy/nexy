@@ -1,0 +1,78 @@
+# 别名
+
+在 `.nexy` 文件中配置更干净的导入的导入路径别名。
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useAliases = {
+        ""@": "src",
+        ""@components": "src/components",
+        ""@lib": "src/lib",
+    }
+```
+
+---
+
+## 用法
+
+使用上面的配置，而不是：
+
+```python
+from src.components.card.nexy import Card
+from src.lib.utils import format_date
+```
+
+你可以写：
+
+```python
+from "@components/card.nexy import Card
+from "@lib/utils import format_date
+```
+
+---
+
+## 它是如何工作的
+
+别名在编译时解析。 VFS 命名空间将别名前缀映射到其扩展路径。它们适用于 frontmatter 导入和模板 `__Import` 调用。
+
+`"@` 符号是一种约定，而不是要求 — 您可以使用任何前缀：
+
+```python
+useAliases = {
+    "~": "src",
+    "#components": "src/components",
+}
+```
+
+---
+
+## 限制
+
+- 别名仅适用于 `.nexy` 和 `.mdx` 文件
+- 它们**不适用于**客户端组件中的 JavaScript/TypeScript 导入（为此使用 `vite.config.ts` 路径别名）
+- 别名是相对于项目根目录解析的，而不是相对于当前文件
+
+---
+
+## 与Vite别名结合
+
+对于全栈项目，请配置 Nexy 别名（用于 `.nexy` 导入）和 Vite 别名（用于 JS/TS 导入）：
+
+```python
+# nexyconfig.py
+useAliases = {""@": "src"}
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { resolve } from "path";
+
+export default defineConfig({
+    resolve: {
+        alias: { ""@": resolve(__dirname, "src") },
+    },
+});
+```

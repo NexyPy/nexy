@@ -33,12 +33,16 @@ export class NexyLspClient {
       };
 
       const documentSelector = [{ scheme: "file", language: "nexy" }];
-      const fileEvents = [vscode.workspace.createFileSystemWatcher("**/*.nexy")];
+      const nexyWatcher = vscode.workspace.createFileSystemWatcher("**/*.nexy");
+      const fileEvents: vscode.FileSystemWatcher[] = [nexyWatcher];
+      this.context.subscriptions.push(nexyWatcher);
 
       // .mdx seulement dans un projet nexy
       if (this.isNexyProject) {
         documentSelector.push({ scheme: "file", language: "mdx" });
-        fileEvents.push(vscode.workspace.createFileSystemWatcher("**/*.mdx"));
+        const mdxWatcher = vscode.workspace.createFileSystemWatcher("**/*.mdx");
+        fileEvents.push(mdxWatcher);
+        this.context.subscriptions.push(mdxWatcher);
       }
 
       const clientOptions: LanguageClientOptions = {

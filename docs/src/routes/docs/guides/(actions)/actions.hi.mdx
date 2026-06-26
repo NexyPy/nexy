@@ -1,0 +1,161 @@
+# सर्वर क्रियाएँ
+
+सर्वर क्रियाएँ आपको क्लाइंट से पायथन फ़ंक्शंस को POST एंडपॉइंट के रूप में कॉल करने देती हैं - कोई रूट पंजीकरण नहीं, कोई क्रमबद्धता बॉयलरप्लेट नहीं।
+
+---
+
+## किसी क्रिया को परिभाषित करना
+
+किसी भी फंक्शन को `"@Action` से सजाएँ:
+
+```python
+# src/actions/vote.py
+from nexy.decorators import Action
+
+"@Action
+def vote(post_id: str, direction: int) -> dict:
+    return {"success": True, "post_id": post_id, "votes": 42}
+```
+
+फ़ंक्शन JSON बॉडी पैरामीटर को कीवर्ड तर्क के रूप में प्राप्त करता है। कोई भी JSON-क्रमांकित मान लौटाएँ।
+
+---
+
+## एक्शन फाइलें कहां रखें
+
+क्रियाएँ आपके प्रोजेक्ट में **कहीं भी** रह सकती हैं - `src/actions/`, `src/routes/`, या सीधे रूट में। `ActionEngine` स्टार्टअप पर संपूर्ण प्रोजेक्ट निर्देशिका को स्कैन करता है।
+
+```text
+my-app/
+├── src/
+│   └── actions/
+│       ├── vote.py        ← "@Action
+│       └── comment.py     ← "@Action
+├── actions/
+│   ├── vote.ts            ← Generated TypeScript client
+│   └── comment.ts
+```
+
+डिस्कवरी और एंडपॉइंट जेनरेशन कैसे काम करते हैं, इसके लिए ["@Action reference](/docs/decorators/action) देखें।
+
+---
+
+## व्यावहारिक उदाहरण
+
+### फॉर्म जमा करना
+
+```python
+# src/actions/contact.py
+from nexy.decorators import Action
+from pydantic import BaseModel, EmailStr
+
+class ContactForm(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
+
+"@Action
+def submit_contact(data: ContactForm) -> dict:
+    # Save to database, send email, etc.
+    return {"ok": True, "name": data.name}
+```
+
+```nexy
+---
+---
+<form id="contact">
+  <input name="name" required />
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+
+<script>
+document.getElementById('contact').onsubmit = async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const res = await fetch('/_nx_a1b2c3d4e5f6', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.fromEntries(fd))
+  });
+  const data = await res.json();
+  if (data.ok) alert('Message sent!');
+};
+</script>
+```
+
+### डेटाबेस कार्रवाई
+
+```python
+# src/actions/create_user.py
+from nexy.decorators import Action
+from pydantic import BaseModel
+from src.database import get_session
+from src.models import User
+
+class CreateUserBody(BaseModel):
+    name: str
+    email: str
+
+"@Action
+def create_user(body: CreateUserBody) -> dict:
+    db = next(get_session())
+    user = User(name=body.name, email=body.email)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"id": user.id, "name": user.name}
+```
+
+### त्रुटि प्रबंधन के साथ कार्रवाई
+
+```python
+# src/actions/delete_item.py
+from nexy.decorators import Action
+from fastapi import HTTPException
+from src.database import get_session
+
+"@Action
+def delete_item(item_id: int) -> dict:
+    db = next(get_session())
+    item = db.get(Item, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    db.delete(item)
+    db.commit()
+    return {"deleted": item_id}
+```
+
+---
+
+## जेनरेटेड टाइपस्क्रिप्ट क्लाइंट
+
+`nx build` या `nx dev`, `./actions/` में टाइप-सुरक्षित टाइपस्क्रिप्ट रैपर उत्पन्न करता है:
+
+```typescript
+// Generated: ./actions/vote.ts
+import { transport } from '"@/nexy/client';
+
+export const vote = async (post_id: string, direction: number): Promise<dict> => {
+  return await transport.call('/_nx_a1b2c3d4e5f6', { post_id, direction });
+};
+```
+
+प्रत्येक उत्पन्न फ़ंक्शन उचित टाइपस्क्रिप्ट प्रकारों के साथ पायथन हस्ताक्षर को प्रतिबिंबित करता है।
+
+---
+
+## सर्वोत्तम प्रथाएँ
+
+- क्रिया कार्यों को केंद्रित और निष्क्रिय रखें
+- कार्रवाई के अंदर इनपुट को मान्य करें - उन्हें अविश्वसनीय मानें
+- जटिल अनुरोध निकायों के लिए पाइडेंटिक मॉडल का उपयोग करें
+- क्रियाएँ केवल POST हैं - अन्य HTTP विधियों के लिए, रूट हैंडलर का उपयोग करें
+- प्राधिकरण के लिए गार्ड या मिडलवेयर का उपयोग करें
+
+---
+
+## संदर्भ
+
+संपूर्ण एपीआई संदर्भ (पैरामीटर प्रकार, रिटर्न प्रकार, सीमाएं) के लिए ["@Action decorator](/docs/decorators/action) देखें।

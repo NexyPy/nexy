@@ -1,51 +1,54 @@
 ---
-from "@/components/sections/otherHero.nexy" import OtherHero
+from "@/locales/routes/community/layout" import HeroI18n, SidebarI18n
+from "@components/sections/otherHero.nexy" import OtherHero
 
-title = "Real-world Web Applications built with Nexy"
-description = """Explore inspiring websites, apps, and digital experiences made by developers and companies around the
-world."""
+h = HeroI18n()
+s = SidebarI18n()
+title = h.title
+description = h.description
 children:prop[str]
 
 
 ---
+<main class=" overflow-x-hidden">
 <OtherHero title={{title}} description={{description}} />
 <main class="border-t border-border border-dashed">
     <section class="w-container mx-auto flex">
         <aside class="w-72 py-12 px-6 border-r border-border border-dashed space-y-4">
-            <h2 class="text-xs uppercase font-mono opacity-80">GET STARTED</h2>
+            <h2 class="text-xs uppercase font-mono opacity-80">{{s.get_started}}</h2>
             <ul class="space-y-1.5 *:px-3 text-sm border-l border-border border-dashed">
                 <li class=" ">
-                    <a href="/community">Get help</a>
+                    <a href="/community">{{s.get_help}}</a>
                 </li>
                  <li>
-                    <a href="/community/team">Support</a>
+                    <a href="/community/team">{{s.support}}</a>
                 </li>
                  <li>
-                    <a href="/community/governance">FAQ</a>
+                    <a href="/community/governance">{{s.faq}}</a>
                 </li>
             </ul>
-            <h2 class="text-xs uppercase font-mono opacity-80">CONTRIBUTE</h2>
+            <h2 class="text-xs uppercase font-mono opacity-80">{{s.contribute}}</h2>
             <ul class="space-y-1.5 *:px-3 text-sm border-l border-border border-dashed">
                 <li class="bg-green-600/20 border-l-2 py-1 text-base border-green-600  ">
-                    <a href="/community">Guide</a>
+                    <a href="/community">{{s.guide}}</a>
                 </li>
                  <li>
-                    <a href="/community/team">Report a Bug</a>
+                    <a href="/community/team">{{s.report_bug}}</a>
                 </li>
                  <li>
-                    <a href="/community/governance">Feature Request</a>
+                    <a href="/community/governance">{{s.feature_request}}</a>
                 </li>
             </ul>
-            <h2 class="text-xs uppercase font-mono opacity-80 mt-8">Governance</h2>
+            <h2 class="text-xs uppercase font-mono opacity-80 mt-8">{{s.governance}}</h2>
             <ul class="space-y-1.5 *:px-3 text-sm border-l border-border border-dashed">
                 <li class=" ">
-                    <a href="/community">Team</a>
+                    <a href="/community">{{s.team}}</a>
                 </li>
                  <li>
-                    <a href="/community/team">Roadmap</a>
+                    <a href="/community/team">{{s.roadmap}}</a>
                 </li>
                  <li>
-                    <a href="/community/governance">Manifesto</a>
+                    <a href="/community/governance">{{s.manifesto}}</a>
                 </li>
             </ul>
         </aside>
@@ -54,4 +57,5 @@ children:prop[str]
         </aside>
         <aside class="w-24  border-border border-dashed "></aside>
     </section>
+</main>
 </main>

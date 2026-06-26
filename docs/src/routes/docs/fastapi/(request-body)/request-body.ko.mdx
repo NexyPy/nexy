@@ -1,0 +1,108 @@
+# 요청 본문
+
+Pydantic 모델을 사용하여 JSON 요청 본문을 수신합니다.
+
+---
+
+## 기본 모델
+```python
+---
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+def POST(item: Item):
+    return {"name": item.name, "price": item.price}
+---
+```
+```python
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+## `embed`가 포함된 본문 필드
+
+필드 이름을 재정의하거나 추가 JSON 필드를 삽입합니다.
+```python
+---
+from fastapi import Body
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+def POST(
+    item: Item,
+    important: str = Body(embed=True),
+):
+    # Expects: {"item": {...}, "important": "x"}
+    ...
+---
+```
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+## 다중 신체 매개변수
+
+여러 모델을 전달합니다. FastAPI는 해당 모델을 매개변수 이름 아래에 중첩합니다.
+```python
+---
+def POST(item: Item, user: User):
+    # Expects: {"item": {...}, "user": {...}}
+    ...
+---
+```
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+## 중첩 모델
+
+모델에는 다른 모델, 목록 및 선택적 필드가 포함될 수 있습니다.
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+라우터에 구애받지 않음 — 동일한 Pydantic 모델이 FBR과 Modular 모두에서 작동합니다.
+
+## 제한사항
+
+- Pydantic 모델 매개변수에 유형 주석을 달면 본문이 자동으로 구문 분석됩니다.
+- FastAPI가 유효성 검사를 처리하고 잘못된 입력 시 422를 반환합니다.
+- `"@Body()` 데코레이터가 필요하지 않습니다. — 표준 FastAPI 동작

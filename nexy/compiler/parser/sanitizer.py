@@ -34,12 +34,6 @@ class LogicSanitizer:
     def namespace(self) -> str:
         return Config.NAMESPACE
 
-        # Regex for: import "path" [as alias]
-        self.RE_NEXY_IMPORT = re.compile(
-            r'^\s*import\s+["\'](?P<path>[^"\']+)["\'](?:\s+as\s+(?P<alias>\w+))?(?=\n\S|$)',
-            re.M | re.S,
-        )
-
     def _resolve_full_path(self, current_file: str, import_str: str) -> str:
         """
         Resolves the full relative path from the current file,
@@ -64,7 +58,7 @@ class LogicSanitizer:
         # 1. Handle Aliases
         for alias, replacement in self.aliases.items():
             if import_str.startswith(alias):
-                resolved_path = root_path / import_str.replace(alias, replacement.strip("/"), 1)
+                resolved_path = root_path / import_str.replace(alias, replacement, 1)
                 return resolved_path.absolute().relative_to(root_path).as_posix()
 
         # 2. Handle Relative Paths (./ and ../)

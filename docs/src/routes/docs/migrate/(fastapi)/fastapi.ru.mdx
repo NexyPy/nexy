@@ -1,0 +1,58 @@
+# Миграция с FastAPI на Nexy
+
+Вы уже знаете FastAPI. Это означает, что вы уже знаете большую часть Nexy.
+
+## Что остается прежним
+```python
+from fastapi import Request, Depends
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+```
+Все, что работает в FastAPI, работает и в Nexy — та же поддержка асинхронности, та же проверка типов, та же документация OpenAPI.
+
+## Какие изменения
+
+### Маршруты → файлы или декораторы
+```python
+# FastAPI
+"@router.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+
+# Nexy FBR: src/routes/users/[id].py
+async def GET(id: int):
+    return {"id": id}
+```
+```python
+# FastAPI
+"@router.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+
+# Nexy Modular
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, id: int):
+        return {"id": id}
+```
+### Шаблоны → Файлы `.nexy`
+
+Вместо `Jinja2Templates` + `TemplateResponse` напишите файлы `.nexy` с логикой оформления + шаблоном.
+
+### Нет ручной регистрации маршрутизатора
+
+Nexy автоматически обнаруживает маршруты — ни `include_router`, ни `APIRouter` для подключения.
+
+## Ключевые различия
+
+| ФастAPI | Некси |
+|---------|------|
+| `"@app.get("/")` | Файл в формате `src/routes/` (FBR) или `"@Controller` (модульный) |
+| `TemplateResponse` | `.nexy` файл с обложкой |
+| Руководство `include_router` | Автообнаружение |
+| `Depends()` в подписи | То же самое, но еще `"@UseGuard`/`"@Middleware` |
+| Нет встроенного CLI | `nx dev`, `nx build`, `nx start` |
+
+Ваши навыки работы с FastAPI передаются напрямую. Nexy удаляет шаблон.

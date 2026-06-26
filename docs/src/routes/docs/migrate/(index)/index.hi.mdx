@@ -1,0 +1,11 @@
+# नेक्सी पर माइग्रेट करें
+
+अपने मौजूदा एप्लिकेशन को अन्य फ्रेमवर्क से नेक्सी पर माइग्रेट करें। प्रत्येक मार्गदर्शिका में मुख्य अंतर, परियोजना संरचना मानचित्रण और चरण-दर-चरण माइग्रेशन शामिल है।
+
+## उपलब्ध मार्गदर्शिकाएँ
+
+- [FastAPI](/docs/migrate/fastapi) - फास्टएपीआई से नेक्सी तक
+- [Django](/docs/migrate/django) - Django से Nexy तक
+- [NestJS](/docs/migrate/nestjs) - NestJS से Nexy तक
+- [Flask](/docs/migrate/flask) - फ्लास्क से नेक्सी तक
+- [Next.js](/docs/migrate/nextjs) — Next.js से Nexy तक

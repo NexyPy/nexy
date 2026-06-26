@@ -1,0 +1,49 @@
+# Миграция с Flask на Nexy
+
+Колба минимальная. Nexy тоже минимален, но со встроенными современными асинхронными функциями, типами и OpenAPI.
+
+## Сопоставление концепций
+
+| Колба | Некси |
+|-------|------|
+| `"@app.route("/")` | Файл в `src/routes/` или `"@Controller` |
+| `render_template()` | `.nexy` файл |
+| `request.args` | Параметры запроса в сигнатуре функции |
+| `request.json` | Параметр тела в сигнатуре функции |
+| `g` | `request.state` |
+| `flask run` | `nx dev` |
+| `config.py` | `nexyconfig.py` |
+| Чертежи | Подкаталоги `"@Module` или `src/routes/` |
+
+## Пример
+
+```python
+# Flask
+"@app.route("/api/users/<int:id>")
+def get_user(id):
+    return jsonify({"id": id})
+
+# Nexy FBR: src/routes/api/users/[id].py
+async def get(id: int):
+    return {"id": id}
+```
+
+## Что вы получаете
+
+- **Поддержка асинхронности** — встроенная, без хаков.
+- **Проверка типа** — Pydantic, автоматические ошибки 422.
+- **Документация OpenAPI** — `flasgger` не требуется.
+- **Система DI** — внедрение сервисов без глобальных синглтонов.
+- **CLI** — `nx build`, `nx start`, `nx migrate`
+
+## Этапы миграции
+
+1. **Экаффолд** — `nx new my-app`
+2. **Маршруты портов** — `"@app.route()` → файл в `src/routes/` или `"@Controller`.
+3. **Шаблоны портов** — файлы Flask `render_template()` → `.nexy`.
+4. **Обработка запроса порта** — `request.args`/`request.json` → типизированные параметры функции
+5. **Схемы портов** → `"@Module` или подкаталоги в FBR.
+
+## Что остается
+
+Простые маршруты, минимум шаблонов, полный контроль. Просто с современным Python.

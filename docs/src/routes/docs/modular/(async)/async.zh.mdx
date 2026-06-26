@@ -1,0 +1,50 @@
+# 异步和并发（模块化）
+
+Nexy 基于 FastAPI 构建，支持控制器中的 `async` 和 `def`。
+
+## `async def` 与 `def`
+
+|处理程序类型 |执行 |何时使用 |
+|------------|------------|------------|
+| `def` |线程池（阻塞）| CPU 工作、同步数据库调用、阻塞 I/O |
+| `async def` |事件循环|异步数据库、HTTP 调用、长轮询 |
+
+## 异步控制器
+
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+
+## 混合同步和异步
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/sync")
+class SyncController:
+    def GET(self):             # runs in thread pool
+        return {"type": "sync"}
+
+"@Controller("/async")
+class AsyncController:
+    async def GET(self):       # runs in event loop
+        return {"type": "async"}
+```
+
+## 后台任务
+
+对于响应后的即发即忘工作，请使用 `BackgroundTasks`。对于真正的异步后台工作，请使用 `asyncio.create_task`。
+
+## 注意事项
+
+- 不要使用 `await` 从 `def` 处理程序调用 `async` 函数 — 使用 `asyncio.run()` 或使处理程序为 `async def`
+- 不要从 `async def` 调用阻塞函数（`time.sleep()`、`requests.get()`）——使用 `asyncio.sleep()`、`httpx.AsyncClient`
+- 对于生产，使用多个工作人员作为同步处理程序

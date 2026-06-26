@@ -1,0 +1,45 @@
+#“@Middleware (FBR)
+
+将中间件可调用对象应用于路由函数。
+
+## 中间件合约
+
+中间件可以用 `__call__(self, request)` 调用。它接收 FastAPI `Request` 对象并在处理程序之前运行。
+
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+
+## 函数上的中间件
+
+```python
+from nexy.decorators import Middleware
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+```
+
+## 多个中间件
+
+```python
+from nexy.decorators import Middleware
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+```
+
+＃＃ 签名
+
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+
+中间件作为 FastAPI `Depends` 运行 — 它在处理程序之前运行。与守卫不同，中间件旨在产生副作用（日志记录、计时），而不是阻止请求（尽管它可以提高 `HTTPException`）。
+
+---
+
+另请参阅：[Middlewares](/docs/fbrouters/middlewares)、["@Middleware reference](/docs/decorators/middleware)

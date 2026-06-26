@@ -1,0 +1,72 @@
+# Svelte
+
+Ajoutez Svelte à votre `nexyconfig.py` :
+
+```python
+from nexy.frontend import svelte
+
+class NexyConfig(NexyConfigModel):
+    useFF = [svelte()]
+```
+
+---
+
+## Création d'un composant
+
+Les fichiers avec l'extension `.svelte` sont traités comme des composants Svelte :
+
+```svelte
+<!-- src/components/Counter.svelte -->
+<script>
+  export let initial = 0
+  let count = initial
+</script>
+
+<div>
+  <p>Count: {count}</p>
+  <button on:click={() => count += 1}>+</button>
+</div>
+```
+
+---
+
+## Utilisation dans une page .nexy
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Les accessoires sont transmis via la syntaxe Jinja2 `{{ }}` — utilisez des doubles accolades pour les valeurs JSON.
+
+---
+
+## Enfants / contenu des machines à sous
+
+Nexy transmet le contenu enfant en tant que machines à sous Svelte :
+
+```svelte
+<!-- Card.svelte -->
+<script>
+  export let title
+</script>
+
+<div class="card">
+  <h2>{title}</h2>
+  <slot />
+</div>
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as a slot</p>
+</Card>
+```
+
+---
+
+## RSS
+
+Les composants Svelte utilisent `hydrate` lorsque le serveur a du HTML pré-rendu, ou `mount` pour le rendu client uniquement.

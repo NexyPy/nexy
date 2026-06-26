@@ -1,0 +1,35 @@
+# Aperçu de la sécurité
+
+Nexy fournit un middleware d'authentification, des gardes de route et une prise en charge de session. La bibliothèque standard de Python et les packages tiers couvrent le chiffrement, le hachage, JWT et la génération d'ID.
+
+---
+
+## Matrice des fonctionnalités
+
+| Fonctionnalité | API Nexy | Back-end |
+|---------|----------|---------|
+| Authentification | `useAuth` configuration + backend personnalisé | Starlette `AuthenticationMiddleware` |
+| Protection des itinéraires | `"@UseGuard(*guards)` | API rapide `Depends` |
+| Séances | `useSession` configuration + `useSession()` crochet | Starlette `SessionMiddleware` |
+| Autorisation | Gardes personnalisées + vérification des rôles | API rapide `Depends` |
+| Cryptage / Hachage | Python standard | `hashlib`, `bcrypt`, `cryptography` |
+| JWT | Tiers | `PyJWT` |
+| UID | Python standard | `uuid`, `secrets` |
+
+---
+
+## Liens rapides
+
+- [Authentication](/docs/security/authentication) — configurez les backends d'authentification et les flux de connexion
+- [Authorization](/docs/security/authorization) — contrôle d'accès basé sur les rôles avec des gardes
+- [Encryption & Hashing](/docs/security/encryption-hashing) — hachage de mot de passe, cryptage de données
+- [JWT](/docs/security/jwt) — Création et vérification du jeton Web JSON
+- [UID](/docs/security/uid) — stratégies de génération d'identifiants uniques
+
+---
+
+## Connexes
+
+- [Guides / Auth](/docs/guides/auth) — procédure pas à pas pratique du flux d'authentification
+- [Config / Session](/docs/config/session) — configuration du middleware de session
+- [Decorators / "@UseGuard](/docs/decorators/useguard) — référence du décorateur de garde

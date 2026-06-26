@@ -1,0 +1,20 @@
+# 钩子
+
+挂钩是反应式函数，可提供对 `.nexy` 组件和布局内的请求上下文和浏览器状态的访问。它们反映了现代前端框架的概念，但在服务器上运行。
+
+所有钩子均从 `nexy` 导入：
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## 可用的钩子
+
+- [usePathname](/docs/hooks/usePathname) — 当前 URL 路径
+- [useSearchParams](/docs/hooks/useSearchParams) — 查询字符串参数
+- [useRouter](/docs/hooks/useRouter) — 程序化导航
+- [useQuery](/docs/hooks/useQuery) — 解析的查询参数
+- [useSession](/docs/hooks/useSession) — 会话数据访问
+- [useCookies](/docs/hooks/useCookies) — cookie 读/写
+- [useToc](/docs/hooks/useToc) — 目录提取
+- [useViews](/docs/hooks/useViews) — 可组合视图管理

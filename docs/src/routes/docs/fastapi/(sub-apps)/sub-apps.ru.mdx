@@ -1,0 +1,51 @@
+# Дополнительные приложения и крепления
+
+Монтируйте независимые приложения ASGI или WSGI по дополнительному пути.
+
+## Монтируем дочернее приложение
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+Теперь `/sub/` обслуживает субприложение. У него есть свои собственные маршруты, промежуточное программное обеспечение и срок службы.
+
+## Подприложение Starlette
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## Подприложение WSGI (Flask, Django)
+
+См. [WSGI](/docs/fastapi/wsgi).
+
+## Как работают крепления
+
+- Префикс монтирования **удаляется** перед тем, как запросы достигают подприложения.
+- Подприложения имеют свой **собственный стек промежуточного программного обеспечения**. Проверка подлинности/промежуточное программное обеспечение Nexy не применяется.
+- Подприложениями могут быть любые приложения ASGI (FastAPI, Starlette, Litestar и т. д.).
+- Маунты заказаны — победа в первом матче
+
+## Ограничения
+
+- WebSocket не поддерживается при монтировании.
+- События продолжительности жизни относятся к каждому приложению.
+- Документы OpenAPI охватывают только корневое приложение — документы вложенных приложений требуют отдельной настройки.

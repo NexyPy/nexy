@@ -1,0 +1,74 @@
+# sesión
+
+Configure el middleware de sesión para sesiones de cookies firmadas: no se requiere almacenamiento en el lado del servidor.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useSession = {
+        "secret_key": "your-secret-key",
+        "max_age": 3600,
+        "same_site": "lax",
+        "https_only": False,
+    }
+```
+
+Utiliza `SessionMiddleware` de Starlette debajo del capó.
+
+---
+
+## Campos
+
+| Campo | Tipo | Predeterminado | Descripción |
+|-------|------|---------|-------------|
+| `secret_key` | `str` | requerido | Clave secreta para firmar cookies de sesión |
+| `max_age` | `int` | `1209600` (14 días) | Duración máxima de las cookies de sesión en segundos |
+| `same_site` | `str` | `"lax"` | Política SameSite (`"lax"`, `"strict"`, `"none"`) |
+| `https_only` | `bool` | `False` | Enviar cookies solo a través de HTTPS |
+
+---
+
+## Uso
+
+```python
+from nexy import useSession
+
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+```
+
+La sesión se comporta como un diccionario: asignar, leer, eliminar:
+
+```python
+session = useSession()
+user_id = session.get("user_id")
+del session["user_id"]
+```
+
+---
+
+## Patrón de mensajes flash
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append({"type": "success", "text": "Saved!"})
+session["_flashes"] = flashes
+```
+
+Luego lea y aclare en su plantilla:
+
+```python
+session = useSession()
+flashes = session.pop("_flashes", [])
+```
+
+---
+
+## Notas de seguridad
+
+- Los datos de la sesión están firmados pero **no cifrados**: no almacene datos confidenciales
+- Rotar `secret_key` periódicamente en producción
+- Utilice `https_only=True` en producción.

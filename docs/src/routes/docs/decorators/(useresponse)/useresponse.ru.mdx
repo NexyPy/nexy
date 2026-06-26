@@ -1,0 +1,48 @@
+# "@UseResponse
+
+Установите метаданные ответа для метода-обработчика — код состояния, модель ответа, класс ответа и т. д.
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## Подпись
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## Все параметры
+
+| Парам | Тип | Описание |
+|-------|------|-------------|
+| `status_code` | `int` | Код состояния HTTP |
+| `response_class` | `type[Response]` | Пользовательский класс ответа (например, `HTMLResponse`) |
+| `response_model` | `type` | Пидантическая модель для сериализации ответов |
+| `responses` | `dict` | Дополнительные ответы OpenAPI |
+| `response_description` | `str` | Описание ответа в OpenAPI |
+| `response_model_include` | набор/сопоставление | Поля для включения в ответ |
+| `response_model_exclude` | набор/сопоставление | Поля, которые нужно исключить из ответа |
+| `response_model_by_alias` | `bool` | Используйте в ответ псевдонимы |
+| `response_model_exclude_unset` | `bool` | Исключить неустановленные поля |
+| `response_model_exclude_defaults` | `bool` | Исключить поля со значениями по умолчанию |
+| `response_model_exclude_none` | `bool` | Исключить поля без значений |

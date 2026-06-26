@@ -1,0 +1,69 @@
+# バックグラウンド タスク (モジュール式)
+
+コントローラーで応答を送信した後、コードを実行します。
+
+```python
+from fastapi import BackgroundTasks
+```
+
+## 単一タスク
+
+```python
+from nexy.decorators import Controller
+from fastapi import BackgroundTasks
+
+def send_email(email: str, body: str):
+    ...
+
+"@Controller("/contact")
+class ContactController:
+    def post(self, data: ContactForm, tasks: BackgroundTasks):
+        tasks.add_task(send_email, data.email, "Thanks!")
+        return {"status": "sent"}
+```
+
+## 複数のタスク
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def get(self, tasks: BackgroundTasks):
+        tasks.add_task(log_visit)
+        tasks.add_task(notify_admin)
+        tasks.add_task(warm_cache)
+        return {"ok": True}
+```
+
+## DI を使用したタスク
+
+```python
+from fastapi import BackgroundTasks
+from nexy.decorators import Controller, Injectable
+from src.db import Database
+
+"@Injectable()
+class Logger:
+    def write(self, msg: str):
+        ...
+
+"@Controller("/logs")
+class LogController:
+    def __init__(self, logger: Logger, tasks: BackgroundTasks):
+        self.logger = logger
+        self.tasks = tasks
+
+    def post(self):
+        self.tasks.add_task(self.logger.write, "action logged")
+        return {"ok": True}
+```
+
+## 重要
+
+- タスクは応答の送信**後**に実行されます。クライアントは待機しません。
+- 同じプロセスで実行されます - 長いタスクはイベント ループをブロックします
+- 負荷の高い作業の場合は、タスクキュー (Celery、ARQ、RQ など) を使用します。
+- タスク内のエラーは黙って飲み込まれます — タスク関数内に try/excel を追加します
+- タスクは変更可能なオブジェクトの**コピー**を受け取ります - 変更は応答に影響しません

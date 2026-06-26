@@ -1,0 +1,71 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# страниц
+
+Страница — это маршрут, который возвращает HTML. В Nexy страницы представляют собой файлы `.nexy` или `.mdx` в папке `src/routes/`.
+
+> Страницы отличаются от **обработчиков маршрутов** (файлы `.py`), которые возвращают JSON или необработанные данные.
+
+---
+
+## Создание страницы
+
+Поместите файл `.nexy` или `.mdx` в `src/routes/`:
+```bash
+src/
+└── routes/
+    └── index.nexy       →  /
+```
+```html
+<!-- index.nexy -->
+<h1>Hello Nexy!</h1>
+```
+Регистрация маршрута не требуется — файл **является** маршрутом.
+
+---
+
+## страниц в `.nexy`
+
+Файл `.nexy` может содержать заголовок Python и шаблон HTML:
+```
+---
+items: prop[list] = []
+---
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## страниц в `.mdx`
+
+Файлы `.mdx` сочетают в себе Markdown с компонентами Nexy:
+```mdx
+---
+from "@components/link.nexy" import Link
+---
+
+# My Article
+
+<Link href="/docs">Back to docs</Link>
+```
+Эта страница, которую вы читаете, сама по себе является файлом `.mdx` — оглавление, боковая панель и навигационная цепочка обрабатываются макетом.
+
+---
+
+## Специальные файлы, не маршрутизируемые
+
+Некоторые файлы внутри `routes/` не создают маршруты:
+
+| Файл | Роль |
+|---|---|
+| `__init__.py` | Маркер пакета Python |
+| `layout.nexy` | Оболочка общего макета |
+| `dependencies.py` | Общие зависимости |
+<Link href="/docs/fbrouters/layouts">Next: Layouts →</Link>

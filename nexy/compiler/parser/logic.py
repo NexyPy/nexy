@@ -43,9 +43,8 @@ class ASTUtils:
                 and func.attr == "import_component"
             ):
                 valid_call = True
-        elif isinstance(func, ast.Name):
-            if func.id == "__Import":
-                valid_call = True
+        elif isinstance(func, ast.Name) and func.id == "__Import":
+            valid_call = True
 
         if not valid_call:
             return None
@@ -83,8 +82,7 @@ class LogicParser:
         try:
             tree = ast.parse(clean_code)
         except SyntaxError as e:
-            # Re-raise with a clear message for the user
-            raise SyntaxError(f"Logic Parse Error: {e}")
+            raise SyntaxError(f"Logic Parse Error: {e}") from e
 
         # 3. Data Extraction & Final Code Construction
         final_body = self._process_nodes(tree.body, result)
@@ -105,10 +103,9 @@ class LogicParser:
                 continue
 
             # Case B: Component Imports (Variable Assignment from __Import)
-            if isinstance(node, ast.Assign):
-                if self._try_extract_import(node, result):
-                    final_nodes.append(node)
-                    continue
+            if isinstance(node, ast.Assign) and self._try_extract_import(node, result):
+                final_nodes.append(node)
+                continue
 
             # Case C: Standard Python code
             final_nodes.append(node)

@@ -1,0 +1,95 @@
+# Descripción general de los componentes
+
+Los componentes son los componentes básicos de una aplicación Nexy. Un componente es un archivo `.nexy` que combina la lógica de Python con una plantilla HTML, como los archivos `.vue` de Vue o los archivos `.svelte` de Svelte.
+
+## Tipos de componentes
+
+Nexy tiene dos categorías de componentes:
+
+### 1. Componentes de la página (en `src/routes/`)
+
+Cada archivo `.nexy` en `src/routes/` se convierte en una ruta. La ruta del archivo determina la URL.
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   └── [slug].nexy     →  /blog/:slug
+```
+
+Se puede acceder directamente a los componentes de la página a través de URL. Pueden usar enlaces como `useQuery()` y `usePathname()` porque se ejecutan en un contexto de solicitud.
+
+### 2. Componentes reutilizables (en `src/components/`)
+
+Los componentes de `src/components/` no son rutas: son importados y utilizados por páginas y otros componentes.
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+---
+<Header title="My Site" />
+<Card title="Hello">
+  <p>Card content</p>
+</Card>
+```
+
+Estos componentes aceptan accesorios, usan ranuras y encapsulan la lógica HTML + en una unidad reutilizable.
+
+## Anatomía de un componente
+
+Cada componente `.nexy` tiene tres secciones posibles:
+
+```nexy
+---
+# 1. Frontmatter: Python code
+title:prop[str] = "Default"
+count = 0
+---
+<!-- 2. Template: HTML + Jinja2 -->
+<div class="card">
+  <h2>{{ title }}</h2>
+  <p>Count: {{ count }}</p>
+  <slot />
+</div>
+
+<style>
+/* 3. Styles (global) */
+.card { border: 1px solid #ddd; padding: 1rem; }
+</style>
+```
+
+**1. Frontmatter**: código Python entre delimitadores `---`. Declara accesorios, importa módulos, ejecuta enlaces, procesa datos.
+
+**2. Plantilla**: HTML con expresiones Jinja2. Genera variables, recorre datos y representa componentes secundarios.
+
+**3. Estilos**: etiquetas `<style>` (en cualquier lugar de la plantilla). Los estilos son globales, no de ámbito. Utilice BEM o clases de utilidad para la encapsulación.
+
+## Reglas de componentes
+
+- **El nombre debe ser PascalCase**: `BlogCard`, `Header`, `CommentForm`
+- **Un archivo = un componente**: No se permiten múltiples exportaciones por archivo
+- **Accesorios declarados por adelantado**: `title:prop[str] = "Default"`
+- **Importaciones en la parte superior**: Antes de cualquier lógica o ganchos
+- **Sin efectos secundarios a nivel de módulo**: el frontmatter se ejecuta por solicitud. No abra archivos ni cree conexiones fuera de funciones
+
+## Cuándo crear un componente
+
+Cree un componente cuando:
+
+- Reutilizas el mismo patrón HTML en varios lugares (Tarjeta, Botón, Encabezado)
+- Quieres encapsular la lógica con su plantilla (CommentForm con validación)
+- Necesita pasar datos de una página a una subsección (barra lateral con elemento activo)
+- Quieres compartir la estructura de diseño entre rutas (Diseño, Wrapper)
+
+Si estás escribiendo el mismo HTML dos veces, extráelo en un componente.
+
+## Próximos pasos
+
+- [Component Usage](/docs/components/usage): paso de accesorios, ranuras, renderizado
+- [Markup](/docs/components/markup): sintaxis HTML, etiquetas de componentes, atributos dinámicos
+- [Python](/docs/components/python): lógica frontal, importaciones, ganchos
+- [Properties](/docs/components/properties): accesorios escritos, valores predeterminados, validación
+- [Styles](/docs/components/styles): CSS en componentes

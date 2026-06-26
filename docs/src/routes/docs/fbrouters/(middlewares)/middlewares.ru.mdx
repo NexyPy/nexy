@@ -1,0 +1,65 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Промежуточное ПО
+
+Промежуточное программное обеспечение — это уровень, который запускается до и после каждого запроса, что полезно для ведения журналов, аутентификации, заголовков CORS и других глобальных задач.
+
+---
+
+## Создание промежуточного программного обеспечения
+
+В Nexy промежуточное ПО определяется через `BaseHTTPMiddleware` Starlette или как вызываемые объекты:
+```python
+# src/middlewares.py
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        print(f"→ {request.method} {request.url.path}")
+        response = await call_next(request)
+        print(f"← {response.status_code}")
+        return response
+```
+---
+
+## Регистрация промежуточного программного обеспечения
+
+В `nexyconfig.py` передайте список кортежей `(MiddlewareClass, kwargs_dict)`:
+```python
+from nexy.core.models import NexyConfigModel
+from src.middlewares import LoggingMiddleware
+
+class NexyConfig(NexyConfigModel):
+    useMiddlewares = [
+        (LoggingMiddleware, {}),
+    ]
+```
+---
+
+## Порядок выполнения
+
+Промежуточное ПО запускается в порядке объявления, образуя **стек** (например, Starlette):
+```text
+Request → MW1 → MW2 → Route → MW2 → MW1 → Response
+```
+---
+
+## Промежуточное программное обеспечение уровня каталога (FBR)
+
+С помощью FBR вы можете разместить логику промежуточного программного обеспечения в `dependencies.py` внутри каталога:
+```python
+# routes/api/dependencies.py
+from fastapi import Request
+
+async def verify_api_key(request: Request):
+    if request.headers.get("X-API-Key") != "secret":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403)
+```
+Каждая страница под `/api/` автоматически наследует эту проверку.
+<Link href="/docs/fbrouters/route_handlers">Next: Route Handlers →</Link>

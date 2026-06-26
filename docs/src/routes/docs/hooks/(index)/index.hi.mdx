@@ -1,0 +1,20 @@
+# हुक
+
+हुक प्रतिक्रियाशील फ़ंक्शन हैं जो आपके `.nexy` घटकों और लेआउट के अंदर अनुरोध संदर्भ और ब्राउज़र स्थिति तक पहुंच प्रदान करते हैं। वे आधुनिक फ्रंटएंड फ्रेमवर्क से अवधारणा को प्रतिबिंबित करते हैं लेकिन सर्वर पर चलते हैं।
+
+सभी हुक `nexy` से आयातित हैं:
+
+```python
+from nexy import usePathname, useSearchParams, useRouter
+```
+
+## उपलब्ध हुक
+
+- [usePathname](/docs/hooks/usePathname) — वर्तमान URL पथ
+- [useSearchParams](/docs/hooks/useSearchParams) - क्वेरी स्ट्रिंग पैरामीटर
+- [useRouter](/docs/hooks/useRouter) — प्रोग्रामेटिक नेविगेशन
+- [useQuery](/docs/hooks/useQuery) - पार्स किए गए क्वेरी पैरामीटर
+- [useSession](/docs/hooks/useSession) - सत्र डेटा एक्सेस
+- [useCookies](/docs/hooks/useCookies) - कुकी पढ़ें/लिखें
+- [useToc](/docs/hooks/useToc) - सामग्री निष्कर्षण की तालिका
+- [useViews](/docs/hooks/useViews) - कंपोज़ेबल व्यू प्रबंधन

@@ -1,1 +1,49 @@
-jhjdhjh
+---
+from "@components/link.nexy" import Link
+from "@components/background.nexy" import Background
+---
+<section class="overflow-hidden">
+    <aside class="relative w-full w-container px-6 md:px-16 py-24 space-y-4 ">
+        <Background className="-z-10 rotate-y-180 absolute -bottom-20 -right-50 opacity-20 scale-110" />
+        <Background className="-z-10 rotate-x-180 absolute -top-20 -left-50 opacity-20 scale-110" />
+
+        <h2 class="text-3xl font-medium">Ours Sponsor</h2>
+        <p class="text-base font-light max-w-xl leading-6">
+            Nous proposons une gamme complète de solutions numériques pour répondre à vos besoins spécifiques.
+        </p>
+        <div  class="grid grid-cols-4 grid-rows-3 h-132 gap-2 mt-16 *:bg-amber-50/4 *:border *:border-border/40 *:backdrop-blur *:rounded-2xl *:corner ">
+            <div class=""></div>
+            <div class=""></div>
+            <div class=""></div>
+            <div class=""></div>
+            <div class=""></div>
+            <div class="col-span-2 bg-transparent! border-dashed items-center justify-center flex">
+                <Link href="/community"
+                className="bg-white text-black font-medium w-fit flex items-center gap-2 px-6 py-3 rounded-full corner"
+                >
+                    <span>See more</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4.5 " viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z" />
+                        <path d="M5 3a2 2 0 0 0-2 2" />
+                        <path d="M19 3a2 2 0 0 1 2 2" />
+                        <path d="M5 21a2 2 0 0 1-2-2" />
+                        <path d="M9 3h1" />
+                        <path d="M9 21h2" />
+                        <path d="M14 3h1" />
+                        <path d="M3 9v1" />
+                        <path d="M21 9v2" />
+                        <path d="M3 14v1" />
+                    </svg>
+                </Link>
+                
+            </div>
+            <div class=""></div>
+            <div class=""></div>
+            <div class=""></div>
+            <div class=""></div>
+            <div class=""></div>
+        </div>
+    </aside>
+</section>

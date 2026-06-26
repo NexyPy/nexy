@@ -1,0 +1,61 @@
+# データベースの概要
+
+Nexy は、組み込みのデータベース抽象化を提供しません。 ORM を選択し、FastAPI プロジェクトの場合と同様に構成します。
+
+---
+
+## サポートされている ORM
+
+| ORM |スタイル |非同期 |移行ツール |
+|-----|------|------|-----|
+| SQLモデル |ピダンティックネイティブ |はい |アレンビック |
+| SQLAlchemy |フル機能の成熟した |はい |アレンビック |
+|トータス-ORM |ジャンゴっぽい |はい |エアリッヒ |
+
+---
+
+## 一般的なパターン
+
+1. 選択した ORM とドライバーをインストールします
+2. アプリで接続を構成する
+3. モデルを定義する
+4. 移行の作成と適用
+5. ルート ハンドラーで ORM を使用する
+
+---
+
+## 依存性注入パターン
+
+ルート全体で使用するデータベースの依存関係を作成します。
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+次に、ルート ハンドラーに挿入します。
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## 次のステップ
+
+- [SQLModel](/docs/orm/sqlmodel) — 新しいプロジェクトに推奨
+- [SQLAlchemy](/docs/orm/sqlalchemy) — 完全な制御と柔軟性
+- [Tortoise-ORM](/docs/orm/tortoise) — Django のような非同期 ORM

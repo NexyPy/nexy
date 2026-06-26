@@ -1,0 +1,73 @@
+# Autorização
+
+Proteja rotas usando decoradores `"@UseGuard` com chamadas de guarda.
+
+## Contrato de guarda
+
+Um guarda pode ser chamado com `__call__(self, request)`. Aumente `HTTPException` para bloquear, retorne `None` para permitir.
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+---
+
+## Guarda em uma rota
+```python
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+```
+```python
+from nexy.decorators import Controller, UseGuard
+from starlette.authentication import requires
+
+"@Controller("/admin")
+"@UseGuard(requires("authenticated"))
+class AdminController:
+    def GET(self, request):
+        return {"user": request.user.username}
+```
+## Vários guardas
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RateLimitGuard())
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## Usando `requires` da Starlette
+```python
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+```
+Funciona tanto em FBR quanto em Modular — `requires` retorna um guarda válido que pode ser chamado.
+
+---
+
+## Relacionado
+
+- ["@UseGuard reference](/docs/decorators/useguard) — API completa do decorador
+- [Guards (Modular)](/docs/modular/guards) — injeção de proteção em Modular DI
+- [Authentication](/docs/security/authentication) — configurando back-ends de autenticação

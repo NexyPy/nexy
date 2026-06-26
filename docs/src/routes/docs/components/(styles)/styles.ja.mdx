@@ -1,0 +1,67 @@
+# .nexy ファイル内のスタイル
+
+Nexy テンプレートは、`<style>` タグ、外部インポート、または Tailwind などのユーティリティ フレームワークを通じて、HTML と同じ方法で CSS をサポートします。
+
+## インライン `<style>` タグ
+
+スタイルを追加する最も直接的な方法。 `<style>` ブロックをテンプレート セクションの任意の場所に追加します。
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+</style>
+```
+
+スタイルは**スコープ指定されていません** - グローバルに適用されます。衝突を避けるために、命名規則 (BEM、ユーティリティ クラス) またはデータ属性を使用してください。
+
+## `__Import` 経由の外部 CSS
+
+すべての `.nexy` ファイルには、自動的に使用可能な `__Import` があります (コンパイラによって挿入されます)。 CSS ファイルの場合、ファイルを読み取り、`<style>` タグでラップします。
+
+```nexy
+---
+global_css = __Import("/styles/global.css", "", "")()
+---
+{{ global_css }}
+<div class="layout">...</div>
+```
+
+`__Import(path, framework, symbol)` は 3 つの引数を取ります。 CSS の場合、2 番目と 3 番目は使用されず、空の文字列を渡します。末尾の `()` は、返された呼び出し可能オブジェクトをすぐに呼び出し、`<style>...</style>` 文字列を生成します。
+
+## 追い風 CSS
+
+Nexy は、そのままの状態で Tailwind と連携します。テンプレート属性内のユーティリティ クラスは通常どおりに処理されます。
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Tailwind を `nexyconfig.py` または `tailwind.config.*` で構成します。
+
+## Vite 経由の CSS インポート
+
+Vite が有効になっている場合 (`useVite: true`)、フロントエンド コンポーネントで標準 CSS `"@import` または `import` ステートメントを使用できます。 Vite は、PostCSS、CSS モジュール、および設定されたプラグインを通じてそれらを処理します。
+
+## ベストプラクティス
+
+|アプローチ |いつ使用するか |
+|----------|---------------|
+| `<style>` (テンプレート内) |コンポーネント固有のスタイル、小規模プロジェクト |
+| `__Import()` 外部 CSS |コンポーネント間でのスタイルの共有 |
+|追い風 CSS |実用性第一の設計、ラピッドプロトタイピング |
+| Vite CSS パイプライン |完全なビルド ツールチェーン、CSS モジュール、PostCSS |

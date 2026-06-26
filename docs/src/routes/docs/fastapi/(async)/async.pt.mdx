@@ -1,0 +1,66 @@
+# Assíncrono e simultaneidade
+
+Nexy é construído em FastAPI que suporta manipuladores de rota `async` e `def` automaticamente.
+
+## `async def` versus `def`
+
+| Tipo de manipulador | Execução | Quando usar |
+|------------|-----------|-------------|
+| `def` | Pool de threads (bloqueio) | Trabalho da CPU, sincronização de chamadas de banco de dados, bloqueio de E/S |
+| `async def` | Ciclo de eventos | Banco de dados assíncrono, chamadas HTTP, WebSocket, sondagem longa |
+
+---
+
+## Rota assíncrona
+```python
+---
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+---
+```
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+## Sincronização mista e assíncrona em um arquivo
+```python
+---
+def GET():          # runs in thread pool
+    return {"type": "sync"}
+
+async def GET_async():  # runs in event loop
+    return {"type": "async"}
+---
+```
+```python
+from nexy.decorators import Controller
+
+"@Controller("/demo")
+class DemoController:
+    def GET(self):          # runs in thread pool
+        return {"type": "sync"}
+
+    async def async_get(self):  # runs in event loop
+        return {"type": "async"}
+```
+## Tarefas em segundo plano
+
+Para trabalho do tipo disparar e esquecer após a resposta, use `BackgroundTasks` (compatível com sincronização). Para um trabalho em segundo plano verdadeiramente assíncrono, use `asyncio.create_task`.
+
+## Advertências
+
+- **Não** chame funções `async` de manipuladores `def` com `await` — use `asyncio.run()` ou crie o manipulador `async def`
+- **Não** chame funções de bloqueio (como `time.sleep()`, `requests.get()`) de `async def` — use `asyncio.sleep()`, `httpx.AsyncClient`
+- `nx dev` do Nexy executa um trabalhador uvicorn por padrão - manipuladores assíncronos brilham aqui
+- Para produção, use vários trabalhadores (`nx start --workers 4`) para manipuladores de sincronização

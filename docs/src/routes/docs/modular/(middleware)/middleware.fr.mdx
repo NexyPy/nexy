@@ -1,0 +1,192 @@
+# Intergiciel
+
+Le middleware intercepte les requêtes avant qu’elles n’atteignent le contrôleur (et les réponses après). Utilisez-le pour des problèmes transversaux qui s'appliquent à de nombreuses routes : journalisation, timing, CORS, compression, manipulation d'en-tête.
+
+Comme les gardes, les middlewares de Nexy sont des **dépendances FastAPI** : des appelables qui peuvent modifier la requête/réponse ou abandonner la requête.
+
+## Pourquoi un middleware ?
+
+Vous pouvez ajouter la journalisation dans chaque méthode de contrôleur :
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+Le middleware extrait cela en un seul appelable appliqué une seule fois :
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## Création d'un middleware
+
+Le middleware est un appelable qui prend un `Request`. Il peut modifier `request.state`, augmenter `HTTPException` pour abandonner ou passer en renvoyant `None` :
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+Pour le timing, vous pouvez utiliser `request.state` pour transmettre des données à la réponse :
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+Ajoutez ensuite un hook de réponse via le paramètre `Response` de FastAPI :
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**Je t'ai eu** : le modèle `call_next` fonctionne pour les middlewares qui englobent l'intégralité du cycle demande/réponse. Middleware simple qui ne s'exécute qu'avant que le gestionnaire ne prenne `request`.
+
+## Application d'un middleware
+
+### Au niveau du contrôleur
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### Au niveau de la méthode
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### Au niveau du module
+
+Enregistrez le middleware dans le module pour toutes les routes :
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+Le middleware au niveau du module n'est pas pris en charge directement via les attributs `"@Module()`. Pour un middleware qui s'applique à toutes les routes, utilisez le niveau méthode ou contrôleur, ou enregistrez-vous globalement via `nexyconfig.py`.
+
+## Intergiciel mondial
+
+Enregistrez le middleware pour chaque itinéraire dans l'application via `nexyconfig.py` :
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+Chaque entrée est un tuple de `(middleware_class, kwargs)`. Les kwargs sont transmis au constructeur du middleware.
+
+## Middleware intégré
+
+Nexy inclut plusieurs middleware intégrés configurables via `nexyconfig.py` :
+
+| Clé de configuration | Intergiciel | Descriptif |
+|------------|-----------|-------------|
+| `useCORS` | `CORSMiddleware` | Partage de ressources inter-origines |
+| `useGZip` | `GZipMiddleware` | Compression de réponse |
+| `useTrustedHost` | `TrustedHostMiddleware` | Validation de l'en-tête de l'hôte |
+| `useSession` | `SessionMiddleware` | Sessions basées sur les cookies |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` | Forcer HTTPS |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+Le middleware intégré s'exécute au niveau global, avant tout middleware personnalisé.
+
+## Middleware contre gardes
+
+| Aspects | Intergiciel | Garde |
+|--------|-----------|-------|
+| Exécute | Devant le gestionnaire | Avant le gestionnaire (après le middleware) |
+| Objectif principal | Journalisation, en-têtes, compression | Authentification, autorisation, contrôle d'accès |
+| Modèle | `__call__(self, request)` | `__call__(self, request)` |
+| Abandonner | Augmenter `HTTPException` | Augmenter `HTTPException` |
+| Passer les données | `request.state` | `request.state` |
+
+En pratique, middleware et guards sont implémentés de la même manière (dépendances FastAPI). La distinction est conceptuelle : le middleware modifie les requêtes/réponses, les gardiens prennent les décisions de contrôle d'accès.
+
+## Gestion des erreurs dans le middleware
+
+Le middleware peut détecter les erreurs et renvoyer des réponses personnalisées à l'aide du modèle `call_next` :
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## meilleures pratiques
+
+1. **Une préoccupation par middleware** : journalisation, synchronisation, CORS. Pas un seul « gros middleware ».
+2. **Gardez le middleware rapide** : le middleware bloque la demande. Les opérations coûteuses appartiennent au gestionnaire.
+3. **Utilisez `request.state` pour transmettre des données** : il s'agit du moyen standard de partager des données entre le middleware, les gardes et les gestionnaires.
+4. **Préférez les gardes pour l'authentification** — conceptuellement plus clair que le middleware pour le contrôle d'accès.
+5. **Testez le middleware de manière isolée** — créez un `Request` fictif, appelez le middleware, affirmez les effets secondaires.
+
+## Prochaines étapes
+
+- [Guards](/docs/modular/guards) — authentification et autorisation
+- [Controllers](/docs/modular/controllers) — définir les gestionnaires d'itinéraire
+- [Modules](/docs/modular/modules) — organisé en modules de fonctionnalités

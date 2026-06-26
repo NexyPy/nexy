@@ -1,0 +1,73 @@
+# 디버깅
+
+Nexy 앱은 표준 Python입니다. 일반적인 디버깅 도구를 사용하세요.
+
+## `breakpoint()`
+
+경로 핸들러의 아무 곳에나 `breakpoint()`를 삽입하세요.
+
+```python
+def GET():
+    x = 42
+    breakpoint()  # drops into pdb
+    return {"x": x}
+```
+
+`nx dev`를 실행하고 경로에 도달하면 터미널이 `pdb`로 떨어집니다.
+
+## VS 코드
+
+1. 여백을 클릭하여 VS Code에서 중단점을 설정합니다.
+2. `.vscode/launch.json`를 생성합니다:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Nexy Dev",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nexy.cli",
+            "args": ["dev"],
+            "jinja": true
+        }
+    ]
+}
+```
+
+3. 디버깅을 시작하려면 `F5`를 누르십시오. 중단점은 `.nexy` frontmatter 및 `.py` 파일에서 작동합니다.
+
+## 인쇄 디버깅
+
+```python
+---
+print(f"Request params: {params}")  # appears in the terminal
+---
+```
+
+## 콘솔 로깅
+
+Nexy는 기본적으로 모든 요청을 터미널에 기록합니다. 자신만의 로그를 추가하세요.
+
+```python
+import logging
+logger = logging.getLogger("nexy")
+
+def GET():
+    logger.info("Home page loaded")
+    return {"ok": True}
+```
+
+## 유비콘 리로드
+
+`nx dev`는 `--reload`로 uvicorn을 실행합니다. `.py`, `.nexy`, `.mdx` 파일을 변경하면 자동으로 다시 시작됩니다.
+
+## 일반적인 문제
+
+| 증상 | 가능한 원인 |
+|---------|-------------|
+| 경로 반환 405 | 잘못된 HTTP 메소드 또는 `python-multipart` 누락 |
+| 본문은 `None` | Pydantic 모델 또는 유형 주석 누락 |
+| 422 유효성 검사 오류 | 경로/쿼리 매개변수의 유형 불일치 |
+| 모듈을 찾을 수 없습니다 | VFS 캐시가 오래되었습니다 — `nx dev` 다시 시작 |

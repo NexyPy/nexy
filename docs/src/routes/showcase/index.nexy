@@ -1,23 +1,24 @@
 ---
-from "@/components/sections/otherHero.nexy" import OtherHero
-from "@/components/sections/showcaseCard.nexy" import ShowcaseCard
-from "@/components/sections/separator.nexy" import Separator
+from "@/locales/routes/showcase" import Showcase
+from "@components/sections/otherHero.nexy" import OtherHero
+from "@components/sections/showcaseCard.nexy" import ShowcaseCard
+from "@components/sections/separator.nexy" import Separator
 
-title = "Real-world Web Applications built with Nexy"
-description = """ Explore inspiring websites, apps, and digital experiences made by developers and companies around the
-world."""
+s = Showcase()
+title = s.title
+description = s.description
 
 ---
-
+<main class=" overflow-x-hidden">
 <OtherHero title={{title}} description={{description}} />
 <section class="border-t border-border border-dashed py-16 space-y-6">
     <aside class="w-container">
         <ul class="flex gap-4 items-center ">
-            <li class="bg-foreground text-foreground-second px-4 py-1 rounded-full ">All</li>
-            <li>Marketing & Media</li>
-            <li>Platform Engineering</li>
-            <li>AI </li>
-            <li>Web App</li>
+            <li class="bg-foreground text-foreground-second px-4 py-1 rounded-full ">{{s.filter_all}}</li>
+            <li>{{s.filter_marketing}}</li>
+            <li>{{s.filter_platform_engineering}}</li>
+            <li>{{s.filter_ai}}</li>
+            <li>{{s.filter_web_app}}</li>
         </ul>
         <ul>
 
@@ -100,7 +101,7 @@ world."""
             <li class="font-mono opacity-50">/</li>
             <li class="py-1 px-3 rounded-2xl corner border">
                 24 
-                <span class="opacity-60">Pages</span>
+                <span class="opacity-60">{{s.pages}}</span>
             </li>
         </ul>
          <ul class="flex items-center gap-2 *:border-border">
@@ -114,3 +115,4 @@ world."""
         </ul>
     </aside>
 </section>
+</main>

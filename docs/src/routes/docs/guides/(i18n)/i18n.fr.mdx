@@ -1,0 +1,78 @@
+#i18n
+
+Configurez les paramètres régionaux dans `nexyconfig.py` :
+
+```python
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "ar", "es", "hi", "zh"]
+    useDefaultLocale = "en"
+```
+
+## Fichiers de traduction
+
+Placez les fichiers de traduction JSON dans `nexy/i18n/<locale>/` :
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+  "nav.docs": "Documentation",
+  "nav.blog": "Blog",
+  "home.hero": "Build faster with Nexy"
+}
+```
+
+Voir [Config / i18n](/docs/config/i18n) pour la référence complète.
+
+## Utiliser des traductions dans des modèles
+
+```nexy
+---
+---
+<h1>{{ trans("home.hero", "Build faster with Nexy") }}</h1>
+<p>{{ t("nav.docs", "Docs") }}</p>
+```
+
+- `trans(key, default)` — fonction complète
+- `t(key, default)` — alias abrégé
+
+## Détection des paramètres régionaux
+
+Nexy détecte les paramètres régionaux de l'utilisateur à partir de (dans l'ordre) :
+
+1. **Préfixe de l'URL** : `/fr/docs/`, `/en/docs/`
+2. **Cookie** : `nexy-locale`
+3. **En-tête Accept-Language** : préférence du navigateur
+
+Les paramètres régionaux détectés sont définis en tant que ContextVar à l'échelle de la requête, accessible via `current_locale` ou `useLocale()`.
+
+## Prise en charge RTL
+
+L'arabe (`ar`) et les autres langues RTL sont détectés automatiquement. Utilisez `useLocale()` pour vérifier :
+
+```nexy
+---
+from nexy import useLocale
+locale = useLocale()
+---
+<html lang="{{locale.locale}}" dir="{{ 'rtl' if locale.is_rtl else 'ltr' }}">
+```
+
+## Référence de configuration
+
+| Options | Tapez | Par défaut | Descriptif |
+|--------|------|---------|-------------|
+| `useLocales` | `list[str]` | `None` | Paramètres régionaux disponibles |
+| `useDefaultLocale` | `str` | `"en"` | Paramètres régionaux de secours |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | Nom du cookie local |
+| `useRTL` | `bool` | `False` | Activer la mise en page RTL |

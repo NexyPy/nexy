@@ -1,0 +1,85 @@
+# FBR 或模块化路由器
+
+Nexy 提供**两种路由策略**。您在项目创建时进行选择 - 此侧边栏顶部的切换开关会相应地切换文档。
+
+## 基于文件的路由 (FBR)
+
+路由由 `src/routes/` 下的文件树定义。
+
+```text
+src/routes/
+
+├── index.nexy        →  /
+
+├── about.nexy        →  /about
+
+├── blog/
+
+│   ├── index.nexy    →  /blog
+
+│   └── [slug].nexy   →  /blog/{slug}
+
+└── layout.nexy       →  shared layout
+```
+
+**选择 FBR 时**：
+
+- 你想要约定优于配置
+- 您正在构建一个简单的网站、文档或 MVP
+- 您的应用程序适合清晰的页面层次结构
+- 你更喜欢更少的样板文件
+
+## 模块化路由器
+
+路由是通过 `src/apps/` 中的 Python 装饰器定义的。
+
+```text
+src/apps/
+
+├── app_module.py     →  "@Module(root module)
+
+├── app_controller.py →  "@Controller("/")
+
+├── app_view.nexy     →  template
+
+├── users/
+
+│   ├── user_module.py
+
+│   ├── user_controller.py
+
+│   └── user_service.py
+
+└── layout.nexy       →  shared layout
+```
+
+**在以下情况下选择模块化**：
+
+- 您的应用程序很大，具有清晰的域边界
+- 您需要依赖注入和可测试的服务
+- 你来自 NestJS / Angular 并且更喜欢装饰器
+- 多个团队拥有不同的功能模块
+
+## 两者都在一个项目中
+
+您的 `nexyconfig.py` 控制使用哪个路由器：
+
+```python
+# FBR — no explicit router config needed
+
+class NexyConfig(NexyConfigModel):
+
+    pass
+```
+
+```python
+# Modular — import the APIRouter from your root "@Module
+
+from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
+
+class NexyConfig(NexyConfigModel):
+
+    useRouter = AppModule
+```
+
+您不能将两者混合在一个项目中 - 选择适合您的团队和规模的项目。

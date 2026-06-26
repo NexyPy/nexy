@@ -1,0 +1,202 @@
+# गुण (प्रॉप्स)
+
+प्रॉप्स यह बताते हैं कि किसी घटक में डेटा कैसे प्रवाहित होता है। वे घटकों को पुन: प्रयोज्य बनाते हैं - वही `Card` घटक प्राप्त प्रॉप्स के आधार पर विभिन्न सामग्री प्रस्तुत कर सकता है।
+
+## सहारा घोषित करना
+
+`:prop[type]` सिंटैक्स का उपयोग करके प्रॉप्स को फ्रंटमैटर में घोषित किया जाता है:
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+प्रत्येक घोषणा संबंधित प्रकार के एनोटेशन के साथ उत्पन्न पायथन फ़ंक्शन का एक पैरामीटर बन जाती है।
+
+## आवश्यक बनाम वैकल्पिक
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+यदि घटक का उपयोग करते समय एक आवश्यक प्रोप पारित नहीं किया जाता है, तो रेंडर समय पर पायथन `TypeError` बढ़ा देता है। त्रुटि संदेश में घटक का नाम और अनुपलब्ध तर्क शामिल है।
+
+**प्रोप कब बनाना आवश्यक है**: जब घटक इसके बिना अर्थहीन हो। `title` के बिना `BlogCard` टूट गया है - इसे आवश्यक बनाएं। `variant` के बिना `Button`, `"primary"` पर डिफ़ॉल्ट हो सकता है।
+
+## समर्थित प्रकार
+
+| प्रकार | डिफ़ॉल्ट शाब्दिक | नोट्स |
+|------|----------------|-------|
+| `str` | `""` | स्ट्रिंग मान |
+| `int` | `0` | पूर्णांक मान |
+| `float` | `0.0` | फ़्लोट मान |
+| `bool` | `false` | `true`/`false` (`True`/`False` नहीं) |
+| `list` | `[]` | सूची मान |
+| `dict` | `{}` | तानाशाही मूल्य |
+| `Any` | `None` | किसी भी प्रकार |
+
+टाइप एनोटेशन का उपयोग दस्तावेज़ीकरण और आईडीई समर्थन के लिए किया जाता है। रनटाइम पर, पायथन को गतिशील रूप से टाइप किया जाता है - एनोटेशन प्रकार को लागू नहीं करता है। यदि आप एक स्ट्रिंग पास करते हैं जहां एक इंट अपेक्षित है, तो यह तब विफल हो जाएगा जब टेम्पलेट इसे अंकगणितीय रूप से उपयोग करने का प्रयास करेगा, प्रोप घोषणा स्तर पर नहीं।
+
+## माता-पिता से प्रॉप्स पास करना
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**नियम**:
+
+- **स्ट्रिंग मान** `key="value"` या `key="{{ jinja_expr }}"` का उपयोग करें
+- **अभिव्यक्ति** `key={expr}` का उपयोग करें - कोई उद्धरण नहीं, मान को पायथन के रूप में पार्स किया गया है
+- **बूलियन्स**: `active=true` (लोअरकेस) का उपयोग करें, `active=True` या `active="true"` का नहीं
+- **सूचियाँ/निर्देश**: `items={["a", "b"]}` या `settings={"key": "val"}`
+
+## डिफ़ॉल्ट मान और परिवर्तनशील वस्तुएं
+
+एक सामान्य पायथन गेटचा: **परिवर्तनीय डिफ़ॉल्ट का उपयोग न करें** जो कॉल में साझा किए जाते हैं:
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+नेक्सी आपके लिए इसे संभालता है। जेनरेट किया गया फ़ंक्शन आंतरिक डिफ़ॉल्ट के रूप में `None` का उपयोग करता है और प्रति कॉल एक नई प्रतिलिपि बनाता है:
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+इसलिए `items:prop[list] = []` का उपयोग करना सुरक्षित है - प्रत्येक घटक कॉल को अपनी सूची मिलती है।
+
+## `{{ }}` के साथ डायनेमिक प्रॉप्स
+
+गतिशील मानों के लिए Jinja2 अभिव्यक्तियों का उपयोग करें:
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+कंपाइलर `{{ }}` वाले विशेषता मानों को Jinja2 स्ट्रिंग संयोजन में परिवर्तित करता है:
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+गैर-उद्धृत `{...}` मानों के लिए, सामग्री को सीधे पायथन अभिव्यक्ति के रूप में पारित किया जाता है।
+
+## एमडीएक्स पेजों में प्रॉप्स
+
+पेज (`.mdx` फ़ाइलें `src/routes/`) में भी प्रॉप्स घोषित कर सकते हैं:
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+पेज प्रॉप्स आम तौर पर लेआउट द्वारा सेट किए जाते हैं या `useViews()` के माध्यम से पारित किए जाते हैं। वे कंपोनेंट प्रॉप्स की तुलना में कम आम हैं क्योंकि पेज आमतौर पर इसके बजाय हुक और डेटाबेस क्वेरीज़ से डेटा प्राप्त करते हैं।
+
+## प्रॉप्स फैलाना
+
+टेम्पलेट में Jinja2 स्प्रेड सिंटैक्स का उपयोग करके एकाधिक प्रॉप्स के रूप में एक निर्देश पारित करें:
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+यह कंपाइलर के शॉर्टहैंड डिटेक्शन के माध्यम से काम करता है: जब यह एक विशेषता कुंजी में `{{ ...props }}` देखता है, तो यह इसे `**props` तक विस्तारित करता है।
+
+## पूर्ण उदाहरण: बटन घटक
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+उपयोग:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## अगला
+
+- [Conditional Rendering](/docs/components/conditional): टेम्पलेट्स में यदि/के लिए
+- [Component Modules](/docs/components/modules): घटकों को व्यवस्थित करना

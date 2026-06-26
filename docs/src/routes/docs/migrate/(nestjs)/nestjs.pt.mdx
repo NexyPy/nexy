@@ -1,0 +1,44 @@
+# Migrar do NestJS para o Nexy
+
+O Roteador Modular da Nexy é inspirado no NestJS – decoradores, DI, módulos, guardas, middleware. Os conceitos são transferidos quase um a um.
+
+## Mapeamento de conceitos
+
+| NestJS | Nexy |
+|--------|------|
+| `"@Controller()` | `"@Controller()` |
+| `"@Injectable()` | `"@Injectable()` |
+| `"@Module()` | `"@Module()` |
+| `"@Get()` | `def GET(self)` |
+| `"@Post()` | `def POST(self)` |
+| `"@UseGuards()` | `"@UseGuard()` |
+| `"@UseInterceptors()` | `"@Middleware()` |
+| `constructor(private svc: Svc)` | `def __init__(self, svc: Svc)` |
+| `APP_INTERCEPTOR` | `useMiddlewares` na configuração |
+| `app.module.ts` | `app_module.py` |
+
+## Exemplo
+```python
+# NestJS equivalent
+"@Controller("/users")
+export class UsersController {
+    constructor(private service: UserService) {}
+    "@Get()
+    findAll() { return this.service.findAll(); }
+}
+
+# Nexy
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+## Principais diferenças
+
+- **Nomes de métodos definem verbos HTTP** — sem decoradores `"@Get`/`"@Post`/`"@Put`/`"@Delete`
+- **Todos os decoradores em um módulo** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **Não `"@Global`** — o escopo é tratado via `Injectable(scope=Scope.SINGLETON)`
+- **Guardas e Middleware podem ser chamados** — nenhuma classe base para estender, apenas `__call__(self, request)`

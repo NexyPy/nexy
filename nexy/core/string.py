@@ -53,12 +53,12 @@ class StringTransform:
     @staticmethod
     def _normalize_dynamic_segment(segment: str) -> str:
         if segment.startswith("[...") and segment.endswith("]"):
-            return f"{segment[4:-1]}_ndp"
+            return f"{segment[4:-1].replace('-', '_')}_dynamic_param"
         if segment.startswith("[") and segment.endswith("]"):
-            return f"{segment[1:-1]}_ndp"
+            return f"{segment[1:-1].replace('-', '_')}_dynamic_param"
         if segment.startswith("(") and segment.endswith(")"):
-            return f"{segment[1:-1]}_ngp"
-        return segment
+            return f"{segment[1:-1]}_group"
+        return segment.replace("-", "_")
 
     @staticmethod
     def normalize_route_path_for_namespace(path: str) -> str:
@@ -77,11 +77,22 @@ class StringTransform:
         normalized_dirs = [StringTransform._normalize_dynamic_segment(p) for p in dirs]
 
         stem, ext = filename.rsplit(".", 1)
+
+        # Handle locale variant filenames: guide.fr.mdx -> guide_fr.mdx
+        # Only applies when useLocales contains the suffix (e.g., "fr").
+        # Without this, dotted names break VFS import resolution (guide.fr -> guide/fr/).
+        if "." in stem:
+            from nexy.core.config import Config as _NexyConfig
+
+            _cfg = _NexyConfig()
+            if _cfg.useLocales and stem.rsplit(".", 1)[1] in _cfg.useLocales:
+                stem = stem.replace(".", "_")
+
         if "[" in stem and "]" in stem:
             stem = re.sub(r"\[\.\.\.([^\]]+)\]", r"\1", stem)
             stem = re.sub(r"\[([^\]]+)\]", r"\1", stem)
-            stem = stem.replace("-", "_")
-            stem = f"{stem}_ndc"
+            stem = f"{stem}_catch_all"
+        stem = stem.replace("-", "_")
 
         normalized_parts = [p for p in normalized_dirs if p] + [f"{stem}.{ext}"]
         return "/".join(normalized_parts)
@@ -95,8 +106,9 @@ class StringTransform:
             if not cleaned:
                 return ""
             first = cleaned[0].capitalize()
-            return f"{first}{cleaned[1:]}_ndc"
+            return f"{first}{cleaned[1:]}_catch_all"
         if not segment:
             return ""
+        segment = segment.replace("-", "_")
         first_letter = segment[0].capitalize()
         return first_letter + segment[1:]

@@ -1,0 +1,207 @@
+# Поставщики и внедрение зависимостей
+
+Поставщики инкапсулируют бизнес-логику, доступ к данным или внешнюю интеграцию. Они декорируются `"@Injectable()` и автоматически внедряются в контроллеры (или другие поставщики) через параметры конструктора.
+
+## Почему провайдеры?
+
+Без DI каждый контроллер вручную создает свои зависимости:
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+При использовании DI контейнер создает экземпляры зависимостей и внедряет их:
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+Преимущества: тестируемость (имитация `UserService` в тестах), совместное использование синглтона (один и тот же экземпляр на всех контроллерах), контроль области действия (при необходимости новый для каждого запроса).
+
+## Создание поставщика
+
+Украсьте любой класс с помощью `"@Injectable()`:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+`"@Injectable()` предотвращает прямое создание экземпляров — вызов `UserService()` за пределами DI вызывает `TypeError`. Это вынуждает вас использовать контейнер, который гарантирует правильное разрешение областей и зависимостей.
+
+## Внедрение в контроллер
+
+Объявите зависимость как параметр конструктора с подсказкой типа:
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+Контейнер DI соответствует подсказке типа (`UserService`) зарегистрированному поставщику. Если ни один поставщик не соответствует, он вызывает `ValueError` при запуске.
+
+**Попался**: имена параметров конструктора не имеют значения — имеют значение только подсказки типов. `service: UserService` и `s: UserService` разрешаются одному и тому же поставщику.
+
+## Внедрение провайдеров в других провайдеров
+
+Провайдеры могут зависеть от других провайдеров — контейнер разрешает все дерево:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+Циклические зависимости (`A → B → A`) вызывают `RecursionError` при запуске. Рефакторинг для извлечения общей логики в третий поставщик.
+
+## Области для инъекций
+
+Срок действия поставщика управления областями действия:
+
+| Область применения | Пожизненная | Вариант использования |
+|-------|----------|----------|
+| `Scope.SINGLETON` (по умолчанию) | Один экземпляр для всего приложения | Подключения к базе данных, настройки, кеши |
+| `Scope.REQUEST` | Новый экземпляр для каждого HTTP-запроса | Состояние каждого запроса, журналы аудита |
+| `Scope.TRANSIENT` | Новый экземпляр при каждой инъекции | Утилиты без сохранения состояния, чистые функции |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`** — это вариант по умолчанию и самый безопасный. Используйте **`Scope.REQUEST`** только тогда, когда вам нужно состояние каждого запроса (например, сохранение текущего пользователя от защиты). Используйте **`Scope.TRANSIENT`**, если у поставщика есть изменяемое состояние, которое не должно использоваться совместно.
+
+**Подсказка**: временные поставщики, внедренные в одноэлементный поставщик, фактически становятся одноэлементными — они создаются один раз, когда синглтон впервые разрешается. Если вам нужен новый переходный процесс для каждого запроса, вместо этого внедрите его в поставщика области запроса.
+
+## Пользовательские поставщики с `useValue` и `useFactory`
+
+Для зависимостей, не связанных с классом (строки, конфигурации, лямбда-выражения), используйте синтаксис dict в модуле:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+Зарегистрируйте поставщиков непосредственно в списке `providers` модуля:
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+Внедрить по подсказке типа:
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## Необязательные зависимости
+
+Используйте `None` в качестве значения по умолчанию для необязательного внедрения:
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+Если `Logger` не зарегистрирован ни в одном модуле, контейнер пропускает его и передает `None`. Это полезно для дополнительных функций, таких как ведение журнала или метрик, которые не должны вызывать сбои, если их не настроить.
+
+## Тестирование с поставщиками
+
+DI упрощает тестирование — создайте экземпляр контроллера с помощью макета:
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+Нет необходимости запускать сервер или настраивать полный контейнер DI. В этом главное преимущество внедрения конструктора — чистые модульные тесты.
+
+## Лучшие практики
+
+1. **Предпочитаю внедрение конструктора** — вызов `Container.resolve()` вручную выполняется редко; позвольте контейнеру автоматически впрыскиваться.
+2. **Не сохранять состояние поставщиков** (одиночная область действия) — состояние принадлежит базам данных или поставщикам в области запросов.
+3. **Одна ответственность на каждого поставщика** — `UserService` обрабатывает пользователей, `EmailService` обрабатывает электронную почту.
+4. **Явно зарегистрируйте всех поставщиков** в списке `providers` модуля — явная регистрация самодокументируется.
+5. **Используйте `Scope.REQUEST` с осторожностью** — каждый поставщик в области запроса увеличивает накладные расходы на распределение.
+
+## Следующие шаги
+
+- [Modules](/docs/modular/modules) — организовать поставщиков в функциональные модули.
+- [Guards](/docs/modular/guards) — добавить аутентификацию и авторизацию
+- [Middleware](/docs/modular/middleware) — перехватывать запросы до того, как они достигнут контроллеров

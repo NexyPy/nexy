@@ -1,0 +1,61 @@
+# Обзор базы данных
+
+Nexy не предоставляет встроенную абстракцию базы данных. Вы выбираете свой ORM и настраиваете его так же, как и в любом проекте FastAPI.
+
+---
+
+## Поддерживаемые ORM
+
+| ОРМ | Стиль | Асинхронный | Инструмент миграции |
+|-----|-------|-------|----------------|
+| SQLМодель | Пидантик-родной | Да | Перегонный куб |
+| SQLАлхимия | Полнофункциональный, зрелый | Да | Перегонный куб |
+| Черепаха-ОРМ | Джангоподобный | Да | Айрих |
+
+---
+
+## Общий шаблон
+
+1. Установите выбранный вами ORM и драйвер.
+2. Настройте соединение в вашем приложении.
+3. Определите модели
+4. Создание и применение миграций
+5. Используйте ORM в своих обработчиках маршрутов.
+
+---
+
+## Шаблон внедрения зависимостей
+
+Создайте зависимость базы данных для использования на всех ваших маршрутах:
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+Затем внедрите в обработчики маршрутов:
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## Следующие шаги
+
+- [SQLModel](/docs/orm/sqlmodel) — рекомендуется для новых проектов.
+- [SQLAlchemy](/docs/orm/sqlalchemy) — полный контроль и гибкость
+- [Tortoise-ORM](/docs/orm/tortoise) — асинхронная ORM в стиле Django.

@@ -1,0 +1,129 @@
+#خطوات التحقق من الهوية
+
+ينشئ هذا الدليل تسجيل الدخول وتسجيل الخروج ولوحة معلومات محمية من البداية باستخدام المصادقة المستندة إلى الجلسة.
+
+## 1. تمكين البرامج الوسيطة للجلسة
+
+في `nexyconfig.py`، قم بتمكين `useSession` — جلسات ملفات تعريف الارتباط الموقعة لـ Starlette:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me-in-production"}
+```
+
+راجع [Session config](/docs/config/session) للحصول على الخيارات.
+
+## 2. مصادقة الواجهة الخلفية والتكوين
+
+قم بإنشاء واجهة خلفية تقرأ معرف المستخدم من الجلسة:
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+أضفه إلى التكوين:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+راجع [Authentication reference](/docs/security/authentication) لمزيد من أنواع الواجهة الخلفية (الرمز المميز، JWT).
+
+## 3. صفحة تسجيل الدخول
+
+```nexy
+# src/routes/login.nexy
+---
+from nexy import useSession
+from src.db import authenticate_user
+
+def POST(username: str, password: str):
+    user = authenticate_user(username, password)
+    if not user:
+        return {"error": "Invalid credentials"}
+    session = useSession()
+    session["user_id"] = user.id
+    return Redirect("/dashboard")
+---
+<form method="POST">
+  <input name="username" placeholder="Username">
+  <input name="password" type="password" placeholder="Password">
+  <button>Sign in</button>
+</form>
+```
+
+## 4. لوحة القيادة المحمية
+
+قم بحماية لوحة المعلومات بواقي — تُرجع `{"user": ...}` إذا تمت مصادقتها، و401 بخلاف ذلك:
+
+```nexy
+# src/routes/dashboard.nexy
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+<h1>Dashboard</h1>
+<p>Welcome, {{ user }}!</p>
+```
+
+راجع [Authorization](/docs/security/authorization) لكتابة الحراس المخصصين و["@UseGuard reference](/docs/decorators/useguard).
+
+## 5. تسجيل الخروج
+
+امسح الجلسة لتسجيل الخروج:
+
+```nexy
+# src/routes/logout.nexy
+---
+from nexy import useSession
+
+def POST():
+    session = useSession()
+    session.clear()
+    return Redirect("/login")
+---
+```
+
+## 6. واجهة المستخدم الشرطية في القوالب
+
+تحقق من الجلسة مباشرة في أي قالب `.nexy`:
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+---
+<header>
+  {% if session.get("user_id") %}
+    <a href="/dashboard">Dashboard</a>
+    <form method="POST" action="/logout">
+      <button>Sign out</button>
+    </form>
+  {% else %}
+    <a href="/login">Sign in</a>
+  {% endif %}
+</header>
+```
+
+انظر [useSession hook](/docs/hooks/useSession).
+
+## ما هي الخطوة التالية؟
+
+- [Authentication reference](/docs/security/authentication) — الواجهات الخلفية للمصادقة، JWT، OAuth
+- [Authorization / Guards](/docs/security/authorization) — حراس ونطاقات مخصصة
+- [JWT](/docs/security/jwt) — مصادقة قائمة على الرمز المميز
+- [Session config](/docs/config/session)

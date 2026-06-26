@@ -1,0 +1,43 @@
+# Asíncrono y concurrencia (FBR)
+
+Nexy se basa en FastAPI que admite controladores de ruta `async` y `def`.
+
+## `async def` frente a `def`
+
+| Tipo de controlador | Ejecución | Cuándo utilizar |
+|-------------|-----------|-------------|
+| `def` | Grupo de subprocesos (bloqueo) | Trabajo de CPU, sincronización de llamadas de base de datos, bloqueo de E/S |
+| `async def` | Bucle de eventos | Base de datos asíncrona, llamadas HTTP, WebSocket, sondeo largo |
+
+## Ruta asíncrona
+
+```python
+# src/routes/proxy.py
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+```
+
+## Sincronización mixta y asíncrona en un archivo
+
+```python
+def GET():             # runs in thread pool
+    return {"type": "sync"}
+
+async def GET():       # runs in event loop
+    return {"type": "async"}
+```
+
+## Tareas en segundo plano
+
+Para trabajos de disparar y olvidar después de la respuesta, utilice `BackgroundTasks`. Para un verdadero trabajo asíncrono en segundo plano, utilice `asyncio.create_task`.
+
+## Advertencias
+
+- No llames a `async` funciones desde `def` controladores con `await` - usa `asyncio.run()` o haz que el controlador sea `async def`
+- No llames a funciones de bloqueo (`time.sleep()`, `requests.get()`) desde `async def` — usa `asyncio.sleep()`, `httpx.AsyncClient`
+- `nx dev` de Nexy ejecuta un trabajador uvicorn de forma predeterminada: los controladores asíncronos brillan aquí
+- Para producción, utilice varios trabajadores (`nx start --workers 4`) para los controladores de sincronización.

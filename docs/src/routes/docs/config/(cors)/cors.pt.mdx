@@ -1,0 +1,68 @@
+# CORS
+
+Configure o compartilhamento de recursos entre origens para seu aplicativo Nexy usando `CORSMiddleware` da Starlette.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## Opções comuns
+
+| Opção | Tipo | Padrão | Descrição |
+|--------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` | Origens permitidas. Use `["*"]` para permitir tudo (somente desenvolvimento). |
+| `allow_origins_regex` | `str` | `None` | Padrão Regex para origens permitidas (por exemplo, `"%%U0%%"`). |
+| `allow_methods` | `list[str]` | `["GET"]` | Métodos HTTP permitidos. `["*"]` permite tudo. |
+| `allow_headers` | `list[str]` | `[]` | Cabeçalhos de solicitação permitidos. `["*"]` permite tudo. |
+| `allow_credentials` | `bool` | `False` | Permitir cookies e cabeçalhos de autorização. |
+| `expose_headers` | `list[str]` | `[]` | Cabeçalhos expostos ao navegador. |
+| `max_age` | `int` | `600` | Duração do cache de simulação em segundos. |
+
+---
+
+## Configuração de desenvolvimento
+
+Para o desenvolvimento local, permitir todas as origens:
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## Configuração de produção
+
+Seja explícito sobre origens e métodos:
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+Quando `allow_credentials` é `True`, você não pode usar `"*"` para `allow_origins` — listar as origens explicitamente.
+
+---
+
+## Atrás de um proxy
+
+Se seu aplicativo for executado atrás de um proxy reverso (nginx, Cloudflare), certifique-se de que os cabeçalhos encaminhados estejam configurados para que o middleware CORS veja a origem correta.

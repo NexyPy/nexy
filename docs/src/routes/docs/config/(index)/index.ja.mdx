@@ -1,0 +1,15 @@
+# 設定
+
+Nexy は、プロジェクト ルートにある `nexyconfig.py` ファイルを通じて構成されます。このファイルは、ルーティング、エイリアス、i18n、CORS、セッションなど、フレームワークのあらゆる側面を制御します。
+
+構成システムは、検証が組み込まれた Pydantic モデルを使用します。すべてのフィールドには適切なデフォルトがあるため、`nexyconfig.py` ではオーバーライドする内容を指定するだけで済みます。
+
+## クイックリンク
+
+- [Nexy Config](/docs/config/nexy) — プロジェクトレベルの設定リファレンス
+- [Vite Config](/docs/config/vite) — フロントエンド ビルド ツールの構成
+- [CORS](/docs/config/cors) — クロスオリジンのリソース共有
+- [Aliases](/docs/config/aliases) — インポート パスのエイリアス
+- [Session](/docs/config/session) — セッションミドルウェア設定
+- [i18n](/docs/config/i18n) — 国際化構成
+- [TOC](/docs/config/toc) — 目次の自動生成

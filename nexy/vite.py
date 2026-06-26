@@ -7,13 +7,12 @@ from nexy.utils.server.ports import get_vite_port
 
 
 def Vite() -> str:
-    # 1. Config verification
     config = Config()
     if not os.path.exists("vite.config.ts"):
-        return ""  # No Vite if no config
+        return ""
 
     if not config.useVite:
-        return ""  # No Vite if disabled
+        return ""
 
     manifest_path = Path("__nexy__/client/.vite/manifest.json")
     prod_server = Path("__nexy__/nexy.prod")
@@ -21,7 +20,7 @@ def Vite() -> str:
 
     if prod_mode:
         if not manifest_path.is_file():
-            return ""  # Prod without manifest → no Vite assets
+            return ""
         try:
             data = json.loads(manifest_path.read_text(encoding="utf-8"))
             entry = data.get("__nexy__/main.ts") or data.get("/__nexy__/main.ts")
@@ -45,39 +44,33 @@ def Vite() -> str:
                     )
                     return f'{css_links}<script type="module" src="{src}"></script>'
         except Exception:
-            return ""  # Malformed manifest → no Vite
+            return ""
 
-    # 3. Development Mode (Dynamic via browser)
     port = get_vite_port(5173)
 
-    # HMR Client Script
     hmr_script = """
     <script type="module">
         (function() {
             const host = window.location.host;
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const ws = new WebSocket(`${protocol}//${host}/_nexy/hmr`);
-            
+
             ws.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
                 if (data.type === 'nexy:reload') {
                     console.log(`[Nexy HMR] Reloading due to change in: ${data.path}`);
-                    
+
                     try {
-                        // 1. Fetch new HTML for current route
                         const res = await fetch(window.location.href, {
                             headers: { 'X-Nexy-HMR': '1' }
                         });
                         const html = await res.text();
-                        
-                        // 2. Parse and Swap Body (KISS)
+
                         const parser = new DOMParser();
                         const newDoc = parser.parseFromString(html, 'text/html');
-                        
-                        // Preserve scripts that shouldn't be re-run or handle re-hydration
+
                         document.body.innerHTML = newDoc.body.innerHTML;
-                        
-                        // 3. Re-run hydration scripts
+
                         const scripts = document.body.querySelectorAll('script');
                         scripts.forEach(oldScript => {
                             const newScript = document.createElement('script');
@@ -101,13 +94,12 @@ def Vite() -> str:
 
     vite_protocol = "https" if config.useSslKeyfile and config.useSslCertfile else "http"
 
-    # Small JS script to inject tags with the correct hostname
     return f"""
     {hmr_script}
     <script type="module">
         const host = window.location.hostname;
         const base = `{vite_protocol}://${{host}}:{port}`;
-        
+
         const s1 = document.createElement('script');
         s1.type = 'module';
         s1.src = `${{base}}/@vite/client`;

@@ -1,8 +1,8 @@
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
 
 
-def preact() -> FFModel:
-    return FFModel(
+def preact() -> FrontendFramework:
+    return FrontendFramework(
         name="preact",
         render=(
             "(function(){"

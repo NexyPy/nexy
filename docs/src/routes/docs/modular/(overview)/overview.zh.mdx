@@ -1,0 +1,102 @@
+# 模块化路由器 — 架构概述
+
+模块化路由器将 NestJS 风格的架构引入了 Python。您可以将代码组织到**控制器**、**提供程序**、**模块**、**防护**和**中间件**中，而不是将文件变成路由（FBR）。
+
+## 为什么要模块化？
+
+基于文件的路由 (FBR) 非常适合中小型应用程序。但随着您的应用程序的增长：
+
+|问题 | FBR |模块化路由器|
+|--------|-----|----------------|
+|跨领域关注点 |每个文件重复中间件 |控制器或模块级别的防护/中间件 |
+|依赖注入 |手动进口无处不在 | `"@Injectable` 自动解析 |
+|代码组织|分散在文件中|分为功能模块 |
+|可测试性|与文件路径紧密耦合 |控制器接受注入的依赖项 |
+|大团队协调|文件冲突，界限不清 |由类属性强制执行的模块边界 |
+
+＃＃ 建筑学
+
+```
+AppModule  ("@Module)
+├── AuthModule  ("@Module)
+│   ├── AuthController   ("@Controller)
+│   │   ├── def GET(self)       → GET /auth/
+│   │   └── def post(self, ...)  → POST /auth/
+│   └── AuthService      ("@Injectable)
+├── UsersModule  ("@Module(prefix="/users"))
+│   └── UsersController  ("@Controller)
+│       ├── def GET(self)       → GET /users/
+│       └── def post(self, ...)  → POST /users/
+└── └── UserService      ("@Injectable)
+```
+
+### 方法名称定义 HTTP 动词
+
+Nexy 将 **方法名称** 映射到 HTTP 方法 — 不需要 `"@Get`/`"@Post` 装饰器：
+
+|方法名称 | HTTP 方法 |
+|-------------|-------------|
+| `GET`、`get`、`Get` |获取 |
+| `post`、`POST`、`Post` |发布 |
+| `put`、`PUT`、`Put` |放置 |
+| `delete`、`DELETE`、`Delete` |删除|
+| `patch`、`PATCH`、`Patch` |补丁 |
+| `options`、`OPTIONS`、`Options` |选项 |
+| `head`、`HEAD`、`Head` |头|
+| `SOCKET`、`socket`、`Socket` | WebSocket |
+
+## 快速入门
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module, Controller
+
+"@Controller("/ping")
+class PingController:
+    def GET(self):
+        return {"status": "ok"}
+
+"@Module()
+class AppModule:
+    controllers = [PingController]
+```
+
+在`nexyconfig.py`中配置：
+
+```python
+from nexy import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useModular = "src.apps.app_module.AppModule"
+```
+
+## 何时选择模块化而非 FBR
+
+**在以下情况下选择模块化：**
+- 您有 5 个以上共享依赖项的路由文件
+- 你需要依赖注入（服务、数据库、配置）
+- 您的团队具有明显的功能边界（身份验证、计费、用户）
+
+**在以下情况下选择 FBR：**
+- 您的路线少于 10 条
+- 您更喜欢约定优于配置
+- 您正在构建一个大部分静态的网站
+- 您想要最简单的设置
+
+## 五个概念
+
+|概念 |装饰 |目的|
+|--------|------------|---------|
+|控制器| `"@Controller(prefix)` |将相关路由分组到路径前缀下 |
+|供应商| `"@Injectable()` |业务逻辑，可注入控制器|
+|模块| `"@Module()` |通过类属性连接控制器和提供者 |
+|守卫| `"@UseGuard(...)` |授权 - 在处理程序之前运行 |
+|中间件| `"@Middleware(...)` |请求/响应管道——在警卫之前运行 |
+
+## 后续步骤
+
+- [Controllers](/docs/modular/controllers) — 使用方法名称路由处理 HTTP 请求
+- [Providers & DI](/docs/modular/providers) — 将服务注入控制器
+- [Modules](/docs/modular/modules) — 将控制器和提供者组织到功能模块中
+- [Guards](/docs/modular/guards) — 通过授权保护路由
+- [Middleware](/docs/modular/middleware) — 在处理程序之前拦截请求

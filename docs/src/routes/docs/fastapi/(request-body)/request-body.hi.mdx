@@ -1,0 +1,108 @@
+# अनुरोध निकाय
+
+पाइडेंटिक मॉडल का उपयोग करके JSON अनुरोध निकाय प्राप्त करें।
+
+---
+
+## बुनियादी मॉडल
+```python
+---
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+def POST(item: Item):
+    return {"name": item.name, "price": item.price}
+---
+```
+```python
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+## `embed` के साथ बॉडी फ़ील्ड
+
+फ़ील्ड नाम को ओवरराइड करें या अतिरिक्त JSON फ़ील्ड इंजेक्ट करें:
+```python
+---
+from fastapi import Body
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+def POST(
+    item: Item,
+    important: str = Body(embed=True),
+):
+    # Expects: {"item": {...}, "important": "x"}
+    ...
+---
+```
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+## शरीर के अनेक पैरामीटर
+
+कई मॉडल पास करें - फास्टएपीआई उन्हें उनके पैरामीटर नामों के अंतर्गत रखता है:
+```python
+---
+def POST(item: Item, user: User):
+    # Expects: {"item": {...}, "user": {...}}
+    ...
+---
+```
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+## नेस्टेड मॉडल
+
+मॉडल में अन्य मॉडल, सूचियाँ और वैकल्पिक फ़ील्ड शामिल हो सकते हैं:
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+राउटर-अज्ञेयवादी - समान पाइडेंटिक मॉडल एफबीआर और मॉड्यूलर दोनों में काम करते हैं।
+
+## सीमाएँ
+
+- जब आप पाइडेंटिक मॉडल पैरामीटर टाइप-एनोटेट करते हैं तो बॉडी स्वचालित रूप से पार्स हो जाती है
+- फास्टएपीआई सत्यापन को संभालता है और अमान्य इनपुट पर 422 लौटाता है
+- कोई `"@Body()` डेकोरेटर की आवश्यकता नहीं - मानक फास्टएपीआई व्यवहार

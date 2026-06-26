@@ -1,0 +1,75 @@
+#“@Action
+
+将 Python 函数转换为可从浏览器调用的服务器端点 - 无需路由器注册，无需解析请求。
+
+```python
+from nexy.decorators import Action
+
+"@Action
+def submit_comment(post_id: int, body: str) -> dict:
+    return {"status": "ok"}
+```
+
+- -
+
+＃＃ 签名
+
+```python
+Action(func: Callable | None = None) -> Callable
+```
+
+带或不带括号使用：
+
+```python
+"@Action
+def fn(): ...
+
+"@Action()
+def fn(): ...
+```
+
+---
+
+## 它是如何工作的
+
+1. 在`ActionsStore`中注册函数
+2. 启动时，`ActionEngine` 发现所有操作并将它们安装为 `POST /_nx_{hash}`
+3. URL 哈希 = `sha256(func_name + "salt2026")[:12]` — 每个部署具有确定性
+4. 从 JSON 正文解析参数，按名称注入
+5.返回值序列化为JSON
+
+---
+
+## 参数类型
+
+|类型 |来源 |示例|
+|------|--------|---------|
+| `str`、`int`、`float`、`bool` | JSON 正文 | `post_id: int` |
+| `list`、`dict` | JSON 正文 | `tags: list[str]` |
+| Pydantic 模型 | JSON 正文（已验证）| `data: CreateComment` |
+| `Request` | FastAPI注入| `request: Request` |
+
+---
+
+## 返回类型
+
+|返回 |回应 |
+|--------|----------|
+| `dict` | `JSONResponse` |
+| `list` | `JSONResponse` |
+| `str` | `PlainTextResponse` |
+| `int`、`float`、`bool` | `JSONResponse` |
+| `BaseModel` | `JSONResponse` |
+| `None` | `JSONResponse({"ok": True})` |
+
+---
+
+## 限制
+
+- 仅发布
+- 仅 JSON 正文（无表单数据，多部分）
+- 哈希盐是硬编码的 — URL 在部署中稳定
+
+---
+
+有关使用示例和客户端集成，请参阅 [Server Actions guide](/docs/guides/actions)。

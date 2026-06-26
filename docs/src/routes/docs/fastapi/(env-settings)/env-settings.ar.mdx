@@ -1,0 +1,72 @@
+# البيئة والإعدادات
+
+إدارة التكوين باستخدام متغيرات البيئة وملفات `.env`.
+
+## `.env` ملفات
+
+يقرأ Nexy ملفات `.env` تلقائيًا عند بدء التشغيل (عبر `python-dotenv`).
+
+```env
+# .env
+DATABASE_URL=postgresql://localhost/mydb
+SECRET_KEY=change-me-in-production
+DEBUG=true
+```
+
+الوصول إليهم عبر `os.environ`:
+
+```python
+import os
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+```
+
+## إعدادات Pydantic
+
+للإعدادات المكتوبة مع التحقق من الصحة:
+
+```bash
+pip install pydantic-settings
+```
+
+```python
+# src/settings.py
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str = "sqlite:///dev.db"
+    secret_key: str = "dev-key"
+    debug: bool = True
+
+    model_config = {"env_file": ".env"}
+
+settings = Settings()
+```
+
+ثم استخدم في أي مكان:
+
+```python
+from src.settings import settings
+
+def GET():
+    return {"db": settings.database_url}
+```
+
+## متغيرات البيئة في NexyConfig
+
+استخدم `os.getenv` لتمرير env vars إلى [Nexy config](/docs/config/nexy):
+
+```python
+import os
+
+class NexyConfig(NexyConfigModel):
+    usePort = int(os.getenv("PORT", "3000"))
+    useTitle = os.getenv("SITE_TITLE", "My App")
+```
+
+## أفضل ممارسات الإنتاج
+
+- لا تلتزم مطلقًا بـ `.env` إلى git — أضف إلى `.gitignore`
+- استخدم المدير السري لموفر الخدمة السحابية أو أسرار CI/CD للإنتاج
+- أضف البادئة إلى env vars (على سبيل المثال، `NEXY_`، `APP_`) لتجنب الاصطدامات
+- استخدم `pydantic-settings` للتحقق من الصحة واكتب الإكراه

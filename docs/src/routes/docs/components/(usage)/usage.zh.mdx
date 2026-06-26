@@ -1,0 +1,191 @@
+
+# 使用组件
+
+组件是 `src/components/` 中的 `.nexy` 文件，您导入到页面和其他组件中。
+
+## 创建组件
+
+组件是任何 `.nexy` 文件。最简单的组件没有 frontmatter — 只有 HTML：
+
+```nexy
+<!-- src/components/Hello.nexy -->
+---
+---
+<h1>Hello Nexy!</h1>
+```
+
+但大多数组件都有道具、逻辑和模板。
+
+## 导入组件
+
+使用 Nexy 的组件导入语法，它支持相对路径和配置的别名：
+
+```nexy
+---
+from "./Card.nexy" import Card
+from "./Header.nexy" import Header
+from "@components/Button.nexy" import Button
+---
+```
+
+导入路径是相对于当前文件的。默认情况下，`"@/` 映射到 `src/`（或您在 `useAliases` 中配置的任何内容）。
+
+**为什么使用特殊语法？** 因为编译器需要在构建时知道哪些 PascalCase 标签是组件，哪些是未知的 HTML 元素。清理程序会在 Python 的 AST 解析器看到这些导入之前对其进行转换，因此它们永远不会导致语法错误。
+
+## 渲染组件
+
+在模板中，使用导入的名称作为 HTML 标记：
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<Card title="Hello" count={5} />
+```
+
+编译器将 PascalCase 标签转换为 Jinja2 函数调用：
+
+|模板|编译输出 |
+|----------|----------------|
+| `&lt;Card /&gt;` | `{{Card() }}` |
+| `&lt;Card title="Hi" /&gt;` | `{{ Card(title="Hi") }}` |
+| `&lt;Card count={5} /&gt;` | `{{ Card(count=5) }}` |
+| `&lt;Card&gt;content&lt;/Card&gt;` | `{% call Card() %}content{% endcall %}` |
+
+**命名要求**：组件名称**必须**以大写字母开头。如果使用小写字母，编译器会将其视为常规 HTML 元素，并且不会调用组件函数。这与 Web 平台约定一致（自定义元素必须有连字符；PascalCase 为框架组件保留）。
+
+## 传递道具
+
+```nexy
+---
+from "./Card.nexy" import Card
+---
+<!-- Static string -->
+<Card title="Hello" />
+
+<!-- Dynamic Jinja2 expression -->
+<Card title="{{ page_title }}" />
+
+<!-- Unquoted value (expression, not string) -->
+<Card count={5} active={true} items={["a", "b"]} />
+
+<!-- Mixed -->
+<Card title="{{ page_title }}" count={items|length} />
+```
+
+**属性传递规则**：
+
+|语法 |值类型|模板输出 |
+|--------|---------|----------------|
+| `title="Hello"` |字符串| `Card(title="Hello")` |
+| `title="{{ var }}"` | Jinja2 表达式 | `Card(title=var)` |
+| `count={5}` | Python 表达式 | `Card(count=5)` |
+| `active=true` |关键字（Python 布尔值）| `Card(active=True)` |
+| `items={["a"]}` | Python 表达式 | `Card(items=["a"])` |
+
+与 Python 文字匹配的不带引号的值（`true`、`false`、`none`、数字）按原样传递。其他一切都是字符串。
+
+**陷阱**：`count={0}` 传递整数 0。`count="0"` 传递字符串 `"0"`。在 Jinja2 模板中，`{% if count %}` 对 `0`（虚假）与 `"0"`（真实）的评估不同。当您需要数字零时，请使用 `{0}`。
+
+## 老虎机/儿童
+
+包裹内容的组件使用 `<slot />` 来定义子元素的去向：
+
+```nexy
+<!-- Card.nexy -->
+---
+title:prop[str] = ""
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <div class="card-body">
+    <slot />
+  </div>
+</div>
+```
+
+```nexy
+<!-- Usage -->
+---
+from "./Card.nexy" import Card
+---
+<Card title="My Card">
+  <p>This appears inside the slot.</p>
+</Card>
+```
+
+**槽如何工作**：编译器将子项包装在 `{% call %}` 块中。该组件将它们作为 `caller` 函数接收。 `<slot />` 调用 `caller()` 并输出结果。
+
+**限制**：
+- 每个组件只有一个未命名的插槽
+- 没有作用域插槽（将函数作为 props 传递）
+- 插槽仅适用于 `.nexy` 文件，不适用于原始 Jinja2 模板
+
+## 自闭合与包装
+
+自关闭组件（无子组件）：
+
+```nexy
+<Header title="Blog" />
+<Separator />
+<Spacer size={16} />
+```
+
+包装组件（带子组件）：
+
+```nexy
+<Card title="Post">
+  <p>Content here</p>
+</Card>
+
+<Layout>
+  <Header />
+  <main>Page content</main>
+  <Footer />
+</Layout>
+```
+
+编译器会检测自闭合标签 (`&lt;Card /&gt;`) 与带有子标签 (`&lt;Card&gt;...&lt;/Card&gt;`) 的情况，并生成适当的 Jinja2 语法。
+
+## 提前返回/条件渲染
+
+由于该组件是一个 Python 函数，因此您可以在 frontmatter 中尽早返回：
+
+```nexy
+---
+title:prop[str] = ""
+if not title:
+    print("Warning: Card rendered without title")
+    # Return early — the template still runs but title is empty
+---
+<div class="card">
+  <h2>{{ title }}</h2>
+  <slot />
+</div>
+```
+
+对于模板中的条件渲染，请使用 Jinja2 `{% if %}`：
+
+```nexy
+---
+show_header:prop[bool] = true
+---
+{% if show_header %}
+  <header>
+    <slot />
+  </header>
+{% endif %}
+```
+
+## 最佳实践
+
+- **每个文件一个组件** — 命名清晰，易于查找
+- **将模板保持在 50 行以内** — 如果更长，则提取子组件
+- **使用 props 而不是硬编码** - 使组件可重用
+- **以 PascalCase 命名文件** — `BlogCard.nexy` 不是 `blog_card.nexy`
+- **可选值的默认属性** — `title:prop[str] = ""` 不是 `title:prop[str]`
+
+## 下一步
+
+- [Markup](/docs/components/markup)：模板语法、动态属性、HTML 约定
+- [Properties](/docs/components/properties)：输入的 props、默认值、验证模式

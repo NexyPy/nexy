@@ -1,0 +1,65 @@
+# OpenAPI Webhooks & Callbacks
+
+Define webhooks and callbacks in your OpenAPI schema so consumers know what your API sends to them.
+
+## Webhooks
+
+Webhooks are outgoing events your API sends to external URLs.
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+This registers a webhook in the OpenAPI schema. Consumers see the expected payload shape in `/docs`.
+
+## Callbacks
+
+Callbacks describe requests your API will make to the consumer's server.
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+Pass the callback router to a route:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+This generates additional paths in the OpenAPI spec showing what your API will POST to the external URL.
+
+## Why use them
+
+- Auto-generated documentation for API consumers
+- Type-safe contract definition
+- Works with any OpenAPI client generator
+- No runtime effect — purely for documentation

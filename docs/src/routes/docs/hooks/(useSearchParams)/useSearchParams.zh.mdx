@@ -1,0 +1,43 @@
+# 使用搜索参数
+
+以字典形式返回当前 URL 查询参数。
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## 返回值
+
+`dict` — 来自请求 URL 的查询参数（例如 `{"q": "nexy", "page": "2"}`）。
+
+ - -
+
+＃＃ 例子
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## 方法
+
+返回的字典支持标准字典操作：`.get(key, default)`、`.keys()`、`.items()`。
+
+---
+
+## 使用说明
+
+- 所有值都是字符串 - 使用 `int()`、`bool()` 等进行转换。
+- 对于 API 处理程序，请使用 FastAPI 的本机参数注入

@@ -1,0 +1,24 @@
+# Руководства
+
+Практические пошаговые руководства по использованию Nexy с интерфейсными платформами, загрузке данных, аутентификации, интернационализации и развертыванию.
+
+## Интеграция с интерфейсной платформой
+
+- [React in Nexy](/docs/frontend/react)
+- [Vue in Nexy](/docs/frontend/vue)
+- [Svelte in Nexy](/docs/frontend/svelte)
+- [Solid in Nexy](/docs/frontend/solid)
+- [Preact in Nexy](/docs/frontend/preact)
+- [Vite & SSR](/docs/frontend/vite)
+
+## Основные руководства
+
+- [Jinja2](/docs/guides/jinja2) — использование шаблонизатора
+- [Data Loading](/docs/guides/data-loading) — получение и кэширование данных
+- [Error Handling](/docs/guides/error-handling) — страницы ошибок и обработка исключений.
+- [Actions](/docs/guides/actions) — формируют действия и мутации
+- [Auth](/docs/guides/auth) — потоки аутентификации
+- [i18n](/docs/guides/i18n) — интернационализация
+- [CSS & JS](/docs/guides/css-js) — статические активы и комплектация
+- [Real-Time](/docs/guides/websocket) — WebSocket и SSE.
+- [Deploy](/docs/guides/deploy) — производственное развертывание

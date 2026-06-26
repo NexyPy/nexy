@@ -8,7 +8,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from nexy.__version__ import __Version__
+from nexy.__version__ import __version__
 from nexy.i18n import t
 from nexy.utils.common.console import console
 
@@ -37,7 +37,7 @@ class InitProject:
     """Orchestrates the project initialization process."""
 
     def __init__(self) -> None:
-        self.version = __Version__().get()
+        self.version = __version__
 
     def run(
         self,
@@ -140,7 +140,9 @@ class InitProject:
                         if favicon.exists():
                             if template_name.endswith("-fbr"):
                                 (dest / "src" / "routes").mkdir(parents=True, exist_ok=True)
-                                shutil.move(str(favicon), str(dest / "src" / "routes" / "favicon.ico"))
+                                shutil.move(
+                                    str(favicon), str(dest / "src" / "routes" / "favicon.ico")
+                                )
                             else:
                                 (dest / "public").mkdir(parents=True, exist_ok=True)
                                 shutil.move(str(favicon), str(dest / "public" / "favicon.ico"))
@@ -286,6 +288,7 @@ class InitProject:
     @staticmethod
     def _write_alembic_ini_url(dest: Path, db_url: str) -> None:
         import re
+
         alembic_ini = dest / "alembic.ini"
         if not alembic_ini.exists():
             return
@@ -312,6 +315,7 @@ class InitProject:
 
         if project_dir_name:
             import sys as _sys
+
             is_win = _sys.platform == "win32"
             activate = ".venv\\Scripts\\activate" if is_win else "source .venv/bin/activate"
             venv_msg = t(

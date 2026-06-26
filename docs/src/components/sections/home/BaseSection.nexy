@@ -1,6 +1,6 @@
 ---
-from "@/components/background.nexy" import Background
-from "@/components/sections/home/viteLogo.nexy" import ViteLogo
+from "@components/background.nexy" import Background
+from "@components/sections/home/viteLogo.nexy" import ViteLogo
 ---
 <section class="overflow-hidden">
     <aside class="relative w-full w-container px-6 md:px-16 py-24 space-y-4 ">

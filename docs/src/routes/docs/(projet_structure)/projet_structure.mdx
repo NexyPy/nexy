@@ -1,0 +1,114 @@
+# Project Structure
+
+This page gives an overview of Nexy's file and folder conventions, and how to organize your project.
+
+```text
+my-app/
+├── .venv/
+├── node_modules/          (optional — client framework only)
+├── public/
+├── src/
+│   ├── components/
+│   ├── routes/            (FBR) — or apps/ (Modular)
+│   └── layout.nexy
+├── .gitignore
+├── nexyconfig.py
+├── pyproject.toml
+├── package.json           (optional)
+├── vite.config.ts         (optional)
+└── tsconfig.json          (optional)
+```
+
+---
+
+## Top-level directories
+
+### `public/`
+
+Static assets placed here are served at the root `/` URL. Images, fonts, favicons, robots.txt — anything you want publicly accessible without a route.
+
+### `src/`
+
+Your application source code lives here. Nexy watches `src/` for changes in development and compiles everything from here in production.
+
+---
+
+## Inside `src/`
+
+```text
+src/
+├── components/     — reusable Nexy components (optional)
+├── routes/         — FBR: file-based routing tree
+├── apps/           — Modular: controllers, modules, providers
+├── layout.nexy     — root layout (optional, FBR only)
+└── global.css      — global styles (optional)
+```
+
+### `src/components/`
+
+Optional directory for reusable `.nexy` components. Nexy does not enforce a specific components directory — you can use any name or structure. Components are imported with `from "@components/..." import ...`.
+
+### `src/routes/` (File-Based Routing)
+
+Every `.py`, `.nexy`, and `.mdx` file under `src/routes/` becomes an HTTP route, with exceptions for special filenames:
+
+| File | Behavior |
+|------|----------|
+| `index.nexy` / `index.py` / `index.mdx` | Served at the parent path (`/users/index.nexy` → `/users`) |
+| `layout.nexy` | Shared layout for sibling and child routes (not routable) |
+| `__init__.py` | Python package marker (not routable) |
+| `dependencies.py` | Shared dependencies (not routable) |
+
+```text
+routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     —  shared layout for /blog/*
+└── api/
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+### `src/apps/` (Modular Routing)
+
+When using the Modular Router, your application code is organized into feature modules:
+
+```text
+apps/
+├── app_module.py       →  "@Module(root module)
+├── app_controller.py   →  "@Controller("/")
+├── app_view.nexy       →  template
+├── users/
+│   ├── user_module.py
+│   ├── user_controller.py
+│   └── user_service.py
+└── layout.nexy         →  shared layout
+```
+
+---
+
+## Configuration files
+
+| File | Purpose |
+|------|---------|
+| `nexyconfig.py` | Main Nexy configuration: router, plugins, app settings |
+| `pyproject.toml` | Python project metadata, dependencies, build system |
+| `package.json` | JavaScript dependencies (present when using a client framework) |
+| `vite.config.ts` | Vite configuration for bundling client-side code |
+| `tsconfig.json` | TypeScript compiler options |
+| `.gitignore` | Files and directories to exclude from version control |
+
+---
+
+## Organizing your project
+
+Beyond the conventions above, Nexy has no opinion on how you structure your source code. Some patterns that work well:
+
+- **Feature folders**: group related pages, components, and utilities by feature
+- **Shared components**: keep truly reusable components in `src/components/`
+- **Route groups**: nest directories in `src/routes/` to mirror your URL structure
+- **Monorepo**: treat `src/apps/` modules as independently deployable units
+
+What matters is that every file under `src/routes/` (FBR) or referenced by `"@Module` (Modular) follows the naming conventions above.

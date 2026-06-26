@@ -1,0 +1,43 @@
+# useSearchParams
+
+現在の URL クエリ パラメータを辞書として返します。
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## 戻り値
+
+`dict` — リクエスト URL からのクエリ パラメータ (例: `{"q": "nexy", "page": "2"}`)。
+
+ - -
+
+＃＃ 例
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## メソッド
+
+返された辞書は、標準の辞書操作 `.get(key, default)`、`.keys()`、`.items()` をサポートします。
+
+---
+
+## 使用上の注意
+
+- すべての値は文字列です - `int()`、`bool()` などで変換します。
+- API ハンドラーの場合は、代わりに FastAPI のネイティブ パラメーター インジェクションを使用します。

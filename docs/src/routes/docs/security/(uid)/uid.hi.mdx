@@ -1,0 +1,52 @@
+# यूआईडी
+
+नेक्सी एक समर्पित यूआईडी जनरेटर शिप नहीं करता है। पायथन की मानक लाइब्रेरी अधिकांश उपयोग के मामलों को कवर करती है।
+
+## यूयूआईडी (stdlib)
+
+```python
+import uuid
+
+uuid.uuid4()          # Random UUID → "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+uuid.uuid4().hex      # Without dashes → "f47ac10b58cc4372a5670e02b2c3d479"
+uuid.uuid7()          # Time-ordered (Python 3.14+) → "018f3a6e-1b3c-7b00-a567-0e02b2c3d479"
+```
+
+## रहस्य (stdlib, URL-सुरक्षित)
+
+```python
+import secrets
+
+secrets.token_hex(16)    # → "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+secrets.token_urlsafe(8) # → "xYZabcDE_fg"
+```
+
+## नैनोआईडी (तृतीय-पक्ष)
+
+```bash
+pip install nanoid
+```
+
+```python
+from nanoid import generate
+
+generate()          # → "V1StGXR8_Z5jdHi6B-myT"
+generate(size=21)   # default length
+```
+
+## डेटाबेस स्वतः उत्पन्न आईडी
+
+| डीबी | प्रकार | ऑटो |
+|----|------|------|
+| पोस्टग्रेएसक्यूएल | `UUID` या `SERIAL` | `gen_random_uuid()` या `SERIAL` |
+| SQLite | `INTEGER PRIMARY KEY` | स्वतः-वृद्धि |
+| MySQL | `INT AUTO_INCREMENT` या `UUID` | `AUTO_INCREMENT` या `UUID()` |
+
+## कब क्या उपयोग करना है
+
+| उपयोग का मामला | समाधान |
+|---|----------|
+| डेटाबेस प्राथमिक कुंजी | डीबी ऑटो-इंक्रीमेंट या `uuid.uuid4()` |
+| सार्वजनिक-सामना करने वाली आईडी (उपयोगकर्ता, पोस्ट) | `secrets.token_urlsafe()` या NanoID |
+| सत्र/एपीआई टोकन | `secrets.token_hex()` |
+| आदेशित आईडी | `uuid.uuid7()` (पायथन 3.14+) या यूएलआईडी |

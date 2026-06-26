@@ -1,0 +1,129 @@
+# Tutorial de autenticación
+
+Esta guía crea un inicio de sesión, cierre de sesión y un panel protegido desde cero mediante autenticación basada en sesión.
+
+## 1. Habilitar el middleware de sesión
+
+En `nexyconfig.py`, habilite `useSession`: sesiones de cookies firmadas de Starlette:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me-in-production"}
+```
+
+Consulte [Session config](/docs/config/session) para conocer las opciones.
+
+## 2. Backend y configuración de autenticación
+
+Cree un backend que lea el ID de usuario de la sesión:
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+Agréguelo a la configuración:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+Consulte [Authentication reference](/docs/security/authentication) para conocer más tipos de backend (token, JWT).
+
+## 3. Página de inicio de sesión
+
+```nexy
+# src/routes/login.nexy
+---
+from nexy import useSession
+from src.db import authenticate_user
+
+def POST(username: str, password: str):
+    user = authenticate_user(username, password)
+    if not user:
+        return {"error": "Invalid credentials"}
+    session = useSession()
+    session["user_id"] = user.id
+    return Redirect("/dashboard")
+---
+<form method="POST">
+  <input name="username" placeholder="Username">
+  <input name="password" type="password" placeholder="Password">
+  <button>Sign in</button>
+</form>
+```
+
+## 4. Panel protegido
+
+Proteja el tablero con un protector: devuelve `{"user": ...}` si está autenticado, 401 en caso contrario:
+
+```nexy
+# src/routes/dashboard.nexy
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+<h1>Dashboard</h1>
+<p>Welcome, {{ user }}!</p>
+```
+
+Consulte [Authorization](/docs/security/authorization) para escribir guardias personalizadas y ["@UseGuard reference](/docs/decorators/useguard).
+
+## 5. Cerrar sesión
+
+Borre la sesión para cerrar sesión:
+
+```nexy
+# src/routes/logout.nexy
+---
+from nexy import useSession
+
+def POST():
+    session = useSession()
+    session.clear()
+    return Redirect("/login")
+---
+```
+
+## 6. UI condicional en plantillas
+
+Consulta la sesión directamente en cualquier plantilla `.nexy`:
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+---
+<header>
+  {% if session.get("user_id") %}
+    <a href="/dashboard">Dashboard</a>
+    <form method="POST" action="/logout">
+      <button>Sign out</button>
+    </form>
+  {% else %}
+    <a href="/login">Sign in</a>
+  {% endif %}
+</header>
+```
+
+Ver [useSession hook](/docs/hooks/useSession).
+
+## ¿Qué sigue?
+
+- [Authentication reference](/docs/security/authentication) — backends de autenticación, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) — guardias personalizados, miras
+- [JWT](/docs/security/jwt): autenticación basada en token
+-[Session config](/docs/config/session)

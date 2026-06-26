@@ -1,0 +1,61 @@
+# Database Overview
+
+Nexy does not ship a built-in database abstraction. You choose your ORM and configure it as you would in any FastAPI project.
+
+---
+
+## Supported ORMs
+
+| ORM | Style | Async | Migration Tool |
+|-----|-------|-------|----------------|
+| SQLModel | Pydantic-native | Yes | Alembic |
+| SQLAlchemy | Full-featured, mature | Yes | Alembic |
+| Tortoise-ORM | Django-like | Yes | Aerich |
+
+---
+
+## General pattern
+
+1. Install your chosen ORM and driver
+2. Configure the connection in your app
+3. Define models
+4. Create and apply migrations
+5. Use the ORM in your route handlers
+
+---
+
+## Dependency injection pattern
+
+Create a database dependency for use across your routes:
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+Then inject into route handlers:
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## Next steps
+
+- [SQLModel](/docs/orm/sqlmodel) — recommended for new projects
+- [SQLAlchemy](/docs/orm/sqlalchemy) — full control and flexibility
+- [Tortoise-ORM](/docs/orm/tortoise) — Django-like async ORM

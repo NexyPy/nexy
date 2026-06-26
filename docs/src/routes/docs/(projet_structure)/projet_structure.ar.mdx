@@ -1,0 +1,114 @@
+# هيكل المشروع
+
+تقدم هذه الصفحة نظرة عامة على اصطلاحات الملفات والمجلدات الخاصة بـ Nexy وكيفية تنظيم مشروعك.
+
+```text
+my-app/
+├── .venv/
+├── node_modules/          (optional — client framework only)
+├── public/
+├── src/
+│   ├── components/
+│   ├── routes/            (FBR) — or apps/ (Modular)
+│   └── layout.nexy
+├── .gitignore
+├── nexyconfig.py
+├── pyproject.toml
+├── package.json           (optional)
+├── vite.config.ts         (optional)
+└── tsconfig.json          (optional)
+```
+
+---
+
+## أدلة المستوى الأعلى
+
+### `public/`
+
+يتم عرض الأصول الثابتة الموضوعة هنا على عنوان URL الجذر `/`. الصور والخطوط والأيقونات المفضلة وملف robots.txt — أي شيء تريد الوصول إليه بشكل عام دون طريق.
+
+### `src/`
+
+كود مصدر التطبيق الخاص بك موجود هنا. يراقب Nexy `src/` للتغييرات في التطوير ويجمع كل شيء من هنا في الإنتاج.
+
+---
+
+## داخل `src/`
+
+```text
+src/
+├── components/     — reusable Nexy components (optional)
+├── routes/         — FBR: file-based routing tree
+├── apps/           — Modular: controllers, modules, providers
+├── layout.nexy     — root layout (optional, FBR only)
+└── global.css      — global styles (optional)
+```
+
+### `src/components/`
+
+دليل اختياري لمكونات `.nexy` القابلة لإعادة الاستخدام. لا يفرض Nexy دليل مكونات محددًا — يمكنك استخدام أي اسم أو بنية. يتم استيراد المكونات باستخدام `from "@components/..." import ...`.
+
+### `src/routes/` (التوجيه المعتمد على الملف)
+
+يصبح كل ملف `.py` و`.nexy` و`.mdx` ضمن `src/routes/` مسار HTTP، مع استثناءات لأسماء الملفات الخاصة:
+
+| ملف | السلوك |
+|------|----------|
+| `index.nexy` / `index.py` / `index.mdx` | يتم عرضه في المسار الأصلي (`/users/index.nexy` → `/users`) |
+| %%ص13%% | تخطيط مشترك لمسارات الأخوة والأبناء (غير قابلة للتوجيه) |
+| %%ص14%% | علامة حزمة بايثون (غير قابلة للتوجيه) |
+| `dependencies.py` | التبعيات المشتركة (غير قابلة للتوجيه) |
+
+```text
+routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     —  shared layout for /blog/*
+└── api/
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+### `src/apps/` (التوجيه المعياري)
+
+عند استخدام Modular Router، يتم تنظيم رمز التطبيق الخاص بك في وحدات ميزات:
+
+```text
+apps/
+├── app_module.py       →  "@Module(root module)
+├── app_controller.py   →  "@Controller("/")
+├── app_view.nexy       →  template
+├── users/
+│   ├── user_module.py
+│   ├── user_controller.py
+│   └── user_service.py
+└── layout.nexy         →  shared layout
+```
+
+---
+
+## ملفات التكوين
+
+| ملف | الغرض |
+|------|---------|
+| `nexyconfig.py` | تكوين Nexy الرئيسي: جهاز التوجيه والمكونات الإضافية وإعدادات التطبيق |
+| `pyproject.toml` | البيانات الوصفية لمشروع بايثون، والتبعيات، ونظام البناء |
+| `package.json` | تبعيات جافا سكريبت (موجود عند استخدام إطار عمل العميل) |
+| `vite.config.ts` | تكوين Vite لتجميع التعليمات البرمجية من جانب العميل |
+| `tsconfig.json` | خيارات برنامج التحويل البرمجي لـ TypeScript |
+| `.gitignore` | الملفات والأدلة المراد استبعادها من التحكم في الإصدار |
+
+---
+
+## تنظيم مشروعك
+
+بخلاف الاتفاقيات المذكورة أعلاه، ليس لدى Nexy أي رأي حول كيفية هيكلة كود المصدر الخاص بك. بعض الأنماط التي تعمل بشكل جيد:
+
+- **مجلدات الميزات**: قم بتجميع الصفحات والمكونات والأدوات المساعدة ذات الصلة حسب الميزة
+- **المكونات المشتركة**: احتفظ بالمكونات القابلة لإعادة الاستخدام فعليًا في `src/components/`
+- **مجموعات التوجيه**: قم بتجميع الأدلة في `src/routes/` لعكس بنية عنوان URL الخاص بك
+- **Monorepo**: تعامل مع الوحدات `src/apps/` كوحدات قابلة للنشر بشكل مستقل
+
+ما يهم هو أن كل ملف ضمن `src/routes/` (FBR) أو تمت الإشارة إليه بواسطة `"@Module` (Modular) يتبع اصطلاحات التسمية المذكورة أعلاه.

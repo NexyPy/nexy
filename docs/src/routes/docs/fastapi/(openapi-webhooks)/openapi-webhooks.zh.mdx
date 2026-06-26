@@ -1,0 +1,65 @@
+# OpenAPI Webhook 和回调
+
+在 OpenAPI 架构中定义 Webhook 和回调，以便消费者知道您的 API 向他们发送了什么。
+
+## 网络钩子
+
+Webhook 是您的 API 发送到外部 URL 的传出事件。
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+这会在 OpenAPI 架构中注册一个 Webhook。消费者看到预期的有效负载形状为 `/docs`。
+
+## 回调
+
+回调描述您的 API 将向消费者服务器发出的请求。
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+将回调路由器传递给路由：
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+这会在 OpenAPI 规范中生成其他路径，显示您的 API 将 POST 到外部 URL 的内容。
+
+## 为什么使用它们
+
+- 为 API 使用者自动生成文档
+- 类型安全的合约定义
+- 可与任何 OpenAPI 客户端生成器配合使用
+- 无运行时效果——纯粹用于文档

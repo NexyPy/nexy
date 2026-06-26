@@ -1,0 +1,192 @@
+# ミドルウェア
+
+ミドルウェアは、コントローラーに到達する前にリクエスト (およびその後の応答) をインターセプトします。ロギング、タイミング、CORS、圧縮、ヘッダー操作など、多くのルートに適用される横断的な問題に使用します。
+
+ガードと同様、Nexy のミドルウェアは **FastAPI の依存関係**、つまりリクエスト/レスポンスを変更したり、リクエストを中止したりできる呼び出し可能ファイルです。
+
+## なぜミドルウェアなのか?
+
+すべてのコントローラー メソッドにログを追加できます。
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+ミドルウェアはこれを 1 回適用される単一の呼び出し可能ファイルに抽出します。
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## ミドルウェアの作成
+
+ミドルウェアは、`Request` を受け取る呼び出し可能です。 `request.state` を変更したり、`HTTPException` を発生させて中止したり、`None` を返してパススルーしたりすることができます。
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+タイミングについては、`request.state` を使用してデータを応答に渡すことができます。
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+次に、FastAPI の `Response` パラメーターを介して応答フックを追加します。
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**注意事項**: `call_next` パターンは、要求/応答サイクル全体をラップするミドルウェアで機能します。ハンドラーが `request` を取得する前にのみ実行される単純なミドルウェア。
+
+## ミドルウェアの適用
+
+### コントローラーレベル
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### メソッドレベル
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### モジュールレベル
+
+すべてのルートのモジュールにミドルウェアを登録します。
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+モジュールレベルのミドルウェアは、`"@Module()` 属性を介して直接サポートされません。すべてのルートに適用されるミドルウェアの場合は、メソッドまたはコントローラー レベルを使用するか、`nexyconfig.py` を介してグローバルに登録します。
+
+## グローバルミドルウェア
+
+`nexyconfig.py` 経由でアプリ内のすべてのルートのミドルウェアを登録します。
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+各エントリは `(middleware_class, kwargs)` のタプルです。 kwargs はミドルウェアのコンストラクターに渡されます。
+
+## 組み込みミドルウェア
+
+Nexy には、`nexyconfig.py` 経由で構成可能ないくつかの組み込みミドルウェアが含まれています。
+
+|構成キー |ミドルウェア |説明 |
+|-----------|-----------|---------------|
+| `useCORS` | `CORSMiddleware` |クロスオリジンリソース共有 |
+| `useGZip` | `GZipMiddleware` |応答の圧縮 |
+| `useTrustedHost` | `TrustedHostMiddleware` |ホストヘッダーの検証 |
+| `useSession` | `SessionMiddleware` | Cookie ベースのセッション |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` | HTTPS を強制する |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+組み込みミドルウェアは、カスタム ミドルウェアよりも前にグローバル レベルで実行されます。
+
+## ミドルウェア vs ガード
+
+|側面 |ミドルウェア |ガード |
+|----------|-----------|----------|
+|実行します |ハンドラーの前 |ハンドラー前 (ミドルウェア後) |
+|主な目的 |ロギング、ヘッダー、圧縮 |認証、承認、アクセス制御 |
+|パターン | `__call__(self, request)` | `__call__(self, request)` |
+|中止 | `HTTPException` を上げる | `HTTPException` を上げる |
+|データを渡す | `request.state` | `request.state` |
+
+実際には、ミドルウェアとガードは同じ方法で実装されます (FastAPI の依存関係)。この区別は概念的なものです。ミドルウェアはリクエスト/レスポンスを変更し、ガードはアクセス制御の決定を行います。
+
+## ミドルウェアでのエラー処理
+
+ミドルウェアはエラーをキャッチし、`call_next` パターンを使用してカスタム応答を返すことができます。
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## ベストプラクティス
+
+1. **ミドルウェアごとに 1 つの懸念事項** - ロギング、タイミング、CORS。 「大きなミドルウェア」は 1 つもありません。
+2. **ミドルウェアを高速に保つ** — ミドルウェアはリクエストをブロックします。負荷の高い操作はハンドラーに属します。
+3. **データの受け渡しには `request.state` を使用します** - これは、ミドルウェア、ガード、ハンドラー間でデータを共有する標準的な方法です。
+4. **認証にはガードを優先** — アクセス制御用のミドルウェアよりも概念的に明確です。
+5. **ミドルウェアを分離してテスト** — モック `Request` を作成し、ミドルウェアを呼び出し、副作用をアサートします。
+
+## 次のステップ
+
+- [Guards](/docs/modular/guards) — 認証と認可
+- [Controllers](/docs/modular/controllers) — ルート ハンドラーを定義します
+- [Modules](/docs/modular/modules) — 機能モジュールに編成します

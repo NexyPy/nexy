@@ -1,0 +1,30 @@
+# Real-Time Communication
+
+Nexy supports WebSocket, Server-Sent Events (SSE), and long-polling for real-time communication.
+
+## Which one to use
+
+| Feature | Best for | Direction |
+|---------|----------|-----------|
+| **WebSocket** | Bidirectional, low-latency (chat, games, collaboration) | Client ↔ Server |
+| **SSE** | Server → client events (notifications, live feeds) | Server → Client |
+| **Long-polling** | Simple polling when the above aren't available | Client → Server |
+
+## WebSocket
+
+Full-duplex communication over a single TCP connection. Nexy maps the `SOCKET` function/method name to a Starlette WebSocket endpoint.
+
+- [FBR WebSocket](/docs/fbrouters/websocket) — file-based routing examples
+- [Modular WebSocket](/docs/modular/websocket) — controller-based examples with DI
+
+## Server-Sent Events (SSE)
+
+Unidirectional server → client streaming over HTTP. Lighter than WebSocket when you only need server push.
+
+See [SSE](/docs/fastapi/sse) for implementation details.
+
+## When to choose
+
+- **WebSocket**: chat apps, live collaboration, gaming, financial tickers
+- **SSE**: live notifications, feed updates, progress bars, log streaming
+- **Long-polling**: fallback for environments that block WebSocket (corporate proxies)

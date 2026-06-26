@@ -1,0 +1,49 @@
+# Next.js에서 Nexy로 마이그레이션
+
+Next.js는 파일 기반 라우팅 및 서버 구성 요소를 대중화했습니다. Nexy는 Python에도 동일한 DX를 제공합니다.
+
+## 개념 매핑
+
+| Next.js | 넥시 |
+|---------|------|
+| `app/` 디렉토리 | `src/routes/` 디렉토리 |
+| `page.tsx` | `.nexy` 또는 `.mdx` 파일 |
+| `layout.tsx` | `layout.nexy` |
+| `loading.tsx` | `dependencies.py` |
+| `route.ts`(API) | `get()`, `post()` 등이 포함된 `.py` 파일 |
+| `next.config.js` | `nexyconfig.py` |
+| 서버 작업 | `"@Action` 데코레이터 |
+| 반응 서버 구성요소 | `.nexy` 구성 요소(Python + Jinja2) |
+| `getStaticProps` | `.nexy`의 머리말 논리 |
+
+## 예
+
+```python
+# Next.js: app/users/[id]/page.tsx
+export default async function Page({ params }) {
+    const user = await db.user.findUnique(params.id);
+    return <div>{user.name}</div>;
+}
+
+# Nexy: src/routes/users/[id]/index.nexy
+---
+user = db.user.find_unique(id)
+---
+<h1>{{ user.name }}</h1>
+```
+
+## 마이그레이션 단계
+
+1. **비계** — `nx new my-app`
+2. **포트 페이지** — `page.tsx` → `.nexy` 또는 `.mdx` 파일
+3. **포트 레이아웃** — `layout.tsx` → `layout.nexy`
+4. **포트 API 경로** — `route.ts` → `get()`, `post()` 등이 포함된 `.py` 파일
+5. **포트 서버 작업** — 서버 작업 → `"@Action` 데코레이터
+
+## 주요 차이점
+
+- **서버의 Python** — JavaScript/TypeScript가 필요하지 않습니다.
+- **페이지에 대한 빌드 단계 없음** — `.nexy` 파일은 개발 시 컴파일됩니다.
+- **여러 프런트엔드 프레임워크** — React, Vue, Svelte, Solid, Preact
+- **FastAPI 내부** — 비동기, OpenAPI, 유형 안전
+- **두 가지 라우팅 전략** — 파일 기반(예: Next.js 페이지) 또는 모듈식(예: NestJS)

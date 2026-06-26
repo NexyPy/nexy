@@ -1,0 +1,130 @@
+# مقدمة
+
+**Nexy** (تُنطق `nek:si`) هو إطار عمل ويب Python متكامل تم إنشاؤه فوق **FastAPI** و**Starlette**. إنه يجلب تجربة المطور لأطر العمل الحديثة مثل Next.js وNestJS إلى Python.
+
+يأتي الاسم من: **N**ew **Ex**perience for P**y**thon — وهو أسلوب جديد لبناء تطبيقات الويب في Python.
+
+> Nexy لا يعيد اختراع العجلة. فهو يجعل تطوير ويب Python أسهل بشكل جذري مع الحفاظ على قوة FastAPI.
+
+---
+
+## جهازي توجيه وإطار عمل واحد
+
+تقدم Nexy **إستراتيجيتين للتوجيه** — اختر الإستراتيجية التي تناسب مشروعك:
+
+### جهاز التوجيه (التوجيه المستند إلى الملف)
+
+يتم تحديد المسارات بواسطة شجرة الملفات الخاصة بك - كل ملف `.nexy`، `.mdx`، أو `.py` في `src/routes/` يصبح مسار HTTP تلقائيًا.
+
+```text
+src/routes/
+
+├── index.nexy          →  /
+
+├── about.nexy          →  /about
+
+├── blog/
+
+│   ├── index.nexy      →  /blog
+
+│   └── [slug].nexy     →  /blog/{slug}
+
+└── api/
+
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+**الأفضل لـ**: المواقع البسيطة، والوثائق، وMVPs، ومشاريع API فقط، والفرق التي تفضل التقليد على التكوين.
+
+اعرف المزيد: [File-Based Routing →](/docs/fbrouters)
+
+### جهاز توجيه معياري (يعتمد على الديكور)
+
+يتم تحديد المسارات عبر أدوات تزيين Python - قم بتنظيم التعليمات البرمجية في **وحدات التحكم**، و**الموفرين**، و**الوحدات** باتباع نمط NestJS.
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+
+class UsersController:
+
+    def __init__(self, service: UserService):
+
+        self.service = service
+
+    def GET(self):
+
+        return self.service.find_all()
+```
+
+**الأفضل لـ**: التطبيقات الكبيرة، والتصميم المستند إلى المجال، والمشاريع التي تستفيد من حقن التبعية والتنظيم الصارم للتعليمات البرمجية.
+
+اعرف المزيد: [Modular Router →](/docs/modular/overview)
+
+> استخدم **محدد جهاز التوجيه** الموجود أعلى الشريط الجانبي للتبديل بين طرق عرض الوثائق لكل جهاز توجيه.
+
+---
+
+## FastAPI هو المحرك
+
+تمامًا كما أن Next.js **هو React** تحت الغطاء، فإن Nexy **هو FastAPI** تحت الغطاء. يتم تشغيل كل مسار وكل استجابة وكل برنامج وسيط عبر FastAPI وStarlette.
+
+```python
+# FastAPI patterns that work unchanged in Nexy
+
+from fastapi import Request, Depends
+
+from fastapi.responses import JSONResponse, HTMLResponse
+
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+
+    id: int
+
+    name: str
+
+    email: str
+
+def GET(request: Request, db=Depends(get_db)):
+
+    return db.query(User).all()
+```
+
+**ما يبقى على حاله:** `Request`، `Depends`، `HTTPException`، `BaseModel`، `HTMLResponse`، `RedirectResponse`، `WebSocket`، `UploadFile`، `Form`، `Header`، `Cookie`، `Query`، `status` — الكل من %%ص14%%.
+
+**ما يضيفه Nexy:** `.nexy`/`.mdx` ملفات ← تم تجميعها إلى مسارات FastAPI، `"@Action` ← مسارات POST التي تم إنشاؤها تلقائيًا، `"@Controller`/`"@Module` ← منشئو FastAPI `APIRouter`، الخطافات ← مساعدون محددو الطلب أعلى `Request` من FastAPI.
+
+نظرًا لأن Nexy هو FastAPI، فإن كل مسار ينتج **مستندات OpenAPI** تلقائيًا عند `/docs` (Swagger UI) و`/redoc`.
+
+---
+
+## لماذا نيكسي؟
+
+- **FastAPI تحت الغطاء** — غير متزامن، مستندات OpenAPI تلقائية، آمنة للنوع، تم اختبارها في المعركة
+- **واجهة المستخدم القائمة على المكونات** — اكتب المكونات باستخدام قوالب Python + Jinja2، أو استخدم React/Vue/Svelte/Solid/Preact
+- **التوجيه المعياري والمعتمد على الملفات** — اختر الأداة المناسبة لمشروعك
+- **بدون نموذج معياري** — لا يوجد تسجيل يدوي للمسار، ولا توجد ملفات تكوين لتوصيلها
+- **i18n، وHMR، والبرمجيات الوسيطة، والحراسات المضمنة** — جاهزة للإنتاج من اليوم الأول
+
+---
+
+## هل نيكسي مناسب لك؟
+
+استخدم Nexy إذا كنت تريد:
+
+- إنشاء تطبيق Python متكامل بنفس سرعة Next.js أو Laravel
+- إنشاء REST API ببنية NestJS ولكن ببساطة Python
+- استخدم مكونات React/Vue/Svelte من واجهة Python الخلفية
+- التوقف عن إعادة هيكلة المشاريع وتركيب الحزم المعيارية
+
+---
+
+## ما ستتعلمه
+
+- إنشاء وتكوين مشروع Nexy
+- فهم استراتيجيات التوجيه
+- أنشئ تطبيقك الأول بأمثلة ملموسة
+- اتبع أفضل الممارسات لعمليات نشر الإنتاج
+

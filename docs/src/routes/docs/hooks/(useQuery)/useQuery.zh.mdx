@@ -1,0 +1,49 @@
+# 使用查询
+
+从当前 URL 返回动态路由参数（路径参数）。
+
+```python
+from nexy import useQuery
+
+query = useQuery()
+```
+
+---
+
+## 返回值
+
+`dict` — 从 URL 中提取的路径参数（例如 `{"slug": "hello-world"}` 表示 `[slug]` 路由）。
+
+ - -
+
+＃＃ 例子
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<h1>Article: {{ params.slug }}</h1>
+```
+
+---
+
+## 有多个参数
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<article>
+    <h1>{{ params.title }}</h1>
+    <p>Year: {{ params.year }}, Month: {{ params.month }}</p>
+</article>
+```
+
+---
+
+## 使用说明
+
+- 默认情况下，值是字符串 - FastAPI 类型转换适用于 `.py` 处理程序
+- 相当于FastAPI中的`request.path_params`

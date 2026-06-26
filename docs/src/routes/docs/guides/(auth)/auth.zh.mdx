@@ -1,0 +1,129 @@
+# 身份验证演练
+
+本指南使用基于会话的身份验证从头开始构建登录、注销和受保护的仪表板。
+
+## 1.启用会话中间件
+
+在 `nexyconfig.py` 中，启用 `useSession` — Starlette 的签名 cookie 会话：
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me-in-production"}
+```
+
+有关选项，请参阅 [Session config](/docs/config/session)。
+
+## 2. 身份验证后端和配置
+
+创建一个从会话中读取用户 ID 的后端：
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+将其添加到配置中：
+
+```python
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+有关更多后端类型（令牌、JWT），请参阅 [Authentication reference](/docs/security/authentication)。
+
+## 3.登录页面
+
+```nexy
+# src/routes/login.nexy
+---
+from nexy import useSession
+from src.db import authenticate_user
+
+def POST(username: str, password: str):
+    user = authenticate_user(username, password)
+    if not user:
+        return {"error": "Invalid credentials"}
+    session = useSession()
+    session["user_id"] = user.id
+    return Redirect("/dashboard")
+---
+<form method="POST">
+  <input name="username" placeholder="Username">
+  <input name="password" type="password" placeholder="Password">
+  <button>Sign in</button>
+</form>
+```
+
+## 4. 受保护的仪表板
+
+使用守卫保护仪表板 — 如果通过身份验证，则返回 `{"user": ...}`，否则返回 401：
+
+```nexy
+# src/routes/dashboard.nexy
+---
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+---
+<h1>Dashboard</h1>
+<p>Welcome, {{ user }}!</p>
+```
+
+请参阅 [Authorization](/docs/security/authorization) 来编写自定义防护和 ["@UseGuard reference](/docs/decorators/useguard)。
+
+## 5. 注销
+
+清除会话以注销：
+
+```nexy
+# src/routes/logout.nexy
+---
+from nexy import useSession
+
+def POST():
+    session = useSession()
+    session.clear()
+    return Redirect("/login")
+---
+```
+
+## 6. 模板中的条件 UI
+
+直接在任何 `.nexy` 模板中检查会话：
+
+```nexy
+---
+from nexy import useSession
+session = useSession()
+---
+<header>
+  {% if session.get("user_id") %}
+    <a href="/dashboard">Dashboard</a>
+    <form method="POST" action="/logout">
+      <button>Sign out</button>
+    </form>
+  {% else %}
+    <a href="/login">Sign in</a>
+  {% endif %}
+</header>
+```
+
+请参阅[useSession hook](/docs/hooks/useSession)。
+
+## 接下来是什么？
+
+- [Authentication reference](/docs/security/authentication) — 身份验证后端、JWT、OAuth
+- [Authorization / Guards](/docs/security/authorization) — 自定义防护装置、范围
+- [JWT](/docs/security/jwt) — 基于令牌的身份验证
+- [Session config](/docs/config/session)

@@ -1,0 +1,61 @@
+# 数据库概述
+
+Nexy 不提供内置数据库抽象。您可以像在任何 FastAPI 项目中一样选择 ORM 并配置它。
+
+---
+
+## 支持的 ORM
+
+|对象关系管理 |风格|异步 |迁移工具|
+|-----|--------|--------------------|----------------|
+| SQL模型| Pydantic 原生 |是的 |蒸馏器|
+| SQLAlchemy |功能齐全、成熟|是的 |蒸馏器|
+|乌龟-ORM |类似姜戈 |是的 |艾里奇|
+
+---
+
+## 一般模式
+
+1. 安装您选择的 ORM 和驱动程序
+2. 在您的应用程序中配置连接
+3. 定义模型
+4. 创建并应用迁移
+5. 在路由处理程序中使用 ORM
+
+---
+
+## 依赖注入模式
+
+创建一个数据库依赖项以便在您的路由中使用：
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+然后注入路由处理程序：
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## 后续步骤
+
+- [SQLModel](/docs/orm/sqlmodel) — 推荐用于新项目
+- [SQLAlchemy](/docs/orm/sqlalchemy) — 完全控制和灵活性
+- [Tortoise-ORM](/docs/orm/tortoise) — 类似 Django 的异步 ORM

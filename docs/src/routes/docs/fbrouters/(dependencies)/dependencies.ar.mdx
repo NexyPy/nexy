@@ -1,0 +1,70 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# التبعيات
+
+يجمع الملف `dependencies.py` داخل `src/routes/` تبعيات FastAPI الشائعة التي تنطبق تلقائيًا على كل مسار في شجرة الدليل.
+
+---
+
+## `dependencies = [...]`
+
+حدد العناصر القابلة للاستدعاء وأدرجها في متغير `dependencies` على مستوى الوحدة النمطية:
+```python
+# src/routes/dashboard/dependencies.py
+from fastapi import Request, HTTPException
+
+def get_db():
+    return {"connection": "ok"}
+
+def require_auth(request: Request):
+    if not request.headers.get("Authorization"):
+        raise HTTPException(status_code=401)
+
+dependencies = [get_db, require_auth]
+```
+يتم تطبيق العناصر المدرجة في `dependencies` فقط، ويتم تجاهل الوظائف العارية.
+
+---
+
+## الوراثة (دمج، وليس تجاوز)
+
+يمشي Nexy **لأعلى** من ملف المسار إلى `src/routes/` و **يدمج** كل قائمة `dependencies` يتم العثور عليها:
+```
+src/routes/
+├── dependencies.py              # [log_request]
+└── dashboard/
+    ├── dependencies.py          # [require_auth]
+    ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
+    └── settings.nexy            # same
+```
+ملفات `dependencies.py` تابعة **لا تتجاوز** الوالدين. يتم دمج كافة القوائم. إذا ظهر نفس اسم التبعية في كليهما، فسيقوم FastAPI برفع `ValueError` عند بدء التشغيل (معلمة مكررة).
+
+---
+
+## الاستخدام في الصفحة
+
+في صفحات `.nexy`، تعمل التبعيات تلقائيًا قبل العرض — ولا تحتاج إلى استيرادها أو الاتصال بها:
+```nexy
+---
+---
+<h1>Dashboard</h1>
+```
+القيم التي تم حلها **غير** متوفرة كمتغيرات القالب. يتم تشغيل التبعيات للتأثيرات الجانبية (فحص المصادقة، والتسجيل، وإعداد اتصال قاعدة البيانات).
+
+بالنسبة للمعالجات `.py`، تعمل التبعيات كآثار جانبية - **لا** يتم إدخال قيم الإرجاع الخاصة بها في المعالج. للوصول إلى قيمة التبعية، أضف `Depends()` في توقيع الوظيفة:
+```python
+# src/routes/dashboard/users.py
+from fastapi import Depends
+from .dependencies import get_db
+
+def GET(db=Depends(get_db)):
+    return {"db": db["connection"]}
+```
+إذا تم إدراج نفس الشيء القابل للاستدعاء في كل من `dependencies = [...]` وتوقيع المعالج، فسيقوم FastAPI بتشغيله مرة واحدة ومشاركة النتيجة.
+
+---
+<Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

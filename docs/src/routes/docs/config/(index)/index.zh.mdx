@@ -1,0 +1,15 @@
+# 配置
+
+Nexy 通过项目根目录下的 `nexyconfig.py` 文件进行配置。该文件控制框架的各个方面——路由、别名、i18n、CORS、会话等等。
+
+配置系统使用带有内置验证的 Pydantic 模型。每个字段都有一个合理的默认值，因此您的 `nexyconfig.py` 只需指定您想要覆盖的内容。
+
+## 快速链接
+
+- [Nexy Config](/docs/config/nexy) — 项目级设置参考
+- [Vite Config](/docs/config/vite) — 前端构建工具配置
+- [CORS](/docs/config/cors) — 跨源资源共享
+- [Aliases](/docs/config/aliases) — 导入路径别名
+- [Session](/docs/config/session) — 会话中间件设置
+- [i18n](/docs/config/i18n) — 国际化配置
+- [TOC](/docs/config/toc) — 自动生成目录

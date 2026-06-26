@@ -1,0 +1,97 @@
+#Configuração: Nexy
+
+Nexy é configurado via `nexyconfig.py` na raiz do seu projeto. O arquivo define uma classe que estende `NexyConfigModel`:
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    usePort = 3000
+    useTitle = "My App"
+```
+
+## Todos os campos
+
+### Roteador
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `useRouter` | `APIRouter \| None` | `None` | Módulo raiz do roteador modular. Quando definido, usa roteamento modular. Quando `None`, usa FBR. |
+| `excludeDirs` | `list[str]` | `[]` | Diretórios a serem excluídos da verificação FBR. |
+
+### Servidor
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `usePort` | `int` | `3000` | Porta para o servidor de desenvolvimento/produção. |
+| `useHost` | `str` | `"0.0.0.0"` | Host ao qual vincular. |
+| `useSslKeyfile` | `str \| None` | `None` | Caminho do arquivo de chave SSL para HTTPS. |
+| `useSslCertfile` | `str \| None` | `None` | Caminho do arquivo do certificado SSL para HTTPS. |
+
+### Documentos OpenAPI
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `useDocs` | `bool` | `True` | Habilite/desabilite documentos OpenAPI. |
+| `useDocsUrl` | `str` | `"/docs"` | URL para interface do usuário Swagger. |
+| `useRedocsUrl` | `str \| None` | `"/redocs"` | URL para ReDoc. Defina como `None` para desativar. |
+| `useTitle` | `str` | `"Nexy"` | Título do esquema OpenAPI. |
+
+### Front-end
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `useVite` | `bool` | `False` | Habilite o pacote Vite para componentes do cliente. |
+| `useViteDevUrl` | `str \| None` | `None` | URL personalizado do servidor de desenvolvimento Vite (detectado automaticamente se `None`). |
+| `useFF` | `list[FrontendFramework]` | `[]` | Frameworks de front-end para habilitar (React, Vue, Svelte, Solid, Preact). Detectado automaticamente no projeto. |
+| `useMarkdownExtensions` | `list[str]` | `[]` | Extensões Python-Markdown para arquivos `.mdx`. |
+
+### Middleware
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `useMiddlewares` | `list[Any]` | `[]` | Classes de middleware ASGI personalizadas. |
+| `useCORS` | `dict \| None` | `None` | Configuração de middleware CORS (Starlette `CORSMiddleware` kwargs). |
+| `useGZip` | `dict \| None` | `None` | Configuração do middleware GZip (Starlette `GZipMiddleware` kwargs). |
+| `useTrustedHost` | `dict \| None` | `None` | Configuração de middleware de host confiável. |
+| `useHTTPSRedirect` | `bool` | `False` | Redirecione HTTP para HTTPS. |
+| `useSession` | `dict \| None` | `None` | Configuração de middleware de sessão (Starlette `SessionMiddleware` kwargs). |
+| `useAuth` | `dict \| None` | `None` | Configuração do middleware de autenticação. |
+
+###i18n
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `useLocales` | `list[str] \| None` | `None` | Locais disponíveis (por exemplo, `["en", "fr"]`). Detectado automaticamente de `nexy/i18n/` se `None`. |
+| `useDefaultLocale` | `str` | `"en"` | Localidade padrão. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | Nome do cookie para armazenamento local. |
+| `useLocaleDetection` | `dict[str, bool] \| None` | `None` | Configurações de detecção de localidade. |
+| `useRTL` | `bool` | `False` | Ative o suporte RTL. |
+
+### Índice
+
+| Campo | Tipo | Padrão | Descrição |
+|-------|------|---------|------------|
+| `useTocDepth` | `str` | `"2-6"` | Níveis de rumo a serem incluídos no sumário (por exemplo, `"2-4"` para h2-h4). |
+| `useTocTitle` | `str` | `"Table of Contents"` | Título da seção do sumário. |
+| `useTocAuto` | `bool` | `True` | Gerar sumário automaticamente para páginas `.mdx`. |
+
+---
+
+## Acessando o aplicativo FastAPI
+
+Nexy expõe a instância FastAPI subjacente via `nexy.app`. Isso é útil para adicionar rotas personalizadas, middleware ou manipuladores de eventos fora do sistema de roteamento do Nexy.
+
+```python
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("Server starting...")
+
+"@app.get("/health")
+def health():
+    return {"status": "ok"}
+```
+
+O objeto `app` é uma FastAPI `APIRouter` totalmente configurada que é montada por `AppServer`. Você pode usar qualquer recurso FastAPI/Starlette nele.

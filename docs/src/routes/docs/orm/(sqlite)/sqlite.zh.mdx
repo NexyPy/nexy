@@ -1,0 +1,26 @@
+# SQLite
+
+SQLite 是 Nexy 开发的默认数据库 — 零配置、基于文件、非常适合原型设计。
+
+## 连接
+
+默认值：`sqlite:///dev.db`
+
+```python
+DATABASE_URL = "sqlite:///dev.db"
+```
+
+## 使用 ORM
+
+|对象关系管理 |司机 |连接字符串 |
+|-----|--------|--------------------|
+| SQL模型/SQLAlchemy | `aiosqlite` | `sqlite+aiosqlite:///dev.db` |
+|乌龟-ORM | `aiosqlite` | `sqlite://dev.db` |
+
+## 限制
+
+- 无并发写入（不适合高流量生产）
+- 没有用户管理或权限
+- 仅限于单个文件
+
+SQLite 非常适合开发和小型项目。切换到 PostgreSQL 进行生产。

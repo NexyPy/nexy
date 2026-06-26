@@ -1,0 +1,56 @@
+# File-Based Routing Overview
+
+Nexy's File-Based Routing (FBR) creates routes automatically from your file tree under `src/routes/`. Every `.nexy`, `.mdx`, and `.py` file becomes an HTTP route — no route registration required.
+
+If you've worked with Next.js Pages Router, PHP, or a static HTML server, the concept is familiar: the file path is the URL path.
+
+---
+
+## How it works
+
+```
+src/routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     →  (shared layout, not routed)
+└── api/
+    └── users.py        →  /api/users (REST handler)
+```
+
+Each file maps to a URL path by removing the `src/routes/` prefix and the file extension. Files named `index` serve as the directory root — `/blog/index.nexy` serves at `/blog`.
+
+---
+
+## Reserved filenames
+
+Some filenames have special behavior and are not treated as routes:
+
+| File | Purpose |
+|------|---------|
+| `layout.nexy` | Shared layout for sibling and child routes |
+| `dependencies.py` | Shared dependency injection |
+| `__init__.py` | Python package marker |
+
+---
+
+## Route priority
+
+If you create multiple files for the same path in different formats, Nexy resolves priority as: `.py` > `.nexy` > `.mdx`.
+
+```
+routes/
+├── index.nexy    →  served
+├── index.py      →  overrides index.nexy
+└── index.mdx     →  ignored (lowest priority)
+```
+
+---
+
+## Next steps
+
+- [Pages & Layouts](/docs/fbrouters/pages) — creating pages and shared layouts
+- [Route Handlers (API)](/docs/fbrouters/route_handlers) — REST API routes with Python
+- [Dynamic URLs](/docs/fbrouters/route_parameters) — path parameters like `[slug]`

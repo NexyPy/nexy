@@ -1,0 +1,126 @@
+# वेबसॉकेट (एफबीआर)
+
+`async def SOCKET` फ़ंक्शन के साथ `.py` फ़ाइल बनाकर वेबसॉकेट एंडपॉइंट को परिभाषित करें।
+
+---
+
+## मूल प्रतिध्वनि
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Echo: {data}")
+    except WebSocketDisconnect:
+        pass
+```
+
+फ़ंक्शन नाम `SOCKET` (केस-असंवेदनशील) एक स्टारलेट वेबसॉकेट एंडपॉइंट पर मैप करता है। फ़ाइल पथ इस उदाहरण में URL - `/chat` निर्धारित करता है।
+
+---
+
+## JSON प्राप्त करें
+
+```python
+# src/routes/events.py
+from fastapi import WebSocket, WebSocketDisconnect
+import json
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_json()
+            await websocket.send_json({"echo": data})
+    except WebSocketDisconnect:
+        pass
+```
+
+---
+
+## कमरे का पैटर्न
+
+सभी जुड़े हुए ग्राहकों को संदेश प्रसारित करें:
+
+```python
+# src/routes/chat.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+connections: list[WebSocket] = []
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    connections.append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in connections:
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        connections.remove(websocket)
+```
+
+`connections` सूची मॉड्यूल स्तर पर रहती है - सभी ग्राहक समान सूची साझा करते हैं।
+
+---
+
+## नामित कमरे
+
+कमरे के नाम से समूह कनेक्शन:
+
+```python
+# src/routes/rooms/{room_id}.py
+from fastapi import WebSocket, WebSocketDisconnect
+
+rooms: dict[str, list[WebSocket]] = {}
+
+async def SOCKET(websocket: WebSocket, room_id: str):
+    await websocket.accept()
+    rooms.setdefault(room_id, []).append(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            for conn in rooms.get(room_id, []):
+                await conn.send_text(data)
+    except WebSocketDisconnect:
+        rooms[room_id].remove(websocket)
+        if not rooms[room_id]:
+            del rooms[room_id]
+```
+
+URL पैरामीटर `{room_id}` फ़ाइल नाम से स्वचालित रूप से इंजेक्ट किया जाता है।
+
+---
+
+## कनेक्शन जीवनचक्र
+
+| घटना | क्या होता है |
+|-------|----||
+| ग्राहक जुड़ता है | `websocket.accept()` - पहले बुलाया जाना चाहिए |
+| संदेश प्राप्त हुआ | `receive_text()` / `receive_json()` / `receive_bytes()` |
+| क्लाइंट डिस्कनेक्ट हो जाता है | `WebSocketDisconnect` बढ़ा - `except` में साफ़ करें |
+| सर्वर बंद हो जाता है | `await websocket.close(code=1000)` |
+
+कनेक्शन साफ़ करने के लिए हमेशा संदेश लूप को `try/except WebSocketDisconnect` में लपेटें।
+
+---
+
+## ग्राहक
+
+```javascript
+const ws = new WebSocket("ws://localhost:3000/chat");
+ws.onmessage = (event) => console.log(event.data);
+ws.send("Hello from the client!");
+```
+
+---
+
+## यह भी देखें
+
+- [Route Handlers](/docs/fbrouters/route_handlers) - FBR में REST समापन बिंदु
+- [WebSocket Guide](/docs/guides/websocket) — वैचारिक अवलोकन

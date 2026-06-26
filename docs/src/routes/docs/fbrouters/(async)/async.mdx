@@ -1,0 +1,43 @@
+# Async & Concurrency (FBR)
+
+Nexy is built on FastAPI which supports both `async` and `def` route handlers.
+
+## `async def` vs `def`
+
+| Handler type | Execution | When to use |
+|-------------|-----------|-------------|
+| `def` | Thread pool (blocking) | CPU work, sync DB calls, blocking I/O |
+| `async def` | Event loop | Async DB, HTTP calls, WebSocket, long-polling |
+
+## Async route
+
+```python
+# src/routes/proxy.py
+import httpx
+
+async def GET():
+    async with httpx.AsyncClient() as client:
+        resp = await client.get("https://api.example.com/data")
+        return resp.json()
+```
+
+## Mixed sync and async in one file
+
+```python
+def GET():             # runs in thread pool
+    return {"type": "sync"}
+
+async def GET():       # runs in event loop
+    return {"type": "async"}
+```
+
+## Background tasks
+
+For fire-and-forget work after the response, use `BackgroundTasks`. For true async background work, use `asyncio.create_task`.
+
+## Caveats
+
+- Don't call `async` functions from `def` handlers with `await` — use `asyncio.run()` or make the handler `async def`
+- Don't call blocking functions (`time.sleep()`, `requests.get()`) from `async def` — use `asyncio.sleep()`, `httpx.AsyncClient`
+- Nexy's `nx dev` runs one uvicorn worker by default — async handlers shine here
+- For production, use multiple workers (`nx start --workers 4`) for sync handlers

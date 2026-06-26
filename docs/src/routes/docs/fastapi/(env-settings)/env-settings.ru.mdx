@@ -1,0 +1,72 @@
+# Окружающая среда и настройки
+
+Управляйте конфигурацией с помощью переменных среды и файлов `.env`.
+
+## `.env` файлов
+
+Nexy автоматически читает файлы `.env` при запуске (через `python-dotenv`).
+
+```env
+# .env
+DATABASE_URL=postgresql://localhost/mydb
+SECRET_KEY=change-me-in-production
+DEBUG=true
+```
+
+Доступ к ним через `os.environ`:
+
+```python
+import os
+
+DATABASE_URL = os.environ["DATABASE_URL"]
+```
+
+## Настройки Пидантика
+
+Для введенных настроек с проверкой:
+
+```bash
+pip install pydantic-settings
+```
+
+```python
+# src/settings.py
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    database_url: str = "sqlite:///dev.db"
+    secret_key: str = "dev-key"
+    debug: bool = True
+
+    model_config = {"env_file": ".env"}
+
+settings = Settings()
+```
+
+Затем используйте где угодно:
+
+```python
+from src.settings import settings
+
+def GET():
+    return {"db": settings.database_url}
+```
+
+## Переменные среды в NexyConfig
+
+Use `os.getenv` to pass env vars into your [Nexy config](/docs/config/nexy):
+
+```python
+import os
+
+class NexyConfig(NexyConfigModel):
+    usePort = int(os.getenv("PORT", "3000"))
+    useTitle = os.getenv("SITE_TITLE", "My App")
+```
+
+## Лучшие практики производства
+
+— Никогда не коммитируйте `.env` в git — добавьте в `.gitignore`
+- Используйте секретный менеджер вашего облачного провайдера или секреты CI/CD для производства.
+- Добавляйте префиксы к переменным окружения (например, `NEXY_`, `APP_`), чтобы избежать коллизий.
+- Используйте `pydantic-settings` для проверки и приведения типов.

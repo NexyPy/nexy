@@ -1,0 +1,75 @@
+# "@アクション
+
+Python 関数をブラウザから呼び出し可能なサーバー エンドポイントに変換します。ルーターの登録やリクエストの解析は必要ありません。
+
+```python
+from nexy.decorators import Action
+
+"@Action
+def submit_comment(post_id: int, body: str) -> dict:
+    return {"status": "ok"}
+```
+
+- -
+
+＃＃ サイン
+
+```python
+Action(func: Callable | None = None) -> Callable
+```
+
+括弧の有無にかかわらず使用されます。
+
+```python
+"@Action
+def fn(): ...
+
+"@Action()
+def fn(): ...
+```
+
+---
+
+## 仕組み
+
+1. `ActionsStore`に関数を登録します
+2. 起動時に、`ActionEngine` はすべてのアクションを検出し、それらを `POST /_nx_{hash}` としてマウントします。
+3. URL ハッシュ = `sha256(func_name + "salt2026")[:12]` — デプロイメントごとに決定的
+4. JSON 本文から解析され、名前によって挿入された引数
+5. JSONとしてシリアル化された戻り値
+
+---
+
+## パラメータの種類
+
+|タイプ |出典 |例 |
+|------|--------|----------|
+| `str`、`int`、`float`、`bool` | JSON本体 | `post_id: int` |
+| `list`、`dict` | JSON本体 | `tags: list[str]` |
+|ピダンティックモデル | JSON 本文 (検証済み) | `data: CreateComment` |
+| `Request` | FastAPI インジェクション | `request: Request` |
+
+---
+
+## 戻り値の型
+
+|戻る |応答 |
+|----------|----------|
+| `dict` | `JSONResponse` |
+| `list` | `JSONResponse` |
+| `str` | `PlainTextResponse` |
+| `int`、`float`、`bool` | `JSONResponse` |
+| `BaseModel` | `JSONResponse` |
+| `None` | `JSONResponse({"ok": True})` |
+
+---
+
+## 制限事項
+
+- POSTのみ
+- JSON 本文のみ (フォーム データなし、マルチパート)
+- ハッシュ ソルトはハードコード化されています - URL はデプロイメント内で安定しています
+
+---
+
+使用例とクライアント統合については、[Server Actions guide](/docs/guides/actions) を参照してください。

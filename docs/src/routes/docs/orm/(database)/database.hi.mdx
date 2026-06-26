@@ -1,0 +1,61 @@
+# डेटाबेस अवलोकन
+
+नेक्सी एक अंतर्निहित डेटाबेस एब्स्ट्रैक्शन शिप नहीं करता है। आप अपना ORM चुनें और इसे वैसे ही कॉन्फ़िगर करें जैसे आप किसी भी फास्टएपीआई प्रोजेक्ट में करेंगे।
+
+---
+
+## समर्थित ओआरएम
+
+| ओआरएम | शैली | एसिंक | माइग्रेशन टूल |
+|----|-------|-------|----------------|
+| SQLमॉडल | पायडेंटिक-देशी | हाँ | एलेम्बिक |
+| एसक्यूएलकेमी | पूर्ण विशेषताओं वाला, परिपक्व | हाँ | एलेम्बिक |
+| कछुआ-ओआरएम | Django की तरह | हाँ | एरीच |
+
+---
+
+## सामान्य पैटर्न
+
+1. अपना चुना हुआ ओआरएम और ड्राइवर स्थापित करें
+2. अपने ऐप में कनेक्शन कॉन्फ़िगर करें
+3. मॉडल परिभाषित करें
+4. माइग्रेशन बनाएं और लागू करें
+5. अपने रूट हैंडलर में ORM का उपयोग करें
+
+---
+
+## निर्भरता इंजेक्शन पैटर्न
+
+अपने मार्गों पर उपयोग के लिए एक डेटाबेस निर्भरता बनाएँ:
+
+```python
+# src/database.py
+from sqlmodel import create_engine, Session
+
+DATABASE_URL = "sqlite:///dev.db"
+engine = create_engine(DATABASE_URL)
+
+def get_session():
+    with Session(engine) as session:
+        yield session
+```
+
+फिर रूट हैंडलर में इंजेक्ट करें:
+
+```python
+# src/routes/users.py
+from fastapi import Depends
+from src.database import get_session
+
+def GET(db=Depends(get_session)):
+    users = db.exec(...)
+    return users
+```
+
+---
+
+## अगले चरण
+
+- [SQLModel](/docs/orm/sqlmodel) - नई परियोजनाओं के लिए अनुशंसित
+- [SQLAlchemy](/docs/orm/sqlalchemy) - पूर्ण नियंत्रण और लचीलापन
+- [Tortoise-ORM](/docs/orm/tortoise) - Django-जैसा async ORM

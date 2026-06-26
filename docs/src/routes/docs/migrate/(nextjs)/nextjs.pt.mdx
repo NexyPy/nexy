@@ -1,0 +1,49 @@
+# Migrar de Next.js para Nexy
+
+Next.js popularizou roteamento baseado em arquivo e componentes de servidor. Nexy traz o mesmo DX para Python.
+
+## Mapeamento de conceitos
+
+| Próximo.js | Nexy |
+|--------|------|
+| Diretório `app/` | Diretório `src/routes/` |
+| `page.tsx` | Arquivo `.nexy` ou `.mdx` |
+| `layout.tsx` | `layout.nexy` |
+| `loading.tsx` | `dependencies.py` |
+| `route.ts` (API) | Arquivo `.py` com `get()`, `post()`, etc. |
+| `next.config.js` | `nexyconfig.py` |
+| Ações do servidor | `"@Action` decorador |
+| Componentes do servidor React | Componentes `.nexy` (Python + Jinja2) |
+| `getStaticProps` | Lógica do frontmatter em `.nexy` |
+
+## Exemplo
+
+```python
+# Next.js: app/users/[id]/page.tsx
+export default async function Page({ params }) {
+    const user = await db.user.findUnique(params.id);
+    return <div>{user.name}</div>;
+}
+
+# Nexy: src/routes/users/[id]/index.nexy
+---
+user = db.user.find_unique(id)
+---
+<h1>{{ user.name }}</h1>
+```
+
+## Etapas de migração
+
+1. **Andaime** — `nx new my-app`
+2. **Páginas de porta** — `page.tsx` → arquivos `.nexy` ou `.mdx`
+3. **Layouts de portas** — `layout.tsx` → `layout.nexy`
+4. **Rotas de API de porta** — `route.ts` → `.py` arquivos com `get()`, `post()`, etc.
+5. **Ações do servidor de porta** — Ações do servidor → `"@Action` decorador
+
+## Principais diferenças
+
+- **Python no servidor** — não é necessário JavaScript/TypeScript
+- **Nenhuma etapa de construção para páginas** — `.nexy` arquivos são compilados em tempo de desenvolvimento
+- **Múltiplas estruturas de front-end** — React, Vue, Svelte, Solid, Preact
+- **FastAPI nos bastidores** — assíncrono, OpenAPI, tipo seguro
+- **Duas estratégias de roteamento** — baseado em arquivo (como Next.js Pages) ou modular (como NestJS)

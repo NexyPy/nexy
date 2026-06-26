@@ -1,0 +1,111 @@
+# CSS 和 JavaScript
+
+Nexy 为您提供样式和脚本方面的完全自由。每种方法都有效——内联、导入、实用程序优先或自定义捆绑。
+
+## CSS 方法
+
+### 1. `.nexy` 模板中内联 `<style>`
+
+直接在模板部分添加 `<style>` 标签。默认情况下，样式是全局的——使用 BEM、数据属性或实用程序类手动设置它们的范围。
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+</style>
+```
+
+### 2.通过`__Import`导入外部CSS
+
+每个 `.nexy` 文件自动有 `__Import` 可用（由编译器注入）。使用它来内联外部 CSS、JSON 或图像。
+
+```nexy
+---
+css_block = __Import("/styles/global.css", "", "")()
+---
+<div class="wrapper">
+  {{ css_block }}
+  <main>...</main>
+</div>
+```
+
+`__Import(path, framework, symbol)` 按文件扩展名调度：
+
+|扩展|返回|
+|------------|---------|
+| `.css` |内联文件内容的 `<style>...</style>` 字符串 |
+| `.png`、`.jpg`、`.svg` 等 | Base64 数据 URI 字符串 |
+| `.json` |解析 JSON 数据 |
+| `.tsx`、`.vue`、`.svelte` 等 |客户端组件包装器（`<ncc>` 标记）|
+
+对于 CSS，第二个和第三个参数未使用 - 传递空字符串。
+
+### 3.顺风CSS
+
+Nexy 在项目初始化时包含 Tailwind CSS 支持。模板中的实用程序类会正常处理。
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+在 `tailwind.config.*` 或 `nexyconfig.py` 中配置 Tailwind。
+
+### 4.Vite CSS 捆绑
+
+启用 Vite 后（配置中的 `useVite: true`），您可以从前端组件导入 `.css` 文件，它们将与 Vite 的管道捆绑在一起 - 包括 PostCSS、CSS 模块和 HMR。
+
+## 客户端 JavaScript
+
+直接在`.nexy`模板中添加`<script>`标签：
+
+```nexy
+---
+---
+<button id="greet-btn">Greet</button>
+
+<script>
+document.getElementById('greet-btn').addEventListener('click', () => {
+  alert('Hello from Nexy!')
+})
+</script>
+```
+
+## 打字稿
+
+启用Vite后，会自动编译`.ts`文件。将它们导入您的前端组件或通过 `<script>` 标签。
+
+```typescript
+// src/scripts/utils.ts
+export function greet(name: string): string {
+  return `Hello ${name}`
+}
+```
+
+`public/` 中的脚本是静态提供的。 `src/` 中的脚本由 Vite 处理（如果启用）或在开发中以原始方式提供。
+
+## 捆绑
+
+|模式| CSS | JS/TS |
+|------|-----|--------|
+| **发展** |生食或通过 Vite HMR |生食或通过 Vite HMR |
+| **产量（`nexy build`）** |内联或 Vite 捆绑 |由 Vite 缩小并捆绑 |
+
+当 Vite 关闭时，`<style>` 标签中的 CSS 直接内联在 HTML 输出中。当 Vite 开启时，所有资产都会经过 Vite 的构建管道，以实现最佳的捆绑和代码分割。

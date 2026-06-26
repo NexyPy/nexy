@@ -1,0 +1,114 @@
+# Estructura del proyecto
+
+Esta página ofrece una descripción general de las convenciones de archivos y carpetas de Nexy, y cómo organizar su proyecto.
+
+```text
+my-app/
+├── .venv/
+├── node_modules/          (optional — client framework only)
+├── public/
+├── src/
+│   ├── components/
+│   ├── routes/            (FBR) — or apps/ (Modular)
+│   └── layout.nexy
+├── .gitignore
+├── nexyconfig.py
+├── pyproject.toml
+├── package.json           (optional)
+├── vite.config.ts         (optional)
+└── tsconfig.json          (optional)
+```
+
+---
+
+## Directorios de nivel superior
+
+### `public/`
+
+Los recursos estáticos colocados aquí se sirven en la URL raíz `/`. Imágenes, fuentes, favicons, robots.txt: todo lo que quieras que sea accesible públicamente sin una ruta.
+
+### `src/`
+
+El código fuente de su aplicación se encuentra aquí. Nexy observa `src/` en busca de cambios en el desarrollo y compila todo desde aquí en producción.
+
+---
+
+## Dentro `src/`
+
+```text
+src/
+├── components/     — reusable Nexy components (optional)
+├── routes/         — FBR: file-based routing tree
+├── apps/           — Modular: controllers, modules, providers
+├── layout.nexy     — root layout (optional, FBR only)
+└── global.css      — global styles (optional)
+```
+
+### `src/components/`
+
+Directorio opcional para componentes `.nexy` reutilizables. Nexy no impone un directorio de componentes específico; puede usar cualquier nombre o estructura. Los componentes se importan con `from "@components/..." import ...`.
+
+### `src/routes/` (enrutamiento basado en archivos)
+
+Cada archivo `.py`, `.nexy` y `.mdx` bajo `src/routes/` se convierte en una ruta HTTP, con excepciones para nombres de archivos especiales:
+
+| Archivo | Comportamiento |
+|------|----------|
+| `index.nexy` / `index.py` / `index.mdx` | Servido en la ruta principal (`/users/index.nexy` → `/users`) |
+| `layout.nexy` | Diseño compartido para rutas entre hermanos y secundarios (no enrutables) |
+| `__init__.py` | Marcador de paquete Python (no enrutable) |
+| `dependencies.py` | Dependencias compartidas (no enrutables) |
+
+```text
+routes/
+├── index.nexy          →  /
+├── about.nexy          →  /about
+├── blog/
+│   ├── index.nexy      →  /blog
+│   ├── [slug].nexy     →  /blog/{slug}
+│   └── layout.nexy     —  shared layout for /blog/*
+└── api/
+    └── users.py        →  /api/users (GET, POST, etc.)
+```
+
+### `src/apps/` (enrutamiento modular)
+
+Cuando utiliza el enrutador modular, el código de su aplicación se organiza en módulos de funciones:
+
+```text
+apps/
+├── app_module.py       →  "@Module(root module)
+├── app_controller.py   →  "@Controller("/")
+├── app_view.nexy       →  template
+├── users/
+│   ├── user_module.py
+│   ├── user_controller.py
+│   └── user_service.py
+└── layout.nexy         →  shared layout
+```
+
+---
+
+## Archivos de configuración
+
+| Archivo | Propósito |
+|------|---------|
+| `nexyconfig.py` | Configuración principal de Nexy: enrutador, complementos, configuración de la aplicación |
+| `pyproject.toml` | Metadatos del proyecto Python, dependencias, sistema de compilación |
+| `package.json` | Dependencias de JavaScript (presentes cuando se utiliza un marco de cliente) |
+| `vite.config.ts` | Configuración de Vite para agrupar código del lado del cliente |
+| `tsconfig.json` | Opciones del compilador TypeScript |
+| `.gitignore` | Archivos y directorios para excluir del control de versiones |
+
+---
+
+## Organizando tu proyecto
+
+Más allá de las convenciones anteriores, Nexy no tiene opinión sobre cómo estructurar su código fuente. Algunos patrones que funcionan bien:
+
+- **Carpetas de funciones**: agrupa páginas, componentes y utilidades relacionadas por función
+- **Componentes compartidos**: mantenga los componentes verdaderamente reutilizables en `src/components/`
+- **Grupos de rutas**: anida directorios en `src/routes/` para reflejar su estructura de URL
+- **Monorepo**: trata los módulos `src/apps/` como unidades desplegables de forma independiente
+
+Lo que importa es que cada archivo bajo `src/routes/` (FBR) o al que hace referencia `"@Module` (Modular) siga las convenciones de nomenclatura anteriores.

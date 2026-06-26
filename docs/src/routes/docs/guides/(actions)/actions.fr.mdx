@@ -1,0 +1,161 @@
+# Actions du serveur
+
+Les actions du serveur vous permettent d'appeler des fonctions Python à partir du client en tant que points de terminaison POST : pas d'enregistrement de route, pas de passe-partout de sérialisation.
+
+---
+
+## Définir une action
+
+Décorez n'importe quelle fonction avec `"@Action` :
+
+```python
+# src/actions/vote.py
+from nexy.decorators import Action
+
+"@Action
+def vote(post_id: str, direction: int) -> dict:
+    return {"success": True, "post_id": post_id, "votes": 42}
+```
+
+La fonction reçoit les paramètres du corps JSON comme arguments de mot-clé. Renvoie n’importe quelle valeur sérialisable JSON.
+
+---
+
+## Où placer les fichiers d'action
+
+Les actions peuvent se trouver **n'importe où** dans votre projet : `src/actions/`, `src/routes/` ou directement à la racine. Le `ActionEngine` analyse l'intégralité du répertoire du projet au démarrage.
+
+```text
+my-app/
+├── src/
+│   └── actions/
+│       ├── vote.py        ← "@Action
+│       └── comment.py     ← "@Action
+├── actions/
+│   ├── vote.ts            ← Generated TypeScript client
+│   └── comment.ts
+```
+
+Consultez ["@Action reference](/docs/decorators/action) pour savoir comment fonctionnent la découverte et la génération de points de terminaison.
+
+---
+
+## Exemples pratiques
+
+### Soumission du formulaire
+
+```python
+# src/actions/contact.py
+from nexy.decorators import Action
+from pydantic import BaseModel, EmailStr
+
+class ContactForm(BaseModel):
+    name: str
+    email: EmailStr
+    message: str
+
+"@Action
+def submit_contact(data: ContactForm) -> dict:
+    # Save to database, send email, etc.
+    return {"ok": True, "name": data.name}
+```
+
+```nexy
+---
+---
+<form id="contact">
+  <input name="name" required />
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+
+<script>
+document.getElementById('contact').onsubmit = async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const res = await fetch('/_nx_a1b2c3d4e5f6', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.fromEntries(fd))
+  });
+  const data = await res.json();
+  if (data.ok) alert('Message sent!');
+};
+</script>
+```
+
+### Action de base de données
+
+```python
+# src/actions/create_user.py
+from nexy.decorators import Action
+from pydantic import BaseModel
+from src.database import get_session
+from src.models import User
+
+class CreateUserBody(BaseModel):
+    name: str
+    email: str
+
+"@Action
+def create_user(body: CreateUserBody) -> dict:
+    db = next(get_session())
+    user = User(name=body.name, email=body.email)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"id": user.id, "name": user.name}
+```
+
+### Action avec gestion des erreurs
+
+```python
+# src/actions/delete_item.py
+from nexy.decorators import Action
+from fastapi import HTTPException
+from src.database import get_session
+
+"@Action
+def delete_item(item_id: int) -> dict:
+    db = next(get_session())
+    item = db.get(Item, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    db.delete(item)
+    db.commit()
+    return {"deleted": item_id}
+```
+
+---
+
+## Client TypeScript généré
+
+`nx build` ou `nx dev` génère des wrappers TypeScript sécurisés dans `./actions/` :
+
+```typescript
+// Generated: ./actions/vote.ts
+import { transport } from '"@/nexy/client';
+
+export const vote = async (post_id: string, direction: number): Promise<dict> => {
+  return await transport.call('/_nx_a1b2c3d4e5f6', { post_id, direction });
+};
+```
+
+Chaque fonction générée reflète la signature Python avec les types TypeScript appropriés.
+
+---
+
+## Bonnes pratiques
+
+- Gardez les fonctions d'action concentrées et idempotentes
+- Validez les entrées à l'intérieur de l'action - traitez-les comme non fiables
+- Utiliser des modèles Pydantic pour les corps de requêtes complexes
+- Les actions sont uniquement POST — pour les autres méthodes HTTP, utilisez les gestionnaires de route
+- Utiliser des gardes ou un middleware pour l'autorisation
+
+---
+
+## Référence
+
+Voir ["@Action decorator](/docs/decorators/action) pour la référence complète de l'API (types de paramètres, types de retour, limitations).

@@ -1,0 +1,61 @@
+# Nexy 中的 FastAPI
+
+Nexy 构建于 **FastAPI** 和 **Starlette** 之上。 Nexy 中提供了所有 FastAPI 功能 — 没有包装器，没有抽象。直接从`fastapi`导入。
+
+## 有什么可用
+
+|特色 |进口|工作于 |
+|---------|--------|----------|
+|请求正文 (Pydantic) | `from pydantic import BaseModel` |两者 |
+|路径参数| `from fastapi import Path` |两者 |
+|查询参数| `from fastapi import Query` |两者 |
+| Cookie 参数 | `from fastapi import Cookie` |两者 |
+|标头参数 | `from fastapi import Header` |两者 |
+|表格数据| `from fastapi import Form` |两者 |
+|文件上传 | `from fastapi import File, UploadFile` |两者 |
+|依赖关系 | `from fastapi import Depends` |两者 |
+|后台任务| `from fastapi import BackgroundTasks` |两者 |
+| HTTP 错误 | `from fastapi import HTTPException` |两者 |
+|状态代码 | `from fastapi import status` |两者 |
+| WebSocket | `from fastapi import WebSocket` |两者 |
+|请求 | `from fastapi import Request` |两者 |
+|回应 | `from fastapi.responses import ...` |两者 |
+|中间件| `from starlette.middleware import Middleware` |两者 |
+|跨域资源共享 | `from fastapi.middleware.cors import CORSMiddleware` |两者 |
+| API 路由器 | `from fastapi import APIRouter` |仅模块化 |
+|测试客户端 | `from fastapi.testclient import TestClient` |两者 |
+
+---
+
+## 基本路线
+```python
+# src/routes/users/[id].nexy
+---
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+def POST(body: CreateUser):
+    return {"name": body.name}
+---
+```
+```python
+from nexy.decorators import Controller
+from fastapi import Query, HTTPException
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"name": body.name}
+```
+## Nexy 添加了什么？
+
+Nexy 将 FastAPI 与基于文件的路由、`.nexy` 组件、模块化 DI 和前端框架集成封装在一起。但它**永远不会隐藏 FastAPI** — `nexy.app` 是 FastAPI `APIRouter`，配置公开所有 Starlette 中间件，并且每个 FastAPI 依赖项/响应/异常都保持不变。

@@ -27,7 +27,7 @@ class MdxCompConfig:
         cls._mappings.clear()
 
         root = Path(Config.PROJECT_ROOT or ".").resolve()
-        config_path = root / "src" / "mdxconfig"
+        config_path = root / "src" / "mdxconfig.nexy"
 
         if not config_path.exists():
             cls._loaded = True

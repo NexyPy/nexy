@@ -1,0 +1,57 @@
+# "@Инъекционный
+
+Помечает класс как управляемый контейнером внедрения зависимостей Nexy.
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str) -> list[dict]:
+        ...
+```
+## Подпись
+```python
+Injectable(scope: Scope = Scope.SINGLETON) -> Callable[[type], type]
+```
+## Область применения
+
+| Область применения | Поведение |
+|-------|-----------|
+| `Scope.SINGLETON` (по умолчанию) | Один экземпляр доступен для всего приложения |
+| `Scope.REQUEST` | Новый экземпляр для каждого HTTP-запроса |
+| `Scope.TRANSIENT` | Новый экземпляр каждый раз, когда проблема решена |
+```python
+from nexy.decorators import Injectable, Scope
+
+"@Injectable(Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.user_id: str | None = None
+```
+## Внедрение зависимостей
+
+Параметры конструктора разрешаются автоматически, если типы являются инъекционными:
+```python
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):  # DatabaseService resolved by Container
+        self.db = db
+
+"@Injectable()
+class DatabaseService:
+    def connect(self) -> None:
+        ...
+```
+## Контейнер
+
+При необходимости получите доступ к контейнеру напрямую:
+```python
+from nexy.decorators import Container
+
+service = Container.resolve(DatabaseService)
+```
+## Ограничения
+
+— Классы `"@Injectable()` не могут быть созданы вручную вне контекста DI.
+- Круговые зависимости повышают `RecursionError`
+- Параметры конструктора без значений по умолчанию должны быть инъекционными типами.

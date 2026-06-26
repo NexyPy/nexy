@@ -1,0 +1,65 @@
+# useViews
+
+Renderiza um modelo de visualização (`.nexy`, `.mdx` ou componente frontend) com um determinado contexto, retornando um `HTMLResponse`.
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## Parâmetros
+
+| Parâmetro | Tipo | Padrão | Descrição |
+|-----------|------|---------|------------|
+| `path` | `str` | obrigatório | Caminho para o arquivo de visualização (relativo ao projeto) |
+| `context` | `dict \| None` | `None` | Variáveis ​​a serem passadas para o template |
+
+---
+
+## Valor de retorno
+
+`HTMLResponse` — o HTML renderizado com recursos Vite injetados.
+
+---
+
+## Exemplo
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## Componentes de front-end
+
+Para visualizações `.tsx`, `.vue`, `.svelte` e `.jsx`, `useViews` retorna um contêiner hidratável:
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+O contêiner inclui atributos `data-nexy-fw`, `data-nexy-path` e `data-nexy-props` para hidratação do lado do cliente.
+
+---
+
+## Extensões suportadas
+
+| Extensão | Comportamento |
+|-----------|----------|
+| `.nexy` | Modelo compilado → HTML renderizado |
+| `.mdx` | Markdown + componentes → HTML renderizado |
+| `.tsx` | Recipiente hidratável (React/Solid/Preact) |
+| `.vue` | Recipiente hidratável |
+| `.svelte` | Recipiente hidratável |
+| `.jsx` | Recipiente hidratável |

@@ -1,0 +1,275 @@
+# Контроллеры
+
+Контроллеры группируют связанные конечные точки HTTP под общим префиксом. Вместо того, чтобы разбрасывать маршруты по файлам, контроллер сохраняет каждую конечную точку ресурса в одном классе.
+
+## Почему контроллеры?
+
+В FBR вы создаете `users/index.nexy`, `users/[id].nexy`, `users/create.nexy`. Каждый файл обрабатывает один URL-адрес. Это работает до тех пор, пока одной странице не потребуются данные от другой или пока вы не поделитесь логикой аутентификации между 10 пользовательскими маршрутами.
+
+Контроллер помещает все маршруты `/users/*` в один класс. Общие зависимости помещаются в конструктор. Логика, специфичная для маршрута, присутствует в каждом методе.
+
+## Создание контроллера
+
+Украсьте класс `"@Controller(prefix)`:
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
+
+    def post(self, data: dict):
+        return {"id": 3, **data}
+```
+
+**Имена методов определяют метод HTTP.** Nexy записывает имя метода в верхний регистр и сопоставляет его со стандартными методами HTTP. `GET` → ​​GET, `post` → POST, `Put` → PUT.
+
+Все маршруты в этом контроллере находятся в `/users/`:
+- `GET /users/` → `GET()`
+- `POST /users/` → `post(data)`
+
+**Попался**: у вас может быть только ОДИН метод для каждого HTTP-метода на контроллер. `def GET(self): ... def get(self): ...` вызовет `ValueError` при запуске.
+
+## Сопоставление методов маршрута
+
+| Имя метода | HTTP-метод | Пример |
+|-------------|-------------|---------|
+| `GET`, `get`, `Get` | ПОЛУЧИТЬ | Читать ресурсы |
+| `post`, `POST`, `Post` | ПОСТ | Создание ресурсов |
+| `put`, `PUT`, `Put` | ПУТЬ | Заменить ресурсы |
+| `delete`, `DELETE`, `Delete` | УДАЛИТЬ | Удалить ресурсы |
+| `patch`, `PATCH`, `Patch` | ПАТЧ | Частичное обновление |
+| `options`, `OPTIONS`, `Options` | ОПЦИИ | CORS предполетная подготовка |
+| `head`, `HEAD`, `Head` | ГОЛОВА | Только заголовки ответов |
+| `SOCKET`, `socket`, `Socket` | Вебсокет | Общение в режиме реального времени |
+
+**Соглашение**: используйте верхний регистр для операций чтения (`GET`), нижний регистр для мутаций (`post`, `put`, `delete`). Это упрощает сканирование контроллера — вы сразу видите HTTP-команды.
+
+## Параметры пути
+
+Параметры пути указываются в **префиксе контроллера**, а не в отдельных методах:
+
+```python
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {"id": id, "name": "Charlie"}
+
+    def delete(self, id: int):
+        return {"deleted": id}
+```
+
+Параметры пути **приводятся к типу** — маршрутизатор считывает подсказку типа и преобразует строку из URL-адреса. Поддерживаемые типы: `int`, `float`, `str`, `uuid.UUID`, `datetime.datetime`.
+
+**Подсказка**: если приведение не удается (например, `GET /users/abc`, где `id: int`), маршрутизатор возвращает ошибку проверки 422, а не 404. Это сообщает клиенту, что формат параметра неправильный, а не то, что ресурс не существует.
+
+### Несколько параметров пути
+
+```python
+"@Controller("/users/{userId}/posts/{postId}")
+class UserPostController:
+    def GET(self, userId: int, postId: int):
+        return {"user": userId, "post": postId}
+```
+
+## Параметры запроса
+
+Параметры строки запроса доступны как аргументы ключевого слова функции со значениями по умолчанию:
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self, q: str | None = None, page: int = 1):
+        return {"query": q, "page": page}
+```
+
+Система внедрения зависимостей FastAPI автоматически обрабатывает анализ параметров запроса. Параметры, не являющиеся параметрами пути, интерпретируются как параметры запроса.
+
+Вы также можете получить доступ к параметрам запроса через `request.query_params`:
+
+```python
+from fastapi import Request
+
+"@Controller("/users")
+class UsersController:
+    def GET(self, request: Request):
+        q = request.query_params.get("q")
+        page = int(request.query_params.get("page", 1))
+        return {"query": q, "page": page}
+```
+
+**Попался**: `useQuery` возвращает параметры пути, а не параметры запроса. Для параметров запроса объявите их как аргументы ключевого слова функции или используйте `request.query_params`.
+
+## Тело запроса
+
+Методы POST, PUT и PATCH автоматически анализируют тело запроса. Объявите подсказку типа:
+
+```python
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def post(self, body: CreateUser):
+        return {"id": 4, **body.model_dump()}
+```
+
+По умолчанию тело анализируется как JSON. Модели Pydantic обеспечивают автоматическую проверку — недопустимые поля возвращают 422 с ошибками на уровне поля.
+
+**Подсказка**: если вы используете `dict` в качестве подсказки типа, вы теряете проверку. Всегда отдавайте предпочтение Pydantic для конечных точек, ориентированных на пользователя.
+
+## Переопределение кодов состояния
+
+Используйте `"@UseResponse(status_code=...)`, чтобы переопределить код состояния по умолчанию:
+
+```python
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201)
+    def post(self, data: dict):
+        return {"id": 5}
+```
+
+Коды состояния по умолчанию: `GET` → 200, `POST` → 201, `DELETE` → 204, остальные → 200.
+
+`"@UseResponse` также поддерживает модель ответа, класс ответа, описание ответа и другие параметры, совместимые с FastAPI:
+
+```python
+from nexy.decorators import UseResponse
+from fastapi.responses import HTMLResponse
+
+"@UseResponse(
+    status_code=200,
+    response_class=HTMLResponse,
+    response_model=None,
+    response_description="User profile page",
+)
+def GET(self):
+    ...
+```
+
+## Метаданные маршрута
+
+Добавьте метаданные OpenAPI с помощью `"@UseRoute`:
+
+```python
+from nexy.decorators import Controller, UseRoute
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(summary="List all users", description="Returns paginated user list")
+    def GET(self):
+        return [...]
+
+    "@UseRoute(summary="Create a user", deprecated=True)
+    def post(self, data: dict):
+        return [...]
+```
+
+`"@UseRoute` поддерживает: `name`, `tags`, `summary`, `description`, `deprecated`, `include_in_schema`, `operation_id`, `openapi_extra`.
+
+## Асинхронные обработчики
+
+Контроллеры поддерживают как синхронные, так и асинхронные обработчики:
+
+```python
+"@Controller("/users")
+class UsersController:
+    async def GET(self):
+        users = await db.fetch_all()
+        return users
+
+    def post(self, data: dict):
+        # Sync is fine for CPU-bound work
+        return process_sync(data)
+```
+
+Nexy автоматически ожидает асинхронные обработчики. Обработчики синхронизации выполняются в пуле потоков. Предпочитайте асинхронность для конечных точек, связанных с вводом-выводом (база данных, HTTP-вызовы).
+
+## Обработка ошибок
+
+Поднимите исключения HTTP для ответов об ошибках:
+
+```python
+from starlette.exceptions import HTTPException
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        if id < 1:
+            raise HTTPException(400, "ID must be positive")
+        user = find_user(id)
+        if not user:
+            raise HTTPException(404, "User not found")
+        return user
+```
+
+Используйте стандартные коды состояния HTTP. Nexy реэкспортирует исключения из Starlette.
+
+## Один контроллер, один путь
+
+Фундаментальное ограничение: **все методы в контроллере используют один и тот же путь**. Путь определяется префиксом контроллера. Вы не можете определять подпути для каждого метода.
+
+Если вам нужны `/users` и `/users/{id}`, создайте два контроллера:
+
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self):
+        return [...]          # GET /users/
+
+    def post(self, data: dict):
+        return {...}          # POST /users/
+
+"@Controller("/users/{id}")
+class UserDetailController:
+    def GET(self, id: int):
+        return {...}          # GET /users/42
+
+    def delete(self, id: int):
+        return None           # DELETE /users/42
+```
+
+Оба контроллера могут находиться в одном модуле. Такое разделение является намеренным — каждый контроллер обрабатывает один путь к ресурсу.
+
+## Интеграция модулей
+
+Контроллеры регистрируются в модуле через атрибут класса `controllers`:
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+```
+
+Модуль может установить префикс, который будет применяться ко всем его контроллерам:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController, UserDetailController]
+    # → GET /api/v1/users/, DELETE /api/v1/users/42
+```
+
+## Лучшие практики
+
+1. **Один ресурс на контроллер** — `UsersController`, `PostsController`. Ни одного `ApiController`.
+2. **Держите методы целенаправленными** — каждый метод выполняет одну задачу.
+3. **Используйте внедрение зависимостей** — не создавайте экземпляры сервисов в теле метода.
+4. **Предпочитайте Pydantic для тела запроса** — `body: dict` — это запах кода.
+5. **Осмысленно префиксируйте контроллеры** — `/users`, `/posts`, `/auth`.
+
+## Следующие шаги
+
+- [Providers & DI](/docs/modular/providers) — внедрите сервисы в ваши контроллеры.
+- [Modules](/docs/modular/modules) — организовать контроллеры в функциональные модули.
+- [Guards](/docs/modular/guards) — защитить маршруты авторизацией

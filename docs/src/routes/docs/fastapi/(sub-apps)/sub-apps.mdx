@@ -1,0 +1,51 @@
+# Sub Applications & Mounts
+
+Mount independent ASGI or WSGI applications at a sub-path.
+
+## Mounting a sub-app
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+Now `/sub/` serves the sub-application. It has its own routes, middleware, and lifespan.
+
+## Starlette sub-app
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## WSGI sub-app (Flask, Django)
+
+See [WSGI](/docs/fastapi/wsgi).
+
+## How mounts work
+
+- The mount **prefix is stripped** before requests reach the sub-app
+- Sub-apps have their **own middleware stack** — Nexy auth/middleware doesn't apply
+- Sub-apps can be any ASGI application (FastAPI, Starlette, Litestar, etc.)
+- Mounts are ordered — first match wins
+
+## Restrictions
+
+- WebSocket isn't supported across mounts
+- Lifespan events are per-app
+- OpenAPI docs only cover the root app — sub-app docs need separate setup

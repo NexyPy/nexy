@@ -3,19 +3,41 @@
     {
       "title": "Getting Started",
       "items": [
-        { "label": "Architecture", "href": "/docs/getting-started" }
+        { "label": "Introduction", "href": "/docs" },
+        { "label": "Create a Project", "href": "/docs/create_a_projet" },
+        { "label": "Project Structure", "href": "/docs/projet_structure" },
+        { "label": "Build and Deploy", "href": "/docs/build_and_deploy" }
       ]
     },
     {
       "title": "FBR",
       "items": [
-        { "label": "How it works", "href": "/docs/FBR/overview" }
+        { "label": "How it works", "href": "/docs/fbrouters" },
+        { "label": "Pages", "href": "/docs/fbrouters/pages" },
+        { "label": "Layouts", "href": "/docs/fbrouters/layouts" },
+        { "label": "Dependencies", "href": "/docs/fbrouters/dependencies" },
+        { "label": "Middlewares", "href": "/docs/fbrouters/middlewares" },
+        { "label": "Route Handlers", "href": "/docs/fbrouters/route_handlers" },
+        { "label": "Route Parameters", "href": "/docs/fbrouters/route_parameters" },
+        { "label": "Query Parameters", "href": "/docs/fbrouters/query_parameters" }
+      ]
+    },
+    {
+      "title": "Components",
+      "items": [
+        { "label": "Introduction", "href": "/docs/components" },
+        { "label": "Create a Component", "href": "/docs/components/usage" },
+        { "label": "Writing markup", "href": "/docs/components/markup" },
+        { "label": "Python in template", "href": "/docs/components/python" },
+        { "label": "Properties", "href": "/docs/components/properties" },
+        { "label": "Conditional Rendering", "href": "/docs/components/conditional" },
+        { "label": "Module System", "href": "/docs/components/modules" }
       ]
     },
     {
       "title": "Modular",
       "items": [
-        { "label": "How it works", "href": "/docs/Modular/overview" }
+        { "label": "How it works", "href": "/docs/modular/overview" }
       ]
     },
     {

@@ -1,0 +1,65 @@
+# useViews
+
+指定されたコンテキストを使用してビュー テンプレート (`.nexy`、`.mdx`、またはフロントエンド コンポーネント) をレンダリングし、`HTMLResponse` を返します。
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## パラメータ
+
+|パラメータ |タイプ |デフォルト |説明 |
+|----------|------|-----------|---------------|
+| `path` | `str` |必須 |ビュー ファイルへのパス (プロジェクトに相対) |
+| `context` | `dict \| None` | `None` |テンプレートに渡す変数 |
+
+---
+
+## 戻り値
+
+`HTMLResponse` — Vite アセットが挿入されてレンダリングされた HTML。
+
+ - -
+
+＃＃ 例
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## フロントエンドコンポーネント
+
+`.tsx`、`.vue`、`.svelte`、および `.jsx` ビューの場合、`useViews` は水和可能なコンテナを返します。
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+コンテナーには、クライアント側のハイドレーション用の `data-nexy-fw`、`data-nexy-path`、および `data-nexy-props` 属性が含まれています。
+
+---
+
+## サポートされている拡張機能
+
+|拡張子 |行動 |
+|----------|----------|
+| `.nexy` |コンパイルされたテンプレート → レンダリングされた HTML |
+| `.mdx` | Markdown + コンポーネント → レンダリングされた HTML |
+| `.tsx` |水和可能なコンテナ (React/Solid/Preact) |
+| `.vue` |水和可能なコンテナ |
+| `.svelte` |水和可能なコンテナ |
+| `.jsx` |水和可能なコンテナ |

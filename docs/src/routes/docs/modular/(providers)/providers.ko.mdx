@@ -1,0 +1,207 @@
+# 공급자 및 의존성 주입
+
+공급자는 비즈니스 논리, 데이터 액세스 또는 외부 통합을 캡슐화합니다. `"@Injectable()`로 장식되어 있으며 생성자 매개변수를 통해 컨트롤러(또는 다른 공급자)에 자동으로 주입됩니다.
+
+## 왜 공급자인가?
+
+DI가 없으면 모든 컨트롤러는 수동으로 종속성을 생성합니다.
+
+```python
+# ❌ Manual — breaks testability, duplicates setup
+class UsersController:
+    def __init__(self):
+        self.db = Database()       # Hard to mock
+        self.logger = Logger()     # New instance per controller
+```
+
+DI를 사용하면 컨테이너는 종속성을 인스턴스화하고 주입합니다.
+
+```python
+# ✅ DI — swap implementations, share instances
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+이점: 테스트 가능성(테스트에서 `UserService` 모의), 싱글톤 공유(컨트롤러 간 동일한 인스턴스), 범위 제어(필요할 때 요청마다 새로 추가).
+
+## 공급자 만들기
+
+`"@Injectable()`로 모든 클래스를 장식하세요:
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class UserService:
+    def __init__(self):
+        self.users = []
+
+    def find_all(self):
+        return self.users
+
+    def find_by_id(self, id: int):
+        return next((u for u in self.users if u["id"] == id), None)
+
+    def create(self, data: dict):
+        user = {"id": len(self.users) + 1, **data}
+        self.users.append(user)
+        return user
+```
+
+`"@Injectable()`는 직접 인스턴스화를 방지합니다. DI 외부에서 `UserService()`를 호출하면 `TypeError`가 발생합니다. 이렇게 하면 범위와 종속성이 올바르게 해결되도록 컨테이너를 사용해야 합니다.
+
+## 컨트롤러에 주입
+
+유형 힌트를 사용하여 종속성을 생성자 매개변수로 선언합니다.
+
+```python
+from nexy.decorators import Controller, Injectable
+
+"@Injectable()
+class UserService:
+    def find_all(self):
+        return ["Alice", "Bob"]
+
+"@Controller("/users")
+class UsersController:
+    def __init__(self, service: UserService):
+        self.service = service
+
+    def GET(self):
+        return self.service.find_all()
+```
+
+DI 컨테이너는 유형 힌트(`UserService`)를 등록된 공급자와 일치시킵니다. 일치하는 공급자가 없으면 시작 시 `ValueError`가 발생합니다.
+
+**알겠습니다**: 생성자 매개변수 이름은 중요하지 않습니다. 유형 힌트만 중요합니다. `service: UserService` 및 `s: UserService` 모두 동일한 공급자로 확인됩니다.
+
+## 다른 공급자에 공급자 주입
+
+공급자는 다른 공급자에 의존할 수 있습니다. 컨테이너는 전체 트리를 확인합니다.
+
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def get_connection(self):
+        return "DB_CONNECTION_OK"
+
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):
+        self.db = db
+
+    def get_users(self):
+        conn = self.db.get_connection()
+        return {"users": ["Alice", "Bob"], "db_status": conn}
+```
+
+순환 종속성(`A → B → A`)은 시작 시 `RecursionError`을(를) 발생시킵니다. 공유 논리를 세 번째 공급자로 추출하기 위한 리팩터링.
+
+## 주입 범위
+
+범위 제어 공급자 수명:
+
+| 범위 | 평생 | 사용 사례 |
+|-------|----------|----------|
+| `Scope.SINGLETON`(기본값) | 전체 앱에 대한 하나의 인스턴스 | 데이터베이스 연결, 구성, 캐시 |
+| `Scope.REQUEST` | HTTP 요청당 새 인스턴스 | 요청별 상태, 감사 로그 |
+| `Scope.TRANSIENT` | 주입할 때마다 새 인스턴스 | 상태 비저장 유틸리티, 순수 기능 |
+
+```python
+from nexy.decorators import Injectable
+from nexy.decorators import Scope
+
+"@Injectable(scope=Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.started_at = None
+
+"@Injectable(scope=Scope.TRANSIENT)
+class IdGenerator:
+    def new_id(self):
+        import uuid
+        return str(uuid.uuid4())
+```
+
+**`Scope.SINGLETON`**는 기본이며 가장 안전한 선택입니다. 요청별 상태가 필요한 경우에만 **`Scope.REQUEST`**를 사용하세요(예: 가드로부터 현재 사용자 저장). 공급자가 공유하면 안 되는 변경 가능한 상태인 경우 **`Scope.TRANSIENT`**를 사용하세요.
+
+**알겠습니다**: 싱글톤 공급자에 주입된 임시 공급자는 사실상 싱글톤이 됩니다. 즉, 싱글톤이 처음 해결될 때 한 번 생성됩니다. 요청당 새로운 임시가 필요한 경우 대신 요청 범위 공급자에 삽입하세요.
+
+## `useValue` 및 `useFactory`를 사용한 사용자 정의 공급자
+
+클래스가 아닌 종속성(문자열, 구성, 람다)의 경우 모듈에서 dict 구문을 사용하세요.
+
+```python
+from nexy.decorators import Module
+
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [
+        UserService,
+        {"provide": "DATABASE_URL", "useValue": "postgres://localhost:5432/mydb"},
+        {"provide": "UUID_GEN", "useFactory": lambda: __import__("uuid").uuid4},
+    ]
+```
+
+모듈의 `providers` 목록에 공급자를 직접 등록합니다.
+
+```python
+"@Module()
+class AppModule:
+    controllers = [UsersController]
+    providers = [UserService, DatabaseService]
+```
+
+유형 힌트별로 삽입:
+
+```python
+class UsersController:
+    def __init__(self, user_service: UserService):
+        self.user_service = user_service
+```
+
+## 선택적 종속성
+
+선택적 주입의 기본값으로 `None`를 사용합니다.
+
+```python
+class UsersController:
+    def __init__(self, logger=None):
+        self.logger = logger or PrintLogger()
+```
+
+`Logger`가 어떤 모듈에도 등록되지 않은 경우 컨테이너는 이를 건너뛰고 `None`를 전달합니다. 이는 구성되지 않은 경우 충돌하지 않아야 하는 로깅 또는 메트릭과 같은 선택적 기능에 유용합니다.
+
+## 제공업체를 통한 테스트
+
+DI는 테스트를 간단하게 만듭니다. 모의 객체로 컨트롤러를 인스턴스화합니다.
+
+```python
+# In tests
+mock_service = Mock(spec=UserService)
+mock_service.find_all.return_value = [{"id": 1, "name": "Test"}]
+
+controller = UsersController(service=mock_service)
+result = controller.GET()
+assert result == [{"id": 1, "name": "Test"}]
+```
+
+서버를 시작하거나 전체 DI 컨테이너를 설정할 필요가 없습니다. 이것이 생성자 주입의 주요 장점인 순수 단위 테스트입니다.
+
+## 모범 사례
+
+1. **생성자 주입 선호** — `Container.resolve()`를 수동으로 호출하는 경우는 드뭅니다. 용기가 자동으로 주입되도록 하세요.
+2. **공급자를 상태 비저장 상태로 유지**(싱글톤 범위) - 상태는 데이터베이스 또는 요청 범위 공급자에 속합니다.
+3. **공급자당 하나의 책임** — `UserService`는 사용자를 처리하고, `EmailService`는 이메일을 처리합니다.
+4. 모듈의 `providers` 목록에 **모든 공급자를 명시적으로 등록**합니다. 명시적 등록은 자체 문서화됩니다.
+5. **`Scope.REQUEST`를 드물게 사용하세요** — 각 요청 범위 공급자는 할당 오버헤드를 추가합니다.
+
+## 다음 단계
+
+- [Modules](/docs/modular/modules) — 공급자를 기능 모듈로 구성
+- [Guards](/docs/modular/guards) — 인증 및 승인 추가
+- [Middleware](/docs/modular/middleware) — 요청이 컨트롤러에 도달하기 전에 차단합니다.

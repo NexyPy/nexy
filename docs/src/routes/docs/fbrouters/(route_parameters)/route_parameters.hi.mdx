@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# डायनामिक यूआरएल (रूट पैरामीटर्स)
+
+डायनामिक पैरामीटर वेरिएबल यूआरएल सेगमेंट को कैप्चर करते हैं। नेक्सी `[param]` ब्रैकेट सिंटैक्स का उपयोग करता है।
+
+---
+
+## सिंटेक्स
+```bash
+routes/
+├── blog/
+│   ├── index.nexy          →  /blog
+│   └── [slug].nexy         →  /blog/{slug}
+└── users/
+    └── [userId].py         →  /users/{userId}
+```
+---
+
+## `.nexy` पेज में
+
+पैरामीटर फ्रंटमैटर गुणों के माध्यम से उपलब्ध है:
+```
+---
+slug: prop[str]
+---
+<h1>Article: {{ slug }}</h1>
+```
+---
+
+## `.py` हैंडलर में
+```python
+# routes/users/[userId].py
+from fastapi import Request
+
+async def get(request: Request, userId: int):
+    return {"user_id": userId}
+```
+प्रकार स्वचालित रूप से परिवर्तित हो जाते हैं (`int`, `str`, `UUID`, आदि)।
+
+---
+
+## एकाधिक पैरामीटर
+```bash
+routes/
+└── blog/
+    └── [year]/[month]/[slug].nexy
+```
+```nexy
+---
+year: prop[int]
+month: prop[int]
+slug: prop[str]
+---
+<article>
+    <time>{{ year }}-{{ month }}</time>
+    <h1>{{ slug | replace("-", " ") }}</h1>
+</article>
+```
+---
+
+## कैच-सभी पैरामीटर
+```bash
+routes/
+└── docs/
+    └── [...path].nexy      →  /docs/{path+}
+```
+```nexy
+---
+path: prop[list[str]]
+---
+<pre>{{ path | join("/") }}</pre>
+```
+`path` वेरिएबल **सभी** शेष URL खंडों को एक सूची के रूप में प्राप्त करता है।
+<Link href="/docs/fbrouters/query_parameters">Next: Query Parameters →</Link>

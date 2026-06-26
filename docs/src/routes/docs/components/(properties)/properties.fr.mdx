@@ -1,0 +1,202 @@
+# Propriétés (accessoires)
+
+Les accessoires sont la façon dont les données circulent dans un composant. Ils rendent les composants réutilisables : le même composant `Card` peut restituer un contenu différent en fonction des accessoires qu'il reçoit.
+
+## Déclarer des accessoires
+
+Les accessoires sont déclarés dans le frontmatter en utilisant la syntaxe `:prop[type]` :
+
+```nexy
+---
+title:prop[str]
+count:prop[int] = 0
+items:prop[list] = []
+active:prop[bool] = false
+---
+<h2>{{ title }}</h2>
+<span>Count: {{ count }}</span>
+```
+
+Chaque déclaration devient un paramètre de la fonction Python générée avec l'annotation de type correspondante.
+
+## Obligatoire ou facultatif
+
+```nexy
+---
+# Required — must be passed, no default
+name:prop[str]
+
+# Optional — has a default value
+name:prop[str] = "Guest"
+age:prop[int] = 0
+items:prop[list] = []
+settings:prop[dict] = {}
+active:prop[bool] = false
+---
+```
+
+Si un accessoire requis n'est pas transmis lorsque le composant est utilisé, Python génère un `TypeError` au moment du rendu. Le message d'erreur inclut le nom du composant et l'argument manquant.
+
+**Quand rendre un accessoire requis** : Lorsque le composant n'a aucun sens sans lui. Un `BlogCard` sans `title` est cassé — rendez-le obligatoire. Un `Button` sans `variant` peut être par défaut `"primary"`.
+
+## Types pris en charge
+
+| Tapez | Littéral par défaut | Remarques |
+|------|------|-------|
+| `str` | `""` | Valeurs de chaîne |
+| `int` | `0` | Valeurs entières |
+| `float` | `0.0` | Valeurs flottantes |
+| `bool` | `false` | `true`/`false` (et non `True`/`False`) |
+| `list` | `[]` | Liste des valeurs |
+| `dict` | `{}` | Valeurs de dictée |
+| `Any` | `None` | Tout type |
+
+L'annotation de type est utilisée pour la documentation et la prise en charge de l'IDE. Au moment de l'exécution, Python est typé dynamiquement : l'annotation n'applique pas le type. Si vous transmettez une chaîne là où un int est attendu, elle échouera lorsque le modèle tentera de l'utiliser de manière arithmétique, et non au niveau de la déclaration prop.
+
+## Passer les accessoires des parents
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+query = useQuery()
+posts = [...]  # from database
+---
+{% for post in posts %}
+  <Card
+    title="{{ post.title }}"
+    date="{{ post.date }}"
+    slug="{{ post.slug }}"
+    tags={post.tags}
+    published={post.published}
+  />
+{% endfor %}
+```
+
+**Règles** :
+
+- **Les valeurs de chaîne** utilisent `key="value"` ou `key="{{ jinja_expr }}"`
+- **Les expressions** utilisent `key={expr}` — pas de guillemets, la valeur est analysée en Python
+- **Booléens** : utilisez `active=true` (minuscules), et non `active=True` ou `active="true"`
+- **Listes/dicts** : `items={["a", "b"]}` ou `settings={"key": "val"}`
+
+## Valeurs par défaut et objets mutables
+
+Un piège Python courant : **n'utilisez pas de valeurs par défaut mutables** qui sont partagées entre les appels :
+
+```python
+# BAD — in Python, this list is created once and shared
+def Card(items: list = []):
+    items.append("new")  # Modifies the default!
+```
+
+Nexy s'en charge pour vous. La fonction générée utilise `None` comme valeur interne par défaut et crée une nouvelle copie par appel :
+
+```python
+# What Nexy actually generates
+def Card(items: list = None):
+    if items is None:
+        items = []
+```
+
+Donc `items:prop[list] = []` est sûr à utiliser — chaque appel de composant obtient sa propre liste.
+
+## Accessoires dynamiques avec `{{ }}`
+
+Utilisez les expressions Jinja2 pour les valeurs dynamiques :
+
+```nexy
+<Card title="{{ post.title }}" />
+<Card count={posts|length} />
+<Card active={user.role == "admin"} />
+<Card style={{"color": "red" if urgent else "blue"}} />
+```
+
+Le compilateur convertit les valeurs d'attribut contenant `{{ }}` en concaténation de chaînes Jinja2 :
+
+```
+title="{{ post.title }}"  →  title=post.title
+```
+
+Pour les valeurs `{...}` non citées, le contenu est transmis directement sous forme d'expression Python.
+
+## Accessoires dans les pages MDX
+
+Les pages (fichiers `.mdx` dans `src/routes/`) peuvent également déclarer des accessoires :
+
+```mdx
+---
+title:prop[str] = "Untitled"
+section:prop[str] = "docs"
+---
+
+# {{ title }}
+
+Page content...
+```
+
+Les accessoires de page sont généralement définis par la mise en page ou transmis via `useViews()`. Ils sont moins courants que les accessoires de composants, car les pages obtiennent généralement des données provenant de hooks et de requêtes de base de données.
+
+## Propager les accessoires
+
+Transmettez un dict sous forme de plusieurs accessoires en utilisant la syntaxe de propagation Jinja2 dans le modèle :
+
+```nexy
+---
+from nexy import useQuery
+from "./Card.nexy" import Card
+
+post = {"title": "Hello", "date": "2026-01-15", "slug": "hello-world"}
+---
+<Card {{ post }} />
+<!-- Expands to: Card(title="Hello", date="2026-01-15", slug="hello-world") -->
+```
+
+Cela fonctionne via la détection abrégée du compilateur : lorsqu'il voit `{{ ...props }}` dans une clé d'attribut, il l'étend à `**props`.
+
+## Exemple complet : composant de bouton
+
+```nexy
+<!-- src/components/Button.nexy -->
+---
+label:prop[str] = "Click"
+variant:prop[str] = "primary"
+size:prop[str] = "md"
+disabled:prop[bool] = false
+---
+<button
+  class="btn btn--{{ variant }} btn--{{ size }}"
+  {{ 'disabled' if disabled else '' }}
+  onclick="{{ attrs.onclick if attrs else '' }}"
+>
+  {{ label }}
+  <slot />
+</button>
+
+<style>
+.btn { padding: 0.5rem 1rem; border-radius: 6px; border: none; cursor: pointer; }
+.btn--primary { background: #3b82f6; color: white; }
+.btn--secondary { background: #6b7280; color: white; }
+.btn--sm { font-size: 0.875rem; }
+.btn--md { font-size: 1rem; }
+</style>
+```
+
+Usage:
+
+```nexy
+---
+from "./Button.nexy" import Button
+---
+<Button label="Save" variant="primary" size="sm" />
+<Button label="Cancel" variant="secondary" />
+<Button label="Submit" disabled={true}>
+  <span class="spinner" />
+</Button>
+```
+
+## Suivant
+
+- [Conditional Rendering](/docs/components/conditional) : si/pour dans les modèles
+- [Component Modules](/docs/components/modules) : organisation des composants

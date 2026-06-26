@@ -1,0 +1,135 @@
+# 応答モデル
+
+応答のシリアル化、ステータス コード、および応答タイプを制御します。
+
+---
+
+## ピダンティックな応答モデル
+```python
+---
+from pydantic import BaseModel
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+def GET() -> UserOut:
+    return UserOut(id=1, name="Alice", email="alice"@example.com")
+---
+```
+```python
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class UserOut(BaseModel):
+    id: int
+    name: str
+    email: str
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice", email="alice"@example.com")]
+```
+## リスト応答
+```python
+---
+def GET() -> list[UserOut]:
+    return [UserOut(id=1, name="Alice")]
+---
+```
+```python
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[UserOut]:
+        return [UserOut(id=1, name="Alice")]
+```
+## 応答タイプ
+
+`fastapi.responses` からインポート:
+```python
+from fastapi.responses import (
+    JSONResponse,
+    HTMLResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    StreamingResponse,
+    FileResponse,
+    ORJSONResponse,   # requires orjson
+)
+```
+### HTMLレスポンス
+```python
+---
+from fastapi.responses import HTMLResponse
+
+def GET() -> HTMLResponse:
+    return HTMLResponse("<h1>Hello</h1>")
+---
+```
+```python
+from fastapi.responses import HTMLResponse
+from nexy.decorators import Controller
+
+"@Controller("/page")
+class PageController:
+    def GET(self) -> HTMLResponse:
+        return HTMLResponse("<h1>Hello</h1>")
+```
+### ストリーミング応答
+```python
+---
+from fastapi.responses import StreamingResponse
+import io
+
+def GET() -> StreamingResponse:
+    return StreamingResponse(io.StringIO("large CSV data..."), media_type="text/csv")
+---
+```
+```python
+from fastapi.responses import StreamingResponse
+from nexy.decorators import Controller
+import io
+
+"@Controller("/export")
+class ExportController:
+    def GET(self) -> StreamingResponse:
+        return StreamingResponse(io.StringIO("data..."), media_type="text/csv")
+```
+## カスタム ステータスを使用したダイレクト レスポンス
+```python
+---
+from fastapi.responses import JSONResponse
+
+def GET() -> JSONResponse:
+    return JSONResponse(
+        content={"msg": "created"},
+        status_code=201,
+        headers={"X-Custom": "value"},
+    )
+---
+```
+```python
+from fastapi.responses import JSONResponse
+from nexy.decorators import Controller, UseResponse
+
+"@Controller("/items")
+class ItemsController:
+    "@UseResponse(status_code=201)
+    def post(self, item: Item):
+        return {"created": True}
+```
+## サポートされている応答タイプ
+
+|クラス |コンテンツタイプ |使用例 |
+|----------|---------------|----------|
+| `JSONResponse` | `application/json` | JSON データ (デフォルト) |
+| `HTMLResponse` | `text/html` | HTML文字列 |
+| `PlainTextResponse` | `text/plain` |生のテキスト |
+| `RedirectResponse` | — |リダイレクト |
+| `StreamingResponse` |さまざまです |ストリームデータ |
+| `FileResponse` |さまざまです |ファイルのダウンロード |
+| `ORJSONResponse` | `application/json` |高速な JSON (`orjson` が必要) |
+
+モジュラー コントローラーでのステータス コードの設定については、["@UseResponse](/docs/decorators/useresponse) を参照してください。

@@ -1,0 +1,56 @@
+# التشفير والتجزئة
+
+لا تقوم Nexy بشحن العملات المشفرة الخاصة بها — استخدم مكتبة Python القياسية وحزم الجهات الخارجية الموثوقة.
+
+## التجزئة
+
+### هاشليب (ستدليب)
+
+```python
+import hashlib
+
+hash = hashlib.sha256(b"data").hexdigest()
+```
+
+### بكريبت
+
+```bash
+pip install bcrypt
+```
+
+```python
+import bcrypt
+
+hashed = bcrypt.hashpw(b"password", bcrypt.gensalt())
+bcrypt.checkpw(b"password", hashed)  # True
+```
+
+## التشفير
+
+### التشفير (فيرنت المتماثل)
+
+```bash
+pip install cryptography
+```
+
+```python
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key()
+cipher = Fernet(key)
+
+token = cipher.encrypt(b"secret data")
+cipher.decrypt(token)  # b"secret data"
+```
+
+## متغيرات البيئة
+
+لا تستخدم المفاتيح الصلبة أبدًا. استخدام متغيرات البيئة:
+
+```python
+import os
+
+secret = os.environ["SECRET_KEY"]
+```
+
+من أجل التطوير، يقرأ Nexy ملفات `.env` تلقائيًا.

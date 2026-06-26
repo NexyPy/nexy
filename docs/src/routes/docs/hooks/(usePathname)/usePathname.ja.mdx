@@ -1,0 +1,40 @@
+# パス名を使用
+
+現在の URL パスを文字列として返します。
+
+```python
+from nexy import usePathname
+
+pathname = usePathname()
+```
+
+---
+
+## 戻り値
+
+`str` — 現在のリクエスト URL のパスコンポーネント (例: `/docs/hooks/usePathname`)。
+
+ - -
+
+＃＃ 例
+
+```nexy
+---
+from nexy import usePathname
+path = usePathname()
+---
+<nav class="breadcrumb">
+    {% set segments = path.strip('/').split('/') %}
+    {% for seg in segments %}
+        <span>/ {{ seg }}</span>
+    {% endfor %}
+</nav>
+```
+
+---
+
+## 使用上の注意
+
+- `.nexy` および `.mdx` フロントマターで利用可能
+- `request.url.path` 経由の `.py` ルート ハンドラーでも利用可能
+- パスのみを返します。クエリ文字列やフラグメントは返しません。

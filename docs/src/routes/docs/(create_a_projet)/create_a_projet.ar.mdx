@@ -1,0 +1,123 @@
+#بداية سريعة
+
+أنشئ مشروع Nexy في ثوانٍ — لا يلزم التثبيت الشامل.
+
+## المتطلبات الأساسية
+
+- **بايثون 3.11+**
+- **[uv](https://docs.astral.sh/uv/)** (مدير الحزم)
+- **Node.js 18+** (لمكونات العميل وTailwind CSS)
+
+## إنشاء مشروع
+
+```bash
+uvx nexy new
+```
+
+أو حدد اسمًا مباشرةً:
+
+```bash
+uvx nexy new my-app
+```
+
+يقوم `uvx` بتنزيل Nexy وتشغيله سريعًا - لا يوجد شيء يمكن تثبيته عالميًا.
+
+## المطالبات التفاعلية
+
+بعد تشغيل الأمر، يرشدك Nexy خلال عملية إعداد المشروع:
+
+### 1. جهاز التوجيه
+
+```text
+
+» Use file-based router? (Y/n)
+```
+
+- **نعم** — التوجيه المستند إلى الملفات (FBR): الصفحات عبارة عن ملفات في `routes/`
+- **لا** — التوجيه المعياري: وحدات تحكم ووحدات مع أدوات تزيين
+
+### 2. نوع المشروع
+
+```bash
+» Choose the type of project
+
+  ʋ Web (monolith web app)
+
+    API (RESTful API)
+```
+
+### 3. إطار عمل العميل (الويب فقط)
+
+```bash
+
+» Use a client component? (Y/n)
+
+```
+
+إذا كانت الإجابة بنعم:
+
+```bash
+
+» Choose the client framework
+
+  ʋ React
+
+    Vue
+
+    Svelte
+
+    Solid
+
+    Preact
+
+    None
+```
+
+يتم تكوين Tailwind CSS تلقائيًا عند تحديد إطار عمل العميل.
+
+### 4. ORM وقاعدة البيانات
+
+```bash
+
+» Choose an ORM
+
+  ʋ SQLModel
+
+    SQLAlchemy
+
+    Tortoise-ORM
+
+    None
+```
+
+إذا تم تحديد ORM:
+
+```bash
+
+» Choose database
+
+  ʋ SQLite
+
+    PostgreSQL
+
+    MySQL
+
+» Database URL (sqlite:///dev.db)
+```
+
+## ابدأ تشغيل خادم التطوير
+
+```bash
+cd my-app
+
+nexy dev
+```
+
+افتح [http://localhost:3000](http://localhost:3000) لرؤية تطبيقك.
+
+## الخطوات التالية
+
+مشروعك جاهز. توجه إلى [Project Structure](/docs/projet_structure) لفهم التخطيط، أو انتقل مباشرة إلى المبنى:
+
+- [Your First Page](/docs/fbrouters/pages) — التوجيه المستند إلى الملف
+- [Your First Controller](/docs/modular/controllers) — التوجيه المعياري
