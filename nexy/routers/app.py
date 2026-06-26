@@ -198,7 +198,9 @@ class AppServer:
             project_locales_dir=str(Path(os.getcwd()) / (self.config.useLocalesDir or "locales")),
         )
         loc_count = len(self.config.useLocales or ["en"])
-        console.print(f"[dim][nexy][/dim] Translations preloaded for [bold]{loc_count}[/bold] locales")
+        console.print(
+            f"[dim][nexy][/dim] Translations preloaded for [bold]{loc_count}[/bold] locales"
+        )
         self.server.add_middleware(LocaleMiddleware)
         self.server.middleware("http")(self.PathMiddleware)
         self._setup_favicon()

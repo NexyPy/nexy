@@ -47,6 +47,8 @@ def Vite() -> str:
             return ""
 
     port = get_vite_port(5173)
+    ssl_enabled = config.useSslKeyfile and config.useSslCertfile
+    vite_protocol = "https" if ssl_enabled else "http"
 
     hmr_script = """
     <script type="module">
@@ -92,22 +94,8 @@ def Vite() -> str:
     </script>
     """
 
-    vite_protocol = "https" if config.useSslKeyfile and config.useSslCertfile else "http"
-
     return f"""
     {hmr_script}
-    <script type="module">
-        const host = window.location.hostname;
-        const base = `{vite_protocol}://${{host}}:{port}`;
-
-        const s1 = document.createElement('script');
-        s1.type = 'module';
-        s1.src = `${{base}}/@vite/client`;
-        document.head.appendChild(s1);
-
-        const s2 = document.createElement('script');
-        s2.type = 'module';
-        s2.src = `${{base}}/__nexy__/main.ts`;
-        document.head.appendChild(s2);
-    </script>
+    <script type="module" src="{vite_protocol}://localhost:{port}/@vite/client"></script>
+    <script type="module" src="{vite_protocol}://localhost:{port}/__nexy__/main.ts"></script>
     """

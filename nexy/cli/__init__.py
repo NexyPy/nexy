@@ -70,7 +70,13 @@ def main(
             ("start", t("cli.cmd.start", "Start production server")),
             ("build", t("cli.cmd.build", "Compile project for production deployment")),
             ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
-            ("translate", t("cli.cmd.translate", "Translate locale source (i18n.py) to all configured languages")),
+            (
+                "translate",
+                t(
+                    "cli.cmd.translate",
+                    "Translate locale source (i18n.py) to all configured languages",
+                ),
+            ),
         ]
         max_cmd_len = max(len(cmd) for cmd, _ in commands)
         for cmd, desc in commands:

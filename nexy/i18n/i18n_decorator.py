@@ -10,9 +10,7 @@ def i18n():
         qual = f"{cls.__module__}.{cls.__qualname__}"
         _I18N_REGISTRY[qual] = cls
         cls.__i18n_defaults__ = {
-            k: v
-            for k, v in cls.__dict__.items()
-            if not k.startswith("_") and isinstance(v, str)
+            k: v for k, v in cls.__dict__.items() if not k.startswith("_") and isinstance(v, str)
         }
 
         orig_getattr = cls.__getattribute__

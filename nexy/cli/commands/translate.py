@@ -32,7 +32,7 @@ class _SyncRateLimiter:
     def wait(self) -> None:
         with self._lock:
             now = time.monotonic()
-            backoff = min(2 ** self._failures, 30)
+            backoff = min(2**self._failures, 30)
             wait = 0.0
             if self._failures > 0 and now - self._last_fail < backoff:
                 wait = backoff - (now - self._last_fail)
@@ -69,8 +69,7 @@ def _translate_batch(translator: Any, batch: list[str]) -> list[str]:
     except Exception as exc:
         _sync_limiter.report_failure()
         console.print(
-            f"  [yellow]WARN[/yellow] translate_batch failed ({exc}), "
-            f"retrying individually..."
+            f"  [yellow]WARN[/yellow] translate_batch failed ({exc}), retrying individually..."
         )
         results: list[str] = []
         for text in batch:
@@ -96,13 +95,10 @@ def _translate_module_sync(
     from deep_translator import GoogleTranslator
 
     try:
-        translator = GoogleTranslator(
-            source=_map_locale(source_locale), target=_map_locale(target)
-        )
+        translator = GoogleTranslator(source=_map_locale(source_locale), target=_map_locale(target))
     except Exception as exc:
         console.print(
-            f"  [red]ERROR[/red] GoogleTranslator({source_locale}→{target}) "
-            f"failed: {exc}"
+            f"  [red]ERROR[/red] GoogleTranslator({source_locale}→{target}) failed: {exc}"
         )
         return (target, module_name, {})
 
@@ -139,32 +135,6 @@ def _scan_i18n_classes(src_dir: Path) -> dict[str, type]:
     return dict(_I18N_REGISTRY)
 
 
-async def _translate_module_async(
-    client: httpx.AsyncClient,
-    target: str,
-    module_name: str,
-    cls_list: list[type],
-    source_locale: str,
-) -> tuple[str, str, dict[str, dict[str, str]]]:
-    data: dict[str, dict[str, str]] = {}
-    for cls in cls_list:
-        class_name = cls.__qualname__
-        defaults = cls.__i18n_defaults__
-        if target == source_locale:
-            data[class_name] = dict(defaults)
-        else:
-            keys = list(defaults.keys())
-            values = list(defaults.values())
-            if values:
-                translated = await _translate_batch_async(
-                    client, values, source_locale, target
-                )
-                data[class_name] = dict(zip(keys, translated))
-            else:
-                data[class_name] = {}
-    return (target, module_name, data)
-
-
 def _restructure(
     locales_data: dict[str, dict[str, dict[str, str]]],
 ) -> dict[str, dict[str, dict[str, str]]]:
@@ -189,8 +159,7 @@ async def _translate_async(
     cancelled = False
 
     coros = [
-        asyncio.to_thread(_translate_module_sync, t, m, cl, source_locale)
-        for t, m, cl in tasks
+        asyncio.to_thread(_translate_module_sync, t, m, cl, source_locale) for t, m, cl in tasks
     ]
     with console.status("") as status:
         for coro in asyncio.as_completed(coros):
@@ -198,15 +167,11 @@ async def _translate_async(
                 target, module_name, data = await coro
             except asyncio.CancelledError:
                 console.print()
-                console.print(
-                    "  [yellow]\u26a0 Translation cancelled by user (Ctrl+C)[/yellow]"
-                )
+                console.print("  [yellow]\u26a0 Translation cancelled by user (Ctrl+C)[/yellow]")
                 cancelled = True
                 break
             except Exception as exc:
-                console.print(
-                    f"  [red]ERROR[/red] ... failed: {exc}"
-                )
+                console.print(f"  [red]ERROR[/red] ... failed: {exc}")
                 continue
 
             if module_name not in module_results:
@@ -280,13 +245,9 @@ def translate(
 
     total_keys = sum(len(cls.__i18n_defaults__) for cls in classes.values())
     console.print(
-        f"[dim]Scanning[/dim] [green]\u2713[/green] "
-        f"{len(classes)} classes, {total_keys} keys"
+        f"[dim]Scanning[/dim] [green]\u2713[/green] {len(classes)} classes, {total_keys} keys"
     )
-    console.print(
-        f"[dim]Translating[/dim] {source_locale} \u2192 "
-        f"{', '.join(target_locales)}"
-    )
+    console.print(f"[dim]Translating[/dim] {source_locale} \u2192 {', '.join(target_locales)}")
     console.print(f"[dim]Source: {src_dir}[/dim]")
     console.print()
 
@@ -307,9 +268,7 @@ def translate(
         console.print("  [green]\u2713[/green] Translation complete")
         return
 
-    module_results, cancelled = asyncio.run(
-        _translate_async(tasks, source_locale)
-    )
+    module_results, cancelled = asyncio.run(_translate_async(tasks, source_locale))
 
     if cancelled and not module_results:
         console.print()
@@ -340,9 +299,7 @@ def translate(
             console.print(f"  [dim]cleanup: removed {old_file.name}[/dim]")
 
     if skipped_modules:
-        console.print(
-            f"  [dim]\u2014 {len(skipped_modules)} modules up to date, skipped[/dim]"
-        )
- 
+        console.print(f"  [dim]\u2014 {len(skipped_modules)} modules up to date, skipped[/dim]")
+
     console.print("\n[green]\u2713[/green] Translation complete")
     console.print("  [dim]Restart the dev server to pick up new translations.[/dim]")
