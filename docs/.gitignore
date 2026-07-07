@@ -1,8 +1,83 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+__nexy__/__pycache__
+__nexy__/.temp
+# Dependencies
+node_modules
 **/node_modules/**
-.venv/**
-**/__pycache__
-**/nexy-virt/
-package-lock.json
-./pnpm-lock.yaml
-./bun.lock
 
+# Build / dist
+dist
+dist-ssr
+target/
+**/target/
+*.egg-info/
+
+# Cache
+__pycache__
+**/__pycache__/**
+*.pyc
+*.pyo
+.mypy_cache
+.pytest_cache
+.coverage
+.coverage.*
+.cache
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Binary artifacts (should never be committed)
+*.rlib
+*.pdb
+*.dll
+*.exe
+*.so
+*.dylib
+*.o
+*.obj
+*.class
+
+# VS Code test binaries
+.vscode-test/
+**/.vscode-test/
+
+# Python
+.venv
+**/.venv/**
+*.pyc
+*.pyo
+
+# Nexy
+__nexy__/
+**/__nexy__/**
+tasks
+session.ai
+
+# Env / deploy
+.vercel
+.env
+*.local
+
+# Lock files (files, not directories)
+bun.lock
+**/bun.lock
+pnpm-lock.yaml
+**/pnpm-lock.yaml
+
+# Fonts (local)
+**/public/font/
