@@ -1,6 +1,6 @@
-import os
 import hashlib
 import json
+import os
 import traceback as _tb
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -26,11 +26,11 @@ class Builder:
         self.discovery = Discovery()
         self.cache_file = Path("__nexy__") / "build-cache.json"
         self.cache: dict[str, str] = {}
-        
+
         exclude_dirs = self.config.excludeDirs
         for name in exclude_dirs:
             self.discovery.add_excluded_dir(name)
-        
+
         self._load_cache()
 
     def _get_file_hash(self, file_path: Path) -> str:
@@ -62,11 +62,11 @@ class Builder:
         def compile_file(file_path) -> tuple[str, str | None, bool]:
             input_path = file_path.as_posix()
             file_hash = self._get_file_hash(file_path)
-            
+
             # Check if file is already cached and hasn't changed
             if incremental and input_path in self.cache and self.cache[input_path] == file_hash:
                 return input_path, None, True  # skipped (cached)
-            
+
             try:
                 compiler = Compiler()
                 compiler.compile_with_deps(input=input_path)

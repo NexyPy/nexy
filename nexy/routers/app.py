@@ -23,7 +23,6 @@ from nexy.routers.fbrouter import FBRouter
 from nexy.runtime.hmr import HMR_MANAGER
 from nexy.runtime.importer import install_vfs_importer
 from nexy.utils.common.console import console
-from nexy.utils.dev.pycache import pycache
 
 
 class AppServer:

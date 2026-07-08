@@ -23,19 +23,25 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
         self.vfs = VFS()
 
     def _find_vfs_path(self, base_path: str) -> str | None:
+        # Fast path: direct check for exact match first (no full disk scan
         if self.vfs.exists(base_path):
             return base_path
-        candidates = {
-            base_path,
+        # Generate candidate variations and check them directly first
+        candidates = [
             base_path.lower(),
             base_path.upper(),
             base_path.replace("_", "-"),
             base_path.replace("-", "_"),
-        }
+        ]
+        for candidate in candidates:
+            if self.vfs.exists(candidate):
+                return candidate
+        # Only scan all files as last resort
         for fname in self.vfs.list_files():
+            normalized_fname = fname.replace("\\", "/")
             for cand in candidates:
-                if fname.replace("\\", "/") == cand:
-                    return fname
+                if normalized_fname == cand:
+                    return cand
         return None
 
     def find_spec(

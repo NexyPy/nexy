@@ -155,10 +155,10 @@ class Server:
         """Starts the FastAPI/Uvicorn server with optional workers."""
         cfg = Config()
         run_host = host or "127.0.0.1"
-        
+
         # Nombre de workers auto si non spécifié (CPU count)
         num_workers = workers or (cfg.useWorkers if hasattr(cfg, "useWorkers") else os.cpu_count())
-        
+
         _write_port_file("server", port)
 
         ssl_args = {}
@@ -211,10 +211,10 @@ class Server:
         port: int, host: str = "localhost", timeout: int = 30, ssl: bool = False) -> bool:
         """Attend que Vite soit prêt à répondre aux requêtes."""
         import urllib.request
-        
+
         protocol = "https" if ssl else "http"
         start_time = time.time()
-        
+
         while time.time() - start_time < timeout:
             try:
                 url = f"{protocol}://{host}:{port}/@vite/client"

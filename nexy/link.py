@@ -1,10 +1,9 @@
-from typing import Optional
 
 
 def Link(
     href: str,
     children: str = "",
-    class_name: Optional[str] = None,
+    class_name: str | None = None,
     prefetch: bool = True,
     **kwargs,
 ) -> str:
@@ -16,8 +15,8 @@ def Link(
         attrs["onmouseenter"] = f"window.__nexy_prefetch && window.__nexy_prefetch('{href}')"
         attrs["ontouchstart"] = f"window.__nexy_prefetch && window.__nexy_prefetch('{href}')"
     attrs.update(kwargs)
-    
+
     # Convert attrs to HTML string
     attr_str = " ".join([f'{k}="{v}"' for k, v in attrs.items()])
-    
+
     return f"<a {attr_str}>{children}</a>"
