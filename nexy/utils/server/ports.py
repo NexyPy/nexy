@@ -14,7 +14,7 @@ def _is_port_available(host: str, port: int) -> bool:
 
     # Step 1: Connection attempt (detects if a service is listening)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.settimeout(0.2)
+        sock.settimeout(0.02)
         try:
             sock.connect((check_host, port))
             return False  # If we can connect, the port is occupied

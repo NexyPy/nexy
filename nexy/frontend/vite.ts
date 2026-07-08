@@ -42,6 +42,7 @@ function nexyPlugin(): Plugin {
           ]
         },
 
+        clearScreen: false,
         server: {
           strictPort: true,
           cors: { 
@@ -52,11 +53,18 @@ function nexyPlugin(): Plugin {
             // Empêche les boucles infinies de rebuild lors du SSG
             ignored: [
               '**/node_modules/**', 
+              '**/.venv/**',
+              '**/venv/**',
+              '**/__pycache__/**',
               '**/__nexy__/client/**', 
               '**/__nexy__/**/*.{html,py}', 
               '**/.git/**'
             ]
           }
+        },
+
+        optimizeDeps: {
+          entries: ['__nexy__/main.ts']
         },
 
         build: {
@@ -78,9 +86,10 @@ function nexyPlugin(): Plugin {
     // --- HMR pour les fichiers non-JS (Python, Nexy, MDX) ---
     configureServer(server) {
       server.watcher.add([
-        path.resolve(process.cwd(), '**/*.py'),
-        path.resolve(process.cwd(), '**/*.nexy'),
-        path.resolve(process.cwd(), '**/*.mdx')
+        path.resolve(process.cwd(), 'src/**/*.py'),
+        path.resolve(process.cwd(), 'src/**/*.nexy'),
+        path.resolve(process.cwd(), 'src/**/*.mdx'),
+        path.resolve(process.cwd(), '*.py')
       ])
 
       const reloadExts = (file: string) =>

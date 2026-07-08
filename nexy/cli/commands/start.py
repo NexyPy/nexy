@@ -15,7 +15,7 @@ def start(port: int | None = None, host: str | None = None) -> None:
 
     config = Config()
     run_host = host or config.useHost
-    run_port, _ = Server.resolve_ports(run_host, port or config.usePort)
+    run_port, _ = Server.resolve_ports(run_host, port or config.usePort, with_client=False)
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
     ssl_enabled = bool(ssl_keyfile and ssl_certfile)
     protocol = "https" if ssl_enabled else "http"
@@ -49,15 +49,20 @@ def start(port: int | None = None, host: str | None = None) -> None:
 
         Server.check_nexy_prod(delete=False)
 
-        Server.uvicorn(
+        proc = Server.uvicorn(
             host=run_host,
             port=run_port,
             ssl_keyfile=ssl_keyfile,
             ssl_certfile=ssl_certfile,
+            as_process=True,
         )
+        if proc:
+            proc.wait()
 
     except (KeyboardInterrupt, SystemExit):
-        console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")
+        pass
     finally:
+        if 'proc' in locals() and proc:
+            Server.stop_process(proc)
         Server.check_nexy_prod(delete=True)
         console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")

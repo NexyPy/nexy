@@ -1,3 +1,39 @@
-class Audio:
-    def __call__(self, *args: object, **kwargs: object) -> None:
-        print("Audio called with args:", args, "and kwargs:", kwargs)
+from typing import Optional, List
+
+
+def Audio(
+    src: str,
+    controls: bool = True,
+    autoplay: bool = False,
+    loop: bool = False,
+    muted: bool = False,
+    preload: str = "metadata",
+    class_name: Optional[str] = None,
+    sources: Optional[List[str]] = None,
+    **kwargs,
+) -> str:
+    # Build attributes
+    attrs = {"preload": preload}
+    if class_name:
+        attrs["class"] = class_name
+    if controls:
+        attrs["controls"] = ""
+    if autoplay:
+        attrs["autoplay"] = ""
+    if loop:
+        attrs["loop"] = ""
+    if muted:
+        attrs["muted"] = ""
+    
+    attrs.update(kwargs)
+    attr_str = " ".join([f'{k}="{v}"' if v else k for k, v in attrs.items()])
+    
+    # Build sources
+    source_tags = ""
+    if sources:
+        for s in sources:
+            source_tags += f'<source src="{s}" type="audio/{s.split(".")[-1]}" />'
+    else:
+        source_tags = f'<source src="{src}" type="audio/{src.split(".")[-1]}" />'
+    
+    return f"<audio {attr_str}>{source_tags}</audio>"
