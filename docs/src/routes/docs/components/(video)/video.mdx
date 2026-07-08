@@ -1,0 +1,66 @@
+# Video Component
+
+The built-in `Video` component makes it easy to embed video files with built-in controls.
+
+## Import
+
+Import it directly from `nexy`:
+
+```nexy
+---
+from nexy import Video
+---
+```
+
+## Basic Usage
+
+```nexy
+---
+from nexy import Video
+---
+<Video src="/demo.mp4" />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `str` | **required** | Path to the video file |
+| `width` | `int | None` | `None` | Video width in pixels |
+| `height` | `int | None` | `None` | Video height in pixels |
+| `controls` | `bool` | `True` | Show video controls |
+| `autoplay` | `bool` | `False` | Autoplay the video |
+| `loop` | `bool` | `False` | Loop the video |
+| `muted` | `bool` | `False` | Mute the video |
+| `preload` | `str` | `"metadata"` | Preload strategy (`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | CSS class names |
+| `sources` | `list[str] | None` | `None` | List of alternative video sources |
+| `**kwargs` | any | — | Additional HTML attributes |
+
+## Multiple Sources
+
+Provide multiple video formats for better browser compatibility:
+
+```nexy
+---
+from nexy import Video
+---
+<Video 
+    sources=["/video.mp4", "/video.webm", "/video.ogg"] 
+    controls={True}
+/>
+```
+
+## Autoplay Video
+
+Note: Most browsers require `muted` for autoplay to work:
+
+```nexy
+<Video 
+    src="/background.mp4" 
+    autoplay={True} 
+    muted={True} 
+    loop={True} 
+    controls={False}
+/>
+```

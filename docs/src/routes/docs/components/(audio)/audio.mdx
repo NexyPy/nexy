@@ -1,0 +1,60 @@
+# Audio Component
+
+The built-in `Audio` component makes it easy to add audio players to your app.
+
+## Import
+
+Import it directly from `nexy`:
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## Basic Usage 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `str` | **required** | Path to the audio file |
+| `controls` | `bool` | `True` | Show audio controls |
+| `autoplay` | `bool` | `False` | Autoplay the audio |
+| `loop` | `bool` | `False` | Loop the audio |
+| `muted` | `bool` | `False` | Mute the audio |
+| `preload` | `str` | `"metadata"` | Preload strategy (`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | CSS class names |
+| `sources` | `list[str] | None` | `None` | List of alternative audio sources |
+| `**kwargs` | any | — | Additional HTML attributes |
+
+## Multiple Sources
+
+Provide multiple audio formats for better browser compatibility:
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## Autoplay Audio
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

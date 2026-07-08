@@ -1,24 +1,24 @@
 ---
 from "@components/background.nexy" import Background
+from "@/locales/components/home" import HomeI18n
+h = HomeI18n()
 ---
 <section class="overflow-hidden">
     <aside class="relative w-full w-container px-6 md:px-16 py-24 space-y-4 ">
         <Background className="-z-10 rotate-y-180 absolute -bottom-20 -right-50 opacity-20 scale-110" />
         <Background className="-z-10 rotate-x-180 absolute -top-20 -left-50 opacity-20 scale-110" />
 
-        <h2 class="text-3xl font-medium">What is Nexy ?</h2>
+        <h2 class="text-3xl font-medium">{{h.what_is_nexy}}</h2>
         <p class="text-base font-light max-w-xl leading-6">
-            Nexy is a Python web framework optimized for building fast, content-driven
-            websites, API services, and more.
+            {{h.what_desc}}
         </p>
         <div class="space-y-4 md:space-y-0 md:grid grid-cols-3 mt-12 z">
             <div
                 class=" p-1.5 bg-gray-50/5 border border-border border-dashed rounded-[42px] md:rounded-br-none corder ">
                 <div class="bg-linear-150 to-[#119f6b] from-[#00D084] p-6 rounded-4xl corder space-y-3 ">
-                    <h3 class="text-xl font-medium">Server-First</h3>
+                    <h3 class="text-xl font-medium">{{h.server_first}}</h3>
                     <p>
-                        Nexy improves website performance by rendering components on the server, sending lightweight
-                        HTML to the browser by using Python
+                        {{h.server_first_desc}}
                     </p>
                 </div>
             </div>
@@ -47,10 +47,9 @@ from "@components/background.nexy" import Background
                 class=" p-1.5 bg-gray-50/5 border border-border border-dashed rounded-[42px] md:rounded-bl-none corder ">
                 <div
                     class="border border-[#7AA7DA] bg-linear-150 to-[#4d80a1] from-[#7AA7DA] p-6 rounded-4xl corder space-y-3 ">
-                    <h3 class="text-xl font-medium">Customizable</h3>
+                    <h3 class="text-xl font-medium">{{h.customizable}}</h3>
                     <p>
-                        Extend Nexy with your favorite tools. Bring your own JavaScript UI components, CSS libraries,
-                        themes, integrations, and more.
+                        {{h.customizable_desc}}
                     </p>
                 </div>
             </div>
@@ -63,10 +62,9 @@ from "@components/background.nexy" import Background
             <div
                 class=" p-1.5 bg-gray-50/5 border border-border border-dashed rounded-[42px] md:rounded-t-none corder col-start-2 ">
                 <div class="bg-linear-150 to-[#119f6b] from-[#00D084] p-6 rounded-4xl corder space-y-3 ">
-                    <h3 class="text-xl font-medium">Content-Driven</h3>
+                    <h3 class="text-xl font-medium">{{h.content_driven}}</h3>
                     <p>
-                        Nexy was designed to work with your content, no matter where it lives. Load data from your file
-                        system, external API, or your favorite CMS.
+                        {{h.content_driven_desc}}
                     </p>
                 </div>
             </div>

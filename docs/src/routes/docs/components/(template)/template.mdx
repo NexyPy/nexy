@@ -1,0 +1,33 @@
+# Template Class
+
+The `Template` class handles rendering Jinja2 and Markdown templates in Nexy.
+
+## Import
+
+Import it directly from `nexy`:
+
+```python
+from nexy import Template
+```
+
+## Basic Usage
+
+```python
+template = Template()
+html = template.render("page.html", {"title": "Hello World"})
+```
+
+## Markdown Support
+
+If your file ends with `.md`, it will be automatically processed as Markdown:
+
+```python
+template = Template()
+html = template.render("blog-post.md", {})
+```
+
+## Methods
+
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `render` | `path: str`, `context: dict[str, Any] \| None = None` | `str` | Renders a template |

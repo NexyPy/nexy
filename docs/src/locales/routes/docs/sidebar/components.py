@@ -10,4 +10,6 @@ class ComponentsI18n:
     link = "Lien"
     script = "Script"
     vite = "Vite"
+    import_ = "Import"
+    template = "Template"
     badge_soon = "bientôt"

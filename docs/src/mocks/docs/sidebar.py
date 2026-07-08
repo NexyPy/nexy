@@ -82,12 +82,14 @@ def build_sections(s, mode="fbr"):
     ]
 
     components_items = [
-        {"label": s.components.audio, "href": "#", "badge": s.components.badge_soon},
-        {"label": s.components.video, "href": "#", "badge": s.components.badge_soon},
-        {"label": s.components.form, "href": "#", "badge": s.components.badge_soon},
-        {"label": s.components.image, "href": "#", "badge": s.components.badge_soon},
-        {"label": s.components.link, "href": "#", "badge": s.components.badge_soon},
-        {"label": s.components.script, "href": "#", "badge": s.components.badge_soon},
+        {"label": s.components.image, "href": "/components/image"},
+        {"label": s.components.video, "href": "/components/video"},
+        {"label": s.components.audio, "href": "/components/audio"},
+        {"label": s.components.link, "href": "/components/link"},
+        {"label": s.components.form, "href": "/components/form"},
+        {"label": s.components.script, "href": "/components/script"},
+        {"label": s.components.import_, "href": "/components/import"},
+        {"label": s.components.template, "href": "/components/template"},
         {"label": s.components.vite, "href": "/frontend/vite"},
     ]
 

@@ -1,0 +1,40 @@
+# Form Component
+
+The built-in Form component simplifies working with forms and server actions.
+
+## Import
+
+Import it directly from `nexy`:
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## Basic Usage
+
+The Form component will be enhanced to integrate with server actions and provide form handling utilities.
+
+For now, you can use standard HTML forms in your components:
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Server Actions
+
+The Form component will integrate with Nexy's `@action` decorator for server-side form processing.
