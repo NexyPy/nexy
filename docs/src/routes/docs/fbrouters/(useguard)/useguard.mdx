@@ -1,4 +1,4 @@
-# "@UseGuard (FBR)
+# @UseGuard
 
 Apply guard callables to a route function.
 
@@ -28,7 +28,7 @@ class AuthGuard:
         if not request.user:
             raise HTTPException(401)
 
-"@UseGuard(AuthGuard())
+@UseGuard(AuthGuard())
 def GET():
     ...
 ```
@@ -38,7 +38,7 @@ def GET():
 ```python
 from nexy.decorators import UseGuard
 
-"@UseGuard(AuthGuard(), RoleGuard("admin"))
+@UseGuard(AuthGuard(), RoleGuard("admin"))
 def GET():
     ...
 ```
@@ -53,4 +53,4 @@ Guards run as FastAPI `Depends` — they receive the `Request` object and can bl
 
 ---
 
-See also: [Authorization](/docs/fbrouters/authorization), ["@UseGuard reference](/docs/decorators/useguard)
+See also: [Authorization](/docs/fbrouters/authorization), [@UseGuard reference](/docs/decorators/useguard)

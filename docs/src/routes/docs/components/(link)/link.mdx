@@ -1,0 +1,56 @@
+# Link Component
+
+The built-in `Link` component provides client-side navigation with prefetching for a better user experience.
+
+## Import
+
+Import it directly from `nexy`:
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## Basic Usage
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `href` | `str` | **required** | URL to navigate to |
+| `children` | `str` | `""` | Link text or content |
+| `class_name` | `str | None` | `None` | CSS class names |
+| `prefetch` | `bool` | `True` | Prefetch page on hover/touch |
+| `**kwargs` | any | — | Additional HTML attributes |
+
+## Prefetching
+
+By default, `Link` prefetches pages when the user hovers or touches them for faster navigation:
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+To disable prefetching for a specific link:
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## Styling Links
+
+Use `class_name` to apply custom styles:
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```

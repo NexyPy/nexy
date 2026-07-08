@@ -1,0 +1,59 @@
+# Image Component
+
+The built-in `Image` component makes it easy to add optimized images with lazy loading by default.
+
+## Import
+
+Import it directly from `nexy`:
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+## Usage
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `str` | **required** | Path to the image file |
+| `alt` | `str` | `""` | Alternative text for accessibility |
+| `width` | `int | None` | `None` | Image width in pixels |
+| `height` | `int | None` | `None` | Image height in pixels |
+| `loading` | `str` | `"lazy"` | Loading strategy (`"lazy"` or `"eager"`) |
+| `class_name` | `str | None` | `None` | CSS class names |
+| `**kwargs` | any | — | Additional HTML attributes |
+
+## Lazy Loading
+
+By default, images are loaded lazily for better performance:
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+To eager load critical images:
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```
