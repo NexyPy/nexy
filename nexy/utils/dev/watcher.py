@@ -80,16 +80,16 @@ class WatchHandler(PatternMatchingEventHandler):
         return path.endswith((".nexy", ".mdx", ".py")) and not self._skip(path)
 
     def _trigger_reload(self, path: str) -> None:
-        if self._is_frontend_file(path):
-            # Seulement broadcast HMR pour modifications frontend
+        if self._is_frontend_file(path) or path.endswith((".nexy", ".mdx")):
+            # Broadcast HMR for frontend, .nexy, and .mdx modifications
             if HMR_MANAGER.loop:
                 import asyncio
                 asyncio.run_coroutine_threadsafe(
                     HMR_MANAGER.broadcast_reload(path),
                     HMR_MANAGER.loop
                 )
-        elif self.on_reload_api:
-            # Redémarrer Uvicorn seulement pour modifications backend
+        elif self.on_reload_api and path.endswith(".py"):
+            # Only restart Uvicorn for .py backend modifications
             try:
                 self.on_reload_api()
             except Exception as e:

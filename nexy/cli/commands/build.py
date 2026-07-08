@@ -73,6 +73,7 @@ def _show_summary(build_result, ssg_entries: list[dict]) -> None:
         build_result.failed,
         "green",
         "red",
+        getattr(build_result, "skipped", []),
     )
     _print_section(
         t("build.client_components", "client components"),
@@ -108,10 +109,14 @@ def _print_section(
     console.print(f"\n{title} [{total}]")
     console.print("[dim]\u2502[/dim]")
 
-    groups: list[tuple[str, list[str], str, str]] = [
+    groups: list[tuple[str, list[str], str, str]] = []
+    if skipped:
+        groups.append((t("build.skipped_label", "Skipped (cached)"), skipped, "dim", "="))
+    groups.extend([
         (t("build.success_label", "Build success"), success, ok_style, "\u2713"),
         (t("build.failed_label", "Build Failed"), failed, fail_style, "\u2717"),
-    ]
+    ])
+    
     for gi, (gname, gfiles, gstyle, mark) in enumerate(groups):
         is_last_group = gi == len(groups) - 1
         gprefix = "\u2514\u2500\u2500" if is_last_group else "\u251c\u2500\u2500"

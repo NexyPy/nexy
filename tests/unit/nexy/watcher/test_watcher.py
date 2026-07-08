@@ -137,14 +137,14 @@ class TestOnModified:
         monkeypatch.chdir(tmp_path)
         routes = tmp_path / "src" / "routes"
         routes.mkdir(parents=True)
-        nexy_file = routes / "index.nexy"
-        nexy_file.write_text(NEXY_SOURCE)
+        py_file = routes / "app.py"
+        py_file.write_text("print('hello')")
 
         calls = []
         handler.on_reload_api = lambda: calls.append(1)
-        handler.on_modified(_make_event(str(nexy_file)))
+        handler.on_modified(_make_event(str(py_file)))
 
-        assert len(calls) == 1, "on_reload_api should be called once after compile"
+        assert len(calls) == 1, "on_reload_api should be called once for .py file"
 
     def test_does_not_call_reload_api_on_skipped(self, handler, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
@@ -179,12 +179,12 @@ class TestOnCreated:
         monkeypatch.chdir(tmp_path)
         routes = tmp_path / "src" / "routes"
         routes.mkdir(parents=True)
-        nexy_file = routes / "page.nexy"
-        nexy_file.write_text(NEXY_SOURCE)
+        py_file = routes / "app.py"
+        py_file.write_text("print('hello')")
 
         calls = []
         handler.on_reload_api = lambda: calls.append(1)
-        handler.on_created(_make_event(str(nexy_file)))
+        handler.on_created(_make_event(str(py_file)))
 
         assert len(calls) == 1
 
@@ -206,7 +206,7 @@ class TestOnDeleted:
     def test_calls_reload_api(self, handler):
         calls = []
         handler.on_reload_api = lambda: calls.append(1)
-        handler.on_deleted(_make_event("src/routes/index.nexy"))
+        handler.on_deleted(_make_event("src/routes/app.py"))
         assert len(calls) == 1
 
     def test_no_error_for_non_existent(self, handler):
@@ -271,8 +271,8 @@ class TestEdgeCases:
         monkeypatch.chdir(tmp_path)
         routes = tmp_path / "src" / "routes"
         routes.mkdir(parents=True)
-        f = routes / "count.nexy"
-        f.write_text(NEXY_SOURCE)
+        f = routes / "count.py"
+        f.write_text("print('hello')")
 
         calls = []
         handler.on_reload_api = lambda: calls.append(1)

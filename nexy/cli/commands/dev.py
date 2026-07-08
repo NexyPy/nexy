@@ -48,7 +48,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     startup_start = time.perf_counter()
 
     try:
-        with console.status("\n[green]nsc[/green] » compile...", spinner="dots"):
+        with console.status("\n[green]nsc[/green] » compile ...", spinner="dots"):
             build_start = time.perf_counter()
             VFS.set_dev_mode(True)
             result = Builder().build()
@@ -58,14 +58,32 @@ def dev(port: int | None = None, host: str | None = None) -> None:
                 f"\n[green]nsc[/green] » [green]{t('dev.compiling', 'compiling')}[/green]"
                 f" in [reset][dim]{build_timer}[/dim]"
             )
+            if result.skipped:
+                console.print(
+                    f"  [dim]skipped {len(result.skipped)} cached file(s)[/dim]"
+                )
             if result.failed:
                 for p in result.failed:
                     console.print(f"  [red]x {p}[/red]")
 
         if not result.failed:
+            fg_start = time.perf_counter()
             FrontendGenerator().generate()
+            fg_elapsed = time.perf_counter() - fg_start
+            console.print(f"  [dim]frontend gen in {fg_elapsed:.2f}s[/dim]")
+            
             if config.useVite:
+                vite_start = time.perf_counter()
                 vite_proc = Server.vite(port=client_port, ssl=ssl_enabled)
+                vite_launch = time.perf_counter() - vite_start
+                console.print(f"  [dim]vite launched in {vite_launch:.2f}s[/dim]")
+                
+                with console.status(f"[dim]  waiting for Vite to be ready on port {client_port}...[/dim]", spinner="dots"):
+                    wait_start = time.perf_counter()
+                    if not Server.wait_for_vite_ready(client_port, ssl=ssl_enabled):
+                        console.print("[yellow]  warning: Vite took too long to start[/yellow]")
+                    wait_elapsed = time.perf_counter() - wait_start
+                    console.print(f"  [dim]vite ready in {wait_elapsed:.2f}s[/dim]")
     except Exception as e:
         console.print(f"\n[red]{t('dev.init_error', 'Error during initialization:')}[/red] {e}")
         Server.stop_process(vite_proc)

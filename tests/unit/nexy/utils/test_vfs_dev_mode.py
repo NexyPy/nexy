@@ -6,13 +6,13 @@ from nexy.utils.fs.vfs import VFS
 
 
 def setup_function() -> None:
-    VFS().clear()
+    VFS().clear(clear_disk=True)
 
 
 def test_vfs_dev_mode_prevents_flush() -> None:
     vfs = VFS()
-    vfs.write("__nexy__/test.txt", "hello")
     vfs.set_dev_mode(True)
+    vfs.write("__nexy__/test.txt", "hello")
     vfs.flush_to_disk()
     target = Path("__nexy__/test.txt")
     assert not target.exists()
