@@ -1,0 +1,60 @@
+#مكون صوتي
+
+يُسهل المكون `Audio` المدمج إضافة مشغلات الصوت إلى تطبيقك.
+
+##استيراد
+
+قم باستيراده مباشرةً من `nexy`:
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## الاستخدام الأساسي 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## الدعائم
+
+| الدعامة | اكتب | الافتراضي | الوصف |
+|------|------|---------|-------------|
+| `src` | `str` | **مطلوب** | المسار إلى الملف الصوتي |
+| `controls` | `bool` | `True` | إظهار عناصر التحكم في الصوت |
+| `autoplay` | `bool` | `False` | التشغيل التلقائي للصوت |
+| `loop` | `bool` | `False` | تكرار الصوت |
+| `muted` | `bool` | `False` | كتم الصوت |
+| `preload` | `str` | `"metadata"` | استراتيجية التحميل المسبق (`"none"`، `"metadata"`، `"auto"`) |
+| `class_name` | `str | None` | `None` | أسماء فئات CSS |
+| `sources` | `list[str] | None` | `None` | قائمة مصادر الصوت البديلة |
+| `**kwargs` | أي | — | سمات HTML الإضافية |
+
+## مصادر متعددة
+
+توفير تنسيقات صوتية متعددة لتحسين التوافق مع المتصفح:
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## التشغيل التلقائي للصوت
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

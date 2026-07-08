@@ -1,4 +1,4 @@
-# 配置：Nexy
+# Config: Nexy
 
 Nexy 通过项目根目录下的 `nexyconfig.py` 进行配置。该文件定义了一个扩展 `NexyConfigModel` 的类：
 
@@ -12,11 +12,11 @@ class NexyConfig(NexyConfigModel):
 
 ## 所有字段
 
-### 路由器
+### Router
 
 |领域 |类型 |默认 |描述 |
 |--------|------|---------|-------------|
-| `useRouter` | `APIRouter \| None` | `None` |模块化路由器根模块。设置后，使用模块化路由。当`None`时，使用FBR。 |
+| `useRouter` | `APIRouter \| None` | `None` |模块化路由器根模块。设置后，使用模块化路由。 When `None`, uses FBR. |
 | `excludeDirs` | `list[str]` | `[]` |要从 FBR 扫描中排除的目录。 |
 
 ### 服务器
@@ -28,13 +28,13 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile` | `str \| None` | `None` | HTTPS 的 SSL 密钥文件路径。 |
 | `useSslCertfile` | `str \| None` | `None` | HTTPS 的 SSL 证书文件路径。 |
 
-### OpenAPI 文档
+### OpenAPI docs
 
 |领域 |类型 |默认 |描述 |
 |--------|------|---------|-------------|
 | `useDocs` | `bool` | `True` |启用/禁用 OpenAPI 文档。 |
 | `useDocsUrl` | `str` | `"/docs"` | Swagger UI 的 URL。 |
-| `useRedocsUrl` | `str \| None` | `"/redocs"` | ReDoc 的 URL。设置为 `None` 以禁用。 |
+| `useRedocsUrl` | `str \| None` | `"/redocs"` | URL for ReDoc.设置为 `None` 以禁用。 |
 | `useTitle` | `str` | `"Nexy"` | OpenAPI 架构的标题。 |
 
 ### 前端
@@ -58,12 +58,12 @@ class NexyConfig(NexyConfigModel):
 | `useSession` | `dict \| None` | `None` |会话中间件配置（Starlette `SessionMiddleware` kwargs）。 |
 | `useAuth` | `dict \| None` | `None` |身份验证中间件配置。 |
 
-### 国际化
+### i18n
 
 |领域 |类型 |默认 |描述 |
 |--------|------|---------|-------------|
 | `useLocales` | `list[str] \| None` | `None` |可用区域设置（例如 `["en", "fr"]`）。如果 `None`，则从 `nexy/i18n/` 自动检测。 |
-| `useDefaultLocale` | `str` | `"en"` |默认区域设置。 |
+| `useDefaultLocale` | `str` | `"en"` | Default locale. |
 | `useLocaleCookieName` | `str` | `"nexy-locale"` |区域设置存储的 Cookie 名称。 |
 | `useLocaleDetection` | `dict[str, bool] \| None` | `None` |区域设置检测设置。 |
 | `useRTL` | `bool` | `False` |启用 RTL 支持。 |

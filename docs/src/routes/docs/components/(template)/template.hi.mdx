@@ -1,0 +1,33 @@
+# टेम्पलेट क्लास
+
+`Template` क्लास नेक्सी में जिंजा2 और मार्कडाउन टेम्पलेट्स को रेंडर करने का काम संभालती है।
+
+## आयात करें
+
+इसे सीधे `nexy` से आयात करें:
+
+```python
+from nexy import Template
+```
+
+## बुनियादी उपयोग
+
+```python
+template = Template()
+html = template.render("page.html", {"title": "Hello World"})
+```
+
+## मार्कडाउन समर्थन
+
+यदि आपकी फ़ाइल `.md` के साथ समाप्त होती है, तो इसे स्वचालित रूप से मार्कडाउन के रूप में संसाधित किया जाएगा:
+
+```python
+template = Template()
+html = template.render("blog-post.md", {})
+```
+
+## तरीके
+
+| विधि | पैरामीटर्स | रिटर्न | विवरण |
+|--------|---|---|---|
+| `render` | `path: str`, `context: dict[str, Any] \| None = None` | `str` | एक टेम्पलेट प्रस्तुत करता है |

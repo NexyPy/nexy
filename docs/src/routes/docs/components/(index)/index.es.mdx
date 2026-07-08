@@ -65,7 +65,7 @@ count = 0
 
 **2. Plantilla**: HTML con expresiones Jinja2. Genera variables, recorre datos y representa componentes secundarios.
 
-**3. Estilos**: etiquetas `<style>` (en cualquier lugar de la plantilla). Los estilos son globales, no de ámbito. Utilice BEM o clases de utilidad para la encapsulación.
+**3. Estilos**: etiquetas `<style>` (en cualquier lugar de la plantilla). Los estilos son globales, no de alcance. Utilice BEM o clases de utilidad para la encapsulación.
 
 ## Reglas de componentes
 

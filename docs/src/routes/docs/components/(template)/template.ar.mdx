@@ -1,0 +1,33 @@
+# فئة القالب
+
+تتعامل الفئة `Template` مع عرض قوالب Jinja2 وMarkdown في Nexy.
+
+##استيراد
+
+قم باستيراده مباشرةً من `nexy`:
+
+```python
+from nexy import Template
+```
+
+## الاستخدام الأساسي
+
+```python
+template = Template()
+html = template.render("page.html", {"title": "Hello World"})
+```
+
+## دعم تخفيض السعر
+
+إذا انتهى ملفك بـ `.md`، فستتم معالجته تلقائيًا كـ Markdown:
+
+```python
+template = Template()
+html = template.render("blog-post.md", {})
+```
+
+## طرق
+
+| الطريقة | المعلمات | عوائد | الوصف |
+|--------|-----------|---------|-------------|
+| `render` | `path: str`، `context: dict[str, Any] \| None = None` | `str` | يعرض قالبًا |

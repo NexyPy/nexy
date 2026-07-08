@@ -1,0 +1,41 @@
+# インポートヘルパー
+
+`Import` 関数は、Nexy にさまざまな種類のアセットをインポートするのに役立ちます。
+
+## インポート
+
+`nexy` から直接インポートします。
+
+```nexy
+---
+from nexy import Import
+---
+```
+
+## サポートされるアセット
+
+`Import` は以下を処理できます:
+- クライアントコンポーネント
+- JSONファイル
+- CSSファイル
+- 画像
+
+## 使用法
+
+JSON をインポートします。
+```python
+from nexy import Import
+data = Import("data.json", "json", "default")
+```
+
+CSS をインポートする:
+```python
+from nexy import Import
+styles = Import("styles.css", "css", "default")
+```
+
+画像のインポート:
+```python
+from nexy import Import
+img_src = Import("image.jpg", "image", "default")
+```

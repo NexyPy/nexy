@@ -62,7 +62,7 @@ class AuthGuard:
 
 ## تطبيق الحراس
 
-### مستوى وحدة التحكم — يحمي جميع المسارات
+### مستوى وحدة التحكم — يحمي كافة المسارات
 
 ```python
 from nexy.decorators import Controller, UseGuard
@@ -100,13 +100,13 @@ class AdminController:
     ...
 ```
 
-يقوم الحراس بتنفيذ الأمر بالترتيب المذكور في القائمة. إذا تم رفع `AuthGuard`، فلن يتم تشغيل `RateLimitGuard` أبدًا.
+Guards execute in the order they're listed. If `AuthGuard` raises, `RateLimitGuard` never runs.
 
 **مسكتك**: يتم تشغيل الحراس على مستوى الطريقة بعد الحراس على مستوى وحدة التحكم - وفقط في حالة مرور الحراس على مستوى وحدة التحكم.
 
-## الحراس مع المعلمات
+## Guards with Parameters
 
-إنشاء مصنع حراسة للحراس ذوي المعلمات:
+Create a guard factory for parameterized guards:
 
 ```python
 class RoleGuard:

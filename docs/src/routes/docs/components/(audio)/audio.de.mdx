@@ -1,0 +1,60 @@
+# Audiokomponente
+
+Mit der integrierten `Audio`-Komponente können Sie ganz einfach Audioplayer zu Ihrer App hinzufügen.
+
+## Importieren
+
+Importieren Sie es direkt aus `nexy`:
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## Grundlegende Verwendung 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## Requisiten
+
+| Stütze | Geben Sie | ein Standard | Beschreibung |
+|------|------|---------|-------------|
+| `src` | `str` | **erforderlich** | Pfad zur Audiodatei |
+| `controls` | `bool` | `True` | Audiosteuerung anzeigen |
+| `autoplay` | `bool` | `False` | Audio automatisch abspielen |
+| `loop` | `bool` | `False` | Schleifen Sie das Audio |
+| `muted` | `bool` | `False` | Ton stumm schalten |
+| `preload` | `str` | `"metadata"` | Vorladestrategie (`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | CSS-Klassennamen |
+| `sources` | `list[str] | None` | `None` | Liste alternativer Audioquellen |
+| `**kwargs` | irgendein | — | Zusätzliche HTML-Attribute |
+
+## Mehrere Quellen
+
+Stellen Sie mehrere Audioformate für eine bessere Browserkompatibilität bereit:
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## Audio automatisch abspielen
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

@@ -1,4 +1,4 @@
-# Subaplicaciones y montajes
+# Subaplicaciones y soportes
 
 Monte aplicaciones ASGI o WSGI independientes en una subruta.
 

@@ -13,7 +13,7 @@ Next.js는 파일 기반 라우팅 및 서버 구성 요소를 대중화했습�
 | `route.ts`(API) | `get()`, `post()` 등이 포함된 `.py` 파일 |
 | `next.config.js` | `nexyconfig.py` |
 | 서버 작업 | `"@Action` 데코레이터 |
-| 반응 서버 구성요소 | `.nexy` 구성 요소(Python + Jinja2) |
+| 반응 서버 구성 요소 | `.nexy` 구성 요소(Python + Jinja2) |
 | `getStaticProps` | `.nexy`의 머리말 논리 |
 
 ## 예

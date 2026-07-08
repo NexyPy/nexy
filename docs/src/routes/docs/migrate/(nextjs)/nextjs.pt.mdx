@@ -12,7 +12,7 @@ Next.js popularizou roteamento baseado em arquivo e componentes de servidor. Nex
 | `loading.tsx` | `dependencies.py` |
 | `route.ts` (API) | Arquivo `.py` com `get()`, `post()`, etc. |
 | `next.config.js` | `nexyconfig.py` |
-| Ações do servidor | `"@Action` decorador |
+| Ações do Servidor | `"@Action` decorador |
 | Componentes do servidor React | Componentes `.nexy` (Python + Jinja2) |
 | `getStaticProps` | Lógica do frontmatter em `.nexy` |
 

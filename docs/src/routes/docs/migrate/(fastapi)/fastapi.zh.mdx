@@ -51,7 +51,7 @@ Nexy 自动发现路线 — 无需连接 `include_router`，无需连接 `APIRou
 |---------|------|
 | `"@app.get("/")` |文件位于 `src/routes/` (FBR) 或 `"@Controller`（模块化）|
 | `TemplateResponse` |带有 frontmatter 的 `.nexy` 文件 |
-|手册 `include_router` |自动发现 |
+|手册 `include_router` |自动发现|
 |签名中的 `Depends()` |相同，但还有 `"@UseGuard`/`"@Middleware` |
 |没有内置 CLI | `nx dev`、`nx build`、`nx start` |
 

@@ -56,5 +56,5 @@ class UsersController:
 - **Sin configuraciones monolíticas**: configura solo lo que usas
 - **Async por defecto** — FastAPI/Starlette bajo el capó
 - **Documentos OpenAPI**: automático, no se necesita `drf-spectacular`
-- **UI basada en componentes**: mezcla Python + Jinja2 en un archivo
+- **UI basada en componentes**: mezcla Python + Jinja2 en un solo archivo
 - **Elección del marco**: React, Vue, Svelte, Solid o Preact para la interfaz

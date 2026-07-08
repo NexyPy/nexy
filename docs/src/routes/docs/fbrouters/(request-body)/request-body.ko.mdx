@@ -64,4 +64,4 @@ Pydantic 모델 매개변수에 유형 주석을 달면 본문이 자동으로 �
 
 ---
 
-자세한 내용은 [FastAPI Request Body](/docs/fastapi/request-body)도 참조하세요.
+자세한 내용은 [FastAPI Request Body](/docs/fastapi/request-body)를 참조하세요.

@@ -1,0 +1,56 @@
+# مكون الارتباط
+
+يوفر المكون `Link` المدمج التنقل من جانب العميل مع الجلب المسبق للحصول على تجربة مستخدم أفضل.
+
+##استيراد
+
+قم باستيراده مباشرةً من `nexy`:
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## الاستخدام الأساسي
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## الدعائم
+
+| الدعامة | اكتب | الافتراضي | الوصف |
+|------|------|---------|-------------|
+| `href` | `str` | **مطلوب** | عنوان URL للانتقال إلى |
+| `children` | `str` | `""` | رابط النص أو المحتوى |
+| `class_name` | `str | None` | `None` | أسماء فئات CSS |
+| `prefetch` | `bool` | `True` | صفحة الجلب المسبق عند التمرير/اللمس |
+| `**kwargs` | أي | — | سمات HTML الإضافية |
+
+## الجلب المسبق
+
+افتراضيًا، يقوم `Link` بإحضار الصفحات مسبقًا عندما يمرر المستخدم مؤشر الماوس عليها أو يلمسها للتنقل بشكل أسرع:
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+لتعطيل الجلب المسبق لارتباط معين:
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## روابط التصميم
+
+استخدم `class_name` لتطبيق الأنماط المخصصة:
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```

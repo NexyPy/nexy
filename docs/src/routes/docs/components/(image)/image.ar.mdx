@@ -1,0 +1,59 @@
+# مكون الصورة
+
+يسهّل المكون `Image` المدمج إضافة الصور المحسنة مع التحميل البطيء افتراضيًا.
+
+##استيراد
+
+قم باستيراده مباشرةً من `nexy`:
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+## الاستخدام
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## الدعائم
+
+| الدعامة | اكتب | الافتراضي | الوصف |
+|------|------|---------|-------------|
+| `src` | `str` | **مطلوب** | المسار إلى ملف الصورة |
+| `alt` | `str` | `""` | نص بديل لسهولة الوصول |
+| `width` | `int | None` | `None` | عرض الصورة بالبكسل |
+| `height` | `int | None` | `None` | ارتفاع الصورة بالبكسل |
+| `loading` | `str` | `"lazy"` | استراتيجية التحميل (`"lazy"` أو `"eager"`) |
+| `class_name` | `str | None` | `None` | أسماء فئات CSS |
+| `**kwargs` | أي | — | سمات HTML الإضافية |
+
+## تحميل كسول
+
+افتراضيًا، يتم تحميل الصور ببطء للحصول على أداء أفضل:
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+لتحميل الصور الهامة حريصة:
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```

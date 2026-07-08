@@ -1,0 +1,59 @@
+# 이미지 구성요소
+
+내장된 `Image` 구성 요소를 사용하면 기본적으로 지연 로딩을 사용하여 최적화된 이미지를 쉽게 추가할 수 있습니다.
+
+## 가져오기
+
+`nexy`에서 직접 가져옵니다.
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+## 용법
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## 소품
+
+| 소품 | 유형 | 기본값 | 설명 |
+|------|------|---------|-------------|
+| `src` | `str` | **필수** | 이미지 파일 경로 |
+| `alt` | `str` | `""` | 접근성을 위한 대체 텍스트 |
+| `width` | `int | None` | `None` | 이미지 너비(픽셀) |
+| `height` | `int | None` | `None` | 이미지 높이(픽셀) |
+| `loading` | `str` | `"lazy"` | 로딩 전략(`"lazy"` 또는 `"eager"`) |
+| `class_name` | `str | None` | `None` | CSS 클래스 이름 |
+| `**kwargs` | 어떤 | — | 추가 HTML 속성 |
+
+## 지연 로딩
+
+기본적으로 이미지는 더 나은 성능을 위해 느리게 로드됩니다.
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+중요한 이미지를 즉시 로드하려면 다음을 수행하세요.
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```

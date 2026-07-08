@@ -55,4 +55,4 @@ class UsersController:
 | `Depends()` في التوقيع | نفسه، ولكن أيضًا `"@UseGuard`/`"@Middleware` |
 | لا يوجد سطر أوامر مدمج | `nx dev`، `nx build`، `nx start` |
 
-يتم نقل مهارات FastAPI الخاصة بك مباشرة. يقوم Nexy بإزالة القالب المعياري.
+يتم نقل مهارات FastAPI الخاصة بك مباشرةً. يقوم Nexy بإزالة القالب المعياري.

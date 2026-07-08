@@ -1,0 +1,56 @@
+# Composant de lien
+
+Le composant `Link` intégré fournit une navigation côté client avec prélecture pour une meilleure expérience utilisateur.
+
+## Importer
+
+Importez-le directement depuis `nexy` :
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## Utilisation de base
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## Accessoires
+
+| Accessoire | Tapez | Par défaut | Descriptif |
+|------|------|---------|-------------|
+| `href` | `str` | **obligatoire** | URL vers laquelle accéder |
+| `children` | `str` | `""` | Lier du texte ou du contenu |
+| `class_name` | `str | None` | `None` | Noms de classes CSS |
+| `prefetch` | `bool` | `True` | Pré-récupérer la page au survol/au toucher |
+| `**kwargs` | n'importe quel | — | Attributs HTML supplémentaires |
+
+## Prélecture
+
+Par défaut, `Link` pré-extrait les pages lorsque l'utilisateur les survole ou les touche pour une navigation plus rapide :
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+Pour désactiver la prélecture pour un lien spécifique :
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## Liens de style
+
+Utilisez `class_name` pour appliquer des styles personnalisés :
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```

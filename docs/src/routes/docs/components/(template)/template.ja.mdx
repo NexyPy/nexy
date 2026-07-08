@@ -1,0 +1,33 @@
+# テンプレートクラス
+
+`Template` クラスは、Nexy での Jinja2 および Markdown テンプレートのレンダリングを処理します。
+
+## インポート
+
+`nexy` から直接インポートします。
+
+```python
+from nexy import Template
+```
+
+## 基本的な使い方
+
+```python
+template = Template()
+html = template.render("page.html", {"title": "Hello World"})
+```
+
+## マークダウンのサポート
+
+ファイルが `.md` で終わる場合、自動的にマークダウンとして処理されます。
+
+```python
+template = Template()
+html = template.render("blog-post.md", {})
+```
+
+## メソッド
+
+|方法 |パラメータ |返品 |説明 |
+|----------|-----------|-----------|-------------|
+| `render` | `path: str`、`context: dict[str, Any] \| None = None` | `str` |テンプレートをレンダリングします |

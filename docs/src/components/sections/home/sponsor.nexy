@@ -1,27 +1,44 @@
 ---
 from "@components/link.nexy" import Link
 from "@components/background.nexy" import Background
+from "@/locales/components/home" import HomeI18n
+h = HomeI18n()
 ---
 <section class="overflow-hidden">
     <aside class="relative w-full w-container px-6 md:px-16 py-24 space-y-4 ">
         <Background className="-z-10 rotate-y-180 absolute -bottom-20 -right-50 opacity-20 scale-110" />
         <Background className="-z-10 rotate-x-180 absolute -top-20 -left-50 opacity-20 scale-110" />
 
-        <h2 class="text-3xl font-medium">Ours Sponsor</h2>
+        <h2 class="text-3xl font-medium">{{h.sponsor_title}}</h2>
         <p class="text-base font-light max-w-xl leading-6">
-            Nous proposons une gamme complète de solutions numériques pour répondre à vos besoins spécifiques.
+            {{h.sponsor_desc}}
         </p>
-        <div  class="grid grid-cols-4 grid-rows-3 h-132 gap-2 mt-16 *:bg-amber-50/4 *:border *:border-border/40 *:backdrop-blur *:rounded-2xl *:corner ">
-            <div class=""></div>
-            <div class=""></div>
-            <div class=""></div>
-            <div class=""></div>
-            <div class=""></div>
+        <div class="grid grid-cols-4 grid-rows-3 h-132 gap-2 mt-16 *:bg-amber-50/4 *:border *:border-border/40 *:backdrop-blur *:rounded-2xl *:corner">
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <span class="text-sm font-medium opacity-70">Vercel</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <span class="text-sm font-medium opacity-70">JetBrains</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+                <span class="text-sm font-medium opacity-70">DigitalOcean</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4"/><path d="M12 2a10 10 0 1 0 10 10h-10V2z"/></svg>
+                <span class="text-sm font-medium opacity-70">GitHub</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <span class="text-sm font-medium opacity-70">Sentry</span>
+            </div>
             <div class="col-span-2 bg-transparent! border-dashed items-center justify-center flex">
                 <Link href="/community"
                 className="bg-white text-black font-medium w-fit flex items-center gap-2 px-6 py-3 rounded-full corner"
                 >
-                    <span>See more</span>
+                    <span>{{h.see_more}}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-4.5 " viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path
@@ -37,13 +54,27 @@ from "@components/background.nexy" import Background
                         <path d="M3 14v1" />
                     </svg>
                 </Link>
-                
             </div>
-            <div class=""></div>
-            <div class=""></div>
-            <div class=""></div>
-            <div class=""></div>
-            <div class=""></div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="text-sm font-medium opacity-70">Cloudflare</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <span class="text-sm font-medium opacity-70">CodeRabbit</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span class="text-sm font-medium opacity-70">Stellar</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span class="text-sm font-medium opacity-70">Railway</span>
+            </div>
+            <div class="flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                <span class="text-sm font-medium opacity-70">Hetzner</span>
+            </div>
         </div>
     </aside>
 </section>

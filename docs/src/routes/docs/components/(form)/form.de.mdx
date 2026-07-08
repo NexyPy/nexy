@@ -1,0 +1,40 @@
+# Formularkomponente
+
+Die integrierte Formularkomponente vereinfacht die Arbeit mit Formularen und Serveraktionen.
+
+## Importieren
+
+Importieren Sie es direkt aus `nexy`:
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## Grundlegende Verwendung
+
+Die Formularkomponente wird erweitert, um sie in Serveraktionen zu integrieren und Dienstprogramme zur Formularverarbeitung bereitzustellen.
+
+Derzeit können Sie in Ihren Komponenten Standard-HTML-Formulare verwenden:
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Serveraktionen
+
+Die Form-Komponente lässt sich für die serverseitige Formularverarbeitung in Nexys `@action`-Dekorator integrieren.

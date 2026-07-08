@@ -1,6 +1,6 @@
 # Guardas e Autorização (Modular)
 
-Proteja controladores e rotas usando `"@UseGuard` com chamadas de guarda.
+Proteja controladores e rotas usando `"@UseGuard` com chamadas de proteção.
 
 ## Contrato de guarda
 

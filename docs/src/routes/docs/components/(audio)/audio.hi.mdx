@@ -1,0 +1,60 @@
+# ऑडियो घटक
+
+अंतर्निहित `Audio` घटक आपके ऐप में ऑडियो प्लेयर जोड़ना आसान बनाता है।
+
+## आयात करें
+
+इसे सीधे `nexy` से आयात करें:
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## बुनियादी उपयोग 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## सहारा
+
+| प्रोप | प्रकार | डिफ़ॉल्ट | विवरण |
+|------|------|------|---|
+| `src` | `str` | **आवश्यक** | ऑडियो फ़ाइल का पथ |
+| `controls` | `bool` | `True` | ऑडियो नियंत्रण दिखाएं |
+| `autoplay` | `bool` | `False` | ऑडियो ऑटोप्ले करें |
+| `loop` | `bool` | `False` | ऑडियो को लूप करें |
+| `muted` | `bool` | `False` | ऑडियो म्यूट करें |
+| `preload` | `str` | `"metadata"` | प्रीलोड रणनीति (`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | सीएसएस वर्ग के नाम |
+| `sources` | `list[str] | None` | `None` | वैकल्पिक ऑडियो स्रोतों की सूची |
+| `**kwargs` | कोई भी | — | अतिरिक्त HTML विशेषताएँ |
+
+## एकाधिक स्रोत
+
+बेहतर ब्राउज़र संगतता के लिए एकाधिक ऑडियो प्रारूप प्रदान करें:
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## ऑटोप्ले ऑडियो
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

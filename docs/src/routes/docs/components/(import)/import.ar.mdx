@@ -1,0 +1,41 @@
+# مساعد الاستيراد
+
+تساعد الدالة `Import` في استيراد أنواع مختلفة من الأصول في Nexy.
+
+##استيراد
+
+قم باستيراده مباشرةً من `nexy`:
+
+```nexy
+---
+from nexy import Import
+---
+```
+
+## الأصول المدعومة
+
+يستطيع `Import` التعامل مع:
+- مكونات العميل
+- ملفات JSON
+- ملفات CSS
+- الصور
+
+## الاستخدام
+
+استيراد جسون:
+```python
+from nexy import Import
+data = Import("data.json", "json", "default")
+```
+
+استيراد CSS:
+```python
+from nexy import Import
+styles = Import("styles.css", "css", "default")
+```
+
+استيراد الصورة:
+```python
+from nexy import Import
+img_src = Import("image.jpg", "image", "default")
+```

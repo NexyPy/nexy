@@ -1,0 +1,40 @@
+# フォームコンポーネント
+
+組み込みのフォーム コンポーネントにより、フォームとサーバー アクションの操作が簡素化されます。
+
+## インポート
+
+`nexy` から直接インポートします。
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## 基本的な使い方
+
+Form コンポーネントは、サーバー アクションと統合され、フォーム処理ユーティリティを提供するように強化されます。
+
+現時点では、コンポーネントで標準の HTML フォームを使用できます。
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## サーバーアクション
+
+Form コンポーネントは、サーバー側のフォーム処理のために Nexy の `@action` デコレータと統合されます。

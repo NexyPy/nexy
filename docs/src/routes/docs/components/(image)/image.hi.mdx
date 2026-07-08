@@ -1,0 +1,59 @@
+# छवि घटक
+
+अंतर्निहित `Image` घटक डिफ़ॉल्ट रूप से आलसी लोडिंग के साथ अनुकूलित छवियों को जोड़ना आसान बनाता है।
+
+## आयात करें
+
+इसे सीधे `nexy` से आयात करें:
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+## उपयोग
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## सहारा
+
+| प्रोप | प्रकार | डिफ़ॉल्ट | विवरण |
+|------|------|------|---|
+| `src` | `str` | **आवश्यक** | छवि फ़ाइल का पथ |
+| `alt` | `str` | `""` | अभिगम्यता के लिए वैकल्पिक पाठ |
+| `width` | `int | None` | `None` | छवि की चौड़ाई पिक्सेल में |
+| `height` | `int | None` | `None` | छवि ऊंचाई पिक्सेल में |
+| `loading` | `str` | `"lazy"` | लोडिंग रणनीति (`"lazy"` या `"eager"`) |
+| `class_name` | `str | None` | `None` | सीएसएस वर्ग के नाम |
+| `**kwargs` | कोई भी | — | अतिरिक्त HTML विशेषताएँ |
+
+## आलसी लोडिंग
+
+डिफ़ॉल्ट रूप से, बेहतर प्रदर्शन के लिए छवियों को आलस्य से लोड किया जाता है:
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+महत्वपूर्ण छवियों को उत्सुकता से लोड करने के लिए:
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```

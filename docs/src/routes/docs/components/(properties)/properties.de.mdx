@@ -37,7 +37,7 @@ active:prop[bool] = false
 
 Wenn eine erforderliche Requisite bei Verwendung der Komponente nicht übergeben wird, löst Python beim Rendern einen `TypeError` aus. Die Fehlermeldung enthält den Komponentennamen und das fehlende Argument.
 
-**Wann ist eine Requisite erforderlich?**: Wenn die Komponente ohne sie bedeutungslos ist. A `BlogCard` without a `title` is broken — make it required. Ein `Button` ohne `variant` kann standardmäßig auf `"primary"` gesetzt werden.
+**Wann ist eine Requisite erforderlich?**: Wenn die Komponente ohne sie bedeutungslos ist. Ein `BlogCard` ohne einen `title` ist kaputt – machen Sie es erforderlich. Ein `Button` ohne `variant` kann standardmäßig auf `"primary"` gesetzt werden.
 
 ## Unterstützte Typen
 

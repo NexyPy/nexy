@@ -42,7 +42,7 @@ class NexyConfig(NexyConfigModel):
 | 필드 | 유형 | 기본값 | 설명 |
 |---------|------|---------|-------------|
 | `useVite` | `bool` | `False` | 클라이언트 구성 요소에 대해 Vite 번들링을 활성화합니다. |
-| `useViteDevUrl` | `str \| None` | `None` | Custom Vite dev server URL (auto-detected if `None`). |
+| `useViteDevUrl` | `str \| None` | `None` | 사용자 정의 Vite 개발 서버 URL(`None`인 경우 자동 감지). |
 | `useFF` | `list[FrontendFramework]` | `[]` | 활성화할 프런트엔드 프레임워크(React, Vue, Svelte, Solid, Preact) 프로젝트에서 자동 감지됩니다. |
 | `useMarkdownExtensions` | `list[str]` | `[]` | `.mdx` 파일용 Python-Markdown 확장입니다. |
 

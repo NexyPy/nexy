@@ -1,0 +1,53 @@
+# Skripte in Komponenten
+
+Sie können clientseitiges JavaScript mithilfe von Standard-<script>-Tags direkt in Ihre .nexy-Dateien einbinden.
+
+## Grundlegende Verwendung
+
+```nexy
+---
+---
+<button id="myButton">Click Me!</button>
+<script>
+document.getElementById('myButton').addEventListener('click', function() {
+    alert('Hello from Nexy!');
+});
+</script>
+```
+
+## Framework-spezifische Skripte
+
+Verwenden Sie für Framework-Komponenten (React, Vue, Svelte, Solid, Preact) die Syntax `<script framework="...">`:
+
+```nexy
+---
+---
+<script framework="react">
+import { useState } from 'react';
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>+</button>
+        </div>
+    );
+}
+</script>
+```
+
+## Hot Module Replacement (HMR)
+
+Nexy kümmert sich während der Entwicklung automatisch um Skriptaktualisierungen. Wenn Sie ein Skript ändern, wird die Komponente neu geladen, ohne dass die gesamte Seite aktualisiert wird.
+
+## Externe Skripte
+
+Sie können auch auf externe Skripte verweisen:
+
+```nexy
+---
+---
+<script src="https://cdn.example.com/script.js"></script>
+```

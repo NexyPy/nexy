@@ -1,0 +1,60 @@
+# Composant audio
+
+Le composant `Audio` intégré facilite l'ajout de lecteurs audio à votre application.
+
+## Importer
+
+Importez-le directement depuis `nexy` :
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## Utilisation de base 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## Accessoires
+
+| Accessoire | Tapez | Par défaut | Descriptif |
+|------|------|---------|-------------|
+| `src` | `str` | **obligatoire** | Chemin d'accès au fichier audio |
+| `controls` | `bool` | `True` | Afficher les commandes audio |
+| `autoplay` | `bool` | `False` | Lecture automatique de l'audio |
+| `loop` | `bool` | `False` | Boucler l'audio |
+| `muted` | `bool` | `False` | Couper le son |
+| `preload` | `str` | `"metadata"` | Stratégie de préchargement (`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | Noms de classes CSS |
+| `sources` | `list[str] | None` | `None` | Liste des sources audio alternatives |
+| `**kwargs` | n'importe quel | — | Attributs HTML supplémentaires |
+
+## Sources multiples
+
+Fournissez plusieurs formats audio pour une meilleure compatibilité avec les navigateurs :
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## Lecture automatique de l'audio
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

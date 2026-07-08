@@ -1,0 +1,60 @@
+# 音频组件
+
+内置的 `Audio` 组件可以轻松地将音频播放器添加到您的应用程序中。
+
+## 导入
+
+直接从`nexy`导入：
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## 基本用法 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## 道具
+
+|道具|类型 |默认 |描述 |
+|------|------|---------|------------|
+| `src` | `str` | **必填** |音频文件的路径 |
+| `controls` | `bool` | `True` |显示音频控件 |
+| `autoplay` | `bool` | `False` |自动播放音频 |
+| `loop` | `bool` | `False` |循环播放音频 |
+| `muted` | `bool` | `False` |静音 |
+| `preload` | `str` | `"metadata"` |预加载策略（`"none"`、`"metadata"`、`"auto"`）|
+| `class_name` | `str | None` | `None` | CSS 类名 |
+| `sources` | `list[str] | None` | `None` |替代音频源列表 |
+| `**kwargs` |任何| — |附加 HTML 属性 |
+
+## 多个来源
+
+提供多种音频格式以实现更好的浏览器兼容性：
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## 自动播放音频
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

@@ -72,7 +72,7 @@ class NexyConfig(NexyConfigModel):
 
 | Feld | Geben Sie | ein Standard | Beschreibung |
 |-------|------|---------|-------------|
-| `useTocDepth` | `str` | `"2-6"` | Heading levels to include in TOC (e.g. `"2-4"` for h2-h4). |
+| `useTocDepth` | `str` | `"2-6"` | Überschriftenebenen, die in das Inhaltsverzeichnis einbezogen werden sollen (z. B. `"2-4"` für h2-h4). |
 | `useTocTitle` | `str` | `"Table of Contents"` | Titel des Inhaltsverzeichnisabschnitts. |
 | `useTocAuto` | `bool` | `True` | Inhaltsverzeichnis für `.mdx` Seiten automatisch generieren. |
 

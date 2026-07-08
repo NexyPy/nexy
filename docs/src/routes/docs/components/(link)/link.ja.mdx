@@ -1,0 +1,56 @@
+# リンクコンポーネント
+
+組み込みの `Link` コンポーネントは、ユーザー エクスペリエンスを向上させるためのプリフェッチを備えたクライアント側のナビゲーションを提供します。
+
+## インポート
+
+`nexy` から直接インポートします。
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## 基本的な使い方
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## 小道具
+
+|小道具 |タイプ |デフォルト |説明 |
+|------|------|-----------|---------------|
+| `href` | `str` | **必須** |移動先の URL |
+| `children` | `str` | `""` |リンクテキストまたはコンテンツ |
+| `class_name` | `str | None` | `None` | CSS クラス名 |
+| `prefetch` | `bool` | `True` |ホバー/タッチでページをプリフェッチ |
+| `**kwargs` |任意 | — |追加の HTML 属性 |
+
+## プリフェッチ
+
+デフォルトでは、`Link` は、ユーザーがページにホバーするかタッチすると、ナビゲーションを高速化するためにページをプリフェッチします。
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+特定のリンクのプリフェッチを無効にするには:
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## スタイリングリンク
+
+`class_name` を使用してカスタム スタイルを適用します。
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```

@@ -1,0 +1,56 @@
+# Link-Komponente
+
+Die integrierte `Link`-Komponente bietet clientseitige Navigation mit Prefetching für ein besseres Benutzererlebnis.
+
+## Importieren
+
+Importieren Sie es direkt aus `nexy`:
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## Grundlegende Verwendung
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## Requisiten
+
+| Stütze | Geben Sie | ein Standard | Beschreibung |
+|------|------|---------|-------------|
+| `href` | `str` | **erforderlich** | URL, zu der | navigiert werden soll
+| `children` | `str` | `""` | Text oder Inhalt verlinken |
+| `class_name` | `str | None` | `None` | CSS-Klassennamen |
+| `prefetch` | `bool` | `True` | Seite bei Hover/Touch | vorab abrufen
+| `**kwargs` | irgendein | — | Zusätzliche HTML-Attribute |
+
+## Vorabholen
+
+Standardmäßig ruft `Link` Seiten vorab ab, wenn der Benutzer mit der Maus darüber fährt oder sie berührt, um die Navigation zu beschleunigen:
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+So deaktivieren Sie den Vorabruf für einen bestimmten Link:
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## Styling-Links
+
+Verwenden Sie `class_name`, um benutzerdefinierte Stile anzuwenden:
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```
