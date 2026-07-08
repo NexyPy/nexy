@@ -19,6 +19,7 @@ COLORS = {
 # Uvicorn system messages to hide for a cleaner console
 IGNORED_MESSAGES = [
     "Started server process",
+    "Started parent process",
     "Waiting for application startup",
     "Application startup complete",
     "Uvicorn running on",

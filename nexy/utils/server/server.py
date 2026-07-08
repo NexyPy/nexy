@@ -79,6 +79,7 @@ class Server:
     def resolve_ports(
         host: str | None = None,
         port: int | None = None,
+        with_client: bool = True,
     ) -> tuple[int, int]:
         """
         Calculates server and client ports in cascade.
@@ -93,7 +94,10 @@ class Server:
 
         # 2. Find a port for the client (must be different from the server)
         # Search starts right after the server port
-        client_port = find_available_port(server_port + 1, run_host)
+        if with_client:
+            client_port = find_available_port(server_port + 1, run_host)
+        else:
+            client_port = 0
 
         return server_port, client_port
 
