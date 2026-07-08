@@ -4,12 +4,10 @@ from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.i18n import t
 from nexy.utils.common.console import console
-from nexy.utils.dev.pycache import pycache
 from nexy.utils.server.server import Server
 
 
 def start(port: int | None = None, host: str | None = None) -> None:
-    # pycache()
     startup_start = time.perf_counter()
     version = __version__
 
@@ -43,26 +41,23 @@ def start(port: int | None = None, host: str | None = None) -> None:
             )
 
         console.print(
-            f"  [dim]\u00bb\u00bb[/dim] {t('start.ready', 'ready in')} [green]{startup_timer}[/green]"
+            f"  [dim]\u00bb\u00bb[/dim] {t('start.ready', 'ready in')}"
+            f" [green]{startup_timer}[/green]"
         )
         console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.stop', 'Press Ctrl+C to stop')}\n")
 
         Server.check_nexy_prod(delete=False)
 
-        proc = Server.uvicorn(
+        Server.uvicorn(
             host=run_host,
             port=run_port,
             ssl_keyfile=ssl_keyfile,
             ssl_certfile=ssl_certfile,
-            as_process=True,
+            as_process=False,
         )
-        if proc:
-            proc.wait()
 
     except (KeyboardInterrupt, SystemExit):
         pass
     finally:
-        if 'proc' in locals() and proc:
-            Server.stop_process(proc)
         Server.check_nexy_prod(delete=True)
         console.print(f"[red]nexy \u00bb {t('start.exited', 'exited')} [reset]")

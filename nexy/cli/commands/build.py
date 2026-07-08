@@ -116,7 +116,7 @@ def _print_section(
         (t("build.success_label", "Build success"), success, ok_style, "\u2713"),
         (t("build.failed_label", "Build Failed"), failed, fail_style, "\u2717"),
     ])
-    
+
     for gi, (gname, gfiles, gstyle, mark) in enumerate(groups):
         is_last_group = gi == len(groups) - 1
         gprefix = "\u2514\u2500\u2500" if is_last_group else "\u251c\u2500\u2500"

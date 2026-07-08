@@ -1,4 +1,3 @@
-from typing import Optional, List
 
 
 def Audio(
@@ -8,8 +7,8 @@ def Audio(
     loop: bool = False,
     muted: bool = False,
     preload: str = "metadata",
-    class_name: Optional[str] = None,
-    sources: Optional[List[str]] = None,
+    class_name: str | None = None,
+    sources: list[str] | None = None,
     **kwargs,
 ) -> str:
     # Build attributes
@@ -24,10 +23,10 @@ def Audio(
         attrs["loop"] = ""
     if muted:
         attrs["muted"] = ""
-    
+
     attrs.update(kwargs)
     attr_str = " ".join([f'{k}="{v}"' if v else k for k, v in attrs.items()])
-    
+
     # Build sources
     source_tags = ""
     if sources:
@@ -35,5 +34,5 @@ def Audio(
             source_tags += f'<source src="{s}" type="audio/{s.split(".")[-1]}" />'
     else:
         source_tags = f'<source src="{src}" type="audio/{src.split(".")[-1]}" />'
-    
+
     return f"<audio {attr_str}>{source_tags}</audio>"

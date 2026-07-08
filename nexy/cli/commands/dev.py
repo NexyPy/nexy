@@ -1,6 +1,3 @@
-import contextlib
-import os
-import signal
 import subprocess
 import sys
 import time
@@ -64,10 +61,10 @@ def dev(port: int | None = None, host: str | None = None) -> None:
 
         if not result.failed:
             FrontendGenerator().generate()
-            
+
             if config.useVite:
                 vite_proc = Server.vite(port=client_port, ssl=ssl_enabled)
-                with console.status(f"[dim]  starting dev server...[/dim]", spinner="dots"):
+                with console.status("[dim]  starting dev server...[/dim]", spinner="dots"):
                     if not Server.wait_for_vite_ready(client_port, ssl=ssl_enabled):
                         console.print("[yellow]  warning: Vite took too long to start[/yellow]")
     except Exception as e:
