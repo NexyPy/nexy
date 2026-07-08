@@ -1,0 +1,66 @@
+# Componente de vídeo
+
+El componente `Video` integrado facilita la inserción de archivos de vídeo con controles integrados.
+
+## Importar
+
+Importarlo directamente desde `nexy`:
+
+```nexy
+---
+from nexy import Video
+---
+```
+
+## Uso básico
+
+```nexy
+---
+from nexy import Video
+---
+<Video src="/demo.mp4" />
+```
+
+## Accesorios
+
+| Apoyo | Tipo | Predeterminado | Descripción |
+|------|------|---------|-------------|
+| `src` | `str` | **obligatorio** | Ruta al archivo de vídeo |
+| `width` | `int | None` | `None` | Ancho del vídeo en píxeles |
+| `height` | `int | None` | `None` | Altura del vídeo en píxeles |
+| `controls` | `bool` | `True` | Mostrar controles de vídeo |
+| `autoplay` | `bool` | `False` | Reproducir automáticamente el vídeo |
+| `loop` | `bool` | `False` | Bucle el vídeo |
+| `muted` | `bool` | `False` | Silenciar el vídeo |
+| `preload` | `str` | `"metadata"` | Estrategia de precarga (`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | Nombres de clases CSS |
+| `sources` | `list[str] | None` | `None` | Lista de fuentes de vídeo alternativas |
+| `**kwargs` | cualquiera | — | Atributos HTML adicionales |
+
+## Múltiples fuentes
+
+Proporcione múltiples formatos de video para una mejor compatibilidad del navegador:
+
+```nexy
+---
+from nexy import Video
+---
+<Video 
+    sources=["/video.mp4", "/video.webm", "/video.ogg"] 
+    controls={True}
+/>
+```
+
+## Vídeo de reproducción automática
+
+Nota: La mayoría de los navegadores requieren `muted` para que funcione la reproducción automática:
+
+```nexy
+<Video 
+    src="/background.mp4" 
+    autoplay={True} 
+    muted={True} 
+    loop={True} 
+    controls={False}
+/>
+```

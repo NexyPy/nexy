@@ -47,7 +47,7 @@ class UsersController:
 1. **Создайте новый проект Nexy** — `nx new my-app`
 2. **Модели портов** — преобразуйте модели Django в SQLModel/SQLAlchemy.
 3. **Представления портов** — конвертируйте представления функций/классов Django в файлы `.nexy` (FBR) или `"@Controller` (модульные).
-4. **Port URL configs** — `urls.py` patterns become file tree (FBR) or `"@Module` (Modular)
+4. **Конфигурации URL-адресов портов** — шаблоны `urls.py` становятся файловым деревом (FBR) или `"@Module` (модульный).
 5. **Шаблоны портов** — шаблоны DTL → Jinja2 в файлах `.nexy`
 6. **Промежуточное программное обеспечение порта** — Промежуточное программное обеспечение Django → Starlette `BaseHTTPMiddleware`
 

@@ -1,10 +1,9 @@
 ---
 from "@components/link.nexy" import Link
-from src.utils import resolve_url
+from "@/locales/components/home" import HomeI18n
+h = HomeI18n()
 
-creator =  "https://avatars.githubusercontent.com/u/108950035?s=400&u=8c53eecafb5ed2d9e0a4ff4c6275710fcf1bf029&v=4"
-contributor =  resolve_url("/community")
-menbre=  resolve_url("/community")
+creator = "https://avatars.githubusercontent.com/u/108950035?s=400&u=8c53eecafb5ed2d9e0a4ff4c6275710fcf1bf029&v=4"
 ---
 <section
     class="md:flex gap-8  space-y-4 md:space-y-0 items-center  w-full w-container bg-background-second  text-white md:border-x border-border border-dashed p-24 ">
@@ -12,9 +11,9 @@ menbre=  resolve_url("/community")
             <div style="background-image: url({{creator}});background-size: cover; background-position: center;" class="p-1 flex items-end size-full bg-red-50/20 border border-border  corner rounded-3xl">
                 <div class="w-full flex justify-between items-center p-4  backdrop-blur-sm bg-background/76 text-foreground border border-border rounded-2xl corner ">
                     <div>
-                        <h3 class="text-sm font-medium">Espoir LOEMBA</h3>
-                    <p class="text-xs tracking-wide font-light  opacity-60">
-                        Nexy creator
+                        <h3 class="text-sm font-medium">{{h.creator_name}}</h3>
+                    <p class="text-xs tracking-wide font-light opacity-60">
+                        {{h.creator_role}}
                     </p>
                     </div>
                     <div class="size-8 border border-border grid place-content-center rounded-xl corner">
@@ -29,26 +28,28 @@ menbre=  resolve_url("/community")
                 </div>
             </div>
             <article class="space-y-4 *:size-40.5">
-            <div 
-                style="background-image: url();"
-                class="  bg-red-50/20 border border-border corner rounded-3xl"> </div>
-            <div class=" bg-red-50/20 border border-border corner rounded-3xl"> </div>
+            <div class="bg-red-50/20 border border-border corner rounded-3xl flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                <span class="text-xs font-medium opacity-70">GitHub</span>
+            </div>
+            <div class="bg-red-50/20 border border-border corner rounded-3xl flex flex-col items-center justify-center p-4 text-center">
+                <svg class="size-10 mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span class="text-xs font-medium opacity-70">Discord</span>
+            </div>
             </article>
     </aside>
     <aside class="space-y-4 flex-1 border border-dashed border-border p-8 rounded-4xl corner">
-        <h2 class="text-3xl font-medium">Ours Communities</h2>
+        <h2 class="text-3xl font-medium">{{h.community_title}}</h2>
         <p class="text-base font-light max-w-xl leading-6">
-            Nexy upports every major UI framework. Bring your existing components and take advantage of Astro's
-            optimized client build performance.
-            
+            {{h.community_desc}}
         </p>
         <p class="text-base font-light max-w-xl leading-6">
-            Nexy upports every major UI framework. Bring your existing components and take advantage of Astro's
+            {{h.community_desc2}}
         </p>
         <div class="flex items-center gap-4 mt-8 ">
             <Link href="/community"
                 className="bg-white text-black font-medium w-fit flex items-center gap-2 px-6 py-3 rounded-full corner">
-            <span>Join Community</span>
+            <span>{{h.join_community}}</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="size-4.5 " viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path
@@ -67,7 +68,7 @@ menbre=  resolve_url("/community")
 
             <Link href="https://github.com/NexyPy/nexy.git" target="_blank"
                 className="border border-white/40 text-white  w-fit md:flex  hidden items-center gap-2 px-6 py-3 rounded-full corner">
-            <span>View on Github</span>
+            <span>{{h.view_on_github}}</span>
             <svg width="20" height="20" class="size-4.5 hidden md:block" viewBox="0 0 24 24" fill="currentColor"
                 stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
                 class="lucide lucide-github-icon lucide-github">

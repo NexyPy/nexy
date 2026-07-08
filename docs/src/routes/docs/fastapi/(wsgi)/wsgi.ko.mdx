@@ -24,7 +24,7 @@ from fastapi.middleware.wsgi import WSGIMiddleware
 app.mount("/legacy", WSGIMiddleware(flask_app))
 ```
 
-이제 Flask 경로를 `/legacy/hello`에서 사용할 수 있습니다. 모든 Nexy 기능(인증, 미들웨어)은 상위 앱에 계속 적용됩니다.
+이제 Flask 경로를 `/legacy/hello`에서 사용할 수 있습니다. 모든 Nexy 기능(인증, 미들웨어)은 여전히 ​​상위 앱에 적용됩니다.
 
 ## 장고
 

@@ -6,10 +6,10 @@ Nexy は、プロジェクト ルートにある `nexyconfig.py` ファイルを
 
 ## クイックリンク
 
-- [Nexy Config](/docs/config/nexy) — プロジェクトレベルの設定リファレンス
-- [Vite Config](/docs/config/vite) — フロントエンド ビルド ツールの構成
-- [CORS](/docs/config/cors) — クロスオリジンのリソース共有
-- [Aliases](/docs/config/aliases) — インポート パスのエイリアス
-- [Session](/docs/config/session) — セッションミドルウェア設定
-- [i18n](/docs/config/i18n) — 国際化構成
-- [TOC](/docs/config/toc) — 目次の自動生成
+- [Nexy Config](/docs/config/nexy) — project-level settings reference
+- [Vite Config](/docs/config/vite) — frontend build tool configuration
+- [CORS](/docs/config/cors) — cross-origin resource sharing
+- [Aliases](/docs/config/aliases) — import path aliases
+- [Session](/docs/config/session) — session middleware settings
+- [i18n](/docs/config/i18n) — internationalization configuration
+- [TOC](/docs/config/toc) — table of contents auto-generation

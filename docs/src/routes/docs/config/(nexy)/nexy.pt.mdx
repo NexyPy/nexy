@@ -72,7 +72,7 @@ class NexyConfig(NexyConfigModel):
 
 | Campo | Tipo | Padrão | Descrição |
 |-------|------|---------|------------|
-| `useTocDepth` | `str` | `"2-6"` | Níveis de rumo a serem incluídos no sumário (por exemplo, `"2-4"` para h2-h4). |
+| `useTocDepth` | `str` | `"2-6"` | Níveis de rumo a serem incluídos no TOC (por exemplo, `"2-4"` para h2-h4). |
 | `useTocTitle` | `str` | `"Table of Contents"` | Título da seção do sumário. |
 | `useTocAuto` | `bool` | `True` | Gerar sumário automaticamente para páginas `.mdx`. |
 

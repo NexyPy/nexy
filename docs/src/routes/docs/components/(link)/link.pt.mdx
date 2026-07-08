@@ -1,0 +1,56 @@
+# Componente de link
+
+O componente `Link` integrado fornece navegação do lado do cliente com pré-busca para uma melhor experiência do usuário.
+
+## Importar
+
+Importe-o diretamente de `nexy`:
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## Uso Básico
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## Adereços
+
+| Suporte | Tipo | Padrão | Descrição |
+|------|------|---------|------------|
+| `href` | `str` | **obrigatório** | URL para navegar |
+| `children` | `str` | `""` | Texto ou conteúdo do link |
+| `class_name` | `str | None` | `None` | Nomes de classes CSS |
+| `prefetch` | `bool` | `True` | Pré-busca da página ao passar o mouse/toque |
+| `**kwargs` | qualquer | — | Atributos HTML adicionais |
+
+## Pré-busca
+
+Por padrão, `Link` pré-busca páginas quando o usuário passa o mouse ou toca nelas para uma navegação mais rápida:
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+Para desativar a pré-busca de um link específico:
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## Links de estilo
+
+Use `class_name` para aplicar estilos personalizados:
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```

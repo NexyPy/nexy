@@ -1,0 +1,41 @@
+# Auxiliar de importação
+
+A função `Import` ajuda na importação de diferentes tipos de ativos no Nexy.
+
+## Importar
+
+Importe-o diretamente de `nexy`:
+
+```nexy
+---
+from nexy import Import
+---
+```
+
+## Ativos Suportados
+
+`Import` pode lidar com:
+- Componentes do cliente
+- Arquivos JSON
+- Arquivos CSS
+- Imagens
+
+## Uso
+
+Importar JSON:
+```python
+from nexy import Import
+data = Import("data.json", "json", "default")
+```
+
+Importar CSS:
+```python
+from nexy import Import
+styles = Import("styles.css", "css", "default")
+```
+
+Importar imagem:
+```python
+from nexy import Import
+img_src = Import("image.jpg", "image", "default")
+```

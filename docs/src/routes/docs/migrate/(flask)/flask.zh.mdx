@@ -32,7 +32,7 @@ async def get(id: int):
 
 - **异步支持** - 原生，而不是通过黑客
 - **类型验证** — Pydantic，自动 422 错误
-- **OpenAPI docs** — no `flasgger` needed
+- **OpenAPI 文档** — 不需要 `flasgger`
 - **DI 系统** — 无需全局单例即可注入服务
 - **CLI** — `nx build`、`nx start`、`nx migrate`
 

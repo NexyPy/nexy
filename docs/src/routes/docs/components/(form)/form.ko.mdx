@@ -1,0 +1,40 @@
+# 폼 컴포넌트
+
+내장된 양식 구성 요소는 양식 및 서버 작업 작업을 단순화합니다.
+
+## 가져오기
+
+`nexy`에서 직접 가져옵니다.
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## 기본 사용법
+
+양식 구성 요소는 서버 작업과 통합되고 양식 처리 유틸리티를 제공하도록 향상됩니다.
+
+지금은 구성 요소에서 표준 HTML 양식을 사용할 수 있습니다.
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## 서버 작업
+
+Form 구성 요소는 서버 측 양식 처리를 위해 Nexy의 `@action` 데코레이터와 통합됩니다.

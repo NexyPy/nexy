@@ -38,7 +38,7 @@ def GET():
 Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
 ```
 
-미들웨어는 FastAPI `Depends`로 실행되며 핸들러보다 먼저 실행됩니다. Unlike guards, middleware is intended for side effects (logging, timing), not for blocking requests (though it can raise `HTTPException`).
+미들웨어는 FastAPI `Depends`로 실행되며 핸들러보다 먼저 실행됩니다. 가드와 달리 미들웨어는 요청 차단이 아닌 부작용(로깅, 타이밍)을 위한 것입니다(`HTTPException`를 발생시킬 수 있음).
 
 ---
 

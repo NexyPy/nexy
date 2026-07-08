@@ -121,7 +121,7 @@ class UsersController:
 
 El cuerpo se analiza como JSON de forma predeterminada. Los modelos de Pydantic proporcionan validación automática: los campos no válidos devuelven un 422 con errores a nivel de campo.
 
-**Te tengo**: Si usas `dict` como sugerencia de tipo, pierdes la validación. Prefiera siempre Pydantic para puntos finales orientados al usuario.
+**Te tengo**: si usas `dict` como sugerencia de tipo, pierdes la validación. Prefiera siempre Pydantic para puntos finales orientados al usuario.
 
 ## Anulación de códigos de estado
 

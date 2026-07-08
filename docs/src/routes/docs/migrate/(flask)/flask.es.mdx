@@ -40,7 +40,7 @@ async def get(id: int):
 
 1. **Andamio** — `nx new my-app`
 2. **Rutas de puerto** — `"@app.route()` → archivo en `src/routes/` o `"@Controller`
-3. **Port templates** — Flask `render_template()` → `.nexy` files
+3. **Plantillas de puerto** — Archivos Flask `render_template()` → `.nexy`
 4. **Manejo de solicitudes de puerto** — `request.args`/`request.json` → parámetros de función escritos
 5. **Planos de puertos** → `"@Module` o subdirectorios en FBR
 

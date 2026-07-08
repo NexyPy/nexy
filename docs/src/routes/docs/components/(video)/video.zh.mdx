@@ -1,0 +1,66 @@
+# 视频组件
+
+内置的 `Video` 组件可以轻松地使用内置控件嵌入视频文件。
+
+## 导入
+
+直接从`nexy`导入：
+
+```nexy
+---
+from nexy import Video
+---
+```
+
+## 基本用法
+
+```nexy
+---
+from nexy import Video
+---
+<Video src="/demo.mp4" />
+```
+
+## 道具
+
+|道具|类型 |默认 |描述 |
+|------|------|---------|------------|
+| `src` | `str` | **必填** |视频文件路径 |
+| `width` | `int | None` | `None` |视频宽度（以像素为单位）|
+| `height` | `int | None` | `None` |视频高度（以像素为单位）|
+| `controls` | `bool` | `True` |显示视频控件 |
+| `autoplay` | `bool` | `False` |自动播放视频 |
+| `loop` | `bool` | `False` |循环播放视频 |
+| `muted` | `bool` | `False` |将视频静音 |
+| `preload` | `str` | `"metadata"` |预加载策略（`"none"`、`"metadata"`、`"auto"`）|
+| `class_name` | `str | None` | `None` | CSS 类名 |
+| `sources` | `list[str] | None` | `None` |替代视频源列表|
+| `**kwargs` |任何| — |附加 HTML 属性 |
+
+## 多个来源
+
+提供多种视频格式以实现更好的浏览器兼容性：
+
+```nexy
+---
+from nexy import Video
+---
+<Video 
+    sources=["/video.mp4", "/video.webm", "/video.ogg"] 
+    controls={True}
+/>
+```
+
+## 自动播放视频
+
+注意：大多数浏览器需要 `muted` 才能自动播放：
+
+```nexy
+<Video 
+    src="/background.mp4" 
+    autoplay={True} 
+    muted={True} 
+    loop={True} 
+    controls={False}
+/>
+```

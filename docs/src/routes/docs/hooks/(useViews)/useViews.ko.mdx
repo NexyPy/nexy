@@ -14,7 +14,7 @@ html = useViews(path, context=None)
 
 | 매개변수 | 유형 | 기본값 | 설명 |
 |------------|------|---------|-------------|
-| `path` | `str` | 필수 | 뷰 파일 경로(프로젝트 기준) |
+| `path` | `str` | 필수 | 뷰 파일 경로(프로젝트 관련) |
 | `context` | `dict \| None` | `None` | 템플릿에 전달할 변수 |
 
 ---
@@ -37,7 +37,7 @@ html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "W
 
 ---
 
-## 프런트엔드 구성 요소
+## 프런트엔드 구성요소
 
 `.tsx`, `.vue`, `.svelte` 및 `.jsx` 보기의 경우 `useViews`는 수화 가능한 컨테이너를 반환합니다.
 

@@ -1,0 +1,56 @@
+# Componente de enlace
+
+El componente integrado `Link` proporciona navegación del lado del cliente con captación previa para una mejor experiencia de usuario.
+
+## Importar
+
+Importarlo directamente desde `nexy`:
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## Uso básico
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## Accesorios
+
+| Apoyo | Tipo | Predeterminado | Descripción |
+|------|------|---------|-------------|
+| `href` | `str` | **obligatorio** | URL para navegar |
+| `children` | `str` | `""` | Enlace de texto o contenido |
+| `class_name` | `str | None` | `None` | Nombres de clases CSS |
+| `prefetch` | `bool` | `True` | Captura previa de página al pasar el mouse/tocar |
+| `**kwargs` | cualquiera | — | Atributos HTML adicionales |
+
+## Captación previa
+
+De forma predeterminada, `Link` busca previamente las páginas cuando el usuario pasa el cursor sobre ellas o las toca para una navegación más rápida:
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+Para deshabilitar la captación previa de un enlace específico:
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## Enlaces de estilo
+
+Utilice `class_name` para aplicar estilos personalizados:
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```

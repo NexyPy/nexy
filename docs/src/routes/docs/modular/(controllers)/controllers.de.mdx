@@ -266,7 +266,7 @@ class UsersModule:
 2. **Methoden im Fokus halten** – jede Methode bewirkt eine Aufgabe.
 3. **Abhängigkeitsinjektion verwenden** – Instanziieren Sie keine Dienste im Methodenkörper.
 4. **Bevorzugen Sie Pydantic für Anforderungstexte** – `body: dict` ist ein Codegeruch.
-5. **Prefix controllers meaningfully** — `/users`, `/posts`, `/auth`.
+5. **Stellen Sie Controllern ein sinnvolles Präfix voran** – `/users`, `/posts`, `/auth`.
 
 ## Nächste Schritte
 

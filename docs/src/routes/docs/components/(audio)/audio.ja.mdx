@@ -1,0 +1,60 @@
+# オーディオコンポーネント
+
+組み込みの `Audio` コンポーネントを使用すると、アプリにオーディオ プレーヤーを簡単に追加できます。
+
+## インポート
+
+`nexy` から直接インポートします。
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## 基本的な使い方 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## 小道具
+
+|小道具 |タイプ |デフォルト |説明 |
+|------|------|-----------|---------------|
+| `src` | `str` | **必須** |音声ファイルへのパス |
+| `controls` | `bool` | `True` |オーディオ コントロールを表示 |
+| `autoplay` | `bool` | `False` |オーディオを自動再生する |
+| `loop` | `bool` | `False` |オーディオをループする |
+| `muted` | `bool` | `False` |音声をミュートする |
+| `preload` | `str` | `"metadata"` |プリロード戦略 (`"none"`、`"metadata"`、`"auto"`) |
+| `class_name` | `str | None` | `None` | CSS クラス名 |
+| `sources` | `list[str] | None` | `None` |代替音源のリスト |
+| `**kwargs` |任意 | — |追加の HTML 属性 |
+
+## 複数のソース
+
+ブラウザーの互換性を高めるために複数のオーディオ形式を提供します。
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## 音声の自動再生
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

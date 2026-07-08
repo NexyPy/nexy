@@ -1,0 +1,60 @@
+# 오디오 구성 요소
+
+내장된 `Audio` 구성 요소를 사용하면 앱에 오디오 플레이어를 쉽게 추가할 수 있습니다.
+
+## 가져오기
+
+`nexy`에서 직접 가져옵니다.
+
+```nexy
+---
+from nexy import Audio
+---
+```
+
+## 기본 사용법 
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio src="/music.mp3" />
+```
+
+## 소품
+
+| 소품 | 유형 | 기본값 | 설명 |
+|------|------|---------|-------------|
+| `src` | `str` | **필수** | 오디오 파일 경로 |
+| `controls` | `bool` | `True` | 오디오 컨트롤 표시 |
+| `autoplay` | `bool` | `False` | 오디오 자동 재생 |
+| `loop` | `bool` | `False` | 오디오 반복 |
+| `muted` | `bool` | `False` | 오디오 음소거 |
+| `preload` | `str` | `"metadata"` | 사전 로드 전략(`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | CSS 클래스 이름 |
+| `sources` | `list[str] | None` | `None` | 대체 오디오 소스 목록 |
+| `**kwargs` | 어떤 | — | 추가 HTML 속성 |
+
+## 여러 소스
+
+더 나은 브라우저 호환성을 위해 다양한 오디오 형식을 제공합니다.
+
+```nexy
+---
+from nexy import Audio
+---
+<Audio 
+    sources=["/audio.mp3", "/audio.ogg", "/audio.wav"] 
+/>
+```
+
+## 오디오 자동 재생
+
+```nexy
+<Audio 
+    src="/bgm.mp3" 
+    autoplay={True} 
+    loop={True} 
+    controls={False}
+/>
+```

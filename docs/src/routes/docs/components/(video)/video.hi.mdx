@@ -1,0 +1,66 @@
+# वीडियो घटक
+
+अंतर्निहित `Video` घटक अंतर्निहित नियंत्रणों के साथ वीडियो फ़ाइलों को एम्बेड करना आसान बनाता है।
+
+## आयात करें
+
+इसे सीधे `nexy` से आयात करें:
+
+```nexy
+---
+from nexy import Video
+---
+```
+
+## बुनियादी उपयोग
+
+```nexy
+---
+from nexy import Video
+---
+<Video src="/demo.mp4" />
+```
+
+## सहारा
+
+| प्रोप | प्रकार | डिफ़ॉल्ट | विवरण |
+|------|------|------|---|
+| `src` | `str` | **आवश्यक** | वीडियो फ़ाइल का पथ |
+| `width` | `int | None` | `None` | वीडियो की चौड़ाई पिक्सेल में |
+| `height` | `int | None` | `None` | वीडियो की ऊँचाई पिक्सेल में |
+| `controls` | `bool` | `True` | वीडियो नियंत्रण दिखाएं |
+| `autoplay` | `bool` | `False` | वीडियो को ऑटोप्ले करें |
+| `loop` | `bool` | `False` | वीडियो को लूप करें |
+| `muted` | `bool` | `False` | वीडियो म्यूट करें |
+| `preload` | `str` | `"metadata"` | प्रीलोड रणनीति (`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | सीएसएस वर्ग के नाम |
+| `sources` | `list[str] | None` | `None` | वैकल्पिक वीडियो स्रोतों की सूची |
+| `**kwargs` | कोई भी | — | अतिरिक्त HTML विशेषताएँ |
+
+## एकाधिक स्रोत
+
+बेहतर ब्राउज़र संगतता के लिए एकाधिक वीडियो प्रारूप प्रदान करें:
+
+```nexy
+---
+from nexy import Video
+---
+<Video 
+    sources=["/video.mp4", "/video.webm", "/video.ogg"] 
+    controls={True}
+/>
+```
+
+## ऑटोप्ले वीडियो
+
+नोट: अधिकांश ब्राउज़रों को ऑटोप्ले के काम करने के लिए `muted` की आवश्यकता होती है:
+
+```nexy
+<Video 
+    src="/background.mp4" 
+    autoplay={True} 
+    muted={True} 
+    loop={True} 
+    controls={False}
+/>
+```

@@ -1,0 +1,66 @@
+#مكون الفيديو
+
+يجعل المكون `Video` المدمج من السهل تضمين ملفات الفيديو باستخدام عناصر التحكم المضمنة.
+
+##استيراد
+
+قم باستيراده مباشرةً من `nexy`:
+
+```nexy
+---
+from nexy import Video
+---
+```
+
+## الاستخدام الأساسي
+
+```nexy
+---
+from nexy import Video
+---
+<Video src="/demo.mp4" />
+```
+
+## الدعائم
+
+| الدعامة | اكتب | الافتراضي | الوصف |
+|------|------|---------|-------------|
+| `src` | `str` | **مطلوب** | المسار إلى ملف الفيديو |
+| `width` | `int | None` | `None` | عرض الفيديو بالبكسل |
+| `height` | `int | None` | `None` | ارتفاع الفيديو بالبكسل |
+| `controls` | `bool` | `True` | إظهار عناصر التحكم في الفيديو |
+| `autoplay` | `bool` | `False` | تشغيل الفيديو تلقائيًا |
+| `loop` | `bool` | `False` | تكرار الفيديو |
+| `muted` | `bool` | `False` | كتم الفيديو |
+| `preload` | `str` | `"metadata"` | استراتيجية التحميل المسبق (`"none"`، `"metadata"`، `"auto"`) |
+| `class_name` | `str | None` | `None` | أسماء فئات CSS |
+| `sources` | `list[str] | None` | `None` | قائمة مصادر الفيديو البديلة |
+| `**kwargs` | أي | — | سمات HTML الإضافية |
+
+## مصادر متعددة
+
+توفير تنسيقات فيديو متعددة لتحسين التوافق مع المتصفح:
+
+```nexy
+---
+from nexy import Video
+---
+<Video 
+    sources=["/video.mp4", "/video.webm", "/video.ogg"] 
+    controls={True}
+/>
+```
+
+## التشغيل التلقائي للفيديو
+
+ملاحظة: تتطلب معظم المتصفحات `muted` حتى يعمل التشغيل التلقائي:
+
+```nexy
+<Video 
+    src="/background.mp4" 
+    autoplay={True} 
+    muted={True} 
+    loop={True} 
+    controls={False}
+/>
+```

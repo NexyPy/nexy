@@ -1,0 +1,59 @@
+# Composant d'image
+
+Le composant `Image` intégré facilite l'ajout d'images optimisées avec un chargement paresseux par défaut.
+
+## Importer
+
+Importez-le directement depuis `nexy` :
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+## Utilisation
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## Accessoires
+
+| Accessoire | Tapez | Par défaut | Descriptif |
+|------|------|---------|-------------|
+| `src` | `str` | **obligatoire** | Chemin d'accès au fichier image |
+| `alt` | `str` | `""` | Texte alternatif pour l'accessibilité |
+| `width` | `int | None` | `None` | Largeur de l'image en pixels |
+| `height` | `int | None` | `None` | Hauteur de l'image en pixels |
+| `loading` | `str` | `"lazy"` | Stratégie de chargement (`"lazy"` ou `"eager"`) |
+| `class_name` | `str | None` | `None` | Noms de classes CSS |
+| `**kwargs` | n'importe quel | — | Attributs HTML supplémentaires |
+
+## Chargement paresseux
+
+Par défaut, les images sont chargées paresseusement pour de meilleures performances :
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+Pour charger avec impatience des images critiques :
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```

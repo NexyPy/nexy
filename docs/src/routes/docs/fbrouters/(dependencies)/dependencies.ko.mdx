@@ -41,7 +41,7 @@ src/routes/
     ├── index.nexy               # gets [Depends(log_request), Depends(require_auth)]
     └── settings.nexy            # same
 ```
-하위 `dependencies.py` 파일은 **상위 항목을 재정의하지 않습니다**. 모든 목록이 결합됩니다. If the same dependency name appears in both, FastAPI raises `ValueError` at startup (duplicate parameter).
+하위 `dependencies.py` 파일은 **상위 항목을 재정의하지 않습니다**. 모든 목록이 결합됩니다. 두 항목 모두에 동일한 종속성 이름이 나타나면 FastAPI는 시작 시 `ValueError`를 발생시킵니다(중복 매개변수).
 
 ---
 
@@ -64,7 +64,7 @@ from .dependencies import get_db
 def GET(db=Depends(get_db)):
     return {"db": db["connection"]}
 ```
-동일한 호출 가능 항목이 `dependencies = [...]` 및 핸들러 서명 모두에 나열되면 FastAPI는 이를 한 번 실행하고 결과를 공유합니다.
+동일한 호출 가능 항목이 `dependencies = [...]` 및 핸들러 서명 모두에 나열되어 있는 경우 FastAPI는 이를 한 번 실행하고 결과를 공유합니다.
 
 ---
 <Link href="/docs/fbrouters/middlewares">Next: Middlewares →</Link>

@@ -1,0 +1,59 @@
+# 图像组件
+
+内置的 `Image` 组件可以轻松添加默认延迟加载的优化图像。
+
+## 导入
+
+直接从`nexy`导入：
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+＃＃ 用法
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## 道具
+
+|道具|类型 |默认 |描述 |
+|------|------|---------|------------|
+| `src` | `str` | **必填** |图像文件的路径 |
+| `alt` | `str` | `""` |用于辅助功能的替代文本 |
+| `width` | `int | None` | `None` |图像宽度（以像素为单位）|
+| `height` | `int | None` | `None` |图像高度（以像素为单位）|
+| `loading` | `str` | `"lazy"` |加载策略（`"lazy"` 或 `"eager"`）|
+| `class_name` | `str | None` | `None` | CSS 类名 |
+| `**kwargs` |任何| — |附加 HTML 属性 |
+
+## 延迟加载
+
+默认情况下，图像会延迟加载以获得更好的性能：
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+要立即加载关键图像：
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```

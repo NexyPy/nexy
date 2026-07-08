@@ -1,0 +1,66 @@
+# 비디오 구성 요소
+
+내장된 `Video` 구성 요소를 사용하면 내장 컨트롤을 사용하여 비디오 파일을 쉽게 삽입할 수 있습니다.
+
+## 가져오기
+
+`nexy`에서 직접 가져옵니다.
+
+```nexy
+---
+from nexy import Video
+---
+```
+
+## 기본 사용법
+
+```nexy
+---
+from nexy import Video
+---
+<Video src="/demo.mp4" />
+```
+
+## 소품
+
+| 소품 | 유형 | 기본값 | 설명 |
+|------|------|---------|-------------|
+| `src` | `str` | **필수** | 비디오 파일 경로 |
+| `width` | `int | None` | `None` | 비디오 너비(픽셀) |
+| `height` | `int | None` | `None` | 비디오 높이(픽셀) |
+| `controls` | `bool` | `True` | 비디오 컨트롤 표시 |
+| `autoplay` | `bool` | `False` | 비디오 자동 재생 |
+| `loop` | `bool` | `False` | 동영상 반복 |
+| `muted` | `bool` | `False` | 비디오 음소거 |
+| `preload` | `str` | `"metadata"` | 사전 로드 전략(`"none"`, `"metadata"`, `"auto"`) |
+| `class_name` | `str | None` | `None` | CSS 클래스 이름 |
+| `sources` | `list[str] | None` | `None` | 대체 비디오 소스 목록 |
+| `**kwargs` | 어떤 | — | 추가 HTML 속성 |
+
+## 여러 소스
+
+더 나은 브라우저 호환성을 위해 다양한 비디오 형식을 제공합니다.
+
+```nexy
+---
+from nexy import Video
+---
+<Video 
+    sources=["/video.mp4", "/video.webm", "/video.ogg"] 
+    controls={True}
+/>
+```
+
+## 자동재생 동영상
+
+참고: 대부분의 브라우저에서 자동 재생이 작동하려면 `muted`가 필요합니다.
+
+```nexy
+<Video 
+    src="/background.mp4" 
+    autoplay={True} 
+    muted={True} 
+    loop={True} 
+    controls={False}
+/>
+```

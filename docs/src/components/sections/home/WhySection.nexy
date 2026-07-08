@@ -8,16 +8,43 @@ h = HomeI18n()
     <p class="text-base font-light max-w-xl leading-6">
         {{h.what_desc}}
     </p>
-    <div  class="grid grid-cols-3 grid-rows-3  mt-16 *:h-48 *:bg-amber-50/20 *:border *:border-b-0 *:border-r-0 *:border-border/40 *:backdrop-blur  *:corner ">
-            <div class="rounded-t-2xl border-r!">1</div>
-            <div class=" border-0! bg-transparent!">2</div>
-            <div class="rounded-t-2xl border-r!">3</div>
-            <div class="">4</div>
-            <div class="">5</div>
-            <div class="border-r!">6</div>
-            <div class="border-b! rounded-bl-2xl">7</div>
-            <div class="">8</div>
-            <div class="border-b! border-r! rounded-br-2xl ">9</div>
-            <div class="col-start-2 rounded-b-2xl border-r! border-b!">10</div>
+    <div class="grid grid-cols-3 grid-rows-3 mt-16 *:h-48 *:bg-amber-50/20 *:border *:border-b-0 *:border-r-0 *:border-border/40 *:backdrop-blur *:corner">
+        <div class="rounded-t-2xl border-r! flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_router}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_router_desc}}</p>
+        </div>
+        <div class="border-0! bg-transparent!"></div>
+        <div class="rounded-t-2xl border-r! flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_frontend}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_frontend_desc}}</p>
+        </div>
+        <div class="flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_templates}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_templates_desc}}</p>
+        </div>
+        <div class="flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_i18n}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_i18n_desc}}</p>
+        </div>
+        <div class="border-r! flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_di}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_di_desc}}</p>
+        </div>
+        <div class="border-b! rounded-bl-2xl flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_cli}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_cli_desc}}</p>
+        </div>
+        <div class="flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_hooks}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_hooks_desc}}</p>
+        </div>
+        <div class="border-b! border-r! rounded-br-2xl flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_fastapi}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_fastapi_desc}}</p>
+        </div>
+        <div class="col-start-2 rounded-b-2xl border-r! border-b! flex flex-col justify-center p-4">
+            <h3 class="text-lg font-semibold">{{h.why_vite}}</h3>
+            <p class="text-sm font-light mt-1 opacity-70">{{h.why_vite_desc}}</p>
+        </div>
     </div>
 </section>

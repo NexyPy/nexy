@@ -1,6 +1,6 @@
-# Next.js から Nexy へ移行
+# Migrate from Next.js to Nexy
 
-Next.js は、ファイルベースのルーティングおよびサーバー コンポーネントを普及させました。 Nexy は、同じ DX を Python にもたらします。
+Next.js は、ファイルベースのルーティングおよびサーバー コンポーネントを普及させました。 Nexy brings the same DX to Python.
 
 ## 概念マッピング
 
@@ -10,11 +10,11 @@ Next.js は、ファイルベースのルーティングおよびサーバー �
 | `page.tsx` | `.nexy` または `.mdx` ファイル |
 | `layout.tsx` | `layout.nexy` |
 | `loading.tsx` | `dependencies.py` |
-| `route.ts` (API) | `.py` ファイル (`get()`、`post()` など)
+| `route.ts` (API) | `.py` file with `get()`, `post()`, etc. |
 | `next.config.js` | `nexyconfig.py` |
 |サーバーアクション | `"@Action` デコレータ |
-| React サーバー コンポーネント | `.nexy` コンポーネント (Python + Jinja2) |
-| `getStaticProps` | `.nexy` のフロントマター ロジック |
+| React Server Components | `.nexy` components (Python + Jinja2) |
+| `getStaticProps` | Frontmatter logic in `.nexy` |
 
 ＃＃ 例
 

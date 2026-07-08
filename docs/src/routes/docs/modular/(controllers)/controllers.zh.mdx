@@ -34,16 +34,16 @@ class UsersController:
 
 ## 路由方法映射
 
-|方法名称 | HTTP 方法 |示例|
+|方法名称| HTTP 方法 |示例|
 |-------------|-------------|---------|
 | `GET`、`get`、`Get` |获取 |阅读资源 |
-| `post`、`POST`、`Post` |发布 |创建资源 |
-| `put`、`PUT`、`Put` |放置 |更换资源|
+| `post`、`POST`、`Post` |发布 |创建资源|
+| `put`、`PUT`、`Put` |放置|更换资源|
 | `delete`、`DELETE`、`Delete` |删除|删除资源 |
 | `patch`、`PATCH`、`Patch` |补丁 |部分更新 |
 | `options`、`OPTIONS`、`Options` |选项 | CORS 飞行前 |
 | `head`、`HEAD`、`Head` |头|仅响应标头 |
-| `SOCKET`、`socket`、`Socket` | WebSocket |实时沟通 |
+| `SOCKET`、`socket`、`Socket` | WebSocket |实时沟通|
 
 **约定**：使用大写字母表示读取操作 (`GET`)，使用小写字母表示突变 (`post`、`put`、`delete`)。这使得控制器更容易扫描——您可以一目了然地看到 HTTP 动词。
 
@@ -211,11 +211,11 @@ class UserDetailController:
         return user
 ```
 
-使用标准 HTTP 状态代码。 Nexy 从 Starlette 重新导出例外。
+使用标准 HTTP 状态代码。 Nexy re-exports exceptions from Starlette.
 
-## 一个控制器，一条路径
+## One Controller, One Path
 
-一个基本约束：**控制器中的所有方法共享相同的路径**。该路径由控制器前缀确定。您不能为每个方法定义子路径。
+一个基本约束：**控制器中的所有方法共享相同的路径**。该路径由控制器前缀确定。 You cannot define sub-paths per method.
 
 如果您需要 `/users` 和 `/users/{id}`，请创建两个控制器：
 

@@ -1,4 +1,4 @@
-#i18n
+# i18n
 
 Configure la internacionalización: detección local, archivos de traducción y compatibilidad con RTL.
 

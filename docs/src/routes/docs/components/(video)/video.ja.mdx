@@ -1,0 +1,66 @@
+# ビデオコンポーネント
+
+組み込みの `Video` コンポーネントを使用すると、組み込みコントロールを使用してビデオ ファイルを簡単に埋め込むことができます。
+
+## インポート
+
+`nexy` から直接インポートします。
+
+```nexy
+---
+from nexy import Video
+---
+```
+
+## 基本的な使い方
+
+```nexy
+---
+from nexy import Video
+---
+<Video src="/demo.mp4" />
+```
+
+## 小道具
+
+|小道具 |タイプ |デフォルト |説明 |
+|------|------|-----------|---------------|
+| `src` | `str` | **必須** |ビデオ ファイルへのパス |
+| `width` | `int | None` | `None` |ビデオの幅 (ピクセル単位) |
+| `height` | `int | None` | `None` |ビデオの高さ (ピクセル単位) |
+| `controls` | `bool` | `True` |ビデオ コントロールを表示 |
+| `autoplay` | `bool` | `False` |ビデオを自動再生する |
+| `loop` | `bool` | `False` |ビデオをループする |
+| `muted` | `bool` | `False` |ビデオをミュートする |
+| `preload` | `str` | `"metadata"` |プリロード戦略 (`"none"`、`"metadata"`、`"auto"`) |
+| `class_name` | `str | None` | `None` | CSS クラス名 |
+| `sources` | `list[str] | None` | `None` |代替ビデオ ソースのリスト |
+| `**kwargs` |任意 | — |追加の HTML 属性 |
+
+## 複数のソース
+
+ブラウザーの互換性を高めるために複数のビデオ形式を提供します。
+
+```nexy
+---
+from nexy import Video
+---
+<Video 
+    sources=["/video.mp4", "/video.webm", "/video.ogg"] 
+    controls={True}
+/>
+```
+
+## ビデオの自動再生
+
+注: ほとんどのブラウザでは、自動再生が機能するために `muted` が必要です。
+
+```nexy
+<Video 
+    src="/background.mp4" 
+    autoplay={True} 
+    muted={True} 
+    loop={True} 
+    controls={False}
+/>
+```

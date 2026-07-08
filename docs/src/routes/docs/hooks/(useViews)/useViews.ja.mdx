@@ -58,7 +58,7 @@ container = useViews("src/components/Counter.tsx", {"initial": 0})
 |拡張子 |行動 |
 |----------|----------|
 | `.nexy` |コンパイルされたテンプレート → レンダリングされた HTML |
-| `.mdx` | Markdown + コンポーネント → レンダリングされた HTML |
+| `.mdx` |マークダウン + コンポーネント → レンダリングされた HTML |
 | `.tsx` |水和可能なコンテナ (React/Solid/Preact) |
 | `.vue` |水和可能なコンテナ |
 | `.svelte` |水和可能なコンテナ |

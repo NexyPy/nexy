@@ -1,0 +1,56 @@
+# 링크 구성요소
+
+내장된 `Link` 구성 요소는 더 나은 사용자 경험을 위해 프리패치와 함께 클라이언트 측 탐색 기능을 제공합니다.
+
+## 가져오기
+
+`nexy`에서 직접 가져옵니다.
+
+```nexy
+---
+from nexy import Link
+---
+```
+
+## 기본 사용법
+
+```nexy
+---
+from nexy import Link
+---
+<Link href="/about">About Us</Link>
+```
+
+## 소품
+
+| 소품 | 유형 | 기본값 | 설명 |
+|------|------|---------|-------------|
+| `href` | `str` | **필수** | 탐색할 URL |
+| `children` | `str` | `""` | 링크 텍스트 또는 콘텐츠 |
+| `class_name` | `str | None` | `None` | CSS 클래스 이름 |
+| `prefetch` | `bool` | `True` | 호버/터치 시 페이지 미리 가져오기 |
+| `**kwargs` | 어떤 | — | 추가 HTML 속성 |
+
+## 미리 가져오기
+
+기본적으로 `Link`는 더 빠른 탐색을 위해 사용자가 페이지를 가리키거나 터치할 때 페이지를 미리 가져옵니다.
+
+```nexy
+<Link href="/blog/my-post" prefetch={True}>Read Post</Link>
+```
+
+특정 링크에 대한 프리페칭을 비활성화하려면 다음을 수행하십시오.
+```nexy
+<Link href="/external" prefetch={False}>External Link</Link>
+```
+
+## 스타일링 링크
+
+사용자 정의 스타일을 적용하려면 `class_name`를 사용하십시오.
+
+```nexy
+<Link 
+    href="/contact" 
+    class_name="text-blue-500 hover:text-blue-700 underline"
+>Contact Us</Link>
+```

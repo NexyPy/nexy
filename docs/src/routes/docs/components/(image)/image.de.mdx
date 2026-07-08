@@ -1,0 +1,59 @@
+# Bildkomponente
+
+Die integrierte `Image`-Komponente erleichtert das standardmäßige Hinzufügen optimierter Bilder mit Lazy Loading.
+
+## Importieren
+
+Importieren Sie es direkt aus `nexy`:
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+## Nutzung
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## Requisiten
+
+| Stütze | Geben Sie | ein Standard | Beschreibung |
+|------|------|---------|-------------|
+| `src` | `str` | **erforderlich** | Pfad zur Bilddatei |
+| `alt` | `str` | `""` | Alternativtext zur Barrierefreiheit |
+| `width` | `int | None` | `None` | Bildbreite in Pixel |
+| `height` | `int | None` | `None` | Bildhöhe in Pixel |
+| `loading` | `str` | `"lazy"` | Ladestrategie (`"lazy"` oder `"eager"`) |
+| `class_name` | `str | None` | `None` | CSS-Klassennamen |
+| `**kwargs` | irgendein | — | Zusätzliche HTML-Attribute |
+
+## Lazy Loading
+
+Standardmäßig werden Bilder für eine bessere Leistung verzögert geladen:
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+Um kritische Bilder eifrig zu laden:
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```

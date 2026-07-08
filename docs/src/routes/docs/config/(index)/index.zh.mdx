@@ -4,7 +4,7 @@ Nexy 通过项目根目录下的 `nexyconfig.py` 文件进行配置。该文件�
 
 配置系统使用带有内置验证的 Pydantic 模型。每个字段都有一个合理的默认值，因此您的 `nexyconfig.py` 只需指定您想要覆盖的内容。
 
-## 快速链接
+## Quick links
 
 - [Nexy Config](/docs/config/nexy) — 项目级设置参考
 - [Vite Config](/docs/config/vite) — 前端构建工具配置

@@ -81,5 +81,5 @@ def GET() -> JSONResponse:
 | `PlainTextResponse` | `text/plain` |原始文本|
 | `RedirectResponse` | — |重定向 |
 | `StreamingResponse` |变化 |流数据 |
-| `FileResponse` |变化 |文件下载|
+| `FileResponse` |变化 |文件下载 |
 | `ORJSONResponse` | `application/json` |更快的 JSON（需要 `orjson`）|

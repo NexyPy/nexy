@@ -1,0 +1,59 @@
+# 画像コンポーネント
+
+組み込みの `Image` コンポーネントを使用すると、デフォルトで遅延読み込みを行う最適化された画像を簡単に追加できます。
+
+## インポート
+
+`nexy` から直接インポートします。
+
+```nexy
+---
+from nexy import Image
+---
+```
+
+＃＃ 使用法
+
+```nexy
+---
+from nexy import Image
+---
+<Image src="/nexy.svg" alt="Nexy Logo" width={200} height={200} />
+```
+
+## 小道具
+
+|小道具 |タイプ |デフォルト |説明 |
+|------|------|-----------|---------------|
+| `src` | `str` | **必須** |画像ファイルへのパス |
+| `alt` | `str` | `""` |アクセシビリティのための代替テキスト |
+| `width` | `int | None` | `None` |画像の幅 (ピクセル単位) |
+| `height` | `int | None` | `None` |画像の高さ (ピクセル単位) |
+| `loading` | `str` | `"lazy"` |ロード戦略 (`"lazy"` または `"eager"`) |
+| `class_name` | `str | None` | `None` | CSS クラス名 |
+| `**kwargs` |任意 | — |追加の HTML 属性 |
+
+## 遅延読み込み
+
+デフォルトでは、パフォーマンスを向上させるために画像は遅延してロードされます。
+
+```nexy
+---
+from nexy import Image
+---
+<Image 
+    src="/hero.jpg" 
+    alt="Hero" 
+    loading="lazy" 
+    class_name="w-full h-auto"
+/>
+```
+
+重要なイメージを積極的にロードするには:
+```nexy
+<Image 
+    src="/logo.svg" 
+    alt="Logo" 
+    loading="eager"
+/>
+```

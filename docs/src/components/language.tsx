@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Languages, X, ChevronRight, Check } from "lucide-react";
+import { Languages, X, SearchIcon, Check } from "lucide-react";
 
 interface LocaleInfo {
     code: string;
@@ -18,10 +18,28 @@ declare global {
     }
 }
 
+const LOCALE_FLAG_MAP: Record<string, string> = {
+    fr: "fr", en: "gb", es: "es", pt: "pt", de: "de",
+    ru: "ru", zh: "cn", ja: "jp", ko: "kr", ar: "sa", hi: "in",
+};
+
 function Language() {
     const [open, setOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [search, setSearch] = useState("");
     const [activeIndex, setActiveIndex] = useState(0);
+
+    const locales = typeof window !== "undefined" ? window.__NEXY_LOCALES : undefined;
+    const currentLocale = locales?.current ?? "en";
+    const available = locales?.available ?? [];
+
+    const filtered = available.filter((l) =>
+        l.name.toLowerCase().includes(search.toLowerCase()) ||
+        l.code.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const currentLangInfo = available.find(l => l.code === currentLocale);
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
@@ -40,6 +58,14 @@ function Language() {
     }, [open]);
 
     useEffect(() => {
+        if (open) {
+            setTimeout(() => inputRef.current?.focus(), 50);
+            setSearch("");
+            setActiveIndex(0);
+        }
+    }, [open]);
+
+    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 setOpen(false);
@@ -48,30 +74,24 @@ function Language() {
                 if (e.key === "ArrowDown") {
                     e.preventDefault();
                     setActiveIndex((prev) =>
-                        prev >= available.length - 1 ? 0 : prev + 1
+                        prev >= filtered.length - 1 ? 0 : prev + 1
                     );
                 }
                 if (e.key === "ArrowUp") {
                     e.preventDefault();
                     setActiveIndex((prev) =>
-                        prev <= 0 ? available.length - 1 : prev - 1
+                        prev <= 0 ? filtered.length - 1 : prev - 1
                     );
                 }
-                if (e.key === "Enter" && available[activeIndex]) {
+                if (e.key === "Enter" && filtered[activeIndex]) {
                     e.preventDefault();
-                    switchLocale(available[activeIndex].code);
+                    switchLocale(filtered[activeIndex].code);
                 }
             }
         };
         document.addEventListener("keydown", handleKeyDown);
         return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [open, activeIndex]);
-
-    const locales = typeof window !== "undefined" ? window.__NEXY_LOCALES : undefined;
-    const currentLocale = locales?.current ?? "en";
-    const available = locales?.available ?? [];
-
-    const currentLangInfo = available.find(l => l.code === currentLocale);
+    }, [open, activeIndex, filtered]);
 
     const switchLocale = useCallback((localeCode: string) => {
         const path = window.location.pathname;
@@ -101,7 +121,11 @@ function Language() {
                 className="flex items-center gap-2 cursor-pointer"
             >
                 <Languages size={18} />
-                <span className="text-lg">{currentLangInfo?.flag ?? "🌍"}</span>
+                <img
+                    src={`https://flagcdn.com/24x18/${LOCALE_FLAG_MAP[currentLocale] || currentLocale}.png`}
+                    alt={currentLocale}
+                    className="w-6 h-4"
+                />
             </button>
 
             {open && (
@@ -112,49 +136,67 @@ function Language() {
                     />
                     <div
                         ref={modalRef}
-                        className="relative bg-background border border-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+                        className="relative bg-background border border-border rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden"
                     >
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                            <h3 className="text-lg font-semibold">Choose Language</h3>
+                        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+                            <SearchIcon size={18} className="text-muted-foreground" />
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                placeholder="Search language..."
+                                value={search}
+                                onChange={(e) => {
+                                    setSearch(e.target.value);
+                                    setActiveIndex(0);
+                                }}
+                                className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base"
+                            />
                             <button
                                 onClick={() => setOpen(false)}
-                                className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                                className="p-1.5 hover:bg-muted rounded-md text-muted-foreground transition-colors"
                             >
                                 <X size={18} />
                             </button>
                         </div>
 
-                        <div className="max-h-80 overflow-y-auto">
-                            <div className="p-2">
-                                {available.map((locale, index) => (
-                                    <button
-                                        key={locale.code}
-                                        onClick={() => switchLocale(locale.code)}
-                                        onMouseEnter={() => setActiveIndex(index)}
-                                        className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left rounded-lg transition-all ${
-                                            index === activeIndex 
-                                                ? "bg-foreground/5 ring-1 ring-foreground/10" 
-                                                : "hover:bg-foreground/5"
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-2xl">{locale.flag}</span>
-                                            <div className="flex flex-col">
+                        <div className="max-h-80 overflow-y-auto p-4">
+                            {filtered.length === 0 ? (
+                                <div className="p-8 text-center text-muted-foreground">
+                                    No languages found
+                                </div>
+                            ) : (
+                                <div className="p-2">
+                                    {filtered.map((locale, index) => (
+                                        <button
+                                            key={locale.code}
+                                            onClick={() => switchLocale(locale.code)}
+                                            onMouseEnter={() => setActiveIndex(index)}
+                                            className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left rounded-lg transition-all ${
+                                                index === activeIndex 
+                                                    ? "bg-foreground/5 ring-1 ring-foreground/10" 
+                                                    : "hover:bg-foreground/5"
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <img
+                                                    src={`https://flagcdn.com/32x24/${LOCALE_FLAG_MAP[locale.code] || locale.code}.png`}
+                                                    alt={locale.name}
+                                                    className="w-8 h-6"
+                                                />
                                                 <span className="font-medium">{locale.name}</span>
-                                                <span className="text-xs text-muted-foreground uppercase">
-                                                    {locale.code}
-                                                </span>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            {locale.code === currentLocale && (
-                                                <Check size={16} className="text-green-500" />
+                                            {locale.code === currentLocale ? (
+                                                <div className="flex items-center gap-1.5 text-green-500">
+                                                    <Check size={16} />
+                                                    <span className="text-xs font-medium">Current</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-xs text-muted-foreground uppercase">{locale.code}</span>
                                             )}
-                                            <ChevronRight size={14} className="text-muted-foreground" />
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         
                         <div className="border-t border-border px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">

@@ -70,7 +70,7 @@ from "@components/icon-button.nexy" import Button as IconBtn
 
 ---
 
-## 다시 내보내는 중
+## 다시 내보내기 중
 
 구성 요소를 집계하는 색인 파일을 만듭니다.
 
