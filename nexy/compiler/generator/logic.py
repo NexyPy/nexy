@@ -156,6 +156,7 @@ from nexy import Template as __Template
 from nexy.i18n.core import current_locale as __current_locale
 from nexy.i18n.core import trans as __trans
 from nexy.utils.imports.component_import import _Import as __Import
+from nexy.routers.actions.store import ACTIONS_STORE as __ACTIONS_STORE
 from jinja2 import Template as __JinjaTemplate
 NexyElement = Union[callable, __JinjaTemplate]
 {layout_header}
@@ -165,7 +166,17 @@ def {self.func_name}({props}) -> str:
     {t_local}
 {logic}
     {layout_children}
+    # Add actions to context (both function and path)
+    __actions_dict = {{}}
+    __actions_path_dict = {{}}
+    for __func_id, __handler in __ACTIONS_STORE.registry.items():
+        __name = __func_id.split('.')[-1]
+        __actions_dict[__name] = __handler
+        __actions_path_dict[__name] = __ACTIONS_STORE.path_map.get(__func_id, '')
     context = {{{context_items}}}
+    context.update(__actions_dict)
+    context['__actions'] = __actions_dict
+    context['__actions_path'] = __actions_path_dict
     rendered = str(__Template().render("{self.template_path}", context))
     return {render_wrapper}
 """
