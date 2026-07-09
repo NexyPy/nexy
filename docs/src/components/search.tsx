@@ -168,24 +168,24 @@ function Search() {
         <>
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center gap-2 text-sm text-muted-foreground border border-border dark:border-border/40 rounded-full px-3 py-1.5 bg-gray-100/20 dark:bg-gray-50/5 hover:bg-muted transition-all duration-200"
+                className="flex items-center gap-2 text-sm text-muted-foreground border border-border dark:border-border/40 rounded-full pl-3 pr-6 cursor-pointer py-1.5 bg-gray-100/20 dark:bg-gray-50/5 hover:bg-muted transition-all duration-200"
             >
                 <SearchIcon size={14} />
                 <span className="hidden xs:inline">Search</span>
                 <div className="flex items-center gap-1">
-                    <kbd className="hidden sm:inline-flex items-center justify-center text-xs font-medium text-muted-foreground bg-muted border border-border rounded px-1.5 py-0.5">
+                    <kbd className="hidden sm:inline-flex items-center justify-center text-xs font-medium text-muted-foreground">
                         ⌘
                     </kbd>
-                    <kbd className="inline-flex items-center justify-center text-xs font-medium text-muted-foreground bg-muted border border-border rounded px-1.5 py-0.5">
+                    <kbd className="inline-flex items-center justify-center  font-medium text-muted-foreground">
                         K
                     </kbd>
                 </div>
             </button>
 
             {open && (
-                <div className="fixed inset-0 z-[9999] flex items-start justify-center p-4 pt-20 md:pt-32">
+                <div className="fixed inset-0 z-9999 flex items-start justify-center p-4 pt-20 md:pt-32 h-screen backdrop-blur-2xl">
                     <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/60 backdrop-blur-3xl"
                         onClick={() => setOpen(false)}
                     />
                     <div className="relative bg-background border border-border rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden">
@@ -204,7 +204,7 @@ function Search() {
                             />
                             <button
                                 onClick={() => setOpen(false)}
-                                className="p-1.5 hover:bg-muted rounded-md text-muted-foreground transition-colors"
+                                className="p-1.5 cursor-pointer hover:bg-muted rounded-md text-muted-foreground transition-colors"
                             >
                                 <X size={18} />
                             </button>

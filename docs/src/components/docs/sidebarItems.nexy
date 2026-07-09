@@ -10,7 +10,7 @@ pathname = usePathname()
         {% if _items.get("type") == "link" %}
             {% set section_path = '/docs' + _items.get("href") %}
             {% set is_active = pathname == section_path %}
-            <a href="{{section_path}}" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium {% if is_active %}text-gray-900 dark:text-gray-100 border-l-2 border-dashed border-yellow-500 bg-yellow-500/10{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors hover:bg-black/5 dark:hover:bg-white/5 rounded-none mx-2">
+            <a href="{{section_path}}" onclick="closeSidebar()" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium {% if is_active %}text-gray-900 dark:text-gray-100 border-l-2 border-dashed border-yellow-500 bg-yellow-500/10{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors hover:bg-black/5 dark:hover:bg-white/5 rounded-none mx-2">
                 {{_items.get("title")}}
             
             </a>
@@ -25,7 +25,7 @@ pathname = usePathname()
                             {% set item_path = '/docs' + _items.get("href") + ch.get("href") %}
                             {% set is_active = pathname == item_path %}
                             <li class="hover:bg-black/5 dark:hover:bg-white/5 {% if is_active %} bg-yellow-500/10 border-l-2  border-yellow-500{% endif %}">
-                                <a href="{{item_path}}" class="flex items-center gap-2 px-2 py-1 text-sm {% if is_active %}text-gray-900 dark:text-gray-100{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors  mx-2">
+                                <a href="{{item_path}}" onclick="closeSidebar()" class="flex items-center gap-2 px-2 py-1 text-sm {% if is_active %}text-gray-900 dark:text-gray-100{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors  mx-2">
                                     {{ch.get("label")}}
                                     {% if ch.get("badge") %}
                                     <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 font-medium">{{ch.get("badge")}}</span>
@@ -44,7 +44,7 @@ pathname = usePathname()
                         {% set item_path = '/docs' + _items.get("href") + ch.get("href") if ch.get("href") != '/' else '/docs' + _items.get("href")  %}
                         {% set is_active = pathname == item_path %}
                         <li class="{% if is_active %}border-yellow-500 border-l-2 bg-yellow-500/10{% endif %}">
-                            <a href="{{item_path}}" class="flex items-center gap-2 px-3 py-1 text-sm {% if is_active %}text-gray-900 dark:text-gray-100{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+                            <a href="{{item_path}}" onclick="closeSidebar()" class="flex items-center gap-2 px-3 py-1 text-sm {% if is_active %}text-gray-900 dark:text-gray-100{% else %}text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white{% endif %} transition-colors hover:bg-black/5 dark:hover:bg-white/5">
                                 {{ch.get("label")}}
                                 {% if ch.get("badge") %}
                                     <span class="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 font-medium">{{ch.get("badge")}}</span>
