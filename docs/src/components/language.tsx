@@ -23,6 +23,11 @@ const LOCALE_FLAG_MAP: Record<string, string> = {
     ru: "ru", zh: "cn", ja: "jp", ko: "kr", ar: "sa", hi: "in",
 };
 
+const LOCALE_NAMES: Record<string, string> = {
+    fr: "Français", en: "English", es: "Español", pt: "Português", de: "Deutsch",
+    ru: "Русский", zh: "中文", ja: "日本語", ko: "한국어", ar: "العربية", hi: "हिन्दी",
+};
+
 function Language() {
     const [open, setOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -32,14 +37,19 @@ function Language() {
 
     const locales = typeof window !== "undefined" ? window.__NEXY_LOCALES : undefined;
     const currentLocale = locales?.current ?? "en";
-    const available = locales?.available ?? [];
-
-    const filtered = available.filter((l) =>
-        l.name.toLowerCase().includes(search.toLowerCase()) ||
-        l.code.toLowerCase().includes(search.toLowerCase())
+    const raw = locales?.available ?? [];
+    const available = raw.map((l: any) =>
+        typeof l === "string"
+            ? { code: l, name: LOCALE_NAMES[l] ?? l, flag: "" }
+            : { code: l.code ?? "", name: l.name ?? LOCALE_NAMES[l.code] ?? l.code, flag: l.flag ?? "" }
     );
 
-    const currentLangInfo = available.find(l => l.code === currentLocale);
+    const filtered = available.filter((l) =>
+        (l.name ?? '').toLowerCase().includes(search.toLowerCase()) ||
+        (l.code ?? '').toLowerCase().includes(search.toLowerCase())
+    );
+
+    const currentLangInfo = available.find(l => l?.code === currentLocale);
 
     useEffect(() => {
         function handleClick(e: MouseEvent) {
@@ -168,7 +178,7 @@ function Language() {
                                 <div className="p-2">
                                     {filtered.map((locale, index) => (
                                         <button
-                                            key={locale.code}
+                                            key={locale.code ?? index}
                                             onClick={() => switchLocale(locale.code)}
                                             onMouseEnter={() => setActiveIndex(index)}
                                             className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 text-left rounded-lg transition-all ${

@@ -16,10 +16,27 @@ function switchRouter(modular) {
     });
 }
 </script>
-<aside class="sidebar p-0! pr-2! py-6! flex flex-col gap-1 max-lg:fixed max-lg:top-0 max-lg:-left-72 max-lg:bottom-0 max-lg:z-50 max-lg:w-72 max-lg:h-dvh max-lg:pt-20 max-lg:bg-background max-lg:border-r max-lg:shadow-xl max-lg:transition-all max-lg:duration-300 max-lg:overflow-hidden" id="docs-sidebar">
+<div id="docs-sidebar-desktop" class="sidebar p-0! pr-2! py-6! flex-col gap-1 overflow-hidden hidden lg:flex">
     <RouterToggle/>
-
     <aside class="overflow-y-auto flex flex-col gap-4 py-2 pr-2 flex-1">
         <SidebarItems SIDE_BAR_Items={{build_sections(s, "fbr" if not is_modular else "modular")}}/>
     </aside>
-</aside>
+</div>
+
+<div id="docs-sidebar-modal" class="hidden fixed inset-0 z-40 items-end justify-center pb-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeSidebar()"></div>
+    <div class="relative bg-background border border-border rounded-xl shadow-2xl w-full max-w-sm overflow-hidden max-h-[80vh] flex flex-col">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+            <span class="text-sm font-medium text-foreground">Docs</span>
+            <button onclick="closeSidebar()" class="p-1.5 hover:bg-muted rounded-md text-muted-foreground transition-colors cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="overflow-y-auto p-2 flex-1">
+            <div class="p-2">
+                <RouterToggle/>
+            </div>
+            <SidebarItems SIDE_BAR_Items={{build_sections(s, "fbr" if not is_modular else "modular")}}/>
+        </div>
+    </div>
+</div>
