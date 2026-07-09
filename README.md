@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/NexyPy/nexy/main/docs/public/nexy.svg" alt="Nexy" width="120" />
+  <img src="./nexy.png" alt="Nexy" width="120" />
 </p>
 
 <h1 align="center">Nexy</h1>
 
 <p align="center">
-  <em>The fullstack Python meta-framework — <strong>sub-second startup, sub-100ms HMR</strong></em>
+  <em>The fullstack Python meta-framework — sub-second startup, sub-100ms HMR, zero-config Vite.</em>
 </p>
 
 <p align="center">
@@ -27,39 +27,48 @@
   <a href="https://github.com/NexyPy/nexy/actions/workflows/ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/NexyPy/nexy/ci.yml?branch=main&color=%2334D058" alt="CI">
   </a>
+  <a href="https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/contributions-welcome-34D058" alt="Contributions welcome">
+  </a>
 </p>
 
 ---
 
 ## Why Nexy?
 
-Most Python web frameworks force you to choose: backend **or** frontend. Nexy is the first Python meta-framework that seamlessly bridges FastAPI with Vite-powered frontends (React, Vue, Svelte, Solid) — without sacrificing DX or performance.
+Every Python web framework forces you to choose: backend **or** frontend. Nexy is the first Python meta-framework that bridges FastAPI with Vite-powered frontends (React, Vue, Svelte, Solid, Preact) in a single file — without sacrificing DX or performance.
+
+**Design-Driven Engineering** — an API so clean it feels like a DSL, architecture so fast you forget it's there.
 
 | You get | Instead of |
 |---------|------------|
-| **Sub-second startup** | Waiting 10-30s for Next.js/Rails |
-| One `.nexy` file = backend + frontend | Separate projects for API + UI |
-| Zero-config Vite integration | Manually wiring Webpack/Vite |
-| Framework-agnostic UI | Being locked into one JS framework |
-| SSR + SSG out of the box | Adding SSG as an afterthought |
+| **Sub-second startup** | 10–30s waiting for Next.js, Rails, Django |
+| One `.nexy` file = backend + frontend | Separate projects for API + UI + build tooling |
+| Zero-config Vite integration | Manually wiring Webpack, Vite, Parcel |
+| Framework-agnostic UI components | Being locked into React or Vue |
+| SSR + SSG out of the box, parallel build | Adding SSG as an afterthought |
+
+---
 
 ## Quick start
 
 ```bash
-# Create a project — no pip install needed
+# No pip install needed
 uvx nexy new
 
-# Start developing
+# Start developing — HMR, FastAPI, Vite, all hot-reloading
 cd my-project && nexy dev
 ```
 
-That's it. Your browser opens at `http://localhost:3000` with HMR, FastAPI backend, and Vite frontend — all hot-reloading on save.
+Your browser opens at `localhost:3000`. Change a file. Instant feedback. No waiting.
 
-## Code example
+---
 
-One `.nexy` file. Server-rendered HTML + interactive frontend component.
+## The `.nexy` file — one format, three layers
 
-```html
+A single file that mixes Python, Jinja2, and your frontend framework of choice.
+
+````html
 ---
 title : prop[str] = "Dashboard"
 from "@/components/Chart.tsx" import Chart
@@ -68,59 +77,17 @@ from "@/components/Chart.tsx" import Chart
 <h1>{{ title }}</h1>
 
 <Chart data="{{ api_data }}" />
-```
+````
 
-The `---` block is Python: declare props, import components. Below is Jinja2: server-rendered HTML. Frontend frameworks hydrate on top via Vite.
+| Layer | Language | Role |
+|-------|----------|------|
+| `---` frontmatter | Python | Props, imports, server logic |
+| Body | Jinja2 | Server-rendered HTML |
+| Components | TS/JS/Vue/Svelte | Interactive islands via Vite |
 
-## Features
+---
 
-### .nexy — polyglot components
-
-A single file format that mixes Python, Jinja2, and your UI framework of choice.
-
-```
-┌─────────────────────┐
-│  ---                │  ← Python logic (props, imports)
-│  title : prop[str]  │
-│  ---                │
-│  <h1>{{ title }}</h1>│  ← Jinja2 template (SSR)
-│  <Chart />           │  ← TS/JS client island
-└─────────────────────┘
-```
-
-### Dual routing — scale with your project
-
-- **File-based**: `src/routes/index.nexy` → `/`, `src/routes/blog/[slug].nexy` → `/blog/{slug}`
-- **Modular**: NestJS-inspired decorator-based routing for enterprise apps
-- **Hybrid**: Mix static pages and dynamic API routes in the same project
-
-### Framework-agnostic frontend
-
-Import React, Vue, Svelte, Solid, or Preact components directly into your `.nexy` templates. No adapter, no bridge, no configuration.
-
-```python
-# Works in any .nexy file
-from "@/components/Chart.tsx" import Chart     # React/Solid/Preact
-from "@/components/Table.vue" import Table     # Vue
-from "@/components/Card.svelte" import Card    # Svelte
-```
-
-### Production-grade SSR & SSG
-
-- **SSR**: Server-side rendering for every component (esbuild per-file, no Vite dependency)
-- **SSG**: Parallel static generation with worker pool
-- **Automatic**: Framework detection from imports, zero config
-
-### CLI — one tool to rule them all
-
-| Command | Purpose |
-|---------|---------|
-| `nexy new` | Scaffold a new project |
-| `nexy dev` | Dev server with HMR |
-| `nexy build` | Production build |
-| `nexy start` | Production server |
-
-## Architecture at a glance
+## Architecture
 
 ```mermaid
 graph TD
@@ -134,33 +101,82 @@ graph TD
     E --> L[Module Finder/Loader]
     F --> M[Frontend Frameworks]
     N[Watcher] --> O[FS Events]
-    O --> P[compile + restart]
+    O --> P[Compile + Restart]
 ```
+
+**Key design choice:** Nexy uses a per-file esbuild compilation pipeline for SSR — no Vite dependency in production. Worker-pool parallelism for SSG. This means sub-second rebuilds regardless of project size.
+
+---
+
+## Comparisons
+
+| Feature | Nexy | Next.js | Django + Htmx | Remix |
+|---------|------|---------|---------------|-------|
+| Language | Python + any JS framework | JS/TS only | Python + htmx | JS/TS only |
+| Startup | < 1s | 10–30s | 3–8s | 8–15s |
+| HMR | < 100ms | ~500ms | N/A | ~300ms |
+| File format | `.nexy` (Python + Jinja2 + UI) | `.tsx`/`.jsx` | `.py` + `.html` | `.tsx` |
+| SSR | Built-in (esbuild) | Built-in (React) | Manual | Built-in (React) |
+| SSG | Parallel worker pool | `next export` | Third-party | Via Vite |
+| Routing | File-based + Modular (hybrid) | File-based | Manual | File-based |
+
+---
 
 ## Supported frontend frameworks
 
-| Framework | Status | SSR | SSG | HMR |
-|-----------|--------|-----|-----|-----|
-| React | Stable | ✓ | ✓ | ✓ |
-| Vue | Stable | ✓ | ✓ | ✓ |
-| Svelte | Stable | ✓ | ✓ | ✓ |
-| Solid | Stable | ✓ | ✓ | ✓ |
-| Preact | Stable | ✓ | ✓ | ✓ |
-| None (vanilla) | Stable | ✓ | — | ✓ |
+| Framework | SSR | SSG | HMR |
+|-----------|-----|-----|-----|
+| React | ✓ | ✓ | ✓ |
+| Vue | ✓ | ✓ | ✓ |
+| Svelte | ✓ | ✓ | ✓ |
+| Solid | ✓ | ✓ | ✓ |
+| Preact | ✓ | ✓ | ✓ |
+| None (vanilla) | ✓ | — | ✓ |
 
-## Project status
+---
 
-Nexy is in active development. The core features are stable and production-ready.
-We welcome contributions of all kinds — bug reports, feature requests, and pull requests.
+## CLI
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) to get started, or browse [good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+| Command | Purpose |
+|---------|---------|
+| `nexy new` | Scaffold a new project with your framework of choice |
+| `nexy dev` | Dev server with sub-100ms HMR |
+| `nexy build` | Production build (SSR + SSG + client bundles) |
+| `nexy start` | Production server (Uvicorn + FastAPI) |
+
+---
+
+## Roadmap
+
+- [x] Core compiler & dual routing (file-based + modular)
+- [x] Vite integration with HMR for React, Vue, Svelte, Solid, Preact
+- [x] Parallel SSG with worker pool
+- [ ] Native CLI scaffolding with framework selection wizard
+- [ ] One-click deployment (Docker, Vercel, Fly.io)
+- [ ] First-class AI/agent endpoint support
+
+---
+
+## Contributing
+
+We welcome contributions from everyone — whether you're a seasoned Rust/Python engineer or writing your first open-source PR.
+
+- **Good first issues** — [browse the label](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+- **Architecture discussions** — [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
+- **Code of conduct** — [Contributor Covenant](CODE_OF_CONDUCT.md)
+- **Contribution guide** — [CONTRIBUTING.md](CONTRIBUTING.md)
+
+See something you want to improve? Open a PR. Architecture proposals, bug fixes, documentation, tests — all count.
+
+---
 
 ## Community
 
-- [GitHub Issues](https://github.com/NexyPy/nexy/issues) — bug reports, feature requests
-- [GitHub Discussions](https://github.com/NexyPy/nexy/discussions) — questions, ideas
 - [Documentation](https://nexy.ai/docs) — full reference
-- [Contributor Covenant](CODE_OF_CONDUCT.md) — code of conduct
+- [GitHub Issues](https://github.com/NexyPy/nexy/issues) — bug reports & feature requests
+- [Discord](https://discord.gg/nexy) — community chat
+
+---
 
 ## License
 
