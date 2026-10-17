@@ -65,7 +65,7 @@ src/apps/
 يتحكم `nexyconfig.py` في جهاز التوجيه الذي سيتم استخدامه:
 
 ```python
-# FBR — no explicit router config needed
+# FBR - no explicit router config needed
 
 class NexyConfig(NexyConfigModel):
 
@@ -73,7 +73,7 @@ class NexyConfig(NexyConfigModel):
 ```
 
 ```python
-# Modular — import the APIRouter from your root "@Module
+# Modular - import the APIRouter from your root "@Module
 
 from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
 
@@ -82,4 +82,4 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-لا يمكنك الجمع بين الاثنين في مشروع واحد — اختر المشروع الذي يناسب فريقك وحجمه.
+لا يمكنك الجمع بين الاثنين في مشروع واحد - اختر المشروع الذي يناسب فريقك وحجمه.

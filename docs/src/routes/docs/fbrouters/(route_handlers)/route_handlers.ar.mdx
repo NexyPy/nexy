@@ -62,7 +62,7 @@ class CreateUser(BaseModel):
 async def POST(request: Request, body: CreateUser):
     return {"name": body.name, "email": body.email}
 ```
-يقوم FastAPI بالتحقق من صحة النص تلقائيًا — ويعيد 422 عند إدخال غير صالح.
+يقوم FastAPI بالتحقق من صحة النص تلقائيًا - ويعيد 422 عند إدخال غير صالح.
 
 ---
 

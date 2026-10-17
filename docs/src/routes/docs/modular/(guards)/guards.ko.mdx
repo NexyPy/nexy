@@ -62,7 +62,7 @@ class AuthGuard:
 
 ## 가드 적용
 
-### 컨트롤러 수준 — 모든 경로 보호
+### 컨트롤러 수준 - 모든 경로 보호
 
 ```python
 from nexy.decorators import Controller, UseGuard
@@ -91,7 +91,7 @@ class UsersController:
         return {"message": "No auth required"}
 ```
 
-### 여러 명의 경비원 — 모두 통과해야 함
+### 여러 명의 경비원 - 모두 통과해야 함
 
 ```python
 "@Controller("/admin")
@@ -180,14 +180,14 @@ class UsersController:
 
 ## 모범 사례
 
-1. **문제당 하나의 경비원** — `AuthGuard`, `RoleGuard`, `RateLimitGuard`. 모든 일을 하는 `SecurityGuard`는 아닙니다.
-2. **설명이 포함된 상태 코드 사용** — 인증 누락/잘못의 경우 401, 권한 부족의 경우 403, 속도 제한의 경우 429입니다.
-3. **부작용 방지** — 경비원은 상태를 수정하지 말고 권한을 확인해야 합니다(`request.state` 제외).
-4. **캐시 비용이 많이 드는 검사** — 메모리 내 캐시가 있는 싱글톤 가드 인스턴스입니다.
-5. **격리된 가드 테스트** — 모의 `Request`를 생성하고 가드를 호출하고 레이즈 또는 패스를 선언합니다.
+1. **문제당 하나의 경비원** - `AuthGuard`, `RoleGuard`, `RateLimitGuard`. 모든 일을 하는 `SecurityGuard`는 아닙니다.
+2. **설명이 포함된 상태 코드 사용** - 인증 누락/잘못의 경우 401, 권한 부족의 경우 403, 속도 제한의 경우 429입니다.
+3. **부작용 방지** - 경비원은 상태를 수정하지 말고 권한을 확인해야 합니다(`request.state` 제외).
+4. **캐시 비용이 많이 드는 검사** - 메모리 내 캐시가 있는 싱글톤 가드 인스턴스입니다.
+5. **격리된 가드 테스트** - 모의 `Request`를 생성하고 가드를 호출하고 레이즈 또는 패스를 선언합니다.
 
 ## 다음 단계
 
-- [Middleware](/docs/modular/middleware) — 파이프라인 후크 요청
-- [Controllers](/docs/modular/controllers) — 경로 핸들러 정의
-- [Modules](/docs/modular/modules) — 기능 모듈로 구성
+- [Middleware](/docs/modular/middleware) - 파이프라인 후크 요청
+- [Controllers](/docs/modular/controllers) - 경로 핸들러 정의
+- [Modules](/docs/modular/modules) - 기능 모듈로 구성

@@ -37,7 +37,7 @@ For fire-and-forget work after the response, use `BackgroundTasks`. For true asy
 
 ## Caveats
 
-- Don't call `async` functions from `def` handlers with `await` — use `asyncio.run()` or make the handler `async def`
-- Don't call blocking functions (`time.sleep()`, `requests.get()`) from `async def` — use `asyncio.sleep()`, `httpx.AsyncClient`
-- Nexy's `nx dev` runs one uvicorn worker by default — async handlers shine here
+- Don't call `async` functions from `def` handlers with `await` - use `asyncio.run()` or make the handler `async def`
+- Don't call blocking functions (`time.sleep()`, `requests.get()`) from `async def` - use `asyncio.sleep()`, `httpx.AsyncClient`
+- Nexy's `nx dev` runs one uvicorn worker by default - async handlers shine here
 - For production, use multiple workers (`nx start --workers 4`) for sync handlers

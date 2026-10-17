@@ -106,7 +106,7 @@ export class DefinitionHandler {
     const pyResolved = resolvePythonModulePath(impPath, workspaceRoot);
     if (pyResolved) return pyResolved;
 
-    // Python package import (e.g. from nexy import Vite) — look in site-packages
+    // Python package import (e.g. from nexy import Vite) - look in site-packages
     if (!impPath.startsWith(".") && !impPath.startsWith("@") && !impPath.startsWith("/") && !impPath.includes("/")) {
       const sitePkg = this.resolvePythonPackage(impPath, workspaceRoot, symbolName);
       if (sitePkg) return sitePkg;
@@ -176,7 +176,7 @@ export class DefinitionHandler {
       return Location.create(pathToFileURL(finalPath).toString(), Range.create(0, 0, 0, 0));
     }
 
-    // Fallback: package import (e.g. from nexy import Vite) — show the import line in header
+    // Fallback: package import (e.g. from nexy import Vite) - show the import line in header
     const text = doc.getText();
     const importRegex = new RegExp(`^.*\\b${imp.name}\\b.*$`, 'm');
     const match = importRegex.exec(text);

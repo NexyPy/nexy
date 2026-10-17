@@ -34,16 +34,16 @@ user = db.user.find_unique(id)
 
 ## 迁移步骤
 
-1. **脚手架** — `nx new my-app`
-2. **端口页面** — `page.tsx` → `.nexy` 或 `.mdx` 文件
-3. **端口布局** — `layout.tsx` → `layout.nexy`
-4. **端口 API 路由** — `route.ts` → `.py` 文件，包含 `get()`、`post()` 等。
-5. **端口服务器操作** — 服务器操作 → `"@Action` 装饰器
+1. **脚手架** - `nx new my-app`
+2. **端口页面** - `page.tsx` → `.nexy` 或 `.mdx` 文件
+3. **端口布局** - `layout.tsx` → `layout.nexy`
+4. **端口 API 路由** - `route.ts` → `.py` 文件，包含 `get()`、`post()` 等。
+5. **端口服务器操作** - 服务器操作 → `"@Action` 装饰器
 
 ## 主要区别
 
-- **服务器上的 Python** — 不需要 JavaScript/TypeScript
-- **页面没有构建步骤** — `.nexy` 文件在开发时编译
-- **多个前端框架** — React、Vue、Svelte、Solid、Preact
-- **FastAPI 底层** — 异步、OpenAPI、类型安全
-- **两种路由策略** — 基于文件（如 Next.js Pages）或模块化（如 NestJS）
+- **服务器上的 Python** - 不需要 JavaScript/TypeScript
+- **页面没有构建步骤** - `.nexy` 文件在开发时编译
+- **多个前端框架** - React、Vue、Svelte、Solid、Preact
+- **FastAPI 底层** - 异步、OpenAPI、类型安全
+- **两种路由策略** - 基于文件（如 Next.js Pages）或模块化（如 NestJS）

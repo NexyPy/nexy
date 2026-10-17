@@ -13,7 +13,7 @@ def GET():
     return {"x": x}
 ```
 
-运行 `nx dev` 并命中路线 — 终点站落入 `pdb`。
+运行 `nx dev` 并命中路线 - 终点站落入 `pdb`。
 
 ## VS 代码
 
@@ -36,7 +36,7 @@ def GET():
 }
 ```
 
-3. 按 `F5` 开始调试 — 断点在 `.nexy` frontmatter 和 `.py` 文件中工作。
+3. 按 `F5` 开始调试 - 断点在 `.nexy` frontmatter 和 `.py` 文件中工作。
 
 ## 打印调试
 
@@ -61,7 +61,7 @@ def GET():
 
 ## uvicorn 重新加载
 
-`nx dev` 使用 `--reload` 运行 uvicorn — 对 `.py`、`.nexy`、`.mdx` 文件的更改会触发自动重新启动。
+`nx dev` 使用 `--reload` 运行 uvicorn - 对 `.py`、`.nexy`、`.mdx` 文件的更改会触发自动重新启动。
 
 ## 常见问题
 
@@ -70,4 +70,4 @@ def GET():
 |路线返回 405 | HTTP 方法错误或缺少 `python-multipart` |
 |身体是`None` |缺少 Pydantic 模型或类型注释 |
 | 422 验证错误 |路径/查询参数中的类型不匹配 |
-|找不到模块 | VFS 缓存过时 — 重新启动 `nx dev` |
+|找不到模块 | VFS 缓存过时 - 重新启动 `nx dev` |

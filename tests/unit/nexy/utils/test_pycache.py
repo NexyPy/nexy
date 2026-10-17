@@ -12,7 +12,9 @@ def test_pycache_sets_environment() -> None:
             os.chdir(tmp)
             pycache()
             env_val = os.environ.get("PYTHONPYCACHEPREFIX", "")
-            assert env_val.endswith("__nexy__/__pycache__") or env_val.endswith("__nexy__\\__pycache__")
+            assert env_val.endswith("__nexy__/__pycache__") or env_val.endswith(
+                "__nexy__\\__pycache__"
+            )
         finally:
             os.chdir(orig)
             os.environ.pop("PYTHONPYCACHEPREFIX", None)

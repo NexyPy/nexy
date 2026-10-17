@@ -1,11 +1,9 @@
-
-
-def Link(
+def link(
     href: str,
     children: str = "",
     class_name: str | None = None,
     prefetch: bool = True,
-    **kwargs,
+    **kwargs: str | bool,
 ) -> str:
     # Build attributes
     attrs = {"href": href, "data-nexy-link": "true"}

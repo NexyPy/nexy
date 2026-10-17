@@ -166,9 +166,9 @@ Cette structure s'étend à des centaines de modules. Chaque répertoire de modu
 
 La résolution des modules suit trois règles :
 
-1. **Tri topologique** — les modules s'initialisent dans l'ordre des dépendances (importations en premier)
-2. **Détection circulaire** — les dépendances circulaires entre les modules augmentent `RecursionError` au démarrage
-3. **Portée du fournisseur** — les fournisseurs conservent leur portée d'origine quel que soit le module qui les importe
+1. **Tri topologique** - les modules s'initialisent dans l'ordre des dépendances (importations en premier)
+2. **Détection circulaire** - les dépendances circulaires entre les modules augmentent `RecursionError` au démarrage
+3. **Portée du fournisseur** - les fournisseurs conservent leur portée d'origine quel que soit le module qui les importe
 
 Si le module A importe le module B et que le module B importe le module A, le conteneur détecte le cycle au démarrage :
 
@@ -180,14 +180,14 @@ RecursionError: Cycle detected for ModuleA
 
 ## meilleures pratiques
 
-1. **Une fonctionnalité par module** — utilisateurs, authentification, facturation. Pas des "utilitaires".
-2. **Gardez les importations de modules superficielles** — un module qui importe plus de 10 autres en fait trop
-3. **Utilisez `exports` intentionnellement** — exportez uniquement ce dont les autres modules ont réellement besoin
-4. **Nommer les modules après les domaines** — `UsersModule`, `OrdersModule`, `PaymentsModule`
-5. **Toujours fournir un `prefix` lors de la gestion des versions** — `"@Module(prefix="/api/v1")`
+1. **Une fonctionnalité par module** - utilisateurs, authentification, facturation. Pas des "utilitaires".
+2. **Gardez les importations de modules superficielles** - un module qui importe plus de 10 autres en fait trop
+3. **Utilisez `exports` intentionnellement** - exportez uniquement ce dont les autres modules ont réellement besoin
+4. **Nommer les modules après les domaines** - `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Toujours fournir un `prefix` lors de la gestion des versions** - `"@Module(prefix="/api/v1")`
 
 ## Prochaines étapes
 
-- [Guards](/docs/modular/guards) — protège les routes des modules
-- [Middleware](/docs/modular/middleware) — demander des hooks de pipeline
-- [Controllers](/docs/modular/controllers) — définir les gestionnaires d'itinéraire
+- [Guards](/docs/modular/guards) - protège les routes des modules
+- [Middleware](/docs/modular/middleware) - demander des hooks de pipeline
+- [Controllers](/docs/modular/controllers) - définir les gestionnaires d'itinéraire

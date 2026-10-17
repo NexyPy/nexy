@@ -45,6 +45,6 @@ class AsyncController:
 
 ## 注意事项
 
-- 不要使用 `await` 从 `def` 处理程序调用 `async` 函数 — 使用 `asyncio.run()` 或使处理程序为 `async def`
-- 不要从 `async def` 调用阻塞函数（`time.sleep()`、`requests.get()`）——使用 `asyncio.sleep()`、`httpx.AsyncClient`
+- 不要使用 `await` 从 `def` 处理程序调用 `async` 函数 - 使用 `asyncio.run()` 或使处理程序为 `async def`
+- 不要从 `async def` 调用阻塞函数（`time.sleep()`、`requests.get()`）--使用 `asyncio.sleep()`、`httpx.AsyncClient`
 - 对于生产，使用多个工作人员作为同步处理程序

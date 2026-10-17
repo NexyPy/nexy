@@ -1,6 +1,6 @@
 # Properties (Props)
 
-Props are how data flows into a component. They make components reusable — the same `Card` component can render different content based on the props it receives.
+Props are how data flows into a component. They make components reusable - the same `Card` component can render different content based on the props it receives.
 
 ## Declaring Props
 
@@ -23,10 +23,10 @@ Each declaration becomes a parameter of the generated Python function with the c
 
 ```nexy
 ---
-# Required — must be passed, no default
+# Required - must be passed, no default
 name:prop[str]
 
-# Optional — has a default value
+# Optional - has a default value
 name:prop[str] = "Guest"
 age:prop[int] = 0
 items:prop[list] = []
@@ -37,7 +37,7 @@ active:prop[bool] = false
 
 If a required prop is not passed when the component is used, Python raises a `TypeError` at render time. The error message includes the component name and the missing argument.
 
-**When to make a prop required**: When the component is meaningless without it. A `BlogCard` without a `title` is broken — make it required. A `Button` without a `variant` can default to `"primary"`.
+**When to make a prop required**: When the component is meaningless without it. A `BlogCard` without a `title` is broken - make it required. A `Button` without a `variant` can default to `"primary"`.
 
 ## Supported Types
 
@@ -51,7 +51,7 @@ If a required prop is not passed when the component is used, Python raises a `Ty
 | `dict` | `{}` | Dict values |
 | `Any` | `None` | Any type |
 
-The type annotation is used for documentation and IDE support. At runtime, Python is dynamically typed — the annotation doesn't enforce the type. If you pass a string where an int is expected, it will fail when the template tries to use it arithmetically, not at the prop declaration level.
+The type annotation is used for documentation and IDE support. At runtime, Python is dynamically typed - the annotation doesn't enforce the type. If you pass a string where an int is expected, it will fail when the template tries to use it arithmetically, not at the prop declaration level.
 
 ## Passing Props from Parents
 
@@ -77,7 +77,7 @@ posts = [...]  # from database
 **Rules**:
 
 - **String values** use `key="value"` or `key="{{ jinja_expr }}"`
-- **Expressions** use `key={expr}` — no quotes, the value is parsed as Python
+- **Expressions** use `key={expr}` - no quotes, the value is parsed as Python
 - **Booleans**: use `active=true` (lowercase), not `active=True` or `active="true"`
 - **Lists/dicts**: `items={["a", "b"]}` or `settings={"key": "val"}`
 
@@ -86,7 +86,7 @@ posts = [...]  # from database
 A common Python gotcha: **don't use mutable defaults** that are shared across calls:
 
 ```python
-# BAD — in Python, this list is created once and shared
+# BAD - in Python, this list is created once and shared
 def Card(items: list = []):
     items.append("new")  # Modifies the default!
 ```
@@ -100,7 +100,7 @@ def Card(items: list = None):
         items = []
 ```
 
-So `items:prop[list] = []` is safe to use — each component call gets its own list.
+So `items:prop[list] = []` is safe to use - each component call gets its own list.
 
 ## Dynamic Props with `{{ }}`
 

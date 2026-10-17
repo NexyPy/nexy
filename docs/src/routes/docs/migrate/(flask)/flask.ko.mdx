@@ -30,18 +30,18 @@ async def get(id: int):
 
 ## 당신이 얻는 것
 
-- **비동기 지원** — 해킹을 통하지 않는 기본
-- **유형 검증** — Pydantic, 자동 422 오류
-- **OpenAPI 문서** — `flasgger` 필요 없음
-- **DI 시스템** — 글로벌 싱글톤 없이 서비스 주입
-- **CLI** — `nx build`, `nx start`, `nx migrate`
+- **비동기 지원** - 해킹을 통하지 않는 기본
+- **유형 검증** - Pydantic, 자동 422 오류
+- **OpenAPI 문서** - `flasgger` 필요 없음
+- **DI 시스템** - 글로벌 싱글톤 없이 서비스 주입
+- **CLI** - `nx build`, `nx start`, `nx migrate`
 
 ## 마이그레이션 단계
 
-1. **비계** — `nx new my-app`
-2. **포트 경로** — `"@app.route()` → `src/routes/` 또는 `"@Controller`에 파일
-3. **포트 템플릿** — Flask `render_template()` → `.nexy` 파일
-4. **포트 요청 처리** — `request.args`/`request.json` → 입력된 함수 매개변수
+1. **비계** - `nx new my-app`
+2. **포트 경로** - `"@app.route()` → `src/routes/` 또는 `"@Controller`에 파일
+3. **포트 템플릿** - Flask `render_template()` → `.nexy` 파일
+4. **포트 요청 처리** - `request.args`/`request.json` → 입력된 함수 매개변수
 5. **포트 블루프린트** → `"@Module` 또는 FBR의 하위 디렉터리
 
 ## 남는 것

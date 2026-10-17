@@ -1,8 +1,11 @@
 from nexy.core.models import FrontendFramework
+from nexy.frontend.islands import ISLANDS_RUNTIME
 
 
 def vue() -> FrontendFramework:
-    render_script = """
+    render_script = (
+        ISLANDS_RUNTIME
+        + """
     (async function() {
         const w = window;
         if (w.__nexy_vue_init) return;
@@ -82,7 +85,18 @@ def vue() -> FrontendFramework:
 
         function init() {
             const nodes = document.querySelectorAll('[data-nexy-fw="vue"]');
-            nodes.forEach(m);
+            nodes.forEach((el) => {
+                if (el.hasAttribute("data-nexy-island")) {
+                    const directive = el.getAttribute("data-nexy-directive");
+                    if (directive === "client:only") return;
+                    const media = el.getAttribute("data-nexy-media") || "";
+                    if (media) el.dataset.nexyMedia = media;
+                    el.__nexyHydrate = () => m(el);
+                } else {
+                    m(el);
+                }
+            });
+            nexyIslands.init(document);
         }
 
         if (document.readyState === "loading") {
@@ -92,6 +106,7 @@ def vue() -> FrontendFramework:
         }
     })();
     """
+    )
 
     return FrontendFramework(
         name="vue",

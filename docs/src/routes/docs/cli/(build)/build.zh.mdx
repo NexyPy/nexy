@@ -1,6 +1,6 @@
 #nx构建
 
-编译生产项目 — `.nexy`/`.mdx` 编译、SSG 和客户端捆绑。
+编译生产项目 - `.nexy`/`.mdx` 编译、SSG 和客户端捆绑。
 
 ```bash
 nx build
@@ -11,7 +11,7 @@ nx build
 ## 它的作用
 
 1.将所有`.nexy`/`.mdx`文件编译为`__nexy__/`（并行、多线程）
-2. 生成 SSG 页面（静态站点生成）——为静态路由预渲染 HTML
+2. 生成 SSG 页面（静态站点生成）--为静态路由预渲染 HTML
 3. 为客户端组件运行 Vite 生产构建（如果已配置）
 4. 为FastAPI应用程序生成编译后的路由树
 
@@ -19,10 +19,10 @@ nx build
 
 ```text
 __nexy__/
-├── server/          — Compiled Python routes
-├── client/          — Bundled JS/CSS (Vite)
-├── static/          — Pre-rendered HTML (SSG)
-└── manifest.json    — Build manifest
+├── server/          - Compiled Python routes
+├── client/          - Bundled JS/CSS (Vite)
+├── static/          - Pre-rendered HTML (SSG)
+└── manifest.json    - Build manifest
 ```
 
 ---

@@ -68,9 +68,9 @@ router integration.
 - `createErrorHandler` converts render exceptions into flight/HTML error responses.
 - Custom error boundaries via `error.tsx`.
 
-**Nexy gap**: Nexy has `error.nexy`/`notfound.nexy` scoped handlers
-(`fbrouter/__init__.py:139-182`), but the app-level handler registration order currently
-overrides the FBR ones (`nexy/routers/app.py:237`).
+**Nexy gap**: Nexy has `errors.nexy`/`notfound.nexy` scoped handlers
+(`fbrouter/__init__.py`), but the app-level handler registration order currently
+overrides the FBR ones (`nexy/routers/app.py`).
 
 ## 8. Headers
 

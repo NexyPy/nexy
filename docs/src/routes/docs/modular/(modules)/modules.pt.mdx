@@ -97,7 +97,7 @@ class UsersModule:
     providers = [UserService]
 ```
 
-O `DatabaseService` é resolvido na inicialização quando o módulo é carregado. Se as dependências de um provedor não puderem ser resolvidas, o erro será gerado imediatamente — não no momento da solicitação.
+O `DatabaseService` é resolvido na inicialização quando o módulo é carregado. Se as dependências de um provedor não puderem ser resolvidas, o erro será gerado imediatamente - não no momento da solicitação.
 
 ### Exportações
 
@@ -110,7 +110,7 @@ class DatabaseModule:
     exports = [DatabaseService]  # Only DatabaseService is visible outside
 ```
 
-Sem `exports`, NENHUM provedor fica visível para importar módulos. Isso é intencional — força você a declarar explicitamente a API pública do seu módulo.
+Sem `exports`, NENHUM provedor fica visível para importar módulos. Isso é intencional - força você a declarar explicitamente a API pública do seu módulo.
 
 ## Módulos Compartilhados
 
@@ -166,9 +166,9 @@ Essa estrutura pode ser dimensionada para centenas de módulos. Cada diretório 
 
 A resolução do módulo segue três regras:
 
-1. **Classificação topológica** — os módulos são inicializados em ordem de dependência (importações primeiro)
-2. **Detecção circular** — dependências circulares entre módulos aumentam `RecursionError` na inicialização
-3. **Escopo do provedor** — os provedores mantêm seu escopo original, independentemente de qual módulo os importa
+1. **Classificação topológica** - os módulos são inicializados em ordem de dependência (importações primeiro)
+2. **Detecção circular** - dependências circulares entre módulos aumentam `RecursionError` na inicialização
+3. **Escopo do provedor** - os provedores mantêm seu escopo original, independentemente de qual módulo os importa
 
 Se o módulo A importa o módulo B e o módulo B importa o módulo A, o contêiner detecta o ciclo na inicialização:
 
@@ -180,14 +180,14 @@ RecursionError: Cycle detected for ModuleA
 
 ## Melhores práticas
 
-1. **Um recurso por módulo** — usuários, autenticação, cobrança. Não "utilitários".
-2. **Mantenha as importações de módulos superficiais** — um módulo que importa mais de 10 outros está fazendo muito
-3. **Use `exports` intencionalmente** — exporte apenas o que outros módulos realmente precisam
-4. **Nomeie os módulos após os domínios** — `UsersModule`, `OrdersModule`, `PaymentsModule`
-5. **Sempre forneça um `prefix` ao fazer o versionamento** — `"@Module(prefix="/api/v1")`
+1. **Um recurso por módulo** - usuários, autenticação, cobrança. Não "utilitários".
+2. **Mantenha as importações de módulos superficiais** - um módulo que importa mais de 10 outros está fazendo muito
+3. **Use `exports` intencionalmente** - exporte apenas o que outros módulos realmente precisam
+4. **Nomeie os módulos após os domínios** - `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Sempre forneça um `prefix` ao fazer o versionamento** - `"@Module(prefix="/api/v1")`
 
 ## Próximas etapas
 
-- [Guards](/docs/modular/guards) — protege as rotas do módulo
-- [Middleware](/docs/modular/middleware) — solicita ganchos de pipeline
-- [Controllers](/docs/modular/controllers) — definir manipuladores de rota
+- [Guards](/docs/modular/guards) - protege as rotas do módulo
+- [Middleware](/docs/modular/middleware) - solicita ganchos de pipeline
+- [Controllers](/docs/modular/controllers) - definir manipuladores de rota

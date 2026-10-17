@@ -62,12 +62,12 @@ from starlette.authentication import requires
 def GET(request):
     return {"user": request.user.username}
 ```
-FBR과 모듈러 모두에서 작동합니다. — `requires`는 유효한 가드 호출 가능 항목을 반환합니다.
+FBR과 모듈러 모두에서 작동합니다. - `requires`는 유효한 가드 호출 가능 항목을 반환합니다.
 
 ---
 
 ## 관련
 
-- ["@UseGuard reference](/docs/decorators/useguard) — 전체 데코레이터 API
-- [Guards (Modular)](/docs/modular/guards) — 모듈형 DI에 가드 주입
-- [Authentication](/docs/security/authentication) — 인증 백엔드 설정
+- ["@UseGuard reference](/docs/decorators/useguard) - 전체 데코레이터 API
+- [Guards (Modular)](/docs/modular/guards) - 모듈형 DI에 가드 주입
+- [Authentication](/docs/security/authentication) - 인증 백엔드 설정

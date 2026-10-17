@@ -1,0 +1,7 @@
+{
+  "format": {
+    "skip_tool": "tool not found - skipping",
+    "failed": "{count} file(s) failed",
+    "passed": "formatting complete"
+  }
+}

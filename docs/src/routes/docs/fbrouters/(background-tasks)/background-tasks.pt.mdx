@@ -1,6 +1,6 @@
 # Tarefas em segundo plano (FBR)
 
-Execute o código *após* enviar a resposta — para registro, notificações, aquecimento de cache.
+Execute o código *após* enviar a resposta - para registro, notificações, aquecimento de cache.
 
 ```python
 from fastapi import BackgroundTasks
@@ -49,8 +49,8 @@ def GET(tasks: BackgroundTasks):
 
 ## Importante
 
-- As tarefas são executadas **após** o envio da resposta — o cliente não espera
+- As tarefas são executadas **após** o envio da resposta - o cliente não espera
 - Eles são executados no mesmo processo – tarefas longas bloqueiam o loop de eventos
 - Para trabalhos pesados, use uma fila de tarefas (Celery, ARQ, RQ, etc.)
-- Erros em tarefas são engolidos silenciosamente — adicione try/except dentro da função de tarefa
-- As tarefas recebem **cópias** de objetos mutáveis — as mutações não afetarão a resposta
+- Erros em tarefas são engolidos silenciosamente - adicione try/except dentro da função de tarefa
+- As tarefas recebem **cópias** de objetos mutáveis - as mutações não afetarão a resposta

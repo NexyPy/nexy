@@ -25,7 +25,7 @@ class LogicGenerator:
     def generate(self, template_path: str, source: ParserModel, source_path: str = None) -> None:
         self.source = source
         self.source_path = source_path
-        self.template_path = template_path
+        self.template_path = Path(template_path).as_posix()
         tp = Path(template_path)
         stem = tp.stem
         raw_name = self._string_transform.get_component_name(stem)
@@ -68,7 +68,9 @@ class LogicGenerator:
         logic = textwrap.indent(function_body, "    ")
 
         use_layout = Config.useRouter is None
-        is_layout_file = self.source_path.endswith("layout.nexy") if use_layout else False
+        is_layout_file = (
+            Path(self.source_path).name.lower() in Config.LAYOUT_FILE_NAMES if use_layout else False
+        )
         layout_import = (
             RouteLayout.get_closest_import(self.source_path, is_layout=is_layout_file)
             if use_layout

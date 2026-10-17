@@ -20,7 +20,7 @@ async def SOCKET(websocket: WebSocket):
         pass
 ```
 
-يتم تعيين اسم الوظيفة `SOCKET` (غير حساس لحالة الأحرف) إلى نقطة نهاية Starlette WebSocket. يحدد مسار الملف عنوان URL — `/chat` في هذا المثال.
+يتم تعيين اسم الوظيفة `SOCKET` (غير حساس لحالة الأحرف) إلى نقطة نهاية Starlette WebSocket. يحدد مسار الملف عنوان URL - `/chat` في هذا المثال.
 
 ---
 
@@ -65,7 +65,7 @@ async def SOCKET(websocket: WebSocket):
         connections.remove(websocket)
 ```
 
-توجد القائمة `connections` على مستوى الوحدة النمطية — حيث يشترك جميع العملاء في نفس القائمة.
+توجد القائمة `connections` على مستوى الوحدة النمطية - حيث يشترك جميع العملاء في نفس القائمة.
 
 ---
 
@@ -101,9 +101,9 @@ async def SOCKET(websocket: WebSocket, room_id: str):
 
 | الحدث | ماذا يحدث |
 |-------|------------|
-| يتصل العميل | `websocket.accept()` — يجب الاتصال به أولاً |
+| يتصل العميل | `websocket.accept()` - يجب الاتصال به أولاً |
 | وصلت الرسالة | `receive_text()` / `receive_json()` / `receive_bytes()` |
-| قطع اتصال العميل | تم رفع `WebSocketDisconnect` — التنظيف في `except` |
+| قطع اتصال العميل | تم رفع `WebSocketDisconnect` - التنظيف في `except` |
 | يغلق الخادم | `await websocket.close(code=1000)` |
 
 قم دائمًا بلف حلقة الرسالة في `try/except WebSocketDisconnect` لتنظيف الاتصالات.
@@ -122,5 +122,5 @@ ws.send("Hello from the client!");
 
 ## أنظر أيضا
 
-- [Route Handlers](/docs/fbrouters/route_handlers) — نقاط نهاية REST في FBR
-- [WebSocket Guide](/docs/guides/websocket) — نظرة عامة مفاهيمية
+- [Route Handlers](/docs/fbrouters/route_handlers) - نقاط نهاية REST في FBR
+- [WebSocket Guide](/docs/guides/websocket) - نظرة عامة مفاهيمية

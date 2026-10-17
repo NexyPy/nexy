@@ -4,7 +4,7 @@
 
 ## 为什么是模块？
 
-如果没有模块，您将在一个平面列表中注册每个控制器和提供程序。随着应用程序的增长，该列表变得难以管理——50 个提供商没有明确的所有权。
+如果没有模块，您将在一个平面列表中注册每个控制器和提供程序。随着应用程序的增长，该列表变得难以管理--50 个提供商没有明确的所有权。
 
 模块恢复边界：`UsersModule` 拥有 `UsersController` 和 `UserService`。每个模块都是一个独立的单元。
 
@@ -110,7 +110,7 @@ class DatabaseModule:
     exports = [DatabaseService]  # Only DatabaseService is visible outside
 ```
 
-如果没有 `exports`，则导入模块无法看到任何提供者。这是有意为之的——它迫使您显式声明模块的公共 API。
+如果没有 `exports`，则导入模块无法看到任何提供者。这是有意为之的--它迫使您显式声明模块的公共 API。
 
 ## 共享模块
 
@@ -166,7 +166,7 @@ src/
 
 模块解析遵循三个规则：
 
-1. **拓扑排序** — 模块按依赖顺序初始化（首先导入）
+1. **拓扑排序** - 模块按依赖顺序初始化（首先导入）
 2. **循环检测** - 模块之间的循环依赖在启动时引发`RecursionError`
 3. **提供程序范围** - 提供程序保留其原始范围，无论哪个模块导入它们
 
@@ -180,14 +180,14 @@ RecursionError: Cycle detected for ModuleA
 
 ## 最佳实践
 
-1. **每个模块一个功能** — 用户、身份验证、计费。不是“实用程序”。
+1. **每个模块一个功能** - 用户、身份验证、计费。不是“实用程序”。
 2. **保持模块导入浅** - 导入 10 多个其他模块的模块做得太多了
 3. **有意使用`exports`** - 只导出其他模块真正需要的内容
-4. **在域之后命名模块** — `UsersModule`、`OrdersModule`、`PaymentsModule`
-5. **版本控制时始终提供 `prefix`** — `"@Module(prefix="/api/v1")`
+4. **在域之后命名模块** - `UsersModule`、`OrdersModule`、`PaymentsModule`
+5. **版本控制时始终提供 `prefix`** - `"@Module(prefix="/api/v1")`
 
 ## 后续步骤
 
-- [Guards](/docs/modular/guards) — 保护模块路由
-- [Middleware](/docs/modular/middleware) — 请求管道挂钩
-- [Controllers](/docs/modular/controllers) — 定义路由处理程序
+- [Guards](/docs/modular/guards) - 保护模块路由
+- [Middleware](/docs/modular/middleware) - 请求管道挂钩
+- [Controllers](/docs/modular/controllers) - 定义路由处理程序

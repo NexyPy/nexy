@@ -4,7 +4,7 @@ Este guia cria login, logout e um painel protegido do zero usando autenticação
 
 ## 1. Habilitar middleware de sessão
 
-Em `nexyconfig.py`, habilite `useSession` — sessões de cookies assinadas da Starlette:
+Em `nexyconfig.py`, habilite `useSession` - sessões de cookies assinadas da Starlette:
 
 ```python
 class NexyConfig(NexyConfigModel):
@@ -64,7 +64,7 @@ def POST(username: str, password: str):
 
 ## 4. Painel protegido
 
-Proteja o painel com uma proteção — retorna `{"user": ...}` se autenticado, 401 caso contrário:
+Proteja o painel com uma proteção - retorna `{"user": ...}` se autenticado, 401 caso contrário:
 
 ```nexy
 # src/routes/dashboard.nexy
@@ -123,7 +123,7 @@ Consulte [useSession hook](/docs/hooks/useSession).
 
 ## O que vem a seguir?
 
-- [Authentication reference](/docs/security/authentication) — back-ends de autenticação, JWT, OAuth
-- [Authorization / Guards](/docs/security/authorization) — proteções personalizadas, escopos
-- [JWT](/docs/security/jwt) — autenticação baseada em token
+- [Authentication reference](/docs/security/authentication) - back-ends de autenticação, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) - proteções personalizadas, escopos
+- [JWT](/docs/security/jwt) - autenticação baseada em token
 -[Session config](/docs/config/session)

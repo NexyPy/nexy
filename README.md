@@ -5,7 +5,7 @@
 <h1 align="center">Nexy</h1>
 
 <p align="center">
-  <em>The fullstack Python meta-framework — sub-second startup, sub-100ms HMR, zero-config Vite.</em>
+  <em>The fullstack Python meta-framework - sub-second startup, sub-100ms HMR, zero-config Vite.</em>
 </p>
 
 <p align="center">
@@ -36,9 +36,9 @@
 
 ## Why Nexy?
 
-Every Python web framework forces you to choose: backend **or** frontend. Nexy is the first Python meta-framework that bridges FastAPI with Vite-powered frontends (React, Vue, Svelte, Solid, Preact) in a single file — without sacrificing DX or performance.
+Every Python web framework forces you to choose: backend **or** frontend. Nexy is the first Python meta-framework that bridges FastAPI with Vite-powered frontends (React, Vue, Svelte, Solid, Preact) in a single file - without sacrificing DX or performance.
 
-**Design-Driven Engineering** — an API so clean it feels like a DSL, architecture so fast you forget it's there.
+**Design-Driven Engineering** - an API so clean it feels like a DSL, architecture so fast you forget it's there.
 
 | You get | Instead of |
 |---------|------------|
@@ -56,7 +56,7 @@ Every Python web framework forces you to choose: backend **or** frontend. Nexy i
 # No pip install needed
 uvx nexy new
 
-# Start developing — HMR, FastAPI, Vite, all hot-reloading
+# Start developing - HMR, FastAPI, Vite, all hot-reloading
 cd my-project && nexy dev
 ```
 
@@ -64,7 +64,7 @@ Your browser opens at `localhost:3000`. Change a file. Instant feedback. No wait
 
 ---
 
-## The `.nexy` file — one format, three layers
+## The `.nexy` file - one format, three layers
 
 A single file that mixes Python, Jinja2, and your frontend framework of choice.
 
@@ -104,7 +104,7 @@ graph TD
     O --> P[Compile + Restart]
 ```
 
-**Key design choice:** Nexy uses a per-file esbuild compilation pipeline for SSR — no Vite dependency in production. Worker-pool parallelism for SSG. This means sub-second rebuilds regardless of project size.
+**Key design choice:** Nexy uses a per-file esbuild compilation pipeline for SSR - no Vite dependency in production. Worker-pool parallelism for SSG. This means sub-second rebuilds regardless of project size.
 
 ---
 
@@ -131,7 +131,7 @@ graph TD
 | Svelte | ✓ | ✓ | ✓ |
 | Solid | ✓ | ✓ | ✓ |
 | Preact | ✓ | ✓ | ✓ |
-| None (vanilla) | ✓ | — | ✓ |
+| None (vanilla) | ✓ | - | ✓ |
 
 ---
 
@@ -159,22 +159,22 @@ graph TD
 
 ## Contributing
 
-We welcome contributions from everyone — whether you're a seasoned Rust/Python engineer or writing your first open-source PR.
+We welcome contributions from everyone - whether you're a seasoned Rust/Python engineer or writing your first open-source PR.
 
-- **Good first issues** — [browse the label](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-- **Architecture discussions** — [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
-- **Code of conduct** — [Contributor Covenant](CODE_OF_CONDUCT.md)
-- **Contribution guide** — [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Good first issues** - [browse the label](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+- **Architecture discussions** - [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
+- **Code of conduct** - [Contributor Covenant](CODE_OF_CONDUCT.md)
+- **Contribution guide** - [CONTRIBUTING.md](CONTRIBUTING.md)
 
-See something you want to improve? Open a PR. Architecture proposals, bug fixes, documentation, tests — all count.
+See something you want to improve? Open a PR. Architecture proposals, bug fixes, documentation, tests - all count.
 
 ---
 
 ## Community
 
-- [Documentation](https://nexy.ai/docs) — full reference
-- [GitHub Issues](https://github.com/NexyPy/nexy/issues) — bug reports & feature requests
-- [Discord](https://discord.gg/nexy) — community chat
+- [Documentation](https://nexy.ai/docs) - full reference
+- [GitHub Issues](https://github.com/NexyPy/nexy/issues) - bug reports & feature requests
+- [Discord](https://discord.gg/nexy) - community chat
 
 ---
 

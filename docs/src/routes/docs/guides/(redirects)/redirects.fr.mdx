@@ -28,7 +28,7 @@ class AdminController:
 from fastapi.responses import RedirectResponse
 
 def GET():
-    # 301 — Permanent (tells browsers to cache)
+    # 301 - Permanent (tells browsers to cache)
     return RedirectResponse("/new-page", status_code=301)
 ---
 ```

@@ -1,6 +1,6 @@
 # Server Actions
 
-Server actions let you call Python functions from the client as POST endpoints — no route registration, no serialization boilerplate.
+Server actions let you call Python functions from the client as POST endpoints - no route registration, no serialization boilerplate.
 
 ---
 
@@ -23,7 +23,7 @@ The function receives JSON body parameters as keyword arguments. Return any JSON
 
 ## Where to put action files
 
-Actions can live **anywhere** in your project — `src/actions/`, `src/routes/`, or directly in the root. The `ActionEngine` scans the entire project directory at startup.
+Actions can live **anywhere** in your project - `src/actions/`, `src/routes/`, or directly in the root. The `ActionEngine` scans the entire project directory at startup.
 
 ```text
 my-app/
@@ -149,9 +149,9 @@ Each generated function mirrors the Python signature with proper TypeScript type
 ## Best practices
 
 - Keep action functions focused and idempotent
-- Validate inputs inside the action — treat them as untrusted
+- Validate inputs inside the action - treat them as untrusted
 - Use Pydantic models for complex request bodies
-- Actions are POST-only — for other HTTP methods, use route handlers
+- Actions are POST-only - for other HTTP methods, use route handlers
 - Use guards or middleware for authorization
 
 ---

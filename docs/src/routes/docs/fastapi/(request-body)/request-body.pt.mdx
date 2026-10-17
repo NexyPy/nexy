@@ -69,7 +69,7 @@ class ItemsController:
 ```
 ## Vários parâmetros corporais
 
-Passe vários modelos — FastAPI os aninha sob seus nomes de parâmetros:
+Passe vários modelos - FastAPI os aninha sob seus nomes de parâmetros:
 ```python
 ---
 def POST(item: Item, user: User):
@@ -105,4 +105,4 @@ Independente de roteador – os mesmos modelos Pydantic funcionam em FBR e Modul
 
 - O corpo é analisado automaticamente quando você anota um parâmetro do modelo Pydantic
 - FastAPI lida com validação e retorna 422 em entrada inválida
-- Não é necessário nenhum decorador `"@Body()` — comportamento FastAPI padrão
+- Não é necessário nenhum decorador `"@Body()` - comportamento FastAPI padrão

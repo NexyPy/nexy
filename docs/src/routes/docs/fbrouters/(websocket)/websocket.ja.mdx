@@ -101,9 +101,9 @@ URL パラメータ `{room_id}` はファイル名から自動的に挿入され
 
 |イベント |何が起こるか |
 |------|-----------|
-|クライアントが接続します | `websocket.accept()` — 最初に呼び出す必要があります |
+|クライアントが接続します | `websocket.accept()` - 最初に呼び出す必要があります |
 |メッセージを受信しました | `receive_text()` / `receive_json()` / `receive_bytes()` |
-|クライアントが切断します | `WebSocketDisconnect` が発生しました — `except` でクリーンアップ |
+|クライアントが切断します | `WebSocketDisconnect` が発生しました - `except` でクリーンアップ |
 |サーバーが閉じます | `await websocket.close(code=1000)` |
 
 接続をクリーンアップするには、常にメッセージ ループを `try/except WebSocketDisconnect` でラップしてください。
@@ -122,5 +122,5 @@ ws.send("Hello from the client!");
 
 ## も参照
 
-- [Route Handlers](/docs/fbrouters/route_handlers) — FBR の REST エンドポイント
-- [WebSocket Guide](/docs/guides/websocket) — 概念的な概要
+- [Route Handlers](/docs/fbrouters/route_handlers) - FBR の REST エンドポイント
+- [WebSocket Guide](/docs/guides/websocket) - 概念的な概要

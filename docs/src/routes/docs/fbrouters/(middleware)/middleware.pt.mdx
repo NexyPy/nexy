@@ -38,7 +38,7 @@ def GET():
 Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
 ```
 
-O middleware é executado como FastAPI `Depends` — é executado antes do manipulador. Ao contrário dos guardas, o middleware destina-se a efeitos colaterais (registro, temporização), não ao bloqueio de solicitações (embora possa aumentar `HTTPException`).
+O middleware é executado como FastAPI `Depends` - é executado antes do manipulador. Ao contrário dos guardas, o middleware destina-se a efeitos colaterais (registro, temporização), não ao bloqueio de solicitações (embora possa aumentar `HTTPException`).
 
 ---
 

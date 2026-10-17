@@ -1,13 +1,11 @@
-
-
-def Image(
+def image(
     src: str,
     alt: str = "",
     width: int | None = None,
     height: int | None = None,
     loading: str = "lazy",
     class_name: str | None = None,
-    **kwargs,
+    **kwargs: str | int,
 ) -> str:
     # Build attributes
     attrs = {

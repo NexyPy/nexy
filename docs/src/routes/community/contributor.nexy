@@ -33,7 +33,7 @@ Total time: ~2 minutes.
 - **Python** 3.12+
 - **Node.js** 20+ (for frontend builds and VS Code extension)
 - **uv** package manager (recommended) or pip
-- **pnpm** (for JavaScript dependencies — only needed for VS Code extension)
+- **pnpm** (for JavaScript dependencies - only needed for VS Code extension)
 
 ## Project structure
 
@@ -129,10 +129,10 @@ python -m mypy nexy --strict
 
 ### General rules
 
-- All code in English — no French comments or variable names
+- All code in English - no French comments or variable names
 - Functions under 20 lines, classes under 10 methods
-- No premature abstraction — KISS before clever
-- Follow SOLID principles — one responsibility per file
+- No premature abstraction - KISS before clever
+- Follow SOLID principles - one responsibility per file
 
 ## Testing
 
@@ -158,10 +158,10 @@ python -m pytest tests/ --cov=nexy --cov-report=term
 
 ## Pull request checklist
 
-- [ ] `python -m pytest tests/ -v` — tests pass
-- [ ] `ruff check nexy/` — lint passes
-- [ ] `ruff format nexy/ --check` — formatting correct
-- [ ] `python -m mypy nexy --strict` — type checks
+- [ ] `python -m pytest tests/ -v` - tests pass
+- [ ] `ruff check nexy/` - lint passes
+- [ ] `ruff format nexy/ --check` - formatting correct
+- [ ] `python -m mypy nexy --strict` - type checks
 - [ ] New tests cover my changes
 - [ ] Documentation updated (if public API change)
 - [ ] Conventional commit messages

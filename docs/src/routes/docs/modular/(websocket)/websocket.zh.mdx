@@ -22,7 +22,7 @@ class ChatController:
             pass
 ```
 
-`SOCKET` 方法名称映射到 WebSocket 端点。控制器中的所有方法共享 `"@Controller` 前缀 — 因此这是作为 WebSocket 的 `GET /chat`。
+`SOCKET` 方法名称映射到 WebSocket 端点。控制器中的所有方法共享 `"@Controller` 前缀 - 因此这是作为 WebSocket 的 `GET /chat`。
 
 ---
 
@@ -85,7 +85,7 @@ class ChatController:
             self.manager.remove(websocket)
 ```
 
-`ConnectionManager` 是一个单例 `"@Injectable()` — 所有控制器实例共享同一个管理器。
+`ConnectionManager` 是一个单例 `"@Injectable()` - 所有控制器实例共享同一个管理器。
 
 ---
 
@@ -134,9 +134,9 @@ class RoomController:
 
 |活动 |会发生什么 |
 |--------|-------------|
-|客户端连接| `websocket.accept()` — 必须首先调用 |
+|客户端连接| `websocket.accept()` - 必须首先调用 |
 |收到消息 | `receive_text()` / `receive_json()` / `receive_bytes()` |
-|客户端断开连接 | `WebSocketDisconnect` 引发 — 清理 `except` |
+|客户端断开连接 | `WebSocketDisconnect` 引发 - 清理 `except` |
 |服务器关闭 | `await websocket.close(code=1000)` |
 
  - -
@@ -153,7 +153,7 @@ ws.send("Hello from the client!");
 
 ## 另请参阅
 
-- [Controllers](/docs/modular/controllers) — 模块化中的路由处理程序
-- [Providers & DI](/docs/modular/providers) — 可注入服务
-- [Guards](/docs/modular/guards) — 保护 WebSocket 端点
-- [WebSocket Guide](/docs/guides/websocket) — 概念概述
+- [Controllers](/docs/modular/controllers) - 模块化中的路由处理程序
+- [Providers & DI](/docs/modular/providers) - 可注入服务
+- [Guards](/docs/modular/guards) - 保护 WebSocket 端点
+- [WebSocket Guide](/docs/guides/websocket) - 概念概述

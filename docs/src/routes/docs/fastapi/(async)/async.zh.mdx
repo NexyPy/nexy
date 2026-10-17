@@ -60,7 +60,7 @@ class DemoController:
 
 ## 注意事项
 
-- **不要**使用 `await` 从 `def` 处理程序调用 `async` 函数 — 使用 `asyncio.run()` 或使处理程序 `async def`
-- **不要**从 `async def` 调用阻塞函数（如 `time.sleep()`、`requests.get()`）——使用 `asyncio.sleep()`、`httpx.AsyncClient`
-- Nexy 的 `nx dev` 默认运行一个 uvicorn 工作线程 — 异步处理程序在这里大放异彩
+- **不要**使用 `await` 从 `def` 处理程序调用 `async` 函数 - 使用 `asyncio.run()` 或使处理程序 `async def`
+- **不要**从 `async def` 调用阻塞函数（如 `time.sleep()`、`requests.get()`）--使用 `asyncio.sleep()`、`httpx.AsyncClient`
+- Nexy 的 `nx dev` 默认运行一个 uvicorn 工作线程 - 异步处理程序在这里大放异彩
 - 对于生产，使用多个工作线程 (`nx start --workers 4`) 作为同步处理程序

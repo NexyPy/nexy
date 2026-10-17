@@ -88,7 +88,7 @@ const LANG_EXT: Record<string, string> = {
     'prop = Any  # Nexy prop type',
     '__all__: list[str] = []',
     '',
-    '# Nexy runtime stubs — silences Pylance when nexy package is not in path',
+    '# Nexy runtime stubs - silences Pylance when nexy package is not in path',
     'try:',
     '    from nexy import Template as __Template, Import as __Import',
     '    from nexy.routers.context import current_request, usePathname',
@@ -487,7 +487,7 @@ export function registerServiceDelegation(
     return new vscode.Range(relStartLine, relStartChar, relEndLine, relEndChar);
   }
 
-  // Cache CSS virtual documents for color provider — reuse until content changes
+  // Cache CSS virtual documents for color provider - reuse until content changes
   const CSS_DOC_CACHE = new Map<string, { uri: vscode.Uri; hash: number }>();
   async function getOrCreateCssDoc(region: RegionInfo): Promise<{ uri: vscode.Uri }> {
     const key = region.scheme + '::' + region.start;
@@ -514,7 +514,7 @@ export function registerServiceDelegation(
           const allColors: vscode.ColorInformation[] = [];
 
           for (const region of cssRegions) {
-            // Use an in-memory untitled CSS document — no disk writes
+            // Use an in-memory untitled CSS document - no disk writes
             if (!cssActivated) {
               await vscode.extensions.getExtension("vscode.css-language-features")?.activate();
               cssActivated = true;
@@ -626,7 +626,7 @@ export function registerServiceDelegation(
 
   function isNexyFalsePositive(d: vscode.Diagnostic): boolean {
     const msg = d.message;
-    // reportMissingModuleSource — Pylance can't find nexy package
+    // reportMissingModuleSource - Pylance can't find nexy package
     if (d.code === 'reportMissingModuleSource' && /["']nexy/i.test(msg)) return true;
     // Import cannot be resolved for nexy.*
     if (/import\s+["']nexy/i.test(msg)) return true;
@@ -648,7 +648,7 @@ export function registerServiceDelegation(
         let originalUri: vscode.Uri;
         let document: vscode.TextDocument | undefined;
         if (isPylanceFile) {
-          // Pylance reports against .nexy-virt/*.py — find matching .nexy file
+          // Pylance reports against .nexy-virt/*.py - find matching .nexy file
           const virtDir = path.dirname(uri.fsPath);
           const baseNoExt = path.basename(uri.fsPath, '.py');
           const origFile = path.join(path.dirname(virtDir), baseNoExt);
@@ -731,7 +731,7 @@ function sanitizeCompletionItem(item: vscode.CompletionItem): vscode.CompletionI
   out.insertText = item.insertText ?? (typeof (item as any).textEdit?.newText === "string"
     ? (item as any).textEdit.newText
     : undefined);
-  // Preserve auto-import edits from Pylance (was being deleted — kills auto-import)
+  // Preserve auto-import edits from Pylance (was being deleted - kills auto-import)
   out.additionalTextEdits = item.additionalTextEdits;
   (out as any).textEdit = undefined;
   out.command = item.command;

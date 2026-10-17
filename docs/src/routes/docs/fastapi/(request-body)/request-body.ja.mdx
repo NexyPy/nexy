@@ -69,7 +69,7 @@ class ItemsController:
 ```
 ## 複数のボディパラメータ
 
-いくつかのモデルを渡します — FastAPI はそれらをパラメーター名の下にネストします。
+いくつかのモデルを渡します - FastAPI はそれらをパラメーター名の下にネストします。
 ```python
 ---
 def POST(item: Item, user: User):
@@ -99,7 +99,7 @@ class Item(BaseModel):
     tags: list[str] = []
     image: Image | None = None
 ```
-ルーターに依存しない — 同じ Pydantic モデルが FBR とモジュラーの両方で動作します。
+ルーターに依存しない - 同じ Pydantic モデルが FBR とモジュラーの両方で動作します。
 
 ## 制限事項
 

@@ -1,4 +1,4 @@
-# Roteador Modular — Visão Geral da Arquitetura
+# Roteador Modular - Visão Geral da Arquitetura
 
 O Modular Router traz a arquitetura estilo NestJS para Python. Em vez de os arquivos se tornarem rotas (FBR), você organiza o código em **controladores**, **provedores**, **módulos**, **guardas** e **middleware**.
 
@@ -32,7 +32,7 @@ AppModule  ("@Module)
 
 ### Nomes de métodos definem verbos HTTP
 
-Nexy mapeia **nomes de métodos** para métodos HTTP — não são necessários decoradores `"@Get`/`"@Post`:
+Nexy mapeia **nomes de métodos** para métodos HTTP - não são necessários decoradores `"@Get`/`"@Post`:
 
 | Nome do método | Método HTTP |
 |------------|------------|
@@ -90,13 +90,13 @@ class NexyConfig(NexyConfigModel):
 | Controlador | `"@Controller(prefix)` | Agrupa rotas relacionadas sob um prefixo de caminho |
 | Provedor | `"@Injectable()` | Lógica de negócios, injetável em controladores |
 | Módulo | `"@Module()` | Conecta controladores e provedores por meio de atributos de classe |
-| Guarda | `"@UseGuard(...)` | Autorização — é executado antes do manipulador |
-| Middleware | `"@Middleware(...)` | Pipeline de solicitação/resposta — executado antes dos guardas |
+| Guarda | `"@UseGuard(...)` | Autorização - é executado antes do manipulador |
+| Middleware | `"@Middleware(...)` | Pipeline de solicitação/resposta - executado antes dos guardas |
 
 ## Próximas etapas
 
-- [Controllers](/docs/modular/controllers) — lida com solicitações HTTP com roteamento de nome de método
-- [Providers & DI](/docs/modular/providers) — injeta serviços em controladores
-- [Modules](/docs/modular/modules) — organize controladores e provedores em módulos de recursos
-- [Guards](/docs/modular/guards) — proteja rotas com autorização
-- [Middleware](/docs/modular/middleware) — intercepta solicitações antes dos manipuladores
+- [Controllers](/docs/modular/controllers) - lida com solicitações HTTP com roteamento de nome de método
+- [Providers & DI](/docs/modular/providers) - injeta serviços em controladores
+- [Modules](/docs/modular/modules) - organize controladores e provedores em módulos de recursos
+- [Guards](/docs/modular/guards) - proteja rotas com autorização
+- [Middleware](/docs/modular/middleware) - intercepta solicitações antes dos manipuladores

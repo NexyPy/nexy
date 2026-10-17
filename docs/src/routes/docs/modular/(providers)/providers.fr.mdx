@@ -7,7 +7,7 @@ Les fournisseurs encapsulent la logique métier, l’accès aux données ou les 
 Sans DI, chaque contrôleur crée manuellement ses dépendances :
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 Avec DI, le conteneur instancie les dépendances et les injecte :
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
@@ -49,7 +49,7 @@ class UserService:
         return user
 ```
 
-`"@Injectable()` empêche l'instanciation directe — l'appel de `UserService()` en dehors de DI augmente `TypeError`. Cela vous oblige à utiliser le conteneur, qui garantit que les portées et les dépendances sont correctement résolues.
+`"@Injectable()` empêche l'instanciation directe - l'appel de `UserService()` en dehors de DI augmente `TypeError`. Cela vous oblige à utiliser le conteneur, qui garantit que les portées et les dépendances sont correctement résolues.
 
 ## Injection dans un contrôleur
 
@@ -78,7 +78,7 @@ Le conteneur DI fait correspondre l'indice de type (`UserService`) à un fournis
 
 ## Injection de fournisseurs dans d'autres fournisseurs
 
-Les fournisseurs peuvent dépendre d'autres fournisseurs — le conteneur résout l'arborescence complète :
+Les fournisseurs peuvent dépendre d'autres fournisseurs - le conteneur résout l'arborescence complète :
 
 ```python
 from nexy.decorators import Injectable
@@ -194,14 +194,14 @@ Pas besoin de démarrer le serveur ou de configurer le conteneur DI complet. C'e
 
 ## meilleures pratiques
 
-1. **Préférez l'injection de constructeur** — l'appel manuel de `Container.resolve()` est rare ; laissez le récipient s'injecter automatiquement.
+1. **Préférez l'injection de constructeur** - l'appel manuel de `Container.resolve()` est rare ; laissez le récipient s'injecter automatiquement.
 2. **Gardez les fournisseurs apatrides** (portée singleton) : l'état appartient aux bases de données ou aux fournisseurs à portée de requête.
-3. **Une responsabilité par fournisseur** — `UserService` gère les utilisateurs, `EmailService` gère les e-mails.
-4. **Enregistrez explicitement tous les fournisseurs** dans la liste `providers` du module — les enregistrements explicites sont auto-documentés.
+3. **Une responsabilité par fournisseur** - `UserService` gère les utilisateurs, `EmailService` gère les e-mails.
+4. **Enregistrez explicitement tous les fournisseurs** dans la liste `providers` du module - les enregistrements explicites sont auto-documentés.
 5. **Utilisez `Scope.REQUEST` avec parcimonie** : chaque fournisseur étendu aux requêtes ajoute une surcharge d'allocation.
 
 ## Prochaines étapes
 
-- [Modules](/docs/modular/modules) — organisez les fournisseurs en modules de fonctionnalités
-- [Guards](/docs/modular/guards) — ajouter l'authentification et l'autorisation
-- [Middleware](/docs/modular/middleware) — intercepte les requêtes avant qu'elles n'atteignent les contrôleurs
+- [Modules](/docs/modular/modules) - organisez les fournisseurs en modules de fonctionnalités
+- [Guards](/docs/modular/guards) - ajouter l'authentification et l'autorisation
+- [Middleware](/docs/modular/middleware) - intercepte les requêtes avant qu'elles n'atteignent les contrôleurs

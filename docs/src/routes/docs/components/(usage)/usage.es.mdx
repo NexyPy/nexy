@@ -156,7 +156,7 @@ Dado que el componente es una función de Python, puede regresar al principio de
 title:prop[str] = ""
 if not title:
     print("Warning: Card rendered without title")
-    # Return early — the template still runs but title is empty
+    # Return early - the template still runs but title is empty
 ---
 <div class="card">
   <h2>{{ title }}</h2>
@@ -182,8 +182,8 @@ show_header:prop[bool] = true
 - **Un componente por archivo**: nombres claros, fáciles de encontrar
 - **Mantenga las plantillas en menos de 50 líneas**; si son más largas, extraiga los subcomponentes
 - **Usa accesorios en lugar de codificación**: hace que los componentes sean reutilizables
-- **Nombre de archivos en PascalCase** — `BlogCard.nexy` no `blog_card.nexy`
-- **Accesorios predeterminados para valores opcionales** — `title:prop[str] = ""` no `title:prop[str]`
+- **Nombre de archivos en PascalCase** - `BlogCard.nexy` no `blog_card.nexy`
+- **Accesorios predeterminados para valores opcionales** - `title:prop[str] = ""` no `title:prop[str]`
 
 ## Siguiente
 

@@ -1,6 +1,6 @@
 # Nexy 中的 FastAPI
 
-Nexy 构建于 **FastAPI** 和 **Starlette** 之上。 Nexy 中提供了所有 FastAPI 功能 — 没有包装器，没有抽象。直接从`fastapi`导入。
+Nexy 构建于 **FastAPI** 和 **Starlette** 之上。 Nexy 中提供了所有 FastAPI 功能 - 没有包装器，没有抽象。直接从`fastapi`导入。
 
 ## 有什么可用
 
@@ -58,4 +58,4 @@ class UsersController:
 ```
 ## Nexy 添加了什么？
 
-Nexy 将 FastAPI 与基于文件的路由、`.nexy` 组件、模块化 DI 和前端框架集成封装在一起。但它**永远不会隐藏 FastAPI** — `nexy.app` 是 FastAPI `APIRouter`，配置公开所有 Starlette 中间件，并且每个 FastAPI 依赖项/响应/异常都保持不变。
+Nexy 将 FastAPI 与基于文件的路由、`.nexy` 组件、模块化 DI 和前端框架集成封装在一起。但它**永远不会隐藏 FastAPI** - `nexy.app` 是 FastAPI `APIRouter`，配置公开所有 Starlette 中间件，并且每个 FastAPI 依赖项/响应/异常都保持不变。

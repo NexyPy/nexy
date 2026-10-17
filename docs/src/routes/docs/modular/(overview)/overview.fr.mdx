@@ -1,4 +1,4 @@
-# Routeur modulaire — Présentation de l'architecture
+# Routeur modulaire - Présentation de l'architecture
 
 Le routeur modulaire apporte une architecture de style NestJS à Python. Au lieu que les fichiers deviennent des routes (FBR), vous organisez le code en **contrôleurs**, **fournisseurs**, **modules**, **gardes** et **middleware**.
 
@@ -32,7 +32,7 @@ AppModule  ("@Module)
 
 ### Les noms de méthodes définissent les verbes HTTP
 
-Nexy mappe les **noms de méthodes** aux méthodes HTTP — aucun décorateur `"@Get`/`"@Post` n'est nécessaire :
+Nexy mappe les **noms de méthodes** aux méthodes HTTP - aucun décorateur `"@Get`/`"@Post` n'est nécessaire :
 
 | Nom de la méthode | Méthode HTTP |
 |-------------|-------------|
@@ -91,12 +91,12 @@ class NexyConfig(NexyConfigModel):
 | Fournisseur | `"@Injectable()` | Logique métier, injectable dans les contrôleurs |
 | Module | `"@Module()` | Câbler les contrôleurs et les fournisseurs via les attributs de classe |
 | Garde | `"@UseGuard(...)` | Autorisation - s'exécute avant le gestionnaire |
-| Intergiciel | `"@Middleware(...)` | Pipeline de requêtes/réponses — s'exécute avant les gardes |
+| Intergiciel | `"@Middleware(...)` | Pipeline de requêtes/réponses - s'exécute avant les gardes |
 
 ## Prochaines étapes
 
-- [Controllers](/docs/modular/controllers) — gère les requêtes HTTP avec le routage du nom de méthode
-- [Providers & DI](/docs/modular/providers) — injecter des services dans les contrôleurs
-- [Modules](/docs/modular/modules) — organisez les contrôleurs et les fournisseurs en modules de fonctionnalités
-- [Guards](/docs/modular/guards) — protège les itinéraires avec autorisation
-- [Middleware](/docs/modular/middleware) — intercepte les requêtes avant les gestionnaires
+- [Controllers](/docs/modular/controllers) - gère les requêtes HTTP avec le routage du nom de méthode
+- [Providers & DI](/docs/modular/providers) - injecter des services dans les contrôleurs
+- [Modules](/docs/modular/modules) - organisez les contrôleurs et les fournisseurs en modules de fonctionnalités
+- [Guards](/docs/modular/guards) - protège les itinéraires avec autorisation
+- [Middleware](/docs/modular/middleware) - intercepte les requêtes avant les gestionnaires

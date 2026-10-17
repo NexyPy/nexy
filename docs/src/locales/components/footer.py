@@ -8,7 +8,7 @@ class FooterI18n:
     governance = "Gouvernance"
     contributors = "Contributeurs"
     github = "GitHub"
-    description = "Construisez des expériences web modernes avec Nexy — le framework Python pour l'ère full-stack."
+    description = "Construisez des expériences web modernes avec Nexy - le framework Python pour l'ère full-stack."
     newsletter_title = "Abonnez-vous à notre newsletter"
     newsletter_desc = "Restez informé des nouvelles versions, fonctionnalités, guides et études de cas."
     copyright = "© 2026 Luilka, Tous droits réservés."

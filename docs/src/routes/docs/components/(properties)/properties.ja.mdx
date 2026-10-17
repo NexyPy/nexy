@@ -23,10 +23,10 @@ active:prop[bool] = false
 
 ```nexy
 ---
-# Required — must be passed, no default
+# Required - must be passed, no default
 name:prop[str]
 
-# Optional — has a default value
+# Optional - has a default value
 name:prop[str] = "Guest"
 age:prop[int] = 0
 items:prop[list] = []
@@ -77,7 +77,7 @@ posts = [...]  # from database
 **ルール**:
 
 - **文字列値**は `key="value"` または `key="{{ jinja_expr }}"` を使用します
-- **式** は `key={expr}` を使用します — 引用符なし、値は Python として解析されます
+- **式** は `key={expr}` を使用します - 引用符なし、値は Python として解析されます
 - **ブール値**: `active=True` や `active="true"` ではなく、`active=true` (小文字) を使用します。
 - **リスト/辞書**: `items={["a", "b"]}` または `settings={"key": "val"}`
 
@@ -86,7 +86,7 @@ posts = [...]  # from database
 Python の一般的な注意事項: **呼び出し間で共有される変更可能なデフォルトを使用しないでください**。
 
 ```python
-# BAD — in Python, this list is created once and shared
+# BAD - in Python, this list is created once and shared
 def Card(items: list = []):
     items.append("new")  # Modifies the default!
 ```

@@ -4,7 +4,7 @@
 
 ## 1. تمكين البرامج الوسيطة للجلسة
 
-في `nexyconfig.py`، قم بتمكين `useSession` — جلسات ملفات تعريف الارتباط الموقعة لـ Starlette:
+في `nexyconfig.py`، قم بتمكين `useSession` - جلسات ملفات تعريف الارتباط الموقعة لـ Starlette:
 
 ```python
 class NexyConfig(NexyConfigModel):
@@ -64,7 +64,7 @@ def POST(username: str, password: str):
 
 ## 4. لوحة القيادة المحمية
 
-قم بحماية لوحة المعلومات بواقي — تُرجع `{"user": ...}` إذا تمت مصادقتها، و401 بخلاف ذلك:
+قم بحماية لوحة المعلومات بواقي - تُرجع `{"user": ...}` إذا تمت مصادقتها، و401 بخلاف ذلك:
 
 ```nexy
 # src/routes/dashboard.nexy
@@ -123,7 +123,7 @@ session = useSession()
 
 ## ما هي الخطوة التالية؟
 
-- [Authentication reference](/docs/security/authentication) — الواجهات الخلفية للمصادقة، JWT، OAuth
-- [Authorization / Guards](/docs/security/authorization) — حراس ونطاقات مخصصة
-- [JWT](/docs/security/jwt) — مصادقة قائمة على الرمز المميز
+- [Authentication reference](/docs/security/authentication) - الواجهات الخلفية للمصادقة، JWT، OAuth
+- [Authorization / Guards](/docs/security/authorization) - حراس ونطاقات مخصصة
+- [JWT](/docs/security/jwt) - مصادقة قائمة على الرمز المميز
 - [Session config](/docs/config/session)

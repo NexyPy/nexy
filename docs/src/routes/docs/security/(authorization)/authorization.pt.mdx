@@ -62,12 +62,12 @@ from starlette.authentication import requires
 def GET(request):
     return {"user": request.user.username}
 ```
-Funciona tanto em FBR quanto em Modular — `requires` retorna um guarda válido que pode ser chamado.
+Funciona tanto em FBR quanto em Modular - `requires` retorna um guarda válido que pode ser chamado.
 
 ---
 
 ## Relacionado
 
-- ["@UseGuard reference](/docs/decorators/useguard) — API completa do decorador
-- [Guards (Modular)](/docs/modular/guards) — injeção de proteção em Modular DI
-- [Authentication](/docs/security/authentication) — configurando back-ends de autenticação
+- ["@UseGuard reference](/docs/decorators/useguard) - API completa do decorador
+- [Guards (Modular)](/docs/modular/guards) - injeção de proteção em Modular DI
+- [Authentication](/docs/security/authentication) - configurando back-ends de autenticação

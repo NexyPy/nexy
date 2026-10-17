@@ -38,7 +38,7 @@ class UsersController:
 ```
 ## الاختلافات الرئيسية
 
-- **أسماء الطرق تحدد أفعال HTTP** — لا توجد أدوات تزيين `"@Get`/`"@Post`/`"@Put`/`"@Delete`
-- **جميع أدوات الديكور في وحدة واحدة** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
-- **لا يوجد `"@Global`** — يتم التعامل مع النطاق عبر `Injectable(scope=Scope.SINGLETON)`
-- **الحراسات والبرامج الوسيطة قابلة للاستدعاء** — لا توجد فئة أساسية لتوسيعها، فقط `__call__(self, request)`
+- **أسماء الطرق تحدد أفعال HTTP** - لا توجد أدوات تزيين `"@Get`/`"@Post`/`"@Put`/`"@Delete`
+- **جميع أدوات الديكور في وحدة واحدة** - `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **لا يوجد `"@Global`** - يتم التعامل مع النطاق عبر `Injectable(scope=Scope.SINGLETON)`
+- **الحراسات والبرامج الوسيطة قابلة للاستدعاء** - لا توجد فئة أساسية لتوسيعها، فقط `__call__(self, request)`

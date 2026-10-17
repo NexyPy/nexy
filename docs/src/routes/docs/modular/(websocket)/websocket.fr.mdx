@@ -22,7 +22,7 @@ class ChatController:
             pass
 ```
 
-Le nom de la méthode `SOCKET` est mappé à un point de terminaison WebSocket. Toutes les méthodes d'un contrôleur partagent le préfixe `"@Controller` — il s'agit donc de `GET /chat` en tant que WebSocket.
+Le nom de la méthode `SOCKET` est mappé à un point de terminaison WebSocket. Toutes les méthodes d'un contrôleur partagent le préfixe `"@Controller` - il s'agit donc de `GET /chat` en tant que WebSocket.
 
 ---
 
@@ -85,7 +85,7 @@ class ChatController:
             self.manager.remove(websocket)
 ```
 
-Le `ConnectionManager` est un singleton `"@Injectable()` — toutes les instances de contrôleur partagent le même gestionnaire.
+Le `ConnectionManager` est un singleton `"@Injectable()` - toutes les instances de contrôleur partagent le même gestionnaire.
 
 ---
 
@@ -134,9 +134,9 @@ class RoomController:
 
 | Événement | Que se passe-t-il |
 |-------|-------------|
-| Le client se connecte | `websocket.accept()` — doit être appelé en premier |
+| Le client se connecte | `websocket.accept()` - doit être appelé en premier |
 | Message reçu | `receive_text()` / `receive_json()` / `receive_bytes()` |
-| Le client se déconnecte | `WebSocketDisconnect` augmenté — nettoyage dans `except` |
+| Le client se déconnecte | `WebSocketDisconnect` augmenté - nettoyage dans `except` |
 | Le serveur se ferme | `await websocket.close(code=1000)` |
 
 ---
@@ -153,7 +153,7 @@ ws.send("Hello from the client!");
 
 ## Voir aussi
 
-- [Controllers](/docs/modular/controllers) — gestionnaires de routes dans Modular
-- [Providers & DI](/docs/modular/providers) — services injectables
-- [Guards](/docs/modular/guards) — protège les points de terminaison WebSocket
-- [WebSocket Guide](/docs/guides/websocket) — aperçu conceptuel
+- [Controllers](/docs/modular/controllers) - gestionnaires de routes dans Modular
+- [Providers & DI](/docs/modular/providers) - services injectables
+- [Guards](/docs/modular/guards) - protège les points de terminaison WebSocket
+- [WebSocket Guide](/docs/guides/websocket) - aperçu conceptuel

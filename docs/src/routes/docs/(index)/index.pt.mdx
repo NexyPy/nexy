@@ -2,7 +2,7 @@
 
 **Nexy** (pronuncia-se `nek:si`) é uma estrutura web Python full-stack construída sobre **FastAPI** e **Starlette**. Ele traz a experiência do desenvolvedor de estruturas modernas como Next.js e NestJS para Python.
 
-O nome vem de: **N**ew **Ex**perience for P**y**thon — uma nova abordagem para construir aplicações web em Python.
+O nome vem de: **N**ew **Ex**perience for P**y**thon - uma nova abordagem para construir aplicações web em Python.
 
 > Nexy não reinventa a roda. Isso torna o desenvolvimento web em Python radicalmente mais simples, ao mesmo tempo que mantém o poder do FastAPI.
 
@@ -10,11 +10,11 @@ O nome vem de: **N**ew **Ex**perience for P**y**thon — uma nova abordagem para
 
 ## Dois roteadores, uma estrutura
 
-Nexy oferece **duas estratégias de roteamento** — escolha aquela que se adapta ao seu projeto:
+Nexy oferece **duas estratégias de roteamento** - escolha aquela que se adapta ao seu projeto:
 
 ### Routes Router (Roteamento baseado em arquivo)
 
-As rotas são definidas pela sua árvore de arquivos — cada arquivo `.nexy`, `.mdx` ou `.py` em `src/routes/` se torna uma rota HTTP automaticamente.
+As rotas são definidas pela sua árvore de arquivos - cada arquivo `.nexy`, `.mdx` ou `.py` em `src/routes/` se torna uma rota HTTP automaticamente.
 
 ```text
 src/routes/
@@ -40,7 +40,7 @@ Saiba mais: [File-Based Routing →](/docs/fbrouters)
 
 ### Roteador modular (baseado em decorador)
 
-As rotas são definidas por meio de decoradores Python — organize o código em **Controladores**, **Provedores** e **Módulos** seguindo o padrão NestJS.
+As rotas são definidas por meio de decoradores Python - organize o código em **Controladores**, **Provedores** e **Módulos** seguindo o padrão NestJS.
 
 ```python
 from nexy.decorators import Controller
@@ -92,7 +92,7 @@ def GET(request: Request, db=Depends(get_db)):
     return db.query(User).all()
 ```
 
-**O que permanece o mesmo:** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` — todos de `fastapi`.
+**O que permanece o mesmo:** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` - todos de `fastapi`.
 
 **O que Nexy adiciona:** arquivos `.nexy`/`.mdx` → compilados para rotas FastAPI, `"@Action` → rotas POST geradas automaticamente, `"@Controller`/`"@Module` → construtores FastAPI `APIRouter`, ganchos → auxiliares com escopo de solicitação além de `Request` do FastAPI.
 
@@ -102,10 +102,10 @@ Como Nexy é FastAPI, cada rota produz **documentos OpenAPI** automaticamente em
 
 ## Por que Nexy?
 
-- **FastAPI nos bastidores** — documentos OpenAPI assíncronos e automáticos, com segurança de tipo e testados em batalha
-- **IU baseada em componentes** — escreva componentes com modelos Python + Jinja2 ou use React/Vue/Svelte/Solid/Preact
-- **Roteamento modular E baseado em arquivo** — escolha a ferramenta certa para o seu projeto
-- **Calendário zero** — sem registro manual de rota, sem arquivos de configuração para conectar
+- **FastAPI nos bastidores** - documentos OpenAPI assíncronos e automáticos, com segurança de tipo e testados em batalha
+- **IU baseada em componentes** - escreva componentes com modelos Python + Jinja2 ou use React/Vue/Svelte/Solid/Preact
+- **Roteamento modular E baseado em arquivo** - escolha a ferramenta certa para o seu projeto
+- **Calendário zero** - sem registro manual de rota, sem arquivos de configuração para conectar
 
 **I18n, HMR, middleware, guards integrados** – pronto para produção desde o primeiro dia
 

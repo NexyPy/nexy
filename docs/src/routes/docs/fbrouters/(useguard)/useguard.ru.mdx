@@ -49,7 +49,7 @@ def GET():
 UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
 ```
 
-Охранники работают как FastAPI `Depends` — они получают объект `Request` и могут блокировать, поднимая `HTTPException`.
+Охранники работают как FastAPI `Depends` - они получают объект `Request` и могут блокировать, поднимая `HTTPException`.
 
 ---
 

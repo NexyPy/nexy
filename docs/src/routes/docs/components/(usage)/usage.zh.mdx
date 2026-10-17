@@ -5,7 +5,7 @@
 
 ## 创建组件
 
-组件是任何 `.nexy` 文件。最简单的组件没有 frontmatter — 只有 HTML：
+组件是任何 `.nexy` 文件。最简单的组件没有 frontmatter - 只有 HTML：
 
 ```nexy
 <!-- src/components/Hello.nexy -->
@@ -156,7 +156,7 @@ from "./Card.nexy" import Card
 title:prop[str] = ""
 if not title:
     print("Warning: Card rendered without title")
-    # Return early — the template still runs but title is empty
+    # Return early - the template still runs but title is empty
 ---
 <div class="card">
   <h2>{{ title }}</h2>
@@ -179,11 +179,11 @@ show_header:prop[bool] = true
 
 ## 最佳实践
 
-- **每个文件一个组件** — 命名清晰，易于查找
-- **将模板保持在 50 行以内** — 如果更长，则提取子组件
+- **每个文件一个组件** - 命名清晰，易于查找
+- **将模板保持在 50 行以内** - 如果更长，则提取子组件
 - **使用 props 而不是硬编码** - 使组件可重用
-- **以 PascalCase 命名文件** — `BlogCard.nexy` 不是 `blog_card.nexy`
-- **可选值的默认属性** — `title:prop[str] = ""` 不是 `title:prop[str]`
+- **以 PascalCase 命名文件** - `BlogCard.nexy` 不是 `blog_card.nexy`
+- **可选值的默认属性** - `title:prop[str] = ""` 不是 `title:prop[str]`
 
 ## 下一步
 

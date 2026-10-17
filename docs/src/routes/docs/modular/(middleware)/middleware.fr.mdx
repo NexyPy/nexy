@@ -182,11 +182,11 @@ class ErrorHandlerMiddleware:
 1. **Une préoccupation par middleware** : journalisation, synchronisation, CORS. Pas un seul « gros middleware ».
 2. **Gardez le middleware rapide** : le middleware bloque la demande. Les opérations coûteuses appartiennent au gestionnaire.
 3. **Utilisez `request.state` pour transmettre des données** : il s'agit du moyen standard de partager des données entre le middleware, les gardes et les gestionnaires.
-4. **Préférez les gardes pour l'authentification** — conceptuellement plus clair que le middleware pour le contrôle d'accès.
-5. **Testez le middleware de manière isolée** — créez un `Request` fictif, appelez le middleware, affirmez les effets secondaires.
+4. **Préférez les gardes pour l'authentification** - conceptuellement plus clair que le middleware pour le contrôle d'accès.
+5. **Testez le middleware de manière isolée** - créez un `Request` fictif, appelez le middleware, affirmez les effets secondaires.
 
 ## Prochaines étapes
 
-- [Guards](/docs/modular/guards) — authentification et autorisation
-- [Controllers](/docs/modular/controllers) — définir les gestionnaires d'itinéraire
-- [Modules](/docs/modular/modules) — organisé en modules de fonctionnalités
+- [Guards](/docs/modular/guards) - authentification et autorisation
+- [Controllers](/docs/modular/controllers) - définir les gestionnaires d'itinéraire
+- [Modules](/docs/modular/modules) - organisé en modules de fonctionnalités

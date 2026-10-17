@@ -7,7 +7,7 @@ Providers encapsulate business logic, data access, or external integrations. The
 Without DI, every controller manually creates its dependencies:
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 With DI, the container instantiates dependencies and injects them:
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
@@ -49,7 +49,7 @@ class UserService:
         return user
 ```
 
-`"@Injectable()` prevents direct instantiation — calling `UserService()` outside of DI raises `TypeError`. This forces you to use the container, which ensures scopes and dependencies are correctly resolved.
+`"@Injectable()` prevents direct instantiation - calling `UserService()` outside of DI raises `TypeError`. This forces you to use the container, which ensures scopes and dependencies are correctly resolved.
 
 ## Injecting into a Controller
 
@@ -74,11 +74,11 @@ class UsersController:
 
 The DI container matches the type hint (`UserService`) to a registered provider. If no provider matches, it raises `ValueError` at startup.
 
-**Gotcha**: Constructor parameter names don't matter — only type hints do. `service: UserService` and `s: UserService` both resolve to the same provider.
+**Gotcha**: Constructor parameter names don't matter - only type hints do. `service: UserService` and `s: UserService` both resolve to the same provider.
 
 ## Injecting Providers into Other Providers
 
-Providers can depend on other providers — the container resolves the full tree:
+Providers can depend on other providers - the container resolves the full tree:
 
 ```python
 from nexy.decorators import Injectable
@@ -128,7 +128,7 @@ class IdGenerator:
 
 **`Scope.SINGLETON`** is the default and safest choice. Use **`Scope.REQUEST`** only when you need per-request state (e.g., storing the current user from a guard). Use **`Scope.TRANSIENT`** when the provider has mutable state that shouldn't be shared.
 
-**Gotcha**: Transient providers injected into a singleton provider become effectively singleton — they're created once when the singleton is first resolved. If you need a fresh transient per request, inject it into a request-scoped provider instead.
+**Gotcha**: Transient providers injected into a singleton provider become effectively singleton - they're created once when the singleton is first resolved. If you need a fresh transient per request, inject it into a request-scoped provider instead.
 
 ## Custom Providers with `useValue` and `useFactory`
 
@@ -178,7 +178,7 @@ If `Logger` is not registered in any module, the container skips it and passes `
 
 ## Testing with Providers
 
-DI makes testing straightforward — instantiate the controller with a mock:
+DI makes testing straightforward - instantiate the controller with a mock:
 
 ```python
 # In tests
@@ -190,18 +190,18 @@ result = controller.GET()
 assert result == [{"id": 1, "name": "Test"}]
 ```
 
-No need to start the server or set up the full DI container. This is the main advantage of constructor injection — pure unit tests.
+No need to start the server or set up the full DI container. This is the main advantage of constructor injection - pure unit tests.
 
 ## Best Practices
 
-1. **Prefer constructor injection** — manually calling `Container.resolve()` is rare; let the container inject automatically.
-2. **Keep providers stateless** (singleton scope) — state belongs in databases or request-scoped providers.
-3. **One responsibility per provider** — `UserService` handles users, `EmailService` handles emails.
-4. **Register all providers explicitly** in the module's `providers` list — explicit registrations are self-documenting.
-5. **Use `Scope.REQUEST` sparingly** — each request-scoped provider adds allocation overhead.
+1. **Prefer constructor injection** - manually calling `Container.resolve()` is rare; let the container inject automatically.
+2. **Keep providers stateless** (singleton scope) - state belongs in databases or request-scoped providers.
+3. **One responsibility per provider** - `UserService` handles users, `EmailService` handles emails.
+4. **Register all providers explicitly** in the module's `providers` list - explicit registrations are self-documenting.
+5. **Use `Scope.REQUEST` sparingly** - each request-scoped provider adds allocation overhead.
 
 ## Next Steps
 
-- [Modules](/docs/modular/modules) — organize providers into feature modules
-- [Guards](/docs/modular/guards) — add authentication and authorization
-- [Middleware](/docs/modular/middleware) — intercept requests before they reach controllers
+- [Modules](/docs/modular/modules) - organize providers into feature modules
+- [Guards](/docs/modular/guards) - add authentication and authorization
+- [Middleware](/docs/modular/middleware) - intercept requests before they reach controllers

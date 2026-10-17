@@ -22,7 +22,7 @@ class ChatController:
             pass
 ```
 
-Имя метода `SOCKET` сопоставляется с конечной точкой WebSocket. Все методы в контроллере имеют общий префикс `"@Controller` — так что это `GET /chat` для WebSocket.
+Имя метода `SOCKET` сопоставляется с конечной точкой WebSocket. Все методы в контроллере имеют общий префикс `"@Controller` - так что это `GET /chat` для WebSocket.
 
 ---
 
@@ -85,7 +85,7 @@ class ChatController:
             self.manager.remove(websocket)
 ```
 
-`ConnectionManager` является одноэлементным `"@Injectable()` — все экземпляры контроллера используют одного и того же менеджера.
+`ConnectionManager` является одноэлементным `"@Injectable()` - все экземпляры контроллера используют одного и того же менеджера.
 
 ---
 
@@ -134,9 +134,9 @@ class RoomController:
 
 | Событие | Что происходит |
 |-------|-------------|
-| Клиент подключается | `websocket.accept()` — должен быть вызван первым |
+| Клиент подключается | `websocket.accept()` - должен быть вызван первым |
 | Сообщение получено | `receive_text()` / `receive_json()` / `receive_bytes()` |
-| Клиент отключается | `WebSocketDisconnect` поднят — очистка в `except` |
+| Клиент отключается | `WebSocketDisconnect` поднят - очистка в `except` |
 | Сервер закрывается | `await websocket.close(code=1000)` |
 
 ---
@@ -153,7 +153,7 @@ ws.send("Hello from the client!");
 
 ## См. также
 
-- [Controllers](/docs/modular/controllers) — обработчики маршрутов в Modular
-- [Providers & DI](/docs/modular/providers) — инъекционные услуги
-- [Guards](/docs/modular/guards) — защита конечных точек WebSocket.
-- [WebSocket Guide](/docs/guides/websocket) — концептуальный обзор
+- [Controllers](/docs/modular/controllers) - обработчики маршрутов в Modular
+- [Providers & DI](/docs/modular/providers) - инъекционные услуги
+- [Guards](/docs/modular/guards) - защита конечных точек WebSocket.
+- [WebSocket Guide](/docs/guides/websocket) - концептуальный обзор

@@ -62,12 +62,12 @@ from starlette.authentication import requires
 def GET(request):
     return {"user": request.user.username}
 ```
-适用于 FBR 和模块化 — `requires` 返回一个有效的可调用守卫。
+适用于 FBR 和模块化 - `requires` 返回一个有效的可调用守卫。
 
 ---
 
 ## 相关
 
-- ["@UseGuard reference](/docs/decorators/useguard) — 完整的装饰器 API
-- [Guards (Modular)](/docs/modular/guards) — 模块化 DI 中的保护注入
-- [Authentication](/docs/security/authentication) — 设置身份验证后端
+- ["@UseGuard reference](/docs/decorators/useguard) - 完整的装饰器 API
+- [Guards (Modular)](/docs/modular/guards) - 模块化 DI 中的保护注入
+- [Authentication](/docs/security/authentication) - 设置身份验证后端

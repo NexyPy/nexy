@@ -3,14 +3,14 @@ from collections.abc import Callable
 
 
 class ActionsStore:
-    def __init__(self):
-        self.registry: dict[str, Callable] = {}
+    def __init__(self) -> None:
+        self.registry: dict[str, Callable[..., object]] = {}
         self.path_map: dict[str, str] = {}
 
     def _generate_hash(self, func_id: str) -> str:
         return hashlib.sha256(f"{func_id}salt2026".encode()).hexdigest()[:12]
 
-    def register(self, func: Callable):
+    def register(self, func: Callable[..., object]) -> str:
         func_id = f"{func.__module__}.{func.__name__}"
         self.registry[func_id] = func
         return func_id

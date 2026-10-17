@@ -1,8 +1,8 @@
-# Nexy VSCode Extension — Agent Guide
+# Nexy VSCode Extension - Agent Guide
 
 ## Vision
 
-Offrir une expérience de développement **équivalente à Vue (Volar), Svelte, ou Astro** pour `.nexy` et `.mdx` — IntelliSense complète (complétion, hover, go-to-definition, rename, folding, code actions, diagnostics) pour tous les langages embarqués : Python (`---`), Jinja2 (`{{ }}`/`{% %}`/`{# #}`), HTML, CSS/SCSS/Less (`<style>`), JS/TS/TSX/JSX/Rust (`<script>`), Markdown (`.mdx`).
+Offrir une expérience de développement **équivalente à Vue (Volar), Svelte, ou Astro** pour `.nexy` et `.mdx` - IntelliSense complète (complétion, hover, go-to-definition, rename, folding, code actions, diagnostics) pour tous les langages embarqués : Python (`---`), Jinja2 (`{{ }}`/`{% %}`/`{# #}`), HTML, CSS/SCSS/Less (`<style>`), JS/TS/TSX/JSX/Rust (`<script>`), Markdown (`.mdx`).
 
 ## Architecture
 
@@ -80,9 +80,9 @@ page.nexy
 Mapping aller-retour des positions par `EmbedContentProvider`.
 
 ### Jinja2 en 3 couches
-1. **Grammaire TextMate** (`jinja2-injection.json`) — colorie `{{ }}`/`{% %}`/`{# #}`, injectée aussi dans `string.quoted.*.html` pour colorer même dans les attributs
-2. **Virtual Python** (`page.nexy.jinja.py`) — `{{ x\|upper }}` → stubs Python → Pylance donne complétions
-3. **Strip + Remap HTML** — `{% %}`/`{{ }}`/`{# #}` remplacés par espaces avant délégation HTML
+1. **Grammaire TextMate** (`jinja2-injection.json`) - colorie `{{ }}`/`{% %}`/`{# #}`, injectée aussi dans `string.quoted.*.html` pour colorer même dans les attributs
+2. **Virtual Python** (`page.nexy.jinja.py`) - `{{ x\|upper }}` → stubs Python → Pylance donne complétions
+3. **Strip + Remap HTML** - `{% %}`/`{{ }}`/`{# #}` remplacés par espaces avant délégation HTML
 
 ### Détection de projet
 `findWorkspaceRoot()` (shared/nexy.config.parser.ts) cherche en remontant :
@@ -110,10 +110,10 @@ pnpm add -D <pkg>                # Ajouter dépendance dev
 ## Tests
 
 49 tests, 4 fichiers, 0 échec. Tous les tests sont dans `test/` avec `vitest` :
-- `test/parser/header.test.ts` — extractHeader, extractImports, extractProps, findUsedComponents
-- `test/parser/template.test.ts` — extractStyleTags, extractScriptTags
-- `test/parser/jinja.test.ts` — extractJinjaExpressions, extractVariables, extractFilters, isValidJinjaFilter
-- `test/nexy.config.parser.test.ts` — findWorkspaceRoot, parseMdxConfig, parseNexyConfig (filesystem temp)
+- `test/parser/header.test.ts` - extractHeader, extractImports, extractProps, findUsedComponents
+- `test/parser/template.test.ts` - extractStyleTags, extractScriptTags
+- `test/parser/jinja.test.ts` - extractJinjaExpressions, extractVariables, extractFilters, isValidJinjaFilter
+- `test/nexy.config.parser.test.ts` - findWorkspaceRoot, parseMdxConfig, parseNexyConfig (filesystem temp)
 
 ### Ajouter un test
 1. Créer `test/<name>.test.ts`
@@ -143,8 +143,8 @@ afterEach(() => { fs.rmSync(tmpDir, { recursive: true, force: true }); });
 ## Gotchas
 
 - `features/semanticTokens.ts` et `src/semantic.tokens.ts` sont DEUX fichiers différents (LSP server vs client-side).
-- Le fichier `_nexy.tmLanguage.json` est un brouillon — ignorer.
+- Le fichier `_nexy.tmLanguage.json` est un brouillon - ignorer.
 - `vsce package --no-dependencies` nécessaire sous pnpm.
 - Pylance nécessite des vrais fichiers `.py` sur disque (`.nexy-virt/`) avec `__init__.py`.
-- Position mapping fragile — tester avec accents/émojis/CRLF.
-- Les trois échecs `findUsedComponents` dans les tests sont NORMAUX — `NEXY_BUILTIN_COMPONENTS` a été ajouté.
+- Position mapping fragile - tester avec accents/émojis/CRLF.
+- Les trois échecs `findUsedComponents` dans les tests sont NORMAUX - `NEXY_BUILTIN_COMPONENTS` a été ajouté.

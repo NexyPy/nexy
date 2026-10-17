@@ -40,7 +40,7 @@ Voir [WSGI](/docs/fastapi/wsgi).
 ## Comment fonctionnent les montures
 
 - Le **préfixe de montage est supprimé** avant que les requêtes n'atteignent la sous-application
-- Les sous-applications ont leur **propre pile middleware** — L'authentification/middleware Nexy ne s'applique pas
+- Les sous-applications ont leur **propre pile middleware** - L'authentification/middleware Nexy ne s'applique pas
 - Les sous-applications peuvent être n'importe quelle application ASGI (FastAPI, Starlette, Litestar, etc.)
 - Les montures sont commandées - le premier match gagne
 
@@ -48,4 +48,4 @@ Voir [WSGI](/docs/fastapi/wsgi).
 
 - WebSocket n'est pas pris en charge sur tous les montages
 - Les événements de durée de vie sont par application
-- Les documents OpenAPI couvrent uniquement l'application racine — les documents des sous-applications nécessitent une configuration séparée
+- Les documents OpenAPI couvrent uniquement l'application racine - les documents des sous-applications nécessitent une configuration séparée

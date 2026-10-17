@@ -4,7 +4,7 @@
 
 ## 1. Включить промежуточное программное обеспечение сеанса
 
-В `nexyconfig.py` включите `useSession` — подписанные сеансы cookie Starlette:
+В `nexyconfig.py` включите `useSession` - подписанные сеансы cookie Starlette:
 
 ```python
 class NexyConfig(NexyConfigModel):
@@ -64,7 +64,7 @@ def POST(username: str, password: str):
 
 ## 4. Защищенная панель управления
 
-Защитите панель мониторинга с помощью защиты — возвращает `{"user": ...}` при аутентификации, 401 в противном случае:
+Защитите панель мониторинга с помощью защиты - возвращает `{"user": ...}` при аутентификации, 401 в противном случае:
 
 ```nexy
 # src/routes/dashboard.nexy
@@ -123,7 +123,7 @@ session = useSession()
 
 ## Что дальше?
 
-- [Authentication reference](/docs/security/authentication) — серверы аутентификации, JWT, OAuth
-- [Authorization / Guards](/docs/security/authorization) — пользовательские охранники, области видимости
-- [JWT](/docs/security/jwt) — аутентификация на основе токена
+- [Authentication reference](/docs/security/authentication) - серверы аутентификации, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) - пользовательские охранники, области видимости
+- [JWT](/docs/security/jwt) - аутентификация на основе токена
 - [Session config](/docs/config/session)

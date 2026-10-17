@@ -18,6 +18,49 @@ _ORM_EXTRA_PACKAGES: dict[str, list[str]] = {
 }
 
 
+def node_package_manager(dest: Path = Path(".")) -> str | None:
+    """Detect the package manager for *dest* (lockfile first): pnpm, yarn or npm."""
+    if (dest / "pnpm-lock.yaml").exists() and shutil.which("pnpm"):
+        return "pnpm"
+    if (dest / "yarn.lock").exists() and shutil.which("yarn"):
+        return "yarn"
+    if shutil.which("npm"):
+        return "npm"
+    return None
+
+
+def install_packages(deps: list[str], dest: Path | None = None) -> None:
+    """Install node *deps* into *dest* with the detected package manager."""
+    if not deps:
+        return
+
+    dest = (dest or Path(".")).resolve()
+    pm = node_package_manager(dest)
+    if pm is None:
+        warning_msg = f"[yellow]{t('add.warning', 'Warning:')}[/yellow] " + t(
+            "add.no_pm", "No package manager found. Please install dependencies manually:"
+        )
+        console.print(warning_msg + ", ".join(deps))
+        return
+
+    cmd = ["npm", "install"] if pm == "npm" else [pm, "add"]
+    install_msg = (
+        f"[yellow]nexy[/yellow] » {t('add.installing', 'Installing dependencies')}: "
+        f"{', '.join(deps)}..."
+    )
+    with console.status(install_msg, spinner="dots"):
+        try:
+            subprocess.run(
+                cmd + deps, check=True, capture_output=True, cwd=dest, shell=(os.name == "nt")
+            )
+        except subprocess.CalledProcessError as e:
+            error_msg = (
+                f"[red]{t('add.error', 'Error:')}[/red] "
+                f"{t('add.install_failed', 'Failed to install dependencies')}: {e}"
+            )
+            console.print(error_msg)
+
+
 class DependencyInstaller:
     """Handles automatic installation of dependencies for different project types."""
 
@@ -86,17 +129,10 @@ class DependencyInstaller:
     def install_node_dependencies(self) -> None:
         package_json = self.directory / "package.json"
         vite_config = self.directory / "vite.config.ts"
-        pnpm_lock = self.directory / "pnpm-lock.yaml"
-        yarn_lock = self.directory / "yarn.lock"
 
         if package_json.exists() and vite_config.exists():
-            if pnpm_lock.exists() and shutil.which("pnpm"):
-                cmd = ["pnpm", "install"]
-            elif yarn_lock.exists() and shutil.which("yarn"):
-                cmd = ["yarn", "install"]
-            elif shutil.which("npm"):
-                cmd = ["npm", "install"]
-            else:
+            pm = node_package_manager(self.directory)
+            if pm is None:
                 console.print(
                     "[yellow]nexy[/yellow] » "
                     + t(
@@ -105,6 +141,7 @@ class DependencyInstaller:
                     )
                 )
                 return
+            cmd = [pm, "install"]
 
             with console.status(
                 "[yellow]nexy[/yellow] » "

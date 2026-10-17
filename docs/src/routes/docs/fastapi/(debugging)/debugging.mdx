@@ -1,6 +1,6 @@
 # Debugging
 
-Nexy apps are standard Python — use your usual debugging tools.
+Nexy apps are standard Python - use your usual debugging tools.
 
 ## `breakpoint()`
 
@@ -13,7 +13,7 @@ def GET():
     return {"x": x}
 ```
 
-Run `nx dev` and hit the route — the terminal drops into `pdb`.
+Run `nx dev` and hit the route - the terminal drops into `pdb`.
 
 ## VS Code
 
@@ -36,7 +36,7 @@ Run `nx dev` and hit the route — the terminal drops into `pdb`.
 }
 ```
 
-3. Press `F5` to start debugging — breakpoints work in `.nexy` frontmatter and `.py` files.
+3. Press `F5` to start debugging - breakpoints work in `.nexy` frontmatter and `.py` files.
 
 ## Print debugging
 
@@ -61,7 +61,7 @@ def GET():
 
 ## uvicorn reload
 
-`nx dev` runs uvicorn with `--reload` — changes to `.py`, `.nexy`, `.mdx` files trigger an automatic restart.
+`nx dev` runs uvicorn with `--reload` - changes to `.py`, `.nexy`, `.mdx` files trigger an automatic restart.
 
 ## Common issues
 
@@ -70,4 +70,4 @@ def GET():
 | Route returns 405 | Wrong HTTP method or missing `python-multipart` |
 | Body is `None` | Missing Pydantic model or type annotation |
 | 422 Validation Error | Type mismatch in path/query params |
-| Module not found | VFS cache stale — restart `nx dev` |
+| Module not found | VFS cache stale - restart `nx dev` |

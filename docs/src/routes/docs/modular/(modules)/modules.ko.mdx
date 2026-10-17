@@ -166,9 +166,9 @@ src/
 
 모듈 확인은 세 가지 규칙을 따릅니다.
 
-1. **토폴로지 정렬** — 모듈은 종속성 순서로 초기화됩니다(가져오기 먼저).
-2. **순환 감지** — 모듈 간의 순환 종속성은 시작 시 `RecursionError`를 증가시킵니다.
-3. **제공자 범위** — 제공자는 어떤 모듈을 가져오든 관계없이 원래 범위를 유지합니다.
+1. **토폴로지 정렬** - 모듈은 종속성 순서로 초기화됩니다(가져오기 먼저).
+2. **순환 감지** - 모듈 간의 순환 종속성은 시작 시 `RecursionError`를 증가시킵니다.
+3. **제공자 범위** - 제공자는 어떤 모듈을 가져오든 관계없이 원래 범위를 유지합니다.
 
 모듈 A가 모듈 B를 가져오고 모듈 B가 모듈 A를 가져오는 경우 컨테이너는 시작 시 주기를 감지합니다.
 
@@ -180,14 +180,14 @@ RecursionError: Cycle detected for ModuleA
 
 ## 모범 사례
 
-1. **모듈당 하나의 기능** — 사용자, 인증, 청구. "유틸리티"가 아닙니다.
-2. **모듈 가져오기를 얕게 유지** — 10개 이상의 다른 모듈을 가져오는 모듈이 너무 많은 작업을 수행합니다.
-3. **`exports`를 의도적으로 사용** — 다른 모듈에 실제로 필요한 것만 내보냅니다.
-4. **도메인 뒤에 모듈 이름 지정** — `UsersModule`, `OrdersModule`, `PaymentsModule`
-5. **버전 관리 시 항상 `prefix`를 제공하세요** — `"@Module(prefix="/api/v1")`
+1. **모듈당 하나의 기능** - 사용자, 인증, 청구. "유틸리티"가 아닙니다.
+2. **모듈 가져오기를 얕게 유지** - 10개 이상의 다른 모듈을 가져오는 모듈이 너무 많은 작업을 수행합니다.
+3. **`exports`를 의도적으로 사용** - 다른 모듈에 실제로 필요한 것만 내보냅니다.
+4. **도메인 뒤에 모듈 이름 지정** - `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **버전 관리 시 항상 `prefix`를 제공하세요** - `"@Module(prefix="/api/v1")`
 
 ## 다음 단계
 
-- [Guards](/docs/modular/guards) — 모듈 경로 보호
-- [Middleware](/docs/modular/middleware) — 파이프라인 후크 요청
-- [Controllers](/docs/modular/controllers) — 경로 핸들러 정의
+- [Guards](/docs/modular/guards) - 모듈 경로 보호
+- [Middleware](/docs/modular/middleware) - 파이프라인 후크 요청
+- [Controllers](/docs/modular/controllers) - 경로 핸들러 정의

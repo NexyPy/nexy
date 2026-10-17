@@ -5,7 +5,7 @@ Components are `.nexy` files in `src/components/` that you import into pages and
 
 ## Creating a Component
 
-A component is any `.nexy` file. The simplest possible component has no frontmatter — just HTML:
+A component is any `.nexy` file. The simplest possible component has no frontmatter - just HTML:
 
 ```nexy
 <!-- src/components/Hello.nexy -->
@@ -156,7 +156,7 @@ Since the component is a Python function, you can return early in the frontmatte
 title:prop[str] = ""
 if not title:
     print("Warning: Card rendered without title")
-    # Return early — the template still runs but title is empty
+    # Return early - the template still runs but title is empty
 ---
 <div class="card">
   <h2>{{ title }}</h2>
@@ -179,11 +179,11 @@ show_header:prop[bool] = true
 
 ## Best Practices
 
-- **One component per file** — clear naming, easy to find
-- **Keep templates under 50 lines** — if it's longer, extract sub-components
-- **Use props instead of hardcoding** — makes components reusable
-- **Name files in PascalCase** — `BlogCard.nexy` not `blog_card.nexy`
-- **Default props for optional values** — `title:prop[str] = ""` not `title:prop[str]`
+- **One component per file** - clear naming, easy to find
+- **Keep templates under 50 lines** - if it's longer, extract sub-components
+- **Use props instead of hardcoding** - makes components reusable
+- **Name files in PascalCase** - `BlogCard.nexy` not `blog_card.nexy`
+- **Default props for optional values** - `title:prop[str] = ""` not `title:prop[str]`
 
 ## Next
 

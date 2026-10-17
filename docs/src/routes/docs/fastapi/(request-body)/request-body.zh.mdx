@@ -99,10 +99,10 @@ class Item(BaseModel):
     tags: list[str] = []
     image: Image | None = None
 ```
-与路由器无关——相同的 Pydantic 模型可以在 FBR 和 Modular 中工作。
+与路由器无关--相同的 Pydantic 模型可以在 FBR 和 Modular 中工作。
 
 ## 限制
 
 - 当您键入注释 Pydantic 模型参数时，正文会自动解析
 - FastAPI 处理验证并在无效输入时返回 422
-- 不需要 `"@Body()` 装饰器——标准 FastAPI 行为
+- 不需要 `"@Body()` 装饰器--标准 FastAPI 行为

@@ -34,5 +34,5 @@
 
 ### Added
 - Tests: sandbox (9), VFS dev mode (3), builder parallel (1), pycache (1),
-  version (3), string transform (13) — 30 new tests, 84 total pass.
+  version (3), string transform (13) - 30 new tests, 84 total pass.
 - CI workflow (`.github/workflows/ci.yml`): ruff → mypy → pytest on 3.12/3.13.

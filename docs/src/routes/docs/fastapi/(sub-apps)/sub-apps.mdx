@@ -40,12 +40,12 @@ See [WSGI](/docs/fastapi/wsgi).
 ## How mounts work
 
 - The mount **prefix is stripped** before requests reach the sub-app
-- Sub-apps have their **own middleware stack** — Nexy auth/middleware doesn't apply
+- Sub-apps have their **own middleware stack** - Nexy auth/middleware doesn't apply
 - Sub-apps can be any ASGI application (FastAPI, Starlette, Litestar, etc.)
-- Mounts are ordered — first match wins
+- Mounts are ordered - first match wins
 
 ## Restrictions
 
 - WebSocket isn't supported across mounts
 - Lifespan events are per-app
-- OpenAPI docs only cover the root app — sub-app docs need separate setup
+- OpenAPI docs only cover the root app - sub-app docs need separate setup

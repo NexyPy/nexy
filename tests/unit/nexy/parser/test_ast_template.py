@@ -1,11 +1,12 @@
 import pytest
 from nexy.compiler.parser.template import TemplateParser, NexyParserError
 
+
 class TestASTTemplateParser:
     def test_simple_component(self):
         parser = TemplateParser()
-        result = parser.parse('<Button />', known_components={"Button"})
-        assert result == '{{ Button() }}'
+        result = parser.parse("<Button />", known_components={"Button"})
+        assert result == "{{ Button() }}"
 
     def test_component_with_attributes(self):
         parser = TemplateParser()
@@ -23,31 +24,33 @@ class TestASTTemplateParser:
         """
         known = {"Grid", "Card", "Icon"}
         result = parser.parse(html, known_components=known)
-        
-        assert '{% call Grid() %}' in result
+
+        assert "{% call Grid() %}" in result
         assert '{% call Card(title="Card 1") %}' in result
         assert '{{ Icon(name="star") }}' in result
-        assert '{% endcall %}' in result
+        assert "{% endcall %}" in result
 
     def test_mixed_html_and_components(self):
         parser = TemplateParser()
         html = '<div class="container"><Button /><span>Text</span></div>'
         result = parser.parse(html, known_components={"Button"})
         assert '<div class="container">' in result
-        assert '{{ Button() }}' in result
-        assert '<span>Text</span>' in result
+        assert "{{ Button() }}" in result
+        assert "<span>Text</span>" in result
 
     def test_missing_import_raises_error(self):
         parser = TemplateParser()
         with pytest.raises(NexyParserError, match="Missing Import: <UnknownComponent>"):
-            parser.parse('<UnknownComponent />')
+            parser.parse("<UnknownComponent />")
 
     def test_self_closing_html_tags(self):
         parser = TemplateParser()
         html = '<img src="logo.png" /><br>'
         result = parser.parse(html)
         assert '<img src="logo.png" />' in result
-        assert '<br />' in result or '<br>' in result # HTMLParser might normalize <br> to <br /> if we set it
+        assert (
+            "<br />" in result or "<br>" in result
+        )  # HTMLParser might normalize <br> to <br /> if we set it
 
     def test_dynamic_attributes(self):
         parser = TemplateParser()

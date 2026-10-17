@@ -1,6 +1,4 @@
-
-
-def Audio(
+def audio(
     src: str,
     controls: bool = True,
     autoplay: bool = False,
@@ -9,7 +7,7 @@ def Audio(
     preload: str = "metadata",
     class_name: str | None = None,
     sources: list[str] | None = None,
-    **kwargs,
+    **kwargs: str | bool,
 ) -> str:
     # Build attributes
     attrs = {"preload": preload}

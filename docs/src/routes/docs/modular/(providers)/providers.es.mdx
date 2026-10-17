@@ -7,7 +7,7 @@ Los proveedores encapsulan la lógica empresarial, el acceso a datos o las integ
 Sin DI, cada controlador crea manualmente sus dependencias:
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 Con DI, el contenedor crea una instancia de dependencias y las inyecta:
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
@@ -203,5 +203,5 @@ No es necesario iniciar el servidor ni configurar el contenedor DI completo. És
 ## Próximos pasos
 
 - [Modules](/docs/modular/modules): organiza proveedores en módulos de funciones
-- [Guards](/docs/modular/guards) — agregar autenticación y autorización
+- [Guards](/docs/modular/guards) - agregar autenticación y autorización
 - [Middleware](/docs/modular/middleware): intercepta las solicitudes antes de que lleguen a los controladores

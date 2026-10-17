@@ -1,6 +1,6 @@
 # Gardes
 
-Les gardes déterminent si une demande doit parvenir au gestionnaire d'itinéraire. Ils s'exécutent **avant la méthode du contrôleur** — parfaits pour l'authentification, l'autorisation, la limitation de débit et le contrôle d'accès.
+Les gardes déterminent si une demande doit parvenir au gestionnaire d'itinéraire. Ils s'exécutent **avant la méthode du contrôleur** - parfaits pour l'authentification, l'autorisation, la limitation de débit et le contrôle d'accès.
 
 Les gardes de Nexy sont des **dépendances FastAPI**. Ce sont des appelables (classes avec `__call__` ou fonctions autonomes) qui reçoivent la requête et transmettent ou déclenchent une HTTPException.
 
@@ -180,14 +180,14 @@ class UsersController:
 
 ## meilleures pratiques
 
-1. **Un garde par préoccupation** — `AuthGuard`, `RoleGuard`, `RateLimitGuard`. Pas `SecurityGuard` qui fait tout.
-2. **Utilisez des codes d'état descriptifs** — 401 pour une authentification manquante/invalide, 403 pour des autorisations insuffisantes, 429 pour une limitation de débit.
-3. **Évitez les effets secondaires** — les gardes doivent vérifier les autorisations et non modifier l'état (sauf `request.state`).
-4. **Cache les contrôles coûteux** — instances de garde singleton avec caches en mémoire.
-5. **Testez les gardes en isolement** — créez un `Request` simulé, appelez le garde, affirmez qu'il augmente ou passe.
+1. **Un garde par préoccupation** - `AuthGuard`, `RoleGuard`, `RateLimitGuard`. Pas `SecurityGuard` qui fait tout.
+2. **Utilisez des codes d'état descriptifs** - 401 pour une authentification manquante/invalide, 403 pour des autorisations insuffisantes, 429 pour une limitation de débit.
+3. **Évitez les effets secondaires** - les gardes doivent vérifier les autorisations et non modifier l'état (sauf `request.state`).
+4. **Cache les contrôles coûteux** - instances de garde singleton avec caches en mémoire.
+5. **Testez les gardes en isolement** - créez un `Request` simulé, appelez le garde, affirmez qu'il augmente ou passe.
 
 ## Prochaines étapes
 
-- [Middleware](/docs/modular/middleware) — demander des hooks de pipeline
-- [Controllers](/docs/modular/controllers) — définir les gestionnaires d'itinéraire
-- [Modules](/docs/modular/modules) — organisé en modules de fonctionnalités
+- [Middleware](/docs/modular/middleware) - demander des hooks de pipeline
+- [Controllers](/docs/modular/controllers) - définir les gestionnaires d'itinéraire
+- [Modules](/docs/modular/modules) - organisé en modules de fonctionnalités

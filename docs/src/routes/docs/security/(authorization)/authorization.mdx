@@ -62,12 +62,12 @@ from starlette.authentication import requires
 def GET(request):
     return {"user": request.user.username}
 ```
-Works in both FBR and Modular — `requires` returns a valid guard callable.
+Works in both FBR and Modular - `requires` returns a valid guard callable.
 
 ---
 
 ## Related
 
-- ["@UseGuard reference](/docs/decorators/useguard) — full decorator API
-- [Guards (Modular)](/docs/modular/guards) — guard injection in Modular DI
-- [Authentication](/docs/security/authentication) — setting up auth backends
+- ["@UseGuard reference](/docs/decorators/useguard) - full decorator API
+- [Guards (Modular)](/docs/modular/guards) - guard injection in Modular DI
+- [Authentication](/docs/security/authentication) - setting up auth backends

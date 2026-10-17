@@ -134,3 +134,50 @@ export function CardContent({ children, className = '' }: { children: React.Reac
         },
     ),
 }
+
+
+class TemplateNotFoundError(ValueError):
+    """Raised when an unknown project template name is requested."""
+
+
+BUNDLED_TEMPLATES: frozenset[str] = frozenset(
+    {
+        "web-fbr",
+        "web-modular",
+        "api-fbr",
+        "api-modular",
+    }
+)
+
+GITHUB_TEMPLATES: frozenset[str] = frozenset(
+    {
+        "api-fbr",
+        "api-modular",
+        "web-fbr-none",
+        "web-fbr-preact",
+        "web-fbr-react",
+        "web-fbr-solid",
+        "web-fbr-svelte",
+        "web-fbr-vue",
+        "web-modular-none",
+        "web-modular-preact",
+        "web-modular-react",
+        "web-modular-solid",
+        "web-modular-svelte",
+        "web-modular-vue",
+    }
+)
+
+
+def template_source(name: str) -> str:
+    """Resolve a project template name to its source.
+
+    Returns "github" (clone from the nexy repository) or "bundled"
+    (render the template shipped with the package). Raises
+    TemplateNotFoundError for unknown names.
+    """
+    if name in GITHUB_TEMPLATES:
+        return "github"
+    if name in BUNDLED_TEMPLATES:
+        return "bundled"
+    raise TemplateNotFoundError(name)

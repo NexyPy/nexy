@@ -23,10 +23,10 @@ Cada declaración se convierte en un parámetro de la función Python generada c
 
 ```nexy
 ---
-# Required — must be passed, no default
+# Required - must be passed, no default
 name:prop[str]
 
-# Optional — has a default value
+# Optional - has a default value
 name:prop[str] = "Guest"
 age:prop[int] = 0
 items:prop[list] = []
@@ -86,7 +86,7 @@ posts = [...]  # from database
 Un problema común de Python: **no utilice valores predeterminados mutables** que se comparten entre llamadas:
 
 ```python
-# BAD — in Python, this list is created once and shared
+# BAD - in Python, this list is created once and shared
 def Card(items: list = []):
     items.append("new")  # Modifies the default!
 ```

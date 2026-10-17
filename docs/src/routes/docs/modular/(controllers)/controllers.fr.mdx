@@ -262,14 +262,14 @@ class UsersModule:
 
 ## meilleures pratiques
 
-1. **Une ressource par contrôleur** — `UsersController`, `PostsController`. Pas un seul `ApiController`.
-2. **Gardez les méthodes concentrées** — chaque méthode fait une chose.
-3. **Utilisez l'injection de dépendances** — n'instancierez pas de services dans le corps de la méthode.
-4. **Préférez Pydantic pour les corps de requête** — `body: dict` est une odeur de code.
-5. **Préfixez les contrôleurs de manière significative** — `/users`, `/posts`, `/auth`.
+1. **Une ressource par contrôleur** - `UsersController`, `PostsController`. Pas un seul `ApiController`.
+2. **Gardez les méthodes concentrées** - chaque méthode fait une chose.
+3. **Utilisez l'injection de dépendances** - n'instancierez pas de services dans le corps de la méthode.
+4. **Préférez Pydantic pour les corps de requête** - `body: dict` est une odeur de code.
+5. **Préfixez les contrôleurs de manière significative** - `/users`, `/posts`, `/auth`.
 
 ## Prochaines étapes
 
-- [Providers & DI](/docs/modular/providers) — injectez des services dans vos contrôleurs
-- [Modules](/docs/modular/modules) — organise les contrôleurs en modules de fonctionnalités
-- [Guards](/docs/modular/guards) — protège les itinéraires avec autorisation
+- [Providers & DI](/docs/modular/providers) - injectez des services dans vos contrôleurs
+- [Modules](/docs/modular/modules) - organise les contrôleurs en modules de fonctionnalités
+- [Guards](/docs/modular/guards) - protège les itinéraires avec autorisation

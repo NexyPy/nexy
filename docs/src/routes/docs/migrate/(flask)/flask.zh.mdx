@@ -31,17 +31,17 @@ async def get(id: int):
 ## 你将获得什么
 
 - **异步支持** - 原生，而不是通过黑客
-- **类型验证** — Pydantic，自动 422 错误
-- **OpenAPI 文档** — 不需要 `flasgger`
-- **DI 系统** — 无需全局单例即可注入服务
-- **CLI** — `nx build`、`nx start`、`nx migrate`
+- **类型验证** - Pydantic，自动 422 错误
+- **OpenAPI 文档** - 不需要 `flasgger`
+- **DI 系统** - 无需全局单例即可注入服务
+- **CLI** - `nx build`、`nx start`、`nx migrate`
 
 ## 迁移步骤
 
-1. **脚手架** — `nx new my-app`
-2. **港口航线** — `"@app.route()` → 文件在`src/routes/`或`"@Controller`
-3. **端口模板** — Flask `render_template()` → `.nexy` 文件
-4. **端口请求处理** — `request.args`/`request.json` → 类型化函数参数
+1. **脚手架** - `nx new my-app`
+2. **港口航线** - `"@app.route()` → 文件在`src/routes/`或`"@Controller`
+3. **端口模板** - Flask `render_template()` → `.nexy` 文件
+4. **端口请求处理** - `request.args`/`request.json` → 类型化函数参数
 5. **端口蓝图** → `"@Module` 或 FBR 中的子目录
 
 ## 留下什么

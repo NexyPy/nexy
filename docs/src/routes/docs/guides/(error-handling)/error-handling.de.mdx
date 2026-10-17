@@ -8,15 +8,15 @@ Wenn eine Seite nicht gefunden wird (404) oder ein nicht behandelter Fehler auft
 
 ## Benutzerdefinierte Fehlerseiten
 
-Platzieren Sie `error.nexy`- oder `notfound.nexy`-Dateien in einem beliebigen Routenverzeichnis, um Fehlerseiten für diesen Bereich zu überschreiben:
+Platzieren Sie `errors.nexy`- oder `notfound.nexy`-Dateien in einem beliebigen Routenverzeichnis, um Fehlerseiten für diesen Bereich zu überschreiben:
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### Beispiel: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### Beispiel: `error.nexy`
+### Beispiel: `errors.nexy`
 
 ```nexy
 ---
@@ -64,9 +64,9 @@ In Unterverzeichnissen platzierte Fehlerseiten gelten nur für Routen innerhalb 
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 

@@ -1,6 +1,6 @@
 # 使用会话
 
-返回当前请求的会话字典。会话由签名的 cookie 支持——没有服务器端存储。
+返回当前请求的会话字典。会话由签名的 cookie 支持--没有服务器端存储。
 
 ```python
 from nexy import useSession
@@ -12,7 +12,7 @@ session = useSession()
 
 ## 返回值
 
-`dict` — 来自签名 cookie 的会话数据。如果不存在会话，则返回空字典。
+`dict` - 来自签名 cookie 的会话数据。如果不存在会话，则返回空字典。
 
  - -
 
@@ -59,4 +59,4 @@ session["_flashes"] = flashes
 
 - 需要 `nexyconfig.py` 中的 `useSession` 配置
 - 会话数据已签名但**未加密**
-- 没有服务器端存储——一切都在cookie中
+- 没有服务器端存储--一切都在cookie中

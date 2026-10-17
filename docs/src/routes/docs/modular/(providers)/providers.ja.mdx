@@ -7,7 +7,7 @@
 DI を使用しない場合、すべてのコントローラーは依存関係を手動で作成します。
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 DI を使用すると、コンテナーは依存関係をインスタンス化し、それらを注入します。
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
@@ -194,14 +194,14 @@ assert result == [{"id": 1, "name": "Test"}]
 
 ## ベストプラクティス
 
-1. **コンストラクター インジェクションを優先します** — `Container.resolve()` を手動で呼び出すことはまれです。コンテナに自動的に注入させます。
-2. **プロバイダーをステートレスに保つ** (シングルトン スコープ) — 状態はデータベースまたはリクエスト スコープのプロバイダーに属します。
+1. **コンストラクター インジェクションを優先します** - `Container.resolve()` を手動で呼び出すことはまれです。コンテナに自動的に注入させます。
+2. **プロバイダーをステートレスに保つ** (シングルトン スコープ) - 状態はデータベースまたはリクエスト スコープのプロバイダーに属します。
 3. **プロバイダーごとに 1 つの責任** - `UserService` がユーザーを処理し、`EmailService` が電子メールを処理します。
 4. **すべてのプロバイダーをモジュールの `providers` リストに明示的に登録します**。明示的な登録は自己文書化されます。
-5. **`Scope.REQUEST` は慎重に使用してください** — リクエスト スコープのプロバイダーごとに割り当てオーバーヘッドが追加されます。
+5. **`Scope.REQUEST` は慎重に使用してください** - リクエスト スコープのプロバイダーごとに割り当てオーバーヘッドが追加されます。
 
 ## 次のステップ
 
-- [Modules](/docs/modular/modules) — プロバイダーを機能モジュールに編成します
-- [Guards](/docs/modular/guards) — 認証と認可を追加します
-- [Middleware](/docs/modular/middleware) — リクエストがコントローラーに到達する前にインターセプトします
+- [Modules](/docs/modular/modules) - プロバイダーを機能モジュールに編成します
+- [Guards](/docs/modular/guards) - 認証と認可を追加します
+- [Middleware](/docs/modular/middleware) - リクエストがコントローラーに到達する前にインターセプトします

@@ -7,7 +7,7 @@
 DI가 없으면 모든 컨트롤러는 수동으로 종속성을 생성합니다.
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 DI를 사용하면 컨테이너는 종속성을 인스턴스화하고 주입합니다.
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
@@ -194,14 +194,14 @@ assert result == [{"id": 1, "name": "Test"}]
 
 ## 모범 사례
 
-1. **생성자 주입 선호** — `Container.resolve()`를 수동으로 호출하는 경우는 드뭅니다. 용기가 자동으로 주입되도록 하세요.
+1. **생성자 주입 선호** - `Container.resolve()`를 수동으로 호출하는 경우는 드뭅니다. 용기가 자동으로 주입되도록 하세요.
 2. **공급자를 상태 비저장 상태로 유지**(싱글톤 범위) - 상태는 데이터베이스 또는 요청 범위 공급자에 속합니다.
-3. **공급자당 하나의 책임** — `UserService`는 사용자를 처리하고, `EmailService`는 이메일을 처리합니다.
+3. **공급자당 하나의 책임** - `UserService`는 사용자를 처리하고, `EmailService`는 이메일을 처리합니다.
 4. 모듈의 `providers` 목록에 **모든 공급자를 명시적으로 등록**합니다. 명시적 등록은 자체 문서화됩니다.
-5. **`Scope.REQUEST`를 드물게 사용하세요** — 각 요청 범위 공급자는 할당 오버헤드를 추가합니다.
+5. **`Scope.REQUEST`를 드물게 사용하세요** - 각 요청 범위 공급자는 할당 오버헤드를 추가합니다.
 
 ## 다음 단계
 
-- [Modules](/docs/modular/modules) — 공급자를 기능 모듈로 구성
-- [Guards](/docs/modular/guards) — 인증 및 승인 추가
-- [Middleware](/docs/modular/middleware) — 요청이 컨트롤러에 도달하기 전에 차단합니다.
+- [Modules](/docs/modular/modules) - 공급자를 기능 모듈로 구성
+- [Guards](/docs/modular/guards) - 인증 및 승인 추가
+- [Middleware](/docs/modular/middleware) - 요청이 컨트롤러에 도달하기 전에 차단합니다.

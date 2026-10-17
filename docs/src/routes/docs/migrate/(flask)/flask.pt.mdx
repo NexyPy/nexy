@@ -30,18 +30,18 @@ async def get(id: int):
 
 ## O que você ganha
 
-- **Suporte assíncrono** — nativo, não através de hacks
-- **Validação de tipo** — Pydantic, erros 422 automáticos
-- **documentos OpenAPI** — não é necessário `flasgger`
-- **Sistema DI** — injeta serviços sem singletons globais
-- **CLI** — `nx build`, `nx start`, `nx migrate`
+- **Suporte assíncrono** - nativo, não através de hacks
+- **Validação de tipo** - Pydantic, erros 422 automáticos
+- **documentos OpenAPI** - não é necessário `flasgger`
+- **Sistema DI** - injeta serviços sem singletons globais
+- **CLI** - `nx build`, `nx start`, `nx migrate`
 
 ## Etapas de migração
 
-1. **Andaime** — `nx new my-app`
-2. **Rotas de porta** — `"@app.route()` → arquivo em `src/routes/` ou `"@Controller`
-3. **Modelos de porta** — Flask `render_template()` → arquivos `.nexy`
-4. **Tratamento de solicitação de porta** — `request.args`/`request.json` → parâmetros de função digitados
+1. **Andaime** - `nx new my-app`
+2. **Rotas de porta** - `"@app.route()` → arquivo em `src/routes/` ou `"@Controller`
+3. **Modelos de porta** - Flask `render_template()` → arquivos `.nexy`
+4. **Tratamento de solicitação de porta** - `request.args`/`request.json` → parâmetros de função digitados
 5. **Port Blueprints** → `"@Module` ou subdiretórios em FBR
 
 ## O que fica

@@ -49,7 +49,7 @@ def GET():
 UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
 ```
 
-Os guardas são executados como FastAPI `Depends` — eles recebem o objeto `Request` e podem bloquear aumentando `HTTPException`.
+Os guardas são executados como FastAPI `Depends` - eles recebem o objeto `Request` e podem bloquear aumentando `HTTPException`.
 
 ---
 

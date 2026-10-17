@@ -1,6 +1,6 @@
 # Background Tasks
 
-Run code *after* sending the response — for logging, notifications, cache warming, etc.
+Run code *after* sending the response - for logging, notifications, cache warming, etc.
 ```python
 from fastapi import BackgroundTasks
 ```
@@ -93,8 +93,8 @@ class LogController:
 ```
 ## Important
 
-- Tasks run **after** the response is sent — the client doesn't wait
-- They run in the same process — long tasks block the event loop
+- Tasks run **after** the response is sent - the client doesn't wait
+- They run in the same process - long tasks block the event loop
 - For heavy work, use a task queue (Celery, ARQ, RQ, etc.)
-- Errors in tasks are silently swallowed — add try/except inside the task function
-- Tasks receive **copies** of mutable objects — mutations won't affect the response
+- Errors in tasks are silently swallowed - add try/except inside the task function
+- Tasks receive **copies** of mutable objects - mutations won't affect the response

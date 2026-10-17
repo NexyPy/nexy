@@ -1,6 +1,6 @@
 # Styles in .nexy Files
 
-Nexy templates support CSS the same way HTML does — through `<style>` tags, external imports, or utility frameworks like Tailwind.
+Nexy templates support CSS the same way HTML does - through `<style>` tags, external imports, or utility frameworks like Tailwind.
 
 ## Inline `<style>` Tag
 
@@ -22,7 +22,7 @@ The most direct way to add styles. Add a `<style>` block anywhere in the templat
 </style>
 ```
 
-Styles are **not scoped** — they apply globally. Use a naming convention (BEM, utility classes) or data attributes to avoid collisions.
+Styles are **not scoped** - they apply globally. Use a naming convention (BEM, utility classes) or data attributes to avoid collisions.
 
 ## External CSS via `__Import`
 
@@ -36,7 +36,7 @@ global_css = __Import("/styles/global.css", "", "")()
 <div class="layout">...</div>
 ```
 
-`__Import(path, framework, symbol)` takes three arguments. For CSS, the 2nd and 3rd are unused — pass empty strings. The trailing `()` calls the returned callable immediately, producing the `<style>...</style>` string.
+`__Import(path, framework, symbol)` takes three arguments. For CSS, the 2nd and 3rd are unused - pass empty strings. The trailing `()` calls the returned callable immediately, producing the `<style>...</style>` string.
 
 ## Tailwind CSS
 

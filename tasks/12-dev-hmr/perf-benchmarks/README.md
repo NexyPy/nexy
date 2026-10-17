@@ -8,11 +8,18 @@ the README as unverified claims.
 
 ## Current state (verified)
 
-- No perf assertions in `tests/` (only functional tests).
-- `nexy/frontend/scripts/ssg.ts:84` — `Promise.all(jobs)` over all files; **no worker
-  pool** despite README claiming `os.cpus().length` parallelism.
-- `nexy/builder/__init__.py:114` — `build()`; `incremental=True` path at L116-128
-  (fingerprint skip at L128).
+- **Done**: perf benchmarks exist in `tests/` marked `@pytest.mark.slow` for builder,
+  HMR, and SSG (`tests/unit/nexy/builder/test_builder_benchmark.py`,
+  `tests/unit/nexy/runtime/test_hmr_benchmark.py`,
+  `tests/unit/nexy/frontend/test_ssg_benchmark.py`).
+- **Done**: SSG render loop parallelized. `nexy/frontend/scripts/utils.ts` gained
+  `mapPool(files, concurrency=cpuCount())`; `ssg.{react,preact,solid}.ts` process each
+  file through it (bounded concurrency = `os.cpus().length`). Dispatcher
+  `nexy/frontend/scripts/ssg.ts` measures elapsed time and writes it to
+  `__nexy__/client/ssg-report.json` (`{ timingMs, entries }`).
+- The old README claim (`Promise.all(jobs)` at `ssg.ts:84`) predates the pool; the
+  dispatcher now fans out per-framework jobs in parallel and each framework render
+  loop is pooled internally.
 
 ## TDD phases
 
@@ -25,7 +32,7 @@ the README as unverified claims.
    (`_capture_broadcast` pattern), assert elapsed.
 5. **Green — SSG worker pool** — `nexy/frontend/scripts/utils.ts` gains `mapPool(files,
    concurrency=os.cpus().length)`; `ssg.{react,preact,solid}.ts` use it around the
-   `renderToString` import loop; timing logged to `ssg-report.json`.
+   `renderToString` import loop; timing logged to `ssg-report.json`. **Done.**
 6. **Gates** — ruff, mypy, pytest `-m "not slow"` in CI fast lane + `-m slow` nightly.
 
 ## Definition of Done

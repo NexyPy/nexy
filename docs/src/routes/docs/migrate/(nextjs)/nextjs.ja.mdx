@@ -34,16 +34,16 @@ user = db.user.find_unique(id)
 
 ## 移行手順
 
-1. **足場** — `nx new my-app`
-2. **ポート ページ** — `page.tsx` → `.nexy` または `.mdx` ファイル
-3. **ポート レイアウト** — `layout.tsx` → `layout.nexy`
-4. **ポート API ルート** — `get()`、`post()` などの `route.ts` → `.py` ファイル。
-5. **ポート サーバー アクション** — サーバー アクション → `"@Action` デコレーター
+1. **足場** - `nx new my-app`
+2. **ポート ページ** - `page.tsx` → `.nexy` または `.mdx` ファイル
+3. **ポート レイアウト** - `layout.tsx` → `layout.nexy`
+4. **ポート API ルート** - `get()`、`post()` などの `route.ts` → `.py` ファイル。
+5. **ポート サーバー アクション** - サーバー アクション → `"@Action` デコレーター
 
 ## 主な違い
 
-- **サーバー上の Python** — JavaScript/TypeScript は必要ありません
-- **ページのビルド手順はありません** — `.nexy` ファイルは開発時にコンパイルされます
-- **複数のフロントエンド フレームワーク** — React、Vue、Svelte、Solid、Preact
-- **内部の FastAPI** — 非同期、OpenAPI、タイプセーフ
-- **2 つのルーティング戦略** — ファイルベース (Next.js Pages など) またはモジュール型 (NestJS など)
+- **サーバー上の Python** - JavaScript/TypeScript は必要ありません
+- **ページのビルド手順はありません** - `.nexy` ファイルは開発時にコンパイルされます
+- **複数のフロントエンド フレームワーク** - React、Vue、Svelte、Solid、Preact
+- **内部の FastAPI** - 非同期、OpenAPI、タイプセーフ
+- **2 つのルーティング戦略** - ファイルベース (Next.js Pages など) またはモジュール型 (NestJS など)

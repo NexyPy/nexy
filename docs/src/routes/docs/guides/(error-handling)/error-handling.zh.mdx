@@ -8,15 +8,15 @@ Nexy 提供内置的 404 和 500 错误页面。使用自定义 `.nexy` 文件�
 
 ## 自定义错误页面
 
-将 `error.nexy` 或 `notfound.nexy` 文件放置在任何路由目录中以覆盖该范围的错误页面：
+将 `errors.nexy` 或 `notfound.nexy` 文件放置在任何路由目录中以覆盖该范围的错误页面：
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### 示例：`notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### 示例：`error.nexy`
+### 示例：`errors.nexy`
 
 ```nexy
 ---
@@ -64,13 +64,13 @@ src/routes/
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 
 ## 相关
 
-- [Authorization / Guards](/docs/security/authorization) — 保护路由免遭未经授权的访问
-- [Authentication](/docs/security/authentication) — 配置身份验证中间件
+- [Authorization / Guards](/docs/security/authorization) - 保护路由免遭未经授权的访问
+- [Authentication](/docs/security/authentication) - 配置身份验证中间件

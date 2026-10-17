@@ -1,6 +1,6 @@
 # Background Tasks (FBR)
 
-Run code *after* sending the response — for logging, notifications, cache warming.
+Run code *after* sending the response - for logging, notifications, cache warming.
 
 ```python
 from fastapi import BackgroundTasks
@@ -49,8 +49,8 @@ def GET(tasks: BackgroundTasks):
 
 ## Important
 
-- Tasks run **after** the response is sent — the client doesn't wait
-- They run in the same process — long tasks block the event loop
+- Tasks run **after** the response is sent - the client doesn't wait
+- They run in the same process - long tasks block the event loop
 - For heavy work, use a task queue (Celery, ARQ, RQ, etc.)
-- Errors in tasks are silently swallowed — add try/except inside the task function
-- Tasks receive **copies** of mutable objects — mutations won't affect the response
+- Errors in tasks are silently swallowed - add try/except inside the task function
+- Tasks receive **copies** of mutable objects - mutations won't affect the response

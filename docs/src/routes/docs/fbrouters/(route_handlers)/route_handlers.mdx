@@ -28,6 +28,26 @@ Nexy maps function names to HTTP methods: `GET` , `POST`, `PUT`, `PATCH`, `DELET
 
 ---
 
+## `index.py`
+
+An `index.py` file maps to the *parent* path - the equivalent of Next.js `route.ts`. A `routes/api/index.py` answers `GET /api`, `POST /api`, and so on:
+
+```python
+# routes/api/index.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"api": "ok"}
+
+async def POST(request: Request):
+    data = await request.json()
+    return {"received": data}
+```
+
+An `index.py` can sit anywhere in the route tree, with or without a UI framework configured - `.py` is always an active route extension. Like `index.nexy`, the `index` stem maps to the parent path (`/api/index.py` → `/api`).
+
+---
+
 ## Available HTTP methods
 
 Define one function per method in a single file:
@@ -62,7 +82,7 @@ class CreateUser(BaseModel):
 async def POST(request: Request, body: CreateUser):
     return {"name": body.name, "email": body.email}
 ```
-FastAPI validates the body automatically — returns 422 on invalid input.
+FastAPI validates the body automatically - returns 422 on invalid input.
 
 ---
 

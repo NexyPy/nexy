@@ -42,7 +42,6 @@ class ComponentType(Enum):
     SOLID = "solid"
     PREACT = "preact"
     JSON = "json"
-    MDX = "mdx"
     UNKNOWN = "unknown"
 
 
@@ -110,7 +109,7 @@ class NexyConfigModel:
     useDocs: bool = True
     useVite: bool = False
     useViteDevUrl: str | None = None
-    useFF: list[FrontendFramework] = []
+    useFF: FrontendFramework | None = None
     useMarkdownExtensions: list[str] = []
     excludeDirs: list[str] = []
     useMiddlewares: list[Any] = []
@@ -132,3 +131,9 @@ class NexyConfigModel:
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"
     useTocAuto: bool = True
+    useWatchExtensions: list[str] | None = None
+    useWatchExcludePatterns: list[str] | None = None
+    useLayoutExtensions: list[str] | None = None
+    useNotFoundExtensions: list[str] | None = None
+    useErrorsExtensions: list[str] | None = None
+    useLoadingExtensions: list[str] | None = None

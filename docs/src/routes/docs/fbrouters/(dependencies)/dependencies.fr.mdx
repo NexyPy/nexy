@@ -26,7 +26,7 @@ def require_auth(request: Request):
 
 dependencies = [get_db, require_auth]
 ```
-Seuls les éléments répertoriés dans `dependencies` sont appliqués — les fonctions nues sont ignorées.
+Seuls les éléments répertoriés dans `dependencies` sont appliqués - les fonctions nues sont ignorées.
 
 ---
 
@@ -47,7 +47,7 @@ Les fichiers `dependencies.py` enfants **ne remplacent pas** les parents. Toutes
 
 ## Utilisation dans une page
 
-Dans les pages `.nexy`, les dépendances s'exécutent automatiquement avant le rendu — vous n'avez pas besoin de les importer ou de les appeler :
+Dans les pages `.nexy`, les dépendances s'exécutent automatiquement avant le rendu - vous n'avez pas besoin de les importer ou de les appeler :
 ```nexy
 ---
 ---

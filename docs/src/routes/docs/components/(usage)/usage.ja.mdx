@@ -156,7 +156,7 @@ from "./Card.nexy" import Card
 title:prop[str] = ""
 if not title:
     print("Warning: Card rendered without title")
-    # Return early — the template still runs but title is empty
+    # Return early - the template still runs but title is empty
 ---
 <div class="card">
   <h2>{{ title }}</h2>
@@ -179,11 +179,11 @@ show_header:prop[bool] = true
 
 ## ベストプラクティス
 
-- **ファイルごとに 1 つのコンポーネント** — 明確な名前、見つけやすい
-- **テンプレートは 50 行以内に留めてください** — 長くなる場合はサブコンポーネントを抽出します
-- **ハードコーディングの代わりにプロパティを使用** — コンポーネントを再利用可能にします
-- **PascalCase でファイルに名前を付ける** — `blog_card.nexy` ではなく `BlogCard.nexy`
-- **オプションの値のデフォルトの小道具** — `title:prop[str]` ではなく `title:prop[str] = ""`
+- **ファイルごとに 1 つのコンポーネント** - 明確な名前、見つけやすい
+- **テンプレートは 50 行以内に留めてください** - 長くなる場合はサブコンポーネントを抽出します
+- **ハードコーディングの代わりにプロパティを使用** - コンポーネントを再利用可能にします
+- **PascalCase でファイルに名前を付ける** - `blog_card.nexy` ではなく `BlogCard.nexy`
+- **オプションの値のデフォルトの小道具** - `title:prop[str]` ではなく `title:prop[str] = ""`
 
 ## 次へ
 

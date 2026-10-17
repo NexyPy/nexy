@@ -7,7 +7,7 @@
 DI के बिना, प्रत्येक नियंत्रक मैन्युअल रूप से अपनी निर्भरताएँ बनाता है:
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 DI के साथ, कंटेनर निर्भरता को तुरंत चालू करता है और उन्हें इंजेक्ट करता है:
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service

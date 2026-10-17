@@ -31,11 +31,15 @@ class ActionEngine:
         if not base_path.exists():
             return
 
+        # Modules are imported as '<start_dir>.<name>' so they resolve
+        # through the project root (e.g. 'src.app.actions').
+        root_name = base_path.name
         if str(base_path.parent) not in sys.path:
             sys.path.append(str(base_path.parent))
 
-        # walk_packages starts scanning
-        for _loader, name, _is_pkg in pkgutil.walk_packages([str(base_path)]):
+        for _loader, name, _is_pkg in pkgutil.walk_packages(
+            [str(base_path)], prefix=f"{root_name}."
+        ):
             # Optimization: check if any part of the module path is in ignore_folders
             # Example: 'src.node_modules.test' -> ['src', 'node_modules', 'test']
             parts = name.split(".")
@@ -132,4 +136,3 @@ class ActionEngine:
 
 
 ACTION_ENGINE = ActionEngine(output_dir="./actions")
-ACTION_ENGINE.discover("./")

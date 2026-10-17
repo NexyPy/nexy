@@ -2,7 +2,7 @@
 
 **Nexy** (`nek:si` と発音) は、**FastAPI** と **Starlette** 上に構築されたフルスタック Python Web フレームワークです。 Next.js や NestJS などの最新のフレームワークの開発者エクスペリエンスを Python にもたらします。
 
-名前の由来は、**N**ew **Ex**perience for P**y**thon — Python で Web アプリケーションを構築するための新しいアプローチです。
+名前の由来は、**N**ew **Ex**perience for P**y**thon - Python で Web アプリケーションを構築するための新しいアプローチです。
 
 > Nexy は車輪の再発明をしません。 FastAPI のパワーを維持しながら、Python Web 開発を根本的に簡素化します。
 
@@ -92,7 +92,7 @@ def GET(request: Request, db=Depends(get_db)):
     return db.query(User).all()
 ```
 
-**変わらない点:** `Request`、`Depends`、`HTTPException`、`BaseModel`、`JSONResponse`、`HTMLResponse`、`RedirectResponse`、`WebSocket`、`UploadFile`、`Form`、`Header`、`Cookie`、`Query`、 `status` — すべて `fastapi` から。
+**変わらない点:** `Request`、`Depends`、`HTTPException`、`BaseModel`、`JSONResponse`、`HTMLResponse`、`RedirectResponse`、`WebSocket`、`UploadFile`、`Form`、`Header`、`Cookie`、`Query`、 `status` - すべて `fastapi` から。
 
 **Nexy の追加内容:** `.nexy`/`.mdx` ファイル → FastAPI ルートにコンパイル、`"@Action` → 自動生成された POST ルート、`"@Controller`/`"@Module` → FastAPI `APIRouter` ビルダー、フック → FastAPI の `Request` 上のリクエスト スコープのヘルパー。
 
@@ -102,11 +102,11 @@ Nexy は FastAPI であるため、すべてのルートは `/docs` (Swagger UI)
 
 ## なぜネクシーなのか?
 
-- **内部の FastAPI** — 非同期、自動 OpenAPI ドキュメント、タイプセーフ、実戦テスト済み
-- **コンポーネントベースの UI** — Python + Jinja2 テンプレートを使用してコンポーネントを作成するか、React/Vue/Svelte/Solid/Preact を使用します
-- **ファイルベースおよびモジュラールーティング** — プロジェクトに適切なツールを選択してください
-- **定型文ゼロ** — 手動ルート登録や接続する設定ファイルは不要です
-- **組み込みの i18n、HMR、ミドルウェア、ガード** — 初日から本番稼働可能
+- **内部の FastAPI** - 非同期、自動 OpenAPI ドキュメント、タイプセーフ、実戦テスト済み
+- **コンポーネントベースの UI** - Python + Jinja2 テンプレートを使用してコンポーネントを作成するか、React/Vue/Svelte/Solid/Preact を使用します
+- **ファイルベースおよびモジュラールーティング** - プロジェクトに適切なツールを選択してください
+- **定型文ゼロ** - 手動ルート登録や接続する設定ファイルは不要です
+- **組み込みの i18n、HMR、ミドルウェア、ガード** - 初日から本番稼働可能
 
 ---
 

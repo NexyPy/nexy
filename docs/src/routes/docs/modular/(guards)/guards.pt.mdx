@@ -1,6 +1,6 @@
 # Guardas
 
-Os guardas determinam se uma solicitação deve chegar ao manipulador de rota. Eles são executados **antes do método do controlador** — perfeitos para autenticação, autorização, limitação de taxa e controle de acesso.
+Os guardas determinam se uma solicitação deve chegar ao manipulador de rota. Eles são executados **antes do método do controlador** - perfeitos para autenticação, autorização, limitação de taxa e controle de acesso.
 
 Os guardas do Nexy são **dependências FastAPI**. Eles são chamáveis ​​(classes com `__call__` ou funções autônomas) que recebem a solicitação e passam ou geram uma HTTPException.
 
@@ -62,7 +62,7 @@ O guarda aumenta `HTTPException` para bloquear a solicitação. Se retornar norm
 
 ## Aplicando Guardas
 
-### Nível do controlador — protege todas as rotas
+### Nível do controlador - protege todas as rotas
 
 ```python
 from nexy.decorators import Controller, UseGuard
@@ -77,7 +77,7 @@ class AdminController:
         return None
 ```
 
-### Nível de método — protege rotas específicas
+### Nível de método - protege rotas específicas
 
 ```python
 "@Controller("/users")
@@ -180,14 +180,14 @@ class UsersController:
 
 ## Melhores práticas
 
-1. **Um guarda por preocupação** — `AuthGuard`, `RoleGuard`, `RateLimitGuard`. Não `SecurityGuard` que faz tudo.
-2. **Use códigos de status descritivos** — 401 para autenticação ausente/inválida, 403 para permissões insuficientes, 429 para limitação de taxa.
-3. **Evite efeitos colaterais** — os guardas devem verificar as permissões, não modificar o estado (exceto `request.state`).
-4. **Verificações caras de cache** — instâncias de proteção singleton com caches na memória.
-5. **Teste os guardas isoladamente** — crie uma simulação de `Request`, chame o guarda, afirme que ele aumenta ou passa.
+1. **Um guarda por preocupação** - `AuthGuard`, `RoleGuard`, `RateLimitGuard`. Não `SecurityGuard` que faz tudo.
+2. **Use códigos de status descritivos** - 401 para autenticação ausente/inválida, 403 para permissões insuficientes, 429 para limitação de taxa.
+3. **Evite efeitos colaterais** - os guardas devem verificar as permissões, não modificar o estado (exceto `request.state`).
+4. **Verificações caras de cache** - instâncias de proteção singleton com caches na memória.
+5. **Teste os guardas isoladamente** - crie uma simulação de `Request`, chame o guarda, afirme que ele aumenta ou passa.
 
 ## Próximas etapas
 
-- [Middleware](/docs/modular/middleware) — solicita ganchos de pipeline
-- [Controllers](/docs/modular/controllers) — definir manipuladores de rota
-- [Modules](/docs/modular/modules) — organize em módulos de recursos
+- [Middleware](/docs/modular/middleware) - solicita ganchos de pipeline
+- [Controllers](/docs/modular/controllers) - definir manipuladores de rota
+- [Modules](/docs/modular/modules) - organize em módulos de recursos

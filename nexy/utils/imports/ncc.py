@@ -19,10 +19,12 @@ class NexyClientComponent:
         mount_id = self._generate_mount_id()
         if caller:
             props["children"] = f"{caller()}"
+        directive = props.pop("directive", None)
+        media = props.pop("media", None)
         props_json = self._serialize_props(props)
         url = self._resolve_path()
 
-        return self._render_tag(url, mount_id, props_json)
+        return self._render_tag(url, mount_id, props_json, directive, media)
 
     def _generate_mount_id(self) -> str:
         base = f"{self.path}|{self.symbol}|{self._seq}"
@@ -58,7 +60,14 @@ class NexyClientComponent:
 
         return resolved if resolved.startswith("/") else f"/{resolved}"
 
-    def _render_tag(self, url: str, mount_id: str, props_json: str) -> str:
+    def _render_tag(
+        self,
+        url: str,
+        mount_id: str,
+        props_json: str,
+        directive: str | None = None,
+        media: str | None = None,
+    ) -> str:
         esc_props = _html_escape(props_json, quote=True)
         esc_symbol = _html_escape(self.symbol, quote=True)
         esc_fw = _html_escape(self.framework, quote=True)
@@ -71,6 +80,13 @@ class NexyClientComponent:
         key_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
 
         path_attr = f'data-nexy-path="{esc_url}" ' if not is_prod else ""
+        island_attr = ""
+        if directive:
+            island_attr = (
+                f'data-nexy-island="" data-nexy-directive="{_html_escape(directive, quote=True)}" '
+            )
+            if media and directive == "client:media":
+                island_attr += f'data-nexy-media="{_html_escape(media, quote=True)}" '
 
         return (
             f'<ncc id="{mount_id}" '
@@ -78,6 +94,7 @@ class NexyClientComponent:
             f"{path_attr}"
             f'data-nexy-key="{key_hash}" '
             f'style="display: contents;" '
+            f"{island_attr}"
             f'data-nexy-symbol="{esc_symbol}" '
             f'data-nexy-props="{esc_props}">{content}</ncc>'
         )

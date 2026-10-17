@@ -69,7 +69,7 @@ class ItemsController:
 ```
 ## Multiple body parameters
 
-Pass several models — FastAPI nests them under their parameter names:
+Pass several models - FastAPI nests them under their parameter names:
 ```python
 ---
 def POST(item: Item, user: User):
@@ -99,10 +99,10 @@ class Item(BaseModel):
     tags: list[str] = []
     image: Image | None = None
 ```
-Router-agnostic — the same Pydantic models work in both FBR and Modular.
+Router-agnostic - the same Pydantic models work in both FBR and Modular.
 
 ## Limitations
 
 - Body is parsed automatically when you type-annotate a Pydantic model parameter
 - FastAPI handles validation and returns 422 on invalid input
-- No `"@Body()` decorator needed — standard FastAPI behaviour
+- No `"@Body()` decorator needed - standard FastAPI behaviour

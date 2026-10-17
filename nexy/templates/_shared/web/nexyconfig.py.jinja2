@@ -4,7 +4,7 @@ from nexy.core.models import NexyConfigModel
 
 class NexyConfig(NexyConfigModel):
 {%- if client_framework != "none" %}
-    useFF = [{{ client_framework }}()]
+    useFF = {{ client_framework }}()
 {%- endif %}
     useTitle = "Nexy Web ({{ 'FBR' if FBRouter else 'Modular' }}{{ ' + ' + client_framework.capitalize() if client_framework != 'none' else '' }})"
 {%- if not FBRouter %}

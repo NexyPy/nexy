@@ -44,17 +44,17 @@ class UsersController:
 ```
 ## 移行手順
 
-1. **新しい Nexy プロジェクトの足場を構築** — `nx new my-app`
-2. **ポート モデル** — Django モデルを SQLModel/SQLAlchemy に変換します。
-3. **ポート ビュー** — Django 関数/クラス ビューを `.nexy` ファイル (FBR) または `"@Controller` (モジュラー) に変換します。
-4. **ポート URL 構成** — `urls.py` パターンはファイル ツリー (FBR) または `"@Module` (モジュラー) になります
-5. **ポート テンプレート** — DTL テンプレート → `.nexy` ファイルの Jinja2
-6. **ポートミドルウェア** — Django ミドルウェア → Starlette `BaseHTTPMiddleware`
+1. **新しい Nexy プロジェクトの足場を構築** - `nx new my-app`
+2. **ポート モデル** - Django モデルを SQLModel/SQLAlchemy に変換します。
+3. **ポート ビュー** - Django 関数/クラス ビューを `.nexy` ファイル (FBR) または `"@Controller` (モジュラー) に変換します。
+4. **ポート URL 構成** - `urls.py` パターンはファイル ツリー (FBR) または `"@Module` (モジュラー) になります
+5. **ポート テンプレート** - DTL テンプレート → `.nexy` ファイルの Jinja2
+6. **ポートミドルウェア** - Django ミドルウェア → Starlette `BaseHTTPMiddleware`
 
 ## 切り替える理由
 
-- **モノリシック設定なし** — 使用するもののみを構成します
-- **デフォルトでは非同期** — 内部の FastAPI/Starlette
-- **OpenAPI ドキュメント** — 自動、`drf-spectacular` は必要ありません
-- **コンポーネントベースの UI** — Python と Jinja2 を 1 つのファイルに混在させる
-- **フレームワークの選択** — フロントエンドの React、Vue、Svelte、Solid、または Preact
+- **モノリシック設定なし** - 使用するもののみを構成します
+- **デフォルトでは非同期** - 内部の FastAPI/Starlette
+- **OpenAPI ドキュメント** - 自動、`drf-spectacular` は必要ありません
+- **コンポーネントベースの UI** - Python と Jinja2 を 1 つのファイルに混在させる
+- **フレームワークの選択** - フロントエンドの React、Vue、Svelte、Solid、または Preact

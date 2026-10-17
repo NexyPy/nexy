@@ -1,6 +1,6 @@
 # FBR or Modular Router
 
-Nexy offers **two routing strategies**. You choose at project creation — and the toggle at the top of this sidebar switches the documentation accordingly.
+Nexy offers **two routing strategies**. You choose at project creation - and the toggle at the top of this sidebar switches the documentation accordingly.
 
 ## File-Based Routing (FBR)
 
@@ -65,7 +65,7 @@ src/apps/
 Your `nexyconfig.py` controls which router to use:
 
 ```python
-# FBR — no explicit router config needed
+# FBR - no explicit router config needed
 
 class NexyConfig(NexyConfigModel):
 
@@ -73,7 +73,7 @@ class NexyConfig(NexyConfigModel):
 ```
 
 ```python
-# Modular — import the APIRouter from your root "@Module
+# Modular - import the APIRouter from your root "@Module
 
 from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
 
@@ -82,4 +82,4 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-You can't mix both in a single project — choose the one that fits your team and scale.
+You can't mix both in a single project - choose the one that fits your team and scale.

@@ -4,7 +4,7 @@
 
 ## 1.启用会话中间件
 
-在 `nexyconfig.py` 中，启用 `useSession` — Starlette 的签名 cookie 会话：
+在 `nexyconfig.py` 中，启用 `useSession` - Starlette 的签名 cookie 会话：
 
 ```python
 class NexyConfig(NexyConfigModel):
@@ -64,7 +64,7 @@ def POST(username: str, password: str):
 
 ## 4. 受保护的仪表板
 
-使用守卫保护仪表板 — 如果通过身份验证，则返回 `{"user": ...}`，否则返回 401：
+使用守卫保护仪表板 - 如果通过身份验证，则返回 `{"user": ...}`，否则返回 401：
 
 ```nexy
 # src/routes/dashboard.nexy
@@ -123,7 +123,7 @@ session = useSession()
 
 ## 接下来是什么？
 
-- [Authentication reference](/docs/security/authentication) — 身份验证后端、JWT、OAuth
-- [Authorization / Guards](/docs/security/authorization) — 自定义防护装置、范围
-- [JWT](/docs/security/jwt) — 基于令牌的身份验证
+- [Authentication reference](/docs/security/authentication) - 身份验证后端、JWT、OAuth
+- [Authorization / Guards](/docs/security/authorization) - 自定义防护装置、范围
+- [JWT](/docs/security/jwt) - 基于令牌的身份验证
 - [Session config](/docs/config/session)

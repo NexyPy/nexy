@@ -66,7 +66,7 @@ class NexyConfig(NexyConfigModel):
 
 ## 本番環境のベスト プラクティス
 
-- `.env` を git にコミットしないでください — `.gitignore` に追加します
+- `.env` を git にコミットしないでください - `.gitignore` に追加します
 - クラウド プロバイダーのシークレット マネージャーまたは CI/CD シークレットを運用環境に使用します。
 - 衝突を避けるために、環境変数に接頭辞を付けます (例: `NEXY_`、`APP_`)。
 - 検証と型強制には `pydantic-settings` を使用します

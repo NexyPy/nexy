@@ -45,7 +45,7 @@ All routes in this controller are at `/users/`:
 | `head`, `HEAD`, `Head` | HEAD | Response headers only |
 | `SOCKET`, `socket`, `Socket` | WebSocket | Real-time communication |
 
-**Convention**: Use uppercase for read operations (`GET`), lowercase for mutations (`post`, `put`, `delete`). This makes the controller easier to scan — you see the HTTP verbs at a glance.
+**Convention**: Use uppercase for read operations (`GET`), lowercase for mutations (`post`, `put`, `delete`). This makes the controller easier to scan - you see the HTTP verbs at a glance.
 
 ## Path Parameters
 
@@ -61,7 +61,7 @@ class UserDetailController:
         return {"deleted": id}
 ```
 
-Path parameters are **type-coerced** — the router reads the type hint and converts the string from the URL. Supported types: `int`, `float`, `str`, `uuid.UUID`, `datetime.datetime`.
+Path parameters are **type-coerced** - the router reads the type hint and converts the string from the URL. Supported types: `int`, `float`, `str`, `uuid.UUID`, `datetime.datetime`.
 
 **Gotcha**: If coercion fails (e.g., `GET /users/abc` where `id: int`), the router returns a 422 validation error, not a 404. This tells the client the parameter format is wrong, not that the resource doesn't exist.
 
@@ -119,7 +119,7 @@ class UsersController:
         return {"id": 4, **body.model_dump()}
 ```
 
-Body is parsed as JSON by default. Pydantic models provide automatic validation — invalid fields return a 422 with field-level errors.
+Body is parsed as JSON by default. Pydantic models provide automatic validation - invalid fields return a 422 with field-level errors.
 
 **Gotcha**: If you use `dict` as the type hint, you lose validation. Always prefer Pydantic for user-facing endpoints.
 
@@ -237,7 +237,7 @@ class UserDetailController:
         return None           # DELETE /users/42
 ```
 
-Both controllers can be in the same module. This separation is intentional — each controller handles one resource path.
+Both controllers can be in the same module. This separation is intentional - each controller handles one resource path.
 
 ## Module Integration
 
@@ -262,14 +262,14 @@ class UsersModule:
 
 ## Best Practices
 
-1. **One resource per controller** — `UsersController`, `PostsController`. Not a single `ApiController`.
-2. **Keep methods focused** — each method does one thing.
-3. **Use dependency injection** — don't instantiate services in the method body.
-4. **Prefer Pydantic for request bodies** — `body: dict` is a code smell.
-5. **Prefix controllers meaningfully** — `/users`, `/posts`, `/auth`.
+1. **One resource per controller** - `UsersController`, `PostsController`. Not a single `ApiController`.
+2. **Keep methods focused** - each method does one thing.
+3. **Use dependency injection** - don't instantiate services in the method body.
+4. **Prefer Pydantic for request bodies** - `body: dict` is a code smell.
+5. **Prefix controllers meaningfully** - `/users`, `/posts`, `/auth`.
 
 ## Next Steps
 
-- [Providers & DI](/docs/modular/providers) — inject services into your controllers
-- [Modules](/docs/modular/modules) — organize controllers into feature modules
-- [Guards](/docs/modular/guards) — protect routes with authorization
+- [Providers & DI](/docs/modular/providers) - inject services into your controllers
+- [Modules](/docs/modular/modules) - organize controllers into feature modules
+- [Guards](/docs/modular/guards) - protect routes with authorization

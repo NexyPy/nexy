@@ -38,7 +38,7 @@ def GET():
 Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
 ```
 
-中间件作为 FastAPI `Depends` 运行 — 它在处理程序之前运行。与守卫不同，中间件旨在产生副作用（日志记录、计时），而不是阻止请求（尽管它可以提高 `HTTPException`）。
+中间件作为 FastAPI `Depends` 运行 - 它在处理程序之前运行。与守卫不同，中间件旨在产生副作用（日志记录、计时），而不是阻止请求（尽管它可以提高 `HTTPException`）。
 
 ---
 

@@ -180,7 +180,7 @@ class UsersController:
 
 ## Mejores prácticas
 
-1. **Un guardia por preocupación** — `AuthGuard`, `RoleGuard`, `RateLimitGuard`. No `SecurityGuard` que lo hace todo.
+1. **Un guardia por preocupación** - `AuthGuard`, `RoleGuard`, `RateLimitGuard`. No `SecurityGuard` que lo hace todo.
 2. **Utilice códigos de estado descriptivos**: 401 para autenticación faltante o no válida, 403 para permisos insuficientes, 429 para limitación de velocidad.
 3. **Evite efectos secundarios**: los guardias deben verificar los permisos, no modificar el estado (excepto `request.state`).
 4. **Caché de comprobaciones costosas**: instancias de protección única con cachés en memoria.
@@ -188,6 +188,6 @@ class UsersController:
 
 ## Próximos pasos
 
-- [Middleware](/docs/modular/middleware) — solicitar ganchos de canalización
+- [Middleware](/docs/modular/middleware) - solicitar ganchos de canalización
 - [Controllers](/docs/modular/controllers): define controladores de ruta
 - [Modules](/docs/modular/modules): organizar en módulos de funciones

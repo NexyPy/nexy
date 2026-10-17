@@ -34,7 +34,7 @@ def fn(): ...
 
 1. Enregistre la fonction dans `ActionsStore`
 2. Au démarrage, `ActionEngine` découvre toutes les actions et les monte en tant que `POST /_nx_{hash}`
-3. Hachage d'URL = `sha256(func_name + "salt2026")[:12]` — déterministe par déploiement
+3. Hachage d'URL = `sha256(func_name + "salt2026")[:12]` - déterministe par déploiement
 4. Arguments analysés à partir du corps JSON, injectés par nom
 5. Valeur de retour sérialisée au format JSON
 
@@ -68,7 +68,7 @@ def fn(): ...
 
 - POST uniquement
 - Corps JSON uniquement (pas de données de formulaire, multipart)
-- Le sel de hachage est codé en dur — URL stable au sein d'un déploiement
+- Le sel de hachage est codé en dur - URL stable au sein d'un déploiement
 
 ---
 

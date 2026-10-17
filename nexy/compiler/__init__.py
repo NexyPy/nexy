@@ -1,7 +1,9 @@
 import pathlib
 import re
 
+from nexy.compiler.frontend_route import FrontendRouteCompiler
 from nexy.compiler.generator import Generator
+from nexy.compiler.markdown_route import MarkdownRouteCompiler
 from nexy.compiler.parser import Parser
 from nexy.core.config import Config
 from nexy.core.models import ParserModel
@@ -16,6 +18,14 @@ def is_nexy_file(file_path: str) -> bool:
 
 def is_mdx_file(file_path: str) -> bool:
     return file_path.endswith(".mdx")
+
+
+def is_md_file(file_path: str) -> bool:
+    return file_path.endswith(".md")
+
+
+def is_framework_route_file(file_path: str) -> bool:
+    return file_path.endswith((".tsx", ".vue", ".svelte"))
 
 
 _CODE_FENCE_RE = re.compile(
@@ -54,6 +64,12 @@ def _compile_with_deps(input_path: str, _compiling: set[str] | None = None) -> N
     if abs_path in _compiling:
         return
     _compiling.add(abs_path)
+
+    # Framework route files (.tsx/.vue/.svelte) and pure markdown (.md) have no
+    # Nexy frontmatter to scan; skip the graph crawl.
+    if is_framework_route_file(input_path) or is_md_file(input_path):
+        return
+
     try:
         with open(input_path, encoding="utf-8") as f:
             source = f.read()
@@ -63,10 +79,10 @@ def _compile_with_deps(input_path: str, _compiling: set[str] | None = None) -> N
     clean = _CODE_FENCE_RE.sub("\n", source)
     for m in _IMPORT_FROM_RE.finditer(clean):
         dep = _resolve_dep_path(input_path, m.group("path"))
-        if dep and (dep.endswith(".nexy") or dep.endswith(".mdx")):
+        if dep and dep.endswith(".nexy"):
             vfs = VFS()
             dep_output = f"{Config.NAMESPACE.strip('/')}/{dep}"
-            dep_output = dep_output.replace(".nexy", ".html").replace(".mdx", ".md")
+            dep_output = dep_output.replace(".nexy", ".html")
             dep_py = str(pathlib.Path(dep_output).with_suffix(".py"))
             if not vfs.exists(dep_py):
                 _compile_with_deps(dep, _compiling)
@@ -80,6 +96,8 @@ class Compiler:
         self.config = Config()
         self.parser = Parser()
         self.generator = Generator()
+        self.frontend_route = FrontendRouteCompiler()
+        self.markdown_route = MarkdownRouteCompiler()
         self.source_code: str = ""
 
     def _load_source(self) -> str:
@@ -89,27 +107,32 @@ class Compiler:
         except FileNotFoundError as e:
             raise FileNotFoundError(f"File '{self.input}' not found.") from e
 
-    def compile(self, input: str, output: str | None = None) -> None:
+    def compile(self, input: str, output: str | None = None) -> None:  # noqa: A002
         self.input = input
         self.output = output
+
+        if is_framework_route_file(self.input):
+            self.frontend_route.compile(input=self.input)
+            return
+
+        if is_md_file(self.input):
+            self.markdown_route.compile(input=self.input)
+            return
+
         self.source_code = self._load_source()
-        if is_nexy_file(self.input):
+        if is_nexy_file(self.input) or is_mdx_file(self.input):
             if self.output is None:
                 from nexy.core.string import StringTransform
 
                 mapped = StringTransform.normalize_route_path_for_namespace(self.input)
                 namespace = self.config.NAMESPACE.strip("/")
-                self.output = f"{namespace}/{mapped.replace('.nexy', '.html')}"
-        elif is_mdx_file(self.input):
-            if self.output is None:
-                from nexy.core.string import StringTransform
-
-                mapped = StringTransform.normalize_route_path_for_namespace(self.input)
-                namespace = self.config.NAMESPACE.strip("/")
-                self.output = f"{namespace}/{mapped.replace('.mdx', '.md')}"
+                if is_mdx_file(self.input):
+                    self.output = f"{namespace}/{mapped.replace('.mdx', '.mdx.html')}"
+                else:
+                    self.output = f"{namespace}/{mapped.replace('.nexy', '.html')}"
 
         else:
-            msg = f"File '{self.input}' is not a nexy or mdx component"
+            msg = f"File '{self.input}' is not a nexy component"
             console.print(f"[red]nsc[/red] » {msg}")
             raise NexyCompileError(source_path=self.input, message=msg)
 
@@ -128,7 +151,7 @@ class Compiler:
                 source_path=self.input, message=msg, line=line, column=col
             ) from e
 
-    def compile_with_deps(self, input: str, output: str | None = None) -> None:
+    def compile_with_deps(self, input: str, output: str | None = None) -> None:  # noqa: A002
         _compile_with_deps(input)
         self.compile(input=input, output=output)
 

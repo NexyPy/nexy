@@ -20,7 +20,7 @@ async def SOCKET(websocket: WebSocket):
         pass
 ```
 
-O nome da função `SOCKET` (sem distinção entre maiúsculas e minúsculas) é mapeado para um endpoint Starlette WebSocket. O caminho do arquivo determina a URL — `/chat` neste exemplo.
+O nome da função `SOCKET` (sem distinção entre maiúsculas e minúsculas) é mapeado para um endpoint Starlette WebSocket. O caminho do arquivo determina a URL - `/chat` neste exemplo.
 
 ---
 
@@ -65,7 +65,7 @@ async def SOCKET(websocket: WebSocket):
         connections.remove(websocket)
 ```
 
-A lista `connections` reside no nível do módulo — todos os clientes compartilham a mesma lista.
+A lista `connections` reside no nível do módulo - todos os clientes compartilham a mesma lista.
 
 ---
 
@@ -101,9 +101,9 @@ O parâmetro URL `{room_id}` é injetado automaticamente a partir do nome do arq
 
 | Evento | O que acontece |
 |-------|------------|
-| Cliente se conecta | `websocket.accept()` — deve ser chamado primeiro |
+| Cliente se conecta | `websocket.accept()` - deve ser chamado primeiro |
 | Mensagem recebida | `receive_text()`/`receive_json()`/`receive_bytes()` |
-| Cliente desconecta | `WebSocketDisconnect` aumentado — limpeza em `except` |
+| Cliente desconecta | `WebSocketDisconnect` aumentado - limpeza em `except` |
 | Servidor fecha | `await websocket.close(code=1000)` |
 
 Sempre envolva o loop de mensagens em `try/except WebSocketDisconnect` para limpar as conexões.
@@ -122,5 +122,5 @@ ws.send("Hello from the client!");
 
 ## Veja também
 
-- [Route Handlers](/docs/fbrouters/route_handlers) — endpoints REST em FBR
-- [WebSocket Guide](/docs/guides/websocket) — visão geral conceitual
+- [Route Handlers](/docs/fbrouters/route_handlers) - endpoints REST em FBR
+- [WebSocket Guide](/docs/guides/websocket) - visão geral conceitual

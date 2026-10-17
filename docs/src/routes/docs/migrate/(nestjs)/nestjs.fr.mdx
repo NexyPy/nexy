@@ -38,7 +38,7 @@ class UsersController:
 ```
 ## Différences clés
 
-- **Les noms de méthodes définissent les verbes HTTP** — pas de décorateurs `"@Get`/`"@Post`/`"@Put`/`"@Delete`
-- **Tous les décorateurs dans un module** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
-- **Non `"@Global`** — la portée est gérée via `Injectable(scope=Scope.SINGLETON)`
-- **Les gardes et les middlewares sont appelables** — aucune classe de base à étendre, juste `__call__(self, request)`
+- **Les noms de méthodes définissent les verbes HTTP** - pas de décorateurs `"@Get`/`"@Post`/`"@Put`/`"@Delete`
+- **Tous les décorateurs dans un module** - `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **Non `"@Global`** - la portée est gérée via `Injectable(scope=Scope.SINGLETON)`
+- **Les gardes et les middlewares sont appelables** - aucune classe de base à étendre, juste `__call__(self, request)`

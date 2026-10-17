@@ -30,18 +30,18 @@ async def get(id: int):
 
 ## 得られるもの
 
-- **非同期サポート** — ハッキングではなくネイティブ
-- **型検証** — Pydantic、自動 422 エラー
-- **OpenAPI ドキュメント** — `flasgger` は必要ありません
-- **DI システム** — グローバル シングルトンを使用せずにサービスを挿入します
-- **CLI** — `nx build`、`nx start`、`nx migrate`
+- **非同期サポート** - ハッキングではなくネイティブ
+- **型検証** - Pydantic、自動 422 エラー
+- **OpenAPI ドキュメント** - `flasgger` は必要ありません
+- **DI システム** - グローバル シングルトンを使用せずにサービスを挿入します
+- **CLI** - `nx build`、`nx start`、`nx migrate`
 
 ## 移行手順
 
-1. **足場** — `nx new my-app`
-2. **ポート ルート** — `"@app.route()` → `src/routes/` または `"@Controller` のファイル
-3. **ポート テンプレート** — Flask `render_template()` → `.nexy` ファイル
-4. **ポートリクエストの処理** — `request.args`/`request.json` → 型付き関数パラメータ
+1. **足場** - `nx new my-app`
+2. **ポート ルート** - `"@app.route()` → `src/routes/` または `"@Controller` のファイル
+3. **ポート テンプレート** - Flask `render_template()` → `.nexy` ファイル
+4. **ポートリクエストの処理** - `request.args`/`request.json` → 型付き関数パラメータ
 5. **ポート ブループリント** → `"@Module` または FBR のサブディレクトリ
 
 ## 残るもの

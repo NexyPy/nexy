@@ -22,7 +22,7 @@ class ChatController:
             pass
 ```
 
-O nome do método `SOCKET` é mapeado para um endpoint WebSocket. Todos os métodos em um controlador compartilham o prefixo `"@Controller` — portanto, este é `GET /chat` como um WebSocket.
+O nome do método `SOCKET` é mapeado para um endpoint WebSocket. Todos os métodos em um controlador compartilham o prefixo `"@Controller` - portanto, este é `GET /chat` como um WebSocket.
 
 ---
 
@@ -85,7 +85,7 @@ class ChatController:
             self.manager.remove(websocket)
 ```
 
-O `ConnectionManager` é um singleton `"@Injectable()` — todas as instâncias do controlador compartilham o mesmo gerenciador.
+O `ConnectionManager` é um singleton `"@Injectable()` - todas as instâncias do controlador compartilham o mesmo gerenciador.
 
 ---
 
@@ -134,9 +134,9 @@ class RoomController:
 
 | Evento | O que acontece |
 |-------|------------|
-| Cliente se conecta | `websocket.accept()` — deve ser chamado primeiro |
+| Cliente se conecta | `websocket.accept()` - deve ser chamado primeiro |
 | Mensagem recebida | `receive_text()`/`receive_json()`/`receive_bytes()` |
-| Cliente desconecta | `WebSocketDisconnect` aumentado — limpeza em `except` |
+| Cliente desconecta | `WebSocketDisconnect` aumentado - limpeza em `except` |
 | Servidor fecha | `await websocket.close(code=1000)` |
 
 ---
@@ -153,7 +153,7 @@ ws.send("Hello from the client!");
 
 ## Veja também
 
-- [Controllers](/docs/modular/controllers) — manipuladores de rotas no Modular
-- [Providers & DI](/docs/modular/providers) — serviços injetáveis
-- [Guards](/docs/modular/guards) — protege endpoints WebSocket
-- [WebSocket Guide](/docs/guides/websocket) — visão geral conceitual
+- [Controllers](/docs/modular/controllers) - manipuladores de rotas no Modular
+- [Providers & DI](/docs/modular/providers) - serviços injetáveis
+- [Guards](/docs/modular/guards) - protege endpoints WebSocket
+- [WebSocket Guide](/docs/guides/websocket) - visão geral conceitual

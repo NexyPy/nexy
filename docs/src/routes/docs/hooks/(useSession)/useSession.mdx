@@ -1,6 +1,6 @@
 # useSession
 
-Returns the session dictionary for the current request. Sessions are backed by signed cookies — no server-side storage.
+Returns the session dictionary for the current request. Sessions are backed by signed cookies - no server-side storage.
 
 ```python
 from nexy import useSession
@@ -12,7 +12,7 @@ session = useSession()
 
 ## Return value
 
-`dict` — the session data from the signed cookie. Returns an empty dict if no session exists.
+`dict` - the session data from the signed cookie. Returns an empty dict if no session exists.
 
 ---
 
@@ -59,4 +59,4 @@ session["_flashes"] = flashes
 
 - Requires `useSession` config in `nexyconfig.py`
 - Session data is signed but **not encrypted**
-- No server-side storage — everything is in the cookie
+- No server-side storage - everything is in the cookie

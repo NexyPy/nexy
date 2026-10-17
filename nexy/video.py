@@ -1,6 +1,4 @@
-
-
-def Video(
+def video(
     src: str,
     width: int | None = None,
     height: int | None = None,
@@ -11,7 +9,7 @@ def Video(
     preload: str = "metadata",
     class_name: str | None = None,
     sources: list[str] | None = None,
-    **kwargs,
+    **kwargs: str | bool,
 ) -> str:
     # Build attributes
     attrs = {"preload": preload}

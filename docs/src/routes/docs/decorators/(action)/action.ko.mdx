@@ -34,7 +34,7 @@ def fn(): ...
 
 1. `ActionsStore`에 함수를 등록합니다.
 2. 시작 시 `ActionEngine`는 모든 작업을 검색하고 이를 `POST /_nx_{hash}`로 마운트합니다.
-3. URL 해시 = `sha256(func_name + "salt2026")[:12]` — 배포별로 결정적
+3. URL 해시 = `sha256(func_name + "salt2026")[:12]` - 배포별로 결정적
 4. JSON 본문에서 구문 분석되고 이름으로 삽입된 인수
 5. JSON으로 직렬화된 반환 값
 

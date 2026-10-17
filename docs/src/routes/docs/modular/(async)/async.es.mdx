@@ -46,5 +46,5 @@ Para trabajos de disparar y olvidar después de la respuesta, utilice `Backgroun
 ## Advertencias
 
 - No llames a `async` funciones desde `def` controladores con `await` - usa `asyncio.run()` o haz que el controlador sea `async def`
-- No llames a funciones de bloqueo (`time.sleep()`, `requests.get()`) desde `async def` — usa `asyncio.sleep()`, `httpx.AsyncClient`
+- No llames a funciones de bloqueo (`time.sleep()`, `requests.get()`) desde `async def` - usa `asyncio.sleep()`, `httpx.AsyncClient`
 - Para producción, utilice varios trabajadores para los controladores de sincronización.

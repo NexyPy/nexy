@@ -26,7 +26,7 @@ def require_auth(request: Request):
 
 dependencies = [get_db, require_auth]
 ```
-Somente os itens listados em `dependencies` são aplicados — funções simples são ignoradas.
+Somente os itens listados em `dependencies` são aplicados - funções simples são ignoradas.
 
 ---
 
@@ -47,7 +47,7 @@ Arquivos filhos `dependencies.py` **não substituem** os pais. Todas as listas s
 
 ## Usando em uma página
 
-Nas páginas `.nexy`, as dependências são executadas automaticamente antes da renderização — você não precisa importá-las ou chamá-las:
+Nas páginas `.nexy`, as dependências são executadas automaticamente antes da renderização - você não precisa importá-las ou chamá-las:
 ```nexy
 ---
 ---
@@ -55,7 +55,7 @@ Nas páginas `.nexy`, as dependências são executadas automaticamente antes da 
 ```
 Os valores resolvidos **não** estão disponíveis como variáveis ​​de modelo. As dependências são executadas para efeitos colaterais (verificações de autenticação, registro, configuração de conexão de banco de dados).
 
-Para manipuladores `.py`, as dependências são executadas como efeitos colaterais — seus valores de retorno **não** são injetados no manipulador. Para acessar o valor de uma dependência, adicione `Depends()` na assinatura da função:
+Para manipuladores `.py`, as dependências são executadas como efeitos colaterais - seus valores de retorno **não** são injetados no manipulador. Para acessar o valor de uma dependência, adicione `Depends()` na assinatura da função:
 ```python
 # src/routes/dashboard/users.py
 from fastapi import Depends

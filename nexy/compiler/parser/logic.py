@@ -176,7 +176,6 @@ class LogicParser:
             ".solid": ComponentType.SOLID,
             ".preact": ComponentType.PREACT,
             ".json": ComponentType.JSON,
-            ".mdx": ComponentType.MDX,
         }
 
         # 1. Priority to file extension

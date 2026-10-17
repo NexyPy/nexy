@@ -32,4 +32,4 @@ class CommunityI18n:
         "Active participation in discussions",
         "Understanding of the project's architecture and philosophy"
     ]
-    join_cta = "If that sounds like you, keep contributing — we'd love to have you."
+    join_cta = "If that sounds like you, keep contributing - we'd love to have you."

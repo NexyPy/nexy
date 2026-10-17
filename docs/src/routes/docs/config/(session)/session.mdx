@@ -1,6 +1,6 @@
 # Session
 
-Configure session middleware for signed-cookie sessions — no server-side storage required.
+Configure session middleware for signed-cookie sessions - no server-side storage required.
 
 ```python
 from nexy.core.models import NexyConfigModel
@@ -39,7 +39,7 @@ session["user_id"] = 123
 session["role"] = "admin"
 ```
 
-Session behaves like a dictionary — assign, read, delete:
+Session behaves like a dictionary - assign, read, delete:
 
 ```python
 session = useSession()
@@ -69,6 +69,6 @@ flashes = session.pop("_flashes", [])
 
 ## Security notes
 
-- Session data is signed but **not encrypted** — do not store sensitive data
+- Session data is signed but **not encrypted** - do not store sensitive data
 - Rotate `secret_key` periodically in production
 - Use `https_only=True` in production
