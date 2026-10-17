@@ -1,6 +1,6 @@
 # Migrate from Django to Nexy
 
-Django is batteries-included. Nexy is focused and modular — you bring what you need.
+Django is batteries-included. Nexy is focused and modular - you bring what you need.
 
 ## Concepts mapping
 
@@ -44,17 +44,17 @@ class UsersController:
 ```
 ## Migration steps
 
-1. **Scaffold a new Nexy project** — `nx new my-app`
-2. **Port models** — translate Django models to SQLModel/SQLAlchemy
-3. **Port views** — convert Django function/class views to `.nexy` files (FBR) or `"@Controller` (Modular)
-4. **Port URL configs** — `urls.py` patterns become file tree (FBR) or `"@Module` (Modular)
-5. **Port templates** — DTL templates → Jinja2 in `.nexy` files
-6. **Port middleware** — Django middleware → Starlette `BaseHTTPMiddleware`
+1. **Scaffold a new Nexy project** - `nx new my-app`
+2. **Port models** - translate Django models to SQLModel/SQLAlchemy
+3. **Port views** - convert Django function/class views to `.nexy` files (FBR) or `"@Controller` (Modular)
+4. **Port URL configs** - `urls.py` patterns become file tree (FBR) or `"@Module` (Modular)
+5. **Port templates** - DTL templates → Jinja2 in `.nexy` files
+6. **Port middleware** - Django middleware → Starlette `BaseHTTPMiddleware`
 
 ## Why switch
 
-- **No monolithic settings** — configure only what you use
-- **Async by default** — FastAPI/Starlette under the hood
-- **OpenAPI docs** — automatic, no `drf-spectacular` needed
-- **Component-based UI** — mix Python + Jinja2 in one file
-- **Framework choice** — React, Vue, Svelte, Solid, or Preact for the frontend
+- **No monolithic settings** - configure only what you use
+- **Async by default** - FastAPI/Starlette under the hood
+- **OpenAPI docs** - automatic, no `drf-spectacular` needed
+- **Component-based UI** - mix Python + Jinja2 in one file
+- **Framework choice** - React, Vue, Svelte, Solid, or Preact for the frontend

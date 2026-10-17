@@ -156,7 +156,7 @@ Puisque le composant est une fonction Python, vous pouvez revenir plus tôt dans
 title:prop[str] = ""
 if not title:
     print("Warning: Card rendered without title")
-    # Return early — the template still runs but title is empty
+    # Return early - the template still runs but title is empty
 ---
 <div class="card">
   <h2>{{ title }}</h2>
@@ -179,11 +179,11 @@ show_header:prop[bool] = true
 
 ## meilleures pratiques
 
-- **Un composant par fichier** — nom clair, facile à trouver
-- **Conservez les modèles sous 50 lignes** — s'ils sont plus longs, extrayez les sous-composants
-- **Utilisez des accessoires au lieu du codage en dur** — rend les composants réutilisables
-- **Nommer les fichiers dans PascalCase** — `BlogCard.nexy` et non `blog_card.nexy`
-- **Accessoires par défaut pour les valeurs facultatives** — `title:prop[str] = ""` et non `title:prop[str]`
+- **Un composant par fichier** - nom clair, facile à trouver
+- **Conservez les modèles sous 50 lignes** - s'ils sont plus longs, extrayez les sous-composants
+- **Utilisez des accessoires au lieu du codage en dur** - rend les composants réutilisables
+- **Nommer les fichiers dans PascalCase** - `BlogCard.nexy` et non `blog_card.nexy`
+- **Accessoires par défaut pour les valeurs facultatives** - `title:prop[str] = ""` et non `title:prop[str]`
 
 ## Suivant
 

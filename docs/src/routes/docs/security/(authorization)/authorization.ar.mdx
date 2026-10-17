@@ -62,12 +62,12 @@ from starlette.authentication import requires
 def GET(request):
     return {"user": request.user.username}
 ```
-يعمل في كل من FBR وModular — `requires` يُرجع حارس صالح قابل للاستدعاء.
+يعمل في كل من FBR وModular - `requires` يُرجع حارس صالح قابل للاستدعاء.
 
 ---
 
 ## ذات صلة
 
-- ["@UseGuard reference](/docs/decorators/useguard) — واجهة برمجة تطبيقات الديكور الكاملة
-- [Guards (Modular)](/docs/modular/guards) — الحقن الواقي في Modular DI
-- [Authentication](/docs/security/authentication) — إعداد الواجهات الخلفية للمصادقة
+- ["@UseGuard reference](/docs/decorators/useguard) - واجهة برمجة تطبيقات الديكور الكاملة
+- [Guards (Modular)](/docs/modular/guards) - الحقن الواقي في Modular DI
+- [Authentication](/docs/security/authentication) - إعداد الواجهات الخلفية للمصادقة

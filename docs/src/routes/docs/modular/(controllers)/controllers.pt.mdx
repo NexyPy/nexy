@@ -45,7 +45,7 @@ Todas as rotas neste controlador estão em `/users/`:
 | `head`, `HEAD`, `Head` | CABEÇA | Apenas cabeçalhos de resposta |
 | `SOCKET`, `socket`, `Socket` | WebSocket | Comunicação em tempo real |
 
-**Convenção**: Use letras maiúsculas para operações de leitura (`GET`), letras minúsculas para mutações (`post`, `put`, `delete`). Isso torna o controlador mais fácil de verificar — você vê os verbos HTTP rapidamente.
+**Convenção**: Use letras maiúsculas para operações de leitura (`GET`), letras minúsculas para mutações (`post`, `put`, `delete`). Isso torna o controlador mais fácil de verificar - você vê os verbos HTTP rapidamente.
 
 ## Parâmetros de caminho
 
@@ -61,7 +61,7 @@ class UserDetailController:
         return {"deleted": id}
 ```
 
-Os parâmetros de caminho são **coagidos por tipo** — o roteador lê a dica de tipo e converte a string do URL. Tipos suportados: `int`, `float`, `str`, `uuid.UUID`, `datetime.datetime`.
+Os parâmetros de caminho são **coagidos por tipo** - o roteador lê a dica de tipo e converte a string do URL. Tipos suportados: `int`, `float`, `str`, `uuid.UUID`, `datetime.datetime`.
 
 **Entendi**: Se a coerção falhar (por exemplo, `GET /users/abc` onde `id: int`), o roteador retornará um erro de validação 422, não um 404. Isso informa ao cliente que o formato do parâmetro está errado, não que o recurso não existe.
 
@@ -237,7 +237,7 @@ class UserDetailController:
         return None           # DELETE /users/42
 ```
 
-Ambos os controladores podem estar no mesmo módulo. Essa separação é intencional — cada controlador lida com um caminho de recurso.
+Ambos os controladores podem estar no mesmo módulo. Essa separação é intencional - cada controlador lida com um caminho de recurso.
 
 ## Integração de Módulo
 
@@ -262,14 +262,14 @@ class UsersModule:
 
 ## Melhores práticas
 
-1. **Um recurso por controlador** — `UsersController`, `PostsController`. Nem um único `ApiController`.
-2. **Mantenha o foco nos métodos** — cada método faz uma coisa.
-3. **Use injeção de dependência** — não instancie serviços no corpo do método.
-4. **Prefira Pydantic para corpos de solicitação** — `body: dict` é um cheiro de código.
-5. **Prefixar controladores significativamente** — `/users`, `/posts`, `/auth`.
+1. **Um recurso por controlador** - `UsersController`, `PostsController`. Nem um único `ApiController`.
+2. **Mantenha o foco nos métodos** - cada método faz uma coisa.
+3. **Use injeção de dependência** - não instancie serviços no corpo do método.
+4. **Prefira Pydantic para corpos de solicitação** - `body: dict` é um cheiro de código.
+5. **Prefixar controladores significativamente** - `/users`, `/posts`, `/auth`.
 
 ## Próximas etapas
 
-- [Providers & DI](/docs/modular/providers) — injete serviços em seus controladores
-- [Modules](/docs/modular/modules) — organize os controladores em módulos de recursos
-- [Guards](/docs/modular/guards) — proteja rotas com autorização
+- [Providers & DI](/docs/modular/providers) - injete serviços em seus controladores
+- [Modules](/docs/modular/modules) - organize os controladores em módulos de recursos
+- [Guards](/docs/modular/guards) - proteja rotas com autorização

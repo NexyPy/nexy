@@ -1,6 +1,6 @@
 # Ações do Servidor
 
-As ações do servidor permitem chamar funções Python do cliente como pontos de extremidade POST — sem registro de rota, sem padrão de serialização.
+As ações do servidor permitem chamar funções Python do cliente como pontos de extremidade POST - sem registro de rota, sem padrão de serialização.
 
 ---
 
@@ -23,7 +23,7 @@ A função recebe parâmetros do corpo JSON como argumentos de palavras-chave. R
 
 ## Onde colocar os arquivos de ação
 
-As ações podem estar em **qualquer lugar** do seu projeto — `src/actions/`, `src/routes/` ou diretamente na raiz. O `ActionEngine` verifica todo o diretório do projeto na inicialização.
+As ações podem estar em **qualquer lugar** do seu projeto - `src/actions/`, `src/routes/` ou diretamente na raiz. O `ActionEngine` verifica todo o diretório do projeto na inicialização.
 
 ```text
 my-app/
@@ -151,7 +151,7 @@ Cada função gerada espelha a assinatura Python com tipos TypeScript adequados.
 - Mantenha as funções de ação focadas e idempotentes
 - Valide as entradas dentro da ação – trate-as como não confiáveis
 - Use modelos Pydantic para órgãos de solicitação complexos
-- As ações são somente POST — para outros métodos HTTP, use manipuladores de rota
+- As ações são somente POST - para outros métodos HTTP, use manipuladores de rota
 - Use guardas ou middleware para autorização
 
 ---

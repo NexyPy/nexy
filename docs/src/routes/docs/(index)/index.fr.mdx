@@ -2,7 +2,7 @@
 
 **Nexy** (prononcé `nek:si`) est un framework Web Python complet construit sur **FastAPI** et **Starlette**. Il apporte à Python l'expérience des développeurs de frameworks modernes tels que Next.js et NestJS.
 
-Le nom vient de : **N**ew **Ex**perience for P**y**thon — une nouvelle approche de la création d'applications Web en Python.
+Le nom vient de : **N**ew **Ex**perience for P**y**thon - une nouvelle approche de la création d'applications Web en Python.
 
 > Nexy ne réinvente pas la roue. Cela simplifie radicalement le développement Web Python tout en conservant la puissance de FastAPI.
 
@@ -10,7 +10,7 @@ Le nom vient de : **N**ew **Ex**perience for P**y**thon — une nouvelle approch
 
 ## Deux routeurs, un framework
 
-Nexy propose **deux stratégies de routage** — choisissez celle qui correspond à votre projet :
+Nexy propose **deux stratégies de routage** - choisissez celle qui correspond à votre projet :
 
 ### Routeurs Routeurs (routage basé sur des fichiers)
 
@@ -92,7 +92,7 @@ def GET(request: Request, db=Depends(get_db)):
     return db.query(User).all()
 ```
 
-**Ce qui reste le même :** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` — tous de `fastapi`.
+**Ce qui reste le même :** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` - tous de `fastapi`.
 
 **Ce que Nexy ajoute :** `.nexy`/`.mdx` fichiers → compilés sur les routes FastAPI, `"@Action` → routes POST générées automatiquement, `"@Controller`/`"@Module` → Générateurs FastAPI `APIRouter`, Hooks → assistants à l'échelle des requêtes en plus des `Request` de FastAPI.
 
@@ -102,11 +102,11 @@ def GET(request: Request, db=Depends(get_db)):
 
 ## Pourquoi Nexy ?
 
-- **FastAPI sous le capot** — documents OpenAPI asynchrones et automatiques, de type sécurisé, testés au combat
-- **Interface utilisateur basée sur les composants** — écrivez des composants avec les modèles Python + Jinja2 ou utilisez React/Vue/Svelte/Solid/Preact
-- **Routage basé sur des fichiers ET modulaire** — choisissez le bon outil pour votre projet
-- **Zéro passe-partout** — pas d'enregistrement manuel de l'itinéraire, pas de fichiers de configuration à câbler
-- **I18n, HMR, middleware et gardes intégrés** — prêt pour la production dès le premier jour
+- **FastAPI sous le capot** - documents OpenAPI asynchrones et automatiques, de type sécurisé, testés au combat
+- **Interface utilisateur basée sur les composants** - écrivez des composants avec les modèles Python + Jinja2 ou utilisez React/Vue/Svelte/Solid/Preact
+- **Routage basé sur des fichiers ET modulaire** - choisissez le bon outil pour votre projet
+- **Zéro passe-partout** - pas d'enregistrement manuel de l'itinéraire, pas de fichiers de configuration à câbler
+- **I18n, HMR, middleware et gardes intégrés** - prêt pour la production dès le premier jour
 
 ---
 

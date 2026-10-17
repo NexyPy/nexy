@@ -8,15 +8,15 @@ Nexy는 내장된 404 및 500 오류 페이지를 제공합니다. 사용자 정
 
 ## 사용자 정의 오류 페이지
 
-해당 범위에 대한 오류 페이지를 재정의하려면 경로 디렉터리에 `error.nexy` 또는 `notfound.nexy` 파일을 배치하세요.
+해당 범위에 대한 오류 페이지를 재정의하려면 경로 디렉터리에 `errors.nexy` 또는 `notfound.nexy` 파일을 배치하세요.
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### 예시: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### 예시: `error.nexy`
+### 예시: `errors.nexy`
 
 ```nexy
 ---
@@ -64,13 +64,13 @@ src/routes/
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 
 ## 관련
 
-- [Authorization / Guards](/docs/security/authorization) — 무단 액세스로부터 경로를 보호합니다.
-- [Authentication](/docs/security/authentication) — 인증 미들웨어 구성
+- [Authorization / Guards](/docs/security/authorization) - 무단 액세스로부터 경로를 보호합니다.
+- [Authentication](/docs/security/authentication) - 인증 미들웨어 구성

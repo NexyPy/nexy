@@ -44,17 +44,17 @@ class UsersController:
 ```
 ## Étapes de migration
 
-1. **Échafauder un nouveau projet Nexy** — `nx new my-app`
-2. **Modèles de port** — traduisez les modèles Django en SQLModel/SQLAlchemy
-3. **Vues de port** — convertissez les vues de fonction/classe Django en fichiers `.nexy` (FBR) ou `"@Controller` (modulaire)
-4. **Configurations d'URL de port** — Les modèles `urls.py` deviennent une arborescence de fichiers (FBR) ou `"@Module` (modulaire)
-5. **Modèles de port** — Modèles DTL → Jinja2 dans les fichiers `.nexy`
-6. **Middleware de port** — Middleware Django → Starlette `BaseHTTPMiddleware`
+1. **Échafauder un nouveau projet Nexy** - `nx new my-app`
+2. **Modèles de port** - traduisez les modèles Django en SQLModel/SQLAlchemy
+3. **Vues de port** - convertissez les vues de fonction/classe Django en fichiers `.nexy` (FBR) ou `"@Controller` (modulaire)
+4. **Configurations d'URL de port** - Les modèles `urls.py` deviennent une arborescence de fichiers (FBR) ou `"@Module` (modulaire)
+5. **Modèles de port** - Modèles DTL → Jinja2 dans les fichiers `.nexy`
+6. **Middleware de port** - Middleware Django → Starlette `BaseHTTPMiddleware`
 
 ## Pourquoi changer
 
 - **Aucun paramètre monolithique** : configurez uniquement ce que vous utilisez
-- **Async par défaut** — FastAPI/Starlette sous le capot
-- **Documents OpenAPI** — automatique, aucun `drf-spectacular` nécessaire
-- **Interface utilisateur basée sur les composants** — mélangez Python + Jinja2 dans un seul fichier
-- **Choix de framework** — React, Vue, Svelte, Solid ou Preact pour le frontend
+- **Async par défaut** - FastAPI/Starlette sous le capot
+- **Documents OpenAPI** - automatique, aucun `drf-spectacular` nécessaire
+- **Interface utilisateur basée sur les composants** - mélangez Python + Jinja2 dans un seul fichier
+- **Choix de framework** - React, Vue, Svelte, Solid ou Preact pour le frontend

@@ -8,15 +8,15 @@ Lorsqu'une page n'est pas trouvée (404) ou qu'une erreur non gérée se produit
 
 ## Pages d'erreur personnalisées
 
-Placez les fichiers `error.nexy` ou `notfound.nexy` dans n'importe quel répertoire de route pour remplacer les pages d'erreur pour cette étendue :
+Placez les fichiers `errors.nexy` ou `notfound.nexy` dans n'importe quel répertoire de route pour remplacer les pages d'erreur pour cette étendue :
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### Exemple : `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### Exemple : `error.nexy`
+### Exemple : `errors.nexy`
 
 ```nexy
 ---
@@ -64,13 +64,13 @@ Les pages d'erreur placées dans des sous-répertoires ne s'appliquent qu'aux ro
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 
 ## Connexes
 
-- [Authorization / Guards](/docs/security/authorization) — protection des routes contre les accès non autorisés
-- [Authentication](/docs/security/authentication) — configuration du middleware d'authentification
+- [Authorization / Guards](/docs/security/authorization) - protection des routes contre les accès non autorisés
+- [Authentication](/docs/security/authentication) - configuration du middleware d'authentification

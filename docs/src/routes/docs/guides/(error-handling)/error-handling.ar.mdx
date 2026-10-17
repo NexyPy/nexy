@@ -8,15 +8,15 @@
 
 ## صفحات الخطأ المخصصة
 
-ضع ملفات `error.nexy` أو `notfound.nexy` في أي دليل مسار لتجاوز صفحات الخطأ لهذا النطاق:
+ضع ملفات `errors.nexy` أو `notfound.nexy` في أي دليل مسار لتجاوز صفحات الخطأ لهذا النطاق:
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### مثال: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### مثال: `error.nexy`
+### مثال: `errors.nexy`
 
 ```nexy
 ---
@@ -64,13 +64,13 @@ src/routes/
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 
 ## ذات صلة
 
-- [Authorization / Guards](/docs/security/authorization) — حماية المسارات من الوصول غير المصرح به
-- [Authentication](/docs/security/authentication) — تكوين البرامج الوسيطة للمصادقة
+- [Authorization / Guards](/docs/security/authorization) - حماية المسارات من الوصول غير المصرح به
+- [Authentication](/docs/security/authentication) - تكوين البرامج الوسيطة للمصادقة

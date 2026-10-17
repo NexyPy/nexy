@@ -1,4 +1,4 @@
-# Modular Router — Architecture Overview
+# Modular Router - Architecture Overview
 
 The Modular Router brings NestJS-style architecture to Python. Instead of files becoming routes (FBR), you organize code into **controllers**, **providers**, **modules**, **guards**, and **middleware**.
 
@@ -32,7 +32,7 @@ AppModule  ("@Module)
 
 ### Method names define HTTP verbs
 
-Nexy maps **method names** to HTTP methods — no `"@Get`/`"@Post` decorators needed:
+Nexy maps **method names** to HTTP methods - no `"@Get`/`"@Post` decorators needed:
 
 | Method name | HTTP method |
 |-------------|-------------|
@@ -90,13 +90,13 @@ class NexyConfig(NexyConfigModel):
 | Controller | `"@Controller(prefix)` | Groups related routes under a path prefix |
 | Provider | `"@Injectable()` | Business logic, injectable into controllers |
 | Module | `"@Module()` | Wires controllers and providers via class attributes |
-| Guard | `"@UseGuard(...)` | Authorization — runs before the handler |
-| Middleware | `"@Middleware(...)` | Request/response pipeline — runs before guards |
+| Guard | `"@UseGuard(...)` | Authorization - runs before the handler |
+| Middleware | `"@Middleware(...)` | Request/response pipeline - runs before guards |
 
 ## Next Steps
 
-- [Controllers](/docs/modular/controllers) — handle HTTP requests with method-name routing
-- [Providers & DI](/docs/modular/providers) — inject services into controllers
-- [Modules](/docs/modular/modules) — organize controllers and providers into feature modules
-- [Guards](/docs/modular/guards) — protect routes with authorization
-- [Middleware](/docs/modular/middleware) — intercept requests before handlers
+- [Controllers](/docs/modular/controllers) - handle HTTP requests with method-name routing
+- [Providers & DI](/docs/modular/providers) - inject services into controllers
+- [Modules](/docs/modular/modules) - organize controllers and providers into feature modules
+- [Guards](/docs/modular/guards) - protect routes with authorization
+- [Middleware](/docs/modular/middleware) - intercept requests before handlers

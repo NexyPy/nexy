@@ -1,12 +1,12 @@
 # CSS & JavaScript
 
-Nexy gives you full freedom over styling and scripting. Every approach works — inline, imported, utility-first, or custom bundling.
+Nexy gives you full freedom over styling and scripting. Every approach works - inline, imported, utility-first, or custom bundling.
 
 ## CSS Approaches
 
 ### 1. Inline `<style>` in `.nexy` Templates
 
-Add a `<style>` tag directly in the template section. Styles are global by default — scope them manually with BEM, data attributes, or utility classes.
+Add a `<style>` tag directly in the template section. Styles are global by default - scope them manually with BEM, data attributes, or utility classes.
 
 ```nexy
 ---
@@ -51,7 +51,7 @@ css_block = __Import("/styles/global.css", "", "")()
 | `.json` | Parsed JSON data |
 | `.tsx`, `.vue`, `.svelte`, etc. | A client component wrapper (`<ncc>` tag) |
 
-For CSS, the 2nd and 3rd arguments are unused — pass empty strings.
+For CSS, the 2nd and 3rd arguments are unused - pass empty strings.
 
 ### 3. Tailwind CSS
 
@@ -70,7 +70,7 @@ Configure Tailwind in `tailwind.config.*` or `nexyconfig.py`.
 
 ### 4. Vite CSS Bundling
 
-When Vite is enabled (`useVite: true` in config), you can import `.css` files from your frontend components and they will be bundled with Vite's pipeline — including PostCSS, CSS modules, and HMR.
+When Vite is enabled (`useVite: true` in config), you can import `.css` files from your frontend components and they will be bundled with Vite's pipeline - including PostCSS, CSS modules, and HMR.
 
 ## Client-Side JavaScript
 

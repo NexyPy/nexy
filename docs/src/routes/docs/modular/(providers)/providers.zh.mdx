@@ -7,7 +7,7 @@
 如果没有 DI，每个控制器都会手动创建其依赖项：
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 通过 DI，容器实例化依赖项并注入它们：
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
@@ -49,7 +49,7 @@ class UserService:
         return user
 ```
 
-`"@Injectable()` 阻止直接实例化 — 在 DI 外部调用 `UserService()` 会引发 `TypeError`。这迫使您使用容器，以确保正确解析范围和依赖项。
+`"@Injectable()` 阻止直接实例化 - 在 DI 外部调用 `UserService()` 会引发 `TypeError`。这迫使您使用容器，以确保正确解析范围和依赖项。
 
 ## 注入控制器
 
@@ -74,11 +74,11 @@ class UsersController:
 
 DI 容器将类型提示 (`UserService`) 与已注册的提供程序相匹配。如果没有提供者匹配，则会在启动时引发 `ValueError`。
 
-**陷阱**：构造函数参数名称并不重要——只有类型提示才重要。 `service: UserService` 和 `s: UserService` 均解析为同一提供者。
+**陷阱**：构造函数参数名称并不重要--只有类型提示才重要。 `service: UserService` 和 `s: UserService` 均解析为同一提供者。
 
 ## 将提供程序注入其他提供程序
 
-提供者可以依赖其他提供者——容器解析完整的树：
+提供者可以依赖其他提供者--容器解析完整的树：
 
 ```python
 from nexy.decorators import Injectable
@@ -190,18 +190,18 @@ result = controller.GET()
 assert result == [{"id": 1, "name": "Test"}]
 ```
 
-无需启动服务器或设置完整的 DI 容器。这是构造函数注入的主要优点——纯单元测试。
+无需启动服务器或设置完整的 DI 容器。这是构造函数注入的主要优点--纯单元测试。
 
 ## 最佳实践
 
-1. **更喜欢构造函数注入**——手动调用 `Container.resolve()` 很少见；让容器自动注入。
-2. **保持提供程序无状态**（单例范围）——状态属于数据库或请求范围的提供程序。
-3. **每个提供商承担一项责任** — `UserService` 处理用户，`EmailService` 处理电子邮件。
-4. **在模块的 `providers` 列表中显式注册所有提供程序** — 显式注册是自记录的。
-5. **谨慎使用 `Scope.REQUEST`** — 每个请求范围的提供程序都会增加分配开销。
+1. **更喜欢构造函数注入**--手动调用 `Container.resolve()` 很少见；让容器自动注入。
+2. **保持提供程序无状态**（单例范围）--状态属于数据库或请求范围的提供程序。
+3. **每个提供商承担一项责任** - `UserService` 处理用户，`EmailService` 处理电子邮件。
+4. **在模块的 `providers` 列表中显式注册所有提供程序** - 显式注册是自记录的。
+5. **谨慎使用 `Scope.REQUEST`** - 每个请求范围的提供程序都会增加分配开销。
 
 ## 后续步骤
 
-- [Modules](/docs/modular/modules) — 将提供者组织到功能模块中
-- [Guards](/docs/modular/guards) — 添加身份验证和授权
-- [Middleware](/docs/modular/middleware) — 在请求到达控制器之前拦截请求
+- [Modules](/docs/modular/modules) - 将提供者组织到功能模块中
+- [Guards](/docs/modular/guards) - 添加身份验证和授权
+- [Middleware](/docs/modular/middleware) - 在请求到达控制器之前拦截请求

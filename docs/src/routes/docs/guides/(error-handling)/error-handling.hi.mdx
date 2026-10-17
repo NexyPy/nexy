@@ -8,15 +8,15 @@
 
 ## कस्टम त्रुटि पृष्ठ
 
-उस दायरे के लिए त्रुटि पृष्ठों को ओवरराइड करने के लिए किसी भी रूट निर्देशिका में `error.nexy` या `notfound.nexy` फ़ाइलें रखें:
+उस दायरे के लिए त्रुटि पृष्ठों को ओवरराइड करने के लिए किसी भी रूट निर्देशिका में `errors.nexy` या `notfound.nexy` फ़ाइलें रखें:
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### उदाहरण: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### उदाहरण: `error.nexy`
+### उदाहरण: `errors.nexy`
 
 ```nexy
 ---
@@ -64,9 +64,9 @@ src/routes/
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 

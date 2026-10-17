@@ -62,7 +62,7 @@ class AuthGuard:
 
 ## ガードの適用
 
-### コントローラーレベル — すべてのルートを保護します
+### コントローラーレベル - すべてのルートを保護します
 
 ```python
 from nexy.decorators import Controller, UseGuard
@@ -77,7 +77,7 @@ class AdminController:
         return None
 ```
 
-### メソッドレベル — 特定のルートを保護します
+### メソッドレベル - 特定のルートを保護します
 
 ```python
 "@Controller("/users")
@@ -180,14 +180,14 @@ class UsersController:
 
 ## ベストプラクティス
 
-1. **懸念ごとに 1 つのガード** — `AuthGuard`、`RoleGuard`、`RateLimitGuard`。 `SecurityGuard` がすべてを行うわけではありません。
-2. **説明的なステータス コードを使用します** — 欠落または無効な認証の場合は 401、不十分な権限の場合は 403、レート制限の場合は 429。
-3. **副作用を避ける** — ガードは状態を変更するのではなく、アクセス許可をチェックする必要があります (`request.state` を除く)。
-4. **高価なチェックをキャッシュする** — メモリ内キャッシュを備えたシングルトン ガード インスタンス。
-5. **ガードを分離してテスト** — モック `Request` を作成し、ガードを呼び出し、レイズまたはパスをアサートします。
+1. **懸念ごとに 1 つのガード** - `AuthGuard`、`RoleGuard`、`RateLimitGuard`。 `SecurityGuard` がすべてを行うわけではありません。
+2. **説明的なステータス コードを使用します** - 欠落または無効な認証の場合は 401、不十分な権限の場合は 403、レート制限の場合は 429。
+3. **副作用を避ける** - ガードは状態を変更するのではなく、アクセス許可をチェックする必要があります (`request.state` を除く)。
+4. **高価なチェックをキャッシュする** - メモリ内キャッシュを備えたシングルトン ガード インスタンス。
+5. **ガードを分離してテスト** - モック `Request` を作成し、ガードを呼び出し、レイズまたはパスをアサートします。
 
 ## 次のステップ
 
-- [Middleware](/docs/modular/middleware) — パイプラインフックをリクエストします
-- [Controllers](/docs/modular/controllers) — ルート ハンドラーを定義します
-- [Modules](/docs/modular/modules) — 機能モジュールに編成します
+- [Middleware](/docs/modular/middleware) - パイプラインフックをリクエストします
+- [Controllers](/docs/modular/controllers) - ルート ハンドラーを定義します
+- [Modules](/docs/modular/modules) - 機能モジュールに編成します

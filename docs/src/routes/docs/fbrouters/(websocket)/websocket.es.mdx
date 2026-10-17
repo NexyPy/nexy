@@ -101,7 +101,7 @@ El parámetro de URL `{room_id}` se inyecta automáticamente desde el nombre del
 
 | Evento | ¿Qué pasa?
 |-------|-------------|
-| El cliente se conecta | `websocket.accept()` — debe llamarse primero |
+| El cliente se conecta | `websocket.accept()` - debe llamarse primero |
 | Mensaje recibido | `receive_text()` / `receive_json()` / `receive_bytes()` |
 | El cliente se desconecta | `WebSocketDisconnect` levantado - limpiar en `except` |
 | El servidor se cierra | `await websocket.close(code=1000)` |
@@ -122,5 +122,5 @@ ws.send("Hello from the client!");
 
 ## Ver también
 
-- [Route Handlers](/docs/fbrouters/route_handlers) — Puntos finales REST en FBR
-- [WebSocket Guide](/docs/guides/websocket) — descripción general conceptual
+- [Route Handlers](/docs/fbrouters/route_handlers) - Puntos finales REST en FBR
+- [WebSocket Guide](/docs/guides/websocket) - descripción general conceptual

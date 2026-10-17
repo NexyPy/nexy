@@ -1,11 +1,10 @@
 ---
 items = [
-        {"label":"showcase","href":"#"},
-        {"label":"Docs","href":"#"},
-        {"label":"Community","href":"#"}
-    ]
+    {"label": "showcase", "href": "#"},
+    {"label": "Docs", "href": "#"},
+    {"label": "Community", "href": "#"},
+]
 ---
-
 <header
     class="sticky top-0 z-30  bg-background/80 backdrop-blur-xs border-b border-dashed border-b-border flex justify-center items-center py-4 px-6 md:px-16 lg:px-20">
     

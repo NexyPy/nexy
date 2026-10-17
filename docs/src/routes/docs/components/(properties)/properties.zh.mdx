@@ -1,6 +1,6 @@
 # 属性（道具）
 
-Props 是数据流入组件的方式。它们使组件可重用——相同的 `Card` 组件可以根据它接收到的 props 渲染不同的内容。
+Props 是数据流入组件的方式。它们使组件可重用--相同的 `Card` 组件可以根据它接收到的 props 渲染不同的内容。
 
 ## 声明道具
 
@@ -23,10 +23,10 @@ active:prop[bool] = false
 
 ```nexy
 ---
-# Required — must be passed, no default
+# Required - must be passed, no default
 name:prop[str]
 
-# Optional — has a default value
+# Optional - has a default value
 name:prop[str] = "Guest"
 age:prop[int] = 0
 items:prop[list] = []
@@ -51,7 +51,7 @@ active:prop[bool] = false
 | `dict` | `{}` |字典值 |
 | `Any` | `None` |任何类型 |
 
-类型注释用于文档和 IDE 支持。在运行时，Python 是动态类型的——注释不强制类型。如果您在需要 int 的位置传递一个字符串，则当模板尝试以算术方式（而不是在 prop 声明级别）使用它时，它将失败。
+类型注释用于文档和 IDE 支持。在运行时，Python 是动态类型的--注释不强制类型。如果您在需要 int 的位置传递一个字符串，则当模板尝试以算术方式（而不是在 prop 声明级别）使用它时，它将失败。
 
 ## 传递父母的道具
 
@@ -77,7 +77,7 @@ posts = [...]  # from database
 **规则**：
 
 - **字符串值**使用 `key="value"` 或 `key="{{ jinja_expr }}"`
-- **表达式** 使用 `key={expr}` — 无引号，该值被解析为 Python
+- **表达式** 使用 `key={expr}` - 无引号，该值被解析为 Python
 - **布尔值**：使用 `active=true`（小写），而不是 `active=True` 或 `active="true"`
 - **列表/字典**：`items={["a", "b"]}` 或 `settings={"key": "val"}`
 
@@ -86,7 +86,7 @@ posts = [...]  # from database
 一个常见的 Python 陷阱：**不要使用在调用之间共享的可变默认值**：
 
 ```python
-# BAD — in Python, this list is created once and shared
+# BAD - in Python, this list is created once and shared
 def Card(items: list = []):
     items.append("new")  # Modifies the default!
 ```
@@ -100,7 +100,7 @@ def Card(items: list = None):
         items = []
 ```
 
-因此 `items:prop[list] = []` 可以安全使用——每个组件调用都有自己的列表。
+因此 `items:prop[list] = []` 可以安全使用--每个组件调用都有自己的列表。
 
 ## 带有 `{{ }}` 的动态道具
 

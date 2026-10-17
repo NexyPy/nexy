@@ -22,7 +22,7 @@ class ChatController:
             pass
 ```
 
-يتم تعيين اسم الأسلوب `SOCKET` إلى نقطة نهاية WebSocket. تشترك كافة الأساليب في وحدة التحكم في البادئة `"@Controller` — لذا فهي `GET /chat` باعتبارها WebSocket.
+يتم تعيين اسم الأسلوب `SOCKET` إلى نقطة نهاية WebSocket. تشترك كافة الأساليب في وحدة التحكم في البادئة `"@Controller` - لذا فهي `GET /chat` باعتبارها WebSocket.
 
 ---
 
@@ -85,7 +85,7 @@ class ChatController:
             self.manager.remove(websocket)
 ```
 
-`ConnectionManager` هو `"@Injectable()` مفرد — جميع مثيلات وحدة التحكم تشترك في نفس المدير.
+`ConnectionManager` هو `"@Injectable()` مفرد - جميع مثيلات وحدة التحكم تشترك في نفس المدير.
 
 ---
 
@@ -134,9 +134,9 @@ class RoomController:
 
 | الحدث | ماذا يحدث |
 |-------|------------|
-| يتصل العميل | `websocket.accept()` — يجب الاتصال به أولاً |
+| يتصل العميل | `websocket.accept()` - يجب الاتصال به أولاً |
 | وصلت الرسالة | `receive_text()` / `receive_json()` / `receive_bytes()` |
-| قطع اتصال العميل | تم رفع `WebSocketDisconnect` — التنظيف في `except` |
+| قطع اتصال العميل | تم رفع `WebSocketDisconnect` - التنظيف في `except` |
 | يغلق الخادم | `await websocket.close(code=1000)` |
 
 ---
@@ -153,7 +153,7 @@ ws.send("Hello from the client!");
 
 ## أنظر أيضا
 
-- [Controllers](/docs/modular/controllers) — معالجات المسار في Modular
-- [Providers & DI](/docs/modular/providers) — خدمات الحقن
-- [Guards](/docs/modular/guards) — حماية نقاط نهاية WebSocket
-- [WebSocket Guide](/docs/guides/websocket) — نظرة عامة مفاهيمية
+- [Controllers](/docs/modular/controllers) - معالجات المسار في Modular
+- [Providers & DI](/docs/modular/providers) - خدمات الحقن
+- [Guards](/docs/modular/guards) - حماية نقاط نهاية WebSocket
+- [WebSocket Guide](/docs/guides/websocket) - نظرة عامة مفاهيمية

@@ -1,6 +1,34 @@
+import re
 from html.parser import HTMLParser
 
 from nexy.compiler.parser.nodes import ElementNode, Node, TextNode
+
+_TAG_NAME_RE = re.compile(r"<([a-zA-Z0-9_:.-]+)")
+_ATTR_PATTERN_RE = re.compile(
+    r"(?P<name>[a-zA-Z0-9_:.-]+)"
+    r"(?:\s*=\s*"
+    r'(?:"(?P<v1>[^"]*)"|'
+    r"'(?P<v2>[^']*)'|"
+    r"(?P<v3>[^\s/>]+)))?",
+    re.IGNORECASE,
+)
+
+_VOID_ELEMENTS = {
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+}
 
 
 class NexyHTMLParser(HTMLParser):
@@ -18,29 +46,12 @@ class NexyHTMLParser(HTMLParser):
         attr_dict = {}
 
         if raw_tag_text:
-            import re
-
-            # 1. Extract Tag Name (preserving case)
-            # Match the first word after '<'
-            tag_match = re.search(r"<([a-zA-Z0-9_:.-]+)", raw_tag_text)
+            tag_match = _TAG_NAME_RE.search(raw_tag_text)
             if tag_match:
                 tag = tag_match.group(1)
 
-            # 2. Extract Attributes (preserving case)
-            # This regex handles: attr="val", attr='val', attr=val, and valueless attr
-            # It also handles spaces around '='
-            attr_pattern = re.compile(
-                r"(?P<name>[a-zA-Z0-9_:.-]+)"  # Attribute name
-                r"(?:\s*=\s*"  # Optional = with spaces
-                r'(?:"(?P<v1>[^"]*)"|'  # Double quoted value
-                r"'(?P<v2>[^']*)'|"  # Single quoted value
-                r"(?P<v3>[^\s/>]+)))?",  # Unquoted value
-                re.IGNORECASE,
-            )
-
-            # Start searching after the tag name
             search_pos = tag_match.end() if tag_match else 0
-            for m in attr_pattern.finditer(raw_tag_text, search_pos):
+            for m in _ATTR_PATTERN_RE.finditer(raw_tag_text, search_pos):
                 attr_name = m.group("name")
                 # Value is in one of the three groups
                 attr_value = m.group("v1") or m.group("v2") or m.group("v3") or ""
@@ -61,28 +72,8 @@ class NexyHTMLParser(HTMLParser):
         else:
             self.root.append(node)
 
-        # Void elements in HTML
-        void_elements = {
-            "area",
-            "base",
-            "br",
-            "col",
-            "embed",
-            "hr",
-            "img",
-            "input",
-            "link",
-            "meta",
-            "param",
-            "source",
-            "track",
-            "wbr",
-        }
-
-        # RULE: Lowercase tags follow HTML void rules.
-        # Uppercase tags (Components) ALWAYS allow children.
         is_component = tag and tag[0].isupper()
-        is_void_html = tag.lower() in void_elements
+        is_void_html = tag.lower() in _VOID_ELEMENTS
 
         is_void = is_void_html and not is_component
 

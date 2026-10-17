@@ -30,18 +30,18 @@ async def get(id: int):
 
 ## Ce que vous gagnez
 
-- **Support asynchrone** — natif, pas via des hacks
-- **Validation de type** — Pydantic, erreurs 422 automatiques
-- **Documents OpenAPI** — aucun `flasgger` nécessaire
-- **Système DI** — injecter des services sans singletons globaux
-- **CLI** — `nx build`, `nx start`, `nx migrate`
+- **Support asynchrone** - natif, pas via des hacks
+- **Validation de type** - Pydantic, erreurs 422 automatiques
+- **Documents OpenAPI** - aucun `flasgger` nécessaire
+- **Système DI** - injecter des services sans singletons globaux
+- **CLI** - `nx build`, `nx start`, `nx migrate`
 
 ## Étapes de migration
 
-1. **Échafaudage** — `nx new my-app`
-2. **Routes de port** — `"@app.route()` → fichier dans `src/routes/` ou `"@Controller`
-3. **Modèles de port** — Fichiers Flask `render_template()` → `.nexy`
-4. **Gestion des demandes de port** — `request.args`/`request.json` → paramètres de fonction saisis
+1. **Échafaudage** - `nx new my-app`
+2. **Routes de port** - `"@app.route()` → fichier dans `src/routes/` ou `"@Controller`
+3. **Modèles de port** - Fichiers Flask `render_template()` → `.nexy`
+4. **Gestion des demandes de port** - `request.args`/`request.json` → paramètres de fonction saisis
 5. **Plans de port** → `"@Module` ou sous-répertoires dans FBR
 
 ## Ce qui reste

@@ -1,19 +1,20 @@
 from __future__ import annotations
 
+import http.cookies
 import re
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from fastapi import Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import Request
+from starlette.datastructures import MutableHeaders
 
 from nexy.core.config import Config
 from nexy.i18n import L, current_locale
 
 
-class LocaleMiddleware(BaseHTTPMiddleware):
+class LocaleMiddleware:
     def __init__(self, app: Any) -> None:
-        super().__init__(app)
+        self.app = app
         self.config = Config()
         self._init_locales()
 
@@ -35,10 +36,7 @@ class LocaleMiddleware(BaseHTTPMiddleware):
         if m:
             locale = m.group(1)
             rest = path[m.end() :]
-            if not rest:
-                rest = "/"
-            else:
-                rest = "/" + rest
+            rest = "/" if not rest else "/" + rest
             return locale, rest
         return None
 
@@ -56,37 +54,60 @@ class LocaleMiddleware(BaseHTTPMiddleware):
                 return tag
         return None
 
-    async def dispatch(
-        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
-    ) -> Response:
+    def _cookie_value(self, locale: str) -> str:
+        cookie: http.cookies.BaseCookie[str] = http.cookies.SimpleCookie()
+        cookie[self._cookie_name] = locale
+        cookie[self._cookie_name]["max-age"] = 31536000
+        cookie[self._cookie_name]["path"] = "/"
+        cookie[self._cookie_name]["httponly"] = True
+        cookie[self._cookie_name]["samesite"] = "lax"
+        return cookie.output(header="").strip()
+
+    async def __call__(
+        self,
+        scope: dict[str, Any],
+        receive: Callable[[], Awaitable[dict[str, Any]]],
+        send: Callable[[dict[str, Any]], Awaitable[None]],
+    ) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        request = Request(scope)
+        scope.setdefault("state", {})
         matched = self._detect_from_url(request.url.path)
 
         if matched:
             locale, new_path = matched
-            request.state.locale = locale
-            request.scope["path"] = new_path
-            request.scope["root_path"] = ""
-            token = current_locale.set(locale)
+            scope["path"] = new_path
+            scope["root_path"] = ""
         else:
             locale = (
                 self._detect_from_cookie(request)
                 or self._detect_from_header(request)
                 or self._default
             )
-            request.state.locale = locale
-            token = current_locale.set(locale)
 
+        scope["state"]["locale"] = locale
+
+        existing = request.cookies.get(self._cookie_name)
+        token = current_locale.set(locale)
         try:
-            response = await call_next(request)
-            existing = request.cookies.get(self._cookie_name)
             if existing != locale:
-                response.set_cookie(
-                    key=self._cookie_name,
-                    value=locale,
-                    max_age=31536000,
-                    httponly=True,
-                    samesite="lax",
-                )
-            return response
+                cookie_value = self._cookie_value(locale)
+                send = self._send_with_cookie(send, cookie_value)
+            await self.app(scope, receive, send)
         finally:
             current_locale.reset(token)
+
+    def _send_with_cookie(
+        self,
+        send: Callable[[dict[str, Any]], Awaitable[None]],
+        cookie_value: str,
+    ) -> Callable[[dict[str, Any]], Awaitable[None]]:
+        async def send_wrapper(message: dict[str, Any]) -> None:
+            if message["type"] == "http.response.start":
+                MutableHeaders(scope=message).append("set-cookie", cookie_value)
+            await send(message)
+
+        return send_wrapper

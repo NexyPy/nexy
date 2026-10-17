@@ -45,6 +45,6 @@ class AsyncController:
 
 ##محاذير
 
-- لا تستدعي وظائف `async` من معالجات `def` مع `await` — استخدم `asyncio.run()` أو اجعل المعالج `async def`
-- لا تستدعي وظائف الحظر (`time.sleep()`، `requests.get()`) من `async def` — استخدم `asyncio.sleep()`، `httpx.AsyncClient`
+- لا تستدعي وظائف `async` من معالجات `def` مع `await` - استخدم `asyncio.run()` أو اجعل المعالج `async def`
+- لا تستدعي وظائف الحظر (`time.sleep()`، `requests.get()`) من `async def` - استخدم `asyncio.sleep()`، `httpx.AsyncClient`
 - بالنسبة للإنتاج، استخدم عوامل متعددة لمعالجات المزامنة

@@ -1,6 +1,6 @@
 # Components Overview
 
-Components are the building blocks of a Nexy application. A component is a `.nexy` file that combines Python logic with an HTML template — like Vue's `.vue` files or Svelte's `.svelte` files.
+Components are the building blocks of a Nexy application. A component is a `.nexy` file that combines Python logic with an HTML template - like Vue's `.vue` files or Svelte's `.svelte` files.
 
 ## Component Types
 
@@ -23,7 +23,7 @@ Page components are directly accessible via URL. They can use hooks like `useQue
 
 ### 2. Reusable Components (in `src/components/`)
 
-Components in `src/components/` are not routes — they're imported and used by pages and other components.
+Components in `src/components/` are not routes - they're imported and used by pages and other components.
 
 ```nexy
 ---
@@ -61,11 +61,11 @@ count = 0
 </style>
 ```
 
-**1. Frontmatter** — Python code between `---` delimiters. Declares props, imports modules, runs hooks, processes data.
+**1. Frontmatter** - Python code between `---` delimiters. Declares props, imports modules, runs hooks, processes data.
 
-**2. Template** — HTML with Jinja2 expressions. Outputs variables, loops over data, renders child components.
+**2. Template** - HTML with Jinja2 expressions. Outputs variables, loops over data, renders child components.
 
-**3. Styles** — `<style>` tags (anywhere in the template). Styles are global, not scoped. Use BEM or utility classes for encapsulation.
+**3. Styles** - `<style>` tags (anywhere in the template). Styles are global, not scoped. Use BEM or utility classes for encapsulation.
 
 ## Component Rules
 

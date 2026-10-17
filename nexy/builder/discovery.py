@@ -6,7 +6,7 @@ from nexy.core.config import Config
 
 
 class Discovery:
-    """Scanner de fichiers pour trouver les fichiers .nexy et .mdx."""
+    """Scans files to find .nexy, .md, .mdx, and framework route files."""
 
     TARGET_EXTENSIONS = Config.TARGET_EXTENSIONS
     DEFAULT_EXCLUDED_DIRS = {
@@ -17,6 +17,13 @@ class Discovery:
         "dist",
         "build",
         "__nexy__",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".uvcache",
+        ".github",
+        ".cursor",
+        ".vscode",
+        ".nexy-virt",
     }
 
     def __init__(self) -> None:
@@ -25,7 +32,7 @@ class Discovery:
     def scan(self, root_path: Path | str) -> list[Path]:
         root = Path(root_path)
         if not root.is_dir():
-            raise FileNotFoundError(f"Le répertoire {root} n'existe pas ou n'est pas un dossier")
+            raise FileNotFoundError(f"not found {root} folder")
 
         return list(self._walk(root))
 

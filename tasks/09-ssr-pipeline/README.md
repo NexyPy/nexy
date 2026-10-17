@@ -9,12 +9,12 @@ shell before the body, matching the Next.js Fizz model.
 
 ## Current state (verified)
 
-- `nexy/routers/fbrouter/__init__.py:99-121` (`_make_request_handler`) — awaits the
-  component, returns `HTMLResponse` (fully buffered).
-- Components are sync Python `def Page(...) -> str` — the entire string is produced
-  before the response starts.
-- `nexy/core/config.py:27` — `ROUTE_FILE_EXTENSIONS` enables `.py`, `.nexy`, `.tsx`...
-  all uniformly; no notion of streaming boundary.
+- `nexy/routers/fbrouter/__init__.py:113-139` (`_make_request_handler`) wraps every
+  component in a `StreamingResponse`; `_stream_body` (L101-110) emits sync strings
+  as a single byte-identical chunk and streams generator components chunk-by-chunk.
+- Sync `def Page(...) -> str` components keep identical output (single-chunk stream).
+- Tests: `tests/unit/nexy/routers/test_streaming_response.py` (4 tests) — generator
+  pages emit multiple chunks, sync pages byte-identical.
 
 ## Competitive target
 
@@ -26,20 +26,24 @@ shell before the body, matching the Next.js Fizz model.
 ## TDD phases
 
 1. **Red** — test: a page whose head renders faster than its body emits the head bytes
-   first on the wire (response is a stream, not a complete string).
+   first on the wire (response is a stream, not a complete string). **Done.**
 2. **Green — stream wrapper** — `HTMLResponse` subclass / ASGI `StreamingResponse` from
-   an iterable yielded by a component that supports generators.
+   an iterable yielded by a component that supports generators. **Done** — every
+   component served through `StreamingResponse`.
 3. **Green — shell split** — flush `<head>` + opening `<body>` before invoking the
-   component body; component can yield body chunks.
+   component body; component can yield body chunks. **Partial** — generator
+   components yield chunks; no dedicated shell flush inside the wrapper.
 4. **Refactor** — keep sync `-> str` components working unchanged; only generator
-   components get streamed.
+   components get streamed. **Done.**
 5. **Gates** — ruff, mypy, pytest, `nexy build` EXIT=0.
 
 ## Definition of Done
 
-- Sync `-> str` pages still work (backward compatible).
-- Generator-capable components stream head first on ASGI (Uvicorn).
-- Measurable TTFB improvement on a body-heavy page.
+- Sync `-> str` pages still work (backward compatible). **Done.**
+- Generator-capable components stream head first on ASGI (Uvicorn). **Done** (chunk
+  streaming; explicit head-first flush is component-controlled).
+- Measurable TTFB improvement on a body-heavy page. **Pending** (real-project
+  benchmark).
 
 ## References
 

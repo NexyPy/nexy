@@ -1,11 +1,12 @@
 from nexy.core.models import FrontendFramework
+from nexy.frontend.islands import ISLANDS_RUNTIME
 
 
 def svelte() -> FrontendFramework:
     return FrontendFramework(
         name="svelte",
         render=(
-            "(function(){"
+            ISLANDS_RUNTIME + "(function(){"
             "const w=window as any;"
             "const gi=w.__nexy_import||((p: any)=>import(/* @vite-ignore */ p));"
             "async function m(el: any){"
@@ -31,7 +32,14 @@ def svelte() -> FrontendFramework:
             "}"
             "function init(){"
             'const nodes=w.document.querySelectorAll("[data-nexy-fw=\\"svelte\\"]");'
-            "nodes.forEach((el: any)=>{m(el)});"
+            "nodes.forEach((el: any)=>{"
+            'if(el.hasAttribute("data-nexy-island")){'
+            'const directive=el.getAttribute("data-nexy-directive");'
+            'if(directive==="client:only")return;'
+            "el.__nexyHydrate=()=>m(el);"
+            "}else{m(el);}"
+            "});"
+            "nexyIslands.init(w.document);"
             "}"
             'if(w.document.readyState==="loading"){'
             'w.document.addEventListener("DOMContentLoaded",init);'

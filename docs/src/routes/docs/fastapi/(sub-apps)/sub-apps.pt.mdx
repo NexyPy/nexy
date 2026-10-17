@@ -40,7 +40,7 @@ Consulte [WSGI](/docs/fastapi/wsgi).
 ## Como funcionam as montagens
 
 - O prefixo de montagem **é removido** antes que as solicitações cheguem ao subaplicativo
-- Os subaplicativos têm sua **própria pilha de middleware** — Nexy auth/middleware não se aplica
+- Os subaplicativos têm sua **própria pilha de middleware** - Nexy auth/middleware não se aplica
 - Os subaplicativos podem ser qualquer aplicativo ASGI (FastAPI, Starlette, Litestar, etc.)
 - As montarias são ordenadas – vitórias na primeira partida
 

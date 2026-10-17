@@ -22,7 +22,7 @@ class ChatController:
             pass
 ```
 
-The `SOCKET` method name maps to a WebSocket endpoint. All methods in a controller share the `"@Controller` prefix — so this is `GET /chat` as a WebSocket.
+The `SOCKET` method name maps to a WebSocket endpoint. All methods in a controller share the `"@Controller` prefix - so this is `GET /chat` as a WebSocket.
 
 ---
 
@@ -85,7 +85,7 @@ class ChatController:
             self.manager.remove(websocket)
 ```
 
-The `ConnectionManager` is a singleton `"@Injectable()` — all controller instances share the same manager.
+The `ConnectionManager` is a singleton `"@Injectable()` - all controller instances share the same manager.
 
 ---
 
@@ -134,9 +134,9 @@ class RoomController:
 
 | Event | What happens |
 |-------|-------------|
-| Client connects | `websocket.accept()` — must be called first |
+| Client connects | `websocket.accept()` - must be called first |
 | Message received | `receive_text()` / `receive_json()` / `receive_bytes()` |
-| Client disconnects | `WebSocketDisconnect` raised — clean up in `except` |
+| Client disconnects | `WebSocketDisconnect` raised - clean up in `except` |
 | Server closes | `await websocket.close(code=1000)` |
 
 ---
@@ -153,7 +153,7 @@ ws.send("Hello from the client!");
 
 ## See also
 
-- [Controllers](/docs/modular/controllers) — route handlers in Modular
-- [Providers & DI](/docs/modular/providers) — injectable services
-- [Guards](/docs/modular/guards) — protect WebSocket endpoints
-- [WebSocket Guide](/docs/guides/websocket) — conceptual overview
+- [Controllers](/docs/modular/controllers) - route handlers in Modular
+- [Providers & DI](/docs/modular/providers) - injectable services
+- [Guards](/docs/modular/guards) - protect WebSocket endpoints
+- [WebSocket Guide](/docs/guides/websocket) - conceptual overview

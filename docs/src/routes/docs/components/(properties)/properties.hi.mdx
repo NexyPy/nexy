@@ -23,10 +23,10 @@ active:prop[bool] = false
 
 ```nexy
 ---
-# Required — must be passed, no default
+# Required - must be passed, no default
 name:prop[str]
 
-# Optional — has a default value
+# Optional - has a default value
 name:prop[str] = "Guest"
 age:prop[int] = 0
 items:prop[list] = []
@@ -86,7 +86,7 @@ posts = [...]  # from database
 एक सामान्य पायथन गेटचा: **परिवर्तनीय डिफ़ॉल्ट का उपयोग न करें** जो कॉल में साझा किए जाते हैं:
 
 ```python
-# BAD — in Python, this list is created once and shared
+# BAD - in Python, this list is created once and shared
 def Card(items: list = []):
     items.append("new")  # Modifies the default!
 ```

@@ -17,7 +17,7 @@ class HomeI18n:
     why_router_desc = "Auto-discovers routes from src/routes/. Supports dynamic params, layout nesting, middleware, guards, and locale dispatch."
 
     why_frontend = "Multi-Framework"
-    why_frontend_desc = "React, Preact, Solid, Vue, and Svelte — bring your own components. CSR, SSR hydration, and Fast Refresh included."
+    why_frontend_desc = "React, Preact, Solid, Vue, and Svelte - bring your own components. CSR, SSR hydration, and Fast Refresh included."
 
     why_templates = "Jinja2 + MDX"
     why_templates_desc = "Server-side template rendering with Markdown, auto-generated heading IDs, and table-of-contents extraction."
@@ -32,7 +32,7 @@ class HomeI18n:
     why_cli_desc = "8 commands (new, init, dev, start, build, migrate, translate, add) with Typer + Rich terminal output."
 
     why_hooks = "8 Request Hooks"
-    why_hooks_desc = "usePathname, useRouter, useQuery, useSession, useCookies, useSearchParams, useToc, useViews — request-scoped context anywhere."
+    why_hooks_desc = "usePathname, useRouter, useQuery, useSession, useCookies, useSearchParams, useToc, useViews - request-scoped context anywhere."
 
     why_fastapi = "FastAPI Foundation"
     why_fastapi_desc = "Built on FastAPI with HTTP, WebSocket, async support, middleware stack (CORS, GZip, Session), and OpenAPI docs."

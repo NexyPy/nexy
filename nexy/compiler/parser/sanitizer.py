@@ -106,10 +106,10 @@ class LogicSanitizer:
         targets = self._clean_targets(targets_raw)
 
         # --- LOGIC (Nexy / Python) ---
-        if ext in (".nexy", ".py", ".mdx", ""):
-            is_nexy = ext in (".nexy", ".mdx")
+        if ext in (".nexy", ".py", ""):
+            is_nexy = ext == ".nexy"
             prefix = f"{self.namespace.replace('/', '.')}" if is_nexy else ""
-            module_name = re.sub(r"\.nexy$|\.py$|\.mdx$", "", full_rel_path)
+            module_name = re.sub(r"\.nexy$|\.py$", "", full_rel_path)
             module_name = re.sub(r"\.+", ".", module_name.replace("/", ".")).strip(".")
             module_name = prefix + module_name
             return f"from {module_name} import {', '.join(targets)}"
@@ -145,8 +145,8 @@ class LogicSanitizer:
             alias = self._normalize_alias(pathlib.Path(full_rel_path).stem)
 
         # --- LOGIC (Nexy / Python) ---
-        if ext in (".nexy", ".py", ".mdx", ""):
-            is_nexy_module = ext in (".nexy", ".mdx")
+        if ext in (".nexy", ".py", ""):
+            is_nexy_module = ext == ".nexy"
 
             prefix = ""
 
@@ -157,7 +157,7 @@ class LogicSanitizer:
                     prefix += "."
 
             # remove extension
-            module_name = re.sub(r"\.(nexy|py|mdx)$", "", full_rel_path)
+            module_name = re.sub(r"\.(nexy|py)$", "", full_rel_path)
 
             # normalize path
             module_name = module_name.replace("\\", "/").replace("/", ".").strip(".")

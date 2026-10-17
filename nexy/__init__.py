@@ -1,4 +1,4 @@
-from nexy.audio import Audio
+from nexy.audio import audio as Audio
 from nexy.form import Form
 from nexy.hooks import (
     useCookies,
@@ -11,11 +11,11 @@ from nexy.hooks import (
     useViews,
 )
 from nexy.i18n.core import current_locale, t, trans, useLocale
-from nexy.image import Image
-from nexy.link import Link
+from nexy.image import image as Image
+from nexy.link import link as Link
 from nexy.template import Template
 from nexy.utils.imports.component_import import Import
-from nexy.video import Video
+from nexy.video import video as Video
 from nexy.vite import Vite
 
 __all__ = [

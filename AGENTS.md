@@ -1,4 +1,4 @@
-# Nexy — Agent Guide
+# Nexy - Agent Guide
 
 ## Vision & Ambition
 L'objectif principal de Nexy est de **surpasser les solutions existantes** telles que Django, Next.js, Remix, Reflect et Astro, tant en matière d'expérience développeur (DX) que de performances en production.
@@ -13,7 +13,7 @@ L'objectif principal de Nexy est de **surpasser les solutions existantes** telle
 - **TDD**: write the test first (red), minimal code to pass (green), then refactor. One assertion per test. Name: `test_<thing>_<scenario>`.
 - **SOLID**: one responsibility per class/file. `TemplateParser` parses, `Builder` builds, `Router` routes. Depend on abstractions (`Protocol`), inject via `nexy/runtime/injection.py`.
 
-## Commands (Astral toolchain — no Makefile)
+## Commands (Astral toolchain - no Makefile)
 
 ```bash
 # Quality gates (run in this order: lint → format → typecheck → test)
@@ -55,9 +55,9 @@ uv pip install -e ".[dev]"
 
 ## Gotchas
 
-- `test_config.py` uses `hasattr` pattern — watch for config API changes.
+- `test_config.py` uses `hasattr` pattern - watch for config API changes.
 - Integration tests (`tests/integration/`) may require project scaffolding or a temp workspace.
-- `docs/` is a **separate Nexy app** with its own `.git` — do not treat as monorepo child.
+- `docs/` is a **separate Nexy app** with its own `.git` - do not treat as monorepo child.
 - `skills/` dir contains project philosophy docs (KISS, SOLID, TDD, framework-dev).
 - `nexyconfig.py` at root is the user-facing config (not `pyproject.toml`).
 - `.nexy` files use `---` frontmatter delimiter for Python logic.
@@ -71,9 +71,9 @@ uv pip install -e ".[dev]"
 
 ## Session Progress (June 2026)
 
-### Completed — TOC via generated code (no template.py injection)
+### Completed - TOC via generated code (no template.py injection)
 
-**`template.py`**: stripped TOC auto-injection (`{toc_html}` placeholder replacement, `TOC_AUTO` fallback). `render()` now returns pure rendered content — no TOC awareness at all.
+**`template.py`**: stripped TOC auto-injection (`{toc_html}` placeholder replacement, `TOC_AUTO` fallback). `render()` now returns pure rendered content - no TOC awareness at all.
 
 **`logic.py`**: TOC is fully generated-code concern:
 - Layout files get `toc_html: str = ''` auto-appended to their NexyProps (visible to both function params and Jinja2 context)
@@ -93,25 +93,25 @@ uv pip install -e ".[dev]"
 - Rewrote theme.tsx: `containerRef` + `useRef`/`useLayoutEffect` + separate ThemeButton/SunIcon/MoonIcon/MonitorIcon
 - Added `{% raw %}…{% endraw %}` around framework blocks to protect `{{` in JSX
 
-**Vite build pipeline — client-only warnings**:
+**Vite build pipeline - client-only warnings**:
 - `frontend/vite.ts`: `[nexy] Building server components…` (buildStart), `[nexy] Building client bundles…` (closeBundle)
-- `scripts/entries.ts`: `⚠ client-only: {file} — {reason}, no server HTML`
+- `scripts/entries.ts`: `⚠ client-only: {file} - {reason}, no server HTML`
 - `scripts/utils.ts`: `getProjectFrameworks()` checks for `from 'react'`/`from 'solid-js'`/`from 'preact'` imports
 - `scripts/ssg.ts`: warns when `.tsx`/`.jsx` found but no framework installed
-- `scripts/ssg.html.ts`: `⚠ client-only: {file} — no server HTML, rendering client placeholder`
+- `scripts/ssg.html.ts`: `⚠ client-only: {file} - no server HTML, rendering client placeholder`
 - `ssg.{react,preact,solid,vue,svelte}.ts`: SSR failures → warning + empty `<div id="{entryId}-root"></div>`
 - `frontend/__init__.py`: logs detected frameworks in `_generate_vite_entry()`
 
-**Bug fixes** (`theme.jinja2` — "none" framework):
+**Bug fixes** (`theme.jinja2` - "none" framework):
 - Added `active = 'system'` to frontmatter (was missing → `{{active}}` rendered empty string)
-- Changed `--spacing-slider-left`/`--spacing-slider-width` → `--slider-left`/`--slider-width` (was inconsistent with vue/svelte/tsx — all use `--slider-*`)
+- Changed `--spacing-slider-left`/`--spacing-slider-width` → `--slider-left`/`--slider-width` (was inconsistent with vue/svelte/tsx - all use `--slider-*`)
 
-**SSG unified on per-file esbuild builds — parallèle**:
+**SSG unified on per-file esbuild builds - parallèle**:
 - `ssg.preact.ts`: revu vers worker pool parallèle avec `os.cpus().length`
 - `ssg.react.ts`: supprimé Vite + `@vitejs/plugin-react` → esbuild per-file parallèle
 - `ssg.solid.ts`: supprimé Vite + `vite-plugin-solid` → esbuild per-file parallèle
 - Workers partagent un compteur atomique `let idx = 0` ; `Math.min(os.cpus().length, files.length)` workers en parallèle
-- `Promise.allSettled` implicite via worker pool — chaque fichier buildé indépendamment, un échec ne bloque pas les autres
+- `Promise.allSettled` implicite via worker pool - chaque fichier buildé indépendamment, un échec ne bloque pas les autres
 - Messages d'erreur réels maintenant inclus dans les warnings catch-blocks (React/Solid avaient `"SSR failed"` générique)
 
 ### MDX translation & file reorganization (June 10)
@@ -126,11 +126,21 @@ uv pip install -e ".[dev]"
 - `vsce package` failed under pnpm (npm dependency resolution in shallow pnpm store), resolved with `--no-dependencies` flag: `npx vsce package --no-dependencies`
 
 ### Key findings
-- `.nexy` files rendered via standard Jinja2 `Environment` (no sandbox) — `range()` works in `{% for %}`
+- `.nexy` files rendered via standard Jinja2 `Environment` (no sandbox) - `range()` works in `{% for %}`
 - Icon SVGs ARE identical across frameworks (same Heroicons path data, only attribute naming differs: `fill-rule`/`fillRule`)
 - 28/32 tests pass (4 pre-existing `TemplateFormatter.format_attributes` failures unrelated)
 - Ruff errors on `.jinja2` files are expected (mixed HTML/JS/Python, not valid Python)
-- No Vite dependency in production SSG pipeline — esbuild seul pour React, Preact, Solid SSR builds
-- Pylance delegation requires **real `.py` on disk** (`.nexy-virt/`) — Pylance ignores non-`file://` schemes for imports
-- CSS/JS/HTML delegation works with custom virtual scheme URIs (`nexy-embed-*://`) — only color provider needs untitled docs
+- No Vite dependency in production SSG pipeline - esbuild seul pour React, Preact, Solid SSR builds
+- Pylance delegation requires **real `.py` on disk** (`.nexy-virt/`) - Pylance ignores non-`file://` schemes for imports
+- CSS/JS/HTML delegation works with custom virtual scheme URIs (`nexy-embed-*://`) - only color provider needs untitled docs
 - vsce packaging needs `--no-dependencies` when running under pnpm's strict node_modules layout
+
+### Frontend route compiler verification (Oct 2026)
+
+- `frontend_route.py` `compile()` split into 12 focused helpers (`_layout_wrapper`, `_module_signature`, `_ssg_module_lines`, `_render_module_tail`, `_reject_locale_suffix`, `_route_module_paths`, …). No behavior intended to change.
+- Added byte-level verification matrix `tests/unit/nexy/compiler/test_frontend_route_matrix.py`: 8 route kinds (tsx default/named/no-export, vue, svelte, mdx react/preact, catch-all), AST validity, framework/symbol/component contracts, meta.json contract, byte determinism, runtime execution via VFS importer (mount-id md5, dev path, prod SSR embedding, layout wiring).
+- Added `test_markdown_route.py` (MarkdownRouteCompiler: AST validity, component-name conventions incl. `[slug]` catch-all, locale suffix `about.fr.md` → `about_fr.py` + meta locale, layout wiring, cmarkgfm render + heading ids, TOC publication, determinism) and `test_compiler_dispatch.py` (Compiler.compile dispatch: .tsx → FrontendRouteCompiler, .md → MarkdownRouteCompiler, .nexy → classic pipeline, non-route files raise NexyCompileError).
+- **Bug found & fixed**: `_ssg_static_path` looked up `<name>.default.html` for default-export tsx/mdx routes, but the JS SSG writer (`getEntryId`) emits `<name>.Default.html` (see committed `templates/tests/*/__nexy__/client/snippets.json`) and `ncc.py`/`formatting.py` read `.Default.html`. Prod `__ssr` was always empty for default exports on case-sensitive filesystems (silently masked on Windows). Regression tests assert the exact bytes of the generated lookup path.
+- Note: whole-tree `ruff check nexy/` and `mypy --strict` still fail with pre-existing violations in untouched files (116 / 144 respectively); `nexy/compiler/` files added/edited are clean except the systemic `VFS` untyped-call pattern.
+
+

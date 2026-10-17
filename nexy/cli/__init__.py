@@ -6,7 +6,7 @@ import typer
 import typer.rich_utils
 
 from nexy.__version__ import __version__
-from nexy.cli.commands import build, dev, init, start
+from nexy.cli.commands import build, check, dev, format_, init, start, test
 from nexy.cli.commands.migrate import migrate
 from nexy.cli.commands.new import new
 from nexy.cli.commands.translate import translate
@@ -55,9 +55,8 @@ def main(
         console.print()
         console.print(f"[bold green]nexy[/bold green] [dim]{VERSION}[/dim]")
         console.print()
-        console.print(
-            f"[italic]{t('cli.tagline', 'The modern full-stack framework that just works')}[/italic]"
-        )
+        tagline = t("cli.tagline", "The modern full-stack framework that just works")
+        console.print(f"[italic]{tagline}[/italic]")
         console.print()
         console.print(f"[bold cyan]{t('cli.commands_header', 'Available Commands:')}[/bold cyan]")
         commands = [
@@ -69,6 +68,18 @@ def main(
             ("dev", t("cli.cmd.dev", "Start local development server with hot reload")),
             ("start", t("cli.cmd.start", "Start production server")),
             ("build", t("cli.cmd.build", "Compile project for production deployment")),
+            (
+                "check",
+                t("cli.cmd.check", "Run type checking across all project files"),
+            ),
+            (
+                "format",
+                t("cli.cmd.format", "Auto-format all project files"),
+            ),
+            (
+                "test",
+                t("cli.cmd.test", "Run tests (--server / --client)"),
+            ),
             ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
             (
                 "translate",
@@ -94,6 +105,11 @@ CLI.command()(start)
 CLI.command(name="s", hidden=True)(start)
 CLI.command()(build)
 CLI.command(name="b", hidden=True)(build)
+CLI.command()(check)
+CLI.command(name="c", hidden=True)(check)
+CLI.command(name="format")(format_)
+CLI.command(name="f", hidden=True)(format_)
+CLI.command()(test)
 CLI.command()(init)
 CLI.command(name="i", hidden=True)(init)
 CLI.command()(new)

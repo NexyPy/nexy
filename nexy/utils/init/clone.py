@@ -15,7 +15,6 @@ class GitClone:
         self.repo = "https://github.com/NexyPy/nexy.git"
         self.branch = "master"  # Templates are in the master branch of the nexy repo
         self.dest = Path(".")
-        self.is_windows = os.name == "nt"
 
     def _is_empty_dir(self, path: Path) -> bool:
         return not any(path.iterdir())
@@ -50,7 +49,6 @@ class GitClone:
                         capture_output=True,
                         text=True,
                         check=True,
-                        shell=self.is_windows,
                     )
                 except subprocess.CalledProcessError as e:
                     if "fetch" in cmd and e.returncode == 128:
@@ -75,7 +73,6 @@ class GitClone:
                         capture_output=True,
                         text=True,
                         check=True,
-                        shell=self.is_windows,
                     )
                 except subprocess.CalledProcessError as e:
                     raise Exception(
@@ -107,7 +104,6 @@ class GitClone:
                             capture_output=True,
                             text=True,
                             check=True,
-                            shell=self.is_windows,
                         )
                     except subprocess.CalledProcessError as e:
                         raise Exception(

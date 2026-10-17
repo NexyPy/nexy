@@ -56,7 +56,5 @@ class TestStringTransform:
         assert name.endswith("_catch_all")
 
     def test_normalize_route_path(self) -> None:
-        result = StringTransform.normalize_route_path_for_namespace(
-            "src/routes/blog/post.nexy"
-        )
+        result = StringTransform.normalize_route_path_for_namespace("src/routes/blog/post.nexy")
         assert result == "src/routes/blog/post.nexy"

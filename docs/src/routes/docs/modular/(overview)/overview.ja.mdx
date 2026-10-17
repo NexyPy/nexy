@@ -1,4 +1,4 @@
-# モジュラールーター — アーキテクチャの概要
+# モジュラールーター - アーキテクチャの概要
 
 Modular Router は、NestJS スタイルのアーキテクチャを Python にもたらします。ファイルがルート (FBR) になる代わりに、コードを **コントローラー**、**プロバイダー**、**モジュール**、**ガード**、**ミドルウェア**に編成します。
 
@@ -90,13 +90,13 @@ class NexyConfig(NexyConfigModel):
 |コントローラー | `"@Controller(prefix)` |関連するルートをパス プレフィックスの下にグループ化します。
 |プロバイダー | `"@Injectable()` |ビジネス ロジック、コントローラーに挿入可能 |
 |モジュール | `"@Module()` |クラス属性を介してコントローラーとプロバイダーを接続する |
-|ガード | `"@UseGuard(...)` |認可 — ハンドラーの前に実行されます。
-|ミドルウェア | `"@Middleware(...)` |リクエスト/レスポンス パイプライン — ガードの前に実行 |
+|ガード | `"@UseGuard(...)` |認可 - ハンドラーの前に実行されます。
+|ミドルウェア | `"@Middleware(...)` |リクエスト/レスポンス パイプライン - ガードの前に実行 |
 
 ## 次のステップ
 
-- [Controllers](/docs/modular/controllers) — メソッド名ルーティングを使用して HTTP リクエストを処理します
-- [Providers & DI](/docs/modular/providers) — コントローラーにサービスを挿入します
-- [Modules](/docs/modular/modules) — コントローラーとプロバイダーを機能モジュールに編成します
-- [Guards](/docs/modular/guards) — 承認によりルートを保護します
-- [Middleware](/docs/modular/middleware) — ハンドラーの前にリクエストをインターセプトします
+- [Controllers](/docs/modular/controllers) - メソッド名ルーティングを使用して HTTP リクエストを処理します
+- [Providers & DI](/docs/modular/providers) - コントローラーにサービスを挿入します
+- [Modules](/docs/modular/modules) - コントローラーとプロバイダーを機能モジュールに編成します
+- [Guards](/docs/modular/guards) - 承認によりルートを保護します
+- [Middleware](/docs/modular/middleware) - ハンドラーの前にリクエストをインターセプトします

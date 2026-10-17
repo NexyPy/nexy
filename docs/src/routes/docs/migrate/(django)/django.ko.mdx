@@ -44,17 +44,17 @@ class UsersController:
 ```
 ## 마이그레이션 단계
 
-1. **새로운 Nexy 프로젝트 스캐폴드** — `nx new my-app`
-2. **포트 모델** — Django 모델을 SQLModel/SQLAlchemy로 변환
-3. **포트 보기** — Django 함수/클래스 보기를 `.nexy` 파일(FBR) 또는 `"@Controller`(모듈식)로 변환합니다.
-4. **포트 URL 구성** — `urls.py` 패턴은 파일 트리(FBR) 또는 `"@Module`(모듈식)가 됩니다.
-5. **포트 템플릿** — DTL 템플릿 → `.nexy` 파일의 Jinja2
-6. **포트 미들웨어** — Django 미들웨어 → Starlette `BaseHTTPMiddleware`
+1. **새로운 Nexy 프로젝트 스캐폴드** - `nx new my-app`
+2. **포트 모델** - Django 모델을 SQLModel/SQLAlchemy로 변환
+3. **포트 보기** - Django 함수/클래스 보기를 `.nexy` 파일(FBR) 또는 `"@Controller`(모듈식)로 변환합니다.
+4. **포트 URL 구성** - `urls.py` 패턴은 파일 트리(FBR) 또는 `"@Module`(모듈식)가 됩니다.
+5. **포트 템플릿** - DTL 템플릿 → `.nexy` 파일의 Jinja2
+6. **포트 미들웨어** - Django 미들웨어 → Starlette `BaseHTTPMiddleware`
 
 ## 전환하는 이유
 
-- **모놀리식 설정 없음** — 사용하는 것만 구성
-- **기본적으로 비동기** — FastAPI/Starlette 내부
-- **OpenAPI 문서** — 자동, `drf-spectacular` 필요 없음
-- **구성요소 기반 UI** — Python + Jinja2를 하나의 파일에 혼합
-- **프레임워크 선택** — 프런트엔드용 React, Vue, Svelte, Solid 또는 Preact
+- **모놀리식 설정 없음** - 사용하는 것만 구성
+- **기본적으로 비동기** - FastAPI/Starlette 내부
+- **OpenAPI 문서** - 자동, `drf-spectacular` 필요 없음
+- **구성요소 기반 UI** - Python + Jinja2를 하나의 파일에 혼합
+- **프레임워크 선택** - 프런트엔드용 React, Vue, Svelte, Solid 또는 Preact

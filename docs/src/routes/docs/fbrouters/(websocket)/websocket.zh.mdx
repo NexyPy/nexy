@@ -20,7 +20,7 @@ async def SOCKET(websocket: WebSocket):
         pass
 ```
 
-函数名称 `SOCKET`（不区分大小写）映射到 Starlette WebSocket 端点。文件路径决定 URL — 在此示例中为 `/chat`。
+函数名称 `SOCKET`（不区分大小写）映射到 Starlette WebSocket 端点。文件路径决定 URL - 在此示例中为 `/chat`。
 
 ---
 
@@ -65,7 +65,7 @@ async def SOCKET(websocket: WebSocket):
         connections.remove(websocket)
 ```
 
-`connections` 列表位于模块级别 — 所有客户端共享相同的列表。
+`connections` 列表位于模块级别 - 所有客户端共享相同的列表。
 
 ---
 
@@ -101,9 +101,9 @@ URL 参数 `{room_id}` 是从文件名自动注入的。
 
 |活动 |会发生什么 |
 |--------|-------------|
-|客户端连接| `websocket.accept()` — 必须首先调用 |
+|客户端连接| `websocket.accept()` - 必须首先调用 |
 |收到消息 | `receive_text()` / `receive_json()` / `receive_bytes()` |
-|客户端断开连接 | `WebSocketDisconnect` 引发 — 清理 `except` |
+|客户端断开连接 | `WebSocketDisconnect` 引发 - 清理 `except` |
 |服务器关闭 | `await websocket.close(code=1000)` |
 
 始终将消息循环包装在 `try/except WebSocketDisconnect` 中以清理连接。
@@ -122,5 +122,5 @@ ws.send("Hello from the client!");
 
 ## 另请参阅
 
-- [Route Handlers](/docs/fbrouters/route_handlers) — FBR 中的 REST 端点
-- [WebSocket Guide](/docs/guides/websocket) — 概念概述
+- [Route Handlers](/docs/fbrouters/route_handlers) - FBR 中的 REST 端点
+- [WebSocket Guide](/docs/guides/websocket) - 概念概述

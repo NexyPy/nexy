@@ -1,6 +1,6 @@
 # Тестирование
 
-Приложения Nexy — это приложения FastAPI — протестируйте их с помощью `TestClient` от Starlette.
+Приложения Nexy - это приложения FastAPI - протестируйте их с помощью `TestClient` от Starlette.
 
 ```bash
 pip install httpx pytest-anyio  # httpx for TestClient, anyio for async tests
@@ -84,4 +84,4 @@ async def test_async_route():
 - Используйте `TestClient` в качестве менеджера контекста, если в вашем приложении есть события жизненного цикла.
 - Имитируйте внешние сервисы с помощью `httpx.MockTransport` или `responses`.
 - Запустите тесты с помощью `pytest tests/ -v` (специальная команда Nexy не требуется)
-- TestClient использует `httpx` внутри — тот же API, что и `requests`.
+- TestClient использует `httpx` внутри - тот же API, что и `requests`.

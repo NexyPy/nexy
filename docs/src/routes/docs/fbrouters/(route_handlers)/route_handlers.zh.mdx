@@ -62,7 +62,7 @@ class CreateUser(BaseModel):
 async def POST(request: Request, body: CreateUser):
     return {"name": body.name, "email": body.email}
 ```
-FastAPI 自动验证正文 — 如果输入无效，则返回 422。
+FastAPI 自动验证正文 - 如果输入无效，则返回 422。
 
 ---
 

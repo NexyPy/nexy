@@ -5,7 +5,7 @@ Componentes são arquivos `.nexy` em `src/components/` que você importa para p�
 
 ## Criando um componente
 
-Um componente é qualquer arquivo `.nexy`. O componente mais simples possível não tem frontmatter — apenas HTML:
+Um componente é qualquer arquivo `.nexy`. O componente mais simples possível não tem frontmatter - apenas HTML:
 
 ```nexy
 <!-- src/components/Hello.nexy -->
@@ -156,7 +156,7 @@ Como o componente é uma função Python, você pode retornar no início do fron
 title:prop[str] = ""
 if not title:
     print("Warning: Card rendered without title")
-    # Return early — the template still runs but title is empty
+    # Return early - the template still runs but title is empty
 ---
 <div class="card">
   <h2>{{ title }}</h2>
@@ -179,11 +179,11 @@ show_header:prop[bool] = true
 
 ## Melhores práticas
 
-- **Um componente por arquivo** — nomenclatura clara e fácil de encontrar
-- **Mantenha os modelos com menos de 50 linhas** — se for mais longo, extraia os subcomponentes
-- **Use props em vez de codificação** — torna os componentes reutilizáveis
-- **Nomeie arquivos em PascalCase** — `BlogCard.nexy` não `blog_card.nexy`
-- **Propriedades padrão para valores opcionais** — `title:prop[str] = ""` não `title:prop[str]`
+- **Um componente por arquivo** - nomenclatura clara e fácil de encontrar
+- **Mantenha os modelos com menos de 50 linhas** - se for mais longo, extraia os subcomponentes
+- **Use props em vez de codificação** - torna os componentes reutilizáveis
+- **Nomeie arquivos em PascalCase** - `BlogCard.nexy` não `blog_card.nexy`
+- **Propriedades padrão para valores opcionais** - `title:prop[str] = ""` não `title:prop[str]`
 
 ## Próximo
 

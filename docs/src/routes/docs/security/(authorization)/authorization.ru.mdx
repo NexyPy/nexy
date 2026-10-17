@@ -62,12 +62,12 @@ from starlette.authentication import requires
 def GET(request):
     return {"user": request.user.username}
 ```
-Работает как в FBR, так и в модульном режиме — `requires` возвращает действительный вызываемый объект защиты.
+Работает как в FBR, так и в модульном режиме - `requires` возвращает действительный вызываемый объект защиты.
 
 ---
 
 ## Похожие
 
-- ["@UseGuard reference](/docs/decorators/useguard) — полный API декоратора
-- [Guards (Modular)](/docs/modular/guards) — защитная инъекция в модульном DI
-- [Authentication](/docs/security/authentication) — настройка бэкендов аутентификации
+- ["@UseGuard reference](/docs/decorators/useguard) - полный API декоратора
+- [Guards (Modular)](/docs/modular/guards) - защитная инъекция в модульном DI
+- [Authentication](/docs/security/authentication) - настройка бэкендов аутентификации

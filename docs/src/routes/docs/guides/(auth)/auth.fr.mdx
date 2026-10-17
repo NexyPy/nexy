@@ -4,7 +4,7 @@ Ce guide crée la connexion, la déconnexion et un tableau de bord protégé à 
 
 ## 1. Activer le middleware de session
 
-Dans `nexyconfig.py`, activez `useSession` — les sessions de cookies signées de Starlette :
+Dans `nexyconfig.py`, activez `useSession` - les sessions de cookies signées de Starlette :
 
 ```python
 class NexyConfig(NexyConfigModel):
@@ -64,7 +64,7 @@ def POST(username: str, password: str):
 
 ## 4. Tableau de bord protégé
 
-Protégez le tableau de bord avec une protection — renvoie `{"user": ...}` si authentifié, 401 sinon :
+Protégez le tableau de bord avec une protection - renvoie `{"user": ...}` si authentifié, 401 sinon :
 
 ```nexy
 # src/routes/dashboard.nexy
@@ -123,7 +123,7 @@ Voir [useSession hook](/docs/hooks/useSession).
 
 ## Quelle est la prochaine étape ?
 
-- [Authentication reference](/docs/security/authentication) — backends d'authentification, JWT, OAuth
-- [Authorization / Guards](/docs/security/authorization) — protections personnalisées, lunettes
-- [JWT](/docs/security/jwt) — authentification basée sur un jeton
+- [Authentication reference](/docs/security/authentication) - backends d'authentification, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) - protections personnalisées, lunettes
+- [JWT](/docs/security/jwt) - authentification basée sur un jeton
 - [Session config](/docs/config/session)

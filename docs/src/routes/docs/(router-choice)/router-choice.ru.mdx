@@ -1,6 +1,6 @@
 # FBR или модульный маршрутизатор
 
-Nexy предлагает **две стратегии маршрутизации**. Вы выбираете при создании проекта — и переключатель в верхней части боковой панели соответствующим образом переключает документацию.
+Nexy предлагает **две стратегии маршрутизации**. Вы выбираете при создании проекта - и переключатель в верхней части боковой панели соответствующим образом переключает документацию.
 
 ## Маршрутизация на основе файлов (FBR)
 
@@ -65,7 +65,7 @@ src/apps/
 Ваш `nexyconfig.py` контролирует, какой маршрутизатор использовать:
 
 ```python
-# FBR — no explicit router config needed
+# FBR - no explicit router config needed
 
 class NexyConfig(NexyConfigModel):
 
@@ -73,7 +73,7 @@ class NexyConfig(NexyConfigModel):
 ```
 
 ```python
-# Modular — import the APIRouter from your root "@Module
+# Modular - import the APIRouter from your root "@Module
 
 from src.apps.app_module import AppModule  # "@Module() returns an APIRouter
 
@@ -82,4 +82,4 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-Вы не можете совмещать оба проекта в одном проекте — выберите тот, который подходит вашей команде и масштабируется.
+Вы не можете совмещать оба проекта в одном проекте - выберите тот, который подходит вашей команде и масштабируется.

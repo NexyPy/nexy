@@ -23,10 +23,10 @@ active:prop[bool] = false
 
 ```nexy
 ---
-# Required — must be passed, no default
+# Required - must be passed, no default
 name:prop[str]
 
-# Optional — has a default value
+# Optional - has a default value
 name:prop[str] = "Guest"
 age:prop[int] = 0
 items:prop[list] = []
@@ -77,7 +77,7 @@ posts = [...]  # from database
 **규칙**:
 
 - **문자열 값**은 `key="value"` 또는 `key="{{ jinja_expr }}"`를 사용합니다.
-- **표현식**은 `key={expr}`를 사용합니다. — 따옴표가 없으며 값은 Python으로 구문 분석됩니다.
+- **표현식**은 `key={expr}`를 사용합니다. - 따옴표가 없으며 값은 Python으로 구문 분석됩니다.
 - **부울**: `active=True` 또는 `active="true"`가 아닌 `active=true`(소문자)를 사용합니다.
 - **목록/딕셔너리**: `items={["a", "b"]}` 또는 `settings={"key": "val"}`
 
@@ -86,7 +86,7 @@ posts = [...]  # from database
 일반적인 Python 문제: 호출 간에 공유되는 **변경 가능한 기본값을 사용하지 마세요**:
 
 ```python
-# BAD — in Python, this list is created once and shared
+# BAD - in Python, this list is created once and shared
 def Card(items: list = []):
     items.append("new")  # Modifies the default!
 ```

@@ -1,4 +1,4 @@
-# 模块化路由器 — 架构概述
+# 模块化路由器 - 架构概述
 
 模块化路由器将 NestJS 风格的架构引入了 Python。您可以将代码组织到**控制器**、**提供程序**、**模块**、**防护**和**中间件**中，而不是将文件变成路由（FBR）。
 
@@ -32,7 +32,7 @@ AppModule  ("@Module)
 
 ### 方法名称定义 HTTP 动词
 
-Nexy 将 **方法名称** 映射到 HTTP 方法 — 不需要 `"@Get`/`"@Post` 装饰器：
+Nexy 将 **方法名称** 映射到 HTTP 方法 - 不需要 `"@Get`/`"@Post` 装饰器：
 
 |方法名称 | HTTP 方法 |
 |-------------|-------------|
@@ -91,12 +91,12 @@ class NexyConfig(NexyConfigModel):
 |供应商| `"@Injectable()` |业务逻辑，可注入控制器|
 |模块| `"@Module()` |通过类属性连接控制器和提供者 |
 |守卫| `"@UseGuard(...)` |授权 - 在处理程序之前运行 |
-|中间件| `"@Middleware(...)` |请求/响应管道——在警卫之前运行 |
+|中间件| `"@Middleware(...)` |请求/响应管道--在警卫之前运行 |
 
 ## 后续步骤
 
-- [Controllers](/docs/modular/controllers) — 使用方法名称路由处理 HTTP 请求
-- [Providers & DI](/docs/modular/providers) — 将服务注入控制器
-- [Modules](/docs/modular/modules) — 将控制器和提供者组织到功能模块中
-- [Guards](/docs/modular/guards) — 通过授权保护路由
-- [Middleware](/docs/modular/middleware) — 在处理程序之前拦截请求
+- [Controllers](/docs/modular/controllers) - 使用方法名称路由处理 HTTP 请求
+- [Providers & DI](/docs/modular/providers) - 将服务注入控制器
+- [Modules](/docs/modular/modules) - 将控制器和提供者组织到功能模块中
+- [Guards](/docs/modular/guards) - 通过授权保护路由
+- [Middleware](/docs/modular/middleware) - 在处理程序之前拦截请求

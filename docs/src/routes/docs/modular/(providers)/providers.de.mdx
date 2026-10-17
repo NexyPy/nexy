@@ -7,7 +7,7 @@ Anbieter kapseln Geschäftslogik, Datenzugriff oder externe Integrationen. Sie w
 Ohne DI erstellt jeder Controller seine Abhängigkeiten manuell:
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 Mit DI instanziiert der Container Abhängigkeiten und fügt sie ein:
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service

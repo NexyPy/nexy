@@ -1,65 +1,49 @@
 # 10 — Data Layer
 
-## Objective
+## Status: Closed — server-first decision
 
-Nexy has no loaders and a single `@Action` POST handler. The big three expose a typed
-**GET data protocol** per route (Remix loaders, Next RSC payload, TanStack
-`createServerFn`). This epic delivers a typed loader model callable from both server
-render and the client router.
+**Decision (2026-06)**: Nexy has **no loader / `.data` protocol**. Nexy is a
+server-first framework: the server-rendered HTML is the single source of truth, and
+dynamic data flows through the mechanisms that already exist:
 
-## Current state (verified)
+- **Page data** is declared in the `.nexy` frontmatter (Python executed at render time,
+  see `nexy/compiler/generator/logic.py`).
+- **Mutations / RPC** go through `@Action` (POST, `nexy/decorators.py`,
+  `nexy/routers/actions/`).
+- **Custom endpoints** are plain `.py` route handlers (`GET`/`POST`).
 
-- `nexy/decorators.py:411` — `@Action` decorator (POST-only).
-- `nexy/routers/actions/store.py:5` (`ActionsStore`), `nexy/routers/actions/engine.py:13`
-  (`ActionEngine`) — action engine, POST-only, returns plain data.
-- No `@Loader`; route data is baked into `data-nexy-props` on `<ncc>`
-  (`nexy/compiler/frontend_route.py:133-147`) and the client re-parses it
-  (`nexy/frontend/react.py:30-38`).
+The Remix single-fetch `.data` model, Next RSC payload, and TanStack `createServerFn`
+were evaluated and **rejected**: they introduce a parallel client data protocol that
+conflicts with the server-first philosophy. The client router therefore navigates by
+re-fetching server HTML, and never fetches per-route JSON payloads.
 
-## Competitive anchors
+## What was implemented then removed
 
-| Protocol | Model | Where |
-|---|---|---|
-| Next RSC | Flight payload `{t,h,q,i,S,...}` passed through render | `app-render.tsx` |
-| Remix | single-fetch `.data` URL + TurboStream, CSRF guard | `single-fetch.ts` |
-| TanStack | `createServerFn` (RPC / stub / SSR wrapper) | `router-plugin` |
-| Nuxt | `devalue` → `window.__NUXT__` | `renderer.ts` |
+An experimental `loader()` + `GET /<route>.data` single-fetch implementation was
+added (server side only: `_make_request_handler_with_loader`, `_register_data_endpoint`,
+`data-nexy-props` serialization) and then **reverted** after the server-first decision.
 
-## Target
+Removed artifacts:
 
-- `@Loader` decorator symmetric to `@Action`, returning typed data resolved **before**
-  render (server) or on-demand (client router).
-- Server render passes loader data into `data-nexy-props` (reuse existing channel).
-- Client router fetches `.data`-style payload via `@Loader` before rendering the target
-  component (single-fetch model).
+- `nexy/routers/fbrouter/__init__.py` — `_make_request_handler_with_loader`,
+  `_has_loader`, `_register_data_endpoint`, `_register_data_endpoint` call in
+  `_register_all_routes`, `JSONResponse` import.
+- `nexy/compiler/frontend_route.py` — `__nexy_props_json` module-body code; the
+  `<ncc>` template keeps a static `data-nexy-props="{}"`.
+- `tests/unit/nexy/routers/test_loaders.py` — deleted (6 tests).
 
-## TDD phases
+## What remains in place
 
-1. **Red** — test: a route file with a `@loader` function runs it before the page
-   component, injecting result into props.
-2. **Green** — `@Loader` decorator in `decorators.py`, registered like `@Action` in the
-   engine/store.
-3. **Green** — server render resolves loader data and serializes it into `data-nexy-props`
-   (`frontend_route.py:136-147`).
-4. **Green** — client router (`08-route-tree/client-side-routing`) calls the loader
-   endpoint before `import()` of the component.
-5. **Gates** — ruff, mypy, pytest, `nexy build` EXIT=0.
-
-## Definition of Done
-
-- `@Loader` route data flows server→props→client without a second fetch on initial load.
-- Client-side navigation fetches only the loader payload (`.data`), not full HTML.
-- Backward compatible with `@Action` POST routes.
+- `data-nexy-props` on `<ncc>` (`nexy/compiler/frontend_route.py:145`) is a **static**
+  empty placeholder; the client runtime parses props on mount
+  (`nexy/frontend/react.py:30-38`), which for SPA-style hydration receives props passed
+  by the runtime, not loader data.
+- `@Action` POST routes, API handlers, and the ISR cache (`nexy/runtime/cache.py`) are
+  the data mechanisms. `revalidate` frontmatter (ISR) is unaffected.
 
 ## References
 
-- [Remix analysis](../competitive/remix.md) — `.data` URL + single-fetch.
-- [Next.js analysis](../competitive/nextjs.md) — RSC payload.
-- [TanStack analysis](../competitive/tanstack.md) — `createServerFn`.
+- [Remix analysis](../competitive/remix.md) — `.data` URL + single-fetch (rejected).
+- [Next.js analysis](../competitive/nextjs.md) — RSC payload (rejected).
+- [TanStack analysis](../competitive/tanstack.md) — `createServerFn` (rejected).
 - Client consumption lives in [client-side-routing](../08-route-tree/client-side-routing/).
-
----
-
-### Loaders (sub-epic)
-
-See [./loaders/README.md](./loaders/README.md).

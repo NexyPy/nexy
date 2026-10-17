@@ -1,6 +1,6 @@
 # Migrate from NestJS to Nexy
 
-Nexy's Modular Router is inspired by NestJS — decorators, DI, modules, guards, middleware. The concepts transfer almost one-to-one.
+Nexy's Modular Router is inspired by NestJS - decorators, DI, modules, guards, middleware. The concepts transfer almost one-to-one.
 
 ## Concepts mapping
 
@@ -38,7 +38,7 @@ class UsersController:
 ```
 ## Key differences
 
-- **Method names define HTTP verbs** — no `"@Get`/`"@Post`/`"@Put`/`"@Delete` decorators
-- **All decorators in one module** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
-- **No `"@Global`** — scope is handled via `Injectable(scope=Scope.SINGLETON)`
-- **Guards & Middleware are callables** — no base class to extend, just `__call__(self, request)`
+- **Method names define HTTP verbs** - no `"@Get`/`"@Post`/`"@Put`/`"@Delete` decorators
+- **All decorators in one module** - `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **No `"@Global`** - scope is handled via `Injectable(scope=Scope.SINGLETON)`
+- **Guards & Middleware are callables** - no base class to extend, just `__call__(self, request)`

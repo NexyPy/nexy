@@ -1,6 +1,6 @@
 # Sessão
 
-Configure o middleware de sessão para sessões de cookies assinados — não é necessário armazenamento no servidor.
+Configure o middleware de sessão para sessões de cookies assinados - não é necessário armazenamento no servidor.
 
 ```python
 from nexy.core.models import NexyConfigModel
@@ -69,6 +69,6 @@ flashes = session.pop("_flashes", [])
 
 ## Notas de segurança
 
-- Os dados da sessão são assinados, mas **não criptografados** — não armazene dados confidenciais
+- Os dados da sessão são assinados, mas **não criptografados** - não armazene dados confidenciais
 - Girar `secret_key` periodicamente na produção
 - Use `https_only=True` na produção

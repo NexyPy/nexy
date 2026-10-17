@@ -7,7 +7,7 @@ Os provedores encapsulam lógica de negócios, acesso a dados ou integrações e
 Sem DI, cada controlador cria manualmente suas dependências:
 
 ```python
-# ❌ Manual — breaks testability, duplicates setup
+# ❌ Manual - breaks testability, duplicates setup
 class UsersController:
     def __init__(self):
         self.db = Database()       # Hard to mock
@@ -17,7 +17,7 @@ class UsersController:
 Com DI, o contêiner instancia dependências e as injeta:
 
 ```python
-# ✅ DI — swap implementations, share instances
+# ✅ DI - swap implementations, share instances
 class UsersController:
     def __init__(self, user_service: UserService):
         self.user_service = user_service
@@ -49,7 +49,7 @@ class UserService:
         return user
 ```
 
-`"@Injectable()` impede a instanciação direta — chamar `UserService()` fora do DI aumenta `TypeError`. Isso força você a usar o contêiner, o que garante que os escopos e as dependências sejam resolvidos corretamente.
+`"@Injectable()` impede a instanciação direta - chamar `UserService()` fora do DI aumenta `TypeError`. Isso força você a usar o contêiner, o que garante que os escopos e as dependências sejam resolvidos corretamente.
 
 ## Injetando em um controlador
 
@@ -78,7 +78,7 @@ O contêiner DI corresponde à dica de tipo (`UserService`) para um provedor reg
 
 ## Injetando provedores em outros provedores
 
-Os provedores podem depender de outros provedores — o contêiner resolve a árvore completa:
+Os provedores podem depender de outros provedores - o contêiner resolve a árvore completa:
 
 ```python
 from nexy.decorators import Injectable
@@ -128,7 +128,7 @@ class IdGenerator:
 
 **`Scope.SINGLETON`** é a escolha padrão e mais segura. Use **`Scope.REQUEST`** somente quando precisar do estado por solicitação (por exemplo, armazenando o usuário atual de um guarda). Use **`Scope.TRANSIENT`** quando o provedor tiver um estado mutável que não deve ser compartilhado.
 
-**Pegadinha**: provedores transitórios injetados em um provedor singleton tornam-se efetivamente singleton — eles são criados uma vez quando o singleton é resolvido pela primeira vez. Se você precisar de um novo transitório por solicitação, injete-o em um provedor com escopo de solicitação.
+**Pegadinha**: provedores transitórios injetados em um provedor singleton tornam-se efetivamente singleton - eles são criados uma vez quando o singleton é resolvido pela primeira vez. Se você precisar de um novo transitório por solicitação, injete-o em um provedor com escopo de solicitação.
 
 ## Provedores personalizados com `useValue` e `useFactory`
 
@@ -178,7 +178,7 @@ Se `Logger` não estiver registrado em nenhum módulo, o contêiner o ignora e p
 
 ## Teste com provedores
 
-DI simplifica o teste — instancie o controlador com uma simulação:
+DI simplifica o teste - instancie o controlador com uma simulação:
 
 ```python
 # In tests
@@ -194,14 +194,14 @@ Não há necessidade de iniciar o servidor ou configurar o contêiner DI complet
 
 ## Melhores práticas
 
-1. **Prefira injeção de construtor** — chamar `Container.resolve()` manualmente é raro; deixe o recipiente injetar automaticamente.
-2. **Manter os provedores sem estado** (escopo singleton) — o estado pertence a bancos de dados ou provedores com escopo de solicitação.
-3. **Uma responsabilidade por provedor** — `UserService` lida com usuários, `EmailService` lida com e-mails.
-4. **Registre todos os provedores explicitamente** na lista `providers` do módulo — os registros explícitos são autodocumentados.
-5. **Use `Scope.REQUEST` com moderação** — cada provedor com escopo de solicitação adiciona sobrecarga de alocação.
+1. **Prefira injeção de construtor** - chamar `Container.resolve()` manualmente é raro; deixe o recipiente injetar automaticamente.
+2. **Manter os provedores sem estado** (escopo singleton) - o estado pertence a bancos de dados ou provedores com escopo de solicitação.
+3. **Uma responsabilidade por provedor** - `UserService` lida com usuários, `EmailService` lida com e-mails.
+4. **Registre todos os provedores explicitamente** na lista `providers` do módulo - os registros explícitos são autodocumentados.
+5. **Use `Scope.REQUEST` com moderação** - cada provedor com escopo de solicitação adiciona sobrecarga de alocação.
 
 ## Próximas etapas
 
-- [Modules](/docs/modular/modules) — organize os provedores em módulos de recursos
-- [Guards](/docs/modular/guards) — adicione autenticação e autorização
-- [Middleware](/docs/modular/middleware) — intercepta solicitações antes que cheguem aos controladores
+- [Modules](/docs/modular/modules) - organize os provedores em módulos de recursos
+- [Guards](/docs/modular/guards) - adicione autenticação e autorização
+- [Middleware](/docs/modular/middleware) - intercepta solicitações antes que cheguem aos controladores

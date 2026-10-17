@@ -34,16 +34,16 @@ user = db.user.find_unique(id)
 
 ## Migration steps
 
-1. **Scaffold** — `nx new my-app`
-2. **Port pages** — `page.tsx` → `.nexy` or `.mdx` files
-3. **Port layouts** — `layout.tsx` → `layout.nexy`
-4. **Port API routes** — `route.ts` → `.py` files with `get()`, `post()`, etc.
-5. **Port server actions** — Server Actions → `"@Action` decorator
+1. **Scaffold** - `nx new my-app`
+2. **Port pages** - `page.tsx` → `.nexy` or `.mdx` files
+3. **Port layouts** - `layout.tsx` → `layout.nexy`
+4. **Port API routes** - `route.ts` → `.py` files with `get()`, `post()`, etc.
+5. **Port server actions** - Server Actions → `"@Action` decorator
 
 ## Key differences
 
-- **Python on the server** — no JavaScript/TypeScript required
-- **No build step for pages** — `.nexy` files compile at dev time
-- **Multiple frontend frameworks** — React, Vue, Svelte, Solid, Preact
-- **FastAPI under the hood** — async, OpenAPI, type-safe
-- **Two routing strategies** — file-based (like Next.js Pages) or modular (like NestJS)
+- **Python on the server** - no JavaScript/TypeScript required
+- **No build step for pages** - `.nexy` files compile at dev time
+- **Multiple frontend frameworks** - React, Vue, Svelte, Solid, Preact
+- **FastAPI under the hood** - async, OpenAPI, type-safe
+- **Two routing strategies** - file-based (like Next.js Pages) or modular (like NestJS)

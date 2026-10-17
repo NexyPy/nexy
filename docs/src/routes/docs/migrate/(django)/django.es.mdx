@@ -44,17 +44,17 @@ class UsersController:
 ```
 ## Pasos de migración
 
-1. **Crear un nuevo proyecto Nexy** — `nx new my-app`
+1. **Crear un nuevo proyecto Nexy** - `nx new my-app`
 2. **Modelos de puerto**: traduce los modelos de Django a SQLModel/SQLAlchemy
-3. **Vistas de puertos** — convierte vistas de funciones/clases de Django a archivos `.nexy` (FBR) o `"@Controller` (Modular)
+3. **Vistas de puertos** - convierte vistas de funciones/clases de Django a archivos `.nexy` (FBR) o `"@Controller` (Modular)
 4. **Configuraciones de URL del puerto**: los patrones `urls.py` se convierten en árbol de archivos (FBR) o `"@Module` (Modular)
-5. **Plantillas de puerto** — Plantillas DTL → Jinja2 en archivos `.nexy`
-6. **Middleware de puerto** — Middleware Django → Starlette `BaseHTTPMiddleware`
+5. **Plantillas de puerto** - Plantillas DTL → Jinja2 en archivos `.nexy`
+6. **Middleware de puerto** - Middleware Django → Starlette `BaseHTTPMiddleware`
 
 ## ¿Por qué cambiar?
 
 - **Sin configuraciones monolíticas**: configura solo lo que usas
-- **Async por defecto** — FastAPI/Starlette bajo el capó
+- **Async por defecto** - FastAPI/Starlette bajo el capó
 - **Documentos OpenAPI**: automático, no se necesita `drf-spectacular`
 - **UI basada en componentes**: mezcla Python + Jinja2 en un solo archivo
 - **Elección del marco**: React, Vue, Svelte, Solid o Preact para la interfaz

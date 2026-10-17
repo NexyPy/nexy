@@ -1,6 +1,6 @@
 # Guards
 
-Guards determine whether a request should reach the route handler. They execute **before the controller method** — perfect for authentication, authorization, rate limiting, and access control.
+Guards determine whether a request should reach the route handler. They execute **before the controller method** - perfect for authentication, authorization, rate limiting, and access control.
 
 Nexy's guards are **FastAPI dependencies**. They're callables (classes with `__call__` or standalone functions) that receive the request and either pass or raise an HTTPException.
 
@@ -58,11 +58,11 @@ class AuthGuard:
 
 The guard raises `HTTPException` to block the request. If it returns normally, the request proceeds.
 
-**Gotcha**: `__call__` can be sync or async — the router handles both. Use async when your guard needs to call a database or external API.
+**Gotcha**: `__call__` can be sync or async - the router handles both. Use async when your guard needs to call a database or external API.
 
 ## Applying Guards
 
-### Controller-level — protects all routes
+### Controller-level - protects all routes
 
 ```python
 from nexy.decorators import Controller, UseGuard
@@ -77,7 +77,7 @@ class AdminController:
         return None
 ```
 
-### Method-level — protects specific routes
+### Method-level - protects specific routes
 
 ```python
 "@Controller("/users")
@@ -91,7 +91,7 @@ class UsersController:
         return {"message": "No auth required"}
 ```
 
-### Multiple guards — all must pass
+### Multiple guards - all must pass
 
 ```python
 "@Controller("/admin")
@@ -102,7 +102,7 @@ class AdminController:
 
 Guards execute in the order they're listed. If `AuthGuard` raises, `RateLimitGuard` never runs.
 
-**Gotcha**: Method-level guards run AFTER controller-level guards — and only if controller-level guards pass.
+**Gotcha**: Method-level guards run AFTER controller-level guards - and only if controller-level guards pass.
 
 ## Guards with Parameters
 
@@ -180,14 +180,14 @@ class UsersController:
 
 ## Best Practices
 
-1. **One guard per concern** — `AuthGuard`, `RoleGuard`, `RateLimitGuard`. Not `SecurityGuard` that does everything.
-2. **Use descriptive status codes** — 401 for missing/invalid auth, 403 for insufficient permissions, 429 for rate limiting.
-3. **Avoid side effects** — guards should check permissions, not modify state (except `request.state`).
-4. **Cache expensive checks** — singleton guard instances with in-memory caches.
-5. **Test guards in isolation** — create a mock `Request`, call the guard, assert it raises or passes.
+1. **One guard per concern** - `AuthGuard`, `RoleGuard`, `RateLimitGuard`. Not `SecurityGuard` that does everything.
+2. **Use descriptive status codes** - 401 for missing/invalid auth, 403 for insufficient permissions, 429 for rate limiting.
+3. **Avoid side effects** - guards should check permissions, not modify state (except `request.state`).
+4. **Cache expensive checks** - singleton guard instances with in-memory caches.
+5. **Test guards in isolation** - create a mock `Request`, call the guard, assert it raises or passes.
 
 ## Next Steps
 
-- [Middleware](/docs/modular/middleware) — request pipeline hooks
-- [Controllers](/docs/modular/controllers) — define route handlers
-- [Modules](/docs/modular/modules) — organize into feature modules
+- [Middleware](/docs/modular/middleware) - request pipeline hooks
+- [Controllers](/docs/modular/controllers) - define route handlers
+- [Modules](/docs/modular/modules) - organize into feature modules

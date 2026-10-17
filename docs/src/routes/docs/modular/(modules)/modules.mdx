@@ -4,7 +4,7 @@ Modules group related controllers, providers, and sub-modules into a cohesive un
 
 ## Why Modules?
 
-Without modules, you'd register every controller and provider in one flat list. As the app grows, that list becomes unmanageable — 50 providers with no clear ownership.
+Without modules, you'd register every controller and provider in one flat list. As the app grows, that list becomes unmanageable - 50 providers with no clear ownership.
 
 Modules restore boundaries: `UsersModule` owns `UsersController` and `UserService`. Each module is a self-contained unit.
 
@@ -97,7 +97,7 @@ class UsersModule:
     providers = [UserService]
 ```
 
-The `DatabaseService` is resolved at startup when the module is loaded. If a provider's dependencies can't be resolved, the error is raised immediately — not at request time.
+The `DatabaseService` is resolved at startup when the module is loaded. If a provider's dependencies can't be resolved, the error is raised immediately - not at request time.
 
 ### Exports
 
@@ -110,7 +110,7 @@ class DatabaseModule:
     exports = [DatabaseService]  # Only DatabaseService is visible outside
 ```
 
-Without `exports`, NO providers are visible to importing modules. This is intentional — it forces you to explicitly declare your module's public API.
+Without `exports`, NO providers are visible to importing modules. This is intentional - it forces you to explicitly declare your module's public API.
 
 ## Shared Modules
 
@@ -166,9 +166,9 @@ This structure scales to hundreds of modules. Each module directory is self-cont
 
 Module resolution follows three rules:
 
-1. **Topological sort** — modules initialize in dependency order (imports first)
-2. **Circular detection** — circular dependencies between modules raise `RecursionError` at startup
-3. **Provider scope** — providers retain their original scope regardless of which module imports them
+1. **Topological sort** - modules initialize in dependency order (imports first)
+2. **Circular detection** - circular dependencies between modules raise `RecursionError` at startup
+3. **Provider scope** - providers retain their original scope regardless of which module imports them
 
 If module A imports module B, and module B imports module A, the container detects the cycle at startup:
 
@@ -180,14 +180,14 @@ RecursionError: Cycle detected for ModuleA
 
 ## Best Practices
 
-1. **One feature per module** — users, auth, billing. Not "utils".
-2. **Keep module imports shallow** — a module importing 10+ others is doing too much
-3. **Use `exports` intentionally** — only export what other modules genuinely need
-4. **Name modules after domains** — `UsersModule`, `OrdersModule`, `PaymentsModule`
-5. **Always provide a `prefix` when versioning** — `"@Module(prefix="/api/v1")`
+1. **One feature per module** - users, auth, billing. Not "utils".
+2. **Keep module imports shallow** - a module importing 10+ others is doing too much
+3. **Use `exports` intentionally** - only export what other modules genuinely need
+4. **Name modules after domains** - `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Always provide a `prefix` when versioning** - `"@Module(prefix="/api/v1")`
 
 ## Next Steps
 
-- [Guards](/docs/modular/guards) — protect module routes
-- [Middleware](/docs/modular/middleware) — request pipeline hooks
-- [Controllers](/docs/modular/controllers) — define route handlers
+- [Guards](/docs/modular/guards) - protect module routes
+- [Middleware](/docs/modular/middleware) - request pipeline hooks
+- [Controllers](/docs/modular/controllers) - define route handlers

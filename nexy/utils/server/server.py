@@ -130,7 +130,7 @@ class Server:
                     ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
                     capture_output=True,
                     timeout=timeout,
-                    check=False
+                    check=False,
                 )
             else:
                 # Unix: terminate puis kill si nécessaire
@@ -156,8 +156,15 @@ class Server:
         cfg = Config()
         run_host = host or "127.0.0.1"
 
-        # Nombre de workers auto si non spécifié (CPU count)
-        num_workers = workers or (cfg.useWorkers if hasattr(cfg, "useWorkers") else os.cpu_count())
+        # On Windows, uvicorn multi-worker mode is unreliable; default to 1 worker.
+        if workers is not None:
+            num_workers = workers
+        elif hasattr(cfg, "useWorkers") and cfg.useWorkers:
+            num_workers = cfg.useWorkers
+        elif sys.platform == "win32":
+            num_workers = 1
+        else:
+            num_workers = os.cpu_count() or 1
 
         _write_port_file("server", port)
 
@@ -208,7 +215,8 @@ class Server:
 
     @staticmethod
     def wait_for_vite_ready(
-        port: int, host: str = "localhost", timeout: int = 30, ssl: bool = False) -> bool:
+        port: int, host: str = "localhost", timeout: int = 30, ssl: bool = False
+    ) -> bool:
         """Attend que Vite soit prêt à répondre aux requêtes."""
         import urllib.request
 
@@ -229,18 +237,23 @@ class Server:
         port: int = 5173,
         build: bool = False,
         ssl: bool = False,
-        suppress_output: bool = True,
+        suppress_output: bool | None = None,
+        capture_stderr: bool = False,
     ) -> Popen[Any]:
-        """Lance le client Vite."""
+        """Launches the Vite client."""
         pm, is_npm = _detect_pm()
-        cmd = "build" if build else "dev"
 
-        args = [pm]
+        if suppress_output is None:
+            suppress_output = build
+
         if build:
-            args.append("--silent")
-        args += ["run", cmd] if is_npm else [cmd]
-
-        if not build:
+            # Run vite directly so the framework's build does not depend on a
+            # user-defined `build` script (e.g. `tsc -b && vite build`).
+            args = [pm]
+            args += ["exec", "--", "vite", "build"] if is_npm else ["exec", "vite", "build"]
+        else:
+            args = [pm]
+            args += ["run", "dev"] if is_npm else ["dev"]
             _write_port_file("client", port)
             if is_npm:
                 args.append("--")
@@ -248,7 +261,18 @@ class Server:
             if ssl:
                 args.append("--https")
 
-        stdout = subprocess.DEVNULL
-        stderr = subprocess.DEVNULL
+        if capture_stderr:
+            stderr = subprocess.PIPE
+        elif suppress_output:
+            stderr = subprocess.DEVNULL
+        else:
+            stderr = subprocess.STDOUT
+
+        if suppress_output:
+            stdout = subprocess.DEVNULL
+        elif capture_stderr:
+            stdout = subprocess.PIPE
+        else:
+            stdout = None
 
         return subprocess.Popen(args, stdout=stdout, stderr=stderr)

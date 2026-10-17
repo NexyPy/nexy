@@ -8,15 +8,15 @@ Nexy предоставляет встроенные страницы ошибо
 
 ## Пользовательские страницы ошибок
 
-Поместите файлы `error.nexy` или `notfound.nexy` в любой каталог маршрута, чтобы переопределить страницы ошибок для этой области:
+Поместите файлы `errors.nexy` или `notfound.nexy` в любой каталог маршрута, чтобы переопределить страницы ошибок для этой области:
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### Пример: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### Пример: `error.nexy`
+### Пример: `errors.nexy`
 
 ```nexy
 ---
@@ -64,13 +64,13 @@ src/routes/
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 
 ## Похожие
 
-- [Authorization / Guards](/docs/security/authorization) — защита маршрутов от несанкционированного доступа
-- [Authentication](/docs/security/authentication) — настройка промежуточного программного обеспечения аутентификации
+- [Authorization / Guards](/docs/security/authorization) - защита маршрутов от несанкционированного доступа
+- [Authentication](/docs/security/authentication) - настройка промежуточного программного обеспечения аутентификации

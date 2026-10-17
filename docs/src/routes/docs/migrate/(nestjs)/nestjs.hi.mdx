@@ -39,6 +39,6 @@ class UsersController:
 ## मुख्य अंतर
 
 - **विधि नाम HTTP क्रियाओं को परिभाषित करते हैं** - कोई `"@Get`/`"@Post`/`"@Put`/`"@Delete` डेकोरेटर नहीं
-- **सभी डेकोरेटर एक मॉड्यूल में** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **सभी डेकोरेटर एक मॉड्यूल में** - `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
 - **नहीं `"@Global`** - दायरा `Injectable(scope=Scope.SINGLETON)` के माध्यम से नियंत्रित किया जाता है
 - **गार्ड और मिडलवेयर कॉल करने योग्य हैं** - विस्तार करने के लिए कोई बेस क्लास नहीं, केवल `__call__(self, request)`

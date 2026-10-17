@@ -5,6 +5,7 @@ import {
   getAssetTags,
   saveSnippets,
   writeComponent,
+  globIgnore,
   type SSGResult,
   c,
 } from './utils'
@@ -14,7 +15,7 @@ export async function run(): Promise<SSGResult> {
   const manifest = getManifest()
   const files = glob.sync('**/*.{tsx,jsx}', {
     cwd: process.cwd(),
-    ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
+    ignore: globIgnore()
   })
 
   if (!files.length) return result
@@ -28,7 +29,7 @@ export async function run(): Promise<SSGResult> {
 
     const { css } = getAssetTags(manifest, fileName)
 
-    console.warn(`${c.yellow}⚠ client-only: ${file} — no server HTML, rendering client placeholder${c.reset}`)
+    console.warn(`${c.yellow}⚠ client-only: ${file} - no server HTML, rendering client placeholder${c.reset}`)
 
     const entryId = `${fileName}.Default`
     const finalContent = `${css}<div id="${entryId}-root"></div>`

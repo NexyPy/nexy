@@ -13,7 +13,7 @@ def GET():
     return {"x": x}
 ```
 
-Exécutez `nx dev` et suivez l'itinéraire — le terminal tombe dans `pdb`.
+Exécutez `nx dev` et suivez l'itinéraire - le terminal tombe dans `pdb`.
 
 ## VSCode
 
@@ -36,7 +36,7 @@ Exécutez `nx dev` et suivez l'itinéraire — le terminal tombe dans `pdb`.
 }
 ```
 
-3. Appuyez sur `F5` pour démarrer le débogage — les points d'arrêt fonctionnent dans les fichiers `.nexy` frontmatter et `.py`.
+3. Appuyez sur `F5` pour démarrer le débogage - les points d'arrêt fonctionnent dans les fichiers `.nexy` frontmatter et `.py`.
 
 ## Débogage de l'impression
 
@@ -61,7 +61,7 @@ def GET():
 
 ## rechargement de la vicorne
 
-`nx dev` exécute uvicorn avec `--reload` — les modifications apportées aux fichiers `.py`, `.nexy`, `.mdx` déclenchent un redémarrage automatique.
+`nx dev` exécute uvicorn avec `--reload` - les modifications apportées aux fichiers `.py`, `.nexy`, `.mdx` déclenchent un redémarrage automatique.
 
 ## Problèmes courants
 
@@ -70,4 +70,4 @@ def GET():
 | L'itinéraire renvoie 405 | Mauvaise méthode HTTP ou `python-multipart` manquant |
 | Le corps est `None` | Modèle Pydantic manquant ou annotation de type |
 | 422 Erreur de validation | Incompatibilité de type dans les paramètres de chemin/requête |
-| Module introuvable | Cache VFS obsolète — redémarrez `nx dev` |
+| Module introuvable | Cache VFS obsolète - redémarrez `nx dev` |

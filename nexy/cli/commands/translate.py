@@ -91,7 +91,7 @@ def _translate_module_sync(
     cls_list: list[type],
     source_locale: str,
 ) -> tuple[str, str, dict[str, dict[str, str]]]:
-    """Translate a single module for a target locale. Sync — runs in to_thread."""
+    """Translate a single module for a target locale. Sync - runs in to_thread."""
     from deep_translator import GoogleTranslator
 
     try:
@@ -113,7 +113,7 @@ def _translate_module_sync(
             values = list(defaults.values())
             if values:
                 translated = _translate_batch(translator, values)
-                data[class_name] = dict(zip(keys, translated))
+                data[class_name] = dict(zip(keys, translated, strict=True))
             else:
                 data[class_name] = {}
     return (target, module_name, data)

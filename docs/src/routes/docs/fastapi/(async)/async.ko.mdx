@@ -60,7 +60,7 @@ class DemoController:
 
 ## 주의사항
 
-- **`await`를 사용하여 `def` 핸들러에서 `async` 함수를 호출하지 마세요** — `asyncio.run()`를 사용하거나 핸들러를 `async def`로 만드세요.
-- **`async def`에서 차단 함수(예: `time.sleep()`, `requests.get()`)를 호출하지 마세요** — `asyncio.sleep()`, `httpx.AsyncClient`를 사용하세요.
+- **`await`를 사용하여 `def` 핸들러에서 `async` 함수를 호출하지 마세요** - `asyncio.run()`를 사용하거나 핸들러를 `async def`로 만드세요.
+- **`async def`에서 차단 함수(예: `time.sleep()`, `requests.get()`)를 호출하지 마세요** - `asyncio.sleep()`, `httpx.AsyncClient`를 사용하세요.
 - Nexy의 `nx dev`는 기본적으로 하나의 uvicorn 작업자를 실행합니다. 여기에서는 비동기 처리기가 빛납니다.
 - 프로덕션의 경우 동기화 핸들러에 여러 작업자(`nx start --workers 4`)를 사용합니다.

@@ -58,7 +58,7 @@ _toc_storage: ContextVar[str] = ContextVar("_toc_storage", default="")
 
 
 def useToc(depth_range: str = "2-6") -> str:
-    from nexy.template import _build_toc_html
+    from nexy.runtime.markdown import build_toc_html as _build_toc_html
 
     html = _toc_storage.get()
     if not html:
@@ -66,8 +66,8 @@ def useToc(depth_range: str = "2-6") -> str:
     return _build_toc_html(html, depth_range)
 
 
-PYTHON_VIEWS = (".nexy", ".mdx")
-FRONTEND_VIEWS = (".tsx", ".vue", ".svelte", ".jsx")
+PYTHON_VIEWS = (".nexy",)
+FRONTEND_VIEWS = (".tsx", ".vue", ".svelte", ".jsx", ".mdx")
 
 
 def useViews(path: str, context: dict[str, Any] | None = None) -> HTMLResponse:

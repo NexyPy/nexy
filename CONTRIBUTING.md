@@ -1,7 +1,7 @@
 # Contributing to Nexy
 
 **First time here?** Check out [good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-— curated for new contributors.
+- curated for new contributors.
 
 <p align="center">
   <a href="https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
@@ -230,10 +230,10 @@ npm run test
 
 ### Checklist
 
-- [ ] `python -m pytest tests/ -v` — tests pass
-- [ ] `ruff check nexy/` — lint passes
-- [ ] `ruff format nexy/ --check` — formatting correct
-- [ ] `python -m mypy nexy --strict` — type checks
+- [ ] `python -m pytest tests/ -v` - tests pass
+- [ ] `ruff check nexy/` - lint passes
+- [ ] `ruff format nexy/ --check` - formatting correct
+- [ ] `python -m mypy nexy --strict` - type checks
 - [ ] New tests cover my changes
 - [ ] Documentation updated (if public API change)
 - [ ] Conventional commit messages

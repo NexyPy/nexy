@@ -9,20 +9,9 @@ from nexy.frontend import FrontendGenerator
 from nexy.i18n import t
 from nexy.utils.common.console import console
 from nexy.utils.dev.pycache import pycache
-from nexy.utils.dev.watcher import create_observer
+from nexy.utils.dev.watcher import create_observer, stop_observer
 from nexy.utils.fs.vfs import VFS
 from nexy.utils.server.server import Server
-
-
-def _stop_observer(observer) -> None:
-    """Arrête proprement le watcher watchdog."""
-    if not observer:
-        return
-    try:
-        observer.stop()
-        observer.join(timeout=2)
-    except Exception as e:
-        console.print(f"  [dim]Warning: Could not stop watcher cleanly: {e}[/dim]")
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:
@@ -30,10 +19,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     config = Config()
     version = __version__
     run_host = host or config.useHost
-    if port:
-        run_port = port
-    else:
-        run_port = port or config.usePort
+    run_port = port or config.usePort
     run_port, client_port = Server.resolve_ports(run_host, run_port)
     Server.check_nexy_prod(delete=True)
 
@@ -45,27 +31,52 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     startup_start = time.perf_counter()
 
     try:
-        with console.status("\n[green]nsc[/green] » compile ...", spinner="dots"):
-            build_start = time.perf_counter()
-            VFS.set_dev_mode(True)
-            result = Builder().build(showlog=False)
-            build_elapsed = time.perf_counter() - build_start
-            build_timer = f"{build_elapsed:.2f}s"
-            console.print(
-                f"\n[green]nsc[/green] » [green]{t('dev.compiling', 'compiling')}[/green]"
-                f" in [reset][dim]{build_timer}[/dim]"
-            )
-            if result.failed:
-                for p in result.failed:
-                    console.print(f"  [red]x {p}[/red]")
+        VFS.set_dev_mode(True)
 
-        if not result.failed:
-            FrontendGenerator().generate()
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            fe_future = pool.submit(FrontendGenerator().generate)
+            build_future = pool.submit(Builder().build, showlog=False)
+
+            fe_start = time.perf_counter()
+            fe_future.result()
+            fe_elapsed = time.perf_counter() - fe_start
 
             if config.useVite:
+                vite_start = time.perf_counter()
                 vite_proc = Server.vite(port=client_port, ssl=ssl_enabled)
+
+            with console.status("\n[green]nsc[/green] » compile ...", spinner="dots"):
+                build_start = time.perf_counter()
+                result = build_future.result()
+                build_elapsed = time.perf_counter() - build_start
+                build_timer = f"{build_elapsed:.2f}s"
+                console.print(
+                    f"\n[green]nsc[/green] » [green]{t('dev.compiling', 'compiling')}[/green]"
+                    f" in [reset][dim]{build_timer}[/dim]"
+                )
+                if result.failed:
+                    for p in result.failed:
+                        err = result.errors.get(p)
+                        if err:
+                            console.print(f"  [red]x {err.format()}[/red]")
+                        else:
+                            console.print(f"  [red]x {p}[/red]")
+
+        if config.useVite:
+            if result.failed:
+                Server.stop_process(vite_proc)
+                vite_proc = None
+            else:
                 with console.status("[dim]  starting dev server...[/dim]", spinner="dots"):
-                    if not Server.wait_for_vite_ready(client_port, ssl=ssl_enabled):
+                    vite_ready = Server.wait_for_vite_ready(client_port, ssl=ssl_enabled)
+                    vite_elapsed = time.perf_counter() - vite_start
+                    console.print(
+                        f"  [dim]frontend[/dim] [dim]{fe_elapsed:.2f}s[/dim] ·"
+                        f" [dim]vite[/dim] [dim]{vite_elapsed:.2f}s[/dim]"
+                    )
+                    if not vite_ready:
                         console.print("[yellow]  warning: Vite took too long to start[/yellow]")
     except Exception as e:
         console.print(f"\n[red]{t('dev.init_error', 'Error during initialization:')}[/red] {e}")
@@ -96,9 +107,8 @@ def dev(port: int | None = None, host: str | None = None) -> None:
         network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host
 
         console.print(t("dev.banner", "nexy@{version} dev using :").format(version=version))
-        console.print(
-            f"  [dim]\u00bb\u00bb[/dim] [green]Uvicorn[/green]  {'and [green]Vite[/green]' if vite_proc else ''}"
-        )
+        vite_status = "and [green]Vite[/green]" if vite_proc else ""
+        console.print(f"  [dim]\u00bb\u00bb[/dim] [green]Uvicorn[/green]  {vite_status}")
         console.print(
             f"  [dim]\u00bb\u00bb[/dim] {t('dev.local', 'Local:')} [green]{protocol}://localhost:{run_port}[/green]"
         )
@@ -147,6 +157,6 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     finally:
         console.print("  [dim]Cleaning up...[/dim]")
         _server_instance = None
-        _stop_observer(observer)
+        stop_observer(observer)
         Server.stop_process(vite_proc)
         console.print(f"[red]nexy \u00bb {t('dev.exited', 'exited')} [reset]")

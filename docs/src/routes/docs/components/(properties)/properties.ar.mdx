@@ -23,10 +23,10 @@ active:prop[bool] = false
 
 ```nexy
 ---
-# Required — must be passed, no default
+# Required - must be passed, no default
 name:prop[str]
 
-# Optional — has a default value
+# Optional - has a default value
 name:prop[str] = "Guest"
 age:prop[int] = 0
 items:prop[list] = []
@@ -77,7 +77,7 @@ posts = [...]  # from database
 **القواعد**:
 
 - **قيم السلسلة** تستخدم `key="value"` أو `key="{{ jinja_expr }}"`
-- **التعبيرات** تستخدم `key={expr}` — بدون علامات اقتباس، ويتم تحليل القيمة على أنها Python
+- **التعبيرات** تستخدم `key={expr}` - بدون علامات اقتباس، ويتم تحليل القيمة على أنها Python
 - **القيم المنطقية**: استخدم `active=true` (أحرف صغيرة)، وليس `active=True` أو `active="true"`
 - **القوائم/الإملاءات**: `items={["a", "b"]}` أو `settings={"key": "val"}`
 
@@ -86,7 +86,7 @@ posts = [...]  # from database
 مشكلة شائعة في لغة بايثون: **لا تستخدم الإعدادات الافتراضية القابلة للتغيير** والتي تتم مشاركتها عبر المكالمات:
 
 ```python
-# BAD — in Python, this list is created once and shared
+# BAD - in Python, this list is created once and shared
 def Card(items: list = []):
     items.append("new")  # Modifies the default!
 ```
@@ -100,7 +100,7 @@ def Card(items: list = None):
         items = []
 ```
 
-لذا فإن `items:prop[list] = []` آمن للاستخدام — حيث يحصل كل استدعاء مكون على قائمته الخاصة.
+لذا فإن `items:prop[list] = []` آمن للاستخدام - حيث يحصل كل استدعاء مكون على قائمته الخاصة.
 
 ## الدعائم الديناميكية مع `{{ }}`
 

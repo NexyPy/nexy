@@ -1,4 +1,4 @@
-# Nexy — Agent Guide (Technical & Functional)
+# Nexy - Agent Guide (Technical & Functional)
 
 This document is the "Source of Truth" for AI Agents working on the Nexy framework. It details the architecture, mechanisms, and quality standards of the project.
 

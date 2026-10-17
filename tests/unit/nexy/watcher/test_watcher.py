@@ -1,9 +1,10 @@
 from pathlib import Path
 
+import asyncio
 import pytest
 from watchdog.events import FileSystemEvent
 
-from nexy.utils.dev.watcher import WatchHandler
+from nexy.utils.dev.watcher import WatchHandler, is_ignored_path, normalize_path
 from nexy.utils.fs.vfs import VFS
 
 
@@ -23,6 +24,7 @@ title = "Test"
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture
 def handler() -> WatchHandler:
     return WatchHandler()
@@ -36,60 +38,63 @@ def _make_event(src_path: str, dest_path: str | None = None) -> FileSystemEvent:
     return event
 
 
-# ── _normalize ──────────────────────────────────────────────────────────────────
+# ── normalize_path ──────────────────────────────────────────────────────────────────
+
 
 class TestNormalize:
     def test_string(self, handler):
-        assert handler._normalize("some/path/file.nexy") == "some/path/file.nexy"
+        assert normalize_path("some/path/file.nexy") == "some/path/file.nexy"
 
     def test_bytes(self, handler):
-        assert handler._normalize(b"some/path/file.nexy") == "some/path/file.nexy"
+        assert normalize_path(b"some/path/file.nexy") == "some/path/file.nexy"
 
     def test_backslashes(self, handler):
-        assert handler._normalize("src\\routes\\index.nexy") == "src/routes/index.nexy"
+        assert normalize_path("src\\routes\\index.nexy") == "src/routes/index.nexy"
 
     def test_strips_dot_slash(self, handler):
-        assert handler._normalize("./src/routes/index.nexy") == "src/routes/index.nexy"
+        assert normalize_path("./src/routes/index.nexy") == "src/routes/index.nexy"
 
     def test_strips_cwd_prefix(self, handler):
         cwd = Path.cwd().as_posix()
         abs_path = f"{cwd}/src/routes/index.nexy"
-        assert handler._normalize(abs_path) == "src/routes/index.nexy"
+        assert normalize_path(abs_path) == "src/routes/index.nexy"
 
     def test_absolute_path_on_different_drive(self, handler):
         cwd = Path.cwd()
         other_drive = "E:" if cwd.drive == "D:" else "D:"
         abs_path = f"{other_drive}/other/project/src/routes/index.nexy"
-        result = handler._normalize(abs_path)
+        result = normalize_path(abs_path)
         assert result == abs_path.replace("\\", "/").lstrip("./")
 
 
-# ── _skip ───────────────────────────────────────────────────────────────────────
+# ── is_ignored_path ───────────────────────────────────────────────────────────────────────
+
 
 class TestSkip:
     def test_skips_git(self, handler):
-        assert handler._skip(".git/config")
+        assert is_ignored_path(".git/config")
 
     def test_skips_venv(self, handler):
-        assert handler._skip("venv/bin/python")
+        assert is_ignored_path("venv/bin/python")
 
     def test_skips_pycache(self, handler):
-        assert handler._skip("__pycache__/cache.py")
+        assert is_ignored_path("__pycache__/cache.py")
 
     def test_skips_node_modules(self, handler):
-        assert handler._skip("node_modules/pkg/index.js")
+        assert is_ignored_path("node_modules/pkg/index.js")
 
     def test_skips_nexy_dir(self, handler):
-        assert handler._skip("__nexy__/generated.py")
+        assert is_ignored_path("__nexy__/generated.py")
 
     def test_allows_src_routes(self, handler):
-        assert not handler._skip("src/routes/index.nexy")
+        assert not is_ignored_path("src/routes/index.nexy")
 
     def test_allows_py_file(self, handler):
-        assert not handler._skip("src/lib/utils.py")
+        assert not is_ignored_path("src/lib/utils.py")
 
 
 # ── on_modified ─────────────────────────────────────────────────────────────────
+
 
 class TestOnModified:
     def test_compiles_nexy_and_updates_vfs(self, handler, tmp_path, monkeypatch):
@@ -161,6 +166,7 @@ class TestOnModified:
 
 # ── on_created ──────────────────────────────────────────────────────────────────
 
+
 class TestOnCreated:
     def test_compiles_new_nexy_file(self, handler, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
@@ -202,6 +208,7 @@ class TestOnCreated:
 
 # ── on_deleted ──────────────────────────────────────────────────────────────────
 
+
 class TestOnDeleted:
     def test_calls_reload_api(self, handler):
         calls = []
@@ -214,6 +221,7 @@ class TestOnDeleted:
 
 
 # ── on_moved ────────────────────────────────────────────────────────────────────
+
 
 class TestOnMoved:
     def test_creates_at_destination(self, handler, tmp_path, monkeypatch):
@@ -242,7 +250,136 @@ class TestOnMoved:
         pass  # on_deleted handles cleanup, covered above
 
 
+# ── _trigger_reload (single HMR owner) ─────────────────────────────────────────
+
+
+class TestTriggerReload:
+    @pytest.fixture(autouse=True)
+    def _capture_broadcast(self, monkeypatch):
+        from nexy.runtime.hmr import HMR_MANAGER
+
+        self.broadcast_calls: list[str] = []
+        self.reload_calls: list[int] = []
+
+        async def _fake_broadcast(path: str = ""):
+            self.broadcast_calls.append(path)
+
+        class _FakeLoop:
+            pass
+
+        monkeypatch.setattr(HMR_MANAGER, "loop", _FakeLoop())
+        monkeypatch.setattr(HMR_MANAGER, "broadcast_reload", _fake_broadcast)
+        monkeypatch.setattr(
+            "nexy.utils.dev.watcher.asyncio.run_coroutine_threadsafe",
+            lambda coro, loop: asyncio.run(coro),
+        )
+
+    def test_nexy_broadcasts(self, handler):
+        handler._trigger_reload("src/routes/index.nexy")
+        assert self.broadcast_calls == ["src/routes/index.nexy"]
+
+    def test_md_broadcasts(self, handler):
+        handler._trigger_reload("src/routes/page.md")
+        assert self.broadcast_calls == ["src/routes/page.md"]
+
+    def test_tsx_does_not_broadcast(self, handler):
+        handler._trigger_reload("src/routes/page.tsx")
+        assert self.broadcast_calls == []
+
+    def test_mdx_does_not_broadcast(self, handler):
+        handler._trigger_reload("src/routes/about.mdx")
+        assert self.broadcast_calls == []
+
+    def test_vue_does_not_broadcast(self, handler):
+        handler._trigger_reload("src/routes/app.vue")
+        assert self.broadcast_calls == []
+
+    def test_py_triggers_api_restart_not_broadcast(self, handler):
+        handler.on_reload_api = lambda: self.reload_calls.append(1)
+        handler._trigger_reload("src/routes/api.py")
+        assert self.broadcast_calls == []
+        assert self.reload_calls == [1]
+
+
+class TestHmrDebugTiming:
+    def test_logs_timing_when_debug_enabled(self, handler, monkeypatch):
+        monkeypatch.setenv("NEXY_HMR_DEBUG", "1")
+        logged = []
+        monkeypatch.setattr(
+            "nexy.utils.dev.watcher.console.print",
+            lambda msg: logged.append(str(msg)),
+        )
+        handler._log_hmr_timing("src/routes/index.nexy", 0.0)
+        assert len(logged) == 1
+        assert "hmr" in logged[0]
+
+    def test_silent_when_debug_disabled(self, handler, monkeypatch):
+        monkeypatch.delenv("NEXY_HMR_DEBUG", raising=False)
+        logged = []
+        monkeypatch.setattr(
+            "nexy.utils.dev.watcher.console.print",
+            lambda msg: logged.append(str(msg)),
+        )
+        handler._log_hmr_timing("src/routes/index.nexy", 0.0)
+        assert logged == []
+
+    def test_silent_without_start_time(self, handler, monkeypatch):
+        monkeypatch.setenv("NEXY_HMR_DEBUG", "1")
+        logged = []
+        monkeypatch.setattr(
+            "nexy.utils.dev.watcher.console.print",
+            lambda msg: logged.append(str(msg)),
+        )
+        handler._log_hmr_timing("src/routes/index.nexy", None)
+        assert logged == []
+
+
+# ── module purge ────────────────────────────────────────────────────────────────
+
+
+class _FakeSys:
+    def __init__(self, modules: dict):
+        self.modules = modules
+
+
+class TestModulePurge:
+    def test_purge_removes_route_module(self, handler, monkeypatch):
+        fake_sys = _FakeSys({"__nexy__.src.routes.index": object()})
+        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        handler._purge_route_modules("src/routes/index.nexy")
+        assert "__nexy__.src.routes.index" not in fake_sys.modules
+
+    def test_purge_removes_markdown_module(self, handler, monkeypatch):
+        fake_sys = _FakeSys({"__nexy__.src.routes.hello": object()})
+        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        handler._purge_route_modules("src/routes/hello.md")
+        assert "__nexy__.src.routes.hello" not in fake_sys.modules
+
+    def test_purge_ignores_frontend_file(self, handler, monkeypatch):
+        fake_sys = _FakeSys({"__nexy__.src.routes.app": object()})
+        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        handler._purge_route_modules("src/routes/app.tsx")
+        assert "__nexy__.src.routes.app" in fake_sys.modules
+
+    def test_purge_removes_parent_packages(self, handler, monkeypatch):
+        fake_sys = _FakeSys(
+            {
+                "__nexy__": object(),
+                "__nexy__.src": object(),
+                "__nexy__.src.routes": object(),
+                "__nexy__.src.routes.index": object(),
+            }
+        )
+        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        handler._purge_route_modules("src/routes/index.nexy")
+        assert "__nexy__" in fake_sys.modules
+        assert "__nexy__.src" in fake_sys.modules
+        assert "__nexy__.src.routes" in fake_sys.modules
+        assert "__nexy__.src.routes.index" not in fake_sys.modules
+
+
 # ── Edge cases ──────────────────────────────────────────────────────────────────
+
 
 class TestEdgeCases:
     def test_directory_events_ignored(self, handler):

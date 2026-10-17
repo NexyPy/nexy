@@ -134,9 +134,9 @@ class RoomController:
 
 | Evento | ¿Qué pasa?
 |-------|-------------|
-| El cliente se conecta | `websocket.accept()` — debe llamarse primero |
+| El cliente se conecta | `websocket.accept()` - debe llamarse primero |
 | Mensaje recibido | `receive_text()` / `receive_json()` / `receive_bytes()` |
-| El cliente se desconecta | `WebSocketDisconnect` levantado — limpiar en `except` |
+| El cliente se desconecta | `WebSocketDisconnect` levantado - limpiar en `except` |
 | El servidor se cierra | `await websocket.close(code=1000)` |
 
 ---
@@ -153,7 +153,7 @@ ws.send("Hello from the client!");
 
 ## Ver también
 
-- [Controllers](/docs/modular/controllers) — controladores de ruta en Modular
-- [Providers & DI](/docs/modular/providers) — servicios inyectables
+- [Controllers](/docs/modular/controllers) - controladores de ruta en Modular
+- [Providers & DI](/docs/modular/providers) - servicios inyectables
 - [Guards](/docs/modular/guards): protege los puntos finales de WebSocket
-- [WebSocket Guide](/docs/guides/websocket) — descripción general conceptual
+- [WebSocket Guide](/docs/guides/websocket) - descripción general conceptual

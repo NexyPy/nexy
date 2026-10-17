@@ -262,14 +262,14 @@ class UsersModule:
 
 ## ベストプラクティス
 
-1. **コントローラーごとに 1 つのリソース** — `UsersController`、`PostsController`。 `ApiController` は 1 つもありません。
-2. **メソッドに焦点を当て続ける** — 各メソッドは 1 つのことを行います。
-3. **依存関係の挿入を使用する** — メソッド本体でサービスをインスタンス化しないでください。
-4. **リクエストボディには Pydantic を優先します** — `body: dict` はコードの臭いです。
-5. **コントローラーに意味のある接頭辞を付けます** — `/users`、`/posts`、`/auth`。
+1. **コントローラーごとに 1 つのリソース** - `UsersController`、`PostsController`。 `ApiController` は 1 つもありません。
+2. **メソッドに焦点を当て続ける** - 各メソッドは 1 つのことを行います。
+3. **依存関係の挿入を使用する** - メソッド本体でサービスをインスタンス化しないでください。
+4. **リクエストボディには Pydantic を優先します** - `body: dict` はコードの臭いです。
+5. **コントローラーに意味のある接頭辞を付けます** - `/users`、`/posts`、`/auth`。
 
 ## 次のステップ
 
-- [Providers & DI](/docs/modular/providers) — コントローラーにサービスを挿入します
-- [Modules](/docs/modular/modules) — コントローラーを機能モジュールに編成します
-- [Guards](/docs/modular/guards) — 承認によりルートを保護します
+- [Providers & DI](/docs/modular/providers) - コントローラーにサービスを挿入します
+- [Modules](/docs/modular/modules) - コントローラーを機能モジュールに編成します
+- [Guards](/docs/modular/guards) - 承認によりルートを保護します

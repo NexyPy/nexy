@@ -8,15 +8,15 @@ Nexy は、組み込みの 404 および 500 エラー ページを提供しま�
 
 ## カスタム エラー ページ
 
-`error.nexy` または `notfound.nexy` ファイルを任意のルート ディレクトリに配置して、そのスコープのエラー ページをオーバーライドします。
+`errors.nexy` または `notfound.nexy` ファイルを任意のルート ディレクトリに配置して、そのスコープのエラー ページをオーバーライドします。
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### 例: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### 例: `error.nexy`
+### 例: `errors.nexy`
 
 ```nexy
 ---
@@ -64,13 +64,13 @@ src/routes/
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 
 ## 関連
 
 - [Authorization / Guards](/docs/security/authorization) - ルートを不正アクセスから保護します
-- [Authentication](/docs/security/authentication) — 認証ミドルウェアの構成
+- [Authentication](/docs/security/authentication) - 認証ミドルウェアの構成

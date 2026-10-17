@@ -2,7 +2,7 @@
 
 中间件在请求到达控制器之前拦截请求（并在请求之后响应）。使用它来解决适用于许多路由的横切问题：日志记录、计时、CORS、压缩、标头操作。
 
-与守卫一样，Nexy 中的中间件是 **FastAPI 依赖项** — 可以修改请求/响应或中止请求的可调用项。
+与守卫一样，Nexy 中的中间件是 **FastAPI 依赖项** - 可以修改请求/响应或中止请求的可调用项。
 
 ## 为什么是中间件？
 
@@ -179,14 +179,14 @@ class ErrorHandlerMiddleware:
 
 ## 最佳实践
 
-1. **每个中间件一个问题** — 日志记录、计时、CORS。没有一个“大型中间件”。
+1. **每个中间件一个问题** - 日志记录、计时、CORS。没有一个“大型中间件”。
 2. **保持中间件快速** - 中间件阻止请求。昂贵的操作属于处理程序。
-3. **使用 `request.state` 传递数据** — 这是在中间件、防护程序和处理程序之间共享数据的标准方法。
+3. **使用 `request.state` 传递数据** - 这是在中间件、防护程序和处理程序之间共享数据的标准方法。
 4. **首选警卫进行身份验证** - 概念上比访问控制中间件更清晰。
-5. **隔离测试中间件** — 创建一个模拟 `Request`，调用中间件，断言副作用。
+5. **隔离测试中间件** - 创建一个模拟 `Request`，调用中间件，断言副作用。
 
 ## 后续步骤
 
-- [Guards](/docs/modular/guards) — 身份验证和授权
-- [Controllers](/docs/modular/controllers) — 定义路由处理程序
-- [Modules](/docs/modular/modules) — 组织成功能模块
+- [Guards](/docs/modular/guards) - 身份验证和授权
+- [Controllers](/docs/modular/controllers) - 定义路由处理程序
+- [Modules](/docs/modular/modules) - 组织成功能模块

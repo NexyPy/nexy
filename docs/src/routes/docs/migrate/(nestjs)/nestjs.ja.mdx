@@ -38,7 +38,7 @@ class UsersController:
 ```
 ## 主な違い
 
-- **メソッド名は HTTP 動詞を定義します** — `"@Get`/`"@Post`/`"@Put`/`"@Delete` デコレータはありません
-- **1 つのモジュール内のすべてのデコレータ** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
-- **いいえ `"@Global`** — スコープは `Injectable(scope=Scope.SINGLETON)` 経由で処理されます
-- **ガードとミドルウェアは呼び出し可能です** — 拡張する基本クラスはなく、`__call__(self, request)` だけです
+- **メソッド名は HTTP 動詞を定義します** - `"@Get`/`"@Post`/`"@Put`/`"@Delete` デコレータはありません
+- **1 つのモジュール内のすべてのデコレータ** - `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **いいえ `"@Global`** - スコープは `Injectable(scope=Scope.SINGLETON)` 経由で処理されます
+- **ガードとミドルウェアは呼び出し可能です** - 拡張する基本クラスはなく、`__call__(self, request)` だけです

@@ -61,6 +61,6 @@ Para un trabajo instantáneo después de la respuesta, utilice `BackgroundTasks`
 ## Advertencias
 
 - **No** llame a `async` funciones desde `def` controladores con `await`: use `asyncio.run()` o haga que el controlador sea `async def`
-- **No** llamar a funciones de bloqueo (como `time.sleep()`, `requests.get()`) desde `async def` — use `asyncio.sleep()`, `httpx.AsyncClient`
+- **No** llamar a funciones de bloqueo (como `time.sleep()`, `requests.get()`) desde `async def` - use `asyncio.sleep()`, `httpx.AsyncClient`
 - `nx dev` de Nexy ejecuta un trabajador uvicorn de forma predeterminada: los controladores asíncronos brillan aquí
 - Para producción, utilice varios trabajadores (`nx start --workers 4`) para los controladores de sincronización.

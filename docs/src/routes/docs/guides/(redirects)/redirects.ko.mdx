@@ -28,7 +28,7 @@ class AdminController:
 from fastapi.responses import RedirectResponse
 
 def GET():
-    # 301 — Permanent (tells browsers to cache)
+    # 301 - Permanent (tells browsers to cache)
     return RedirectResponse("/new-page", status_code=301)
 ---
 ```
@@ -67,7 +67,7 @@ class DashboardController:
 
 | 코드 | 이름 | 사용 사례 |
 |------|------|----------|
-| 301 | 영구 이전 | 영구 URL 변경 — 브라우저가 이를 캐시합니다 |
+| 301 | 영구 이전 | 영구 URL 변경 - 브라우저가 이를 캐시합니다 |
 | 302 | 발견됨(기본값) | 임시 리디렉션 |
 | 307 | 임시 리디렉션 | 302와 비슷하지만 HTTP 메서드를 유지합니다 |
 | 308 | 영구 리디렉션 | 301과 비슷하지만 HTTP 메서드를 유지합니다 |

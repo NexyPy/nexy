@@ -1,6 +1,6 @@
 # 从 NestJS 迁移到 Nexy
 
-Nexy 的模块化路由器受到 NestJS 的启发——装饰器、DI、模块、防护装置、中间件。这些概念几乎是一对一地传递的。
+Nexy 的模块化路由器受到 NestJS 的启发--装饰器、DI、模块、防护装置、中间件。这些概念几乎是一对一地传递的。
 
 ## 概念图
 
@@ -38,7 +38,7 @@ class UsersController:
 ```
 ## 主要区别
 
-- **方法名称定义 HTTP 动词** — 无 `"@Get`/`"@Post`/`"@Put`/`"@Delete` 装饰器
-- **一个模块中的所有装饰器** — `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
-- **没有 `"@Global`** — 范围通过 `Injectable(scope=Scope.SINGLETON)` 处理
-- **守卫和中间件是可调用的** — 无需扩展基类，只需 `__call__(self, request)`
+- **方法名称定义 HTTP 动词** - 无 `"@Get`/`"@Post`/`"@Put`/`"@Delete` 装饰器
+- **一个模块中的所有装饰器** - `from nexy.decorators import Controller, Module, Injectable, UseGuard, Middleware`
+- **没有 `"@Global`** - 范围通过 `Injectable(scope=Scope.SINGLETON)` 处理
+- **守卫和中间件是可调用的** - 无需扩展基类，只需 `__call__(self, request)`

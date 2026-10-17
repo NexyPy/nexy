@@ -101,7 +101,7 @@ function tokenizeTemplateLine(
   builder: SemanticTokensBuilder, map: Map<string, number>,
   lineIdx: number, line: string,
 ): void {
-  // PascalCase component tags — <Button> (handled by semantic, TextMate only knows lowercase)
+  // PascalCase component tags - <Button> (handled by semantic, TextMate only knows lowercase)
   let m: RegExpExecArray | null;
   const compRe = /<([A-Z][A-Za-z0-9_]*)/g;
   while ((m = compRe.exec(line))) {
@@ -110,13 +110,13 @@ function tokenizeTemplateLine(
     pushTok(builder, map, lineIdx, m.index + 1, name.length, tokenType);
   }
 
-  // Jinja2 {{ }} — expression variables
+  // Jinja2 {{ }} - expression variables
   const jinjaExprRe = /\{\{\s*([A-Za-z_][A-Za-z0-9_.]*)/g;
   while ((m = jinjaExprRe.exec(line))) {
     pushTok(builder, map, lineIdx, m.index + 2, m[1].length, "variable");
   }
 
-  // Jinja2 {% %} — block keywords
+  // Jinja2 {% %} - block keywords
   const jinjaBlockRe = /\{%[-]?\s*(if|elif|else|endif|for|endfor|block|endblock|macro|endmacro|call|endcall|filter|endfilter|set|with|endwith|raw|endraw|extends|include|import|from)\b/g;
   while ((m = jinjaBlockRe.exec(line))) {
     pushTok(builder, map, lineIdx, m.index + 2, m[1].length, "keyword");
@@ -128,7 +128,7 @@ function tokenizeTemplateLine(
     pushTok(builder, map, lineIdx, m.index + 1, m[1].length, "macro");
   }
 
-  // Jinja2 {# #} — comments kept as-is by grammar, mark the delimiters
+  // Jinja2 {# #} - comments kept as-is by grammar, mark the delimiters
   const commentRe = /\{#|#\}/g;
   while ((m = commentRe.exec(line))) {
     pushTok(builder, map, lineIdx, m.index, m[0].length, "comment");

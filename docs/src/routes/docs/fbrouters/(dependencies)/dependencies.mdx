@@ -26,7 +26,7 @@ def require_auth(request: Request):
 
 dependencies = [get_db, require_auth]
 ```
-Only items listed in `dependencies` are applied — bare functions are ignored.
+Only items listed in `dependencies` are applied - bare functions are ignored.
 
 ---
 
@@ -47,7 +47,7 @@ Child `dependencies.py` files **do not override** parents. All lists are combine
 
 ## Using in a page
 
-In `.nexy` pages, dependencies run automatically before the render — you don't need to import or call them:
+In `.nexy` pages, dependencies run automatically before the render - you don't need to import or call them:
 ```nexy
 ---
 ---
@@ -55,7 +55,7 @@ In `.nexy` pages, dependencies run automatically before the render — you don't
 ```
 The resolved values are **not** available as template variables. Dependencies run for side effects (auth checks, logging, DB connection setup).
 
-For `.py` handlers, dependencies run as side effects — their return values are **not** injected into the handler. To access a dependency's value, add `Depends()` in the function signature:
+For `.py` handlers, dependencies run as side effects - their return values are **not** injected into the handler. To access a dependency's value, add `Depends()` in the function signature:
 ```python
 # src/routes/dashboard/users.py
 from fastapi import Depends

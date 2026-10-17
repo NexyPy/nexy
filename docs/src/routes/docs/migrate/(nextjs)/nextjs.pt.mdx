@@ -34,16 +34,16 @@ user = db.user.find_unique(id)
 
 ## Etapas de migração
 
-1. **Andaime** — `nx new my-app`
-2. **Páginas de porta** — `page.tsx` → arquivos `.nexy` ou `.mdx`
-3. **Layouts de portas** — `layout.tsx` → `layout.nexy`
-4. **Rotas de API de porta** — `route.ts` → `.py` arquivos com `get()`, `post()`, etc.
-5. **Ações do servidor de porta** — Ações do servidor → `"@Action` decorador
+1. **Andaime** - `nx new my-app`
+2. **Páginas de porta** - `page.tsx` → arquivos `.nexy` ou `.mdx`
+3. **Layouts de portas** - `layout.tsx` → `layout.nexy`
+4. **Rotas de API de porta** - `route.ts` → `.py` arquivos com `get()`, `post()`, etc.
+5. **Ações do servidor de porta** - Ações do servidor → `"@Action` decorador
 
 ## Principais diferenças
 
-- **Python no servidor** — não é necessário JavaScript/TypeScript
-- **Nenhuma etapa de construção para páginas** — `.nexy` arquivos são compilados em tempo de desenvolvimento
-- **Múltiplas estruturas de front-end** — React, Vue, Svelte, Solid, Preact
-- **FastAPI nos bastidores** — assíncrono, OpenAPI, tipo seguro
-- **Duas estratégias de roteamento** — baseado em arquivo (como Next.js Pages) ou modular (como NestJS)
+- **Python no servidor** - não é necessário JavaScript/TypeScript
+- **Nenhuma etapa de construção para páginas** - `.nexy` arquivos são compilados em tempo de desenvolvimento
+- **Múltiplas estruturas de front-end** - React, Vue, Svelte, Solid, Preact
+- **FastAPI nos bastidores** - assíncrono, OpenAPI, tipo seguro
+- **Duas estratégias de roteamento** - baseado em arquivo (como Next.js Pages) ou modular (como NestJS)

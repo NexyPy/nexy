@@ -8,15 +8,15 @@ When a page is not found (404) or an unhandled error occurs (500), Nexy returns 
 
 ## Custom error pages
 
-Place `error.nexy` or `notfound.nexy` files in any route directory to override error pages for that scope:
+Place `errors.nexy` or `notfound.nexy` files in any route directory to override error pages for that scope:
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy     # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy         # Global custom 500
 ```
 
 ### Example: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### Example: `error.nexy`
+### Example: `errors.nexy`
 
 ```nexy
 ---
@@ -57,6 +57,25 @@ src/routes/
 </main>
 ```
 
+## Loading states
+
+Place a `loading.nexy` file in any route directory to declare the loading state for that scope. The loader is not routable itself - it wraps the rendered page output:
+
+```
+src/routes/
++-- admin/
+|   +-- loading.nexy     # Loading state for /admin/*
++-- loading.nexy         # Global loading state
+```
+
+```nexy
+---
+---
+<div class="flex min-h-screen items-center justify-center">
+  <p class="text-sm text-gray-500">Loading…</p>
+</div>
+```
+
 ## Scoped error pages
 
 Error pages placed in subdirectories only apply to routes within that directory. This lets you have different error pages for different sections of your site:
@@ -64,13 +83,13 @@ Error pages placed in subdirectories only apply to routes within that directory.
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 
 ## Related
 
-- [Authorization / Guards](/docs/security/authorization) — protecting routes from unauthorized access
-- [Authentication](/docs/security/authentication) — configuring auth middleware
+- [Authorization / Guards](/docs/security/authorization) - protecting routes from unauthorized access
+- [Authentication](/docs/security/authentication) - configuring auth middleware

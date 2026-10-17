@@ -11,4 +11,5 @@ def test_version_not_empty() -> None:
 
 def test_version_matches_semver() -> None:
     import re
+
     assert re.match(r"^\d+\.\d+\.\d+", __version__)

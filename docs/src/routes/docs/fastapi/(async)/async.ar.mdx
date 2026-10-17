@@ -60,7 +60,7 @@ class DemoController:
 
 ##محاذير
 
-- **لا** تستدعي وظائف `async` من معالجات `def` مع `await` — استخدم `asyncio.run()` أو اجعل المعالج `async def`
-- **لا** تتصل بوظائف الحظر (مثل `time.sleep()`، `requests.get()`) من `async def` — استخدم `asyncio.sleep()`، `httpx.AsyncClient`
+- **لا** تستدعي وظائف `async` من معالجات `def` مع `await` - استخدم `asyncio.run()` أو اجعل المعالج `async def`
+- **لا** تتصل بوظائف الحظر (مثل `time.sleep()`، `requests.get()`) من `async def` - استخدم `asyncio.sleep()`، `httpx.AsyncClient`
 - يقوم `nx dev` الخاص بـ Nexy بتشغيل عامل uvicorn واحدًا افتراضيًا - تتألق المعالجات غير المتزامنة هنا
 - بالنسبة للإنتاج، استخدم عدة عاملين (`nx start --workers 4`) لمعالجات المزامنة

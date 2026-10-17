@@ -57,9 +57,35 @@ def Vite() -> str:
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const ws = new WebSocket(`${protocol}//${host}/_nexy/hmr`);
 
+            function nexyErrorOverlay(errors) {
+                let overlay = document.getElementById('nexy-error-overlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'nexy-error-overlay';
+                    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;'
+                        + 'background:rgba(20,20,30,.92);color:#f87171;'
+                        + 'font:14px/1.5 monospace;padding:2rem;overflow:auto;';
+                    document.body.appendChild(overlay);
+                }
+                const lines = errors.map((e) => {
+                    const file = e.file || '(unknown)';
+                    const msg = e.message || 'Unknown error';
+                    return `<h3 style="margin:0 0 .5rem">${file}</h3>`
+                        + `<pre style="margin:0 0 1.5rem;white-space:pre-wrap">${msg}</pre>`;
+                }).join('');
+                overlay.innerHTML = `<h2 style="margin:0 0 1rem;color:#fbbf24">`
+                    + 'Nexy compile error</h2>'
+                    + lines;
+            }
+
             ws.onmessage = async (event) => {
                 const data = JSON.parse(event.data);
+                if (data.type === 'nexy:error') {
+                    nexyErrorOverlay(data.errors || []);
+                    return;
+                }
                 if (data.type === 'nexy:reload') {
+                    const t0 = performance.now();
                     console.log(`[Nexy HMR] Reloading due to change in: ${data.path}`);
 
                     try {
@@ -81,7 +107,7 @@ def Vite() -> str:
                             oldScript.parentNode.replaceChild(newScript, oldScript);
                         });
 
-                        console.log("[Nexy HMR] DOM updated successfully.");
+                        console.log(`[Nexy HMR] DOM updated successfully in ${(performance.now() - t0).toFixed(1)}ms.`);
                     } catch (err) {
                         console.warn("[Nexy HMR] Partial reload failed, falling back to full reload.", err);
                         window.location.reload();

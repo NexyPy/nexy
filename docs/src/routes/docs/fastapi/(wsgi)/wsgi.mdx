@@ -44,12 +44,12 @@ app.mount("/django", WSGIMiddleware(django_app))
 ## How it works
 
 - `WSGIMiddleware` wraps any WSGI callable as ASGI
-- The sub-application runs in a thread pool — it doesn't block the event loop
+- The sub-application runs in a thread pool - it doesn't block the event loop
 - Path prefix (`/legacy`, `/django`) is stripped before reaching the WSGI app
-- Nexy middleware (auth, session, CORS) does **not** apply to the mounted WSGI app — configure it there separately
+- Nexy middleware (auth, session, CORS) does **not** apply to the mounted WSGI app - configure it there separately
 
 ## Limitations
 
-- Request/response cycle only — WebSocket not supported
+- Request/response cycle only - WebSocket not supported
 - WSGI apps can't use Nexy hooks or dependencies
-- Performance is limited by the thread pool — consider migrating to native Nexy routes
+- Performance is limited by the thread pool - consider migrating to native Nexy routes

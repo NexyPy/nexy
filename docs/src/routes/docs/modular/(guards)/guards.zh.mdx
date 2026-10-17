@@ -1,6 +1,6 @@
 # 守卫
 
-守卫确定请求是否应该到达路由处理程序。它们**在控制器方法之前**执行——非常适合身份验证、授权、速率限制和访问控制。
+守卫确定请求是否应该到达路由处理程序。它们**在控制器方法之前**执行--非常适合身份验证、授权、速率限制和访问控制。
 
 Nexy 的守卫是 **FastAPI 依赖项**。它们是可调用对象（具有 `__call__` 的类或独立函数），接收请求并传递或引发 HTTPException。
 
@@ -58,11 +58,11 @@ class AuthGuard:
 
 警卫提出 `HTTPException` 以阻止该请求。如果正常返回，则请求继续。
 
-**陷阱**：`__call__` 可以是同步的，也可以是异步的——路由器处理两者。当您的守卫需要调用数据库或外部 API 时，请使用异步。
+**陷阱**：`__call__` 可以是同步的，也可以是异步的--路由器处理两者。当您的守卫需要调用数据库或外部 API 时，请使用异步。
 
 ## 应用守卫
 
-### 控制器级 — 保护所有路由
+### 控制器级 - 保护所有路由
 
 ```python
 from nexy.decorators import Controller, UseGuard
@@ -77,7 +77,7 @@ class AdminController:
         return None
 ```
 
-### 方法级 — 保护特定路由
+### 方法级 - 保护特定路由
 
 ```python
 "@Controller("/users")
@@ -91,7 +91,7 @@ class UsersController:
         return {"message": "No auth required"}
 ```
 
-### 多个守卫——所有人都必须通过
+### 多个守卫--所有人都必须通过
 
 ```python
 "@Controller("/admin")
@@ -180,14 +180,14 @@ class UsersController:
 
 ## 最佳实践
 
-1. **每个关注点一名警卫** — `AuthGuard`、`RoleGuard`、`RateLimitGuard`。不是 `SecurityGuard` 能做所有事情。
-2. **使用描述性状态代码** — 401 表示缺少/无效身份验证，403 表示权限不足，429 表示速率限制。
+1. **每个关注点一名警卫** - `AuthGuard`、`RoleGuard`、`RateLimitGuard`。不是 `SecurityGuard` 能做所有事情。
+2. **使用描述性状态代码** - 401 表示缺少/无效身份验证，403 表示权限不足，429 表示速率限制。
 3. **避免副作用** - 守卫应该检查权限，而不是修改状态（`request.state` 除外）。
 4. **缓存昂贵的检查** - 具有内存缓存的单例保护实例。
-5. **隔离测试守卫** — 创建一个模拟 `Request`，调用守卫，断言它引发或通过。
+5. **隔离测试守卫** - 创建一个模拟 `Request`，调用守卫，断言它引发或通过。
 
 ## 后续步骤
 
-- [Middleware](/docs/modular/middleware) — 请求管道挂钩
-- [Controllers](/docs/modular/controllers) — 定义路由处理程序
-- [Modules](/docs/modular/modules) — 组织成功能模块
+- [Middleware](/docs/modular/middleware) - 请求管道挂钩
+- [Controllers](/docs/modular/controllers) - 定义路由处理程序
+- [Modules](/docs/modular/modules) - 组织成功能模块

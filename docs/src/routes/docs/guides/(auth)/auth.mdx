@@ -4,7 +4,7 @@ This guide builds login, logout, and a protected dashboard from scratch using se
 
 ## 1. Enable session middleware
 
-In `nexyconfig.py`, enable `useSession` — Starlette's signed cookie sessions:
+In `nexyconfig.py`, enable `useSession` - Starlette's signed cookie sessions:
 
 ```python
 class NexyConfig(NexyConfigModel):
@@ -64,7 +64,7 @@ def POST(username: str, password: str):
 
 ## 4. Protected dashboard
 
-Protect the dashboard with a guard — returns `{"user": ...}` if authenticated, 401 otherwise:
+Protect the dashboard with a guard - returns `{"user": ...}` if authenticated, 401 otherwise:
 
 ```nexy
 # src/routes/dashboard.nexy
@@ -123,7 +123,7 @@ See [useSession hook](/docs/hooks/useSession).
 
 ## What's next?
 
-- [Authentication reference](/docs/security/authentication) — auth backends, JWT, OAuth
-- [Authorization / Guards](/docs/security/authorization) — custom guards, scopes
-- [JWT](/docs/security/jwt) — token-based auth
+- [Authentication reference](/docs/security/authentication) - auth backends, JWT, OAuth
+- [Authorization / Guards](/docs/security/authorization) - custom guards, scopes
+- [JWT](/docs/security/jwt) - token-based auth
 - [Session config](/docs/config/session)

@@ -66,7 +66,7 @@ class NexyConfig(NexyConfigModel):
 
 ## Bonnes pratiques de production
 
-- Ne commettez jamais `.env` dans git — ajoutez à `.gitignore`
+- Ne commettez jamais `.env` dans git - ajoutez à `.gitignore`
 - Utilisez le gestionnaire de secrets de votre fournisseur de cloud ou les secrets CI/CD pour la production
 - Préfixez vos variables d'environnement (par exemple, `NEXY_`, `APP_`) pour éviter les collisions
 - Utiliser `pydantic-settings` pour la validation et la coercition de type

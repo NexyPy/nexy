@@ -2,7 +2,7 @@
 
 **Nexy**(`nek:si`로 발음)는 **FastAPI** 및 **Starlette**를 기반으로 구축된 전체 스택 Python 웹 프레임워크입니다. Next.js 및 NestJS와 같은 최신 프레임워크의 개발자 경험을 Python에 제공합니다.
 
-이름의 유래: **N**ew **Ex**perience for P**y**thon — Python으로 웹 애플리케이션을 구축하는 새로운 접근 방식입니다.
+이름의 유래: **N**ew **Ex**perience for P**y**thon - Python으로 웹 애플리케이션을 구축하는 새로운 접근 방식입니다.
 
 > 넥시는 바퀴를 재발명하지 않습니다. FastAPI의 성능을 유지하면서 Python 웹 개발을 근본적으로 단순화합니다.
 
@@ -92,7 +92,7 @@ def GET(request: Request, db=Depends(get_db)):
     return db.query(User).all()
 ```
 
-**동일하게 유지되는 사항:** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` — 모두 출처 `fastapi`.
+**동일하게 유지되는 사항:** `Request`, `Depends`, `HTTPException`, `BaseModel`, `JSONResponse`, `HTMLResponse`, `RedirectResponse`, `WebSocket`, `UploadFile`, `Form`, `Header`, `Cookie`, `Query`, `status` - 모두 출처 `fastapi`.
 
 **Nexy가 추가하는 내용:** `.nexy`/`.mdx` 파일 → FastAPI 경로로 컴파일됨, `"@Action` → 자동 생성된 POST 경로, `"@Controller`/`"@Module` → FastAPI `APIRouter` 빌더, 후크 → FastAPI의 `Request` 위에 요청 범위 헬퍼.
 
@@ -102,11 +102,11 @@ Nexy는 FastAPI이기 때문에 모든 경로는 `/docs`(Swagger UI) 및 `/redoc
 
 ## 왜 넥시인가?
 
-- **FastAPI 내부** — 비동기, 자동 OpenAPI 문서, 유형 안전, 전투 테스트 완료
-- **구성 요소 기반 UI** — Python + Jinja2 템플릿을 사용하여 구성 요소를 작성하거나 React/Vue/Svelte/Solid/Preact를 사용합니다.
-- **파일 기반 및 모듈식 라우팅** — 프로젝트에 적합한 도구 선택
-- **상용구 없음** — 수동 경로 등록이 없고 연결할 구성 파일이 없습니다.
-- **내장 i18n, HMR, 미들웨어, 가드** — 첫날부터 생산 가능
+- **FastAPI 내부** - 비동기, 자동 OpenAPI 문서, 유형 안전, 전투 테스트 완료
+- **구성 요소 기반 UI** - Python + Jinja2 템플릿을 사용하여 구성 요소를 작성하거나 React/Vue/Svelte/Solid/Preact를 사용합니다.
+- **파일 기반 및 모듈식 라우팅** - 프로젝트에 적합한 도구 선택
+- **상용구 없음** - 수동 경로 등록이 없고 연결할 구성 파일이 없습니다.
+- **내장 i18n, HMR, 미들웨어, 가드** - 첫날부터 생산 가능
 
 ---
 

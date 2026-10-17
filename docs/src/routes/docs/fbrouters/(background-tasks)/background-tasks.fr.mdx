@@ -49,8 +49,8 @@ def GET(tasks: BackgroundTasks):
 
 ##Important
 
-- Les tâches s'exécutent **après** l'envoi de la réponse — le client n'attend pas
+- Les tâches s'exécutent **après** l'envoi de la réponse - le client n'attend pas
 - Ils s'exécutent dans le même processus : les tâches longues bloquent la boucle d'événements
 - Pour les travaux lourds, utilisez une file d'attente de tâches (Céleri, ARQ, RQ, etc.)
-- Les erreurs dans les tâches sont avalées silencieusement — ajoutez try/sauf dans la fonction de tâche
-- Les tâches reçoivent des **copies** d'objets mutables — les mutations n'affecteront pas la réponse
+- Les erreurs dans les tâches sont avalées silencieusement - ajoutez try/sauf dans la fonction de tâche
+- Les tâches reçoivent des **copies** d'objets mutables - les mutations n'affecteront pas la réponse

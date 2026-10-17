@@ -45,7 +45,7 @@ class UsersController:
 | `head`、`HEAD`、`Head` |头|仅响应标头 |
 | `SOCKET`、`socket`、`Socket` | WebSocket |实时沟通|
 
-**约定**：使用大写字母表示读取操作 (`GET`)，使用小写字母表示突变 (`post`、`put`、`delete`)。这使得控制器更容易扫描——您可以一目了然地看到 HTTP 动词。
+**约定**：使用大写字母表示读取操作 (`GET`)，使用小写字母表示突变 (`post`、`put`、`delete`)。这使得控制器更容易扫描--您可以一目了然地看到 HTTP 动词。
 
 ## 路径参数
 
@@ -61,7 +61,7 @@ class UserDetailController:
         return {"deleted": id}
 ```
 
-路径参数是 **类型强制** — 路由器读取类型提示并从 URL 转换字符串。支持的类型：`int`、`float`、`str`、`uuid.UUID`、`datetime.datetime`。
+路径参数是 **类型强制** - 路由器读取类型提示并从 URL 转换字符串。支持的类型：`int`、`float`、`str`、`uuid.UUID`、`datetime.datetime`。
 
 **陷阱**：如果强制转换失败（例如，`GET /users/abc` 其中 `id: int`），路由器将返回 422 验证错误，而不是 404。这告诉客户端参数格式错误，而不是资源不存在。
 
@@ -237,7 +237,7 @@ class UserDetailController:
         return None           # DELETE /users/42
 ```
 
-两个控制器可以位于同一模块中。这种分离是有意为之的——每个控制器处理一个资源路径。
+两个控制器可以位于同一模块中。这种分离是有意为之的--每个控制器处理一个资源路径。
 
 ## 模块集成
 
@@ -262,14 +262,14 @@ class UsersModule:
 
 ## 最佳实践
 
-1. **每个控制器一个资源** — `UsersController`、`PostsController`。一个`ApiController`都没有。
+1. **每个控制器一个资源** - `UsersController`、`PostsController`。一个`ApiController`都没有。
 2. **保持方法的重点** - 每个方法只做一件事。
-3. **使用依赖注入**——不要在方法体中实例化服务。
-4. **对于请求主体更喜欢 Pydantic** — `body: dict` 是一种代码味道。
-5. **有意义地为控制器添加前缀** — `/users`、`/posts`、`/auth`。
+3. **使用依赖注入**--不要在方法体中实例化服务。
+4. **对于请求主体更喜欢 Pydantic** - `body: dict` 是一种代码味道。
+5. **有意义地为控制器添加前缀** - `/users`、`/posts`、`/auth`。
 
 ## 后续步骤
 
-- [Providers & DI](/docs/modular/providers) — 将服务注入您的控制器
-- [Modules](/docs/modular/modules) — 将控制器组织成功能模块
-- [Guards](/docs/modular/guards) — 通过授权保护路由
+- [Providers & DI](/docs/modular/providers) - 将服务注入您的控制器
+- [Modules](/docs/modular/modules) - 将控制器组织成功能模块
+- [Guards](/docs/modular/guards) - 通过授权保护路由

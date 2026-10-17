@@ -5,11 +5,11 @@
 ```text
 my-app/
 ├── .venv/
-├── node_modules/          (optional — client framework only)
+├── node_modules/          (optional - client framework only)
 ├── public/
 ├── src/
 │   ├── components/
-│   ├── routes/            (FBR) — or apps/ (Modular)
+│   ├── routes/            (FBR) - or apps/ (Modular)
 │   └── layout.nexy
 ├── .gitignore
 ├── nexyconfig.py
@@ -25,7 +25,7 @@ my-app/
 
 ### `public/`
 
-ここに配置された静的アセットは、ルート `/` URL で提供されます。画像、フォント、ファビコン、robots.txt — ルートなしでパブリックにアクセスできるようにしたいものすべて。
+ここに配置された静的アセットは、ルート `/` URL で提供されます。画像、フォント、ファビコン、robots.txt - ルートなしでパブリックにアクセスできるようにしたいものすべて。
 
 ### `src/`
 
@@ -37,11 +37,11 @@ my-app/
 
 ```text
 src/
-├── components/     — reusable Nexy components (optional)
-├── routes/         — FBR: file-based routing tree
-├── apps/           — Modular: controllers, modules, providers
-├── layout.nexy     — root layout (optional, FBR only)
-└── global.css      — global styles (optional)
+├── components/     - reusable Nexy components (optional)
+├── routes/         - FBR: file-based routing tree
+├── apps/           - Modular: controllers, modules, providers
+├── layout.nexy     - root layout (optional, FBR only)
+└── global.css      - global styles (optional)
 ```
 
 ### `src/components/`
@@ -66,7 +66,7 @@ routes/
 ├── blog/
 │   ├── index.nexy      →  /blog
 │   ├── [slug].nexy     →  /blog/{slug}
-│   └── layout.nexy     —  shared layout for /blog/*
+│   └── layout.nexy     -  shared layout for /blog/*
 └── api/
     └── users.py        →  /api/users (GET, POST, etc.)
 ```

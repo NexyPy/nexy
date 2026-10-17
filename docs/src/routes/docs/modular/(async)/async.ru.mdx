@@ -45,6 +45,6 @@ class AsyncController:
 
 ## Предостережения
 
-- Не вызывайте функции `async` из обработчиков `def` с помощью `await` — используйте `asyncio.run()` или создайте обработчик `async def`
-- Не вызывать функции блокировки (`time.sleep()`, `requests.get()`) из `async def` — используйте `asyncio.sleep()`, `httpx.AsyncClient`
+- Не вызывайте функции `async` из обработчиков `def` с помощью `await` - используйте `asyncio.run()` или создайте обработчик `async def`
+- Не вызывать функции блокировки (`time.sleep()`, `requests.get()`) из `async def` - используйте `asyncio.sleep()`, `httpx.AsyncClient`
 - Для производства используйте несколько рабочих для обработчиков синхронизации.

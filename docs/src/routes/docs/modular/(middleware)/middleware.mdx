@@ -2,7 +2,7 @@
 
 Middleware intercepts requests before they reach the controller (and responses after). Use it for cross-cutting concerns that apply to many routes: logging, timing, CORS, compression, header manipulation.
 
-Like guards, middleware in Nexy are **FastAPI dependencies** — callables that can modify the request/response or abort the request.
+Like guards, middleware in Nexy are **FastAPI dependencies** - callables that can modify the request/response or abort the request.
 
 ## Why Middleware?
 
@@ -179,14 +179,14 @@ class ErrorHandlerMiddleware:
 
 ## Best Practices
 
-1. **One concern per middleware** — logging, timing, CORS. Not a single "big middleware."
-2. **Keep middleware fast** — middleware blocks the request. Expensive operations belong in the handler.
-3. **Use `request.state` for passing data** — it's the standard way to share data between middleware, guards, and handlers.
-4. **Prefer guards for auth** — conceptually clearer than middleware for access control.
-5. **Test middleware in isolation** — create a mock `Request`, call the middleware, assert side effects.
+1. **One concern per middleware** - logging, timing, CORS. Not a single "big middleware."
+2. **Keep middleware fast** - middleware blocks the request. Expensive operations belong in the handler.
+3. **Use `request.state` for passing data** - it's the standard way to share data between middleware, guards, and handlers.
+4. **Prefer guards for auth** - conceptually clearer than middleware for access control.
+5. **Test middleware in isolation** - create a mock `Request`, call the middleware, assert side effects.
 
 ## Next Steps
 
-- [Guards](/docs/modular/guards) — authentication and authorization
-- [Controllers](/docs/modular/controllers) — define route handlers
-- [Modules](/docs/modular/modules) — organize into feature modules
+- [Guards](/docs/modular/guards) - authentication and authorization
+- [Controllers](/docs/modular/controllers) - define route handlers
+- [Modules](/docs/modular/modules) - organize into feature modules

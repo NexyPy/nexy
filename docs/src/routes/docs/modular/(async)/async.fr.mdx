@@ -45,6 +45,6 @@ Pour un travail de type "feu et oubli" après la réponse, utilisez `BackgroundT
 
 ## Mises en garde
 
-- N'appelez pas les fonctions `async` à partir des gestionnaires `def` avec `await` — utilisez `asyncio.run()` ou créez le gestionnaire `async def`
-- N'appelez pas les fonctions de blocage (`time.sleep()`, `requests.get()`) depuis `async def` — utilisez `asyncio.sleep()`, `httpx.AsyncClient`
+- N'appelez pas les fonctions `async` à partir des gestionnaires `def` avec `await` - utilisez `asyncio.run()` ou créez le gestionnaire `async def`
+- N'appelez pas les fonctions de blocage (`time.sleep()`, `requests.get()`) depuis `async def` - utilisez `asyncio.sleep()`, `httpx.AsyncClient`
 - Pour la production, utilisez plusieurs travailleurs pour les gestionnaires de synchronisation

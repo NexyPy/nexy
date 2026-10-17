@@ -37,7 +37,7 @@ Para trabalho do tipo disparar e esquecer após a resposta, use `BackgroundTasks
 
 ## Advertências
 
-- Não chame funções `async` de manipuladores `def` com `await` — use `asyncio.run()` ou crie o manipulador `async def`
-- Não chame funções de bloqueio (`time.sleep()`, `requests.get()`) de `async def` — use `asyncio.sleep()`, `httpx.AsyncClient`
+- Não chame funções `async` de manipuladores `def` com `await` - use `asyncio.run()` ou crie o manipulador `async def`
+- Não chame funções de bloqueio (`time.sleep()`, `requests.get()`) de `async def` - use `asyncio.sleep()`, `httpx.AsyncClient`
 - `nx dev` do Nexy executa um trabalhador uvicorn por padrão - manipuladores assíncronos brilham aqui
 - Para produção, use vários trabalhadores (`nx start --workers 4`) para manipuladores de sincronização

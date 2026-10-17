@@ -1,6 +1,6 @@
 # "@Ação
 
-Transforme uma função Python em um endpoint de servidor que pode ser chamado pelo navegador — sem registro de roteador, sem análise de solicitação.
+Transforme uma função Python em um endpoint de servidor que pode ser chamado pelo navegador - sem registro de roteador, sem análise de solicitação.
 
 ```python
 from nexy.decorators import Action
@@ -34,7 +34,7 @@ def fn(): ...
 
 1. Registra a função em `ActionsStore`
 2. Na inicialização, `ActionEngine` descobre todas as ações e as monta como `POST /_nx_{hash}`
-3. Hash de URL = `sha256(func_name + "salt2026")[:12]` — determinístico por implantação
+3. Hash de URL = `sha256(func_name + "salt2026")[:12]` - determinístico por implantação
 4. Argumentos analisados do corpo JSON, injetados por nome
 5. Valor de retorno serializado como JSON
 
@@ -68,7 +68,7 @@ def fn(): ...
 
 - Somente POST
 - Apenas corpo JSON (sem dados de formulário, multiparte)
-- Hash salt é codificado — URL estável em uma implantação
+- Hash salt é codificado - URL estável em uma implantação
 
 ---
 

@@ -23,7 +23,7 @@ def vote(post_id: str, direction: int) -> dict:
 
 ## 动作文件放在哪里
 
-操作可以存在于项目中的 **任何地方** — `src/actions/`、`src/routes/` 或直接位于根目录中。 `ActionEngine` 在启动时扫描整个项目目录。
+操作可以存在于项目中的 **任何地方** - `src/actions/`、`src/routes/` 或直接位于根目录中。 `ActionEngine` 在启动时扫描整个项目目录。
 
 ```text
 my-app/
@@ -151,7 +151,7 @@ export const vote = async (post_id: string, direction: number): Promise<dict> =>
 - 保持动作函数集中且幂等
 - 验证操作内的输入 - 将它们视为不可信
 - 使用 Pydantic 模型处理复杂的请求体
-- 操作仅限 POST — 对于其他 HTTP 方法，请使用路由处理程序
+- 操作仅限 POST - 对于其他 HTTP 方法，请使用路由处理程序
 - 使用警卫或中间件进行授权
 
 ---

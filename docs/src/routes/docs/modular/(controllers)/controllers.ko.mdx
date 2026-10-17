@@ -262,14 +262,14 @@ class UsersModule:
 
 ## 모범 사례
 
-1. **컨트롤러당 하나의 리소스** — `UsersController`, `PostsController`. 하나의 `ApiController`가 아닙니다.
-2. **방법에 집중하세요** — 각 방법은 한 가지 일을 합니다.
+1. **컨트롤러당 하나의 리소스** - `UsersController`, `PostsController`. 하나의 `ApiController`가 아닙니다.
+2. **방법에 집중하세요** - 각 방법은 한 가지 일을 합니다.
 3. **종속성 주입 사용** - 메서드 본문에서 서비스를 인스턴스화하지 마세요.
-4. **요청 본문에 Pydantic을 선호하세요** — `body: dict`는 코드 냄새입니다.
-5. **컨트롤러 앞에 의미 있는 접두사를 붙입니다** — `/users`, `/posts`, `/auth`.
+4. **요청 본문에 Pydantic을 선호하세요** - `body: dict`는 코드 냄새입니다.
+5. **컨트롤러 앞에 의미 있는 접두사를 붙입니다** - `/users`, `/posts`, `/auth`.
 
 ## 다음 단계
 
-- [Providers & DI](/docs/modular/providers) — 컨트롤러에 서비스를 주입합니다.
-- [Modules](/docs/modular/modules) — 컨트롤러를 기능 모듈로 구성
-- [Guards](/docs/modular/guards) — 승인을 통해 경로를 보호합니다.
+- [Providers & DI](/docs/modular/providers) - 컨트롤러에 서비스를 주입합니다.
+- [Modules](/docs/modular/modules) - 컨트롤러를 기능 모듈로 구성
+- [Guards](/docs/modular/guards) - 승인을 통해 경로를 보호합니다.

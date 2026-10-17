@@ -38,7 +38,7 @@ def GET():
 Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
 ```
 
-Middleware runs as FastAPI `Depends` — it runs before the handler. Unlike guards, middleware is intended for side effects (logging, timing), not for blocking requests (though it can raise `HTTPException`).
+Middleware runs as FastAPI `Depends` - it runs before the handler. Unlike guards, middleware is intended for side effects (logging, timing), not for blocking requests (though it can raise `HTTPException`).
 
 ---
 

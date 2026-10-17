@@ -46,7 +46,7 @@ app.mount("/django", WSGIMiddleware(django_app))
 - `WSGIMiddleware` 包装任何可调用为 ASGI 的 WSGI
 - 子应用程序在线程池中运行 - 它不会阻塞事件循环
 - 路径前缀（`/legacy`、`/django`）在到达 WSGI 应用程序之前被删除
-- Nexy 中间件（auth、session、CORS）**不适用于**已安装的 WSGI 应用程序 — 单独配置它
+- Nexy 中间件（auth、session、CORS）**不适用于**已安装的 WSGI 应用程序 - 单独配置它
 
 ## 限制
 

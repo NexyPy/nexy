@@ -50,6 +50,6 @@ app.mount("/django", WSGIMiddleware(django_app))
 
 ## 제한사항
 
-- 요청/응답 주기만 — WebSocket은 지원되지 않음
+- 요청/응답 주기만 - WebSocket은 지원되지 않음
 - WSGI 앱은 Nexy 후크 또는 종속성을 사용할 수 없습니다.
 - 성능은 스레드 풀에 의해 제한됩니다. 기본 Nexy 경로로 마이그레이션하는 것을 고려하세요.

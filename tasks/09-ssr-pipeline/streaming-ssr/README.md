@@ -8,10 +8,12 @@ components; synchronous `-> str` components remain buffered for backward compati
 
 ## Current state
 
-- All HTML produced via `HTMLResponse` (`fbrouter/__init__.py:10` import, L371/L394)
-  with fully materialized strings.
-- `_make_request_handler` (`fbrouter/__init__.py:99-121`) calls the sync component and
-  returns the response in one shot.
+- `_make_request_handler` (`fbrouter/__init__.py:113-139`) wraps every component in a
+  `StreamingResponse`; `_stream_body` (L101-110) turns a plain string into a single
+  chunk (byte-identical to the old buffered `HTMLResponse`) and streams generator
+  components chunk-by-chunk as produced.
+- Tests: `tests/unit/nexy/routers/test_streaming_response.py` covers single-chunk
+  sync output, multi-chunk generator output, and type of the response.
 
 ## Target architecture
 
@@ -22,15 +24,22 @@ ASGI stream
   └─ flush <body/> close + </html>
 ```
 
+The generator path is implemented (component yields chunks). An explicit
+shell/head-before-body flush (Next.js `chainStreams` split inside the wrapper)
+is not yet a separate concern — the component decides chunk boundaries.
+
 ## TDD phases
 
 1. **Red** — test: generator component yields head before body; client receives head
-   bytes first.
+   bytes first. **Done** (`test_streaming_response.py`).
 2. **Green** — `StreamingHTMLResponse` iterable wrapping a component that may be a
-   generator; head flush before body.
+   generator; head flush before body. **Done** via `_make_request_handler` +
+   `_stream_body`.
 3. **Green** — `createDocumentClosingStream` equivalent that emits the closing tags.
+   **Partial** — generator can yield closing tags; no dedicated closing-stream
+   helper.
 4. **Refactor** — sync `-> str` components wrapped into a single-chunk stream (no
-   behavior change).
+   behavior change). **Done.**
 5. **Gates** — ruff, mypy, pytest, `nexy build` EXIT=0.
 
 ## Definition of Done

@@ -183,11 +183,11 @@ RecursionError: Cycle detected for ModuleA
 1. **Una función por módulo**: usuarios, autenticación, facturación. No "utilidades".
 2. **Mantenga las importaciones de módulos superficiales**: un módulo que importa más de 10 módulos más está haciendo demasiado
 3. **Utilice `exports` intencionalmente**: exporte solo lo que otros módulos realmente necesitan
-4. **Nombrar módulos después de dominios** — `UsersModule`, `OrdersModule`, `PaymentsModule`
-5. **Proporcione siempre un `prefix` al realizar versiones** — `"@Module(prefix="/api/v1")`
+4. **Nombrar módulos después de dominios** - `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Proporcione siempre un `prefix` al realizar versiones** - `"@Module(prefix="/api/v1")`
 
 ## Próximos pasos
 
-- [Guards](/docs/modular/guards) — protege las rutas del módulo
-- [Middleware](/docs/modular/middleware) — solicitar ganchos de canalización
+- [Guards](/docs/modular/guards) - protege las rutas del módulo
+- [Middleware](/docs/modular/middleware) - solicitar ganchos de canalización
 - [Controllers](/docs/modular/controllers): define controladores de ruta

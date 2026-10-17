@@ -8,15 +8,15 @@ Cuando no se encuentra una página (404) o se produce un error no controlado (50
 
 ## Páginas de error personalizadas
 
-Coloque archivos `error.nexy` o `notfound.nexy` en cualquier directorio de ruta para anular las páginas de error para ese alcance:
+Coloque archivos `errors.nexy` o `notfound.nexy` en cualquier directorio de ruta para anular las páginas de error para ese alcance:
 
 ```
 src/routes/
 +-- admin/
 |   +-- notfound.nexy   # Custom 404 for /admin/*
-|   +-- error.nexy      # Custom 500 for /admin/*
+|   +-- errors.nexy      # Custom 500 for /admin/*
 +-- notfound.nexy       # Global custom 404
-+-- error.nexy          # Global custom 500
++-- errors.nexy          # Global custom 500
 ```
 
 ### Ejemplo: `notfound.nexy`
@@ -38,7 +38,7 @@ src/routes/
 </main>
 ```
 
-### Ejemplo: `error.nexy`
+### Ejemplo: `errors.nexy`
 
 ```nexy
 ---
@@ -64,9 +64,9 @@ Las páginas de error ubicadas en subdirectorios solo se aplican a rutas dentro 
 ```
 src/routes/
 +-- admin/
-|   +-- notfound.nexy   # /admin/* — "Admin page not found"
+|   +-- notfound.nexy   # /admin/* - "Admin page not found"
 +-- blog/
-|   +-- notfound.nexy   # /blog/* — "Blog post not found"
+|   +-- notfound.nexy   # /blog/* - "Blog post not found"
 +-- notfound.nexy       # All other routes
 ```
 

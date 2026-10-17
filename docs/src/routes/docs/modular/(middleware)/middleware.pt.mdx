@@ -2,7 +2,7 @@
 
 O middleware intercepta as solicitações antes que elas cheguem ao controlador (e as respostas depois). Use-o para questões transversais que se aplicam a muitas rotas: registro, temporização, CORS, compactação, manipulação de cabeçalho.
 
-Assim como os guardas, o middleware no Nexy são **dependências FastAPI** — chamáveis ​​que podem modificar a solicitação/resposta ou abortar a solicitação.
+Assim como os guardas, o middleware no Nexy são **dependências FastAPI** - chamáveis ​​que podem modificar a solicitação/resposta ou abortar a solicitação.
 
 ## Por que Middleware?
 
@@ -179,14 +179,14 @@ class ErrorHandlerMiddleware:
 
 ## Melhores práticas
 
-1. **Uma preocupação por middleware** — registro, tempo, CORS. Nem um único "grande middleware".
-2. **Mantenha o middleware rápido** — o middleware bloqueia a solicitação. Operações caras pertencem ao manipulador.
-3. **Use `request.state` para passar dados** — é a forma padrão de compartilhar dados entre middleware, guards e manipuladores.
-4. **Prefira proteções para autenticação** — conceitualmente mais claros que middleware para controle de acesso.
-5. **Teste o middleware isoladamente** — crie uma simulação de `Request`, chame o middleware, afirme os efeitos colaterais.
+1. **Uma preocupação por middleware** - registro, tempo, CORS. Nem um único "grande middleware".
+2. **Mantenha o middleware rápido** - o middleware bloqueia a solicitação. Operações caras pertencem ao manipulador.
+3. **Use `request.state` para passar dados** - é a forma padrão de compartilhar dados entre middleware, guards e manipuladores.
+4. **Prefira proteções para autenticação** - conceitualmente mais claros que middleware para controle de acesso.
+5. **Teste o middleware isoladamente** - crie uma simulação de `Request`, chame o middleware, afirme os efeitos colaterais.
 
 ## Próximas etapas
 
-- [Guards](/docs/modular/guards) — autenticação e autorização
-- [Controllers](/docs/modular/controllers) — definir manipuladores de rota
-- [Modules](/docs/modular/modules) — organize em módulos de recursos
+- [Guards](/docs/modular/guards) - autenticação e autorização
+- [Controllers](/docs/modular/controllers) - definir manipuladores de rota
+- [Modules](/docs/modular/modules) - organize em módulos de recursos

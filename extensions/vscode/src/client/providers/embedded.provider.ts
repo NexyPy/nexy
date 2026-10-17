@@ -47,7 +47,7 @@ export interface RegionInfo {
 /**
  * Transform a Nexy header into valid Python for Pylance.
  * - Lines with `from "..." import ...` are replaced with spaces
- *   (invalid Python syntax otherwise — Nexy-specific import sugar).
+ *   (invalid Python syntax otherwise - Nexy-specific import sugar).
  * - All other lines are kept as-is for full Pylance analysis.
  * Character positions are preserved so diagnostic remapping stays correct.
  */
@@ -55,11 +55,11 @@ function sanitizeHeaderForPython(header: string): string {
   return header
     .split('\n')
     .map(line => {
-      // Quoted imports (from "...") are invalid Python — replace with spaces
+      // Quoted imports (from "...") are invalid Python - replace with spaces
       if (/^\s*from\s+["']/.test(line)) {
         return ' '.repeat(line.length);
       }
-      // Python-native imports (from module import ...) are valid Python —
+      // Python-native imports (from module import ...) are valid Python -
       // keep them so Pylance can resolve and provide completions.
       return line;
     })
@@ -114,7 +114,7 @@ export function getDocumentRegions(document: vscode.TextDocument): RegionInfo[] 
       });
     }
 
-    // Le reste est considéré comme HTML ou Markdown — strip Jinja2 for clean delegation
+    // Le reste est considéré comme HTML ou Markdown - strip Jinja2 for clean delegation
     const languageId = document.languageId === "mdx" ? "markdown" : "html";
     regions.push({
       languageId: languageId,
