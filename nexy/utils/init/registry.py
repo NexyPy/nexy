@@ -31,7 +31,7 @@ export default function Button({ variant = 'primary', className = '', ...props }
   };
 
   return (
-    <button 
+    <button
       className={`${baseStyles} ${variants[variant]} ${className}`}
       {...props}
     />
@@ -51,7 +51,7 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-  <button 
+  <button
     :class="[
       'px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
       variant === 'primary' ? 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500' : '',
@@ -78,7 +78,7 @@ withDefaults(defineProps<Props>(), {
   };
 </script>
 
-<button 
+<button
   class="{baseStyles} {variants[variant]} {className}"
   {...$$restProps}
 >

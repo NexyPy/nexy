@@ -21,22 +21,17 @@ class RouteLayout:
 
                     if layout_candidate.is_file() and layout_candidate != path:
                         try:
-                            # 1. Get the relative path as a POSIX string (with slashes)
                             rel_path = layout_candidate.relative_to(Path.cwd())
                             raw_path = rel_path.as_posix()
                         except ValueError:
                             raw_path = layout_candidate.as_posix()
 
-                        # 2. Normalize the path while slashes still exist
-                        # This ensures (article) becomes article_group
                         normalized_path = StringTransform.normalize_route_path_for_namespace(
                             raw_path
                         )
 
-                        # 3. Strip extension and convert to Python module dots
                         module_path = normalized_path.rsplit(".", 1)[0].replace("/", ".")
 
-                        # 4. Apply namespace
                         namespace = Config.NAMESPACE.replace("/", ".")
                         if not namespace.endswith("."):
                             namespace += "."

@@ -52,11 +52,3 @@ class Discovery:
 
     def remove_excluded_dir(self, dir_name: str) -> None:
         self.excluded_dirs.discard(dir_name)
-
-
-# discovery = Discovery()
-
-# # 2. Lance le scan
-# files = discovery.scan(".")
-# for f in files:
-#     print(str(f))

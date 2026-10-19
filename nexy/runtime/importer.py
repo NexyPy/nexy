@@ -23,10 +23,8 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
         self.vfs = VFS()
 
     def _find_vfs_path(self, base_path: str) -> str | None:
-        # Fast path: direct check for exact match first (no full disk scan
         if self.vfs.exists(base_path):
             return base_path
-        # Generate candidate variations and check them directly first
         candidates = [
             base_path.lower(),
             base_path.upper(),
@@ -36,7 +34,6 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
         for candidate in candidates:
             if self.vfs.exists(candidate):
                 return candidate
-        # Only scan all files as last resort
         for fname in self.vfs.list_files():
             normalized_fname = fname.replace("\\", "/")
             for cand in candidates:
@@ -47,29 +44,22 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
     def find_spec(
         self, fullname: str, _path: list[str] | None, _target: object | None = None
     ) -> importlib.machinery.ModuleSpec | None:
-        # We only intercept imports starting with __nexy__
         if not fullname.startswith("__nexy__"):
             return None
 
-        # Convert module name to virtual path
-        # __nexy__.src.routes.index -> __nexy__/src/routes/index.py
         parts = fullname.split(".")
         base_path = "/".join(parts)
 
-        # Check if it's a package or a module
-        # Try as a module first (.py)
         py_path = base_path + ".py"
         found = self._find_vfs_path(py_path)
         if found:
             return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found))
 
-        # Try .nexy fallback
         nexy_path = base_path + ".nexy"
         found = self._find_vfs_path(nexy_path)
         if found:
             return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found))
 
-        # Try as a package (__init__.py)
         init_path = base_path + "/__init__.py"
         found = self._find_vfs_path(init_path)
         if found:

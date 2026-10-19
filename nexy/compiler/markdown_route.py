@@ -33,7 +33,7 @@ class MarkdownRouteCompiler:
             if not self.vfs.exists(init_file):
                 self.vfs.write(init_file, "")
 
-    def compile(self, *, input: str) -> None:  # noqa: A002 - match existing Compiler API
+    def compile(self, *, input: str) -> None:
         src = Path(input)
         ext = src.suffix.lower()
         if ext != ".md":
@@ -45,10 +45,7 @@ class MarkdownRouteCompiler:
 
         py_path = Path(full_namespaced).with_suffix(".py").as_posix()
 
-        # Component name = matches FBRouter._scan_modules lookup convention
-        # (get_component_name), so [slug].md -> Slug_catch_all.
         stem = src.stem
-        # Strip locale suffix (.fr / .en / …) if present and matched by useLocales
         locale: str | None = None
         locales = self.config.useLocales or []
         if "." in stem and locales:
@@ -59,7 +56,6 @@ class MarkdownRouteCompiler:
         component_name = self.string_transform.get_component_name(stem) or "Index"
         func_name = component_name
 
-        # Resolve URL path for the route (same rules as FBR)
         router_path = Path(Config.ROUTER_PATH).as_posix()
         cleaned = (
             posix_src.replace(f"{Config.NAMESPACE}{router_path}", "")
@@ -68,7 +64,6 @@ class MarkdownRouteCompiler:
         )
         _pathname = Pathname(cleaned).process()
 
-        # Layout - same discovery mechanism as .nexy / framework routes
         layout_import = RouteLayout.get_closest_import(posix_src, is_layout=False)
 
         layout_header = ""
@@ -90,10 +85,6 @@ class MarkdownRouteCompiler:
         except ValueError:
             rel_from_cwd = src.as_posix().lstrip("/")
 
-        # --- Python wrapper module
-        # The wrapper reads the markdown source at request time, renders via
-        # cmarkgfm, injects heading ids, publishes the TOC for useToc(), and
-        # wraps the body in the nearest layout.
         module_body = (
             "from typing import *\n"
             "from pathlib import Path as __Path\n"
@@ -124,7 +115,6 @@ class MarkdownRouteCompiler:
         self.vfs.write(py_path, module_body)
         self._generate_init(Path(full_namespaced).parent.as_posix())
 
-        # Tag for downstream users (locale handling)
         meta: dict[str, Any] = {
             "kind": "markdown",
             "ext": ext,

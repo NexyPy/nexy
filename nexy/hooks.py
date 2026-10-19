@@ -90,14 +90,11 @@ def useViews(path: str, context: dict[str, Any] | None = None) -> HTMLResponse:
             raise ValueError(f"Failed to load module or function for path: {path}") from e
 
     elif any(ext in path for ext in FRONTEND_VIEWS):
-        # KISS: Map extension to framework and return an hydratable container
         ext = f".{path.split('.')[-1]}"
         framework = Config.FRONTEND_EXTENSIONS.get(ext, "react")
 
-        # Prepare props for hydration
         props_json = json.dumps(ctx)
 
-        # Hydratable container that Nexy's frontend runtime will pick up
         container = (
             f'<div data-nexy-fw="{framework}" '
             f'data-nexy-path="{path}" '

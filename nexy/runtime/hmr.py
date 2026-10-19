@@ -16,8 +16,6 @@ class HMRManager:
 
     async def connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
-        # Capture the running loop at connect time. Capturing at import time
-        # points to a loop that may never run (uvicorn creates its own loop).
         self.loop = asyncio.get_running_loop()
         self._connections.append(websocket)
 

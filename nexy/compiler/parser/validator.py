@@ -44,7 +44,6 @@ class ImportValidator:
         - resolved absolute path
         - optional filename suggestions
         """
-        # Work with absolute paths to avoid duplicate segments
         current_dir = pathlib.Path(current_file).resolve().parent
         project_root = pathlib.Path(Config.PROJECT_ROOT).resolve()
 
@@ -52,10 +51,6 @@ class ImportValidator:
             raw = imp.path.replace("\\", "/")
             import_path = pathlib.Path(imp.path)
 
-            # Determine base resolution:
-            # - Absolute paths: keep as-is
-            # - Explicit relative ("./" or "../"): resolve from current file's directory
-            # - Project-relative (e.g., "src/..."): resolve from project root to avoid duplications
             if import_path.is_absolute():
                 full_path = import_path.resolve()
             elif raw.startswith("./") or raw.startswith("../"):
@@ -75,7 +70,6 @@ class ImportValidator:
                 parts.append(f"alias='{imp.alias}'")
             parts.append(f"resolved='{full_path}'")
 
-            # Raise a concise, user-friendly error with context
             hint = f" suggestions={suggestions}" if suggestions else ""
             raise ImportValidationError(
                 f'Import Error "{imp.path}" does not exist; {", ".join(parts)}{hint}'

@@ -9,28 +9,24 @@ def _is_port_available(host: str, port: int) -> bool:
     Checks if a port is free by combining a connection attempt
     and a binding fallback.
     """
-    # On Windows, connecting to 0.0.0.0 is not supported. Use 127.0.0.1 for the check.
     check_host = "127.0.0.1" if host == "0.0.0.0" else host
 
-    # Step 1: Connection attempt (detects if a service is listening)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.02)
         try:
             sock.connect((check_host, port))
-            return False  # If we can connect, the port is occupied
+            return False
         except (TimeoutError, ConnectionRefusedError):
             pass
         except OSError:
             pass
 
-    # Step 2: Binding attempt (final confirmation)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        # SO_REUSEADDR allows port reuse without waiting for kernel timeout
         if host != "0.0.0.0":
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             sock.bind((host, port))
-            return True  # Bind successful, the port is free
+            return True
         except OSError:
             return False
 

@@ -9,7 +9,6 @@ def audio(
     sources: list[str] | None = None,
     **kwargs: str | bool,
 ) -> str:
-    # Build attributes
     attrs = {"preload": preload}
     if class_name:
         attrs["class"] = class_name
@@ -25,7 +24,6 @@ def audio(
     attrs.update(kwargs)
     attr_str = " ".join([f'{k}="{v}"' if v else k for k, v in attrs.items()])
 
-    # Build sources
     source_tags = ""
     if sources:
         for s in sources:

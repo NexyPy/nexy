@@ -13,7 +13,6 @@ from nexy.cli.commands.translate import translate
 from nexy.i18n import t
 from nexy.utils.common.console import console
 
-# Ensure UTF-8 encoding for stdout/stderr so Rich can render Unicode box-drawing characters
 if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
     with contextlib.suppress(Exception):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -21,7 +20,6 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() not in ("utf-8", "utf8"):
     with contextlib.suppress(Exception):
         sys.stderr.reconfigure(encoding="utf-8")
 
-# Force rounded Unicode box-drawing characters in Typer's Rich help output
 _orig_get_console = typer.rich_utils._get_rich_console
 
 
@@ -120,8 +118,6 @@ CLI.command()(translate)
 CLI.command(name="ts", hidden=True)(translate)
 CLI.command(name="trans")(translate)
 CLI.command(name="t", hidden=True)(translate)
-# CLI.command(name="a", hidden=True)(add)
-# CLI.command()(add)
 
 
 __all__ = ["CLI"]

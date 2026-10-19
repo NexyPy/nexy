@@ -44,8 +44,6 @@ _patch_win_asyncio()
 
 _NEXY_DIR = Path("__nexy__")
 
-# ── Internal helpers ────────────────────────────────────────────────────────
-
 
 def _write_port_file(name: str, port: int) -> None:
     """Saves the port used for inter-process communication."""
@@ -60,9 +58,6 @@ def _detect_pm() -> tuple[str, bool]:
         if binary:
             return binary, candidate == "npm"
     return "npm", True
-
-
-# ── Server class ────────────────────────────────────────────────────────────
 
 
 class Server:
@@ -89,11 +84,8 @@ class Server:
         run_host: str = host or cfg.useHost
         base_port: int = port or cfg.usePort
 
-        # 1. Find a port for the server (e.g. 3000 or 3001)
         server_port = find_available_port(base_port, run_host)
 
-        # 2. Find a port for the client (must be different from the server)
-        # Search starts right after the server port
         if with_client:
             client_port = find_available_port(server_port + 1, run_host)
         else:
@@ -125,7 +117,6 @@ class Server:
             return
         try:
             if sys.platform == "win32":
-                # Windows: tuer l'arborescence de processus
                 subprocess.run(
                     ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
                     capture_output=True,
@@ -133,7 +124,6 @@ class Server:
                     check=False,
                 )
             else:
-                # Unix: terminate puis kill si nécessaire
                 proc.terminate()
                 try:
                     proc.wait(timeout=timeout)
@@ -156,7 +146,6 @@ class Server:
         cfg = Config()
         run_host = host or "127.0.0.1"
 
-        # On Windows, uvicorn multi-worker mode is unreliable; default to 1 worker.
         if workers is not None:
             num_workers = workers
         elif hasattr(cfg, "useWorkers") and cfg.useWorkers:
@@ -247,8 +236,6 @@ class Server:
             suppress_output = build
 
         if build:
-            # Run vite directly so the framework's build does not depend on a
-            # user-defined `build` script (e.g. `tsc -b && vite build`).
             args = [pm]
             args += ["exec", "--", "vite", "build"] if is_npm else ["exec", "vite", "build"]
         else:

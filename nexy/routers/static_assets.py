@@ -30,7 +30,7 @@ def setup_favicon(server: FastAPI, router_path: str) -> None:
     @server.get("/favicon.ico", include_in_schema=False)
     async def favicon() -> Response:
         try:
-            favicon_data = FAVICON_SVG.encode("utf-8")  # Default to SVG if no ICO found
+            favicon_data = FAVICON_SVG.encode("utf-8")
             if os.path.isfile(favicon_path):
                 with open(favicon_path, "rb") as f:
                     favicon_data = f.read()

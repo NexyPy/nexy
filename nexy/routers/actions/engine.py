@@ -31,8 +31,6 @@ class ActionEngine:
         if not base_path.exists():
             return
 
-        # Modules are imported as '<start_dir>.<name>' so they resolve
-        # through the project root (e.g. 'src.app.actions').
         root_name = base_path.name
         if str(base_path.parent) not in sys.path:
             sys.path.append(str(base_path.parent))
@@ -40,8 +38,6 @@ class ActionEngine:
         for _loader, name, _is_pkg in pkgutil.walk_packages(
             [str(base_path)], prefix=f"{root_name}."
         ):
-            # Optimization: check if any part of the module path is in ignore_folders
-            # Example: 'src.node_modules.test' -> ['src', 'node_modules', 'test']
             parts = name.split(".")
             if any(ignored in parts for ignored in self.ignore_folders):
                 continue
@@ -49,14 +45,12 @@ class ActionEngine:
             try:
                 importlib.import_module(name)
             except Exception:
-                # We skip modules with import errors to keep the engine running
                 continue
 
     def include_router(self, router: FastAPI):
         """
         Mounts all registered actions onto the router.
         """
-        # We check the registry here
         for func_id, handler in ACTIONS_STORE.registry.items():
             path_hash = ACTIONS_STORE._generate_hash(func_id)
             encrypted_path = f"/_nx_{path_hash}"
@@ -81,7 +75,6 @@ class ActionEngine:
         if py_type is bool:
             return "boolean"
 
-        # Handle typing generics (List, Dict, etc.)
         origin = getattr(py_type, "__origin__", None)
         if origin is list or py_type is list:
             return "any[]"
@@ -107,11 +100,10 @@ class ActionEngine:
             sub_dir = out_path.joinpath(*parts)
             sub_dir.mkdir(parents=True, exist_ok=True)
 
-            # Extract signature for type safety
             sig = inspect.signature(handler)
             params = []
             for name, param in sig.parameters.items():
-                if name in ("request", "response"):  # Skip FastAPI internals
+                if name in ("request", "response"):
                     continue
                 ts_type = self._map_py_type_to_ts(param.annotation)
                 params.append(f"{name}: {ts_type}")

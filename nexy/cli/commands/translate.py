@@ -224,7 +224,7 @@ def translate(
         console.print(f"[red]Error:[/red] Source directory not found: {src_dir}")
         raise typer.Exit(1)
 
-    with console.status("[dim]Scanning @i18n() classes…[/dim]") as status:
+    with console.status("[dim]Scanning @i18n() classes…[/dim]"):
         classes = _scan_i18n_classes(src_dir)
 
     if not classes:
@@ -274,9 +274,8 @@ def translate(
         console.print()
         return
 
-    # Write one consolidated file per module with all locales
     console.print()
-    with console.status("[dim]Writing consolidated translation files…[/dim]") as status:
+    with console.status("[dim]Writing consolidated translation files…[/dim]"):
         for module_name, locales_data in module_results.items():
             output = _restructure(locales_data)
             gen_file = gen_dir / f"{module_name}.json"
@@ -291,7 +290,6 @@ def translate(
                 f"[dim]({class_count} classes, {locale_count} locales)[/dim]"
             )
 
-    # Clean up legacy per-locale files (previous format)
     for old_file in sorted(gen_dir.glob("*.json")):
         stem = old_file.stem
         if any(stem.endswith(f".{loc}") for loc in all_locales):

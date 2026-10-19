@@ -107,9 +107,6 @@ class WatchHandler(PatternMatchingEventHandler):
             )
 
     def _trigger_reload(self, path: str, start_time: float | None = None) -> None:
-        # Single HMR owner: Nexy broadcasts only for server-rendered content
-        # (.nexy, .md). Framework files (.tsx/.vue/.svelte/.mdx) are owned by
-        # Vite's HMR. Python API changes restart uvicorn.
         if path.endswith((".nexy", ".md")):
             if HMR_MANAGER.loop:
                 asyncio.run_coroutine_threadsafe(

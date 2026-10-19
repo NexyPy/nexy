@@ -13,7 +13,7 @@ from nexy.utils.common.console import console
 class GitClone:
     def __init__(self) -> None:
         self.repo = "https://github.com/NexyPy/nexy.git"
-        self.branch = "master"  # Templates are in the master branch of the nexy repo
+        self.branch = "master"
         self.dest = Path(".")
 
     def _is_empty_dir(self, path: Path) -> bool:
@@ -21,11 +21,9 @@ class GitClone:
 
     def clone(self, repo: str, branch: str, dest: Path, subdir: str | None = None) -> None:
         """Clones the template. If subdir is provided, extracts only that directory's contents."""
-        # Backup user's git repo if it already exists
         has_user_git = self._stash_git_repo()
 
         try:
-            # If the directory contains only .venv or is empty, we can clone/extract
             is_empty = self._is_empty_dir(dest)
             has_only_venv = False
             if not is_empty:
@@ -35,7 +33,6 @@ class GitClone:
                 elif len(items) == 1 and items[0].name == ".venv":
                     has_only_venv = True
 
-            # Common init steps
             init_cmds = [
                 ["git", "init"],
                 ["git", "remote", "add", "origin", repo],
@@ -60,11 +57,9 @@ class GitClone:
                         ) from e
                     raise e
 
-            # Extraction logic (sparse or merge)
             checkout_path = subdir if subdir else "."
 
             if is_empty or has_only_venv:
-                # Checkout the subdir contents to the root
                 checkout_cmd = ["git", "checkout", "FETCH_HEAD", "--", checkout_path]
                 try:
                     subprocess.run(
@@ -82,7 +77,6 @@ class GitClone:
                         ).format(path=checkout_path)
                     ) from e
 
-                # If we used a subdir, move files to root and cleanup
                 if subdir:
                     self._move_subdir_to_root(dest, Path(subdir))
             else:
@@ -90,7 +84,6 @@ class GitClone:
                     "[yellow]nexy[/yellow] » "
                     + t("init.merging", "Directory not empty, merging files...")
                 )
-                # Standard merge approach
                 merge_cmds = [
                     ["git", "checkout", "FETCH_HEAD", "--", checkout_path],
                     ["git", "merge", "--ff-only", "FETCH_HEAD"],
@@ -117,10 +110,8 @@ class GitClone:
                     self._move_subdir_to_root(dest, Path(subdir))
 
         finally:
-            # Remove template .git directory to sever origin link
             self._cleanup_git(dest)
 
-            # Restore user's git repo if it existed
             if has_user_git:
                 self._restore_git_repo()
 
@@ -148,7 +139,6 @@ class GitClone:
                     target.unlink()
             shutil.move(str(item), str(root))
 
-        # Remove empty parent dirs of the subdir
         current = source
         while current != root:
             parent = current.parent
@@ -170,7 +160,6 @@ class GitClone:
         if gitdir.exists():
             shutil.rmtree(gitdir, onerror=on_rm_error)
 
-        # Also remove .github if present (often template-specific)
         githubdir = dest / ".github"
         if githubdir.exists():
             shutil.rmtree(githubdir, onerror=on_rm_error)
@@ -181,7 +170,6 @@ class GitClone:
         gitdir = root / ".git"
         backup = root / ".git_old"
 
-        # If backup already exists, we must remove it first to avoid rename errors
         if backup.exists():
 
             def on_rm_error(
@@ -219,15 +207,13 @@ class GitClone:
         backup = root / ".git_old"
 
         if backup.exists():
-            # If a new .git was created by the template extraction, remove it
             if gitdir.exists():
                 self._cleanup_git(root)
 
             try:
-                # Restore by renaming (effectively deletes backup)
                 backup.rename(gitdir)
             except Exception:
-                # Fallback to copy and delete
+
                 def on_rm_error(
                     func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
                 ) -> None:

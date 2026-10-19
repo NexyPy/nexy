@@ -21,9 +21,6 @@ class Generator:
         self.source = source
         try:
             directory = os.path.dirname(output)
-            # No need to create physical directories in development
-            # unless we are in production build mode
-            # For now, we just write to VFS
             self.logic.generate(template_path=output, source=self.source, source_path=source_path)
             self.template.generate(output=output, source=self.source.template)
             self._generate_init(directory)

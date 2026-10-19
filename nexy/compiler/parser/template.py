@@ -13,7 +13,6 @@ class NexyParserError(Exception):
 class TemplateFormatter:
     """Helper class to format HTML-style attributes into Python/Jinja arguments."""
 
-    # Matches key = "value" with optional spaces around the '='
     _ATTR_REGEX = re.compile(r'(\w+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+))')
 
     @classmethod
@@ -36,31 +35,21 @@ class TemplateFormatter:
 
         pairs = []
         for key, value in attrs.items():
-            # 1. Handle Shorthand or Spread in the key
-            # e.g. <Component {{ title }} /> or <Component {{ ...props }} />
             if "{{" in key and (not value or value == ""):
                 inner_match = re.search(r"\{\{\s*(.*?)\s*\}\}", key)
                 if inner_match:
                     inner = inner_match.group(1).strip()
                     if inner.startswith("...") or inner.startswith("**"):
-                        # Spread: {{ ...props }} -> **props
                         var_name = inner.lstrip(".*").strip()
                         pairs.append(f"**{var_name}")
                         continue
                     elif " " not in inner and "(" not in inner:
-                        # Shorthand: {{ title }} -> title=title
                         pairs.append(f"{inner}={inner}")
                         continue
                     else:
-                        # Raw expression injection: {{ "class='foo'" }}
-                        # For components, this is unusual but we can support it if it returns a dict
-                        # But Jinja2 macros expect keyword args.
                         pass
 
-            # 2. Handle dynamic values
             if "{{" in value:
-                # Handle dynamic strings: "/user/{{ id }}" -> "/user/" ~ (id)
-                # If the entire value is just a Jinja expression: {{ user.name }}
                 if (
                     value.strip().startswith("{{")
                     and value.strip().endswith("}}")
@@ -73,14 +62,11 @@ class TemplateFormatter:
                         continue
 
                 expr = re.sub(r"\{\{\s*(.*?)\s*\}\}", r'" ~ (\1) ~ "', value)
-                # Clean up empty string concatenations
                 expr = f'"{expr}"'.replace('"" ~ ', "").replace(' ~ ""', "")
                 pairs.append(f"{key}={expr}")
             elif cls._is_unquoted_value(value):
-                # Unquoted value: count=5, price=9.99, active=true
                 pairs.append(f"{key}={value}")
             else:
-                # Quoted string
                 pairs.append(f'{key}="{value}"')
 
         return ", ".join(pairs)
@@ -91,11 +77,9 @@ class TemplateFormatter:
         if not value:
             return False
 
-        # Booleans and None
         if value.lower() in ("true", "false", "none"):
             return True
 
-        # Numbers (integers and floats, including negative ones)
         try:
             float(value)
             return True
@@ -113,11 +97,9 @@ class TemplateParser:
     3. Converts PascalCase tags (<User />) to Jinja2 syntax.
     """
 
-    # Robust Regex for comments with re.DOTALL to handle multiple lines
     _HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
     _JINJA_COMMENT_RE = re.compile(r"\{#.*?#\}", re.DOTALL)
 
-    # Jinja2 blocks protection regex
     _JINJA_BLOCK_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{#.*?#\}", re.DOTALL)
 
     def __init__(self) -> None:
@@ -126,7 +108,6 @@ class TemplateParser:
         self.placeholders: list[str] = []
         self.standalone_placeholders: list[str] = []
 
-    # Match standalone {{ or {% that have NO matching close delimiter
     _STANDALONE_JINJA_RE = re.compile(r"\{\{|\{%")
 
     def _protect_jinja(self, html: str) -> str:
@@ -137,11 +118,8 @@ class TemplateParser:
             self.placeholders.append(match.group(0))
             return placeholder
 
-        # Pass 1: protect complete Jinja2 blocks ({{...}}, {%...%}, {#...#})
         result = self._JINJA_BLOCK_RE.sub(replace, html)
 
-        # Pass 2: protect standalone openers without matching close
-        # These would cause TemplateSyntaxError if passed to Jinja2 raw
         self.standalone_placeholders = []
 
         def replace_standalone(match):
@@ -202,7 +180,6 @@ class TemplateParser:
         return ""
 
     def _render_component(self, node: ElementNode) -> str:
-        # For components, we must unprotect BOTH keys and values before formatting
         unprotected_attrs = {
             self._unprotect_jinja(k): self._unprotect_jinja(v) for k, v in node.attributes.items()
         }
@@ -221,13 +198,11 @@ class TemplateParser:
         if node.attributes:
             pairs = []
             for k, v in node.attributes.items():
-                # Handle dynamic attribute injection: <div {{ "class='foo'" }}>
                 if "{{" in k and (not v or v == ""):
                     pairs.append(self._unprotect_jinja(k))
                     continue
 
                 if v:
-                    # We keep placeholders here, they will be unprotected in the final step
                     safe_v = v.replace('"', "&quot;")
                     pairs.append(f'{k}="{safe_v}"')
                 else:

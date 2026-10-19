@@ -1,6 +1,5 @@
 from pathlib import Path
 
-# Directories never worth scanning in a Nexy project.
 SKIP_DIRS = {
     ".git",
     ".venv",

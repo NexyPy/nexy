@@ -8,7 +8,6 @@ class Pathname:
     def _dynamic_pathname(self, path: str | None = None) -> str:
         """Convert [slug] to {slug}."""
         target = path or self.pathname
-        # Regex: find content inside brackets, unless it starts with '...'
         return re.sub(r"\[(?!(\.\.\.))([^\]]+)\]", r"{\2}", target)
 
     def _catch_all(self, path: str | None = None) -> str:
@@ -19,15 +18,13 @@ class Pathname:
     def _group_pathname(self, path: str | None = None) -> str:
         """Remove parenthesized segments like /(user)/."""
         target = path or self.pathname
-        # Remove /(group) and handle resulting double slashes
         cleaned = re.sub(r"/\([^)]+\)", "", target)
         return cleaned if cleaned else "/"
 
     def _normalize_pathname(self, path: str | None = None) -> str:
         target = path or self.pathname
-        # Next.js: /docs/index -> /docs and /index -> /
         if target.endswith("/index"):
-            target = target[:-6]  # Remove "/index"
+            target = target[:-6]
         return target if target else "/"
 
     def process(self) -> str:
@@ -37,7 +34,6 @@ class Pathname:
         res = self._catch_all(res)
         res = self._dynamic_pathname(res)
 
-        # Final cleanup of double slashes
         res = re.sub(r"/+", "/", res)
         return res if (res == "/" or not res.endswith("/")) else res.rstrip("/")
 
@@ -68,19 +64,14 @@ class StringTransform:
 
         parts = path.split("/")
 
-        # Case 1: Path points to a directory (no extension in the last segment)
         if "." not in parts[-1]:
             return "/".join([StringTransform._normalize_dynamic_segment(p) for p in parts])
 
-        # Case 2: Path points to a file
         *dirs, filename = parts
         normalized_dirs = [StringTransform._normalize_dynamic_segment(p) for p in dirs]
 
         stem, ext = filename.rsplit(".", 1)
 
-        # Handle locale variant filenames: guide.fr.mdx -> guide_fr.mdx
-        # Only applies when useLocales contains the suffix (e.g., "fr").
-        # Without this, dotted names break VFS import resolution (guide.fr -> guide/fr/).
         if "." in stem:
             from nexy.core.config import Config as _NexyConfig
 
