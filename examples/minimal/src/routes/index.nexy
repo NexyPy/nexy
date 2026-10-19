@@ -1,0 +1,12 @@
+---
+greeting: prop[str] = "Hello Nexy!"
+def shout(text: str) -> str:
+    return text.upper()
+---
+<section>
+    <h1 class="text-3xl font-bold">{{ shout(greeting) }}</h1>
+    <p class="mt-4 text-gray-600">
+        This minimal example renders through <code>src/routes/index.nexy</code>
+        wrapped by <code>src/routes/layout.nexy</code>.
+    </p>
+</section>

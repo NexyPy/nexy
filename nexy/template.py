@@ -43,8 +43,6 @@ class NexyTemplateLoader(BaseLoader):
             raise TemplateNotFound(template)
 
         source = self.vfs.read(template)
-        # Return a real uptodate check so recompiled templates are picked up
-        # (a constant `True` would serve stale HTML forever in dev).
         return source, template, self._is_current(template, source)
 
     def _is_current(self, template: str, source: str) -> Callable[[], bool]:

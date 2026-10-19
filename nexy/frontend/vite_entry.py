@@ -183,7 +183,6 @@ def _runtime_lines() -> list[str]:
 def write_main_file(dest_dir: Path, frameworks: set[str]) -> None:
     """Write the minimal main.ts: react preamble (top), styles, runtime and islands."""
     preamble = _react_preamble(frameworks)
-    # IMPORTANT: Preamble must be at the very top, before CSS
     minimal = (
         f"{preamble}\n"
         'import "/src/globale.css";\n'

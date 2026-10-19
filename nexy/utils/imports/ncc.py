@@ -75,7 +75,6 @@ class NexyClientComponent:
 
         is_prod = Path("__nexy__/nexy.prod").is_file()
 
-        # Static content retrieval
         content = self._get_static_content(esc_url, esc_symbol)
         key_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
 

@@ -16,13 +16,10 @@ class RouteDependencies:
         deps: list[Callable[..., Any]] = []
         try:
             path = Path(source_path).resolve()
-            # The root of the router (e.g., src/routes)
             root = Path(Config.ROUTER_PATH).resolve()
             current = path.parent.resolve()
 
-            # 1. Build the chain of directories from current up to root
             chain: list[Path] = []
-            # We use root.parent as limit to ensure we can capture dependencies.py at root level
             limit_dir = root.parent
 
             while str(current).startswith(str(limit_dir)):
@@ -31,18 +28,14 @@ class RouteDependencies:
                     break
                 current = current.parent
 
-            # 2. Process from Top to Bottom (reversed) to respect inheritance order
             for directory in reversed(chain):
                 dep_file = directory / "dependencies.py"
 
                 if dep_file.is_file():
                     try:
-                        # Get relative path for module resolution
-
                         rel_path = dep_file.relative_to(Path.cwd())
                         raw_path = rel_path.as_posix()
 
-                        # Normalize path (handle (grouping) folders like layout logic)
                         normalized_path = raw_path.replace(".py", "").replace("/", ".")
 
                         try:

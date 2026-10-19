@@ -14,13 +14,11 @@ class LogicSanitizer:
     """
 
     def __init__(self) -> None:
-        # Regex for: from "path" import targets
         self.RE_NEXY_FROM = re.compile(
             r'^\s*from\s+["\'](?P<path>[^"\']+)["\']\s+import\s+(?P<targets>.+?)(?=\n\S|$)',
             re.M | re.S,
         )
 
-        # Regex for: import "path" [as alias]
         self.RE_NEXY_IMPORT = re.compile(
             r'^\s*import\s+["\'](?P<path>[^"\']+)["\'](?:\s+as\s+(?P<alias>\w+))?(?=\n\S|$)',
             re.M | re.S,
@@ -39,7 +37,6 @@ class LogicSanitizer:
         Resolves the full relative path from the current file,
         taking aliases and relative paths into account.
         """
-        # Detect alias-like paths (starting with @, $, etc) that could not be resolved
         first_ch = import_str[0]
         if first_ch in ("@", "$", "~") and not any(
             import_str.startswith(alias) for alias in self.aliases
@@ -50,24 +47,21 @@ class LogicSanitizer:
         is_alias = any(import_str.startswith(alias) for alias in self.aliases)
 
         if not (is_relative or is_alias):
-            return import_str  # Standard module or external
+            return import_str
 
         root_path = pathlib.Path.cwd().absolute()
         current_path = pathlib.Path(current_file).absolute()
 
-        # 1. Handle Aliases
         for alias, replacement in self.aliases.items():
             if import_str.startswith(alias):
                 resolved_path = root_path / import_str.replace(alias, replacement, 1)
                 return resolved_path.absolute().relative_to(root_path).as_posix()
 
-        # 2. Handle Relative Paths (./ and ../)
         resolved_path = current_path.parent.joinpath(import_str).resolve()
 
         try:
             return resolved_path.relative_to(root_path).as_posix()
         except ValueError:
-            # Fallback if path is outside project root
             return os.path.normpath(resolved_path).replace("\\", "/")
 
     def _clean_targets(self, targets_str: str) -> list[str]:
@@ -84,16 +78,13 @@ class LogicSanitizer:
         Main entry point for sanitizing logic blocks.
         Transforms custom Nexy import syntax into valid Python AST-parsable code.
         """
-        # 1. Transform 'from "path" import targets'
         source = self.RE_NEXY_FROM.sub(lambda m: self._replace_from(m, current_file), source)
-        # 2. Transform 'import "path" [as alias]'
         source = self.RE_NEXY_IMPORT.sub(lambda m: self._replace_import(m, current_file), source)
 
         return source
 
     def _normalize_alias(self, name: str) -> str:
         """Converts a string into a valid Python identifier."""
-        # Replace non-alphanumeric characters with underscores
         return re.sub(r"[^a-zA-Z0-9_]", "_", name)
 
     def _replace_from(self, match: Match[str], current_file: str) -> str:
@@ -105,7 +96,6 @@ class LogicSanitizer:
         ext = pathlib.Path(full_rel_path).suffix.lower()
         targets = self._clean_targets(targets_raw)
 
-        # --- LOGIC (Nexy / Python) ---
         if ext in (".nexy", ".py", ""):
             is_nexy = ext == ".nexy"
             prefix = f"{self.namespace.replace('/', '.')}" if is_nexy else ""
@@ -114,7 +104,6 @@ class LogicSanitizer:
             module_name = prefix + module_name
             return f"from {module_name} import {', '.join(targets)}"
 
-        # --- RUNTIME (TSX, JSX, VUE, SVELTE, JSON, etc.) ---
         framework = self._get_framework(ext)
 
         import_lines = []
@@ -140,11 +129,9 @@ class LogicSanitizer:
         full_rel_path = self._resolve_full_path(current_file, path_str)
         ext = pathlib.Path(full_rel_path).suffix.lower()
 
-        # If no alias provided, use the filename stem as the default alias
         if not alias:
             alias = self._normalize_alias(pathlib.Path(full_rel_path).stem)
 
-        # --- LOGIC (Nexy / Python) ---
         if ext in (".nexy", ".py", ""):
             is_nexy_module = ext == ".nexy"
 
@@ -156,20 +143,15 @@ class LogicSanitizer:
                 if prefix:
                     prefix += "."
 
-            # remove extension
             module_name = re.sub(r"\.(nexy|py)$", "", full_rel_path)
 
-            # normalize path
             module_name = module_name.replace("\\", "/").replace("/", ".").strip(".")
 
-            # remove duplicated dots
             module_name = re.sub(r"\.+", ".", module_name)
 
-            # validate module name
             if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_\.]*$", module_name):
                 raise ValueError(f"Invalid module name: {module_name}")
 
-            # validate alias
             if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", alias):
                 raise ValueError(f"Invalid alias: {alias}")
 
@@ -177,9 +159,7 @@ class LogicSanitizer:
 
             return f"import {module_name} as {alias}"
 
-        # --- RUNTIME (JSON, VUE, etc.) ---
         framework = self._get_framework(ext)
-        # For simple imports, we assume 'default' symbol unless specified (not possible in simple import syntax)
         return (
             f'{alias} = __Import(path="{full_rel_path}", framework="{framework}", symbol="default")'
         )

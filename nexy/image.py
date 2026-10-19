@@ -7,7 +7,6 @@ def image(
     class_name: str | None = None,
     **kwargs: str | int,
 ) -> str:
-    # Build attributes
     attrs = {
         "src": src,
         "alt": alt,
@@ -20,10 +19,8 @@ def image(
     if class_name:
         attrs["class"] = class_name
 
-    # Add any additional kwargs
     attrs.update(kwargs)
 
-    # Convert attrs to HTML string
     attr_str = " ".join([f'{k}="{v}"' for k, v in attrs.items()])
 
     return f"<img {attr_str} />"

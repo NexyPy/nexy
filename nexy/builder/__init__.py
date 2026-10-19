@@ -90,8 +90,6 @@ def _get_file_fingerprint(file_path: Path) -> str:
     base = stat_fingerprint(file_path)
     if not base:
         return ""
-    # A layout.* wrap affects every route below it; include the chain
-    # so editing a layout recompiles its children.
     chain = _get_layout_chain(file_path.parent.resolve())
     return base + (f"|{chain}" if chain else "")
 

@@ -52,6 +52,10 @@ exclude = ["nexy/templates/tests"]
 strict = true
 files = "nexy"
 
+[[tool.mypy.overrides]]
+module = "nexyconfig"
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"

@@ -32,7 +32,6 @@ class AppServer:
         self.server: FastAPI | None = None
         self.fb_router: FBRouter | None = None
 
-        # Internal configuration state
         self._docs_url, self._redocs_url = self._resolve_docs_settings()
 
     async def scalar_html(self):

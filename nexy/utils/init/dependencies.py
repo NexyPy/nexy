@@ -70,8 +70,6 @@ class DependencyInstaller:
         self.is_windows = os.name == "nt"
         self.venv_dir = directory / ".venv"
 
-    # -- helpers ----------------------------------------------------------------
-
     def _python(self) -> str:
         if self.is_windows:
             return str(self.venv_dir / "Scripts" / "python.exe")
@@ -93,8 +91,6 @@ class DependencyInstaller:
             if output:
                 console.print(output.decode("utf-8", errors="replace")[:500])
             return False
-
-    # -- public API ------------------------------------------------------------
 
     def install_all(self) -> None:
         self._install_uv()

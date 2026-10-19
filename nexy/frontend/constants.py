@@ -1,7 +1,5 @@
-# Client-routed file types only: .mdx/.nexy pages are server-rendered.
 NAVIGABLE_EXTS: tuple[str, ...] = (".tsx", ".jsx", ".vue", ".svelte", ".solid", ".preact")
 
-# Packages Vite must pre-bundle for each active framework.
 FRAMEWORK_DEPS: dict[str, list[str]] = {
     "react": ["react", "react-dom", "react/jsx-runtime"],
     "vue": ["vue"],

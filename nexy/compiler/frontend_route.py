@@ -21,7 +21,6 @@ _TSX_EXPORT_RE = re.compile(
 )
 _TSX_EXPORT_DEFAULT_RE = re.compile(r"export\s+default\s")
 
-# Imports injected at the top of every generated wrapper module.
 _MODULE_IMPORTS = (
     "from typing import *\n"
     "from fastapi import *\n"
@@ -65,7 +64,6 @@ def _resolve_tsx_export_symbol(src: Path, fallback_stem: str) -> str:
     if match:
         return match.group(1)
 
-    # Fallback: PascalCase of the stem (matches user's common convention)
     stem = fallback_stem.strip()
     if stem:
         cleaned = re.sub(r"[^a-zA-Z0-9_$]+", "", stem)
@@ -79,21 +77,14 @@ def _resolve_tsx_export_symbol(src: Path, fallback_stem: str) -> str:
 def _resolve_symbol(src: Path, ext: str, stem: str) -> str:
     """Pick the client-side export symbol to hydrate for this route file."""
     if ext in (".vue", ".svelte"):
-        # SFC always uses `export default` - lookup by "default" on the mod.
         return "default"
     if ext == ".mdx":
-        # MDX is compiled to ESM with a `default` export.
         return "default"
-    # React/Preact TSX - detect the real export name so client-side
-    # hydration can find the component (otherwise mod["Default"] is
-    # undefined for files using named exports like Card/User).
     return _resolve_tsx_export_symbol(src, stem)
 
 
 def _glob_ref(src: Path, posix_src: str) -> tuple[str, str]:
     """(import.meta.glob path, md5 key) for one framework route source."""
-    # We resolve the URL that runtime.ts' import.meta.glob uses (/src/routes/foo.vue)
-    # AND produce a keyed md5 hash for prod lookups (same as NexyClientComponent).
     try:
         cwd = Path.cwd()
         rel_from_cwd = "/" + src.resolve().relative_to(cwd).as_posix().lstrip("/")
@@ -112,7 +103,6 @@ def _ssg_static_path(rel_glob: str, framework: str, symbol: str) -> str:
     if framework in ("vue", "svelte"):
         rel_path_html = rel_glob + ".html"
     else:
-        # JS writer (getEntryId) names default exports '<name>.Default.html'
         export_name = "Default" if symbol == "default" else symbol
         rel_path_html = rel_glob.replace(".tsx", "").replace(".mdx", "") + f".{export_name}.html"
     return f"__nexy__/client/static{rel_path_html}"
@@ -120,8 +110,6 @@ def _ssg_static_path(rel_glob: str, framework: str, symbol: str) -> str:
 
 def _ncc_template(framework: str, rel_glob: str, key_hash: str, symbol: str) -> str:
     """Build the <ncc> hydrating tag served as the route's HTML template."""
-    # The route is rendered server-side as a <ncc> container.
-    # __nexy_ssr_content placeholder is filled by the wrapper at call-time.
     return (
         "<ncc"
         ' id="{{ __nexy_mount_id }}"'
@@ -212,11 +200,8 @@ def _route_module_paths(posix_src: str, stem: str) -> dict[str, Any]:
     mapped = StringTransform().normalize_route_path_for_namespace(posix_src)
     full_namespaced = f"{Config.NAMESPACE}{mapped}"
 
-    # Component name = matches FBRouter._scan_modules lookup convention
-    # (get_component_name), so [slug].tsx -> Slug_catch_all and index.tsx -> Index.
     component_name = StringTransform().get_component_name(stem) or "Index"
 
-    # Resolve URL path for the route (same rules as FBR)
     router_path = Path(Config.ROUTER_PATH).as_posix()
     cleaned = (
         posix_src.replace(f"{Config.NAMESPACE}{router_path}", "")
@@ -272,7 +257,7 @@ class FrontendRouteCompiler:
             framework = _detect_mdx_framework(src)
         return ext, framework
 
-    def compile(self, *, input: str) -> None:  # noqa: A002 - match existing Compiler API
+    def compile(self, *, input: str) -> None:
         src = Path(input)
         ext, framework = self._detect_framework(src, input)
         _reject_locale_suffix(src, ext, self.config.useLocales or [])
@@ -282,7 +267,7 @@ class FrontendRouteCompiler:
         paths = _route_module_paths(posix_src, stem)
         py_path = paths["py_path"]
         html_path = paths["html_path"]
-        template_abs_ref = html_path  # referenced by __Template().render
+        template_abs_ref = html_path
 
         layout_header, render_wrapper = _layout_wrapper(posix_src)
         rel_glob, key_hash = _glob_ref(src, posix_src)

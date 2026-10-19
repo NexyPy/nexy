@@ -53,15 +53,12 @@ class NexyHTMLParser(HTMLParser):
             search_pos = tag_match.end() if tag_match else 0
             for m in _ATTR_PATTERN_RE.finditer(raw_tag_text, search_pos):
                 attr_name = m.group("name")
-                # Value is in one of the three groups
                 attr_value = m.group("v1") or m.group("v2") or m.group("v3") or ""
                 attr_dict[attr_name] = attr_value
 
-            # 3. Check for Self-Closing
             if raw_tag_text.strip().endswith("/>"):
                 is_self_closing = True
 
-        # Fallback if regex failed
         if not attr_dict and attrs:
             attr_dict = {k: (v if v is not None else "") for k, v in attrs}
 
@@ -84,11 +81,8 @@ class NexyHTMLParser(HTMLParser):
 
     def handle_endtag(self, tag: str) -> None:
         tag_lower = tag.lower()
-        # Search for the matching start tag in the stack (from top to bottom)
-        # This handles cases where some tags might have been closed implicitly
         for i in range(len(self.stack) - 1, -1, -1):
             if self.stack[i].tag_name.lower() == tag_lower:
-                # Close all tags above this one
                 while len(self.stack) > i:
                     self.stack.pop()
                 break

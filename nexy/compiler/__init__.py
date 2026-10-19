@@ -65,8 +65,6 @@ def _compile_with_deps(input_path: str, _compiling: set[str] | None = None) -> N
         return
     _compiling.add(abs_path)
 
-    # Framework route files (.tsx/.vue/.svelte) and pure markdown (.md) have no
-    # Nexy frontmatter to scan; skip the graph crawl.
     if is_framework_route_file(input_path) or is_md_file(input_path):
         return
 
@@ -75,7 +73,6 @@ def _compile_with_deps(input_path: str, _compiling: set[str] | None = None) -> N
             source = f.read()
     except FileNotFoundError:
         return
-    # Strip fenced code blocks so imports inside examples don't trigger false dependencies
     clean = _CODE_FENCE_RE.sub("\n", source)
     for m in _IMPORT_FROM_RE.finditer(clean):
         dep = _resolve_dep_path(input_path, m.group("path"))
@@ -107,7 +104,7 @@ class Compiler:
         except FileNotFoundError as e:
             raise FileNotFoundError(f"File '{self.input}' not found.") from e
 
-    def compile(self, input: str, output: str | None = None) -> None:  # noqa: A002
+    def compile(self, input: str, output: str | None = None) -> None:
         self.input = input
         self.output = output
 
@@ -151,7 +148,7 @@ class Compiler:
                 source_path=self.input, message=msg, line=line, column=col
             ) from e
 
-    def compile_with_deps(self, input: str, output: str | None = None) -> None:  # noqa: A002
+    def compile_with_deps(self, input: str, output: str | None = None) -> None:
         _compile_with_deps(input)
         self.compile(input=input, output=output)
 

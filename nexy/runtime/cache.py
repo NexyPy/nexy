@@ -33,7 +33,7 @@ class RevalidateCache:
 
     def set(self, path: str, value: str, revalidate: int | None = None) -> None:
         if revalidate is None or revalidate <= 0:
-            return  # dynamic route - never cached
+            return
         with self._lock:
             self._entries[path] = _Entry(value, time.monotonic() + revalidate, revalidate)
             self._touch(path)

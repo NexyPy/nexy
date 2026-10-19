@@ -149,8 +149,6 @@ class RouteManifestBuilder:
         lines.append("];")
         if include_route_type:
             lines.append("")
-            # Typed Route union: every pathname as a literal, dynamic segments as
-            # template-literal `${string}` so `Link href` is checked by `tsc -b`.
             route_parts: list[str] = []
             seen: set[str] = set()
             for e in entries:

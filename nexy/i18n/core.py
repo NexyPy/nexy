@@ -90,8 +90,6 @@ class LocaleManager:
                             if loaded:
                                 data = loaded
                 merged[locale] = data
-            # Merge generated __nexy__/i18n/ files on top
-            # Format: {class_name: {locale: {attr: value, ...}, ...}, ...}
             gen_dir = Path.cwd() / "__nexy__" / "i18n"
             if gen_dir.exists():
                 for gen_file in sorted(gen_dir.glob("*.json")):

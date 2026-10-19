@@ -11,7 +11,6 @@ def setup_hmr(server: FastAPI) -> None:
         await HMR_MANAGER.connect(websocket)
         try:
             while True:
-                # Keep connection alive
                 await websocket.receive_text()
         except WebSocketDisconnect:
             HMR_MANAGER.disconnect(websocket)

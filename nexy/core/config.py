@@ -35,7 +35,6 @@ class Config:
     _loaded: bool = False
     _load_error: str | None = None
 
-    # Default values (overridden by nexyconfig.py if present)
     ROUTER_PATH: str = "src/routes"
     ALIASES: dict[str, str] = {}
     NAMESPACE: str = "__nexy__/"
@@ -64,7 +63,6 @@ class Config:
     TOC_TITLE: str = "Table of Contents"
     TOC_AUTO: bool = True
 
-    # Watch patterns
     WATCH_EXTENSIONS: list[str] = [".nexy", ".py", ".md", ".mdx", ".tsx", ".jsx", ".vue", ".svelte"]
     WATCH_EXTENSIONS_GLOB: list[str] = ["*{.nexy,.py,.md,.mdx,.tsx,.jsx,.vue,.svelte}"]
     WATCH_EXCLUDE_PATTERNS: list[str] = [
@@ -79,7 +77,6 @@ class Config:
         "**/build/**",
     ]
 
-    # Frontend route extensions
     FRAMEWORK_ROUTE_EXTENSIONS: list[str] = [".tsx", ".jsx", ".vue", ".svelte", ".solid"]
     FRONTEND_EXTENSIONS: dict[str, str] = {
         ".tsx": "react",
@@ -100,7 +97,6 @@ class Config:
     ]
     ALWAYS_ACTIVE_EXTENSIONS: list[str] = [".nexy", ".md", ".mdx", ".py"]
 
-    # Project root
     PROJECT_ROOT: Path = Path.cwd()
 
     def __new__(cls) -> "Config":
@@ -310,7 +306,6 @@ class Config:
         return cls._load_error
 
 
-# Seed NexyConfigModel defaults onto Config for any attribute not already defined.
 for _name in NexyConfigModel.__annotations__:
     if _name not in Config.__dict__:
         setattr(Config, _name, getattr(NexyConfigModel, _name, None))

@@ -1,8 +1,0 @@
----
-title: "Page not found"
----
-<div class="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
-  <h1 class="text-6xl font-bold">404</h1>
-  <p class="text-xl text-slate-500">This page does not exist</p>
-  <a class="border border-slate-300 px-4 py-2 rounded-lg hover:bg-slate-100" href="/">Back home</a>
-</div>

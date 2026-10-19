@@ -121,9 +121,6 @@ class Container:
             cls._resolving.discard(target_cls)
 
 
-# --- 3. OTHER DECORATORS ---
-
-
 def Controller(prefix: str = "", tags: list[str] | None = None) -> Callable[[type[Any]], type[Any]]:
     def wrapper(cls: type[Any]) -> type[Any]:
         cls.__is_controller__ = True
@@ -327,7 +324,6 @@ def _register_controller(ctrl_cls: type[Any], parent_router: APIRouter) -> None:
     path_tag = parent_router.prefix + ctrl_prefix if (parent_router.prefix or ctrl_prefix) else "/"
     ctrl_router = APIRouter(prefix=ctrl_prefix, tags=[path_tag])
 
-    # Container.resolve analyzes the Controller, resolves its Service dependency
     ctrl_instance = Container.resolve(ctrl_cls)
     class_guards: Iterable[Callable[..., Any]] = getattr(ctrl_cls, "__nexy_guards__", ())
     class_middlewares: Iterable[Callable[..., Any]] = getattr(ctrl_cls, "__nexy_middlewares__", ())

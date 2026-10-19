@@ -4,7 +4,6 @@ import os
 import traceback
 from typing import cast
 
-# ANSI colors for terminal
 COLORS = {
     "reset": "\033[0m",
     "dim": "\033[2m",
@@ -16,7 +15,6 @@ COLORS = {
     "magenta": "\033[35m",
 }
 
-# Uvicorn system messages to hide for a cleaner console
 IGNORED_MESSAGES = [
     "Started server process",
     "Started parent process",
@@ -34,7 +32,6 @@ IGNORED_MESSAGES = [
     "/_nexy/hmr",
 ]
 
-# Signs associated with main HTTP status codes (no emojis)
 status_indicators = {
     200: "✓",
     201: "+",
@@ -134,13 +131,11 @@ class NexyDefaultFormatter(logging.Formatter):
 
                 result += f'\n  File "{file_name}", line {line_no}, in {scope_name}\n'
 
-                # --- CONTEXTUAL BLOCK DETECTION ---
                 start_line = line_no
                 block_indent = None
                 is_global_scope = scope_name == "<module>"
 
                 if not is_global_scope:
-                    # Walk up to find function or class start
                     while start_line > 1:
                         prev_line = linecache.getline(frame.filename, start_line).rstrip("\n")
                         stripped = prev_line.lstrip()
@@ -149,12 +144,10 @@ class NexyDefaultFormatter(logging.Formatter):
                             break
                         start_line -= 1
 
-                # Module-level scope or no structure found
                 if block_indent is None:
                     start_line = max(1, line_no - 4)
                     end_line = line_no + 4
                 else:
-                    # Walk down to find function or class end based on indentation
                     end_line = line_no
                     while True:
                         next_line = linecache.getline(frame.filename, end_line + 1)
@@ -162,19 +155,16 @@ class NexyDefaultFormatter(logging.Formatter):
                             break
 
                         next_stripped = next_line.rstrip("\n")
-                        if next_stripped.strip():  # Skip empty lines for indentation calculation
+                        if next_stripped.strip():
                             current_indent = len(next_stripped) - len(next_stripped.lstrip())
-                            # Block ends when indentation drops to function/class level
                             if current_indent <= block_indent and end_line >= line_no:
                                 break
                         end_line += 1
 
-                # Safety limit: cap large blocks to avoid excessive output
                 if (end_line - start_line) > 16:
                     start_line = max(1, line_no - 4)
                     end_line = line_no + 4
 
-                # --- CODE SNIPPET RENDERING ---
                 for current_line in range(start_line, end_line + 1):
                     raw_line = linecache.getline(frame.filename, current_line)
                     if not raw_line:
@@ -196,7 +186,6 @@ class NexyDefaultFormatter(logging.Formatter):
         return result.rstrip("\n")
 
 
-# Config ready for uvicorn.run()
 NEXY_LOG_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,

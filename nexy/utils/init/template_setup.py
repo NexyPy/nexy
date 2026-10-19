@@ -44,7 +44,6 @@ def initialize_from_template(
     project_name = project_dir_name or dest.resolve().name
 
     try:
-        # Use spinner during initialization
         with console.status(
             "[yellow]nexy[/yellow] » "
             + t("init.initializing", "Initializing {name}...").format(name=template_name),
@@ -86,7 +85,6 @@ def _render_local_template(
     TemplateRenderer(TEMPLATES_DIR / template_name, dest, context).render()
     _render_shared_files(template_name, dest, context)
 
-    # Auto-generate empty __init__.py for Python packages
     generate_init_files(dest / "src")
 
 
@@ -161,20 +159,15 @@ def _run_post_init_pipeline(
     orm = config.get("orm", "None")
     db_url = config.get("db_url")
 
-    # Auto-install dependencies
     installer = DependencyInstaller(dest, orm=orm)
     installer.install_all()
 
-    # Generate __init__.py and .env post-init files
     generate_post_init_files(dest, orm, db_url)
 
-    # Initialize migration tool if ORM chosen
     init_migration(orm, dest, db_url)
 
-    # Git init + .gitignore
     init_git(dest)
 
-    # Final cleanup of build/dist artifacts
     cleanup_build_artifacts(dest)
 
     print_success_message(project_dir_name)
@@ -246,7 +239,6 @@ def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
             cwd=dest,
             capture_output=True,
         )
-        # Render custom alembic env.py that wires up target_metadata
         alembic_dir = dest / "alembic"
         if alembic_dir.exists():
             _render_alembic_env(alembic_dir, orm)

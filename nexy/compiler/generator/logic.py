@@ -90,7 +90,6 @@ class LogicGenerator:
                 f"        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
             )
             render_wrapper = "str(__Layout(children=rendered))"
-        # -----------------------
 
         if is_layout_file:
             layout_children = (
@@ -99,7 +98,6 @@ class LogicGenerator:
 
         props = self._resolve_props()
 
-        # Extraction des identifiants Python (AST)
         idents = set()
         try:
             tree = ast.parse(self.source.frontmatter)
@@ -125,7 +123,6 @@ class LogicGenerator:
         names = [n for n in idents if not n.startswith("_")]
 
         context_items = ", ".join([f'"{n}": {n}' for n in names])
-        # All Nexy components should support children/slots
         slot = "Slot = caller if (locals().get('caller') and callable(caller)) else (lambda: children if locals().get('children') else '')"
 
         extras = "'trans': __trans, '__locale': __current_locale.get()"
@@ -136,7 +133,6 @@ class LogicGenerator:
 
         t_local = "trans = __trans\n    t = __trans"
 
-        # Safe props injection: check if they already exist in source.props
         existing_props = [p.name for p in self.source.props]
 
         extra_props = []

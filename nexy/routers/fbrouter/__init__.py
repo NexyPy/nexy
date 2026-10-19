@@ -170,8 +170,7 @@ def _make_isr_handler(
             return _cached_response(cached)
 
         if stale:
-            # Serve stale now; regenerate in background (single-flight-ish via
-            # the store being overwritten on completion).
+
             async def _regen() -> None:
                 fresh = _render()
                 REVALIDATE_CACHE.set(pathname, fresh, revalidate)
@@ -264,8 +263,6 @@ class FBRouter:
             path_str = app_path.as_posix()
             ext = app_path.suffix.lower()
 
-            # Pure framework route files do NOT support locale suffixes (e.g. about.fr.tsx).
-            # Only .nexy and .mdx files may use *.lang.ext variants.
             name = app_path.name.lower()
             if ext in _FRAMEWORK_ONLY_EXTS and name.count(".") > 1:
                 parts = name.rsplit(".", 2)
@@ -280,8 +277,6 @@ class FBRouter:
                     )
                     continue
 
-            # Detect locale variant from filename pattern: basename.locale.ext
-            # Only applicable to .nexy / .mdx files.
             locale = None
             if available_locales and name.count(".") > 1:
                 parts = name.rsplit(".", 2)
@@ -293,13 +288,10 @@ class FBRouter:
                 ):
                     locale = parts[1]
 
-            # 1. Resolve Import Path
-            # UI routes: .nexy / .mdx / .tsx / .vue / .svelte - all compiled through VFS
             if path_str.endswith(_UI_ROUTE_EXTS):
                 m_type = "component"
                 mapped = self.string_transform.normalize_route_path_for_namespace(path_str)
                 import_path = f"{Config.NAMESPACE}{mapped}".replace("/", ".").rsplit(".", 1)[0]
-                # Compile the route into the VFS BEFORE trying to import it
                 try:
                     from nexy.compiler import Compiler
 
@@ -321,7 +313,6 @@ class FBRouter:
                 console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {exc}")
                 continue
 
-            # 2. Process Pathname
             clean = (
                 path_str.replace(f"{Config.NAMESPACE}src/routes", "")
                 .replace("src/routes", "")
@@ -329,7 +320,6 @@ class FBRouter:
             )
             pathname = Pathname(clean).process()
 
-            # 3. Categorize (Error, NotFound, Loading, or Route)
             name = app_path.name.lower()
             if (
                 name in Config.NOTFOUND_FILE_NAMES
@@ -352,14 +342,9 @@ class FBRouter:
                     self.loading_handlers.append(entry)
                 continue
 
-            # For framework routes (.tsx/.vue/.svelte), the Python wrapper function
-            # has a stable name matching the PascalCase stem (see FrontendRouteCompiler).
-            # For locale variants of framework routes, the wrapper uses the *base* stem
-            # without locale (same as .nexy), so we fall back to mapping.
             stem_for_comp = clean.split("/")[-1] if clean else ""
             if locale:
                 if ext in _FRAMEWORK_ROUTE_EXTS:
-                    # guide.fr.vue → compiled wrapper uses stem "guide" (locale stripped)
                     raw_stem = app_path.stem
                     base_stem = raw_stem.rsplit(".", 1)[0] if "." in raw_stem else raw_stem
                     comp_name = self.string_transform.get_component_name(base_stem)
@@ -371,7 +356,6 @@ class FBRouter:
 
             component = getattr(module, comp_name, None)
             if component is None and ext in _FRAMEWORK_ROUTE_EXTS:
-                # Fallback: search any callable top-level that isn't a stdlib import
                 for attr_name in dir(module):
                     if attr_name.startswith("_"):
                         continue
@@ -409,10 +393,6 @@ class FBRouter:
         registered_paths: set[str] = set()
 
         def _path_sort_key(path: str) -> tuple[int, int]:
-            # Order: static > dynamic > catch-all, and among dynamic routes
-            # the most specific (most literal segments) first - FastAPI
-            # matches in registration order, so a broad route must never
-            # shadow a more specific one.
             if "{slug:path}" in path or re.search(r"\{[^}]+:path\}", path):
                 return 2, 0
             if "{" in path:
@@ -431,7 +411,6 @@ class FBRouter:
                 continue
             path, source = meta["pathname"], meta["source"]
 
-            # Get folder-level dependencies
             folder_deps = [Depends(d) for d in RouteDependencies.collect(source)]
 
             if meta["type"] == "api":
@@ -439,10 +418,8 @@ class FBRouter:
                     if handler := getattr(module, method, None):
                         RouteValidator.validate_sig(handler, path, method)
 
-                        # Merge guards, middlewares and folder deps
                         deps = RouteMiddleware.resolve(handler) + folder_deps
 
-                        # Metadata extraction
                         resp_meta = getattr(handler, "__nexy_response_meta__", None)
                         self.router.add_api_route(
                             path=path,
@@ -452,30 +429,22 @@ class FBRouter:
                             name=method,
                             tags=[path],
                             status_code=resp_meta.status_code if resp_meta else None,
-                            # ... (other response_meta fields)
                         )
 
                 if ws_handler := getattr(module, "SOCKET", None):
                     self.router.websocket(path)(ws_handler)
 
-            else:  # Component (UI)
+            else:
                 component = getattr(module, meta["comp_name"], None)
                 if component:
-                    # Re-import at call time so .nexy/.md/.mdx edits are served
-                    # without a server restart (watcher purges sys.modules).
                     component = _lazy_component(meta["import_path"], meta["comp_name"], component)
-                    # Check for locale variants
                     locale_variants = self._locale_variants.get(path, {})
                     revalidate = self._get_revalidate(module)
                     if revalidate is not None:
-                        # ISR: cached HTML, background regen when stale. Not
-                        # combined with locale variants (single source of truth).
                         handler = _make_isr_handler(component, path, revalidate)
                     elif locale_variants:
                         handler = _make_locale_handler(component, locale_variants)
                     else:
-                        # Fixed (request) signature so FastAPI never validates
-                        # the component's **kwargs as query params (422).
                         handler = _make_request_handler(component)
                     deps = RouteMiddleware.resolve(component) + folder_deps
                     self.router.get(
@@ -495,7 +464,6 @@ class FBRouter:
 
             registered_paths.add(path)
 
-        # Register orphan locale variant routes (no base route file)
         for path, variants in self._locale_variants.items():
             if path in registered_paths:
                 continue

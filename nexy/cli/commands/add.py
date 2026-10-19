@@ -11,13 +11,11 @@ from nexy.utils.imports.component import framework_from_extension, wrap_componen
 from nexy.utils.init.dependencies import install_packages
 from nexy.utils.init.registry import COMPONENT_REGISTRY
 
-# Module-level constants for Typer defaults
 _ADD_HELP_COMPONENTS = t("add.help_components", "Components to add (registry names or URLs)")
 _ADD_HELP_UI = t("add.help_ui", "Force treatment as UI components")
 _ADD_HELP_URL = t("add.help_url", "Force treatment as URLs")
 _ADD_HELP_ALL = t("add.help_all", "Add all available components from registry")
 
-# (name, content, framework, dependencies)
 Resolved = tuple[str, str, str, set[str]]
 
 
