@@ -1,6 +1,7 @@
 import contextlib
 import functools
 import sys
+from typing import Any
 
 import typer
 import typer.rich_utils
@@ -15,16 +16,18 @@ from nexy.utils.common.console import console
 
 if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
     with contextlib.suppress(Exception):
-        sys.stdout.reconfigure(encoding="utf-8")
+        stdout: Any = sys.stdout
+        stdout.reconfigure(encoding="utf-8")
 if sys.stderr.encoding and sys.stderr.encoding.lower() not in ("utf-8", "utf8"):
     with contextlib.suppress(Exception):
-        sys.stderr.reconfigure(encoding="utf-8")
+        stderr: Any = sys.stderr
+        stderr.reconfigure(encoding="utf-8")
 
 _orig_get_console = typer.rich_utils._get_rich_console
 
 
 @functools.wraps(_orig_get_console)
-def _nexy_get_console(stderr: bool = False):
+def _nexy_get_console(stderr: bool = False) -> Any:
     c = _orig_get_console(stderr=stderr)
     c.safe_box = False
     return c

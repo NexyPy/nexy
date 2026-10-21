@@ -1,5 +1,6 @@
 import hashlib
 import json
+from collections.abc import Callable
 from html import escape as _html_escape
 from pathlib import Path
 from typing import Any
@@ -14,7 +15,7 @@ class NexyClientComponent:
         self.symbol = symbol
         self._seq = 0
 
-    def generate(self, props: dict[str, Any], caller: callable = None) -> str:
+    def generate(self, props: dict[str, Any], caller: Callable[[], Any] | None = None) -> str:
         self._seq += 1
         mount_id = self._generate_mount_id()
         if caller:
@@ -28,7 +29,7 @@ class NexyClientComponent:
 
     def _generate_mount_id(self) -> str:
         base = f"{self.path}|{self.symbol}|{self._seq}"
-        h = hashlib.md5(base.encode()).hexdigest()[:10]
+        h = hashlib.md5(base.encode(), usedforsecurity=False).hexdigest()[:10]
         return f"nexy-{h}"
 
     def _serialize_props(self, props: dict[str, Any]) -> str:
@@ -76,7 +77,7 @@ class NexyClientComponent:
         is_prod = Path("__nexy__/nexy.prod").is_file()
 
         content = self._get_static_content(esc_url, esc_symbol)
-        key_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
+        key_hash = hashlib.md5(url.encode("utf-8"), usedforsecurity=False).hexdigest()
 
         path_attr = f'data-nexy-path="{esc_url}" ' if not is_prod else ""
         island_attr = ""

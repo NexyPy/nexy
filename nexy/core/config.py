@@ -49,6 +49,24 @@ class Config:
     excludeDirs: list[str] = ["templates", "extension", "docs"]
     useLocales: list[str] | None = None
     useAliases: dict[str, str] | None = None
+    useDocsUrl: str = "/docs"
+    useRedocsUrl: str | None = "/redocs"
+    useDefaultLocale: str = "en"
+    useLocaleCookieName: str = "nexy-locale"
+    useLocalesDir: str | None = None
+    useLocalesSourceDir: str | None = None
+    useMiddlewares: list[Any] = []
+    useCORS: dict[str, Any] | None = None
+    useGZip: dict[str, Any] | None = None
+    useTrustedHost: dict[str, Any] | None = None
+    useHTTPSRedirect: bool = False
+    useSession: dict[str, Any] | None = None
+    useAuth: dict[str, Any] | None = None
+    useSslKeyfile: str | None = None
+    useSslCertfile: str | None = None
+    useTocDepth: str = "2-6"
+    useTocTitle: str = "Table of Contents"
+    useTocAuto: bool = True
 
     MARKDOWN_EXTENSIONS: list[str] = list(_DEFAULT_MARKDOWN_EXTENSIONS)
     TARGET_EXTENSIONS: list[str] = [".nexy", ".md", ".mdx", ".tsx", ".jsx", ".vue", ".svelte"]
@@ -64,7 +82,18 @@ class Config:
     TOC_AUTO: bool = True
 
     WATCH_EXTENSIONS: list[str] = [".nexy", ".py", ".md", ".mdx", ".tsx", ".jsx", ".vue", ".svelte"]
-    WATCH_EXTENSIONS_GLOB: list[str] = ["*{.nexy,.py,.md,.mdx,.tsx,.jsx,.vue,.svelte}"]
+    # One glob per extension: watchdog 6 matches these with pathlib.PurePath.match,
+    # which has no {a,b} alternation, so a single "*{.nexy,.py}" glob matches nothing.
+    WATCH_EXTENSIONS_GLOB: list[str] = [
+        "*.nexy",
+        "*.py",
+        "*.md",
+        "*.mdx",
+        "*.tsx",
+        "*.jsx",
+        "*.vue",
+        "*.svelte",
+    ]
     WATCH_EXCLUDE_PATTERNS: list[str] = [
         "**/.venv/**",
         "**/node_modules/**",
@@ -286,7 +315,7 @@ class Config:
                 [watch_ext] if isinstance(watch_ext, str) else list(watch_ext)
             )
         else:
-            Config.WATCH_EXTENSIONS_GLOB = ["*{" + ",".join(Config.WATCH_EXTENSIONS) + "}"]
+            Config.WATCH_EXTENSIONS_GLOB = [f"*{ext}" for ext in Config.WATCH_EXTENSIONS]
 
         watch_exclude = getattr(nc, "useWatchExcludePatterns", None)
         if watch_exclude:

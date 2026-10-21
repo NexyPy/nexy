@@ -63,7 +63,7 @@ def _translate_batch(translator: Any, batch: list[str]) -> list[str]:
     """Translate a batch via deep_translator with rate limiting."""
     _sync_limiter.wait()
     try:
-        result = translator.translate_batch(batch)
+        result: list[str] = translator.translate_batch(batch)
         _sync_limiter.report_success()
         return result
     except Exception as exc:
@@ -105,7 +105,7 @@ def _translate_module_sync(
     data: dict[str, dict[str, str]] = {}
     for cls in cls_list:
         class_name = cls.__qualname__
-        defaults = cls.__i18n_defaults__
+        defaults: dict[str, str] = getattr(cls, "__i18n_defaults__", {})
         if target == source_locale:
             data[class_name] = dict(defaults)
         else:
@@ -208,10 +208,7 @@ def translate(
     default_locale = config.useDefaultLocale or "en"
     available = config.useLocales or [default_locale]
 
-    if targets:
-        target_locales = targets
-    else:
-        target_locales = [loc for loc in available if loc != source_locale]
+    target_locales = targets or [loc for loc in available if loc != source_locale]
 
     all_locales = list(dict.fromkeys([source_locale] + target_locales))
 
@@ -243,7 +240,7 @@ def translate(
     gen_dir = Path.cwd() / "__nexy__" / "i18n"
     gen_dir.mkdir(parents=True, exist_ok=True)
 
-    total_keys = sum(len(cls.__i18n_defaults__) for cls in classes.values())
+    total_keys = sum(len(getattr(cls, "__i18n_defaults__", {})) for cls in classes.values())
     console.print(
         f"[dim]Scanning[/dim] [green]\u2713[/green] {len(classes)} classes, {total_keys} keys"
     )
@@ -255,10 +252,13 @@ def translate(
     skipped_modules: list[str] = []
     for module_name, cls_list in module_classes.items():
         gen_file = gen_dir / f"{module_name}.json"
-        if gen_file.exists() and not force:
-            if gen_file.stat().st_mtime >= module_mtimes[module_name]:
-                skipped_modules.append(module_name)
-                continue
+        if (
+            gen_file.exists()
+            and not force
+            and gen_file.stat().st_mtime >= module_mtimes[module_name]
+        ):
+            skipped_modules.append(module_name)
+            continue
         for target in all_locales:
             tasks.append((target, module_name, cls_list))
 

@@ -54,7 +54,16 @@ def _scaffold_project(tmp_path: Path) -> Path:
     return tmp_path
 
 
+# The benchmark shells out to `node --import tsx` with react/vite installed:
+# it requires the JS toolchain under repo-root node_modules/. That dependency
+# was removed from the repo by the cleanup decision (QUALITY_PLAN 6.5) - skip
+# rather than fail while the environment is absent (restore it to run).
+
 @pytest.mark.slow
+@pytest.mark.skipif(
+    not (REPO_ROOT / "node_modules").exists(),
+    reason="requires the JS toolchain (node_modules with tsx/react/vite) removed from the repo root by cleanup - restore the environment to run this benchmark",
+)
 def test_ssg_completes_under_sanity_ceiling(tmp_path: Path) -> None:
     """Perf claim: static generation of 31 routes finishes in a bounded time.
 

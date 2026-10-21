@@ -17,7 +17,7 @@ class Generator:
         self.logic = LogicGenerator()
         self.vfs = VFS()
 
-    def generate(self, output: str, source: ParserModel, source_path: str = None) -> bool:
+    def generate(self, output: str, source: ParserModel, source_path: str | None = None) -> bool:
         self.source = source
         try:
             directory = os.path.dirname(output)

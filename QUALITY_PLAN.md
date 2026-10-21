@@ -504,4 +504,60 @@ Aucune suppression de lint n'a été ajoutée pour faire passer un gate ; les 2 
 
 ---
 
+### 6.7 État des gates — session du 2026-10-21 (P3 terminé)
+
+Les 4 quality gates retournent **0**. Aucun `noqa`, `type: ignore` ou `per-file-ignores` ajouté pour y parvenir dans cette session.
+
+| Gate | §6.6 (2026-10-18) | Mesuré le 2026-10-21 | Exit |
+|---|---|---|---|
+| `ruff check nexy/` | 109 | **0** — «All checks passed!» | 0 |
+| `ruff format nexy/ --check` | vert | **0** — 126 fichiers déjà formatés | 0 |
+| `mypy nexy --strict` | 144 | **0** — «Success: no issues found in 126 source files» | 0 |
+| `pytest tests/` | 4 failed / 300 passed | **378 passed, 1 skipped** (10,6 s), 0 échec | 0 |
+| `pytest --cov=nexy` (`fail_under`) | 52,79 % (échec temporaire, seuil 52,8) | **54,15 % ≥ 54** | 0 |
+
+#### Ce qui a été fait dans cette session
+
+**1. `mypy --strict` : 144 → 0.**
+
+Dès la première mesure, les 29 dernières erreurs projectives étaient **toutes dans un seul fichier**, `nexy/utils/server/server.py` ; les 125 autres fichiers étaient déjà verts. Corrections, sans aucune suppression :
+
+| Erreur mypy | Nb | Correction |
+|---|---|---|
+| `attr-defined` sur `_ProactorBasePipeTransport._call_connection_lost` et `_patch_win_asyncio._applied` | 4 | flag d'application promu en variable de module `_WIN_ASYNCIO_PATCHED` (au lieu d'un attribut de fonction) ; l'objet transport est saisi via une annotation `transport_cls: Any`, pas via `getattr`/`setattr` (interdits par `B009`/`B010`) |
+| `no-untyped-def` sur `_safe_call_connection_lost` | 1 | annotations `self: Any, exc: BaseException \| None = None` + retour `-> None` |
+| `no-any-return` sur `s.getsockname()[0]` | 1 | enveloppé dans `str(...)` |
+| `type-arg` sur `proc: Popen \| None` | 1 | `Popen[Any] \| None` |
+| `arg-type` : `host=host` passé à `uvicorn.run` alors que `host: str \| None` | 1 | **bug réel corrigé** : passage de `run_host` (`host or "127.0.0.1"`) — avant, un `host=None` partait vers uvicorn |
+| `arg-type` ×19 sur `**ssl_args` / `**workers_kwargs` dépliés dans `uvicorn.run` | 19 | dicts typés `dict[str, Any]` explicites |
+| `return-value` : `return True` hors signature `Popen[Any] \| None` | 1 | signature élargie en `Popen[Any] \| bool \| None` + docstring *Returns* décrivant les 3 cas |
+
+**2. `pyproject.toml` : option mypy invalide supprimée.**
+
+`ignore_untyped_imports = true` dans l'override `deep_translator.*` fait remonter *«Unrecognized option»* — option **non reconnue par mypy**. Elle n'était d'aucune utilité : `ignore_missing_imports = true` suffit à gérer le fait que `deep-translator` n'exporte pas de `py.typed`. Supprimée ; l'override reste en place.
+
+**3. `ruff format` : `cli/commands/add.py` reformatté** (ligne blanche surnuméraire, le seul fichier à sortir du format).
+
+**4. Couverture : `fail_under` 52,8 → 54.**
+
+`nexy/utils/server/server.py` était à **24 %** ; les 29 lignes ajoutées par le travail de typage l'ont fait retomber à 52,79 %, sous le seuil. Plutôt que de baisser le seuil, `tests/unit/nexy/utils/test_server.py` a été créé : **18 tests, 1 assertion chacun, tous verts**, portant le module à **67 %** et la couverture globale à **54,15 %**.
+
+Cas couverts : écriture de port, marqueur `nexy.prod` (création **et** suppression), IP réseau, `get_ssl_config` (complet / certfile manquant), `stop_process` (None / process fini / enfant vivant), `_detect_pm`, les 3 sorties de `wait_for_vite_ready` (succès immédiat, échec jusqu'au timeout, `ssl=True` → `https://`), les 3 sorties de `uvicorn()` (`as_process` → `Popen`, premier plan → `True`, exception → `None`), propagation de `workers`, et `resolve_ports(with_client=False)` → `0`.
+
+> Le garde de schéma CAT III de `wait_for_vite_ready` a été **déplacé hors de la boucle** : placé dans le `try`, il était avalé par son propre `except Exception` et ne pouvait jamais se propager. Levé avant la boucle, il échoue effectivement.
+
+**5. Deux commentaires/Docstrings français → anglais** (`stop_process`, `wait_for_vite_ready`), conformément à « All code in English ».
+
+#### Restant ouvert (hors périmètre de cette session)
+
+| Point | État |
+|---|---|
+| `ruff check tests/` | **57 erreurs préexistantes** dans `tests/` (F401, I001, ARG002…). Le gate documenté ne couvre que `nexy/` ; le nouveau `test_server.py` est propre (0 erreur). |
+| `pytest tests/integration/` | **13 passed** — critère P1 « ≥ 13 tests » atteint |
+| Docstrings Google style (P4) | non commencé — `test_docstrings_google.py` existe déjà comme verrou |
+| Bandit | `bandit -r nexy/ -c .bandit` sort en 1 : LOW ×22 + le MEDIUM B310 du probe `urlopen` documenté comme risque accepté dans `SECURITY.md` |
+| Artefacts de session non trackés | `server_orig.py`, `bandit*.json`, `bf*.json`, `ai` — à supprimer avant commit |
+
+---
+
 *Généré par audit automatisé le 2026-10-18, complété par l'audit post-suppressions (§6) et le nettoyage code mort/commentaires (§6.5-2, §6.5-3, §6.6). Toutes les commandes de la §0 reproductibles depuis la racine du dépôt.*

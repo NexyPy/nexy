@@ -23,7 +23,7 @@ class ActionEngine:
             "build",
         }
 
-    def discover(self, start_dir: str = "src"):
+    def discover(self, start_dir: str = "src") -> None:
         """
         Dynamically imports modules while skipping ignored directories.
         """
@@ -47,7 +47,7 @@ class ActionEngine:
             except Exception:
                 continue
 
-    def include_router(self, router: FastAPI):
+    def include_router(self, router: FastAPI) -> FastAPI:
         """
         Mounts all registered actions onto the router.
         """
@@ -83,7 +83,7 @@ class ActionEngine:
 
         return "any"
 
-    def generate_client(self):
+    def generate_client(self) -> None:
         """Generates TypeScript mirror files with basic type safety."""
         if not self.output_dir or not ACTIONS_STORE.path_map:
             return
@@ -119,7 +119,8 @@ class ActionEngine:
                 "import { transport } from '@/nexy/client';",
                 "",
                 f"export const {func_name} = async ({arg_line}): Promise<{ret_type}> => {{",
-                f"  return await transport.call('{final_url}', {{ {', '.join(p.split(':')[0] for p in params)} }});",
+                f"  return await transport.call('{final_url}', "
+                f"{{ {', '.join(p.split(':')[0] for p in params)} }});",
                 "};",
             ]
 

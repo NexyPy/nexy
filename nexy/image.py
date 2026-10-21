@@ -7,7 +7,21 @@ def image(
     class_name: str | None = None,
     **kwargs: str | int,
 ) -> str:
-    attrs = {
+    """Render an `<img>` element with lazy loading by default.
+
+    Args:
+        src: Image URL or path.
+        alt: Alternative text (empty by default).
+        width: Fixed width in pixels; omitted when None.
+        height: Fixed height in pixels; omitted when None.
+        loading: Loading strategy, "lazy" by default.
+        class_name: CSS classes added to the element.
+        **kwargs: Extra attributes merged into the element.
+
+    Returns:
+        The `<img>` HTML markup ready to embed.
+    """
+    attrs: dict[str, str | int] = {
         "src": src,
         "alt": alt,
         "loading": loading,

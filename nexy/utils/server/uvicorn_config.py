@@ -102,7 +102,11 @@ class NexyAccessFormatter(logging.Formatter):
 
         indicator = status_indicators.get(status_code, "!")
 
-        return f"{label} {COLORS['dim']}{host}{COLORS['reset']}:{COLORS['blue']}{port}{COLORS['reset']} {color}{path}{COLORS['reset']} , {color}{status_code}{COLORS['reset']} © {indicator}"
+        return (
+            f"{label} {COLORS['dim']}{host}{COLORS['reset']}:"
+            f"{COLORS['blue']}{port}{COLORS['reset']} {color}{path}{COLORS['reset']}"
+            f" , {color}{status_code}{COLORS['reset']} © {indicator}"
+        )
 
 
 class NexyDefaultFormatter(logging.Formatter):
@@ -178,7 +182,10 @@ class NexyDefaultFormatter(logging.Formatter):
                         caret_indent = " " * (indent + 6)
                         caret = "~" * max(1, len(code_part)) + "^~"
 
-                        result += f"    {COLORS['red']}➔{COLORS['reset']}  {COLORS['red']}{clean_line}{COLORS['reset']}\n"
+                        result += (
+                            f"    {COLORS['red']}➔{COLORS['reset']}  "
+                            f"{COLORS['red']}{clean_line}{COLORS['reset']}\n"
+                        )
                         result += f"{caret_indent}{COLORS['red']}{caret}{COLORS['reset']}\n"
                     else:
                         result += f"       {COLORS['dim']}{clean_line}{COLORS['reset']}\n"

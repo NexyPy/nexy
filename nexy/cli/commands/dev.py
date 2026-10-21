@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import time
+from typing import Any
 
 from nexy.__version__ import __version__
 from nexy.builder import Builder
@@ -9,7 +10,7 @@ from nexy.frontend import FrontendGenerator
 from nexy.i18n import t
 from nexy.utils.common.console import console
 from nexy.utils.dev.pycache import pycache
-from nexy.utils.dev.watcher import create_observer, stop_observer
+from nexy.utils.dev.watcher import create_observer, purge_project_modules, stop_observer
 from nexy.utils.fs.vfs import VFS
 from nexy.utils.server.server import Server
 
@@ -23,7 +24,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     run_port, client_port = Server.resolve_ports(run_host, run_port)
     Server.check_nexy_prod(delete=True)
 
-    vite_proc: subprocess.Popen | None = None
+    vite_proc: subprocess.Popen[Any] | None = None
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
     ssl_enabled = bool(ssl_keyfile and ssl_certfile)
     protocol = "https" if ssl_enabled else "http"
@@ -133,6 +134,9 @@ def dev(port: int | None = None, host: str | None = None) -> None:
                     "nexy.routers.fbrouter",
                 ):
                     del sys.modules[_name]
+            # Project modules (src/routes/*.py, dependencies.py, ...) stay cached
+            # across uvicorn restarts; drop them so the reload serves new code.
+            purge_project_modules()
             _uvicorn_config = _uvicorn.Config(
                 "nexy.routers.app:_server",
                 host=run_host,

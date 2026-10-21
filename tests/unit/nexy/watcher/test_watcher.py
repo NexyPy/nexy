@@ -417,3 +417,69 @@ class TestEdgeCases:
             handler.on_modified(_make_event(str(f)))
 
         assert len(calls) == 1, "Rapid repeated events should call reload only once"
+
+
+# ── purge_project_modules (dev restart serves fresh .py code) ──────────────────
+
+
+class TestPurgeProjectModules:
+    @staticmethod
+    def _register(name: str, file: Path, monkeypatch):
+        import sys
+        import types
+
+        module = types.ModuleType(name)
+        module.__file__ = str(file)
+        monkeypatch.setitem(sys.modules, name, module)
+
+    def test_purge_removes_project_module(self, tmp_path, monkeypatch):
+        import sys
+
+        from nexy.utils.dev.watcher import purge_project_modules
+
+        source = tmp_path / "proj_probe.py"
+        source.write_text("")
+        self._register("proj_purge_probe", source, monkeypatch)
+
+        purge_project_modules(root=tmp_path)
+
+        assert "proj_purge_probe" not in sys.modules
+
+    def test_purge_reports_removed_names(self, tmp_path, monkeypatch):
+        from nexy.utils.dev.watcher import purge_project_modules
+
+        source = tmp_path / "reported_probe.py"
+        source.write_text("")
+        self._register("reported_purge_probe", source, monkeypatch)
+
+        purged = purge_project_modules(root=tmp_path)
+
+        assert "reported_purge_probe" in purged
+
+    def test_purge_keeps_framework_module(self, tmp_path, monkeypatch):
+        import sys
+
+        from nexy.utils.dev.watcher import purge_project_modules
+
+        source = tmp_path / "framework_probe.py"
+        source.write_text("")
+        self._register("nexy._purge_probe", source, monkeypatch)
+
+        purge_project_modules(root=tmp_path)
+
+        assert "nexy._purge_probe" in sys.modules
+
+    def test_purge_keeps_venv_module(self, tmp_path, monkeypatch):
+        import sys
+
+        from nexy.utils.dev.watcher import purge_project_modules
+
+        site = tmp_path / ".venv" / "lib"
+        site.mkdir(parents=True)
+        source = site / "env_probe.py"
+        source.write_text("")
+        self._register("venv_purge_probe", source, monkeypatch)
+
+        purge_project_modules(root=tmp_path)
+
+        assert "venv_purge_probe" in sys.modules

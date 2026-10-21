@@ -26,14 +26,38 @@ def _get_req() -> Request:
 
 
 def usePathname() -> str:
+    """Read the request path of the current HTTP request.
+
+    Returns:
+        The URL path (e.g. "/blog/post-1").
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
     return _get_req().url.path
 
 
-def useSearchParams() -> dict:
+def useSearchParams() -> dict[str, str]:
+    """Read the query string of the current request.
+
+    Returns:
+        Query parameters as a plain dict (first value per key).
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
     return dict(_get_req().query_params)
 
 
-def useRouter() -> dict:
+def useRouter() -> dict[str, Any]:
+    """Read routing info of the current request.
+
+    Returns:
+        A dict with "path", "base_url" and "url_for" keys.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
     req = _get_req()
     return {
         "path": req.url.path,
@@ -42,15 +66,39 @@ def useRouter() -> dict:
     }
 
 
-def useQuery() -> dict:
+def useQuery() -> dict[str, Any]:
+    """Read dynamic path parameters of the current request.
+
+    Returns:
+        The FastAPI path params dict (e.g. {"slug": "post-1"}).
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
     return _get_req().path_params
 
 
-def useSession() -> dict:
+def useSession() -> dict[str, Any]:
+    """Read the session store of the current request.
+
+    Returns:
+        The session dict, empty when sessions are not enabled.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
     return getattr(_get_req(), "session", {})
 
 
-def useCookies() -> dict:
+def useCookies() -> dict[str, str]:
+    """Read the cookies of the current request.
+
+    Returns:
+        Cookie names mapped to their values.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
     return _get_req().cookies
 
 
@@ -58,6 +106,17 @@ _toc_storage: ContextVar[str] = ContextVar("_toc_storage", default="")
 
 
 def useToc(depth_range: str = "2-6") -> str:
+    """Read the table of contents generated for the current page.
+
+    Args:
+        depth_range: Heading depth selector (e.g. "2-4"), default "2-6".
+
+    Returns:
+        Rendered TOC HTML, or an empty string when the page has none.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
     from nexy.runtime.markdown import build_toc_html as _build_toc_html
 
     html = _toc_storage.get()
@@ -71,6 +130,21 @@ FRONTEND_VIEWS = (".tsx", ".vue", ".svelte", ".jsx", ".mdx")
 
 
 def useViews(path: str, context: dict[str, Any] | None = None) -> HTMLResponse:
+    """Render a server view for the given route path.
+
+    Args:
+        path: Route path carrying the view extension (e.g. "index.nexy",
+            "about.tsx"). Python paths delegate to the VFS importer, frontend
+            extensions are rendered as client-side containers.
+        context: Props passed to the component; defaults to an empty dict.
+
+    Returns:
+        The HTML response for the view, with the Vite dev/prod client prepended.
+
+    Raises:
+        ValueError: If the path extension is not a supported view, or if the
+            compiled module or its component function cannot be loaded.
+    """
     ctx = context or {}
 
     if path.endswith(PYTHON_VIEWS):

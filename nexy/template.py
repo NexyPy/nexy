@@ -30,6 +30,8 @@ _LOCALE_INFO = [
 
 
 class NexyTemplateLoader(BaseLoader):
+    """Jinja2 loader resolving templates from the VFS first, then the disk."""
+
     def __init__(self) -> None:
         self.vfs = VFS()
 
@@ -82,7 +84,11 @@ class Template:
     """Class to handle Jinja2 and Markdown template rendering."""
 
     def __init__(self, templates_dir: str = ".") -> None:
-        """Initialize the renderer. Reuses a shared Jinja2 Environment for performance."""
+        """Initialize the renderer. Reuses a shared Jinja2 Environment for performance.
+
+        Args:
+            templates_dir: Base directory exposed to the Jinja2 loader.
+        """
         self.config = Config()
         self.templates_dir = templates_dir
         self.env = _get_shared_env()
@@ -101,6 +107,20 @@ class Template:
         return _cmark_render_markdown(content)
 
     def render(self, path: str, context: dict[str, Any] | None = None) -> str:
+        """Render a template file, converting Markdown routes to HTML.
+
+        Args:
+            path: Template path (VFS-first); `.md`/`.mdx.html` routes are also
+                run through the Markdown renderer and heading-id injection.
+            context: Jinja2 context passed to the template; defaults to empty.
+
+        Returns:
+            The rendered HTML (Markdown-converted for markdown routes, whose
+            output also feeds the page table of contents).
+
+        Raises:
+            TemplateNotFound: If the path exists neither in the VFS nor on disk.
+        """
         if context is None:
             context = {}
 

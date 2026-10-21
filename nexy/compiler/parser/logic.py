@@ -24,7 +24,7 @@ class ASTUtils:
         )
 
     @staticmethod
-    def extract_loader_args(node: ast.Assign) -> dict[str, Any] | None:
+    def extract_loader_args(node: ast.Assign) -> dict[str | None, Any] | None:
         """Attempts to extract path/framework/symbol from a __nexy_loader__ or __Import call."""
         if not (isinstance(node.value, ast.Call)):
             return None
@@ -46,7 +46,7 @@ class ASTUtils:
         if not valid_call:
             return None
 
-        args = {}
+        args: dict[str | None, Any] = {}
         for kw in call.keywords:
             if isinstance(kw.value, ast.Constant):
                 args[kw.arg] = kw.value.value
@@ -87,7 +87,7 @@ class LogicParser:
 
     def _process_nodes(self, nodes: list[ast.stmt], result: LogicResult) -> list[ast.stmt]:
         """Iterates through AST nodes to extract metadata and filter nodes."""
-        final_nodes = []
+        final_nodes: list[ast.stmt] = []
         for node in nodes:
             if isinstance(node, ast.AnnAssign) and ASTUtils.is_prop_annotation(node):
                 result.props.append(self._build_prop(node))

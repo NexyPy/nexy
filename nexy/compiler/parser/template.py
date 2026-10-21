@@ -113,7 +113,7 @@ class TemplateParser:
     def _protect_jinja(self, html: str) -> str:
         self.placeholders = []
 
-        def replace(match):
+        def replace(match: re.Match[str]) -> str:
             placeholder = f"NXYPJ{len(self.placeholders)}Z"
             self.placeholders.append(match.group(0))
             return placeholder
@@ -122,7 +122,7 @@ class TemplateParser:
 
         self.standalone_placeholders = []
 
-        def replace_standalone(match):
+        def replace_standalone(match: re.Match[str]) -> str:
             placeholder = f"NXPSA{len(self.standalone_placeholders)}Z"
             self.standalone_placeholders.append(match.group(0))
             return placeholder

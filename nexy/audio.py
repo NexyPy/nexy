@@ -9,7 +9,25 @@ def audio(
     sources: list[str] | None = None,
     **kwargs: str | bool,
 ) -> str:
-    attrs = {"preload": preload}
+    """Render a native `<audio>` player with optional sources.
+
+    Args:
+        src: Single audio file path, used when `sources` is empty.
+        controls: Add the native playback controls.
+        autoplay: Start playback on load.
+        loop: Restart playback at the end.
+        muted: Start playback muted.
+        preload: Value of the `preload` attribute (e.g. "metadata").
+        class_name: CSS classes added to the `<audio>` element.
+        sources: Multiple audio paths rendered as `<source>` tags; the
+            MIME type is derived from each file extension.
+        **kwargs: Extra attributes merged into the element (`value=""`
+            renders as a bare attribute).
+
+    Returns:
+        The `<audio>` HTML markup ready to embed.
+    """
+    attrs: dict[str, str | bool] = {"preload": preload}
     if class_name:
         attrs["class"] = class_name
     if controls:

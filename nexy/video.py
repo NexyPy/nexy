@@ -11,7 +11,27 @@ def video(
     sources: list[str] | None = None,
     **kwargs: str | bool,
 ) -> str:
-    attrs = {"preload": preload}
+    """Render a native `<video>` player with optional sources.
+
+    Args:
+        src: Single video file path, used when `sources` is empty.
+        width: Fixed width in pixels; omitted when None.
+        height: Fixed height in pixels; omitted when None.
+        controls: Add the native playback controls.
+        autoplay: Start playback on load.
+        loop: Restart playback at the end.
+        muted: Start playback muted.
+        preload: Value of the `preload` attribute (e.g. "metadata").
+        class_name: CSS classes added to the element.
+        sources: Multiple video paths rendered as `<source>` tags; the
+            MIME type is derived from each file extension.
+        **kwargs: Extra attributes merged into the element (`value=""`
+            renders as a bare attribute).
+
+    Returns:
+        The `<video>` HTML markup ready to embed.
+    """
+    attrs: dict[str, str | bool] = {"preload": preload}
     if width is not None:
         attrs["width"] = str(width)
     if height is not None:
