@@ -24,6 +24,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "bandit>=1.9.0",
     "deep-translator>=1.11.0",
     "httpx>=0.28.0",
     "mypy>=1.19.1",

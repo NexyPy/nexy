@@ -1,6 +1,7 @@
+import asyncio
+import time
 from pathlib import Path
 
-import asyncio
 import pytest
 from watchdog.events import FileSystemEvent
 
@@ -417,6 +418,70 @@ class TestEdgeCases:
             handler.on_modified(_make_event(str(f)))
 
         assert len(calls) == 1, "Rapid repeated events should call reload only once"
+
+    def test_trailing_skips_when_content_unchanged(self, tmp_path, monkeypatch):
+        """A single save (leading + throttled events) must reload exactly once,
+        even after the trailing debounce timer fires."""
+        monkeypatch.chdir(tmp_path)
+        routes = tmp_path / "src" / "routes"
+        routes.mkdir(parents=True)
+        f = routes / "save.py"
+        f.write_text("print('hello')")
+        handler = WatchHandler(min_interval=0.1)
+
+        calls = []
+        handler.on_reload_api = lambda: calls.append(1)
+        try:
+            handler.on_modified(_make_event(str(f)))
+            handler.on_modified(_make_event(str(f)))  # throttled -> trailing
+            time.sleep(0.35)
+        finally:
+            handler.cancel_trailing()
+
+        assert len(calls) == 1, "Unchanged trailing event must not reload again"
+
+    def test_trailing_reprocesses_when_content_changed(self, tmp_path, monkeypatch):
+        """If the file changed after the leading edge (half-written save), the
+        trailing event must process it again."""
+        monkeypatch.chdir(tmp_path)
+        routes = tmp_path / "src" / "routes"
+        routes.mkdir(parents=True)
+        f = routes / "growing.py"
+        f.write_text("print('hel')")
+        handler = WatchHandler(min_interval=0.1)
+
+        calls = []
+        handler.on_reload_api = lambda: calls.append(1)
+        try:
+            handler.on_modified(_make_event(str(f)))
+            f.write_text("print('hello')")
+            handler.on_modified(_make_event(str(f)))  # throttled -> trailing
+            time.sleep(0.35)
+        finally:
+            handler.cancel_trailing()
+
+        assert len(calls) == 2, "Changed trailing event must process again"
+
+    def test_created_marks_path_for_throttle(self, tmp_path, monkeypatch):
+        """on_created bypasses the throttle, but must still be recorded so the
+        modified events of the same save do not fire a second leading edge."""
+        monkeypatch.chdir(tmp_path)
+        routes = tmp_path / "src" / "routes"
+        routes.mkdir(parents=True)
+        f = routes / "fresh.py"
+        f.write_text("print('hello')")
+
+        calls = []
+        handler = WatchHandler(min_interval=0.1)
+        handler.on_reload_api = lambda: calls.append(1)
+        try:
+            handler.on_created(_make_event(str(f)))
+            handler.on_modified(_make_event(str(f)))  # throttled -> trailing
+            time.sleep(0.35)
+        finally:
+            handler.cancel_trailing()
+
+        assert len(calls) == 1, "Create + modify of one save must reload once"
 
 
 # ── purge_project_modules (dev restart serves fresh .py code) ──────────────────
