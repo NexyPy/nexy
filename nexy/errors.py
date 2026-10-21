@@ -7,6 +7,15 @@ from fastapi import Response
 
 @dataclass(frozen=True)
 class NexyCompileError(Exception):
+    """Compilation failure for a single route file, as Raised by the compiler.
+
+    Attributes:
+        source_path: Path of the file that failed to compile.
+        message: Human-readable failure reason.
+        line: 1-based source line when the parser could locate it.
+        column: 1-based source column when the parser could locate it.
+    """
+
     source_path: str
     message: str
     line: int | None = None
@@ -51,8 +60,18 @@ Internal Server Error
 
 
 def NotFound() -> Response:
+    """Build the styled 404 HTML error response.
+
+    Returns:
+        A FastAPI Response with status 404 and the Nexy 404 page.
+    """
     return Response(content=_page_404(), status_code=404)
 
 
 def InternalServerError() -> Response:
+    """Build the styled 500 HTML error response.
+
+    Returns:
+        A FastAPI Response with status 500 and the Nexy 500 page.
+    """
     return Response(content=_page_500(), status_code=500)

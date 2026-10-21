@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from scalar_fastapi import get_scalar_api_reference
 from starlette.exceptions import HTTPException
 
@@ -34,10 +35,11 @@ class AppServer:
 
         self._docs_url, self._redocs_url = self._resolve_docs_settings()
 
-    async def scalar_html(self):
+    async def scalar_html(self) -> HTMLResponse:
+        openapi_url: str | None = self.server.openapi_url if self.server else None
         return get_scalar_api_reference(
             scalar_favicon_url="/favicon.ico",
-            openapi_url=self.server.openapi_url,
+            openapi_url=openapi_url,
             title="Nexy - scalar API",
             telemetry=True,
             dark_mode=True,

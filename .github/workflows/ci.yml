@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, V2]
   pull_request:
     branches: [main]
 
@@ -21,7 +21,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install deps
-        run: uv pip install -e ".[dev]"
+        run: uv pip install -e . --group dev
 
       - name: Lint
         run: ruff check nexy/

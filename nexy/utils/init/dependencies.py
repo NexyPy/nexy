@@ -50,9 +50,10 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
     )
     with console.status(install_msg, spinner="dots"):
         try:
-            subprocess.run(
-                cmd + deps, check=True, capture_output=True, cwd=dest, shell=(os.name == "nt")
-            )
+            # Resolve the shim (npm.cmd on Windows) ourselves so the shell is
+            # never involved: shell=True would let package names inject commands.
+            exe = shutil.which(cmd[0]) or cmd[0]
+            subprocess.run([exe, *cmd[1:], *deps], check=True, capture_output=True, cwd=dest)
         except subprocess.CalledProcessError as e:
             error_msg = (
                 f"[red]{t('add.error', 'Error:')}[/red] "
@@ -77,12 +78,14 @@ class DependencyInstaller:
 
     def _run(self, cmd: list[str], desc: str) -> bool:
         try:
+            # Resolve the executable (npm.cmd/pnpm.cmd on Windows) instead of
+            # using shell=True, which would let arguments inject commands.
+            exe = shutil.which(cmd[0]) or cmd[0]
             subprocess.run(
-                cmd,
+                [exe, *cmd[1:]],
                 cwd=self.directory,
                 check=True,
                 capture_output=True,
-                shell=self.is_windows,
             )
             return True
         except subprocess.CalledProcessError as e:

@@ -19,10 +19,12 @@ class LogicGenerator:
         self.template_path: str = ""
         self.FRONTMATTER: str = ""
         self._string_transform = StringTransform()
-        self.source_path: str = None
+        self.source_path: str | None = None
         self.vfs = VFS()
 
-    def generate(self, template_path: str, source: ParserModel, source_path: str = None) -> None:
+    def generate(
+        self, template_path: str, source: ParserModel, source_path: str | None = None
+    ) -> None:
         self.source = source
         self.source_path = source_path
         self.template_path = Path(template_path).as_posix()
@@ -68,11 +70,12 @@ class LogicGenerator:
         logic = textwrap.indent(function_body, "    ")
 
         use_layout = Config.useRouter is None
+        source_path = self.source_path or str(Config.PROJECT_ROOT)
         is_layout_file = (
-            Path(self.source_path).name.lower() in Config.LAYOUT_FILE_NAMES if use_layout else False
+            Path(source_path).name.lower() in Config.LAYOUT_FILE_NAMES if use_layout else False
         )
         layout_import = (
-            RouteLayout.get_closest_import(self.source_path, is_layout=is_layout_file)
+            RouteLayout.get_closest_import(source_path, is_layout=is_layout_file)
             if use_layout
             else None
         )
@@ -123,7 +126,10 @@ class LogicGenerator:
         names = [n for n in idents if not n.startswith("_")]
 
         context_items = ", ".join([f'"{n}": {n}' for n in names])
-        slot = "Slot = caller if (locals().get('caller') and callable(caller)) else (lambda: children if locals().get('children') else '')"
+        slot = (
+            "Slot = caller if (locals().get('caller') and callable(caller)) else "
+            "(lambda: children if locals().get('children') else '')"
+        )
 
         extras = "'trans': __trans, '__locale': __current_locale.get()"
         if context_items != "":

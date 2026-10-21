@@ -90,7 +90,7 @@ def _glob_ref(src: Path, posix_src: str) -> tuple[str, str]:
         rel_from_cwd = "/" + src.resolve().relative_to(cwd).as_posix().lstrip("/")
     except ValueError:
         rel_from_cwd = "/" + posix_src.lstrip("/")
-    key_hash = hashlib.md5(rel_from_cwd.encode("utf-8")).hexdigest()
+    key_hash = hashlib.md5(rel_from_cwd.encode("utf-8"), usedforsecurity=False).hexdigest()
     return rel_from_cwd, key_hash
 
 

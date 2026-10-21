@@ -20,13 +20,30 @@ Resolved = tuple[str, str, str, set[str]]
 
 
 def fetch_remote_component(url: str) -> str | None:
-    """Fetches component source from a remote URL."""
+    """Fetches component source from a remote URL.
+
+    Only http(s) is accepted: urlopen would otherwise happily follow
+    file:// or custom schemes and read local files.
+    """
+    if not url.startswith(("http://", "https://")):
+        error_msg = f"[red]{t('add.error', 'Error:')}[/red] Only http(s) URLs are supported."
+        console.print(error_msg)
+        return None
     try:
-        status_msg = f"[yellow]nexy[/yellow] \u00bb {t('add.fetching', 'Fetching remote component from')} {url}..."
-        with console.status(status_msg, spinner="dots"), urllib.request.urlopen(url) as response:
-            return response.read().decode("utf-8")
+        status_msg = (
+            f"[yellow]nexy[/yellow] \u00bb "
+            f"{t('add.fetching', 'Fetching remote component from')} {url}..."
+        )
+        # Scheme already restricted to http(s) by the guard above.
+        status_ctx = console.status(status_msg, spinner="dots")
+        with status_ctx, urllib.request.urlopen(url) as response:  # nosec B310
+            text: str = response.read().decode("utf-8")
+            return text
     except Exception as e:
-        error_msg = f"[red]{t('add.error', 'Error:')}[/red] {t('add.fetch_failed', 'Failed to fetch component from')} {url}: {e}"
+        error_msg = (
+            f"[red]{t('add.error', 'Error:')}[/red] "
+            f"{t('add.fetch_failed', 'Failed to fetch component from')} {url}: {e}"
+        )
         console.print(error_msg)
         return None
 
@@ -40,8 +57,10 @@ def add(
     config = Config()
 
     framework = "react"
-    if config.useFF:
-        framework = config.useFF.name.lower()
+    use_ff = config.useFF
+    if use_ff:
+        # A list config selects the first framework (same convention as _normalize_ff).
+        framework = (use_ff[0] if isinstance(use_ff, list) else use_ff).name.lower()
 
     if all:
         components = list(COMPONENT_REGISTRY.keys())
@@ -67,9 +86,15 @@ def add(
 
 
 def _print_available_components() -> None:
-    usage_msg = f"[yellow]{t('add.usage', 'Usage:')}[/yellow] {t('add.usage_text', 'nexy add [COMPONENT_NAME or URL]...')}"
+    usage_msg = (
+        f"[yellow]{t('add.usage', 'Usage:')}[/yellow] "
+        f"{t('add.usage_text', 'nexy add [COMPONENT_NAME or URL]...')}"
+    )
     console.print(usage_msg)
-    available_msg = f"{t('add.available', 'Available UI components:')} [cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
+    available_msg = (
+        f"{t('add.available', 'Available UI components:')} "
+        f"[cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
+    )
     console.print(available_msg)
 
 
@@ -99,10 +124,7 @@ def _resolve_registry_component(item: str, framework: str) -> Resolved | None:
         console.print(not_found_msg)
         return None
 
-    if framework in entry.framework_code:
-        fw = framework
-    else:
-        fw = next(iter(entry.framework_code))
+    fw = framework if framework in entry.framework_code else next(iter(entry.framework_code))
     return entry.name, entry.framework_code[fw], fw, set(entry.dependencies)
 
 
@@ -111,7 +133,10 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
     file_path = target_dir / f"{name}.nexy"
 
     if file_path.exists():
-        skip_msg = f"[yellow]{t('add.skipping', 'Skipping:')}[/yellow] {file_path} {t('add.exists', 'already exists.')}"
+        skip_msg = (
+            f"[yellow]{t('add.skipping', 'Skipping:')}[/yellow] "
+            f"{file_path} {t('add.exists', 'already exists.')}"
+        )
         console.print(skip_msg)
         return
 
@@ -119,5 +144,8 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
         PathUtil.write_file(file_path, wrap_component_script(content, framework))
         console.print(f"[green]{t('add.added', 'Added:')}[/green] {file_path}")
     except Exception as e:
-        error_msg = f"[red]{t('add.error', 'Error:')}[/red] {t('add.write_failed', 'Failed to write')} {file_path}: {e}"
+        error_msg = (
+            f"[red]{t('add.error', 'Error:')}[/red] "
+            f"{t('add.write_failed', 'Failed to write')} {file_path}: {e}"
+        )
         console.print(error_msg)

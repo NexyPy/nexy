@@ -7,6 +7,16 @@ from nexy.utils.server.ports import get_vite_port
 
 
 def Vite() -> str:
+    """Return the Vite client tag to prepend to every page.
+
+    Dev mode serves the HMR WebSocket script (with the compile-error overlay);
+    prod mode inlines or links the built client from the Vite manifest.
+
+    Returns:
+        The `<script>` (and CSS) markup for the current mode, or an empty
+        string when the project has no vite.config.ts, Vite is disabled in
+        nexyconfig, or the production manifest is missing.
+    """
     config = Config()
     if not os.path.exists("vite.config.ts"):
         return ""

@@ -9,13 +9,13 @@ class VFS:
     Uses lazy loading: only file paths are indexed at startup, content is read on demand.
     """
 
-    _instance = None
+    _instance: "VFS | None" = None
     _files: dict[str, str] = {}
     _disk_files: set[str] = set()
     _dev_mode: bool = False
     _disk_prefix: str = "__nexy__"
 
-    def __new__(cls):
+    def __new__(cls) -> "VFS":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._index_from_disk()

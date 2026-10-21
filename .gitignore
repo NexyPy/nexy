@@ -66,6 +66,12 @@ __nexy__/
 **/__nexy__/**
 tasks
 session.ai
+ai
+
+# Session / audit artifacts (regenerated on demand)
+bandit*.json
+bf*.json
+server_orig.py
 
 # Env / deploy
 .vercel

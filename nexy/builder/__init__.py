@@ -151,7 +151,7 @@ class Builder:
         result = BuildResult()
         max_workers = min(os.cpu_count() or 1, len(files) or 1)
 
-        def compile_file(file_path) -> tuple[str, BuildError | None, bool]:
+        def compile_file(file_path: Path) -> tuple[str, BuildError | None, bool]:
             rel = file_path.resolve().relative_to(Path.cwd())
             input_path = rel.as_posix()
             file_hash = _get_file_fingerprint(file_path)

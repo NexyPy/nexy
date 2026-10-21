@@ -30,7 +30,7 @@ ruff format nexy/
 python -m pytest tests/unit/nexy/parser/test_scanner.py -v
 
 # Install dev deps
-uv pip install -e ".[dev]"
+uv pip install -e . --group dev
 ```
 
 ## Architecture
@@ -50,7 +50,7 @@ uv pip install -e ".[dev]"
 - **Python**: hatchling build, uv for deps, >=3.12 (`.python-version` = 3.13)
 - **JS/TS**: pnpm (root + `extensions/vscode/` + `packages/react/`), vite 7, eslint
 - **Lint/format**: ruff for both (line-length=100, target-version=py312). No black/isort.
-- **Typecheck**: mypy --strict on `nexy/` + `tsc -b` for TS
+- **Typecheck**: mypy --strict on `nexy/`; TypeScript typecheck lives in `extensions/vscode/` (own `tsconfig.json`, its own pnpm install)
 - **CLI binary**: `nx` or `nexy` → `nexy.cli:CLI`
 
 ## Gotchas
@@ -59,7 +59,7 @@ uv pip install -e ".[dev]"
 - Integration tests (`tests/integration/`) may require project scaffolding or a temp workspace.
 - `docs/` is a **separate Nexy app** with its own `.git` - do not treat as monorepo child.
 - `skills/` dir contains project philosophy docs (KISS, SOLID, TDD, framework-dev).
-- `nexyconfig.py` at root is the user-facing config (not `pyproject.toml`).
+- `nexyconfig.py` is the user-facing config of a **user project** (loaded at runtime from the project root by `nexy/core/config.py`; runnable example in `examples/minimal/nexyconfig.py`). The framework repo itself has none.
 - `.nexy` files use `---` frontmatter delimiter for Python logic.
 
 ## Conventions

@@ -1,8 +1,10 @@
 import asyncio
 import os
 import sys
+import threading
 import time
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
@@ -44,7 +46,13 @@ def is_ignored_path(path: str) -> bool:
         "__pycache__/",
         "node_modules/",
     )
-    return any(seg in path for seg in ignored)
+    if any(seg in path for seg in ignored):
+        return True
+    # excludeDirs (docs, templates, ...) must be checked here: the watchdog
+    # exclusion globs ("**/docs/**") do not match with PurePath.match, so the
+    # watchdog-level ignore_patterns never filter root-level directories.
+    posix = f"/{path}"
+    return any(f"/{dir_name}/" in posix for dir_name in Config().excludeDirs)
 
 
 def needs_restart(path: str) -> bool:
@@ -64,6 +72,7 @@ class WatchHandler(PatternMatchingEventHandler):
         self._last_event_time: float = 0.0
         self._last_path: str = ""
         self._min_interval = min_interval
+        self._pending: dict[str, threading.Timer] = {}
         self.compiler = Compiler()
 
     def _should_trigger(self, path: str) -> bool:
@@ -143,21 +152,47 @@ class WatchHandler(PatternMatchingEventHandler):
         if event.is_directory:
             return
         path = normalize_path(event.src_path)
-        if throttle and not self._should_trigger(path):
-            return
         if is_ignored_path(path):
             return
+        if throttle and not self._should_trigger(path):
+            # Save bursts (truncate + write on Windows) hit the leading edge
+            # mid-save: re-process once the path has gone quiet.
+            self._schedule_trailing(path)
+            return
+        self._process_path(path)
 
+    def _schedule_trailing(self, path: str) -> None:
+        timer = self._pending.pop(path, None)
+        if timer is not None:
+            timer.cancel()
+        timer = threading.Timer(self._min_interval, self._run_trailing, args=(path,))
+        timer.daemon = True
+        self._pending[path] = timer
+        timer.start()
+
+    def _run_trailing(self, path: str) -> None:
+        self._pending.pop(path, None)
+        self._last_event_time = time.time()
+        self._process_path(path)
+
+    def _process_path(self, path: str) -> None:
+        if not os.path.exists(path):
+            # Atomic saves briefly remove the file; a create/moved event follows.
+            return
         event_start = time.perf_counter()
-
         if path.endswith((".nexy", ".mdx", ".md")):
             try:
                 self._compile_and_log(path)
             except Exception as e:
                 self._broadcast_compile_error(path, e)
                 return
-
         self._trigger_reload(path, event_start)
+
+    def cancel_trailing(self) -> None:
+        """Cancel scheduled trailing reprocessing (used on shutdown)."""
+        for timer in self._pending.values():
+            timer.cancel()
+        self._pending.clear()
 
     def on_deleted(self, event: FileSystemEvent) -> None:
         if event.is_directory:
@@ -183,7 +218,40 @@ class WatchHandler(PatternMatchingEventHandler):
         self.on_created(dest_event)
 
 
-def stop_observer(observer: Observer | None) -> None:
+def purge_project_modules(root: Path | None = None) -> list[str]:
+    """Drop project-local modules so the dev restart re-imports fresh code.
+
+    Framework modules (``nexy`` / ``nexy.*``) and environment directories
+    (``.venv``, ``site-packages``, ``node_modules``) are never dropped:
+    re-importing them mid-run would leave already-imported modules holding a
+    stale ``Config`` class.
+
+    Args:
+        root: Project root to purge from. Defaults to the current directory.
+
+    Returns:
+        The names removed from ``sys.modules``.
+    """
+    base = (root or Path.cwd()).resolve().as_posix()
+    skip_markers = ("/.venv/", "/venv/", "/site-packages/", "/node_modules/")
+    purged: list[str] = []
+    for name, module in list(sys.modules.items()):
+        if name == "nexy" or name.startswith(("nexy.", "__nexy__")):
+            continue
+        module_file = getattr(module, "__file__", None)
+        if not module_file:
+            continue
+        file_posix = Path(module_file).resolve().as_posix()
+        if not file_posix.startswith(base + "/"):
+            continue
+        if any(marker in file_posix for marker in skip_markers):
+            continue
+        del sys.modules[name]
+        purged.append(name)
+    return purged
+
+
+def stop_observer(observer: Any) -> None:
     """Stop the watchdog observer cleanly and wait for its thread."""
     if not observer:
         return
@@ -199,7 +267,7 @@ def create_observer(
     patterns: list[str],
     ignore_patterns: list[str],
     on_reload_api: Callable[[], None],
-):
+) -> Any:
     event_handler = WatchHandler(
         patterns=patterns,
         ignore_patterns=ignore_patterns,

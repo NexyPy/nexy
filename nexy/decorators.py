@@ -1,10 +1,11 @@
 import functools
 import inspect
 from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Set as AbstractSet
 from contextvars import ContextVar
 from enum import Enum
 from threading import RLock
-from typing import AbstractSet, Any
+from typing import Any
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
@@ -29,7 +30,7 @@ def Injectable(scope: Scope = Scope.SINGLETON) -> Callable[[type[Any]], type[Any
             original_init = cls.__init__
 
             @functools.wraps(original_init)
-            def _guarded_init(self, *args: Any, **kwargs: Any) -> None:
+            def _guarded_init(self: Any, *args: Any, **kwargs: Any) -> None:
                 if not Container._di_context.get():
                     raise TypeError(
                         f"{cls.__name__} is managed by Nexy. "
@@ -48,7 +49,7 @@ class Container:
     _instances: dict[type[Any], Any] = {}
     _lock = RLock()
     _resolving: set[type[Any]] = set()
-    _request_store: ContextVar = ContextVar("_request_store", default=None)
+    _request_store: ContextVar[Any] = ContextVar("_request_store", default=None)
     _di_context: ContextVar[bool] = ContextVar("_di_context", default=False)
 
     @classmethod
@@ -221,7 +222,7 @@ def UseRoute(
     )
 
     def wrapper(handler: Callable[..., Any]) -> Callable[..., Any]:
-        handler.__nexy_route_meta__ = meta
+        setattr(handler, "__nexy_route_meta__", meta)
         return handler
 
     return wrapper
@@ -277,7 +278,7 @@ def UseResponse(
     )
 
     def wrapper(handler: Callable[..., Any]) -> Callable[..., Any]:
-        handler.__nexy_response_meta__ = meta
+        setattr(handler, "__nexy_response_meta__", meta)
         return handler
 
     return wrapper
@@ -295,7 +296,7 @@ def Module(
             raise ValueError(f"Module {cls.__name__} must have at least one controller")
 
         module_router = APIRouter(prefix=prefix)
-        module_router.__module_exports__ = exports_list
+        setattr(module_router, "__module_exports__", exports_list)
 
         for sub_router in imports_list:
             for exported_cls in getattr(sub_router, "__module_exports__", []):
@@ -334,7 +335,8 @@ def _register_controller(ctrl_cls: type[Any], parent_router: APIRouter) -> None:
             if method_upper in seen_http_methods:
                 print(f"{ctrl_cls.__name__} has multiple handlers for HTTP method {method_upper} ")
                 raise ValueError(
-                    f"Controller {ctrl_cls.__name__} has multiple handlers for HTTP method {method_upper}"
+                    f"Controller {ctrl_cls.__name__} "
+                    f"has multiple handlers for HTTP method {method_upper}"
                 )
             seen_http_methods.add(method_upper)
             method_guards: Iterable[Callable[..., Any]] = getattr(
@@ -404,8 +406,8 @@ def _register_controller(ctrl_cls: type[Any], parent_router: APIRouter) -> None:
     parent_router.include_router(ctrl_router)
 
 
-def Action(func: Callable | None = None):
-    def decorator(f: Callable):
+def Action(func: Callable[..., Any] | None = None) -> Any:
+    def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
         ACTIONS_STORE.register(f)
         return f
 

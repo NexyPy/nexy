@@ -298,7 +298,8 @@ class FBRouter:
                     Compiler().compile(input=str(app_path))
                 except Exception as compile_exc:
                     console.print(
-                        f"  [red]ERROR[/red] {app_path.name} ({app_path}): compile failed - {compile_exc}"
+                        f"  [red]ERROR[/red] {app_path.name} ({app_path}): "
+                        f"compile failed - {compile_exc}"
                     )
                     continue
             else:

@@ -72,7 +72,7 @@ def write_keys_file(src_dir: Path) -> None:
         for ext in NAVIGABLE_EXTS:
             for p in src_root.glob(f"**/*{ext}"):
                 rel = "/" + p.as_posix().lstrip("/")
-                mapping[hashlib.md5(rel.encode("utf-8")).hexdigest()] = rel
+                mapping[hashlib.md5(rel.encode("utf-8"), usedforsecurity=False).hexdigest()] = rel
 
     lines = ["export const __NEXY_KEYS: Record<string,string> = {"]
     lines.extend(f'  "{key}": "{value}",' for key, value in mapping.items())

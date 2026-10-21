@@ -2,6 +2,7 @@ import importlib.abc
 import importlib.machinery
 import importlib.util
 import sys
+from collections.abc import Sequence
 
 from nexy.utils.fs.vfs import VFS
 
@@ -42,7 +43,7 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
         return None
 
     def find_spec(
-        self, fullname: str, _path: list[str] | None, _target: object | None = None
+        self, fullname: str, _path: Sequence[str] | None, _target: object | None = None
     ) -> importlib.machinery.ModuleSpec | None:
         if not fullname.startswith("__nexy__"):
             return None

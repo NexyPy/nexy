@@ -18,24 +18,26 @@ from nexy.utils.fs.vfs import VFS
 from nexy.utils.server.ports import find_available_port
 from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG
 
+_WIN_ASYNCIO_PATCHED = False
+
 
 def _patch_win_asyncio() -> None:
     """Suppress ConnectionResetError in asyncio proactor on Windows."""
-    if sys.platform != "win32":
-        return
-    if getattr(_patch_win_asyncio, "_applied", False):
+    global _WIN_ASYNCIO_PATCHED
+    if sys.platform != "win32" or _WIN_ASYNCIO_PATCHED:
         return
     try:
         import asyncio.proactor_events as _pe
 
-        orig = _pe._ProactorBasePipeTransport._call_connection_lost
+        transport_cls: Any = _pe._ProactorBasePipeTransport
+        orig = transport_cls._call_connection_lost
 
-        def _safe_call_connection_lost(self, exc=None):
+        def _safe_call_connection_lost(self: Any, exc: BaseException | None = None) -> None:
             with contextlib.suppress(ConnectionResetError):
                 orig(self, exc)
 
-        _pe._ProactorBasePipeTransport._call_connection_lost = _safe_call_connection_lost
-        _patch_win_asyncio._applied = True
+        transport_cls._call_connection_lost = _safe_call_connection_lost
+        _WIN_ASYNCIO_PATCHED = True
     except Exception:
         pass
 
@@ -86,10 +88,7 @@ class Server:
 
         server_port = find_available_port(base_port, run_host)
 
-        if with_client:
-            client_port = find_available_port(server_port + 1, run_host)
-        else:
-            client_port = 0
+        client_port = find_available_port(server_port + 1, run_host) if with_client else 0
 
         return server_port, client_port
 
@@ -98,7 +97,7 @@ class Server:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.connect(("8.8.8.8", 80))
-            return s.getsockname()[0]
+            return str(s.getsockname()[0])
         except Exception:
             return "127.0.0.1"
         finally:
@@ -111,8 +110,8 @@ class Server:
         return None, None
 
     @staticmethod
-    def stop_process(proc: Popen | None, timeout: int = 5) -> None:
-        """Arrête proprement un processus (Windows ou Unix)."""
+    def stop_process(proc: Popen[Any] | None, timeout: int = 5) -> None:
+        """Stops a child process cleanly (Windows or Unix)."""
         if not proc or proc.poll() is not None:
             return
         try:
@@ -141,8 +140,12 @@ class Server:
         ssl_keyfile: str | None = None,
         ssl_certfile: str | None = None,
         workers: int | None = None,
-    ) -> Popen[Any] | None:
-        """Starts the FastAPI/Uvicorn server with optional workers."""
+    ) -> Popen[Any] | bool | None:
+        """Starts the FastAPI/Uvicorn server with optional workers.
+
+        Returns the spawned process when ``as_process`` is true, ``True`` when the
+        foreground server stopped normally, and ``None`` when the launch failed.
+        """
         cfg = Config()
         run_host = host or "127.0.0.1"
 
@@ -157,7 +160,7 @@ class Server:
 
         _write_port_file("server", port)
 
-        ssl_args = {}
+        ssl_args: dict[str, Any] = {}
         if ssl_keyfile and ssl_certfile:
             ssl_args = {"ssl_keyfile": ssl_keyfile, "ssl_certfile": ssl_certfile}
 
@@ -185,10 +188,12 @@ class Server:
                     stderr=subprocess.STDOUT,
                 )
             else:
-                workers_kwargs = {"workers": num_workers} if num_workers and num_workers > 1 else {}
+                workers_kwargs: dict[str, Any] = (
+                    {"workers": num_workers} if num_workers and num_workers > 1 else {}
+                )
                 _uvicorn.run(
                     "nexy.routers.app:_server",
-                    host=host,
+                    host=run_host,
                     port=port,
                     log_config=NEXY_LOG_CONFIG,
                     log_level="info",
@@ -206,10 +211,12 @@ class Server:
     def wait_for_vite_ready(
         port: int, host: str = "localhost", timeout: int = 30, ssl: bool = False
     ) -> bool:
-        """Attend que Vite soit prêt à répondre aux requêtes."""
+        """Waits until the Vite dev server answers the readiness probe."""
         import urllib.request
 
         protocol = "https" if ssl else "http"
+        if protocol not in ("http", "https"):
+            raise ValueError(f"Unsupported protocol for Vite readiness probe: {protocol!r}")
         start_time = time.time()
 
         while time.time() - start_time < timeout:

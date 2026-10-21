@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
@@ -30,4 +32,7 @@ def register_validation_error_handler(server: FastAPI) -> None:
         errors = exc.errors()
         if errors and all(e.get("loc") and e["loc"][0] == "path" for e in errors):
             return NotFound()
-        return Response(content=exc.json(), status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        # fastapi.RequestValidationError exposes .json() at runtime; its type
+        # stubs do not, so the narrow cast documents that reality.
+        json_text = cast(Any, exc).json()
+        return Response(content=json_text, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
