@@ -29,31 +29,49 @@ def _observer_handler(on_reload_api) -> WatchHandler:
     )
 
 
-def test_dispatch_fires_for_nexy_route() -> None:
+def _touch(tmp_path, rel: str, content: str = "# page") -> str:
+    """Creates the file on disk and returns the relative POSIX path.
+
+    ``_process_path`` skips files that do not exist (atomic-save window), so
+    dispatch-level tests must use real files.
+    """
+    file = tmp_path / rel
+    file.parent.mkdir(parents=True, exist_ok=True)
+    file.write_text(content, encoding="utf-8")
+    return file.relative_to(tmp_path).as_posix()
+
+
+def test_dispatch_fires_for_nexy_route(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    rel = _touch(tmp_path, "src/routes/index.nexy")
     compiled: list[str] = []
     handler = _observer_handler(lambda: None)
     handler._compile_and_log = compiled.append
 
-    handler.dispatch(_event("src/routes/index.nexy"))
+    handler.dispatch(_event(rel))
 
     assert compiled == ["src/routes/index.nexy"]
 
 
-def test_dispatch_fires_for_py_file() -> None:
+def test_dispatch_fires_for_py_file(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    rel = _touch(tmp_path, "src/routes/api.py", "print('hello')")
     reloaded: list[bool] = []
     handler = _observer_handler(lambda: reloaded.append(True))
 
-    handler.dispatch(_event("src/routes/api.py"))
+    handler.dispatch(_event(rel))
 
     assert len(reloaded) == 1
 
 
-def test_dispatch_fires_for_markdown_page() -> None:
+def test_dispatch_fires_for_markdown_page(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    rel = _touch(tmp_path, "src/routes/blog/post.md")
     compiled: list[str] = []
     handler = _observer_handler(lambda: None)
     handler._compile_and_log = compiled.append
 
-    handler.dispatch(_event("src/routes/blog/post.md"))
+    handler.dispatch(_event(rel))
 
     assert compiled == ["src/routes/blog/post.md"]
 
@@ -80,7 +98,10 @@ def test_dispatch_ignores_venv_file() -> None:
 
 
 def test_create_observer_delivers_real_file_change(tmp_path) -> None:
-    """End-to-end: real watchdog Observer -> dispatch -> reload callback."""
+    """End-to-end: real watchdog Observer -> dispatch -> reload callback.
+
+    One save (create + modify events) must yield exactly one reload.
+    """
     hits: list[bool] = []
     observer = create_observer(
         path=str(tmp_path),
@@ -90,8 +111,13 @@ def test_create_observer_delivers_real_file_change(tmp_path) -> None:
     )
     try:
         (tmp_path / "api.py").write_text("value = 1\n", encoding="utf-8")
-        deadline = time.time() + 5
+        # Wait past the debounce window so a trailing double-fire would show up.
+        debounce = WatchHandler()._min_interval
+        deadline = time.time() + debounce + 2
         while time.time() < deadline and not hits:
+            time.sleep(0.05)
+        settle_until = time.time() + debounce
+        while time.time() < settle_until:
             time.sleep(0.05)
     finally:
         stop_observer(observer)

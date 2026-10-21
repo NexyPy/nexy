@@ -73,15 +73,20 @@ class WatchHandler(PatternMatchingEventHandler):
         self._last_path: str = ""
         self._min_interval = min_interval
         self._pending: dict[str, threading.Timer] = {}
+        self._signatures: dict[str, tuple[int, int]] = {}
         self.compiler = Compiler()
 
     def _should_trigger(self, path: str) -> bool:
         current_time = time.time()
         if path == self._last_path and (current_time - self._last_event_time) < self._min_interval:
             return False
-        self._last_event_time = current_time
-        self._last_path = path
+        self._mark_processed(path)
         return True
+
+    def _mark_processed(self, path: str) -> None:
+        """Records the throttle bookkeeping for a path (leading edge)."""
+        self._last_event_time = time.time()
+        self._last_path = path
 
     def _purge_route_modules(self, path: str) -> None:
         """Remove compiled route modules from sys.modules so the next request
@@ -156,9 +161,14 @@ class WatchHandler(PatternMatchingEventHandler):
             return
         if throttle and not self._should_trigger(path):
             # Save bursts (truncate + write on Windows) hit the leading edge
-            # mid-save: re-process once the path has gone quiet.
+            # mid-save: re-process once the path has gone quiet, but only if
+            # the content actually changed since the leading edge.
             self._schedule_trailing(path)
             return
+        if not throttle:
+            # on_created bypasses the throttle: record it so the modified
+            # events of the same save burst do not process a second time.
+            self._mark_processed(path)
         self._process_path(path)
 
     def _schedule_trailing(self, path: str) -> None:
@@ -173,6 +183,10 @@ class WatchHandler(PatternMatchingEventHandler):
     def _run_trailing(self, path: str) -> None:
         self._pending.pop(path, None)
         self._last_event_time = time.time()
+        if not self._content_changed(path):
+            # Same content as the leading edge: one save must produce exactly
+            # one compile / reload / HMR broadcast.
+            return
         self._process_path(path)
 
     def _process_path(self, path: str) -> None:
@@ -184,9 +198,30 @@ class WatchHandler(PatternMatchingEventHandler):
             try:
                 self._compile_and_log(path)
             except Exception as e:
+                # Forget the signature so the trailing edge retries after a
+                # transient mid-save parse error.
+                self._signatures.pop(path, None)
                 self._broadcast_compile_error(path, e)
                 return
+        sig = self._signature(path)
+        if sig is not None:
+            self._signatures[path] = sig
         self._trigger_reload(path, event_start)
+
+    @staticmethod
+    def _signature(path: str) -> tuple[int, int] | None:
+        """Cheap content identity for a file: (mtime_ns, size)."""
+        try:
+            st = os.stat(path)
+        except OSError:
+            return None
+        return (st.st_mtime_ns, st.st_size)
+
+    def _content_changed(self, path: str) -> bool:
+        sig = self._signature(path)
+        if sig is None:
+            return False
+        return self._signatures.get(path) != sig
 
     def cancel_trailing(self) -> None:
         """Cancel scheduled trailing reprocessing (used on shutdown)."""
