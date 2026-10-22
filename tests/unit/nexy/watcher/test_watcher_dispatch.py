@@ -10,7 +10,7 @@ import time
 from watchdog.events import FileModifiedEvent
 
 from nexy.core.config import Config
-from nexy.helpers.dev.watcher import WatchHandler, create_observer, stop_observer
+from nexy.modules.cli.devtools.watcher import WatchHandler, create_observer, stop_observer
 
 
 def _event(path: str) -> FileModifiedEvent:
