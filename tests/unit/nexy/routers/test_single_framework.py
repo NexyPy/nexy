@@ -62,7 +62,7 @@ class TestWarnAndSkipOutOfSet:
         (routes / "page.vue").write_text("<template><div>Vue</div></template>")
         (routes / "page.tsx").write_text("export default function Page() { return null }")
 
-        from nexy.routers.fbrouter.discovery import RouteDiscovery
+        from nexy.modules.routers.fbrouter.discovery import RouteDiscovery
 
         discovery = RouteDiscovery()
         files = [f.name for f in discovery.scan()]

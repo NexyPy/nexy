@@ -1,4 +1,4 @@
-from nexy.frontend.islands import ISLANDS_RUNTIME
+from nexy.modules.frontend.islands import ISLANDS_RUNTIME
 
 
 class TestIslandsRuntime:

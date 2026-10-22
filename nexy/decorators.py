@@ -10,7 +10,7 @@ from typing import Any
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
-from nexy.routers.actions.store import ACTIONS_STORE
+from nexy.modules.routers.actions.store import ACTIONS_STORE
 
 HTTP_METHODS: set[str] = {"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"}
 

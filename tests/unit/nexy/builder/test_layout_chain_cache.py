@@ -1,7 +1,7 @@
 import tempfile
 from pathlib import Path
 
-from nexy.builder import _get_layout_chain, _layout_chain_cache
+from nexy.modules.builder import _get_layout_chain, _layout_chain_cache
 
 
 def test_layout_chain_memoizes_per_directory() -> None:

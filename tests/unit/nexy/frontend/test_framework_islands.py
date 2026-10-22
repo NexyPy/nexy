@@ -1,4 +1,4 @@
-from nexy.frontend import preact, react, solid, svelte, vue
+from nexy.modules.frontend import preact, react, solid, svelte, vue
 
 
 class TestFrameworkIslands:

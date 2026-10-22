@@ -1,4 +1,4 @@
-from nexy.utils.init.prompts import validate_project_name as _validate_name
+from nexy.modules.cli.init.prompts import validate_project_name as _validate_name
 
 
 def test_validate_name_empty_returns_error() -> None:

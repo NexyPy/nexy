@@ -187,14 +187,14 @@ Les deux fichiers existants sont des zéros : les remplir plutôt que d'en crée
 
 | # | Test | Cible réelle |
 |---|---|---|
-| 1 | `test_runtime_compile_and_serve_returns_html` | `nexy/compiler` → `nexy/template.py` → `nexy/routers/app.py` |
-| 2 | `test_runtime_unknown_route_returns_404` | `nexy/routers/error_handlers.py` (couverture actuelle **0 %**) |
+| 1 | `test_runtime_compile_and_serve_returns_html` | `nexy/compiler` → `nexy/template.py` → `nexy/modules/routers/app.py` |
+| 2 | `test_runtime_unknown_route_returns_404` | `nexy/modules/routers/error_handlers.py` (couverture actuelle **0 %**) |
 | 3 | `test_runtime_layout_chain_renders_nested` | `nexy/builder/__init__.py` + `routers/fbrouter/layout.py` |
-| 4 | `test_runtime_markdown_page_renders_toc` | `nexy/runtime/markdown.py` (39 %) |
-| 5 | `test_runtime_second_request_uses_cache` | `nexy/runtime/cache.py` (98 %) — non régression HIT/MISS |
-| 6 | `test_runtime_hmr_message_reaches_client` | `nexy/routers/hmr.py` (**0 %**) |
-| 7 | `test_runtime_locale_prefix_rewrites_path` | `nexy/i18n/middleware.py` (97 %) en condition réelle |
-| 8 | `test_runtime_static_asset_served_from_disk` | `nexy/routers/static_assets.py` (**0 %**) |
+| 4 | `test_runtime_markdown_page_renders_toc` | `nexy/modules/runtime/markdown.py` (39 %) |
+| 5 | `test_runtime_second_request_uses_cache` | `nexy/modules/runtime/cache.py` (98 %) — non régression HIT/MISS |
+| 6 | `test_runtime_hmr_message_reaches_client` | `nexy/modules/routers/hmr.py` (**0 %**) |
+| 7 | `test_runtime_locale_prefix_rewrites_path` | `nexy/modules/i18n/middleware.py` (97 %) en condition réelle |
+| 8 | `test_runtime_static_asset_served_from_disk` | `nexy/modules/routers/static_assets.py` (**0 %**) |
 
 **`tests/integration/nexy/builder/test_builder.py`** *(actuellement vide)* — à remplir de :
 
@@ -216,16 +216,15 @@ Les deux fichiers existants sont des zéros : les remplir plutôt que d'en crée
 
 33 fichiers représentent **60 % du code non couvert** (1 628 / 2 716 lignes). On commence là.
 
-#### Tier A — 11 fichiers à **0 %** (164 lignes) ⬅️ priorité 1
+#### Tier A — 10 fichiers à **0 %** (141 lignes) ⬅️ priorité 1
 
 | Fichier | % | Statements | Test cible à créer |
 |---|---|---|---|
-| `nexy/routers/app.py` | 0 | 57 | `tests/unit/nexy/routers/test_app_server.py` |
-| `nexy/routers/static_assets.py` | 0 | 23 | `tests/unit/nexy/routers/test_static_assets.py` |
-| `nexy/frontend/base.py` | 0 | 23 | `tests/unit/nexy/frontend/test_frontend_base.py` |
-| `nexy/routers/router_resolver.py` | 0 | 19 | `tests/unit/nexy/routers/test_router_resolver.py` |
-| `nexy/routers/error_handlers.py` | 0 | 17 | `tests/unit/nexy/routers/test_error_handlers.py` |
-| `nexy/routers/hmr.py` | 0 | 11 | `tests/unit/nexy/routers/test_hmr.py` |
+| `nexy/modules/routers/app.py` | 0 | 57 | `tests/unit/nexy/modules/routers/test_app_server.py` |
+| `nexy/modules/routers/static_assets.py` | 0 | 23 | `tests/unit/nexy/modules/routers/test_static_assets.py` |
+| `nexy/modules/routers/router_resolver.py` | 0 | 19 | `tests/unit/nexy/modules/routers/test_router_resolver.py` |
+| `nexy/modules/routers/error_handlers.py` | 0 | 17 | `tests/unit/nexy/modules/routers/test_error_handlers.py` |
+| `nexy/modules/routers/hmr.py` | 0 | 11 | `tests/unit/nexy/modules/routers/test_hmr.py` |
 | `nexy/cli/__main__.py` | 0 | 5 | `tests/unit/nexy/cli/test_main.py` |
 | `nexy/app.py` | 0 | 3 | `tests/unit/nexy/test_app.py` |
 | `nexy/core/types.py` | 0 | 2 | `tests/unit/nexy/core/test_types.py` |
@@ -241,20 +240,20 @@ Les deux fichiers existants sont des zéros : les remplir plutôt que d'en crée
 | `nexy/image.py` | 9 | 10 | branches `Image()` |
 | `nexy/cli/commands/migrate.py` | 9 | 108 | 3 ORM (sqlmodel/tortoise/sqlalchemy) — mocker |
 | `nexy/link.py` | 10 | 9 | branches `Link()` |
-| `nexy/utils/init/clone.py` | 13 | 115 | clone de template + erreurs réseau |
+| `nexy/modules/cli/init/clone.py` | 13 | 115 | clone de template + erreurs réseau |
 | `nexy/cli/commands/dev.py` | 13 | 94 | supervision du processus |
-| `nexy/utils/server/uvicorn_config.py` | 14 | 92 | config uvicorn |
-| `nexy/utils/common/report.py` | 17 | 35 | rendu console |
+| `nexy/helpers/server/uvicorn_config.py` | 14 | 92 | config uvicorn |
+| `nexy/helpers/common/report.py` | 17 | 35 | rendu console |
 | `nexy/cli/commands/translate.py` | 17 | 163 | batch translate — mocker `deep_translator` |
-| `nexy/i18n/_cli.py` | 18 | 62 | CLI i18n |
+| `nexy/modules/i18n/_cli.py` | 18 | 62 | CLI i18n |
 | `nexy/cli/commands/format.py` | 19 | 83 | formatage |
-| `nexy/i18n/i18n_decorator.py` | 19 | 17 | **+ erreur mypy `method-assign`** |
-| `nexy/utils/common/formatting.py` | 20 | 12 | |
+| `nexy/modules/i18n/i18n_decorator.py` | 19 | 17 | **+ erreur mypy `method-assign`** |
+| `nexy/helpers/common/formatting.py` | 20 | 12 | |
 | **`nexy/decorators.py`** | 20 | **184** | **2e plus gros trou**, 0 docstring |
-| `nexy/utils/init/dependencies.py` | 20 | 87 | |
-| `nexy/routers/fbrouter/dependencies.py` | 21 | 31 | injection |
+| `nexy/modules/cli/init/dependencies.py` | 20 | 87 | |
+| `nexy/modules/routers/fbrouter/dependencies.py` | 21 | 31 | injection |
 | `nexy/cli/commands/start.py` | 22 | 25 | |
-| `nexy/utils/init/template_setup.py` | 25 | 126 | |
+| `nexy/modules/cli/init/template_setup.py` | 25 | 126 | |
 | `nexy/cli/commands/add.py` | 26 | 63 | |
 | `nexy/cli/commands/check.py` | 28 | 44 | |
 | `nexy/cli/commands/build.py` | 28 | 62 | couvert plus largement par P1 e2e |
@@ -274,21 +273,21 @@ Ordre : `decorators.py` (184) → `utils/server/server.py` (112) → `routers/fb
 | Fichier | Ruff | Mypy | Stratégie |
 |---|---|---|---|
 | `nexy/core/models.py` | **38** | 5 | `N815` → décision de convention (voir §3.1) |
-| `nexy/utils/server/server.py` | 1 | **34** | annotations & `Protocol` : c'est **24 % de tout mypy** |
-| `nexy/utils/init/registry.py` | 13 | 0 | `W291`×3 = auto-fix ; reste = `N815` |
+| `nexy/helpers/server/server.py` | 1 | **34** | annotations & `Protocol` : c'est **24 % de tout mypy** |
+| `nexy/modules/cli/init/registry.py` | 13 | 0 | `W291`×3 = auto-fix ; reste = `N815` |
 | `nexy/decorators.py` | 11 | **9** | `N802` sur `Controller`/`UseGuard`/… (API publique) |
 | `nexy/core/config.py` | 11 | **6** | déclarer les 7 champs manquants de `Config` (`useTocDepth`, `useTocTitle`, `useTocAuto`, `useDocsUrl`, `useRedocsUrl`, `useDefaultLocale`, `useLocalesDir`) → **10 des 44 `attr-defined`** tombent (ses 6 + les 4 de `routers/app.py` qui lisent ces mêmes attributs) |
-| `nexy/routers/middlewares.py` | 0 | **12** | **plus gros contributeur** : annoter les types du pipeline de middlewares |
-| `nexy/routers/app.py` | 0 | 6 | lit `Config.useDocsUrl/useRedocsUrl/useDefaultLocale/useLocalesDir` → résolu par la ligne au-dessus ; **0 % de couverture** (Tier A) |
+| `nexy/modules/routers/middlewares.py` | 0 | **12** | **plus gros contributeur** : annoter les types du pipeline de middlewares |
+| `nexy/modules/routers/app.py` | 0 | 6 | lit `Config.useDocsUrl/useRedocsUrl/useDefaultLocale/useLocalesDir` → résolu par la ligne au-dessus ; **0 % de couverture** (Tier A) |
 | `nexy/cli/commands/add.py` | 9 | 2 | `E501` + `ARG001 ui` (paramètre mort) |
 | `nexy/cli/commands/translate.py` | 4 | 7 | **+ `F841 status` — valeur écrasée jamais lue = bug probable** |
 | `nexy/hooks.py` | 8 | 5 | 0 docstring, 38 % de couverture |
 | `nexy/__init__.py` | 4 | 0 | `N812` ×4 (ré-exports `Audio`…) → `__all__` |
-| `nexy/i18n/i18n_decorator.py` | 1 | 6 | **+ `method-assign`**, 19 % de couverture |
+| `nexy/modules/i18n/i18n_decorator.py` | 1 | 6 | **+ `method-assign`**, 19 % de couverture |
 | `nexy/cli/commands/migrate.py` | 0 | 3 | `import-not-found` ×3 → ajouter types extras **ou** import local + `# type: ignore[import-not-found]` **justifié** |
 | `nexy/vite.py` | 4 | 2 | |
-| `nexy/utils/dev/watcher.py` | 0 | 4 | couverture 81 % |
-| `nexy/runtime/importer.py` | 0 | 4 | **+ `override` : signature `find_spec` incompatible avec la `supertype` `MetaPathFinder` → comportement à risque** |
+| `nexy/modules/cli/devtools/watcher.py` | 0 | 4 | couverture 81 % |
+| `nexy/modules/runtime/importer.py` | 0 | 4 | **+ `override` : signature `find_spec` incompatible avec la `supertype` `MetaPathFinder` → comportement à risque** |
 | + 24 fichiers à 1–3 erreurs chacun | 3 | 24 | passage en revue unitaire |
 
 > **Les 44 `attr-defined` sont répartis sur 11 fichiers** (middlewares 12, server 7, config 6, app 4, translate 4, decorators 3, vite 2, watcher 2, i18n.middleware 2, error_handlers 1, i18n_decorator 1) — **il n'y a donc pas une cause unique**. Le lot `Config` (10 erreurs) s'efface d'un trait, mais `middlewares.py` (12) et `server.py` (7) exigent leur propre passe d'annotations.
@@ -323,10 +322,10 @@ Le périmètre est **365 API publiques** : 145 docstrings en prose à convertir,
 | Priorité | Bloc | API | État |
 |---|---|---|---|
 | 1 | `nexy/__init__.py`, `nexy/template.py`, `nexy/hooks.py`, `nexy/decorators.py`, `nexy/errors.py`, `nexy/vite.py`, `nexy/core/*` | surface exportée | **ignorée : 0 docstring sur `decorators.py` (23), `models.py` (14), `hooks.py` (8), `core/types.py`** |
-| 2 | `nexy/compiler/**` | parser/generator | 20 docstrings sans section |
-| 3 | `nexy/routers/**` | routing | `fbrouter/validator.py`, `middlewares.py` vides |
-| 4 | `nexy/frontend/**` | frameworks | `vite_entry.py` : 9 docstrings, **0 Google** |
-| 5 | `nexy/utils/**` | utilitaires | `fs/path.py` 8/8 non-Google, `server/*`, `init/*` |
+| 2 | `nexy/modules/compiler/**` | parser/generator | 20 docstrings sans section |
+| 3 | `nexy/modules/routers/**` | routing | `fbrouter/validator.py`, `middlewares.py` vides |
+| 4 | `nexy/modules/frontend/**` | frameworks | `vite_entry.py` : 9 docstrings, **0 Google** |
+| 5 | `nexy/helpers/**` | utilitaires | `fs/path.py` 8/8 non-Google, `server/*`, `init/*` |
 | 6 | `nexy/cli/**` | commandes Typer | la docstring devient l'aide `--help` |
 
 **Format imposé** (CONTRIBUTING.md) :
@@ -520,7 +519,7 @@ Les 4 quality gates retournent **0**. Aucun `noqa`, `type: ignore` ou `per-file-
 
 **1. `mypy --strict` : 144 → 0.**
 
-Dès la première mesure, les 29 dernières erreurs projectives étaient **toutes dans un seul fichier**, `nexy/utils/server/server.py` ; les 125 autres fichiers étaient déjà verts. Corrections, sans aucune suppression :
+Dès la première mesure, les 29 dernières erreurs projectives étaient **toutes dans un seul fichier**, `nexy/helpers/server/server.py` ; les 125 autres fichiers étaient déjà verts. Corrections, sans aucune suppression :
 
 | Erreur mypy | Nb | Correction |
 |---|---|---|
@@ -540,7 +539,7 @@ Dès la première mesure, les 29 dernières erreurs projectives étaient **toute
 
 **4. Couverture : `fail_under` 52,8 → 54.**
 
-`nexy/utils/server/server.py` était à **24 %** ; les 29 lignes ajoutées par le travail de typage l'ont fait retomber à 52,79 %, sous le seuil. Plutôt que de baisser le seuil, `tests/unit/nexy/utils/test_server.py` a été créé : **18 tests, 1 assertion chacun, tous verts**, portant le module à **67 %** et la couverture globale à **54,15 %**.
+`nexy/helpers/server/server.py` était à **24 %** ; les 29 lignes ajoutées par le travail de typage l'ont fait retomber à 52,79 %, sous le seuil. Plutôt que de baisser le seuil, `tests/unit/nexy/helpers/test_server.py` a été créé : **18 tests, 1 assertion chacun, tous verts**, portant le module à **67 %** et la couverture globale à **54,15 %**.
 
 Cas couverts : écriture de port, marqueur `nexy.prod` (création **et** suppression), IP réseau, `get_ssl_config` (complet / certfile manquant), `stop_process` (None / process fini / enfant vivant), `_detect_pm`, les 3 sorties de `wait_for_vite_ready` (succès immédiat, échec jusqu'au timeout, `ssl=True` → `https://`), les 3 sorties de `uvicorn()` (`as_process` → `Popen`, premier plan → `True`, exception → `None`), propagation de `workers`, et `resolve_ports(with_client=False)` → `0`.
 

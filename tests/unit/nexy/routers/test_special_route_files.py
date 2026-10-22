@@ -4,10 +4,10 @@ import types
 from nexy.core.config import Config
 from nexy.core.models import FrontendFramework
 from nexy.core.string import StringTransform
-from nexy.frontend.react import react
-from nexy.routers.fbrouter import FBRouter
-from nexy.routers.fbrouter.discovery import RouteDiscovery
-from nexy.routers.fbrouter.layout import RouteLayout
+from nexy.modules.frontend.react import react
+from nexy.modules.routers.fbrouter import FBRouter
+from nexy.modules.routers.fbrouter.discovery import RouteDiscovery
+from nexy.modules.routers.fbrouter.layout import RouteLayout
 
 
 class TestSpecialRouteFilesConfig:

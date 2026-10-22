@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-from nexy.compiler.markdown_route import MarkdownRouteCompiler
 from nexy.core.config import Config
-from nexy.runtime.importer import install_vfs_importer
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
+from nexy.modules.compiler.markdown_route import MarkdownRouteCompiler
+from nexy.modules.runtime.importer import install_vfs_importer
 
 MD = "# Hello World\n\nSome **content**.\n"
 
