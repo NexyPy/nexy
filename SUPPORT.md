@@ -28,7 +28,7 @@ with:
 ## Security vulnerabilities
 
 Please **do not** report security issues publicly. Email
-[hopcy.forcy@gamil.com](mailto:hopcy.forcy@gamil.com) instead.
+[hopcy.forcy@gmail.com](mailto:hopcy.forcy@gmail.com) instead.
 See [SECURITY.md](SECURITY.md) for our disclosure policy.
 
 ## Feature requests
