@@ -13,30 +13,77 @@ jobs:
       matrix:
         python-version: ["3.12", "3.13"]
 
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
+
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install deps
-        run: uv pip install -e . --group dev
+      # Reproducible install: everything comes from the committed uv.lock.
+      # Any drift between pyproject.toml and uv.lock fails this step.
+      - name: Install deps (locked)
+        run: uv sync --frozen --group dev
 
-      - name: Lint
-        run: ruff check nexy/
+      - name: Lint (nexy + tests)
+        run: uv run --no-sync ruff check nexy/ tests/
 
       - name: Format
-        run: ruff format nexy/ --check
+        run: uv run --no-sync ruff format nexy/ tests/ --check
 
       - name: Typecheck
-        run: python -m mypy nexy --strict
+        run: uv run --no-sync python -m mypy nexy --strict
 
       - name: Test
-        run: python -m pytest tests/ -v --tb=short
+        run: uv run --no-sync python -m pytest tests/ --tb=short
 
-      - name: Test coverage
-        run: python -m pytest tests/ --cov=nexy --cov-report=term-missing
+      - name: Test coverage (floor enforced by fail_under)
+        run: uv run --no-sync python -m pytest tests/ --cov=nexy --cov-report=term-missing
 
-      - name: Security (bandit)
-        run: python -m bandit -r nexy/ -c .bandit --exit-zero
+      - name: Security (bandit, zero findings)
+        run: uv run --no-sync python -m bandit -r nexy/ -c .bandit
+
+      # Dependency audit runs against the lock snapshot, including dev tools
+      # (attackers reach contributors too); the project itself is excluded
+      # because "nexy" is not on PyPI. The one ignore is documented in
+      # SECURITY.md ("Dependency audit register").
+      - name: Dependency audit (pip-audit)
+        run: |
+          uv export --frozen --no-emit-project --format requirements.txt -o requirements-audit.txt
+          uv run --no-sync pip-audit -r requirements-audit.txt --disable-pip --strict \
+            --ignore-vuln PYSEC-2022-252
+
+  extension:
+    name: VS Code extension (build + typecheck + lint)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: extensions/vscode
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+        with:
+          version: 9
+
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: extensions/vscode/pnpm-lock.yaml
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm run check-types
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Production esbuild bundle
+        run: pnpm run package

@@ -14,6 +14,10 @@ cd packages/docs
 node js/build.mjs          # regenerate all HTML pages from js/content.js
 ```
 
+The generated output (`index.html`, `404.html`, `en/**/index.html`, `js/search-index.js`,
+`sitemap.xml`, `robots.txt`) is gitignored: only sources are tracked, so rebuild before
+publishing the folder to a `gh-pages` branch.
+
 Open `index.html`, or serve the folder:
 
 ```bash

@@ -61,7 +61,9 @@ def _init_alembic(cwd: Path, orm_name: str) -> None:
     alembic_dir = cwd / "alembic"
     if alembic_dir.exists():
         loader = FileSystemLoader(str(TEMPLATES_DIR / "alembic"))
-        env = Environment(loader=loader)
+        # Renders a Python code template (env.py), not HTML; autoescaping
+        # here would corrupt the generated Python. See SECURITY.md.
+        env = Environment(loader=loader)  # nosec B701
         env_path = alembic_dir / "env.py"
         env_path.write_text(env.get_template("env.py.jinja2").render(orm=orm_name))
     _write_db_url_to_alembic_ini(cwd)

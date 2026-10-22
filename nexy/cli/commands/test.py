@@ -1,5 +1,5 @@
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
@@ -41,7 +41,7 @@ def _run_server(root: Path, args: list[str]) -> int:
         return 0
     targets = ["tests/"] if (root / "tests").is_dir() else [str(root)]
     with console.status("  pytest ..."):
-        r = subprocess.run([exe, *targets, *args], capture_output=True, text=True)
+        r = subprocess.run([exe, *targets, *args], capture_output=True, text=True)  # nosec B603
     _print_result("pytest", r)
     return 0 if r.returncode == 0 else 1
 
@@ -51,8 +51,9 @@ def _run_client(root: Path, args: list[str]) -> int:
         msg = t("test.skip_client", "vitest not configured - skipping client tests")
         console.print(f"  [yellow]\u26a0[/yellow] {msg}")
         return 0
+    npx_exe = shutil.which("npx") or sys.executable
     with console.status("  vitest ..."):
-        r = subprocess.run(["npx", "vitest", "run", *args], capture_output=True, text=True)
+        r = subprocess.run([npx_exe, "vitest", "run", *args], capture_output=True, text=True)  # nosec B603/B607
     _print_result("vitest", r)
     return 0 if r.returncode == 0 else 1
 

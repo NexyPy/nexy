@@ -1,4 +1,4 @@
-import subprocess
+import subprocess  # nosec B404
 
 from nexy.utils.common.console import console
 from nexy.utils.common.formatting import artifact_size

@@ -1,5 +1,5 @@
 import json
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 from pathlib import Path
@@ -132,6 +132,6 @@ def _run_checks() -> None:
 
 def _run_single_check(name: str, cmd: list[str]) -> bool:
     with console.status(f"  {name} ..."):
-        r = subprocess.run(cmd, capture_output=True, text=True)
+        r = subprocess.run(cmd, capture_output=True, text=True)  # nosec B603 - trusted internal command construction
     print_cmd_result(name, r)
     return r.returncode == 0

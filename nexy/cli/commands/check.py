@@ -1,5 +1,5 @@
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
@@ -38,14 +38,19 @@ def _check_python(root: Path) -> bool:
         )
         return True
     with console.status("  mypy ..."):
-        r = subprocess.run([exe, str(root)], capture_output=True, text=True)
+        r = subprocess.run([exe, str(root)], capture_output=True, text=True)  # nosec B603
     print_cmd_result("mypy", r)
     return r.returncode == 0
 
 
 def _check_typescript() -> bool:
+    tsc_exe = shutil.which("tsc")
+    if not tsc_exe:
+        skip = t("check.skip_tool", "tsc not found - skipping TypeScript")
+        console.print(f"  [yellow]\u26a0[/yellow] {skip}")
+        return True
     with console.status("  tsc ..."):
-        r = subprocess.run(["tsc", "-b"], capture_output=True, text=True)
+        r = subprocess.run([tsc_exe, "-b"], capture_output=True, text=True)  # nosec B603/B607
     print_cmd_result("tsc", r)
     return r.returncode == 0
 
@@ -63,7 +68,7 @@ def _check_nexy(root: Path) -> bool:
     gen_dir = root / "__nexy__"
     if exe and gen_dir.is_dir():
         with console.status("  mypy __nexy__/ ..."):
-            r = subprocess.run([exe, str(gen_dir)], capture_output=True, text=True)
+            r = subprocess.run([exe, str(gen_dir)], capture_output=True, text=True)  # nosec B603
         print_cmd_result("mypy __nexy__/", r)
         ok = ok and r.returncode == 0
     return ok

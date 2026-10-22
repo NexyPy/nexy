@@ -9,7 +9,7 @@ def _is_port_available(host: str, port: int) -> bool:
     Checks if a port is free by combining a connection attempt
     and a binding fallback.
     """
-    check_host = "127.0.0.1" if host == "0.0.0.0" else host
+    check_host = "127.0.0.1" if host == "0.0.0.0" else host  # nosec B104 - probe never binds
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.settimeout(0.02)
@@ -22,7 +22,7 @@ def _is_port_available(host: str, port: int) -> bool:
             pass
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        if host != "0.0.0.0":
+        if host != "0.0.0.0":  # nosec B104 - literal comparison, not a bind address
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             sock.bind((host, port))

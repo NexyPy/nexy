@@ -21,7 +21,7 @@ def start(port: int | None = None, host: str | None = None) -> None:
     startup_elapsed = time.perf_counter() - startup_start
     startup_timer = f"{startup_elapsed:.2f}s"
 
-    network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host
+    network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host  # nosec B104
 
     try:
         console.print(

@@ -1,38 +1,12 @@
 # Bandit configuration - Nexy.
 #
-# Rule: every skipped test below is an ACCEPTED RISK reviewed on 2026-10-19 and
-# documented in SECURITY.md (Audit section). Skipping here keeps the audit
-# reproducible and auditable in a single file, instead of scattering inline
-# suppressions. Adding a skip requires a SECURITY.md entry.
+# Rule: zero findings is the gate. Every finding surfaced by
+#   python -m bandit -r nexy/
+# must either be fixed in code or carry an inline `# nosec <ID>` with a
+# one-line justification. The old practice of skipping whole rule classes
+# below (B404, B607, B110, ...) is retired: it hid entire surfaces instead
+# of triaging individual calls.
 #
-# Fixed findings (NOT skipped): B324 MD5 -> usedforsecurity=False on all 4
-# sites, B602 shell=True -> shutil.which + list args (dependencies.py),
-# B310 urlopen -> http(s) scheme allowlist (cli/commands/add.py).
-#
-# Accepted risks:
-#   B701 - Jinja2 Environment without autoescape (nexy/template.py, utils/init).
-#     Nexy templates are the project's own server-side code (like Django
-#     templates), not untrusted user input; enabling autoescape would break
-#     every existing template that renders HTML props ({{ children }}), which
-#     is a user-facing behavior change. Mitigation: pass user data through |e.
-#   B104 - dev server binds 0.0.0.0 by default (core/config.py, core/models.py).
-#     Deliberate dev-server default (same as Vite/Django runserver); changing
-#     it would break LAN/mobile preview workflows. Mitigation: useHost = "127.0.0.1".
-#   B102 - exec in nexy/core/sandbox.py (component logic blocks).
-#     Core feature: .nexy frontmatter logic is the project owner's own code,
-#     executed with a restricted builtins set and a denied-names guard.
-#     It is not a sandbox against the project author (who can already run
-#     arbitrary code); it only limits accidental access.
-#   B310 - urlopen in nexy/utils/server/server.py.
-#     The URL is built from a literal http/https protocol plus a numeric port
-#     (Vite readiness probe); no user-controlled scheme reaches urlopen.
-skips:
-  - B102
-  - B104
-  - B701
-  - B101
-  - B110
-  - B112
-  - B404
-  - B607
-  - B310
+# Impact on SECURITY.md: every `# nosec` in nexy/ must have a matching
+# entry in the "Accepted risks" section of SECURITY.md.
+skips: []

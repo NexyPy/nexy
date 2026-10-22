@@ -1,4 +1,3 @@
-@import url("../public/fonts/font.css");
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));

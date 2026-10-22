@@ -1,5 +1,5 @@
 import shutil
-import subprocess
+import subprocess  # nosec B404
 
 
 def run_tool(tool: str, args: list[str]) -> int | None:
@@ -7,4 +7,4 @@ def run_tool(tool: str, args: list[str]) -> int | None:
     exe = shutil.which(tool)
     if not exe:
         return None
-    return subprocess.run([exe, *args], check=False).returncode
+    return subprocess.run([exe, *args], check=False).returncode  # nosec B603

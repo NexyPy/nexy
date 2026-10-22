@@ -44,7 +44,7 @@ class ActionEngine:
 
             try:
                 importlib.import_module(name)
-            except Exception:
+            except ImportError:
                 continue
 
     def include_router(self, router: FastAPI) -> FastAPI:

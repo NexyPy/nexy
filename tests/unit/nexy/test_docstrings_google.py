@@ -47,12 +47,12 @@ def _count_public_api_docstrings() -> tuple[int, int, int]:
 class TestDocstringAntiRegression:
     def test_public_api_docstrings_never_shrink(self) -> None:
         _, with_docstring, _ = _count_public_api_docstrings()
-        assert (
-            with_docstring >= BASELINE_WITH_DOCSTRING
-        ), f"Public API docstrings dropped: {with_docstring} < floor {BASELINE_WITH_DOCSTRING}"
+        assert with_docstring >= BASELINE_WITH_DOCSTRING, (
+            f"Public API docstrings dropped: {with_docstring} < floor {BASELINE_WITH_DOCSTRING}"
+        )
 
     def test_google_style_sections_never_shrink(self) -> None:
         _, _, with_google = _count_public_api_docstrings()
-        assert (
-            with_google >= BASELINE_GOOGLE_SECTIONS
-        ), f"Google-style docstrings dropped: {with_google} < floor {BASELINE_GOOGLE_SECTIONS}"
+        assert with_google >= BASELINE_GOOGLE_SECTIONS, (
+            f"Google-style docstrings dropped: {with_google} < floor {BASELINE_GOOGLE_SECTIONS}"
+        )
