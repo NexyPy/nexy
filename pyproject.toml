@@ -50,7 +50,7 @@ include = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["nexy"]
-exclude = ["nexy/templates/tests"]
+exclude = ["nexy/modules/cli/templates/tests"]
 
 [tool.mypy]
 strict = true
@@ -106,7 +106,7 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 # templates (client-side JS / TSX-Vue-Svelte scaffolding); the 100-column
 # budget applies to Python code, not to the embedded template content.
 "nexy/vite.py" = ["N802", "E501"]
-"nexy/helpers/init/registry.py" = ["E501"]
+"nexy/modules/cli/init/registry.py" = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -117,7 +117,7 @@ line-ending = "auto"
 branch = true
 source = ["nexy"]
 omit = [
-    "nexy/templates/*",
+    "nexy/modules/cli/templates/*",
 ]
 
 [tool.coverage.report]
