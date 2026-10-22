@@ -11,7 +11,7 @@ L'objectif principal de Nexy est de **surpasser les solutions existantes** telle
 
 - **KISS**: simplest working code wins. No premature abstraction, no clever one-liners. Functions < 20 lines, classes < 10 methods.
 - **TDD**: write the test first (red), minimal code to pass (green), then refactor. One assertion per test. Name: `test_<thing>_<scenario>`.
-- **SOLID**: one responsibility per class/file. `TemplateParser` parses, `Builder` builds, `Router` routes. Depend on abstractions (`Protocol`), inject via `nexy/runtime/injection.py`.
+- **SOLID**: one responsibility per class/file. `TemplateParser` parses, `Builder` builds, `Router` routes. Depend on abstractions (`Protocol`), inject via the `Container`/`Injectable` API in `nexy/decorators.py`.
 
 ## Commands (Astral toolchain - no Makefile)
 
@@ -37,10 +37,10 @@ uv pip install -e . --group dev
 
 | Layer | Dir | Key files |
 |-------|-----|-----------|
-| CLI | `nexy/cli/` | `__init__.py` (Typer app), `commands/{dev,start,build,init}.py` |
-| Router | `nexy/routers/` | `app.py` (AppServer assembly), `fbrouter/` (file-based), `actions/` |
-| Compiler | `nexy/compiler/` | `parser/{scanner,sanitizer,template,validator,logic}.py`, `generator/` |
-| Frontend | `nexy/frontend/` | `{react,vue,svelte,solid,preact}.py` + `runtime.ts`, `vite.ts` |
+| CLI | `nexy/modules/cli/` | `__init__.py` (Typer app), `commands/{dev,start,build,init}.py` |
+| Router | `nexy/modules/routers/` | `app.py` (AppServer assembly), `fbrouter/` (file-based), `actions/` |
+| Compiler | `nexy/modules/compiler/` | `parser/{scanner,sanitizer,template,validator,logic}.py`, `generator/` |
+| Frontend | `nexy/modules/frontend/` | `{react,vue,svelte,solid,preact}.py` + `runtime.ts`, `vite.ts` |
 | Core | `nexy/core/` | `config.py`, `models.py`, `types.py` |
 | Entry | `nexy/app.py` | exports `app: FastAPI` = `AppServer().run()` |
 | pkg init | `nexy/__init__.py` | exports `Audio`, `Video`, `Form`, `Import`, `Template`, `Vite` |
@@ -51,7 +51,7 @@ uv pip install -e . --group dev
 - **JS/TS**: pnpm (root + `extensions/vscode/` + `packages/react/`), vite 7, eslint
 - **Lint/format**: ruff for both (line-length=100, target-version=py312). No black/isort.
 - **Typecheck**: mypy --strict on `nexy/`; TypeScript typecheck lives in `extensions/vscode/` (own `tsconfig.json`, its own pnpm install)
-- **CLI binary**: `nx` or `nexy` → `nexy.cli:CLI`
+- **CLI binary**: `nx` or `nexy` → `nexy.modules.cli:CLI`
 
 ## Gotchas
 
@@ -66,7 +66,7 @@ uv pip install -e . --group dev
 
 - **Branches**: `feature/*`, `fix/*`, `docs/*`, `perf/*`
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`)
-- **i18n**: English default; extract strings to `nexy/i18n/en/`
+- **i18n**: English default; extract strings to `nexy/modules/i18n/en/`
 - **Coverage target**: ≥95% per module (CONTRIBUTING.md)
 
 ## Session Progress (June 2026)
@@ -142,5 +142,3 @@ uv pip install -e . --group dev
 - Added `test_markdown_route.py` (MarkdownRouteCompiler: AST validity, component-name conventions incl. `[slug]` catch-all, locale suffix `about.fr.md` → `about_fr.py` + meta locale, layout wiring, cmarkgfm render + heading ids, TOC publication, determinism) and `test_compiler_dispatch.py` (Compiler.compile dispatch: .tsx → FrontendRouteCompiler, .md → MarkdownRouteCompiler, .nexy → classic pipeline, non-route files raise NexyCompileError).
 - **Bug found & fixed**: `_ssg_static_path` looked up `<name>.default.html` for default-export tsx/mdx routes, but the JS SSG writer (`getEntryId`) emits `<name>.Default.html` (see committed `templates/tests/*/__nexy__/client/snippets.json`) and `ncc.py`/`formatting.py` read `.Default.html`. Prod `__ssr` was always empty for default exports on case-sensitive filesystems (silently masked on Windows). Regression tests assert the exact bytes of the generated lookup path.
 - Note: whole-tree `ruff check nexy/` and `mypy --strict` still fail with pre-existing violations in untouched files (116 / 144 respectively); `nexy/compiler/` files added/edited are clean except the systemic `VFS` untyped-call pattern.
-
-

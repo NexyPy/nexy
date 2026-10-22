@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from nexy.frontend import FrontendGenerator
+from nexy.modules.frontend import FrontendGenerator
 
 
 class TestRouteTreeManifest:

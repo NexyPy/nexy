@@ -15,7 +15,7 @@ string_transform = StringTransform()
 
 
 def _get_req() -> Request:
-    from .routers.context import current_request
+    from .modules.routers.context import current_request
 
     req = current_request.get()
     if not req:
@@ -117,7 +117,7 @@ def useToc(depth_range: str = "2-6") -> str:
     Raises:
         RuntimeError: If called outside an HTTP request context.
     """
-    from nexy.runtime.markdown import build_toc_html as _build_toc_html
+    from nexy.modules.runtime.markdown import build_toc_html as _build_toc_html
 
     html = _toc_storage.get()
     if not html:

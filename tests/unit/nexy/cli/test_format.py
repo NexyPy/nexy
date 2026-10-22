@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from nexy.utils.fs.frontmatter import (
+from nexy.helpers.fs.frontmatter import (
     reassemble_frontmatter as _reassemble,
 )
-from nexy.utils.fs.frontmatter import (
+from nexy.helpers.fs.frontmatter import (
     split_frontmatter as _split_frontmatter,
 )
-from nexy.utils.fs.scan import collect_files as _collect_files
+from nexy.helpers.fs.scan import collect_files as _collect_files
 
 
 def test_split_frontmatter_extracts_logic_and_template() -> None:

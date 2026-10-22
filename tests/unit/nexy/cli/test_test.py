@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from nexy.cli.commands.test import _has_vitest
+from nexy.modules.cli.commands.test import _has_vitest
 
 
 def test_has_vitest_detects_config_file(tmp_path: Path) -> None:

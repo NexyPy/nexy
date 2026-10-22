@@ -100,17 +100,17 @@ TOTALS: SEVERITY.HIGH=4  SEVERITY.MEDIUM=9  SEVERITY.LOW=52
 
 HIGH   nexy/cli/commands/migrate.py:64          [B701] jinja2 autoescape=False
        nexy/template.py:68                       [B701]
-       nexy/utils/init/renderer.py:41            [B701]
-       nexy/utils/init/template_setup.py:251     [B701]
+       nexy/helpers/init/renderer.py:41            [B701]
+       nexy/helpers/init/template_setup.py:251     [B701]
 MEDIUM nexy/cli/commands/dev.py:108              [B104] bind all interfaces
        nexy/cli/commands/start.py:24             [B104]
        nexy/core/config.py:44                    [B104]
        nexy/core/models.py:197                   [B104]
-       nexy/utils/common/constants.py:4          [B104]
-       nexy/utils/server/ports.py:12             [B104]
-       nexy/utils/server/ports.py:25             [B104]
+       nexy/helpers/common/constants.py:4          [B104]
+       nexy/helpers/server/ports.py:12             [B104]
+       nexy/helpers/server/ports.py:25             [B104]
        nexy/core/sandbox.py:103                  [B102] exec
-       nexy/utils/server/server.py:225           [B310] urlopen
+       nexy/helpers/server/server.py:225           [B310] urlopen
 ```
 With the local (untracked) `.bandit`: `HIGH=0 MEDIUM=1 LOW=22`.
 
@@ -335,7 +335,7 @@ Yet `git ls-files | Select-String -Pattern 'pnpm-lock\.yaml$|bun\.lock$|uv\.lock
 
 **Location** working tree vs `fb5a829`
 
-**Evidence** `git status --porcelain` → 58 paths: 49 modified, 9 untracked (`.bandit`, `tests/conftest.py`, `tests/integration/conftest.py`, `tests/unit/nexy/routers/test_tier_a.py`, `tests/unit/nexy/test_docstrings_google.py`, `tests/unit/nexy/test_error_paths.py`, `tests/unit/nexy/test_media_components.py`, `tests/unit/nexy/test_tier_a_surface.py`, `tests/unit/nexy/utils/test_server.py`). `git ls-files --error-unmatch audit_session.log` → *"did not match any file(s) known to git"*.
+**Evidence** `git status --porcelain` → 58 paths: 49 modified, 9 untracked (`.bandit`, `tests/conftest.py`, `tests/integration/conftest.py`, `tests/unit/nexy/routers/test_tier_a.py`, `tests/unit/nexy/test_docstrings_google.py`, `tests/unit/nexy/test_error_paths.py`, `tests/unit/nexy/test_media_components.py`, `tests/unit/nexy/test_tier_a_surface.py`, `tests/unit/nexy/helpers/test_server.py`). `git ls-files --error-unmatch audit_session.log` → *"did not match any file(s) known to git"*.
 
 **Impact** `HEAD` contains neither the `.bandit` registry, nor the current `fail_under = 54` coverage floor, nor the mypy fixes, nor the integration tests — `pyproject.toml` itself is modified but uncommitted. An audit of the committed SHA (which is what CI clones) sees the *old* state. The quality claims in `QUALITY_PLAN.md` §6.7 describe a tree that does not exist in the repository.
 

@@ -1,4 +1,4 @@
-from nexy.compiler.parser.template import TemplateFormatter, TemplateParser
+from nexy.modules.compiler.parser.template import TemplateFormatter, TemplateParser
 
 
 class TestTemplateFormatter:

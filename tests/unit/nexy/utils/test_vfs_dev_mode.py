@@ -2,7 +2,7 @@ import os
 import tempfile
 from pathlib import Path
 
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
 
 
 def setup_function() -> None:
