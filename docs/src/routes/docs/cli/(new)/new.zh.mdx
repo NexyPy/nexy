@@ -1,0 +1,53 @@
+#nx 新
+
+以交互方式创建一个新的 Nexy 项目。这是推荐的开始方式。
+
+```bash
+nx new
+nx new my-app
+```
+
+---
+
+## 选项
+
+|旗帜|描述 |
+|------|-------------|
+| `<name>` |项目名称（位置参数，可选 - 如果省略则提示）|
+| `--template`、`-t` |从注册模板初始化（静默克隆，无提示）|
+
+---
+
+## 互动提示
+
+|步骤|提示|选项|
+|------|--------|---------|
+| 1 |项目名称| （如果未作为参数提供）|
+| 2 |使用基于文件的路由器？ |是（FBR）/否（模块化）|
+| 3 |项目类型 | Web（整体式）/API（RESTful）|
+| 4 |使用客户端组件？ |是/否（仅限网络）|
+| 5 |客户端框架| React、Vue、Svelte、Solid、Preact、无 |
+| 6 |对象关系管理 | SQLModel、SQLAlchemy、Tortoise-ORM、无 |
+| 7 |数据库| SQLite、PostgreSQL、MySQL（如果选择了 ORM）|
+| 8 |数据库网址 | （根据选择自动生成）|
+
+ - -
+
+＃＃ 输出
+
+```text
+my-app/
+├── nexyconfig.py
+├── pyproject.toml
+├── src/
+│   ├── routes/       (FBR) or apps/ (Modular)
+│   └── layout.nexy
+├── public/
+└── README.md
+```
+
+---
+
+## 别名
+
+`nx n`

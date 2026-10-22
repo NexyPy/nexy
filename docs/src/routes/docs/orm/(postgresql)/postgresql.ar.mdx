@@ -1,0 +1,26 @@
+# بوستجري إس كيو إل
+
+PostgreSQL هي قاعدة بيانات الإنتاج الموصى بها لتطبيقات Nexy.
+
+## اتصال
+
+قم بتكوين اتصال PostgreSQL الخاص بك في تكوين قاعدة بيانات المشروع:
+
+```python
+# configs/database.py or .env
+DATABASE_URL = "postgresql+asyncpg://user:password"@localhost:5432/mydb"
+```
+
+## مع ORMs
+
+| أو آر إم | سائق | سلسلة الاتصال |
+|-----|--------|------------------|
+| SQLModel / SQLAlchemy | `asyncpg` | `postgresql+asyncpg://user:pass"@localhost/db` |
+| السلحفاة-ORM | `asyncpg` | `postgres://user:pass"@localhost/db` |
+
+## لماذا PostgreSQL مع Nexy
+
+- دعم غير متزامن كامل عبر `asyncpg`
+- أعمدة JSON/JSONB الأصلية للمخططات المرنة
+- ممتاز لعمليات نشر الإنتاج
+- يعمل مع جميع ORMs المدعومة

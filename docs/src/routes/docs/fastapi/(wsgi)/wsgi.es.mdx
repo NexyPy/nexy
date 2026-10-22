@@ -1,0 +1,55 @@
+# WSGI (frasco, Django)
+
+Monte aplicaciones WSGI (Flask, Django, Pyramid) junto con rutas Nexy.
+
+## matraz
+
+```python
+# src/flask_app.py
+from flask import Flask
+
+flask_app = Flask(__name__)
+
+"@flask_app.route("/hello")
+def hello():
+    return "<h1>Hello from Flask</h1>"
+```
+
+```python
+# In nexyconfig.py or any startup file
+from nexy import app
+from src.flask_app import flask_app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/legacy", WSGIMiddleware(flask_app))
+```
+
+Las rutas de matraz ahora están disponibles en `/legacy/hello`. Todas las funciones de Nexy (autenticación, middleware) aún se aplican a la aplicación principal.
+
+##Django
+
+```python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
+
+from django.core.wsgi import get_wsgi_application
+django_app = get_wsgi_application()
+
+from nexy import app
+from fastapi.middleware.wsgi import WSGIMiddleware
+
+app.mount("/django", WSGIMiddleware(django_app))
+```
+
+## Cómo funciona
+
+- `WSGIMiddleware` envuelve cualquier WSGI invocable como ASGI
+- La subaplicación se ejecuta en un grupo de subprocesos: no bloquea el bucle de eventos.
+- El prefijo de ruta (`/legacy`, `/django`) se elimina antes de llegar a la aplicación WSGI.
+- El middleware Nexy (autenticación, sesión, CORS) **no** se aplica a la aplicación WSGI montada; configúrelo allí por separado
+
+## Limitaciones
+
+- Solo ciclo de solicitud/respuesta: WebSocket no es compatible
+- Las aplicaciones WSGI no pueden usar ganchos o dependencias de Nexy
+- El rendimiento está limitado por el grupo de subprocesos; considere migrar a rutas nativas de Nexy

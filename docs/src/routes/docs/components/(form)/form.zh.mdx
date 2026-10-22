@@ -1,0 +1,40 @@
+# 表单组件
+
+内置的表单组件简化了表单和服务器操作的使用。
+
+## 导入
+
+直接从`nexy`导入：
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## 基本用法
+
+表单组件将得到增强，以与服务器操作集成并提供表单处理实用程序。
+
+现在，您可以在组件中使用标准 HTML 表单：
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## 服务器操作
+
+Form 组件将与 Nexy 的 `@action` 装饰器集成以进行服务器端表单处理。

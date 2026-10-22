@@ -1,0 +1,53 @@
+# Скрипты в компонентах
+
+Вы можете включить клиентский JavaScript непосредственно в файлы .nexy, используя стандартные теги <script>.
+
+## Базовое использование
+
+```nexy
+---
+---
+<button id="myButton">Click Me!</button>
+<script>
+document.getElementById('myButton').addEventListener('click', function() {
+    alert('Hello from Nexy!');
+});
+</script>
+```
+
+## Скрипты, специфичные для платформы
+
+Для компонентов платформы (React, Vue, Svelte, Solid, Preact) используйте синтаксис `<script framework="...">`:
+
+```nexy
+---
+---
+<script framework="react">
+import { useState } from 'react';
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>+</button>
+        </div>
+    );
+}
+</script>
+```
+
+## Горячая замена модуля (HMR)
+
+Nexy автоматически обрабатывает обновления скриптов во время разработки. При изменении скрипта компонент перезагружается без обновления всей страницы.
+
+## Внешние скрипты
+
+Вы также можете ссылаться на внешние скрипты:
+
+```nexy
+---
+---
+<script src="https://cdn.example.com/script.js"></script>
+```

@@ -1,0 +1,58 @@
+# "@모듈
+
+컨트롤러, 공급자 및 하위 모듈을 FastAPI `APIRouter`로 조립합니다.
+```python
+from nexy.decorators import Module, Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1}]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [UsersController]
+    providers = [DatabaseService]
+    imports = [AuthModule]
+    exports = [UsersController]
+```
+## 서명
+```python
+Module(prefix: str = "") -> Callable[[type], APIRouter]
+```
+## 클래스 속성
+
+| 속성 | 유형 | 필수 | 설명 |
+|------------|------|----------|-------------|
+| `controllers` | `list[type]` | 예 | 등록할 컨트롤러 클래스 |
+| `providers` | `list[type]` | 아니요 | DI 컨테이너에 등록할 수 있는 주입 가능한 서비스 |
+| `imports` | `list[APIRouter]` | 아니요 | 포함할 하위 모듈(`"@Module`에서 반환) |
+| `exports` | `list[type]` | 아니요 | 모듈을 가져오는 데 사용하기 위해 내보낼 공급자 |
+
+## 작동 방식
+
+1. 공급자는 `Container.resolve()`를 통해 인스턴스화됩니다.
+2. 가져온 하위 모듈은 상위 라우터에 포함됩니다.
+3. 내보내기는 `router.__module_exports__`에 저장됩니다.
+4. 각 컨트롤러의 메소드가 경로로 등록됩니다.
+
+## 가져오기/내보내기 예시
+```python
+from nexy.decorators import Injectable, Module
+
+"@Injectable()
+class SharedService:
+    def get_data(self) -> str:
+        return "shared"
+
+"@Module(prefix="/shared")
+class SharedModule:
+    controllers = [SharedController]
+    providers = [SharedService]
+    exports = [SharedService]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [AppController]
+    imports = [SharedModule]  # SharedModule router included
+```

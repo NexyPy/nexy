@@ -1,0 +1,57 @@
+# "@주사 가능
+
+Nexy의 종속성 주입 컨테이너에서 관리되는 클래스를 표시합니다.
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str) -> list[dict]:
+        ...
+```
+## 서명
+```python
+Injectable(scope: Scope = Scope.SINGLETON) -> Callable[[type], type]
+```
+## 범위
+
+| 범위 | 행동 |
+|-------|------------|
+| `Scope.SINGLETON`(기본값) | 앱 전체에서 하나의 인스턴스가 공유됨 |
+| `Scope.REQUEST` | HTTP 요청당 새 인스턴스 |
+| `Scope.TRANSIENT` | 해결될 때마다 새 인스턴스 |
+```python
+from nexy.decorators import Injectable, Scope
+
+"@Injectable(Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.user_id: str | None = None
+```
+## 의존성 주입
+
+유형이 주입 가능하면 생성자 매개변수가 자동으로 확인됩니다.
+```python
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):  # DatabaseService resolved by Container
+        self.db = db
+
+"@Injectable()
+class DatabaseService:
+    def connect(self) -> None:
+        ...
+```
+## 컨테이너
+
+필요한 경우 컨테이너에 직접 액세스합니다.
+```python
+from nexy.decorators import Container
+
+service = Container.resolve(DatabaseService)
+```
+## 제한사항
+
+- `"@Injectable()` 클래스는 DI 컨텍스트 외부에서 수동으로 인스턴스화할 수 없습니다.
+- 순환 종속성은 `RecursionError` 증가
+- 기본값이 없는 생성자 매개변수는 주입 가능한 유형이어야 합니다.

@@ -1,0 +1,47 @@
+# "@UseRoute
+
+हैंडलर विधि पर ओपनएपीआई मेटाडेटा सेट करें - नाम, सारांश, विवरण, टैग इत्यादि।
+```python
+from nexy.decorators import UseRoute, Controller
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(
+        summary="List all users",
+        description="Returns paginated list of users",
+        deprecated=False,
+        tags=["users"],
+    )
+    def GET(self) -> list[dict]:
+        ...
+```
+## हस्ताक्षर
+```python
+UseRoute(
+    name: str | None = None,
+    tags: list[str] | None = None,
+    summary: str | None = None,
+    description: str | None = None,
+    deprecated: bool | None = None,
+    include_in_schema: bool | None = None,
+    operation_id: str | None = None,
+    openapi_extra: dict[str, Any] | None = None,
+) -> Callable
+```
+## सभी पैरामीटर
+
+| परम | प्रकार | विवरण |
+|------|------|----------------|
+| `name` | `str` | रूट का नाम (डिफ़ॉल्ट `ClassName.method_name`) |
+| `tags` | `list[str]` | ओपनएपीआई टैग (नियंत्रक टैग को ओवरराइड करता है) |
+| `summary` | `str` | ओपनएपीआई सारांश |
+| `description` | `str` | ओपनएपीआई विवरण |
+| `deprecated` | `bool` | OpenAPI में बहिष्कृत के रूप में चिह्नित करें |
+| `include_in_schema` | `bool` | OpenAPI स्कीमा से छिपाएँ |
+| `operation_id` | `str` | ओपनएपीआई ऑपरेशनआईडी |
+| `openapi_extra` | `dict` | अतिरिक्त ओपनएपीआई फ़ील्ड |
+
+## उपनाम
+```python
+from nexy.decorators import useRoute  # lowercase alias, identical API
+```

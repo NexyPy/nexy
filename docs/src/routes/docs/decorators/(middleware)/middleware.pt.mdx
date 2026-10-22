@@ -1,0 +1,75 @@
+# "@Middleware
+
+Aplique callables de middleware a uma classe de controlador ou método manipulador.
+
+## Contrato de middleware
+
+Um middleware é qualquer coisa que possa ser chamada com `__call__(self, request)`. Ele recebe o objeto FastAPI `Request` e é executado antes do manipulador.
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## Middleware em uma rota
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## Múltiplos middlewares
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+## Assinatura
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## Guardas vs Middleware
+
+| | Guardas | Middleware |
+|---|--------|-----------|
+| Finalidade | Autorização | Efeitos colaterais (registro, tempo) |
+| Solicitação de blocos | Sim (gera HTTPException) | Não (a menos que você aumente) |
+| Funciona como | API rápida `Depends` | API rápida `Depends` |
+| Encomendar | Protetores de classe → protetores de método | Middleware de classe → middleware de método |
+
+Ambos são executados como dependências FastAPI `Depends`. Ordem: protetores de classe → middleware de classe → protetores de método → middleware de método.

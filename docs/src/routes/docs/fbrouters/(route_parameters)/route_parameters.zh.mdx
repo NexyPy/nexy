@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 动态 URL（路由参数）
+
+动态参数捕获可变 URL 段。 Nexy 使用 `[param]` 括号语法。
+
+---
+
+## 语法
+```bash
+routes/
+├── blog/
+│   ├── index.nexy          →  /blog
+│   └── [slug].nexy         →  /blog/{slug}
+└── users/
+    └── [userId].py         →  /users/{userId}
+```
+---
+
+## 在 `.nexy` 页面中
+
+该参数可通过 frontmatter 属性获得：
+```
+---
+slug: prop[str]
+---
+<h1>Article: {{ slug }}</h1>
+```
+---
+
+## 在 `.py` 处理程序中
+```python
+# routes/users/[userId].py
+from fastapi import Request
+
+async def get(request: Request, userId: int):
+    return {"user_id": userId}
+```
+类型会自动转换（`int`、`str`、`UUID` 等）。
+
+---
+
+## 多个参数
+```bash
+routes/
+└── blog/
+    └── [year]/[month]/[slug].nexy
+```
+```nexy
+---
+year: prop[int]
+month: prop[int]
+slug: prop[str]
+---
+<article>
+    <time>{{ year }}-{{ month }}</time>
+    <h1>{{ slug | replace("-", " ") }}</h1>
+</article>
+```
+---
+
+## 捕获所有参数
+```bash
+routes/
+└── docs/
+    └── [...path].nexy      →  /docs/{path+}
+```
+```nexy
+---
+path: prop[list[str]]
+---
+<pre>{{ path | join("/") }}</pre>
+```
+`path` 变量接收**所有**剩余的 URL 段作为列表。
+<Link href="/docs/fbrouters/query_parameters">Next: Query Parameters →</Link>

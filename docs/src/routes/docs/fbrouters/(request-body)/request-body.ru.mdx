@@ -1,0 +1,67 @@
+# Тело запроса (FBR)
+
+Получайте тела запросов JSON, используя модели Pydantic.
+
+## Базовая модель
+
+```python
+# src/routes/items.py
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+def POST(item: Item):
+    return {"name": item.name, "price": item.price}
+```
+
+## Поле тела с `embed`
+
+```python
+from fastapi import Body
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+def POST(
+    item: Item,
+    important: str = Body(embed=True),
+):
+    # Expects: {"item": {...}, "important": "x"}
+    ...
+```
+
+## Несколько параметров тела
+
+```python
+def POST(item: Item, user: User):
+    # Expects: {"item": {...}, "user": {...}}
+    ...
+```
+
+## Вложенные модели
+
+Модели могут содержать другие модели, списки и необязательные поля.
+
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+
+Тело анализируется автоматически, когда вы вводите аннотацию параметра модели Pydantic. FastAPI обрабатывает проверку и возвращает 422 при недопустимом вводе.
+
+---
+
+См. также: [FastAPI Request Body](/docs/fastapi/request-body) для получения более подробной информации.

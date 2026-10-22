@@ -1,0 +1,111 @@
+# CSS und JavaScript
+
+Nexy gibt Ihnen volle Freiheit beim Styling und Scripting. Jeder Ansatz funktioniert – Inline-, Import-, Utility-First- oder benutzerdefinierte Bündelung.
+
+## CSS-Ansätze
+
+### 1. Inline `<style>` in `.nexy` Vorlagen
+
+Fügen Sie direkt im Vorlagenbereich ein `<style>`-Tag hinzu. Stile sind standardmäßig global – erweitern Sie sie manuell mit BEM, Datenattributen oder Dienstprogrammklassen.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.card-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+</style>
+```
+
+### 2. Externes CSS über `__Import` importieren
+
+Für jede `.nexy`-Datei ist automatisch `__Import` verfügbar (vom Compiler eingefügt). Verwenden Sie es, um externes CSS, JSON oder Bilder einzubinden.
+
+```nexy
+---
+css_block = __Import("/styles/global.css", "", "")()
+---
+<div class="wrapper">
+  {{ css_block }}
+  <main>...</main>
+</div>
+```
+
+`__Import(path, framework, symbol)` versendet nach Dateierweiterung:
+
+| Erweiterung | Retouren |
+|-----------|---------|
+| `.css` | Eine `<style>...</style>`-Zeichenfolge mit eingebundenem Dateiinhalt |
+| `.png`, `.jpg`, `.svg` usw. | Eine Base64-Daten-URI-Zeichenfolge |
+| `.json` | Geparste JSON-Daten |
+| `.tsx`, `.vue`, `.svelte` usw. | Ein Client-Komponenten-Wrapper (`<ncc>`-Tag) |
+
+Für CSS werden das 2. und 3. Argument nicht verwendet – übergeben Sie leere Zeichenfolgen.
+
+### 3. Rückenwind-CSS
+
+Nexy bietet Tailwind CSS-Unterstützung bei der Projektinitialisierung. Dienstprogrammklassen in Ihrer Vorlage werden normal verarbeitet.
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Konfigurieren Sie Tailwind in `tailwind.config.*` oder `nexyconfig.py`.
+
+### 4. Vite CSS-Bündelung
+
+Wenn Vite aktiviert ist (`useVite: true` in der Konfiguration), können Sie `.css`-Dateien aus Ihren Frontend-Komponenten importieren und sie werden mit der Pipeline von Vite gebündelt – einschließlich PostCSS, CSS-Modulen und HMR.
+
+## Clientseitiges JavaScript
+
+Fügen Sie `<script>`-Tags direkt in `.nexy`-Vorlagen hinzu:
+
+```nexy
+---
+---
+<button id="greet-btn">Greet</button>
+
+<script>
+document.getElementById('greet-btn').addEventListener('click', () => {
+  alert('Hello from Nexy!')
+})
+</script>
+```
+
+## TypeScript
+
+Wenn Vite aktiviert ist, werden `.ts`-Dateien automatisch kompiliert. Importieren Sie sie in Ihre Frontend-Komponenten oder über `<script>`-Tags.
+
+```typescript
+// src/scripts/utils.ts
+export function greet(name: string): string {
+  return `Hello ${name}`
+}
+```
+
+Skripte in `public/` werden statisch bereitgestellt. Skripte in `src/` werden von Vite verarbeitet (falls aktiviert) oder roh in der Entwicklung bereitgestellt.
+
+## Bündelung
+
+| Modus | CSS | JS/TS |
+|------|-----|-------|
+| **Entwicklung** | Roh oder über Vite HMR | serviert Roh oder über Vite HMR | serviert
+| **Produktion (`nexy build`)** | Inline oder Vite-gebündelt | Minimiert und gebündelt von Vite |
+
+Wenn Vite deaktiviert ist, wird CSS in `<style>`-Tags direkt in die HTML-Ausgabe eingebunden. Wenn Vite aktiviert ist, durchlaufen alle Assets die Build-Pipeline von Vite, um eine optimale Bündelung und Codeaufteilung zu gewährleisten.

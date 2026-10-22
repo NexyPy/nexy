@@ -27,6 +27,48 @@ Unified CLI commands for type checking, formatting, and testing across Python an
 3. **[`nexy test`](./06-cli-quality-commands/03-test.md)**: Run pytest (--server) and/or vitest (--client)
 4. **[Register in CLI](./06-cli-quality-commands/04-register.md)**: Wire up commands + update welcome banner
 
+### [07. Framework Config — Single Framework](./07-framework-config/)
+Enforce one frontend framework per project (`useFF`), warn-and-skip out-of-set files, keep `.nexy`/`.md`/`.mdx`/`.py` always active.
+
+1. **[Single Framework Enforcement](./07-framework-config/single-framework/)**: `useFF: FrontendFramework | None`, active extension set derived from the configured framework.
+
+### [08. Route Tree](./08-route-tree/)
+The route tree is the shared contract between server and client.
+
+1. **[Client-Side Routing](./08-route-tree/client-side-routing/)**: Hybrid routing — every `routes/*.tsx` is served by generated Python functions on the server AND navigable between routes on the client (App Router model) using a shared `routes.auto.ts` manifest.
+2. **[Type-Safe Routes](./08-route-tree/type-safe-routes/)**: Generate a typed route tree (TanStack `routeTree.ts` model) so links and params are checked at compile time.
+
+### [09. SSR Pipeline](./09-ssr-pipeline/)
+From synchronous Python rendering to streaming-first output.
+
+1. **[Streaming SSR](./09-ssr-pipeline/streaming-ssr/)**: Flush the HTML shell before the body to improve TTFB, following the Fizz/`chainStreams` model.
+
+### [10. Data Layer](./10-data-layer/)
+Nexy must match the data protocols of the big three (RSC, single-fetch, `createServerFn`).
+
+1. **[Loaders](./10-data-layer/loaders/)**: Typed GET data loading per route (Remix loader model), usable by both server and client router.
+
+### [11. Hydration](./11-hydration/)
+From eager `<ncc>` mounting to selective hydration.
+
+1. **[Islands Directives](./11-hydration/islands-directives/)**: `client:load/idle/visible/media/only` directives (Astro `astro-island` model) applied to Nexy islands.
+
+### [12. Dev & HMR](./12-dev-hmr/)
+Close the gap between what Nexy documents and what it actually ships.
+
+1. **[Browser Error Overlay](./12-dev-hmr/error-overlay/)**: Real overlay for compile failures (`broadcast_error` on the HMR socket).
+2. **[Perf Benchmarks](./12-dev-hmr/perf-benchmarks/)**: Regression tests for startup, HMR broadcast latency, and build time.
+
+### [13. Cache & Static](./13-cache-static/)
+From build-time cache to runtime revalidation.
+
+1. **[ISR Revalidation](./13-cache-static/isr-revalidate/)**: Runtime revalidation (Next `resumeDataCache` / Nuxt `PAYLOAD_CACHE` model) on top of `build-cache.json`.
+
+## Competitive Analysis
+- [Competitive README](./competitive/README.md) — how to read the source analyses.
+- [Matrix Synthesis](./competitive/ANALYSIS.md) — 6 mechanisms × 6 frameworks.
+- [Next.js](./competitive/nextjs.md) · [Nuxt](./competitive/nuxt.md) · [Remix](./competitive/remix.md) · [TanStack](./competitive/tanstack.md) · [Astro](./competitive/astro.md)
+
 ## Quality Gates (Mandatory)
 Before completing any task, ensure:
 ```bash

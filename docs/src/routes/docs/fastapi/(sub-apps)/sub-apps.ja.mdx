@@ -1,0 +1,51 @@
+# サブアプリケーションとマウント
+
+独立した ASGI または WSGI アプリケーションをサブパスにマウントします。
+
+## サブアプリのマウント
+
+```python
+from nexy import app
+from fastapi import FastAPI
+
+sub_app = FastAPI()
+
+"@sub_app.get("/")
+def sub_home():
+    return {"from": "sub-app"}
+
+app.mount("/sub", sub_app)
+```
+
+現在、`/sub/` はサブアプリケーションを提供します。独自のルート、ミドルウェア、寿命があります。
+
+## Starlette サブアプリ
+
+```python
+from starlette.applications import Starlette
+from starlette.responses import PlainTextResponse
+
+starlette_app = Starlette()
+"@starlette_app.route("/")
+async def index(request):
+    return PlainTextResponse("Starlette sub-app")
+
+app.mount("/legacy", starlette_app)
+```
+
+## WSGI サブアプリ (Flask、Django)
+
+[WSGI](/docs/fastapi/wsgi)を参照してください。
+
+## マウントの仕組み
+
+- リクエストがサブアプリに到達する前に、マウント **プレフィックスが削除**されます
+- サブアプリには **独自のミドルウェア スタック**があります - Nexy 認証/ミドルウェアは適用されません
+- サブアプリには、任意の ASGI アプリケーション (FastAPI、Starlette、Litestar など) を使用できます。
+- マウントは順序付けされます - 最初のマッチが勝利します
+
+## 制限事項
+
+- WebSocket はマウント間でサポートされていません
+- ライフスパンイベントはアプリごとに発生します
+- OpenAPI ドキュメントではルート アプリのみが説明されています。サブアプリのドキュメントでは別のセットアップが必要です

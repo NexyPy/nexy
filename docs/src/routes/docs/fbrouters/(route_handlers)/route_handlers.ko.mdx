@@ -1,0 +1,126 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 경로 처리기(API)
+
+경로 핸들러는 API 엔드포인트를 노출하는 `src/routes/`의 `.py` 파일입니다. 페이지(`.nexy` / `.mdx`)와 달리 핸들러는 JSON 또는 원시 데이터를 반환합니다.
+
+---
+
+## 핸들러 생성
+```bash
+routes/
+└── api/
+    └── hello.py           →  GET /api/hello
+```
+```python
+# api/hello.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"message": "Hello from Nexy!"}
+```
+
+Nexy는 함수 이름을 HTTP 메서드(`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)에 매핑합니다.
+
+---
+
+## 사용 가능한 HTTP 메소드
+
+단일 파일에서 메서드당 하나의 함수를 정의합니다.
+```python
+# routes/api/items.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"items": []}
+
+async def POST(request: Request):
+    data = await request.json()
+    return {"created": data}
+
+async def DELETE(request: Request, id: int):
+    return {"deleted": id}
+```
+
+각 함수는 `/api/items`의 `GET`, `POST`, `DELETE`에 해당합니다.
+
+---
+
+## 요청 본문
+```python
+# routes/api/users.py
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+async def POST(request: Request, body: CreateUser):
+    return {"name": body.name, "email": body.email}
+```
+FastAPI는 자동으로 본문의 유효성을 검사합니다. 잘못된 입력 시 422를 반환합니다.
+
+---
+
+## 상태 코드
+
+`JSONResponse`를 사용하여 `status_code`를 반환합니다.
+```python
+from fastapi.responses import JSONResponse
+
+async def POST(request: Request):
+    return JSONResponse({"created": True}, status_code=201)
+```
+---
+
+## 경로 매개변수
+```python
+# routes/api/users/[id].py
+from fastapi import Request
+
+async def GET(request: Request, id: int):
+    return {"user_id": id}
+```
+동적 세그먼트(`[id]`)는 자동 유형 변환을 통해 키워드 인수로 삽입됩니다.
+
+---
+
+## 종속성
+
+FastAPI의 `Depends`, `Header`, `Query`, `Cookie`는 기본적으로 작동합니다.
+```python
+from fastapi import Depends, Header, Query
+
+def get_db():
+    return {"connection": "ok"}
+
+async def GET(request: Request, db=Depends(get_db), x_api_key: str = Header(None)):
+    return {"db": db, "api_key": x_api_key}
+```
+---
+
+## 응답
+
+| 반환 유형 | 응답 |
+|---------------|----------|
+| `dict` | `application/json` |
+| `list` | `application/json` |
+| `str` | `text/plain` |
+| `BaseModel` | `application/json` |
+| `Response` | 사용자 정의(모든) |
+| `None` | `200 OK` 비어 있음 |
+
+---
+
+## 모범 사례
+
+- 하나의 `.py` 파일 = 하나의 경로 경로
+- HTTP 메소드와 일치하는 함수 이름 사용(`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
+- 요청 검증을 위해 Pydantic 모델 사용
+- 사용자 정의 상태 코드에는 `JSONResponse`를 사용하세요.
+- 클라이언트가 유발한 돌연변이에 대해서는 [Actions](/docs/guides/actions)를 참조하세요.
+

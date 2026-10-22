@@ -1,18 +1,24 @@
-import { createLogger, type Logger, type Plugin} from 'vite'
+import { createLogger, type Logger, type Plugin } from 'vite'
+import mdx from '@mdx-js/rollup'
+import remarkGfm from 'remark-gfm'
 import path from 'node:path'
 import { execSync } from 'child_process'
 import { createRequire } from 'module'
 import { pathToFileURL } from 'url'
+import { transform } from 'esbuild'
+import { __NEXY_DEPS } from './src/deps.auto.ts'
 
 const c = {
   reset:  '\x1b[0m',
   dim:    '\x1b[2m',
   yellow: '\x1b[33m',
   red:    '\x1b[31m',
+  green:  '\x1b[32m',
 }
 
+const require = createRequire(import.meta.url)
+
 function getTsxPath(): string {
-  const require = createRequire(import.meta.url)
   try {
     const resolved = require.resolve('tsx/esm')
     return pathToFileURL(resolved).href
@@ -21,20 +27,64 @@ function getTsxPath(): string {
   }
 }
 
+async function compileMdxToJs(source: string, id: string, importSource: string): Promise<string> {
+  const { code } = await transform(source, {
+    loader: 'jsx',
+    jsx: 'automatic',
+    jsxImportSource: importSource,
+    sourcefile: id
+  })
+  return code
+}
+
+function isInstalled(name: string): boolean {
+  try {
+    require.resolve(name)
+    return true
+  } catch {
+    return false
+  }
+}
+
 let nexySSGDone = false
 let isSSRBuild = false
+let isProduction = false
+
+function makeMdxTransform(jsx: boolean, importSource: string) {
+  const inner = jsx
+    ? mdx({ jsx: true, jsxImportSource: importSource, remarkPlugins: [remarkGfm] })
+    : mdx({ providerImportSource: importSource, remarkPlugins: [remarkGfm] })
+  return async function mdxTransform(this: any, source: string, id: string) {
+    if (!id.endsWith('.mdx')) return null
+    const out = await inner.transform.call(this, source, id)
+    if (!out) return null
+    if (!jsx) return out
+    return {
+      code: await compileMdxToJs(out.code, id, importSource),
+      map: (out as any).map ?? null
+    }
+  }
+}
+
+const mdxProdTransform = makeMdxTransform(true, 'react')
+const mdxDevTransform = makeMdxTransform(false, '@mdx-js/react')
 
 function nexyPlugin(): Plugin {
   return {
     name: 'nexy',
 
-    // --- Configuration Automatique ---
-    // Cette partie injecte tes réglages directement dans Vite
-    config( { mode }) {
+    transform(source, id) {
+      return (isProduction ? mdxProdTransform : mdxDevTransform).call(this, source, id)
+    },
+
+    // --- Automatic Configuration ---
+    // Injects Nexy settings directly into Vite
+    config({ mode }) {
+      isProduction = mode === 'production'
       return {
         logLevel: 'info',
         base: mode === 'production' ? '/__nexy__/client/' : '/',
-        
+
         resolve: {
           alias: [
             { find: /^@nexy\//, replacement: path.resolve(process.cwd(), '__nexy__/src') + '/' },
@@ -42,21 +92,38 @@ function nexyPlugin(): Plugin {
           ]
         },
 
+        clearScreen: false,
         server: {
           strictPort: true,
-          cors: { 
-            origin: true, 
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'] 
+          cors: {
+            origin: true,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+          },
+          warmup: {
+            clientFiles: [
+              '__nexy__/main.ts',
+              '__nexy__/src/runtime.ts',
+              '__nexy__/src/ff.auto.ts',
+              'src/**/*.{tsx,jsx,vue,svelte,ts,js}'
+            ]
           },
           watch: {
-            // Empêche les boucles infinies de rebuild lors du SSG
+            // Prevent infinite rebuild loops during SSG
             ignored: [
-              '**/node_modules/**', 
-              '**/__nexy__/client/**', 
-              '**/__nexy__/**/*.{html,py}', 
+              '**/node_modules/**',
+              '**/.venv/**',
+              '**/venv/**',
+              '**/__pycache__/**',
+              '**/__nexy__/client/**',
+              '**/__nexy__/**/*.{html,py}',
               '**/.git/**'
             ]
           }
+        },
+
+        optimizeDeps: {
+          entries: ['__nexy__/main.ts'],
+          include: __NEXY_DEPS.filter(isInstalled)
         },
 
         build: {
@@ -75,16 +142,19 @@ function nexyPlugin(): Plugin {
       isSSRBuild = !!config.build?.ssr
     },
 
-    // --- HMR pour les fichiers non-JS (Python, Nexy, MDX) ---
+    // --- HMR for non-JS files (Python, Nexy, MDX) ---
     configureServer(server) {
       server.watcher.add([
-        path.resolve(process.cwd(), '**/*.py'),
-        path.resolve(process.cwd(), '**/*.nexy'),
-        path.resolve(process.cwd(), '**/*.mdx')
+        path.resolve(process.cwd(), 'src/**/*.py'),
+        path.resolve(process.cwd(), 'src/**/*.nexy'),
+        path.resolve(process.cwd(), 'src/**/*.mdx'),
+        path.resolve(process.cwd(), '*.py')
       ])
 
-      const reloadExts = (file: string) =>
-        file.endsWith('.py') || file.endsWith('.nexy') || file.endsWith('.mdx')
+      // Vite owns HMR for framework files (.tsx/.vue/.svelte/.jsx) natively.
+      // MDX is routed through Vite here; .nexy/.md are served via the Nexy
+      // body-swap WebSocket, and .py changes restart the uvicorn process.
+      const reloadExts = (file: string) => file.endsWith('.mdx')
 
       server.watcher.on('change', (file) => {
         if (reloadExts(file)) {
@@ -99,7 +169,7 @@ function nexyPlugin(): Plugin {
       })
     },
 
-    // --- Génération des Entrées (Client side) ---
+    // --- Entry Generation (Client side) ---
     buildStart() {
       if (isSSRBuild) return
       nexySSGDone = false
@@ -141,8 +211,8 @@ const nexyLogger = (): Logger => {
       if (silentMessages.some(m => msg.includes(m))) return
       console.info(`${prefix} ${msg.replace("/", "")}`)
     },
-    warn: (msg) => console.warn(`${prefix} ${c.yellow}⚠ ${msg}${c.reset}`),
-    error: (msg) => console.error(`${prefix} ${c.red}✘ ${msg}${c.reset}`),
+    warn: (msg) => console.warn(`${prefix} ${c.yellow}WARN ${msg}${c.reset}`),
+    error: (msg) => console.error(`${prefix} ${c.red}ERR ${msg}${c.reset}`),
   }
 }
 
@@ -151,3 +221,4 @@ const nexy = Object.assign(nexyPlugin, {
 })
 
 export default nexy
+

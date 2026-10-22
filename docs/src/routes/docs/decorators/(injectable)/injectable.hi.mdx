@@ -1,0 +1,57 @@
+# "@इंजेक्टेबल
+
+एक वर्ग को नेक्सी के निर्भरता इंजेक्शन कंटेनर द्वारा प्रबंधित के रूप में चिह्नित करता है।
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str) -> list[dict]:
+        ...
+```
+## हस्ताक्षर
+```python
+Injectable(scope: Scope = Scope.SINGLETON) -> Callable[[type], type]
+```
+## दायरा
+
+| दायरा | व्यवहार |
+|-------|--------|
+| `Scope.SINGLETON` (डिफ़ॉल्ट) | एक उदाहरण पूरे ऐप में साझा किया गया |
+| `Scope.REQUEST` | प्रति HTTP अनुरोध नया उदाहरण |
+| `Scope.TRANSIENT` | हर बार इसका समाधान होने पर नया उदाहरण |
+```python
+from nexy.decorators import Injectable, Scope
+
+"@Injectable(Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.user_id: str | None = None
+```
+## निर्भरता इंजेक्शन
+
+जब प्रकार इंजेक्टेबल होते हैं तो कंस्ट्रक्टर पैरामीटर स्वचालित रूप से हल हो जाते हैं:
+```python
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):  # DatabaseService resolved by Container
+        self.db = db
+
+"@Injectable()
+class DatabaseService:
+    def connect(self) -> None:
+        ...
+```
+## कंटेनर
+
+यदि आवश्यक हो तो सीधे कंटेनर तक पहुंचें:
+```python
+from nexy.decorators import Container
+
+service = Container.resolve(DatabaseService)
+```
+## प्रतिबंध
+
+- `"@Injectable()` कक्षाओं को DI संदर्भ के बाहर मैन्युअल रूप से प्रारंभ नहीं किया जा सकता है
+- सर्कुलर निर्भरताएँ `RecursionError` बढ़ाती हैं
+- डिफॉल्ट के बिना कंस्ट्रक्टर पैरामीटर इंजेक्टेबल प्रकार के होने चाहिए

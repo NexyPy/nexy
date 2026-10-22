@@ -1,0 +1,26 @@
+# SQL라이트
+
+SQLite는 Nexy 개발을 위한 기본 데이터베이스입니다. 구성이 필요 없고 파일 기반이며 프로토타입 제작에 적합합니다.
+
+## 연결
+
+기본값: `sqlite:///dev.db`
+
+```python
+DATABASE_URL = "sqlite:///dev.db"
+```
+
+## ORM 사용
+
+| ORM | 드라이버 | 연결 문자열 |
+|------|---------|------|
+| SQL모델/SQLAlchemy | `aiosqlite` | `sqlite+aiosqlite:///dev.db` |
+| 거북이-ORM | `aiosqlite` | `sqlite://dev.db` |
+
+## 제한사항
+
+- 동시 쓰기 없음(트래픽이 많은 프로덕션에는 적합하지 않음)
+- 사용자 관리나 권한이 없습니다.
+- 단일 파일로 제한됩니다.
+
+SQLite는 개발 및 소규모 프로젝트에 적합합니다. 프로덕션을 위해 PostgreSQL로 전환하세요.

@@ -1,0 +1,61 @@
+# 프록시 뒤에
+
+Nginx, Caddy, Cloudflare 또는 로드 밸런서 뒤에서 실행하는 경우 전달된 헤더를 신뢰하도록 Nexy를 구성하세요.
+
+## 전달된 헤더
+
+```python
+# nexyconfig.py
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTrustedHost = {
+        "allowed_hosts": ["*"],
+    }
+```
+
+## 유비콘
+
+`nx start`로 실행하거나 uvicorn으로 직접 실행하는 경우 `--proxy-headers` 플래그를 전달하세요.
+
+```bash
+nx start --proxy-headers
+
+# or
+uvicorn nexy.app:app --proxy-headers --forwarded-allow-ips="*"
+```
+
+## 루트 경로
+
+앱이 하위 경로(예: `https://example.com/myapp/`):)에 마운트된 경우
+
+```python
+# nexyconfig.py
+from nexy import app
+
+app.root_path = "/myapp"
+```
+
+## Nginx 예제
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## 효과
+
+올바르게 구성된 경우:
+- `request.url`는 내부 URL이 아닌 원래 URL을 반영합니다.
+- 리디렉션은 올바른 구성표(https)를 사용합니다.
+- 속도 제한 및 클라이언트 IP 감지는 실제 클라이언트 IP를 사용합니다.
+- OpenAPI 문서 URL이 올바르게 생성됩니다.

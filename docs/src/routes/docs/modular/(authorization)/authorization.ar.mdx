@@ -1,0 +1,64 @@
+# الحراس والتفويض (معياري)
+
+قم بحماية وحدات التحكم والمسارات باستخدام `"@UseGuard` مع استدعاءات الحراسة.
+
+##عقد الحراسة
+
+يمكن استدعاء الحارس بـ `__call__(self, request)`. ارفع `HTTPException` للحظر، وأرجع `None` للسماح.
+
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+
+## حارس على مستوى وحدة التحكم
+
+```python
+from nexy.decorators import Controller, UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self, request):
+        return {"user": request.user.username}
+```
+
+## حراس متعددة
+
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+
+يعمل حراس مستوى الفصل قبل حراس مستوى الطريقة. تعمل جميعها كـ FastAPI `Depends`.
+
+## حارس على مستوى الطريقة
+
+```python
+from nexy.decorators import Controller, UseGuard
+
+"@Controller("/users")
+class UsersController:
+    "@UseGuard(AuthGuard())
+    def GET(self, request):
+        return {"user": request.user.username}
+```
+
+يعمل على مستوى وحدة التحكم والطريقة.
+
+---
+
+أنظر أيضا: [Guards](/docs/modular/guards)، ["@UseGuard reference](/docs/decorators/useguard)، [Authentication](/docs/security/authentication)

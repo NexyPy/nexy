@@ -1,0 +1,58 @@
+# "@モジュール
+
+コントローラー、プロバイダー、およびサブモジュールを FastAPI `APIRouter` にアセンブルします。
+```python
+from nexy.decorators import Module, Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1}]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [UsersController]
+    providers = [DatabaseService]
+    imports = [AuthModule]
+    exports = [UsersController]
+```
+＃＃ サイン
+```python
+Module(prefix: str = "") -> Callable[[type], APIRouter]
+```
+## クラス属性
+
+|属性 |タイプ |必須 |説明 |
+|----------|------|----------|---------------|
+| `controllers` | `list[type]` |はい |登録するコントローラー クラス |
+| `providers` | `list[type]` |いいえ | DIコンテナに登録する注入可能なサービス |
+| `imports` | `list[APIRouter]` |いいえ | | を含めるサブモジュール (`"@Module` によって返される)
+| `exports` | `list[type]` |いいえ |モジュールのインポートで使用するためにエクスポートするプロバイダー |
+
+## 仕組み
+
+1. プロバイダーは `Container.resolve()` 経由でインスタンス化されます
+2. インポートされたサブモジュールは親ルーターに含まれます
+3. エクスポートは `router.__module_exports__` に保存されます
+4. 各コントローラーのメソッドがルートとして登録されます
+
+## インポート/エクスポートの例
+```python
+from nexy.decorators import Injectable, Module
+
+"@Injectable()
+class SharedService:
+    def get_data(self) -> str:
+        return "shared"
+
+"@Module(prefix="/shared")
+class SharedModule:
+    controllers = [SharedController]
+    providers = [SharedService]
+    exports = [SharedService]
+
+"@Module(prefix="/api")
+class AppModule:
+    controllers = [AppController]
+    imports = [SharedModule]  # SharedModule router included
+```

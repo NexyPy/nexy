@@ -1,0 +1,167 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Jinja2 Injection (Nexy)",
+  "scopeName": "jinja2.injection.nexy",
+  "injectionSelector": "L:text.html.basic, L:string.quoted.double.html, L:string.quoted.single.html",
+  "patterns": [
+    { "include": "#jinja-expression" },
+    { "include": "#jinja-block" },
+    { "include": "#jinja-comment" }
+  ],
+  "repository": {
+    "jinja-expression": {
+      "name": "meta.embedded.jinja.expression.nexy",
+      "begin": "\\{\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin.jinja2" }
+      },
+      "end": "\\}\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end.jinja2" }
+      },
+      "patterns": [
+        { "include": "#python-inside" }
+      ]
+    },
+    "jinja-block": {
+      "name": "meta.embedded.jinja.block.nexy",
+      "begin": "\\{%[-]?",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-block.begin.jinja2" }
+      },
+      "end": "[-]?%\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-block.end.jinja2" }
+      },
+      "patterns": [
+        { "include": "#jinja-keywords" },
+        { "include": "#jinja-jinja-keywords" },
+        { "include": "#python-inside" }
+      ]
+    },
+    "jinja-comment": {
+      "name": "comment.block.jinja2.nexy",
+      "begin": "\\{#",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.comment.begin.jinja2" }
+      },
+      "end": "#\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.comment.end.jinja2" }
+      }
+    },
+    "jinja-keywords": {
+      "match": "\\b(if|elif|else|for|not|and|or|in|is|as|import|from|True|False|None)\\b",
+      "name": "keyword.control.python"
+    },
+    "jinja-jinja-keywords": {
+      "match": "\\b(endif|endfor|endblock|endmacro|endcall|endfilter|endwith|endraw|block|extends|include|macro|call|filter|set|del|raw|with|without|context)\\b",
+      "name": "keyword.control.python"
+    },
+    "python-inside": {
+      "patterns": [
+        { "include": "#py-triple-single" },
+        { "include": "#py-triple-double" },
+        { "include": "#py-string-single" },
+        { "include": "#py-string-double" },
+        { "include": "#py-fstring-single" },
+        { "include": "#py-fstring-double" },
+        { "include": "#py-number" },
+        { "include": "#py-builtins" },
+        { "include": "#py-keywords" },
+        { "include": "#py-function-call" },
+        { "include": "#py-op-comparison" },
+        { "include": "#py-op-math" },
+        { "include": "#py-identifier" }
+      ]
+    },
+    "py-triple-single": {
+      "name": "string.quoted.single.multiline.python",
+      "begin": "'''",
+      "end": "'''",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" }
+      ]
+    },
+    "py-triple-double": {
+      "name": "string.quoted.double.multiline.python",
+      "begin": "\"\"\"",
+      "end": "\"\"\"",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" }
+      ]
+    },
+    "py-string-single": {
+      "name": "string.quoted.single.python",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" }
+      ]
+    },
+    "py-string-double": {
+      "name": "string.quoted.double.python",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" }
+      ]
+    },
+    "py-fstring-single": {
+      "name": "string.quoted.single.fstring.python",
+      "begin": "f'",
+      "end": "'",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [ { "include": "#python-inside" } ]
+        }
+      ]
+    },
+    "py-fstring-double": {
+      "name": "string.quoted.double.fstring.python",
+      "begin": "f\"",
+      "end": "\"",
+      "patterns": [
+        { "match": "\\\\[\\s\\S]", "name": "constant.character.escape.python" },
+        {
+          "begin": "\\{",
+          "end": "\\}",
+          "patterns": [ { "include": "#python-inside" } ]
+        }
+      ]
+    },
+    "py-number": {
+      "match": "\\b(?:0[bBoOxX][0-9a-fA-F]+|\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?)\\b",
+      "name": "constant.numeric.python"
+    },
+    "py-builtins": {
+      "match": "\\b(abs|all|any|bool|callable|dict|enumerate|float|int|len|list|max|min|print|range|set|str|sum|tuple|zip|type|isinstance|hasattr|getattr|setattr|delattr|super|object|property|staticmethod|classmethod|reversed|sorted|filter|map|open|file|input|iter|next|repr|id|ord|chr|hex|oct|bin|pow|round|hash|slice|vars|dir|locals|globals|__import__|compile|eval|exec|__file__|__name__|__doc__|__dict__)\\b",
+      "name": "support.function.builtin.python"
+    },
+    "py-keywords": {
+      "match": "\\b(and|or|not|is|in|as|if|else|elif|for|while|break|continue|return|yield|import|from|class|def|with|try|except|finally|raise|pass|del|global|nonlocal|lambda|assert|async|await|True|False|None)\\b",
+      "name": "keyword.control.python"
+    },
+    "py-function-call": {
+      "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()",
+      "captures": {
+        "1": { "name": "entity.name.function.python" }
+      }
+    },
+    "py-op-comparison": {
+      "match": "==|!=|<=|>=|<>|(?:\\bis\\b|\\bin\\b)",
+      "name": "keyword.operator.comparison.python"
+    },
+    "py-op-math": {
+      "match": "\\+|\\-|\\*|\\/|\\%|\\*\\*|\\/\\/|\\|\\||&&|\\||\\^|~|<<|>>|&|=|:",
+      "name": "keyword.operator.arithmetic.python"
+    },
+    "py-identifier": {
+      "match": "\\b[_A-Za-z][_A-Za-z0-9]*\\b",
+      "name": "variable.other.readwrite.python"
+    }
+  }
+}

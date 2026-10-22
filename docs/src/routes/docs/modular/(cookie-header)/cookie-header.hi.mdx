@@ -1,0 +1,69 @@
+# कुकीज़ और हेडर (मॉड्यूलर)
+
+नियंत्रकों में फास्टएपीआई के `Cookie` और `Header` का उपयोग करके HTTP कुकीज़ और हेडर पढ़ें।
+
+## कुकी पैरामीटर
+
+```python
+from nexy.decorators import Controller
+from fastapi import Cookie
+
+"@Controller("/profile")
+class ProfileController:
+    def GET(self, session_id: str | None = Cookie(None)):
+        return {"session_id": session_id}
+```
+
+## एकाधिक कुकीज़
+
+```python
+from fastapi import Cookie
+from nexy.decorators import Controller
+
+"@Controller("/settings")
+class SettingsController:
+    def GET(self, session_id: str | None = Cookie(None), theme: str = Cookie("light")):
+        return {"session": session_id, "theme": theme}
+```
+
+## हेडर पैरामीटर
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/info")
+class InfoController:
+    def GET(self, user_agent: str | None = Header(None)):
+        return {"ua": user_agent}
+```
+
+## कस्टम हेडर उपनाम
+
+```python
+from fastapi import Header
+from nexy.decorators import Controller
+
+"@Controller("/secure")
+class SecureController:
+    def GET(self, x_token: str = Header(alias="X-Token")):
+        return {"token": x_token}
+```
+
+हेडर नाम डिफ़ॉल्ट रूप से अंडरस्कोर के रूप में हाइफ़न के साथ लोअरकेस होते हैं। कस्टम नामों के लिए `alias` का उपयोग करें।
+
+## टेम्पलेट्स में कुकीज़ पढ़ना
+
+`.nexy` टेम्पलेट्स में, `useCookies()` हुक का उपयोग करें:
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+
+---
+
+यह भी देखें: [useCookies hook](/docs/hooks/useCookies), [Session config](/docs/config/session)

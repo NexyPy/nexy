@@ -1,0 +1,29 @@
+#MySQL y MariaDB
+
+MySQL y MariaDB son bases de datos de producción confiables respaldadas por todos los ORM de Nexy.
+
+## Conexión
+
+```python
+# MySQL
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+
+# MariaDB (same driver, compatible)
+DATABASE_URL = "mysql+asyncmy://user:password"@localhost:3306/mydb"
+```
+
+MariaDB es un reemplazo directo de MySQL: mismos controladores, mismas cadenas de conexión.
+
+## Con ORM
+
+| ORM | Conductor | Cadena de conexión |
+|-----|--------|------------------|
+| Modelo SQL / SQLAlchemy | `asyncmy` | `mysql+asyncmy://user:pass"@localhost/db` |
+| Tortuga-ORM | `asyncmy` | `mysql://user:pass"@localhost/db` |
+
+## Notas
+
+- Utilice `aiomysql` o `asyncmy` para soporte asíncrono.
+- Asegúrese de que su servidor de base de datos admita conexiones asíncronas
+- Configurar la agrupación de conexiones para cargas de trabajo de producción.
+- MySQL ↔ MariaDB: tu código permanece igual, solo cambia el servidor

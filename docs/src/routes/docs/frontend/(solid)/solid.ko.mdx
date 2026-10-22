@@ -1,0 +1,73 @@
+# 솔리드
+
+`nexyconfig.py`에 Solid를 추가하세요:
+
+```python
+from nexy.frontend import solid
+
+class NexyConfig(NexyConfigModel):
+    useFF = [solid()]
+```
+
+---
+
+## 컴포넌트 생성
+
+상태에 대한 Solid 사용 신호와 함께 사용되는 `.tsx` 또는 `.jsx` 확장자를 가진 파일:
+
+```tsx
+// src/components/Counter.tsx
+import { createSignal } from 'solid-js'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = createSignal(initial)
+  return (
+    <div>
+      <p>Count: {count()}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## .nexy 페이지에서 사용
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+소품은 Jinja2 `{{ }}` 구문을 통해 전달됩니다. JSON 값에는 이중 중괄호를 사용하세요.
+
+---
+
+## 어린이/슬롯 콘텐츠
+
+Nexy는 하위 콘텐츠를 `children` prop으로 전달합니다.
+
+```tsx
+export default function Card(props) {
+  return (
+    <div class="card">
+      <h2>{props.title}</h2>
+      <div>{props.children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## SSR
+
+Solid는 SSR에 `renderToString`를 사용하고 클라이언트에서는 `hydrate`로 수화물을 사용합니다.

@@ -1,0 +1,97 @@
+# Config: Nexy
+
+Nexy is configured via `nexyconfig.py` at your project root. The file defines a class that extends `NexyConfigModel`:
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    usePort = 3000
+    useTitle = "My App"
+```
+
+## All fields
+
+### Router
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useRouter` | `APIRouter \| None` | `None` | Modular router root module. When set, uses Modular routing. When `None`, uses FBR. |
+| `excludeDirs` | `list[str]` | `[]` | Directories to exclude from FBR scanning. |
+
+### Server
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `usePort` | `int` | `3000` | Port for the dev/production server. |
+| `useHost` | `str` | `"0.0.0.0"` | Host to bind to. |
+| `useSslKeyfile` | `str \| None` | `None` | SSL key file path for HTTPS. |
+| `useSslCertfile` | `str \| None` | `None` | SSL certificate file path for HTTPS. |
+
+### OpenAPI docs
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useDocs` | `bool` | `True` | Enable/disable OpenAPI docs. |
+| `useDocsUrl` | `str` | `"/docs"` | URL for Swagger UI. |
+| `useRedocsUrl` | `str \| None` | `"/redocs"` | URL for ReDoc. Set to `None` to disable. |
+| `useTitle` | `str` | `"Nexy"` | Title for OpenAPI schema. |
+
+### Frontend
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useVite` | `bool` | `False` | Enable Vite bundling for client components. |
+| `useViteDevUrl` | `str \| None` | `None` | Custom Vite dev server URL (auto-detected if `None`). |
+| `useFF` | `list[FrontendFramework]` | `[]` | Frontend frameworks to enable (React, Vue, Svelte, Solid, Preact). Auto-detected from project. |
+| `useMarkdownExtensions` | `list[str]` | `[]` | Python-Markdown extensions for `.mdx` files. |
+
+### Middleware
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useMiddlewares` | `list[Any]` | `[]` | Custom ASGI middleware classes. |
+| `useCORS` | `dict \| None` | `None` | CORS middleware config (Starlette `CORSMiddleware` kwargs). |
+| `useGZip` | `dict \| None` | `None` | GZip middleware config (Starlette `GZipMiddleware` kwargs). |
+| `useTrustedHost` | `dict \| None` | `None` | Trusted host middleware config. |
+| `useHTTPSRedirect` | `bool` | `False` | Redirect HTTP to HTTPS. |
+| `useSession` | `dict \| None` | `None` | Session middleware config (Starlette `SessionMiddleware` kwargs). |
+| `useAuth` | `dict \| None` | `None` | Authentication middleware config. |
+
+### i18n
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` | Available locales (e.g. `["en", "fr"]`). Auto-detected from `nexy/i18n/` if `None`. |
+| `useDefaultLocale` | `str` | `"en"` | Default locale. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | Cookie name for locale storage. |
+| `useLocaleDetection` | `dict[str, bool] \| None` | `None` | Locale detection settings. |
+| `useRTL` | `bool` | `False` | Enable RTL support. |
+
+### Table of Contents
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | Heading levels to include in TOC (e.g. `"2-4"` for h2-h4). |
+| `useTocTitle` | `str` | `"Table of Contents"` | TOC section title. |
+| `useTocAuto` | `bool` | `True` | Auto-generate TOC for `.mdx` pages. |
+
+---
+
+## Accessing the FastAPI app
+
+Nexy exposes the underlying FastAPI instance via `nexy.app`. This is useful for adding custom routes, middleware, or event handlers outside of Nexy's routing system.
+
+```python
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("Server starting...")
+
+"@app.get("/health")
+def health():
+    return {"status": "ok"}
+```
+
+The `app` object is a fully configured FastAPI `APIRouter` that gets mounted by `AppServer`. You can use any FastAPI/Starlette feature on it.

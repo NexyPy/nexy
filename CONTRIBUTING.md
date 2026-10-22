@@ -1,7 +1,7 @@
 # Contributing to Nexy
 
 **First time here?** Check out [good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-— curated for new contributors.
+- curated for new contributors.
 
 <p align="center">
   <a href="https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
@@ -39,7 +39,7 @@ cd nexy
 
 # 2. Set up Python
 uv venv && source .venv/bin/activate  # or .venv\Scripts\activate on Windows
-uv pip install -e ".[dev]"
+uv pip install -e . --group dev
 
 # 3. Verify everything works
 ruff check nexy/ && ruff format nexy/ --check && python -m mypy nexy --strict && python -m pytest tests/ -v
@@ -64,8 +64,8 @@ uv venv
 # Windows: .venv\Scripts\activate
 # Unix/macOS: source .venv/bin/activate
 
-# Install in editable mode with dev deps
-uv pip install -e ".[dev]"
+# Install in editable mode with dev deps (dev is a dependency group, not an extra)
+uv pip install -e . --group dev
 ```
 
 ### JavaScript dependencies (optional)
@@ -73,6 +73,7 @@ uv pip install -e ".[dev]"
 Only needed for the VS Code extension:
 
 ```bash
+cd extensions/vscode
 pnpm install --frozen-lockfile
 ```
 
@@ -185,7 +186,7 @@ python -m mypy nexy --strict
 
 ### TypeScript (VS Code extension)
 
-- **Linter**: ESLint (via `tsc -b`)
+- **Linter**: ESLint + TypeScript (the extension ships its own `tsconfig.json`; run `pnpm install --frozen-lockfile` in `extensions/vscode/` first)
 - **Format**: Prettier (via ESLint)
 
 ### General rules
@@ -230,10 +231,10 @@ npm run test
 
 ### Checklist
 
-- [ ] `python -m pytest tests/ -v` — tests pass
-- [ ] `ruff check nexy/` — lint passes
-- [ ] `ruff format nexy/ --check` — formatting correct
-- [ ] `python -m mypy nexy --strict` — type checks
+- [ ] `python -m pytest tests/ -v` - tests pass
+- [ ] `ruff check nexy/` - lint passes
+- [ ] `ruff format nexy/ --check` - formatting correct
+- [ ] `python -m mypy nexy --strict` - type checks
 - [ ] New tests cover my changes
 - [ ] Documentation updated (if public API change)
 - [ ] Conventional commit messages

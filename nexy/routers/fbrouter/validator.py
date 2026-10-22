@@ -10,7 +10,7 @@ class RouteValidator:
         return {m.group(1) for m in re.finditer(r"{([^}:]+)(:[^}]+)?}", path)}
 
     @classmethod
-    def validate_sig(cls, handler: Callable[..., Any], path: str, method_name: str):
+    def validate_sig(cls, handler: Callable[..., Any], path: str, method_name: str) -> None:
         expected = cls.extract_path_params(path)
         if not expected:
             return

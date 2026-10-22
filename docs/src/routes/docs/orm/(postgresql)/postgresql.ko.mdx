@@ -1,0 +1,26 @@
+# 포스트그레SQL
+
+PostgreSQL은 Nexy 애플리케이션에 권장되는 프로덕션 데이터베이스입니다.
+
+## 연결
+
+프로젝트의 데이터베이스 구성에서 PostgreSQL 연결을 구성합니다.
+
+```python
+# configs/database.py or .env
+DATABASE_URL = "postgresql+asyncpg://user:password"@localhost:5432/mydb"
+```
+
+## ORM 사용
+
+| ORM | 드라이버 | 연결 문자열 |
+|------|---------|------|
+| SQL모델/SQLAlchemy | `asyncpg` | `postgresql+asyncpg://user:pass"@localhost/db` |
+| 거북이-ORM | `asyncpg` | `postgres://user:pass"@localhost/db` |
+
+## PostgreSQL을 Nexy와 함께 사용해야 하는 이유
+
+- `asyncpg`를 통한 완전한 비동기 지원
+- 유연한 스키마를 위한 기본 JSON/JSONB 열
+- 프로덕션 배포에 탁월
+- 지원되는 모든 ORM과 함께 작동

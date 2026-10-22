@@ -1,0 +1,67 @@
+# Corpo da solicitação (FBR)
+
+Receba corpos de solicitação JSON usando modelos Pydantic.
+
+## Modelo básico
+
+```python
+# src/routes/items.py
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+def POST(item: Item):
+    return {"name": item.name, "price": item.price}
+```
+
+## Campo de corpo com `embed`
+
+```python
+from fastapi import Body
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+def POST(
+    item: Item,
+    important: str = Body(embed=True),
+):
+    # Expects: {"item": {...}, "important": "x"}
+    ...
+```
+
+## Vários parâmetros corporais
+
+```python
+def POST(item: Item, user: User):
+    # Expects: {"item": {...}, "user": {...}}
+    ...
+```
+
+## Modelos aninhados
+
+Os modelos podem conter outros modelos, listas e campos opcionais.
+
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+
+O corpo é analisado automaticamente quando você anota um parâmetro do modelo Pydantic. FastAPI lida com a validação e retorna 422 em entradas inválidas.
+
+---
+
+Veja também: [FastAPI Request Body](/docs/fastapi/request-body) para mais detalhes.

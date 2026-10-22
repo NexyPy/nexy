@@ -1,0 +1,83 @@
+# Jinja2
+
+Nexy verwendet **Jinja2** als Template-Engine. Der Vorlagenblock jeder `.nexy`-Datei wird als Jinja2-Vorlage gerendert.
+
+---
+
+## Syntax
+
+```nexy
+---
+title = "Hello"
+items = [1, 2, 3]
+---
+<h1>{{ title }}</h1>
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+{% if user %}
+    <p>Welcome, {{ user.name }}</p>
+{% endif %}
+```
+
+---
+
+## Vorlagenkontext
+
+Der Vorlagenkontext umfasst:
+
+- Alle in frontmatter deklarierten Requisiten (`item: prop[type]`)
+- Automatisch injizierte Helfer: `Slot`, `trans`, `t`, `__current_locale`, `__Import`, `__Template`
+- Zusätzliche Requisiten: `caller`, `children`
+
+---
+
+## Filter
+
+Alle in Jinja2 integrierten Filter sind verfügbar:
+
+```nexy
+<p>{{ description | truncate(100) }}</p>
+<p>{{ created_at | date(format="short") }}</p>
+<p>{{ content | safe }}</p>
+<p>{{ name | title }}</p>
+```
+
+---
+
+## Makros
+
+Jinja2-Makros funktionieren in `.nexy`-Dateien:
+
+```nexy
+{% macro input(name, type="text", value="") %}
+    <input type="{{ type }}" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
+
+<form>
+    {{ input("username") }}
+    {{ input("password", type="password") }}
+</form>
+```
+
+---
+
+## Abschlag
+
+`.mdx`-Dateien werden als Markdown gerendert und dann in die Layoutvorlage eingeschlossen. Die Standard-Jinja2-Syntax funktioniert auch in `.mdx`.
+
+---
+
+## Leerzeichenkontrolle
+
+Die Leerzeichensteuerung von Jinja2 funktioniert in `.nexy`-Dateien:
+
+```nexy
+{%- for item in items -%}
+    <span>{{ item }}</span>
+{%- endfor -%}
+```
+
+Verwenden Sie `{%-` und `-%}`, um Leerzeichen um Kontrollblöcke herum zu entfernen.

@@ -1,0 +1,61 @@
+# Derrière un proxy
+
+Lorsque vous exécutez derrière Nginx, Caddy, Cloudflare ou un équilibreur de charge, configurez Nexy pour qu'il fasse confiance aux en-têtes transférés.
+
+## En-têtes transférés
+
+```python
+# nexyconfig.py
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTrustedHost = {
+        "allowed_hosts": ["*"],
+    }
+```
+
+## Uvicorne
+
+Lors de l'exécution avec `nx start` ou directement avec uvicorn, passez le flag `--proxy-headers` :
+
+```bash
+nx start --proxy-headers
+
+# or
+uvicorn nexy.app:app --proxy-headers --forwarded-allow-ips="*"
+```
+
+## Chemin racine
+
+Si votre application est montée sur un sous-chemin (par exemple, `https://example.com/myapp/`):
+
+```python
+# nexyconfig.py
+from nexy import app
+
+app.root_path = "/myapp"
+```
+
+## Exemple Nginx
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## Effets
+
+Lorsqu'il est configuré correctement :
+- `request.url` reflète l'URL d'origine, pas l'URL interne
+- Les redirections utilisent le schéma correct (https)
+- La limitation du débit et la détection de l'adresse IP du client utilisent l'adresse IP réelle du client
+- Les URL des documents OpenAPI sont générées correctement

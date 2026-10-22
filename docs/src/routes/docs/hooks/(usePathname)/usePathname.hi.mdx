@@ -1,0 +1,40 @@
+#उपयोगपथनाम
+
+वर्तमान URL पथ को एक स्ट्रिंग के रूप में लौटाता है।
+
+```python
+from nexy import usePathname
+
+pathname = usePathname()
+```
+
+---
+
+## वापसी मूल्य
+
+`str` - वर्तमान अनुरोध URL का पथ घटक (जैसे `/docs/hooks/usePathname`)।
+
+---
+
+## उदाहरण
+
+```nexy
+---
+from nexy import usePathname
+path = usePathname()
+---
+<nav class="breadcrumb">
+    {% set segments = path.strip('/').split('/') %}
+    {% for seg in segments %}
+        <span>/ {{ seg }}</span>
+    {% endfor %}
+</nav>
+```
+
+---
+
+## उपयोग नोट्स
+
+- `.nexy` और `.mdx` फ्रंटमैटर में उपलब्ध है
+- `request.url.path` के माध्यम से `.py` रूट हैंडलर में भी उपलब्ध है
+- केवल पथ लौटाता है - कोई क्वेरी स्ट्रिंग नहीं, कोई टुकड़ा नहीं

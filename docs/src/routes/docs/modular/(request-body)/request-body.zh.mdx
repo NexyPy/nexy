@@ -1,0 +1,69 @@
+# 请求正文（模块化）
+
+使用控制器中的 Pydantic 模型接收 JSON 请求主体。
+
+## 基本模型
+
+```python
+from nexy.decorators import Controller
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+
+## 正文字段带有 `embed`
+
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+
+## 多个身体参数
+
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+
+## 嵌套模型
+
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+
+FastAPI 处理验证并在无效输入时返回 422。
+
+---
+
+另请参阅：[Controllers](/docs/modular/controllers)、[FastAPI Request Body](/docs/fastapi/request-body)

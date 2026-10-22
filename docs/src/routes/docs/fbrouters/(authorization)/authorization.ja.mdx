@@ -1,0 +1,60 @@
+# 認可(FBR)
+
+ガード呼び出し可能な `"@UseGuard` デコレータを使用してルートを保護します。
+
+## ガード契約
+
+ガードは、`__call__(self, request)` で呼び出すことができます。ブロックするには `HTTPException` を上げ、許可するには `None` を返します。
+
+```python
+from fastapi import HTTPException
+
+class AdminGuard:
+    def __call__(self, request):
+        if not request.user.is_authenticated:
+            raise HTTPException(401)
+        if "admin" not in request.user.scopes:
+            raise HTTPException(403)
+```
+
+## ルート上のガード
+
+```python
+# src/routes/admin.py
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+```
+
+## Starlette の `requires` を使用する
+
+```python
+from nexy.decorators import UseGuard
+from starlette.authentication import requires
+
+"@UseGuard(requires("authenticated"))
+def GET(request):
+    return {"user": request.user.username}
+```
+
+## 複数のガード
+
+```python
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+```
+
+---
+
+関連項目: ["@UseGuard reference](/docs/decorators/useguard)、[Authentication](/docs/security/authentication)

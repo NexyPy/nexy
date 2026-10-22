@@ -1,54 +1,125 @@
-import os
 from pathlib import Path
 
 
 class VFS:
     """
-    In-memory Virtual File System.
+    Virtual File System with persistent storage.
     Singleton class to store compiled files during runtime.
+    Files are stored in memory and persisted to __nexy__ directory on disk.
+    Uses lazy loading: only file paths are indexed at startup, content is read on demand.
     """
 
-    _instance = None
+    _instance: "VFS | None" = None
     _files: dict[str, str] = {}
+    _disk_files: set[str] = set()
+    _dev_mode: bool = False
+    _disk_prefix: str = "__nexy__"
 
-    def __new__(cls):
+    def __new__(cls) -> "VFS":
         if cls._instance is None:
             cls._instance = super().__new__(cls)
+            cls._instance._index_from_disk()
         return cls._instance
 
+    def _index_from_disk(self) -> None:
+        """Indexes file paths from __nexy__ directory without reading contents.
+        Content will be loaded lazily on first read() call.
+        """
+        disk_path = Path(self._disk_prefix)
+        if not disk_path.exists():
+            return
+        self._disk_files.clear()
+        for file_path in disk_path.rglob("*"):
+            if file_path.is_file():
+                vfs_path = str(file_path).replace("\\", "/")
+                self._disk_files.add(vfs_path)
+
     def write(self, path: str, content: str) -> None:
-        """Writes content to a virtual file path."""
+        """Writes content to a virtual file path and persists to disk (unless in dev mode)."""
         path = path.replace("\\", "/")
         self._files[path] = content
+        self._disk_files.add(path)
+
+        if not self._dev_mode and path.startswith(self._disk_prefix):
+            disk_path = Path(path)
+            disk_path.parent.mkdir(parents=True, exist_ok=True)
+            disk_path.write_text(content, encoding="utf-8")
 
     def read(self, path: str) -> str:
-        """Reads content from a virtual file path."""
+        """Reads content from a virtual file path (checks memory first, then disk)."""
         path = path.replace("\\", "/")
-        if path not in self._files:
-            raise FileNotFoundError(f"Virtual file not found: {path}")
-        return self._files[path]
+        if path in self._files:
+            return self._files[path]
+
+        if path.startswith(self._disk_prefix):
+            disk_path = Path(path)
+            if disk_path.exists():
+                content = disk_path.read_text(encoding="utf-8")
+                self._files[path] = content
+                self._disk_files.add(path)
+                return content
+
+        raise FileNotFoundError(f"Virtual file not found: {path}")
 
     def exists(self, path: str) -> bool:
-        """Checks if a virtual file exists."""
+        """Checks if a virtual file exists (checks memory first, then indexed disk paths)."""
         path = path.replace("\\", "/")
-        return path in self._files
+        if path in self._files:
+            return True
+
+        if path in self._disk_files:
+            return True
+
+        if path.startswith(self._disk_prefix):
+            disk_path = Path(path)
+            if disk_path.exists():
+                self._disk_files.add(path)
+                return True
+
+        return False
 
     def list_files(self) -> list[str]:
-        """Returns a list of all files in the VFS."""
-        return list(self._files.keys())
+        """Returns a list of all files in the VFS (memory + indexed disk paths)."""
+        files = set(self._files.keys())
+        files.update(self._disk_files)
+        return list(files)
 
-    def clear(self) -> None:
-        """Clears all files from the VFS."""
+    @classmethod
+    def set_dev_mode(cls, dev: bool = True) -> None:
+        cls._dev_mode = dev
+
+    @classmethod
+    def is_dev_mode(cls) -> bool:
+        return cls._dev_mode
+
+    def clear(self, clear_disk: bool = False) -> None:
+        """Clears all files from the VFS. If clear_disk is True, also deletes from disk."""
         self._files.clear()
+        self._disk_files.clear()
+
+        if clear_disk:
+            disk_path = Path(self._disk_prefix)
+            if disk_path.exists():
+                import shutil
+
+                shutil.rmtree(disk_path)
 
     def delete(self, path: str) -> None:
-        """Deletes a file from the VFS."""
+        """Deletes a file from the VFS (memory and disk)."""
         path = path.replace("\\", "/")
         if path in self._files:
             del self._files[path]
+        self._disk_files.discard(path)
+
+        if path.startswith(self._disk_prefix):
+            disk_path = Path(path)
+            if disk_path.exists():
+                disk_path.unlink(missing_ok=True)
 
     def flush_to_disk(self, prefix: str = "__nexy__") -> None:
-        """Writes all VFS files under prefix to the physical filesystem."""
+        """Flushes all in-memory files to disk (already done automatically in write)."""
+        if self._dev_mode:
+            return
         for path, content in self._files.items():
             if not path.startswith(prefix):
                 continue

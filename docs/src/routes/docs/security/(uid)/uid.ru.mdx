@@ -1,0 +1,52 @@
+# уникальный идентификатор
+
+Nexy не поставляет специальный генератор UID. Стандартная библиотека Python охватывает большинство случаев использования.
+
+## UUID (стандартная библиотека)
+
+```python
+import uuid
+
+uuid.uuid4()          # Random UUID → "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+uuid.uuid4().hex      # Without dashes → "f47ac10b58cc4372a5670e02b2c3d479"
+uuid.uuid7()          # Time-ordered (Python 3.14+) → "018f3a6e-1b3c-7b00-a567-0e02b2c3d479"
+```
+
+## секреты (stdlib, URL-безопасность)
+
+```python
+import secrets
+
+secrets.token_hex(16)    # → "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+secrets.token_urlsafe(8) # → "xYZabcDE_fg"
+```
+
+## NanoID (сторонний)
+
+```bash
+pip install nanoid
+```
+
+```python
+from nanoid import generate
+
+generate()          # → "V1StGXR8_Z5jdHi6B-myT"
+generate(size=21)   # default length
+```
+
+## Идентификаторы, сгенерированные базой данных автоматически
+
+| БД | Тип | Авто |
+|----|------|------|
+| PostgreSQL | `UUID` или `SERIAL` | `gen_random_uuid()` или `SERIAL` |
+| SQLite | `INTEGER PRIMARY KEY` | Автоинкремент |
+| MySQL | `INT AUTO_INCREMENT` или `UUID` | `AUTO_INCREMENT` или `UUID()` |
+
+## Когда что использовать
+
+| Вариант использования | Решение |
+|----------|----------|
+| Первичный ключ базы данных | Автоинкремент БД или `uuid.uuid4()` |
+| Публичный идентификатор (пользователь, сообщение) | `secrets.token_urlsafe()` или NanoID |
+| Токен сеанса/API | `secrets.token_hex()` |
+| Заказанные идентификаторы | `uuid.uuid7()` (Python 3.14+) или ULID |

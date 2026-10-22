@@ -8,7 +8,6 @@ class Pathname:
     def _dynamic_pathname(self, path: str | None = None) -> str:
         """Convert [slug] to {slug}."""
         target = path or self.pathname
-        # Regex: find content inside brackets, unless it starts with '...'
         return re.sub(r"\[(?!(\.\.\.))([^\]]+)\]", r"{\2}", target)
 
     def _catch_all(self, path: str | None = None) -> str:
@@ -19,15 +18,13 @@ class Pathname:
     def _group_pathname(self, path: str | None = None) -> str:
         """Remove parenthesized segments like /(user)/."""
         target = path or self.pathname
-        # Remove /(group) and handle resulting double slashes
         cleaned = re.sub(r"/\([^)]+\)", "", target)
         return cleaned if cleaned else "/"
 
     def _normalize_pathname(self, path: str | None = None) -> str:
         target = path or self.pathname
-        # Next.js: /docs/index -> /docs and /index -> /
         if target.endswith("/index"):
-            target = target[:-6]  # Remove "/index"
+            target = target[:-6]
         return target if target else "/"
 
     def process(self) -> str:
@@ -37,7 +34,6 @@ class Pathname:
         res = self._catch_all(res)
         res = self._dynamic_pathname(res)
 
-        # Final cleanup of double slashes
         res = re.sub(r"/+", "/", res)
         return res if (res == "/" or not res.endswith("/")) else res.rstrip("/")
 
@@ -53,12 +49,12 @@ class StringTransform:
     @staticmethod
     def _normalize_dynamic_segment(segment: str) -> str:
         if segment.startswith("[...") and segment.endswith("]"):
-            return f"{segment[4:-1]}_ndp"
+            return f"{segment[4:-1].replace('-', '_')}_dynamic_param"
         if segment.startswith("[") and segment.endswith("]"):
-            return f"{segment[1:-1]}_ndp"
+            return f"{segment[1:-1].replace('-', '_')}_dynamic_param"
         if segment.startswith("(") and segment.endswith(")"):
-            return f"{segment[1:-1]}_ngp"
-        return segment
+            return f"{segment[1:-1]}_group"
+        return segment.replace("-", "_")
 
     @staticmethod
     def normalize_route_path_for_namespace(path: str) -> str:
@@ -68,20 +64,26 @@ class StringTransform:
 
         parts = path.split("/")
 
-        # Case 1: Path points to a directory (no extension in the last segment)
         if "." not in parts[-1]:
             return "/".join([StringTransform._normalize_dynamic_segment(p) for p in parts])
 
-        # Case 2: Path points to a file
         *dirs, filename = parts
         normalized_dirs = [StringTransform._normalize_dynamic_segment(p) for p in dirs]
 
         stem, ext = filename.rsplit(".", 1)
+
+        if "." in stem:
+            from nexy.core.config import Config as _NexyConfig
+
+            _cfg = _NexyConfig()
+            if _cfg.useLocales and stem.rsplit(".", 1)[1] in _cfg.useLocales:
+                stem = stem.replace(".", "_")
+
         if "[" in stem and "]" in stem:
             stem = re.sub(r"\[\.\.\.([^\]]+)\]", r"\1", stem)
             stem = re.sub(r"\[([^\]]+)\]", r"\1", stem)
-            stem = stem.replace("-", "_")
-            stem = f"{stem}_ndc"
+            stem = f"{stem}_catch_all"
+        stem = stem.replace("-", "_")
 
         normalized_parts = [p for p in normalized_dirs if p] + [f"{stem}.{ext}"]
         return "/".join(normalized_parts)
@@ -95,8 +97,9 @@ class StringTransform:
             if not cleaned:
                 return ""
             first = cleaned[0].capitalize()
-            return f"{first}{cleaned[1:]}_ndc"
+            return f"{first}{cleaned[1:]}_catch_all"
         if not segment:
             return ""
+        segment = segment.replace("-", "_")
         first_letter = segment[0].capitalize()
         return first_letter + segment[1:]

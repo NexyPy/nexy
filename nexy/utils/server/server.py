@@ -1,7 +1,10 @@
+import contextlib
+import os
 import shutil
 import socket
 import subprocess
 import sys
+import time
 import traceback
 from pathlib import Path
 from subprocess import Popen
@@ -15,9 +18,33 @@ from nexy.utils.fs.vfs import VFS
 from nexy.utils.server.ports import find_available_port
 from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG
 
-_NEXY_DIR = Path("__nexy__")
+_WIN_ASYNCIO_PATCHED = False
 
-# ── Internal helpers ────────────────────────────────────────────────────────
+
+def _patch_win_asyncio() -> None:
+    """Suppress ConnectionResetError in asyncio proactor on Windows."""
+    global _WIN_ASYNCIO_PATCHED
+    if sys.platform != "win32" or _WIN_ASYNCIO_PATCHED:
+        return
+    try:
+        import asyncio.proactor_events as _pe
+
+        transport_cls: Any = _pe._ProactorBasePipeTransport
+        orig = transport_cls._call_connection_lost
+
+        def _safe_call_connection_lost(self: Any, exc: BaseException | None = None) -> None:
+            with contextlib.suppress(ConnectionResetError):
+                orig(self, exc)
+
+        transport_cls._call_connection_lost = _safe_call_connection_lost
+        _WIN_ASYNCIO_PATCHED = True
+    except Exception:
+        pass
+
+
+_patch_win_asyncio()
+
+_NEXY_DIR = Path("__nexy__")
 
 
 def _write_port_file(name: str, port: int) -> None:
@@ -35,9 +62,6 @@ def _detect_pm() -> tuple[str, bool]:
     return "npm", True
 
 
-# ── Server class ────────────────────────────────────────────────────────────
-
-
 class Server:
     @staticmethod
     def check_nexy_prod(delete: bool = False) -> None:
@@ -52,6 +76,7 @@ class Server:
     def resolve_ports(
         host: str | None = None,
         port: int | None = None,
+        with_client: bool = True,
     ) -> tuple[int, int]:
         """
         Calculates server and client ports in cascade.
@@ -61,12 +86,9 @@ class Server:
         run_host: str = host or cfg.useHost
         base_port: int = port or cfg.usePort
 
-        # 1. Find a port for the server (e.g. 3000 or 3001)
         server_port = find_available_port(base_port, run_host)
 
-        # 2. Find a port for the client (must be different from the server)
-        # Search starts right after the server port
-        client_port = find_available_port(server_port + 1, run_host)
+        client_port = find_available_port(server_port + 1, run_host) if with_client else 0
 
         return server_port, client_port
 
@@ -75,7 +97,7 @@ class Server:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.connect(("8.8.8.8", 80))
-            return s.getsockname()[0]
+            return str(s.getsockname()[0])
         except Exception:
             return "127.0.0.1"
         finally:
@@ -88,19 +110,57 @@ class Server:
         return None, None
 
     @staticmethod
+    def stop_process(proc: Popen[Any] | None, timeout: int = 5) -> None:
+        """Stops a child process cleanly (Windows or Unix)."""
+        if not proc or proc.poll() is not None:
+            return
+        try:
+            if sys.platform == "win32":
+                subprocess.run(
+                    ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                    capture_output=True,
+                    timeout=timeout,
+                    check=False,
+                )
+            else:
+                proc.terminate()
+                try:
+                    proc.wait(timeout=timeout)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait(timeout=timeout)
+        except Exception:
+            pass
+
+    @staticmethod
     def uvicorn(
         host: str | None = None,
         port: int = 3000,
         as_process: bool = False,
         ssl_keyfile: str | None = None,
         ssl_certfile: str | None = None,
-    ) -> Popen[Any] | None:
-        """Starts the FastAPI/Uvicorn server."""
+        workers: int | None = None,
+    ) -> Popen[Any] | bool | None:
+        """Starts the FastAPI/Uvicorn server with optional workers.
+
+        Returns the spawned process when ``as_process`` is true, ``True`` when the
+        foreground server stopped normally, and ``None`` when the launch failed.
+        """
+        cfg = Config()
         run_host = host or "127.0.0.1"
+
+        if workers is not None:
+            num_workers = workers
+        elif hasattr(cfg, "useWorkers") and cfg.useWorkers:
+            num_workers = cfg.useWorkers
+        elif sys.platform == "win32":
+            num_workers = 1
+        else:
+            num_workers = os.cpu_count() or 1
 
         _write_port_file("server", port)
 
-        ssl_args = {}
+        ssl_args: dict[str, Any] = {}
         if ssl_keyfile and ssl_certfile:
             ssl_args = {"ssl_keyfile": ssl_keyfile, "ssl_certfile": ssl_certfile}
 
@@ -108,6 +168,7 @@ class Server:
             if as_process:
                 ssl_kw = ", ".join(f"{k}='{v}'" for k, v in ssl_args.items())
                 ssl_part = f", {ssl_kw}" if ssl_kw else ""
+                workers_part = f", workers={num_workers}" if num_workers and num_workers > 1 else ""
                 launcher_code = (
                     "import uvicorn\n"
                     "import sys\n"
@@ -115,7 +176,7 @@ class Server:
                     "    from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG\n"
                     f"    uvicorn.run('nexy.routers.app:_server', host='{run_host}',"
                     f" port={port}, log_config=NEXY_LOG_CONFIG,"
-                    f" log_level='info'{ssl_part})\n"
+                    f" log_level='info'{ssl_part}{workers_part})\n"
                     "except Exception as e:\n"
                     "    print(f'Critical error in Nexy subprocess: {e}')\n"
                     "    sys.exit(1)\n"
@@ -127,13 +188,17 @@ class Server:
                     stderr=subprocess.STDOUT,
                 )
             else:
+                workers_kwargs: dict[str, Any] = (
+                    {"workers": num_workers} if num_workers and num_workers > 1 else {}
+                )
                 _uvicorn.run(
                     "nexy.routers.app:_server",
-                    host=host,
+                    host=run_host,
                     port=port,
                     log_config=NEXY_LOG_CONFIG,
                     log_level="info",
                     **ssl_args,
+                    **workers_kwargs,
                 )
                 return True
 
@@ -143,20 +208,46 @@ class Server:
             return None
 
     @staticmethod
+    def wait_for_vite_ready(
+        port: int, host: str = "localhost", timeout: int = 30, ssl: bool = False
+    ) -> bool:
+        """Waits until the Vite dev server answers the readiness probe."""
+        import urllib.request
+
+        protocol = "https" if ssl else "http"
+        if protocol not in ("http", "https"):
+            raise ValueError(f"Unsupported protocol for Vite readiness probe: {protocol!r}")
+        start_time = time.time()
+
+        while time.time() - start_time < timeout:
+            try:
+                url = f"{protocol}://{host}:{port}/@vite/client"
+                with urllib.request.urlopen(url, timeout=1):
+                    return True
+            except Exception:
+                time.sleep(0.2)
+        return False
+
+    @staticmethod
     def vite(
         port: int = 5173,
         build: bool = False,
         ssl: bool = False,
-        suppress_output: bool = False,
+        suppress_output: bool | None = None,
+        capture_stderr: bool = False,
     ) -> Popen[Any]:
-        """Lance le client Vite."""
+        """Launches the Vite client."""
         pm, is_npm = _detect_pm()
-        cmd = "build" if build else "dev"
 
-        args = [pm, "--silent"]
-        args += ["run", cmd] if is_npm else [cmd]
+        if suppress_output is None:
+            suppress_output = build
 
-        if not build:
+        if build:
+            args = [pm]
+            args += ["exec", "--", "vite", "build"] if is_npm else ["exec", "vite", "build"]
+        else:
+            args = [pm]
+            args += ["run", "dev"] if is_npm else ["dev"]
             _write_port_file("client", port)
             if is_npm:
                 args.append("--")
@@ -164,7 +255,18 @@ class Server:
             if ssl:
                 args.append("--https")
 
-        stdout = subprocess.DEVNULL if suppress_output else None
-        stderr = subprocess.PIPE if suppress_output else None
+        if capture_stderr:
+            stderr = subprocess.PIPE
+        elif suppress_output:
+            stderr = subprocess.DEVNULL
+        else:
+            stderr = subprocess.STDOUT
+
+        if suppress_output:
+            stdout = subprocess.DEVNULL
+        elif capture_stderr:
+            stdout = subprocess.PIPE
+        else:
+            stdout = None
 
         return subprocess.Popen(args, stdout=stdout, stderr=stderr)

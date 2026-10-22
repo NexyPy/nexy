@@ -1,0 +1,56 @@
+# 暗号化とハッシュ
+
+Nexy は独自の暗号を出荷していません。Python の標準ライブラリと信頼できるサードパーティのパッケージを使用します。
+
+## ハッシュ化
+
+### ハッシュライブラリ (stdlib)
+
+```python
+import hashlib
+
+hash = hashlib.sha256(b"data").hexdigest()
+```
+
+### bcrypt
+
+```bash
+pip install bcrypt
+```
+
+```python
+import bcrypt
+
+hashed = bcrypt.hashpw(b"password", bcrypt.gensalt())
+bcrypt.checkpw(b"password", hashed)  # True
+```
+
+## 暗号化
+
+### 暗号化 (フェルネット対称)
+
+```bash
+pip install cryptography
+```
+
+```python
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key()
+cipher = Fernet(key)
+
+token = cipher.encrypt(b"secret data")
+cipher.decrypt(token)  # b"secret data"
+```
+
+## 環境変数
+
+決してキーをハードコードしないでください。環境変数を使用します。
+
+```python
+import os
+
+secret = os.environ["SECRET_KEY"]
+```
+
+開発のために、Nexy は `.env` ファイルを自動的に読み取ります。

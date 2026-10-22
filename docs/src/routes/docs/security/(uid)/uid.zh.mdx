@@ -1,0 +1,52 @@
+# 用户标识
+
+Nexy 不提供专用的 UID 生成器。 Python 的标准库涵盖了大多数用例。
+
+## UUID（标准库）
+
+```python
+import uuid
+
+uuid.uuid4()          # Random UUID → "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+uuid.uuid4().hex      # Without dashes → "f47ac10b58cc4372a5670e02b2c3d479"
+uuid.uuid7()          # Time-ordered (Python 3.14+) → "018f3a6e-1b3c-7b00-a567-0e02b2c3d479"
+```
+
+## 秘密（stdlib、URL 安全）
+
+```python
+import secrets
+
+secrets.token_hex(16)    # → "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+secrets.token_urlsafe(8) # → "xYZabcDE_fg"
+```
+
+## NanoID（第三方）
+
+```bash
+pip install nanoid
+```
+
+```python
+from nanoid import generate
+
+generate()          # → "V1StGXR8_Z5jdHi6B-myT"
+generate(size=21)   # default length
+```
+
+## 数据库自动生成的 ID
+
+|数据库|类型 |汽车 |
+|----|------|------|
+| PostgreSQL | `UUID` 或 `SERIAL` | `gen_random_uuid()` 或 `SERIAL` |
+| SQLite | `INTEGER PRIMARY KEY` |自动递增 |
+| MySQL | `INT AUTO_INCREMENT` 或 `UUID` | `AUTO_INCREMENT` 或 `UUID()` |
+
+## 何时使用什么
+
+|使用案例 |解决方案 |
+|----------|----------|
+|数据库主键| DB自动递增或`uuid.uuid4()` |
+|面向公众的 ID（用户、帖子）| `secrets.token_urlsafe()` 或 NanoID |
+|会话/API 令牌 | `secrets.token_hex()` |
+|订购 ID | `uuid.uuid7()` (Python 3.14+) 或 ULID |

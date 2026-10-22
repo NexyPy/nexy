@@ -1,0 +1,43 @@
+# searchParams का उपयोग करें
+
+वर्तमान यूआरएल क्वेरी पैरामीटर को शब्दकोश के रूप में लौटाता है।
+
+```python
+from nexy import useSearchParams
+
+params = useSearchParams()
+```
+
+---
+
+## वापसी मूल्य
+
+`dict` - अनुरोध URL से क्वेरी पैरामीटर (जैसे `{"q": "nexy", "page": "2"}`)।
+
+---
+
+## उदाहरण
+
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Search: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+
+---
+
+## तरीके
+
+लौटाया गया निर्देश मानक शब्दकोश संचालन का समर्थन करता है: `.get(key, default)`, `.keys()`, `.items()`।
+
+---
+
+## उपयोग नोट्स
+
+- सभी मान स्ट्रिंग हैं - `int()`, `bool()`, आदि के साथ कनवर्ट करें।
+- एपीआई हैंडलर्स के लिए, इसके बजाय फास्टएपीआई के मूल पैरामीटर इंजेक्शन का उपयोग करें
