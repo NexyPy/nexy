@@ -26,7 +26,7 @@ def normalize_path(p: str | bytes) -> str:
         cwd = _Path.cwd().as_posix()
         if s.startswith(cwd):
             s = s[len(cwd) + 1 :]
-    except Exception:
+    except (OSError, ValueError):
         pass
     # Strip only the literal "./" prefix: lstrip("./") would also eat the
     # leading "/" of absolute paths outside cwd (e.g. pytest tmp_path on Linux)

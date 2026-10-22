@@ -59,7 +59,23 @@ Top 10:2025 categories engaged by these findings: **A03 Software Supply Chain Fa
 
 Ordered by exploitability × impact.
 
----
+> **Fix pass (2026-10-22) — resolution status:**
+
+| Finding | Status | Where |
+|---|---|---|
+| F1 `.bandit` untracked | **RESOLVED** | `.bandit` tracked; rewritten to `skips: []` with the inline-`# nosec` governance rule |
+| F2 sandbox is dead code | **RESOLVED** | `nexy/core/sandbox.py` deleted; `SECURITY.md` states plainly that `.nexy` frontmatter runs unsandboxed (author's own code) |
+| F3 no lockfile / no SCA | **RESOLVED** | `uv.lock` committed (`bandit` + `pip-audit` declared in `[dependency-groups].dev`); CI installs with `uv sync --frozen --group dev` and runs `pip-audit` on the exported lock; result register in `SECURITY.md` (1 documented ignore: PYSEC-2022-252) |
+| F4 CI misses PRs to `V2` | **RESOLVED** | `.github/workflows/ci.yml` `pull_request.branches: [main, develop, V2]` |
+| F5 actions pinned to tags | **RESOLVED** | All four actions SHA-pinned, tags cross-checked via the GitHub API (checkout v4.2.2, setup-uv v5.4.2, pnpm/action-setup v4.0.0, setup-node v4.1.0) |
+| F6 no bandit gate | **RESOLVED** | `bandit` declared + `uv run --no-sync python -m bandit -r nexy/ -c .bandit` in CI; no `--exit-zero`, rc must be 0 |
+| F7 whole-class skips | **RESOLVED** | `.bandit` `skips: []`; every residual risk is an inline `# nosec <ID>` with justification, mirrored in the `SECURITY.md` residual risk register |
+| F8 prebuilt `.vsix` tracked | **RESOLVED** | 5 binaries unstaged from git (`git rm --cached`, files remain on disk) + `*.vsix` ignored |
+| F9 lockfile ignore policy | **RESOLVED** | `bun.lock` / `pnpm-lock.yaml` ignore lines removed from `.gitignore`; lockfiles are versioned by policy (root `uv.lock` included) |
+| F10 `tests/` unlinted | **RESOLVED** for lint: `ruff check tests/` → 0 (23 auto-fixes + 29 manual), `ruff format tests/ --check` → clean, both gated in CI. [PARTIAL] `mypy tests/` intentionally not added — `nexy/`-strict is the framework contract; tests use plain annotations. JS/TS side: new CI `extension` job typechecks, lints and production-builds `extensions/vscode/` |
+| F11 work uncommitted | **RESOLVED** | This fix pass committed in atomic commits (see `git log`) |
+
+Bandit after the pass: **0 HIGH / 0 MEDIUM / 0 LOW, 0 skipped** (`python -m bandit -r nexy/ -c .bandit` rc=0). All five quality gates re-verified after every change: ruff check/format (185 files), mypy --strict (125 files), pytest 381 passed + 1 skipped, coverage 54.54% (floor 54).
 
 ### [HIGH] [VERIFIED] F1 — The `.bandit` accepted-risk registry is not in the repository. The documented audit command fails, and the security baseline collapses to 4 HIGH / 9 MEDIUM on any fresh clone.
 
@@ -349,11 +365,11 @@ What was checked and found clean. This section is load-bearing — it marks the 
 
 ## 6. Residual risk
 
-1. **No dependency CVE data was obtained.** `pip-audit`/OSV was not run. The most likely place for a live vulnerability in this project is its 9 direct Python deps plus their transitives — that surface is currently unchecked. Running the SCA check is the single highest-value next action.
-2. **The `B701` Jinja2-autoescape decision is documented, not verified.** `nexy/template.py:68` creates `Environment(loader=..., auto_reload=True)` with no `autoescape`. The accepted-risk rationale ("templates are the project's own server-side code") is sound for the framework's own templates but does **not** cover a template rendering user-supplied data. Whether any shipped path does that was not traced to a conclusion — an open question, not a cleared item.
+1. ~~**No dependency CVE data was obtained.**~~ **Closed in the fix pass:** `pip-audit` now runs in CI against the frozen lock (result register in `SECURITY.md`), and the lock is hash-pinned. One advisory (PYSEC-2022-252) is ignored with written justification — see the register.
+2. ~~**The `B701` Jinja2-autoescape decision is documented, not verified.**~~ **Traced in the fix pass:** the framework's own environments render author-authored sources only; the one place visitor-controlled data can flow unescaped is route path params (`[slug]` components) into author templates. Accepted with that boundary made explicit: it is the same default Jinja itself ships with; authors escape with `|e`. Documented in the `SECURITY.md` B701 register entry.
 3. **Multi-step logic flaws are outside SAST's reach.** Bandit is pattern-matching; it structurally cannot detect the F2 class — a documented control that does not exist. A manual review of the `nexy/compiler/` → `nexy/runtime/` trust boundary is warranted and was **not** completed.
-4. **`docs/` (separate repo, HEAD `59de0e39`) and the JS dependency trees of `templates/` and `extensions/vscode/` were not audited.** The framework's JavaScript surface — what actually runs in the user's browser — has no SCA, no audit step, and no build in CI.
-5. **The `0.0.0.0` bind default (B104) is accepted but unenforced.** `core/config.py:44`, `core/models.py:197`, `utils/common/constants.py:4` (`DEFAULT_HOST = "0.0.0.0"`), `utils/server/ports.py:12,25` — the dev server binds all interfaces by default. Verified as a fact of the code, not as a risk decision.
+4. **`docs/` (separate repo) and the JS dependency trees of `templates/` were not audited.** The new CI `extension` job now builds + tscs `extensions/vscode/`, but **no npm SCA (`pnpm audit` / OSV) exists for the template lockfiles** — still unchecked at the time of this report's fix pass.
+5. **The `0.0.0.0` bind default (B104) is accepted but unenforced.** `core/config.py:44`, `core/models.py:197`, `utils/common/constants.py:4` (`DEFAULT_HOST = "0.0.0.0"`), `utils/server/ports.py:12,25` — the dev server binds all interfaces by default. Documented as a deliberate default in the `SECURITY.md` B104 register entry.
 
 ---
 

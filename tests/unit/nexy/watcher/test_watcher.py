@@ -43,24 +43,24 @@ def _make_event(src_path: str, dest_path: str | None = None) -> FileSystemEvent:
 
 
 class TestNormalize:
-    def test_string(self, handler):
+    def test_string(self):
         assert normalize_path("some/path/file.nexy") == "some/path/file.nexy"
 
-    def test_bytes(self, handler):
+    def test_bytes(self):
         assert normalize_path(b"some/path/file.nexy") == "some/path/file.nexy"
 
-    def test_backslashes(self, handler):
+    def test_backslashes(self):
         assert normalize_path("src\\routes\\index.nexy") == "src/routes/index.nexy"
 
-    def test_strips_dot_slash(self, handler):
+    def test_strips_dot_slash(self):
         assert normalize_path("./src/routes/index.nexy") == "src/routes/index.nexy"
 
-    def test_strips_cwd_prefix(self, handler):
+    def test_strips_cwd_prefix(self):
         cwd = Path.cwd().as_posix()
         abs_path = f"{cwd}/src/routes/index.nexy"
         assert normalize_path(abs_path) == "src/routes/index.nexy"
 
-    def test_absolute_path_on_different_drive(self, handler):
+    def test_absolute_path_on_different_drive(self):
         cwd = Path.cwd()
         other_drive = "E:" if cwd.drive == "D:" else "D:"
         abs_path = f"{other_drive}/other/project/src/routes/index.nexy"
@@ -72,25 +72,25 @@ class TestNormalize:
 
 
 class TestSkip:
-    def test_skips_git(self, handler):
+    def test_skips_git(self):
         assert is_ignored_path(".git/config")
 
-    def test_skips_venv(self, handler):
+    def test_skips_venv(self):
         assert is_ignored_path("venv/bin/python")
 
-    def test_skips_pycache(self, handler):
+    def test_skips_pycache(self):
         assert is_ignored_path("__pycache__/cache.py")
 
-    def test_skips_node_modules(self, handler):
+    def test_skips_node_modules(self):
         assert is_ignored_path("node_modules/pkg/index.js")
 
-    def test_skips_nexy_dir(self, handler):
+    def test_skips_nexy_dir(self):
         assert is_ignored_path("__nexy__/generated.py")
 
-    def test_allows_src_routes(self, handler):
+    def test_allows_src_routes(self):
         assert not is_ignored_path("src/routes/index.nexy")
 
-    def test_allows_py_file(self, handler):
+    def test_allows_py_file(self):
         assert not is_ignored_path("src/lib/utils.py")
 
 
@@ -272,7 +272,7 @@ class TestTriggerReload:
         monkeypatch.setattr(HMR_MANAGER, "broadcast_reload", _fake_broadcast)
         monkeypatch.setattr(
             "nexy.utils.dev.watcher.asyncio.run_coroutine_threadsafe",
-            lambda coro, loop: asyncio.run(coro),
+            lambda coro, _loop: asyncio.run(coro),
         )
 
     def test_nexy_broadcasts(self, handler):

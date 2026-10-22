@@ -56,6 +56,10 @@ __pycache__
 .vscode-test/
 **/.vscode-test/
 
+# Pylance delegation stubs (generated from .nexy sources by the VS Code extension)
+.nexy-virt/
+**/.nexy-virt/
+
 # Python
 .venv
 **/.venv/**
@@ -79,5 +83,6 @@ bun.lock
 pnpm-lock.yaml
 **/pnpm-lock.yaml
 
-# Fonts (local)
+# Fonts (local) - pages link to Google Fonts instead of shipping binaries
+**/public/fonts/
 **/public/font/

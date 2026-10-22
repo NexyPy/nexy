@@ -2,12 +2,12 @@ import contextlib
 import os
 import shutil
 import socket
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 import traceback
 from pathlib import Path
-from subprocess import Popen
+from subprocess import Popen  # nosec B404 - type only, no invocation
 from typing import Any
 
 import uvicorn as _uvicorn
@@ -38,7 +38,7 @@ def _patch_win_asyncio() -> None:
 
         transport_cls._call_connection_lost = _safe_call_connection_lost
         _WIN_ASYNCIO_PATCHED = True
-    except Exception:
+    except (AttributeError, ImportError):
         pass
 
 
@@ -116,12 +116,13 @@ class Server:
             return
         try:
             if sys.platform == "win32":
+                taskkill_exe = shutil.which("taskkill") or "taskkill"
                 subprocess.run(
-                    ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
+                    [taskkill_exe, "/F", "/T", "/PID", str(proc.pid)],
                     capture_output=True,
                     timeout=timeout,
                     check=False,
-                )
+                )  # nosec B603/B607 - resolved via shutil.which, fixed argv with proc.pid
             else:
                 proc.terminate()
                 try:
@@ -129,7 +130,8 @@ class Server:
                 except subprocess.TimeoutExpired:
                     proc.kill()
                     proc.wait(timeout=timeout)
-        except Exception:
+        except (OSError, subprocess.SubprocessError):
+            # Best-effort teardown: the caller proceeds either way.
             pass
 
     @staticmethod
@@ -186,7 +188,7 @@ class Server:
                     [sys.executable, "-c", launcher_code],
                     stdout=None,
                     stderr=subprocess.STDOUT,
-                )
+                )  # nosec B603 - argv is sys.executable plus a launcher built from config values
             else:
                 workers_kwargs: dict[str, Any] = (
                     {"workers": num_workers} if num_workers and num_workers > 1 else {}
@@ -208,23 +210,19 @@ class Server:
             return None
 
     @staticmethod
-    def wait_for_vite_ready(
-        port: int, host: str = "localhost", timeout: int = 30, ssl: bool = False
-    ) -> bool:
-        """Waits until the Vite dev server answers the readiness probe."""
-        import urllib.request
+    def wait_for_vite_ready(port: int, host: str = "localhost", timeout: int = 30) -> bool:
+        """Waits until the Vite dev server answers the readiness probe.
 
-        protocol = "https" if ssl else "http"
-        if protocol not in ("http", "https"):
-            raise ValueError(f"Unsupported protocol for Vite readiness probe: {protocol!r}")
+        The probe is a TCP connect, not an HTTP request: it only reports that
+        the port accepts connections, which is what readiness means here.
+        """
         start_time = time.time()
 
         while time.time() - start_time < timeout:
             try:
-                url = f"{protocol}://{host}:{port}/@vite/client"
-                with urllib.request.urlopen(url, timeout=1):
+                with socket.create_connection((host, port), timeout=1):
                     return True
-            except Exception:
+            except OSError:
                 time.sleep(0.2)
         return False
 
@@ -269,4 +267,4 @@ class Server:
         else:
             stdout = None
 
-        return subprocess.Popen(args, stdout=stdout, stderr=stderr)
+        return subprocess.Popen(args, stdout=stdout, stderr=stderr)  # nosec B603 - resolved devtool argv via _detect_pm

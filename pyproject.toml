@@ -28,6 +28,7 @@ dev = [
     "deep-translator>=1.11.0",
     "httpx>=0.28.0",
     "mypy>=1.19.1",
+    "pip-audit>=2.8.0",
     "pytest>=9.0.2",
     "pytest-cov>=6.0.0",
     "ruff>=0.14.11",
@@ -127,6 +128,7 @@ omit = [
 # server.py test batch (utils/server/server.py 24% -> 67%). Never lower it.
 fail_under = 54
 show_missing = true
+
 exclude_also = [
     "if TYPE_CHECKING:",
 ]
