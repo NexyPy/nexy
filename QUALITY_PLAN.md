@@ -216,13 +216,12 @@ Les deux fichiers existants sont des zéros : les remplir plutôt que d'en crée
 
 33 fichiers représentent **60 % du code non couvert** (1 628 / 2 716 lignes). On commence là.
 
-#### Tier A — 11 fichiers à **0 %** (164 lignes) ⬅️ priorité 1
+#### Tier A — 10 fichiers à **0 %** (141 lignes) ⬅️ priorité 1
 
 | Fichier | % | Statements | Test cible à créer |
 |---|---|---|---|
 | `nexy/modules/routers/app.py` | 0 | 57 | `tests/unit/nexy/modules/routers/test_app_server.py` |
 | `nexy/modules/routers/static_assets.py` | 0 | 23 | `tests/unit/nexy/modules/routers/test_static_assets.py` |
-| `nexy/modules/frontend/base.py` | 0 | 23 | `tests/unit/nexy/modules/frontend/test_frontend_base.py` |
 | `nexy/modules/routers/router_resolver.py` | 0 | 19 | `tests/unit/nexy/modules/routers/test_router_resolver.py` |
 | `nexy/modules/routers/error_handlers.py` | 0 | 17 | `tests/unit/nexy/modules/routers/test_error_handlers.py` |
 | `nexy/modules/routers/hmr.py` | 0 | 11 | `tests/unit/nexy/modules/routers/test_hmr.py` |
