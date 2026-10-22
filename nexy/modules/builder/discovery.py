@@ -1,30 +1,14 @@
-import traceback
-from collections.abc import Generator
 from pathlib import Path
 
 from nexy.core.config import Config
+from nexy.helpers.fs.scan import SKIP_DIRS, walk_paths
 
 
 class Discovery:
     """Scans files to find .nexy, .md, .mdx, and framework route files."""
 
     TARGET_EXTENSIONS = Config.TARGET_EXTENSIONS
-    DEFAULT_EXCLUDED_DIRS = {
-        "__pycache__",
-        ".git",
-        ".venv",
-        "node_modules",
-        "dist",
-        "build",
-        "__nexy__",
-        ".pytest_cache",
-        ".mypy_cache",
-        ".uvcache",
-        ".github",
-        ".cursor",
-        ".vscode",
-        ".nexy-virt",
-    }
+    DEFAULT_EXCLUDED_DIRS = SKIP_DIRS
 
     def __init__(self) -> None:
         self.excluded_dirs = self.DEFAULT_EXCLUDED_DIRS.copy()
@@ -34,18 +18,7 @@ class Discovery:
         if not root.is_dir():
             raise FileNotFoundError(f"not found {root} folder")
 
-        return list(self._walk(root))
-
-    def _walk(self, current_path: Path) -> Generator[Path, None, None]:
-        try:
-            for item in current_path.iterdir():
-                if item.is_dir():
-                    if item.name not in self.excluded_dirs:
-                        yield from self._walk(item)
-                elif item.suffix in self.TARGET_EXTENSIONS:
-                    yield item
-        except PermissionError:
-            traceback.print_exc()
+        return list(walk_paths(root, self.TARGET_EXTENSIONS, excluded=self.excluded_dirs))
 
     def add_excluded_dir(self, dir_name: str) -> None:
         self.excluded_dirs.add(dir_name)
