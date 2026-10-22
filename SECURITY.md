@@ -15,7 +15,7 @@ We take security issues seriously. Please do **not** report security
 vulnerabilities via public GitHub issues.
 
 Instead, report them privately by emailing the maintainer at
-**[hopcy.forcy@gamil.com](mailto:hopcy.forcy@gamil.com)**.
+**[hopcy.forcy@gmail.com](mailto:hopcy.forcy@gmail.com)**.
 
 You should receive a response within **48 hours**. If for some reason you
 do not, please follow up to ensure we received your original message.
