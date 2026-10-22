@@ -5,7 +5,7 @@
 Nexy is a full-stack Python meta-framework that bridges FastAPI backends with
 Vite-powered frontends (React, Vue, Svelte, Solid, Preact). It compiles `.nexy`
 components at runtime through a Virtual File System (VFS), and a file watcher
-triggers clean uvicorn restarts - no importlib hacks, no stale modules.
+triggers clean uvicorn restarts — no importlib hacks, no stale modules.
 
 ## System diagram
 
@@ -90,53 +90,56 @@ sequenceDiagram
     S->>V: re-import fresh modules
 ```
 
-## Project structure
+## Package layout
 
 ```
 nexy/
-├── cli/                        # Typer CLI (nx, nexy commands)
-│   ├── __init__.py             # CLI app entry
-│   └── commands/               # dev, start, build, init, new
-├── compiler/                   # .nexy compilation pipeline
-│   ├── parser/
-│   │   ├── scanner.py          # --- frontmatter extraction
-│   │   ├── sanitizer.py        # framework-specific rewrites
-│   │   ├── template.py         # HTML → AST → Jinja2
-│   │   ├── validator.py        # prop validation
-│   │   └── logic.py            # Python frontmatter → Jinja2 context
-│   └── generator/              # Python code generation
-├── core/                       # Framework core
-│   ├── config.py               # NexyConfigModel (nexyconfig.py)
-│   └── models.py               # Pydantic models
-├── routers/
-│   ├── app.py                  # AppServer assembly
-│   ├── fbrouter/               # File-based router
-│   └── actions/                # Route action handlers
-├── frontend/                   # Client framework integration
-│   ├── react.py, vue.py, svelte.py, solid.py, preact.py
-│   ├── runtime.ts              # Browser runtime
-│   └── vite.ts                 # Vite plugin
-├── vfs/                        # Virtual File System (PEP 302)
-│   ├── finder.py               # Module finder
-│   └── loader.py               # Module loader
-├── utils/
-│   ├── dev/                    # Dev server, watcher, HMR
-│   ├── init/                   # Project initialization
-│   └── server/                 # Server config, port mgmt
-├── i18n/                       # Internationalization
-└── templates/                  # Project scaffold templates
+├── app.py                     # uvicorn target: nexy.app:app → AppServer().run()
+├── __init__.py                # public facade (Audio, Video, Form, Import, Template, Vite, …)
+├── decorators.py              # Injectable, Container, Controller, Module, UseGuard, Middleware
+├── router.py, vite.py …       # facade re-exports + component helpers (audio, form, image, link, script, video)
+├── core/                      # framework core
+│   ├── config.py              # nexyconfig.py loader (user project root)
+│   ├── models.py              # Pydantic models (FrontendFramework, …)
+│   ├── string.py              # route-name transforms
+│   └── types.py
+├── helpers/                   # transversal layer — zero upward imports
+│   ├── common/                # console, formatting, json, process, report
+│   ├── fs/                    # vfs (VFS singleton), path, scan, frontmatter, fingerprint
+│   ├── imports/               # component, css, images, ncc import rewriting
+│   └── server/                # uvicorn_config, ports
+└── modules/                   # feature modules
+    ├── builder/               # production build assembly (parallel executor)
+    ├── cli/                   # Typer app — 11 commands
+    │   ├── commands/          # new, dev, build, start, init, add, check, format, migrate, test, translate
+    │   └── devtools/          # watcher (fs events → compile → clean restart), pycache
+    ├── compiler/              # .nexy → route modules
+    │   ├── parser/            # scanner, sanitizer, template, validator, logic
+    │   ├── generator/         # Python code generation
+    │   ├── frontend_route.py  # .tsx/.jsx/.mdx route compiler
+    │   └── markdown_route.py  # .md route compiler
+    ├── frontend/              # per-framework integrations
+    │   ├── react.py, vue.py, svelte.py, solid.py, preact.py
+    │   ├── vite_entry.py      # useFF contract: normalize_ff, frameworks_of
+    │   ├── vite.ts            # Vite plugin
+    │   └── runtime.ts         # browser runtime
+    ├── i18n/                  # locale routing, middleware
+    ├── routers/               # app (AppServer assembly), fbrouter/, actions/
+    │   ├── middlewares.py, static_assets.py, hmr.py, error_handlers.py
+    └── runtime/               # importer (PEP 302), cache, hmr, markdown
 ```
 
 ## Key modules
 
 ### Virtual File System (VFS)
 
-In-memory singleton storing compiled `.py` and `.html` files.
-Survives across uvicorn restarts - always has fresh compiled content.
+In-memory singleton (`helpers/fs/vfs.py`, class `VFS`) storing compiled `.py`
+and `.html` files. Survives across uvicorn restarts — always has fresh
+compiled content.
 
-- **NexyVFSFinder** (PEP 302): intercepts `__nexy__.*` imports
-- **NexyVFSLoader**: loads from VFS instead of disk
-- Registered via `sys.meta_path` at startup
+- **NexyVFSFinder** (PEP 302 meta-path finder): intercepts `__nexy__.*` imports
+- **NexyVFSLoader** (`importlib.abc.SourceLoader`): loads from VFS instead of disk
+- Both live in `modules/runtime/importer.py`, registered via `sys.meta_path`
 
 ### Compiler pipeline
 
@@ -152,20 +155,25 @@ flowchart LR
     H --> I[VFS: .py + .html]
 ```
 
-1. **Scanner** - extracts `---` frontmatter delimiter
-2. **Sanitizer** - rewrites framework-specific syntax (vue ↔ react ↔ nexy)
-3. **TemplateParser** - HTML to AST, validates component references, excludes built-in `Slot`
-4. **LogicParser** - compiles Python frontmatter to Jinja2 expressions
-5. **Generator** - produces `__nexy__/*.py` and `__nexy__/*.html` in VFS
+1. **Scanner** — extracts `---` frontmatter delimiter
+2. **Sanitizer** — rewrites framework-specific syntax (vue ↔ react ↔ nexy)
+3. **TemplateParser** — HTML to AST, validates component references, excludes built-in `Slot`
+4. **Validator** — ensures every imported component resolves on disk, with did-you-mean suggestions
+5. **LogicParser** — compiles Python frontmatter to Jinja2 expressions
+6. **Generator** — produces `__nexy__/*.py` and `__nexy__/*.html` in VFS
+
+Dedicated compilers handle other route kinds: `frontend_route.py` for
+`.tsx`/`.jsx`/`.mdx`, `markdown_route.py` for `.md`.
 
 ### Routing
 
 **File-based router (FBR)**: `src/routes/index.nexy` → `/`,
 `src/routes/blog/[slug].nexy` → `/blog/{slug}`. Auto-discovery from filesystem,
-`_layout.nexy` files for shared layouts, supports `.nexy`, `.mdx`, `.py`.
+`_layout.nexy` files for shared layouts, supports `.nexy`, `.mdx`, `.md`, `.py`.
 
-**Modular router**: NestJS-inspired apps with `app_controller.py` + `app_module.py`.
-Decorator-based routing with dependency injection (`@Injectable`, `@Controller`, `@Module`).
+**Modular router**: NestJS-inspired controllers with `app_controller.py` +
+`app_module.py`. Decorator-based routing with DI
+(`@Injectable`, `@Controller`, `@Module`, `@UseGuard`).
 
 ## Design decisions
 
@@ -178,14 +186,16 @@ Decorator-based routing with dependency injection (`@Injectable`, `@Controller`,
 | Custom watcher > uvicorn --reload | Fine-grained control, debouncing, Vite coordination |
 | sys.modules clearing | Fresh module state on every restart |
 | Pydantic for config | Type safety, IDE autocomplete, schema gen |
-| Slot as built-in component | No import needed in .nexy - always available |
+| Slot as built-in component | No import needed in .nexy — always available |
 
 ## Performance
 
-- **Startup**: <200ms (compile + server ready)
-- **HMR**: <100ms file change → browser refresh
-- **SSR**: ~5-15ms per component (esbuild)
-- **SSG**: Parallel worker pool (`os.cpus().length` workers)
+Reference targets measured on the development machine:
+
+- **Startup**: < 200 ms (compile + server ready)
+- **HMR**: < 100 ms file change → browser refresh
+- **SSR**: ~5–15 ms per component (esbuild)
+- **SSG**: parallel worker pool, one worker per CPU core
 
 ## Security
 

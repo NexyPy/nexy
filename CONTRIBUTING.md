@@ -1,7 +1,6 @@
 # Contributing to Nexy
 
-**First time here?** Check out [good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-- curated for new contributors.
+**First time here?** Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — curated for new contributors.
 
 <p align="center">
   <a href="https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
@@ -87,26 +86,26 @@ python -m mypy nexy --strict
 python -m pytest tests/ -v
 ```
 
-All tests should pass. Pre-existing failures in `test_format_attributes_*` are
-known and unrelated to your changes.
+All tests should pass — the suite is fully green on `main`. If it fails on
+your fresh clone, verify your Python version (3.12+) before suspecting your
+changes.
 
 ## Project structure
 
 ```
 nexy/
-├── nexy/                   # Main Python package
-│   ├── cli/                # CLI commands (dev, build, start, new)
-│   ├── compiler/           # .nexy → Jinja2 pipeline
-│   ├── routers/            # AppServer, FBRouter, ModularRouter
-│   ├── frontend/           # React, Vue, Svelte, Solid, Preact
-│   ├── vfs/                # Virtual File System
-│   └── templates/          # Project scaffold templates
-├── tests/                  # pytest suite
-├── extensions/vscode/      # VS Code extension (LSP)
-└── docs/                   # Documentation site (separate repo)
+├── nexy/                      # Main Python package
+│   ├── app.py                 # uvicorn target: nexy.app:app
+│   ├── core/                  # config, models, types
+│   ├── helpers/               # transversal layer (fs, imports, server, common)
+│   └── modules/               # cli, compiler, frontend, routers, runtime, i18n, builder
+├── templates/                 # test fixtures (scaffold layouts per framework)
+├── tests/                     # pytest suite
+├── extensions/vscode/         # VS Code extension (LSP)
+└── docs/                      # Docs site (separate app + repo)
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for a deep dive.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full package layout and a deep dive.
 
 ## Development workflow
 
@@ -211,7 +210,8 @@ python -m pytest tests/unit/nexy/parser/test_scanner.py -v
 python -m pytest tests/ --cov=nexy --cov-report=term
 ```
 
-**Coverage target**: 95% per module.
+**Coverage floor**: 54% overall (enforced by the test suite). Aspire to 95%
+per module when touching one.
 
 ### Conventions
 
