@@ -1,6 +1,6 @@
 # Contributing to Nexy
 
-**First time here?** Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — curated for new contributors.
+**First time here?** Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) - curated for new contributors.
 
 <p align="center">
   <a href="https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
@@ -86,7 +86,7 @@ python -m mypy nexy --strict
 python -m pytest tests/ -v
 ```
 
-All tests should pass — the suite is fully green on `main`. If it fails on
+All tests should pass - the suite is fully green on `main`. If it fails on
 your fresh clone, verify your Python version (3.12+) before suspecting your
 changes.
 

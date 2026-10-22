@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>The fullstack Python meta-framework.</strong><br/>
-  FastAPI backend, Vite-powered frontend, one file per page — startup in under a second, HMR in under 100&nbsp;ms.
+  FastAPI backend, Vite-powered frontend, one file per page - startup in under a second, HMR in under 100&nbsp;ms.
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 
 ## Why Nexy
 
-Every Python web framework forces a choice: backend **or** frontend. Nexy refuses it. One `.nexy` file carries the server logic (Python), the markup (Jinja2), and the interactive islands (React, Vue, Svelte, Solid, Preact) — wired to FastAPI and Vite with zero config.
+Every Python web framework forces a choice: backend **or** frontend. Nexy refuses it. One `.nexy` file carries the server logic (Python), the markup (Jinja2), and the interactive islands (React, Vue, Svelte, Solid, Preact) - wired to FastAPI and Vite with zero config.
 
 | You get | Instead of |
 |---------|------------|
@@ -32,7 +32,7 @@ Every Python web framework forces a choice: backend **or** frontend. Nexy refuse
 
 ## Quick start
 
-No `pip install` required — `uvx` downloads and runs the CLI in one step:
+No `pip install` required - `uvx` downloads and runs the CLI in one step:
 
 ```bash
 uvx nexy new          # wizard picks the UI framework
@@ -41,7 +41,7 @@ nexy dev              # localhost:3000, sub-100ms HMR
 
 Your browser opens on `localhost:3000`. Change a file. Instant feedback.
 
-## The `.nexy` file — one format, three layers
+## The `.nexy` file - one format, three layers
 
 A single file that mixes Python, Jinja2, and your frontend framework of choice:
 
@@ -79,7 +79,7 @@ graph TD
     O --> P[Compile + clean restart]
 ```
 
-**Key design choice:** production SSR runs through a per-file esbuild pipeline — no Vite dependency at runtime. SSG runs a worker pool sized to the CPU count, so rebuilds stay sub-second regardless of project size.
+**Key design choice:** production SSR runs through a per-file esbuild pipeline - no Vite dependency at runtime. SSG runs a worker pool sized to the CPU count, so rebuilds stay sub-second regardless of project size.
 
 ## How it compares
 
@@ -102,7 +102,7 @@ graph TD
 | Svelte | ✓ | ✓ | ✓ |
 | Solid | ✓ | ✓ | ✓ |
 | Preact | ✓ | ✓ | ✓ |
-| None (vanilla) | ✓ | — | ✓ |
+| None (vanilla) | ✓ | - | ✓ |
 
 ## CLI
 
@@ -113,7 +113,7 @@ graph TD
 | `nexy build` | Production build (SSR + SSG + client bundles) |
 | `nexy start` | Production server (Uvicorn + FastAPI) |
 
-Eleven commands ship with the CLI (`add`, `check`, `format`, `migrate`, `test`, `translate`, …) — run `nexy --help` for the full list.
+Eleven commands ship with the CLI (`add`, `check`, `format`, `migrate`, `test`, `translate`, …) - run `nexy --help` for the full list.
 
 ## Roadmap
 
@@ -126,13 +126,13 @@ Eleven commands ship with the CLI (`add`, `check`, `format`, `migrate`, `test`, 
 
 ## Contributing and community
 
-Contributions are welcome — seasoned engineers and first-time PR authors alike.
+Contributions are welcome - seasoned engineers and first-time PR authors alike.
 
 - [Good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) · [CONTRIBUTING.md](CONTRIBUTING.md) · [Discussions](https://github.com/NexyPy/nexy/discussions)
-- [Documentation](https://nexy.ai/docs) — full reference
-- [Issues](https://github.com/NexyPy/nexy/issues) — bugs and feature requests
-- [Discord](https://discord.gg/nexy) — community chat
+- [Documentation](https://nexy.ai/docs) - full reference
+- [Issues](https://github.com/NexyPy/nexy/issues) - bugs and feature requests
+- [Discord](https://discord.gg/nexy) - community chat
 
 ## License
 
-[MIT](LICENSE) — free forever, built in the open.
+[MIT](LICENSE) - free forever, built in the open.
