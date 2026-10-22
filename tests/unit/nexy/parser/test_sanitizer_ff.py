@@ -1,4 +1,4 @@
-from nexy.compiler.parser.sanitizer import LogicSanitizer
+from nexy.modules.compiler.parser.sanitizer import LogicSanitizer
 
 
 def test_tsx_maps_to_react():

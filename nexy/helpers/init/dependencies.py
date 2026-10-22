@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 from nexy.helpers.common.console import console
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 _ORM_PACKAGES: dict[str, str] = {
     "SQLModel": "sqlmodel",

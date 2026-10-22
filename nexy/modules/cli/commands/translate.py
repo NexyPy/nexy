@@ -13,7 +13,7 @@ import typer
 
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
-from nexy.i18n.i18n_decorator import _I18N_REGISTRY
+from nexy.modules.i18n.i18n_decorator import _I18N_REGISTRY
 
 _GOOGLE_LOCALE_MAP = {"zh": "zh-CN"}
 _GOOGLE_RPS = 3.0

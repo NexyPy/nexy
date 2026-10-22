@@ -257,7 +257,7 @@ class TestOnMoved:
 class TestTriggerReload:
     @pytest.fixture(autouse=True)
     def _capture_broadcast(self, monkeypatch):
-        from nexy.runtime.hmr import HMR_MANAGER
+        from nexy.modules.runtime.hmr import HMR_MANAGER
 
         self.broadcast_calls: list[str] = []
         self.reload_calls: list[int] = []

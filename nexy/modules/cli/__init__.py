@@ -8,11 +8,11 @@ import typer.rich_utils
 
 from nexy.__version__ import __version__
 from nexy.helpers.common.console import console
-from nexy.i18n import t
 from nexy.modules.cli.commands import build, check, dev, format_, init, start, test
 from nexy.modules.cli.commands.migrate import migrate
 from nexy.modules.cli.commands.new import new
 from nexy.modules.cli.commands.translate import translate
+from nexy.modules.i18n import t
 
 if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
     with contextlib.suppress(Exception):

@@ -1,7 +1,7 @@
 import sys
 
 from nexy.helpers.fs.vfs import VFS
-from nexy.runtime.importer import install_vfs_importer
+from nexy.modules.runtime.importer import install_vfs_importer
 
 
 def test_vfs_import():

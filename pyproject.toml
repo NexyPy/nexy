@@ -91,12 +91,12 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 "nexy/decorators.py" = ["N802", "B010"]
 "nexy/hooks.py" = ["N802"]
 "nexy/errors.py" = ["N802"]
-"nexy/i18n/core.py" = ["N802"]
+"nexy/modules/i18n/core.py" = ["N802"]
 "nexy/helpers/imports/component_import.py" = ["N802"]
 "nexy/__init__.py" = ["N812"]
 # B010: dynamic dunder attributes on handlers/classes (route metadata,
 # i18n defaults); direct attribute access would be a mypy attr-defined error.
-"nexy/i18n/i18n_decorator.py" = ["N807", "B010"]
+"nexy/modules/i18n/i18n_decorator.py" = ["N807", "B010"]
 # typer.Option/typer.Argument as defaults is the documented typer idiom and
 # the established style of every CLI command in this codebase (B008 conflicts
 # with it). ARG001: the --ui flag of `nexy add` is kept for CLI compatibility.

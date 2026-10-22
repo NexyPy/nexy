@@ -28,7 +28,7 @@ def nexy_app(nexy_project) -> Iterator[TestClient]:
     The app is reassembled per test in the sandboxed cwd of nexy_project,
     so it picks up project-local configuration and middleware wiring.
     """
-    from nexy.routers.app import AppServer
+    from nexy.modules.routers.app import AppServer
 
     nexy_project("")  # no overrides: framework defaults
     with TestClient(AppServer().run()) as client:

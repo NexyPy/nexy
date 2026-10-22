@@ -8,9 +8,9 @@ from jinja2 import BaseLoader, Environment, TemplateNotFound
 from nexy.helpers.fs.vfs import VFS
 
 from .core.config import Config
-from .i18n.core import current_locale, trans
-from .runtime.markdown import inject_heading_ids as _inject_heading_ids
-from .runtime.markdown import render_markdown as _cmark_render_markdown
+from .modules.i18n.core import current_locale, trans
+from .modules.runtime.markdown import inject_heading_ids as _inject_heading_ids
+from .modules.runtime.markdown import render_markdown as _cmark_render_markdown
 
 _ENV_LOCK = threading.Lock()
 _SHARED_ENV: Environment | None = None

@@ -1,10 +1,10 @@
 import pytest
 from jinja2 import TemplateNotFound
 
-from nexy.compiler import Compiler
 from nexy.errors import NexyCompileError
 from nexy.hooks import usePathname, useViews
 from nexy.modules.builder.discovery import Discovery
+from nexy.modules.compiler import Compiler
 from nexy.template import Template
 
 

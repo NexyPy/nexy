@@ -7,7 +7,7 @@ from nexy.helpers.common.console import console
 from nexy.helpers.common.report import print_cmd_result
 from nexy.helpers.fs.frontmatter import reassemble_frontmatter, split_frontmatter
 from nexy.helpers.fs.scan import collect_files
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 _PY_EXTS = (".py",)
 _TS_EXTS = (".ts", ".tsx", ".vue", ".svelte")

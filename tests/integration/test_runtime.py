@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from nexy.runtime.cache import RevalidateCache
+from nexy.modules.runtime.cache import RevalidateCache
 
 
 class TestRevalidateCache:

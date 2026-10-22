@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from nexy.helpers.common.console import console
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 
 class GitClone:

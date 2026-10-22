@@ -11,9 +11,9 @@ from nexy.hooks import (
     useToc,
     useViews,
 )
-from nexy.i18n.core import current_locale, t, trans, useLocale
 from nexy.image import image as Image
 from nexy.link import link as Link
+from nexy.modules.i18n.core import current_locale, t, trans, useLocale
 from nexy.template import Template
 from nexy.video import video as Video
 from nexy.vite import Vite

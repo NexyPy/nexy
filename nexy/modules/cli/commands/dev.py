@@ -5,14 +5,14 @@ from typing import Any
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
-from nexy.frontend import FrontendGenerator
 from nexy.helpers.common.console import console
 from nexy.helpers.dev.pycache import pycache
 from nexy.helpers.dev.watcher import create_observer, purge_project_modules, stop_observer
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.server import Server
-from nexy.i18n import t
 from nexy.modules.builder import Builder
+from nexy.modules.frontend import FrontendGenerator
+from nexy.modules.i18n import t
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:
@@ -130,15 +130,15 @@ def dev(port: int | None = None, host: str | None = None) -> None:
             _restart_requested = False
             for _name in list(sys.modules.keys()):
                 if _name.startswith("__nexy__") or _name in (
-                    "nexy.routers.app",
-                    "nexy.routers.fbrouter",
+                    "nexy.modules.routers.app",
+                    "nexy.modules.routers.fbrouter",
                 ):
                     del sys.modules[_name]
             # Project modules (src/routes/*.py, dependencies.py, ...) stay cached
             # across uvicorn restarts; drop them so the reload serves new code.
             purge_project_modules()
             _uvicorn_config = _uvicorn.Config(
-                "nexy.routers.app:_server",
+                "nexy.modules.routers.app:_server",
                 host=run_host,
                 port=run_port,
                 log_config=NEXY_LOG_CONFIG,

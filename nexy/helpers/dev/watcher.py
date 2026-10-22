@@ -10,11 +10,11 @@ from typing import Any
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
 
-from nexy.compiler import Compiler
 from nexy.core.config import Config
 from nexy.core.string import StringTransform
 from nexy.helpers.common.console import console
-from nexy.runtime.hmr import HMR_MANAGER
+from nexy.modules.compiler import Compiler
+from nexy.modules.runtime.hmr import HMR_MANAGER
 
 
 def normalize_path(p: str | bytes) -> str:
