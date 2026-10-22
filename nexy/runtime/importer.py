@@ -4,7 +4,7 @@ import importlib.util
 import sys
 from collections.abc import Sequence
 
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
 
 
 class NexyVFSLoader(importlib.abc.SourceLoader):

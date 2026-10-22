@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nexy.utils.server import server as server_module
-from nexy.utils.server.server import Server, _detect_pm, _write_port_file
+from nexy.helpers.server import server as server_module
+from nexy.helpers.server.server import Server, _detect_pm, _write_port_file
 
 
 @pytest.fixture(autouse=True)

@@ -8,8 +8,8 @@ import pytest
 
 from nexy.compiler.frontend_route import FrontendRouteCompiler
 from nexy.core.config import Config
+from nexy.helpers.fs.vfs import VFS
 from nexy.runtime.importer import install_vfs_importer
-from nexy.utils.fs.vfs import VFS
 
 DEFAULT_EXPORT = "export default function Page() { return null }\n"
 NAMED_EXPORT = "export function Card() { return null }\n"

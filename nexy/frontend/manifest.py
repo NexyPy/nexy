@@ -3,8 +3,8 @@ from pathlib import Path
 
 from nexy.core.config import Config
 from nexy.frontend.constants import NAVIGABLE_EXTS
-from nexy.utils.common.json import to_json_literal
-from nexy.utils.fs.path import PathUtil
+from nexy.helpers.common.json import to_json_literal
+from nexy.helpers.fs.path import PathUtil
 
 
 def navigable_entries(entries: list[dict[str, object]]) -> list[dict[str, object]]:

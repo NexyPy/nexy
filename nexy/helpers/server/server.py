@@ -13,10 +13,10 @@ from typing import Any
 import uvicorn as _uvicorn
 
 from nexy.core.config import Config
-from nexy.utils.common.console import console as print_console
-from nexy.utils.fs.vfs import VFS
-from nexy.utils.server.ports import find_available_port
-from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG
+from nexy.helpers.common.console import console as print_console
+from nexy.helpers.fs.vfs import VFS
+from nexy.helpers.server.ports import find_available_port
+from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
 
 _WIN_ASYNCIO_PATCHED = False
 
@@ -175,7 +175,7 @@ class Server:
                     "import uvicorn\n"
                     "import sys\n"
                     "try:\n"
-                    "    from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG\n"
+                    "    from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG\n"
                     f"    uvicorn.run('nexy.routers.app:_server', host='{run_host}',"
                     f" port={port}, log_config=NEXY_LOG_CONFIG,"
                     f" log_level='info'{ssl_part}{workers_part})\n"

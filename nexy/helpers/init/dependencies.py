@@ -4,8 +4,8 @@ import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
+from nexy.helpers.common.console import console
 from nexy.i18n import t
-from nexy.utils.common.console import console
 
 _ORM_PACKAGES: dict[str, str] = {
     "SQLModel": "sqlmodel",

@@ -1,7 +1,7 @@
 import socket
 from pathlib import Path
 
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
 
 
 def _is_port_available(host: str, port: int) -> bool:

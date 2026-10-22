@@ -241,20 +241,20 @@ Les deux fichiers existants sont des zéros : les remplir plutôt que d'en crée
 | `nexy/image.py` | 9 | 10 | branches `Image()` |
 | `nexy/cli/commands/migrate.py` | 9 | 108 | 3 ORM (sqlmodel/tortoise/sqlalchemy) — mocker |
 | `nexy/link.py` | 10 | 9 | branches `Link()` |
-| `nexy/utils/init/clone.py` | 13 | 115 | clone de template + erreurs réseau |
+| `nexy/helpers/init/clone.py` | 13 | 115 | clone de template + erreurs réseau |
 | `nexy/cli/commands/dev.py` | 13 | 94 | supervision du processus |
-| `nexy/utils/server/uvicorn_config.py` | 14 | 92 | config uvicorn |
-| `nexy/utils/common/report.py` | 17 | 35 | rendu console |
+| `nexy/helpers/server/uvicorn_config.py` | 14 | 92 | config uvicorn |
+| `nexy/helpers/common/report.py` | 17 | 35 | rendu console |
 | `nexy/cli/commands/translate.py` | 17 | 163 | batch translate — mocker `deep_translator` |
 | `nexy/i18n/_cli.py` | 18 | 62 | CLI i18n |
 | `nexy/cli/commands/format.py` | 19 | 83 | formatage |
 | `nexy/i18n/i18n_decorator.py` | 19 | 17 | **+ erreur mypy `method-assign`** |
-| `nexy/utils/common/formatting.py` | 20 | 12 | |
+| `nexy/helpers/common/formatting.py` | 20 | 12 | |
 | **`nexy/decorators.py`** | 20 | **184** | **2e plus gros trou**, 0 docstring |
-| `nexy/utils/init/dependencies.py` | 20 | 87 | |
+| `nexy/helpers/init/dependencies.py` | 20 | 87 | |
 | `nexy/routers/fbrouter/dependencies.py` | 21 | 31 | injection |
 | `nexy/cli/commands/start.py` | 22 | 25 | |
-| `nexy/utils/init/template_setup.py` | 25 | 126 | |
+| `nexy/helpers/init/template_setup.py` | 25 | 126 | |
 | `nexy/cli/commands/add.py` | 26 | 63 | |
 | `nexy/cli/commands/check.py` | 28 | 44 | |
 | `nexy/cli/commands/build.py` | 28 | 62 | couvert plus largement par P1 e2e |
@@ -274,8 +274,8 @@ Ordre : `decorators.py` (184) → `utils/server/server.py` (112) → `routers/fb
 | Fichier | Ruff | Mypy | Stratégie |
 |---|---|---|---|
 | `nexy/core/models.py` | **38** | 5 | `N815` → décision de convention (voir §3.1) |
-| `nexy/utils/server/server.py` | 1 | **34** | annotations & `Protocol` : c'est **24 % de tout mypy** |
-| `nexy/utils/init/registry.py` | 13 | 0 | `W291`×3 = auto-fix ; reste = `N815` |
+| `nexy/helpers/server/server.py` | 1 | **34** | annotations & `Protocol` : c'est **24 % de tout mypy** |
+| `nexy/helpers/init/registry.py` | 13 | 0 | `W291`×3 = auto-fix ; reste = `N815` |
 | `nexy/decorators.py` | 11 | **9** | `N802` sur `Controller`/`UseGuard`/… (API publique) |
 | `nexy/core/config.py` | 11 | **6** | déclarer les 7 champs manquants de `Config` (`useTocDepth`, `useTocTitle`, `useTocAuto`, `useDocsUrl`, `useRedocsUrl`, `useDefaultLocale`, `useLocalesDir`) → **10 des 44 `attr-defined`** tombent (ses 6 + les 4 de `routers/app.py` qui lisent ces mêmes attributs) |
 | `nexy/routers/middlewares.py` | 0 | **12** | **plus gros contributeur** : annoter les types du pipeline de middlewares |
@@ -287,7 +287,7 @@ Ordre : `decorators.py` (184) → `utils/server/server.py` (112) → `routers/fb
 | `nexy/i18n/i18n_decorator.py` | 1 | 6 | **+ `method-assign`**, 19 % de couverture |
 | `nexy/cli/commands/migrate.py` | 0 | 3 | `import-not-found` ×3 → ajouter types extras **ou** import local + `# type: ignore[import-not-found]` **justifié** |
 | `nexy/vite.py` | 4 | 2 | |
-| `nexy/utils/dev/watcher.py` | 0 | 4 | couverture 81 % |
+| `nexy/helpers/dev/watcher.py` | 0 | 4 | couverture 81 % |
 | `nexy/runtime/importer.py` | 0 | 4 | **+ `override` : signature `find_spec` incompatible avec la `supertype` `MetaPathFinder` → comportement à risque** |
 | + 24 fichiers à 1–3 erreurs chacun | 3 | 24 | passage en revue unitaire |
 
@@ -326,7 +326,7 @@ Le périmètre est **365 API publiques** : 145 docstrings en prose à convertir,
 | 2 | `nexy/compiler/**` | parser/generator | 20 docstrings sans section |
 | 3 | `nexy/routers/**` | routing | `fbrouter/validator.py`, `middlewares.py` vides |
 | 4 | `nexy/frontend/**` | frameworks | `vite_entry.py` : 9 docstrings, **0 Google** |
-| 5 | `nexy/utils/**` | utilitaires | `fs/path.py` 8/8 non-Google, `server/*`, `init/*` |
+| 5 | `nexy/helpers/**` | utilitaires | `fs/path.py` 8/8 non-Google, `server/*`, `init/*` |
 | 6 | `nexy/cli/**` | commandes Typer | la docstring devient l'aide `--help` |
 
 **Format imposé** (CONTRIBUTING.md) :
@@ -520,7 +520,7 @@ Les 4 quality gates retournent **0**. Aucun `noqa`, `type: ignore` ou `per-file-
 
 **1. `mypy --strict` : 144 → 0.**
 
-Dès la première mesure, les 29 dernières erreurs projectives étaient **toutes dans un seul fichier**, `nexy/utils/server/server.py` ; les 125 autres fichiers étaient déjà verts. Corrections, sans aucune suppression :
+Dès la première mesure, les 29 dernières erreurs projectives étaient **toutes dans un seul fichier**, `nexy/helpers/server/server.py` ; les 125 autres fichiers étaient déjà verts. Corrections, sans aucune suppression :
 
 | Erreur mypy | Nb | Correction |
 |---|---|---|
@@ -540,7 +540,7 @@ Dès la première mesure, les 29 dernières erreurs projectives étaient **toute
 
 **4. Couverture : `fail_under` 52,8 → 54.**
 
-`nexy/utils/server/server.py` était à **24 %** ; les 29 lignes ajoutées par le travail de typage l'ont fait retomber à 52,79 %, sous le seuil. Plutôt que de baisser le seuil, `tests/unit/nexy/utils/test_server.py` a été créé : **18 tests, 1 assertion chacun, tous verts**, portant le module à **67 %** et la couverture globale à **54,15 %**.
+`nexy/helpers/server/server.py` était à **24 %** ; les 29 lignes ajoutées par le travail de typage l'ont fait retomber à 52,79 %, sous le seuil. Plutôt que de baisser le seuil, `tests/unit/nexy/helpers/test_server.py` a été créé : **18 tests, 1 assertion chacun, tous verts**, portant le module à **67 %** et la couverture globale à **54,15 %**.
 
 Cas couverts : écriture de port, marqueur `nexy.prod` (création **et** suppression), IP réseau, `get_ssl_config` (complet / certfile manquant), `stop_process` (None / process fini / enfant vivant), `_detect_pm`, les 3 sorties de `wait_for_vite_ready` (succès immédiat, échec jusqu'au timeout, `ssl=True` → `https://`), les 3 sorties de `uvicorn()` (`as_process` → `Popen`, premier plan → `True`, exception → `None`), propagation de `workers`, et `resolve_ports(with_client=False)` → `0`.
 

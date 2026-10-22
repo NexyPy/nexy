@@ -37,7 +37,7 @@ uv pip install -e . --group dev
 
 | Layer | Dir | Key files |
 |-------|-----|-----------|
-| CLI | `nexy/cli/` | `__init__.py` (Typer app), `commands/{dev,start,build,init}.py` |
+| CLI | `nexy/modules/cli/` | `__init__.py` (Typer app), `commands/{dev,start,build,init}.py` |
 | Router | `nexy/routers/` | `app.py` (AppServer assembly), `fbrouter/` (file-based), `actions/` |
 | Compiler | `nexy/compiler/` | `parser/{scanner,sanitizer,template,validator,logic}.py`, `generator/` |
 | Frontend | `nexy/frontend/` | `{react,vue,svelte,solid,preact}.py` + `runtime.ts`, `vite.ts` |
@@ -51,7 +51,7 @@ uv pip install -e . --group dev
 - **JS/TS**: pnpm (root + `extensions/vscode/` + `packages/react/`), vite 7, eslint
 - **Lint/format**: ruff for both (line-length=100, target-version=py312). No black/isort.
 - **Typecheck**: mypy --strict on `nexy/`; TypeScript typecheck lives in `extensions/vscode/` (own `tsconfig.json`, its own pnpm install)
-- **CLI binary**: `nx` or `nexy` → `nexy.cli:CLI`
+- **CLI binary**: `nx` or `nexy` → `nexy.modules.cli:CLI`
 
 ## Gotchas
 

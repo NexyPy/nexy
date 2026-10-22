@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 from nexy.core.config import Config
-from nexy.utils.server.ports import get_vite_port
+from nexy.helpers.server.ports import get_vite_port
 
 
 def Vite() -> str:

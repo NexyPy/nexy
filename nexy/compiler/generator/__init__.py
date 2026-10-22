@@ -2,8 +2,8 @@ import os
 
 from nexy.core.models import ParserModel
 from nexy.errors import NexyCompileError
-from nexy.utils.common.console import console
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.common.console import console
+from nexy.helpers.fs.vfs import VFS
 
 from .logic import LogicGenerator
 from .template import TemplateGenerator

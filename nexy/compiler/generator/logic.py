@@ -7,8 +7,8 @@ from typing import *  # noqa: F403
 from nexy.core.config import Config
 from nexy.core.models import ParserModel
 from nexy.core.string import StringTransform
+from nexy.helpers.fs.vfs import VFS
 from nexy.routers.fbrouter.layout import RouteLayout
-from nexy.utils.fs.vfs import VFS
 
 
 class LogicGenerator:
@@ -161,7 +161,7 @@ from pathlib import Path as __Path
 from nexy import Template as __Template
 from nexy.i18n.core import current_locale as __current_locale
 from nexy.i18n.core import trans as __trans
-from nexy.utils.imports.component_import import _Import as __Import
+from nexy.helpers.imports.component_import import _Import as __Import
 from nexy.routers.actions.store import ACTIONS_STORE as __ACTIONS_STORE
 from jinja2 import Template as __JinjaTemplate
 NexyElement = Union[callable, __JinjaTemplate]

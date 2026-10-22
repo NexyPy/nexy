@@ -5,7 +5,7 @@ from typing import Any
 
 from jinja2 import BaseLoader, Environment, TemplateNotFound
 
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
 
 from .core.config import Config
 from .i18n.core import current_locale, trans

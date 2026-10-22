@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from nexy.utils.dev.pycache import pycache
+from nexy.helpers.dev.pycache import pycache
 
 
 def test_pycache_sets_environment() -> None:

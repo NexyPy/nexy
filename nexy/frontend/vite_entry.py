@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from nexy.frontend.constants import FRAMEWORK_DEPS, NAVIGABLE_EXTS, navigable_glob
-from nexy.utils.fs.path import PathUtil
+from nexy.helpers.fs.path import PathUtil
 
 
 def generate_vite_entry(use_ff: Any) -> None:

@@ -8,8 +8,8 @@ from nexy.compiler.parser import Parser
 from nexy.core.config import Config
 from nexy.core.models import ParserModel
 from nexy.errors import NexyCompileError
-from nexy.utils.common.console import console
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.common.console import console
+from nexy.helpers.fs.vfs import VFS
 
 
 def is_nexy_file(file_path: str) -> bool:

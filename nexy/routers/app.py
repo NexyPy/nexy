@@ -8,6 +8,7 @@ from starlette.exceptions import HTTPException
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
+from nexy.helpers.common.console import console
 from nexy.i18n import L as LocaleManager
 from nexy.i18n.middleware import LocaleMiddleware
 from nexy.routers.actions.engine import ACTION_ENGINE
@@ -18,7 +19,6 @@ from nexy.routers.middlewares import PathMiddleware, setup_middlewares
 from nexy.routers.router_resolver import resolve_router
 from nexy.routers.static_assets import setup_favicon, setup_static_files
 from nexy.runtime.importer import install_vfs_importer
-from nexy.utils.common.console import console
 
 
 class AppServer:

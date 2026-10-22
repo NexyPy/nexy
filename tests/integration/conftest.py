@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
 
 # Verbatim shape of the documented user-facing .nexy format
 # (examples/minimal): frontmatter logic block, then template body.

@@ -9,8 +9,8 @@ from starlette.types import ASGIApp, Receive, Scope, Send
 
 from nexy.core.config import Config
 from nexy.decorators import Container
+from nexy.helpers.common.console import console
 from nexy.routers.context import current_request
-from nexy.utils.common.console import console
 
 
 class PathMiddleware:
