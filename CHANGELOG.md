@@ -1,38 +1,51 @@
 # Changelog
 
+All notable changes to Nexy are documented in this file.
+The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
+
 ## [Unreleased]
 
-### Security
-- Sandboxed `exec()` via `nexy/core/sandbox.py`: restricted builtins whitelist,
-  dangerous names (`__import__`, `open`, `exec`, `eval`, `compile`) denied.
-  Applied to `template.py:91` and `runtime/mdx.py:250`.
+### Changed
 
-### Performance
-- `routers/fbrouter/discovery.py`: `rglob("*")` → targeted `glob("**/*.{ext}")`.
-- `frontend/__init__.py`: same pattern for key generation.
-- `builder/__init__.py`: sequential compile → `ThreadPoolExecutor(os.cpu_count())`.
+- **Package layout**: `nexy/utils/` is now `nexy/helpers/` — a transversal
+  layer with zero upward imports (`common`, `fs`, `imports`, `server`).
+  All feature code moved under `nexy/modules/` (`cli`, `compiler`, `frontend`,
+  `routers`, `runtime`, `i18n`, `builder`). The public facade exported by
+  `nexy/__init__.py` is unchanged.
+- **CLI scaffolding**: project templates (`web-fbr`, `web-modular`, `api-fbr`,
+  `api-modular`, `alembic`, `_shared`) now live inside
+  `nexy/modules/cli/templates/`.
+- **Dev tooling**: the file watcher and `__pycache__` management moved to
+  `nexy/modules/cli/devtools/` (`watcher.py`, `pycache.py`).
+- **Scaffolds**: the Counter, Card, and Theme templates were rewritten —
+  consistent utility classes across frameworks, explicit state hooks on
+  Preact, and a table-of-contents layout for markdown pages.
 
 ### Fixed
-- `WATCH_EXTENSIONS_GLOB` no longer silently overrides user-supplied config.
-- Circular import in `hooks.py` (`from nexy import Vite` → `from nexy.vite import Vite`).
-- Dead code in `sanitizer.py` (duplicate `RE_NEXY_IMPORT` after return statement).
-- `B904` bare raises in `clone.py` (3 sites).
 
-### Changed
-- `__pycache__` centralized to `__nexy__/__pycache__` via `pycache()`.
-- `VFS.set_dev_mode(True)` prevents `flush_to_disk()` during `nexy dev`.
-- `FFModel` → `FrontendFramework`, `FF_REGISTRY` → `FRAMEWORK_REGISTRY`.
-- `NCC` → `NexyClientComponent`, `_emit_ncc` → `_emit_client_component`.
-- `_ndp`/`_ndc`/`_ngp` suffixes → `_dynamic_param`/`_catch_all`/`_group`.
-- `CODE_PARSED` → `code_parsed`, `C` → `COLORS`.
-- `NexyVFSLoader` → `NexyTemplateLoader`.
-- `__version__.py`: class `__Version__().get()` → plain string `__version__`.
-- Removed 9 empty non-init `.py` files; populated `core/types.py` with `JsonResponse`.
-- Translated 38 French comments to English across 8 files.
-- Extracted inline CSS from `errors.py` into `_page_404()`/`_page_500()` helpers.
-- Removed dead `Task()`/`Job()` stubs from `decorators.py`.
+- **Production SSR for default exports**: the static-site generator looked up
+  `<name>.default.html` while the build emits `<name>.Default.html`, so the
+  server-rendered payload was silently empty for default-export routes on
+  case-sensitive filesystems. The lookup now matches emitted names.
+- **SSG pipeline**: React, Preact, and Solid are prerendered through per-file
+  esbuild builds with a CPU-bound worker pool instead of Vite, and SSR
+  failures now surface the real error in the build warning instead of a
+  generic message.
 
 ### Added
-- Tests: sandbox (9), VFS dev mode (3), builder parallel (1), pycache (1),
-  version (3), string transform (13) - 30 new tests, 84 total pass.
-- CI workflow (`.github/workflows/ci.yml`): ruff → mypy → pytest on 3.12/3.13.
+
+- Compiler regression suites: byte-level route compile matrix (8 route
+  kinds), compiler dispatch contract, markdown route compiler tests, and the
+  frontend `useFF` contract tests backed by `vite_entry.normalize_ff`.
+
+### Removed
+
+- Dead code: the unused `BaseFrontendGenerator` abstraction, the unused
+  `helpers/common/constants.py`, empty stub modules, and the `Task()`/`Job()`
+  decorator stubs. Contract tests lost with the dead abstraction were ported
+  to the production code they verify.
+
+## [2.1.1] and earlier
+
+See [GitHub releases](https://github.com/NexyPy/nexy/releases) for the
+release history of versions 2.1.1 and earlier.
