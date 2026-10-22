@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 
 from nexy.__version__ import __version__
-from nexy.builder import Builder, BuildResult
 from nexy.core.config import Config
 from nexy.frontend import FrontendGenerator
 from nexy.helpers.common.console import console
@@ -14,6 +13,7 @@ from nexy.helpers.common.report import print_cmd_result, print_tree_section
 from nexy.helpers.dev.pycache import pycache
 from nexy.helpers.server.server import Server
 from nexy.i18n import t
+from nexy.modules.builder import Builder, BuildResult
 
 
 def build(check: bool = False) -> None:

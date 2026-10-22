@@ -42,7 +42,7 @@ def builder_project(nexy_project, tmp_path: Path) -> Path:
     Isolates the shared VFS: no dev-mode writes, an empty store, and a
     cleanup restoring the dev-mode default (False).
     """
-    from nexy.builder import Builder  # noqa: F401  (import sanity under cwd)
+    from nexy.modules.builder import Builder  # noqa: F401  (import sanity under cwd)
 
     nexy_project("")
     VFS.set_dev_mode(False)
