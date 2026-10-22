@@ -1,0 +1,33 @@
+# Vite Integration
+
+Enable Vite in `nexyconfig.py`:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## Dev Mode
+
+`nexy dev` automatically starts a Vite dev server alongside the Nexy server. Vite provides:
+- Hot Module Replacement (HMR)
+- Fast refresh for framework components
+- TypeScript and JSX compilation
+- CSS preprocessing
+
+The Nexy server proxies Vite's dev URL so everything works on a single port.
+
+## Production
+
+`nexy build` runs a Vite production build. Output goes to `__nexy__/client/`. The `Vite()` function reads the manifest and emits the correct CSS and script tags.
+
+## Custom Vite Config
+
+Nexy merges your `vite.config.ts` with its own defaults. You can add plugins, aliases, and other Vite options normally.
+
+## Config Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `useVite` | `bool` | `False` | Enable Vite |
+| `useViteDevUrl` | `str \| None` | `None` | Custom Vite dev URL |

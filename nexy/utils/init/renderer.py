@@ -1,5 +1,6 @@
 import shutil
 from pathlib import Path
+from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -28,7 +29,7 @@ class TemplateRenderer:
         "solid": ".tsx",
     }
 
-    def __init__(self, src: Path, dest: Path, context: dict | None = None):
+    def __init__(self, src: Path, dest: Path, context: dict[str, Any] | None = None):
         self.src = src
         self.dest = dest
         self.context = context or {}
@@ -37,7 +38,9 @@ class TemplateRenderer:
         if not self.src.is_dir():
             raise FileNotFoundError(f"Template directory not found: {self.src}")
 
-        env = Environment(loader=FileSystemLoader(str(self.src)))
+        # Scaffolding templates emit Python/TS/HTML source files; autoescape
+        # would corrupt generated source code. See SECURITY.md.
+        env = Environment(loader=FileSystemLoader(str(self.src)))  # nosec B701
         self.dest.mkdir(parents=True, exist_ok=True)
 
         for src_path in self.src.rglob("*"):
@@ -65,7 +68,6 @@ class TemplateRenderer:
                 dest_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src_path, dest_path)
 
-        # Clean up empty directories left after filtering
         for dir_path in sorted(self.dest.rglob("*"), key=lambda p: len(str(p)), reverse=True):
             if dir_path.is_dir() and not any(dir_path.iterdir()):
                 dir_path.rmdir()
@@ -114,8 +116,6 @@ class TemplateRenderer:
         target = ".".join(parts)
 
         if has_jinja2:
-            # FW_EXT_MAP replaces the suffix when a FW_SUFFIX was matched,
-            # or adds an extension for bare .jinja2 filenames
             if matched or "." not in target:
                 fw = self.context.get("client_framework", "")
                 fw_ext = self.FW_EXT_MAP.get(fw.lower())

@@ -1,0 +1,33 @@
+# Integración de Vite
+
+Habilite Vite en `nexyconfig.py`:
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## Modo de desarrollo
+
+`nexy dev` inicia automáticamente un servidor de desarrollo Vite junto con el servidor Nexy. Vite proporciona:
+- Reemplazo de módulo caliente (HMR)
+- Actualización rápida para los componentes del marco.
+- Compilación de TypeScript y JSX.
+- Preprocesamiento CSS
+
+El servidor Nexy representa la URL de desarrollo de Vite para que todo funcione en un solo puerto.
+
+## Producción
+
+`nexy build` ejecuta una compilación de producción de Vite. La salida va a `__nexy__/client/`. La función `Vite()` lee el manifiesto y emite las etiquetas CSS y script correctas.
+
+## Configuración personalizada de Vite
+
+Nexy fusiona tu `vite.config.ts` con sus propios valores predeterminados. Puede agregar complementos, alias y otras opciones de Vite normalmente.
+
+## Referencia de configuración
+
+| Opción | Tipo | Predeterminado | Descripción |
+|--------|------|---------|-------------|
+| `useVite` | `bool` | `False` | Habilitar Vite |
+| `useViteDevUrl` | `str \| None` | `None` | URL de desarrollo de Vite personalizada |

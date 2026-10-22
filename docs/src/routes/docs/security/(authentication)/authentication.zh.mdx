@@ -1,0 +1,54 @@
+# 认证
+
+Nexy 通过 Starlette 的 `AuthenticationMiddleware` 提供基于中间件的身份验证。在 `nexyconfig.py` 中进行全局配置。
+
+## 基于会话的身份验证
+
+```python
+# src/auth.py
+from starlette.authentication import AuthCredentials, AuthenticationBackend, SimpleUser
+
+class SessionAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        user_id = conn.session.get("user_id")
+        if user_id:
+            return AuthCredentials(["authenticated"]), SimpleUser(user_id)
+        return None
+```
+
+```python
+# nexyconfig.py
+class NexyConfig(NexyConfigModel):
+    useSession = {"secret_key": "change-me"}
+    useAuth = {"backend": SessionAuthBackend()}
+```
+
+## 基于令牌的身份验证
+
+```python
+class TokenAuthBackend(AuthenticationBackend):
+    async def authenticate(self, conn):
+        token = conn.headers.get("Authorization", "").removeprefix("Bearer ")
+        user = await verify_token(token)
+        if user:
+            return AuthCredentials(["authenticated"]), SimpleUser(user.id)
+        return None
+```
+
+## 在处理程序中访问用户
+
+```python
+def GET(request):
+    return {"user": request.user.username}
+```
+
+## 配置参考
+
+|领域 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useAuth` | `dict \| None` | `None` | Kwargs 转发至 Starlette 的 `AuthenticationMiddleware` |
+| `useSession` | `dict \| None` | `None` | Kwargs 转发至 Starlette 的 `SessionMiddleware` |
+
+---
+
+另请参阅：[Authorization](/docs/security/authorization)、[JWT](/docs/security/jwt)、[Auth Guide](/docs/guides/auth)

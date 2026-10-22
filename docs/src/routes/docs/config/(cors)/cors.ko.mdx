@@ -1,0 +1,68 @@
+# 코르스
+
+Starlette의 `CORSMiddleware`를 사용하여 Nexy 애플리케이션에 대한 교차 출처 리소스 공유를 구성합니다.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## 공통 옵션
+
+| 옵션 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` | 허용된 출처. 모두 허용하려면 `["*"]`를 사용하세요(개발에만 해당). |
+| `allow_origins_regex` | `str` | `None` | 허용된 출처에 대한 정규식 패턴(예: `"%%U0%%"`) |
+| `allow_methods` | `list[str]` | `["GET"]` | 허용되는 HTTP 메소드. `["*"]`는 모두 허용합니다. |
+| `allow_headers` | `list[str]` | `[]` | 허용되는 요청 헤더입니다. `["*"]`는 모두 허용합니다. |
+| `allow_credentials` | `bool` | `False` | 쿠키 및 인증 헤더를 허용합니다. |
+| `expose_headers` | `list[str]` | `[]` | 브라우저에 노출되는 헤더입니다. |
+| `max_age` | `int` | `600` | 프리플라이트 캐시 기간(초)입니다. |
+
+---
+
+## 개발 설정
+
+로컬 개발의 경우 모든 출처를 허용합니다.
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## 생산 설정
+
+출처와 방법을 명시적으로 설명하세요.
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+`allow_credentials`가 `True`인 경우 `allow_origins`에 `"*"`를 사용할 수 없습니다. 출처를 명시적으로 나열하세요.
+
+---
+
+## 프록시 뒤에
+
+앱이 역방향 프록시(nginx, Cloudflare) 뒤에서 실행되는 경우 CORS 미들웨어가 올바른 원본을 볼 수 있도록 전달된 헤더가 구성되어 있는지 확인하세요.

@@ -1,0 +1,26 @@
+# पोस्टग्रेएसक्यूएल
+
+PostgreSQL नेक्सी अनुप्रयोगों के लिए अनुशंसित उत्पादन डेटाबेस है।
+
+## कनेक्शन
+
+प्रोजेक्ट के डेटाबेस कॉन्फ़िगरेशन में अपना PostgreSQL कनेक्शन कॉन्फ़िगर करें:
+
+```python
+# configs/database.py or .env
+DATABASE_URL = "postgresql+asyncpg://user:password"@localhost:5432/mydb"
+```
+
+## ओआरएम के साथ
+
+| ओआरएम | ड्राइवर | कनेक्शन स्ट्रिंग |
+|----|--------|------------------|
+| SQLModel / SQLAlchemy | `asyncpg` | `postgresql+asyncpg://user:pass"@localhost/db` |
+| कछुआ-ओआरएम | `asyncpg` | `postgres://user:pass"@localhost/db` |
+
+## नेक्सी के साथ PostgreSQL क्यों
+
+- `asyncpg` के माध्यम से पूर्ण एसिंक समर्थन
+- लचीले स्कीमा के लिए मूल JSON/JSONB कॉलम
+- उत्पादन परिनियोजन के लिए उत्कृष्ट
+- सभी समर्थित ओआरएम के साथ काम करता है

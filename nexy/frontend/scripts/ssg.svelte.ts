@@ -9,6 +9,7 @@ import {
   saveSnippets,
   writeComponent,
   getEntryId,
+  globIgnore,
   type SSGResult,
   c
 } from './utils'
@@ -59,7 +60,7 @@ export async function run(): Promise<SSGResult> {
   const manifest = getManifest()
   const files = glob.sync('**/*.svelte', {
     cwd: process.cwd(),
-    ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
+    ignore: globIgnore()
   })
 
   if (!files.length) return result
@@ -101,7 +102,7 @@ export async function run(): Promise<SSGResult> {
       writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
       result.entries.push({ file, component: 'Default', status: 'success' })
     } catch (e) {
-      console.warn(`${c.yellow}⚠ client-only: ${file} — SSR failed, using client placeholder (no server HTML)${c.reset}`)
+      console.warn(`${c.yellow}⚠ client-only: ${file} - SSR failed, using client placeholder (no server HTML)${c.reset}`)
       const entryId = getEntryId(fileName, 'Default', 'svelte')
       const { css } = getAssetTags(manifest, fileName)
       writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)

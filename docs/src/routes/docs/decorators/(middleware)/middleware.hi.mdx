@@ -1,0 +1,75 @@
+# "@मिडलवेयर
+
+कंट्रोलर क्लास या हैंडलर विधि में मिडलवेयर कॉलेबल्स लागू करें।
+
+## मिडलवेयर अनुबंध
+
+एक मिडलवेयर `__call__(self, request)` के साथ कॉल करने योग्य है। यह FastAPI `Request` ऑब्जेक्ट प्राप्त करता है और हैंडलर से पहले चलता है।
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+---
+
+## एक मार्ग पर मिडलवेयर
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import Middleware, Controller
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+```
+## एकाधिक मिडलवेयर
+```python
+---
+from nexy.decorators import Middleware
+
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+
+class TimerMiddleware:
+    def __call__(self, request) -> None:
+        print("timing")
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+---
+```
+```python
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+class UsersController:
+    def GET(self):
+        ...
+```
+## हस्ताक्षर
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## गार्ड्स बनाम मिडलवेयर
+
+| | गार्ड | मिडलवेयर |
+|---|--------|----|
+| उद्देश्य | प्राधिकरण | साइड इफेक्ट्स (लॉगिंग, टाइमिंग) |
+| ब्लॉक अनुरोध | हाँ (HTTPException बढ़ाता है) | नहीं (जब तक आप नहीं बढ़ाते) |
+| | के रूप में चलता है फास्टएपीआई `Depends` | फास्टएपीआई `Depends` |
+| आदेश | क्लास गार्ड → मेथड गार्ड | क्लास मिडलवेयर → विधि मिडलवेयर |
+
+दोनों FastAPI `Depends` निर्भरता के रूप में चलते हैं। ऑर्डर: क्लास गार्ड → क्लास मिडलवेयर → मेथड गार्ड → मेथड मिडलवेयर।

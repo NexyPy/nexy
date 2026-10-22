@@ -1,0 +1,40 @@
+# Componente de formulario
+
+El componente Formulario integrado simplifica el trabajo con formularios y acciones del servidor.
+
+## Importar
+
+Importarlo directamente desde `nexy`:
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## Uso básico
+
+El componente Formulario se mejorará para integrarse con las acciones del servidor y proporcionar utilidades de manejo de formularios.
+
+Por ahora, puedes utilizar formularios HTML estándar en tus componentes:
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Acciones del servidor
+
+El componente Formulario se integrará con el decorador `@action` de Nexy para el procesamiento de formularios del lado del servidor.

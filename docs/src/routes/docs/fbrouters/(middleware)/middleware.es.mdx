@@ -1,0 +1,45 @@
+# "@Middleware (FBR)
+
+Aplicar llamadas de middleware a una función de ruta.
+
+## Contrato de middleware
+
+Un middleware es cualquier invocable con `__call__(self, request)`. Recibe el objeto FastAPI `Request` y se ejecuta antes que el controlador.
+
+```python
+class LoggingMiddleware:
+    def __call__(self, request) -> None:
+        print(f"Request: {request.method} {request.url}")
+```
+
+## Middleware en una función
+
+```python
+from nexy.decorators import Middleware
+
+"@Middleware(LoggingMiddleware())
+def GET():
+    ...
+```
+
+## Múltiples middleware
+
+```python
+from nexy.decorators import Middleware
+
+"@Middleware(LoggingMiddleware(), TimerMiddleware())
+def GET():
+    ...
+```
+
+## Firma
+
+```python
+Middleware(*middlewares: Callable[..., Any]) -> Callable[[Any], Any]
+```
+
+El middleware se ejecuta como FastAPI `Depends`: se ejecuta antes que el controlador. A diferencia de los guardias, el middleware está diseñado para efectos secundarios (registro, sincronización), no para bloquear solicitudes (aunque puede generar `HTTPException`).
+
+---
+
+Ver también: [Middlewares](/docs/fbrouters/middlewares), ["@Middleware reference](/docs/decorators/middleware)

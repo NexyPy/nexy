@@ -7,13 +7,19 @@ import { type JSX } from "solid-js";
 type ThemeMode = "light" | "dark" | "system";
 
 const Theme = () => {
-  const [active, setActive] = createSignal<ThemeMode>(
-    (localStorage.getItem("nexy-theme") as ThemeMode) || "system"
-  );
+  const [mounted, setMounted] = createSignal(false);
+  const [active, setActive] = createSignal<ThemeMode>("system");
 
   let containerRef: HTMLDivElement | undefined;
 
+  onMount(() => {
+    setMounted(true);
+    const savedTheme = localStorage.getItem("nexy-theme") as ThemeMode | null;
+    if (savedTheme) setActive(savedTheme);
+  });
+
   createEffect(() => {
+    if (!mounted()) return;
     const root = document.documentElement;
     const currentActive = active();
     localStorage.setItem("nexy-theme", currentActive);
@@ -31,6 +37,7 @@ const Theme = () => {
   });
 
   const updateSlider = () => {
+    if (!mounted()) return;
     const currentActive = active();
     const activeElement = containerRef?.querySelector(`[data-mode="${currentActive}"]`) as HTMLElement;
 
@@ -113,13 +120,19 @@ import { type ComponentChildren } from "preact";
 type ThemeMode = "light" | "dark" | "system";
 
 const Theme = () => {
-  const [active, setActive] = useState<ThemeMode>(() => {
-    return (localStorage.getItem("nexy-theme") as ThemeMode) || "system";
-  });
+  const [mounted, setMounted] = useState(false);
+  const [active, setActive] = useState<ThemeMode>("system");
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
+    const savedTheme = localStorage.getItem("nexy-theme") as ThemeMode | null;
+    if (savedTheme) setActive(savedTheme);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const root = document.documentElement;
     localStorage.setItem("nexy-theme", active);
 
@@ -137,24 +150,25 @@ const Theme = () => {
     } else {
       applyTheme(active === "dark");
     }
-  }, [active]);
+  }, [active, mounted]);
 
   useLayoutEffect(() => {
+    if (!mounted) return;
     const activeElement = containerRef.current?.querySelector(`[data-mode="${active}"]`) as HTMLElement;
     if (activeElement) {
       const root = document.documentElement;
       root.style.setProperty("--slider-left", `${activeElement.offsetLeft}px`);
       root.style.setProperty("--slider-width", `${activeElement.offsetWidth}px`);
     }
-  }, [active]);
+  }, [active, mounted]);
 
   return (
     <div
       ref={containerRef}
-      class=" relative flex justify-center items-center  p-1 gap-0.5 border border-border rounded-full size-fit transition-colors"
+      class="relative flex justify-center items-center p-1 gap-0.5 border border-border rounded-full size-fit transition-colors"
     >
       <div
-        class="absolute  left-0 size-7 bg-foreground  rounded-full transition-all duration-300 ease-in-out"
+        class="absolute left-0 size-7 bg-foreground rounded-full transition-all duration-300 ease-in-out"
         style={{
           transform: "translateX(var(--slider-left))",
           width: "var(--slider-width)"
@@ -214,13 +228,19 @@ import type { ReactNode } from "react";
 type ThemeMode = "light" | "dark" | "system";
 
 const Theme = () => {
-  const [active, setActive] = useState<ThemeMode>(() => {
-    return (localStorage.getItem("nexy-theme") as ThemeMode) || "system";
-  });
+  const [mounted, setMounted] = useState(false);
+  const [active, setActive] = useState<ThemeMode>("system");
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
+    const savedTheme = localStorage.getItem("nexy-theme") as ThemeMode | null;
+    if (savedTheme) setActive(savedTheme);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const root = document.documentElement;
     localStorage.setItem("nexy-theme", active);
 
@@ -238,24 +258,25 @@ const Theme = () => {
     } else {
       applyTheme(active === "dark");
     }
-  }, [active]);
+  }, [active, mounted]);
 
   useLayoutEffect(() => {
+    if (!mounted) return;
     const activeElement = containerRef.current?.querySelector(`[data-mode="${active}"]`) as HTMLElement;
     if (activeElement) {
       const root = document.documentElement;
       root.style.setProperty("--slider-left", `${activeElement.offsetLeft}px`);
       root.style.setProperty("--slider-width", `${activeElement.offsetWidth}px`);
     }
-  }, [active]);
+  }, [active, mounted]);
 
   return (
     <div
       ref={containerRef}
-      className=" relative flex justify-center items-center  p-1 gap-0.5 border border-border rounded-full size-fit transition-colors"
+      className="relative flex justify-center items-center p-1 gap-0.5 border border-border rounded-full size-fit transition-colors"
     >
       <div
-        className="absolute  left-0 size-7 bg-foreground  rounded-full transition-all duration-300 ease-in-out"
+        className="absolute left-0 size-7 bg-foreground rounded-full transition-all duration-300 ease-in-out"
         style={{
           transform: "translateX(var(--slider-left))",
           width: "var(--slider-width)"

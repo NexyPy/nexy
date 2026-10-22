@@ -1,0 +1,76 @@
+# "@UseGuard
+
+컨트롤러 클래스 또는 개별 핸들러 메서드에 가드 호출 가능 항목을 적용합니다.
+
+## 경비 계약
+
+가드는 `__call__(self, request)`로 호출할 수 있습니다. FastAPI `Request` 개체를 받습니다. 차단하려면 `HTTPException`를 올리고 허용하려면 `None`를 반환합니다.
+```python
+from fastapi import HTTPException
+
+class RoleGuard:
+    def __init__(self, role: str):
+        self.role = role
+
+    def __call__(self, request) -> None:
+        if request.user.role != self.role:
+            raise HTTPException(403)
+```
+---
+
+## 경로의 가드
+```python
+---
+from nexy.decorators import UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import UseGuard, Controller
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@Controller("/users")
+"@UseGuard(AuthGuard())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+
+    "@UseGuard(AdminGuard())
+    def delete(self, user_id: int) -> dict:
+        ...
+```
+## 다수의 경비원
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## 서명
+```python
+UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## 주문
+
+클래스 수준 가드는 메서드 수준 가드보다 먼저 실행됩니다. 모두 FastAPI `Depends`로 실행됩니다.

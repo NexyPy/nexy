@@ -1,0 +1,65 @@
+# OpenAPI Webhooks وعمليات الاسترجاعات
+
+قم بتحديد خطافات الويب وعمليات الاسترجاعات في مخطط OpenAPI الخاص بك حتى يعرف المستهلكون ما ترسله واجهة برمجة التطبيقات الخاصة بك إليهم.
+
+## خطافات الويب
+
+خطافات الويب هي أحداث صادرة ترسلها واجهة برمجة التطبيقات (API) الخاصة بك إلى عناوين URL خارجية.
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+يؤدي هذا إلى تسجيل خطاف ويب في مخطط OpenAPI. يرى المستهلكون شكل الحمولة الصافية المتوقعة بنسبة `/docs`.
+
+## الاسترجاعات
+
+تصف عمليات الاسترجاعات الطلبات التي ستقدمها واجهة برمجة التطبيقات (API) الخاصة بك إلى خادم المستهلك.
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+قم بتمرير جهاز توجيه رد الاتصال إلى المسار:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+يؤدي هذا إلى إنشاء مسارات إضافية في مواصفات OpenAPI توضح ما ستنشره واجهة برمجة التطبيقات (API) الخاصة بك إلى عنوان URL الخارجي.
+
+## لماذا استخدامها
+
+- الوثائق التي يتم إنشاؤها تلقائيًا لعملاء واجهة برمجة التطبيقات (API).
+- تعريف العقد الآمن النوعي
+- يعمل مع أي منشئ عميل OpenAPI
+- لا يوجد تأثير لوقت التشغيل - للتوثيق فقط

@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 動的 URL (ルートパラメータ)
+
+動的パラメータは、可変 URL セグメントをキャプチャします。 Nexy は `[param]` 括弧構文を使用します。
+
+---
+
+## 構文
+```bash
+routes/
+├── blog/
+│   ├── index.nexy          →  /blog
+│   └── [slug].nexy         →  /blog/{slug}
+└── users/
+    └── [userId].py         →  /users/{userId}
+```
+---
+
+## `.nexy` ページ内
+
+このパラメータは、frontmatter プロパティ経由で利用できます。
+```
+---
+slug: prop[str]
+---
+<h1>Article: {{ slug }}</h1>
+```
+---
+
+## `.py` ハンドラー内
+```python
+# routes/users/[userId].py
+from fastapi import Request
+
+async def get(request: Request, userId: int):
+    return {"user_id": userId}
+```
+型は自動的に変換されます (`int`、`str`、`UUID` など)。
+
+---
+
+## 複数のパラメータ
+```bash
+routes/
+└── blog/
+    └── [year]/[month]/[slug].nexy
+```
+```nexy
+---
+year: prop[int]
+month: prop[int]
+slug: prop[str]
+---
+<article>
+    <time>{{ year }}-{{ month }}</time>
+    <h1>{{ slug | replace("-", " ") }}</h1>
+</article>
+```
+---
+
+## キャッチオールパラメータ
+```bash
+routes/
+└── docs/
+    └── [...path].nexy      →  /docs/{path+}
+```
+```nexy
+---
+path: prop[list[str]]
+---
+<pre>{{ path | join("/") }}</pre>
+```
+`path` 変数は、残りの **すべて** の URL セグメントをリストとして受け取ります。
+<Link href="/docs/fbrouters/query_parameters">Next: Query Parameters →</Link>

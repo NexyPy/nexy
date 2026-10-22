@@ -23,7 +23,7 @@ class ActionEngine:
             "build",
         }
 
-    def discover(self, start_dir: str = "src"):
+    def discover(self, start_dir: str = "src") -> None:
         """
         Dynamically imports modules while skipping ignored directories.
         """
@@ -31,28 +31,26 @@ class ActionEngine:
         if not base_path.exists():
             return
 
+        root_name = base_path.name
         if str(base_path.parent) not in sys.path:
             sys.path.append(str(base_path.parent))
 
-        # walk_packages starts scanning
-        for loader, name, is_pkg in pkgutil.walk_packages([str(base_path)]):
-            # Optimization: check if any part of the module path is in ignore_folders
-            # Example: 'src.node_modules.test' -> ['src', 'node_modules', 'test']
+        for _loader, name, _is_pkg in pkgutil.walk_packages(
+            [str(base_path)], prefix=f"{root_name}."
+        ):
             parts = name.split(".")
             if any(ignored in parts for ignored in self.ignore_folders):
                 continue
 
             try:
                 importlib.import_module(name)
-            except Exception:
-                # We skip modules with import errors to keep the engine running
+            except ImportError:
                 continue
 
-    def include_router(self, router: FastAPI):
+    def include_router(self, router: FastAPI) -> FastAPI:
         """
         Mounts all registered actions onto the router.
         """
-        # We check the registry here
         for func_id, handler in ACTIONS_STORE.registry.items():
             path_hash = ACTIONS_STORE._generate_hash(func_id)
             encrypted_path = f"/_nx_{path_hash}"
@@ -77,7 +75,6 @@ class ActionEngine:
         if py_type is bool:
             return "boolean"
 
-        # Handle typing generics (List, Dict, etc.)
         origin = getattr(py_type, "__origin__", None)
         if origin is list or py_type is list:
             return "any[]"
@@ -86,7 +83,7 @@ class ActionEngine:
 
         return "any"
 
-    def generate_client(self):
+    def generate_client(self) -> None:
         """Generates TypeScript mirror files with basic type safety."""
         if not self.output_dir or not ACTIONS_STORE.path_map:
             return
@@ -103,11 +100,10 @@ class ActionEngine:
             sub_dir = out_path.joinpath(*parts)
             sub_dir.mkdir(parents=True, exist_ok=True)
 
-            # Extract signature for type safety
             sig = inspect.signature(handler)
             params = []
             for name, param in sig.parameters.items():
-                if name in ("request", "response"):  # Skip FastAPI internals
+                if name in ("request", "response"):
                     continue
                 ts_type = self._map_py_type_to_ts(param.annotation)
                 params.append(f"{name}: {ts_type}")
@@ -123,7 +119,8 @@ class ActionEngine:
                 "import { transport } from '@/nexy/client';",
                 "",
                 f"export const {func_name} = async ({arg_line}): Promise<{ret_type}> => {{",
-                f"  return await transport.call('{final_url}', {{ {', '.join(p.split(':')[0] for p in params)} }});",
+                f"  return await transport.call('{final_url}', "
+                f"{{ {', '.join(p.split(':')[0] for p in params)} }});",
                 "};",
             ]
 
@@ -132,4 +129,3 @@ class ActionEngine:
 
 
 ACTION_ENGINE = ActionEngine(output_dir="./actions")
-ACTION_ENGINE.discover("./")

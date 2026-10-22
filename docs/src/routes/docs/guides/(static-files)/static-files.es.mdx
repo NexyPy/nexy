@@ -1,0 +1,38 @@
+# Archivos estáticos
+
+Nexy sirve archivos estáticos desde el directorio `public/` en la raíz de su proyecto.
+
+## Cómo funciona
+
+Cualquier archivo colocado en `public/` se entrega en la ruta URL raíz:
+
+```text
+public/
+├── logo.svg           →  /logo.svg
+├── images/
+│   └── hero.jpg       →  /images/hero.jpg
+├── fonts/
+│   └── inter.woff2    →  /fonts/inter.woff2
+└── robots.txt         →  /robots.txt
+```
+
+No se necesita configuración. Los archivos en `public/` se entregan automáticamente.
+
+## Directorio de activos
+
+Para recursos compilados (CSS, JS de Vite), use el directorio `assets/` o configure la salida en `vite.config.ts`. Nexy los monta en `/assets/`.
+
+## Hacer referencia a archivos estáticos
+
+En plantillas `.nexy`:
+
+```nexy
+<img src="/logo.svg" alt="Logo" />
+<link rel="stylesheet" href="/styles/global.css" />
+```
+
+En el frontmatter de Python o en los controladores de rutas, las rutas son relativas a la raíz del proyecto.
+
+## Producción
+
+Durante `nx build`, el directorio `public/` se copia a `__nexy__/public/`. Su servidor de producción entrega estos archivos directamente, sin necesidad de compilación.

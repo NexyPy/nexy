@@ -1,0 +1,51 @@
+# useRouter
+
+현재 요청에 대한 라우팅 컨텍스트가 포함된 객체를 반환합니다.
+
+```python
+from nexy import useRouter
+
+router = useRouter()
+```
+
+---
+
+## 반환 값
+
+다음 키를 사용하여 `dict`:
+
+| 열쇠 | 유형 | 설명 |
+|------|------|-------------|
+| `path` | `str` | 현재 URL 경로 |
+| `base_url` | `str` | 서버의 기본 URL |
+| `url_for` | `callable \| None` | 역방향 URL 조회를 위한 FastAPI의 `url_for` 함수 |
+
+---
+
+## 예
+
+```nexy
+---
+from nexy import useRouter
+router = useRouter()
+---
+<p>Current path: {{ router.path }}</p>
+<p>Base URL: {{ router.base_url }}</p>
+```
+
+---
+
+## 역방향 URL 조회
+
+```python
+router = useRouter()
+if router.url_for:
+    url = router.url_for("read_article", slug="hello-world")
+```
+
+---
+
+## 사용 참고사항
+
+- `url_for`는 요청 컨텍스트 외부에서 `None`일 수 있습니다.
+- 내부적으로 FastAPI의 `request.app.url_for`를 사용합니다.

@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Dynamische URLs (Routenparameter)
+
+Dynamische Parameter erfassen variable URL-Segmente. Nexy verwendet die Klammersyntax `[param]`.
+
+---
+
+## Syntax
+```bash
+routes/
+├── blog/
+│   ├── index.nexy          →  /blog
+│   └── [slug].nexy         →  /blog/{slug}
+└── users/
+    └── [userId].py         →  /users/{userId}
+```
+---
+
+## Auf einer `.nexy` Seite
+
+Der Parameter ist über die Frontmatter-Eigenschaften verfügbar:
+```
+---
+slug: prop[str]
+---
+<h1>Article: {{ slug }}</h1>
+```
+---
+
+## In einem `.py`-Handler
+```python
+# routes/users/[userId].py
+from fastapi import Request
+
+async def get(request: Request, userId: int):
+    return {"user_id": userId}
+```
+Typen werden automatisch konvertiert (`int`, `str`, `UUID` usw.).
+
+---
+
+## Mehrere Parameter
+```bash
+routes/
+└── blog/
+    └── [year]/[month]/[slug].nexy
+```
+```nexy
+---
+year: prop[int]
+month: prop[int]
+slug: prop[str]
+---
+<article>
+    <time>{{ year }}-{{ month }}</time>
+    <h1>{{ slug | replace("-", " ") }}</h1>
+</article>
+```
+---
+
+## Catch-all-Parameter
+```bash
+routes/
+└── docs/
+    └── [...path].nexy      →  /docs/{path+}
+```
+```nexy
+---
+path: prop[list[str]]
+---
+<pre>{{ path | join("/") }}</pre>
+```
+Die Variable `path` empfängt **alle** verbleibenden URL-Segmente als Liste.
+<Link href="/docs/fbrouters/query_parameters">Next: Query Parameters →</Link>

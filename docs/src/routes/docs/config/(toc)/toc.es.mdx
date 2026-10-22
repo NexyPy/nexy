@@ -1,0 +1,53 @@
+# Tabla de contenidos
+
+Configure la tabla de contenido generada automáticamente para las páginas de Markdown.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTocDepth = "2-6"
+    useTocTitle = "Table of Contents"
+    useTocAuto = True
+```
+
+---
+
+## Campos
+
+| Campo | Tipo | Predeterminado | Descripción |
+|-------|------|---------|-------------|
+| `useTocDepth` | `str` | `"2-6"` | Niveles de encabezado a incluir (por ejemplo, `"2-4"` para h2 a h4). |
+| `useTocTitle` | `str` | `"On this page"` | Título que se muestra encima del TOC. |
+| `useTocAuto` | `bool` | `True` | Generar automáticamente TOC para `.mdx` páginas. Establezca en `False` para deshabilitarlo. |
+
+---
+
+## Uso en plantillas
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc()
+---
+<aside class="toc">
+    {{ toc_html | safe }}
+</aside>
+```
+
+---
+
+## Profundidad personalizada
+
+```nexy
+---
+from nexy import useToc
+toc_html = useToc(depth_range="1-4")
+---
+```
+
+Incluya solo h3 a h5:
+
+```nexy
+toc_html = useToc(depth_range="3-5")
+```

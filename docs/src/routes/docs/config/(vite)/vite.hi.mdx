@@ -1,0 +1,45 @@
+# कॉन्फिग: विटे
+
+नेक्सी क्लाइंट-साइड बंडलिंग के लिए **Vite** के साथ एकीकृत होता है। कॉन्फ़िगरेशन `nexyconfig.py` और `vite.config.ts` में जाता है।
+
+## वाइट को सक्षम करना
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## वाइट कॉन्फ़िगरेशन फ़ील्ड
+
+| फ़ील्ड | प्रकार | डिफ़ॉल्ट | विवरण |
+|-------|------|------|----|
+| `useVite` | `bool` | `False` | वाइट बंडलिंग सक्षम करें. |
+| `useViteDevUrl` | `str \| None` | `None` | कस्टम वाइट देव सर्वर यूआरएल। `None` होने पर स्वतः पता लगाया गया। |
+
+## vite.config.ts
+
+Nexy `nx init` के दौरान प्रोजेक्ट रूट पर `vite.config.ts` उत्पन्न करता है। आप इसे किसी भी Vite प्रोजेक्ट की तरह कस्टमाइज़ कर सकते हैं:
+
+```ts
+import { defineConfig } from "vite";
+import react from ""@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: "__nexy__/client",
+    },
+});
+```
+
+## देव मोड
+
+जब `useVite = True`, `nx dev` यूविकॉर्न के साथ एक वाइट डेव सर्वर शुरू करता है। Nexy HMR स्क्रिप्ट को स्वचालित रूप से इंजेक्ट करता है।
+
+## उत्पादन
+
+`nx build` के दौरान, Vite `__nexy__/client/` में अनुकूलित बंडल तैयार करता है। नेक्सी मेनिफेस्ट को पढ़ता है और सही सीएसएस/जेएस टैग इंजेक्ट करता है।
+
+## इनलाइन मोड
+
+`NEXY_INLINE_CLIENT=1` को CSS/JS को सीधे HTML में इनलाइन करने के लिए सेट करें (ईमेल, एएमपी, या स्व-निहित पृष्ठों के लिए उपयोगी)।

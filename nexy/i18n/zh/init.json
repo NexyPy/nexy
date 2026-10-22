@@ -5,8 +5,7 @@
       "router": "您想使用基于文件的路由器吗？",
       "project_type": "选择项目类型",
       "client_component": "您想使用客户端组件吗？",
-      "framework": "选择客户端框架",
-      "tailwind": "您想使用 Tailwind CSS 吗？"
+      "framework": "选择客户端框架"
     },
     "choice": {
       "web": "Web (单体 Web 应用)",

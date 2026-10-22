@@ -1,0 +1,50 @@
+# 非同期と同時実行 (モジュール式)
+
+Nexy は、コントローラーで `async` と `def` の両方をサポートする FastAPI に基づいて構築されています。
+
+## `async def` 対 `def`
+
+|ハンドラーの種類 |実行 |いつ使用するか |
+|---------------|-----------|---------------|
+| `def` |スレッド プール (ブロッキング) | CPU の動作、DB 呼び出しの同期、I/O のブロック |
+| `async def` |イベントループ |非同期 DB、HTTP 呼び出し、ロングポーリング |
+
+## 非同期コントローラー
+
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+
+## 同期と非同期の混合
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/sync")
+class SyncController:
+    def GET(self):             # runs in thread pool
+        return {"type": "sync"}
+
+"@Controller("/async")
+class AsyncController:
+    async def GET(self):       # runs in event loop
+        return {"type": "async"}
+```
+
+## バックグラウンドタスク
+
+応答後のファイアアンドフォーゲット作業には、`BackgroundTasks` を使用します。真の非同期バックグラウンド作業の場合は、`asyncio.create_task` を使用します。
+
+## 注意事項
+
+- `await` を使用して `def` ハンドラーから `async` 関数を呼び出さないでください。`asyncio.run()` を使用するか、ハンドラーを `async def` にしてください。
+- `async def` からブロッキング関数 (`time.sleep()`、`requests.get()`) を呼び出さないでください。`asyncio.sleep()`、`httpx.AsyncClient` を使用してください。
+- 本番環境では、同期ハンドラーに複数のワーカーを使用します

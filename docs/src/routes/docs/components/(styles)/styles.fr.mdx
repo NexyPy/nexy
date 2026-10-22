@@ -1,0 +1,67 @@
+# Styles dans les fichiers .nexy
+
+Les modèles Nexy prennent en charge CSS de la même manière que HTML : via des balises `<style>`, des importations externes ou des frameworks utilitaires comme Tailwind.
+
+## Balise `<style>` en ligne
+
+Le moyen le plus direct d’ajouter des styles. Ajoutez un bloc `<style>` n'importe où dans la section modèle.
+
+```nexy
+---
+---
+<div class="card">
+  <slot />
+</div>
+
+<style>
+.card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+</style>
+```
+
+Les styles ne sont **pas limités** : ils s'appliquent globalement. Utilisez une convention de dénomination (BEM, classes utilitaires) ou des attributs de données pour éviter les collisions.
+
+## CSS externe via `__Import`
+
+Chaque fichier `.nexy` a `__Import` disponible automatiquement (injecté par le compilateur). Pour les fichiers CSS, il lit le fichier et l'enveloppe dans une balise `<style>` :
+
+```nexy
+---
+global_css = __Import("/styles/global.css", "", "")()
+---
+{{ global_css }}
+<div class="layout">...</div>
+```
+
+`__Import(path, framework, symbol)` prend trois arguments. Pour CSS, le 2ème et le 3ème ne sont pas utilisés : transmettez des chaînes vides. Le `()` final appelle immédiatement l'appelable renvoyé, produisant la chaîne `<style>...</style>`.
+
+## CSS Tailwind
+
+Nexy fonctionne avec Tailwind dès la sortie de la boîte. Les classes utilitaires dans les attributs de votre modèle sont traitées normalement :
+
+```nexy
+---
+padding:prop[str] = "p-4"
+---
+<div class="rounded-lg shadow-md {{ padding }}">
+  <slot />
+</div>
+```
+
+Configurez Tailwind dans `nexyconfig.py` ou `tailwind.config.*`.
+
+## Importations CSS via Vite
+
+Si Vite est activé (`useVite: true`), vous pouvez utiliser les instructions CSS `"@import` ou `import` standard dans vos composants frontend. Vite les traite via PostCSS, les modules CSS et tous les plugins configurés.
+
+## meilleures pratiques
+
+| Approche | Quand utiliser |
+|--------------|-------------|
+| `<style>` dans le modèle | Styles spécifiques aux composants, petits projets |
+| `__Import()` CSS externe | Partage de styles entre composants |
+| CSS vent arrière | Conception axée sur l'utilité, prototypage rapide |
+| Pipeline CSS Vite | Chaîne d'outils de construction complète, modules CSS, PostCSS |

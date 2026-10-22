@@ -1,0 +1,193 @@
+# Module
+
+Module gruppieren verwandte Controller, Anbieter und Untermodule zu einer zusammenhängenden Einheit. Jede modulare App verfügt über ein Stammmodul, das Funktionsmodule importiert.
+
+## Warum Module?
+
+Ohne Module würden Sie jeden Controller und Anbieter in einer flachen Liste registrieren. Wenn die App wächst, wird diese Liste unüberschaubar – 50 Anbieter ohne klare Eigentümerschaft.
+
+Module stellen Grenzen wieder her: `UsersModule` besitzt `UsersController` und `UserService`. Jedes Modul ist eine in sich geschlossene Einheit.
+
+## Root-Modul
+
+Jede App benötigt ein Root-Modul. Auf das Root-Modul wird in `nexyconfig.py` verwiesen:
+
+```python
+# src/apps/app_module.py
+from nexy.decorators import Module
+from src.app.users.users_module import UsersModule
+from src.app.blog.blog_module import BlogModule
+
+"@Module()
+class AppModule:
+    controllers = [AppController]
+    imports = [UsersModule, BlogModule]
+```
+
+Der `"@Module`-Dekorator erstellt aus der Klasse eine FastAPI `APIRouter`. Es liest drei Klassenattribute:
+
+| Attribut | Geben Sie | ein Beschreibung |
+|-----------|------|-------------|
+| `controllers` | `list[type]` | Zu registrierende Controller-Klassen |
+| `imports` | `list[APIRouter]` | Untermodule (von `"@Module`) sollen | enthalten
+| `providers` | `list[type]` | Injizierbare Klassen zur Registrierung im Container |
+| `exports` | `list[type]` | Für importierende Module sichtbare Anbieter |
+
+**Gotcha**: `"@Module()` requires at least one controller. Eine leere `controllers`-Liste löst `ValueError` aus.
+
+## Funktionsmodule
+
+Funktionsmodule kapseln eine Domäne:
+
+```python
+# src/modules/users/users_module.py
+from nexy.decorators import Module
+from .users_controller import UsersController
+from .users_service import UserService
+
+"@Module()
+class UsersModule:
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+Importieren Sie es in das Root-Modul:
+
+```python
+"@Module()
+class AppModule:
+    imports = [UsersModule]
+    controllers = [AppController]
+```
+
+### Modulpräfix
+
+Legen Sie ein Präfix fest, das für alle Routen im Modul gilt:
+
+```python
+"@Module(prefix="/api/v1")
+class UsersModule:
+    controllers = [UsersController]
+    # All routes are prefixed with /api/v1
+```
+
+Controller-Präfixe sind RELATIV zum Modul-Präfix. Wenn `"@Module(prefix="/users")` und `"@Controller("/{id}")`, ist der effektive Pfad `/users/{id}`.
+
+## Anbieterregistrierung
+
+Anbieter müssen in einem Modul registriert sein, um für die Injektion verfügbar zu sein:
+
+```python
+from nexy.decorators import Module, Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str):
+        ...
+
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+
+# Import in another module to make DatabaseService available
+"@Module()
+class UsersModule:
+    imports = [DatabaseModule]
+    controllers = [UsersController]
+    providers = [UserService]
+```
+
+`DatabaseService` wird beim Start aufgelöst, wenn das Modul geladen wird. Wenn die Abhängigkeiten eines Anbieters nicht aufgelöst werden können, wird der Fehler sofort ausgelöst – nicht zum Zeitpunkt der Anforderung.
+
+### Exporte
+
+Das Attribut `exports` steuert, welche Anbieter für importierende Module sichtbar sind:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService, ConnectionPool]
+    exports = [DatabaseService]  # Only DatabaseService is visible outside
+```
+
+Ohne `exports` sind KEINE Anbieter für importierende Module sichtbar. Dies ist beabsichtigt – es zwingt Sie dazu, die öffentliche API Ihres Moduls explizit zu deklarieren.
+
+## Gemeinsam genutzte Module
+
+Module sind Singletons. Beim Importieren desselben Moduls an mehreren Orten werden dieselben Anbieterinstanzen verwendet:
+
+```python
+"@Module()
+class DatabaseModule:
+    providers = [DatabaseService]
+    exports = [DatabaseService]
+
+# Both modules share the same DatabaseService singleton
+"@Module(imports=[DatabaseModule])
+class UsersModule:
+    ...
+
+"@Module(imports=[DatabaseModule])
+class OrdersModule:
+    ...
+```
+
+Auf diese Weise teilen Sie eine Datenbankverbindung in Ihrer gesamten App.
+
+## Projektstruktur
+
+Ein typisches modulares Projekt folgt dieser Konvention:
+
+```
+src/
+├── apps/
+│   └── app_module.py              ← Root module
+├── modules/
+│   ├── users/
+│   │   ├── __init__.py
+│   │   ├── users_module.py
+│   │   ├── users_controller.py
+│   │   └── users_service.py
+│   └── auth/
+│       ├── __init__.py
+│       ├── auth_module.py
+│       ├── auth_controller.py
+│       ├── auth_service.py
+│       └── auth_guard.py
+└── common/
+    ├── __init__.py
+    ├── database_service.py
+    └── logger_service.py
+```
+
+Diese Struktur lässt sich auf Hunderte von Modulen skalieren. Jedes Modulverzeichnis ist in sich geschlossen.
+
+## Modulauflösung
+
+Die Modulauflösung folgt drei Regeln:
+
+1. **Topologische Sortierung** – Module werden in Abhängigkeitsreihenfolge initialisiert (Importe zuerst)
+2. **Zirkuläre Erkennung** – zirkuläre Abhängigkeiten zwischen Modulen erhöhen beim Start `RecursionError`
+3. **Anbieterumfang** – Anbieter behalten ihren ursprünglichen Umfang, unabhängig davon, welches Modul sie importiert
+
+Wenn Modul A Modul B importiert und Modul B Modul A importiert, erkennt der Container den Zyklus beim Start:
+
+```
+RecursionError: Cycle detected for ModuleA
+```
+
+**Warum das wichtig ist**: Zirkuläre Abhängigkeiten weisen oft auf ein Designproblem hin. Extrahieren Sie die gemeinsame Abhängigkeit in ein drittes Modul.
+
+## Best Practices
+
+1. **Eine Funktion pro Modul** – Benutzer, Authentifizierung, Abrechnung. Keine „Utils“.
+2. **Modulimporte flach halten** – ein Modul, das mehr als 10 andere importiert, leistet zu viel
+3. **Verwenden Sie `exports` absichtlich** – exportieren Sie nur das, was andere Module wirklich benötigen
+4. **Module nach Domänen benennen** – `UsersModule`, `OrdersModule`, `PaymentsModule`
+5. **Geben Sie bei der Versionierung immer `prefix` an** – `"@Module(prefix="/api/v1")`
+
+## Nächste Schritte
+
+- [Guards](/docs/modular/guards) – Modulrouten schützen
+- [Middleware](/docs/modular/middleware) – Pipeline-Hooks anfordern
+- [Controllers](/docs/modular/controllers) – Routenhandler definieren

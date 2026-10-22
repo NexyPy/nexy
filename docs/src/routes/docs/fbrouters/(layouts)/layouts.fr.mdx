@@ -1,0 +1,72 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Mises en page
+
+Une mise en page est un fichier `layout.nexy` qui enveloppe toutes les pages de son répertoire. Cela évite de répéter le même en-tête, barre latérale ou pied de page sur chaque page.
+
+---
+
+## Comment ça marche
+
+Placez `layout.nexy` dans un répertoire `routes/`. Nexy l'applique automatiquement à toutes les pages sœurs (sans créer lui-même de parcours) :
+```bash
+routes/
+├── layout.nexy           ← Applied to / and /about
+├── index.nexy
+├── about.nexy
+└── blog/
+    ├── layout.nexy       ← Applied to /blog/...
+    ├── index.nexy
+    └── [slug].nexy
+```
+---
+
+## Syntaxe
+
+La mise en page reçoit son contenu enfant via `children:prop[str]` :
+```
+---
+children: prop[str]
+---
+<header class="site-header">
+    <nav>...</nav>
+</header>
+<main>
+    {{ children | safe }}
+</main>
+<footer>...</footer>
+```
+---
+
+## Mises en page imbriquées
+
+Les mises en page s'imbriquent hiérarchiquement. Une page à `blog/[slug].nexy` reçoit `blog/layout.nexy` en premier, puis la racine `layout.nexy` :
+```bash
+routes/
+├── layout.nexy           ← Global layout (header, footer)
+└── blog/
+    ├── layout.nexy       ← Blog layout (category sidebar)
+    └── [slug].nexy       ← Page → blog/layout → root/layout
+```
+---
+
+## Exemple concret
+
+La mise en page de ces documents (`src/routes/docs/layout.nexy`) utilise `usePathname`, `Sidebar` et `Table_of_contents` :
+```python
+from nexy import usePathname
+from "@components/docs/sidebar.nexy" import Sidebar
+from "@components/docs/table_of_contents.nexy" import Table_of_contents
+```
+```html
+<main>
+    <Sidebar />
+    <aside>{{ children | safe }}</aside>
+    <Table_of_contents />
+</main>
+```
+<Link href="/docs/fbrouters/dependencies">Next: Dependencies →</Link>

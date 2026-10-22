@@ -1,0 +1,26 @@
+#SQLite
+
+SQLite é o banco de dados padrão para desenvolvimento Nexy – configuração zero, baseado em arquivo, perfeito para prototipagem.
+
+## Conexão
+
+Padrão: `sqlite:///dev.db`
+
+```python
+DATABASE_URL = "sqlite:///dev.db"
+```
+
+## Com ORMs
+
+| ORM | Motorista | Cadeia de conexão |
+|-----|--------|------------------|
+| SQLModel/SQLAlchemy | `aiosqlite` | `sqlite+aiosqlite:///dev.db` |
+| Tartaruga-ORM | `aiosqlite` | `sqlite://dev.db` |
+
+## Limitações
+
+- Sem gravações simultâneas (não adequado para produção de alto tráfego)
+- Sem gerenciamento de usuários ou permissões
+- Limitado a um único arquivo
+
+SQLite é ótimo para desenvolvimento e pequenos projetos. Mude para PostgreSQL para produção.

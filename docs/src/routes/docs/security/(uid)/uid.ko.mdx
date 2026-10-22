@@ -1,0 +1,52 @@
+# UID
+
+Nexy는 전용 UID 생성기를 제공하지 않습니다. Python의 표준 라이브러리는 대부분의 사용 사례를 포괄합니다.
+
+## UUID(stdlib)
+
+```python
+import uuid
+
+uuid.uuid4()          # Random UUID → "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+uuid.uuid4().hex      # Without dashes → "f47ac10b58cc4372a5670e02b2c3d479"
+uuid.uuid7()          # Time-ordered (Python 3.14+) → "018f3a6e-1b3c-7b00-a567-0e02b2c3d479"
+```
+
+## 비밀(stdlib, URL 안전)
+
+```python
+import secrets
+
+secrets.token_hex(16)    # → "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+secrets.token_urlsafe(8) # → "xYZabcDE_fg"
+```
+
+## NanoID(타사)
+
+```bash
+pip install nanoid
+```
+
+```python
+from nanoid import generate
+
+generate()          # → "V1StGXR8_Z5jdHi6B-myT"
+generate(size=21)   # default length
+```
+
+## 데이터베이스 자동 생성 ID
+
+| DB | 유형 | 자동 |
+|----|------|------|
+| 포스트그레SQL | `UUID` 또는 `SERIAL` | `gen_random_uuid()` 또는 `SERIAL` |
+| SQLite | `INTEGER PRIMARY KEY` | 자동 증가 |
+| MySQL | `INT AUTO_INCREMENT` 또는 `UUID` | `AUTO_INCREMENT` 또는 `UUID()` |
+
+## 언제 무엇을 사용할 것인가
+
+| 사용 사례 | 솔루션 |
+|------------|----------|
+| 데이터베이스 기본 키 | DB 자동 증가 또는 `uuid.uuid4()` |
+| 공개 ID(사용자, 게시물) | `secrets.token_urlsafe()` or NanoID |
+| 세션/API 토큰 | `secrets.token_hex()` |
+| 주문 ID | `uuid.uuid7()`(Python 3.14+) 또는 ULID |

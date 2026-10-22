@@ -1,0 +1,33 @@
+# 模板类
+
+`Template` 类处理在 Nexy 中渲染 Jinja2 和 Markdown 模板。
+
+## 导入
+
+直接从`nexy`导入：
+
+```python
+from nexy import Template
+```
+
+## 基本用法
+
+```python
+template = Template()
+html = template.render("page.html", {"title": "Hello World"})
+```
+
+## Markdown 支持
+
+如果你的文件以 `.md` 结尾，它将被自动处理为 Markdown：
+
+```python
+template = Template()
+html = template.render("blog-post.md", {})
+```
+
+## 方法
+
+|方法|参数|返回|描述 |
+|--------|------------|---------|------------|
+| `render` | `path: str`、`context: dict[str, Any] \| None = None` | `str` |渲染模板 |

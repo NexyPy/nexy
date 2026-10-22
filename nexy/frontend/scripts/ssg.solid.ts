@@ -2,11 +2,10 @@ import { glob } from 'glob'
 import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
-import os from 'os'
 import esbuild from 'esbuild'
 import {
   detectTsxFramework,
-  extractPropPaths,
+  createPropExtractor,
   createJinjaProps,
   restoreJinjaVars,
   isComponent,
@@ -15,6 +14,8 @@ import {
   saveSnippets,
   writeComponent,
   getEntryId,
+  globIgnore,
+  mapPool,
   type SSGResult,
   c
 } from './utils'
@@ -24,7 +25,7 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
   const manifest = getManifest()
   const allFiles = glob.sync('**/*.{tsx,jsx}', {
     cwd: process.cwd(),
-    ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
+    ignore: globIgnore()
   })
   const files = options?.primary
     ? allFiles
@@ -36,56 +37,61 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
   fs.mkdirSync(tempDir, { recursive: true })
 
   const modules = new Map<string, Record<string, any>>()
-  let idx = 0
 
-  const worker = async () => {
-    while (idx < files.length) {
-      const i = idx++
-      const file = files[i]
-      const outFile = path.join(tempDir, `_c${i}.mjs`)
-      try {
-        await esbuild.build({
-          entryPoints: { [`_c${i}`]: path.resolve(process.cwd(), file) },
-          outdir: tempDir,
-          bundle: true,
-          format: 'esm',
-          platform: 'node',
-          jsx: 'automatic',
-          jsxImportSource: 'solid-js',
-          external: ['solid-js', 'solid-js/web', 'solid-js/store'],
-          logLevel: 'silent',
-          outExtension: { '.js': '.mjs' },
-        })
-        if (fs.existsSync(outFile)) {
-          const mod = await import(`${pathToFileURL(outFile).href}?t=${Date.now()}`)
-          modules.set(file, mod)
-        }
-      } catch (e) {
-        const errMsg = e instanceof Error ? e.message : String(e)
-        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, no server HTML (client bundle only)${c.reset}`)
-      }
-    }
+  const entryPoints: Record<string, string> = {}
+  for (const [i, file] of files.entries()) {
+    entryPoints[`_c${i}`] = path.resolve(process.cwd(), file)
   }
 
-  const concurrency = Math.min(os.cpus().length, files.length)
-  await Promise.all(Array.from({ length: concurrency }, () => worker()))
+  try {
+    await esbuild.build({
+      entryPoints,
+      outdir: tempDir,
+      bundle: true,
+      format: 'esm',
+      platform: 'node',
+      jsx: 'automatic',
+      jsxImportSource: 'solid-js',
+      external: ['solid-js', 'solid-js/web', 'solid-js/store'],
+      logLevel: 'silent',
+      outExtension: { '.js': '.mjs' },
+    })
+  } catch (e) {
+    const errMsg = e instanceof Error ? e.message : String(e)
+    console.warn(`${c.yellow}⚠ client-only: ${errMsg} - some files may lack server HTML (client bundle only)${c.reset}`)
+  }
+
+  for (const [i, file] of files.entries()) {
+    const outFile = path.join(tempDir, `_c${i}.mjs`)
+    try {
+      if (fs.existsSync(outFile)) {
+        const mod = await import(`${pathToFileURL(outFile).href}?t=${Date.now()}`)
+        modules.set(file, mod)
+      }
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : String(e)
+      console.warn(`${c.yellow}⚠ client-only: ${file} - ${errMsg}, no server HTML (client bundle only)${c.reset}`)
+    }
+  }
 
   fs.rmSync(tempDir, { recursive: true, force: true })
 
   const snippets: Record<string, string> = {}
 
-  for (const file of files) {
+  const getPropPaths = createPropExtractor(files.map(f => path.resolve(process.cwd(), f)))
+
+  const processFile = async (file: string) => {
     const relativeDir = path.dirname(file)
     const ext = path.extname(file)
     const fileName = path.basename(file, ext)
 
-    const propPaths = extractPropPaths(path.resolve(process.cwd(), file))
+    const propPaths = getPropPaths(path.resolve(process.cwd(), file))
     const jinjaProps = createJinjaProps(propPaths)
 
     const mod = modules.get(file)
     if (!mod) {
       result.entries.push({ file, component: '*', status: 'not_supported' })
-      continue
+      return
     }
 
     let hasComponent = false
@@ -104,7 +110,7 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
         result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'success' })
       } catch (e) {
         const errMsg = e instanceof Error ? e.message : String(e)
-        console.warn(`${c.yellow}⚠ client-only: ${file} — ${errMsg}, using client placeholder (no server HTML)${c.reset}`)
+        console.warn(`${c.yellow}⚠ client-only: ${file} - ${errMsg}, using client placeholder (no server HTML)${c.reset}`)
         const { css } = getAssetTags(manifest, fileName)
         writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
         result.entries.push({ file, component: exportName === 'default' ? 'Default' : exportName, status: 'not_supported' })
@@ -114,6 +120,8 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
       result.entries.push({ file, component: '*', status: 'not_supported' })
     }
   }
+
+  await mapPool(files, processFile)
 
   saveSnippets(snippets)
   return result

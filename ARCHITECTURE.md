@@ -5,7 +5,7 @@
 Nexy is a full-stack Python meta-framework that bridges FastAPI backends with
 Vite-powered frontends (React, Vue, Svelte, Solid, Preact). It compiles `.nexy`
 components at runtime through a Virtual File System (VFS), and a file watcher
-triggers clean uvicorn restarts — no importlib hacks, no stale modules.
+triggers clean uvicorn restarts - no importlib hacks, no stale modules.
 
 ## System diagram
 
@@ -132,7 +132,7 @@ nexy/
 ### Virtual File System (VFS)
 
 In-memory singleton storing compiled `.py` and `.html` files.
-Survives across uvicorn restarts — always has fresh compiled content.
+Survives across uvicorn restarts - always has fresh compiled content.
 
 - **NexyVFSFinder** (PEP 302): intercepts `__nexy__.*` imports
 - **NexyVFSLoader**: loads from VFS instead of disk
@@ -152,11 +152,11 @@ flowchart LR
     H --> I[VFS: .py + .html]
 ```
 
-1. **Scanner** — extracts `---` frontmatter delimiter
-2. **Sanitizer** — rewrites framework-specific syntax (vue ↔ react ↔ nexy)
-3. **TemplateParser** — HTML to AST, validates component references, excludes built-in `Slot`
-4. **LogicParser** — compiles Python frontmatter to Jinja2 expressions
-5. **Generator** — produces `__nexy__/*.py` and `__nexy__/*.html` in VFS
+1. **Scanner** - extracts `---` frontmatter delimiter
+2. **Sanitizer** - rewrites framework-specific syntax (vue ↔ react ↔ nexy)
+3. **TemplateParser** - HTML to AST, validates component references, excludes built-in `Slot`
+4. **LogicParser** - compiles Python frontmatter to Jinja2 expressions
+5. **Generator** - produces `__nexy__/*.py` and `__nexy__/*.html` in VFS
 
 ### Routing
 
@@ -178,7 +178,7 @@ Decorator-based routing with dependency injection (`@Injectable`, `@Controller`,
 | Custom watcher > uvicorn --reload | Fine-grained control, debouncing, Vite coordination |
 | sys.modules clearing | Fresh module state on every restart |
 | Pydantic for config | Type safety, IDE autocomplete, schema gen |
-| Slot as built-in component | No import needed in .nexy — always available |
+| Slot as built-in component | No import needed in .nexy - always available |
 
 ## Performance
 
