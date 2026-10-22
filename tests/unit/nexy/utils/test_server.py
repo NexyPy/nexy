@@ -102,36 +102,27 @@ def test_detect_pm_returns_two_element_tuple() -> None:
     assert isinstance(binary, str) and isinstance(is_npm, bool)
 
 
-def test_wait_for_vite_ready_uses_https_when_ssl() -> None:
-    captured: list[str] = []
+def test_wait_for_vite_ready_connects_to_specified_port() -> None:
+    probed: list[tuple[str, int]] = []
 
-    def _fake_urlopen(url: str, timeout: int = 0) -> MagicMock:
-        del timeout
-        captured.append(url)
-        handle = MagicMock()
-        handle.__enter__.return_value = handle
-        return handle
+    def _capture(address: tuple[str, int], timeout: float | None = None) -> MagicMock:
+        del timeout  # signature must match socket.create_connection callers
+        probed.append(address)
+        return MagicMock()
 
-    with patch("urllib.request.urlopen", side_effect=_fake_urlopen):
-        Server.wait_for_vite_ready(5173, ssl=True)
-
-    assert captured[0].startswith("https://")
-
-
-def test_wait_for_vite_ready_returns_true_on_first_success() -> None:
-    handle = MagicMock()
-    handle.__enter__.return_value = handle
-
-    with patch("urllib.request.urlopen", return_value=handle) as mock_urlopen:
+    with (
+        patch("socket.create_connection", side_effect=_capture),
+        patch.object(server_module.time, "sleep"),
+    ):
         ready = Server.wait_for_vite_ready(5173, timeout=1)
 
     assert ready is True
-    mock_urlopen.assert_called_once()
+    assert probed[0][1] == 5173
 
 
 def test_wait_for_vite_ready_returns_false_when_never_ready() -> None:
     with (
-        patch("urllib.request.urlopen", side_effect=OSError),
+        patch("socket.create_connection", side_effect=OSError),
         patch.object(server_module.time, "sleep"),
     ):
         ready = Server.wait_for_vite_ready(5173, timeout=0.3)

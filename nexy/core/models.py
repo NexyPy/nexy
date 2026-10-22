@@ -194,7 +194,7 @@ class NexyConfigModel:
     useAliases: dict[str, str] | None = None
     useRouter: APIRouter | None = None
     usePort: int = 3000
-    useHost: str = "0.0.0.0"
+    useHost: str = "0.0.0.0"  # nosec B104 - deliberate dev default, see SECURITY.md
     useTitle: str = "Nexy"
     useDocsUrl: str = "/docs"
     useRedocsUrl: str | None = "/redocs"

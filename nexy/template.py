@@ -68,6 +68,9 @@ def _get_shared_env() -> Environment:
         env = Environment(
             loader=NexyTemplateLoader(),
             auto_reload=True,
+            # nosec B701 - Nexy templates are the project's own server-side
+            # HTML (see SECURITY.md); autoescape would double-escape
+            # hand-written HTML props such as {{ children }}.
         )
         env.globals["trans"] = lambda key, default=None: trans(
             key, default=default, locale=current_locale.get()

@@ -35,13 +35,13 @@ def _detect_locale() -> str:
         loc = _py_locale.getdefaultlocale()[0]
         if loc:
             return _normalize(loc)
-    except Exception:
+    except (OSError, ValueError):
         pass
     try:
         loc = _py_locale.getlocale()[0]
         if loc:
             return _normalize(loc)
-    except Exception:
+    except (OSError, ValueError):
         pass
     return FALLBACK_LOCALE
 
@@ -70,7 +70,7 @@ def _load_locale(locale: str) -> dict[str, Any]:
             try:
                 with pack.open("r", encoding="utf-8") as f:
                     data = _deep_merge(data, json.load(f))
-            except Exception:
+            except (OSError, json.JSONDecodeError, UnicodeError):
                 continue
     return data
 

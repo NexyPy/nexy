@@ -2,7 +2,7 @@
 
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 from contextlib import suppress
 from pathlib import Path
@@ -203,13 +203,16 @@ def init_git(dest: Path) -> None:
     gitignore = dest / ".gitignore"
     if not gitignore.exists():
         gitignore.write_text(_GITIGNORE_CONTENT)
-    with suppress(Exception):
+    git_exe = shutil.which("git")
+    if not git_exe:
+        return
+    with suppress(OSError, subprocess.SubprocessError):
         subprocess.run(
-            ["git", "init"],
+            [git_exe, "init"],
             cwd=dest,
             check=True,
             capture_output=True,
-        )
+        )  # nosec B603/B607 - resolved via shutil.which, fixed argv
 
 
 def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
@@ -227,18 +230,19 @@ def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
         spinner="dots",
     ):
         if tool == "aerich":
+            uv_exe = shutil.which("uv") or "uv"
             subprocess.run(
-                ["uv", "run", tool, "init", "-t", "src.configs.db.TORTOISE_ORM"],
+                [uv_exe, "run", tool, "init", "-t", "src.configs.db.TORTOISE_ORM"],
                 cwd=dest,
                 capture_output=True,
-            )
+            )  # nosec B603/B607
             return
-
+        uv_exe = shutil.which("uv") or "uv"
         subprocess.run(
-            ["uv", "run", tool, "init", tool],
+            [uv_exe, "run", tool, "init", tool],
             cwd=dest,
             capture_output=True,
-        )
+        )  # nosec B603/B607
         alembic_dir = dest / "alembic"
         if alembic_dir.exists():
             _render_alembic_env(alembic_dir, orm)
@@ -248,7 +252,9 @@ def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
 
 def _render_alembic_env(alembic_dir: Path, orm: str) -> None:
     loader = FileSystemLoader(str(TEMPLATES_DIR / "alembic"))
-    env = Environment(loader=loader)
+    # Renders a Python code template (env.py), not HTML; autoescaping
+    # here would corrupt the generated Python. See SECURITY.md.
+    env = Environment(loader=loader)  # nosec B701
     env_path = alembic_dir / "env.py"
     env_path.write_text(env.get_template("env.py.jinja2").render(orm=orm))
 

@@ -41,7 +41,7 @@ class Config:
     useFF: FrontendFramework | list[FrontendFramework] | None = None
     useRouter: Any = None
     usePort: int = 3000
-    useHost: str = "0.0.0.0"
+    useHost: str = "0.0.0.0"  # nosec B104 - deliberate dev default, see SECURITY.md
     useTitle: str = "Nexy App"
     useDocs: bool = True
     useVite: bool = True

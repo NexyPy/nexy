@@ -1,5 +1,5 @@
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
@@ -46,7 +46,7 @@ def _format_python(root: Path, check: bool) -> int:
         args.append("--check")
     args.extend(files)
     with console.status("  ruff format ..."):
-        r = subprocess.run(args, capture_output=True, text=True)
+        r = subprocess.run(args, capture_output=True, text=True)  # nosec B603
     print_cmd_result("ruff format", r)
     return 0 if r.returncode == 0 else 1
 
@@ -63,7 +63,7 @@ def _format_ts(root: Path, check: bool) -> int:
         return 0
     args = [exe, "--check" if check else "--write", *files]
     with console.status("  prettier ..."):
-        r = subprocess.run(args, capture_output=True, text=True)
+        r = subprocess.run(args, capture_output=True, text=True)  # nosec B603
     print_cmd_result("prettier", r)
     return 0 if r.returncode == 0 else 1
 
@@ -108,7 +108,7 @@ def _format_logic_block(path: Path, logic: str, ruff_exe: str | None) -> str:
         input=logic,
         capture_output=True,
         text=True,
-    )
+    )  # nosec B603
     if r.returncode == 0:
         return r.stdout
     detail = r.stderr.strip().splitlines()
@@ -125,7 +125,7 @@ def _format_template_block(path: Path, template: str, prettier_exe: str | None) 
         input=template,
         capture_output=True,
         text=True,
-    )
+    )  # nosec B603
     if r.returncode == 0:
         return r.stdout
     if r.stderr:

@@ -1,7 +1,7 @@
 import os
 import shutil
 import stat
-import subprocess
+import subprocess  # nosec B404
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -46,7 +46,7 @@ class GitClone:
                         capture_output=True,
                         text=True,
                         check=True,
-                    )
+                    )  # nosec B603 - fixed git argv, repo URL from user's own template choice
                 except subprocess.CalledProcessError as e:
                     if "fetch" in cmd and e.returncode == 128:
                         raise Exception(
@@ -68,7 +68,7 @@ class GitClone:
                         capture_output=True,
                         text=True,
                         check=True,
-                    )
+                    )  # nosec B603 - fixed git argv, path from the template manifest
                 except subprocess.CalledProcessError as e:
                     raise Exception(
                         t(
@@ -97,7 +97,7 @@ class GitClone:
                             capture_output=True,
                             text=True,
                             check=True,
-                        )
+                        )  # nosec B603 - fixed git argv
                     except subprocess.CalledProcessError as e:
                         raise Exception(
                             t(
@@ -223,5 +223,8 @@ class GitClone:
                 try:
                     shutil.copytree(backup, gitdir, dirs_exist_ok=True)
                     shutil.rmtree(backup, onerror=on_rm_error)
-                except Exception:
-                    pass
+                except (OSError, shutil.Error):
+                    # Backup restore is best-effort: the destination .git stays
+                    # untouched, so a failed restore cannot corrupt the project.
+                    warn = t("init.git_restore", "could not restore previous .git")
+                    console.print(f"  [yellow]\u26a0[/yellow] {warn}")
