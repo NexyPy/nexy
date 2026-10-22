@@ -1,0 +1,73 @@
+# 固体
+
+将固体添加到您的`nexyconfig.py`：
+
+```python
+from nexy.frontend import solid
+
+class NexyConfig(NexyConfigModel):
+    useFF = [solid()]
+```
+
+---
+
+## 创建组件
+
+带有 `.tsx` 或 `.jsx` 扩展名的文件与 Solid 使用信号一起用于状态：
+
+```tsx
+// src/components/Counter.tsx
+import { createSignal } from 'solid-js'
+
+export default function Counter({ initial = 0 }) {
+  const [count, setCount] = createSignal(initial)
+  return (
+    <div>
+      <p>Count: {count()}</p>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+    </div>
+  )
+}
+```
+
+---
+
+## 在 .nexy 页面中使用
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Props 通过 Jinja2 `{{ }}` 语法传递 - 对 JSON 值使用双括号。
+
+---
+
+## 儿童/老虎机内容
+
+Nexy 将子内容作为 `children` 属性传递：
+
+```tsx
+export default function Card(props) {
+  return (
+    <div class="card">
+      <h2>{props.title}</h2>
+      <div>{props.children}</div>
+    </div>
+  )
+}
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as children</p>
+</Card>
+```
+
+---
+
+## 服务端SR
+
+Solid 在 SSR 中使用 `renderToString`，在客户端上使用 `hydrate` 进行水合。

@@ -1,0 +1,72 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 레이아웃
+
+레이아웃은 해당 디렉토리의 모든 페이지를 래핑하는 `layout.nexy` 파일입니다. 모든 페이지에서 동일한 머리글, 사이드바 또는 바닥글이 반복되는 것을 방지합니다.
+
+---
+
+## 작동 방식
+
+`layout.nexy`를 `routes/` 디렉터리에 넣습니다. Nexy는 경로 자체를 만들지 않고 모든 형제 페이지에 자동으로 적용합니다.
+```bash
+routes/
+├── layout.nexy           ← Applied to / and /about
+├── index.nexy
+├── about.nexy
+└── blog/
+    ├── layout.nexy       ← Applied to /blog/...
+    ├── index.nexy
+    └── [slug].nexy
+```
+---
+
+## 구문
+
+레이아웃은 `children:prop[str]`를 통해 하위 콘텐츠를 받습니다.
+```
+---
+children: prop[str]
+---
+<header class="site-header">
+    <nav>...</nav>
+</header>
+<main>
+    {{ children | safe }}
+</main>
+<footer>...</footer>
+```
+---
+
+## 중첩 레이아웃
+
+레이아웃은 계층적으로 중첩됩니다. `blog/[slug].nexy`의 페이지는 먼저 `blog/layout.nexy`를 받은 다음 루트 `layout.nexy`를 받습니다.
+```bash
+routes/
+├── layout.nexy           ← Global layout (header, footer)
+└── blog/
+    ├── layout.nexy       ← Blog layout (category sidebar)
+    └── [slug].nexy       ← Page → blog/layout → root/layout
+```
+---
+
+## 실제 사례
+
+이 문서(`src/routes/docs/layout.nexy`)의 레이아웃은 `usePathname`, `Sidebar` 및 `Table_of_contents`를 사용합니다.
+```python
+from nexy import usePathname
+from "@components/docs/sidebar.nexy" import Sidebar
+from "@components/docs/table_of_contents.nexy" import Table_of_contents
+```
+```html
+<main>
+    <Sidebar />
+    <aside>{{ children | safe }}</aside>
+    <Table_of_contents />
+</main>
+```
+<Link href="/docs/fbrouters/dependencies">Next: Dependencies →</Link>

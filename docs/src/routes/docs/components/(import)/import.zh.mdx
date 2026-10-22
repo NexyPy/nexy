@@ -1,0 +1,41 @@
+# 导入助手
+
+`Import` 功能有助于在 Nexy 中导入不同类型的资产。
+
+## 导入
+
+直接从`nexy`导入：
+
+```nexy
+---
+from nexy import Import
+---
+```
+
+## 支持的资产
+
+`Import` 可以处理：
+- 客户端组件
+- JSON 文件
+- CSS 文件
+- 图片
+
+## 用法
+
+导入 JSON：
+```python
+from nexy import Import
+data = Import("data.json", "json", "default")
+```
+
+导入CSS：
+```python
+from nexy import Import
+styles = Import("styles.css", "css", "default")
+```
+
+导入图像：
+```python
+from nexy import Import
+img_src = Import("image.jpg", "image", "default")
+```

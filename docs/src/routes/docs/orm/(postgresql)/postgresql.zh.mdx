@@ -1,0 +1,26 @@
+# PostgreSQL
+
+PostgreSQL 是 Nexy 应用程序推荐的生产数据库。
+
+## 连接
+
+在项目的数据库配置中配置 PostgreSQL 连接：
+
+```python
+# configs/database.py or .env
+DATABASE_URL = "postgresql+asyncpg://user:password"@localhost:5432/mydb"
+```
+
+## 使用 ORM
+
+|对象关系管理 |司机 |连接字符串 |
+|-----|--------|--------------------|
+| SQL模型/SQLAlchemy | `asyncpg` | `postgresql+asyncpg://user:pass"@localhost/db` |
+|乌龟-ORM | `asyncpg` | `postgres://user:pass"@localhost/db` |
+
+## 为什么选择 PostgreSQL 和 Nexy
+
+- 通过 `asyncpg` 完全异步支持
+- 用于灵活模式的本机 JSON/JSONB 列
+- 非常适合生产部署
+- 适用于所有受支持的 ORM

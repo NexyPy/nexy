@@ -1,0 +1,75 @@
+# "@कार्रवाई
+
+पायथन फ़ंक्शन को ब्राउज़र से कॉल करने योग्य सर्वर एंडपॉइंट में बदलें - कोई राउटर पंजीकरण नहीं, कोई अनुरोध पार्सिंग नहीं।
+
+```python
+from nexy.decorators import Action
+
+"@Action
+def submit_comment(post_id: int, body: str) -> dict:
+    return {"status": "ok"}
+```
+
+---
+
+## हस्ताक्षर
+
+```python
+Action(func: Callable | None = None) -> Callable
+```
+
+कोष्ठक के साथ या उसके बिना प्रयोग किया जाता है:
+
+```python
+"@Action
+def fn(): ...
+
+"@Action()
+def fn(): ...
+```
+
+---
+
+## यह कैसे काम करता है
+
+1. फ़ंक्शन को `ActionsStore` में पंजीकृत करता है
+2. स्टार्टअप पर, `ActionEngine` सभी क्रियाओं का पता लगाता है और उन्हें `POST /_nx_{hash}` के रूप में माउंट करता है
+3. यूआरएल हैश = `sha256(func_name + "salt2026")[:12]` - प्रति परिनियोजन नियतात्मक
+4. JSON बॉडी से पार्स किए गए तर्क, नाम से इंजेक्ट किए गए
+5. वापसी मान JSON के रूप में क्रमबद्ध
+
+---
+
+## पैरामीटर प्रकार
+
+| प्रकार | स्रोत | उदाहरण |
+|------|--------|------|
+| `str`, `int`, `float`, `bool` | JSON बॉडी | `post_id: int` |
+| `list`, `dict` | JSON बॉडी | `tags: list[str]` |
+| पायडेंटिक मॉडल | JSON बॉडी (मान्य) | `data: CreateComment` |
+| `Request` | फास्टएपीआई इंजेक्शन | `request: Request` |
+
+---
+
+## रिटर्न प्रकार
+
+| वापसी | प्रतिक्रिया |
+|-------|-------|
+| `dict` | `JSONResponse` |
+| `list` | `JSONResponse` |
+| `str` | `PlainTextResponse` |
+| `int`, `float`, `bool` | `JSONResponse` |
+| `BaseModel` | `JSONResponse` |
+| `None` | `JSONResponse({"ok": True})` |
+
+---
+
+## सीमाएँ
+
+- केवल पोस्ट
+- केवल JSON बॉडी (कोई फॉर्म डेटा नहीं, मल्टीपार्ट)
+- हैश नमक हार्डकोडेड है - एक परिनियोजन के भीतर यूआरएल स्थिर है
+
+---
+
+उपयोग के उदाहरणों और क्लाइंट एकीकरण के लिए [Server Actions guide](/docs/guides/actions) देखें।

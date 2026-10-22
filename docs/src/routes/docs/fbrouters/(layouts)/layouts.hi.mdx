@@ -1,0 +1,72 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# लेआउट
+
+लेआउट एक `layout.nexy` फ़ाइल है जो अपनी निर्देशिका के सभी पृष्ठों को लपेटती है। यह प्रत्येक पृष्ठ पर एक ही शीर्षलेख, साइडबार या पादलेख को दोहराने से रोकता है।
+
+---
+
+## यह कैसे काम करता है
+
+`layout.nexy` को `routes/` निर्देशिका के अंदर रखें। नेक्सी इसे स्वचालित रूप से सभी सहोदर पृष्ठों पर लागू करता है (बिना कोई रूट बनाए):
+```bash
+routes/
+├── layout.nexy           ← Applied to / and /about
+├── index.nexy
+├── about.nexy
+└── blog/
+    ├── layout.nexy       ← Applied to /blog/...
+    ├── index.nexy
+    └── [slug].nexy
+```
+---
+
+## सिंटेक्स
+
+लेआउट अपनी चाइल्ड सामग्री `children:prop[str]` के माध्यम से प्राप्त करता है:
+```
+---
+children: prop[str]
+---
+<header class="site-header">
+    <nav>...</nav>
+</header>
+<main>
+    {{ children | safe }}
+</main>
+<footer>...</footer>
+```
+---
+
+## नेस्टेड लेआउट
+
+लेआउट पदानुक्रमिक रूप से घोंसला बनाते हैं। `blog/[slug].nexy` पर एक पृष्ठ पहले `blog/layout.nexy` प्राप्त करता है, फिर रूट `layout.nexy` प्राप्त करता है:
+```bash
+routes/
+├── layout.nexy           ← Global layout (header, footer)
+└── blog/
+    ├── layout.nexy       ← Blog layout (category sidebar)
+    └── [slug].nexy       ← Page → blog/layout → root/layout
+```
+---
+
+## वास्तविक दुनिया का उदाहरण
+
+इन दस्तावेज़ों के लिए लेआउट (`src/routes/docs/layout.nexy`) `usePathname`, `Sidebar`, और `Table_of_contents` का उपयोग करता है:
+```python
+from nexy import usePathname
+from "@components/docs/sidebar.nexy" import Sidebar
+from "@components/docs/table_of_contents.nexy" import Table_of_contents
+```
+```html
+<main>
+    <Sidebar />
+    <aside>{{ children | safe }}</aside>
+    <Table_of_contents />
+</main>
+```
+<Link href="/docs/fbrouters/dependencies">Next: Dependencies →</Link>

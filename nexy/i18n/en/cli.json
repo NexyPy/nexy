@@ -11,6 +11,9 @@
       "dev": "Start local development server with hot reload",
       "start": "Start production server",
       "build": "Compile project for production deployment",
+      "check": "Run type checking across all project files",
+      "format": "Auto-format all project files",
+      "test": "Run tests (--server / --client)",
       "migrate": "Run ORM migrations (auto-detects ORM)"
     },
     "new": {
@@ -20,7 +23,8 @@
       "error_chars": "Use only letters, numbers, hyphens, underscores.",
       "error_exists": "Directory '{name}' already exists.",
       "help_arg": "Name of the project to create (creates a new directory)",
-      "help_template": "Initialize from a registered template (silent clone)."
+      "help_template": "Initialize from a registered template (e.g. web-fbr-react).",
+      "template_unknown": "Unknown template '{template}'. Run 'nexy new --help' for available templates."
     }
   }
 }

@@ -1,0 +1,72 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Diseños
+
+Un diseño es un archivo `layout.nexy` que envuelve todas las páginas en su directorio. Evita repetir el mismo encabezado, barra lateral o pie de página en cada página.
+
+---
+
+## Cómo funciona
+
+Coloque `layout.nexy` dentro de un directorio `routes/`. Nexy lo aplica automáticamente a todas las páginas hermanas (sin crear una ruta):
+```bash
+routes/
+├── layout.nexy           ← Applied to / and /about
+├── index.nexy
+├── about.nexy
+└── blog/
+    ├── layout.nexy       ← Applied to /blog/...
+    ├── index.nexy
+    └── [slug].nexy
+```
+---
+
+## Sintaxis
+
+El diseño recibe su contenido secundario a través de `children:prop[str]`:
+```
+---
+children: prop[str]
+---
+<header class="site-header">
+    <nav>...</nav>
+</header>
+<main>
+    {{ children | safe }}
+</main>
+<footer>...</footer>
+```
+---
+
+## Diseños anidados
+
+Los diseños se anidan jerárquicamente. Una página en `blog/[slug].nexy` recibe `blog/layout.nexy` primero, luego la raíz `layout.nexy`:
+```bash
+routes/
+├── layout.nexy           ← Global layout (header, footer)
+└── blog/
+    ├── layout.nexy       ← Blog layout (category sidebar)
+    └── [slug].nexy       ← Page → blog/layout → root/layout
+```
+---
+
+## Ejemplo del mundo real
+
+El diseño de estos documentos (`src/routes/docs/layout.nexy`) utiliza `usePathname`, `Sidebar` y `Table_of_contents`:
+```python
+from nexy import usePathname
+from "@components/docs/sidebar.nexy" import Sidebar
+from "@components/docs/table_of_contents.nexy" import Table_of_contents
+```
+```html
+<main>
+    <Sidebar />
+    <aside>{{ children | safe }}</aside>
+    <Table_of_contents />
+</main>
+```
+<Link href="/docs/fbrouters/dependencies">Next: Dependencies →</Link>

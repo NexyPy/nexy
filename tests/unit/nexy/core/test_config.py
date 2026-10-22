@@ -1,4 +1,3 @@
-import pytest
 from nexy.core.config import Config
 
 
@@ -9,10 +8,11 @@ class TestConfigWatchExtensions:
         """Test that user-configured watch extensions are not overridden."""
         # When useWatchExtensions is set in nexyconfig, it should be preserved
         config = Config()
-        
+
         # The default WATCH_EXTENSIONS_GLOB should include route extensions
         if hasattr(config, "WATCH_EXTENSIONS_GLOB"):
             extensions = config.WATCH_EXTENSIONS_GLOB
             assert len(extensions) > 0, "Watch extensions should not be empty"
-            # Should include .nexy and .mdx
+            # Should include .nexy and .md
             assert any(".nexy" in ext for ext in extensions), ".nexy should be in watch extensions"
+            assert any(".md" in ext for ext in extensions), ".md should be in watch extensions"

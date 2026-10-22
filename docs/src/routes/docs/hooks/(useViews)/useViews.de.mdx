@@ -1,0 +1,65 @@
+# useViews
+
+Rendert eine Ansichtsvorlage (`.nexy`, `.mdx` oder Frontend-Komponente) mit einem bestimmten Kontext und gibt einen `HTMLResponse` zurück.
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## Parameter
+
+| Parameter | Geben Sie | ein Standard | Beschreibung |
+|-----------|------|---------|-------------|
+| `path` | `str` | erforderlich | Pfad zur Ansichtsdatei (relativ zum Projekt) |
+| `context` | `dict \| None` | `None` | An die Vorlage zu übergebende Variablen |
+
+---
+
+## Rückgabewert
+
+`HTMLResponse` – der gerenderte HTML-Code mit eingefügten Vite-Assets.
+
+---
+
+## Beispiel
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## Frontend-Komponenten
+
+Für die Ansichten `.tsx`, `.vue`, `.svelte` und `.jsx` gibt `useViews` einen hydrierbaren Behälter zurück:
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+Der Behälter enthält die Attribute `data-nexy-fw`, `data-nexy-path` und `data-nexy-props` für die clientseitige Flüssigkeitszufuhr.
+
+---
+
+## Unterstützte Erweiterungen
+
+| Erweiterung | Verhalten |
+|-----------|----------|
+| `.nexy` | Kompilierte Vorlage → gerendertes HTML |
+| `.mdx` | Markdown + Komponenten → gerendertes HTML |
+| `.tsx` | Hydratisierbarer Behälter (React/Solid/Preact) |
+| `.vue` | Hydrierbarer Behälter |
+| `.svelte` | Hydrierbarer Behälter |
+| `.jsx` | Hydrierbarer Behälter |

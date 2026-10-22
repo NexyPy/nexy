@@ -1,0 +1,61 @@
+# Atrás de um proxy
+
+Ao executar atrás de Nginx, Caddy, Cloudflare ou um balanceador de carga, configure o Nexy para confiar nos cabeçalhos encaminhados.
+
+## Cabeçalhos encaminhados
+
+```python
+# nexyconfig.py
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTrustedHost = {
+        "allowed_hosts": ["*"],
+    }
+```
+
+## Uvicórnio
+
+Ao executar com `nx start` ou diretamente com uvicorn, passe o sinalizador `--proxy-headers`:
+
+```bash
+nx start --proxy-headers
+
+# or
+uvicorn nexy.app:app --proxy-headers --forwarded-allow-ips="*"
+```
+
+## Caminho raiz
+
+Se seu aplicativo estiver montado em um subcaminho (por exemplo, `https://example.com/myapp/`):
+
+```python
+# nexyconfig.py
+from nexy import app
+
+app.root_path = "/myapp"
+```
+
+## Exemplo Nginx
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## Efeitos
+
+Quando configurado corretamente:
+- `request.url` reflete o URL original, não o interno
+- Redirecionamentos usam o esquema correto (https)
+- Limitação de taxa e detecção de IP do cliente usam o IP real do cliente
+- URLs de documentos OpenAPI são gerados corretamente

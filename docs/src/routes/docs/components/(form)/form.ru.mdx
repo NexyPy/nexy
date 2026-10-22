@@ -1,0 +1,40 @@
+# Компонент формы
+
+Встроенный компонент «Форма» упрощает работу с формами и действиями сервера.
+
+## Импорт
+
+Импортируйте его напрямую из `nexy`:
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## Базовое использование
+
+Компонент «Форма» будет улучшен для интеграции с действиями сервера и предоставления утилит для обработки форм.
+
+На данный момент вы можете использовать стандартные HTML-формы в своих компонентах:
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Действия сервера
+
+Компонент Form будет интегрирован с декоратором `@action` от Nexy для обработки форм на стороне сервера.

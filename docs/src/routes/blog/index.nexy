@@ -1,13 +1,15 @@
 ---
-from "@/components/sections/otherHero.nexy" import OtherHero 
-from "@/components/sections/blogCard.nexy" import BlogCard 
-from "@/components/sections/separator.nexy" import Separator
+from "@/locales/routes/blog" import Blog
+from "@components/sections/otherHero.nexy" import OtherHero 
+from "@components/sections/blogCard.nexy" import BlogCard 
+from "@components/sections/separator.nexy" import Separator
 
-title  = "The Nexy Blog"
-description = "Read the latest news about all Nexy solutions, from framework announcements to integration tutorials"
+b = Blog()
+title  = b.title
+description = b.description
 
 ---
-
+ <main class=" overflow-x-hidden">
 <OtherHero
     title={{title}}
     description={{description}}
@@ -89,7 +91,7 @@ description = "Read the latest news about all Nexy solutions, from framework ann
             <li class="font-mono opacity-50">/</li>
             <li class="py-1 px-3 rounded-2xl corner border">
                 24 
-                <span class="opacity-60">Pages</span>
+                <span class="opacity-60">{{b.pages}}</span>
             </li>
         </ul>
          <ul class="flex items-center gap-2 *:border-border">
@@ -103,3 +105,4 @@ description = "Read the latest news about all Nexy solutions, from framework ann
         </ul>
     </aside>
 </section>
+</main>

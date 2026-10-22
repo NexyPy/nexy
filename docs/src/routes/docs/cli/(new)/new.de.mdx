@@ -1,0 +1,53 @@
+# nx neu
+
+Erstellt interaktiv ein neues Nexy-Projekt. Dies ist der empfohlene Einstieg.
+
+```bash
+nx new
+nx new my-app
+```
+
+---
+
+## Optionen
+
+| Flagge | Beschreibung |
+|------|-------------|
+| `<name>` | Projektname (Positionsargument, optional – wird abgefragt, wenn weggelassen) |
+| `--template`, `-t` | Von einer registrierten Vorlage initialisieren (stiller Klon, keine Eingabeaufforderungen) |
+
+---
+
+## Interaktive Eingabeaufforderungen
+
+| Schritt | Aufforderung | Optionen |
+|------|--------|---------|
+| 1 | Projektname | (falls nicht als Argument angegeben) |
+| 2 | Dateibasierten Router verwenden? | Ja (FBR) / Nein (Modular) |
+| 3 | Projekttyp | Web (monolithisch) / API (RESTful) |
+| 4 | Eine Client-Komponente verwenden? | Ja / Nein (nur Web) |
+| 5 | Client-Framework | Reagieren, Vue, Svelte, Solid, Preact, Keine |
+| 6 | ORM | SQLModel, SQLAlchemy, Tortoise-ORM, Keine |
+| 7 | Datenbank | SQLite, PostgreSQL, MySQL (falls ORM ausgewählt) |
+| 8 | Datenbank-URL | (automatisch generiert basierend auf der Auswahl) |
+
+---
+
+## Ausgabe
+
+```text
+my-app/
+├── nexyconfig.py
+├── pyproject.toml
+├── src/
+│   ├── routes/       (FBR) or apps/ (Modular)
+│   └── layout.nexy
+├── public/
+└── README.md
+```
+
+---
+
+## Alias
+
+`nx n`

@@ -1,8 +1,11 @@
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
+from nexy.frontend.islands import ISLANDS_RUNTIME
 
 
-def react() -> FFModel:
-    render_script = """
+def react() -> FrontendFramework:
+    render_script = (
+        ISLANDS_RUNTIME
+        + """
     (async function() {
         const w = window;
         if (w.__nexy_react_init) return;
@@ -23,7 +26,7 @@ def react() -> FFModel:
 
         async function m(el) {
             if (!el || el.dataset.nexyMounted === "1") return;
-            
+
             const key = el.getAttribute("data-nexy-key") || "";
             const path = el.dataset.nexyPath || "";
             const symbol = el.getAttribute("data-nexy-symbol") || "";
@@ -31,8 +34,8 @@ def react() -> FFModel:
             const serverHTML = el.innerHTML;
 
             let props = {};
-            try { 
-                props = JSON.parse(propsStr); 
+            try {
+                props = JSON.parse(propsStr);
             } catch(e) {
                 console.error("[Nexy] Failed to parse props:", e);
             }
@@ -51,7 +54,7 @@ def react() -> FFModel:
 
             try {
                 const mod = await gi(ref);
-                
+
                 // Robust Export Resolution
                 let Comp = null;
                 if (symbol && mod[symbol]) {
@@ -64,12 +67,12 @@ def react() -> FFModel:
                 }
 
                 if (!Comp || (typeof Comp !== 'function' && typeof Comp.render !== 'function')) {
-                    throw new Error(`No valid React component found in ${ref}. Check your exports.`);
+                    throw new Error(`No valid React component found in ${ref}.`);
                 }
 
                 const element = React.createElement(
-                    React.StrictMode, 
-                    null, 
+                    React.StrictMode,
+                    null,
                     React.createElement(Comp, props)
                 );
 
@@ -86,8 +89,25 @@ def react() -> FFModel:
 
         function init() {
             const nodes = document.querySelectorAll('[data-nexy-fw="react"]');
-            nodes.forEach(m);
+            nodes.forEach((el) => {
+                if (el.hasAttribute("data-nexy-island")) {
+                    const directive = el.getAttribute("data-nexy-directive");
+                    if (directive === "client:only") return;
+                    const media = el.getAttribute("data-nexy-media") || "";
+                    if (media) el.dataset.nexyMedia = media;
+                    el.__nexyHydrate = () => m(el);
+                } else {
+                    m(el);
+                }
+            });
+            nexyIslands.init(document);
         }
+
+        w.__nexy_render = (Comp, container, props) => {
+            const el = React.createElement(Comp, props || {});
+            const element = React.createElement(React.StrictMode, null, el);
+            RDC.createRoot(container).render(element);
+        };
 
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", init);
@@ -96,8 +116,9 @@ def react() -> FFModel:
         }
     })();
     """
+    )
 
-    return FFModel(
+    return FrontendFramework(
         name="react",
         render=render_script,
         extension=["jsx", "tsx"],

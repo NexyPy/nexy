@@ -1,0 +1,74 @@
+#सत्र
+
+हस्ताक्षरित-कुकी सत्रों के लिए सत्र मिडलवेयर कॉन्फ़िगर करें - सर्वर-साइड स्टोरेज की आवश्यकता नहीं है।
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useSession = {
+        "secret_key": "your-secret-key",
+        "max_age": 3600,
+        "same_site": "lax",
+        "https_only": False,
+    }
+```
+
+हुड के नीचे स्टारलेट के `SessionMiddleware` का उपयोग करता है।
+
+---
+
+## फ़ील्ड्स
+
+| फ़ील्ड | प्रकार | डिफ़ॉल्ट | विवरण |
+|-------|------|------|----|
+| `secret_key` | `str` | आवश्यक | सत्र कुकीज़ पर हस्ताक्षर करने की गुप्त कुंजी |
+| `max_age` | `int` | `1209600` (14 दिन) | सत्र कुकी की अधिकतम आयु सेकंड में |
+| `same_site` | `str` | `"lax"` | सेमसाइट नीति (`"lax"`, `"strict"`, `"none"`) |
+| `https_only` | `bool` | `False` | केवल HTTPS पर कुकी भेजें |
+
+---
+
+## उपयोग
+
+```python
+from nexy import useSession
+
+session = useSession()
+session["user_id"] = 123
+session["role"] = "admin"
+```
+
+सत्र एक शब्दकोश की तरह व्यवहार करता है - असाइन करें, पढ़ें, हटाएं:
+
+```python
+session = useSession()
+user_id = session.get("user_id")
+del session["user_id"]
+```
+
+---
+
+## फ़्लैश संदेश पैटर्न
+
+```python
+session = useSession()
+flashes = session.get("_flashes", [])
+flashes.append({"type": "success", "text": "Saved!"})
+session["_flashes"] = flashes
+```
+
+फिर पढ़ें और अपने टेम्पलेट में साफ़ करें:
+
+```python
+session = useSession()
+flashes = session.pop("_flashes", [])
+```
+
+---
+
+## सुरक्षा नोट
+
+- सत्र डेटा हस्ताक्षरित है लेकिन **एन्क्रिप्टेड नहीं** - संवेदनशील डेटा संग्रहीत न करें
+- उत्पादन में समय-समय पर `secret_key` घुमाएँ
+- उत्पादन में `https_only=True` का उपयोग करें

@@ -1,8 +1,11 @@
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
+from nexy.frontend.islands import ISLANDS_RUNTIME
 
 
-def vue() -> FFModel:
-    render_script = """
+def vue() -> FrontendFramework:
+    render_script = (
+        ISLANDS_RUNTIME
+        + """
     (async function() {
         const w = window;
         if (w.__nexy_vue_init) return;
@@ -20,7 +23,7 @@ def vue() -> FFModel:
 
         async function m(el) {
             if (!el || el.dataset.nexyMounted === "1") return;
-            
+
             const key = el.getAttribute("data-nexy-key") || "";
             const path = el.dataset.nexyPath || "";
             const symbol = el.getAttribute("data-nexy-symbol") || "";
@@ -28,8 +31,8 @@ def vue() -> FFModel:
             const serverHTML = el.innerHTML;
 
             let props = {};
-            try { 
-                props = JSON.parse(propsStr); 
+            try {
+                props = JSON.parse(propsStr);
             } catch(e) {}
 
             let slots = {};
@@ -47,7 +50,7 @@ def vue() -> FFModel:
 
             try {
                 const mod = await gi(ref);
-                
+
                 // ENHANCED VUE COMPONENT RESOLUTION
                 let Comp = null;
                 if (symbol && mod[symbol]) {
@@ -82,7 +85,18 @@ def vue() -> FFModel:
 
         function init() {
             const nodes = document.querySelectorAll('[data-nexy-fw="vue"]');
-            nodes.forEach(m);
+            nodes.forEach((el) => {
+                if (el.hasAttribute("data-nexy-island")) {
+                    const directive = el.getAttribute("data-nexy-directive");
+                    if (directive === "client:only") return;
+                    const media = el.getAttribute("data-nexy-media") || "";
+                    if (media) el.dataset.nexyMedia = media;
+                    el.__nexyHydrate = () => m(el);
+                } else {
+                    m(el);
+                }
+            });
+            nexyIslands.init(document);
         }
 
         if (document.readyState === "loading") {
@@ -92,8 +106,9 @@ def vue() -> FFModel:
         }
     })();
     """
+    )
 
-    return FFModel(
+    return FrontendFramework(
         name="vue",
         render=render_script,
         extension=["vue"],

@@ -1,0 +1,48 @@
+# "@UseResponse
+
+Establezca metadatos de respuesta en un método de controlador: código de estado, modelo de respuesta, clase de respuesta, etc.
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## Firma
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## Todos los parámetros
+
+| Parámetro | Tipo | Descripción |
+|-------|------|-------------|
+| `status_code` | `int` | Código de estado HTTP |
+| `response_class` | `type[Response]` | Clase de respuesta personalizada (por ejemplo, `HTMLResponse`) |
+| `response_model` | `type` | Modelo Pydantic para serialización de respuestas |
+| `responses` | `dict` | Respuestas adicionales de OpenAPI |
+| `response_description` | `str` | Descripción de la respuesta en OpenAPI |
+| `response_model_include` | conjunto/mapeo | Campos a incluir en la respuesta |
+| `response_model_exclude` | conjunto/mapeo | Campos para excluir de la respuesta |
+| `response_model_by_alias` | `bool` | Utilice nombres de alias en respuesta |
+| `response_model_exclude_unset` | `bool` | Excluir campos no configurados |
+| `response_model_exclude_defaults` | `bool` | Excluir campos con valores predeterminados |
+| `response_model_exclude_none` | `bool` | Excluir campos sin valor |

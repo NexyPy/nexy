@@ -1,0 +1,41 @@
+# आयात सहायक
+
+`Import` फ़ंक्शन नेक्सी में विभिन्न प्रकार की संपत्तियों को आयात करने में मदद करता है।
+
+## आयात करें
+
+इसे सीधे `nexy` से आयात करें:
+
+```nexy
+---
+from nexy import Import
+---
+```
+
+## समर्थित संपत्ति
+
+`Import` संभाल सकता है:
+- ग्राहक घटक
+- JSON फ़ाइलें
+- सीएसएस फ़ाइलें
+- छवियाँ
+
+## उपयोग
+
+JSON आयात करें:
+```python
+from nexy import Import
+data = Import("data.json", "json", "default")
+```
+
+सीएसएस आयात करें:
+```python
+from nexy import Import
+styles = Import("styles.css", "css", "default")
+```
+
+छवि आयात करें:
+```python
+from nexy import Import
+img_src = Import("image.jpg", "image", "default")
+```

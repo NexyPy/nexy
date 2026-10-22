@@ -1,8 +1,34 @@
+from pathlib import Path
 from typing import Any
 
 import questionary
 
 from nexy.i18n import t
+
+
+def ask_project_name() -> str | None:
+    """Prompt for a project name (None when the user cancels)."""
+    name = questionary.text(
+        t("cli.new.prompt", "Project name:"),
+        qmark="»",
+        validate=validate_project_name,
+    ).ask()
+    if name is None:
+        return None
+    return name or ask_project_name()
+
+
+def validate_project_name(name: str) -> bool | str:
+    """Accept a valid, available project name or return the error message."""
+    if not name.strip():
+        return t("cli.new.error_empty", "Project name cannot be empty.")
+    if not name[0].isalpha():
+        return t("cli.new.error_letter", "Project name must start with a letter.")
+    if not all(c.isalnum() or c in "-_" for c in name):
+        return t("cli.new.error_chars", "Use only letters, numbers, hyphens, underscores.")
+    if Path(name).exists():
+        return t("cli.new.error_exists", "Directory '{name}' already exists.").format(name=name)
+    return True
 
 
 class ProjectPrompter:
@@ -68,13 +94,8 @@ class ProjectPrompter:
                 qmark="»",
             ).ask()
             self.config["client_framework"] = framework.lower()
-            if framework.lower() != "none":
-                self.ask_tailwindcss()
         else:
             self.config["client_framework"] = "none"
-
-    def ask_tailwindcss(self) -> None:
-        self.config["tailwind"] = True
 
     def ask_db_url(self) -> None:
         db_type = questionary.select(

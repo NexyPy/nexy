@@ -1,0 +1,65 @@
+# Événements de durée de vie
+
+Exécutez le code avant que l'application ne commence à être diffusée ou lorsqu'elle s'arrête.
+
+## Utilisation de `nexy.app`
+
+```python
+# In any file loaded at startup (e.g., nexyconfig.py, src/events.py)
+from nexy import app
+
+"@app.on_event("startup")
+async def startup():
+    print("App starting...")
+    await db.connect()
+
+"@app.on_event("shutdown")
+async def shutdown():
+    print("App shutting down...")
+    await db.disconnect()
+```
+
+## Durée de vie du gestionnaire de contexte (FastAPI 3.0+)
+
+```python
+from contextlib import asynccontextmanager
+from nexy import app
+
+"@asynccontextmanager
+async def lifespan():
+    print("Startup")
+    await db.connect()
+    yield
+    print("Shutdown")
+    await db.disconnect()
+
+app.router.lifespan_context = lifespan
+```
+
+## Quand utiliser les événements de durée de vie
+
+| Cas d'utilisation | Événement |
+|--------------|-------|
+| Pool de connexions à la base de données | `startup` |
+| Réchauffement du cache | `startup` |
+| Charger des modèles ML | `startup` |
+| Connexions étroites | `shutdown` |
+| Vider les files d'attente | `shutdown` |
+
+## Plusieurs gestionnaires d'événements
+
+```python
+"@app.on_event("startup")
+async def first():
+    ...
+
+"@app.on_event("startup")
+async def second():
+    ...
+```
+
+## Remarque
+
+- Les événements de durée de vie ne sont **pas** par requête : ils s'exécutent une fois au démarrage/à l'arrêt de l'application.
+- En développement (`nx dev`), les événements s'exécutent à chaque rechargement
+- Utilisez `nx start` pour la production : les événements sont exécutés une fois au lancement

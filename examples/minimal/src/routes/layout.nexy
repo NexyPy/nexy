@@ -1,0 +1,17 @@
+---
+children:prop[NexyElement]
+title:prop[str] = "Nexy Minimal Example"
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <main class="mx-auto max-w-2xl p-8">
+        {{ children }}
+    </main>
+</body>
+</html>

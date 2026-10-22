@@ -1,0 +1,31 @@
+# Construir e implementar
+
+`nx build` compila su proyecto para producción. `nx start` ejecuta el servidor de producción.
+
+## Construir
+
+```bash
+nx build
+```
+
+Compila archivos `.nexy`/`.mdx`, agrupa activos de interfaz, genera árbol de rutas. La salida va a `__nexy__/`.
+
+Consulte [CLI: build](/docs/cli/build) para conocer las banderas y opciones.
+
+## Comenzar
+
+```bash
+nx start
+```
+
+Inicia el servidor Uvicorn de producción.
+
+Consulte [CLI: start](/docs/cli/start) para conocer las banderas (`--port`, `--host`, `--env`).
+
+## Implementar
+
+Docker, VPS, Fly.io, Railway, Render: consulte [Deploy guide](/docs/guides/deploy) para obtener instrucciones específicas de la plataforma.
+
+## Exportación estática
+
+Para sitios completamente estáticos, cada página se renderiza previamente en HTML durante la compilación. Sirve `__nexy__/static/` con cualquier servidor de archivos estático.

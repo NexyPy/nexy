@@ -1,0 +1,57 @@
+# "@الحقن
+
+وضع علامة على فئة على أنها مُدارة بواسطة حاوية حقن التبعية الخاصة بـ Nexy.
+```python
+from nexy.decorators import Injectable
+
+"@Injectable()
+class DatabaseService:
+    def query(self, sql: str) -> list[dict]:
+        ...
+```
+## إمضاء
+```python
+Injectable(scope: Scope = Scope.SINGLETON) -> Callable[[type], type]
+```
+## النطاق
+
+| النطاق | السلوك |
+|-------|-----------|
+| `Scope.SINGLETON` (افتراضي) | تمت مشاركة مثيل واحد عبر التطبيق |
+| `Scope.REQUEST` | مثيل جديد لكل طلب HTTP |
+| `Scope.TRANSIENT` | مثيل جديد في كل مرة يتم حلها |
+```python
+from nexy.decorators import Injectable, Scope
+
+"@Injectable(Scope.REQUEST)
+class RequestContext:
+    def __init__(self):
+        self.user_id: str | None = None
+```
+## حقن التبعية
+
+يتم حل معلمات المُنشئ تلقائيًا عندما تكون الأنواع قابلة للحقن:
+```python
+"@Injectable()
+class UserService:
+    def __init__(self, db: DatabaseService):  # DatabaseService resolved by Container
+        self.db = db
+
+"@Injectable()
+class DatabaseService:
+    def connect(self) -> None:
+        ...
+```
+##حاوية
+
+الوصول إلى الحاوية مباشرة إذا لزم الأمر:
+```python
+from nexy.decorators import Container
+
+service = Container.resolve(DatabaseService)
+```
+## القيود
+
+- لا يمكن إنشاء فئات `"@Injectable()` يدويًا خارج سياق DI
+- التبعيات الدائرية ترفع `RecursionError`
+- يجب أن تكون معلمات المنشئ بدون الإعدادات الافتراضية من الأنواع القابلة للحقن

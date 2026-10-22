@@ -3,58 +3,57 @@ import { useState, useRef, useLayoutEffect, useEffect, ReactNode } from 'react';
 type ThemeMode = 'light' | 'dark' | 'system';
 
 const Theme = () => {
-    const [active, setActive] = useState<ThemeMode>(() => {
-        if (typeof window !== 'undefined') {
-
-            return (localStorage.getItem('nexy-theme') as ThemeMode) || 'system';
-        }
-        return "system"
-    });
+    const [mounted, setMounted] = useState(false);
+    const [active, setActive] = useState<ThemeMode>('system');
 
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const root = document.documentElement;
-            localStorage.setItem('nexy-theme', active);
+        setMounted(true);
+        const savedTheme = localStorage.getItem('nexy-theme') as ThemeMode | null;
+        if (savedTheme) setActive(savedTheme);
+    }, []);
 
-            const applyTheme = (isDark: boolean) => {
-                if (isDark) {
-                    root.style.colorScheme = 'dark';
-                    root.classList.add('dark');
-                } else {
-                    root.style.colorScheme = 'light';
-                    root.classList.remove('dark');
-                }
-            };
+    useEffect(() => {
+        if (!mounted) return;
+        const root = document.documentElement;
+        localStorage.setItem('nexy-theme', active);
 
-            if (active === 'system') {
-                const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                applyTheme(systemDark);
-
+        const applyTheme = (isDark: boolean) => {
+            if (isDark) {
+                root.style.colorScheme = 'dark';
+                root.classList.add('dark');
             } else {
-                applyTheme(active === 'dark');
+                root.style.colorScheme = 'light';
+                root.classList.remove('dark');
             }
-        }
+        };
 
-    }, [active]);
+        if (active === 'system') {
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(systemDark);
+        } else {
+            applyTheme(active === 'dark');
+        }
+    }, [active, mounted]);
 
     useLayoutEffect(() => {
+        if (!mounted) return;
         const activeElement = containerRef.current?.querySelector(`[data-mode="${active}"]`) as HTMLElement;
         if (activeElement) {
             const root = document.documentElement;
             root.style.setProperty('--slider-left', `${activeElement.offsetLeft}px`);
             root.style.setProperty('--slider-width', `${activeElement.offsetWidth}px`);
         }
-    }, [active]);
+    }, [active, mounted]);
 
     return (
         <div
             ref={containerRef}
-            className=" relative flex justify-center items-center  p-1 gap-0.5 border border-border rounded-full size-fit transition-colors"
+            className="relative flex justify-center items-center p-1 gap-0.5 border border-border rounded-full size-fit transition-colors"
         >
             <div
-                className="absolute  left-0 size-7 bg-foreground  rounded-full transition-all duration-300 ease-in-out"
+                className="absolute left-0 size-7 bg-foreground rounded-full transition-all duration-300 ease-in-out"
                 style={{
                     transform: `translateX(var(--slider-left))`,
                     width: `var(--slider-width)`

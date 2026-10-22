@@ -1,0 +1,68 @@
+# CORS
+
+Konfigurieren Sie die ursprungsübergreifende Ressourcenfreigabe für Ihre Nexy-Anwendung mit `CORSMiddleware` von Starlette.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {
+        "allow_origins": ["https://app.example.com", "https://admin.example.com"],
+        "allow_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Authorization", "Content-Type"],
+        "allow_credentials": True,
+        "max_age": 600,
+    }
+```
+
+---
+
+## Allgemeine Optionen
+
+| Option | Geben Sie | ein Standard | Beschreibung |
+|--------|------|---------|-------------|
+| `allow_origins` | `list[str]` | `[]` | Zulässige Herkunft. Verwenden Sie `["*"]`, um alle zuzulassen (nur Entwicklung). |
+| `allow_origins_regex` | `str` | `None` | Regex-Muster für zulässige Ursprünge (z. B. `"%%U0%%"`). |
+| `allow_methods` | `list[str]` | `["GET"]` | Zulässige HTTP-Methoden. `["*"]` erlaubt alles. |
+| `allow_headers` | `list[str]` | `[]` | Zulässige Anforderungsheader. `["*"]` erlaubt alles. |
+| `allow_credentials` | `bool` | `False` | Cookies und Autorisierungsheader zulassen. |
+| `expose_headers` | `list[str]` | `[]` | Header, die dem Browser angezeigt werden. |
+| `max_age` | `int` | `600` | Dauer des Preflight-Cache in Sekunden. |
+
+---
+
+## Entwicklungs-Setup
+
+Für die lokale Entwicklung alle Ursprünge zulassen:
+
+```python
+useCORS = {
+    "allow_origins": ["*"],
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+```
+
+---
+
+## Produktionsaufbau
+
+Machen Sie deutliche Angaben zu Herkunft und Methoden:
+
+```python
+useCORS = {
+    "allow_origins": ["https://myapp.com", "https://api.myapp.com"],
+    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    "allow_headers": ["Authorization", "Content-Type", "X-Requested-With"],
+    "allow_credentials": True,
+    "max_age": 3600,
+}
+```
+
+Wenn `allow_credentials` `True` ist, können Sie `"*"` nicht für `allow_origins` verwenden – Ursprünge explizit auflisten.
+
+---
+
+## Hinter einem Proxy
+
+Wenn Ihre App hinter einem Reverse-Proxy (Nginx, Cloudflare) ausgeführt wird, stellen Sie sicher, dass weitergeleitete Header konfiguriert sind, damit die CORS-Middleware den richtigen Ursprung erkennt.

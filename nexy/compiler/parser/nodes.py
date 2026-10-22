@@ -28,7 +28,6 @@ class ElementNode(Node):
         """Returns True if the tag starts with an uppercase letter (PascalCase)."""
         if not self.tag_name:
             return False
-        # Avoid matching our internal Jinja2 placeholders (NXYPJ...)
         if self.tag_name.startswith("NXYPJ") and self.tag_name.endswith("Z"):
             return False
         return self.tag_name[0].isupper()

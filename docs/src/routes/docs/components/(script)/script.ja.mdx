@@ -1,0 +1,53 @@
+# コンポーネント内のスクリプト
+
+標準の <script> タグを使用して、クライアント側の JavaScript を .nexy ファイルに直接組み込むことができます。
+
+## 基本的な使い方
+
+```nexy
+---
+---
+<button id="myButton">Click Me!</button>
+<script>
+document.getElementById('myButton').addEventListener('click', function() {
+    alert('Hello from Nexy!');
+});
+</script>
+```
+
+## フレームワーク固有のスクリプト
+
+フレームワーク コンポーネント (React、Vue、Svelte、Solid、Preact) の場合は、`<script framework="...">` 構文を使用します。
+
+```nexy
+---
+---
+<script framework="react">
+import { useState } from 'react';
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>+</button>
+        </div>
+    );
+}
+</script>
+```
+
+## ホットモジュール交換 (HMR)
+
+Nexy は開発中にスクリプトの更新を自動的に処理します。スクリプトを変更すると、ページ全体を更新せずにコンポーネントが再ロードされます。
+
+## 外部スクリプト
+
+外部スクリプトを参照することもできます。
+
+```nexy
+---
+---
+<script src="https://cdn.example.com/script.js"></script>
+```

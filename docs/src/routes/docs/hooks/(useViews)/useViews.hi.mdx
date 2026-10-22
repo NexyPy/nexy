@@ -1,0 +1,65 @@
+# दृश्य का उपयोग करें
+
+किसी दिए गए संदर्भ के साथ एक दृश्य टेम्पलेट (`.nexy`, `.mdx`, या फ्रंटएंड घटक) प्रस्तुत करता है, जो `HTMLResponse` लौटाता है।
+
+```python
+from nexy import useViews
+
+html = useViews(path, context=None)
+```
+
+---
+
+## पैरामीटर्स
+
+| पैरामीटर | प्रकार | डिफ़ॉल्ट | विवरण |
+|----|------|------|----|
+| `path` | `str` | आवश्यक | दृश्य फ़ाइल का पथ (प्रोजेक्ट के सापेक्ष) |
+| `context` | `dict \| None` | `None` | टेम्प्लेट में पास करने के लिए वेरिएबल |
+
+---
+
+## वापसी मूल्य
+
+`HTMLResponse` - वाइट संपत्तियों के साथ प्रस्तुत HTML।
+
+---
+
+## उदाहरण
+
+```nexy
+---
+from nexy import useViews
+html = useViews("src/routes/components/card.nexy", {"title": "Hello", "body": "World"})
+---
+{{ html | safe }}
+```
+
+---
+
+## फ्रंटएंड घटक
+
+`.tsx`, `.vue`, `.svelte`, और `.jsx` दृश्यों के लिए, `useViews` एक हाइड्रेटेबल कंटेनर लौटाता है:
+
+```nexy
+---
+from nexy import useViews
+container = useViews("src/components/Counter.tsx", {"initial": 0})
+---
+{{ container | safe }}
+```
+
+कंटेनर में क्लाइंट-साइड हाइड्रेशन के लिए `data-nexy-fw`, `data-nexy-path`, और `data-nexy-props` विशेषताएँ शामिल हैं।
+
+---
+
+## समर्थित एक्सटेंशन
+
+| विस्तार | व्यवहार |
+|----|----|
+| `.nexy` | संकलित टेम्पलेट → प्रस्तुत HTML |
+| `.mdx` | मार्कडाउन + घटक → प्रस्तुत HTML |
+| `.tsx` | हाइड्रेटेबल कंटेनर (रिएक्ट/सॉलिड/प्रीएक्ट) |
+| `.vue` | हाइड्रेटेबल कंटेनर |
+| `.svelte` | हाइड्रेटेबल कंटेनर |
+| `.jsx` | हाइड्रेटेबल कंटेनर |

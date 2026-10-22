@@ -1,0 +1,40 @@
+# Componente de formulário
+
+O componente Form integrado simplifica o trabalho com formulários e ações do servidor.
+
+## Importar
+
+Importe-o diretamente de `nexy`:
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## Uso Básico
+
+O componente Form será aprimorado para integração com ações do servidor e fornecer utilitários de manipulação de formulários.
+
+Por enquanto, você pode usar formulários HTML padrão em seus componentes:
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## Ações do servidor
+
+O componente Form será integrado ao decorador `@action` da Nexy para processamento de formulários no lado do servidor.

@@ -1,0 +1,52 @@
+#UID
+
+Nexy は専用の UID ジェネレーターを同梱していません。 Python の標準ライブラリは、ほとんどのユースケースをカバーします。
+
+## UUID (stdlib)
+
+```python
+import uuid
+
+uuid.uuid4()          # Random UUID → "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+uuid.uuid4().hex      # Without dashes → "f47ac10b58cc4372a5670e02b2c3d479"
+uuid.uuid7()          # Time-ordered (Python 3.14+) → "018f3a6e-1b3c-7b00-a567-0e02b2c3d479"
+```
+
+## シークレット (stdlib、URL セーフ)
+
+```python
+import secrets
+
+secrets.token_hex(16)    # → "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+secrets.token_urlsafe(8) # → "xYZabcDE_fg"
+```
+
+## NanoID (サードパーティ)
+
+```bash
+pip install nanoid
+```
+
+```python
+from nanoid import generate
+
+generate()          # → "V1StGXR8_Z5jdHi6B-myT"
+generate(size=21)   # default length
+```
+
+## データベース自動生成 ID
+
+| DB |タイプ |自動 |
+|----|------|------|
+|ポストグレSQL | `UUID` または `SERIAL` | `gen_random_uuid()` または `SERIAL` |
+| SQLite | `INTEGER PRIMARY KEY` |自動インクリメント |
+| MySQL | `INT AUTO_INCREMENT` または `UUID` | `AUTO_INCREMENT` または `UUID()` |
+
+## いつ何を使用するか
+
+|使用例 |ソリューション |
+|----------|----------|
+|データベースの主キー | DB 自動インクリメントまたは `uuid.uuid4()` |
+|公開 ID (ユーザー、投稿) | `secrets.token_urlsafe()` または NanoID |
+|セッション/API トークン | `secrets.token_hex()` |
+|注文された ID | `uuid.uuid7()` (Python 3.14 以降) または ULID |

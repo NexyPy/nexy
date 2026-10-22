@@ -1,0 +1,83 @@
+#神社2
+
+Nexy は、テンプレート エンジンとして **Jinja2** を使用しています。すべての `.nexy` ファイルのテンプレート ブロックは、Jinja2 テンプレートとしてレンダリングされます。
+
+---
+
+## 構文
+
+```nexy
+---
+title = "Hello"
+items = [1, 2, 3]
+---
+<h1>{{ title }}</h1>
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+{% if user %}
+    <p>Welcome, {{ user.name }}</p>
+{% endif %}
+```
+
+---
+
+## テンプレートのコンテキスト
+
+テンプレート コンテキストには次のものが含まれます。
+
+- フロントマターで宣言されたすべてのプロパティ (`item: prop[type]`)
+- 自動挿入ヘルパー: `Slot`、`trans`、`t`、`__current_locale`、`__Import`、`__Template`
+- 追加の小道具: `caller`、`children`
+
+---
+
+## フィルター
+
+すべての Jinja2 組み込みフィルタが利用可能です。
+
+```nexy
+<p>{{ description | truncate(100) }}</p>
+<p>{{ created_at | date(format="short") }}</p>
+<p>{{ content | safe }}</p>
+<p>{{ name | title }}</p>
+```
+
+---
+
+## マクロ
+
+Jinja2 マクロは `.nexy` ファイルで動作します。
+
+```nexy
+{% macro input(name, type="text", value="") %}
+    <input type="{{ type }}" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
+
+<form>
+    {{ input("username") }}
+    {{ input("password", type="password") }}
+</form>
+```
+
+---
+
+## マークダウン
+
+`.mdx` ファイルはマークダウンとしてレンダリングされ、レイアウト テンプレートにラップされます。標準の Jinja2 構文は `.mdx` 内でも機能します。
+
+---
+
+## 空白コントロール
+
+Jinja2 の空白コントロールは `.nexy` ファイルで機能します。
+
+```nexy
+{%- for item in items -%}
+    <span>{{ item }}</span>
+{%- endfor -%}
+```
+
+`{%-` および `-%}` を使用して、制御ブロックの周囲の空白を削除します。

@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 동적 URL(경로 매개변수)
+
+동적 매개변수는 가변 URL 세그먼트를 캡처합니다. Nexy는 `[param]` 브래킷 구문을 사용합니다.
+
+---
+
+## 구문
+```bash
+routes/
+├── blog/
+│   ├── index.nexy          →  /blog
+│   └── [slug].nexy         →  /blog/{slug}
+└── users/
+    └── [userId].py         →  /users/{userId}
+```
+---
+
+## `.nexy` 페이지에서
+
+이 매개변수는 frontmatter 속성을 통해 사용할 수 있습니다:
+```
+---
+slug: prop[str]
+---
+<h1>Article: {{ slug }}</h1>
+```
+---
+
+## `.py` 핸들러에서
+```python
+# routes/users/[userId].py
+from fastapi import Request
+
+async def get(request: Request, userId: int):
+    return {"user_id": userId}
+```
+유형은 자동으로 변환됩니다(`int`, `str`, `UUID` 등).
+
+---
+
+## 다중 매개변수
+```bash
+routes/
+└── blog/
+    └── [year]/[month]/[slug].nexy
+```
+```nexy
+---
+year: prop[int]
+month: prop[int]
+slug: prop[str]
+---
+<article>
+    <time>{{ year }}-{{ month }}</time>
+    <h1>{{ slug | replace("-", " ") }}</h1>
+</article>
+```
+---
+
+## 포괄적인 매개변수
+```bash
+routes/
+└── docs/
+    └── [...path].nexy      →  /docs/{path+}
+```
+```nexy
+---
+path: prop[list[str]]
+---
+<pre>{{ path | join("/") }}</pre>
+```
+`path` 변수는 나머지 **모든** URL 세그먼트를 목록으로 받습니다.
+<Link href="/docs/fbrouters/query_parameters">Next: Query Parameters →</Link>

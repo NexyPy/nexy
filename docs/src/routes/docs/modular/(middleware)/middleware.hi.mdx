@@ -1,0 +1,192 @@
+# मिडिलवेयर
+
+मिडलवेयर अनुरोधों को नियंत्रक तक पहुंचने से पहले ही रोक लेता है (और उसके बाद प्रतिक्रिया देता है)। इसका उपयोग क्रॉस-कटिंग चिंताओं के लिए करें जो कई मार्गों पर लागू होती हैं: लॉगिंग, टाइमिंग, सीओआरएस, संपीड़न, हेडर हेरफेर।
+
+गार्ड की तरह, नेक्सी में मिडलवेयर **फास्टएपीआई निर्भरता** हैं - कॉल करने योग्य जो अनुरोध/प्रतिक्रिया को संशोधित कर सकते हैं या अनुरोध को निरस्त कर सकते हैं।
+
+## मिडलवेयर क्यों?
+
+आप प्रत्येक नियंत्रक विधि में लॉगिंग जोड़ सकते हैं:
+
+```python
+class UsersController:
+    def GET(self):
+        print(f"→ GET /users")          # Duplicated
+        return [...]
+
+class PostsController:
+    def GET(self):
+        print(f"→ GET /posts")          # Duplicated
+        return [...]
+```
+
+मिडलवेयर इसे एक बार लागू किए गए एकल कॉलेबल में निकालता है:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+## मिडलवेयर बनाना
+
+मिडलवेयर एक कॉल करने योग्य है जो `Request` लेता है। यह `request.state` को संशोधित कर सकता है, निरस्त करने के लिए `HTTPException` बढ़ा सकता है, या `None` लौटाकर पास कर सकता है:
+
+```python
+class LoggingMiddleware:
+    async def __call__(self, request: Request):
+        print(f"→ {request.method} {request.url.path}")
+```
+
+समय के लिए, आप प्रतिक्रिया को डेटा पास करने के लिए `request.state` का उपयोग कर सकते हैं:
+
+```python
+import time
+
+class TimingMiddleware:
+    async def __call__(self, request: Request):
+        request.state.start_time = time.time()
+```
+
+फिर FastAPI के `Response` पैरामीटर के माध्यम से एक प्रतिक्रिया हुक जोड़ें:
+
+```python
+class TimingMiddleware:
+    async def __call__(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - start
+        response.headers["X-Response-Time"] = f"{elapsed:.3f}s"
+        return response
+```
+
+**समझ गया**: `call_next` पैटर्न मिडलवेयर के लिए काम करता है जो पूरे अनुरोध/प्रतिक्रिया चक्र को कवर करता है। सरल मिडलवेयर जो केवल हैंडलर से पहले चलता है वह केवल `request` लेता है।
+
+## मिडलवेयर लगाना
+
+### नियंत्रक-स्तर
+
+```python
+from nexy.decorators import Controller, Middleware
+
+"@Controller("/users")
+"@Middleware(LoggingMiddleware())
+class UsersController:
+    def GET(self):
+        return [...]
+```
+
+### विधि-स्तर
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@Middleware(TimingMiddleware())
+    def GET(self):
+        import time
+        time.sleep(1)
+        return {"done": True}
+```
+
+### मॉड्यूल-स्तर
+
+सभी मार्गों के लिए मॉड्यूल में मिडलवेयर पंजीकृत करें:
+
+```python
+# auth_module.py
+from nexy.decorators import Module
+
+"@Module()
+class AuthModule:
+    controllers = [AuthController]
+```
+
+मॉड्यूल-स्तरीय मिडलवेयर सीधे `"@Module()` विशेषताओं के माध्यम से समर्थित नहीं है। सभी मार्गों पर लागू होने वाले मिडलवेयर के लिए, विधि या नियंत्रक स्तर का उपयोग करें, या `nexyconfig.py` के माध्यम से विश्व स्तर पर पंजीकरण करें।
+
+## ग्लोबल मिडलवेयर
+
+`nexyconfig.py` के माध्यम से ऐप में प्रत्येक रूट के लिए मिडलवेयर पंजीकृत करें:
+
+```python
+# nexyconfig.py
+config = {
+    "useMiddlewares": [
+        (CORSMiddleware, {"allow_origins": ["*"]}),
+        (LoggingMiddleware, {}),
+    ]
+}
+```
+
+प्रत्येक प्रविष्टि `(middleware_class, kwargs)` का टुपल है। क्वार्ग्स को मिडलवेयर के कंस्ट्रक्टर को भेज दिया जाता है।
+
+## बिल्ट-इन मिडलवेयर
+
+नेक्सी में `nexyconfig.py` के माध्यम से कॉन्फ़िगर करने योग्य कई अंतर्निहित मिडलवेयर शामिल हैं:
+
+| कॉन्फ़िग कुंजी | मिडलवेयर | विवरण |
+|---|----|---|
+| `useCORS` | `CORSMiddleware` | क्रॉस-ओरिजिनल रिसोर्स शेयरिंग |
+| `useGZip` | `GZipMiddleware` | प्रतिक्रिया संपीड़न |
+| `useTrustedHost` | `TrustedHostMiddleware` | होस्ट हेडर सत्यापन |
+| `useSession` | `SessionMiddleware` | कुकी-आधारित सत्र |
+| `useHTTPSRedirect` | `HTTPSRedirectMiddleware` | बलपूर्वक HTTPS |
+
+```python
+# nexyconfig.py
+config = {
+    "useCORS": {"allow_origins": ["https://myapp.com"]},
+    "useGZip": {"minimum_size": 1000},
+    "useTrustedHost": {"allowed_hosts": ["myapp.com"]},
+    "useSession": {"secret_key": "your-secret-key", "max_age": 3600},
+}
+```
+
+किसी भी कस्टम मिडलवेयर से पहले, बिल्ट-इन मिडलवेयर वैश्विक स्तर पर चलता है।
+
+## मिडलवेयर बनाम गार्ड
+
+| पहलू | मिडलवेयर | रक्षक |
+|-------|-------|-------|
+| निष्पादित | हैंडलर से पहले | हैंडलर से पहले (मिडिलवेयर के बाद) |
+| प्राथमिक उद्देश्य | लॉगिंग, हेडर, संपीड़न | प्रमाणीकरण, प्राधिकरण, अभिगम नियंत्रण |
+| पैटर्न | `__call__(self, request)` | `__call__(self, request)` |
+| निरस्त करें | `HTTPException` बढ़ाएं | `HTTPException` बढ़ाएँ |
+| डेटा पास करें | `request.state` | `request.state` |
+
+व्यवहार में, मिडलवेयर और गार्ड को उसी तरह लागू किया जाता है (FastAPI निर्भरता)। अंतर वैचारिक है: मिडलवेयर अनुरोधों/प्रतिक्रियाओं को संशोधित करता है, गार्ड एक्सेस नियंत्रण निर्णय लेते हैं।
+
+## मिडलवेयर में त्रुटि प्रबंधन
+
+मिडलवेयर त्रुटियों को पकड़ सकता है और `call_next` पैटर्न का उपयोग करके कस्टम प्रतिक्रियाएँ लौटा सकता है:
+
+```python
+class ErrorHandlerMiddleware:
+    async def __call__(self, request: Request, call_next):
+        try:
+            return await call_next(request)
+        except Exception as e:
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(e)},
+            )
+```
+
+## सर्वोत्तम प्रथाएँ
+
+1. **प्रति मिडलवेयर एक चिंता** - लॉगिंग, टाइमिंग, सीओआरएस। एक भी "बड़ा मिडलवेयर" नहीं।
+2. **मिडलवेयर को तेज़ रखें** - मिडलवेयर अनुरोध को ब्लॉक कर देता है। महँगे ऑपरेशन हैंडलर में हैं।
+3. **डेटा पास करने के लिए `request.state` का उपयोग करें** - यह मिडलवेयर, गार्ड और हैंडलर के बीच डेटा साझा करने का मानक तरीका है।
+4. **ऑथ के लिए गार्ड को प्राथमिकता दें** - एक्सेस कंट्रोल के लिए मिडलवेयर की तुलना में वैचारिक रूप से अधिक स्पष्ट।
+5. **मिडलवेयर का अलग से परीक्षण करें** - एक नकली `Request` बनाएं, मिडलवेयर को कॉल करें, साइड इफेक्ट्स पर जोर दें।
+
+## अगले चरण
+
+- [Guards](/docs/modular/guards) - प्रमाणीकरण और प्राधिकरण
+- [Controllers](/docs/modular/controllers) - रूट हैंडलर को परिभाषित करें
+- [Modules](/docs/modular/modules) - फीचर मॉड्यूल में व्यवस्थित करें

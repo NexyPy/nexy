@@ -1,0 +1,26 @@
+# SQLite
+
+SQLite ist die Standarddatenbank für die Nexy-Entwicklung – keine Konfiguration, dateibasiert, perfekt für Prototyping.
+
+## Verbindung
+
+Standard: `sqlite:///dev.db`
+
+```python
+DATABASE_URL = "sqlite:///dev.db"
+```
+
+## Mit ORMs
+
+| ORM | Fahrer | Verbindungszeichenfolge |
+|-----|--------|------------------|
+| SQLModel / SQLAlchemy | `aiosqlite` | `sqlite+aiosqlite:///dev.db` |
+| Schildkröte-ORM | `aiosqlite` | `sqlite://dev.db` |
+
+## Einschränkungen
+
+- Keine gleichzeitigen Schreibvorgänge (nicht für Produktionen mit hohem Datenverkehr geeignet)
+- Keine Benutzerverwaltung oder Berechtigungen
+- Begrenzt auf eine einzelne Datei
+
+SQLite eignet sich hervorragend für die Entwicklung und kleine Projekte. Wechseln Sie für die Produktion zu PostgreSQL.
