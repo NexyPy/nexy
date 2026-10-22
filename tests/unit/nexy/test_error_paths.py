@@ -1,10 +1,10 @@
 import pytest
 from jinja2 import TemplateNotFound
 
-from nexy.builder.discovery import Discovery
-from nexy.compiler import Compiler
 from nexy.errors import NexyCompileError
 from nexy.hooks import usePathname, useViews
+from nexy.modules.builder.discovery import Discovery
+from nexy.modules.compiler import Compiler
 from nexy.template import Template
 
 
@@ -37,14 +37,14 @@ class TestTemplateErrorPaths:
 
 class TestRemoteFetchErrorPaths:
     def test_non_http_scheme_is_rejected(self, nexy_project) -> None:
-        from nexy.cli.commands.add import fetch_remote_component
+        from nexy.modules.cli.commands.add import fetch_remote_component
 
         nexy_project("")
 
         assert fetch_remote_component("file:///etc/passwd") is None
 
     def test_ftp_scheme_is_rejected(self, nexy_project) -> None:
-        from nexy.cli.commands.add import fetch_remote_component
+        from nexy.modules.cli.commands.add import fetch_remote_component
 
         nexy_project("")
 

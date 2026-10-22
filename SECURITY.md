@@ -97,9 +97,9 @@ author's own responsibility and is escaped with `|e` where needed.
 | Site | What the environment emits |
 |---|---|
 | `nexy/template.py:71` | server-side route HTML (`{{ children }}`, props) |
-| `nexy/cli/commands/migrate.py:66` | generated Python (`alembic/env.py`) |
-| `nexy/utils/init/template_setup.py:257` | generated Python (`alembic/env.py`) |
-| `nexy/utils/init/renderer.py:43` | scaffolding sources (Python/TS/HTML files) |
+| `nexy/modules/cli/commands/migrate.py:66` | generated Python (`alembic/env.py`) |
+| `nexy/modules/cli/init/template_setup.py:257` | generated Python (`alembic/env.py`) |
+| `nexy/modules/cli/init/renderer.py:43` | scaffolding sources (Python/TS/HTML files) |
 
 #### B104 — dev default host `0.0.0.0` (7 sites)
 
@@ -110,12 +110,11 @@ not binds.
 
 | Site | Note |
 |---|---|
-| `nexy/utils/common/constants.py:4` | `DEFAULT_HOST` constant |
 | `nexy/core/config.py:44`, `nexy/core/models.py:197` | `useHost` field defaults |
-| `nexy/cli/commands/dev.py:108`, `nexy/cli/commands/start.py:24` | literal comparison to pick the LAN IP to display |
-| `nexy/utils/server/ports.py:12`, `ports.py:25` | literal comparison; the availability probe never binds |
+| `nexy/modules/cli/commands/dev.py:108`, `nexy/modules/cli/commands/start.py:24` | literal comparison to pick the LAN IP to display |
+| `nexy/helpers/server/ports.py:12`, `ports.py:25` | literal comparison; the availability probe never binds |
 
-#### B310 — `urlopen` in `nexy/cli/commands/add.py:39`
+#### B310 — `urlopen` in `nexy/modules/cli/commands/add.py:39`
 
 `nexy add <url>` fetches the component the user explicitly named; the CLI's
 job is to fetch what the user asks. Scheme restricted to http(s) by the guard
@@ -124,7 +123,7 @@ above (done during the audit), so no `file://`/`ftp://` readback.
 #### B404 — `import subprocess` (12 sites)
 
 Harmless by itself: every import site is followed by argv-array launches
-triaged under B603. Sites: `cli/commands/{build,check,dev,test,format}.py`,
+triaged under B603. Sites: `modules/cli/commands/{build,check,dev,test,format}.py`,
 `utils/common/{process,report}.py`, `utils/init/{clone,dependencies,template_setup}.py`,
 `utils/server/server.py` (import + `Popen` type-only import).
 

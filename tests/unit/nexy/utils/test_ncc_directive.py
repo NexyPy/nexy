@@ -1,4 +1,4 @@
-from nexy.utils.imports.ncc import NexyClientComponent
+from nexy.helpers.imports.ncc import NexyClientComponent
 
 
 class TestNccDirective:

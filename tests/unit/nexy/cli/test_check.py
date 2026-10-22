@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from nexy.utils.fs.scan import has_files as _has_files
+from nexy.helpers.fs.scan import has_files as _has_files
 
 
 def test_has_files_detects_matching_extension(tmp_path: Path) -> None:
