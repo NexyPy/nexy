@@ -1,0 +1,78 @@
+# エイリアス
+
+`.nexy` ファイル内のクリーナー インポートのインポート パス エイリアスを構成します。
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useAliases = {
+        ""@": "src",
+        ""@components": "src/components",
+        ""@lib": "src/lib",
+    }
+```
+
+---
+
+## 使用法
+
+上記の構成では、次の代わりに:
+
+```python
+from src.components.card.nexy import Card
+from src.lib.utils import format_date
+```
+
+次のように書くことができます:
+
+```python
+from "@components/card.nexy import Card
+from "@lib/utils import format_date
+```
+
+---
+
+## 仕組み
+
+エイリアスはコンパイル時に解決されます。 VFS 名前空間は、エイリアス プレフィックスを展開されたパスにマップします。これらは、フロントマターのインポートとテンプレートの `__Import` 呼び出しの両方で機能します。
+
+`"@` 記号は規則であり、必須ではありません。任意の接頭辞を使用できます。
+
+```python
+useAliases = {
+    "~": "src",
+    "#components": "src/components",
+}
+```
+
+---
+
+## 制限事項
+
+- エイリアスは `.nexy` および `.mdx` ファイルでのみ機能します
+- クライアント コンポーネントの JavaScript/TypeScript インポートには**適用されません** (そのためには `vite.config.ts` パス エイリアスを使用してください)
+- エイリアスは、現在のファイルではなく、プロジェクトのルートを基準にして解決されます。
+
+---
+
+## Vite エイリアスと組み合わせる
+
+フルスタック プロジェクトの場合、Nexy エイリアス (`.nexy` インポート用) と Vite エイリアス (JS/TS インポート用) の両方を構成します。
+
+```python
+# nexyconfig.py
+useAliases = {""@": "src"}
+```
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { resolve } from "path";
+
+export default defineConfig({
+    resolve: {
+        alias: { ""@": resolve(__dirname, "src") },
+    },
+});
+```

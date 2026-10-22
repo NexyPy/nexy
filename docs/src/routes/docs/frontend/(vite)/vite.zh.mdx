@@ -1,0 +1,33 @@
+# Vite 集成
+
+在`nexyconfig.py`中启用Vite：
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## 开发模式
+
+`nexy dev` 自动启动 Vite 开发服务器和 Nexy 服务器。维特提供：
+- 热模块更换（HMR）
+- 框架组件快速刷新
+- TypeScript 和 JSX 编译
+- CSS预处理
+
+Nexy 服务器代理 Vite 的开发 URL，因此一切都可以在单个端口上运行。
+
+## 生产
+
+`nexy build` 运行 Vite 生产版本。输出转到`__nexy__/client/`。 `Vite()` 函数读取清单并发出正确的 CSS 和脚本标签。
+
+## 自定义 Vite 配置
+
+Nexy 将您的 `vite.config.ts` 与其自己的默认值合并。您可以正常添加插件、别名和其他 Vite 选项。
+
+## 配置参考
+
+|选项 |类型 |默认 |描述 |
+|--------|------|---------|-------------|
+| `useVite` | `bool` | `False` |启用Vite |
+| `useViteDevUrl` | `str \| None` | `None` |自定义 Vite 开发 URL |

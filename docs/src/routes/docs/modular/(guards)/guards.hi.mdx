@@ -1,0 +1,193 @@
+#रक्षक
+
+गार्ड यह निर्धारित करते हैं कि अनुरोध रूट हैंडलर तक पहुंचना चाहिए या नहीं। वे **नियंत्रक विधि से पहले** निष्पादित करते हैं - प्रमाणीकरण, प्राधिकरण, दर सीमित करने और पहुंच नियंत्रण के लिए बिल्कुल सही।
+
+नेक्सी के गार्ड **FastAPI निर्भरता** हैं। वे कॉल करने योग्य हैं (`__call__` या स्टैंडअलोन फ़ंक्शंस वाले वर्ग) जो अनुरोध प्राप्त करते हैं और HTTPException को पास करते हैं या बढ़ाते हैं।
+
+## गार्ड क्यों?
+
+गार्ड के बिना, आप प्रत्येक नियंत्रक विधि में प्रमाणीकरण की जाँच करेंगे:
+
+```python
+class AdminController:
+    def GET(self):
+        if not is_authenticated(request):
+            raise HTTPException(401)
+        return {"role": "admin"}
+
+    def delete(self, id: int):
+        if not is_authenticated(request):
+            raise HTTPException(401)
+        return None
+```
+
+एक गार्ड इसे पुन: प्रयोज्य कॉल करने योग्य में निकालता है:
+
+```python
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization")
+        if not token:
+            raise HTTPException(401)
+```
+
+एक बार लागू करने पर, नियंत्रक में प्रत्येक मार्ग की सुरक्षा होती है:
+
+```python
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+```
+
+## एक गार्ड बनाना
+
+गार्ड एक कॉल करने योग्य है जो `Request` लेता है और `None` लौटाता है या बढ़ाता है:
+
+```python
+from starlette.exceptions import HTTPException
+from starlette.requests import Request
+
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization")
+        if not token or not token.startswith("Bearer "):
+            raise HTTPException(401, "Missing or invalid token")
+```
+
+अनुरोध को ब्लॉक करने के लिए गार्ड `HTTPException` बढ़ाता है। यदि यह सामान्य रूप से लौटता है, तो अनुरोध आगे बढ़ता है।
+
+**समझ गया**: `__call__` सिंक या एसिंक हो सकता है - राउटर दोनों को संभालता है। जब आपके गार्ड को डेटाबेस या बाहरी एपीआई को कॉल करने की आवश्यकता हो तो एसिंक का उपयोग करें।
+
+## गार्ड लगाना
+
+### नियंत्रक-स्तर - सभी मार्गों की सुरक्षा करता है
+
+```python
+from nexy.decorators import Controller, UseGuard
+
+"@Controller("/admin")
+"@UseGuard(AuthGuard())
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+
+    def delete(self, id: int):
+        return None
+```
+
+### विधि-स्तर - विशिष्ट मार्गों की सुरक्षा करता है
+
+```python
+"@Controller("/users")
+class UsersController:
+    "@UseGuard(AuthGuard())
+    def GET(self):
+        return {"email": "user"@example.com"}
+
+    # No guard on public routes
+    def post(self, data: dict):
+        return {"message": "No auth required"}
+```
+
+### एकाधिक गार्ड - सभी को गुजरना होगा
+
+```python
+"@Controller("/admin")
+"@UseGuard(AuthGuard(), RateLimitGuard())
+class AdminController:
+    ...
+```
+
+गार्ड सूचीबद्ध क्रम में कार्य निष्पादित करते हैं। यदि `AuthGuard` बढ़ता है, तो `RateLimitGuard` कभी नहीं चलता।
+
+**समझ गया**: मेथड-लेवल गार्ड कंट्रोलर-लेवल गार्ड के बाद चलते हैं - और केवल तभी जब कंट्रोलर-लेवल गार्ड पास हो जाते हैं।
+
+## पैरामीटर वाले गार्ड
+
+पैरामीटरयुक्त गार्डों के लिए एक गार्ड फ़ैक्टरी बनाएँ:
+
+```python
+class RoleGuard:
+    def __init__(self, required_role: str):
+        self.required_role = required_role
+
+    async def __call__(self, request: Request):
+        user_role = request.headers.get("X-Role", "guest")
+        if user_role != self.required_role:
+            raise HTTPException(403, f"Requires {self.required_role} role")
+```
+
+तर्कों के साथ लागू करें:
+
+```python
+"@Controller("/admin")
+"@UseGuard(RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        return {"role": "admin"}
+```
+
+## कार्यों के रूप में रक्षक
+
+साधारण गार्ड स्टैंडअलोन कार्य हो सकते हैं:
+
+```python
+async def rate_limit(request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    if is_rate_limited(client_ip):
+        raise HTTPException(429, "Too many requests")
+
+"@Controller("/api")
+"@UseGuard(rate_limit)
+class ApiController:
+    def GET(self):
+        return {"data": [...]}
+```
+
+## गार्ड प्रसंग
+
+गार्ड को पूर्ण स्टारलेट `Request` ऑब्जेक्ट प्राप्त होता है, जो हेडर, क्वेरी पैरामीटर, सत्र और बहुत कुछ तक पहुंच प्रदान करता है।
+
+डाउनस्ट्रीम उपयोग के लिए गार्ड में अनुरोध स्थिति सेट करें:
+
+```python
+class AuthGuard:
+    async def __call__(self, request: Request):
+        token = request.headers.get("Authorization", "").removeprefix("Bearer ")
+        user = await verify_token(token)
+        if not user:
+            raise HTTPException(401)
+        request.state.user = user
+
+# In the controller:
+class UsersController:
+    def GET(self, request: Request):
+        return {"user": request.state.user}
+```
+
+## गार्ड बनाम मिडलवेयर
+
+| पहलू | रक्षक | मिडलवेयर |
+|-------|-------|----|
+| निष्पादित | हैंडलर से पहले, मिडलवेयर के बाद | गार्ड और हैंडलर से पहले |
+| उद्देश्य | प्रमाणीकरण, प्राधिकरण, अभिगम नियंत्रण | लॉगिंग, हेडर हेरफेर, सीओआरएस |
+| वापसी | `None` या बढ़ाएँ `HTTPException` | `None` या बढ़ाएँ `HTTPException` |
+| पहुंच का अनुरोध करें | `Request` पैरामीटर के माध्यम से पूर्ण | `Request` पैरामीटर के माध्यम से पूर्ण |
+
+**गार्ड बनाम मिडलवेयर कब चुनें**: यदि तर्क यह निर्धारित करता है कि "क्या यह अनुरोध आगे बढ़ना चाहिए?" (प्रमाणीकरण, भूमिका जांच, दर सीमा), एक गार्ड का उपयोग करें। यदि तर्क बिना किसी परवाह किए अनुरोध/प्रतिक्रिया को संशोधित करता है (लॉगिंग, सीओआरएस), तो मिडलवेयर का उपयोग करें।
+
+## सर्वोत्तम प्रथाएँ
+
+1. **प्रति चिंता एक गार्ड** - `AuthGuard`, `RoleGuard`, `RateLimitGuard`। `SecurityGuard` नहीं जो सब कुछ करता है।
+2. **वर्णनात्मक स्थिति कोड का उपयोग करें** - गुम/अमान्य प्रमाणीकरण के लिए 401, अपर्याप्त अनुमतियों के लिए 403, दर सीमित करने के लिए 429।
+3. **दुष्प्रभावों से बचें** - गार्ड को अनुमतियों की जांच करनी चाहिए, स्थिति को संशोधित नहीं करना चाहिए (`request.state` को छोड़कर)।
+4. **कैश महंगे चेक** - इन-मेमोरी कैश के साथ सिंगलटन गार्ड इंस्टेंस।
+5. **अलगाव में गार्ड का परीक्षण करें** - एक नकली `Request` बनाएं, गार्ड को कॉल करें, दावा करें कि यह ऊपर उठता है या पास हो जाता है।
+
+## अगले चरण
+
+- [Middleware](/docs/modular/middleware) - पाइपलाइन हुक का अनुरोध करें
+- [Controllers](/docs/modular/controllers) - रूट हैंडलर को परिभाषित करें
+- [Modules](/docs/modular/modules) - फीचर मॉड्यूल में व्यवस्थित करें

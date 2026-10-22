@@ -1,0 +1,47 @@
+# usoToc
+
+Genera una tabla de contenido HTML a partir de los encabezados de la página actual.
+
+```python
+from nexy import useToc
+
+toc_html = useToc()
+toc_html = useToc(depth_range="1-4")
+```
+
+---
+
+## Parámetros
+
+| Parámetro | Tipo | Predeterminado | Descripción |
+|-----------|------|---------|-------------|
+| `depth_range` | `str` | `"2-6"` | Niveles de encabezado a incluir (por ejemplo, `"2-4"` para h2 a h4) |
+
+---
+
+## Valor de retorno
+
+`str`: cadena HTML de la tabla de contenido o cadena vacía si no hay encabezados.
+
+---
+
+## Ejemplo
+
+```nexy
+---
+from nexy import useToc
+toc = useToc()
+---
+<aside class="toc">
+    <h3>On this page</h3>
+    {{ toc | safe }}
+</aside>
+```
+
+---
+
+## Notas de uso
+
+- Analiza los títulos de rebajas del contenido de la página renderizada.
+- Devuelve una cadena vacía para páginas sin encabezados
+- Formato de rango de profundidad: `"2-6"` significa h2 a h6, `"1-3"` significa h1 a h3

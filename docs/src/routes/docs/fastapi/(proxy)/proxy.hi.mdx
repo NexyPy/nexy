@@ -1,0 +1,61 @@
+# प्रॉक्सी के पीछे
+
+Nginx, Caddy, Cloudflare, या लोड बैलेंसर के पीछे चलते समय, अग्रेषित हेडर पर भरोसा करने के लिए Nexy को कॉन्फ़िगर करें।
+
+## अग्रेषित हेडर
+
+```python
+# nexyconfig.py
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useTrustedHost = {
+        "allowed_hosts": ["*"],
+    }
+```
+
+## उविकॉर्न
+
+`nx start` या सीधे यूविकॉर्न के साथ चलते समय, `--proxy-headers` ध्वज पास करें:
+
+```bash
+nx start --proxy-headers
+
+# or
+uvicorn nexy.app:app --proxy-headers --forwarded-allow-ips="*"
+```
+
+## मूल मार्ग
+
+यदि आपका ऐप उप-पथ पर माउंट किया गया है (उदाहरण के लिए, `https://example.com/myapp/`):
+
+```python
+# nexyconfig.py
+from nexy import app
+
+app.root_path = "/myapp"
+```
+
+## नगनेक्स उदाहरण
+
+```nginx
+server {
+    listen 80;
+    server_name example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+## प्रभाव
+
+सही ढंग से कॉन्फ़िगर होने पर:
+- `request.url` मूल URL को दर्शाता है, आंतरिक को नहीं
+- रीडायरेक्ट सही योजना का उपयोग करते हैं (https)
+- दर सीमित करना और क्लाइंट आईपी का पता लगाना वास्तविक क्लाइंट आईपी का उपयोग करता है
+- ओपनएपीआई डॉक्स यूआरएल सही ढंग से उत्पन्न होते हैं

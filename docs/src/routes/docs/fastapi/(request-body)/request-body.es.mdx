@@ -1,0 +1,108 @@
+# Cuerpo de solicitud
+
+Reciba cuerpos de solicitud JSON utilizando modelos Pydantic.
+
+---
+
+## Modelo básico
+```python
+---
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+def POST(item: Item):
+    return {"name": item.name, "price": item.price}
+---
+```
+```python
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+## Campo de cuerpo con `embed`
+
+Anule el nombre del campo o inyecte campos JSON adicionales:
+```python
+---
+from fastapi import Body
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+def POST(
+    item: Item,
+    important: str = Body(embed=True),
+):
+    # Expects: {"item": {...}, "important": "x"}
+    ...
+---
+```
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+## Múltiples parámetros corporales
+
+Pase varios modelos: FastAPI los anida bajo sus nombres de parámetros:
+```python
+---
+def POST(item: Item, user: User):
+    # Expects: {"item": {...}, "user": {...}}
+    ...
+---
+```
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+## Modelos anidados
+
+Los modelos pueden contener otros modelos, listas y campos opcionales:
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+Independiente del enrutador: los mismos modelos de Pydantic funcionan tanto en FBR como en Modular.
+
+## Limitaciones
+
+- El cuerpo se analiza automáticamente cuando escribes y anotas un parámetro del modelo Pydantic.
+- FastAPI maneja la validación y devuelve 422 en caso de entrada no válida
+- No se necesita decorador `"@Body()`: comportamiento FastAPI estándar

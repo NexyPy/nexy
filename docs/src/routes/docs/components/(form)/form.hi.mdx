@@ -1,0 +1,40 @@
+# प्रपत्र घटक
+
+अंतर्निहित फॉर्म घटक फॉर्म और सर्वर क्रियाओं के साथ काम करना सरल बनाता है।
+
+## आयात करें
+
+इसे सीधे `nexy` से आयात करें:
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## बुनियादी उपयोग
+
+फॉर्म घटक को सर्वर क्रियाओं के साथ एकीकृत करने और फॉर्म हैंडलिंग उपयोगिताएँ प्रदान करने के लिए बढ़ाया जाएगा।
+
+अभी के लिए, आप अपने घटकों में मानक HTML फॉर्म का उपयोग कर सकते हैं:
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## सर्वर क्रियाएँ
+
+फॉर्म घटक सर्वर-साइड फॉर्म प्रोसेसिंग के लिए नेक्सी के `@action` डेकोरेटर के साथ एकीकृत होगा।

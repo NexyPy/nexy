@@ -1,0 +1,47 @@
+# "@UseRoute
+
+이름, 요약, 설명, 태그 등 처리기 메서드에 OpenAPI 메타데이터를 설정합니다.
+```python
+from nexy.decorators import UseRoute, Controller
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(
+        summary="List all users",
+        description="Returns paginated list of users",
+        deprecated=False,
+        tags=["users"],
+    )
+    def GET(self) -> list[dict]:
+        ...
+```
+## 서명
+```python
+UseRoute(
+    name: str | None = None,
+    tags: list[str] | None = None,
+    summary: str | None = None,
+    description: str | None = None,
+    deprecated: bool | None = None,
+    include_in_schema: bool | None = None,
+    operation_id: str | None = None,
+    openapi_extra: dict[str, Any] | None = None,
+) -> Callable
+```
+## 모든 매개변수
+
+| 파람 | 유형 | 설명 |
+|-------|------|-------------|
+| `name` | `str` | 경로 이름(기본값은 `ClassName.method_name`) |
+| `tags` | `list[str]` | OpenAPI 태그(컨트롤러 태그 재정의) |
+| `summary` | `str` | OpenAPI 요약 |
+| `description` | `str` | OpenAPI 설명 |
+| `deprecated` | `bool` | OpenAPI에서 더 이상 사용되지 않는 것으로 표시 |
+| `include_in_schema` | `bool` | OpenAPI 스키마에서 숨기기 |
+| `operation_id` | `str` | OpenAPI 작업 ID |
+| `openapi_extra` | `dict` | 추가 OpenAPI 필드 |
+
+## 별칭
+```python
+from nexy.decorators import useRoute  # lowercase alias, identical API
+```

@@ -1,0 +1,85 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# नेक्सी टेम्पलेट में पायथन
+
+फ्रंटमैटर (`---`) संकलन समय पर और प्रत्येक अनुरोध पर पायथन चलाता है।
+
+---
+
+## आप क्या कर सकते हैं
+
+### मॉड्यूल आयात करें
+```python
+---
+import json
+from datetime import datetime
+from nexy import usePathname
+from "@components/card.nexy" import Card
+---
+```
+### अभिव्यक्तियाँ चलाएँ
+```python
+---
+items = [1, 2, 3]
+now = datetime.now()
+is_admin = user.role == "admin"
+---
+```
+### हुक का प्रयोग करें
+```python
+---
+from nexy import usePathname, useSearchParams, useCookies
+pathname = usePathname()
+params = useSearchParams()
+cookies = useCookies()
+---
+```
+### एक्सेस अनुरोध डेटा
+```python
+---
+from fastapi import Request
+# request is injected automatically
+---
+```
+---
+
+## संकलन-समय बनाम रनटाइम
+
+| ऑपरेशन | कब | उदाहरण |
+|---|---|---|
+| `import` | संकलित करें | घटकों का आयात |
+| `prop[type]` | संकलित करें | टाइप-चेक किए गए प्रॉप्स |
+| हुक्स | निवेदन | `usePathname()` |
+| चर | निवेदन | `user = request.user` |
+
+फ्रंटमैटर में परिभाषित वेरिएबल टेम्पलेट में उपलब्ध हैं:
+```python
+---
+from datetime import datetime
+year = datetime.now().year
+---
+<footer>&copy; {{ year }} Nexy</footer>
+```
+---
+
+## साझा तर्क
+
+पुन: प्रयोज्य पायथन तर्क के लिए, एक नियमित `.py` फ़ाइल बनाएं:
+```python
+# src/utils/helpers.py
+def format_date(dt):
+    return dt.strftime("%B %d, %Y")
+```
+किसी भी घटक से आयात करें:
+```python
+---
+from src.utils.helpers import format_date
+from datetime import datetime
+---
+<p>{{ format_date(datetime.now()) }}</p>
+```
+<Link href="/docs/components/properties">Next: Properties →</Link>

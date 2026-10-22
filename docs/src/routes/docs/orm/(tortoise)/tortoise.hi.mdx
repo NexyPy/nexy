@@ -1,0 +1,36 @@
+# कछुआ-ओआरएम
+
+**Tortoise-ORM** एक एसिंक-नेटिव ORM है जो Django के ORM से प्रेरित है। सीखना आसान है, फास्टएपीआई/नेक्सी के साथ अच्छा काम करता है।
+
+## विन्यास
+
+```python
+TORTOISE_ORM = {
+    "connections": {"default": "sqlite://dev.db"},
+    "apps": {"models": {"models": ["models", "aerich.models"], "default_connection": "default"}},
+}
+```
+
+## उदाहरण
+
+```python
+from tortoise import fields
+from tortoise.models import Model
+
+class User(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=100)
+    email = fields.CharField(max_length=100)
+```
+
+## प्रवास
+
+कछुआ-ओआरएम **एरिच** का उपयोग करता है (`nx migrate` के माध्यम से कॉन्फ़िगर किया गया):
+
+```bash
+nx migrate --init    # Initialize Aerich (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+यदि आप Django से आ रहे हैं और async समर्थन के साथ एक परिचित API चाहते हैं तो Tortoise-ORM एक बढ़िया विकल्प है।

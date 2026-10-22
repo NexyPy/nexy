@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-function Form({use=2}:{use:any}) {
+function Form() {
     
     const [name, setName] = useState("");
     
 
     return (
-        <form onSubmit={(e) => e.preventDefault()} className="max-w-80 border border-border dark:border-border/70 bg-gray-100/20 dark:bg-black/10  rounded-xl p-1 flex items-center ">
+        <form onSubmit={(e) => e.preventDefault()} className="max-w-80 border border-border dark:border-border/70 bg-gray-100/20 dark:bg-black/10 rounded-xl p-1 flex items-center">
             <input 
                 type="email" id="name" name="name" pattern=""
                 placeholder="you@domaine.com"
@@ -14,7 +14,7 @@ function Form({use=2}:{use:any}) {
             />
             <button 
                 type="submit"
-                className=" cursor-pointer flex items-center justify-center gap-2 bg-yellow-300 px-4 py-2 rounded-lg uppercase text-xs font-medium text-black"
+                className="cursor-pointer flex items-center justify-center gap-2 bg-yellow-300 px-4 py-2 rounded-lg uppercase text-xs font-medium text-black"
             >
                 <span>Subcribe</span>
                 <svg

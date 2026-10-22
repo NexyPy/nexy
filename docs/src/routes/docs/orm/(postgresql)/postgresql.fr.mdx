@@ -1,0 +1,26 @@
+# PostgreSQL
+
+PostgreSQL est la base de données de production recommandée pour les applications Nexy.
+
+## Connexion
+
+Configurez votre connexion PostgreSQL dans la configuration de la base de données du projet :
+
+```python
+# configs/database.py or .env
+DATABASE_URL = "postgresql+asyncpg://user:password"@localhost:5432/mydb"
+```
+
+## Avec les ORM
+
+| ORM | Chauffeur | Chaîne de connexion |
+|-----|--------|------------------|
+| Modèle SQL / SQLAlchimie | `asyncpg` | `postgresql+asyncpg://user:pass"@localhost/db` |
+| Tortue-ORM | `asyncpg` | `postgres://user:pass"@localhost/db` |
+
+## Pourquoi PostgreSQL avec Nexy
+
+- Prise en charge asynchrone complète via `asyncpg`
+- Colonnes JSON/JSONB natives pour schémas flexibles
+- Excellent pour les déploiements de production
+- Fonctionne avec tous les ORM pris en charge

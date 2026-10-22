@@ -1,0 +1,47 @@
+# Gerar clientes
+
+Gere SDKs de cliente com segurança de tipo a partir do seu esquema OpenAPI.
+
+## Gerar cliente do FastAPI
+
+FastAPI inclui um comando `generate_client` que gera clientes TypeScript/JavaScript:
+
+```bash
+pip install fastapi
+fastapi-codegen --input openapi.json --output ./client
+```
+
+Ou use `openapi-generator`:
+
+```bash
+npm install "@openapitools/openapi-generator-cli
+npx openapi-generator-cli generate \
+    -i http://localhost:3000/openapi.json \
+    -g typescript-fetch \
+    -o ./client
+```
+
+## Nexy + liblab
+
+[Nexy OpenAPI URL] → [liblab](https://liblab.com) gera SDKs em vários idiomas.
+
+## Busca manual
+
+Para casos simples, use `fetch` diretamente:
+
+```typescript
+const res = await fetch("/api/items/1");
+const item = await res.json();
+```
+
+## Biblioteca cliente
+
+Nexy gera wrappers TypeScript para [Actions](/docs/guides/actions) em `./actions/`. Para manipuladores de rotas, use seu cliente HTTP preferido (`fetch`, `axios`, `httpx`).
+
+## Idiomas
+
+| Ferramenta | Idiomas |
+|------|-----------|
+| `openapi-generator` | TypeScript, Python, Java, Go, C#, Rust, 50+ |
+| `liblab` | TypeScript, Python, Go, Java, Kotlin, C# |
+| `fastapi-codegen` | TypeScript (Fetch/Axios) |

@@ -1,0 +1,48 @@
+# "@UseResponse
+
+핸들러 메서드(상태 코드, 응답 모델, 응답 클래스 등)에 응답 메타데이터를 설정합니다.
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## 서명
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## 모든 매개변수
+
+| 파람 | 유형 | 설명 |
+|-------|------|-------------|
+| `status_code` | `int` | HTTP 상태 코드 |
+| `response_class` | `type[Response]` | 사용자 정의 응답 클래스(예: `HTMLResponse`) |
+| `response_model` | `type` | 응답 직렬화를 위한 Pydantic 모델 |
+| `responses` | `dict` | 추가 OpenAPI 응답 |
+| `response_description` | `str` | OpenAPI의 응답 설명 |
+| `response_model_include` | 설정/매핑 | 응답에 포함할 필드 |
+| `response_model_exclude` | 설정/매핑 | 응답에서 제외할 필드 |
+| `response_model_by_alias` | `bool` | 응답에 별칭 이름 사용 |
+| `response_model_exclude_unset` | `bool` | 설정되지 않은 필드 제외 |
+| `response_model_exclude_defaults` | `bool` | 기본값 필드 제외 |
+| `response_model_exclude_none` | `bool` | 값이 없는 필드 제외 |

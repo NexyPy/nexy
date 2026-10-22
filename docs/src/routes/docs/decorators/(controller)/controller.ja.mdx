@@ -1,0 +1,50 @@
+# "@コントローラー
+
+クラスを FastAPI コントローラーとしてマークします。メソッド名は HTTP 動詞を定義します。
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+＃＃ サイン
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## パラメータ
+
+|パラム |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `prefix` | `str` | `""` |このコントローラのすべてのルートの URL プレフィックス |
+| `tags` | `list[str]` | `None` | OpenAPI タグ (デフォルトは `[ClassName]`) |
+
+## HTTP 動詞
+
+メソッド名では大文字と小文字が区別されません。コントローラーごとに動詞ごとに 1 つのメソッド。
+
+|メソッド名 | HTTP 動詞 |
+|---------------|----------|
+| `def GET(self)` |入手 |
+| `def post(self)` |投稿 |
+| `def Put(self)` |置く |
+| `def delete(self)` |削除 |
+| `def patch(self)` |パッチ |
+| `def options(self)` |オプション |
+| `def head(self)` |頭 |
+| `def SOCKET(self)` |ウェブソケット |
+
+すべてのハンドラー メソッドは `"/"` にマップされます。パス パラメーターは `"@Controller` プレフィックスに入ります。
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

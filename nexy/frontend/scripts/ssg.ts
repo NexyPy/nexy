@@ -1,6 +1,6 @@
 import { glob } from 'glob'
-import { getProjectFrameworks, checkFrameworks, c } from './utils'
-import { type SSGResult, writeReport } from './utils'
+import { getProjectFrameworks, checkFrameworks, globIgnore, c } from './utils'
+import { type Framework, type SSGResult, writeReport, flushSnippets } from './utils'
 import { JSDOM } from 'jsdom'
 
 async function run() {
@@ -34,11 +34,14 @@ async function run() {
   const usedFrameworks = getProjectFrameworks()
   const installedFrameworks = checkFrameworks(usedFrameworks)
   const results: SSGResult[] = []
+  const startMs = Date.now()
 
-  const hasTsx = glob.sync('**/*.{tsx,jsx}', {
+  const hasTsx = glob.sync('**/*.{tsx,jsx,mdx}', {
     cwd: process.cwd(),
-    ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
+    ignore: globIgnore()
   }).length > 0
+
+  const jobs: Promise<SSGResult>[] = []
 
   if (hasTsx) {
     const tsxInstalled = ['react', 'preact', 'solid'].filter(f =>
@@ -48,23 +51,23 @@ async function run() {
     if (tsxInstalled.length === 1) {
       const framework = tsxInstalled[0]
       const { run } = await import(`./ssg.${framework}`)
-      results.push(await run({ primary: true }))
+      jobs.push(run({ primary: true }))
     } else if (tsxInstalled.length > 1) {
       for (const framework of tsxInstalled) {
         const { run } = await import(`./ssg.${framework}`)
-        results.push(await run())
+        jobs.push(run())
       }
     } else {
-      console.warn(`${c.yellow}⚠ .tsx/.jsx files found but no React/Preact/Solid framework detected — treating as client-only bundles${c.reset}`)
+      console.warn(`${c.yellow}⚠ .tsx/.jsx/.mdx files found but no React/Preact/Solid framework detected - treating as client-only bundles${c.reset}`)
       const { run } = await import('./ssg.html')
-      results.push(await run())
+      jobs.push(run())
     }
   }
 
   if (usedFrameworks.has('vue')) {
     if (installedFrameworks.has('vue')) {
       const { run } = await import('./ssg.vue')
-      results.push(await run())
+      jobs.push(run())
     } else {
       console.warn(`${c.yellow} *.vue files found but vue is not installed. Run: pnpm add vue${c.reset}`)
     }
@@ -73,13 +76,16 @@ async function run() {
   if (usedFrameworks.has('svelte')) {
     if (installedFrameworks.has('svelte')) {
       const { run } = await import('./ssg.svelte')
-      results.push(await run())
+      jobs.push(run())
     } else {
       console.warn(`${c.yellow} *.svelte files found but svelte is not installed. Run: pnpm add svelte${c.reset}`)
     }
   }
 
-  writeReport(results)
+  results.push(...await Promise.all(jobs))
+  await flushSnippets()
+
+  writeReport(results, Date.now() - startMs)
 
   const all = results.flatMap(r => r.entries)
   const success = all.filter(e => e.status === 'success').length

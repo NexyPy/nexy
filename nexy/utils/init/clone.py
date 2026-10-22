@@ -13,20 +13,17 @@ from nexy.utils.common.console import console
 class GitClone:
     def __init__(self) -> None:
         self.repo = "https://github.com/NexyPy/nexy.git"
-        self.branch = "master"  # Templates are in the master branch of the nexy repo
+        self.branch = "master"
         self.dest = Path(".")
-        self.is_windows = os.name == "nt"
 
     def _is_empty_dir(self, path: Path) -> bool:
         return not any(path.iterdir())
 
     def clone(self, repo: str, branch: str, dest: Path, subdir: str | None = None) -> None:
         """Clones the template. If subdir is provided, extracts only that directory's contents."""
-        # Backup user's git repo if it already exists
         has_user_git = self._stash_git_repo()
 
         try:
-            # If the directory contains only .venv or is empty, we can clone/extract
             is_empty = self._is_empty_dir(dest)
             has_only_venv = False
             if not is_empty:
@@ -36,7 +33,6 @@ class GitClone:
                 elif len(items) == 1 and items[0].name == ".venv":
                     has_only_venv = True
 
-            # Common init steps
             init_cmds = [
                 ["git", "init"],
                 ["git", "remote", "add", "origin", repo],
@@ -50,7 +46,6 @@ class GitClone:
                         capture_output=True,
                         text=True,
                         check=True,
-                        shell=self.is_windows,
                     )
                 except subprocess.CalledProcessError as e:
                     if "fetch" in cmd and e.returncode == 128:
@@ -59,14 +54,12 @@ class GitClone:
                                 "init.template_not_found",
                                 "Template or branch '{branch}' not found on remote.",
                             ).format(branch=branch)
-                        )
+                        ) from e
                     raise e
 
-            # Extraction logic (sparse or merge)
             checkout_path = subdir if subdir else "."
 
             if is_empty or has_only_venv:
-                # Checkout the subdir contents to the root
                 checkout_cmd = ["git", "checkout", "FETCH_HEAD", "--", checkout_path]
                 try:
                     subprocess.run(
@@ -75,17 +68,15 @@ class GitClone:
                         capture_output=True,
                         text=True,
                         check=True,
-                        shell=self.is_windows,
                     )
-                except subprocess.CalledProcessError:
+                except subprocess.CalledProcessError as e:
                     raise Exception(
                         t(
                             "init.checkout_failed",
                             "Failed to extract files from template '{path}'.",
                         ).format(path=checkout_path)
-                    )
+                    ) from e
 
-                # If we used a subdir, move files to root and cleanup
                 if subdir:
                     self._move_subdir_to_root(dest, Path(subdir))
             else:
@@ -93,7 +84,6 @@ class GitClone:
                     "[yellow]nexy[/yellow] » "
                     + t("init.merging", "Directory not empty, merging files...")
                 )
-                # Standard merge approach
                 merge_cmds = [
                     ["git", "checkout", "FETCH_HEAD", "--", checkout_path],
                     ["git", "merge", "--ff-only", "FETCH_HEAD"],
@@ -107,24 +97,21 @@ class GitClone:
                             capture_output=True,
                             text=True,
                             check=True,
-                            shell=self.is_windows,
                         )
-                    except subprocess.CalledProcessError:
+                    except subprocess.CalledProcessError as e:
                         raise Exception(
                             t(
                                 "init.checkout_failed",
                                 "Failed to extract files from template '{path}'.",
                             ).format(path=checkout_path)
-                        )
+                        ) from e
 
                 if subdir:
                     self._move_subdir_to_root(dest, Path(subdir))
 
         finally:
-            # Suppression radicale du dossier .git du template pour couper tout lien (origin)
             self._cleanup_git(dest)
 
-            # Restauration du dépôt git de l'utilisateur s'il existait
             if has_user_git:
                 self._restore_git_repo()
 
@@ -152,7 +139,6 @@ class GitClone:
                     target.unlink()
             shutil.move(str(item), str(root))
 
-        # Remove empty parent dirs of the subdir
         current = source
         while current != root:
             parent = current.parent
@@ -165,7 +151,7 @@ class GitClone:
         """Removes the .git directory to cut any link with the remote repository."""
 
         def on_rm_error(
-            func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+            func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
         ) -> None:
             os.chmod(path, stat.S_IWRITE)
             func(path)
@@ -174,7 +160,6 @@ class GitClone:
         if gitdir.exists():
             shutil.rmtree(gitdir, onerror=on_rm_error)
 
-        # Supprime également .github si présent (souvent spécifique au dépôt du template)
         githubdir = dest / ".github"
         if githubdir.exists():
             shutil.rmtree(githubdir, onerror=on_rm_error)
@@ -185,11 +170,10 @@ class GitClone:
         gitdir = root / ".git"
         backup = root / ".git_old"
 
-        # If backup already exists, we must remove it first to avoid rename errors
         if backup.exists():
 
             def on_rm_error(
-                func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+                func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
             ) -> None:
                 os.chmod(path, stat.S_IWRITE)
                 func(path)
@@ -205,7 +189,7 @@ class GitClone:
                     shutil.copytree(gitdir, backup, dirs_exist_ok=True)
 
                     def on_rm_error(
-                        func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+                        func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
                     ) -> None:
                         os.chmod(path, stat.S_IWRITE)
                         func(path)
@@ -223,17 +207,15 @@ class GitClone:
         backup = root / ".git_old"
 
         if backup.exists():
-            # If a new .git was created by the template extraction, remove it
             if gitdir.exists():
                 self._cleanup_git(root)
 
             try:
-                # Restore by renaming (effectively deletes backup)
                 backup.rename(gitdir)
             except Exception:
-                # Fallback to copy and delete
+
                 def on_rm_error(
-                    func: Callable[[str], Any], path: str, exc_info: tuple[object, ...]
+                    func: Callable[[str], Any], path: str, _exc_info: tuple[object, ...]
                 ) -> None:
                     os.chmod(path, stat.S_IWRITE)
                     func(path)

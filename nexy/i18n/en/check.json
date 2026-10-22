@@ -1,0 +1,8 @@
+{
+  "check": {
+    "compiling": "compiling .nexy/.mdx ...",
+    "skip_tool": "mypy not found - skipping Python",
+    "failed": "{count} section(s) failed",
+    "passed": "all checks passed"
+  }
+}

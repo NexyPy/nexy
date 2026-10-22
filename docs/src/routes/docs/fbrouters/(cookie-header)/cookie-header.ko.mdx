@@ -1,0 +1,61 @@
+# 쿠키 및 헤더(FBR)
+
+FastAPI의 `Cookie` 및 `Header` 매개변수를 사용하여 HTTP 쿠키 및 헤더를 읽습니다.
+
+## 쿠키 매개변수
+
+```python
+# src/routes/profile.py
+from fastapi import Cookie
+
+def GET(session_id: str | None = Cookie(None)):
+    return {"session_id": session_id}
+```
+
+## 다중 쿠키
+
+```python
+from fastapi import Cookie
+
+def GET(
+    session_id: str | None = Cookie(None),
+    theme: str = Cookie("light"),
+):
+    return {"session": session_id, "theme": theme}
+```
+
+## 헤더 매개변수
+
+```python
+from fastapi import Header
+
+def GET(user_agent: str | None = Header(None)):
+    return {"ua": user_agent}
+```
+
+## 사용자 정의 헤더 별칭
+
+```python
+from fastapi import Header
+
+def GET(x_token: str = Header(alias="X-Token")):
+    return {"token": x_token}
+```
+
+헤더 이름은 기본적으로 밑줄로 하이픈이 포함된 소문자입니다. 사용자 정의 이름에는 `alias`를 사용하십시오.
+
+## 템플릿에서 쿠키 읽기
+
+`.nexy` 템플릿에서는 `useCookies()` 후크를 사용합니다.
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+---
+<p>Session: {{ cookies.get("session_id") }}</p>
+```
+
+---
+
+참조: [Session config](/docs/config/session)

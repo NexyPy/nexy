@@ -1,0 +1,45 @@
+# 設定: Vite
+
+Nexy は、クライアント側のバンドルのために **Vite** と統合します。構成は `nexyconfig.py` と `vite.config.ts` に入ります。
+
+## Vite を有効にする
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## Vite 設定フィールド
+
+|フィールド |タイプ |デフォルト |説明 |
+|----------|------|----------|---------------|
+| `useVite` | `bool` | `False` | Vite バンドルを有効にします。 |
+| `useViteDevUrl` | `str \| None` | `None` |カスタム Vite 開発サーバー URL。 `None` の場合は自動検出されます。 |
+
+## vite.config.ts
+
+Nexy は、`nx init` 中にプロジェクト ルートで `vite.config.ts` を生成します。他の Vite プロジェクトと同様にカスタマイズできます。
+
+```ts
+import { defineConfig } from "vite";
+import react from ""@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: "__nexy__/client",
+    },
+});
+```
+
+## 開発モード
+
+`useVite = True`、`nx dev` が uvicorn と一緒に Vite 開発サーバーを起動します。 Nexy は HMR スクリプトを自動的に挿入します。
+
+## 生産
+
+`nx build` 中に、Vite は `__nexy__/client/` で最適化されたバンドルを生成します。 Nexy はマニフェストを読み取り、正しい CSS/JS タグを挿入します。
+
+## インラインモード
+
+CSS/JS を HTML に直接インライン化するには、`NEXY_INLINE_CLIENT=1` を設定します (電子メール、AMP、または自己完結型ページに役立ちます)。

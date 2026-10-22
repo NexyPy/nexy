@@ -5,8 +5,7 @@
       "router": "Souhaitez‑vous utiliser le routeur basé sur les fichiers ?",
       "project_type": "Choisissez le type de projet",
       "client_component": "Souhaitez‑vous utiliser un composant client ?",
-      "framework": "Choisissez le framework client",
-      "tailwind": "Souhaitez‑vous utiliser Tailwind CSS ?"
+      "framework": "Choisissez le framework client"
     },
     "choice": {
       "web": "Web (application monolithique)",

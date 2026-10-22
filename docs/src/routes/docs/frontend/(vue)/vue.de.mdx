@@ -1,0 +1,73 @@
+#Vue
+
+Fügen Sie Vue zu Ihrem `nexyconfig.py` hinzu:
+
+```python
+from nexy.frontend import vue
+
+class NexyConfig(NexyConfigModel):
+    useFF = [vue()]
+```
+
+---
+
+## Eine Komponente erstellen
+
+Dateien mit der Erweiterung `.vue` werden als einzelne Dateikomponenten behandelt:
+
+```vue
+<!-- src/components/Counter.vue -->
+<script setup>
+import { ref } from 'vue'
+const props = defineProps({ initial: { type: Number, default: 0 } })
+const count = ref(props.initial)
+</script>
+
+<template>
+  <div>
+    <p>Count: {{ count }}</p>
+    <button "@click="count++">+</button>
+  </div>
+</template>
+```
+
+---
+
+## Verwendung in einer .nexy-Seite
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Requisiten werden über die Jinja2 `{{ }}`-Syntax übergeben – verwenden Sie doppelte geschweifte Klammern für JSON-Werte.
+
+---
+
+## Kinder-/Slot-Inhalte
+
+Nexy übergibt untergeordnete Inhalte als Standard-Slot:
+
+```vue
+<!-- Card.vue -->
+<template>
+  <div class="card">
+    <h2>{{ title }}</h2>
+    <slot />
+  </div>
+</template>
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as the default slot</p>
+</Card>
+```
+
+---
+
+## SSR
+
+Vue-Komponenten verwenden `createSSRApp` zur Hydratation. Vom Server gerendertes HTML wird automatisch auf dem Client hydratisiert.

@@ -1,0 +1,54 @@
+# nx dev
+
+Startet den Entwicklungsserver mit Hot-Reload, Vite HMR und VFS-Dateiüberwachung.
+
+```bash
+nx dev
+```
+
+---
+
+## Was es tut
+
+1. Startet einen **VFS** (Virtual File System)-Watcher für `.nexy`/`.mdx`-Dateien
+2. Startet den **Vite**-Entwicklungsserver für Client-Komponenten (sofern konfiguriert).
+3. Startet **uvicorn** mit automatischem Neuladen auf `127.0.0.1:3000`
+4. Öffnet **HMR** WebSocket unter `/_nexy/hmr` für sofortige Browser-Updates
+
+---
+
+## Optionen
+
+| Flagge | Standard | Beschreibung |
+|------|---------|-------------|
+| `--port` | `3000` | Server-Port |
+| `--host` | `127.0.0.1` | Serverbindungsadresse |
+| `--vite-port` | auto | Port des Vite-Entwicklungsservers |
+
+---
+
+## Umgebungsvariablen
+
+| Variable | Standard | Beschreibung |
+|----------|---------|-------------|
+| `NEXY_DEBUG` | `true` | Debug-Modus (automatisch im Entwickler festgelegt) |
+| `NEXY_PORT` | `3000` | Server-Port |
+| `NEXY_HOST` | `127.0.0.1` | Adresse binden |
+
+---
+
+## Beispiel
+
+```bash
+# Development with custom port
+nx dev --port 8080
+
+# Development binding all interfaces (Docker)
+nx dev --host 0.0.0.0
+```
+
+---
+
+## Alias
+
+`nx d`

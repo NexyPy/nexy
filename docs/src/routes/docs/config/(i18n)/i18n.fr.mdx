@@ -1,0 +1,101 @@
+#i18n
+
+Configurez l'internationalisation : détection des paramètres régionaux, fichiers de traduction et prise en charge RTL.
+
+```python
+from nexy.core.models import NexyConfigModel
+
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr", "es"]
+    useDefaultLocale = "en"
+    useLocaleCookieName = "nexy-locale"
+    useLocaleDetection = {"header": True, "cookie": True}
+    useRTL = False
+```
+
+---
+
+## Champs
+
+| Champ | Tapez | Par défaut | Descriptif |
+|-------|------|---------|-------------|
+| `useLocales` | `list[str] \| None` | `None` | Paramètres régionaux disponibles. Détecté automatiquement à partir de `nexy/i18n/` si `None`. |
+| `useDefaultLocale` | `str` | `"en"` | Paramètres régionaux de secours en cas d'échec de la détection. |
+| `useLocaleCookieName` | `str` | `"nexy-locale"` | Nom du cookie pour conserver le choix de paramètres régionaux de l'utilisateur. |
+| `useLocaleDetection` | `dict \| None` | `None` | Stratégies de détection : `header`, `cookie`, `path`. |
+| `useRTL` | `bool` | `False` | Activez la prise en charge de la mise en page de droite à gauche. |
+
+---
+
+## Fichiers de traduction
+
+Placez les fichiers de traduction JSON dans `nexy/i18n/<locale>/` :
+
+```text
+nexy/
+└── i18n/
+    ├── en/
+    │   └── common.json
+    ├── fr/
+    │   └── common.json
+    └── es/
+        └── common.json
+```
+
+```json
+// nexy/i18n/en/common.json
+{
+    "welcome": "Welcome",
+    "greeting": "Hello!"
+}
+```
+
+```json
+// nexy/i18n/fr/common.json
+{
+    "welcome": "Bienvenue",
+    "greeting": "Bonjour !"
+}
+```
+
+---
+
+## Utilisation dans les modèles
+
+```nexy
+---
+from nexy.i18n import t
+welcome = t("welcome")
+---
+<h1>{{ welcome }}</h1>
+```
+
+---
+
+## Utilisation en Python
+
+```python
+from nexy.i18n import trans, t
+
+msg = trans("welcome")            # explicit
+msg = t("welcome")                # shorthand
+msg = t("missing_key", default="Fallback")
+```
+
+---
+
+## Changement de paramètres régionaux
+
+```python
+from nexy.i18n import useLocale
+locale = useLocale()
+print(locale["locale"])       # "fr"
+print(locale["is_rtl"])       # False
+print(locale["available"])    # ["en", "fr", "es"]
+```
+
+---
+
+## Prise en charge RTL
+
+Lorsque `useRTL = True`, Nexy définit l'attribut `dir="rtl"` sur l'élément `<html>` et charge les feuilles de style ajustées RTL pour les frameworks pris en charge.

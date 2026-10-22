@@ -28,7 +28,7 @@ export function parseHeader(text: string): { imports: NexyImport[]; props: NexyP
   const props: NexyProp[] = [];
 
   // Use the framework's pattern for scanning (lenient with spaces)
-  const headerMatch = text.match(/^\s*---\s*\n([\s\S]*?)\n\s*---\s*/m);
+  const headerMatch = text.match(/^\s*---[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*---[ \t]*(?=\r?\n|$)/m);
   if (!headerMatch) {
     return { imports, props };
   }
@@ -37,7 +37,7 @@ export function parseHeader(text: string): { imports: NexyImport[]; props: NexyP
 
   // Support parentheses and multi-line imports (LogicSanitizer inspiration)
   const importRegex =
-    /^\s*from\s+["'](?<path>[^"']+)["']\s+import\s+(?<targets>.+?)(?=\n\S|$)/gms;
+    /^\s*from\s+["'](?<path>[^"']+)["']\s+import\s+(?<targets>.+?)(?=\r?\n\S|$)/gms;
   
   let m: RegExpExecArray | null;
   while ((m = importRegex.exec(header)) !== null) {
@@ -90,7 +90,7 @@ export function parseHeader(text: string): { imports: NexyImport[]; props: NexyP
 }
 
 export function getSection(text: string, offset: number): NexySection {
-  const headerMatch = text.match(/^\s*---\s*\n([\s\S]*?)\n\s*---\s*/m);
+  const headerMatch = text.match(/^\s*---[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*---[ \t]*(?=\r?\n|$)/m);
   if (!headerMatch || headerMatch.index === undefined) {
     return "template";
   }
@@ -115,7 +115,7 @@ export function getTemplate(text: string): string {
 
 export function findUsedComponentsInTemplate(text: string): string[] {
   const template = getTemplate(text);
-  const usedComponents = [...template.matchAll(/<([A-Z][A-Za-z0-9]*)/g)].map(
+  const usedComponents = [...template.matchAll(/<([A-Z][A-Za-z0-9_]*)/g)].map(
     (match) => match[1],
   );
   return Array.from(new Set(usedComponents));

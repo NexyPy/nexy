@@ -1,0 +1,76 @@
+# "@UseGuard
+
+Apply guard callables to a controller class or individual handler method.
+
+## Guard contract
+
+A guard is any callable with `__call__(self, request)`. It receives the FastAPI `Request` object. Raise `HTTPException` to block, return `None` to allow.
+```python
+from fastapi import HTTPException
+
+class RoleGuard:
+    def __init__(self, role: str):
+        self.role = role
+
+    def __call__(self, request) -> None:
+        if request.user.role != self.role:
+            raise HTTPException(403)
+```
+---
+
+## Guard on a route
+```python
+---
+from nexy.decorators import UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import UseGuard, Controller
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@Controller("/users")
+"@UseGuard(AuthGuard())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+
+    "@UseGuard(AdminGuard())
+    def delete(self, user_id: int) -> dict:
+        ...
+```
+## Multiple guards
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## Signature
+```python
+UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## Order
+
+Class-level guards run before method-level guards. All run as FastAPI `Depends`.

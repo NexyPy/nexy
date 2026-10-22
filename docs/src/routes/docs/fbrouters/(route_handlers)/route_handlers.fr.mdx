@@ -1,0 +1,126 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Gestionnaires de routes (API)
+
+Un gestionnaire de route est un fichier `.py` dans `src/routes/` qui expose un point de terminaison d'API. Contrairement aux pages (`.nexy` / `.mdx`), les gestionnaires renvoient des données JSON ou brutes.
+
+---
+
+## Création d'un gestionnaire
+```bash
+routes/
+└── api/
+    └── hello.py           →  GET /api/hello
+```
+```python
+# api/hello.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"message": "Hello from Nexy!"}
+```
+
+Nexy mappe les noms de fonctions aux méthodes HTTP : `GET` , `POST`, `PUT`, `PATCH`, `DELETE`.
+
+---
+
+## Méthodes HTTP disponibles
+
+Définissez une fonction par méthode dans un seul fichier :
+```python
+# routes/api/items.py
+from fastapi import Request
+
+async def GET(request: Request):
+    return {"items": []}
+
+async def POST(request: Request):
+    data = await request.json()
+    return {"created": data}
+
+async def DELETE(request: Request, id: int):
+    return {"deleted": id}
+```
+
+Chaque fonction correspond à `GET`, `POST`, `DELETE` sur `/api/items`.
+
+---
+
+## Corps de la requête
+```python
+# routes/api/users.py
+from pydantic import BaseModel
+
+class CreateUser(BaseModel):
+    name: str
+    email: str
+
+async def POST(request: Request, body: CreateUser):
+    return {"name": body.name, "email": body.email}
+```
+FastAPI valide automatiquement le corps – renvoie 422 en cas d'entrée non valide.
+
+---
+
+## Codes d'état
+
+Renvoie un `status_code` avec `JSONResponse` :
+```python
+from fastapi.responses import JSONResponse
+
+async def POST(request: Request):
+    return JSONResponse({"created": True}, status_code=201)
+```
+---
+
+## Paramètres de l'itinéraire
+```python
+# routes/api/users/[id].py
+from fastapi import Request
+
+async def GET(request: Request, id: int):
+    return {"user_id": id}
+```
+Les segments dynamiques (`[id]`) sont injectés comme arguments de mots-clés avec conversion de type automatique.
+
+---
+
+## Dépendances
+
+Les `Depends`, `Header`, `Query`, `Cookie` de FastAPI fonctionnent de manière native :
+```python
+from fastapi import Depends, Header, Query
+
+def get_db():
+    return {"connection": "ok"}
+
+async def GET(request: Request, db=Depends(get_db), x_api_key: str = Header(None)):
+    return {"db": db, "api_key": x_api_key}
+```
+---
+
+## Réponses
+
+| Type de retour | Réponse |
+|-------------|----------|
+| `dict` | `application/json` |
+| `list` | `application/json` |
+| `str` | `text/plain` |
+| `BaseModel` | `application/json` |
+| `Response` | Personnalisé (tous) |
+| `None` | `200 OK` vide |
+
+---
+
+## Bonnes pratiques
+
+- Un fichier `.py` = un chemin de route
+- Utilisez des noms de fonctions correspondant aux méthodes HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
+- Utiliser les modèles Pydantic pour la validation des demandes
+- Utilisez `JSONResponse` pour les codes de statut personnalisés
+- Pour les mutations déclenchées par le client, voir [Actions](/docs/guides/actions)
+

@@ -1,0 +1,53 @@
+# Scripts em Componentes
+
+Você pode incluir JavaScript do lado do cliente diretamente em seus arquivos .nexy usando tags <script> padrão.
+
+## Uso Básico
+
+```nexy
+---
+---
+<button id="myButton">Click Me!</button>
+<script>
+document.getElementById('myButton').addEventListener('click', function() {
+    alert('Hello from Nexy!');
+});
+</script>
+```
+
+## Scripts específicos da estrutura
+
+Para componentes da estrutura (React, Vue, Svelte, Solid, Preact), use a sintaxe `<script framework="...">`:
+
+```nexy
+---
+---
+<script framework="react">
+import { useState } from 'react';
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>+</button>
+        </div>
+    );
+}
+</script>
+```
+
+## Substituição de módulo a quente (HMR)
+
+Nexy lida automaticamente com atualizações de script durante o desenvolvimento. Ao alterar um script, o componente é recarregado sem atualizar a página inteira.
+
+## Scripts Externos
+
+Você também pode fazer referência a scripts externos:
+
+```nexy
+---
+---
+<script src="https://cdn.example.com/script.js"></script>
+```

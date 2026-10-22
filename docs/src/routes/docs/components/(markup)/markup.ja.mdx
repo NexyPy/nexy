@@ -1,0 +1,79 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# Nexy でマークアップを書く
+
+Nexy テンプレートは、動的コンテンツに **HTML** + **Jinja2** を使用します。
+HTML と Jinja2 を知っている場合は、Nexy テンプレートをすでに知っているでしょう。
+
+---
+
+## テキスト補間
+```html
+<h1>{{ title }}</h1>
+<p>{{ description }}</p>
+```
+変数はフロントマターまたはプロップから取得されます。
+
+---
+
+## フィルター
+
+Jinja2 フィルターは値を変換します。
+```html
+<p>{{ content | safe }}</p>
+<p>{{ name | upper }}</p>
+<p>{{ price | round(2) }}</p>
+```
+`| safe` は、文字列を安全な HTML (自動エスケープなし) としてマークします。
+
+---
+
+## for ループ
+```html
+<ul>
+{% for item in items %}
+    <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+```
+---
+
+## もし/そうでなければ
+```html
+{% if user %}
+    <p>Welcome, {{ user.name }}!</p>
+{% else %}
+    <a href="/login">Sign in</a>
+{% endif %}
+```
+---
+
+## テンプレート内のコンポーネント
+
+コンポーネントは HTML 要素のように使用されます。
+```html
+<div class="card">
+    <Card title="Hello">
+        <p>Child content</p>
+    </Card>
+</div>
+```
+`Slot` コンポーネントは子をレンダリングします (「モジュール」を参照)。
+
+---
+
+## 生の JS ブロック
+
+`{{ '' }}` を使用して、`{{ '{{' }}` を Jinja2 解析から保護します (JS フレームワークを埋め込むときに必要です)。
+```html
+{% raw %}
+<script>
+const data = {{ json_data }};
+</script>
+{% endraw %}
+```
+<Link href="/docs/components/python">Next: Python in template →</Link>

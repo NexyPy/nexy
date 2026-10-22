@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
+import os from 'os'
 import path from 'path'
 import { glob } from 'glob'
 import ts from 'typescript'
+import { EXCLUDES } from './excludes'
 
 export type Framework = 'react' | 'preact' | 'solid' | 'vue' | 'svelte'
 
@@ -12,6 +14,12 @@ export const c = {
   yellow: '\x1b[33m',
   red:    '\x1b[31m',
   green:  '\x1b[32m',
+}
+
+const GLOB_IGNORE = ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**', 'nexy/**', ...EXCLUDES]
+
+export function globIgnore(): string[] {
+  return GLOB_IGNORE
 }
 
 export const FRAMEWORK_PACKAGES: Record<Framework, string> = {
@@ -24,9 +32,9 @@ export const FRAMEWORK_PACKAGES: Record<Framework, string> = {
 
 export function getProjectFrameworks(): Set<Framework> {
   const frameworks = new Set<Framework>()
-  const files = glob.sync('**/*.{tsx,jsx,vue,svelte}', {
+  const files = glob.sync('**/*.{tsx,jsx,vue,svelte,mdx}', {
     cwd: process.cwd(),
-    ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
+    ignore: globIgnore()
   })
 
   for (const file of files) {
@@ -34,6 +42,8 @@ export function getProjectFrameworks(): Set<Framework> {
       frameworks.add('vue')
     } else if (file.endsWith('.svelte')) {
       frameworks.add('svelte')
+    } else if (file.endsWith('.mdx')) {
+      frameworks.add(resolveMdxFramework(path.resolve(process.cwd(), file)))
     } else if (file.endsWith('.tsx') || file.endsWith('.jsx')) {
       const content = fs.readFileSync(path.resolve(process.cwd(), file), 'utf-8')
       if (content.includes("from 'solid-js'") || content.includes('from "solid-js"')) {
@@ -46,7 +56,7 @@ export function getProjectFrameworks(): Set<Framework> {
       ) {
         frameworks.add('react')
       } else {
-        console.warn(`${c.yellow}⚠ client-only: ${file} — no framework imports detected, client bundle only (no SSR)${c.reset}`)
+        console.warn(`${c.yellow}⚠ client-only: ${file} - no framework imports detected, client bundle only (no SSR)${c.reset}`)
       }
     }
   }
@@ -83,7 +93,7 @@ export function detectTsxFramework(filePath: string): 'react' | 'preact' | 'soli
   if (content.includes("from 'solid-js'") || content.includes('from "solid-js"')) return 'solid'
   if (content.includes("from 'preact'")   || content.includes('from "preact"'))   return 'preact'
 
-  // Vérifier aussi le dossier parent — si le fichier est dans un template preact/solid
+  // Vérifier aussi le dossier parent - si le fichier est dans un template preact/solid
   const normalizedPath = filePath.replace(/\\/g, '/')
   if (normalizedPath.includes('web-fbr-preact') || normalizedPath.includes('/preact/')) return 'preact'
   if (normalizedPath.includes('web-fbr-solid')  || normalizedPath.includes('/solid/'))  return 'solid'
@@ -91,8 +101,25 @@ export function detectTsxFramework(filePath: string): 'react' | 'preact' | 'soli
   return 'react'
 }
 
+export function resolveMdxFramework(filePath: string): 'react' | 'preact' {
+  const content = fs.readFileSync(filePath, 'utf-8')
+  if (content.includes("from 'preact'") || content.includes('from "preact"')) return 'preact'
+  const normalizedPath = filePath.replace(/\\/g, '/')
+  if (normalizedPath.includes('web-fbr-preact') || normalizedPath.includes('/preact/')) return 'preact'
+  return 'react'
+}
+
 export function extractPropPaths(filePath: string): string[] {
   const program = ts.createProgram([filePath], { jsx: ts.JsxEmit.React, strict: true })
+  return _extractFromProgram(program, filePath)
+}
+
+export function createPropExtractor(files: string[]): (filePath: string) => string[] {
+  const program = ts.createProgram(files, { jsx: ts.JsxEmit.React, strict: true })
+  return (filePath: string) => _extractFromProgram(program, filePath)
+}
+
+function _extractFromProgram(program: ts.Program, filePath: string): string[] {
   const checker = program.getTypeChecker()
   const source = program.getSourceFile(filePath)
   if (!source) return []
@@ -182,8 +209,18 @@ export const createJinjaProps = (propPaths: string[]): Record<string, any> => {
   return result
 }
 
+export const normalizeClassWhitespace = (html: string): string => {
+  return html.replace(
+    /(\sclass(?:Name)?=")([^"]+)(")/g,
+    (_, prefix, classes, suffix) => {
+      const normalized = classes.trim().replace(/\s+/g, ' ')
+      return `${prefix}${normalized}${suffix}`
+    }
+  )
+}
+
 export const restoreJinjaVars = (html: string, propPaths: string[]): string => {
-  let result = html
+  let result = normalizeClassWhitespace(html)
   const sorted = [...propPaths].sort((a, b) => b.length - a.length)
   for (const propPath of sorted) {
     const placeholder = `${PLACEHOLDER_PREFIX}${propPath.replace(/\./g, 'DOT')}`
@@ -222,14 +259,23 @@ export function getAssetTags(manifest: Record<string, any>, fileName: string): {
   return { js, css }
 }
 
-export function saveSnippets(newSnippets: Record<string, string>) {
-  const snippetsPath = path.resolve(process.cwd(), '__nexy__/client/snippets.json')
-  const existing = fs.existsSync(snippetsPath)
-    ? JSON.parse(fs.readFileSync(snippetsPath, 'utf-8'))
-    : {}
+let snippetsChain: Promise<void> = Promise.resolve()
 
-  fs.mkdirSync(path.resolve(process.cwd(), '__nexy__/client/static'), { recursive: true })
-  fs.writeFileSync(snippetsPath, JSON.stringify({ ...existing, ...newSnippets }, null, 2))
+export function saveSnippets(newSnippets: Record<string, string>) {
+  snippetsChain = snippetsChain.then(() => {
+    const snippetsPath = path.resolve(process.cwd(), '__nexy__/client/snippets.json')
+    const existing = fs.existsSync(snippetsPath)
+      ? JSON.parse(fs.readFileSync(snippetsPath, 'utf-8'))
+      : {}
+
+    fs.mkdirSync(path.resolve(process.cwd(), '__nexy__/client/static'), { recursive: true })
+    fs.writeFileSync(snippetsPath, JSON.stringify({ ...existing, ...newSnippets }, null, 2))
+  })
+  return snippetsChain
+}
+
+export function flushSnippets(): Promise<void> {
+  return snippetsChain
 }
 
 export function writeComponent(
@@ -271,11 +317,14 @@ export interface SSGResult {
   entries: SSGEntry[];
 }
 
-export function writeReport(results: SSGResult[]) {
+export function writeReport(results: SSGResult[], elapsedMs?: number) {
   const all: SSGEntry[] = results.flatMap(r => r.entries)
   const reportPath = path.resolve(process.cwd(), '__nexy__/client/ssg-report.json')
   fs.mkdirSync(path.dirname(reportPath), { recursive: true })
-  fs.writeFileSync(reportPath, JSON.stringify(all, null, 2))
+  const report = elapsedMs === undefined
+    ? all
+    : { timingMs: Math.round(elapsedMs), entries: all }
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2))
 }
 
 export function getTempDir(): string {
@@ -284,4 +333,27 @@ export function getTempDir(): string {
     fs.mkdirSync(tempDir, { recursive: true });
   }
   return tempDir;
+}
+
+export function cpuCount(): number {
+  return Math.max(1, os.cpus().length)
+}
+
+export async function mapPool<T, R>(
+  items: readonly T[],
+  worker: (item: T, index: number) => Promise<R>,
+  concurrency = cpuCount()
+): Promise<R[]> {
+  const results: R[] = new Array(items.length)
+  let next = 0
+  const runner = async () => {
+    while (true) {
+      const index = next++
+      if (index >= items.length) return
+      results[index] = await worker(items[index], index)
+    }
+  }
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => runner())
+  await Promise.all(workers)
+  return results
 }
