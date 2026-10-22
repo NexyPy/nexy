@@ -287,7 +287,7 @@ Ordre : `decorators.py` (184) → `utils/server/server.py` (112) → `routers/fb
 | `nexy/modules/i18n/i18n_decorator.py` | 1 | 6 | **+ `method-assign`**, 19 % de couverture |
 | `nexy/cli/commands/migrate.py` | 0 | 3 | `import-not-found` ×3 → ajouter types extras **ou** import local + `# type: ignore[import-not-found]` **justifié** |
 | `nexy/vite.py` | 4 | 2 | |
-| `nexy/helpers/dev/watcher.py` | 0 | 4 | couverture 81 % |
+| `nexy/modules/cli/devtools/watcher.py` | 0 | 4 | couverture 81 % |
 | `nexy/modules/runtime/importer.py` | 0 | 4 | **+ `override` : signature `find_spec` incompatible avec la `supertype` `MetaPathFinder` → comportement à risque** |
 | + 24 fichiers à 1–3 erreurs chacun | 3 | 24 | passage en revue unitaire |
 
