@@ -1,4 +1,4 @@
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 from typing import Any
@@ -71,7 +71,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
                 vite_proc = None
             else:
                 with console.status("[dim]  starting dev server...[/dim]", spinner="dots"):
-                    vite_ready = Server.wait_for_vite_ready(client_port, ssl=ssl_enabled)
+                    vite_ready = Server.wait_for_vite_ready(client_port)
                     vite_elapsed = time.perf_counter() - vite_start
                     console.print(
                         f"  [dim]frontend[/dim] [dim]{fe_elapsed:.2f}s[/dim] ·"
@@ -105,7 +105,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
         startup_elapsed = time.perf_counter() - startup_start
         startup_timer = f"{startup_elapsed:.2f}s"
 
-        network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host
+        network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host  # nosec B104
 
         console.print(t("dev.banner", "nexy@{version} dev using :").format(version=version))
         vite_status = "and [green]Vite[/green]" if vite_proc else ""

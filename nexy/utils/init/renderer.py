@@ -38,7 +38,9 @@ class TemplateRenderer:
         if not self.src.is_dir():
             raise FileNotFoundError(f"Template directory not found: {self.src}")
 
-        env = Environment(loader=FileSystemLoader(str(self.src)))
+        # Scaffolding templates emit Python/TS/HTML source files; autoescape
+        # would corrupt generated source code. See SECURITY.md.
+        env = Environment(loader=FileSystemLoader(str(self.src)))  # nosec B701
         self.dest.mkdir(parents=True, exist_ok=True)
 
         for src_path in self.src.rglob("*"):

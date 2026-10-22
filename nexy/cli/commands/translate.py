@@ -130,7 +130,9 @@ def _scan_i18n_classes(src_dir: Path) -> dict[str, type]:
             if spec and spec.loader:
                 mod = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(mod)
-        except Exception:
+        except (ImportError, AttributeError, OSError, SyntaxError):
+            # Untranslated helper modules are skipped; only the registry
+            # modules that register entries matter here.
             continue
     return dict(_I18N_REGISTRY)
 

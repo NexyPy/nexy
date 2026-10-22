@@ -1,6 +1,6 @@
 import os
 import shutil
-import subprocess
+import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
@@ -53,7 +53,7 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
             # Resolve the shim (npm.cmd on Windows) ourselves so the shell is
             # never involved: shell=True would let package names inject commands.
             exe = shutil.which(cmd[0]) or cmd[0]
-            subprocess.run([exe, *cmd[1:], *deps], check=True, capture_output=True, cwd=dest)
+            subprocess.run([exe, *cmd[1:], *deps], check=True, capture_output=True, cwd=dest)  # nosec B603
         except subprocess.CalledProcessError as e:
             error_msg = (
                 f"[red]{t('add.error', 'Error:')}[/red] "
@@ -86,7 +86,7 @@ class DependencyInstaller:
                 cwd=self.directory,
                 check=True,
                 capture_output=True,
-            )
+            )  # nosec B603
             return True
         except subprocess.CalledProcessError as e:
             console.print(f"[red]nexy[/red] » {desc} failed")
