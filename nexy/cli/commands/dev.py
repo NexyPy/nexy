@@ -7,12 +7,12 @@ from nexy.__version__ import __version__
 from nexy.builder import Builder
 from nexy.core.config import Config
 from nexy.frontend import FrontendGenerator
+from nexy.helpers.common.console import console
+from nexy.helpers.dev.pycache import pycache
+from nexy.helpers.dev.watcher import create_observer, purge_project_modules, stop_observer
+from nexy.helpers.fs.vfs import VFS
+from nexy.helpers.server.server import Server
 from nexy.i18n import t
-from nexy.utils.common.console import console
-from nexy.utils.dev.pycache import pycache
-from nexy.utils.dev.watcher import create_observer, purge_project_modules, stop_observer
-from nexy.utils.fs.vfs import VFS
-from nexy.utils.server.server import Server
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:
@@ -124,7 +124,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
 
         import uvicorn as _uvicorn
 
-        from nexy.utils.server.uvicorn_config import NEXY_LOG_CONFIG
+        from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
 
         while True:
             _restart_requested = False

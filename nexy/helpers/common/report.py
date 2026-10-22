@@ -1,7 +1,7 @@
 import subprocess  # nosec B404
 
-from nexy.utils.common.console import console
-from nexy.utils.common.formatting import artifact_size
+from nexy.helpers.common.console import console
+from nexy.helpers.common.formatting import artifact_size
 
 _MAX_SHOWN = 3
 

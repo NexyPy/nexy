@@ -1,4 +1,4 @@
-from nexy.utils.init.resolver import TemplateResolver
+from nexy.helpers.init.resolver import TemplateResolver
 
 
 def test_resolve_web_fbr() -> None:

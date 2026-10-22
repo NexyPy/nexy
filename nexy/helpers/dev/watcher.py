@@ -13,8 +13,8 @@ from watchdog.observers import Observer
 from nexy.compiler import Compiler
 from nexy.core.config import Config
 from nexy.core.string import StringTransform
+from nexy.helpers.common.console import console
 from nexy.runtime.hmr import HMR_MANAGER
-from nexy.utils.common.console import console
 
 
 def normalize_path(p: str | bytes) -> str:

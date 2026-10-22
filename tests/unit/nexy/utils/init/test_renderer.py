@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from nexy.utils.init.renderer import TemplateRenderer
+from nexy.helpers.init.renderer import TemplateRenderer
 
 
 def _renderer(client_framework: str) -> TemplateRenderer:

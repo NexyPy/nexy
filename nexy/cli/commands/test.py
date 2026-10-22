@@ -5,8 +5,8 @@ from pathlib import Path
 
 import typer
 
+from nexy.helpers.common.console import console
 from nexy.i18n import t
-from nexy.utils.common.console import console
 
 
 def test(

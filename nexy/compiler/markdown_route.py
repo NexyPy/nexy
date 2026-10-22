@@ -3,8 +3,8 @@ from typing import Any
 
 from nexy.core.config import Config
 from nexy.core.string import Pathname, StringTransform
+from nexy.helpers.fs.vfs import VFS
 from nexy.routers.fbrouter.layout import RouteLayout
-from nexy.utils.fs.vfs import VFS
 
 
 class MarkdownRouteCompiler:

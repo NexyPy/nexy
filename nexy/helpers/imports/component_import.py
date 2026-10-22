@@ -2,10 +2,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from nexy.utils.imports.css import CSS
-from nexy.utils.imports.images import Image
-from nexy.utils.imports.json import Json
-from nexy.utils.imports.ncc import NexyClientComponent
+from nexy.helpers.common.json import Json
+from nexy.helpers.imports.css import CSS
+from nexy.helpers.imports.images import Image
+from nexy.helpers.imports.ncc import NexyClientComponent
 
 
 class Import:

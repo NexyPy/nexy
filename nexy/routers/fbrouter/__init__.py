@@ -12,9 +12,9 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 
 from nexy.core.config import Config
 from nexy.core.string import Pathname, StringTransform
+from nexy.helpers.common.console import console
 from nexy.routers.fbrouter.discovery import RouteDiscovery
 from nexy.runtime.cache import REVALIDATE_CACHE
-from nexy.utils.common.console import console
 
 from .dependencies import RouteDependencies
 from .middleware import RouteMiddleware

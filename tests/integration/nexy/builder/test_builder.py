@@ -5,7 +5,7 @@ import pytest
 
 from nexy.builder import Builder
 from nexy.builder.discovery import Discovery
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
 
 
 class TestBuilderDiscovery:

@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from nexy.compiler.frontend_route import FrontendRouteCompiler
+from nexy.helpers.fs.vfs import VFS
 from nexy.runtime.importer import install_vfs_importer
-from nexy.utils.fs.vfs import VFS
 
 
 def _compile(tmp_path: Path, rel_file: str) -> None:

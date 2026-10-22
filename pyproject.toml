@@ -92,7 +92,7 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 "nexy/hooks.py" = ["N802"]
 "nexy/errors.py" = ["N802"]
 "nexy/i18n/core.py" = ["N802"]
-"nexy/utils/imports/component_import.py" = ["N802"]
+"nexy/helpers/imports/component_import.py" = ["N802"]
 "nexy/__init__.py" = ["N812"]
 # B010: dynamic dunder attributes on handlers/classes (route metadata,
 # i18n defaults); direct attribute access would be a mypy attr-defined error.
@@ -106,7 +106,7 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 # templates (client-side JS / TSX-Vue-Svelte scaffolding); the 100-column
 # budget applies to Python code, not to the embedded template content.
 "nexy/vite.py" = ["N802", "E501"]
-"nexy/utils/init/registry.py" = ["E501"]
+"nexy/helpers/init/registry.py" = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"

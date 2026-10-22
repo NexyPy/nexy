@@ -2,7 +2,7 @@ import sys
 
 import typer
 
-from nexy.utils.init import AlreadyInitializedError, InitProject
+from nexy.helpers.init import AlreadyInitializedError, InitProject
 
 
 def init() -> None:

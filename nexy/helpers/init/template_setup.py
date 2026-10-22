@@ -10,9 +10,9 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
+from nexy.helpers.common.console import console
+from nexy.helpers.common.constants import TEMPLATES_DIR
 from nexy.i18n import t
-from nexy.utils.common.console import console
-from nexy.utils.common.constants import TEMPLATES_DIR
 
 from .clone import GitClone
 from .dependencies import DependencyInstaller

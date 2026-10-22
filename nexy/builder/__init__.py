@@ -10,9 +10,9 @@ from nexy.builder.discovery import Discovery
 from nexy.compiler import Compiler
 from nexy.core.config import Config
 from nexy.errors import NexyCompileError
-from nexy.utils.common.console import console
-from nexy.utils.fs.fingerprint import first_stat_fingerprint, stat_fingerprint
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.common.console import console
+from nexy.helpers.fs.fingerprint import first_stat_fingerprint, stat_fingerprint
+from nexy.helpers.fs.vfs import VFS
 
 
 @dataclass

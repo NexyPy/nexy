@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from nexy.core.config import Config
-from nexy.utils.common.console import console
+from nexy.helpers.common.console import console
 
 KNOWN_ROUTE_EXTENSIONS = [".nexy", ".md", ".mdx", ".py", ".tsx", ".jsx", ".vue", ".svelte"]
 _FRAMEWORK_ROUTE_EXTENSIONS = {".tsx", ".jsx", ".vue", ".svelte"}

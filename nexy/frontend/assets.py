@@ -1,8 +1,8 @@
 import shutil
 from pathlib import Path
 
-from nexy.utils.common.console import console
-from nexy.utils.fs.path import PathUtil
+from nexy.helpers.common.console import console
+from nexy.helpers.fs.path import PathUtil
 
 _PACKAGE_DIR = Path(__file__).resolve().parent
 

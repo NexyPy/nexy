@@ -1,6 +1,6 @@
 import pytest
 
-from nexy.utils.init.registry import (
+from nexy.helpers.init.registry import (
     GITHUB_TEMPLATES,
     TemplateNotFoundError,
     template_source,

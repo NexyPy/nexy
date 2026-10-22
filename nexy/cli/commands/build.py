@@ -9,11 +9,11 @@ from nexy.__version__ import __version__
 from nexy.builder import Builder, BuildResult
 from nexy.core.config import Config
 from nexy.frontend import FrontendGenerator
+from nexy.helpers.common.console import console
+from nexy.helpers.common.report import print_cmd_result, print_tree_section
+from nexy.helpers.dev.pycache import pycache
+from nexy.helpers.server.server import Server
 from nexy.i18n import t
-from nexy.utils.common.console import console
-from nexy.utils.common.report import print_cmd_result, print_tree_section
-from nexy.utils.dev.pycache import pycache
-from nexy.utils.server.server import Server
 
 
 def build(check: bool = False) -> None:
@@ -44,7 +44,7 @@ def build(check: bool = False) -> None:
 
 def _compile_server_components() -> BuildResult:
     with console.status(f"  {t('build.compiling_server', 'compiling server components')} ..."):
-        from nexy.utils.fs.vfs import VFS
+        from nexy.helpers.fs.vfs import VFS
 
         FrontendGenerator().generate(ssg=True)
         build_result = Builder().build(showlog=False)

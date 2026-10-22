@@ -3,8 +3,8 @@ from pathlib import Path
 import typer
 from jinja2 import Environment, FileSystemLoader
 
-from nexy.utils.common.constants import TEMPLATES_DIR
-from nexy.utils.common.process import run_tool
+from nexy.helpers.common.constants import TEMPLATES_DIR
+from nexy.helpers.common.process import run_tool
 
 
 def _detect_orm() -> tuple[str, str]:
