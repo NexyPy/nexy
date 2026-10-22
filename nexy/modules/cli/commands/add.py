@@ -7,8 +7,8 @@ from nexy.core.config import Config
 from nexy.helpers.common.console import console
 from nexy.helpers.fs.path import PathUtil
 from nexy.helpers.imports.component import framework_from_extension, wrap_component_script
-from nexy.helpers.init.dependencies import install_packages
-from nexy.helpers.init.registry import COMPONENT_REGISTRY
+from nexy.modules.cli.init.dependencies import install_packages
+from nexy.modules.cli.init.registry import COMPONENT_REGISTRY
 from nexy.modules.i18n import t
 
 _ADD_HELP_COMPONENTS = t("add.help_components", "Components to add (registry names or URLs)")

@@ -241,7 +241,7 @@ Les deux fichiers existants sont des zéros : les remplir plutôt que d'en crée
 | `nexy/image.py` | 9 | 10 | branches `Image()` |
 | `nexy/cli/commands/migrate.py` | 9 | 108 | 3 ORM (sqlmodel/tortoise/sqlalchemy) — mocker |
 | `nexy/link.py` | 10 | 9 | branches `Link()` |
-| `nexy/helpers/init/clone.py` | 13 | 115 | clone de template + erreurs réseau |
+| `nexy/modules/cli/init/clone.py` | 13 | 115 | clone de template + erreurs réseau |
 | `nexy/cli/commands/dev.py` | 13 | 94 | supervision du processus |
 | `nexy/helpers/server/uvicorn_config.py` | 14 | 92 | config uvicorn |
 | `nexy/helpers/common/report.py` | 17 | 35 | rendu console |
@@ -251,10 +251,10 @@ Les deux fichiers existants sont des zéros : les remplir plutôt que d'en crée
 | `nexy/modules/i18n/i18n_decorator.py` | 19 | 17 | **+ erreur mypy `method-assign`** |
 | `nexy/helpers/common/formatting.py` | 20 | 12 | |
 | **`nexy/decorators.py`** | 20 | **184** | **2e plus gros trou**, 0 docstring |
-| `nexy/helpers/init/dependencies.py` | 20 | 87 | |
+| `nexy/modules/cli/init/dependencies.py` | 20 | 87 | |
 | `nexy/modules/routers/fbrouter/dependencies.py` | 21 | 31 | injection |
 | `nexy/cli/commands/start.py` | 22 | 25 | |
-| `nexy/helpers/init/template_setup.py` | 25 | 126 | |
+| `nexy/modules/cli/init/template_setup.py` | 25 | 126 | |
 | `nexy/cli/commands/add.py` | 26 | 63 | |
 | `nexy/cli/commands/check.py` | 28 | 44 | |
 | `nexy/cli/commands/build.py` | 28 | 62 | couvert plus largement par P1 e2e |
@@ -275,7 +275,7 @@ Ordre : `decorators.py` (184) → `utils/server/server.py` (112) → `routers/fb
 |---|---|---|---|
 | `nexy/core/models.py` | **38** | 5 | `N815` → décision de convention (voir §3.1) |
 | `nexy/helpers/server/server.py` | 1 | **34** | annotations & `Protocol` : c'est **24 % de tout mypy** |
-| `nexy/helpers/init/registry.py` | 13 | 0 | `W291`×3 = auto-fix ; reste = `N815` |
+| `nexy/modules/cli/init/registry.py` | 13 | 0 | `W291`×3 = auto-fix ; reste = `N815` |
 | `nexy/decorators.py` | 11 | **9** | `N802` sur `Controller`/`UseGuard`/… (API publique) |
 | `nexy/core/config.py` | 11 | **6** | déclarer les 7 champs manquants de `Config` (`useTocDepth`, `useTocTitle`, `useTocAuto`, `useDocsUrl`, `useRedocsUrl`, `useDefaultLocale`, `useLocalesDir`) → **10 des 44 `attr-defined`** tombent (ses 6 + les 4 de `routers/app.py` qui lisent ces mêmes attributs) |
 | `nexy/modules/routers/middlewares.py` | 0 | **12** | **plus gros contributeur** : annoter les types du pipeline de middlewares |

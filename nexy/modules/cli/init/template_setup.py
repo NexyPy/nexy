@@ -11,7 +11,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader
 
 from nexy.helpers.common.console import console
-from nexy.helpers.common.constants import TEMPLATES_DIR
+from nexy.modules.cli.constants import TEMPLATES_DIR
 from nexy.modules.i18n import t
 
 from .clone import GitClone

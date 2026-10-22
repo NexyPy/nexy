@@ -6,8 +6,8 @@ import typer
 
 from nexy.__version__ import __version__
 from nexy.helpers.common.console import console
-from nexy.helpers.init import InitProject, TemplateNotFoundError, template_source
-from nexy.helpers.init.prompts import ask_project_name
+from nexy.modules.cli.init import InitProject, TemplateNotFoundError, template_source
+from nexy.modules.cli.init.prompts import ask_project_name
 from nexy.modules.i18n import t
 
 
