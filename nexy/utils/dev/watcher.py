@@ -28,7 +28,10 @@ def normalize_path(p: str | bytes) -> str:
             s = s[len(cwd) + 1 :]
     except Exception:
         pass
-    return s.lstrip("./")
+    # Strip only the literal "./" prefix: lstrip("./") would also eat the
+    # leading "/" of absolute paths outside cwd (e.g. pytest tmp_path on Linux)
+    # and the leading dot of dotfiles, breaking os.path.exists downstream.
+    return s.removeprefix("./")
 
 
 def is_ignored_path(path: str) -> bool:
