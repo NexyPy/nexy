@@ -4,7 +4,6 @@ import time
 from typing import Any
 
 from nexy.__version__ import __version__
-from nexy.builder import Builder
 from nexy.core.config import Config
 from nexy.frontend import FrontendGenerator
 from nexy.helpers.common.console import console
@@ -13,6 +12,7 @@ from nexy.helpers.dev.watcher import create_observer, purge_project_modules, sto
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.server import Server
 from nexy.i18n import t
+from nexy.modules.builder import Builder
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:

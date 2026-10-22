@@ -3,11 +3,11 @@ import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
-from nexy.builder import Builder
 from nexy.helpers.common.console import console
 from nexy.helpers.common.report import print_cmd_result
 from nexy.helpers.fs.scan import has_files
 from nexy.i18n import t
+from nexy.modules.builder import Builder
 
 _PY_EXTS = (".py",)
 _TS_EXTS = (".ts", ".tsx", ".vue", ".svelte")

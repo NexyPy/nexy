@@ -6,13 +6,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from nexy.builder.discovery import Discovery
 from nexy.compiler import Compiler
 from nexy.core.config import Config
 from nexy.errors import NexyCompileError
 from nexy.helpers.common.console import console
 from nexy.helpers.fs.fingerprint import first_stat_fingerprint, stat_fingerprint
 from nexy.helpers.fs.vfs import VFS
+from nexy.modules.builder.discovery import Discovery
 
 
 @dataclass

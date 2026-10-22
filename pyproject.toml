@@ -36,8 +36,8 @@ dev = [
 ]
 
 [project.scripts]
-nx = "nexy.cli:CLI"
-nexy = "nexy.cli:CLI"
+nx = "nexy.modules.cli:CLI"
+nexy = "nexy.modules.cli:CLI"
 
 [build-system]
 requires = ["hatchling"]
@@ -100,8 +100,8 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 # typer.Option/typer.Argument as defaults is the documented typer idiom and
 # the established style of every CLI command in this codebase (B008 conflicts
 # with it). ARG001: the --ui flag of `nexy add` is kept for CLI compatibility.
-"nexy/cli/**/*.py" = ["B008"]
-"nexy/cli/commands/add.py" = ["ARG001"]
+"nexy/modules/cli/**/*.py" = ["B008"]
+"nexy/modules/cli/commands/add.py" = ["ARG001"]
 # E501 inapplicable: these files embed foreign-language code as string
 # templates (client-side JS / TSX-Vue-Svelte scaffolding); the 100-column
 # budget applies to Python code, not to the embedded template content.

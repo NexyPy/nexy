@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-from nexy.builder import Builder
-from nexy.builder.discovery import Discovery
 from nexy.helpers.fs.vfs import VFS
+from nexy.modules.builder import Builder
+from nexy.modules.builder.discovery import Discovery
 
 
 class TestBuilderDiscovery:
