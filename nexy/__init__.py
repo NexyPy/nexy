@@ -1,5 +1,6 @@
 from nexy.audio import audio as Audio
 from nexy.form import Form
+from nexy.helpers.imports.component_import import Import
 from nexy.hooks import (
     useCookies,
     usePathname,
@@ -10,11 +11,10 @@ from nexy.hooks import (
     useToc,
     useViews,
 )
-from nexy.i18n.core import current_locale, t, trans, useLocale
 from nexy.image import image as Image
 from nexy.link import link as Link
+from nexy.modules.i18n.core import current_locale, t, trans, useLocale
 from nexy.template import Template
-from nexy.utils.imports.component_import import Import
 from nexy.video import video as Video
 from nexy.vite import Vite
 

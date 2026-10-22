@@ -1,6 +1,6 @@
 import asyncio
 
-from nexy.runtime.hmr import HMR_MANAGER
+from nexy.modules.runtime.hmr import HMR_MANAGER
 
 
 class _FakeWS:

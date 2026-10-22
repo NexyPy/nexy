@@ -1,0 +1,44 @@
+from nexy.core.models import FrontendFramework
+from nexy.modules.frontend.islands import ISLANDS_RUNTIME
+
+
+def preact() -> FrontendFramework:
+    return FrontendFramework(
+        name="preact",
+        render=(
+            ISLANDS_RUNTIME + "(function(){"
+            "const w=window as any;"
+            "const gi=w.__nexy_import||((p: any)=>import(/* @vite-ignore */ p));"
+            "async function m(el: any){"
+            'if(!el||el.dataset.nexyMounted==="1")return;'
+            'el.dataset.nexyMounted="1";'
+            'const key=el.getAttribute("data-nexy-key")||"";'
+            'const path=el.dataset.nexyPath||"";'
+            'const symbol=el.getAttribute("data-nexy-symbol")||"";'
+            'const propsStr=el.dataset.nexyProps||"{}";'
+            "let props={};"
+            "try{props=JSON.parse(propsStr)}catch(e){}"
+            "const ref= key || path;"
+            "const mod=await gi(ref);"
+            "const Comp=(mod&&mod.default)!==undefined?mod.default:(symbol&&mod&&mod[symbol]);"
+            'const preact=await import("preact");'
+            "preact.render(preact.h(Comp,props),el);"
+            "}"
+            "function init(){"
+            'const nodes=w.document.querySelectorAll("[data-nexy-fw=\\"preact\\"]");'
+            "nodes.forEach((el: any)=>{"
+            'if(el.hasAttribute("data-nexy-island")){'
+            'const directive=el.getAttribute("data-nexy-directive");'
+            'if(directive==="client:only")return;'
+            "el.__nexyHydrate=()=>m(el);"
+            "}else{m(el);}"
+            "});"
+            "nexyIslands.init(w.document);"
+            "}"
+            'if(w.document.readyState==="loading"){'
+            'w.document.addEventListener("DOMContentLoaded",init);'
+            "}else{init()}"
+            "})();"
+        ),
+        extension=["jsx", "tsx"],
+    )

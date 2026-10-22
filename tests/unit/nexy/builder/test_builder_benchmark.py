@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from nexy.builder import Builder
+from nexy.modules.builder import Builder
 
 
 @pytest.mark.slow
