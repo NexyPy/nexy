@@ -1,2 +1,0 @@
-                                                                                  
-p = DocsFastapiCookie_header()
