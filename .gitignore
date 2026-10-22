@@ -77,7 +77,8 @@ __pycache__
 # Nexy
 __nexy__/
 **/__nexy__/**
-tasks
+tasks/
+skills/
 session.ai
 ai
 
