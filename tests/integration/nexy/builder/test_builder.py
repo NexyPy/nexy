@@ -26,7 +26,8 @@ class TestBuilderDiscovery:
 
 
 class TestBuilderBuild:
-    def test_build_compiles_route_into_vfs(self, builder_project: Path) -> None:
+    @pytest.mark.usefixtures("builder_project")
+    def test_build_compiles_route_into_vfs(self) -> None:
         result = Builder().build()
 
         assert result.failed == []
@@ -38,7 +39,8 @@ class TestBuilderBuild:
         assert len(html_outputs) == 1
         assert len(vfs.read(html_outputs[0])) > 0
 
-    def test_second_build_serves_from_cache(self, builder_project: Path) -> None:
+    @pytest.mark.usefixtures("builder_project")
+    def test_second_build_serves_from_cache(self) -> None:
         builder = Builder()
         first = builder.build()
 
@@ -53,11 +55,9 @@ class TestBuilderBuild:
         builder.build()
 
         route = builder_project / "index.nexy"
-        route.write_text(
-            "---\n---\n<section><p>CHANGED</p></section>", encoding="utf-8"
-        )
+        route.write_text("---\n---\n<section><p>CHANGED</p></section>", encoding="utf-8")
         # stat-based fingerprints need a strictly newer mtime than the first build.
-        os.utime(route, ns=(os.stat(route).st_mtime_ns + 1_000_000,)*2)
+        os.utime(route, ns=(os.stat(route).st_mtime_ns + 1_000_000,) * 2)
 
         rebuilt = builder.build()
 

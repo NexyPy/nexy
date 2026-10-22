@@ -1,4 +1,3 @@
-import pytest
 from nexy.core.config import Config
 
 

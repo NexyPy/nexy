@@ -1,7 +1,7 @@
 import sys
 
-from nexy.runtime.importer import install_vfs_importer
 from nexy.routers.fbrouter import _lazy_component
+from nexy.runtime.importer import install_vfs_importer
 from nexy.utils.fs.vfs import VFS
 
 

@@ -1,6 +1,5 @@
 import os
 import tempfile
-from pathlib import Path
 
 from nexy.utils.dev.pycache import pycache
 

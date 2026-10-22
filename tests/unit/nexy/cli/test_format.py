@@ -2,6 +2,8 @@ from pathlib import Path
 
 from nexy.utils.fs.frontmatter import (
     reassemble_frontmatter as _reassemble,
+)
+from nexy.utils.fs.frontmatter import (
     split_frontmatter as _split_frontmatter,
 )
 from nexy.utils.fs.scan import collect_files as _collect_files

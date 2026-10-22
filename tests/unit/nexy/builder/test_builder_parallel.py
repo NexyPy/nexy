@@ -1,9 +1,4 @@
-import os
-import tempfile
-from pathlib import Path
-
 from nexy.builder import Builder
-from nexy.core.config import Config
 
 
 def test_builder_thread_pool_runs() -> None:
