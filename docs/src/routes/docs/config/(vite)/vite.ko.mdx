@@ -1,0 +1,45 @@
+# 구성: Vite
+
+Nexy는 클라이언트측 번들링을 위해 **Vite**와 통합됩니다. 구성은 `nexyconfig.py` 및 `vite.config.ts`에 들어갑니다.
+
+## VITE 활성화
+
+```python
+class NexyConfig(NexyConfigModel):
+    useVite = True
+```
+
+## Vite 구성 필드
+
+| 필드 | 유형 | 기본값 | 설명 |
+|---------|------|---------|-------------|
+| `useVite` | `bool` | `False` | Vite 번들링을 활성화합니다. |
+| `useViteDevUrl` | `str \| None` | `None` | 사용자 정의 Vite 개발 서버 URL. `None`인 경우 자동 감지됩니다. |
+
+## vite.config.ts
+
+Nexy는 `nx init` 동안 프로젝트 루트에서 `vite.config.ts`를 생성합니다. 다른 Vite 프로젝트처럼 사용자 정의할 수 있습니다:
+
+```ts
+import { defineConfig } from "vite";
+import react from ""@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    build: {
+        outDir: "__nexy__/client",
+    },
+});
+```
+
+## 개발 모드
+
+`useVite = True`일 때, `nx dev`는 uvicorn과 함께 Vite 개발 서버를 시작합니다. Nexy는 HMR 스크립트를 자동으로 주입합니다.
+
+## 생산
+
+`nx build` 동안 Vite는 `__nexy__/client/`에서 최적화된 번들을 생성합니다. Nexy는 매니페스트를 읽고 올바른 CSS/JS 태그를 삽입합니다.
+
+## 인라인 모드
+
+CSS/JS를 HTML에 직접 인라인하려면 `NEXY_INLINE_CLIENT=1`를 설정합니다(이메일, AMP 또는 자체 포함 페이지에 유용함).

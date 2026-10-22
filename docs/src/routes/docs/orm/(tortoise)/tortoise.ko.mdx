@@ -1,0 +1,36 @@
+# 거북이-ORM
+
+**Tortoise-ORM**은 Django의 ORM에서 영감을 받은 비동기 네이티브 ORM입니다. 배우기 쉽고 FastAPI/Nexy와 잘 작동합니다.
+
+## 구성
+
+```python
+TORTOISE_ORM = {
+    "connections": {"default": "sqlite://dev.db"},
+    "apps": {"models": {"models": ["models", "aerich.models"], "default_connection": "default"}},
+}
+```
+
+## 예
+
+```python
+from tortoise import fields
+from tortoise.models import Model
+
+class User(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=100)
+    email = fields.CharField(max_length=100)
+```
+
+## 마이그레이션
+
+Tortoise-ORM은 **Aerich**(`nx migrate`를 통해 구성됨)를 사용합니다.
+
+```bash
+nx migrate --init    # Initialize Aerich (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+Tortoise-ORM은 Django 출신이고 비동기 지원이 포함된 친숙한 API를 원하는 경우 탁월한 선택입니다.

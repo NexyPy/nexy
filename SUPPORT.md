@@ -10,7 +10,7 @@
 
 ## Before asking
 
-1. **Search existing issues** — your question may already be answered.
+1. **Search existing issues** - your question may already be answered.
 2. **Check the documentation** at [nexy.ai/docs](https://nexy.ai/docs).
 3. **Search Discussions** for similar topics.
 

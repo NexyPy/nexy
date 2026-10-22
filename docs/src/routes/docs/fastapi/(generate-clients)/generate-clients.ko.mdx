@@ -1,0 +1,47 @@
+# 클라이언트 생성
+
+OpenAPI 스키마에서 유형이 안전한 클라이언트 SDK를 생성합니다.
+
+## FastAPI의 생성 클라이언트
+
+FastAPI에는 TypeScript/JavaScript 클라이언트를 출력하는 `generate_client` 명령이 포함되어 있습니다.
+
+```bash
+pip install fastapi
+fastapi-codegen --input openapi.json --output ./client
+```
+
+또는 `openapi-generator`를 사용하세요:
+
+```bash
+npm install "@openapitools/openapi-generator-cli
+npx openapi-generator-cli generate \
+    -i http://localhost:3000/openapi.json \
+    -g typescript-fetch \
+    -o ./client
+```
+
+## 넥시 + liblab
+
+[Nexy OpenAPI URL] → [liblab](https://liblab.com)는 다국어로 SDK를 생성합니다.
+
+## 수동 가져오기
+
+간단한 경우에는 `fetch`를 직접 사용하십시오.
+
+```typescript
+const res = await fetch("/api/items/1");
+const item = await res.json();
+```
+
+## 클라이언트 라이브러리
+
+Nexy는 `./actions/`에서 [Actions](/docs/guides/actions)에 대한 TypeScript 래퍼를 생성합니다. 경로 핸들러의 경우 선호하는 HTTP 클라이언트(`fetch`, `axios`, `httpx`)를 사용하십시오.
+
+## 언어
+
+| 도구 | 언어 |
+|------|------------|
+| `openapi-generator` | TypeScript, Python, Java, Go, C#, Rust, 50+ |
+| `liblab` | TypeScript, Python, Go, 자바, Kotlin, C# |
+| `fastapi-codegen` | TypeScript(Fetch/Axios) |

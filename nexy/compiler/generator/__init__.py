@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from nexy.core.models import ParserModel
 from nexy.errors import NexyCompileError
@@ -18,20 +17,17 @@ class Generator:
         self.logic = LogicGenerator()
         self.vfs = VFS()
 
-    def generate(self, output: str, source: ParserModel, source_path: str = None) -> bool:
+    def generate(self, output: str, source: ParserModel, source_path: str | None = None) -> bool:
         self.source = source
         try:
             directory = os.path.dirname(output)
-            # No need to create physical directories in development
-            # unless we are in production build mode
-            # For now, we just write to VFS
             self.logic.generate(template_path=output, source=self.source, source_path=source_path)
             self.template.generate(output=output, source=self.source.template)
             self._generate_init(directory)
             return True
         except Exception as e:
             console.print(f"[red]nsc[/red] » Error writing to file '{output}': {e}")
-            raise NexyCompileError(source_path=output, message=str(e))
+            raise NexyCompileError(source_path=output, message=str(e)) from e
 
     def _generate_init(self, directory: str) -> None:
         parts = directory.replace("\\", "/").split("/")

@@ -1,0 +1,73 @@
+# 뷰
+
+`nexyconfig.py`에 Vue를 추가하세요.
+
+```python
+from nexy.frontend import vue
+
+class NexyConfig(NexyConfigModel):
+    useFF = [vue()]
+```
+
+---
+
+## 컴포넌트 생성
+
+`.vue` 확장자를 가진 파일은 단일 파일 구성 요소로 처리됩니다.
+
+```vue
+<!-- src/components/Counter.vue -->
+<script setup>
+import { ref } from 'vue'
+const props = defineProps({ initial: { type: Number, default: 0 } })
+const count = ref(props.initial)
+</script>
+
+<template>
+  <div>
+    <p>Count: {{ count }}</p>
+    <button "@click="count++">+</button>
+  </div>
+</template>
+```
+
+---
+
+## .nexy 페이지에서 사용
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+소품은 Jinja2 `{{ }}` 구문을 통해 전달됩니다. JSON 값에는 이중 중괄호를 사용하세요.
+
+---
+
+## 어린이/슬롯 콘텐츠
+
+Nexy는 하위 콘텐츠를 기본 슬롯으로 전달합니다.
+
+```vue
+<!-- Card.vue -->
+<template>
+  <div class="card">
+    <h2>{{ title }}</h2>
+    <slot />
+  </div>
+</template>
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as the default slot</p>
+</Card>
+```
+
+---
+
+## SSR
+
+Vue 구성 요소는 수분 공급을 위해 `createSSRApp`를 사용합니다. 서버에서 렌더링된 HTML은 클라이언트에서 자동으로 수화됩니다.

@@ -1,0 +1,40 @@
+# SQLAlchemy
+
+**SQLAlchemy** पायथन के लिए परिपक्व, पूर्ण विशेषताओं वाला ORM है। जब आपको जटिल प्रश्नों, एकाधिक डेटाबेस, या मौजूदा SQLAlchemy परियोजनाओं की आवश्यकता हो तो इसका उपयोग करें।
+
+## विन्यास
+
+```python
+# configs/database.py
+from sqlalchemy.ext.asyncio import create_async_engine
+
+engine = create_async_engine("sqlite+aiosqlite:///dev.db")
+```
+
+## उदाहरण
+
+```python
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    email = Column(String)
+```
+
+## प्रवास
+
+एलेम्बिक का उपयोग करें (`nx migrate` के माध्यम से कॉन्फ़िगर किया गया):
+
+```bash
+nx migrate --init    # Initialize Alembic (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+SQLAlchemy आपको प्रश्नों, रिश्तों और कनेक्शन पूलिंग पर पूर्ण नियंत्रण देता है।

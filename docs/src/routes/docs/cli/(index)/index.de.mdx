@@ -1,0 +1,14 @@
+# Befehlszeilenschnittstelle
+
+Nexy wird mit einer voll ausgestatteten CLI ausgeliefert. Die Binärdatei lautet `nx` (oder `nexy`) und stellt Befehle für Entwicklung, Erstellung, Projektgerüstbau und Migration bereit.
+
+Jeder Befehl akzeptiert `--help` zur detaillierten Verwendung.
+
+## Quicklinks
+
+- [dev](/docs/cli/dev) – Starten Sie den Entwicklungsserver
+- [start](/docs/cli/start) – Produktionsserver
+- [build](/docs/cli/build) – Produktionsaufbau
+- [new](/docs/cli/new) – Gerüst für ein neues Projekt
+- [init](/docs/cli/init) – Nexy in einem vorhandenen Projekt initialisieren
+- [migrate](/docs/cli/migrate) – Migration von anderen Frameworks

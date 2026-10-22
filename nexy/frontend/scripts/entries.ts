@@ -9,6 +9,7 @@ import {
   checkFrameworks,
   detectTsxFramework,
   getTempDir,
+  globIgnore,
   c
 } from './utils'
 
@@ -109,7 +110,7 @@ async function generateEntries() {
 
   const files = glob.sync('**/*.{tsx,jsx,vue,svelte}', {
     cwd: process.cwd(),
-    ignore: ['node_modules/**', 'dist/**', '__nexy__/**', '.git/**', 'public/**']
+    ignore: globIgnore()
   })
 
   const entriesDir = path.resolve(process.cwd(), '__nexy__/client/entries')
@@ -142,7 +143,7 @@ async function generateEntries() {
       if (message.includes("require")) reason = "CommonJS/AMD not supported";
       if (message.includes("is not defined")) reason = "missing browser-only global";
 
-      console.warn(`${c.yellow}⚠ client-only: ${file} — ${reason}, no server HTML (client bundle only)${c.reset}`);
+      console.warn(`${c.yellow}⚠ client-only: ${file} - ${reason}, no server HTML (client bundle only)${c.reset}`);
 
       continue;
     }

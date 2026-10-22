@@ -1,0 +1,38 @@
+# Fichiers statiques
+
+Nexy sert les fichiers statiques du répertoire `public/` à la racine de votre projet.
+
+## Comment ça marche
+
+Tout fichier placé dans `public/` est servi au chemin de l'URL racine :
+
+```text
+public/
+├── logo.svg           →  /logo.svg
+├── images/
+│   └── hero.jpg       →  /images/hero.jpg
+├── fonts/
+│   └── inter.woff2    →  /fonts/inter.woff2
+└── robots.txt         →  /robots.txt
+```
+
+Aucune configuration nécessaire. Les fichiers dans `public/` sont servis automatiquement.
+
+## Répertoire des actifs
+
+Pour les actifs compilés (CSS, JS de Vite), utilisez le répertoire `assets/` ou configurez la sortie dans `vite.config.ts`. Nexy les monte à `/assets/`.
+
+## Référencement de fichiers statiques
+
+Dans les modèles `.nexy` :
+
+```nexy
+<img src="/logo.svg" alt="Logo" />
+<link rel="stylesheet" href="/styles/global.css" />
+```
+
+Dans le frontmatter Python ou les gestionnaires de routes, les chemins sont relatifs à la racine du projet.
+
+## Production
+
+Pendant `nx build`, le répertoire `public/` est copié dans `__nexy__/public/`. Votre serveur de production sert ces fichiers directement – ​​aucune compilation n'est nécessaire.

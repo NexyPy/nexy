@@ -1,0 +1,12 @@
+# Bandit configuration - Nexy.
+#
+# Rule: zero findings is the gate. Every finding surfaced by
+#   python -m bandit -r nexy/
+# must either be fixed in code or carry an inline `# nosec <ID>` with a
+# one-line justification. The old practice of skipping whole rule classes
+# below (B404, B607, B110, ...) is retired: it hid entire surfaces instead
+# of triaging individual calls.
+#
+# Impact on SECURITY.md: every `# nosec` in nexy/ must have a matching
+# entry in the "Accepted risks" section of SECURITY.md.
+skips: []

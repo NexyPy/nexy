@@ -1,28 +1,27 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
-from nexy.core.models import FFModel
+from nexy.core.models import FrontendFramework
 
 
 class BaseFrontendGenerator(ABC):
-    """Abstract base class for frontend framework generators."""
-
     @abstractmethod
     def generate(self) -> None:
-        """Generate frontend configuration and entry files."""
         pass
 
-    def _get_ff_list(self) -> list[FFModel]:
-        """Get the list of frontend frameworks from config."""
+    def _get_ff(self) -> FrontendFramework | None:
         from nexy.core.config import Config
 
         config = Config()
-        return config.useFF or []
+        use_ff = config.useFF
+        if isinstance(use_ff, list):
+            return use_ff[0] if use_ff else None
+        return use_ff
 
     def _get_frameworks(self) -> set[str]:
-        """Extract framework names from FFModel list."""
-        ff_list = self._get_ff_list()
-        return {getattr(ff, "name", "").lower() for ff in ff_list if hasattr(ff, "name")}
+        """Extract the active framework name."""
+        ff = self._get_ff()
+        return {ff.name.lower()} if ff else set()
 
     def _ensure_directories(self) -> tuple[Path, Path]:
         """Create necessary directories for frontend generation."""

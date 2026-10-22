@@ -1,0 +1,36 @@
+#कुकीज़ का उपयोग करें
+
+वर्तमान अनुरोध से कुकीज़ को एक शब्दकोश के रूप में लौटाता है।
+
+```python
+from nexy import useCookies
+
+cookies = useCookies()
+```
+
+---
+
+## वापसी मूल्य
+
+`dict` - अनुरोध के साथ भेजी गई सभी कुकीज़।
+
+---
+
+## उदाहरण
+
+```nexy
+---
+from nexy import useCookies
+cookies = useCookies()
+locale = cookies.get("nexy-locale", "en")
+---
+<html lang="{{ locale }}">
+```
+
+---
+
+## उपयोग नोट्स
+
+- केवल पढ़ने के लिए - कुकीज़ सेट करने के लिए `useSession` का उपयोग करें
+- कुकी मान स्ट्रिंग हैं
+- फास्टएपीआई में `request.cookies` के बराबर

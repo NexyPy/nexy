@@ -1,0 +1,83 @@
+#Jinja2
+
+Nexy usa **Jinja2** como motor de plantillas. Cada bloque de plantilla de archivo `.nexy` se representa como una plantilla Jinja2.
+
+---
+
+## Sintaxis
+
+```nexy
+---
+title = "Hello"
+items = [1, 2, 3]
+---
+<h1>{{ title }}</h1>
+<ul>
+{% for item in items %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+{% if user %}
+    <p>Welcome, {{ user.name }}</p>
+{% endif %}
+```
+
+---
+
+## Contexto de plantilla
+
+El contexto de la plantilla incluye:
+
+- Todos los accesorios declarados al frente (`item: prop[type]`)
+- Ayudantes autoinyectados: `Slot`, `trans`, `t`, `__current_locale`, `__Import`, `__Template`
+- Accesorios adicionales: `caller`, `children`
+
+---
+
+## Filtros
+
+Todos los filtros integrados de Jinja2 están disponibles:
+
+```nexy
+<p>{{ description | truncate(100) }}</p>
+<p>{{ created_at | date(format="short") }}</p>
+<p>{{ content | safe }}</p>
+<p>{{ name | title }}</p>
+```
+
+---
+
+## Macros
+
+Las macros de Jinja2 funcionan en archivos `.nexy`:
+
+```nexy
+{% macro input(name, type="text", value="") %}
+    <input type="{{ type }}" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
+
+<form>
+    {{ input("username") }}
+    {{ input("password", type="password") }}
+</form>
+```
+
+---
+
+## Rebaja
+
+Los archivos `.mdx` se representan como Markdown y luego se ajustan a la plantilla de diseño. La sintaxis estándar de Jinja2 también funciona dentro de `.mdx`.
+
+---
+
+## Control de espacios en blanco
+
+El control de espacios en blanco de Jinja2 funciona en archivos `.nexy`:
+
+```nexy
+{%- for item in items -%}
+    <span>{{ item }}</span>
+{%- endfor -%}
+```
+
+Utilice `{%-` y `-%}` para eliminar los espacios en blanco alrededor de los bloques de control.

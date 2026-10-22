@@ -1,0 +1,38 @@
+# 静的ファイル
+
+Nexy は、プロジェクト ルートの `public/` ディレクトリから静的ファイルを提供します。
+
+## 仕組み
+
+`public/` に配置されたファイルはすべて、ルート URL パスで提供されます。
+
+```text
+public/
+├── logo.svg           →  /logo.svg
+├── images/
+│   └── hero.jpg       →  /images/hero.jpg
+├── fonts/
+│   └── inter.woff2    →  /fonts/inter.woff2
+└── robots.txt         →  /robots.txt
+```
+
+設定は必要ありません。 `public/` のファイルは自動的に提供されます。
+
+## アセットディレクトリ
+
+コンパイルされたアセット (CSS、Vite の JS) の場合は、`assets/` ディレクトリを使用するか、`vite.config.ts` で出力を構成します。 Nexy はこれらを `/assets/` にマウントします。
+
+## 静的ファイルの参照
+
+`.nexy` テンプレート内:
+
+```nexy
+<img src="/logo.svg" alt="Logo" />
+<link rel="stylesheet" href="/styles/global.css" />
+```
+
+Python フロントマターまたはルート ハンドラーでは、パスはプロジェクト ルートに対する相対パスです。
+
+## 生産
+
+`nx build` 中に、`public/` ディレクトリが `__nexy__/public/` にコピーされます。運用サーバーはこれらのファイルを直接提供します。コンパイルは必要ありません。

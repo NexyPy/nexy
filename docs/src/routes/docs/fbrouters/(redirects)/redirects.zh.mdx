@@ -1,0 +1,49 @@
+# 重定向 (FBR)
+
+使用 FastAPI 的 `RedirectResponse` 将传入请求重定向到其他 URL。
+
+## 基本重定向
+
+```python
+# src/routes/redirect.py
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+```
+
+## 带状态码
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/new-page", status_code=301)
+```
+
+## 有条件重定向
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+```
+
+## 状态码参考
+
+|代码|名称 |使用案例 |
+|------|------|----------|
+| 301 | 301永久搬家 |永久网址更改 |
+| 302 | 302找到（默认）|临时重定向 |
+| 307 | 307临时重定向 |保留 HTTP 方法 |
+| 308 | 308永久重定向 |保留 HTTP 方法 |
+
+## 常见模式
+
+- 身份验证重定向：未经身份验证的用户 → `/login`
+- 旧版 URL：旧路径 → 新路径 (301)
+- 提交后重定向：表单 POST 之后 → 成功页面 (303)
+- 区域设置重定向：`/` → `/{locale}/` 基于浏览器语言

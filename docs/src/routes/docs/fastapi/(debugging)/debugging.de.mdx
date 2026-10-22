@@ -1,0 +1,73 @@
+# Debuggen
+
+Nexy-Apps sind Standard-Python – verwenden Sie Ihre üblichen Debugging-Tools.
+
+## `breakpoint()`
+
+Fügen Sie `breakpoint()` an einer beliebigen Stelle in Ihrem Routenhandler ein:
+
+```python
+def GET():
+    x = 42
+    breakpoint()  # drops into pdb
+    return {"x": x}
+```
+
+Führen Sie `nx dev` aus und gehen Sie zur Route – das Terminal fällt in `pdb`.
+
+## VS-Code
+
+1. Legen Sie Haltepunkte in VS Code fest, indem Sie auf die Leiste klicken
+2. Erstellen Sie ein `.vscode/launch.json`:
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Nexy Dev",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "nexy.cli",
+            "args": ["dev"],
+            "jinja": true
+        }
+    ]
+}
+```
+
+3. Drücken Sie `F5`, um mit dem Debuggen zu beginnen – Haltepunkte funktionieren in den Dateien `.nexy` frontmatter und `.py`.
+
+## Debugging drucken
+
+```python
+---
+print(f"Request params: {params}")  # appears in the terminal
+---
+```
+
+## Konsolenprotokollierung
+
+Nexy protokolliert standardmäßig alle Anfragen an das Terminal. Fügen Sie Ihre eigenen Protokolle hinzu:
+
+```python
+import logging
+logger = logging.getLogger("nexy")
+
+def GET():
+    logger.info("Home page loaded")
+    return {"ok": True}
+```
+
+## uvicorn neu laden
+
+`nx dev` führt uvicorn mit `--reload` aus – Änderungen an den Dateien `.py`, `.nexy`, `.mdx` lösen einen automatischen Neustart aus.
+
+## Häufige Probleme
+
+| Symptom | Wahrscheinliche Ursache |
+|---------|-------------|
+| Route gibt 405 | zurück Falsche HTTP-Methode oder `python-multipart` fehlt |
+| Der Körper ist `None` | Fehlende Pydantic-Modell- oder Typanmerkung |
+| 422 Validierungsfehler | Typkonflikt in Pfad-/Abfrageparametern |
+| Modul nicht gefunden | VFS-Cache veraltet – `nx dev` neu starten |

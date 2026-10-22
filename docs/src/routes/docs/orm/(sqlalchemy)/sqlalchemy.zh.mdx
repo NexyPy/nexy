@@ -1,0 +1,40 @@
+# SQLAlchemy
+
+**SQLAlchemy** 是成熟的、功能齐全的 Python ORM。当您需要复杂查询、多个数据库或现有 SQLAlchemy 项目时，请使用它。
+
+＃＃ 配置
+
+```python
+# configs/database.py
+from sqlalchemy.ext.asyncio import create_async_engine
+
+engine = create_async_engine("sqlite+aiosqlite:///dev.db")
+```
+
+＃＃ 例子
+
+```python
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    email = Column(String)
+```
+
+## 迁移
+
+使用 Alembic（通过 `nx migrate` 配置）：
+
+```bash
+nx migrate --init    # Initialize Alembic (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+SQLAlchemy 使您可以完全控制查询、关系和连接池。

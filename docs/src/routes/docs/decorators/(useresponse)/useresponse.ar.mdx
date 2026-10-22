@@ -1,0 +1,48 @@
+# "@UseResponse
+
+قم بتعيين بيانات تعريف الاستجابة على طريقة المعالج - رمز الحالة، ونموذج الاستجابة، وفئة الاستجابة، وما إلى ذلك.
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## إمضاء
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## جميع المعلمات
+
+| بارام | اكتب | الوصف |
+|-------|------|-------------|
+| `status_code` | `int` | رمز حالة HTTP |
+| `response_class` | `type[Response]` | فئة الاستجابة المخصصة (على سبيل المثال `HTMLResponse`) |
+| `response_model` | `type` | نموذج Pydantic لتسلسل الاستجابة |
+| `responses` | `dict` | استجابات OpenAPI الإضافية |
+| `response_description` | `str` | وصف الاستجابة في OpenAPI |
+| `response_model_include` | تعيين/رسم الخرائط | الحقول التي يجب تضمينها في الرد |
+| `response_model_exclude` | تعيين/رسم الخرائط | الحقول المراد استبعادها من الرد |
+| `response_model_by_alias` | `bool` | استخدم الأسماء المستعارة في الرد |
+| `response_model_exclude_unset` | `bool` | استبعاد الحقول غير المحددة |
+| `response_model_exclude_defaults` | `bool` | استبعاد الحقول ذات القيمة الافتراضية |
+| `response_model_exclude_none` | `bool` | استبعاد الحقول التي لا تحتوي على قيمة |

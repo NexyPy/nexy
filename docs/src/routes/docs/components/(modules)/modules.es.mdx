@@ -1,0 +1,100 @@
+# Sistema de módulos
+
+El sistema de módulos de Nexy le permite importar y exportar componentes en su proyecto.
+
+---
+
+## Importando un componente
+
+Utilice la sintaxis `import` en el frontmatter:
+
+```python
+---
+from "@components/card.nexy" import Card
+from "@components/button.nexy" import Button
+---
+```
+
+El alias `"@` se resuelve en `src/` (configurable en `nexyconfig.py`).
+
+---
+
+## Exportaciones nombradas
+
+De forma predeterminada, un archivo `.nexy` exporta su plantilla como un componente con el nombre del archivo:
+
+| Archivo | Nombre de exportación |
+|---|---|
+| `card.nexy` | `Card` |
+| `button.nexy` | `Button` |
+| `table_of_contents.nexy` | `Table_of_contents` |
+
+---
+
+## Ranura (niños)
+
+El componente `Slot` muestra el contenido secundario que se pasa entre etiquetas de apertura/cierre:
+
+```nexy
+<div class="card">
+    <h2>{{ title }}</h2>
+    <Slot />
+</div>
+```
+
+Uso:
+
+```html
+<Card title="Hello">
+    <p>This goes into the Slot.</p>
+</Card>
+```
+
+---
+
+## Importar alias
+
+Utilice `as` para evitar conflictos de nombres:
+
+```python
+---
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+---
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+---
+
+## Reexportar
+
+Cree un archivo de índice que agregue componentes:
+
+```python
+from "@components/button.nexy" import Button as Btn
+from "@components/icon-button.nexy" import Button as IconBtn
+```
+
+```html
+<Btn label="Save" />
+<IconBtn label="Delete" icon="trash" />
+```
+
+Otros archivos se importan desde este barril:
+
+```python
+---
+from "@components/index.nexy" import Card, Button
+---
+```
+
+-----
+
+## Importaciones dinámicas
+
+Para marcos del lado del cliente (React, Solid), Nexy genera el árbol de importación automáticamente durante la compilación. No es necesario administrar los puntos de entrada manualmente: el compilador detecta el uso de `.tsx`/`.jsx` y conecta Vite o esbuild en consecuencia.
+
