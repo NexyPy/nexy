@@ -11,7 +11,7 @@ L'objectif principal de Nexy est de **surpasser les solutions existantes** telle
 
 - **KISS**: simplest working code wins. No premature abstraction, no clever one-liners. Functions < 20 lines, classes < 10 methods.
 - **TDD**: write the test first (red), minimal code to pass (green), then refactor. One assertion per test. Name: `test_<thing>_<scenario>`.
-- **SOLID**: one responsibility per class/file. `TemplateParser` parses, `Builder` builds, `Router` routes. Depend on abstractions (`Protocol`), inject via `nexy/runtime/injection.py`.
+- **SOLID**: one responsibility per class/file. `TemplateParser` parses, `Builder` builds, `Router` routes. Depend on abstractions (`Protocol`), inject via the `Container`/`Injectable` API in `nexy/decorators.py`.
 
 ## Commands (Astral toolchain - no Makefile)
 
