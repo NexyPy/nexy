@@ -3,7 +3,7 @@ from typing import Any
 
 import questionary
 
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 
 def ask_project_name() -> str | None:

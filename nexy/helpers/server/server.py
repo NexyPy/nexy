@@ -176,7 +176,7 @@ class Server:
                     "import sys\n"
                     "try:\n"
                     "    from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG\n"
-                    f"    uvicorn.run('nexy.routers.app:_server', host='{run_host}',"
+                    f"    uvicorn.run('nexy.modules.routers.app:_server', host='{run_host}',"
                     f" port={port}, log_config=NEXY_LOG_CONFIG,"
                     f" log_level='info'{ssl_part}{workers_part})\n"
                     "except Exception as e:\n"
@@ -194,7 +194,7 @@ class Server:
                     {"workers": num_workers} if num_workers and num_workers > 1 else {}
                 )
                 _uvicorn.run(
-                    "nexy.routers.app:_server",
+                    "nexy.modules.routers.app:_server",
                     host=run_host,
                     port=port,
                     log_config=NEXY_LOG_CONFIG,

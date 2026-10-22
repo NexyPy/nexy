@@ -6,7 +6,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
-from nexy.routers.middlewares import PathMiddleware
+from nexy.modules.routers.middlewares import PathMiddleware
 
 
 async def _request(app, path="/hello"):
@@ -56,7 +56,7 @@ def _app_with_path_middleware():
 
 
 def test_path_middleware_sets_current_request():
-    from nexy.routers.context import current_request
+    from nexy.modules.routers.context import current_request
 
     inner = Starlette(
         routes=[

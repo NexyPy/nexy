@@ -9,7 +9,7 @@ from nexy.helpers.fs.path import PathUtil
 from nexy.helpers.imports.component import framework_from_extension, wrap_component_script
 from nexy.helpers.init.dependencies import install_packages
 from nexy.helpers.init.registry import COMPONENT_REGISTRY
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 _ADD_HELP_COMPONENTS = t("add.help_components", "Components to add (registry names or URLs)")
 _ADD_HELP_UI = t("add.help_ui", "Force treatment as UI components")

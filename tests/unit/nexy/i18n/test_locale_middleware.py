@@ -5,8 +5,8 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
-from nexy.i18n.core import L
-from nexy.i18n.middleware import LocaleMiddleware
+from nexy.modules.i18n.core import L
+from nexy.modules.i18n.middleware import LocaleMiddleware
 
 
 async def _request(app, path="/", headers=None, cookies=None):
@@ -112,7 +112,7 @@ def test_locale_middleware_is_pure_asgi():
 
 
 def test_current_locale_contextvar_set():
-    from nexy.i18n.core import current_locale
+    from nexy.modules.i18n.core import current_locale
 
     inner = Starlette(
         routes=[

@@ -1,4 +1,4 @@
-from nexy.frontend.base import BaseFrontendGenerator
+from nexy.modules.frontend.base import BaseFrontendGenerator
 
 
 class _StubGenerator(BaseFrontendGenerator):
@@ -47,8 +47,8 @@ class TestRouterCompatibilityShim:
         nexy_project("")
         (tmp_path / "src" / "routes").mkdir(parents=True)
 
+        from nexy.modules.routers.fbrouter import FBRouter
         from nexy.router import FileBasedRouter, FileRouter
-        from nexy.routers.fbrouter import FBRouter
 
         assert isinstance(FileBasedRouter, FBRouter)
         assert FileRouter is FBRouter

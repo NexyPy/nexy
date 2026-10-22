@@ -12,7 +12,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from nexy.helpers.common.console import console
 from nexy.helpers.common.constants import TEMPLATES_DIR
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 from .clone import GitClone
 from .dependencies import DependencyInstaller
@@ -71,7 +71,7 @@ def _clone_from_github(dest: Path, subdir: str) -> None:
 def _render_local_template(
     template_name: str, dest: Path, config: dict[str, Any], project_name: str
 ) -> None:
-    from nexy.i18n import _detect_locale
+    from nexy.modules.i18n import _detect_locale
 
     context = {
         "orm": config.get("orm", "None"),

@@ -1,6 +1,6 @@
 import asyncio
 
-from nexy.routers.fbrouter import _make_request_handler
+from nexy.modules.routers.fbrouter import _make_request_handler
 
 
 class TestStreamingResponse:

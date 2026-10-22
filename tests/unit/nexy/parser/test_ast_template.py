@@ -1,6 +1,6 @@
 import pytest
 
-from nexy.compiler.parser.template import NexyParserError, TemplateParser
+from nexy.modules.compiler.parser.template import NexyParserError, TemplateParser
 
 
 class TestASTTemplateParser:

@@ -3,7 +3,7 @@ from typing import Any
 
 from nexy.__version__ import __version__
 from nexy.helpers.common.console import console
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 from .prompts import ProjectPrompter
 from .registry import template_source

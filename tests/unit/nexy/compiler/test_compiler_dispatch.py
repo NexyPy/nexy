@@ -1,8 +1,8 @@
 import pytest
 
-from nexy.compiler import Compiler
 from nexy.errors import NexyCompileError
 from nexy.helpers.fs.vfs import VFS
+from nexy.modules.compiler import Compiler
 
 DEFAULT_EXPORT = "export default function Page() { return null }\n"
 

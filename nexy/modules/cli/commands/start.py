@@ -4,7 +4,7 @@ from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
 from nexy.helpers.server.server import Server
-from nexy.i18n import t
+from nexy.modules.i18n import t
 
 
 def start(port: int | None = None, host: str | None = None) -> None:
