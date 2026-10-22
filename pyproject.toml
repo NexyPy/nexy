@@ -31,6 +31,7 @@ dev = [
     "pip-audit>=2.8.0",
     "pytest>=9.0.2",
     "pytest-cov>=6.0.0",
+    "pytest-playwright>=0.7.0",
     "ruff>=0.14.11",
     "types-jinja2>=2.11.9",
 ]
@@ -135,8 +136,9 @@ exclude_also = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not e2e'"
 markers = [
-    "slow: performance/regression benchmarks (nightly, excluded from fast CI lane)",
+    "e2e: end-to-end browser tests (Playwright, real dev stack); run with: pytest -m e2e",
 ]
 
 [tool.uv.workspace]
