@@ -1,5 +1,5 @@
-import pytest
 from pathlib import Path
+
 from nexy.core.config import Config
 
 

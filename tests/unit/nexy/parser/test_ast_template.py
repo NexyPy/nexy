@@ -1,5 +1,6 @@
 import pytest
-from nexy.compiler.parser.template import TemplateParser, NexyParserError
+
+from nexy.compiler.parser.template import NexyParserError, TemplateParser
 
 
 class TestASTTemplateParser:
@@ -56,8 +57,10 @@ class TestASTTemplateParser:
         parser = TemplateParser()
         html = '<a href="/user/{{ id }}">Profile</a>'
         result = parser.parse(html)
-        # Standard HTML tags attributes are not formatted by TemplateFormatter.format_dict in my current implementation
-        # Wait, I should check if I want to support dynamic attributes in standard HTML tags too.
+        # Standard HTML tag attributes are not formatted by
+        # TemplateFormatter.format_dict in my current implementation.
+        # Wait, I should check if I want to support dynamic attributes in
+        # standard HTML tags too.
         # Nexy usually uses Jinja2 for that anyway: <a href="/user/{{ id }}">
         # The AST parser will just treat `{{ id }}` as part of the attribute value string.
         assert 'href="/user/{{ id }}"' in result

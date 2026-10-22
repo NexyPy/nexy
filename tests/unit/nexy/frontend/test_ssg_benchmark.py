@@ -46,8 +46,7 @@ def _scaffold_project(tmp_path: Path) -> Path:
     manifest_dir = tmp_path / "__nexy__" / "client" / ".vite"
     manifest_dir.mkdir(parents=True)
     entries = {
-        f"src/routes/page{i}.tsx": {"file": f"assets/page{i}.js", "css": []}
-        for i in range(30)
+        f"src/routes/page{i}.tsx": {"file": f"assets/page{i}.js", "css": []} for i in range(30)
     }
     entries["src/routes/index.tsx"] = {"file": "assets/index.js", "css": []}
     (manifest_dir / "manifest.json").write_text(json.dumps(entries), encoding="utf-8")
@@ -59,10 +58,16 @@ def _scaffold_project(tmp_path: Path) -> Path:
 # was removed from the repo by the cleanup decision (QUALITY_PLAN 6.5) - skip
 # rather than fail while the environment is absent (restore it to run).
 
+_SLOW_BENCHMARK_REASON = (
+    "requires the JS toolchain (node_modules with tsx/react/vite) removed from the repo root"
+    " by cleanup - restore the environment to run this benchmark"
+)
+
+
 @pytest.mark.slow
 @pytest.mark.skipif(
     not (REPO_ROOT / "node_modules").exists(),
-    reason="requires the JS toolchain (node_modules with tsx/react/vite) removed from the repo root by cleanup - restore the environment to run this benchmark",
+    reason=_SLOW_BENCHMARK_REASON,
 )
 def test_ssg_completes_under_sanity_ceiling(tmp_path: Path) -> None:
     """Perf claim: static generation of 31 routes finishes in a bounded time.

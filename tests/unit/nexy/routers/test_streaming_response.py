@@ -7,14 +7,13 @@ class TestStreamingResponse:
     """Sync components are served through a streaming (single-chunk) response."""
 
     def test_handler_returns_streaming_response(self):
-        def Home() -> str:
+        def Home() -> str:  # noqa: N802 - mirrors real compiled route components (PascalCase)
             return "<h1>Home</h1>"
 
         handler = _make_request_handler(Home)
 
         async def run():
             from fastapi import Request
-            from starlette.datastructures import Headers
 
             request = Request({"type": "http", "method": "GET", "path": "/", "headers": []})
             result = await handler(request)
@@ -39,7 +38,7 @@ class TestStreamingResponse:
         assert out == body.encode()
 
     def test_sync_component_body_unchanged(self):
-        def Home() -> str:
+        def Home() -> str:  # noqa: N802 - mirrors real compiled route components (PascalCase)
             return "<h1>Home</h1>"
 
         handler = _make_request_handler(Home)
@@ -53,10 +52,10 @@ class TestStreamingResponse:
             return b"".join(chunks)
 
         out = asyncio.run(run())
-        assert out == "<h1>Home</h1>".encode()
+        assert out == b"<h1>Home</h1>"
 
     def test_generator_component_streams_multiple_chunks(self):
-        def Home():
+        def Home():  # noqa: N802 - mirrors real compiled route components (PascalCase)
             yield "<h1>"
             yield "Home"
             yield "</h1>"
@@ -72,4 +71,4 @@ class TestStreamingResponse:
 
         chunks = asyncio.run(run())
         assert len(chunks) >= 2
-        assert b"".join(chunks) == "<h1>Home</h1>".encode()
+        assert b"".join(chunks) == b"<h1>Home</h1>"

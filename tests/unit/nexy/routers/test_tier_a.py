@@ -1,3 +1,4 @@
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.routing import Mount
@@ -8,7 +9,8 @@ from nexy.routers.static_assets import FAVICON_SVG, setup_favicon, setup_static_
 
 
 class TestStaticAssets:
-    def test_favicon_falls_back_to_builtin_svg(self, nexy_project, tmp_path) -> None:
+    @pytest.mark.usefixtures("nexy_project")
+    def test_favicon_falls_back_to_builtin_svg(self) -> None:
         server = FastAPI()
         setup_favicon(server, "src/routes")  # no favicon anywhere in tmp_path
 
@@ -18,7 +20,8 @@ class TestStaticAssets:
         assert response.content == FAVICON_SVG.encode("utf-8")
         assert response.headers["content-type"].startswith("image/x-icon")
 
-    def test_favicon_prefers_router_folder(self, nexy_project, tmp_path) -> None:
+    @pytest.mark.usefixtures("nexy_project")
+    def test_favicon_prefers_router_folder(self, tmp_path) -> None:
         custom = b"custom-favicon-bytes"
         (tmp_path / "src").mkdir()
         (tmp_path / "src" / "routes").mkdir()
@@ -30,7 +33,8 @@ class TestStaticAssets:
 
         assert response.content == custom
 
-    def test_static_files_mounts_existing_directories_only(self, nexy_project, tmp_path) -> None:
+    @pytest.mark.usefixtures("nexy_project")
+    def test_static_files_mounts_existing_directories_only(self, tmp_path) -> None:
         server = FastAPI()
         (tmp_path / "public").mkdir()
 

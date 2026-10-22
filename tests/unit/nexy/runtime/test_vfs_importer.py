@@ -1,7 +1,7 @@
 import sys
-import pytest
-from nexy.utils.fs.vfs import VFS
+
 from nexy.runtime.importer import install_vfs_importer
+from nexy.utils.fs.vfs import VFS
 
 
 def test_vfs_import():
@@ -27,8 +27,9 @@ def test_vfs_import():
     if "__nexy__.test_module" in sys.modules:
         del sys.modules["__nexy__.test_module"]
 
-    import __nexy__.test_module
     import importlib
+
+    import __nexy__.test_module
 
     importlib.reload(__nexy__.test_module)
     assert __nexy__.test_module.hello() == "updated"
