@@ -1,8 +1,8 @@
 [project]
 name = "nexy"
-version = "2.0.9"
+version = "2.1.1"
 description = "The Modern Fullstack Python Meta-Framework: Build high-performance web apps ."
-readme = "README.pypi.md"
+readme = "README.md"
 requires-python = ">=3.12"
 keywords = [
     "python", "fastapi", "fullstack", "meta-framework", "vite", "react", "vue", "svelte", "solid", "jinja2", 
@@ -11,11 +11,10 @@ keywords = [
 ]
 
 dependencies = [
+    "cmarkgfm>=2024.1.4",
     "fastapi>=0.128.0",
     "jinja2>=3.1.6",
-    "markdown>=3.10.1",
     "pygments>=2.20.0",
-    "pymdown-extensions>=10.21.2",
     "questionary>=2.1.1",
     "scalar-fastapi>=1.8.2",
     "typer>=0.21.1",
@@ -25,8 +24,13 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "bandit>=1.9.0",
+    "deep-translator>=1.11.0",
+    "httpx>=0.28.0",
     "mypy>=1.19.1",
+    "pip-audit>=2.8.0",
     "pytest>=9.0.2",
+    "pytest-cov>=6.0.0",
     "ruff>=0.14.11",
     "types-jinja2>=2.11.9",
 ]
@@ -52,6 +56,21 @@ exclude = ["nexy/templates/tests"]
 strict = true
 files = "nexy"
 
+[[tool.mypy.overrides]]
+module = "nexyconfig"
+ignore_missing_imports = true
+
+# Optional ORM integrations: importable only when the user picks one,
+# so their packages are not project dependencies.
+[[tool.mypy.overrides]]
+module = ["sqlmodel", "tortoise.*", "sqlalchemy.*"]
+ignore_missing_imports = true
+
+# deep-translator ships no py.typed marker.
+[[tool.mypy.overrides]]
+module = "deep_translator.*"
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
@@ -59,13 +78,66 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 
+# Deliberate public API naming (do not rename - it would break user code):
+# - camelCase config fields of the nexyconfig.py surface (N815),
+#   mirrored by the framework classes in nexy/core/config.py and nexy/core/models.py
+# - NestJS-style decorators (N802): Controller, UseGuard, Injectable, ...
+# - `use*` hooks (N802): useRouter, useQuery, useSession, ...
+# - single-item re-exports (N812): Audio, Video, Image, Link
+# - `Vite`, `_Import`, `useLocale` (N802), and the `__()` i18n helper (N807)
+[tool.ruff.lint.per-file-ignores]
+"nexy/core/config.py" = ["N815"]
+"nexy/core/models.py" = ["N815"]
+"nexy/decorators.py" = ["N802", "B010"]
+"nexy/hooks.py" = ["N802"]
+"nexy/errors.py" = ["N802"]
+"nexy/i18n/core.py" = ["N802"]
+"nexy/utils/imports/component_import.py" = ["N802"]
+"nexy/__init__.py" = ["N812"]
+# B010: dynamic dunder attributes on handlers/classes (route metadata,
+# i18n defaults); direct attribute access would be a mypy attr-defined error.
+"nexy/i18n/i18n_decorator.py" = ["N807", "B010"]
+# typer.Option/typer.Argument as defaults is the documented typer idiom and
+# the established style of every CLI command in this codebase (B008 conflicts
+# with it). ARG001: the --ui flag of `nexy add` is kept for CLI compatibility.
+"nexy/cli/**/*.py" = ["B008"]
+"nexy/cli/commands/add.py" = ["ARG001"]
+# E501 inapplicable: these files embed foreign-language code as string
+# templates (client-side JS / TSX-Vue-Svelte scaffolding); the 100-column
+# budget applies to Python code, not to the embedded template content.
+"nexy/vite.py" = ["N802", "E501"]
+"nexy/utils/init/registry.py" = ["E501"]
+
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
 
+[tool.coverage.run]
+branch = true
+source = ["nexy"]
+omit = [
+    "nexy/templates/*",
+]
+
+[tool.coverage.report]
+# Anti-regression floor, measured with branch coverage on 2026-10-19.
+# Raised to 50 after the integration test batch (P2-b), to 51 after the Tier A
+# unit tests, to 52 after the media branch tests, to 52.8 after the error
+# path batch (errors.py 100%, discovery.py 92%), then to 54 after the
+# server.py test batch (utils/server/server.py 24% -> 67%). Never lower it.
+fail_under = 54
+show_missing = true
+
+exclude_also = [
+    "if TYPE_CHECKING:",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "slow: performance/regression benchmarks (nightly, excluded from fast CI lane)",
+]
 
 [tool.uv.workspace]
 members = []

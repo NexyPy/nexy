@@ -1,0 +1,47 @@
+# "@UseRoute
+
+ハンドラー メソッドに OpenAPI メタデータ (名前、概要、説明、タグなど) を設定します。
+```python
+from nexy.decorators import UseRoute, Controller
+
+"@Controller("/users")
+class UsersController:
+    "@UseRoute(
+        summary="List all users",
+        description="Returns paginated list of users",
+        deprecated=False,
+        tags=["users"],
+    )
+    def GET(self) -> list[dict]:
+        ...
+```
+＃＃ サイン
+```python
+UseRoute(
+    name: str | None = None,
+    tags: list[str] | None = None,
+    summary: str | None = None,
+    description: str | None = None,
+    deprecated: bool | None = None,
+    include_in_schema: bool | None = None,
+    operation_id: str | None = None,
+    openapi_extra: dict[str, Any] | None = None,
+) -> Callable
+```
+## すべてのパラメータ
+
+|パラム |タイプ |説明 |
+|------|------|---------------|
+| `name` | `str` |ルート名 (デフォルトは `ClassName.method_name`) |
+| `tags` | `list[str]` | OpenAPI タグ (コントローラー タグをオーバーライド) |
+| `summary` | `str` | OpenAPI の概要 |
+| `description` | `str` | OpenAPI の説明 |
+| `deprecated` | `bool` | OpenAPI で非推奨としてマーク |
+| `include_in_schema` | `bool` | OpenAPI スキーマから隠す |
+| `operation_id` | `str` | OpenAPI 操作 ID |
+| `openapi_extra` | `dict` |追加の OpenAPI フィールド |
+
+## エイリアス
+```python
+from nexy.decorators import useRoute  # lowercase alias, identical API
+```

@@ -1,4 +1,4 @@
-from nexy.compiler.parser.template import TemplateParser, TemplateFormatter
+from nexy.compiler.parser.template import TemplateFormatter, TemplateParser
 
 
 class TestTemplateFormatter:
@@ -22,16 +22,16 @@ class TestTemplateFormatter:
 class TestTemplateParser:
     def test_self_closing_without_spaces(self):
         parser = TemplateParser()
-        result = parser.parse('<Button />', known_components={"Button"})
+        result = parser.parse("<Button />", known_components={"Button"})
         assert "Button()" in result
 
     def test_self_closing_with_spaces_around_equals(self):
         parser = TemplateParser()
         result = parser.parse('<Button title = "Hello" />', known_components={"Button"})
-        assert "Button(title=\"Hello\")" in result
+        assert 'Button(title="Hello")' in result
 
     def test_self_closing_mixed_spaces(self):
         parser = TemplateParser()
         result = parser.parse('<Button title="Hello" count = 5 />', known_components={"Button"})
-        assert "title=\"Hello\"" in result
+        assert 'title="Hello"' in result
         assert "count=5" in result

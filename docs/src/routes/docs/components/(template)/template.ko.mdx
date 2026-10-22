@@ -1,0 +1,33 @@
+# 템플릿 클래스
+
+`Template` 클래스는 Nexy에서 Jinja2 및 Markdown 템플릿 렌더링을 처리합니다.
+
+## 가져오기
+
+`nexy`에서 직접 가져옵니다.
+
+```python
+from nexy import Template
+```
+
+## 기본 사용법
+
+```python
+template = Template()
+html = template.render("page.html", {"title": "Hello World"})
+```
+
+## 마크다운 지원
+
+파일이 `.md`로 끝나면 자동으로 Markdown으로 처리됩니다.
+
+```python
+template = Template()
+html = template.render("blog-post.md", {})
+```
+
+## 방법
+
+| 방법 | 매개변수 | 반품 | 설명 |
+|---------|------------|---------|-------------|
+| `render` | `path: str`, `context: dict[str, Any] \| None = None` | `str` | 템플릿을 렌더링합니다 |

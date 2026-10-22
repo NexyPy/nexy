@@ -1,0 +1,36 @@
+# 乌龟-ORM
+
+**Tortoise-ORM** 是一个受 Django ORM 启发的异步原生 ORM。易于学习，与 FastAPI/Nexy 配合良好。
+
+＃＃ 配置
+
+```python
+TORTOISE_ORM = {
+    "connections": {"default": "sqlite://dev.db"},
+    "apps": {"models": {"models": ["models", "aerich.models"], "default_connection": "default"}},
+}
+```
+
+＃＃ 例子
+
+```python
+from tortoise import fields
+from tortoise.models import Model
+
+class User(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=100)
+    email = fields.CharField(max_length=100)
+```
+
+## 迁移
+
+Tortoise-ORM 使用 **Aerich** （通过 `nx migrate` 配置）：
+
+```bash
+nx migrate --init    # Initialize Aerich (first time)
+nx migrate           # Create migration
+nx migrate --upgrade # Apply
+```
+
+如果您来自 Django 并且想要一个具有异步支持的熟悉的 API，Tortoise-ORM 是一个不错的选择。

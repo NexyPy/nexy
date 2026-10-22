@@ -1,0 +1,49 @@
+#उपयोग क्वेरी
+
+वर्तमान URL से डायनामिक रूट पैरामीटर (पथ पैरामीटर) लौटाता है।
+
+```python
+from nexy import useQuery
+
+query = useQuery()
+```
+
+---
+
+## वापसी मूल्य
+
+`dict` - URL से निकाले गए पथ पैरामीटर (उदाहरण के लिए `[slug]` रूट के लिए `{"slug": "hello-world"}`)।
+
+---
+
+## उदाहरण
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<h1>Article: {{ params.slug }}</h1>
+```
+
+---
+
+## कई मापदंडों के साथ
+
+```nexy
+---
+from nexy import useQuery
+params = useQuery()
+---
+<article>
+    <h1>{{ params.title }}</h1>
+    <p>Year: {{ params.year }}, Month: {{ params.month }}</p>
+</article>
+```
+
+---
+
+## उपयोग नोट्स
+
+- मान डिफ़ॉल्ट रूप से स्ट्रिंग हैं - फास्टएपीआई प्रकार रूपांतरण `.py` हैंडलर में लागू होता है
+- फास्टएपीआई में `request.path_params` के बराबर

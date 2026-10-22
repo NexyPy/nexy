@@ -1,0 +1,50 @@
+# Async और Concurrency (मॉड्यूलर)
+
+नेक्सी फास्टएपीआई पर बनाया गया है जो नियंत्रकों में `async` और `def` दोनों का समर्थन करता है।
+
+## `async def` बनाम `def`
+
+| हैंडलर प्रकार | निष्पादन | कब उपयोग करें |
+|---|----|---|
+| `def` | थ्रेड पूल (अवरुद्ध करना) | सीपीयू कार्य, डीबी कॉल को सिंक करना, I/O को ब्लॉक करना |
+| `async def` | इवेंट लूप | Async DB, HTTP कॉल, लॉन्ग-पोलिंग |
+
+## एसिंक नियंत्रक
+
+```python
+from nexy.decorators import Controller
+import httpx
+
+"@Controller("/proxy")
+class ProxyController:
+    async def GET(self):
+        async with httpx.AsyncClient() as client:
+            resp = await client.get("https://api.example.com/data")
+            return resp.json()
+```
+
+## मिश्रित सिंक और एसिंक्स
+
+```python
+from nexy.decorators import Controller
+
+"@Controller("/sync")
+class SyncController:
+    def GET(self):             # runs in thread pool
+        return {"type": "sync"}
+
+"@Controller("/async")
+class AsyncController:
+    async def GET(self):       # runs in event loop
+        return {"type": "async"}
+```
+
+## पृष्ठभूमि कार्य
+
+प्रतिक्रिया के बाद आग लगाओ और भूल जाओ कार्य के लिए, `BackgroundTasks` का उपयोग करें। वास्तविक एसिंक पृष्ठभूमि कार्य के लिए, `asyncio.create_task` का उपयोग करें।
+
+## चेतावनियाँ
+
+- `def` हैंडलर से `await` वाले `async` फ़ंक्शन को कॉल न करें - `asyncio.run()` का उपयोग करें या हैंडलर को `async def` बनाएं
+- `async def` से ब्लॉकिंग फ़ंक्शन (`time.sleep()`, `requests.get()`) को कॉल न करें - `asyncio.sleep()`, `httpx.AsyncClient` का उपयोग करें
+- उत्पादन के लिए, सिंक हैंडलर के लिए एकाधिक श्रमिकों का उपयोग करें

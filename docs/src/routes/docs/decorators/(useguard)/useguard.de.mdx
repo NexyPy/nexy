@@ -1,0 +1,76 @@
+# "@UseGuard
+
+Wenden Sie Guard-Callables auf eine Controller-Klasse oder eine einzelne Handler-Methode an.
+
+## Wachvertrag
+
+Ein Wächter kann mit `__call__(self, request)` aufgerufen werden. Es empfängt das FastAPI-Objekt `Request`. Erhöhen Sie `HTTPException` zum Blockieren, geben Sie `None` zurück, um es zuzulassen.
+```python
+from fastapi import HTTPException
+
+class RoleGuard:
+    def __init__(self, role: str):
+        self.role = role
+
+    def __call__(self, request) -> None:
+        if request.user.role != self.role:
+            raise HTTPException(403)
+```
+---
+
+## Wache auf einer Route
+```python
+---
+from nexy.decorators import UseGuard
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@UseGuard(AuthGuard())
+def GET():
+    ...
+---
+```
+```python
+from nexy.decorators import UseGuard, Controller
+
+class AuthGuard:
+    def __call__(self, request):
+        if not request.user:
+            raise HTTPException(401)
+
+"@Controller("/users")
+"@UseGuard(AuthGuard())
+class UsersController:
+    def GET(self) -> list[dict]:
+        ...
+
+    "@UseGuard(AdminGuard())
+    def delete(self, user_id: int) -> dict:
+        ...
+```
+## Mehrere Wachen
+```python
+---
+from nexy.decorators import UseGuard
+
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+def GET():
+    ...
+---
+```
+```python
+"@UseGuard(AuthGuard(), RoleGuard("admin"))
+class AdminController:
+    def GET(self):
+        ...
+```
+## Unterschrift
+```python
+UseGuard(*guards: Callable[..., Any]) -> Callable[[Any], Any]
+```
+## Bestellung
+
+Wächter auf Klassenebene werden vor Wächtern auf Methodenebene ausgeführt. Alle laufen als FastAPI `Depends`.

@@ -1,0 +1,65 @@
+# ओपनएपीआई वेबहुक और कॉलबैक
+
+अपने ओपनएपीआई स्कीमा में वेबहुक और कॉलबैक को परिभाषित करें ताकि उपभोक्ताओं को पता चले कि आपका एपीआई उन्हें क्या भेजता है।
+
+## वेबहुक
+
+वेबहुक आउटगोइंग इवेंट हैं जिन्हें आपका एपीआई बाहरी यूआरएल पर भेजता है।
+
+```python
+from nexy import app
+from pydantic import BaseModel
+
+class WebhookPayload(BaseModel):
+    event: str
+    data: dict
+
+"@app.webhooks.post("/")
+async def event_webhook(payload: WebhookPayload):
+    """Sent when an event occurs."""
+    ...
+```
+
+यह OpenAPI स्कीमा में एक वेबहुक पंजीकृत करता है। उपभोक्ता अपेक्षित पेलोड आकार `/docs` में देखते हैं।
+
+## कॉलबैक
+
+कॉलबैक उन अनुरोधों का वर्णन करता है जो आपका एपीआई उपभोक्ता के सर्वर पर करेगा।
+
+```python
+from pydantic import BaseModel
+from fastapi import APIRouter
+
+class Invoice(BaseModel):
+    id: str
+    amount: float
+    status: str
+
+callback_router = APIRouter()
+
+"@callback_router.post("/invoice-callback", response_model=Invoice)
+def invoice_notification(body: Invoice):
+    ...
+```
+
+कॉलबैक राउटर को रूट पर पास करें:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+"@app.post("/create-invoice", callbacks=callback_router.routes)
+def create_invoice(invoice: Invoice):
+    # Your logic here
+    return {"status": "processing"}
+```
+
+यह ओपनएपीआई स्पेक में अतिरिक्त पथ उत्पन्न करता है जो दिखाता है कि आपका एपीआई बाहरी यूआरएल पर क्या पोस्ट करेगा।
+
+## उनका उपयोग क्यों करें
+
+- एपीआई उपभोक्ताओं के लिए स्वतः उत्पन्न दस्तावेज़
+- प्रकार-सुरक्षित अनुबंध परिभाषा
+- किसी भी OpenAPI क्लाइंट जनरेटर के साथ काम करता है
+- कोई रनटाइम प्रभाव नहीं - विशुद्ध रूप से दस्तावेज़ीकरण के लिए

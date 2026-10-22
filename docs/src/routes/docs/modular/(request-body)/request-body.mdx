@@ -1,0 +1,69 @@
+# Request Body (Modular)
+
+Receive JSON request bodies using Pydantic models in controllers.
+
+## Basic model
+
+```python
+from nexy.decorators import Controller
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    is_offer: bool | None = None
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item):
+        return {"name": item.name, "price": item.price}
+```
+
+## Body field with `embed`
+
+```python
+from fastapi import Body
+from pydantic import BaseModel
+from nexy.decorators import Controller
+
+class Item(BaseModel):
+    name: str
+    price: float
+
+"@Controller("/items")
+class ItemsController:
+    def post(self, item: Item, important: str = Body(embed=True)):
+        # Expects: {"item": {...}, "important": "x"}
+        ...
+```
+
+## Multiple body parameters
+
+```python
+"@Controller("/orders")
+class OrderController:
+    def post(self, item: Item, user: User):
+        # Expects: {"item": {...}, "user": {...}}
+        ...
+```
+
+## Nested models
+
+```python
+from pydantic import BaseModel
+
+class Image(BaseModel):
+    url: str
+    alt: str | None = None
+
+class Item(BaseModel):
+    name: str
+    tags: list[str] = []
+    image: Image | None = None
+```
+
+FastAPI handles validation and returns 422 on invalid input.
+
+---
+
+See also: [Controllers](/docs/modular/controllers), [FastAPI Request Body](/docs/fastapi/request-body)

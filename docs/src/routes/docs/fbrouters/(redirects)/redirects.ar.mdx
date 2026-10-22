@@ -1,0 +1,49 @@
+# عمليات إعادة التوجيه (FBR)
+
+أعد توجيه الطلبات الواردة إلى عناوين URL أخرى باستخدام `RedirectResponse` الخاص بـ FastAPI.
+
+## إعادة التوجيه الأساسية
+
+```python
+# src/routes/redirect.py
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/login")
+```
+
+## مع رمز الحالة
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET():
+    return RedirectResponse("/new-page", status_code=301)
+```
+
+## إعادة التوجيه المشروط
+
+```python
+from fastapi.responses import RedirectResponse
+
+def GET(request):
+    if not request.user.is_authenticated:
+        return RedirectResponse("/login")
+    return "<h1>Dashboard</h1>"
+```
+
+## مرجع رمز الحالة
+
+| الكود | الاسم | حالة الاستخدام |
+|------|------|----------|
+| 301 | انتقل نهائيا | تغيير عنوان URL الدائم |
+| 302 | تم العثور عليه (افتراضي) | إعادة توجيه مؤقتة |
+| 307 | إعادة توجيه مؤقتة | يحافظ على طريقة HTTP |
+| 308 | إعادة توجيه دائمة | يحافظ على طريقة HTTP |
+
+## الأنماط الشائعة
+
+- إعادة توجيه المصادقة: المستخدمون غير المصادق عليهم → `/login`
+- عناوين URL القديمة: المسارات القديمة ← المسارات الجديدة (301)
+- إعادة التوجيه بعد الإرسال: بعد النموذج POST → صفحة النجاح (303)
+- إعادة توجيه اللغة: `/` → `/{locale}/` بناءً على لغة المتصفح

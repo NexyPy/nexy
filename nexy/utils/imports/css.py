@@ -1,9 +1,12 @@
 from collections.abc import Callable
+from pathlib import Path
 
 
 class CSS:
     @staticmethod
     def create(path: str) -> Callable[[], str]:
-        # CSS imports in Nexy logic usually return empty strings
-        # as they are injected in the head during compilation
+        p = Path(path)
+        if p.exists():
+            content = p.read_text(encoding="utf-8")
+            return lambda: f"<style>\n{content}\n</style>"
         return lambda: ""

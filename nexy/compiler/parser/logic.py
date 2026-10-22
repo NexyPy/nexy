@@ -24,7 +24,7 @@ class ASTUtils:
         )
 
     @staticmethod
-    def extract_loader_args(node: ast.Assign) -> dict[str, Any] | None:
+    def extract_loader_args(node: ast.Assign) -> dict[str | None, Any] | None:
         """Attempts to extract path/framework/symbol from a __nexy_loader__ or __Import call."""
         if not (isinstance(node.value, ast.Call)):
             return None
@@ -32,9 +32,6 @@ class ASTUtils:
         call = node.value
         func = call.func
 
-        # Accept multiple loader call patterns:
-        # 1) __nexy_loader__.import_component(...)
-        # 2) __Import(...)
         valid_call = False
         if isinstance(func, ast.Attribute):
             if (
@@ -43,15 +40,13 @@ class ASTUtils:
                 and func.attr == "import_component"
             ):
                 valid_call = True
-        elif isinstance(func, ast.Name):
-            if func.id == "__Import":
-                valid_call = True
+        elif isinstance(func, ast.Name) and func.id == "__Import":
+            valid_call = True
 
         if not valid_call:
             return None
 
-        # Simple extraction of keyword arguments
-        args = {}
+        args: dict[str | None, Any] = {}
         for kw in call.keywords:
             if isinstance(kw.value, ast.Constant):
                 args[kw.arg] = kw.value.value
@@ -76,17 +71,13 @@ class LogicParser:
         if not code.strip():
             return result
 
-        # 1. Pre-processing
         clean_code = self.sanitizer.sanitize(code, current_file=current_file)
 
-        # 2. AST Analysis
         try:
             tree = ast.parse(clean_code)
         except SyntaxError as e:
-            # Re-raise with a clear message for the user
-            raise SyntaxError(f"Logic Parse Error: {e}")
+            raise SyntaxError(f"Logic Parse Error: {e}") from e
 
-        # 3. Data Extraction & Final Code Construction
         final_body = self._process_nodes(tree.body, result)
 
         if final_body:
@@ -96,21 +87,16 @@ class LogicParser:
 
     def _process_nodes(self, nodes: list[ast.stmt], result: LogicResult) -> list[ast.stmt]:
         """Iterates through AST nodes to extract metadata and filter nodes."""
-        final_nodes = []
+        final_nodes: list[ast.stmt] = []
         for node in nodes:
-            # Case A: Props
             if isinstance(node, ast.AnnAssign) and ASTUtils.is_prop_annotation(node):
                 result.props.append(self._build_prop(node))
-                # Skip prop annotations in the final function body
                 continue
 
-            # Case B: Component Imports (Variable Assignment from __Import)
-            if isinstance(node, ast.Assign):
-                if self._try_extract_import(node, result):
-                    final_nodes.append(node)
-                    continue
+            if isinstance(node, ast.Assign) and self._try_extract_import(node, result):
+                final_nodes.append(node)
+                continue
 
-            # Case C: Standard Python code
             final_nodes.append(node)
 
         return final_nodes
@@ -147,11 +133,9 @@ class LogicParser:
         if not path or not symbol:
             return False
 
-        # If it's a CSS import, collect it
         if fw_str == "css" or (path and path.endswith(".css")):
             result.css_imports.append(path)
 
-        # Determine the component type based on extension or framework hint
         comp_type = self._determine_component_type(path, fw_str)
         ext = path[path.rfind(".") :] if "." in path else ""
 
@@ -179,15 +163,12 @@ class LogicParser:
             ".solid": ComponentType.SOLID,
             ".preact": ComponentType.PREACT,
             ".json": ComponentType.JSON,
-            ".mdx": ComponentType.MDX,
         }
 
-        # 1. Priority to file extension
         for ext, ctype in mapping.items():
             if path_lower.endswith(ext):
                 return ctype
 
-        # 2. Fallback to framework argument hint
         fw_map = {
             "vue": ComponentType.VUE,
             "react": ComponentType.REACT,

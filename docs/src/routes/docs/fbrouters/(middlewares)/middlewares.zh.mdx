@@ -1,0 +1,65 @@
+---
+from nexy import usePathname
+from "@components/link.nexy" import Link
+pathname = usePathname()
+---
+
+# 中间件
+
+中间件是在每个请求之前和之后运行的层 - 对于日志记录、身份验证、CORS 标头和其他全局问题很有用。
+
+---
+
+## 创建中间件
+
+在 Nexy 中，中间件是通过 Starlette 的 `BaseHTTPMiddleware` 定义的或可调用的：
+```python
+# src/middlewares.py
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        print(f"→ {request.method} {request.url.path}")
+        response = await call_next(request)
+        print(f"← {response.status_code}")
+        return response
+```
+---
+
+## 注册中间件
+
+在 `nexyconfig.py` 中，传递 `(MiddlewareClass, kwargs_dict)` 元组列表：
+```python
+from nexy.core.models import NexyConfigModel
+from src.middlewares import LoggingMiddleware
+
+class NexyConfig(NexyConfigModel):
+    useMiddlewares = [
+        (LoggingMiddleware, {}),
+    ]
+```
+---
+
+## 执行顺序
+
+中间件按声明顺序运行，形成**堆栈**（如 Starlette）：
+```text
+Request → MW1 → MW2 → Route → MW2 → MW1 → Response
+```
+---
+
+## 目录级中间件（FBR）
+
+使用 FBR，您可以将中间件逻辑放置在目录中的 `dependencies.py` 中：
+```python
+# routes/api/dependencies.py
+from fastapi import Request
+
+async def verify_api_key(request: Request):
+    if request.headers.get("X-API-Key") != "secret":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403)
+```
+`/api/` 下的每个页面都会自动继承此检查。
+<Link href="/docs/fbrouters/route_handlers">Next: Route Handlers →</Link>

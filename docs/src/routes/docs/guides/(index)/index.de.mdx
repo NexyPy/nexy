@@ -1,0 +1,24 @@
+# Führer
+
+Praktische Komplettlösungen für die Verwendung von Nexy mit Frontend-Frameworks, Datenladen, Authentifizierung, Internationalisierung und Bereitstellung.
+
+## Frontend-Framework-Integration
+
+- [React in Nexy](/docs/frontend/react)
+- [Vue in Nexy](/docs/frontend/vue)
+- [Svelte in Nexy](/docs/frontend/svelte)
+- [Solid in Nexy](/docs/frontend/solid)
+- [Preact in Nexy](/docs/frontend/preact)
+- [Vite & SSR](/docs/frontend/vite)
+
+## Grundlegende Leitfäden
+
+- [Jinja2](/docs/guides/jinja2) – Verwendung der Template-Engine
+- [Data Loading](/docs/guides/data-loading) – Daten abrufen und zwischenspeichern
+- [Error Handling](/docs/guides/error-handling) – Fehlerseiten und Ausnahmebehandlung
+- [Actions](/docs/guides/actions) – Aktionen und Mutationen bilden
+- [Auth](/docs/guides/auth) – Authentifizierungsflüsse
+- [i18n](/docs/guides/i18n) – Internationalisierung
+- [CSS & JS](/docs/guides/css-js) – statische Assets und Bündelung
+- [Real-Time](/docs/guides/websocket) – WebSocket und SSE
+- [Deploy](/docs/guides/deploy) – Produktionsbereitstellung

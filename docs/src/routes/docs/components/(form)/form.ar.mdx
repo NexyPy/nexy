@@ -1,0 +1,40 @@
+#مكون النموذج
+
+يعمل مكون النموذج المدمج على تبسيط العمل مع النماذج وإجراءات الخادم.
+
+##استيراد
+
+قم باستيراده مباشرةً من `nexy`:
+
+```nexy
+---
+from nexy import Form
+---
+```
+
+## الاستخدام الأساسي
+
+سيتم تحسين مكون النموذج للتكامل مع إجراءات الخادم وتوفير أدوات مساعدة للتعامل مع النماذج.
+
+في الوقت الحالي، يمكنك استخدام نماذج HTML القياسية في مكوناتك:
+
+```nexy
+---
+from nexy import Form
+---
+<form action="/submit" method="POST">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+```
+
+## إجراءات الخادم
+
+سوف يتكامل مكون النموذج مع مصمم الديكور `@action` الخاص بـ Nexy لمعالجة النماذج من جانب الخادم.

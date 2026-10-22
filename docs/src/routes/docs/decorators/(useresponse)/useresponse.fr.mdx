@@ -1,0 +1,48 @@
+# "@UseResponse
+
+Définissez les métadonnées de réponse sur une méthode de gestionnaire : code d'état, modèle de réponse, classe de réponse, etc.
+```python
+from nexy.decorators import UseResponse, Controller
+from fastapi.responses import HTMLResponse
+
+"@Controller("/users")
+class UsersController:
+    "@UseResponse(status_code=201, response_model=dict)
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+
+    "@UseResponse(response_class=HTMLResponse)
+    def GET(self) -> str:
+        return "<h1>Users</h1>"
+```
+## Signature
+```python
+UseResponse(
+    status_code: int | None = None,
+    response_class: type[Response] | None = None,
+    response_model: type[Any] | None = None,
+    responses: dict[int | str, Any] | None = None,
+    response_description: str | None = None,
+    response_model_include: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_exclude: AbstractSet[str] | Mapping[str, Any] | None = None,
+    response_model_by_alias: bool | None = None,
+    response_model_exclude_unset: bool | None = None,
+    response_model_exclude_defaults: bool | None = None,
+    response_model_exclude_none: bool | None = None,
+) -> Callable
+```
+## Tous les paramètres
+
+| Paramètres | Tapez | Descriptif |
+|-------|------|-------------|
+| `status_code` | `int` | Code d'état HTTP |
+| `response_class` | `type[Response]` | Classe de réponse personnalisée (par exemple `HTMLResponse`) |
+| `response_model` | `type` | Modèle pydantique pour la sérialisation des réponses |
+| `responses` | `dict` | Réponses OpenAPI supplémentaires |
+| `response_description` | `str` | Description de la réponse dans OpenAPI |
+| `response_model_include` | ensemble/cartographie | Champs à inclure dans la réponse |
+| `response_model_exclude` | ensemble/cartographie | Champs à exclure de la réponse |
+| `response_model_by_alias` | `bool` | Utiliser des noms d'alias en réponse |
+| `response_model_exclude_unset` | `bool` | Exclure les champs non définis |
+| `response_model_exclude_defaults` | `bool` | Exclure les champs avec valeur par défaut |
+| `response_model_exclude_none` | `bool` | Exclure les champs sans valeur |

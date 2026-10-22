@@ -25,6 +25,15 @@ class PathUtil:
         p.write_text(content, encoding="utf-8")
 
     @staticmethod
+    def write_if_changed(path: str | Path, content: str) -> None:
+        """Write *content* only when it differs from what is on disk."""
+        p = Path(path)
+        if p.exists() and p.read_text(encoding="utf-8") == content:
+            return
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content, encoding="utf-8")
+
+    @staticmethod
     def exists(path: str | Path) -> bool:
         """Checks if a path exists."""
         return Path(path).exists()

@@ -1,0 +1,51 @@
+#استخدامجهاز التوجيه
+
+إرجاع كائن مع سياق التوجيه للطلب الحالي.
+
+```python
+from nexy import useRouter
+
+router = useRouter()
+```
+
+---
+
+## القيمة المرتجعة
+
+`dict` بالمفاتيح التالية:
+
+| مفتاح | اكتب | الوصف |
+|-----|------|-------------|
+| `path` | `str` | مسار URL الحالي |
+| `base_url` | `str` | عنوان URL الأساسي للخادم |
+| `url_for` | `callable \| None` | وظيفة FastAPI `url_for` للبحث العكسي عن عنوان URL |
+
+---
+
+## مثال
+
+```nexy
+---
+from nexy import useRouter
+router = useRouter()
+---
+<p>Current path: {{ router.path }}</p>
+<p>Base URL: {{ router.base_url }}</p>
+```
+
+---
+
+## البحث العكسي عن URL
+
+```python
+router = useRouter()
+if router.url_for:
+    url = router.url_for("read_article", slug="hello-world")
+```
+
+---
+
+## ملاحظات الاستخدام
+
+- قد يكون `url_for` `None` خارج سياق الطلب
+- يستخدم `request.app.url_for` الخاص بـ FastAPI أسفل الغطاء

@@ -1,0 +1,56 @@
+# रीडायरेक्ट (मॉड्यूलर)
+
+आने वाले अनुरोधों को नियंत्रकों में अन्य यूआरएल पर पुनर्निर्देशित करें।
+
+## मूल पुनर्निर्देशन
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+
+## स्टेटस कोड के साथ
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+
+## सशर्त पुनर्निर्देशन
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+
+## स्थिति कोड संदर्भ
+
+| कोड | नाम | उपयोग का मामला |
+|------|------|----------|
+| 301 | स्थायी रूप से स्थानांतरित | स्थायी यूआरएल परिवर्तन |
+| 302 | मिला (डिफ़ॉल्ट) | अस्थायी पुनर्निर्देशन |
+| 307 | अस्थायी रीडायरेक्ट | HTTP पद्धति को सुरक्षित रखता है |
+| 308 | स्थायी पुनर्निर्देशन | HTTP पद्धति को सुरक्षित रखता है |
+
+## सामान्य पैटर्न
+
+- प्रामाणिक रीडायरेक्ट: अप्रमाणित उपयोगकर्ता → `/login`
+- लीगेसी यूआरएल: पुराने रास्ते → नये रास्ते (301)
+- पोस्ट-सबमिट रीडायरेक्ट: फॉर्म पोस्ट के बाद → सफलता पृष्ठ (303)

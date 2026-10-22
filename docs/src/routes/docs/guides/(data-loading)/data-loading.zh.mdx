@@ -1,0 +1,80 @@
+# 数据加载
+
+Nexy 提供了两层来加载数据：`.nexy` frontmatter 中的**编译时**，以及通过钩子的**请求时**。
+
+## 编译时数据（frontmatter）
+
+`.nexy` 文件中的 `---` 块是在编译时执行的 Python。模板中定义的变量可用：
+
+```nexy
+---
+import json
+from src.data import get_items
+items = get_items()
+total = len(items)
+---
+<ul>
+{% for item in items %}
+  <li>{{ item.name }}</li>
+{% endfor %}
+</ul>
+<p>Total: {{ total }} items</p>
+```
+
+您还可以直接导入 JSON 数据：
+
+```nexy
+---
+import "./data.json" as data
+---
+<pre>{{ data | tojson }}</pre>
+```
+
+## 请求时数据（钩子）
+
+钩子在 HTTP 请求期间运行并可以访问请求上下文：
+
+```python
+from nexy import useQuery, useSearchParams, useSession, useCookies
+
+# URL path parameters (from [param] in filename)
+id = useQuery("id")
+
+# Query string parameters
+params = useSearchParams()  # {"page": "1", "sort": "asc"}
+
+# Session data (requires session middleware)
+user = useSession().get("user")
+
+# Cookies
+token = useCookies().get("token")
+```
+
+## API 路由处理程序
+
+对于来自数据库或外部 API 的数据，请在 `.py` 文件中创建专用 API 处理程序：
+
+```python
+# src/routes/api/items.py
+from myapp.db import get_items
+
+def GET():
+    return get_items()
+
+def POST(data: dict):
+    # data is parsed from request body automatically
+    return {"created": True, "id": data.get("id")}
+```
+
+然后通过 `fetch` 或服务器端包含从您的页面调用它。
+
+## 动态包含 `useViews`
+
+在请求时在当前页面内渲染另一个页面的组件：
+
+```python
+from nexy import useViews
+sidebar = useViews("/components/sidebar.nexy", {"active": "docs"})
+```
+
+返回可嵌入模板中的 `HTMLResponse`。

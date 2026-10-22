@@ -1,0 +1,55 @@
+---
+from nexy import usePathname, useSearchParams
+from "@components/link.nexy" import Link
+pathname = usePathname()
+params = useSearchParams()
+---
+
+# 查询参数
+
+查询参数是 URL 中的 `?key=value` 对。 Nexy 通过 frontmatter 中的 `useSearchParams()` 或处理程序中的 `request.query_params` 公开它们。
+
+---
+
+## 在 `.nexy` 页面中
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Results for: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+`params` 对象的行为类似于字典：`.get(key, default)`、`.keys()`、`.items()`。
+
+---
+
+## 在 `.py` 处理程序中
+```python
+# routes/search.py
+from fastapi import Request
+
+async def get(request: Request, q: str = "", page: int = 1):
+    results = search_database(q, page=page)
+    return {"results": results, "page": page}
+```
+FastAPI 自动解析键入的查询参数。
+
+---
+
+## 当前页面参数
+
+此页面在其 frontmatter 中使用 `useSearchParams()`。当前查询参数为：
+```json
+{{ params | safe }}
+```
+---
+
+## 最佳实践
+
+- 在服务器渲染页面的 `.nexy` 组件中使用 `useSearchParams()`
+- 在 API 的 `.py` 处理程序中使用 `request.query_params`
+- 值始终是字符串 - 使用 `int()`、`bool()` 等进行转换。
+<Link href="/docs/components">Next: Views →</Link>

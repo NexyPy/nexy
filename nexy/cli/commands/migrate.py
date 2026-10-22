@@ -1,11 +1,10 @@
-import shutil
-import subprocess
 from pathlib import Path
 
 import typer
 from jinja2 import Environment, FileSystemLoader
 
-_TEMPLATES_DIR = Path(__file__).resolve().parent.parent.parent / "templates"
+from nexy.utils.common.constants import TEMPLATES_DIR
+from nexy.utils.common.process import run_tool
 
 
 def _detect_orm() -> tuple[str, str]:
@@ -50,19 +49,21 @@ def _detect_orm() -> tuple[str, str]:
 
 
 def _run_tool(tool: str, args: list[str]) -> int:
-    exe = shutil.which(tool)
-    if not exe:
+    returncode = run_tool(tool, args)
+    if returncode is None:
         typer.echo(f"Error: {tool} not found on PATH. Install it and try again.")
         raise typer.Exit(1)
-    return subprocess.run([exe, *args], check=False).returncode
+    return returncode
 
 
 def _init_alembic(cwd: Path, orm_name: str) -> None:
     _run_tool("alembic", ["init", "alembic"])
     alembic_dir = cwd / "alembic"
     if alembic_dir.exists():
-        loader = FileSystemLoader(str(_TEMPLATES_DIR / "alembic"))
-        env = Environment(loader=loader)
+        loader = FileSystemLoader(str(TEMPLATES_DIR / "alembic"))
+        # Renders a Python code template (env.py), not HTML; autoescaping
+        # here would corrupt the generated Python. See SECURITY.md.
+        env = Environment(loader=loader)  # nosec B701
         env_path = alembic_dir / "env.py"
         env_path.write_text(env.get_template("env.py.jinja2").render(orm=orm_name))
     _write_db_url_to_alembic_ini(cwd)
@@ -122,11 +123,11 @@ def _check_db_connection() -> None:
             conn.execute(text("SELECT 1"))
         engine.dispose()
     except ImportError as e:
-        typer.echo(f"Error: Missing database driver — {e}")
-        raise typer.Exit(1)
+        typer.echo(f"Error: Missing database driver - {e}")
+        raise typer.Exit(1) from e
     except Exception as e:
-        typer.echo(f"Error: Cannot connect to database — {e}")
-        raise typer.Exit(1)
+        typer.echo(f"Error: Cannot connect to database - {e}")
+        raise typer.Exit(1) from e
 
 
 def migrate(

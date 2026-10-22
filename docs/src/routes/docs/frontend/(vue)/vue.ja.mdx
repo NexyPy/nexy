@@ -1,0 +1,73 @@
+#ビュー
+
+Vue を `nexyconfig.py` に追加します。
+
+```python
+from nexy.frontend import vue
+
+class NexyConfig(NexyConfigModel):
+    useFF = [vue()]
+```
+
+---
+
+## コンポーネントの作成
+
+`.vue` 拡張子を持つファイルは単一ファイル コンポーネントとして扱われます。
+
+```vue
+<!-- src/components/Counter.vue -->
+<script setup>
+import { ref } from 'vue'
+const props = defineProps({ initial: { type: Number, default: 0 } })
+const count = ref(props.initial)
+</script>
+
+<template>
+  <div>
+    <p>Count: {{ count }}</p>
+    <button "@click="count++">+</button>
+  </div>
+</template>
+```
+
+---
+
+## .nexy ページでの使用
+
+```nexy
+---
+from "@components/Counter" import Counter
+---
+<Counter initial={{42}} />
+```
+
+Props は、Jinja2 `{{ }}` 構文を介して渡されます。JSON 値には二重中括弧を使用します。
+
+---
+
+## 子供 / スロットの内容
+
+Nexy は子コンテンツをデフォルトのスロットとして渡します。
+
+```vue
+<!-- Card.vue -->
+<template>
+  <div class="card">
+    <h2>{{ title }}</h2>
+    <slot />
+  </div>
+</template>
+```
+
+```nexy
+<Card title="Hello">
+  <p>This content is passed as the default slot</p>
+</Card>
+```
+
+---
+
+## SSR
+
+Vue コンポーネントは、水和に `createSSRApp` を使用します。サーバーでレンダリングされた HTML は、クライアント上で自動的にハイドレートされます。

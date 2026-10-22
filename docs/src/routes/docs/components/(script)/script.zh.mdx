@@ -1,0 +1,53 @@
+# 组件中的脚本
+
+您可以使用标准 <script> 标记将客户端 JavaScript 直接包含在 .nexy 文件中。
+
+## 基本用法
+
+```nexy
+---
+---
+<button id="myButton">Click Me!</button>
+<script>
+document.getElementById('myButton').addEventListener('click', function() {
+    alert('Hello from Nexy!');
+});
+</script>
+```
+
+## 特定于框架的脚本
+
+对于框架组件（React、Vue、Svelte、Solid、Preact），请使用 `<script framework="...">` 语法：
+
+```nexy
+---
+---
+<script framework="react">
+import { useState } from 'react';
+
+export default function Counter() {
+    const [count, setCount] = useState(0);
+    
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(c => c + 1)}>+</button>
+        </div>
+    );
+}
+</script>
+```
+
+## 热模块更换 (HMR)
+
+Nexy 在开发过程中自动处理脚本更新。当您更改脚本时，组件将重新加载，而无需刷新整个页面。
+
+## 外部脚本
+
+您还可以引用外部脚本：
+
+```nexy
+---
+---
+<script src="https://cdn.example.com/script.js"></script>
+```

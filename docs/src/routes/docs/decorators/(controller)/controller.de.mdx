@@ -1,0 +1,50 @@
+# "@Controller
+
+Markiert eine Klasse als FastAPI-Controller. Methodennamen definieren HTTP-Verben.
+```python
+from nexy.decorators import Controller
+
+"@Controller("/users")
+class UsersController:
+    def GET(self) -> list[dict]:
+        return [{"id": 1, "name": "Alice"}]
+
+    def post(self, data: dict) -> dict:
+        return {"created": True}
+```
+## Unterschrift
+```python
+Controller(
+    prefix: str = "",
+    tags: list[str] | None = None,
+) -> Callable[[type], type]
+```
+## Parameter
+
+| Param | Geben Sie | ein Standard | Beschreibung |
+|-------|------|---------|-------------|
+| `prefix` | `str` | `""` | URL-Präfix für alle Routen in diesem Controller |
+| `tags` | `list[str]` | `None` | OpenAPI-Tags (standardmäßig `[ClassName]`) |
+
+## HTTP-Verben
+
+Bei Methodennamen wird die Groß-/Kleinschreibung nicht beachtet. Eine Methode pro Verb und Controller.
+
+| Methodenname | HTTP-Verb |
+|-------------|-----------|
+| `def GET(self)` | GET |
+| `def post(self)` | POST |
+| `def Put(self)` | PUT |
+| `def delete(self)` | LÖSCHEN |
+| `def patch(self)` | PATCH |
+| `def options(self)` | OPTIONEN |
+| `def head(self)` | KOPF |
+| `def SOCKET(self)` | WebSocket |
+
+Alle Handler-Methoden werden `"/"` zugeordnet – Pfadparameter stehen im Präfix `"@Controller`.
+```python
+"@Controller("/users/{user_id}")
+class UsersController:
+    def GET(self, user_id: int) -> dict:
+        return {"user_id": user_id}
+```

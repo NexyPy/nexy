@@ -1,0 +1,56 @@
+# Redirecionamentos (Modular)
+
+Redirecione as solicitações recebidas para outras URLs nos controladores.
+
+## Redirecionamento básico
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/admin")
+class AdminController:
+    def GET(self):
+        return RedirectResponse("/login")
+```
+
+## Com código de status
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/old-path")
+class RedirectController:
+    def GET(self):
+        return RedirectResponse("/new-path", status_code=308)
+```
+
+## Redirecionamento condicional
+
+```python
+from fastapi.responses import RedirectResponse
+from nexy.decorators import Controller
+
+"@Controller("/dashboard")
+class DashboardController:
+    def GET(self, request):
+        if not request.user.is_authenticated:
+            return RedirectResponse("/login")
+        return {"admin": True}
+```
+
+## Referência do código de status
+
+| Código | Nome | Caso de uso |
+|------|------|----------|
+| 301 | Movido permanentemente | Alteração permanente de URL |
+| 302 | Encontrado (padrão) | Redirecionamento temporário |
+| 307 | Redirecionamento temporário | Preserva o método HTTP |
+| 308 | Redirecionamento Permanente | Preserva o método HTTP |
+
+## Padrões comuns
+
+- Redirecionamento de autenticação: usuários não autenticados → `/login`
+- URLs legados: caminhos antigos → novos caminhos (301)
+- Redirecionamento pós-envio: após o formulário POST → página de sucesso (303)

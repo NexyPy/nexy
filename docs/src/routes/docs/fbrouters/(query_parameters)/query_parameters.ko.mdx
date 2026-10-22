@@ -1,0 +1,55 @@
+---
+from nexy import usePathname, useSearchParams
+from "@components/link.nexy" import Link
+pathname = usePathname()
+params = useSearchParams()
+---
+
+# 쿼리 매개변수
+
+쿼리 매개변수는 URL의 `?key=value` 쌍입니다. Nexy는 Frontmatter의 `useSearchParams()` 또는 핸들러의 `request.query_params`를 통해 이를 노출합니다.
+
+---
+
+## `.nexy` 페이지에서
+```nexy
+---
+from nexy import useSearchParams
+params = useSearchParams()
+search = params.get("q", "")
+page = int(params.get("page", "1"))
+---
+<h1>Results for: {{ search }}</h1>
+<p>Page {{ page }}</p>
+```
+`params` 개체는 사전처럼 동작합니다: `.get(key, default)`, `.keys()`, `.items()`.
+
+---
+
+## `.py` 핸들러에서
+```python
+# routes/search.py
+from fastapi import Request
+
+async def get(request: Request, q: str = "", page: int = 1):
+    results = search_database(q, page=page)
+    return {"results": results, "page": page}
+```
+FastAPI는 입력된 쿼리 매개변수를 자동으로 확인합니다.
+
+---
+
+## 현재 페이지 매개변수
+
+이 페이지는 머리말에 `useSearchParams()`를 사용합니다. 현재 쿼리 매개변수는 다음과 같습니다.
+```json
+{{ params | safe }}
+```
+---
+
+## 모범 사례
+
+- 서버 렌더링 페이지의 `.nexy` 구성 요소에 `useSearchParams()` 사용
+- API용 `.py` 핸들러에서 `request.query_params` 사용
+- 값은 항상 문자열입니다. `int()`, `bool()` 등으로 변환합니다.
+<Link href="/docs/components">Next: Views →</Link>
