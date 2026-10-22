@@ -36,8 +36,8 @@ dev = [
 ]
 
 [project.scripts]
-nx = "nexy.cli:CLI"
-nexy = "nexy.cli:CLI"
+nx = "nexy.modules.cli:CLI"
+nexy = "nexy.modules.cli:CLI"
 
 [build-system]
 requires = ["hatchling"]
@@ -50,7 +50,7 @@ include = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["nexy"]
-exclude = ["nexy/templates/tests"]
+exclude = ["nexy/modules/cli/templates/tests"]
 
 [tool.mypy]
 strict = true
@@ -91,22 +91,22 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 "nexy/decorators.py" = ["N802", "B010"]
 "nexy/hooks.py" = ["N802"]
 "nexy/errors.py" = ["N802"]
-"nexy/i18n/core.py" = ["N802"]
-"nexy/utils/imports/component_import.py" = ["N802"]
+"nexy/modules/i18n/core.py" = ["N802"]
+"nexy/helpers/imports/component_import.py" = ["N802"]
 "nexy/__init__.py" = ["N812"]
 # B010: dynamic dunder attributes on handlers/classes (route metadata,
 # i18n defaults); direct attribute access would be a mypy attr-defined error.
-"nexy/i18n/i18n_decorator.py" = ["N807", "B010"]
+"nexy/modules/i18n/i18n_decorator.py" = ["N807", "B010"]
 # typer.Option/typer.Argument as defaults is the documented typer idiom and
 # the established style of every CLI command in this codebase (B008 conflicts
 # with it). ARG001: the --ui flag of `nexy add` is kept for CLI compatibility.
-"nexy/cli/**/*.py" = ["B008"]
-"nexy/cli/commands/add.py" = ["ARG001"]
+"nexy/modules/cli/**/*.py" = ["B008"]
+"nexy/modules/cli/commands/add.py" = ["ARG001"]
 # E501 inapplicable: these files embed foreign-language code as string
 # templates (client-side JS / TSX-Vue-Svelte scaffolding); the 100-column
 # budget applies to Python code, not to the embedded template content.
 "nexy/vite.py" = ["N802", "E501"]
-"nexy/utils/init/registry.py" = ["E501"]
+"nexy/modules/cli/init/registry.py" = ["E501"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -117,7 +117,7 @@ line-ending = "auto"
 branch = true
 source = ["nexy"]
 omit = [
-    "nexy/templates/*",
+    "nexy/modules/cli/templates/*",
 ]
 
 [tool.coverage.report]

@@ -1,5 +1,5 @@
+from nexy.helpers.fs.vfs import VFS
 from nexy.template import Template
-from nexy.utils.fs.vfs import VFS
 
 
 def _clean():

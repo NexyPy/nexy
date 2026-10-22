@@ -1,4 +1,4 @@
-from nexy.builder import Builder
+from nexy.modules.builder import Builder
 
 
 def test_builder_thread_pool_runs() -> None:

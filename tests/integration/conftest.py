@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
 
 # Verbatim shape of the documented user-facing .nexy format
 # (examples/minimal): frontmatter logic block, then template body.
@@ -28,7 +28,7 @@ def nexy_app(nexy_project) -> Iterator[TestClient]:
     The app is reassembled per test in the sandboxed cwd of nexy_project,
     so it picks up project-local configuration and middleware wiring.
     """
-    from nexy.routers.app import AppServer
+    from nexy.modules.routers.app import AppServer
 
     nexy_project("")  # no overrides: framework defaults
     with TestClient(AppServer().run()) as client:
@@ -42,7 +42,7 @@ def builder_project(nexy_project, tmp_path: Path) -> Path:
     Isolates the shared VFS: no dev-mode writes, an empty store, and a
     cleanup restoring the dev-mode default (False).
     """
-    from nexy.builder import Builder  # noqa: F401  (import sanity under cwd)
+    from nexy.modules.builder import Builder  # noqa: F401  (import sanity under cwd)
 
     nexy_project("")
     VFS.set_dev_mode(False)

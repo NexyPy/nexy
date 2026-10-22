@@ -3,9 +3,9 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.routing import Mount
 
-from nexy.routers.error_handlers import handle_http_exception
-from nexy.routers.hmr import setup_hmr
-from nexy.routers.static_assets import FAVICON_SVG, setup_favicon, setup_static_files
+from nexy.modules.routers.error_handlers import handle_http_exception
+from nexy.modules.routers.hmr import setup_hmr
+from nexy.modules.routers.static_assets import FAVICON_SVG, setup_favicon, setup_static_files
 
 
 class TestStaticAssets:

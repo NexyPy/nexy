@@ -1,8 +1,8 @@
 import sys
 
-from nexy.routers.fbrouter import _lazy_component
-from nexy.runtime.importer import install_vfs_importer
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
+from nexy.modules.routers.fbrouter import _lazy_component
+from nexy.modules.runtime.importer import install_vfs_importer
 
 
 def _clean():

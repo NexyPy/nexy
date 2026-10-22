@@ -2,8 +2,8 @@ import asyncio
 import time
 import types
 
-from nexy.routers.fbrouter import FBRouter, _make_isr_handler
-from nexy.runtime.cache import REVALIDATE_CACHE, RevalidateCache
+from nexy.modules.routers.fbrouter import FBRouter, _make_isr_handler
+from nexy.modules.runtime.cache import REVALIDATE_CACHE, RevalidateCache
 
 
 class TestRevalidateCache:

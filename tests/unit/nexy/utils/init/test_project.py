@@ -1,7 +1,7 @@
 import pytest
 
-from nexy.utils.init.project import AlreadyInitializedError, InitProject
-from nexy.utils.init.template_setup import generate_init_files
+from nexy.modules.cli.init.project import AlreadyInitializedError, InitProject
+from nexy.modules.cli.init.template_setup import generate_init_files
 
 
 def test_ensure_ready_skips_for_new_project(tmp_path) -> None:

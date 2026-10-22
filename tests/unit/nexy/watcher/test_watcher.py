@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 from watchdog.events import FileSystemEvent
 
-from nexy.utils.dev.watcher import WatchHandler, is_ignored_path, normalize_path
-from nexy.utils.fs.vfs import VFS
+from nexy.helpers.fs.vfs import VFS
+from nexy.modules.cli.devtools.watcher import WatchHandler, is_ignored_path, normalize_path
 
 
 @pytest.fixture(autouse=True)
@@ -257,7 +257,7 @@ class TestOnMoved:
 class TestTriggerReload:
     @pytest.fixture(autouse=True)
     def _capture_broadcast(self, monkeypatch):
-        from nexy.runtime.hmr import HMR_MANAGER
+        from nexy.modules.runtime.hmr import HMR_MANAGER
 
         self.broadcast_calls: list[str] = []
         self.reload_calls: list[int] = []
@@ -271,7 +271,7 @@ class TestTriggerReload:
         monkeypatch.setattr(HMR_MANAGER, "loop", _FakeLoop())
         monkeypatch.setattr(HMR_MANAGER, "broadcast_reload", _fake_broadcast)
         monkeypatch.setattr(
-            "nexy.utils.dev.watcher.asyncio.run_coroutine_threadsafe",
+            "nexy.modules.cli.devtools.watcher.asyncio.run_coroutine_threadsafe",
             lambda coro, _loop: asyncio.run(coro),
         )
 
@@ -307,7 +307,7 @@ class TestHmrDebugTiming:
         monkeypatch.setenv("NEXY_HMR_DEBUG", "1")
         logged = []
         monkeypatch.setattr(
-            "nexy.utils.dev.watcher.console.print",
+            "nexy.modules.cli.devtools.watcher.console.print",
             lambda msg: logged.append(str(msg)),
         )
         handler._log_hmr_timing("src/routes/index.nexy", 0.0)
@@ -318,7 +318,7 @@ class TestHmrDebugTiming:
         monkeypatch.delenv("NEXY_HMR_DEBUG", raising=False)
         logged = []
         monkeypatch.setattr(
-            "nexy.utils.dev.watcher.console.print",
+            "nexy.modules.cli.devtools.watcher.console.print",
             lambda msg: logged.append(str(msg)),
         )
         handler._log_hmr_timing("src/routes/index.nexy", 0.0)
@@ -328,7 +328,7 @@ class TestHmrDebugTiming:
         monkeypatch.setenv("NEXY_HMR_DEBUG", "1")
         logged = []
         monkeypatch.setattr(
-            "nexy.utils.dev.watcher.console.print",
+            "nexy.modules.cli.devtools.watcher.console.print",
             lambda msg: logged.append(str(msg)),
         )
         handler._log_hmr_timing("src/routes/index.nexy", None)
@@ -346,19 +346,19 @@ class _FakeSys:
 class TestModulePurge:
     def test_purge_removes_route_module(self, handler, monkeypatch):
         fake_sys = _FakeSys({"__nexy__.src.routes.index": object()})
-        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        monkeypatch.setattr("nexy.modules.cli.devtools.watcher.sys", fake_sys)
         handler._purge_route_modules("src/routes/index.nexy")
         assert "__nexy__.src.routes.index" not in fake_sys.modules
 
     def test_purge_removes_markdown_module(self, handler, monkeypatch):
         fake_sys = _FakeSys({"__nexy__.src.routes.hello": object()})
-        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        monkeypatch.setattr("nexy.modules.cli.devtools.watcher.sys", fake_sys)
         handler._purge_route_modules("src/routes/hello.md")
         assert "__nexy__.src.routes.hello" not in fake_sys.modules
 
     def test_purge_ignores_frontend_file(self, handler, monkeypatch):
         fake_sys = _FakeSys({"__nexy__.src.routes.app": object()})
-        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        monkeypatch.setattr("nexy.modules.cli.devtools.watcher.sys", fake_sys)
         handler._purge_route_modules("src/routes/app.tsx")
         assert "__nexy__.src.routes.app" in fake_sys.modules
 
@@ -371,7 +371,7 @@ class TestModulePurge:
                 "__nexy__.src.routes.index": object(),
             }
         )
-        monkeypatch.setattr("nexy.utils.dev.watcher.sys", fake_sys)
+        monkeypatch.setattr("nexy.modules.cli.devtools.watcher.sys", fake_sys)
         handler._purge_route_modules("src/routes/index.nexy")
         assert "__nexy__" in fake_sys.modules
         assert "__nexy__.src" in fake_sys.modules
@@ -500,7 +500,7 @@ class TestPurgeProjectModules:
     def test_purge_removes_project_module(self, tmp_path, monkeypatch):
         import sys
 
-        from nexy.utils.dev.watcher import purge_project_modules
+        from nexy.modules.cli.devtools.watcher import purge_project_modules
 
         source = tmp_path / "proj_probe.py"
         source.write_text("")
@@ -511,7 +511,7 @@ class TestPurgeProjectModules:
         assert "proj_purge_probe" not in sys.modules
 
     def test_purge_reports_removed_names(self, tmp_path, monkeypatch):
-        from nexy.utils.dev.watcher import purge_project_modules
+        from nexy.modules.cli.devtools.watcher import purge_project_modules
 
         source = tmp_path / "reported_probe.py"
         source.write_text("")
@@ -524,7 +524,7 @@ class TestPurgeProjectModules:
     def test_purge_keeps_framework_module(self, tmp_path, monkeypatch):
         import sys
 
-        from nexy.utils.dev.watcher import purge_project_modules
+        from nexy.modules.cli.devtools.watcher import purge_project_modules
 
         source = tmp_path / "framework_probe.py"
         source.write_text("")
@@ -537,7 +537,7 @@ class TestPurgeProjectModules:
     def test_purge_keeps_venv_module(self, tmp_path, monkeypatch):
         import sys
 
-        from nexy.utils.dev.watcher import purge_project_modules
+        from nexy.modules.cli.devtools.watcher import purge_project_modules
 
         site = tmp_path / ".venv" / "lib"
         site.mkdir(parents=True)
