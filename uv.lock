@@ -1215,6 +1215,7 @@ source = { editable = "." }
 dependencies = [
     { name = "cmarkgfm" },
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "jinja2" },
     { name = "pygments" },
     { name = "questionary" },
@@ -1222,13 +1223,13 @@ dependencies = [
     { name = "typer" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "watchdog" },
+    { name = "websockets" },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "bandit" },
     { name = "deep-translator" },
-    { name = "httpx" },
     { name = "mypy" },
     { name = "pip-audit" },
     { name = "pytest" },
@@ -1242,6 +1243,7 @@ dev = [
 requires-dist = [
     { name = "cmarkgfm", specifier = ">=2024.1.4" },
     { name = "fastapi", specifier = ">=0.128.0" },
+    { name = "httpx", specifier = ">=0.28.0" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pygments", specifier = ">=2.20.0" },
     { name = "questionary", specifier = ">=2.1.1" },
@@ -1249,13 +1251,13 @@ requires-dist = [
     { name = "typer", specifier = ">=0.21.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.40.0" },
     { name = "watchdog", specifier = ">=6.0.0" },
+    { name = "websockets", specifier = ">=13.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "bandit", specifier = ">=1.9.0" },
     { name = "deep-translator", specifier = ">=1.11.0" },
-    { name = "httpx", specifier = ">=0.28.0" },
     { name = "mypy", specifier = ">=1.19.1" },
     { name = "pip-audit", specifier = ">=2.8.0" },
     { name = "pytest", specifier = ">=9.0.2" },
