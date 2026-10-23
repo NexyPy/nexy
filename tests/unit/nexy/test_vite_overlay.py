@@ -35,6 +35,17 @@ class TestViteErrorOverlay:
         assert "e.message" in script
 
     @pytest.mark.usefixtures("dev_project")
+    def test_overlay_escapes_error_text(self):
+        script = Vite()
+        assert "escapeHtml" in script
+        assert "escapeHtml(file)" in script
+        assert "escapeHtml(msg)" in script
+
+    @pytest.mark.usefixtures("dev_project")
+    def test_overlay_renders_remediation_hint(self):
+        assert "e.hint" in Vite()
+
+    @pytest.mark.usefixtures("dev_project")
     def test_overlay_has_styled_container(self):
         script = Vite()
         assert "nexy-error-overlay" in script

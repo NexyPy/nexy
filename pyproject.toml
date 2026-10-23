@@ -109,6 +109,9 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 # budget applies to Python code, not to the embedded template content.
 "nexy/vite.py" = ["N802", "E501"]
 "nexy/modules/cli/init/registry.py" = ["E501"]
+# Test fixtures mirror a user project's nexyconfig.py surface, which is
+# camelCase by design (same rationale as nexy/core/config.py N815).
+"tests/fixtures/**/*.py" = ["N815"]
 
 [tool.ruff.format]
 quote-style = "double"
