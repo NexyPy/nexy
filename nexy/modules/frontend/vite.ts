@@ -93,10 +93,16 @@ function nexyPlugin(): Plugin {
         },
 
         clearScreen: false,
+        // The host server owns HTML: Vite must never answer a page request, or
+        // it would shadow a Nexy route with its own index.html fallback.
+        appType: 'custom',
         server: {
           strictPort: true,
           cors: {
-            origin: true,
+            // Loopback origins only: the app always reaches Vite through the
+            // Nexy origin, so reflecting arbitrary origins would let any
+            // website read project files from 127.0.0.1/@fs/ during dev.
+            origin: /^https?:\/\/(?:(?:[^:]+\.)?localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/,
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
           },
           warmup: {

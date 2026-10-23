@@ -5,10 +5,12 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from scalar_fastapi import get_scalar_api_reference
 from starlette.exceptions import HTTPException
+from starlette.types import ASGIApp
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
+from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.modules.i18n import L as LocaleManager
 from nexy.modules.i18n.middleware import LocaleMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
@@ -63,7 +65,7 @@ class AppServer:
         r_url = conf.useRedocsUrl
         return d_url, r_url
 
-    def run(self) -> FastAPI:
+    def run(self) -> ASGIApp:
         """Main entry point to assemble the application."""
         self.server = FastAPI(title="Nexy", version=self.version, docs_url=None, redoc_url=None)
         server = self.server
@@ -87,7 +89,20 @@ class AppServer:
         setup_hmr(server)
         server.exception_handler(HTTPException)(handle_http_exception)
         register_validation_error_handler(server)
-        return server
+        return self._with_vite_proxy(server)
+
+    @staticmethod
+    def _with_vite_proxy(server: FastAPI) -> ASGIApp:
+        """Wrap the app so Vite's dev endpoints share the Nexy origin.
+
+        In development Vite listens on an internal loopback port; forwarding its
+        paths keeps the whole application on one public origin without exposing
+        that port. Outside dev mode nothing is wrapped.
+        """
+        port = vite_proxy_port()
+        if port is None:
+            return server
+        return ViteProxyMiddleware(server, port=port)
 
 
 _server = AppServer().run()

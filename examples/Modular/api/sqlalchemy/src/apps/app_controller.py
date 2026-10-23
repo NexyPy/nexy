@@ -1,0 +1,7 @@
+from nexy.decorators import Controller
+
+
+@Controller()
+class AppController:
+    def get(self):
+        return {"status": "ok", "message": "Nexy API ready"}

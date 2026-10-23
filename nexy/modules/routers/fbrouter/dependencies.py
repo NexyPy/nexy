@@ -43,6 +43,7 @@ class RouteDependencies:
                         except ImportError as e:
                             # A route can live without a sibling dependencies module.
                             print(e)
+                            continue
                         candidates = getattr(mod, "dependencies", None)
                         if isinstance(candidates, (list, tuple)):
                             deps.extend([c for c in candidates if callable(c)])

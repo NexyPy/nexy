@@ -27,7 +27,11 @@ class Generator:
             return True
         except Exception as e:
             console.print(f"[red]nsc[/red] » Error writing to file '{output}': {e}")
-            raise NexyCompileError(source_path=output, message=str(e)) from e
+            raise NexyCompileError(
+                source_path=output,
+                message=str(e),
+                hint="Fix the template or logic syntax; no output file was written.",
+            ) from e
 
     def _generate_init(self, directory: str) -> None:
         parts = directory.replace("\\", "/").split("/")

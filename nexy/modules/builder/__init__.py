@@ -22,12 +22,15 @@ class BuildError:
     line: int | None = None
     column: int | None = None
     type: str = "Exception"
+    hint: str | None = None
 
     def format(self) -> str:
         if self.line is not None:
             col = self.column if self.column is not None else 0
-            return f"{self.path}:{self.line}:{col} - [{self.type}] {self.message}"
-        return f"{self.path} - [{self.type}] {self.message}"
+            base = f"{self.path}:{self.line}:{col} - [{self.type}] {self.message}"
+        else:
+            base = f"{self.path} - [{self.type}] {self.message}"
+        return f"{base}\n  Fix: {self.hint}" if self.hint else base
 
 
 @dataclass
@@ -173,6 +176,7 @@ class Builder:
                         line=e.line,
                         column=e.column,
                         type="NexyCompileError",
+                        hint=e.hint,
                     ),
                     False,
                 )

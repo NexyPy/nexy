@@ -1,0 +1,127 @@
+name: Release
+
+# Tag-driven PyPI publishing. Configure a trusted publisher on PyPI for
+# NexyPy/nexy -> workflow `release.yml` -> environment `pypi`; no API token
+# is stored in the repository.
+
+on:
+  push:
+    tags:
+      # Stable and pre-release tags, e.g. v2.1.1, v2.2.0rc1, v2.2.0a1.
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+[ab][0-9]+"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      EXPECTED_VERSION: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # A tag can point at any commit. Publish only commits already merged
+      # into main, even if someone with tag rights pushes a side-branch tag.
+      - name: Verify tag is on main
+        run: |
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          python-version: "3.13"
+          enable-cache: false
+
+      # A tag that disagrees with pyproject.toml would publish the wrong
+      # version, or overwrite an existing one. Fail before building.
+      - name: Verify tag matches package version
+        run: |
+          version="$(uv version --short)"
+          test "v${version}" = "${GITHUB_REF_NAME}"
+
+      # Build exactly what a release would publish: no local path sources.
+      - name: Build sdist and wheel
+        run: uv build --no-sources
+
+      - name: Smoke test wheel
+        run: |
+          uv run --isolated --no-project --with dist/*.whl python - <<'PY'
+          import os
+          import nexy
+          from pathlib import Path
+          from nexy.__version__ import __version__
+
+          expected = os.environ["EXPECTED_VERSION"].removeprefix("v")
+          assert __version__ == expected
+
+          root = Path(nexy.__file__).parent
+          assert (root / "modules/cli/templates/web-fbr").is_dir()
+          print(__version__)
+          PY
+
+      - name: Smoke test source distribution
+        run: |
+          uv run --isolated --no-project --with dist/*.tar.gz python - <<'PY'
+          import os
+          import nexy
+          from pathlib import Path
+          from nexy.__version__ import __version__
+
+          expected = os.environ["EXPECTED_VERSION"].removeprefix("v")
+          assert __version__ == expected
+
+          root = Path(nexy.__file__).parent
+          assert (root / "modules/cli/templates/web-fbr").is_dir()
+          print(__version__)
+          PY
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/nexy/
+    permissions:
+      # Mandatory for Trusted Publishing; the build job never gets this.
+      id-token: write
+
+    steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: false
+
+      - name: Download distributions
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: dist
+          path: dist/
+
+      - name: Generate PEP 740 attestations
+        uses: astral-sh/attest-action@39b6ce43875c196a579e31635b11aa2a2036384a # v0.0.7
+
+      - name: Publish to PyPI
+        run: uv publish --trusted-publishing always
