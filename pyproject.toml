@@ -139,6 +139,7 @@ testpaths = ["tests"]
 addopts = "-m 'not e2e'"
 markers = [
     "e2e: end-to-end browser tests (Playwright, real dev stack); run with: pytest -m e2e",
+    "slow: performance/regression benchmarks",
 ]
 
 [tool.uv.workspace]
