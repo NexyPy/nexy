@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from nexy.helpers.fs.vfs import VFS
 
 # Verbatim shape of the documented user-facing .nexy format
-# (examples/minimal): frontmatter logic block, then template body.
+# (examples/FBR/web/basics/minimal): frontmatter logic block, then template body.
 MINIMAL_INDEX_NEXY = """---
 greeting: prop[str] = "Hello World!"
 def shout(text: str) -> str:
