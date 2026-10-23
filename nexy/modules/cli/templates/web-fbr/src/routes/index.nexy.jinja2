@@ -1,4 +1,4 @@
----
+{% if not useCSR %}---
 {% if client_framework == "none" %}
 from "@/components/vanillaCard.nexy" import VanillaCard
 {% elif client_framework == "vue" %}
@@ -106,4 +106,4 @@ from "@/components/background.nexy" import Background
         </section>
     </aside>
 
-</section>{% endraw %}
+</section>{% endraw %}{% endif %}

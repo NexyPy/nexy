@@ -1,0 +1,11 @@
+[project]
+name = "react-sqlmodel"
+version = "0.1.0"
+description = "A Nexy web application with react components"
+dependencies = [
+    "nexy>=2.0.8",
+    "sqlmodel",
+    "alembic",
+    "python-dotenv",
+]
+requires-python = ">=3.12"

@@ -17,9 +17,9 @@ jobs:
       UV_PYTHON: ${{ matrix.python-version }}
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -56,6 +56,55 @@ jobs:
           uv run --no-sync pip-audit -r requirements-audit.txt --disable-pip --strict \
             --ignore-vuln PYSEC-2022-252
 
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: "3.13"
+          enable-cache: false
+
+      # Build exactly what a release would publish: no local path sources.
+      - name: Build sdist and wheel
+        run: uv build --no-sources
+
+      - name: Smoke test wheel
+        run: |
+          uv run --isolated --no-project --with dist/*.whl python - <<'PY'
+          import nexy
+          from pathlib import Path
+          from nexy.__version__ import __version__
+
+          root = Path(nexy.__file__).parent
+          assert (root / "modules/cli/templates/web-fbr").is_dir()
+          print(__version__)
+          PY
+
+      - name: Smoke test source distribution
+        run: |
+          uv run --isolated --no-project --with dist/*.tar.gz python - <<'PY'
+          import nexy
+          from pathlib import Path
+          from nexy.__version__ import __version__
+
+          root = Path(nexy.__file__).parent
+          assert (root / "modules/cli/templates/web-fbr").is_dir()
+          print(__version__)
+          PY
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error
+
   extension:
     name: VS Code extension (build + typecheck + lint)
     runs-on: ubuntu-latest
@@ -64,13 +113,13 @@ jobs:
         working-directory: extensions/vscode
 
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+      - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
         with:
           version: 9
 
-      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           cache: pnpm

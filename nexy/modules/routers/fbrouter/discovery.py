@@ -24,6 +24,9 @@ class RouteDiscovery:
         for f in files:
             if not self._is_valid_route(f):
                 continue
+            if self.config.useCSR and f.suffix == ".nexy":
+                self._warn_csr_ignored(f)
+                continue
             if f.suffix not in active:
                 self._warn_out_of_set(f)
                 continue
@@ -32,6 +35,13 @@ class RouteDiscovery:
                 continue
             valid.append(f)
         return sorted(valid)
+
+    def _warn_csr_ignored(self, path: Path) -> None:
+        rel = path.relative_to(self.router_path)
+        console.print(
+            f"  [yellow]WARN[/yellow] {rel}: .nexy is disabled (useCSR=True) - "
+            f"client routing owns the views, use a framework route file instead"
+        )
 
     def _warn_out_of_set(self, path: Path) -> None:
         ff = self.config.useFF

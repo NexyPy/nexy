@@ -1,40 +1,100 @@
-# Nexy Documentation
+# Nexy documentation
 
-docs/src/routes/docs/
-├── layout.nexy                → Sidebar + TOC + breadcrumb
-├── index.mdx                  → /docs  - Introduction (FR)
-├── create_a_projet.mdx        → /docs/create_a_projet  - Project creation (FR)
-├── projet_structure.mdx       → /docs/projet_structure  - Project layout (FR)
-├── build_and_deploy.mdx       → /docs/build_and_deploy  - Build & deploy (EN)
-├── fbrouters/
-│   ├── index.mdx              → /docs/fbrouters  - FBR overview (FR)
-│   ├── pages.mdx              → /docs/fbrouters/pages  - Pages (FR)
-│   ├── layouts.mdx            → /docs/fbrouters/layouts  - Layouts (FR)
-│   ├── dependencies.mdx       → /docs/fbrouters/dependencies  - Dependencies (FR)
-│   ├── middlewares.mdx        → /docs/fbrouters/middlewares  - Middlewares (FR)
-│   ├── route_handlers.mdx     → /docs/fbrouters/route_handlers  - API handlers (FR)
-│   ├── route_parameters.mdx   → /docs/fbrouters/route_parameters  - Dynamic routes (FR)
-│   └── query_parameters.mdx   → /docs/fbrouters/query_parameters  - Query strings (FR)
-├── components/
-│   ├── index.mdx              → /docs/components  - Component system (EN)
-│   ├── usage.mdx              → /docs/components/usage  - Creating components (EN)
-│   ├── markup.mdx             → /docs/components/markup  - Template syntax (EN)
-│   ├── python.mdx             → /docs/components/python  - Python frontmatter (EN)
-│   ├── properties.mdx         → /docs/components/properties  - Props (EN)
-│   ├── conditional.mdx        → /docs/components/conditional  - Conditions (EN)
-│   └── modules.mdx            → /docs/components/modules  - Module system (EN)
-├── frontend/
-│   └── index.mdx              → /docs/frontend/overview  - SSR & Vite (EN)
-├── Modular/
-│   └── overview.mdx           → /docs/modular/overview  - DI & guards (EN)
-├── nexy-file/
-│   └── file-format.mdx        → /docs/nexy-file/file-format  - .nexy spec (EN)
-└── reference/
-    ├── cli.mdx                → /docs/reference/cli  - CLI flags (EN)
-    └── structure.mdx          → /docs/reference/structure  - Compilation (EN)
+Nexy is a fullstack Python meta-framework: FastAPI and Starlette serve the app, Vite builds the
+client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an API handler.
 
-## Sources
-- Sidebar: `src/mocks/docs/sidebar.py` - FBR, Components, Getting Started
-- Nav manifest: `src/manifest.json` - Site-wide navigation metadata
-- Layout: `src/routes/docs/layout.nexy` - Wraps every doc page
-- Style: `src/globale.css` - Tailwind v4 + custom `.toc`, `.sidebar`, `.mdx-content`
+These pages are plain Markdown, written from the code. Start with the task you have, not with the
+architecture.
+
+## Getting started
+
+| Page | What you will do |
+|---|---|
+| [Getting started](getting-started.md) | Create a project, run it, build it |
+| [Project structure](project-structure.md) | Know what every folder is for |
+| [Routing](routing/README.md) | Turn a file path into a URL |
+| [Views](views/README.md) | Choose the format of a page |
+| [API](api.md) | Add a Python endpoint |
+
+## Guides
+
+| Page | What you will do |
+|---|---|
+| [.nexy files](views/nexyfile.md) | Write a page with Python, Jinja2 and props |
+| [Markdown and MDX](views/markdown.md) | Write content pages |
+| [Components](views/components.md) | Use `Image`, `Link`, `Audio`, `Video`, `Import` |
+| [Hooks](routing/hooks.md) | Read the path, query, cookies and session |
+| [Pages](routing/pages.md) | Dynamic segments, layouts, error pages |
+| [Modular routing](routing/modular.md) | Controllers, modules and injection |
+| [SSR](routing/fbr/ssr.md), [CSR](routing/fbr/csr.md), [ISR](routing/fbr/isr.md) | Pick a rendering mode |
+| [WebSocket](routing/fbr/websocket.md) | Handle a `SOCKET` connection |
+| [Actions](actions.md) | Call a Python function from a form |
+| [i18n](i18n.md) | Translate a page |
+| [Frontend](frontend.md) | Understand Vite, styling and the client build |
+| [Testing](testing.md) | Run pytest, `TestClient` and vitest |
+| [Deploy](deploy.md) | Build, containerise and serve |
+
+## Reference
+
+| Page | What it lists |
+|---|---|
+| [CLI](cli.md) | Commands and flags |
+| [Config](config.md) | Every `nexyconfig.py` field and its default |
+| [React](views/react.md), [Vue](views/vue.md), [Svelte](views/svelte.md), [Solid](views/solid.md), [Preact](views/preact.md) | Framework setup |
+
+## For agents
+
+[Agents](agents.md) lists the invariants of a Nexy project. Repository-wide agent rules live in the
+root [`AGENTS.md`](../AGENTS.md).
+
+## Layout
+
+```text
+docs/
+├─ README.md               this page
+├─ getting-started.md      create a project, run it, build it
+├─ project-structure.md    files, folders, generated output
+├─ frontend.md             Vite, dev server, build, styling
+├─ api.md                  Python handlers
+├─ actions.md              @Action endpoints called from a page
+├─ cli.md                  commands and flags
+├─ testing.md              pytest, TestClient, vitest, CI
+├─ config.md               nexyconfig.py, field by field
+├─ i18n.md                 locales, trans, nx translate
+├─ deploy.md               build output, Docker, reverse proxy
+├─ agents.md               rules for AI agents
+├─ routing/
+│  ├─ README.md            file path to URL
+│  ├─ pages.md             dynamic segments, layouts, error pages
+│  ├─ hooks.md             reading the current request from a page
+│  ├─ modular.md           controllers, modules, injection
+│  └─ fbr/
+│     ├─ ssr.md            server rendering (default)
+│     ├─ csr.md            client-side rendering
+│     ├─ isr.md            stale-while-revalidate
+│     └─ websocket.md      SOCKET handlers
+└─ views/
+   ├─ README.md            which view format to use
+   ├─ nexyfile.md          the .nexy format
+   ├─ markdown.md          .md and .mdx
+   ├─ components.md        Image, Link, Audio, Video, Import
+   ├─ react.md             React
+   ├─ vue.md               Vue
+   ├─ svelte.md            Svelte
+   ├─ solid.md             Solid
+   └─ preact.md            Preact
+```
+
+## How these pages are written
+
+- Plain Markdown, rendered by GitHub. No site generator, no build step, no second repository.
+- One question per page. A directory when a feature needs several pages, a file otherwise.
+- Every claim is checked against `nexy/`. When a page and the code disagree, the code wins.
+- English, like the rest of the repository.
+
+## Elsewhere
+
+- [README](../README.md): what Nexy is, quick start, comparison
+- [ARCHITECTURE.md](../ARCHITECTURE.md): internals, request lifecycle, compiler pipeline
+- [CONTRIBUTING.md](../CONTRIBUTING.md): working on Nexy itself
+- [llms.txt](../llms.txt): entry point for AI agents

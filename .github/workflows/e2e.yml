@@ -1,0 +1,42 @@
+name: E2E
+
+# The browser suite is slow and boots a real dev stack (uvicorn + Vite +
+# Chromium), so it is not part of the fast quality matrix. It still has to
+# run somewhere: a suite that never executes rots silently.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * *"
+  push:
+    branches: [main, V2]
+
+jobs:
+  browser:
+    name: Browser E2E (Playwright, real dev stack)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: "3.13"
+
+      - name: Install deps (locked)
+        run: uv sync --frozen --group dev
+
+      - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
+        with:
+          version: 9
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Install Chromium
+        run: uv run --no-sync playwright install --with-deps chromium
+
+      - name: Run E2E suite
+        run: uv run --no-sync python -m pytest tests/ -m e2e --tb=short

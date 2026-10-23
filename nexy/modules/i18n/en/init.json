@@ -4,6 +4,7 @@
     "ask": {
       "router": "Would you like to use the file-based router?",
       "project_type": "Choose the type of project",
+      "csr": "Enable client-side routing (navigate without full page reload)?",
       "client_component": "Would you like to use a client component?",
       "framework": "Choose the client framework"
     },
