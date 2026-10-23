@@ -250,21 +250,26 @@ npm run test
 
 For maintainers only:
 
-```bash
-# 1. Bump version in nexy/__version__.py + pyproject.toml
+1. Bump the version in `nexy/__version__.py` and `pyproject.toml`.
+2. Update the changelog:
+   ```bash
+   npx git-cliff -o CHANGELOG.md
+   ```
+3. Commit the version bump and changelog on `main`, then tag and push. The
+   tag must match the package version exactly (for example, `v2.1.1`), and
+   its commit must already be on `main`; the workflow rejects tags from
+   other branches:
+   ```bash
+   git tag v<version>
+   git push origin v<version>
+   ```
+4. The `Release` workflow builds the sdist and wheel, smoke-tests both, and
+   publishes to PyPI with trusted publishing.
+5. Create the GitHub Release from the tag.
 
-# 2. Update changelog
-npx git-cliff -o CHANGELOG.md
-
-# 3. Tag and push
-git tag v<version>
-git push origin v<version>
-
-# 4. Publish to PyPI
-uv build && uv publish
-
-# 5. Create GitHub Release
-```
+The workflow requires a PyPI trusted publisher configured for
+`NexyPy/nexy`, workflow `release.yml`, and environment `pypi`. It stores no
+long-lived PyPI token.
 
 ## Getting help
 
