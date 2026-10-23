@@ -6,6 +6,9 @@ class NexyConfig(NexyConfigModel):
 {%- if client_framework != "none" %}
     useFF = {{ client_framework }}()
 {%- endif %}
+{%- if useCSR %}
+    useCSR = True
+{%- endif %}
     useTitle = "Nexy Web ({{ 'FBR' if FBRouter else 'Modular' }}{{ ' + ' + client_framework.capitalize() if client_framework != 'none' else '' }})"
 {%- if not FBRouter %}
     useRouter = AppModule

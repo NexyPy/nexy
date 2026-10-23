@@ -79,18 +79,26 @@ def _render_local_template(
         "project_name": project_name,
         "project_type": config.get("project_type", "web"),
         "FBRouter": config.get("FBRouter", False),
+        "useCSR": config.get("useCSR", False),
         "client_framework": config.get("client_framework", "none"),
         "locale": _detect_locale(),
     }
-    TemplateRenderer(TEMPLATES_DIR / template_name, dest, context).render()
+    exclude = _excluded_suffixes(context)
+    TemplateRenderer(TEMPLATES_DIR / template_name, dest, context, exclude).render()
     _render_shared_files(template_name, dest, context)
 
     generate_init_files(dest / "src")
 
 
+def _excluded_suffixes(context: dict[str, Any]) -> set[str]:
+    """Client routing owns the views, so no .nexy file is scaffolded."""
+    return {".nexy"} if context.get("useCSR") else set()
+
+
 def _render_shared_files(template_name: str, dest: Path, context: dict[str, Any]) -> None:
     """Render the _shared overlays that apply to this template type."""
     shared_dir = TEMPLATES_DIR / "_shared"
+    exclude = _excluded_suffixes(context)
     if template_name.startswith("web-"):
         for sub_dir, rel_dest in [
             ("web-components", "src/components"),
@@ -99,12 +107,12 @@ def _render_shared_files(template_name: str, dest: Path, context: dict[str, Any]
             src = shared_dir / sub_dir
             if src.is_dir():
                 tgt = dest / rel_dest if rel_dest != "." else dest
-                TemplateRenderer(src, tgt, context).render()
+                TemplateRenderer(src, tgt, context, exclude).render()
         _place_web_assets(dest, template_name)
     elif template_name.startswith("api-"):
         src = shared_dir / "api"
         if src.is_dir():
-            TemplateRenderer(src, dest, context).render()
+            TemplateRenderer(src, dest, context, exclude).render()
 
     _render_overlays(template_name, dest, context)
 
@@ -112,14 +120,15 @@ def _render_shared_files(template_name: str, dest: Path, context: dict[str, Any]
 def _render_overlays(template_name: str, dest: Path, context: dict[str, Any]) -> None:
     """Render configs/ for every template type and fbr/ for *-fbr ones."""
     shared_dir = TEMPLATES_DIR / "_shared"
+    exclude = _excluded_suffixes(context)
     cfg_src = shared_dir / "configs"
     if cfg_src.is_dir():
-        TemplateRenderer(cfg_src, dest / "src" / "configs", context).render()
+        TemplateRenderer(cfg_src, dest / "src" / "configs", context, exclude).render()
 
     if template_name.endswith("-fbr"):
         fbr_src = shared_dir / "fbr"
         if fbr_src.is_dir():
-            TemplateRenderer(fbr_src, dest / "src", context).render()
+            TemplateRenderer(fbr_src, dest / "src", context, exclude).render()
 
 
 def _place_web_assets(dest: Path, template_name: str) -> None:
