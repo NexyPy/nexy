@@ -4,6 +4,7 @@ from typing import Any
 from nexy.core.config import Config
 from nexy.core.string import Pathname, StringTransform
 from nexy.helpers.fs.vfs import VFS
+from nexy.modules.compiler.document_shell import CSR_SHELL_HEADER, CSR_SHELL_RENDER
 from nexy.modules.routers.fbrouter.layout import RouteLayout
 
 
@@ -77,6 +78,9 @@ class MarkdownRouteCompiler:
                 f"        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
             )
             render_wrapper = "str(__Layout(children=rendered))"
+        elif Config.useCSR:
+            layout_header = CSR_SHELL_HEADER
+            render_wrapper = CSR_SHELL_RENDER
 
         src_abs = src.resolve()
         try:
