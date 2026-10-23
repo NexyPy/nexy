@@ -116,9 +116,20 @@ class WatchHandler(PatternMatchingEventHandler):
         console.print(f"[red]nsc[/red] » [red]error[/red] while compiling [dim]{path}[/dim]")
         console.print(f"[red]│[/red] [bold]{type(error).__name__}:[/bold] {str(error)}")
         if HMR_MANAGER.loop:
+            hint = getattr(error, "hint", None)
+            message = str(error)
+            if hint:
+                # __str__ already appends the hint; the overlay renders it once.
+                message = message.removesuffix(f"\n  Fix: {hint}")
             asyncio.run_coroutine_threadsafe(
                 HMR_MANAGER.broadcast_error(
-                    [{"file": path, "message": f"{type(error).__name__}: {error}"}]
+                    [
+                        {
+                            "file": path,
+                            "message": f"{type(error).__name__}: {message}",
+                            "hint": hint,
+                        }
+                    ]
                 ),
                 HMR_MANAGER.loop,
             )

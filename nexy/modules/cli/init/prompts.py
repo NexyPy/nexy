@@ -66,9 +66,47 @@ class ProjectPrompter:
         ).ask()
 
         self.config["project_type"] = choice
+        self.config["useCSR"] = False
+        self.config["client_framework"] = "none"
 
-        if choice == "web":
-            self.ask_client_component()
+        if choice != "web":
+            return
+        if self.config.get("FBRouter"):
+            self.ask_csr()
+        else:
+            self.ask_framework(required=False)
+
+    def ask_csr(self) -> None:
+        """Client routing replaces .nexy views, so it needs a renderer."""
+        enabled = questionary.confirm(
+            t(
+                "init.ask.csr",
+                "Enable client-side routing (navigate without full page reload)?",
+            ),
+            default=False,
+            qmark="»",
+            instruction="(yes/no) ",
+        ).ask()
+        self.config["useCSR"] = bool(enabled)
+        self.ask_framework(required=bool(enabled))
+
+    def ask_framework(self, required: bool) -> None:
+        """Pick the renderer; with client routing the "none" choice disappears."""
+        if not required:
+            use_client = questionary.confirm(
+                t("init.ask.client_component", "Would you like to use a client component?"),
+                default=True,
+                qmark="»",
+            ).ask()
+            if not use_client:
+                return
+        framework = questionary.select(
+            t("init.ask.framework", "Choose the client framework"),
+            choices=["React", "Vue", "Svelte", "Solid", "Preact"],
+            pointer="ʋ",
+            qmark="»",
+        ).ask()
+        self.config["client_framework"] = framework.lower()
 
     def ask_orm(self) -> None:
         self.config["orm"] = questionary.select(
@@ -80,22 +118,6 @@ class ProjectPrompter:
         ).ask()
         if self.config["orm"] != "None":
             self.ask_db_url()
-
-    def ask_client_component(self) -> None:
-        use_client = questionary.confirm(
-            t("init.ask.client_component", "Use a client component?"), default=True, qmark="»"
-        ).ask()
-
-        if use_client:
-            framework = questionary.select(
-                t("init.ask.framework", "Choose the client framework"),
-                choices=["React", "Vue", "Svelte", "Solid", "Preact", "None"],
-                pointer="ʋ",
-                qmark="»",
-            ).ask()
-            self.config["client_framework"] = framework.lower()
-        else:
-            self.config["client_framework"] = "none"
 
     def ask_db_url(self) -> None:
         db_type = questionary.select(

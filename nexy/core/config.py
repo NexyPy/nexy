@@ -27,6 +27,8 @@ _DEFAULT_MARKDOWN_EXTENSIONS: list[str] = [
     "pymdownx.tabbed",
 ]
 
+MISSING_CONFIG_ERROR = "nexyconfig.py not found"
+
 
 class Config:
     """Singleton configuration manager for Nexy applications."""
@@ -43,6 +45,7 @@ class Config:
     usePort: int = 3000
     useHost: str = "0.0.0.0"  # nosec B104 - deliberate dev default, see SECURITY.md
     useTitle: str = "Nexy App"
+    useCSR: bool = False
     useDocs: bool = True
     useVite: bool = True
     useMarkdownExtensions: list[str] = []
@@ -163,8 +166,39 @@ class Config:
             raise ValueError("useFF must configure exactly one frontend framework")
 
     @classmethod
-    def derive_route_extensions(cls, ff: FrontendFramework | None) -> list[str]:
-        exts = list(cls.ALWAYS_ACTIVE_EXTENSIONS)
+    def validate_csr_mode(
+        cls,
+        csr: bool,
+        use_ff: FrontendFramework | list[FrontendFramework] | None,
+        use_router: Any = None,
+    ) -> None:
+        """Reject client routing that cannot work.
+
+        Two contradictions are caught here instead of silently building an
+        empty or unreachable application:
+
+        * no ``useFF``: the client router only renders framework components,
+          and without a framework no route file is active at all;
+        * ``useRouter`` (modular): module routing never reads the route
+          directory, so ``useCSR`` would have nothing to route.
+        """
+        if not csr:
+            return
+        if use_router is not None:
+            raise ValueError(
+                "useCSR requires file-based routing: remove useRouter from "
+                "nexyconfig.py or set useCSR = False"
+            )
+        if not cls._normalize_ff(use_ff):
+            raise ValueError(
+                "useCSR requires a client framework: set useFF = react() "
+                "(or vue/svelte/solid/preact), or set useCSR = False to keep "
+                ".nexy server-rendered views"
+            )
+
+    @classmethod
+    def derive_route_extensions(cls, ff: FrontendFramework | None, csr: bool = False) -> list[str]:
+        exts = [ext for ext in cls.ALWAYS_ACTIVE_EXTENSIONS if not (csr and ext == ".nexy")]
         if ff is None:
             return exts
         for ext in ff.extension or []:
@@ -178,9 +212,10 @@ class Config:
         prefix: str,
         registry: dict[str, Any],
         user_exts: list[str] | None = None,
+        include_nexy: bool = True,
     ) -> list[str]:
         names: list[str] = []
-        if prefix in ("layout", "errors", "loading"):
+        if include_nexy and prefix in ("layout", "errors", "loading"):
             names.append(f"{prefix}.nexy")
 
         extensions: set[str] = set()
@@ -221,7 +256,7 @@ class Config:
 
         nexyconfig = self._import_nexyconfig()
         if nexyconfig is None:
-            Config._load_error = "nexyconfig.py not found"
+            Config._load_error = MISSING_CONFIG_ERROR
             return
 
         try:
@@ -237,6 +272,7 @@ class Config:
 
         try:
             Config.validate_single_framework(Config.useFF)
+            Config.validate_csr_mode(Config.useCSR, Config.useFF, Config.useRouter)
         except ValueError as e:
             Config._load_error = str(e)
             return
@@ -255,7 +291,9 @@ class Config:
             Config.TOC_AUTO = Config.useTocAuto
 
         ff_list = self._normalize_ff(Config.useFF)
-        Config.ROUTE_FILE_EXTENSIONS = self.derive_route_extensions(ff_list[0] if ff_list else None)
+        Config.ROUTE_FILE_EXTENSIONS = self.derive_route_extensions(
+            ff_list[0] if ff_list else None, Config.useCSR
+        )
 
         mapping: dict[str, str] = dict(Config.FRONTEND_EXTENSIONS)
         registry: dict[str, FrontendFramework] = {}
@@ -278,25 +316,35 @@ class Config:
 
         Config.TARGET_EXTENSIONS = [ext for ext in Config.ROUTE_FILE_EXTENSIONS if ext != ".py"]
 
+        if Config.useCSR:
+            # Client routing owns the views: .nexy is not a source file anymore,
+            # so watching it would only trigger pointless rebuilds.
+            Config.WATCH_EXTENSIONS = [ext for ext in Config.WATCH_EXTENSIONS if ext != ".nexy"]
+
+        include_nexy = not Config.useCSR
         Config.LAYOUT_FILE_NAMES = self.derive_special_names(
             "layout",
             registry,
             user_exts=getattr(nc, "useLayoutExtensions", None),
+            include_nexy=include_nexy,
         )
         Config.NOTFOUND_FILE_NAMES = self.derive_special_names(
             "notfound",
             registry,
             user_exts=getattr(nc, "useNotFoundExtensions", None),
+            include_nexy=include_nexy,
         )
         Config.ERROR_FILE_NAMES = self.derive_special_names(
             "errors",
             registry,
             user_exts=getattr(nc, "useErrorsExtensions", None),
+            include_nexy=include_nexy,
         )
         Config.LOADING_FILE_NAMES = self.derive_special_names(
             "loading",
             registry,
             user_exts=getattr(nc, "useLoadingExtensions", None),
+            include_nexy=include_nexy,
         )
 
         Config.ROUTE_FILE_EXCEPTIONS = list(
@@ -333,6 +381,16 @@ class Config:
     def get_load_error(cls) -> str | None:
         """Get the configuration load error, if any."""
         return cls._load_error
+
+    @classmethod
+    def require_valid(cls) -> None:
+        """Raise ValueError when nexyconfig.py describes an impossible project.
+
+        A missing nexyconfig.py is not an error: framework defaults apply.
+        """
+        error = cls._load_error
+        if error and error != MISSING_CONFIG_ERROR:
+            raise ValueError(error)
 
 
 for _name in NexyConfigModel.__annotations__:

@@ -1,0 +1,10 @@
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller()
+class AppController:
+    async def get(self):
+        return useViews("src/apps/layout.nexy", context={
+            "children": useViews("src/apps/app_view.nexy"),
+        })

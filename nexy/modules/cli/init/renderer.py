@@ -15,6 +15,9 @@ class TemplateRenderer:
     Bare .jinja2 files (no extension before .jinja2) get the framework-appropriate
     extension appended via FW_EXT_MAP so that a single file can produce
     .nexy / .vue / .svelte / .tsx output depending on client_framework.
+
+    *exclude_suffixes* drops whole file kinds from the scaffold (e.g. ``.nexy``
+    when client-side routing owns the views).
     """
 
     FW_SUFFIXES = {".react", ".vue", ".svelte", ".solid", ".preact", ".none"}
@@ -29,10 +32,17 @@ class TemplateRenderer:
         "solid": ".tsx",
     }
 
-    def __init__(self, src: Path, dest: Path, context: dict[str, Any] | None = None):
+    def __init__(
+        self,
+        src: Path,
+        dest: Path,
+        context: dict[str, Any] | None = None,
+        exclude_suffixes: set[str] | None = None,
+    ):
         self.src = src
         self.dest = dest
         self.context = context or {}
+        self.exclude_suffixes = exclude_suffixes or set()
 
     def render(self) -> None:
         if not self.src.is_dir():
@@ -48,6 +58,8 @@ class TemplateRenderer:
 
             if src_path.is_dir():
                 continue
+            if src_path.suffix in self.exclude_suffixes:
+                continue
 
             target_rel = self._resolve_target(rel)
             if target_rel is None:
@@ -55,6 +67,10 @@ class TemplateRenderer:
 
             is_jinja2 = target_rel.suffix == ".jinja2"
             dest_path = self.dest / str(target_rel)
+            if (dest_path.with_suffix("") if is_jinja2 else dest_path).suffix in (
+                self.exclude_suffixes
+            ):
+                continue
 
             if is_jinja2:
                 template = env.get_template(rel.as_posix())

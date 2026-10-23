@@ -1,0 +1,44 @@
+# Nexy
+
+> Fullstack Python meta-framework: FastAPI and Starlette on the server, Vite on the client. A route
+> is a file under `src/routes/`.
+
+Nexy is meant to be read without a browser and without a build step. Start with the documentation
+index, follow the page for the task, and trust the source when the two disagree.
+
+## Documentation
+
+- [Index](docs/README.md): every page, one line each
+- [Getting started](docs/getting-started.md): create a project, run it, build it
+- [Project structure](docs/project-structure.md): files, folders, generated output
+- [Routing](docs/routing/README.md): file path to URL, groups, reserved names
+- [Pages](docs/routing/pages.md): dynamic segments, catch-all, layouts, error pages
+- [Hooks](docs/routing/hooks.md): request path, query, cookies, session, TOC from a page
+- [Modular routing](docs/routing/modular.md): controllers, modules, injection
+- [SSR](docs/routing/fbr/ssr.md): server rendering, the default
+- [CSR](docs/routing/fbr/csr.md): client-side rendering
+- [ISR](docs/routing/fbr/isr.md): `revalidate` and stale-while-revalidate
+- [WebSocket](docs/routing/fbr/websocket.md): `SOCKET` handlers
+- [Views](docs/views/README.md): which view format to use
+- [.nexy files](docs/views/nexyfile.md): frontmatter, properties, Jinja2, components
+- [Markdown and MDX](docs/views/markdown.md): `.md` content, `.mdx` components
+- [Components](docs/views/components.md): `Image`, `Link`, `Audio`, `Video`, `Import`
+- [React](docs/views/react.md), [Vue](docs/views/vue.md), [Svelte](docs/views/svelte.md),
+  [Solid](docs/views/solid.md), [Preact](docs/views/preact.md)
+- [API](docs/api.md): Python handlers, parameters, responses
+- [Actions](docs/actions.md): `@Action` POST endpoints with generated paths
+- [Frontend](docs/frontend.md): Vite, dev server, build, styling
+- [CLI](docs/cli.md): commands and flags
+- [Testing](docs/testing.md): `nx test`, `TestClient`, vitest, CI
+- [Config](docs/config.md): every `nexyconfig.py` field and its default
+- [i18n](docs/i18n.md): locales, `trans`, `nx translate`
+- [Deploy](docs/deploy.md): build output, Docker, reverse proxy
+- [For AI agents](docs/agents.md): invariants and verification commands
+
+## Source
+
+- [Architecture](ARCHITECTURE.md): request lifecycle, compiler pipeline, package layout
+- [Contributing](CONTRIBUTING.md): development workflow and quality gates
+- `nexy/core/config.py`: option defaults
+- `nexy/modules/routers/fbrouter/`: routing implementation
+- `nexy/modules/compiler/`: `.nexy` and Markdown compilation

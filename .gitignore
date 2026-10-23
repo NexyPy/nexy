@@ -86,6 +86,7 @@ ai
 bandit*.json
 bf*.json
 server_orig.py
+requirements-audit.txt
 
 # Env / deploy
 .vercel

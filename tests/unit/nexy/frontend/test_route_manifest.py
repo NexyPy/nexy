@@ -183,6 +183,10 @@ class TestClientRouterGeneration:
         assert "fetch(" not in content
         assert "DOMParser" not in content
 
+    def test_runtime_catch_all_matches_multiple_segments(self, tmp_path, monkeypatch):
+        content = self._generate(tmp_path, monkeypatch)
+        assert "isCatchAll ? parts.length < segs.length" in content
+
     def test_keys_auto_only_indexes_navigable_files(self, tmp_path, monkeypatch):
         self._routes(tmp_path)
         (tmp_path / "src" / "routes" / "index.nexy").write_text("---\n---\n<div>Home</div>")

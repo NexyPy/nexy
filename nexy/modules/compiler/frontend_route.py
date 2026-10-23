@@ -7,6 +7,7 @@ from typing import Any
 from nexy.core.config import Config
 from nexy.core.string import Pathname, StringTransform
 from nexy.helpers.fs.vfs import VFS
+from nexy.modules.compiler.document_shell import CSR_SHELL_HEADER, CSR_SHELL_RENDER
 from nexy.modules.routers.fbrouter.layout import RouteLayout
 
 _EXT_TO_FW: dict[str, str] = {
@@ -150,10 +151,17 @@ def _module_signature(layout_header: str, func_name: str, py_path: str, symbol: 
 
 
 def _layout_wrapper(posix_src: str) -> tuple[str, str]:
-    """(layout_header, render_wrapper) for the closest parent layout import."""
+    """(layout_header, render_wrapper) for the closest parent layout import.
+
+    With ``useCSR`` the framework owns the document: when the user provides no
+    ``layout.*``, Nexy supplies a minimal shell so the page is a valid HTML
+    document carrying the Vite tags. A user layout always wins.
+    """
     is_layout_file = Path(posix_src).name.lower() in Config.LAYOUT_FILE_NAMES
     layout_import = RouteLayout.get_closest_import(posix_src, is_layout=is_layout_file)
     if not layout_import:
+        if Config.useCSR:
+            return CSR_SHELL_HEADER, CSR_SHELL_RENDER
         return "", "rendered"
     layout_header = (
         f"try:\n"

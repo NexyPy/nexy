@@ -85,7 +85,7 @@ Every `# nosec` below is intentional and reviewed. Process launches marked
 **"fixed argv"** always pass the first argument from `shutil.which` or a
 hard-coded tool name, never from untrusted input.
 
-#### B701 — Jinja2 environments without autoescape (4 sites)
+#### B701 - Jinja2 environments without autoescape (4 sites)
 
 Nexy renders **its own Python/TS/HTML source code and server-side HTML**, not
 attacker-controlled HTML documents. Turning autoescape on would
@@ -101,7 +101,7 @@ author's own responsibility and is escaped with `|e` where needed.
 | `nexy/modules/cli/init/template_setup.py:257` | generated Python (`alembic/env.py`) |
 | `nexy/modules/cli/init/renderer.py:43` | scaffolding sources (Python/TS/HTML files) |
 
-#### B104 — dev default host `0.0.0.0` (7 sites)
+#### B104 - dev default host `0.0.0.0` (7 sites)
 
 Binding all interfaces is the documented developer convenience default, so a
 phone or colleague can test on a LAN machine. Production users are expected
@@ -114,20 +114,20 @@ not binds.
 | `nexy/modules/cli/commands/dev.py:108`, `nexy/modules/cli/commands/start.py:24` | literal comparison to pick the LAN IP to display |
 | `nexy/helpers/server/ports.py:12`, `ports.py:25` | literal comparison; the availability probe never binds |
 
-#### B310 — `urlopen` in `nexy/modules/cli/commands/add.py:39`
+#### B310 - `urlopen` in `nexy/modules/cli/commands/add.py:39`
 
 `nexy add <url>` fetches the component the user explicitly named; the CLI's
 job is to fetch what the user asks. Scheme restricted to http(s) by the guard
 above (done during the audit), so no `file://`/`ftp://` readback.
 
-#### B404 — `import subprocess` (12 sites)
+#### B404 - `import subprocess` (12 sites)
 
 Harmless by itself: every import site is followed by argv-array launches
 triaged under B603. Sites: `modules/cli/commands/{build,check,dev,test,format}.py`,
 `utils/common/{process,report}.py`, `utils/init/{clone,dependencies,template_setup}.py`,
 `utils/server/server.py` (import + `Popen` type-only import).
 
-#### B603 — `subprocess.run`/`Popen` without shell (argv array, 22 sites)
+#### B603 - `subprocess.run`/`Popen` without shell (argv array, 22 sites)
 
 Every flagged call launches an explicit argv array (never a shell string),
 with the first element pinned to `shutil.which(...)` or a fixed tool name.
@@ -153,7 +153,7 @@ To re-run the audit: `python -m bandit -r nexy/ -c .bandit`
 CI audits the full lock envelope (`uv export --frozen` + `pip-audit
 --disable-pip --strict`). Known vulnerabilities must be **fixed** (bump the
 package) or, when there is no fixed release, **ignored per ID with a written
-justification here** — never with a blanket `--ignore-vulns all`.
+justification here** - never with a blanket `--ignore-vulns all`.
 
 | ID | Package (locked) | Why ignored | Revisit when |
 |---|---|---|---|
