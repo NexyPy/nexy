@@ -1,6 +1,6 @@
 # Contributing to Nexy
 
-**First time here?** Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — curated for new contributors.
+**First time here?** Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) - curated for new contributors.
 
 <p align="center">
   <a href="https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22">
@@ -86,7 +86,7 @@ python -m mypy nexy --strict
 python -m pytest tests/ -v
 ```
 
-All tests should pass — the suite is fully green on `main`. If it fails on
+All tests should pass - the suite is fully green on `main`. If it fails on
 your fresh clone, verify your Python version (3.12+) before suspecting your
 changes.
 
@@ -102,7 +102,7 @@ nexy/
 ├── templates/                 # test fixtures (scaffold layouts per framework)
 ├── tests/                     # pytest suite
 ├── extensions/vscode/         # VS Code extension (LSP)
-└── docs/                      # Docs site (separate app + repo)
+└── docs/                      # Documentation — plain Markdown, index in docs/README.md
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full package layout and a deep dive.
@@ -250,21 +250,26 @@ npm run test
 
 For maintainers only:
 
-```bash
-# 1. Bump version in nexy/__version__.py + pyproject.toml
+1. Bump the version in `nexy/__version__.py` and `pyproject.toml`.
+2. Update the changelog:
+   ```bash
+   npx git-cliff -o CHANGELOG.md
+   ```
+3. Commit the version bump and changelog on `main`, then tag and push. The
+   tag must match the package version exactly (for example, `v2.1.1`), and
+   its commit must already be on `main`; the workflow rejects tags from
+   other branches:
+   ```bash
+   git tag v<version>
+   git push origin v<version>
+   ```
+4. The `Release` workflow builds the sdist and wheel, smoke-tests both, and
+   publishes to PyPI with trusted publishing.
+5. Create the GitHub Release from the tag.
 
-# 2. Update changelog
-npx git-cliff -o CHANGELOG.md
-
-# 3. Tag and push
-git tag v<version>
-git push origin v<version>
-
-# 4. Publish to PyPI
-uv build && uv publish
-
-# 5. Create GitHub Release
-```
+The workflow requires a PyPI trusted publisher configured for
+`NexyPy/nexy`, workflow `release.yml`, and environment `pypi`. It stores no
+long-lived PyPI token.
 
 ## Getting help
 

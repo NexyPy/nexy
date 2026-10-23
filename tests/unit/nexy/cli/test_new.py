@@ -1,4 +1,9 @@
+from nexy.modules.cli.init import GitClone
 from nexy.modules.cli.init.prompts import validate_project_name as _validate_name
+
+
+def test_git_clone_targets_repository_default_branch() -> None:
+    assert GitClone().branch == "main"
 
 
 def test_validate_name_empty_returns_error() -> None:

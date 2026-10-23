@@ -11,6 +11,7 @@ from nexy.helpers.common.console import console
 from nexy.helpers.common.report import print_cmd_result, print_tree_section
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
+from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.frontend import FrontendGenerator
 from nexy.modules.i18n import t
@@ -18,6 +19,7 @@ from nexy.modules.i18n import t
 
 def build(check: bool = False) -> None:
     pycache()
+    abort_on_invalid_config()
     build_start = time.perf_counter()
     config = Config()
     version = __version__

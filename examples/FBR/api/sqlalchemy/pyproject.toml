@@ -1,0 +1,11 @@
+[project]
+name = "sqlalchemy"
+version = "0.1.0"
+description = "A Nexy RESTful API with SQLAlchemy"
+dependencies = [
+    "nexy>=2.0.0",
+    "sqlalchemy",
+    "alembic",
+    "python-dotenv",
+]
+requires-python = ">=3.12"
