@@ -38,3 +38,23 @@ class TestViteErrorOverlay:
     def test_overlay_has_styled_container(self):
         script = Vite()
         assert "nexy-error-overlay" in script
+
+
+class TestViteTagsAreSameOrigin:
+    """Vite tags must be relative: the dev server exposes a single origin.
+
+    Absolute URLs pointed at the internal Vite port, which leaked that port and
+    only worked for a browser on the machine running the dev server.
+    """
+
+    @pytest.mark.usefixtures("dev_project")
+    def test_client_tag_is_relative(self):
+        assert 'src="/@vite/client"' in Vite()
+
+    @pytest.mark.usefixtures("dev_project")
+    def test_entry_tag_is_relative(self):
+        assert 'src="/__nexy__/main.ts"' in Vite()
+
+    @pytest.mark.usefixtures("dev_project")
+    def test_no_hardcoded_localhost(self):
+        assert "localhost" not in Vite()

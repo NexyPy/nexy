@@ -78,6 +78,9 @@ def _start_vite(project: Path, port: int) -> subprocess.Popen[bytes]:
 
 def _start_uvicorn(project: Path, port: int) -> subprocess.Popen[bytes]:
     launcher = (
+        "import os\n"
+        "from nexy.helpers.server.proxy import DEV_ENV_VAR\n"
+        "os.environ[DEV_ENV_VAR] = '1'\n"
         "import uvicorn\n"
         "from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG\n"
         "uvicorn.run('nexy.modules.routers.app:_server', host='127.0.0.1',"
@@ -94,8 +97,9 @@ def _start_uvicorn(project: Path, port: int) -> subprocess.Popen[bytes]:
 class DevStack:
     """Handle to the running dev stack used by the browser tests."""
 
-    def __init__(self, server_port: int) -> None:
+    def __init__(self, server_port: int, client_port: int) -> None:
         self.server_port = server_port
+        self.client_port = client_port
 
     @property
     def base_url(self) -> str:
@@ -128,7 +132,7 @@ def dev_stack(tmp_path_factory: pytest.TempPathFactory) -> Iterator[DevStack]:
             raise RuntimeError("Vite did not start")
         if not _wait_for_port(server_port):
             raise RuntimeError("uvicorn did not start")
-        yield DevStack(server_port)
+        yield DevStack(server_port, client_port)
     finally:
         Server.stop_process(vite_proc)
         Server.stop_process(server_proc)

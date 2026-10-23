@@ -93,6 +93,9 @@ function nexyPlugin(): Plugin {
         },
 
         clearScreen: false,
+        // The host server owns HTML: Vite must never answer a page request, or
+        // it would shadow a Nexy route with its own index.html fallback.
+        appType: 'custom',
         server: {
           strictPort: true,
           cors: {
