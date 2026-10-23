@@ -202,6 +202,7 @@ class NexyConfigModel:
     useVite: bool = False
     useViteDevUrl: str | None = None
     useFF: FrontendFramework | None = None
+    useCSR: bool = False
     useMarkdownExtensions: list[str] = []
     excludeDirs: list[str] = []
     useMiddlewares: list[Any] = []
