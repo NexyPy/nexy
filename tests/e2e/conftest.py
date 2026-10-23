@@ -40,18 +40,43 @@ def _free_port() -> int:
 
 
 def _run(project: Path, *args: str) -> None:
-    subprocess.run(  # nosec B603 - fixed argv, no shell
+    """Run *args* in *project*, surfacing output when the command fails."""
+    completed = subprocess.run(  # nosec B603 - fixed argv, no shell
         list(args),
         cwd=project,
-        check=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        check=False,
+        capture_output=True,
+        text=True,
     )
+    if completed.returncode != 0:
+        raise RuntimeError(
+            f"command {args} failed in {project} (exit {completed.returncode}):\n"
+            f"{completed.stdout or ''}{completed.stderr or ''}"
+        )
 
 
 def _install_node_modules(project: Path) -> None:
     pnpm = shutil.which("pnpm") or shutil.which("pnpm.cmd") or "pnpm"
-    _run(project, pnpm, "install", "--allow-build=esbuild")
+    reported = subprocess.run(  # nosec B603 - fixed argv, no shell
+        [pnpm, "--version"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if reported.returncode != 0:
+        raise RuntimeError(
+            f"pnpm --version failed (exit {reported.returncode}): "
+            f"{reported.stdout or ''}{reported.stderr or ''}"
+        )
+    major = int(reported.stdout.strip().split(".")[0])
+    # pnpm >= 11 hard-fails on unapproved build scripts (ERR_PNPM_IGNORED_BUILDS);
+    # approve esbuild with the install-time flag. pnpm 9 does not know the flag
+    # (it runs build scripts by default) and pnpm 10 only warns, so a plain
+    # install is correct there.
+    args = ["install"]
+    if major >= 11:
+        args.append("--allow-build=esbuild")
+    _run(project, pnpm, *args)
 
 
 def _generate(project: Path) -> None:
