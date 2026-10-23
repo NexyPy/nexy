@@ -1,0 +1,45 @@
+# Views
+
+A view renders the response body for a page. Choose one format and put the file under
+`src/routes/`.
+
+## Formats
+
+| Format | File | Server render | Client framework | Notes |
+|---|---|---|---|---|
+| `.nexy` | [nexyfile.md](nexyfile.md) | Jinja2 + Python logic, streamed | optional | Native Nexy page format |
+| `.md` | [markdown.md](markdown.md) | cmarkgfm at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
+| `.mdx` | [markdown.md](markdown.md) | framework SSR | React or Preact | Markdown with components |
+| `.tsx`, `.jsx` | [react.md](react.md) or [preact.md](preact.md) | framework SSR / SSG | React or Preact | Component routes |
+| `.vue` | [vue.md](vue.md) | framework SSR / SSG | Vue | SFC routes |
+| `.svelte` | [svelte.md](svelte.md) | framework SSR / SSG | Svelte | SFC routes |
+
+Built-in `Image`, `Link`, `Audio`, `Video` and `Import` helpers: [components.md](components.md).
+
+## Enable a framework
+
+Set `useFF` in `nexyconfig.py` and run `nexy new` to add dependencies:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()
+```
+
+With a framework enabled, its extensions become active routes and Vite handles client bundles.
+
+> **Good to know**: in [CSR](../routing/fbr/csr.md) mode, only framework route files are navigable
+> client-side.
+
+## Layouts
+
+A `layout.*` in a directory wraps pages below it. See [layouts](../routing/pages.md#layouts).
+
+## Next steps
+
+- [.nexy files](nexyfile.md): Python + Jinja2 + props
+- [Markdown and MDX](markdown.md): content pages
+- [Components](components.md): built-in HTML helpers

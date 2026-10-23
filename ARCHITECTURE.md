@@ -110,8 +110,8 @@ nexy/
 │   └── server/                # uvicorn_config, ports
 └── modules/                   # feature modules
     ├── builder/               # production build assembly (parallel executor)
-    ├── cli/                   # Typer app - 11 commands
-    │   ├── commands/          # new, dev, build, start, init, add, check, format, migrate, test, translate
+    ├── cli/                   # Typer app - 10 commands
+    │   ├── commands/          # new, dev, build, start, init, check, format, migrate, test, translate
     │   └── devtools/          # watcher (fs events → compile → clean restart), pycache
     ├── compiler/              # .nexy → route modules
     │   ├── parser/            # scanner, sanitizer, template, validator, logic
@@ -169,7 +169,8 @@ Dedicated compilers handle other route kinds: `frontend_route.py` for
 
 **File-based router (FBR)**: `src/routes/index.nexy` → `/`,
 `src/routes/blog/[slug].nexy` → `/blog/{slug}`. Auto-discovery from filesystem,
-`_layout.nexy` files for shared layouts, supports `.nexy`, `.mdx`, `.md`, `.py`.
+`layout.nexy` files for shared layouts, supports `.nexy`, `.mdx`, `.md`, `.py`
+(plus `.tsx`, `.vue`, `.svelte` when that framework is configured).
 
 **Modular router**: NestJS-inspired controllers with `app_controller.py` +
 `app_module.py`. Decorator-based routing with DI
@@ -192,15 +193,17 @@ Dedicated compilers handle other route kinds: `frontend_route.py` for
 
 Reference targets measured on the development machine:
 
-- **Startup**: < 200 ms (compile + server ready)
+- **Startup**: under a second (compile + server ready)
 - **HMR**: < 100 ms file change → browser refresh
 - **SSR**: ~5–15 ms per component (esbuild)
 - **SSG**: parallel worker pool, one worker per CPU core
 
 ## Security
 
-- Jinja2 auto-escaping (XSS protection)
+- Jinja2 autoescaping is **off**: `.nexy` templates are the project's own HTML. Escape untrusted
+  values with `| e`.
 - CORS, GZip, TrustedHost, Session, Auth middleware
 - Signed session cookies
 - Environment variables for secrets (never hardcoded)
-- No arbitrary code execution in templates
+- `.nexy` frontmatter is Python and runs per request, and the Jinja2 environment is not sandboxed:
+  treat route files as application code, never as user input
