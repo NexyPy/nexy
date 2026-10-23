@@ -1,0 +1,11 @@
+[project]
+name = "sqlmodel"
+version = "0.1.0"
+description = "A Nexy RESTful API with SQLModel"
+dependencies = [
+    "nexy>=2.0.0",
+    "sqlmodel",
+    "alembic",
+    "python-dotenv",
+]
+requires-python = ">=3.12"
