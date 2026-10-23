@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 
 from nexy.core.config import Config
-from nexy.helpers.server.ports import get_vite_port
 
 
 def Vite() -> str:
@@ -55,10 +54,6 @@ def Vite() -> str:
                     return f'{css_links}<script type="module" src="{src}"></script>'
         except Exception:
             return ""
-
-    port = get_vite_port(5173)
-    ssl_enabled = config.useSslKeyfile and config.useSslCertfile
-    vite_protocol = "https" if ssl_enabled else "http"
 
     hmr_script = """
     <script type="module">
@@ -132,6 +127,6 @@ def Vite() -> str:
 
     return f"""
     {hmr_script}
-    <script type="module" src="{vite_protocol}://localhost:{port}/@vite/client"></script>
-    <script type="module" src="{vite_protocol}://localhost:{port}/__nexy__/main.ts"></script>
+    <script type="module" src="/@vite/client"></script>
+    <script type="module" src="/__nexy__/main.ts"></script>
     """
