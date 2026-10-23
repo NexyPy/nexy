@@ -484,7 +484,7 @@ Cause racine de chaque échec, tracée dans le code, **pas supposée** :
    - (a) locale **minimale** : régénérer un `vite.config.ts` + `package.json`/lock au dépôt (contre la consigne « supprimés ») ;
    - (b) **isoler les tests** : commenter `test_vite_overlay` pour créer un `vite.config.ts` dans `tmp_path` (`monkeypatch.chdir`) - tests plus propres, aucun assouplissement d'assertion ;
    - (c) marquer les 4 tests en `pytest.mark.skipif` si la toolchain est absente (**le moins souhaitable, dernier recours** - cela masque la régression au lieu de la corriger).
-2. ~~**`examples/` n'existe pas encore**~~ - **fait** : `examples/README.md` + `examples/minimal/` (`nexyconfig.py`, `src/routes/{layout,index}.nexy`), constat `ROUTER_PATH = "src/routes"` (`nexy/core/config.py:38`) vérifié.
+2. ~~**`examples/` n'existe pas encore**~~ - **fait** : `examples/README.md` + `examples/FBR/web/basics/minimal/` (`nexyconfig.py`, `src/routes/{layout,index}.nexy`), constat `ROUTER_PATH = "src/routes"` (`nexy/core/config.py:38`) vérifié.
 3. ~~**Code mort + commentaires `#` dans `nexy/`**~~ - **fait** : 312 commentaires `#` hors docstring supprimés (53 fichiers), 7 conservés (6 `noqa` vivants + 1 `type: ignore`), 4 `noqa: A002` morts retirés, 2 `F841` de `translate.py` corrigés (`:227` et `:278`, le second masquant le premier), blocs de code mort `discovery.py`/`cli/__init__.py` supprimés, espaces de fin de ligne nettoyés (3 × `W291`). **ruff : 114 → 109**.
 4. `cliff.toml` / `.gitignore` / `.python-version` / `.github/` : les garder ou les supprimer aussi ?
 

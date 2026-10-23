@@ -59,7 +59,7 @@ uv pip install -e . --group dev
 - Integration tests (`tests/integration/`) may require project scaffolding or a temp workspace.
 - `docs/` is a **separate Nexy app** with its own `.git` - do not treat as monorepo child.
 - `skills/` dir contains project philosophy docs (KISS, SOLID, TDD, framework-dev).
-- `nexyconfig.py` is the user-facing config of a **user project** (loaded at runtime from the project root by `nexy/core/config.py`; runnable example in `examples/minimal/nexyconfig.py`). The framework repo itself has none.
+- `nexyconfig.py` is the user-facing config of a **user project** (loaded at runtime from the project root by `nexy/core/config.py`; runnable example in `examples/FBR/web/basics/minimal/nexyconfig.py`). The framework repo itself has none.
 - `.nexy` files use `---` frontmatter delimiter for Python logic.
 
 ## Conventions
