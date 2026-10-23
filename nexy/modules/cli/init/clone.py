@@ -13,7 +13,9 @@ from nexy.modules.i18n import t
 class GitClone:
     def __init__(self) -> None:
         self.repo = "https://github.com/NexyPy/nexy.git"
-        self.branch = "master"
+        # GitHub retired `master`: `nexy new -t <github-template>` must fetch
+        # the repository's actual default branch or every lookup fails.
+        self.branch = "main"
         self.dest = Path(".")
 
     def _is_empty_dir(self, path: Path) -> bool:
