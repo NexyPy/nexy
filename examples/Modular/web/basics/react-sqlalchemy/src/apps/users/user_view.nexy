@@ -1,0 +1,11 @@
+
+---
+users: list
+---
+
+<section class="p-8 max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Users</h1>
+    <div class="space-y-3">
+        
+    </div>
+</section>

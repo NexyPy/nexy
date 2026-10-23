@@ -1,3 +1,4 @@
+import os
 import subprocess  # nosec B404
 import sys
 import time
@@ -7,8 +8,10 @@ from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
 from nexy.helpers.fs.vfs import VFS
+from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder
+from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.cli.devtools.watcher import create_observer, purge_project_modules, stop_observer
 from nexy.modules.frontend import FrontendGenerator
@@ -17,6 +20,10 @@ from nexy.modules.i18n import t
 
 def dev(port: int | None = None, host: str | None = None) -> None:
     pycache()
+    abort_on_invalid_config()
+    # Mark this process tree as the dev server so the application proxies Vite's
+    # endpoints through its own origin instead of exposing Vite's port.
+    os.environ[DEV_ENV_VAR] = "1"
     config = Config()
     version = __version__
     run_host = host or config.useHost

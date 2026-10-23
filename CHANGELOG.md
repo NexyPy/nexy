@@ -7,7 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Changed
 
-- **Package layout**: `nexy/utils/` is now `nexy/helpers/` — a transversal
+- **Package layout**: `nexy/utils/` is now `nexy/helpers/` - a transversal
   layer with zero upward imports (`common`, `fs`, `imports`, `server`).
   All feature code moved under `nexy/modules/` (`cli`, `compiler`, `frontend`,
   `routers`, `runtime`, `i18n`, `builder`). The public facade exported by
@@ -17,7 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   `nexy/modules/cli/templates/`.
 - **Dev tooling**: the file watcher and `__pycache__` management moved to
   `nexy/modules/cli/devtools/` (`watcher.py`, `pycache.py`).
-- **Scaffolds**: the Counter, Card, and Theme templates were rewritten —
+- **Scaffolds**: the Counter, Card, and Theme templates were rewritten -
   consistent utility classes across frameworks, explicit state hooks on
   Preact, and a table-of-contents layout for markdown pages.
 

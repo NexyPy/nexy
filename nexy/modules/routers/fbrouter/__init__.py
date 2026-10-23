@@ -35,6 +35,19 @@ _FRAMEWORK_ROUTE_EXTS = _FRAMEWORK_ONLY_EXTS + (".mdx",)
 _UI_ROUTE_EXTS = (".nexy", ".mdx", ".md", ".tsx", ".vue", ".svelte")
 
 
+def _route_clean_path(path_str: str, locale: str | None) -> str:
+    """Strip the router prefix, the locale suffix and the file extension.
+
+    Only the extension (and its locale marker) is removed: dots inside a
+    dynamic segment such as ``[...path]`` are part of the route path and must
+    survive, so splitting on the first ``.`` is wrong.
+    """
+    relative = path_str.replace(f"{Config.NAMESPACE}src/routes", "").replace("src/routes", "")
+    if locale:
+        relative = relative.removesuffix(f".{locale}")
+    return relative.rsplit(".", 1)[0]
+
+
 def _lazy_component(
     import_path: str, comp_name: str, original: Callable[..., str]
 ) -> Callable[..., str]:
@@ -314,11 +327,7 @@ class FBRouter:
                 console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {exc}")
                 continue
 
-            clean = (
-                path_str.replace(f"{Config.NAMESPACE}src/routes", "")
-                .replace("src/routes", "")
-                .split(".")[0]
-            )
+            clean = _route_clean_path(path_str, locale)
             pathname = Pathname(clean).process()
 
             name = app_path.name.lower()
