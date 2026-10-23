@@ -44,7 +44,7 @@ def _free_port() -> int:
         return int(sock.getsockname()[1])
 
 
-def _http_scope(path: str, method: str = "GET") -> Scope:
+def _http_scope(path: str, method: str = "GET", host: str = "localhost:3000") -> Scope:
     return {
         "type": "http",
         "asgi": {"version": "3.0"},
@@ -53,7 +53,7 @@ def _http_scope(path: str, method: str = "GET") -> Scope:
         "path": path,
         "raw_path": path.encode(),
         "query_string": b"",
-        "headers": [(b"host", b"localhost:3000")],
+        "headers": [(b"host", host.encode("latin-1"))],
         "scheme": "http",
         "server": ("localhost", 3000),
         "client": ("127.0.0.1", 50000),
@@ -61,7 +61,9 @@ def _http_scope(path: str, method: str = "GET") -> Scope:
     }
 
 
-def _websocket_scope(path: str = "/", subprotocols: list[str] | None = None) -> Scope:
+def _websocket_scope(
+    path: str = "/", subprotocols: list[str] | None = None, host: str = "localhost:3000"
+) -> Scope:
     return {
         "type": "websocket",
         "asgi": {"version": "3.0"},
@@ -69,7 +71,7 @@ def _websocket_scope(path: str = "/", subprotocols: list[str] | None = None) -> 
         "path": path,
         "raw_path": path.encode(),
         "query_string": b"",
-        "headers": [(b"host", b"localhost:3000")],
+        "headers": [(b"host", host.encode("latin-1"))],
         "scheme": "ws",
         "server": ("localhost", 3000),
         "client": ("127.0.0.1", 50000),
@@ -175,8 +177,10 @@ async def _run(scope: Scope, receive: Callable[..., Any], app: Any = None) -> _R
     return send
 
 
-def _http(path: str, app: Any = None, method: str = "GET") -> _Recorder:
-    return asyncio.run(_run(_http_scope(path, method), _empty_receive, app))
+def _http(
+    path: str, app: Any = None, method: str = "GET", host: str = "localhost:3000"
+) -> _Recorder:
+    return asyncio.run(_run(_http_scope(path, method, host), _empty_receive, app))
 
 
 @pytest.mark.parametrize(
@@ -346,6 +350,41 @@ def test_vite_proxy_port_is_none_when_vite_disabled(nexy_project, tmp_path, monk
 
 def test_proxy_prefixes_cover_vite_paths() -> None:
     assert "/@vite/" in VITE_ONLY_PREFIXES
+
+
+def test_proxy_rejects_vite_asset_for_foreign_host() -> None:
+    response = _http("/@fs/tmp/secret", host="evil.example")
+    assert response.status == 403
+
+
+def test_proxy_does_not_forward_vite_asset_for_foreign_host() -> None:
+    app = _FakeApp()
+    response = _http("/@fs/tmp/secret", app, host="evil.example")
+    assert response.body != FAKE_BODY and app.reached is False
+
+
+def test_proxy_allows_lan_ip_host() -> None:
+    assert _http("/@vite/client", host="192.168.1.50:8000").body == FAKE_BODY
+
+
+def test_proxy_allows_localhost_subdomain() -> None:
+    assert _http("/@vite/client", host="app.localhost:3000").body == FAKE_BODY
+
+
+def test_proxy_falls_through_for_app_path_with_foreign_host() -> None:
+    app = _FakeApp()
+    response = _http("/about", app, host="evil.example")
+    assert response.body == b"nexy" and app.reached is True
+
+
+def test_hmr_socket_rejects_foreign_host() -> None:
+    send = asyncio.run(
+        _run(
+            _websocket_scope(subprotocols=["vite-hmr"], host="evil.example"),
+            _disconnect_receive,
+        )
+    )
+    assert send.messages[0] == {"type": "websocket.close", "code": 1008}
 
 
 def test_vite_proxy_port_is_none_outside_dev_mode(tmp_path, monkeypatch) -> None:

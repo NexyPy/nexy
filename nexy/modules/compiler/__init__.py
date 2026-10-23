@@ -131,7 +131,11 @@ class Compiler:
         else:
             msg = f"File '{self.input}' is not a nexy component"
             console.print(f"[red]nsc[/red] » {msg}")
-            raise NexyCompileError(source_path=self.input, message=msg)
+            raise NexyCompileError(
+                source_path=self.input,
+                message=msg,
+                hint="Use a .nexy, .mdx, .md or framework route file (.tsx/.vue/.svelte).",
+            )
 
         try:
             code_parsed: ParserModel = self.parser.process(
@@ -145,7 +149,11 @@ class Compiler:
             col = getattr(e, "offset", None) or getattr(e, "column", None)
             msg = str(e)
             raise NexyCompileError(
-                source_path=self.input, message=msg, line=line, column=col
+                source_path=self.input,
+                message=msg,
+                line=line,
+                column=col,
+                hint="Fix the syntax at the reported location, then save the file to recompile.",
             ) from e
 
     def compile_with_deps(self, input: str, output: str | None = None) -> None:

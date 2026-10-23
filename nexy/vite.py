@@ -54,6 +54,8 @@ def Vite() -> str:
                     return f'{css_links}<script type="module" src="{src}"></script>'
         except Exception:
             return ""
+        # Prod mode must never fall back to the dev HMR script.
+        return ""
 
     hmr_script = """
     <script type="module">
@@ -61,6 +63,12 @@ def Vite() -> str:
             const host = window.location.host;
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const ws = new WebSocket(`${protocol}//${host}/_nexy/hmr`);
+
+            function escapeHtml(value) {
+                return String(value).replace(/[&<>"']/g, (ch) => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                })[ch]);
+            }
 
             function nexyErrorOverlay(errors) {
                 let overlay = document.getElementById('nexy-error-overlay');
@@ -75,8 +83,11 @@ def Vite() -> str:
                 const lines = errors.map((e) => {
                     const file = e.file || '(unknown)';
                     const msg = e.message || 'Unknown error';
-                    return `<h3 style="margin:0 0 .5rem">${file}</h3>`
-                        + `<pre style="margin:0 0 1.5rem;white-space:pre-wrap">${msg}</pre>`;
+                    const hint = e.hint ? `<p style="margin:0 0 1.5rem;color:#fbbf24">`
+                        + `Fix: ${escapeHtml(e.hint)}</p>` : '';
+                    return `<h3 style="margin:0 0 .5rem">${escapeHtml(file)}</h3>`
+                        + `<pre style="margin:0 0 1.5rem;white-space:pre-wrap">${escapeHtml(msg)}</pre>`
+                        + hint;
                 }).join('');
                 overlay.innerHTML = `<h2 style="margin:0 0 1rem;color:#fbbf24">`
                     + 'Nexy compile error</h2>'

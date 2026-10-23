@@ -14,6 +14,7 @@ does not know about falls through to the application untouched.
 
 import asyncio
 import contextlib
+import ipaddress
 import os
 from pathlib import Path
 
@@ -82,6 +83,9 @@ class ViteProxyMiddleware:
         if HMR_SUBPROTOCOL not in scope.get("subprotocols", ()):
             await self.app(scope, receive, send)
             return
+        if not _host_allowed(scope):
+            await send({"type": "websocket.close", "code": 1008})
+            return
         try:
             await self._forward_websocket(scope, receive, send)
         except (OSError, WebSocketException):
@@ -94,6 +98,9 @@ class ViteProxyMiddleware:
             return
 
         vite_only = _is_vite_only(scope["path"])
+        if vite_only and not _host_allowed(scope):
+            await _send_forbidden(send)
+            return
         try:
             await self._forward_http(scope, receive, send, fallthrough=not vite_only)
         except (httpx.HTTPError, OSError):
@@ -138,6 +145,41 @@ def _is_vite_only(path: str) -> bool:
     return any(path.startswith(prefix) for prefix in VITE_ONLY_PREFIXES)
 
 
+def _host_name(scope: Scope) -> str:
+    """Return the request Host header without its port, lowercased."""
+    for name, value in scope.get("headers", ()):
+        if name.lower() == b"host":
+            host: str = value.decode("latin-1").strip().lower()
+            if host.startswith("["):  # IPv6 literal, e.g. [::1]:3000
+                end = host.find("]")
+                return host[1:end] if end != -1 else host
+            if host.count(":") == 1:
+                return host.split(":", 1)[0]
+            return host
+    return ""
+
+
+def _host_allowed(scope: Scope) -> bool:
+    """Accept only localhost names and IP literals, mirroring Vite's policy.
+
+    Vite's own allowed-host check is bypassed by construction: the proxy
+    rewrites the upstream Host to the loopback address. Replaying the check
+    here stops DNS-rebinding pages and hostile origins from reading project
+    files through the forwarded ``/@fs/`` endpoints. Requests that are not
+    Vite-only keep their existing app behaviour.
+    """
+    host = _host_name(scope)
+    if not host:
+        return False
+    if host == "localhost" or host.endswith(".localhost"):
+        return True
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return True
+
+
 async def _relay_response(response: httpx.Response, send: Send) -> None:
     """Stream an upstream response back to the client."""
     await send(
@@ -160,6 +202,18 @@ def _response_headers(response: httpx.Response) -> list[tuple[bytes, bytes]]:
         for name, value in response.headers.multi_items()
         if name.lower() not in skip
     ]
+
+
+async def _send_forbidden(send: Send) -> None:
+    """Refuse Vite-only assets for a non-local Host."""
+    await send(
+        {
+            "type": "http.response.start",
+            "status": 403,
+            "headers": [(b"content-type", b"text/plain; charset=utf-8")],
+        }
+    )
+    await send({"type": "http.response.body", "body": b"Host not allowed for Vite dev assets"})
 
 
 async def _send_unavailable(send: Send) -> None:

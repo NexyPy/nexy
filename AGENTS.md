@@ -22,6 +22,13 @@ ruff format nexy/ --check
 python -m mypy nexy --strict
 python -m pytest tests/ -v
 
+# One command (same gates as CI, stops at the first failure)
+python scripts/verify.py
+
+# Supply-chain audit against the frozen lock (retries transient network failures;
+# CI remains authoritative)
+python scripts/audit_dependencies.py
+
 # Auto-fix
 ruff check nexy/ --fix
 ruff format nexy/
@@ -57,7 +64,7 @@ uv pip install -e . --group dev
 
 - `test_config.py` uses `hasattr` pattern - watch for config API changes.
 - Integration tests (`tests/integration/`) may require project scaffolding or a temp workspace.
-- `docs/` is a **separate Nexy app** with its own `.git` - do not treat as monorepo child.
+- `docs/` is **plain Markdown** (no app, no build step, no separate repo) - entry point `docs/README.md`, one question per page, machine entry point `llms.txt`. Do not reintroduce a docs site generator here.
 - `skills/` dir contains project philosophy docs (KISS, SOLID, TDD, framework-dev).
 - `nexyconfig.py` is the user-facing config of a **user project** (loaded at runtime from the project root by `nexy/core/config.py`; runnable example in `examples/FBR/web/basics/minimal/nexyconfig.py`). The framework repo itself has none.
 - `.nexy` files use `---` frontmatter delimiter for Python logic.

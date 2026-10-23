@@ -14,19 +14,22 @@ class NexyCompileError(Exception):
         message: Human-readable failure reason.
         line: 1-based source line when the parser could locate it.
         column: 1-based source column when the parser could locate it.
+        hint: Concrete remediation step, when the compiler knows one.
     """
 
     source_path: str
     message: str
     line: int | None = None
     column: int | None = None
+    hint: str | None = None
 
     def __str__(self) -> str:
         loc = ""
         if self.line is not None:
             col = self.column if self.column is not None else 0
             loc = f":{self.line}:{col}"
-        return f"{self.source_path}{loc} - {self.message}"
+        base = f"{self.source_path}{loc} - {self.message}"
+        return f"{base}\n  Fix: {self.hint}" if self.hint else base
 
 
 _STYLES = """\
