@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from nexy.__version__ import __version__
+from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.modules.i18n import t
 
@@ -36,10 +37,7 @@ class InitProject:
             dest = Path(".").resolve()
 
         if show_title:
-            title = t("init.title", "nexy {version} {command}").format(
-                version=self.version, command=command
-            )
-            console.print(title)
+            launcher.banner(command, self.version)
 
         self._ensure_ready(dest, project_dir)
 

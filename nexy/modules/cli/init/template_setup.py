@@ -10,6 +10,7 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
+from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.modules.cli.constants import TEMPLATES_DIR
 from nexy.modules.i18n import t
@@ -290,28 +291,21 @@ def cleanup_build_artifacts(dest: Path) -> None:
 
 
 def print_success_message(project_dir_name: str | None = None) -> None:
-    console.print(
-        "\n[green]nexy[/green] \u00bb "
-        + t("init.success_title", "Project initialized successfully!")
-    )
+    launcher.success(t("init.success_title", "Project initialized successfully!"))
     _print_next_steps(project_dir_name)
 
 
 def _print_next_steps(project_dir_name: str | None) -> None:
-    console.print("\n" + t("init.next_steps", "Next steps:"))
+    console.print("\n" + t("init.next_steps", "Next steps"))
 
-    step = 1
     if project_dir_name:
-        console.print(f"  {step}. [cyan]cd {project_dir_name}[/cyan]")
-        step += 1
-        activate_msg = t("init.step_activate_venv", "Activate the virtual environment")
-        console.print(f"  {step}. [cyan]{_activate_command()}[/cyan] {activate_msg}")
-        step += 1
+        launcher.step(f"cd {project_dir_name}")
 
-    dev_msg = t("init.step_run_dev", "Start the development server")
-    console.print(f"  {step}. [cyan]nexy dev[/cyan] - {dev_msg}")
-    help_msg = t("init.step_help", "Explore available commands")
-    console.print(f"  {step + 1}. [cyan]nexy --help[/cyan] - {help_msg}")
+    launcher.step(
+        _activate_command(), t("init.step_activate_venv", "Activate the virtual environment")
+    )
+    launcher.step("nexy dev", t("init.step_run_dev", "Start the development server"))
+    launcher.step("nexy --help", t("init.step_help", "Explore available commands"))
 
 
 def _activate_command() -> str:

@@ -4,6 +4,7 @@ import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
+from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
 from nexy.modules.i18n import t
 
@@ -19,14 +20,11 @@ _ORM_EXTRA_PACKAGES: dict[str, list[str]] = {
 
 
 def node_package_manager(dest: Path = Path(".")) -> str | None:
-    """Detect the package manager for *dest* (lockfile first): pnpm, yarn or npm."""
-    if (dest / "pnpm-lock.yaml").exists() and shutil.which("pnpm"):
-        return "pnpm"
-    if (dest / "yarn.lock").exists() and shutil.which("yarn"):
-        return "yarn"
-    if shutil.which("npm"):
-        return "npm"
-    return None
+    """Detect the package manager for *dest*.
+
+    A lockfile wins; otherwise the priority is bun, pnpm, then npm.
+    """
+    return package_manager.detect(dest)
 
 
 def install_packages(deps: list[str], dest: Path | None = None) -> None:
@@ -43,18 +41,19 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
         console.print(warning_msg + ", ".join(deps))
         return
 
-    cmd = ["npm", "install"] if pm == "npm" else [pm, "add"]
     install_msg = (
         f"[yellow]nexy[/yellow] » {t('add.installing', 'Installing dependencies')}: "
         f"{', '.join(deps)}..."
     )
     with console.status(install_msg, spinner="dots"):
         try:
-            # Resolve the shim (npm.cmd on Windows) ourselves so the shell is
-            # never involved: shell=True would let package names inject commands.
-            exe = shutil.which(cmd[0]) or cmd[0]
-            subprocess.run([exe, *cmd[1:], *deps], check=True, capture_output=True, cwd=dest)  # nosec B603
-        except subprocess.CalledProcessError as e:
+            subprocess.run(  # nosec B603 - resolved executable, fixed argv
+                package_manager.add_argv(pm, deps),
+                check=True,
+                capture_output=True,
+                cwd=dest,
+            )
+        except (OSError, subprocess.SubprocessError) as e:
             error_msg = (
                 f"[red]{t('add.error', 'Error:')}[/red] "
                 f"{t('add.install_failed', 'Failed to install dependencies')}: {e}"
@@ -88,11 +87,14 @@ class DependencyInstaller:
                 capture_output=True,
             )  # nosec B603
             return True
-        except subprocess.CalledProcessError as e:
+        except (OSError, subprocess.SubprocessError) as e:
             console.print(f"[red]nexy[/red] » {desc} failed")
-            output = (e.stdout or b"") + (e.stderr or b"")
+            output = getattr(e, "stdout", None) or b""
+            output += getattr(e, "stderr", None) or b""
             if output:
                 console.print(output.decode("utf-8", errors="replace")[:500])
+            else:
+                console.print(f"[red]{e}[/red]")
             return False
 
     def install_all(self) -> None:
@@ -136,11 +138,11 @@ class DependencyInstaller:
                     "[yellow]nexy[/yellow] » "
                     + t(
                         "init.node_manager_not_found",
-                        "No Node.js package manager found. Install deps manually.",
+                        "No Node.js package manager found. Install bun, pnpm or npm.",
                     )
                 )
                 return
-            cmd = [pm, "install"]
+            cmd = package_manager.install_argv(pm, allow_builds=("esbuild",))
 
             with console.status(
                 "[yellow]nexy[/yellow] » "
@@ -148,7 +150,7 @@ class DependencyInstaller:
                 spinner="dots",
             ):
                 ok = self._run(cmd, "Node.js dependencies installation")
-                if not ok:
+                if not ok and pm == "npm":
                     console.print(
                         "[yellow]nexy[/yellow] » "
                         + t(
@@ -157,13 +159,16 @@ class DependencyInstaller:
                         )
                     )
                     ok = self._run(
-                        cmd + ["--legacy-peer-deps"],
+                        [*cmd, "--legacy-peer-deps"],
                         "Node.js dependencies installation (legacy-peer-deps)",
                     )
                 if ok:
                     console.print(
                         "[green]nexy[/green] » "
-                        + t("init.node_installed", "Node.js dependencies installed.")
+                        + t(
+                            "init.node_installed",
+                            "Node.js dependencies installed with {pm}.",
+                        ).format(pm=pm)
                     )
 
     def install_python_dependencies(self) -> None:
