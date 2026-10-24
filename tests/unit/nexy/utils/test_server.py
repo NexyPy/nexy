@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from nexy.helpers.server import server as server_module
-from nexy.helpers.server.server import Server, _detect_pm, _write_port_file
+from nexy.helpers.server.server import Server, _write_port_file
 
 
 @pytest.fixture(autouse=True)
@@ -94,12 +94,6 @@ def test_stop_process_terminates_live_unix_child() -> None:
         Server.stop_process(proc)
 
     proc.terminate.assert_called_once()
-
-
-def test_detect_pm_returns_two_element_tuple() -> None:
-    binary, is_npm = _detect_pm()
-
-    assert isinstance(binary, str) and isinstance(is_npm, bool)
 
 
 def test_wait_for_vite_ready_connects_to_specified_port() -> None:
@@ -197,3 +191,73 @@ def test_resolve_ports_skips_client_port_when_disabled() -> None:
 
     assert client_port == 0
     assert server_port == 3995
+
+
+def test_vite_argv_build_runs_local_vite(tmp_path: Any, monkeypatch: Any) -> None:
+    from pathlib import Path
+
+    vite = Path("node_modules") / "vite" / "bin" / "vite.js"
+    (tmp_path / vite).parent.mkdir(parents=True)
+    (tmp_path / vite).write_text("", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
+    )
+
+    argv = Server._vite_argv(build=True, port=5173, ssl=False)
+
+    assert argv == ["C:/node.exe", str(vite), "build"]
+
+
+def test_vite_argv_dev_passes_port_and_host(tmp_path: Any, monkeypatch: Any) -> None:
+    from pathlib import Path
+
+    vite = Path("node_modules") / "vite" / "bin" / "vite.js"
+    (tmp_path / vite).parent.mkdir(parents=True)
+    (tmp_path / vite).write_text("", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
+    )
+
+    argv = Server._vite_argv(build=False, port=3456, ssl=False)
+
+    assert argv[-3:] == ["--port", "3456", "--host"]
+
+
+def test_vite_argv_dev_appends_https(tmp_path: Any, monkeypatch: Any) -> None:
+    from pathlib import Path
+
+    vite = Path("node_modules") / "vite" / "bin" / "vite.js"
+    (tmp_path / vite).parent.mkdir(parents=True)
+    (tmp_path / vite).write_text("", encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
+    )
+
+    assert Server._vite_argv(build=False, port=3456, ssl=True)[-1] == "--https"
+
+
+def test_vite_argv_raises_when_node_is_missing(monkeypatch: Any) -> None:
+    monkeypatch.setattr(server_module.shutil, "which", lambda *_: None)
+
+    with pytest.raises(RuntimeError, match="Node.js"):
+        Server._vite_argv(build=True, port=5173, ssl=False)
+
+
+def test_vite_argv_raises_when_vite_is_missing(tmp_path: Any, monkeypatch: Any) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
+    )
+
+    with pytest.raises(RuntimeError, match="Vite is not installed"):
+        Server._vite_argv(build=True, port=5173, ssl=False)
+
+
+def test_wait_for_vite_ready_stops_when_process_exited() -> None:
+    process = MagicMock()
+    process.poll.return_value = 1
+
+    assert Server.wait_for_vite_ready(5173, timeout=30, process=process) is False

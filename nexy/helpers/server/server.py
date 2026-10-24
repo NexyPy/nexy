@@ -53,15 +53,6 @@ def _write_port_file(name: str, port: int) -> None:
     vfs.write(f"__nexy__/{name}.port", str(port))
 
 
-def _detect_pm() -> tuple[str, bool]:
-    """Detects the package manager (pnpm, bun, yarn, npm)."""
-    for candidate in ("pnpm", "bun", "yarn", "npm"):
-        binary = shutil.which(candidate) or shutil.which(candidate + ".cmd")
-        if binary:
-            return binary, candidate == "npm"
-    return "npm", True
-
-
 class Server:
     @staticmethod
     def check_nexy_prod(delete: bool = False) -> None:
@@ -210,21 +201,64 @@ class Server:
             return None
 
     @staticmethod
-    def wait_for_vite_ready(port: int, host: str = "localhost", timeout: int = 30) -> bool:
-        """Waits until the Vite dev server answers the readiness probe.
+    def wait_for_vite_ready(
+        port: int,
+        host: str = "localhost",
+        timeout: int = 30,
+        process: Popen[Any] | None = None,
+    ) -> bool:
+        """Wait until the Vite dev server answers the readiness probe.
 
         The probe is a TCP connect, not an HTTP request: it only reports that
-        the port accepts connections, which is what readiness means here.
+        the port accepts connections, which is what readiness means here. When
+        *process* is given, an early exit is treated as failure instead of
+        waiting out the whole timeout for a server that will never listen.
         """
         start_time = time.time()
 
         while time.time() - start_time < timeout:
+            if process is not None and process.poll() is not None:
+                return False
             try:
                 with socket.create_connection((host, port), timeout=1):
                     return True
             except OSError:
                 time.sleep(0.2)
         return False
+
+    @staticmethod
+    def _vite_argv(build: bool, port: int, ssl: bool) -> list[str]:
+        """Build the argv that runs the project's local Vite binary.
+
+        The package manager runner is deliberately bypassed: pnpm 10+ may run
+        an implicit install before a script, and `nexy dev` must never mutate
+        node_modules. Invoking node directly has no such side effect.
+
+        Raises:
+            RuntimeError: Node.js or the project's Vite install is missing.
+        """
+        node = shutil.which("node") or shutil.which("node.exe")
+        if node is None:
+            raise RuntimeError(
+                "Node.js is not installed. Install Node.js 20 or later, then reinstall "
+                "the project dependencies."
+            )
+
+        vite = Path("node_modules") / "vite" / "bin" / "vite.js"
+        if not vite.is_file():
+            from nexy.helpers.common.package_manager import detect
+
+            manager = detect() or "npm"
+            raise RuntimeError(f"Vite is not installed in this project. Run: {manager} install")
+
+        argv = [node, str(vite)]
+        if build:
+            argv.append("build")
+        else:
+            argv.extend(["--port", str(port), "--host"])
+            if ssl:
+                argv.append("--https")
+        return argv
 
     @staticmethod
     def vite(
@@ -234,24 +268,13 @@ class Server:
         suppress_output: bool | None = None,
         capture_stderr: bool = False,
     ) -> Popen[Any]:
-        """Launches the Vite client."""
-        pm, is_npm = _detect_pm()
-
+        """Launch the project's local Vite client."""
         if suppress_output is None:
             suppress_output = build
 
-        if build:
-            args = [pm]
-            args += ["exec", "--", "vite", "build"] if is_npm else ["exec", "vite", "build"]
-        else:
-            args = [pm]
-            args += ["run", "dev"] if is_npm else ["dev"]
+        args = Server._vite_argv(build, port, ssl)
+        if not build:
             _write_port_file("client", port)
-            if is_npm:
-                args.append("--")
-            args += ["--port", str(port), "--host"]
-            if ssl:
-                args.append("--https")
 
         if capture_stderr:
             stderr = subprocess.PIPE
@@ -267,4 +290,4 @@ class Server:
         else:
             stdout = None
 
-        return subprocess.Popen(args, stdout=stdout, stderr=stderr)  # nosec B603 - resolved devtool argv via _detect_pm
+        return subprocess.Popen(args, stdout=stdout, stderr=stderr)  # nosec B603 - resolved executable, fixed argv
