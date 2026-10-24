@@ -5,6 +5,7 @@ from pathlib import Path
 import typer
 
 from nexy.__version__ import __version__
+from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.modules.cli.init import InitProject, TemplateNotFoundError, template_source
 from nexy.modules.cli.init.prompts import ask_project_name
@@ -25,8 +26,7 @@ def new(
         ),
     ),
 ) -> None:
-    title = t("init.title", "nexy {version} {command}").format(version=__version__, command="new")
-    console.print(title)
+    launcher.banner("new", __version__)
 
     if template:
         try:

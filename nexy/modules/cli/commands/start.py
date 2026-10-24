@@ -2,6 +2,7 @@ import time
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
+from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.helpers.server.server import Server
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -26,27 +27,13 @@ def start(port: int | None = None, host: str | None = None) -> None:
     network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host  # nosec B104
 
     try:
-        console.print(
-            t("start.banner", "nexy@{version} starting in production...").format(version=version)
-        )
+        launcher.banner("start", version)
 
-        console.print(
-            f"  [dim]\u00bb\u00bb[/dim] [green]{t('start.uvicorn', 'Uvicorn')}[/green]"
-            f" {t('start.uvicorn_on', 'running on port')} [yellow]{run_port}[/yellow]"
-        )
-        console.print(
-            f"  [dim]\u00bb\u00bb[/dim] {t('start.local', 'Local:')} [green]{protocol}://localhost:{run_port}[/green]"
-        )
+        launcher.entry(t("start.local", "Local:"), f"{protocol}://localhost:{run_port}")
         if network_ip != "127.0.0.1" and network_ip != "localhost":
-            console.print(
-                f"  [dim]\u00bb\u00bb[/dim] {t('start.network', 'Network:')} [green]{protocol}://{network_ip}:{run_port}[/green]"
-            )
-
-        console.print(
-            f"  [dim]\u00bb\u00bb[/dim] {t('start.ready', 'ready in')}"
-            f" [green]{startup_timer}[/green]"
-        )
-        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('start.stop', 'Press Ctrl+C to stop')}\n")
+            launcher.entry(t("start.network", "Network:"), f"{protocol}://{network_ip}:{run_port}")
+        launcher.entry(t("start.ready", "Ready:"), startup_timer)
+        console.print(f"  [dim]{t('start.stop', 'Press Ctrl+C to stop')}[/dim]\n")
 
         Server.check_nexy_prod(delete=False)
 
