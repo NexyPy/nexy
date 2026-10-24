@@ -56,6 +56,28 @@ jobs:
           uv run --no-sync pip-audit -r requirements-audit.txt --disable-pip --strict \
             --ignore-vuln PYSEC-2022-252
 
+  attribution:
+    name: Commit attribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      # GitHub treats every Co-authored-by trailer as a contributor, so an AI
+      # trailer adds a bot to the contributor graph permanently. Check only the
+      # commits this push or PR introduces.
+      - name: Reject AI attribution in new commits
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -n "$BASE" ] && git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            python scripts/check_attribution.py --range "${BASE}..HEAD"
+          else
+            python scripts/check_attribution.py --range "HEAD~1..HEAD"
+          fi
+
   build:
     name: Build distributions
     runs-on: ubuntu-latest
