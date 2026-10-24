@@ -7,6 +7,7 @@ from typing import Any
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
+from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.helpers.common.report import print_cmd_result, print_tree_section
 from nexy.helpers.server.server import Server
@@ -24,8 +25,8 @@ def build(check: bool = False) -> None:
     config = Config()
     version = __version__
     Server.check_nexy_prod()
-    console.print(f"nexy@{version} {t('build.label', 'build')}\n")
-    console.print(f"{t('build.creating', 'Creating an optimized production build')}\n")
+    launcher.banner("build", version)
+    console.print(f"  {t('build.creating', 'Creating an optimized production build')}...\n")
 
     build_result = _compile_server_components()
     _exit_on_failed_components(build_result)
@@ -67,8 +68,14 @@ def _exit_on_failed_components(build_result: BuildResult) -> None:
 
 
 def _build_client_bundle() -> list[dict[str, Any]]:
-    with console.status(f"  {t('build.building_client', 'building client bundle')} ..."):
+    try:
         vite_proc = Server.vite(build=True, suppress_output=True, capture_stderr=True)
+    except RuntimeError as error:
+        console.print(f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}")
+        console.print(f"    [red]{error}[/red]")
+        sys.exit(1)
+
+    with console.status(f"  {t('build.building_client', 'building client bundle')} ..."):
         out, err = vite_proc.communicate()
         if vite_proc.returncode != 0:
             console.print(f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}")

@@ -16,6 +16,7 @@ import {
   writeComponent,
   getEntryId,
   globIgnore,
+  loadMdxPlugin,
   mapPool,
   type SSGResult,
   c
@@ -48,7 +49,7 @@ export async function run(options?: { primary?: boolean }): Promise<SSGResult> {
     entryPoints[`_c${i}`] = path.resolve(process.cwd(), file)
   }
 
-  const mdxPlugin = [(await import('@mdx-js/esbuild')).default({ jsx: true, jsxImportSource: 'react' })]
+  const mdxPlugin = await loadMdxPlugin(files, 'react')
 
   try {
     await esbuild.build({

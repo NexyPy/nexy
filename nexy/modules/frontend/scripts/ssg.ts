@@ -69,7 +69,7 @@ async function run() {
       const { run } = await import('./ssg.vue')
       jobs.push(run())
     } else {
-      console.warn(`${c.yellow} *.vue files found but vue is not installed. Run: pnpm add vue${c.reset}`)
+      console.warn(`${c.yellow} *.vue files found but vue is not installed. Install it with your package manager.${c.reset}`)
     }
   }
 
@@ -78,7 +78,7 @@ async function run() {
       const { run } = await import('./ssg.svelte')
       jobs.push(run())
     } else {
-      console.warn(`${c.yellow} *.svelte files found but svelte is not installed. Run: pnpm add svelte${c.reset}`)
+      console.warn(`${c.yellow} *.svelte files found but svelte is not installed. Install it with your package manager.${c.reset}`)
     }
   }
 

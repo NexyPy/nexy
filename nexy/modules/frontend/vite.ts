@@ -1,6 +1,4 @@
 import { createLogger, type Logger, type Plugin } from 'vite'
-import mdx from '@mdx-js/rollup'
-import remarkGfm from 'remark-gfm'
 import path from 'node:path'
 import { execSync } from 'child_process'
 import { createRequire } from 'module'
@@ -23,7 +21,7 @@ function getTsxPath(): string {
     const resolved = require.resolve('tsx/esm')
     return pathToFileURL(resolved).href
   } catch {
-    throw new Error(' "tsx" is required. Run: pnpm add -D tsx')
+    throw new Error(' "tsx" is required. Install it with your package manager: bun add -d tsx')
   }
 }
 
@@ -50,13 +48,47 @@ let nexySSGDone = false
 let isSSRBuild = false
 let isProduction = false
 
+// MDX is optional: a project that never uses .mdx must not need the MDX
+// packages installed, or the Vite config fails to load before it can start.
+type MdxFactory = (options: Record<string, unknown>) => Plugin
+type MdxModule = { default: MdxFactory }
+type GfmModule = { default: unknown }
+
+// Non-literal specifiers keep Vite's config bundler from trying to resolve
+// packages the project may not have installed.
+const MDX_PACKAGE = '@mdx-js/rollup'
+const GFM_PACKAGE = 'remark-gfm'
+
+let mdxDeps: Promise<{ mdx: MdxFactory; remarkGfm: unknown }> | null = null
+
+function loadMdxDeps(): Promise<{ mdx: MdxFactory; remarkGfm: unknown }> {
+  if (!mdxDeps) {
+    mdxDeps = Promise.all([
+      (0, eval)(`import(${JSON.stringify(MDX_PACKAGE)})`) as Promise<MdxModule>,
+      (0, eval)(`import(${JSON.stringify(GFM_PACKAGE)})`) as Promise<GfmModule>
+    ])
+      .then(([mdx, gfm]) => ({ mdx: mdx.default, remarkGfm: gfm.default }))
+      .catch(() => {
+        throw new Error(
+          '[nexy] MDX support requires optional packages that are not installed.\n' +
+          'Install them with your package manager:\n' +
+          '  bun add -d @mdx-js/rollup remark-gfm @mdx-js/react\n' +
+          '  pnpm add -D @mdx-js/rollup remark-gfm @mdx-js/react\n' +
+          '  npm install -D @mdx-js/rollup remark-gfm @mdx-js/react'
+        )
+      })
+  }
+  return mdxDeps
+}
+
 function makeMdxTransform(jsx: boolean, importSource: string) {
-  const inner = jsx
-    ? mdx({ jsx: true, jsxImportSource: importSource, remarkPlugins: [remarkGfm] })
-    : mdx({ providerImportSource: importSource, remarkPlugins: [remarkGfm] })
   return async function mdxTransform(this: any, source: string, id: string) {
     if (!id.endsWith('.mdx')) return null
-    const out = await inner.transform.call(this, source, id)
+    const { mdx, remarkGfm } = await loadMdxDeps()
+    const inner = jsx
+      ? mdx({ jsx: true, jsxImportSource: importSource, remarkPlugins: [remarkGfm] })
+      : mdx({ providerImportSource: importSource, remarkPlugins: [remarkGfm] })
+    const out = await (inner.transform as any).call(this, source, id)
     if (!out) return null
     if (!jsx) return out
     return {

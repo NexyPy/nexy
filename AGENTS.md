@@ -73,6 +73,7 @@ uv pip install -e . --group dev
 
 - **Branches**: `feature/*`, `fix/*`, `docs/*`, `perf/*`
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`)
+- **Attribution**: AI tools never appear as author or co-author. No `Co-authored-by` with Claude/Codebuff/Freebuff/Copilot/Cursor and no `Generated with` footer. GitHub counts co-author trailers as contributors, so a bot trailer pollutes the contributor graph permanently. `scripts/check_attribution.py` enforces it (`.githooks/commit-msg`; enable with `git config core.hooksPath .githooks`).
 - **i18n**: English default; extract strings to `nexy/modules/i18n/en/`
 - **Coverage target**: ≥95% per module (CONTRIBUTING.md)
 

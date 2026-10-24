@@ -1,0 +1,4 @@
+#!/bin/sh
+# Reject AI attribution before the commit exists.
+# Enable once per clone: git config core.hooksPath .githooks
+python scripts/check_attribution.py --message-file "$1"
