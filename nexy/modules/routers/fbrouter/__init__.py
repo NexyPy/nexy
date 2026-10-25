@@ -7,6 +7,7 @@ from collections.abc import Callable
 from typing import Any
 
 from fastapi import APIRouter, Depends, FastAPI, Request, status
+from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse, StreamingResponse
 
@@ -138,10 +139,15 @@ def _make_request_handler(component: Callable[..., str]) -> Callable[..., Any]:
     """
 
     _sig = inspect.signature(component)
+    # A component that waits on I/O (a document rendered by Node) must not stall the event loop.
+    blocking = bool(getattr(component, "__nexy_blocking__", False))
 
     async def _request_handler(request: Request) -> StreamingResponse:
         params = _coerce_path_params(_sig, request.path_params)
-        result = component(**params)
+        if blocking:
+            result = await run_in_threadpool(component, **params)
+        else:
+            result = component(**params)
         return StreamingResponse(_stream_body(result), media_type="text/html")
 
     _request_handler.__name__ = component.__name__
@@ -201,9 +207,12 @@ def _make_isr_handler(
 
 
 class FBRouter:
-    def __init__(self) -> None:
+    def __init__(self, router: APIRouter | None = None) -> None:
         self.discovery = RouteDiscovery()
-        self.router = APIRouter()
+        # Registering on the application's own router keeps routes flat: a nested
+        # include_router adds a routing level to every request.
+        self.router = router if router is not None else APIRouter()
+        self._flat = router is not None
         self.string_transform = StringTransform()
         self.modules_meta: list[dict[str, Any]] = []
         self.error_handlers: list[dict[str, Any]] = []
@@ -213,7 +222,8 @@ class FBRouter:
         self._load_and_register()
 
     def register_on(self, app: FastAPI) -> None:
-        app.include_router(self.router)
+        if not self._flat:
+            app.include_router(self.router)
         self._register_error_handlers(app)
 
     def _register_error_handlers(self, app: FastAPI) -> None:
@@ -225,7 +235,7 @@ class FBRouter:
         to 404. The most specific scope wins for each status code.
         """
 
-        def _render(entry: dict[str, Any], status_code: int, exc: Exception) -> HTMLResponse:
+        def _render(entry: dict[str, Any], status_code: int, _exc: Exception) -> HTMLResponse:
             component = getattr(entry["module"], entry["comp"], None)
             if component is None:
                 return HTMLResponse(f"<h1>{status_code}</h1>", status_code=status_code)
@@ -235,7 +245,8 @@ class FBRouter:
             try:
                 body = component()
             except Exception:
-                body = str(exc) or f"<h1>{status_code}</h1>"
+                # The error page itself failed: never echo the exception text to the client.
+                body = f"<h1>{status_code}</h1>"
             return HTMLResponse(body, status_code=status_code)
 
         def _pick(handlers: list[dict[str, Any]], scope_prefix: str) -> dict[str, Any] | None:
@@ -428,7 +439,8 @@ class FBRouter:
                     if handler := getattr(module, method, None):
                         RouteValidator.validate_sig(handler, path, method)
 
-                        deps = RouteMiddleware.resolve(handler) + folder_deps
+                        # Outermost first: routes root down to the directory, then the handler.
+                        deps = folder_deps + RouteMiddleware.resolve(handler)
 
                         resp_meta = getattr(handler, "__nexy_response_meta__", None)
                         self.router.add_api_route(
@@ -456,7 +468,7 @@ class FBRouter:
                         handler = _make_locale_handler(component, locale_variants)
                     else:
                         handler = _make_request_handler(component)
-                    deps = RouteMiddleware.resolve(component) + folder_deps
+                    deps = folder_deps + RouteMiddleware.resolve(component)
                     self.router.get(
                         path,
                         response_class=HTMLResponse,
