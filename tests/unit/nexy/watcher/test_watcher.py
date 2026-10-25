@@ -548,3 +548,45 @@ class TestPurgeProjectModules:
         purge_project_modules(root=tmp_path)
 
         assert "venv_purge_probe" in sys.modules
+
+
+class TestPurgeKeepsNamespacePackagesConsistent:
+    """`src/routes` has no __init__.py: a purge that drops `src` but not `src.routes` breaks imports."""
+
+    def _project(self, tmp_path, monkeypatch):
+        import importlib
+        import sys
+
+        package = tmp_path / "purgeproj"
+        (package / "routes").mkdir(parents=True)
+        (package / "__init__.py").write_text("")
+        (package / "routes" / "users.py").write_text("VALUE = 1\n")
+        monkeypatch.syspath_prepend(str(tmp_path))
+        importlib.invalidate_caches()
+        importlib.import_module("purgeproj.routes.users")
+        return sys
+
+    def test_a_route_can_be_imported_again_after_a_purge(self, tmp_path, monkeypatch):
+        import importlib
+
+        from nexy.modules.cli.devtools.watcher import purge_project_modules
+
+        sys = self._project(tmp_path, monkeypatch)
+        try:
+            purge_project_modules(root=tmp_path)
+            module = importlib.import_module("purgeproj.routes.users")
+            assert module.VALUE == 1
+        finally:
+            for name in [n for n in sys.modules if n.startswith("purgeproj")]:
+                del sys.modules[name]
+
+    def test_the_namespace_package_is_purged_with_its_parent(self, tmp_path, monkeypatch):
+        from nexy.modules.cli.devtools.watcher import purge_project_modules
+
+        sys = self._project(tmp_path, monkeypatch)
+        try:
+            purged = purge_project_modules(root=tmp_path)
+            assert "purgeproj.routes" in purged
+        finally:
+            for name in [n for n in sys.modules if n.startswith("purgeproj")]:
+                del sys.modules[name]

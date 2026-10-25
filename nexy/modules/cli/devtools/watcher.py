@@ -342,22 +342,44 @@ def purge_project_modules(root: Path | None = None) -> list[str]:
         The names removed from ``sys.modules``.
     """
     base = (root or Path.cwd()).resolve().as_posix()
-    skip_markers = ("/.venv/", "/venv/", "/site-packages/", "/node_modules/")
-    purged: list[str] = []
-    for name, module in list(sys.modules.items()):
-        if name == "nexy" or name.startswith(("nexy.", "__nexy__")):
-            continue
-        module_file = getattr(module, "__file__", None)
-        if not module_file:
-            continue
-        file_posix = Path(module_file).resolve().as_posix()
-        if not file_posix.startswith(base + "/"):
-            continue
-        if any(marker in file_posix for marker in skip_markers):
-            continue
+    # Decide first, delete after: a namespace package computes its path from its parent, so the
+    # parent must still be there when the package is looked at.
+    purged = [
+        name
+        for name, module in list(sys.modules.items())
+        if not (name == "nexy" or name.startswith(("nexy.", "__nexy__")))
+        and _is_project_module(module, base)
+    ]
+    for name in purged:
         del sys.modules[name]
-        purged.append(name)
     return purged
+
+
+def _module_locations(module: Any) -> list[str]:
+    """Where a module lives: its file, or the folders of a namespace package (no ``__file__``).
+
+    A folder without ``__init__.py`` (``src/routes``) is a namespace package. It must be purged
+    with its regular parent (``src``): left alone, it keeps a dead reference to the parent and the
+    next import of a route fails with ``KeyError: 'src'``.
+    """
+    module_file = getattr(module, "__file__", None)
+    if module_file:
+        return [str(module_file)]
+    try:
+        return [str(entry) for entry in getattr(module, "__path__", [])]
+    except Exception:  # a namespace path that cannot be recomputed is not ours to keep
+        return []
+
+
+def _is_project_module(module: Any, base: str) -> bool:
+    skip_markers = ("/.venv/", "/venv/", "/site-packages/", "/node_modules/")
+    for location in _module_locations(module):
+        posix = Path(location).resolve().as_posix()
+        if not (posix.startswith(base + "/") or posix == base):
+            continue
+        if not any(marker in posix + "/" for marker in skip_markers):
+            return True
+    return False
 
 
 def stop_observer(observer: Any) -> None:
