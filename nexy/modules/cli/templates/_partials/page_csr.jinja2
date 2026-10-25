@@ -1,8 +1,8 @@
 {#- A starter page of a client-routed project, in the syntax of the chosen framework.
     The includer sets: page_name, page_partial and, for a page with the demo card, page_card. -#}
 {%- set page_ext = ".vue" if client_framework == "vue" else (".svelte" if client_framework == "svelte" else ".tsx") -%}
-{%- set card = "Card" -%}
-{%- set card_import = 'import Card from "@/components/card' ~ page_ext ~ '";' if page_card else "" -%}
+{%- set card = "Counter" -%}
+{%- set card_import = 'import Counter from "@/components/counter/counter' ~ page_ext ~ '";' if page_card else "" -%}
 {%- if client_framework == "vue" -%}
 {%- if page_card %}<script setup lang="ts">
 {{ card_import }}

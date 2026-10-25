@@ -1,64 +1,14 @@
-<section {{ cls }}="relative isolate overflow-hidden">
-  <div {{ cls }}="bg-glow absolute inset-0 -z-10"></div>
-  <div {{ cls }}="w-container px-6 pb-12 pt-16 md:px-10 md:pb-16 md:pt-24">
-    <p {{ cls }}="eyebrow">About</p>
-    <h1 {{ cls }}="mt-4 max-w-3xl text-4xl leading-[1.05] md:text-6xl">
-      A framework for teams that write Python and care about the frontend.
-    </h1>
-    <p {{ cls }}="lead mt-6">
-      Nexy puts routing, rendering and the API in one project. Backend developers keep the language they
-      know; designers and frontend developers keep the tools they like.
-    </p>
-  </div>
-</section>
-
-<section {{ cls }}="section border-t border-dashed border-border">
-  <p {{ cls }}="eyebrow">Principles</p>
-  <div {{ cls }}="mt-6 grid gap-4 md:grid-cols-3">
-    <div {{ cls }}="card">
-      <p {{ cls }}="card-title">Python first</p>
-      <p {{ cls }}="card-text">Logic lives in Python. Pages, handlers and middleware are plain files you can read in one sitting.</p>
-    </div>
-    <div {{ cls }}="card">
-      <p {{ cls }}="card-title">A frontend without compromise</p>
-      <p {{ cls }}="card-text">Choose React, Preact, Solid, Vue or Svelte, or no framework at all, and keep Vite and Tailwind in the loop.</p>
-    </div>
-    <div {{ cls }}="card">
-      <p {{ cls }}="card-title">Files over configuration</p>
-      <p {{ cls }}="card-text">The folder structure is the routing table. Layouts, middleware and dependencies inherit from parent folders.</p>
-    </div>
-  </div>
-</section>
-
-<section {{ cls }}="section border-t border-dashed border-border">
-  <p {{ cls }}="eyebrow">Under the hood</p>
-  <h2 {{ cls }}="section-title mt-3 max-w-2xl">Built on tools you already trust.</h2>
-  <div {{ cls }}="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-    <div {{ cls }}="card">
-      <p {{ cls }}="card-title">FastAPI</p>
-      <p {{ cls }}="card-text">The HTTP engine and the request and response types.</p>
-    </div>
-    <div {{ cls }}="card">
-      <p {{ cls }}="card-title">Vite</p>
-      <p {{ cls }}="card-text">Bundling and hot reload for the client side.</p>
-    </div>
-    <div {{ cls }}="card">
-      <p {{ cls }}="card-title">Jinja</p>
-      <p {{ cls }}="card-text">Server-side templates for <code>.nexy</code> pages.</p>
-    </div>
-    <div {{ cls }}="card">
-      <p {{ cls }}="card-title">Tailwind CSS</p>
-      <p {{ cls }}="card-text">Styling for this starter, easy to replace.</p>
-    </div>
-  </div>
-</section>
-
-<section {{ cls }}="section border-t border-dashed border-border">
-  <div {{ cls }}="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-    <div>
-      <h2 {{ cls }}="section-title">Nexy is open source.</h2>
-      <p {{ cls }}="lead mt-3">Released under the MIT license. Read the code, send a fix, shape the next version.</p>
-    </div>
-    <a href="/contributors" {{ cls }}="btn-primary shrink-0">Meet the contributors <span aria-hidden="true">&#8594;</span></a>
+<section {{ cls }}="mx-auto w-full max-w-5xl flex-1 px-6 py-20">
+  <h1 {{ cls }}="text-4xl font-semibold tracking-tight">About</h1>
+  <p {{ cls }}="mt-5 max-w-xl text-base leading-7 text-foreground-second">
+    Nexy puts routing, rendering and the API in one Python project. Backend developers keep the
+    language they know, and the frontend keeps the tools it likes: {{ fw_label }}, Vite and hot reload.
+  </p>
+  <p {{ cls }}="mt-4 max-w-xl text-base leading-7 text-foreground-second">
+    It is open source under the MIT license.
+  </p>
+  <div {{ cls }}="mt-8 flex gap-3">
+    <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Documentation</a>
+    <a href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-ghost">GitHub</a>
   </div>
 </section>

@@ -1,20 +1,42 @@
-<header {{ cls }}="sticky top-0 z-30 border-b border-dashed border-border bg-background/80 backdrop-blur">
-  <nav {{ cls }}="w-container flex items-center justify-between gap-4 px-6 md:px-10 py-3.5" aria-label="Main">
-    <div {{ cls }}="flex items-center gap-6 md:gap-8">
-      <a href="/" aria-label="Nexy home" {{ cls }}="dark:hue-rotate-140 dark:invert">
-        <img src="/public/nexy.svg" alt="Nexy" {{ cls }}="w-20" />
+{%- macro nav_link(href, label) -%}
+{%- if useCSR -%}
+<Link href="{{ href }}" {{ cls }}="nav-link">{{ label }}</Link>
+{%- else -%}
+<a href="{{ href }}" {{ cls }}="nav-link">{{ label }}</a>
+{%- endif -%}
+{%- endmacro -%}
+<header {{ cls }}="border-b border-border">
+  <nav {{ cls }}="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-6" aria-label="Main">
+    <div {{ cls }}="flex items-center gap-8">
+      <a href="/" aria-label="Nexy" {{ cls }}="grayscale dark:invert">
+        <img src="/nexy.svg" alt="Nexy" {{ cls }}="h-5 w-auto" />
       </a>
-      <ul {{ cls }}="flex items-center gap-4 md:gap-6">
-        <li><a href="/about" {{ cls }}="eyebrow ease hover:text-foreground">About</a></li>
-        <li><a href="/contributors" {{ cls }}="eyebrow ease hover:text-foreground">Contributors</a></li>
-        <li {{ cls }}="hidden sm:block">
-          <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="eyebrow ease hover:text-foreground">Docs</a>
-        </li>
-      </ul>
+      <div {{ cls }}="flex items-center gap-6">
+        {{ nav_link("/", "Home") }}
+        {{ nav_link("/about", "About") }}
+      </div>
     </div>
-    <a href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">
-      GitHub
-      <span aria-hidden="true">&#8599;</span>
-    </a>
+{% if useCSR %}
+    <ThemeToggle />
+{% else %}
+    <button type="button" data-theme-toggle aria-label="Toggle theme" {{ cls }}="theme-toggle">
+{% include "theme_icons.html.jinja2" %}
+    </button>
+{% endif %}
   </nav>
 </header>
+{% if not useCSR %}
+<script>
+  // Server pages reload on every link: mark the current one, and wire the theme button.
+  const here = location.pathname.replace(/\/$/, "") || "/";
+  for (const link of document.querySelectorAll("header a[href^='/']")) {
+    if ((link.pathname.replace(/\/$/, "") || "/") === here) link.setAttribute("aria-current", "page");
+  }
+  document.querySelector("[data-theme-toggle]")?.addEventListener("click", () => {
+    const dark = document.documentElement.classList.toggle("dark");
+    try {
+      localStorage.setItem("nexy-theme", dark ? "dark" : "light");
+    } catch {}
+  });
+</script>
+{% endif %}

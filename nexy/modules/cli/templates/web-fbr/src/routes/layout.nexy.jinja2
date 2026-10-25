@@ -18,11 +18,9 @@ children:prop[NexyElement]
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <script>
-        document.documentElement.classList.toggle(
-            "dark",
-            localStorage.getItem("nexy-theme") === "dark" ||
-            (!("nexy-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches),
-        );
+        try {
+            document.documentElement.classList.toggle("dark", localStorage.getItem("nexy-theme") !== "light");
+        } catch (e) {}
     </script>
 </head>
 

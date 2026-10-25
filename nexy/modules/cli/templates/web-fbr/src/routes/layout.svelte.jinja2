@@ -3,6 +3,8 @@
 <script lang="ts">
   // The root layout writes the whole document; the page arrives as `children`.
   import type { Snippet } from "svelte";
+  import Link from "@nexy/Link.svelte";
+  import ThemeToggle from "@/components/theme-toggle.svelte";
 
   let { children }: { children?: Snippet } = $props();
 </script>
@@ -20,11 +22,9 @@
       rel="stylesheet"
     />
     <script>
-      document.documentElement.classList.toggle(
-        "dark",
-        localStorage.getItem("nexy-theme") === "dark" ||
-          (!("nexy-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches),
-      );
+      try {
+        document.documentElement.classList.toggle("dark", localStorage.getItem("nexy-theme") !== "light");
+      } catch (e) {}
     </script>
   </head>
   <body class="antialiased min-h-dvh flex flex-col bg-background text-foreground">

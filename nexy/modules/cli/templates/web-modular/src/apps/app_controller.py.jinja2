@@ -15,8 +15,3 @@ class AboutController:
     async def get(self):
         return useViews(LAYOUT, context={"children": useViews("src/apps/about_view.nexy")})
 
-
-@Controller("/contributors")
-class ContributorsController:
-    async def get(self):
-        return useViews(LAYOUT, context={"children": useViews("src/apps/contributors_view.nexy")})

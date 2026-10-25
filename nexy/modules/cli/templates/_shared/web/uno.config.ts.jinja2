@@ -1,0 +1,25 @@
+import { defineConfig, presetWind4, transformerDirectives } from 'unocss'
+
+// The design tokens live in src/globale.css as CSS variables; the utilities read them.
+export default defineConfig({
+  presets: [presetWind4({ dark: 'class' })],
+  transformers: [transformerDirectives()],
+  // Same layers as Tailwind: the reset is `base`, utilities win over `components`.
+  outputToCssLayers: {
+    cssLayerName: (layer) => (layer === 'shortcuts' ? 'components' : layer === 'default' ? 'utilities' : 'base'),
+  },
+  theme: {
+    colors: {
+      background: 'var(--background)',
+      'background-second': 'var(--background-second)',
+      foreground: 'var(--foreground)',
+      'foreground-second': 'var(--foreground-second)',
+      border: 'var(--border)',
+      'border-second': 'var(--border-second)',
+      accent: 'var(--accent)',
+    },
+    font: {
+      mono: '"Geist Mono", ui-monospace, monospace',
+    },
+  },
+})

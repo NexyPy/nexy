@@ -28,7 +28,7 @@ from fastapi.testclient import TestClient
 from nexy.modules.routers.app import AppServer
 out = {"failed": list(build.failed), "load_error": Config.get_load_error(), "pages": {}}
 with TestClient(AppServer().run()) as client:
-    for path in ("/", "/about", "/contributors", "/definitely-not-a-route"):
+    for path in ("/", "/about", "/definitely-not-a-route"):
         r = client.get(path)
         out["pages"][path] = [r.status_code, r.headers.get("content-type", ""), r.text]
 sys.stdout.write("@@" + json.dumps(out) + "@@")
@@ -99,11 +99,9 @@ def test_web_template_serves_a_valid_document(tmp_path, template, framework, use
 
 
 @pytest.mark.parametrize(("template", "framework", "use_csr"), WEB)
-@pytest.mark.parametrize(
-    ("path", "marker"), [("/about", "Principles"), ("/contributors", "contribute")]
-)
+@pytest.mark.parametrize(("path", "marker"), [("/about", "open source"), ("/", "Full-stack")])
 def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path, marker):
-    """Every starter links to /about and /contributors, so both must exist, in every mode."""
+    """Every starter links Home and About, so both must exist, in every mode."""
     result = _run(tmp_path, template, framework, use_csr)
     status, content_type, html = result["pages"][path]
     assert status == 200, path

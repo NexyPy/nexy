@@ -1,17 +1,11 @@
+{% if style == "tailwind" -%}
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
+{%- elif style == "unocss" -%}
+@layer base, components, utilities;
+{%- endif %}
 
-{% set color = "#0E2126" %}
-{% if client_framework == "vue" %}
-{% set color = "#0E261E" %}
-{% elif client_framework == "svelte" or client_framework == "none" %}
-{% set color = "#0E2625" %}
-{% elif client_framework == "solid" %}
-{% set color = "#091D24" %}
-{% elif client_framework == "preact" %}
-{% set color = "#0E1026" %}
-{% endif %}
 {% set accent = "#61DAFB" %}
 {% if client_framework == "vue" %}
 {% set accent = "#42B883" %}
@@ -26,21 +20,22 @@
 {% endif %}
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   font-family: "Geist", "Inter", system-ui, sans-serif;
   --accent: {{ accent }};
-  --background: light-dark(white, {{ color }});
-  --background-second: light-dark({{ color }}, lab(35.03% -8.77 -8.15 / 0.21));
-  --foreground: light-dark({{ color }}, lab(100% 0.01 -0.01));
-  --foreground-second: light-dark(lab(100% 0.01 -0.01), {{ color }});
-  --border: light-dark(#C2C6D0, lab(100% 0.01 -0.01 / 0.226));
-  --border-second: light-dark(lab(100% 0.01 -0.01 / 0.226), #c2c6d05a);
+  --background: light-dark(#ffffff, #0a0a0a);
+  --background-second: light-dark(#fafafa, #141414);
+  --foreground: light-dark(#171717, #ededed);
+  --foreground-second: light-dark(#666666, #a1a1a1);
+  --border: light-dark(#e5e5e5, #262626);
+  --border-second: light-dark(#d4d4d4, #404040);
 }
 
 .dark {
   color-scheme: dark;
 }
 
+{% if style == "tailwind" %}
 @theme {
   --color-background: var(--background);
   --color-background-second: var(--background-second);
@@ -51,122 +46,50 @@
   --color-accent: var(--accent);
 
   --font-mono: "Geist Mono", ui-monospace, monospace;
-
-
-  --spacing-slider-left: 2px;
-  --spacing-slider-width: 40px;
 }
+{% endif %}
 
-
+{% if style in ("vanilla", "other") %}
+{% include "vanilla.css" %}
+{% else %}
 @layer base {
-  /**{corner-shape: superellipse(1.5);} apple corner */
-  html {
-    scroll-behavior: smooth;
-  }
   body {
     background-color: var(--background);
     color: var(--foreground);
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
-  h1,h2,h3,h4{
+  h1, h2, h3 {
     font-family: "Geist", "Inter", sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.03em;
   }
   code {
-    @apply rounded-md border border-border bg-background-second/10 px-1.5 py-0.5 font-mono text-[0.85em];
-  }
-  pre code {
-    @apply border-0 bg-transparent p-0;
+    @apply rounded border border-border bg-background-second px-1.5 py-0.5 font-mono text-[0.85em];
   }
   ::selection {
-    background-color: color-mix(in oklab, var(--accent) 35%, transparent);
+    background-color: color-mix(in oklab, var(--foreground) 20%, transparent);
   }
 }
 
 @layer components {
-  .w-container {
-    @apply max-w-6xl mx-auto;
-  }
-
-  .eyebrow {
-    @apply font-mono text-xs uppercase tracking-[0.18em] text-foreground/50;
-  }
-
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, var(--border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
-    opacity: 0.35;
-  }
-
-  .bg-glow {
-    background: radial-gradient(ellipse 50% 50% at 50% 0%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%);
-  }
-
-  .ease {
-    @apply transition-all duration-300 ease-in-out;
-  }
-
-  /* Buttons. Tailwind 4 cannot @apply another component class, so the shared part is a list. */
+  /* The shared part of both buttons; Tailwind 4 cannot @apply another component class. */
   .btn-primary,
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium no-underline transition-all duration-300 ease-in-out;
+    @apply inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md px-4 text-sm font-medium no-underline transition-colors;
   }
   .btn-primary {
     @apply bg-foreground text-background hover:opacity-85;
   }
   .btn-ghost {
-    @apply border border-border text-foreground hover:border-accent hover:text-accent;
+    @apply border border-border text-foreground hover:bg-background-second;
   }
 
-  /* Small pill above a headline */
-  .badge {
-    @apply transition-all duration-300 ease-in-out inline-flex items-center gap-2 rounded-full border border-dashed border-border px-3 py-1 font-mono text-xs text-foreground/70 no-underline hover:border-accent hover:text-foreground;
+  .nav-link {
+    @apply text-sm text-foreground-second no-underline transition-colors hover:text-foreground;
   }
-  .badge-dot {
-    @apply size-1.5 rounded-full bg-accent;
-  }
-
-  /* Page rhythm: one spacing scale for every section */
-  .section {
-    @apply mx-auto w-full max-w-6xl px-6 py-14 md:px-10 md:py-20;
-  }
-  .section-title {
-    @apply text-3xl md:text-4xl leading-[1.1];
-  }
-  .lead {
-    @apply max-w-2xl text-base md:text-lg leading-8 text-foreground/60;
+  .nav-link[aria-current="page"] {
+    color: var(--foreground);
   }
 
-  /* Cards */
-  .card {
-    @apply transition-all duration-300 ease-in-out rounded-2xl border border-border bg-background-second/5 p-6 hover:border-accent hover:border-dashed;
-  }
-  .card-title {
-    @apply text-base font-semibold tracking-tight;
-  }
-  .card-text {
-    @apply mt-2 text-sm leading-6 text-foreground/60;
-  }
-
-  /* A window around a command or a file tree */
-  .window {
-    @apply overflow-hidden rounded-2xl border border-border bg-background-second/10 text-left;
-  }
-  .window-bar {
-    @apply flex items-center gap-1.5 border-b border-border px-4 py-3;
-  }
-  .window-dot {
-    @apply size-2.5 rounded-full bg-foreground/15;
-  }
-  .window-body {
-    @apply overflow-x-auto p-5 font-mono text-sm leading-7 text-foreground/80;
-  }
-
-  .prose-block p {
-    @apply mt-4 text-foreground/70 leading-8;
+  .theme-toggle {
+    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground-second transition-colors hover:bg-background-second hover:text-foreground;
   }
 }
+{% endif %}

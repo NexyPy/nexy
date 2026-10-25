@@ -1,13 +1,1 @@
----
-{% if client_framework == "none" %}
-from "@/components/theme/theme.nexy" import Theme
-{% elif client_framework == "svelte" %}
-from "@/components/theme/theme.svelte" import Theme
-{% elif client_framework == "vue" %}
-from "@/components/theme/theme.vue" import Theme
-{% else %}
-from "@/components/theme/theme.tsx" import Theme
-{% endif %}
----
-{% set theme_slot = "<Theme />" -%}
 {% include "footer.html.jinja2" %}

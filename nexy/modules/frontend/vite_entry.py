@@ -195,12 +195,19 @@ def write_main_file(dest_dir: Path, frameworks: set[str]) -> None:
     preamble = _react_preamble(frameworks)
     minimal = (
         f"{preamble}\n"
+        f"{_unocss_import(dest_dir)}"
         'import "/src/globale.css";\n'
         'import "@nexy/runtime.ts";\n'
         'import "@nexy/ff.auto.ts";\n'
         "export {};\n"
     )
     PathUtil.write_if_changed(dest_dir / "main.ts", minimal)
+
+
+def _unocss_import(dest_dir: Path) -> str:
+    """UnoCSS generates the utilities in a virtual module a project must import."""
+    project = dest_dir.parent.parent
+    return 'import "virtual:uno.css";\n' if (project / "uno.config.ts").is_file() else ""
 
 
 def _react_preamble(frameworks: set[str]) -> str:

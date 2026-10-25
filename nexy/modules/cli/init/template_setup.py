@@ -132,6 +132,7 @@ def _render_shared_files(template_name: str, dest: Path, context: dict[str, Any]
                 tgt = dest / rel_dest if rel_dest != "." else dest
                 TemplateRenderer(src, tgt, context, exclude).render()
         _place_web_assets(dest, template_name)
+        _drop_unused_style_files(dest, context.get("style", "tailwind"))
     elif template_name.startswith("api-"):
         src = shared_dir / "api"
         if src.is_dir():
@@ -152,6 +153,12 @@ def _render_overlays(template_name: str, dest: Path, context: dict[str, Any]) ->
         fbr_src = shared_dir / "fbr"
         if fbr_src.is_dir():
             TemplateRenderer(fbr_src, dest / "src", context, exclude).render()
+
+
+def _drop_unused_style_files(dest: Path, style: str) -> None:
+    """The UnoCSS config is rendered with the other web files; only UnoCSS projects keep it."""
+    if style != "unocss":
+        (dest / "uno.config.ts").unlink(missing_ok=True)
 
 
 def _place_web_assets(dest: Path, template_name: str) -> None:
