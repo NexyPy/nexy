@@ -19,7 +19,7 @@ def _plain(markup: str) -> str:
 
 class TestFormat:
     def test_a_request_line_reads_method_path_status_and_duration(self):
-        assert _plain(format_request("GET", "/users", 200, 0.012)) == " GET /users 200 in 12ms"
+        assert _plain(format_request("GET", "/users", 200, 0.012)) == "GET » /users 200 in 12ms"
 
     @pytest.mark.parametrize(
         ("seconds", "text"),
@@ -71,7 +71,7 @@ class TestMiddleware:
         lines: list[str] = []
         asyncio.run(_call(AccessLogMiddleware(_responder(404), log=lines.append), "/missing"))
         assert len(lines) == 1
-        assert _plain(lines[0]).startswith(" GET /missing 404 in ")
+        assert _plain(lines[0]).startswith("GET » /missing 404 in ")
 
     def test_the_response_goes_through_unchanged(self):
         sent = asyncio.run(_call(AccessLogMiddleware(_responder(), log=lambda _l: None)))
@@ -93,7 +93,7 @@ class TestMiddleware:
         lines: list[str] = []
         with pytest.raises(RuntimeError):
             asyncio.run(_call(AccessLogMiddleware(failing, log=lines.append), "/x"))
-        assert _plain(lines[0]).startswith(" GET /x 500 in ")
+        assert _plain(lines[0]).startswith("GET » /x 500 in ")
 
     def test_other_scopes_pass_through_unlogged(self):
         reached: list[str] = []

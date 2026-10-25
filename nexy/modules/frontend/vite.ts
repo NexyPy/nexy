@@ -277,6 +277,12 @@ function nexyPlugin(): Plugin {
       })
     },
 
+    // Python files restart the server and .nexy/.md pages refresh over the Nexy socket: Vite must
+    // not also reload the browser, which would hit the server while it is still restarting.
+    handleHotUpdate({ file }) {
+      if (/\.(py|nexy|md)$/.test(file)) return []
+    },
+
     // --- Entry Generation (Client side) ---
     buildStart() {
       if (isSSRBuild || process.env.NEXY_RENDER_ONLY) return
@@ -315,7 +321,7 @@ function nexyPlugin(): Plugin {
 
 const nexyLogger = (): Logger => {
   const logger = createLogger()
-  const prefix = `${c.reset}${c.yellow}${c.dim}VITE${c.reset} »`
+  const prefix = `${c.reset}${c.dim}vite »${c.reset}`
   return {
     ...logger,
     info: (msg) => {
@@ -323,8 +329,8 @@ const nexyLogger = (): Logger => {
       if (silentMessages.some(m => msg.includes(m))) return
       console.info(`${prefix} ${msg.replace("/", "")}`)
     },
-    warn: (msg) => console.warn(`${prefix} ${c.yellow}WARN ${msg}${c.reset}`),
-    error: (msg) => console.error(`${prefix} ${c.red}ERR ${msg}${c.reset}`),
+    warn: (msg) => console.warn(`${prefix} ${c.yellow}${msg}${c.reset}`),
+    error: (msg) => console.error(`${prefix} ${c.red}${msg}${c.reset}`),
   }
 }
 

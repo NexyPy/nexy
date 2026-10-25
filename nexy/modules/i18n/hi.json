@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "सफ़ाई हो रही है...",
-    "compiled_in": "{time} में कंपाइल हुआ",
     "compiling_status": "कंपाइल हो रहा है...",
     "deps_hint": "nexy dev डिपेंडेंसी इंस्टॉल नहीं करता; nexy init और nexy new करते हैं।",
     "deps_missing": "Node.js की डिपेंडेंसी मौजूद नहीं हैं।",

@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "جارٍ التنظيف...",
-    "compiled_in": "تم التجميع في {time}",
     "compiling_status": "جارٍ التجميع...",
     "deps_hint": "الأمر nexy dev لا يثبّت الاعتماديات؛ يفعل ذلك nexy init و nexy new.",
     "deps_missing": "اعتماديات Node.js غير موجودة.",

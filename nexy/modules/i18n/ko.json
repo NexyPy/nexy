@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "정리하는 중...",
-    "compiled_in": "{time}에 컴파일됨",
     "compiling_status": "컴파일 중...",
     "deps_hint": "nexy dev는 의존성을 설치하지 않습니다. nexy init과 nexy new가 설치합니다.",
     "deps_missing": "Node.js 의존성이 없습니다.",

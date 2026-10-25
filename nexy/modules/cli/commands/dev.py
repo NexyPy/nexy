@@ -3,7 +3,7 @@ import subprocess  # nosec B404
 import sys
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from nexy.__version__ import __version__
@@ -44,8 +44,6 @@ class _Session:
     """What `nx dev` starts and later has to stop."""
 
     vite: "subprocess.Popen[Any] | None" = None
-    frontend_seconds: float = 0.0
-    vite_started_at: float = field(default=0.0)
 
 
 def _require_vite_install() -> None:
@@ -75,10 +73,7 @@ def _report_failures(result: BuildResult) -> None:
 def _await_compile(build: "Future[BuildResult]") -> BuildResult:
     label = t("dev.compiling_status", "Compiling...")
     with console.status(f"\n[dim]{label}[/dim]", spinner="dots"):
-        started = time.perf_counter()
         result = build.result()
-        elapsed = f"{time.perf_counter() - started:.2f}s"
-        launcher.success(t("dev.compiled_in", "Compiled in {time}").format(time=elapsed))
         _report_failures(result)
     return result
 
@@ -91,12 +86,9 @@ def _generate_and_compile(
         frontend = pool.submit(FrontendGenerator().generate)
         build = pool.submit(Builder().build, showlog=False)
 
-        started = time.perf_counter()
         frontend.result()
-        session.frontend_seconds = time.perf_counter() - started
 
         if config.useVite:
-            session.vite_started_at = time.perf_counter()
             session.vite = Server.vite(port=client_port, ssl=ssl)
         return _await_compile(build)
 
@@ -114,11 +106,6 @@ def _settle_vite(session: _Session, result: BuildResult, client_port: int) -> No
     label = t("dev.starting_vite", "Starting the dev server...")
     with console.status(f"[dim]  {label}[/dim]", spinner="dots"):
         ready = Server.wait_for_vite_ready(client_port, process=session.vite)
-        vite_seconds = time.perf_counter() - session.vite_started_at
-    console.print(
-        f"  [dim]frontend[/dim] [dim]{session.frontend_seconds:.2f}s[/dim] ·"
-        f" [dim]vite[/dim] [dim]{vite_seconds:.2f}s[/dim]\n"
-    )
     if not ready:
         console.print(f"[red]  ✘[/red] {t('dev.vite_failed', 'Vite failed to start.')}")
         cause = t("dev.vite_failed_hint", "Read the Vite output above for the cause.")

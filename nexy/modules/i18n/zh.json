@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "正在清理...",
-    "compiled_in": "编译完成，用时 {time}",
     "compiling_status": "正在编译...",
     "deps_hint": "nexy dev 不会安装依赖；nexy init 和 nexy new 会安装。",
     "deps_missing": "缺少 Node.js 依赖。",

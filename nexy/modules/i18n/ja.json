@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "後片付けをしています...",
-    "compiled_in": "{time} でコンパイルしました",
     "compiling_status": "コンパイルしています...",
     "deps_hint": "nexy dev は依存関係をインストールしません。nexy init と nexy new が行います。",
     "deps_missing": "Node.js の依存関係がありません。",

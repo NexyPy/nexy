@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "Limpiando...",
-    "compiled_in": "Compilado en {time}",
     "compiling_status": "Compilando...",
     "deps_hint": "nexy dev no instala dependencias; nexy init y nexy new sí lo hacen.",
     "deps_missing": "Faltan las dependencias de Node.js.",

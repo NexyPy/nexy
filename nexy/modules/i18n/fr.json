@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "Nettoyage...",
-    "compiled_in": "Compilé en {time}",
     "compiling_status": "Compilation...",
     "deps_hint": "nexy dev n'installe pas les dépendances ; nexy init et nexy new le font.",
     "deps_missing": "Les dépendances Node.js sont manquantes.",

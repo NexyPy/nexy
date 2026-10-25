@@ -1,4 +1,4 @@
-"""One line per request, in the style of the Next.js dev server: `GET /users 200 in 12ms`.
+"""One line per request, in the style of the Next.js dev server: `GET » /users 200 in 12ms`.
 
 uvicorn's own access log carries no duration, so Nexy measures it here and turns uvicorn's off.
 """
@@ -22,6 +22,7 @@ _QUIET_PREFIXES = (
     "/@fs/",
     "/@react-refresh",
     "/node_modules/",
+    "/assets/",
 )
 _SLOW_SECONDS = 1.0
 
@@ -48,7 +49,7 @@ def format_request(method: str, path: str, status: int, seconds: float) -> str:
     colour = _status_colour(status)
     duration_colour = "yellow" if seconds >= _SLOW_SECONDS else "dim"
     return (
-        f" [bold]{escape(method)}[/bold] {escape(path)} [{colour}]{status}[/{colour}]"
+        f"[bold]{escape(method)}[/bold] [dim]»[/dim] {escape(path)} [{colour}]{status}[/{colour}]"
         f" [dim]in[/dim] [{duration_colour}]{format_duration(seconds)}[/{duration_colour}]"
     )
 

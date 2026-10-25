@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "Очистка...",
-    "compiled_in": "Скомпилировано за {time}",
     "compiling_status": "Компиляция...",
     "deps_hint": "nexy dev не устанавливает зависимости; это делают nexy init и nexy new.",
     "deps_missing": "Отсутствуют зависимости Node.js.",

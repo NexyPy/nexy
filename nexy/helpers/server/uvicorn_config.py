@@ -30,6 +30,8 @@ IGNORED_MESSAGES = [
     "Waiting for application shutdown",
     "Application shutdown complete",
     "/_nexy/hmr",
+    # The browser's HMR sockets (Vite's and Nexy's) open and close all day: not worth a line.
+    "WebSocket /",
     # A stale browser tab keeps reconnecting its Vite socket: it says nothing about the app.
     "connection rejected",
 ]

@@ -76,7 +76,6 @@
   },
   "dev": {
     "cleaning": "Membersihkan...",
-    "compiled_in": "Dikompilasi dalam {time}",
     "compiling_status": "Mengompilasi...",
     "deps_hint": "nexy dev tidak memasang dependensi; nexy init dan nexy new yang memasangnya.",
     "deps_missing": "Dependensi Node.js belum ada.",
