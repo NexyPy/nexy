@@ -8,6 +8,8 @@ route *is* the page and the browser needs a full document with the Vite tags.
 import importlib
 from pathlib import Path
 
+import pytest
+
 from nexy.core.config import Config
 from nexy.helpers.fs.vfs import VFS
 from nexy.modules.compiler.frontend_route import FrontendRouteCompiler
@@ -74,7 +76,9 @@ class TestShellRuntime:
 
 
 class TestShellEscapeHatch:
-    def test_framework_layout_is_composed_on_the_client(self, nexy_project, tmp_path, monkeypatch):
+    def test_root_layout_tsx_owns_the_document_instead_of_the_shell(
+        self, nexy_project, tmp_path, monkeypatch
+    ):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
         monkeypatch.chdir(tmp_path)
         layout = tmp_path / "src" / "routes" / "layout.tsx"
@@ -82,25 +86,74 @@ class TestShellEscapeHatch:
         layout.write_text("export default function Layout() { return null }\n", encoding="utf-8")
         install_vfs_importer()
         _compile_tsx(tmp_path)
-        assert "data-nexy-layouts" in VFS().read("__nexy__/src/routes/home.html")
-        # The document still comes from the shell (or a layout.nexy), never from layout.tsx.
-        assert "__nexy_shell" in VFS().read("__nexy__/src/routes/home.py")
+        source = VFS().read("__nexy__/src/routes/home.py")
+        assert "__render_document" in source
+        assert "__nexy_shell" not in source
 
-    def test_user_layout_nexy_wins_over_the_shell(self, nexy_project, tmp_path, monkeypatch):
-        nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
+    def test_solid_root_layout_owns_the_document_too(self, nexy_project, tmp_path, monkeypatch):
+        nexy_project("useCSR = True\nuseFF = solid()", imports="from nexy.frontend import solid\n")
         monkeypatch.chdir(tmp_path)
-        layout = tmp_path / "src" / "routes" / "layout.nexy"
+        layout = tmp_path / "src" / "routes" / "layout.tsx"
         layout.parent.mkdir(parents=True, exist_ok=True)
-        layout.write_text("<html>{{children}}</html>", encoding="utf-8")
+        layout.write_text("export default function Layout() { return null }\n", encoding="utf-8")
         install_vfs_importer()
         _compile_tsx(tmp_path)
         source = VFS().read("__nexy__/src/routes/home.py")
-        assert "__nexy_shell" not in source
-        assert "import Layout as __Layout" in source
+        assert "__render_document" in source and "__nexy_shell" not in source
+
+    @pytest.mark.parametrize(
+        ("framework", "layout", "page", "body"),
+        [
+            ("preact", "layout.tsx", "home.tsx", "export default function X() { return null }\n"),
+            ("vue", "layout.vue", "home.vue", "<template><div /></template>\n"),
+            ("svelte", "layout.svelte", "home.svelte", "<div></div>\n"),
+        ],
+    )
+    def test_preact_vue_and_svelte_root_layouts_own_the_document_too(
+        self, nexy_project, tmp_path, monkeypatch, framework, layout, page, body
+    ):
+        nexy_project(
+            f"useCSR = True\nuseFF = {framework}()",
+            imports=f"from nexy.frontend import {framework}\n",
+        )
+        monkeypatch.chdir(tmp_path)
+        routes = tmp_path / "src" / "routes"
+        routes.mkdir(parents=True, exist_ok=True)
+        (routes / layout).write_text(body, encoding="utf-8")
+        (routes / page).write_text(body, encoding="utf-8")
+        install_vfs_importer()
+        VFS().clear()
+        FrontendRouteCompiler().compile(input=f"src/routes/{page}")
+        source = VFS().read(f"__nexy__/src/routes/{Path(page).stem}.py")
+        assert "__render_document" in source and "__nexy_shell" not in source
+
+    def test_a_root_layout_of_another_framework_does_not_own_the_document(
+        self, nexy_project, tmp_path, monkeypatch
+    ):
+        nexy_project("useCSR = True\nuseFF = vue()", imports="from nexy.frontend import vue\n")
+        monkeypatch.chdir(tmp_path)
+        routes = tmp_path / "src" / "routes"
+        routes.mkdir(parents=True, exist_ok=True)
+        (routes / "layout.tsx").write_text("export default () => null\n", encoding="utf-8")
+        (routes / "home.vue").write_text("<template><div /></template>\n", encoding="utf-8")
+        install_vfs_importer()
+        VFS().clear()
+        FrontendRouteCompiler().compile(input="src/routes/home.vue")
+        assert "__render_document" not in VFS().read("__nexy__/src/routes/home.py")
+
+    def test_without_a_root_layout_the_built_in_shell_is_used(
+        self, nexy_project, tmp_path, monkeypatch
+    ):
+        nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
+        monkeypatch.chdir(tmp_path)
+        install_vfs_importer()
+        _compile_tsx(tmp_path)
+        assert "__nexy_shell" in VFS().read("__nexy__/src/routes/home.py")
 
     def test_layout_file_name_is_framework_owned_in_csr(self, nexy_project):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
         assert "layout.tsx" in Config().LAYOUT_FILE_NAMES
+        assert "layout.nexy" not in Config().LAYOUT_FILE_NAMES
 
 
 class TestShellMarkdown:

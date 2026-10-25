@@ -5,6 +5,15 @@ import { createRequire } from 'module'
 import { pathToFileURL } from 'url'
 import { transform } from 'esbuild'
 import { __NEXY_DEPS } from './src/deps.auto.ts'
+import {
+  DOCUMENT_FRAMEWORKS,
+  isLoopback,
+  MAX_RENDER_BODY,
+  parseRenderRequest,
+  readMode,
+  renderDocument,
+  stripDocumentTags
+} from './document'
 
 const c = {
   reset:  '\x1b[0m',
@@ -101,11 +110,29 @@ function makeMdxTransform(jsx: boolean, importSource: string) {
 const mdxProdTransform = makeMdxTransform(true, 'react')
 const mdxDevTransform = makeMdxTransform(false, '@mdx-js/react')
 
+/**
+ * The browser build of a Vue or Svelte root layout holds the body content only: those frameworks cannot
+ * create <html>, <head> or <body> in the browser, and the server already sent them.
+ */
+function documentForBrowser(source: string, id: string, ssr: boolean): string | null {
+  if (ssr) return null
+  const { csr, framework } = readMode()
+  if (!csr || (framework !== 'vue' && framework !== 'svelte')) return null
+  const file = id.split('?')[0].replace(/\\/g, '/')
+  const root = path.resolve(process.cwd(), 'src/routes').replace(/\\/g, '/')
+  if (file.toLowerCase() !== `${root}/layout.${framework}`.toLowerCase()) return null
+  return stripDocumentTags(source, framework)
+}
+
 function nexyPlugin(): Plugin {
   return {
     name: 'nexy',
+    enforce: 'pre',
 
-    transform(source, id) {
+    transform(source, id, options) {
+      const stripped = documentForBrowser(source, id, options?.ssr === true)
+      if (stripped !== null) return { code: stripped, map: null }
+      if (!id.split('?')[0].endsWith('.mdx')) return null
       return (isProduction ? mdxProdTransform : mdxDevTransform).call(this, source, id)
     },
 
@@ -182,6 +209,44 @@ function nexyPlugin(): Plugin {
 
     // --- HMR for non-JS files (Python, Nexy, MDX) ---
     configureServer(server) {
+      // Full-document render for client-routed projects: the Python server POSTs a route and gets
+      // its HTML back. Only a process on this machine may ask (the app's dev proxy forwards GET
+      // and HEAD only, never this), only for route files, and the body is size-limited.
+      server.middlewares.use('/__nexy__/render', async (req, res) => {
+        const reply = (status: number, text: string, type = 'text/plain') => {
+          res.statusCode = status
+          res.setHeader('content-type', `${type}; charset=utf-8`)
+          res.end(text)
+        }
+        try {
+          if (!isLoopback(req.socket.remoteAddress)) return reply(403, 'forbidden')
+          if (req.method !== 'POST') return reply(405, 'use POST')
+          const mode = readMode()
+          if (!mode.csr || !DOCUMENT_FRAMEWORKS.includes(mode.framework)) {
+            return reply(404, 'document rendering is not enabled')
+          }
+          const chunks: Buffer[] = []
+          let size = 0
+          for await (const chunk of req) {
+            size += (chunk as Buffer).length
+            if (size > MAX_RENDER_BODY) return reply(413, 'request too large')
+            chunks.push(chunk as Buffer)
+          }
+          let request
+          try {
+            request = parseRenderRequest(Buffer.concat(chunks).toString('utf8'))
+          } catch (error) {
+            return reply(400, (error as Error).message)
+          }
+          const html = await renderDocument(server, request.page, request.layouts, request.props)
+          reply(200, html, 'text/html')
+        } catch (error) {
+          const err = error as Error
+          if (err.stack) server.ssrFixStacktrace(err)
+          reply(500, String(err.stack ?? err))
+        }
+      })
+
       server.watcher.add([
         path.resolve(process.cwd(), 'src/**/*.py'),
         path.resolve(process.cwd(), 'src/**/*.nexy'),
@@ -209,7 +274,7 @@ function nexyPlugin(): Plugin {
 
     // --- Entry Generation (Client side) ---
     buildStart() {
-      if (isSSRBuild) return
+      if (isSSRBuild || process.env.NEXY_RENDER_ONLY) return
       nexySSGDone = false
       const isDev = process.env.NODE_ENV === 'development'
       if (!isDev) {
@@ -225,7 +290,7 @@ function nexyPlugin(): Plugin {
 
     // --- Static Site Generation (SSG) ---
     closeBundle() {
-      if (isSSRBuild || nexySSGDone) return
+      if (isSSRBuild || nexySSGDone || process.env.NEXY_RENDER_ONLY) return
       nexySSGDone = true
 
       console.log(`${c.dim}[nexy] Building client bundles...${c.reset}`)
