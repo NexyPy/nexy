@@ -13,6 +13,7 @@ from starlette.types import ASGIApp
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
+from nexy.helpers.server.access_log import AccessLogMiddleware
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.modules.i18n import L as LocaleManager
 from nexy.modules.i18n.middleware import LocaleMiddleware
@@ -143,6 +144,8 @@ class AppServer:
         setup_favicon(server, self.config.ROUTER_PATH)
         setup_static_files(server)
         setup_middlewares(server, self.config)
+        # Added last, so outermost: it times everything below it.
+        server.add_middleware(AccessLogMiddleware)
         ACTION_ENGINE.discover()
         self.fb_router = resolve_router(server, self.config, self.scalar_html, self._docs_url)
         setup_hmr(server)

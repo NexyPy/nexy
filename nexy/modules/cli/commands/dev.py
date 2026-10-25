@@ -173,6 +173,7 @@ class _Reloader:
                     host=endpoint.host,
                     port=endpoint.port,
                     log_config=NEXY_LOG_CONFIG,
+                    access_log=False,
                     log_level="info",
                     ssl_keyfile=endpoint.ssl_keyfile,
                     ssl_certfile=endpoint.ssl_certfile,

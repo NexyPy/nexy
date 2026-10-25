@@ -30,6 +30,8 @@ IGNORED_MESSAGES = [
     "Waiting for application shutdown",
     "Application shutdown complete",
     "/_nexy/hmr",
+    # A stale browser tab keeps reconnecting its Vite socket: it says nothing about the app.
+    "connection rejected",
 ]
 
 status_indicators = {

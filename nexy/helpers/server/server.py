@@ -169,7 +169,7 @@ class Server:
                     "try:\n"
                     "    from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG\n"
                     f"    uvicorn.run('nexy.modules.routers.app:_server', host='{run_host}',"
-                    f" port={port}, log_config=NEXY_LOG_CONFIG,"
+                    f" port={port}, log_config=NEXY_LOG_CONFIG, access_log=False,"
                     f" log_level='info'{ssl_part}{workers_part})\n"
                     "except Exception as e:\n"
                     "    print(f'Critical error in Nexy subprocess: {e}')\n"
@@ -190,6 +190,7 @@ class Server:
                     host=run_host,
                     port=port,
                     log_config=NEXY_LOG_CONFIG,
+                    access_log=False,
                     log_level="info",
                     **ssl_args,
                     **workers_kwargs,
