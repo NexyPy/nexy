@@ -42,7 +42,7 @@ class InitProject:
         self._ensure_ready(dest, project_dir)
 
         if template:
-            config: dict[str, Any] = {"orm": "None", "db_url": None}
+            config: dict[str, Any] = TemplateResolver.config_for(template)
             if template_source(template) == "github":
                 initialize_from_template(
                     template, dest, config, use_github=True, subdir=f"templates/{template}"

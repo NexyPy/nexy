@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import typer
+from rich.markup import escape
 
 from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
@@ -53,7 +54,13 @@ def new(
     except KeyboardInterrupt:
         print()
         sys.exit(130)
-    except Exception:
+    except typer.Exit:
+        raise
+    except Exception as error:
         if created_dir is not None and created_dir.exists():
             shutil.rmtree(created_dir, ignore_errors=True)
-        raise
+        reason = escape(str(error)) or type(error).__name__
+        console.print()
+        console.print(f"[red]x[/red] {t('cli.new.failed', 'Could not create the project')}")
+        console.print(f"  [dim]{reason}[/dim]")
+        raise typer.Exit(code=1) from None
