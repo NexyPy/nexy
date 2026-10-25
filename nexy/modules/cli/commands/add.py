@@ -1,5 +1,8 @@
+import hashlib
+import urllib.error
 import urllib.request
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import typer
 
@@ -14,31 +17,66 @@ from nexy.modules.i18n import t
 _ADD_HELP_COMPONENTS = t("add.help_components", "Components to add (registry names or URLs)")
 _ADD_HELP_UI = t("add.help_ui", "Force treatment as UI components")
 _ADD_HELP_URL = t("add.help_url", "Force treatment as URLs")
+_ADD_HELP_SHA = t("add.help_sha", "Expected SHA-256 of a remote component (aborts on mismatch)")
 _ADD_HELP_ALL = t("add.help_all", "Add all available components from registry")
 
 Resolved = tuple[str, str, str, set[str]]
 
 
-def fetch_remote_component(url: str) -> str | None:
-    """Fetches component source from a remote URL.
+_MAX_REMOTE_BYTES = 1_000_000
+_REMOTE_TIMEOUT = 15
+_LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
 
-    Only http(s) is accepted: urlopen would otherwise happily follow
-    file:// or custom schemes and read local files.
+
+def _is_allowed_url(url: str) -> bool:
+    """https only; plain http is tolerated for loopback development servers."""
+    parts = urlsplit(url)
+    if parts.scheme == "https":
+        return bool(parts.hostname)
+    return parts.scheme == "http" and parts.hostname in _LOCAL_HOSTS
+
+
+class _SafeRedirect(urllib.request.HTTPRedirectHandler):
+    """Refuse redirects that would leave https (or loopback http)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):  # type: ignore[no-untyped-def]
+        if not _is_allowed_url(newurl):
+            raise urllib.error.URLError(f"redirect to a disallowed URL: {newurl}")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str | None:
+    """Fetch component source from a remote URL.
+
+    The code ends up in your project, so the download is constrained: https
+    only (http for loopback), a timeout, a 1 MB cap, and an optional SHA-256
+    pin. The digest of what was fetched is always printed so it can be pinned.
     """
-    if not url.startswith(("http://", "https://")):
-        error_msg = f"[red]{t('add.error', 'Error:')}[/red] Only http(s) URLs are supported."
+    if not _is_allowed_url(url):
+        error_msg = f"[red]{t('add.error', 'Error:')}[/red] Only https:// URLs are supported."
         console.print(error_msg)
         return None
     try:
         status_msg = (
-            f"[yellow]nexy[/yellow] \u00bb "
+            f"[yellow]nexy[/yellow] » "
             f"{t('add.fetching', 'Fetching remote component from')} {url}..."
         )
-        # Scheme already restricted to http(s) by the guard above.
-        status_ctx = console.status(status_msg, spinner="dots")
-        with status_ctx, urllib.request.urlopen(url) as response:  # nosec B310
-            text: str = response.read().decode("utf-8")
-            return text
+        # Scheme and host validated by _is_allowed_url; redirects re-checked by _SafeRedirect.
+        opener = urllib.request.build_opener(_SafeRedirect)
+        with (
+            console.status(status_msg, spinner="dots"),
+            opener.open(  # nosec B310
+                url, timeout=_REMOTE_TIMEOUT
+            ) as response,
+        ):
+            raw: bytes = response.read(_MAX_REMOTE_BYTES + 1)
+        if len(raw) > _MAX_REMOTE_BYTES:
+            raise ValueError("component is larger than 1 MB")
+        digest = hashlib.sha256(raw).hexdigest()
+        if expected_sha256 and digest != expected_sha256.lower():
+            raise ValueError(f"sha256 mismatch: expected {expected_sha256}, got {digest}")
+        console.print(f"[dim]sha256 {digest}[/dim]")
+        return raw.decode("utf-8")
     except Exception as e:
         error_msg = (
             f"[red]{t('add.error', 'Error:')}[/red] "
@@ -53,6 +91,7 @@ def add(
     ui: bool = typer.Option(False, "--ui", help=_ADD_HELP_UI),
     url: bool = typer.Option(False, "--url", help=_ADD_HELP_URL),
     all: bool = typer.Option(False, "--all", "-a", help=_ADD_HELP_ALL),
+    sha256: str = typer.Option(None, "--sha256", help=_ADD_HELP_SHA),
 ) -> None:
     config = Config()
 
@@ -74,7 +113,7 @@ def add(
 
     all_deps: set[str] = set()
     for item in components:
-        resolved = _resolve_component(item, framework, url)
+        resolved = _resolve_component(item, framework, url, sha256)
         if resolved is None:
             continue
         name, content, fw, deps = resolved
@@ -98,16 +137,18 @@ def _print_available_components() -> None:
     console.print(available_msg)
 
 
-def _resolve_component(item: str, framework: str, force_url: bool) -> Resolved | None:
+def _resolve_component(
+    item: str, framework: str, force_url: bool, sha256: str | None = None
+) -> Resolved | None:
     """Resolve one CLI entry into (name, content, framework, dependencies)."""
     is_url = item.startswith(("http://", "https://")) or force_url
     if is_url:
-        return _resolve_remote_component(item)
+        return _resolve_remote_component(item, sha256)
     return _resolve_registry_component(item, framework)
 
 
-def _resolve_remote_component(url: str) -> Resolved | None:
-    content = fetch_remote_component(url)
+def _resolve_remote_component(url: str, sha256: str | None = None) -> Resolved | None:
+    content = fetch_remote_component(url, sha256)
     if not content:
         return None
     url_path = Path(url)

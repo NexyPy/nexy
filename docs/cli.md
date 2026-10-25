@@ -30,6 +30,13 @@ The binary is `nx` (also installed as `nexy`). Without a global install, prefix 
 | `test` | `--no-server` | on - skip pytest when you only want client tests |
 | `new` | `--template`, `-t` | none - clone a registered template without prompts |
 
+## Output
+
+Long steps (installing packages, compiling, bundling) show a spinner with the elapsed time, then
+leave one line behind: `✔ Installed Python dependencies  1.4s`. A failing step prints the last
+lines of the command's output instead of hiding it. Terminals that cannot render Unicode get
+`+` and `x`.
+
 ## Build behaviour
 
 `nx build` compiles the routes, then bundles the client when `useVite` is on.

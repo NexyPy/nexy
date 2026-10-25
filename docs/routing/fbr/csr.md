@@ -22,6 +22,12 @@ class NexyConfig(NexyConfigModel):
   `.svelte`.
 - `.md` routes can be served with a CSR shell.
 
+## Layout
+
+`nx new` scaffolds `src/routes/layout.nexy` in CSR mode too. It owns the HTML document; the pages
+are framework components mounted inside `<main>`. React and Preact pages can also be wrapped by
+`layout.tsx` files: see [Layouts](../layouts.md).
+
 ## Behaviour
 
 The first load returns HTML. After that, the client router handles navigation between navigable

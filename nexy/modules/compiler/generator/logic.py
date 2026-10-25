@@ -82,6 +82,12 @@ class LogicGenerator:
             else None
         )
 
+        from nexy.modules.compiler.document_shell import (
+            CSR_SHELL_HEADER,
+            CSR_SHELL_RENDER,
+            is_route_file,
+        )
+
         layout_header = ""
         render_wrapper = "rendered"
         layout_children = ""
@@ -95,6 +101,9 @@ class LogicGenerator:
                 f"        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
             )
             render_wrapper = "str(__Layout(children=rendered))"
+        elif use_layout and not is_layout_file and is_route_file(source_path):
+            layout_header = CSR_SHELL_HEADER
+            render_wrapper = CSR_SHELL_RENDER
 
         if is_layout_file:
             layout_children = (

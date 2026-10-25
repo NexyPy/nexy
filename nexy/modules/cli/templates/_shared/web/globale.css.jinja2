@@ -12,10 +12,23 @@
 {% elif client_framework == "preact" %}
 {% set color = "#0E1026" %}
 {% endif %}
+{% set accent = "#61DAFB" %}
+{% if client_framework == "vue" %}
+{% set accent = "#42B883" %}
+{% elif client_framework == "svelte" %}
+{% set accent = "#FF3E00" %}
+{% elif client_framework == "solid" %}
+{% set accent = "#4F88C6" %}
+{% elif client_framework == "preact" %}
+{% set accent = "#8E6CF0" %}
+{% elif client_framework == "none" %}
+{% set accent = "#00D084" %}
+{% endif %}
 
 :root {
   color-scheme: light dark;
-  font-family: "Inter";
+  font-family: "Inter", system-ui, sans-serif;
+  --accent: {{ accent }};
   --background: light-dark(white, {{ color }});
   --background-second: light-dark({{ color }}, lab(35.03% -8.77 -8.15 / 0.21));
   --foreground: light-dark({{ color }}, lab(100% 0.01 -0.01));
@@ -35,6 +48,9 @@
   --color-foreground-second: var(--foreground-second);
   --color-border: var(--border);
   --color-border-second: var(--border-second);
+  --color-accent: var(--accent);
+
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 
 
   --spacing-slider-left: 2px;
@@ -44,20 +60,44 @@
 
 @layer base {
   /**{corner-shape: superellipse(1.5);} apple corner */
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     background-color: var(--background);
     color: var(--foreground);
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   h1,h2,h3,h4{
-    font-family: "Geist";
-    font-weight: "800"
+    font-family: "Geist", "Inter", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  ::selection {
+    background-color: color-mix(in oklab, var(--accent) 35%, transparent);
   }
 }
 
 @layer components {
   .w-container {
     @apply max-w-6xl mx-auto;
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.18em] text-foreground/50;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+    opacity: 0.35;
+  }
+
+  .bg-glow {
+    background: radial-gradient(ellipse 50% 50% at 50% 0%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%);
   }
 
   .ease {

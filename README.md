@@ -5,7 +5,7 @@
 # Nexy
 
 **The fullstack Python meta-framework.** FastAPI on the server, Vite on the client, one file per
-page. Startup in under a second, HMR in under 100 ms.
+page. Sub-second startup, HMR in under 100 ms.
 
 <p>
   <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pypi/v/nexy?color=%2334D058&label=version" alt="PyPI version"></a>
@@ -16,14 +16,14 @@ page. Startup in under a second, HMR in under 100 ms.
   <a href="https://github.com/NexyPy/nexy/commits/main"><img src="https://img.shields.io/github/last-commit/NexyPy/nexy?color=%2334D058" alt="Last commit"></a>
 </p>
 
-## What Nexy is
+## Why Nexy
 
-A route is a file. Put `.nexy` under `src/routes/` and you get a page: Python for the logic, Jinja2
-for the markup, an optional React, Vue, Svelte, Solid or Preact component for interactivity. Put
-`.py` there and you get an API handler: the function names are the HTTP methods.
+A route is a file. Put a `.nexy` file under `src/routes/` and you get a page: Python for the logic,
+Jinja2 for the markup, an optional React, Vue, Svelte, Solid or Preact component for interactivity.
+Put a `.py` file there and you get an API handler: the function names are the HTTP methods.
 
-The server is FastAPI and Starlette. The client is Vite. There is no second process, no second
-origin, no glue project between the frontend and the backend.
+The server is FastAPI and Starlette. The client is Vite. No second process, no second origin, no
+glue project between the frontend and the backend.
 
 | You get | Instead of |
 |---|---|
@@ -33,15 +33,7 @@ origin, no glue project between the frontend and the backend.
 | Any supported client framework, or none | Being locked into React or Vue |
 | SSR, ISR and parallel SSG built in | SSG bolted on afterwards |
 
-## Requirements
-
-| Requirement | Why |
-|---|---|
-| Python 3.12+ | `requires-python` in `pyproject.toml` |
-| [uv](https://docs.astral.sh/uv/) | runs and manages Nexy |
-| Node.js 18+ | only for React, Vue, Svelte, Solid or Preact |
-
-## Install and run
+## Quickstart
 
 ```bash
 uvx nexy new my-app
@@ -54,10 +46,82 @@ Install the CLI once with `uv tool install nexy` to drop the prefix and use `nx 
 `nexy dev`).
 
 `new` asks four questions: file-based router or modular, web or API, client framework or none, ORM or
-none. The answers decide what the scaffold writes.
+none. The answers decide what the scaffold writes, including the Node package manager it reuses: a
+committed lockfile wins when that tool is installed, otherwise `bun`, `pnpm` then `npm` by priority.
 
 Change a file, the page reloads. `nx dev` compiles the routes you touched and proxies Vite through
 its own port, so the browser only ever talks to `3000`.
+
+**Requirements**: Python 3.12+, [uv](https://docs.astral.sh/uv/), and Node.js 18+ only when you use
+a client framework.
+
+## A page, an endpoint, an island
+
+### A page
+
+Python on top, HTML in the middle, CSS at the bottom.
+
+```nexy
+---
+from nexy import usePathname
+
+title: prop[str] = "Hello"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ title }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+Everything between the `---` lines is Python. Imports resolve at compile time; the rest runs on
+every request. `prop[type]` declares a property, `= value` gives it a default.
+
+The body is Jinja2 with the frontmatter variables in scope. Autoescaping is **off**: escape
+untrusted values with `{{ value | e }}`, and wrap JavaScript containing `{{` or `{%` in
+`{% raw %}...{% endraw %}`. Declare props before using them; an undeclared variable renders as an
+empty string.
+
+### An endpoint
+
+```python
+# src/routes/api/items.py  →  /api/items
+from fastapi import Request
+from pydantic import BaseModel
+
+
+class Item(BaseModel):
+    name: str
+
+
+async def GET(request: Request):
+    return {"items": []}
+
+
+async def POST(request: Request, body: Item):
+    return {"created": body.name}
+```
+
+Each function named after an HTTP method becomes an endpoint. Path segments, query strings, JSON
+bodies, `Depends`, headers and uploads keep their normal FastAPI behaviour, and every handler is
+published in the OpenAPI schema at `/openapi.json` and rendered by Scalar at `/docs`.
+
+### An island
+
+Import a client component by path; the compiler mounts it and passes the attributes as props. This
+is not a client-only island: the HTML exists before the bundle runs, so the first paint does not
+wait for JavaScript.
+
+```nexy
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start="0" />
+```
 
 ## Project layout
 
@@ -94,57 +158,55 @@ The URL is the file path relative to `src/routes/`, minus the extension.
 | `api/users.py` | `/api/users` |
 
 `index` maps to its directory, not to `/index`. A directory in parentheses is a group: it organises
-files without appearing in the URL.
+files without appearing in the URL. Files and folders starting with `_` or `.` are ignored, which is
+the place for partials and drafts.
 
 These names are not routes: `layout.nexy`, `loading.nexy`, `errors.nexy`, `notfound.nexy`,
-`dependencies.py`, `__init__.py`. Files and folders starting with `_` or `.` are ignored, which is
-the place for partials and drafts.
+`dependencies.py`, `__init__.py`. A `layout.*` wraps every page in its directory and below, and
+receives the page as `children`. `notfound.*` answers `404`, `errors.*` answers `500`, and
+`dependencies.py` applies its FastAPI dependencies to that subtree.
 
 One file per URL. `blog.nexy` next to `blog/index.nexy` registers two routes for the same path; pick
 one.
 
-### Dynamic segments
+Dynamic segments become page properties: `[slug]` gives a `str`, `[...path]` gives one string with
+the slashes included. In a `.nexy` page only `int` and `float` annotations are converted.
 
-One segment, `[slug]`, becomes a page property:
+[Routing reference →](docs/routing/README.md)
 
-```nexy
----
-slug: prop[str]
----
-<h1>{{ slug }}</h1>
+## Views
+
+A view renders the page body. Pick one format per file.
+
+| Format | File | Server render | Client framework |
+|---|---|---|---|
+| `.nexy` | page | Jinja2 + Python logic, streamed | optional |
+| `.md` | pure Markdown | cmarkgfm at request time, GFM, layout-wrapped | optional via layout |
+| `.mdx` | Markdown with components | framework SSR | React or Preact |
+| `.tsx`, `.jsx` | component | framework SSR / SSG | React or Preact |
+| `.vue` | SFC | framework SSR / SSG | Vue |
+| `.svelte` | SFC | framework SSR / SSG | Svelte |
+
+Markdown pages get heading IDs and a generated table of contents, and support locale variants such
+as `about.fr.md`. The framework for `.mdx` is detected from the imports; if both are imported,
+React wins.
+
+```python
+# nexyconfig.py
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()  # vue(), svelte(), solid(), preact()
 ```
 
-Several segments, `[...path]`, arrive as a single string with the slashes included. In a `.nexy`
-page only `int` and `float` annotations are converted; every other segment arrives as a string.
+With a framework enabled, its extensions become active routes, and `nx new` sets it up with Vite and
+Tailwind. `useVite` defaults to `True`.
 
-### Layouts and error pages
+[Views →](docs/views/README.md) · [.nexy files →](docs/views/nexyfile.md) · [Markdown →](docs/views/markdown.md)
 
-`layout.nexy` wraps every page in its directory and in its children. The page is passed as
-`children`:
-
-```nexy
----
-children: prop[str]
----
-<header>...</header>
-<main>{{ children }}</main>
-<footer>...</footer>
-```
-
-With a client framework configured, `layout.tsx`, `layout.jsx`, `layout.vue` and `layout.svelte`
-work too.
-
-`notfound.nexy` answers `404` and `errors.nexy` answers `500`, each scoped to its directory. Both
-must exist at the routes root to be installed at all; a copy in a subdirectory refines the page for
-that prefix. The `500` handler catches every unhandled exception, API handlers included, and answers
-with HTML - return a `JSONResponse` when the caller expects JSON.
-
-`dependencies.py` follows the same hierarchy: a dependency declared there applies to that directory
-and its children.
-
-`loading.nexy` is reserved but has no runtime effect yet.
-
-### Rendering modes
+## Rendering modes
 
 | Mode | How | Behaviour |
 |---|---|---|
@@ -153,46 +215,12 @@ and its children.
 | CSR | `useCSR = True` in `nexyconfig.py` | first load returns HTML, then the client router navigates; `.nexy` routes are disabled |
 | SSG | `nx build` | framework routes pre-rendered to HTML by a per-file esbuild pipeline, one file per worker |
 
-CSR requires a client framework, and is incompatible with a modular `useRouter`. Only `.tsx`,
+CSR requires a client framework and is incompatible with a modular `useRouter`. Only `.tsx`,
 `.jsx`, `.vue` and `.svelte` routes are navigable client-side; `.md` can use a CSR shell.
 
-## API handlers
+[SSR →](docs/routing/fbr/ssr.md) · [CSR →](docs/routing/fbr/csr.md) · [ISR →](docs/routing/fbr/isr.md)
 
-A `.py` file under `src/routes/` is an API handler. The file path is the URL, and each function
-named after an HTTP method becomes an endpoint.
-
-```python
-# src/routes/api/items.py  →  /api/items
-from fastapi import Request
-from pydantic import BaseModel
-
-
-class Item(BaseModel):
-    name: str
-
-
-async def GET(request: Request):
-    return {"items": []}
-
-
-async def POST(request: Request, body: Item):
-    return {"created": body.name}
-```
-
-Supported names: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HEAD`.
-
-| Parameter source | How it arrives |
-|---|---|
-| Path segment `[id]` | function argument `id`, converted to its annotation |
-| Query string | `page: int = 1` |
-| JSON body | Pydantic model argument |
-| FastAPI primitives | `Depends`, `Header`, `Cookie`, `Form`, `UploadFile` - unchanged |
-
-FastAPI validates the annotation and answers `422` on a mismatch. Return a `dict`, a `list` or a
-`BaseModel` for JSON; return a response object for a custom status or content type.
-
-Every handler appears in the generated OpenAPI schema, served at `/openapi.json` and rendered by
-Scalar at `/docs`. Disable both with `useDocs = False`.
+## More server features
 
 ### WebSocket
 
@@ -211,8 +239,8 @@ async def SOCKET(websocket: WebSocket):
 
 ### Modular routing
 
-Files are the default, not the only option. Classes and decorators produce an `APIRouter` that is
-mounted with `useRouter`:
+Files are the default, not the only option. Classes and decorators produce an `APIRouter` mounted
+with `useRouter`:
 
 ```python
 # src/apps/app_controller.py
@@ -227,168 +255,49 @@ class UserController:
 ```
 
 ```python
-# src/apps/app_module.py
-from nexy.decorators import Module
-from .app_controller import UserController
-
-
-@Module(prefix="/api")
-class AppModule:
-    controllers = [UserController]
-```
-
-```python
 # nexyconfig.py
 class NexyConfig(NexyConfigModel):
-    useRouter = AppModule
+    useRouter = AppModule  # a module class or any APIRouter
 ```
 
-Methods are matched by name, case-insensitively; one handler per HTTP method, duplicates raise at
-startup. `@Injectable()` classes are resolved into a controller's `__init__`; register them in
-`providers` to resolve them eagerly at startup. `Scope.SINGLETON`, `Scope.REQUEST` and
-`Scope.TRANSIENT` are available for their lifetime, and `Container.resolve(Service)` builds one
-yourself. `@UseGuard()` and `@Middleware()` add FastAPI dependencies; `@UseRoute()` is OpenAPI
-metadata only.
+Methods are matched by name, case-insensitively; duplicates raise at startup. `@Injectable()`
+classes are resolved into a controller's `__init__`, with `Scope.SINGLETON`, `Scope.REQUEST` and
+`Scope.TRANSIENT` lifetimes, and `@UseGuard()` / `@Middleware()` add FastAPI dependencies.
+File-based routing keeps working alongside a modular router.
 
-File-based routing keeps working when a modular router is mounted: `src/routes/` is scanned whenever
-it exists.
+[Modular routing →](docs/routing/modular.md)
 
-## Views
+### Actions
 
-A view renders the page body. Pick one format per file.
-
-| Format | File | Server render | Client framework |
-|---|---|---|---|
-| `.nexy` | page | Jinja2 + Python logic, streamed | optional |
-| `.md` | pure Markdown | cmarkgfm at request time, GFM, layout-wrapped | optional via layout |
-| `.mdx` | Markdown with components | framework SSR | React or Preact |
-| `.tsx`, `.jsx` | component | framework SSR / SSG | React or Preact |
-| `.vue` | SFC | framework SSR / SSG | Vue |
-| `.svelte` | SFC | framework SSR / SSG | Svelte |
-
-### The `.nexy` file
-
-Python on top, HTML in the middle, CSS at the bottom.
-
-```nexy
----
-from nexy import usePathname
-
-slug: prop[str] = "untitled"
-pathname = usePathname()
----
-<article class="post">
-  <h1>{{ slug }}</h1>
-  <p>You are on {{ pathname }}</p>
-</article>
-
-<style>
-  .post { max-width: 60ch; }
-</style>
-```
-
-Everything between the `---` lines is Python. Imports are resolved when the component is compiled;
-the rest runs on every request, so it can read request state. `prop[type]` declares a property and
-`= value` gives a default; a property without a default must be passed by the parent.
-
-The body is Jinja2 with the frontmatter variables and the properties in scope. Autoescaping is
-**off**: `{{ value }}` is inserted as written. Escape untrusted values with `{{ value | e }}`, and
-wrap JavaScript containing `{{` or `{%` in `{% raw %}...{% endraw %}`.
-
-Declare props before using them: an undeclared variable renders as an empty string. Keep side
-effects inside functions - the frontmatter runs again on every request.
-
-### Components
-
-Import a `.nexy` component and use it as a tag; children go through `<slot />`:
-
-```nexy
----
-from "@components/card.nexy" import Card
----
-<Card title="Hello">
-  <p>Child content</p>
-</Card>
-```
-
-Aliases come from `useAliases`. The common setup maps `@` to `src/`, so `@components/card.nexy`
-means `src/components/card.nexy`.
-
-Import a client component by path; the compiler mounts it and passes the attributes as props:
-
-```nexy
----
-from "@/components/Counter.tsx" import Counter
----
-<Counter start="0" />
-```
-
-`<style>` blocks are emitted with the page that declares them and are not scoped. Prefix your
-classes.
-
-### Markdown and MDX
-
-A `.md` file is pure content: rendered with `cmarkgfm`, heading IDs added, a table of contents
-derived, then wrapped in the nearest `layout.*`. Frontmatter there is not Python logic; use `.nexy`
-when you need server logic. Locale variants such as `about.fr.md` are supported.
-
-`.mdx` is compiled by the framework pipeline and needs React or Preact. The framework is detected
-from imports; if both are imported, React wins.
-
-### Client frameworks
+`@Action` turns a function into a `POST` endpoint with a generated path, so a page can call server
+code without declaring a route file:
 
 ```python
-# nexyconfig.py
-from nexy.core.models import NexyConfigModel
-from nexy.frontend import react
+# src/actions/user.py
+from nexy.decorators import Action
 
 
-class NexyConfig(NexyConfigModel):
-    useFF = react()  # vue(), svelte(), solid(), preact()
+@Action
+async def create_user(name: str) -> dict:
+    return {"name": name}
 ```
-
-With a framework enabled, its extensions become active routes, and `nx new` sets it up with Vite and
-Tailwind. `useVite` defaults to `True`.
-
-A framework route is a normal page, not a client-only island: the HTML exists before the bundle
-runs, so the first paint does not wait for JavaScript.
-
-## Built-in components
-
-They return HTML strings and are used two ways: as a Jinja call or as an HTML-style tag. The
-compiler turns the tag into the call, so both lines below are equivalent.
 
 ```nexy
-{{ Audio("/theme.mp3", controls=True) }}
-
-<Audio src="/theme.mp3" controls=True />
+<form method="post" action="{{ __actions_path['create_user'] }}">
+  <input name="name">
+  <button type="submit">Create</button>
+</form>
 ```
 
-Tags are self-closing, attributes are keyword arguments, and `True` / `False` / numbers stay
-unquoted (`controls` alone would become an empty string - write `controls=True`).
+The path is deterministic (a hash of the module and function name). It keeps the endpoint out of
+casual discovery but is not a secret; do not rely on it for authorization.
 
-| Helper | Signature |
-|---|---|
-| `Image` | `Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` |
-| `Link` | `Link(href, children="", class_name=None, prefetch=True, **attrs)` |
-| `Audio` | `Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` |
-| `Video` | `Video(src, width=None, height=None, ...)` |
-| `Import` | `Import(path, framework, symbol)`, same as importing a component in Python |
+[Actions →](docs/actions.md)
 
-`Link` renders `<a data-nexy-link>` and is handled by the client router; `prefetch=True` warms the
-target on hover or touch. `sources` adds `<source>` tags with the MIME type derived from each
-extension.
+## Hooks and components
 
-`Template().render(path, context)` renders a template file and `Template().invalidate(path)` drops
-it from the cache. `Vite()` returns the client tags for the current mode; Nexy calls it for every
-page.
-
-`Form` and `Script` are exported placeholders with no behaviour yet.
-
-## Hooks
-
-Hooks read the current request from inside a `.nexy` page. They only work while a request is being
-handled; calling one elsewhere raises `RuntimeError`.
+Hooks read the current request from inside a `.nexy` page. Calling one outside a request raises
+`RuntimeError`.
 
 | Hook | Returns |
 |---|---|
@@ -401,19 +310,46 @@ handled; calling one elsewhere raises `RuntimeError`.
 | `useToc(depth_range="2-6")` | table of contents HTML, `""` when there is none |
 | `useViews(path, context=None)` | renders another view and returns an `HTMLResponse` |
 
-```nexy
----
-from nexy import useCookies, usePathname, useSearchParams
+Built-in helpers return HTML strings, usable as a Jinja call or as a tag:
 
-pathname = usePathname()
-page = useSearchParams().get("page", "1")
-theme = useCookies().get("theme", "light")
----
-<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```nexy
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
 ```
 
-`useSession()` needs `useSession = {...}` in `nexyconfig.py`. `useRouter()` here is the request hook,
-not the config field.
+| Helper | Purpose |
+|---|---|
+| `Image` | `<img>` with lazy loading and explicit dimensions |
+| `Link` | `<a data-nexy-link>`, prefetched on hover and handled by the client router |
+| `Audio`, `Video` | media tags, with `<source>` children derived from `sources` |
+| `Import` | imports a component from Python, like the template syntax |
+
+[Hooks →](docs/routing/hooks.md) · [Components →](docs/views/components.md)
+
+## Internationalisation
+
+```python
+class NexyConfig(NexyConfigModel):
+    useLocales = ["en", "fr"]
+    useDefaultLocale = "en"
+```
+
+For every request the locale is resolved from the URL prefix `/fr/...`, then the `nexy-locale`
+cookie, then `Accept-Language`, then `useDefaultLocale`.
+
+```python
+from nexy import current_locale, t, trans
+
+trans("hero.title", "Hello")   # dotted key, default, current locale
+t("hero.title", "Hello")       # alias
+current_locale.get()           # "fr"
+```
+
+`trans` is available in every template, and `nx translate` generates the locale packs. A missing key
+falls back to the default, then to the key itself.
+
+[i18n →](docs/i18n.md)
 
 ## Config
 
@@ -431,122 +367,20 @@ class NexyConfig(NexyConfigModel):
     useHost = "0.0.0.0"
     useTitle = "My App"
     useAliases = {"@": "src/"}
+    useCORS = {"allow_origins": ["https://example.com"]}
 ```
 
-| Field | Default | Meaning |
-|---|---|---|
-| `usePort` | `3000` | port for `dev` and `start` |
-| `useHost` | `"0.0.0.0"` | bind address |
-| `useSslKeyfile`, `useSslCertfile` | `None` | serve HTTPS directly |
-| `useCSR` | `False` | client-side routing; disables `.nexy` routes |
-| `useRouter` | `None` | an `APIRouter` or module mounted next to the file-based routes |
-| `excludeDirs` | `["templates", "extension", "docs"]` | directories skipped when scanning routes |
-| `useAliases` | `None` | import aliases, e.g. `{"@": "src/"}` |
-| `useFF` | `None` | `react()`, `vue()`, `svelte()`, `solid()` or `preact()` |
-| `useVite` | `True` | build and serve client bundles with Vite |
-| `useMarkdownExtensions` | `[]` | extra extensions for `.md` and `.mdx` |
-| `useDocs` | `True` | serve the OpenAPI schema and the Scalar page |
-| `useDocsUrl` | `"/docs"` | path of that page |
-| `useTocDepth`, `useTocTitle`, `useTocAuto` | `"2-6"`, `"Table of Contents"`, `True` | table of contents |
-| `useMiddlewares`, `useCORS`, `useGZip`, `useTrustedHost`, `useSession`, `useAuth` | `[]`, `None` | middleware |
-| `useHTTPSRedirect` | `False` | redirect HTTP to HTTPS |
-
-Reserved-name extensions are configurable too: `useLayoutExtensions = ["md"]` makes `layout.md`
-reserved exactly like `layout.nexy`. The same exists for `notfound`, `errors` and `loading`.
-
-Three fields are declared but read by nothing: `useViteDevUrl`, `useLocaleDetection`, `useRTL`.
-`useRedocsUrl` is read but no route is mounted for it. Setting any of them has no effect.
-
-## i18n
-
-```python
-class NexyConfig(NexyConfigModel):
-    useLocales = ["en", "fr"]
-    useDefaultLocale = "en"
-    useLocaleCookieName = "nexy-locale"
-    useLocalesDir = "locales"            # runtime locale files
-    useLocalesSourceDir = "src/locales"  # source for `nx translate`
-```
-
-For every request, the locale is resolved in this order: the URL prefix `/fr/...` (stripped from the
-path before routing), the `nexy-locale` cookie, `Accept-Language`, then `useDefaultLocale`.
-
-```python
-from nexy import current_locale, t, trans, useLocale
-
-trans("hero.title", "Hello")   # dotted key, default, current locale
-t("hero.title", "Hello")       # alias
-current_locale.get()           # "fr"
-useLocale()                    # {"locale", "is_rtl", "available", "default", "trans"}
-```
-
-`trans` is available in every template:
-
-```html
-<h1>{{ trans("hero.title", "Hello") }}</h1>
-```
-
-A missing key falls back to the default, then to the key itself.
-
-`useLocalesDir` holds one file per locale, with nested objects matching the dotted keys
-(`locales/fr.json`, `locales/en.json`); a `<locale>.py` exporting a `translations` dict works too.
-
-`@i18n()` classes give you class attributes that translate at access time, and `nx translate`
-scans them under `useLocalesSourceDir`, translates them and writes generated packs to
-`__nexy__/i18n/`:
-
-```python
-from nexy.modules.i18n import i18n
-
-
-@i18n()
-class Home:
-    title = "Hello"
-```
-
-```bash
-nx translate --source en --target fr
-```
-
-The command uses an online translator and needs network access.
-
-## Actions
-
-`@Action` turns a function into a `POST` endpoint with a generated path, so a page can call server
-code without declaring a route file.
-
-```python
-# src/actions/user.py
-from nexy.decorators import Action
-
-
-@Action
-async def create_user(name: str) -> dict:
-    return {"name": name}
-```
-
-At startup Nexy imports every module under `src/`, registers each action, and mounts it at
-`POST /_nx_<hash>`. Parameters and body models follow the function signature, like any FastAPI
-route.
-
-Inside a `.nexy` template an action is exposed three ways:
-
-| Variable | Content |
+| Area | Fields |
 |---|---|
-| `create_user` | the function itself, callable in the template |
-| `__actions["create_user"]` | the same function, by name |
-| `__actions_path["create_user"]` | the generated URL |
+| Server | `usePort`, `useHost`, `useSslKeyfile`, `useSslCertfile`, `useCSR` |
+| Routes | `useRouter`, `useAliases`, `excludeDirs`, `useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useLoadingExtensions` |
+| Frontend | `useFF`, `useVite`, `useMarkdownExtensions`, `useWatchExtensions`, `useWatchExcludePatterns` |
+| API docs | `useDocs`, `useDocsUrl`, `useTitle` |
+| Middleware | `useMiddlewares`, `useCORS`, `useGZip`, `useTrustedHost`, `useSession`, `useAuth`, `useHTTPSRedirect` |
+| i18n | `useLocales`, `useDefaultLocale`, `useLocaleCookieName`, `useLocalesDir`, `useLocalesSourceDir` |
+| Markdown | `useTocDepth`, `useTocTitle`, `useTocAuto` |
 
-```nexy
-<form method="post" action="{{ __actions_path['create_user'] }}">
-  <input name="name">
-  <button type="submit">Create</button>
-</form>
-```
-
-The path is deterministic - a hash of the function's module and name. It keeps the endpoint out of
-casual discovery but it is not a secret; do not rely on it for authorization. No TypeScript client
-is generated by the current build.
+[Every field and its default →](docs/config.md)
 
 ## CLI
 
@@ -559,61 +393,17 @@ The binary is `nx`, also installed as `nexy`. Without a global install, prefix w
 | `nx build` | `nx b` | production build |
 | `nx new` | `nx n` | scaffold a project |
 | `nx init` | `nx i` | add Nexy to an existing project |
-| `nx migrate` | `nx m` | migrate from another framework |
+| `nx migrate` | `nx m` | ORM migrations: autogenerate a revision, `--init`, `--upgrade` |
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python, JS/TS and `.nexy` files |
-| `nx test` | - | run pytest; `--client` adds vitest |
-| `nx translate` | `nx t` | generate locale files |
+| `nx test` | - | run pytest; `--client` adds vitest, `--no-server` skips pytest |
+| `nx translate` | `nx t`, `nx trans` | generate locale files |
 
-Common flags: `--port` and `--host` for `dev` and `start` (defaults from `usePort` and `useHost`);
-`--check` for `build` (runs ruff and mypy after the build) and for `format` (report instead of
-rewrite); `--template` / `-t` for `new`; `--client` and `--no-server` for `test`.
+`--port` and `--host` override `usePort` and `useHost` for `dev` and `start`; `--check` runs ruff and
+mypy after `build`, and reports instead of rewriting for `format`; `--template` / `-t` skips the
+`new` prompts.
 
-## Testing
-
-`nx test` runs pytest. Extra arguments are forwarded to it:
-
-```bash
-nx test                 # pytest
-nx test -k create_user  # forwarded to pytest
-nx test --client        # pytest, then vitest
-```
-
-pytest runs on `tests/` when that directory exists, otherwise on the project root. If pytest is not
-installed, the run is skipped with a warning. vitest runs with `npx vitest run`, and only when
-`vitest.config.ts` exists or `vitest` appears in `package.json`. There is no built-in end-to-end
-runner: drive the app with `TestClient` for server behaviour, and add Playwright or Cypress yourself
-for the browser.
-
-A server test uses the ASGI app directly:
-
-```python
-# tests/test_pages.py
-from fastapi.testclient import TestClient
-
-from nexy.app import app
-
-
-def test_home_renders():
-    client = TestClient(app)
-    response = client.get("/")
-    assert response.status_code == 200
-```
-
-For per-test isolation, build a fresh application instead of reusing the module-level one:
-
-```python
-from fastapi.testclient import TestClient
-from nexy.modules.routers.app import AppServer
-
-
-with TestClient(AppServer().run()) as client:
-    assert client.get("/api/hello").json() == {"message": "Hello"}
-```
-
-`AppServer().run()` reads `nexyconfig.py` from the working directory and assembles routes,
-middleware and locale state. Test API handlers with `client.get` / `client.post`; test actions by
-posting to `__actions_path["create_user"]`, which the rendered page exposes.
+[All flags →](docs/cli.md)
 
 ## Build and deploy
 
@@ -649,6 +439,8 @@ CMD ["nx", "start", "--host", "0.0.0.0", "--port", "8000"]
 Static hosting is a deployment choice, not a build mode: there is no `--static` flag. Put static
 files in `public/`; they are served from `/` in development and production. Behind a reverse proxy,
 remember to forward WebSocket upgrade requests.
+
+[Deploy guide →](docs/deploy.md)
 
 ## How it works
 
@@ -689,8 +481,8 @@ Internals, request lifecycle and compiler pipeline: [ARCHITECTURE.md](ARCHITECTU
 
 ## Documentation
 
-This README covers the whole framework. The pages below go deeper on one topic each, in plain
-Markdown, and are written from the code.
+This README is the front door. The pages below go deeper on one topic each, in plain Markdown, and
+are written from the code.
 
 | I want | Read |
 |---|---|

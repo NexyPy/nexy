@@ -70,17 +70,24 @@ def react() -> FrontendFramework:
                     throw new Error(`No valid React component found in ${ref}.`);
                 }
 
-                const element = React.createElement(
-                    React.StrictMode,
-                    null,
-                    React.createElement(Comp, props)
-                );
+                // Nested layouts (layout.tsx above the page), outermost first.
+                const layoutKeys = (el.getAttribute("data-nexy-layouts") || "")
+                    .split(",").filter(Boolean);
+                const layouts = await Promise.all(layoutKeys.map(async (k) => {
+                    const lm = await gi(k);
+                    return (lm && lm.default) || lm;
+                }));
+                let tree = React.createElement(Comp, props);
+                for (let i = layouts.length - 1; i >= 0; i--) {
+                    tree = React.createElement(layouts[i], { params: props }, tree);
+                }
+                const element = React.createElement(React.StrictMode, null, tree);
 
                 if (serverHTML.trim() !== "" && !(props.children)) {
-                    RDC.hydrateRoot(el, element);
+                    el.__nexyRoot = RDC.hydrateRoot(el, element);
                 } else {
-                    const root = RDC.createRoot(el);
-                    root.render(element);
+                    el.__nexyRoot = RDC.createRoot(el);
+                    el.__nexyRoot.render(element);
                 }
             } catch(e) {
                 console.error(`[Nexy] Execution error in ${ref}:`, e);
@@ -103,10 +110,17 @@ def react() -> FrontendFramework:
             nexyIslands.init(document);
         }
 
-        w.__nexy_render = (Comp, container, props) => {
-            const el = React.createElement(Comp, props || {});
-            const element = React.createElement(React.StrictMode, null, el);
-            RDC.createRoot(container).render(element);
+        // Client navigation: re-render into the root that already hosts the page, so the
+        // layouts keep their state; only the page element changes.
+        w.__nexy_render = (Comp, container, props, layouts) => {
+            const host = container.querySelector(':scope > [data-nexy-fw="react"]') || container;
+            let tree = React.createElement(Comp, props || {});
+            const chain = layouts || [];
+            for (let i = chain.length - 1; i >= 0; i--) {
+                tree = React.createElement(chain[i], { params: props || {} }, tree);
+            }
+            if (!host.__nexyRoot) host.__nexyRoot = RDC.createRoot(host);
+            host.__nexyRoot.render(React.createElement(React.StrictMode, null, tree));
         };
 
         if (document.readyState === "loading") {

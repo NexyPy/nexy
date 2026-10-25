@@ -30,10 +30,15 @@ def _compile_tsx(tmp_path: Path, rel_file: str = "src/routes/home.tsx") -> None:
 
 
 class TestShellInGeneratedSource:
-    def test_default_project_has_no_shell(self, nexy_project, tmp_path):
+    def test_default_project_has_shell(self, nexy_project, tmp_path):
         nexy_project()
         _compile_tsx(tmp_path)
-        assert "__nexy_shell" not in VFS().read("__nexy__/src/routes/home.py")
+        assert "__nexy_shell" in VFS().read("__nexy__/src/routes/home.py")
+
+    def test_shell_source_is_valid_python(self):
+        from nexy.modules.compiler.document_shell import CSR_SHELL_HEADER
+
+        compile(CSR_SHELL_HEADER, "shell.py", "exec")
 
     def test_csr_project_has_shell(self, nexy_project, tmp_path):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
@@ -69,12 +74,24 @@ class TestShellRuntime:
 
 
 class TestShellEscapeHatch:
-    def test_user_layout_wins_over_the_shell(self, nexy_project, tmp_path, monkeypatch):
+    def test_framework_layout_is_composed_on_the_client(self, nexy_project, tmp_path, monkeypatch):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
         monkeypatch.chdir(tmp_path)
         layout = tmp_path / "src" / "routes" / "layout.tsx"
         layout.parent.mkdir(parents=True, exist_ok=True)
         layout.write_text("export default function Layout() { return null }\n", encoding="utf-8")
+        install_vfs_importer()
+        _compile_tsx(tmp_path)
+        assert "data-nexy-layouts" in VFS().read("__nexy__/src/routes/home.html")
+        # The document still comes from the shell (or a layout.nexy), never from layout.tsx.
+        assert "__nexy_shell" in VFS().read("__nexy__/src/routes/home.py")
+
+    def test_user_layout_nexy_wins_over_the_shell(self, nexy_project, tmp_path, monkeypatch):
+        nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
+        monkeypatch.chdir(tmp_path)
+        layout = tmp_path / "src" / "routes" / "layout.nexy"
+        layout.parent.mkdir(parents=True, exist_ok=True)
+        layout.write_text("<html>{{children}}</html>", encoding="utf-8")
         install_vfs_importer()
         _compile_tsx(tmp_path)
         source = VFS().read("__nexy__/src/routes/home.py")
@@ -98,3 +115,24 @@ class TestShellMarkdown:
         source = VFS().read("__nexy__/src/routes/docs.py")
         assert "def __nexy_shell(children: str) -> str:" in source
         compile(source, "docs.py", "exec")
+
+
+class TestShellBehaviour:
+    @staticmethod
+    def _shell():
+        from nexy.modules.compiler.document_shell import CSR_SHELL_FUNCTION, CSR_SHELL_HEADER
+
+        namespace: dict = {}
+        exec(CSR_SHELL_HEADER, namespace)  # noqa: S102 - trusted generated source
+        return namespace[CSR_SHELL_FUNCTION]
+
+    def test_fragment_is_wrapped_in_a_document(self, nexy_project):
+        nexy_project("")
+        html = self._shell()("<p>x</p>")
+        assert html.startswith("<!DOCTYPE html>") and "<p>x</p>" in html
+
+    def test_full_document_is_not_wrapped_twice(self, nexy_project):
+        nexy_project("")
+        page = "<!DOCTYPE html><html><body>own</body></html>"
+        assert self._shell()(page) == page
+        assert self._shell()("\n  <html><body></body></html>").count("<html") == 1

@@ -87,6 +87,10 @@ class NexyHTMLParser(HTMLParser):
                     self.stack.pop()
                 break
 
+    def handle_decl(self, decl: str) -> None:
+        """Keep ``<!DOCTYPE html>``; dropping it puts the page in quirks mode."""
+        self.handle_data(f"<!{decl}>")
+
     def handle_data(self, data: str) -> None:
         if not data:
             return

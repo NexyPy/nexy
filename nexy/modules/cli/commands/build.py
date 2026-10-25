@@ -10,6 +10,7 @@ from nexy.core.config import Config
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.helpers.common.report import print_cmd_result, print_tree_section
+from nexy.helpers.common.tasks import step
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -46,7 +47,7 @@ def build(check: bool = False) -> None:
 
 
 def _compile_server_components() -> BuildResult:
-    with console.status(f"  {t('build.compiling_server', 'compiling server components')} ..."):
+    with step(t("build.compiling_server", "Compiled server components")):
         from nexy.helpers.fs.vfs import VFS
 
         FrontendGenerator().generate(ssg=True)
@@ -75,7 +76,7 @@ def _build_client_bundle() -> list[dict[str, Any]]:
         console.print(f"    [red]{error}[/red]")
         sys.exit(1)
 
-    with console.status(f"  {t('build.building_client', 'building client bundle')} ..."):
+    with step(t("build.building_client", "Built client bundle")):
         out, err = vite_proc.communicate()
         if vite_proc.returncode != 0:
             console.print(f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}")

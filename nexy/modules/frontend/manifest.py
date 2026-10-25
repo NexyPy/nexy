@@ -5,6 +5,7 @@ from nexy.core.config import Config
 from nexy.helpers.common.json import to_json_literal
 from nexy.helpers.fs.path import PathUtil
 from nexy.modules.frontend.constants import NAVIGABLE_EXTS
+from nexy.modules.frontend.layout_chain import framework_layout_chain
 
 
 def navigable_entries(entries: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -92,6 +93,7 @@ class RouteManifestBuilder:
                     "path": url,
                     "file": f"/src/routes/{rel}",
                     "layout": layout,
+                    "layouts": framework_layout_chain(path, routes_root),
                     "params": extract_params(url),
                 }
             )
@@ -129,6 +131,7 @@ class RouteManifestBuilder:
             "  path: string;",
             "  file: string;",
             "  layout: string | null;",
+            "  layouts: string[];",
             "  params: string[];",
             "};",
             "",
@@ -142,6 +145,8 @@ class RouteManifestBuilder:
                 + to_json_literal(e["file"])
                 + ", layout: "
                 + to_json_literal(e["layout"])
+                + ", layouts: "
+                + to_json_literal(e.get("layouts", []))
                 + ", params: "
                 + to_json_literal(e["params"])
                 + " },"

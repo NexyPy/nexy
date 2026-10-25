@@ -1,11 +1,11 @@
 import os
 import shutil
-import subprocess  # nosec B404
 import sys
 from pathlib import Path
 
 from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
+from nexy.helpers.common.tasks import run_task
 from nexy.modules.i18n import t
 
 _ORM_PACKAGES: dict[str, str] = {
@@ -41,24 +41,18 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
         console.print(warning_msg + ", ".join(deps))
         return
 
-    install_msg = (
-        f"[yellow]nexy[/yellow] » {t('add.installing', 'Installing dependencies')}: "
-        f"{', '.join(deps)}..."
+    names = ", ".join(deps)
+    result = run_task(
+        f"{t('add.installing', 'Installing')} {names}",
+        package_manager.add_argv(pm, deps),
+        cwd=dest,
+        done=f"{t('add.installed', 'Installed')} {names}",
     )
-    with console.status(install_msg, spinner="dots"):
-        try:
-            subprocess.run(  # nosec B603 - resolved executable, fixed argv
-                package_manager.add_argv(pm, deps),
-                check=True,
-                capture_output=True,
-                cwd=dest,
-            )
-        except (OSError, subprocess.SubprocessError) as e:
-            error_msg = (
-                f"[red]{t('add.error', 'Error:')}[/red] "
-                f"{t('add.install_failed', 'Failed to install dependencies')}: {e}"
-            )
-            console.print(error_msg)
+    if not result.ok:
+        console.print(
+            f"[red]{t('add.error', 'Error:')}[/red] "
+            f"{t('add.install_failed', 'Failed to install dependencies')}"
+        )
 
 
 class DependencyInstaller:
@@ -75,27 +69,8 @@ class DependencyInstaller:
             return str(self.venv_dir / "Scripts" / "python.exe")
         return str(self.venv_dir / "bin" / "python")
 
-    def _run(self, cmd: list[str], desc: str) -> bool:
-        try:
-            # Resolve the executable (npm.cmd/pnpm.cmd on Windows) instead of
-            # using shell=True, which would let arguments inject commands.
-            exe = shutil.which(cmd[0]) or cmd[0]
-            subprocess.run(
-                [exe, *cmd[1:]],
-                cwd=self.directory,
-                check=True,
-                capture_output=True,
-            )  # nosec B603
-            return True
-        except (OSError, subprocess.SubprocessError) as e:
-            console.print(f"[red]nexy[/red] » {desc} failed")
-            output = getattr(e, "stdout", None) or b""
-            output += getattr(e, "stderr", None) or b""
-            if output:
-                console.print(output.decode("utf-8", errors="replace")[:500])
-            else:
-                console.print(f"[red]{e}[/red]")
-            return False
+    def _run(self, cmd: list[str], label: str, done: str | None = None) -> bool:
+        return run_task(label, cmd, cwd=self.directory, done=done).ok
 
     def install_all(self) -> None:
         self._install_uv()
@@ -108,24 +83,17 @@ class DependencyInstaller:
     def _install_uv(self) -> None:
         if shutil.which("uv") is not None:
             return
-        with console.status(
-            "[yellow]nexy[/yellow] » Installing uv...",
-            spinner="dots",
-        ):
-            self._run(
-                [sys.executable, "-m", "pip", "install", "uv"],
-                "uv installation",
-            )
+        self._run([sys.executable, "-m", "pip", "install", "uv"], "Installing uv", "Installed uv")
 
     def create_venv(self) -> None:
         if self.venv_dir.exists():
             return
 
-        with console.status(
-            "[yellow]nexy[/yellow] » Creating virtual environment...",
-            spinner="dots",
-        ):
-            self._run(["uv", "venv", str(self.venv_dir)], "Virtual environment creation")
+        self._run(
+            ["uv", "venv", str(self.venv_dir)],
+            "Creating virtual environment",
+            "Created virtual environment",
+        )
 
     def install_node_dependencies(self) -> None:
         package_json = self.directory / "package.json"
@@ -144,44 +112,28 @@ class DependencyInstaller:
                 return
             cmd = package_manager.install_argv(pm, allow_builds=("esbuild",))
 
-            with console.status(
-                "[yellow]nexy[/yellow] » "
-                + t("init.installing_node", "Installing Node.js dependencies..."),
-                spinner="dots",
-            ):
-                ok = self._run(cmd, "Node.js dependencies installation")
-                if not ok and pm == "npm":
-                    console.print(
-                        "[yellow]nexy[/yellow] » "
-                        + t(
-                            "init.node_retry",
-                            "Retrying with --legacy-peer-deps...",
-                        )
-                    )
-                    ok = self._run(
-                        [*cmd, "--legacy-peer-deps"],
-                        "Node.js dependencies installation (legacy-peer-deps)",
-                    )
-                if ok:
-                    console.print(
-                        "[green]nexy[/green] » "
-                        + t(
-                            "init.node_installed",
-                            "Node.js dependencies installed with {pm}.",
-                        ).format(pm=pm)
-                    )
+            label = t("init.installing_node", "Installing Node.js dependencies")
+            done = t("init.node_installed", "Installed Node.js dependencies with {pm}").format(
+                pm=pm
+            )
+            ok = self._run(cmd, label, done)
+            if not ok and pm == "npm":
+                console.print(
+                    "[yellow]![/yellow] "
+                    + t("init.node_retry", "Retrying with --legacy-peer-deps...")
+                )
+                self._run([*cmd, "--legacy-peer-deps"], label, done)
 
     def install_python_dependencies(self) -> None:
         pyproject = self.directory / "pyproject.toml"
         if not pyproject.exists():
             return
 
-        with console.status(
-            "[yellow]nexy[/yellow] » "
-            + t("init.installing_python", "Installing Python dependencies..."),
-            spinner="dots",
-        ):
-            self._run(["uv", "sync"], "Python dependencies installation")
+        self._run(
+            ["uv", "sync"],
+            t("init.installing_python", "Installing Python dependencies"),
+            t("init.python_installed", "Installed Python dependencies"),
+        )
 
     def install_orm(self) -> None:
         if not self.orm or self.orm == "None":
@@ -189,15 +141,12 @@ class DependencyInstaller:
         package = _ORM_PACKAGES.get(self.orm)
         if not package:
             return
-        with console.status(
-            f"[yellow]nexy[/yellow] » Installing {self.orm}...",
-            spinner="dots",
-        ):
-            self._run(["uv", "add", package], f"{self.orm} installation")
-            extras = _ORM_EXTRA_PACKAGES.get(self.orm, [])
-            for extra in extras:
-                self._run(["uv", "add", extra], f"{extra} installation")
-            self._run(["uv", "add", "python-dotenv"], "python-dotenv installation")
+        self._run(["uv", "add", package], f"Installing {self.orm}", f"Installed {self.orm}")
+        for extra in _ORM_EXTRA_PACKAGES.get(self.orm, []):
+            self._run(["uv", "add", extra], f"Installing {extra}", f"Installed {extra}")
+        self._run(
+            ["uv", "add", "python-dotenv"], "Installing python-dotenv", "Installed python-dotenv"
+        )
 
     def _remove_egg_info(self) -> None:
         for item in self.directory.glob("**/*.egg-info"):

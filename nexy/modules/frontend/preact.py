@@ -22,8 +22,21 @@ def preact() -> FrontendFramework:
             "const mod=await gi(ref);"
             "const Comp=(mod&&mod.default)!==undefined?mod.default:(symbol&&mod&&mod[symbol]);"
             'const preact=await import("preact");'
-            "preact.render(preact.h(Comp,props),el);"
+            'const lk=(el.getAttribute("data-nexy-layouts")||"").split(",").filter(Boolean);'
+            "const ls=await Promise.all(lk.map(async(k: string)=>{const lm=await gi(k);"
+            "return (lm&&lm.default)||lm;}));"
+            "let tree=preact.h(Comp,props);"
+            "for(let i=ls.length-1;i>=0;i--){tree=preact.h(ls[i],{params:props},tree);}"
+            "preact.render(tree,el);"
             "}"
+            "w.__nexy_render=async(Comp: any,container: any,props: any,layouts: any)=>{"
+            'const preact=await import("preact");'
+            'const host=container.querySelector(":scope > [data-nexy-fw=\\"preact\\"]")||container;'
+            "let tree=preact.h(Comp,props||{});"
+            "const chain=layouts||[];"
+            "for(let i=chain.length-1;i>=0;i--){tree=preact.h(chain[i],{params:props||{}},tree);}"
+            "preact.render(tree,host);"
+            "};"
             "function init(){"
             'const nodes=w.document.querySelectorAll("[data-nexy-fw=\\"preact\\"]");'
             "nodes.forEach((el: any)=>{"

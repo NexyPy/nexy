@@ -316,12 +316,12 @@ class Config:
 
         Config.TARGET_EXTENSIONS = [ext for ext in Config.ROUTE_FILE_EXTENSIONS if ext != ".py"]
 
-        if Config.useCSR:
-            # Client routing owns the views: .nexy is not a source file anymore,
-            # so watching it would only trigger pointless rebuilds.
-            Config.WATCH_EXTENSIONS = [ext for ext in Config.WATCH_EXTENSIONS if ext != ".nexy"]
+        # .nexy views are disabled in CSR, but the root layout.nexy still owns the HTML
+        # document, so .nexy must stay a build target.
+        if Config.useCSR and ".nexy" not in Config.TARGET_EXTENSIONS:
+            Config.TARGET_EXTENSIONS.append(".nexy")
 
-        include_nexy = not Config.useCSR
+        include_nexy = True
         Config.LAYOUT_FILE_NAMES = self.derive_special_names(
             "layout",
             registry,

@@ -6,7 +6,9 @@ from nexy.core.string import StringTransform
 
 class RouteLayout:
     @staticmethod
-    def get_closest_import(source_path: str, is_layout: bool = False) -> str | None:
+    def get_closest_import(
+        source_path: str, is_layout: bool = False, nexy_only: bool = False
+    ) -> str | None:
         try:
             path = Path(source_path).resolve()
             root = Path(Config.ROUTER_PATH).resolve()
@@ -17,6 +19,8 @@ class RouteLayout:
 
             while str(current).startswith(str(limit_dir)):
                 for name in Config.LAYOUT_FILE_NAMES:
+                    if nexy_only and not name.endswith(".nexy"):
+                        continue
                     layout_candidate = current / name
 
                     if layout_candidate.is_file() and layout_candidate != path:

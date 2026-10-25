@@ -7,7 +7,12 @@ from typing import Any
 from nexy.core.config import Config
 from nexy.core.string import Pathname, StringTransform
 from nexy.helpers.fs.vfs import VFS
-from nexy.modules.compiler.document_shell import CSR_SHELL_HEADER, CSR_SHELL_RENDER
+from nexy.modules.compiler.document_shell import (
+    CSR_SHELL_HEADER,
+    CSR_SHELL_RENDER,
+    is_route_file,
+)
+from nexy.modules.frontend.layout_chain import framework_layout_chain, layout_key
 from nexy.modules.routers.fbrouter.layout import RouteLayout
 
 _EXT_TO_FW: dict[str, str] = {
@@ -109,8 +114,13 @@ def _ssg_static_path(rel_glob: str, framework: str, symbol: str) -> str:
     return f"__nexy__/client/static{rel_path_html}"
 
 
-def _ncc_template(framework: str, rel_glob: str, key_hash: str, symbol: str) -> str:
+def _ncc_template(
+    framework: str, rel_glob: str, key_hash: str, symbol: str, layouts: list[str] | None = None
+) -> str:
     """Build the <ncc> hydrating tag served as the route's HTML template."""
+    layouts_attr = ""
+    if layouts:
+        layouts_attr = f' data-nexy-layouts="{",".join(layout_key(p) for p in layouts)}"'
     return (
         "<ncc"
         ' id="{{ __nexy_mount_id }}"'
@@ -119,6 +129,7 @@ def _ncc_template(framework: str, rel_glob: str, key_hash: str, symbol: str) -> 
         f' data-nexy-path="{rel_glob}"'
         "{% endif %}"
         f' data-nexy-key="{key_hash}"'
+        f"{layouts_attr}"
         ' style="display: contents;"'
         f' data-nexy-symbol="{symbol}"'
         ' data-nexy-props="{{ __nexy_props | e }}">'
@@ -150,17 +161,19 @@ def _module_signature(layout_header: str, func_name: str, py_path: str, symbol: 
     )
 
 
-def _layout_wrapper(posix_src: str) -> tuple[str, str]:
+def _layout_wrapper(posix_src: str, nexy_only: bool = False) -> tuple[str, str]:
     """(layout_header, render_wrapper) for the closest parent layout import.
 
-    With ``useCSR`` the framework owns the document: when the user provides no
-    ``layout.*``, Nexy supplies a minimal shell so the page is a valid HTML
-    document carrying the Vite tags. A user layout always wins.
+    Every web view must be wrapped by a layout to own the HTML document
+    (<!DOCTYPE html>/<html>/<head>/<body>). A user layout always wins;
+    otherwise Nexy supplies the minimal document shell carrying Vite tags.
     """
     is_layout_file = Path(posix_src).name.lower() in Config.LAYOUT_FILE_NAMES
-    layout_import = RouteLayout.get_closest_import(posix_src, is_layout=is_layout_file)
+    layout_import = RouteLayout.get_closest_import(
+        posix_src, is_layout=is_layout_file, nexy_only=nexy_only
+    )
     if not layout_import:
-        if Config.useCSR:
+        if is_route_file(posix_src):
             return CSR_SHELL_HEADER, CSR_SHELL_RENDER
         return "", "rendered"
     layout_header = (
@@ -277,7 +290,8 @@ class FrontendRouteCompiler:
         html_path = paths["html_path"]
         template_abs_ref = html_path
 
-        layout_header, render_wrapper = _layout_wrapper(posix_src)
+        layouts = framework_layout_chain(src, Path(Config.ROUTER_PATH))
+        layout_header, render_wrapper = _layout_wrapper(posix_src, nexy_only=bool(layouts))
         rel_glob, key_hash = _glob_ref(src, posix_src)
         symbol = _resolve_symbol(src, ext, stem)
         ssg_static = _ssg_static_path(rel_glob, framework, symbol)
@@ -287,10 +301,12 @@ class FrontendRouteCompiler:
         )
         module_body += "    __ext = " + repr(ext) + "\n"
         module_body += "    if __is_prod:\n"
-        module_body += _ssg_module_lines(ssg_static)
+        # The SSG snapshot has no layouts around the page; mounting client-side avoids a
+        # hydration mismatch.
+        module_body += "        pass\n" if layouts else _ssg_module_lines(ssg_static)
         module_body += _render_module_tail(template_abs_ref, render_wrapper)
 
-        template_html = _ncc_template(framework, rel_glob, key_hash, symbol)
+        template_html = _ncc_template(framework, rel_glob, key_hash, symbol, layouts)
 
         self.vfs.write(py_path, module_body)
         self.vfs.write(html_path, template_html)

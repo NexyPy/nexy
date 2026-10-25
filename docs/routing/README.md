@@ -42,7 +42,8 @@ They coexist. FBR is scanned whenever `src/routes/` exists, even with a modular 
 
 ## Next steps
 
-- [Pages](pages.md): dynamic segments, layouts, error pages
+- [Pages](pages.md): dynamic segments, error pages
+- [Layouts](layouts.md): the root document and nested layouts
 - [Hooks](hooks.md): read the path, query, cookies and session inside a page
 - [Rendering: SSR](fbr/ssr.md), [CSR](fbr/csr.md), [ISR](fbr/isr.md)
 - [WebSocket handlers](fbr/websocket.md)

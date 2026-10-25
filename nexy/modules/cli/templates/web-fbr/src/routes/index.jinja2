@@ -1,74 +1,99 @@
 {% if useCSR -%}
+{% set fw_label = {"vue": "Vue", "svelte": "Svelte", "preact": "Preact", "solid": "Solid", "react": "React"}.get(client_framework, "React") -%}
 {% if client_framework == "vue" -%}
 <script setup lang="ts">
 import Card from "@/components/card.vue";
 </script>
 
 <template>
-  <main class="min-h-dvh flex flex-col items-center justify-center gap-10 p-8">
-    <header class="max-w-xl text-center">
-      <p class="font-mono text-xs uppercase tracking-[0.2em] text-foreground-second">
-        Client-side routing
-      </p>
-      <h1 class="mt-3 text-3xl font-semibold text-foreground">Your Nexy app</h1>
-      <p class="mt-3 text-sm text-foreground-second">
-        Edit
-        <code class="rounded bg-background-second px-1.5 py-0.5 font-mono">src/routes/index.vue</code>
-        to get started.
-      </p>
-    </header>
-    <!-- The demo card is designed for a dark surface. -->
-    <div class="dark rounded-3xl bg-background p-4">
-      <Card />
+  <section class="relative isolate overflow-hidden flex-1">
+    <div class="bg-glow absolute inset-0 -z-10"></div>
+    <div class="bg-grid absolute inset-0 -z-10"></div>
+    <div class="w-container px-6 md:px-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
+      <div class="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left gap-6">
+        <p class="eyebrow inline-flex items-center gap-2 rounded-full border border-dashed border-border px-3 py-1">
+          <span class="size-1.5 rounded-full bg-accent"></span>
+          Nexy &times; {{ fw_label }}
+        </p>
+        <h1 class="text-4xl md:text-6xl leading-[1.05]">
+          Your app is live.<br />
+          <span class="text-accent">Start building.</span>
+        </h1>
+        <p class="max-w-md text-foreground/60 leading-7">
+          Edit
+          <code class="font-mono text-sm rounded-md border border-border bg-background-second/10 px-1.5 py-0.5">src/routes/index.vue</code>
+          and save. <code class="font-mono text-sm">layout.nexy</code> wraps every page.
+        </p>
+      </div>
+      <!-- The demo card is designed for a dark surface. -->
+      <div class="dark w-full max-w-sm rounded-3xl bg-background border border-dashed border-border p-3">
+        <Card />
+      </div>
     </div>
-  </main>
+  </section>
 </template>
 {% elif client_framework == "svelte" -%}
 <script lang="ts">
   import Card from "@/components/card.svelte";
 </script>
 
-<main class="min-h-dvh flex flex-col items-center justify-center gap-10 p-8">
-  <header class="max-w-xl text-center">
-    <p class="font-mono text-xs uppercase tracking-[0.2em] text-foreground-second">
-      Client-side routing
-    </p>
-    <h1 class="mt-3 text-3xl font-semibold text-foreground">Your Nexy app</h1>
-    <p class="mt-3 text-sm text-foreground-second">
-      Edit
-      <code class="rounded bg-background-second px-1.5 py-0.5 font-mono">src/routes/index.svelte</code>
-      to get started.
-    </p>
-  </header>
-  <!-- The demo card is designed for a dark surface. -->
-  <div class="dark rounded-3xl bg-background p-4">
-    <Card />
+<section class="relative isolate overflow-hidden flex-1">
+  <div class="bg-glow absolute inset-0 -z-10"></div>
+  <div class="bg-grid absolute inset-0 -z-10"></div>
+  <div class="w-container px-6 md:px-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
+    <div class="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left gap-6">
+      <p class="eyebrow inline-flex items-center gap-2 rounded-full border border-dashed border-border px-3 py-1">
+        <span class="size-1.5 rounded-full bg-accent"></span>
+        Nexy &times; {{ fw_label }}
+      </p>
+      <h1 class="text-4xl md:text-6xl leading-[1.05]">
+        Your app is live.<br />
+        <span class="text-accent">Start building.</span>
+      </h1>
+      <p class="max-w-md text-foreground/60 leading-7">
+        Edit
+        <code class="font-mono text-sm rounded-md border border-border bg-background-second/10 px-1.5 py-0.5">src/routes/index.svelte</code>
+        and save. <code class="font-mono text-sm">layout.nexy</code> wraps every page.
+      </p>
+    </div>
+    <!-- The demo card is designed for a dark surface. -->
+    <div class="dark w-full max-w-sm rounded-3xl bg-background border border-dashed border-border p-3">
+      <Card />
+    </div>
   </div>
-</main>
+</section>
 {% elif client_framework == "react" -%}
 import Card from "@/components/card.tsx";
 
 export default function Home() {
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-center gap-10 p-8">
-      <header className="max-w-xl text-center">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-foreground-second">
-          Client-side routing
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold text-foreground">Your Nexy app</h1>
-        <p className="mt-3 text-sm text-foreground-second">
-          Edit{" "}
-          <code className="rounded bg-background-second px-1.5 py-0.5 font-mono">
-            src/routes/index.tsx
-          </code>{" "}
-          to get started.
-        </p>
-      </header>
-      {/* The demo card is designed for a dark surface. */}
-      <div className="dark rounded-3xl bg-background p-4">
-        <Card />
+    <section className="relative isolate overflow-hidden flex-1">
+      <div className="bg-glow absolute inset-0 -z-10" />
+      <div className="bg-grid absolute inset-0 -z-10" />
+      <div className="w-container px-6 md:px-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
+        <div className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left gap-6">
+          <p className="eyebrow inline-flex items-center gap-2 rounded-full border border-dashed border-border px-3 py-1">
+            <span className="size-1.5 rounded-full bg-accent" />
+            Nexy &times; {{ fw_label }}
+          </p>
+          <h1 className="text-4xl md:text-6xl leading-[1.05]">
+            Your app is live.<br />
+            <span className="text-accent">Start building.</span>
+          </h1>
+          <p className="max-w-md text-foreground/60 leading-7">
+            Edit{" "}
+            <code className="font-mono text-sm rounded-md border border-border bg-background-second/10 px-1.5 py-0.5">
+              src/routes/index.tsx
+            </code>{" "}
+            and save. <code className="font-mono text-sm">layout.nexy</code> wraps every page.
+          </p>
+        </div>
+        {/* The demo card is designed for a dark surface. */}
+        <div className="dark w-full max-w-sm rounded-3xl bg-background border border-dashed border-border p-3">
+          <Card />
+        </div>
       </div>
-    </main>
+    </section>
   );
 }
 {% else -%}
@@ -76,21 +101,33 @@ import Card from "@/components/card.tsx";
 
 export default function Home() {
   return (
-    <main class="min-h-dvh flex flex-col items-center justify-center gap-10 p-8">
-      <header class="max-w-xl text-center">
-        <p class="font-mono text-xs uppercase tracking-[0.2em] text-foreground-second">
-          Client-side routing
-        </p>
-        <h1 class="mt-3 text-3xl font-semibold text-foreground">Your Nexy app</h1>
-        <p class="mt-3 text-sm text-foreground-second">
-          Edit <code class="rounded bg-background-second px-1.5 py-0.5 font-mono">src/routes/index.tsx</code> to get started.
-        </p>
-      </header>
-      <!-- The demo card is designed for a dark surface. -->
-      <div class="dark rounded-3xl bg-background p-4">
-        <Card />
+    <section class="relative isolate overflow-hidden flex-1">
+      <div class="bg-glow absolute inset-0 -z-10" />
+      <div class="bg-grid absolute inset-0 -z-10" />
+      <div class="w-container px-6 md:px-10 py-16 md:py-24 flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
+        <div class="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left gap-6">
+          <p class="eyebrow inline-flex items-center gap-2 rounded-full border border-dashed border-border px-3 py-1">
+            <span class="size-1.5 rounded-full bg-accent" />
+            Nexy &times; {{ fw_label }}
+          </p>
+          <h1 class="text-4xl md:text-6xl leading-[1.05]">
+            Your app is live.<br />
+            <span class="text-accent">Start building.</span>
+          </h1>
+          <p class="max-w-md text-foreground/60 leading-7">
+            Edit{" "}
+            <code class="font-mono text-sm rounded-md border border-border bg-background-second/10 px-1.5 py-0.5">
+              src/routes/index.tsx
+            </code>{" "}
+            and save. <code class="font-mono text-sm">layout.nexy</code> wraps every page.
+          </p>
+        </div>
+        {/* The demo card is designed for a dark surface. */}
+        <div class="dark w-full max-w-sm rounded-3xl bg-background border border-dashed border-border p-3">
+          <Card />
+        </div>
       </div>
-    </main>
+    </section>
   );
 }
 {% endif -%}

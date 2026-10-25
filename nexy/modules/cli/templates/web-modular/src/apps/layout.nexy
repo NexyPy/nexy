@@ -11,18 +11,25 @@ children:prop[NexyElement]
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexy Web</title>
+    <meta name="description" content="Built with Nexy">
+    <title>Nexy App</title>
     <Vite />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script>
+        document.documentElement.classList.toggle(
+            "dark",
+            localStorage.getItem("nexy-theme") === "dark" ||
+            (!("nexy-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches),
+        );
+    </script>
 </head>
 
-<body class="  antialiased min-h-dvh flex flex-col ">
+<body class="antialiased min-h-dvh flex flex-col bg-background text-foreground">
     <Header />
-    <main class="lg:px-20 ">
+    <main class="flex-1 flex flex-col">
         {{children | safe}}
-        
     </main>
     <Footer />
 </body>

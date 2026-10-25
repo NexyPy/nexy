@@ -53,8 +53,8 @@ children: prop[str]
 <footer>...</footer>
 ```
 
-With a client framework configured, the framework spelling works too: `layout.tsx`, `layout.jsx`,
-`layout.vue`, `layout.svelte`.
+The root `layout.nexy` owns `<!DOCTYPE html>`, `<html>`, `<head>` and `<body>`. With React or
+Preact, a `layout.tsx` also wraps the pages below it. See [Layouts](layouts.md).
 
 ## Error pages
 

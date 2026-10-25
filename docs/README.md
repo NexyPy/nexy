@@ -15,6 +15,8 @@ architecture.
 | [Routing](routing/README.md) | Turn a file path into a URL |
 | [Views](views/README.md) | Choose the format of a page |
 | [API](api.md) | Add a Python endpoint |
+| [Tutorial](tutorial.md) | Build a page, an endpoint and a production build in 10 minutes |
+| [Coming from another framework](comparison.md) | Map FastAPI, Next.js and Express to Nexy |
 
 ## Guides
 
@@ -24,7 +26,8 @@ architecture.
 | [Markdown and MDX](views/markdown.md) | Write content pages |
 | [Components](views/components.md) | Use `Image`, `Link`, `Audio`, `Video`, `Import` |
 | [Hooks](routing/hooks.md) | Read the path, query, cookies and session |
-| [Pages](routing/pages.md) | Dynamic segments, layouts, error pages |
+| [Pages](routing/pages.md) | Dynamic segments, error pages |
+| [Layouts](routing/layouts.md) | The root document and nested layouts |
 | [Modular routing](routing/modular.md) | Controllers, modules and injection |
 | [SSR](routing/fbr/ssr.md), [CSR](routing/fbr/csr.md), [ISR](routing/fbr/isr.md) | Pick a rendering mode |
 | [WebSocket](routing/fbr/websocket.md) | Handle a `SOCKET` connection |
@@ -53,6 +56,8 @@ root [`AGENTS.md`](../AGENTS.md).
 docs/
 ├─ README.md               this page
 ├─ getting-started.md      create a project, run it, build it
+├─ tutorial.md             a 10 minute walkthrough
+├─ comparison.md           FastAPI, Next.js and Express mapped to Nexy
 ├─ project-structure.md    files, folders, generated output
 ├─ frontend.md             Vite, dev server, build, styling
 ├─ api.md                  Python handlers
@@ -65,7 +70,8 @@ docs/
 ├─ agents.md               rules for AI agents
 ├─ routing/
 │  ├─ README.md            file path to URL
-│  ├─ pages.md             dynamic segments, layouts, error pages
+│  ├─ pages.md             dynamic segments, error pages
+│  ├─ layouts.md           root document, nested layouts
 │  ├─ hooks.md             reading the current request from a page
 │  ├─ modular.md           controllers, modules, injection
 │  └─ fbr/

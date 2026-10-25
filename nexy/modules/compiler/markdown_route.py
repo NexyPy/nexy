@@ -78,7 +78,7 @@ class MarkdownRouteCompiler:
                 f"        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
             )
             render_wrapper = "str(__Layout(children=rendered))"
-        elif Config.useCSR:
+        else:
             layout_header = CSR_SHELL_HEADER
             render_wrapper = CSR_SHELL_RENDER
 

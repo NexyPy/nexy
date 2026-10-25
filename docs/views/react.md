@@ -38,6 +38,11 @@ The default export is the page component; a named export also works.
 > **Good to know**: keep components outside `src/routes/` (usually `src/components/`) so they are
 > not treated as pages.
 
+## Layouts
+
+A `layout.tsx` wraps the pages below it and receives them as `children`. It never writes `<html>`:
+the document stays in `layout.nexy`. See [Layouts](../routing/layouts.md).
+
 ## Rendering
 
 Server rendering is on by default. Set `useCSR = True` for

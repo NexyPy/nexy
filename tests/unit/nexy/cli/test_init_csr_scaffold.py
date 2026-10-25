@@ -1,8 +1,9 @@
-"""Client routing must scaffold a project without a single .nexy file.
+"""Client routing must scaffold a project without any .nexy *view*.
 
 ``useCSR = True`` hands the views to the framework, so ``nexy init`` cannot
 ship the server-rendered ``.nexy`` pages. What replaces them is a framework
-route that the client router can mount.
+route that the client router can mount. The root ``layout.nexy`` is the one
+exception: like Next.js' root layout it owns the HTML document.
 """
 
 from pathlib import Path
@@ -27,9 +28,22 @@ def _nexy_files(dest: Path) -> list[str]:
 
 
 class TestCsrScaffold:
-    def test_no_nexy_file_is_generated(self, tmp_path: Path):
+    def test_only_the_root_layout_is_nexy(self, tmp_path: Path):
         _scaffold(tmp_path, "react", use_csr=True)
-        assert _nexy_files(tmp_path) == []
+        assert _nexy_files(tmp_path) == ["src/routes/layout.nexy"]
+
+    def test_layout_owns_the_html_document(self, tmp_path: Path):
+        _scaffold(tmp_path, "react", use_csr=True)
+        layout = (tmp_path / "src" / "routes" / "layout.nexy").read_text(encoding="utf-8")
+        assert "<!DOCTYPE html>" in layout
+        assert 'lang="{{ locale }}"' in layout
+        assert "{{children | safe}}" in layout
+        assert "<Header" not in layout and "<Footer" not in layout
+
+    def test_route_is_a_fragment_not_a_document(self, tmp_path: Path):
+        _scaffold(tmp_path, "react", use_csr=True)
+        route = (tmp_path / "src" / "routes" / "index.tsx").read_text(encoding="utf-8")
+        assert "<html" not in route and "<body" not in route
 
     def test_framework_route_is_generated(self, tmp_path: Path):
         _scaffold(tmp_path, "react", use_csr=True)
@@ -77,9 +91,28 @@ class TestDefaultScaffold:
         _scaffold(tmp_path, "none", use_csr=False)
         assert (tmp_path / "src" / "components" / "card.nexy").is_file()
 
+    def test_layout_owns_the_html_document(self, tmp_path: Path):
+        _scaffold(tmp_path, "vue", use_csr=False)
+        layout = (tmp_path / "src" / "routes" / "layout.nexy").read_text(encoding="utf-8")
+        assert layout.lstrip().split("---")[2].lstrip().startswith("<!DOCTYPE html>")
+
     def test_layout_keeps_request_time_placeholders(self, tmp_path: Path):
         """layout.nexy is rendered per request, not at scaffold time."""
         _scaffold(tmp_path, "react", use_csr=False)
         layout = (tmp_path / "src" / "routes" / "layout.nexy").read_text(encoding="utf-8")
         assert 'lang="{{ locale }}"' in layout
         assert "{{children | safe}}" in layout
+
+
+class TestEveryFrameworkGetsALayout:
+    def test_layout_in_every_framework_and_mode(self, tmp_path: Path):
+        for framework in ("none", "react", "preact", "solid", "vue", "svelte"):
+            for use_csr in (False, True):
+                if use_csr and framework == "none":
+                    continue
+                dest = tmp_path / f"{framework}-{use_csr}"
+                _scaffold(dest, framework, use_csr=use_csr)
+                layout = dest / "src" / "routes" / "layout.nexy"
+                assert layout.is_file(), (framework, use_csr)
+                text = layout.read_text(encoding="utf-8")
+                assert "<!DOCTYPE html>" in text and "{%" not in text

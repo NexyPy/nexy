@@ -69,6 +69,23 @@ class ViteProxyMiddleware:
         self.app = app
         self.port = port
         self.host = host
+        self._client: httpx.AsyncClient | None = None
+
+    def _upstream_client(self) -> httpx.AsyncClient:
+        """Reuse one pooled client for the whole dev session.
+
+        A per-request ``AsyncClient`` tears down and re-opens a loopback TCP
+        connection for every module request a dev page load makes (dozens per
+        refresh), which dominates local TTFB. ``trust_env=False`` also keeps
+        any ``HTTP_PROXY`` defined on the host from intercepting 127.0.0.1
+        traffic - that turns a local roundtrip into a proxy detour.
+        """
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(
+                trust_env=False,
+                limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
+            )
+        return self._client
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] == "websocket":
@@ -101,6 +118,12 @@ class ViteProxyMiddleware:
         if vite_only and not _host_allowed(scope):
             await _send_forbidden(send)
             return
+        if not vite_only and _is_app_document(scope):
+            # An HTML navigation to an extension-less path: only the app can
+            # answer it, so skip the upstream probe (one loopback roundtrip
+            # per page refresh for free).
+            await self.app(scope, receive, send)
+            return
         try:
             await self._forward_http(scope, receive, send, fallthrough=not vite_only)
         except (httpx.HTTPError, OSError):
@@ -118,16 +141,16 @@ class ViteProxyMiddleware:
         self, scope: Scope, receive: Receive, send: Send, *, fallthrough: bool
     ) -> None:
         """Relay one HTTP response, or hand an unknown path to the application."""
-        async with httpx.AsyncClient() as client:
-            request = client.build_request(scope["method"], self._upstream_url(scope))
-            response = await client.send(request, stream=True)
-            try:
-                if fallthrough and response.status_code == httpx.codes.NOT_FOUND:
-                    await self.app(scope, receive, send)
-                    return
-                await _relay_response(response, send)
-            finally:
-                await response.aclose()
+        client = self._upstream_client()
+        request = client.build_request(scope["method"], self._upstream_url(scope))
+        response = await client.send(request, stream=True)
+        try:
+            if fallthrough and response.status_code == httpx.codes.NOT_FOUND:
+                await self.app(scope, receive, send)
+                return
+            await _relay_response(response, send)
+        finally:
+            await response.aclose()
 
     async def _forward_websocket(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Relay a WebSocket connection to Vite's HMR endpoint."""
@@ -143,6 +166,22 @@ class ViteProxyMiddleware:
 def _is_vite_only(path: str) -> bool:
     """True when the path can only be served by Vite."""
     return any(path.startswith(prefix) for prefix in VITE_ONLY_PREFIXES)
+
+
+def _is_app_document(scope: Scope) -> bool:
+    """True for HTML navigations that only the application can answer.
+
+    Vite runs with ``appType: 'custom'``: it never serves an HTML document,
+    and a route such as ``/about`` carries no file extension it could resolve
+    from its module graph or public dir. Probing it first would add a full
+    loopback roundtrip to every page refresh with a guaranteed 404 as the
+    answer. Requests that name a file (``/favicon.ico``, ``/logo.svg``) keep
+    the probe: those may live in Vite's ``public/`` directory.
+    """
+    accept = dict(scope.get("headers", ())).get(b"accept", b"").lower()
+    if b"text/html" not in accept:
+        return False
+    return "." not in scope["path"].rsplit("/", 1)[-1]
 
 
 def _host_name(scope: Scope) -> str:
