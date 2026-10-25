@@ -4,6 +4,11 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
+from nexy.modules.cli.constants import TEMPLATES_DIR
+
+# Markup shared by every framework (header, footer, the starter pages): templates `include` it.
+PARTIALS_DIR = TEMPLATES_DIR / "_partials"
+
 
 class TemplateRenderer:
     """Copies a local template directory and renders .jinja2 files with context.
@@ -50,7 +55,8 @@ class TemplateRenderer:
 
         # Scaffolding templates emit Python/TS/HTML source files; autoescape
         # would corrupt generated source code. See SECURITY.md.
-        env = Environment(loader=FileSystemLoader(str(self.src)))  # nosec B701
+        loader = FileSystemLoader([str(self.src), str(PARTIALS_DIR)])
+        env = Environment(loader=loader)  # nosec B701
         self.dest.mkdir(parents=True, exist_ok=True)
 
         for src_path in self.src.rglob("*"):

@@ -10,6 +10,7 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
+from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.modules.cli.constants import TEMPLATES_DIR
@@ -72,8 +73,6 @@ def _clone_from_github(dest: Path, subdir: str) -> None:
 def _render_local_template(
     template_name: str, dest: Path, config: dict[str, Any], project_name: str
 ) -> None:
-    from nexy.modules.i18n import _detect_locale
-
     context = {
         "orm": config.get("orm", "None"),
         "db_url": config.get("db_url"),
@@ -82,13 +81,34 @@ def _render_local_template(
         "FBRouter": config.get("FBRouter", False),
         "useCSR": config.get("useCSR", False),
         "client_framework": config.get("client_framework", "none"),
-        "locale": _detect_locale(),
+        "nexy_version": __version__,
     }
+    context.update(_markup_context(context["client_framework"], context["useCSR"]))
     exclude = _excluded_suffixes(context)
     TemplateRenderer(TEMPLATES_DIR / template_name, dest, context, exclude).render()
     _render_shared_files(template_name, dest, context)
 
     generate_init_files(dest / "src")
+
+
+_FRAMEWORK_LABELS = {
+    "none": "HTML",
+    "react": "React",
+    "preact": "Preact",
+    "solid": "Solid",
+    "vue": "Vue",
+    "svelte": "Svelte",
+}
+
+
+def _markup_context(framework: str, client_routed: bool) -> dict[str, str]:
+    """Names the shared markup needs: the class attribute of the syntax and the framework label."""
+    return {
+        # Only JSX in React spells it className. A server-rendered project writes HTML (.nexy)
+        # even when React runs in its islands.
+        "cls": "className" if framework == "react" and client_routed else "class",
+        "fw_label": _FRAMEWORK_LABELS.get(framework, "HTML"),
+    }
 
 
 def _excluded_suffixes(context: dict[str, Any]) -> set[str]:

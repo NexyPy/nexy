@@ -1,0 +1,49 @@
+<section {{ cls }}="relative isolate overflow-hidden">
+  <div {{ cls }}="bg-glow absolute inset-0 -z-10"></div>
+  <div {{ cls }}="w-container px-6 pb-12 pt-16 md:px-10 md:pb-16 md:pt-24">
+    <p {{ cls }}="eyebrow">Contributors</p>
+    <h1 {{ cls }}="mt-4 max-w-3xl text-4xl leading-[1.05] md:text-6xl">Built in the open, by people like you.</h1>
+    <p {{ cls }}="lead mt-6">
+      Every release of Nexy comes from issues, pull requests and conversations on GitHub.
+      Here is how to take part.
+    </p>
+    <div {{ cls }}="mt-8 flex flex-wrap gap-3">
+      <a href="https://github.com/NexyPy/nexy/issues" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Open an issue</a>
+      <a href="https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-ghost">Contributing guide</a>
+    </div>
+  </div>
+</section>
+
+<section {{ cls }}="section border-t border-dashed border-border">
+  <p {{ cls }}="eyebrow">How to contribute</p>
+  <div {{ cls }}="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div {{ cls }}="card">
+      <p {{ cls }}="eyebrow">01</p>
+      <p {{ cls }}="card-title mt-3">Pick a task</p>
+      <p {{ cls }}="card-text">Start from an open issue, or describe the problem you want to fix before you code.</p>
+    </div>
+    <div {{ cls }}="card">
+      <p {{ cls }}="eyebrow">02</p>
+      <p {{ cls }}="card-title mt-3">Branch</p>
+      <p {{ cls }}="card-text">Name it <code>feature/*</code>, <code>fix/*</code>, <code>docs/*</code> or <code>perf/*</code>.</p>
+    </div>
+    <div {{ cls }}="card">
+      <p {{ cls }}="eyebrow">03</p>
+      <p {{ cls }}="card-title mt-3">Test first</p>
+      <p {{ cls }}="card-text">Write the failing test, make it pass, then clean up. Keep each change small.</p>
+    </div>
+    <div {{ cls }}="card">
+      <p {{ cls }}="eyebrow">04</p>
+      <p {{ cls }}="card-title mt-3">Open a pull request</p>
+      <p {{ cls }}="card-text">Use Conventional Commits: <code>feat:</code>, <code>fix:</code>, <code>docs:</code> and friends.</p>
+    </div>
+  </div>
+</section>
+
+<section {{ cls }}="section border-t border-dashed border-border">
+  <p {{ cls }}="eyebrow">Thank you</p>
+  <h2 {{ cls }}="section-title mt-3 max-w-2xl">The people who shaped Nexy.</h2>
+  <a href="https://github.com/NexyPy/nexy/graphs/contributors" target="_blank" rel="noopener noreferrer" {{ cls }}="mt-8 block">
+    <img src="https://contrib.rocks/image?repo=NexyPy/nexy" alt="Nexy contributors on GitHub" loading="lazy" {{ cls }}="h-auto max-w-full" />
+  </a>
+</section>

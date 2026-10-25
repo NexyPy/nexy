@@ -1,4 +1,13 @@
-{% if useCSR and client_framework == "react" %}{% raw %}import type { ReactNode } from "react";
+{%- if useCSR and client_framework in ["react", "solid", "preact"] -%}
+{%- set charset_attr = "charSet" if client_framework == "react" else "charset" -%}
+{%- set cross_attr = "crossOrigin" if client_framework == "react" else "crossorigin" -%}
+{%- if client_framework == "react" -%}
+import type { ReactNode } from "react";
+{%- elif client_framework == "solid" -%}
+import type { JSX } from "solid-js";
+{%- else -%}
+import type { ComponentChildren } from "preact";
+{%- endif %}
 
 const themeScript = `
   document.documentElement.classList.toggle(
@@ -8,156 +17,38 @@ const themeScript = `
   );
 `;
 
-export default function RootLayout({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Built with Nexy" />
-        <title>Nexy App</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&family=Inter:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <body className="antialiased min-h-dvh flex flex-col bg-background text-foreground">
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur border-b border-dashed border-border">
-          <nav className="w-container flex items-center justify-between gap-6 px-6 md:px-10 py-4">
-            <a href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-              <span className="size-2.5 rounded-full bg-accent" />
-              Nexy
-            </a>
-            <a
-              href="https://github.com/NexyPy/nexy"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="eyebrow hover:text-foreground ease"
-            >
-              GitHub &#8599;
-            </a>
-          </nav>
-        </header>
-        <main className="flex-1 flex flex-col">{children}</main>
-        <footer className="border-t border-dashed border-border">
-          <div className="w-container px-6 md:px-10 py-6 flex items-center justify-between gap-4">
-            <p className="eyebrow">Built with Nexy</p>
-            <p className="eyebrow">MIT</p>
-          </div>
-        </footer>
-      </body>
-    </html>
-  );
-}
-{% endraw %}{% elif useCSR and client_framework == "solid" %}{% raw %}import type { JSX } from "solid-js";
-
-const themeScript = `
-  document.documentElement.classList.toggle(
-    "dark",
-    localStorage.getItem("nexy-theme") === "dark" ||
-      (!("nexy-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches),
-  );
-`;
-
+{% if client_framework == "solid" -%}
 export default function RootLayout(props: { children: JSX.Element }) {
-  return (
-    <html lang="en" class="dark">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="description" content="Built with Nexy" />
-        <title>Nexy App</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&family=Inter:wght@100..900&display=swap"
-          rel="stylesheet"
-        />
-        <script innerHTML={themeScript} />
-      </head>
-      <body class="antialiased min-h-dvh flex flex-col bg-background text-foreground">
-        <header class="sticky top-0 z-30 bg-background/80 backdrop-blur border-b border-dashed border-border">
-          <nav class="w-container flex items-center justify-between gap-6 px-6 md:px-10 py-4">
-            <a href="/" class="flex items-center gap-2 font-semibold tracking-tight">
-              <span class="size-2.5 rounded-full bg-accent" />
-              Nexy
-            </a>
-            <a
-              href="https://github.com/NexyPy/nexy"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="eyebrow hover:text-foreground ease"
-            >
-              GitHub &#8599;
-            </a>
-          </nav>
-        </header>
-        <main class="flex-1 flex flex-col">{props.children}</main>
-        <footer class="border-t border-dashed border-border">
-          <div class="w-container px-6 md:px-10 py-6 flex items-center justify-between gap-4">
-            <p class="eyebrow">Built with Nexy</p>
-            <p class="eyebrow">MIT</p>
-          </div>
-        </footer>
-      </body>
-    </html>
-  );
-}
-{% endraw %}{% elif useCSR and client_framework == "preact" %}{% raw %}import type { ComponentChildren } from "preact";
-
-const themeScript = `
-  document.documentElement.classList.toggle(
-    "dark",
-    localStorage.getItem("nexy-theme") === "dark" ||
-      (!("nexy-theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches),
-  );
-`;
-
+{%- elif client_framework == "react" -%}
+export default function RootLayout({ children }: { children: ReactNode }) {
+{%- else -%}
 export default function RootLayout({ children }: { children: ComponentChildren }) {
+{%- endif %}
   return (
-    <html lang="en" class="dark">
+    <html lang="en" {{ cls }}="dark"{% if client_framework == "react" %} suppressHydrationWarning{% endif %}>
       <head>
-        <meta charset="UTF-8" />
+        <meta {{ charset_attr }}="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="Built with Nexy" />
         <title>Nexy App</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" {{ cross_attr }}="" />
         <link
           href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&family=Inter:wght@100..900&display=swap"
           rel="stylesheet"
         />
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+{% if client_framework == "solid" -%}
+        <script innerHTML={themeScript} />
+{%- else -%}
+        <script dangerouslySetInnerHTML={% raw %}{{ __html: themeScript }}{% endraw %} />
+{%- endif %}
       </head>
-      <body class="antialiased min-h-dvh flex flex-col bg-background text-foreground">
-        <header class="sticky top-0 z-30 bg-background/80 backdrop-blur border-b border-dashed border-border">
-          <nav class="w-container flex items-center justify-between gap-6 px-6 md:px-10 py-4">
-            <a href="/" class="flex items-center gap-2 font-semibold tracking-tight">
-              <span class="size-2.5 rounded-full bg-accent" />
-              Nexy
-            </a>
-            <a
-              href="https://github.com/NexyPy/nexy"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="eyebrow hover:text-foreground ease"
-            >
-              GitHub &#8599;
-            </a>
-          </nav>
-        </header>
-        <main class="flex-1 flex flex-col">{children}</main>
-        <footer class="border-t border-dashed border-border">
-          <div class="w-container px-6 md:px-10 py-6 flex items-center justify-between gap-4">
-            <p class="eyebrow">Built with Nexy</p>
-            <p class="eyebrow">MIT</p>
-          </div>
-        </footer>
+      <body {{ cls }}="antialiased min-h-dvh flex flex-col bg-background text-foreground">
+{% include "header.html.jinja2" %}
+        <main {{ cls }}="flex flex-1 flex-col">{% if client_framework == "solid" %}{props.children}{% else %}{children}{% endif %}</main>
+{% include "footer.html.jinja2" %}
       </body>
     </html>
   );
 }
-{% endraw %}{% endif %}
+{% endif -%}

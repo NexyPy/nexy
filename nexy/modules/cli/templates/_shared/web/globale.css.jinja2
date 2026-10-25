@@ -27,7 +27,7 @@
 
 :root {
   color-scheme: light dark;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
   --accent: {{ accent }};
   --background: light-dark(white, {{ color }});
   --background-second: light-dark({{ color }}, lab(35.03% -8.77 -8.15 / 0.21));
@@ -73,6 +73,12 @@
     font-weight: 700;
     letter-spacing: -0.03em;
   }
+  code {
+    @apply rounded-md border border-border bg-background-second/10 px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+  pre code {
+    @apply border-0 bg-transparent p-0;
+  }
   ::selection {
     background-color: color-mix(in oklab, var(--accent) 35%, transparent);
   }
@@ -102,5 +108,65 @@
 
   .ease {
     @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Buttons. Tailwind 4 cannot @apply another component class, so the shared part is a list. */
+  .btn-primary,
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium no-underline transition-all duration-300 ease-in-out;
+  }
+  .btn-primary {
+    @apply bg-foreground text-background hover:opacity-85;
+  }
+  .btn-ghost {
+    @apply border border-border text-foreground hover:border-accent hover:text-accent;
+  }
+
+  /* Small pill above a headline */
+  .badge {
+    @apply transition-all duration-300 ease-in-out inline-flex items-center gap-2 rounded-full border border-dashed border-border px-3 py-1 font-mono text-xs text-foreground/70 no-underline hover:border-accent hover:text-foreground;
+  }
+  .badge-dot {
+    @apply size-1.5 rounded-full bg-accent;
+  }
+
+  /* Page rhythm: one spacing scale for every section */
+  .section {
+    @apply mx-auto w-full max-w-6xl px-6 py-14 md:px-10 md:py-20;
+  }
+  .section-title {
+    @apply text-3xl md:text-4xl leading-[1.1];
+  }
+  .lead {
+    @apply max-w-2xl text-base md:text-lg leading-8 text-foreground/60;
+  }
+
+  /* Cards */
+  .card {
+    @apply transition-all duration-300 ease-in-out rounded-2xl border border-border bg-background-second/5 p-6 hover:border-accent hover:border-dashed;
+  }
+  .card-title {
+    @apply text-base font-semibold tracking-tight;
+  }
+  .card-text {
+    @apply mt-2 text-sm leading-6 text-foreground/60;
+  }
+
+  /* A window around a command or a file tree */
+  .window {
+    @apply overflow-hidden rounded-2xl border border-border bg-background-second/10 text-left;
+  }
+  .window-bar {
+    @apply flex items-center gap-1.5 border-b border-border px-4 py-3;
+  }
+  .window-dot {
+    @apply size-2.5 rounded-full bg-foreground/15;
+  }
+  .window-body {
+    @apply overflow-x-auto p-5 font-mono text-sm leading-7 text-foreground/80;
+  }
+
+  .prose-block p {
+    @apply mt-4 text-foreground/70 leading-8;
   }
 }

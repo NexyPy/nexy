@@ -1,0 +1,18 @@
+{#- A starter page of a server-rendered project. The includer sets page_partial and, for a page
+    with the demo card, page_card. -#}
+{%- set page_ext = ".nexy" -%}
+{%- set card = "VanillaCard" if client_framework == "none" else "FrameworkCard" -%}
+{%- if page_card -%}
+---
+{% if client_framework == "none" -%}
+from "@/components/vanillaCard.nexy" import VanillaCard
+{%- elif client_framework == "vue" -%}
+from "@/components/card.vue" import Card as FrameworkCard
+{%- elif client_framework == "svelte" -%}
+from "@/components/card.svelte" import Card as FrameworkCard
+{%- else -%}
+from "@/components/card.tsx" import Card as FrameworkCard
+{%- endif %}
+---
+{% endif -%}
+{% include page_partial %}

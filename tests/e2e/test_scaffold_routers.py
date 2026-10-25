@@ -28,7 +28,7 @@ from fastapi.testclient import TestClient
 from nexy.modules.routers.app import AppServer
 out = {"failed": list(build.failed), "load_error": Config.get_load_error(), "pages": {}}
 with TestClient(AppServer().run()) as client:
-    for path in ("/", "/definitely-not-a-route"):
+    for path in ("/", "/about", "/contributors", "/definitely-not-a-route"):
         r = client.get(path)
         out["pages"][path] = [r.status_code, r.headers.get("content-type", ""), r.text]
 sys.stdout.write("@@" + json.dumps(out) + "@@")
@@ -40,8 +40,12 @@ WEB = [
     ("web-fbr", "vue", False),
     ("web-fbr", "react", True),
     ("web-fbr", "svelte", True),
+    ("web-fbr", "vue", True),
+    ("web-fbr", "preact", True),
+    ("web-fbr", "solid", True),
     ("web-modular", "none", False),
     ("web-modular", "react", False),
+    ("web-modular", "vue", False),
 ]
 API = [("api-fbr", "none", False), ("api-modular", "none", False)]
 
@@ -92,6 +96,22 @@ def test_web_template_serves_a_valid_document(tmp_path, template, framework, use
     assert html.count("/_nexy/hmr") <= 1
 
     assert result["pages"]["/definitely-not-a-route"][0] == 404
+
+
+@pytest.mark.parametrize(("template", "framework", "use_csr"), WEB)
+@pytest.mark.parametrize(
+    ("path", "marker"), [("/about", "Principles"), ("/contributors", "contribute")]
+)
+def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path, marker):
+    """Every starter links to /about and /contributors, so both must exist, in every mode."""
+    result = _run(tmp_path, template, framework, use_csr)
+    status, content_type, html = result["pages"][path]
+    assert status == 200, path
+    assert content_type.startswith("text/html")
+    if use_csr:
+        assert "__nexy_page" in html  # the page describes itself to the browser
+    else:
+        assert marker.lower() in html.lower()
 
 
 @pytest.mark.parametrize(("template", "framework", "use_csr"), API)
