@@ -1,3 +1,6 @@
+import html
+
+
 def image(
     src: str,
     alt: str = "",
@@ -35,6 +38,6 @@ def image(
 
     attrs.update(kwargs)
 
-    attr_str = " ".join([f'{k}="{v}"' for k, v in attrs.items()])
+    attr_str = " ".join(f'{k}="{html.escape(str(v), quote=True)}"' for k, v in attrs.items())
 
     return f"<img {attr_str} />"

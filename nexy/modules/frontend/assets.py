@@ -26,9 +26,11 @@ def _write_excludes(dest: Path, exclude_dirs: list[str]) -> None:
 def copy_vite_config() -> None:
     """Copy the frontend vite config from nexy/modules/frontend/vite.ts to __nexy__/vite.ts."""
     try:
-        source = _PACKAGE_DIR / "vite.ts"
-        dest = Path("__nexy__") / "vite.ts"
-        if source.is_file():
-            PathUtil.write_if_changed(dest, source.read_text(encoding="utf-8"))
+        for name in ("vite.ts", "document.ts"):
+            source = _PACKAGE_DIR / name
+            if source.is_file():
+                PathUtil.write_if_changed(
+                    Path("__nexy__") / name, source.read_text(encoding="utf-8")
+                )
     except Exception as e:
         console.print(f"[red]nsc[/red] » error generating vite.ts: {e}")

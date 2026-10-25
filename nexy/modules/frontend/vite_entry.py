@@ -1,6 +1,7 @@
 """Generates the client bootstrap files under __nexy__/ (entry, deps, keys, runtime)."""
 
 import hashlib
+import json
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,16 @@ def generate_vite_entry(use_ff: Any) -> None:
     write_runtime_file(src_dir)
     write_main_file(dest_dir, frameworks_of(ff_list))
     write_client_link(src_dir)
+    write_mode_file(dest_dir, ff_list)
+
+
+def write_mode_file(dest_dir: Path, ff_list: list[Any]) -> None:
+    """Tell the Node side whether routes are client-routed and with which framework."""
+    from nexy.core.config import Config
+
+    framework = getattr(ff_list[0], "name", "").lower() if ff_list else ""
+    content = json.dumps({"csr": bool(Config.useCSR), "framework": framework}) + "\n"
+    PathUtil.write_if_changed(dest_dir / "mode.auto.json", content)
 
 
 def normalize_ff(use_ff: Any) -> list[Any]:
@@ -137,6 +148,14 @@ def _runtime_lines() -> list[str]:
         "  return { route: null, params: {} };",
         "};",
         "const mainContainer = () => document.querySelector('main') || document.body;",
+        "const JSX_FRAMEWORKS = ['react', 'preact', 'solid'];",
+        "const pickRenderer = (file: string) => {",
+        "  const renderers = w.__nexy_renderers || {};",
+        "  if (file.endsWith('.vue')) return renderers.vue;",
+        "  if (file.endsWith('.svelte')) return renderers.svelte;",
+        "  const name = JSX_FRAMEWORKS.find(n => renderers[n]);",
+        "  return (name && renderers[name]) || w.__nexy_render;",
+        "};",
         "async function renderRoute(file: string, params: Record<string, string>, "
         "layouts: string[] = []) {",
         "  const mod: any = await w.__nexy_import(file);",
@@ -146,7 +165,8 @@ def _runtime_lines() -> list[str]:
         "    return (lm && lm.default) || lm;",
         "  }));",
         "  const container = mainContainer();",
-        "  if (w.__nexy_render) return w.__nexy_render(Comp, container, params, chain);",
+        "  const render = pickRenderer(file);",
+        "  if (render) return render(Comp, container, params, chain);",
         "  if (Comp && typeof Comp === 'function') {",
         "    container.innerHTML = '<div class=\\\"nexy-client-route\\\"></div>';",
         "  }",
@@ -166,6 +186,17 @@ def _runtime_lines() -> list[str]:
         "    console.error('[Nexy] Client navigation failed:', err);",
         "    if (push) window.location.href = href;",
         "  }",
+        "};",
+        "const prefetched = new Set<string>();",
+        "w.__nexy_prefetch = (href: string) => {",
+        "  try {",
+        "    const { route } = matchRoute(new URL(href, location.origin).pathname);",
+        "    if (!route || prefetched.has(route.file)) return;",
+        "    prefetched.add(route.file);",
+        "    const files = [route.file, ...(route.layouts || [])];",
+        "    const retry = () => prefetched.delete(route.file);",
+        "    files.forEach(f => { w.__nexy_import(f).catch(retry); });",
+        "  } catch { /* an invalid href is not worth warming */ }",
         "};",
         "document.addEventListener('click', (e: MouseEvent) => {",
         "  const target = e.target as HTMLElement;",

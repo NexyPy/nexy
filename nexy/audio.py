@@ -1,3 +1,15 @@
+import html
+
+
+def _source_tag(path: str) -> str:
+    """A `<source>` tag whose attributes cannot be broken out of by the path."""
+    extension = path.split(".")[-1]
+    return (
+        f'<source src="{html.escape(path, quote=True)}" '
+        f'type="audio/{html.escape(extension, quote=True)}" />'
+    )
+
+
 def audio(
     src: str,
     controls: bool = True,
@@ -40,13 +52,15 @@ def audio(
         attrs["muted"] = ""
 
     attrs.update(kwargs)
-    attr_str = " ".join([f'{k}="{v}"' if v else k for k, v in attrs.items()])
+    attr_str = " ".join(
+        f'{k}="{html.escape(str(v), quote=True)}"' if v else k for k, v in attrs.items()
+    )
 
     source_tags = ""
     if sources:
         for s in sources:
-            source_tags += f'<source src="{s}" type="audio/{s.split(".")[-1]}" />'
+            source_tags += _source_tag(s)
     else:
-        source_tags = f'<source src="{src}" type="audio/{src.split(".")[-1]}" />'
+        source_tags = _source_tag(src)
 
     return f"<audio {attr_str}>{source_tags}</audio>"

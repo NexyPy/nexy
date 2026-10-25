@@ -110,21 +110,28 @@ def build_toc_html(html: str, depth_range: str = "2-6") -> str:
     result: list[str] = ['<nav class="toc"><ul>']
     prev = headings[0][0]
 
-    result.append(f'<li><a href="#{headings[0][1]}" class="toc-link">{escape(headings[0][2])}</a>')
+    first_id = escape(headings[0][1], quote=True)
+    result.append(f'<li><a href="#{first_id}" class="toc-link">{escape(headings[0][2])}</a>')
 
     for level, id_attr, text in headings[1:]:
         if level > prev:
             for _ in range(level - prev):
                 result.append("<ul>")
-            result.append(f'<li><a href="#{id_attr}" class="toc-link">{escape(text)}</a>')
+            result.append(
+                f'<li><a href="#{escape(id_attr, quote=True)}" class="toc-link">{escape(text)}</a>'
+            )
         elif level < prev:
             for _ in range(prev - level):
                 result.append("</li></ul>")
             result.append("</li>")
-            result.append(f'<li><a href="#{id_attr}" class="toc-link">{escape(text)}</a>')
+            result.append(
+                f'<li><a href="#{escape(id_attr, quote=True)}" class="toc-link">{escape(text)}</a>'
+            )
         else:
             result.append("</li>")
-            result.append(f'<li><a href="#{id_attr}" class="toc-link">{escape(text)}</a>')
+            result.append(
+                f'<li><a href="#{escape(id_attr, quote=True)}" class="toc-link">{escape(text)}</a>'
+            )
         prev = level
 
     for _ in range(prev - headings[0][0] + 1):

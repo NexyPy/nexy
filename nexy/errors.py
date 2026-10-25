@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from fastapi import Response
+from fastapi.responses import HTMLResponse
 
 
 @dataclass(frozen=True)
@@ -68,7 +69,7 @@ def NotFound() -> Response:
     Returns:
         A FastAPI Response with status 404 and the Nexy 404 page.
     """
-    return Response(content=_page_404(), status_code=404)
+    return HTMLResponse(content=_page_404(), status_code=404)
 
 
 def InternalServerError() -> Response:
@@ -77,4 +78,4 @@ def InternalServerError() -> Response:
     Returns:
         A FastAPI Response with status 500 and the Nexy 500 page.
     """
-    return Response(content=_page_500(), status_code=500)
+    return HTMLResponse(content=_page_500(), status_code=500)

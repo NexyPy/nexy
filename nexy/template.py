@@ -1,6 +1,7 @@
 import os
 import threading
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from jinja2 import BaseLoader, Environment, TemplateNotFound
@@ -67,7 +68,9 @@ def _get_shared_env() -> Environment:
             return _SHARED_ENV
         env = Environment(
             loader=NexyTemplateLoader(),
-            auto_reload=True,
+            # A production build never changes its templates: skip the per-render
+            # "is it still current" check that dev needs for hot reload.
+            auto_reload=not Path("__nexy__/nexy.prod").is_file(),
             # nosec B701 - Nexy templates are the project's own server-side
             # HTML (see SECURITY.md); autoescape would double-escape
             # hand-written HTML props such as {{ children }}.

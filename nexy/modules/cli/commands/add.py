@@ -106,7 +106,7 @@ def add(
 
     if not components:
         _print_available_components()
-        raise typer.Exit()
+        raise typer.Exit
 
     target_dir = Path("src/components/ui")
     target_dir.mkdir(parents=True, exist_ok=True)

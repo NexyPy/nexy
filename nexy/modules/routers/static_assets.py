@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from fastapi import FastAPI, Response
 from fastapi.staticfiles import StaticFiles
@@ -24,19 +25,18 @@ def setup_static_files(server: FastAPI) -> None:
 
 
 def setup_favicon(server: FastAPI, router_path: str) -> None:
-    """Serve /favicon.ico from the router folder, public/ or the built-in SVG."""
-    favicon_path = f"{router_path}/favicon.ico"
+    """Serve /favicon.ico from the router folder, public/ or the built-in SVG.
+
+    The handler is synchronous on purpose: FastAPI runs it in a worker thread, so reading the file
+    never blocks the event loop.
+    """
+    candidates = (Path(router_path) / "favicon.ico", Path("public") / "favicon.ico")
 
     @server.get("/favicon.ico", include_in_schema=False)
-    async def favicon() -> Response:
-        try:
-            favicon_data = FAVICON_SVG.encode("utf-8")
-            if os.path.isfile(favicon_path):
-                with open(favicon_path, "rb") as f:
-                    favicon_data = f.read()
-            else:
-                with open("public/favicon.ico", "rb") as f:
-                    favicon_data = f.read()
-            return Response(content=favicon_data, media_type="image/x-icon")
-        except FileNotFoundError:
-            return Response(content=FAVICON_SVG.encode("utf-8"), media_type="image/x-icon")
+    def favicon() -> Response:
+        for candidate in candidates:
+            try:
+                return Response(content=candidate.read_bytes(), media_type="image/x-icon")
+            except OSError:
+                continue
+        return Response(content=FAVICON_SVG.encode("utf-8"), media_type="image/svg+xml")

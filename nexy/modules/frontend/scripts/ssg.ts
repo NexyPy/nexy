@@ -2,6 +2,7 @@ import { glob } from 'glob'
 import { getProjectFrameworks, checkFrameworks, globIgnore, c } from './utils'
 import { type Framework, type SSGResult, writeReport, flushSnippets } from './utils'
 import { JSDOM } from 'jsdom'
+import { DOCUMENT_FRAMEWORKS, readMode, writeDocuments } from '../document'
 
 async function run() {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>')
@@ -36,7 +37,12 @@ async function run() {
   const results: SSGResult[] = []
   const startMs = Date.now()
 
-  const hasTsx = glob.sync('**/*.{tsx,jsx,mdx}', {
+  // In a client-routed project the root layout renders whole documents (see document.ts);
+  // per-file island snapshots would only duplicate that work.
+  const mode = readMode()
+  const documentMode = mode.csr && DOCUMENT_FRAMEWORKS.includes(mode.framework)
+
+  const hasTsx = !documentMode && glob.sync('**/*.{tsx,jsx,mdx}', {
     cwd: process.cwd(),
     ignore: globIgnore()
   }).length > 0
@@ -64,7 +70,7 @@ async function run() {
     }
   }
 
-  if (usedFrameworks.has('vue')) {
+  if (!documentMode && usedFrameworks.has('vue')) {
     if (installedFrameworks.has('vue')) {
       const { run } = await import('./ssg.vue')
       jobs.push(run())
@@ -73,7 +79,7 @@ async function run() {
     }
   }
 
-  if (usedFrameworks.has('svelte')) {
+  if (!documentMode && usedFrameworks.has('svelte')) {
     if (installedFrameworks.has('svelte')) {
       const { run } = await import('./ssg.svelte')
       jobs.push(run())
@@ -84,6 +90,11 @@ async function run() {
 
   results.push(...await Promise.all(jobs))
   await flushSnippets()
+
+  const documents = await writeDocuments()
+  if (documents) {
+    console.log(`  documents » [reset][dim]${documents} pre-rendered[/dim] [green]✓[/green]`)
+  }
 
   writeReport(results, Date.now() - startMs)
 

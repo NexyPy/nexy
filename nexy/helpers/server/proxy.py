@@ -176,10 +176,15 @@ def _is_app_document(scope: Scope) -> bool:
     from its module graph or public dir. Probing it first would add a full
     loopback roundtrip to every page refresh with a guaranteed 404 as the
     answer. Requests that name a file (``/favicon.ico``, ``/logo.svg``) keep
-    the probe: those may live in Vite's ``public/`` directory.
+    the probe: those may live in Vite's ``public/`` directory. So do paths with
+    a ``_`` or ``.`` segment (``/__inspect/``, ``/.well-known/...``): Nexy never
+    routes those, while Vite plugins serve their dev UIs from them.
     """
     accept = dict(scope.get("headers", ())).get(b"accept", b"").lower()
     if b"text/html" not in accept:
+        return False
+    segments = [segment for segment in scope["path"].split("/") if segment]
+    if any(segment.startswith(("_", ".")) for segment in segments):
         return False
     return "." not in scope["path"].rsplit("/", 1)[-1]
 

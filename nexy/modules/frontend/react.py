@@ -94,7 +94,61 @@ def react() -> FrontendFramework:
             }
         }
 
+        const resolveComponent = (mod, symbol) => {
+            if (symbol && mod[symbol]) return mod[symbol];
+            return (mod && mod.default) || mod;
+        };
+
+        function buildTree(Page, props, layouts, layoutProps) {
+            let tree = Page ? React.createElement(Page, props) : null;
+            for (let i = layouts.length - 1; i >= 0; i--) {
+                tree = React.createElement(layouts[i], { params: layoutProps || props }, tree);
+            }
+            return React.createElement(React.StrictMode, null, tree);
+        }
+
+        // Client-routed projects: the root layout.tsx owns <html>, so React takes over the whole
+        // document. The server already rendered it (mode "document"), rendered only the layouts
+        // around an empty page ("shell", dynamic routes in production), or sent nothing ("client").
+        async function mountDocument(boot) {
+            const props = boot.props || {};
+            try {
+                const Page = resolveComponent(await gi(boot.page), "");
+                const layouts = await Promise.all((boot.layouts || []).map(async (key) => {
+                    return resolveComponent(await gi(key), "");
+                }));
+                let root;
+                if (boot.mode === "document") {
+                    root = RDC.hydrateRoot(document, buildTree(Page, props, layouts));
+                } else if (boot.mode === "shell") {
+                    // The server rendered the layouts around an empty page, with no params. Hydrate
+                    // exactly that, then show the page once hydration has committed.
+                    const Gate = () => {
+                        const [ready, setReady] = React.useState(false);
+                        React.useEffect(() => setReady(true), []);
+                        return ready ? React.createElement(Page, props) : null;
+                    };
+                    root = RDC.hydrateRoot(document, buildTree(Gate, {}, layouts, {}));
+                } else {
+                    root = RDC.createRoot(document);
+                    root.render(buildTree(Page, props, layouts));
+                }
+                document.__nexyRoot = root;
+            } catch(e) {
+                console.error("[Nexy] Failed to mount the document:", e);
+            }
+        }
+
         function init() {
+            const boot = document.getElementById("__nexy_page");
+            if (boot) {
+                try {
+                    mountDocument(JSON.parse(boot.textContent || "{}"));
+                } catch(e) {
+                    console.error("[Nexy] Invalid page description:", e);
+                }
+                return;
+            }
             const nodes = document.querySelectorAll('[data-nexy-fw="react"]');
             nodes.forEach((el) => {
                 if (el.hasAttribute("data-nexy-island")) {
@@ -113,6 +167,10 @@ def react() -> FrontendFramework:
         // Client navigation: re-render into the root that already hosts the page, so the
         // layouts keep their state; only the page element changes.
         w.__nexy_render = (Comp, container, props, layouts) => {
+            if (document.__nexyRoot) {
+                document.__nexyRoot.render(buildTree(Comp, props || {}, layouts || []));
+                return;
+            }
             const host = container.querySelector(':scope > [data-nexy-fw="react"]') || container;
             let tree = React.createElement(Comp, props || {});
             const chain = layouts || [];
@@ -122,6 +180,8 @@ def react() -> FrontendFramework:
             if (!host.__nexyRoot) host.__nexyRoot = RDC.createRoot(host);
             host.__nexyRoot.render(React.createElement(React.StrictMode, null, tree));
         };
+        w.__nexy_renderers = w.__nexy_renderers || {};
+        w.__nexy_renderers.react = w.__nexy_render;
 
         if (document.readyState === "loading") {
             document.addEventListener("DOMContentLoaded", init);

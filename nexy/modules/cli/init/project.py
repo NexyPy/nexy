@@ -72,4 +72,4 @@ class InitProject:
             console.print(
                 "[red]nexy[/red] » " + t("init.already", "Project already initialized here")
             )
-            raise AlreadyInitializedError()
+            raise AlreadyInitializedError

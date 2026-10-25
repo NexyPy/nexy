@@ -51,7 +51,7 @@ def main(
 
     if version:
         console.print(f"[green]nexy[/green] {VERSION}")
-        raise typer.Exit()
+        raise typer.Exit
     if ctx.invoked_subcommand is None:
         console.print()
         console.print(f"[bold green]nexy[/bold green] [dim]{VERSION}[/dim]")

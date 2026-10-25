@@ -30,7 +30,7 @@ def resolve_router(
         server.include_router(cast("APIRouter", router_source))
 
     if Path("src/routes").exists():
-        fb_router = FBRouter()
+        fb_router = FBRouter(router=server.router)
         fb_router.register_on(server)
         return fb_router
     return None

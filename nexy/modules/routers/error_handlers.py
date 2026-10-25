@@ -1,20 +1,34 @@
-from typing import Any, cast
+import html
 
 from fastapi import FastAPI, Request, Response, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import HTMLResponse, JSONResponse
 from starlette.exceptions import HTTPException
 
 from nexy.errors import InternalServerError, NotFound
 
 
-def handle_http_exception(_request: Request, exc: HTTPException) -> Response:
-    """Map HTTP exceptions to Nexy error pages (404, 500 and a plain fallback)."""
+def _wants_json(request: Request) -> bool:
+    """True for clients that ask for JSON and not for a page (API clients, fetch with headers)."""
+    accept = request.headers.get("accept", "").lower()
+    return "application/json" in accept and "text/html" not in accept
+
+
+def handle_http_exception(request: Request, exc: HTTPException) -> Response:
+    """Map HTTP exceptions to JSON for API clients, else to Nexy error pages."""
+    headers = getattr(exc, "headers", None)
+    if _wants_json(request):
+        return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=headers)
     if exc.status_code == status.HTTP_404_NOT_FOUND:
         return NotFound()
     if exc.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:
         return InternalServerError()
-    return Response(
-        content=f"<h1>{exc.status_code} - {exc.detail}</h1>", status_code=exc.status_code
+    # The detail may carry user input (HTTPException(detail=f"No user {name}")): escape it.
+    return HTMLResponse(
+        content=f"<h1>{exc.status_code} - {html.escape(str(exc.detail))}</h1>",
+        status_code=exc.status_code,
+        headers=headers,
     )
 
 
@@ -28,11 +42,13 @@ def register_validation_error_handler(server: FastAPI) -> None:
     """
 
     @server.exception_handler(RequestValidationError)
-    async def _handle_validation(_request: Request, exc: RequestValidationError) -> Response:
+    async def _handle_validation(request: Request, exc: RequestValidationError) -> Response:
         errors = exc.errors()
         if errors and all(e.get("loc") and e["loc"][0] == "path" for e in errors):
+            if _wants_json(request):
+                return JSONResponse({"detail": "Not Found"}, status_code=status.HTTP_404_NOT_FOUND)
             return NotFound()
-        # fastapi.RequestValidationError exposes .json() at runtime; its type
-        # stubs do not, so the narrow cast documents that reality.
-        json_text = cast(Any, exc).json()
-        return Response(content=json_text, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={"detail": jsonable_encoder(errors)},
+        )

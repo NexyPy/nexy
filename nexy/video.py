@@ -1,3 +1,15 @@
+import html
+
+
+def _source_tag(path: str) -> str:
+    """A `<source>` tag whose attributes cannot be broken out of by the path."""
+    extension = path.split(".")[-1]
+    return (
+        f'<source src="{html.escape(path, quote=True)}" '
+        f'type="video/{html.escape(extension, quote=True)}" />'
+    )
+
+
 def video(
     src: str,
     width: int | None = None,
@@ -48,13 +60,15 @@ def video(
         attrs["muted"] = ""
 
     attrs.update(kwargs)
-    attr_str = " ".join([f'{k}="{v}"' if v else k for k, v in attrs.items()])
+    attr_str = " ".join(
+        f'{k}="{html.escape(str(v), quote=True)}"' if v else k for k, v in attrs.items()
+    )
 
     source_tags = ""
     if sources:
         for s in sources:
-            source_tags += f'<source src="{s}" type="video/{s.split(".")[-1]}" />'
+            source_tags += _source_tag(s)
     else:
-        source_tags = f'<source src="{src}" type="video/{src.split(".")[-1]}" />'
+        source_tags = _source_tag(src)
 
     return f"<video {attr_str}>{source_tags}</video>"

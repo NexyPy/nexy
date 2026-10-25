@@ -5,7 +5,6 @@ import re
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from fastapi import Request
 from starlette.datastructures import MutableHeaders
 
 from nexy.core.config import Config
@@ -27,6 +26,7 @@ class LocaleMiddleware:
         self._available = available
         self._default = default
         self._cookie_name = cookie_name
+        self._cookie_headers: dict[str, str] = {}
         self._prefix_re = re.compile(
             r"^/({})($|/)".format("|".join(re.escape(loc) for loc in available))
         )
@@ -40,15 +40,30 @@ class LocaleMiddleware:
             return locale, rest
         return None
 
-    def _detect_from_cookie(self, request: Request) -> str | None:
-        val = request.cookies.get(self._cookie_name)
-        if val and val in self._available:
-            return val
-        return None
+    def _cookie_from_header(self, raw: bytes | None) -> str | None:
+        """The locale cookie's value from a raw ``Cookie`` header, parsed like Starlette does."""
+        if raw is None:
+            return None
+        found: str | None = None
+        for chunk in raw.decode("latin-1").split(";"):
+            key, sep, value = chunk.partition("=")
+            if sep and key.strip() == self._cookie_name:
+                found = self._cookie_text(value.strip())
+        return found
 
-    def _detect_from_header(self, request: Request) -> str | None:
-        header = request.headers.get("Accept-Language", "")
-        for part in header.split(","):
+    def _cookie_text(self, value: str) -> str:
+        """A cookie value without its surrounding quotes, decoded by the stdlib parser."""
+        if value[:1] != '"':
+            return value
+        parsed: http.cookies.BaseCookie[str] = http.cookies.SimpleCookie()
+        parsed.load(f"{self._cookie_name}={value}")
+        morsel = parsed.get(self._cookie_name)
+        return morsel.value if morsel is not None else value
+
+    def _detect_from_accept_language(self, raw: bytes | None) -> str | None:
+        if raw is None:
+            return None
+        for part in raw.decode("latin-1").split(","):
             tag = part.split(";")[0].strip().split("-")[0].lower()
             if tag in self._available:
                 return tag
@@ -63,6 +78,24 @@ class LocaleMiddleware:
         cookie[self._cookie_name]["samesite"] = "lax"
         return cookie.output(header="").strip()
 
+    def _set_cookie_header(self, locale: str) -> str:
+        cached = self._cookie_headers.get(locale)
+        if cached is None:
+            cached = self._cookie_headers[locale] = self._cookie_value(locale)
+        return cached
+
+    @staticmethod
+    def _request_headers(headers: list[tuple[bytes, bytes]]) -> tuple[bytes | None, bytes | None]:
+        """The ``Cookie`` and ``Accept-Language`` values; repeated headers are joined (RFC 9113)."""
+        cookies: list[bytes] = []
+        languages: list[bytes] = []
+        for name, value in headers:
+            if name == b"cookie":
+                cookies.append(value)
+            elif name == b"accept-language":
+                languages.append(value)
+        return (b"; ".join(cookies) or None, b", ".join(languages) or None)
+
     async def __call__(
         self,
         scope: dict[str, Any],
@@ -73,9 +106,11 @@ class LocaleMiddleware:
             await self.app(scope, receive, send)
             return
 
-        request = Request(scope)
-        scope.setdefault("state", {})
-        matched = self._detect_from_url(request.url.path)
+        raw_cookie, raw_language = self._request_headers(scope["headers"])
+
+        state = scope.setdefault("state", {})
+        matched = self._detect_from_url(scope.get("root_path", "") + scope["path"])
+        existing = self._cookie_from_header(raw_cookie)
 
         if matched:
             locale, new_path = matched
@@ -83,19 +118,16 @@ class LocaleMiddleware:
             scope["root_path"] = ""
         else:
             locale = (
-                self._detect_from_cookie(request)
-                or self._detect_from_header(request)
+                (existing if existing in self._available else None)
+                or self._detect_from_accept_language(raw_language)
                 or self._default
             )
 
-        scope["state"]["locale"] = locale
-
-        existing = request.cookies.get(self._cookie_name)
+        state["locale"] = locale
         token = current_locale.set(locale)
         try:
             if existing != locale:
-                cookie_value = self._cookie_value(locale)
-                send = self._send_with_cookie(send, cookie_value)
+                send = self._send_with_cookie(send, self._set_cookie_header(locale))
             await self.app(scope, receive, send)
         finally:
             current_locale.reset(token)

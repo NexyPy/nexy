@@ -14,6 +14,7 @@ import uvicorn as _uvicorn
 
 from nexy.core.config import Config
 from nexy.helpers.common.console import console as print_console
+from nexy.helpers.common.vite_launch import vite_argv
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.ports import find_available_port
 from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
@@ -227,38 +228,17 @@ class Server:
         return False
 
     @staticmethod
-    def _vite_argv(build: bool, port: int, ssl: bool) -> list[str]:
-        """Build the argv that runs the project's local Vite binary.
+    def _vite_argv(build: bool, port: int, ssl: bool = False) -> list[str]:
+        """Build the argv that starts the project's Vite.
 
-        The package manager runner is deliberately bypassed: pnpm 10+ may run
-        an implicit install before a script, and `nexy dev` must never mutate
-        node_modules. Invoking node directly has no such side effect.
+        *ssl* is accepted for callers but unused: Uvicorn terminates TLS and the dev proxy
+        reaches Vite over loopback HTTP, so Vite never runs in HTTPS mode.
 
         Raises:
             RuntimeError: Node.js or the project's Vite install is missing.
         """
-        node = shutil.which("node") or shutil.which("node.exe")
-        if node is None:
-            raise RuntimeError(
-                "Node.js is not installed. Install Node.js 20 or later, then reinstall "
-                "the project dependencies."
-            )
-
-        vite = Path("node_modules") / "vite" / "bin" / "vite.js"
-        if not vite.is_file():
-            from nexy.helpers.common.package_manager import detect
-
-            manager = detect() or "npm"
-            raise RuntimeError(f"Vite is not installed in this project. Run: {manager} install")
-
-        argv = [node, str(vite)]
-        if build:
-            argv.append("build")
-        else:
-            argv.extend(["--port", str(port), "--host"])
-            if ssl:
-                argv.append("--https")
-        return argv
+        del ssl
+        return vite_argv(build, port)
 
     @staticmethod
     def vite(

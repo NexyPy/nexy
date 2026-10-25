@@ -368,8 +368,19 @@ def _register_controller(ctrl_cls: type[Any], parent_router: APIRouter) -> None:
                 "name": route_name,
                 "dependencies": dependencies or None,
             }
-            if route_meta is not None and route_meta.tags is not None:
-                route_kwargs["tags"] = route_meta.tags
+            if route_meta is not None:
+                for field in (
+                    "tags",
+                    "summary",
+                    "description",
+                    "deprecated",
+                    "include_in_schema",
+                    "operation_id",
+                    "openapi_extra",
+                ):
+                    value = getattr(route_meta, field)
+                    if value is not None:
+                        route_kwargs[field] = value
             if response_meta is not None:
                 if response_meta.status_code is not None:
                     route_kwargs["status_code"] = response_meta.status_code

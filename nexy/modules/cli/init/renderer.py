@@ -23,10 +23,6 @@ class TemplateRenderer:
     FW_SUFFIXES = {".react", ".vue", ".svelte", ".solid", ".preact", ".none"}
     FILTER_SUFFIXES = FW_SUFFIXES
 
-    # The root layout owns the HTML document in every web project, even when
-    # client routing excludes the other .nexy views.
-    ALWAYS_KEEP = {"layout.nexy"}
-
     FW_EXT_MAP = {
         "none": ".nexy",
         "vue": ".vue",
@@ -69,7 +65,7 @@ class TemplateRenderer:
             is_jinja2 = target_rel.suffix == ".jinja2"
             dest_path = self.dest / str(target_rel)
             final_path = dest_path.with_suffix("") if is_jinja2 else dest_path
-            if final_path.name not in self.ALWAYS_KEEP and (
+            if (
                 src_path.suffix in self.exclude_suffixes
                 or final_path.suffix in self.exclude_suffixes
             ):

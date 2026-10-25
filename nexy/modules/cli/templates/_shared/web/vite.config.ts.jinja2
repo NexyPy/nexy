@@ -25,7 +25,7 @@ export default defineConfig({
     {%- elif client_framework == "svelte" %}
     svelte(),
     {%- elif client_framework == "solid" %}
-    solid(),
+    solid({% if useCSR %}{ ssr: true }{% endif %}),
     {%- elif client_framework == "preact" %}
     preact(),
     {%- endif %}

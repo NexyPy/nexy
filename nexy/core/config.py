@@ -74,7 +74,12 @@ class Config:
     MARKDOWN_EXTENSIONS: list[str] = list(_DEFAULT_MARKDOWN_EXTENSIONS)
     TARGET_EXTENSIONS: list[str] = [".nexy", ".md", ".mdx", ".tsx", ".jsx", ".vue", ".svelte"]
     FRAMEWORK_REGISTRY: dict[str, FrontendFramework] = {}
-    ROUTE_FILE_EXCEPTIONS: list[str] = ["__init__.py", "layout.nexy", "dependencies.py"]
+    ROUTE_FILE_EXCEPTIONS: list[str] = [
+        "__init__.py",
+        "layout.nexy",
+        "dependencies.py",
+        "middleware.py",
+    ]
     ROUTE_FILE_DEFAULT: list[str] = ["index.py", "index.nexy", "index.mdx", "index.md"]
     LAYOUT_FILE_NAMES: list[str] = ["layout.nexy"]
     NOTFOUND_FILE_NAMES: list[str] = ["notfound.nexy"]
@@ -316,12 +321,13 @@ class Config:
 
         Config.TARGET_EXTENSIONS = [ext for ext in Config.ROUTE_FILE_EXTENSIONS if ext != ".py"]
 
-        # .nexy views are disabled in CSR, but the root layout.nexy still owns the HTML
-        # document, so .nexy must stay a build target.
-        if Config.useCSR and ".nexy" not in Config.TARGET_EXTENSIONS:
-            Config.TARGET_EXTENSIONS.append(".nexy")
+        if Config.useCSR:
+            # Client routing owns the views: .nexy is not a source file anymore, and no
+            # layout.nexy exists - the root layout.tsx owns the HTML document. Watching .nexy
+            # would only trigger pointless rebuilds.
+            Config.WATCH_EXTENSIONS = [ext for ext in Config.WATCH_EXTENSIONS if ext != ".nexy"]
 
-        include_nexy = True
+        include_nexy = not Config.useCSR
         Config.LAYOUT_FILE_NAMES = self.derive_special_names(
             "layout",
             registry,
@@ -352,6 +358,7 @@ class Config:
                 [
                     "__init__.py",
                     "dependencies.py",
+                    "middleware.py",
                     *Config.LAYOUT_FILE_NAMES,
                 ]
             )
