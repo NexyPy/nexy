@@ -32,9 +32,42 @@ The binary is `nx` (also installed as `nexy`). Without a global install, prefix 
 ## Output
 
 Long steps (installing packages, compiling, bundling) show a spinner with the elapsed time, then
-leave one line behind: `✔ Installed Python dependencies  1.4s`. A failing step prints the last
+leave one line behind: `✔ uv sync .venv  1.4s`. A group of steps (the installs of `nx new`) shows a
+progress bar with the number of finished steps, `━━━━────  2/5`; a single step (`nx add`) shows a
+bar that pulses while it runs. Dev logs read `GET » /about 200 in 12ms` for requests and
+`vite » ...` for Vite. A failing step prints the last
 lines of the command's output instead of hiding it. Terminals that cannot render Unicode get
 `+` and `x`.
+
+## Questions of `nx new`
+
+`nx new` asks, in this order: file-based router, project type (web or API), client-side routing,
+client framework, how to style the app, database, ORM and database URL. Questions that do not
+apply are skipped (an API project has no framework or style; "None" as the database skips the ORM).
+Every select ends with **Back**, which returns to the previous question that was asked.
+
+| Question | Choices |
+|---|---|
+| Style | Tailwind CSS, UnoCSS, Vanilla CSS, Other (no CSS tool, same plain stylesheet as Vanilla) |
+| Database | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Other (you type the URL), None |
+| ORM | SQLModel, SQLAlchemy, Tortoise-ORM |
+
+The database driver for the chosen ORM is installed with it (`psycopg`, `pymysql`, `asyncpg` or
+`aiomysql`), and the URL is written to `.env`.
+
+Before installing packages, `nx new` checks the connection. Without one, it skips the installs and
+tells you to run `uv sync` and your package manager's install later. With one, it prints the
+latency and download speed, and warns when the connection is slow (over 400 ms, or under
+100 KB/s). Each install line names the tool and the folder it fills, for example
+`pnpm install node_modules` or `uv sync .venv`.
+
+## What `dev`, `build` and `start` create
+
+Before they run, the three commands create an empty `__init__.py` in `src/` and in every folder
+under it that holds a `.py` or `.nexy` file, so a route such as `src/routes/users.py` imports the
+same way in all of them. Existing files are never touched, and `nx dev` does the same again when
+you add a folder. Python bytecode goes to `__nexy__/__pycache__`, so no `__pycache__` folder
+appears next to your sources.
 
 ## Language
 
