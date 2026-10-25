@@ -3,7 +3,9 @@ import functools
 import importlib
 import inspect
 import re
+import traceback
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Depends, FastAPI, Request, status
@@ -47,6 +49,16 @@ def _route_clean_path(path_str: str, locale: str | None) -> str:
     if locale:
         relative = relative.removesuffix(f".{locale}")
     return relative.rsplit(".", 1)[0]
+def _describe_import_error(error: BaseException) -> str:
+    """``Type: message`` plus the file and line that raised it (a bare ``'src'`` says nothing)."""
+    text = f"{type(error).__name__}: {error}"
+    frames = traceback.extract_tb(error.__traceback__)
+    if not frames:
+        return text
+    last = frames[-1]
+    return f"{text} ({Path(last.filename).name}:{last.lineno})"
+
+
 
 
 def _lazy_component(
@@ -335,7 +347,8 @@ class FBRouter:
                 console.print(f"  [yellow]WARN[/yellow] {app_path.name} ({app_path}): {imp_exc}")
                 continue
             except Exception as exc:
-                console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {exc}")
+                reason = _describe_import_error(exc)
+                console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {reason}")
                 continue
 
             clean = _route_clean_path(path_str, locale)
