@@ -1,12 +1,16 @@
 import os
 import shutil
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
+from nexy.helpers.common.network import Connection, format_speed, probe, quality
 from nexy.helpers.common.tasks import run_task
 from nexy.modules.i18n import t
+
+from .databases import driver_packages
 
 _ORM_PACKAGES: dict[str, str] = {
     "SQLModel": "sqlmodel",
@@ -58,9 +62,19 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
 class DependencyInstaller:
     """Handles automatic installation of dependencies for different project types."""
 
-    def __init__(self, directory: Path = Path("."), orm: str | None = None):
+    def __init__(
+        self,
+        directory: Path = Path("."),
+        orm: str | None = None,
+        database: str = "none",
+        probe: Callable[[], Connection] = probe,
+    ):
         self.directory = directory
         self.orm = orm
+        self.database = database
+        self.probe = probe
+        self._finished = 0
+        self._total = 0
         self.is_windows = os.name == "nt"
         self.venv_dir = directory / ".venv"
 
@@ -70,15 +84,68 @@ class DependencyInstaller:
         return str(self.venv_dir / "bin" / "python")
 
     def _run(self, cmd: list[str], label: str, done: str | None = None) -> bool:
-        return run_task(label, cmd, cwd=self.directory, done=done).ok
+        place = (self._finished, self._total) if self._total > 1 else None
+        self._finished += 1
+        return run_task(label, cmd, cwd=self.directory, done=done, progress=place).ok
+
+    def _count_steps(self) -> int:
+        """How many tasks `install_all` is about to run, for the progress bar."""
+        steps = int(shutil.which("uv") is None) + int(not self.venv_dir.exists())
+        steps += int(
+            (self.directory / "package.json").exists()
+            and (self.directory / "vite.config.ts").exists()
+        )
+        steps += int((self.directory / "pyproject.toml").exists())
+        if self.orm in _ORM_PACKAGES:
+            steps += 2 + len(_ORM_EXTRA_PACKAGES.get(self.orm, []))
+            steps += len(driver_packages(self.database, self.orm))
+        return steps
 
     def install_all(self) -> None:
+        if not self._network_is_usable():
+            return
+        self._finished, self._total = 0, self._count_steps()
         self._install_uv()
         self.create_venv()
         self.install_node_dependencies()
         self.install_python_dependencies()
         self.install_orm()
         self._remove_egg_info()
+
+    def _network_is_usable(self) -> bool:
+        """Look at the connection; say what it is, and skip the installs when there is none."""
+        connection = self.probe()
+        state = quality(connection)
+        if state == "offline":
+            console.print(
+                "[yellow]![/yellow] "
+                + t("init.network.offline", "No connection: packages were not installed.")
+            )
+            console.print(
+                t(
+                    "init.network.offline_hint",
+                    "When you are online, run uv sync and your package manager's install "
+                    "in the project folder.",
+                )
+            )
+            return False
+        console.print(self._connection_line(connection))
+        if state == "slow":
+            console.print(
+                "[yellow]![/yellow] "
+                + t("init.network.slow", "Slow connection: installing packages may take a while.")
+            )
+        return True
+
+    @staticmethod
+    def _connection_line(connection: Connection) -> str:
+        latency = f"{connection.latency_ms:.0f}"
+        if connection.speed_kbps is None:
+            return t("init.network.latency", "Connection: {latency} ms").format(latency=latency)
+        speed = format_speed(connection.speed_kbps)
+        return t("init.network.speed", "Connection: {latency} ms, {speed}").format(
+            latency=latency, speed=speed
+        )
 
     def _install_uv(self) -> None:
         if shutil.which("uv") is not None:
@@ -116,28 +183,21 @@ class DependencyInstaller:
                 return
             cmd = package_manager.install_argv(pm, allow_builds=("esbuild",))
 
-            label = t("init.installing_node", "Installing Node.js dependencies")
-            done = t("init.node_installed", "Installed Node.js dependencies with {pm}").format(
-                pm=pm
-            )
-            ok = self._run(cmd, label, done)
+            label = f"{pm} install node_modules"
+            ok = self._run(cmd, label, label)
             if not ok and pm == "npm":
                 console.print(
                     "[yellow]![/yellow] "
                     + t("init.node_retry", "Retrying with --legacy-peer-deps...")
                 )
-                self._run([*cmd, "--legacy-peer-deps"], label, done)
+                self._run([*cmd, "--legacy-peer-deps"], label, label)
 
     def install_python_dependencies(self) -> None:
         pyproject = self.directory / "pyproject.toml"
         if not pyproject.exists():
             return
 
-        self._run(
-            ["uv", "sync"],
-            t("init.installing_python", "Installing Python dependencies"),
-            t("init.python_installed", "Installed Python dependencies"),
-        )
+        self._run(["uv", "sync"], "uv sync .venv")
 
     def install_orm(self) -> None:
         if not self.orm or self.orm == "None":
@@ -145,18 +205,15 @@ class DependencyInstaller:
         package = _ORM_PACKAGES.get(self.orm)
         if not package:
             return
-        self._run(["uv", "add", package], *self._install_labels(self.orm))
+        self._add(package)
         for extra in _ORM_EXTRA_PACKAGES.get(self.orm, []):
-            self._run(["uv", "add", extra], *self._install_labels(extra))
-        self._run(["uv", "add", "python-dotenv"], *self._install_labels("python-dotenv"))
+            self._add(extra)
+        for driver in driver_packages(self.database, self.orm):
+            self._add(driver)
+        self._add("python-dotenv")
 
-    @staticmethod
-    def _install_labels(name: str) -> tuple[str, str]:
-        """The progress line and the done line of installing one package."""
-        return (
-            t("init.installing_package", "Installing {name}").format(name=name),
-            t("init.installed_package", "Installed {name}").format(name=name),
-        )
+    def _add(self, package: str) -> bool:
+        return self._run(["uv", "add", package], f"uv add .venv {package}")
 
     def _remove_egg_info(self) -> None:
         for item in self.directory.glob("**/*.egg-info"):

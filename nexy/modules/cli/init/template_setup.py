@@ -76,6 +76,8 @@ def _render_local_template(
     context = {
         "orm": config.get("orm", "None"),
         "db_url": config.get("db_url"),
+        "database": config.get("database", "none"),
+        "style": config.get("style", "tailwind"),
         "project_name": project_name,
         "project_type": config.get("project_type", "web"),
         "FBRouter": config.get("FBRouter", False),
@@ -189,7 +191,7 @@ def _run_post_init_pipeline(
     orm = config.get("orm", "None")
     db_url = config.get("db_url")
 
-    installer = DependencyInstaller(dest, orm=orm)
+    installer = DependencyInstaller(dest, orm=orm, database=config.get("database", "none"))
     installer.install_all()
 
     generate_post_init_files(dest, orm, db_url)

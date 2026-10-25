@@ -28,4 +28,6 @@ class TemplateResolver:
             "useCSR": False,
             "orm": "None",
             "db_url": None,
+            "database": "none",
+            "style": "tailwind",
         }
