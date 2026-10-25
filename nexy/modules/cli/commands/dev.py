@@ -57,11 +57,11 @@ def _require_vite_install() -> None:
         return
 
     manager = package_manager.detect() or "npm"
-    console.print("\n[red]  ✘[/red] Node.js dependencies are missing.")
-    console.print(f"    Run: [cyan]{manager} install[/cyan]")
-    console.print(
-        "\n    [dim]nexy dev does not install dependencies; nexy init and nexy new do.[/dim]"
-    )
+    console.print(f"\n[red]  ✘[/red] {t('dev.deps_missing', 'Node.js dependencies are missing.')}")
+    command = f"[cyan]{manager} install[/cyan]"
+    console.print("    " + t("dev.deps_run", "Run: {command}").format(command=command))
+    hint = t("dev.deps_hint", "nexy dev does not install dependencies; nexy init and nexy new do.")
+    console.print(f"\n    [dim]{hint}[/dim]")
     sys.exit(1)
 
 
@@ -72,12 +72,12 @@ def _report_failures(result: BuildResult) -> None:
 
 
 def _await_compile(build: "Future[BuildResult]") -> BuildResult:
-    with console.status("\n[green]nsc[/green] » compile ...", spinner="dots"):
+    label = t("dev.compiling_status", "Compiling...")
+    with console.status(f"\n[dim]{label}[/dim]", spinner="dots"):
         started = time.perf_counter()
         result = build.result()
-        launcher.success(
-            f"{t('dev.compiling', 'compiled')} in {time.perf_counter() - started:.2f}s"
-        )
+        elapsed = f"{time.perf_counter() - started:.2f}s"
+        launcher.success(t("dev.compiled_in", "Compiled in {time}").format(time=elapsed))
         _report_failures(result)
     return result
 
@@ -110,7 +110,8 @@ def _settle_vite(session: _Session, result: BuildResult, client_port: int) -> No
     if result.failed:
         _drop_vite(session)
         return
-    with console.status("[dim]  starting dev server...[/dim]", spinner="dots"):
+    label = t("dev.starting_vite", "Starting the dev server...")
+    with console.status(f"[dim]  {label}[/dim]", spinner="dots"):
         ready = Server.wait_for_vite_ready(client_port, process=session.vite)
         vite_seconds = time.perf_counter() - session.vite_started_at
     console.print(
@@ -118,8 +119,9 @@ def _settle_vite(session: _Session, result: BuildResult, client_port: int) -> No
         f" [dim]vite[/dim] [dim]{vite_seconds:.2f}s[/dim]\n"
     )
     if not ready:
-        console.print("[red]  ✘[/red] Vite failed to start.")
-        console.print("    [dim]Read the Vite output above for the cause.[/dim]")
+        console.print(f"[red]  ✘[/red] {t('dev.vite_failed', 'Vite failed to start.')}")
+        cause = t("dev.vite_failed_hint", "Read the Vite output above for the cause.")
+        console.print(f"    [dim]{cause}[/dim]")
         _drop_vite(session)
         sys.exit(1)
 
@@ -234,13 +236,13 @@ def _serve(config: Config, endpoint: _Endpoint, session: _Session, started: floa
         _print_banner(endpoint, time.perf_counter() - started)
         reloader.serve(endpoint)
     except KeyboardInterrupt:
-        console.print("\n  [dim]Stopping servers...[/dim]")
+        console.print(f"\n  [dim]{t('dev.stopping', 'Stopping servers...')}[/dim]")
     except SystemExit:
         pass
     except Exception as error:
-        console.print(f"\n  [red]Error: {error}[/red]")
+        console.print(f"\n  [red]{t('dev.error', 'Error: {error}').format(error=error)}[/red]")
     finally:
-        console.print("  [dim]Cleaning up...[/dim]")
+        console.print(f"  [dim]{t('dev.cleaning', 'Cleaning up...')}[/dim]")
         stop_observer(observer)
         Server.stop_process(session.vite)
         console.print(f"[red]nexy » {t('dev.exited', 'exited')} [reset]")

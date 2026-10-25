@@ -16,7 +16,6 @@ The binary is `nx` (also installed as `nexy`). Without a global install, prefix 
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (prettier), `.nexy` files |
 | `nx test` | - | run pytest; `--client` adds vitest |
-| `nx translate` | `nx t`, `nx trans` | generate locale files |
 
 ## Flags
 
@@ -36,6 +35,20 @@ Long steps (installing packages, compiling, bundling) show a spinner with the el
 leave one line behind: `✔ Installed Python dependencies  1.4s`. A failing step prints the last
 lines of the command's output instead of hiding it. Terminals that cannot render Unicode get
 `+` and `x`.
+
+## Language
+
+The command line speaks English, Chinese, Hindi, Spanish, Portuguese, French, German, Japanese,
+Russian, Korean, Indonesian and Arabic. It uses the first of these that it supports:
+
+1. the `NEXY_LANG` environment variable (`NEXY_LANG=ja nx dev`);
+2. the locale variables of your shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, then `LANGUAGE`);
+3. the language of your operating system.
+
+Anything else is English, and so is any message a language does not have yet. Only what `nx`
+prints is translated: compiler errors, tracebacks and the output of the tools it runs stay as they
+are. The translations have not been reviewed by native speakers yet:
+corrections are welcome as pull requests to `nexy/modules/i18n/<language>.json`.
 
 ## Build behaviour
 

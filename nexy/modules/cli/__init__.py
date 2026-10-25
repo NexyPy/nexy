@@ -44,7 +44,10 @@ CLI = typer.Typer(
 
 @CLI.callback(invoke_without_command=True)
 def main(
-    ctx: typer.Context, version: bool = typer.Option(False, "--version", "-v", help="Show version")
+    ctx: typer.Context,
+    version: bool = typer.Option(
+        False, "--version", "-v", help=t("cli.help_version", "Show version")
+    ),
 ) -> None:
     """Main entry point executed when no command is provided."""
 

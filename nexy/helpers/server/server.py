@@ -18,6 +18,7 @@ from nexy.helpers.common.vite_launch import vite_argv
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.ports import find_available_port
 from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
+from nexy.modules.i18n import t
 
 _WIN_ASYNCIO_PATCHED = False
 
@@ -199,7 +200,8 @@ class Server:
 
         except Exception as exc:
             traceback.print_exc()
-            print_console.print(f"[red]✘ Server launch failed:[/red] {exc}")
+            failure = t("server.launch_failed", "Server launch failed:")
+            print_console.print(f"[red]✘ {failure}[/red] {exc}")
             return None
 
     @staticmethod

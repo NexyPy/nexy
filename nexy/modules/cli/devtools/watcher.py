@@ -7,13 +7,16 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from rich.markup import escape
 from watchdog.events import FileSystemEvent, PatternMatchingEventHandler
 from watchdog.observers import Observer
 
 from nexy.core.config import Config
 from nexy.core.string import StringTransform
 from nexy.helpers.common.console import console
+from nexy.helpers.server.access_log import format_duration
 from nexy.modules.compiler import Compiler
+from nexy.modules.i18n import t
 from nexy.modules.runtime.hmr import HMR_MANAGER
 
 
@@ -131,14 +134,16 @@ class WatchHandler(PatternMatchingEventHandler):
         self.compiler.compile(path)
         self._purge_route_modules(path)
         elapsed = time.perf_counter() - start
-        console.print(
-            f"[green]nsc[/green] » [green]compile[/green]"
-            f" [dim]{path}[/dim] in [dim]{elapsed:.2f}s[/dim]"
+        took = format_duration(elapsed)
+        done = t("watch.compiled", "Compiled {path} in {time}").format(
+            path=f"[dim]{path}[/dim]", time=f"[dim]{took}[/dim]"
         )
+        console.print(f"  [green]✓[/green] {done}")
 
     def _broadcast_compile_error(self, path: str, error: Exception) -> None:
-        console.print(f"[red]nsc[/red] » [red]error[/red] while compiling [dim]{path}[/dim]")
-        console.print(f"[red]│[/red] [bold]{type(error).__name__}:[/bold] {str(error)}")
+        failed = t("watch.compile_failed", "Failed to compile {path}")
+        console.print(f"  [red]x[/red] {failed.format(path=f'[dim]{path}[/dim]')}")
+        console.print(f"    [bold]{type(error).__name__}:[/bold] {escape(str(error))}")
         if HMR_MANAGER.loop:
             hint = getattr(error, "hint", None)
             message = str(error)
@@ -166,12 +171,12 @@ class WatchHandler(PatternMatchingEventHandler):
                 )
                 self._log_hmr_timing(path, start_time)
         elif self.on_reload_api and path.endswith(".py"):
+            console.print(f"  [yellow]~[/yellow] [dim]{path}[/dim]")
             try:
                 self.on_reload_api()
             except Exception as e:
-                console.print(
-                    f"[red]hmr[/red] » [red]error[/red] failed to restart server: {str(e)}"
-                )
+                reason = t("watch.restart_failed", "Failed to restart the server: {error}")
+                console.print(f"[red]hmr[/red] » [red]{reason.format(error=e)}[/red]")
 
     def _log_hmr_timing(self, path: str, start_time: float | None) -> None:
         if start_time is None:
@@ -363,7 +368,8 @@ def stop_observer(observer: Any) -> None:
         observer.stop()
         observer.join(timeout=2)
     except Exception as e:
-        console.print(f"  [dim]Warning: Could not stop watcher cleanly: {e}[/dim]")
+        reason = t("watch.stop_failed", "Could not stop the watcher cleanly: {error}")
+        console.print(f"  [dim]{reason.format(error=e)}[/dim]")
 
 
 def create_observer(

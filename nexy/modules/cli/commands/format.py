@@ -34,9 +34,8 @@ def format_(check: bool = False) -> None:
 def _format_python(root: Path, check: bool) -> int:
     exe = shutil.which("ruff")
     if not exe:
-        console.print(
-            f"  [yellow]\u26a0[/yellow] {t('format.skip_tool', 'ruff not found - skipping Python')}"
-        )
+        skip = t("format.skip_tool", "{tool} not found - skipping {scope}")
+        console.print(f"  [yellow]\u26a0[/yellow] {skip.format(tool='ruff', scope='Python')}")
         return 0
     files = collect_files(root, _PY_EXTS)
     if not files:
@@ -56,8 +55,8 @@ def _format_ts(root: Path, check: bool) -> int:
     files = collect_files(root, _TS_EXTS)
     if not exe:
         if files:
-            msg = t("format.skip_tool", "prettier not found - skipping JS/TS")
-            console.print(f"  [yellow]\u26a0[/yellow] {msg}")
+            msg = t("format.skip_tool", "{tool} not found - skipping {scope}")
+            console.print(f"  [yellow]\u26a0[/yellow] {msg.format(tool='prettier', scope='JS/TS')}")
         return 0
     if not files:
         return 0

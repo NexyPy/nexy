@@ -36,17 +36,17 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
     pm = node_package_manager(dest)
     if pm is None:
         warning_msg = f"[yellow]{t('add.warning', 'Warning:')}[/yellow] " + t(
-            "add.no_pm", "No package manager found. Please install dependencies manually:"
+            "add.no_pm", "No package manager found. Please install dependencies manually: {names}"
         )
-        console.print(warning_msg + ", ".join(deps))
+        console.print(warning_msg.format(names=", ".join(deps)))
         return
 
     names = ", ".join(deps)
     result = run_task(
-        f"{t('add.installing', 'Installing')} {names}",
+        t("add.installing", "Installing {names}").format(names=names),
         package_manager.add_argv(pm, deps),
         cwd=dest,
-        done=f"{t('add.installed', 'Installed')} {names}",
+        done=t("add.installed", "Installed {names}").format(names=names),
     )
     if not result.ok:
         console.print(
@@ -83,7 +83,11 @@ class DependencyInstaller:
     def _install_uv(self) -> None:
         if shutil.which("uv") is not None:
             return
-        self._run([sys.executable, "-m", "pip", "install", "uv"], "Installing uv", "Installed uv")
+        self._run(
+            [sys.executable, "-m", "pip", "install", "uv"],
+            t("init.installing_uv", "Installing uv"),
+            t("init.installed_uv", "Installed uv"),
+        )
 
     def create_venv(self) -> None:
         if self.venv_dir.exists():
@@ -91,8 +95,8 @@ class DependencyInstaller:
 
         self._run(
             ["uv", "venv", str(self.venv_dir)],
-            "Creating virtual environment",
-            "Created virtual environment",
+            t("init.venv.creating", "Creating virtual environment"),
+            t("init.venv.created", "Created virtual environment"),
         )
 
     def install_node_dependencies(self) -> None:
@@ -141,11 +145,17 @@ class DependencyInstaller:
         package = _ORM_PACKAGES.get(self.orm)
         if not package:
             return
-        self._run(["uv", "add", package], f"Installing {self.orm}", f"Installed {self.orm}")
+        self._run(["uv", "add", package], *self._install_labels(self.orm))
         for extra in _ORM_EXTRA_PACKAGES.get(self.orm, []):
-            self._run(["uv", "add", extra], f"Installing {extra}", f"Installed {extra}")
-        self._run(
-            ["uv", "add", "python-dotenv"], "Installing python-dotenv", "Installed python-dotenv"
+            self._run(["uv", "add", extra], *self._install_labels(extra))
+        self._run(["uv", "add", "python-dotenv"], *self._install_labels("python-dotenv"))
+
+    @staticmethod
+    def _install_labels(name: str) -> tuple[str, str]:
+        """The progress line and the done line of installing one package."""
+        return (
+            t("init.installing_package", "Installing {name}").format(name=name),
+            t("init.installed_package", "Installed {name}").format(name=name),
         )
 
     def _remove_egg_info(self) -> None:

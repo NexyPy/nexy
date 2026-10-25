@@ -256,7 +256,8 @@ def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
         return
 
     with console.status(
-        f"[yellow]nexy[/yellow] » Initializing {tool}...",
+        "[yellow]nexy[/yellow] » "
+        + t("init.migration_tool", "Initializing {tool}...").format(tool=tool),
         spinner="dots",
     ):
         if tool == "aerich":

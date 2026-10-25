@@ -5,6 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from nexy.helpers.common.process import run_tool
 from nexy.modules.cli.constants import TEMPLATES_DIR
+from nexy.modules.i18n import t
 
 
 def _detect_orm() -> tuple[str, str]:
@@ -51,7 +52,11 @@ def _detect_orm() -> tuple[str, str]:
 def _run_tool(tool: str, args: list[str]) -> int:
     returncode = run_tool(tool, args)
     if returncode is None:
-        typer.echo(f"Error: {tool} not found on PATH. Install it and try again.")
+        typer.echo(
+            t(
+                "migrate.tool_missing", "Error: {tool} not found on PATH. Install it and try again."
+            ).format(tool=tool)
+        )
         raise typer.Exit(1)
     return returncode
 
@@ -112,7 +117,9 @@ def _check_db_connection() -> None:
 
     db_url = os.getenv("DATABASE_URL")
     if not db_url:
-        typer.echo("Error: DATABASE_URL not found in .env or environment.")
+        typer.echo(
+            t("migrate.no_database_url", "Error: DATABASE_URL not found in .env or environment.")
+        )
         raise typer.Exit(1)
 
     try:
@@ -123,23 +130,40 @@ def _check_db_connection() -> None:
             conn.execute(text("SELECT 1"))
         engine.dispose()
     except ImportError as e:
-        typer.echo(f"Error: Missing database driver - {e}")
+        typer.echo(
+            t("migrate.no_driver", "Error: Missing database driver - {error}").format(error=e)
+        )
         raise typer.Exit(1) from e
     except Exception as e:
-        typer.echo(f"Error: Cannot connect to database - {e}")
+        typer.echo(
+            t("migrate.no_connection", "Error: Cannot connect to database - {error}").format(
+                error=e
+            )
+        )
         raise typer.Exit(1) from e
 
 
 def migrate(
-    message: str = typer.Option("", "--message", "-m", help="Migration message"),
-    init: bool = typer.Option(False, "--init", help="Initialize migration tool"),
-    upgrade: bool = typer.Option(False, "--upgrade", "-u", help="Apply pending migrations"),
+    message: str = typer.Option(
+        "", "--message", "-m", help=t("migrate.help_message", "Migration message")
+    ),
+    init: bool = typer.Option(
+        False, "--init", help=t("migrate.help_init", "Initialize migration tool")
+    ),
+    upgrade: bool = typer.Option(
+        False, "--upgrade", "-u", help=t("migrate.help_upgrade", "Apply pending migrations")
+    ),
 ) -> None:
     orm_name, tool = _detect_orm()
     cwd = Path.cwd()
 
     if not orm_name:
-        typer.echo("No supported ORM found. Install one: sqlmodel, tortoise-orm, sqlalchemy")
+        typer.echo(
+            t(
+                "migrate.no_orm",
+                "No supported ORM found. Install one: sqlmodel, tortoise-orm, sqlalchemy",
+            )
+        )
         raise typer.Exit(1)
 
     typer.echo(f"-- {orm_name} ({tool}) --")
@@ -152,11 +176,18 @@ def migrate(
         return
 
     if tool == "alembic" and not (cwd / "alembic.ini").exists():
-        typer.echo("Alembic not initialized. Run 'nx m --init' first.")
+        typer.echo(
+            t(
+                "migrate.alembic_not_initialized",
+                "Alembic not initialized. Run 'nx m --init' first.",
+            )
+        )
         raise typer.Exit(1)
 
     if tool == "aerich" and not (cwd / "aerich.ini").exists():
-        typer.echo("Aerich not initialized. Run 'nx m --init' first.")
+        typer.echo(
+            t("migrate.aerich_not_initialized", "Aerich not initialized. Run 'nx m --init' first.")
+        )
         raise typer.Exit(1)
 
     _check_db_connection()

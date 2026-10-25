@@ -53,14 +53,13 @@ def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str 
     pin. The digest of what was fetched is always printed so it can be pinned.
     """
     if not _is_allowed_url(url):
-        error_msg = f"[red]{t('add.error', 'Error:')}[/red] Only https:// URLs are supported."
+        only_https = t("add.https_only", "Only https:// URLs are supported.")
+        error_msg = f"[red]{t('add.error', 'Error:')}[/red] {only_https}"
         console.print(error_msg)
         return None
     try:
-        status_msg = (
-            f"[yellow]nexy[/yellow] » "
-            f"{t('add.fetching', 'Fetching remote component from')} {url}..."
-        )
+        fetching = t("add.fetching", "Fetching remote component from {url}...")
+        status_msg = f"[yellow]nexy[/yellow] » {fetching.format(url=url)}"
         # Scheme and host validated by _is_allowed_url; redirects re-checked by _SafeRedirect.
         opener = urllib.request.build_opener(_SafeRedirect)
         with (
@@ -78,10 +77,8 @@ def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str 
         console.print(f"[dim]sha256 {digest}[/dim]")
         return raw.decode("utf-8")
     except Exception as e:
-        error_msg = (
-            f"[red]{t('add.error', 'Error:')}[/red] "
-            f"{t('add.fetch_failed', 'Failed to fetch component from')} {url}: {e}"
-        )
+        failed = t("add.fetch_failed", "Failed to fetch component from {url}: {error}")
+        error_msg = f"[red]{t('add.error', 'Error:')}[/red] {failed.format(url=url, error=e)}"
         console.print(error_msg)
         return None
 
@@ -130,10 +127,8 @@ def _print_available_components() -> None:
         f"{t('add.usage_text', 'nexy add [COMPONENT_NAME or URL]...')}"
     )
     console.print(usage_msg)
-    available_msg = (
-        f"{t('add.available', 'Available UI components:')} "
-        f"[cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
-    )
+    names = f"[cyan]{', '.join(COMPONENT_REGISTRY.keys())}[/cyan]"
+    available_msg = t("add.available", "Available UI components: {names}").format(names=names)
     console.print(available_msg)
 
 
@@ -174,19 +169,18 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
     file_path = target_dir / f"{name}.nexy"
 
     if file_path.exists():
-        skip_msg = (
-            f"[yellow]{t('add.skipping', 'Skipping:')}[/yellow] "
-            f"{file_path} {t('add.exists', 'already exists.')}"
-        )
+        exists = t("add.exists", "Skipping: {path} already exists.")
+        skip_msg = f"[yellow]{exists.format(path=file_path)}[/yellow]"
         console.print(skip_msg)
         return
 
     try:
         PathUtil.write_file(file_path, wrap_component_script(content, framework))
-        console.print(f"[green]{t('add.added', 'Added:')}[/green] {file_path}")
+        added = t("add.added", "Added: {path}").format(path=file_path)
+        console.print(f"[green]{added}[/green]")
     except Exception as e:
+        failed = t("add.write_failed", "Failed to write {path}: {error}")
         error_msg = (
-            f"[red]{t('add.error', 'Error:')}[/red] "
-            f"{t('add.write_failed', 'Failed to write')} {file_path}: {e}"
+            f"[red]{t('add.error', 'Error:')}[/red] {failed.format(path=file_path, error=e)}"
         )
         console.print(error_msg)

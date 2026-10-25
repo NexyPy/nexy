@@ -33,9 +33,8 @@ def _check_python(root: Path) -> bool:
         return True
     exe = shutil.which("mypy")
     if not exe:
-        console.print(
-            f"  [yellow]\u26a0[/yellow] {t('check.skip_tool', 'mypy not found - skipping Python')}"
-        )
+        skip = t("check.skip_tool", "{tool} not found - skipping {scope}")
+        console.print(f"  [yellow]\u26a0[/yellow] {skip.format(tool='mypy', scope='Python')}")
         return True
     with console.status("  mypy ..."):
         r = subprocess.run([exe, str(root)], capture_output=True, text=True)  # nosec B603
@@ -46,8 +45,8 @@ def _check_python(root: Path) -> bool:
 def _check_typescript() -> bool:
     tsc_exe = shutil.which("tsc")
     if not tsc_exe:
-        skip = t("check.skip_tool", "tsc not found - skipping TypeScript")
-        console.print(f"  [yellow]\u26a0[/yellow] {skip}")
+        skip = t("check.skip_tool", "{tool} not found - skipping {scope}")
+        console.print(f"  [yellow]\u26a0[/yellow] {skip.format(tool='tsc', scope='TypeScript')}")
         return True
     with console.status("  tsc ..."):
         r = subprocess.run([tsc_exe, "-b"], capture_output=True, text=True)  # nosec B603/B607
