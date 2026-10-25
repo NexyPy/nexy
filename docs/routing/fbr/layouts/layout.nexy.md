@@ -11,7 +11,7 @@ from nexy import Vite
 children: prop[NexyElement]
 ---
 <!DOCTYPE html>
-<html lang="{{ locale }}">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,6 @@ children: prop[NexyElement]
 - `<!DOCTYPE html>`, `<html>`, `<head>` and `<body>` live here and nowhere else.
 - `<Vite />` injects the client scripts and styles once, in the `<head>`.
 - `{{ children | safe }}` is where the page, or the next nested layout, renders.
-- `{{ locale }}` is the locale of the request. See [i18n](../../../guides/i18n.md).
 
 ## Nested layouts
 

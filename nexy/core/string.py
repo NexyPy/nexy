@@ -72,13 +72,6 @@ class StringTransform:
 
         stem, ext = filename.rsplit(".", 1)
 
-        if "." in stem:
-            from nexy.core.config import Config as _NexyConfig
-
-            _cfg = _NexyConfig()
-            if _cfg.useLocales and stem.rsplit(".", 1)[1] in _cfg.useLocales:
-                stem = stem.replace(".", "_")
-
         if "[" in stem and "]" in stem:
             stem = re.sub(r"\[\.\.\.([^\]]+)\]", r"\1", stem)
             stem = re.sub(r"\[([^\]]+)\]", r"\1", stem)

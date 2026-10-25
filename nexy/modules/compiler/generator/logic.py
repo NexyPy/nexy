@@ -142,13 +142,10 @@ class LogicGenerator:
             "(lambda: children if locals().get('children') else '')"
         )
 
-        extras = "'trans': __trans, '__locale': __current_locale.get()"
         if context_items != "":
-            context_items += f", 'Slot': Slot, {extras}"
+            context_items += ", 'Slot': Slot"
         else:
-            context_items = f"'Slot': Slot, {extras}"
-
-        t_local = "trans = __trans\n    t = __trans"
+            context_items = "'Slot': Slot"
 
         existing_props = [p.name for p in self.source.props]
 
@@ -168,8 +165,6 @@ class LogicGenerator:
 from fastapi import *
 from pathlib import Path as __Path
 from nexy import Template as __Template
-from nexy.modules.i18n.core import current_locale as __current_locale
-from nexy.modules.i18n.core import trans as __trans
 from nexy.helpers.imports.component_import import _Import as __Import
 from nexy.modules.routers.actions.store import ACTIONS_STORE as __ACTIONS_STORE
 from jinja2 import Template as __JinjaTemplate
@@ -178,7 +173,6 @@ NexyElement = Union[callable, __JinjaTemplate]
 {module_imports}
 def {self.func_name}({props}) -> str:
     {slot}
-    {t_local}
 {logic}
     {layout_children}
     # Add actions to context (both function and path)

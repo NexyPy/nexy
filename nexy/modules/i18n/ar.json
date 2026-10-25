@@ -1,0 +1,183 @@
+{
+  "add": {
+    "added": "تمت الإضافة: {path}",
+    "available": "مكوّنات الواجهة المتاحة: {names}",
+    "error": "خطأ:",
+    "exists": "تم التخطي: {path} موجود مسبقًا.",
+    "fetch_failed": "تعذّر جلب المكوّن من {url}: {error}",
+    "fetching": "جارٍ جلب المكوّن البعيد من {url}...",
+    "help_all": "إضافة كل المكوّنات المتاحة من السجل",
+    "help_components": "المكوّنات المراد إضافتها (أسماء من السجل أو عناوين URL)",
+    "help_sha": "قيمة SHA-256 المتوقعة لمكوّن بعيد (يُلغى الأمر عند عدم التطابق)",
+    "help_ui": "فرض التعامل معها كمكوّنات واجهة",
+    "help_url": "فرض التعامل معها كعناوين URL",
+    "https_only": "عناوين URL التي تبدأ بـ https:// فقط مدعومة.",
+    "install_failed": "تعذّر تثبيت الاعتماديات",
+    "installed": "تم تثبيت {names}",
+    "installing": "جارٍ تثبيت {names}",
+    "no_pm": "لم يتم العثور على مدير حزم. ثبّت الاعتماديات يدويًا: {names}",
+    "not_found": "المكوّن '{name}' غير موجود في السجل.",
+    "usage": "الاستخدام:",
+    "usage_text": "nexy add [اسم_المكوّن أو URL]...",
+    "warning": "تنبيه:",
+    "write_failed": "تعذّرت كتابة {path}: {error}"
+  },
+  "build": {
+    "building_client": "تم بناء حزمة العميل",
+    "checks_failed": "فشلت الفحوصات",
+    "checks_passed": "نجحت جميع الفحوصات",
+    "client_components": "مكوّنات العميل",
+    "compiling_routes": "تم تجميع المسارات",
+    "compiling_server": "تم تجميع مكوّنات الخادم",
+    "creating": "جارٍ إنشاء بناء إنتاجي محسّن",
+    "failed_client": "فشل بناء العميل",
+    "failed_components": "فشل {count} مكوّن",
+    "failed_label": "فشل البناء",
+    "routes": "المسارات",
+    "server_components": "مكوّنات الخادم",
+    "skipped_label": "تم التخطي (من الذاكرة المؤقتة)",
+    "success_build": "اكتمل البناء في {time}",
+    "success_label": "نجح البناء"
+  },
+  "check": {
+    "compiling": "جارٍ تجميع ملفات .nexy/.mdx ...",
+    "failed": "فشل {count} قسم",
+    "passed": "نجحت جميع الفحوصات",
+    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}"
+  },
+  "cli": {
+    "cmd": {
+      "build": "تجميع المشروع للنشر في بيئة الإنتاج",
+      "check": "فحص الأنواع في جميع ملفات المشروع",
+      "dev": "تشغيل خادم التطوير المحلي مع إعادة التحميل الفوري",
+      "format": "تنسيق جميع ملفات المشروع تلقائيًا",
+      "init": "تهيئة Nexy في المجلد الحالي",
+      "migrate": "تشغيل ترحيلات ORM (يُكتشف ORM تلقائيًا)",
+      "new": "إنشاء مشروع جديد في مجلد جديد",
+      "start": "تشغيل خادم الإنتاج",
+      "test": "تشغيل الاختبارات (--server / --client)"
+    },
+    "commands_header": "الأوامر المتاحة:",
+    "help": "أداة سطر أوامر Nexy",
+    "help_version": "عرض الإصدار",
+    "new": {
+      "error_chars": "استخدم الحروف والأرقام والشرطات والشرطات السفلية فقط.",
+      "error_empty": "لا يمكن أن يكون اسم المشروع فارغًا.",
+      "error_exists": "المجلد '{name}' موجود مسبقًا.",
+      "error_letter": "يجب أن يبدأ اسم المشروع بحرف.",
+      "failed": "تعذّر إنشاء المشروع",
+      "help_arg": "اسم المشروع المراد إنشاؤه (يُنشئ مجلدًا جديدًا)",
+      "help_template": "التهيئة من قالب مسجّل (مثل web-fbr-react).",
+      "prompt": "اسم المشروع:",
+      "template_unknown": "القالب '{template}' غير معروف."
+    },
+    "tagline": "إطار العمل الحديث الشامل الذي يعمل ببساطة",
+    "usage": "شغّل nx أو nexy <الأمر> --help لعرض الاستخدام بالتفصيل"
+  },
+  "dev": {
+    "cleaning": "جارٍ التنظيف...",
+    "compiled_in": "تم التجميع في {time}",
+    "compiling_status": "جارٍ التجميع...",
+    "deps_hint": "الأمر nexy dev لا يثبّت الاعتماديات؛ يفعل ذلك nexy init و nexy new.",
+    "deps_missing": "اعتماديات Node.js غير موجودة.",
+    "deps_run": "شغّل: {command}",
+    "error": "خطأ: {error}",
+    "exited": "تم الإيقاف",
+    "init_error": "حدث خطأ أثناء التهيئة:",
+    "local": "محلي:",
+    "network": "الشبكة:",
+    "ready": "جاهز:",
+    "restarting": "جارٍ إعادة التشغيل...",
+    "routes_failed": "تعذّر تحديث مسارات العميل: {error}",
+    "starting_vite": "جارٍ تشغيل خادم التطوير...",
+    "stop": "اضغط Ctrl+C للإيقاف",
+    "stopping": "جارٍ إيقاف الخوادم...",
+    "vite_failed": "تعذّر تشغيل Vite.",
+    "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب."
+  },
+  "format": {
+    "failed": "فشل {count} ملف",
+    "passed": "اكتمل التنسيق",
+    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}"
+  },
+  "init": {
+    "already": "المشروع مهيّأ هنا مسبقًا",
+    "ask": {
+      "client_component": "هل تريد استخدام مكوّن عميل؟",
+      "csr": "هل تريد تفعيل التوجيه من جهة العميل (التنقل دون إعادة تحميل الصفحة كاملة)؟",
+      "db_type": "اختر قاعدة البيانات",
+      "db_url": "عنوان URL لقاعدة البيانات",
+      "framework": "اختر إطار عمل العميل",
+      "orm": "اختر ORM",
+      "project_type": "اختر نوع المشروع",
+      "router": "هل تريد استخدام الموجّه المعتمد على الملفات؟"
+    },
+    "checkout_failed": "تعذّر استخراج ملفات القالب '{path}'.",
+    "choice": {
+      "api": "API (واجهة RESTful)",
+      "web": "ويب (تطبيق ويب متكامل)"
+    },
+    "error": "فشلت التهيئة: {error}",
+    "git_restore": "تعذّرت استعادة .git السابق",
+    "initializing": "جارٍ تهيئة {name}...",
+    "installed_package": "تم تثبيت {name}",
+    "installed_uv": "تم تثبيت uv",
+    "installing_node": "جارٍ تثبيت اعتماديات Node.js",
+    "installing_package": "جارٍ تثبيت {name}",
+    "installing_python": "جارٍ تثبيت اعتماديات Python",
+    "installing_uv": "جارٍ تثبيت uv",
+    "merging": "المجلد ليس فارغًا، جارٍ دمج الملفات...",
+    "migration_tool": "جارٍ تهيئة {tool}...",
+    "next_steps": "الخطوات التالية",
+    "node_installed": "تم تثبيت اعتماديات Node.js باستخدام {pm}",
+    "node_manager_not_found": "لم يتم العثور على مدير حزم لـ Node.js. ثبّت bun أو pnpm أو npm.",
+    "node_retry": "جارٍ إعادة المحاولة باستخدام --legacy-peer-deps...",
+    "python_installed": "تم تثبيت اعتماديات Python",
+    "step_activate_venv": "تفعيل البيئة الافتراضية",
+    "step_help": "استكشاف الأوامر المتاحة",
+    "step_run_dev": "تشغيل خادم التطوير",
+    "success_title": "تمت تهيئة المشروع بنجاح!",
+    "template_not_found": "لم يتم العثور على القالب أو الفرع '{branch}' في المستودع البعيد.",
+    "venv": {
+      "created": "تم إنشاء البيئة الافتراضية",
+      "creating": "جارٍ إنشاء البيئة الافتراضية"
+    }
+  },
+  "migrate": {
+    "aerich_not_initialized": "Aerich غير مهيّأ. شغّل 'nx m --init' أولًا.",
+    "alembic_not_initialized": "Alembic غير مهيّأ. شغّل 'nx m --init' أولًا.",
+    "help_init": "تهيئة أداة الترحيل",
+    "help_message": "رسالة الترحيل",
+    "help_upgrade": "تطبيق الترحيلات المعلّقة",
+    "no_connection": "خطأ: تعذّر الاتصال بقاعدة البيانات - {error}",
+    "no_database_url": "خطأ: لم يتم العثور على DATABASE_URL في ملف .env أو في البيئة.",
+    "no_driver": "خطأ: برنامج تشغيل قاعدة البيانات مفقود - {error}",
+    "no_orm": "لم يتم العثور على ORM مدعوم. ثبّت أحدها: sqlmodel أو tortoise-orm أو sqlalchemy",
+    "tool_missing": "خطأ: لم يتم العثور على {tool} في PATH. ثبّته ثم حاول مرة أخرى."
+  },
+  "server": {
+    "launch_failed": "فشل تشغيل الخادم:"
+  },
+  "start": {
+    "exited": "تم الإيقاف",
+    "local": "محلي:",
+    "network": "الشبكة:",
+    "ready": "جاهز:",
+    "stop": "اضغط Ctrl+C للإيقاف"
+  },
+  "test": {
+    "failed": "فشلت {count} عملية تشغيل للاختبارات",
+    "help_args": "وسائط إضافية تُمرَّر إلى مشغّل الاختبارات",
+    "help_client": "تشغيل اختبارات العميل (vitest)",
+    "help_server": "تشغيل اختبارات الخادم (pytest)",
+    "passed": "نجحت جميع الاختبارات",
+    "skip_client": "لم يتم إعداد vitest: تم تخطي اختبارات العميل",
+    "skip_tool": "لم يتم العثور على pytest: تم تخطي اختبارات الخادم"
+  },
+  "watch": {
+    "compile_failed": "فشل تجميع {path}",
+    "compiled": "تم تجميع {path} في {time}",
+    "restart_failed": "تعذّرت إعادة تشغيل الخادم: {error}",
+    "stop_failed": "تعذّر إيقاف المراقب بشكل سليم: {error}"
+  }
+}

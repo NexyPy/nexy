@@ -214,12 +214,6 @@ class NexyConfigModel:
     useAuth: dict[str, Any] | None = None
     useSslKeyfile: str | None = None
     useSslCertfile: str | None = None
-    useLocales: list[str] | None = None
-    useLocalesDir: str | None = None
-    useLocalesSourceDir: str | None = None
-    useDefaultLocale: str = "en"
-    useLocaleCookieName: str = "nexy-locale"
-    useLocaleDetection: dict[str, bool] | None = None
     useRTL: bool = False
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"

@@ -1,0 +1,183 @@
+{
+  "add": {
+    "added": "Ajouté : {path}",
+    "available": "Composants UI disponibles : {names}",
+    "error": "Erreur :",
+    "exists": "Ignoré : {path} existe déjà.",
+    "fetch_failed": "Impossible de récupérer le composant depuis {url} : {error}",
+    "fetching": "Récupération du composant distant depuis {url}...",
+    "help_all": "Ajouter tous les composants disponibles du registre",
+    "help_components": "Composants à ajouter (noms du registre ou URL)",
+    "help_sha": "SHA-256 attendu d'un composant distant (abandon en cas de différence)",
+    "help_ui": "Forcer le traitement comme composants UI",
+    "help_url": "Forcer le traitement comme URL",
+    "https_only": "Seules les URL https:// sont prises en charge.",
+    "install_failed": "Échec de l'installation des dépendances",
+    "installed": "{names} installé",
+    "installing": "Installation de {names}",
+    "no_pm": "Aucun gestionnaire de paquets trouvé. Installez les dépendances manuellement : {names}",
+    "not_found": "Composant « {name} » introuvable dans le registre.",
+    "usage": "Utilisation :",
+    "usage_text": "nexy add [NOM_DU_COMPOSANT ou URL]...",
+    "warning": "Attention :",
+    "write_failed": "Impossible d'écrire {path} : {error}"
+  },
+  "build": {
+    "building_client": "Bundle client construit",
+    "checks_failed": "vérifications en échec",
+    "checks_passed": "toutes les vérifications ont réussi",
+    "client_components": "composants client",
+    "compiling_routes": "Routes compilées",
+    "compiling_server": "Composants serveur compilés",
+    "creating": "Création d'un build de production optimisé",
+    "failed_client": "échec du build client",
+    "failed_components": "{count} composant(s) en échec",
+    "failed_label": "Build en échec",
+    "routes": "routes",
+    "server_components": "composants serveur",
+    "skipped_label": "Ignoré (en cache)",
+    "success_build": "build terminé en {time}",
+    "success_label": "Build réussi"
+  },
+  "check": {
+    "compiling": "compilation des fichiers .nexy/.mdx ...",
+    "failed": "{count} section(s) en échec",
+    "passed": "toutes les vérifications ont réussi",
+    "skip_tool": "{tool} est introuvable : {scope} ignoré"
+  },
+  "cli": {
+    "cmd": {
+      "build": "Compiler le projet pour la production",
+      "check": "Vérifier les types de tous les fichiers du projet",
+      "dev": "Lancer le serveur de développement avec rechargement à chaud",
+      "format": "Formater automatiquement tous les fichiers du projet",
+      "init": "Initialiser Nexy dans le dossier courant",
+      "migrate": "Exécuter les migrations de l'ORM (détection automatique)",
+      "new": "Créer un nouveau projet dans un nouveau dossier",
+      "start": "Lancer le serveur de production",
+      "test": "Lancer les tests (--server / --client)"
+    },
+    "commands_header": "Commandes disponibles :",
+    "help": "CLI de Nexy",
+    "help_version": "Afficher la version",
+    "new": {
+      "error_chars": "Utilisez uniquement des lettres, des chiffres, des tirets et des tirets bas.",
+      "error_empty": "Le nom du projet ne peut pas être vide.",
+      "error_exists": "Le dossier « {name} » existe déjà.",
+      "error_letter": "Le nom du projet doit commencer par une lettre.",
+      "failed": "Impossible de créer le projet",
+      "help_arg": "Nom du projet à créer (crée un nouveau dossier)",
+      "help_template": "Initialiser depuis un modèle enregistré (par ex. web-fbr-react).",
+      "prompt": "Nom du projet :",
+      "template_unknown": "Modèle inconnu « {template} »."
+    },
+    "tagline": "Le framework full-stack moderne qui fonctionne tout simplement",
+    "usage": "Lancez nx ou nexy <commande> --help pour le détail d'utilisation"
+  },
+  "dev": {
+    "cleaning": "Nettoyage...",
+    "compiled_in": "Compilé en {time}",
+    "compiling_status": "Compilation...",
+    "deps_hint": "nexy dev n'installe pas les dépendances ; nexy init et nexy new le font.",
+    "deps_missing": "Les dépendances Node.js sont manquantes.",
+    "deps_run": "Exécutez : {command}",
+    "error": "Erreur : {error}",
+    "exited": "arrêté",
+    "init_error": "Erreur pendant l'initialisation :",
+    "local": "Local :",
+    "network": "Réseau :",
+    "ready": "Prêt :",
+    "restarting": "Redémarrage...",
+    "routes_failed": "Impossible de mettre à jour les routes client : {error}",
+    "starting_vite": "Démarrage du serveur de développement...",
+    "stop": "Ctrl+C pour arrêter",
+    "stopping": "Arrêt des serveurs...",
+    "vite_failed": "Vite n'a pas pu démarrer.",
+    "vite_failed_hint": "Consultez la sortie de Vite ci-dessus pour en connaître la cause."
+  },
+  "format": {
+    "failed": "{count} fichier(s) en échec",
+    "passed": "formatage terminé",
+    "skip_tool": "{tool} est introuvable : {scope} ignoré"
+  },
+  "init": {
+    "already": "Le projet est déjà initialisé ici",
+    "ask": {
+      "client_component": "Voulez-vous utiliser un composant client ?",
+      "csr": "Activer le routage côté client (navigation sans rechargement complet) ?",
+      "db_type": "Choisir la base de données",
+      "db_url": "URL de la base de données",
+      "framework": "Choisir le framework client",
+      "orm": "Choisir un ORM",
+      "project_type": "Choisir le type de projet",
+      "router": "Utiliser le routeur par fichiers ?"
+    },
+    "checkout_failed": "Impossible d'extraire les fichiers du modèle « {path} ».",
+    "choice": {
+      "api": "API (API RESTful)",
+      "web": "Web (application web monolithique)"
+    },
+    "error": "Échec de l'initialisation : {error}",
+    "git_restore": "impossible de restaurer l'ancien dossier .git",
+    "initializing": "Initialisation de {name}...",
+    "installed_package": "{name} installé",
+    "installed_uv": "uv installé",
+    "installing_node": "Installation des dépendances Node.js",
+    "installing_package": "Installation de {name}",
+    "installing_python": "Installation des dépendances Python",
+    "installing_uv": "Installation de uv",
+    "merging": "Le dossier n'est pas vide, fusion des fichiers...",
+    "migration_tool": "Initialisation de {tool}...",
+    "next_steps": "Prochaines étapes",
+    "node_installed": "Dépendances Node.js installées avec {pm}",
+    "node_manager_not_found": "Aucun gestionnaire de paquets Node.js trouvé. Installez bun, pnpm ou npm.",
+    "node_retry": "Nouvelle tentative avec --legacy-peer-deps...",
+    "python_installed": "Dépendances Python installées",
+    "step_activate_venv": "Activer l'environnement virtuel",
+    "step_help": "Découvrir les commandes disponibles",
+    "step_run_dev": "Lancer le serveur de développement",
+    "success_title": "Projet initialisé avec succès !",
+    "template_not_found": "Modèle ou branche « {branch} » introuvable sur le dépôt distant.",
+    "venv": {
+      "created": "Environnement virtuel créé",
+      "creating": "Création de l'environnement virtuel"
+    }
+  },
+  "migrate": {
+    "aerich_not_initialized": "Aerich n'est pas initialisé. Lancez d'abord « nx m --init ».",
+    "alembic_not_initialized": "Alembic n'est pas initialisé. Lancez d'abord « nx m --init ».",
+    "help_init": "Initialiser l'outil de migration",
+    "help_message": "Message de migration",
+    "help_upgrade": "Appliquer les migrations en attente",
+    "no_connection": "Erreur : connexion à la base de données impossible - {error}",
+    "no_database_url": "Erreur : DATABASE_URL est introuvable dans .env ou dans l'environnement.",
+    "no_driver": "Erreur : pilote de base de données manquant - {error}",
+    "no_orm": "Aucun ORM pris en charge. Installez-en un : sqlmodel, tortoise-orm, sqlalchemy",
+    "tool_missing": "Erreur : {tool} est introuvable dans le PATH. Installez-le puis réessayez."
+  },
+  "server": {
+    "launch_failed": "Échec du lancement du serveur :"
+  },
+  "start": {
+    "exited": "arrêté",
+    "local": "Local :",
+    "network": "Réseau :",
+    "ready": "Prêt :",
+    "stop": "Ctrl+C pour arrêter"
+  },
+  "test": {
+    "failed": "{count} exécution(s) de tests en échec",
+    "help_args": "Arguments supplémentaires transmis au lanceur de tests",
+    "help_client": "Lancer les tests client (vitest)",
+    "help_server": "Lancer les tests serveur (pytest)",
+    "passed": "tous les tests ont réussi",
+    "skip_client": "vitest n'est pas configuré : tests client ignorés",
+    "skip_tool": "pytest est introuvable : tests serveur ignorés"
+  },
+  "watch": {
+    "compile_failed": "Échec de la compilation de {path}",
+    "compiled": "{path} compilé en {time}",
+    "restart_failed": "Impossible de redémarrer le serveur : {error}",
+    "stop_failed": "Impossible d'arrêter proprement la surveillance : {error}"
+  }
+}

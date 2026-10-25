@@ -15,8 +15,6 @@ from nexy.core.config import Config
 from nexy.helpers.common.console import console
 from nexy.helpers.server.access_log import AccessLogMiddleware
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
-from nexy.modules.i18n import L as LocaleManager
-from nexy.modules.i18n.middleware import LocaleMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
 from nexy.modules.routers.error_handlers import (
     handle_http_exception,
@@ -129,17 +127,7 @@ class AppServer:
         )
         server = self.server
 
-        LocaleManager.configure(
-            available=self.config.useLocales or ["en"],
-            default=self.config.useDefaultLocale or "en",
-            project_locales_dir=str(Path(os.getcwd()) / (self.config.useLocalesDir or "locales")),
-        )
-        loc_count = len(self.config.useLocales or ["en"])
-        console.print(
-            f"[dim][nexy][/dim] Translations preloaded for [bold]{loc_count}[/bold] locales"
-        )
         install_directory_middleware(server, routes=self._file_routes)
-        server.add_middleware(LocaleMiddleware)
         server.add_middleware(PathMiddleware)
         setup_favicon(server, self.config.ROUTER_PATH)
         setup_static_files(server)

@@ -77,14 +77,6 @@ def test_layout_import_line_in_generated_source(tmp_path, monkeypatch) -> None:
     assert "    from __nexy__.src.routes.app.layout import Layout as __Layout" in body
 
 
-def test_locale_suffix_sets_meta_and_strips_stem(tmp_path, monkeypatch) -> None:
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(Config, "useLocales", ["fr", "en"])
-    _compile(tmp_path, "src/routes/docs/about.fr.md", MD)
-    meta = json.loads(VFS().read("__nexy__/src/routes/docs/about_fr.meta.json"))
-    assert meta["locale"] == "fr" and meta["component_name"] == "About"
-
-
 def test_wrapper_renders_markdown_with_heading_ids(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     install_vfs_importer()

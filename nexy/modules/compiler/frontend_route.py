@@ -33,8 +33,6 @@ _MODULE_IMPORTS = (
     "import json as __json\n"
     "from pathlib import Path as __Path\n"
     "from nexy import Template as __Template\n"
-    "from nexy.modules.i18n.core import current_locale as __current_locale\n"
-    "from nexy.modules.i18n.core import trans as __trans\n"
     "from jinja2 import Template as __JinjaTemplate\n"
     "NexyElement = Union[callable, __JinjaTemplate]\n"
 )
@@ -142,13 +140,10 @@ def _module_signature(layout_header: str, func_name: str, py_path: str, symbol: 
     return (
         f"{layout_header}\n"
         f"def {func_name}("
-        "__locale_info: Any = None, "
-        "trans: Any = None, "
         "caller: Any = None, "
         "children: str = '', "
         "**kwargs: Any"
         ") -> str:\n"
-        "    t = __trans\n"
         "    if caller is not None and callable(caller):\n"
         "        Slot = caller\n"
         "    else:\n"
@@ -215,8 +210,6 @@ from nexy.modules.runtime.csr_document import render_document as __render_docume
 
 
 def {func_name}(
-    __locale_info: Any = None,
-    trans: Any = None,
     caller: Any = None,
     children: str = "",
     **kwargs: Any,
@@ -255,36 +248,6 @@ def _document_module(
         static_stem=static_stem,
         dynamic=dynamic,
     )
-
-
-def _reject_locale_suffix(src: Path, ext: str, locales: list[str]) -> None:
-    """Block locale-suffixed framework route files (about.fr.tsx, guide.en.vue…).
-
-    Only .nexy and .mdx files support locale variants through FBR's
-    basename.locale.ext convention. For framework components, use
-    nexy.modules.i18n APIs inside the component instead. .mdx locale variants remain
-    LEGACY-supported through the frontmatter i18n pipeline.
-    """
-    stem = src.stem
-    if "." not in stem or not locales:
-        return
-
-    _base, maybe_locale = stem.rsplit(".", 1)
-    if maybe_locale in locales and ext != ".mdx":
-        from nexy.errors import NexyCompileError
-
-        locales_hint = ", ".join(sorted(locales))
-        raise NexyCompileError(
-            source_path=str(src.resolve()),
-            message=(
-                f"Locale suffix '.{maybe_locale}' is not supported on "
-                f"{ext!r} route files. For i18n pages, use "
-                f"*.nexy or *.mdx locale variants "
-                f"(e.g. page.{maybe_locale}.nexy) or handle locale "
-                f"switching inside the component itself "
-                f"(available locales: {locales_hint})."
-            ),
-        )
 
 
 def _route_module_paths(posix_src: str, stem: str) -> dict[str, Any]:
@@ -352,7 +315,6 @@ class FrontendRouteCompiler:
     def compile(self, *, input: str) -> None:
         src = Path(input)
         ext, framework = self._detect_framework(src, input)
-        _reject_locale_suffix(src, ext, self.config.useLocales or [])
 
         posix_src = src.as_posix()
         stem = src.stem
@@ -446,8 +408,6 @@ def _render_module_tail(template_abs_ref: str, render_wrapper: str) -> str:
         "        '__nexy_props': __json.dumps(kwargs),\n"
         "        'Slot': Slot,\n"
         "        'children': children,\n"
-        "        'trans': __trans,\n"
-        "        '__locale': __current_locale.get(),\n"
         "    }\n"
         "    context.update(kwargs)\n"
         f"    rendered = str(__Template().render({template_abs_ref!r}, context))\n"

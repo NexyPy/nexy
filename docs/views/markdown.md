@@ -13,7 +13,6 @@ table of contents, and wraps it in the nearest `layout.*`.
 Nexy is a fullstack Python meta-framework.
 ```
 
-- Locale variants: `about.fr.md` maps to a locale-specific route.
 - Frontmatter in `.md` is not used as Python logic. If you need server logic, use `.nexy`.
 - Layout wrapping, error pages and dynamic segments work the same way as other pages.
 
@@ -24,7 +23,6 @@ in the framework, server-rendered like other component routes.
 
 - Requires `useFF` to be React or Preact.
 - The framework is auto-detected from imports; if both are imported, React is used.
-- Locale variants are supported.
 
 > **Good to know**: use `.nexy` if you need Python logic in frontmatter.
 
@@ -32,4 +30,4 @@ in the framework, server-rendered like other component routes.
 
 - [.nexy files](nexyfile.md): the native page format
 - [Views](README.md): choose a format
-- [i18n](../guides/i18n.md): locale variants
+- [i18n](../guides/i18n.md): internationalization

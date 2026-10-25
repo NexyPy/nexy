@@ -1,0 +1,183 @@
+{
+  "add": {
+    "added": "已添加：{path}",
+    "available": "可用的 UI 组件：{names}",
+    "error": "错误：",
+    "exists": "已跳过：{path} 已存在。",
+    "fetch_failed": "无法从 {url} 获取组件：{error}",
+    "fetching": "正在从 {url} 获取远程组件...",
+    "help_all": "添加注册表中所有可用的组件",
+    "help_components": "要添加的组件（注册表名称或 URL）",
+    "help_sha": "远程组件的预期 SHA-256（不一致时中止）",
+    "help_ui": "强制按 UI 组件处理",
+    "help_url": "强制按 URL 处理",
+    "https_only": "仅支持 https:// 开头的 URL。",
+    "install_failed": "安装依赖失败",
+    "installed": "已安装 {names}",
+    "installing": "正在安装 {names}",
+    "no_pm": "未找到包管理器。请手动安装依赖：{names}",
+    "not_found": "在注册表中找不到组件“{name}”。",
+    "usage": "用法：",
+    "usage_text": "nexy add [组件名称 或 URL]...",
+    "warning": "警告：",
+    "write_failed": "无法写入 {path}：{error}"
+  },
+  "build": {
+    "building_client": "客户端包已构建",
+    "checks_failed": "检查失败",
+    "checks_passed": "所有检查均已通过",
+    "client_components": "客户端组件",
+    "compiling_routes": "路由已编译",
+    "compiling_server": "服务端组件已编译",
+    "creating": "正在创建优化后的生产构建",
+    "failed_client": "客户端构建失败",
+    "failed_components": "{count} 个组件失败",
+    "failed_label": "构建失败",
+    "routes": "路由",
+    "server_components": "服务端组件",
+    "skipped_label": "已跳过（缓存）",
+    "success_build": "构建完成，用时 {time}",
+    "success_label": "构建成功"
+  },
+  "check": {
+    "compiling": "正在编译 .nexy/.mdx 文件 ...",
+    "failed": "{count} 个部分失败",
+    "passed": "所有检查均已通过",
+    "skip_tool": "未找到 {tool}：跳过 {scope}"
+  },
+  "cli": {
+    "cmd": {
+      "build": "编译项目以用于生产部署",
+      "check": "对项目所有文件进行类型检查",
+      "dev": "启动带热重载的本地开发服务器",
+      "format": "自动格式化项目所有文件",
+      "init": "在当前目录初始化 Nexy",
+      "migrate": "运行 ORM 迁移（自动检测 ORM）",
+      "new": "在新目录中创建新项目",
+      "start": "启动生产服务器",
+      "test": "运行测试（--server / --client）"
+    },
+    "commands_header": "可用命令：",
+    "help": "Nexy 命令行工具",
+    "help_version": "显示版本",
+    "new": {
+      "error_chars": "只能使用字母、数字、连字符和下划线。",
+      "error_empty": "项目名称不能为空。",
+      "error_exists": "目录“{name}”已存在。",
+      "error_letter": "项目名称必须以字母开头。",
+      "failed": "无法创建项目",
+      "help_arg": "要创建的项目名称（会创建新目录）",
+      "help_template": "从已注册的模板初始化（例如 web-fbr-react）。",
+      "prompt": "项目名称：",
+      "template_unknown": "未知模板“{template}”。"
+    },
+    "tagline": "开箱即用的现代全栈框架",
+    "usage": "运行 nx 或 nexy <命令> --help 查看详细用法"
+  },
+  "dev": {
+    "cleaning": "正在清理...",
+    "compiled_in": "编译完成，用时 {time}",
+    "compiling_status": "正在编译...",
+    "deps_hint": "nexy dev 不会安装依赖；nexy init 和 nexy new 会安装。",
+    "deps_missing": "缺少 Node.js 依赖。",
+    "deps_run": "请运行：{command}",
+    "error": "错误：{error}",
+    "exited": "已退出",
+    "init_error": "初始化时出错：",
+    "local": "本地：",
+    "network": "网络：",
+    "ready": "就绪：",
+    "restarting": "正在重启...",
+    "routes_failed": "无法更新客户端路由：{error}",
+    "starting_vite": "正在启动开发服务器...",
+    "stop": "按 Ctrl+C 停止",
+    "stopping": "正在停止服务器...",
+    "vite_failed": "Vite 启动失败。",
+    "vite_failed_hint": "请查看上方的 Vite 输出以了解原因。"
+  },
+  "format": {
+    "failed": "{count} 个文件失败",
+    "passed": "格式化完成",
+    "skip_tool": "未找到 {tool}：跳过 {scope}"
+  },
+  "init": {
+    "already": "此处的项目已初始化",
+    "ask": {
+      "client_component": "是否使用客户端组件？",
+      "csr": "是否启用客户端路由（无需刷新整个页面即可跳转）？",
+      "db_type": "选择数据库",
+      "db_url": "数据库 URL",
+      "framework": "选择客户端框架",
+      "orm": "选择 ORM",
+      "project_type": "选择项目类型",
+      "router": "是否使用基于文件的路由？"
+    },
+    "checkout_failed": "无法提取模板“{path}”中的文件。",
+    "choice": {
+      "api": "API（RESTful API）",
+      "web": "Web（单体 Web 应用）"
+    },
+    "error": "初始化失败：{error}",
+    "git_restore": "无法恢复之前的 .git",
+    "initializing": "正在初始化 {name}...",
+    "installed_package": "已安装 {name}",
+    "installed_uv": "已安装 uv",
+    "installing_node": "正在安装 Node.js 依赖",
+    "installing_package": "正在安装 {name}",
+    "installing_python": "正在安装 Python 依赖",
+    "installing_uv": "正在安装 uv",
+    "merging": "目录不为空，正在合并文件...",
+    "migration_tool": "正在初始化 {tool}...",
+    "next_steps": "后续步骤",
+    "node_installed": "已使用 {pm} 安装 Node.js 依赖",
+    "node_manager_not_found": "未找到 Node.js 包管理器。请安装 bun、pnpm 或 npm。",
+    "node_retry": "正在使用 --legacy-peer-deps 重试...",
+    "python_installed": "已安装 Python 依赖",
+    "step_activate_venv": "激活虚拟环境",
+    "step_help": "查看可用命令",
+    "step_run_dev": "启动开发服务器",
+    "success_title": "项目初始化成功！",
+    "template_not_found": "在远程仓库中找不到模板或分支“{branch}”。",
+    "venv": {
+      "created": "已创建虚拟环境",
+      "creating": "正在创建虚拟环境"
+    }
+  },
+  "migrate": {
+    "aerich_not_initialized": "Aerich 尚未初始化。请先运行“nx m --init”。",
+    "alembic_not_initialized": "Alembic 尚未初始化。请先运行“nx m --init”。",
+    "help_init": "初始化迁移工具",
+    "help_message": "迁移说明",
+    "help_upgrade": "应用待执行的迁移",
+    "no_connection": "错误：无法连接到数据库 - {error}",
+    "no_database_url": "错误：在 .env 或环境变量中找不到 DATABASE_URL。",
+    "no_driver": "错误：缺少数据库驱动 - {error}",
+    "no_orm": "未找到受支持的 ORM。请安装其中一个：sqlmodel、tortoise-orm、sqlalchemy",
+    "tool_missing": "错误：在 PATH 中找不到 {tool}。请安装后重试。"
+  },
+  "server": {
+    "launch_failed": "服务器启动失败："
+  },
+  "start": {
+    "exited": "已退出",
+    "local": "本地：",
+    "network": "网络：",
+    "ready": "就绪：",
+    "stop": "按 Ctrl+C 停止"
+  },
+  "test": {
+    "failed": "{count} 次测试运行失败",
+    "help_args": "传递给测试运行器的额外参数",
+    "help_client": "运行客户端测试（vitest）",
+    "help_server": "运行服务端测试（pytest）",
+    "passed": "所有测试均已通过",
+    "skip_client": "未配置 vitest：跳过客户端测试",
+    "skip_tool": "未找到 pytest：跳过服务端测试"
+  },
+  "watch": {
+    "compile_failed": "编译 {path} 失败",
+    "compiled": "已编译 {path}，用时 {time}",
+    "restart_failed": "无法重启服务器：{error}",
+    "stop_failed": "无法正常停止文件监视：{error}"
+  }
+}

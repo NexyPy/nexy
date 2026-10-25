@@ -93,19 +93,15 @@ select = [
 # - NestJS-style decorators (N802): Controller, UseGuard, Injectable, ...
 # - `use*` hooks (N802): useRouter, useQuery, useSession, ...
 # - single-item re-exports (N812): Audio, Video, Image, Link
-# - `Vite`, `_Import`, `useLocale` (N802), and the `__()` i18n helper (N807)
+# - `Vite` and `_Import` (N802)
 [tool.ruff.lint.per-file-ignores]
 "nexy/core/config.py" = ["N815"]
 "nexy/core/models.py" = ["N815"]
 "nexy/decorators.py" = ["N802", "B010"]
 "nexy/hooks.py" = ["N802"]
 "nexy/errors.py" = ["N802"]
-"nexy/modules/i18n/core.py" = ["N802"]
 "nexy/helpers/imports/component_import.py" = ["N802"]
 "nexy/__init__.py" = ["N812"]
-# B010: dynamic dunder attributes on handlers/classes (route metadata,
-# i18n defaults); direct attribute access would be a mypy attr-defined error.
-"nexy/modules/i18n/i18n_decorator.py" = ["N807", "B010"]
 # typer.Option/typer.Argument as defaults is the documented typer idiom and
 # the established style of every CLI command in this codebase (B008 conflicts
 # with it). ARG001: the --ui flag of `nexy add` is kept for CLI compatibility.

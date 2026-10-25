@@ -9,25 +9,11 @@ from jinja2 import BaseLoader, Environment, TemplateNotFound
 from nexy.helpers.fs.vfs import VFS
 
 from .core.config import Config
-from .modules.i18n.core import current_locale, trans
 from .modules.runtime.markdown import inject_heading_ids as _inject_heading_ids
 from .modules.runtime.markdown import render_markdown as _cmark_render_markdown
 
 _ENV_LOCK = threading.Lock()
 _SHARED_ENV: Environment | None = None
-_LOCALE_INFO = [
-    {"code": "fr", "name": "Français", "flag": "🇫🇷"},
-    {"code": "en", "name": "English", "flag": "🇬🇧"},
-    {"code": "es", "name": "Español", "flag": "🇪🇸"},
-    {"code": "pt", "name": "Português", "flag": "🇵🇹"},
-    {"code": "de", "name": "Deutsch", "flag": "🇩🇪"},
-    {"code": "ru", "name": "Русский", "flag": "🇷🇺"},
-    {"code": "zh", "name": "中文", "flag": "🇨🇳"},
-    {"code": "ja", "name": "日本語", "flag": "🇯🇵"},
-    {"code": "ko", "name": "한국어", "flag": "🇰🇷"},
-    {"code": "ar", "name": "العربية", "flag": "🇸🇦"},
-    {"code": "hi", "name": "हिन्दी", "flag": "🇮🇳"},
-]
 
 
 class NexyTemplateLoader(BaseLoader):
@@ -75,13 +61,6 @@ def _get_shared_env() -> Environment:
             # HTML (see SECURITY.md); autoescape would double-escape
             # hand-written HTML props such as {{ children }}.
         )
-        env.globals["trans"] = lambda key, default=None: trans(
-            key, default=default, locale=current_locale.get()
-        )
-        env.globals["_locale_info"] = lambda: {
-            "current": current_locale.get(),
-            "available": _LOCALE_INFO,
-        }
         _SHARED_ENV = env
         return env
 

@@ -11,7 +11,6 @@ from nexy.helpers.common.console import console
 from nexy.modules.cli.commands import build, check, dev, format_, init, start, test
 from nexy.modules.cli.commands.migrate import migrate
 from nexy.modules.cli.commands.new import new
-from nexy.modules.cli.commands.translate import translate
 from nexy.modules.i18n import t
 
 if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
@@ -82,13 +81,6 @@ def main(
                 t("cli.cmd.test", "Run tests (--server / --client)"),
             ),
             ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
-            (
-                "translate",
-                t(
-                    "cli.cmd.translate",
-                    "Translate locale source (i18n.py) to all configured languages",
-                ),
-            ),
         ]
         max_cmd_len = max(len(cmd) for cmd, _ in commands)
         for cmd, desc in commands:
@@ -117,10 +109,6 @@ CLI.command()(new)
 CLI.command(name="n", hidden=True)(new)
 CLI.command()(migrate)
 CLI.command(name="m", hidden=True)(migrate)
-CLI.command()(translate)
-CLI.command(name="ts", hidden=True)(translate)
-CLI.command(name="trans")(translate)
-CLI.command(name="t", hidden=True)(translate)
 
 
 __all__ = ["CLI"]

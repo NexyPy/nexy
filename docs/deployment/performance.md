@@ -28,7 +28,7 @@ benchmark against other frameworks.
 
 Reading the table:
 
-- Nexy's own layers (locale, path context, middleware) cost about a third of the throughput of a bare
+- Nexy's own layers (path context, middleware) cost about a third of the throughput of a bare
   FastAPI route.
 - A server-rendered page costs about 2 ms of CPU, spread over roughly 16 template renders (one per
   component). Pages with fewer components are proportionally cheaper.

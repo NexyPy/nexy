@@ -47,13 +47,6 @@ class MarkdownRouteCompiler:
         py_path = Path(full_namespaced).with_suffix(".py").as_posix()
 
         stem = src.stem
-        locale: str | None = None
-        locales = self.config.useLocales or []
-        if "." in stem and locales:
-            base, maybe_locale = stem.rsplit(".", 1)
-            if maybe_locale in locales:
-                locale = maybe_locale
-                stem = base
         component_name = self.string_transform.get_component_name(stem) or "Index"
         func_name = component_name
 
@@ -96,8 +89,6 @@ class MarkdownRouteCompiler:
             "from nexy.modules.runtime.markdown import inject_heading_ids as __inject_heading_ids\n"
             f"{layout_header}\n"
             f"def {func_name}("
-            "__locale_info: Any = None, "
-            "trans: Any = None, "
             "caller: Any = None, "
             "children: str = '', "
             "**kwargs: Any"
@@ -129,8 +120,6 @@ class MarkdownRouteCompiler:
             "source": posix_src,
             "global_src": rel_from_cwd,
         }
-        if locale:
-            meta["locale"] = locale
 
         meta_path = Path(full_namespaced).with_suffix(".meta.json").as_posix()
         import json as _json

@@ -327,29 +327,10 @@ Built-in helpers return HTML strings, usable as a Jinja call or as a tag:
 
 [Hooks →](docs/routing/hooks.md) · [Components →](docs/views/components.md)
 
-## Internationalisation
+## Internationalization
 
-```python
-class NexyConfig(NexyConfigModel):
-    useLocales = ["en", "fr"]
-    useDefaultLocale = "en"
-```
-
-For every request the locale is resolved from the URL prefix `/fr/...`, then the `nexy-locale`
-cookie, then `Accept-Language`, then `useDefaultLocale`.
-
-```python
-from nexy import current_locale, t, trans
-
-trans("hero.title", "Hello")   # dotted key, default, current locale
-t("hero.title", "Hello")       # alias
-current_locale.get()           # "fr"
-```
-
-`trans` is available in every template, and `nx translate` generates the locale packs. A missing key
-falls back to the default, then to the key itself.
-
-[i18n →](docs/i18n.md)
+Nexy ships no runtime i18n: an application picks the library it prefers. The command line itself is
+translated. See the [i18n guide](docs/guides/i18n.md).
 
 ## Config
 
@@ -377,7 +358,6 @@ class NexyConfig(NexyConfigModel):
 | Frontend | `useFF`, `useVite`, `useMarkdownExtensions`, `useWatchExtensions`, `useWatchExcludePatterns` |
 | API docs | `useDocs`, `useDocsUrl`, `useTitle` |
 | Middleware | `useMiddlewares`, `useCORS`, `useGZip`, `useTrustedHost`, `useSession`, `useAuth`, `useHTTPSRedirect` |
-| i18n | `useLocales`, `useDefaultLocale`, `useLocaleCookieName`, `useLocalesDir`, `useLocalesSourceDir` |
 | Markdown | `useTocDepth`, `useTocTitle`, `useTocAuto` |
 
 [Every field and its default →](docs/config.md)
@@ -397,7 +377,6 @@ The binary is `nx`, also installed as `nexy`. Without a global install, prefix w
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python, JS/TS and `.nexy` files |
 | `nx test` | - | run pytest; `--client` adds vitest, `--no-server` skips pytest |
-| `nx translate` | `nx t`, `nx trans` | generate locale files |
 
 `--port` and `--host` override `usePort` and `useHost` for `dev` and `start`; `--check` runs ruff and
 mypy after `build`, and reports instead of rewriting for `format`; `--template` / `-t` skips the
@@ -499,7 +478,7 @@ are written from the code.
 | controllers and modules | [Modular routing](docs/routing/modular.md) |
 | to add an endpoint | [API](docs/api.md) |
 | a form posted from a page | [Actions](docs/actions.md) |
-| translations | [i18n](docs/i18n.md) |
+| translations | [i18n](docs/guides/i18n.md) |
 | a config field | [Config](docs/config.md) |
 | the client build and Vite | [Frontend](docs/frontend.md) |
 | every command and flag | [CLI](docs/cli.md) |

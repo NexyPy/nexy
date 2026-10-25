@@ -25,7 +25,7 @@ npm ls vite
 ## Rules Nexy follows
 
 - **Never trust the Host header for paths.** Nexy reads `scope["path"]`, not `request.url.path`, in
-  its own middleware (locale, directory middleware). Do the same in yours.
+  its own middleware (directory middleware). Do the same in yours.
 - **Escape what reaches HTML.** Props passed to client components, `Link` attributes, `Image`,
   `Audio` and `Video` attributes, table-of-contents anchors and `HTTPException` details are all
   HTML-escaped. `| safe` in a template turns this off: never use it on user input.

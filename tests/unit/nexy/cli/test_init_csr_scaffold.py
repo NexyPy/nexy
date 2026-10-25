@@ -139,7 +139,7 @@ class TestDefaultScaffold:
         """layout.nexy is rendered per request, not at scaffold time."""
         _scaffold(tmp_path, "react", use_csr=False)
         layout = (tmp_path / "src" / "routes" / "layout.nexy").read_text(encoding="utf-8")
-        assert 'lang="{{ locale }}"' in layout
+        assert '<html lang="en"' in layout
         assert "{{children | safe}}" in layout
 
 

@@ -38,17 +38,17 @@ _FRAMEWORK_ROUTE_EXTS = _FRAMEWORK_ONLY_EXTS + (".mdx",)
 _UI_ROUTE_EXTS = (".nexy", ".mdx", ".md", ".tsx", ".vue", ".svelte")
 
 
-def _route_clean_path(path_str: str, locale: str | None) -> str:
-    """Strip the router prefix, the locale suffix and the file extension.
+def _route_clean_path(path_str: str) -> str:
+    """Strip the router prefix and the file extension.
 
-    Only the extension (and its locale marker) is removed: dots inside a
-    dynamic segment such as ``[...path]`` are part of the route path and must
-    survive, so splitting on the first ``.`` is wrong.
+    Only the extension is removed: dots inside a dynamic segment such as
+    ``[...path]`` are part of the route path and must survive, so splitting on
+    the first ``.`` is wrong.
     """
     relative = path_str.replace(f"{Config.NAMESPACE}src/routes", "").replace("src/routes", "")
-    if locale:
-        relative = relative.removesuffix(f".{locale}")
     return relative.rsplit(".", 1)[0]
+
+
 def _describe_import_error(error: BaseException) -> str:
     """``Type: message`` plus the file and line that raised it (a bare ``'src'`` says nothing)."""
     text = f"{type(error).__name__}: {error}"
@@ -57,8 +57,6 @@ def _describe_import_error(error: BaseException) -> str:
         return text
     last = frames[-1]
     return f"{text} ({Path(last.filename).name}:{last.lineno})"
-
-
 
 
 def _lazy_component(
@@ -78,30 +76,6 @@ def _lazy_component(
         return component(**kwargs)
 
     return _wrapper
-
-
-def _make_locale_handler(
-    base_component: Callable[..., str], variants: dict[str, Callable[..., str]]
-) -> Callable[..., Any]:
-    """Create a locale-aware route handler that dispatches to variant components.
-
-    Uses request.path_params instead of **kwargs to avoid FastAPI
-    validation treating kwargs as a required query parameter.
-    """
-
-    async def _locale_handler(request: Request) -> str:
-        locale: str = request.state.locale
-        handler = variants.get(locale, base_component)
-        params = _coerce_path_params(inspect.signature(handler), request.path_params)
-        return handler(**params)
-
-    _locale_handler.__name__ = base_component.__name__
-    _locale_handler.__doc__ = base_component.__doc__
-    for attr in ("__nexy_guards__", "__nexy_middlewares__"):
-        if hasattr(base_component, attr):
-            setattr(_locale_handler, attr, getattr(base_component, attr))
-
-    return _locale_handler
 
 
 def _coerce_path_params(sig: inspect.Signature, path_params: dict[str, str]) -> dict[str, Any]:
@@ -140,7 +114,7 @@ def _stream_body(result: str | Any) -> Any:
 def _make_request_handler(component: Callable[..., str]) -> Callable[..., Any]:
     """Wrap a UI component with a fixed (request) signature.
 
-    Compiled components expose **kwargs (from locale/props injection);
+    Compiled components expose **kwargs (props injection);
     FastAPI would otherwise treat `kwargs` as a required query parameter
     and reject the request with 422. Delegating through request.path_params
     keeps the route free of signature validation while still forwarding
@@ -288,41 +262,13 @@ class FBRouter:
         from nexy.modules.runtime.importer import install_vfs_importer
 
         install_vfs_importer()
-        self._locale_variants: dict[str, dict[str, Callable[..., str]]] = {}
         self._scan_modules()
         self._register_all_routes()
 
     def _scan_modules(self) -> None:
-        available_locales = Config().useLocales or []
-
         for app_path in self.discovery.scan():
             path_str = app_path.as_posix()
             ext = app_path.suffix.lower()
-
-            name = app_path.name.lower()
-            if ext in _FRAMEWORK_ONLY_EXTS and name.count(".") > 1:
-                parts = name.rsplit(".", 2)
-                pext = "." + parts[2]
-                if pext in _FRAMEWORK_ONLY_EXTS and parts[1] in available_locales:
-                    console.print(
-                        f"  [yellow]WARN[/yellow] {app_path.name}: locale suffix "
-                        f"'.{parts[1]}' is not supported on framework route files "
-                        f"({', '.join(_FRAMEWORK_ROUTE_EXTS)}). Skipped - use "
-                        f".nexy or .mdx locale variants instead, or implement locale "
-                        f"logic inside the component via useLocales()."
-                    )
-                    continue
-
-            locale = None
-            if available_locales and name.count(".") > 1:
-                parts = name.rsplit(".", 2)
-                pext = "." + parts[2]
-                if (
-                    pext in Config.ROUTE_FILE_EXTENSIONS
-                    and parts[1] in available_locales
-                    and pext not in _FRAMEWORK_ROUTE_EXTS
-                ):
-                    locale = parts[1]
 
             if path_str.endswith(_UI_ROUTE_EXTS):
                 m_type = "component"
@@ -351,7 +297,7 @@ class FBRouter:
                 console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {reason}")
                 continue
 
-            clean = _route_clean_path(path_str, locale)
+            clean = _route_clean_path(path_str)
             pathname = Pathname(clean).process()
 
             name = app_path.name.lower()
@@ -377,16 +323,7 @@ class FBRouter:
                 continue
 
             stem_for_comp = clean.split("/")[-1] if clean else ""
-            if locale:
-                if ext in _FRAMEWORK_ROUTE_EXTS:
-                    raw_stem = app_path.stem
-                    base_stem = raw_stem.rsplit(".", 1)[0] if "." in raw_stem else raw_stem
-                    comp_name = self.string_transform.get_component_name(base_stem)
-                else:
-                    normalized_stem = mapped.split("/")[-1].rsplit(".", 1)[0]
-                    comp_name = self.string_transform.get_component_name(normalized_stem)
-            else:
-                comp_name = self.string_transform.get_component_name(stem_for_comp)
+            comp_name = self.string_transform.get_component_name(stem_for_comp)
 
             component = getattr(module, comp_name, None)
             if component is None and ext in _FRAMEWORK_ROUTE_EXTS:
@@ -400,17 +337,6 @@ class FBRouter:
                             component = val
                             comp_name = attr_name
                             break
-
-            if locale:
-                if component:
-                    self._locale_variants.setdefault(pathname, {})[locale] = component
-                else:
-                    console.print(
-                        f"  [yellow]WARN[/yellow] Locale variant '{locale}' for "
-                        f"'{pathname}' - component '{comp_name}' not found in "
-                        f"{app_path}"
-                    )
-                continue
 
             self.modules_meta.append(
                 {
@@ -473,12 +399,9 @@ class FBRouter:
                 component = getattr(module, meta["comp_name"], None)
                 if component:
                     component = _lazy_component(meta["import_path"], meta["comp_name"], component)
-                    locale_variants = self._locale_variants.get(path, {})
                     revalidate = self._get_revalidate(module)
                     if revalidate is not None:
                         handler = _make_isr_handler(component, path, revalidate)
-                    elif locale_variants:
-                        handler = _make_locale_handler(component, locale_variants)
                     else:
                         handler = _make_request_handler(component)
                     deps = folder_deps + RouteMiddleware.resolve(component)
@@ -498,19 +421,6 @@ class FBRouter:
                     )
 
             registered_paths.add(path)
-
-        for path, variants in self._locale_variants.items():
-            if path in registered_paths:
-                continue
-            components = list(variants.values())
-            handler = _make_locale_handler(components[0], variants)
-            self.router.get(
-                path,
-                response_class=HTMLResponse,
-                name=handler.__name__,
-                description="",
-                tags=[path],
-            )(handler)
 
     @staticmethod
     def _get_revalidate(module: Any) -> int | None:

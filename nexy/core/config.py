@@ -50,14 +50,9 @@ class Config:
     useVite: bool = True
     useMarkdownExtensions: list[str] = []
     excludeDirs: list[str] = ["templates", "extension", "docs"]
-    useLocales: list[str] | None = None
     useAliases: dict[str, str] | None = None
     useDocsUrl: str = "/docs"
     useRedocsUrl: str | None = "/redocs"
-    useDefaultLocale: str = "en"
-    useLocaleCookieName: str = "nexy-locale"
-    useLocalesDir: str | None = None
-    useLocalesSourceDir: str | None = None
     useMiddlewares: list[Any] = []
     useCORS: dict[str, Any] | None = None
     useGZip: dict[str, Any] | None = None

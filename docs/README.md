@@ -68,7 +68,7 @@ architecture.
 | Page | What you will do |
 |---|---|
 | [Actions](guides/actions.md) | Call a Python function from a form |
-| [i18n](guides/i18n.md) | Translate a page |
+| [i18n](guides/i18n.md) | Internationalize an application |
 | [Databases](guides/databases.md) | ORMs and migrations |
 | [Middleware and security](guides/middleware-and-security.md) | CORS, GZip, trusted hosts, sessions |
 | [Frontend](guides/frontend.md) | Vite, styling and the client build |

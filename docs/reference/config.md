@@ -78,16 +78,6 @@ reserved, exactly like `layout.nexy`.
 | `useAuth` | `None` | authentication middleware config |
 | `useHTTPSRedirect` | `False` | redirect HTTP to HTTPS |
 
-## i18n
-
-| Field | Default | Meaning |
-|---|---|---|
-| `useLocales` | `None` | active locales, e.g. `["en", "fr"]` |
-| `useDefaultLocale` | `"en"` | fallback locale |
-| `useLocaleCookieName` | `"nexy-locale"` | cookie that stores the choice |
-| `useLocalesDir` | `None` | runtime locale files, `locales/` by default |
-| `useLocalesSourceDir` | `None` | source for `nx translate`, `src/locales/` by default |
-
 ## Markdown
 
 | Field | Default | Meaning |
@@ -123,10 +113,10 @@ Defaults above are read from `nexy/core/config.py`.
 
 These fields exist in `NexyConfigModel` but no code consumes them. Setting them has no effect:
 
-`useViteDevUrl`, `useLocaleDetection`, `useRTL`.
+`useViteDevUrl`, `useRTL`.
 
 ## Next steps
 
-- [i18n](../guides/i18n.md): locales and translations
+- [i18n](../guides/i18n.md): internationalization
 - [Frontend](../guides/frontend.md): `useFF` and the client build
 - [Deploy](../deployment/README.md): production options
