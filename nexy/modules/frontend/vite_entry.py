@@ -22,7 +22,7 @@ def generate_vite_entry(use_ff: Any) -> None:
     write_keys_file(src_dir)
     write_runtime_file(src_dir)
     write_main_file(dest_dir, frameworks_of(ff_list))
-    write_client_link(src_dir)
+    write_client_adapter(src_dir, frameworks_of(ff_list))
     write_mode_file(dest_dir, ff_list)
 
 
@@ -92,9 +92,11 @@ def write_keys_file(src_dir: Path) -> None:
 
 
 def write_runtime_file(src_dir: Path) -> None:
-    """Write runtime.ts: client router (match, render, navigate) wired to the manifests."""
+    """Write runtime.ts (matching and rendering) and router.ts (navigation) it drives."""
     content = "\n".join(_runtime_lines()) + "\n"
     PathUtil.write_if_changed(src_dir / "runtime.ts", content)
+    router = Path(__file__).resolve().parent / "client" / "router.ts"
+    PathUtil.write_if_changed(src_dir / "router.ts", router.read_text(encoding="utf-8"))
 
 
 def _runtime_lines() -> list[str]:
@@ -104,6 +106,7 @@ def _runtime_lines() -> list[str]:
         "type Importers = Record<string, Importer>",
         "import { __NEXY_KEYS } from '@nexy/keys.auto.ts';",
         "import { NEXY_ROUTES, type NexyRoute } from '@nexy/routes.client.auto.ts';",
+        "import { createRouter } from '@nexy/router.ts';",
         "const importers: Importers = import.meta.glob(",
         f"  '/src/**/*.{navigable_glob()}', {{ eager: false }}",
         ") as Record<string, Importer>",
@@ -171,49 +174,18 @@ def _runtime_lines() -> list[str]:
         "    container.innerHTML = '<div class=\\\"nexy-client-route\\\"></div>';",
         "  }",
         "}",
-        "const navigate = async (href: string, push: boolean) => {",
-        "  if (href.startsWith('http') || href.startsWith('#') "
-        "|| href.startsWith('mailto:')) return;",
-        "  const url = new URL(href, location.origin);",
-        "  const { route, params } = matchRoute(url.pathname);",
-        "  if (!route) { if (push) window.location.href = href; return; }",
-        "  try {",
-        "    await renderRoute(route.file, params, route.layouts || []);",
-        "    if (push) window.history.pushState({ nexy: true }, '', href);",
-        "    document.dispatchEvent(new CustomEvent('nexy:navigated', "
-        "{ detail: { pathname: url.pathname, params } }));",
-        "  } catch (err) {",
-        "    console.error('[Nexy] Client navigation failed:', err);",
-        "    if (push) window.location.href = href;",
-        "  }",
-        "};",
-        "const prefetched = new Set<string>();",
-        "w.__nexy_prefetch = (href: string) => {",
-        "  try {",
-        "    const { route } = matchRoute(new URL(href, location.origin).pathname);",
-        "    if (!route || prefetched.has(route.file)) return;",
-        "    prefetched.add(route.file);",
-        "    const files = [route.file, ...(route.layouts || [])];",
-        "    const retry = () => prefetched.delete(route.file);",
-        "    files.forEach(f => { w.__nexy_import(f).catch(retry); });",
-        "  } catch { /* an invalid href is not worth warming */ }",
-        "};",
-        "document.addEventListener('click', (e: MouseEvent) => {",
-        "  const target = e.target as HTMLElement;",
-        "  const a = target.closest('a[data-nexy-link]');",
-        "  if (!a) return;",
-        "  const href = a.getAttribute('href');",
-        "  if (!href || a.getAttribute('target') === '_blank') return;",
-        "  if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;",
-        "  const { route } = matchRoute(new URL(href, location.origin).pathname);",
-        "  if (!route) return;",
-        "  e.preventDefault();",
-        "  navigate(href, true);",
+        "const router = createRouter({",
+        "  match: (pathname: string) => {",
+        "    const { route, params } = matchRoute(pathname);",
+        "    return route ? { file: route.file, layouts: route.layouts || [], params } : null;",
+        "  },",
+        "  render: (m) => renderRoute(m.file, m.params, m.layouts),",
+        "  prefetch: (m) => Promise.all([m.file, ...m.layouts].map(f => w.__nexy_import(f))),",
         "});",
-        "window.addEventListener('popstate', (e: PopStateEvent) => {",
-        "  if (e.state && (e.state as any).nexy) { navigate(location.href, false); return; }",
-        "  window.location.reload();",
-        "});",
+        "w.__nexy_router = router;",
+        "w.__nexy_prefetch = (href: string) => router.prefetch(href);",
+        "// Only a project with client routes takes over links and the back button.",
+        "if (NEXY_ROUTES.some(isNavigable)) router.start();",
         "export {};",
     ]
 
@@ -245,44 +217,38 @@ def _react_preamble(frameworks: set[str]) -> str:
     )
 
 
-def write_client_link(src_dir: Path) -> None:
-    """Generate a typed client Link component (Next.js API, href: Route)."""
-    target = src_dir / "Link.tsx"
-    content = (
-        "import type { ReactNode } from 'react';\n"
-        "import { type Route } from '@nexy/routes.auto.ts';\n"
-        "\n"
-        "const w = window as any;\n"
-        "\n"
-        "export function Link({\n"
-        "  href,\n"
-        "  children,\n"
-        "  className,\n"
-        "  prefetch = true,\n"
-        "  ...rest\n"
-        "}: {\n"
-        "  href: Route;\n"
-        "  children?: ReactNode;\n"
-        "  className?: string;\n"
-        "  prefetch?: boolean;\n"
-        "}) {\n"
-        "  const resolved = href;\n"
-        "  const preload = () => {\n"
-        "    if (w.__nexy_prefetch) w.__nexy_prefetch(resolved);\n"
-        "  };\n"
-        "  return (\n"
-        "    <a\n"
-        "      href={resolved}\n"
-        '      data-nexy-link="true"\n'
-        "      className={className}\n"
-        "      onMouseEnter={prefetch ? preload : undefined}\n"
-        "      onTouchStart={prefetch ? preload : undefined}\n"
-        "      {...rest}\n"
-        "    >\n"
-        "      {children}\n"
-        "    </a>\n"
-        "  );\n"
-        "}\n"
-        "\n"
-    )
-    PathUtil.write_if_changed(target, content)
+# What each framework gets next to router.ts and shared.ts: (source file, generated name), plus
+# components that must keep their own extension.
+_ADAPTERS: dict[str, tuple[tuple[str, str], ...]] = {
+    "react": (("react.ts", "client.ts"),),
+    "preact": (("preact.ts", "client.ts"),),
+    "vue": (("vue.ts", "client.ts"),),
+    "solid": (("solid.tsx", "client.tsx"),),
+    "svelte": (
+        ("svelte.ts", "client.ts"),
+        ("Link.svelte", "Link.svelte"),
+        ("Image.svelte", "Image.svelte"),
+    ),
+}
+_ALL_ADAPTER_FILES = ("client.ts", "client.tsx", "Link.svelte", "Image.svelte", "Link.tsx")
+
+
+def write_client_adapter(src_dir: Path, frameworks: set[str]) -> None:
+    """Write Link, Image and the hooks of the project's framework, and remove any other's.
+
+    A project uses one frontend framework, so exactly one adapter is generated; the files of a
+    previous framework are deleted so a switch leaves nothing stale. ``router.ts`` is written
+    with the runtime; ``shared.ts`` holds the logic every adapter has in common.
+    """
+    for name in _ALL_ADAPTER_FILES:
+        (src_dir / name).unlink(missing_ok=True)
+    package = Path(__file__).resolve().parent / "client"
+    chosen = next((name for name in _ADAPTERS if name in frameworks), None)
+    if chosen is None:
+        return
+    for filename in ("shared.ts",):
+        PathUtil.write_if_changed(
+            src_dir / filename, (package / filename).read_text(encoding="utf-8")
+        )
+    for source, target in _ADAPTERS[chosen]:
+        PathUtil.write_if_changed(src_dir / target, (package / source).read_text(encoding="utf-8"))
