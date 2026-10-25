@@ -46,8 +46,15 @@ def build(check: bool = False) -> None:
     console.print(f"\n  [green]\u2713[/green] {success_msg}")
 
 
+def _compile_label() -> str:
+    # A client-routed project has no server components: what compiles is its routes.
+    if Config.useCSR:
+        return t("build.compiling_routes", "Compiled routes")
+    return t("build.compiling_server", "Compiled server components")
+
+
 def _compile_server_components() -> BuildResult:
-    with step(t("build.compiling_server", "Compiled server components")):
+    with step(_compile_label()):
         from nexy.helpers.fs.vfs import VFS
 
         FrontendGenerator().generate(ssg=True)
@@ -106,8 +113,9 @@ def _show_summary(build_result: BuildResult, ssg_entries: list[dict[str, Any]]) 
         "success": t("build.success_label", "Build success"),
         "failed": t("build.failed_label", "Build Failed"),
     }
+    csr = Config.useCSR
     print_tree_section(
-        t("build.server_components", "server components"),
+        t("build.routes", "routes") if csr else t("build.server_components", "server components"),
         build_result.success,
         build_result.failed,
         "green",
@@ -115,6 +123,8 @@ def _show_summary(build_result: BuildResult, ssg_entries: list[dict[str, Any]]) 
         build_result.skipped,
         labels,
     )
+    if csr:
+        return
     print_tree_section(
         t("build.client_components", "client components"),
         _ssg_by_status(ssg_entries, "success"),

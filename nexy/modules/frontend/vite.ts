@@ -282,7 +282,11 @@ function nexyPlugin(): Plugin {
       if (isSSRBuild || process.env.NEXY_RENDER_ONLY) return
       nexySSGDone = false
       const isDev = process.env.NODE_ENV === 'development'
-      if (!isDev) {
+      // Server components are the islands a server-rendered page embeds. A client-routed project
+      // has none: its documents are rendered once, after the bundle (see document.ts).
+      const { csr, framework } = readMode()
+      const hasIslands = !(csr && DOCUMENT_FRAMEWORKS.includes(framework))
+      if (!isDev && hasIslands) {
         console.log(`${c.dim}[nexy] Building server components...${c.reset}`)
         const tsxPath = getTsxPath()
         execSync(`node --import "${tsxPath}" __nexy__/scripts/entries.ts`, {
