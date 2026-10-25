@@ -18,6 +18,7 @@ from pathlib import Path
 
 from rich.console import Console, RenderResult
 from rich.live import Live
+from rich.progress_bar import ProgressBar
 from rich.spinner import Spinner
 from rich.table import Table
 from rich.text import Text
@@ -26,6 +27,7 @@ from nexy.helpers.common.console import console as _console
 
 _TAIL_LINES = 15
 _LIVE_WIDTH = 78
+_BAR_WIDTH = 20
 
 
 def _symbols(out: Console) -> tuple[str, str, str]:
@@ -54,10 +56,15 @@ class TaskResult:
 
 
 class _LiveLine:
-    """One spinner row: label, elapsed time, dim last output line."""
+    """One spinner row: label, a bar, elapsed time, dim last output line.
 
-    def __init__(self, label: str) -> None:
+    The bar counts the finished steps of a group (``progress=(2, 5)``). A lone step has no count
+    to show, so its bar only pulses to say it is alive.
+    """
+
+    def __init__(self, label: str, progress: tuple[int, int] | None = None) -> None:
         self.label = label
+        self.progress = progress
         self.last = ""
         self.started = time.monotonic()
         self._spinner = Spinner("dots", style="yellow")
@@ -66,12 +73,22 @@ class _LiveLine:
         elapsed = format_duration(time.monotonic() - self.started)
         row = Table.grid(padding=(0, 1))
         row.add_column()
+        row.add_column(no_wrap=True)
         row.add_column(no_wrap=True, overflow="ellipsis")
         text = Text.assemble(self.label, ("  " + elapsed, "dim"))
+        if self.progress:
+            text.append(f"  {self.progress[0]}/{self.progress[1]}", style="dim")
         if self.last:
             text.append("  " + self.last[:_LIVE_WIDTH], style="dim")
-        row.add_row(self._spinner, text)
+        row.add_row(self._spinner, self._bar(), text)
         yield row
+
+    def _bar(self) -> ProgressBar:
+        if self.progress:
+            done, total = self.progress
+            return ProgressBar(total=total, completed=done, width=_BAR_WIDTH)
+        pulse_time = time.monotonic() - self.started
+        return ProgressBar(pulse=True, animation_time=pulse_time, width=_BAR_WIDTH)
 
 
 def _resolve(argv: Sequence[str]) -> list[str]:
@@ -95,16 +112,18 @@ def run_task(
     *,
     cwd: Path | str | None = None,
     done: str | None = None,
+    progress: tuple[int, int] | None = None,
     console: Console | None = None,
 ) -> TaskResult:
     """Run *argv* while showing progress; print one result line when it ends.
 
-    *done* replaces *label* on the success line (``"Installed zod"``).
+    *done* replaces *label* on the success line (``"Installed zod"``). *progress* is the position
+    of this task in a group, ``(finished, total)``, drawn as a bar next to the spinner.
     """
     out = console or _console
     ok_mark, fail_mark, wait_mark = _symbols(out)
     tail: deque[str] = deque(maxlen=_TAIL_LINES)
-    live = _LiveLine(label)
+    live = _LiveLine(label, progress)
     started = time.monotonic()
 
     try:

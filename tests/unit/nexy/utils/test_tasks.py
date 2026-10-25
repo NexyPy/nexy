@@ -58,3 +58,28 @@ class TestRunTask:
         code = "import sys; print('[red]oops[/red] npm ERR!'); sys.exit(1)"
         run_task("x", [sys.executable, "-c", code], console=console)
         assert "[red]oops[/red]" in buffer.getvalue()
+
+
+def _render(live) -> str:
+    console, buffer = _console()
+    console.print(live)
+    return buffer.getvalue()
+
+
+class TestProgressBar:
+    def test_a_group_shows_how_many_steps_are_finished(self):
+        from nexy.helpers.common.tasks import _LiveLine
+
+        text = _render(_LiveLine("Installing", progress=(2, 5)))
+        assert "Installing" in text and "2/5" in text
+
+    def test_a_lone_task_shows_a_pulsing_bar_without_a_count(self):
+        from nexy.helpers.common.tasks import _LiveLine
+
+        text = _render(_LiveLine("Installing"))
+        assert "Installing" in text and "/" not in text
+
+    def test_run_task_accepts_the_position_in_a_group(self):
+        console, buffer = _console()
+        result = run_task("x", [sys.executable, "-c", "pass"], progress=(1, 3), console=console)
+        assert result.ok
