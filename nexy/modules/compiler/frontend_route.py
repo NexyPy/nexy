@@ -186,6 +186,77 @@ def _layout_wrapper(posix_src: str, nexy_only: bool = False) -> tuple[str, str]:
     return layout_header, "str(__Layout(children=rendered))"
 
 
+# Route and root-layout extensions of each framework whose root layout owns the document.
+_DOCUMENT_EXTENSIONS = {
+    "react": (".tsx", ".jsx"),
+    "solid": (".tsx", ".jsx"),
+    "preact": (".tsx", ".jsx"),
+    "vue": (".vue",),
+    "svelte": (".svelte",),
+}
+
+
+def _owns_document(ext: str, layouts: list[str]) -> bool:
+    """True when the root layout of a client-routed project owns ``<html>`` (any framework)."""
+    if not Config.useCSR or not layouts:
+        return False
+    use_ff = Config._normalize_ff(Config.useFF)
+    name = getattr(use_ff[0], "name", "").lower() if use_ff else ""
+    extensions = _DOCUMENT_EXTENSIONS.get(name, ())
+    if ext not in extensions:
+        return False
+    root = f"/{Path(Config.ROUTER_PATH).as_posix().strip('/')}"
+    return layouts[0] in tuple(f"{root}/layout{extension}" for extension in extensions)
+
+
+_DOCUMENT_MODULE = """\
+from typing import Any
+from nexy.modules.runtime.csr_document import render_document as __render_document
+
+
+def {func_name}(
+    __locale_info: Any = None,
+    trans: Any = None,
+    caller: Any = None,
+    children: str = "",
+    **kwargs: Any,
+) -> str:
+    return __render_document(
+        page_file={page_file!r},
+        page_key={page_key!r},
+        layouts={layouts!r},
+        layout_keys={layout_keys!r},
+        props=kwargs,
+        static_stem={static_stem!r},
+        dynamic={dynamic!r},
+    )
+
+
+{func_name}.__nexy_blocking__ = True  # waits on Node: rendered off the event loop
+"""
+
+
+def _document_module(
+    func_name: str,
+    *,
+    page_file: str,
+    layouts: list[str],
+    static_stem: str,
+    dynamic: bool,
+) -> str:
+    """Python module whose component returns the full document rendered by Node."""
+    layout_keys = [layout_key(layout) for layout in layouts]
+    return _DOCUMENT_MODULE.format(
+        func_name=func_name,
+        page_file=page_file,
+        page_key=layout_key(page_file),
+        layouts=layouts,
+        layout_keys=layout_keys,
+        static_stem=static_stem,
+        dynamic=dynamic,
+    )
+
+
 def _reject_locale_suffix(src: Path, ext: str, locales: list[str]) -> None:
     """Block locale-suffixed framework route files (about.fr.tsx, guide.en.vue…).
 
@@ -295,6 +366,20 @@ class FrontendRouteCompiler:
         rel_glob, key_hash = _glob_ref(src, posix_src)
         symbol = _resolve_symbol(src, ext, stem)
         ssg_static = _ssg_static_path(rel_glob, framework, symbol)
+
+        if _owns_document(ext, layouts):
+            module_body = _document_module(
+                paths["component_name"],
+                page_file=rel_glob,
+                layouts=layouts,
+                static_stem=rel_glob[: -len(ext)],
+                dynamic="{" in paths["pathname"],
+            )
+            self.vfs.write(py_path, module_body)
+            self.vfs.write(html_path, _ncc_template(framework, rel_glob, key_hash, symbol, layouts))
+            self._generate_init(Path(paths["full_namespaced"]).parent.as_posix())
+            self._write_route_meta(paths, posix_src, symbol, rel_glob, key_hash, framework, ext)
+            return
 
         module_body = _MODULE_IMPORTS + _module_signature(
             layout_header, paths["component_name"], py_path, symbol
