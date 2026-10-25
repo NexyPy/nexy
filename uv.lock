@@ -1210,7 +1210,7 @@ wheels = [
 
 [[package]]
 name = "nexy"
-version = "2.1.1"
+version = "2.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "cmarkgfm" },
@@ -1220,6 +1220,7 @@ dependencies = [
     { name = "pygments" },
     { name = "questionary" },
     { name = "scalar-fastapi" },
+    { name = "starlette" },
     { name = "typer" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "watchdog" },
@@ -1242,12 +1243,13 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "cmarkgfm", specifier = ">=2024.1.4" },
-    { name = "fastapi", specifier = ">=0.128.0" },
+    { name = "fastapi", specifier = ">=0.133.0" },
     { name = "httpx", specifier = ">=0.28.0" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pygments", specifier = ">=2.20.0" },
     { name = "questionary", specifier = ">=2.1.1" },
     { name = "scalar-fastapi", specifier = ">=1.8.2" },
+    { name = "starlette", specifier = ">=1.0.1" },
     { name = "typer", specifier = ">=0.21.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.40.0" },
     { name = "watchdog", specifier = ">=6.0.0" },

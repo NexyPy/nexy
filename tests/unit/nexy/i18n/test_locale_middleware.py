@@ -9,8 +9,8 @@ from nexy.modules.i18n.core import L
 from nexy.modules.i18n.middleware import LocaleMiddleware
 
 
-async def _request(app, path="/", headers=None, cookies=None):
-    header_bytes = [(b"host", b"testserver")]
+async def _request(app, path="/", headers=None, cookies=None, extra=()):
+    header_bytes = [(b"host", b"testserver"), *extra]
     if headers:
         header_bytes += [(k.lower().encode(), v.encode()) for k, v in headers.items()]
     if cookies:
@@ -125,3 +125,78 @@ def test_current_locale_contextvar_set():
     inner.add_middleware(LocaleMiddleware)
     data = _get_locale(inner, "/fr/hello")
     assert data["locale"] == "fr"
+
+
+def _raw_cookie(app, value: str):
+    import json
+
+    async def go():
+        scope_headers = {"cookie": value}
+        status, hdrs, body = await _request(app, "/hello", headers=scope_headers)
+        return status, hdrs, json.loads(body)
+
+    return asyncio.run(go())
+
+
+def test_cookie_among_other_cookies(app):
+    _, _, data = _raw_cookie(app, "theme=dark; nexy-locale=fr; session=abc")
+    assert data["locale"] == "fr"
+
+
+def test_quoted_cookie_value_is_unquoted(app):
+    _, _, data = _raw_cookie(app, 'nexy-locale="fr"')
+    assert data["locale"] == "fr"
+
+
+def test_unknown_cookie_locale_falls_back_to_header_then_default(app):
+    _, _, data = _raw_cookie(app, "nexy-locale=xx")
+    assert data["locale"] == "en"
+
+
+def test_matching_cookie_means_no_set_cookie_header(app):
+    _, hdrs, _ = _raw_cookie(app, "nexy-locale=en")
+    assert "set-cookie" not in hdrs
+
+
+def test_mismatching_cookie_is_refreshed(app):
+    _, hdrs, _ = _raw_cookie(app, "nexy-locale=xx")
+    assert "nexy-locale=en" in hdrs.get("set-cookie", "")
+
+
+def test_set_cookie_value_is_stable_across_requests(app):
+    first = asyncio.run(_request(app, "/hello"))[1]["set-cookie"]
+    second = asyncio.run(_request(app, "/hello"))[1]["set-cookie"]
+    assert first == second
+
+
+def test_cookie_split_across_several_headers_is_read(app):
+    # HTTP/2 clients may send one `cookie` header per cookie.
+    import json
+
+    async def go():
+        extra = [(b"cookie", b"theme=dark"), (b"cookie", b"nexy-locale=fr")]
+        _, hdrs, body = await _request(app, "/hello", extra=extra)
+        return hdrs, json.loads(body)
+
+    headers, data = asyncio.run(go())
+    assert data["locale"] == "fr"
+    assert "set-cookie" not in headers
+
+
+def test_language_split_across_several_headers_is_read(app):
+    import json
+
+    async def go():
+        extra = [(b"accept-language", b"de"), (b"accept-language", b"fr")]
+        _, _, body = await _request(app, "/hello", extra=extra)
+        return json.loads(body)
+
+    assert asyncio.run(go())["locale"] == "fr"
+
+
+def test_middleware_uses_no_private_stdlib_helper():
+    import inspect
+
+    from nexy.modules.i18n import middleware
+
+    assert "http.cookies import _" not in inspect.getsource(middleware)

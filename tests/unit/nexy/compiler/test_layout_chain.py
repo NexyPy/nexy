@@ -39,11 +39,29 @@ class TestChain:
         _write(tmp_path, "src/routes/layout.tsx")
         assert framework_layout_chain(Path("src/routes/layout.tsx"), Path("src/routes")) == []
 
-    def test_only_jsx_pages_use_the_chain(self, tmp_path, monkeypatch):
+    def test_vue_pages_use_vue_layouts_only(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
+        _write(tmp_path, "src/routes/layout.vue", "<template></template>")
         _write(tmp_path, "src/routes/layout.tsx")
         _write(tmp_path, "src/routes/page.vue", "<template></template>")
-        assert framework_layout_chain(Path("src/routes/page.vue"), Path("src/routes")) == []
+        assert framework_layout_chain(Path("src/routes/page.vue"), Path("src/routes")) == [
+            "/src/routes/layout.vue"
+        ]
+
+    def test_svelte_pages_use_svelte_layouts_only(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write(tmp_path, "src/routes/layout.svelte", "<div></div>")
+        _write(tmp_path, "src/routes/blog/layout.vue", "<template></template>")
+        _write(tmp_path, "src/routes/blog/post.svelte", "<div></div>")
+        assert framework_layout_chain(Path("src/routes/blog/post.svelte"), Path("src/routes")) == [
+            "/src/routes/layout.svelte"
+        ]
+
+    def test_unknown_extensions_have_no_chain(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        _write(tmp_path, "src/routes/layout.tsx")
+        _write(tmp_path, "src/routes/page.md", "# x")
+        assert framework_layout_chain(Path("src/routes/page.md"), Path("src/routes")) == []
 
     def test_a_page_outside_the_routes_directory_has_no_chain(self, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
@@ -111,7 +129,7 @@ class TestCompiledPage:
         source = VFS().read("__nexy__/src/routes/blog/post.py")
         assert "__ssg_file" not in source
 
-    def test_framework_layout_does_not_wrap_on_the_server(
+    def test_root_layout_makes_the_route_render_a_full_document(
         self, tmp_path, monkeypatch, nexy_project
     ):
         self._compile(
@@ -121,19 +139,58 @@ class TestCompiledPage:
             ["src/routes/layout.tsx", "src/routes/blog/post.tsx"],
         )
         source = VFS().read("__nexy__/src/routes/blog/post.py")
+        assert "__render_document" in source
         assert "import Layout as __Layout" not in source
-        assert "__nexy_shell" in source
+        assert "__nexy_shell" not in source
 
-    def test_root_layout_nexy_still_owns_the_document(self, tmp_path, monkeypatch, nexy_project):
+    def test_document_route_describes_its_page_and_layouts(
+        self, tmp_path, monkeypatch, nexy_project
+    ):
         self._compile(
             tmp_path,
             monkeypatch,
             nexy_project,
-            ["src/routes/layout.tsx", "src/routes/blog/post.tsx"],
+            ["src/routes/layout.tsx", "src/routes/blog/layout.tsx", "src/routes/blog/post.tsx"],
         )
-        (tmp_path / "src/routes/layout.nexy").write_text(
-            "<html>{{children}}</html>", encoding="utf-8"
-        )
-        FrontendRouteCompiler().compile(input="src/routes/blog/post.tsx")
         source = VFS().read("__nexy__/src/routes/blog/post.py")
-        assert "src.routes.layout import Layout as __Layout" in source
+        assert "page_file='/src/routes/blog/post.tsx'" in source
+        assert "layouts=['/src/routes/layout.tsx', '/src/routes/blog/layout.tsx']" in source
+        assert "static_stem='/src/routes/blog/post'" in source
+        assert "dynamic=False" in source
+
+    def test_dynamic_route_is_marked_dynamic(self, tmp_path, monkeypatch, nexy_project):
+        nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
+        monkeypatch.chdir(tmp_path)
+        _write(tmp_path, "src/routes/layout.tsx")
+        _write(tmp_path, "src/routes/blog/[slug].tsx")
+        VFS().clear()
+        install_vfs_importer()
+        FrontendRouteCompiler().compile(input="src/routes/blog/[slug].tsx")
+        source = VFS().read("__nexy__/src/routes/blog/slug_catch_all.py")
+        assert "dynamic=True" in source
+
+    def test_nested_layout_without_a_root_layout_keeps_the_shell(
+        self, tmp_path, monkeypatch, nexy_project
+    ):
+        self._compile(
+            tmp_path,
+            monkeypatch,
+            nexy_project,
+            ["src/routes/blog/layout.tsx", "src/routes/blog/post.tsx"],
+        )
+        source = VFS().read("__nexy__/src/routes/blog/post.py")
+        assert "__nexy_shell" in source
+        assert "__render_document" not in source
+
+    def test_vue_root_layout_owns_the_document_and_is_composed_on_the_client(
+        self, tmp_path, monkeypatch, nexy_project
+    ):
+        nexy_project("useCSR = True\nuseFF = vue()", imports="from nexy.frontend import vue")
+        monkeypatch.chdir(tmp_path)
+        _write(tmp_path, "src/routes/layout.vue", "<template><slot /></template>")
+        _write(tmp_path, "src/routes/blog/post.vue", "<template></template>")
+        VFS().clear()
+        install_vfs_importer()
+        FrontendRouteCompiler().compile(input="src/routes/blog/post.vue")
+        assert "data-nexy-layouts" in VFS().read("__nexy__/src/routes/blog/post.html")
+        assert "__render_document" in VFS().read("__nexy__/src/routes/blog/post.py")

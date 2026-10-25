@@ -225,7 +225,7 @@ def test_vite_argv_dev_passes_port_and_host(tmp_path: Any, monkeypatch: Any) -> 
     assert argv[-3:] == ["--port", "3456", "--host"]
 
 
-def test_vite_argv_dev_appends_https(tmp_path: Any, monkeypatch: Any) -> None:
+def test_vite_argv_never_passes_https(tmp_path: Any, monkeypatch: Any) -> None:
     from pathlib import Path
 
     vite = Path("node_modules") / "vite" / "bin" / "vite.js"
@@ -236,7 +236,7 @@ def test_vite_argv_dev_appends_https(tmp_path: Any, monkeypatch: Any) -> None:
         server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
     )
 
-    assert Server._vite_argv(build=False, port=3456, ssl=True)[-1] == "--https"
+    assert "--https" not in Server._vite_argv(build=False, port=3456, ssl=True)
 
 
 def test_vite_argv_raises_when_node_is_missing(monkeypatch: Any) -> None:

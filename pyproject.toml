@@ -12,12 +12,14 @@ keywords = [
 
 dependencies = [
     "cmarkgfm>=2024.1.4",
-    "fastapi>=0.128.0",
+    "fastapi>=0.133.0",
     "httpx>=0.28.0",
     "jinja2>=3.1.6",
     "pygments>=2.20.0",
     "questionary>=2.1.1",
     "scalar-fastapi>=1.8.2",
+    # CVE-2026-48710 (BadHost): Host-header path confusion fixed in Starlette 1.0.1.
+    "starlette>=1.0.1",
     "typer>=0.21.1",
     "uvicorn[standard]>=0.40.0",
     "watchdog>=6.0.0",
@@ -78,7 +80,12 @@ line-length = 100
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
+# C4/DTZ/ERA/PLE/LOG/ICN/ASYNC/RSE: no findings today, so they act as a ratchet against
+# regressions (blocking calls in coroutines, naive datetimes, commented-out code...).
+select = [
+    "E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG",
+    "C4", "DTZ", "ERA", "PLE", "LOG", "ICN", "ASYNC", "RSE",
+]
 
 # Deliberate public API naming (do not rename - it would break user code):
 # - camelCase config fields of the nexyconfig.py surface (N815),
@@ -109,6 +116,8 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "ARG"]
 # budget applies to Python code, not to the embedded template content.
 "nexy/vite.py" = ["N802", "E501"]
 "nexy/modules/cli/init/registry.py" = ["E501"]
+# Fakes for `nx dev` mirror the real collaborators' signatures, so some arguments go unused.
+"tests/unit/nexy/cli/test_dev_command.py" = ["ARG"]
 # Test fixtures mirror a user project's nexyconfig.py surface, which is
 # camelCase by design (same rationale as nexy/core/config.py N815).
 "tests/fixtures/**/*.py" = ["N815"]
@@ -130,8 +139,9 @@ omit = [
 # Raised to 50 after the integration test batch (P2-b), to 51 after the Tier A
 # unit tests, to 52 after the media branch tests, to 52.8 after the error
 # path batch (errors.py 100%, discovery.py 92%), then to 54 after the
-# server.py test batch (utils/server/server.py 24% -> 67%). Never lower it.
-fail_under = 54
+# server.py test batch (utils/server/server.py 24% -> 67%), then to 66 (measured 67.0% on
+# 2026-10-25 after the CSR document, fast path and middleware batches). Never lower it.
+fail_under = 66
 show_missing = true
 
 exclude_also = [

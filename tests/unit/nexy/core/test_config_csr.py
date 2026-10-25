@@ -25,9 +25,9 @@ class TestCsrRouteExtensions:
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
         assert ".tsx" in Config().ROUTE_FILE_EXTENSIONS
 
-    def test_csr_keeps_nexy_as_build_target_for_the_root_layout(self, nexy_project):
+    def test_csr_drops_nexy_from_build_targets(self, nexy_project):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
-        assert ".nexy" in Config().TARGET_EXTENSIONS
+        assert ".nexy" not in Config().TARGET_EXTENSIONS
 
 
 class TestCsrSpecialNames:
@@ -35,20 +35,20 @@ class TestCsrSpecialNames:
         nexy_project()
         assert "layout.nexy" in Config().LAYOUT_FILE_NAMES
 
-    def test_csr_keeps_layout_nexy(self, nexy_project):
+    def test_csr_drops_layout_nexy(self, nexy_project):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
-        assert "layout.nexy" in Config().LAYOUT_FILE_NAMES
+        assert "layout.nexy" not in Config().LAYOUT_FILE_NAMES
 
-    def test_csr_keeps_errors_and_loading_nexy(self, nexy_project):
+    def test_csr_drops_errors_and_loading_nexy(self, nexy_project):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
-        assert "errors.nexy" in Config().ERROR_FILE_NAMES
-        assert "loading.nexy" in Config().LOADING_FILE_NAMES
+        assert "errors.nexy" not in Config().ERROR_FILE_NAMES
+        assert "loading.nexy" not in Config().LOADING_FILE_NAMES
 
 
 class TestCsrWatch:
-    def test_csr_keeps_watching_nexy_for_the_root_layout(self, nexy_project):
+    def test_csr_stops_watching_nexy(self, nexy_project):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
-        assert any(".nexy" in pattern for pattern in Config().WATCH_EXTENSIONS_GLOB)
+        assert not any(".nexy" in pattern for pattern in Config().WATCH_EXTENSIONS_GLOB)
 
     def test_csr_keeps_watching_python(self, nexy_project):
         nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)

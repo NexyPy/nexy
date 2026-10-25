@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -70,23 +71,72 @@ _RECORD_SEPARATOR = "\x1e"
 _FIELD_SEPARATOR = "\x1f"
 
 
+# Mail domains that only AI vendors' tools use as a commit identity.
+AI_DOMAINS: tuple[str, ...] = (
+    "aider.chat",
+    "anthropic.com",
+    "codebuff.com",
+    "cognition.ai",
+    "cursor.com",
+    "cursor.sh",
+    "devin.ai",
+    "openai.com",
+    "qodo.ai",
+    "sourcegraph.com",
+    "windsurf.com",
+)
+
+_IDENTITY = re.compile(r"^(?P<name>.*?)\s*(?:<(?P<email>[^>]*)>)?\s*$")
+
+
 def names_ai(text: str) -> bool:
-    """Return True when *text* mentions a known AI tool or vendor."""
+    """Return True when *text* names a known AI tool as a whole word.
+
+    Whole words only: "Ali Haider" does not name Aider.
+    """
     lowered = text.lower()
-    return any(tool in lowered for tool in AI_TOOLS)
+    return any(
+        re.search(rf"(?<![a-z0-9]){re.escape(tool)}(?![a-z0-9])", lowered) for tool in AI_TOOLS
+    )
+
+
+def is_ai_identity(value: str) -> bool:
+    """Return True when a ``Name <email>`` trailer value is an AI tool, not a person.
+
+    A person can share a first name with a tool ("Devin Lee <devin@corp.com>"), so the name
+    alone is not enough: the identity must be a bot account, a vendor mail domain, or a
+    tool name paired with a no-reply address.
+    """
+    match = _IDENTITY.match(value.strip())
+    name = (match.group("name") if match else value).strip()
+    email = ((match.group("email") if match else "") or "").strip().lower()
+    domain = email.rpartition("@")[2]
+    local = email.partition("@")[0]
+
+    if "[bot]" in name.lower() or "[bot]" in local:
+        return True
+    if any(domain == vendor or domain.endswith("." + vendor) for vendor in AI_DOMAINS):
+        return True
+    if name.lower() in AI_TOOLS and domain.endswith("github.com"):
+        return True  # "Copilot <...@users.noreply.github.com>": a bare tool name, not a person
+    no_reply = local.startswith("noreply") or local.startswith("no-reply") or not email
+    return names_ai(name) and no_reply
 
 
 def offending_lines(message: str) -> list[str]:
     """Return the lines of *message* that attribute work to an AI."""
     found: list[str] = []
     for line in message.splitlines():
-        stripped = line.strip().lstrip("\U0001f916 ").strip()
+        stripped = line.strip().lstrip("🤖 ").strip()
         if not stripped:
             continue
-        key = stripped.split(":", 1)[0].strip().lower()
-        is_trailer = key in TRAILER_KEYS
-        is_generator = stripped.lower().startswith(GENERATOR_PREFIXES)
-        if names_ai(stripped) and (is_trailer or is_generator):
+        key, _, value = stripped.partition(":")
+        if key.strip().lower() in TRAILER_KEYS:
+            if is_ai_identity(value) or (
+                key.strip().lower() != "co-authored-by" and names_ai(value)
+            ):
+                found.append(stripped)
+        elif stripped.lower().startswith(GENERATOR_PREFIXES) and names_ai(stripped):
             found.append(stripped)
     return found
 

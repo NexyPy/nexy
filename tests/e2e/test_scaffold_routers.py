@@ -81,7 +81,13 @@ def test_web_template_serves_a_valid_document(tmp_path, template, framework, use
     assert content_type.startswith("text/html")
     assert html.lstrip().lower().startswith("<!doctype html>"), html[:120]
     assert html.lower().count("<!doctype") == 1
-    assert "<main" in html and "</html>" in html
+    assert "</html>" in html
+    if use_csr:
+        # No layout.nexy in client mode: the root layout of the framework owns the document. Node
+        # renders it, which needs a Vite server, so here the page describes itself to the browser.
+        assert "__nexy_page" in html
+    else:
+        assert "<main" in html
     assert "object at 0x" not in html
     assert html.count("/_nexy/hmr") <= 1
 

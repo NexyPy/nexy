@@ -518,3 +518,27 @@ def test_vite_proxy_port_reads_client_port(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("NEXY_DEV_SERVER", "1")
     assert vite_proxy_port() == 5199
+
+
+class TestAppDocumentShortcut:
+    @staticmethod
+    def _scope(path: str, accept: str = "text/html") -> dict:
+        return {"path": path, "headers": [(b"accept", accept.encode())]}
+
+    def test_extensionless_page_goes_straight_to_the_app(self):
+        from nexy.helpers.server.proxy import _is_app_document
+
+        assert _is_app_document(self._scope("/about"))
+
+    def test_plugin_ui_and_well_known_paths_still_reach_vite(self):
+        from nexy.helpers.server.proxy import _is_app_document
+
+        assert not _is_app_document(self._scope("/__inspect/"))
+        assert not _is_app_document(self._scope("/.well-known/apple-app-site-association"))
+        assert not _is_app_document(self._scope("/blog/_drafts/post"))
+
+    def test_files_and_non_html_requests_are_probed(self):
+        from nexy.helpers.server.proxy import _is_app_document
+
+        assert not _is_app_document(self._scope("/logo.svg"))
+        assert not _is_app_document(self._scope("/about", accept="application/json"))
