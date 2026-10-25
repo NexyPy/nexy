@@ -1,12 +1,19 @@
-import html
+from http import HTTPStatus
 
 from fastapi import FastAPI, Request, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
-from nexy.errors import InternalServerError, NotFound
+from nexy.errors import InternalServerError, NotFound, error_page
+
+
+def _phrase(code: int) -> str:
+    try:
+        return HTTPStatus(code).phrase
+    except ValueError:
+        return "Error"
 
 
 def _wants_json(request: Request) -> bool:
@@ -24,12 +31,10 @@ def handle_http_exception(request: Request, exc: HTTPException) -> Response:
         return NotFound()
     if exc.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR:
         return InternalServerError()
-    # The detail may carry user input (HTTPException(detail=f"No user {name}")): escape it.
-    return HTMLResponse(
-        content=f"<h1>{exc.status_code} - {html.escape(str(exc.detail))}</h1>",
-        status_code=exc.status_code,
-        headers=headers,
-    )
+    # The detail may carry user input, e.g. HTTPException(detail=f"No user {name}"): it is escaped.
+    page = error_page(exc.status_code, _phrase(exc.status_code), str(exc.detail))
+    page.headers.update(headers or {})
+    return page
 
 
 def register_validation_error_handler(server: FastAPI) -> None:
