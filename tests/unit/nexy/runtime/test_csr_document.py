@@ -145,3 +145,56 @@ class TestSafety:
     def test_a_fragment_response_is_replaced_by_the_fallback_document(self, tmp_path):
         _production(tmp_path, "document", "<div>no html element here</div>")
         assert _boot(_render())["mode"] == "client"
+
+
+class TestRequestLocation:
+    """The page is rendered for the URL that was asked: its hooks agree on both sides."""
+
+    def test_the_location_goes_with_the_render_request(self, monkeypatch):
+        seen = {}
+
+        def fake_post(url, **kwargs):
+            seen.update(kwargs["json"])
+            return httpx.Response(200, text=DOC, request=httpx.Request("POST", url))
+
+        monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
+        monkeypatch.setattr(csr_document.httpx, "post", fake_post)
+        monkeypatch.setattr(
+            csr_document, "_request_location", lambda: {"pathname": "/users/7", "search": "?tab=x"}
+        )
+        _render()
+        assert seen["location"] == {"pathname": "/users/7", "search": "?tab=x"}
+
+    def test_no_location_is_sent_outside_a_request(self, monkeypatch):
+        seen = {}
+
+        def fake_post(url, **kwargs):
+            seen.update(kwargs["json"])
+            return httpx.Response(200, text=DOC, request=httpx.Request("POST", url))
+
+        monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
+        monkeypatch.setattr(csr_document.httpx, "post", fake_post)
+        _render()
+        assert "location" not in seen
+
+    def test_the_location_of_a_request_is_its_path_and_query(self, monkeypatch):
+        class Url:
+            path = "/users/7"
+            query = "tab=x"
+
+        class Request:
+            url = Url()
+
+        monkeypatch.setattr(csr_document, "_get_request", lambda: Request())
+        assert csr_document._request_location() == {"pathname": "/users/7", "search": "?tab=x"}
+
+    def test_an_empty_query_is_an_empty_search(self, monkeypatch):
+        class Url:
+            path = "/about"
+            query = ""
+
+        class Request:
+            url = Url()
+
+        monkeypatch.setattr(csr_document, "_get_request", lambda: Request())
+        assert csr_document._request_location() == {"pathname": "/about", "search": ""}

@@ -20,7 +20,7 @@ import httpx
 
 from nexy.helpers.common.console import console
 from nexy.helpers.server.proxy import vite_proxy_port
-from nexy.modules.i18n.core import current_locale
+from nexy.hooks import _get_req as _get_request
 from nexy.vite import Vite
 
 _STATIC_ROOT = "__nexy__/client/static"
@@ -52,7 +52,7 @@ def _is_document(html: str) -> bool:
 def _fallback_document() -> str:
     """Empty document used when no pre-rendered HTML is available: the browser renders it all."""
     return (
-        f'<!DOCTYPE html><html lang="{current_locale.get()}"><head>'
+        '<!DOCTYPE html><html lang="en"><head>'
         '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
         "</head><body></body></html>"
     )
@@ -67,13 +67,24 @@ def _from_production(static_stem: str, dynamic: bool) -> str | None:
         return None
 
 
+def _request_location() -> dict[str, str] | None:
+    """The path and query of the request being answered, or None outside a request."""
+    try:
+        url = _get_request().url
+    except RuntimeError:
+        return None
+    return {"pathname": url.path, "search": f"?{url.query}" if url.query else ""}
+
+
 def _from_vite(page_file: str, layouts: list[str], props: dict[str, Any], port: int) -> str | None:
     # The props go in the body: they can be large, and a URL has a hard length limit.
-    body = {
+    body: dict[str, Any] = {
         "page": page_file,
         "layouts": layouts,
         "props": json.loads(json.dumps(props, default=str)),
     }
+    if location := _request_location():
+        body["location"] = location
     try:
         response = httpx.post(
             f"http://127.0.0.1:{port}/__nexy__/render", json=body, timeout=_RENDER_TIMEOUT

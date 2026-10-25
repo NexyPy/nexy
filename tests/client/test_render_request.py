@@ -82,7 +82,7 @@ CWD = "C:/work/app"
     "layout",
     [
         "C:/work/app/src/routes/layout.vue",
-        "C:\work\app\src\routes\layout.vue",
+        r"C:\work\app\src\routes\layout.vue",
         "C:/work/app/src/routes/layout.vue?vue&type=template",
     ],
 )
@@ -108,3 +108,38 @@ def test_a_drive_letter_in_another_case_is_the_same_file_on_windows():
 )
 def test_nested_or_foreign_layouts_are_not_the_root_layout(layout):
     assert _call("isRootLayout", layout, "vue", CWD) == {"ok": False}
+
+
+def test_concurrent_renders_each_see_their_own_request_location():
+    done = subprocess.run(
+        [NODE, str(HERE / "render_request.mjs"), "[]", "concurrent"],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=60,
+        check=False,
+    )
+    assert "@@" in done.stdout, done.stderr[-800:]
+    seen = json.loads(done.stdout.split("@@")[1])
+    assert [r["seen"] for r in seen["results"]] == ["/a", "/b"]
+    assert seen["results"][0]["params"] == {"id": "/a"}
+    assert seen["after"] is None  # nothing leaks once the renders are done
+
+
+def test_a_render_request_may_carry_the_request_location():
+    body = {
+        "page": "/src/routes/index.tsx",
+        "layouts": [],
+        "props": {},
+        "location": {"pathname": "/users/7", "search": "?tab=x"},
+    }
+    assert _call("parseRenderRequest", json.dumps(body)) == {"ok": body}
+
+
+@pytest.mark.parametrize(
+    "location",
+    [{"pathname": 5, "search": ""}, {"pathname": "/", "search": None}, {"pathname": "/"}, "/x"],
+)
+def test_a_malformed_location_is_rejected(location):
+    body = json.dumps({"page": None, "layouts": [], "props": {}, "location": location})
+    assert "error" in _call("parseRenderRequest", body)

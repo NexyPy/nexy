@@ -8,6 +8,7 @@ import { __NEXY_DEPS } from './src/deps.auto.ts'
 import {
   DOCUMENT_FRAMEWORKS,
   isLoopback,
+  isRootLayout,
   MAX_RENDER_BODY,
   parseRenderRequest,
   readMode,
@@ -118,9 +119,7 @@ function documentForBrowser(source: string, id: string, ssr: boolean): string | 
   if (ssr) return null
   const { csr, framework } = readMode()
   if (!csr || (framework !== 'vue' && framework !== 'svelte')) return null
-  const file = id.split('?')[0].replace(/\\/g, '/')
-  const root = path.resolve(process.cwd(), 'src/routes').replace(/\\/g, '/')
-  if (file.toLowerCase() !== `${root}/layout.${framework}`.toLowerCase()) return null
+  if (!isRootLayout(id, framework, process.cwd())) return null
   return stripDocumentTags(source, framework)
 }
 
@@ -238,7 +237,13 @@ function nexyPlugin(): Plugin {
           } catch (error) {
             return reply(400, (error as Error).message)
           }
-          const html = await renderDocument(server, request.page, request.layouts, request.props)
+          const html = await renderDocument(
+            server,
+            request.page,
+            request.layouts,
+            request.props,
+            request.location
+          )
           reply(200, html, 'text/html')
         } catch (error) {
           const err = error as Error

@@ -37,7 +37,69 @@ export function isLoopback(address: string | undefined | null): boolean {
   return address === '127.0.0.1' || address === '::1' || address === '::ffff:127.0.0.1'
 }
 
-export type RenderRequest = { page: string | null; layouts: string[]; props: Record<string, unknown> }
+/** True when `id` (a Vite module id) is the root `src/routes/layout.<framework>` of the project at `cwd`. */
+export function isRootLayout(id: string, framework: string, cwd: string): boolean {
+  const normalise = (value: string) => value.split('?')[0].replace(/\\/g, '/')
+  const expected = `${normalise(path.resolve(cwd, 'src/routes'))}/layout.${framework}`
+  const actual = normalise(id)
+  // Windows paths are case-insensitive: Vite may report `d:/app` while the process runs in `D:/app`.
+  return process.platform === 'win32' ? actual.toLowerCase() === expected.toLowerCase() : actual === expected
+}
+
+/** The URL a page is rendered for: what `usePathname()` and friends answer during the render. */
+export type RenderLocation = { pathname: string; search: string }
+
+export type RenderRequest = {
+  page: string | null
+  layouts: string[]
+  props: Record<string, unknown>
+  location?: RenderLocation
+}
+
+const LOCATION_KEY = '__NEXY_LOCATION__'
+let renderQueue: Promise<unknown> = Promise.resolve()
+
+/**
+ * Run `render` with the request location published for the hooks of the page.
+ *
+ * The location is a global, so renders go one at a time: two overlapping requests must never see
+ * each other's URL. Rendering is CPU work in one thread anyway, so nothing is lost.
+ */
+export function withLocation<T>(
+  location: RenderLocation,
+  params: Record<string, unknown>,
+  render: () => Promise<T>
+): Promise<T> {
+  const strings = Object.fromEntries(
+    Object.entries(params).filter(([, value]) => typeof value === 'string')
+  )
+  const run = async () => {
+    const g = globalThis as Record<string, unknown>
+    g[LOCATION_KEY] = { ...location, hash: '', params: strings }
+    try {
+      return await render()
+    } finally {
+      delete g[LOCATION_KEY]
+    }
+  }
+  const result = renderQueue.then(run, run)
+  renderQueue = result.catch(() => undefined)
+  return result
+}
+
+function parseLocation(value: unknown): RenderLocation | undefined {
+  if (value === undefined) return undefined
+  const location = value as Record<string, unknown> | null
+  if (
+    location === null ||
+    typeof location !== 'object' ||
+    typeof location.pathname !== 'string' ||
+    typeof location.search !== 'string'
+  ) {
+    throw new Error('"location" must be { pathname: string, search: string }')
+  }
+  return { pathname: location.pathname, search: location.search }
+}
 
 /** Parse and validate the JSON body of a render request. Throws on anything unexpected. */
 export function parseRenderRequest(text: string): RenderRequest {
@@ -46,6 +108,7 @@ export function parseRenderRequest(text: string): RenderRequest {
     throw new Error('The render request must be a JSON object')
   }
   const { page, layouts, props } = body
+  const location = parseLocation(body.location)
   if (page !== null && typeof page !== 'string') throw new Error('"page" must be a route file or null')
   if (!Array.isArray(layouts) || layouts.some(layout => typeof layout !== 'string')) {
     throw new Error('"layouts" must be a list of route files')
@@ -55,7 +118,7 @@ export function parseRenderRequest(text: string): RenderRequest {
   }
   if (page) assertRouteFile(page)
   layouts.forEach(assertRouteFile)
-  return { page, layouts, props } as RenderRequest
+  return (location ? { page, layouts, props, location } : { page, layouts, props }) as RenderRequest
 }
 
 type Component = (props: Record<string, unknown>) => unknown
@@ -73,6 +136,16 @@ async function load(server: ViteDevServer, file: string): Promise<Component> {
 
 /** Render `<layouts><page/></layouts>` as a full HTML document. A null page renders the shell. */
 export async function renderDocument(
+  server: ViteDevServer,
+  page: string | null,
+  layouts: string[],
+  props: Record<string, unknown>,
+  location: RenderLocation = { pathname: '/', search: '' }
+): Promise<string> {
+  return withLocation(location, props, () => renderWithin(server, page, layouts, props))
+}
+
+async function renderWithin(
   server: ViteDevServer,
   page: string | null,
   layouts: string[],
@@ -201,7 +274,13 @@ export async function writeDocuments(): Promise<number> {
   try {
     for (const route of routes) {
       const dynamic = route.path.includes('{')
-      const html = await renderDocument(server, dynamic ? null : route.file, route.layouts ?? [], {})
+      const html = await renderDocument(
+        server,
+        dynamic ? null : route.file,
+        route.layouts ?? [],
+        {},
+        { pathname: route.path, search: '' }
+      )
       const out = path.resolve(
         process.cwd(),
         '__nexy__/client/static' + route.file.replace(/\.(tsx|jsx|vue|svelte)$/, dynamic ? '.shell.html' : '.document.html')
