@@ -110,5 +110,5 @@ used in two components is one class. Prefix or namespace your classes.
 ## Next steps
 
 - [Markdown and MDX](markdown.md): content pages
-- [ISR](../routing/fbr/isr.md): cache a page per path
-- [CSR](../routing/fbr/csr.md): client-side rendering
+- [ISR](../rendering/isr.md): cache a page per path
+- [CSR](../rendering/csr.md): client-side rendering

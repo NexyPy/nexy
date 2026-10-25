@@ -32,4 +32,4 @@ in the framework, server-rendered like other component routes.
 
 - [.nexy files](nexyfile.md): the native page format
 - [Views](README.md): choose a format
-- [i18n](../i18n.md): locale variants
+- [i18n](../guides/i18n.md): locale variants

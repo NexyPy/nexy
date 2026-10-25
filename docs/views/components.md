@@ -130,4 +130,4 @@ client bundle in production. Nexy calls it for every page; you rarely need it di
 
 - [.nexy files](nexyfile.md): where these helpers are used
 - [React](react.md): importing `.tsx` components
-- [Frontend](../frontend.md): how client components are bundled
+- [Frontend](../guides/frontend.md): how client components are bundled
