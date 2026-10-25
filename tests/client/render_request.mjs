@@ -1,6 +1,6 @@
 // Calls the request guards of document.ts with a JSON list of cases: { fn, args } -> result or error.
-import { isLoopback, parseRenderRequest } from "../../nexy/modules/frontend/document.ts";
-const fns = { isLoopback, parseRenderRequest };
+import { isLoopback, isRootLayout, parseRenderRequest } from "../../nexy/modules/frontend/document.ts";
+const fns = { isLoopback, isRootLayout, parseRenderRequest };
 const cases = JSON.parse(process.argv[2]);
 const out = cases.map((c) => {
   try {

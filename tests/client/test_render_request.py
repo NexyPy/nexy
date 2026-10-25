@@ -73,3 +73,38 @@ def test_malformed_requests_are_rejected(body):
 def test_only_route_files_can_be_rendered(page):
     body = json.dumps({"page": page, "layouts": [], "props": {}})
     assert "error" in _call("parseRenderRequest", body)
+
+
+CWD = "C:/work/app"
+
+
+@pytest.mark.parametrize(
+    "layout",
+    [
+        "C:/work/app/src/routes/layout.vue",
+        "C:\work\app\src\routes\layout.vue",
+        "C:/work/app/src/routes/layout.vue?vue&type=template",
+    ],
+)
+def test_the_root_layout_is_recognised_whatever_the_path_spelling(layout):
+    assert _call("isRootLayout", layout, "vue", CWD) == {"ok": True}
+
+
+def test_a_drive_letter_in_another_case_is_the_same_file_on_windows():
+    import sys
+
+    if sys.platform != "win32":
+        pytest.skip("paths are case-sensitive here")
+    assert _call("isRootLayout", "c:/work/app/src/routes/layout.vue", "vue", CWD) == {"ok": True}
+
+
+@pytest.mark.parametrize(
+    "layout",
+    [
+        "C:/work/app/src/routes/blog/layout.vue",
+        "C:/work/app/src/routes/layout.svelte",
+        "C:/work/app/src/layout.vue",
+    ],
+)
+def test_nested_or_foreign_layouts_are_not_the_root_layout(layout):
+    assert _call("isRootLayout", layout, "vue", CWD) == {"ok": False}
