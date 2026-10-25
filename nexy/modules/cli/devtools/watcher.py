@@ -58,6 +58,28 @@ def is_ignored_path(path: str) -> bool:
     return any(f"/{dir_name}/" in posix for dir_name in Config().excludeDirs)
 
 
+def is_route_page(path: str) -> bool:
+    """True for a page of the routes directory that is not Python (``.nexy``, ``.md``, ``.tsx``...).
+
+    The route table is built when the server starts, so a page that appears, disappears or moves
+    needs a restart; editing one only needs a recompile.
+    """
+    routes = f"{Config.ROUTER_PATH.strip('/')}/"
+    suffix = Path(path).suffix
+    return (
+        path.startswith(routes)
+        and suffix != ".py"
+        and suffix in Config.ROUTE_FILE_EXTENSIONS
+        and not is_ignored_path(path)
+    )
+
+
+def is_routes_directory(path: str) -> bool:
+    """True for the routes directory or one of its subdirectories."""
+    routes = Config.ROUTER_PATH.strip("/")
+    return (path == routes or path.startswith(f"{routes}/")) and not is_ignored_path(path)
+
+
 def needs_restart(path: str) -> bool:
     """True for server-side files whose change requires a reload."""
     return path.endswith((".nexy", ".mdx", ".md", ".py")) and not is_ignored_path(path)
@@ -68,10 +90,12 @@ class WatchHandler(PatternMatchingEventHandler):
         self,
         on_reload_api: Callable[[], None] | None = None,
         min_interval: float = 0.5,
+        on_routes_changed: Callable[[str], None] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.on_reload_api = on_reload_api
+        self.on_routes_changed = on_routes_changed
         self._last_event_time: float = 0.0
         self._last_path: str = ""
         self._min_interval = min_interval
@@ -160,10 +184,39 @@ class WatchHandler(PatternMatchingEventHandler):
             f" [dim]{path}[/dim] → broadcast in [dim]{elapsed_ms:.1f}ms[/dim]"
         )
 
+    def dispatch(self, event: FileSystemEvent) -> None:
+        """Directory events skip the file patterns: removing a folder removes its routes."""
+        if event.is_directory:
+            if event.event_type in ("deleted", "moved"):
+                self._on_directory(event)
+            return
+        super().dispatch(event)
+
+    def _on_directory(self, event: FileSystemEvent) -> None:
+        paths = [normalize_path(event.src_path)]
+        if event.event_type == "moved":
+            paths.append(normalize_path(event.dest_path))
+        for path in paths:
+            if is_routes_directory(path):
+                self._routes_changed(path, "-" if path == paths[0] else "+")
+
+    def _routes_changed(self, path: str, symbol: str) -> None:
+        """Tell the dev server that the set of routes changed, and say so."""
+        colour = {"+": "green", "-": "red"}.get(symbol, "yellow")
+        console.print(f"  [{colour}]{symbol}[/{colour}] [dim]{path}[/dim]")
+        if self.on_routes_changed:
+            self.on_routes_changed(path)
+
     def on_modified(self, event: FileSystemEvent) -> None:
         self._handle_event(event, throttle=True)
 
     def on_created(self, event: FileSystemEvent) -> None:
+        if not event.is_directory:
+            path = normalize_path(event.src_path)
+            if is_route_page(path):
+                self._mark_processed(path)
+                self._routes_changed(path, "+")
+                return
         self._handle_event(event, throttle=False)
 
     def _handle_event(self, event: FileSystemEvent, throttle: bool) -> None:
@@ -249,7 +302,9 @@ class WatchHandler(PatternMatchingEventHandler):
         path = normalize_path(event.src_path)
         if is_ignored_path(path):
             return
-        if needs_restart(path):
+        if is_route_page(path):
+            self._routes_changed(path, "-")
+        elif needs_restart(path):
             self._trigger_reload(path)
 
     def on_moved(self, event: FileSystemEvent) -> None:
@@ -316,11 +371,13 @@ def create_observer(
     patterns: list[str],
     ignore_patterns: list[str],
     on_reload_api: Callable[[], None],
+    on_routes_changed: Callable[[str], None] | None = None,
 ) -> Any:
     event_handler = WatchHandler(
         patterns=patterns,
         ignore_patterns=ignore_patterns,
         on_reload_api=on_reload_api,
+        on_routes_changed=on_routes_changed,
         ignore_directories=True,
     )
     observer = Observer()

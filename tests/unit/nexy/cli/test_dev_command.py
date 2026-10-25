@@ -17,6 +17,7 @@ class Recorder:
     def __init__(self) -> None:
         self.events: list[str] = []
         self.reload_callback: Any = None
+        self.routes_callback: Any = None
 
     def __call__(self, event: str) -> None:
         self.events.append(event)
@@ -40,6 +41,7 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
         build_result=FakeBuildResult(),
         vite_ready=True,
         generate_error=None,
+        regenerate_error=None,
         serve_plan=[],  # one entry per uvicorn run: "exit" | "restart" | "interrupt"
         vite_proc=object(),
     )
@@ -87,6 +89,8 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
             rec("frontend")
             if state.generate_error:
                 raise state.generate_error
+            if rec.count("frontend") > 1 and state.regenerate_error:
+                raise state.regenerate_error
 
     class FakeBuilder:
         def build(self, showlog: bool = False) -> FakeBuildResult:
@@ -104,6 +108,8 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
             step = state.serve_plan.pop(0) if state.serve_plan else "exit"
             if step == "restart":
                 rec.reload_callback()
+            if step == "routes":
+                rec.routes_callback("src/routes/about.nexy")
             if step == "interrupt":
                 raise KeyboardInterrupt
 
@@ -120,6 +126,7 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
 
     def create_observer(**kwargs: Any) -> object:
         rec.reload_callback = kwargs["on_reload_api"]
+        rec.routes_callback = kwargs["on_routes_changed"]
         rec("observer")
         return object()
 
@@ -201,6 +208,29 @@ def test_a_file_change_restarts_uvicorn_with_fresh_modules(world):
     assert world.rec.count("uvicorn_run") == 2
     assert world.rec.count("uvicorn_new") == 2
     assert world.rec.count("purge") == 2
+
+
+def test_a_page_that_appears_regenerates_the_client_files_then_restarts(world):
+    world.serve_plan = ["routes", "exit"]
+    dev_module.dev()
+    events = world.rec.events
+    assert world.rec.count("uvicorn_run") == 2
+    assert world.rec.count("frontend") == 2
+    second_start = [i for i, e in enumerate(events) if e == "uvicorn_new"][1]
+    assert events.index("frontend", events.index("uvicorn_run")) < second_start
+
+
+def test_a_python_change_restarts_without_regenerating_the_client_files(world):
+    world.serve_plan = ["restart", "exit"]
+    dev_module.dev()
+    assert world.rec.count("frontend") == 1
+
+
+def test_a_failing_regeneration_does_not_stop_the_server(world):
+    world.serve_plan = ["routes", "exit"]
+    world.regenerate_error = RuntimeError("boom")
+    dev_module.dev()
+    assert world.rec.count("uvicorn_run") == 2
 
 
 def test_ctrl_c_still_cleans_up(world):

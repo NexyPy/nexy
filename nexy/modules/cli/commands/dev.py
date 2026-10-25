@@ -147,11 +147,22 @@ def _purge_app_modules() -> None:
     purge_project_modules()
 
 
+def _regenerate_client_files() -> None:
+    """Rebuild the client route list after a page appeared, disappeared or moved."""
+    try:
+        FrontendGenerator().generate()
+    except Exception as error:
+        reason = t("dev.routes_failed", "Could not update the client routes: {error}")
+        console.print(f"  [red]x[/red] {reason.format(error=error)}")
+
+
 class _Reloader:
     """Runs uvicorn and restarts it whenever the watcher asks."""
 
     def __init__(self) -> None:
         self.restart_requested = False
+        self.regenerate_requested = False
+        self._started = False
         self._server: Any = None
 
     def request_restart(self) -> None:
@@ -159,13 +170,24 @@ class _Reloader:
         if self._server is not None:
             self._server.should_exit = True
 
+    def request_routes_restart(self, _path: str) -> None:
+        """The set of pages changed: the route table and the client route list are stale."""
+        self.regenerate_requested = True
+        self.request_restart()
+
     def serve(self, endpoint: _Endpoint) -> None:
         import uvicorn
 
         from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
 
         while True:
+            if self._started:
+                console.print(f"  [yellow]○[/yellow] {t('dev.restarting', 'Restarting...')}")
+            self._started = True
             self.restart_requested = False
+            if self.regenerate_requested:
+                self.regenerate_requested = False
+                _regenerate_client_files()
             _purge_app_modules()
             self._server = uvicorn.Server(
                 uvicorn.Config(
@@ -207,6 +229,7 @@ def _serve(config: Config, endpoint: _Endpoint, session: _Session, started: floa
             patterns=config.WATCH_EXTENSIONS_GLOB,
             ignore_patterns=config.WATCH_EXCLUDE_PATTERNS,
             on_reload_api=reloader.request_restart,
+            on_routes_changed=reloader.request_routes_restart,
         )
         _print_banner(endpoint, time.perf_counter() - started)
         reloader.serve(endpoint)

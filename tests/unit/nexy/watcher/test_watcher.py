@@ -171,7 +171,7 @@ class TestOnModified:
 class TestOnCreated:
     def test_compiles_new_nexy_file(self, handler, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
-        routes = tmp_path / "src" / "routes"
+        routes = tmp_path / "src" / "components"  # a page of the routes restarts the server instead
         routes.mkdir(parents=True)
         nexy_file = routes / "newpage.nexy"
         nexy_file.write_text(NEXY_SOURCE)
@@ -227,7 +227,7 @@ class TestOnDeleted:
 class TestOnMoved:
     def test_creates_at_destination(self, handler, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
-        routes = tmp_path / "src" / "routes"
+        routes = tmp_path / "src" / "components"  # a page of the routes restarts the server instead
         routes.mkdir(parents=True)
         src = routes / "old_name.nexy"
         src.write_text(NEXY_SOURCE)
