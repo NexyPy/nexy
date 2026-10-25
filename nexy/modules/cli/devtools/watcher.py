@@ -61,6 +61,16 @@ def is_ignored_path(path: str) -> bool:
     return any(f"/{dir_name}/" in posix for dir_name in Config().excludeDirs)
 
 
+def is_generated_init(path: str) -> bool:
+    """True for an empty ``__init__.py``: the file Nexy creates itself, not an edit to react to."""
+    if Path(path).name != "__init__.py":
+        return False
+    try:
+        return Path(path).stat().st_size == 0
+    except OSError:
+        return False
+
+
 def is_route_page(path: str) -> bool:
     """True for a page of the routes directory that is not Python (``.nexy``, ``.md``, ``.tsx``...).
 
@@ -229,7 +239,7 @@ class WatchHandler(PatternMatchingEventHandler):
         if event.is_directory:
             return
         path = normalize_path(event.src_path)
-        if is_ignored_path(path):
+        if is_ignored_path(path) or is_generated_init(path):
             return
         if throttle and not self._should_trigger(path):
             # Save bursts (truncate + write on Windows) hit the leading edge

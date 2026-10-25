@@ -11,6 +11,7 @@ from nexy.core.config import Config
 from nexy.helpers.common import launcher, package_manager
 from nexy.helpers.common.console import console
 from nexy.helpers.common.vite_launch import vite_installed
+from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.server import Server
@@ -190,6 +191,7 @@ class _Reloader:
             if self.regenerate_requested:
                 self.regenerate_requested = False
                 _regenerate_client_files()
+            ensure_project_packages()
             _purge_app_modules()
             self._server = uvicorn.Server(
                 uvicorn.Config(
@@ -250,6 +252,7 @@ def _serve(config: Config, endpoint: _Endpoint, session: _Session, started: floa
 
 def dev(port: int | None = None, host: str | None = None) -> None:
     pycache()
+    ensure_project_packages()
     abort_on_invalid_config()
     # Mark this process tree as the dev server so the application proxies Vite's
     # endpoints through its own origin instead of exposing Vite's port.

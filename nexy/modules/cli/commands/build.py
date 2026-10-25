@@ -11,6 +11,7 @@ from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.helpers.common.report import print_cmd_result, print_tree_section
 from nexy.helpers.common.tasks import step
+from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
@@ -21,6 +22,7 @@ from nexy.modules.i18n import t
 
 def build(check: bool = False) -> None:
     pycache()
+    ensure_project_packages()
     abort_on_invalid_config()
     build_start = time.perf_counter()
     config = Config()

@@ -4,12 +4,16 @@ from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
+from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.server import Server
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
+from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.i18n import t
 
 
 def start(port: int | None = None, host: str | None = None) -> None:
+    pycache()
+    ensure_project_packages()
     abort_on_invalid_config()
     startup_start = time.perf_counter()
     version = __version__

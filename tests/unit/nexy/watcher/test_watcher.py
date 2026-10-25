@@ -590,3 +590,26 @@ class TestPurgeKeepsNamespacePackagesConsistent:
         finally:
             for name in [n for n in sys.modules if n.startswith("purgeproj")]:
                 del sys.modules[name]
+
+
+class TestGeneratedInitFiles:
+    def test_an_empty_init_is_not_a_change(self, tmp_path):
+        from nexy.modules.cli.devtools.watcher import is_generated_init
+
+        init = tmp_path / "__init__.py"
+        init.write_text("")
+        assert is_generated_init(str(init))
+
+    def test_an_init_with_code_is_a_change(self, tmp_path):
+        from nexy.modules.cli.devtools.watcher import is_generated_init
+
+        init = tmp_path / "__init__.py"
+        init.write_text("VALUE = 1\n")
+        assert not is_generated_init(str(init))
+
+    def test_other_files_are_a_change(self, tmp_path):
+        from nexy.modules.cli.devtools.watcher import is_generated_init
+
+        other = tmp_path / "users.py"
+        other.write_text("")
+        assert not is_generated_init(str(other))

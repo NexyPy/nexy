@@ -13,6 +13,7 @@ from jinja2 import Environment, FileSystemLoader
 from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
+from nexy.helpers.fs.packages import ensure_packages
 from nexy.modules.cli.constants import TEMPLATES_DIR
 from nexy.modules.i18n import t
 
@@ -180,15 +181,7 @@ def _place_web_assets(dest: Path, template_name: str) -> None:
 
 def generate_init_files(base: Path) -> None:
     """Auto-generate empty __init__.py in Python package dirs."""
-    dirs_to_check = [base]
-    dirs_to_check.extend(sorted(base.rglob("*")))
-    for dir_path in dirs_to_check:
-        if dir_path.is_dir() and not (dir_path / "__init__.py").exists():
-            is_top_src = dir_path == base
-            has_py = any(f.suffix == ".py" for f in dir_path.iterdir())
-            has_nexy = any(f.suffix == ".nexy" for f in dir_path.iterdir())
-            if is_top_src or has_py or has_nexy:
-                (dir_path / "__init__.py").write_text("")
+    ensure_packages(base)
 
 
 def _run_post_init_pipeline(
