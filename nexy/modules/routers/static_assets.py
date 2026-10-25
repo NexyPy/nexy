@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, Response
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 FAVICON_SVG = (
@@ -16,12 +18,45 @@ FAVICON_SVG = (
 )
 
 
+class PublicFilesMiddleware:
+    """Serve `public/<file>` at `/<file>`, the way Vite and Next.js do.
+
+    Vite serves `public/` at the root in development; this brings production to the same URLs, so
+    a page that writes `/logo.svg` works in both. Only GET and HEAD requests whose last segment has
+    an extension are looked up, so pages and API routes pay nothing. Dot files are never served.
+    """
+
+    def __init__(self, app: Any, directory: str | Path = "public") -> None:
+        self.app = app
+        self.root = Path(directory).resolve()
+
+    def _file_for(self, path: str) -> Path | None:
+        relative = path.lstrip("/")
+        parts = relative.split("/")
+        if "." not in parts[-1] or any(part.startswith(".") for part in parts):
+            return None
+        candidate = (self.root / relative).resolve()
+        if candidate.is_file() and candidate.is_relative_to(self.root):
+            return candidate
+        return None
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
+        if scope["type"] == "http" and scope["method"] in ("GET", "HEAD"):
+            file = self._file_for(scope["path"])
+            if file is not None:
+                await FileResponse(file)(scope, receive, send)
+                return
+        await self.app(scope, receive, send)
+
+
 def setup_static_files(server: FastAPI) -> None:
     """Mounts directories if they exist."""
     mounts = {"/public": "public", "/assets": "__nexy__/client/assets"}
     for path, directory in mounts.items():
         if os.path.isdir(directory):
             server.mount(path, StaticFiles(directory=directory), name=directory)
+    if os.path.isdir("public"):
+        server.add_middleware(PublicFilesMiddleware, directory="public")
 
 
 def setup_favicon(server: FastAPI, router_path: str) -> None:

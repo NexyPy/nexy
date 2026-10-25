@@ -48,7 +48,7 @@ Two files that resolve to the same URL both register. Do not put `blog.nexy` nex
 |---|---|
 | `src/components/` | components imported by pages; never routes |
 | `src/apps/` | controllers and modules of the [modular router](../routing/modular/README.md) |
-| `public/` | static files served under `/public/` |
+| `public/` | static files, served at the root: `public/logo.svg` is `/logo.svg` (also under `/public/`) |
 | `__nexy__/` | generated output; do not commit |
 
 ## Next steps

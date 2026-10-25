@@ -92,7 +92,7 @@ known.
 | Svelte | `import Image from "@nexy/Image.svelte"` |
 
 ```tsx
-<Image src="/public/photo.jpg" alt="A mountain" width={800} height={600} />
+<Image src="/photo.jpg" alt="A mountain" width={800} height={600} />
 ```
 
 - `alt` is required; use `alt=""` for a decorative image. Nexy warns once when it is missing.
