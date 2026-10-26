@@ -164,7 +164,11 @@ async def _fake_vite() -> AsyncIterator[int]:
 
     port = _free_port()
     async with serve(
-        handler, "127.0.0.1", port, subprotocols=["vite-hmr"], process_request=process_request
+        handler,
+        "127.0.0.1",
+        port,
+        subprotocols=["vite-hmr", "vite-ping"],
+        process_request=process_request,
     ):
         yield port
 
@@ -259,6 +263,30 @@ def test_proxy_strips_hop_by_hop_headers() -> None:
 def test_proxy_forwards_websocket_upgrade() -> None:
     send = asyncio.run(_run(_websocket_scope(subprotocols=["vite-hmr"]), _disconnect_receive))
     assert send.messages[0]["type"] == "websocket.accept"
+
+
+def test_proxy_forwards_the_ping_socket_the_client_uses_after_a_restart() -> None:
+    send = asyncio.run(_run(_websocket_scope(subprotocols=["vite-ping"]), _disconnect_receive))
+    assert send.messages[0] == {"type": "websocket.accept", "subprotocol": "vite-ping"}
+
+
+def test_proxy_does_not_hand_the_ping_socket_to_the_app() -> None:
+    app = _FakeApp()
+    asyncio.run(_run(_websocket_scope(subprotocols=["vite-ping"]), _disconnect_receive, app))
+    assert app.reached is False
+
+
+def test_proxy_refuses_the_ping_socket_from_another_host() -> None:
+    scope = _websocket_scope(subprotocols=["vite-ping"], host="evil.example")
+    send = asyncio.run(_run(scope, _disconnect_receive))
+    assert send.messages[0] == {"type": "websocket.close", "code": 1008}
+
+
+def test_proxy_picks_the_vite_subprotocol_among_the_ones_offered() -> None:
+    send = asyncio.run(
+        _run(_websocket_scope(subprotocols=["other", "vite-hmr"]), _disconnect_receive)
+    )
+    assert send.messages[0]["subprotocol"] == "vite-hmr"
 
 
 def test_proxy_does_not_reach_app_for_hmr_socket() -> None:

@@ -33,8 +33,12 @@ from nexy.helpers.server.ports import get_client_port
 # instead of being retried against the app.
 VITE_ONLY_PREFIXES = ("/@vite/", "/@id/", "/@fs/", "/__nexy__/", "/node_modules/")
 
-# Vite's HMR client asks for this subprotocol; Nexy's own HMR socket does not.
+# Vite's client asks for one of these subprotocols; Nexy's own HMR socket does not. `vite-ping` is
+# how the client checks that the server is back after a restart: refusing it left the browser
+# retrying forever, once a second, and the page never reloaded by itself.
 HMR_SUBPROTOCOL: Subprotocol = Subprotocol("vite-hmr")
+PING_SUBPROTOCOL: Subprotocol = Subprotocol("vite-ping")
+VITE_SUBPROTOCOLS = (HMR_SUBPROTOCOL, PING_SUBPROTOCOL)
 
 # Methods Vite serves. Anything else is a genuine application request.
 SAFE_METHODS = frozenset({"GET", "HEAD"})
@@ -97,14 +101,15 @@ class ViteProxyMiddleware:
 
     async def _handle_websocket(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Proxy Vite's HMR socket; every other socket belongs to the app."""
-        if HMR_SUBPROTOCOL not in scope.get("subprotocols", ()):
+        protocol = _vite_subprotocol(scope)
+        if protocol is None:
             await self.app(scope, receive, send)
             return
         if not _host_allowed(scope):
             await send({"type": "websocket.close", "code": 1008})
             return
         try:
-            await self._forward_websocket(scope, receive, send)
+            await self._forward_websocket(scope, receive, send, protocol)
         except (OSError, WebSocketException):
             await _close_websocket(send)
 
@@ -155,15 +160,23 @@ class ViteProxyMiddleware:
         finally:
             await response.aclose()
 
-    async def _forward_websocket(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def _forward_websocket(
+        self, scope: Scope, receive: Receive, send: Send, protocol: Subprotocol
+    ) -> None:
         """Relay a WebSocket connection to Vite's HMR endpoint."""
         uri = f"ws://{self.host}:{self.port}{scope['path']}"
-        async with connect(uri, subprotocols=[HMR_SUBPROTOCOL], open_timeout=10) as upstream:
+        async with connect(uri, subprotocols=[protocol], open_timeout=10) as upstream:
             await send({"type": "websocket.accept", "subprotocol": upstream.subprotocol})
             await asyncio.gather(
                 _pump_client_to_upstream(upstream, receive),
                 _pump_upstream_to_client(upstream, send),
             )
+
+
+def _vite_subprotocol(scope: Scope) -> Subprotocol | None:
+    """The Vite subprotocol the client offers, or None for a socket that belongs to the app."""
+    offered = scope.get("subprotocols", ())
+    return next((protocol for protocol in VITE_SUBPROTOCOLS if protocol in offered), None)
 
 
 def _is_vite_only(path: str) -> bool:
