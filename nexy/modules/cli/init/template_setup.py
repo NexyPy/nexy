@@ -1,6 +1,5 @@
 """Template initialization: clone/render, shared overlays and the post-init pipeline."""
 
-import re
 import shutil
 import subprocess  # nosec B404
 import sys
@@ -8,13 +7,13 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader
-
 from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.packages import ensure_packages
 from nexy.modules.cli.constants import TEMPLATES_DIR
+from nexy.modules.cli.migrations import alembic
 from nexy.modules.i18n import t
 
 from .clone import GitClone
@@ -247,63 +246,34 @@ def init_git(dest: Path) -> None:
         )  # nosec B603/B607 - resolved via shutil.which, fixed argv
 
 
+_MIGRATION_TOOLS = {"SQLModel": "alembic", "SQLAlchemy": "alembic", "Tortoise-ORM": "aerich"}
+
+
+def _uv_run(args: list[str], cwd: Path) -> None:
+    uv = shutil.which("uv") or "uv"
+    subprocess.run([uv, "run", *args], cwd=cwd, capture_output=True)  # nosec B603 B607
+
+
+def _scaffold_migration_tool(tool: str, orm: str, dest: Path, db_url: str | None) -> None:
+    """Initialize the migration tool in *dest*; Alembic also gets Nexy's `env.py` and the URL."""
+    if tool == "aerich":
+        _uv_run(["aerich", "init", "-t", "src.configs.db.TORTOISE_ORM"], dest)
+        return
+    _uv_run(["alembic", "init", "alembic"], dest)
+    if (dest / "alembic").exists():
+        alembic.render_env(dest / "alembic", orm)
+        if db_url:
+            alembic.write_ini_url(dest, db_url)
+
+
 def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
     """Scaffold alembic/aerich when the config picked an ORM."""
-    tool = ""
-    if orm in ("SQLModel", "SQLAlchemy"):
-        tool = "alembic"
-    elif orm == "Tortoise-ORM":
-        tool = "aerich"
-    if not tool:
+    tool = _MIGRATION_TOOLS.get(orm)
+    if tool is None:
         return
-
-    with console.status(
-        "[yellow]nexy[/yellow] » "
-        + t("init.migration_tool", "Initializing {tool}...").format(tool=tool),
-        spinner="dots",
-    ):
-        if tool == "aerich":
-            uv_exe = shutil.which("uv") or "uv"
-            subprocess.run(
-                [uv_exe, "run", tool, "init", "-t", "src.configs.db.TORTOISE_ORM"],
-                cwd=dest,
-                capture_output=True,
-            )  # nosec B603/B607
-            return
-        uv_exe = shutil.which("uv") or "uv"
-        subprocess.run(
-            [uv_exe, "run", tool, "init", tool],
-            cwd=dest,
-            capture_output=True,
-        )  # nosec B603/B607
-        alembic_dir = dest / "alembic"
-        if alembic_dir.exists():
-            _render_alembic_env(alembic_dir, orm)
-            if db_url:
-                write_alembic_ini_url(dest, db_url)
-
-
-def _render_alembic_env(alembic_dir: Path, orm: str) -> None:
-    loader = FileSystemLoader(str(TEMPLATES_DIR / "alembic"))
-    # Renders a Python code template (env.py), not HTML; autoescaping
-    # here would corrupt the generated Python. See SECURITY.md.
-    env = Environment(loader=loader)  # nosec B701
-    env_path = alembic_dir / "env.py"
-    env_path.write_text(env.get_template("env.py.jinja2").render(orm=orm))
-
-
-def write_alembic_ini_url(dest: Path, db_url: str) -> None:
-    alembic_ini = dest / "alembic.ini"
-    if not alembic_ini.exists():
-        return
-    content = alembic_ini.read_text(encoding="utf-8")
-    content = re.sub(
-        r"^sqlalchemy\.url\s*=.*",
-        f"sqlalchemy.url = {db_url}",
-        content,
-        flags=re.MULTILINE,
-    )
-    alembic_ini.write_text(content, encoding="utf-8")
+    message = t("init.migration_tool", "Initializing {tool}...").format(tool=tool)
+    with console.status(tagged("nexy", message, "yellow"), spinner="dots"):
+        _scaffold_migration_tool(tool, orm, dest, db_url)
 
 
 def cleanup_build_artifacts(dest: Path) -> None:
