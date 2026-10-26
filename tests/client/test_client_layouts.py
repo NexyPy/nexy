@@ -96,11 +96,11 @@ def test_a_different_chain_remounts_cleanly(report):
 
 
 def test_generated_router_runtime_is_valid_and_defines_prefetch():
-    from nexy.modules.frontend.vite_entry import _runtime_lines
+    from nexy.modules.frontend.vite_entry import runtime_source
 
     GENERATED.mkdir(exist_ok=True)
     source = GENERATED / "router.runtime.ts"
-    source.write_text("\n".join(_runtime_lines()), encoding="utf-8")
+    source.write_text(runtime_source(), encoding="utf-8")
     target = GENERATED / "router.runtime.mjs"
     done = subprocess.run(
         [NODE, "-e", _STRIP, str(source), str(target)], capture_output=True, text=True, check=False

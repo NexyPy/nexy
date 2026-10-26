@@ -10,7 +10,6 @@ from nexy.helpers.common.network import Connection
 from nexy.modules.cli.init import dependencies
 from nexy.modules.cli.init.dependencies import DependencyInstaller
 
-
 positions: list = []
 
 
