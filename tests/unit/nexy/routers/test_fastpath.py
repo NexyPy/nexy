@@ -270,6 +270,53 @@ class TestLiveRouteChanges:
 
         assert client.get("/late").json() == {"late": True}
 
+    def test_a_route_replaced_at_the_same_count_is_picked_up(self):
+        app = FastAPI()
+
+        @app.get("/swap")
+        async def before():
+            return {"which": "before"}
+
+        install(app.router)
+        client = TestClient(app)
+        assert client.get("/swap").json() == {"which": "before"}
+        app.router.routes.clear()
+
+        @app.get("/swap")
+        async def after():
+            return {"which": "after"}
+
+        assert client.get("/swap").json() == {"which": "after"}
+
+    def test_a_removed_route_is_no_longer_served(self):
+        app = FastAPI()
+
+        @app.get("/gone")
+        async def gone():
+            return {"gone": False}
+
+        install(app.router)
+        client = TestClient(app)
+        assert client.get("/gone").status_code == 200
+        app.router.routes.clear()
+        assert client.get("/gone").status_code == 404
+
+
+class TestUnmatchableRoutes:
+    def test_a_route_that_cannot_be_matched_keeps_the_url_on_fastapi(self):
+        class Odd:
+            def matches(self, _scope: Any) -> tuple[Any, Any]:
+                raise RuntimeError("cannot match")
+
+        router = APIRouter()
+
+        @router.get("/ping")
+        async def ping():
+            return {"ping": True}
+
+        router.routes.insert(0, Odd())
+        assert build_table(router) == {}
+
 
 class TestScope:
     def test_handlers_see_the_route_in_the_scope(self):

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import logging
 from collections.abc import Awaitable, Callable
 from typing import Any
 
@@ -24,6 +25,7 @@ from starlette.responses import Response
 from starlette.routing import Match
 from starlette.types import ASGIApp, Receive, Scope, Send
 
+_log = logging.getLogger("nexy.fastpath")
 _Entry = tuple[Callable[[], Awaitable[Any]], APIRoute]
 
 
@@ -83,7 +85,11 @@ def _shadowed(candidate: APIRoute, method: str, earlier: list[Any]) -> bool:
         try:
             if route.matches(probe)[0] == Match.FULL:
                 return True
-        except Exception:
+        except Exception as error:
+            # An unknown kind of route: stay on the safe side and let FastAPI serve this URL.
+            _log.debug(
+                "fast path skipped %s: %r cannot be matched (%s)", candidate.path, route, error
+            )
             return True
     return False
 
@@ -124,15 +130,16 @@ class FastPath:
     def __init__(self, router: APIRouter, inner: ASGIApp) -> None:
         self.router = router
         self.inner = inner
-        self._seen = -1
+        self._seen: int | None = None
         self._table: dict[tuple[str, str], _Entry] = {}
 
     def _refresh(self) -> None:
-        # Routes can be added after startup (tests, plugins): rebuild when the count changes.
-        count = len(self.router.routes)
-        if count != self._seen:
+        # Routes can be added, removed or replaced after startup (tests, plugins): rebuild when
+        # the routes themselves change, not just how many there are.
+        fingerprint = hash(tuple(map(id, self.router.routes)))
+        if fingerprint != self._seen:
             self._table = build_table(self.router)
-            self._seen = count
+            self._seen = fingerprint
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] == "http" and not scope.get("root_path"):
