@@ -99,22 +99,33 @@ class Container:
         dependencies = cls._dependencies(target_cls)
         token = cls._di_context.set(True)
         try:
-            return target_cls(*dependencies)
+            return target_cls(**dependencies)
         finally:
             cls._di_context.reset(token)
 
+    @staticmethod
+    def _parameters(target_cls: type[Any]) -> list[inspect.Parameter]:
+        """The parameters of `__init__` after `self`, annotations evaluated (postponed or not)."""
+        try:
+            signature = inspect.signature(target_cls.__init__, eval_str=True)
+        except NameError as error:
+            raise ValueError(
+                f"Cannot read the annotations of {target_cls.__name__}.__init__: {error}"
+            ) from error
+        return list(signature.parameters.values())[1:]
+
     @classmethod
-    def _dependencies(cls, target_cls: type[Any]) -> list[Any]:
-        """The instances of the injectable parameters of `__init__`; others need a default."""
-        found: list[Any] = []
-        for name, param in inspect.signature(target_cls.__init__).parameters.items():
-            if name == "self":
+    def _dependencies(cls, target_cls: type[Any]) -> dict[str, Any]:
+        """The injectable parameters of `__init__` as instances, by name; others need a default."""
+        found: dict[str, Any] = {}
+        for param in cls._parameters(target_cls):
+            if param.kind in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
                 continue
             if hasattr(param.annotation, "__injectable__"):
-                found.append(cls.resolve(param.annotation))
+                found[param.name] = cls.resolve(param.annotation)
             elif param.default is inspect.Parameter.empty:
                 raise ValueError(
-                    f"Dependency {name}: {param.annotation} is not injectable in "
+                    f"Dependency {param.name}: {param.annotation} is not injectable in "
                     f"{target_cls.__name__}"
                 )
         return found
