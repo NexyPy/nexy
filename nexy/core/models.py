@@ -215,6 +215,7 @@ class NexyConfigModel:
     useSslKeyfile: str | None = None
     useSslCertfile: str | None = None
     useWorkers: int = 0
+    useBadge: bool = True
     useRTL: bool = False
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"

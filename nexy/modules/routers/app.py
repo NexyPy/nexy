@@ -15,6 +15,7 @@ from nexy.core.config import Config
 from nexy.helpers.common.console import console
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.access_log import AccessLogMiddleware
+from nexy.helpers.server.badge import BadgeMiddleware
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
@@ -134,6 +135,8 @@ class AppServer:
         """The middlewares, innermost first: each one added wraps the ones before it."""
         install_directory_middleware(server, routes=self._file_routes)
         server.add_middleware(PathMiddleware)
+        if self.config.useBadge:
+            server.add_middleware(BadgeMiddleware, version=self.version)
         setup_favicon(server, self.config.ROUTER_PATH)
         setup_static_files(server)
         setup_middlewares(server, self.config)
