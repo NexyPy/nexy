@@ -6,12 +6,13 @@ from pathlib import Path
 from nexy.helpers.common.console import console
 from nexy.helpers.common.report import print_cmd_result
 from nexy.helpers.fs.frontmatter import reassemble_frontmatter, split_frontmatter
+from nexy.helpers.fs.nexy_format import FormatError, format_logic, format_template
 from nexy.helpers.fs.scan import collect_files
 from nexy.modules.i18n import t
 
 _PY_EXTS = (".py",)
-_TS_EXTS = (".ts", ".tsx", ".vue", ".svelte")
-_NEXY_EXTS = (".nexy", ".mdx")
+_TS_EXTS = (".ts", ".tsx", ".vue", ".svelte", ".mdx")
+_NEXY_EXTS = (".nexy",)
 
 
 def format_(check: bool = False) -> None:
@@ -70,65 +71,32 @@ def _format_ts(root: Path, check: bool) -> int:
 def _format_nexy(root: Path, check: bool) -> int:
     ruff_exe = shutil.which("ruff")
     prettier_exe = shutil.which("prettier")
-    files = collect_files(root, _NEXY_EXTS)
     failures = 0
-    for f in files:
+    for name in collect_files(root, _NEXY_EXTS):
         try:
-            _format_single(Path(f), ruff_exe, prettier_exe, check)
-        except Exception as e:
-            console.print(f"  [red]\u2718[/red] {f} - {e}")
+            _format_single(Path(name), ruff_exe, prettier_exe, check)
+        except (FormatError, RuntimeError, OSError) as error:
+            console.print(f"  [red]✘[/red] {name} - {error}")
             failures += 1
     return failures
 
 
+def formatted_source(
+    path: Path, source: str, ruff_exe: str | None, prettier_exe: str | None
+) -> str:
+    """The canonical text of a .nexy file."""
+    logic, template = split_frontmatter(source)
+    text = reassemble_frontmatter(
+        format_logic(logic, ruff_exe), format_template(template, prettier_exe, path.name)
+    )
+    return text.rstrip() + "\n"
+
+
 def _format_single(path: Path, ruff_exe: str | None, prettier_exe: str | None, check: bool) -> None:
     original = path.read_text(encoding="utf-8")
-    logic, template = split_frontmatter(original)
-    new_logic = _format_logic_block(path, logic, ruff_exe)
-    new_template = _format_template_block(path, template, prettier_exe)
-
-    result = reassemble_frontmatter(new_logic, new_template)
-    if check:
-        if result != original:
-            console.print(f"  [red]\u2718[/red] {path}")
-            raise RuntimeError("would be reformatted")
-        console.print(f"  [green]\u2713[/green] {path}")
-    else:
-        if result != original:
-            path.write_text(result, encoding="utf-8")
-            console.print(f"  [green]\u2713[/green] {path}")
-
-
-def _format_logic_block(path: Path, logic: str, ruff_exe: str | None) -> str:
-    if not logic or not ruff_exe:
-        return logic
-    r = subprocess.run(
-        [ruff_exe, "format", "--stdin-filename", "block.py"],
-        input=logic,
-        capture_output=True,
-        text=True,
-    )  # nosec B603
-    if r.returncode == 0:
-        return r.stdout
-    detail = r.stderr.strip().splitlines()
-    msg = detail[-1] if detail else f"exit {r.returncode}"
-    console.print(f"  [yellow]\u26a0[/yellow] ruff {path} - frontmatter kept as-is ({msg})")
-    return logic
-
-
-def _format_template_block(path: Path, template: str, prettier_exe: str | None) -> str:
-    if not template or not prettier_exe:
-        return template
-    r = subprocess.run(
-        [prettier_exe, "--parser", "html", "--stdin-filepath", path.name],
-        input=template,
-        capture_output=True,
-        text=True,
-    )  # nosec B603
-    if r.returncode == 0:
-        return r.stdout
-    if r.stderr:
-        detail = r.stderr.strip().splitlines()
-        msg = detail[-1] if detail else f"exit {r.returncode}"
-        console.print(f"  [yellow]\u26a0[/yellow] prettier {path} - {msg}")
-    return template
+    result = formatted_source(path, original, ruff_exe, prettier_exe)
+    if check and result != original:
+        raise RuntimeError("would be reformatted")
+    if result != original:
+        path.write_text(result, encoding="utf-8")
+    console.print(f"  [green]✓[/green] {path}")
