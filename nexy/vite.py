@@ -1,8 +1,16 @@
 import json
 import os
+from functools import cache
 from pathlib import Path
+from typing import Any
 
 from nexy.core.config import Config
+
+_CLIENT = Path("__nexy__/client")
+_MANIFEST = _CLIENT / ".vite" / "manifest.json"
+_PRODUCTION_MARKER = Path("__nexy__/nexy.prod")
+_HMR_CLIENT = Path(__file__).parent / "modules" / "runtime" / "hmr_client.html"
+_ENTRY_KEYS = ("__nexy__/main.ts", "/__nexy__/main.ts")
 
 
 def Vite() -> str:
@@ -16,128 +24,70 @@ def Vite() -> str:
         string when the project has no vite.config.ts, Vite is disabled in
         nexyconfig, or the production manifest is missing.
     """
-    config = Config()
-    if not os.path.exists("vite.config.ts"):
+    if not os.path.exists("vite.config.ts") or not Config().useVite:
         return ""
+    if _PRODUCTION_MARKER.is_file():
+        return _production_tags()
+    return _development_tags()
 
-    if not config.useVite:
-        return ""
 
-    manifest_path = Path("__nexy__/client/.vite/manifest.json")
-    prod_server = Path("__nexy__/nexy.prod")
-    prod_mode = prod_server.is_file()
+@cache
+def _hmr_client() -> str:
+    return _HMR_CLIENT.read_text(encoding="utf-8")
 
-    if prod_mode:
-        if not manifest_path.is_file():
-            return ""
-        try:
-            data = json.loads(manifest_path.read_text(encoding="utf-8"))
-            entry = data.get("__nexy__/main.ts") or data.get("/__nexy__/main.ts")
-            if entry and "file" in entry:
-                file_rel = entry["file"].lstrip("/")
-                css_files = entry.get("css") or []
-                inline = os.getenv("NEXY_INLINE_CLIENT", "").strip() in ("1", "true", "TRUE")
-                if inline:
-                    css_blocks = []
-                    for c in css_files:
-                        p = Path("__nexy__/client").joinpath(c.lstrip("/"))
-                        if p.is_file():
-                            css_blocks.append(f"<style>{p.read_text(encoding='utf-8')}</style>")
-                    js_path = Path("__nexy__/client").joinpath(file_rel)
-                    js_code = js_path.read_text(encoding="utf-8") if js_path.is_file() else ""
-                    return "".join(css_blocks) + f'<script type="module">\n{js_code}\n</script>'
-                else:
-                    src = f"/{file_rel}"
-                    css_links = "".join(
-                        f'<link rel="stylesheet" href="/{c.lstrip("/")}" />' for c in css_files
-                    )
-                    return f'{css_links}<script type="module" src="{src}"></script>'
-        except Exception:
-            return ""
-        # Prod mode must never fall back to the dev HMR script.
-        return ""
 
-    hmr_script = """
-    <script type="module">
-        (function() {
-            const host = window.location.host;
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const ws = new WebSocket(`${protocol}//${host}/_nexy/hmr`);
-
-            function escapeHtml(value) {
-                return String(value).replace(/[&<>"']/g, (ch) => ({
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-                })[ch]);
-            }
-
-            function nexyErrorOverlay(errors) {
-                let overlay = document.getElementById('nexy-error-overlay');
-                if (!overlay) {
-                    overlay = document.createElement('div');
-                    overlay.id = 'nexy-error-overlay';
-                    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;'
-                        + 'background:rgba(20,20,30,.92);color:#f87171;'
-                        + 'font:14px/1.5 monospace;padding:2rem;overflow:auto;';
-                    document.body.appendChild(overlay);
-                }
-                const lines = errors.map((e) => {
-                    const file = e.file || '(unknown)';
-                    const msg = e.message || 'Unknown error';
-                    const hint = e.hint ? `<p style="margin:0 0 1.5rem;color:#fbbf24">`
-                        + `Fix: ${escapeHtml(e.hint)}</p>` : '';
-                    return `<h3 style="margin:0 0 .5rem">${escapeHtml(file)}</h3>`
-                        + `<pre style="margin:0 0 1.5rem;white-space:pre-wrap">${escapeHtml(msg)}</pre>`
-                        + hint;
-                }).join('');
-                overlay.innerHTML = `<h2 style="margin:0 0 1rem;color:#fbbf24">`
-                    + 'Nexy compile error</h2>'
-                    + lines;
-            }
-
-            ws.onmessage = async (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'nexy:error') {
-                    nexyErrorOverlay(data.errors || []);
-                    return;
-                }
-                if (data.type === 'nexy:reload') {
-                    const t0 = performance.now();
-                    console.log(`[Nexy HMR] Reloading due to change in: ${data.path}`);
-
-                    try {
-                        const res = await fetch(window.location.href, {
-                            headers: { 'X-Nexy-HMR': '1' }
-                        });
-                        const html = await res.text();
-
-                        const parser = new DOMParser();
-                        const newDoc = parser.parseFromString(html, 'text/html');
-
-                        document.body.innerHTML = newDoc.body.innerHTML;
-
-                        const scripts = document.body.querySelectorAll('script');
-                        scripts.forEach(oldScript => {
-                            const newScript = document.createElement('script');
-                            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                            oldScript.parentNode.replaceChild(newScript, oldScript);
-                        });
-
-                        console.log(`[Nexy HMR] DOM updated successfully in ${(performance.now() - t0).toFixed(1)}ms.`);
-                    } catch (err) {
-                        console.warn("[Nexy HMR] Partial reload failed, falling back to full reload.", err);
-                        window.location.reload();
-                    }
-                }
-            };
-
-            ws.onclose = () => console.log("[Nexy HMR] Connection closed.");
-        })();
-    </script>
-    """
-
+def _development_tags() -> str:
     return f"""
-    {hmr_script}
+    {_hmr_client()}
     <script type="module" src="/@vite/client"></script>
     <script type="module" src="/__nexy__/main.ts"></script>
     """
+
+
+def _production_tags() -> str:
+    """The built client's tags; empty when it is missing: prod never falls back to the dev script."""
+    try:
+        entry = _entry()
+        if entry is None:
+            return ""
+        return _inline_tags(entry) if _inline_requested() else _linked_tags(entry)
+    except Exception:
+        return ""
+
+
+def _entry() -> dict[str, Any] | None:
+    """The manifest entry of the client bundle, or None when there is no manifest or no entry."""
+    if not _MANIFEST.is_file():
+        return None
+    data = json.loads(_MANIFEST.read_text(encoding="utf-8"))
+    entry = next((data[key] for key in _ENTRY_KEYS if data.get(key)), None)
+    return entry if entry and "file" in entry else None
+
+
+def _inline_requested() -> bool:
+    return os.getenv("NEXY_INLINE_CLIENT", "").strip() in ("1", "true", "TRUE")
+
+
+def _built_file(name: str) -> Path:
+    return _CLIENT.joinpath(name.lstrip("/"))
+
+
+def _read_if_file(path: Path) -> str:
+    return path.read_text(encoding="utf-8") if path.is_file() else ""
+
+
+def _inline_tags(entry: dict[str, Any]) -> str:
+    styles = "".join(
+        f"<style>{_read_if_file(_built_file(name))}</style>"
+        for name in entry.get("css") or []
+        if _built_file(name).is_file()
+    )
+    code = _read_if_file(_built_file(entry["file"]))
+    return f'{styles}<script type="module">\n{code}\n</script>'
+
+
+def _linked_tags(entry: dict[str, Any]) -> str:
+    links = "".join(
+        f'<link rel="stylesheet" href="/{name.lstrip("/")}" />' for name in entry.get("css") or []
+    )
+    return f'{links}<script type="module" src="/{entry["file"].lstrip("/")}"></script>'

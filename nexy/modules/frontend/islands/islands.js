@@ -1,14 +1,4 @@
-"""Islands runtime - selective hydration honoring Astro-style client: directives.
 
-Embedded into every framework entry (react.py, vue.py, ...) via
-ISLANDS_RUNTIME. The default remains eager (client:load) for backward
-compatibility; client:idle / client:visible / client:media defer hydration.
-
-`nexyIslands.init(root)` scans `[data-nexy-island]` nodes inside root and
-schedules each island per its `data-nexy-directive` attribute.
-"""
-
-ISLANDS_RUNTIME = """
 const nexyIslands = (() => {
     function idle(cb) {
         if ("requestIdleCallback" in window) {
@@ -57,6 +47,3 @@ const nexyIslands = (() => {
     }
     return { init, schedule };
 })();
-"""
-
-__all__ = ["ISLANDS_RUNTIME"]

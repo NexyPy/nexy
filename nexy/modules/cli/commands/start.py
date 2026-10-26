@@ -65,7 +65,6 @@ def start(port: int | None = None, host: str | None = None) -> None:
             port=run_port,
             ssl_keyfile=ssl_keyfile,
             ssl_certfile=ssl_certfile,
-            as_process=False,
         )
 
     except (KeyboardInterrupt, SystemExit):

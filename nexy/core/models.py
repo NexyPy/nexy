@@ -214,6 +214,7 @@ class NexyConfigModel:
     useAuth: dict[str, Any] | None = None
     useSslKeyfile: str | None = None
     useSslCertfile: str | None = None
+    useWorkers: int = 0
     useRTL: bool = False
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"

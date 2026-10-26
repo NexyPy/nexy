@@ -1,19 +1,11 @@
-import linecache
-import logging
-import os
-import traceback
-from typing import Any, cast
+"""The log of the uvicorn server: quiet about startup, one labelled line per message."""
 
-COLORS = {
-    "reset": "\033[0m",
-    "dim": "\033[2m",
-    "blue": "\033[34m",
-    "green": "\033[32m",
-    "yellow": "\033[33m",
-    "red": "\033[31m",
-    "cyan": "\033[36m",
-    "magenta": "\033[35m",
-}
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+_DIM, _RED, _RESET = "\033[2m", "\033[31m", "\033[0m"
 
 IGNORED_MESSAGES = [
     "Started server process",
@@ -38,186 +30,41 @@ IGNORED_MESSAGES = [
     "connection rejected",
 ]
 
-status_indicators = {
-    200: "✓",
-    201: "+",
-    304: "*",
-    307: ">",
-    400: "!",
-    404: "o",
-    422: "x",
-    500: "!!",
-}
-
-
-class NexyFilter(logging.Filter):
-    """Cleaning filter to block redundant initialization logs."""
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        msg = record.getMessage()
-        return not any(ignored in msg for ignored in IGNORED_MESSAGES)
-
-
-class NexyAccessFormatter(logging.Formatter):
-    """Ultra-readable formatter for HTTP requests and WebSocket connections."""
-
-    def format(self, record: logging.LogRecord) -> str:
-        msg = record.getMessage()
-        if not record.args or len(record.args) < 5:
-            return (
-                f"  {COLORS['blue']}ŋ{COLORS['reset']} {COLORS['dim']}[Info]{COLORS['reset']} {msg}"
-            )
-
-        args = record.args
-        if isinstance(args, tuple):
-            arg0, arg1, arg2, arg_last = args[0], args[1], args[2], args[-1]
-        elif isinstance(args, dict):
-            arg0 = args.get("a", "")
-            arg1 = args.get("b", "")
-            arg2 = args.get("c", "")
-            arg_last = args.get("d", 0)
-        else:
-            return f"  {COLORS['blue']}ŋ{COLORS['reset']} {msg}"
-
-        addr = str(arg0) if arg0 else "unknown"
-        host = addr.split(":")[0] if ":" in addr else addr
-        port = addr.split(":")[-1] if ":" in addr else "3000"
-
-        method = str(arg1)
-        path = str(arg2)
-
-        try:
-            status_code = int(cast(int, arg_last))
-        except (ValueError, TypeError):
-            status_code = 200
-
-        color = COLORS["green"]
-        if 300 <= status_code < 400:
-            color = COLORS["cyan"]
-        elif 400 <= status_code < 500:
-            color = COLORS["yellow"]
-        elif status_code >= 500:
-            color = COLORS["red"]
-
-        is_socket = "ws" in path or "socket" in path or status_code == 101
-        label = (
-            f"{COLORS['magenta']}ws{COLORS['reset']} »"
-            if is_socket
-            else f"{color}{method}{COLORS['reset']} »"
-        )
-
-        indicator = status_indicators.get(status_code, "!")
-
-        return (
-            f"{label} {COLORS['dim']}{host}{COLORS['reset']}:"
-            f"{COLORS['blue']}{port}{COLORS['reset']} {color}{path}{COLORS['reset']}"
-            f" , {color}{status_code}{COLORS['reset']} © {indicator}"
-        )
-
-
-class NexyDefaultFormatter(logging.Formatter):
-    """Universal formatter handling errors based on function, class, or module level."""
-
-    def format(self, record: logging.LogRecord) -> str:
-        msg = record.getMessage()
-        level = record.levelname.capitalize()
-
-        color = COLORS["red"] if record.levelno >= 40 else COLORS["dim"]
-        prefix = f"{color}{level}{COLORS['reset']} »"
-        result = f"{prefix} {msg}"
-
-        if record.exc_info:
-            tb_frames = traceback.extract_tb(record.exc_info[2])
-            if tb_frames:
-                frame = tb_frames[-1]
-
-                try:
-                    file_name = os.path.relpath(frame.filename, start=os.getcwd())
-                except Exception:
-                    file_name = os.path.basename(frame.filename)
-
-                line_no = frame.lineno or 0
-                scope_name = frame.name or "<module>"
-
-                result += f'\n  File "{file_name}", line {line_no}, in {scope_name}\n'
-
-                start_line = line_no
-                block_indent = None
-                is_global_scope = scope_name == "<module>"
-
-                if not is_global_scope:
-                    while start_line > 1:
-                        prev_line = linecache.getline(frame.filename, start_line).rstrip("\n")
-                        stripped = prev_line.lstrip()
-                        if stripped.startswith(("def ", "class ")):
-                            block_indent = len(prev_line) - len(stripped)
-                            break
-                        start_line -= 1
-
-                if block_indent is None:
-                    start_line = max(1, line_no - 4)
-                    end_line = line_no + 4
-                else:
-                    end_line = line_no
-                    while True:
-                        next_line = linecache.getline(frame.filename, end_line + 1)
-                        if not next_line:
-                            break
-
-                        next_stripped = next_line.rstrip("\n")
-                        if next_stripped.strip():
-                            current_indent = len(next_stripped) - len(next_stripped.lstrip())
-                            if current_indent <= block_indent and end_line >= line_no:
-                                break
-                        end_line += 1
-
-                if (end_line - start_line) > 16:
-                    start_line = max(1, line_no - 4)
-                    end_line = line_no + 4
-
-                for current_line in range(start_line, end_line + 1):
-                    raw_line = linecache.getline(frame.filename, current_line)
-                    if not raw_line:
-                        continue
-
-                    clean_line = raw_line.rstrip("\n")
-
-                    if current_line == line_no:
-                        indent = len(clean_line) - len(clean_line.lstrip())
-                        code_part = clean_line[indent:]
-                        caret_indent = " " * (indent + 6)
-                        caret = "~" * max(1, len(code_part)) + "^~"
-
-                        result += (
-                            f"    {COLORS['red']}➔{COLORS['reset']}  "
-                            f"{COLORS['red']}{clean_line}{COLORS['reset']}\n"
-                        )
-                        result += f"{caret_indent}{COLORS['red']}{caret}{COLORS['reset']}\n"
-                    else:
-                        result += f"       {COLORS['dim']}{clean_line}{COLORS['reset']}\n"
-
-        return result.rstrip("\n")
-
-
 # Shutdown (Ctrl+C, a deploy, a dev restart) must not wait for a browser that keeps a socket open.
 # The Server header names the software to anyone who asks: not worth sending.
 SERVE_LIMITS: dict[str, Any] = {"server_header": False, "timeout_graceful_shutdown": 10}
 DEV_SERVE_LIMITS: dict[str, Any] = {"server_header": False, "timeout_graceful_shutdown": 2}
 
-NEXY_LOG_CONFIG = {
+
+class NexyFilter(logging.Filter):
+    """Drops the startup and shutdown messages that say nothing the banner does not."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        message = record.getMessage()
+        return not any(ignored in message for ignored in IGNORED_MESSAGES)
+
+
+class NexyDefaultFormatter(logging.Formatter):
+    """``Level » message``, red for errors, with the traceback when the record has one."""
+
+    def format(self, record: logging.LogRecord) -> str:
+        colour = _RED if record.levelno >= logging.ERROR else _DIM
+        text = f"{colour}{record.levelname.capitalize()}{_RESET} » {record.getMessage()}"
+        if record.exc_info:
+            text += "\n" + self.formatException(record.exc_info)
+        return text
+
+
+def _logger(handler: str) -> dict[str, Any]:
+    return {"handlers": [handler], "level": "INFO", "propagate": False}
+
+
+NEXY_LOG_CONFIG: dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {"nexy_filter": {"()": NexyFilter}},
-    "formatters": {
-        "access": {"()": NexyAccessFormatter},
-        "default": {"()": NexyDefaultFormatter},
-    },
+    "formatters": {"default": {"()": NexyDefaultFormatter}},
     "handlers": {
-        "access": {
-            "class": "logging.StreamHandler",
-            "formatter": "access",
-            "filters": ["nexy_filter"],
-        },
         "default": {
             "class": "logging.StreamHandler",
             "formatter": "default",
@@ -225,8 +72,8 @@ NEXY_LOG_CONFIG = {
         },
     },
     "loggers": {
-        "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
-        "uvicorn.error": {"handlers": ["default"], "level": "INFO", "propagate": False},
-        "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
+        "uvicorn": _logger("default"),
+        "uvicorn.error": _logger("default"),
+        "uvicorn.access": _logger("default"),
     },
 }

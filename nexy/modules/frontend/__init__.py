@@ -4,13 +4,9 @@ from pathlib import Path
 
 from nexy.core.config import Config
 from nexy.modules.frontend.assets import copy_ssg_scripts, copy_vite_config
+from nexy.modules.frontend.frameworks import preact, react, solid, svelte, vue
 from nexy.modules.frontend.manifest import RouteManifestBuilder
-from nexy.modules.frontend.preact import preact
-from nexy.modules.frontend.react import react
-from nexy.modules.frontend.solid import solid
-from nexy.modules.frontend.svelte import svelte
 from nexy.modules.frontend.vite_entry import generate_vite_entry
-from nexy.modules.frontend.vue import vue
 
 
 class FrontendGenerator:

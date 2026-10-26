@@ -62,6 +62,7 @@ class Config:
     useAuth: dict[str, Any] | None = None
     useSslKeyfile: str | None = None
     useSslCertfile: str | None = None
+    useWorkers: int = 0
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"
     useTocAuto: bool = True

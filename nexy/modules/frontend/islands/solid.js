@@ -1,11 +1,4 @@
-from nexy.core.models import FrontendFramework
-from nexy.modules.frontend.islands import ISLANDS_RUNTIME
 
-
-def solid() -> FrontendFramework:
-    render_script = (
-        ISLANDS_RUNTIME
-        + """
     (async function() {
         const w = window;
         if (w.__nexy_solid_init) return;
@@ -165,11 +158,4 @@ def solid() -> FrontendFramework:
             init();
         }
     })();
-    """
-    )
-
-    return FrontendFramework(
-        name="solid",
-        render=render_script,
-        extension=["jsx", "tsx"],
-    )
+    

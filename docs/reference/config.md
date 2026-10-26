@@ -22,6 +22,7 @@ class NexyConfig(NexyConfigModel):
 | `usePort` | `3000` | port for `dev` and `start` |
 | `useHost` | `"0.0.0.0"` | bind address |
 | `useSslKeyfile`, `useSslCertfile` | `None` | serve HTTPS directly |
+| `useWorkers` | `0` | processes `nx start` runs; `0` is one per CPU on Linux and macOS, one on Windows |
 | `useCSR` | `False` | client-side routing mode; `.nexy` routes are disabled |
 
 ## Routes

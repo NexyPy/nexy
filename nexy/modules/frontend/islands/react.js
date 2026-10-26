@@ -1,11 +1,4 @@
-from nexy.core.models import FrontendFramework
-from nexy.modules.frontend.islands import ISLANDS_RUNTIME
 
-
-def react() -> FrontendFramework:
-    render_script = (
-        ISLANDS_RUNTIME
-        + """
     (async function() {
         const w = window;
         if (w.__nexy_react_init) return;
@@ -189,11 +182,4 @@ def react() -> FrontendFramework:
             init();
         }
     })();
-    """
-    )
-
-    return FrontendFramework(
-        name="react",
-        render=render_script,
-        extension=["jsx", "tsx"],
-    )
+    

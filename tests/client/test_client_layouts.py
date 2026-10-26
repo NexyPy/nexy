@@ -37,7 +37,7 @@ pytestmark = [
 
 
 def _runtime(framework: str) -> Path:
-    render = getattr(importlib.import_module(f"nexy.modules.frontend.{framework}"), framework)()
+    render = getattr(importlib.import_module("nexy.modules.frontend.frameworks"), framework)()
     GENERATED.mkdir(exist_ok=True)
     source = GENERATED / f"{framework}.runtime.ts"
     source.write_text(render.render, encoding="utf-8")
