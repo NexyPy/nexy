@@ -22,7 +22,7 @@ dependencies = [
     "starlette>=1.0.1",
     "typer>=0.21.1",
     "uvicorn[standard]>=0.40.0",
-    "watchdog>=6.0.0",
+    "watchfiles>=1.0",
     "websockets>=13.0",
 ]
 

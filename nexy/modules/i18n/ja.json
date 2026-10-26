@@ -184,7 +184,6 @@
     "compiled": "{path} を {time} でコンパイルしました",
     "error_kept": "修正して保存してください。サーバーは最後に動いていた版を保ちます。",
     "restart_failed": "サーバーを再起動できませんでした: {error}",
-    "stop_failed": "ウォッチャーを正常に停止できませんでした: {error}",
     "update": "更新"
   }
 }

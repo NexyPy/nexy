@@ -184,7 +184,6 @@
     "compiled": "已编译 {path}，用时 {time}",
     "error_kept": "修复后保存：服务器继续运行上一个可用版本。",
     "restart_failed": "无法重启服务器：{error}",
-    "stop_failed": "无法正常停止文件监视：{error}",
     "update": "更新"
   }
 }

@@ -21,7 +21,7 @@ from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
-from nexy.modules.cli.devtools.watcher import create_observer, purge_project_modules, stop_observer
+from nexy.modules.cli.devtools.watch import create_observer, purge_project_modules, stop_observer
 from nexy.modules.frontend import FrontendGenerator
 from nexy.modules.i18n import t
 

@@ -184,7 +184,6 @@
     "compiled": "{path} compilado en {time}",
     "error_kept": "Corrígelo y guarda: el servidor mantiene su última versión que funcionaba.",
     "restart_failed": "No se pudo reiniciar el servidor: {error}",
-    "stop_failed": "No se pudo detener el observador correctamente: {error}",
     "update": "actualizando"
   }
 }

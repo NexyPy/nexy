@@ -184,7 +184,6 @@
     "compiled": "{path} in {time} kompiliert",
     "error_kept": "Beheben und speichern: Der Server behält seine letzte funktionierende Version.",
     "restart_failed": "Der Server konnte nicht neu gestartet werden: {error}",
-    "stop_failed": "Die Dateiüberwachung konnte nicht sauber beendet werden: {error}",
     "update": "aktualisiere"
   }
 }

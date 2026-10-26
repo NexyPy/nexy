@@ -184,7 +184,6 @@
     "compiled": "{path}을(를) {time}에 컴파일함",
     "error_kept": "수정 후 저장하세요. 서버는 마지막으로 동작한 버전을 유지합니다.",
     "restart_failed": "서버를 다시 시작하지 못했습니다: {error}",
-    "stop_failed": "감시기를 정상적으로 중지하지 못했습니다: {error}",
     "update": "업데이트"
   }
 }

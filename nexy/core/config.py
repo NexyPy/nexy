@@ -81,7 +81,7 @@ class Config:
     TOC_AUTO: bool = True
 
     WATCH_EXTENSIONS: list[str] = [".nexy", ".py", ".md", ".mdx", ".tsx", ".jsx", ".vue", ".svelte"]
-    # One glob per extension: watchdog 6 matches these with pathlib.PurePath.match,
+    # One glob per extension: the watcher matches these with pathlib.PurePath.match,
     # which has no {a,b} alternation, so a single "*{.nexy,.py}" glob matches nothing.
     WATCH_EXTENSIONS_GLOB: list[str] = [
         "*.nexy",

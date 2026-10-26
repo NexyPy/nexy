@@ -64,20 +64,3 @@ def test_the_report_names_the_file_the_error_and_the_code(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "nexy » error" in out and "SyntaxError" in out and "def GET(:" in out
     assert "Fix it and save." in out
-
-
-class TestStrayMarkdown:
-    def test_a_readme_at_the_root_is_not_a_page(self):
-        from nexy.modules.cli.devtools.watcher import is_stray_markdown
-
-        assert is_stray_markdown("README.md") is True
-
-    def test_a_markdown_route_is_a_page(self):
-        from nexy.modules.cli.devtools.watcher import is_stray_markdown
-
-        assert is_stray_markdown("src/routes/blog/post.md") is False
-
-    def test_a_python_file_is_never_stray(self):
-        from nexy.modules.cli.devtools.watcher import is_stray_markdown
-
-        assert is_stray_markdown("src/routes/users.py") is False
