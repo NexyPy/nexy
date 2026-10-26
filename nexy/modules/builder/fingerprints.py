@@ -2,46 +2,37 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from pathlib import Path
 
 from nexy.core.config import Config
+from nexy.helpers.fs.ancestors import walk_up
 from nexy.helpers.fs.fingerprint import first_stat_fingerprint, stat_fingerprint
 
 _layout_chain_cache: dict[str, str] = {}
 
-_LAYOUT_ROOT: Path | None = None
-_LAYOUT_LIMIT: Path | None = None
 
-
-def _layout_bounds() -> tuple[Path, Path]:
-    global _LAYOUT_ROOT, _LAYOUT_LIMIT
-    if _LAYOUT_ROOT is None:
-        root = Path(Config.ROUTER_PATH).resolve()
-        _LAYOUT_ROOT = root
-        _LAYOUT_LIMIT = root.parent
-    return _LAYOUT_ROOT, _LAYOUT_LIMIT or _LAYOUT_ROOT
+def _layout_stamps(directory: Path, limit: Path) -> Iterator[str]:
+    """One ``path:mtime:size`` stamp for each layout file from *directory* up to *limit*."""
+    for current in walk_up(directory, limit):
+        for name in Config.LAYOUT_FILE_NAMES:
+            layout = current / name
+            if layout.is_file():
+                stat = layout.stat()
+                yield f"L{layout.as_posix()}:{stat.st_mtime_ns}:{stat.st_size}"
 
 
 def layout_chain_fingerprint(directory: Path) -> str:
-    """Fingerprint of every layout.* wrapping this directory, cached per dir."""
+    """Fingerprint of every layout.* wrapping this directory, cached per dir.
+
+    It climbs as far as the layout lookup does (the folder that holds the routes), so a layout
+    placed there invalidates the pages below it.
+    """
     key = directory.as_posix()
-    if key in _layout_chain_cache:
-        return _layout_chain_cache[key]
-    root, limit = _layout_bounds()
-    parts: list[str] = []
-    current = directory
-    while str(current).startswith(str(limit)):
-        for name in Config.LAYOUT_FILE_NAMES:
-            layout_file = current / name
-            if layout_file.is_file():
-                lst = layout_file.stat()
-                parts.append(f"L{layout_file.as_posix()}:{lst.st_mtime_ns}:{lst.st_size}")
-        if current in (root, limit):
-            break
-        current = current.parent
-    chain = "|".join(parts)
-    _layout_chain_cache[key] = chain
-    return chain
+    if key not in _layout_chain_cache:
+        limit = Path(Config.ROUTER_PATH).resolve().parent
+        _layout_chain_cache[key] = "|".join(_layout_stamps(directory, limit))
+    return _layout_chain_cache[key]
 
 
 def file_fingerprint(file_path: Path) -> str:
