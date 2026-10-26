@@ -2,7 +2,6 @@
  "class:helpers/fs/vfs.py:VFS": 11,
  "class:modules/cli/init/dependencies.py:DependencyInstaller": 14,
  "class:modules/cli/init/prompts.py:ProjectPrompter": 13,
- "class:modules/compiler/parser/sanitizer.py:LogicSanitizer": 16,
  "duplicate:d2589363df": 10,
  "function:core/project_rules.py:project_problems": 24,
  "function:core/string.py:StringTransform.normalize_route_path_for_namespace": 22,

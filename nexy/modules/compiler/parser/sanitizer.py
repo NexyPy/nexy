@@ -1,9 +1,9 @@
-import os
 import pathlib
 import re
 from re import Match
 
 from nexy.core.config import Config
+from nexy.modules.compiler.parser.import_paths import module_name, resolve_import
 
 _PYTHON_MODULES = (".nexy", ".py", "")
 
@@ -42,39 +42,6 @@ class LogicSanitizer:
     def namespace(self) -> str:
         return Config.NAMESPACE
 
-    def _is_alias(self, import_str: str) -> bool:
-        return any(import_str.startswith(alias) for alias in self.aliases)
-
-    def _resolve_alias(self, import_str: str, root: pathlib.Path) -> str:
-        """The project-relative path of an import that starts with a configured alias."""
-        alias, replacement = next(
-            (alias, target)
-            for alias, target in self.aliases.items()
-            if import_str.startswith(alias)
-        )
-        resolved = root / import_str.replace(alias, replacement, 1)
-        return resolved.absolute().relative_to(root).as_posix()
-
-    @staticmethod
-    def _resolve_relative(current_file: str, import_str: str, root: pathlib.Path) -> str:
-        """The path of a relative import, project-relative when it stays inside the project."""
-        resolved = pathlib.Path(current_file).absolute().parent.joinpath(import_str).resolve()
-        try:
-            return resolved.relative_to(root).as_posix()
-        except ValueError:
-            return os.path.normpath(resolved).replace("\\", "/")
-
-    def _resolve_full_path(self, current_file: str, import_str: str) -> str:
-        """The full relative path of an import, with aliases and relative paths resolved."""
-        if import_str[0] in ("@", "$", "~") and not self._is_alias(import_str):
-            raise ImportError(f"Alias '{import_str.split('/')[0]}' not configured.")
-        root = pathlib.Path.cwd().absolute()
-        if self._is_alias(import_str):
-            return self._resolve_alias(import_str, root)
-        if import_str.startswith(("./", "../")):
-            return self._resolve_relative(current_file, import_str, root)
-        return import_str
-
     def _clean_targets(self, targets_str: str) -> list[str]:
         """Cleans parentheses, newlines, and spaces from import targets."""
         cleaned = targets_str.replace("(", "").replace(")", "").replace("\n", " ")
@@ -98,17 +65,6 @@ class LogicSanitizer:
         """Converts a string into a valid Python identifier."""
         return re.sub(r"[^a-zA-Z0-9_]", "_", name)
 
-    def _prefix(self, is_nexy: bool) -> str:
-        """``__nexy__.`` for a compiled .nexy module, nothing for a Python one."""
-        namespace = self.namespace.replace("\\", "/").replace("/", ".").strip(".")
-        return f"{namespace}." if is_nexy and namespace else ""
-
-    def _module_name(self, rel_path: str, is_nexy: bool) -> str:
-        """The dotted module a ``.nexy`` or ``.py`` file is imported as."""
-        base = re.sub(r"\.(nexy|py)$", "", rel_path)
-        dotted = re.sub(r"\.+", ".", base.replace("\\", "/").replace("/", ".")).strip(".")
-        return self._prefix(is_nexy) + dotted
-
     def _framework_import(self, rel_path: str, framework: str, target: str) -> str:
         """``Name = __Import(...)`` for one target of a framework component import."""
         parts = re.split(r"\s+as\s+", target, flags=re.IGNORECASE)
@@ -118,11 +74,11 @@ class LogicSanitizer:
 
     def _replace_from(self, match: Match[str], current_file: str) -> str:
         """Callback for 'from "path" import targets' transformation."""
-        rel_path = self._resolve_full_path(current_file, match.group("path"))
+        rel_path = resolve_import(current_file, match.group("path"), self.aliases)
         extension = pathlib.Path(rel_path).suffix.lower()
         targets = self._clean_targets(match.group("targets"))
         if extension in _PYTHON_MODULES:
-            module = self._module_name(rel_path, extension == ".nexy")
+            module = module_name(rel_path, self.namespace, extension == ".nexy")
             return f"from {module} import {', '.join(targets)}"
         framework = self._get_framework(extension)
         lines = (self._framework_import(rel_path, framework, target) for target in targets)
@@ -130,11 +86,11 @@ class LogicSanitizer:
 
     def _replace_import(self, match: Match[str], current_file: str) -> str:
         """Callback for 'import "path" [as alias]' transformation."""
-        rel_path = self._resolve_full_path(current_file, match.group("path"))
+        rel_path = resolve_import(current_file, match.group("path"), self.aliases)
         extension = pathlib.Path(rel_path).suffix.lower()
         alias = match.group("alias") or self._normalize_alias(pathlib.Path(rel_path).stem)
         if extension in _PYTHON_MODULES:
-            module = self._module_name(rel_path, extension == ".nexy")
+            module = module_name(rel_path, self.namespace, extension == ".nexy")
             _require_identifier(module, alias)
             return f"import {module} as {alias}"
         framework = self._get_framework(extension)

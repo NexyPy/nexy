@@ -5,7 +5,14 @@ from __future__ import annotations
 import pytest
 
 from nexy.core.config import Config
+from nexy.modules.compiler.parser.import_paths import (
+    module_name,
+    namespace_prefix,
+    resolve_import,
+)
 from nexy.modules.compiler.parser.sanitizer import LogicSanitizer, _require_identifier
+
+ALIASES = {"@/": "src/"}
 
 
 @pytest.fixture
@@ -17,18 +24,17 @@ def sanitizer(monkeypatch) -> LogicSanitizer:
 
 
 class TestModuleNames:
-    def test_a_nexy_file_is_imported_from_the_compiled_namespace(self, sanitizer):
-        assert sanitizer._module_name("src/ui/card.nexy", is_nexy=True) == "__nexy__.src.ui.card"
+    def test_a_nexy_file_is_imported_from_the_compiled_namespace(self):
+        assert module_name("src/ui/card.nexy", "__nexy__/", is_nexy=True) == "__nexy__.src.ui.card"
 
-    def test_a_python_file_is_imported_by_its_own_path(self, sanitizer):
-        assert sanitizer._module_name("src/lib/util.py", is_nexy=False) == "src.lib.util"
+    def test_a_python_file_is_imported_by_its_own_path(self):
+        assert module_name("src/lib/util.py", "__nexy__/", is_nexy=False) == "src.lib.util"
 
-    def test_backslashes_and_repeated_dots_are_cleaned(self, sanitizer):
-        assert sanitizer._module_name("src\\ui..card.nexy", is_nexy=False) == "src.ui.card"
+    def test_backslashes_and_repeated_dots_are_cleaned(self):
+        assert module_name("src\\ui..card.nexy", "__nexy__/", is_nexy=False) == "src.ui.card"
 
-    def test_no_namespace_means_no_prefix(self, sanitizer, monkeypatch):
-        monkeypatch.setattr(Config, "NAMESPACE", "")
-        assert sanitizer._prefix(is_nexy=True) == ""
+    def test_no_namespace_means_no_prefix(self):
+        assert namespace_prefix("", is_nexy=True) == ""
 
 
 class TestFrom:
@@ -72,15 +78,15 @@ class TestImport:
 
 
 class TestPaths:
-    def test_a_configured_alias_is_resolved_from_the_project_root(self, sanitizer):
-        assert sanitizer._resolve_full_path("src/p.nexy", "@/ui/card.nexy") == "src/ui/card.nexy"
+    def test_a_configured_alias_is_resolved_from_the_project_root(self):
+        assert resolve_import("src/p.nexy", "@/ui/card.nexy", ALIASES) == "src/ui/card.nexy"
 
-    def test_an_alias_that_is_not_configured_is_an_error(self, sanitizer):
+    def test_an_alias_that_is_not_configured_is_an_error(self):
         with pytest.raises(ImportError, match="not configured"):
-            sanitizer._resolve_full_path("src/p.nexy", "$/ui/card.nexy")
+            resolve_import("src/p.nexy", "$/ui/card.nexy", ALIASES)
 
-    def test_a_package_name_is_left_alone(self, sanitizer):
-        assert sanitizer._resolve_full_path("src/p.nexy", "fastapi") == "fastapi"
+    def test_a_package_name_is_left_alone(self):
+        assert resolve_import("src/p.nexy", "fastapi", ALIASES) == "fastapi"
 
-    def test_a_relative_path_is_resolved_from_the_file(self, sanitizer):
-        assert sanitizer._resolve_full_path("src/pages/p.nexy", "../ui/c.nexy") == "src/ui/c.nexy"
+    def test_a_relative_path_is_resolved_from_the_file(self):
+        assert resolve_import("src/pages/p.nexy", "../ui/c.nexy", ALIASES) == "src/ui/c.nexy"
