@@ -5,6 +5,16 @@ from re import Match
 
 from nexy.core.config import Config
 
+_PYTHON_MODULES = (".nexy", ".py", "")
+
+
+def _require_identifier(module: str, alias: str) -> None:
+    """A module path and an alias must be Python names: they end up in generated code."""
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_\.]*$", module):
+        raise ValueError(f"Invalid module name: {module}")
+    if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", alias):
+        raise ValueError(f"Invalid alias: {alias}")
+
 
 class LogicSanitizer:
     """
@@ -32,37 +42,38 @@ class LogicSanitizer:
     def namespace(self) -> str:
         return Config.NAMESPACE
 
-    def _resolve_full_path(self, current_file: str, import_str: str) -> str:
-        """
-        Resolves the full relative path from the current file,
-        taking aliases and relative paths into account.
-        """
-        first_ch = import_str[0]
-        if first_ch in ("@", "$", "~") and not any(
-            import_str.startswith(alias) for alias in self.aliases
-        ):
-            raise ImportError(f"Alias '{import_str.split('/')[0]}' not configured.")
+    def _is_alias(self, import_str: str) -> bool:
+        return any(import_str.startswith(alias) for alias in self.aliases)
 
-        is_relative = import_str.startswith("./") or import_str.startswith("../")
-        is_alias = any(import_str.startswith(alias) for alias in self.aliases)
+    def _resolve_alias(self, import_str: str, root: pathlib.Path) -> str:
+        """The project-relative path of an import that starts with a configured alias."""
+        alias, replacement = next(
+            (alias, target)
+            for alias, target in self.aliases.items()
+            if import_str.startswith(alias)
+        )
+        resolved = root / import_str.replace(alias, replacement, 1)
+        return resolved.absolute().relative_to(root).as_posix()
 
-        if not (is_relative or is_alias):
-            return import_str
-
-        root_path = pathlib.Path.cwd().absolute()
-        current_path = pathlib.Path(current_file).absolute()
-
-        for alias, replacement in self.aliases.items():
-            if import_str.startswith(alias):
-                resolved_path = root_path / import_str.replace(alias, replacement, 1)
-                return resolved_path.absolute().relative_to(root_path).as_posix()
-
-        resolved_path = current_path.parent.joinpath(import_str).resolve()
-
+    @staticmethod
+    def _resolve_relative(current_file: str, import_str: str, root: pathlib.Path) -> str:
+        """The path of a relative import, project-relative when it stays inside the project."""
+        resolved = pathlib.Path(current_file).absolute().parent.joinpath(import_str).resolve()
         try:
-            return resolved_path.relative_to(root_path).as_posix()
+            return resolved.relative_to(root).as_posix()
         except ValueError:
-            return os.path.normpath(resolved_path).replace("\\", "/")
+            return os.path.normpath(resolved).replace("\\", "/")
+
+    def _resolve_full_path(self, current_file: str, import_str: str) -> str:
+        """The full relative path of an import, with aliases and relative paths resolved."""
+        if import_str[0] in ("@", "$", "~") and not self._is_alias(import_str):
+            raise ImportError(f"Alias '{import_str.split('/')[0]}' not configured.")
+        root = pathlib.Path.cwd().absolute()
+        if self._is_alias(import_str):
+            return self._resolve_alias(import_str, root)
+        if import_str.startswith(("./", "../")):
+            return self._resolve_relative(current_file, import_str, root)
+        return import_str
 
     def _clean_targets(self, targets_str: str) -> list[str]:
         """Cleans parentheses, newlines, and spaces from import targets."""
@@ -87,79 +98,44 @@ class LogicSanitizer:
         """Converts a string into a valid Python identifier."""
         return re.sub(r"[^a-zA-Z0-9_]", "_", name)
 
+    def _prefix(self, is_nexy: bool) -> str:
+        """``__nexy__.`` for a compiled .nexy module, nothing for a Python one."""
+        namespace = self.namespace.replace("\\", "/").replace("/", ".").strip(".")
+        return f"{namespace}." if is_nexy and namespace else ""
+
+    def _module_name(self, rel_path: str, is_nexy: bool) -> str:
+        """The dotted module a ``.nexy`` or ``.py`` file is imported as."""
+        base = re.sub(r"\.(nexy|py)$", "", rel_path)
+        dotted = re.sub(r"\.+", ".", base.replace("\\", "/").replace("/", ".")).strip(".")
+        return self._prefix(is_nexy) + dotted
+
+    def _framework_import(self, rel_path: str, framework: str, target: str) -> str:
+        """``Name = __Import(...)`` for one target of a framework component import."""
+        parts = re.split(r"\s+as\s+", target, flags=re.IGNORECASE)
+        symbol = parts[0]
+        alias = self._normalize_alias(parts[1] if len(parts) > 1 else symbol)
+        return f'{alias} = __Import(path="{rel_path}", framework="{framework}", symbol="{symbol}")'
+
     def _replace_from(self, match: Match[str], current_file: str) -> str:
         """Callback for 'from "path" import targets' transformation."""
-        path_str = match.group("path")
-        targets_raw = match.group("targets")
-
-        full_rel_path = self._resolve_full_path(current_file, path_str)
-        ext = pathlib.Path(full_rel_path).suffix.lower()
-        targets = self._clean_targets(targets_raw)
-
-        if ext in (".nexy", ".py", ""):
-            is_nexy = ext == ".nexy"
-            prefix = f"{self.namespace.replace('/', '.')}" if is_nexy else ""
-            module_name = re.sub(r"\.nexy$|\.py$", "", full_rel_path)
-            module_name = re.sub(r"\.+", ".", module_name.replace("/", ".")).strip(".")
-            module_name = prefix + module_name
-            return f"from {module_name} import {', '.join(targets)}"
-
-        framework = self._get_framework(ext)
-
-        import_lines = []
-        for t in targets:
-            parts = re.split(r"\s+as\s+", t, flags=re.I)
-            symbol = parts[0]
-            alias = parts[1] if len(parts) > 1 else symbol
-            alias = self._normalize_alias(alias)
-
-            line = (
-                f"{alias} = __Import("
-                f'path="{full_rel_path}", framework="{framework}", symbol="{symbol}")'
-            )
-            import_lines.append(line)
-
-        return "\n".join(import_lines)
+        rel_path = self._resolve_full_path(current_file, match.group("path"))
+        extension = pathlib.Path(rel_path).suffix.lower()
+        targets = self._clean_targets(match.group("targets"))
+        if extension in _PYTHON_MODULES:
+            module = self._module_name(rel_path, extension == ".nexy")
+            return f"from {module} import {', '.join(targets)}"
+        framework = self._get_framework(extension)
+        lines = (self._framework_import(rel_path, framework, target) for target in targets)
+        return "\n".join(lines)
 
     def _replace_import(self, match: Match[str], current_file: str) -> str:
         """Callback for 'import "path" [as alias]' transformation."""
-        path_str = match.group("path")
-        alias = match.group("alias")
-
-        full_rel_path = self._resolve_full_path(current_file, path_str)
-        ext = pathlib.Path(full_rel_path).suffix.lower()
-
-        if not alias:
-            alias = self._normalize_alias(pathlib.Path(full_rel_path).stem)
-
-        if ext in (".nexy", ".py", ""):
-            is_nexy_module = ext == ".nexy"
-
-            prefix = ""
-
-            if is_nexy_module and self.namespace:
-                prefix = self.namespace.replace("\\", "/").replace("/", ".").strip(".")
-
-                if prefix:
-                    prefix += "."
-
-            module_name = re.sub(r"\.(nexy|py)$", "", full_rel_path)
-
-            module_name = module_name.replace("\\", "/").replace("/", ".").strip(".")
-
-            module_name = re.sub(r"\.+", ".", module_name)
-
-            if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_\.]*$", module_name):
-                raise ValueError(f"Invalid module name: {module_name}")
-
-            if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", alias):
-                raise ValueError(f"Invalid alias: {alias}")
-
-            module_name = f"{prefix}{module_name}"
-
-            return f"import {module_name} as {alias}"
-
-        framework = self._get_framework(ext)
-        return (
-            f'{alias} = __Import(path="{full_rel_path}", framework="{framework}", symbol="default")'
-        )
+        rel_path = self._resolve_full_path(current_file, match.group("path"))
+        extension = pathlib.Path(rel_path).suffix.lower()
+        alias = match.group("alias") or self._normalize_alias(pathlib.Path(rel_path).stem)
+        if extension in _PYTHON_MODULES:
+            module = self._module_name(rel_path, extension == ".nexy")
+            _require_identifier(module, alias)
+            return f"import {module} as {alias}"
+        framework = self._get_framework(extension)
+        return f'{alias} = __Import(path="{rel_path}", framework="{framework}", symbol="default")'
