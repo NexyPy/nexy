@@ -1,21 +1,39 @@
-<section {{ cls }}="mx-auto grid w-full max-w-5xl flex-1 items-center gap-16 px-6 py-20 md:grid-cols-2">
-  <div>
-    <h1 {{ cls }}="text-4xl font-semibold leading-tight tracking-tight md:text-5xl">
-      Full-stack Python,<br />modern frontend.
-    </h1>
-    <p {{ cls }}="mt-5 max-w-md text-base leading-7 text-foreground-second">
-      Routes are files. Pages render on the server, interactive parts run in the browser,
-      and the API lives next to the views.
-    </p>
-    <div {{ cls }}="mt-8 flex flex-wrap gap-3">
-      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Get started</a>
-      <a href="/about" {{ cls }}="btn-ghost">About</a>
+<section {{ cls }}="mx-auto w-full max-w-5xl flex-1 px-6 py-16 md:py-24">
+  <div {{ cls }}="grid items-center gap-14 md:grid-cols-2 md:gap-16">
+    <div>
+      <p {{ cls }}="badge">Nexy v{{ nexy_version }}</p>
+      <h1 {{ cls }}="mt-6 text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+        Full-stack Python,<br />
+        <span {{ cls }}="text-foreground-second">modern frontend.</span>
+      </h1>
+      <p {{ cls }}="mt-6 max-w-md text-base leading-7 text-foreground-second">
+        Routes are files. Pages render on the server, interactive parts run in the browser,
+        and the API lives next to the views.
+      </p>
+      <div {{ cls }}="mt-8 flex flex-wrap gap-3">
+        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Get started</a>
+        <a href="/about" {{ cls }}="btn-ghost">About</a>
+      </div>
+      <p {{ cls }}="mt-8 text-sm text-foreground-second">
+        Edit <code>src/routes/index{{ page_ext }}</code> and save.
+      </p>
     </div>
-    <p {{ cls }}="mt-10 text-sm text-foreground-second">
-      Edit <code>src/routes/index{{ page_ext }}</code> and save.
-    </p>
+    <div {{ cls }}="flex justify-center md:justify-end">
+      <{{ card }} />
+    </div>
   </div>
-  <div {{ cls }}="flex justify-center md:justify-end">
-    <{{ card }} />
-  </div>
+  <ul {{ cls }}="mt-20 grid gap-8 border-t border-border pt-10 sm:grid-cols-3">
+    <li>
+      <h2 {{ cls }}="text-sm font-medium">File-based routes</h2>
+      <p {{ cls }}="mt-2 text-sm leading-6 text-foreground-second">A file in <code>src/routes</code> is a page.</p>
+    </li>
+    <li>
+      <h2 {{ cls }}="text-sm font-medium">Server first</h2>
+      <p {{ cls }}="mt-2 text-sm leading-6 text-foreground-second">FastAPI renders the page and serves the API.</p>
+    </li>
+    <li>
+      <h2 {{ cls }}="text-sm font-medium">Instant feedback</h2>
+      <p {{ cls }}="mt-2 text-sm leading-6 text-foreground-second">{{ fw_label }} and Vite reload as you type.</p>
+    </li>
+  </ul>
 </section>

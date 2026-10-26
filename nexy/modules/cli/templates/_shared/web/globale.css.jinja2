@@ -81,6 +81,17 @@
     @apply border border-border text-foreground hover:bg-background-second;
   }
 
+  .badge {
+    @apply inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground-second;
+  }
+
+  .panel {
+    @apply w-full max-w-sm overflow-hidden rounded-xl border border-border bg-background-second;
+  }
+  .panel-bar {
+    @apply flex items-center justify-between border-b border-border px-4 py-3 font-mono text-xs text-foreground-second;
+  }
+
   .nav-link {
     @apply text-sm text-foreground-second no-underline transition-colors hover:text-foreground;
   }
