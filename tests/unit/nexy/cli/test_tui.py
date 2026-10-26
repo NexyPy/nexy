@@ -145,6 +145,42 @@ class TestTranscript:
         assert len(tui.transcript._heights) == 1
 
 
+class _Recorder(DummyOutput):
+    def __init__(self) -> None:
+        super().__init__()
+        self.moves: list[tuple[str, int]] = []
+
+    def cursor_up(self, amount: int) -> None:
+        self.moves.append(("up", amount))
+
+    def erase_down(self) -> None:
+        self.moves.append(("erase", 0))
+
+
+class TestEraseAll:
+    def test_every_answer_is_wiped_in_one_move(self, keys):
+        recorder = _Recorder()
+        tui.terminal.output = recorder
+        keys(ENTER + ENTER)
+        tui.select("One", CHOICES)
+        tui.select("Two", CHOICES)
+        tui.transcript.erase_all()
+        assert recorder.moves[-2:] == [("up", 6), ("erase", 0)]
+
+    def test_nothing_is_left_to_erase_afterwards(self, keys):
+        keys(ENTER)
+        tui.select("One", CHOICES)
+        tui.transcript.erase_all()
+        assert tui.transcript._heights == []
+
+    @pytest.mark.usefixtures("keys")
+    def test_wiping_an_empty_screen_does_not_move_the_cursor(self):
+        recorder = _Recorder()
+        tui.terminal.output = recorder
+        tui.transcript.erase_all()
+        assert recorder.moves == []
+
+
 class TestRender:
     @staticmethod
     def _plain(fragments) -> str:

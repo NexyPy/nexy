@@ -4,6 +4,7 @@ from typing import Any
 from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
+from nexy.modules.cli import tui
 from nexy.modules.i18n import t
 
 from .prompts import ProjectPrompter
@@ -38,6 +39,7 @@ class InitProject:
             self._from_template(template, dest)
             return
         config = ProjectPrompter().ask_all()
+        tui.transcript.erase_all()
         initialize_from_template(TemplateResolver.resolve(config), dest, config)
 
     @staticmethod

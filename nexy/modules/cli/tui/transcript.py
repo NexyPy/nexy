@@ -36,6 +36,17 @@ class Transcript:
         output.erase_down()
         output.flush()
 
+    def erase_all(self) -> None:
+        """Wipe every block shown so far: the answers give way to what the answers started."""
+        lines = sum(self._heights)
+        self._heights.clear()
+        if not lines:
+            return
+        output = _output()
+        output.cursor_up(lines)
+        output.erase_down()
+        output.flush()
+
     def clear(self) -> None:
         self._heights.clear()
 
