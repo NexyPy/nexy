@@ -33,34 +33,34 @@ def _write(root: Path, name: str, text: str = "") -> str:
     return name
 
 
+@pytest.mark.usefixtures("project")
 class TestResolve:
-    def test_a_relative_import_is_relative_to_the_project(self, project):
-        _write(project, "src/a.nexy")
+    def test_a_relative_import_is_relative_to_the_project(self):
         assert resolve_dependency("src/a.nexy", "./card.nexy") == "src/card.nexy"
 
-    def test_a_parent_import_climbs(self, project):
+    def test_a_parent_import_climbs(self):
         assert resolve_dependency("src/pages/a.nexy", "../ui/card.nexy") == "src/ui/card.nexy"
 
-    def test_an_alias_is_replaced(self, project):
+    def test_an_alias_is_replaced(self):
         assert resolve_dependency("src/a.nexy", "@/ui/card.nexy") == "src/ui/card.nexy"
 
-    @pytest.mark.usefixtures("project")
     def test_a_package_import_is_not_a_dependency(self):
         assert resolve_dependency("src/a.nexy", "fastapi") is None
 
-    def test_a_relative_import_outside_the_project_is_not_a_dependency(self, project):
+    def test_a_relative_import_outside_the_project_is_not_a_dependency(self):
         assert resolve_dependency("src/a.nexy", "../../../../elsewhere/x.nexy") is None
 
 
+@pytest.mark.usefixtures("project")
 class TestImportedComponents:
-    def test_each_nexy_import_is_listed(self, project):
+    def test_each_nexy_import_is_listed(self):
         source = 'from "./a.nexy" import A\nfrom "./b.nexy" import B\n'
         assert list(_imported_components("src/page.nexy", source)) == ["src/a.nexy", "src/b.nexy"]
 
-    def test_other_files_are_not_components(self, project):
+    def test_other_files_are_not_components(self):
         assert list(_imported_components("src/p.nexy", 'from "./card.tsx" import C\n')) == []
 
-    def test_an_import_inside_a_code_fence_is_an_example(self, project):
+    def test_an_import_inside_a_code_fence_is_an_example(self):
         source = '```python\nfrom "./a.nexy" import A\n```\n'
         assert list(_imported_components("src/page.nexy", source)) == []
 
@@ -101,6 +101,6 @@ class TestCompileDependencies:
         compile_dependencies("src/page.tsx", compiled.append)
         assert compiled == []
 
-    @pytest.mark.usefixtures("project")
-    def test_a_missing_file_is_not_an_error(self):
+    def test_a_missing_file_is_not_an_error(self, project):
+        del project
         compile_dependencies("src/gone.nexy", lambda _path: None)
