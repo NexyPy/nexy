@@ -141,8 +141,9 @@ omit = [
 # unit tests, to 52 after the media branch tests, to 52.8 after the error
 # path batch (errors.py 100%, discovery.py 92%), then to 54 after the
 # server.py test batch (utils/server/server.py 24% -> 67%), then to 66 (measured 67.0% on
-# 2026-10-25 after the CSR document, fast path and middleware batches). Never lower it.
-fail_under = 66
+# 2026-10-25 after the CSR document, fast path and middleware batches), then to 84 (86.5% on
+# the unit suite on 2026-10-26 after the DI, validator, registrar, HMR and VFS batches). Never lower it.
+fail_under = 84
 show_missing = true
 
 exclude_also = [
