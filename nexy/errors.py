@@ -34,6 +34,13 @@ class NexyCompileError(Exception):
         return f"{base}\n  Fix: {self.hint}" if self.hint else base
 
 
+def error_position(failure: BaseException) -> tuple[int | None, int | None]:
+    """(line, column) a failure carries: Python syntax errors and Nexy's own errors name them."""
+    line = getattr(failure, "lineno", None) or getattr(failure, "line", None)
+    column = getattr(failure, "offset", None) or getattr(failure, "column", None)
+    return line, column
+
+
 _PAGE = """\
 <!DOCTYPE html>
 <html lang="en">
