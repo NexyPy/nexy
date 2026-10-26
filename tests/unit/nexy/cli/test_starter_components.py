@@ -1,4 +1,4 @@
-"""The theme button and the current-link mark belong to the project, not the runtime."""
+"""The theme switch and the current-link mark belong to the project, not the runtime."""
 
 from __future__ import annotations
 
@@ -26,10 +26,18 @@ def _scaffold(dest: Path, framework: str, use_csr: bool) -> Path:
 
 @pytest.mark.parametrize(("framework", "ext"), CSR)
 class TestClientRouted:
-    def test_the_theme_toggle_is_a_component_of_the_project(self, tmp_path, framework, ext):
+    def test_the_theme_toggle_is_a_switch_component_of_the_project(self, tmp_path, framework, ext):
         _scaffold(tmp_path, framework, True)
         component = tmp_path / "src" / "components" / f"theme-toggle.{ext}"
-        assert 'localStorage.setItem("nexy-theme"' in component.read_text(encoding="utf-8")
+        text = component.read_text(encoding="utf-8")
+        assert 'role="switch"' in text and "data-theme-toggle" in text
+
+    def test_the_layout_sets_the_theme_before_the_page_paints(self, tmp_path, framework, ext):  # noqa: ARG002
+        _scaffold(tmp_path, framework, True)
+        layout = next((tmp_path / "src" / "routes").glob("layout.*"))
+        text = layout.read_text(encoding="utf-8")
+        assert 'localStorage.setItem(KEY, dark ? "dark" : "light")' in text
+        assert "html.dark{background:" in text
 
     def test_the_layout_uses_it(self, tmp_path, framework, ext):
         _scaffold(tmp_path, framework, True)
@@ -49,10 +57,27 @@ class TestServerRendered:
         _scaffold(tmp_path, framework, False)
         assert list((tmp_path / "src" / "components").glob("theme-toggle.*")) == []
 
-    def test_the_header_component_carries_its_own_script(self, tmp_path, framework):
+    def test_the_header_component_carries_the_switch_and_marks_the_current_page(
+        self, tmp_path, framework
+    ):
         _scaffold(tmp_path, framework, False)
         header = (tmp_path / "src" / "components" / "header.nexy").read_text(encoding="utf-8")
-        assert "data-theme-toggle" in header and "aria-current" in header
+        assert 'role="switch"' in header and "data-theme-toggle" in header
+        assert "aria-current" in header
+
+    def test_the_layout_sets_the_theme_before_the_page_paints(self, tmp_path, framework):
+        _scaffold(tmp_path, framework, False)
+        layout = (tmp_path / "src" / "routes" / "layout.nexy").read_text(encoding="utf-8")
+        assert layout.index("html.dark{background:") < layout.index("<Vite />")
+        assert 'localStorage.setItem(KEY, dark ? "dark" : "light")' in layout
+
+
+def test_the_generated_entry_reveals_the_page_once_the_styles_are_in(tmp_path):
+    src = tmp_path / "__nexy__" / "src"
+    src.mkdir(parents=True)
+    write_main_file(src, set())
+    main = (src / "main.ts").read_text(encoding="utf-8")
+    assert main.index('import "/src/globale.css"') < main.index('getElementById("nexy-boot")')
 
 
 def test_the_generated_entry_has_no_ui_runtime(tmp_path):

@@ -32,7 +32,9 @@ HEADER = re.compile(r"^:root \{.*?^\}\n\n\.dark \{.*?^\}\n", re.DOTALL | re.MULT
 def render_tailwind_stylesheet() -> str:
     environment = Environment(loader=FileSystemLoader(TEMPLATES / "_shared" / "web"))
     template = environment.get_template("globale.css.jinja2")
-    return template.render(style="tailwind", client_framework="react")
+    # The starter classes are plain CSS that every style includes itself: only Tailwind's own
+    # reset and the utilities the project may use belong in this file.
+    return template.render(style="tailwind", client_framework="react", starter=False)
 
 
 def compile_css(source: str) -> str:

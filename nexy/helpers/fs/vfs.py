@@ -45,8 +45,8 @@ class VFS:
     _disk_files: set[str]
 
     def __new__(cls) -> "VFS":
-        # The compiler builds components on several threads, and each one asks for the VFS: without
-        # the lock two of them could each make an instance, and what one writes the other never sees.
+        # The compiler builds components on several threads and each one asks for the VFS.
+        # Without the lock two could make an instance each, and what one writes the other loses.
         if cls._instance is None:
             with _CREATION:
                 if cls._instance is None:

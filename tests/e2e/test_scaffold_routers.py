@@ -99,7 +99,7 @@ def test_web_template_serves_a_valid_document(tmp_path, template, framework, use
 
 
 @pytest.mark.parametrize(("template", "framework", "use_csr"), WEB)
-@pytest.mark.parametrize(("path", "marker"), [("/about", "open source"), ("/", "Full-stack")])
+@pytest.mark.parametrize(("path", "marker"), [("/about", "open source"), ("/", "Routes are files")])
 def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path, marker):
     """Every starter links Home and About, so both must exist, in every mode."""
     result = _run(tmp_path, template, framework, use_csr)

@@ -23,12 +23,12 @@
   color-scheme: light;
   font-family: "Geist", "Inter", system-ui, sans-serif;
   --accent: {{ accent }};
-  --background: light-dark(#ffffff, #0a0a0a);
-  --background-second: light-dark(#fafafa, #141414);
-  --foreground: light-dark(#171717, #ededed);
-  --foreground-second: light-dark(#666666, #a1a1a1);
-  --border: light-dark(#e5e5e5, #262626);
-  --border-second: light-dark(#d4d4d4, #404040);
+  --background: light-dark(#f6f7f9, #0b1016);
+  --background-second: light-dark(#ffffff, #111821);
+  --foreground: light-dark(#0f1720, #e8ecf2);
+  --foreground-second: light-dark(#5a6678, #93a0b3);
+  --border: light-dark(#e1e5eb, #1e2835);
+  --border-second: light-dark(#cbd2dc, #2e3b4c);
 }
 
 .dark {
@@ -57,50 +57,10 @@
     background-color: var(--background);
     color: var(--foreground);
   }
-  h1, h2, h3 {
-    font-family: "Geist", "Inter", sans-serif;
-  }
-  code {
-    @apply rounded border border-border bg-background-second px-1.5 py-0.5 font-mono text-[0.85em];
-  }
   ::selection {
-    background-color: color-mix(in oklab, var(--foreground) 20%, transparent);
-  }
-}
-
-@layer components {
-  /* The shared part of both buttons; Tailwind 4 cannot @apply another component class. */
-  .btn-primary,
-  .btn-ghost {
-    @apply inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md px-4 text-sm font-medium no-underline transition-colors;
-  }
-  .btn-primary {
-    @apply bg-foreground text-background hover:opacity-85;
-  }
-  .btn-ghost {
-    @apply border border-border text-foreground hover:bg-background-second;
-  }
-
-  .badge {
-    @apply inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-foreground-second;
-  }
-
-  .panel {
-    @apply w-full max-w-sm overflow-hidden rounded-xl border border-border bg-background-second;
-  }
-  .panel-bar {
-    @apply flex items-center justify-between border-b border-border px-4 py-3 font-mono text-xs text-foreground-second;
-  }
-
-  .nav-link {
-    @apply text-sm text-foreground-second no-underline transition-colors hover:text-foreground;
-  }
-  .nav-link[aria-current="page"] {
-    color: var(--foreground);
-  }
-
-  .theme-toggle {
-    @apply inline-flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground-second transition-colors hover:bg-background-second hover:text-foreground;
+    background-color: color-mix(in oklab, var(--accent) 28%, transparent);
   }
 }
 {% endif %}
+
+{% if starter | default(true) %}{% include "starter.css" %}{% endif %}

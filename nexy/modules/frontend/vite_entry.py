@@ -116,6 +116,7 @@ def write_main_file(dest_dir: Path, frameworks: set[str]) -> None:
         'import "/src/globale.css";\n'
         'import "@nexy/runtime.ts";\n'
         'import "@nexy/ff.auto.ts";\n'
+        'document.getElementById("nexy-boot")?.remove();\n'
         "export {};\n"
     )
     PathUtil.write_if_changed(dest_dir / "main.ts", minimal)

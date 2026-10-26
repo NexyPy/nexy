@@ -36,8 +36,20 @@ def _hmr_client() -> str:
     return _HMR_CLIENT.read_text(encoding="utf-8")
 
 
+# In development the stylesheet reaches the page through JavaScript, after the first paint. The
+# page stays hidden until main.ts has run (its styles are in by then); the timer is the way out if
+# it never does, so a broken client cannot leave a blank page.
+BOOT_GATE_ID = "nexy-boot"
+_BOOT_GATE = (
+    f'<style id="{BOOT_GATE_ID}">html{{visibility:hidden}}</style>'
+    f'<script>setTimeout(function(){{var g=document.getElementById("{BOOT_GATE_ID}");'
+    "g&&g.remove()},2500)</script>"
+)
+
+
 def _development_tags() -> str:
     return f"""
+    {_BOOT_GATE}
     {_hmr_client()}
     <script type="module" src="/@vite/client"></script>
     <script type="module" src="/__nexy__/main.ts"></script>

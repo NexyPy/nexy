@@ -1,39 +1,94 @@
-<section {{ cls }}="mx-auto w-full max-w-5xl flex-1 px-6 py-16 md:py-24">
-  <div {{ cls }}="grid items-center gap-14 md:grid-cols-2 md:gap-16">
-    <div>
-      <p {{ cls }}="badge">Nexy v{{ nexy_version }}</p>
-      <h1 {{ cls }}="mt-6 text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
-        Full-stack Python,<br />
-        <span {{ cls }}="text-foreground-second">modern frontend.</span>
-      </h1>
-      <p {{ cls }}="mt-6 max-w-md text-base leading-7 text-foreground-second">
-        Routes are files. Pages render on the server, interactive parts run in the browser,
-        and the API lives next to the views.
-      </p>
-      <div {{ cls }}="mt-8 flex flex-wrap gap-3">
-        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Get started</a>
-        <a href="/about" {{ cls }}="btn-ghost">About</a>
-      </div>
-      <p {{ cls }}="mt-8 text-sm text-foreground-second">
-        Edit <code>src/routes/index{{ page_ext }}</code> and save.
-      </p>
+{%- set ext = page_ext -%}
+{%- set for_attr = "htmlFor" if cls == "className" else "for" -%}
+{%- set checked = "defaultChecked" if cls == "className" else "checked" -%}
+<section {{ cls }}="nx-container nx-hero">
+  <div>
+    <h1 {{ cls }}="nx-title">Routes are files.</h1>
+    <p {{ cls }}="nx-lead">
+      Drop a file in <code>src/routes</code> and it is a page. The server renders it, the browser
+      runs only what has to be interactive, and the API lives next to the views.
+    </p>
+    <div {{ cls }}="nx-actions">
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Get started</a>
+      <a href="/about" {{ cls }}="btn-ghost">About Nexy</a>
     </div>
-    <div {{ cls }}="flex justify-center md:justify-end">
-      <{{ card }} />
+    <p {{ cls }}="nx-hint">Edit <code>src/routes/index{{ ext }}</code> and save: the page reloads.</p>
+  </div>
+
+  <div {{ cls }}="nx-map">
+    <div {{ cls }}="nx-tree" role="radiogroup" aria-label="Files in src/routes">
+      <p {{ cls }}="nx-tree-root">src/routes</p>
+      <label {{ cls }}="nx-file" {{ for_attr }}="nx-r-layout"><input type="radio" name="nx-route" id="nx-r-layout" />layout{{ ext }}</label>
+      <label {{ cls }}="nx-file" {{ for_attr }}="nx-r-index"><input type="radio" name="nx-route" id="nx-r-index" {{ checked }} />index{{ ext }}</label>
+      <label {{ cls }}="nx-file" {{ for_attr }}="nx-r-about"><input type="radio" name="nx-route" id="nx-r-about" />about{{ ext }}</label>
+      <label {{ cls }}="nx-file nx-file-new" {{ for_attr }}="nx-r-new"><input type="radio" name="nx-route" id="nx-r-new" />pricing{{ ext }}</label>
+    </div>
+    <div {{ cls }}="nx-view">
+      <div {{ cls }}="nx-panel" data-route="layout">
+        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/*</b><i>every page</i></div>
+        <div {{ cls }}="nx-preview">
+          <div {{ cls }}="nx-sk nx-sk-bar"></div>
+          <div {{ cls }}="nx-sk-fill"></div>
+          <div {{ cls }}="nx-sk nx-sk-bar"></div>
+        </div>
+        <p {{ cls }}="nx-caption"><code>layout{{ ext }}</code> wraps every page. The header and the footer on this page live in it.</p>
+      </div>
+      <div {{ cls }}="nx-panel" data-route="index">
+        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/</b><i>200</i></div>
+        <div {{ cls }}="nx-preview">
+          <div {{ cls }}="nx-sk nx-sk-title"></div>
+          <div {{ cls }}="nx-sk nx-sk-90"></div>
+          <div {{ cls }}="nx-sk nx-sk-72"></div>
+          <div {{ cls }}="nx-sk-button"></div>
+        </div>
+        <p {{ cls }}="nx-caption"><code>index{{ ext }}</code> answers <code>GET /</code>. It is the page you are reading.</p>
+      </div>
+      <div {{ cls }}="nx-panel" data-route="about">
+        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/about</b><i>200</i></div>
+        <div {{ cls }}="nx-preview">
+          <div {{ cls }}="nx-sk nx-sk-title"></div>
+          <div {{ cls }}="nx-sk nx-sk-95"></div>
+          <div {{ cls }}="nx-sk nx-sk-80"></div>
+          <div {{ cls }}="nx-sk nx-sk-60"></div>
+        </div>
+        <p {{ cls }}="nx-caption"><code>about{{ ext }}</code> answers <code>GET /about</code>. A file name is a path.</p>
+      </div>
+      <div {{ cls }}="nx-panel" data-route="new">
+        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/pricing</b><i>404</i></div>
+        <div {{ cls }}="nx-preview nx-preview-empty">No page here yet.</div>
+        <p {{ cls }}="nx-caption">Create <code>src/routes/pricing{{ ext }}</code> and <code>/pricing</code> exists. There is no router to edit.</p>
+      </div>
     </div>
   </div>
-  <ul {{ cls }}="mt-20 grid gap-8 border-t border-border pt-10 sm:grid-cols-3">
-    <li>
-      <h2 {{ cls }}="text-sm font-medium">File-based routes</h2>
-      <p {{ cls }}="mt-2 text-sm leading-6 text-foreground-second">A file in <code>src/routes</code> is a page.</p>
-    </li>
-    <li>
-      <h2 {{ cls }}="text-sm font-medium">Server first</h2>
-      <p {{ cls }}="mt-2 text-sm leading-6 text-foreground-second">FastAPI renders the page and serves the API.</p>
-    </li>
-    <li>
-      <h2 {{ cls }}="text-sm font-medium">Instant feedback</h2>
-      <p {{ cls }}="mt-2 text-sm leading-6 text-foreground-second">{{ fw_label }} and Vite reload as you type.</p>
-    </li>
-  </ul>
 </section>
+
+<section {{ cls }}="nx-container nx-island">
+  <div {{ cls }}="nx-island-text">
+    <h2 {{ cls }}="nx-h2">Interactive where it counts</h2>
+{%- if client_framework == "none" %}
+    <p>This counter is a plain component with a little JavaScript. Edit <code>src/components/counter{{ ext }}</code> and it updates as you save.</p>
+{%- else %}
+    <p>This counter is a {{ fw_label }} component hydrated in the browser. Edit <code>src/components/counter/counter{{ ext }}</code> and it updates as you save.</p>
+{%- endif %}
+  </div>
+  <{{ card }} />
+</section>
+
+<ul {{ cls }}="nx-container nx-facts">
+  <li>
+    <h2>Server first</h2>
+    <p>FastAPI renders each page and serves your API from the same project.</p>
+  </li>
+  <li>
+    <h2>Only what moves ships</h2>
+{%- if client_framework == "none" %}
+    <p>Pages are plain HTML with a little JavaScript. Add a framework later if you need one.</p>
+{%- else %}
+    <p>{{ fw_label }} components run in the browser. The rest of the page ships no framework.</p>
+{%- endif %}
+  </li>
+  <li>
+    <h2>Instant feedback</h2>
+    <p>Save a file and the page reloads: Vite watches the client, a fast watcher the Python.</p>
+  </li>
+</ul>

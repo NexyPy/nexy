@@ -1,35 +1,7 @@
 {% if useCSR and client_framework == "vue" %}
-<script setup lang="ts">
-// Switches between the light and the dark theme and remembers the choice. Edit or delete freely.
-function toggle() {
-  const dark = document.documentElement.classList.toggle("dark");
-  try {
-    localStorage.setItem("nexy-theme", dark ? "dark" : "light");
-  } catch {
-    // Storage can be blocked: the choice then lasts until the page is reloaded.
-  }
-}
-</script>
-
 <template>
-  <button type="button" aria-label="Toggle theme" class="theme-toggle" @click="toggle">
-{% include "theme_icons.html.jinja2" %}
-  </button>
+{% include "theme_switch.html.jinja2" %}
 </template>
 {% elif useCSR and client_framework == "svelte" %}
-<script lang="ts">
-  // Switches between the light and the dark theme and remembers the choice. Edit or delete freely.
-  function toggle() {
-    const dark = document.documentElement.classList.toggle("dark");
-    try {
-      localStorage.setItem("nexy-theme", dark ? "dark" : "light");
-    } catch {
-      // Storage can be blocked: the choice then lasts until the page is reloaded.
-    }
-  }
-</script>
-
-<button type="button" aria-label="Toggle theme" class="theme-toggle" onclick={toggle}>
-{% include "theme_icons.html.jinja2" %}
-</button>
+{% include "theme_switch.html.jinja2" %}
 {% endif %}

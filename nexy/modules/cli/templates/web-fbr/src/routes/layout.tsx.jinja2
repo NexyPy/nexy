@@ -11,11 +11,9 @@ import type { ComponentChildren } from "preact";
 import { Link } from "@nexy/client";
 import ThemeToggle from "@/components/theme-toggle.tsx";
 
-const themeScript = `
-  try {
-    document.documentElement.classList.toggle("dark", localStorage.getItem("nexy-theme") !== "light");
-  } catch (e) {}
-`;
+const criticalCss = `{% include "critical.css" %}`;
+
+const themeScript = `{% include "theme_script.js" %}`;
 
 {% if client_framework == "solid" -%}
 export default function RootLayout(props: { children: JSX.Element }) {
@@ -25,7 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 export default function RootLayout({ children }: { children: ComponentChildren }) {
 {%- endif %}
   return (
-    <html lang="en" {{ cls }}="dark"{% if client_framework == "react" %} suppressHydrationWarning{% endif %}>
+    <html lang="en"{% if client_framework == "react" %} suppressHydrationWarning{% endif %}>
       <head>
         <meta {{ charset_attr }}="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,18 +32,20 @@ export default function RootLayout({ children }: { children: ComponentChildren }
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" {{ cross_attr }}="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400..600&family=Inter:wght@100..900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
           rel="stylesheet"
         />
 {% if client_framework == "solid" -%}
+        <style innerHTML={criticalCss} />
         <script innerHTML={themeScript} />
 {%- else -%}
+        <style dangerouslySetInnerHTML={% raw %}{{ __html: criticalCss }}{% endraw %} />
         <script dangerouslySetInnerHTML={% raw %}{{ __html: themeScript }}{% endraw %} />
 {%- endif %}
       </head>
-      <body {{ cls }}="antialiased min-h-dvh flex flex-col bg-background text-foreground">
+      <body {{ cls }}="nx-page">
 {% include "header.html.jinja2" %}
-        <main {{ cls }}="flex flex-1 flex-col">{% if client_framework == "solid" %}{props.children}{% else %}{children}{% endif %}</main>
+        <main {{ cls }}="nx-main">{% if client_framework == "solid" %}{props.children}{% else %}{children}{% endif %}</main>
 {% include "footer.html.jinja2" %}
       </body>
     </html>

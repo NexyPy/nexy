@@ -1,20 +1,10 @@
 {% if useCSR and client_framework in ("react", "solid", "preact") %}
 {%- set cls = "className" if client_framework == "react" else "class" -%}
-// Switches between the light and the dark theme and remembers the choice. Edit or delete freely.
+// The light/dark switch. The script in the layout's <head> does the work: it flips the theme,
+// remembers the choice and keeps aria-checked in step. Edit or delete freely.
 export default function ThemeToggle() {
-  const toggle = () => {
-    const dark = document.documentElement.classList.toggle("dark");
-    try {
-      localStorage.setItem("nexy-theme", dark ? "dark" : "light");
-    } catch {
-      // Storage can be blocked: the choice then lasts until the page is reloaded.
-    }
-  };
-
   return (
-    <button type="button" aria-label="Toggle theme" {{ cls }}="theme-toggle" onClick={toggle}>
-{% include "theme_icons.html.jinja2" %}
-    </button>
+{% include "theme_switch.html.jinja2" %}
   );
 }
 {% endif %}

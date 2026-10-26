@@ -16,21 +16,16 @@ export default function Counter() {
 {%- endif %}
 
   return (
-    <div {{ cls }}="panel">
-      <div {{ cls }}="panel-bar"><span>counter</span><span>interactive</span></div>
-      <div {{ cls }}="flex flex-col items-center gap-8 px-6 py-12">
-      <output {{ cls }}="text-6xl font-semibold tabular-nums" aria-live="polite">
+    <div {{ cls }}="nx-counter">
+      <button type="button" {{ cls }}="nx-step" aria-label="Decrease" onClick={() => setCount((value) => value - 1)}>
+        −
+      </button>
+      <output {{ cls }}="nx-count" aria-live="polite">
         {% raw %}{{% endraw %}{% if client_framework == "solid" %}count(){% else %}count{% endif %}{% raw %}}{% endraw %}
       </output>
-      <div {{ cls }}="flex gap-3">
-        <button type="button" {{ cls }}="btn-ghost w-10 px-0" aria-label="Decrease" onClick={() => setCount((value) => value - 1)}>
-          -
-        </button>
-        <button type="button" {{ cls }}="btn-primary w-10 px-0" aria-label="Increase" onClick={() => setCount((value) => value + 1)}>
-          +
-        </button>
-      </div>
-      </div>
+      <button type="button" {{ cls }}="nx-step" aria-label="Increase" onClick={() => setCount((value) => value + 1)}>
+        +
+      </button>
     </div>
   );
 }

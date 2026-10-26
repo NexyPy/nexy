@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -54,7 +55,7 @@ class TestUnoCss:
     def test_the_stylesheet_keeps_the_components_without_the_tailwind_directives(self, tmp_path):
         _scaffold(tmp_path, "unocss")
         css = _read(tmp_path, "src/globale.css")
-        assert ".btn-primary" in css and "@apply" in css
+        assert ".btn-primary" in css and ".nx-map" in css
         assert "@import" not in css and "@theme" not in css and "@custom-variant" not in css
 
     def test_the_client_entry_loads_the_generated_utilities(self, tmp_path):
@@ -83,17 +84,15 @@ class TestPlainCss:
         css = _read(tmp_path, "src/globale.css")
         assert "@apply" not in css and "@import" not in css and "@theme" not in css
 
-    def test_the_stylesheet_styles_every_class_of_the_starter(self, tmp_path, style):
+    def test_the_stylesheet_styles_every_class_the_starter_uses(self, tmp_path, style):
         _scaffold(tmp_path, style)
         css = _read(tmp_path, "src/globale.css")
-        for selector in (
-            ".btn-primary",
-            ".nav-link",
-            ".theme-toggle",
-            ".flex",
-            r".md\:grid-cols-2",
-        ):
-            assert selector in css
+        used = set()
+        for page in (tmp_path / "src").rglob("*"):
+            if page.is_file() and page.suffix in (".nexy", ".tsx"):
+                for value in re.findall(r'(?:class|className)="([^"]+)"', page.read_text("utf-8")):
+                    used |= {name for name in value.split() if name.startswith(("nx-", "btn-"))}
+        assert used and [name for name in sorted(used) if f".{name}" not in css] == []
 
     def test_the_theme_variables_are_still_defined(self, tmp_path, style):
         _scaffold(tmp_path, style, framework="vue")

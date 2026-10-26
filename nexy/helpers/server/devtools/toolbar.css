@@ -6,6 +6,9 @@
   background: #0a0a0a; color: #ededed; border: 1px solid #2e2e2e;
   box-shadow: 0 6px 24px rgba(0, 0, 0, .35); font: 500 13px/1 system-ui, sans-serif;
 }
+@media (max-width: 640px) {
+  .bar { left: 16px; transform: none; }
+}
 .bar button {
   all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 12px; border-radius: 999px; color: inherit;
