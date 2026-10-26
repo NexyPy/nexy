@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from fastapi import APIRouter, FastAPI
 
@@ -22,12 +22,8 @@ def resolve_router(
     ACTION_ENGINE.include_router(server)
 
     router_source = config.useRouter
-    if isinstance(router_source, (APIRouter, type)) and (
-        isinstance(router_source, APIRouter) or issubclass(router_source, APIRouter)
-    ):
-        # Same runtime call as before; the isinstance/issubclass guard above
-        # accepts both an instance and a class, so the cast only informs mypy.
-        server.include_router(cast("APIRouter", router_source))
+    if isinstance(router_source, APIRouter):
+        server.include_router(router_source)
 
     if Path("src/routes").exists():
         fb_router = FBRouter(router=server.router)

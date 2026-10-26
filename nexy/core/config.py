@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-from typing import Any
 
 from nexy.core.config_loader import MISSING_CONFIG_ERROR, ConfigLoader
 from nexy.core.models import FrontendFramework, NexyConfigModel
@@ -25,8 +24,11 @@ _DEFAULT_MARKDOWN_EXTENSIONS: list[str] = [
 ]
 
 
-class Config:
-    """Singleton configuration manager for Nexy applications."""
+class Config(NexyConfigModel):
+    """Singleton configuration manager for Nexy applications.
+
+    The settings of `NexyConfigModel` hold their defaults here; `nexyconfig.py` overrides them.
+    """
 
     _instance: "Config | None" = None
     _loaded: bool = False
@@ -35,32 +37,10 @@ class Config:
     ROUTER_PATH: str = "src/routes"
     ALIASES: dict[str, str] = {}
     NAMESPACE: str = "__nexy__/"
-    useFF: FrontendFramework | list[FrontendFramework] | None = None
-    useRouter: Any = None
-    usePort: int = 3000
-    useHost: str = "0.0.0.0"  # nosec B104 - deliberate dev default, see SECURITY.md
+    # What differs from the user-facing `NexyConfigModel` defaults: the framework's own.
     useTitle: str = "Nexy App"
-    useCSR: bool = False
-    useDocs: bool = True
     useVite: bool = True
-    useMarkdownExtensions: list[str] = []
     excludeDirs: list[str] = ["templates", "extension", "docs"]
-    useAliases: dict[str, str] | None = None
-    useDocsUrl: str = "/docs"
-    useRedocsUrl: str | None = "/redocs"
-    useMiddlewares: list[Any] = []
-    useCORS: dict[str, Any] | None = None
-    useGZip: dict[str, Any] | None = None
-    useTrustedHost: dict[str, Any] | None = None
-    useHTTPSRedirect: bool = False
-    useSession: dict[str, Any] | None = None
-    useAuth: dict[str, Any] | None = None
-    useSslKeyfile: str | None = None
-    useSslCertfile: str | None = None
-    useWorkers: int = 0
-    useTocDepth: str = "2-6"
-    useTocTitle: str = "Table of Contents"
-    useTocAuto: bool = True
 
     MARKDOWN_EXTENSIONS: list[str] = list(_DEFAULT_MARKDOWN_EXTENSIONS)
     TARGET_EXTENSIONS: list[str] = [".nexy", ".md", ".mdx", ".tsx", ".jsx", ".vue", ".svelte"]
@@ -165,8 +145,3 @@ class Config:
         error = cls._load_error
         if error and error != MISSING_CONFIG_ERROR:
             raise ValueError(error)
-
-
-for _name in NexyConfigModel.__annotations__:
-    if _name not in Config.__dict__:
-        setattr(Config, _name, getattr(NexyConfigModel, _name, None))
