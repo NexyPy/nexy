@@ -13,16 +13,9 @@ from nexy.core.config import Config
 from nexy.core.models import NexyProp, ParserModel
 from nexy.core.string import StringTransform
 from nexy.helpers.fs.vfs import VFS
-from nexy.modules.compiler.document_shell import CSR_SHELL_HEADER, CSR_SHELL_RENDER, is_route_file
+from nexy.modules.compiler.document_shell import is_route_file, layout_parts
 from nexy.modules.routers.fbrouter.layout import RouteLayout
 
-_MISSING_LAYOUT = (
-    "try:\n"
-    "    from {layout} import Layout as __Layout\n"
-    "except ImportError:\n"
-    "    def __Layout(children: str = '', **kwargs) -> str:\n"
-    "        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
-)
 _LAYOUT_CHILDREN = "children = f\"<nslot  style='display:contents;'>{children}</nslot>\" "
 _SLOT = (
     "Slot = caller if (locals().get('caller') and callable(caller)) else "
@@ -128,15 +121,11 @@ def layout_shell(source_path: str) -> Shell:
     if Config.useRouter is not None:
         return Shell()
     is_layout = Path(source_path).name.lower() in Config.LAYOUT_FILE_NAMES
-    children = _LAYOUT_CHILDREN if is_layout else ""
     layout = RouteLayout.get_closest_import(source_path, is_layout=is_layout)
-    if layout:
-        return Shell(
-            _MISSING_LAYOUT.format(layout=layout), "str(__Layout(children=rendered))", children
-        )
-    if not is_layout and is_route_file(source_path):
-        return Shell(CSR_SHELL_HEADER, CSR_SHELL_RENDER, children)
-    return Shell(children=children)
+    header, wrapper = layout_parts(
+        layout, fallback_shell=not is_layout and is_route_file(source_path)
+    )
+    return Shell(header, wrapper, _LAYOUT_CHILDREN if is_layout else "")
 
 
 def function_name(template_path: str) -> str:

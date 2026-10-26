@@ -92,7 +92,7 @@ def test_the_lazy_wrapper_keeps_the_blocking_mark():
 
 
 def test_a_generated_document_component_is_marked_blocking():
-    from nexy.modules.compiler.frontend_route import _document_module
+    from nexy.modules.compiler.frontend_templates import document_module as _document_module
 
     source = _document_module(
         "Home",

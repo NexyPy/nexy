@@ -1,131 +1,97 @@
+"""Compiles markdown content routes (.md) into Python wrapper modules."""
+
+from __future__ import annotations
+
+import json
 from pathlib import Path
 from typing import Any
 
 from nexy.core.config import Config
-from nexy.core.string import Pathname, StringTransform
 from nexy.helpers.fs.vfs import VFS
-from nexy.modules.compiler.document_shell import CSR_SHELL_HEADER, CSR_SHELL_RENDER
+from nexy.helpers.fs.vfs_packages import write_package_inits
+from nexy.modules.compiler.document_shell import layout_parts
+from nexy.modules.compiler.route_paths import RoutePaths, route_paths
 from nexy.modules.routers.fbrouter.layout import RouteLayout
+
+_IMPORTS = (
+    "from typing import *\n"
+    "from pathlib import Path as __Path\n"
+    "from nexy.modules.runtime.markdown import render_markdown as __render_markdown\n"
+    "from nexy.modules.runtime.markdown import inject_heading_ids as __inject_heading_ids\n"
+)
+_SIGNATURE = "caller: Any = None, children: str = '', **kwargs: Any"
+_BODY = (
+    "    try:\n"
+    "        __content = __Path(__src).read_text(encoding='utf-8')\n"
+    "    except OSError:\n"
+    "        __content = ''\n"
+    "    rendered = __inject_heading_ids(__render_markdown(__content))\n"
+    "    try:\n"
+    "        from nexy.hooks import _toc_storage as __toc_store\n"
+    "        __toc_store.set(rendered)\n"
+    "    except Exception:\n"
+    "        pass\n"
+)
+
+
+def module_source(component: str, layout_header: str, render_wrapper: str, source: str) -> str:
+    """The Python module that renders the file *source* inside its layout."""
+    return (
+        f"{_IMPORTS}{layout_header}\n"
+        f"def {component}({_SIGNATURE}) -> str:\n"
+        f"    __src = {source!r}\n"
+        f"{_BODY}"
+        f"    return {render_wrapper}\n"
+    )
+
+
+def relative_to_project(src: Path) -> str:
+    """*src* relative to the working directory; outside it, without the leading slash."""
+    try:
+        return src.resolve().relative_to(Path.cwd()).as_posix()
+    except ValueError:
+        return src.as_posix().lstrip("/")
 
 
 class MarkdownRouteCompiler:
     """Compiles markdown content routes (.md) into Python wrapper modules.
 
-    A .md route is pure content: it is rendered to HTML with cmarkgfm at
-    request time, heading ids and a TOC are derived, then the body is
-    wrapped by the nearest layout.* (layout.nexy, layout.tsx, ...).
+    A .md route is pure content: it is rendered to HTML with cmarkgfm at request time, heading
+    ids and a TOC are derived, then the body is wrapped by the nearest layout.* (layout.nexy,
+    layout.tsx, ...).
     """
 
     def __init__(self) -> None:
         self.config = Config()
-        self.string_transform = StringTransform()
         self.vfs = VFS()
-
-    def _generate_init(self, directory: str) -> None:
-        """Write empty __init__.py for every ancestor of a compiled module.
-
-        Mirror of Generator._generate_init so markdown routes in
-        subdirectories are importable as Python packages.
-        """
-        parts = directory.replace("\\", "/").split("/")
-        for i in range(1, len(parts) + 1):
-            sub = "/".join(parts[:i])
-            init_file = f"{sub}/__init__.py"
-            if not self.vfs.exists(init_file):
-                self.vfs.write(init_file, "")
 
     def compile(self, *, input: str) -> None:
         src = Path(input)
-        ext = src.suffix.lower()
-        if ext != ".md":
-            raise ValueError(f"MarkdownRouteCompiler: unsupported extension {ext!r} for {input}")
-
-        posix_src = src.as_posix()
-        mapped = self.string_transform.normalize_route_path_for_namespace(posix_src)
-        full_namespaced = f"{Config.NAMESPACE}{mapped}"
-
-        py_path = Path(full_namespaced).with_suffix(".py").as_posix()
-
-        stem = src.stem
-        component_name = self.string_transform.get_component_name(stem) or "Index"
-        func_name = component_name
-
-        router_path = Path(Config.ROUTER_PATH).as_posix()
-        cleaned = (
-            posix_src.replace(f"{Config.NAMESPACE}{router_path}", "")
-            .replace(router_path, "")
-            .split(".")[0]
-        )
-        _pathname = Pathname(cleaned).process()
-
-        layout_import = RouteLayout.get_closest_import(posix_src, is_layout=False)
-
-        layout_header = ""
-        render_wrapper = "rendered"
-        if layout_import:
-            layout_header = (
-                f"try:\n"
-                f"    from {layout_import} import Layout as __Layout\n"
-                f"except ImportError:\n"
-                f"    def __Layout(children: str = '', **kwargs) -> str:\n"
-                f"        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
+        extension = src.suffix.lower()
+        if extension != ".md":
+            raise ValueError(
+                f"MarkdownRouteCompiler: unsupported extension {extension!r} for {input}"
             )
-            render_wrapper = "str(__Layout(children=rendered))"
-        else:
-            layout_header = CSR_SHELL_HEADER
-            render_wrapper = CSR_SHELL_RENDER
+        paths = route_paths(src.as_posix(), src.stem)
+        layout = RouteLayout.get_closest_import(paths.source, is_layout=False)
+        header, wrapper = layout_parts(layout, fallback_shell=True)
+        project_path = relative_to_project(src)
+        self.vfs.write(paths.py_path, module_source(paths.component, header, wrapper, project_path))
+        write_package_inits(self.vfs, paths.package)
+        self._write_meta(paths, extension, project_path)
 
-        src_abs = src.resolve()
-        try:
-            cwd = Path.cwd()
-            rel_from_cwd = src_abs.relative_to(cwd).as_posix()
-        except ValueError:
-            rel_from_cwd = src.as_posix().lstrip("/")
-
-        module_body = (
-            "from typing import *\n"
-            "from pathlib import Path as __Path\n"
-            "from nexy.modules.runtime.markdown import render_markdown as __render_markdown\n"
-            "from nexy.modules.runtime.markdown import inject_heading_ids as __inject_heading_ids\n"
-            f"{layout_header}\n"
-            f"def {func_name}("
-            "caller: Any = None, "
-            "children: str = '', "
-            "**kwargs: Any"
-            ") -> str:\n"
-            f"    __src = {rel_from_cwd!r}\n"
-            "    try:\n"
-            "        __content = __Path(__src).read_text(encoding='utf-8')\n"
-            "    except OSError:\n"
-            "        __content = ''\n"
-            "    rendered = __inject_heading_ids(__render_markdown(__content))\n"
-            "    try:\n"
-            "        from nexy.hooks import _toc_storage as __toc_store\n"
-            "        __toc_store.set(rendered)\n"
-            "    except Exception:\n"
-            "        pass\n"
-            f"    return {render_wrapper}\n"
-        )
-
-        self.vfs.write(py_path, module_body)
-        self._generate_init(Path(full_namespaced).parent.as_posix())
-
+    def _write_meta(self, paths: RoutePaths, extension: str, project_path: str) -> None:
         meta: dict[str, Any] = {
             "kind": "markdown",
-            "ext": ext,
-            "component_name": component_name,
-            "func_name": func_name,
-            "py_path": py_path,
-            "pathname": _pathname,
-            "source": posix_src,
-            "global_src": rel_from_cwd,
+            "ext": extension,
+            "component_name": paths.component,
+            "func_name": paths.component,
+            "py_path": paths.py_path,
+            "pathname": paths.pathname,
+            "source": paths.source,
+            "global_src": project_path,
         }
-
-        meta_path = Path(full_namespaced).with_suffix(".meta.json").as_posix()
-        import json as _json
-
-        self.vfs.write(meta_path, _json.dumps(meta, ensure_ascii=False))
-        return None
+        self.vfs.write(paths.meta_path, json.dumps(meta, ensure_ascii=False))
 
 
 __all__ = ["MarkdownRouteCompiler"]

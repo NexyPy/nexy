@@ -44,3 +44,26 @@ CSR_SHELL_HEADER = (
 )
 
 CSR_SHELL_RENDER = f"{CSR_SHELL_FUNCTION}(rendered)"
+
+
+LAYOUT_RENDER = "str(__Layout(children=rendered))"
+_LAYOUT_IMPORT = (
+    "try:\n"
+    "    from {layout} import Layout as __Layout\n"
+    "except ImportError:\n"
+    "    def __Layout(children: str = '', **kwargs) -> str:\n"
+    "        return '<div data-nexy-error=\"Layout not available\"></div>'\n"
+)
+
+
+def layout_parts(layout_import: str | None, *, fallback_shell: bool) -> tuple[str, str]:
+    """(header, render expression) that wrap a view: its layout, else the shell, else nothing.
+
+    A layout always wins. Without one the view gets the minimal document shell, unless it is a
+    fragment (a component) that must stay one.
+    """
+    if layout_import:
+        return _LAYOUT_IMPORT.format(layout=layout_import), LAYOUT_RENDER
+    if fallback_shell:
+        return CSR_SHELL_HEADER, CSR_SHELL_RENDER
+    return "", "rendered"
