@@ -19,6 +19,10 @@ class NexyVFSLoader(importlib.abc.SourceLoader):
         return self.vfs.read(path).encode("utf-8")
 
 
+# What a compiled module can be stored as: a module, a .nexy, or a package.
+_CANDIDATES = ((".py", False), (".nexy", False), ("/__init__.py", True))
+
+
 class NexyVFSFinder(importlib.abc.MetaPathFinder):
     def __init__(self) -> None:
         self.vfs = VFS()
@@ -48,24 +52,14 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
         if not fullname.startswith("__nexy__"):
             return None
 
-        parts = fullname.split(".")
-        base_path = "/".join(parts)
-
-        py_path = base_path + ".py"
-        found = self._find_vfs_path(py_path)
-        if found:
-            return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found))
-
-        nexy_path = base_path + ".nexy"
-        found = self._find_vfs_path(nexy_path)
-        if found:
-            return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found))
-
-        init_path = base_path + "/__init__.py"
-        found = self._find_vfs_path(init_path)
-        if found:
-            return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found), is_package=True)
-
+        base_path = "/".join(fullname.split("."))
+        for suffix, is_package in _CANDIDATES:
+            found = self._find_vfs_path(base_path + suffix)
+            if found:
+                loader = NexyVFSLoader(found)
+                return importlib.util.spec_from_loader(
+                    fullname, loader, is_package=is_package or None
+                )
         return None
 
 

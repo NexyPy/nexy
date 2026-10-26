@@ -38,29 +38,35 @@ def _names(routes: Path, files: list[Path]) -> str:
     return ", ".join(shown) + (f" and {more} more" if more > 0 else "")
 
 
+def _csr_problem(routes: Path, files: list[Path]) -> list[str]:
+    """``useCSR = True``: no ``.nexy`` view may be a route."""
+    views = [file for file in files if file.suffix == ".nexy"]
+    if not views:
+        return []
+    return [
+        "useCSR = True means client routes only, but these .nexy files are in "
+        f"{Config.ROUTER_PATH}/: {_names(routes, views)}. Write them as framework "
+        "components (the root layout.tsx owns the HTML document), or set useCSR = False."
+    ]
+
+
+def _server_problem(routes: Path, files: list[Path]) -> list[str]:
+    """``useCSR = False``: no client component may be a route."""
+    clients = [file for file in files if file.suffix in _CLIENT_ROUTE_SUFFIXES]
+    if not clients:
+        return []
+    return [
+        "useCSR = False means server-rendered pages, but these client files are in "
+        f"{Config.ROUTER_PATH}/: {_names(routes, clients)}. Move components to src/components/ "
+        "and import them from a .nexy page, or set useCSR = True for client routes."
+    ]
+
+
 def project_problems(root: Path | None = None) -> list[str]:
     """Human-readable problems, empty when the project respects its mode."""
     Config()
     routes = (root or Path.cwd()) / Config.ROUTER_PATH
     if not routes.is_dir():
         return []
-
     files = _route_files(routes)
-    if Config.useCSR:
-        views = [file for file in files if file.suffix == ".nexy"]
-        if views:
-            return [
-                "useCSR = True means client routes only, but these .nexy files are in "
-                f"{Config.ROUTER_PATH}/: {_names(routes, views)}. Write them as framework "
-                "components (the root layout.tsx owns the HTML document), or set useCSR = False."
-            ]
-        return []
-
-    clients = [file for file in files if file.suffix in _CLIENT_ROUTE_SUFFIXES]
-    if clients:
-        return [
-            "useCSR = False means server-rendered pages, but these client files are in "
-            f"{Config.ROUTER_PATH}/: {_names(routes, clients)}. Move components to src/components/ "
-            "and import them from a .nexy page, or set useCSR = True for client routes."
-        ]
-    return []
+    return _csr_problem(routes, files) if Config.useCSR else _server_problem(routes, files)
