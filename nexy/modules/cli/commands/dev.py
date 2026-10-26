@@ -229,21 +229,32 @@ class _Reloader:
         self._server = None
 
 
+def _watch(config: Config, reloader: _Reloader) -> Any:
+    return create_observer(
+        path=".",
+        patterns=config.WATCH_EXTENSIONS_GLOB,
+        ignore_patterns=config.WATCH_EXCLUDE_PATTERNS,
+        on_reload_api=reloader.request_restart,
+        on_routes_changed=reloader.request_routes_restart,
+    )
+
+
+def _release(observer: Any, session: _Session) -> None:
+    """Stop what `nx dev` started: the watcher and Vite."""
+    console.print(f"  [dim]{t('dev.cleaning', 'Cleaning up...')}[/dim]")
+    stop_observer(observer)
+    Server.stop_process(session.vite)
+    console.print(tagged("nexy", t("dev.exited", "exited"), "red"))
+
+
 def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float) -> None:
     """Watch the project and serve it until Ctrl+C; always release what was started."""
     reloader = _Reloader()
     observer = None
     try:
-        observer = create_observer(
-            path=".",
-            patterns=config.WATCH_EXTENSIONS_GLOB,
-            ignore_patterns=config.WATCH_EXCLUDE_PATTERNS,
-            on_reload_api=reloader.request_restart,
-            on_routes_changed=reloader.request_routes_restart,
-        )
-        print_listening(
-            "dev", __version__, endpoint, time.perf_counter() - started, Server.get_network_ip
-        )
+        observer = _watch(config, reloader)
+        elapsed = time.perf_counter() - started
+        print_listening("dev", __version__, endpoint, elapsed, Server.get_network_ip)
         reloader.serve(endpoint)
     except KeyboardInterrupt:
         console.print(f"\n  [dim]{t('dev.stopping', 'Stopping servers...')}[/dim]")
@@ -252,10 +263,7 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
     except Exception as error:
         console.print(f"\n  [red]{t('dev.error', 'Error: {error}').format(error=error)}[/red]")
     finally:
-        console.print(f"  [dim]{t('dev.cleaning', 'Cleaning up...')}[/dim]")
-        stop_observer(observer)
-        Server.stop_process(session.vite)
-        console.print(tagged("nexy", t("dev.exited", "exited"), "red"))
+        _release(observer, session)
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:

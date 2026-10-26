@@ -3,7 +3,6 @@
  "function:core/project_rules.py:project_problems": 24,
  "function:core/string.py:StringTransform.normalize_route_path_for_namespace": 22,
  "function:helpers/server/proxy.py:ViteProxyMiddleware._handle_http": 21,
- "function:modules/cli/commands/dev.py:_serve": 25,
  "function:modules/cli/init/dependencies.py:install_packages": 24,
  "function:modules/cli/init/project.py:InitProject.run": 24,
  "function:modules/cli/init/template_setup.py:initialize_from_template": 22,
@@ -12,6 +11,5 @@
  "function:modules/routers/fastpath.py:FastPath.__call__": 25,
  "function:modules/routers/fastpath.py:_is_trivial": 22,
  "function:modules/routers/fbrouter/registrar.py:RouteRegistrar._page": 22,
- "function:modules/routers/middlewares.py:collect_middlewares": 26,
  "function:modules/runtime/importer.py:NexyVFSFinder.find_spec": 22
 }
