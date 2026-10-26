@@ -15,6 +15,13 @@ import {
   type Params,
   type RouterLocation
 } from './router.ts'
+import {
+  createActionState,
+  ActionError,
+  type Action,
+  type ActionOptions,
+  type ActionState
+} from './action-runtime.ts'
 
 /** A route of the project, with an optional query or fragment, or a link out of the app. */
 export type Href =
@@ -51,4 +58,20 @@ export const router = {
   forward: () => getRouter()?.forward(),
   refresh: () => getRouter()?.refresh(),
   prefetch: (href: Href) => getRouter()?.prefetch(href)
+}
+
+export { ActionError }
+export type { Action, ActionOptions, ActionState }
+
+/** Call an action from a component: `const save = useAction(createUser)`, then `$save.pending` and `save.run(input)`. */
+export function useAction<Input, Output>(action: Action<Input, Output>, options?: ActionOptions<Output>) {
+  const store = createActionState(action, options)
+  return {
+    subscribe(run: (state: ActionState<Output>) => void): () => void {
+      run(store.getState())
+      return store.subscribe(() => run(store.getState()))
+    },
+    run: store.run,
+    reset: store.reset
+  }
 }

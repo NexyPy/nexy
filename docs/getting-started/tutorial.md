@@ -88,6 +88,6 @@ Uvicorn: no Node process at runtime.
 ## Where next
 
 - [Routing](../routing/README.md): dynamic segments and groups
-- [Actions](../guides/actions.md): call Python from a form
+- [Actions](../guides/actions.md): call Python from a form or from the client
 - [Testing](../guides/testing.md): test pages and endpoints
 - [Deploy](../deployment/README.md): containers and reverse proxies

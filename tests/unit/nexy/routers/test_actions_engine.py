@@ -36,24 +36,6 @@ def _handler(amount: int, label: str, request: Any = None) -> str:  # noqa: ARG0
     return f"{amount}{label}"
 
 
-@pytest.mark.parametrize(
-    ("py_type", "expected"),
-    [
-        (int, "number"),
-        (float, "number"),
-        (str, "string"),
-        (bool, "boolean"),
-        (list, "any[]"),
-        (list[int], "any[]"),
-        (dict, "{ [key: string]: any }"),
-        (dict[str, int], "{ [key: string]: any }"),
-        (object, "any"),
-    ],
-)
-def test_map_py_type_to_ts(py_type: Any, expected: str) -> None:
-    assert ActionEngine()._map_py_type_to_ts(py_type) == expected
-
-
 def test_include_router_mounts_post_route() -> None:
     func_id = ACTIONS_STORE.register(_handler)
     router = ActionEngine().include_router(FastAPI())
@@ -62,26 +44,70 @@ def test_include_router_mounts_post_route() -> None:
     assert route.methods == {"POST"}
 
 
-def test_generate_client_writes_typed_function(tmp_path: Path) -> None:
+def test_generate_client_writes_one_typed_module(tmp_path: Path) -> None:
     ACTIONS_STORE.register(_handler)
-    engine = ActionEngine(output_dir=str(tmp_path))
-    engine.include_router(FastAPI())
-    engine.generate_client()
-    generated = next(tmp_path.rglob("_handler.ts")).read_text(encoding="utf-8")
-    assert "amount: number" in generated
-    assert "label: string" in generated
-    assert "request" not in generated
-    assert "Promise<string>" in generated
+    path = ActionEngine(output_dir=str(tmp_path)).generate_client()
+    assert path == tmp_path / "actions.ts"
 
 
-def test_generate_client_without_output_dir_writes_nothing(tmp_path: Path) -> None:
+def test_generated_client_types_the_input_and_the_result(tmp_path: Path) -> None:
     ACTIONS_STORE.register(_handler)
-    ActionEngine(output_dir=None).generate_client()
-    assert list(tmp_path.iterdir()) == []
+    ActionEngine(output_dir=str(tmp_path)).generate_client()
+    generated = (tmp_path / "actions.ts").read_text(encoding="utf-8")
+    assert "defineAction<{ amount: number; label: string }, string>" in generated
+
+
+def test_generated_client_leaves_out_the_injected_arguments(tmp_path: Path) -> None:
+    ACTIONS_STORE.register(_handler)
+    ActionEngine(output_dir=str(tmp_path)).generate_client()
+    assert "request" not in (tmp_path / "actions.ts").read_text(encoding="utf-8")
+
+
+def test_generated_client_points_at_the_mounted_path(tmp_path: Path) -> None:
+    func_id = ACTIONS_STORE.register(_handler)
+    ActionEngine(output_dir=str(tmp_path)).generate_client()
+    generated = (tmp_path / "actions.ts").read_text(encoding="utf-8")
+    assert f"/_nx_{ACTIONS_STORE._generate_hash(func_id)}" in generated
+
+
+def test_generated_client_ships_its_runtime(tmp_path: Path) -> None:
+    ACTIONS_STORE.register(_handler)
+    ActionEngine(output_dir=str(tmp_path)).generate_client()
+    assert "export function defineAction" in (tmp_path / "action-runtime.ts").read_text("utf-8")
+
+
+def test_an_action_without_input_takes_void(tmp_path: Path) -> None:
+    def ping() -> str:
+        return "pong"
+
+    ACTIONS_STORE.register(ping)
+    ActionEngine(output_dir=str(tmp_path)).generate_client()
+    assert "defineAction<void, string>" in (tmp_path / "actions.ts").read_text(encoding="utf-8")
+
+
+def test_without_actions_a_stale_client_is_removed(tmp_path: Path) -> None:
+    (tmp_path / "actions.ts").write_text("old", encoding="utf-8")
+    assert ActionEngine(output_dir=str(tmp_path)).generate_client() is None
+    assert not (tmp_path / "actions.ts").exists()
 
 
 def test_discover_skips_missing_directory(tmp_path: Path) -> None:
     ActionEngine().discover(str(tmp_path / "missing"))
+
+
+def test_discover_says_which_module_failed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    source = tmp_path / "src"
+    source.mkdir()
+    (source / "__init__.py").write_text("", encoding="utf-8")
+    (source / "broken_report.py").write_text(
+        "import missing_package_xyz" + chr(10), encoding="utf-8"
+    )
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.syspath_prepend(str(tmp_path))
+    ActionEngine().discover("src")
+    assert "src.broken_report" in capsys.readouterr().out
 
 
 def test_discover_imports_modules_and_skips_broken(

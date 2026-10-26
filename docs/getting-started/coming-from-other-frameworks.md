@@ -28,7 +28,7 @@ and `/docs` keep working.
 | `use client` components in a server page | [islands](../rendering/islands.md) in server mode |
 | Route handlers `route.ts` | `src/routes/api/x.py`, written in Python |
 | `(group)` folders | same: `(group)/` |
-| Server Actions | [`@Action`](../guides/actions.md) functions called from a form |
+| Server Actions | [`@Action`](../guides/actions.md) functions called from a form or as typed client functions |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
 The backend is Python, so your API shares code with your data and ML work. Client components

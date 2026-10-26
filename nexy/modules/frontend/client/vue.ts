@@ -33,6 +33,13 @@ import {
   warnMissingAlt,
   type Prefetch
 } from './shared.ts'
+import {
+  createActionState,
+  ActionError,
+  type Action,
+  type ActionOptions,
+  type ActionState
+} from './action-runtime.ts'
 
 /** A route of the project, with an optional query or fragment, or a link out of the app. */
 export type Href =
@@ -180,3 +187,21 @@ export const Image = defineComponent({
     }
   }
 })
+
+export { ActionError }
+export type { Action, ActionOptions, ActionState }
+
+/** Call an action from a component. Each field is a ref: `pending.value`, `data.value`, `error.value`. */
+export function useAction<Input, Output>(action: Action<Input, Output>, options?: ActionOptions<Output>) {
+  const store = createActionState(action, options)
+  const state = shallowRef(store.getState())
+  const stop = store.subscribe(() => (state.value = store.getState()))
+  if (getCurrentScope()) onScopeDispose(stop)
+  return {
+    pending: computed(() => state.value.pending),
+    data: computed(() => state.value.data),
+    error: computed(() => state.value.error),
+    run: store.run,
+    reset: store.reset
+  }
+}

@@ -23,6 +23,13 @@ import {
   type ImageProps,
   type Prefetch
 } from './shared.ts'
+import {
+  createActionState,
+  ActionError,
+  type Action,
+  type ActionOptions,
+  type ActionState
+} from './action-runtime.ts'
 
 /** A route of the project, with an optional query or fragment, or a link out of the app. */
 export type Href =
@@ -150,4 +157,21 @@ export function Image(props: ImageComponentProps): JSX.Element {
     return { ...others, style: [cssText(style), given].filter(Boolean).join(';') || undefined }
   }
   return <img {...rest} {...attributes()} />
+}
+
+export { ActionError }
+export type { Action, ActionOptions, ActionState }
+
+/** Call an action from a component. Each field is an accessor: `pending()`, `data()`, `error()`. */
+export function useAction<Input, Output>(action: Action<Input, Output>, options?: ActionOptions<Output>) {
+  const store = createActionState(action, options)
+  const [state, setState] = createSignal(store.getState())
+  onCleanup(store.subscribe(() => setState(store.getState())))
+  return {
+    pending: () => state().pending,
+    data: () => state().data,
+    error: () => state().error,
+    run: store.run,
+    reset: store.reset
+  }
 }

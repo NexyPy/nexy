@@ -22,6 +22,13 @@ import {
   type ImageProps,
   type Prefetch
 } from './shared.ts'
+import {
+  createActionState,
+  ActionError,
+  type Action,
+  type ActionOptions,
+  type ActionState
+} from './action-runtime.ts'
 
 /** A route of the project, with an optional query or fragment, or a link out of the app. */
 export type Href =
@@ -143,3 +150,13 @@ export const Image = forwardRef<HTMLImageElement, ImageComponentProps>(function 
     style: { ...computed, ...(style as object) }
   })
 })
+
+export { ActionError }
+export type { Action, ActionOptions, ActionState }
+
+/** Call an action from a component: `const { run, pending, data, error } = useAction(createUser)`. */
+export function useAction<Input, Output>(action: Action<Input, Output>, options?: ActionOptions<Output>) {
+  const store = useMemo(() => createActionState(action, options), [action])
+  const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
+  return { ...state, run: store.run, reset: store.reset }
+}

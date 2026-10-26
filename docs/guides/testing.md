@@ -88,11 +88,14 @@ async def test_create_user_returns_name():
 def test_form_posts_to_action(client):
     html = client.get("/").text
     action = html.split('action="')[1].split('"')[0]
-    assert client.post(action, data={"name": "Ada"}).status_code == 200
+    response = client.post(action, data={"name": "Ada"}, follow_redirects=False)
+    assert response.status_code == 303
 ```
 
-> **Good to know**: action paths are deterministic but generated. Never hardcode `/_nx_<hash>` in a
-> test.
+A call with JSON answers with the result, and `422` with the invalid fields.
+
+> **Good to know**: action paths are specific to the project and generated. Never hardcode
+> `/_nx_<hash>` in a test.
 
 ## Test the client
 

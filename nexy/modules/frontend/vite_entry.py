@@ -253,9 +253,7 @@ def write_client_adapter(src_dir: Path, frameworks: set[str]) -> None:
     chosen = next((name for name in _ADAPTERS if name in frameworks), None)
     if chosen is None:
         return
-    for filename in ("shared.ts",):
-        PathUtil.write_if_changed(
-            src_dir / filename, (package / filename).read_text(encoding="utf-8")
-        )
+    for source, target in (("shared.ts", "shared.ts"), ("actions.ts", "action-runtime.ts")):
+        PathUtil.write_if_changed(src_dir / target, (package / source).read_text(encoding="utf-8"))
     for source, target in _ADAPTERS[chosen]:
         PathUtil.write_if_changed(src_dir / target, (package / source).read_text(encoding="utf-8"))

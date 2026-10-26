@@ -16,6 +16,7 @@ export function stage(framework, adapter, extras = []) {
   const copy = (from, to) => fs.copyFileSync(new URL(from, SOURCES), new URL(to, dir));
   copy("router.ts", "router.ts");
   copy("shared.ts", "shared.ts");
+  copy("actions.ts", "action-runtime.ts");
   copy(adapter, `client${path.extname(adapter)}`);
   for (const extra of extras) copy(extra, extra);
   return dir;

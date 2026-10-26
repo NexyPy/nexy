@@ -135,6 +135,7 @@ class AppServer:
         # Added last, so outermost: it times everything below it.
         server.add_middleware(AccessLogMiddleware)
         ACTION_ENGINE.discover()
+        ACTION_ENGINE.generate_client()
         self.fb_router = resolve_router(server, self.config, self.scalar_html, self._docs_url)
         setup_hmr(server)
         server.exception_handler(HTTPException)(handle_http_exception)

@@ -62,7 +62,16 @@ def _compile_server_components() -> BuildResult:
         FrontendGenerator().generate(ssg=True)
         build_result = Builder().build(showlog=False)
         VFS().flush_to_disk()
+        _write_action_client()
     return build_result
+
+
+def _write_action_client() -> None:
+    """Generate `@nexy/actions` before the bundle, so the client imports typed actions."""
+    from nexy.modules.routers.actions.engine import ACTION_ENGINE
+
+    ACTION_ENGINE.discover()
+    ACTION_ENGINE.generate_client()
 
 
 def _exit_on_failed_components(build_result: BuildResult) -> None:
