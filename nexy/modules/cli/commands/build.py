@@ -20,32 +20,32 @@ from nexy.modules.frontend import FrontendGenerator
 from nexy.modules.i18n import t
 
 
+def _announce_start() -> None:
+    Server.check_nexy_prod()
+    launcher.banner("build", __version__)
+    console.print(f"  {t('build.creating', 'Creating an optimized production build')}...\n")
+
+
+def _announce_end(started: float) -> None:
+    took = t("build.success_build", "build in {time}").format(
+        time=f"{time.perf_counter() - started:.2f}s"
+    )
+    console.print(f"\n  [green]✓[/green] {took}")
+
+
 def build(check: bool = False) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
-    build_start = time.perf_counter()
-    config = Config()
-    version = __version__
-    Server.check_nexy_prod()
-    launcher.banner("build", version)
-    console.print(f"  {t('build.creating', 'Creating an optimized production build')}...\n")
-
+    started = time.perf_counter()
+    _announce_start()
     build_result = _compile_server_components()
     _exit_on_failed_components(build_result)
-
-    ssg_entries: list[dict[str, Any]] = []
-    if config.useVite:
-        ssg_entries = _build_client_bundle()
-
+    ssg_entries = _build_client_bundle() if Config().useVite else []
     if check:
         _run_checks()
-
     _show_summary(build_result, ssg_entries)
-
-    build_elapsed = time.perf_counter() - build_start
-    success_msg = t("build.success_build", "build in {time}").format(time=f"{build_elapsed:.2f}s")
-    console.print(f"\n  [green]\u2713[/green] {success_msg}")
+    _announce_end(started)
 
 
 def _compile_label() -> str:
@@ -118,23 +118,24 @@ def _ssg_by_status(entries: list[dict[str, Any]], status: str) -> list[str]:
     return [e["file"] for e in entries if e["status"] == status]
 
 
-def _show_summary(build_result: BuildResult, ssg_entries: list[dict[str, Any]]) -> None:
-    labels = {
+def _summary_labels() -> dict[str, str]:
+    return {
         "skipped": t("build.skipped_label", "Skipped (cached)"),
         "success": t("build.success_label", "Build success"),
         "failed": t("build.failed_label", "Build Failed"),
     }
-    csr = Config.useCSR
-    print_tree_section(
-        t("build.routes", "routes") if csr else t("build.server_components", "server components"),
-        build_result.success,
-        build_result.failed,
-        "green",
-        "red",
-        build_result.skipped,
-        labels,
-    )
-    if csr:
+
+
+def _show_summary(build_result: BuildResult, ssg_entries: list[dict[str, Any]]) -> None:
+    labels = _summary_labels()
+    client_routed = Config.useCSR
+    if client_routed:
+        title = t("build.routes", "routes")
+    else:
+        title = t("build.server_components", "server components")
+    success, failed = build_result.success, build_result.failed
+    print_tree_section(title, success, failed, "green", "red", build_result.skipped, labels)
+    if client_routed:
         return
     print_tree_section(
         t("build.client_components", "client components"),

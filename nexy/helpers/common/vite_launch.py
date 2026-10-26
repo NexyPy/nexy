@@ -56,29 +56,37 @@ def dev_script() -> str | None:
     return script if isinstance(script, str) and script.strip() else None
 
 
-def _plain_vite_args(script: str) -> list[str] | None:
-    """Arguments of a plain ``vite ...`` script, without port/host; None for anything else."""
+def _script_words(script: str) -> list[str] | None:
+    """The words of a plain ``vite ...`` script; None for shell syntax or another command."""
     if _SHELL_SYNTAX.search(script):
         return None
     try:
-        parts = shlex.split(script)
+        words = shlex.split(script)
     except ValueError:
         return None
-    if not parts or parts[0] != "vite":
-        return None
+    return words[1:] if words and words[0] == "vite" else None
 
-    args: list[str] = []
+
+def _without_port_and_host(args: list[str]) -> list[str]:
+    """*args* minus ``--port``/``--host`` and their values: Nexy chooses both."""
+    kept: list[str] = []
     skip_value = False
-    for arg in parts[1:]:
+    for arg in args:
         if skip_value:
             skip_value = False
             if not arg.startswith("-"):
                 continue
-        if arg == "--port" or arg == "--host":
+        if arg in ("--port", "--host"):
             skip_value = True
         elif not arg.startswith(("--port=", "--host=")):
-            args.append(arg)
-    return args
+            kept.append(arg)
+    return kept
+
+
+def _plain_vite_args(script: str) -> list[str] | None:
+    """Arguments of a plain ``vite ...`` script, without port/host; None for anything else."""
+    words = _script_words(script)
+    return None if words is None else _without_port_and_host(words)
 
 
 def _js_runtime() -> str | None:
@@ -87,6 +95,22 @@ def _js_runtime() -> str | None:
         or shutil.which("node.exe")
         or (package_manager.resolve("bun") if package_manager.detect() == "bun" else None)
     )
+
+
+def _script_argv(manager: str, server_flags: list[str]) -> list[str]:
+    """A custom dev script (env wrappers, chained commands) runs through the package manager."""
+    runner = [package_manager.executable(manager), "run", "dev"]
+    return [*runner, *(["--"] if manager == "npm" else []), *server_flags]
+
+
+def _pnp_argv(manager: str, build: bool, server_flags: list[str]) -> list[str]:
+    """Yarn Plug'n'Play has no node_modules: the package manager's own runner starts Vite."""
+    runner = _RUNNERS.get(manager, _RUNNERS["npm"])
+    return [package_manager.executable(runner[0]), *runner[1:], *_build_flag(build), *server_flags]
+
+
+def _build_flag(build: bool) -> list[str]:
+    return ["build"] if build else []
 
 
 def vite_argv(build: bool, port: int) -> list[str]:
@@ -98,23 +122,14 @@ def vite_argv(build: bool, port: int) -> list[str]:
     manager = package_manager.detect()
     script = None if build else dev_script()
     server_flags = [] if build else ["--port", str(port), "--host"]
-
     if script is not None and manager is not None and _plain_vite_args(script) is None:
-        # A custom dev script (env wrappers, chained commands) keeps working.
-        runner = [package_manager.executable(manager), "run", "dev"]
-        return [*runner, *(["--"] if manager == "npm" else []), *server_flags]
-
-    entry = local_vite()
-    runtime = _js_runtime()
+        return _script_argv(manager, server_flags)
+    entry, runtime = local_vite(), _js_runtime()
     if entry is not None and runtime is not None:
         extra = [] if script is None else _plain_vite_args(script) or []
-        return [runtime, str(entry), *(["build"] if build else []), *extra, *server_flags]
-
+        return [runtime, str(entry), *_build_flag(build), *extra, *server_flags]
     if manager is not None and Path(".pnp.cjs").is_file():
-        runner_cmd = _RUNNERS.get(manager, _RUNNERS["npm"])
-        exe = package_manager.executable(runner_cmd[0])
-        return [exe, *runner_cmd[1:], *(["build"] if build else []), *server_flags]
-
+        return _pnp_argv(manager, build, server_flags)
     if runtime is None:
         raise RuntimeError(
             "Node.js is not installed. Install Node.js 20 or later (or bun), then reinstall "
