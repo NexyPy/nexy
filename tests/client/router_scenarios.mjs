@@ -213,5 +213,26 @@ const out = {};
   out.samePage = { ok, rendered: w.rendered, length: w.real.history.length };
 }
 
+// 12. With view transitions the page change happens inside one, unless the visitor prefers calm.
+{
+  const calls = [];
+  const w = world();
+  w.real.document.startViewTransition = (update) => {
+    calls.push("start");
+    return { updateCallbackDone: update().then(() => calls.push("done")) };
+  };
+  w.real.matchMedia = () => ({ matches: false });
+  await w.router.navigate("/about");
+  const calm = world();
+  const calmCalls = [];
+  calm.real.document.startViewTransition = (update) => {
+    calmCalls.push("start");
+    return { updateCallbackDone: update() };
+  };
+  calm.real.matchMedia = () => ({ matches: true });
+  await calm.router.navigate("/about");
+  out.viewTransition = { calls, rendered: w.rendered, calmCalls, calmRendered: calm.rendered };
+}
+
 console.log("@@" + JSON.stringify(out) + "@@");
 process.exit(0);

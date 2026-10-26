@@ -8,19 +8,23 @@
 <header {{ cls }}="nx-header">
   <nav {{ cls }}="nx-container nx-header-inner" aria-label="Main">
     <div {{ cls }}="nx-nav">
-      <a href="/" aria-label="Nexy" {{ cls }}="nx-brand">
+      <a href="/" aria-label="Nexy, home" {{ cls }}="nx-brand">
         <img src="/nexy.svg" alt="Nexy" />
       </a>
       <div {{ cls }}="nx-nav-links">
         {{ nav_link("/", "Home") }}
         {{ nav_link("/about", "About") }}
+        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-nav-link">Docs</a>
       </div>
     </div>
+    <div {{ cls }}="nx-header-actions">
 {% if useCSR %}
-    <ThemeToggle />
+      <ThemeToggle />
 {% else %}
 {% include "theme_switch.html.jinja2" %}
 {% endif %}
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary nx-header-cta">Get started</a>
+    </div>
   </nav>
 </header>
 {% if not useCSR %}

@@ -105,6 +105,16 @@ export function createRouter(options: RouterOptions) {
     )
   }
 
+  /** Run `render` inside a view transition when the browser has them and the visitor allows motion. */
+  async function transition(render: () => Promise<void>): Promise<void> {
+    const doc = win.document as Document & {
+      startViewTransition?: (update: () => Promise<void>) => { updateCallbackDone: Promise<void> }
+    }
+    const calm = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (!doc.startViewTransition || calm) return render()
+    await doc.startViewTransition(render).updateCallbackDone
+  }
+
   /** Show `url` without touching history; resolves false when the server has to take over. */
   async function show(url: URL, id: number): Promise<boolean> {
     const match = options.match(url.pathname)
@@ -113,7 +123,7 @@ export function createRouter(options: RouterOptions) {
       return false
     }
     try {
-      await options.render(match)
+      await transition(() => options.render(match))
     } catch (error) {
       console.error('[Nexy] Client navigation failed:', error)
       if (id === navigation) win.location.assign(url.href)

@@ -23,12 +23,14 @@
   color-scheme: light;
   font-family: "Geist", "Inter", system-ui, sans-serif;
   --accent: {{ accent }};
-  --background: light-dark(#f6f7f9, #0b1016);
-  --background-second: light-dark(#ffffff, #111821);
-  --foreground: light-dark(#0f1720, #e8ecf2);
-  --foreground-second: light-dark(#5a6678, #93a0b3);
-  --border: light-dark(#e1e5eb, #1e2835);
-  --border-second: light-dark(#cbd2dc, #2e3b4c);
+  /* Nexy's own colours: mint mist in the light, deep emerald in the dark. */
+  --background: light-dark(#f2f7f4, #062b24);
+  --background-second: light-dark(#ffffff, #0a3a30);
+  --foreground: light-dark(#0a2531, #eaf6f1);
+  --foreground-second: light-dark(#4a6068, #9cc4b8);
+  --border: light-dark(#d8e5df, #14503f);
+  --border-second: light-dark(#c0d4cb, #1e6b55);
+  --brand: light-dark(#0b8f6b, #2ee6a6);
 }
 
 .dark {
@@ -44,6 +46,7 @@
   --color-border: var(--border);
   --color-border-second: var(--border-second);
   --color-accent: var(--accent);
+  --color-brand: var(--brand);
 
   --font-mono: "Geist Mono", ui-monospace, monospace;
 }
@@ -58,7 +61,7 @@
     color: var(--foreground);
   }
   ::selection {
-    background-color: color-mix(in oklab, var(--accent) 28%, transparent);
+    background-color: color-mix(in oklab, var(--brand) 30%, transparent);
   }
 }
 {% endif %}

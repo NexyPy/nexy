@@ -34,6 +34,16 @@ def seen() -> dict:
     return json.loads(done.stdout.split("@@")[1])
 
 
+class TestViewTransition:
+    def test_the_page_change_runs_inside_a_view_transition(self, seen):
+        assert seen["viewTransition"]["calls"] == ["start", "done"]
+        assert seen["viewTransition"]["rendered"] == ["/src/routes/about.tsx"]
+
+    def test_a_visitor_who_prefers_calm_gets_the_plain_change(self, seen):
+        assert seen["viewTransition"]["calmCalls"] == []
+        assert seen["viewTransition"]["calmRendered"] == ["/src/routes/about.tsx"]
+
+
 class TestNavigation:
     def test_it_renders_then_moves_the_url_and_announces_itself(self, seen):
         nav = seen["navigate"]

@@ -55,7 +55,7 @@ class TestUnoCss:
     def test_the_stylesheet_keeps_the_components_without_the_tailwind_directives(self, tmp_path):
         _scaffold(tmp_path, "unocss")
         css = _read(tmp_path, "src/globale.css")
-        assert ".btn-primary" in css and ".nx-map" in css
+        assert ".btn-primary" in css and ".nx-tabs" in css
         assert "@import" not in css and "@theme" not in css and "@custom-variant" not in css
 
     def test_the_client_entry_loads_the_generated_utilities(self, tmp_path):

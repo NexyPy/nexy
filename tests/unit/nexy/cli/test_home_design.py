@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import shutil
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -33,15 +35,24 @@ def _home(dest: Path, framework: str, use_csr: bool) -> str:
 
 @pytest.mark.parametrize(("framework", "use_csr"), FRAMEWORKS)
 class TestHome:
-    def test_the_hero_is_the_headline_of_the_idea(self, tmp_path, framework, use_csr):
+    def test_the_hero_says_what_nexy_is(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
-        assert "Routes are files." in _home(tmp_path, framework, use_csr)
+        assert "The Python framework for the whole web app." in _home(tmp_path, framework, use_csr)
 
-    def test_the_explorer_has_a_file_for_each_page_and_one_to_create(
-        self, tmp_path, framework, use_csr
-    ):
+    def test_the_steps_are_three_tabs(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
-        assert _home(tmp_path, framework, use_csr).count('type="radio"') == 4
+        assert _home(tmp_path, framework, use_csr).count('type="radio"') == 3
+
+    def test_the_command_can_be_copied(self, tmp_path, framework, use_csr):
+        _scaffold(tmp_path, framework, use_csr)
+        assert 'data-copy="nx new my-app"' in _home(tmp_path, framework, use_csr)
+
+    def test_both_illustrations_ship_with_the_project(self, tmp_path, framework, use_csr):
+        _scaffold(tmp_path, framework, use_csr)
+        home = _home(tmp_path, framework, use_csr)
+        public = tmp_path / "public"
+        for name in ("hero-light.svg", "hero-dark.svg"):
+            assert name in home and (public / name).is_file()
 
     def test_exactly_one_file_is_selected_at_first(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
@@ -54,12 +65,13 @@ class TestHome:
         _scaffold(tmp_path, framework, use_csr)
         home = _home(tmp_path, framework, use_csr)
         attribute = "htmlFor" if framework == "react" and use_csr else "for"
-        assert f'{attribute}="nx-r-about"' in home
+        assert f'{attribute}="nx-t-ship"' in home
 
     def test_no_utility_class_is_needed_to_look_right(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
         home = _home(tmp_path, framework, use_csr)
         assert "text-foreground-second" not in home and "max-w-5xl" not in home
+        assert "style=" not in home
 
     def test_the_counter_is_a_segmented_control(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
@@ -82,7 +94,18 @@ class TestStylesheet:
     def test_every_style_gets_the_same_starter_classes(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
-        assert all(name in css for name in (".nx-hero", ".nx-map", ".nx-switch", ".btn-primary"))
+        names = (".nx-hero", ".nx-tabs", ".nx-bento", ".nx-switch", ".btn-primary")
+        assert all(name in css for name in names)
+
+    def test_changing_page_feels_like_changing_a_tab(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        assert "@view-transition" in css and "::view-transition-new(root)" in css
+
+    def test_the_page_is_not_black_in_the_dark(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        assert "#062b24" in css and "#000000" not in css.lower()
 
     def test_the_dark_theme_is_a_class_on_the_page(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
@@ -116,3 +139,19 @@ class TestNoFlashOfUnstyledPage:
         monkeypatch.chdir(tmp_path)
         tags = _development_tags()
         assert tags.index("nexy-boot") < tags.index("/@vite/client")
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js is not installed")
+def test_the_script_of_the_head_is_valid_javascript():
+    from nexy.modules.cli.constants import TEMPLATES_DIR
+
+    script = TEMPLATES_DIR / "_partials" / "theme_script.js"
+    done = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+
+
+def test_a_failed_copy_is_not_reported_as_done():
+    from nexy.modules.cli.constants import TEMPLATES_DIR
+
+    script = (TEMPLATES_DIR / "_partials" / "theme_script.js").read_text(encoding="utf-8")
+    assert "copyWithSelection" in script and "}, function () {});" in script

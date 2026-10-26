@@ -1,94 +1,120 @@
-{%- set ext = page_ext -%}
 {%- set for_attr = "htmlFor" if cls == "className" else "for" -%}
 {%- set checked = "defaultChecked" if cls == "className" else "checked" -%}
-<section {{ cls }}="nx-container nx-hero">
-  <div>
-    <h1 {{ cls }}="nx-title">Routes are files.</h1>
-    <p {{ cls }}="nx-lead">
-      Drop a file in <code>src/routes</code> and it is a page. The server renders it, the browser
-      runs only what has to be interactive, and the API lives next to the views.
-    </p>
+{%- set frameworks = [("react", "React"), ("vue", "Vue"), ("svelte", "Svelte"), ("solid", "Solid"), ("preact", "Preact")] -%}
+<div {{ cls }}="nx-hero-wrap">
+  <section {{ cls }}="nx-container nx-hero">
+    <div {{ cls }}="nx-hero-copy">
+      <a href="https://github.com/NexyPy/nexy/releases" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-pill"><b>v{{ nexy_version }}</b>See what is new</a>
+      <h1 {{ cls }}="nx-title">The Python framework for the whole web app.</h1>
+      <p {{ cls }}="nx-lead">
+        Pages are files, the API sits next to them, and the parts that need to move run in the
+        browser with the framework you like.
+      </p>
+      <div {{ cls }}="nx-actions">
+        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Get started</a>
+        <button type="button" data-copy="nx new my-app" aria-label="Copy the command nx new my-app" {{ cls }}="nx-command">
+          <span {{ cls }}="nx-command-prompt">$</span><code>nx new my-app</code><span {{ cls }}="nx-command-copy">Copy</span>
+        </button>
+      </div>
+    </div>
+    <div {{ cls }}="nx-art">
+      <img src="/hero-light.svg" alt="The Nexy mark above three stacked pages" {{ cls }}="nx-art-light" width="640" height="560" />
+      <img src="/hero-dark.svg" alt="The Nexy mark above three stacked pages" {{ cls }}="nx-art-dark" width="640" height="560" />
+    </div>
+  </section>
+</div>
+
+<section {{ cls }}="nx-container nx-section">
+  <h2 {{ cls }}="nx-h2">From an empty folder to a running app</h2>
+  <p {{ cls }}="nx-sub">Three commands, one project. Pick a step to see what it does.</p>
+  <div {{ cls }}="nx-tabs">
+    <div {{ cls }}="nx-tablist" role="radiogroup" aria-label="Steps">
+      <label {{ cls }}="nx-tab" {{ for_attr }}="nx-t-create"><input type="radio" name="nx-step" id="nx-t-create" {{ checked }} />Create</label>
+      <label {{ cls }}="nx-tab" {{ for_attr }}="nx-t-develop"><input type="radio" name="nx-step" id="nx-t-develop" />Develop</label>
+      <label {{ cls }}="nx-tab" {{ for_attr }}="nx-t-ship"><input type="radio" name="nx-step" id="nx-t-ship" />Ship</label>
+    </div>
+    <div {{ cls }}="nx-panel" data-step="create">
+      <h3>Answer a few questions</h3>
+      <p>Choose a router, a style and a database. Your project opens with working pages and a theme switch.</p>
+      <button type="button" data-copy="nx new my-app" aria-label="Copy the command nx new my-app" {{ cls }}="nx-command">
+        <span {{ cls }}="nx-command-prompt">$</span><code>nx new my-app</code><span {{ cls }}="nx-command-copy">Copy</span>
+      </button>
+    </div>
+    <div {{ cls }}="nx-panel" data-step="develop">
+      <h3>Save a file, see the page</h3>
+      <p>The page reloads as you type. A mistake shows up in the page with the code around it, and a toolbar lists your routes.</p>
+      <button type="button" data-copy="nx dev" aria-label="Copy the command nx dev" {{ cls }}="nx-command">
+        <span {{ cls }}="nx-command-prompt">$</span><code>nx dev</code><span {{ cls }}="nx-command-copy">Copy</span>
+      </button>
+    </div>
+    <div {{ cls }}="nx-panel" data-step="ship">
+      <h3>Build once, run anywhere Python runs</h3>
+      <p>One build prepares the server and the client. Start it with a single command, with security headers already set.</p>
+      <button type="button" data-copy="nx build &amp;&amp; nx start" aria-label="Copy the commands nx build and nx start" {{ cls }}="nx-command">
+        <span {{ cls }}="nx-command-prompt">$</span><code>nx build &amp;&amp; nx start</code><span {{ cls }}="nx-command-copy">Copy</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section {{ cls }}="nx-container nx-section">
+  <h2 {{ cls }}="nx-h2">What you get</h2>
+  <p {{ cls }}="nx-sub">The parts of a web app, already in one place.</p>
+  <div {{ cls }}="nx-bento">
+    <article {{ cls }}="nx-tile nx-tile-wide">
+      <h3>Pages are files</h3>
+      <p>Add a file to <code>src/routes</code> and its page exists. There is no router to edit.</p>
+      <div {{ cls }}="nx-tile-visual">
+        <div {{ cls }}="nx-routes">
+          <div {{ cls }}="nx-route"><span>index{{ page_ext }}</span><span>/</span></div>
+          <div {{ cls }}="nx-route"><span>about{{ page_ext }}</span><span>/about</span></div>
+          <div {{ cls }}="nx-route nx-route-new"><span>pricing{{ page_ext }}</span><span>/pricing</span></div>
+        </div>
+      </div>
+    </article>
+    <article {{ cls }}="nx-tile nx-tile-narrow">
+      <h3>Your framework, your call</h3>
+{%- if client_framework == "none" %}
+      <p>Pages are plain HTML and ship no framework. Add one when you need it.</p>
+{%- else %}
+      <p>This project uses {{ fw_label }}. The rest of the page ships no framework.</p>
+{%- endif %}
+      <div {{ cls }}="nx-tile-visual">
+        <div {{ cls }}="nx-chips">
+{%- for key, label in frameworks %}
+          <span {{ cls }}="nx-chip nx-chip-{{ key }}{% if client_framework == key %} nx-chip-current{% endif %}">{{ label }}</span>
+{%- endfor %}
+        </div>
+      </div>
+    </article>
+    <article {{ cls }}="nx-tile nx-tile-narrow">
+      <h3>Interactive where it counts</h3>
+{%- if client_framework == "none" %}
+      <p>A small piece of JavaScript runs in the browser. Try it.</p>
+{%- else %}
+      <p>A {{ fw_label }} component runs in the browser. Try it.</p>
+{%- endif %}
+      <div {{ cls }}="nx-tile-visual">
+        <{{ card }} />
+      </div>
+    </article>
+    <article {{ cls }}="nx-tile nx-tile-wide">
+      <h3>Debug without leaving the page</h3>
+      <p>With <code>nx dev</code>, errors show the code around them and a toolbar lists your routes, timings and settings. You can move it to any corner.</p>
+      <div {{ cls }}="nx-tile-visual">
+        <span {{ cls }}="nx-toolbar-mock">Nexy</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<div {{ cls }}="nx-container nx-band-wrap">
+  <section {{ cls }}="nx-band">
+    <h2 {{ cls }}="nx-h2">Start building today</h2>
+    <p {{ cls }}="nx-sub">Edit <code>src/routes/index{{ page_ext }}</code>, save, and this page changes.</p>
     <div {{ cls }}="nx-actions">
-      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Get started</a>
-      <a href="/about" {{ cls }}="btn-ghost">About Nexy</a>
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Read the docs</a>
+      <a href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-ghost">View on GitHub</a>
     </div>
-    <p {{ cls }}="nx-hint">Edit <code>src/routes/index{{ ext }}</code> and save: the page reloads.</p>
-  </div>
-
-  <div {{ cls }}="nx-map">
-    <div {{ cls }}="nx-tree" role="radiogroup" aria-label="Files in src/routes">
-      <p {{ cls }}="nx-tree-root">src/routes</p>
-      <label {{ cls }}="nx-file" {{ for_attr }}="nx-r-layout"><input type="radio" name="nx-route" id="nx-r-layout" />layout{{ ext }}</label>
-      <label {{ cls }}="nx-file" {{ for_attr }}="nx-r-index"><input type="radio" name="nx-route" id="nx-r-index" {{ checked }} />index{{ ext }}</label>
-      <label {{ cls }}="nx-file" {{ for_attr }}="nx-r-about"><input type="radio" name="nx-route" id="nx-r-about" />about{{ ext }}</label>
-      <label {{ cls }}="nx-file nx-file-new" {{ for_attr }}="nx-r-new"><input type="radio" name="nx-route" id="nx-r-new" />pricing{{ ext }}</label>
-    </div>
-    <div {{ cls }}="nx-view">
-      <div {{ cls }}="nx-panel" data-route="layout">
-        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/*</b><i>every page</i></div>
-        <div {{ cls }}="nx-preview">
-          <div {{ cls }}="nx-sk nx-sk-bar"></div>
-          <div {{ cls }}="nx-sk-fill"></div>
-          <div {{ cls }}="nx-sk nx-sk-bar"></div>
-        </div>
-        <p {{ cls }}="nx-caption"><code>layout{{ ext }}</code> wraps every page. The header and the footer on this page live in it.</p>
-      </div>
-      <div {{ cls }}="nx-panel" data-route="index">
-        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/</b><i>200</i></div>
-        <div {{ cls }}="nx-preview">
-          <div {{ cls }}="nx-sk nx-sk-title"></div>
-          <div {{ cls }}="nx-sk nx-sk-90"></div>
-          <div {{ cls }}="nx-sk nx-sk-72"></div>
-          <div {{ cls }}="nx-sk-button"></div>
-        </div>
-        <p {{ cls }}="nx-caption"><code>index{{ ext }}</code> answers <code>GET /</code>. It is the page you are reading.</p>
-      </div>
-      <div {{ cls }}="nx-panel" data-route="about">
-        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/about</b><i>200</i></div>
-        <div {{ cls }}="nx-preview">
-          <div {{ cls }}="nx-sk nx-sk-title"></div>
-          <div {{ cls }}="nx-sk nx-sk-95"></div>
-          <div {{ cls }}="nx-sk nx-sk-80"></div>
-          <div {{ cls }}="nx-sk nx-sk-60"></div>
-        </div>
-        <p {{ cls }}="nx-caption"><code>about{{ ext }}</code> answers <code>GET /about</code>. A file name is a path.</p>
-      </div>
-      <div {{ cls }}="nx-panel" data-route="new">
-        <div {{ cls }}="nx-url"><span>localhost:3000</span><b>/pricing</b><i>404</i></div>
-        <div {{ cls }}="nx-preview nx-preview-empty">No page here yet.</div>
-        <p {{ cls }}="nx-caption">Create <code>src/routes/pricing{{ ext }}</code> and <code>/pricing</code> exists. There is no router to edit.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section {{ cls }}="nx-container nx-island">
-  <div {{ cls }}="nx-island-text">
-    <h2 {{ cls }}="nx-h2">Interactive where it counts</h2>
-{%- if client_framework == "none" %}
-    <p>This counter is a plain component with a little JavaScript. Edit <code>src/components/counter{{ ext }}</code> and it updates as you save.</p>
-{%- else %}
-    <p>This counter is a {{ fw_label }} component hydrated in the browser. Edit <code>src/components/counter/counter{{ ext }}</code> and it updates as you save.</p>
-{%- endif %}
-  </div>
-  <{{ card }} />
-</section>
-
-<ul {{ cls }}="nx-container nx-facts">
-  <li>
-    <h2>Server first</h2>
-    <p>FastAPI renders each page and serves your API from the same project.</p>
-  </li>
-  <li>
-    <h2>Only what moves ships</h2>
-{%- if client_framework == "none" %}
-    <p>Pages are plain HTML with a little JavaScript. Add a framework later if you need one.</p>
-{%- else %}
-    <p>{{ fw_label }} components run in the browser. The rest of the page ships no framework.</p>
-{%- endif %}
-  </li>
-  <li>
-    <h2>Instant feedback</h2>
-    <p>Save a file and the page reloads: Vite watches the client, a fast watcher the Python.</p>
-  </li>
-</ul>
+  </section>
+</div>
