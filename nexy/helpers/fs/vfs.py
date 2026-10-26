@@ -37,16 +37,17 @@ class VFS:
     """
 
     _instance: "VFS | None" = None
-    _files: dict[str, str] = {}
-    _disk_files: set[str] = set()
     _dev_mode: bool = False
     _disk_prefix: str = _DISK_PREFIX
+    _files: dict[str, str]
+    _disk_files: set[str]
 
     def __new__(cls) -> "VFS":
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._disk_files.clear()
-            cls._disk_files.update(_scan_disk(cls._disk_prefix))
+            instance = super().__new__(cls)
+            instance._files = {}
+            instance._disk_files = _scan_disk(cls._disk_prefix)
+            cls._instance = instance
         return cls._instance
 
     def write(self, path: str, content: str) -> None:
@@ -108,6 +109,6 @@ class VFS:
         """Flushes all in-memory files to disk (already done automatically in write)."""
         if self._dev_mode:
             return
-        for path, content in self._files.items():
+        for path, content in list(self._files.items()):
             if path.startswith(prefix):
                 _save(path, content)
