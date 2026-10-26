@@ -27,23 +27,6 @@ class ScanResult:
 
 
 @dataclass
-class Binding:
-    """One name/value binding extracted from the logic block.
-
-    Attributes:
-        name: Variable name exposed to the template.
-        value: Literal value of the binding.
-        is_prop: True when declared as a `prop[...]` (public interface).
-        data_type: Declared type (e.g. "str", "int", "any").
-    """
-
-    name: str
-    value: Any
-    is_prop: bool = False
-    data_type: str = "any"
-
-
-@dataclass
 class NexyProp:
     """A component prop parsed from a `name: prop[type] = default` declaration.
 
@@ -107,34 +90,6 @@ class LogicResult:
     props: list[NexyProp] = field(default_factory=list)
     python_code: str = ""
     css_imports: list[str] = field(default_factory=list)
-
-
-@dataclass
-class ComponentUsage:
-    """A component tag found in the template body.
-
-    Attributes:
-        name: Component tag name (e.g. "Card").
-        attributes: Attributes written on the tag.
-        is_self_closing: True when written as `<Name />`.
-    """
-
-    name: str
-    attributes: dict[str, str]
-    is_self_closing: bool
-
-
-@dataclass
-class TemplateResult:
-    """Result of converting a template body.
-
-    Attributes:
-        converted_html: Rendered HTML with component tags resolved.
-        used_components: Names of the components actually used.
-    """
-
-    converted_html: str
-    used_components: set[str]
 
 
 @dataclass

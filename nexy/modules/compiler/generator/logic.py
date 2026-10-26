@@ -157,11 +157,6 @@ class LogicGenerator:
         self.FRONTMATTER = self._component_model()
         self.vfs.write(self.output, self.FRONTMATTER)
 
-    def _resolve_props(self) -> str:
-        if self.source is None:
-            raise RuntimeError("LogicGenerator.source is not set")
-        return props_signature(self.source.props)
-
     def _component_model(self) -> str:
         if self.source is None:
             raise RuntimeError("LogicGenerator.source is not set")

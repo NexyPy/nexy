@@ -51,7 +51,6 @@ class Config(NexyConfigModel):
         "dependencies.py",
         "middleware.py",
     ]
-    ROUTE_FILE_DEFAULT: list[str] = ["index.py", "index.nexy", "index.mdx", "index.md"]
     LAYOUT_FILE_NAMES: list[str] = ["layout.nexy"]
     NOTFOUND_FILE_NAMES: list[str] = ["notfound.nexy"]
     ERROR_FILE_NAMES: list[str] = ["errors.nexy"]

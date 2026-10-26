@@ -186,19 +186,6 @@ def _escape(line: str) -> str:
     return line.replace("[", "\\[")
 
 
-class Timer:
-    """Total duration for a closing ``Done in 8.4s`` line."""
-
-    def __init__(self) -> None:
-        self.started = time.monotonic()
-
-    def elapsed(self) -> float:
-        return time.monotonic() - self.started
-
-    def summary(self, text: str = "Done", console: Console | None = None) -> None:
-        (console or _console).print(f"\n[bold]{text}[/bold] in {format_duration(self.elapsed())}")
-
-
 @contextmanager
 def step(label: str, *, done: str | None = None, console: Console | None = None) -> Generator[None]:
     """In-process ``run_task``: a spinner while the block runs, then one result line."""

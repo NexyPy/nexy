@@ -3,7 +3,7 @@
 // The root layout owns <html>, <head> and <body>, like Next.js: Nexy renders
 // <RootLayout><NestedLayout><Page /></NestedLayout></RootLayout> here, in Node, so the first response
 // already carries the real document. React and Solid then hydrate the same tree; Preact, Vue and
-// Svelte build the body in the browser and swap it in (see takeover.py).
+// Svelte build the body in the browser and swap it in.
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
