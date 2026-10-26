@@ -53,7 +53,7 @@ uv pip install -e . --group dev
 | Compiler | `nexy/modules/compiler/` | `parser/{scanner,sanitizer,template,validator,logic}.py`, `generator/` |
 | Frontend | `nexy/modules/frontend/` | `{react,vue,svelte,solid,preact}.py` + `runtime.ts`, `vite.ts` |
 | Core | `nexy/core/` | `config.py`, `models.py`, `types.py` |
-| Entry | `nexy/app.py` | exports `app: FastAPI` = `AppServer().run()` |
+| Entry | `nexy/app.py` | exports `app: ASGIApp` = `AppServer().run()` (FastAPI, wrapped by the Vite proxy in dev) |
 | pkg init | `nexy/__init__.py` | exports `Audio`, `Video`, `Form`, `Import`, `Template`, `Vite` |
 
 ## Toolchain

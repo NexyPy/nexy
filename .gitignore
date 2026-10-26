@@ -99,3 +99,4 @@ requirements-audit.txt
 # Fonts (local) - templates link to Google Fonts instead of shipping binaries
 **/public/fonts/
 **/public/font/
+examples/test/

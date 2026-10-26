@@ -157,7 +157,8 @@ class AppServer:
         ACTION_ENGINE.discover()
         ACTION_ENGINE.generate_client()
         self.fb_router = resolve_router(server, self.config, self.scalar_html, self._docs_url)
-        setup_hmr(server)
+        if is_dev():
+            setup_hmr(server)
         self._add_error_handlers(server)
         # FastAPI's telemetry reports the matched route; the fast path skips that step, so it
         # is only used when no OpenTelemetry SDK can be listening.

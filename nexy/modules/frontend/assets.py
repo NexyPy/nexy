@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
 
+from rich.markup import escape
+
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.path import PathUtil
@@ -14,8 +16,11 @@ def copy_ssg_scripts(exclude_dirs: list[str]) -> None:
         dest = Path("__nexy__") / "scripts"
         shutil.copytree(_PACKAGE_DIR / "scripts", dest, dirs_exist_ok=True)
         _write_excludes(dest, exclude_dirs)
-    except Exception as e:
-        print(f"[nexy] Error copying scripts: {e}")
+    except OSError as error:
+        message = (
+            f"could not copy the SSG scripts, static pages will not build: {escape(str(error))}"
+        )
+        console.print(tagged("nsc", message, "red"))
 
 
 def _write_excludes(dest: Path, exclude_dirs: list[str]) -> None:

@@ -7,7 +7,11 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from rich.markup import escape
+
 from nexy.core.config import Config
+from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.ancestors import walk_up
 
 
@@ -18,7 +22,7 @@ def _declared(dependencies_file: Path) -> list[Callable[..., Any]]:
         module = importlib.import_module(module_name.replace("/", "."))
     except ImportError as error:
         # A route can live without a sibling dependencies module.
-        print(error)
+        console.print(tagged("nexy", f"{dependencies_file}: {escape(str(error))}", "yellow"))
         return []
     candidates = getattr(module, "dependencies", None)
     return [c for c in candidates if callable(c)] if isinstance(candidates, (list, tuple)) else []

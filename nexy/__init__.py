@@ -26,7 +26,6 @@ __all__ = [
     "Import",
     "Template",
     "Vite",
-    "app",
     "useViews",
     "usePathname",
     "useSearchParams",
