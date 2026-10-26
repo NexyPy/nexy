@@ -1,4 +1,5 @@
 import { createLogger, type Logger, type Plugin } from 'vite'
+import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'child_process'
 import { createRequire } from 'module'
@@ -25,6 +26,19 @@ const c = {
 }
 
 const require = createRequire(import.meta.url)
+
+// The aliases of nexyconfig.py (`useAliases`), written to __nexy__/aliases.json; `@` -> src by default.
+function projectAliases(): { find: RegExp; replacement: string }[] {
+  let declared: Record<string, string> = {}
+  try {
+    declared = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), '__nexy__/aliases.json'), 'utf8'))
+  } catch {}
+  const entries = Object.entries(declared).length ? Object.entries(declared) : [['@', 'src']]
+  return entries.map(([key, dir]) => ({
+    find: new RegExp('^' + key.replace(/\/$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '/'),
+    replacement: path.resolve(process.cwd(), dir) + '/'
+  }))
+}
 
 function getTsxPath(): string {
   try {
@@ -146,7 +160,7 @@ function nexyPlugin(): Plugin {
         resolve: {
           alias: [
             { find: /^@nexy\//, replacement: path.resolve(process.cwd(), '__nexy__/src') + '/' },
-            { find: /^@\//, replacement: path.resolve(process.cwd(), 'src') + '/' }
+            ...projectAliases()
           ]
         },
 

@@ -98,8 +98,11 @@
     "skip_tool": "未找到 {tool}：跳过 {scope}"
   },
   "init": {
+    "alias_invalid": "使用 @、~、# 或 $,后面可跟字母(例如 ~ 或 @app)。",
     "already": "此处的项目已初始化",
     "ask": {
+      "alias": "导入别名",
+      "alias_customize": "自定义导入别名?",
       "client_component": "是否使用客户端组件？",
       "csr": "启用客户端路由？",
       "database": "选择数据库",
@@ -122,6 +125,8 @@
     "error": "初始化失败：{error}",
     "git_restore": "无法恢复之前的 .git",
     "hint": {
+      "alias_custom": "选择其他前缀,如 ~ 或 #",
+      "alias_default": "@/components/... 指向 src/",
       "api": "仅 JSON 接口,无页面",
       "component_no": "仅服务器渲染的 .nexy 页面",
       "component_yes": "用 UI 框架编写交互部分",

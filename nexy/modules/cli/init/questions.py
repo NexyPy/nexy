@@ -9,6 +9,7 @@ from nexy.modules.cli.tui import BACK as GO_BACK
 from nexy.modules.cli.tui import Option
 from nexy.modules.i18n import t
 
+from .alias import DEFAULT_ALIAS, validate_alias
 from .databases import DATABASES, default_url
 
 DONE, SKIP, BACK = "done", "skip", "back"
@@ -180,6 +181,32 @@ def ask_style(config: Config) -> str:
     return DONE
 
 
+def _wants_custom_alias() -> Any:
+    return tui.confirm(
+        t("init.ask.alias_customize", "Customize the import alias?"),
+        yes=t("init.choice.yes", "Yes"),
+        no=t("init.choice.no", "No"),
+        yes_hint=t("init.hint.alias_custom", "choose another prefix, such as ~ or #"),
+        no_hint=t("init.hint.alias_default", "@/components/... points to src/"),
+        default=False,
+    )
+
+
+def ask_alias(config: Config) -> str:
+    """Like create-next-app: the import alias is `@/` unless the user wants another prefix."""
+    if not _is_web(config):
+        return SKIP
+    custom = _wants_custom_alias()
+    answer: Any = DEFAULT_ALIAS
+    if custom is not GO_BACK and custom:
+        prompt = t("init.ask.alias", "Import alias")
+        answer = tui.text(prompt, default=DEFAULT_ALIAS, validate=validate_alias, back=True)
+    if custom is GO_BACK or answer is GO_BACK:
+        return BACK
+    config["alias"] = answer.strip()
+    return DONE
+
+
 def ask_orm(config: Config) -> str:
     """The ORM comes first: a database only makes sense once something talks to it."""
     choice = tui.select(t("init.ask.orm", "Choose an ORM"), _orms())
@@ -225,6 +252,7 @@ STEPS = (
     ask_csr,
     ask_framework,
     ask_style,
+    ask_alias,
     ask_orm,
     ask_database,
     ask_db_url,

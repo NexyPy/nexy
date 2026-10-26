@@ -51,7 +51,7 @@ def _run(monkeypatch, answers) -> tuple[dict, Script]:
     return ProjectPrompter().ask_all(), script
 
 
-WEB = [True, "web", True, "react", "tailwind"]
+WEB = [True, "web", True, "react", "tailwind", False]
 
 
 def test_the_client_routing_question_is_short(monkeypatch):
@@ -60,7 +60,9 @@ def test_the_client_routing_question_is_short(monkeypatch):
 
 
 def test_full_client_routed_web_project(monkeypatch):
-    config, _ = _run(monkeypatch, [True, "web", True, "react", "unocss", "SQLModel", "sqlite", "x"])
+    config, _ = _run(
+        monkeypatch, [True, "web", True, "react", "unocss", False, "SQLModel", "sqlite", "x"]
+    )
     assert (config["useCSR"], config["client_framework"], config["style"]) == (
         True,
         "react",
@@ -70,7 +72,7 @@ def test_full_client_routed_web_project(monkeypatch):
 
 
 def test_no_orm_means_no_database_and_no_url(monkeypatch):
-    config, script = _run(monkeypatch, [True, "web", False, True, "vue", "tailwind", "None"])
+    config, script = _run(monkeypatch, [True, "web", False, True, "vue", "tailwind", False, "None"])
     assert (config["database"], config["orm"]) == ("none", "None") and "db_url" not in config
     assert "Choose a database" not in script.asked
 
@@ -112,26 +114,40 @@ def test_the_database_choices_have_no_none(monkeypatch):
     ]
 
 
+class TestAlias:
+    def test_the_default_alias_is_kept_when_not_customized(self, monkeypatch):
+        config, _ = _run(monkeypatch, [*WEB, "None"])
+        assert config["alias"] == "@"
+
+    def test_a_custom_alias_is_asked_for_and_stored(self, monkeypatch):
+        config, _ = _run(monkeypatch, [True, "web", True, "react", "tailwind", True, " ~ ", "None"])
+        assert config["alias"] == "~"
+
+    def test_an_api_project_has_no_alias_question(self, monkeypatch):
+        _, script = _run(monkeypatch, [False, "api", "None"])
+        assert "Customize the import alias?" not in script.asked
+
+
 class TestGoingBack:
     def test_the_first_question_cannot_go_back(self, monkeypatch):
         _, script = _run(monkeypatch, [*WEB, "None"])
         assert script.backs["Use file-based router?"] is False
 
     def test_back_from_the_framework_asks_client_routing_again(self, monkeypatch):
-        answers = [True, "web", True, BACK, False, True, "svelte", "tailwind", "None"]
+        answers = [True, "web", True, BACK, False, True, "svelte", "tailwind", False, "None"]
         config, script = _run(monkeypatch, answers)
         assert script.asked.count("Enable client-side routing?") == 2
         assert (config["useCSR"], config["client_framework"]) == (False, "svelte")
 
     def test_back_from_the_first_selects_goes_to_the_question_before(self, monkeypatch):
-        answers = [True, "web", True, "vue", BACK, "solid", "tailwind", "None"]
+        answers = [True, "web", True, "vue", BACK, "solid", "tailwind", False, "None"]
         config, _ = _run(monkeypatch, answers)
         assert config["client_framework"] == "solid"
 
-    def test_back_from_the_orm_goes_to_the_style(self, monkeypatch):
-        answers = [*WEB, BACK, "vanilla", "None"]
+    def test_back_from_the_orm_goes_to_the_alias(self, monkeypatch):
+        answers = [*WEB, BACK, True, "~", "None"]
         config, _ = _run(monkeypatch, answers)
-        assert config["style"] == "vanilla"
+        assert config["alias"] == "~"
 
     def test_back_from_the_database_goes_to_the_orm(self, monkeypatch):
         answers = [*WEB, "SQLModel", BACK, "None"]

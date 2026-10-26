@@ -98,8 +98,11 @@
     "skip_tool": "{tool} est introuvable : {scope} ignoré"
   },
   "init": {
+    "alias_invalid": "Utilisez @, ~, # ou $, suivi éventuellement de lettres (par exemple ~ ou @app).",
     "already": "Le projet est déjà initialisé ici",
     "ask": {
+      "alias": "Alias d'import",
+      "alias_customize": "Personnaliser l'alias d'import ?",
       "client_component": "Voulez-vous utiliser un composant client ?",
       "csr": "Activer le routage côté client ?",
       "database": "Choisissez une base de données",
@@ -122,6 +125,8 @@
     "error": "Échec de l'initialisation : {error}",
     "git_restore": "impossible de restaurer l'ancien dossier .git",
     "hint": {
+      "alias_custom": "choisir un autre préfixe, comme ~ ou #",
+      "alias_default": "@/components/... pointe vers src/",
       "api": "uniquement des endpoints JSON, sans pages",
       "component_no": "uniquement des pages .nexy rendues par le serveur",
       "component_yes": "parties interactives avec un framework UI",

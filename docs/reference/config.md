@@ -33,7 +33,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | an `APIRouter` instance or class mounted next to the file-based routes; `None` means file-based only |
 | `excludeDirs` | `["templates", "extension", "docs"]` | directories skipped when scanning routes |
-| `useAliases` | `None` | import aliases, e.g. `{"@": "src/"}` |
+| `useAliases` | `None` | import aliases, e.g. `{"@": "src/"}`; `nx new` writes the one you chose, and Vite and `tsconfig.json` follow it |
 
 ## Frontend
 

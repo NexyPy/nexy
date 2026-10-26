@@ -16,6 +16,7 @@ from nexy.modules.cli.constants import TEMPLATES_DIR
 from nexy.modules.cli.migrations import alembic
 from nexy.modules.i18n import t
 
+from .alias import DEFAULT_ALIAS, apply_alias
 from .clone import GitClone
 from .dependencies import DependencyInstaller
 from .renderer import TemplateRenderer
@@ -94,6 +95,7 @@ def _render_local_template(
     _render_shared_files(template_name, dest, context)
 
     generate_init_files(dest / "src")
+    apply_alias(dest, config.get("alias", DEFAULT_ALIAS))
 
 
 _FRAMEWORK_LABELS = {

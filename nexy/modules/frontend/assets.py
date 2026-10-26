@@ -1,8 +1,10 @@
+import json
 import shutil
 from pathlib import Path
 
 from rich.markup import escape
 
+from nexy.core.config import Config
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.path import PathUtil
@@ -27,6 +29,12 @@ def _write_excludes(dest: Path, exclude_dirs: list[str]) -> None:
     entries = ",\n  ".join(f"'{d}/**'" for d in exclude_dirs)
     content = f"export const EXCLUDES: string[] = [\n  {entries}\n]\n"
     PathUtil.write_if_changed(dest / "excludes.ts", content)
+
+
+def write_aliases() -> None:
+    """The import aliases of nexyconfig.py, for the Vite config to resolve the same ones."""
+    content = json.dumps(Config.ALIASES or {}, indent=2) + "\n"
+    PathUtil.write_if_changed(Path("__nexy__") / "aliases.json", content)
 
 
 def copy_vite_config() -> None:

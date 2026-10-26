@@ -98,8 +98,11 @@
     "skip_tool": "{tool} tidak ditemukan: {scope} dilewati"
   },
   "init": {
+    "alias_invalid": "Gunakan @, ~, # atau $, boleh diikuti huruf (misalnya ~ atau @app).",
     "already": "Proyek sudah diinisialisasi di sini",
     "ask": {
+      "alias": "Alias impor",
+      "alias_customize": "Ubah alias impor?",
       "client_component": "Apakah Anda ingin memakai komponen klien?",
       "csr": "Aktifkan perutean sisi klien?",
       "database": "Pilih basis data",
@@ -122,6 +125,8 @@
     "error": "Inisialisasi gagal: {error}",
     "git_restore": "tidak dapat memulihkan .git sebelumnya",
     "hint": {
+      "alias_custom": "pilih awalan lain, seperti ~ atau #",
+      "alias_default": "@/components/... menunjuk ke src/",
       "api": "hanya endpoint JSON, tanpa halaman",
       "component_no": "hanya halaman .nexy dari server",
       "component_yes": "bagian interaktif dengan framework UI",

@@ -67,7 +67,7 @@ application loads again. A valid save reads `nexy » update <file>` while the se
 ## Questions of `nx new`
 
 `nx new` asks, in this order: file-based router, project type (web or API), client-side routing,
-client framework, how to style the app, ORM, database and database URL. Every option has a short
+client framework, how to style the app, import alias, ORM, database and database URL. Every option has a short
 description and the current one is highlighted. Questions that do not apply are skipped (an API
 project has no framework or style; choosing **No database** as the ORM skips the database and URL).
 Move with the arrow keys (or `j`/`k`, or a number), confirm with `enter`, go back to the previous
@@ -75,6 +75,7 @@ question with `←` or `esc`, quit with `ctrl+c`.
 
 | Question | Choices |
 |---|---|
+| Import alias | `@` (`@/components/...` points to `src/`), or another prefix such as `~` or `#app` |
 | Style | Tailwind CSS, UnoCSS, Vanilla CSS, Other (no CSS tool, same plain stylesheet as Vanilla) |
 | ORM | SQLModel, SQLAlchemy, Tortoise-ORM, No database |
 | Database (with an ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Other (you type the URL) |

@@ -98,8 +98,11 @@
     "skip_tool": "{tool} が見つかりません: {scope} をスキップします"
   },
   "init": {
+    "alias_invalid": "@、~、# または $ に続けて任意の文字を使います(例: ~ や @app)。",
     "already": "このディレクトリは既に初期化されています",
     "ask": {
+      "alias": "インポートのエイリアス",
+      "alias_customize": "インポートのエイリアスを変更しますか?",
       "client_component": "クライアントコンポーネントを使用しますか？",
       "csr": "クライアントサイドルーティングを有効にしますか？",
       "database": "データベースを選択",
@@ -122,6 +125,8 @@
     "error": "初期化に失敗しました: {error}",
     "git_restore": "以前の .git を復元できませんでした",
     "hint": {
+      "alias_custom": "~ や # など別のプレフィックスを選ぶ",
+      "alias_default": "@/components/... は src/ を指す",
       "api": "JSON エンドポイントのみ(ページなし)",
       "component_no": "サーバー描画の .nexy ページのみ",
       "component_yes": "UIフレームワークでインタラクティブ部分を記述",

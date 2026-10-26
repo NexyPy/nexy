@@ -98,8 +98,11 @@
     "skip_tool": "{tool} not found - skipping {scope}"
   },
   "init": {
+    "alias_invalid": "Use @, ~, # or $, optionally followed by letters (for example ~ or @app).",
     "already": "Project already initialized here",
     "ask": {
+      "alias": "Import alias",
+      "alias_customize": "Customize the import alias?",
       "client_component": "Would you like to use a client component?",
       "csr": "Enable client-side routing?",
       "database": "Choose a database",
@@ -122,6 +125,8 @@
     "error": "Initialization failed: {error}",
     "git_restore": "could not restore previous .git",
     "hint": {
+      "alias_custom": "choose another prefix, such as ~ or #",
+      "alias_default": "@/components/... points to src/",
       "api": "JSON endpoints only, no pages",
       "component_no": "server-rendered .nexy pages only",
       "component_yes": "interactive parts written in a UI framework",
