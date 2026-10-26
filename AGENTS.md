@@ -22,6 +22,10 @@ ruff format nexy/ --check
 python -m mypy nexy --strict
 python -m pytest tests/ -v
 
+# Structure rules (functions < 20 lines, classes < 10 methods, no copied code):
+# fails on a new or worse offender; `--write` records the baseline after a refactor
+python scripts/audit_structure.py --check
+
 # One command (same gates as CI, stops at the first failure)
 python scripts/verify.py
 

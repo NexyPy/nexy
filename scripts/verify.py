@@ -11,6 +11,7 @@ GATES: list[tuple[str, list[str]]] = [
     ("lint", ["-m", "ruff", "check", "nexy/", "tests/"]),
     ("format", ["-m", "ruff", "format", "nexy/", "tests/", "--check"]),
     ("typecheck", ["-m", "mypy", "nexy", "--strict"]),
+    ("structure", ["scripts/audit_structure.py", "--check"]),
     ("test", ["-m", "pytest", "tests/", "-q"]),
 ]
 
