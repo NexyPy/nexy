@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -105,3 +107,28 @@ def test_flushing_writes_what_was_only_in_memory(vfs, tmp_path):
     VFS.set_dev_mode(False)
     vfs.flush_to_disk()
     assert Path(tmp_path / "__nexy__" / "a.py").read_text(encoding="utf-8") == "x = 1"
+
+
+def test_threads_asking_at_once_get_the_same_instance(tmp_path, monkeypatch):
+    """The compiler runs on several threads: they must all write to one file system."""
+
+    def slow_scan(_prefix: str) -> set[str]:
+        time.sleep(0.05)
+        return set()
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(VFS, "_instance", None)
+    monkeypatch.setattr("nexy.helpers.fs.vfs._scan_disk", slow_scan)
+    found: list[VFS] = []
+    start = threading.Barrier(8)
+
+    def ask() -> None:
+        start.wait()
+        found.append(VFS())
+
+    threads = [threading.Thread(target=ask) for _ in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert len({id(instance) for instance in found}) == 1

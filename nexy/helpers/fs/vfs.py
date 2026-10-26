@@ -1,7 +1,9 @@
 import shutil
+import threading
 from pathlib import Path
 
 _DISK_PREFIX = "__nexy__"
+_CREATION = threading.Lock()
 
 
 def _key(path: str) -> str:
@@ -43,11 +45,15 @@ class VFS:
     _disk_files: set[str]
 
     def __new__(cls) -> "VFS":
+        # The compiler builds components on several threads, and each one asks for the VFS: without
+        # the lock two of them could each make an instance, and what one writes the other never sees.
         if cls._instance is None:
-            instance = super().__new__(cls)
-            instance._files = {}
-            instance._disk_files = _scan_disk(cls._disk_prefix)
-            cls._instance = instance
+            with _CREATION:
+                if cls._instance is None:
+                    instance = super().__new__(cls)
+                    instance._files = {}
+                    instance._disk_files = _scan_disk(cls._disk_prefix)
+                    cls._instance = instance
         return cls._instance
 
     def write(self, path: str, content: str) -> None:
