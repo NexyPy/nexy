@@ -127,3 +127,45 @@ def test_a_module_without_the_class_is_an_error(missing):
     target = _target()
     assert ConfigLoader(target)._find_user_class(missing) is False
     assert "missing NexyConfig class" in target._load_error
+
+
+class TestSharedDefaultsAreNeverMutated:
+    """A project's settings must not leak into the defaults every other load starts from."""
+
+    def test_framework_extensions_leave_the_default_route_list_alone(self):
+        target = _target(useFF=REACT)
+        default = target.FRAMEWORK_ROUTE_EXTENSIONS
+        _loader(target)._derive_frameworks()
+        assert default == [".vue"]
+
+    def test_framework_extensions_leave_the_default_watch_list_alone(self):
+        target = _target(useFF=REACT)
+        default = target.WATCH_EXTENSIONS
+        _loader(target)._derive_frameworks()
+        assert default == [".nexy", ".py"]
+
+    def test_excluded_directories_leave_the_default_patterns_alone(self):
+        target = _target()
+        default = target.WATCH_EXCLUDE_PATTERNS
+        _loader(target)._derive_watching()
+        assert default == ["**/.git/**"]
+
+    def test_user_aliases_are_copied(self):
+        aliases = {"@": "src"}
+        target = _target(useAliases=aliases)
+        _loader(target)._derive_text_options()
+        target.ALIASES["~"] = "lib"
+        assert aliases == {"@": "src"}
+
+    def test_user_markdown_extensions_are_copied(self):
+        extensions = ["toc"]
+        target = _target(useMarkdownExtensions=extensions)
+        _loader(target)._derive_text_options()
+        target.MARKDOWN_EXTENSIONS.append("extra")
+        assert extensions == ["toc"]
+
+    def test_user_exclude_patterns_are_copied(self):
+        patterns = ["**/x/**"]
+        target = _target()
+        _loader(target, useWatchExcludePatterns=patterns)._derive_watching()
+        assert patterns == ["**/x/**"]

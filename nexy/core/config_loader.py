@@ -19,6 +19,11 @@ _SPECIAL_FILES = {
 _ALWAYS_ROUTE_EXCEPTIONS = ("__init__.py", "dependencies.py", "middleware.py")
 
 
+def _with(current: list[str], added: list[str]) -> list[str]:
+    """A new list: *current* followed by what *added* has that it lacks, in order."""
+    return list(dict.fromkeys([*current, *added]))
+
+
 def import_nexyconfig() -> Any | None:
     """The user's nexyconfig module, or the example one, or None."""
     try:
@@ -93,9 +98,9 @@ class ConfigLoader:
     def _derive_text_options(self) -> None:
         t = self.target
         if t.useAliases:
-            t.ALIASES = t.useAliases
+            t.ALIASES = dict(t.useAliases)
         if t.useMarkdownExtensions:
-            t.MARKDOWN_EXTENSIONS = t.useMarkdownExtensions
+            t.MARKDOWN_EXTENSIONS = list(t.useMarkdownExtensions)
         if t.useTocDepth:
             t.TOC_DEPTH = t.useTocDepth
         if t.useTocTitle:
@@ -122,13 +127,11 @@ class ConfigLoader:
         return registry
 
     def _add_framework_extensions(self, frameworks: list[FrontendFramework]) -> None:
+        # New lists, never an append: the defaults are shared by every load of the class.
         t = self.target
-        for framework in frameworks:
-            for ext in map(rules.dotted, framework.extension or []):
-                if ext not in t.FRAMEWORK_ROUTE_EXTENSIONS:
-                    t.FRAMEWORK_ROUTE_EXTENSIONS.append(ext)
-                if ext not in t.WATCH_EXTENSIONS:
-                    t.WATCH_EXTENSIONS.append(ext)
+        added = [rules.dotted(ext) for framework in frameworks for ext in framework.extension or []]
+        t.FRAMEWORK_ROUTE_EXTENSIONS = _with(t.FRAMEWORK_ROUTE_EXTENSIONS, added)
+        t.WATCH_EXTENSIONS = _with(t.WATCH_EXTENSIONS, added)
 
     def _derive_special_names(self, registry: dict[str, FrontendFramework]) -> None:
         t = self.target
@@ -153,8 +156,6 @@ class ConfigLoader:
             t.WATCH_EXTENSIONS_GLOB = [f"*{ext}" for ext in t.WATCH_EXTENSIONS]
         excluded = getattr(self.user, "useWatchExcludePatterns", None)
         if excluded:
-            t.WATCH_EXCLUDE_PATTERNS = excluded
-        for directory in t.excludeDirs or []:
-            pattern = f"**/{directory}/**"
-            if pattern not in t.WATCH_EXCLUDE_PATTERNS:
-                t.WATCH_EXCLUDE_PATTERNS.append(pattern)
+            t.WATCH_EXCLUDE_PATTERNS = list(excluded)
+        patterns = [f"**/{directory}/**" for directory in t.excludeDirs or []]
+        t.WATCH_EXCLUDE_PATTERNS = _with(t.WATCH_EXCLUDE_PATTERNS, patterns)
