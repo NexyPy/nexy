@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -100,7 +101,7 @@ class TestStylesheet:
     def test_the_page_is_not_black_in_the_dark(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
-        assert "#062b24" in css and "#000000" not in css.lower()
+        assert "#0e0e10" in css and "#000000" not in css.lower()
 
     def test_the_dark_theme_is_a_class_on_the_page(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
@@ -143,3 +144,37 @@ def test_the_script_of_the_head_is_valid_javascript():
     script = TEMPLATES_DIR / "_partials" / "theme_script.js"
     done = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True)
     assert done.returncode == 0, done.stderr
+
+
+HEX = re.compile(r"#([0-9a-fA-F]{6})")
+
+
+def _is_grey(code: str) -> bool:
+    red, green, blue = (int(code[i : i + 2], 16) for i in (0, 2, 4))
+    return max(red, green, blue) - min(red, green, blue) <= 12
+
+
+class TestBlackAndWhite:
+    """Nexy's look is black and white: no hue in the stylesheet, the images or the toolbar."""
+
+    @pytest.mark.parametrize("style", ["tailwind", "unocss", "vanilla"])
+    def test_the_stylesheet_has_no_colour_besides_the_framework_accent(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        css = " ".join(line for line in css.splitlines() if "--accent:" not in line)
+        assert [code for code in HEX.findall(css) if not _is_grey(code)] == []
+
+    def test_the_images_are_grey(self, tmp_path):
+        _scaffold(tmp_path, "none", False)
+        colours = []
+        for image in (tmp_path / "public").glob("*.svg"):
+            colours += HEX.findall(image.read_text(encoding="utf-8"))
+        assert colours and [code for code in colours if not _is_grey(code)] == []
+
+    def test_the_dev_toolbar_is_grey_apart_from_its_signals(self):
+        from nexy.helpers.server import devtools
+
+        css = (Path(devtools.__file__).parent / "toolbar.css").read_text(encoding="utf-8")
+        signals = ("--bad", "--warn", "--good", "#ff7b7b", "#ffb3b3", "#4a2121", "#c62828")
+        lines = [line for line in css.splitlines() if not any(mark in line for mark in signals)]
+        assert [code for code in HEX.findall(" ".join(lines)) if not _is_grey(code)] == []

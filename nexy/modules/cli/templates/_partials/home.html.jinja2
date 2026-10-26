@@ -49,7 +49,7 @@
       <div {{ cls }}="nx-tile-visual">
         <div {{ cls }}="nx-chips">
 {%- for key, label in frameworks %}
-          <span {{ cls }}="nx-chip nx-chip-{{ key }}{% if client_framework == key %} nx-chip-current{% endif %}">{{ label }}</span>
+          <span {{ cls }}="nx-chip{% if client_framework == key %} nx-chip-current{% endif %}">{{ label }}</span>
 {%- endfor %}
         </div>
       </div>
