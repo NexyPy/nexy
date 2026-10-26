@@ -87,7 +87,7 @@ def test_the_generator_writes_the_module_where_it_belongs(monkeypatch):
     monkeypatch.setattr(Config, "useRouter", None)
     generator = LogicGenerator()
     generator.vfs = _MemoryVfs()
-    source = ParserModel(frontmatter="x = 1\n", template="<p></p>")
+    source = ParserModel(frontmatter="x = 1\n", template="<p></p>", props=[])
     generator.generate("__nexy__/page.nexy", source)
     path, content = generator.vfs.last
     assert path == "__nexy__/page.py" and content == render_module("__nexy__/page.nexy", source)
