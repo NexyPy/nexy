@@ -2,6 +2,9 @@ import importlib
 import types
 
 from nexy.core.config import Config
+from nexy.core.framework_rules import (
+    special_names,
+)
 from nexy.core.models import FrontendFramework
 from nexy.core.string import StringTransform
 from nexy.modules.frontend.frameworks import react
@@ -14,34 +17,34 @@ class TestSpecialRouteFilesConfig:
     """Special route files (layout/notfound/error) follow the active framework."""
 
     def test_derive_special_names_default(self):
-        names = Config.derive_special_names("layout", {})
+        names = special_names("layout", {})
         assert names == ["layout.nexy"]
 
     def test_derive_special_names_with_react(self):
         registry = {"react": react()}
-        names = Config.derive_special_names("layout", registry)
+        names = special_names("layout", registry)
         assert "layout.nexy" in names
         assert "layout.tsx" in names
 
     def test_derive_special_names_with_user_override(self):
-        names = Config.derive_special_names("layout", {}, user_exts=[".svelte"])
+        names = special_names("layout", {}, user_exts=[".svelte"])
         assert names == ["layout.nexy", "layout.svelte"]
 
     def test_derive_notfound_names(self):
         ff = FrontendFramework(name="vue", render="", extension=["vue"])
-        names = Config.derive_special_names("notfound", {"vue": ff})
+        names = special_names("notfound", {"vue": ff})
         assert "notfound.vue" in names
 
     def test_derive_errors_names(self):
         ff = FrontendFramework(name="vue", render="", extension=["vue"])
-        names = Config.derive_special_names("errors", {"vue": ff})
+        names = special_names("errors", {"vue": ff})
         assert "errors.nexy" in names
         assert "errors.vue" in names
         assert "error.nexy" not in names
 
     def test_derive_loading_names(self):
         ff = FrontendFramework(name="vue", render="", extension=["vue"])
-        names = Config.derive_special_names("loading", {"vue": ff})
+        names = special_names("loading", {"vue": ff})
         assert "loading.nexy" in names
         assert "loading.vue" in names
 

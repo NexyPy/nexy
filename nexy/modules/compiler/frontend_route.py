@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from nexy.core.config import Config
+from nexy.core.framework_rules import as_list
 from nexy.core.string import Pathname, StringTransform
 from nexy.helpers.fs.vfs import VFS
 from nexy.modules.compiler.document_shell import (
@@ -195,7 +196,7 @@ def _owns_document(ext: str, layouts: list[str]) -> bool:
     """True when the root layout of a client-routed project owns ``<html>`` (any framework)."""
     if not Config.useCSR or not layouts:
         return False
-    use_ff = Config._normalize_ff(Config.useFF)
+    use_ff = as_list(Config.useFF)
     name = getattr(use_ff[0], "name", "").lower() if use_ff else ""
     extensions = _DOCUMENT_EXTENSIONS.get(name, ())
     if ext not in extensions:

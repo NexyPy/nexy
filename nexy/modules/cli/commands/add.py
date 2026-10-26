@@ -96,7 +96,7 @@ def add(
     framework = "react"
     use_ff = config.useFF
     if use_ff:
-        # A list config selects the first framework (same convention as _normalize_ff).
+        # A list config selects the first framework (same convention as `as_list`).
         framework = (use_ff[0] if isinstance(use_ff, list) else use_ff).name.lower()
 
     if all:

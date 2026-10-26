@@ -98,6 +98,8 @@ select = [
 "nexy/core/config.py" = ["N815"]
 "nexy/core/models.py" = ["N815"]
 "nexy/decorators.py" = ["N802", "B010"]
+"nexy/modules/modular/*.py" = ["N802", "N816", "B010"]
+"nexy/modules/di/*.py" = ["N802"]
 "nexy/hooks.py" = ["N802"]
 "nexy/errors.py" = ["N802"]
 "nexy/helpers/imports/component_import.py" = ["N802"]
@@ -110,7 +112,7 @@ select = [
 # E501 inapplicable: these files embed foreign-language code as string
 # templates (client-side JS / TSX-Vue-Svelte scaffolding); the 100-column
 # budget applies to Python code, not to the embedded template content.
-"nexy/vite.py" = ["N802", "E501"]
+"nexy/vite.py" = ["N802"]
 "nexy/modules/cli/init/registry.py" = ["E501"]
 # Fakes for `nx dev` mirror the real collaborators' signatures, so some arguments go unused.
 "tests/unit/nexy/cli/test_dev_command.py" = ["ARG"]

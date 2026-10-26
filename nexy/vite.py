@@ -45,7 +45,7 @@ def _development_tags() -> str:
 
 
 def _production_tags() -> str:
-    """The built client's tags; empty when it is missing: prod never falls back to the dev script."""
+    """The built client's tags; empty when it is missing, never the dev script."""
     try:
         entry = _entry()
         if entry is None:

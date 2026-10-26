@@ -108,9 +108,7 @@ class TestMiddleware:
             reached.append(scope["type"])
 
         lines: list[str] = []
-        asyncio.run(
-            _call(AccessLogMiddleware(app, log=lines.append), "/", scope_type="lifespan")
-        )
+        asyncio.run(_call(AccessLogMiddleware(app, log=lines.append), "/", scope_type="lifespan"))
         assert reached == ["lifespan"] and lines == []
 
 

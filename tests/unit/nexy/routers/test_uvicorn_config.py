@@ -1,4 +1,4 @@
-"""How uvicorn's own log lines look: quiet about startup, labelled, with the traceback when asked."""
+"""How uvicorn's own log lines look: quiet about startup, labelled, with a traceback if any."""
 
 from __future__ import annotations
 
