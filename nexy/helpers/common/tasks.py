@@ -106,6 +106,52 @@ def _pump(proc: subprocess.Popen[str], tail: deque[str], live: _LiveLine) -> Non
             live.last = line.strip()
 
 
+def _spawn(argv: Sequence[str], cwd: Path | str | None) -> subprocess.Popen[str]:
+    return subprocess.Popen(  # nosec B603 - resolved executable, no shell
+        _resolve(argv),
+        cwd=cwd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+
+
+def _follow(
+    proc: subprocess.Popen[str], tail: deque[str], live: _LiveLine, out: Console, label: str
+) -> None:
+    """Show the task until it ends: a live row on a terminal, a single line otherwise."""
+    if out.is_terminal:
+        with Live(live, console=out, refresh_per_second=12, transient=True):
+            _pump(proc, tail, live)
+            proc.wait()
+        return
+    out.print(f"[yellow]{_symbols(out)[2]}[/yellow] {label}")
+    _pump(proc, tail, live)
+    proc.wait()
+
+
+def _announce(
+    out: Console,
+    label: str,
+    done: str | None,
+    seconds: float,
+    proc: subprocess.Popen[str],
+    tail: deque[str],
+) -> None:
+    """The one line a task leaves behind; a failure also keeps the end of its output."""
+    ok_mark, fail_mark, _ = _symbols(out)
+    if proc.returncode == 0:
+        shown = format_duration(seconds)
+        out.print(f"[green]{ok_mark}[/green] {done or label}  [dim]{shown}[/dim]")
+        return
+    detail = f"exit {proc.returncode}, {format_duration(seconds)}"
+    out.print(f"[red]{fail_mark}[/red] {label}  [dim]{detail}[/dim]")
+    for line in tail:
+        out.print(f"  [dim]{_escape(line)}[/dim]")
+
+
 def run_task(
     label: str,
     argv: Sequence[str],
@@ -121,46 +167,19 @@ def run_task(
     of this task in a group, ``(finished, total)``, drawn as a bar next to the spinner.
     """
     out = console or _console
-    ok_mark, fail_mark, wait_mark = _symbols(out)
     tail: deque[str] = deque(maxlen=_TAIL_LINES)
-    live = _LiveLine(label, progress)
     started = time.monotonic()
-
     try:
-        proc = subprocess.Popen(  # nosec B603 - resolved executable, no shell
-            _resolve(argv),
-            cwd=cwd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-        )
+        proc = _spawn(argv, cwd)
     except OSError as exc:
-        out.print(f"[red]{fail_mark}[/red] {label}  [dim]{exc}[/dim]")
+        out.print(f"[red]{_symbols(out)[1]}[/red] {label}  [dim]{exc}[/dim]")
         return TaskResult(ok=False, seconds=0.0, output=[str(exc)])
-
-    if out.is_terminal:
-        with Live(live, console=out, refresh_per_second=12, transient=True):
-            _pump(proc, tail, live)
-            proc.wait()
-    else:
-        out.print(f"[yellow]{wait_mark}[/yellow] {label}")
-        _pump(proc, tail, live)
-        proc.wait()
-
+    _follow(proc, tail, _LiveLine(label, progress), out, label)
     seconds = time.monotonic() - started
-    ok = proc.returncode == 0
-    if ok:
-        out.print(
-            f"[green]{ok_mark}[/green] {done or label}  [dim]{format_duration(seconds)}[/dim]"
-        )
-    else:
-        detail = f"exit {proc.returncode}, {format_duration(seconds)}"
-        out.print(f"[red]{fail_mark}[/red] {label}  [dim]{detail}[/dim]")
-        for line in tail:
-            out.print(f"  [dim]{_escape(line)}[/dim]")
-    return TaskResult(ok=ok, seconds=seconds, returncode=proc.returncode, output=list(tail))
+    _announce(out, label, done, seconds, proc, tail)
+    return TaskResult(
+        ok=proc.returncode == 0, seconds=seconds, returncode=proc.returncode, output=list(tail)
+    )
 
 
 def _escape(line: str) -> str:

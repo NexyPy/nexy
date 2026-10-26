@@ -121,17 +121,17 @@ class AppServer:
             for route in self.fb_router.scan.routes
         ]
 
-    def run(self) -> ASGIApp:
-        """Main entry point to assemble the application."""
-        self.server = FastAPI(
+    def _new_application(self) -> FastAPI:
+        return FastAPI(
             title="Nexy",
             version=self.version,
             docs_url=None,
             redoc_url=None,
             **_telemetry_options(),
         )
-        server = self.server
 
+    def _add_middlewares(self, server: FastAPI) -> None:
+        """The middlewares, innermost first: each one added wraps the ones before it."""
         install_directory_middleware(server, routes=self._file_routes)
         server.add_middleware(PathMiddleware)
         setup_favicon(server, self.config.ROUTER_PATH)
@@ -141,13 +141,21 @@ class AppServer:
         server.add_middleware(AccessLogMiddleware)
         if not is_dev():
             server.add_middleware(SecurityHeadersMiddleware)
+
+    def _add_error_handlers(self, server: FastAPI) -> None:
+        server.exception_handler(HTTPException)(handle_http_exception)
+        server.add_exception_handler(Exception, handle_crash)
+        register_validation_error_handler(server)
+
+    def run(self) -> ASGIApp:
+        """Main entry point to assemble the application."""
+        self.server = server = self._new_application()
+        self._add_middlewares(server)
         ACTION_ENGINE.discover()
         ACTION_ENGINE.generate_client()
         self.fb_router = resolve_router(server, self.config, self.scalar_html, self._docs_url)
         setup_hmr(server)
-        server.exception_handler(HTTPException)(handle_http_exception)
-        server.add_exception_handler(Exception, handle_crash)
-        register_validation_error_handler(server)
+        self._add_error_handlers(server)
         # FastAPI's telemetry reports the matched route; the fast path skips that step, so it
         # is only used when no OpenTelemetry SDK can be listening.
         if not _otel_sdk_installed():

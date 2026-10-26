@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 import typer
 
 from nexy.core.config import Config
+from nexy.core.framework_rules import as_list
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.path import PathUtil
@@ -46,6 +47,34 @@ class _SafeRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
+def _error(message: str) -> None:
+    console.print(f"[red]{t('add.error', 'Error:')}[/red] {message}")
+
+
+def _download(url: str) -> bytes:
+    """The body of *url*, at most `_MAX_REMOTE_BYTES`; redirects are re-checked."""
+    fetching = t("add.fetching", "Fetching remote component from {url}...")
+    status = tagged("nexy", fetching.format(url=url), "yellow")
+    # Scheme and host validated by _is_allowed_url; redirects re-checked by _SafeRedirect.
+    opener = urllib.request.build_opener(_SafeRedirect)
+    with (
+        console.status(status, spinner="dots"),
+        opener.open(url, timeout=_REMOTE_TIMEOUT) as response,  # nosec B310
+    ):
+        raw: bytes = response.read(_MAX_REMOTE_BYTES + 1)
+    if len(raw) > _MAX_REMOTE_BYTES:
+        raise ValueError("component is larger than 1 MB")
+    return raw
+
+
+def _check_digest(raw: bytes, expected_sha256: str | None) -> str:
+    """The SHA-256 of *raw*; a different one than *expected_sha256* is an error."""
+    digest = hashlib.sha256(raw).hexdigest()
+    if expected_sha256 and digest != expected_sha256.lower():
+        raise ValueError(f"sha256 mismatch: expected {expected_sha256}, got {digest}")
+    return digest
+
+
 def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str | None:
     """Fetch component source from a remote URL.
 
@@ -54,34 +83,37 @@ def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str 
     pin. The digest of what was fetched is always printed so it can be pinned.
     """
     if not _is_allowed_url(url):
-        only_https = t("add.https_only", "Only https:// URLs are supported.")
-        error_msg = f"[red]{t('add.error', 'Error:')}[/red] {only_https}"
-        console.print(error_msg)
+        _error(t("add.https_only", "Only https:// URLs are supported."))
         return None
     try:
-        fetching = t("add.fetching", "Fetching remote component from {url}...")
-        status_msg = tagged("nexy", fetching.format(url=url), "yellow")
-        # Scheme and host validated by _is_allowed_url; redirects re-checked by _SafeRedirect.
-        opener = urllib.request.build_opener(_SafeRedirect)
-        with (
-            console.status(status_msg, spinner="dots"),
-            opener.open(  # nosec B310
-                url, timeout=_REMOTE_TIMEOUT
-            ) as response,
-        ):
-            raw: bytes = response.read(_MAX_REMOTE_BYTES + 1)
-        if len(raw) > _MAX_REMOTE_BYTES:
-            raise ValueError("component is larger than 1 MB")
-        digest = hashlib.sha256(raw).hexdigest()
-        if expected_sha256 and digest != expected_sha256.lower():
-            raise ValueError(f"sha256 mismatch: expected {expected_sha256}, got {digest}")
-        console.print(f"[dim]sha256 {digest}[/dim]")
+        raw = _download(url)
+        console.print(f"[dim]sha256 {_check_digest(raw, expected_sha256)}[/dim]")
         return raw.decode("utf-8")
-    except Exception as e:
+    except Exception as failure:
         failed = t("add.fetch_failed", "Failed to fetch component from {url}: {error}")
-        error_msg = f"[red]{t('add.error', 'Error:')}[/red] {failed.format(url=url, error=e)}"
-        console.print(error_msg)
+        _error(failed.format(url=url, error=failure))
         return None
+
+
+def _configured_framework() -> str:
+    """The framework of the project (the first when several are listed); React by default."""
+    frameworks = as_list(Config().useFF)
+    return frameworks[0].name.lower() if frameworks else "react"
+
+
+def _add_components(components: list[str], is_url: bool, sha256: str | None) -> set[str]:
+    """Write each component into `src/components/ui`; the packages they need are returned."""
+    target_dir = Path("src/components/ui")
+    target_dir.mkdir(parents=True, exist_ok=True)
+    needed: set[str] = set()
+    framework = _configured_framework()
+    for item in components:
+        resolved = _resolve_component(item, framework, is_url, sha256)
+        if resolved is not None:
+            name, content, fw, deps = resolved
+            needed.update(deps)
+            _write_nexy_component(target_dir, name, content, fw)
+    return needed
 
 
 def add(
@@ -91,35 +123,14 @@ def add(
     all: bool = typer.Option(False, "--all", "-a", help=_ADD_HELP_ALL),
     sha256: str = typer.Option(None, "--sha256", help=_ADD_HELP_SHA),
 ) -> None:
-    config = Config()
-
-    framework = "react"
-    use_ff = config.useFF
-    if use_ff:
-        # A list config selects the first framework (same convention as `as_list`).
-        framework = (use_ff[0] if isinstance(use_ff, list) else use_ff).name.lower()
-
     if all:
         components = list(COMPONENT_REGISTRY.keys())
-
     if not components:
         _print_available_components()
         raise typer.Exit
-
-    target_dir = Path("src/components/ui")
-    target_dir.mkdir(parents=True, exist_ok=True)
-
-    all_deps: set[str] = set()
-    for item in components:
-        resolved = _resolve_component(item, framework, url, sha256)
-        if resolved is None:
-            continue
-        name, content, fw, deps = resolved
-        all_deps.update(deps)
-        _write_nexy_component(target_dir, name, content, fw)
-
-    if all_deps:
-        install_packages(list(all_deps))
+    needed = _add_components(components, url, sha256)
+    if needed:
+        install_packages(list(needed))
 
 
 def _print_available_components() -> None:
