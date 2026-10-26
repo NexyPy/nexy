@@ -5,8 +5,6 @@
  "function:helpers/common/report.py:print_tree_section": 28,
  "function:helpers/common/vite_launch.py:_plain_vite_args": 21,
  "function:helpers/common/vite_launch.py:vite_argv": 26,
- "function:helpers/imports/ncc.py:NexyClientComponent._render_tag": 29,
- "function:helpers/imports/ncc.py:NexyClientComponent._resolve_path": 21,
  "function:helpers/server/proxy.py:ViteProxyMiddleware._handle_http": 21,
  "function:modules/cli/commands/build.py:_show_summary": 26,
  "function:modules/cli/commands/build.py:build": 25,
