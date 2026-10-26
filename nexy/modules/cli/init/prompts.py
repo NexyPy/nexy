@@ -1,23 +1,15 @@
 from pathlib import Path
 from typing import Any
 
-import questionary
-
+from nexy.modules.cli import tui
 from nexy.modules.i18n import t
 
-from .questions import BACK, BACK_VALUE, DONE, STEPS
+from .questions import BACK, DONE, STEPS
 
 
-def ask_project_name() -> str | None:
-    """Prompt for a project name (None when the user cancels)."""
-    name = questionary.text(
-        t("cli.new.prompt", "Project name:"),
-        qmark="»",
-        validate=validate_project_name,
-    ).ask()
-    if name is None:
-        return None
-    return name or ask_project_name()
+def ask_project_name() -> str:
+    """Prompt for a project name; Ctrl+C raises KeyboardInterrupt."""
+    return str(tui.text(t("cli.new.prompt", "Project name:"), validate=validate_project_name))
 
 
 def validate_project_name(name: str) -> bool | str:
@@ -58,4 +50,4 @@ class ProjectPrompter:
         return self.config
 
 
-__all__ = ["BACK_VALUE", "ProjectPrompter", "ask_project_name", "validate_project_name"]
+__all__ = ["ProjectPrompter", "ask_project_name", "validate_project_name"]

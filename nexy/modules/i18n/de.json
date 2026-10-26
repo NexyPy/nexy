@@ -112,12 +112,43 @@
     },
     "checkout_failed": "Die Dateien der Vorlage '{path}' konnten nicht extrahiert werden.",
     "choice": {
-      "api": "API (RESTful-API)",
-      "back": "Zurück",
-      "web": "Web (monolithische Webanwendung)"
+      "api": "API",
+      "no": "Nein",
+      "no_database": "Keine Datenbank",
+      "other": "Andere",
+      "web": "Web",
+      "yes": "Ja"
     },
     "error": "Initialisierung fehlgeschlagen: {error}",
     "git_restore": "das vorherige .git konnte nicht wiederhergestellt werden",
+    "hint": {
+      "api": "nur JSON-Endpunkte, keine Seiten",
+      "component_no": "nur serverseitige .nexy-Seiten",
+      "component_yes": "interaktive Teile mit einem UI-Framework",
+      "csr_no": "jede Seite rendert der Server",
+      "csr_yes": "der Browser navigiert ohne Neuladen",
+      "mysql": "weit verbreitet, MariaDB-kompatibel",
+      "neon": "Serverless-PostgreSQL in der Cloud",
+      "no_orm": "keine Datenschicht, später ergänzen",
+      "other_db": "eigene Verbindungs-URL eingeben",
+      "other_style": "selbst einrichten",
+      "postgresql": "der robuste Open-Source-Standard",
+      "preact": "React-API in 3 kB",
+      "react": "die verbreitetste UI-Bibliothek",
+      "router_no": "Routen im Code mit Modulen registrieren",
+      "router_yes": "Seiten sind die Dateien in src/routes",
+      "solid": "feingranulare Reaktivität, ohne Virtual DOM",
+      "sqlalchemy": "das Referenz-ORM für Python",
+      "sqlite": "eine Datei, nichts zu installieren",
+      "sqlmodel": "Pydantic-Modelle, die auch Tabellen sind",
+      "svelte": "kompiliert, kaum Laufzeit",
+      "tailwind": "Utility-Klassen im Markup",
+      "tortoise": "async-first, Django-ähnliche API",
+      "unocss": "Atomic CSS bei Bedarf, sehr schnell",
+      "vanilla": "einfache Stylesheets, nichts zu lernen",
+      "vue": "zugänglich und gut dokumentiert",
+      "web": "Seiten, Layouts und Komponenten in einer App"
+    },
     "initializing": "{name} wird initialisiert...",
     "installed_uv": "uv installiert",
     "installing_uv": "uv wird installiert",
@@ -174,6 +205,14 @@
     "passed": "alle Tests bestanden",
     "skip_client": "vitest ist nicht konfiguriert: Client-Tests werden übersprungen",
     "skip_tool": "pytest nicht gefunden: Server-Tests werden übersprungen"
+  },
+  "tui": {
+    "keys": {
+      "back": "zurück",
+      "choose": "wählen",
+      "move": "bewegen",
+      "quit": "beenden"
+    }
   },
   "watch": {
     "compile_failed": "{path} konnte nicht kompiliert werden",

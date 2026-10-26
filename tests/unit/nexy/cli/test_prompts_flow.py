@@ -6,35 +6,43 @@ from types import SimpleNamespace
 
 import pytest
 
+from nexy.modules.cli import tui
 from nexy.modules.cli.init import questions
-from nexy.modules.cli.init.prompts import BACK_VALUE, ProjectPrompter
+from nexy.modules.cli.init.prompts import ProjectPrompter
+
+BACK = tui.BACK
 
 
 class Script:
-    """Stands in for questionary: answers in order and remembers what was asked."""
+    """Stands in for the terminal: answers in order and remembers what was asked."""
 
     def __init__(self, answers):
         self.answers = list(answers)
         self.asked: list[str] = []
         self.choices: dict[str, list] = {}
+        self.backs: dict[str, bool] = {}
 
-    def _ask(self, kind):
-        def build(message, *args, choices=None, **kwargs):
-            self.asked.append(message)
-            if choices is not None:
-                self.choices[message] = [getattr(c, "value", c) for c in choices]
-            return SimpleNamespace(ask=lambda: self.answers.pop(0))
+    def _answer(self, message, back=True):
+        self.asked.append(message)
+        self.backs[message] = back
+        answer = self.answers.pop(0)
+        if answer is None:
+            raise KeyboardInterrupt
+        return answer
 
-        return build
+    def select(self, message, choices, *, default=None, back=True):
+        self.choices[message] = [choice.value for choice in choices]
+        return self._answer(message, back)
+
+    def confirm(self, message, *, back=True, **_kwargs):
+        return self._answer(message, back)
+
+    def text(self, message, *, back=False, **_kwargs):
+        return self._answer(message, back)
 
     def install(self, monkeypatch):
-        fake = SimpleNamespace(
-            confirm=self._ask("confirm"),
-            select=self._ask("select"),
-            text=self._ask("text"),
-            Choice=lambda title, value=None, **kw: SimpleNamespace(title=title, value=value),
-        )
-        monkeypatch.setattr(questions, "questionary", fake)
+        fake = SimpleNamespace(select=self.select, confirm=self.confirm, text=self.text)
+        monkeypatch.setattr(questions, "tui", fake)
 
 
 def _run(monkeypatch, answers) -> tuple[dict, Script]:
@@ -43,17 +51,16 @@ def _run(monkeypatch, answers) -> tuple[dict, Script]:
     return ProjectPrompter().ask_all(), script
 
 
-def _without_back(choices):
-    return [c for c in choices if c != BACK_VALUE]
+WEB = [True, "web", True, "react", "tailwind"]
 
 
 def test_the_client_routing_question_is_short(monkeypatch):
-    _, script = _run(monkeypatch, [True, "web", True, "React", "tailwind", "none"])
+    _, script = _run(monkeypatch, [*WEB, "None"])
     assert "Enable client-side routing?" in script.asked
 
 
 def test_full_client_routed_web_project(monkeypatch):
-    config, _ = _run(monkeypatch, [True, "web", True, "React", "unocss", "sqlite", "SQLModel", "x"])
+    config, _ = _run(monkeypatch, [True, "web", True, "react", "unocss", "SQLModel", "sqlite", "x"])
     assert (config["useCSR"], config["client_framework"], config["style"]) == (
         True,
         "react",
@@ -62,21 +69,26 @@ def test_full_client_routed_web_project(monkeypatch):
     assert (config["database"], config["orm"], config["db_url"]) == ("sqlite", "SQLModel", "x")
 
 
-def test_no_database_means_no_orm_and_no_url(monkeypatch):
-    config, script = _run(monkeypatch, [True, "web", False, True, "Vue", "tailwind", "none"])
-    assert config["orm"] == "None" and "db_url" not in config
-    assert "Choose an ORM" not in script.asked
+def test_no_orm_means_no_database_and_no_url(monkeypatch):
+    config, script = _run(monkeypatch, [True, "web", False, True, "vue", "tailwind", "None"])
+    assert (config["database"], config["orm"]) == ("none", "None") and "db_url" not in config
+    assert "Choose a database" not in script.asked
+
+
+def test_the_orm_is_asked_before_the_database(monkeypatch):
+    _, script = _run(monkeypatch, [*WEB, "SQLAlchemy", "postgresql", "x"])
+    assert script.asked.index("Choose an ORM") < script.asked.index("Choose a database")
 
 
 def test_an_api_project_is_not_asked_about_styles_or_client_routing(monkeypatch):
-    _, script = _run(monkeypatch, [False, "api", "none"])
-    assert "Choose a style system" not in script.asked
+    _, script = _run(monkeypatch, [False, "api", "None"])
+    assert "Choose how to style the app" not in script.asked
     assert "Enable client-side routing?" not in script.asked
 
 
 def test_the_style_choices(monkeypatch):
-    _, script = _run(monkeypatch, [True, "web", True, "React", "tailwind", "none"])
-    assert _without_back(script.choices["Choose how to style the app"]) == [
+    _, script = _run(monkeypatch, [*WEB, "None"])
+    assert script.choices["Choose how to style the app"] == [
         "tailwind",
         "unocss",
         "vanilla",
@@ -84,42 +96,56 @@ def test_the_style_choices(monkeypatch):
     ]
 
 
-def test_the_database_choices_end_with_none(monkeypatch):
-    _, script = _run(monkeypatch, [True, "web", True, "React", "tailwind", "none"])
-    assert _without_back(script.choices["Choose a database"]) == [
+def test_the_orm_choices_end_with_no_database(monkeypatch):
+    _, script = _run(monkeypatch, [*WEB, "None"])
+    assert script.choices["Choose an ORM"] == ["SQLModel", "SQLAlchemy", "Tortoise-ORM", "None"]
+
+
+def test_the_database_choices_have_no_none(monkeypatch):
+    _, script = _run(monkeypatch, [*WEB, "SQLModel", "sqlite", "x"])
+    assert script.choices["Choose a database"] == [
         "sqlite",
         "postgresql",
         "neon",
         "mysql",
         "other",
-        "none",
     ]
 
 
 class TestGoingBack:
-    def test_the_framework_question_offers_a_way_back(self, monkeypatch):
-        _, script = _run(monkeypatch, [True, "web", True, "React", "tailwind", "none"])
-        assert script.choices["Choose the client framework"][-1] == BACK_VALUE
+    def test_the_first_question_cannot_go_back(self, monkeypatch):
+        _, script = _run(monkeypatch, [*WEB, "None"])
+        assert script.backs["Use file-based router?"] is False
 
     def test_back_from_the_framework_asks_client_routing_again(self, monkeypatch):
-        answers = [True, "web", True, BACK_VALUE, False, True, "Svelte", "tailwind", "none"]
+        answers = [True, "web", True, BACK, False, True, "svelte", "tailwind", "None"]
         config, script = _run(monkeypatch, answers)
         assert script.asked.count("Enable client-side routing?") == 2
         assert (config["useCSR"], config["client_framework"]) == (False, "svelte")
 
     def test_back_from_the_first_selects_goes_to_the_question_before(self, monkeypatch):
-        answers = [True, "web", True, "Vue", BACK_VALUE, "Solid", "tailwind", "none"]
+        answers = [True, "web", True, "vue", BACK, "solid", "tailwind", "None"]
         config, _ = _run(monkeypatch, answers)
         assert config["client_framework"] == "solid"
 
-    def test_back_from_the_database_goes_to_the_style(self, monkeypatch):
-        answers = [True, "web", True, "Vue", "tailwind", BACK_VALUE, "vanilla", "none"]
+    def test_back_from_the_orm_goes_to_the_style(self, monkeypatch):
+        answers = [*WEB, BACK, "vanilla", "None"]
         config, _ = _run(monkeypatch, answers)
         assert config["style"] == "vanilla"
 
+    def test_back_from_the_database_goes_to_the_orm(self, monkeypatch):
+        answers = [*WEB, "SQLModel", BACK, "None"]
+        config, _ = _run(monkeypatch, answers)
+        assert config["orm"] == "None"
+
+    def test_back_from_the_url_goes_to_the_database(self, monkeypatch):
+        answers = [*WEB, "SQLModel", "sqlite", BACK, "mysql", "x"]
+        config, _ = _run(monkeypatch, answers)
+        assert config["database"] == "mysql"
+
     def test_back_over_a_question_that_was_skipped_goes_further_back(self, monkeypatch):
-        # An API project skips client routing: back from the database lands on the project type.
-        answers = [True, "api", BACK_VALUE, "api", "none"]
+        # An API project skips client routing: back from the ORM lands on the project type.
+        answers = [True, "api", BACK, "api", "None"]
         _, script = _run(monkeypatch, answers)
         assert script.asked.count("Choose the type of project") == 2
 

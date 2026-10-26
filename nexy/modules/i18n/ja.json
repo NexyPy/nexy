@@ -112,12 +112,43 @@
     },
     "checkout_failed": "テンプレート '{path}' のファイルを展開できませんでした。",
     "choice": {
-      "api": "API（RESTful API）",
-      "back": "戻る",
-      "web": "Web（モノリシックなWebアプリ）"
+      "api": "API",
+      "no": "いいえ",
+      "no_database": "データベースなし",
+      "other": "その他",
+      "web": "Web",
+      "yes": "はい"
     },
     "error": "初期化に失敗しました: {error}",
     "git_restore": "以前の .git を復元できませんでした",
+    "hint": {
+      "api": "JSON エンドポイントのみ(ページなし)",
+      "component_no": "サーバー描画の .nexy ページのみ",
+      "component_yes": "UIフレームワークでインタラクティブ部分を記述",
+      "csr_no": "各ページはサーバーが描画",
+      "csr_yes": "リロードなしでページ遷移",
+      "mysql": "ホスティング豊富、MariaDB互換",
+      "neon": "クラウドのサーバーレス PostgreSQL",
+      "no_orm": "DB層なし(後から追加可)",
+      "other_db": "接続URLを自分で入力",
+      "other_style": "自分で設定",
+      "postgresql": "堅牢なオープンソースの定番",
+      "preact": "3 kB の React 互換 API",
+      "react": "最も普及した UI ライブラリ",
+      "router_no": "モジュールでコード内にルートを登録",
+      "router_yes": "ページは src/routes のファイル",
+      "solid": "細粒度リアクティビティ、仮想DOMなし",
+      "sqlalchemy": "Python の標準的 ORM",
+      "sqlite": "ファイル1つ、インストール不要",
+      "sqlmodel": "テーブルも兼ねる Pydantic モデル",
+      "svelte": "コンパイル型で実行時が極小",
+      "tailwind": "マークアップ内のユーティリティクラス",
+      "tortoise": "非同期ファースト、Django風API",
+      "unocss": "オンデマンドのアトミックCSS、高速",
+      "vanilla": "素のスタイルシート、学習不要",
+      "vue": "学びやすく文書が充実",
+      "web": "ページ・レイアウト・コンポーネントを1つのアプリに"
+    },
     "initializing": "{name} を初期化しています...",
     "installed_uv": "uv をインストールしました",
     "installing_uv": "uv をインストールしています",
@@ -174,6 +205,14 @@
     "passed": "すべてのテストに合格しました",
     "skip_client": "vitest が設定されていないため、クライアントのテストをスキップします",
     "skip_tool": "pytest が見つからないため、サーバーのテストをスキップします"
+  },
+  "tui": {
+    "keys": {
+      "back": "戻る",
+      "choose": "決定",
+      "move": "移動",
+      "quit": "終了"
+    }
   },
   "watch": {
     "compile_failed": "{path} のコンパイルに失敗しました",

@@ -67,15 +67,17 @@ application loads again. A valid save reads `nexy » update <file>` while the se
 ## Questions of `nx new`
 
 `nx new` asks, in this order: file-based router, project type (web or API), client-side routing,
-client framework, how to style the app, database, ORM and database URL. Questions that do not
-apply are skipped (an API project has no framework or style; "None" as the database skips the ORM).
-Every select ends with **Back**, which returns to the previous question that was asked.
+client framework, how to style the app, ORM, database and database URL. Every option has a short
+description and the current one is highlighted. Questions that do not apply are skipped (an API
+project has no framework or style; choosing **No database** as the ORM skips the database and URL).
+Move with the arrow keys (or `j`/`k`, or a number), confirm with `enter`, go back to the previous
+question with `←` or `esc`, quit with `ctrl+c`.
 
 | Question | Choices |
 |---|---|
 | Style | Tailwind CSS, UnoCSS, Vanilla CSS, Other (no CSS tool, same plain stylesheet as Vanilla) |
-| Database | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Other (you type the URL), None |
-| ORM | SQLModel, SQLAlchemy, Tortoise-ORM |
+| ORM | SQLModel, SQLAlchemy, Tortoise-ORM, No database |
+| Database (with an ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Other (you type the URL) |
 
 The database driver for the chosen ORM is installed with it (`psycopg`, `pymysql`, `asyncpg` or
 `aiomysql`), and the URL is written to `.env`.

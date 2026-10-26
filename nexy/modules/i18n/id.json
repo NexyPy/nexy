@@ -112,12 +112,43 @@
     },
     "checkout_failed": "Gagal mengekstrak berkas dari templat '{path}'.",
     "choice": {
-      "api": "API (API RESTful)",
-      "back": "Kembali",
-      "web": "Web (aplikasi web monolitik)"
+      "api": "API",
+      "no": "Tidak",
+      "no_database": "Tanpa database",
+      "other": "Lainnya",
+      "web": "Web",
+      "yes": "Ya"
     },
     "error": "Inisialisasi gagal: {error}",
     "git_restore": "tidak dapat memulihkan .git sebelumnya",
+    "hint": {
+      "api": "hanya endpoint JSON, tanpa halaman",
+      "component_no": "hanya halaman .nexy dari server",
+      "component_yes": "bagian interaktif dengan framework UI",
+      "csr_no": "setiap halaman dirender server",
+      "csr_yes": "browser berpindah tanpa memuat ulang",
+      "mysql": "banyak hosting, kompatibel MariaDB",
+      "neon": "PostgreSQL serverless di cloud",
+      "no_orm": "tanpa lapisan data, tambah nanti",
+      "other_db": "ketik URL koneksi sendiri",
+      "other_style": "atur sendiri",
+      "postgresql": "standar open-source yang andal",
+      "preact": "API React dalam 3 kB",
+      "react": "pustaka UI paling populer",
+      "router_no": "daftarkan rute di kode, dengan modul",
+      "router_yes": "halaman adalah file di src/routes",
+      "solid": "reaktivitas halus, tanpa DOM virtual",
+      "sqlalchemy": "ORM acuan untuk Python",
+      "sqlite": "satu file, tanpa instalasi",
+      "sqlmodel": "model Pydantic sekaligus tabel",
+      "svelte": "dikompilasi, runtime sangat kecil",
+      "tailwind": "kelas utilitas di markup",
+      "tortoise": "async-first, API ala Django",
+      "unocss": "CSS atomik sesuai kebutuhan, sangat cepat",
+      "vanilla": "stylesheet biasa, tanpa belajar",
+      "vue": "mudah dipelajari, dokumentasi lengkap",
+      "web": "halaman, layout, dan komponen dalam satu app"
+    },
     "initializing": "Menginisialisasi {name}...",
     "installed_uv": "uv terpasang",
     "installing_uv": "Memasang uv",
@@ -174,6 +205,14 @@
     "passed": "semua pengujian lolos",
     "skip_client": "vitest belum dikonfigurasi: pengujian klien dilewati",
     "skip_tool": "pytest tidak ditemukan: pengujian server dilewati"
+  },
+  "tui": {
+    "keys": {
+      "back": "kembali",
+      "choose": "pilih",
+      "move": "pindah",
+      "quit": "keluar"
+    }
   },
   "watch": {
     "compile_failed": "Gagal mengompilasi {path}",

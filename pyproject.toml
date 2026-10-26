@@ -16,7 +16,7 @@ dependencies = [
     "httpx>=0.28.0",
     "jinja2>=3.1.6",
     "pygments>=2.20.0",
-    "questionary>=2.1.1",
+    "prompt-toolkit>=3.0.52",
     "scalar-fastapi>=1.8.2",
     # CVE-2026-48710 (BadHost): Host-header path confusion fixed in Starlette 1.0.1.
     "starlette>=1.0.1",

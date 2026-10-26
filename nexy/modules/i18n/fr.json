@@ -112,12 +112,43 @@
     },
     "checkout_failed": "Impossible d'extraire les fichiers du modèle « {path} ».",
     "choice": {
-      "api": "API (API RESTful)",
-      "back": "Retour",
-      "web": "Web (application web monolithique)"
+      "api": "API",
+      "no": "Non",
+      "no_database": "Pas de base de données",
+      "other": "Autre",
+      "web": "Web",
+      "yes": "Oui"
     },
     "error": "Échec de l'initialisation : {error}",
     "git_restore": "impossible de restaurer l'ancien dossier .git",
+    "hint": {
+      "api": "uniquement des endpoints JSON, sans pages",
+      "component_no": "uniquement des pages .nexy rendues par le serveur",
+      "component_yes": "parties interactives avec un framework UI",
+      "csr_no": "chaque page est rendue par le serveur",
+      "csr_yes": "le navigateur navigue sans recharger",
+      "mysql": "très répandu, compatible MariaDB",
+      "neon": "PostgreSQL serverless dans le cloud",
+      "no_orm": "pas de couche de données, à ajouter plus tard",
+      "other_db": "saisir votre propre URL de connexion",
+      "other_style": "à configurer vous-même",
+      "postgresql": "le standard open source robuste",
+      "preact": "l'API de React en 3 ko",
+      "react": "la bibliothèque UI la plus répandue",
+      "router_no": "déclarer les routes dans le code, avec des modules",
+      "router_yes": "les pages sont les fichiers de src/routes",
+      "solid": "réactivité fine, sans DOM virtuel",
+      "sqlalchemy": "l'ORM Python de référence",
+      "sqlite": "un fichier, rien à installer",
+      "sqlmodel": "modèles Pydantic qui sont aussi des tables",
+      "svelte": "compilé, presque sans runtime",
+      "tailwind": "classes utilitaires dans le balisage",
+      "tortoise": "async d'abord, API proche de Django",
+      "unocss": "CSS atomique à la demande, très rapide",
+      "vanilla": "feuilles de style simples, rien à apprendre",
+      "vue": "accessible et bien documenté",
+      "web": "pages, layouts et composants dans une seule app"
+    },
     "initializing": "Initialisation de {name}...",
     "installed_uv": "uv installé",
     "installing_uv": "Installation de uv",
@@ -174,6 +205,14 @@
     "passed": "tous les tests ont réussi",
     "skip_client": "vitest n'est pas configuré : tests client ignorés",
     "skip_tool": "pytest est introuvable : tests serveur ignorés"
+  },
+  "tui": {
+    "keys": {
+      "back": "précédent",
+      "choose": "choisir",
+      "move": "naviguer",
+      "quit": "quitter"
+    }
   },
   "watch": {
     "compile_failed": "Échec de la compilation de {path}",

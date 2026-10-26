@@ -112,12 +112,43 @@
     },
     "checkout_failed": "无法提取模板“{path}”中的文件。",
     "choice": {
-      "api": "API（RESTful API）",
-      "back": "返回",
-      "web": "Web（单体 Web 应用）"
+      "api": "API",
+      "no": "否",
+      "no_database": "不使用数据库",
+      "other": "其他",
+      "web": "Web",
+      "yes": "是"
     },
     "error": "初始化失败：{error}",
     "git_restore": "无法恢复之前的 .git",
+    "hint": {
+      "api": "仅 JSON 接口,无页面",
+      "component_no": "仅服务器渲染的 .nexy 页面",
+      "component_yes": "用 UI 框架编写交互部分",
+      "csr_no": "每个页面由服务器渲染",
+      "csr_yes": "浏览器无需刷新即可跳转",
+      "mysql": "托管广泛,兼容 MariaDB",
+      "neon": "云端无服务器 PostgreSQL",
+      "no_orm": "无数据库层,以后再加",
+      "other_db": "输入自己的连接 URL",
+      "other_style": "自行配置",
+      "postgresql": "稳健的开源标准",
+      "preact": "3 kB 的 React API",
+      "react": "使用最广泛的 UI 库",
+      "router_no": "在代码中通过模块注册路由",
+      "router_yes": "页面即 src/routes 中的文件",
+      "solid": "细粒度响应式,无虚拟 DOM",
+      "sqlalchemy": "Python 的标准 ORM",
+      "sqlite": "单个文件,无需安装",
+      "sqlmodel": "同时是数据表的 Pydantic 模型",
+      "svelte": "编译型,运行时极小",
+      "tailwind": "在标记中使用工具类",
+      "tortoise": "原生异步,类 Django API",
+      "unocss": "按需原子化 CSS,极快",
+      "vanilla": "纯样式表,无需学习",
+      "vue": "易上手,文档完善",
+      "web": "页面、布局和组件合为一个应用"
+    },
     "initializing": "正在初始化 {name}...",
     "installed_uv": "已安装 uv",
     "installing_uv": "正在安装 uv",
@@ -174,6 +205,14 @@
     "passed": "所有测试均已通过",
     "skip_client": "未配置 vitest：跳过客户端测试",
     "skip_tool": "未找到 pytest：跳过服务端测试"
+  },
+  "tui": {
+    "keys": {
+      "back": "返回",
+      "choose": "选择",
+      "move": "移动",
+      "quit": "退出"
+    }
   },
   "watch": {
     "compile_failed": "编译 {path} 失败",

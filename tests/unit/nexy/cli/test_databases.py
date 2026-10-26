@@ -14,7 +14,6 @@ def test_the_offered_databases():
         "neon",
         "mysql",
         "other",
-        "none",
     ]
 
 

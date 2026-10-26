@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-# (key, label shown in the prompt). `other` asks for a URL, `none` skips the database.
+# (key, label shown in the prompt). `other` asks for a URL; no database is the "no ORM" answer.
 DATABASES: list[tuple[str, str]] = [
     ("sqlite", "SQLite"),
     ("postgresql", "PostgreSQL"),
     ("neon", "Neon (serverless PostgreSQL)"),
     ("mysql", "MySQL / MariaDB"),
     ("other", "Other"),
-    ("none", "None"),
 ]
 
 _TORTOISE = "Tortoise-ORM"

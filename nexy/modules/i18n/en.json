@@ -112,12 +112,43 @@
     },
     "checkout_failed": "Failed to extract files from template '{path}'.",
     "choice": {
-      "api": "API (RESTful API)",
-      "back": "Back",
-      "web": "Web (monolith web app)"
+      "api": "API",
+      "no": "No",
+      "no_database": "No database",
+      "other": "Other",
+      "web": "Web",
+      "yes": "Yes"
     },
     "error": "Initialization failed: {error}",
     "git_restore": "could not restore previous .git",
+    "hint": {
+      "api": "JSON endpoints only, no pages",
+      "component_no": "server-rendered .nexy pages only",
+      "component_yes": "interactive parts written in a UI framework",
+      "csr_no": "every page is rendered by the server",
+      "csr_yes": "the browser navigates without reloading",
+      "mysql": "widely hosted, MariaDB compatible",
+      "neon": "serverless PostgreSQL in the cloud",
+      "no_orm": "no database layer, add one later",
+      "other_db": "type your own connection URL",
+      "other_style": "set it up yourself",
+      "postgresql": "the robust open-source standard",
+      "preact": "React API in 3 kB",
+      "react": "the most widely used UI library",
+      "router_no": "register routes in code, with modules",
+      "router_yes": "pages are the files of src/routes",
+      "solid": "fine-grained reactivity, no virtual DOM",
+      "sqlalchemy": "the reference Python ORM",
+      "sqlite": "a file, nothing to install",
+      "sqlmodel": "Pydantic models that are also tables",
+      "svelte": "compiled, very little runtime",
+      "tailwind": "utility classes in your markup",
+      "tortoise": "async-first, Django-like API",
+      "unocss": "on-demand atomic CSS, very fast",
+      "vanilla": "plain stylesheets, nothing to learn",
+      "vue": "approachable and well documented",
+      "web": "pages, layouts and components in one app"
+    },
     "initializing": "Initializing {name}...",
     "installed_uv": "Installed uv",
     "installing_uv": "Installing uv",
@@ -174,6 +205,14 @@
     "passed": "all tests passed",
     "skip_client": "vitest not configured - skipping client tests",
     "skip_tool": "pytest not found - skipping server tests"
+  },
+  "tui": {
+    "keys": {
+      "back": "back",
+      "choose": "choose",
+      "move": "move",
+      "quit": "quit"
+    }
   },
   "watch": {
     "compile_failed": "Failed to compile {path}",
