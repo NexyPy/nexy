@@ -1,25 +1,19 @@
 :host { all: initial; }
 * { box-sizing: border-box; }
 
-/* The toolbar's own theme: dark glass by default, light or the system's on request. */
+/* The toolbar's own theme: it follows the page (dark or light) unless told otherwise. Neutral on
+   purpose: it must not look like part of the app it is debugging. */
 .root {
-  --bg: rgba(6, 43, 36, 0.94); --panel: #0a3a30; --line: #14503f; --line-2: #1e6b55;
-  --ink: #eaf6f1; --muted: #9cc4b8; --brand: #2ee6a6; --on-brand: #03241c; --bad: #ff7b7b;
-  --warn: #ffc857; --good: #2ee6a6; --shadow: 0 18px 48px -16px rgba(2, 19, 15, 0.6);
+  --bg: rgba(24, 26, 31, 0.94); --panel: #1c1f25; --line: #2c3038; --line-2: #3b4049;
+  --ink: #f1f3f5; --muted: #9aa3ad; --brand: #f1f3f5; --on-brand: #15171b; --bad: #ff7b7b;
+  --warn: #ffc857; --good: #35d49a; --shadow: 0 18px 48px -16px rgba(0, 0, 0, 0.55);
   position: fixed; z-index: 2147483001; zoom: var(--zoom, 1);
   font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink);
 }
 .root[data-theme="light"] {
-  --bg: rgba(255, 255, 255, 0.94); --panel: #ffffff; --line: #d8e5df; --line-2: #c0d4cb;
-  --ink: #0a2531; --muted: #4a6068; --brand: #0b8f6b; --on-brand: #ffffff; --bad: #c62828;
-  --warn: #a15c00; --good: #0b8f6b; --shadow: 0 18px 48px -16px rgba(10, 37, 49, 0.3);
-}
-@media (prefers-color-scheme: light) {
-  .root[data-theme="system"] {
-    --bg: rgba(255, 255, 255, 0.94); --panel: #ffffff; --line: #d8e5df; --line-2: #c0d4cb;
-    --ink: #0a2531; --muted: #4a6068; --brand: #0b8f6b; --on-brand: #ffffff; --bad: #c62828;
-    --warn: #a15c00; --good: #0b8f6b; --shadow: 0 18px 48px -16px rgba(10, 37, 49, 0.3);
-  }
+  --bg: rgba(255, 255, 255, 0.94); --panel: #ffffff; --line: #e3e6ea; --line-2: #cdd2d9;
+  --ink: #111418; --muted: #5b6470; --brand: #111418; --on-brand: #ffffff; --bad: #c62828;
+  --warn: #a15c00; --good: #12805c; --shadow: 0 18px 48px -16px rgba(17, 20, 24, 0.25);
 }
 
 /* The four corners. The panel opens towards the middle of the screen. */
@@ -126,25 +120,25 @@ a:hover { text-decoration: underline; }
 /* The dialog over the page for an error raised in the browser */
 .overlay {
   position: fixed; inset: 0; z-index: 2147483002; display: grid; place-items: center; padding: 16px;
-  background: rgba(2, 19, 15, 0.7); backdrop-filter: blur(3px); font: 14px/1.5 system-ui, sans-serif;
+  background: rgba(8, 9, 11, 0.7); backdrop-filter: blur(3px); font: 14px/1.5 system-ui, sans-serif;
 }
 .dialog {
   width: min(840px, 100%); max-height: calc(100vh - 32px); overflow: auto; border-radius: 16px;
-  background: #0a3a30; color: #eaf6f1; border: 1px solid #14503f; border-top: 3px solid #ff7b7b;
+  background: #1c1f25; color: #f1f3f5; border: 1px solid #2c3038; border-top: 3px solid #ff7b7b;
 }
-.dialog header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; color: #9cc4b8; }
+.dialog header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; color: #9aa3ad; }
 .dialog header .pill2 {
-  padding: 2px 9px; border-radius: 999px; background: #4a1d1d; color: #ffb3b3; font-size: 12px; font-weight: 700;
+  padding: 2px 9px; border-radius: 999px; background: #4a2020; color: #ffb3b3; font-size: 12px; font-weight: 700;
 }
 .dialog header .spacer { flex: 1; }
 .dialog header button {
-  all: unset; cursor: pointer; padding: 3px 9px; border-radius: 8px; color: #eaf6f1;
+  all: unset; cursor: pointer; padding: 3px 9px; border-radius: 8px; color: #f1f3f5;
 }
-.dialog header button:hover { background: #0e4a3d; }
+.dialog header button:hover { background: #2c3038; }
 .dialog h2 { margin: 0; padding: 0 18px 4px; font-size: 20px; line-height: 1.3; word-break: break-word; }
-.dialog .where { padding: 0 18px 14px; color: #9cc4b8; }
+.dialog .where { padding: 0 18px 14px; color: #9aa3ad; }
 .dialog pre {
-  margin: 0; padding: 14px 18px; background: #062b24; border-top: 1px solid #14503f; overflow: auto;
-  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #cfe8df;
+  margin: 0; padding: 14px 18px; background: #15171b; border-top: 1px solid #2c3038; overflow: auto;
+  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #d5dae0;
 }
-.dialog footer { padding: 10px 18px; border-top: 1px solid #14503f; color: #9cc4b8; font-size: 12px; }
+.dialog footer { padding: 10px 18px; border-top: 1px solid #2c3038; color: #9aa3ad; font-size: 12px; }

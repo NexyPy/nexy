@@ -242,3 +242,12 @@ class TestToolbarAssets:
 
     def test_motion_is_switched_off_for_people_who_ask(self):
         assert "prefers-reduced-motion: no-preference" in self._asset("toolbar.css")
+
+
+class TestToolbarColours:
+    def test_it_follows_the_page_by_default(self):
+        assert "theme: 'system'" in TestToolbarAssets._asset("toolbar.js")
+
+    def test_it_does_not_wear_the_green_of_the_app(self):
+        css = TestToolbarAssets._asset("toolbar.css").lower()
+        assert not any(green in css for green in ("#062b24", "#0a3a30", "#14503f", "#2ee6a6"))

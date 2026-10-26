@@ -160,6 +160,7 @@
     "merging": "ディレクトリが空ではないため、ファイルをマージしています...",
     "migration_tool": "{tool} を初期化しています...",
     "network": {
+      "checking": "接続を確認しています...",
       "latency": "接続：{latency} ms",
       "offline": "接続がありません：パッケージはインストールされませんでした。",
       "offline_hint": "オンラインになったら、プロジェクトフォルダーで uv sync とパッケージマネージャーの install を実行してください。",

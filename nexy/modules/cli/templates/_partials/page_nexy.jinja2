@@ -1,18 +1,3 @@
-{#- A starter page of a server-rendered project. The includer sets page_partial and, for a page
-    with the demo card, page_card. -#}
+{#- A starter page of a server-rendered project. The includer sets page_partial. -#}
 {%- set page_ext = ".nexy" -%}
-{%- set card = "Counter" -%}
-{%- if page_card -%}
----
-{% if client_framework == "none" -%}
-from "@/components/counter/counter.nexy" import Counter
-{%- elif client_framework == "vue" -%}
-from "@/components/counter/counter.vue" import Counter
-{%- elif client_framework == "svelte" -%}
-from "@/components/counter/counter.svelte" import Counter
-{%- else -%}
-from "@/components/counter/counter.tsx" import Counter
-{%- endif %}
----
-{% endif -%}
 {% include page_partial %}

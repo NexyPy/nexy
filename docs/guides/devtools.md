@@ -9,7 +9,7 @@ response.
 | Page | URL, route, handler, the file it comes from (with a link that opens it in your editor), status, server time, first byte, first paint, main content, layout shift (graded green, amber or red), DOM ready |
 | Routes | every route of the app with its methods, a filter, and the current one marked; each links to its file |
 | Errors | server errors since `nexy dev` started and the errors the browser raised |
-| Settings | theme (dark, light or system), position, size, hide, reset |
+| Settings | theme (match the page, dark or light), position, size, hide, reset |
 
 ## Move it
 

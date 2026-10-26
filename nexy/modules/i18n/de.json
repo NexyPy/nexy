@@ -160,6 +160,7 @@
     "merging": "Das Verzeichnis ist nicht leer, Dateien werden zusammengeführt...",
     "migration_tool": "{tool} wird initialisiert...",
     "network": {
+      "checking": "Verbindung wird geprüft ...",
       "latency": "Verbindung: {latency} ms",
       "offline": "Keine Verbindung: Die Pakete wurden nicht installiert.",
       "offline_hint": "Sobald Sie online sind, führen Sie im Projektordner uv sync und das install Ihres Paketmanagers aus.",

@@ -160,6 +160,7 @@
     "merging": "El directorio no está vacío, fusionando archivos...",
     "migration_tool": "Inicializando {tool}...",
     "network": {
+      "checking": "Comprobando la conexión...",
       "latency": "Conexión: {latency} ms",
       "offline": "Sin conexión: no se instalaron los paquetes.",
       "offline_hint": "Cuando tengas conexión, ejecuta uv sync y el install de tu gestor de paquetes en la carpeta del proyecto.",

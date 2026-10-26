@@ -39,13 +39,20 @@ class TestHome:
         _scaffold(tmp_path, framework, use_csr)
         assert "The Python framework for the whole web app." in _home(tmp_path, framework, use_csr)
 
-    def test_the_steps_are_three_tabs(self, tmp_path, framework, use_csr):
+    def test_the_page_sells_it_does_not_teach_how_to_install(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
-        assert _home(tmp_path, framework, use_csr).count('type="radio"') == 3
+        home = _home(tmp_path, framework, use_csr)
+        assert "nx new" not in home and "nx build" not in home and "nx dev" not in home
 
-    def test_the_command_can_be_copied(self, tmp_path, framework, use_csr):
+    def test_the_page_names_what_the_product_gives(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
-        assert 'data-copy="nx new my-app"' in _home(tmp_path, framework, use_csr)
+        home = _home(tmp_path, framework, use_csr)
+        assert "Less glue, more product." in home and "Ready for production" in home
+
+    def test_each_benefit_has_an_icon(self, tmp_path, framework, use_csr):
+        _scaffold(tmp_path, framework, use_csr)
+        home = _home(tmp_path, framework, use_csr)
+        assert all(f"nx-icon-{name}" in home for name in ("server", "frontend", "bolt", "shield"))
 
     def test_both_illustrations_ship_with_the_project(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
@@ -54,29 +61,11 @@ class TestHome:
         for name in ("hero-light.svg", "hero-dark.svg"):
             assert name in home and (public / name).is_file()
 
-    def test_exactly_one_file_is_selected_at_first(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr)
-        home = _home(tmp_path, framework, use_csr)
-        assert home.count("defaultChecked") + home.count(" checked") == 1
-
-    def test_labels_point_at_their_inputs_in_the_syntax_of_the_framework(
-        self, tmp_path, framework, use_csr
-    ):
-        _scaffold(tmp_path, framework, use_csr)
-        home = _home(tmp_path, framework, use_csr)
-        attribute = "htmlFor" if framework == "react" and use_csr else "for"
-        assert f'{attribute}="nx-t-ship"' in home
-
     def test_no_utility_class_is_needed_to_look_right(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
         home = _home(tmp_path, framework, use_csr)
         assert "text-foreground-second" not in home and "max-w-5xl" not in home
         assert "style=" not in home
-
-    def test_the_counter_is_a_segmented_control(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr)
-        counter = next((tmp_path / "src" / "components" / "counter").glob("counter.*"))
-        assert "nx-counter" in counter.read_text(encoding="utf-8")
 
     def test_the_page_is_not_dark_before_the_theme_is_known(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
@@ -94,13 +83,19 @@ class TestStylesheet:
     def test_every_style_gets_the_same_starter_classes(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
-        names = (".nx-hero", ".nx-tabs", ".nx-bento", ".nx-switch", ".btn-primary")
+        names = (".nx-hero", ".nx-bento", ".nx-icon", ".nx-switch", ".btn-primary")
         assert all(name in css for name in names)
 
     def test_changing_page_feels_like_changing_a_tab(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
         assert "@view-transition" in css and "::view-transition-new(root)" in css
+
+    def test_buttons_have_no_shadow(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        buttons = css[css.index(".btn-primary,") : css.index(".nx-hero-wrap {")]
+        assert "box-shadow" not in buttons
 
     def test_the_page_is_not_black_in_the_dark(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
@@ -148,10 +143,3 @@ def test_the_script_of_the_head_is_valid_javascript():
     script = TEMPLATES_DIR / "_partials" / "theme_script.js"
     done = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True)
     assert done.returncode == 0, done.stderr
-
-
-def test_a_failed_copy_is_not_reported_as_done():
-    from nexy.modules.cli.constants import TEMPLATES_DIR
-
-    script = (TEMPLATES_DIR / "_partials" / "theme_script.js").read_text(encoding="utf-8")
-    assert "copyWithSelection" in script and "}, function () {});" in script

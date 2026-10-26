@@ -115,8 +115,14 @@ class DependencyInstaller:
         steps += int((self.directory / "pyproject.toml").exists())
         return steps + len(orm_packages(self.orm, self.database))
 
+    def _check_connection(self) -> Connection:
+        """Look at the connection with a spinner: the probe can take a few seconds."""
+        label = t("init.network.checking", "Checking the connection...")
+        with console.status(label, spinner="dots"):
+            return self.probe()
+
     def install_all(self) -> None:
-        if not is_usable(self.probe()):
+        if not is_usable(self._check_connection()):
             return
         self._finished, self._total = 0, self._count_steps()
         self._install_uv()

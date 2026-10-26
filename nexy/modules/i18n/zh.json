@@ -160,6 +160,7 @@
     "merging": "目录不为空，正在合并文件...",
     "migration_tool": "正在初始化 {tool}...",
     "network": {
+      "checking": "正在检查网络连接...",
       "latency": "连接：{latency} 毫秒",
       "offline": "没有网络连接：未安装软件包。",
       "offline_hint": "联网后，请在项目文件夹中运行 uv sync 和你的包管理器的 install 命令。",

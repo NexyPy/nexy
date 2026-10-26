@@ -66,8 +66,7 @@
     margin-inline: auto;
     padding-inline: 1.5rem;
   }
-  :where(.nx-page) :where(a, button, summary):focus-visible,
-  .nx-tab:has(input:focus-visible) {
+  :where(.nx-page) :where(a, button, summary):focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 3px;
   }
@@ -138,11 +137,6 @@
     align-items: center;
     gap: 0.75rem;
   }
-  @media (max-width: 40rem) {
-    .nx-header-cta {
-      display: none;
-    }
-  }
 
   /* The light/dark switch: the thumb holds the icon of the current mode. */
   .nx-switch {
@@ -204,13 +198,12 @@
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.18s, border-color 0.18s, transform 0.12s, box-shadow 0.18s;
+    transition: background-color 0.18s, border-color 0.18s, transform 0.12s;
   }
   .btn-primary {
     background: var(--btn-bg);
     color: var(--btn-fg);
     border: 1px solid transparent;
-    box-shadow: 0 8px 24px -10px var(--btn-bg);
   }
   .btn-primary:hover {
     background: var(--btn-bg-hover);
@@ -226,57 +219,6 @@
   .btn-primary:active,
   .btn-ghost:active {
     transform: translateY(1px);
-  }
-  .nx-header-cta {
-    height: 2.25rem;
-    font-size: 0.875rem;
-    padding-inline: 1rem;
-  }
-
-  /* The command to copy */
-  .nx-command {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    height: 2.75rem;
-    padding-inline: 1rem 0.875rem;
-    border: 1px solid var(--border-second);
-    border-radius: 0.875rem;
-    background: color-mix(in oklab, var(--background-second) 80%, transparent);
-    color: var(--foreground);
-    cursor: pointer;
-    transition: border-color 0.18s;
-  }
-  .nx-command:hover {
-    border-color: var(--brand);
-  }
-  .nx-command-prompt {
-    color: var(--brand);
-    font-family: "Geist Mono", ui-monospace, monospace;
-  }
-  .nx-command-copy {
-    padding: 0.2rem 0.55rem;
-    border-radius: 0.5rem;
-    background: color-mix(in oklab, var(--foreground) 8%, transparent);
-    color: var(--foreground-second);
-    font-size: 0.8125rem;
-    font-weight: 600;
-  }
-  .nx-command[data-copied] .nx-command-copy {
-    color: var(--brand);
-  }
-  .nx-command[data-copied]::after {
-    content: "Copied";
-    position: absolute;
-    right: 0;
-    top: -2.1rem;
-    padding: 0.2rem 0.6rem;
-    border-radius: 0.5rem;
-    background: var(--foreground);
-    color: var(--background);
-    font-size: 0.75rem;
-    font-weight: 600;
   }
 
   /* Hero */
@@ -431,89 +373,6 @@
     color: var(--foreground-second);
   }
 
-  /* Steps: three tabs, one panel */
-  .nx-tabs {
-    margin-top: 2.25rem;
-    border: 1px solid var(--border);
-    border-radius: 1.5rem;
-    background: var(--background-second);
-    overflow: hidden;
-  }
-  .nx-tablist {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    border-bottom: 1px solid var(--border);
-  }
-  .nx-tablist::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    width: calc(100% / 3);
-    height: 3px;
-    border-radius: 3px 3px 0 0;
-    background: linear-gradient(90deg, #2d8fd8, #0fb482);
-    transition: transform 0.35s cubic-bezier(0.3, 0.7, 0.2, 1);
-  }
-  .nx-tabs:has(#nx-t-develop:checked) .nx-tablist::after {
-    transform: translateX(100%);
-  }
-  .nx-tabs:has(#nx-t-ship:checked) .nx-tablist::after {
-    transform: translateX(200%);
-  }
-  .nx-tab {
-    position: relative;
-    padding: 1.125rem 1rem;
-    text-align: center;
-    font-weight: 600;
-    color: var(--foreground-second);
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-  .nx-tab:hover,
-  .nx-tab:has(input:checked) {
-    color: var(--foreground);
-  }
-  .nx-tab input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .nx-panel {
-    display: none;
-    padding: 2rem;
-    gap: 1.25rem;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .nx-tabs:has(#nx-t-create:checked) [data-step="create"],
-  .nx-tabs:has(#nx-t-develop:checked) [data-step="develop"],
-  .nx-tabs:has(#nx-t-ship:checked) [data-step="ship"] {
-    display: flex;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .nx-panel {
-      animation: nx-panel 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
-    }
-  }
-  @keyframes nx-panel {
-    from {
-      opacity: 0;
-      transform: translateX(18px);
-    }
-  }
-  .nx-panel h3 {
-    font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
-    font-size: 1.375rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
-  .nx-panel p {
-    max-width: 38rem;
-    color: var(--foreground-second);
-  }
-
   /* What you get: tiles of different sizes */
   .nx-bento {
     display: grid;
@@ -558,29 +417,34 @@
     margin-top: auto;
     padding-top: 1.25rem;
   }
-  .nx-routes {
+  .nx-icon {
     display: grid;
-    gap: 0.5rem;
-  }
-  .nx-route {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.625rem 0.875rem;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
     border-radius: 0.875rem;
-    background: color-mix(in oklab, var(--brand) 9%, transparent);
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 0.875rem;
-  }
-  .nx-route span:last-child {
+    background: linear-gradient(135deg, color-mix(in oklab, #2d8fd8 22%, transparent), color-mix(in oklab, var(--brand) 26%, transparent));
     color: var(--brand);
-    font-weight: 600;
   }
-  .nx-route-new {
-    background: transparent;
-    border: 1px dashed var(--border-second);
-    color: var(--foreground-second);
+  .nx-icon::before {
+    content: "";
+    width: 1.375rem;
+    height: 1.375rem;
+    background: currentColor;
+    mask: var(--glyph) center / contain no-repeat;
+  }
+  .nx-icon-server {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='6' rx='2'/%3E%3Crect x='3' y='14' width='18' height='6' rx='2'/%3E%3Cpath d='M7 7h.01M7 17h.01'/%3E%3C/svg%3E");
+  }
+  .nx-icon-frontend {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M3 9h18M9 9v11'/%3E%3C/svg%3E");
+  }
+  .nx-icon-bolt {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E");
+  }
+  .nx-icon-shield {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E");
   }
   .nx-chips {
     display: flex;
@@ -623,73 +487,6 @@
     border-color: var(--brand);
     background: color-mix(in oklab, var(--brand) 14%, transparent);
   }
-  .nx-toolbar-mock {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.5rem 0.875rem;
-    border-radius: 999px;
-    background: #062b24;
-    color: #eaf6f1;
-    border: 1px solid #14503f;
-    font-size: 0.875rem;
-    font-weight: 600;
-    box-shadow: 0 12px 28px -14px rgb(6 43 36 / 0.7);
-  }
-  .nx-toolbar-mock::before {
-    content: "N";
-    display: grid;
-    place-items: center;
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 0.4rem;
-    background: #2ee6a6;
-    color: #03241c;
-    font-size: 0.75rem;
-    font-weight: 800;
-  }
-  .nx-toolbar-mock::after {
-    content: "";
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: #2ee6a6;
-  }
-
-  /* The counter: a component that runs in the browser */
-  .nx-counter {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.3rem;
-    border: 1px solid var(--border-second);
-    border-radius: 999px;
-    background: var(--background);
-  }
-  .nx-step {
-    width: 2.75rem;
-    height: 2.75rem;
-    border-radius: 50%;
-    font-size: 1.375rem;
-    line-height: 1;
-    color: var(--foreground);
-    cursor: pointer;
-    transition: background-color 0.15s, transform 0.1s;
-  }
-  .nx-step:hover {
-    background: color-mix(in oklab, var(--brand) 16%, transparent);
-  }
-  .nx-step:active {
-    transform: scale(0.9);
-  }
-  .nx-count {
-    min-width: 4.5rem;
-    text-align: center;
-    font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
-    font-size: 1.75rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-
   /* The call to action */
   .nx-band-wrap {
     padding-block: 4.5rem;
@@ -732,11 +529,6 @@
     color: #eaf6f1;
     border-color: #1e6b55;
     background: transparent;
-  }
-  .nx-band .nx-command {
-    color: #eaf6f1;
-    border-color: #1e6b55;
-    background: rgb(3 36 28 / 0.5);
   }
 
   /* Pages of text */

@@ -88,11 +88,6 @@ class TestCsrScaffold:
         _scaffold(tmp_path, "react", use_csr=True)
         assert (tmp_path / "src" / "routes" / "index.tsx").is_file()
 
-    def test_route_imports_the_client_component(self, tmp_path: Path):
-        _scaffold(tmp_path, "react", use_csr=True)
-        route = (tmp_path / "src" / "routes" / "index.tsx").read_text(encoding="utf-8")
-        assert 'from "@/components/counter/counter.tsx"' in route
-
     def test_route_has_no_jinja_leftover(self, tmp_path: Path):
         _scaffold(tmp_path, "react", use_csr=True)
         route = (tmp_path / "src" / "routes" / "index.tsx").read_text(encoding="utf-8")
@@ -126,9 +121,9 @@ class TestDefaultScaffold:
         config = _scaffold(tmp_path, "react", use_csr=False)
         assert "useCSR" not in config
 
-    def test_the_counter_component_is_kept(self, tmp_path: Path):
+    def test_the_starter_ships_no_demo_component(self, tmp_path: Path):
         _scaffold(tmp_path, "none", use_csr=False)
-        assert (tmp_path / "src" / "components" / "counter" / "counter.nexy").is_file()
+        assert not (tmp_path / "src" / "components" / "counter").exists()
 
     def test_layout_owns_the_html_document(self, tmp_path: Path):
         _scaffold(tmp_path, "vue", use_csr=False)

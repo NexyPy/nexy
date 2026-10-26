@@ -160,6 +160,7 @@
     "merging": "Directory not empty, merging files...",
     "migration_tool": "Initializing {tool}...",
     "network": {
+      "checking": "Checking the connection...",
       "latency": "Connection: {latency} ms",
       "offline": "No connection: packages were not installed.",
       "offline_hint": "When you are online, run uv sync and your package manager's install in the project folder.",

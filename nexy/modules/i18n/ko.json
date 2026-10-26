@@ -160,6 +160,7 @@
     "merging": "디렉터리가 비어 있지 않아 파일을 병합하는 중...",
     "migration_tool": "{tool} 초기화 중...",
     "network": {
+      "checking": "연결을 확인하는 중...",
       "latency": "연결: {latency} ms",
       "offline": "연결 없음: 패키지가 설치되지 않았습니다.",
       "offline_hint": "온라인이 되면 프로젝트 폴더에서 uv sync와 패키지 관리자의 install을 실행하세요.",

@@ -160,6 +160,7 @@
     "merging": "Direktori tidak kosong, menggabungkan berkas...",
     "migration_tool": "Menginisialisasi {tool}...",
     "network": {
+      "checking": "Memeriksa koneksi...",
       "latency": "Koneksi: {latency} ms",
       "offline": "Tidak ada koneksi: paket tidak dipasang.",
       "offline_hint": "Saat sudah online, jalankan uv sync dan install dari pengelola paket Anda di folder proyek.",

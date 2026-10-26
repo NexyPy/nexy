@@ -111,3 +111,39 @@ class TestProgressBar:
         (tmp_path / "pyproject.toml").write_text("")
         _installer(tmp_path, Connection(True, 30.0, 3000.0)).install_all()
         assert positions == [None]
+
+
+class TestWhileTheConnectionIsChecked:
+    """The check can take seconds: something must say so, and stop before the result is printed."""
+
+    @staticmethod
+    def _status_log(monkeypatch):
+        log: list[str] = []
+
+        class Spinner:
+            def __enter__(self):
+                log.append("shown")
+
+            def __exit__(self, *_exc):
+                log.append("hidden")
+
+        monkeypatch.setattr(
+            dependencies.console, "status", lambda text, **_kw: (log.append(text), Spinner())[1]
+        )
+        return log
+
+    def test_a_spinner_says_the_connection_is_being_checked(self, project, calls, monkeypatch):
+        log = self._status_log(monkeypatch)
+        _installer(project, Connection(True, 30.0, 3000.0)).install_all()
+        assert log[0] == "Checking the connection..."
+
+    def test_the_spinner_is_gone_before_the_result_is_printed(self, project, calls, monkeypatch):
+        log = self._status_log(monkeypatch)
+        seen_at_probe: list[list[str]] = []
+
+        def probe() -> Connection:
+            seen_at_probe.append(list(log))
+            return Connection(True, 30.0, 3000.0)
+
+        DependencyInstaller(project, orm=None, probe=probe).install_all()
+        assert seen_at_probe == [["Checking the connection...", "shown"]] and log[-1] == "hidden"

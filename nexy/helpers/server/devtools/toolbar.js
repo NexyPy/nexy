@@ -6,7 +6,7 @@
   // --- Preferences, kept in this browser -------------------------------------------------------
   const STORE = 'nexy-devtools'
   const CORNERS = ['top-left', 'top-right', 'bottom-left', 'bottom-right']
-  const DEFAULTS = { position: 'bottom-left', theme: 'dark', zoom: 1, hidden: false }
+  const DEFAULTS = { position: 'bottom-left', theme: 'system', zoom: 1, hidden: false }
   const read = () => { try { return JSON.parse(localStorage.getItem(STORE)) || {} } catch { return {} } }
   const prefs = { ...DEFAULTS, ...read() }
   if (!CORNERS.includes(prefs.position)) prefs.position = DEFAULTS.position
@@ -60,7 +60,7 @@
   shadow.append(h('style', {}, css))
   document.body.append(host)
 
-  const root = h('div', { class: 'root', 'data-pos': prefs.position, 'data-theme': prefs.theme })
+  const root = h('div', { class: 'root', 'data-pos': prefs.position, 'data-theme': 'dark' })
   const pill = h('button', { class: 'pill', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', title: 'Nexy dev tools. Drag to move.' })
   root.append(pill)
   shadow.append(root)
@@ -122,7 +122,7 @@
   const settingsTab = () => [
     h('div', { class: 'h' }, 'Theme'),
     h('div', { class: 'choices' },
-      ['dark', 'light', 'system'].map((v) => choice(v[0].toUpperCase() + v.slice(1), prefs.theme, v, (x) => { prefs.theme = x }))),
+      [['Match page', 'system'], ['Dark', 'dark'], ['Light', 'light']].map(([label, v]) => choice(label, prefs.theme, v, (x) => { prefs.theme = x }))),
     h('div', { class: 'h' }, 'Position'),
     h('div', { class: 'choices grid4' },
       CORNERS.map((c) => choice(c.replace('-', ' '), prefs.position, c, (x) => { prefs.position = x }))),
@@ -162,9 +162,19 @@
     if (focused) { const again = panel.querySelector(`.${focused}`); if (again) { again.focus(); again.setSelectionRange?.(query.length, query.length) } }
   }
 
+  // "system" follows the page: its dark class, else its colour scheme, else the system's.
+  function pageIsDark() {
+    const page = document.documentElement
+    if (page.classList.contains('dark')) return true
+    if (page.classList.contains('light')) return false
+    const scheme = getComputedStyle(page).colorScheme
+    if (scheme === 'dark' || scheme === 'light') return scheme === 'dark'
+    return matchMedia('(prefers-color-scheme: dark)').matches
+  }
+
   function applyPrefs() {
     root.dataset.pos = prefs.position
-    root.dataset.theme = prefs.theme
+    root.dataset.theme = prefs.theme === 'system' ? (pageIsDark() ? 'dark' : 'light') : prefs.theme
     root.style.setProperty('--zoom', String(prefs.zoom))
     host.style.display = prefs.hidden ? 'none' : ''
   }
@@ -266,6 +276,8 @@
     }
   })
 
+  new MutationObserver(() => applyPrefs()).observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] })
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyPrefs)
   applyPrefs()
   render()
 })()
