@@ -14,8 +14,6 @@
  "function:helpers/imports/ncc.py:NexyClientComponent._resolve_path": 21,
  "function:helpers/server/proxy.py:ViteProxyMiddleware._handle_http": 21,
  "function:hooks.py:useViews": 37,
- "function:modules/builder/__init__.py:Builder.build": 71,
- "function:modules/builder/__init__.py:Builder.build.compile_file": 37,
  "function:modules/cli/__init__.py:main": 42,
  "function:modules/cli/commands/add.py:add": 29,
  "function:modules/cli/commands/add.py:fetch_remote_component": 29,
