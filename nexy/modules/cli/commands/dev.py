@@ -9,13 +9,14 @@ from typing import Any
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
-from nexy.helpers.common import launcher, package_manager
+from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.common.pycheck import describe, report
 from nexy.helpers.common.vite_launch import vite_installed
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
+from nexy.helpers.server.listening import Endpoint, print_listening
 from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
@@ -27,20 +28,6 @@ from nexy.modules.i18n import t
 
 _APP_MODULES = ("nexy.modules.routers.app", "nexy.modules.routers.fbrouter")
 _APP = "nexy.modules.routers.app:_server"
-
-
-@dataclass(frozen=True)
-class _Endpoint:
-    """Where the application listens."""
-
-    host: str
-    port: int
-    ssl_keyfile: str | None = None
-    ssl_certfile: str | None = None
-
-    @property
-    def protocol(self) -> str:
-        return "https" if self.ssl_keyfile and self.ssl_certfile else "http"
 
 
 @dataclass
@@ -182,7 +169,7 @@ class _Reloader:
         self.request_restart()
         self._announced = False
 
-    def serve(self, endpoint: _Endpoint) -> None:
+    def serve(self, endpoint: Endpoint) -> None:
         """Serve until Ctrl+C; an application that cannot load waits for the next change."""
         while True:
             self._prepare()
@@ -220,7 +207,7 @@ class _Reloader:
         while not self._changed.wait(0.2):
             pass
 
-    def _run(self, endpoint: _Endpoint) -> None:
+    def _run(self, endpoint: Endpoint) -> None:
         import uvicorn
 
         from nexy.helpers.server.uvicorn_config import DEV_SERVE_LIMITS, NEXY_LOG_CONFIG
@@ -242,19 +229,7 @@ class _Reloader:
         self._server = None
 
 
-def _print_banner(endpoint: _Endpoint, startup_seconds: float) -> None:
-    network_ip = Server.get_network_ip() if endpoint.host == "0.0.0.0" else endpoint.host  # nosec B104
-    launcher.banner("dev", __version__)
-    launcher.entry(t("dev.local", "Local:"), f"{endpoint.protocol}://localhost:{endpoint.port}")
-    if network_ip not in ("127.0.0.1", "localhost"):
-        launcher.entry(
-            t("dev.network", "Network:"), f"{endpoint.protocol}://{network_ip}:{endpoint.port}"
-        )
-    launcher.entry(t("dev.ready", "Ready:"), f"{startup_seconds:.2f}s")
-    console.print(f"  [dim]{t('dev.stop', 'press Ctrl+C to stop')}[/dim]")
-
-
-def _serve(config: Config, endpoint: _Endpoint, session: _Session, started: float) -> None:
+def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float) -> None:
     """Watch the project and serve it until Ctrl+C; always release what was started."""
     reloader = _Reloader()
     observer = None
@@ -266,7 +241,9 @@ def _serve(config: Config, endpoint: _Endpoint, session: _Session, started: floa
             on_reload_api=reloader.request_restart,
             on_routes_changed=reloader.request_routes_restart,
         )
-        _print_banner(endpoint, time.perf_counter() - started)
+        print_listening(
+            "dev", __version__, endpoint, time.perf_counter() - started, Server.get_network_ip
+        )
         reloader.serve(endpoint)
     except KeyboardInterrupt:
         console.print(f"\n  [dim]{t('dev.stopping', 'Stopping servers...')}[/dim]")
@@ -296,7 +273,7 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     Server.check_nexy_prod(delete=True)
 
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
-    endpoint = _Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
+    endpoint = Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
     started = time.perf_counter()
     session = _initialise(config, client_port, endpoint.protocol == "https")
     _serve(config, endpoint, session, started)

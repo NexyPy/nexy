@@ -85,12 +85,8 @@
     "error_waiting": "Aplikasi tidak dapat dimulai: menunggu perbaikan.",
     "exited": "berhenti",
     "init_error": "Terjadi kesalahan saat inisialisasi:",
-    "local": "Lokal:",
-    "network": "Jaringan:",
-    "ready": "Siap:",
     "routes_failed": "Rute klien tidak dapat diperbarui: {error}",
     "starting_vite": "Memulai server pengembangan...",
-    "stop": "tekan Ctrl+C untuk berhenti",
     "stopping": "Menghentikan server...",
     "updating": "memperbarui server",
     "vite_failed": "Vite gagal dimulai.",
@@ -160,15 +156,15 @@
     "tool_missing": "Kesalahan: {tool} tidak ditemukan di PATH. Pasang lalu coba lagi."
   },
   "server": {
-    "launch_failed": "Server gagal dijalankan:"
-  },
-  "start": {
-    "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",
-    "exited": "berhenti",
+    "launch_failed": "Server gagal dijalankan:",
     "local": "Lokal:",
     "network": "Jaringan:",
     "ready": "Siap:",
     "stop": "tekan Ctrl+C untuk berhenti"
+  },
+  "start": {
+    "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",
+    "exited": "berhenti"
   },
   "test": {
     "failed": "{count} proses pengujian gagal",

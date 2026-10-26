@@ -85,12 +85,8 @@
     "error_waiting": "A aplicação não pode iniciar: aguardando uma correção.",
     "exited": "encerrado",
     "init_error": "Erro durante a inicialização:",
-    "local": "Local:",
-    "network": "Rede:",
-    "ready": "Pronto:",
     "routes_failed": "Não foi possível atualizar as rotas do cliente: {error}",
     "starting_vite": "Iniciando o servidor de desenvolvimento...",
-    "stop": "pressione Ctrl+C para parar",
     "stopping": "Parando os servidores...",
     "updating": "atualizando o servidor",
     "vite_failed": "O Vite não conseguiu iniciar.",
@@ -160,15 +156,15 @@
     "tool_missing": "Erro: {tool} não está no PATH. Instale-o e tente novamente."
   },
   "server": {
-    "launch_failed": "Falha ao iniciar o servidor:"
-  },
-  "start": {
-    "broken": "{count} arquivo(s) de rota não puderam ser carregados: o servidor não foi iniciado.",
-    "exited": "encerrado",
+    "launch_failed": "Falha ao iniciar o servidor:",
     "local": "Local:",
     "network": "Rede:",
     "ready": "Pronto:",
     "stop": "pressione Ctrl+C para parar"
+  },
+  "start": {
+    "broken": "{count} arquivo(s) de rota não puderam ser carregados: o servidor não foi iniciado.",
+    "exited": "encerrado"
   },
   "test": {
     "failed": "{count} execução(ões) de testes com falha",

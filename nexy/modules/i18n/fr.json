@@ -85,12 +85,8 @@
     "error_waiting": "L'application ne peut pas démarrer : en attente d'une correction.",
     "exited": "arrêté",
     "init_error": "Erreur pendant l'initialisation :",
-    "local": "Local :",
-    "network": "Réseau :",
-    "ready": "Prêt :",
     "routes_failed": "Impossible de mettre à jour les routes client : {error}",
     "starting_vite": "Démarrage du serveur de développement...",
-    "stop": "Ctrl+C pour arrêter",
     "stopping": "Arrêt des serveurs...",
     "updating": "mise à jour du serveur",
     "vite_failed": "Vite n'a pas pu démarrer.",
@@ -160,15 +156,15 @@
     "tool_missing": "Erreur : {tool} est introuvable dans le PATH. Installez-le puis réessayez."
   },
   "server": {
-    "launch_failed": "Échec du lancement du serveur :"
-  },
-  "start": {
-    "broken": "{count} fichier(s) de route n'ont pas pu être chargés : le serveur n'a pas démarré.",
-    "exited": "arrêté",
+    "launch_failed": "Échec du lancement du serveur :",
     "local": "Local :",
     "network": "Réseau :",
     "ready": "Prêt :",
     "stop": "Ctrl+C pour arrêter"
+  },
+  "start": {
+    "broken": "{count} fichier(s) de route n'ont pas pu être chargés : le serveur n'a pas démarré.",
+    "exited": "arrêté"
   },
   "test": {
     "failed": "{count} exécution(s) de tests en échec",

@@ -85,12 +85,8 @@
     "error_waiting": "La aplicación no puede iniciar: esperando una corrección.",
     "exited": "detenido",
     "init_error": "Error durante la inicialización:",
-    "local": "Local:",
-    "network": "Red:",
-    "ready": "Listo:",
     "routes_failed": "No se pudieron actualizar las rutas del cliente: {error}",
     "starting_vite": "Iniciando el servidor de desarrollo...",
-    "stop": "pulse Ctrl+C para detener",
     "stopping": "Deteniendo los servidores...",
     "updating": "actualizando el servidor",
     "vite_failed": "Vite no pudo iniciarse.",
@@ -160,15 +156,15 @@
     "tool_missing": "Error: {tool} no está en el PATH. Instálelo e inténtelo de nuevo."
   },
   "server": {
-    "launch_failed": "Falló el inicio del servidor:"
-  },
-  "start": {
-    "broken": "{count} archivo(s) de ruta no se pudieron cargar: el servidor no se inició.",
-    "exited": "detenido",
+    "launch_failed": "Falló el inicio del servidor:",
     "local": "Local:",
     "network": "Red:",
     "ready": "Listo:",
     "stop": "pulse Ctrl+C para detener"
+  },
+  "start": {
+    "broken": "{count} archivo(s) de ruta no se pudieron cargar: el servidor no se inició.",
+    "exited": "detenido"
   },
   "test": {
     "failed": "{count} ejecución(es) de pruebas con error",

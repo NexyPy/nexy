@@ -8,6 +8,9 @@ from typing import Any
 
 import pytest
 
+from nexy.helpers.common import launcher
+from nexy.helpers.server.listening import Endpoint
+
 dev_module = importlib.import_module("nexy.modules.cli.commands.dev")
 
 
@@ -141,7 +144,7 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
 
     monkeypatch.setattr(dev_module, "create_observer", create_observer)
     for name in ("banner", "success", "entry"):
-        monkeypatch.setattr(dev_module.launcher, name, lambda *a, **k: None)
+        monkeypatch.setattr(launcher, name, lambda *a, **k: None)
     monkeypatch.setattr("uvicorn.Config", lambda *a, **k: SimpleNamespace(args=a, kwargs=k))
     monkeypatch.setattr("uvicorn.Server", FakeUvicornServer)
     monkeypatch.delenv(dev_module.DEV_ENV_VAR, raising=False)
@@ -295,16 +298,6 @@ def test_the_observer_watches_what_the_config_says(world, monkeypatch):
     assert captured["patterns"] == ["*.py"] and captured["path"] == "."
 
 
-class TestEndpoint:
-    def test_protocol_follows_the_certificates(self):
-        plain = dev_module._Endpoint("127.0.0.1", 3000)
-        secure = dev_module._Endpoint("127.0.0.1", 3000, "key.pem", "cert.pem")
-        assert (plain.protocol, secure.protocol) == ("http", "https")
-
-    def test_a_key_without_a_certificate_stays_http(self):
-        assert dev_module._Endpoint("h", 1, ssl_keyfile="key.pem").protocol == "http"
-
-
 class TestReloader:
     def test_a_request_stops_the_running_server(self):
         reloader = dev_module._Reloader()
@@ -318,7 +311,7 @@ class TestReloader:
         assert reloader.restart_requested
 
     def test_serve_returns_when_no_restart_was_requested(self, world):
-        dev_module._Reloader().serve(dev_module._Endpoint("127.0.0.1", 3000))
+        dev_module._Reloader().serve(Endpoint("127.0.0.1", 3000))
         assert world.rec.count("uvicorn_run") == 1
 
 
@@ -339,26 +332,6 @@ class TestSettleVite:
         with pytest.raises(SystemExit) as error:
             dev_module._settle_vite(session, FakeBuildResult(), 5173)
         assert error.value.code == 1 and session.vite is None
-
-
-class TestBanner:
-    def test_the_network_address_is_shown_when_listening_on_all_interfaces(
-        self, world, monkeypatch
-    ):
-        entries: list[str] = []
-        monkeypatch.setattr(
-            dev_module.launcher, "entry", lambda label, value: entries.append(value)
-        )
-        dev_module._print_banner(dev_module._Endpoint("0.0.0.0", 3000), 1.5)  # noqa: S104
-        assert "http://localhost:3000" in entries and "http://192.168.1.2:3000" in entries
-
-    def test_loopback_shows_no_network_line(self, world, monkeypatch):
-        entries: list[str] = []
-        monkeypatch.setattr(
-            dev_module.launcher, "entry", lambda label, value: entries.append(value)
-        )
-        dev_module._print_banner(dev_module._Endpoint("127.0.0.1", 3000), 0.2)
-        assert entries == ["http://localhost:3000", "0.20s"]
 
 
 def test_purging_removes_the_application_modules(monkeypatch, world):

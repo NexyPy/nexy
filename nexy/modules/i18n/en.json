@@ -85,12 +85,8 @@
     "error_waiting": "The application cannot start: waiting for a fix.",
     "exited": "exited",
     "init_error": "Error during initialization:",
-    "local": "Local:",
-    "network": "Network:",
-    "ready": "Ready:",
     "routes_failed": "Could not update the client routes: {error}",
     "starting_vite": "Starting the dev server...",
-    "stop": "press Ctrl+C to stop",
     "stopping": "Stopping servers...",
     "updating": "update server",
     "vite_failed": "Vite failed to start.",
@@ -160,15 +156,15 @@
     "tool_missing": "Error: {tool} not found on PATH. Install it and try again."
   },
   "server": {
-    "launch_failed": "Server launch failed:"
-  },
-  "start": {
-    "broken": "{count} route file(s) failed to load: the server was not started.",
-    "exited": "exited",
+    "launch_failed": "Server launch failed:",
     "local": "Local:",
     "network": "Network:",
     "ready": "Ready:",
-    "stop": "Press Ctrl+C to stop"
+    "stop": "press Ctrl+C to stop"
+  },
+  "start": {
+    "broken": "{count} route file(s) failed to load: the server was not started.",
+    "exited": "exited"
   },
   "test": {
     "failed": "{count} test run(s) failed",

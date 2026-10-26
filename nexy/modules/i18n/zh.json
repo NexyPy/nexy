@@ -85,12 +85,8 @@
     "error_waiting": "应用无法启动：等待修复。",
     "exited": "已退出",
     "init_error": "初始化时出错：",
-    "local": "本地：",
-    "network": "网络：",
-    "ready": "就绪：",
     "routes_failed": "无法更新客户端路由：{error}",
     "starting_vite": "正在启动开发服务器...",
-    "stop": "按 Ctrl+C 停止",
     "stopping": "正在停止服务器...",
     "updating": "更新服务器",
     "vite_failed": "Vite 启动失败。",
@@ -160,15 +156,15 @@
     "tool_missing": "错误：在 PATH 中找不到 {tool}。请安装后重试。"
   },
   "server": {
-    "launch_failed": "服务器启动失败："
-  },
-  "start": {
-    "broken": "{count} 个路由文件加载失败：服务器未启动。",
-    "exited": "已退出",
+    "launch_failed": "服务器启动失败：",
     "local": "本地：",
     "network": "网络：",
     "ready": "就绪：",
     "stop": "按 Ctrl+C 停止"
+  },
+  "start": {
+    "broken": "{count} 个路由文件加载失败：服务器未启动。",
+    "exited": "已退出"
   },
   "test": {
     "failed": "{count} 次测试运行失败",

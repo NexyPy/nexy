@@ -85,12 +85,8 @@
     "error_waiting": "Die Anwendung kann nicht starten: warte auf eine Korrektur.",
     "exited": "beendet",
     "init_error": "Fehler bei der Initialisierung:",
-    "local": "Lokal:",
-    "network": "Netzwerk:",
-    "ready": "Bereit:",
     "routes_failed": "Die Client-Routen konnten nicht aktualisiert werden: {error}",
     "starting_vite": "Entwicklungsserver wird gestartet...",
-    "stop": "Zum Beenden Strg+C drücken",
     "stopping": "Server werden beendet...",
     "updating": "Server wird aktualisiert",
     "vite_failed": "Vite konnte nicht gestartet werden.",
@@ -160,15 +156,15 @@
     "tool_missing": "Fehler: {tool} wurde im PATH nicht gefunden. Installieren Sie es und versuchen Sie es erneut."
   },
   "server": {
-    "launch_failed": "Serverstart fehlgeschlagen:"
-  },
-  "start": {
-    "broken": "{count} Routendatei(en) konnten nicht geladen werden: Der Server wurde nicht gestartet.",
-    "exited": "beendet",
+    "launch_failed": "Serverstart fehlgeschlagen:",
     "local": "Lokal:",
     "network": "Netzwerk:",
     "ready": "Bereit:",
     "stop": "Zum Beenden Strg+C drücken"
+  },
+  "start": {
+    "broken": "{count} Routendatei(en) konnten nicht geladen werden: Der Server wurde nicht gestartet.",
+    "exited": "beendet"
   },
   "test": {
     "failed": "{count} Testlauf/-läufe fehlgeschlagen",

@@ -85,12 +85,8 @@
     "error_waiting": "アプリケーションを起動できません。修正を待っています。",
     "exited": "終了しました",
     "init_error": "初期化中にエラーが発生しました:",
-    "local": "ローカル:",
-    "network": "ネットワーク:",
-    "ready": "準備完了:",
     "routes_failed": "クライアントルートを更新できませんでした: {error}",
     "starting_vite": "開発サーバーを起動しています...",
-    "stop": "Ctrl+C で停止",
     "stopping": "サーバーを停止しています...",
     "updating": "サーバーを更新",
     "vite_failed": "Vite を起動できませんでした。",
@@ -160,15 +156,15 @@
     "tool_missing": "エラー: {tool} が PATH に見つかりません。インストールしてからもう一度お試しください。"
   },
   "server": {
-    "launch_failed": "サーバーの起動に失敗しました:"
-  },
-  "start": {
-    "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",
-    "exited": "終了しました",
+    "launch_failed": "サーバーの起動に失敗しました:",
     "local": "ローカル:",
     "network": "ネットワーク:",
     "ready": "準備完了:",
     "stop": "Ctrl+C で停止"
+  },
+  "start": {
+    "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",
+    "exited": "終了しました"
   },
   "test": {
     "failed": "{count} 件のテスト実行が失敗しました",
