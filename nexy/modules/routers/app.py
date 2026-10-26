@@ -180,4 +180,16 @@ class AppServer:
         return ViteProxyMiddleware(server, port=port)
 
 
-_server = AppServer().run()
+def create_app() -> ASGIApp:
+    """Assemble a new application from the project in the working directory."""
+    return AppServer().run()
+
+
+def __getattr__(name: str) -> Any:
+    """``_server``, the uvicorn target, is built on first use and kept: importing this module
+    must not scan the project."""
+    if name != "_server":
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    application = create_app()
+    globals()["_server"] = application
+    return application
