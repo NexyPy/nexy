@@ -97,6 +97,23 @@ A call with JSON answers with the result, and `422` with the invalid fields.
 > **Good to know**: action paths are specific to the project and generated. Never hardcode
 > `/_nx_<hash>` in a test.
 
+## Test a `.nexy` component
+
+`nexy.testing.render` compiles a component, with the components it imports, and returns its HTML.
+Props are keyword arguments and `children=` fills the slot:
+
+```python filename="tests/test_button.py"
+from nexy.testing import render
+
+
+def test_button_shows_its_label():
+    assert "Save" in render("src/components/button.nexy", label="Save")
+```
+
+Run pytest from the project root: the compiled files go to `__nexy__/`, as with `nx dev`. A
+component that reads the request (`usePathname`, `useSession`) needs a page test with `TestClient`
+instead.
+
 ## Test the client
 
 `nx test --client` expects your own vitest setup. A minimal component test:
