@@ -81,6 +81,7 @@
     "deps_missing": "Node.js の依存関係がありません。",
     "deps_run": "次を実行してください: {command}",
     "error": "エラー: {error}",
+    "error_label": "エラー",
     "error_waiting": "アプリケーションを起動できません。修正を待っています。",
     "exited": "終了しました",
     "init_error": "初期化中にエラーが発生しました:",
@@ -183,6 +184,7 @@
     "compiled": "{path} を {time} でコンパイルしました",
     "error_kept": "修正して保存してください。サーバーは最後に動いていた版を保ちます。",
     "restart_failed": "サーバーを再起動できませんでした: {error}",
-    "stop_failed": "ウォッチャーを正常に停止できませんでした: {error}"
+    "stop_failed": "ウォッチャーを正常に停止できませんでした: {error}",
+    "update": "更新"
   }
 }

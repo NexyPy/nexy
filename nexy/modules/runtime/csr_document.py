@@ -19,6 +19,7 @@ from typing import Any
 import httpx
 
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.server.proxy import vite_proxy_port
 from nexy.hooks import _get_req as _get_request
 from nexy.vite import Vite
@@ -90,10 +91,11 @@ def _from_vite(page_file: str, layouts: list[str], props: dict[str, Any], port: 
             f"http://127.0.0.1:{port}/__nexy__/render", json=body, timeout=_RENDER_TIMEOUT
         )
     except httpx.HTTPError as error:
-        console.print(f"[yellow]nexy[/yellow] » document render unavailable: {error}")
+        console.print(tagged("nexy", f"document render unavailable: {error}", "yellow"))
         return None
     if response.status_code != 200:
-        console.print(f"[red]nexy[/red] » rendering {page_file} failed:\n{response.text[:2000]}")
+        failure = f"rendering {page_file} failed:\n{response.text[:2000]}"
+        console.print(tagged("nexy", failure, "red"))
         return None
     return response.text
 

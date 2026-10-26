@@ -14,7 +14,8 @@ from watchdog.observers import Observer
 from nexy.core.config import Config
 from nexy.core.string import StringTransform
 from nexy.helpers.common.console import console
-from nexy.helpers.common.pycheck import find_syntax_problem
+from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.pycheck import find_syntax_problem, report
 from nexy.helpers.server.access_log import format_duration
 from nexy.modules.compiler import Compiler
 from nexy.modules.i18n import t
@@ -70,6 +71,13 @@ def is_generated_init(path: str) -> bool:
         return Path(path).stat().st_size == 0
     except OSError:
         return False
+
+
+def is_stray_markdown(path: str) -> bool:
+    """True for a Markdown file of the project outside the routes, like README.md: not a page."""
+    if Path(path).suffix not in (".md", ".mdx") or Path(path).is_absolute():
+        return False
+    return not path.startswith(f"{Config.ROUTER_PATH.strip('/')}/")
 
 
 def is_route_page(path: str) -> bool:
@@ -184,12 +192,12 @@ class WatchHandler(PatternMatchingEventHandler):
         elif self.on_reload_api and path.endswith(".py"):
             if self._report_python_problem(path):
                 return
-            console.print(f"  [yellow]~[/yellow] [dim]{path}[/dim]")
+            console.print(tagged("nexy", f"{t('watch.update', 'update')} [dim]{path}[/dim]"))
             try:
                 self.on_reload_api()
             except Exception as e:
                 reason = t("watch.restart_failed", "Failed to restart the server: {error}")
-                console.print(f"[red]hmr[/red] » [red]{reason.format(error=e)}[/red]")
+                console.print(tagged("hmr", f"[red]{reason.format(error=e)}[/red]", "red"))
 
     @staticmethod
     def _report_python_problem(path: str) -> bool:
@@ -197,9 +205,8 @@ class WatchHandler(PatternMatchingEventHandler):
         problem = find_syntax_problem(path)
         if problem is None:
             return False
-        console.print(f"  [red]x[/red] {escape(problem.format())}")
         kept = t("watch.error_kept", "Fix it and save: the server keeps its last working version.")
-        console.print(f"    [dim]{kept}[/dim]")
+        report(problem, kept)
         return True
 
     def _log_hmr_timing(self, path: str, start_time: float | None) -> None:
@@ -208,10 +215,9 @@ class WatchHandler(PatternMatchingEventHandler):
         if os.getenv("NEXY_HMR_DEBUG", "").strip() not in ("1", "true", "TRUE"):
             return
         elapsed_ms = (time.perf_counter() - start_time) * 1000
-        console.print(
-            f"[green]nsc[/green] » [green]hmr[/green]"
-            f" [dim]{path}[/dim] → broadcast in [dim]{elapsed_ms:.1f}ms[/dim]"
-        )
+        took = f"[dim]{elapsed_ms:.1f}ms[/dim]"
+        message = f"[green]hmr[/green] [dim]{path}[/dim] → broadcast in {took}"
+        console.print(tagged("nsc", message, "green"))
 
     def dispatch(self, event: FileSystemEvent) -> None:
         """Directory events skip the file patterns: removing a folder removes its routes."""
@@ -253,7 +259,7 @@ class WatchHandler(PatternMatchingEventHandler):
         if event.is_directory:
             return
         path = normalize_path(event.src_path)
-        if is_ignored_path(path) or is_generated_init(path):
+        if is_ignored_path(path) or is_generated_init(path) or is_stray_markdown(path):
             return
         if throttle and not self._should_trigger(path):
             # Save bursts (truncate + write on Windows) hit the leading edge

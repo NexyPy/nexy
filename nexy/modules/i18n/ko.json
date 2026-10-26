@@ -81,6 +81,7 @@
     "deps_missing": "Node.js 의존성이 없습니다.",
     "deps_run": "다음을 실행하세요: {command}",
     "error": "오류: {error}",
+    "error_label": "오류",
     "error_waiting": "애플리케이션을 시작할 수 없습니다. 수정을 기다리는 중입니다.",
     "exited": "종료됨",
     "init_error": "초기화 중 오류가 발생했습니다:",
@@ -183,6 +184,7 @@
     "compiled": "{path}을(를) {time}에 컴파일함",
     "error_kept": "수정 후 저장하세요. 서버는 마지막으로 동작한 버전을 유지합니다.",
     "restart_failed": "서버를 다시 시작하지 못했습니다: {error}",
-    "stop_failed": "감시기를 정상적으로 중지하지 못했습니다: {error}"
+    "stop_failed": "감시기를 정상적으로 중지하지 못했습니다: {error}",
+    "update": "업데이트"
   }
 }

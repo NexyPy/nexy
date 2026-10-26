@@ -81,6 +81,7 @@
     "deps_missing": "Dependensi Node.js belum ada.",
     "deps_run": "Jalankan: {command}",
     "error": "Kesalahan: {error}",
+    "error_label": "kesalahan",
     "error_waiting": "Aplikasi tidak dapat dimulai: menunggu perbaikan.",
     "exited": "berhenti",
     "init_error": "Terjadi kesalahan saat inisialisasi:",
@@ -183,6 +184,7 @@
     "compiled": "{path} dikompilasi dalam {time}",
     "error_kept": "Perbaiki lalu simpan: server tetap memakai versi terakhir yang berfungsi.",
     "restart_failed": "Server gagal dimulai ulang: {error}",
-    "stop_failed": "Pemantau tidak dapat dihentikan dengan benar: {error}"
+    "stop_failed": "Pemantau tidak dapat dihentikan dengan benar: {error}",
+    "update": "memperbarui"
   }
 }

@@ -81,6 +81,7 @@
     "deps_missing": "Node.js dependencies are missing.",
     "deps_run": "Run: {command}",
     "error": "Error: {error}",
+    "error_label": "error",
     "error_waiting": "The application cannot start: waiting for a fix.",
     "exited": "exited",
     "init_error": "Error during initialization:",
@@ -183,6 +184,7 @@
     "compiled": "Compiled {path} in {time}",
     "error_kept": "Fix it and save: the server keeps its last working version.",
     "restart_failed": "Failed to restart the server: {error}",
-    "stop_failed": "Could not stop the watcher cleanly: {error}"
+    "stop_failed": "Could not stop the watcher cleanly: {error}",
+    "update": "update"
   }
 }

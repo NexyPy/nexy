@@ -3,6 +3,7 @@ import os
 from nexy.core.models import ParserModel
 from nexy.errors import NexyCompileError
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.vfs import VFS
 
 from .logic import LogicGenerator
@@ -26,7 +27,7 @@ class Generator:
             self._generate_init(directory)
             return True
         except Exception as e:
-            console.print(f"[red]nsc[/red] » Error writing to file '{output}': {e}")
+            console.print(tagged("nsc", f"Error writing to file '{output}': {e}", "red"))
             raise NexyCompileError(
                 source_path=output,
                 message=str(e),

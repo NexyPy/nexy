@@ -2,6 +2,7 @@ import shutil
 from pathlib import Path
 
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.path import PathUtil
 
 _PACKAGE_DIR = Path(__file__).resolve().parent
@@ -33,4 +34,4 @@ def copy_vite_config() -> None:
                     Path("__nexy__") / name, source.read_text(encoding="utf-8")
                 )
     except Exception as e:
-        console.print(f"[red]nsc[/red] » error generating vite.ts: {e}")
+        console.print(tagged("nsc", f"error generating vite.ts: {e}", "red"))

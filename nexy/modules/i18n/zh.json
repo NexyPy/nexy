@@ -81,6 +81,7 @@
     "deps_missing": "缺少 Node.js 依赖。",
     "deps_run": "请运行：{command}",
     "error": "错误：{error}",
+    "error_label": "错误",
     "error_waiting": "应用无法启动：等待修复。",
     "exited": "已退出",
     "init_error": "初始化时出错：",
@@ -183,6 +184,7 @@
     "compiled": "已编译 {path}，用时 {time}",
     "error_kept": "修复后保存：服务器继续运行上一个可用版本。",
     "restart_failed": "无法重启服务器：{error}",
-    "stop_failed": "无法正常停止文件监视：{error}"
+    "stop_failed": "无法正常停止文件监视：{error}",
+    "update": "更新"
   }
 }

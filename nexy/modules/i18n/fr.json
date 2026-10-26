@@ -81,6 +81,7 @@
     "deps_missing": "Les dépendances Node.js sont manquantes.",
     "deps_run": "Exécutez : {command}",
     "error": "Erreur : {error}",
+    "error_label": "erreur",
     "error_waiting": "L'application ne peut pas démarrer : en attente d'une correction.",
     "exited": "arrêté",
     "init_error": "Erreur pendant l'initialisation :",
@@ -183,6 +184,7 @@
     "compiled": "{path} compilé en {time}",
     "error_kept": "Corrigez et enregistrez : le serveur garde sa dernière version qui fonctionnait.",
     "restart_failed": "Impossible de redémarrer le serveur : {error}",
-    "stop_failed": "Impossible d'arrêter proprement la surveillance : {error}"
+    "stop_failed": "Impossible d'arrêter proprement la surveillance : {error}",
+    "update": "mise à jour de"
   }
 }

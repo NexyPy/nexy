@@ -9,6 +9,7 @@ from pathlib import Path
 from nexy.core.config import Config
 from nexy.errors import NexyCompileError
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.fingerprint import first_stat_fingerprint, stat_fingerprint
 from nexy.helpers.fs.vfs import VFS
 from nexy.modules.builder.discovery import Discovery
@@ -200,17 +201,15 @@ class Builder:
                 if skipped:
                     result.skipped.append(input_path)
                     if showlog:
-                        console.print(f"[dim]nsc[/dim] » cached [reset][dim]{input_path}[/dim]")
+                        console.print(tagged("nsc", f"cached [dim]{input_path}[/dim]"))
                 elif error is None:
                     result.success.append(input_path)
                     if showlog:
-                        console.print(
-                            f"[green]nsc[/green] » compiled [reset][dim]{input_path}[/dim]"
-                        )
+                        console.print(tagged("nsc", f"compiled [dim]{input_path}[/dim]", "green"))
                 else:
                     result.failed.append(input_path)
                     result.errors[input_path] = error
-                    console.print(f"[red]nsc[/red] » {error.format()}")
+                    console.print(tagged("nsc", error.format(), "red"))
                     if showlog:
                         _tb.print_exc()
 

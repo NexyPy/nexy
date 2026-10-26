@@ -370,3 +370,15 @@ def test_purging_removes_the_application_modules(monkeypatch, world):
     assert "__nexy__.src.routes.index" not in sys.modules
     assert "nexy.modules.routers.app" not in sys.modules
     assert world.rec.count("purge") == 1
+
+
+class TestRestartAnnouncement:
+    def test_a_python_change_is_not_announced_twice(self, world, capsys):
+        world.serve_plan = ["restart", "exit"]
+        dev_module.dev()
+        assert "update server" not in capsys.readouterr().out
+
+    def test_a_new_page_says_the_server_is_updating(self, world, capsys):
+        world.serve_plan = ["routes", "exit"]
+        dev_module.dev()
+        assert "update server" in capsys.readouterr().out

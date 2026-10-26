@@ -5,6 +5,7 @@ from nexy.core.config import Config
 from nexy.core.models import ParserModel
 from nexy.errors import NexyCompileError
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.vfs import VFS
 from nexy.modules.compiler.frontend_route import FrontendRouteCompiler
 from nexy.modules.compiler.generator import Generator
@@ -130,7 +131,7 @@ class Compiler:
 
         else:
             msg = f"File '{self.input}' is not a nexy component"
-            console.print(f"[red]nsc[/red] » {msg}")
+            console.print(tagged("nsc", msg, "red"))
             raise NexyCompileError(
                 source_path=self.input,
                 message=msg,

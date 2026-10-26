@@ -81,6 +81,7 @@
     "deps_missing": "اعتماديات Node.js غير موجودة.",
     "deps_run": "شغّل: {command}",
     "error": "خطأ: {error}",
+    "error_label": "خطأ",
     "error_waiting": "لا يمكن تشغيل التطبيق: في انتظار الإصلاح.",
     "exited": "تم الإيقاف",
     "init_error": "حدث خطأ أثناء التهيئة:",
@@ -183,6 +184,7 @@
     "compiled": "تم تجميع {path} في {time}",
     "error_kept": "أصلح الخطأ واحفظ: يحتفظ الخادم بآخر نسخة كانت تعمل.",
     "restart_failed": "تعذّرت إعادة تشغيل الخادم: {error}",
-    "stop_failed": "تعذّر إيقاف المراقب بشكل سليم: {error}"
+    "stop_failed": "تعذّر إيقاف المراقب بشكل سليم: {error}",
+    "update": "تحديث"
   }
 }

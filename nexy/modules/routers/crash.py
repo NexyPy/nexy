@@ -8,7 +8,6 @@ code or the exception reaches the visitor.
 
 from __future__ import annotations
 
-import linecache
 import os
 import secrets
 import traceback
@@ -22,12 +21,11 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, Response
 
 from nexy.errors import InternalServerError
+from nexy.helpers.common.code_frame import print_frame, rows_of_file
 from nexy.helpers.common.console import console
 from nexy.helpers.common.pycheck import project_path
 from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.security_headers import DEFAULT_HEADERS
-
-_CONTEXT = 3
 
 
 @dataclass(frozen=True)
@@ -64,15 +62,9 @@ def is_dev() -> bool:
     return os.environ.get(DEV_ENV_VAR) == "1"
 
 
-def _context(filename: str, line: int) -> tuple[tuple[int, str], ...]:
-    lines = linecache.getlines(filename)
-    first, last = max(1, line - _CONTEXT), min(len(lines), line + _CONTEXT)
-    return tuple((number, lines[number - 1].rstrip("\n")) for number in range(first, last + 1))
-
-
 def _frame(entry: traceback.FrameSummary, root: Path) -> Frame:
     inside = project_path(entry.filename, root)
-    code = _context(entry.filename, entry.lineno or 0) if inside else ()
+    code = rows_of_file(entry.filename, entry.lineno or 0) if inside else ()
     return Frame(inside or entry.filename, entry.name, entry.lineno or 0, code)
 
 
@@ -98,13 +90,9 @@ def log_crash(request: Request, crash: Crash, dev: bool | None = None) -> None:
             f"    [dim]at {markup(frame.location)}:{frame.line} in {frame.function}[/dim]"
         )
     if crash.origin:
-        _print_code(crash.origin)
-
-
-def _print_code(frame: Frame) -> None:
-    for number, text in frame.code:
-        colour = "red" if number == frame.line else "dim"
-        console.print(f"    [{colour}]{number:>4} | {markup(text)}[/{colour}]")
+        console.print()
+        print_frame(crash.origin.code, crash.origin.line)
+        console.print()
 
 
 def _rows(frame: Frame) -> str:

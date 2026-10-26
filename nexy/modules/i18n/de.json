@@ -81,6 +81,7 @@
     "deps_missing": "Die Node.js-Abhängigkeiten fehlen.",
     "deps_run": "Führen Sie aus: {command}",
     "error": "Fehler: {error}",
+    "error_label": "Fehler",
     "error_waiting": "Die Anwendung kann nicht starten: warte auf eine Korrektur.",
     "exited": "beendet",
     "init_error": "Fehler bei der Initialisierung:",
@@ -183,6 +184,7 @@
     "compiled": "{path} in {time} kompiliert",
     "error_kept": "Beheben und speichern: Der Server behält seine letzte funktionierende Version.",
     "restart_failed": "Der Server konnte nicht neu gestartet werden: {error}",
-    "stop_failed": "Die Dateiüberwachung konnte nicht sauber beendet werden: {error}"
+    "stop_failed": "Die Dateiüberwachung konnte nicht sauber beendet werden: {error}",
+    "update": "aktualisiere"
   }
 }

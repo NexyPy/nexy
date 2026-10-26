@@ -16,6 +16,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from nexy.core.config import Config
 from nexy.core.string import Pathname, StringTransform
 from nexy.helpers.common.console import console
+from nexy.helpers.common.pycheck import describe, report
 from nexy.modules.routers.crash import inspect_crash, log_crash
 from nexy.modules.routers.fbrouter.discovery import RouteDiscovery
 from nexy.modules.runtime.cache import REVALIDATE_CACHE
@@ -297,14 +298,9 @@ class FBRouter:
                 import_path = path_str.replace("/", ".").removesuffix(".py")
             try:
                 module = importlib.import_module(import_path)
-            except ImportError as imp_exc:
-                console.print(f"  [yellow]WARN[/yellow] {app_path.name} ({app_path}): {imp_exc}")
-                LOAD_FAILURES.append(f"{app_path}: {imp_exc}")
-                continue
             except Exception as exc:
-                reason = _describe_import_error(exc)
-                console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {reason}")
-                LOAD_FAILURES.append(f"{app_path}: {reason}")
+                report(describe(exc))
+                LOAD_FAILURES.append(f"{app_path}: {_describe_import_error(exc)}")
                 continue
 
             clean = _route_clean_path(path_str)

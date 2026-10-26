@@ -81,6 +81,7 @@
     "deps_missing": "As dependências do Node.js estão ausentes.",
     "deps_run": "Execute: {command}",
     "error": "Erro: {error}",
+    "error_label": "erro",
     "error_waiting": "A aplicação não pode iniciar: aguardando uma correção.",
     "exited": "encerrado",
     "init_error": "Erro durante a inicialização:",
@@ -183,6 +184,7 @@
     "compiled": "{path} compilado em {time}",
     "error_kept": "Corrija e salve: o servidor mantém a última versão que funcionava.",
     "restart_failed": "Não foi possível reiniciar o servidor: {error}",
-    "stop_failed": "Não foi possível parar o observador corretamente: {error}"
+    "stop_failed": "Não foi possível parar o observador corretamente: {error}",
+    "update": "atualizando"
   }
 }

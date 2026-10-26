@@ -35,6 +35,12 @@ class TestFormat:
     def test_the_status_colour_follows_its_class(self, status, colour):
         assert f"[{colour}]{status}[/{colour}]" in format_request("GET", "/", status, 0.001)
 
+    @pytest.mark.parametrize(
+        ("status", "colour"), [(200, "green"), (302, "cyan"), (404, "yellow"), (500, "red")]
+    )
+    def test_the_verb_has_the_colour_of_the_status(self, status, colour):
+        assert f"[{colour}]GET[/{colour}]" in format_request("GET", "/", status, 0.001)
+
     def test_a_slow_request_is_flagged(self):
         assert "[yellow]1.5s[/yellow]" in format_request("GET", "/", 200, 1.5)
         assert "[dim]12ms[/dim]" in format_request("GET", "/", 200, 0.012)
@@ -103,6 +109,53 @@ class TestMiddleware:
 
         lines: list[str] = []
         asyncio.run(
-            _call(AccessLogMiddleware(app, log=lines.append), "/ws", scope_type="websocket")
+            _call(AccessLogMiddleware(app, log=lines.append), "/", scope_type="lifespan")
         )
-        assert reached == ["websocket"] and lines == []
+        assert reached == ["lifespan"] and lines == []
+
+
+def _socket(accepts: bool = True):
+    async def app(scope, receive, send):
+        if accepts:
+            await send({"type": "websocket.accept"})
+        else:
+            await send({"type": "websocket.close", "code": 1008})
+
+    return app
+
+
+class TestSockets:
+    def test_an_accepted_socket_is_logged_as_socket_with_status_101(self):
+        lines: list[str] = []
+        app = AccessLogMiddleware(_socket(), log=lines.append)
+        asyncio.run(_call(app, "/chat", scope_type="websocket"))
+        assert _plain(lines[0]).startswith("SOCKET » /chat 101 in ")
+
+    def test_a_refused_socket_is_logged_as_403(self):
+        lines: list[str] = []
+        app = AccessLogMiddleware(_socket(accepts=False), log=lines.append)
+        asyncio.run(_call(app, "/chat", scope_type="websocket"))
+        assert _plain(lines[0]).startswith("SOCKET » /chat 403 in ")
+
+    def test_a_socket_is_logged_once(self):
+        lines: list[str] = []
+        app = AccessLogMiddleware(_socket(), log=lines.append)
+        asyncio.run(_call(app, "/chat", scope_type="websocket"))
+        assert len(lines) == 1
+
+    def test_the_framework_socket_is_not_logged(self):
+        lines: list[str] = []
+        app = AccessLogMiddleware(_socket(), log=lines.append)
+        asyncio.run(_call(app, "/_nexy/hmr", scope_type="websocket"))
+        assert lines == []
+
+    def test_a_socket_that_crashes_before_accepting_is_a_500(self):
+        async def failing(scope, receive, send):
+            raise RuntimeError("boom")
+
+        lines: list[str] = []
+        with pytest.raises(RuntimeError):
+            asyncio.run(
+                _call(AccessLogMiddleware(failing, log=lines.append), "/c", scope_type="websocket")
+            )
+        assert _plain(lines[0]).startswith("SOCKET » /c 500 in ")

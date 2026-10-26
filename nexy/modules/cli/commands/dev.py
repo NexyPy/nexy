@@ -7,13 +7,12 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Any
 
-from rich.markup import escape
-
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common import launcher, package_manager
 from nexy.helpers.common.console import console
-from nexy.helpers.common.pycheck import describe
+from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.pycheck import describe, report
 from nexy.helpers.common.vite_launch import vite_installed
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
@@ -167,8 +166,11 @@ class _Reloader:
         self._started = False
         self._server: Any = None
         self._changed = threading.Event()
+        self._announced = False
 
     def request_restart(self) -> None:
+        """A Python file changed: the watcher already named it."""
+        self._announced = True
         self.restart_requested = True
         self._changed.set()
         if self._server is not None:
@@ -178,6 +180,7 @@ class _Reloader:
         """The set of pages changed: the route table and the client route list are stale."""
         self.regenerate_requested = True
         self.request_restart()
+        self._announced = False
 
     def serve(self, endpoint: _Endpoint) -> None:
         """Serve until Ctrl+C; an application that cannot load waits for the next change."""
@@ -191,9 +194,10 @@ class _Reloader:
                 self._wait_for_change()
 
     def _prepare(self) -> None:
-        if self._started:
-            console.print(f"  [dim]nexy[/dim] » {t('dev.updating', 'update server')}")
+        if self._started and not self._announced:
+            console.print(tagged("nexy", t("dev.updating", "update server")))
         self._started = True
+        self._announced = False
         self.restart_requested = False
         self._changed.clear()
         if self.regenerate_requested:
@@ -207,14 +211,12 @@ class _Reloader:
         try:
             _import_app()
         except Exception as error:
-            problem = describe(error)
-            console.print(f"  [red]x[/red] {escape(problem.format())}")
+            waiting = t("dev.error_waiting", "The application cannot start: waiting for a fix.")
+            report(describe(error), waiting)
             return False
         return True
 
     def _wait_for_change(self) -> None:
-        waiting = t("dev.error_waiting", "The application cannot start: waiting for a fix.")
-        console.print(f"    [dim]{waiting}[/dim]")
         while not self._changed.wait(0.2):
             pass
 
@@ -276,7 +278,7 @@ def _serve(config: Config, endpoint: _Endpoint, session: _Session, started: floa
         console.print(f"  [dim]{t('dev.cleaning', 'Cleaning up...')}[/dim]")
         stop_observer(observer)
         Server.stop_process(session.vite)
-        console.print(f"[red]nexy » {t('dev.exited', 'exited')} [reset]")
+        console.print(tagged("nexy", t("dev.exited", "exited"), "red"))
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:

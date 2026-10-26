@@ -8,6 +8,7 @@ import typer
 
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.path import PathUtil
 from nexy.helpers.imports.component import framework_from_extension, wrap_component_script
 from nexy.modules.cli.init.dependencies import install_packages
@@ -59,7 +60,7 @@ def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str 
         return None
     try:
         fetching = t("add.fetching", "Fetching remote component from {url}...")
-        status_msg = f"[yellow]nexy[/yellow] » {fetching.format(url=url)}"
+        status_msg = tagged("nexy", fetching.format(url=url), "yellow")
         # Scheme and host validated by _is_allowed_url; redirects re-checked by _SafeRedirect.
         opener = urllib.request.build_opener(_SafeRedirect)
         with (

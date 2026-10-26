@@ -45,13 +45,23 @@ Saving a broken file never stops the server. A `.py` file with a syntax error is
 file and line, and the server keeps serving the last working version until you fix it:
 
 ```text
-  x src/routes/users.py:4  SyntaxError: invalid syntax
-    Fix it and save: the server keeps its last working version.
+  nexy » error  src/routes/users.py:3
+  SyntaxError: invalid syntax
+
+    1 | import json
+    2 |
+  > 3 | def GET(:
+                ^
+    4 |     x = 1
+    5 |     return {"v": 2}
+
+  Fix it and save: the server keeps its last working version.
 ```
 
 A file that parses but fails when the application loads (a missing import, an error at module
 level) is reported the same way and `nx dev` waits for your next save; nothing is served until the
-application loads again. A save that is valid reads `nexy » update server` while the server reloads.
+application loads again. A valid save reads `nexy » update <file>` while the server reloads. Markdown files outside
+`src/routes`, such as `README.md`, are not pages and do not trigger anything.
 `nx start` is stricter: it exits with code 1, and starts nothing, if a route file cannot load.
 
 ## Questions of `nx new`
