@@ -167,7 +167,6 @@
     "step_activate_venv": "Ativar o ambiente virtual",
     "step_help": "Explorar os comandos disponíveis",
     "step_run_dev": "Iniciar o servidor de desenvolvimento",
-    "success_title": "Projeto inicializado com sucesso!",
     "template_not_found": "Modelo ou branch '{branch}' não encontrado no remoto.",
     "venv": {
       "created": "Ambiente virtual criado",

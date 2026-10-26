@@ -167,7 +167,6 @@
     "step_activate_venv": "仮想環境を有効にする",
     "step_help": "利用可能なコマンドを確認する",
     "step_run_dev": "開発サーバーを起動する",
-    "success_title": "プロジェクトを初期化しました！",
     "template_not_found": "テンプレートまたはブランチ '{branch}' がリモートに見つかりません。",
     "venv": {
       "created": "仮想環境を作成しました",

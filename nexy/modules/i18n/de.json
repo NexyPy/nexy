@@ -167,7 +167,6 @@
     "step_activate_venv": "Virtuelle Umgebung aktivieren",
     "step_help": "Verfügbare Befehle ansehen",
     "step_run_dev": "Entwicklungsserver starten",
-    "success_title": "Projekt erfolgreich initialisiert!",
     "template_not_found": "Vorlage oder Branch '{branch}' wurde im Remote nicht gefunden.",
     "venv": {
       "created": "Virtuelle Umgebung erstellt",

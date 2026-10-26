@@ -167,7 +167,6 @@
     "step_activate_venv": "Aktifkan lingkungan virtual",
     "step_help": "Lihat perintah yang tersedia",
     "step_run_dev": "Jalankan server pengembangan",
-    "success_title": "Proyek berhasil diinisialisasi!",
     "template_not_found": "Templat atau branch '{branch}' tidak ditemukan di remote.",
     "venv": {
       "created": "Lingkungan virtual dibuat",

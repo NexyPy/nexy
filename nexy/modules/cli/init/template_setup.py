@@ -287,7 +287,6 @@ def cleanup_build_artifacts(dest: Path) -> None:
 
 
 def print_success_message(project_dir_name: str | None = None) -> None:
-    launcher.success(t("init.success_title", "Project initialized successfully!"))
     _print_next_steps(project_dir_name)
 
 

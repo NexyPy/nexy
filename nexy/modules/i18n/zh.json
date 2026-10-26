@@ -167,7 +167,6 @@
     "step_activate_venv": "激活虚拟环境",
     "step_help": "查看可用命令",
     "step_run_dev": "启动开发服务器",
-    "success_title": "项目初始化成功！",
     "template_not_found": "在远程仓库中找不到模板或分支“{branch}”。",
     "venv": {
       "created": "已创建虚拟环境",
