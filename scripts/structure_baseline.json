@@ -61,7 +61,5 @@
  "function:modules/routers/fbrouter/layout.py:RouteLayout.get_closest_import": 41,
  "function:modules/routers/fbrouter/registrar.py:RouteRegistrar._page": 22,
  "function:modules/routers/middlewares.py:collect_middlewares": 26,
- "function:modules/runtime/importer.py:NexyVFSFinder.find_spec": 22,
- "function:modules/runtime/markdown.py:build_toc_html": 76,
- "function:modules/runtime/markdown.py:inject_heading_ids": 31
+ "function:modules/runtime/importer.py:NexyVFSFinder.find_spec": 22
 }
