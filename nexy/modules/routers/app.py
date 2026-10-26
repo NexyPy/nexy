@@ -117,8 +117,8 @@ class AppServer:
             return []
         depth = len(Path(Config.ROUTER_PATH).parts)
         return [
-            (meta["pathname"], Path(meta["source"]).parent.parts[depth:])
-            for meta in self.fb_router.modules_meta
+            (route.pathname, Path(route.source).parent.parts[depth:])
+            for route in self.fb_router.scan.routes
         ]
 
     def run(self) -> ASGIApp:

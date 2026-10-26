@@ -7,6 +7,7 @@ modules); this module is the stable import path for them.
 from collections.abc import Callable
 from typing import Any
 
+from nexy.core.http_methods import HTTP_METHODS
 from nexy.modules.di.container import Container, Injectable, Scope
 from nexy.modules.modular.metadata import (
     Controller,
@@ -18,7 +19,7 @@ from nexy.modules.modular.metadata import (
     UseRoute,
     useRoute,
 )
-from nexy.modules.modular.module import HTTP_METHODS, Module
+from nexy.modules.modular.module import Module
 from nexy.modules.routers.actions.revalidate import revalidate
 from nexy.modules.routers.actions.store import ACTIONS_STORE
 

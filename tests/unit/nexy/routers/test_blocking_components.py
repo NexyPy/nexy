@@ -7,7 +7,7 @@ import threading
 import time
 from typing import Any
 
-from nexy.modules.routers.fbrouter import _make_request_handler
+from nexy.modules.routers.fbrouter.handlers import make_request_handler
 
 
 class _Request:
@@ -15,7 +15,7 @@ class _Request:
 
 
 def _handler(component):
-    return _make_request_handler(component)
+    return make_request_handler(component)
 
 
 async def _body(response) -> str:
@@ -81,13 +81,13 @@ def test_the_loop_keeps_answering_while_a_blocking_component_waits():
 
 
 def test_the_lazy_wrapper_keeps_the_blocking_mark():
-    from nexy.modules.routers.fbrouter import _lazy_component
+    from nexy.modules.routers.fbrouter.handlers import lazy_component
 
     def component(**_kwargs: Any) -> str:  # noqa: ARG001
         return ""
 
     component.__nexy_blocking__ = True  # type: ignore[attr-defined]
-    wrapped = _lazy_component("os", "component", component)
+    wrapped = lazy_component("os", "component", component)
     assert wrapped.__nexy_blocking__ is True  # type: ignore[attr-defined]
 
 

@@ -86,7 +86,13 @@ class TestPlainCss:
     def test_the_stylesheet_styles_every_class_of_the_starter(self, tmp_path, style):
         _scaffold(tmp_path, style)
         css = _read(tmp_path, "src/globale.css")
-        for selector in (".btn-primary", ".nav-link", ".theme-toggle", ".flex", r".md\:grid-cols-2"):
+        for selector in (
+            ".btn-primary",
+            ".nav-link",
+            ".theme-toggle",
+            ".flex",
+            r".md\:grid-cols-2",
+        ):
             assert selector in css
 
     def test_the_theme_variables_are_still_defined(self, tmp_path, style):

@@ -8,10 +8,10 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 
+from nexy.core.http_methods import HTTP_METHODS
 from nexy.modules.di.container import Container
 from nexy.modules.modular.metadata import ResponseMeta, RouteMeta, route_options
 
-HTTP_METHODS: set[str] = {"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"}
 _META_ROUTE = "__nexy_route_meta__"
 _META_RESPONSE = "__nexy_response_meta__"
 

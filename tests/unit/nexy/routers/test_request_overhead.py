@@ -4,6 +4,7 @@ from fastapi import APIRouter, FastAPI
 
 from nexy.modules.routers.app import _telemetry_options
 from nexy.modules.routers.fbrouter import FBRouter
+from nexy.modules.routers.fbrouter.scanner import ScanResult
 
 
 class TestFlatRoutes:
@@ -12,7 +13,7 @@ class TestFlatRoutes:
         fb = FBRouter.__new__(FBRouter)
         fb.router = router
         fb._flat = router is not None
-        fb._register_error_handlers = lambda _app: None  # type: ignore[method-assign]
+        fb.scan = ScanResult()
         return fb
 
     def test_routes_on_the_app_router_are_not_included_again(self):

@@ -6,11 +6,10 @@ from nexy.core.framework_rules import (
     special_names,
 )
 from nexy.core.models import FrontendFramework
-from nexy.core.string import StringTransform
 from nexy.modules.frontend.frameworks import react
-from nexy.modules.routers.fbrouter import FBRouter
 from nexy.modules.routers.fbrouter.discovery import RouteDiscovery
 from nexy.modules.routers.fbrouter.layout import RouteLayout
+from nexy.modules.routers.fbrouter.scanner import RouteScanner
 
 
 class TestSpecialRouteFilesConfig:
@@ -113,17 +112,9 @@ class TestScanCategorizesSpecialFiles:
 
         monkeypatch.setattr(importlib, "import_module", _fake_import)
 
-        router = FBRouter.__new__(FBRouter)
-        router.discovery = RouteDiscovery()
-        router.string_transform = StringTransform()
-        router.error_handlers = []
-        router.notfound_handlers = []
-        router.loading_handlers = []
-        router.modules_meta = []
-        router._locale_variants = {}
-        router._scan_modules()
+        found = RouteScanner(RouteDiscovery()).scan()
 
-        assert [h["comp"] for h in router.error_handlers] == ["Errors"]
-        assert [h["comp"] for h in router.notfound_handlers] == ["Notfound"]
-        assert [h["comp"] for h in router.loading_handlers] == ["Loading"]
-        assert [m["pathname"] for m in router.modules_meta] == ["/"]
+        assert [h.comp for h in found.errors] == ["Errors"]
+        assert [h.comp for h in found.notfound] == ["Notfound"]
+        assert [h.comp for h in found.loading] == ["Loading"]
+        assert [m.pathname for m in found.routes] == ["/"]
