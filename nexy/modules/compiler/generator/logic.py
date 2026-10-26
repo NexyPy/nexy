@@ -37,17 +37,8 @@ def {name}({props}) -> str:
     {slot}
 {logic}
     {layout_children}
-    # Add actions to context (both function and path)
-    __actions_dict = {{}}
-    __actions_path_dict = {{}}
-    for __func_id, __handler in __ACTIONS_STORE.registry.items():
-        __name = __func_id.split('.')[-1]
-        __actions_dict[__name] = __handler
-        __actions_path_dict[__name] = __ACTIONS_STORE.path_map.get(__func_id, '')
     context = {{{context_items}}}
-    context.update(__actions_dict)
-    context['__actions'] = __actions_dict
-    context['__actions_path'] = __actions_path_dict
+    context.update(__ACTIONS_STORE.template_context())
     rendered = str(__Template().render("{template_path}", context))
     return {render_wrapper}
 """
@@ -134,44 +125,38 @@ def function_name(template_path: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_]", "_", raw)
 
 
+def module_path(template_path: str) -> str:
+    """Where the module of the component at *template_path* is written."""
+    return Path(template_path).with_suffix(".py").as_posix()
+
+
+def render_module(template_path: str, source: ParserModel, source_path: str | None = None) -> str:
+    """The Python module that renders the component: pure, nothing is written."""
+    imports, body = split_imports(source.frontmatter)
+    shell = layout_shell(source_path or str(Config.PROJECT_ROOT))
+    names = template_names(source.frontmatter, source.props)
+    return _MODULE.format(
+        layout_header=shell.header,
+        module_imports=imports,
+        name=function_name(template_path),
+        props=props_signature(source.props),
+        slot=_SLOT,
+        logic=textwrap.indent(body, "    "),
+        layout_children=shell.children,
+        context_items=context_literal(names),
+        template_path=Path(template_path).as_posix(),
+        render_wrapper=shell.wrapper,
+    )
+
+
 class LogicGenerator:
     """Writes the Python module of one component into the virtual file system."""
 
     def __init__(self) -> None:
-        self.func_name: str = ""
-        self.source: ParserModel | None = None
-        self.output: str = ""
-        self.template_path: str = ""
-        self.FRONTMATTER: str = ""
-        self.source_path: str | None = None
         self.vfs = VFS()
 
     def generate(
         self, template_path: str, source: ParserModel, source_path: str | None = None
     ) -> None:
-        self.source = source
-        self.source_path = source_path
-        self.template_path = Path(template_path).as_posix()
-        self.func_name = function_name(template_path)
-        self.output = Path(template_path).with_suffix(".py").as_posix()
-        self.FRONTMATTER = self._component_model()
-        self.vfs.write(self.output, self.FRONTMATTER)
-
-    def _component_model(self) -> str:
-        if self.source is None:
-            raise RuntimeError("LogicGenerator.source is not set")
-        imports, body = split_imports(self.source.frontmatter)
-        shell = layout_shell(self.source_path or str(Config.PROJECT_ROOT))
-        names = template_names(self.source.frontmatter, self.source.props)
-        return _MODULE.format(
-            layout_header=shell.header,
-            module_imports=imports,
-            name=self.func_name,
-            props=props_signature(self.source.props),
-            slot=_SLOT,
-            logic=textwrap.indent(body, "    "),
-            layout_children=shell.children,
-            context_items=context_literal(names),
-            template_path=self.template_path,
-            render_wrapper=shell.wrapper,
-        )
+        module = render_module(template_path, source, source_path)
+        self.vfs.write(module_path(template_path), module)

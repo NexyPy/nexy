@@ -17,5 +17,13 @@ class ActionsStore:
         self.registry[func_id] = func
         return func_id
 
+    def template_context(self) -> dict[str, object]:
+        """What every template can call: each action by name, and the two maps behind them."""
+        actions = {func_id.split(".")[-1]: handler for func_id, handler in self.registry.items()}
+        paths = {
+            func_id.split(".")[-1]: self.path_map.get(func_id, "") for func_id in self.registry
+        }
+        return {**actions, "__actions": actions, "__actions_path": paths}
+
 
 ACTIONS_STORE = ActionsStore()

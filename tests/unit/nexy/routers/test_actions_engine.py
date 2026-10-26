@@ -136,3 +136,41 @@ def test_discover_skips_ignored_folders(tmp_path: Path, monkeypatch: pytest.Monk
     monkeypatch.syspath_prepend(str(tmp_path))
     ActionEngine().discover("src")
     assert "src.node_modules.bomb" not in sys.modules
+
+
+class TestTemplateContext:
+    """What a rendered component can call: its actions by name and the paths behind them."""
+
+    @staticmethod
+    def _store():
+        from nexy.modules.routers.actions.store import ActionsStore
+
+        store = ActionsStore()
+
+        async def create_user() -> None: ...
+
+        create_user.__module__ = "src.actions.user"
+        func_id = store.register(create_user)
+        return store, func_id, create_user
+
+    def test_each_action_is_available_by_its_function_name(self):
+        store, _, handler = self._store()
+        assert store.template_context()["create_user"] is handler
+
+    def test_the_actions_map_lists_them(self):
+        store, _, handler = self._store()
+        assert store.template_context()["__actions"] == {"create_user": handler}
+
+    def test_the_path_map_gives_the_generated_path(self):
+        store, func_id, _ = self._store()
+        store.path_map[func_id] = "/_nx_abc"
+        assert store.template_context()["__actions_path"] == {"create_user": "/_nx_abc"}
+
+    def test_an_action_without_a_path_yet_has_an_empty_one(self):
+        store, _, _ = self._store()
+        assert store.template_context()["__actions_path"] == {"create_user": ""}
+
+    def test_an_empty_store_has_empty_maps(self):
+        from nexy.modules.routers.actions.store import ActionsStore
+
+        assert ActionsStore().template_context() == {"__actions": {}, "__actions_path": {}}

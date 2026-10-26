@@ -15,7 +15,7 @@ import pytest
 from nexy.core.config import Config
 from nexy.core.models import NexyProp, ParserModel
 from nexy.modules.compiler.generator import logic as logic_module
-from nexy.modules.compiler.generator.logic import LogicGenerator
+from nexy.modules.compiler.generator.logic import LogicGenerator, render_module
 from nexy.modules.routers.fbrouter.layout import RouteLayout
 
 GOLDEN = Path(__file__).parent / "golden" / "logic_generator.json"
@@ -68,10 +68,7 @@ def _generate(name: str, case: dict[str, Any], monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setattr(Config, "useRouter", object() if case.get("router") else None)
     props = [NexyProp(*prop) for prop in case["props"]]
     source = ParserModel(frontmatter=case["frontmatter"], template="<p></p>", props=props)
-    generator = LogicGenerator()
-    generator.vfs = _MemoryVfs()
-    generator.generate(f"__nexy__/{name}.nexy", source, case.get("path"))
-    return generator.FRONTMATTER
+    return render_module(f"__nexy__/{name}.nexy", source, case.get("path"))
 
 
 class _MemoryVfs:
@@ -85,9 +82,22 @@ def test_the_generated_module_is_what_it_was(name, monkeypatch):
     assert _generate(name, SCENARIOS[name], monkeypatch) == golden[name]
 
 
-def test_a_generator_without_a_source_says_so():
-    with pytest.raises(RuntimeError):
-        LogicGenerator()._component_model()
+def test_the_generator_writes_the_module_where_it_belongs(monkeypatch):
+    monkeypatch.setattr(RouteLayout, "get_closest_import", staticmethod(lambda *_a, **_k: None))
+    monkeypatch.setattr(Config, "useRouter", None)
+    generator = LogicGenerator()
+    generator.vfs = _MemoryVfs()
+    source = ParserModel(frontmatter="x = 1\n", template="<p></p>")
+    generator.generate("__nexy__/page.nexy", source)
+    path, content = generator.vfs.last
+    assert path == "__nexy__/page.py" and content == render_module("__nexy__/page.nexy", source)
+
+
+def test_rendering_a_module_does_not_touch_the_file_system(monkeypatch):
+    monkeypatch.setattr(RouteLayout, "get_closest_import", staticmethod(lambda *_a, **_k: None))
+    monkeypatch.setattr(Config, "useRouter", None)
+    source = ParserModel(frontmatter="", template="", props=[])
+    assert "def Page(" in render_module("__nexy__/page.nexy", source)
 
 
 def test_the_module_is_importable_python():
