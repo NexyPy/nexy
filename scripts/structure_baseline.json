@@ -1,5 +1,4 @@
 {
- "class:helpers/fs/vfs.py:VFS": 11,
  "duplicate:d2589363df": 10,
  "function:core/project_rules.py:project_problems": 24,
  "function:core/string.py:StringTransform.normalize_route_path_for_namespace": 22,
@@ -21,8 +20,6 @@
  "function:modules/cli/init/project.py:InitProject.run": 24,
  "function:modules/cli/init/template_setup.py:initialize_from_template": 22,
  "function:modules/compiler/parser/__init__.py:Parser.process": 22,
- "function:modules/frontend/manifest.py:RouteManifestBuilder._render": 44,
- "function:modules/frontend/manifest.py:RouteManifestBuilder.entries": 28,
  "function:modules/routers/actions/endpoint.py:make_endpoint": 23,
  "function:modules/routers/app.py:AppServer.run": 30,
  "function:modules/routers/fastpath.py:FastPath.__call__": 25,

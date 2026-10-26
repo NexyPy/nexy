@@ -17,6 +17,11 @@ def _scan_disk(prefix: str) -> set[str]:
     return {_key(str(file)) for file in root.rglob("*") if file.is_file()}
 
 
+def _on_disk(path: str, prefix: str) -> bool:
+    """True for a path under the persisted *prefix* whose file exists on disk."""
+    return path.startswith(prefix) and Path(path).exists()
+
+
 def _save(path: str, content: str) -> None:
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -44,10 +49,6 @@ class VFS:
             cls._disk_files.update(_scan_disk(cls._disk_prefix))
         return cls._instance
 
-    def _on_disk(self, path: str) -> bool:
-        """True for a path under the persisted prefix whose file exists on disk."""
-        return path.startswith(self._disk_prefix) and Path(path).exists()
-
     def write(self, path: str, content: str) -> None:
         """Writes content to a virtual file path and persists to disk (unless in dev mode)."""
         path = _key(path)
@@ -59,7 +60,7 @@ class VFS:
     def read(self, path: str) -> str:
         """Reads content from a virtual file path (checks memory first, then disk)."""
         path = _key(path)
-        if path not in self._files and self._on_disk(path):
+        if path not in self._files and _on_disk(path, self._disk_prefix):
             self._files[path] = Path(path).read_text(encoding="utf-8")
             self._disk_files.add(path)
         if path not in self._files:
@@ -71,7 +72,7 @@ class VFS:
         path = _key(path)
         if path in self._files or path in self._disk_files:
             return True
-        if self._on_disk(path):
+        if _on_disk(path, self._disk_prefix):
             self._disk_files.add(path)
             return True
         return False
@@ -100,7 +101,7 @@ class VFS:
         path = _key(path)
         self._files.pop(path, None)
         self._disk_files.discard(path)
-        if self._on_disk(path):
+        if _on_disk(path, self._disk_prefix):
             Path(path).unlink(missing_ok=True)
 
     def flush_to_disk(self, prefix: str = _DISK_PREFIX) -> None:
