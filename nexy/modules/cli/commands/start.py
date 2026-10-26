@@ -1,3 +1,4 @@
+import sys
 import time
 
 from nexy.__version__ import __version__
@@ -11,11 +12,29 @@ from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.i18n import t
 
 
+def _route_failures() -> list[str]:
+    """Build the application, which loads the routes, and list the ones that failed."""
+    from nexy.modules.routers import app  # noqa: F401  (importing builds it)
+    from nexy.modules.routers.fbrouter import LOAD_FAILURES
+
+    return list(LOAD_FAILURES)
+
+
+def _refuse_broken_project(failures: list[str]) -> None:
+    """A project with a route that cannot load must not go live."""
+    if not failures:
+        return
+    text = t("start.broken", "{count} route file(s) failed to load: the server was not started.")
+    console.print(f"\n  [red]x[/red] {text.format(count=len(failures))}")
+    sys.exit(1)
+
+
 def start(port: int | None = None, host: str | None = None) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
     startup_start = time.perf_counter()
+    _refuse_broken_project(_route_failures())
     version = __version__
 
     config = Config()

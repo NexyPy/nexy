@@ -17,7 +17,7 @@ from nexy.helpers.common.console import console as print_console
 from nexy.helpers.common.vite_launch import vite_argv
 from nexy.helpers.fs.vfs import VFS
 from nexy.helpers.server.ports import find_available_port
-from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
+from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG, SERVE_LIMITS
 from nexy.modules.i18n import t
 
 _WIN_ASYNCIO_PATCHED = False
@@ -171,7 +171,9 @@ class Server:
                     "    from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG\n"
                     f"    uvicorn.run('nexy.modules.routers.app:_server', host='{run_host}',"
                     f" port={port}, log_config=NEXY_LOG_CONFIG, access_log=False,"
-                    f" log_level='info'{ssl_part}{workers_part})\n"
+                    f" log_level='info', server_header=False,"
+                    f" timeout_graceful_shutdown={SERVE_LIMITS['timeout_graceful_shutdown']}"
+                    f"{ssl_part}{workers_part})\n"
                     "except Exception as e:\n"
                     "    print(f'Critical error in Nexy subprocess: {e}')\n"
                     "    sys.exit(1)\n"
@@ -193,6 +195,7 @@ class Server:
                     log_config=NEXY_LOG_CONFIG,
                     access_log=False,
                     log_level="info",
+                    **SERVE_LIMITS,
                     **ssl_args,
                     **workers_kwargs,
                 )

@@ -81,16 +81,17 @@
     "deps_missing": "缺少 Node.js 依赖。",
     "deps_run": "请运行：{command}",
     "error": "错误：{error}",
+    "error_waiting": "应用无法启动：等待修复。",
     "exited": "已退出",
     "init_error": "初始化时出错：",
     "local": "本地：",
     "network": "网络：",
     "ready": "就绪：",
-    "restarting": "正在重启...",
     "routes_failed": "无法更新客户端路由：{error}",
     "starting_vite": "正在启动开发服务器...",
     "stop": "按 Ctrl+C 停止",
     "stopping": "正在停止服务器...",
+    "updating": "更新服务器",
     "vite_failed": "Vite 启动失败。",
     "vite_failed_hint": "请查看上方的 Vite 输出以了解原因。"
   },
@@ -161,6 +162,7 @@
     "launch_failed": "服务器启动失败："
   },
   "start": {
+    "broken": "{count} 个路由文件加载失败：服务器未启动。",
     "exited": "已退出",
     "local": "本地：",
     "network": "网络：",
@@ -179,6 +181,7 @@
   "watch": {
     "compile_failed": "编译 {path} 失败",
     "compiled": "已编译 {path}，用时 {time}",
+    "error_kept": "修复后保存：服务器继续运行上一个可用版本。",
     "restart_failed": "无法重启服务器：{error}",
     "stop_failed": "无法正常停止文件监视：{error}"
   }

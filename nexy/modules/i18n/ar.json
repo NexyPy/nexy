@@ -81,16 +81,17 @@
     "deps_missing": "اعتماديات Node.js غير موجودة.",
     "deps_run": "شغّل: {command}",
     "error": "خطأ: {error}",
+    "error_waiting": "لا يمكن تشغيل التطبيق: في انتظار الإصلاح.",
     "exited": "تم الإيقاف",
     "init_error": "حدث خطأ أثناء التهيئة:",
     "local": "محلي:",
     "network": "الشبكة:",
     "ready": "جاهز:",
-    "restarting": "جارٍ إعادة التشغيل...",
     "routes_failed": "تعذّر تحديث مسارات العميل: {error}",
     "starting_vite": "جارٍ تشغيل خادم التطوير...",
     "stop": "اضغط Ctrl+C للإيقاف",
     "stopping": "جارٍ إيقاف الخوادم...",
+    "updating": "تحديث الخادم",
     "vite_failed": "تعذّر تشغيل Vite.",
     "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب."
   },
@@ -161,6 +162,7 @@
     "launch_failed": "فشل تشغيل الخادم:"
   },
   "start": {
+    "broken": "تعذر تحميل {count} من ملفات المسارات: لم يبدأ الخادم.",
     "exited": "تم الإيقاف",
     "local": "محلي:",
     "network": "الشبكة:",
@@ -179,6 +181,7 @@
   "watch": {
     "compile_failed": "فشل تجميع {path}",
     "compiled": "تم تجميع {path} في {time}",
+    "error_kept": "أصلح الخطأ واحفظ: يحتفظ الخادم بآخر نسخة كانت تعمل.",
     "restart_failed": "تعذّرت إعادة تشغيل الخادم: {error}",
     "stop_failed": "تعذّر إيقاف المراقب بشكل سليم: {error}"
   }

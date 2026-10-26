@@ -75,6 +75,8 @@ Every page is HTML, but Nexy assumes a server for routing and for API handlers.
 ## Checklist
 
 - [ ] `nx build` in CI, no warnings for routes you expect to render on the server
+- [ ] `nx start` exits with code 1, and starts nothing, when a route file cannot load
+- [ ] `NEXY_ACTION_SECRET` set, or `__nexy__/action.key` kept with the build
 - [ ] `useDocs = False` in production if the API schema should not be public
 - [ ] `useTrustedHost` and `useHTTPSRedirect` set for public deployments
 - [ ] `__nexy__/` not committed

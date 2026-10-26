@@ -14,6 +14,7 @@ from watchdog.observers import Observer
 from nexy.core.config import Config
 from nexy.core.string import StringTransform
 from nexy.helpers.common.console import console
+from nexy.helpers.common.pycheck import find_syntax_problem
 from nexy.helpers.server.access_log import format_duration
 from nexy.modules.compiler import Compiler
 from nexy.modules.i18n import t
@@ -181,12 +182,25 @@ class WatchHandler(PatternMatchingEventHandler):
                 )
                 self._log_hmr_timing(path, start_time)
         elif self.on_reload_api and path.endswith(".py"):
+            if self._report_python_problem(path):
+                return
             console.print(f"  [yellow]~[/yellow] [dim]{path}[/dim]")
             try:
                 self.on_reload_api()
             except Exception as e:
                 reason = t("watch.restart_failed", "Failed to restart the server: {error}")
                 console.print(f"[red]hmr[/red] » [red]{reason.format(error=e)}[/red]")
+
+    @staticmethod
+    def _report_python_problem(path: str) -> bool:
+        """Say what is wrong with *path* and keep the running server; True when it is broken."""
+        problem = find_syntax_problem(path)
+        if problem is None:
+            return False
+        console.print(f"  [red]x[/red] {escape(problem.format())}")
+        kept = t("watch.error_kept", "Fix it and save: the server keeps its last working version.")
+        console.print(f"    [dim]{kept}[/dim]")
+        return True
 
     def _log_hmr_timing(self, path: str, start_time: float | None) -> None:
         if start_time is None:

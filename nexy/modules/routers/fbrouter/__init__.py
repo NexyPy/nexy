@@ -16,6 +16,7 @@ from fastapi.responses import HTMLResponse, StreamingResponse
 from nexy.core.config import Config
 from nexy.core.string import Pathname, StringTransform
 from nexy.helpers.common.console import console
+from nexy.modules.routers.crash import inspect_crash, log_crash
 from nexy.modules.routers.fbrouter.discovery import RouteDiscovery
 from nexy.modules.runtime.cache import REVALIDATE_CACHE
 
@@ -35,6 +36,10 @@ HTTP_METHODS_MAP = {
 
 _FRAMEWORK_ONLY_EXTS = (".tsx", ".vue", ".svelte")
 _FRAMEWORK_ROUTE_EXTS = _FRAMEWORK_ONLY_EXTS + (".mdx",)
+# Route files that could not be compiled or imported by the last scan, as "path: reason".
+# `nx start` refuses to serve a project that has any; `nx dev` keeps going and reports them.
+LOAD_FAILURES: list[str] = []
+
 _UI_ROUTE_EXTS = (".nexy", ".mdx", ".md", ".tsx", ".vue", ".svelte")
 
 
@@ -255,6 +260,7 @@ class FBRouter:
 
             @app.exception_handler(status.HTTP_500_INTERNAL_SERVER_ERROR)
             async def _handle_error(request: Request, exc: Exception) -> HTMLResponse:
+                log_crash(request, inspect_crash(exc))
                 handler = _pick(self.error_handlers, str(request.url.path))
                 return _render(handler or root_error, status.HTTP_500_INTERNAL_SERVER_ERROR, exc)
 
@@ -266,6 +272,7 @@ class FBRouter:
         self._register_all_routes()
 
     def _scan_modules(self) -> None:
+        LOAD_FAILURES.clear()
         for app_path in self.discovery.scan():
             path_str = app_path.as_posix()
             ext = app_path.suffix.lower()
@@ -283,6 +290,7 @@ class FBRouter:
                         f"  [red]ERROR[/red] {app_path.name} ({app_path}): "
                         f"compile failed - {compile_exc}"
                     )
+                    LOAD_FAILURES.append(f"{app_path}: compile failed - {compile_exc}")
                     continue
             else:
                 m_type = "api"
@@ -291,10 +299,12 @@ class FBRouter:
                 module = importlib.import_module(import_path)
             except ImportError as imp_exc:
                 console.print(f"  [yellow]WARN[/yellow] {app_path.name} ({app_path}): {imp_exc}")
+                LOAD_FAILURES.append(f"{app_path}: {imp_exc}")
                 continue
             except Exception as exc:
                 reason = _describe_import_error(exc)
                 console.print(f"  [red]ERROR[/red] {app_path.name} ({app_path}): {reason}")
+                LOAD_FAILURES.append(f"{app_path}: {reason}")
                 continue
 
             clean = _route_clean_path(path_str)

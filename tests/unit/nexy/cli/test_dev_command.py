@@ -122,6 +122,15 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
     monkeypatch.setattr(dev_module.VFS, "set_dev_mode", lambda *_: rec("dev_mode"))
     monkeypatch.setattr(dev_module, "_require_vite_install", lambda: rec("require_vite"))
     monkeypatch.setattr(dev_module, "purge_project_modules", lambda: rec("purge"))
+    state.app_error = None
+
+    def import_app() -> None:
+        rec("import_app")
+        if state.app_error:
+            error, state.app_error = state.app_error, None
+            raise error
+
+    monkeypatch.setattr(dev_module, "_import_app", import_app)
     monkeypatch.setattr(dev_module, "stop_observer", lambda _o: rec("stop_observer"))
 
     def create_observer(**kwargs: Any) -> object:
@@ -224,6 +233,40 @@ def test_a_python_change_restarts_without_regenerating_the_client_files(world):
     world.serve_plan = ["restart", "exit"]
     dev_module.dev()
     assert world.rec.count("frontend") == 1
+
+
+def _fix_on_wait(world, monkeypatch):
+    """The user saves a fix as soon as dev starts waiting."""
+
+    def fix(self):
+        world.rec("waiting")
+        self.request_restart()
+
+    monkeypatch.setattr(dev_module._Reloader, "_wait_for_change", fix)
+
+
+def test_an_application_that_cannot_load_does_not_stop_dev(world, monkeypatch):
+    world.serve_plan = ["restart", "exit"]
+    world.app_error = KeyError("src")
+    _fix_on_wait(world, monkeypatch)
+    dev_module.dev()
+    assert world.rec.count("waiting") == 1
+
+
+def test_an_application_that_cannot_load_is_not_served(world, monkeypatch):
+    world.serve_plan = ["restart", "exit"]
+    world.app_error = KeyError("src")
+    _fix_on_wait(world, monkeypatch)
+    dev_module.dev()
+    assert world.rec.count("uvicorn_run") == 2
+
+
+def test_the_next_change_after_an_error_loads_the_application_again(world, monkeypatch):
+    world.serve_plan = ["restart", "exit"]
+    world.app_error = KeyError("src")
+    _fix_on_wait(world, monkeypatch)
+    dev_module.dev()
+    assert world.rec.count("import_app") == 3
 
 
 def test_a_failing_regeneration_does_not_stop_the_server(world):

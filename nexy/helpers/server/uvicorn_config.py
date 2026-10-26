@@ -2,7 +2,7 @@ import linecache
 import logging
 import os
 import traceback
-from typing import cast
+from typing import Any, cast
 
 COLORS = {
     "reset": "\033[0m",
@@ -25,6 +25,8 @@ IGNORED_MESSAGES = [
     "Stopping reloader process",
     "Will watch for changes",
     "Shutting down",
+    # The crash handler already reported it, with the exception and where it came from.
+    "Exception in ASGI application",
     "connection closed",
     "connection open",
     "Waiting for application shutdown",
@@ -196,6 +198,11 @@ class NexyDefaultFormatter(logging.Formatter):
 
         return result.rstrip("\n")
 
+
+# Shutdown (Ctrl+C, a deploy, a dev restart) must not wait for a browser that keeps a socket open.
+# The Server header names the software to anyone who asks: not worth sending.
+SERVE_LIMITS: dict[str, Any] = {"server_header": False, "timeout_graceful_shutdown": 10}
+DEV_SERVE_LIMITS: dict[str, Any] = {"server_header": False, "timeout_graceful_shutdown": 2}
 
 NEXY_LOG_CONFIG = {
     "version": 1,

@@ -55,6 +55,7 @@ color:var(--muted)}}
 h1{{margin:1.25rem 0 .5rem;font-size:clamp(1.75rem,5vw,2.25rem);\
 letter-spacing:-.03em;line-height:1.15}}
 p{{color:var(--muted)}}
+.ref{{margin-top:.75rem;font:.75rem ui-monospace,monospace}}
 a{{display:inline-block;margin-top:1.75rem;padding:.55rem 1.1rem;border-radius:999px;\
 background:var(--fg);color:var(--bg);font-size:.9rem;font-weight:500;text-decoration:none}}
 a:hover{{opacity:.85}}
@@ -65,14 +66,16 @@ a:hover{{opacity:.85}}
 <span class="code">{code}</span>
 <h1>{title}</h1>
 <p>{message}</p>
-<a href="/">Back to home</a>
+{reference}<a href="/">Back to home</a>
 </main>
 </body>
 </html>
 """
 
 
-def error_page(status_code: int, title: str, message: str) -> Response:
+def error_page(
+    status_code: int, title: str, message: str, reference: str | None = None
+) -> Response:
     """Build the HTML page for an error status.
 
     The page is self-contained (no font, script or stylesheet to fetch) because it is shown when
@@ -83,11 +86,15 @@ def error_page(status_code: int, title: str, message: str) -> Response:
         status_code: HTTP status of the response, also shown on the page.
         title: Short headline, for example ``Page not found``.
         message: One sentence telling the visitor what to do next.
+        reference: Identifier of the error, the same as in the server log.
 
     Returns:
         An HTML response with the given status.
     """
-    body = _PAGE.format(code=status_code, title=escape(title), message=escape(message))
+    ref = f'<p class="ref">Reference: {escape(reference)}</p>' if reference else ""
+    body = _PAGE.format(
+        code=status_code, title=escape(title), message=escape(message), reference=ref
+    )
     return HTMLResponse(content=body, status_code=status_code)
 
 
@@ -102,12 +109,15 @@ def NotFound() -> Response:
     )
 
 
-def InternalServerError() -> Response:
+def InternalServerError(reference: str | None = None) -> Response:
     """Build the styled 500 HTML error response.
 
     Returns:
         A FastAPI Response with status 500 and the Nexy 500 page.
     """
     return error_page(
-        500, "Something went wrong", "The server hit an unexpected problem. Try again in a moment."
+        500,
+        "Something went wrong",
+        "The server hit an unexpected problem. Try again in a moment.",
+        reference,
     )

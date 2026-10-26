@@ -33,6 +33,11 @@ npm ls vite
   (`/__nexy__/render`) only accepts files under `src/routes/` with a `.tsx` or `.jsx` extension, and
   is reachable only through the dev server, which refuses foreign `Host` headers.
 - **Error details do not leak.** An error page that itself fails shows only the status code.
+- **Production answers carry safe headers.** `X-Content-Type-Options: nosniff` and
+  `Referrer-Policy: strict-origin-when-cross-origin`, unless your code sets its own. The `Server`
+  header is not sent. Add `Strict-Transport-Security` and a `Content-Security-Policy` in your
+  proxy or a middleware: they depend on your domain.
+- **A crash shows a reference, not the error.** See [Error pages](../routing/fbr/errors/README.md#unhandled-exceptions).
 - **No `eval` and no `shell=True` in Nexy's Python code.** External programs run with an argument list.
 
 ## Running the audits

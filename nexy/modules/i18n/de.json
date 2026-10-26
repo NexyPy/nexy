@@ -81,16 +81,17 @@
     "deps_missing": "Die Node.js-Abhängigkeiten fehlen.",
     "deps_run": "Führen Sie aus: {command}",
     "error": "Fehler: {error}",
+    "error_waiting": "Die Anwendung kann nicht starten: warte auf eine Korrektur.",
     "exited": "beendet",
     "init_error": "Fehler bei der Initialisierung:",
     "local": "Lokal:",
     "network": "Netzwerk:",
     "ready": "Bereit:",
-    "restarting": "Neustart...",
     "routes_failed": "Die Client-Routen konnten nicht aktualisiert werden: {error}",
     "starting_vite": "Entwicklungsserver wird gestartet...",
     "stop": "Zum Beenden Strg+C drücken",
     "stopping": "Server werden beendet...",
+    "updating": "Server wird aktualisiert",
     "vite_failed": "Vite konnte nicht gestartet werden.",
     "vite_failed_hint": "Die Ursache steht in der Vite-Ausgabe oben."
   },
@@ -161,6 +162,7 @@
     "launch_failed": "Serverstart fehlgeschlagen:"
   },
   "start": {
+    "broken": "{count} Routendatei(en) konnten nicht geladen werden: Der Server wurde nicht gestartet.",
     "exited": "beendet",
     "local": "Lokal:",
     "network": "Netzwerk:",
@@ -179,6 +181,7 @@
   "watch": {
     "compile_failed": "{path} konnte nicht kompiliert werden",
     "compiled": "{path} in {time} kompiliert",
+    "error_kept": "Beheben und speichern: Der Server behält seine letzte funktionierende Version.",
     "restart_failed": "Der Server konnte nicht neu gestartet werden: {error}",
     "stop_failed": "Die Dateiüberwachung konnte nicht sauber beendet werden: {error}"
   }

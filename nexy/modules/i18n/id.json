@@ -81,16 +81,17 @@
     "deps_missing": "Dependensi Node.js belum ada.",
     "deps_run": "Jalankan: {command}",
     "error": "Kesalahan: {error}",
+    "error_waiting": "Aplikasi tidak dapat dimulai: menunggu perbaikan.",
     "exited": "berhenti",
     "init_error": "Terjadi kesalahan saat inisialisasi:",
     "local": "Lokal:",
     "network": "Jaringan:",
     "ready": "Siap:",
-    "restarting": "Memulai ulang...",
     "routes_failed": "Rute klien tidak dapat diperbarui: {error}",
     "starting_vite": "Memulai server pengembangan...",
     "stop": "tekan Ctrl+C untuk berhenti",
     "stopping": "Menghentikan server...",
+    "updating": "memperbarui server",
     "vite_failed": "Vite gagal dimulai.",
     "vite_failed_hint": "Baca keluaran Vite di atas untuk mengetahui penyebabnya."
   },
@@ -161,6 +162,7 @@
     "launch_failed": "Server gagal dijalankan:"
   },
   "start": {
+    "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",
     "exited": "berhenti",
     "local": "Lokal:",
     "network": "Jaringan:",
@@ -179,6 +181,7 @@
   "watch": {
     "compile_failed": "Gagal mengompilasi {path}",
     "compiled": "{path} dikompilasi dalam {time}",
+    "error_kept": "Perbaiki lalu simpan: server tetap memakai versi terakhir yang berfungsi.",
     "restart_failed": "Server gagal dimulai ulang: {error}",
     "stop_failed": "Pemantau tidak dapat dihentikan dengan benar: {error}"
   }

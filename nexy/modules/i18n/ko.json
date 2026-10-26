@@ -81,16 +81,17 @@
     "deps_missing": "Node.js 의존성이 없습니다.",
     "deps_run": "다음을 실행하세요: {command}",
     "error": "오류: {error}",
+    "error_waiting": "애플리케이션을 시작할 수 없습니다. 수정을 기다리는 중입니다.",
     "exited": "종료됨",
     "init_error": "초기화 중 오류가 발생했습니다:",
     "local": "로컬:",
     "network": "네트워크:",
     "ready": "준비됨:",
-    "restarting": "다시 시작하는 중...",
     "routes_failed": "클라이언트 라우트를 업데이트하지 못했습니다: {error}",
     "starting_vite": "개발 서버를 시작하는 중...",
     "stop": "중지하려면 Ctrl+C",
     "stopping": "서버를 중지하는 중...",
+    "updating": "서버 업데이트",
     "vite_failed": "Vite를 시작하지 못했습니다.",
     "vite_failed_hint": "원인은 위의 Vite 출력을 확인하세요."
   },
@@ -161,6 +162,7 @@
     "launch_failed": "서버를 시작하지 못했습니다:"
   },
   "start": {
+    "broken": "라우트 파일 {count}개를 불러오지 못했습니다. 서버를 시작하지 않았습니다.",
     "exited": "종료됨",
     "local": "로컬:",
     "network": "네트워크:",
@@ -179,6 +181,7 @@
   "watch": {
     "compile_failed": "{path} 컴파일에 실패했습니다",
     "compiled": "{path}을(를) {time}에 컴파일함",
+    "error_kept": "수정 후 저장하세요. 서버는 마지막으로 동작한 버전을 유지합니다.",
     "restart_failed": "서버를 다시 시작하지 못했습니다: {error}",
     "stop_failed": "감시기를 정상적으로 중지하지 못했습니다: {error}"
   }

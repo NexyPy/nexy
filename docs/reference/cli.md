@@ -39,6 +39,21 @@ bar that pulses while it runs. Dev logs read `GET » /about 200 in 12ms` for req
 lines of the command's output instead of hiding it. Terminals that cannot render Unicode get
 `+` and `x`.
 
+## Errors while `nx dev` runs
+
+Saving a broken file never stops the server. A `.py` file with a syntax error is reported with its
+file and line, and the server keeps serving the last working version until you fix it:
+
+```text
+  x src/routes/users.py:4  SyntaxError: invalid syntax
+    Fix it and save: the server keeps its last working version.
+```
+
+A file that parses but fails when the application loads (a missing import, an error at module
+level) is reported the same way and `nx dev` waits for your next save; nothing is served until the
+application loads again. A save that is valid reads `nexy » update server` while the server reloads.
+`nx start` is stricter: it exits with code 1, and starts nothing, if a route file cannot load.
+
 ## Questions of `nx new`
 
 `nx new` asks, in this order: file-based router, project type (web or API), client-side routing,

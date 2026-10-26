@@ -81,16 +81,17 @@
     "deps_missing": "Node.js の依存関係がありません。",
     "deps_run": "次を実行してください: {command}",
     "error": "エラー: {error}",
+    "error_waiting": "アプリケーションを起動できません。修正を待っています。",
     "exited": "終了しました",
     "init_error": "初期化中にエラーが発生しました:",
     "local": "ローカル:",
     "network": "ネットワーク:",
     "ready": "準備完了:",
-    "restarting": "再起動しています...",
     "routes_failed": "クライアントルートを更新できませんでした: {error}",
     "starting_vite": "開発サーバーを起動しています...",
     "stop": "Ctrl+C で停止",
     "stopping": "サーバーを停止しています...",
+    "updating": "サーバーを更新",
     "vite_failed": "Vite を起動できませんでした。",
     "vite_failed_hint": "原因は上の Vite の出力を確認してください。"
   },
@@ -161,6 +162,7 @@
     "launch_failed": "サーバーの起動に失敗しました:"
   },
   "start": {
+    "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",
     "exited": "終了しました",
     "local": "ローカル:",
     "network": "ネットワーク:",
@@ -179,6 +181,7 @@
   "watch": {
     "compile_failed": "{path} のコンパイルに失敗しました",
     "compiled": "{path} を {time} でコンパイルしました",
+    "error_kept": "修正して保存してください。サーバーは最後に動いていた版を保ちます。",
     "restart_failed": "サーバーを再起動できませんでした: {error}",
     "stop_failed": "ウォッチャーを正常に停止できませんでした: {error}"
   }

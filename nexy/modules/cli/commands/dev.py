@@ -1,15 +1,19 @@
 import os
 import subprocess  # nosec B404
 import sys
+import threading
 import time
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Any
 
+from rich.markup import escape
+
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common import launcher, package_manager
 from nexy.helpers.common.console import console
+from nexy.helpers.common.pycheck import describe
 from nexy.helpers.common.vite_launch import vite_installed
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
@@ -23,6 +27,7 @@ from nexy.modules.frontend import FrontendGenerator
 from nexy.modules.i18n import t
 
 _APP_MODULES = ("nexy.modules.routers.app", "nexy.modules.routers.fbrouter")
+_APP = "nexy.modules.routers.app:_server"
 
 
 @dataclass(frozen=True)
@@ -146,6 +151,13 @@ def _regenerate_client_files() -> None:
         console.print(f"  [red]x[/red] {reason.format(error=error)}")
 
 
+def _import_app() -> None:
+    """Import the application the way uvicorn will, so a broken file is reported, not fatal."""
+    from uvicorn.importer import import_from_string
+
+    import_from_string(_APP)
+
+
 class _Reloader:
     """Runs uvicorn and restarts it whenever the watcher asks."""
 
@@ -154,9 +166,11 @@ class _Reloader:
         self.regenerate_requested = False
         self._started = False
         self._server: Any = None
+        self._changed = threading.Event()
 
     def request_restart(self) -> None:
         self.restart_requested = True
+        self._changed.set()
         if self._server is not None:
             self._server.should_exit = True
 
@@ -166,36 +180,64 @@ class _Reloader:
         self.request_restart()
 
     def serve(self, endpoint: _Endpoint) -> None:
+        """Serve until Ctrl+C; an application that cannot load waits for the next change."""
+        while True:
+            self._prepare()
+            if self._load():
+                self._run(endpoint)
+                if not self.restart_requested:
+                    return
+            else:
+                self._wait_for_change()
+
+    def _prepare(self) -> None:
+        if self._started:
+            console.print(f"  [dim]nexy[/dim] » {t('dev.updating', 'update server')}")
+        self._started = True
+        self.restart_requested = False
+        self._changed.clear()
+        if self.regenerate_requested:
+            self.regenerate_requested = False
+            _regenerate_client_files()
+        ensure_project_packages()
+        _purge_app_modules()
+
+    @staticmethod
+    def _load() -> bool:
+        try:
+            _import_app()
+        except Exception as error:
+            problem = describe(error)
+            console.print(f"  [red]x[/red] {escape(problem.format())}")
+            return False
+        return True
+
+    def _wait_for_change(self) -> None:
+        waiting = t("dev.error_waiting", "The application cannot start: waiting for a fix.")
+        console.print(f"    [dim]{waiting}[/dim]")
+        while not self._changed.wait(0.2):
+            pass
+
+    def _run(self, endpoint: _Endpoint) -> None:
         import uvicorn
 
-        from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
+        from nexy.helpers.server.uvicorn_config import DEV_SERVE_LIMITS, NEXY_LOG_CONFIG
 
-        while True:
-            if self._started:
-                console.print(f"  [yellow]○[/yellow] {t('dev.restarting', 'Restarting...')}")
-            self._started = True
-            self.restart_requested = False
-            if self.regenerate_requested:
-                self.regenerate_requested = False
-                _regenerate_client_files()
-            ensure_project_packages()
-            _purge_app_modules()
-            self._server = uvicorn.Server(
-                uvicorn.Config(
-                    "nexy.modules.routers.app:_server",
-                    host=endpoint.host,
-                    port=endpoint.port,
-                    log_config=NEXY_LOG_CONFIG,
-                    access_log=False,
-                    log_level="info",
-                    ssl_keyfile=endpoint.ssl_keyfile,
-                    ssl_certfile=endpoint.ssl_certfile,
-                )
+        self._server = uvicorn.Server(
+            uvicorn.Config(
+                _APP,
+                host=endpoint.host,
+                port=endpoint.port,
+                log_config=NEXY_LOG_CONFIG,
+                access_log=False,
+                log_level="info",
+                **DEV_SERVE_LIMITS,
+                ssl_keyfile=endpoint.ssl_keyfile,
+                ssl_certfile=endpoint.ssl_certfile,
             )
-            self._server.run()
-            self._server = None
-            if not self.restart_requested:
-                return
+        )
+        self._server.run()
+        self._server = None
 
 
 def _print_banner(endpoint: _Endpoint, startup_seconds: float) -> None:

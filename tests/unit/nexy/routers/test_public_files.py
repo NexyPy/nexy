@@ -1,4 +1,4 @@
-"""Files in `public/` are served at the root, like Vite and Next.js: `public/logo.svg` is `/logo.svg`."""
+"""Files in `public/` are served at the root, like Vite and Next.js."""
 
 from __future__ import annotations
 

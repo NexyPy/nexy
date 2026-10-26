@@ -81,16 +81,17 @@
     "deps_missing": "As dependências do Node.js estão ausentes.",
     "deps_run": "Execute: {command}",
     "error": "Erro: {error}",
+    "error_waiting": "A aplicação não pode iniciar: aguardando uma correção.",
     "exited": "encerrado",
     "init_error": "Erro durante a inicialização:",
     "local": "Local:",
     "network": "Rede:",
     "ready": "Pronto:",
-    "restarting": "Reiniciando...",
     "routes_failed": "Não foi possível atualizar as rotas do cliente: {error}",
     "starting_vite": "Iniciando o servidor de desenvolvimento...",
     "stop": "pressione Ctrl+C para parar",
     "stopping": "Parando os servidores...",
+    "updating": "atualizando o servidor",
     "vite_failed": "O Vite não conseguiu iniciar.",
     "vite_failed_hint": "Leia a saída do Vite acima para ver a causa."
   },
@@ -161,6 +162,7 @@
     "launch_failed": "Falha ao iniciar o servidor:"
   },
   "start": {
+    "broken": "{count} arquivo(s) de rota não puderam ser carregados: o servidor não foi iniciado.",
     "exited": "encerrado",
     "local": "Local:",
     "network": "Rede:",
@@ -179,6 +181,7 @@
   "watch": {
     "compile_failed": "Falha ao compilar {path}",
     "compiled": "{path} compilado em {time}",
+    "error_kept": "Corrija e salve: o servidor mantém a última versão que funcionava.",
     "restart_failed": "Não foi possível reiniciar o servidor: {error}",
     "stop_failed": "Não foi possível parar o observador corretamente: {error}"
   }

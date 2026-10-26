@@ -165,13 +165,13 @@ class TestLanguageDetection:
 
 class TestTranslate:
     def test_a_message_is_returned_in_the_requested_language(self):
-        assert _cli.t("dev.restarting", locale="fr") == "Redémarrage..."
+        assert _cli.t("dev.updating", locale="fr") == "mise à jour du serveur"
 
     def test_english_is_the_fallback_language(self, monkeypatch):
         monkeypatch.setattr(
             _cli, "_load_locale", lambda locale: {} if locale == "fr" else _cli_en()
         )
-        assert _cli.t("dev.restarting", locale="fr") == "Restarting..."
+        assert _cli.t("dev.updating", locale="fr") == "update server"
 
     def test_an_unknown_key_returns_the_default_then_the_key(self):
         assert _cli.t("nope.nothing", "Fallback", locale="fr") == "Fallback"
