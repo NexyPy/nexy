@@ -148,6 +148,19 @@ class TestPages:
         assert router.routes[0].description == "The home page."
 
 
+class TestSource:
+    def test_a_page_remembers_the_file_it_comes_from(self):
+        def Page() -> str:
+            return ""
+
+        router = _register(_route(_module(Page=Page), "/", kind="page", source="src/routes/x.nexy"))
+        assert router.routes[0].endpoint.__nexy_source__ == "src/routes/x.nexy"
+
+    def test_an_endpoint_remembers_the_file_it_comes_from(self):
+        router = _register(_route(_module(GET=_hello), "/hello", source="src/routes/hello.py"))
+        assert router.routes[0].endpoint.__nexy_source__ == "src/routes/hello.py"
+
+
 class TestOrder:
     def test_static_paths_come_before_dynamic_ones(self):
         async def GET(slug: str) -> dict[str, str]:

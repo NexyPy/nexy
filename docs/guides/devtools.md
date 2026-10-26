@@ -1,20 +1,29 @@
 # Dev toolbar
 
-`nexy dev` adds a toolbar to every HTML page: a small "Nexy" pill at the bottom of the window. It
-is never part of a production response.
+`nexy dev` adds a toolbar to every HTML page. It sits in the bottom-left corner, shows the route you
+are on and how long the server took, and opens into a panel. It is never part of a production
+response.
 
 | Tab | Shows |
 |---|---|
-| Page | URL, matched route, handler, status, server time, time to first byte, DOM ready, islands |
-| Routes | every route of the app with its methods; the current one is marked |
+| Page | URL, route, handler, the file it comes from (with a link that opens it in your editor), status, server time, first byte, first paint, main content, layout shift (graded green, amber or red), DOM ready |
+| Routes | every route of the app with its methods, a filter, and the current one marked; each links to its file |
 | Errors | server errors since `nexy dev` started and the errors the browser raised |
-| Config | the configuration in use (`useCSR`, `useVite`, `useFF`, `useBadge`, aliases...) |
+| Settings | theme (dark, light or system), position, size, hide, reset |
 
-An uncaught error in the browser opens a dialog over the page with the message and the stack, like
-the Next.js overlay. A server error answers with a page of the same kind: the error, where it was
-raised and the code around it. Press `Esc` to dismiss the dialog.
+## Move it
 
-`Hide` removes the toolbar for this browser; `Shift`+`Alt`+`D` brings it back.
+Drag the button: it follows the pointer and snaps to the nearest corner when you let go. The panel
+opens towards the middle of the screen from wherever the button is. The position is kept in this
+browser. You can also pick a corner in **Settings**.
+
+`Shift` + `Alt` + `D` hides and shows the toolbar. `Esc` closes the panel.
+
+## Errors
+
+An uncaught error in the browser opens a dialog over the page with the message and the stack; with
+several errors, step through them (1 of 3). A server error answers with a page of the same kind: the
+error, where it was raised and the code around it.
 
 ## Turn it off
 

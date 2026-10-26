@@ -42,6 +42,14 @@ def toolbar_markup(version: str, page: dict[str, object]) -> bytes:
     ).encode()
 
 
+def source_of(route: object) -> dict[str, str | None]:
+    """Where the route's handler lives: the path as written, and the absolute one for an editor."""
+    source = getattr(getattr(route, "endpoint", None), "__nexy_source__", None)
+    if not source:
+        return {"source": None, "file": None}
+    return {"source": Path(source).as_posix(), "file": Path(source).resolve().as_posix()}
+
+
 def _page(scope: Scope, status: int) -> dict[str, object]:
     route = scope.get("route")
     started = scope.get(_STARTED, time.perf_counter())
@@ -51,6 +59,7 @@ def _page(scope: Scope, status: int) -> dict[str, object]:
         "name": getattr(route, "name", None),
         "status": status,
         "ms": round((time.perf_counter() - started) * 1000, 1),
+        **source_of(route),
     }
 
 

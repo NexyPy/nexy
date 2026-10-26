@@ -15,7 +15,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.testclient import TestClient
 
 from nexy.helpers.server import devtools
-from nexy.helpers.server.devtools import DevToolsMiddleware, toolbar_markup
+from nexy.helpers.server.devtools import DevToolsMiddleware, source_of, toolbar_markup
 from nexy.helpers.server.devtools.state import RECENT, config_of, record_error, routes_of
 from nexy.helpers.server.proxy import DEV_ENV_VAR
 
@@ -179,3 +179,66 @@ class TestCrashPage:
     def test_production_remembers_nothing(self, monkeypatch):
         self._crash(monkeypatch, False)
         assert list(RECENT) == []
+
+
+class TestSource:
+    def test_a_handler_that_knows_its_file_is_reported_with_both_paths(self):
+        def handler() -> None: ...
+
+        handler.__nexy_source__ = "src/routes/about.nexy"
+        found = source_of(SimpleNamespace(endpoint=handler))
+        assert found["source"] == "src/routes/about.nexy"
+        assert found["file"].endswith("src/routes/about.nexy") and Path(found["file"]).is_absolute()
+
+    def test_a_route_without_a_file_reports_none(self):
+        assert source_of(SimpleNamespace(endpoint=lambda: None)) == {"source": None, "file": None}
+
+    def test_a_route_without_an_endpoint_reports_none(self):
+        assert source_of(object()) == {"source": None, "file": None}
+
+    def test_the_page_data_carries_the_source(self):
+        app = FastAPI()
+
+        @app.get("/page", response_class=HTMLResponse)
+        async def page() -> str:
+            return "<html><body></body></html>"
+
+        page.__nexy_source__ = "src/routes/page.nexy"
+        app.add_middleware(DevToolsMiddleware, version="1")
+        assert _data(TestClient(app).get("/page").text)["source"] == "src/routes/page.nexy"
+
+    def test_the_routes_list_carries_the_source(self):
+        app = FastAPI()
+
+        @app.get("/page")
+        async def page() -> dict[str, bool]:
+            return {}
+
+        page.__nexy_source__ = "src/routes/page.nexy"
+        assert routes_of(app)[-1]["source"] == "src/routes/page.nexy"
+
+
+class TestToolbarAssets:
+    @staticmethod
+    def _asset(name: str) -> str:
+        return (Path(devtools.__file__).parent / name).read_text(encoding="utf-8")
+
+    def test_it_starts_in_the_bottom_left_corner(self):
+        assert "position: 'bottom-left'" in self._asset("toolbar.js")
+
+    def test_every_corner_has_a_place(self):
+        css = self._asset("toolbar.css")
+        assert all(
+            f'data-pos="{corner}"' in css
+            for corner in ("top-left", "top-right", "bottom-left", "bottom-right")
+        )
+
+    def test_it_can_be_dragged_and_snaps_to_a_corner(self):
+        script = self._asset("toolbar.js")
+        assert "pointermove" in script and "snap" in script and "setPointerCapture" in script
+
+    def test_preferences_are_remembered(self):
+        assert "localStorage.setItem(STORE" in self._asset("toolbar.js")
+
+    def test_motion_is_switched_off_for_people_who_ask(self):
+        assert "prefers-reduced-motion: no-preference" in self._asset("toolbar.css")

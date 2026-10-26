@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from contextlib import suppress
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -37,6 +38,12 @@ def revalidate_window(module: Any) -> int | None:
     return value if isinstance(value, int) and value > 0 else None
 
 
+def _remember_source(handler: Any, source: str) -> None:
+    """The file a handler comes from, for the dev toolbar's "open in editor"."""
+    with suppress(AttributeError, TypeError):
+        handler.__nexy_source__ = source
+
+
 def _page_handler(route: RouteModule, component: Any) -> Any:
     """The request handler of a page: incremental when the module revalidates, plain otherwise."""
     window = revalidate_window(route.module)
@@ -68,6 +75,7 @@ class RouteRegistrar:
 
     def _api_method(self, route: RouteModule, method: str, handler: Any, folder: list[Any]) -> None:
         RouteValidator.validate_sig(handler, route.pathname, method)
+        _remember_source(handler, route.source)
         # Outermost first: routes root down to the directory, then the handler.
         dependencies = folder + RouteMiddleware.resolve(handler)
         meta = getattr(handler, "__nexy_response_meta__", None)
@@ -91,6 +99,7 @@ class RouteRegistrar:
             return
         component = lazy_component(route.import_path, route.comp_name, component)
         handler = _page_handler(route, component)
+        _remember_source(handler, route.source)
         self._router.get(
             route.pathname,
             response_class=HTMLResponse,

@@ -7,7 +7,7 @@ from typing import Any
 
 from fastapi import FastAPI
 
-from nexy.helpers.server.devtools import STATE_PATH
+from nexy.helpers.server.devtools import STATE_PATH, source_of
 
 # Newest first; the toolbar shows these next to the errors the browser raised.
 RECENT: deque[dict[str, str]] = deque(maxlen=20)
@@ -37,7 +37,8 @@ def routes_of(server: FastAPI) -> list[dict[str, Any]]:
         if not path or path.startswith("/_nexy"):
             continue
         methods = sorted(set(_methods(route)) - _HIDDEN_METHODS)
-        found.append({"path": path, "methods": methods, "name": getattr(route, "name", "")})
+        name = getattr(route, "name", "")
+        found.append({"path": path, "methods": methods, "name": name, **source_of(route)})
     return found
 
 
