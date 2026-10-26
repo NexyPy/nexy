@@ -73,6 +73,7 @@ architecture.
 | [Middleware and security](guides/middleware-and-security.md) | CORS, GZip, trusted hosts, sessions |
 | [Frontend](guides/frontend.md) | Vite, styling and the client build |
 | [Testing](guides/testing.md) | pytest, `TestClient` and vitest |
+| [Dev toolbar](guides/devtools.md) | the toolbar of `nexy dev`, and how to turn it off |
 
 ## Deployment
 

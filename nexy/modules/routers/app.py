@@ -16,6 +16,8 @@ from nexy.helpers.common.console import console
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.access_log import AccessLogMiddleware
 from nexy.helpers.server.badge import BadgeMiddleware
+from nexy.helpers.server.devtools import DevToolsMiddleware
+from nexy.helpers.server.devtools.state import setup_devtools
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
@@ -137,6 +139,8 @@ class AppServer:
         server.add_middleware(PathMiddleware)
         if self.config.useBadge:
             server.add_middleware(BadgeMiddleware, version=self.version)
+        if is_dev() and self.config.useDevTools:
+            server.add_middleware(DevToolsMiddleware, version=self.version)
         setup_favicon(server, self.config.ROUTER_PATH)
         setup_static_files(server)
         setup_middlewares(server, self.config)
@@ -159,6 +163,8 @@ class AppServer:
         self.fb_router = resolve_router(server, self.config, self.scalar_html, self._docs_url)
         if is_dev():
             setup_hmr(server)
+            if self.config.useDevTools:
+                setup_devtools(server, self.config)
         self._add_error_handlers(server)
         # FastAPI's telemetry reports the matched route; the fast path skips that step, so it
         # is only used when no OpenTelemetry SDK can be listening.

@@ -24,6 +24,7 @@ from nexy.errors import InternalServerError
 from nexy.helpers.common.code_frame import print_frame, rows_of_file
 from nexy.helpers.common.console import console
 from nexy.helpers.common.pycheck import project_path
+from nexy.helpers.server.devtools.state import record_error
 from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.security_headers import DEFAULT_HEADERS
 
@@ -108,33 +109,42 @@ def _frame_html(frame: Frame) -> str:
     return f'<section><h3>{title}</h3><div class="code">{_rows(frame)}</div></section>'
 
 
+# The look of the Next.js error overlay: the error in a dialog over a dimmed page.
 _STYLE = (
-    ":root{color-scheme:light dark;--bg:#fff;--fg:#111;--muted:#666;--line:#ddd;--bad:#c62828;"
-    "--hit:#fdecea}@media(prefers-color-scheme:dark){:root{--bg:#0a0a0a;--fg:#ededed;"
-    "--muted:#9a9a9a;--line:#2a2a2a;--bad:#ff6b6b;--hit:#2a1414}}"
-    "*{box-sizing:border-box}body{margin:0;padding:2rem 1rem;background:var(--bg);color:var(--fg);"
-    "font:15px/1.5 ui-sans-serif,system-ui,sans-serif}main{max-width:56rem;margin:auto}"
-    "h1{font-size:1.4rem;margin:.2rem 0;color:var(--bad)}p{color:var(--muted);margin:.2rem 0}"
-    "h3{font:500 .85rem ui-monospace,monospace;margin:1.2rem 0 .4rem}h3 b{color:var(--muted)}"
-    ".code{border:1px solid var(--line);border-radius:6px;overflow:auto;"
-    "font:.8rem/1.6 ui-monospace,monospace}.row{display:flex;white-space:pre}"
-    ".row i{width:3.5rem;padding-right:.8rem;text-align:right;color:var(--muted);flex:none}"
-    ".hit{background:var(--hit);color:var(--bad)}"
-    "pre{white-space:pre-wrap;font-size:.75rem;color:var(--muted)}summary{cursor:pointer}"
+    "*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;"
+    "padding:16px;background:#050505;color:#ededed;font:14px/1.5 system-ui,sans-serif}"
+    ".dialog{width:min(860px,100%);border-radius:12px;background:#0a0a0a;border:1px solid #2e2e2e;"
+    "border-top:3px solid #ff5c5c;overflow:hidden}"
+    "header{display:flex;align-items:center;gap:10px;padding:14px 18px;color:#a1a1a1}"
+    ".pill{padding:2px 8px;border-radius:999px;background:#3a1414;color:#ff9a9a;font-size:12px;"
+    "font-weight:600}.spacer{flex:1}"
+    "h1{margin:0;padding:0 18px 4px;font-size:20px;line-height:1.3;word-break:break-word}"
+    ".where{padding:0 18px 14px;color:#a1a1a1}"
+    "h3{margin:0;padding:10px 18px;border-top:1px solid #2e2e2e;font:500 12px ui-monospace,"
+    "monospace;color:#cfcfcf}h3 b{color:#8a8a8a}"
+    ".code{background:#111;overflow:auto;font:12px/1.6 ui-monospace,monospace;padding:6px 0}"
+    ".row{display:flex;white-space:pre}.row i{width:3.5rem;padding-right:.8rem;text-align:right;"
+    "color:#6b6b6b;flex:none}.hit{background:#2a1414;color:#ff9a9a}"
+    "details{border-top:1px solid #2e2e2e}summary{cursor:pointer;padding:10px 18px;color:#a1a1a1}"
+    "pre{margin:0;padding:0 18px 14px;white-space:pre-wrap;font:12px/1.6 ui-monospace,monospace;"
+    "color:#9a9a9a}footer{padding:10px 18px;border-top:1px solid #2e2e2e;color:#8a8a8a;"
+    "font-size:12px}"
 )
 
 
 def debug_page(request: Request, crash: Crash) -> Response:
-    """The development page for a crash: error, request, project code, then the raw traceback."""
+    """The development page for a crash: error, where, project code, then the raw traceback."""
     own = (frame for frame in reversed(crash.frames) if frame.in_project)
     frames = "".join(_frame_html(frame) for frame in own)
+    where = f"{escape(request.method)} {escape(request.url.path)}"
     body = (
         f"<!DOCTYPE html><html lang=en><meta charset=utf-8><title>{escape(crash.kind)}</title>"
-        f"<style>{_STYLE}</style><main><p>500 &middot; {escape(request.method)} "
-        f"{escape(request.url.path)} &middot; ref {crash.reference}</p>"
-        f"<h1>{escape(crash.kind)}: {escape(crash.message)}</h1>{frames}"
-        f"<details><summary>Full traceback</summary><pre>{escape(crash.text)}</pre></details>"
-        "<p>Shown in development only. In production visitors see a plain error page.</p></main>"
+        f"<style>{_STYLE}</style><div class=dialog><header><span class=pill>Server Error</span>"
+        f"<span>500</span><span class=spacer></span><span>ref {crash.reference}</span></header>"
+        f"<h1>{escape(crash.kind)}: {escape(crash.message)}</h1><div class=where>{where}</div>"
+        f"{frames}<details><summary>Full traceback</summary><pre>{escape(crash.text)}</pre>"
+        "</details><footer>Shown by nexy dev only. Visitors see a plain error page in production."
+        "</footer></div>"
     )
     return HTMLResponse(body, status_code=500)
 
@@ -172,6 +182,9 @@ async def handle_crash(request: Request, error: Exception) -> Response:
     try:
         crash = inspect_crash(error)
         log_crash(request, crash)
+        if is_dev():
+            where = f"{request.method} {request.url.path}"
+            record_error(crash.kind, crash.message, where, crash.reference)
         return crash_response(request, crash)
     except Exception:
         console.print(f"  [red]x[/red] {markup(type(error).__name__)}: {markup(str(error))}")
