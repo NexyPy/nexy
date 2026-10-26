@@ -1,6 +1,5 @@
 {
  "class:helpers/fs/vfs.py:VFS": 11,
- "class:modules/cli/init/dependencies.py:DependencyInstaller": 14,
  "class:modules/cli/init/prompts.py:ProjectPrompter": 13,
  "duplicate:d2589363df": 10,
  "function:core/project_rules.py:project_problems": 24,
@@ -19,8 +18,6 @@
  "function:modules/cli/commands/build.py:build": 25,
  "function:modules/cli/commands/dev.py:_serve": 25,
  "function:modules/cli/commands/new.py:new": 37,
- "function:modules/cli/init/dependencies.py:DependencyInstaller._network_is_usable": 22,
- "function:modules/cli/init/dependencies.py:DependencyInstaller.install_node_dependencies": 24,
  "function:modules/cli/init/dependencies.py:install_packages": 24,
  "function:modules/cli/init/project.py:InitProject.run": 24,
  "function:modules/cli/init/prompts.py:ProjectPrompter.ask_all": 21,
