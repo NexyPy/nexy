@@ -31,6 +31,14 @@ def node_package_manager(dest: Path = Path(".")) -> str | None:
     return package_manager.detect(dest)
 
 
+def _no_package_manager(deps: list[str]) -> None:
+    warning = f"[yellow]{t('add.warning', 'Warning:')}[/yellow] "
+    message = t(
+        "add.no_pm", "No package manager found. Please install dependencies manually: {names}"
+    )
+    console.print(warning + message.format(names=", ".join(deps)))
+
+
 def install_packages(deps: list[str], dest: Path | None = None) -> None:
     """Install node *deps* into *dest* with the detected package manager."""
     if not deps:
@@ -38,11 +46,7 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
     dest = (dest or Path(".")).resolve()
     manager = node_package_manager(dest)
     if manager is None:
-        warning = f"[yellow]{t('add.warning', 'Warning:')}[/yellow] "
-        message = t(
-            "add.no_pm", "No package manager found. Please install dependencies manually: {names}"
-        )
-        console.print(warning + message.format(names=", ".join(deps)))
+        _no_package_manager(deps)
         return
     names = ", ".join(deps)
     result = run_task(

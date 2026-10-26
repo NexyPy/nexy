@@ -33,6 +33,20 @@ venv/
 """
 
 
+def _fetch_template(
+    template_name: str, dest: Path, config: dict[str, Any], use_github: bool, subdir: str
+) -> None:
+    with console.status(
+        "[yellow]nexy[/yellow] » "
+        + t("init.initializing", "Initializing {name}...").format(name=template_name),
+        spinner="dots",
+    ):
+        if use_github:
+            _clone_from_github(dest, subdir)
+        else:
+            _render_local_template(template_name, dest, config, dest.resolve().name)
+
+
 def initialize_from_template(
     template_name: str,
     dest: Path,
@@ -43,19 +57,8 @@ def initialize_from_template(
     """Clone/render the template into *dest*, then run the post-init pipeline."""
     config = config or {}
     project_dir_name = dest.name if dest != Path(".") else None
-    project_name = project_dir_name or dest.resolve().name
-
     try:
-        with console.status(
-            "[yellow]nexy[/yellow] » "
-            + t("init.initializing", "Initializing {name}...").format(name=template_name),
-            spinner="dots",
-        ):
-            if use_github:
-                _clone_from_github(dest, subdir)
-            else:
-                _render_local_template(template_name, dest, config, project_name)
-
+        _fetch_template(template_name, dest, config, use_github, subdir)
         _run_post_init_pipeline(dest, config, project_dir_name)
     except Exception as e:
         console.print(

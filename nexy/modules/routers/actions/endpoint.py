@@ -87,6 +87,17 @@ def _with_headers_of(answer: Response, response: Response) -> Response:
     return answer
 
 
+def _answer(result: Any, request: Request, collected: Any) -> Response:
+    """A redirect back for a plain form post, JSON for a script; revalidated paths in a header."""
+    if _is_json(request):
+        answer: Response = JSONResponse(jsonable_encoder(result))
+    else:
+        answer = RedirectResponse(_back(request), status_code=303)
+    if collected:
+        answer.headers[HEADER] = header_value(collected)
+    return answer
+
+
 def make_endpoint(spec: ActionSpec) -> Callable[[Request], Awaitable[Response]]:
     """The route function of *spec*; it takes JSON from scripts and forms from plain HTML."""
 
@@ -104,12 +115,7 @@ def make_endpoint(spec: ActionSpec) -> Callable[[Request], Awaitable[Response]]:
         result = await _call(spec, values, request, response)
         if isinstance(result, Response):
             return result
-        if not _is_json(request):
-            answer: Response = RedirectResponse(_back(request), status_code=303)
-        else:
-            answer = JSONResponse(jsonable_encoder(result))
-        if collected:
-            answer.headers[HEADER] = header_value(collected)
+        answer = _answer(result, request, collected)
         return _with_headers_of(answer, response)
 
     return endpoint

@@ -1,12 +1,3 @@
 {
- "duplicate:d2589363df": 10,
- "function:helpers/server/proxy.py:ViteProxyMiddleware._handle_http": 21,
- "function:modules/cli/init/dependencies.py:install_packages": 24,
- "function:modules/cli/init/project.py:InitProject.run": 24,
- "function:modules/cli/init/template_setup.py:initialize_from_template": 22,
- "function:modules/compiler/parser/__init__.py:Parser.process": 22,
- "function:modules/routers/actions/endpoint.py:make_endpoint": 23,
- "function:modules/routers/fastpath.py:FastPath.__call__": 25,
- "function:modules/routers/fastpath.py:_is_trivial": 22,
- "function:modules/routers/fbrouter/registrar.py:RouteRegistrar._page": 22
+ "duplicate:d2589363df": 10
 }

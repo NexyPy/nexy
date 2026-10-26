@@ -110,20 +110,23 @@ class ViteProxyMiddleware:
 
     async def _handle_http(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Proxy Vite's assets; fall through to the app for everything else."""
-        if scope["method"] not in SAFE_METHODS:
-            await self.app(scope, receive, send)
-            return
-
         vite_only = _is_vite_only(scope["path"])
-        if vite_only and not _host_allowed(scope):
-            await _send_forbidden(send)
-            return
-        if not vite_only and _is_app_document(scope):
-            # An HTML navigation to an extension-less path: only the app can
-            # answer it, so skip the upstream probe (one loopback roundtrip
-            # per page refresh for free).
+        if scope["method"] not in SAFE_METHODS or self._belongs_to_app(scope, vite_only):
             await self.app(scope, receive, send)
-            return
+        elif vite_only and not _host_allowed(scope):
+            await _send_forbidden(send)
+        else:
+            await self._try_forward(scope, receive, send, vite_only)
+
+    @staticmethod
+    def _belongs_to_app(scope: Scope, vite_only: bool) -> bool:
+        """An HTML navigation to an extension-less path: only the app can answer it, so the
+        upstream probe (one loopback roundtrip per page refresh) is skipped."""
+        return not vite_only and _is_app_document(scope)
+
+    async def _try_forward(
+        self, scope: Scope, receive: Receive, send: Send, vite_only: bool
+    ) -> None:
         try:
             await self._forward_http(scope, receive, send, fallthrough=not vite_only)
         except (httpx.HTTPError, OSError):

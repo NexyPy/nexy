@@ -82,17 +82,11 @@ class Parser:
     def process(self, source_code: str, current_file: str) -> ParserModel:
         blocks = self.scanner.scan(source_code)
         logic = self._parse_logic(blocks.logic_block, current_file)
-        components = _names_of_nexy_imports(logic)
         failures: list[Exception] = []
         _attempt(
             lambda: ImportValidator.validate_imports(logic.nexy_imports, current_file), failures
         )
-        if logic.python_code:
-            components |= _capitalised_python_imports(logic.python_code)
-        parse_template = self.template_parser.parse
-        template = _attempt(
-            lambda: parse_template(blocks.template_block, known_components=components), failures
-        )
+        template = self._parse_template(blocks.template_block, logic, failures)
         if failures:
             raise _compile_error(current_file, failures) from failures[0]
         return ParserModel(
@@ -102,6 +96,15 @@ class Parser:
             context=[],
             styles=logic.css_imports,
         )
+
+    def _parse_template(
+        self, block: str, logic: LogicResult, failures: list[Exception]
+    ) -> str | None:
+        components = _names_of_nexy_imports(logic)
+        if logic.python_code:
+            components |= _capitalised_python_imports(logic.python_code)
+        parse = self.template_parser.parse
+        return _attempt(lambda: parse(block, known_components=components), failures)
 
 
 __all__ = ["Parser"]

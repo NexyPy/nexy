@@ -32,6 +32,31 @@ def _is_default_json(route: APIRoute) -> bool:
     return getattr(placeholder, "value", placeholder) is JSONResponse
 
 
+def _has_no_inputs(route: APIRoute) -> bool:
+    dependant = route.dependant
+    return not (
+        route.dependencies
+        or route.callbacks
+        or dependant.dependencies
+        or dependant.query_params
+        or dependant.path_params
+        or dependant.header_params
+        or dependant.cookie_params
+        or dependant.body_params
+    )
+
+
+def _has_plain_response(route: APIRoute) -> bool:
+    return (
+        route.response_field is None
+        and not getattr(route, "response_fields", None)
+        and route.status_code in (None, 200)
+        and _is_default_json(route)
+        and not getattr(route, "is_json_stream", False)
+        and not getattr(route, "is_sse_stream", False)
+    )
+
+
 def _is_trivial(route: APIRoute) -> bool:
     """True when FastAPI would do nothing for this route that the fast path does not do."""
     if route.methods is None or len(route.methods) != 1 or "{" in route.path:
@@ -39,23 +64,16 @@ def _is_trivial(route: APIRoute) -> bool:
     endpoint = route.endpoint
     if not inspect.iscoroutinefunction(endpoint) or inspect.signature(endpoint).parameters:
         return False
-    dependant = route.dependant
-    return (
-        route.response_field is None
-        and not getattr(route, "response_fields", None)
-        and route.status_code in (None, 200)
-        and _is_default_json(route)
-        and not route.dependencies
-        and not route.callbacks
-        and not dependant.dependencies
-        and not dependant.query_params
-        and not dependant.path_params
-        and not dependant.header_params
-        and not dependant.cookie_params
-        and not dependant.body_params
-        and not getattr(route, "is_json_stream", False)
-        and not getattr(route, "is_sse_stream", False)
-    )
+    return _has_no_inputs(route) and _has_plain_response(route)
+
+
+async def _send_json(body: bytes, send: Send) -> None:
+    headers = [
+        (b"content-length", str(len(body)).encode("latin-1")),
+        (b"content-type", b"application/json"),
+    ]
+    await send({"type": "http.response.start", "status": 200, "headers": headers})
+    await send({"type": "http.response.body", "body": body})
 
 
 def _shadowed(candidate: APIRoute, method: str, earlier: list[Any]) -> bool:
@@ -121,27 +139,21 @@ class FastPath:
             self._refresh()
             entry = self._table.get((scope["method"], scope["path"]))
             if entry is not None:
-                handler, route = entry
-                scope.setdefault("router", self.router)
-                scope.update({"endpoint": handler, "path_params": {}, "route": route})
-                value = await handler()
-                if isinstance(value, Response):
-                    await value(scope, receive, send)
-                    return
-                body = _encode(value)
-                await send(
-                    {
-                        "type": "http.response.start",
-                        "status": 200,
-                        "headers": [
-                            (b"content-length", str(len(body)).encode("latin-1")),
-                            (b"content-type", b"application/json"),
-                        ],
-                    }
-                )
-                await send({"type": "http.response.body", "body": body})
+                await self._answer(entry, scope, receive, send)
                 return
         await self.inner(scope, receive, send)
+
+    async def _answer(
+        self, entry: tuple[Any, Any], scope: Scope, receive: Receive, send: Send
+    ) -> None:
+        handler, route = entry
+        scope.setdefault("router", self.router)
+        scope.update({"endpoint": handler, "path_params": {}, "route": route})
+        value = await handler()
+        if isinstance(value, Response):
+            await value(scope, receive, send)
+            return
+        await _send_json(_encode(value), send)
 
 
 def install(router: APIRouter) -> bool:

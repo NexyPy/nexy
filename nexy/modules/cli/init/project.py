@@ -30,30 +30,32 @@ class InitProject:
         show_title: bool = True,
     ) -> None:
         """Main execution flow for project initialization."""
-        if project_dir:
-            dest = Path(project_dir).resolve()
-            dest.mkdir(parents=True, exist_ok=True)
-        else:
-            dest = Path(".").resolve()
-
+        dest = self._destination(project_dir)
         if show_title:
             launcher.banner(command, self.version)
-
         self._ensure_ready(dest, project_dir)
-
         if template:
-            config: dict[str, Any] = TemplateResolver.config_for(template)
-            if template_source(template) == "github":
-                initialize_from_template(
-                    template, dest, config, use_github=True, subdir=f"templates/{template}"
-                )
-            else:
-                initialize_from_template(template, dest, config)
+            self._from_template(template, dest)
             return
-
         config = ProjectPrompter().ask_all()
-        template_name = TemplateResolver.resolve(config)
-        initialize_from_template(template_name, dest, config)
+        initialize_from_template(TemplateResolver.resolve(config), dest, config)
+
+    @staticmethod
+    def _destination(project_dir: str | None) -> Path:
+        dest = Path(project_dir or ".").resolve()
+        if project_dir:
+            dest.mkdir(parents=True, exist_ok=True)
+        return dest
+
+    @staticmethod
+    def _from_template(template: str, dest: Path) -> None:
+        config: dict[str, Any] = TemplateResolver.config_for(template)
+        if template_source(template) == "github":
+            initialize_from_template(
+                template, dest, config, use_github=True, subdir=f"templates/{template}"
+            )
+        else:
+            initialize_from_template(template, dest, config)
 
     def _ensure_ready(self, dest: Path, project_dir: str | None) -> None:
         """Guard against initializing inside an existing Nexy project.

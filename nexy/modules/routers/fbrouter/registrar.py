@@ -37,6 +37,14 @@ def revalidate_window(module: Any) -> int | None:
     return value if isinstance(value, int) and value > 0 else None
 
 
+def _page_handler(route: RouteModule, component: Any) -> Any:
+    """The request handler of a page: incremental when the module revalidates, plain otherwise."""
+    window = revalidate_window(route.module)
+    if window is None:
+        return make_request_handler(component)
+    return make_isr_handler(component, route.pathname, window)
+
+
 class RouteRegistrar:
     """Registers `RouteModule`s on *router*, the more specific paths first."""
 
@@ -82,12 +90,7 @@ class RouteRegistrar:
             )
             return
         component = lazy_component(route.import_path, route.comp_name, component)
-        window = revalidate_window(route.module)
-        handler = (
-            make_isr_handler(component, route.pathname, window)
-            if window is not None
-            else make_request_handler(component)
-        )
+        handler = _page_handler(route, component)
         self._router.get(
             route.pathname,
             response_class=HTMLResponse,
