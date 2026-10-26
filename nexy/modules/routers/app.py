@@ -13,6 +13,7 @@ from starlette.types import ASGIApp
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
+from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.access_log import AccessLogMiddleware
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
@@ -73,6 +74,8 @@ class AppServer:
     _docs_disabled_printed = False
 
     def __init__(self) -> None:
+        # Also when the app is loaded without the CLI (`uvicorn nexy.app:app`).
+        ensure_project_packages()
         install_vfs_importer()
         self.config = Config()
         self.version = __version__
