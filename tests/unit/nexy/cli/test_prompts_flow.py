@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from nexy.modules.cli.init import prompts
+from nexy.modules.cli.init import questions
 from nexy.modules.cli.init.prompts import BACK_VALUE, ProjectPrompter
 
 
@@ -34,7 +34,7 @@ class Script:
             text=self._ask("text"),
             Choice=lambda title, value=None, **kw: SimpleNamespace(title=title, value=value),
         )
-        monkeypatch.setattr(prompts, "questionary", fake)
+        monkeypatch.setattr(questions, "questionary", fake)
 
 
 def _run(monkeypatch, answers) -> tuple[dict, Script]:
