@@ -1,4 +1,4 @@
-"""The theme button and the current-link mark belong to the project, not to the framework runtime."""
+"""The theme button and the current-link mark belong to the project, not the runtime."""
 
 from __future__ import annotations
 

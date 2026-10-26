@@ -116,6 +116,9 @@ select = [
 "nexy/modules/cli/init/registry.py" = ["E501"]
 # Fakes for `nx dev` mirror the real collaborators' signatures, so some arguments go unused.
 "tests/unit/nexy/cli/test_dev_command.py" = ["ARG"]
+"tests/unit/nexy/cli/test_dependency_installer.py" = ["ARG"]
+"tests/unit/nexy/cli/test_prompts_flow.py" = ["ARG"]
+"tests/unit/nexy/utils/test_network.py" = ["ARG"]
 # Test fixtures mirror a user project's nexyconfig.py surface, which is
 # camelCase by design (same rationale as nexy/core/config.py N815).
 "tests/fixtures/**/*.py" = ["N815"]
