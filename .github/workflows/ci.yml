@@ -106,9 +106,10 @@ jobs:
       - name: Build sdist and wheel
         run: uv build --no-sources
 
+      # -I keeps the checkout's own nexy/ folder off sys.path, so the installed package is the one tested.
       - name: Smoke test wheel
         run: |
-          uv run --isolated --no-project --with dist/*.whl python - <<'PY'
+          uv run --isolated --no-project --with dist/*.whl python -I - <<'PY'
           import nexy
           from pathlib import Path
           from nexy.__version__ import __version__
@@ -121,7 +122,7 @@ jobs:
 
       - name: Smoke test source distribution
         run: |
-          uv run --isolated --no-project --with dist/*.tar.gz python - <<'PY'
+          uv run --isolated --no-project --with dist/*.tar.gz python -I - <<'PY'
           import nexy
           from pathlib import Path
           from nexy.__version__ import __version__
