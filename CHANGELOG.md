@@ -5,8 +5,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-10-27
+
+### Removed
+
+- **The "Built with Nexy" badge** and its `useBadge` setting. The development toolbar stays
+  (`useDevTools`). A `useBadge` line left in a `nexyconfig.py` is ignored.
+
 ### Changed
 
+- **MDX is compiled by Vite only.** The Python compiler no longer parses or renders `.mdx` through
+  the `.nexy` pipeline: it writes the thin wrapper that serves the route, like for `.tsx`, `.vue`
+  and `.svelte`. `nx check` no longer compiles `.mdx` files.
+- **The React starter** (client-routed, Tailwind or UnoCSS) has a new design written with utility
+  classes and idiomatic React: a home page that confirms the app is running and lists the first
+  three steps, an About page, and reusable components (`Button`, `Frame`, `Header`, `Footer`,
+  `ThemeToggle` and more). The theme switch is a hook with state instead of a global script. The
+  other frameworks and plain CSS keep their current starter for now.
+- **The development toolbar** follows the page: white in a light theme, dark in a dark theme. Its
+  close control is an icon, and the Routes tab lists the routes again.
 - **Package layout**: `nexy/utils/` is now `nexy/helpers/` - a transversal
   layer with zero upward imports (`common`, `fs`, `imports`, `server`).
   All feature code moved under `nexy/modules/` (`cli`, `compiler`, `frontend`,
@@ -23,6 +40,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Fixed
 
+- **`nx dev` no longer stops on a server error.** When uvicorn cannot start or crashes, dev
+  reports the reason, keeps Vite and the watcher running, and starts again at the next file
+  change. Only Ctrl+C stops it.
+- **The development toolbar's Routes tab** printed `[object HTMLDivElement]` instead of the list.
 - **Production SSR for default exports**: the static-site generator looked up
   `<name>.default.html` while the build emits `<name>.Default.html`, so the
   server-rendered payload was silently empty for default-export routes on
@@ -34,6 +55,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Added
 
+- **Skills for coding agents** in `skills/`: principles (order of work, KISS, SOLID, TDD, one
+  function one treatment, no emoji, real SVG icons, human text), a UX and information-architecture
+  audit to run before any view, and one skill each for `.nexy`, Markdown and MDX, React, Preact,
+  Solid, Vue, Svelte, styling, the backend, testing and work on the framework itself. An
+  `AGENTS.md` snippet carries the rules to OpenCode and Codex.
 - Compiler regression suites: byte-level route compile matrix (8 route
   kinds), compiler dispatch contract, markdown route compiler tests, and the
   frontend `useFF` contract tests backed by `vite_entry.normalize_ff`.
