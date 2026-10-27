@@ -28,6 +28,13 @@ title: prop[str]
 """
 
 
+SLOT_TAG = """---
+title: prop[str]
+---
+<section><h2>{{ title }}</h2><Slot /></section>
+"""
+
+
 @pytest.fixture
 def project(tmp_path, monkeypatch) -> Path:
     monkeypatch.chdir(tmp_path)
@@ -56,6 +63,17 @@ def test_logic_in_the_frontmatter_runs(project):
 def test_children_fill_the_slot(project):
     html = render(_write(project, "card.nexy", CARD), title="T", children="<p>inside</p>")
     assert "<p>inside</p>" in html
+
+
+def test_the_slot_tag_fills_with_the_children(project):
+    html = render(_write(project, "card.nexy", SLOT_TAG), title="T", children="<p>inside</p>")
+    assert "<p>inside</p>" in html
+
+
+def test_a_lowercase_slot_tag_is_not_a_slot(project):
+    source = SLOT_TAG.replace("<Slot />", "<slot />")
+    html = render(_write(project, "card.nexy", source), title="T", children="<p>inside</p>")
+    assert "<p>inside</p>" not in html
 
 
 def test_a_component_that_imports_another_renders_it(project):

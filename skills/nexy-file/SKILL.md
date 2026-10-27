@@ -44,12 +44,18 @@ HTML with Jinja2: `{{ value }}`, `{% for %}`, `{% if %}`.
 ## Components
 
 An imported name that starts with an uppercase letter is a tag. Attributes become keyword
-arguments. Children go through `<slot />` in the child and `{{ children }}` in a layout.
+arguments. Children go through `<Slot />` (capital S) in the child and `{{ children }}` in a layout.
 
 A built-in helper tag (`Link`, `Image`, `Audio`, `Video`, `Import`) is always self-closing; content
 goes through its `children` argument.
 
-One component per file, and the file name is the component name.
+One component per file, and the file name is the component name: `CopyChip.nexy` holds `CopyChip`.
+A component is imported as a Python module, so its file name has no hyphen (`copy-chip.nexy` fails
+to compile), and it starts with a capital letter in PascalCase.
+
+Pass a computed value with Jinja inside the attribute: `<Icon path="{{ icon }}" size="{{ size }}" />`.
+A bare name (`path=icon`) is the text "icon", not the variable. For a CSS class use the prop
+`class_name`, because `class` is a Python keyword.
 
 ## Hooks
 

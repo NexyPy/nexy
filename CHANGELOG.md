@@ -17,11 +17,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 - **MDX is compiled by Vite only.** The Python compiler no longer parses or renders `.mdx` through
   the `.nexy` pipeline: it writes the thin wrapper that serves the route, like for `.tsx`, `.vue`
   and `.svelte`. `nx check` no longer compiles `.mdx` files.
-- **The React starter** (client-routed, Tailwind or UnoCSS) has a new design written with utility
-  classes and idiomatic React: a home page that confirms the app is running and lists the first
-  three steps, an About page, and reusable components (`Button`, `Frame`, `Header`, `Footer`,
-  `ThemeToggle` and more). The theme switch is a hook with state instead of a global script. The
-  other frameworks and plain CSS keep their current starter for now.
+- **The starter has a new design for every framework and both modes.** With Tailwind or UnoCSS, a
+  new file-based project (React, Preact, Solid, Vue, Svelte, or server-rendered `.nexy`) gets the
+  same pages written with utility classes in the idiom of its framework: a home page that confirms
+  the app is running and lists the first three steps, an About page, and the same set of reusable
+  components (`Button`, `Frame`, `Header`, `Footer`, `ThemeToggle` and more). The framework's own
+  logo shows on the home page, and its colour is the accent. The theme switch keeps its state the
+  way the framework does (a hook, a signal, a ref, a rune) instead of a global script; server pages
+  use a short script inside the component that owns it. Plain CSS and the modular router keep their
+  previous starter.
+- **UnoCSS reads `.nexy` files** in a server project, so utility classes written in pages are
+  generated.
 - **The development toolbar** follows the page: white in a light theme, dark in a dark theme. Its
   close control is an icon, and the Routes tab lists the routes again.
 - **Package layout**: `nexy/utils/` is now `nexy/helpers/` - a transversal
@@ -44,6 +50,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   reports the reason, keeps Vite and the watcher running, and starts again at the next file
   change. Only Ctrl+C stops it.
 - **The development toolbar's Routes tab** printed `[object HTMLDivElement]` instead of the list.
+- **Documentation that did not match the code.** A `.nexy` component renders its children with
+  `<Slot />` (capital S), not `<slot />`; the MDX framework is Preact when the file imports
+  `preact` and React otherwise; the README and `llms.txt` linked pages that do not exist. A
+  `.nexy` component file is named in PascalCase, since it is imported as a Python module.
 - **Production SSR for default exports**: the static-site generator looked up
   `<name>.default.html` while the build emits `<name>.Default.html`, so the
   server-rendered payload was silently empty for default-export routes on
@@ -55,6 +65,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Added
 
+- **`nx skills` and `nx new --no-agents`.** `nx new` writes `AGENTS.md` (tailored to the stack),
+  `CLAUDE.md` (which imports it) and the skills that fit the project into `.agents/skills/` and
+  `.claude/skills/`, the folders Codex, OpenCode and Claude Code read. `nx skills` does the same
+  for an existing project and never overwrites a file or a skill of the project. The skills ship in
+  the wheel.
+- **A `nexy-security` skill** for dependencies, input, sessions, authorization and secrets, and
+  tests that check every skill against the code (format, examples, imports, configuration fields,
+  commands, paths) and every relative link of the documentation.
 - **Skills for coding agents** in `skills/`: principles (order of work, KISS, SOLID, TDD, one
   function one treatment, no emoji, real SVG icons, human text), a UX and information-architecture
   audit to run before any view, and one skill each for `.nexy`, Markdown and MDX, React, Preact,

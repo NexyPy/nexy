@@ -50,7 +50,7 @@ component in a layout is an [island](../../../rendering/islands.md) like any oth
 
 ```nexy
 ---
-from "@/components/header.nexy" import Header
+from "@/components/Header.nexy" import Header
 from "@/components/theme/theme.tsx" import Theme
 ---
 <Header />

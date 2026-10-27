@@ -10,6 +10,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 
 - [Index](docs/README.md): every page, one line each
 - [Getting started](docs/getting-started/quick-start.md): create a project, run it, build it
+- [How Nexy works](docs/getting-started/how-nexy-works.md): who builds what, and one request
 - [Project structure](docs/getting-started/project-structure.md): files, folders, generated output
 - [Routing](docs/routing/README.md): file path to URL, groups, reserved names
 - [Pages](docs/routing/fbr/pages/README.md): dynamic segments, catch-all, layouts, error pages
@@ -35,6 +36,8 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Deploy](docs/deployment/README.md): build output, Docker, reverse proxy
 - [For AI agents](docs/reference/agents.md): invariants and verification commands
 - [Coding agents](docs/guides/ai-agents.md): skills, `AGENTS.md` and `nx skills`
+- [Troubleshooting](docs/guides/troubleshooting.md): first problems and their fix
+- [Upgrading to 2.2](docs/getting-started/upgrading.md): what changes for an existing project
 
 ## Source
 

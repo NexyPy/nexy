@@ -83,8 +83,12 @@ The last line is exactly `{{ Audio("/theme.mp3", controls=True) }}`. Both syntax
 built-in `Image`, `Link`, `Audio` and `Video` helpers - see
 [components](components.md#two-syntaxes-one-function).
 
-Children are rendered through `<slot />` inside the child component, and through `{{ children }}`
+Children are rendered through `<Slot />` (capital S) inside the child component, and through `{{ children }}`
 inside a layout.
+
+Pass a computed value with Jinja inside the attribute: `<Icon path="{{ icon }}" size="{{ size }}" />`.
+A bare name such as `path=icon` is the text `icon`, not the variable. To give a component a CSS
+class, declare a `class_name` prop: `class` is a Python keyword.
 
 > **Good to know**: a helper tag is always self-closing. Passing content to `Link` goes through its
 > `children` argument (`<Link href="/about" children="About" />`), not through element content.
@@ -96,7 +100,9 @@ used in two components is one class. Prefix or namespace your classes.
 
 ## Rules that save time
 
-- One component per file. The file name is the component name.
+- One component per file. The file name is the component name, in PascalCase (`CopyChip.nexy`). A
+  `.nexy` component is imported as a Python module: a hyphen in the name (`copy-chip.nexy`) does not
+  compile.
 - Declare props before using them: an undeclared variable renders as an empty string, because
   Jinja2's undefined is silent here.
 - Keep side effects inside functions - the frontmatter runs again on every request.

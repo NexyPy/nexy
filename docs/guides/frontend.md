@@ -54,9 +54,19 @@ Vite handles the client bundle; SSR HTML is produced per file by esbuild.
 
 ## Styling
 
-`nexy new` sets up Tailwind for the client framework you pick, and imports it from `src/globale.css`
-(that file name is the one the scaffold creates). Keep component CSS in the component's `<style>`
-block.
+`nexy new` asks for a style mode and sets it up for the client framework you pick: Tailwind,
+UnoCSS or plain CSS. The design tokens (colours, fonts, the dark theme) are CSS variables in
+`src/globale.css`, the file the scaffold creates.
+
+| Mode | The starter pages are written with |
+|---|---|
+| Tailwind, UnoCSS | utility classes in the markup, with the tokens mapped to class names |
+| Plain CSS | semantic class names and the CSS in `src/globale.css` |
+
+Follow the mode of your project when you add a page: utility classes in a utility project, CSS in a
+plain-CSS one. Keep component CSS that utilities cannot express in the component's `<style>` block.
+In a server project (`.nexy` pages) UnoCSS reads the `.nexy` files for classes; Tailwind finds them
+on its own.
 
 ## Fonts, images, scripts
 
