@@ -20,10 +20,18 @@
       else if (k.startsWith('on')) el.addEventListener(k.slice(2), v)
       else if (v !== null && v !== undefined) el.setAttribute(k, v)
     }
-    for (const kid of kids.flat()) {
+    for (const kid of kids.flat(Infinity)) {
       if (kid !== null && kid !== undefined && kid !== false) el.append(kid.nodeType ? kid : String(kid))
     }
     return el
+  }
+  const ICONS = {
+    close: '<path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  }
+  const icon = (name, size) => {
+    const span = h('span', { class: 'icon', 'aria-hidden': 'true' })
+    span.innerHTML = `<svg viewBox="0 0 24 24" width="${size}" height="${size}">${ICONS[name]}</svg>`
+    return span
   }
   const ms = (n) => (n === undefined || Number.isNaN(n) ? '-' : n < 1 ? '<1 ms' : `${Math.round(n)} ms`)
   const row = (name, value) => h('div', { class: 'row' }, h('span', {}, name), h('span', {}, value))
@@ -155,7 +163,7 @@
         label, id === 'errors' && count ? h('span', { class: 'n' }, count) : null))
     panel = h('div', { class: 'panel', role: 'dialog', 'aria-label': 'Nexy dev tools' },
       h('div', { class: 'head' }, h('span', { class: 'title' }, 'Nexy'), h('span', { class: 'version' }, `v${page.version}`),
-        h('span', { class: 'spacer' }), h('button', { class: 'close', 'aria-label': 'Close', onclick: () => toggle(false) }, 'Close')),
+        h('span', { class: 'spacer' }), h('button', { class: 'close', 'aria-label': 'Close', title: 'Close', onclick: () => toggle(false) }, icon('close', 16))),
       h('div', { class: 'tabs', role: 'tablist' }, tabs),
       h('div', { class: 'body' }, TABS[tab][1]()))
     root.append(panel)
@@ -250,7 +258,7 @@
           h('span', { class: 'spacer' }),
           all.length > 1 ? [h('button', { 'aria-label': 'Previous error', onclick: () => step(-1) }, '<'),
             h('span', {}, `${index + 1} of ${all.length}`), h('button', { 'aria-label': 'Next error', onclick: () => step(1) }, '>')] : null,
-          h('button', { onclick: close }, 'Close')),
+          h('button', { class: 'close', 'aria-label': 'Close', title: 'Close', onclick: close }, icon('close', 16))),
         h('h2', {}, `${e.kind}: ${e.message}`),
         h('div', { class: 'where' }, e.where || page.path),
         e.stack ? h('pre', {}, e.stack) : null,
