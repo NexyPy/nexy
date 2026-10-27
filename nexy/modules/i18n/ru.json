@@ -40,7 +40,7 @@
     "success_label": "Сборка успешна"
   },
   "check": {
-    "compiling": "компиляция файлов .nexy/.mdx ...",
+    "compiling": "компиляция файлов .nexy ...",
     "failed": "Разделов с ошибками: {count}",
     "passed": "все проверки пройдены",
     "skip_tool": "{tool} не найден: {scope} пропущен"

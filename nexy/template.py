@@ -95,8 +95,8 @@ class Template:
         """Render a template file, converting Markdown routes to HTML.
 
         Args:
-            path: Template path (VFS-first); `.md`/`.mdx.html` routes are also
-                run through the Markdown renderer and heading-id injection.
+            path: Template path (VFS-first); `.md` routes are also run through the
+                Markdown renderer and heading-id injection. MDX is compiled by Vite.
             context: Jinja2 context passed to the template; defaults to empty.
 
         Returns:
@@ -111,7 +111,7 @@ class Template:
 
         rendered_content = self._render_jinja2(path, context)
 
-        if path.endswith(".md") or path.endswith(".mdx.html"):
+        if path.endswith(".md"):
             rendered_content = self._render_markdown(rendered_content)
             rendered_content = _inject_heading_ids(rendered_content)
             from nexy.hooks import _toc_storage as _store

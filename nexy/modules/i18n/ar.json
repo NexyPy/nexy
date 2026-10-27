@@ -40,7 +40,7 @@
     "success_label": "نجح البناء"
   },
   "check": {
-    "compiling": "جارٍ تجميع ملفات .nexy/.mdx ...",
+    "compiling": "جارٍ تجميع ملفات .nexy ...",
     "failed": "فشل {count} قسم",
     "passed": "نجحت جميع الفحوصات",
     "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}"

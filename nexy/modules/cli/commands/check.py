@@ -11,7 +11,7 @@ from nexy.modules.i18n import t
 
 _PY_EXTS = (".py",)
 _TS_EXTS = (".ts", ".tsx", ".vue", ".svelte")
-_NEXY_EXTS = (".nexy", ".mdx")
+_NEXY_EXTS = (".nexy",)
 
 
 def check(tsc: bool = True, nexypy: bool = True) -> None:
@@ -56,7 +56,7 @@ def _check_typescript() -> bool:
 
 def _check_nexy(root: Path) -> bool:
     ok = True
-    with console.status(f"  {t('check.compiling', 'compiling .nexy/.mdx ...')}"):
+    with console.status(f"  {t('check.compiling', 'compiling .nexy ...')}"):
         result = Builder().build(showlog=False)
     if result.failed:
         for path in result.failed:

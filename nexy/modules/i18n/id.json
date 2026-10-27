@@ -40,7 +40,7 @@
     "success_label": "Build berhasil"
   },
   "check": {
-    "compiling": "mengompilasi berkas .nexy/.mdx ...",
+    "compiling": "mengompilasi berkas .nexy ...",
     "failed": "{count} bagian gagal",
     "passed": "semua pemeriksaan lolos",
     "skip_tool": "{tool} tidak ditemukan: {scope} dilewati"

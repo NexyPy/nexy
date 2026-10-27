@@ -40,7 +40,7 @@
     "success_label": "Build concluído"
   },
   "check": {
-    "compiling": "compilando arquivos .nexy/.mdx ...",
+    "compiling": "compilando arquivos .nexy ...",
     "failed": "{count} seção(ões) com falha",
     "passed": "todas as verificações passaram",
     "skip_tool": "{tool} não encontrado: {scope} ignorado"

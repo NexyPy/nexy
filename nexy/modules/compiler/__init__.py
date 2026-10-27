@@ -11,15 +11,11 @@ from nexy.modules.compiler.markdown_route import MarkdownRouteCompiler
 from nexy.modules.compiler.parser import Parser
 
 _FIX_SYNTAX = "Fix the syntax at the reported location, then save the file to recompile."
-_UNSUPPORTED = "Use a .nexy, .mdx, .md or framework route file (.tsx/.vue/.svelte)."
+_UNSUPPORTED = "Use a .nexy, .md or framework route file (.tsx/.vue/.svelte/.mdx)."
 
 
 def is_nexy_file(file_path: str) -> bool:
     return file_path.endswith(".nexy")
-
-
-def is_mdx_file(file_path: str) -> bool:
-    return file_path.endswith(".mdx")
 
 
 def is_md_file(file_path: str) -> bool:
@@ -27,15 +23,14 @@ def is_md_file(file_path: str) -> bool:
 
 
 def is_framework_route_file(file_path: str) -> bool:
-    return file_path.endswith((".tsx", ".vue", ".svelte"))
+    """Files Vite compiles: Python only writes the thin wrapper that serves them (MDX included)."""
+    return file_path.endswith((".tsx", ".vue", ".svelte", ".mdx"))
 
 
 def default_output(input_path: str) -> str:
     """Where a component's compiled HTML goes: its namespaced path with an ``.html`` extension."""
     mapped = StringTransform.normalize_route_path_for_namespace(input_path)
     namespace = Config.NAMESPACE.strip("/")
-    if is_mdx_file(input_path):
-        return f"{namespace}/{mapped.replace('.mdx', '.mdx.html')}"
     return f"{namespace}/{mapped.replace('.nexy', '.html')}"
 
 
@@ -76,9 +71,9 @@ class Compiler:
             self._compile_component()
 
     def _compile_component(self) -> None:
-        """Compile a .nexy or .mdx file: parse it, then generate its Python and HTML."""
+        """Compile a .nexy file: parse it, then generate its Python and HTML."""
         self.source_code = self._load_source()
-        if not (is_nexy_file(self.input) or is_mdx_file(self.input)):
+        if not is_nexy_file(self.input):
             raise self._unsupported()
         if self.output is None:
             self.output = default_output(self.input)

@@ -18,10 +18,14 @@ Nexy is a fullstack Python meta-framework.
 
 ## `.mdx`: Markdown with components
 
-`.mdx` files are compiled by the framework route pipeline (React or Preact). Components are rendered
-in the framework, server-rendered like other component routes.
+`.mdx` files are compiled by **Vite**, through the framework route pipeline (React or Preact). Python
+only writes the thin wrapper that serves the route; it never compiles or renders MDX itself.
+Components are rendered by the framework, server-rendered like other component routes, and
+pre-rendered to HTML by `nx build`.
 
 - Requires `useFF` to be React or Preact.
+- Requires the optional packages `@mdx-js/rollup`, `remark-gfm` and `@mdx-js/react` (and
+  `@mdx-js/esbuild` for the build). Vite tells you which one is missing.
 - The framework is auto-detected from imports; if both are imported, React is used.
 
 > **Good to know**: use `.nexy` if you need Python logic in frontmatter.

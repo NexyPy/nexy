@@ -40,7 +40,7 @@
     "success_label": "构建成功"
   },
   "check": {
-    "compiling": "正在编译 .nexy/.mdx 文件 ...",
+    "compiling": "正在编译 .nexy 文件 ...",
     "failed": "{count} 个部分失败",
     "passed": "所有检查均已通过",
     "skip_tool": "未找到 {tool}：跳过 {scope}"

@@ -40,7 +40,7 @@
     "success_label": "ビルド成功"
   },
   "check": {
-    "compiling": ".nexy/.mdx ファイルをコンパイルしています ...",
+    "compiling": ".nexy ファイルをコンパイルしています ...",
     "failed": "{count} 件のセクションが失敗しました",
     "passed": "すべてのチェックに合格しました",
     "skip_tool": "{tool} が見つかりません: {scope} をスキップします"

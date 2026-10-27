@@ -40,7 +40,7 @@
     "success_label": "Compilación correcta"
   },
   "check": {
-    "compiling": "compilando archivos .nexy/.mdx ...",
+    "compiling": "compilando archivos .nexy ...",
     "failed": "{count} sección(es) con error",
     "passed": "todas las comprobaciones han pasado",
     "skip_tool": "{tool} no encontrado: se omite {scope}"

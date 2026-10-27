@@ -40,7 +40,7 @@
     "success_label": "बिल्ड सफल"
   },
   "check": {
-    "compiling": ".nexy/.mdx फ़ाइलें कंपाइल हो रही हैं ...",
+    "compiling": ".nexy फ़ाइलें कंपाइल हो रही हैं ...",
     "failed": "{count} भाग विफल रहे",
     "passed": "सभी जाँच सफल रहीं",
     "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है"
