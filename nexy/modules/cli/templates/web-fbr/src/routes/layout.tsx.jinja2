@@ -1,3 +1,33 @@
+{% if utility_ui %}{% raw %}import type { ReactNode } from "react";
+import Header from "@/components/header.tsx";
+import Footer from "@/components/footer.tsx";
+import ThemeScript from "@/components/theme-script.tsx";
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Pages, an API and interactive parts in one project." />
+        <title>Nexy App</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
+          rel="stylesheet"
+        />
+        <ThemeScript />
+      </head>
+      <body className="flex min-h-dvh flex-col">
+        <Header />
+        <main className="flex flex-1 flex-col">{children}</main>
+        <Footer />
+      </body>
+    </html>
+  );
+}
+{% endraw %}{% else -%}
 {%- if useCSR and client_framework in ["react", "solid", "preact"] -%}
 {%- set charset_attr = "charSet" if client_framework == "react" else "charset" -%}
 {%- set cross_attr = "crossOrigin" if client_framework == "react" else "crossorigin" -%}
@@ -8,12 +38,9 @@ import type { JSX } from "solid-js";
 {%- else -%}
 import type { ComponentChildren } from "preact";
 {%- endif %}
-import { Link } from "@nexy/client";
-import ThemeToggle from "@/components/theme-toggle.tsx";
-
-const criticalCss = `{% include "critical.css" %}`;
-
-const themeScript = `{% include "theme_script.js" %}`;
+import Header from "@/components/header.tsx";
+import Footer from "@/components/footer.tsx";
+import ThemeScript from "@/components/theme-script.tsx";
 
 {% if client_framework == "solid" -%}
 export default function RootLayout(props: { children: JSX.Element }) {
@@ -35,20 +62,15 @@ export default function RootLayout({ children }: { children: ComponentChildren }
           href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
           rel="stylesheet"
         />
-{% if client_framework == "solid" -%}
-        <style innerHTML={criticalCss} />
-        <script innerHTML={themeScript} />
-{%- else -%}
-        <style dangerouslySetInnerHTML={% raw %}{{ __html: criticalCss }}{% endraw %} />
-        <script dangerouslySetInnerHTML={% raw %}{{ __html: themeScript }}{% endraw %} />
-{%- endif %}
+        <ThemeScript />
       </head>
       <body {{ cls }}="nx-page">
-{% include "header.html.jinja2" %}
+        <Header />
         <main {{ cls }}="nx-main">{% if client_framework == "solid" %}{props.children}{% else %}{children}{% endif %}</main>
-{% include "footer.html.jinja2" %}
+        <Footer />
       </body>
     </html>
   );
 }
 {% endif -%}
+{% endif %}

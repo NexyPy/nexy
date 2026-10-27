@@ -1,0 +1,72 @@
+{% if utility_ui %}{% raw %}import { useState } from "react";
+
+import CopyChip from "@/components/copy-chip.tsx";
+import Icon from "@/components/icon.tsx";
+
+const CHECK = "M5 13l4 4L19 7";
+
+const STEPS = [
+  {
+    title: "Change this headline",
+    text: "Edit the title, save, and watch this page update without a refresh.",
+    snippet: "src/routes/index.tsx",
+  },
+  {
+    title: "Add a page",
+    text: "A new file becomes a new address. Visit /hello once it is saved.",
+    snippet: "src/routes/hello.tsx",
+  },
+  {
+    title: "Ship it",
+    text: "Build the production version whenever you are ready.",
+    snippet: "nexy build",
+  },
+];
+
+function Check({ done, number, onToggle }: { done: boolean; number: number; onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={done}
+      aria-label={`Mark step ${number} as done`}
+      onClick={onToggle}
+      className={`grid size-9 shrink-0 place-items-center border font-mono text-sm transition-colors ${
+        done ? "border-signal bg-signal text-ink" : "border-border-second hover:border-foreground"
+      }`}
+    >
+      {done ? <Icon path={CHECK} size={16} /> : number}
+    </button>
+  );
+}
+
+// Three steps in a real order: tick them off as you go.
+export default function Steps() {
+  const [done, setDone] = useState<boolean[]>(STEPS.map(() => false));
+  const count = done.filter(Boolean).length;
+  const toggle = (index: number) => setDone(done.map((value, i) => (i === index ? !value : value)));
+
+  return (
+    <div>
+      <p className="mb-2 flex items-center justify-between font-mono text-xs text-foreground-second" aria-live="polite">
+        <span>{count === STEPS.length ? "All set. Time to build." : `${count} of ${STEPS.length} done`}</span>
+        <span className="h-1 w-24 bg-border" aria-hidden="true">
+          <span className="block h-full bg-signal transition-all duration-300" style={{ width: `${(count / STEPS.length) * 100}%` }} />
+        </span>
+      </p>
+      <ol>
+        {STEPS.map((step, index) => (
+          <li key={step.title} className="grid grid-cols-[auto_1fr] gap-5 border-t border-border py-8">
+            <Check done={done[index]} number={index + 1} onToggle={() => toggle(index)} />
+            <div className="min-w-0">
+              <h3 className={`text-2xl transition-opacity ${done[index] ? "opacity-50" : ""}`}>{step.title}</h3>
+              <p className="mt-2 max-w-[48ch] text-foreground-second">{step.text}</p>
+              <CopyChip text={step.snippet} />
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+{% endraw %}{% endif %}

@@ -1,0 +1,18 @@
+{% if utility_ui %}{% raw %}import type { ReactNode } from "react";
+
+// A small label followed by a dashed rule. It takes the colour of the section it sits in.
+export default function Eyebrow({ children }: { children: ReactNode }) {
+  return (
+    <div className="mb-5 flex items-center gap-3.5">
+      <span className="inline-flex items-center gap-2.5 font-mono text-[0.7rem] uppercase tracking-[0.07em] opacity-70">
+        <span className="size-1.5 bg-current" aria-hidden="true" />
+        {children}
+      </span>
+      <span
+        className="h-px grow bg-[image:repeating-linear-gradient(to_right,currentColor_0_3px,transparent_3px_6px)] opacity-25"
+        aria-hidden="true"
+      />
+    </div>
+  );
+}
+{% endraw %}{% endif %}

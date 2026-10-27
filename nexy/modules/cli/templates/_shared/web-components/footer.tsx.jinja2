@@ -1,0 +1,41 @@
+{% if utility_ui %}{% raw %}import Container from "@/components/container.tsx";
+import LinePattern from "@/components/line-pattern.tsx";
+
+const LINKS = [
+  ["Docs", "https://github.com/NexyPy/nexy#readme"],
+  ["GitHub", "https://github.com/NexyPy/nexy"],
+  ["Releases", "https://github.com/NexyPy/nexy/releases"],
+];
+
+export default function Footer() {
+  return (
+    <footer className="relative overflow-hidden border-t border-paper/10 bg-ink py-14 text-paper">
+      <LinePattern side="left" />
+      <Container className="relative flex flex-wrap items-center justify-between gap-6">
+        <div className="flex items-center gap-5">
+          <img src="/nexy.svg" alt="Nexy" className="h-5 invert" />
+          <p className="text-sm text-paper/65">Open source under the MIT license.</p>
+        </div>
+        <ul className="flex flex-wrap gap-6 font-mono text-xs uppercase tracking-[0.04em]">
+          {LINKS.map(([label, href]) => (
+            <li key={href}>
+              <a href={href} target="_blank" rel="noopener noreferrer" className="text-paper/65 transition-colors hover:text-paper">
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Container>
+    </footer>
+  );
+}
+{% endraw %}{% else -%}
+{% if useCSR and client_framework in ("react", "solid", "preact") %}
+{%- set cls = "className" if client_framework == "react" else "class" -%}
+export default function Footer() {
+  return (
+{% include "footer.html.jinja2" %}
+  );
+}
+{% endif %}
+{% endif %}

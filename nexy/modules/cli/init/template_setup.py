@@ -90,6 +90,7 @@ def _render_local_template(
         "nexy_version": __version__,
     }
     context.update(_markup_context(context["client_framework"], context["useCSR"]))
+    context["utility_ui"] = _utility_ui(context)
     exclude = _excluded_suffixes(context)
     TemplateRenderer(TEMPLATES_DIR / template_name, dest, context, exclude).render()
     _render_shared_files(template_name, dest, context)
@@ -116,6 +117,18 @@ def _markup_context(framework: str, client_routed: bool) -> dict[str, str]:
         "cls": "className" if framework == "react" and client_routed else "class",
         "fw_label": _FRAMEWORK_LABELS.get(framework, "HTML"),
     }
+
+
+_UTILITY_STYLES = ("tailwind", "unocss")
+
+
+def _utility_ui(context: dict[str, Any]) -> bool:
+    """True for the utility-class starter: client-routed React with Tailwind or UnoCSS."""
+    return (
+        context["useCSR"]
+        and context["client_framework"] == "react"
+        and context["style"] in _UTILITY_STYLES
+    )
 
 
 def _excluded_suffixes(context: dict[str, Any]) -> set[str]:

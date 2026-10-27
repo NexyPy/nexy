@@ -30,20 +30,31 @@ class TestClientRouted:
         _scaffold(tmp_path, framework, True)
         component = tmp_path / "src" / "components" / f"theme-toggle.{ext}"
         text = component.read_text(encoding="utf-8")
-        assert 'role="switch"' in text and "data-theme-toggle" in text
+        marker = "useState" if framework == "react" else "data-theme-toggle"
+        assert 'role="switch"' in text and marker in text
 
-    def test_the_layout_sets_the_theme_before_the_page_paints(self, tmp_path, framework, ext):  # noqa: ARG002
+    def test_the_layout_sets_the_theme_before_the_page_paints(self, tmp_path, framework, ext):
         _scaffold(tmp_path, framework, True)
-        layout = next((tmp_path / "src" / "routes").glob("layout.*"))
-        text = layout.read_text(encoding="utf-8")
-        assert 'localStorage.setItem(KEY, dark ? "dark" : "light")' in text
+        routes, components = tmp_path / "src" / "routes", tmp_path / "src" / "components"
+        layout = next(routes.glob("layout.*"))
+        holder = components / "theme-script.tsx" if ext == "tsx" else layout
+        text = holder.read_text(encoding="utf-8")
+        saved_theme = (
+            'classList.toggle("dark"'
+            if framework == "react"
+            else 'localStorage.setItem(KEY, dark ? "dark" : "light")'
+        )
+        assert saved_theme in text
         assert "html.dark{background:" in text
 
     def test_the_layout_uses_it(self, tmp_path, framework, ext):
         _scaffold(tmp_path, framework, True)
         layout = next((tmp_path / "src" / "routes").glob("layout.*"))
         text = layout.read_text(encoding="utf-8")
-        assert f"theme-toggle.{ext}" in text and "<ThemeToggle" in text
+        if ext == "tsx":
+            assert "<Header />" in text and "<Footer />" in text and "<ThemeScript />" in text
+        else:
+            assert f"theme-toggle.{ext}" in text and "<ThemeToggle" in text
 
     def test_no_jinja_is_left_in_the_component(self, tmp_path, framework, ext):
         _scaffold(tmp_path, framework, True)

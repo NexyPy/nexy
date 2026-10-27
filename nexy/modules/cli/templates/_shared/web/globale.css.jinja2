@@ -1,3 +1,6 @@
+{% if utility_ui -%}
+{% include "utility.css" %}
+{%- else -%}
 {% if style == "tailwind" -%}
 @import "tailwindcss";
 
@@ -67,3 +70,4 @@
 {% endif %}
 
 {% if starter | default(true) %}{% include "starter.css" %}{% endif %}
+{% endif %}

@@ -17,8 +17,16 @@ export default defineConfig({
       border: 'var(--border)',
       'border-second': 'var(--border-second)',
       accent: 'var(--accent)',
+{%- if utility_ui %}
+      ink: 'var(--ink)',
+      paper: 'var(--paper)',
+      signal: 'var(--signal)',
+{%- endif %}
     },
     font: {
+{%- if utility_ui %}
+      display: '"Fraunces", ui-serif, Georgia, serif',
+{%- endif %}
       mono: '"Geist Mono", ui-monospace, monospace',
     },
   },

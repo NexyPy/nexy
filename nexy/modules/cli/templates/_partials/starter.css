@@ -373,6 +373,39 @@
     color: var(--foreground-second);
   }
 
+  /* Tech separator */
+  .nx-sep-wrap {
+    padding-block: 1.5rem;
+  }
+  .nx-sep {
+    position: relative;
+  }
+  .nx-sep-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem 1.25rem;
+    padding: 0.875rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--background-second) 80%, transparent);
+    color: var(--foreground-second);
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .nx-sep-inner span:not(.nx-sep-dot) {
+    color: var(--foreground-second);
+  }
+  .nx-sep-dot {
+    width: 0.25rem;
+    height: 0.25rem;
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 12%, transparent);
+  }
+
   /* What you get: tiles of different sizes */
   .nx-bento {
     display: grid;
