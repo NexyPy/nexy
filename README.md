@@ -188,8 +188,8 @@ A view renders the page body. Pick one format per file.
 | `.svelte` | SFC | framework SSR / SSG | Svelte |
 
 Markdown pages get heading IDs and a generated table of contents, and support locale variants such
-as `about.fr.md`. The framework for `.mdx` is detected from the imports; if both are imported,
-React wins.
+as `about.fr.md`. The framework for `.mdx` is detected from the imports: Preact when
+the file imports `preact`, React otherwise.
 
 ```python
 # nexyconfig.py
@@ -218,7 +218,7 @@ Tailwind. `useVite` defaults to `True`.
 CSR requires a client framework and is incompatible with a modular `useRouter`. Only `.tsx`,
 `.jsx`, `.vue` and `.svelte` routes are navigable client-side; `.md` can use a CSR shell.
 
-[SSR →](docs/routing/fbr/ssr.md) · [CSR →](docs/routing/fbr/csr.md) · [ISR →](docs/routing/fbr/isr.md)
+[SSR →](docs/rendering/ssr.md) · [CSR →](docs/rendering/csr.md) · [ISR →](docs/rendering/isr.md)
 
 ## More server features
 
@@ -265,7 +265,7 @@ classes are resolved into a controller's `__init__`, with `Scope.SINGLETON`, `Sc
 `Scope.TRANSIENT` lifetimes, and `@UseGuard()` / `@Middleware()` add FastAPI dependencies.
 File-based routing keeps working alongside a modular router.
 
-[Modular routing →](docs/routing/modular.md)
+[Modular routing →](docs/routing/modular/README.md)
 
 ### Actions
 
@@ -292,7 +292,7 @@ async def create_user(name: str) -> dict:
 The path is deterministic (a hash of the module and function name). It keeps the endpoint out of
 casual discovery but is not a secret; do not rely on it for authorization.
 
-[Actions →](docs/actions.md)
+[Actions →](docs/guides/actions.md)
 
 ## Hooks and components
 
@@ -325,7 +325,7 @@ Built-in helpers return HTML strings, usable as a Jinja call or as a tag:
 | `Audio`, `Video` | media tags, with `<source>` children derived from `sources` |
 | `Import` | imports a component from Python, like the template syntax |
 
-[Hooks →](docs/routing/hooks.md) · [Components →](docs/views/components.md)
+[Hooks →](docs/routing/fbr/navigation/hooks.md) · [Components →](docs/views/components.md)
 
 ## Internationalization
 
@@ -360,7 +360,7 @@ class NexyConfig(NexyConfigModel):
 | Middleware | `useMiddlewares`, `useCORS`, `useGZip`, `useTrustedHost`, `useSession`, `useAuth`, `useHTTPSRedirect` |
 | Markdown | `useTocDepth`, `useTocTitle`, `useTocAuto` |
 
-[Every field and its default →](docs/config.md)
+[Every field and its default →](docs/reference/config.md)
 
 ## CLI
 
@@ -382,7 +382,7 @@ The binary is `nx`, also installed as `nexy`. Without a global install, prefix w
 mypy after `build`, and reports instead of rewriting for `format`; `--template` / `-t` skips the
 `new` prompts.
 
-[All flags →](docs/cli.md)
+[All flags →](docs/reference/cli.md)
 
 ## Build and deploy
 
@@ -419,7 +419,7 @@ Static hosting is a deployment choice, not a build mode: there is no `--static` 
 files in `public/`; they are served from `/` in development and production. Behind a reverse proxy,
 remember to forward WebSocket upgrade requests.
 
-[Deploy guide →](docs/deploy.md)
+[Deploy guide →](docs/deployment/README.md)
 
 ## How it works
 
@@ -465,26 +465,26 @@ are written from the code.
 
 | I want | Read |
 |---|---|
-| to create a project and run it | [Getting started](docs/getting-started.md) |
-| the files and folders | [Project structure](docs/project-structure.md) |
+| to create a project and run it | [Getting started](docs/getting-started/quick-start.md) |
+| the files and folders | [Project structure](docs/getting-started/project-structure.md) |
 | the URL of a file | [Routing](docs/routing/README.md) |
-| dynamic segments, layouts, error pages | [Pages](docs/routing/pages.md) |
-| the current path, query, cookies, session | [Hooks](docs/routing/hooks.md) |
+| dynamic segments, layouts, error pages | [Pages](docs/routing/fbr/pages/README.md) |
+| the current path, query, cookies, session | [Hooks](docs/routing/fbr/navigation/hooks.md) |
 | to write a page | [.nexy files](docs/views/nexyfile.md) |
 | Markdown or MDX | [Markdown](docs/views/markdown.md) |
 | built-in HTML helpers | [Components](docs/views/components.md) |
-| SSR, CSR, ISR | [SSR](docs/routing/fbr/ssr.md), [CSR](docs/routing/fbr/csr.md), [ISR](docs/routing/fbr/isr.md) |
-| a WebSocket | [WebSocket](docs/routing/fbr/websocket.md) |
-| controllers and modules | [Modular routing](docs/routing/modular.md) |
-| to add an endpoint | [API](docs/api.md) |
-| a form posted from a page | [Actions](docs/actions.md) |
+| SSR, CSR, ISR | [SSR](docs/rendering/ssr.md), [CSR](docs/rendering/csr.md), [ISR](docs/rendering/isr.md) |
+| a WebSocket | [WebSocket](docs/routing/fbr/realtime/websocket.md) |
+| controllers and modules | [Modular routing](docs/routing/modular/README.md) |
+| to add an endpoint | [API](docs/routing/fbr/handlers/README.md) |
+| a form posted from a page | [Actions](docs/guides/actions.md) |
 | translations | [i18n](docs/guides/i18n.md) |
-| a config field | [Config](docs/config.md) |
-| the client build and Vite | [Frontend](docs/frontend.md) |
-| every command and flag | [CLI](docs/cli.md) |
-| to test a project | [Testing](docs/testing.md) |
-| build output and Docker | [Deploy](docs/deploy.md) |
-| rules for an AI agent | [Agents](docs/agents.md) |
+| a config field | [Config](docs/reference/config.md) |
+| the client build and Vite | [Frontend](docs/guides/frontend.md) |
+| every command and flag | [CLI](docs/reference/cli.md) |
+| to test a project | [Testing](docs/guides/testing.md) |
+| build output and Docker | [Deploy](docs/deployment/README.md) |
+| rules for an AI agent | [Agents](docs/reference/agents.md) |
 
 [llms.txt](llms.txt) is the same map in one file, for tools that read plain text.
 

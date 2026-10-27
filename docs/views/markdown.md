@@ -26,7 +26,8 @@ pre-rendered to HTML by `nx build`.
 - Requires `useFF` to be React or Preact.
 - Requires the optional packages `@mdx-js/rollup`, `remark-gfm` and `@mdx-js/react` (and
   `@mdx-js/esbuild` for the build). Vite tells you which one is missing.
-- The framework is auto-detected from imports; if both are imported, React is used.
+- The framework is auto-detected from imports: Preact when the file imports `preact`, React
+  otherwise.
 
 > **Good to know**: use `.nexy` if you need Python logic in frontmatter.
 
