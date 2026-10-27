@@ -96,7 +96,6 @@ class TestDatabase:
         assert database.database_url(tmp_path) is None
 
     def test_a_working_sqlite_database_has_no_problem(self, tmp_path):
-        pytest.importorskip("sqlalchemy")
         assert database.connection_problem(f"sqlite:///{(tmp_path / 'ok.db').as_posix()}") is None
 
     def test_without_sqlalchemy_the_driver_is_missing(self, monkeypatch):
@@ -105,7 +104,6 @@ class TestDatabase:
         assert problem is not None and problem[0] == "driver"
 
     def test_an_unreachable_database_is_a_connection_problem(self):
-        pytest.importorskip("sqlalchemy")
         problem = database.connection_problem("sqlite:////nonexistent-folder/x/y.db")
         assert problem is not None and problem[0] == "connection"
 

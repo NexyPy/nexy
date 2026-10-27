@@ -36,6 +36,9 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-playwright>=0.7.0",
     "ruff>=0.14.11",
+    "sqlalchemy>=2.0",
+    "itsdangerous>=2.2",
+    "python-multipart>=0.0.9",
     "types-jinja2>=2.11.9",
 ]
 

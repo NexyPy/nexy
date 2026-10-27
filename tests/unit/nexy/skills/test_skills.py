@@ -19,6 +19,7 @@ CLIENT_FILE = {
     "nexy-vue": "vue.ts",
     "nexy-svelte": "svelte.ts",
 }
+FRAMEWORK_SKILLS = [path for path in SKILLS if path.parent.name in CLIENT_FILE]
 NAME = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 BLOCK = re.compile(r"```(\w*)\n(.*?)```", re.DOTALL)
 EMOJI = re.compile("[\U0001f300-\U0001faff☀-➿]")
@@ -99,14 +100,13 @@ class TestTruth:
         for path in set(re.findall(r"`(nexy/[\w/.-]+)`", text)):
             assert (ROOT / path.rstrip("/")).exists(), path
 
-    def test_the_client_names_exist_for_its_framework(self, skill):
-        file = CLIENT_FILE.get(skill.parent.name)
-        if file is None:
-            pytest.skip("not a framework skill")
-        source = (CLIENT / file).read_text(encoding="utf-8")
-        text = skill.read_text(encoding="utf-8")
-        for name in re.findall(r"`(\w+)` from `@nexy/client`", text):
-            assert re.search(rf"export (?:const|function|type) {name}\b", source), name
+
+@pytest.mark.parametrize("skill", FRAMEWORK_SKILLS, ids=_ids)
+def test_the_client_names_a_framework_skill_uses_exist_for_that_framework(skill):
+    source = (CLIENT / CLIENT_FILE[skill.parent.name]).read_text(encoding="utf-8")
+    text = skill.read_text(encoding="utf-8")
+    for name in re.findall(r"`(\w+)` from `@nexy/client`", text):
+        assert re.search(rf"export (?:const|function|type) {name}\b", source), name
 
 
 def test_every_skill_is_listed_in_the_index():

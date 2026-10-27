@@ -28,6 +28,17 @@ jobs:
       - name: Install deps (locked)
         run: uv sync --frozen --group dev
 
+      # tests/client mounts the generated runtimes in jsdom with Node.js: without its packages
+      # those tests cannot even start.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/client/package-lock.json
+
+      - name: Install the client test dependencies (locked)
+        run: npm ci --no-audit --no-fund --prefix tests/client
+
       - name: Lint (nexy + tests)
         run: uv run --no-sync ruff check nexy/ tests/
 

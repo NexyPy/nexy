@@ -36,6 +36,7 @@ TARGETS = {
     "none": ("none", False, "nexy", ["live-row"], "JavaScript"),
     "react-server": ("react", False, "nexy", ["live-row"], "React"),
 }
+CLIENT_TARGETS = [name for name, target in TARGETS.items() if target[2] != "nexy"]
 EMOJI = re.compile("[\U0001f300-\U0001faff☀-➿]")
 HAND_DOM = ("querySelector", "addEventListener", "innerHTML =")
 
@@ -101,12 +102,6 @@ class TestEveryFramework:
         text = _text(root, extension).replace("nx-spin", "").replace("nx-header", "")
         assert "nx-" not in text
 
-    def test_no_template_syntax_is_left_in_framework_sources(self, tmp_path, target, style):
-        root, extension, _, _ = self._project(tmp_path, target, style)
-        if extension == "nexy":
-            pytest.skip("a .nexy file keeps its own Jinja")
-        assert "{%" not in _text(root, extension)
-
     def test_a_nexy_page_has_no_scaffold_time_markers_left(self, tmp_path, target, style):
         root, extension, _, _ = self._project(tmp_path, target, style)
         assert "{% raw %}" not in _text(root, extension) and "{% endraw %}" not in _text(
@@ -139,8 +134,13 @@ class TestEveryFramework:
 
 
 @pytest.mark.parametrize("style", UTILITY_STYLES)
-@pytest.mark.parametrize("name", ["react", "preact", "solid", "vue", "svelte"])
+@pytest.mark.parametrize("name", CLIENT_TARGETS)
 class TestIdiomaticClientCode:
+    def test_no_template_syntax_is_left_in_the_sources(self, tmp_path, name, style):
+        framework, use_csr, extension, _, _ = TARGETS[name]
+        _scaffold(tmp_path, framework, style, use_csr)
+        assert "{%" not in _text(tmp_path, extension)
+
     def _components(self, tmp_path, name, style) -> str:
         framework, use_csr, extension, _, _ = TARGETS[name]
         _scaffold(tmp_path, framework, style, use_csr)
