@@ -11,7 +11,7 @@ from nexy.modules.i18n import t
 
 _PY_EXTS = (".py",)
 _TS_EXTS = (".ts", ".tsx", ".vue", ".svelte")
-_NEXY_EXTS = (".nexy", ".mdx")
+_NEXY_EXTS = (".nexy",)
 
 
 def check(tsc: bool = True, nexypy: bool = True) -> None:
@@ -33,9 +33,8 @@ def _check_python(root: Path) -> bool:
         return True
     exe = shutil.which("mypy")
     if not exe:
-        console.print(
-            f"  [yellow]\u26a0[/yellow] {t('check.skip_tool', 'mypy not found - skipping Python')}"
-        )
+        skip = t("check.skip_tool", "{tool} not found - skipping {scope}")
+        console.print(f"  [yellow]\u26a0[/yellow] {skip.format(tool='mypy', scope='Python')}")
         return True
     with console.status("  mypy ..."):
         r = subprocess.run([exe, str(root)], capture_output=True, text=True)  # nosec B603
@@ -46,8 +45,8 @@ def _check_python(root: Path) -> bool:
 def _check_typescript() -> bool:
     tsc_exe = shutil.which("tsc")
     if not tsc_exe:
-        skip = t("check.skip_tool", "tsc not found - skipping TypeScript")
-        console.print(f"  [yellow]\u26a0[/yellow] {skip}")
+        skip = t("check.skip_tool", "{tool} not found - skipping {scope}")
+        console.print(f"  [yellow]\u26a0[/yellow] {skip.format(tool='tsc', scope='TypeScript')}")
         return True
     with console.status("  tsc ..."):
         r = subprocess.run([tsc_exe, "-b"], capture_output=True, text=True)  # nosec B603/B607
@@ -57,7 +56,7 @@ def _check_typescript() -> bool:
 
 def _check_nexy(root: Path) -> bool:
     ok = True
-    with console.status(f"  {t('check.compiling', 'compiling .nexy/.mdx ...')}"):
+    with console.status(f"  {t('check.compiling', 'compiling .nexy ...')}"):
         result = Builder().build(showlog=False)
     if result.failed:
         for path in result.failed:

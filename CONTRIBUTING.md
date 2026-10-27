@@ -235,7 +235,7 @@ python -m pytest tests/unit/nexy/parser/test_scanner.py -v
 python -m pytest tests/ --cov=nexy --cov-report=term
 ```
 
-**Coverage floor**: 54% overall (enforced by the test suite). Aspire to 95%
+**Coverage floor**: 84% overall (enforced by the test suite). Aspire to 95%
 per module when touching one.
 
 ### Conventions

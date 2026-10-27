@@ -1,10 +1,21 @@
 import { createLogger, type Logger, type Plugin } from 'vite'
+import fs from 'node:fs'
 import path from 'node:path'
 import { execSync } from 'child_process'
 import { createRequire } from 'module'
 import { pathToFileURL } from 'url'
 import { transform } from 'esbuild'
 import { __NEXY_DEPS } from './src/deps.auto.ts'
+import {
+  DOCUMENT_FRAMEWORKS,
+  isLoopback,
+  isRootLayout,
+  MAX_RENDER_BODY,
+  parseRenderRequest,
+  readMode,
+  renderDocument,
+  stripDocumentTags
+} from './document'
 
 const c = {
   reset:  '\x1b[0m',
@@ -15,6 +26,19 @@ const c = {
 }
 
 const require = createRequire(import.meta.url)
+
+// The aliases of nexyconfig.py (`useAliases`), written to __nexy__/aliases.json; `@` -> src by default.
+function projectAliases(): { find: RegExp; replacement: string }[] {
+  let declared: Record<string, string> = {}
+  try {
+    declared = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), '__nexy__/aliases.json'), 'utf8'))
+  } catch {}
+  const entries = Object.entries(declared).length ? Object.entries(declared) : [['@', 'src']]
+  return entries.map(([key, dir]) => ({
+    find: new RegExp('^' + key.replace(/\/$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '/'),
+    replacement: path.resolve(process.cwd(), dir) + '/'
+  }))
+}
 
 function getTsxPath(): string {
   try {
@@ -101,11 +125,27 @@ function makeMdxTransform(jsx: boolean, importSource: string) {
 const mdxProdTransform = makeMdxTransform(true, 'react')
 const mdxDevTransform = makeMdxTransform(false, '@mdx-js/react')
 
+/**
+ * The browser build of a Vue or Svelte root layout holds the body content only: those frameworks cannot
+ * create <html>, <head> or <body> in the browser, and the server already sent them.
+ */
+function documentForBrowser(source: string, id: string, ssr: boolean): string | null {
+  if (ssr) return null
+  const { csr, framework } = readMode()
+  if (!csr || (framework !== 'vue' && framework !== 'svelte')) return null
+  if (!isRootLayout(id, framework, process.cwd())) return null
+  return stripDocumentTags(source, framework)
+}
+
 function nexyPlugin(): Plugin {
   return {
     name: 'nexy',
+    enforce: 'pre',
 
-    transform(source, id) {
+    transform(source, id, options) {
+      const stripped = documentForBrowser(source, id, options?.ssr === true)
+      if (stripped !== null) return { code: stripped, map: null }
+      if (!id.split('?')[0].endsWith('.mdx')) return null
       return (isProduction ? mdxProdTransform : mdxDevTransform).call(this, source, id)
     },
 
@@ -120,7 +160,7 @@ function nexyPlugin(): Plugin {
         resolve: {
           alias: [
             { find: /^@nexy\//, replacement: path.resolve(process.cwd(), '__nexy__/src') + '/' },
-            { find: /^@\//, replacement: path.resolve(process.cwd(), 'src') + '/' }
+            ...projectAliases()
           ]
         },
 
@@ -182,6 +222,50 @@ function nexyPlugin(): Plugin {
 
     // --- HMR for non-JS files (Python, Nexy, MDX) ---
     configureServer(server) {
+      // Full-document render for client-routed projects: the Python server POSTs a route and gets
+      // its HTML back. Only a process on this machine may ask (the app's dev proxy forwards GET
+      // and HEAD only, never this), only for route files, and the body is size-limited.
+      server.middlewares.use('/__nexy__/render', async (req, res) => {
+        const reply = (status: number, text: string, type = 'text/plain') => {
+          res.statusCode = status
+          res.setHeader('content-type', `${type}; charset=utf-8`)
+          res.end(text)
+        }
+        try {
+          if (!isLoopback(req.socket.remoteAddress)) return reply(403, 'forbidden')
+          if (req.method !== 'POST') return reply(405, 'use POST')
+          const mode = readMode()
+          if (!mode.csr || !DOCUMENT_FRAMEWORKS.includes(mode.framework)) {
+            return reply(404, 'document rendering is not enabled')
+          }
+          const chunks: Buffer[] = []
+          let size = 0
+          for await (const chunk of req) {
+            size += (chunk as Buffer).length
+            if (size > MAX_RENDER_BODY) return reply(413, 'request too large')
+            chunks.push(chunk as Buffer)
+          }
+          let request
+          try {
+            request = parseRenderRequest(Buffer.concat(chunks).toString('utf8'))
+          } catch (error) {
+            return reply(400, (error as Error).message)
+          }
+          const html = await renderDocument(
+            server,
+            request.page,
+            request.layouts,
+            request.props,
+            request.location
+          )
+          reply(200, html, 'text/html')
+        } catch (error) {
+          const err = error as Error
+          if (err.stack) server.ssrFixStacktrace(err)
+          reply(500, String(err.stack ?? err))
+        }
+      })
+
       server.watcher.add([
         path.resolve(process.cwd(), 'src/**/*.py'),
         path.resolve(process.cwd(), 'src/**/*.nexy'),
@@ -207,12 +291,22 @@ function nexyPlugin(): Plugin {
       })
     },
 
+    // Python files restart the server and .nexy/.md pages refresh over the Nexy socket: Vite must
+    // not also reload the browser, which would hit the server while it is still restarting.
+    handleHotUpdate({ file }) {
+      if (/\.(py|nexy|md)$/.test(file)) return []
+    },
+
     // --- Entry Generation (Client side) ---
     buildStart() {
-      if (isSSRBuild) return
+      if (isSSRBuild || process.env.NEXY_RENDER_ONLY) return
       nexySSGDone = false
       const isDev = process.env.NODE_ENV === 'development'
-      if (!isDev) {
+      // Server components are the islands a server-rendered page embeds. A client-routed project
+      // has none: its documents are rendered once, after the bundle (see document.ts).
+      const { csr, framework } = readMode()
+      const hasIslands = !(csr && DOCUMENT_FRAMEWORKS.includes(framework))
+      if (!isDev && hasIslands) {
         console.log(`${c.dim}[nexy] Building server components...${c.reset}`)
         const tsxPath = getTsxPath()
         execSync(`node --import "${tsxPath}" __nexy__/scripts/entries.ts`, {
@@ -225,7 +319,7 @@ function nexyPlugin(): Plugin {
 
     // --- Static Site Generation (SSG) ---
     closeBundle() {
-      if (isSSRBuild || nexySSGDone) return
+      if (isSSRBuild || nexySSGDone || process.env.NEXY_RENDER_ONLY) return
       nexySSGDone = true
 
       console.log(`${c.dim}[nexy] Building client bundles...${c.reset}`)
@@ -241,7 +335,7 @@ function nexyPlugin(): Plugin {
 
 const nexyLogger = (): Logger => {
   const logger = createLogger()
-  const prefix = `${c.reset}${c.yellow}${c.dim}VITE${c.reset} »`
+  const prefix = `${c.reset}${c.dim}vite »${c.reset}`
   return {
     ...logger,
     info: (msg) => {
@@ -249,8 +343,8 @@ const nexyLogger = (): Logger => {
       if (silentMessages.some(m => msg.includes(m))) return
       console.info(`${prefix} ${msg.replace("/", "")}`)
     },
-    warn: (msg) => console.warn(`${prefix} ${c.yellow}WARN ${msg}${c.reset}`),
-    error: (msg) => console.error(`${prefix} ${c.red}ERR ${msg}${c.reset}`),
+    warn: (msg) => console.warn(`${prefix} ${c.yellow}${msg}${c.reset}`),
+    error: (msg) => console.error(`${prefix} ${c.red}${msg}${c.reset}`),
   }
 }
 

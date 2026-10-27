@@ -1,171 +1,109 @@
 from pathlib import Path
 
 import typer
-from jinja2 import Environment, FileSystemLoader
 
 from nexy.helpers.common.process import run_tool
-from nexy.modules.cli.constants import TEMPLATES_DIR
+from nexy.modules.cli.migrations import alembic
+from nexy.modules.cli.migrations.database import connection_problem, database_url
+from nexy.modules.cli.migrations.orm import Orm, detect_orm
+from nexy.modules.i18n import t
 
-
-def _detect_orm() -> tuple[str, str]:
-    """Detect the active ORM.
-
-    Returns (orm_name, tool).
-    """
-    cwd = Path.cwd()
-
-    config_file = cwd / "nexyconfig.py"
-    if config_file.exists():
-        content = config_file.read_text()
-        if "SQLModel" in content or "sqlmodel" in content:
-            return ("SQLModel", "alembic")
-        if "Tortoise" in content or "tortoise" in content:
-            return ("Tortoise-ORM", "aerich")
-        if "SQLAlchemy" in content or "sqlalchemy" in content:
-            return ("SQLAlchemy", "alembic")
-
-    try:
-        import sqlmodel  # noqa: F401
-
-        return ("SQLModel", "alembic")
-    except ImportError:
-        pass
-
-    try:
-        import tortoise  # noqa: F401
-
-        return ("Tortoise-ORM", "aerich")
-    except ImportError:
-        pass
-
-    try:
-        import sqlalchemy  # noqa: F401
-
-        return ("SQLAlchemy", "alembic")
-    except ImportError:
-        pass
-
-    return ("", "")
+_AERICH_CONFIG = "src.configs.db.TORTOISE_ORM"
+_INIT_FILES = {"alembic": "alembic.ini", "aerich": "aerich.ini"}
 
 
 def _run_tool(tool: str, args: list[str]) -> int:
     returncode = run_tool(tool, args)
     if returncode is None:
-        typer.echo(f"Error: {tool} not found on PATH. Install it and try again.")
+        message = t(
+            "migrate.tool_missing", "Error: {tool} not found on PATH. Install it and try again."
+        )
+        typer.echo(message.format(tool=tool))
         raise typer.Exit(1)
     return returncode
 
 
-def _init_alembic(cwd: Path, orm_name: str) -> None:
+def _fail(message: str) -> typer.Exit:
+    typer.echo(message)
+    return typer.Exit(1)
+
+
+def _require_orm(project: Path) -> Orm:
+    orm = detect_orm(project)
+    if orm is None:
+        raise _fail(
+            t(
+                "migrate.no_orm",
+                "No supported ORM found. Install one: sqlmodel, tortoise-orm, sqlalchemy",
+            )
+        )
+    return orm
+
+
+def _initialize(orm: Orm, project: Path) -> None:
+    """Set the migration tool up: Alembic with Nexy's `env.py` and URL, or Aerich."""
+    if orm.tool == "aerich":
+        _run_tool("aerich", ["init", "-t", _AERICH_CONFIG])
+        return
     _run_tool("alembic", ["init", "alembic"])
-    alembic_dir = cwd / "alembic"
-    if alembic_dir.exists():
-        loader = FileSystemLoader(str(TEMPLATES_DIR / "alembic"))
-        # Renders a Python code template (env.py), not HTML; autoescaping
-        # here would corrupt the generated Python. See SECURITY.md.
-        env = Environment(loader=loader)  # nosec B701
-        env_path = alembic_dir / "env.py"
-        env_path.write_text(env.get_template("env.py.jinja2").render(orm=orm_name))
-    _write_db_url_to_alembic_ini(cwd)
+    if (project / "alembic").exists():
+        alembic.render_env(project / "alembic", orm.name)
+    url = database_url(project)
+    if url:
+        alembic.write_ini_url(project, url)
 
 
-def _write_db_url_to_alembic_ini(cwd: Path) -> None:
-    import os
-    import re
-
-    env_path = cwd / ".env"
-    db_url = None
-    if env_path.exists():
-        try:
-            from dotenv import load_dotenv
-
-            load_dotenv(env_path)
-        except ImportError:
-            pass
-        db_url = os.getenv("DATABASE_URL")
-    if not db_url:
+def _require_initialized(orm: Orm, project: Path) -> None:
+    if (project / _INIT_FILES[orm.tool]).exists():
         return
-    alembic_ini = cwd / "alembic.ini"
-    if not alembic_ini.exists():
+    messages = {
+        "alembic": t(
+            "migrate.alembic_not_initialized", "Alembic not initialized. Run 'nx m --init' first."
+        ),
+        "aerich": t(
+            "migrate.aerich_not_initialized", "Aerich not initialized. Run 'nx m --init' first."
+        ),
+    }
+    raise _fail(messages[orm.tool])
+
+
+def _require_database(project: Path) -> None:
+    url = database_url(project)
+    if not url:
+        raise _fail(
+            t("migrate.no_database_url", "Error: DATABASE_URL not found in .env or environment.")
+        )
+    problem = connection_problem(url)
+    if problem is None:
         return
-    content = alembic_ini.read_text(encoding="utf-8")
-    content = re.sub(
-        r"^sqlalchemy\.url\s*=.*",
-        f"sqlalchemy.url = {db_url}",
-        content,
-        flags=re.MULTILINE,
-    )
-    alembic_ini.write_text(content, encoding="utf-8")
-
-
-def _check_db_connection() -> None:
-    import os
-
-    env_path = Path.cwd() / ".env"
-    if env_path.exists():
-        try:
-            from dotenv import load_dotenv
-
-            load_dotenv(env_path)
-        except ImportError:
-            pass
-
-    db_url = os.getenv("DATABASE_URL")
-    if not db_url:
-        typer.echo("Error: DATABASE_URL not found in .env or environment.")
-        raise typer.Exit(1)
-
-    try:
-        from sqlalchemy import create_engine, text
-
-        engine = create_engine(db_url)
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        engine.dispose()
-    except ImportError as e:
-        typer.echo(f"Error: Missing database driver - {e}")
-        raise typer.Exit(1) from e
-    except Exception as e:
-        typer.echo(f"Error: Cannot connect to database - {e}")
-        raise typer.Exit(1) from e
+    kind, error = problem
+    if kind == "driver":
+        message = t("migrate.no_driver", "Error: Missing database driver - {error}")
+    else:
+        message = t("migrate.no_connection", "Error: Cannot connect to database - {error}")
+    raise _fail(message.format(error=error)) from error
 
 
 def migrate(
-    message: str = typer.Option("", "--message", "-m", help="Migration message"),
-    init: bool = typer.Option(False, "--init", help="Initialize migration tool"),
-    upgrade: bool = typer.Option(False, "--upgrade", "-u", help="Apply pending migrations"),
+    message: str = typer.Option(
+        "", "--message", "-m", help=t("migrate.help_message", "Migration message")
+    ),
+    init: bool = typer.Option(
+        False, "--init", help=t("migrate.help_init", "Initialize migration tool")
+    ),
+    upgrade: bool = typer.Option(
+        False, "--upgrade", "-u", help=t("migrate.help_upgrade", "Apply pending migrations")
+    ),
 ) -> None:
-    orm_name, tool = _detect_orm()
-    cwd = Path.cwd()
-
-    if not orm_name:
-        typer.echo("No supported ORM found. Install one: sqlmodel, tortoise-orm, sqlalchemy")
-        raise typer.Exit(1)
-
-    typer.echo(f"-- {orm_name} ({tool}) --")
-
+    project = Path.cwd()
+    orm = _require_orm(project)
+    typer.echo(f"-- {orm.name} ({orm.tool}) --")
     if init:
-        if tool == "alembic":
-            _init_alembic(cwd, orm_name)
-        elif tool == "aerich":
-            _run_tool("aerich", ["init", "-t", "src.configs.db.TORTOISE_ORM"])
+        _initialize(orm, project)
         return
-
-    if tool == "alembic" and not (cwd / "alembic.ini").exists():
-        typer.echo("Alembic not initialized. Run 'nx m --init' first.")
-        raise typer.Exit(1)
-
-    if tool == "aerich" and not (cwd / "aerich.ini").exists():
-        typer.echo("Aerich not initialized. Run 'nx m --init' first.")
-        raise typer.Exit(1)
-
-    _check_db_connection()
-
+    _require_initialized(orm, project)
+    _require_database(project)
     if upgrade:
-        _run_tool(tool, ["upgrade", "head"])
+        _run_tool(orm.tool, ["upgrade", "head"])
         return
-
-    args = ["revision", "--autogenerate"]
-    if message:
-        args += ["-m", message]
-    _run_tool(tool, args)
+    _run_tool(orm.tool, ["revision", "--autogenerate", *(["-m", message] if message else [])])

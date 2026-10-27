@@ -1,7 +1,7 @@
 import sys
 
 from nexy.helpers.fs.vfs import VFS
-from nexy.modules.routers.fbrouter import _lazy_component
+from nexy.modules.routers.fbrouter.handlers import lazy_component
 from nexy.modules.runtime.importer import install_vfs_importer
 
 
@@ -23,7 +23,7 @@ def test_lazy_component_returns_original_first():
 
     import __nexy__.src.routes.hello as mod
 
-    lazy = _lazy_component("__nexy__.src.routes.hello", "Hello", mod.Hello)
+    lazy = lazy_component("__nexy__.src.routes.hello", "Hello", mod.Hello)
     assert lazy() == "old"
 
 
@@ -40,7 +40,7 @@ def test_lazy_component_resolves_fresh_after_recompile():
 
     import __nexy__.src.routes.hello as mod
 
-    lazy = _lazy_component("__nexy__.src.routes.hello", "Hello", mod.Hello)
+    lazy = lazy_component("__nexy__.src.routes.hello", "Hello", mod.Hello)
     assert lazy() == "old"
 
     VFS().write("__nexy__/src/routes/hello.py", "def Hello(): return 'new'")

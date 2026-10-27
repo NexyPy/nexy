@@ -39,10 +39,15 @@ Single-file component. Nexy renders it on the server and mounts it in the browse
 ## Rendering
 
 Server rendering is on by default. Set `useCSR = True` for
-[client-side rendering](../routing/fbr/csr.md).
+[client-side rendering](../rendering/csr.md).
+
+## Layouts
+
+In client mode the root `layout.svelte` owns the HTML document and every `layout.svelte` renders its
+page with `{@render children?.()}`. See [layout.svelte](../routing/fbr/layouts/layout.svelte.md).
 
 ## Next steps
 
 - [Views](README.md): compare formats
-- [Frontend](../frontend.md): Vite and the client build
+- [Frontend](../guides/frontend.md): Vite and the client build
 - [.nexy files](nexyfile.md): mixing server logic and Svelte islands

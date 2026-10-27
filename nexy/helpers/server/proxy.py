@@ -33,8 +33,12 @@ from nexy.helpers.server.ports import get_client_port
 # instead of being retried against the app.
 VITE_ONLY_PREFIXES = ("/@vite/", "/@id/", "/@fs/", "/__nexy__/", "/node_modules/")
 
-# Vite's HMR client asks for this subprotocol; Nexy's own HMR socket does not.
+# Vite's client asks for one of these subprotocols; Nexy's own HMR socket does not. `vite-ping` is
+# how the client checks that the server is back after a restart: refusing it left the browser
+# retrying forever, once a second, and the page never reloaded by itself.
 HMR_SUBPROTOCOL: Subprotocol = Subprotocol("vite-hmr")
+PING_SUBPROTOCOL: Subprotocol = Subprotocol("vite-ping")
+VITE_SUBPROTOCOLS = (HMR_SUBPROTOCOL, PING_SUBPROTOCOL)
 
 # Methods Vite serves. Anything else is a genuine application request.
 SAFE_METHODS = frozenset({"GET", "HEAD"})
@@ -69,6 +73,23 @@ class ViteProxyMiddleware:
         self.app = app
         self.port = port
         self.host = host
+        self._client: httpx.AsyncClient | None = None
+
+    def _upstream_client(self) -> httpx.AsyncClient:
+        """Reuse one pooled client for the whole dev session.
+
+        A per-request ``AsyncClient`` tears down and re-opens a loopback TCP
+        connection for every module request a dev page load makes (dozens per
+        refresh), which dominates local TTFB. ``trust_env=False`` also keeps
+        any ``HTTP_PROXY`` defined on the host from intercepting 127.0.0.1
+        traffic - that turns a local roundtrip into a proxy detour.
+        """
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(
+                trust_env=False,
+                limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
+            )
+        return self._client
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] == "websocket":
@@ -80,27 +101,37 @@ class ViteProxyMiddleware:
 
     async def _handle_websocket(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Proxy Vite's HMR socket; every other socket belongs to the app."""
-        if HMR_SUBPROTOCOL not in scope.get("subprotocols", ()):
+        protocol = _vite_subprotocol(scope)
+        if protocol is None:
             await self.app(scope, receive, send)
             return
         if not _host_allowed(scope):
             await send({"type": "websocket.close", "code": 1008})
             return
         try:
-            await self._forward_websocket(scope, receive, send)
+            await self._forward_websocket(scope, receive, send, protocol)
         except (OSError, WebSocketException):
             await _close_websocket(send)
 
     async def _handle_http(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Proxy Vite's assets; fall through to the app for everything else."""
-        if scope["method"] not in SAFE_METHODS:
-            await self.app(scope, receive, send)
-            return
-
         vite_only = _is_vite_only(scope["path"])
-        if vite_only and not _host_allowed(scope):
+        if scope["method"] not in SAFE_METHODS or self._belongs_to_app(scope, vite_only):
+            await self.app(scope, receive, send)
+        elif vite_only and not _host_allowed(scope):
             await _send_forbidden(send)
-            return
+        else:
+            await self._try_forward(scope, receive, send, vite_only)
+
+    @staticmethod
+    def _belongs_to_app(scope: Scope, vite_only: bool) -> bool:
+        """An HTML navigation to an extension-less path: only the app can answer it, so the
+        upstream probe (one loopback roundtrip per page refresh) is skipped."""
+        return not vite_only and _is_app_document(scope)
+
+    async def _try_forward(
+        self, scope: Scope, receive: Receive, send: Send, vite_only: bool
+    ) -> None:
         try:
             await self._forward_http(scope, receive, send, fallthrough=not vite_only)
         except (httpx.HTTPError, OSError):
@@ -118,21 +149,23 @@ class ViteProxyMiddleware:
         self, scope: Scope, receive: Receive, send: Send, *, fallthrough: bool
     ) -> None:
         """Relay one HTTP response, or hand an unknown path to the application."""
-        async with httpx.AsyncClient() as client:
-            request = client.build_request(scope["method"], self._upstream_url(scope))
-            response = await client.send(request, stream=True)
-            try:
-                if fallthrough and response.status_code == httpx.codes.NOT_FOUND:
-                    await self.app(scope, receive, send)
-                    return
-                await _relay_response(response, send)
-            finally:
-                await response.aclose()
+        client = self._upstream_client()
+        request = client.build_request(scope["method"], self._upstream_url(scope))
+        response = await client.send(request, stream=True)
+        try:
+            if fallthrough and response.status_code == httpx.codes.NOT_FOUND:
+                await self.app(scope, receive, send)
+                return
+            await _relay_response(response, send)
+        finally:
+            await response.aclose()
 
-    async def _forward_websocket(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def _forward_websocket(
+        self, scope: Scope, receive: Receive, send: Send, protocol: Subprotocol
+    ) -> None:
         """Relay a WebSocket connection to Vite's HMR endpoint."""
         uri = f"ws://{self.host}:{self.port}{scope['path']}"
-        async with connect(uri, subprotocols=[HMR_SUBPROTOCOL], open_timeout=10) as upstream:
+        async with connect(uri, subprotocols=[protocol], open_timeout=10) as upstream:
             await send({"type": "websocket.accept", "subprotocol": upstream.subprotocol})
             await asyncio.gather(
                 _pump_client_to_upstream(upstream, receive),
@@ -140,9 +173,36 @@ class ViteProxyMiddleware:
             )
 
 
+def _vite_subprotocol(scope: Scope) -> Subprotocol | None:
+    """The Vite subprotocol the client offers, or None for a socket that belongs to the app."""
+    offered = scope.get("subprotocols", ())
+    return next((protocol for protocol in VITE_SUBPROTOCOLS if protocol in offered), None)
+
+
 def _is_vite_only(path: str) -> bool:
     """True when the path can only be served by Vite."""
     return any(path.startswith(prefix) for prefix in VITE_ONLY_PREFIXES)
+
+
+def _is_app_document(scope: Scope) -> bool:
+    """True for HTML navigations that only the application can answer.
+
+    Vite runs with ``appType: 'custom'``: it never serves an HTML document,
+    and a route such as ``/about`` carries no file extension it could resolve
+    from its module graph or public dir. Probing it first would add a full
+    loopback roundtrip to every page refresh with a guaranteed 404 as the
+    answer. Requests that name a file (``/favicon.ico``, ``/logo.svg``) keep
+    the probe: those may live in Vite's ``public/`` directory. So do paths with
+    a ``_`` or ``.`` segment (``/__inspect/``, ``/.well-known/...``): Nexy never
+    routes those, while Vite plugins serve their dev UIs from them.
+    """
+    accept = dict(scope.get("headers", ())).get(b"accept", b"").lower()
+    if b"text/html" not in accept:
+        return False
+    segments = [segment for segment in scope["path"].split("/") if segment]
+    if any(segment.startswith(("_", ".")) for segment in segments):
+        return False
+    return "." not in scope["path"].rsplit("/", 1)[-1]
 
 
 def _host_name(scope: Scope) -> str:

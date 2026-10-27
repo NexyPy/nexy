@@ -49,3 +49,13 @@ def test_collect_outside_router_root_returns_empty(project: Path) -> None:
     outside = project / "elsewhere"
     outside.mkdir()
     assert RouteDependencies.collect(str(outside / "page.nexy")) == []
+
+
+def test_an_unimportable_dependencies_module_is_reported_on_the_console(
+    project: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    (project / "src" / "routes" / "dependencies.py").write_text(
+        "import missing_package_xyz\n", encoding="utf-8"
+    )
+    RouteDependencies.collect(str(project / "src" / "routes" / "page.nexy"))
+    assert "missing_package_xyz" in capsys.readouterr().out

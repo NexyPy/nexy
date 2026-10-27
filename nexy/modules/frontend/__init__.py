@@ -3,14 +3,10 @@
 from pathlib import Path
 
 from nexy.core.config import Config
-from nexy.modules.frontend.assets import copy_ssg_scripts, copy_vite_config
+from nexy.modules.frontend.assets import copy_ssg_scripts, copy_vite_config, write_aliases
+from nexy.modules.frontend.frameworks import preact, react, solid, svelte, vue
 from nexy.modules.frontend.manifest import RouteManifestBuilder
-from nexy.modules.frontend.preact import preact
-from nexy.modules.frontend.react import react
-from nexy.modules.frontend.solid import solid
-from nexy.modules.frontend.svelte import svelte
 from nexy.modules.frontend.vite_entry import generate_vite_entry
-from nexy.modules.frontend.vue import vue
 
 
 class FrontendGenerator:
@@ -24,6 +20,7 @@ class FrontendGenerator:
         self._write_route_manifest()
         generate_vite_entry(self.config.useFF)
         copy_vite_config()
+        write_aliases()
         if ssg:
             copy_ssg_scripts(list(self.config.excludeDirs or []))
 

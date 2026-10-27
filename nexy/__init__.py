@@ -13,7 +13,6 @@ from nexy.hooks import (
 )
 from nexy.image import image as Image
 from nexy.link import link as Link
-from nexy.modules.i18n.core import current_locale, t, trans, useLocale
 from nexy.template import Template
 from nexy.video import video as Video
 from nexy.vite import Vite
@@ -27,11 +26,6 @@ __all__ = [
     "Import",
     "Template",
     "Vite",
-    "app",
-    "current_locale",
-    "trans",
-    "t",
-    "useLocale",
     "useViews",
     "usePathname",
     "useSearchParams",

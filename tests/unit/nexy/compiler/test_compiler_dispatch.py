@@ -29,6 +29,22 @@ def test_compile_routes_md_to_markdown_route_compiler(tmp_path, monkeypatch) -> 
     assert VFS().exists("__nexy__/src/routes/about.py")
 
 
+def test_compile_leaves_mdx_to_vite_with_a_thin_wrapper(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    _write(tmp_path, "src/routes/post.mdx", "# Post\n")
+    VFS().clear()
+    Compiler().compile(input="src/routes/post.mdx")
+    assert VFS().exists("__nexy__/src/routes/post.py")
+
+
+def test_compile_never_renders_mdx_in_python(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    _write(tmp_path, "src/routes/post.mdx", "# Post\n")
+    VFS().clear()
+    Compiler().compile(input="src/routes/post.mdx")
+    assert not VFS().exists("__nexy__/src/routes/post.mdx.html")
+
+
 def test_compile_nexy_still_uses_classic_pipeline(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     _write(tmp_path, "src/routes/hello.nexy", "---\n---\n<div>Hello</div>\n")

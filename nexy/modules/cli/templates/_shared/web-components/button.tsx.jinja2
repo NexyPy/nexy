@@ -1,0 +1,54 @@
+{% if utility_ui %}{% raw %}import type { ReactNode } from "react";
+
+import Icon from "@/components/icon.tsx";
+
+// `tone` says what the button sits on: the dark blocks (header, hero, footer) or the page.
+const TONES = {
+  "on-ink": {
+    solid: "border-paper bg-paper text-ink hover:bg-paper/85",
+    outline: "border-paper/30 text-paper hover:border-paper",
+  },
+  "on-paper": {
+    solid: "border-foreground bg-foreground text-background hover:opacity-85",
+    outline: "border-border-second text-foreground hover:border-foreground",
+  },
+};
+
+const SIZES = { md: "px-6 py-3.5 text-[0.8rem]", sm: "px-4 py-2 text-xs" };
+const BASE =
+  "group inline-flex w-fit items-center gap-2.5 border font-mono font-semibold uppercase tracking-[0.04em] transition-colors duration-200";
+const ARROW = "M5 12h14M12 5l7 7-7 7";
+
+type ButtonProps = {
+  href: string;
+  children: ReactNode;
+  tone?: keyof typeof TONES;
+  variant?: "solid" | "outline";
+  size?: keyof typeof SIZES;
+  /** SVG path of the icon after the label. The arrow by default. */
+  icon?: string;
+};
+
+export default function Button({
+  href,
+  children,
+  tone = "on-paper",
+  variant = "solid",
+  size = "md",
+  icon = ARROW,
+}: ButtonProps) {
+  const external = href.startsWith("http");
+  return (
+    <a
+      href={href}
+      className={`${BASE} ${SIZES[size]} ${TONES[tone][variant]}`}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
+      {children}
+      <span className={`transition-transform duration-200 ${icon === ARROW ? "group-hover:translate-x-1" : ""}`}>
+        <Icon path={icon} size={size === "sm" ? 14 : 16} />
+      </span>
+    </a>
+  );
+}
+{% endraw %}{% endif %}

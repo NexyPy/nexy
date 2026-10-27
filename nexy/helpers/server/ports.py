@@ -57,29 +57,6 @@ def _read_port_file(path: str | Path) -> int | None:
         return None
 
 
-def generate_port(
-    host: str, base_port: int | None = None, default_port: int = 3000
-) -> tuple[int, int]:
-    """Generates server and client ports and saves them to files."""
-    run_host = host or "127.0.0.1"
-    if base_port is not None and base_port > 0:
-        server_port = base_port
-    else:
-        server_port = find_available_port(default_port, run_host)
-
-    client_port = find_available_port(server_port + 1, run_host)
-
-    vfs = VFS()
-    vfs.write("__nexy__/server.port", str(server_port))
-    vfs.write("__nexy__/client.port", str(client_port))
-    return server_port, client_port
-
-
-def get_server_port(default: int = 3000) -> int:
-    n = _read_port_file("__nexy__/server.port")
-    return n if n is not None else default
-
-
 def get_client_port(default: int = 5173) -> int:
     n = _read_port_file("__nexy__/client.port")
     if n is None:
@@ -87,13 +64,20 @@ def get_client_port(default: int = 5173) -> int:
     return n if n is not None else default
 
 
-def get_vite_port(default: int = 5173) -> int:
-    return get_client_port(default)
-
-
-def is_port_open(host: str, port: int, timeout: float = 0.2) -> bool:
+def network_ip() -> str:
+    """The address of this machine on the local network, or loopback when it has none."""
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        with socket.create_connection((host, port), timeout=timeout):
-            return True
-    except Exception:
-        return False
+        probe.connect(("8.8.8.8", 80))
+        return str(probe.getsockname()[0])
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        probe.close()
+
+
+def resolve_ports(host: str, base_port: int, with_client: bool = True) -> tuple[int, int]:
+    """The server port, then the client port after it (0 when there is no client)."""
+    server_port = find_available_port(base_port, host)
+    client_port = find_available_port(server_port + 1, host) if with_client else 0
+    return server_port, client_port

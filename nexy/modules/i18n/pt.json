@@ -1,0 +1,230 @@
+{
+  "add": {
+    "added": "Adicionado: {path}",
+    "available": "Componentes de UI disponíveis: {names}",
+    "error": "Erro:",
+    "exists": "Ignorado: {path} já existe.",
+    "fetch_failed": "Não foi possível obter o componente de {url}: {error}",
+    "fetching": "Obtendo o componente remoto de {url}...",
+    "help_all": "Adicionar todos os componentes disponíveis do registro",
+    "help_components": "Componentes a adicionar (nomes do registro ou URLs)",
+    "help_sha": "SHA-256 esperado de um componente remoto (cancela se for diferente)",
+    "help_ui": "Forçar o tratamento como componentes de UI",
+    "help_url": "Forçar o tratamento como URLs",
+    "https_only": "Somente URLs https:// são suportadas.",
+    "install_failed": "Falha ao instalar as dependências",
+    "installed": "{names} instalado",
+    "installing": "Instalando {names}",
+    "no_pm": "Nenhum gerenciador de pacotes encontrado. Instale as dependências manualmente: {names}",
+    "not_found": "O componente '{name}' não foi encontrado no registro.",
+    "usage": "Uso:",
+    "usage_text": "nexy add [NOME_DO_COMPONENTE ou URL]...",
+    "warning": "Aviso:",
+    "write_failed": "Não foi possível gravar {path}: {error}"
+  },
+  "build": {
+    "building_client": "Pacote do cliente gerado",
+    "checks_failed": "verificações com falha",
+    "checks_passed": "todas as verificações passaram",
+    "client_components": "componentes de cliente",
+    "compiling_routes": "Rotas compiladas",
+    "compiling_server": "Componentes de servidor compilados",
+    "creating": "Criando um build de produção otimizado",
+    "failed_client": "falha no build do cliente",
+    "failed_components": "{count} componente(s) com falha",
+    "failed_label": "Build com falha",
+    "routes": "rotas",
+    "server_components": "componentes de servidor",
+    "skipped_label": "Ignorado (em cache)",
+    "success_build": "build concluído em {time}",
+    "success_label": "Build concluído"
+  },
+  "check": {
+    "compiling": "compilando arquivos .nexy ...",
+    "failed": "{count} seção(ões) com falha",
+    "passed": "todas as verificações passaram",
+    "skip_tool": "{tool} não encontrado: {scope} ignorado"
+  },
+  "cli": {
+    "cmd": {
+      "build": "Compilar o projeto para produção",
+      "check": "Verificar os tipos de todos os arquivos do projeto",
+      "dev": "Iniciar o servidor de desenvolvimento com hot reload",
+      "format": "Formatar automaticamente todos os arquivos do projeto",
+      "init": "Inicializar o Nexy no diretório atual",
+      "migrate": "Executar as migrações do ORM (detecção automática)",
+      "new": "Criar um novo projeto em um novo diretório",
+      "start": "Iniciar o servidor de produção",
+      "test": "Executar os testes (--server / --client)"
+    },
+    "commands_header": "Comandos disponíveis:",
+    "help": "CLI do Nexy",
+    "help_version": "Mostrar a versão",
+    "new": {
+      "error_chars": "Use apenas letras, números, hífens e sublinhados.",
+      "error_empty": "O nome do projeto não pode ficar vazio.",
+      "error_exists": "O diretório '{name}' já existe.",
+      "error_letter": "O nome do projeto deve começar com uma letra.",
+      "failed": "Não foi possível criar o projeto",
+      "help_arg": "Nome do projeto a criar (cria um novo diretório)",
+      "help_template": "Inicializar a partir de um modelo registrado (ex.: web-fbr-react).",
+      "prompt": "Nome do projeto:",
+      "template_unknown": "Modelo desconhecido '{template}'."
+    },
+    "tagline": "O framework full-stack moderno que simplesmente funciona",
+    "usage": "Execute nx ou nexy <comando> --help para ver o uso detalhado"
+  },
+  "dev": {
+    "cleaning": "Limpando...",
+    "compiling_status": "Compilando...",
+    "deps_hint": "nexy dev não instala dependências; nexy init e nexy new instalam.",
+    "deps_missing": "As dependências do Node.js estão ausentes.",
+    "deps_run": "Execute: {command}",
+    "error": "Erro: {error}",
+    "error_label": "erro",
+    "error_waiting": "A aplicação não pode iniciar: aguardando uma correção.",
+    "exited": "encerrado",
+    "init_error": "Erro durante a inicialização:",
+    "routes_failed": "Não foi possível atualizar as rotas do cliente: {error}",
+    "starting_vite": "Iniciando o servidor de desenvolvimento...",
+    "stopping": "Parando os servidores...",
+    "updating": "atualizando o servidor",
+    "vite_failed": "O Vite não conseguiu iniciar.",
+    "vite_failed_hint": "Leia a saída do Vite acima para ver a causa.",
+    "server_failed": "O servidor parou ({reason}): aguardando uma correção."
+  },
+  "format": {
+    "failed": "{count} arquivo(s) com falha",
+    "passed": "formatação concluída",
+    "skip_tool": "{tool} não encontrado: {scope} ignorado"
+  },
+  "init": {
+    "alias_invalid": "Use @, ~, # ou $, seguido opcionalmente de letras (por exemplo ~ ou @app).",
+    "already": "O projeto já foi inicializado aqui",
+    "ask": {
+      "alias": "Alias de importação",
+      "alias_customize": "Personalizar o alias de importação?",
+      "client_component": "Deseja usar um componente de cliente?",
+      "csr": "Ativar o roteamento no cliente?",
+      "database": "Escolha um banco de dados",
+      "db_url": "URL do banco de dados",
+      "framework": "Escolha o framework do cliente",
+      "orm": "Escolha um ORM",
+      "project_type": "Escolha o tipo de projeto",
+      "router": "Usar o roteador baseado em arquivos?",
+      "style": "Escolha como estilizar o app"
+    },
+    "checkout_failed": "Não foi possível extrair os arquivos do modelo '{path}'.",
+    "choice": {
+      "api": "API",
+      "no": "Não",
+      "no_database": "Sem banco de dados",
+      "other": "Outro",
+      "web": "Web",
+      "yes": "Sim"
+    },
+    "error": "Falha na inicialização: {error}",
+    "git_restore": "não foi possível restaurar o .git anterior",
+    "hint": {
+      "alias_custom": "escolha outro prefixo, como ~ ou #",
+      "alias_default": "@/components/... aponta para src/",
+      "api": "apenas endpoints JSON, sem páginas",
+      "component_no": "apenas páginas .nexy no servidor",
+      "component_yes": "partes interativas com um framework de UI",
+      "csr_no": "cada página é renderizada pelo servidor",
+      "csr_yes": "o navegador navega sem recarregar",
+      "mysql": "amplamente hospedado, compatível com MariaDB",
+      "neon": "PostgreSQL serverless na nuvem",
+      "no_orm": "sem camada de dados, adicione depois",
+      "other_db": "digite sua própria URL de conexão",
+      "other_style": "configure você mesmo",
+      "postgresql": "o padrão robusto de código aberto",
+      "preact": "a API do React em 3 kB",
+      "react": "a biblioteca de UI mais usada",
+      "router_no": "registre rotas no código, com módulos",
+      "router_yes": "as páginas são os arquivos de src/routes",
+      "solid": "reatividade fina, sem DOM virtual",
+      "sqlalchemy": "o ORM de referência do Python",
+      "sqlite": "um arquivo, nada a instalar",
+      "sqlmodel": "modelos Pydantic que também são tabelas",
+      "svelte": "compilado, quase sem runtime",
+      "tailwind": "classes utilitárias na marcação",
+      "tortoise": "async desde a origem, API estilo Django",
+      "unocss": "CSS atômico sob demanda, muito rápido",
+      "vanilla": "folhas de estilo simples, nada a aprender",
+      "vue": "acessível e bem documentado",
+      "web": "páginas, layouts e componentes em um app"
+    },
+    "initializing": "Inicializando {name}...",
+    "installed_uv": "uv instalado",
+    "installing_uv": "Instalando o uv",
+    "merging": "O diretório não está vazio, mesclando arquivos...",
+    "migration_tool": "Inicializando {tool}...",
+    "network": {
+      "checking": "Verificando a conexão...",
+      "latency": "Conexão: {latency} ms",
+      "offline": "Sem conexão: os pacotes não foram instalados.",
+      "offline_hint": "Quando estiver online, execute uv sync e o install do seu gerenciador de pacotes na pasta do projeto.",
+      "slow": "Conexão lenta: instalar os pacotes pode demorar um pouco.",
+      "speed": "Conexão: {latency} ms, {speed}"
+    },
+    "next_steps": "Próximos passos",
+    "node_manager_not_found": "Nenhum gerenciador de pacotes do Node.js encontrado. Instale bun, pnpm ou npm.",
+    "node_retry": "Tentando novamente com --legacy-peer-deps...",
+    "step_activate_venv": "Ativar o ambiente virtual",
+    "step_help": "Explorar os comandos disponíveis",
+    "step_run_dev": "Iniciar o servidor de desenvolvimento",
+    "template_not_found": "Modelo ou branch '{branch}' não encontrado no remoto.",
+    "venv": {
+      "created": "Ambiente virtual criado",
+      "creating": "Criando o ambiente virtual"
+    }
+  },
+  "migrate": {
+    "aerich_not_initialized": "O Aerich não foi inicializado. Execute 'nx m --init' primeiro.",
+    "alembic_not_initialized": "O Alembic não foi inicializado. Execute 'nx m --init' primeiro.",
+    "help_init": "Inicializar a ferramenta de migração",
+    "help_message": "Mensagem da migração",
+    "help_upgrade": "Aplicar as migrações pendentes",
+    "no_connection": "Erro: não foi possível conectar ao banco de dados - {error}",
+    "no_database_url": "Erro: DATABASE_URL não encontrada no .env nem no ambiente.",
+    "no_driver": "Erro: driver do banco de dados ausente - {error}",
+    "no_orm": "Nenhum ORM suportado. Instale um: sqlmodel, tortoise-orm, sqlalchemy",
+    "tool_missing": "Erro: {tool} não está no PATH. Instale-o e tente novamente."
+  },
+  "server": {
+    "launch_failed": "Falha ao iniciar o servidor:",
+    "local": "Local:",
+    "network": "Rede:",
+    "ready": "Pronto:",
+    "stop": "pressione Ctrl+C para parar"
+  },
+  "start": {
+    "broken": "{count} arquivo(s) de rota não puderam ser carregados: o servidor não foi iniciado.",
+    "exited": "encerrado"
+  },
+  "test": {
+    "failed": "{count} execução(ões) de testes com falha",
+    "help_args": "Argumentos extras repassados ao executor de testes",
+    "help_client": "Executar os testes do cliente (vitest)",
+    "help_server": "Executar os testes do servidor (pytest)",
+    "passed": "todos os testes passaram",
+    "skip_client": "vitest não configurado: testes do cliente ignorados",
+    "skip_tool": "pytest não encontrado: testes do servidor ignorados"
+  },
+  "tui": {
+    "keys": {
+      "back": "voltar",
+      "choose": "escolher",
+      "move": "mover",
+      "quit": "sair"
+    }
+  },
+  "watch": {
+    "compile_failed": "Falha ao compilar {path}",
+    "compiled": "{path} compilado em {time}",
+    "error_kept": "Corrija e salve: o servidor mantém a última versão que funcionava.",
+    "restart_failed": "Não foi possível reiniciar o servidor: {error}",
+    "update": "atualizando"
+  }
+}

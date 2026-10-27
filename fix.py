@@ -1,0 +1,1 @@
+import re; path=r'D:\dev\python\nexy\tests\unit\nexy\routers\test_blocking_components.py'; s=open(path).read(); s=re.sub(r'def component\(\*\*kwargs: Any\) -> str:', 'def component(**_kwargs: Any) -> str:  # noqa: ARG001', s); s=re.sub(r'def slow\(\*\*kwargs: Any\) -> str:', 'def slow(**_kwargs: Any) -> str:  # noqa: ARG001', s); open(path,'w').write(s)

@@ -8,7 +8,8 @@ def setup_hmr(server: FastAPI) -> None:
 
     @server.websocket("/_nexy/hmr")
     async def hmr_endpoint(websocket: WebSocket) -> None:
-        await HMR_MANAGER.connect(websocket)
+        if not await HMR_MANAGER.connect(websocket):
+            return
         try:
             while True:
                 await websocket.receive_text()

@@ -1,3 +1,4 @@
+import html as _html
 import importlib
 import json
 import traceback
@@ -12,6 +13,28 @@ from nexy.core.string import StringTransform
 from nexy.vite import Vite
 
 string_transform = StringTransform()
+
+
+class View(HTMLResponse):
+    """An HTML response that also renders as its markup.
+
+    A layout receives a nested view as ``children``; ``str(view)`` and
+    ``{{ children | safe }}`` must give the markup, not the object's repr.
+    """
+
+    def __init__(self, markup: str, *, client: str = "", **kwargs: Any) -> None:
+        super().__init__(client + markup, **kwargs)
+        self.markup = markup
+
+    def __str__(self) -> str:
+        return self.markup
+
+    def __html__(self) -> str:
+        return self.markup
+
+
+def _is_document(markup: str) -> bool:
+    return markup.lstrip()[:15].lower().startswith(("<!doctype", "<html"))
 
 
 def _get_req() -> Request:
@@ -129,6 +152,34 @@ PYTHON_VIEWS = (".nexy",)
 FRONTEND_VIEWS = (".tsx", ".vue", ".svelte", ".jsx", ".mdx")
 
 
+def _python_view(path: str, ctx: dict[str, Any]) -> HTMLResponse:
+    """Render a compiled .nexy/.md view: import its module and call its component."""
+    mapped = string_transform.normalize_route_path_for_namespace(path)
+    import_path = f"{Config.NAMESPACE}{mapped}".replace("/", ".").rsplit(".", 1)[0]
+    try:
+        module = importlib.import_module(import_path)
+        file_name = path.split("/")[-1].split(".", 1)[0]
+        component = getattr(module, string_transform.get_component_name(file_name))
+        markup = str(component(**ctx))
+    except (ImportError, AttributeError) as error:
+        traceback.print_exc()
+        raise ValueError(f"Failed to load module or function for path: {path}") from error
+    # A full document injects <Vite /> itself, in its <head>; a fragment has none.
+    return View(markup, client="" if _is_document(markup) else Vite())
+
+
+def _client_container(path: str, ctx: dict[str, Any]) -> str:
+    """The element the browser hydrates: the framework, the file and the escaped props."""
+    framework = Config.FRONTEND_EXTENSIONS.get(f".{path.split('.')[-1]}", "react")
+    props = _html.escape(json.dumps(ctx, default=str), quote=True)
+    return (
+        f'<div data-nexy-fw="{_html.escape(framework, quote=True)}" '
+        f'data-nexy-path="{_html.escape(path, quote=True)}" '
+        f'data-nexy-props="{props}">'
+        f"</div>"
+    )
+
+
 def useViews(path: str, context: dict[str, Any] | None = None) -> HTMLResponse:
     """Render a server view for the given route path.
 
@@ -146,37 +197,8 @@ def useViews(path: str, context: dict[str, Any] | None = None) -> HTMLResponse:
             compiled module or its component function cannot be loaded.
     """
     ctx = context or {}
-
     if path.endswith(PYTHON_VIEWS):
-        mapped = string_transform.normalize_route_path_for_namespace(path)
-        import_path = f"{Config.NAMESPACE}{mapped}".replace("/", ".").rsplit(".", 1)[0]
-
-        try:
-            module = importlib.import_module(import_path)
-
-            file_name = path.split("/")[-1].split(".", 1)[0]
-            func_name = string_transform.get_component_name(file_name)
-            component_func = getattr(module, func_name)
-            return HTMLResponse(Vite() + component_func(**ctx))
-
-        except (ImportError, AttributeError) as e:
-            traceback.print_exc()
-            raise ValueError(f"Failed to load module or function for path: {path}") from e
-
-    elif any(ext in path for ext in FRONTEND_VIEWS):
-        ext = f".{path.split('.')[-1]}"
-        framework = Config.FRONTEND_EXTENSIONS.get(ext, "react")
-
-        props_json = json.dumps(ctx)
-
-        container = (
-            f'<div data-nexy-fw="{framework}" '
-            f'data-nexy-path="{path}" '
-            f"data-nexy-props='{props_json}'>"
-            f"</div>"
-        )
-
-        return HTMLResponse(Vite() + container)
-
-    else:
-        raise ValueError(f"Unsupported view type for path: {path}")
+        return _python_view(path, ctx)
+    if any(ext in path for ext in FRONTEND_VIEWS):
+        return View(_client_container(path, ctx), client=Vite())
+    raise ValueError(f"Unsupported view type for path: {path}")

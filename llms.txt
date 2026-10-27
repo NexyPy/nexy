@@ -31,7 +31,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [CLI](docs/cli.md): commands and flags
 - [Testing](docs/testing.md): `nx test`, `TestClient`, vitest, CI
 - [Config](docs/config.md): every `nexyconfig.py` field and its default
-- [i18n](docs/i18n.md): locales, `trans`, `nx translate`
+- [i18n](docs/guides/i18n.md): internationalization is up to your application
 - [Deploy](docs/deploy.md): build output, Docker, reverse proxy
 - [For AI agents](docs/agents.md): invariants and verification commands
 

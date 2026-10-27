@@ -1,0 +1,95 @@
+{%- set frameworks = [("react", "React"), ("vue", "Vue"), ("svelte", "Svelte"), ("solid", "Solid"), ("preact", "Preact")] -%}
+<div {{ cls }}="nx-hero-wrap">
+  <section {{ cls }}="nx-container nx-hero">
+    <div {{ cls }}="nx-hero-copy">
+      <a href="https://github.com/NexyPy/nexy/releases" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-pill"><b>v{{ nexy_version }}</b>See what is new</a>
+      <h1 {{ cls }}="nx-title">The Python framework for the whole web app.</h1>
+      <p {{ cls }}="nx-lead">
+        Ship pages, an API and interactive parts from one project. Your team keeps Python, and
+        your frontend keeps the tools it likes.
+      </p>
+      <div {{ cls }}="nx-actions">
+        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Read the docs</a>
+        <a href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-ghost">View on GitHub</a>
+      </div>
+    </div>
+    <div {{ cls }}="nx-art">
+      <img src="/hero-light.svg" alt="The Nexy mark above three stacked pages" {{ cls }}="nx-art-light" width="640" height="560" />
+      <img src="/hero-dark.svg" alt="The Nexy mark above three stacked pages" {{ cls }}="nx-art-dark" width="640" height="560" />
+    </div>
+  </section>
+</div>
+
+<div {{ cls }}="nx-sep-wrap">
+  <section {{ cls }}="nx-container nx-sep">
+    <div {{ cls }}="nx-sep-inner">
+      <span>Nexy</span>
+      <span {{ cls }}="nx-sep-dot" aria-hidden="true"></span>
+      <span>FastAPI</span>
+      <span {{ cls }}="nx-sep-dot" aria-hidden="true"></span>
+      <span>Vite</span>
+      <span {{ cls }}="nx-sep-dot" aria-hidden="true"></span>
+      <span>Python</span>
+      <span {{ cls }}="nx-sep-dot" aria-hidden="true"></span>
+      <span>TypeScript</span>
+    </div>
+  </section>
+</div>
+
+<section {{ cls }}="nx-container nx-section">
+  <h2 {{ cls }}="nx-h2">Less glue, more product.</h2>
+  <p {{ cls }}="nx-sub">A web app is a server, a router, a frontend and the work of connecting them. Nexy ships them already connected.</p>
+  <div {{ cls }}="nx-bento">
+    <article {{ cls }}="nx-tile nx-tile-wide">
+      <span {{ cls }}="nx-icon nx-icon-server" aria-hidden="true"></span>
+      <h3>Python on the server, all the way</h3>
+      <p>Routes, validation, data and background work stay in the language your team already knows. There is no second backend to build, host and keep in sync.</p>
+      <div {{ cls }}="nx-tile-visual">
+        <div {{ cls }}="nx-chips">
+          <span {{ cls }}="nx-chip">Pages</span>
+          <span {{ cls }}="nx-chip">API</span>
+          <span {{ cls }}="nx-chip">Validation</span>
+          <span {{ cls }}="nx-chip">Database</span>
+          <span {{ cls }}="nx-chip">Background work</span>
+        </div>
+      </div>
+    </article>
+    <article {{ cls }}="nx-tile nx-tile-narrow">
+      <span {{ cls }}="nx-icon nx-icon-frontend" aria-hidden="true"></span>
+      <h3>Any frontend, only where it helps</h3>
+{%- if client_framework == "none" %}
+      <p>Pages are plain HTML and ship no framework. Add the one you like when a screen needs it.</p>
+{%- else %}
+      <p>This project runs {{ fw_label }} for what moves. The rest of the page ships no framework.</p>
+{%- endif %}
+      <div {{ cls }}="nx-tile-visual">
+        <div {{ cls }}="nx-chips">
+{%- for key, label in frameworks %}
+          <span {{ cls }}="nx-chip{% if client_framework == key %} nx-chip-current{% endif %}">{{ label }}</span>
+{%- endfor %}
+        </div>
+      </div>
+    </article>
+    <article {{ cls }}="nx-tile nx-tile-narrow">
+      <span {{ cls }}="nx-icon nx-icon-bolt" aria-hidden="true"></span>
+      <h3>Fast from the first save</h3>
+      <p>The page updates as you type. A mistake shows up in the page, with the code around it, not buried in a log.</p>
+    </article>
+    <article {{ cls }}="nx-tile nx-tile-wide">
+      <span {{ cls }}="nx-icon nx-icon-shield" aria-hidden="true"></span>
+      <h3>Ready for production</h3>
+      <p>Security headers are on, server actions check where a request comes from, and one build runs anywhere Python runs.</p>
+    </article>
+  </div>
+</section>
+
+<div {{ cls }}="nx-container nx-band-wrap">
+  <section {{ cls }}="nx-band">
+    <h2 {{ cls }}="nx-h2">Build your next product on Nexy.</h2>
+    <p {{ cls }}="nx-sub">Free, open source and MIT licensed.</p>
+    <div {{ cls }}="nx-actions">
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-primary">Read the docs</a>
+      <a href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" {{ cls }}="btn-ghost">View on GitHub</a>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,230 @@
+{
+  "add": {
+    "added": "追加しました: {path}",
+    "available": "利用可能なUIコンポーネント: {names}",
+    "error": "エラー:",
+    "exists": "スキップ: {path} は既に存在します。",
+    "fetch_failed": "{url} からコンポーネントを取得できませんでした: {error}",
+    "fetching": "{url} からリモートコンポーネントを取得しています...",
+    "help_all": "レジストリの利用可能なコンポーネントをすべて追加する",
+    "help_components": "追加するコンポーネント（レジストリ名またはURL）",
+    "help_sha": "リモートコンポーネントの期待するSHA-256（不一致の場合は中止）",
+    "help_ui": "UIコンポーネントとして扱う",
+    "help_url": "URLとして扱う",
+    "https_only": "https:// のURLのみ使用できます。",
+    "install_failed": "依存関係をインストールできませんでした",
+    "installed": "{names} をインストールしました",
+    "installing": "{names} をインストールしています",
+    "no_pm": "パッケージマネージャーが見つかりません。依存関係を手動でインストールしてください: {names}",
+    "not_found": "コンポーネント '{name}' はレジストリに見つかりません。",
+    "usage": "使い方:",
+    "usage_text": "nexy add [コンポーネント名 または URL]...",
+    "warning": "警告:",
+    "write_failed": "{path} を書き込めませんでした: {error}"
+  },
+  "build": {
+    "building_client": "クライアントバンドルをビルドしました",
+    "checks_failed": "チェックに失敗しました",
+    "checks_passed": "すべてのチェックに合格しました",
+    "client_components": "クライアントコンポーネント",
+    "compiling_routes": "ルートをコンパイルしました",
+    "compiling_server": "サーバーコンポーネントをコンパイルしました",
+    "creating": "最適化された本番ビルドを作成しています",
+    "failed_client": "クライアントのビルドに失敗しました",
+    "failed_components": "{count} 件のコンポーネントが失敗しました",
+    "failed_label": "ビルド失敗",
+    "routes": "ルート",
+    "server_components": "サーバーコンポーネント",
+    "skipped_label": "スキップ（キャッシュ）",
+    "success_build": "{time} でビルドが完了しました",
+    "success_label": "ビルド成功"
+  },
+  "check": {
+    "compiling": ".nexy ファイルをコンパイルしています ...",
+    "failed": "{count} 件のセクションが失敗しました",
+    "passed": "すべてのチェックに合格しました",
+    "skip_tool": "{tool} が見つかりません: {scope} をスキップします"
+  },
+  "cli": {
+    "cmd": {
+      "build": "本番デプロイ用にプロジェクトをコンパイルする",
+      "check": "プロジェクトのすべてのファイルを型チェックする",
+      "dev": "ホットリロード付きのローカル開発サーバーを起動する",
+      "format": "プロジェクトのすべてのファイルを自動整形する",
+      "init": "現在のディレクトリでNexyを初期化する",
+      "migrate": "ORMのマイグレーションを実行する（ORMは自動検出）",
+      "new": "新しいディレクトリに新しいプロジェクトを作成する",
+      "start": "本番サーバーを起動する",
+      "test": "テストを実行する（--server / --client）"
+    },
+    "commands_header": "利用可能なコマンド:",
+    "help": "Nexy CLI",
+    "help_version": "バージョンを表示する",
+    "new": {
+      "error_chars": "使用できるのは英字、数字、ハイフン、アンダースコアのみです。",
+      "error_empty": "プロジェクト名を空にすることはできません。",
+      "error_exists": "ディレクトリ '{name}' は既に存在します。",
+      "error_letter": "プロジェクト名は英字で始めてください。",
+      "failed": "プロジェクトを作成できませんでした",
+      "help_arg": "作成するプロジェクトの名前（新しいディレクトリを作成します）",
+      "help_template": "登録済みのテンプレートから初期化する（例: web-fbr-react）。",
+      "prompt": "プロジェクト名:",
+      "template_unknown": "不明なテンプレート '{template}' です。"
+    },
+    "tagline": "そのまま動く、モダンなフルスタックフレームワーク",
+    "usage": "詳しい使い方は nx または nexy <コマンド> --help を実行してください"
+  },
+  "dev": {
+    "cleaning": "後片付けをしています...",
+    "compiling_status": "コンパイルしています...",
+    "deps_hint": "nexy dev は依存関係をインストールしません。nexy init と nexy new が行います。",
+    "deps_missing": "Node.js の依存関係がありません。",
+    "deps_run": "次を実行してください: {command}",
+    "error": "エラー: {error}",
+    "error_label": "エラー",
+    "error_waiting": "アプリケーションを起動できません。修正を待っています。",
+    "exited": "終了しました",
+    "init_error": "初期化中にエラーが発生しました:",
+    "routes_failed": "クライアントルートを更新できませんでした: {error}",
+    "starting_vite": "開発サーバーを起動しています...",
+    "stopping": "サーバーを停止しています...",
+    "updating": "サーバーを更新",
+    "vite_failed": "Vite を起動できませんでした。",
+    "vite_failed_hint": "原因は上の Vite の出力を確認してください。",
+    "server_failed": "サーバーが停止しました（{reason}）：修正を待っています。"
+  },
+  "format": {
+    "failed": "{count} 件のファイルが失敗しました",
+    "passed": "整形が完了しました",
+    "skip_tool": "{tool} が見つかりません: {scope} をスキップします"
+  },
+  "init": {
+    "alias_invalid": "@、~、# または $ に続けて任意の文字を使います(例: ~ や @app)。",
+    "already": "このディレクトリは既に初期化されています",
+    "ask": {
+      "alias": "インポートのエイリアス",
+      "alias_customize": "インポートのエイリアスを変更しますか?",
+      "client_component": "クライアントコンポーネントを使用しますか？",
+      "csr": "クライアントサイドルーティングを有効にしますか？",
+      "database": "データベースを選択",
+      "db_url": "データベースURL",
+      "framework": "クライアントフレームワークを選択してください",
+      "orm": "ORMを選択してください",
+      "project_type": "プロジェクトの種類を選択してください",
+      "router": "ファイルベースルーターを使用しますか？",
+      "style": "アプリのスタイリング方法を選択"
+    },
+    "checkout_failed": "テンプレート '{path}' のファイルを展開できませんでした。",
+    "choice": {
+      "api": "API",
+      "no": "いいえ",
+      "no_database": "データベースなし",
+      "other": "その他",
+      "web": "Web",
+      "yes": "はい"
+    },
+    "error": "初期化に失敗しました: {error}",
+    "git_restore": "以前の .git を復元できませんでした",
+    "hint": {
+      "alias_custom": "~ や # など別のプレフィックスを選ぶ",
+      "alias_default": "@/components/... は src/ を指す",
+      "api": "JSON エンドポイントのみ(ページなし)",
+      "component_no": "サーバー描画の .nexy ページのみ",
+      "component_yes": "UIフレームワークでインタラクティブ部分を記述",
+      "csr_no": "各ページはサーバーが描画",
+      "csr_yes": "リロードなしでページ遷移",
+      "mysql": "ホスティング豊富、MariaDB互換",
+      "neon": "クラウドのサーバーレス PostgreSQL",
+      "no_orm": "DB層なし(後から追加可)",
+      "other_db": "接続URLを自分で入力",
+      "other_style": "自分で設定",
+      "postgresql": "堅牢なオープンソースの定番",
+      "preact": "3 kB の React 互換 API",
+      "react": "最も普及した UI ライブラリ",
+      "router_no": "モジュールでコード内にルートを登録",
+      "router_yes": "ページは src/routes のファイル",
+      "solid": "細粒度リアクティビティ、仮想DOMなし",
+      "sqlalchemy": "Python の標準的 ORM",
+      "sqlite": "ファイル1つ、インストール不要",
+      "sqlmodel": "テーブルも兼ねる Pydantic モデル",
+      "svelte": "コンパイル型で実行時が極小",
+      "tailwind": "マークアップ内のユーティリティクラス",
+      "tortoise": "非同期ファースト、Django風API",
+      "unocss": "オンデマンドのアトミックCSS、高速",
+      "vanilla": "素のスタイルシート、学習不要",
+      "vue": "学びやすく文書が充実",
+      "web": "ページ・レイアウト・コンポーネントを1つのアプリに"
+    },
+    "initializing": "{name} を初期化しています...",
+    "installed_uv": "uv をインストールしました",
+    "installing_uv": "uv をインストールしています",
+    "merging": "ディレクトリが空ではないため、ファイルをマージしています...",
+    "migration_tool": "{tool} を初期化しています...",
+    "network": {
+      "checking": "接続を確認しています...",
+      "latency": "接続：{latency} ms",
+      "offline": "接続がありません：パッケージはインストールされませんでした。",
+      "offline_hint": "オンラインになったら、プロジェクトフォルダーで uv sync とパッケージマネージャーの install を実行してください。",
+      "slow": "接続が遅いです：パッケージのインストールに時間がかかる場合があります。",
+      "speed": "接続：{latency} ms、{speed}"
+    },
+    "next_steps": "次のステップ",
+    "node_manager_not_found": "Node.js のパッケージマネージャーが見つかりません。bun、pnpm、npm のいずれかをインストールしてください。",
+    "node_retry": "--legacy-peer-deps を付けて再試行しています...",
+    "step_activate_venv": "仮想環境を有効にする",
+    "step_help": "利用可能なコマンドを確認する",
+    "step_run_dev": "開発サーバーを起動する",
+    "template_not_found": "テンプレートまたはブランチ '{branch}' がリモートに見つかりません。",
+    "venv": {
+      "created": "仮想環境を作成しました",
+      "creating": "仮想環境を作成しています"
+    }
+  },
+  "migrate": {
+    "aerich_not_initialized": "Aerich が初期化されていません。先に 'nx m --init' を実行してください。",
+    "alembic_not_initialized": "Alembic が初期化されていません。先に 'nx m --init' を実行してください。",
+    "help_init": "マイグレーションツールを初期化する",
+    "help_message": "マイグレーションのメッセージ",
+    "help_upgrade": "未適用のマイグレーションを適用する",
+    "no_connection": "エラー: データベースに接続できません - {error}",
+    "no_database_url": "エラー: .env にも環境にも DATABASE_URL が見つかりません。",
+    "no_driver": "エラー: データベースドライバーがありません - {error}",
+    "no_orm": "対応するORMが見つかりません。次のいずれかをインストールしてください: sqlmodel, tortoise-orm, sqlalchemy",
+    "tool_missing": "エラー: {tool} が PATH に見つかりません。インストールしてからもう一度お試しください。"
+  },
+  "server": {
+    "launch_failed": "サーバーの起動に失敗しました:",
+    "local": "ローカル:",
+    "network": "ネットワーク:",
+    "ready": "準備完了:",
+    "stop": "Ctrl+C で停止"
+  },
+  "start": {
+    "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",
+    "exited": "終了しました"
+  },
+  "test": {
+    "failed": "{count} 件のテスト実行が失敗しました",
+    "help_args": "テストランナーに渡す追加の引数",
+    "help_client": "クライアントのテストを実行する（vitest）",
+    "help_server": "サーバーのテストを実行する（pytest）",
+    "passed": "すべてのテストに合格しました",
+    "skip_client": "vitest が設定されていないため、クライアントのテストをスキップします",
+    "skip_tool": "pytest が見つからないため、サーバーのテストをスキップします"
+  },
+  "tui": {
+    "keys": {
+      "back": "戻る",
+      "choose": "決定",
+      "move": "移動",
+      "quit": "終了"
+    }
+  },
+  "watch": {
+    "compile_failed": "{path} のコンパイルに失敗しました",
+    "compiled": "{path} を {time} でコンパイルしました",
+    "error_kept": "修正して保存してください。サーバーは最後に動いていた版を保ちます。",
+    "restart_failed": "サーバーを再起動できませんでした: {error}",
+    "update": "更新"
+  }
+}

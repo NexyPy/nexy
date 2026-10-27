@@ -5,6 +5,7 @@ from nexy.core.config import Config
 from nexy.helpers.common.json import to_json_literal
 from nexy.helpers.fs.path import PathUtil
 from nexy.modules.frontend.constants import NAVIGABLE_EXTS
+from nexy.modules.frontend.layout_chain import framework_layout_chain
 
 
 def navigable_entries(entries: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -57,6 +58,63 @@ def sort_key(url: str) -> tuple[int, int]:
     return 0, 0
 
 
+_TYPE_HEADER = [
+    "export type NexyRoute = {",
+    "  path: string;",
+    "  file: string;",
+    "  layout: string | null;",
+    "  layouts: string[];",
+    "  params: string[];",
+    "};",
+    "",
+]
+
+
+def _is_route_file(path: Path, routes_root: Path, special_names: set[str]) -> bool:
+    """A file that is a route: a routable extension, not a layout or error page, not private."""
+    if not path.is_file() or path.suffix not in set(Config.ROUTE_FILE_EXTENSIONS):
+        return False
+    if path.name.lower() in special_names:
+        return False
+    parts = path.relative_to(routes_root).as_posix().split("/")
+    return not any(part.startswith(("_", ".")) for part in parts)
+
+
+def _route_line(entry: dict[str, object]) -> str:
+    """One entry of the ``NEXY_ROUTES`` array."""
+    return (
+        f"  {{ path: {to_json_literal(entry['path'])}, file: {to_json_literal(entry['file'])}"
+        f", layout: {to_json_literal(entry['layout'])}"
+        f", layouts: {to_json_literal(entry.get('layouts', []))}"
+        f", params: {to_json_literal(entry['params'])} }},"
+    )
+
+
+def _route_literal(url: str) -> str:
+    """A URL as a TypeScript type: dynamic segments become ``${string}`` template slots."""
+    if "{" not in url:
+        return to_json_literal(url)
+    slots = re.sub(r"\{[^}]+\}", "${string}", url)
+    return f"`{slots}`"
+
+
+def _route_type(entries: list[dict[str, object]]) -> list[str]:
+    """``export type Route = ...``: every distinct URL, in order; nothing without routes."""
+    urls = dict.fromkeys(str(entry["path"]) for entry in entries)
+    if not urls:
+        return [""]
+    return ["", "export type Route = " + " | ".join(_route_literal(url) for url in urls) + ";"]
+
+
+def render_manifest(entries: list[dict[str, object]], include_route_type: bool) -> str:
+    """Render routes.auto.ts (full) or routes.client.auto.ts (navigable-only)."""
+    lines = [*_TYPE_HEADER, "export const NEXY_ROUTES: NexyRoute[] = [", *map(_route_line, entries)]
+    lines.append("];")
+    if include_route_type:
+        lines += _route_type(entries)
+    return "\n".join(lines) + "\n"
+
+
 class RouteManifestBuilder:
     """Builds the route tree and renders routes.auto.ts / routes.client.auto.ts.
 
@@ -74,43 +132,37 @@ class RouteManifestBuilder:
         if not routes_root.is_dir():
             return []
         layout_names, special_names = collect_route_names()
-
-        entries: list[dict[str, object]] = []
-        for path in sorted(routes_root.rglob("*")):
-            if not path.is_file() or path.suffix not in set(Config.ROUTE_FILE_EXTENSIONS):
-                continue
-            name = path.name.lower()
-            if name in layout_names or name in special_names:
-                continue
-            rel = path.relative_to(routes_root).as_posix()
-            if any(part.startswith("_") or part.startswith(".") for part in rel.split("/")):
-                continue
-            url = file_to_url(path, routes_root)
-            layout = self._closest_layout(path, routes_root, layout_names)
-            entries.append(
-                {
-                    "path": url,
-                    "file": f"/src/routes/{rel}",
-                    "layout": layout,
-                    "params": extract_params(url),
-                }
-            )
+        entries = [
+            self._entry(path, routes_root, layout_names)
+            for path in sorted(routes_root.rglob("*"))
+            if _is_route_file(path, routes_root, layout_names | special_names)
+        ]
         entries.sort(key=lambda e: sort_key(str(e["path"])))
         return entries
+
+    def _entry(self, path: Path, routes_root: Path, layout_names: set[str]) -> dict[str, object]:
+        url = file_to_url(path, routes_root)
+        return {
+            "path": url,
+            "file": f"/src/routes/{path.relative_to(routes_root).as_posix()}",
+            "layout": self._closest_layout(path, routes_root, layout_names),
+            "layouts": framework_layout_chain(path, routes_root),
+            "params": extract_params(url),
+        }
 
     def render_full(self) -> str | None:
         """Render routes.auto.ts (full tree with the Route type union)."""
         entries = self.entries()
         if not entries and not Path("src/routes").is_dir():
             return None
-        return self._render(entries, include_route_type=True)
+        return render_manifest(entries, include_route_type=True)
 
     def render_client(self) -> str | None:
         """Render routes.client.auto.ts (navigable components only)."""
         entries = navigable_entries(self.entries())
         if not entries and not Path("src/routes").is_dir():
             return None
-        return self._render(entries, include_route_type=False)
+        return render_manifest(entries, include_route_type=False)
 
     def write(self, dest_dir: Path) -> None:
         """Write full and client manifests under *dest_dir* when they changed."""
@@ -118,53 +170,9 @@ class RouteManifestBuilder:
         entries = self.entries()
         if not entries and not Path("src/routes").is_dir():
             return
-        PathUtil.write_if_changed(dest_dir / "routes.auto.ts", self._render(entries, True))
-        client = self._render(navigable_entries(entries), include_route_type=False)
+        PathUtil.write_if_changed(dest_dir / "routes.auto.ts", render_manifest(entries, True))
+        client = render_manifest(navigable_entries(entries), include_route_type=False)
         PathUtil.write_if_changed(dest_dir / "routes.client.auto.ts", client)
-
-    def _render(self, entries: list[dict[str, object]], include_route_type: bool) -> str:
-        """Render routes.auto.ts (full) or routes.client.auto.ts (navigable-only)."""
-        lines = [
-            "export type NexyRoute = {",
-            "  path: string;",
-            "  file: string;",
-            "  layout: string | null;",
-            "  params: string[];",
-            "};",
-            "",
-        ]
-        lines.append("export const NEXY_ROUTES: NexyRoute[] = [")
-        for e in entries:
-            lines.append(
-                "  { path: "
-                + to_json_literal(e["path"])
-                + ", file: "
-                + to_json_literal(e["file"])
-                + ", layout: "
-                + to_json_literal(e["layout"])
-                + ", params: "
-                + to_json_literal(e["params"])
-                + " },"
-            )
-        lines.append("];")
-        if include_route_type:
-            lines.append("")
-            route_parts: list[str] = []
-            seen: set[str] = set()
-            for e in entries:
-                url = str(e["path"])
-                if url in seen:
-                    continue
-                seen.add(url)
-                if "{" in url:
-                    literal = re.sub(r"\{[^}]+:path\}", "${string}", url)
-                    literal = re.sub(r"\{[^}]+\}", "${string}", literal)
-                    route_parts.append(f"`{literal}`")
-                else:
-                    route_parts.append(to_json_literal(url))
-            if route_parts:
-                lines.append("export type Route = " + " | ".join(route_parts) + ";")
-        return "\n".join(lines) + "\n"
 
     def _closest_layout(self, path: Path, routes_root: Path, layout_names: set[str]) -> str | None:
         start = path.parent.as_posix()

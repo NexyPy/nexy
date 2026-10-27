@@ -69,3 +69,26 @@ def test_main_accepts_message_file(
     monkeypatch.setattr(sys, "argv", ["check_attribution", "--message-file", str(message_file)])
 
     assert checker.main() == 0
+
+
+def test_human_sharing_a_tool_name_is_accepted(checker: types.ModuleType) -> None:
+    for trailer in (
+        "Co-authored-by: Ali Haider <ali@example.com>",
+        "Co-authored-by: Devin Lee <devin.lee@corp.example>",
+        "Co-authored-by: Sweep Patel <sweep@example.org>",
+    ):
+        assert checker.offending_lines(f"fix\n\n{trailer}\n") == []
+
+
+def test_ai_identities_are_still_rejected(checker: types.ModuleType) -> None:
+    for trailer in (
+        "Co-Authored-By: Claude Sonnet <noreply@anthropic.com>",
+        "Co-authored-by: Copilot <noreply@github.com>",
+        "Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+        "Co-authored-by: Some Agent <agent@openai.com>",
+    ):
+        assert checker.offending_lines(f"fix\n\n{trailer}\n") == [trailer], trailer
+
+
+def test_assisted_by_names_the_tool(checker: types.ModuleType) -> None:
+    assert checker.offending_lines("fix\n\nAssisted-by: Cursor\n") == ["Assisted-by: Cursor"]

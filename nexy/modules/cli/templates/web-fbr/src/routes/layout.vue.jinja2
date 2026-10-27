@@ -1,0 +1,40 @@
+{%- if useCSR -%}
+{%- raw -%}
+<script setup lang="ts">
+// The root layout writes the whole document; the page arrives in the default slot. It declares no
+// props, so the route params are not copied onto <html> as attributes.
+defineOptions({ inheritAttrs: false });
+import { Link } from "@nexy/client";
+import ThemeToggle from "@/components/theme-toggle.vue";
+
+// Set through v-html: Vue escapes the text of a <script> element, which would break `&&`.
+const criticalCss = `{% endraw %}{% include "critical.css" %}{% raw %}`;
+const themeScript = `{% endraw %}{% include "theme_script.js" %}{% raw %}`;
+</script>
+
+<template>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Built with Nexy" />
+    <title>Nexy App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
+      rel="stylesheet"
+    />
+    <style v-html="criticalCss"></style>
+    <script v-html="themeScript"></script>
+  </head>
+  <body class="nx-page">
+{% endraw %}
+{% include "header.html.jinja2" %}
+    <main class="nx-main"><slot /></main>
+{% include "footer.html.jinja2" %}
+{% raw %}  </body>
+  </html>
+</template>
+{% endraw %}
+{%- endif -%}

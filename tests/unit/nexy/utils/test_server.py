@@ -1,18 +1,19 @@
-import subprocess
+import shutil
 import sys
 from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from nexy.helpers.server import server as server_module
-from nexy.helpers.server.server import Server, _write_port_file
+from nexy.helpers.server import markers, uvicorn_run, vite_process
+from nexy.helpers.server.markers import write_port_file
+from nexy.helpers.server.server import Server
 
 
 @pytest.fixture(autouse=True)
 def _isolated_vfs() -> Any:
     """Starts each test from an empty in-memory VFS and restores it afterwards."""
-    vfs = server_module.VFS()
+    vfs = markers.VFS()
     saved_files = dict(vfs._files)
     vfs.clear()
     yield vfs
@@ -21,9 +22,9 @@ def _isolated_vfs() -> Any:
 
 
 def test_write_port_file_stores_port_in_vfs() -> None:
-    _write_port_file("server", 4000)
+    write_port_file("server", 4000)
 
-    assert server_module.VFS().read("__nexy__/server.port") == "4000"
+    assert markers.VFS().read("__nexy__/server.port") == "4000"
 
 
 def test_check_nexy_prod_creates_marker(tmp_path: Any) -> None:
@@ -106,7 +107,7 @@ def test_wait_for_vite_ready_connects_to_specified_port() -> None:
 
     with (
         patch("socket.create_connection", side_effect=_capture),
-        patch.object(server_module.time, "sleep"),
+        patch.object(vite_process.time, "sleep"),
     ):
         ready = Server.wait_for_vite_ready(5173, timeout=1)
 
@@ -117,26 +118,11 @@ def test_wait_for_vite_ready_connects_to_specified_port() -> None:
 def test_wait_for_vite_ready_returns_false_when_never_ready() -> None:
     with (
         patch("socket.create_connection", side_effect=OSError),
-        patch.object(server_module.time, "sleep"),
+        patch.object(vite_process.time, "sleep"),
     ):
         ready = Server.wait_for_vite_ready(5173, timeout=0.3)
 
     assert ready is False
-
-
-def test_uvicorn_as_process_returns_spawned_popen(tmp_path: Any) -> None:
-    import os
-
-    proc = MagicMock(spec=subprocess.Popen)
-    orig = os.getcwd()
-    try:
-        os.chdir(tmp_path)
-        with patch.object(subprocess, "Popen", return_value=proc):
-            result = Server.uvicorn(host="127.0.0.1", port=3999, as_process=True)
-    finally:
-        os.chdir(orig)
-
-    assert result is proc
 
 
 def test_uvicorn_foreground_returns_true(tmp_path: Any) -> None:
@@ -145,8 +131,8 @@ def test_uvicorn_foreground_returns_true(tmp_path: Any) -> None:
     orig = os.getcwd()
     try:
         os.chdir(tmp_path)
-        with patch.object(server_module._uvicorn, "run", return_value=None):
-            result = Server.uvicorn(host="127.0.0.1", port=3998, as_process=False)
+        with patch.object(uvicorn_run.uvicorn, "run", return_value=None):
+            result = Server.uvicorn(host="127.0.0.1", port=3998)
     finally:
         os.chdir(orig)
 
@@ -159,8 +145,8 @@ def test_uvicorn_returns_none_when_launch_fails(tmp_path: Any) -> None:
     orig = os.getcwd()
     try:
         os.chdir(tmp_path)
-        with patch.object(server_module._uvicorn, "run", side_effect=OSError("boom")):
-            result = Server.uvicorn(host="127.0.0.1", port=3997, as_process=False)
+        with patch.object(uvicorn_run.uvicorn, "run", side_effect=OSError("boom")):
+            result = Server.uvicorn(host="127.0.0.1", port=3997)
     finally:
         os.chdir(orig)
 
@@ -178,7 +164,7 @@ def test_uvicorn_passes_explicit_workers_to_uvicorn(tmp_path: Any) -> None:
     orig = os.getcwd()
     try:
         os.chdir(tmp_path)
-        with patch.object(server_module._uvicorn, "run", side_effect=_fake_run):
+        with patch.object(uvicorn_run.uvicorn, "run", side_effect=_fake_run):
             Server.uvicorn(host="127.0.0.1", port=3996, workers=4)
     finally:
         os.chdir(orig)
@@ -200,9 +186,7 @@ def test_vite_argv_build_runs_local_vite(tmp_path: Any, monkeypatch: Any) -> Non
     (tmp_path / vite).parent.mkdir(parents=True)
     (tmp_path / vite).write_text("", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(
-        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
-    )
+    monkeypatch.setattr(shutil, "which", lambda name: "C:/node.exe" if name == "node" else None)
 
     argv = Server._vite_argv(build=True, port=5173, ssl=False)
 
@@ -216,31 +200,27 @@ def test_vite_argv_dev_passes_port_and_host(tmp_path: Any, monkeypatch: Any) -> 
     (tmp_path / vite).parent.mkdir(parents=True)
     (tmp_path / vite).write_text("", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(
-        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
-    )
+    monkeypatch.setattr(shutil, "which", lambda name: "C:/node.exe" if name == "node" else None)
 
     argv = Server._vite_argv(build=False, port=3456, ssl=False)
 
     assert argv[-3:] == ["--port", "3456", "--host"]
 
 
-def test_vite_argv_dev_appends_https(tmp_path: Any, monkeypatch: Any) -> None:
+def test_vite_argv_never_passes_https(tmp_path: Any, monkeypatch: Any) -> None:
     from pathlib import Path
 
     vite = Path("node_modules") / "vite" / "bin" / "vite.js"
     (tmp_path / vite).parent.mkdir(parents=True)
     (tmp_path / vite).write_text("", encoding="utf-8")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(
-        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
-    )
+    monkeypatch.setattr(shutil, "which", lambda name: "C:/node.exe" if name == "node" else None)
 
-    assert Server._vite_argv(build=False, port=3456, ssl=True)[-1] == "--https"
+    assert "--https" not in Server._vite_argv(build=False, port=3456, ssl=True)
 
 
 def test_vite_argv_raises_when_node_is_missing(monkeypatch: Any) -> None:
-    monkeypatch.setattr(server_module.shutil, "which", lambda *_: None)
+    monkeypatch.setattr(shutil, "which", lambda *_: None)
 
     with pytest.raises(RuntimeError, match="Node.js"):
         Server._vite_argv(build=True, port=5173, ssl=False)
@@ -248,9 +228,7 @@ def test_vite_argv_raises_when_node_is_missing(monkeypatch: Any) -> None:
 
 def test_vite_argv_raises_when_vite_is_missing(tmp_path: Any, monkeypatch: Any) -> None:
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(
-        server_module.shutil, "which", lambda name: "C:/node.exe" if name == "node" else None
-    )
+    monkeypatch.setattr(shutil, "which", lambda name: "C:/node.exe" if name == "node" else None)
 
     with pytest.raises(RuntimeError, match="Vite is not installed"):
         Server._vite_argv(build=True, port=5173, ssl=False)

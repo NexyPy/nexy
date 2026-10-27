@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from html import escape
 
 from fastapi import Response
+from fastapi.responses import HTMLResponse
 
 
 @dataclass(frozen=True)
@@ -32,34 +34,75 @@ class NexyCompileError(Exception):
         return f"{base}\n  Fix: {self.hint}" if self.hint else base
 
 
-_STYLES = """\
+def error_position(failure: BaseException) -> tuple[int | None, int | None]:
+    """(line, column) a failure carries: Python syntax errors and Nexy's own errors name them."""
+    line = getattr(failure, "lineno", None) or getattr(failure, "line", None)
+    column = getattr(failure, "offset", None) or getattr(failure, "column", None)
+    return line, column
+
+
+_PAGE = """\
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{code} - {title}</title>
 <style>
-*{padding:0;margin:0;box-sizing:border-box}
-body{height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif;overflow:hidden}
-.code{font-size:6rem;font-weight:bold;border-right:1px solid;padding-right:10px;margin-left:4rem}
-.info{padding:1rem}
-.info h2{margin:0}
-.info p{width:14rem;margin-top:.5rem}
-</style>"""
+:root{{color-scheme:light dark;--bg:#fff;--fg:#0b1a24;--muted:#5b6b78;--line:#d3d9de}}
+@media (prefers-color-scheme: dark){{:root{{\
+--bg:#0b1418;--fg:#eef3f6;--muted:#8da0ac;--line:#2a373f}}}}
+*{{box-sizing:border-box;margin:0}}
+body{{min-height:100dvh;display:grid;place-items:center;padding:1.5rem;background:var(--bg);\
+color:var(--fg);font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}}
+main{{width:min(28rem,100%);text-align:center}}
+.code{{display:inline-block;padding:.4rem .8rem;border:1px dashed var(--line);border-radius:999px;\
+font:600 .75rem/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.18em;\
+color:var(--muted)}}
+h1{{margin:1.25rem 0 .5rem;font-size:clamp(1.75rem,5vw,2.25rem);\
+letter-spacing:-.03em;line-height:1.15}}
+p{{color:var(--muted)}}
+.ref{{margin-top:.75rem;font:.75rem ui-monospace,monospace}}
+a{{display:inline-block;margin-top:1.75rem;padding:.55rem 1.1rem;border-radius:999px;\
+background:var(--fg);color:var(--bg);font-size:.9rem;font-weight:500;text-decoration:none}}
+a:hover{{opacity:.85}}
+</style>
+</head>
+<body>
+<main>
+<span class="code">{code}</span>
+<h1>{title}</h1>
+<p>{message}</p>
+{reference}<a href="/">Back to home</a>
+</main>
+</body>
+</html>
+"""
 
 
-def _page_404() -> str:
-    return f"""\
-{_STYLES}<body style="background-color:yellow">
-<h2 class="code" style="color:red;border-color:red">404</h2>
-<div class="info">
-<h2 style="color:red">Not Found</h2>
-<p>Nexy did not find the requested resource.</p>
-</div>
-</body>"""
+def error_page(
+    status_code: int, title: str, message: str, reference: str | None = None
+) -> Response:
+    """Build the HTML page for an error status.
 
+    The page is self-contained (no font, script or stylesheet to fetch) because it is shown when
+    the application itself may be broken, and it follows the visitor's light or dark theme.
+    Everything interpolated is escaped.
 
-def _page_500() -> str:
-    return f"""\
-{_STYLES}<body style="background-color:red;gap:1rem;text-align:center;color:white">
-<h2 class="code" style="color:red;border-color:red;font-size:3rem;margin:0">500</h2>
-Internal Server Error
-</body>"""
+    Args:
+        status_code: HTTP status of the response, also shown on the page.
+        title: Short headline, for example ``Page not found``.
+        message: One sentence telling the visitor what to do next.
+        reference: Identifier of the error, the same as in the server log.
+
+    Returns:
+        An HTML response with the given status.
+    """
+    ref = f'<p class="ref">Reference: {escape(reference)}</p>' if reference else ""
+    body = _PAGE.format(
+        code=status_code, title=escape(title), message=escape(message), reference=ref
+    )
+    return HTMLResponse(content=body, status_code=status_code)
 
 
 def NotFound() -> Response:
@@ -68,13 +111,20 @@ def NotFound() -> Response:
     Returns:
         A FastAPI Response with status 404 and the Nexy 404 page.
     """
-    return Response(content=_page_404(), status_code=404)
+    return error_page(
+        404, "Page not found", "The page you are looking for does not exist or was moved."
+    )
 
 
-def InternalServerError() -> Response:
+def InternalServerError(reference: str | None = None) -> Response:
     """Build the styled 500 HTML error response.
 
     Returns:
         A FastAPI Response with status 500 and the Nexy 500 page.
     """
-    return Response(content=_page_500(), status_code=500)
+    return error_page(
+        500,
+        "Something went wrong",
+        "The server hit an unexpected problem. Try again in a moment.",
+        reference,
+    )

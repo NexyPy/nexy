@@ -62,12 +62,6 @@ written. Escape untrusted values yourself with `{{ value | e }}`. `| safe` there
 > **Good to know**: wrap JavaScript that contains `{{` or `{%` in `{% raw %}...{% endraw %}`.
 > Frameworks such as Vue and Svelte use the same braces.
 
-Translations use the `trans` helper, available in every template:
-
-```html
-<h1>{{ trans("home.title", "Welcome") }}</h1>
-```
-
 ## Components
 
 Any imported callable whose name starts with an uppercase letter can be used as a tag. The compiler
@@ -110,5 +104,5 @@ used in two components is one class. Prefix or namespace your classes.
 ## Next steps
 
 - [Markdown and MDX](markdown.md): content pages
-- [ISR](../routing/fbr/isr.md): cache a page per path
-- [CSR](../routing/fbr/csr.md): client-side rendering
+- [ISR](../rendering/isr.md): cache a page per path
+- [CSR](../rendering/csr.md): client-side rendering

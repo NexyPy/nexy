@@ -15,45 +15,21 @@ class Scanner:
     )
 
     def scan(self, source: str) -> ScanResult:
-        source_content = (source or "").strip()
+        """Split a .nexy file into its logic block and its template.
 
-        if not source_content:
-            return ScanResult(logic_block="", template_block="")
-
-        if "---" not in source_content:
-            return ScanResult(
-                logic_block="",
-                template_block=source_content,
-            )
-
-        parts = source_content.split("---")
-
-        if len(parts) < 3:
-            if source_content.startswith("---"):
-                raise ValueError("Unclosed '---' delimiter")
-            else:
-                return ScanResult(
-                    logic_block="",
-                    template_block=source_content,
-                )
-
-        match = self._PATTERN.match(source_content)
-
+        Only a file that opens with ``---`` has logic, and the block must be closed. A ``---``
+        anywhere else (a Markdown rule, a comment) belongs to the template.
+        """
+        content = (source or "").strip()
+        match = self._PATTERN.match(content)
         if match:
-            logic = match.group("logic").strip()
-            template = match.group("template").strip()
             return ScanResult(
-                logic_block=logic,
-                template_block=template,
+                logic_block=match.group("logic").strip(),
+                template_block=match.group("template").strip(),
             )
-
-        if source_content.startswith("---"):
-            raise ValueError("Malformed .nexy file: content found before opening '---' delimiter")
-
-        return ScanResult(
-            logic_block="",
-            template_block=source_content,
-        )
+        if content.startswith("---"):
+            raise ValueError("Unclosed '---' delimiter")
+        return ScanResult(logic_block="", template_block=content)
 
     def process(self, source: str) -> ScanResult:
         return self.scan(source)

@@ -1,6 +1,5 @@
 """Template initialization: clone/render, shared overlays and the post-init pipeline."""
 
-import re
 import shutil
 import subprocess  # nosec B404
 import sys
@@ -8,13 +7,16 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader
-
+from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
+from nexy.helpers.fs.packages import ensure_packages
 from nexy.modules.cli.constants import TEMPLATES_DIR
+from nexy.modules.cli.migrations import alembic
 from nexy.modules.i18n import t
 
+from .alias import DEFAULT_ALIAS, apply_alias
 from .clone import GitClone
 from .dependencies import DependencyInstaller
 from .renderer import TemplateRenderer
@@ -32,6 +34,20 @@ venv/
 """
 
 
+def _fetch_template(
+    template_name: str, dest: Path, config: dict[str, Any], use_github: bool, subdir: str
+) -> None:
+    with console.status(
+        "[yellow]nexy[/yellow] » "
+        + t("init.initializing", "Initializing {name}...").format(name=template_name),
+        spinner="dots",
+    ):
+        if use_github:
+            _clone_from_github(dest, subdir)
+        else:
+            _render_local_template(template_name, dest, config, dest.resolve().name)
+
+
 def initialize_from_template(
     template_name: str,
     dest: Path,
@@ -42,19 +58,8 @@ def initialize_from_template(
     """Clone/render the template into *dest*, then run the post-init pipeline."""
     config = config or {}
     project_dir_name = dest.name if dest != Path(".") else None
-    project_name = project_dir_name or dest.resolve().name
-
     try:
-        with console.status(
-            "[yellow]nexy[/yellow] » "
-            + t("init.initializing", "Initializing {name}...").format(name=template_name),
-            spinner="dots",
-        ):
-            if use_github:
-                _clone_from_github(dest, subdir)
-            else:
-                _render_local_template(template_name, dest, config, project_name)
-
+        _fetch_template(template_name, dest, config, use_github, subdir)
         _run_post_init_pipeline(dest, config, project_dir_name)
     except Exception as e:
         console.print(
@@ -72,23 +77,58 @@ def _clone_from_github(dest: Path, subdir: str) -> None:
 def _render_local_template(
     template_name: str, dest: Path, config: dict[str, Any], project_name: str
 ) -> None:
-    from nexy.modules.i18n import _detect_locale
-
     context = {
         "orm": config.get("orm", "None"),
         "db_url": config.get("db_url"),
+        "database": config.get("database", "none"),
+        "style": config.get("style", "tailwind"),
         "project_name": project_name,
         "project_type": config.get("project_type", "web"),
         "FBRouter": config.get("FBRouter", False),
         "useCSR": config.get("useCSR", False),
         "client_framework": config.get("client_framework", "none"),
-        "locale": _detect_locale(),
+        "nexy_version": __version__,
     }
+    context.update(_markup_context(context["client_framework"], context["useCSR"]))
+    context["utility_ui"] = _utility_ui(context)
     exclude = _excluded_suffixes(context)
     TemplateRenderer(TEMPLATES_DIR / template_name, dest, context, exclude).render()
     _render_shared_files(template_name, dest, context)
 
     generate_init_files(dest / "src")
+    apply_alias(dest, config.get("alias", DEFAULT_ALIAS))
+
+
+_FRAMEWORK_LABELS = {
+    "none": "HTML",
+    "react": "React",
+    "preact": "Preact",
+    "solid": "Solid",
+    "vue": "Vue",
+    "svelte": "Svelte",
+}
+
+
+def _markup_context(framework: str, client_routed: bool) -> dict[str, str]:
+    """Names the shared markup needs: the class attribute of the syntax and the framework label."""
+    return {
+        # Only JSX in React spells it className. A server-rendered project writes HTML (.nexy)
+        # even when React runs in its islands.
+        "cls": "className" if framework == "react" and client_routed else "class",
+        "fw_label": _FRAMEWORK_LABELS.get(framework, "HTML"),
+    }
+
+
+_UTILITY_STYLES = ("tailwind", "unocss")
+
+
+def _utility_ui(context: dict[str, Any]) -> bool:
+    """True for the utility-class starter: client-routed React with Tailwind or UnoCSS."""
+    return (
+        context["useCSR"]
+        and context["client_framework"] == "react"
+        and context["style"] in _UTILITY_STYLES
+    )
 
 
 def _excluded_suffixes(context: dict[str, Any]) -> set[str]:
@@ -110,6 +150,7 @@ def _render_shared_files(template_name: str, dest: Path, context: dict[str, Any]
                 tgt = dest / rel_dest if rel_dest != "." else dest
                 TemplateRenderer(src, tgt, context, exclude).render()
         _place_web_assets(dest, template_name)
+        _drop_unused_style_files(dest, context.get("style", "tailwind"))
     elif template_name.startswith("api-"):
         src = shared_dir / "api"
         if src.is_dir():
@@ -132,6 +173,12 @@ def _render_overlays(template_name: str, dest: Path, context: dict[str, Any]) ->
             TemplateRenderer(fbr_src, dest / "src", context, exclude).render()
 
 
+def _drop_unused_style_files(dest: Path, style: str) -> None:
+    """The UnoCSS config is rendered with the other web files; only UnoCSS projects keep it."""
+    if style != "unocss":
+        (dest / "uno.config.ts").unlink(missing_ok=True)
+
+
 def _place_web_assets(dest: Path, template_name: str) -> None:
     """Move favicon.ico and globale.css to their final locations."""
     favicon = dest / "favicon.ico"
@@ -151,15 +198,7 @@ def _place_web_assets(dest: Path, template_name: str) -> None:
 
 def generate_init_files(base: Path) -> None:
     """Auto-generate empty __init__.py in Python package dirs."""
-    dirs_to_check = [base]
-    dirs_to_check.extend(sorted(base.rglob("*")))
-    for dir_path in dirs_to_check:
-        if dir_path.is_dir() and not (dir_path / "__init__.py").exists():
-            is_top_src = dir_path == base
-            has_py = any(f.suffix == ".py" for f in dir_path.iterdir())
-            has_nexy = any(f.suffix == ".nexy" for f in dir_path.iterdir())
-            if is_top_src or has_py or has_nexy:
-                (dir_path / "__init__.py").write_text("")
+    ensure_packages(base)
 
 
 def _run_post_init_pipeline(
@@ -169,7 +208,7 @@ def _run_post_init_pipeline(
     orm = config.get("orm", "None")
     db_url = config.get("db_url")
 
-    installer = DependencyInstaller(dest, orm=orm)
+    installer = DependencyInstaller(dest, orm=orm, database=config.get("database", "none"))
     installer.install_all()
 
     generate_post_init_files(dest, orm, db_url)
@@ -225,62 +264,34 @@ def init_git(dest: Path) -> None:
         )  # nosec B603/B607 - resolved via shutil.which, fixed argv
 
 
+_MIGRATION_TOOLS = {"SQLModel": "alembic", "SQLAlchemy": "alembic", "Tortoise-ORM": "aerich"}
+
+
+def _uv_run(args: list[str], cwd: Path) -> None:
+    uv = shutil.which("uv") or "uv"
+    subprocess.run([uv, "run", *args], cwd=cwd, capture_output=True)  # nosec B603 B607
+
+
+def _scaffold_migration_tool(tool: str, orm: str, dest: Path, db_url: str | None) -> None:
+    """Initialize the migration tool in *dest*; Alembic also gets Nexy's `env.py` and the URL."""
+    if tool == "aerich":
+        _uv_run(["aerich", "init", "-t", "src.configs.db.TORTOISE_ORM"], dest)
+        return
+    _uv_run(["alembic", "init", "alembic"], dest)
+    if (dest / "alembic").exists():
+        alembic.render_env(dest / "alembic", orm)
+        if db_url:
+            alembic.write_ini_url(dest, db_url)
+
+
 def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
     """Scaffold alembic/aerich when the config picked an ORM."""
-    tool = ""
-    if orm in ("SQLModel", "SQLAlchemy"):
-        tool = "alembic"
-    elif orm == "Tortoise-ORM":
-        tool = "aerich"
-    if not tool:
+    tool = _MIGRATION_TOOLS.get(orm)
+    if tool is None:
         return
-
-    with console.status(
-        f"[yellow]nexy[/yellow] » Initializing {tool}...",
-        spinner="dots",
-    ):
-        if tool == "aerich":
-            uv_exe = shutil.which("uv") or "uv"
-            subprocess.run(
-                [uv_exe, "run", tool, "init", "-t", "src.configs.db.TORTOISE_ORM"],
-                cwd=dest,
-                capture_output=True,
-            )  # nosec B603/B607
-            return
-        uv_exe = shutil.which("uv") or "uv"
-        subprocess.run(
-            [uv_exe, "run", tool, "init", tool],
-            cwd=dest,
-            capture_output=True,
-        )  # nosec B603/B607
-        alembic_dir = dest / "alembic"
-        if alembic_dir.exists():
-            _render_alembic_env(alembic_dir, orm)
-            if db_url:
-                write_alembic_ini_url(dest, db_url)
-
-
-def _render_alembic_env(alembic_dir: Path, orm: str) -> None:
-    loader = FileSystemLoader(str(TEMPLATES_DIR / "alembic"))
-    # Renders a Python code template (env.py), not HTML; autoescaping
-    # here would corrupt the generated Python. See SECURITY.md.
-    env = Environment(loader=loader)  # nosec B701
-    env_path = alembic_dir / "env.py"
-    env_path.write_text(env.get_template("env.py.jinja2").render(orm=orm))
-
-
-def write_alembic_ini_url(dest: Path, db_url: str) -> None:
-    alembic_ini = dest / "alembic.ini"
-    if not alembic_ini.exists():
-        return
-    content = alembic_ini.read_text(encoding="utf-8")
-    content = re.sub(
-        r"^sqlalchemy\.url\s*=.*",
-        f"sqlalchemy.url = {db_url}",
-        content,
-        flags=re.MULTILINE,
-    )
-    alembic_ini.write_text(content, encoding="utf-8")
+    message = t("init.migration_tool", "Initializing {tool}...").format(tool=tool)
+    with console.status(tagged("nexy", message, "yellow"), spinner="dots"):
+        _scaffold_migration_tool(tool, orm, dest, db_url)
 
 
 def cleanup_build_artifacts(dest: Path) -> None:
@@ -291,7 +302,6 @@ def cleanup_build_artifacts(dest: Path) -> None:
 
 
 def print_success_message(project_dir_name: str | None = None) -> None:
-    launcher.success(t("init.success_title", "Project initialized successfully!"))
     _print_next_steps(project_dir_name)
 
 
