@@ -67,6 +67,37 @@ class TestSelection:
         assert {"nexy-ux-audit", "nexy-styling"} <= set(select_skills(_profile()))
 
 
+class TestModularRouter:
+    def test_a_modular_project_gets_the_controller_skill(self):
+        modular = Profile("demo", "none", False, "tailwind", "web", "modular")
+        assert "nexy-modular" in select_skills(modular)
+
+    def test_a_file_based_project_does_not(self):
+        assert "nexy-modular" not in select_skills(_profile())
+
+    def test_a_modular_api_project_gets_it_with_the_api_skills(self):
+        chosen = set(select_skills(Profile("demo", "none", False, "tailwind", "api", "modular")))
+        assert chosen == ALWAYS | {"nexy-modular"}
+
+    @pytest.mark.parametrize("template", ["web-modular", "api-modular"])
+    def test_a_scaffolded_modular_project_ships_it(self, tmp_path, template):
+        config = {
+            "client_framework": "none",
+            "FBRouter": False,
+            "project_type": "api" if template.startswith("api") else "web",
+            "orm": "None",
+            "useCSR": False,
+            "style": "tailwind",
+        }
+        _render_local_template(template, tmp_path, config, "demo")
+        assert "nexy-modular" in _installed(tmp_path, ".agents/skills")
+
+    def test_it_is_detected_from_use_router(self, tmp_path):
+        config = "class NexyConfig(NexyConfigModel):\n    useRouter = AppModule\n"
+        (tmp_path / "nexyconfig.py").write_text(config, encoding="utf-8")
+        assert detect_profile(tmp_path).router == "modular"
+
+
 class TestInstall:
     def test_the_skills_land_where_each_tool_looks(self, tmp_path):
         install_agent_files(tmp_path, _profile())

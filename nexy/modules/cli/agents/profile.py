@@ -10,6 +10,7 @@ from typing import Any
 
 _FRAMEWORK = re.compile(r"^\s*useFF\s*=\s*(\w+)\(", re.MULTILINE)
 _CLIENT_ROUTED = re.compile(r"^\s*useCSR\s*=\s*True\b", re.MULTILINE)
+_MODULAR = re.compile(r"^\s*useRouter\s*=", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -21,6 +22,7 @@ class Profile:
     client_routed: bool
     style: str
     kind: str = "web"
+    router: str = "fbr"
 
 
 def profile_from_context(context: dict[str, Any]) -> Profile:
@@ -32,6 +34,7 @@ def profile_from_context(context: dict[str, Any]) -> Profile:
         client_routed=bool(context.get("useCSR", False)),
         style="vanilla" if style == "other" else style,
         kind=context.get("project_type", "web"),
+        router="fbr" if context.get("FBRouter", False) else "modular",
     )
 
 
@@ -59,4 +62,5 @@ def detect_profile(project: Path) -> Profile:
         framework=found.group(1) if found else "none",
         client_routed=bool(_CLIENT_ROUTED.search(config)),
         style=_style_of(project),
+        router="modular" if _MODULAR.search(config) else "fbr",
     )

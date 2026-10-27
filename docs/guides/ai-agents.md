@@ -32,6 +32,7 @@ To skip all of it, create the project with `nx new --no-agents`.
 | `nexy-react`, `nexy-preact`, `nexy-solid`, `nexy-vue`, `nexy-svelte` | idiomatic code for the client framework |
 | `nexy-styling` | Tailwind, UnoCSS or plain CSS, and the design tokens |
 | `nexy-backend` | API handlers, actions, WebSocket, ISR, middleware |
+| `nexy-modular` | controllers, modules, injection and guards of the modular router |
 | `nexy-security` | dependencies, input, sessions, authorization, secrets |
 | `nexy-testing` | the test-first loop and the gates |
 

@@ -21,6 +21,7 @@ as they are.
 | [nexy-svelte](nexy-svelte/SKILL.md) | writing `.svelte` |
 | [nexy-styling](nexy-styling/SKILL.md) | styling: Tailwind, UnoCSS or plain CSS |
 | [nexy-backend](nexy-backend/SKILL.md) | API handlers, actions, WebSocket, ISR, middleware |
+| [nexy-modular](nexy-modular/SKILL.md) | controllers, modules, injection, guards: `useRouter` or `src/apps` |
 | [nexy-security](nexy-security/SKILL.md) | adding a dependency, handling input, sessions, authorization |
 | [nexy-testing](nexy-testing/SKILL.md) | writing the test first, running the gates |
 | [nexy-framework-dev](nexy-framework-dev/SKILL.md) | changing Nexy itself, not a project built with it |

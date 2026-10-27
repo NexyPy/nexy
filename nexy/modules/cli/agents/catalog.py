@@ -23,15 +23,17 @@ _ORDER = (
     *FRAMEWORK_SKILLS.values(),
     "nexy-styling",
     "nexy-backend",
+    "nexy-modular",
     "nexy-security",
     "nexy-testing",
 )
 
 
 def _wanted(profile: Profile) -> set[str]:
+    base = set(API_SKILLS) | ({"nexy-modular"} if profile.router == "modular" else set())
     if profile.kind == "api":
-        return set(API_SKILLS)
-    wanted = set(API_SKILLS) | {"nexy-ux-audit", "nexy-styling"}
+        return base
+    wanted = base | {"nexy-ux-audit", "nexy-styling"}
     if not profile.client_routed:
         wanted |= {"nexy-file", "nexy-markdown"}
     framework = FRAMEWORK_SKILLS.get(profile.framework)

@@ -76,7 +76,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 - **Skills for coding agents** in `skills/`: principles (order of work, KISS, SOLID, TDD, one
   function one treatment, no emoji, real SVG icons, human text), a UX and information-architecture
   audit to run before any view, and one skill each for `.nexy`, Markdown and MDX, React, Preact,
-  Solid, Vue, Svelte, styling, the backend, testing and work on the framework itself. An
+  Solid, Vue, Svelte, styling, the backend, the modular router, testing and work on the framework
+  itself. An
   `AGENTS.md` snippet carries the rules to OpenCode and Codex.
 - Compiler regression suites: byte-level route compile matrix (8 route
   kinds), compiler dispatch contract, markdown route compiler tests, and the
