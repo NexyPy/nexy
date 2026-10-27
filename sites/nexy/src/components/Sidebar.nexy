@@ -1,0 +1,18 @@
+---
+from src.content import menu
+
+current: prop[str] = ""
+groups = menu(current)
+---
+<nav class="side" aria-label="Documentation">
+  {% for group in groups %}
+  <section>
+    <h2>{{ group.title | e }}</h2>
+    <ul>
+      {% for page in group.pages %}
+      <li>{% if page.current %}<a href="{{ page.href }}" aria-current="page">{{ page.label | e }}</a>{% else %}<a href="{{ page.href }}">{{ page.label | e }}</a>{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endfor %}
+</nav>

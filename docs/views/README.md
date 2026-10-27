@@ -36,7 +36,7 @@ With a framework enabled, its extensions become active routes and Vite handles c
 
 ## Layouts
 
-A `layout.*` in a directory wraps pages below it. See [layouts](../routing/fbr/pages/README.md#layouts).
+A `layout.*` in a directory wraps pages below it. See [layouts](../routing/fbr/layouts/README.md).
 
 ## Next steps
 

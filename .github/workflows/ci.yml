@@ -39,11 +39,11 @@ jobs:
       - name: Install the client test dependencies (locked)
         run: npm ci --no-audit --no-fund --prefix tests/client
 
-      - name: Lint (nexy + tests)
-        run: uv run --no-sync ruff check nexy/ tests/
+      - name: Lint (nexy + tests + sites)
+        run: uv run --no-sync ruff check nexy/ tests/ sites/
 
       - name: Format
-        run: uv run --no-sync ruff format nexy/ tests/ --check
+        run: uv run --no-sync ruff format nexy/ tests/ sites/ --check
 
       - name: Typecheck
         run: uv run --no-sync python -m mypy nexy --strict

@@ -1,0 +1,4 @@
+---
+from "@/components/Doc.nexy" import Doc
+---
+<Doc slug="" />
