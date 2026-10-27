@@ -16,7 +16,7 @@ HTML can be streamed when possible.
 > **Good to know**: autoescaping is off in `.nexy` templates. Use `| e` on untrusted values.
 
 API errors such as `500` are rendered by `errors.nexy` when that file exists - see
-[error pages](../routing/fbr/pages/README.md#error-pages).
+[error pages](../routing/fbr/errors/README.md).
 
 ## Next steps
 
