@@ -41,7 +41,7 @@ around it.
 
 ## Test the experience, not only the code
 
-For a view, the audit brief ([nexy-ux-audit](../nexy-ux-audit/SKILL.md)) gives the tests: the
+For a view, the audit brief (`nexy-ux-audit`) gives the tests: the
 empty state, the error message, the primary action, the label of the button. If the brief says an
 error explains what to do, assert that sentence.
 
@@ -57,7 +57,7 @@ nx build                  # fails on a compile error
 ```
 
 In the Nexy repository itself use `python scripts/verify.py` (see
-[nexy-framework-dev](../nexy-framework-dev/SKILL.md)).
+`nexy-framework-dev`).
 
 ## Reporting
 

@@ -74,6 +74,7 @@ architecture.
 | [Frontend](guides/frontend.md) | Vite, styling and the client build |
 | [Testing](guides/testing.md) | pytest, `TestClient` and vitest |
 | [Dev toolbar](guides/devtools.md) | the toolbar of `nexy dev`, and how to turn it off |
+| [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
 
 ## Deployment
 

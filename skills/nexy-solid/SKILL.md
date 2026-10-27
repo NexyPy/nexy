@@ -59,5 +59,5 @@ export default function RootLayout(props: { children: JSX.Element }) {
 - Import with `@/`. Navigate with `Link` from `@nexy/client`.
 - Icons are SVG components. No emoji.
 
-Run [nexy-ux-audit](../nexy-ux-audit/SKILL.md) before building a view, follow
-[nexy-styling](../nexy-styling/SKILL.md), and test first ([nexy-testing](../nexy-testing/SKILL.md)).
+Run `nexy-ux-audit` before building a view, follow
+`nexy-styling`, and test first (`nexy-testing`).

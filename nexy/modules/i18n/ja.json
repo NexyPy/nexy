@@ -55,7 +55,8 @@
       "migrate": "ORMのマイグレーションを実行する（ORMは自動検出）",
       "new": "新しいディレクトリに新しいプロジェクトを作成する",
       "start": "本番サーバーを起動する",
-      "test": "テストを実行する（--server / --client）"
+      "test": "テストを実行する（--server / --client）",
+      "skills": "コーディングエージェント用のスキルと AGENTS.md を追加します"
     },
     "commands_header": "利用可能なコマンド:",
     "help": "Nexy CLI",
@@ -69,10 +70,17 @@
       "help_arg": "作成するプロジェクトの名前（新しいディレクトリを作成します）",
       "help_template": "登録済みのテンプレートから初期化する（例: web-fbr-react）。",
       "prompt": "プロジェクト名:",
-      "template_unknown": "不明なテンプレート '{template}' です。"
+      "template_unknown": "不明なテンプレート '{template}' です。",
+      "help_agents": "コーディングエージェント用の AGENTS.md とスキルを追加します。"
     },
     "tagline": "そのまま動く、モダンなフルスタックフレームワーク",
-    "usage": "詳しい使い方は nx または nexy <コマンド> --help を実行してください"
+    "usage": "詳しい使い方は nx または nexy <コマンド> --help を実行してください",
+    "skills": {
+      "not_a_project": "{path} に nexyconfig.py がありません。Nexy プロジェクトのルートで実行してください。",
+      "help_path": "プロジェクトのルート（既定：現在のフォルダ）",
+      "done": "{count} 個のスキルを .agents/skills と .claude/skills に配置しました",
+      "kept": "あなたのファイルは変更していません：{files}。"
+    }
   },
   "dev": {
     "cleaning": "後片付けをしています...",

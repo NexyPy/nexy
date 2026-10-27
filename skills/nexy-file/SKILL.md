@@ -15,7 +15,7 @@ from nexy import usePathname
 title: prop[str] = "Untitled"
 pathname = usePathname()
 ---
-<Card title="{{ title }}">
+<Card title="Hello">
   <p>You are on {{ pathname }}</p>
 </Card>
 
@@ -81,7 +81,7 @@ while rendering. `directive` and `media` are consumed by Nexy and not passed as 
 
 `<style>` is emitted with the page and is **not scoped**. Prefix class names. In a project that uses
 Tailwind or UnoCSS, write utility classes in the template and keep `<style>` for what utilities
-cannot express (see [nexy-styling](../nexy-styling/SKILL.md)).
+cannot express (see `nexy-styling`).
 
 ## Layout
 
@@ -98,9 +98,9 @@ children: prop[NexyElement]
   <title>My app</title>
 </head>
 <body>
-  {{ children | safe }}
+  {{ children }}
 </body>
 </html>
 ```
 
-For the experience of the page, run [nexy-ux-audit](../nexy-ux-audit/SKILL.md) first.
+For the experience of the page, run `nexy-ux-audit` first.

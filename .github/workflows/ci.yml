@@ -104,6 +104,7 @@ jobs:
 
           root = Path(nexy.__file__).parent
           assert (root / "modules/cli/templates/web-fbr").is_dir()
+          assert (root / "skills/nexy-principles/SKILL.md").is_file()
           print(__version__)
           PY
 
@@ -116,6 +117,7 @@ jobs:
 
           root = Path(nexy.__file__).parent
           assert (root / "modules/cli/templates/web-fbr").is_dir()
+          assert (root / "skills/nexy-principles/SKILL.md").is_file()
           print(__version__)
           PY
 

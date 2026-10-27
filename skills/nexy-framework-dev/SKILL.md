@@ -5,7 +5,7 @@ description: Rules for changing Nexy itself (the nexy/ package, its templates, s
 
 # Working on Nexy
 
-Start with [nexy-principles](../nexy-principles/SKILL.md). This skill adds what is specific to the
+Start with `nexy-principles`. This skill adds what is specific to the
 repository.
 
 ## Architecture

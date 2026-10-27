@@ -24,10 +24,11 @@ module that serves it; Vite compiles the MDX and the build pre-renders it to HTM
   `nexy/modules/frontend/` (TypeScript), not in the compiler.
 - It needs optional packages in the project: `@mdx-js/rollup`, `remark-gfm` and `@mdx-js/react`
   (`@mdx-js/esbuild` for the build).
-- The framework is detected from the imports; React wins when both appear.
+- The framework is detected from the imports: Preact when the file imports `preact`, React
+  otherwise.
 
 ## Write for readers
 
-Run [nexy-ux-audit](../nexy-ux-audit/SKILL.md) for content pages too: one page, one job, the answer
+Run `nexy-ux-audit` for content pages too: one page, one job, the answer
 first, headings that are questions or tasks a person would recognise, and a title that matches the
 link that leads to it.

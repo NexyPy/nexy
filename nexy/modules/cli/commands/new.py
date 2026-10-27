@@ -48,6 +48,11 @@ def new(
             "Initialize from a registered template (e.g. web-fbr-react).",
         ),
     ),
+    agents: bool = typer.Option(
+        True,
+        "--agents/--no-agents",
+        help=t("cli.new.help_agents", "Add AGENTS.md and the skills for coding agents."),
+    ),
 ) -> None:
     launcher.banner("new", __version__)
     if template:
@@ -59,7 +64,11 @@ def new(
             return
         created = Path(project_name).resolve()
         InitProject().run(
-            template=template, project_dir=project_name, command="new", show_title=False
+            template=template,
+            project_dir=project_name,
+            command="new",
+            show_title=False,
+            agents=agents,
         )
     except KeyboardInterrupt:
         print()

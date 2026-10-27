@@ -53,4 +53,4 @@ config (`bg-background`, `text-foreground`).
 Icons are SVG components or files in `public/`, coloured with `currentColor`. Never an emoji, a
 symbol character or an icon font for one glyph.
 
-Run [nexy-ux-audit](../nexy-ux-audit/SKILL.md) before designing a view.
+Run `nexy-ux-audit` before designing a view.

@@ -29,6 +29,7 @@ class InitProject:
         project_dir: str | None = None,
         command: str = "init",
         show_title: bool = True,
+        agents: bool = True,
     ) -> None:
         """Main execution flow for project initialization."""
         dest = self._destination(project_dir)
@@ -36,9 +37,10 @@ class InitProject:
             launcher.banner(command, self.version)
         self._ensure_ready(dest, project_dir)
         if template:
-            self._from_template(template, dest)
+            self._from_template(template, dest, agents)
             return
         config = ProjectPrompter().ask_all()
+        config["agents"] = agents
         tui.transcript.erase_all()
         initialize_from_template(TemplateResolver.resolve(config), dest, config)
 
@@ -50,8 +52,9 @@ class InitProject:
         return dest
 
     @staticmethod
-    def _from_template(template: str, dest: Path) -> None:
+    def _from_template(template: str, dest: Path, agents: bool = True) -> None:
         config: dict[str, Any] = TemplateResolver.config_for(template)
+        config["agents"] = agents
         if template_source(template) == "github":
             initialize_from_template(
                 template, dest, config, use_github=True, subdir=f"templates/{template}"

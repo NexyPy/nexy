@@ -48,5 +48,5 @@ const count = ref(0);
 - Icons are SVG components. No emoji.
 - Inside a `.nexy` template, wrap Vue's `{{ }}` in `{% raw %}...{% endraw %}`.
 
-Run [nexy-ux-audit](../nexy-ux-audit/SKILL.md) before building a view, follow
-[nexy-styling](../nexy-styling/SKILL.md), and test first ([nexy-testing](../nexy-testing/SKILL.md)).
+Run `nexy-ux-audit` before building a view, follow
+`nexy-styling`, and test first (`nexy-testing`).

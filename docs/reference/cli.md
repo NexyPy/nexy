@@ -16,6 +16,7 @@ The binary is `nx` (also installed as `nexy`). Without a global install, prefix 
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (prettier), `.nexy` files |
 | `nx test` | - | run pytest; `--client` adds vitest |
+| `nx skills` | - | add or refresh the skills, `AGENTS.md` and `CLAUDE.md` for coding agents |
 
 ## Flags
 
@@ -28,6 +29,7 @@ The binary is `nx` (also installed as `nexy`). Without a global install, prefix 
 | `test` | `--client` | off - also run vitest instead of pytest alone |
 | `test` | `--no-server` | on - skip pytest when you only want client tests |
 | `new` | `--template`, `-t` | none - clone a registered template without prompts |
+| `new` | `--no-agents` | agents on - skip `AGENTS.md` and the agent skills |
 
 ## Output
 

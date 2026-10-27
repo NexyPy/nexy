@@ -12,6 +12,7 @@ from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.packages import ensure_packages
+from nexy.modules.cli.agents import install_agent_files, profile_from_context
 from nexy.modules.cli.constants import TEMPLATES_DIR
 from nexy.modules.cli.migrations import alembic
 from nexy.modules.i18n import t
@@ -94,6 +95,8 @@ def _render_local_template(
     exclude = _excluded_suffixes(context)
     TemplateRenderer(TEMPLATES_DIR / template_name, dest, context, exclude).render()
     _render_shared_files(template_name, dest, context)
+    if config.get("agents", True):
+        install_agent_files(dest, profile_from_context(context))
 
     generate_init_files(dest / "src")
     apply_alias(dest, config.get("alias", DEFAULT_ALIAS))

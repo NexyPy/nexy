@@ -27,12 +27,10 @@ a different job: read the repository's root `AGENTS.md`.
 
 ## Skills
 
-The repository ships rules for coding agents in [`skills/`](../../skills/README.md): the order of
-work (audit the experience, write the test, write the code), the code rules (one function, one
-treatment; one class, one intention; one folder, one set of intentions), the writing rules (no
-emoji, real SVG icons, human text) and one skill per framework. Claude Code loads them from
-`.claude/skills/`; OpenCode and Codex read them through `AGENTS.md`
-([snippet](../../skills/AGENTS.snippet.md)).
+A project made with `nx new` already holds the rules for agents: `AGENTS.md`, `CLAUDE.md` and the
+skills in `.agents/skills/` and `.claude/skills/`. Read `AGENTS.md` first; it lists the skills and
+says which one to load for a task. For an existing project, run `nx skills`. See
+[Coding agents](../guides/ai-agents.md).
 
 ## Invariants
 

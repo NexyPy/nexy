@@ -36,12 +36,12 @@ The one allowed script is a short one in the layout head that sets the saved the
 ## Rules
 
 - One component per file. Styles in a `<style>` block are scoped by Svelte; keep them for what the
-  project's styling mode cannot express ([nexy-styling](../nexy-styling/SKILL.md)).
+  project's styling mode cannot express (`nexy-styling`).
 - Buttons are `<button type="button">`; navigation is a link. Labels on every field.
 - Import with `@/`. Server calls: `useAction` from `@nexy/client` is a store (`$save.pending`,
   `$save.data`, `$save.error`, `save.run(input)`).
 - Icons are SVG components. No emoji.
 - Inside a `.nexy` template, wrap Svelte's `{ }` blocks in `{% raw %}...{% endraw %}`.
 
-Run [nexy-ux-audit](../nexy-ux-audit/SKILL.md) before building a view, and test first
-([nexy-testing](../nexy-testing/SKILL.md)).
+Run `nexy-ux-audit` before building a view, and test first
+(`nexy-testing`).
