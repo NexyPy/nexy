@@ -1,0 +1,6 @@
+---
+from "@/components/Doc.nexy" import Doc
+
+path: prop[str] = ""
+---
+<Doc slug="{{ path }}" />

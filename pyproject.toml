@@ -122,6 +122,11 @@ select = [
 # templates (client-side JS / TSX-Vue-Svelte scaffolding); the 100-column
 # budget applies to Python code, not to the embedded template content.
 "nexy/vite.py" = ["N802"]
+# sites/nexy is a Nexy project: a handler is named GET, a route file [name].py and the config
+# fields are camelCase, as in any user project.
+"sites/nexy/**" = ["N802", "N815", "N999"]
+# The icons are SVG path data, not Python.
+"sites/shared/icons.py" = ["E501"]
 "nexy/modules/cli/init/registry.py" = ["E501"]
 # Fakes for `nx dev` mirror the real collaborators' signatures, so some arguments go unused.
 "tests/unit/nexy/cli/test_dev_command.py" = ["ARG"]

@@ -1,0 +1,15 @@
+---
+from src.content import ICONS, MARK
+---
+<header class="top">
+  <button class="icon-button menu" aria-label="Open the menu" aria-expanded="false">{{ ICONS.icon_menu }}</button>
+  <a class="brand" href="/docs">
+    <span class="logo" aria-hidden="true">{{ MARK }}</span><span class="name">Nexy</span><span class="tag">Docs</span>
+  </a>
+  <span class="spacer"></span>
+  <button class="search-open" aria-label="Search the docs">
+    {{ ICONS.icon_search }}<span>Search the docs</span><kbd>Ctrl K</kbd>
+  </button>
+  <a class="icon-button" href="https://github.com/NexyPy/nexy" aria-label="Nexy on GitHub">{{ ICONS.icon_github }}</a>
+  <button class="icon-button theme" aria-label="Switch between light and dark">{{ ICONS.icon_sun }}{{ ICONS.icon_moon }}</button>
+</header>

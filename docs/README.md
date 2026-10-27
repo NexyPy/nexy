@@ -138,3 +138,4 @@ docs/
 - [ARCHITECTURE.md](../ARCHITECTURE.md): internals, request lifecycle, compiler pipeline
 - [CONTRIBUTING.md](../CONTRIBUTING.md): working on Nexy itself
 - [llms.txt](../llms.txt): entry point for AI agents
+- [sites/](../sites/README.md): the two websites that show these pages
