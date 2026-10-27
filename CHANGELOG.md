@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+### Changed
+
+- **The dev toolbar badge shows the Nexy mark, not a letter.** The round badge now holds the
+  roof-cut N of the Nexy logo, drawn as an icon.
+
 ### Added
 
 - **Recipes, a Python API reference and a glossary** in `docs/`. The code of the recipes (sign in

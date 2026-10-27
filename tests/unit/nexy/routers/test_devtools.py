@@ -237,6 +237,16 @@ class TestToolbarAssets:
         script = self._asset("toolbar.js")
         assert "pointermove" in script and "snap" in script and "setPointerCapture" in script
 
+    def test_the_badge_holds_the_nexy_mark(self):
+        assert "M12.5527 0.5459" in self._asset("toolbar.js")
+
+    def test_the_badge_is_a_circle(self):
+        css = self._asset("toolbar.css")
+        assert re.search(r"\.logo \{[^}]*border-radius: 50%", css)
+
+    def test_the_badge_does_not_draw_a_letter(self):
+        assert "'N')" not in self._asset("toolbar.js")
+
     def test_preferences_are_remembered(self):
         assert "localStorage.setItem(STORE" in self._asset("toolbar.js")
 
