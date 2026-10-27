@@ -1,0 +1,6 @@
+<div class="scrim" hidden></div>
+<dialog class="search" aria-label="Search">
+  <form method="dialog"><input type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off"></form>
+  <ul class="results" role="listbox"></ul>
+  <p class="hint">Enter opens the result, Esc closes.</p>
+</dialog>

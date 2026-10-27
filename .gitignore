@@ -13,6 +13,7 @@ node_modules
 
 # Build / dist
 dist
+_site
 dist-ssr
 target/
 **/target/

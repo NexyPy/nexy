@@ -1,0 +1,37 @@
+---
+from "@/components/Header.nexy" import Header
+from "@/components/Sidebar.nexy" import Sidebar
+from "@/components/SearchDialog.nexy" import SearchDialog
+from nexy import usePathname
+from src.content import slug_of, title_of
+
+children: prop[NexyElement]
+current = slug_of(usePathname())
+title = title_of(current)
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title | e }}</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css">
+  <script>
+    try {
+      var saved = localStorage.getItem("nexy-docs-theme");
+      var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = dark ? "dark" : "light";
+    } catch (e) { document.documentElement.dataset.theme = "light"; }
+  </script>
+</head>
+<body data-root="" data-search="/search-index">
+  <Header />
+  <div class="frame">
+    <Sidebar current="{{ current }}" />
+    {{ children }}
+  </div>
+  <SearchDialog />
+  <script src="/assets/site.js" defer></script>
+</body>
+</html>

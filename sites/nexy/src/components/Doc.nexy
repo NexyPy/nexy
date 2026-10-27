@@ -1,0 +1,27 @@
+---
+from src.content import document, link
+
+slug: prop[str] = ""
+doc = document(slug)
+---
+<main class="page">
+  <article class="doc">
+    <p class="crumb">{{ doc.section | e }}</p>
+    {{ doc.html }}
+    <p class="source"><a href="{{ doc.source }}">Edit this page on GitHub</a></p>
+    <nav class="pager" aria-label="Pages">
+      {% if doc.before %}<a rel="prev" href="{{ link(doc.before.slug) }}"><small>Previous</small><span>{{ doc.before.label | e }}</span></a>{% else %}<span></span>{% endif %}
+      {% if doc.after %}<a rel="next" href="{{ link(doc.after.slug) }}"><small>Next</small><span>{{ doc.after.label | e }}</span></a>{% else %}<span></span>{% endif %}
+    </nav>
+  </article>
+</main>
+<aside class="toc" aria-label="On this page">
+  {% if doc.outline %}
+  <h2>On this page</h2>
+  <ul>
+    {% for heading in doc.outline %}
+    <li class="l{{ heading.level }}"><a href="#{{ heading.id }}">{{ heading.text | e }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</aside>

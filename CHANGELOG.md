@@ -5,6 +5,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+### Added
+
+- **Two documentation sites in `sites/`**, both reading `docs/` so no text is written twice: a
+  vanilla one (a Python script, plain HTML, CSS and JS, search, light and dark theme, published to
+  GitHub Pages by `.github/workflows/pages.yml`) and one made with Nexy itself. Code is coloured
+  when the site is built, every heading has a link, search shows the words found, there is a 404
+  page that works under a project URL, and a keyboard user can skip the menu.
+
+### Fixed
+
+- Two links in `docs/` pointed to headings that no longer exist; a test now checks every
+  `page.md#heading` link.
+
 ### Changed
 
 - **The dev toolbar badge shows the Nexy mark, not a letter.** The round badge now holds the
