@@ -69,7 +69,12 @@ uv pip install -e . --group dev
 - `test_config.py` uses `hasattr` pattern - watch for config API changes.
 - Integration tests (`tests/integration/`) may require project scaffolding or a temp workspace.
 - `docs/` is **plain Markdown** (no app, no build step, no separate repo) - entry point `docs/README.md`, one question per page, machine entry point `llms.txt`. Do not reintroduce a docs site generator here.
-- `skills/` dir contains project philosophy docs (KISS, SOLID, TDD, framework-dev).
+- `skills/` holds the rules for coding agents (principles, UX audit, one skill per framework,
+  styling, backend, testing, framework-dev). Read `skills/nexy-principles/SKILL.md` first; start
+  every change that has a view with `skills/nexy-ux-audit/SKILL.md`.
+- **MDX is compiled by Vite only.** Python writes the thin wrapper module of an `.mdx` route and
+  nothing else: no MDX parsing or rendering in `nexy/modules/compiler/` or `nexy/template.py`.
+- There is no "Built with Nexy" badge any more (`useBadge` is gone). The dev toolbar stays.
 - `nexyconfig.py` is the user-facing config of a **user project** (loaded at runtime from the project root by `nexy/core/config.py`; runnable example in `examples/FBR/web/basics/minimal/nexyconfig.py`). The framework repo itself has none.
 - `.nexy` files use `---` frontmatter delimiter for Python logic.
 
@@ -153,4 +158,4 @@ uv pip install -e . --group dev
 - Added byte-level verification matrix `tests/unit/nexy/compiler/test_frontend_route_matrix.py`: 8 route kinds (tsx default/named/no-export, vue, svelte, mdx react/preact, catch-all), AST validity, framework/symbol/component contracts, meta.json contract, byte determinism, runtime execution via VFS importer (mount-id md5, dev path, prod SSR embedding, layout wiring).
 - Added `test_markdown_route.py` (MarkdownRouteCompiler: AST validity, component-name conventions incl. `[slug]` catch-all, locale suffix `about.fr.md` → `about_fr.py` + meta locale, layout wiring, cmarkgfm render + heading ids, TOC publication, determinism) and `test_compiler_dispatch.py` (Compiler.compile dispatch: .tsx → FrontendRouteCompiler, .md → MarkdownRouteCompiler, .nexy → classic pipeline, non-route files raise NexyCompileError).
 - **Bug found & fixed**: `_ssg_static_path` looked up `<name>.default.html` for default-export tsx/mdx routes, but the JS SSG writer (`getEntryId`) emits `<name>.Default.html` (see committed `templates/tests/*/__nexy__/client/snippets.json`) and `ncc.py`/`formatting.py` read `.Default.html`. Prod `__ssr` was always empty for default exports on case-sensitive filesystems (silently masked on Windows). Regression tests assert the exact bytes of the generated lookup path.
-- Note: whole-tree `ruff check nexy/` and `mypy --strict` still fail with pre-existing violations in untouched files (116 / 144 respectively); `nexy/compiler/` files added/edited are clean except the systemic `VFS` untyped-call pattern.
+- Gate status (2026-10-26): `ruff check nexy/`, `ruff format --check` and `mypy --strict` pass on the whole tree (203 files), and `scripts/audit_structure.py --check` passes.

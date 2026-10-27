@@ -25,6 +25,15 @@ a different job: read the repository's root `AGENTS.md`.
 | to test the app | [testing](../guides/testing.md) |
 | the client build | [frontend](../guides/frontend.md) |
 
+## Skills
+
+The repository ships rules for coding agents in [`skills/`](../../skills/README.md): the order of
+work (audit the experience, write the test, write the code), the code rules (one function, one
+treatment; one class, one intention; one folder, one set of intentions), the writing rules (no
+emoji, real SVG icons, human text) and one skill per framework. Claude Code loads them from
+`.claude/skills/`; OpenCode and Codex read them through `AGENTS.md`
+([snippet](../../skills/AGENTS.snippet.md)).
+
 ## Invariants
 
 1. `__nexy__/` is generated. Never edit it, never commit it. Delete it to force a clean build.
