@@ -6,6 +6,7 @@ The sites differ in how they look and where they run; none of them owns any text
 
 from __future__ import annotations
 
+import html as htmllib
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -14,6 +15,10 @@ from posixpath import normpath
 
 import cmarkgfm  # type: ignore[import-untyped]
 from cmarkgfm.cmark import Options  # type: ignore[import-untyped]
+from pygments import highlight  # type: ignore[import-untyped]
+from pygments.formatters import HtmlFormatter  # type: ignore[import-untyped]
+from pygments.lexers import HtmlDjangoLexer, get_lexer_by_name  # type: ignore[import-untyped]
+from pygments.util import ClassNotFound  # type: ignore[import-untyped]
 
 REPOSITORY = "https://github.com/NexyPy/nexy/blob/main/"
 TEXT_LENGTH = 1800
@@ -22,6 +27,7 @@ _ROW_LINK = re.compile(r"\[([^\]]+)\]\(([^)#\s]+\.md)\)")
 _FENCE = re.compile(r'^```(\w*)[ \t]+filename="([^"]+)"[ \t]*$', re.MULTILINE)
 _PRE = re.compile(r'<pre lang="(\w*)__file(\d+)">')
 _HEADING = re.compile(r"<h([2-6])>(.*?)</h\1>", re.DOTALL)
+_CODE = re.compile(r'<pre lang="(\w+)"><code>(.*?)</code></pre>', re.DOTALL)
 _HREF = re.compile(r'href="([^"]+)"')
 _TAGS = re.compile(r"<[^>]+>")
 _SPACE = re.compile(r"\s+")
@@ -147,7 +153,8 @@ def _identify(html: str) -> Rendered:
         seen[base] = count + 1
         ident = base if count == 0 else f"{base}-{count}"
         found.append(Heading(level, ident, _TAGS.sub("", inner)))
-        return f'<h{level} id="{ident}">{inner}</h{level}>'
+        anchor = f'<a class="anchor" href="#{ident}" aria-label="Link to this section"></a>'
+        return f'<h{level} id="{ident}">{inner}{anchor}</h{level}>'
 
     return Rendered(_HEADING.sub(mark, html), found)
 
@@ -174,6 +181,29 @@ def _rewrite(html: str, page: Path, docs: Path, link: Link) -> str:
     return _HREF.sub(swap, html)
 
 
+_FORMATTER = HtmlFormatter(nowrap=True, classprefix="tok-")
+
+
+def _lexer(language: str) -> object | None:
+    """The colouring rules for a fence language; a .nexy file is HTML with Jinja."""
+    if language == "nexy":
+        return HtmlDjangoLexer()
+    try:
+        return get_lexer_by_name(language)
+    except ClassNotFound:
+        return None
+
+
+def _colour(found: re.Match[str]) -> str:
+    """Colour one code block at build time, so it needs no script to be readable."""
+    language, escaped = found[1], found[2]
+    lexer = _lexer(language)
+    if lexer is None:
+        return found[0]
+    coloured = highlight(htmllib.unescape(escaped), lexer, _FORMATTER).rstrip("\n")
+    return f'<pre lang="{language}"><code>{coloured}</code></pre>'
+
+
 def plain(html: str) -> str:
     """The text of some HTML: no tags, one space between words."""
     return _SPACE.sub(" ", _TAGS.sub(" ", html)).strip()
@@ -194,5 +224,5 @@ def render(page: Path, docs: Path, link: Link) -> Rendered:
     """One page as HTML: file names as captions, linked headings, links to the site's URLs."""
     text, names = _name_files(page.read_text(encoding="utf-8"))
     html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
-    done = _identify(_caption(html, names))
+    done = _identify(_CODE.sub(_colour, _caption(html, names)))
     return Rendered(_rewrite(done.html, page, docs, link), done.headings)

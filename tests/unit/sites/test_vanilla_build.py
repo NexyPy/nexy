@@ -90,6 +90,39 @@ class TestPageContent:
         assert build.escape('<b>"x"</b>') == "&lt;b&gt;&quot;x&quot;&lt;/b&gt;"
 
 
+class TestUsability:
+    @pytest.fixture(scope="class")
+    def html(self, out):
+        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+
+    def test_the_keyboard_can_skip_the_menu(self, html):
+        assert 'class="skip" href="#content"' in html and 'id="content"' in html
+
+    def test_the_page_says_which_colour_the_browser_bar_takes(self, html):
+        assert 'name="theme-color"' in html
+
+    def test_code_is_coloured_without_javascript(self, html):
+        assert 'class="tok-' in html
+
+    def test_a_wrong_address_gets_a_page_that_still_has_its_style(self, tmp_path):
+        build.build(tmp_path, base="/nexy")
+        page = (tmp_path / "404.html").read_text(encoding="utf-8")
+        assert 'href="/nexy/assets/style.css"' in page and 'href="/nexy/docs/"' in page
+
+    def test_the_base_may_be_empty_for_a_site_at_the_root_of_a_domain(self, tmp_path):
+        build.build(tmp_path, base="")
+        assert 'href="/assets/style.css"' in (tmp_path / "404.html").read_text(encoding="utf-8")
+
+    def test_the_base_is_normalised(self):
+        assert [build.base_of(x) for x in ("", "/", "nexy", "/nexy", "/nexy/")] == [
+            "/",
+            "/",
+            "/nexy/",
+            "/nexy/",
+            "/nexy/",
+        ]
+
+
 class TestSearch:
     @pytest.fixture(scope="class")
     def index(self, out):

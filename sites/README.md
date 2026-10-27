@@ -16,10 +16,21 @@ uv run python sites/vanilla/build.py          # writes sites/vanilla/dist
 python -m http.server -d sites/vanilla/dist   # then open http://localhost:8000/docs/
 ```
 
-Every link is relative, so the folder also works under a project URL such as
-`https://nexypy.github.io/nexy/`. [`.github/workflows/pages.yml`](../.github/workflows/pages.yml)
-builds and publishes it on each push to `main` that touches `docs/` or `sites/`. Turn it on once in
-**Settings > Pages > Source: GitHub Actions**.
+Every link between pages is relative, so the folder also works under a project URL such as
+`https://nexypy.github.io/nexy/`. Only `404.html` needs to know where the site lives, because GitHub
+shows it at the address that failed, whatever its depth: pass `--base /nexy` (the workflow does).
+[`.github/workflows/pages.yml`](../.github/workflows/pages.yml) builds and publishes it on each push
+to `main` that touches `docs/` or `sites/`. Turn it on once in **Settings > Pages > Source: GitHub
+Actions**.
+
+What it gives a reader: a menu by section, an outline of the page that follows the scroll, search
+(`Ctrl K` or `/`) that shows the words found, light and dark themes that follow the system, code
+coloured when the site is built (so it reads without JavaScript), a copy button on code, links to
+every heading, previous and next pages, a "skip to content" link, and a layout that holds from a
+phone to a wide screen.
+
+The build is in English, like `docs/`. A new language is a new folder of Markdown read the same way,
+not a change to the script.
 
 ## Nexy
 

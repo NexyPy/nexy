@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>$title - Nexy</title>
 <meta name="description" content="$description">
+<meta name="theme-color" content="#0a8f9b">
 <link rel="icon" href="$root/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="$root/assets/style.css">
 <script>
@@ -16,6 +17,7 @@
 </script>
 </head>
 <body data-root="$root" data-search="$root/search-index.json">
+<a class="skip" href="#content">Skip to content</a>
 <header class="top">
   <button class="icon-button menu" aria-label="Open the menu" aria-expanded="false">$icon_menu</button>
   <a class="brand" href="$home">
@@ -30,7 +32,7 @@
 </header>
 <div class="frame">
   <nav class="side" aria-label="Documentation">$nav</nav>
-  <main class="page">
+  <main class="page" id="content" tabindex="-1">
     <article class="doc">
       <p class="crumb">$section</p>
       $article

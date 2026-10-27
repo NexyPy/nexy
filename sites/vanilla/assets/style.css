@@ -124,3 +124,43 @@ dialog.search input:focus { outline: 0; }
   .doc h1 { font-size: 30px; }
 }
 @media (prefers-reduced-motion: reduce) { .side { transition: none; } }
+
+/* Code colours: Pygments classes written at build time (tok-*), so code is coloured without a script. */
+:root {
+  --t-key: #cf222e; --t-str: #0a3069; --t-com: #6e7781; --t-fn: #8250df; --t-num: #0550ae;
+  --t-cls: #953800; --t-tag: #116329; --t-attr: #0550ae;
+}
+:root[data-theme="dark"] {
+  --t-key: #ff7b72; --t-str: #a5d6ff; --t-com: #8b949e; --t-fn: #d2a8ff; --t-num: #79c0ff;
+  --t-cls: #ffa657; --t-tag: #7ee787; --t-attr: #79c0ff;
+}
+[class^="tok-k"] { color: var(--t-key); }
+[class^="tok-s"] { color: var(--t-str); }
+[class^="tok-c"] { color: var(--t-com); font-style: italic; }
+[class^="tok-m"] { color: var(--t-num); }
+.tok-nf, .tok-fm, .tok-nd { color: var(--t-fn); }
+.tok-nc, .tok-nn, .tok-ne, .tok-nb, .tok-bp { color: var(--t-cls); }
+.tok-nt { color: var(--t-tag); }
+.tok-na { color: var(--t-attr); }
+.tok-err { color: inherit; background: none; border: 0; }
+
+/* A link to a heading, shown when the heading is hovered or focused */
+.doc .anchor { margin-left: 0.4em; color: var(--muted); text-decoration: none; opacity: 0; }
+.doc .anchor::before { content: "#"; }
+.doc :is(h2, h3, h4):hover .anchor, .doc .anchor:focus-visible { opacity: 1; }
+@media (hover: none) { .doc .anchor { opacity: 0.5; } }
+
+/* For keyboard users: jump over the menu */
+.skip { position: absolute; left: -9999px; top: 8px; z-index: 40; padding: 8px 14px; border-radius: 8px; background: var(--accent); color: var(--on-accent); font-weight: 600; text-decoration: none; }
+.skip:focus { left: 12px; }
+.page:focus { outline: 0; }
+
+/* The page shown for a wrong address */
+.lost { max-width: 640px; margin: 14vh auto 0; padding: 0 24px; }
+.lost h1 { margin: 0 0 16px; font-size: 34px; line-height: 1.2; letter-spacing: -0.02em; }
+.button { display: inline-block; padding: 10px 18px; border-radius: 8px; background: var(--accent); color: var(--on-accent); font-weight: 600; text-decoration: none; }
+.button:hover { filter: brightness(1.08); }
+
+/* Search: where the words were found */
+.results .snippet { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.results mark { background: var(--mark); color: inherit; border-radius: 3px; }

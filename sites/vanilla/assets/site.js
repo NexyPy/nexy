@@ -73,13 +73,40 @@
     }
     return total
   }
+  // A few words around the first match, so a result says why it was found.
+  const snippet = (entry, words) => {
+    const text = `${entry.headings} ${entry.text}`
+    const at = words.map((w) => text.toLowerCase().indexOf(w)).filter((i) => i >= 0).sort((x, y) => x - y)[0]
+    if (at === undefined) return ''
+    const from = Math.max(0, at - 40)
+    return `${from > 0 ? '...' : ''}${text.slice(from, from + 120)}...`
+  }
+  // The words found are wrapped in <mark>. Plain string search: no pattern to escape.
+  const mark = (text, words) => {
+    const fragment = document.createDocumentFragment()
+    const lower = text.toLowerCase()
+    let at = 0
+    while (at < text.length) {
+      const hits = words.map((w) => [lower.indexOf(w, at), w.length]).filter(([i]) => i >= 0).sort((a, b) => a[0] - b[0])
+      if (!hits.length) break
+      const [start, length] = hits[0]
+      const found = Object.assign(document.createElement('mark'), { textContent: text.slice(start, start + length) })
+      fragment.append(text.slice(at, start), found)
+      at = start + length
+    }
+    fragment.append(text.slice(at))
+    return fragment
+  }
   const render = () => {
     list.replaceChildren(...(shown.length ? shown.map((e, i) => {
       const li = document.createElement('li')
       const a = Object.assign(document.createElement('a'), { href: `${root}/${e.url}` })
       a.setAttribute('role', 'option')
       a.setAttribute('aria-selected', String(i === active))
-      a.append(e.title, Object.assign(document.createElement('small'), { textContent: e.section }))
+      const words = input.value.toLowerCase().split(/\s+/).filter(Boolean)
+      const found = Object.assign(document.createElement('span'), { className: 'snippet' })
+      found.append(mark(snippet(e, words), words))
+      a.append(e.title, Object.assign(document.createElement('small'), { textContent: e.section }), found)
       li.append(a)
       return li
     }) : [Object.assign(document.createElement('li'), { className: 'none', textContent: input.value ? 'No page matches.' : 'Type to search.' })]))

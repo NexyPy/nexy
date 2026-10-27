@@ -9,6 +9,7 @@ https://nexypy.github.io/nexy/ as well as from a domain root.
 
 from __future__ import annotations
 
+import argparse
 import json
 import posixpath
 import re
@@ -114,8 +115,25 @@ def _write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
-def build(out: Path, docs: Path = DOCS) -> list[Path]:
-    """Write the whole site into `out` and return the pages it wrote."""
+def base_of(base: str) -> str:
+    """The folder the site is served from, with a slash on both ends: `nexy` is `/nexy/`."""
+    inner = base.strip("/")
+    return f"/{inner}/" if inner else "/"
+
+
+def not_found_html(base: str) -> str:
+    """The page for a wrong address. GitHub Pages serves it at any depth, so links are absolute."""
+    root = base_of(base)
+    template = Template((HERE / "not_found.html").read_text(encoding="utf-8"))
+    return template.substitute(base=root, mark=MARK, **ICONS)
+
+
+def build(out: Path, docs: Path = DOCS, base: str = "") -> list[Path]:
+    """Write the whole site into `out` and return the pages it wrote.
+
+    `base` is the folder the site is served from (`/nexy` for a project page). Only 404.html needs
+    it, because the server shows that page at the address that failed, whatever its depth.
+    """
     sections = source.read_sections(docs)
     template = Template((HERE / "template.html").read_text(encoding="utf-8"))
     entries, written = [], []
@@ -131,6 +149,7 @@ def build(out: Path, docs: Path = DOCS) -> list[Path]:
         written.append(target)
     _write(out / "search-index.json", json.dumps(entries, separators=(",", ":")))
     _write(out / "index.html", _redirect())
+    _write(out / "404.html", not_found_html(base))
     _write(out / ".nojekyll", "")
     shutil.copytree(HERE / "assets", out / "assets", dirs_exist_ok=True)
     return written
@@ -144,6 +163,15 @@ def _redirect() -> str:
     )
 
 
+def _arguments(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Build the vanilla Nexy docs site.")
+    parser.add_argument(
+        "folder", nargs="?", type=Path, default=HERE / "dist", help="where to write"
+    )
+    parser.add_argument("--base", default="", help="folder the site is served from, e.g. /nexy")
+    return parser.parse_args(argv)
+
+
 if __name__ == "__main__":
-    destination = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "dist"
-    print(f"{len(build(destination))} pages written to {destination}")
+    options = _arguments(sys.argv[1:])
+    print(f"{len(build(options.folder, base=options.base))} pages written to {options.folder}")

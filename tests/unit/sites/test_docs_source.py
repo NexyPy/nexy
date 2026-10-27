@@ -116,6 +116,51 @@ class TestRender:
         assert [(h.level, h.id) for h in found] == [(2, "one"), (3, "two")]
 
 
+class TestHighlight:
+    @staticmethod
+    def _html(tmp_path: Path, fence: str, code: str) -> str:
+        path = tmp_path / "p.md"
+        path.write_text(f"```{fence}\n{code}\n```\n", encoding="utf-8")
+        return source.render(path, tmp_path, _link).html
+
+    def test_a_python_keyword_gets_a_token_class(self, tmp_path):
+        html = self._html(tmp_path, "python", "def run(): pass")
+        assert '<span class="tok-k">def</span>' in html
+
+    def test_the_text_of_the_code_is_unchanged(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1 < 2 and 'a'")
+        text = re.sub(r"<[^>]+>", "", html)
+        assert "x = 1 &lt; 2 and &#x27;a&#x27;" in text or "x = 1 &lt; 2 and 'a'" in text
+
+    def test_a_nexy_file_is_coloured_as_a_template(self, tmp_path):
+        html = self._html(tmp_path, "nexy", "<h1>{{ title }}</h1>")
+        assert 'class="tok-' in html
+
+    def test_an_unknown_language_stays_plain(self, tmp_path):
+        assert "tok-" not in self._html(tmp_path, "klingon", "qapla")
+
+    def test_a_block_without_a_language_stays_plain(self, tmp_path):
+        assert "tok-" not in self._html(tmp_path, "", "def run(): pass")
+
+    def test_a_named_block_is_coloured_too(self, tmp_path):
+        html = self._html(tmp_path, 'python filename="a.py"', "def run(): pass")
+        assert "<figcaption>a.py</figcaption>" in html and "tok-k" in html
+
+
+class TestAnchors:
+    def test_a_heading_has_a_link_to_itself(self, tmp_path):
+        path = tmp_path / "p.md"
+        path.write_text("# T\n\n## One\n", encoding="utf-8")
+        html = source.render(path, tmp_path, _link).html
+        assert '<a class="anchor" href="#one"' in html
+
+    def test_the_anchor_adds_no_text_to_the_outline_or_to_search(self, tmp_path):
+        path = tmp_path / "p.md"
+        path.write_text("# T\n\n## One\n", encoding="utf-8")
+        rendered = source.render(path, tmp_path, _link)
+        assert rendered.headings[0].text == "One" and source.plain(rendered.html) == "T One"
+
+
 class TestSearchEntry:
     @staticmethod
     def _entry(tmp_path: Path) -> dict[str, str]:

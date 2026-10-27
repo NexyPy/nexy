@@ -35,15 +35,20 @@ jobs:
         with:
           python-version: "3.13"
 
-      # cmarkgfm comes from the committed uv.lock, like in CI.
+      # cmarkgfm and pygments come from the committed uv.lock, like in CI.
       - name: Install deps (locked)
         run: uv sync --frozen --no-dev
 
-      # Links are relative: the site works under https://<owner>.github.io/<repo>/.
-      - name: Build
-        run: uv run --no-sync python sites/vanilla/build.py _site
+      # Gives the folder the site is served from, such as /nexy for a project page.
+      - id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
-      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      # Links between pages are relative; only 404.html needs the base, because GitHub shows it
+      # at the address that failed, whatever its depth.
+      - name: Build
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: uv run --no-sync python sites/vanilla/build.py _site --base "$BASE_PATH"
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
