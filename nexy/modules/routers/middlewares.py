@@ -1,3 +1,4 @@
+import importlib
 from typing import Any
 
 from fastapi import FastAPI, Request
@@ -38,10 +39,21 @@ class PathMiddleware:
             Container.clear_request_scope()
 
 
+def _optional_middleware(
+    module: str, name: str, options: dict[str, Any]
+) -> list[tuple[Any, dict[str, Any]]]:
+    """A Starlette middleware that needs `itsdangerous`; without it, say so and go without."""
+    try:
+        middleware = getattr(importlib.import_module(module), name)
+    except ImportError:
+        console.print(f"[yellow]  install 'itsdangerous' for {name}[/yellow]")
+        return []
+    return [(middleware, options)]
+
+
 def collect_middlewares(config: Config) -> list[tuple[Any, dict[str, Any]]]:
     """Build the (class, options) list implied by the project config."""
     middlewares: list[tuple[Any, dict[str, Any]]] = []
-
     if config.useCORS:
         middlewares.append((CORSMiddleware, config.useCORS))
     if config.useGZip:
@@ -49,22 +61,14 @@ def collect_middlewares(config: Config) -> list[tuple[Any, dict[str, Any]]]:
     if config.useTrustedHost:
         middlewares.append((TrustedHostMiddleware, config.useTrustedHost))
     if config.useSession:
-        try:
-            from starlette.middleware.sessions import SessionMiddleware
-
-            middlewares.append((SessionMiddleware, config.useSession))
-        except ImportError:
-            console.print("[yellow]  install 'itsdangerous' for SessionMiddleware[/yellow]")
+        middlewares += _optional_middleware(
+            "starlette.middleware.sessions", "SessionMiddleware", config.useSession
+        )
     if config.useAuth:
-        try:
-            from starlette.middleware.authentication import AuthenticationMiddleware
-
-            middlewares.append((AuthenticationMiddleware, config.useAuth))
-        except ImportError:
-            console.print("[yellow]  install 'itsdangerous' for AuthenticationMiddleware[/yellow]")
-    for entry in config.useMiddlewares:
-        if isinstance(entry, tuple) and len(entry) == 2:
-            middlewares.append(entry)
+        middlewares += _optional_middleware(
+            "starlette.middleware.authentication", "AuthenticationMiddleware", config.useAuth
+        )
+    middlewares += [e for e in config.useMiddlewares if isinstance(e, tuple) and len(e) == 2]
     return middlewares
 
 

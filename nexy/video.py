@@ -1,3 +1,6 @@
+from nexy.helpers.html.media import media_element, playback_attributes
+
+
 def video(
     src: str,
     width: int | None = None,
@@ -31,30 +34,15 @@ def video(
     Returns:
         The `<video>` HTML markup ready to embed.
     """
-    attrs: dict[str, str | bool] = {"preload": preload}
-    if width is not None:
-        attrs["width"] = str(width)
-    if height is not None:
-        attrs["height"] = str(height)
-    if class_name:
-        attrs["class"] = class_name
-    if controls:
-        attrs["controls"] = ""
-    if autoplay:
-        attrs["autoplay"] = ""
-    if loop:
-        attrs["loop"] = ""
-    if muted:
-        attrs["muted"] = ""
-
+    sizes = {"width": width, "height": height}
+    attrs = playback_attributes(
+        preload=preload,
+        class_name=class_name,
+        controls=controls,
+        autoplay=autoplay,
+        loop=loop,
+        muted=muted,
+        sizes={name: str(size) for name, size in sizes.items() if size is not None},
+    )
     attrs.update(kwargs)
-    attr_str = " ".join([f'{k}="{v}"' if v else k for k, v in attrs.items()])
-
-    source_tags = ""
-    if sources:
-        for s in sources:
-            source_tags += f'<source src="{s}" type="video/{s.split(".")[-1]}" />'
-    else:
-        source_tags = f'<source src="{src}" type="video/{src.split(".")[-1]}" />'
-
-    return f"<video {attr_str}>{source_tags}</video>"
+    return media_element("video", attrs, src, sources)

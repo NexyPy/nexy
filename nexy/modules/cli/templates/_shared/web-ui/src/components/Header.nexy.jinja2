@@ -1,0 +1,75 @@
+{% if not useCSR %}{% raw %}---
+from "@/components/Button.nexy" import Button
+from "@/components/Icon.nexy" import Icon
+from "@/components/LinePattern.nexy" import LinePattern
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+from nexy import usePathname
+
+pathname = usePathname()
+
+link = "px-3.5 py-2 font-mono text-xs uppercase tracking-[0.04em] transition-opacity hover:opacity-60 aria-[current=page]:underline aria-[current=page]:underline-offset-4"
+menu = "M4 7h16M4 12h16M4 17h16"
+close = "M18 6L6 18M6 6l12 12"
+book = "M2 4h6a4 4 0 014 4v12a3 3 0 00-3-3H2zM22 4h-6a4 4 0 00-4 4v12a3 3 0 013-3h7z"
+pages = [("/", "Home"), ("/about", "About")]
+---
+<header class="fixed inset-x-0 top-0 z-20 py-4 [view-transition-name:nx-header]">
+  <nav
+    class="relative mx-auto flex w-[72rem] max-w-[calc(100%-2rem)] items-center justify-between border border-paper/10 bg-ink/85 px-5 py-3 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.4)] backdrop-blur-[4px]"
+    aria-label="Main"
+  >
+    <LinePattern side="right" />
+    <a href="/" aria-label="Nexy, home" class="relative">
+      <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
+    </a>
+
+    <div class="relative flex items-center gap-2">
+      <div class="hidden items-center sm:flex">
+        {% for href, label in pages %}
+        <a href="{{ href }}" class="{{ link }}"{% if pathname == href %} aria-current="page"{% endif %}>{{ label }}</a>
+        {% endfor %}
+      </div>
+      <ThemeToggle />
+      <span class="hidden sm:block">
+        <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" size="sm" icon="{{ book }}">Docs</Button>
+      </span>
+      <button
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        data-menu-button
+        class="ml-1 grid size-8 place-items-center sm:hidden"
+      >
+        <span data-menu-open><Icon path="{{ menu }}" /></span>
+        <span class="hidden" data-menu-close><Icon path="{{ close }}" /></span>
+      </button>
+    </div>
+
+    <div
+      class="absolute inset-x-0 top-full hidden flex-col border border-t-0 border-paper/10 bg-ink p-3 sm:hidden"
+      data-menu
+    >
+      {% for href, label in pages %}
+      <a href="{{ href }}" class="{{ link }}"{% if pathname == href %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="{{ link }}">Docs</a>
+    </div>
+  </nav>
+</header>
+<script>
+  (function () {
+    var button = document.querySelector("[data-menu-button]");
+    var panel = document.querySelector("[data-menu]");
+    if (!button || !panel) return;
+    button.addEventListener("click", function () {
+      var open = button.getAttribute("aria-expanded") !== "true";
+      button.setAttribute("aria-expanded", String(open));
+      button.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      panel.classList.toggle("hidden", !open);
+      panel.classList.toggle("flex", open);
+      button.querySelector("[data-menu-open]").classList.toggle("hidden", open);
+      button.querySelector("[data-menu-close]").classList.toggle("hidden", !open);
+    });
+  })();
+</script>
+{% endraw %}{% endif %}

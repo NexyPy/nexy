@@ -1,0 +1,37 @@
+{%- macro nav_link(href, label) -%}
+{%- if useCSR -%}
+<Link href="{{ href }}" {{ cls }}="nx-nav-link">{{ label }}</Link>
+{%- else -%}
+<a href="{{ href }}" {{ cls }}="nx-nav-link">{{ label }}</a>
+{%- endif -%}
+{%- endmacro -%}
+<header {{ cls }}="nx-header">
+  <nav {{ cls }}="nx-container nx-header-inner" aria-label="Main">
+    <div {{ cls }}="nx-nav">
+      <a href="/" aria-label="Nexy, home" {{ cls }}="nx-brand">
+        <img src="/nexy.svg" alt="Nexy" />
+      </a>
+      <div {{ cls }}="nx-nav-links">
+        {{ nav_link("/", "Home") }}
+        {{ nav_link("/about", "About") }}
+        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-nav-link">Docs</a>
+      </div>
+    </div>
+    <div {{ cls }}="nx-header-actions">
+{% if useCSR %}
+      <ThemeToggle />
+{% else %}
+{% include "theme_switch.html.jinja2" %}
+{% endif %}
+    </div>
+  </nav>
+</header>
+{% if not useCSR %}
+<script>
+  // Server pages reload on every link: mark the current one.
+  const here = location.pathname.replace(/\/$/, "") || "/";
+  for (const link of document.querySelectorAll("header a[href^='/']")) {
+    if ((link.pathname.replace(/\/$/, "") || "/") === here) link.setAttribute("aria-current", "page");
+  }
+</script>
+{% endif %}

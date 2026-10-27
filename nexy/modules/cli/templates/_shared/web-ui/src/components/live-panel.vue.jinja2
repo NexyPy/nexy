@@ -1,0 +1,33 @@
+{% if useCSR %}{% raw %}<script setup lang="ts">
+import { onMounted, ref } from "vue";
+
+import Frame from "@/components/frame.vue";
+import LiveRow from "@/components/live-row.vue";
+
+// What this very page can tell about itself, measured in the browser.
+const host = ref("");
+const ready = ref(false);
+
+onMounted(() => {
+  host.value = window.location.host;
+  ready.value = true;
+});
+</script>
+
+<template>
+  <Frame class="border border-paper/15 bg-ink/70 p-6 backdrop-blur-sm">
+    <p class="mb-2 font-mono text-[0.7rem] uppercase tracking-[0.07em] text-paper/55">This page, right now</p>
+    <dl class="font-mono text-sm">
+      <LiveRow label="Address">{{ host || "..." }}</LiveRow>
+      <LiveRow label="Server">FastAPI</LiveRow>
+      <LiveRow label="Interactive">
+        <span
+          :class="['size-2 rounded-full', ready ? 'bg-signal motion-safe:animate-pulse' : 'bg-paper/30']"
+          aria-hidden="true"
+        />
+        {{ ready ? "Ready" : "Starting" }}
+      </LiveRow>
+    </dl>
+  </Frame>
+</template>
+{% endraw %}{% endif %}

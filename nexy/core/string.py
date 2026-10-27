@@ -68,25 +68,18 @@ class StringTransform:
             return "/".join([StringTransform._normalize_dynamic_segment(p) for p in parts])
 
         *dirs, filename = parts
-        normalized_dirs = [StringTransform._normalize_dynamic_segment(p) for p in dirs]
+        normalized = [StringTransform._normalize_dynamic_segment(p) for p in dirs]
+        return "/".join([*(p for p in normalized if p), StringTransform._normalize_file(filename)])
 
+    @staticmethod
+    def _normalize_file(filename: str) -> str:
+        """A route file as a module name: ``[slug].tsx`` becomes ``slug_catch_all.tsx``."""
         stem, ext = filename.rsplit(".", 1)
-
-        if "." in stem:
-            from nexy.core.config import Config as _NexyConfig
-
-            _cfg = _NexyConfig()
-            if _cfg.useLocales and stem.rsplit(".", 1)[1] in _cfg.useLocales:
-                stem = stem.replace(".", "_")
-
         if "[" in stem and "]" in stem:
             stem = re.sub(r"\[\.\.\.([^\]]+)\]", r"\1", stem)
             stem = re.sub(r"\[([^\]]+)\]", r"\1", stem)
             stem = f"{stem}_catch_all"
-        stem = stem.replace("-", "_")
-
-        normalized_parts = [p for p in normalized_dirs if p] + [f"{stem}.{ext}"]
-        return "/".join(normalized_parts)
+        return f"{stem.replace('-', '_')}.{ext}"
 
     def get_component_name(self, pathname: str) -> str:
         segment = pathname.split("/")[-1]

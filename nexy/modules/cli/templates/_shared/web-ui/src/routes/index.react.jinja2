@@ -1,0 +1,63 @@
+{% if useCSR %}{% raw %}import Button from "@/components/button.tsx";
+import Container from "@/components/container.tsx";
+import Frame from "@/components/frame.tsx";
+import FrameworkLogo from "@/components/framework-logo.tsx";
+import LinePattern from "@/components/line-pattern.tsx";
+import LivePanel from "@/components/live-panel.tsx";
+import SectionHead from "@/components/section-head.tsx";
+import Steps from "@/components/steps.tsx";
+
+const ARROW_DOWN = "M12 5v14M5 12l7 7 7-7";
+const GLOW = "bg-[image:radial-gradient(60%_60%_at_85%_15%,rgb(63_224_200/0.14),transparent_70%)]";
+
+function Hero() {
+  return (
+    <section className="relative flex min-h-dvh items-end overflow-hidden bg-ink pb-16 pt-34 text-paper">
+      <LinePattern side="right" />
+      <div className={`absolute inset-0 ${GLOW}`} aria-hidden="true" />
+      <Container className="relative grid items-end gap-12 md:grid-cols-[1.3fr_1fr]">
+        <div className="flex flex-col gap-6">
+          <h1 className="max-w-[12ch] text-6xl leading-[1.02] md:text-8xl">Your app is running.</h1>
+          <p className="max-w-[42ch] text-lg text-paper/65">
+            Change a word on this page and save. It updates before you look back.
+          </p>
+          <div className="mt-2 flex flex-wrap gap-4">
+            <Button href="#first-steps" tone="on-ink" icon={ARROW_DOWN}>Make your first change</Button>
+            <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" variant="outline">Read the docs</Button>
+          </div>
+        </div>
+        <LivePanel />
+      </Container>
+    </section>
+  );
+}
+
+function FirstSteps() {
+  return (
+    <section id="first-steps" className="scroll-mt-4 py-24">
+      <Container className="grid gap-12 md:grid-cols-[1fr_1.4fr]">
+        <div className="self-start md:sticky md:top-28">
+          <SectionHead
+            label="Your first minutes"
+            title="Make it yours in three steps."
+            description="Each one takes a minute or less."
+          />
+          <Frame className="grid aspect-[4/3] place-items-center border border-border bg-ink text-paper dark:bg-background-second">
+            <FrameworkLogo className="size-32 text-accent motion-safe:animate-[nx-spin_32s_linear_infinite]" />
+          </Frame>
+        </div>
+        <Steps />
+      </Container>
+    </section>
+  );
+}
+
+export default function Home() {
+  return (
+    <>
+      <Hero />
+      <FirstSteps />
+    </>
+  );
+}
+{% endraw %}{% endif %}

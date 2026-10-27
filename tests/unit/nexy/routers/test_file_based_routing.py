@@ -13,7 +13,7 @@ class TestLayoutDiscovery:
         routes.mkdir(parents=True)
         monkeypatch.setattr(Config, "ROUTER_PATH", str(routes))
 
-        # Create: src/routes/blog/layout.nexy and src/routes/blog/posts/page.nexy
+        # Tree under test: blog/layout.nexy next to blog/posts/page.nexy
         blog = routes / "blog"
         blog.mkdir(parents=True)
         (blog / "layout.nexy").write_text("---\nchildren: str\n---<div>{{children}}</div>")
@@ -37,7 +37,7 @@ class TestLayoutDiscovery:
         routes.mkdir(parents=True)
         monkeypatch.setattr(Config, "ROUTER_PATH", str(routes))
 
-        # Create: src/routes/layout.nexy (root) and src/routes/app/layout.nexy
+        # Tree under test: a root layout.nexy and an app/layout.nexy
         (routes / "layout.nexy").write_text("---\nchildren: str\n---<root>{{children}}</root>")
 
         app = routes / "app"

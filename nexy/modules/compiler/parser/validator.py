@@ -33,47 +33,46 @@ class ImportValidator:
         return candidates
 
     @staticmethod
-    def validate_imports(imports: list[NexyImport], current_file: str) -> None:
-        """
-        Check that all imported files exist.
+    def _resolve(
+        imp: NexyImport, current_dir: pathlib.Path, project_root: pathlib.Path
+    ) -> pathlib.Path:
+        """The file an import points at: absolute, relative to the importer, or to the project."""
+        import_path = pathlib.Path(imp.path)
+        if import_path.is_absolute():
+            return import_path.resolve()
+        if imp.path.replace("\\", "/").startswith(("./", "../")):
+            return (current_dir / import_path).resolve()
+        return (project_root / import_path).resolve()
 
-        Raises ImportValidationError with a helpful message when an import
-        path cannot be resolved. The message contains:
-        - original import path
-        - symbol/alias (if provided)
-        - resolved absolute path
-        - optional filename suggestions
+    @staticmethod
+    def _missing(imp: NexyImport, full_path: pathlib.Path) -> ImportValidationError:
+        """The error for an import whose file does not exist, with names that may be meant."""
+        parts = [f"Missing import file: '{imp.path}'"]
+        if imp.symbol:
+            parts.append(f"symbol='{imp.symbol}'")
+        if imp.alias:
+            parts.append(f"alias='{imp.alias}'")
+        parts.append(f"resolved='{full_path}'")
+        suggestions = ImportValidator._find_suggestions(full_path)
+        hint = f" suggestions={suggestions}" if suggestions else ""
+        return ImportValidationError(
+            f'Import Error "{imp.path}" does not exist; {", ".join(parts)}{hint}'
+        )
+
+    @staticmethod
+    def validate_imports(imports: list[NexyImport], current_file: str) -> None:
+        """Check that all imported files exist.
+
+        Raises ImportValidationError with a helpful message when an import path cannot be
+        resolved: the original import path, the symbol and alias, the resolved absolute path
+        and filename suggestions.
         """
         current_dir = pathlib.Path(current_file).resolve().parent
         project_root = pathlib.Path(Config.PROJECT_ROOT).resolve()
-
         for imp in imports:
-            raw = imp.path.replace("\\", "/")
-            import_path = pathlib.Path(imp.path)
-
-            if import_path.is_absolute():
-                full_path = import_path.resolve()
-            elif raw.startswith("./") or raw.startswith("../"):
-                full_path = (current_dir / import_path).resolve()
-            else:
-                full_path = (project_root / import_path).resolve()
-
-            if full_path.exists():
-                continue
-
-            suggestions = ImportValidator._find_suggestions(full_path)
-
-            parts = [f"Missing import file: '{imp.path}'"]
-            if imp.symbol:
-                parts.append(f"symbol='{imp.symbol}'")
-            if imp.alias:
-                parts.append(f"alias='{imp.alias}'")
-            parts.append(f"resolved='{full_path}'")
-
-            hint = f" suggestions={suggestions}" if suggestions else ""
-            raise ImportValidationError(
-                f'Import Error "{imp.path}" does not exist; {", ".join(parts)}{hint}'
-            )
+            full_path = ImportValidator._resolve(imp, current_dir, project_root)
+            if not full_path.exists():
+                raise ImportValidator._missing(imp, full_path)
 
 
 __all__ = ["ImportValidator", "ImportValidationError"]

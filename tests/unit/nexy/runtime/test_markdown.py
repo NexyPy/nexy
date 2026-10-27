@@ -64,3 +64,33 @@ def test_build_toc_skips_empty_heading() -> None:
 def test_build_toc_closes_descending_levels() -> None:
     toc = build_toc_html("<h3>Deep</h3><h2>Shallow</h2>")
     assert "Shallow" in toc and "Deep" in toc
+
+
+def test_scan_headings_lists_each_heading_with_its_text() -> None:
+    from nexy.modules.runtime.markdown import scan_headings
+
+    found = [
+        (h.level, h.text) for h in scan_headings("<h2>One</h2><p>x</p><h3>Two <em>b</em></h3>")
+    ]
+    assert found == [(2, "One"), (3, "Two b")]
+
+
+def test_scan_headings_reports_an_existing_id() -> None:
+    from nexy.modules.runtime.markdown import scan_headings
+
+    assert [h.id for h in scan_headings('<h2 id="a">A</h2><h2>B</h2>')] == ["a", ""]
+
+
+def test_an_uppercase_heading_is_closed_by_its_uppercase_tag() -> None:
+    assert inject_heading_ids("<H2>Up</H2><h2>Low</h2>") == (
+        '<H2 id="up">Up</H2><h2 id="low">Low</h2>'
+    )
+
+
+def test_build_toc_keeps_only_the_depth_asked_for() -> None:
+    toc = build_toc_html("<h2>A</h2><h3>B</h3><h4>C</h4>", "3-3")
+    assert "B" in toc and "A" not in toc and "C" not in toc
+
+
+def test_build_toc_falls_back_to_the_default_depth_on_nonsense() -> None:
+    assert "A" in build_toc_html("<h2>A</h2>", "not-a-range")

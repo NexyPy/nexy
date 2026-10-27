@@ -31,12 +31,12 @@ class NexyConfig(NexyConfigModel):
 
 With a framework enabled, its extensions become active routes and Vite handles client bundles.
 
-> **Good to know**: in [CSR](../routing/fbr/csr.md) mode, only framework route files are navigable
+> **Good to know**: in [CSR](../rendering/csr.md) mode, only framework route files are navigable
 > client-side.
 
 ## Layouts
 
-A `layout.*` in a directory wraps pages below it. See [layouts](../routing/pages.md#layouts).
+A `layout.*` in a directory wraps pages below it. See [layouts](../routing/fbr/pages/README.md#layouts).
 
 ## Next steps
 

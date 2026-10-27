@@ -1,0 +1,11 @@
+{% if not utility_ui %}{% if useCSR and client_framework in ("react", "solid", "preact") %}
+{%- set cls = "className" if client_framework == "react" else "class" -%}
+// The light/dark switch. The script in the layout's <head> does the work: it flips the theme,
+// remembers the choice and keeps aria-checked in step. Edit or delete freely.
+export default function ThemeToggle() {
+  return (
+{% include "theme_switch.html.jinja2" %}
+  );
+}
+{% endif %}
+{% endif %}

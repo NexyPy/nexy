@@ -13,6 +13,7 @@ class NexyParserError(Exception):
 class TemplateFormatter:
     """Helper class to format HTML-style attributes into Python/Jinja arguments."""
 
+    _EXPRESSION = re.compile(r"\{\{\s*(.*?)\s*\}\}")
     _ATTR_REGEX = re.compile(r'(\w+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+))')
 
     @classmethod
@@ -30,46 +31,43 @@ class TemplateFormatter:
 
     @classmethod
     def format_dict(cls, attrs: dict[str, str]) -> str:
-        if not attrs:
-            return ""
+        """The attributes of a component tag as the arguments of a Jinja call."""
+        return ", ".join(cls._format_pair(key, value) for key, value in attrs.items())
 
-        pairs = []
-        for key, value in attrs.items():
-            if "{{" in key and (not value or value == ""):
-                inner_match = re.search(r"\{\{\s*(.*?)\s*\}\}", key)
-                if inner_match:
-                    inner = inner_match.group(1).strip()
-                    if inner.startswith("...") or inner.startswith("**"):
-                        var_name = inner.lstrip(".*").strip()
-                        pairs.append(f"**{var_name}")
-                        continue
-                    elif " " not in inner and "(" not in inner:
-                        pairs.append(f"{inner}={inner}")
-                        continue
-                    else:
-                        pass
+    @classmethod
+    def _format_pair(cls, key: str, value: str) -> str:
+        if "{{" in key and not value:
+            argument = cls._argument_from_key(key)
+            if argument is not None:
+                return argument
+        if "{{" in value:
+            return f"{key}={cls._expression_of(value)}"
+        if cls._is_unquoted_value(value):
+            return f"{key}={value}"
+        return f'{key}="{value}"'
 
-            if "{{" in value:
-                if (
-                    value.strip().startswith("{{")
-                    and value.strip().endswith("}}")
-                    and value.count("{{") == 1
-                ):
-                    inner_match = re.search(r"\{\{\s*(.*?)\s*\}\}", value)
-                    if inner_match:
-                        expr = inner_match.group(1).strip()
-                        pairs.append(f"{key}=({expr})")
-                        continue
+    @classmethod
+    def _argument_from_key(cls, key: str) -> str | None:
+        """``{{ ...props }}`` spreads a mapping, ``{{ name }}`` passes ``name=name``."""
+        found = cls._EXPRESSION.search(key)
+        if not found:
+            return None
+        inner = found.group(1).strip()
+        if inner.startswith(("...", "**")):
+            return f"**{inner.lstrip('.*').strip()}"
+        if " " not in inner and "(" not in inner:
+            return f"{inner}={inner}"
+        return None
 
-                expr = re.sub(r"\{\{\s*(.*?)\s*\}\}", r'" ~ (\1) ~ "', value)
-                expr = f'"{expr}"'.replace('"" ~ ', "").replace(' ~ ""', "")
-                pairs.append(f"{key}={expr}")
-            elif cls._is_unquoted_value(value):
-                pairs.append(f"{key}={value}")
-            else:
-                pairs.append(f'{key}="{value}"')
-
-        return ", ".join(pairs)
+    @classmethod
+    def _expression_of(cls, value: str) -> str:
+        """A value with ``{{ }}`` in it: the expression itself, or a ``~`` concatenation."""
+        text = value.strip()
+        found = cls._EXPRESSION.search(value)
+        if text.startswith("{{") and text.endswith("}}") and value.count("{{") == 1 and found:
+            return f"({found.group(1).strip()})"
+        joined = cls._EXPRESSION.sub(r'" ~ (\1) ~ "', value)
+        return f'"{joined}"'.replace('"" ~ ', "").replace(' ~ ""', "")
 
     @classmethod
     def _is_unquoted_value(cls, value: str) -> bool:
@@ -193,26 +191,21 @@ class TemplateParser:
             children_content = self._render_nodes(node.children)
             return f"{{% call {tag_name}({formatted_attrs}) %}}{children_content}{{% endcall %}}"
 
+    def _html_attributes(self, node: ElementNode) -> str:
+        """The attributes of a plain tag, with a leading space; none gives an empty string."""
+        pairs = []
+        for key, value in node.attributes.items():
+            if "{{" in key and not value:
+                pairs.append(self._unprotect_jinja(key))
+            elif value:
+                pairs.append(f'{key}="{value.replace(chr(34), "&quot;")}"')
+            else:
+                pairs.append(key)
+        return " " + " ".join(pairs) if pairs else ""
+
     def _render_element(self, node: ElementNode) -> str:
-        attrs_str = ""
-        if node.attributes:
-            pairs = []
-            for k, v in node.attributes.items():
-                if "{{" in k and (not v or v == ""):
-                    pairs.append(self._unprotect_jinja(k))
-                    continue
-
-                if v:
-                    safe_v = v.replace('"', "&quot;")
-                    pairs.append(f'{k}="{safe_v}"')
-                else:
-                    pairs.append(k)
-
-            if pairs:
-                attrs_str = " " + " ".join(pairs)
-
+        attributes = self._html_attributes(node)
         if node.is_self_closing:
-            return f"<{node.tag_name}{attrs_str} />"
-        else:
-            children_content = self._render_nodes(node.children)
-            return f"<{node.tag_name}{attrs_str}>{children_content}</{node.tag_name}>"
+            return f"<{node.tag_name}{attributes} />"
+        children = self._render_nodes(node.children)
+        return f"<{node.tag_name}{attributes}>{children}</{node.tag_name}>"

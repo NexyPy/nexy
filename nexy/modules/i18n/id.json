@@ -1,0 +1,238 @@
+{
+  "add": {
+    "added": "Ditambahkan: {path}",
+    "available": "Komponen UI yang tersedia: {names}",
+    "error": "Kesalahan:",
+    "exists": "Dilewati: {path} sudah ada.",
+    "fetch_failed": "Gagal mengambil komponen dari {url}: {error}",
+    "fetching": "Mengambil komponen jarak jauh dari {url}...",
+    "help_all": "Tambahkan semua komponen yang tersedia dari registri",
+    "help_components": "Komponen yang ditambahkan (nama registri atau URL)",
+    "help_sha": "SHA-256 yang diharapkan dari komponen jarak jauh (dibatalkan jika tidak cocok)",
+    "help_ui": "Paksa diperlakukan sebagai komponen UI",
+    "help_url": "Paksa diperlakukan sebagai URL",
+    "https_only": "Hanya URL https:// yang didukung.",
+    "install_failed": "Gagal memasang dependensi",
+    "installed": "{names} terpasang",
+    "installing": "Memasang {names}",
+    "no_pm": "Pengelola paket tidak ditemukan. Pasang dependensi secara manual: {names}",
+    "not_found": "Komponen '{name}' tidak ditemukan di registri.",
+    "usage": "Penggunaan:",
+    "usage_text": "nexy add [NAMA_KOMPONEN atau URL]...",
+    "warning": "Peringatan:",
+    "write_failed": "Gagal menulis {path}: {error}"
+  },
+  "build": {
+    "building_client": "Bundel klien selesai dibuat",
+    "checks_failed": "pemeriksaan gagal",
+    "checks_passed": "semua pemeriksaan lolos",
+    "client_components": "komponen klien",
+    "compiling_routes": "Rute dikompilasi",
+    "compiling_server": "Komponen server dikompilasi",
+    "creating": "Membuat build produksi yang dioptimalkan",
+    "failed_client": "build klien gagal",
+    "failed_components": "{count} komponen gagal",
+    "failed_label": "Build gagal",
+    "routes": "rute",
+    "server_components": "komponen server",
+    "skipped_label": "Dilewati (cache)",
+    "success_build": "build selesai dalam {time}",
+    "success_label": "Build berhasil"
+  },
+  "check": {
+    "compiling": "mengompilasi berkas .nexy ...",
+    "failed": "{count} bagian gagal",
+    "passed": "semua pemeriksaan lolos",
+    "skip_tool": "{tool} tidak ditemukan: {scope} dilewati"
+  },
+  "cli": {
+    "cmd": {
+      "build": "Kompilasi proyek untuk deployment produksi",
+      "check": "Periksa tipe pada semua berkas proyek",
+      "dev": "Jalankan server pengembangan lokal dengan hot reload",
+      "format": "Format otomatis semua berkas proyek",
+      "init": "Inisialisasi Nexy di direktori saat ini",
+      "migrate": "Jalankan migrasi ORM (ORM terdeteksi otomatis)",
+      "new": "Buat proyek baru di direktori baru",
+      "start": "Jalankan server produksi",
+      "test": "Jalankan pengujian (--server / --client)",
+      "skills": "Tambahkan skill dan AGENTS.md untuk agen pengodean"
+    },
+    "commands_header": "Perintah yang tersedia:",
+    "help": "CLI Nexy",
+    "help_version": "Tampilkan versi",
+    "new": {
+      "error_chars": "Gunakan hanya huruf, angka, tanda hubung, dan garis bawah.",
+      "error_empty": "Nama proyek tidak boleh kosong.",
+      "error_exists": "Direktori '{name}' sudah ada.",
+      "error_letter": "Nama proyek harus diawali dengan huruf.",
+      "failed": "Proyek tidak dapat dibuat",
+      "help_arg": "Nama proyek yang dibuat (membuat direktori baru)",
+      "help_template": "Inisialisasi dari templat terdaftar (mis. web-fbr-react).",
+      "prompt": "Nama proyek:",
+      "template_unknown": "Templat '{template}' tidak dikenal.",
+      "help_agents": "Tambahkan AGENTS.md dan skill untuk agen pengodean."
+    },
+    "tagline": "Framework full-stack modern yang langsung berfungsi",
+    "usage": "Jalankan nx atau nexy <perintah> --help untuk penggunaan lengkap",
+    "skills": {
+      "not_a_project": "Tidak ada nexyconfig.py di {path}: jalankan ini di root proyek Nexy.",
+      "help_path": "Root proyek (default: folder saat ini)",
+      "done": "{count} skill di .agents/skills dan .claude/skills",
+      "kept": "File Anda dipertahankan: {files}."
+    }
+  },
+  "dev": {
+    "cleaning": "Membersihkan...",
+    "compiling_status": "Mengompilasi...",
+    "deps_hint": "nexy dev tidak memasang dependensi; nexy init dan nexy new yang memasangnya.",
+    "deps_missing": "Dependensi Node.js belum ada.",
+    "deps_run": "Jalankan: {command}",
+    "error": "Kesalahan: {error}",
+    "error_label": "kesalahan",
+    "error_waiting": "Aplikasi tidak dapat dimulai: menunggu perbaikan.",
+    "exited": "berhenti",
+    "init_error": "Terjadi kesalahan saat inisialisasi:",
+    "routes_failed": "Rute klien tidak dapat diperbarui: {error}",
+    "starting_vite": "Memulai server pengembangan...",
+    "stopping": "Menghentikan server...",
+    "updating": "memperbarui server",
+    "vite_failed": "Vite gagal dimulai.",
+    "vite_failed_hint": "Baca keluaran Vite di atas untuk mengetahui penyebabnya.",
+    "server_failed": "Server berhenti ({reason}): menunggu perbaikan."
+  },
+  "format": {
+    "failed": "{count} berkas gagal",
+    "passed": "pemformatan selesai",
+    "skip_tool": "{tool} tidak ditemukan: {scope} dilewati"
+  },
+  "init": {
+    "alias_invalid": "Gunakan @, ~, # atau $, boleh diikuti huruf (misalnya ~ atau @app).",
+    "already": "Proyek sudah diinisialisasi di sini",
+    "ask": {
+      "alias": "Alias impor",
+      "alias_customize": "Ubah alias impor?",
+      "client_component": "Apakah Anda ingin memakai komponen klien?",
+      "csr": "Aktifkan perutean sisi klien?",
+      "database": "Pilih basis data",
+      "db_url": "URL basis data",
+      "framework": "Pilih framework klien",
+      "orm": "Pilih ORM",
+      "project_type": "Pilih jenis proyek",
+      "router": "Gunakan router berbasis berkas?",
+      "style": "Pilih cara menata gaya aplikasi"
+    },
+    "checkout_failed": "Gagal mengekstrak berkas dari templat '{path}'.",
+    "choice": {
+      "api": "API",
+      "no": "Tidak",
+      "no_database": "Tanpa database",
+      "other": "Lainnya",
+      "web": "Web",
+      "yes": "Ya"
+    },
+    "error": "Inisialisasi gagal: {error}",
+    "git_restore": "tidak dapat memulihkan .git sebelumnya",
+    "hint": {
+      "alias_custom": "pilih awalan lain, seperti ~ atau #",
+      "alias_default": "@/components/... menunjuk ke src/",
+      "api": "hanya endpoint JSON, tanpa halaman",
+      "component_no": "hanya halaman .nexy dari server",
+      "component_yes": "bagian interaktif dengan framework UI",
+      "csr_no": "setiap halaman dirender server",
+      "csr_yes": "browser berpindah tanpa memuat ulang",
+      "mysql": "banyak hosting, kompatibel MariaDB",
+      "neon": "PostgreSQL serverless di cloud",
+      "no_orm": "tanpa lapisan data, tambah nanti",
+      "other_db": "ketik URL koneksi sendiri",
+      "other_style": "atur sendiri",
+      "postgresql": "standar open-source yang andal",
+      "preact": "API React dalam 3 kB",
+      "react": "pustaka UI paling populer",
+      "router_no": "daftarkan rute di kode, dengan modul",
+      "router_yes": "halaman adalah file di src/routes",
+      "solid": "reaktivitas halus, tanpa DOM virtual",
+      "sqlalchemy": "ORM acuan untuk Python",
+      "sqlite": "satu file, tanpa instalasi",
+      "sqlmodel": "model Pydantic sekaligus tabel",
+      "svelte": "dikompilasi, runtime sangat kecil",
+      "tailwind": "kelas utilitas di markup",
+      "tortoise": "async-first, API ala Django",
+      "unocss": "CSS atomik sesuai kebutuhan, sangat cepat",
+      "vanilla": "stylesheet biasa, tanpa belajar",
+      "vue": "mudah dipelajari, dokumentasi lengkap",
+      "web": "halaman, layout, dan komponen dalam satu app"
+    },
+    "initializing": "Menginisialisasi {name}...",
+    "installed_uv": "uv terpasang",
+    "installing_uv": "Memasang uv",
+    "merging": "Direktori tidak kosong, menggabungkan berkas...",
+    "migration_tool": "Menginisialisasi {tool}...",
+    "network": {
+      "checking": "Memeriksa koneksi...",
+      "latency": "Koneksi: {latency} ms",
+      "offline": "Tidak ada koneksi: paket tidak dipasang.",
+      "offline_hint": "Saat sudah online, jalankan uv sync dan install dari pengelola paket Anda di folder proyek.",
+      "slow": "Koneksi lambat: pemasangan paket mungkin memakan waktu.",
+      "speed": "Koneksi: {latency} ms, {speed}"
+    },
+    "next_steps": "Langkah berikutnya",
+    "node_manager_not_found": "Pengelola paket Node.js tidak ditemukan. Pasang bun, pnpm, atau npm.",
+    "node_retry": "Mencoba lagi dengan --legacy-peer-deps...",
+    "step_activate_venv": "Aktifkan lingkungan virtual",
+    "step_help": "Lihat perintah yang tersedia",
+    "step_run_dev": "Jalankan server pengembangan",
+    "template_not_found": "Templat atau branch '{branch}' tidak ditemukan di remote.",
+    "venv": {
+      "created": "Lingkungan virtual dibuat",
+      "creating": "Membuat lingkungan virtual"
+    }
+  },
+  "migrate": {
+    "aerich_not_initialized": "Aerich belum diinisialisasi. Jalankan 'nx m --init' terlebih dahulu.",
+    "alembic_not_initialized": "Alembic belum diinisialisasi. Jalankan 'nx m --init' terlebih dahulu.",
+    "help_init": "Inisialisasi alat migrasi",
+    "help_message": "Pesan migrasi",
+    "help_upgrade": "Terapkan migrasi yang tertunda",
+    "no_connection": "Kesalahan: tidak dapat terhubung ke basis data - {error}",
+    "no_database_url": "Kesalahan: DATABASE_URL tidak ditemukan di .env maupun lingkungan.",
+    "no_driver": "Kesalahan: driver basis data tidak ada - {error}",
+    "no_orm": "Tidak ada ORM yang didukung. Pasang salah satunya: sqlmodel, tortoise-orm, sqlalchemy",
+    "tool_missing": "Kesalahan: {tool} tidak ditemukan di PATH. Pasang lalu coba lagi."
+  },
+  "server": {
+    "launch_failed": "Server gagal dijalankan:",
+    "local": "Lokal:",
+    "network": "Jaringan:",
+    "ready": "Siap:",
+    "stop": "tekan Ctrl+C untuk berhenti"
+  },
+  "start": {
+    "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",
+    "exited": "berhenti"
+  },
+  "test": {
+    "failed": "{count} proses pengujian gagal",
+    "help_args": "Argumen tambahan yang diteruskan ke penjalan pengujian",
+    "help_client": "Jalankan pengujian klien (vitest)",
+    "help_server": "Jalankan pengujian server (pytest)",
+    "passed": "semua pengujian lolos",
+    "skip_client": "vitest belum dikonfigurasi: pengujian klien dilewati",
+    "skip_tool": "pytest tidak ditemukan: pengujian server dilewati"
+  },
+  "tui": {
+    "keys": {
+      "back": "kembali",
+      "choose": "pilih",
+      "move": "pindah",
+      "quit": "keluar"
+    }
+  },
+  "watch": {
+    "compile_failed": "Gagal mengompilasi {path}",
+    "compiled": "{path} dikompilasi dalam {time}",
+    "error_kept": "Perbaiki lalu simpan: server tetap memakai versi terakhir yang berfungsi.",
+    "restart_failed": "Server gagal dimulai ulang: {error}",
+    "update": "memperbarui"
+  }
+}

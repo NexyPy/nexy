@@ -1,0 +1,26 @@
+{% if useCSR %}{% raw %}<script setup lang="ts">
+import Icon from "@/components/icon.vue";
+
+const CHECK = "M5 13l4 4L19 7";
+
+defineProps<{ done: boolean; number: number }>();
+defineEmits<{ toggle: [] }>();
+</script>
+
+<template>
+  <button
+    type="button"
+    role="checkbox"
+    :aria-checked="done"
+    :aria-label="`Mark step ${number} as done`"
+    :class="[
+      'grid size-9 shrink-0 place-items-center border font-mono text-sm transition-colors',
+      done ? 'border-signal bg-signal text-ink' : 'border-border-second hover:border-foreground',
+    ]"
+    @click="$emit('toggle')"
+  >
+    <Icon v-if="done" :path="CHECK" :size="16" />
+    <template v-else>{{ number }}</template>
+  </button>
+</template>
+{% endraw %}{% endif %}

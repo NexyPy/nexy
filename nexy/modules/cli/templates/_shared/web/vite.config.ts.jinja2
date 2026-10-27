@@ -10,14 +10,22 @@ import solid from 'vite-plugin-solid'
 {%- elif client_framework == "preact" %}
 import preact from '@preact/preset-vite'
 {%- endif %}
+{%- if style == "tailwind" %}
 import tailwindcss from '@tailwindcss/vite'
+{%- elif style == "unocss" %}
+import UnoCSS from 'unocss/vite'
+{%- endif %}
 import nexy from "./__nexy__/vite"
 
 export default defineConfig({
   
   plugins: [
     nexy(),
+    {%- if style == "tailwind" %}
     tailwindcss(),
+    {%- elif style == "unocss" %}
+    UnoCSS(),
+    {%- endif %}
     {%- if client_framework == "react" %}
     react(),
     {%- elif client_framework == "vue" %}
@@ -25,7 +33,7 @@ export default defineConfig({
     {%- elif client_framework == "svelte" %}
     svelte(),
     {%- elif client_framework == "solid" %}
-    solid(),
+    solid({% if useCSR %}{ ssr: true }{% endif %}),
     {%- elif client_framework == "preact" %}
     preact(),
     {%- endif %}

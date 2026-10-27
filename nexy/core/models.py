@@ -27,23 +27,6 @@ class ScanResult:
 
 
 @dataclass
-class Binding:
-    """One name/value binding extracted from the logic block.
-
-    Attributes:
-        name: Variable name exposed to the template.
-        value: Literal value of the binding.
-        is_prop: True when declared as a `prop[...]` (public interface).
-        data_type: Declared type (e.g. "str", "int", "any").
-    """
-
-    name: str
-    value: Any
-    is_prop: bool = False
-    data_type: str = "any"
-
-
-@dataclass
 class NexyProp:
     """A component prop parsed from a `name: prop[type] = default` declaration.
 
@@ -110,34 +93,6 @@ class LogicResult:
 
 
 @dataclass
-class ComponentUsage:
-    """A component tag found in the template body.
-
-    Attributes:
-        name: Component tag name (e.g. "Card").
-        attributes: Attributes written on the tag.
-        is_self_closing: True when written as `<Name />`.
-    """
-
-    name: str
-    attributes: dict[str, str]
-    is_self_closing: bool
-
-
-@dataclass
-class TemplateResult:
-    """Result of converting a template body.
-
-    Attributes:
-        converted_html: Rendered HTML with component tags resolved.
-        used_components: Names of the components actually used.
-    """
-
-    converted_html: str
-    used_components: set[str]
-
-
-@dataclass
 class ContextModel:
     """A context entry passed to the template.
 
@@ -201,7 +156,7 @@ class NexyConfigModel:
     useDocs: bool = True
     useVite: bool = False
     useViteDevUrl: str | None = None
-    useFF: FrontendFramework | None = None
+    useFF: FrontendFramework | list[FrontendFramework] | None = None
     useCSR: bool = False
     useMarkdownExtensions: list[str] = []
     excludeDirs: list[str] = []
@@ -214,12 +169,8 @@ class NexyConfigModel:
     useAuth: dict[str, Any] | None = None
     useSslKeyfile: str | None = None
     useSslCertfile: str | None = None
-    useLocales: list[str] | None = None
-    useLocalesDir: str | None = None
-    useLocalesSourceDir: str | None = None
-    useDefaultLocale: str = "en"
-    useLocaleCookieName: str = "nexy-locale"
-    useLocaleDetection: dict[str, bool] | None = None
+    useWorkers: int = 0
+    useDevTools: bool = True
     useRTL: bool = False
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"

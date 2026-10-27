@@ -1,0 +1,45 @@
+{% if useCSR %}{% raw %}<script setup lang="ts">
+import { onMounted, ref } from "vue";
+
+import Icon from "@/components/icon.vue";
+
+const STORAGE_KEY = "nexy-theme";
+const SUN = "M12 3v2M12 19v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M3 12h2M19 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4M12 8a4 4 0 100 8 4 4 0 000-8z";
+const MOON = "M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z";
+
+// The thumb and its icon follow the `dark` class that the layout sets before the first paint, so
+// the switch never flashes the wrong way. The ref only feeds the accessibility tree.
+const dark = ref(false);
+
+onMounted(() => {
+  dark.value = document.documentElement.classList.contains("dark");
+});
+
+function toggle() {
+  const next = !dark.value;
+  document.documentElement.classList.toggle("dark", next);
+  try {
+    localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
+  } catch {
+    // The choice only lasts for this visit when storage is blocked.
+  }
+  dark.value = next;
+}
+</script>
+
+<template>
+  <button
+    type="button"
+    role="switch"
+    :aria-checked="dark"
+    aria-label="Dark mode"
+    class="relative h-7 w-12 shrink-0 cursor-pointer rounded-full border border-paper/30 transition-colors hover:border-paper"
+    @click="toggle"
+  >
+    <span class="absolute left-0.5 top-0.5 grid size-5.5 place-items-center rounded-full bg-paper text-ink transition-transform duration-300 dark:translate-x-5">
+      <span class="grid dark:hidden"><Icon :path="SUN" :size="14" /></span>
+      <span class="hidden dark:grid"><Icon :path="MOON" :size="14" /></span>
+    </span>
+  </button>
+</template>
+{% endraw %}{% endif %}

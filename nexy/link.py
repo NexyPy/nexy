@@ -1,3 +1,7 @@
+import html
+import json
+
+
 def link(
     href: str,
     children: str = "",
@@ -22,10 +26,12 @@ def link(
     if class_name:
         attrs["class"] = class_name
     if prefetch:
-        attrs["onmouseenter"] = f"window.__nexy_prefetch && window.__nexy_prefetch('{href}')"
-        attrs["ontouchstart"] = f"window.__nexy_prefetch && window.__nexy_prefetch('{href}')"
+        # The href is data, not code: a JSON string literal cannot end the JS string early.
+        call = f"window.__nexy_prefetch && window.__nexy_prefetch({json.dumps(href)})"
+        attrs["onmouseenter"] = call
+        attrs["ontouchstart"] = call
     attrs.update(kwargs)
 
-    attr_str = " ".join([f'{k}="{v}"' for k, v in attrs.items()])
+    attr_str = " ".join(f'{k}="{html.escape(str(v), quote=True)}"' for k, v in attrs.items())
 
     return f"<a {attr_str}>{children}</a>"

@@ -38,13 +38,20 @@ The default export is the page component; a named export also works.
 > **Good to know**: keep components outside `src/routes/` (usually `src/components/`) so they are
 > not treated as pages.
 
+## Layouts
+
+In client mode (`useCSR = True`) the root `layout.tsx` owns the HTML document, like the root layout
+of the Next.js App Router, and nested `layout.tsx` files wrap the pages below them. See
+[layout.tsx](../routing/fbr/layouts/layout.tsx.md). In server mode React components are
+[islands](../rendering/islands.md) inside `.nexy` pages and there is no `layout.tsx`.
+
 ## Rendering
 
 Server rendering is on by default. Set `useCSR = True` for
-[client-side rendering](../routing/fbr/csr.md).
+[client-side rendering](../rendering/csr.md).
 
 ## Next steps
 
 - [Views](README.md): compare formats
 - [Components](components.md): import a component from a `.nexy` page
-- [Frontend](../frontend.md): Vite and the client build
+- [Frontend](../guides/frontend.md): Vite and the client build

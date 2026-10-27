@@ -6,14 +6,19 @@ from pathlib import Path
 import typer
 
 from nexy.helpers.common.console import console
+from nexy.helpers.common.executables import find_tool
 from nexy.modules.i18n import t
 
 
 def test(
-    server: bool = typer.Option(True, "--server", help="Run server tests (pytest)"),
-    client: bool = typer.Option(False, "--client", help="Run client tests (vitest)"),
+    server: bool = typer.Option(
+        True, "--server", help=t("test.help_server", "Run server tests (pytest)")
+    ),
+    client: bool = typer.Option(
+        False, "--client", help=t("test.help_client", "Run client tests (vitest)")
+    ),
     args: list[str] | None = typer.Argument(  # noqa: B008
-        None, help="Extra arguments forwarded to the test runner"
+        None, help=t("test.help_args", "Extra arguments forwarded to the test runner")
     ),
 ) -> None:
     """Run server (pytest) and/or client (vitest) tests."""
@@ -34,7 +39,7 @@ def test(
 
 
 def _run_server(root: Path, args: list[str]) -> int:
-    exe = shutil.which("pytest")
+    exe = find_tool("pytest")
     if not exe:
         msg = t("test.skip_tool", "pytest not found - skipping server tests")
         console.print(f"  [yellow]\u26a0[/yellow] {msg}")

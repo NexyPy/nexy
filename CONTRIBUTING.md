@@ -40,7 +40,10 @@ cd nexy
 uv venv && source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 uv pip install -e . --group dev
 
-# 3. Verify everything works
+# 3. Enable the commit-msg hook (rejects AI attribution trailers)
+git config core.hooksPath .githooks
+
+# 4. Verify everything works
 ruff check nexy/ && ruff format nexy/ --check && python -m mypy nexy --strict && python -m pytest tests/ -v
 ```
 
@@ -53,7 +56,7 @@ ruff check nexy/ && ruff format nexy/ --check && python -m mypy nexy --strict &&
 - **Python** 3.12+
 - **Node.js** 20+ (for frontend builds and VS Code extension)
 - **uv** package manager (recommended) or pip
-- **pnpm** (for JavaScript dependencies)
+- **bun**, **pnpm**, or **npm** for JavaScript dependencies (Nexy prefers bun, then pnpm, then npm)
 
 ### Python environment
 
@@ -152,6 +155,28 @@ fix(compiler): handle empty frontmatter
 docs: update README with CLI examples
 ```
 
+#### Attribution
+
+The human who writes and reviews the change owns the contribution. Keep AI
+tools out of the Git metadata:
+
+- No AI in `Co-authored-by`. GitHub counts every co-author trailer as a
+  contributor, so a bot trailer permanently adds that account to the project's
+  contributor list.
+- No `Generated with ...`, `Generated-by:`, `Assisted-by:`, or equivalent
+  footer, including the boilerplate that Claude Code, Codebuff/Freebuff,
+  Copilot, Cursor, and similar tools append.
+- No bot account as commit author or PR author.
+- Do not describe agent output as independently reviewed. If you produced it,
+  you are not its reviewer.
+
+The `commit-msg` hook enforces this locally once you run
+`git config core.hooksPath .githooks`. To audit a branch:
+
+```bash
+python scripts/check_attribution.py --range origin/main..HEAD
+```
+
 ### 5. Push and open a PR
 
 ```bash
@@ -210,7 +235,7 @@ python -m pytest tests/unit/nexy/parser/test_scanner.py -v
 python -m pytest tests/ --cov=nexy --cov-report=term
 ```
 
-**Coverage floor**: 54% overall (enforced by the test suite). Aspire to 95%
+**Coverage floor**: 84% overall (enforced by the test suite). Aspire to 95%
 per module when touching one.
 
 ### Conventions

@@ -7,11 +7,10 @@ first ``.`` inside a dynamic segment such as ``[...path]``.
 import importlib
 import types
 
-from nexy.core.string import StringTransform
-from nexy.modules.routers.fbrouter import FBRouter
+from nexy.modules.routers.fbrouter.scanner import RouteScanner
 
 
-def _router(tmp_path, monkeypatch, files: list[str]) -> FBRouter:
+def _router(tmp_path, monkeypatch, files: list[str]):
     from nexy.core.config import Config
     from nexy.modules.routers.fbrouter.discovery import RouteDiscovery
 
@@ -37,38 +36,29 @@ def _router(tmp_path, monkeypatch, files: list[str]) -> FBRouter:
 
     monkeypatch.setattr(importlib, "import_module", _fake_import)
 
-    router = FBRouter.__new__(FBRouter)
-    router.discovery = RouteDiscovery()
-    router.string_transform = StringTransform()
-    router.error_handlers = []
-    router.notfound_handlers = []
-    router.loading_handlers = []
-    router.modules_meta = []
-    router._locale_variants = {}
-    router._scan_modules()
-    return router
+    return RouteScanner(RouteDiscovery()).scan()
 
 
 def test_catch_all_pathname_keeps_dynamic_segment(tmp_path, monkeypatch):
     router = _router(tmp_path, monkeypatch, ["docs/[...path].tsx"])
-    assert [m["pathname"] for m in router.modules_meta] == ["/docs/{path:path}"]
+    assert [m.pathname for m in router.routes] == ["/docs/{path:path}"]
 
 
 def test_dynamic_slug_pathname(tmp_path, monkeypatch):
     router = _router(tmp_path, monkeypatch, ["blog/[slug].tsx"])
-    assert [m["pathname"] for m in router.modules_meta] == ["/blog/{slug}"]
+    assert [m.pathname for m in router.routes] == ["/blog/{slug}"]
 
 
 def test_index_pathname_is_root(tmp_path, monkeypatch):
     router = _router(tmp_path, monkeypatch, ["index.tsx"])
-    assert [m["pathname"] for m in router.modules_meta] == ["/"]
+    assert [m.pathname for m in router.routes] == ["/"]
 
 
 def test_nested_literal_pathname(tmp_path, monkeypatch):
     router = _router(tmp_path, monkeypatch, ["docs/guide.tsx"])
-    assert [m["pathname"] for m in router.modules_meta] == ["/docs/guide"]
+    assert [m.pathname for m in router.routes] == ["/docs/guide"]
 
 
 def test_api_py_pathname(tmp_path, monkeypatch):
     router = _router(tmp_path, monkeypatch, ["status.py"])
-    assert [m["pathname"] for m in router.modules_meta] == ["/status"]
+    assert [m.pathname for m in router.routes] == ["/status"]

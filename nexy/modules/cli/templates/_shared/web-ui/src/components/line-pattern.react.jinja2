@@ -1,0 +1,13 @@
+{% if useCSR %}{% raw %}// Oblique lines for the dark blocks. They fade away from the corner they lean towards, so the
+// text on top stays easy to read. Class names are written in full so UnoCSS can find them.
+const SIDES = {
+  right:
+    "bg-[image:repeating-linear-gradient(135deg,rgb(255_255_255/0.09)_0_1px,transparent_1px_16px)] [mask-image:linear-gradient(to_bottom_left,black,transparent_75%)]",
+  left:
+    "bg-[image:repeating-linear-gradient(45deg,rgb(255_255_255/0.09)_0_1px,transparent_1px_16px)] [mask-image:linear-gradient(to_bottom_right,black,transparent_75%)]",
+};
+
+export default function LinePattern({ side }: { side: keyof typeof SIDES }) {
+  return <div className={`pointer-events-none absolute inset-0 ${SIDES[side]}`} aria-hidden="true" />;
+}
+{% endraw %}{% endif %}

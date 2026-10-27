@@ -2,7 +2,9 @@ from pathlib import Path
 from typing import Any
 
 from nexy.__version__ import __version__
+from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
+from nexy.modules.cli import tui
 from nexy.modules.i18n import t
 
 from .prompts import ProjectPrompter
@@ -27,35 +29,38 @@ class InitProject:
         project_dir: str | None = None,
         command: str = "init",
         show_title: bool = True,
+        agents: bool = True,
     ) -> None:
         """Main execution flow for project initialization."""
-        if project_dir:
-            dest = Path(project_dir).resolve()
-            dest.mkdir(parents=True, exist_ok=True)
-        else:
-            dest = Path(".").resolve()
-
+        dest = self._destination(project_dir)
         if show_title:
-            title = t("init.title", "nexy {version} {command}").format(
-                version=self.version, command=command
-            )
-            console.print(title)
-
+            launcher.banner(command, self.version)
         self._ensure_ready(dest, project_dir)
-
         if template:
-            config: dict[str, Any] = {"orm": "None", "db_url": None}
-            if template_source(template) == "github":
-                initialize_from_template(
-                    template, dest, config, use_github=True, subdir=f"templates/{template}"
-                )
-            else:
-                initialize_from_template(template, dest, config)
+            self._from_template(template, dest, agents)
             return
-
         config = ProjectPrompter().ask_all()
-        template_name = TemplateResolver.resolve(config)
-        initialize_from_template(template_name, dest, config)
+        config["agents"] = agents
+        tui.transcript.erase_all()
+        initialize_from_template(TemplateResolver.resolve(config), dest, config)
+
+    @staticmethod
+    def _destination(project_dir: str | None) -> Path:
+        dest = Path(project_dir or ".").resolve()
+        if project_dir:
+            dest.mkdir(parents=True, exist_ok=True)
+        return dest
+
+    @staticmethod
+    def _from_template(template: str, dest: Path, agents: bool = True) -> None:
+        config: dict[str, Any] = TemplateResolver.config_for(template)
+        config["agents"] = agents
+        if template_source(template) == "github":
+            initialize_from_template(
+                template, dest, config, use_github=True, subdir=f"templates/{template}"
+            )
+        else:
+            initialize_from_template(template, dest, config)
 
     def _ensure_ready(self, dest: Path, project_dir: str | None) -> None:
         """Guard against initializing inside an existing Nexy project.
@@ -74,4 +79,4 @@ class InitProject:
             console.print(
                 "[red]nexy[/red] » " + t("init.already", "Project already initialized here")
             )
-            raise AlreadyInitializedError()
+            raise AlreadyInitializedError

@@ -28,6 +28,17 @@ jobs:
       - name: Install deps (locked)
         run: uv sync --frozen --group dev
 
+      # tests/client mounts the generated runtimes in jsdom with Node.js: without its packages
+      # those tests cannot even start.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/client/package-lock.json
+
+      - name: Install the client test dependencies (locked)
+        run: npm ci --no-audit --no-fund --prefix tests/client
+
       - name: Lint (nexy + tests)
         run: uv run --no-sync ruff check nexy/ tests/
 
@@ -56,6 +67,28 @@ jobs:
           uv run --no-sync pip-audit -r requirements-audit.txt --disable-pip --strict \
             --ignore-vuln PYSEC-2022-252
 
+  attribution:
+    name: Commit attribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      # GitHub treats every Co-authored-by trailer as a contributor, so an AI
+      # trailer adds a bot to the contributor graph permanently. Check only the
+      # commits this push or PR introduces.
+      - name: Reject AI attribution in new commits
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -n "$BASE" ] && git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+            python scripts/check_attribution.py --range "${BASE}..HEAD"
+          else
+            python scripts/check_attribution.py --range "HEAD~1..HEAD"
+          fi
+
   build:
     name: Build distributions
     runs-on: ubuntu-latest
@@ -73,27 +106,30 @@ jobs:
       - name: Build sdist and wheel
         run: uv build --no-sources
 
+      # -I keeps the checkout's own nexy/ folder off sys.path, so the installed package is the one tested.
       - name: Smoke test wheel
         run: |
-          uv run --isolated --no-project --with dist/*.whl python - <<'PY'
+          uv run --isolated --no-project --with dist/*.whl python -I - <<'PY'
           import nexy
           from pathlib import Path
           from nexy.__version__ import __version__
 
           root = Path(nexy.__file__).parent
           assert (root / "modules/cli/templates/web-fbr").is_dir()
+          assert (root / "skills/nexy-principles/SKILL.md").is_file()
           print(__version__)
           PY
 
       - name: Smoke test source distribution
         run: |
-          uv run --isolated --no-project --with dist/*.tar.gz python - <<'PY'
+          uv run --isolated --no-project --with dist/*.tar.gz python -I - <<'PY'
           import nexy
           from pathlib import Path
           from nexy.__version__ import __version__
 
           root = Path(nexy.__file__).parent
           assert (root / "modules/cli/templates/web-fbr").is_dir()
+          assert (root / "skills/nexy-principles/SKILL.md").is_file()
           print(__version__)
           PY
 

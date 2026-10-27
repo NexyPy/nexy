@@ -1,0 +1,51 @@
+{% if useCSR %}{% raw %}<script setup lang="ts">
+import { computed, ref } from "vue";
+
+import CopyChip from "@/components/copy-chip.vue";
+import StepCheck from "@/components/step-check.vue";
+
+const STEPS = [
+  {
+    title: "Change this headline",
+    text: "Edit the title, save, and watch this page update without a refresh.",
+    snippet: "src/routes/index.vue",
+  },
+  {
+    title: "Add a page",
+    text: "A new file becomes a new address. Visit /hello once it is saved.",
+    snippet: "src/routes/hello.vue",
+  },
+  {
+    title: "Ship it",
+    text: "Build the production version whenever you are ready.",
+    snippet: "nexy build",
+  },
+];
+
+// Three steps in a real order: tick them off as you go.
+const done = ref<boolean[]>(STEPS.map(() => false));
+const count = computed(() => done.value.filter(Boolean).length);
+const toggle = (index: number) => (done.value[index] = !done.value[index]);
+</script>
+
+<template>
+  <div>
+    <p class="mb-2 flex items-center justify-between font-mono text-xs text-foreground-second" aria-live="polite">
+      <span>{{ count === STEPS.length ? "All set. Time to build." : `${count} of ${STEPS.length} done` }}</span>
+      <span class="h-1 w-24 bg-border" aria-hidden="true">
+        <span class="block h-full bg-signal transition-all duration-300" :style="{ width: `${(count / STEPS.length) * 100}%` }" />
+      </span>
+    </p>
+    <ol>
+      <li v-for="(step, index) in STEPS" :key="step.title" class="grid grid-cols-[auto_1fr] gap-5 border-t border-border py-8">
+        <StepCheck :done="done[index]" :number="index + 1" @toggle="toggle(index)" />
+        <div class="min-w-0">
+          <h3 :class="['text-2xl transition-opacity', done[index] ? 'opacity-50' : '']">{{ step.title }}</h3>
+          <p class="mt-2 max-w-[48ch] text-foreground-second">{{ step.text }}</p>
+          <CopyChip :text="step.snippet" />
+        </div>
+      </li>
+    </ol>
+  </div>
+</template>
+{% endraw %}{% endif %}

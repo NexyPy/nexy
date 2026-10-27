@@ -1,39 +1,20 @@
-import contextlib
-import functools
-import sys
+from collections.abc import Callable
 from typing import Any
 
 import typer
-import typer.rich_utils
 
 from nexy.__version__ import __version__
 from nexy.helpers.common.console import console
 from nexy.modules.cli.commands import build, check, dev, format_, init, start, test
 from nexy.modules.cli.commands.migrate import migrate
 from nexy.modules.cli.commands.new import new
-from nexy.modules.cli.commands.translate import translate
+from nexy.modules.cli.commands.skills import skills
+from nexy.modules.cli.overview import print_overview
+from nexy.modules.cli.terminal import keep_unicode_boxes, use_utf8_streams
 from nexy.modules.i18n import t
 
-if sys.stdout.encoding and sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
-    with contextlib.suppress(Exception):
-        stdout: Any = sys.stdout
-        stdout.reconfigure(encoding="utf-8")
-if sys.stderr.encoding and sys.stderr.encoding.lower() not in ("utf-8", "utf8"):
-    with contextlib.suppress(Exception):
-        stderr: Any = sys.stderr
-        stderr.reconfigure(encoding="utf-8")
-
-_orig_get_console = typer.rich_utils._get_rich_console
-
-
-@functools.wraps(_orig_get_console)
-def _nexy_get_console(stderr: bool = False) -> Any:
-    c = _orig_get_console(stderr=stderr)
-    c.safe_box = False
-    return c
-
-
-typer.rich_utils._get_rich_console = _nexy_get_console
+use_utf8_streams()
+keep_unicode_boxes()
 
 VERSION = __version__
 
@@ -45,82 +26,41 @@ CLI = typer.Typer(
 
 @CLI.callback(invoke_without_command=True)
 def main(
-    ctx: typer.Context, version: bool = typer.Option(False, "--version", "-v", help="Show version")
+    ctx: typer.Context,
+    version: bool = typer.Option(
+        False, "--version", "-v", help=t("cli.help_version", "Show version")
+    ),
 ) -> None:
     """Main entry point executed when no command is provided."""
-
     if version:
         console.print(f"[green]nexy[/green] {VERSION}")
-        raise typer.Exit()
+        raise typer.Exit
     if ctx.invoked_subcommand is None:
-        console.print()
-        console.print(f"[bold green]nexy[/bold green] [dim]{VERSION}[/dim]")
-        console.print()
-        tagline = t("cli.tagline", "The modern full-stack framework that just works")
-        console.print(f"[italic]{tagline}[/italic]")
-        console.print()
-        console.print(f"[bold cyan]{t('cli.commands_header', 'Available Commands:')}[/bold cyan]")
-        commands = [
-            (
-                "new [dim]<project-name>[/dim]",
-                t("cli.cmd.new", "Create a new project in a new directory"),
-            ),
-            ("init", t("cli.cmd.init", "Initialize Nexy in the current directory")),
-            ("dev", t("cli.cmd.dev", "Start local development server with hot reload")),
-            ("start", t("cli.cmd.start", "Start production server")),
-            ("build", t("cli.cmd.build", "Compile project for production deployment")),
-            (
-                "check",
-                t("cli.cmd.check", "Run type checking across all project files"),
-            ),
-            (
-                "format",
-                t("cli.cmd.format", "Auto-format all project files"),
-            ),
-            (
-                "test",
-                t("cli.cmd.test", "Run tests (--server / --client)"),
-            ),
-            ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
-            (
-                "translate",
-                t(
-                    "cli.cmd.translate",
-                    "Translate locale source (i18n.py) to all configured languages",
-                ),
-            ),
-        ]
-        max_cmd_len = max(len(cmd) for cmd, _ in commands)
-        for cmd, desc in commands:
-            console.print(f"  [yellow]{cmd.ljust(max_cmd_len)}[/yellow]  {desc}")
-        console.print()
-        console.print(
-            f"[dim]{t('cli.usage', 'Run nx or nexy <command> --help for detailed usage')}[/dim]"
-        )
-        console.print()
+        print_overview()
 
 
-CLI.command()(dev)
-CLI.command(name="d", hidden=True)(dev)
-CLI.command()(start)
-CLI.command(name="s", hidden=True)(start)
-CLI.command()(build)
-CLI.command(name="b", hidden=True)(build)
-CLI.command()(check)
-CLI.command(name="c", hidden=True)(check)
-CLI.command(name="format")(format_)
-CLI.command(name="f", hidden=True)(format_)
-CLI.command()(test)
-CLI.command()(init)
-CLI.command(name="i", hidden=True)(init)
-CLI.command()(new)
-CLI.command(name="n", hidden=True)(new)
-CLI.command()(migrate)
-CLI.command(name="m", hidden=True)(migrate)
-CLI.command()(translate)
-CLI.command(name="ts", hidden=True)(translate)
-CLI.command(name="trans")(translate)
-CLI.command(name="t", hidden=True)(translate)
+# (command, name when it is not the function's own, one-letter alias or None)
+_COMMANDS: list[tuple[Callable[..., Any], str | None, str | None]] = [
+    (dev, None, "d"),
+    (start, None, "s"),
+    (build, None, "b"),
+    (check, None, "c"),
+    (format_, "format", "f"),
+    (test, None, None),
+    (init, None, "i"),
+    (new, None, "n"),
+    (migrate, None, "m"),
+    (skills, None, None),
+]
 
+
+def _register(app: typer.Typer) -> None:
+    for command, name, alias in _COMMANDS:
+        app.command(name=name)(command)
+        if alias:
+            app.command(name=alias, hidden=True)(command)
+
+
+_register(CLI)
 
 __all__ = ["CLI"]

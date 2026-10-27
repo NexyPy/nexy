@@ -1,0 +1,38 @@
+{% if useCSR %}{% raw %}import { useState } from "preact/hooks";
+
+import Icon from "@/components/icon.tsx";
+
+const COPY = "M9 9h11v11H9zM5 15V5a1 1 0 011-1h10";
+const CHECK = "M5 13l4 4L19 7";
+
+// A snippet the visitor can copy in one click.
+export default function CopyChip({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      return;
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  }
+
+  return (
+    <div class="mt-4">
+      <button
+        type="button"
+        onClick={copy}
+        class="inline-flex max-w-full items-center gap-3 border border-border-second bg-background-second px-3.5 py-2 text-left font-mono text-xs transition-colors hover:border-foreground"
+      >
+        <code class="truncate">{text}</code>
+        <span class={`shrink-0 ${copied ? "text-signal" : "text-foreground-second"}`}>
+          <Icon path={copied ? CHECK : COPY} size={14} />
+        </span>
+      </button>
+      <span class="sr-only" role="status">{copied ? "Copied" : ""}</span>
+    </div>
+  );
+}
+{% endraw %}{% endif %}

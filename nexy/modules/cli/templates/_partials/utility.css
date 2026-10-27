@@ -1,0 +1,115 @@
+{% set accent = {"react": "#61DAFB", "preact": "#8E6CF0", "solid": "#4F88C6", "vue": "#42B883", "svelte": "#FF3E00"}.get(client_framework, "#F7DF1E") -%}
+{% if style == "tailwind" -%}
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+{%- else -%}
+@layer base, components, utilities;
+{%- endif %}
+
+/* Black and white. `ink` and `paper` never change: the header, the hero and the dark cards stay
+   dark in both themes. The other tokens follow the theme. */
+:root {
+  color-scheme: light;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  --accent: {{ accent }};
+  --ink: #0a0a0a;
+  --paper: #fafafa;
+  /* The one colour: a green that leans towards sky blue. Used for status, never for text blocks. */
+  --signal: light-dark(#0a9d8f, #3fe0c8);
+  --background: light-dark(#ffffff, #0a0a0a);
+  --background-second: light-dark(#f5f5f5, #141414);
+  --foreground: light-dark(#0a0a0a, #fafafa);
+  --foreground-second: light-dark(#5c5c5c, #a3a3a3);
+  --border: light-dark(#e5e5e5, #262626);
+  --border-second: light-dark(#d4d4d4, #3a3a3a);
+}
+
+.dark {
+  color-scheme: dark;
+}
+{% if style == "tailwind" %}
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-border-second: var(--border-second);
+  --color-accent: var(--accent);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-signal: var(--signal);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+}
+{% endif %}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: "Geist", "Inter", system-ui, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: "Fraunces", ui-serif, Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background-color: var(--foreground);
+    color: var(--background);
+  }
+}
+
+/* Moving between two pages feels like switching a tab: the header stays, the content slides. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: nx-leave 0.16s ease-in both;
+}
+::view-transition-new(root) {
+  animation: nx-enter 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+::view-transition-group(nx-header) {
+  animation-duration: 0.3s;
+}
+@keyframes nx-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes nx-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes nx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

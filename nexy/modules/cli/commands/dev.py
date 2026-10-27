@@ -1,173 +1,303 @@
 import os
 import subprocess  # nosec B404
 import sys
+import threading
 import time
+from concurrent.futures import Future, ThreadPoolExecutor
+from dataclasses import dataclass
 from typing import Any
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
+from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.pycheck import describe, report
+from nexy.helpers.common.vite_launch import vite_installed
+from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
+from nexy.helpers.server.listening import Endpoint, print_listening
 from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.server import Server
-from nexy.modules.builder import Builder
+from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
-from nexy.modules.cli.devtools.watcher import create_observer, purge_project_modules, stop_observer
+from nexy.modules.cli.devtools.watch import create_observer, purge_project_modules, stop_observer
 from nexy.modules.frontend import FrontendGenerator
 from nexy.modules.i18n import t
+
+_APP_MODULES = ("nexy.modules.routers.app", "nexy.modules.routers.fbrouter")
+_APP = "nexy.modules.routers.app:_server"
+
+
+@dataclass
+class _Session:
+    """What `nx dev` starts and later has to stop."""
+
+    vite: "subprocess.Popen[Any] | None" = None
+
+
+def _require_vite_install() -> None:
+    """Fail before compiling when the frontend dependencies are absent.
+
+    `nexy dev` never installs: node_modules is the job of `nexy new` and
+    `nexy init`. A clear command beats a 30-second wait followed by 502s.
+    """
+    if vite_installed():
+        return
+
+    manager = package_manager.detect() or "npm"
+    console.print(f"\n[red]  ✘[/red] {t('dev.deps_missing', 'Node.js dependencies are missing.')}")
+    command = f"[cyan]{manager} install[/cyan]"
+    console.print("    " + t("dev.deps_run", "Run: {command}").format(command=command))
+    hint = t("dev.deps_hint", "nexy dev does not install dependencies; nexy init and nexy new do.")
+    console.print(f"\n    [dim]{hint}[/dim]")
+    sys.exit(1)
+
+
+def _report_failures(result: BuildResult) -> None:
+    for path in result.failed:
+        error = result.errors.get(path)
+        console.print(f"  [red]x {error.format() if error else path}[/red]")
+
+
+def _await_compile(build: "Future[BuildResult]") -> BuildResult:
+    label = t("dev.compiling_status", "Compiling...")
+    with console.status(f"\n[dim]{label}[/dim]", spinner="dots"):
+        result = build.result()
+        _report_failures(result)
+    return result
+
+
+def _generate_and_compile(
+    config: Config, client_port: int, ssl: bool, session: _Session
+) -> BuildResult:
+    """Generate the client files and compile the routes in parallel; start Vite meanwhile."""
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        frontend = pool.submit(FrontendGenerator().generate)
+        build = pool.submit(Builder().build, showlog=False)
+
+        frontend.result()
+
+        if config.useVite:
+            session.vite = Server.vite(port=client_port, ssl=ssl)
+        return _await_compile(build)
+
+
+def _drop_vite(session: _Session) -> None:
+    Server.stop_process(session.vite)
+    session.vite = None
+
+
+def _settle_vite(session: _Session, result: BuildResult, client_port: int) -> None:
+    """Keep Vite only when the routes compiled and it answers; otherwise stop it."""
+    if result.failed:
+        _drop_vite(session)
+        return
+    label = t("dev.starting_vite", "Starting the dev server...")
+    with console.status(f"[dim]  {label}[/dim]", spinner="dots"):
+        ready = Server.wait_for_vite_ready(client_port, process=session.vite)
+    if not ready:
+        console.print(f"[red]  ✘[/red] {t('dev.vite_failed', 'Vite failed to start.')}")
+        cause = t("dev.vite_failed_hint", "Read the Vite output above for the cause.")
+        console.print(f"    [dim]{cause}[/dim]")
+        _drop_vite(session)
+        sys.exit(1)
+
+
+def _initialise(config: Config, client_port: int, ssl: bool) -> _Session:
+    """Compile, start Vite and wait for it. Exit with code 1 when that is impossible."""
+    session = _Session()
+    try:
+        VFS.set_dev_mode(True)
+        result = _generate_and_compile(config, client_port, ssl, session)
+        if config.useVite:
+            _settle_vite(session, result, client_port)
+    except Exception as error:
+        console.print(f"\n[red]{t('dev.init_error', 'Error during initialization:')}[/red] {error}")
+        Server.stop_process(session.vite)
+        sys.exit(1)
+    return session
+
+
+def _purge_app_modules() -> None:
+    """Forget the application and the project's modules so a restart serves new code."""
+    for name in list(sys.modules):
+        if name.startswith("__nexy__") or name in _APP_MODULES:
+            del sys.modules[name]
+    purge_project_modules()
+
+
+def _regenerate_client_files() -> None:
+    """Rebuild the client route list after a page appeared, disappeared or moved."""
+    try:
+        FrontendGenerator().generate()
+    except Exception as error:
+        reason = t("dev.routes_failed", "Could not update the client routes: {error}")
+        console.print(f"  [red]x[/red] {reason.format(error=error)}")
+
+
+def _import_app() -> None:
+    """Import the application the way uvicorn will, so a broken file is reported, not fatal."""
+    from uvicorn.importer import import_from_string
+
+    import_from_string(_APP)
+
+
+class _Reloader:
+    """Runs uvicorn and restarts it whenever the watcher asks."""
+
+    def __init__(self) -> None:
+        self.restart_requested = False
+        self.regenerate_requested = False
+        self._started = False
+        self._server: Any = None
+        self._changed = threading.Event()
+        self._announced = False
+
+    def request_restart(self) -> None:
+        """A Python file changed: the watcher already named it."""
+        self._announced = True
+        self.restart_requested = True
+        self._changed.set()
+        if self._server is not None:
+            self._server.should_exit = True
+
+    def request_routes_restart(self, _path: str) -> None:
+        """The set of pages changed: the route table and the client route list are stale."""
+        self.regenerate_requested = True
+        self.request_restart()
+        self._announced = False
+
+    def serve(self, endpoint: Endpoint) -> None:
+        """Serve until Ctrl+C; a server that cannot run waits for the next change."""
+        while True:
+            if not self._start(endpoint):
+                self._wait_for_change()
+            elif not self.restart_requested:
+                return
+
+    def _start(self, endpoint: Endpoint) -> bool:
+        """True once the server has run; False when it could not start, whatever the reason."""
+        try:
+            self._prepare()
+            if not self._load():
+                return False
+            self._run(endpoint)
+        except SystemExit as stop:
+            return stop.code in (0, None) or self._failed(f"exit code {stop.code}")
+        except Exception as error:
+            return self._failed(str(error) or type(error).__name__)
+        return True
+
+    @staticmethod
+    def _failed(reason: str) -> bool:
+        message = t("dev.server_failed", "The server stopped ({reason}): waiting for a fix.")
+        console.print(f"  [red]x[/red] {message.format(reason=reason)}")
+        return False
+
+    def _prepare(self) -> None:
+        if self._started and not self._announced:
+            console.print(tagged("nexy", t("dev.updating", "update server")))
+        self._started = True
+        self._announced = False
+        self.restart_requested = False
+        self._changed.clear()
+        if self.regenerate_requested:
+            self.regenerate_requested = False
+            _regenerate_client_files()
+        ensure_project_packages()
+        _purge_app_modules()
+
+    @staticmethod
+    def _load() -> bool:
+        try:
+            _import_app()
+        except Exception as error:
+            waiting = t("dev.error_waiting", "The application cannot start: waiting for a fix.")
+            report(describe(error), waiting)
+            return False
+        return True
+
+    def _wait_for_change(self) -> None:
+        while not self._changed.wait(0.2):
+            pass
+
+    def _run(self, endpoint: Endpoint) -> None:
+        import uvicorn
+
+        from nexy.helpers.server.uvicorn_config import DEV_SERVE_LIMITS, NEXY_LOG_CONFIG
+
+        self._server = uvicorn.Server(
+            uvicorn.Config(
+                _APP,
+                host=endpoint.host,
+                port=endpoint.port,
+                log_config=NEXY_LOG_CONFIG,
+                access_log=False,
+                log_level="info",
+                **DEV_SERVE_LIMITS,
+                ssl_keyfile=endpoint.ssl_keyfile,
+                ssl_certfile=endpoint.ssl_certfile,
+            )
+        )
+        self._server.run()
+        self._server = None
+
+
+def _watch(config: Config, reloader: _Reloader) -> Any:
+    return create_observer(
+        path=".",
+        patterns=config.WATCH_EXTENSIONS_GLOB,
+        ignore_patterns=config.WATCH_EXCLUDE_PATTERNS,
+        on_reload_api=reloader.request_restart,
+        on_routes_changed=reloader.request_routes_restart,
+    )
+
+
+def _release(observer: Any, session: _Session) -> None:
+    """Stop what `nx dev` started: the watcher and Vite."""
+    console.print(f"  [dim]{t('dev.cleaning', 'Cleaning up...')}[/dim]")
+    stop_observer(observer)
+    Server.stop_process(session.vite)
+    console.print(tagged("nexy", t("dev.exited", "exited"), "red"))
+
+
+def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float) -> None:
+    """Watch the project and serve it until Ctrl+C; always release what was started."""
+    reloader = _Reloader()
+    observer = None
+    try:
+        observer = _watch(config, reloader)
+        elapsed = time.perf_counter() - started
+        print_listening("dev", __version__, endpoint, elapsed, Server.get_network_ip)
+        reloader.serve(endpoint)
+    except KeyboardInterrupt:
+        console.print(f"\n  [dim]{t('dev.stopping', 'Stopping servers...')}[/dim]")
+    except SystemExit:
+        pass
+    except Exception as error:
+        console.print(f"\n  [red]{t('dev.error', 'Error: {error}').format(error=error)}[/red]")
+    finally:
+        _release(observer, session)
 
 
 def dev(port: int | None = None, host: str | None = None) -> None:
     pycache()
+    ensure_project_packages()
     abort_on_invalid_config()
     # Mark this process tree as the dev server so the application proxies Vite's
     # endpoints through its own origin instead of exposing Vite's port.
     os.environ[DEV_ENV_VAR] = "1"
     config = Config()
-    version = __version__
+    if config.useVite:
+        _require_vite_install()
     run_host = host or config.useHost
-    run_port = port or config.usePort
-    run_port, client_port = Server.resolve_ports(run_host, run_port)
+    run_port, client_port = Server.resolve_ports(run_host, port or config.usePort)
     Server.check_nexy_prod(delete=True)
 
-    vite_proc: subprocess.Popen[Any] | None = None
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
-    ssl_enabled = bool(ssl_keyfile and ssl_certfile)
-    protocol = "https" if ssl_enabled else "http"
-
-    startup_start = time.perf_counter()
-
-    try:
-        VFS.set_dev_mode(True)
-
-        from concurrent.futures import ThreadPoolExecutor
-
-        with ThreadPoolExecutor(max_workers=2) as pool:
-            fe_future = pool.submit(FrontendGenerator().generate)
-            build_future = pool.submit(Builder().build, showlog=False)
-
-            fe_start = time.perf_counter()
-            fe_future.result()
-            fe_elapsed = time.perf_counter() - fe_start
-
-            if config.useVite:
-                vite_start = time.perf_counter()
-                vite_proc = Server.vite(port=client_port, ssl=ssl_enabled)
-
-            with console.status("\n[green]nsc[/green] » compile ...", spinner="dots"):
-                build_start = time.perf_counter()
-                result = build_future.result()
-                build_elapsed = time.perf_counter() - build_start
-                build_timer = f"{build_elapsed:.2f}s"
-                console.print(
-                    f"\n[green]nsc[/green] » [green]{t('dev.compiling', 'compiling')}[/green]"
-                    f" in [reset][dim]{build_timer}[/dim]"
-                )
-                if result.failed:
-                    for p in result.failed:
-                        err = result.errors.get(p)
-                        if err:
-                            console.print(f"  [red]x {err.format()}[/red]")
-                        else:
-                            console.print(f"  [red]x {p}[/red]")
-
-        if config.useVite:
-            if result.failed:
-                Server.stop_process(vite_proc)
-                vite_proc = None
-            else:
-                with console.status("[dim]  starting dev server...[/dim]", spinner="dots"):
-                    vite_ready = Server.wait_for_vite_ready(client_port)
-                    vite_elapsed = time.perf_counter() - vite_start
-                    console.print(
-                        f"  [dim]frontend[/dim] [dim]{fe_elapsed:.2f}s[/dim] ·"
-                        f" [dim]vite[/dim] [dim]{vite_elapsed:.2f}s[/dim]"
-                    )
-                    if not vite_ready:
-                        console.print("[yellow]  warning: Vite took too long to start[/yellow]")
-    except Exception as e:
-        console.print(f"\n[red]{t('dev.init_error', 'Error during initialization:')}[/red] {e}")
-        Server.stop_process(vite_proc)
-        sys.exit(1)
-
-    _restart_requested = False
-    _server_instance = None
-    observer = None
-
-    def _reload_uvicorn() -> None:
-        nonlocal _restart_requested, _server_instance
-        _restart_requested = True
-        if _server_instance is not None:
-            _server_instance.should_exit = True
-
-    try:
-        observer = create_observer(
-            path=".",
-            patterns=config.WATCH_EXTENSIONS_GLOB,
-            ignore_patterns=config.WATCH_EXCLUDE_PATTERNS,
-            on_reload_api=_reload_uvicorn,
-        )
-
-        startup_elapsed = time.perf_counter() - startup_start
-        startup_timer = f"{startup_elapsed:.2f}s"
-
-        network_ip = Server.get_network_ip() if run_host == "0.0.0.0" else run_host  # nosec B104
-
-        console.print(t("dev.banner", "nexy@{version} dev using :").format(version=version))
-        vite_status = "and [green]Vite[/green]" if vite_proc else ""
-        console.print(f"  [dim]\u00bb\u00bb[/dim] [green]Uvicorn[/green]  {vite_status}")
-        console.print(
-            f"  [dim]\u00bb\u00bb[/dim] {t('dev.local', 'Local:')} [green]{protocol}://localhost:{run_port}[/green]"
-        )
-        if network_ip != "127.0.0.1" and network_ip != "localhost":
-            console.print(
-                f"  [dim]\u00bb\u00bb[/dim] {t('dev.network', 'Network:')} [green]{protocol}://{network_ip}:{run_port}[/green]"
-            )
-        console.print(
-            f"  [dim]\u00bb\u00bb[/dim] {t('dev.ready', 'ready in')} [green]{startup_timer}[/green]"
-        )
-        console.print(f"  [dim]\u00bb\u00bb[/dim] {t('dev.stop', 'press Ctrl+C to stop')}")
-
-        import uvicorn as _uvicorn
-
-        from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG
-
-        while True:
-            _restart_requested = False
-            for _name in list(sys.modules.keys()):
-                if _name.startswith("__nexy__") or _name in (
-                    "nexy.modules.routers.app",
-                    "nexy.modules.routers.fbrouter",
-                ):
-                    del sys.modules[_name]
-            # Project modules (src/routes/*.py, dependencies.py, ...) stay cached
-            # across uvicorn restarts; drop them so the reload serves new code.
-            purge_project_modules()
-            _uvicorn_config = _uvicorn.Config(
-                "nexy.modules.routers.app:_server",
-                host=run_host,
-                port=run_port,
-                log_config=NEXY_LOG_CONFIG,
-                log_level="info",
-                ssl_keyfile=ssl_keyfile,
-                ssl_certfile=ssl_certfile,
-            )
-            _server_instance = _uvicorn.Server(_uvicorn_config)
-            _server_instance.run()
-            _server_instance = None
-            if not _restart_requested:
-                break
-
-    except KeyboardInterrupt:
-        console.print("\n  [dim]Stopping servers...[/dim]")
-    except SystemExit:
-        pass
-    except Exception as e:
-        console.print(f"\n  [red]Error: {e}[/red]")
-    finally:
-        console.print("  [dim]Cleaning up...[/dim]")
-        _server_instance = None
-        stop_observer(observer)
-        Server.stop_process(vite_proc)
-        console.print(f"[red]nexy \u00bb {t('dev.exited', 'exited')} [reset]")
+    endpoint = Endpoint(run_host, run_port, ssl_keyfile, ssl_certfile)
+    started = time.perf_counter()
+    session = _initialise(config, client_port, endpoint.protocol == "https")
+    _serve(config, endpoint, session, started)

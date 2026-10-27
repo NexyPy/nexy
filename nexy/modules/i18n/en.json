@@ -1,0 +1,238 @@
+{
+  "add": {
+    "added": "Added: {path}",
+    "available": "Available UI components: {names}",
+    "error": "Error:",
+    "exists": "Skipping: {path} already exists.",
+    "fetch_failed": "Failed to fetch component from {url}: {error}",
+    "fetching": "Fetching remote component from {url}...",
+    "help_all": "Add all available components from registry",
+    "help_components": "Components to add (registry names or URLs)",
+    "help_sha": "Expected SHA-256 of a remote component (aborts on mismatch)",
+    "help_ui": "Force treatment as UI components",
+    "help_url": "Force treatment as URLs",
+    "https_only": "Only https:// URLs are supported.",
+    "install_failed": "Failed to install dependencies",
+    "installed": "Installed {names}",
+    "installing": "Installing {names}",
+    "no_pm": "No package manager found. Please install dependencies manually: {names}",
+    "not_found": "Component '{name}' not found in registry.",
+    "usage": "Usage:",
+    "usage_text": "nexy add [COMPONENT_NAME or URL]...",
+    "warning": "Warning:",
+    "write_failed": "Failed to write {path}: {error}"
+  },
+  "build": {
+    "building_client": "Built client bundle",
+    "checks_failed": "checks failed",
+    "checks_passed": "all checks passed",
+    "client_components": "client components",
+    "compiling_routes": "Compiled routes",
+    "compiling_server": "Compiled server components",
+    "creating": "Creating an optimized production build",
+    "failed_client": "client build failed",
+    "failed_components": "{count} component(s) failed",
+    "failed_label": "Build Failed",
+    "routes": "routes",
+    "server_components": "server components",
+    "skipped_label": "Skipped (cached)",
+    "success_build": "build in {time}",
+    "success_label": "Build success"
+  },
+  "check": {
+    "compiling": "compiling .nexy ...",
+    "failed": "{count} section(s) failed",
+    "passed": "all checks passed",
+    "skip_tool": "{tool} not found - skipping {scope}"
+  },
+  "cli": {
+    "cmd": {
+      "build": "Compile project for production deployment",
+      "check": "Run type checking across all project files",
+      "dev": "Start local development server with hot reload",
+      "format": "Auto-format all project files",
+      "init": "Initialize Nexy in the current directory",
+      "migrate": "Run ORM migrations (auto-detects ORM)",
+      "new": "Create a new project in a new directory",
+      "start": "Start production server",
+      "test": "Run tests (--server / --client)",
+      "skills": "Add skills and AGENTS.md for coding agents"
+    },
+    "commands_header": "Available Commands:",
+    "help": "Nexy CLI",
+    "help_version": "Show version",
+    "new": {
+      "error_chars": "Use only letters, numbers, hyphens, underscores.",
+      "error_empty": "Project name cannot be empty.",
+      "error_exists": "Directory '{name}' already exists.",
+      "error_letter": "Project name must start with a letter.",
+      "failed": "Could not create the project",
+      "help_arg": "Name of the project to create (creates a new directory)",
+      "help_template": "Initialize from a registered template (e.g. web-fbr-react).",
+      "prompt": "Project name:",
+      "template_unknown": "Unknown template '{template}'.",
+      "help_agents": "Add AGENTS.md and the skills for coding agents."
+    },
+    "tagline": "The modern full-stack framework that just works",
+    "usage": "Run nx or nexy <command> --help for detailed usage",
+    "skills": {
+      "not_a_project": "No nexyconfig.py in {path}: run this at the root of a Nexy project.",
+      "help_path": "Root of the project (default: the current folder)",
+      "done": "{count} skills in .agents/skills and .claude/skills",
+      "kept": "Kept your {files}."
+    }
+  },
+  "dev": {
+    "cleaning": "Cleaning up...",
+    "compiling_status": "Compiling...",
+    "deps_hint": "nexy dev does not install dependencies; nexy init and nexy new do.",
+    "deps_missing": "Node.js dependencies are missing.",
+    "deps_run": "Run: {command}",
+    "error": "Error: {error}",
+    "error_label": "error",
+    "error_waiting": "The application cannot start: waiting for a fix.",
+    "exited": "exited",
+    "init_error": "Error during initialization:",
+    "routes_failed": "Could not update the client routes: {error}",
+    "starting_vite": "Starting the dev server...",
+    "stopping": "Stopping servers...",
+    "updating": "update server",
+    "vite_failed": "Vite failed to start.",
+    "vite_failed_hint": "Read the Vite output above for the cause.",
+    "server_failed": "The server stopped ({reason}): waiting for a fix."
+  },
+  "format": {
+    "failed": "{count} file(s) failed",
+    "passed": "formatting complete",
+    "skip_tool": "{tool} not found - skipping {scope}"
+  },
+  "init": {
+    "alias_invalid": "Use @, ~, # or $, optionally followed by letters (for example ~ or @app).",
+    "already": "Project already initialized here",
+    "ask": {
+      "alias": "Import alias",
+      "alias_customize": "Customize the import alias?",
+      "client_component": "Would you like to use a client component?",
+      "csr": "Enable client-side routing?",
+      "database": "Choose a database",
+      "db_url": "Database URL",
+      "framework": "Choose the client framework",
+      "orm": "Choose an ORM",
+      "project_type": "Choose the type of project",
+      "router": "Use file-based router?",
+      "style": "Choose how to style the app"
+    },
+    "checkout_failed": "Failed to extract files from template '{path}'.",
+    "choice": {
+      "api": "API",
+      "no": "No",
+      "no_database": "No database",
+      "other": "Other",
+      "web": "Web",
+      "yes": "Yes"
+    },
+    "error": "Initialization failed: {error}",
+    "git_restore": "could not restore previous .git",
+    "hint": {
+      "alias_custom": "choose another prefix, such as ~ or #",
+      "alias_default": "@/components/... points to src/",
+      "api": "JSON endpoints only, no pages",
+      "component_no": "server-rendered .nexy pages only",
+      "component_yes": "interactive parts written in a UI framework",
+      "csr_no": "every page is rendered by the server",
+      "csr_yes": "the browser navigates without reloading",
+      "mysql": "widely hosted, MariaDB compatible",
+      "neon": "serverless PostgreSQL in the cloud",
+      "no_orm": "no database layer, add one later",
+      "other_db": "type your own connection URL",
+      "other_style": "set it up yourself",
+      "postgresql": "the robust open-source standard",
+      "preact": "React API in 3 kB",
+      "react": "the most widely used UI library",
+      "router_no": "register routes in code, with modules",
+      "router_yes": "pages are the files of src/routes",
+      "solid": "fine-grained reactivity, no virtual DOM",
+      "sqlalchemy": "the reference Python ORM",
+      "sqlite": "a file, nothing to install",
+      "sqlmodel": "Pydantic models that are also tables",
+      "svelte": "compiled, very little runtime",
+      "tailwind": "utility classes in your markup",
+      "tortoise": "async-first, Django-like API",
+      "unocss": "on-demand atomic CSS, very fast",
+      "vanilla": "plain stylesheets, nothing to learn",
+      "vue": "approachable and well documented",
+      "web": "pages, layouts and components in one app"
+    },
+    "initializing": "Initializing {name}...",
+    "installed_uv": "Installed uv",
+    "installing_uv": "Installing uv",
+    "merging": "Directory not empty, merging files...",
+    "migration_tool": "Initializing {tool}...",
+    "network": {
+      "checking": "Checking the connection...",
+      "latency": "Connection: {latency} ms",
+      "offline": "No connection: packages were not installed.",
+      "offline_hint": "When you are online, run uv sync and your package manager's install in the project folder.",
+      "slow": "Slow connection: installing packages may take a while.",
+      "speed": "Connection: {latency} ms, {speed}"
+    },
+    "next_steps": "Next steps",
+    "node_manager_not_found": "No Node.js package manager found. Install bun, pnpm or npm.",
+    "node_retry": "Retrying with --legacy-peer-deps...",
+    "step_activate_venv": "Activate the virtual environment",
+    "step_help": "Explore available commands",
+    "step_run_dev": "Start the development server",
+    "template_not_found": "Template or branch '{branch}' not found on remote.",
+    "venv": {
+      "created": "Created virtual environment",
+      "creating": "Creating virtual environment"
+    }
+  },
+  "migrate": {
+    "aerich_not_initialized": "Aerich not initialized. Run 'nx m --init' first.",
+    "alembic_not_initialized": "Alembic not initialized. Run 'nx m --init' first.",
+    "help_init": "Initialize migration tool",
+    "help_message": "Migration message",
+    "help_upgrade": "Apply pending migrations",
+    "no_connection": "Error: Cannot connect to database - {error}",
+    "no_database_url": "Error: DATABASE_URL not found in .env or environment.",
+    "no_driver": "Error: Missing database driver - {error}",
+    "no_orm": "No supported ORM found. Install one: sqlmodel, tortoise-orm, sqlalchemy",
+    "tool_missing": "Error: {tool} not found on PATH. Install it and try again."
+  },
+  "server": {
+    "launch_failed": "Server launch failed:",
+    "local": "Local:",
+    "network": "Network:",
+    "ready": "Ready:",
+    "stop": "press Ctrl+C to stop"
+  },
+  "start": {
+    "broken": "{count} route file(s) failed to load: the server was not started.",
+    "exited": "exited"
+  },
+  "test": {
+    "failed": "{count} test run(s) failed",
+    "help_args": "Extra arguments forwarded to the test runner",
+    "help_client": "Run client tests (vitest)",
+    "help_server": "Run server tests (pytest)",
+    "passed": "all tests passed",
+    "skip_client": "vitest not configured - skipping client tests",
+    "skip_tool": "pytest not found - skipping server tests"
+  },
+  "tui": {
+    "keys": {
+      "back": "back",
+      "choose": "choose",
+      "move": "move",
+      "quit": "quit"
+    }
+  },
+  "watch": {
+    "compile_failed": "Failed to compile {path}",
+    "compiled": "Compiled {path} in {time}",
+    "error_kept": "Fix it and save: the server keeps its last working version.",
+    "restart_failed": "Failed to restart the server: {error}",
+    "update": "update"
+  }
+}

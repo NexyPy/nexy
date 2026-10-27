@@ -1,33 +1,46 @@
+{% if utility_ui -%}
+{% include "utility.css" %}
+{%- else -%}
+{% if style == "tailwind" -%}
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
+{%- elif style == "unocss" -%}
+@layer base, components, utilities;
+{%- endif %}
 
-{% set color = "#0E2126" %}
+{% set accent = "#61DAFB" %}
 {% if client_framework == "vue" %}
-{% set color = "#0E261E" %}
-{% elif client_framework == "svelte" or client_framework == "none" %}
-{% set color = "#0E2625" %}
+{% set accent = "#42B883" %}
+{% elif client_framework == "svelte" %}
+{% set accent = "#FF3E00" %}
 {% elif client_framework == "solid" %}
-{% set color = "#091D24" %}
+{% set accent = "#4F88C6" %}
 {% elif client_framework == "preact" %}
-{% set color = "#0E1026" %}
+{% set accent = "#8E6CF0" %}
+{% elif client_framework == "none" %}
+{% set accent = "#00D084" %}
 {% endif %}
 
 :root {
-  color-scheme: light dark;
-  font-family: "Inter";
-  --background: light-dark(white, {{ color }});
-  --background-second: light-dark({{ color }}, lab(35.03% -8.77 -8.15 / 0.21));
-  --foreground: light-dark({{ color }}, lab(100% 0.01 -0.01));
-  --foreground-second: light-dark(lab(100% 0.01 -0.01), {{ color }});
-  --border: light-dark(#C2C6D0, lab(100% 0.01 -0.01 / 0.226));
-  --border-second: light-dark(lab(100% 0.01 -0.01 / 0.226), #c2c6d05a);
+  color-scheme: light;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  --accent: {{ accent }};
+  /* Black and white: paper and ink, with greys between. */
+  --background: light-dark(#fafafa, #0e0e10);
+  --background-second: light-dark(#ffffff, #17171a);
+  --foreground: light-dark(#0a0a0b, #f4f4f5);
+  --foreground-second: light-dark(#5c5c63, #a1a1aa);
+  --border: light-dark(#e4e4e7, #26262b);
+  --border-second: light-dark(#d1d1d6, #3a3a41);
+  --brand: var(--foreground);
 }
 
 .dark {
   color-scheme: dark;
 }
 
+{% if style == "tailwind" %}
 @theme {
   --color-background: var(--background);
   --color-background-second: var(--background-second);
@@ -35,32 +48,26 @@
   --color-foreground-second: var(--foreground-second);
   --color-border: var(--border);
   --color-border-second: var(--border-second);
+  --color-accent: var(--accent);
+  --color-brand: var(--brand);
 
-
-  --spacing-slider-left: 2px;
-  --spacing-slider-width: 40px;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 }
+{% endif %}
 
-
+{% if style in ("vanilla", "other") %}
+{% include "vanilla.css" %}
+{% else %}
 @layer base {
-  /**{corner-shape: superellipse(1.5);} apple corner */
   body {
     background-color: var(--background);
     color: var(--foreground);
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
-  h1,h2,h3,h4{
-    font-family: "Geist";
-    font-weight: "800"
+  ::selection {
+    background-color: color-mix(in oklab, var(--brand) 30%, transparent);
   }
 }
+{% endif %}
 
-@layer components {
-  .w-container {
-    @apply max-w-6xl mx-auto;
-  }
-
-  .ease {
-    @apply transition-all duration-300 ease-in-out;
-  }
-}
+{% if starter | default(true) %}{% include "starter.css" %}{% endif %}
+{% endif %}

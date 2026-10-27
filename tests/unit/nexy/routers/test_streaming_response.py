@@ -1,6 +1,6 @@
 import asyncio
 
-from nexy.modules.routers.fbrouter import _make_request_handler
+from nexy.modules.routers.fbrouter.handlers import make_request_handler
 
 
 class TestStreamingResponse:
@@ -10,7 +10,7 @@ class TestStreamingResponse:
         def Home() -> str:  # noqa: N802 - mirrors real compiled route components (PascalCase)
             return "<h1>Home</h1>"
 
-        handler = _make_request_handler(Home)
+        handler = make_request_handler(Home)
 
         async def run():
             from fastapi import Request
@@ -41,7 +41,7 @@ class TestStreamingResponse:
         def Home() -> str:  # noqa: N802 - mirrors real compiled route components (PascalCase)
             return "<h1>Home</h1>"
 
-        handler = _make_request_handler(Home)
+        handler = make_request_handler(Home)
 
         async def run():
             from fastapi import Request
@@ -60,7 +60,7 @@ class TestStreamingResponse:
             yield "Home"
             yield "</h1>"
 
-        handler = _make_request_handler(Home)
+        handler = make_request_handler(Home)
 
         async def run():
             from fastapi import Request

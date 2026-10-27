@@ -1,21 +1,15 @@
 from pathlib import Path
 from typing import Any
 
-import questionary
-
+from nexy.modules.cli import tui
 from nexy.modules.i18n import t
 
+from .questions import BACK, DONE, STEPS
 
-def ask_project_name() -> str | None:
-    """Prompt for a project name (None when the user cancels)."""
-    name = questionary.text(
-        t("cli.new.prompt", "Project name:"),
-        qmark="»",
-        validate=validate_project_name,
-    ).ask()
-    if name is None:
-        return None
-    return name or ask_project_name()
+
+def ask_project_name() -> str:
+    """Prompt for a project name; Ctrl+C raises KeyboardInterrupt."""
+    return str(tui.text(t("cli.new.prompt", "Project name:"), validate=validate_project_name))
 
 
 def validate_project_name(name: str) -> bool | str:
@@ -32,110 +26,28 @@ def validate_project_name(name: str) -> bool | str:
 
 
 class ProjectPrompter:
-    """Handles all interactive questions for project initialization."""
+    """Runs the questions of project initialization, in order.
+
+    Each question answers done, skip (does not apply) or back. Going back returns to the last
+    question that was actually asked, so skipped ones are never shown on the way.
+    """
 
     def __init__(self) -> None:
         self.config: dict[str, Any] = {}
 
     def ask_all(self) -> dict[str, Any]:
         """Runs the full questionnaire and returns the configuration dictionary."""
-        self.ask_router()
-        self.ask_project_type()
-        self.ask_orm()
+        asked: list[int] = []
+        position = 0
+        while position < len(STEPS):
+            outcome = STEPS[position](self.config)
+            if outcome == BACK:
+                position = asked.pop() if asked else position
+                continue
+            if outcome == DONE:
+                asked.append(position)
+            position += 1
         return self.config
 
-    def ask_router(self) -> None:
-        self.config["FBRouter"] = questionary.confirm(
-            t("init.ask.router", "Use file-based router?"),
-            default=True,
-            qmark="»",
-            instruction="(yes/no) ",
-        ).ask()
 
-    def ask_project_type(self) -> None:
-        choice = questionary.select(
-            t("init.ask.project_type", "Choose the type of project"),
-            choices=[
-                questionary.Choice(t("init.choice.web", "Web (monolith web app)"), value="web"),
-                questionary.Choice(t("init.choice.api", "API (RESTful API)"), value="api"),
-            ],
-            pointer="ʋ",
-            qmark="»",
-            show_description=True,
-            show_selected=True,
-        ).ask()
-
-        self.config["project_type"] = choice
-        self.config["useCSR"] = False
-        self.config["client_framework"] = "none"
-
-        if choice != "web":
-            return
-        if self.config.get("FBRouter"):
-            self.ask_csr()
-        else:
-            self.ask_framework(required=False)
-
-    def ask_csr(self) -> None:
-        """Client routing replaces .nexy views, so it needs a renderer."""
-        enabled = questionary.confirm(
-            t(
-                "init.ask.csr",
-                "Enable client-side routing (navigate without full page reload)?",
-            ),
-            default=False,
-            qmark="»",
-            instruction="(yes/no) ",
-        ).ask()
-        self.config["useCSR"] = bool(enabled)
-        self.ask_framework(required=bool(enabled))
-
-    def ask_framework(self, required: bool) -> None:
-        """Pick the renderer; with client routing the "none" choice disappears."""
-        if not required:
-            use_client = questionary.confirm(
-                t("init.ask.client_component", "Would you like to use a client component?"),
-                default=True,
-                qmark="»",
-            ).ask()
-            if not use_client:
-                return
-        framework = questionary.select(
-            t("init.ask.framework", "Choose the client framework"),
-            choices=["React", "Vue", "Svelte", "Solid", "Preact"],
-            pointer="ʋ",
-            qmark="»",
-        ).ask()
-        self.config["client_framework"] = framework.lower()
-
-    def ask_orm(self) -> None:
-        self.config["orm"] = questionary.select(
-            t("init.ask.orm", "Choose an ORM"),
-            choices=["SQLModel", "SQLAlchemy", "Tortoise-ORM", "None"],
-            pointer="ʋ",
-            qmark="»",
-            default="None",
-        ).ask()
-        if self.config["orm"] != "None":
-            self.ask_db_url()
-
-    def ask_db_url(self) -> None:
-        db_type = questionary.select(
-            t("init.ask.db_type", "Choose database"),
-            choices=["SQLite", "PostgreSQL", "MySQL"],
-            pointer="ʋ",
-            qmark="»",
-            default="SQLite",
-        ).ask()
-
-        defaults = {
-            "SQLite": "sqlite:///dev.db",
-            "PostgreSQL": "postgresql://user:password@localhost:5432/mydb",
-            "MySQL": "mysql://user:password@localhost:3306/mydb",
-        }
-        url = questionary.text(
-            t("init.ask.db_url", "Database URL"),
-            default=defaults[db_type],
-            qmark="»",
-        ).ask()
-        self.config["db_url"] = url
+__all__ = ["ProjectPrompter", "ask_project_name", "validate_project_name"]

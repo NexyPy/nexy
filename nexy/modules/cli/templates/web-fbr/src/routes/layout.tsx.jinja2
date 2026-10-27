@@ -1,0 +1,46 @@
+{% if not utility_ui %}{%- if useCSR and client_framework in ["react", "solid", "preact"] -%}
+{%- set charset_attr = "charSet" if client_framework == "react" else "charset" -%}
+{%- set cross_attr = "crossOrigin" if client_framework == "react" else "crossorigin" -%}
+{%- if client_framework == "react" -%}
+import type { ReactNode } from "react";
+{%- elif client_framework == "solid" -%}
+import type { JSX } from "solid-js";
+{%- else -%}
+import type { ComponentChildren } from "preact";
+{%- endif %}
+import Header from "@/components/header.tsx";
+import Footer from "@/components/footer.tsx";
+import ThemeScript from "@/components/theme-script.tsx";
+
+{% if client_framework == "solid" -%}
+export default function RootLayout(props: { children: JSX.Element }) {
+{%- elif client_framework == "react" -%}
+export default function RootLayout({ children }: { children: ReactNode }) {
+{%- else -%}
+export default function RootLayout({ children }: { children: ComponentChildren }) {
+{%- endif %}
+  return (
+    <html lang="en"{% if client_framework == "react" %} suppressHydrationWarning{% endif %}>
+      <head>
+        <meta {{ charset_attr }}="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Built with Nexy" />
+        <title>Nexy App</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" {{ cross_attr }}="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
+          rel="stylesheet"
+        />
+        <ThemeScript />
+      </head>
+      <body {{ cls }}="nx-page">
+        <Header />
+        <main {{ cls }}="nx-main">{% if client_framework == "solid" %}{props.children}{% else %}{children}{% endif %}</main>
+        <Footer />
+      </body>
+    </html>
+  );
+}
+{% endif -%}
+{% endif %}

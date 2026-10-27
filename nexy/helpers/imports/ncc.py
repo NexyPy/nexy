@@ -8,6 +8,31 @@ from typing import Any
 from nexy.core.config import Config
 
 
+def _escape(value: str) -> str:
+    return _html_escape(value, quote=True)
+
+
+def _expand_alias(path: str) -> str:
+    """*path* with a configured alias (``@/ui``) replaced by what it stands for."""
+    for key, target in (Config.ALIASES or {}).items():
+        alias = key.rstrip("/")
+        if path == alias or path.startswith(f"{alias}/"):
+            suffix = path[len(alias) :].lstrip("/")
+            base = target.lstrip("/")
+            return f"/{base}/{suffix}" if suffix else f"/{base}"
+    return path
+
+
+def _island_attributes(directive: str | None, media: str | None) -> str:
+    """The attributes of an island that hydrates later (``client:idle``, ``client:media``...)."""
+    if not directive:
+        return ""
+    attributes = f'data-nexy-island="" data-nexy-directive="{_html_escape(directive, quote=True)}" '
+    if media and directive == "client:media":
+        attributes += f'data-nexy-media="{_html_escape(media, quote=True)}" '
+    return attributes
+
+
 class NexyClientComponent:
     def __init__(self, path: str, framework: str, symbol: str) -> None:
         self.path = path
@@ -39,26 +64,13 @@ class NexyClientComponent:
             return "{}"
 
     def _resolve_path(self) -> str:
-        aliases = Config.ALIASES or {}
-        resolved = self.path
-
-        for key, target in aliases.items():
-            k = key.rstrip("/")
-            if resolved == k or resolved.startswith(f"{k}/"):
-                t = target.lstrip("/")
-                suffix = resolved[len(k) :].lstrip("/")
-                resolved = f"/{t}/{suffix}" if suffix else f"/{t}"
-                break
-
-        if not resolved.startswith("/") and not (
-            resolved.startswith("./") or resolved.startswith("../")
-        ):
+        resolved = _expand_alias(self.path)
+        if not resolved.startswith(("/", "./", "../")):
             stripped = resolved.lstrip("./")
-            for base in ["src", "src/components"]:
+            for base in ("src", "src/components"):
                 candidate = Path(Config.PROJECT_ROOT).joinpath(base, stripped)
                 if candidate.is_file():
                     return f"/{candidate.as_posix().lstrip('/')}"
-
         return resolved if resolved.startswith("/") else f"/{resolved}"
 
     def _render_tag(
@@ -69,35 +81,21 @@ class NexyClientComponent:
         directive: str | None = None,
         media: str | None = None,
     ) -> str:
-        esc_props = _html_escape(props_json, quote=True)
-        esc_symbol = _html_escape(self.symbol, quote=True)
-        esc_fw = _html_escape(self.framework, quote=True)
-        esc_url = _html_escape(url, quote=True)
-
-        is_prod = Path("__nexy__/nexy.prod").is_file()
-
-        content = self._get_static_content(esc_url, esc_symbol)
+        escape = _escape
+        in_production = Path("__nexy__/nexy.prod").is_file()
         key_hash = hashlib.md5(url.encode("utf-8"), usedforsecurity=False).hexdigest()
-
-        path_attr = f'data-nexy-path="{esc_url}" ' if not is_prod else ""
-        island_attr = ""
-        if directive:
-            island_attr = (
-                f'data-nexy-island="" data-nexy-directive="{_html_escape(directive, quote=True)}" '
-            )
-            if media and directive == "client:media":
-                island_attr += f'data-nexy-media="{_html_escape(media, quote=True)}" '
-
-        return (
-            f'<ncc id="{mount_id}" '
-            f'data-nexy-fw="{esc_fw}" '
-            f"{path_attr}"
-            f'data-nexy-key="{key_hash}" '
-            f'style="display: contents;" '
-            f"{island_attr}"
-            f'data-nexy-symbol="{esc_symbol}" '
-            f'data-nexy-props="{esc_props}">{content}</ncc>'
-        )
+        attributes = [
+            f'id="{mount_id}"',
+            f'data-nexy-fw="{escape(self.framework)}"',
+            "" if in_production else f'data-nexy-path="{escape(url)}"',
+            f'data-nexy-key="{key_hash}"',
+            'style="display: contents;"',
+            _island_attributes(directive, media).strip(),
+            f'data-nexy-symbol="{escape(self.symbol)}"',
+            f'data-nexy-props="{escape(props_json)}"',
+        ]
+        content = self._get_static_content(escape(url), escape(self.symbol))
+        return f"<ncc {' '.join(filter(None, attributes))}>{content}</ncc>"
 
     def _get_static_content(self, url: str, symbol: str) -> str:
         clean_url = url.replace(".tsx", "")
