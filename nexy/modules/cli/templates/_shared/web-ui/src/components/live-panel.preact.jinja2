@@ -1,0 +1,48 @@
+{% if useCSR %}{% raw %}import type { ComponentChildren } from "preact";
+import { useEffect, useState } from "preact/hooks";
+
+import Frame from "@/components/frame.tsx";
+
+function useLivePage() {
+  const [host, setHost] = useState("");
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setHost(window.location.host);
+    setReady(true);
+  }, []);
+
+  return { host, ready };
+}
+
+function Row({ label, children }: { label: string; children: ComponentChildren }) {
+  return (
+    <div class="flex items-center justify-between gap-6 border-t border-paper/10 py-3.5 first:border-t-0">
+      <dt class="text-paper/55">{label}</dt>
+      <dd class="flex items-center gap-2.5 text-paper">{children}</dd>
+    </div>
+  );
+}
+
+// What this very page can tell about itself, measured in the browser.
+export default function LivePanel() {
+  const { host, ready } = useLivePage();
+
+  return (
+    <Frame className="border border-paper/15 bg-ink/70 p-6 backdrop-blur-sm">
+      <p class="mb-2 font-mono text-[0.7rem] uppercase tracking-[0.07em] text-paper/55">This page, right now</p>
+      <dl class="font-mono text-sm">
+        <Row label="Address">{host || "..."}</Row>
+        <Row label="Server">FastAPI</Row>
+        <Row label="Interactive">
+          <span
+            class={`size-2 rounded-full ${ready ? "bg-signal motion-safe:animate-pulse" : "bg-paper/30"}`}
+            aria-hidden="true"
+          />
+          {ready ? "Ready" : "Starting"}
+        </Row>
+      </dl>
+    </Frame>
+  );
+}
+{% endraw %}{% endif %}

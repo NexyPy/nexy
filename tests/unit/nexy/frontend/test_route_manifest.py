@@ -1,4 +1,7 @@
+import re
 from pathlib import Path
+
+import pytest
 
 from nexy.modules.frontend import FrontendGenerator
 
@@ -168,20 +171,34 @@ class TestClientRouterGeneration:
         assert "import.meta.glob" in content
         assert "mdx" not in content.split("import.meta.glob")[1].split(")")[0]
 
-    def test_runtime_has_match_route(self, tmp_path, monkeypatch):
-        content = self._generate(tmp_path, monkeypatch)
-        assert "matchRoute" in content
-        assert "window.history.pushState" in content
+    def _router(self, tmp_path) -> str:
+        return (tmp_path / "__nexy__" / "src" / "router.ts").read_text(encoding="utf-8")
 
-    def test_runtime_handles_popstate_without_reload(self, tmp_path, monkeypatch):
+    def test_runtime_matches_routes_and_drives_the_router(self, tmp_path, monkeypatch):
         content = self._generate(tmp_path, monkeypatch)
-        assert "popstate" in content
-        assert "window.location.reload" in content
+        assert "matchRoute" in content and "createRouter" in content
+        assert "w.__nexy_router = router" in content
 
-    def test_runtime_does_not_fetch_full_document(self, tmp_path, monkeypatch):
+    def test_the_router_pushes_history_after_rendering(self, tmp_path, monkeypatch):
+        self._generate(tmp_path, monkeypatch)
+        router = self._router(tmp_path)
+        assert "pushState" in router and "replaceState" in router
+
+    def test_the_router_handles_popstate_without_reloading(self, tmp_path, monkeypatch):
+        self._generate(tmp_path, monkeypatch)
+        router = self._router(tmp_path)
+        assert "popstate" in router
+        assert "location.reload" not in router
+
+    def test_the_router_only_starts_for_a_project_with_client_routes(self, tmp_path, monkeypatch):
         content = self._generate(tmp_path, monkeypatch)
-        assert "fetch(" not in content
-        assert "DOMParser" not in content
+        assert "if (NEXY_ROUTES.some(isNavigable)) router.start();" in content
+
+    def test_navigation_does_not_fetch_a_full_document(self, tmp_path, monkeypatch):
+        content = self._generate(tmp_path, monkeypatch)
+        router = self._router(tmp_path)
+        for source in (content, router):
+            assert not re.search(r"\bfetch\(", source) and "DOMParser" not in source
 
     def test_runtime_catch_all_matches_multiple_segments(self, tmp_path, monkeypatch):
         content = self._generate(tmp_path, monkeypatch)
@@ -201,43 +218,66 @@ class TestClientRouterGeneration:
         assert ".mdx" not in keys
 
 
-class TestClientLinkComponent:
-    """The generated Link.tsx is a typed, Next.js-style client link."""
+class TestClientAdapters:
+    """Each project gets the Link, Image and hooks of its own framework, and nothing else."""
 
-    def _generate(self, tmp_path, monkeypatch) -> Path:
-        self._routes(tmp_path)
-        monkeypatch.chdir(tmp_path)
-        gen = FrontendGenerator()
-        gen.generate()
-        return tmp_path / "__nexy__" / "src" / "Link.tsx"
+    FILES = {
+        "react": {"client.ts"},
+        "preact": {"client.ts"},
+        "vue": {"client.ts"},
+        "solid": {"client.tsx"},
+        "svelte": {"client.ts", "Link.svelte", "Image.svelte"},
+    }
+    EVERY_ADAPTER_FILE = {"client.ts", "client.tsx", "Link.svelte", "Image.svelte", "Link.tsx"}
 
-    def _routes(self, tmp_path: Path) -> Path:
+    def _generate(self, tmp_path, nexy_project, framework: str | None) -> Path:
+        if framework:
+            nexy_project(
+                f"useFF = {framework}()", imports=f"from nexy.frontend import {framework}\n"
+            )
+        else:
+            nexy_project("")
         routes = tmp_path / "src" / "routes"
-        routes.mkdir(parents=True)
+        routes.mkdir(parents=True, exist_ok=True)
         (routes / "index.tsx").write_text("export default function Home() { return null }")
-        return routes
+        FrontendGenerator().generate()
+        return tmp_path / "__nexy__" / "src"
 
-    def test_generates_link_component(self, tmp_path, monkeypatch):
-        target = self._generate(tmp_path, monkeypatch)
-        assert target.is_file()
+    @pytest.mark.parametrize("framework", sorted(FILES))
+    def test_the_adapter_of_the_framework_is_written(self, tmp_path, nexy_project, framework):
+        src = self._generate(tmp_path, nexy_project, framework)
+        present = {name for name in self.EVERY_ADAPTER_FILE if (src / name).is_file()}
+        assert present == self.FILES[framework]
 
-    def test_link_is_named_export(self, tmp_path, monkeypatch):
-        content = self._generate(tmp_path, monkeypatch).read_text(encoding="utf-8")
-        assert "export function Link" in content
+    @pytest.mark.parametrize("framework", sorted(FILES))
+    def test_the_shared_modules_come_with_it(self, tmp_path, nexy_project, framework):
+        src = self._generate(tmp_path, nexy_project, framework)
+        assert (src / "router.ts").is_file() and (src / "shared.ts").is_file()
 
-    def test_link_href_is_typed_route(self, tmp_path, monkeypatch):
-        content = self._generate(tmp_path, monkeypatch).read_text(encoding="utf-8")
-        assert "href: Route" in content
-        assert "from '@nexy/routes.auto.ts'" in content
+    def test_a_project_without_a_framework_gets_no_adapter(self, tmp_path, nexy_project):
+        src = self._generate(tmp_path, nexy_project, None)
+        assert not any((src / name).exists() for name in self.EVERY_ADAPTER_FILE)
 
-    def test_link_has_no_to_prop(self, tmp_path, monkeypatch):
-        content = self._generate(tmp_path, monkeypatch).read_text(encoding="utf-8")
-        assert "to:" not in content
+    def test_switching_framework_removes_the_old_adapter(self, tmp_path, nexy_project):
+        src = self._generate(tmp_path, nexy_project, "svelte")
+        assert (src / "Link.svelte").is_file()
+        self._generate(tmp_path, nexy_project, "react")
+        assert not (src / "Link.svelte").exists() and (src / "client.ts").is_file()
 
-    def test_link_emits_data_nexy_link(self, tmp_path, monkeypatch):
-        content = self._generate(tmp_path, monkeypatch).read_text(encoding="utf-8")
-        assert "data-nexy-link" in content
+    def test_the_legacy_react_only_link_is_gone(self, tmp_path, nexy_project):
+        src = self._generate(tmp_path, nexy_project, "react")
+        assert not (src / "Link.tsx").exists()
 
-    def test_link_prefetches_on_hover(self, tmp_path, monkeypatch):
-        content = self._generate(tmp_path, monkeypatch).read_text(encoding="utf-8")
-        assert "__nexy_prefetch" in content
+    @pytest.mark.parametrize("framework", sorted(FILES))
+    def test_links_are_typed_by_the_routes_of_the_project(self, tmp_path, nexy_project, framework):
+        src = self._generate(tmp_path, nexy_project, framework)
+        adapter = next(src / n for n in ("client.tsx", "client.ts") if (src / n).is_file())
+        content = adapter.read_text(encoding="utf-8")
+        assert "from './routes.auto.ts'" in content and "export type Href" in content
+
+    @pytest.mark.parametrize("framework", sorted(FILES))
+    def test_links_carry_the_router_marker(self, tmp_path, nexy_project, framework):
+        src = self._generate(tmp_path, nexy_project, framework)
+        names = sorted(self.FILES[framework] - {"Image.svelte"})
+        text = "".join((src / n).read_text(encoding="utf-8") for n in names)
+        assert "data-nexy-link" in text

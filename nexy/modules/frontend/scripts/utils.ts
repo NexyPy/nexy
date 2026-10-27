@@ -30,12 +30,29 @@ export const FRAMEWORK_PACKAGES: Record<Framework, string> = {
   svelte: 'svelte',
 }
 
+export async function loadMdxPlugin(
+  files: string[],
+  jsxImportSource: 'react' | 'preact'
+): Promise<any[]> {
+  if (!files.some(file => path.extname(file) === '.mdx')) return []
+  try {
+    const { default: mdx } = await import('@mdx-js/esbuild')
+    return [mdx({ jsx: true, jsxImportSource })]
+  } catch {
+    throw new Error(
+      '.mdx files found but @mdx-js/esbuild is not installed. ' +
+      'Run: bun add -d @mdx-js/esbuild (or pnpm add -D / npm install -D)'
+    )
+  }
+}
+
 export function getProjectFrameworks(): Set<Framework> {
   const frameworks = new Set<Framework>()
   const files = glob.sync('**/*.{tsx,jsx,vue,svelte,mdx}', {
     cwd: process.cwd(),
     ignore: globIgnore()
   })
+  let hasUnmarkedTsx = false
 
   for (const file of files) {
     if (file.endsWith('.vue')) {
@@ -56,8 +73,20 @@ export function getProjectFrameworks(): Set<Framework> {
       ) {
         frameworks.add('react')
       } else {
-        console.warn(`${c.yellow}⚠ client-only: ${file} - no framework imports detected, client bundle only (no SSR)${c.reset}`)
+        hasUnmarkedTsx = true
       }
+    }
+  }
+
+  // The automatic JSX runtime needs no framework import, so a React 19 or
+  // Preact component looks import-free. Fall back to what is installed.
+  if (hasUnmarkedTsx && frameworks.size === 0) {
+    if (isFrameworkInstalled('react')) {
+      frameworks.add('react')
+    } else if (isFrameworkInstalled('preact')) {
+      frameworks.add('preact')
+    } else if (isFrameworkInstalled('solid')) {
+      frameworks.add('solid')
     }
   }
 
@@ -73,7 +102,7 @@ export function checkFrameworks(usedFrameworks: Set<Framework>): Set<Framework> 
     } else {
       console.warn(
         `${c.yellow} "${framework}" is used but not installed.` +
-        ` Run: pnpm add ${FRAMEWORK_PACKAGES[framework]}${c.reset}`
+        ` Install it with your package manager: ${FRAMEWORK_PACKAGES[framework]}${c.reset}`
       )
     }
   }

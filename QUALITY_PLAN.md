@@ -1,7 +1,23 @@
 # Plan qualité Nexy - Audit & feuille de route
 
-> **Statut : DRAFT, en attente de validation. Aucun fichier source n'a été modifié.**
-> Date des mesures : 2026-10-18 · Branche `V2` · Python 3.13 / 3.14
+> **Mise à jour du 2026-10-27.** Les chiffres des sections 1 à 3 datent du 2026-10-18 et ne sont plus
+> exacts. État mesuré le 2026-10-27, branche `feature/csr-layout-conventions`, Python 3.13 :
+>
+> | Garde-fou | Résultat |
+> |---|---|
+> | `ruff check nexy/ tests/` | 0 erreur |
+> | `ruff format --check nexy/ tests/` | tous les fichiers formatés |
+> | `mypy nexy --strict` | 0 erreur, 203 fichiers |
+> | `bandit -r nexy/ -c .bandit` | 0 finding |
+> | `audit_structure.py --check` | passe |
+> | `pip-audit` (`audit_dependencies.py`) | aucune vulnérabilité connue, 1 ignorée (voir `SECURITY.md`) |
+> | Couverture (branches) | 86,6 %, seuil `fail_under` = 84 |
+> | Tests | voir `CHANGELOG.md` et la CI; les tests e2e (`-m e2e`) tournent dans `e2e.yml` |
+>
+> Le reste de ce document est conservé comme historique de la feuille de route.
+
+> **Statut initial : DRAFT, en attente de validation. Aucun fichier source n'a été modifié.**
+> Date des mesures initiales : 2026-10-18 · Branche `V2` · Python 3.13 / 3.14
 
 ---
 

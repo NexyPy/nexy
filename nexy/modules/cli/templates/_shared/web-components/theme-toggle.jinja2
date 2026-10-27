@@ -1,0 +1,7 @@
+{% if not utility_ui %}{% if useCSR and client_framework == "vue" %}
+<template>
+{% include "theme_switch.html.jinja2" %}
+</template>
+{% elif useCSR and client_framework == "svelte" %}
+{% include "theme_switch.html.jinja2" %}
+{% endif %}{% endif %}

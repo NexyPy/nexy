@@ -1,0 +1,12 @@
+{% if not utility_ui %}{% if useCSR and client_framework in ("react", "solid", "preact") %}
+{%- set cls = "className" if client_framework == "react" else "class" -%}
+import { Link } from "@nexy/client";
+import ThemeToggle from "@/components/theme-toggle.tsx";
+
+export default function Header() {
+  return (
+{% include "header.html.jinja2" %}
+  );
+}
+{% endif %}
+{% endif %}

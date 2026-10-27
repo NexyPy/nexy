@@ -1,4 +1,33 @@
+import shutil
+import threading
 from pathlib import Path
+
+_DISK_PREFIX = "__nexy__"
+_CREATION = threading.Lock()
+
+
+def _key(path: str) -> str:
+    """The form a path has in the VFS: forward slashes."""
+    return path.replace("\\", "/")
+
+
+def _scan_disk(prefix: str) -> set[str]:
+    """The paths of the files under *prefix* on disk; their contents are not read."""
+    root = Path(prefix)
+    if not root.exists():
+        return set()
+    return {_key(str(file)) for file in root.rglob("*") if file.is_file()}
+
+
+def _on_disk(path: str, prefix: str) -> bool:
+    """True for a path under the persisted *prefix* whose file exists on disk."""
+    return path.startswith(prefix) and Path(path).exists()
+
+
+def _save(path: str, content: str) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(content, encoding="utf-8")
 
 
 class VFS:
@@ -10,79 +39,54 @@ class VFS:
     """
 
     _instance: "VFS | None" = None
-    _files: dict[str, str] = {}
-    _disk_files: set[str] = set()
     _dev_mode: bool = False
-    _disk_prefix: str = "__nexy__"
+    _disk_prefix: str = _DISK_PREFIX
+    _files: dict[str, str]
+    _disk_files: set[str]
 
     def __new__(cls) -> "VFS":
+        # The compiler builds components on several threads and each one asks for the VFS.
+        # Without the lock two could make an instance each, and what one writes the other loses.
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._index_from_disk()
+            with _CREATION:
+                if cls._instance is None:
+                    instance = super().__new__(cls)
+                    instance._files = {}
+                    instance._disk_files = _scan_disk(cls._disk_prefix)
+                    cls._instance = instance
         return cls._instance
-
-    def _index_from_disk(self) -> None:
-        """Indexes file paths from __nexy__ directory without reading contents.
-        Content will be loaded lazily on first read() call.
-        """
-        disk_path = Path(self._disk_prefix)
-        if not disk_path.exists():
-            return
-        self._disk_files.clear()
-        for file_path in disk_path.rglob("*"):
-            if file_path.is_file():
-                vfs_path = str(file_path).replace("\\", "/")
-                self._disk_files.add(vfs_path)
 
     def write(self, path: str, content: str) -> None:
         """Writes content to a virtual file path and persists to disk (unless in dev mode)."""
-        path = path.replace("\\", "/")
+        path = _key(path)
         self._files[path] = content
         self._disk_files.add(path)
-
         if not self._dev_mode and path.startswith(self._disk_prefix):
-            disk_path = Path(path)
-            disk_path.parent.mkdir(parents=True, exist_ok=True)
-            disk_path.write_text(content, encoding="utf-8")
+            _save(path, content)
 
     def read(self, path: str) -> str:
         """Reads content from a virtual file path (checks memory first, then disk)."""
-        path = path.replace("\\", "/")
-        if path in self._files:
-            return self._files[path]
-
-        if path.startswith(self._disk_prefix):
-            disk_path = Path(path)
-            if disk_path.exists():
-                content = disk_path.read_text(encoding="utf-8")
-                self._files[path] = content
-                self._disk_files.add(path)
-                return content
-
-        raise FileNotFoundError(f"Virtual file not found: {path}")
+        path = _key(path)
+        if path not in self._files and _on_disk(path, self._disk_prefix):
+            self._files[path] = Path(path).read_text(encoding="utf-8")
+            self._disk_files.add(path)
+        if path not in self._files:
+            raise FileNotFoundError(f"Virtual file not found: {path}")
+        return self._files[path]
 
     def exists(self, path: str) -> bool:
         """Checks if a virtual file exists (checks memory first, then indexed disk paths)."""
-        path = path.replace("\\", "/")
-        if path in self._files:
+        path = _key(path)
+        if path in self._files or path in self._disk_files:
             return True
-
-        if path in self._disk_files:
+        if _on_disk(path, self._disk_prefix):
+            self._disk_files.add(path)
             return True
-
-        if path.startswith(self._disk_prefix):
-            disk_path = Path(path)
-            if disk_path.exists():
-                self._disk_files.add(path)
-                return True
-
         return False
 
     def list_files(self) -> list[str]:
         """Returns a list of all files in the VFS (memory + indexed disk paths)."""
-        files = set(self._files.keys())
-        files.update(self._disk_files)
-        return list(files)
+        return list(set(self._files) | self._disk_files)
 
     @classmethod
     def set_dev_mode(cls, dev: bool = True) -> None:
@@ -96,33 +100,21 @@ class VFS:
         """Clears all files from the VFS. If clear_disk is True, also deletes from disk."""
         self._files.clear()
         self._disk_files.clear()
-
-        if clear_disk:
-            disk_path = Path(self._disk_prefix)
-            if disk_path.exists():
-                import shutil
-
-                shutil.rmtree(disk_path)
+        if clear_disk and Path(self._disk_prefix).exists():
+            shutil.rmtree(self._disk_prefix)
 
     def delete(self, path: str) -> None:
         """Deletes a file from the VFS (memory and disk)."""
-        path = path.replace("\\", "/")
-        if path in self._files:
-            del self._files[path]
+        path = _key(path)
+        self._files.pop(path, None)
         self._disk_files.discard(path)
+        if _on_disk(path, self._disk_prefix):
+            Path(path).unlink(missing_ok=True)
 
-        if path.startswith(self._disk_prefix):
-            disk_path = Path(path)
-            if disk_path.exists():
-                disk_path.unlink(missing_ok=True)
-
-    def flush_to_disk(self, prefix: str = "__nexy__") -> None:
+    def flush_to_disk(self, prefix: str = _DISK_PREFIX) -> None:
         """Flushes all in-memory files to disk (already done automatically in write)."""
         if self._dev_mode:
             return
-        for path, content in self._files.items():
-            if not path.startswith(prefix):
-                continue
-            disk_path = Path(path)
-            disk_path.parent.mkdir(parents=True, exist_ok=True)
-            disk_path.write_text(content, encoding="utf-8")
+        for path, content in list(self._files.items()):
+            if path.startswith(prefix):
+                _save(path, content)

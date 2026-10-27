@@ -1,0 +1,621 @@
+/* The look of the starter pages, in the colours of Nexy: deep emerald in the dark, mint mist in the
+   light. Plain CSS on the design tokens above, so the same file serves Tailwind, UnoCSS and
+   plain-CSS projects. In a layer, so a utility class still wins. */
+
+/* Moving between two pages feels like switching a tab: the header stays, the content slides. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: nx-leave 0.16s ease-in both;
+}
+::view-transition-new(root) {
+  animation: nx-enter 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+::view-transition-group(nx-header),
+::view-transition-group(nx-current) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+@keyframes nx-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes nx-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+@layer components {
+  .nx-page {
+    --btn-bg: var(--foreground);
+    --btn-bg-hover: light-dark(#27272a, #ffffff);
+    --btn-fg: var(--background);
+    --grid: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.05));
+    --ring: light-dark(rgb(0 0 0 / 0.45), rgb(255 255 255 / 0.55));
+    --glow-a: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.08));
+    --glow-b: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.04));
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Geist", "Inter", system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .nx-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .nx-container {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+  :where(.nx-page) :where(a, button, summary):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  .nx-page code {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.875em;
+  }
+  .nx-page :where(p code, li code) {
+    padding: 0.1em 0.4em;
+    border-radius: 0.375rem;
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+
+  /* Header */
+  .nx-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    view-transition-name: nx-header;
+    background: color-mix(in oklab, var(--background) 80%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+  }
+  .nx-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 4rem;
+  }
+  .nx-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+  }
+  .nx-brand img {
+    display: block;
+    height: 1.25rem;
+    width: auto;
+  }
+  :root.dark .nx-brand img {
+    filter: brightness(0) invert(1);
+  }
+  .nx-nav-links {
+    display: flex;
+    gap: 0.25rem;
+  }
+  .nx-nav-link {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--foreground-second);
+    text-decoration: none;
+    transition: color 0.15s, background-color 0.15s;
+  }
+  .nx-nav-link:hover {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  }
+  .nx-nav-link[aria-current="page"] {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 10%, transparent);
+    view-transition-name: nx-current;
+  }
+  .nx-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* The light/dark switch: the thumb holds the icon of the current mode. */
+  .nx-switch {
+    position: relative;
+    flex: none;
+    width: 3.25rem;
+    height: 1.875rem;
+    padding: 0;
+    border: 1px solid var(--border-second);
+    border-radius: 999px;
+    background: var(--background-second);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .nx-switch:hover {
+    border-color: var(--brand);
+  }
+  .nx-switch-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(1.875rem - 6px);
+    height: calc(1.875rem - 6px);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  :root.dark .nx-switch-thumb {
+    transform: translateX(1.375rem);
+  }
+  .nx-switch-thumb svg {
+    grid-area: 1 / 1;
+    transition: opacity 0.2s, transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .nx-switch-moon,
+  :root.dark .nx-switch-sun {
+    opacity: 0;
+    transform: rotate(-60deg) scale(0.6);
+  }
+  :root.dark .nx-switch-moon {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    border-radius: 0.875rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.18s, border-color 0.18s, transform 0.12s;
+  }
+  .btn-primary {
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border: 1px solid transparent;
+  }
+  .btn-primary:hover {
+    background: var(--btn-bg-hover);
+  }
+  .btn-ghost {
+    color: var(--foreground);
+    border: 1px solid var(--border-second);
+    background: color-mix(in oklab, var(--background-second) 70%, transparent);
+  }
+  .btn-ghost:hover {
+    border-color: var(--brand);
+  }
+  .btn-primary:active,
+  .btn-ghost:active {
+    transform: translateY(1px);
+  }
+
+  /* Hero */
+  .nx-hero-wrap {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .nx-hero-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(60% 70% at 82% 24%, var(--glow-a), transparent 70%),
+      radial-gradient(46% 56% at 6% 4%, var(--glow-b), transparent 70%);
+  }
+  .nx-hero-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(70% 80% at 60% 30%, #000, transparent);
+  }
+  .nx-hero {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    padding-block: 3.5rem 2rem;
+  }
+  @media (min-width: 60rem) {
+    .nx-hero {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      gap: 3rem;
+      padding-block: 5rem 3.5rem;
+    }
+  }
+  .nx-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.25rem 0.875rem 0.25rem 0.3rem;
+    border: 1px solid var(--border-second);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--background-second) 75%, transparent);
+    font-size: 0.875rem;
+    color: var(--foreground-second);
+    text-decoration: none;
+    transition: border-color 0.18s, color 0.18s;
+  }
+  .nx-pill:hover {
+    border-color: var(--brand);
+    color: var(--foreground);
+  }
+  .nx-pill b {
+    padding: 0.1rem 0.6rem;
+    border-radius: 999px;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .nx-title {
+    margin-top: 1.5rem;
+    font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+    font-size: clamp(2.6rem, 6.2vw, 4.4rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+  .nx-lead {
+    margin-top: 1.5rem;
+    max-width: 34rem;
+    font-size: 1.1875rem;
+    line-height: 1.65;
+    color: var(--foreground-second);
+  }
+  .nx-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .nx-art {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 34rem);
+  }
+  .nx-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .nx-art-dark,
+  :root.dark .nx-art-light {
+    display: none !important;
+  }
+  :root.dark .nx-art-dark {
+    display: block !important;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .nx-art {
+      animation: nx-float 7s ease-in-out infinite alternate;
+    }
+    .nx-hero-copy > * {
+      animation: nx-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .nx-hero-copy > :nth-child(2) {
+      animation-delay: 0.08s;
+    }
+    .nx-hero-copy > :nth-child(3) {
+      animation-delay: 0.16s;
+    }
+    .nx-hero-copy > :nth-child(4) {
+      animation-delay: 0.24s;
+    }
+  }
+  @keyframes nx-float {
+    to {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes nx-rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+
+  /* Sections */
+  .nx-section {
+    padding-block: 4.5rem 1rem;
+  }
+  .nx-h2 {
+    font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+    font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .nx-sub {
+    margin-top: 0.875rem;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    color: var(--foreground-second);
+  }
+
+  /* Tech separator */
+  .nx-sep-wrap {
+    padding-block: 1.5rem;
+  }
+  .nx-sep {
+    position: relative;
+  }
+  .nx-sep-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem 1.25rem;
+    padding: 0.875rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--background-second) 80%, transparent);
+    color: var(--foreground-second);
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .nx-sep-inner span:not(.nx-sep-dot) {
+    color: var(--foreground-second);
+  }
+  .nx-sep-dot {
+    width: 0.25rem;
+    height: 0.25rem;
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 12%, transparent);
+  }
+
+  /* What you get: tiles of different sizes */
+  .nx-bento {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.25rem;
+  }
+  @media (min-width: 52rem) {
+    .nx-bento {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .nx-tile-wide {
+      grid-column: span 4;
+    }
+    .nx-tile-narrow {
+      grid-column: span 2;
+    }
+  }
+  .nx-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    background: var(--background-second);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .nx-tile:hover {
+    border-color: var(--border-second);
+    transform: translateY(-2px);
+  }
+  .nx-tile h3 {
+    font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+    font-size: 1.3125rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .nx-tile p {
+    color: var(--foreground-second);
+  }
+  .nx-tile-visual {
+    margin-top: auto;
+    padding-top: 1.25rem;
+  }
+  .nx-icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.875rem;
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+    color: var(--foreground);
+  }
+  .nx-icon::before {
+    content: "";
+    width: 1.375rem;
+    height: 1.375rem;
+    background: currentColor;
+    mask: var(--glyph) center / contain no-repeat;
+  }
+  .nx-icon-server {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='6' rx='2'/%3E%3Crect x='3' y='14' width='18' height='6' rx='2'/%3E%3Cpath d='M7 7h.01M7 17h.01'/%3E%3C/svg%3E");
+  }
+  .nx-icon-frontend {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M3 9h18M9 9v11'/%3E%3C/svg%3E");
+  }
+  .nx-icon-bolt {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 2 4 14h7l-1 8 9-12h-7z'/%3E%3C/svg%3E");
+  }
+  .nx-icon-shield {
+    --glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E");
+  }
+  .nx-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .nx-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border-second);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .nx-chip::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--foreground-second);
+  }
+  .nx-chip-current {
+    border-color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+  /* The call to action */
+  .nx-band-wrap {
+    padding-block: 4.5rem;
+  }
+  .nx-band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: clamp(2rem, 6vw, 4rem);
+    border-radius: 2rem;
+    background: var(--foreground);
+    color: var(--background);
+  }
+  .nx-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: currentColor;
+    mask: url("/pattern.svg") right center / auto 100% no-repeat;
+  }
+  .nx-band .nx-h2 {
+    max-width: 24rem;
+  }
+  .nx-band .nx-sub {
+    color: color-mix(in oklab, var(--background) 65%, var(--foreground));
+  }
+  .nx-band .btn-primary {
+    --btn-bg: var(--background);
+    --btn-bg-hover: color-mix(in oklab, var(--background) 88%, var(--foreground));
+    --btn-fg: var(--foreground);
+  }
+  .nx-band .btn-ghost {
+    color: var(--background);
+    border-color: color-mix(in oklab, var(--background) 40%, transparent);
+    background: transparent;
+  }
+  .nx-band .btn-ghost:hover {
+    border-color: var(--background);
+  }
+
+  /* Pages of text */
+  .nx-article {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    padding-block: 4.5rem;
+  }
+  @media (min-width: 60rem) {
+    .nx-article {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
+      gap: 3rem;
+    }
+  }
+  .nx-article p {
+    margin-top: 1.25rem;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    color: var(--foreground-second);
+  }
+  .nx-article .nx-actions {
+    margin-top: 2rem;
+  }
+  .nx-list {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+    max-width: 36rem;
+  }
+  .nx-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    background: var(--background-second);
+  }
+  .nx-row span:last-child {
+    font-size: 0.875rem;
+    color: var(--foreground-second);
+  }
+
+  /* Footer */
+  .nx-footer {
+    border-top: 1px solid var(--border);
+  }
+  .nx-footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 2rem;
+    font-size: 0.9375rem;
+    color: var(--foreground-second);
+  }
+  .nx-footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .nx-footer-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nx-footer-links a:hover {
+    color: var(--foreground);
+  }
+}

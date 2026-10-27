@@ -18,6 +18,7 @@ from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from typing import Any
 
+import httpx
 import pytest
 from websockets.asyncio.server import ServerConnection, serve
 from websockets.datastructures import Headers
@@ -163,7 +164,11 @@ async def _fake_vite() -> AsyncIterator[int]:
 
     port = _free_port()
     async with serve(
-        handler, "127.0.0.1", port, subprotocols=["vite-hmr"], process_request=process_request
+        handler,
+        "127.0.0.1",
+        port,
+        subprotocols=["vite-hmr", "vite-ping"],
+        process_request=process_request,
     ):
         yield port
 
@@ -181,6 +186,33 @@ def _http(
     path: str, app: Any = None, method: str = "GET", host: str = "localhost:3000"
 ) -> _Recorder:
     return asyncio.run(_run(_http_scope(path, method, host), _empty_receive, app))
+
+
+def _nav_scope(path: str) -> Scope:
+    """Scope of a browser document navigation (Accept: text/html)."""
+    scope = _http_scope(path)
+    scope["headers"].append((b"accept", b"text/html,application/xhtml+xml"))
+    return scope
+
+
+@asynccontextmanager
+async def _fake_vite_serves_all() -> AsyncIterator[int]:
+    """Upstream that answers 200 for every path (no 404 fallthrough)."""
+
+    def process_request(_connection: ServerConnection, request: Request) -> Response | None:
+        if request.headers.get("Upgrade", "").lower() == "websocket":
+            return None
+        headers = Headers({"content-type": "application/javascript"})
+        return Response(200, "OK", headers, FAKE_BODY)
+
+    port = _free_port()
+    async with serve(lambda c: _echo(c), "127.0.0.1", port, process_request=process_request):
+        yield port
+
+
+async def _echo(connection: ServerConnection) -> None:
+    async for _message in connection:
+        pass
 
 
 @pytest.mark.parametrize(
@@ -231,6 +263,30 @@ def test_proxy_strips_hop_by_hop_headers() -> None:
 def test_proxy_forwards_websocket_upgrade() -> None:
     send = asyncio.run(_run(_websocket_scope(subprotocols=["vite-hmr"]), _disconnect_receive))
     assert send.messages[0]["type"] == "websocket.accept"
+
+
+def test_proxy_forwards_the_ping_socket_the_client_uses_after_a_restart() -> None:
+    send = asyncio.run(_run(_websocket_scope(subprotocols=["vite-ping"]), _disconnect_receive))
+    assert send.messages[0] == {"type": "websocket.accept", "subprotocol": "vite-ping"}
+
+
+def test_proxy_does_not_hand_the_ping_socket_to_the_app() -> None:
+    app = _FakeApp()
+    asyncio.run(_run(_websocket_scope(subprotocols=["vite-ping"]), _disconnect_receive, app))
+    assert app.reached is False
+
+
+def test_proxy_refuses_the_ping_socket_from_another_host() -> None:
+    scope = _websocket_scope(subprotocols=["vite-ping"], host="evil.example")
+    send = asyncio.run(_run(scope, _disconnect_receive))
+    assert send.messages[0] == {"type": "websocket.close", "code": 1008}
+
+
+def test_proxy_picks_the_vite_subprotocol_among_the_ones_offered() -> None:
+    send = asyncio.run(
+        _run(_websocket_scope(subprotocols=["other", "vite-hmr"]), _disconnect_receive)
+    )
+    assert send.messages[0]["subprotocol"] == "vite-hmr"
 
 
 def test_proxy_does_not_reach_app_for_hmr_socket() -> None:
@@ -285,6 +341,79 @@ def test_proxy_passes_unsafe_method_to_app() -> None:
     app = _FakeApp()
     _http("/api/items", app, method="POST")
     assert app.reached is True
+
+
+def test_html_navigation_skips_upstream_probe() -> None:
+    """A document navigation must not wait for a guaranteed Vite 404.
+
+    The upstream here answers 200 for every path, so the app body proves the
+    probe was skipped entirely (a probe would relay FAKE_BODY instead).
+    """
+
+    async def run() -> tuple[_Recorder, _FakeApp]:
+        send = _Recorder()
+        app = _FakeApp()
+        async with _fake_vite_serves_all() as port:
+            middleware = ViteProxyMiddleware(app, port=port)
+            await middleware(_nav_scope("/about"), _empty_receive, send)
+        return send, app
+
+    body, app = asyncio.run(run())
+    assert body.body == b"nexy" and app.reached is True
+
+
+def test_html_navigation_to_dotted_path_still_probes_vite() -> None:
+    """``/favicon.ico`` may live in Vite's public dir: keep the probe."""
+
+    async def run() -> _Recorder:
+        send = _Recorder()
+        async with _fake_vite_serves_all() as port:
+            middleware = ViteProxyMiddleware(_FakeApp(), port=port)
+            await middleware(_nav_scope("/favicon.ico"), _empty_receive, send)
+        return send
+
+    assert asyncio.run(run()).body == FAKE_BODY
+
+
+def test_module_request_without_html_accept_still_probes_vite() -> None:
+    """Script/module fetches send ``Accept: */*`` and must reach Vite."""
+
+    async def run() -> _Recorder:
+        send = _Recorder()
+        async with _fake_vite_serves_all() as port:
+            middleware = ViteProxyMiddleware(_FakeApp(), port=port)
+            scope = _http_scope("/src/main.ts")
+            scope["headers"].append((b"accept", b"*/*"))
+            await middleware(scope, _empty_receive, send)
+        return send
+
+    assert asyncio.run(run()).body == FAKE_BODY
+
+
+def test_proxy_reuses_one_upstream_client() -> None:
+    """Keep-alive pooling: one AsyncClient for the middleware's lifetime."""
+
+    async def run() -> None:
+        middleware = ViteProxyMiddleware(_FakeApp(), port=_free_port())
+        first = middleware._upstream_client()
+        second = middleware._upstream_client()
+        assert first is second
+        await first.aclose()
+
+    asyncio.run(run())
+
+
+def test_upstream_client_ignores_proxy_env_vars() -> None:
+    """trust_env must be off: HTTP_PROXY would detour loopback traffic."""
+
+    async def run() -> httpx.AsyncClient:
+        middleware = ViteProxyMiddleware(_FakeApp(), port=_free_port())
+        client = middleware._upstream_client()
+        assert client._trust_env is False
+        await client.aclose()
+        return client
+
+    asyncio.run(run())
 
 
 def test_proxy_passes_non_http_scope_to_app() -> None:
@@ -417,3 +546,27 @@ def test_vite_proxy_port_reads_client_port(tmp_path, monkeypatch) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("NEXY_DEV_SERVER", "1")
     assert vite_proxy_port() == 5199
+
+
+class TestAppDocumentShortcut:
+    @staticmethod
+    def _scope(path: str, accept: str = "text/html") -> dict:
+        return {"path": path, "headers": [(b"accept", accept.encode())]}
+
+    def test_extensionless_page_goes_straight_to_the_app(self):
+        from nexy.helpers.server.proxy import _is_app_document
+
+        assert _is_app_document(self._scope("/about"))
+
+    def test_plugin_ui_and_well_known_paths_still_reach_vite(self):
+        from nexy.helpers.server.proxy import _is_app_document
+
+        assert not _is_app_document(self._scope("/__inspect/"))
+        assert not _is_app_document(self._scope("/.well-known/apple-app-site-association"))
+        assert not _is_app_document(self._scope("/blog/_drafts/post"))
+
+    def test_files_and_non_html_requests_are_probed(self):
+        from nexy.helpers.server.proxy import _is_app_document
+
+        assert not _is_app_document(self._scope("/logo.svg"))
+        assert not _is_app_document(self._scope("/about", accept="application/json"))

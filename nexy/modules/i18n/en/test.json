@@ -1,8 +1,0 @@
-{
-  "test": {
-    "skip_tool": "pytest not found - skipping server tests",
-    "skip_client": "vitest not configured - skipping client tests",
-    "failed": "{count} test run(s) failed",
-    "passed": "all tests passed"
-  }
-}

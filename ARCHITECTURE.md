@@ -163,7 +163,12 @@ flowchart LR
 6. **Generator** - produces `__nexy__/*.py` and `__nexy__/*.html` in VFS
 
 Dedicated compilers handle other route kinds: `frontend_route.py` for
-`.tsx`/`.jsx`/`.mdx`, `markdown_route.py` for `.md`.
+`.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx`, `markdown_route.py` for `.md`.
+
+The Python compiler never compiles what Vite compiles. For a framework route, including `.mdx`,
+`frontend_route.py` writes only a thin wrapper module that serves the route; Vite compiles the
+source and the SSG scripts pre-render it at build time. `.nexy` goes through the pipeline above and
+`.md` through `cmarkgfm`.
 
 ### Routing
 

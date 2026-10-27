@@ -22,6 +22,3 @@ class Discovery:
 
     def add_excluded_dir(self, dir_name: str) -> None:
         self.excluded_dirs.add(dir_name)
-
-    def remove_excluded_dir(self, dir_name: str) -> None:
-        self.excluded_dirs.discard(dir_name)

@@ -1,0 +1,21 @@
+{% if not utility_ui %}{% if useCSR and client_framework in ("react", "solid", "preact") %}
+// Sets the theme before the first paint, so a dark page never flashes white. Render it in <head>.
+const criticalCss = `{% include "critical.css" %}`;
+
+const themeScript = `{% include "theme_script.js" %}`;
+
+export default function ThemeScript() {
+  return (
+    <>
+{% if client_framework == "solid" %}
+      <style innerHTML={criticalCss} />
+      <script innerHTML={themeScript} />
+{% else %}
+      <style dangerouslySetInnerHTML={% raw %}{{ __html: criticalCss }}{% endraw %} />
+      <script dangerouslySetInnerHTML={% raw %}{{ __html: themeScript }}{% endraw %} />
+{% endif %}
+    </>
+  );
+}
+{% endif %}
+{% endif %}

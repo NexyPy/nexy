@@ -42,10 +42,15 @@ browser.
 ## Rendering
 
 Server rendering is on by default. Set `useCSR = True` for
-[client-side rendering](../routing/fbr/csr.md).
+[client-side rendering](../rendering/csr.md).
+
+## Layouts
+
+In client mode the root `layout.vue` owns the HTML document and every `layout.vue` renders its page in
+the default `<slot />`. See [layout.vue](../routing/fbr/layouts/layout.vue.md).
 
 ## Next steps
 
 - [Views](README.md): compare formats
-- [Frontend](../frontend.md): Vite and the client build
+- [Frontend](../guides/frontend.md): Vite and the client build
 - [.nexy files](nexyfile.md): mixing server logic and Vue islands

@@ -1,0 +1,27 @@
+{% if not useCSR %}{% raw %}---
+from "@/components/Container.nexy" import Container
+from "@/components/LinePattern.nexy" import LinePattern
+
+links = [
+    ("Docs", "https://github.com/NexyPy/nexy#readme"),
+    ("GitHub", "https://github.com/NexyPy/nexy"),
+    ("Releases", "https://github.com/NexyPy/nexy/releases"),
+]
+---
+<footer class="relative overflow-hidden border-t border-paper/10 bg-ink py-14 text-paper">
+  <LinePattern side="left" />
+  <Container class_name="relative flex flex-wrap items-center justify-between gap-6">
+    <div class="flex items-center gap-5">
+      <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
+      <p class="text-sm text-paper/65">Open source under the MIT license.</p>
+    </div>
+    <ul class="flex flex-wrap gap-6 font-mono text-xs uppercase tracking-[0.04em]">
+      {% for label, href in links %}
+      <li>
+        <a href="{{ href }}" target="_blank" rel="noopener noreferrer" class="text-paper/65 transition-colors hover:text-paper">{{ label }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </Container>
+</footer>
+{% endraw %}{% endif %}

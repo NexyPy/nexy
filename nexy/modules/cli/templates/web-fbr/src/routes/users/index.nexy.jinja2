@@ -1,4 +1,4 @@
-{% if not useCSR %}{% if orm != "None" %}
+{% if not utility_ui %}{% if not useCSR %}{% if orm != "None" %}
 {% if orm == "Tortoise-ORM" %}
 ---
 import asyncio
@@ -11,15 +11,15 @@ from src.services.user_service import UserService
 users = UserService.get_all()
 ---
 {% endif %}{% raw %}
-<section class="p-8 max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold mb-6">Users</h1>
-    <div class="space-y-3">
+<section class="nx-container nx-article">
+    <h1 class="nx-title">Users</h1>
+    <div class="nx-list">
         {% for user in users %}
-        <div class="p-4 border border-border rounded-xl bg-background-second flex items-center justify-between">
-            <span class="font-medium">{{ user.name }}</span>
-            <span class="text-sm text-muted-foreground">{{ user.email }}</span>
+        <div class="nx-row">
+            <span>{{ user.name }}</span>
+            <span>{{ user.email }}</span>
         </div>
         {% endfor %}
     </div>
 </section>{% endraw %}
-{% endif %}{% endif %}
+{% endif %}{% endif %}{% endif %}

@@ -5,10 +5,6 @@ path. The implementations live in ``nexy.modules.frontend``; this module is the
 stable public surface.
 """
 
-from nexy.modules.frontend.preact import preact
-from nexy.modules.frontend.react import react
-from nexy.modules.frontend.solid import solid
-from nexy.modules.frontend.svelte import svelte
-from nexy.modules.frontend.vue import vue
+from nexy.modules.frontend.frameworks import preact, react, solid, svelte, vue
 
 __all__ = ["preact", "react", "solid", "svelte", "vue"]

@@ -19,6 +19,24 @@ class NexyVFSLoader(importlib.abc.SourceLoader):
         return self.vfs.read(path).encode("utf-8")
 
 
+# What a compiled module can be stored as: a module, a .nexy, or a package.
+_CANDIDATES = ((".py", False), (".nexy", False), ("/__init__.py", True))
+
+
+_PREFIX = "__nexy__/"
+
+
+def _spellings(path: str) -> list[str]:
+    """Other ways the file may be named: lowercase, and `-` for `_` or the reverse.
+
+    Only the part after `__nexy__/` is changed: the folder itself has a fixed name.
+    """
+    head = _PREFIX if path.startswith(_PREFIX) else ""
+    tail = path[len(head) :]
+    variants = [tail.lower(), tail.replace("_", "-"), tail.replace("-", "_")]
+    return [head + variant for variant in variants if variant != tail]
+
+
 class NexyVFSFinder(importlib.abc.MetaPathFinder):
     def __init__(self) -> None:
         self.vfs = VFS()
@@ -26,21 +44,7 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
     def _find_vfs_path(self, base_path: str) -> str | None:
         if self.vfs.exists(base_path):
             return base_path
-        candidates = [
-            base_path.lower(),
-            base_path.upper(),
-            base_path.replace("_", "-"),
-            base_path.replace("-", "_"),
-        ]
-        for candidate in candidates:
-            if self.vfs.exists(candidate):
-                return candidate
-        for fname in self.vfs.list_files():
-            normalized_fname = fname.replace("\\", "/")
-            for cand in candidates:
-                if normalized_fname == cand:
-                    return cand
-        return None
+        return next((path for path in _spellings(base_path) if self.vfs.exists(path)), None)
 
     def find_spec(
         self, fullname: str, _path: Sequence[str] | None, _target: object | None = None
@@ -48,24 +52,14 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
         if not fullname.startswith("__nexy__"):
             return None
 
-        parts = fullname.split(".")
-        base_path = "/".join(parts)
-
-        py_path = base_path + ".py"
-        found = self._find_vfs_path(py_path)
-        if found:
-            return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found))
-
-        nexy_path = base_path + ".nexy"
-        found = self._find_vfs_path(nexy_path)
-        if found:
-            return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found))
-
-        init_path = base_path + "/__init__.py"
-        found = self._find_vfs_path(init_path)
-        if found:
-            return importlib.util.spec_from_loader(fullname, NexyVFSLoader(found), is_package=True)
-
+        base_path = "/".join(fullname.split("."))
+        for suffix, is_package in _CANDIDATES:
+            found = self._find_vfs_path(base_path + suffix)
+            if found:
+                loader = NexyVFSLoader(found)
+                return importlib.util.spec_from_loader(
+                    fullname, loader, is_package=is_package or None
+                )
         return None
 
 

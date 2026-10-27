@@ -10,6 +10,25 @@ from nexy.core.models import (
 
 from .sanitizer import LogicSanitizer
 
+_BY_EXTENSION = {
+    ".nexy": ComponentType.NEXY,
+    ".vue": ComponentType.VUE,
+    ".svelte": ComponentType.SVELTE,
+    ".tsx": ComponentType.REACT,
+    ".jsx": ComponentType.REACT,
+    ".solid": ComponentType.SOLID,
+    ".preact": ComponentType.PREACT,
+    ".json": ComponentType.JSON,
+}
+_BY_FRAMEWORK = {
+    "vue": ComponentType.VUE,
+    "react": ComponentType.REACT,
+    "svelte": ComponentType.SVELTE,
+    "solid": ComponentType.SOLID,
+    "preact": ComponentType.PREACT,
+    "json": ComponentType.JSON,
+}
+
 
 class ASTUtils:
     """Helper class to reduce the complexity of AST inspection."""
@@ -24,33 +43,25 @@ class ASTUtils:
         )
 
     @staticmethod
-    def extract_loader_args(node: ast.Assign) -> dict[str | None, Any] | None:
-        """Attempts to extract path/framework/symbol from a __nexy_loader__ or __Import call."""
-        if not (isinstance(node.value, ast.Call)):
-            return None
-
-        call = node.value
-        func = call.func
-
-        valid_call = False
+    def _is_loader_call(func: ast.expr) -> bool:
+        """True for ``__nexy_loader__.import_component(...)`` and ``__Import(...)``."""
         if isinstance(func, ast.Attribute):
-            if (
+            return (
                 isinstance(func.value, ast.Name)
                 and func.value.id == "__nexy_loader__"
                 and func.attr == "import_component"
-            ):
-                valid_call = True
-        elif isinstance(func, ast.Name) and func.id == "__Import":
-            valid_call = True
+            )
+        return isinstance(func, ast.Name) and func.id == "__Import"
 
-        if not valid_call:
+    @staticmethod
+    def extract_loader_args(node: ast.Assign) -> dict[str | None, Any] | None:
+        """Attempts to extract path/framework/symbol from a __nexy_loader__ or __Import call."""
+        call = node.value
+        if not isinstance(call, ast.Call) or not ASTUtils._is_loader_call(call.func):
             return None
-
-        args: dict[str | None, Any] = {}
-        for kw in call.keywords:
-            if isinstance(kw.value, ast.Constant):
-                args[kw.arg] = kw.value.value
-        return args
+        return {
+            kw.arg: kw.value.value for kw in call.keywords if isinstance(kw.value, ast.Constant)
+        }
 
 
 class LogicParser:
@@ -120,64 +131,30 @@ class LogicParser:
     def _try_extract_import(self, node: ast.Assign, result: LogicResult) -> bool:
         """Attempts to extract import metadata for the component manifest."""
         args = ASTUtils.extract_loader_args(node)
-        if not args:
+        path = args.get("path") if args else None
+        symbol = args.get("symbol") if args else None
+        if not (args and path and symbol):
             return False
-
-        target = node.targets[0]
-        alias = target.id if isinstance(target, ast.Name) else None
-
-        path = args.get("path")
-        symbol = args.get("symbol")
-        fw_str = args.get("framework")
-
-        if not path or not symbol:
-            return False
-
-        if fw_str == "css" or (path and path.endswith(".css")):
+        framework = args.get("framework")
+        if framework == "css" or path.endswith(".css"):
             result.css_imports.append(path)
-
-        comp_type = self._determine_component_type(path, fw_str)
-        ext = path[path.rfind(".") :] if "." in path else ""
-
+        target = node.targets[0]
         result.nexy_imports.append(
             NexyImport(
                 path=path,
                 symbol=symbol,
-                alias=alias,
+                alias=target.id if isinstance(target, ast.Name) else None,
                 raw_source="",
-                extension=ext,
-                comp_type=comp_type,
+                extension=path[path.rfind(".") :] if "." in path else "",
+                comp_type=self._determine_component_type(path, framework),
             )
         )
         return True
 
     def _determine_component_type(self, path: str, framework: str | None) -> ComponentType:
         """Maps file extensions and framework strings to ComponentType."""
-        path_lower = path.lower()
-        mapping = {
-            ".nexy": ComponentType.NEXY,
-            ".vue": ComponentType.VUE,
-            ".svelte": ComponentType.SVELTE,
-            ".tsx": ComponentType.REACT,
-            ".jsx": ComponentType.REACT,
-            ".solid": ComponentType.SOLID,
-            ".preact": ComponentType.PREACT,
-            ".json": ComponentType.JSON,
-        }
-
-        for ext, ctype in mapping.items():
-            if path_lower.endswith(ext):
-                return ctype
-
-        fw_map = {
-            "vue": ComponentType.VUE,
-            "react": ComponentType.REACT,
-            "svelte": ComponentType.SVELTE,
-            "solid": ComponentType.SOLID,
-            "preact": ComponentType.PREACT,
-            "json": ComponentType.JSON,
-        }
-        if framework in fw_map:
-            return fw_map[framework]
-
-        return ComponentType.UNKNOWN
+        lowered = path.lower()
+        by_extension = next(
+            (kind for ext, kind in _BY_EXTENSION.items() if lowered.endswith(ext)), None
+        )
+        return by_extension or _BY_FRAMEWORK.get(framework or "", ComponentType.UNKNOWN)

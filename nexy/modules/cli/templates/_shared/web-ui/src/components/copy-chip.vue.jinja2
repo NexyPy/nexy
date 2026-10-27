@@ -1,0 +1,39 @@
+{% if useCSR %}{% raw %}<script setup lang="ts">
+import { ref } from "vue";
+
+import Icon from "@/components/icon.vue";
+
+const COPY = "M9 9h11v11H9zM5 15V5a1 1 0 011-1h10";
+const CHECK = "M5 13l4 4L19 7";
+
+// A snippet the visitor can copy in one click.
+const props = defineProps<{ text: string }>();
+const copied = ref(false);
+
+async function copy() {
+  try {
+    await navigator.clipboard.writeText(props.text);
+  } catch {
+    return;
+  }
+  copied.value = true;
+  setTimeout(() => (copied.value = false), 1600);
+}
+</script>
+
+<template>
+  <div class="mt-4">
+    <button
+      type="button"
+      class="inline-flex max-w-full items-center gap-3 border border-border-second bg-background-second px-3.5 py-2 text-left font-mono text-xs transition-colors hover:border-foreground"
+      @click="copy"
+    >
+      <code class="truncate">{{ text }}</code>
+      <span :class="['shrink-0', copied ? 'text-signal' : 'text-foreground-second']">
+        <Icon :path="copied ? CHECK : COPY" :size="14" />
+      </span>
+    </button>
+    <span class="sr-only" role="status">{{ copied ? "Copied" : "" }}</span>
+  </div>
+</template>
+{% endraw %}{% endif %}

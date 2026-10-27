@@ -18,6 +18,25 @@ def print_cmd_result(name: str, result: subprocess.CompletedProcess[str]) -> Non
         console.print(f"[red]{result.stderr}[/red]")
 
 
+_CAPTIONS = {"skipped": "Skipped (cached)", "success": "Build success", "failed": "Build Failed"}
+_BRANCH, _LAST_BRANCH, _BAR = "├──", "└──", "│"
+
+
+def _groups(
+    success: list[str],
+    failed: list[str],
+    skipped: list[str] | None,
+    styles: tuple[str, str],
+    captions: dict[str, str],
+) -> list[tuple[str, list[str], str, str]]:
+    """(caption, files, style, mark) of each group; skipped comes first, and only when given."""
+    ok_style, fail_style = styles
+    groups = [(captions["skipped"], skipped, "dim", "=")] if skipped else []
+    groups.append((captions["success"], success, ok_style, "✓"))
+    groups.append((captions["failed"], failed, fail_style, "✗"))
+    return groups
+
+
 def print_tree_section(
     title: str,
     success: list[str],
@@ -32,34 +51,16 @@ def print_tree_section(
     *labels* overrides the default group captions (kept caller-side so this
     module stays free of i18n).
     """
-    captions = {
-        "skipped": "Skipped (cached)",
-        "success": "Build success",
-        "failed": "Build Failed",
-        **(labels or {}),
-    }
-
-    total = len(success) + len(failed) + (len(skipped) if skipped else 0)
-    console.print(f"\n{title} [{total}]")
-    console.print("[dim]\u2502[/dim]")
-
-    groups: list[tuple[str, list[str], str, str]] = []
-    if skipped:
-        groups.append((captions["skipped"], skipped, "dim", "="))
-    groups.extend(
-        [
-            (captions["success"], success, ok_style, "\u2713"),
-            (captions["failed"], failed, fail_style, "\u2717"),
-        ]
-    )
-
-    for gi, (gname, gfiles, gstyle, mark) in enumerate(groups):
-        is_last_group = gi == len(groups) - 1
-        gprefix = "\u2514\u2500\u2500" if is_last_group else "\u251c\u2500\u2500"
-        console.print(f"[dim]{gprefix} {gname} [{len(gfiles)}][/dim]")
-        _print_group_files(gfiles, gstyle, mark)
-        if not is_last_group:
-            console.print("[dim]\u2502[/dim]")
+    captions = {**_CAPTIONS, **(labels or {})}
+    groups = _groups(success, failed, skipped, (ok_style, fail_style), captions)
+    console.print(f"\n{title} [{len(success) + len(failed) + len(skipped or [])}]")
+    console.print(f"[dim]{_BAR}[/dim]")
+    for index, (caption, files, style, mark) in enumerate(groups):
+        last = index == len(groups) - 1
+        console.print(f"[dim]{_LAST_BRANCH if last else _BRANCH} {caption} [{len(files)}][/dim]")
+        _print_group_files(files, style, mark)
+        if not last:
+            console.print(f"[dim]{_BAR}[/dim]")
 
 
 def _print_group_files(files: list[str], style: str, mark: str) -> None:

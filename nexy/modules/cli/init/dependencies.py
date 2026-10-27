@@ -1,11 +1,16 @@
-import os
 import shutil
-import subprocess  # nosec B404
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
+from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
+from nexy.helpers.common.network import Connection, probe
+from nexy.helpers.common.tasks import run_task
+from nexy.modules.cli.init.connection import is_usable
 from nexy.modules.i18n import t
+
+from .databases import driver_packages
 
 _ORM_PACKAGES: dict[str, str] = {
     "SQLModel": "sqlmodel",
@@ -19,182 +24,157 @@ _ORM_EXTRA_PACKAGES: dict[str, list[str]] = {
 
 
 def node_package_manager(dest: Path = Path(".")) -> str | None:
-    """Detect the package manager for *dest* (lockfile first): pnpm, yarn or npm."""
-    if (dest / "pnpm-lock.yaml").exists() and shutil.which("pnpm"):
-        return "pnpm"
-    if (dest / "yarn.lock").exists() and shutil.which("yarn"):
-        return "yarn"
-    if shutil.which("npm"):
-        return "npm"
-    return None
+    """Detect the package manager for *dest*.
+
+    A lockfile wins; otherwise the priority is bun, pnpm, then npm.
+    """
+    return package_manager.detect(dest)
+
+
+def _no_package_manager(deps: list[str]) -> None:
+    warning = f"[yellow]{t('add.warning', 'Warning:')}[/yellow] "
+    message = t(
+        "add.no_pm", "No package manager found. Please install dependencies manually: {names}"
+    )
+    console.print(warning + message.format(names=", ".join(deps)))
 
 
 def install_packages(deps: list[str], dest: Path | None = None) -> None:
     """Install node *deps* into *dest* with the detected package manager."""
     if not deps:
         return
-
     dest = (dest or Path(".")).resolve()
-    pm = node_package_manager(dest)
-    if pm is None:
-        warning_msg = f"[yellow]{t('add.warning', 'Warning:')}[/yellow] " + t(
-            "add.no_pm", "No package manager found. Please install dependencies manually:"
-        )
-        console.print(warning_msg + ", ".join(deps))
+    manager = node_package_manager(dest)
+    if manager is None:
+        _no_package_manager(deps)
         return
-
-    cmd = ["npm", "install"] if pm == "npm" else [pm, "add"]
-    install_msg = (
-        f"[yellow]nexy[/yellow] » {t('add.installing', 'Installing dependencies')}: "
-        f"{', '.join(deps)}..."
+    names = ", ".join(deps)
+    result = run_task(
+        t("add.installing", "Installing {names}").format(names=names),
+        package_manager.add_argv(manager, deps),
+        cwd=dest,
+        done=t("add.installed", "Installed {names}").format(names=names),
     )
-    with console.status(install_msg, spinner="dots"):
-        try:
-            # Resolve the shim (npm.cmd on Windows) ourselves so the shell is
-            # never involved: shell=True would let package names inject commands.
-            exe = shutil.which(cmd[0]) or cmd[0]
-            subprocess.run([exe, *cmd[1:], *deps], check=True, capture_output=True, cwd=dest)  # nosec B603
-        except subprocess.CalledProcessError as e:
-            error_msg = (
-                f"[red]{t('add.error', 'Error:')}[/red] "
-                f"{t('add.install_failed', 'Failed to install dependencies')}: {e}"
-            )
-            console.print(error_msg)
+    if not result.ok:
+        error, failed = (
+            t("add.error", "Error:"),
+            t("add.install_failed", "Failed to install dependencies"),
+        )
+        console.print(f"[red]{error}[/red] {failed}")
+
+
+def orm_packages(orm: str | None, database: str) -> list[str]:
+    """The Python packages an ORM needs: the ORM, its tools, its database driver, dotenv."""
+    package = _ORM_PACKAGES.get(orm or "")
+    if not package:
+        return []
+    return [
+        package,
+        *_ORM_EXTRA_PACKAGES.get(orm or "", []),
+        *driver_packages(database, orm or ""),
+        "python-dotenv",
+    ]
+
+
+def _remove_egg_info(directory: Path) -> None:
+    for item in directory.glob("**/*.egg-info"):
+        if item.is_dir():
+            shutil.rmtree(item, ignore_errors=True)
 
 
 class DependencyInstaller:
     """Handles automatic installation of dependencies for different project types."""
 
-    def __init__(self, directory: Path = Path("."), orm: str | None = None):
+    def __init__(
+        self,
+        directory: Path = Path("."),
+        orm: str | None = None,
+        database: str = "none",
+        probe: Callable[[], Connection] = probe,
+    ):
         self.directory = directory
         self.orm = orm
-        self.is_windows = os.name == "nt"
+        self.database = database
+        self.probe = probe
+        self._finished = 0
+        self._total = 0
         self.venv_dir = directory / ".venv"
 
-    def _python(self) -> str:
-        if self.is_windows:
-            return str(self.venv_dir / "Scripts" / "python.exe")
-        return str(self.venv_dir / "bin" / "python")
+    def _run(self, cmd: list[str], label: str, done: str | None = None) -> bool:
+        place = (self._finished, self._total) if self._total > 1 else None
+        self._finished += 1
+        return run_task(label, cmd, cwd=self.directory, done=done, progress=place).ok
 
-    def _run(self, cmd: list[str], desc: str) -> bool:
-        try:
-            # Resolve the executable (npm.cmd/pnpm.cmd on Windows) instead of
-            # using shell=True, which would let arguments inject commands.
-            exe = shutil.which(cmd[0]) or cmd[0]
-            subprocess.run(
-                [exe, *cmd[1:]],
-                cwd=self.directory,
-                check=True,
-                capture_output=True,
-            )  # nosec B603
-            return True
-        except subprocess.CalledProcessError as e:
-            console.print(f"[red]nexy[/red] » {desc} failed")
-            output = (e.stdout or b"") + (e.stderr or b"")
-            if output:
-                console.print(output.decode("utf-8", errors="replace")[:500])
-            return False
+    def _count_steps(self) -> int:
+        """How many tasks `install_all` is about to run, for the progress bar."""
+        steps = int(shutil.which("uv") is None) + int(not self.venv_dir.exists())
+        steps += int(
+            (self.directory / "package.json").exists()
+            and (self.directory / "vite.config.ts").exists()
+        )
+        steps += int((self.directory / "pyproject.toml").exists())
+        return steps + len(orm_packages(self.orm, self.database))
+
+    def _check_connection(self) -> Connection:
+        """Look at the connection with a spinner: the probe can take a few seconds."""
+        label = t("init.network.checking", "Checking the connection...")
+        with console.status(label, spinner="dots"):
+            return self.probe()
 
     def install_all(self) -> None:
+        if not is_usable(self._check_connection()):
+            return
+        self._finished, self._total = 0, self._count_steps()
         self._install_uv()
         self.create_venv()
         self.install_node_dependencies()
         self.install_python_dependencies()
         self.install_orm()
-        self._remove_egg_info()
+        _remove_egg_info(self.directory)
 
     def _install_uv(self) -> None:
         if shutil.which("uv") is not None:
             return
-        with console.status(
-            "[yellow]nexy[/yellow] » Installing uv...",
-            spinner="dots",
-        ):
-            self._run(
-                [sys.executable, "-m", "pip", "install", "uv"],
-                "uv installation",
-            )
+        self._run(
+            [sys.executable, "-m", "pip", "install", "uv"],
+            t("init.installing_uv", "Installing uv"),
+            t("init.installed_uv", "Installed uv"),
+        )
 
     def create_venv(self) -> None:
         if self.venv_dir.exists():
             return
-
-        with console.status(
-            "[yellow]nexy[/yellow] » Creating virtual environment...",
-            spinner="dots",
-        ):
-            self._run(["uv", "venv", str(self.venv_dir)], "Virtual environment creation")
+        self._run(
+            ["uv", "venv", str(self.venv_dir)],
+            t("init.venv.creating", "Creating virtual environment"),
+            t("init.venv.created", "Created virtual environment"),
+        )
 
     def install_node_dependencies(self) -> None:
-        package_json = self.directory / "package.json"
-        vite_config = self.directory / "vite.config.ts"
-
-        if package_json.exists() and vite_config.exists():
-            pm = node_package_manager(self.directory)
-            if pm is None:
-                console.print(
-                    "[yellow]nexy[/yellow] » "
-                    + t(
-                        "init.node_manager_not_found",
-                        "No Node.js package manager found. Install deps manually.",
-                    )
-                )
-                return
-            cmd = [pm, "install"]
-
-            with console.status(
-                "[yellow]nexy[/yellow] » "
-                + t("init.installing_node", "Installing Node.js dependencies..."),
-                spinner="dots",
-            ):
-                ok = self._run(cmd, "Node.js dependencies installation")
-                if not ok:
-                    console.print(
-                        "[yellow]nexy[/yellow] » "
-                        + t(
-                            "init.node_retry",
-                            "Retrying with --legacy-peer-deps...",
-                        )
-                    )
-                    ok = self._run(
-                        cmd + ["--legacy-peer-deps"],
-                        "Node.js dependencies installation (legacy-peer-deps)",
-                    )
-                if ok:
-                    console.print(
-                        "[green]nexy[/green] » "
-                        + t("init.node_installed", "Node.js dependencies installed.")
-                    )
+        if not (
+            (self.directory / "package.json").exists()
+            and (self.directory / "vite.config.ts").exists()
+        ):
+            return
+        manager = node_package_manager(self.directory)
+        if manager is None:
+            missing = t(
+                "init.node_manager_not_found",
+                "No Node.js package manager found. Install bun, pnpm or npm.",
+            )
+            console.print(f"[yellow]nexy[/yellow] » {missing}")
+            return
+        command = package_manager.install_argv(manager, allow_builds=("esbuild",))
+        label = f"{manager} install node_modules"
+        if not self._run(command, label, label) and manager == "npm":
+            retry = t("init.node_retry", "Retrying with --legacy-peer-deps...")
+            console.print(f"[yellow]![/yellow] {retry}")
+            self._run([*command, "--legacy-peer-deps"], label, label)
 
     def install_python_dependencies(self) -> None:
-        pyproject = self.directory / "pyproject.toml"
-        if not pyproject.exists():
-            return
-
-        with console.status(
-            "[yellow]nexy[/yellow] » "
-            + t("init.installing_python", "Installing Python dependencies..."),
-            spinner="dots",
-        ):
-            self._run(["uv", "sync"], "Python dependencies installation")
+        if (self.directory / "pyproject.toml").exists():
+            self._run(["uv", "sync"], "uv sync .venv")
 
     def install_orm(self) -> None:
-        if not self.orm or self.orm == "None":
-            return
-        package = _ORM_PACKAGES.get(self.orm)
-        if not package:
-            return
-        with console.status(
-            f"[yellow]nexy[/yellow] » Installing {self.orm}...",
-            spinner="dots",
-        ):
-            self._run(["uv", "add", package], f"{self.orm} installation")
-            extras = _ORM_EXTRA_PACKAGES.get(self.orm, [])
-            for extra in extras:
-                self._run(["uv", "add", extra], f"{extra} installation")
-            self._run(["uv", "add", "python-dotenv"], "python-dotenv installation")
-
-    def _remove_egg_info(self) -> None:
-        for item in self.directory.glob("**/*.egg-info"):
-            if item.is_dir():
-                shutil.rmtree(item, ignore_errors=True)
+        for package in orm_packages(self.orm, self.database):
+            self._run(["uv", "add", package], f"uv add .venv {package}")

@@ -41,10 +41,15 @@ The default export is the page component; a named export also works.
 ## Rendering
 
 Server rendering is on by default. Set `useCSR = True` for
-[client-side rendering](../routing/fbr/csr.md).
+[client-side rendering](../rendering/csr.md).
+
+## Layouts
+
+In client mode the root `layout.tsx` owns the HTML document, as in React, and every `layout.tsx` renders
+its page with `props.children`. See [layout.tsx](../routing/fbr/layouts/layout.tsx.md).
 
 ## Next steps
 
 - [Views](README.md): compare formats
-- [Frontend](../frontend.md): Vite and the client build
+- [Frontend](../guides/frontend.md): Vite and the client build
 - [.nexy files](nexyfile.md): mixing server logic and Solid islands

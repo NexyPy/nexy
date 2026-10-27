@@ -18,7 +18,7 @@ class TestStaticAssets:
 
         assert response.status_code == 200
         assert response.content == FAVICON_SVG.encode("utf-8")
-        assert response.headers["content-type"].startswith("image/x-icon")
+        assert response.headers["content-type"].startswith("image/svg+xml")
 
     @pytest.mark.usefixtures("nexy_project")
     def test_favicon_prefers_router_folder(self, tmp_path) -> None:
@@ -45,12 +45,18 @@ class TestStaticAssets:
         assert "/assets" not in mounts  # __nexy__/client/assets does not exist
 
 
+def _page_request():
+    from starlette.requests import Request
+
+    return Request({"type": "http", "headers": [(b"accept", b"text/html")]})
+
+
 class TestErrorHandlers:
     def test_http_exception_maps_to_nexy_404_page(self) -> None:
         from starlette.exceptions import HTTPException
 
         response = handle_http_exception(
-            _request=None,  # unused by the handler
+            request=_page_request(),
             exc=HTTPException(status_code=404),
         )
 
@@ -61,7 +67,7 @@ class TestErrorHandlers:
         from starlette.exceptions import HTTPException
 
         response = handle_http_exception(
-            _request=None,
+            request=_page_request(),
             exc=HTTPException(status_code=500),
         )
 
@@ -72,7 +78,7 @@ class TestErrorHandlers:
         from starlette.exceptions import HTTPException
 
         response = handle_http_exception(
-            _request=None,
+            request=_page_request(),
             exc=HTTPException(status_code=403, detail="forbidden"),
         )
 

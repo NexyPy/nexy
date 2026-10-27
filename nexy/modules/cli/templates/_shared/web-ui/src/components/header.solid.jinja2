@@ -1,0 +1,63 @@
+{% if useCSR %}{% raw %}import { createSignal, Show } from "solid-js";
+import { Link } from "@nexy/client";
+
+import Button from "@/components/button.tsx";
+import Icon from "@/components/icon.tsx";
+import LinePattern from "@/components/line-pattern.tsx";
+import ThemeToggle from "@/components/theme-toggle.tsx";
+
+const LINK =
+  "px-3.5 py-2 font-mono text-xs uppercase tracking-[0.04em] transition-opacity hover:opacity-60 aria-[current=page]:underline aria-[current=page]:underline-offset-4";
+const MENU = "M4 7h16M4 12h16M4 17h16";
+const CLOSE = "M18 6L6 18M6 6l12 12";
+const BOOK = "M2 4h6a4 4 0 014 4v12a3 3 0 00-3-3H2zM22 4h-6a4 4 0 00-4 4v12a3 3 0 013-3h7z";
+
+export default function Header() {
+  const [open, setOpen] = createSignal(false);
+  const close = () => setOpen(false);
+
+  return (
+    <header class="fixed inset-x-0 top-0 z-20 py-4 [view-transition-name:nx-header]">
+      <nav
+        class="relative mx-auto flex w-[72rem] max-w-[calc(100%-2rem)] items-center justify-between border border-paper/10 bg-ink/85 px-5 py-3 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.4)] backdrop-blur-[4px]"
+        aria-label="Main"
+      >
+        <LinePattern side="right" />
+        <a href="/" aria-label="Nexy, home" onClick={close} class="relative">
+          <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
+        </a>
+
+        <div class="relative flex items-center gap-2">
+          <div class="hidden items-center sm:flex">
+            <Link href="/" class={LINK}>Home</Link>
+            <Link href="/about" class={LINK}>About</Link>
+          </div>
+          <ThemeToggle />
+          <span class="hidden sm:block">
+            <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" size="sm" icon={BOOK}>
+              Docs
+            </Button>
+          </span>
+          <button
+            type="button"
+            aria-label={open() ? "Close menu" : "Open menu"}
+            aria-expanded={open()}
+            onClick={() => setOpen(!open())}
+            class="ml-1 grid size-8 place-items-center sm:hidden"
+          >
+            <Icon path={open() ? CLOSE : MENU} />
+          </button>
+        </div>
+
+        <Show when={open()}>
+          <div class="absolute inset-x-0 top-full flex flex-col border border-t-0 border-paper/10 bg-ink p-3 sm:hidden">
+            <Link href="/" class={LINK} onClick={close}>Home</Link>
+            <Link href="/about" class={LINK} onClick={close}>About</Link>
+            <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class={LINK} onClick={close}>Docs</a>
+          </div>
+        </Show>
+      </nav>
+    </header>
+  );
+}
+{% endraw %}{% endif %}

@@ -1,0 +1,42 @@
+{% if useCSR %}{% raw %}<script setup lang="ts">
+// The root layout writes the whole document; the page arrives in the default slot. It declares no
+// props, so the route params are not copied onto <html> as attributes.
+defineOptions({ inheritAttrs: false });
+
+import Footer from "@/components/footer.vue";
+import Header from "@/components/header.vue";
+
+// Applied before the first paint, so a dark page never flashes white. Set through v-html: Vue
+// escapes the text of a <script> element, which would break `&&`.
+const criticalCss = "html{background:#ffffff;color-scheme:light}html.dark{background:#0a0a0a;color-scheme:dark}";
+const themeScript = `try {
+  var saved = localStorage.getItem("nexy-theme");
+  var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.classList.toggle("dark", dark);
+} catch (error) {}`;
+</script>
+
+<template>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="description" content="Pages, an API and interactive parts in one project." />
+      <title>Nexy App</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap"
+        rel="stylesheet"
+      />
+      <style v-html="criticalCss"></style>
+      <script v-html="themeScript"></script>
+    </head>
+    <body class="flex min-h-dvh flex-col">
+      <Header />
+      <main class="flex flex-1 flex-col"><slot /></main>
+      <Footer />
+    </body>
+  </html>
+</template>
+{% endraw %}{% endif %}

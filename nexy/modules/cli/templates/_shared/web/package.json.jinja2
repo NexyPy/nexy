@@ -23,8 +23,12 @@
     {%- endif %}
   },
   "devDependencies": {
+    {%- if style == "tailwind" %}
     "@tailwindcss/vite": "^4.2.4",
     "tailwindcss": "^4.2.4",
+    {%- elif style == "unocss" %}
+    "unocss": "^66.11.0",
+    {%- endif %}
     {%- if client_framework == "react" %}
     "@vitejs/plugin-react": "^5.2.0",
     "@types/react": "^19.2.15",
@@ -44,6 +48,6 @@
     "jsdom": "^29.1.1",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
-    "vite": "^6.3.5"
+    "vite": "^6.4.3"
   }
 }

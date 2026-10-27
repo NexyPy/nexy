@@ -1,72 +1,111 @@
+"""The hot-reload channel: browsers connect, get reload and error messages, and are bounded."""
+
+from __future__ import annotations
+
 import asyncio
+from typing import Any
 
-from nexy.modules.runtime.hmr import HMR_MANAGER
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from nexy.modules.routers.hmr import setup_hmr
+from nexy.modules.runtime.hmr import HMR_MANAGER, MAX_CONNECTIONS, HMRManager
 
 
-class _FakeWS:
-    def __init__(self) -> None:
-        self.sent: list[dict] = []
+class FakeSocket:
+    def __init__(self, fail: bool = False) -> None:
+        self.fail = fail
         self.accepted = False
-        self.sent_json_calls = 0
+        self.closed_with: int | None = None
+        self.sent: list[dict[str, Any]] = []
 
     async def accept(self) -> None:
         self.accepted = True
 
-    async def send_json(self, data: dict) -> None:
-        self.sent_json_calls += 1
+    async def close(self, code: int = 1000) -> None:
+        self.closed_with = code
+
+    async def send_json(self, data: dict[str, Any]) -> None:
+        if self.fail:
+            raise RuntimeError("gone")
         self.sent.append(data)
 
-    async def receive_text(self) -> str:
-        return ""
 
-
-def _reset():
+@pytest.fixture(autouse=True)
+def _no_connections():
     HMR_MANAGER._connections.clear()
-    HMR_MANAGER.loop = None
+    yield
+    HMR_MANAGER._connections.clear()
 
 
-def test_loop_captured_at_connect():
-    _reset()
-
-    async def _run() -> None:
-        ws = _FakeWS()
-        await HMR_MANAGER.connect(ws)
-        assert HMR_MANAGER.loop is asyncio.get_running_loop()
-        HMR_MANAGER.disconnect(ws)
-
-    asyncio.run(_run())
+def _run(coroutine):
+    return asyncio.run(coroutine)
 
 
-def test_broadcast_gathers_and_disconnects_broken_sockets():
-    _reset()
-    ok = _FakeWS()
-    broken = _FakeWS()
-
-    async def _boom(_data):
-        raise RuntimeError("gone")
-
-    broken.send_json = _boom
-
-    HMR_MANAGER._connections.extend([ok, broken])
-
-    async def _run() -> None:
-        await HMR_MANAGER.broadcast_reload("page.nexy")
-        assert ok.sent == [{"type": "nexy:reload", "path": "page.nexy"}]
-        assert broken not in HMR_MANAGER._connections
-        assert ok in HMR_MANAGER._connections
-
-    asyncio.run(_run())
+def test_the_manager_is_a_singleton():
+    assert HMRManager() is HMR_MANAGER
 
 
-def test_broadcast_error_emits_nexy_error_message():
-    _reset()
-    ws = _FakeWS()
-    HMR_MANAGER._connections.append(ws)
+def test_a_browser_is_accepted_and_kept():
+    socket = FakeSocket()
+    assert _run(HMR_MANAGER.connect(socket)) is True
+    assert socket.accepted and socket in HMR_MANAGER._connections
 
-    async def _run() -> None:
-        await HMR_MANAGER.broadcast_error([{"file": "page.nexy", "message": "boom"}])
-        assert ws.sent == [
-            {"type": "nexy:error", "errors": [{"file": "page.nexy", "message": "boom"}]}
-        ]
 
-    asyncio.run(_run())
+def test_a_browser_over_the_limit_is_turned_away():
+    for _ in range(MAX_CONNECTIONS):
+        _run(HMR_MANAGER.connect(FakeSocket()))
+    extra = FakeSocket()
+    assert _run(HMR_MANAGER.connect(extra)) is False
+    assert extra.closed_with == 1013 and not extra.accepted
+
+
+def test_disconnecting_frees_a_place():
+    sockets = [FakeSocket() for _ in range(MAX_CONNECTIONS)]
+    for socket in sockets:
+        _run(HMR_MANAGER.connect(socket))
+    HMR_MANAGER.disconnect(sockets[0])
+    assert _run(HMR_MANAGER.connect(FakeSocket())) is True
+
+
+def test_disconnecting_an_unknown_browser_is_harmless():
+    HMR_MANAGER.disconnect(FakeSocket())
+
+
+def test_a_reload_reaches_every_browser():
+    first, second = FakeSocket(), FakeSocket()
+    _run(HMR_MANAGER.connect(first))
+    _run(HMR_MANAGER.connect(second))
+    _run(HMR_MANAGER.broadcast_reload("/about"))
+    assert first.sent == second.sent == [{"type": "nexy:reload", "path": "/about"}]
+
+
+def test_errors_reach_every_browser():
+    socket = FakeSocket()
+    _run(HMR_MANAGER.connect(socket))
+    _run(HMR_MANAGER.broadcast_error([{"file": "a.nexy"}]))
+    assert socket.sent == [{"type": "nexy:error", "errors": [{"file": "a.nexy"}]}]
+
+
+def test_a_browser_that_cannot_be_reached_is_dropped():
+    dead = FakeSocket(fail=True)
+    _run(HMR_MANAGER.connect(dead))
+    _run(HMR_MANAGER.broadcast_reload())
+    assert dead not in HMR_MANAGER._connections
+
+
+def test_a_failing_error_message_drops_the_browser_too():
+    dead = FakeSocket(fail=True)
+    _run(HMR_MANAGER.connect(dead))
+    _run(HMR_MANAGER.broadcast_error([]))
+    assert dead not in HMR_MANAGER._connections
+
+
+def test_the_socket_endpoint_accepts_a_browser_and_forgets_it_on_close():
+    app = FastAPI()
+    setup_hmr(app)
+    with TestClient(app).websocket_connect("/_nexy/hmr") as socket:
+        assert len(HMR_MANAGER._connections) == 1
+        socket.send_text("ping")
+    assert HMR_MANAGER._connections == []

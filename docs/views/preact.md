@@ -41,10 +41,16 @@ The default export is the page component; a named export also works.
 ## Rendering
 
 Server rendering is on by default. Set `useCSR = True` for
-[client-side rendering](../routing/fbr/csr.md).
+[client-side rendering](../rendering/csr.md).
+
+## Layouts
+
+In client mode the root `layout.tsx` owns the HTML document and every `layout.tsx` receives its page as
+`children`. Preact builds the body in the browser instead of hydrating it. See
+[layout.tsx](../routing/fbr/layouts/layout.tsx.md).
 
 ## Next steps
 
 - [Views](README.md): compare formats
 - [Markdown and MDX](markdown.md): `.mdx` routes
-- [Frontend](../frontend.md): Vite and the client build
+- [Frontend](../guides/frontend.md): Vite and the client build

@@ -105,3 +105,63 @@ class TestLink:
         html = link("/a", prefetch=False)
 
         assert "onmouseenter" not in html
+
+
+class TestLinkEscaping:
+    def test_href_cannot_break_out_of_the_attribute(self):
+        from nexy.link import link
+
+        html = link('/a"><script>alert(1)</script>', "x")
+        assert "<script>" not in html
+        assert "&quot;" in html or "&#x27;" in html
+
+    def test_href_cannot_break_out_of_the_prefetch_call(self):
+        from nexy.link import link
+
+        html = link("/a');alert(1);('", "x")
+        assert "alert(1)" in html
+        # The quote is inside a JSON string literal, never a bare statement boundary.
+        assert "__nexy_prefetch(&quot;/a&#x27;);alert(1);(&#x27;&quot;)" in html
+
+    def test_extra_attributes_are_escaped(self):
+        from nexy.link import link
+
+        html = link("/a", "x", title='"><b>')
+        assert "<b>" not in html
+
+
+class TestMediaEscaping:
+    def test_image_attributes_are_escaped(self):
+        from nexy.image import image
+
+        html = image('/a.png" onerror="alert(1)', alt='x" onload="y')
+        assert 'onerror="alert(1)' not in html
+        assert 'onload="y' not in html
+        assert "&quot;" in html
+
+    def test_audio_and_video_sources_are_escaped(self):
+        from nexy.audio import audio
+        from nexy.video import video
+
+        for html in (audio('/a.mp3"><script>x</script>'), video('/v.mp4"><script>x</script>')):
+            assert "<script>" not in html
+
+    def test_media_extra_attributes_are_escaped(self):
+        from nexy.audio import audio
+
+        assert "<b>" not in audio("/a.mp3", title='"><b>')
+
+    def test_normal_media_markup_is_unchanged(self):
+        from nexy.audio import audio
+
+        html = audio("/media/song.mp3")
+        assert '<source src="/media/song.mp3" type="audio/mp3" />' in html
+
+
+class TestMarkdownTocEscaping:
+    def test_heading_ids_are_escaped_in_the_toc(self):
+        from nexy.modules.runtime.markdown import build_toc_html
+
+        toc = build_toc_html('<h2 id="x&quot;><script>y</script>">Title</h2>')
+        assert "<script>" not in toc
+        assert "toc-link" in toc

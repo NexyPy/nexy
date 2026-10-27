@@ -114,6 +114,12 @@ not binds.
 | `nexy/modules/cli/commands/dev.py:108`, `nexy/modules/cli/commands/start.py:24` | literal comparison to pick the LAN IP to display |
 | `nexy/helpers/server/ports.py:12`, `ports.py:25` | literal comparison; the availability probe never binds |
 
+#### B105 - formatter placeholder (1 site)
+
+`nexy/helpers/fs/nexy_format.py` names a module constant `_TOKEN = "NXFMT{index}Z"`. Bandit reads the
+name as a password. It is the pattern of the placeholders the formatter puts in place of Jinja
+blocks while it formats a `.nexy` file, and it never leaves the process.
+
 #### B310 - `urlopen` in `nexy/modules/cli/commands/add.py:39`
 
 `nexy add <url>` fetches the component the user explicitly named; the CLI's

@@ -2,7 +2,8 @@ import asyncio
 import time
 import types
 
-from nexy.modules.routers.fbrouter import FBRouter, _make_isr_handler
+from nexy.modules.routers.fbrouter.handlers import make_isr_handler
+from nexy.modules.routers.fbrouter.registrar import revalidate_window
 from nexy.modules.runtime.cache import REVALIDATE_CACHE, RevalidateCache
 
 
@@ -57,7 +58,7 @@ class TestIsrHandler:
             calls.append(1)
             return f"<h1>Blog {len(calls)}</h1>"
 
-        return _make_isr_handler(_blog, pathname, revalidate)
+        return make_isr_handler(_blog, pathname, revalidate)
 
     async def _fetch(self, handler):
         from fastapi import Request
@@ -108,7 +109,7 @@ class TestIsrHandler:
             return "<h1>Blog</h1>"
 
         mod.Blog = _blog
-        assert FBRouter._get_revalidate(mod) == 5
+        assert revalidate_window(mod) == 5
 
     def test_scan_defaults_revalidate_to_none(self):
         mod = types.ModuleType("routes.about")
@@ -117,4 +118,4 @@ class TestIsrHandler:
             return "<h1>About</h1>"
 
         mod.About = _about
-        assert FBRouter._get_revalidate(mod) is None
+        assert revalidate_window(mod) is None

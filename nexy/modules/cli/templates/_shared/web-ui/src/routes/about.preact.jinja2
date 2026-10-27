@@ -1,0 +1,49 @@
+{% if useCSR %}{% raw %}import Button from "@/components/button.tsx";
+import Container from "@/components/container.tsx";
+import Eyebrow from "@/components/eyebrow.tsx";
+import Frame from "@/components/frame.tsx";
+
+const FACTS = [
+  ["Server", "FastAPI"],
+  ["Client", "Preact"],
+  ["License", "MIT"],
+];
+
+function Facts() {
+  return (
+    <dl class="mt-10 grid grid-cols-3 border-y border-border">
+      {FACTS.map(([label, value]) => (
+        <div key={label} class="border-l border-border py-5 pl-5 first:border-l-0 first:pl-0">
+          <dt class="font-mono text-xs text-foreground-second">{label}</dt>
+          <dd class="mt-1 font-display text-2xl">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+export default function About() {
+  return (
+    <section class="flex flex-1 items-center pb-20 pt-36">
+      <Container className="grid items-stretch gap-12 md:grid-cols-2">
+        <div class="flex flex-col justify-center">
+          <Eyebrow>About</Eyebrow>
+          <h1 class="text-5xl leading-[1.05] md:text-6xl">One project for the whole web app.</h1>
+          <p class="mt-6 max-w-[46ch] text-lg text-foreground-second">
+            Nexy puts the pages, the API and the interactive parts in one Python project. Your team
+            keeps the language it knows, and the frontend keeps the tools it likes.
+          </p>
+          <Facts />
+          <div class="mt-10 flex flex-wrap gap-4">
+            <Button href="https://github.com/NexyPy/nexy#readme">Read the docs</Button>
+            <Button href="https://github.com/NexyPy/nexy" variant="outline">View on GitHub</Button>
+          </div>
+        </div>
+        <Frame className="grid min-h-[26rem] place-items-center border border-border bg-ink p-8 text-paper dark:bg-background-second">
+          <img src="/hero-dark.svg" alt="" width="640" height="560" class="h-auto w-full max-w-md" />
+        </Frame>
+      </Container>
+    </section>
+  );
+}
+{% endraw %}{% endif %}
