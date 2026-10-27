@@ -19,6 +19,7 @@ def _scaffold(dest: Path, framework: str, use_csr: bool) -> Path:
         "project_type": "web",
         "orm": "None",
         "useCSR": use_csr,
+        "style": "vanilla",
     }
     _render_local_template("web-fbr", dest, config, "demo")
     return dest
@@ -30,8 +31,7 @@ class TestClientRouted:
         _scaffold(tmp_path, framework, True)
         component = tmp_path / "src" / "components" / f"theme-toggle.{ext}"
         text = component.read_text(encoding="utf-8")
-        marker = "useState" if framework == "react" else "data-theme-toggle"
-        assert 'role="switch"' in text and marker in text
+        assert 'role="switch"' in text and "data-theme-toggle" in text
 
     def test_the_layout_sets_the_theme_before_the_page_paints(self, tmp_path, framework, ext):
         _scaffold(tmp_path, framework, True)
@@ -39,12 +39,7 @@ class TestClientRouted:
         layout = next(routes.glob("layout.*"))
         holder = components / "theme-script.tsx" if ext == "tsx" else layout
         text = holder.read_text(encoding="utf-8")
-        saved_theme = (
-            'classList.toggle("dark"'
-            if framework == "react"
-            else 'localStorage.setItem(KEY, dark ? "dark" : "light")'
-        )
-        assert saved_theme in text
+        assert 'localStorage.setItem(KEY, dark ? "dark" : "light")' in text
         assert "html.dark{background:" in text
 
     def test_the_layout_uses_it(self, tmp_path, framework, ext):

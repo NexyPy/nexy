@@ -1,3 +1,4 @@
+{% set accent = {"react": "#61DAFB", "preact": "#8E6CF0", "solid": "#4F88C6", "vue": "#42B883", "svelte": "#FF3E00"}.get(client_framework, "#F7DF1E") -%}
 {% if style == "tailwind" -%}
 @import "tailwindcss";
 
@@ -11,7 +12,7 @@
 :root {
   color-scheme: light;
   font-family: "Geist", "Inter", system-ui, sans-serif;
-  --accent: #61DAFB;
+  --accent: {{ accent }};
   --ink: #0a0a0a;
   --paper: #fafafa;
   /* The one colour: a green that leans towards sky blue. Used for status, never for text blocks. */

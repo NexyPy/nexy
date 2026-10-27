@@ -1,0 +1,28 @@
+{% if not useCSR %}{% raw %}---
+from "@/components/Frame.nexy" import Frame
+from "@/components/LiveRow.nexy" import LiveRow
+---
+<Frame class_name="border border-paper/15 bg-ink/70 p-6 backdrop-blur-sm">
+  <p class="mb-2 font-mono text-[0.7rem] uppercase tracking-[0.07em] text-paper/55">This page, right now</p>
+  <dl class="font-mono text-sm" data-live>
+    <LiveRow label="Address"><span data-live-host>...</span></LiveRow>
+    <LiveRow label="Server">FastAPI</LiveRow>
+    <LiveRow label="Interactive">
+      <span class="size-2 rounded-full bg-paper/30" aria-hidden="true" data-live-dot></span>
+      <span data-live-state>Starting</span>
+    </LiveRow>
+  </dl>
+</Frame>
+<script>
+  // What this very page can tell about itself, measured in the browser.
+  (function () {
+    var panel = document.querySelector("[data-live]");
+    if (!panel) return;
+    var dot = panel.querySelector("[data-live-dot]");
+    panel.querySelector("[data-live-host]").textContent = window.location.host;
+    panel.querySelector("[data-live-state]").textContent = "Ready";
+    dot.classList.remove("bg-paper/30");
+    dot.classList.add("bg-signal", "motion-safe:animate-pulse");
+  })();
+</script>
+{% endraw %}{% endif %}

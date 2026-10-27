@@ -1,0 +1,14 @@
+{% if useCSR %}{% raw %}import Eyebrow from "@/components/eyebrow.tsx";
+
+type SectionHeadProps = { label: string; title: string; description: string };
+
+export default function SectionHead(props: SectionHeadProps) {
+  return (
+    <header class="mb-12 max-w-xl">
+      <Eyebrow>{props.label}</Eyebrow>
+      <h2 class="text-3xl leading-tight md:text-4xl">{props.title}</h2>
+      <p class="mt-4 opacity-65">{props.description}</p>
+    </header>
+  );
+}
+{% endraw %}{% endif %}

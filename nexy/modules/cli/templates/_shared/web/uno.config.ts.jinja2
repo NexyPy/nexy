@@ -4,6 +4,13 @@ import { defineConfig, presetWind4, transformerDirectives } from 'unocss'
 export default defineConfig({
   presets: [presetWind4({ dark: 'class' })],
   transformers: [transformerDirectives()],
+{%- if not useCSR %}
+  // Server pages are .nexy files: tell UnoCSS to read them for utility classes.
+  content: {
+    filesystem: ['src/**/*.nexy'],
+    pipeline: { include: [/\.(vue|svelte|[jt]sx|mdx?|astro|html|nexy)($|\?)/] },
+  },
+{%- endif %}
   // Same layers as Tailwind: the reset is `base`, utilities win over `components`.
   outputToCssLayers: {
     cssLayerName: (layer) => (layer === 'shortcuts' ? 'components' : layer === 'default' ? 'utilities' : 'base'),

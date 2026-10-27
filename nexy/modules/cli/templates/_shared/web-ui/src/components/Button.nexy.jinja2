@@ -1,0 +1,32 @@
+{% if not useCSR %}{% raw %}---
+from "@/components/Icon.nexy" import Icon
+
+href: prop[str]
+tone: prop[str] = "on-paper"
+variant: prop[str] = "solid"
+size: prop[str] = "md"
+icon: prop[str] = "M5 12h14M12 5l7 7-7 7"
+
+# `tone` says what the button sits on: the dark blocks (header, hero, footer) or the page.
+tones = {
+    "on-ink": {
+        "solid": "border-paper bg-paper text-ink hover:bg-paper/85",
+        "outline": "border-paper/30 text-paper hover:border-paper",
+    },
+    "on-paper": {
+        "solid": "border-foreground bg-foreground text-background hover:opacity-85",
+        "outline": "border-border-second text-foreground hover:border-foreground",
+    },
+}
+sizes = {"md": "px-6 py-3.5 text-[0.8rem]", "sm": "px-4 py-2 text-xs"}
+base = "group inline-flex w-fit items-center gap-2.5 border font-mono font-semibold uppercase tracking-[0.04em] transition-colors duration-200"
+classes = base + " " + sizes[size] + " " + tones[tone][variant]
+slides = "group-hover:translate-x-1" if icon == "M5 12h14M12 5l7 7-7 7" else ""
+icon_size = 14 if size == "sm" else 16
+external = href.startswith("http")
+---
+<a href="{{ href }}" class="{{ classes }}"{% if external %} target="_blank" rel="noopener noreferrer"{% endif %}>
+  <Slot />
+  <span class="transition-transform duration-200 {{ slides }}"><Icon path="{{ icon }}" size="{{ icon_size }}" /></span>
+</a>
+{% endraw %}{% endif %}

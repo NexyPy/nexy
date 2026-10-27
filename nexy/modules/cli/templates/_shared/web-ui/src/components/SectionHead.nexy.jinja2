@@ -1,0 +1,13 @@
+{% if not useCSR %}{% raw %}---
+from "@/components/Eyebrow.nexy" import Eyebrow
+
+label: prop[str]
+title: prop[str]
+description: prop[str]
+---
+<header class="mb-12 max-w-xl">
+  <Eyebrow>{{ label }}</Eyebrow>
+  <h2 class="text-3xl leading-tight md:text-4xl">{{ title }}</h2>
+  <p class="mt-4 opacity-65">{{ description }}</p>
+</header>
+{% endraw %}{% endif %}

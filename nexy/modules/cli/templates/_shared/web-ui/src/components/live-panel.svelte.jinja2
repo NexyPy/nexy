@@ -1,0 +1,31 @@
+{% if useCSR %}{% raw %}<script lang="ts">
+  import { onMount } from "svelte";
+
+  import Frame from "@/components/frame.svelte";
+  import LiveRow from "@/components/live-row.svelte";
+
+  // What this very page can tell about itself, measured in the browser.
+  let host = $state("");
+  let ready = $state(false);
+
+  onMount(() => {
+    host = window.location.host;
+    ready = true;
+  });
+</script>
+
+<Frame class="border border-paper/15 bg-ink/70 p-6 backdrop-blur-sm">
+  <p class="mb-2 font-mono text-[0.7rem] uppercase tracking-[0.07em] text-paper/55">This page, right now</p>
+  <dl class="font-mono text-sm">
+    <LiveRow label="Address">{host || "..."}</LiveRow>
+    <LiveRow label="Server">FastAPI</LiveRow>
+    <LiveRow label="Interactive">
+      <span
+        class="size-2 rounded-full {ready ? 'bg-signal motion-safe:animate-pulse' : 'bg-paper/30'}"
+        aria-hidden="true"
+      ></span>
+      {ready ? "Ready" : "Starting"}
+    </LiveRow>
+  </dl>
+</Frame>
+{% endraw %}{% endif %}

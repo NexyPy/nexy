@@ -1,4 +1,4 @@
-{% if not useCSR %}{% if orm != "None" %}
+{% if not utility_ui %}{% if not useCSR %}{% if orm != "None" %}
 {% if orm == "Tortoise-ORM" %}
 ---
 import asyncio
@@ -22,4 +22,4 @@ users = UserService.get_all()
         {% endfor %}
     </div>
 </section>{% endraw %}
-{% endif %}{% endif %}
+{% endif %}{% endif %}{% endif %}

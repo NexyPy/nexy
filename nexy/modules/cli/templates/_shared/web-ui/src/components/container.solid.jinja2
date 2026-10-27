@@ -1,0 +1,6 @@
+{% if useCSR %}{% raw %}import type { JSX } from "solid-js";
+
+export default function Container(props: { children: JSX.Element; className?: string }) {
+  return <div class={`mx-auto w-full max-w-[72rem] px-6 ${props.className ?? ""}`}>{props.children}</div>;
+}
+{% endraw %}{% endif %}

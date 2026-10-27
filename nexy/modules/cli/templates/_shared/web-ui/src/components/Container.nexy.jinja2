@@ -1,0 +1,5 @@
+{% if not useCSR %}{% raw %}---
+class_name: prop[str] = ""
+---
+<div class="mx-auto w-full max-w-[72rem] px-6 {{ class_name }}"><Slot /></div>
+{% endraw %}{% endif %}

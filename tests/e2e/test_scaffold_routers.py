@@ -98,10 +98,19 @@ def test_web_template_serves_a_valid_document(tmp_path, template, framework, use
     assert result["pages"]["/definitely-not-a-route"][0] == 404
 
 
+# What each starter says on its pages: the file-based one has the new design, the modular one keeps
+# its own.
+STARTER_TEXT = {
+    "web-fbr": {"/about": "One project for the whole web app", "/": "Your app is running"},
+    "web-modular": {"/about": "open source", "/": "Python framework"},
+}
+
+
 @pytest.mark.parametrize(("template", "framework", "use_csr"), WEB)
-@pytest.mark.parametrize(("path", "marker"), [("/about", "open source"), ("/", "Python framework")])
-def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path, marker):
+@pytest.mark.parametrize("path", ["/about", "/"])
+def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path):
     """Every starter links Home and About, so both must exist, in every mode."""
+    marker = STARTER_TEXT[template][path]
     result = _run(tmp_path, template, framework, use_csr)
     status, content_type, html = result["pages"][path]
     assert status == 200, path

@@ -1,4 +1,4 @@
-{% if not useCSR %}{% raw %}---
+{% if not utility_ui %}{% if not useCSR %}{% raw %}---
 from "@/components/header.nexy" import Header
 from "@/components/footer.nexy" import Footer
 from nexy import Vite
@@ -30,4 +30,4 @@ children:prop[NexyElement]
 </body>
 
 </html>
-{% endraw %}{% endif %}
+{% endraw %}{% endif %}{% endif %}

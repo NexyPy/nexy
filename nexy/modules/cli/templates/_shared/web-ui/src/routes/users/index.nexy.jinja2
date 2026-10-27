@@ -1,0 +1,24 @@
+{% if not useCSR %}{% if orm != "None" %}---
+from "@/components/Container.nexy" import Container
+{% if orm == "Tortoise-ORM" %}import asyncio
+from src.services.user_service import UserService
+
+users = asyncio.run(UserService.get_all())
+{% else %}from src.services.user_service import UserService
+
+users = UserService.get_all()
+{% endif %}---
+{% raw %}<section class="pb-20 pt-36">
+  <Container>
+    <h1 class="text-5xl leading-[1.05] md:text-6xl">Users</h1>
+    <div class="mt-10 border-y border-border">
+      {% for user in users %}
+      <div class="flex flex-wrap items-center justify-between gap-4 border-t border-border py-4 first:border-t-0">
+        <span class="font-medium">{{ user.name }}</span>
+        <span class="font-mono text-sm text-foreground-second">{{ user.email }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </Container>
+</section>
+{% endraw %}{% endif %}{% endif %}

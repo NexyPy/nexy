@@ -135,7 +135,7 @@ class TestDefaultScaffold:
         _scaffold(tmp_path, "react", use_csr=False)
         layout = (tmp_path / "src" / "routes" / "layout.nexy").read_text(encoding="utf-8")
         assert '<html lang="en"' in layout
-        assert "{{children | safe}}" in layout
+        assert "{{ children }}" in layout
 
 
 class TestEveryModeHasTheRightLayout:
