@@ -22,7 +22,6 @@ class NexyConfig(NexyConfigModel):
 | `usePort` | `3000` | port for `dev` and `start` |
 | `useHost` | `"0.0.0.0"` | bind address |
 | `useSslKeyfile`, `useSslCertfile` | `None` | serve HTTPS directly |
-| `useBadge` | `True` | the "Built with Nexy" tag in the corner of HTML pages; `False` removes it |
 | `useDevTools` | `True` | the toolbar `nexy dev` adds to every page (page info, routes, errors, config); `False` removes it. Never present in production |
 | `useWorkers` | `0` | processes `nx start` runs; `0` is one per CPU on Linux and macOS, one on Windows |
 | `useCSR` | `False` | client-side routing mode; `.nexy` routes are disabled |

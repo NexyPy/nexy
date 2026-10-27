@@ -17,7 +17,6 @@ _CONFIG_KEYS = (
     "useCSR",
     "useVite",
     "useFF",
-    "useBadge",
     "useDevTools",
     "useWorkers",
     "ALIASES",

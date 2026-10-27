@@ -1,4 +1,4 @@
-"""Add markup before the ``</body>`` of an HTML response: the badge and the dev toolbar."""
+"""Add markup before the ``</body>`` of an HTML response: the dev toolbar."""
 
 from __future__ import annotations
 

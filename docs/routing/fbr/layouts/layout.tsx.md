@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <header>My app</header>
         <main>{children}</main>
-        <footer>Built with Nexy</footer>
+        <footer>Open source under the MIT license.</footer>
       </body>
     </html>
   );
