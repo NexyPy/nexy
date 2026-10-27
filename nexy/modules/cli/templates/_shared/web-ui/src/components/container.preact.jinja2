@@ -1,0 +1,6 @@
+{% if useCSR %}{% raw %}import type { ComponentChildren } from "preact";
+
+export default function Container({ children, className = "" }: { children: ComponentChildren; className?: string }) {
+  return <div class={`mx-auto w-full max-w-[72rem] px-6 ${className}`}>{children}</div>;
+}
+{% endraw %}{% endif %}

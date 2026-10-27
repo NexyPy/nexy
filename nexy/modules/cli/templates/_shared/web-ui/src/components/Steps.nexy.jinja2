@@ -1,0 +1,87 @@
+{% if not useCSR %}{% raw %}---
+from "@/components/CopyChip.nexy" import CopyChip
+from "@/components/Icon.nexy" import Icon
+
+check = "M5 13l4 4L19 7"
+steps = [
+    (
+        "Change this headline",
+        "Edit the title, save, and watch this page update without a refresh.",
+        "src/routes/index.nexy",
+    ),
+    (
+        "Add a page",
+        "A new file becomes a new address. Visit /hello once it is saved.",
+        "src/routes/hello.nexy",
+    ),
+    ("Ship it", "Build the production version whenever you are ready.", "nexy build"),
+]
+---
+<div data-steps>
+  <p class="mb-2 flex items-center justify-between font-mono text-xs text-foreground-second" aria-live="polite">
+    <span data-steps-label>0 of {{ steps | length }} done</span>
+    <span class="h-1 w-24 bg-border" aria-hidden="true">
+      <span class="block h-full bg-signal transition-all duration-300" style="width: 0%" data-steps-bar></span>
+    </span>
+  </p>
+  <ol>
+    {% for title, text, snippet in steps %}
+    <li class="grid grid-cols-[auto_1fr] gap-5 border-t border-border py-8" data-step data-done="false">
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked="false"
+        aria-label="Mark step {{ loop.index }} as done"
+        data-step-check
+        class="grid size-9 shrink-0 place-items-center border border-border-second font-mono text-sm transition-colors hover:border-foreground"
+      >
+        <span data-step-number>{{ loop.index }}</span>
+        <span class="hidden" data-step-icon><Icon path="{{ check }}" size="16" /></span>
+      </button>
+      <div class="min-w-0">
+        <h3 class="text-2xl transition-opacity">{{ title }}</h3>
+        <p class="mt-2 max-w-[48ch] text-foreground-second">{{ text }}</p>
+        <CopyChip text="{{ snippet }}" />
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+<script>
+  // Three steps in a real order: tick them off as you go.
+  (function () {
+    var root = document.querySelector("[data-steps]");
+    if (!root) return;
+    var items = root.querySelectorAll("[data-step]");
+    var label = root.querySelector("[data-steps-label]");
+    var bar = root.querySelector("[data-steps-bar]");
+    var done = ["border-signal", "bg-signal", "text-ink"];
+    var idle = ["border-border-second", "hover:border-foreground"];
+
+    function render() {
+      var count = 0;
+      items.forEach(function (item) {
+        var finished = item.dataset.done === "true";
+        var check = item.querySelector("[data-step-check]");
+        if (finished) count += 1;
+        check.setAttribute("aria-checked", String(finished));
+        done.forEach(function (name) { check.classList.toggle(name, finished); });
+        idle.forEach(function (name) { check.classList.toggle(name, !finished); });
+        check.querySelector("[data-step-number]").classList.toggle("hidden", finished);
+        check.querySelector("[data-step-icon]").classList.toggle("hidden", !finished);
+        item.querySelector("h3").classList.toggle("opacity-50", finished);
+      });
+      label.textContent = count === items.length ? "All set. Time to build." : count + " of " + items.length + " done";
+      bar.style.width = (count / items.length) * 100 + "%";
+    }
+
+    root.addEventListener("click", function (event) {
+      var check = event.target.closest("[data-step-check]");
+      if (!check) return;
+      var item = check.closest("[data-step]");
+      item.dataset.done = String(item.dataset.done !== "true");
+      render();
+    });
+  })();
+</script>
+{% endraw %}{% endif %}

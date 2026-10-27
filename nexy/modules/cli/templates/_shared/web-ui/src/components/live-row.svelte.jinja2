@@ -1,0 +1,11 @@
+{% if useCSR %}{% raw %}<script lang="ts">
+  import type { Snippet } from "svelte";
+
+  let { label, children }: { label: string; children: Snippet } = $props();
+</script>
+
+<div class="flex items-center justify-between gap-6 border-t border-paper/10 py-3.5 first:border-t-0">
+  <dt class="text-paper/55">{label}</dt>
+  <dd class="flex items-center gap-2.5 text-paper">{@render children()}</dd>
+</div>
+{% endraw %}{% endif %}

@@ -1,1 +1,1 @@
-{% set page_partial = "home.html.jinja2" %}{% if not useCSR %}{% include "page_nexy.jinja2" %}{% endif %}
+{% if not utility_ui %}{% set page_partial = "home.html.jinja2" %}{% if not useCSR %}{% include "page_nexy.jinja2" %}{% endif %}{% endif %}

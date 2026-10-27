@@ -12,11 +12,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-import pytest
-
 HERE = Path(__file__).resolve().parent
 NODE = shutil.which("node")
-pytestmark = pytest.mark.skipif(NODE is None, reason="Node.js is not installed")
 
 
 def _strip(kind: str, source: str) -> str:
@@ -28,8 +25,6 @@ def _strip(kind: str, source: str) -> str:
         timeout=60,
         check=False,
     )
-    if "ERR_UNKNOWN_FILE_EXTENSION" in done.stderr:
-        pytest.skip("this Node.js cannot run TypeScript")
     assert "@@" in done.stdout, done.stderr[-800:]
     return json.loads(done.stdout.split("@@")[1])[0]
 

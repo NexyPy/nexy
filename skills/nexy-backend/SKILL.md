@@ -76,11 +76,11 @@ are not cached this way.
 
 `notfound.nexy` renders 404 and `errors.nexy` renders 500, each scoped to its directory. A client
 that sends `Accept: application/json` receives `{"detail": "..."}` instead. Error text follows
-[nexy-principles](../nexy-principles/SKILL.md): what happened, what to do.
+`nexy-principles`: what happened, what to do.
 
 ## Rules
 
 - Configuration comes from `nexyconfig.py`, not from scattered constants.
 - No side effects at import time: no connections, no file handles, no network calls.
 - Type everything; `mypy --strict` must pass.
-- Write the test first ([nexy-testing](../nexy-testing/SKILL.md)).
+- Write the test first (`nexy-testing`).

@@ -55,7 +55,8 @@
       "migrate": "Jalankan migrasi ORM (ORM terdeteksi otomatis)",
       "new": "Buat proyek baru di direktori baru",
       "start": "Jalankan server produksi",
-      "test": "Jalankan pengujian (--server / --client)"
+      "test": "Jalankan pengujian (--server / --client)",
+      "skills": "Tambahkan skill dan AGENTS.md untuk agen pengodean"
     },
     "commands_header": "Perintah yang tersedia:",
     "help": "CLI Nexy",
@@ -69,10 +70,17 @@
       "help_arg": "Nama proyek yang dibuat (membuat direktori baru)",
       "help_template": "Inisialisasi dari templat terdaftar (mis. web-fbr-react).",
       "prompt": "Nama proyek:",
-      "template_unknown": "Templat '{template}' tidak dikenal."
+      "template_unknown": "Templat '{template}' tidak dikenal.",
+      "help_agents": "Tambahkan AGENTS.md dan skill untuk agen pengodean."
     },
     "tagline": "Framework full-stack modern yang langsung berfungsi",
-    "usage": "Jalankan nx atau nexy <perintah> --help untuk penggunaan lengkap"
+    "usage": "Jalankan nx atau nexy <perintah> --help untuk penggunaan lengkap",
+    "skills": {
+      "not_a_project": "Tidak ada nexyconfig.py di {path}: jalankan ini di root proyek Nexy.",
+      "help_path": "Root proyek (default: folder saat ini)",
+      "done": "{count} skill di .agents/skills dan .claude/skills",
+      "kept": "File Anda dipertahankan: {files}."
+    }
   },
   "dev": {
     "cleaning": "Membersihkan...",

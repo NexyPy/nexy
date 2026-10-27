@@ -22,6 +22,7 @@ def _commands() -> list[tuple[str, str]]:
         ("format", t("cli.cmd.format", "Auto-format all project files")),
         ("test", t("cli.cmd.test", "Run tests (--server / --client)")),
         ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
+        ("skills", t("cli.cmd.skills", "Add skills and AGENTS.md for coding agents")),
     ]
 
 

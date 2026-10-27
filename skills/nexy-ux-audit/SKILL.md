@@ -57,7 +57,7 @@ Design all of them, not only the happy one.
 - Contrast meets WCAG AA (4.5:1 text, 3:1 large text and icons).
 - Semantic HTML first: `button` for actions, `a` for navigation, labels on every field, one `h1`.
 - Works without a mouse and at 320 px wide. Motion respects `prefers-reduced-motion`.
-- Icons are SVG, text is human, there is no emoji (see [nexy-principles](../nexy-principles/SKILL.md)).
+- Icons are SVG, text is human, there is no emoji (see `nexy-principles`).
 
 ## 6. Output
 
@@ -71,5 +71,5 @@ States:     <the ones that need design>
 Cut:        <what was left out on purpose>
 ```
 
-Then continue with the test (see [nexy-testing](../nexy-testing/SKILL.md)). Return to this brief when
+Then continue with the test (see `nexy-testing`). Return to this brief when
 a choice is unclear: the answer is whatever serves the job.

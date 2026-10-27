@@ -36,6 +36,9 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-playwright>=0.7.0",
     "ruff>=0.14.11",
+    "sqlalchemy>=2.0",
+    "itsdangerous>=2.2",
+    "python-multipart>=0.0.9",
     "types-jinja2>=2.11.9",
 ]
 
@@ -50,11 +53,17 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.sdist]
 include = [
     "/nexy",
+    "/skills",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["nexy"]
 exclude = ["nexy/modules/cli/templates/tests"]
+
+# The skills live at the root of the repository; the wheel ships them inside the package so that
+# `nx new` and `nx skills` can copy them into a project.
+[tool.hatch.build.targets.wheel.force-include]
+"skills" = "nexy/skills"
 
 [tool.mypy]
 strict = true

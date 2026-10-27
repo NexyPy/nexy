@@ -151,8 +151,8 @@ def _show_summary(build_result: BuildResult, ssg_entries: list[dict[str, Any]]) 
 def _run_checks() -> None:
     console.print()
     checks = [
-        ("ruff check", ["ruff", "check", "."]),
-        ("ruff format", ["ruff", "format", ".", "--check"]),
+        ("ruff check", [sys.executable, "-m", "ruff", "check", "."]),
+        ("ruff format", [sys.executable, "-m", "ruff", "format", ".", "--check"]),
         ("mypy", [sys.executable, "-m", "mypy", "."]),
     ]
     results = [_run_single_check(name, cmd) for name, cmd in checks]

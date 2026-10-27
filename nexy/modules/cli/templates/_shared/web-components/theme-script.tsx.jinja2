@@ -1,23 +1,4 @@
-{% if utility_ui %}{% raw %}// Applies the saved theme before the first paint, so a dark page never flashes white. Render it
-// in <head>. Switching the theme afterwards is the job of <ThemeToggle />.
-const criticalCss = "html{background:#ffffff;color-scheme:light}html.dark{background:#0a0a0a;color-scheme:dark}";
-
-const themeScript = `try {
-  var saved = localStorage.getItem("nexy-theme");
-  var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  document.documentElement.classList.toggle("dark", dark);
-} catch (error) {}`;
-
-export default function ThemeScript() {
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: criticalCss }} />
-      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-    </>
-  );
-}
-{% endraw %}{% else -%}
-{% if useCSR and client_framework in ("react", "solid", "preact") %}
+{% if not utility_ui %}{% if useCSR and client_framework in ("react", "solid", "preact") %}
 // Sets the theme before the first paint, so a dark page never flashes white. Render it in <head>.
 const criticalCss = `{% include "critical.css" %}`;
 

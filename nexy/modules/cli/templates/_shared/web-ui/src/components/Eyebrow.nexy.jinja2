@@ -1,0 +1,11 @@
+{% if not useCSR %}{% raw %}<div class="mb-5 flex items-center gap-3.5">
+  <span class="inline-flex items-center gap-2.5 font-mono text-[0.7rem] uppercase tracking-[0.07em] opacity-70">
+    <span class="size-1.5 bg-current" aria-hidden="true"></span>
+    <Slot />
+  </span>
+  <span
+    class="h-px grow bg-[image:repeating-linear-gradient(to_right,currentColor_0_3px,transparent_3px_6px)] opacity-25"
+    aria-hidden="true"
+  ></span>
+</div>
+{% endraw %}{% endif %}

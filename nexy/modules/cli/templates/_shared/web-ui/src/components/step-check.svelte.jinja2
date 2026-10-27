@@ -1,0 +1,25 @@
+{% if useCSR %}{% raw %}<script lang="ts">
+  import Icon from "@/components/icon.svelte";
+
+  const CHECK = "M5 13l4 4L19 7";
+
+  let { done, number, ontoggle }: { done: boolean; number: number; ontoggle: () => void } = $props();
+</script>
+
+<button
+  type="button"
+  role="checkbox"
+  aria-checked={done}
+  aria-label="Mark step {number} as done"
+  onclick={ontoggle}
+  class="grid size-9 shrink-0 place-items-center border font-mono text-sm transition-colors {done
+    ? 'border-signal bg-signal text-ink'
+    : 'border-border-second hover:border-foreground'}"
+>
+  {#if done}
+    <Icon path={CHECK} size={16} />
+  {:else}
+    {number}
+  {/if}
+</button>
+{% endraw %}{% endif %}

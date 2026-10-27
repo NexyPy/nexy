@@ -29,9 +29,8 @@ def _scaffold(dest: Path, framework: str, use_csr: bool, style: str = "tailwind"
     return dest
 
 
-def _legacy_style(framework: str, use_csr: bool) -> str:
-    """The `nx-*` starter ships everywhere except client-routed React in Tailwind or UnoCSS."""
-    return "vanilla" if (framework, use_csr) == ("react", True) else "tailwind"
+# The `nx-*` starter ships in plain CSS; Tailwind and UnoCSS get the utility starter.
+LEGACY_STYLE = "vanilla"
 
 
 def _home(dest: Path, framework: str, use_csr: bool) -> str:
@@ -42,44 +41,44 @@ def _home(dest: Path, framework: str, use_csr: bool) -> str:
 @pytest.mark.parametrize(("framework", "use_csr"), FRAMEWORKS)
 class TestHome:
     def test_the_hero_says_what_nexy_is(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         assert "The Python framework for the whole web app." in _home(tmp_path, framework, use_csr)
 
     def test_the_page_sells_it_does_not_teach_how_to_install(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         home = _home(tmp_path, framework, use_csr)
         assert "nx new" not in home and "nx build" not in home and "nx dev" not in home
 
     def test_the_page_names_what_the_product_gives(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         home = _home(tmp_path, framework, use_csr)
         assert "Less glue, more product." in home and "Ready for production" in home
 
     def test_each_benefit_has_an_icon(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         home = _home(tmp_path, framework, use_csr)
         assert all(f"nx-icon-{name}" in home for name in ("server", "frontend", "bolt", "shield"))
 
     def test_both_illustrations_ship_with_the_project(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         home = _home(tmp_path, framework, use_csr)
         public = tmp_path / "public"
         for name in ("hero-light.svg", "hero-dark.svg"):
             assert name in home and (public / name).is_file()
 
     def test_no_utility_class_is_needed_to_look_right(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         home = _home(tmp_path, framework, use_csr)
         assert "text-foreground-second" not in home and "max-w-5xl" not in home
         assert "style=" not in home
 
     def test_the_page_is_not_dark_before_the_theme_is_known(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         layout = next((tmp_path / "src" / "routes").glob("layout.*"))
         assert 'class="dark"' not in layout.read_text(encoding="utf-8")
 
     def test_the_layout_loads_the_fonts_the_design_uses(self, tmp_path, framework, use_csr):
-        _scaffold(tmp_path, framework, use_csr, _legacy_style(framework, use_csr))
+        _scaffold(tmp_path, framework, use_csr, LEGACY_STYLE)
         layout = next((tmp_path / "src" / "routes").glob("layout.*"))
         assert "Bricolage+Grotesque" in layout.read_text(encoding="utf-8")
 
@@ -124,7 +123,8 @@ class TestSwitch:
     def test_it_is_an_accessible_switch(self, tmp_path, framework, use_csr):
         _scaffold(tmp_path, framework, use_csr)
         components = tmp_path / "src" / "components"
-        holder = next(iter(components.glob("theme-toggle.*")), components / "header.nexy")
+        toggles = [*components.glob("theme-toggle.*"), *components.glob("ThemeToggle.*")]
+        holder = toggles[0] if toggles else components / "header.nexy"
         text = holder.read_text(encoding="utf-8")
         assert 'role="switch"' in text and "aria-checked" in text and "aria-label" in text
 

@@ -1,0 +1,47 @@
+{% if not useCSR %}{% raw %}---
+from "@/components/Icon.nexy" import Icon
+
+text: prop[str]
+
+copy = "M9 9h11v11H9zM5 15V5a1 1 0 011-1h10"
+check = "M5 13l4 4L19 7"
+---
+<div class="mt-4">
+  <button
+    type="button"
+    data-copy="{{ text }}"
+    class="inline-flex max-w-full items-center gap-3 border border-border-second bg-background-second px-3.5 py-2 text-left font-mono text-xs transition-colors hover:border-foreground"
+  >
+    <code class="truncate">{{ text }}</code>
+    <span class="shrink-0 text-foreground-second" data-copy-idle><Icon path="{{ copy }}" size="14" /></span>
+    <span class="hidden shrink-0 text-signal" data-copy-done><Icon path="{{ check }}" size="14" /></span>
+  </button>
+  <span class="sr-only" role="status" data-copy-status></span>
+</div>
+<script>
+  (function () {
+    if (window.nexyCopy) return;
+    window.nexyCopy = true;
+    document.addEventListener("click", async function (event) {
+      var button = event.target.closest("[data-copy]");
+      if (!button) return;
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy);
+      } catch (error) {
+        return;
+      }
+      var idle = button.querySelector("[data-copy-idle]");
+      var done = button.querySelector("[data-copy-done]");
+      var status = button.parentElement.querySelector("[data-copy-status]");
+      idle.classList.add("hidden");
+      done.classList.remove("hidden");
+      status.textContent = "Copied";
+      setTimeout(function () {
+        idle.classList.remove("hidden");
+        done.classList.add("hidden");
+        status.textContent = "";
+      }, 1600);
+    });
+  })();
+</script>
+{% endraw %}{% endif %}

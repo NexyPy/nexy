@@ -1,4 +1,4 @@
-{%- if useCSR -%}
+{% if not utility_ui %}{%- if useCSR -%}
 {%- raw -%}
 <script lang="ts">
   // The root layout writes the whole document; the page arrives as `children`.
@@ -32,4 +32,4 @@
 {% raw %}  </body>
 </html>
 {% endraw %}
-{%- endif -%}
+{%- endif -%}{% endif %}

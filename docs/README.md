@@ -13,8 +13,10 @@ architecture.
 | [Installation](getting-started/installation.md) | Requirements, `uvx`, `uv tool install` |
 | [Quick start](getting-started/quick-start.md) | Create a project, run it, build it |
 | [Tutorial](getting-started/tutorial.md) | A page, an endpoint and a production build in 10 minutes |
+| [How Nexy works](getting-started/how-nexy-works.md) | The mental model: who builds what, and one request |
 | [Project structure](getting-started/project-structure.md) | Know what every folder is for |
 | [Coming from another framework](getting-started/coming-from-other-frameworks.md) | Map FastAPI, Next.js and Express to Nexy |
+| [Upgrading to 2.2](getting-started/upgrading.md) | What changes for an existing project |
 
 ## Routing
 
@@ -74,6 +76,9 @@ architecture.
 | [Frontend](guides/frontend.md) | Vite, styling and the client build |
 | [Testing](guides/testing.md) | pytest, `TestClient` and vitest |
 | [Dev toolbar](guides/devtools.md) | the toolbar of `nexy dev`, and how to turn it off |
+| [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
+| [Troubleshooting](guides/troubleshooting.md) | The first problems people hit, and the fix |
+| [Recipes](guides/recipes.md) | Sign in with a session, a JSON API and a file upload, all tested |
 
 ## Deployment
 
@@ -88,6 +93,8 @@ architecture.
 |---|---|
 | [CLI](reference/cli.md) | Commands and flags |
 | [Config](reference/config.md) | Every `nexyconfig.py` field and its default |
+| [Python API](reference/python-api.md) | Every name Nexy exports, by module |
+| [Glossary](reference/glossary.md) | The words these docs use |
 | [File conventions](reference/file-conventions.md) | Reserved files and routing rules |
 | [Security](reference/security.md) | Version floors, rules Nexy follows, audits |
 | [Agents](reference/agents.md) | Invariants of a Nexy project, for AI agents |

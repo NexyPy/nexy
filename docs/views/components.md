@@ -72,7 +72,7 @@ through `window.__nexy_prefetch`.
 
 > **Good to know**: the tag form takes the label as `children`, not as element content:
 > `<Link href="/about" children="About" />`. To put markup inside a link, use the call form with
-> `children=` or a `.nexy` component that renders a `<slot />`.
+> `children=` or a `.nexy` component that renders a `<Slot />`.
 
 ## Audio and Video
 

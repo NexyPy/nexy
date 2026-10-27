@@ -8,13 +8,13 @@ description: The rules for every task in a Nexy project or in Nexy itself - orde
 ## Order of work
 
 1. **Audit the experience first when the change has a view.** A view is a page, a component, a
-   form, a message, an error. Run [nexy-ux-audit](../nexy-ux-audit/SKILL.md) and write down its
+   form, a message, an error. Run `nexy-ux-audit` and write down its
    findings before touching code. No view, no audit.
 2. **Write the test that fails** (red). One behaviour, one assertion, named
    `test_<thing>_<scenario>`.
 3. **Write the least code that passes** (green).
 4. **Refactor** while the tests stay green.
-5. **Run the gates** from [nexy-testing](../nexy-testing/SKILL.md). Report failures as they are.
+5. **Run the gates** from `nexy-testing`. Report failures as they are.
 
 Skipping step 1 or 2 is the most common way to produce code that works and is still wrong.
 

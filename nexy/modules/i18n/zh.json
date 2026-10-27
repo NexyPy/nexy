@@ -55,7 +55,8 @@
       "migrate": "运行 ORM 迁移（自动检测 ORM）",
       "new": "在新目录中创建新项目",
       "start": "启动生产服务器",
-      "test": "运行测试（--server / --client）"
+      "test": "运行测试（--server / --client）",
+      "skills": "为编码代理添加 skills 和 AGENTS.md"
     },
     "commands_header": "可用命令：",
     "help": "Nexy 命令行工具",
@@ -69,10 +70,17 @@
       "help_arg": "要创建的项目名称（会创建新目录）",
       "help_template": "从已注册的模板初始化（例如 web-fbr-react）。",
       "prompt": "项目名称：",
-      "template_unknown": "未知模板“{template}”。"
+      "template_unknown": "未知模板“{template}”。",
+      "help_agents": "为编码代理添加 AGENTS.md 和 skills。"
     },
     "tagline": "开箱即用的现代全栈框架",
-    "usage": "运行 nx 或 nexy <命令> --help 查看详细用法"
+    "usage": "运行 nx 或 nexy <命令> --help 查看详细用法",
+    "skills": {
+      "not_a_project": "{path} 中没有 nexyconfig.py：请在 Nexy 项目的根目录运行。",
+      "help_path": "项目根目录（默认：当前文件夹）",
+      "done": "{count} 个 skill 已放入 .agents/skills 和 .claude/skills",
+      "kept": "已保留你的文件：{files}。"
+    }
   },
   "dev": {
     "cleaning": "正在清理...",

@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-import shutil
 from pathlib import Path
 
 import pytest
 
+from nexy.helpers.common.executables import find_tool
 from nexy.helpers.fs import nexy_format
 from nexy.helpers.fs.nexy_format import FormatError
 from nexy.modules.cli.commands.format import formatted_source
 
-RUFF = shutil.which("ruff")
+RUFF = find_tool("ruff")
 
 SOURCE = """---
 from "./button.nexy" import Button
@@ -77,7 +77,6 @@ class TestNormalize:
         assert nexy_format.normalize("a\n\n\n\nb") == "a\n\nb"
 
 
-@pytest.mark.skipif(RUFF is None, reason="ruff is not installed")
 class TestFormattedSource:
     def test_python_logic_is_formatted(self):
         assert "title = 'Hello'" in _format() or 'title = "Hello"' in _format()

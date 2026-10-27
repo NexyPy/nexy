@@ -55,7 +55,8 @@
       "migrate": "ORM 마이그레이션 실행(ORM 자동 감지)",
       "new": "새 디렉터리에 새 프로젝트 만들기",
       "start": "프로덕션 서버 시작",
-      "test": "테스트 실행(--server / --client)"
+      "test": "테스트 실행(--server / --client)",
+      "skills": "코딩 에이전트용 스킬과 AGENTS.md를 추가합니다"
     },
     "commands_header": "사용 가능한 명령:",
     "help": "Nexy CLI",
@@ -69,10 +70,17 @@
       "help_arg": "만들 프로젝트의 이름(새 디렉터리를 만듭니다)",
       "help_template": "등록된 템플릿으로 초기화(예: web-fbr-react).",
       "prompt": "프로젝트 이름:",
-      "template_unknown": "알 수 없는 템플릿 '{template}'입니다."
+      "template_unknown": "알 수 없는 템플릿 '{template}'입니다.",
+      "help_agents": "코딩 에이전트용 AGENTS.md와 스킬을 추가합니다."
     },
     "tagline": "그냥 잘 동작하는 모던 풀스택 프레임워크",
-    "usage": "자세한 사용법은 nx 또는 nexy <명령> --help를 실행하세요"
+    "usage": "자세한 사용법은 nx 또는 nexy <명령> --help를 실행하세요",
+    "skills": {
+      "not_a_project": "{path}에 nexyconfig.py가 없습니다. Nexy 프로젝트의 루트에서 실행하세요.",
+      "help_path": "프로젝트 루트(기본값: 현재 폴더)",
+      "done": "{count}개의 스킬을 .agents/skills 및 .claude/skills에 넣었습니다",
+      "kept": "작성한 파일을 그대로 두었습니다: {files}."
+    }
   },
   "dev": {
     "cleaning": "정리하는 중...",

@@ -1,4 +1,4 @@
-{%- if useCSR -%}
+{% if not utility_ui %}{%- if useCSR -%}
 {%- raw -%}
 <script setup lang="ts">
 // The root layout writes the whole document; the page arrives in the default slot. It declares no
@@ -37,4 +37,4 @@ const themeScript = `{% endraw %}{% include "theme_script.js" %}{% raw %}`;
   </html>
 </template>
 {% endraw %}
-{%- endif -%}
+{%- endif -%}{% endif %}

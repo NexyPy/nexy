@@ -55,7 +55,8 @@
       "migrate": "تشغيل ترحيلات ORM (يُكتشف ORM تلقائيًا)",
       "new": "إنشاء مشروع جديد في مجلد جديد",
       "start": "تشغيل خادم الإنتاج",
-      "test": "تشغيل الاختبارات (--server / --client)"
+      "test": "تشغيل الاختبارات (--server / --client)",
+      "skills": "إضافة المهارات وAGENTS.md لوكلاء البرمجة"
     },
     "commands_header": "الأوامر المتاحة:",
     "help": "أداة سطر أوامر Nexy",
@@ -69,10 +70,17 @@
       "help_arg": "اسم المشروع المراد إنشاؤه (يُنشئ مجلدًا جديدًا)",
       "help_template": "التهيئة من قالب مسجّل (مثل web-fbr-react).",
       "prompt": "اسم المشروع:",
-      "template_unknown": "القالب '{template}' غير معروف."
+      "template_unknown": "القالب '{template}' غير معروف.",
+      "help_agents": "إضافة AGENTS.md والمهارات لوكلاء البرمجة."
     },
     "tagline": "إطار العمل الحديث الشامل الذي يعمل ببساطة",
-    "usage": "شغّل nx أو nexy <الأمر> --help لعرض الاستخدام بالتفصيل"
+    "usage": "شغّل nx أو nexy <الأمر> --help لعرض الاستخدام بالتفصيل",
+    "skills": {
+      "not_a_project": "لا يوجد nexyconfig.py في {path}: شغّل هذا الأمر في جذر مشروع Nexy.",
+      "help_path": "جذر المشروع (الافتراضي: المجلد الحالي)",
+      "done": "{count} مهارات في .agents/skills و .claude/skills",
+      "kept": "تم الاحتفاظ بملفاتك: {files}."
+    }
   },
   "dev": {
     "cleaning": "جارٍ التنظيف...",

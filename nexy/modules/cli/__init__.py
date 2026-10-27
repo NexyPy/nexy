@@ -8,6 +8,7 @@ from nexy.helpers.common.console import console
 from nexy.modules.cli.commands import build, check, dev, format_, init, start, test
 from nexy.modules.cli.commands.migrate import migrate
 from nexy.modules.cli.commands.new import new
+from nexy.modules.cli.commands.skills import skills
 from nexy.modules.cli.overview import print_overview
 from nexy.modules.cli.terminal import keep_unicode_boxes, use_utf8_streams
 from nexy.modules.i18n import t
@@ -49,6 +50,7 @@ _COMMANDS: list[tuple[Callable[..., Any], str | None, str | None]] = [
     (init, None, "i"),
     (new, None, "n"),
     (migrate, None, "m"),
+    (skills, None, None),
 ]
 
 

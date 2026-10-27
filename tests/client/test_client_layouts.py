@@ -4,7 +4,7 @@ Each generated framework runtime (``nexy.modules.frontend.<fw>``) is mounted on 
 two layouts. The scenario checks the composed DOM, that layouts survive a navigation, and that a
 different layout chain remounts them.
 
-Needs Node.js 22.13+ and ``npm install`` in this directory; skipped otherwise.
+Needs Node.js 22.18+ and ``npm ci`` in this directory (see ``conftest.py``).
 """
 
 import importlib
@@ -27,13 +27,6 @@ fs.writeFileSync(dst, stripTypeScriptTypes(fs.readFileSync(src, 'utf8')));
 """
 
 NODE = shutil.which("node")
-pytestmark = [
-    pytest.mark.skipif(NODE is None, reason="Node.js is not installed"),
-    pytest.mark.skipif(
-        not (HERE / "node_modules" / "jsdom").is_dir(),
-        reason="run `npm install` in tests/client first",
-    ),
-]
 
 
 def _runtime(framework: str) -> Path:
@@ -48,8 +41,7 @@ def _runtime(framework: str) -> Path:
         text=True,
         check=False,
     )
-    if done.returncode != 0:
-        pytest.skip(f"this Node.js cannot strip TypeScript types: {done.stderr[-200:]}")
+    assert done.returncode == 0, f"Node.js cannot strip TypeScript types: {done.stderr[-200:]}"
     return target
 
 
@@ -105,8 +97,7 @@ def test_generated_router_runtime_is_valid_and_defines_prefetch():
     done = subprocess.run(
         [NODE, "-e", _STRIP, str(source), str(target)], capture_output=True, text=True, check=False
     )
-    if done.returncode != 0:
-        pytest.skip("this Node.js cannot strip TypeScript types")
+    assert done.returncode == 0, f"Node.js cannot strip TypeScript types: {done.stderr[-200:]}"
     checked = subprocess.run(
         [NODE, "--check", str(target)], capture_output=True, text=True, check=False
     )

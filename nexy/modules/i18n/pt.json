@@ -55,7 +55,8 @@
       "migrate": "Executar as migrações do ORM (detecção automática)",
       "new": "Criar um novo projeto em um novo diretório",
       "start": "Iniciar o servidor de produção",
-      "test": "Executar os testes (--server / --client)"
+      "test": "Executar os testes (--server / --client)",
+      "skills": "Adicionar skills e AGENTS.md para agentes de código"
     },
     "commands_header": "Comandos disponíveis:",
     "help": "CLI do Nexy",
@@ -69,10 +70,17 @@
       "help_arg": "Nome do projeto a criar (cria um novo diretório)",
       "help_template": "Inicializar a partir de um modelo registrado (ex.: web-fbr-react).",
       "prompt": "Nome do projeto:",
-      "template_unknown": "Modelo desconhecido '{template}'."
+      "template_unknown": "Modelo desconhecido '{template}'.",
+      "help_agents": "Adicionar AGENTS.md e os skills para agentes de código."
     },
     "tagline": "O framework full-stack moderno que simplesmente funciona",
-    "usage": "Execute nx ou nexy <comando> --help para ver o uso detalhado"
+    "usage": "Execute nx ou nexy <comando> --help para ver o uso detalhado",
+    "skills": {
+      "not_a_project": "Não há nexyconfig.py em {path}: execute isto na raiz de um projeto Nexy.",
+      "help_path": "Raiz do projeto (padrão: a pasta atual)",
+      "done": "{count} skills em .agents/skills e .claude/skills",
+      "kept": "Seus arquivos foram mantidos: {files}."
+    }
   },
   "dev": {
     "cleaning": "Limpando...",

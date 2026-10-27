@@ -71,5 +71,5 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ## Before building the view
 
-Run [nexy-ux-audit](../nexy-ux-audit/SKILL.md). Style with the project's mode
-([nexy-styling](../nexy-styling/SKILL.md)). Test per [nexy-testing](../nexy-testing/SKILL.md).
+Run `nexy-ux-audit`. Style with the project's mode
+(`nexy-styling`). Test per `nexy-testing`.

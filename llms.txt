@@ -9,31 +9,38 @@ index, follow the page for the task, and trust the source when the two disagree.
 ## Documentation
 
 - [Index](docs/README.md): every page, one line each
-- [Getting started](docs/getting-started.md): create a project, run it, build it
-- [Project structure](docs/project-structure.md): files, folders, generated output
+- [Getting started](docs/getting-started/quick-start.md): create a project, run it, build it
+- [How Nexy works](docs/getting-started/how-nexy-works.md): who builds what, and one request
+- [Project structure](docs/getting-started/project-structure.md): files, folders, generated output
 - [Routing](docs/routing/README.md): file path to URL, groups, reserved names
-- [Pages](docs/routing/pages.md): dynamic segments, catch-all, layouts, error pages
-- [Hooks](docs/routing/hooks.md): request path, query, cookies, session, TOC from a page
-- [Modular routing](docs/routing/modular.md): controllers, modules, injection
-- [SSR](docs/routing/fbr/ssr.md): server rendering, the default
-- [CSR](docs/routing/fbr/csr.md): client-side rendering
-- [ISR](docs/routing/fbr/isr.md): `revalidate` and stale-while-revalidate
-- [WebSocket](docs/routing/fbr/websocket.md): `SOCKET` handlers
+- [Pages](docs/routing/fbr/pages/README.md): dynamic segments, catch-all, layouts, error pages
+- [Hooks](docs/routing/fbr/navigation/hooks.md): request path, query, cookies, session, TOC from a page
+- [Modular routing](docs/routing/modular/README.md): controllers, modules, injection
+- [SSR](docs/rendering/ssr.md): server rendering, the default
+- [CSR](docs/rendering/csr.md): client-side rendering
+- [ISR](docs/rendering/isr.md): `revalidate` and stale-while-revalidate
+- [WebSocket](docs/routing/fbr/realtime/websocket.md): `SOCKET` handlers
 - [Views](docs/views/README.md): which view format to use
 - [.nexy files](docs/views/nexyfile.md): frontmatter, properties, Jinja2, components
 - [Markdown and MDX](docs/views/markdown.md): `.md` content, `.mdx` components
 - [Components](docs/views/components.md): `Image`, `Link`, `Audio`, `Video`, `Import`
 - [React](docs/views/react.md), [Vue](docs/views/vue.md), [Svelte](docs/views/svelte.md),
   [Solid](docs/views/solid.md), [Preact](docs/views/preact.md)
-- [API](docs/api.md): Python handlers, parameters, responses
-- [Actions](docs/actions.md): `@Action` POST endpoints with generated paths
-- [Frontend](docs/frontend.md): Vite, dev server, build, styling
-- [CLI](docs/cli.md): commands and flags
-- [Testing](docs/testing.md): `nx test`, `TestClient`, vitest, CI
-- [Config](docs/config.md): every `nexyconfig.py` field and its default
+- [API](docs/routing/fbr/handlers/README.md): Python handlers, parameters, responses
+- [Actions](docs/guides/actions.md): `@Action` POST endpoints with generated paths
+- [Frontend](docs/guides/frontend.md): Vite, dev server, build, styling
+- [CLI](docs/reference/cli.md): commands and flags
+- [Testing](docs/guides/testing.md): `nx test`, `TestClient`, vitest, CI
+- [Config](docs/reference/config.md): every `nexyconfig.py` field and its default
+- [Python API](docs/reference/python-api.md): every exported name, by module
+- [Glossary](docs/reference/glossary.md): the words these docs use
 - [i18n](docs/guides/i18n.md): internationalization is up to your application
-- [Deploy](docs/deploy.md): build output, Docker, reverse proxy
-- [For AI agents](docs/agents.md): invariants and verification commands
+- [Deploy](docs/deployment/README.md): build output, Docker, reverse proxy
+- [For AI agents](docs/reference/agents.md): invariants and verification commands
+- [Coding agents](docs/guides/ai-agents.md): skills, `AGENTS.md` and `nx skills`
+- [Troubleshooting](docs/guides/troubleshooting.md): first problems and their fix
+- [Recipes](docs/guides/recipes.md): sign in, a JSON API, file upload; the code is tested
+- [Upgrading to 2.2](docs/getting-started/upgrading.md): what changes for an existing project
 
 ## Source
 

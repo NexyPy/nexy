@@ -35,6 +35,17 @@ def _report_failure(error: Exception, created: Path | None) -> typer.Exit:
     return typer.Exit(code=1)
 
 
+def _scaffold(project_name: str, template: str | None, agents: bool) -> None:
+    """Create the project in its own folder, without the banner `new` already printed."""
+    InitProject().run(
+        template=template,
+        project_dir=project_name,
+        command="new",
+        show_title=False,
+        agents=agents,
+    )
+
+
 def new(
     project_name: str | None = typer.Argument(
         None, help=t("cli.new.help_arg", "Name of the project to create (creates a new directory)")
@@ -48,6 +59,11 @@ def new(
             "Initialize from a registered template (e.g. web-fbr-react).",
         ),
     ),
+    agents: bool = typer.Option(
+        True,
+        "--agents/--no-agents",
+        help=t("cli.new.help_agents", "Add AGENTS.md and the skills for coding agents."),
+    ),
 ) -> None:
     launcher.banner("new", __version__)
     if template:
@@ -58,9 +74,7 @@ def new(
         if not project_name:
             return
         created = Path(project_name).resolve()
-        InitProject().run(
-            template=template, project_dir=project_name, command="new", show_title=False
-        )
+        _scaffold(project_name, template, agents)
     except KeyboardInterrupt:
         print()
         sys.exit(130)

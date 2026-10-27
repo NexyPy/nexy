@@ -12,6 +12,7 @@ from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.packages import ensure_packages
+from nexy.modules.cli.agents import install_agent_files, profile_from_context
 from nexy.modules.cli.constants import TEMPLATES_DIR
 from nexy.modules.cli.migrations import alembic
 from nexy.modules.i18n import t
@@ -74,9 +75,8 @@ def _clone_from_github(dest: Path, subdir: str) -> None:
     cloner.clone(cloner.repo, cloner.branch, dest, subdir=subdir)
 
 
-def _render_local_template(
-    template_name: str, dest: Path, config: dict[str, Any], project_name: str
-) -> None:
+def _template_context(config: dict[str, Any], project_name: str) -> dict[str, Any]:
+    """Everything the templates of one project are rendered with."""
     context = {
         "orm": config.get("orm", "None"),
         "db_url": config.get("db_url"),
@@ -91,9 +91,18 @@ def _render_local_template(
     }
     context.update(_markup_context(context["client_framework"], context["useCSR"]))
     context["utility_ui"] = _utility_ui(context)
+    return context
+
+
+def _render_local_template(
+    template_name: str, dest: Path, config: dict[str, Any], project_name: str
+) -> None:
+    context = _template_context(config, project_name)
     exclude = _excluded_suffixes(context)
     TemplateRenderer(TEMPLATES_DIR / template_name, dest, context, exclude).render()
     _render_shared_files(template_name, dest, context)
+    if config.get("agents", True):
+        install_agent_files(dest, profile_from_context(context))
 
     generate_init_files(dest / "src")
     apply_alias(dest, config.get("alias", DEFAULT_ALIAS))
@@ -123,12 +132,8 @@ _UTILITY_STYLES = ("tailwind", "unocss")
 
 
 def _utility_ui(context: dict[str, Any]) -> bool:
-    """True for the utility-class starter: client-routed React with Tailwind or UnoCSS."""
-    return (
-        context["useCSR"]
-        and context["client_framework"] == "react"
-        and context["style"] in _UTILITY_STYLES
-    )
+    """True for the utility-class starter: file-based routing with Tailwind or UnoCSS."""
+    return bool(context["FBRouter"]) and context["style"] in _UTILITY_STYLES
 
 
 def _excluded_suffixes(context: dict[str, Any]) -> set[str]:
@@ -141,10 +146,10 @@ def _render_shared_files(template_name: str, dest: Path, context: dict[str, Any]
     shared_dir = TEMPLATES_DIR / "_shared"
     exclude = _excluded_suffixes(context)
     if template_name.startswith("web-"):
-        for sub_dir, rel_dest in [
-            ("web-components", "src/components"),
-            ("web", "."),
-        ]:
+        overlays = [("web-components", "src/components"), ("web", ".")]
+        if context.get("utility_ui"):
+            overlays.append(("web-ui", "."))
+        for sub_dir, rel_dest in overlays:
             src = shared_dir / sub_dir
             if src.is_dir():
                 tgt = dest / rel_dest if rel_dest != "." else dest

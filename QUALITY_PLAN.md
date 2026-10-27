@@ -6,12 +6,12 @@
 > | Garde-fou | Résultat |
 > |---|---|
 > | `ruff check nexy/ tests/` | 0 erreur |
-> | `ruff format --check nexy/ tests/` | 378 fichiers formatés |
+> | `ruff format --check nexy/ tests/` | tous les fichiers formatés |
 > | `mypy nexy --strict` | 0 erreur, 203 fichiers |
 > | `bandit -r nexy/ -c .bandit` | 0 finding |
 > | `audit_structure.py --check` | passe |
 > | `pip-audit` (`audit_dependencies.py`) | aucune vulnérabilité connue, 1 ignorée (voir `SECURITY.md`) |
-> | Couverture (branches) | 86,3 %, seuil `fail_under` = 84 |
+> | Couverture (branches) | 86,6 %, seuil `fail_under` = 84 |
 > | Tests | voir `CHANGELOG.md` et la CI; les tests e2e (`-m e2e`) tournent dans `e2e.yml` |
 >
 > Le reste de ce document est conservé comme historique de la feuille de route.

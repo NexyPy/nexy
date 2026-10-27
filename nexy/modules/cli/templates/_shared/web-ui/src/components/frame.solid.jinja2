@@ -1,0 +1,21 @@
+{% if useCSR %}{% raw %}import { For } from "solid-js";
+import type { JSX } from "solid-js";
+
+const MARK = "pointer-events-none absolute size-3 border-current opacity-60 transition-all duration-200";
+const MARKS = [
+  "-left-px -top-px border-l-2 border-t-2 group-hover:left-1 group-hover:top-1",
+  "-right-px -top-px border-r-2 border-t-2 group-hover:right-1 group-hover:top-1",
+  "-bottom-px -left-px border-b-2 border-l-2 group-hover:bottom-1 group-hover:left-1",
+  "-bottom-px -right-px border-b-2 border-r-2 group-hover:bottom-1 group-hover:right-1",
+];
+
+// A box with four corner marks that move inward on hover.
+export default function Frame(props: { children: JSX.Element; className?: string }) {
+  return (
+    <div class={`group relative ${props.className ?? ""}`}>
+      <For each={MARKS}>{(position) => <span class={`${MARK} ${position}`} aria-hidden="true" />}</For>
+      {props.children}
+    </div>
+  );
+}
+{% endraw %}{% endif %}

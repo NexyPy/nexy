@@ -1,0 +1,16 @@
+{% if not useCSR %}{% raw %}---
+class_name: prop[str] = ""
+
+mark = "pointer-events-none absolute size-3 border-current opacity-60 transition-all duration-200"
+marks = [
+    "-left-px -top-px border-l-2 border-t-2 group-hover:left-1 group-hover:top-1",
+    "-right-px -top-px border-r-2 border-t-2 group-hover:right-1 group-hover:top-1",
+    "-bottom-px -left-px border-b-2 border-l-2 group-hover:bottom-1 group-hover:left-1",
+    "-bottom-px -right-px border-b-2 border-r-2 group-hover:bottom-1 group-hover:right-1",
+]
+---
+<div class="group relative {{ class_name }}">
+  {% for position in marks %}<span class="{{ mark }} {{ position }}" aria-hidden="true"></span>{% endfor %}
+  <Slot />
+</div>
+{% endraw %}{% endif %}
