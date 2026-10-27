@@ -11,7 +11,6 @@ import pytest
 
 HERE = Path(__file__).resolve().parent
 NODE = shutil.which("node")
-pytestmark = pytest.mark.skipif(NODE is None, reason="Node.js is not installed")
 
 
 def _call(fn: str, *args: object) -> dict:
@@ -23,8 +22,6 @@ def _call(fn: str, *args: object) -> dict:
         timeout=60,
         check=False,
     )
-    if "ERR_UNKNOWN_FILE_EXTENSION" in done.stderr:
-        pytest.skip("this Node.js cannot run TypeScript")
     assert "@@" in done.stdout, done.stderr[-800:]
     return json.loads(done.stdout.split("@@")[1])[0]
 
@@ -75,39 +72,44 @@ def test_only_route_files_can_be_rendered(page):
     assert "error" in _call("parseRenderRequest", body)
 
 
-CWD = "C:/work/app"
+# The project folder of the platform the test runs on: `C:/...` on Windows, `/...` elsewhere. Vite
+# reports module ids with forward slashes whatever the system, so only the spelling is varied.
+CWD = HERE.as_posix()
+ROOT_LAYOUT = f"{CWD}/src/routes/layout.vue"
 
 
 @pytest.mark.parametrize(
     "layout",
-    [
-        "C:/work/app/src/routes/layout.vue",
-        r"C:\work\app\src\routes\layout.vue",
-        "C:/work/app/src/routes/layout.vue?vue&type=template",
-    ],
+    [ROOT_LAYOUT, ROOT_LAYOUT.replace("/", "\\"), f"{ROOT_LAYOUT}?vue&type=template"],
+    ids=["forward slashes", "backslashes", "query string"],
 )
 def test_the_root_layout_is_recognised_whatever_the_path_spelling(layout):
-    assert _call("isRootLayout", layout, "vue", CWD) == {"ok": True}
+    assert _call("isRootLayout", layout, "vue", str(HERE)) == {"ok": True}
 
 
-def test_a_drive_letter_in_another_case_is_the_same_file_on_windows():
-    import sys
+def test_a_path_in_another_case_is_the_same_file_on_windows():
+    # The platform is an argument, so both behaviours are tested on every system.
+    other = f"{CWD.swapcase()}/src/routes/layout.vue"
+    assert _call("isRootLayout", other, "vue", str(HERE), "win32") == {"ok": True}
 
-    if sys.platform != "win32":
-        pytest.skip("paths are case-sensitive here")
-    assert _call("isRootLayout", "c:/work/app/src/routes/layout.vue", "vue", CWD) == {"ok": True}
+
+@pytest.mark.parametrize("platform", ["linux", "darwin"])
+def test_a_path_in_another_case_is_another_file_where_paths_are_case_sensitive(platform):
+    other = f"{CWD.swapcase()}/src/routes/layout.vue"
+    assert _call("isRootLayout", other, "vue", str(HERE), platform) == {"ok": False}
 
 
 @pytest.mark.parametrize(
     "layout",
     [
-        "C:/work/app/src/routes/blog/layout.vue",
-        "C:/work/app/src/routes/layout.svelte",
-        "C:/work/app/src/layout.vue",
+        f"{CWD}/src/routes/blog/layout.vue",
+        f"{CWD}/src/routes/layout.svelte",
+        f"{CWD}/src/layout.vue",
     ],
+    ids=["nested", "other framework", "outside routes"],
 )
 def test_nested_or_foreign_layouts_are_not_the_root_layout(layout):
-    assert _call("isRootLayout", layout, "vue", CWD) == {"ok": False}
+    assert _call("isRootLayout", layout, "vue", str(HERE)) == {"ok": False}
 
 
 def test_concurrent_renders_each_see_their_own_request_location():

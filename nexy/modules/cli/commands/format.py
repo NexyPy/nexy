@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 from nexy.helpers.common.console import console
+from nexy.helpers.common.executables import find_tool
 from nexy.helpers.common.report import print_cmd_result
 from nexy.helpers.fs.frontmatter import reassemble_frontmatter, split_frontmatter
 from nexy.helpers.fs.nexy_format import FormatError, format_logic, format_template
@@ -33,7 +34,7 @@ def format_(check: bool = False) -> None:
 
 
 def _format_python(root: Path, check: bool) -> int:
-    exe = shutil.which("ruff")
+    exe = find_tool("ruff")
     if not exe:
         skip = t("format.skip_tool", "{tool} not found - skipping {scope}")
         console.print(f"  [yellow]\u26a0[/yellow] {skip.format(tool='ruff', scope='Python')}")
@@ -69,7 +70,7 @@ def _format_ts(root: Path, check: bool) -> int:
 
 
 def _format_nexy(root: Path, check: bool) -> int:
-    ruff_exe = shutil.which("ruff")
+    ruff_exe = find_tool("ruff")
     prettier_exe = shutil.which("prettier")
     failures = 0
     for name in collect_files(root, _NEXY_EXTS):

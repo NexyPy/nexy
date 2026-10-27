@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 from nexy.helpers.common.console import console
+from nexy.helpers.common.executables import find_tool
 from nexy.helpers.common.report import print_cmd_result
 from nexy.helpers.fs.scan import has_files
 from nexy.modules.builder import Builder
@@ -31,7 +32,7 @@ def check(tsc: bool = True, nexypy: bool = True) -> None:
 def _check_python(root: Path) -> bool:
     if not has_files(root, _PY_EXTS):
         return True
-    exe = shutil.which("mypy")
+    exe = find_tool("mypy")
     if not exe:
         skip = t("check.skip_tool", "{tool} not found - skipping {scope}")
         console.print(f"  [yellow]\u26a0[/yellow] {skip.format(tool='mypy', scope='Python')}")
@@ -63,7 +64,7 @@ def _check_nexy(root: Path) -> bool:
             console.print(f"  [red]\u2718[/red] {path}")
         ok = False
 
-    exe = shutil.which("mypy")
+    exe = find_tool("mypy")
     gen_dir = root / "__nexy__"
     if exe and gen_dir.is_dir():
         with console.status("  mypy __nexy__/ ..."):

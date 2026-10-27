@@ -37,13 +37,16 @@ export function isLoopback(address: string | undefined | null): boolean {
   return address === '127.0.0.1' || address === '::1' || address === '::ffff:127.0.0.1'
 }
 
-/** True when `id` (a Vite module id) is the root `src/routes/layout.<framework>` of the project at `cwd`. */
-export function isRootLayout(id: string, framework: string, cwd: string): boolean {
+/**
+ * True when `id` (a Vite module id) is the root `src/routes/layout.<framework>` of the project at `cwd`.
+ * `platform` is the system the paths come from; it only decides whether their case matters.
+ */
+export function isRootLayout(id: string, framework: string, cwd: string, platform: string = process.platform): boolean {
   const normalise = (value: string) => value.split('?')[0].replace(/\\/g, '/')
   const expected = `${normalise(path.resolve(cwd, 'src/routes'))}/layout.${framework}`
   const actual = normalise(id)
   // Windows paths are case-insensitive: Vite may report `d:/app` while the process runs in `D:/app`.
-  return process.platform === 'win32' ? actual.toLowerCase() === expected.toLowerCase() : actual === expected
+  return platform === 'win32' ? actual.toLowerCase() === expected.toLowerCase() : actual === expected
 }
 
 /** The URL a page is rendered for: what `usePathname()` and friends answer during the render. */

@@ -50,12 +50,35 @@ class TestUvicornOptions:
 
 
 class TestStopProcess:
-    def test_windows_kills_the_whole_tree(self):
+    def test_windows_stops_a_process_with_taskkill(self):
+        # Only the choice depends on the platform. Nothing of the standard library runs while it is
+        # patched: on Linux, `shutil.which` would look for `_winapi`.
         process = MagicMock(pid=42)
         process.poll.return_value = None
-        with patch.object(sys, "platform", "win32"), patch.object(subprocess, "run") as run:
-            processes.stop_process(process)
-        assert run.call_args.args[0][-3:] == ["/T", "/PID", "42"]
+        with (
+            patch.object(sys, "platform", "win32"),
+            patch.object(processes, "_kill_tree_windows") as kill_tree,
+        ):
+            processes.stop_process(process, timeout=3)
+        kill_tree.assert_called_once_with(process, 3)
+
+    def test_taskkill_ends_the_whole_tree_of_the_process(self):
+        process = MagicMock(pid=42)
+        with (
+            patch.object(processes.shutil, "which", return_value="C:/Windows/taskkill.exe"),
+            patch.object(subprocess, "run") as run,
+        ):
+            processes._kill_tree_windows(process, 5)
+        assert run.call_args.args[0] == ["C:/Windows/taskkill.exe", "/F", "/T", "/PID", "42"]
+
+    def test_taskkill_is_found_by_name_when_it_is_not_on_the_path(self):
+        process = MagicMock(pid=7)
+        with (
+            patch.object(processes.shutil, "which", return_value=None),
+            patch.object(subprocess, "run") as run,
+        ):
+            processes._kill_tree_windows(process, 5)
+        assert run.call_args.args[0][0] == "taskkill"
 
     def test_unix_kills_a_process_that_ignores_terminate(self):
         process = MagicMock()
