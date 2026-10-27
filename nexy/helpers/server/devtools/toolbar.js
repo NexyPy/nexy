@@ -26,6 +26,8 @@
     return el
   }
   const ICONS = {
+    // The Nexy mark, as in the starter's logo: an N cut like a roof, filled with the text colour.
+    mark: '<path d="M12.5527 0.5459C12.7991 0.546 13.0362 0.6418 13.2139 0.8125L16.001 3.4902L16.0029 3.4922L19.0605 6.3965C19.2502 6.5766 19.3574 6.8273 19.3574 7.0889V19.002H13.6377V5.9648H7.2197V0.5459H12.5527ZM6.2197 19.002H0.5V13.5361L0.5078 13.3906C0.5428 13.0547 0.6978 12.7404 0.9473 12.5078L1.8193 11.6953L6.2197 7.6104V19.002Z" fill="currentColor"/>',
     close: '<path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   }
   const icon = (name, size) => {
@@ -149,7 +151,7 @@
   function render(keepFocus) {
     const count = errorList().length
     pill.replaceChildren(
-      h('span', { class: 'logo' }, 'N'),
+      h('span', { class: 'logo' }, icon('mark', 13)),
       h('span', { class: 'route' }, page.route || page.path),
       h('span', { class: 'ms' }, ms(page.ms)),
       count ? h('span', { class: 'count' }, count) : h('span', { class: 'dot' }))
