@@ -90,7 +90,8 @@
     "stopping": "Arrêt des serveurs...",
     "updating": "mise à jour du serveur",
     "vite_failed": "Vite n'a pas pu démarrer.",
-    "vite_failed_hint": "Consultez la sortie de Vite ci-dessus pour en connaître la cause."
+    "vite_failed_hint": "Consultez la sortie de Vite ci-dessus pour en connaître la cause.",
+    "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction."
   },
   "format": {
     "failed": "{count} fichier(s) en échec",

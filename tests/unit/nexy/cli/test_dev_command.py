@@ -115,6 +115,10 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
                 rec.routes_callback("src/routes/about.nexy")
             if step == "interrupt":
                 raise KeyboardInterrupt
+            if step == "cannot_start":
+                raise SystemExit(1)
+            if step == "crash":
+                raise OSError("boom")
 
     monkeypatch.setattr(dev_module, "pycache", lambda: rec("pycache"))
     monkeypatch.setattr(dev_module, "abort_on_invalid_config", lambda: rec("validate"))
@@ -270,6 +274,27 @@ def test_the_next_change_after_an_error_loads_the_application_again(world, monke
     _fix_on_wait(world, monkeypatch)
     dev_module.dev()
     assert world.rec.count("import_app") == 3
+
+
+def test_a_server_that_cannot_start_does_not_stop_dev(world, monkeypatch):
+    world.serve_plan = ["cannot_start", "exit"]
+    _fix_on_wait(world, monkeypatch)
+    dev_module.dev()
+    assert world.rec.count("uvicorn_run") == 2
+
+
+def test_a_server_that_crashes_does_not_stop_dev(world, monkeypatch):
+    world.serve_plan = ["crash", "exit"]
+    _fix_on_wait(world, monkeypatch)
+    dev_module.dev()
+    assert world.rec.count("uvicorn_run") == 2
+
+
+def test_a_server_that_cannot_start_waits_for_the_next_change(world, monkeypatch):
+    world.serve_plan = ["cannot_start", "exit"]
+    _fix_on_wait(world, monkeypatch)
+    dev_module.dev()
+    assert world.rec.count("waiting") == 1
 
 
 def test_a_failing_regeneration_does_not_stop_the_server(world):

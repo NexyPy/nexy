@@ -90,7 +90,8 @@
     "stopping": "جارٍ إيقاف الخوادم...",
     "updating": "تحديث الخادم",
     "vite_failed": "تعذّر تشغيل Vite.",
-    "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب."
+    "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب.",
+    "server_failed": "توقف الخادم ({reason}): في انتظار الإصلاح."
   },
   "format": {
     "failed": "فشل {count} ملف",

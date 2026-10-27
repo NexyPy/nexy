@@ -170,15 +170,31 @@ class _Reloader:
         self._announced = False
 
     def serve(self, endpoint: Endpoint) -> None:
-        """Serve until Ctrl+C; an application that cannot load waits for the next change."""
+        """Serve until Ctrl+C; a server that cannot run waits for the next change."""
         while True:
-            self._prepare()
-            if self._load():
-                self._run(endpoint)
-                if not self.restart_requested:
-                    return
-            else:
+            if not self._start(endpoint):
                 self._wait_for_change()
+            elif not self.restart_requested:
+                return
+
+    def _start(self, endpoint: Endpoint) -> bool:
+        """True once the server has run; False when it could not start, whatever the reason."""
+        try:
+            self._prepare()
+            if not self._load():
+                return False
+            self._run(endpoint)
+        except SystemExit as stop:
+            return stop.code in (0, None) or self._failed(f"exit code {stop.code}")
+        except Exception as error:
+            return self._failed(str(error) or type(error).__name__)
+        return True
+
+    @staticmethod
+    def _failed(reason: str) -> bool:
+        message = t("dev.server_failed", "The server stopped ({reason}): waiting for a fix.")
+        console.print(f"  [red]x[/red] {message.format(reason=reason)}")
+        return False
 
     def _prepare(self) -> None:
         if self._started and not self._announced:

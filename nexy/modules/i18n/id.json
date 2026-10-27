@@ -90,7 +90,8 @@
     "stopping": "Menghentikan server...",
     "updating": "memperbarui server",
     "vite_failed": "Vite gagal dimulai.",
-    "vite_failed_hint": "Baca keluaran Vite di atas untuk mengetahui penyebabnya."
+    "vite_failed_hint": "Baca keluaran Vite di atas untuk mengetahui penyebabnya.",
+    "server_failed": "Server berhenti ({reason}): menunggu perbaikan."
   },
   "format": {
     "failed": "{count} berkas gagal",

@@ -90,7 +90,8 @@
     "stopping": "正在停止服务器...",
     "updating": "更新服务器",
     "vite_failed": "Vite 启动失败。",
-    "vite_failed_hint": "请查看上方的 Vite 输出以了解原因。"
+    "vite_failed_hint": "请查看上方的 Vite 输出以了解原因。",
+    "server_failed": "服务器已停止（{reason}）：等待修复。"
   },
   "format": {
     "failed": "{count} 个文件失败",

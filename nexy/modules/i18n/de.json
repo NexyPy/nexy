@@ -90,7 +90,8 @@
     "stopping": "Server werden beendet...",
     "updating": "Server wird aktualisiert",
     "vite_failed": "Vite konnte nicht gestartet werden.",
-    "vite_failed_hint": "Die Ursache steht in der Vite-Ausgabe oben."
+    "vite_failed_hint": "Die Ursache steht in der Vite-Ausgabe oben.",
+    "server_failed": "Der Server wurde beendet ({reason}): wartet auf eine Korrektur."
   },
   "format": {
     "failed": "{count} Datei(en) fehlgeschlagen",

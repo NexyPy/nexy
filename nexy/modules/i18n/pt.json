@@ -90,7 +90,8 @@
     "stopping": "Parando os servidores...",
     "updating": "atualizando o servidor",
     "vite_failed": "O Vite não conseguiu iniciar.",
-    "vite_failed_hint": "Leia a saída do Vite acima para ver a causa."
+    "vite_failed_hint": "Leia a saída do Vite acima para ver a causa.",
+    "server_failed": "O servidor parou ({reason}): aguardando uma correção."
   },
   "format": {
     "failed": "{count} arquivo(s) com falha",

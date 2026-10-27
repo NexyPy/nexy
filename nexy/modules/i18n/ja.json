@@ -90,7 +90,8 @@
     "stopping": "サーバーを停止しています...",
     "updating": "サーバーを更新",
     "vite_failed": "Vite を起動できませんでした。",
-    "vite_failed_hint": "原因は上の Vite の出力を確認してください。"
+    "vite_failed_hint": "原因は上の Vite の出力を確認してください。",
+    "server_failed": "サーバーが停止しました（{reason}）：修正を待っています。"
   },
   "format": {
     "failed": "{count} 件のファイルが失敗しました",

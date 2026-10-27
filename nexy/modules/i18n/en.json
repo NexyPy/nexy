@@ -90,7 +90,8 @@
     "stopping": "Stopping servers...",
     "updating": "update server",
     "vite_failed": "Vite failed to start.",
-    "vite_failed_hint": "Read the Vite output above for the cause."
+    "vite_failed_hint": "Read the Vite output above for the cause.",
+    "server_failed": "The server stopped ({reason}): waiting for a fix."
   },
   "format": {
     "failed": "{count} file(s) failed",
