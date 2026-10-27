@@ -11,7 +11,9 @@ CONTRACT = {
     "Body",
     "Cookie",
     "Depends",
+    "File",
     "FileResponse",
+    "Form",
     "HTMLResponse",
     "Header",
     "HTTPException",
@@ -23,6 +25,7 @@ CONTRACT = {
     "Request",
     "Response",
     "StreamingResponse",
+    "UploadFile",
     "status",
 }
 

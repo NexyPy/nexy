@@ -13,12 +13,15 @@ from fastapi import (
     Body,
     Cookie,
     Depends,
+    File,
+    Form,
     Header,
     HTTPException,
     Path,
     Query,
     Request,
     Response,
+    UploadFile,
     status,
 )
 from fastapi.responses import (
@@ -35,7 +38,9 @@ __all__ = [
     "Body",
     "Cookie",
     "Depends",
+    "File",
     "FileResponse",
+    "Form",
     "HTMLResponse",
     "HTTPException",
     "Header",
@@ -47,5 +52,6 @@ __all__ = [
     "Request",
     "Response",
     "StreamingResponse",
+    "UploadFile",
     "status",
 ]
