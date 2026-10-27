@@ -12,7 +12,7 @@ import subprocess  # nosec B404
 _NEXY_IMPORT = re.compile(r"^([ \t]*)((?:from|import)[ \t]+[\"'].*)$", re.MULTILINE)
 _MARKED_IMPORT = re.compile(r"^([ \t]*)# nexy-import: (.*)$", re.MULTILINE)
 _JINJA = re.compile(r"\{\{.*?\}\}|\{%.*?%\}|\{#.*?#\}", re.DOTALL)
-_TOKEN = "NXFMT{index}Z"
+_TOKEN = "NXFMT{index}Z"  # nosec B105 - placeholder pattern of the formatter, not a credential
 _BLANK_RUNS = re.compile(r"\n{3,}")
 
 
