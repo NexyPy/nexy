@@ -78,6 +78,7 @@ architecture.
 | [Dev toolbar](guides/devtools.md) | the toolbar of `nexy dev`, and how to turn it off |
 | [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
 | [Troubleshooting](guides/troubleshooting.md) | The first problems people hit, and the fix |
+| [Recipes](guides/recipes.md) | Sign in with a session, a JSON API and a file upload, all tested |
 
 ## Deployment
 
@@ -92,6 +93,8 @@ architecture.
 |---|---|
 | [CLI](reference/cli.md) | Commands and flags |
 | [Config](reference/config.md) | Every `nexyconfig.py` field and its default |
+| [Python API](reference/python-api.md) | Every name Nexy exports, by module |
+| [Glossary](reference/glossary.md) | The words these docs use |
 | [File conventions](reference/file-conventions.md) | Reserved files and routing rules |
 | [Security](reference/security.md) | Version floors, rules Nexy follows, audits |
 | [Agents](reference/agents.md) | Invariants of a Nexy project, for AI agents |

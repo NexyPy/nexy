@@ -5,6 +5,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+### Added
+
+- **Recipes, a Python API reference and a glossary** in `docs/`. The code of the recipes (sign in
+  with a session, a JSON API, a file upload) runs in the test suite, and the API page is checked
+  against the exports of `nexy`, `nexy.http`, `nexy.decorators` and `nexy.testing`.
+- **`UploadFile`, `File` and `Form`** in `nexy.http`.
+
+### Fixed
+
+- **The tests run the same on Windows, Linux and macOS.** Root-layout paths, the Windows process
+  kill and the temporary paths no longer depend on the host. `nx format`, `nx check` and `nx test`
+  find `ruff`, `mypy` and `pytest` next to the running Python when they are not on `PATH`.
+- **CI installs the client test packages** (`npm ci` in `tests/client`). Those tests now fail, not
+  skip, when Node.js 22.18 or the packages are missing.
+- **No test is skipped any more**: `sqlalchemy`, `itsdangerous` and `python-multipart` joined the
+  dev dependencies, and the starter and skill checks run for every framework.
+
 ## [2.2.0] - 2026-10-27
 
 ### Removed

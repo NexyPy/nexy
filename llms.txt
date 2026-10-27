@@ -32,11 +32,14 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [CLI](docs/reference/cli.md): commands and flags
 - [Testing](docs/guides/testing.md): `nx test`, `TestClient`, vitest, CI
 - [Config](docs/reference/config.md): every `nexyconfig.py` field and its default
+- [Python API](docs/reference/python-api.md): every exported name, by module
+- [Glossary](docs/reference/glossary.md): the words these docs use
 - [i18n](docs/guides/i18n.md): internationalization is up to your application
 - [Deploy](docs/deployment/README.md): build output, Docker, reverse proxy
 - [For AI agents](docs/reference/agents.md): invariants and verification commands
 - [Coding agents](docs/guides/ai-agents.md): skills, `AGENTS.md` and `nx skills`
 - [Troubleshooting](docs/guides/troubleshooting.md): first problems and their fix
+- [Recipes](docs/guides/recipes.md): sign in, a JSON API, file upload; the code is tested
 - [Upgrading to 2.2](docs/getting-started/upgrading.md): what changes for an existing project
 
 ## Source
