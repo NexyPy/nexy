@@ -17,6 +17,7 @@ class UserController:
 {% elif orm == "Tortoise-ORM" %}
 from nexy.decorators import Controller
 from src.apps.users.user_service import UserService
+from src.configs.db import arun
 
 
 @Controller()
@@ -25,8 +26,8 @@ class UserController:
         self.svc = svc
 
     async def get(self):
-        return await self.svc.get_all()
+        return await arun(self.svc.get_all())
 
     async def post(self, name: str, email: str):
-        return await self.svc.create(name, email)
+        return await arun(self.svc.create(name, email))
 {% endif %}
