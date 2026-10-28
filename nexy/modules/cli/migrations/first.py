@@ -7,7 +7,7 @@ when it can, and says why when it cannot.
 
 from __future__ import annotations
 
-import subprocess
+import subprocess  # nosec B404 - only the type of a result: the runner starts the process
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
