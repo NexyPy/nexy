@@ -99,10 +99,13 @@ def _route_literal(url: str) -> str:
 
 
 def _route_type(entries: list[dict[str, object]]) -> list[str]:
-    """``export type Route = ...``: every distinct URL, in order; nothing without routes."""
+    """``export type Route = ...``: every distinct URL, in order; `never` without routes.
+
+    The client adapters import the type, so it must exist even for a project with no routes.
+    """
     urls = dict.fromkeys(str(entry["path"]) for entry in entries)
     if not urls:
-        return [""]
+        return ["", "export type Route = never;"]
     return ["", "export type Route = " + " | ".join(_route_literal(url) for url in urls) + ";"]
 
 
@@ -165,11 +168,14 @@ class RouteManifestBuilder:
         return render_manifest(entries, include_route_type=False)
 
     def write(self, dest_dir: Path) -> None:
-        """Write full and client manifests under *dest_dir* when they changed."""
+        """Write full and client manifests under *dest_dir* when they changed.
+
+        Both files are written even when there are no routes: the client runtime imports them, so
+        a project without `src/routes` (the modular router) gets empty ones instead of a Vite
+        "Failed to resolve import" error.
+        """
         dest_dir.mkdir(parents=True, exist_ok=True)
         entries = self.entries()
-        if not entries and not Path("src/routes").is_dir():
-            return
         PathUtil.write_if_changed(dest_dir / "routes.auto.ts", render_manifest(entries, True))
         client = render_manifest(navigable_entries(entries), include_route_type=False)
         PathUtil.write_if_changed(dest_dir / "routes.client.auto.ts", client)

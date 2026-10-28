@@ -127,6 +127,20 @@ class TestRouteTreeManifest:
         assert "export const NEXY_ROUTES" in content
         assert 'path: "/"' in content
 
+    @pytest.mark.parametrize("name", ["routes.auto.ts", "routes.client.auto.ts"])
+    def test_a_project_without_routes_still_gets_both_manifests(self, tmp_path, monkeypatch, name):
+        # The client runtime imports both files, so a modular project (no src/routes) needs them:
+        # Vite stops with "Failed to resolve import" when one is missing.
+        monkeypatch.chdir(tmp_path)
+        FrontendGenerator()._write_route_manifest()
+        assert (tmp_path / "__nexy__" / "src" / name).is_file()
+
+    def test_the_manifest_of_a_project_without_routes_lists_none(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        FrontendGenerator()._write_route_manifest()
+        content = (tmp_path / "__nexy__" / "src" / "routes.client.auto.ts").read_text("utf-8")
+        assert "export const NEXY_ROUTES: NexyRoute[] = [\n];" in content
+
     def test_client_manifest_excludes_server_rendered_pages(self, tmp_path, monkeypatch):
         routes = self._routes(tmp_path)
         (routes / "index.nexy").write_text("---\n---\n<div>Home</div>")
