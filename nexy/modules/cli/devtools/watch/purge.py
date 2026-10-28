@@ -32,7 +32,23 @@ def purge_project_modules(root: Path | None = None) -> list[str]:
     ]
     for name in purged:
         del sys.modules[name]
+    forget_orm_tables()
     return purged
+
+
+def forget_orm_tables() -> None:
+    """Empty the table registry SQLModel shares between all models.
+
+    The project's model modules are dropped from ``sys.modules``, but SQLModel lives in the
+    environment and keeps every table it saw. Importing ``class User(SQLModel, table=True)`` a
+    second time would then fail with "Table 'user' is already defined for this MetaData instance",
+    and so would every module that imports it. Nothing happens when the project does not use it.
+    """
+    sqlmodel = sys.modules.get("sqlmodel")
+    if sqlmodel is None:
+        return
+    sqlmodel.SQLModel.metadata.clear()
+    sqlmodel.SQLModel._sa_registry.dispose()
 
 
 def _module_locations(module: Any) -> list[str]:

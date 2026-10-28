@@ -78,9 +78,10 @@ def test_a_save_that_writes_twice_restarts_once(tmp_path):
     try:
         time.sleep(0.3)
         target = tmp_path / "api.py"
+        # One save is a burst of writes with no pause: a pause longer than the observer's quiet
+        # period (STEP_MS) is two saves, and a loaded CI runner can stretch a short sleep that far.
         for text in ("a = 1\n", "a = 2\n", "a = 3\n"):
             target.write_text(text, encoding="utf-8")
-            time.sleep(0.02)
         assert _wait_for(lambda: bool(hits))
         time.sleep(0.6)
     finally:

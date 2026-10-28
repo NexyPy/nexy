@@ -20,7 +20,8 @@ from nexy.modules.cli.devtools.watch.paths import (
 from nexy.modules.cli.devtools.watch.reactor import ChangeReactor
 from nexy.modules.compiler import Compiler
 
-# A save is often several writes: wait this long (ms) after the last one, at most DEBOUNCE.
+# A save is often several writes. A batch ends after STEP_MS (ms) without a change, or after
+# DEBOUNCE_MS (ms) in all when changes keep coming.
 STEP_MS = 50
 DEBOUNCE_MS = 300
 

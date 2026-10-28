@@ -1,8 +1,8 @@
 {% if orm != "None" %}
 ---
-users: list
+users: prop[list]
 ---
-
+{% raw %}
 <section class="nx-container nx-article">
     <h1 class="nx-title">Users</h1>
     <div class="nx-list">
@@ -14,4 +14,5 @@ users: list
         {% endfor %}
     </div>
 </section>
+{% endraw %}
 {% endif %}

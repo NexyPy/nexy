@@ -106,3 +106,53 @@ class TestPurgeKeepsNamespacePackagesConsistent:
         finally:
             for name in [n for n in sys.modules if n.startswith("purgeproj")]:
                 del sys.modules[name]
+
+
+class TestPurgeForgetsOrmTables:
+    """SQLModel keeps its tables in one global registry that the purge does not touch.
+
+    A re-import of `class User(SQLModel, table=True)` then fails with "Table 'user' is already
+    defined for this MetaData instance", and every module that imports the model fails with it.
+    """
+
+    @staticmethod
+    def _sqlmodel(monkeypatch):
+        import sys
+        import types
+
+        from sqlalchemy.orm import registry
+
+        shared = registry()
+        base = types.SimpleNamespace(metadata=shared.metadata, _sa_registry=shared)
+        monkeypatch.setitem(sys.modules, "sqlmodel", types.SimpleNamespace(SQLModel=base))
+        return shared
+
+    @staticmethod
+    def _declare(shared):
+        from sqlalchemy import Column, Integer, Table
+
+        Table("usermodel", shared.metadata, Column("id", Integer, primary_key=True))
+
+    def test_a_table_can_be_declared_again_after_the_purge(self, tmp_path, monkeypatch):
+        from nexy.modules.cli.devtools.watch.purge import purge_project_modules
+
+        shared = self._sqlmodel(monkeypatch)
+        self._declare(shared)
+
+        purge_project_modules(root=tmp_path)
+
+        self._declare(shared)
+        assert list(shared.metadata.tables) == ["usermodel"]
+
+    def test_the_purge_does_not_import_sqlmodel_when_the_project_has_none(
+        self, tmp_path, monkeypatch
+    ):
+        import sys
+
+        from nexy.modules.cli.devtools.watch.purge import purge_project_modules
+
+        monkeypatch.delitem(sys.modules, "sqlmodel", raising=False)
+
+        purge_project_modules(root=tmp_path)
+
+        assert "sqlmodel" not in sys.modules
