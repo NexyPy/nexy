@@ -10,9 +10,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 - **A router choice in the docs sites**, like the one of the Next.js docs: *File-based* or
   *Modular*. The menu shows the pages of the chosen router and the pages both share, remembers the
   choice, and sets itself when a page of one router is opened. Both sites behave the same.
-
-### Added
-
 - **Two documentation sites in `sites/`**, both reading `docs/` so no text is written twice: a
   vanilla one (a Python script, plain HTML, CSS and JS, search, light and dark theme, published to
   GitHub Pages by `.github/workflows/pages.yml`) and one made with Nexy itself. Code is coloured
