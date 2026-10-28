@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -25,13 +26,27 @@ def _with(current: list[str], added: list[str]) -> list[str]:
 
 
 def import_nexyconfig() -> Any | None:
-    """The user's nexyconfig module, or the example one, or None."""
+    """The user's nexyconfig module, or the example one, or None.
+
+    Raises:
+        ModuleNotFoundError: nexyconfig.py exists but imports a package this Python lacks. That is
+            a problem to report, not a project without a config.
+    """
     try:
         import nexyconfig
 
         return nexyconfig
-    except ModuleNotFoundError:
+    except ModuleNotFoundError as error:
+        if error.name != "nexyconfig":
+            raise
         return _import_example()
+
+
+def _unloadable(error: ModuleNotFoundError) -> str:
+    return (
+        f"nexyconfig.py cannot be loaded: {error}. If it is a package, install it in this Python "
+        f"({sys.executable}) or activate the project's virtual environment."
+    )
 
 
 def _import_example() -> Any | None:
@@ -56,7 +71,11 @@ class ConfigLoader:
 
     def load(self) -> None:
         """Run every step; a bad configuration sets `target._load_error` and skips the rest."""
-        module = import_nexyconfig()
+        try:
+            module = import_nexyconfig()
+        except ModuleNotFoundError as error:
+            self.target._load_error = _unloadable(error)
+            return
         if module is None:
             self.target._load_error = MISSING_CONFIG_ERROR
             return
