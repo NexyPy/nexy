@@ -49,7 +49,7 @@ def _page_handler(route: RouteModule, component: Any) -> Any:
     window = revalidate_window(route.module)
     if window is None:
         return make_request_handler(component)
-    return make_isr_handler(component, route.pathname, window)
+    return make_isr_handler(component, window)
 
 
 class RouteRegistrar:
