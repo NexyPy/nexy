@@ -224,7 +224,7 @@ def _run_post_init_pipeline(
 
     cleanup_build_artifacts(dest)
 
-    print_success_message(project_dir_name)
+    print_success_message(project_dir_name, orm)
 
 
 def generate_post_init_files(dest: Path, orm: str, db_url: str | None) -> None:
@@ -306,11 +306,11 @@ def cleanup_build_artifacts(dest: Path) -> None:
             shutil.rmtree(folder_path, ignore_errors=True)
 
 
-def print_success_message(project_dir_name: str | None = None) -> None:
-    _print_next_steps(project_dir_name)
+def print_success_message(project_dir_name: str | None = None, orm: str = "None") -> None:
+    _print_next_steps(project_dir_name, orm)
 
 
-def _print_next_steps(project_dir_name: str | None) -> None:
+def _print_next_steps(project_dir_name: str | None, orm: str) -> None:
     console.print("\n" + t("init.next_steps", "Next steps"))
 
     if project_dir_name:
@@ -319,8 +319,18 @@ def _print_next_steps(project_dir_name: str | None) -> None:
     launcher.step(
         _activate_command(), t("init.step_activate_venv", "Activate the virtual environment")
     )
+    if orm != "None":
+        _print_migration_steps()
     launcher.step("nexy dev", t("init.step_run_dev", "Start the development server"))
     launcher.step("nexy --help", t("init.step_help", "Explore available commands"))
+
+
+def _print_migration_steps() -> None:
+    """A new project has models but no tables: the users page fails until they exist."""
+    create = t("init.step_migrate_create", "Create the first migration")
+    apply = t("init.step_migrate_apply", "Create the tables in the database")
+    launcher.step('nexy migrate -m "create tables"', create)
+    launcher.step("nexy migrate --upgrade", apply)
 
 
 def _activate_command() -> str:

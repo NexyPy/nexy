@@ -181,6 +181,8 @@
     "node_retry": "Tentando novamente com --legacy-peer-deps...",
     "step_activate_venv": "Ativar o ambiente virtual",
     "step_help": "Explorar os comandos disponíveis",
+    "step_migrate_apply": "Criar as tabelas no banco de dados",
+    "step_migrate_create": "Criar a primeira migração",
     "step_run_dev": "Iniciar o servidor de desenvolvimento",
     "template_not_found": "Modelo ou branch '{branch}' não encontrado no remoto.",
     "venv": {
