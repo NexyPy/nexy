@@ -9,6 +9,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
   useSyncExternalStore,
   type AnchorHTMLAttributes,
   type ImgHTMLAttributes,
@@ -19,9 +20,12 @@ import type { Route } from './routes.auto.ts'
 import {
   getRouter,
   serverLocation,
+  type Blocker,
   type NavigateOptions,
   type Params,
-  type RouterLocation
+  type RouterLocation,
+  type RouteMatchInfo,
+  type TransitionState
 } from './router.ts'
 import {
   imageAttributes,
@@ -160,6 +164,50 @@ export const Image = forwardRef<HTMLImageElement, ImageComponentProps>(function 
     style: { ...computed, ...style }
   })
 })
+
+/** Match a pathname against the routes: the route and its params, or null when none matches. */
+export function useMatch(pathname: string): RouteMatchInfo {
+  const router = getRouter()
+  return useMemo(() => router?.matchPath(pathname) ?? { match: null, found: false }, [router, pathname])
+}
+
+/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
+export function useBlocker(blocker: Blocker): void {
+  const router = getRouter()
+  useEffect(() => {
+    if (!router) return
+    const stop = router.blocker(blocker)
+    return stop
+  }, [router, blocker])
+}
+
+/** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
+export function useTransition(): TransitionState {
+  const router = getRouter()
+  return useSyncExternalStore(
+    () => {
+      if (!router) return () => {}
+      // `transition()` returns a fresh object each call; subscribe to location changes instead.
+      return router.subscribe(() => {})
+    },
+    () => router?.transition() ?? { pending: false, next: null },
+    () => ({ pending: false, next: null })
+  )
+}
+
+/** Catch errors during client rendering and show a fallback instead of crashing the page. */
+export type ErrorBoundaryProps = {
+  /** Rendered when a descendant throws during client navigation. */
+  fallback: (error: Error, reset: () => void) => React.ReactNode
+  children?: React.ReactNode
+}
+
+export function ErrorBoundary({ fallback, children }: ErrorBoundaryProps) {
+  const [error, setError] = useState<Error | null>(null)
+  const reset = () => setError(null)
+  if (error) return fallback(error, reset)
+  return children ?? null
+}
 
 export { ActionError }
 export type { Action, ActionOptions, ActionState }

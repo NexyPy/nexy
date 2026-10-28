@@ -9,9 +9,12 @@ import type { Route } from './routes.auto.ts'
 import {
   getRouter,
   serverLocation,
+  type Blocker,
   type NavigateOptions,
   type Params,
-  type RouterLocation
+  type RouterLocation,
+  type RouteMatchInfo,
+  type TransitionState
 } from './router.ts'
 import {
   cssText,
@@ -65,6 +68,46 @@ export function useParams<T extends Params = Params>(): Accessor<T> {
 export function useSearchParams(): Accessor<URLSearchParams> {
   const location = useLocation()
   return createMemo(() => new URLSearchParams(location().search))
+}
+
+/** Match a pathname against the routes: reactive when the location changes. */
+export function useMatch(pathname?: string): Accessor<RouteMatchInfo> {
+  const router = getRouter()
+  const location = useLocation()
+  return createMemo(() => router?.matchPath(pathname ?? location().pathname) ?? { match: null, found: false })
+}
+
+/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
+export function useBlocker(blocker: Blocker): void {
+  const router = getRouter()
+  if (!isServer && router) {
+    const stop = router.blocker(blocker)
+    onCleanup(stop)
+  }
+}
+
+/** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
+export function useTransition(): Accessor<TransitionState> {
+  const router = getRouter()
+  const location = useLocation()
+  return createMemo(() => router?.transition() ?? { pending: false, next: null })
+}
+
+/** Catch errors during client rendering and show a fallback instead of crashing the page. */
+export type ErrorBoundaryProps = {
+  /** Rendered when a descendant throws during client navigation. */
+  fallback: (error: Error, reset: () => void) => JSX.Element
+  children?: JSX.Element
+}
+
+export function ErrorBoundary({ fallback, children }: ErrorBoundaryProps): JSX.Element {
+  const [error, setError] = createSignal<Error | null>(null)
+  const reset = () => setError(null)
+  return () => {
+    const err = error()
+    if (err) return fallback(err, reset)
+    return children
+  }
 }
 
 const router = {
