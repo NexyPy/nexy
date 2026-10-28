@@ -114,6 +114,26 @@ class TestErrorPages:
         module.Page = lambda: body
         return SpecialPage(scope, module, "Page")
 
+    def test_a_folder_is_not_a_prefix_of_a_longer_name(self):
+        pages = [self._page("/", "root"), self._page("/blog", "blog")]
+        assert pick(pages, "/blogger/post") is pages[0]
+
+    def test_the_folder_itself_is_inside_the_folder(self):
+        pages = [self._page("/", "root"), self._page("/blog", "blog")]
+        assert pick(pages, "/blog") is pages[1]
+
+    def test_an_api_client_still_gets_json_when_a_page_exists(self):
+        app = FastAPI()
+        ErrorPages([self._page("/", "<p>custom</p>")], []).register(app)
+        answer = TestClient(app).get("/nowhere", headers={"accept": "application/json"})
+        assert answer.headers["content-type"].startswith("application/json")
+
+    def test_a_browser_still_gets_the_page(self):
+        app = FastAPI()
+        ErrorPages([self._page("/", "<p>custom</p>")], []).register(app)
+        answer = TestClient(app).get("/nowhere", headers={"accept": "text/html"})
+        assert "custom" in answer.text
+
     def test_the_deepest_folder_wins(self):
         pages = [self._page("/", "root"), self._page("/blog", "blog")]
         assert pick(pages, "/blog/post") is pages[1]

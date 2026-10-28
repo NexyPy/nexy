@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from sites.shared import docs_source
 from tests.e2e.project import request
 
 SITE = Path(__file__).resolve().parents[3] / "sites" / "nexy"
@@ -105,4 +106,7 @@ def test_every_page_of_the_menu_is_served():
     body = request(SITE, ("/docs", NOTHING))[0][2]
     links = sorted(set(re.findall(r'<a href="(/docs/[^"#]+)"', body)))
     statuses = [status for status, _, _ in request(SITE, *[(path, NOTHING) for path in links])]
-    assert set(statuses) == {200} and len(links) == 63
+    in_the_menu = sum(
+        len(section.pages) for section in docs_source.read_sections(SITE.parents[1] / "docs")
+    )
+    assert set(statuses) == {200} and len(links) == in_the_menu

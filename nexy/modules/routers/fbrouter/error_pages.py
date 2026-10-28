@@ -7,9 +7,9 @@ from types import ModuleType
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
-from nexy.modules.routers.crash import inspect_crash, log_crash
+from nexy.modules.routers.crash import inspect_crash, log_crash, wants_json
 
 
 @dataclass(frozen=True)
@@ -21,9 +21,14 @@ class SpecialPage:
     comp: str
 
 
+def _contains(scope: str, path: str) -> bool:
+    """Whether *path* is the folder *scope* or below it: `/blog` holds `/blog/x`, not `/blogger`."""
+    return scope == "/" or path == scope or path.startswith(scope.rstrip("/") + "/")
+
+
 def pick(pages: list[SpecialPage], path: str) -> SpecialPage | None:
     """The page of the deepest folder that contains *path*."""
-    candidates = [page for page in pages if path.startswith(page.scope)]
+    candidates = [page for page in pages if _contains(page.scope, path)]
     return max(candidates, key=lambda page: len(page.scope), default=None)
 
 
@@ -63,9 +68,12 @@ class ErrorPages:
 
     @staticmethod
     def _handle(app: FastAPI, code: int, pages: list[SpecialPage], fallback: SpecialPage) -> None:
-        async def handler(request: Request, exc: HTTPException | Exception) -> HTMLResponse:
+        async def handler(request: Request, exc: HTTPException | Exception) -> Response:
             if code == status.HTTP_500_INTERNAL_SERVER_ERROR:
                 log_crash(request, inspect_crash(exc))
+            if wants_json(request) and code == status.HTTP_404_NOT_FOUND:
+                detail = getattr(exc, "detail", "Not Found")
+                return JSONResponse({"detail": detail}, status_code=code)
             return render(pick(pages, str(request.url.path)) or fallback, code)
 
         app.add_exception_handler(code, handler)

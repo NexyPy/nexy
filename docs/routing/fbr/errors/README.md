@@ -26,8 +26,59 @@ refines the page for that prefix.
 | A dynamic segment cannot be converted to its annotation | `404` |
 | An unhandled exception, in a page or an API handler | `500` |
 | `raise HTTPException(status_code=403)` | the status you raised, as HTML or JSON |
+| `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, from anywhere in a request |
+| `redirect()`, `permanentRedirect()` | a real redirect with no error page |
 
 Without a custom file, Nexy serves its built-in styled `404` and `500` pages.
+
+## Leave a page or answer from code
+
+`redirect`, `permanentRedirect`, `notFound`, `forbidden` and `unauthorized` raise an HTTP exception,
+so the same call works in a `.nexy` page, an API handler, a modular controller, a guard and a
+`dependencies.py`. They have the same names on the client (`@nexy/client`).
+
+```nexy filename="src/routes/posts/[slug].nexy"
+---
+from nexy import notFound, redirect
+
+from src.posts import find
+
+slug: prop[str]
+post = find(slug)
+if post is None:
+    notFound()
+if post.moved_to:
+    redirect(post.moved_to)
+---
+<h1>{{ post.title }}</h1>
+```
+
+| Call | Answer |
+|---|---|
+| `redirect(url)` | `307`; `redirect(url, status=303)` turns a POST into a GET after a form |
+| `permanentRedirect(url)` | `308`; browsers and search engines remember it |
+| `notFound(detail=None)` | `404`: the `notfound` page, or JSON for an API client |
+| `forbidden(detail=None)` | `403`: the visitor is known but may not see this |
+| `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` adds `WWW-Authenticate` |
+
+A redirect answers with the `Location` header and no page, also to an API client. Build the
+destination from values you trust: a `redirect(request.query_params["next"])` sends visitors
+wherever the link says. A destination with a line break is refused.
+
+A guard protects a whole folder:
+
+```python filename="src/routes/private/dependencies.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 ## HTML or JSON
 

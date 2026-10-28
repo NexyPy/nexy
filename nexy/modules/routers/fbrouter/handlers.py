@@ -95,18 +95,17 @@ def make_request_handler(component: Callable[..., str]) -> Callable[..., Any]:
 class _IncrementalPage:
     """A page served stale-while-revalidate: fresh, stale while regenerating, or rendered once."""
 
-    def __init__(self, component: Callable[..., str], pathname: str, revalidate: int) -> None:
+    def __init__(self, component: Callable[..., str], revalidate: int) -> None:
         self._component = component
         self._signature = inspect.signature(component)
-        self._pathname = pathname
         self._revalidate = revalidate
 
-    def _render(self) -> str:
-        result = self._component(**coerce_path_params(self._signature, {}))
+    def _render(self, params: dict[str, str]) -> str:
+        result = self._component(**coerce_path_params(self._signature, params))
         return result if isinstance(result, str) else "".join(result)
 
-    def _store(self, body: str) -> str:
-        REVALIDATE_CACHE.set(self._pathname, body, self._revalidate)
+    def _store(self, key: str, body: str) -> str:
+        REVALIDATE_CACHE.set(key, body, self._revalidate)
         return body
 
     def response(self, body: str | None) -> HTMLResponse:
@@ -114,26 +113,26 @@ class _IncrementalPage:
         control = f"public, s-maxage={window}, stale-while-revalidate={window}"
         return HTMLResponse(body, headers={"cache-control": control})
 
-    async def _regenerate(self) -> None:
-        self._store(self._render())
+    async def _regenerate(self, key: str, params: dict[str, str]) -> None:
+        self._store(key, self._render(params))
 
-    async def handle(self) -> HTMLResponse:
-        cached = REVALIDATE_CACHE.get(self._pathname)
+    async def handle(self, request: Request) -> HTMLResponse:
+        """Serve the page of this URL: each URL of a dynamic route is cached on its own."""
+        key, params = request.scope["path"], dict(request.path_params)
+        cached = REVALIDATE_CACHE.get(key)
         if cached is None:
-            return self.response(self._store(self._render()))
-        if REVALIDATE_CACHE.is_stale(self._pathname):
-            asyncio.create_task(self._regenerate())
+            return self.response(self._store(key, self._render(params)))
+        if REVALIDATE_CACHE.is_stale(key):
+            asyncio.create_task(self._regenerate(key, params))
         return self.response(cached)
 
 
-def make_isr_handler(
-    component: Callable[..., str], pathname: str, revalidate: int
-) -> Callable[..., Any]:
+def make_isr_handler(component: Callable[..., str], revalidate: int) -> Callable[..., Any]:
     """A handler with incremental static regeneration: see `_IncrementalPage`."""
-    page = _IncrementalPage(component, pathname, revalidate)
+    page = _IncrementalPage(component, revalidate)
 
-    async def handler(request: Request) -> HTMLResponse:  # noqa: ARG001
-        return await page.handle()
+    async def handler(request: Request) -> HTMLResponse:
+        return await page.handle(request)
 
     handler.__name__ = component.__name__
     handler.__doc__ = component.__doc__

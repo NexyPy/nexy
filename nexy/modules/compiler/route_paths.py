@@ -35,7 +35,10 @@ def route_paths(source: str, stem: str) -> RoutePaths:
     names = StringTransform()
     namespaced = f"{Config.NAMESPACE}{names.normalize_route_path_for_namespace(source)}"
     router = Path(Config.ROUTER_PATH).as_posix()
-    cleaned = source.replace(f"{Config.NAMESPACE}{router}", "").replace(router, "").split(".")[0]
+    # Only the extension goes: `[...path]` and `v1.2` contain dots that belong to the URL.
+    cleaned = (
+        source.replace(f"{Config.NAMESPACE}{router}", "").replace(router, "").rsplit(".", 1)[0]
+    )
     return RoutePaths(
         source=source,
         namespaced=namespaced,
