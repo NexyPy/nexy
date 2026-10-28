@@ -3,12 +3,17 @@ from nexy.form import Form
 from nexy.helpers.imports.component_import import Import
 from nexy.hooks import (
     useCookies,
+    useHeaders,
+    useIsActive,
+    useParams,
     usePathname,
     useQuery,
+    useRequest,
     useRouter,
     useSearchParams,
     useSession,
     useToc,
+    useUrl,
     useViews,
 )
 from nexy.image import image as Image
@@ -35,6 +40,11 @@ __all__ = [
     "useSession",
     "useCookies",
     "useToc",
+    "useParams",
+    "useRequest",
+    "useHeaders",
+    "useUrl",
+    "useIsActive",
     "redirect",
     "permanentRedirect",
     "notFound",

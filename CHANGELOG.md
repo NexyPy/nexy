@@ -12,6 +12,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   a modular controller, an action or a guard. A redirect is a real redirect with no error page,
   also for an API client; a destination with a line break is refused. A `HTTPException` of 3xx
   that names a `Location` is now a real redirect too.
+- **Request hooks `useParams`, `useRequest`, `useHeaders`, `useUrl` and `useIsActive`.**
+  `useParams` is the clear name of `useQuery`, which returned the path parameters and not the query
+  string and stays as an alias. `useIsActive` is the server twin of the client hook, with the same
+  rule, for the active link of a navigation bar.
 - **A router choice in the docs sites**, like the one of the Next.js docs: *File-based* or
   *Modular*. The menu shows the pages of the chosen router and the pages both share, remembers the
   choice, and sets itself when a page of one router is opened. Both sites behave the same.

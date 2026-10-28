@@ -18,7 +18,12 @@ Components for `.nexy` templates and the request hooks.
 | `Form` | a placeholder with no behaviour: use a plain `<form>` with an [action](../guides/actions.md) |
 | `usePathname` | the path of the current request |
 | `useSearchParams` | the query string as a dict |
-| `useQuery` | the dynamic path parameters as a dict |
+| `useParams` | the dynamic path parameters as a dict, like `useParams()` on the client |
+| `useQuery` | the original name of `useParams`, kept for existing pages (it does not read the query string) |
+| `useRequest` | the current request, for what the other hooks do not cover |
+| `useHeaders` | the request headers as a dict with lower-case names |
+| `useUrl` | the full URL: `.scheme`, `.hostname`, `.path`, `.query` |
+| `useIsActive` | whether a link points at the current page or one of its parents, for a navigation bar |
 | `useRouter` | `path`, `base_url` and `url_for` of the current request |
 | `useSession` | the session dict, empty when sessions are off |
 | `useCookies` | the request cookies as a dict |
