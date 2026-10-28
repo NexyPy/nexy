@@ -1,9 +1,9 @@
 {% if not utility_ui %}{% if not useCSR %}{% if orm != "None" %}
 {% if orm == "Tortoise-ORM" %}
 ---
-import asyncio
+from src.configs.db import run
 from src.services.user_service import UserService
-users = asyncio.run(UserService.get_all())
+users = run(UserService.get_all())
 ---
 {% else %}
 ---

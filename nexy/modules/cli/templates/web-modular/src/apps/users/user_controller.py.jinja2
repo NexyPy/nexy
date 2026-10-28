@@ -13,13 +13,13 @@ class UserController:
     async def get(self):
         users = self.svc.get_all()
         return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/users/user_view.nexy"),
-            "users": users,
+            "children": useViews("src/apps/users/user_view.nexy", context={"users": users}),
         })
 {% elif orm == "Tortoise-ORM" %}
 from nexy.decorators import Controller
 from nexy.hooks import useViews
 from src.apps.users.user_service import UserService
+from src.configs.db import arun
 
 
 @Controller()
@@ -28,9 +28,8 @@ class UserController:
         self.svc = svc
 
     async def get(self):
-        users = await self.svc.get_all()
+        users = await arun(self.svc.get_all())
         return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/users/user_view.nexy"),
-            "users": users,
+            "children": useViews("src/apps/users/user_view.nexy", context={"users": users}),
         })
 {% endif %}

@@ -181,6 +181,8 @@
     "node_retry": "Mencoba lagi dengan --legacy-peer-deps...",
     "step_activate_venv": "Aktifkan lingkungan virtual",
     "step_help": "Lihat perintah yang tersedia",
+    "step_migrate_apply": "Buat tabel di database",
+    "step_migrate_create": "Buat migrasi pertama",
     "step_run_dev": "Jalankan server pengembangan",
     "template_not_found": "Templat atau branch '{branch}' tidak ditemukan di remote.",
     "venv": {

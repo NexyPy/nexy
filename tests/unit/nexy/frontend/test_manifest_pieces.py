@@ -42,8 +42,8 @@ class TestRouteLiteral:
 
 
 class TestRouteType:
-    def test_no_routes_leave_a_blank_line_and_no_type(self):
-        assert _route_type([]) == [""]
+    def test_no_routes_still_export_the_type_the_client_imports(self):
+        assert _route_type([]) == ["", "export type Route = never;"]
 
     def test_a_url_is_listed_once(self):
         lines = _route_type([_entry("/a"), _entry("/a"), _entry("/b")])
