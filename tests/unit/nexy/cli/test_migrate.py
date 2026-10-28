@@ -156,3 +156,97 @@ class TestCommand:
         monkeypatch.setattr(migrate_module, "run_tool", lambda _tool, _args: None)
         result = runner.invoke(CLI, ["migrate", "--init"])
         assert result.exit_code == 1 and "not found on PATH" in result.output
+
+
+class TestAerichCommands:
+    """Aerich has its own commands: no `revision`, no `head`, no `aerich.ini`."""
+
+    @staticmethod
+    def _tortoise(project: Path) -> None:
+        (project / "nexyconfig.py").write_text("tortoise", encoding="utf-8")
+
+    def test_the_migrations_folder_marks_an_initialised_project(self, project, tools):
+        self._tortoise(project)
+        (project / "migrations").mkdir()
+        result = runner.invoke(CLI, ["migrate"])
+        assert "--init" not in result.output and tools != []
+
+    def test_the_first_migration_creates_the_tables_too(self, project, tools):
+        self._tortoise(project)
+        (project / "migrations").mkdir()
+        runner.invoke(CLI, ["migrate"])
+        assert tools == [("aerich", ["init-db"])]
+
+    def test_later_migrations_are_named(self, project, tools):
+        self._tortoise(project)
+        (project / "migrations" / "models").mkdir(parents=True)
+        runner.invoke(CLI, ["migrate", "-m", "add users"])
+        assert tools == [("aerich", ["migrate", "--name", "add users"])]
+
+    def test_upgrade_takes_no_target(self, project, tools):
+        self._tortoise(project)
+        (project / "migrations" / "models").mkdir(parents=True)
+        runner.invoke(CLI, ["migrate", "--upgrade"])
+        assert tools == [("aerich", ["upgrade"])]
+
+    def test_a_tortoise_url_is_not_checked_with_sqlalchemy(self, project, tools, monkeypatch):
+        self._tortoise(project)
+        (project / "migrations" / "models").mkdir(parents=True)
+        monkeypatch.setenv("DATABASE_URL", "postgres://user:password@localhost:5432/mydb")
+        runner.invoke(CLI, ["migrate", "--upgrade"])
+        assert tools == [("aerich", ["upgrade"])]
+
+
+class TestAlembicEnv:
+    """Autogenerate compares the database with the models: env.py must import them."""
+
+    @staticmethod
+    def _env(tmp_path: Path, orm: str, models: str = "src.models.user_model") -> str:
+        alembic.render_env(tmp_path, orm, models)
+        return (tmp_path / "env.py").read_text(encoding="utf-8")
+
+    def test_sqlmodel_imports_the_module_that_holds_the_models(self, tmp_path):
+        assert "import src.apps.users.user_model" in self._env(
+            tmp_path, "SQLModel", "src.apps.users.user_model"
+        )
+
+    def test_sqlalchemy_takes_its_base_from_the_module_that_holds_the_models(self, tmp_path):
+        env = self._env(tmp_path, "SQLAlchemy", "src.apps.users.user_model")
+        assert "from src.apps.users.user_model import Base" in env
+
+    def test_the_old_import_of_an_empty_package_is_gone(self, tmp_path):
+        assert "from src.models import Base" not in self._env(tmp_path, "SQLAlchemy")
+
+    def test_a_file_based_project_keeps_its_models_in_src_models(self, tmp_path):
+        (tmp_path / "src" / "models").mkdir(parents=True)
+        assert alembic.models_module(tmp_path) == "src.models.user_model"
+
+    def test_a_modular_project_keeps_them_with_the_users_module(self, tmp_path):
+        assert alembic.models_module(tmp_path) == "src.apps.users.user_model"
+
+
+class TestMigrationTemplate:
+    """SQLModel columns are written as `sqlmodel.sql.sqltypes...`: a migration must import it."""
+
+    MAKO = "import sqlalchemy as sa\nfrom alembic import op\n"
+
+    @staticmethod
+    def _mako(tmp_path: Path, orm: str, text: str = MAKO) -> str:
+        (tmp_path / "script.py.mako").write_text(text, encoding="utf-8")
+        alembic.render_env(tmp_path, orm)
+        return (tmp_path / "script.py.mako").read_text(encoding="utf-8")
+
+    def test_a_sqlmodel_migration_imports_sqlmodel(self, tmp_path):
+        assert "import sqlmodel" in self._mako(tmp_path, "SQLModel")
+
+    def test_the_import_is_added_once(self, tmp_path):
+        text = self._mako(tmp_path, "SQLModel")
+        alembic.render_env(tmp_path, "SQLModel")
+        assert (tmp_path / "script.py.mako").read_text(encoding="utf-8") == text
+
+    def test_a_sqlalchemy_migration_is_left_alone(self, tmp_path):
+        assert self._mako(tmp_path, "SQLAlchemy") == self.MAKO
+
+    def test_a_folder_without_the_template_is_fine(self, tmp_path):
+        alembic.render_env(tmp_path, "SQLModel")
+        assert (tmp_path / "env.py").is_file()

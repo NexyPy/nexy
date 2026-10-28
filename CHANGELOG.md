@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+### Added
+
+- **Two documentation sites in `sites/`**, both reading `docs/` so no text is written twice: a
+  vanilla one (a Python script, plain HTML, CSS and JS, search, light and dark theme, published to
+  GitHub Pages by `.github/workflows/pages.yml`) and one made with Nexy itself. Code is coloured
+  when the site is built, every heading has a link, search shows the words found, there is a 404
+  page that works under a project URL, and a keyboard user can skip the menu.
+- **Recipes, a Python API reference and a glossary** in `docs/`. The code of the recipes (sign in
+  with a session, a JSON API, a file upload) runs in the test suite, and the API page is checked
+  against the exports of `nexy`, `nexy.http`, `nexy.decorators` and `nexy.testing`.
+- **`UploadFile`, `File` and `Form`** in `nexy.http`.
+
 ### Changed
 
 - **The docs say where `nexy` may run.** `uvx` comes with uv and only creates a project (`new`,
@@ -13,34 +25,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   project's virtual environment, or through `uv run`. The README, the installation, quick start and
   tutorial pages, the CLI reference, troubleshooting, the generated project's README and its
   AGENTS.md all say so; a test refuses a page that tells to run `uvx nexy dev`.
-
-### Added
-
-- **Two documentation sites in `sites/`**, both reading `docs/` so no text is written twice: a
-  vanilla one (a Python script, plain HTML, CSS and JS, search, light and dark theme, published to
-  GitHub Pages by `.github/workflows/pages.yml`) and one made with Nexy itself. Code is coloured
-  when the site is built, every heading has a link, search shows the words found, there is a 404
-  page that works under a project URL, and a keyboard user can skip the menu.
-
-### Fixed
-
-- Two links in `docs/` pointed to headings that no longer exist; a test now checks every
-  `page.md#heading` link.
-
-### Changed
-
+- **`nx new` creates the first migration and the tables** when you choose an ORM and give a
+  database URL, so the users page answers on the first `nexy dev`. When the database does not
+  answer, it says why and lists `nexy migrate -m "create tables"` and `nexy migrate --upgrade`.
 - **The dev toolbar badge shows the Nexy mark, not a letter.** The round badge now holds the
   roof-cut N of the Nexy logo, drawn as an icon.
 
-### Added
-
-- **Recipes, a Python API reference and a glossary** in `docs/`. The code of the recipes (sign in
-  with a session, a JSON API, a file upload) runs in the test suite, and the API page is checked
-  against the exports of `nexy`, `nexy.http`, `nexy.decorators` and `nexy.testing`.
-- **`UploadFile`, `File` and `Form`** in `nexy.http`.
-
 ### Fixed
 
+- **A new project now has its migration tool.** `alembic` (SQLModel, SQLAlchemy) was never
+  installed in the project, so `nx new` initialised nothing on a machine without a global Alembic.
+- **Alembic sees the models.** The generated `env.py` never imported them: with SQLModel the
+  migration was empty, and with SQLAlchemy it imported `Base` from a module that does not export it.
+  SQLModel migrations also import `sqlmodel`, without which applying them failed.
+- **`nx migrate` works with Tortoise-ORM.** It ran `aerich revision --autogenerate` and
+  `aerich upgrade head`, which Aerich does not have; it also looked for an `aerich.ini` that Aerich
+  never writes, and checked Tortoise URLs with SQLAlchemy. It now runs `init-db`, `migrate --name`
+  and `upgrade`.
+- **Tortoise with SQLite wrote `sqlite:///dev.db` in `.env`**, which Tortoise reads as `/dev.db`,
+  at the root of the disk. It writes `sqlite://dev.db`.
+- Two links in `docs/` pointed to headings that no longer exist; a test now checks every
+  `page.md#heading` link.
 - **The tests run the same on Windows, Linux and macOS.** Root-layout paths, the Windows process
   kill and the temporary paths no longer depend on the host. `nx format`, `nx check` and `nx test`
   find `ruff`, `mypy` and `pytest` next to the running Python when they are not on `PATH`.

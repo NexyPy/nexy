@@ -167,6 +167,8 @@
     "installed_uv": "تم تثبيت uv",
     "installing_uv": "جارٍ تثبيت uv",
     "merging": "المجلد ليس فارغًا، جارٍ دمج الملفات...",
+    "migrated": "تم إنشاء أول ترحيل والجداول",
+    "migration_skipped": "لم يتم إنشاء الجداول: {problem}",
     "migration_tool": "جارٍ تهيئة {tool}...",
     "network": {
       "checking": "جارٍ التحقق من الاتصال...",

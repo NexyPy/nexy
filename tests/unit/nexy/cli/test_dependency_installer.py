@@ -97,14 +97,33 @@ class TestDatabaseDrivers:
         )
         installer.install_all()
         added = [argv[-1] for _, argv in calls if argv[:2] == ["uv", "add"]]
-        assert added == ["sqlmodel", "psycopg[binary]", "python-dotenv"]
+        assert added == ["sqlmodel", "alembic", "psycopg[binary]", "python-dotenv"]
+
+
+class TestMigrationTools:
+    """`nx migrate` runs the tool of the project, so the project must have it."""
+
+    @staticmethod
+    def _added(project, calls, orm):
+        _installer(project, Connection(True, 30.0, 3000.0), orm=orm).install_all()
+        return [argv[-1] for _, argv in calls if argv[:2] == ["uv", "add"]]
+
+    @pytest.mark.parametrize("orm", ["SQLModel", "SQLAlchemy"])
+    def test_a_sql_orm_brings_alembic(self, project, calls, orm):
+        assert "alembic" in self._added(project, calls, orm)
+
+    def test_tortoise_brings_aerich(self, project, calls):
+        assert "aerich" in self._added(project, calls, "Tortoise-ORM")
+
+    def test_a_project_without_an_orm_brings_no_migration_tool(self, project, calls):
+        assert self._added(project, calls, "None") == []
 
 
 class TestProgressBar:
     def test_each_step_knows_its_place_in_the_whole_install(self, project, calls):
         _installer(project, Connection(True, 30.0, 3000.0), orm="SQLModel").install_all()
-        # venv, node, python, sqlmodel, python-dotenv
-        assert positions == [(0, 5), (1, 5), (2, 5), (3, 5), (4, 5)]
+        # venv, node, python, sqlmodel, alembic, python-dotenv
+        assert positions == [(0, 6), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6)]
 
     def test_a_single_step_has_no_count(self, tmp_path, calls):
         (tmp_path / ".venv").mkdir()

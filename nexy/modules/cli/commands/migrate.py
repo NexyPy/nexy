@@ -9,7 +9,9 @@ from nexy.modules.cli.migrations.orm import Orm, detect_orm
 from nexy.modules.i18n import t
 
 _AERICH_CONFIG = "src.configs.db.TORTOISE_ORM"
-_INIT_FILES = {"alembic": "alembic.ini", "aerich": "aerich.ini"}
+# What `init` leaves behind: Alembic writes alembic.ini; Aerich writes its settings into
+# pyproject.toml and creates the migrations folder.
+_INIT_FILES = {"alembic": "alembic.ini", "aerich": "migrations"}
 
 
 def _run_tool(tool: str, args: list[str]) -> int:
@@ -47,7 +49,7 @@ def _initialize(orm: Orm, project: Path) -> None:
         return
     _run_tool("alembic", ["init", "alembic"])
     if (project / "alembic").exists():
-        alembic.render_env(project / "alembic", orm.name)
+        alembic.render_env(project / "alembic", orm.name, alembic.models_module(project))
     url = database_url(project)
     if url:
         alembic.write_ini_url(project, url)
@@ -67,7 +69,10 @@ def _require_initialized(orm: Orm, project: Path) -> None:
     raise _fail(messages[orm.tool])
 
 
-def _require_database(project: Path) -> None:
+def _require_database(orm: Orm, project: Path) -> None:
+    """Alembic's URL is a SQLAlchemy one and can be tried; Aerich's is Tortoise's: it reports."""
+    if orm.tool == "aerich":
+        return
     url = database_url(project)
     if not url:
         raise _fail(
@@ -82,6 +87,18 @@ def _require_database(project: Path) -> None:
     else:
         message = t("migrate.no_connection", "Error: Cannot connect to database - {error}")
     raise _fail(message.format(error=error)) from error
+
+
+def _arguments(orm: Orm, project: Path, message: str, upgrade: bool) -> list[str]:
+    """The arguments of the tool to apply migrations or to create one: they differ per tool."""
+    if orm.tool == "alembic":
+        if upgrade:
+            return ["upgrade", "head"]
+        return ["revision", "--autogenerate", *(["-m", message] if message else [])]
+    if upgrade:
+        return ["upgrade"]
+    first = not any(path.is_dir() for path in (project / "migrations").iterdir())
+    return ["init-db"] if first else ["migrate", "--name", message or "update"]
 
 
 def migrate(
@@ -102,8 +119,5 @@ def migrate(
         _initialize(orm, project)
         return
     _require_initialized(orm, project)
-    _require_database(project)
-    if upgrade:
-        _run_tool(orm.tool, ["upgrade", "head"])
-        return
-    _run_tool(orm.tool, ["revision", "--autogenerate", *(["-m", message] if message else [])])
+    _require_database(orm, project)
+    _run_tool(orm.tool, _arguments(orm, project, message, upgrade))
