@@ -181,6 +181,8 @@
     "node_retry": "Reintentando con --legacy-peer-deps...",
     "step_activate_venv": "Activar el entorno virtual",
     "step_help": "Explorar los comandos disponibles",
+    "step_migrate_apply": "Crear las tablas en la base de datos",
+    "step_migrate_create": "Crear la primera migración",
     "step_run_dev": "Iniciar el servidor de desarrollo",
     "template_not_found": "No se encontró la plantilla o la rama '{branch}' en el remoto.",
     "venv": {

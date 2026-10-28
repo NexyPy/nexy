@@ -181,6 +181,8 @@
     "node_retry": "جارٍ إعادة المحاولة باستخدام --legacy-peer-deps...",
     "step_activate_venv": "تفعيل البيئة الافتراضية",
     "step_help": "استكشاف الأوامر المتاحة",
+    "step_migrate_apply": "إنشاء الجداول في قاعدة البيانات",
+    "step_migrate_create": "إنشاء أول ترحيل",
     "step_run_dev": "تشغيل خادم التطوير",
     "template_not_found": "لم يتم العثور على القالب أو الفرع '{branch}' في المستودع البعيد.",
     "venv": {

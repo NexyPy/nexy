@@ -181,6 +181,8 @@
     "node_retry": "--legacy-peer-deps로 다시 시도하는 중...",
     "step_activate_venv": "가상 환경 활성화",
     "step_help": "사용 가능한 명령 둘러보기",
+    "step_migrate_apply": "데이터베이스에 테이블 만들기",
+    "step_migrate_create": "첫 번째 마이그레이션 만들기",
     "step_run_dev": "개발 서버 시작",
     "template_not_found": "원격에서 템플릿 또는 브랜치 '{branch}'을(를) 찾을 수 없습니다.",
     "venv": {

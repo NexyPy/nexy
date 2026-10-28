@@ -181,6 +181,8 @@
     "node_retry": "--legacy-peer-deps を付けて再試行しています...",
     "step_activate_venv": "仮想環境を有効にする",
     "step_help": "利用可能なコマンドを確認する",
+    "step_migrate_apply": "データベースにテーブルを作成する",
+    "step_migrate_create": "最初のマイグレーションを作成する",
     "step_run_dev": "開発サーバーを起動する",
     "template_not_found": "テンプレートまたはブランチ '{branch}' がリモートに見つかりません。",
     "venv": {

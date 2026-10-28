@@ -1,9 +1,9 @@
 {% if not useCSR %}{% if orm != "None" %}---
 from "@/components/Container.nexy" import Container
-{% if orm == "Tortoise-ORM" %}import asyncio
+{% if orm == "Tortoise-ORM" %}from src.configs.db import run
 from src.services.user_service import UserService
 
-users = asyncio.run(UserService.get_all())
+users = run(UserService.get_all())
 {% else %}from src.services.user_service import UserService
 
 users = UserService.get_all()

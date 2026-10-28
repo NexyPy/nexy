@@ -181,6 +181,8 @@
     "node_retry": "--legacy-peer-deps के साथ फिर से कोशिश की जा रही है...",
     "step_activate_venv": "वर्चुअल एनवायरनमेंट सक्रिय करें",
     "step_help": "उपलब्ध कमांड देखें",
+    "step_migrate_apply": "डेटाबेस में टेबल बनाएं",
+    "step_migrate_create": "पहला माइग्रेशन बनाएं",
     "step_run_dev": "डेवलपमेंट सर्वर शुरू करें",
     "template_not_found": "रिमोट पर टेम्पलेट या ब्रांच '{branch}' नहीं मिली।",
     "venv": {
