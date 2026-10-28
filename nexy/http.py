@@ -33,6 +33,8 @@ from fastapi.responses import (
     StreamingResponse,
 )
 
+from nexy.navigation import forbidden, notFound, permanentRedirect, redirect, unauthorized
+
 __all__ = [
     "BackgroundTasks",
     "Body",
@@ -53,5 +55,10 @@ __all__ = [
     "Response",
     "StreamingResponse",
     "UploadFile",
+    "forbidden",
+    "notFound",
+    "permanentRedirect",
+    "redirect",
     "status",
+    "unauthorized",
 ]

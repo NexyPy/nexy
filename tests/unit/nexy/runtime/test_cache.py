@@ -53,12 +53,12 @@ class TestIsrHandler:
     def _reset(self):
         REVALIDATE_CACHE.clear()
 
-    def _handler(self, pathname: str, revalidate: int, calls: list[int]):
+    def _handler(self, revalidate: int, calls: list[int]):
         def _blog() -> str:
             calls.append(1)
             return f"<h1>Blog {len(calls)}</h1>"
 
-        return make_isr_handler(_blog, pathname, revalidate)
+        return make_isr_handler(_blog, revalidate)
 
     async def _fetch(self, handler):
         from fastapi import Request
@@ -73,7 +73,7 @@ class TestIsrHandler:
     def test_fresh_serves_cached_html(self):
         self._reset()
         calls: list[int] = []
-        handler = self._handler("/blog", 60, calls)
+        handler = self._handler(60, calls)
         first = asyncio.run(self._fetch(handler))
         second = asyncio.run(self._fetch(handler))
         assert first == "<h1>Blog 1</h1>"
@@ -83,14 +83,14 @@ class TestIsrHandler:
     def test_stale_regens_in_background_but_serves_stale(self):
         self._reset()
         calls: list[int] = []
-        handler = self._handler("/blog", 0, calls)  # revalidate=0 -> dynamic-ish
+        handler = self._handler(0, calls)  # revalidate=0 -> dynamic-ish
         first = asyncio.run(self._fetch(handler))
         assert first == "<h1>Blog 1</h1>"
 
     def test_isr_response_has_cache_control_header(self):
         self._reset()
         calls: list[int] = []
-        handler = self._handler("/blog", 60, calls)
+        handler = self._handler(60, calls)
 
         async def run():
             from fastapi import Request

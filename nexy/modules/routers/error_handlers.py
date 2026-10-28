@@ -3,10 +3,11 @@ from http import HTTPStatus
 from fastapi import FastAPI, Request, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException
 
 from nexy.errors import InternalServerError, NotFound, error_page
+from nexy.modules.routers.crash import wants_json
 
 
 def _phrase(code: int) -> str:
@@ -16,16 +17,23 @@ def _phrase(code: int) -> str:
         return "Error"
 
 
-def _wants_json(request: Request) -> bool:
-    """True for clients that ask for JSON and not for a page (API clients, fetch with headers)."""
-    accept = request.headers.get("accept", "").lower()
-    return "application/json" in accept and "text/html" not in accept
+def _redirect_of(exc: HTTPException) -> Response | None:
+    """A real redirect for a 3xx exception that names a `Location`; None for anything else."""
+    if not 300 <= exc.status_code < 400:
+        return None
+    named = {key.lower(): value for key, value in (getattr(exc, "headers", None) or {}).items()}
+    if "location" not in named:
+        return None
+    return RedirectResponse(named["location"], status_code=exc.status_code)
 
 
 def handle_http_exception(request: Request, exc: HTTPException) -> Response:
-    """Map HTTP exceptions to JSON for API clients, else to Nexy error pages."""
+    """Map HTTP exceptions to redirects, JSON for API clients, else to Nexy error pages."""
+    redirect = _redirect_of(exc)
+    if redirect is not None:
+        return redirect
     headers = getattr(exc, "headers", None)
-    if _wants_json(request):
+    if wants_json(request):
         return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=headers)
     if exc.status_code == status.HTTP_404_NOT_FOUND:
         return NotFound()
@@ -50,7 +58,7 @@ def register_validation_error_handler(server: FastAPI) -> None:
     async def _handle_validation(request: Request, exc: RequestValidationError) -> Response:
         errors = exc.errors()
         if errors and all(e.get("loc") and e["loc"][0] == "path" for e in errors):
-            if _wants_json(request):
+            if wants_json(request):
                 return JSONResponse({"detail": "Not Found"}, status_code=status.HTTP_404_NOT_FOUND)
             return NotFound()
         return JSONResponse(
