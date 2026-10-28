@@ -12,6 +12,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   a modular controller, an action or a guard. A redirect is a real redirect with no error page,
   also for an API client; a destination with a line break is refused. A `HTTPException` of 3xx
   that names a `Location` is now a real redirect too.
+- **Page metadata**: `metadata = {...}` in the frontmatter, or `setMetadata(...)` for a title that
+  depends on the data, and `{{ useMetadata().html() }}` in the root layout. Title and template,
+  description, canonical, robots, icon, Open Graph, Twitter and extra tags; every value is
+  escaped, and a request never sees the metadata of another.
 - **Request hooks `useParams`, `useRequest`, `useHeaders`, `useUrl` and `useIsActive`.**
   `useParams` is the clear name of `useQuery`, which returned the path parameters and not the query
   string and stays as an alias. `useIsActive` is the server twin of the client hook, with the same

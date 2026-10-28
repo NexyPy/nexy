@@ -115,6 +115,7 @@ select = [
 "nexy/modules/di/*.py" = ["N802"]
 "nexy/hooks.py" = ["N802"]
 "nexy/navigation.py" = ["N802"]
+"nexy/metadata.py" = ["N802"]
 "nexy/errors.py" = ["N802"]
 "nexy/helpers/imports/component_import.py" = ["N802"]
 "nexy/__init__.py" = ["N812"]

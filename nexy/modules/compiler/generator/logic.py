@@ -101,10 +101,20 @@ def split_route_exports(frontmatter: str) -> tuple[str, str]:
     return _unparse(exports), _unparse(rest) if rest else ""
 
 
+_APPLY_METADATA_IMPORT = "from nexy.metadata import apply_static_metadata as __apply_metadata"
+
+
 def split_frontmatter(frontmatter: str) -> tuple[str, str]:
-    """What goes at module level (imports, route exports) and what runs in the component."""
+    """What goes at module level (imports, route exports) and what runs in the component.
+
+    A page that exports `metadata = {...}` also applies it first thing when it runs, so the layout
+    finds the title the page asked for.
+    """
     exports, rest = split_route_exports(frontmatter)
     imports, body = split_imports(rest)
+    if re.search(r"^metadata = ", exports, re.MULTILINE):
+        imports = "\n".join(part for part in (imports, _APPLY_METADATA_IMPORT) if part)
+        body = f"__apply_metadata(metadata)\n{body}"
     return "\n".join(part for part in (imports, exports) if part), body
 
 

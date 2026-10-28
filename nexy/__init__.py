@@ -18,6 +18,7 @@ from nexy.hooks import (
 )
 from nexy.image import image as Image
 from nexy.link import link as Link
+from nexy.metadata import setMetadata, useMetadata
 from nexy.navigation import forbidden, notFound, permanentRedirect, redirect, unauthorized
 from nexy.template import Template
 from nexy.video import video as Video
@@ -45,6 +46,8 @@ __all__ = [
     "useHeaders",
     "useUrl",
     "useIsActive",
+    "useMetadata",
+    "setMetadata",
     "redirect",
     "permanentRedirect",
     "notFound",

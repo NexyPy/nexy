@@ -69,3 +69,18 @@ class TestSplit:
     def test_imports_and_exports_both_go_to_module_level(self):
         top, body = logic_module.split_frontmatter("import os\nrevalidate = 5\nx = os.sep\n")
         assert (top, body) == ("import os\nrevalidate = 5", "x = os.sep")
+
+
+class TestStaticMetadata:
+    def test_a_page_with_metadata_applies_it_when_it_runs(self):
+        top, body = logic_module.split_frontmatter('metadata = {"title": "Blog"}\nx = 1\n')
+        assert body.startswith("__apply_metadata(metadata)")
+        assert "apply_static_metadata as __apply_metadata" in top
+
+    def test_a_page_without_metadata_gets_no_extra_code(self):
+        top, body = logic_module.split_frontmatter("revalidate = 5\nx = 1\n")
+        assert (top, body) == ("revalidate = 5", "x = 1")
+
+    def test_a_page_whose_only_content_is_metadata_still_applies_it(self):
+        _, body = logic_module.split_frontmatter('metadata = {"title": "Blog"}\n')
+        assert body.strip() == "__apply_metadata(metadata)"

@@ -29,6 +29,7 @@ Components for `.nexy` templates and the request hooks.
 | `useCookies` | the request cookies as a dict |
 | `useToc` | the table of contents of the current page, as HTML |
 | `useViews` | render a view file such as `about.tsx` from a handler |
+| `setMetadata`, `useMetadata` | name the title and head tags of a page, and write them in the layout |
 | `redirect`, `permanentRedirect` | send the visitor elsewhere (307, 308) and stop the request |
 | `notFound`, `forbidden`, `unauthorized` | answer 404, 403 or 401 from anywhere |
 
