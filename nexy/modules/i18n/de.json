@@ -167,6 +167,8 @@
     "installed_uv": "uv installiert",
     "installing_uv": "uv wird installiert",
     "merging": "Das Verzeichnis ist nicht leer, Dateien werden zusammengeführt...",
+    "migrated": "Erste Migration und Tabellen erstellt",
+    "migration_skipped": "Die Tabellen wurden nicht erstellt: {problem}",
     "migration_tool": "{tool} wird initialisiert...",
     "network": {
       "checking": "Verbindung wird geprüft ...",

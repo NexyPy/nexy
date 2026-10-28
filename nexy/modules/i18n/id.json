@@ -167,6 +167,8 @@
     "installed_uv": "uv terpasang",
     "installing_uv": "Memasang uv",
     "merging": "Direktori tidak kosong, menggabungkan berkas...",
+    "migrated": "Migrasi pertama dan tabel telah dibuat",
+    "migration_skipped": "Tabel tidak dibuat: {problem}",
     "migration_tool": "Menginisialisasi {tool}...",
     "network": {
       "checking": "Memeriksa koneksi...",

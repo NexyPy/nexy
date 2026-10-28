@@ -167,6 +167,8 @@
     "installed_uv": "uv をインストールしました",
     "installing_uv": "uv をインストールしています",
     "merging": "ディレクトリが空ではないため、ファイルをマージしています...",
+    "migrated": "最初のマイグレーションとテーブルを作成しました",
+    "migration_skipped": "テーブルを作成できませんでした: {problem}",
     "migration_tool": "{tool} を初期化しています...",
     "network": {
       "checking": "接続を確認しています...",
