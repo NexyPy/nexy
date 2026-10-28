@@ -57,6 +57,8 @@ reserved, exactly like `layout.nexy`.
 | `useLayoutExtensions` | `layout.*` |
 | `useNotFoundExtensions` | `notfound.*` |
 | `useErrorsExtensions` | `errors.*` |
+| `useForbiddenExtensions` | `forbidden.*` |
+| `useUnauthorizedExtensions` | `unauthorized.*` |
 | `useLoadingExtensions` | `loading.*` |
 
 ## API documentation

@@ -38,6 +38,7 @@ architecture.
 | [Middleware files](routing/fbr/middleware/README.md) | `middleware.py`, inherited by directory |
 | [Inheritance](routing/fbr/inheritance.md) | Layouts, dependencies and error pages in one table |
 | [Error pages](routing/fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, JSON errors |
+| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
 | [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | `Link`, client navigation, prefetch |
 | [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
 | [WebSocket](routing/fbr/realtime/websocket.md) | Handle a `SOCKET` connection |
@@ -130,7 +131,12 @@ docs/
 
 - Plain Markdown, rendered by GitHub. No site generator, no build step, no second repository.
 - One question per page. A directory when a feature needs several pages, a file otherwise.
+- A page earns its place in this order: what you will be able to do, the rule in one sentence, a
+  picture when the feature has moving parts, an example you can run, the details, then the tables.
 - Every claim is checked against `nexy/`. When a page and the code disagree, the code wins.
+- An image in `docs/assets/` is an illustration: the site draws the SVG inside the page, so it takes
+  the colours of the theme, and GitHub shows the file itself.
+- Every page ends with the pages that answer the next question.
 - English, like the rest of the repository.
 
 ## Elsewhere

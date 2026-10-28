@@ -32,6 +32,13 @@ _HREF = re.compile(r'href="([^"]+)"')
 _TAGS = re.compile(r"<[^>]+>")
 _SPACE = re.compile(r"\s+")
 
+# An image of the docs is an illustration: the file is read and drawn as a figure, its alt text
+# becoming the caption. The <style> inside the SVG paints it on GitHub, which shows the file alone;
+# on the site it is dropped, so the colours of the page reach the drawing through currentColor.
+_IMAGE = re.compile(r'<p><img src="([^"]+\.svg)" alt="([^"]*)" /></p>')
+_PALETTE = re.compile(r"<style>.*?</style>", re.DOTALL)
+_SVG = re.compile(r"<svg.*?</svg>", re.DOTALL)
+
 Link = Callable[[str], str]
 
 
@@ -219,9 +226,26 @@ def _colour(found: re.Match[str]) -> str:
     return f'<pre lang="{language}"><code>{coloured}</code></pre>'
 
 
+def _figures(html: str, page: Path, docs: Path) -> str:
+    """Draw each image of the docs as a figure, the SVG it names read into the page.
+
+    A file outside the docs, or one that is not there, stays an image: the site then serves or
+    misses it exactly as the Markdown says.
+    """
+
+    def draw(found: re.Match[str]) -> str:
+        target = (page.parent / normpath(found[1])).resolve()
+        if docs.resolve() not in target.parents or not target.is_file():
+            return found[0]
+        svg = _PALETTE.sub("", target.read_text(encoding="utf-8")).strip()
+        return f'<figure class="figure">{svg}<figcaption>{found[2]}</figcaption></figure>'
+
+    return _IMAGE.sub(draw, html)
+
+
 def plain(html: str) -> str:
-    """The text of some HTML: no tags, one space between words."""
-    return _SPACE.sub(" ", _TAGS.sub(" ", html)).strip()
+    """The text of some HTML: no tags, no drawing, one space between words."""
+    return _SPACE.sub(" ", _TAGS.sub(" ", _SVG.sub("", html))).strip()
 
 
 def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict[str, str]:
@@ -240,4 +264,5 @@ def render(page: Path, docs: Path, link: Link) -> Rendered:
     text, names = _name_files(page.read_text(encoding="utf-8"))
     html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
     done = _identify(_CODE.sub(_colour, _caption(html, names)))
-    return Rendered(_rewrite(done.html, page, docs, link), done.headings)
+    # The figures are last: nothing else looks at the drawing the SVG carries.
+    return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)

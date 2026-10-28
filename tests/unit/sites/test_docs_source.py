@@ -147,6 +147,45 @@ class TestHighlight:
         assert "<figcaption>a.py</figcaption>" in html and "tok-k" in html
 
 
+class TestFigures:
+    """An image of the docs is an illustration: drawn as a figure, its alt text as the caption."""
+
+    @staticmethod
+    def _page(tmp_path: Path) -> Path:
+        (tmp_path / "assets").mkdir()
+        (tmp_path / "assets" / "scopes.svg").write_text(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'
+            "<style>svg { color: #0a0a0a; }</style>"
+            "<text>drawn-words</text></svg>",
+            encoding="utf-8",
+        )
+        path = tmp_path / "page.md"
+        path.write_text("# T\n\n![The scopes of an error page](assets/scopes.svg)\n", encoding="utf-8")
+        return path
+
+    def test_an_image_becomes_a_figure(self, tmp_path):
+        html = source.render(self._page(tmp_path), tmp_path, _link).html
+        assert '<figure class="figure">' in html and html.endswith("</figure>\n")
+        assert "<figcaption>The scopes of an error page</figcaption>" in html
+
+    def test_the_svg_is_drawn_so_it_takes_the_colours_of_the_page(self, tmp_path):
+        html = source.render(self._page(tmp_path), tmp_path, _link).html
+        assert "<svg" in html and "<text>drawn-words</text>" in html
+
+    def test_the_palette_meant_for_github_is_dropped(self, tmp_path):
+        html = source.render(self._page(tmp_path), tmp_path, _link).html
+        assert "<style>" not in html
+
+    def test_the_text_of_a_figure_is_left_out_of_the_search(self, tmp_path):
+        rendered = source.render(self._page(tmp_path), tmp_path, _link)
+        assert "drawn-words" not in source.plain(rendered.html)
+
+    def test_an_image_that_does_not_exist_stays_an_image(self, tmp_path):
+        path = tmp_path / "page.md"
+        path.write_text("# T\n\n![gone](assets/gone.svg)\n", encoding="utf-8")
+        assert '<img src="assets/gone.svg"' in source.render(path, tmp_path, _link).html
+
+
 class TestAnchors:
     def test_a_heading_has_a_link_to_itself(self, tmp_path):
         path = tmp_path / "p.md"
