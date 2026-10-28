@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [Unreleased]
 
+### Changed
+
+- **The docs say where `nexy` may run.** `uvx` comes with uv and only creates a project (`new`,
+  `init`): it runs in an environment with none of the project's packages, so `uvx nexy dev` failed
+  on any project that needs one (an ORM, for example). Every other command runs inside the
+  project's virtual environment, or through `uv run`. The README, the installation, quick start and
+  tutorial pages, the CLI reference, troubleshooting, the generated project's README and its
+  AGENTS.md all say so; a test refuses a page that tells to run `uvx nexy dev`.
+
 ### Added
 
 - **Two documentation sites in `sites/`**, both reading `docs/` so no text is written twice: a
