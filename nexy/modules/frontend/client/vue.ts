@@ -110,6 +110,8 @@ export const Link = defineComponent({
     prefetch: { type: [Boolean, String] as PropType<Prefetch>, default: 'intent' },
     /** Added to `class` while the link points at the current page. */
     activeClass: String,
+    /** Alias for `activeClass`. */
+    activeClassName: String,
     /** Active only on the exact page, not on the pages below it. */
     exact: Boolean
   },
@@ -134,7 +136,7 @@ export const Link = defineComponent({
       const className = linkClass(
         attrs.class as string | undefined,
         isActive(location.value.pathname, props.href, props.exact),
-        props.activeClass
+        props.activeClass ?? props.activeClassName
       )
       const anchor: Record<string, unknown> = {
         ...attrs,
