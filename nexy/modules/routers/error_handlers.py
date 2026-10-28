@@ -3,7 +3,7 @@ from http import HTTPStatus
 from fastapi import FastAPI, Request, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException
 
 from nexy.errors import InternalServerError, NotFound, error_page
@@ -17,8 +17,21 @@ def _phrase(code: int) -> str:
         return "Error"
 
 
+def _redirect_of(exc: HTTPException) -> Response | None:
+    """A real redirect for a 3xx exception that names a `Location`; None for anything else."""
+    if not 300 <= exc.status_code < 400:
+        return None
+    named = {key.lower(): value for key, value in (getattr(exc, "headers", None) or {}).items()}
+    if "location" not in named:
+        return None
+    return RedirectResponse(named["location"], status_code=exc.status_code)
+
+
 def handle_http_exception(request: Request, exc: HTTPException) -> Response:
-    """Map HTTP exceptions to JSON for API clients, else to Nexy error pages."""
+    """Map HTTP exceptions to redirects, JSON for API clients, else to Nexy error pages."""
+    redirect = _redirect_of(exc)
+    if redirect is not None:
+        return redirect
     headers = getattr(exc, "headers", None)
     if wants_json(request):
         return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=headers)

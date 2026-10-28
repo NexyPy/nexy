@@ -13,6 +13,7 @@ from nexy.hooks import (
 )
 from nexy.image import image as Image
 from nexy.link import link as Link
+from nexy.navigation import forbidden, notFound, permanentRedirect, redirect, unauthorized
 from nexy.template import Template
 from nexy.video import video as Video
 from nexy.vite import Vite
@@ -34,4 +35,9 @@ __all__ = [
     "useSession",
     "useCookies",
     "useToc",
+    "redirect",
+    "permanentRedirect",
+    "notFound",
+    "forbidden",
+    "unauthorized",
 ]

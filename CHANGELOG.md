@@ -7,6 +7,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Added
 
+- **`redirect`, `permanentRedirect`, `notFound`, `forbidden` and `unauthorized`**, from `nexy` and
+  `nexy.http`. One call leaves a page or answers 307/308, 404, 403 or 401 in a page, an API handler,
+  a modular controller, an action or a guard. A redirect is a real redirect with no error page,
+  also for an API client; a destination with a line break is refused. A `HTTPException` of 3xx
+  that names a `Location` is now a real redirect too.
 - **A router choice in the docs sites**, like the one of the Next.js docs: *File-based* or
   *Modular*. The menu shows the pages of the chosen router and the pages both share, remembers the
   choice, and sets itself when a page of one router is opened. Both sites behave the same.

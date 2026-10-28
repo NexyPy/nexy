@@ -24,6 +24,8 @@ Components for `.nexy` templates and the request hooks.
 | `useCookies` | the request cookies as a dict |
 | `useToc` | the table of contents of the current page, as HTML |
 | `useViews` | render a view file such as `about.tsx` from a handler |
+| `redirect`, `permanentRedirect` | send the visitor elsewhere (307, 308) and stop the request |
+| `notFound`, `forbidden`, `unauthorized` | answer 404, 403 or 401 from anywhere |
 
 The hooks work inside a request only: see [hooks](../routing/fbr/navigation/hooks.md).
 
@@ -43,6 +45,8 @@ on Nexy's contract.
 | `BackgroundTasks` | work that runs after the answer is sent |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | answers with a fixed content type |
 | `RedirectResponse` | an HTTP redirect |
+| `redirect`, `permanentRedirect` | raise a redirect (307, 308) from a page, a handler, a controller or a guard |
+| `notFound`, `forbidden`, `unauthorized` | raise a 404, 403 or 401 from the same places |
 | `FileResponse`, `StreamingResponse` | answer with a file or a stream |
 
 ## `nexy.decorators`
