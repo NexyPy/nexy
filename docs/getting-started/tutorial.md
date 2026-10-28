@@ -8,8 +8,12 @@ for production.
 ```bash
 uvx nexy new notes
 cd notes
-nx dev
+.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
+nexy dev
 ```
+
+`uvx` comes with [uv](https://docs.astral.sh/uv/) and only creates the project. Every command after
+it runs inside the project's virtual environment (or as `uv run nexy dev`).
 
 Pick the file-based router, a web project, and any client framework (or none). Open
 <http://localhost:3000>. Long steps print one line each with their duration, as `uv` does.

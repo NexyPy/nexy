@@ -167,6 +167,8 @@
     "installed_uv": "uv установлен",
     "installing_uv": "Установка uv",
     "merging": "Каталог не пуст, файлы объединяются...",
+    "migrated": "Первая миграция и таблицы созданы",
+    "migration_skipped": "Таблицы не созданы: {problem}",
     "migration_tool": "Инициализация {tool}...",
     "network": {
       "checking": "Проверка соединения...",

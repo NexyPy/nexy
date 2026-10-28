@@ -36,14 +36,21 @@ glue project between the frontend and the backend.
 ## Quickstart
 
 ```bash
-uvx nexy new my-app
+uvx nexy new my-app            # creates the project and its .venv
 cd my-app
-uvx nexy dev
+.venv\Scripts\activate         # Windows; on macOS and Linux: source .venv/bin/activate
+nexy dev
 ```
 
-Open <http://localhost:3000>. `uvx` downloads Nexy and runs it, so nothing is installed globally.
-Install the CLI once with `uv tool install nexy` to drop the prefix and use `nx dev` (or
-`nexy dev`).
+Open <http://localhost:3000>.
+
+- **Install [uv](https://docs.astral.sh/uv/) first**: `uvx` comes with uv, it is not a separate
+  tool. It runs Nexy in a temporary environment, which is enough to **create** a project and nothing
+  more.
+- **Stay in the project's virtual environment** for every other command (`nexy dev`, `build`,
+  `migrate`...). Your own packages, such as your ORM, live in its `.venv`; outside it, a project
+  fails with `ModuleNotFoundError: No module named 'sqlmodel'`. To skip the activation, run one
+  command through uv: `uv run nexy dev`.
 
 `new` asks four questions: file-based router or modular, web or API, client framework or none, ORM or
 none. The answers decide what the scaffold writes, including the Node package manager it reuses: a
@@ -364,7 +371,8 @@ class NexyConfig(NexyConfigModel):
 
 ## CLI
 
-The binary is `nx`, also installed as `nexy`. Without a global install, prefix with `uvx nexy`.
+The binary is `nx`, also installed as `nexy`. `uvx nexy new` creates a project (`uvx` comes with
+uv); run every other command inside the project's virtual environment.
 
 | Command | Alias | What it does |
 |---|---|---|

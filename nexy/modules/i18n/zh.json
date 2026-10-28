@@ -167,6 +167,8 @@
     "installed_uv": "已安装 uv",
     "installing_uv": "正在安装 uv",
     "merging": "目录不为空，正在合并文件...",
+    "migrated": "已创建第一个迁移和数据表",
+    "migration_skipped": "未能创建数据表：{problem}",
     "migration_tool": "正在初始化 {tool}...",
     "network": {
       "checking": "正在检查网络连接...",

@@ -15,7 +15,13 @@ from pathlib import Path
 
 import pytest
 
-from nexy.modules.cli.init.template_setup import _render_local_template
+from nexy.helpers.common.executables import find_tool
+from nexy.modules.cli.init.databases import default_url
+from nexy.modules.cli.init.template_setup import (
+    _render_local_template,
+    generate_post_init_files,
+    init_migration,
+)
 
 REPO = Path(__file__).resolve().parents[2]
 ORMS = ["SQLModel", "SQLAlchemy", "Tortoise-ORM"]
@@ -140,3 +146,32 @@ def test_tortoise_still_answers_after_nexy_dev_imports_the_project_again(tmp_pat
     done = _run(tmp_path, RELOAD)
     assert "@@" in done.stdout, done.stderr[-1500:]
     assert json.loads(done.stdout.split("@@")[1]) == [["Ada"], ["Ada"]]
+
+
+def _real_tools(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
+    """Run alembic or aerich from this environment, as `uv run` would from the project's."""
+    exe = find_tool(args[0]) or args[0]
+    return subprocess.run(
+        [exe, *args[1:]],
+        cwd=cwd,
+        env={**os.environ, "PYTHONPATH": str(REPO), "PYTHONIOENCODING": "utf-8"},
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=90,
+        check=False,
+    )
+
+
+@pytest.mark.parametrize("orm", ORMS)
+@pytest.mark.parametrize("template", ["web-fbr", "web-modular", "api-fbr", "api-modular"])
+def test_a_new_project_has_its_tables_without_a_manual_migration(tmp_path, template, orm):
+    route = {"web-fbr": "/users", "web-modular": "/users", "api-fbr": "/", "api-modular": "/users"}
+    _scaffold(tmp_path, template, orm)
+    url = default_url("sqlite", orm)
+    generate_post_init_files(tmp_path, orm, url)
+    migration = init_migration(orm, tmp_path, url, _real_tools)
+    assert migration.done, migration.problem
+    done = _run(tmp_path, request_code(route[template]))
+    assert "@@" in done.stdout, done.stderr[-1500:]
+    assert json.loads(done.stdout.split("@@")[1])[0] == 200
