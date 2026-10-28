@@ -35,12 +35,17 @@ _SPACE = re.compile(r"\s+")
 Link = Callable[[str], str]
 
 
+# The two ways to route a Nexy app, as the docs name them: (folder under docs/routing, label).
+ROUTERS = (("fbr", "File-based"), ("modular", "Modular"))
+
+
 @dataclass(frozen=True)
 class Page:
     slug: str
     title: str
     label: str
     path: Path
+    router: str | None = None
 
 
 @dataclass(frozen=True)
@@ -68,6 +73,15 @@ def slug_of(relative: str) -> str:
     return "" if stem == "README" else stem.removesuffix("/README")
 
 
+def router_of(slug: str) -> str | None:
+    """`fbr` or `modular` for a page under `routing/fbr` or `routing/modular`; None for the rest."""
+    for router, _label in ROUTERS:
+        folder = f"routing/{router}"
+        if slug == folder or slug.startswith(f"{folder}/"):
+            return router
+    return None
+
+
 def _title(path: Path) -> str:
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.startswith("# "):
@@ -79,7 +93,8 @@ def _page(docs: Path, relative: str, label: str) -> Page | None:
     path = docs / relative
     if not path.is_file():
         return None
-    return Page(slug_of(relative), _title(path), label, path)
+    slug = slug_of(relative)
+    return Page(slug, _title(path), label, path, router_of(slug))
 
 
 def home(docs: Path) -> Page:

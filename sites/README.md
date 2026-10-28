@@ -29,6 +29,14 @@ coloured when the site is built (so it reads without JavaScript), a copy button 
 every heading, previous and next pages, a "skip to content" link, and a layout that holds from a
 phone to a wide screen.
 
+**Two routers, one menu.** Like the docs of Next.js, which has two routers, the menu starts with a
+choice: *File-based* or *Modular*. It shows the pages of the router you chose, plus every page both
+share, and remembers the choice in the browser. A page under `docs/routing/fbr/` or
+`docs/routing/modular/` belongs to that router, so opening one sets the menu by itself, and
+choosing the other router from it leads to that router's overview. The router of a page comes from
+its folder (`router_of` in `shared/docs_source.py`): put a page of a router in its folder, and
+nothing else needs to change.
+
 The build is in English, like `docs/`. A new language is a new folder of Markdown read the same way,
 not a change to the script.
 
