@@ -36,7 +36,7 @@ def stub_project_src() -> None:
 
     Modular templates import ``src.apps[.home].app_module``, which only exists
     inside a scaffolded project. Registering those modules lets each config
-    execute fully, so its ``nexy.*`` imports are proven to resolve — which is
+    execute fully, so its ``nexy.*`` imports are proven to resolve - which is
     what this check guards.
     """
     if "src" in sys.modules:
