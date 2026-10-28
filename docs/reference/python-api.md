@@ -18,12 +18,20 @@ Components for `.nexy` templates and the request hooks.
 | `Form` | a placeholder with no behaviour: use a plain `<form>` with an [action](../guides/actions.md) |
 | `usePathname` | the path of the current request |
 | `useSearchParams` | the query string as a dict |
-| `useQuery` | the dynamic path parameters as a dict |
+| `useParams` | the dynamic path parameters as a dict, like `useParams()` on the client |
+| `useQuery` | the original name of `useParams`, kept for existing pages (it does not read the query string) |
+| `useRequest` | the current request, for what the other hooks do not cover |
+| `useHeaders` | the request headers as a dict with lower-case names |
+| `useUrl` | the full URL: `.scheme`, `.hostname`, `.path`, `.query` |
+| `useIsActive` | whether a link points at the current page or one of its parents, for a navigation bar |
 | `useRouter` | `path`, `base_url` and `url_for` of the current request |
 | `useSession` | the session dict, empty when sessions are off |
 | `useCookies` | the request cookies as a dict |
 | `useToc` | the table of contents of the current page, as HTML |
 | `useViews` | render a view file such as `about.tsx` from a handler |
+| `setMetadata`, `useMetadata` | name the title and head tags of a page, and write them in the layout |
+| `redirect`, `permanentRedirect` | send the visitor elsewhere (307, 308) and stop the request |
+| `notFound`, `forbidden`, `unauthorized` | answer 404, 403 or 401 from anywhere |
 
 The hooks work inside a request only: see [hooks](../routing/fbr/navigation/hooks.md).
 
@@ -43,6 +51,8 @@ on Nexy's contract.
 | `BackgroundTasks` | work that runs after the answer is sent |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | answers with a fixed content type |
 | `RedirectResponse` | an HTTP redirect |
+| `redirect`, `permanentRedirect` | raise a redirect (307, 308) from a page, a handler, a controller or a guard |
+| `notFound`, `forbidden`, `unauthorized` | raise a 404, 403 or 401 from the same places |
 | `FileResponse`, `StreamingResponse` | answer with a file or a stream |
 
 ## `nexy.decorators`

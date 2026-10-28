@@ -27,6 +27,7 @@ architecture.
 | [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
 | [Pages](routing/fbr/pages/README.md) | Write a page |
 | [Dynamic routes](routing/fbr/pages/dynamic-routes.md) | `[slug]`, `[...path]`, route groups |
+| [Page metadata](routing/fbr/pages/metadata.md) | Title, description and share image of a page |
 | [Layouts](routing/fbr/layouts/README.md) | Root and nested layouts |
 | [layout.nexy](routing/fbr/layouts/layout.nexy.md) | The server-mode layout |
 | [layout.tsx](routing/fbr/layouts/layout.tsx.md) | The React client-mode layout that owns `<html>` |

@@ -26,7 +26,12 @@ CONTRACT = {
     "Response",
     "StreamingResponse",
     "UploadFile",
+    "forbidden",
+    "notFound",
+    "permanentRedirect",
+    "redirect",
     "status",
+    "unauthorized",
 }
 
 

@@ -149,7 +149,8 @@ def debug_page(request: Request, crash: Crash) -> Response:
     return HTMLResponse(body, status_code=500)
 
 
-def _wants_json(request: Request) -> bool:
+def wants_json(request: Request) -> bool:
+    """True for clients that ask for JSON and not for a page (API clients, fetch with headers)."""
     accept = request.headers.get("accept", "").lower()
     return "application/json" in accept and "text/html" not in accept
 
@@ -164,7 +165,7 @@ def _json_answer(crash: Crash, dev: bool) -> Response:
 def crash_response(request: Request, crash: Crash, dev: bool | None = None) -> Response:
     """The answer for a crash: JSON for an API client, else the page that fits the mode."""
     dev = is_dev() if dev is None else dev
-    if _wants_json(request):
+    if wants_json(request):
         response = _json_answer(crash, dev)
     elif dev:
         response = debug_page(request, crash)

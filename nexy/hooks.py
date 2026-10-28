@@ -7,6 +7,7 @@ from typing import Any
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
+from starlette.datastructures import URL
 
 from nexy.core.config import Config
 from nexy.core.string import StringTransform
@@ -89,16 +90,97 @@ def useRouter() -> dict[str, Any]:
     }
 
 
-def useQuery() -> dict[str, Any]:
-    """Read dynamic path parameters of the current request.
+def useParams() -> dict[str, Any]:
+    """Read the dynamic path parameters of the current request.
+
+    The twin of `useParams()` on the client: `/blog/[slug]` gives `{"slug": "post-1"}`.
 
     Returns:
-        The FastAPI path params dict (e.g. {"slug": "post-1"}).
+        The path parameters, empty for a route without a dynamic segment.
 
     Raises:
         RuntimeError: If called outside an HTTP request context.
     """
     return _get_req().path_params
+
+
+def useQuery() -> dict[str, Any]:
+    """Read dynamic path parameters of the current request.
+
+    The original name of `useParams()`, kept so existing pages keep working. Despite its name it
+    does not read the query string: that is `useSearchParams()`.
+
+    Returns:
+        The same dict as `useParams()`.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
+    return useParams()
+
+
+def useRequest() -> Request:
+    """Read the current request, for what the other hooks do not cover.
+
+    Returns:
+        The Starlette request.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
+    return _get_req()
+
+
+def useHeaders() -> dict[str, str]:
+    """Read the headers of the current request.
+
+    Returns:
+        Header names, in lower case, mapped to their values.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
+    return dict(_get_req().headers)
+
+
+def useUrl() -> URL:
+    """Read the full URL of the current request.
+
+    Returns:
+        A Starlette `URL`: `.scheme`, `.hostname`, `.port`, `.path`, `.query`.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
+    return _get_req().url
+
+
+def _path_of(href: str) -> str:
+    """The path of an href without query, fragment or trailing slash ("/" stays "/")."""
+    path = href.split("#")[0].split("?")[0]
+    return path.rstrip("/") or "/"
+
+
+def useIsActive(href: str, exact: bool = False) -> bool:
+    """Tell whether *href* points at the current page, or at one of its parents.
+
+    The twin of `useIsActive()` on the client, for the active link of a navigation bar. The
+    query string, the fragment and a trailing slash are ignored.
+
+    Args:
+        href: The link target, such as `/blog`.
+        exact: Match the page itself only. `/` is only ever active on `/`.
+
+    Returns:
+        True when the current path is *href*, or is below it unless *exact* is set.
+
+    Raises:
+        RuntimeError: If called outside an HTTP request context.
+    """
+    current, target = _path_of(_get_req().url.path), _path_of(href)
+    if current == target:
+        return True
+    return not exact and target != "/" and current.startswith(target + "/")
 
 
 def useSession() -> dict[str, Any]:

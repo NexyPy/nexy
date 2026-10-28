@@ -7,6 +7,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Added
 
+- **`redirect`, `permanentRedirect`, `notFound`, `forbidden` and `unauthorized`**, from `nexy` and
+  `nexy.http`. One call leaves a page or answers 307/308, 404, 403 or 401 in a page, an API handler,
+  a modular controller, an action or a guard. A redirect is a real redirect with no error page,
+  also for an API client; a destination with a line break is refused. A `HTTPException` of 3xx
+  that names a `Location` is now a real redirect too.
+- **Page metadata**: `metadata = {...}` in the frontmatter, or `setMetadata(...)` for a title that
+  depends on the data, and `{{ useMetadata().html() }}` in the root layout. Title and template,
+  description, canonical, robots, icon, Open Graph, Twitter and extra tags; every value is
+  escaped, and a request never sees the metadata of another.
+- **Request hooks `useParams`, `useRequest`, `useHeaders`, `useUrl` and `useIsActive`.**
+  `useParams` is the clear name of `useQuery`, which returned the path parameters and not the query
+  string and stays as an alias. `useIsActive` is the server twin of the client hook, with the same
+  rule, for the active link of a navigation bar.
 - **A router choice in the docs sites**, like the one of the Next.js docs: *File-based* or
   *Modular*. The menu shows the pages of the chosen router and the pages both share, remembers the
   choice, and sets itself when a page of one router is opened. Both sites behave the same.
@@ -36,6 +49,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Fixed
 
+- **`revalidate` in a `.nexy` page now switches the ISR cache on.** The frontmatter runs inside the
+  component, so `revalidate = 60` was a local variable the router never saw and the page answered
+  with no cache header. A literal `revalidate` or `metadata` is now an attribute of the module.
+- **A dynamic page with `revalidate` shows its own parameter.** It was rendered with no
+  parameters and all its URLs shared one cache entry; each URL is now cached on its own.
+- **A client catch-all route keeps its parameter.** `[...path].tsx` and a folder such as `v1.2`
+  lost everything after their first dot; only the extension is cut now.
+- **Error pages match by folder.** A `notfound` page of `/blog` no longer answers `/blogger`, and
+  a custom 404 page is not served to a client that asks for JSON.
 - **A new project now has its migration tool.** `alembic` (SQLModel, SQLAlchemy) was never
   installed in the project, so `nx new` initialised nothing on a machine without a global Alembic.
 - **Alembic sees the models.** The generated `env.py` never imported them: with SQLModel the
