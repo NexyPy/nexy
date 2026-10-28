@@ -55,6 +55,8 @@ class Config(NexyConfigModel):
     NOTFOUND_FILE_NAMES: list[str] = ["notfound.nexy"]
     ERROR_FILE_NAMES: list[str] = ["errors.nexy"]
     LOADING_FILE_NAMES: list[str] = ["loading.nexy"]
+    FORBIDDEN_FILE_NAMES: list[str] = ["forbidden.nexy"]
+    UNAUTHORIZED_FILE_NAMES: list[str] = ["unauthorized.nexy"]
     TOC_DEPTH: str = "2-6"
     TOC_TITLE: str = "Table of Contents"
     TOC_AUTO: bool = True

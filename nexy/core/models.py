@@ -181,3 +181,5 @@ class NexyConfigModel:
     useNotFoundExtensions: list[str] | None = None
     useErrorsExtensions: list[str] | None = None
     useLoadingExtensions: list[str] | None = None
+    useForbiddenExtensions: list[str] | None = None
+    useUnauthorizedExtensions: list[str] | None = None
