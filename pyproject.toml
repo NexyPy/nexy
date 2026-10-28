@@ -40,6 +40,7 @@ dev = [
     "sqlmodel>=0.0.22",
     "tortoise-orm>=0.21",
     "aerich>=0.8",
+    "alembic>=1.13",
     "itsdangerous>=2.2",
     "python-multipart>=0.0.9",
     "types-jinja2>=2.11.9",

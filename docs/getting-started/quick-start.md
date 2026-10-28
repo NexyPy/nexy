@@ -7,7 +7,7 @@ Create a Nexy project, run it, and build it for production.
 | Requirement | Why |
 |---|---|
 | Python 3.12+ | `requires-python` in `pyproject.toml` |
-| [uv](https://docs.astral.sh/uv/) | runs Nexy without a global install |
+| [uv](https://docs.astral.sh/uv/) | provides `uvx`, creates the project and installs its packages |
 | Node.js 18+ | only if you use a client framework (React, Vue, Svelte, Solid, Preact) |
 
 ## Create a project
@@ -16,7 +16,9 @@ Create a Nexy project, run it, and build it for production.
 uvx nexy new my-app
 ```
 
-`uvx` fetches Nexy and runs the `new` command, so nothing is installed globally.
+`uvx` comes with uv, so install uv first (see [Installation](installation.md)). It runs Nexy in a
+temporary environment, which is enough to **create** the project. `nexy new` then makes the project's
+own virtual environment, `.venv`, and installs its packages there.
 
 Four prompts decide how the project is wired:
 
@@ -31,14 +33,17 @@ Four prompts decide how the project is wired:
 
 ```bash
 cd my-app
-nx dev
+.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
+nexy dev
 ```
 
 Open <http://localhost:3000>. The port comes from `usePort` (default `3000`); `--port` and `--host`
 override it per run.
 
-> **Good to know**: without a global install, run `uvx nexy dev` instead of `nx dev`. `uv tool
-> install nexy` adds the `nx` and `nexy` binaries to your PATH.
+> **Good to know**: run `nexy dev`, `build`, `migrate` and every command except `new` and `init`
+> inside the project's virtual environment, where your packages are. To skip the activation, use
+> `uv run nexy dev`. Outside it, a project that needs `sqlmodel` fails with `No module named
+> 'sqlmodel'`.
 
 ## Create your first page
 

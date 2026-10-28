@@ -1,7 +1,8 @@
 # CLI
 
-The binary is `nx` (also installed as `nexy`). Without a global install, prefix with `uvx`:
-`uvx nexy <command>`.
+The binary is `nx` (also installed as `nexy`). `uvx nexy new` creates a project (`uvx` comes with
+uv). Run every other command inside the project's virtual environment, or through `uv run`, for
+example `uv run nexy dev`: that is where your own packages are.
 
 ## Commands
 

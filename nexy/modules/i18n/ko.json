@@ -167,6 +167,8 @@
     "installed_uv": "uv 설치됨",
     "installing_uv": "uv 설치 중",
     "merging": "디렉터리가 비어 있지 않아 파일을 병합하는 중...",
+    "migrated": "첫 번째 마이그레이션과 테이블을 만들었습니다",
+    "migration_skipped": "테이블을 만들지 못했습니다: {problem}",
     "migration_tool": "{tool} 초기화 중...",
     "network": {
       "checking": "연결을 확인하는 중...",

@@ -33,7 +33,8 @@ _DRIVERS = {
 def default_url(database: str, orm: str) -> str:
     """The URL suggested for `database` with `orm` (empty when there is nothing to suggest)."""
     if database == "sqlite":
-        return "sqlite:///dev.db"
+        # Tortoise reads `sqlite:///dev.db` as the file `/dev.db`, at the root of the disk.
+        return "sqlite://dev.db" if orm == _TORTOISE else "sqlite:///dev.db"
     family = _FAMILY.get(database)
     if family is None:
         return ""

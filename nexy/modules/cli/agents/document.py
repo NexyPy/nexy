@@ -68,7 +68,9 @@ def render_agents_md(profile: Profile, source: Path, skills: list[str]) -> str:
         "## Rules",
         "\n".join(_rules(profile)),
         "## Commands",
-        "`nx dev`, `nx build`, `nx start`, `nx test`, `nx check`.",
+        "`nx dev`, `nx build`, `nx start`, `nx test`, `nx check`.\n\n"
+        "Run them inside the project's virtual environment (`.venv`), or through `uv run`, "
+        "for example `uv run nx dev`: outside it the project's own packages cannot be found.",
         "## Skills",
         "Installed in `.agents/skills/` and `.claude/skills/`. Load the one that matches the task:",
         "\n".join(listing),

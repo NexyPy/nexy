@@ -77,12 +77,40 @@ Tortoise-ORM.
 | `nx migrate -m "add users"` | create a migration from your model changes |
 | `nx migrate --upgrade` | apply pending migrations |
 
-`nx migrate` stops with a clear message when `DATABASE_URL` is missing or the database cannot be
-reached.
+With Aerich, the first `nx migrate` runs `aerich init-db`, which creates the first migration and the
+tables together; the next ones run `aerich migrate --name "..."`, and `--upgrade` runs
+`aerich upgrade`.
 
-> **Good to know**: a new project has models but no tables. Until you run
-> `nx migrate -m "create tables"` and then `nx migrate --upgrade`, the users page fails with
-> "no such table". `nx new` prints these two steps for a project with an ORM.
+`nx migrate` stops with a clear message when `DATABASE_URL` is missing or the database cannot be
+reached (Alembic only: Aerich reports its own errors).
+
+### The first migration is made for you
+
+When you choose an ORM and give a database URL, `nx new` sets the migration tool up, creates the
+first migration and applies it, so the users page answers on the first `nexy dev`. The migration
+tool (`alembic` or `aerich`) is installed in the project with the ORM.
+
+If the database does not answer (a PostgreSQL server that is not running, a missing driver), `nx new`
+says why, skips the migration and lists the two commands to run when it is ready:
+
+```bash
+nexy migrate -m "create tables"
+nexy migrate --upgrade
+```
+
+Until the tables exist, a page that reads the database fails with "no such table".
+
+### Add a model
+
+Alembic compares the database with the models that `alembic/env.py` imports. A model in a new
+module is not seen until that module is imported there, next to the user model:
+
+```python filename="alembic/env.py"
+import src.models.user_model  # noqa: F401
+import src.models.post_model  # noqa: F401
+```
+
+For Tortoise-ORM, list the module in `TORTOISE_ORM` instead (see above).
 
 ## Next steps
 

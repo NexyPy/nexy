@@ -71,6 +71,27 @@ Install them in the project: `@mdx-js/rollup`, `remark-gfm` and `@mdx-js/react` 
 `@mdx-js/esbuild` for `nx build`). MDX needs React or Preact in `useFF`. Without a client framework,
 write the page as `.md`. See [Markdown and MDX](../views/markdown.md).
 
+## `No module named 'sqlmodel'` (or any package) when a command starts
+
+```text
+nexy » nexyconfig.py cannot be loaded: No module named 'sqlmodel'. If it is a package, install it
+in this Python (...) or activate the project's virtual environment.
+```
+
+The command ran in the wrong Python. The packages of your project (your ORM, your libraries) are in
+its `.venv`, and `uvx nexy` or a global `nexy` runs in an environment of its own that has none of
+them.
+
+Activate the project's virtual environment, from the project folder, then run the command again:
+
+```bash
+.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
+nexy dev
+```
+
+The prompt starts with `(.venv)` when it is active. Or skip the activation with
+`uv run nexy dev`. If the package is really missing from the project, add it with `uv add sqlmodel`.
+
 ## `nx dev` shows an error and waits
 
 When your application cannot start, `nx dev` reports why and waits for the next file change; it does
