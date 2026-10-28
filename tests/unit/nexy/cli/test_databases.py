@@ -21,6 +21,9 @@ def test_the_offered_databases():
     ("database", "orm", "url"),
     [
         ("sqlite", "SQLModel", "sqlite:///dev.db"),
+        ("sqlite", "SQLAlchemy", "sqlite:///dev.db"),
+        # Tortoise reads `sqlite:///dev.db` as the file `/dev.db`, at the root of the disk.
+        ("sqlite", "Tortoise-ORM", "sqlite://dev.db"),
         ("postgresql", "SQLAlchemy", "postgresql+psycopg://user:password@localhost:5432/mydb"),
         ("mysql", "SQLModel", "mysql+pymysql://user:password@localhost:3306/mydb"),
         ("postgresql", "Tortoise-ORM", "postgres://user:password@localhost:5432/mydb"),

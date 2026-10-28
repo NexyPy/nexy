@@ -164,3 +164,13 @@ dialog.search input:focus { outline: 0; }
 /* Search: where the words were found */
 .results .snippet { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .results mark { background: var(--mark); color: inherit; border-radius: 3px; }
+
+/* Two routers, one menu: the pages of the router that is not chosen are hidden. */
+html[data-router="fbr"] .side li[data-router="modular"],
+html[data-router="modular"] .side li[data-router="fbr"] { display: none; }
+.router-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0 4px 18px; padding: 6px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
+.router-switch span { flex: 0 0 100%; padding: 0 4px 2px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+.router-switch button { flex: 1; padding: 6px 8px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.router-switch button:hover { color: var(--ink); }
+html[data-router="fbr"] .router-switch [data-router="fbr"],
+html[data-router="modular"] .router-switch [data-router="modular"] { background: var(--bg); color: var(--accent); box-shadow: 0 0 0 1px var(--line); }

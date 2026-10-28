@@ -84,6 +84,11 @@ nx test     # pytest; --client adds vitest
 nx check    # mypy and tsc
 ```
 
+Run them inside the project's virtual environment (`.venv`), or through `uv run`, for example
+`uv run nx dev`. `uvx nexy` runs in an environment with no package of the project, so it only
+creates a project (`new`, `init`): a command that imports `nexyconfig.py` fails there with
+`No module named ...`.
+
 ## Rules
 
 - `__nexy__/` is generated. Delete it to force a clean build.

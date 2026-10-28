@@ -24,6 +24,21 @@
   const current = $('.side [aria-current]')
   if (current) current.scrollIntoView({ block: 'center' })
 
+  // --- Router switch: the menu shows the docs of one router ------------------------------------
+  const router = document.documentElement
+  const switchButtons = $$('.router-switch button')
+  const press = () => switchButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.router === router.dataset.router)))
+  const own = $('meta[name="nexy-router"]')
+  if (own) { try { localStorage.setItem('nexy-docs-router', own.content) } catch {} }
+  press()
+  switchButtons.forEach((button) => button.addEventListener('click', () => {
+    router.dataset.router = button.dataset.router
+    try { localStorage.setItem('nexy-docs-router', button.dataset.router) } catch {}
+    press()
+    // On a page of the other router the page itself would be wrong: go to the overview of the choice.
+    if (own && own.content !== button.dataset.router) location.href = button.dataset.home
+  }))
+
   // --- Copy button on code blocks --------------------------------------------------------------
   $$('.doc pre').forEach((block) => {
     const button = Object.assign(document.createElement('button'), { className: 'copy', type: 'button', textContent: 'Copy' })

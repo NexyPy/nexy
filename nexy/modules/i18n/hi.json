@@ -167,6 +167,8 @@
     "installed_uv": "uv इंस्टॉल हो गया",
     "installing_uv": "uv इंस्टॉल हो रहा है",
     "merging": "डायरेक्टरी खाली नहीं है, फ़ाइलें मिलाई जा रही हैं...",
+    "migrated": "पहला माइग्रेशन और टेबल बन गए",
+    "migration_skipped": "टेबल नहीं बनाई जा सकीं: {problem}",
     "migration_tool": "{tool} शुरू हो रहा है...",
     "network": {
       "checking": "कनेक्शन जाँचा जा रहा है...",

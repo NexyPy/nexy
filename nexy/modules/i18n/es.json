@@ -167,6 +167,8 @@
     "installed_uv": "uv instalado",
     "installing_uv": "Instalando uv",
     "merging": "El directorio no está vacío, fusionando archivos...",
+    "migrated": "Se crearon la primera migración y las tablas",
+    "migration_skipped": "No se crearon las tablas: {problem}",
     "migration_tool": "Inicializando {tool}...",
     "network": {
       "checking": "Comprobando la conexión...",

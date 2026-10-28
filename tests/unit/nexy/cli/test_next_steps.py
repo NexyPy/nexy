@@ -32,3 +32,8 @@ def test_a_project_without_an_orm_has_nothing_to_migrate(commands):
 def test_the_old_call_without_an_orm_still_works(commands):
     template_setup.print_success_message("demo")
     assert "nexy dev" in commands
+
+
+def test_a_project_whose_tables_exist_is_not_told_to_migrate(commands):
+    template_setup.print_success_message("demo", orm="SQLModel", migrated=True)
+    assert not any("migrate" in command for command in commands)

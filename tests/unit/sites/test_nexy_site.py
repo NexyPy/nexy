@@ -22,6 +22,7 @@ def answers():
         "/docs",
         ACTIONS,
         "/docs/nope/nothing",
+        "/docs/routing/modular/dependency-injection",
         "/assets/style.css",
         "/assets/%2e%2e%2f%2e%2e%2fnexy%2fnexyconfig.py",
         "/search-index",
@@ -54,6 +55,31 @@ def test_a_heading_has_its_anchor_and_a_link_in_the_outline(answers):
 
 def test_links_between_pages_point_to_the_site(answers):
     assert 'href="/docs/guides/middleware-and-security"' in answers[ACTIONS][2]
+
+
+def test_the_menu_marks_the_pages_of_each_router(answers):
+    body = answers[ACTIONS][2]
+    assert '<li data-router="fbr">' in body and '<li data-router="modular">' in body
+
+
+def test_the_menu_offers_both_routers(answers):
+    body = answers[ACTIONS][2]
+    found = re.findall(r'<button type="button" data-router="(\w+)" data-home="([^"]+)"', body)
+    assert found == [("fbr", "/docs/routing/fbr"), ("modular", "/docs/routing/modular")]
+
+
+def test_a_modular_page_declares_its_router(answers):
+    body = answers["/docs/routing/modular/dependency-injection"][2]
+    assert re.search(r'<meta name="nexy-router" content="modular" ?/?>', body)
+
+
+def test_a_page_of_neither_router_declares_none(answers):
+    assert '<meta name="nexy-router"' not in answers[ACTIONS][2]
+
+
+def test_the_router_is_set_before_the_first_paint(answers):
+    head = answers[ACTIONS][2].split("</head>")[0]
+    assert "dataset.router" in head and "nexy-docs-router" in head
 
 
 def test_a_page_that_does_not_exist_is_not_found(answers):

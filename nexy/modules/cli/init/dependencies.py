@@ -18,7 +18,10 @@ _ORM_PACKAGES: dict[str, str] = {
     "Tortoise-ORM": "tortoise-orm",
 }
 
+# The migration tool of the ORM: `nx migrate` runs it, so the project must have it.
 _ORM_EXTRA_PACKAGES: dict[str, list[str]] = {
+    "SQLModel": ["alembic"],
+    "SQLAlchemy": ["alembic"],
     "Tortoise-ORM": ["aerich"],
 }
 

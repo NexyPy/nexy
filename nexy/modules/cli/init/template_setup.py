@@ -15,6 +15,7 @@ from nexy.helpers.fs.packages import ensure_packages
 from nexy.modules.cli.agents import install_agent_files, profile_from_context
 from nexy.modules.cli.constants import TEMPLATES_DIR
 from nexy.modules.cli.migrations import alembic
+from nexy.modules.cli.migrations.first import FirstMigration, Runner, run_first_migration
 from nexy.modules.i18n import t
 
 from .alias import DEFAULT_ALIAS, apply_alias
@@ -218,13 +219,14 @@ def _run_post_init_pipeline(
 
     generate_post_init_files(dest, orm, db_url)
 
-    init_migration(orm, dest, db_url)
+    migration = init_migration(orm, dest, db_url)
+    _report_migration(migration)
 
     init_git(dest)
 
     cleanup_build_artifacts(dest)
 
-    print_success_message(project_dir_name, orm)
+    print_success_message(project_dir_name, orm, migrated=migration.done)
 
 
 def generate_post_init_files(dest: Path, orm: str, db_url: str | None) -> None:
@@ -272,31 +274,59 @@ def init_git(dest: Path) -> None:
 _MIGRATION_TOOLS = {"SQLModel": "alembic", "SQLAlchemy": "alembic", "Tortoise-ORM": "aerich"}
 
 
-def _uv_run(args: list[str], cwd: Path) -> None:
+def uv_run(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
+    """Run a tool of the new project's environment through uv, keeping what it printed."""
     uv = shutil.which("uv") or "uv"
-    subprocess.run([uv, "run", *args], cwd=cwd, capture_output=True)  # nosec B603 B607
+    return subprocess.run(  # nosec B603 B607
+        [uv, "run", *args], cwd=cwd, capture_output=True, text=True, check=False
+    )
 
 
-def _scaffold_migration_tool(tool: str, orm: str, dest: Path, db_url: str | None) -> None:
-    """Initialize the migration tool in *dest*; Alembic also gets Nexy's `env.py` and the URL."""
+def _scaffold_migration_tool(
+    tool: str, orm: str, dest: Path, db_url: str | None, run: Runner
+) -> bool:
+    """Initialize the migration tool in *dest*; Alembic also gets Nexy's `env.py` and the URL.
+
+    Returns whether the tool left its files behind: without them there is nothing to migrate.
+    """
     if tool == "aerich":
-        _uv_run(["aerich", "init", "-t", "src.configs.db.TORTOISE_ORM"], dest)
-        return
-    _uv_run(["alembic", "init", "alembic"], dest)
-    if (dest / "alembic").exists():
-        alembic.render_env(dest / "alembic", orm)
-        if db_url:
-            alembic.write_ini_url(dest, db_url)
+        run(["aerich", "init", "-t", "src.configs.db.TORTOISE_ORM"], dest)
+        return (dest / "migrations").exists()
+    run(["alembic", "init", "alembic"], dest)
+    if not (dest / "alembic").exists():
+        return False
+    alembic.render_env(dest / "alembic", orm, alembic.models_module(dest))
+    if db_url:
+        alembic.write_ini_url(dest, db_url)
+    return True
 
 
-def init_migration(orm: str, dest: Path, db_url: str | None) -> None:
-    """Scaffold alembic/aerich when the config picked an ORM."""
+def init_migration(
+    orm: str, dest: Path, db_url: str | None, run: Runner = uv_run
+) -> FirstMigration:
+    """Set alembic/aerich up when the config picked an ORM, then create the first migration.
+
+    The tables are created when the database URL is known and answers; otherwise the result says
+    why not, and `nx new` tells the developer to run `nexy migrate`.
+    """
     tool = _MIGRATION_TOOLS.get(orm)
     if tool is None:
-        return
+        return FirstMigration(False)
     message = t("init.migration_tool", "Initializing {tool}...").format(tool=tool)
     with console.status(tagged("nexy", message, "yellow"), spinner="dots"):
-        _scaffold_migration_tool(tool, orm, dest, db_url)
+        if not _scaffold_migration_tool(tool, orm, dest, db_url, run):
+            return FirstMigration(False, f"{tool} was not initialised")
+        return run_first_migration(tool, dest, db_url, run)
+
+
+def _report_migration(migration: FirstMigration) -> None:
+    """Say that the tables exist, or why they were not created; nothing when it was not tried."""
+    if migration.done:
+        done = t("init.migrated", "Created the first migration and the tables")
+        console.print(tagged("nexy", done, "green"))
+    elif migration.problem:
+        skipped = t("init.migration_skipped", "The tables were not created: {problem}")
+        console.print(tagged("nexy", skipped.format(problem=migration.problem), "yellow"))
 
 
 def cleanup_build_artifacts(dest: Path) -> None:
@@ -306,11 +336,13 @@ def cleanup_build_artifacts(dest: Path) -> None:
             shutil.rmtree(folder_path, ignore_errors=True)
 
 
-def print_success_message(project_dir_name: str | None = None, orm: str = "None") -> None:
-    _print_next_steps(project_dir_name, orm)
+def print_success_message(
+    project_dir_name: str | None = None, orm: str = "None", migrated: bool = False
+) -> None:
+    _print_next_steps(project_dir_name, orm, migrated)
 
 
-def _print_next_steps(project_dir_name: str | None, orm: str) -> None:
+def _print_next_steps(project_dir_name: str | None, orm: str, migrated: bool) -> None:
     console.print("\n" + t("init.next_steps", "Next steps"))
 
     if project_dir_name:
@@ -319,7 +351,7 @@ def _print_next_steps(project_dir_name: str | None, orm: str) -> None:
     launcher.step(
         _activate_command(), t("init.step_activate_venv", "Activate the virtual environment")
     )
-    if orm != "None":
+    if orm != "None" and not migrated:
         _print_migration_steps()
     launcher.step("nexy dev", t("init.step_run_dev", "Start the development server"))
     launcher.step("nexy --help", t("init.step_help", "Explore available commands"))
