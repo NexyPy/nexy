@@ -46,10 +46,30 @@ def _root(current: str) -> str:
     return posixpath.join(*[".."] * depth)
 
 
+def router_switch_html(current: str) -> str:
+    """The choice of router above the menu: each button leads to the overview of its router."""
+    buttons = "".join(
+        f'<button type="button" data-router="{router}" '
+        f'data-home="{relative(current, f"routing/{router}")}" aria-pressed="false">'
+        f"{escape(label)}</button>"
+        for router, label in source.ROUTERS
+    )
+    group = 'class="router-switch" role="group" aria-label="Router"'
+    return f"<div {group}><span>Docs for</span>{buttons}</div>"
+
+
+def router_meta(page: source.Page) -> str:
+    """Tells the first-paint script which router a page belongs to; nothing for a shared page."""
+    return f'<meta name="nexy-router" content="{page.router}">' if page.router else ""
+
+
 def nav_html(sections: list[source.Section], current: str) -> str:
     def item(page: source.Page) -> str:
         mark = ' aria-current="page"' if page.slug == current else ""
-        return f'<li><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
+        tag = f' data-router="{page.router}"' if page.router else ""
+        return (
+            f'<li{tag}><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
+        )
 
     groups = (
         f"<section><h2>{escape(s.title)}</h2><ul>{''.join(item(p) for p in s.pages)}</ul></section>"
@@ -99,7 +119,8 @@ def _page_html(
         description=_description(rendered),
         root=_root(page.slug),
         home=relative(page.slug, ""),
-        nav=nav_html(sections, page.slug),
+        nav=router_switch_html(page.slug) + nav_html(sections, page.slug),
+        router_meta=router_meta(page),
         article=rendered.html,
         toc=toc_html(rendered.headings),
         pager=pager_html(before, after, page.slug),

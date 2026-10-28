@@ -25,6 +25,8 @@ __all__ = [
     "document",
     "link",
     "menu",
+    "router_of",
+    "routers",
     "search_entries",
     "slug_of",
     "title_of",
@@ -47,6 +49,19 @@ def _pages() -> list[tuple[source.Page, str]]:
     ]
 
 
+def router_of(slug: str) -> str | None:
+    """`fbr` or `modular` for a page of one router, None for a page both share."""
+    return source.router_of(slug)
+
+
+def routers() -> list[dict[str, str]]:
+    """The choice above the menu: each router and the overview it leads to."""
+    return [
+        {"id": router, "label": label, "home": link(f"routing/{router}")}
+        for router, label in source.ROUTERS
+    ]
+
+
 def title_of(slug: str) -> str:
     found = next((page.title for page, _ in _pages() if page.slug == slug), "Not found")
     return f"{found} - Nexy"
@@ -58,7 +73,12 @@ def menu(current: str) -> list[dict[str, Any]]:
         {
             "title": section.title,
             "pages": [
-                {"href": link(p.slug), "label": p.label, "current": p.slug == current}
+                {
+                    "href": link(p.slug),
+                    "label": p.label,
+                    "current": p.slug == current,
+                    "router": p.router,
+                }
                 for p in section.pages
             ],
         }

@@ -1,16 +1,21 @@
 ---
-from src.content import menu
+from src.content import menu, routers
 
 current: prop[str] = ""
 groups = menu(current)
+choices = routers()
 ---
 <nav class="side" aria-label="Documentation">
+  <div class="router-switch" role="group" aria-label="Router">
+    <span>Docs for</span>
+    {% for choice in choices %}<button type="button" data-router="{{ choice.id }}" data-home="{{ choice.home }}" aria-pressed="false">{{ choice.label | e }}</button>{% endfor %}
+  </div>
   {% for group in groups %}
   <section>
     <h2>{{ group.title | e }}</h2>
     <ul>
       {% for page in group.pages %}
-      <li>{% if page.current %}<a href="{{ page.href }}" aria-current="page">{{ page.label | e }}</a>{% else %}<a href="{{ page.href }}">{{ page.label | e }}</a>{% endif %}</li>
+      {% if page.router %}<li data-router="{{ page.router }}">{% else %}<li>{% endif %}{% if page.current %}<a href="{{ page.href }}" aria-current="page">{{ page.label | e }}</a>{% else %}<a href="{{ page.href }}">{{ page.label | e }}</a>{% endif %}</li>
       {% endfor %}
     </ul>
   </section>
