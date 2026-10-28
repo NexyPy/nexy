@@ -66,6 +66,48 @@ def split_imports(frontmatter: str) -> tuple[str, str]:
     return _unparse(imports), _unparse(rest) if rest else ""
 
 
+# Names a router reads from the module of a page, not from inside its component.
+ROUTE_EXPORTS = ("revalidate", "metadata")
+
+
+def _is_route_export(node: ast.stmt) -> bool:
+    """A top-level `revalidate = 60` or `metadata = {...}`: only a literal value can be exported."""
+    if not isinstance(node, ast.Assign) or len(node.targets) != 1:
+        return False
+    target = node.targets[0]
+    if not isinstance(target, ast.Name) or target.id not in ROUTE_EXPORTS:
+        return False
+    try:
+        ast.literal_eval(node.value)
+    except ValueError:
+        return False
+    return True
+
+
+def split_route_exports(frontmatter: str) -> tuple[str, str]:
+    """The route exports of the frontmatter, and the rest.
+
+    The frontmatter runs inside the component function, so `revalidate = 60` written there is a
+    local variable no router can see. These literals are written at module level instead.
+    """
+    try:
+        body = ast.parse(frontmatter).body
+    except SyntaxError:
+        return "", frontmatter
+    exports = [node for node in body if _is_route_export(node)]
+    if not exports:
+        return "", frontmatter
+    rest = [node for node in body if node not in exports]
+    return _unparse(exports), _unparse(rest) if rest else ""
+
+
+def split_frontmatter(frontmatter: str) -> tuple[str, str]:
+    """What goes at module level (imports, route exports) and what runs in the component."""
+    exports, rest = split_route_exports(frontmatter)
+    imports, body = split_imports(rest)
+    return "\n".join(part for part in (imports, exports) if part), body
+
+
 def _unparse(nodes: Sequence[ast.stmt]) -> str:
     return ast.unparse(ast.Module(body=list(nodes), type_ignores=[]))
 
@@ -132,7 +174,7 @@ def module_path(template_path: str) -> str:
 
 def render_module(template_path: str, source: ParserModel, source_path: str | None = None) -> str:
     """The Python module that renders the component: pure, nothing is written."""
-    imports, body = split_imports(source.frontmatter)
+    imports, body = split_frontmatter(source.frontmatter)
     shell = layout_shell(source_path or str(Config.PROJECT_ROOT))
     names = template_names(source.frontmatter, source.props)
     return _MODULE.format(
