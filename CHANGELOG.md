@@ -36,6 +36,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Fixed
 
+- **`revalidate` in a `.nexy` page now switches the ISR cache on.** The frontmatter runs inside the
+  component, so `revalidate = 60` was a local variable the router never saw and the page answered
+  with no cache header. A literal `revalidate` or `metadata` is now an attribute of the module.
+- **A dynamic page with `revalidate` shows its own parameter.** It was rendered with no
+  parameters and all its URLs shared one cache entry; each URL is now cached on its own.
+- **A client catch-all route keeps its parameter.** `[...path].tsx` and a folder such as `v1.2`
+  lost everything after their first dot; only the extension is cut now.
+- **Error pages match by folder.** A `notfound` page of `/blog` no longer answers `/blogger`, and
+  a custom 404 page is not served to a client that asks for JSON.
 - **A new project now has its migration tool.** `alembic` (SQLModel, SQLAlchemy) was never
   installed in the project, so `nx new` initialised nothing on a machine without a global Alembic.
 - **Alembic sees the models.** The generated `env.py` never imported them: with SQLModel the
