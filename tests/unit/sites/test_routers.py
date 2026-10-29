@@ -45,64 +45,78 @@ class TestRouterOfAPage:
         assert {"fbr", "modular", None} <= routers
 
 
+class TestAreas:
+    @pytest.mark.parametrize(
+        ("slug", "area"),
+        [
+            ("routing/fbr/pages", "fbr"),
+            ("routing/modular/dependency-injection", "modular"),
+            ("reference/cli", "cli"),
+            ("deployment/performance", "cli"),
+            ("reference/config", "core"),
+            ("getting-started/how-nexy-works", "core"),
+            ("guides/actions", "nexy"),
+            ("routing", "nexy"),
+            ("", "nexy"),
+        ],
+    )
+    def test_a_page_belongs_to_the_area_of_its_slug(self, slug, area):
+        assert source.area_of(slug) == area
+
+    def test_every_page_is_in_the_menu_of_one_area(self):
+        sections = source.read_sections(DOCS)
+        listed = [
+            p.slug for a in source.AREAS for s in source.in_area(sections, a.slug) for p in s.pages
+        ]
+        assert sorted(listed) == sorted(p.slug for s in sections for p in s.pages)
+
+    def test_an_area_menu_never_holds_an_empty_section(self):
+        sections = source.read_sections(DOCS)
+        assert all(s.pages for a in source.AREAS for s in source.in_area(sections, a.slug))
+
+
 class TestVanillaMenu:
     @pytest.fixture(scope="class")
     def out(self, tmp_path_factory):
-        target = tmp_path_factory.mktemp("routers")
-        build.build(target)
-        return target
+        out = tmp_path_factory.mktemp("site")
+        build.build(out, DOCS)
+        return out
 
-    @staticmethod
-    def _read(out: Path, slug: str) -> str:
+    def _html(self, out, slug):
         return (out / "docs" / slug / "index.html").read_text(encoding="utf-8")
 
-    def test_a_page_of_one_router_is_marked_in_the_menu(self, out):
-        html = self._read(out, "guides/actions")
-        assert re.search(r'<li data-router="fbr"><a href="[^"]+">Pages</a></li>', html)
+    def test_the_menu_of_a_page_holds_only_its_area(self, out):
+        html = self._html(out, "routing/modular")
+        assert "Dependency injection" in html and "Dynamic routes" not in html
 
-    def test_a_page_of_the_other_router_is_marked_too(self, out):
-        html = self._read(out, "guides/actions")
-        assert re.search(r'<li data-router="modular"><a href="[^"]+">Guards and metadata</a>', html)
+    def test_the_selector_names_every_area(self, out):
+        html = self._html(out, "guides/actions")
+        assert all(f"<b>{a.label}</b>" in html for a in source.AREAS)
 
-    def test_a_page_of_neither_router_is_never_hidden(self, out):
-        html = self._read(out, "guides/actions")
-        assert re.search(r'<li><a href="[^"]+" aria-current="page">Actions</a></li>', html)
+    def test_the_selector_marks_the_area_of_the_page(self, out):
+        html = self._html(out, "reference/cli")
+        assert re.search(
+            r'aria-current="true"><span class="area-icon">.*?<b>Nexy CLI</b>', html, re.S
+        )
 
-    def test_a_modular_page_declares_its_router(self, out):
-        html = self._read(out, "routing/modular/dependency-injection")
-        assert '<meta name="nexy-router" content="modular">' in html
+    def test_only_the_section_of_the_page_is_open(self, out):
+        html = self._html(out, "guides/actions")
+        assert len(re.findall(r'<details class="group"[^>]* open>', html)) == 1
 
-    def test_a_file_based_page_declares_its_router(self, out):
-        assert '<meta name="nexy-router" content="fbr">' in self._read(out, "routing/fbr/pages")
+    def test_the_sections_are_one_accordion(self, out):
+        html = self._html(out, "guides/actions")
+        assert 'name="nav"' in html
 
-    def test_a_page_of_neither_router_declares_none(self, out):
-        assert '<meta name="nexy-router"' not in self._read(out, "guides/actions")
-
-    def test_the_menu_offers_both_routers(self, out):
-        html = self._read(out, "guides/actions")
-        buttons = re.findall(r'<button type="button" data-router="(\w+)" data-home="([^"]+)"', html)
-        assert [name for name, _ in buttons] == ["fbr", "modular"]
-
-    def test_each_choice_leads_to_the_overview_of_its_router(self, out):
-        page = out / "docs" / "guides" / "actions"
-        html = (page / "index.html").read_text(encoding="utf-8")
-        homes = re.findall(r'data-home="([^"]+)"', html)
-        assert homes and all((page / home / "index.html").resolve().is_file() for home in homes)
-
-    def test_the_router_is_set_before_the_first_paint(self, out):
-        head = self._read(out, "guides/actions").split("</head>")[0]
-        assert "dataset.router" in head and "nexy-docs-router" in head
+    def test_the_pager_stays_inside_the_area(self, out):
+        html = self._html(out, "routing/modular")
+        assert "Quick start" not in html.split('class="pager"')[1]
 
 
 class TestAssets:
-    def test_the_stylesheet_hides_the_pages_of_the_other_router(self):
-        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
-        assert 'html[data-router="fbr"] .side li[data-router="modular"]' in css
-
-    def test_the_stylesheet_never_hides_the_choice_itself(self):
-        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
-        assert '.side [data-router="modular"]' not in css
-
-    def test_the_script_remembers_the_choice_and_follows_a_router_page(self):
+    def test_the_menu_can_fold_away(self):
         script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")
-        assert "router-switch" in script and "nexy-docs-router" in script
+        assert "nexy-docs-side" in script
+
+    def test_the_panel_scrolls_inside_on_a_wide_screen(self):
+        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
+        assert "html, body { height: 100%; overflow: hidden; }" in css

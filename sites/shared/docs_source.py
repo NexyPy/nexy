@@ -62,12 +62,56 @@ ROUTERS = (("fbr", "File-based"), ("modular", "Modular"))
 
 
 @dataclass(frozen=True)
+class Area:
+    """A part of the docs with its own menu, chosen from the selector above it."""
+
+    slug: str
+    label: str
+    blurb: str
+
+
+AREAS = (
+    Area("nexy", "Nexy", "Pages, views, rendering and guides"),
+    Area("fbr", "FBR Router", "Routes from the files of src/routes"),
+    Area("modular", "Modular Router", "Controllers, modules and injection"),
+    Area("cli", "Nexy CLI", "Create, run, build and ship"),
+    Area("core", "Nexy core", "Configuration, Python API and internals"),
+)
+
+# The pages that are not in the default area, by slug prefix. The first prefix that matches wins.
+_AREA_PREFIXES = (
+    ("fbr", ("routing/fbr",)),
+    ("modular", ("routing/modular",)),
+    (
+        "cli",
+        (
+            "getting-started/installation",
+            "getting-started/quick-start",
+            "getting-started/upgrading",
+            "reference/cli",
+            "guides/devtools",
+            "deployment",
+        ),
+    ),
+    (
+        "core",
+        (
+            "getting-started/how-nexy-works",
+            "getting-started/project-structure",
+            "reference",
+        ),
+    ),
+)
+
+
+@dataclass(frozen=True)
 class Page:
     slug: str
     title: str
     label: str
     path: Path
     router: str | None = None
+    area: str = "nexy"
 
 
 @dataclass(frozen=True)
@@ -104,6 +148,20 @@ def router_of(slug: str) -> str | None:
     return None
 
 
+def area_of(slug: str) -> str:
+    """The area whose menu lists a page: a prefix of its slug, else the default area."""
+    for area, prefixes in _AREA_PREFIXES:
+        if any(slug == prefix or slug.startswith(f"{prefix}/") for prefix in prefixes):
+            return area
+    return AREAS[0].slug
+
+
+def in_area(sections: list[Section], area: str) -> list[Section]:
+    """The sections of one area: each keeps its pages of that area, and none is left empty."""
+    kept = [Section(s.title, [p for p in s.pages if p.area == area]) for s in sections]
+    return [section for section in kept if section.pages]
+
+
 def _title(path: Path) -> str:
     for line in path.read_text(encoding="utf-8").splitlines():
         if line.startswith("# "):
@@ -116,7 +174,7 @@ def _page(docs: Path, relative: str, label: str) -> Page | None:
     if not path.is_file():
         return None
     slug = slug_of(relative)
-    return Page(slug, _title(path), label, path, router_of(slug))
+    return Page(slug, _title(path), label, path, router_of(slug), area_of(slug))
 
 
 def home(docs: Path) -> Page:
