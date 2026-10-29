@@ -83,11 +83,16 @@ class TestPageContent:
         assert 'class="pager"' in html
 
     def test_the_menu_is_made_of_collapsible_sections(self, html):
-        assert '<details class="group" data-section="Guides" open>' in html
+        # Each section is a <details> of the same accordion, and the one holding
+        # the current page is the only one open.
+        assert '<details class="group" name="nav" data-section="Guides">' in html
+        assert '<details class="group" name="nav" data-section="Build" open>' in html
 
     def test_a_section_says_how_many_pages_it_holds(self, html):
-        pattern = r'<span class="group-name">Guides</span>.*?<span class="group-count">8</span>'
-        assert re.search(pattern, html)
+        # The badge counts the links the section really shows, whatever the README holds.
+        section = html.split('data-section="Build"', 1)[1].split("</details>", 1)[0]
+        badge = re.search(r'<span class="group-count">(\d+)</span>', section)
+        assert badge and int(badge.group(1)) == section.count("<li>")
 
     def test_the_menu_has_a_search_button(self, html):
         assert 'class="search-open"' in html

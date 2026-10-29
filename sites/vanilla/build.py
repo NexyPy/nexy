@@ -55,36 +55,45 @@ def _root(current: str) -> str:
     return posixpath.join(*[".."] * depth)
 
 
-def router_switch_html(current: str) -> str:
-    """The choice of router above the menu: each button leads to the overview of its router."""
-    buttons = "".join(
-        f'<button type="button" data-router="{router}" '
-        f'data-home="{relative(current, f"routing/{router}")}" aria-pressed="false">'
-        f"{escape(label)}</button>"
-        for router, label in source.ROUTERS
+def area_select_html(sections: list[source.Section], current: source.Area, page: str) -> str:
+    """The selector above the menu: the area of the page, and a link to the start of each other."""
+
+    def first(area: source.Area) -> str:
+        pages = [p for s in source.in_area(sections, area.slug) for p in s.pages]
+        return relative(page, pages[0].slug) if pages else relative(page, "")
+
+    def face(area: source.Area) -> str:
+        return (
+            f'<span class="area-icon">{ICONS[f"area_{area.slug}"]}</span>'
+            f'<span class="area-text"><b>{escape(area.label)}</b>'
+            f"<small>{escape(area.blurb)}</small></span>"
+        )
+
+    items = "".join(
+        f'<li><a href="{first(area)}"'
+        f"{' aria-current="true"' if area.slug == current.slug else ''}>"
+        f"{face(area)}{ICONS['icon_check']}</a></li>"
+        for area in source.AREAS
     )
-    group = 'class="router-switch" role="group" aria-label="Router"'
-    return f"<div {group}><span>Docs for</span>{buttons}</div>"
-
-
-def router_meta(page: source.Page) -> str:
-    """Tells the first-paint script which router a page belongs to; nothing for a shared page."""
-    return f'<meta name="nexy-router" content="{page.router}">' if page.router else ""
+    return (
+        f'<details class="area-select"><summary>{face(current)}{ICONS["icon_select"]}</summary>'
+        f"<ul>{items}</ul></details>"
+    )
 
 
 def _nav_item(page: source.Page, current: str) -> str:
     mark = ' aria-current="page"' if page.slug == current else ""
-    tag = f' data-router="{page.router}"' if page.router else ""
-    return f'<li{tag}><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
+    return f'<li><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
 
 
 def _nav_group(section: source.Section, current: str) -> str:
-    """A collapsible section: open by default, so the menu works without JavaScript."""
+    """An accordion section: only the one holding the current page is open, one at a time."""
     items = "".join(_nav_item(page, current) for page in section.pages)
     count = len(section.pages)
+    opened = " open" if any(page.slug == current for page in section.pages) else ""
     # The name and the count are joined by a dashed rule, like the Eyebrow of a starter section.
     return (
-        f'<details class="group" data-section="{escape(section.title)}" open>'
+        f'<details class="group" name="nav" data-section="{escape(section.title)}"{opened}>'
         f'<summary><span class="group-name">{escape(section.title)}</span>'
         '<span class="group-rule" aria-hidden="true"></span>'
         f'<span class="group-count">{count}</span>{ICONS["icon_chev"]}</summary>'
@@ -93,7 +102,7 @@ def _nav_group(section: source.Section, current: str) -> str:
 
 
 def nav_html(sections: list[source.Section], current: str) -> str:
-    """The side menu: the router choice, and one collapsible group per section."""
+    """The side menu of one area: one accordion group per section."""
     groups = "".join(_nav_group(section, current) for section in sections)
     foot = (
         '<p class="side-empty" hidden>No page matches.</p>'
@@ -102,7 +111,7 @@ def nav_html(sections: list[source.Section], current: str) -> str:
         '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>'
         "</div>"
     )
-    return router_switch_html(current) + groups + foot
+    return groups + foot
 
 
 def toc_html(headings: list[source.Heading]) -> str:
@@ -149,7 +158,9 @@ def _page_html(
     section: str,
     rendered: source.Rendered,
 ) -> str:
-    before, after = source.neighbours(sections, page.slug)
+    area = next(a for a in source.AREAS if a.slug == page.area)
+    local = source.in_area(sections, area.slug)
+    before, after = source.neighbours(local, page.slug)
     rel = page.path.relative_to(DOCS).as_posix()
     home = not page.slug
     return template.substitute(
@@ -157,8 +168,8 @@ def _page_html(
         description=_description(rendered),
         root=_root(page.slug),
         home=relative(page.slug, ""),
-        nav=nav_html(sections, page.slug),
-        router_meta=router_meta(page),
+        nav=nav_html(local, page.slug),
+        area_select=area_select_html(sections, area, page.slug),
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
         article=rendered.html,

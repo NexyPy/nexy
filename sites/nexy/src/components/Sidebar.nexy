@@ -1,9 +1,9 @@
 ---
-from src.content import ICONS, menu, routers
+from src.content import ICONS, area_select, menu
 
 current: prop[str] = ""
 groups = menu(current)
-choices = routers()
+select = area_select(current)
 ---
 <nav class="side" aria-label="Documentation">
   <div class="side-head">
@@ -14,12 +14,24 @@ choices = routers()
     {{ ICONS.icon_search }}
     <input type="search" placeholder="Filter pages" aria-label="Filter pages" autocomplete="off">
   </label>
-  <div class="router-switch" role="group" aria-label="Router">
-    <span>Docs for</span>
-    {% for choice in choices %}<button type="button" data-router="{{ choice.id }}" data-home="{{ choice.home }}" aria-pressed="false">{{ choice.label | e }}</button>{% endfor %}
-  </div>
+  <details class="area-select">
+    <summary>
+      <span class="area-icon">{{ select.shown.icon }}</span>
+      <span class="area-text"><b>{{ select.shown.label | e }}</b><small>{{ select.shown.blurb | e }}</small></span>
+      {{ ICONS.icon_select }}
+    </summary>
+    <ul>
+      {% for area in select.choices %}
+      <li><a href="{{ area.home }}"{% if area.current %} aria-current="true"{% endif %}>
+        <span class="area-icon">{{ area.icon }}</span>
+        <span class="area-text"><b>{{ area.label | e }}</b><small>{{ area.blurb | e }}</small></span>
+        {{ ICONS.icon_check }}
+      </a></li>
+      {% endfor %}
+    </ul>
+  </details>
   {% for group in groups %}
-  <details class="group" data-section="{{ group.title | e }}" open>
+  <details class="group" name="nav" data-section="{{ group.title | e }}"{% if group.open %} open{% endif %}>
     <summary>
       <span class="group-name">{{ group.title | e }}</span>
       <span class="group-rule" aria-hidden="true"></span>
@@ -28,7 +40,7 @@ choices = routers()
     </summary>
     <ul>
       {% for page in group.pages %}
-      {% if page.router %}<li data-router="{{ page.router }}">{% else %}<li>{% endif %}{% if page.current %}<a href="{{ page.href }}" aria-current="page">{{ page.label | e }}</a>{% else %}<a href="{{ page.href }}">{{ page.label | e }}</a>{% endif %}</li>
+      <li>{% if page.current %}<a href="{{ page.href }}" aria-current="page">{{ page.label | e }}</a>{% else %}<a href="{{ page.href }}">{{ page.label | e }}</a>{% endif %}</li>
       {% endfor %}
     </ul>
   </details>
