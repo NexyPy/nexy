@@ -116,14 +116,27 @@
   }))
 
   // --- Copy button on code blocks --------------------------------------------------------------
+  // A shell command with no file name gets a "Terminal" bar, like a named file.
+  const SHELLS = ['bash', 'sh', 'shell', 'console', 'powershell']
   $$('.doc pre').forEach((block) => {
+    if (block.closest('figure') || !SHELLS.includes(block.getAttribute('lang'))) return
+    const figure = document.createElement('figure')
+    figure.className = 'terminal'
+    figure.innerHTML = '<figcaption>Terminal</figcaption>'
+    block.replaceWith(figure)
+    figure.append(block)
+  })
+
+  $$('.doc pre').forEach((block) => {
+    if (block.getAttribute('lang') === 'diagram') return
+    const bar = block.closest('figure')?.querySelector('figcaption')
     const button = Object.assign(document.createElement('button'), { className: 'copy', type: 'button', textContent: 'Copy' })
     button.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(block.innerText) } catch { return }
       button.textContent = 'Copied'
       setTimeout(() => { button.textContent = 'Copy' }, 1500)
     })
-    block.append(button)
+    ;(bar ?? block).append(button)
   })
 
   // --- Outline: the last heading read crosses the line under the top bar --------------------------
