@@ -86,11 +86,11 @@ def _nav_item(page: source.Page, current: str) -> str:
     return f'<li><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
 
 
-def _nav_group(section: source.Section, current: str) -> str:
-    """An accordion section: only the one holding the current page is open, one at a time."""
+def _nav_group(section: source.Section, current: str, opens: bool) -> str:
+    """An accordion section: the one holding the current page, or the first one, stays open."""
     items = "".join(_nav_item(page, current) for page in section.pages)
     count = len(section.pages)
-    opened = " open" if any(page.slug == current for page in section.pages) else ""
+    opened = " open" if opens else ""
     # The name and the count are joined by a dashed rule, like the Eyebrow of a starter section.
     return (
         f'<details class="group" name="nav" data-section="{escape(section.title)}"{opened}>'
@@ -103,7 +103,14 @@ def _nav_group(section: source.Section, current: str) -> str:
 
 def nav_html(sections: list[source.Section], current: str) -> str:
     """The side menu of one area: one accordion group per section."""
-    groups = "".join(_nav_group(section, current) for section in sections)
+    # A reader who arrives on the home page has chosen no page yet: the first steps are open.
+    holder = next(
+        (i for i, section in enumerate(sections) if any(p.slug == current for p in section.pages)),
+        0,
+    )
+    groups = "".join(
+        _nav_group(section, current, i == holder) for i, section in enumerate(sections)
+    )
     foot = (
         '<p class="side-empty" hidden>No page matches.</p>'
         '<div class="side-foot">'

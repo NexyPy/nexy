@@ -86,11 +86,17 @@ def title_of(slug: str) -> str:
 
 def menu(current: str) -> list[dict[str, Any]]:
     """The side menu of the area of the page: one group per section, its own group open."""
+    sections = _area_sections(current)
+    # A reader who arrives on the home page has chosen no page yet: the first steps are open.
+    holder = next(
+        (i for i, section in enumerate(sections) if any(p.slug == current for p in section.pages)),
+        0,
+    )
     return [
         {
             "title": section.title,
             "count": len(section.pages),
-            "open": any(p.slug == current for p in section.pages),
+            "open": i == holder,
             "pages": [
                 {
                     "href": link(p.slug),
@@ -100,7 +106,7 @@ def menu(current: str) -> list[dict[str, Any]]:
                 for p in section.pages
             ],
         }
-        for section in _area_sections(current)
+        for i, section in enumerate(sections)
     ]
 
 
