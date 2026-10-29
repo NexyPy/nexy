@@ -23,6 +23,22 @@ export type NavigateOptions = {
   scroll?: boolean
 }
 
+export type Blocker = (next: RouterLocation, current: RouterLocation) => void | string | Promise<void | string>
+
+export type TransitionState = {
+  /** A client navigation is in flight (rendering the next page). */
+  pending: boolean
+  /** The location we are navigating toward while `pending` is true. */
+  next: RouterLocation | null
+}
+
+export type RouteMatchInfo = {
+  /** The matched route, or null when none matches (the server must answer). */
+  match: RouteMatch | null
+  /** True when `match` is not null. */
+  found: boolean
+}
+
 export type RouterOptions = {
   /** The route that serves a pathname, or null when the server must answer it. */
   match: (pathname: string) => RouteMatch | null
@@ -62,8 +78,10 @@ export function createRouter(options: RouterOptions) {
   const win = options.win ?? (window as Window & typeof globalThis)
   const listeners = new Set<() => void>()
   const prefetched = new Set<string>()
+  const blockers = new Set<Blocker>()
   let navigation = 0
   let location = read()
+  let pending: TransitionState | null = null
 
   function read(): RouterLocation {
     const { pathname, search, hash } = win.location
@@ -142,6 +160,15 @@ export function createRouter(options: RouterOptions) {
     const samePage = url.pathname === current.pathname && url.search === current.search
     if (samePage && url.hash === current.hash) return true
 
+    const next = { pathname: url.pathname, search: url.search, hash: url.hash, params: options.match(url.pathname)?.params ?? {} }
+
+    // Ask every blocker whether this navigation may proceed. A blocker returns a string
+    // (the reason) or a promise of one to abort; anything else allows it.
+    for (const blocker of blockers) {
+      const answer = await Promise.resolve(blocker(next, location))
+      if (typeof answer === 'string') return false
+    }
+
     const id = ++navigation
     saveScroll()
 
@@ -153,11 +180,16 @@ export function createRouter(options: RouterOptions) {
       return true
     }
 
-    if (!(await show(url, id))) return false
+    pending = { pending: true, next }
+    if (!(await show(url, id))) {
+      pending = null
+      return false
+    }
     win.history[opts.replace ? 'replaceState' : 'pushState']({ nexy: true }, '', url.href)
     commit(read())
     announce(location)
     scrollAfter(url.hash, opts.scroll !== false)
+    pending = null
     return true
   }
 
@@ -248,7 +280,21 @@ export function createRouter(options: RouterOptions) {
     },
     prefetch,
     start,
-    shouldIntercept
+    shouldIntercept,
+    /** Match `pathname` against the routes, without subscribing. */
+    matchPath(pathname: string): RouteMatchInfo {
+      const match = options.match(pathname) ?? null
+      return { match, found: match !== null }
+    },
+    /** Register a blocker that can abort a client navigation. Returns an unsubscribe function. */
+    blocker(blocker: Blocker): () => void {
+      blockers.add(blocker)
+      return () => void blockers.delete(blocker)
+    },
+    /** The in-flight navigation state, shared by every adapter. Read it for a loading boundary. */
+    transition(): TransitionState {
+      return { pending: pending !== null, next: pending?.next ?? null }
+    }
   }
 }
 

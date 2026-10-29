@@ -35,7 +35,8 @@ export default function Home() {
 
 The default export is the page component; a named export also works.
 
-> **Good to know**: Solid components run once. Use signals and memos rather than re-reading values
+> [!NOTE]
+> Solid components run once. Use signals and memos rather than re-reading values
 > in the component body.
 
 ## Rendering

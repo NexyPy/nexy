@@ -13,7 +13,8 @@ By default, Nexy renders pages on the server for each request. No flag is requir
 
 HTML can be streamed when possible.
 
-> **Good to know**: autoescaping is off in `.nexy` templates. Use `| e` on untrusted values.
+> [!NOTE]
+> autoescaping is off in `.nexy` templates. Use `| e` on untrusted values.
 
 API errors such as `500` are rendered by `errors.nexy` when that file exists - see
 [error pages](../routing/fbr/errors/README.md).

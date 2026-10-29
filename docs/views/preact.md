@@ -35,7 +35,8 @@ export default function Home() {
 
 The default export is the page component; a named export also works.
 
-> **Good to know**: `.mdx` files are compiled with Preact too when their imports resolve to Preact -
+> [!NOTE]
+> `.mdx` files are compiled with Preact too when their imports resolve to Preact -
 > see [Markdown](markdown.md).
 
 ## Rendering

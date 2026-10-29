@@ -22,6 +22,18 @@ my-app/
 └─ __nexy__/             build output - generated, never edited
 ```
 
+To choose a folder, ask what the file is:
+
+- **Something the browser can open** - a route: `src/routes/`.
+- **A piece used by several routes** - a component or a module: `src/components/`, `src/`.
+- **A file served as it is** - `public/`.
+- **A controller of the modular router** - `src/apps/`.
+- **Generated** - `__nexy__/`; never edit it.
+
+> [!WARNING]
+> `src/routes/` is scanned: a helper placed there becomes a route. Put a helper that is not a route
+> outside `src/routes/`, or start its name with `_`.
+
 ## `src/routes/`
 
 Every file becomes a route, except the reserved names below. The file path minus the extension is
@@ -40,7 +52,8 @@ Each page name also exists per framework. With `react()` configured, `layout.jsx
 are reserved exactly like `layout.nexy`. The lists are built in `nexy/core/config.py`
 (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
 
-> **Good to know**: `notfound.nexy` and `errors.nexy` are only installed when a copy exists at the
+> [!NOTE]
+> `notfound.nexy` and `errors.nexy` are only installed when a copy exists at the
 > routes root. A copy in a subdirectory then refines the page for that prefix.
 
 ## `src/apps/`

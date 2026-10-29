@@ -181,3 +181,9 @@ class NexyConfigModel:
     useNotFoundExtensions: list[str] | None = None
     useErrorsExtensions: list[str] | None = None
     useLoadingExtensions: list[str] | None = None
+    useForbiddenExtensions: list[str] | None = None
+    useUnauthorizedExtensions: list[str] | None = None
+    useRedirects: list[dict[str, Any]] | None = None
+    useRewrites: list[dict[str, Any]] | None = None
+    useHeaders: list[dict[str, Any]] | None = None
+    useBasePath: str | None = None

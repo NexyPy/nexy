@@ -4,7 +4,8 @@ Hooks read the current HTTP request from inside a `.nexy` page, an API handler o
 controller. Their names match the hooks of the client router (`@nexy/client`) where they do the same
 thing.
 
-> **Good to know**: hooks only work while a request is being handled. Calling one anywhere else
+> [!NOTE]
+> hooks only work while a request is being handled. Calling one anywhere else
 > raises `RuntimeError`.
 
 ## The hooks

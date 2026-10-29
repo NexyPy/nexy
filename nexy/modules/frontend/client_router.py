@@ -29,21 +29,22 @@ def match_route(
     for route in routes:
         if not is_navigable(route):
             continue
-        match = _match_one(route.get("path", ""), parts)
+        match = _match_one(route.get("path", ""), parts, route.get("optional", False))
         if match is not None:
             return route, match
     return None, {}
 
 
-def _match_one(pattern: str, parts: list[str]) -> dict[str, str] | None:
+def _match_one(pattern: str, parts: list[str], optional: bool = False) -> dict[str, str] | None:
     """Match one route pattern against *parts*, or return None when it differs."""
     segs = to_segments(pattern)
     params: dict[str, str] = {}
-    if not _shape_matches(segs, parts):
+    if not _shape_matches(segs, parts, optional):
         return None
     for i, pat in enumerate(segs):
         if pat.startswith("{..."):
-            params[pat[4:-1]] = "/".join(parts[i:])
+            name = pat[4:-1]
+            params[name] = "/".join(parts[i:]) if i < len(parts) else ""
             break
         if pat.startswith("{"):
             params[pat[1:-1]] = parts[i]
@@ -53,10 +54,14 @@ def _match_one(pattern: str, parts: list[str]) -> dict[str, str] | None:
     return params
 
 
-def _shape_matches(segs: list[str], parts: list[str]) -> bool:
-    """A catch-all tail segment absorbs any number of remaining path parts."""
+def _shape_matches(segs: list[str], parts: list[str], optional: bool = False) -> bool:
+    """A catch-all tail segment absorbs any number of remaining path parts.
+
+    When *optional* is true, a trailing catch-all also matches zero remaining segments
+    (so ``/`` matches ``/[[...slug]]``).
+    """
     if segs and segs[-1].startswith("{..."):
-        return len(parts) >= len(segs)
+        return len(parts) >= len(segs) - (1 if optional else 0)
     return len(segs) == len(parts)
 
 

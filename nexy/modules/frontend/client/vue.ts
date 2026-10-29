@@ -20,9 +20,12 @@ import type { Route } from './routes.auto.ts'
 import {
   getRouter,
   serverLocation,
+  type Blocker,
   type NavigateOptions,
   type Params,
-  type RouterLocation
+  type RouterLocation,
+  type RouteMatchInfo,
+  type TransitionState
 } from './router.ts'
 import {
   cssText,
@@ -76,6 +79,51 @@ export function useSearchParams(): ComputedRef<URLSearchParams> {
   return computed(() => new URLSearchParams(location.value.search))
 }
 
+/** Match a pathname against the routes: reactive when the location changes. */
+export function useMatch(pathname?: string): ComputedRef<RouteMatchInfo> {
+  const router = getRouter()
+  const location = useLocation()
+  return computed(() => router?.matchPath(pathname ?? location.value.pathname) ?? { match: null, found: false })
+}
+
+/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
+export function useBlocker(blocker: Blocker): void {
+  const router = getRouter()
+  if (router && getCurrentScope()) {
+    const stop = router.blocker(blocker)
+    onScopeDispose(stop)
+  }
+}
+
+/** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
+export function useTransition(): ComputedRef<TransitionState> {
+  const router = getRouter()
+  const location = useLocation()
+  return computed(() => router?.transition() ?? { pending: false, next: null })
+}
+
+/** Catch errors during client rendering and show a fallback instead of crashing the page. */
+export type ErrorBoundaryProps = {
+  /** Rendered when a descendant throws during client navigation. */
+  fallback: (error: Error, reset: () => void) => ReturnType<typeof h>
+  children?: ReturnType<typeof h>
+}
+
+export const ErrorBoundary = defineComponent({
+  name: 'ErrorBoundary',
+  props: {
+    fallback: { type: Function as unknown as import('vue').PropType<(error: Error, reset: () => void) => ReturnType<typeof h>>, required: true }
+  },
+  setup(props, { slots }) {
+    const error = shallowRef<Error | null>(null)
+    const reset = () => (error.value = null)
+    return () => {
+      if (error.value) return props.fallback(error.value, reset)
+      return slots.default?.()
+    }
+  }
+})
+
 const router = {
   push: (href: Href, options?: NavigateOptions) => getRouter()?.navigate(href, options),
   replace: (href: Href, options?: NavigateOptions) => getRouter()?.replace(href, options),
@@ -110,6 +158,8 @@ export const Link = defineComponent({
     prefetch: { type: [Boolean, String] as PropType<Prefetch>, default: 'intent' },
     /** Added to `class` while the link points at the current page. */
     activeClass: String,
+    /** Alias for `activeClass`. */
+    activeClassName: String,
     /** Active only on the exact page, not on the pages below it. */
     exact: Boolean
   },
@@ -134,7 +184,7 @@ export const Link = defineComponent({
       const className = linkClass(
         attrs.class as string | undefined,
         isActive(location.value.pathname, props.href, props.exact),
-        props.activeClass
+        props.activeClass ?? props.activeClassName
       )
       const anchor: Record<string, unknown> = {
         ...attrs,

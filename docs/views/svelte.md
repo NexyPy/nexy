@@ -33,7 +33,8 @@ class NexyConfig(NexyConfigModel):
 
 Single-file component. Nexy renders it on the server and mounts it in the browser.
 
-> **Good to know**: a `.nexy` template that contains `{{` in JavaScript must wrap it in
+> [!NOTE]
+> a `.nexy` template that contains `{{` in JavaScript must wrap it in
 > `{% raw %}...{% endraw %}`.
 
 ## Rendering

@@ -10,6 +10,11 @@ class Pathname:
         target = path or self.pathname
         return re.sub(r"\[(?!(\.\.\.))([^\]]+)\]", r"{\2}", target)
 
+    def _optional_catch_all(self, path: str | None = None) -> str:
+        """Convert [[...slug]] to {slug:path} (optional)."""
+        target = path or self.pathname
+        return re.sub(r"\[\[\.\.\.([^\]]+)\]\]", r"{\1:path}", target)
+
     def _catch_all(self, path: str | None = None) -> str:
         """Convert [...slug] to {slug:path}."""
         target = path or self.pathname
@@ -31,6 +36,7 @@ class Pathname:
         """Execute all transformations in logical order."""
         res = self._group_pathname()
         res = self._normalize_pathname(res)
+        res = self._optional_catch_all(res)
         res = self._catch_all(res)
         res = self._dynamic_pathname(res)
 
@@ -48,6 +54,8 @@ class StringTransform:
 
     @staticmethod
     def _normalize_dynamic_segment(segment: str) -> str:
+        if segment.startswith("[[...") and segment.endswith("]]"):
+            return f"{segment[5:-2].replace('-', '_')}_dynamic_param"
         if segment.startswith("[...") and segment.endswith("]"):
             return f"{segment[4:-1].replace('-', '_')}_dynamic_param"
         if segment.startswith("[") and segment.endswith("]"):
@@ -76,6 +84,7 @@ class StringTransform:
         """A route file as a module name: ``[slug].tsx`` becomes ``slug_catch_all.tsx``."""
         stem, ext = filename.rsplit(".", 1)
         if "[" in stem and "]" in stem:
+            stem = re.sub(r"\[\[\.\.\.([^\]]+)\]\]", r"\1", stem)
             stem = re.sub(r"\[\.\.\.([^\]]+)\]", r"\1", stem)
             stem = re.sub(r"\[([^\]]+)\]", r"\1", stem)
             stem = f"{stem}_catch_all"
@@ -84,7 +93,8 @@ class StringTransform:
     def get_component_name(self, pathname: str) -> str:
         segment = pathname.split("/")[-1]
         if "[" in segment and "]" in segment:
-            cleaned = re.sub(r"\[\.\.\.([^\]]+)\]", r"\1", segment)
+            cleaned = re.sub(r"\[\[\.\.\.([^\]]+)\]\]", r"\1", segment)
+            cleaned = re.sub(r"\[\.\.\.([^\]]+)\]", r"\1", cleaned)
             cleaned = re.sub(r"\[([^\]]+)\]", r"\1", cleaned)
             cleaned = cleaned.replace("-", "_")
             if not cleaned:

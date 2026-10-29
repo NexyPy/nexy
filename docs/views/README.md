@@ -3,6 +3,17 @@
 A view renders the response body for a page. Choose one format and put the file under
 `src/routes/`.
 
+**Not sure? Write a `.nexy` file.** It needs no client framework, and you can add a React, Vue,
+Svelte, Solid or Preact component inside it later, as an island.
+
+```diagram filename="Which file for which page"
+server logic + HTML          →  .nexy      (Python frontmatter + Jinja2)
+prose that changes rarely    →  .md        (GitHub-flavoured Markdown)
+prose + components           →  .mdx       (React or Preact)
+app-like page, client router →  .tsx .vue .svelte (framework files)
+Python endpoint              →  .py        (GET, POST, …)
+```
+
 ## Formats
 
 | Format | File | Server render | Client framework | Notes |
@@ -31,7 +42,8 @@ class NexyConfig(NexyConfigModel):
 
 With a framework enabled, its extensions become active routes and Vite handles client bundles.
 
-> **Good to know**: in [CSR](../rendering/csr.md) mode, only framework route files are navigable
+> [!NOTE]
+> in [CSR](../rendering/csr.md) mode, only framework route files are navigable
 > client-side.
 
 ## Layouts

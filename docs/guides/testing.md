@@ -94,7 +94,8 @@ def test_form_posts_to_action(client):
 
 A call with JSON answers with the result, and `422` with the invalid fields.
 
-> **Good to know**: action paths are specific to the project and generated. Never hardcode
+> [!NOTE]
+> action paths are specific to the project and generated. Never hardcode
 > `/_nx_<hash>` in a test.
 
 ## Test a `.nexy` component

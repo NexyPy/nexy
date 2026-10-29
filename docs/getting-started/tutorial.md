@@ -1,7 +1,13 @@
 # Tutorial: build a notes page in 10 minutes
 
 You will create a project, add a page, add a Python endpoint, share data between them, and build
-for production.
+for production. You end with one list of notes served as a page and as JSON.
+
+New to Nexy? Do the [Quick start](quick-start.md) first: it takes three minutes.
+
+```diagram filename="The whole tutorial in one line"
+uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
+```
 
 ## 1. Create the project
 
@@ -42,7 +48,7 @@ notes = ["Buy milk", "Ship Nexy"]
 </ul>
 ```
 
-It is served at `/notes`. The part between `---` is Python, the rest is Jinja2.
+Open <http://localhost:3000/notes>: you should see two bullets. It is served at `/notes`. The part between `---` is Python, the rest is Jinja2.
 
 ## 4. Add an endpoint
 
@@ -55,7 +61,7 @@ async def GET():
 curl http://localhost:3000/api/notes
 ```
 
-The function name is the HTTP method. Interactive API docs are at `/docs`.
+You should get `[{"id":1,"text":"Buy milk"}]`. The function name is the HTTP method. Interactive API docs are at `/docs`.
 
 ## 5. Share the data
 

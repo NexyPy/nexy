@@ -68,10 +68,11 @@ def title_of(slug: str) -> str:
 
 
 def menu(current: str) -> list[dict[str, Any]]:
-    """The side menu: each page with the link it points to and whether it is the open one."""
+    """The side menu: one collapsible group per section, each page with its link."""
     return [
         {
             "title": section.title,
+            "count": len(section.pages),
             "pages": [
                 {
                     "href": link(p.slug),

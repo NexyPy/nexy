@@ -75,7 +75,8 @@ async def GET(request: Request):
     return {"user": request.session["user"]}
 ```
 
-> **Good to know**: keep real passwords out of the source. Store a hash (`argon2`, `bcrypt`) and read
+> [!NOTE]
+> keep real passwords out of the source. Store a hash (`argon2`, `bcrypt`) and read
 > the secret key from the environment. The session cookie is signed, not encrypted.
 
 ## A JSON API with create, read and delete

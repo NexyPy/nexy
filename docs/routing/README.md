@@ -2,6 +2,24 @@
 
 Nexy has two routers. Pick one per feature; they can coexist in the same application.
 
+**Not sure? Use file-based routing.** It covers pages and API endpoints with no setup. Add the
+modular router when a backend needs controllers, injected services or guards.
+
+| You are building | Use |
+|---|---|
+| Pages, content, a site with a few endpoints | File-based |
+| A large API with services shared across routes | Modular |
+| Both: pages for people, a structured API for machines | File-based and modular together |
+
+```diagram filename="The file-based router, at a glance"
+src/routes/index.nexy           →  /
+src/routes/about.nexy           →  /about
+src/routes/blog/index.nexy      →  /blog
+src/routes/blog/[slug].nexy     →  /blog/:slug
+src/routes/(app)/dashboard.nexy →  /dashboard
+src/routes/api/users.py         →  /api/users  (GET, POST, …)
+```
+
 | Router | Source | Enabled by |
 |---|---|---|
 | [File-based (FBR)](fbr/README.md) | every file under `src/routes/` | the directory exists |

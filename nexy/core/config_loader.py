@@ -16,6 +16,8 @@ _SPECIAL_FILES = {
     "notfound": ("NOTFOUND_FILE_NAMES", "useNotFoundExtensions"),
     "errors": ("ERROR_FILE_NAMES", "useErrorsExtensions"),
     "loading": ("LOADING_FILE_NAMES", "useLoadingExtensions"),
+    "forbidden": ("FORBIDDEN_FILE_NAMES", "useForbiddenExtensions"),
+    "unauthorized": ("UNAUTHORIZED_FILE_NAMES", "useUnauthorizedExtensions"),
 }
 _ALWAYS_ROUTE_EXCEPTIONS = ("__init__.py", "dependencies.py", "middleware.py")
 

@@ -20,6 +20,7 @@ a different job: read the repository's root `AGENTS.md`.
 | controllers and modules | [modular](../routing/modular/README.md) |
 | to add an endpoint | [API](../routing/fbr/handlers/README.md) |
 | a form posted from a page | [actions](../guides/actions.md) |
+| why a request failed, and which page answers it | [exceptions](exceptions.md) |
 | translations | [i18n](../guides/i18n.md) |
 | a config field | [config](config.md) |
 | to test the app | [testing](../guides/testing.md) |

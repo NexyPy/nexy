@@ -59,7 +59,27 @@ def _fallback_document() -> str:
     )
 
 
+def _static_path_for_pathname(static_stem: str, pathname: str) -> Path:
+    if pathname == "/":
+        return Path(f"{_STATIC_ROOT}{static_stem}/index.html")
+    clean = pathname.strip("/")
+    return Path(f"{_STATIC_ROOT}{static_stem}") / f"{clean}.html"
+
+
 def _from_production(static_stem: str, dynamic: bool) -> str | None:
+    location = _request_location()
+    if location and not dynamic:
+        path = _static_path_for_pathname(static_stem, location["pathname"])
+        try:
+            return path.read_text(encoding="utf-8")
+        except OSError:
+            pass
+    if location and dynamic:
+        path = _static_path_for_pathname(static_stem, location["pathname"])
+        try:
+            return path.read_text(encoding="utf-8")
+        except OSError:
+            pass
     suffix = "shell" if dynamic else "document"
     path = Path(f"{_STATIC_ROOT}{static_stem}.{suffix}.html")
     try:

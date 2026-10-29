@@ -2,6 +2,16 @@
 
 Nexy renders a page on the server by default and hydrates the interactive parts in the browser.
 
+**Not sure? Keep the default, SSR.** Change a page only when you can name the reason: content that
+rarely changes (ISR), one widget that needs the browser (island), or app-like navigation (CSR).
+
+```diagram filename="Who produces the HTML, and when"
+SSR       request ──► server renders ──► HTML ──► browser
+ISR       request ──► cache hit? ──► HTML ──► browser, regenerated in the background
+CSR       request ──► empty shell ──► browser renders the page
+Islands   request ──► server renders ──► HTML ──► one widget hydrates on demand
+```
+
 | Mode | Where the HTML comes from | Enabled by |
 |---|---|---|
 | [SSR](ssr.md) | the server, on every request | default |

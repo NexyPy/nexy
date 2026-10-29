@@ -23,7 +23,12 @@ class FBRouter:
     def register_on(self, app: FastAPI) -> None:
         if not self._flat:
             app.include_router(self.router)
-        ErrorPages(self.scan.notfound, self.scan.errors).register(app)
+        ErrorPages(
+            self.scan.notfound,
+            self.scan.errors,
+            forbidden=self.scan.forbidden,
+            unauthorized=self.scan.unauthorized,
+        ).register(app)
 
 
 __all__ = ["LOAD_FAILURES", "FBRouter"]
