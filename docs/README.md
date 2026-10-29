@@ -3,8 +3,35 @@
 Nexy is a fullstack Python meta-framework: FastAPI and Starlette serve the app, Vite builds the
 client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an API handler.
 
-These pages are plain Markdown, written from the code. Start with the task you have, not with the
-architecture.
+## What Nexy gives you
+
+- **A page from a file**: `.nexy`, Markdown and MDX routes, layouts, metadata. [Pages](routing/fbr/pages/README.md)
+- **A Python API**: FastAPI handlers named after the HTTP method, validation, WebSocket. [Route handlers](routing/fbr/handlers/README.md)
+- **A client framework**: React, Vue, Svelte, Solid and Preact, mixed in one project. [Views](views/README.md)
+- **Control over rendering**: SSR, ISR, CSR and islands, per page. [Rendering](rendering/README.md)
+- **A typed call to Python**: Actions, from a form or from TypeScript. [Actions](guides/actions.md)
+- **A structured backend**: Modular router with injection, guards and metadata. [Modular routing](routing/modular/README.md)
+- **A product ready for the world**: i18n, sessions, middleware, databases. [Guides](guides/i18n.md)
+- **A fast loop**: Dev server, browser error overlay, dev toolbar. [Dev toolbar](guides/devtools.md)
+- **A deployable build**: `nx build` and `nx start`, no Node at runtime. [Deploy](deployment/README.md)
+- **Help from a coding agent**: Project rules for Claude Code, Codex and OpenCode. [Coding agents](guides/ai-agents.md)
+
+Start with the task you have, not with the architecture. Every page is plain Markdown, written from
+the code.
+
+## Where to start
+
+- **I want to see it work**: [Quick start](getting-started/quick-start.md), then the [Tutorial](getting-started/tutorial.md).
+- **I am building a feature**: open [Build](#build) and follow the task.
+- **I must pick an option**: open [Choose](#choose) (router, rendering mode, client framework).
+- **I need an exact name or flag**: open [Reference](#reference).
+
+## Where to start
+
+- **I want to see it work**: [Quick start](getting-started/quick-start.md), then the [Tutorial](getting-started/tutorial.md).
+- **I am building a feature**: open [Build](#build) and follow the task.
+- **I must pick an option**: open [Choose](#choose) (router, rendering mode, client framework).
+- **I need an exact name or flag**: open [Reference](#reference).
 
 ## Getting started
 
@@ -18,74 +45,73 @@ architecture.
 | [Coming from another framework](getting-started/coming-from-other-frameworks.md) | Map FastAPI, Next.js and Express to Nexy |
 | [Upgrading to 2.2](getting-started/upgrading.md) | What changes for an existing project |
 
-## Routing
+## Build
 
 | Page | What you will do |
 |---|---|
-| [Routing](routing/README.md) | Choose between the file-based and the modular router |
 | [File-based routing](routing/fbr/README.md) | Turn a file path into a URL |
-| [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
 | [Pages](routing/fbr/pages/README.md) | Write a page |
 | [Dynamic routes](routing/fbr/pages/dynamic-routes.md) | `[slug]`, `[...path]`, route groups |
 | [Page metadata](routing/fbr/pages/metadata.md) | Title, description and share image of a page |
-| [Layouts](routing/fbr/layouts/README.md) | Root and nested layouts |
-| [layout.nexy](routing/fbr/layouts/layout.nexy.md) | The server-mode layout |
-| [layout.tsx](routing/fbr/layouts/layout.tsx.md) | The React client-mode layout that owns `<html>` |
-| [layout.vue](routing/fbr/layouts/layout.vue.md), [layout.svelte](routing/fbr/layouts/layout.svelte.md) | Nested layouts for Vue and Svelte |
+| [Layouts](routing/fbr/layouts/README.md) | Share a frame between pages |
 | [Route handlers](routing/fbr/handlers/README.md) | Add a Python endpoint |
 | [Validation and errors](routing/fbr/handlers/validation-and-errors.md) | `422`, `404`, `HTTPException` |
-| [Dependencies and guards](routing/fbr/dependencies/README.md) | `dependencies.py` and its inheritance |
-| [Middleware files](routing/fbr/middleware/README.md) | `middleware.py`, inherited by directory |
-| [Inheritance](routing/fbr/inheritance.md) | Layouts, dependencies and error pages in one table |
-| [Error pages](routing/fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, JSON errors |
-| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
+| [Actions](guides/actions.md) | Call a Python function from a form or a typed TypeScript function |
 | [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | `Link`, client navigation, prefetch |
 | [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
-| [WebSocket](routing/fbr/realtime/websocket.md) | Handle a `SOCKET` connection |
-| [Modular routing](routing/modular/README.md) | Controllers and modules |
-| [Dependency injection](routing/modular/dependency-injection.md) | Services, scopes, the container |
-| [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
-| [Nexy and NestJS](routing/modular/vs-nestjs.md) | What matches and what is missing |
-
-## Rendering
-
-| Page | What you will do |
-|---|---|
-| [Rendering](rendering/README.md) | Pick a rendering mode |
-| [SSR](rendering/ssr.md) | Server rendering, the default |
-| [ISR](rendering/isr.md) | Cache pages with stale-while-revalidate |
-| [CSR](rendering/csr.md) | Client-side routing |
-| [Islands](rendering/islands.md) | Hydrate on idle, visible or media query |
-
-## Views
-
-| Page | What you will do |
-|---|---|
 | [Views](views/README.md) | Choose the format of a page |
 | [.nexy files](views/nexyfile.md) | Write a page with Python, Jinja2 and props |
 | [Markdown and MDX](views/markdown.md) | Write content pages |
 | [Components](views/components.md) | Use `Image`, `Link`, `Audio`, `Video`, `Import` |
-| [React](views/react.md), [Vue](views/vue.md), [Svelte](views/svelte.md), [Solid](views/solid.md), [Preact](views/preact.md) | Framework setup |
+| [WebSocket](routing/fbr/realtime/websocket.md) | Handle a `SOCKET` connection |
+| [i18n](guides/i18n.md) | Internationalize an application |
+| [Databases](guides/databases.md) | ORMs and migrations |
+| [Recipes](guides/recipes.md) | Sign in with a session, a JSON API and a file upload, all tested |
+
+## Choose
+
+| Page | What you will decide |
+|---|---|
+| [Routing](routing/README.md) | The file-based or the modular router |
+| [Modular routing](routing/modular/README.md) | Controllers and modules |
+| [Rendering](rendering/README.md) | Which rendering mode fits a page |
+| [SSR](rendering/ssr.md) | Server rendering, the default |
+| [ISR](rendering/isr.md) | Cache pages with stale-while-revalidate |
+| [CSR](rendering/csr.md) | Client-side routing |
+| [Islands](rendering/islands.md) | Hydrate on idle, visible or media query |
+| [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
+| [React](views/react.md) | Use React in a page |
+| [Vue](views/vue.md) | Use Vue in a page |
+| [Svelte](views/svelte.md) | Use Svelte in a page |
+| [Solid](views/solid.md) | Use Solid in a page |
+| [Preact](views/preact.md) | Use Preact in a page |
+| [Nexy and NestJS](routing/modular/vs-nestjs.md) | What matches and what is missing |
+
+## Go deeper
+
+| Page | What you will do |
+|---|---|
+| [Inheritance](routing/fbr/inheritance.md) | Layouts, dependencies and error pages in one table |
+| [layout.nexy](routing/fbr/layouts/layout.nexy.md) | The server-mode layout |
+| [layout.tsx](routing/fbr/layouts/layout.tsx.md) | The React client-mode layout that owns `<html>` |
+| [layout.vue](routing/fbr/layouts/layout.vue.md), [layout.svelte](routing/fbr/layouts/layout.svelte.md) | Nested layouts for Vue and Svelte |
+| [Dependencies and guards](routing/fbr/dependencies/README.md) | `dependencies.py` and its inheritance |
+| [Middleware files](routing/fbr/middleware/README.md) | `middleware.py`, inherited by directory |
+| [Error pages](routing/fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, JSON errors |
+| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
+| [Dependency injection](routing/modular/dependency-injection.md) | Services, scopes, the container |
+| [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
 
 ## Guides
 
 | Page | What you will do |
 |---|---|
-| [Actions](guides/actions.md) | Call a Python function from a form or a typed TypeScript function |
-| [i18n](guides/i18n.md) | Internationalize an application |
-| [Databases](guides/databases.md) | ORMs and migrations |
 | [Middleware and security](guides/middleware-and-security.md) | CORS, GZip, trusted hosts, sessions |
 | [Frontend](guides/frontend.md) | Vite, styling and the client build |
 | [Testing](guides/testing.md) | pytest, `TestClient` and vitest |
-| [Dev toolbar](guides/devtools.md) | the toolbar of `nexy dev`, and how to turn it off |
+| [Dev toolbar](guides/devtools.md) | The toolbar of `nexy dev`, and how to turn it off |
 | [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
 | [Troubleshooting](guides/troubleshooting.md) | The first problems people hit, and the fix |
-| [Recipes](guides/recipes.md) | Sign in with a session, a JSON API and a file upload, all tested |
-
-## Deployment
-
-| Page | What you will do |
-|---|---|
 | [Deploy](deployment/README.md) | Build, containerise and serve |
 | [Performance](deployment/performance.md) | Defaults, measurements and tuning |
 
@@ -96,8 +122,9 @@ architecture.
 | [CLI](reference/cli.md) | Commands and flags |
 | [Config](reference/config.md) | Every `nexyconfig.py` field and its default |
 | [Python API](reference/python-api.md) | Every name Nexy exports, by module |
-| [Glossary](reference/glossary.md) | The words these docs use |
+| [Exceptions and errors](reference/exceptions.md) | Every failure, its status, and the file that answers it |
 | [File conventions](reference/file-conventions.md) | Reserved files and routing rules |
+| [Glossary](reference/glossary.md) | The words these docs use |
 | [Security](reference/security.md) | Version floors, rules Nexy follows, audits |
 | [Agents](reference/agents.md) | Invariants of a Nexy project, for AI agents |
 
