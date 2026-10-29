@@ -78,21 +78,27 @@ def test_trailing_slash_matches_same_route():
 
 
 def test_optional_catch_all_matches_multi_segment():
-    routes: Routes = [{"path": "/docs/{...path}", "file": "/src/routes/docs/[[...path]].tsx", "optional": True}]
+    routes: Routes = [
+        {"path": "/docs/{...path}", "file": "/src/routes/docs/[[...path]].tsx", "optional": True}
+    ]
     route, params = _match(routes, "/docs/a/b/c")
     assert route is not None
     assert params == {"path": "a/b/c"}
 
 
 def test_optional_catch_all_matches_empty():
-    routes: Routes = [{"path": "/{...path}", "file": "/src/routes/[[...path]].tsx", "optional": True}]
+    routes: Routes = [
+        {"path": "/{...path}", "file": "/src/routes/[[...path]].tsx", "optional": True}
+    ]
     route, params = _match(routes, "/")
     assert route is not None
     assert params == {"path": ""}
 
 
 def test_optional_catch_all_matches_single_segment():
-    routes: Routes = [{"path": "/{...path}", "file": "/src/routes/[[...path]].tsx", "optional": True}]
+    routes: Routes = [
+        {"path": "/{...path}", "file": "/src/routes/[[...path]].tsx", "optional": True}
+    ]
     route, params = _match(routes, "/hello")
     assert route is not None
     assert params == {"path": "hello"}

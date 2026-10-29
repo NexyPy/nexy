@@ -77,9 +77,8 @@ class TestProduction:
         (tmp_path / "__nexy__").mkdir(exist_ok=True)
         (tmp_path / "__nexy__" / "nexy.prod").write_text("", encoding="utf-8")
         # The build writes `{route stem}/{pathname}.html`, as `document.ts` does.
-        target = (
-            tmp_path / "__nexy__" / "client" / "static" / "src" / "routes" / "blog" / "[slug]" / "blog"
-        )
+        static = tmp_path / "__nexy__" / "client" / "static"
+        target = static / "src" / "routes" / "blog" / "[slug]" / "blog"
         target.mkdir(parents=True, exist_ok=True)
         (target / "hello.html").write_text(DOC.replace("Hi", "Hello"), encoding="utf-8")
         monkeypatch.setattr(

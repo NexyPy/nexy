@@ -192,10 +192,7 @@ def _callouts(html: str) -> str:
     def convert(found: re.Match[str]) -> str:
         kind = found[1]
         body = found[2].lstrip()
-        if body.startswith("</p>"):
-            body = body[4:].lstrip()
-        else:
-            body = f"<p>{body}"
+        body = body[4:].lstrip() if body.startswith("</p>") else f"<p>{body}"
         title = f'<p class="callout-title">{_ALERT_TITLES[kind]}</p>'
         return f'<aside class="callout callout-{kind.lower()}">{title}{body}</aside>'
 

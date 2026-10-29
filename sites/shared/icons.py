@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 MARK = (
     '<svg viewBox="0 0 20 20" width="14" height="14"><path fill="currentColor" d="M12.5527 0.5459C12.7991 '
     "0.546 13.0362 0.6418 13.2139 0.8125L16.001 3.4902L16.0029 3.4922L19.0605 6.3965C19.2502 6.5766 "
@@ -34,7 +33,7 @@ ICONS = {
     "icon_search": _icon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
     "icon_menu": _icon('<path d="M4 6h16M4 12h16M4 18h16"/>'),
     "icon_close": _icon('<path d="M18 6 6 18M6 6l12 12"/>'),
-    "icon_book": _icon('M5 12h14M12 5l7 7-7 7', ' class="arrow"'),
+    "icon_book": _icon("M5 12h14M12 5l7 7-7 7", ' class="arrow"'),
     "icon_sun": _icon(
         '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4'
         'M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>',
