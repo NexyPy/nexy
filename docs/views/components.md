@@ -40,7 +40,8 @@ attributes are the function's keyword arguments.
 - A bare HTML attribute is not a boolean here: `controls` becomes `controls=""`, which is falsy.
   Write `controls=True`.
 
-> **Good to know**: `class_name` is the documented keyword for CSS classes. Extra keyword arguments
+> [!NOTE]
+> `class_name` is the documented keyword for CSS classes. Extra keyword arguments
 > become HTML attributes, so `class="nav"` also reaches the output.
 
 ## Image
@@ -70,7 +71,8 @@ from nexy import Link
 handled by the client router. With `prefetch=True`, hovering or touching the link warms the target
 through `window.__nexy_prefetch`.
 
-> **Good to know**: the tag form takes the label as `children`, not as element content:
+> [!NOTE]
+> the tag form takes the label as `children`, not as element content:
 > `<Link href="/about" children="About" />`. To put markup inside a link, use the call form with
 > `children=` or a `.nexy` component that renders a `<Slot />`.
 

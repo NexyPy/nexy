@@ -160,7 +160,9 @@ class TestFigures:
             encoding="utf-8",
         )
         path = tmp_path / "page.md"
-        path.write_text("# T\n\n![The scopes of an error page](assets/scopes.svg)\n", encoding="utf-8")
+        path.write_text(
+            "# T\n\n![The scopes of an error page](assets/scopes.svg)\n", encoding="utf-8"
+        )
         return path
 
     def test_an_image_becomes_a_figure(self, tmp_path):
@@ -198,6 +200,59 @@ class TestAnchors:
         path.write_text("# T\n\n## One\n", encoding="utf-8")
         rendered = source.render(path, tmp_path, _link)
         assert rendered.headings[0].text == "One" and source.plain(rendered.html) == "T One"
+
+
+class TestCallouts:
+    @staticmethod
+    def _html(tmp_path: Path, text: str) -> str:
+        path = tmp_path / "p.md"
+        path.write_text(text, encoding="utf-8")
+        return source.render(path, tmp_path, _link).html
+
+    def test_a_github_alert_becomes_a_callout(self, tmp_path):
+        html = self._html(tmp_path, "> [!NOTE]\n> Useful information.\n")
+        assert 'class="callout callout-note"' in html
+        assert "<p>Useful information.</p>" in html
+
+    def test_the_callout_names_its_kind(self, tmp_path):
+        assert '<p class="callout-title">Warning</p>' in self._html(
+            tmp_path, "> [!WARNING]\n> Careful.\n"
+        )
+
+    def test_each_kind_has_its_own_class(self, tmp_path):
+        html = self._html(tmp_path, "> [!TIP]\n> A shortcut.\n")
+        assert 'class="callout callout-tip"' in html
+
+    def test_a_plain_quote_stays_a_quote(self, tmp_path):
+        html = self._html(tmp_path, "> A quote, not an alert.\n")
+        assert "<blockquote>" in html and "callout" not in html
+
+    def test_the_text_of_a_callout_survives(self, tmp_path):
+        html = self._html(tmp_path, "> [!CAUTION]\n> Do not **do** this.\n")
+        assert "Do not do this." in source.plain(html)
+
+
+class TestDiagrams:
+    @staticmethod
+    def _html(tmp_path: Path, text: str) -> str:
+        path = tmp_path / "p.md"
+        path.write_text(text, encoding="utf-8")
+        return source.render(path, tmp_path, _link).html
+
+    def test_a_diagram_becomes_a_figure(self, tmp_path):
+        html = self._html(tmp_path, "```diagram\nBrowser -> Server\n```\n")
+        assert '<figure class="diagram">' in html and '<pre lang="diagram">' in html
+
+    def test_a_named_diagram_has_a_caption(self, tmp_path):
+        html = self._html(tmp_path, '```diagram filename="One request"\nBrowser -> Server\n```\n')
+        assert "<figcaption>One request</figcaption>" in html
+
+    def test_a_diagram_is_not_coloured_as_code(self, tmp_path):
+        assert "<span" not in self._html(tmp_path, "```diagram\nBrowser -> Server\n```\n")
+
+    def test_a_diagram_keeps_its_text(self, tmp_path):
+        html = self._html(tmp_path, "```diagram\nBrowser -> Server\n```\n")
+        assert "Browser -&gt; Server" in html
 
 
 class TestSearchEntry:

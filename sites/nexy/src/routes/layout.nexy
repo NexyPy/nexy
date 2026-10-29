@@ -15,8 +15,12 @@ router = router_of(current)
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0a0a">
   <title>{{ title | e }}</title>
   {% if router %}<meta name="nexy-router" content="{{ router }}">{% endif %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap" rel="stylesheet">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/style.css">
   <script>
@@ -33,7 +37,7 @@ router = router_of(current)
     } catch (e) { document.documentElement.dataset.router = "fbr"; }
   </script>
 </head>
-<body data-root="" data-search="/search-index">
+<body data-root="" data-search="/search-index"{% if current == "" %} data-home="true"{% endif %}>
   <Header />
   <div class="frame">
     <Sidebar current="{{ current }}" />

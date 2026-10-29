@@ -29,6 +29,21 @@ _PRE = re.compile(r'<pre lang="(\w*)__file(\d+)">')
 _HEADING = re.compile(r"<h([2-6])>(.*?)</h\1>", re.DOTALL)
 _CODE = re.compile(r'<pre lang="(\w+)"><code>(.*?)</code></pre>', re.DOTALL)
 _HREF = re.compile(r'href="([^"]+)"')
+
+# A `diagram` fence is an illustration drawn with characters: no language, no colouring.
+_DIAGRAM = re.compile(r'<pre lang="diagram(__file(\d+))?"><code>(.*?)</code></pre>', re.DOTALL)
+
+# A GitHub alert (`> [!NOTE]`) becomes a callout: the marker names the kind, the rest is the body.
+_ALERT = re.compile(
+    r"<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\](.*?)</blockquote>", re.DOTALL
+)
+_ALERT_TITLES = {
+    "NOTE": "Note",
+    "TIP": "Tip",
+    "IMPORTANT": "Important",
+    "WARNING": "Warning",
+    "CAUTION": "Caution",
+}
 _TAGS = re.compile(r"<[^>]+>")
 _SPACE = re.compile(r"\s+")
 
@@ -158,6 +173,35 @@ def _caption(html: str, names: list[str]) -> str:
     return re.sub(r"(<figure>.*?</pre>)", r"\1</figure>", named, flags=re.DOTALL)
 
 
+def _diagrams(html: str, names: list[str]) -> str:
+    """Draw each `diagram` fence as a figure, named when the fence carries a `filename=`."""
+
+    def draw(found: re.Match[str]) -> str:
+        body = f'<pre lang="diagram"><code>{found[3]}</code></pre>'
+        if found[2] is None:
+            return f'<figure class="diagram">{body}</figure>'
+        caption = names[int(found[2])]
+        return f'<figure class="diagram"><figcaption>{caption}</figcaption>{body}</figure>'
+
+    return _DIAGRAM.sub(draw, html)
+
+
+def _callouts(html: str) -> str:
+    """Turn each GitHub alert into an aside, keeping the paragraphs it holds."""
+
+    def convert(found: re.Match[str]) -> str:
+        kind = found[1]
+        body = found[2].lstrip()
+        if body.startswith("</p>"):
+            body = body[4:].lstrip()
+        else:
+            body = f"<p>{body}"
+        title = f'<p class="callout-title">{_ALERT_TITLES[kind]}</p>'
+        return f'<aside class="callout callout-{kind.lower()}">{title}{body}</aside>'
+
+    return _ALERT.sub(convert, html)
+
+
 def _anchor(text: str) -> str:
     plain = _TAGS.sub("", text).strip().lower()
     return re.sub(r"[^\w\- ]", "", plain).replace(" ", "-")
@@ -260,9 +304,11 @@ def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict
 
 
 def render(page: Path, docs: Path, link: Link) -> Rendered:
-    """One page as HTML: file names as captions, linked headings, links to the site's URLs."""
+    """One page as HTML: illustrations, callouts, captions, linked headings, links to site URLs."""
     text, names = _name_files(page.read_text(encoding="utf-8"))
     html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
-    done = _identify(_CODE.sub(_colour, _caption(html, names)))
+    drawn = _diagrams(html, names)
+    coloured = _CODE.sub(_colour, _caption(drawn, names))
+    done = _identify(_callouts(coloured))
     # The figures are last: nothing else looks at the drawing the SVG carries.
     return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)
