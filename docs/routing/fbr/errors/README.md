@@ -1,24 +1,57 @@
 # Error pages
 
-Nexy answers errors with a page for browsers and with JSON for API clients.
+A request that fails should still answer like the rest of your site: a page in your own words for a
+visitor, the same failure as JSON for an API client. Nexy answers both, and one file replaces each
+answer.
 
-## Files
+This page is the map: which file answers which status, and how to make your first one. The pages of
+a folder get [their own page](folder-pages.md).
+
+## One failure, two answers
+
+```diagram filename="who answers a failed request"
+a request that fails
+      │
+      ├── a browser (Accept: text/html)              ──►  an HTML page
+      └── an API client (Accept: application/json)   ──►  {"detail": "…"}  with the same status
+
+the HTML page
+      ├── the deepest folder of the URL that holds a file   ──►  your file
+      └── no folder of the chain holds one                 ──►  the built-in page
+```
+
+## Your first page
+
+Create `src/routes/notfound.nexy` and write what a visitor should read:
+
+```nexy filename="src/routes/notfound.nexy"
+---
+title: Page not found
+---
+<h1>Page not found</h1>
+<p>The page moved or never existed. <a href="/">Back home</a>.</p>
+```
+
+Save, and ask for a URL nothing serves:
+
+```bash
+curl -i -H "Accept: text/html" http://localhost:3000/nowhere
+# HTTP/1.1 404 Not Found
+```
+
+The file at the routes root answers the whole project; a copy in a folder answers only that folder
+and [keeps the rest as it is](folder-pages.md). Without any file, Nexy serves its built-in styled
+page.
+
+## Which file answers
 
 | File | Answers |
 |---|---|
 | `notfound.nexy` | `404` for its directory |
 | `errors.nexy` | `500` for its directory |
+| `forbidden.nexy` | `403` for its directory |
+| `unauthorized.nexy` | `401` for its directory |
 | `loading.nexy` | reserved; no runtime effect yet |
-
-A handler is installed only when a copy exists at the routes root. A copy in a subdirectory then
-refines the page for that prefix.
-
-```nexy filename="src/routes/notfound.nexy"
-<h1>Page not found</h1>
-<a href="/">Back home</a>
-```
-
-## What triggers them
 
 | Situation | Answer |
 |---|---|
@@ -28,8 +61,6 @@ refines the page for that prefix.
 | `raise HTTPException(status_code=403)` | the status you raised, as HTML or JSON |
 | `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, from anywhere in a request |
 | `redirect()`, `permanentRedirect()` | a real redirect with no error page |
-
-Without a custom file, Nexy serves its built-in styled `404` and `500` pages.
 
 ## Leave a page or answer from code
 
@@ -104,7 +135,8 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> **Good to know**: a client that sends `Accept: */*` (the default of `curl` and many HTTP
+> [!NOTE]
+> a client that sends `Accept: */*` (the default of `curl` and many HTTP
 > libraries) receives the HTML page. Set `Accept: application/json` for JSON errors.
 
 ## Unhandled exceptions
@@ -136,6 +168,7 @@ client. See [Validation and errors](../handlers/validation-and-errors.md).
 
 ## Next steps
 
+- [Error pages per folder](folder-pages.md): a 404, 403 or 401 of your own in one folder
 - [Dynamic routes](../pages/dynamic-routes.md)
 - [API routes](../handlers/README.md)
 - [Testing](../../../guides/testing.md)

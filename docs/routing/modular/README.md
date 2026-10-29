@@ -22,7 +22,8 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> **Good to know**: file-based routing keeps working. If `src/routes/` exists, it is scanned even
+> [!NOTE]
+> file-based routing keeps working. If `src/routes/` exists, it is scanned even
 > when `useRouter` is set.
 
 ## Write a controller

@@ -27,22 +27,29 @@ the server-side rendering are done by Vite and the scripts shipped with Nexy.
 
 ## One request
 
-```mermaid
-flowchart LR
-    B[Browser] --> M[Middleware]
-    M --> R{Route}
-    R -->|.nexy or .md| P[Python function]
-    R -->|.py| A[API handler]
-    R -->|framework page| S[Pre-rendered HTML]
-    P --> H[HTML]
-    S --> H
-    A --> J[JSON]
+```diagram filename="From a URL to an answer"
+Browser
+   │  GET /blog/hello
+   ▼
+Middleware ── sessions, CORS, trusted hosts
+   │
+   ▼
+Router ───── finds src/routes/blog/[slug].nexy
+   │         with its layouts, dependencies and error pages
+   ├── .nexy or .md ──► Python function ──► HTML
+   ├── .py ───────────► API handler ──────► JSON
+   └── framework page ► pre-rendered HTML ► HTML
 ```
 
 1. The browser asks for a URL.
 2. Middleware runs first: sessions, CORS, trusted hosts, your own.
 3. The router finds the file for the URL, with its layouts, dependencies and error pages.
 4. The file runs and answers HTML or JSON.
+
+> [!TIP]
+> When a page surprises you, follow this line once with your own URL. The answer is almost always in
+> one of the four steps: middleware changed the request, the router picked another file, the page ran
+> with unexpected data, or the response was not the one you thought.
 
 ## Development and production
 

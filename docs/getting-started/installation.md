@@ -71,7 +71,8 @@ Open <http://localhost:3000>.
 
 To skip the activation, let uv do it for one command: `uv run nexy dev`.
 
-> **Good to know**: `nexy` and `nx` are the same binary. A copy installed with `uv tool install
+> [!NOTE]
+> `nexy` and `nx` are the same binary. A copy installed with `uv tool install
 > nexy` lives in its own environment, like `uvx`, so use it to create projects and run everything
 > else from the project's environment.
 

@@ -2,12 +2,30 @@
   const root = document.body.dataset.root
   const $ = (selector, scope = document) => scope.querySelector(selector)
   const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)]
+  const remember = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)) } catch {} }
+  const recall = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback } catch { return fallback } }
 
   // --- Theme: the choice is kept in this browser -------------------------------------------------
-  $('.theme').addEventListener('click', () => {
+  const themeSwitch = $('[data-theme-toggle]')
+  const showTheme = (name) => themeSwitch.setAttribute('aria-checked', String(name === 'dark'))
+  showTheme(document.documentElement.dataset.theme)
+  themeSwitch.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
     document.documentElement.dataset.theme = next
+    showTheme(next)
     try { localStorage.setItem('nexy-docs-theme', next) } catch {}
+  })
+
+  // --- Copy the page as Markdown, to paste into an editor or an AI assistant -------------------------
+  const copyPage = $('.copy-page')
+  copyPage.addEventListener('click', async () => {
+    const label = copyPage.textContent
+    try {
+      const text = await (await fetch(copyPage.dataset.markdown)).text()
+      await navigator.clipboard.writeText(text)
+      copyPage.textContent = 'Copied'
+    } catch { copyPage.textContent = 'Copy failed' }
+    setTimeout(() => { copyPage.textContent = label }, 1800)
   })
 
   // --- Menu on a narrow screen ---------------------------------------------------------------------
@@ -21,20 +39,78 @@
   menu.addEventListener('click', () => setMenu(!document.body.classList.contains('open')))
   scrim.addEventListener('click', () => setMenu(false))
   $('.side').addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false) })
+
+  // --- Reading progress in the top bar ------------------------------------------------------------
+  const progress = $('.progress')
+  const paint = () => {
+    const max = document.documentElement.scrollHeight - innerHeight
+    progress.style.transform = `scaleX(${max > 0 ? Math.min(scrollY / max, 1) : 0})`
+  }
+  addEventListener('scroll', paint, { passive: true })
+  addEventListener('resize', paint)
+  paint()
+
+  // --- Menu groups: collapsible sections, remembered per browser ---------------------------------
+  const groups = $$('.side details.group')
+  const filter = $('.side-filter input')
+  const empty = $('.side-empty')
+  const closed = new Set(recall('nexy-docs-closed', []))
+  let initialising = true
+
+  const shown = (item) => {
+    if (item.hidden) return false
+    const router = item.dataset.router
+    return !router || router === document.documentElement.dataset.router
+  }
+  const count = () => {
+    groups.forEach((group) => {
+      const pages = $$('li', group).filter(shown).length
+      const badge = $('.group-count', group)
+      if (badge) badge.textContent = pages
+      group.hidden = pages === 0
+    })
+  }
+  const applyFilter = () => {
+    const query = filter.value.trim().toLowerCase()
+    document.documentElement.toggleAttribute('data-filtering', query.length > 0)
+    groups.forEach((group) => {
+      $$('li', group).forEach((item) => {
+        item.hidden = query.length > 0 && !item.textContent.toLowerCase().includes(query)
+      })
+      group.open = query.length > 0 || !closed.has(group.dataset.section)
+    })
+    count()
+    if (empty) empty.hidden = !query || groups.some((group) => !group.hidden)
+  }
+  groups.forEach((group) => {
+    group.addEventListener('toggle', () => {
+      if (initialising) return
+      if (group.open) closed.delete(group.dataset.section)
+      else closed.add(group.dataset.section)
+      remember('nexy-docs-closed', [...closed])
+    })
+  })
   const current = $('.side [aria-current]')
+  const currentGroup = current ? current.closest('details') : null
+  if (currentGroup) closed.delete(currentGroup.dataset.section)
+  groups.forEach((group) => { group.open = group === currentGroup || !closed.has(group.dataset.section) })
+  count()
   if (current) current.scrollIntoView({ block: 'center' })
+  filter.addEventListener('input', applyFilter)
+  setTimeout(() => { initialising = false }, 0)
 
   // --- Router switch: the menu shows the docs of one router ------------------------------------
-  const router = document.documentElement
+  const page = document.documentElement
   const switchButtons = $$('.router-switch button')
-  const press = () => switchButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.router === router.dataset.router)))
+  const press = () => switchButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.router === page.dataset.router)))
   const own = $('meta[name="nexy-router"]')
   if (own) { try { localStorage.setItem('nexy-docs-router', own.content) } catch {} }
   press()
   switchButtons.forEach((button) => button.addEventListener('click', () => {
-    router.dataset.router = button.dataset.router
+    page.dataset.router = button.dataset.router
     try { localStorage.setItem('nexy-docs-router', button.dataset.router) } catch {}
     press()
+    applyFilter()
     // On a page of the other router the page itself would be wrong: go to the overview of the choice.
     if (own && own.content !== button.dataset.router) location.href = button.dataset.home
   }))
@@ -50,20 +126,21 @@
     block.append(button)
   })
 
-  // --- Outline: the heading being read is lit ------------------------------------------------------
+  // --- Outline: the last heading read crosses the line under the top bar --------------------------
   const links = new Map($$('.toc a').map((a) => [a.getAttribute('href').slice(1), a]))
-  if (links.size && 'IntersectionObserver' in window) {
-    const seen = new Set()
-    const light = () => {
-      const first = $$('.doc [id]').find((h) => seen.has(h.id) && links.has(h.id))
-      links.forEach((a) => a.classList.remove('on'))
-      if (first) links.get(first.id).classList.add('on')
+  const targets = $$('.doc [id]').filter((h) => links.has(h.id))
+  const light = () => {
+    let active = null
+    for (const heading of targets) {
+      if (heading.getBoundingClientRect().top > 120) break
+      active = heading
     }
-    const watch = new IntersectionObserver((entries) => {
-      entries.forEach((e) => (e.isIntersecting ? seen.add(e.target.id) : seen.delete(e.target.id)))
-      light()
-    }, { rootMargin: '-64px 0px -70% 0px' })
-    links.forEach((_, id) => { const h = document.getElementById(id); if (h) watch.observe(h) })
+    links.forEach((a, id) => a.classList.toggle('on', Boolean(active) && id === active.id))
+  }
+  if (targets.length) {
+    addEventListener('scroll', light, { passive: true })
+    addEventListener('resize', light)
+    light()
   }
 
   // --- Search: loaded the first time it opens ----------------------------------------------------
@@ -71,7 +148,7 @@
   const input = $('input', dialog)
   const list = $('.results', dialog)
   let index = null
-  let shown = []
+  let shownResults = []
   let active = 0
 
   const load = async () => {
@@ -113,7 +190,7 @@
     return fragment
   }
   const render = () => {
-    list.replaceChildren(...(shown.length ? shown.map((e, i) => {
+    list.replaceChildren(...(shownResults.length ? shownResults.map((e, i) => {
       const li = document.createElement('li')
       const a = Object.assign(document.createElement('a'), { href: `${root}/${e.url}` })
       a.setAttribute('role', 'option')
@@ -128,28 +205,29 @@
   }
   const search = () => {
     const words = input.value.toLowerCase().split(/\s+/).filter(Boolean)
-    shown = words.length
+    shownResults = words.length
       ? index.map((e) => [score(e, words), e]).filter(([s]) => s).sort((a, b) => b[0] - a[0]).slice(0, 8).map(([, e]) => e)
       : []
     active = 0
     render()
   }
-  const open = async () => { await load(); dialog.showModal(); input.value = ''; search(); input.focus() }
-  $('.search-open').addEventListener('click', open)
+  const showSearch = async () => { await load(); dialog.showModal(); input.value = ''; search(); input.focus() }
+  $('.search-open').addEventListener('click', showSearch)
   input.addEventListener('input', search)
   dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close() })
   input.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault()
-      if (shown.length) active = (active + (e.key === 'ArrowDown' ? 1 : -1) + shown.length) % shown.length
+      if (shownResults.length) active = (active + (e.key === 'ArrowDown' ? 1 : -1) + shownResults.length) % shownResults.length
       render()
-    } else if (e.key === 'Enter' && shown[active]) {
+    } else if (e.key === 'Enter' && shownResults[active]) {
       e.preventDefault()
-      location.href = `${root}/${shown[active].url}`
+      location.href = `${root}/${shownResults[active].url}`
     }
   })
   addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); open() }
-    else if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); open() }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); showSearch() }
+    else if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); showSearch() }
+    else if (e.key === 'Escape' && document.body.classList.contains('open')) setMenu(false)
   })
 })()

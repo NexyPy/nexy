@@ -23,14 +23,17 @@ Reserved names and rules under `src/routes/`.
 | `layout.vue`, `layout.svelte` | client mode: nested layouts | [layout.vue](../routing/fbr/layouts/layout.vue.md), [layout.svelte](../routing/fbr/layouts/layout.svelte.md) |
 | `notfound.nexy` | 404 page for its directory | [Error pages](../routing/fbr/errors/README.md) |
 | `errors.nexy` | 500 page for its directory | [Error pages](../routing/fbr/errors/README.md) |
+| `forbidden.nexy` | 403 page for its directory | [Error pages per folder](../routing/fbr/errors/folder-pages.md) |
+| `unauthorized.nexy` | 401 page for its directory | [Error pages per folder](../routing/fbr/errors/folder-pages.md) |
 | `loading.nexy` | reserved; no runtime effect yet | [Error pages](../routing/fbr/errors/README.md) |
 | `middleware.py` | an `async def middleware(request, call_next)` wrapping the requests of the directory and below | [Middleware files](../routing/fbr/middleware/README.md) |
 | `dependencies.py` | a `dependencies = [fn, ...]` list applied to the directory and its children | [Dependencies](../routing/fbr/dependencies/README.md) |
 | `__init__.py` | Python package marker | |
 | `favicon.ico` | served at `/favicon.ico` | |
 
-`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions` and `useLoadingExtensions`
-reserve more extensions for these names. See [Config](config.md).
+`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`,
+`useUnauthorizedExtensions` and `useLoadingExtensions` reserve more extensions for these names. See
+[Config](config.md).
 
 ## Ignored files
 

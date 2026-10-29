@@ -31,12 +31,13 @@ const matchRoute = (pathname: string): { route: NexyRoute | null; params: Record
     const segs = toSegments(route.path);
     const last = segs[segs.length - 1] || '';
     const isCatchAll = last.startsWith('{...');
-    if (isCatchAll ? parts.length < segs.length : segs.length !== parts.length) continue;
+    const optional = route.optional === true;
+    if (isCatchAll ? parts.length < segs.length - (optional ? 1 : 0) : segs.length !== parts.length) continue;
     const params: Record<string, string> = {};
     let ok = true;
     for (let i = 0; i < segs.length; i++) {
       const pat = segs[i];
-      if (pat.startsWith('{...')) { params[pat.slice(4, -1)] = parts.slice(i).join('/'); break; }
+      if (pat.startsWith('{...')) { params[pat.slice(4, -1)] = i < parts.length ? parts.slice(i).join('/') : ''; break; }
       if (pat.startsWith('{')) { params[pat.slice(1, -1)] = parts[i]; continue; }
       if (pat !== parts[i]) { ok = false; break; }
     }

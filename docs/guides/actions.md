@@ -3,6 +3,12 @@
 `@Action` turns a Python function into a `POST` endpoint. A page calls it as a typed function, or
 a plain HTML form posts to it, and no route file is needed.
 
+```diagram filename="One function, two callers"
+page (Jinja2 form)  ── POST ──┐
+                               ├──► /_nx_/<hash> ──► async def create_user ──► JSON
+client (TypeScript) ── fetch ──┘                                        └──► 303 after a form
+```
+
 ## Define an action
 
 ```python filename="src/actions/user.py"

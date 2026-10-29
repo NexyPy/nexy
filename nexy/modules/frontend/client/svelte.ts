@@ -11,9 +11,12 @@ import type { Route } from './routes.auto.ts'
 import {
   getRouter,
   serverLocation,
+  type Blocker,
   type NavigateOptions,
   type Params,
-  type RouterLocation
+  type RouterLocation,
+  type RouteMatchInfo,
+  type TransitionState
 } from './router.ts'
 import {
   createActionState,
@@ -62,6 +65,38 @@ export const router = {
 
 export { ActionError }
 export type { Action, ActionOptions, ActionState }
+
+/** Match a pathname against the routes: reactive when the location changes. */
+export function useMatch(pathname?: string): Readable<RouteMatchInfo> {
+  const router = getRouter()
+  const current = pathname ?? '/'
+  return {
+    subscribe(run) {
+      const update = () => run(router?.matchPath(current) ?? { match: null, found: false })
+      update()
+      return router ? router.subscribe(update) : () => {}
+    }
+  }
+}
+
+/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
+export function useBlocker(blocker: Blocker): () => void {
+  const router = getRouter()
+  if (!router) return () => {}
+  return router.blocker(blocker)
+}
+
+/** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
+export function useTransition(): Readable<TransitionState> {
+  const router = getRouter()
+  return {
+    subscribe(run) {
+      const update = () => run(router?.transition() ?? { pending: false, next: null })
+      update()
+      return router ? router.subscribe(update) : () => {}
+    }
+  }
+}
 
 /** Call an action from a component: `const save = useAction(createUser)`, then `$save.pending` and `save.run(input)`. */
 export function useAction<Input, Output>(action: Action<Input, Output>, options?: ActionOptions<Output>) {

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Page not found - Nexy</title>
 <meta name="robots" content="noindex">
-<meta name="theme-color" content="#0a8f9b">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="icon" href="${base}assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="${base}assets/style.css">
 <script>
@@ -17,16 +17,20 @@
 </script>
 </head>
 <body>
-<header class="top">
-  <a class="brand" href="${base}docs/">
-    <span class="logo" aria-hidden="true">$mark</span><span class="name">Nexy</span><span class="tag">Docs</span>
-  </a>
-</header>
+<div class="top">
+  <header class="topbar">
+    <span class="topbar-lines" aria-hidden="true"></span>
+    <a class="brand" href="${base}docs/">
+      <img class="brand-logo" src="${base}assets/nexy.svg" alt="Nexy">
+    </a>
+  </header>
+</div>
 <main class="lost">
   <p class="crumb">404</p>
   <h1>This page does not exist</h1>
   <p>The address may be mistyped, or the page may have moved. The documentation is organised in sections: start from the overview and pick the topic you need.</p>
   <p><a class="button" href="${base}docs/">Open the documentation</a></p>
 </main>
+<script src="${base}assets/site.js" defer></script>
 </body>
 </html>
