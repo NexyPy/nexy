@@ -9,23 +9,40 @@
   const themeSwitch = $('[data-theme-toggle]')
   const showTheme = (name) => themeSwitch.setAttribute('aria-checked', String(name === 'dark'))
   showTheme(document.documentElement.dataset.theme)
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches
   themeSwitch.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
-    document.documentElement.dataset.theme = next
-    showTheme(next)
+    const apply = () => { document.documentElement.dataset.theme = next; showTheme(next) }
+    if (document.startViewTransition && !still) {
+      const box = themeSwitch.getBoundingClientRect()
+      const root = document.documentElement
+      root.style.setProperty('--tx', `${box.left + box.width / 2}px`)
+      root.style.setProperty('--ty', `${box.top + box.height / 2}px`)
+      root.classList.add('theme-fade')
+      document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-fade'))
+    } else apply()
     try { localStorage.setItem('nexy-docs-theme', next) } catch {}
   })
 
   // --- Copy the page as Markdown, to paste into an editor or an AI assistant -------------------------
+  // A confirmation with a check mark that draws itself, then the label comes back.
+  const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 6"/></svg>'
+  const done = (button, text, label) => {
+    button.classList.add('done')
+    button.innerHTML = `${CHECK}${text}`
+    setTimeout(() => { button.classList.remove('done'); button.textContent = label }, 1800)
+  }
   const copyPage = $('.copy-page')
   copyPage.addEventListener('click', async () => {
     const label = copyPage.textContent
     try {
       const text = await (await fetch(copyPage.dataset.markdown)).text()
       await navigator.clipboard.writeText(text)
-      copyPage.textContent = 'Copied'
-    } catch { copyPage.textContent = 'Copy failed' }
-    setTimeout(() => { copyPage.textContent = label }, 1800)
+      done(copyPage, 'Copied', label)
+    } catch {
+      copyPage.textContent = 'Copy failed'
+      setTimeout(() => { copyPage.textContent = label }, 1800)
+    }
   })
 
   // --- Menu on a narrow screen ---------------------------------------------------------------------
@@ -34,11 +51,23 @@
   const setMenu = (open) => {
     document.body.classList.toggle('open', open)
     menu.setAttribute('aria-expanded', String(open))
-    scrim.hidden = !open
   }
   menu.addEventListener('click', () => setMenu(!document.body.classList.contains('open')))
   scrim.addEventListener('click', () => setMenu(false))
   $('.side').addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false) })
+
+  // --- The grid behind the panel follows the pointer by a few pixels -----------------------------
+  if (!still && matchMedia('(hover: hover)').matches) {
+    let frame = 0
+    addEventListener('pointermove', (e) => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        document.body.style.setProperty('--mx', (e.clientX / innerWidth - 0.5).toFixed(3))
+        document.body.style.setProperty('--my', (e.clientY / innerHeight - 0.5).toFixed(3))
+      })
+    }, { passive: true })
+  }
 
   // --- Reading progress in the top bar ------------------------------------------------------------
   const progress = $('.progress')
@@ -52,7 +81,6 @@
 
   // --- Menu groups: collapsible sections, remembered per browser ---------------------------------
   const groups = $$('.side details.group')
-  const filter = $('.side-filter input')
   const empty = $('.side-empty')
   const closed = new Set(recall('nexy-docs-closed', []))
   let initialising = true
@@ -70,18 +98,6 @@
       group.hidden = pages === 0
     })
   }
-  const applyFilter = () => {
-    const query = filter.value.trim().toLowerCase()
-    document.documentElement.toggleAttribute('data-filtering', query.length > 0)
-    groups.forEach((group) => {
-      $$('li', group).forEach((item) => {
-        item.hidden = query.length > 0 && !item.textContent.toLowerCase().includes(query)
-      })
-      group.open = query.length > 0 || !closed.has(group.dataset.section)
-    })
-    count()
-    if (empty) empty.hidden = !query || groups.some((group) => !group.hidden)
-  }
   groups.forEach((group) => {
     group.addEventListener('toggle', () => {
       if (initialising) return
@@ -96,7 +112,6 @@
   groups.forEach((group) => { group.open = group === currentGroup || !closed.has(group.dataset.section) })
   count()
   if (current) current.scrollIntoView({ block: 'center' })
-  filter.addEventListener('input', applyFilter)
   setTimeout(() => { initialising = false }, 0)
 
   // --- Router switch: the menu shows the docs of one router ------------------------------------
@@ -133,8 +148,7 @@
     const button = Object.assign(document.createElement('button'), { className: 'copy', type: 'button', textContent: 'Copy' })
     button.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(block.innerText) } catch { return }
-      button.textContent = 'Copied'
-      setTimeout(() => { button.textContent = 'Copy' }, 1500)
+      done(button, 'Copied', 'Copy')
     })
     ;(bar ?? block).append(button)
   })
@@ -205,6 +219,7 @@
   const render = () => {
     list.replaceChildren(...(shownResults.length ? shownResults.map((e, i) => {
       const li = document.createElement('li')
+      li.style.setProperty('--i', i)
       const a = Object.assign(document.createElement('a'), { href: `${root}/${e.url}` })
       a.setAttribute('role', 'option')
       a.setAttribute('aria-selected', String(i === active))
@@ -224,8 +239,16 @@
     active = 0
     render()
   }
-  const showSearch = async () => { await load(); dialog.showModal(); input.value = ''; search(); input.focus() }
-  $('.search-open').addEventListener('click', showSearch)
+  const showSearch = async () => {
+    await load()
+    dialog.dataset.fresh = ''
+    dialog.showModal()
+    input.value = ''
+    search()
+    input.focus()
+    setTimeout(() => { delete dialog.dataset.fresh }, 500)
+  }
+  $$('.search-open').forEach((button) => button.addEventListener('click', showSearch))
   input.addEventListener('input', search)
   dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close() })
   input.addEventListener('keydown', (e) => {
