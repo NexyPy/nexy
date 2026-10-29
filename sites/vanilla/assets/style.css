@@ -15,20 +15,27 @@
   --signal: #0f766e;
   --on-accent: #fafafa;
   --code-bg: #f5f5f5;
+  /* A code block is a dark panel in both themes, with a bar that names the file. */
+  --pre-bg: #0d1017;
+  --pre-head: #151922;
+  --pre-line: rgba(255, 255, 255, 0.09);
+  --pre-ink: #e6e8ee;
+  --pre-muted: #8b93a7;
   --mark: rgba(10, 10, 10, 0.07);
   /* The bar of the starter: ink in both themes, so the wordmark is always white. */
-  --header: #0a0a0a;
-  --header-ink: #fafafa;
-  --header-muted: rgba(250, 250, 250, 0.62);
-  --header-line: rgba(250, 250, 250, 0.14);
+  /* The bar follows the theme, flat, with a rule under it. */
+  --header: var(--bg);
+  --header-ink: var(--ink);
+  --header-muted: var(--muted);
+  --header-line: var(--line);
   /* The dots of a callout are the only colour the pages keep. */
   --note: #0a9d8f;
   --tip: #15803d;
   --important: #7c3aed;
   --warning: #c2740b;
   --caution: #dc2626;
-  --top: 84px;
-  --side: 280px;
+  --top: 56px;
+  --side: 268px;
   --toc: 224px;
   --page: 820px;
   --radius: 0.5rem;
@@ -51,10 +58,6 @@
   --on-accent: #0a0a0a;
   --code-bg: #0f0f0f;
   --mark: rgba(250, 250, 250, 0.09);
-  --header: #0a0a0a;
-  --header-ink: #fafafa;
-  --header-muted: rgba(250, 250, 250, 0.6);
-  --header-line: rgba(250, 250, 250, 0.16);
   --note: #3fe0c8;
   --tip: #4ade80;
   --important: #c4b5fd;
@@ -80,8 +83,16 @@ img { max-width: 100%; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 [hidden] { display: none !important; }
 
-/* The bar of the starter: fixed, floating, square, ink on glass. */
-.top { position: fixed; inset: 0 0 auto; z-index: 40; padding: 1rem 1rem 0.75rem; }
+/* The bar: fixed, full width, a rule under it. */
+.top {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
 .topbar {
   position: relative;
   display: flex;
@@ -91,40 +102,26 @@ img { max-width: 100%; }
   width: 100%;
   max-width: 92rem;
   margin: 0 auto;
-  padding: 0.7rem 1.15rem;
-  border: 1px solid var(--header-line);
-  background: rgba(10, 10, 10, 0.88);
+  height: var(--top);
+  padding: 0 1.25rem;
   color: var(--header-ink);
-  box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.45);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  overflow: hidden;
 }
-/* The oblique lines of the starter, fading away from the corner they lean towards. */
-.topbar-lines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.07) 0 1px, transparent 1px 16px);
-  -webkit-mask-image: linear-gradient(to bottom left, #000, transparent 75%);
-  mask-image: linear-gradient(to bottom left, #000, transparent 75%);
-}
+.topbar-lines { display: none; }
 .topbar a { color: inherit; text-decoration: none; }
 .topbar > * { position: relative; }
 .brand { display: inline-flex; align-items: center; }
-.brand-logo { display: block; height: 1.25rem; width: auto; filter: brightness(0) invert(1); }
+.brand-logo { display: block; height: 1.25rem; width: auto; filter: brightness(0); }
+:root[data-theme="dark"] .brand-logo { filter: brightness(0) invert(1); }
 .top-actions { display: flex; align-items: center; gap: 0.6rem; }
 .top-links { display: flex; align-items: center; gap: 0.15rem; margin-right: 0.35rem; }
 .top-links a {
   padding: 0.5rem 0.7rem;
-  font: 500 11px/1 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font: 500 13.5px/1 var(--sans);
   opacity: 0.68;
   transition: opacity 0.15s ease;
 }
 .top-links a:hover, .top-links a[aria-current="page"] { opacity: 1; }
-.top-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+.top-links a[aria-current="page"] { text-decoration: none; }
 
 .search-open {
   display: inline-flex;
@@ -134,16 +131,14 @@ img { max-width: 100%; }
   padding: 0 0.55rem 0 0.6rem;
   border: 1px solid var(--header-line);
   border-radius: 0.375rem;
-  background: rgb(255 255 255 / 0.05);
+  background: var(--soft);
   color: var(--header-muted);
   cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 .search-open svg { width: 15px; height: 15px; }
 .search-open span {
-  font: 500 10.5px/1 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font: 400 13px/1 var(--sans);
 }
 .search-open kbd {
   padding: 0.15rem 0.3rem;
@@ -152,7 +147,7 @@ img { max-width: 100%; }
   color: var(--header-muted);
   font: 500 10px/1 var(--mono);
 }
-.search-open:hover { border-color: rgb(255 255 255 / 0.32); color: var(--header-ink); }
+.search-open:hover { border-color: var(--line-strong); color: var(--header-ink); }
 
 /* The theme switch of the starter: a pill, the knob carrying the sun or the moon. */
 .theme-switch {
@@ -161,7 +156,7 @@ img { max-width: 100%; }
   height: 1.75rem;
   flex: none;
   padding: 0;
-  border: 1px solid rgba(250, 250, 250, 0.3);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
@@ -196,13 +191,11 @@ img { max-width: 100%; }
   border-radius: 0.375rem;
   background: var(--header-ink);
   color: var(--header) !important;
-  font: 600 10.5px/1 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  font: 500 13px/1 var(--sans);
+  transition: opacity 0.2s ease;
 }
 .cta svg { width: 13px; height: 13px; transition: transform 0.2s ease; }
-.cta:hover { background: rgba(250, 250, 250, 0.85); border-color: rgba(250, 250, 250, 0.85); }
+.cta:hover { opacity: 0.85; }
 .cta:hover svg { transform: translateX(3px); }
 
 .menu {
@@ -217,7 +210,7 @@ img { max-width: 100%; }
   color: var(--header-ink);
   cursor: pointer;
 }
-.menu:hover { border-color: var(--header-line); background: rgb(255 255 255 / 0.06); }
+.menu:hover { border-color: var(--header-line); background: var(--soft); }
 .progress {
   position: absolute;
   left: 0;
@@ -357,8 +350,6 @@ html[data-router="modular"] .router-switch [data-router="modular"] {
   background: var(--soft);
   color: var(--ink);
   font-weight: 500;
-  border-radius: 0.25rem 0.375rem 0.375rem 0.25rem;
-  box-shadow: inset 2px 0 0 var(--ink);
 }
 .side-foot { margin: 1.25rem 0.2rem 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 .side-foot a { display: block; padding: 0.2rem 0.35rem; color: var(--muted); text-decoration: none; border-radius: 0.25rem; }
@@ -451,11 +442,14 @@ html[data-router="modular"] .router-switch [data-router="modular"] {
   margin: 1.25rem 0 1.5rem;
   padding: 1rem 1.1rem;
   overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--code-bg);
-  font: 12.75px/1.65 var(--mono);
+  border: 1px solid var(--pre-line);
+  border-radius: 0.6rem;
+  background: var(--pre-bg);
+  color: var(--pre-ink);
+  font: 13px/1.7 var(--mono);
   tab-size: 2;
+  --t-key: #ff7b72; --t-str: #a5d6ff; --t-com: #8b949e; --t-fn: #d2a8ff; --t-num: #79c0ff;
+  --t-cls: #ffa657; --t-tag: #7ee787; --t-attr: #79c0ff;
 }
 .doc pre code { padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; white-space: pre; }
 .doc pre + p, .doc p + pre { margin-top: 1rem; }
@@ -475,7 +469,34 @@ html[data-router="modular"] .router-switch [data-router="modular"] {
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.doc figure pre { margin: 0; border: 0; border-radius: 0; background: var(--code-bg); }
+/* A named block: the bar carries the file name and the copy chip; the panel follows. */
+.doc figure:not(.figure):not(.diagram) { border-color: var(--pre-line); border-radius: 0.6rem; background: var(--pre-bg); }
+.doc figure:not(.figure):not(.diagram) figcaption {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--pre-line);
+  background: var(--pre-head);
+  color: var(--pre-muted);
+  font: 500 12.5px/1.4 var(--mono);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.doc figure:not(.figure):not(.diagram) figcaption::before {
+  content: "";
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/%3E%3Cpath d='M14 3v5h5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.doc figure.terminal figcaption::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 8 5 4-5 4'/%3E%3Cpath d='M13 17h6'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 8 5 4-5 4'/%3E%3Cpath d='M13 17h6'/%3E%3C/svg%3E");
+}
+.doc figure pre { margin: 0; border: 0; border-radius: 0; background: transparent; }
 .doc figure.figure { background: var(--card); }
 .doc figure.figure svg { display: block; width: 100%; height: auto; padding: 1.25rem; }
 .doc figure.figure figcaption { border-bottom: 0; border-top: 1px solid var(--line); background: transparent; }
@@ -565,19 +586,19 @@ body[data-home] .page::before {
   top: 0.5rem;
   right: 0.5rem;
   padding: 0.2rem 0.45rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--pre-line);
   border-radius: 0.3rem;
-  background: var(--card);
-  color: var(--muted);
-  font: 500 10px/1.4 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  background: var(--pre-head);
+  color: var(--pre-muted);
+  font: 500 11px/1.4 var(--sans);
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 pre:hover .copy, .copy:focus-visible { opacity: 1; }
-.copy:hover { border-color: var(--line-strong); color: var(--ink); }
+.copy:hover { border-color: rgba(255, 255, 255, 0.28); color: var(--pre-ink); }
+/* In a bar the chip sits at the right edge, always visible. */
+figcaption > .copy { position: static; margin-left: auto; opacity: 1; }
 
 /* The edit link, under a dashed rule like the end of a section. */
 .source {
@@ -638,10 +659,9 @@ pre:hover .copy, .copy:focus-visible { opacity: 1; }
   --callout: var(--note);
   margin: 1.5rem 0;
   padding: 0.85rem 1rem 0.9rem;
-  border: 1px solid var(--line);
-  border-left: 2px solid var(--callout);
-  border-radius: var(--radius);
-  background: var(--soft);
+  border: 1px solid color-mix(in srgb, var(--callout) 35%, var(--line));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--callout) 6%, var(--bg));
 }
 .callout p { margin: 0.35rem 0; }
 .callout > :last-child { margin-bottom: 0; }
@@ -651,9 +671,7 @@ pre:hover .copy, .copy:focus-visible { opacity: 1; }
   gap: 0.5rem;
   margin: 0 0 0.2rem !important;
   color: var(--ink);
-  font: 600 10.5px/1.5 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
+  font: 600 14px/1.5 var(--sans);
 }
 .callout-title::before { content: ""; width: 0.4rem; height: 0.4rem; border-radius: 999px; background: currentColor; color: var(--callout); }
 .callout-tip { --callout: var(--tip); }
