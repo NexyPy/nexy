@@ -93,16 +93,7 @@ def _nav_group(section: source.Section, current: str) -> str:
 
 
 def nav_html(sections: list[source.Section], current: str) -> str:
-    """The side menu: a filter, the router choice, and one collapsible group per section."""
-    head = (
-        '<div class="side-head"><span class="side-kicker">Documentation</span>'
-        '<span class="side-version">2.2</span></div>'
-        '<label class="side-filter">'
-        f"{ICONS['icon_search']}"
-        '<input type="search" placeholder="Filter pages" aria-label="Filter pages"'
-        ' autocomplete="off">'
-        "</label>"
-    )
+    """The side menu: the router choice, and one collapsible group per section."""
     groups = "".join(_nav_group(section, current) for section in sections)
     foot = (
         '<p class="side-empty" hidden>No page matches.</p>'
@@ -111,7 +102,7 @@ def nav_html(sections: list[source.Section], current: str) -> str:
         '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>'
         "</div>"
     )
-    return head + router_switch_html(current) + groups + foot
+    return router_switch_html(current) + groups + foot
 
 
 def toc_html(headings: list[source.Heading]) -> str:
@@ -170,10 +161,6 @@ def _page_html(
         router_meta=router_meta(page),
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
-        link_start=relative(page.slug, "getting-started/quick-start"),
-        link_build=relative(page.slug, "routing/fbr/pages"),
-        link_choose=relative(page.slug, "routing"),
-        link_reference=relative(page.slug, "reference/cli"),
         article=rendered.html,
         toc=toc_html(rendered.headings),
         pager=pager_html(before, after, page.slug),
