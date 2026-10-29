@@ -32,17 +32,22 @@ def collect_route_names() -> tuple[set[str], set[str]]:
     return layout_names, special_names
 
 
-def file_to_url(path: Path, routes_root: Path) -> str:
+def file_to_url(path: Path, routes_root: Path) -> tuple[str, bool]:
     rel = path.relative_to(routes_root).as_posix()
     stem = rel.rsplit(".", 1)[0]
+    optional = False
     if stem.endswith("/index") or stem == "index":
         stem = stem[: -len("/index")] if len(stem) > len("/index") else ""
+    # Optional catch-all [[...slug]] must be replaced before [...slug].
+    if re.search(r"\[\[\.\.\.[^\]]+\]\]", stem):
+        optional = True
     url = "/" + stem
+    url = re.sub(r"\[\[\.\.\.([^\]]+)\]\]", r"{...\1}", url)
     url = re.sub(r"\[\.\.\.([^\]]+)\]", r"{...\1}", url)
     url = re.sub(r"\[([^\]]+)\]", r"{\1}", url)
     url = re.sub(r"\(([^)]+)\)", "", url)
     url = re.sub(r"/+", "/", url)
-    return url if url != "/" else "/"
+    return (url if url != "/" else "/", optional)
 
 
 def extract_params(url: str) -> list[str]:
@@ -144,14 +149,17 @@ class RouteManifestBuilder:
         return entries
 
     def _entry(self, path: Path, routes_root: Path, layout_names: set[str]) -> dict[str, object]:
-        url = file_to_url(path, routes_root)
-        return {
+        url, optional = file_to_url(path, routes_root)
+        entry: dict[str, object] = {
             "path": url,
             "file": f"/src/routes/{path.relative_to(routes_root).as_posix()}",
             "layout": self._closest_layout(path, routes_root, layout_names),
             "layouts": framework_layout_chain(path, routes_root),
             "params": extract_params(url),
         }
+        if optional:
+            entry["optional"] = True
+        return entry
 
     def render_full(self) -> str | None:
         """Render routes.auto.ts (full tree with the Route type union)."""

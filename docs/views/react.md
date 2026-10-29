@@ -35,7 +35,8 @@ export default function Home() {
 
 The default export is the page component; a named export also works.
 
-> **Good to know**: keep components outside `src/routes/` (usually `src/components/`) so they are
+> [!NOTE]
+> keep components outside `src/routes/` (usually `src/components/`) so they are
 > not treated as pages.
 
 ## Layouts

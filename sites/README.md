@@ -23,11 +23,13 @@ shows it at the address that failed, whatever its depth: pass `--base /nexy` (th
 to `main` that touches `docs/` or `sites/`. Turn it on once in **Settings > Pages > Source: GitHub
 Actions**.
 
-What it gives a reader: a menu by section, an outline of the page that follows the scroll, search
-(`Ctrl K` or `/`) that shows the words found, light and dark themes that follow the system, code
-coloured when the site is built (so it reads without JavaScript), a copy button on code, links to
-every heading, previous and next pages, a "skip to content" link, and a layout that holds from a
-phone to a wide screen.
+What it gives a reader: a menu by section, with collapsible groups that remember what you closed and a
+filter that narrows the list as you type; an outline of the page that follows the scroll; search
+(`Ctrl K` or `/`) that shows the words found; light and dark themes that follow the system; code
+coloured when the site is built (so it reads without JavaScript); GitHub alerts (`> [!NOTE]`) drawn
+as callouts; `diagram` fences drawn as framed illustrations; a copy button on code; links to every
+heading; previous and next pages; a "skip to content" link; and a layout that holds from a phone to a
+wide screen.
 
 **Two routers, one menu.** Like the docs of Next.js, which has two routers, the menu starts with a
 choice: *File-based* or *Modular*. It shows the pages of the router you chose, plus every page both

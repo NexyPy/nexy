@@ -25,7 +25,8 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> **Good to know**: list the functions themselves. A `Depends(...)` object in the list is ignored.
+> [!NOTE]
+> list the functions themselves. A `Depends(...)` object in the list is ignored.
 
 Every route under `src/routes/admin/` now requires the header, `.py` handlers and `.nexy` pages
 alike.

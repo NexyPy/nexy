@@ -19,15 +19,28 @@ def _icon(inner: str, extra: str = "") -> str:
     )
 
 
+def _arrow(path: str, class_name: str) -> str:
+    return (
+        f'<svg class="{class_name}" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        f'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{path}"/></svg>'
+    )
+
+
+ARROW_PREV = _arrow("M19 12H5M12 19l-7-7 7-7", "arrow")
+ARROW_NEXT = _arrow("M5 12h14M12 5l7 7-7 7", "arrow")
+
 ICONS = {
     "icon_search": _icon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
     "icon_menu": _icon('<path d="M4 6h16M4 12h16M4 18h16"/>'),
+    "icon_close": _icon('<path d="M18 6 6 18M6 6l12 12"/>'),
+    "icon_book": _icon("M5 12h14M12 5l7 7-7 7", ' class="arrow"'),
     "icon_sun": _icon(
         '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4'
         'M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>',
         ' class="sun"',
     ),
     "icon_moon": _icon('<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>', ' class="moon"'),
+    "icon_chev": _icon('<path d="m9 18 6-6-6-6"/>', ' class="chev"'),
     "icon_github": _icon(
         '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 '
         "0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 "

@@ -253,6 +253,71 @@ async function engine(framework: string): Promise<Engine> {
 
 type ClientRoute = { path: string; file: string; layouts?: string[] }
 
+function joinPathnames(base: string, value: unknown): string {
+  if (value === undefined || value === null) return base
+  if (Array.isArray(value)) {
+    const rest = value.map(part => String(part)).join('/')
+    return base.replace(/\{[^}]+\}$/, '').replace(/\/$/, '') + '/' + rest.replace(/^\//, '')
+  }
+  const str = String(value)
+  if (base.includes('{')) {
+    // Replace the last dynamic segment or the catch-all
+    if (base.includes('{...')) {
+      const prefix = base.split('{...')[0].replace(/\/$/, '')
+      return (prefix + '/' + str.replace(/^\//, '')).replace(/\/+/g, '/').replace(/\/$/, '') || '/'
+    }
+    return base.replace(/\{[^}]+\}$/, str.replace(/^\//, '').replace(/\/$/, ''))
+  }
+  return str.startsWith('/') ? str : '/' + str
+}
+
+function buildPathname(route: ClientRoute, params: Record<string, unknown> | undefined): string {
+  let pathname = route.path
+  if (!params) return pathname
+  for (const [key, value] of Object.entries(params)) {
+    const pattern = `{${key}}`
+    if (pathname.includes(pattern)) {
+      pathname = pathname.replace(pattern, String(value))
+      continue
+    }
+    const catchAll = `{...${key}}`
+    if (pathname.includes(catchAll)) {
+      const rest = Array.isArray(value) ? value.map(String).join('/') : String(value)
+      const prefix = pathname.split(catchAll)[0].replace(/\/$/, '')
+      pathname = (prefix + '/' + rest.replace(/^\//, '')).replace(/\/+/g, '/')
+      continue
+    }
+  }
+  pathname = pathname.replace(/\/+/g, '/')
+  if (pathname.length > 1 && pathname.endsWith('/')) pathname = pathname.slice(0, -1)
+  return pathname || '/'
+}
+
+function getStaticParamsForRoute(route: ClientRoute, mod: Record<string, unknown>): Array<Record<string, unknown>> | null {
+  const fn =
+    (mod as any).getStaticPaths ||
+    (mod as any).generateStaticParams ||
+    (mod as any).getStaticParams
+  if (typeof fn !== 'function') return null
+  const result = fn()
+  if (!Array.isArray(result)) return []
+  return result.map((item: unknown) => {
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      return (item as Record<string, unknown>).params ?? (item as Record<string, unknown>)
+    }
+    return item as Record<string, unknown>
+  })
+}
+
+function staticFilePath(route: ClientRoute, pathname: string): string {
+  const base = route.file.replace(/\.(tsx|jsx|vue|svelte)$/, '')
+  if (pathname === '/') {
+    return base + '/index.html'
+  }
+  const suffix = pathname.replace(/^\//, '')
+  return base + '/' + suffix + '.html'
+}
+
 /** Pre-render every client route to `__nexy__/client/static/**` for production. */
 export async function writeDocuments(): Promise<number> {
   const mode = readMode()
@@ -277,16 +342,57 @@ export async function writeDocuments(): Promise<number> {
   try {
     for (const route of routes) {
       const dynamic = route.path.includes('{')
+      if (!dynamic) {
+        const html = await renderDocument(
+          server,
+          route.file,
+          route.layouts ?? [],
+          {},
+          { pathname: route.path, search: '' }
+        )
+        const out = path.resolve(
+          process.cwd(),
+          '__nexy__/client/static' + route.file.replace(/\.(tsx|jsx|vue|svelte)$/, '.document.html')
+        )
+        fs.mkdirSync(path.dirname(out), { recursive: true })
+        fs.writeFileSync(out, html)
+        written++
+        continue
+      }
+
+      let staticParams: Array<Record<string, unknown>> | null = null
+      try {
+        const mod = (await server.ssrLoadModule(route.file)) as Record<string, unknown>
+        staticParams = getStaticParamsForRoute(route, mod)
+      } catch {
+        staticParams = null
+      }
+
+      if (staticParams && staticParams.length > 0) {
+        for (const params of staticParams) {
+          const pathname = buildPathname(route, params)
+          const html = await renderDocument(server, route.file, route.layouts ?? [], params, {
+            pathname,
+            search: ''
+          })
+          const out = path.resolve(process.cwd(), '__nexy__/client/static' + staticFilePath(route, pathname))
+          fs.mkdirSync(path.dirname(out), { recursive: true })
+          fs.writeFileSync(out, html)
+          written++
+        }
+        continue
+      }
+
       const html = await renderDocument(
         server,
-        dynamic ? null : route.file,
+        null,
         route.layouts ?? [],
         {},
         { pathname: route.path, search: '' }
       )
       const out = path.resolve(
         process.cwd(),
-        '__nexy__/client/static' + route.file.replace(/\.(tsx|jsx|vue|svelte)$/, dynamic ? '.shell.html' : '.document.html')
+        '__nexy__/client/static' + route.file.replace(/\.(tsx|jsx|vue|svelte)$/, '.shell.html')
       )
       fs.mkdirSync(path.dirname(out), { recursive: true })
       fs.writeFileSync(out, html)

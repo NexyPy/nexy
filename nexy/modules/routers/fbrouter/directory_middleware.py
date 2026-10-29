@@ -68,7 +68,9 @@ def url_pattern(parts: tuple[str, ...]) -> re.Pattern[str]:
     for part in parts:
         if _is_group(part):
             continue
-        if part.startswith("[...") and part.endswith("]"):
+        if part.startswith("[[...") and part.endswith("]]"):
+            segments.append(".*")
+        elif part.startswith("[...") and part.endswith("]"):
             segments.append(".+")
         elif part.startswith("[") and part.endswith("]"):
             segments.append("[^/]+")

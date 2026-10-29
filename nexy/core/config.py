@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import Any
 
 from nexy.core.config_loader import MISSING_CONFIG_ERROR, ConfigLoader
 from nexy.core.models import FrontendFramework, NexyConfigModel
@@ -55,6 +56,8 @@ class Config(NexyConfigModel):
     NOTFOUND_FILE_NAMES: list[str] = ["notfound.nexy"]
     ERROR_FILE_NAMES: list[str] = ["errors.nexy"]
     LOADING_FILE_NAMES: list[str] = ["loading.nexy"]
+    FORBIDDEN_FILE_NAMES: list[str] = ["forbidden.nexy"]
+    UNAUTHORIZED_FILE_NAMES: list[str] = ["unauthorized.nexy"]
     TOC_DEPTH: str = "2-6"
     TOC_TITLE: str = "Table of Contents"
     TOC_AUTO: bool = True
@@ -105,6 +108,11 @@ class Config(NexyConfigModel):
     ALWAYS_ACTIVE_EXTENSIONS: list[str] = [".nexy", ".md", ".mdx", ".py"]
 
     PROJECT_ROOT: Path = Path.cwd()
+
+    useRedirects: list[dict[str, Any]] | None = None
+    useRewrites: list[dict[str, Any]] | None = None
+    useHeaders: list[dict[str, Any]] | None = None
+    useBasePath: str | None = None
 
     def __new__(cls) -> "Config":
         if cls._instance is None:

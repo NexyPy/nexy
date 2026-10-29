@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>$title - Nexy</title>
 <meta name="description" content="$description">
-<meta name="theme-color" content="#0a8f9b">
+<meta name="theme-color" content="#0a0a0a">
 $router_meta
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
 <link rel="icon" href="$root/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="$root/assets/style.css">
 <script>
@@ -23,27 +26,43 @@ $router_meta
   } catch (e) { document.documentElement.dataset.router = "fbr"; }
 </script>
 </head>
-<body data-root="$root" data-search="$root/search-index.json">
+<body data-root="$root" data-search="$root/search-index.json"$home_attr>
 <a class="skip" href="#content">Skip to content</a>
-<header class="top">
-  <button class="icon-button menu" aria-label="Open the menu" aria-expanded="false">$icon_menu</button>
-  <a class="brand" href="$home">
-    <span class="logo" aria-hidden="true">$mark</span><span class="name">Nexy</span><span class="tag">Docs</span>
-  </a>
-  <span class="spacer"></span>
-  <button class="search-open" aria-label="Search the docs">
-    $icon_search<span>Search the docs</span><kbd>Ctrl K</kbd>
-  </button>
-  <a class="icon-button" href="https://github.com/NexyPy/nexy" aria-label="Nexy on GitHub">$icon_github</a>
-  <button class="icon-button theme" aria-label="Switch between light and dark">$icon_sun$icon_moon</button>
-</header>
+<div class="top">
+  <header class="topbar">
+    <span class="topbar-lines" aria-hidden="true"></span>
+    <button class="menu" type="button" aria-label="Open the menu" aria-expanded="false">$icon_menu</button>
+    <a class="brand" href="$home" aria-label="Nexy, home">
+      <img class="brand-logo" src="$root/assets/nexy.svg" alt="Nexy">
+    </a>
+    <div class="top-actions">
+      <nav class="top-links" aria-label="Sections">
+        <a href="$link_start">Start</a>
+        <a href="$link_build">Build</a>
+        <a href="$link_choose">Choose</a>
+        <a href="$link_reference">Reference</a>
+      </nav>
+      <button class="search-open" type="button" aria-label="Search the docs">
+        $icon_search<span>Search the docs</span><kbd>Ctrl K</kbd>
+      </button>
+      <a class="cta" href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer">$icon_book<span>Docs</span></a>
+      <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Switch between light and dark" data-theme-toggle>
+        <span class="theme-knob">$icon_sun$icon_moon</span>
+      </button>
+    </div>
+    <span class="progress" aria-hidden="true"></span>
+  </header>
+</div>
 <div class="frame">
   <nav class="side" aria-label="Documentation">$nav</nav>
   <main class="page" id="content" tabindex="-1">
-    <article class="doc">
-      <p class="crumb">$section</p>
+    <article class="$article_class">
+      <p class="crumb"><a href="$home">Docs</a><span aria-hidden="true">/</span>$section</p>
       $article
-      <p class="source"><a href="$source">Edit this page on GitHub</a></p>
+      <p class="source">
+        <button class="copy-page" type="button" data-markdown="index.md">Copy page as Markdown</button>
+        <a href="$source">Edit on GitHub</a>
+      </p>
       $pager
     </article>
   </main>

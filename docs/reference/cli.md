@@ -118,7 +118,8 @@ corrections are welcome as pull requests to `nexy/modules/i18n/<language>.json`.
 
 `nx build` compiles the routes, then bundles the client when `useVite` is on.
 
-> **Good to know**: there is no `--static` flag. Static hosting is a deployment choice, not a build
+> [!NOTE]
+> there is no `--static` flag. Static hosting is a deployment choice, not a build
 > mode - see [Deploy](../deployment/README.md).
 
 ## Working on Nexy itself

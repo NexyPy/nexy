@@ -49,7 +49,8 @@ The browser only ever talks to port `3000`. There is no second URL to open and n
 
 Vite handles the client bundle; SSR HTML is produced per file by esbuild.
 
-> **Good to know**: a route whose server render fails is reported as a client-only route instead of
+> [!NOTE]
+> a route whose server render fails is reported as a client-only route instead of
 > failing the whole build.
 
 ## Styling

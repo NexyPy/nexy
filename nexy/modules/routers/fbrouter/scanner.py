@@ -43,6 +43,8 @@ class ScanResult:
     errors: list[SpecialPage] = field(default_factory=list)
     notfound: list[SpecialPage] = field(default_factory=list)
     loading: list[SpecialPage] = field(default_factory=list)
+    forbidden: list[SpecialPage] = field(default_factory=list)
+    unauthorized: list[SpecialPage] = field(default_factory=list)
 
 
 def route_clean_path(path: str) -> str:
@@ -87,6 +89,8 @@ def _is_special(name: str) -> bool:
         name in Config.NOTFOUND_FILE_NAMES
         or name in Config.ERROR_FILE_NAMES
         or name in Config.LOADING_FILE_NAMES
+        or name in Config.FORBIDDEN_FILE_NAMES
+        or name in Config.UNAUTHORIZED_FILE_NAMES
     )
 
 
@@ -155,6 +159,10 @@ class RouteScanner:
             result.errors.append(page)
         elif name in Config.NOTFOUND_FILE_NAMES:
             result.notfound.append(page)
+        elif name in Config.FORBIDDEN_FILE_NAMES:
+            result.forbidden.append(page)
+        elif name in Config.UNAUTHORIZED_FILE_NAMES:
+            result.unauthorized.append(page)
         else:
             result.loading.append(page)
 

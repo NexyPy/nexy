@@ -4,9 +4,9 @@ from src.content import document, link
 slug: prop[str] = ""
 doc = document(slug)
 ---
-<main class="page">
-  <article class="doc">
-    <p class="crumb">{{ doc.section | e }}</p>
+<main class="page" id="content" tabindex="-1">
+  <article class="doc{% if not slug %} home{% endif %}">
+    <p class="crumb"><a href="/docs">Docs</a><span aria-hidden="true">/</span>{{ doc.section | e }}</p>
     {{ doc.html }}
     <p class="source"><a href="{{ doc.source }}">Edit this page on GitHub</a></p>
     <nav class="pager" aria-label="Pages">
@@ -23,5 +23,6 @@ doc = document(slug)
     <li class="l{{ heading.level }}"><a href="#{{ heading.id }}">{{ heading.text | e }}</a></li>
     {% endfor %}
   </ul>
+  <p class="top-link"><a href="#content">Back to top</a></p>
   {% endif %}
 </aside>

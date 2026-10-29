@@ -73,6 +73,23 @@ class TestProduction:
         html = _render(dynamic=True)
         assert _boot(html)["mode"] == "shell"
 
+    def test_dynamic_route_serves_pre_rendered_per_path(self, tmp_path, monkeypatch):
+        (tmp_path / "__nexy__").mkdir(exist_ok=True)
+        (tmp_path / "__nexy__" / "nexy.prod").write_text("", encoding="utf-8")
+        # The build writes `{route stem}/{pathname}.html`, as `document.ts` does.
+        static = tmp_path / "__nexy__" / "client" / "static"
+        target = static / "src" / "routes" / "blog" / "[slug]" / "blog"
+        target.mkdir(parents=True, exist_ok=True)
+        (target / "hello.html").write_text(DOC.replace("Hi", "Hello"), encoding="utf-8")
+        monkeypatch.setattr(
+            csr_document,
+            "_request_location",
+            lambda: {"pathname": "/blog/hello", "search": ""},
+        )
+        html = _render(dynamic=True, static_stem="/src/routes/blog/[slug]")
+        assert _boot(html)["mode"] == "shell"
+        assert "Hello" in html
+
     def test_missing_file_falls_back_to_a_client_rendered_document(self, tmp_path):
         (tmp_path / "__nexy__").mkdir()
         (tmp_path / "__nexy__" / "nexy.prod").write_text("", encoding="utf-8")

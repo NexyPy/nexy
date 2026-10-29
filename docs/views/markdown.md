@@ -29,7 +29,8 @@ pre-rendered to HTML by `nx build`.
 - The framework is auto-detected from imports: Preact when the file imports `preact`, React
   otherwise.
 
-> **Good to know**: use `.nexy` if you need Python logic in frontmatter.
+> [!NOTE]
+> use `.nexy` if you need Python logic in frontmatter.
 
 ## Next steps
 

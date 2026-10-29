@@ -105,7 +105,7 @@ nexy/
 ├── templates/                 # test fixtures (scaffold layouts per framework)
 ├── tests/                     # pytest suite
 ├── extensions/vscode/         # VS Code extension (LSP)
-└── docs/                      # Documentation — plain Markdown, index in docs/README.md
+└── docs/                      # Documentation - plain Markdown, index in docs/README.md
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full package layout and a deep dive.

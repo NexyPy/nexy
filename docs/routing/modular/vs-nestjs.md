@@ -46,7 +46,8 @@ Pick the modular router when you want a class-based structure with injection for
 Pick the file-based router when the URL structure is the organising principle. Both are scaffolded
 by `nx new`, run on the same FastAPI application, and can coexist.
 
-> **Good to know**: the missing items above are the honest gap. If you need `useFactory` providers
+> [!NOTE]
+> the missing items above are the honest gap. If you need `useFactory` providers
 > or overridable providers in tests today, keep the logic in plain functions and FastAPI
 > `Depends`, which compose and override naturally.
 

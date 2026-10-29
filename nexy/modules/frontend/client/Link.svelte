@@ -16,6 +16,8 @@
     prefetch?: Prefetch
     /** Added to `class` while the link points at the current page. */
     activeClass?: string
+    /** Alias for `activeClass`. */
+    activeClassName?: string
     /** Active only on the exact page, not on the pages below it. */
     exact?: boolean
     children?: Snippet
@@ -27,6 +29,7 @@
     scroll = true,
     prefetch = 'intent',
     activeClass,
+    activeClassName,
     exact = false,
     class: className,
     children,
@@ -50,7 +53,7 @@
   bind:this={anchor}
   {...rest}
   {href}
-  class={linkClass(className ?? undefined, isActive($location.pathname, href, exact), activeClass)}
+  class={linkClass(className ?? undefined, isActive($location.pathname, href, exact), activeClass ?? activeClassName)}
   aria-current={isActive($location.pathname, href, true) ? 'page' : undefined}
   data-nexy-link="true"
   data-nexy-replace={replace ? '' : undefined}

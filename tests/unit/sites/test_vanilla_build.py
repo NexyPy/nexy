@@ -82,6 +82,16 @@ class TestPageContent:
     def test_the_pager_names_the_neighbours(self, html):
         assert 'class="pager"' in html
 
+    def test_the_menu_is_made_of_collapsible_sections(self, html):
+        assert '<details class="group" data-section="Guides" open>' in html
+
+    def test_a_section_says_how_many_pages_it_holds(self, html):
+        pattern = r'<span class="group-name">Guides</span>.*?<span class="group-count">8</span>'
+        assert re.search(pattern, html)
+
+    def test_the_menu_can_be_filtered(self, html):
+        assert 'placeholder="Filter pages"' in html
+
     def test_the_first_page_has_no_previous_link(self, out):
         html = (out / "docs" / "index.html").read_text(encoding="utf-8")
         assert 'rel="prev"' not in html

@@ -59,7 +59,8 @@ scope.
 Autoescaping is **off**: templates are the project's own HTML, so `{{ value }}` is inserted as
 written. Escape untrusted values yourself with `{{ value | e }}`. `| safe` therefore changes nothing.
 
-> **Good to know**: wrap JavaScript that contains `{{` or `{%` in `{% raw %}...{% endraw %}`.
+> [!NOTE]
+> wrap JavaScript that contains `{{` or `{%` in `{% raw %}...{% endraw %}`.
 > Frameworks such as Vue and Svelte use the same braces.
 
 ## Components
@@ -90,7 +91,8 @@ Pass a computed value with Jinja inside the attribute: `<Icon path="{{ icon }}" 
 A bare name such as `path=icon` is the text `icon`, not the variable. To give a component a CSS
 class, declare a `class_name` prop: `class` is a Python keyword.
 
-> **Good to know**: a helper tag is always self-closing. Passing content to `Link` goes through its
+> [!NOTE]
+> a helper tag is always self-closing. Passing content to `Link` goes through its
 > `children` argument (`<Link href="/about" children="About" />`), not through element content.
 
 ## Styles

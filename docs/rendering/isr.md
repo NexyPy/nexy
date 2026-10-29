@@ -17,7 +17,8 @@ revalidate = 60
 - Caches in-process (an in-memory cache) per path.
 - Applies the policy only when `revalidate` is a positive integer on the module.
 
-> **Good to know**: `.py` API handlers are not pages. Use a different strategy for API caching.
+> [!NOTE]
+> `.py` API handlers are not pages. Use a different strategy for API caching.
 
 ## Next steps
 
