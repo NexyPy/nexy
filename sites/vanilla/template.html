@@ -6,7 +6,6 @@
 <title>$title - Nexy</title>
 <meta name="description" content="$description">
 <meta name="theme-color" content="#0a0a0a">
-$router_meta
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
@@ -18,12 +17,10 @@ $router_meta
     var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     document.documentElement.dataset.theme = dark ? "dark" : "light";
   } catch (e) { document.documentElement.dataset.theme = "light"; }
-  // The menu shows the docs of one router: the page's own, else the one chosen, else file-based.
+  // The menu starts folded when the reader folded it last time.
   try {
-    var own = document.querySelector('meta[name="nexy-router"]');
-    document.documentElement.dataset.router =
-      (own && own.content) || localStorage.getItem("nexy-docs-router") || "fbr";
-  } catch (e) { document.documentElement.dataset.router = "fbr"; }
+    if (localStorage.getItem("nexy-docs-side") === "closed") document.documentElement.dataset.side = "closed";
+  } catch (e) {}
 </script>
 </head>
 <body data-root="$root" data-search="$root/search-index.json"$home_attr>
@@ -38,9 +35,13 @@ $router_meta
   </header>
   <nav class="side" aria-label="Documentation">
     <div class="side-top">
-      <a class="brand" href="$home" aria-label="Nexy, home">
-        <img class="brand-logo" src="$root/assets/nexy.svg" alt="Nexy">
-      </a>
+      <div class="side-brand">
+        <a class="brand" href="$home" aria-label="Nexy, home">
+          <img class="brand-logo" src="$root/assets/nexy.svg" alt="Nexy">
+        </a>
+        <button class="side-toggle" type="button" aria-label="Collapse the menu" aria-expanded="true">$icon_sidebar</button>
+      </div>
+      $area_select
       <button class="search-open" type="button" aria-label="Search the docs">
         $icon_search<span>Search</span><kbd>Ctrl K</kbd>
       </button>
@@ -49,6 +50,7 @@ $router_meta
   </nav>
   <div class="panel">
     <div class="panel-bar">
+      <button class="side-toggle bar-open" type="button" aria-label="Open the menu" aria-expanded="false">$icon_sidebar</button>
       <span class="progress" aria-hidden="true"></span>
       <a class="bar-link" href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" aria-label="Nexy on GitHub">$icon_github</a>
       <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Switch between light and dark" data-theme-toggle>

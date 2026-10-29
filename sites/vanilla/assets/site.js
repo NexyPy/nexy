@@ -2,27 +2,28 @@
   const root = document.body.dataset.root
   const $ = (selector, scope = document) => scope.querySelector(selector)
   const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)]
-  const remember = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)) } catch {} }
-  const recall = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback } catch { return fallback } }
 
   // --- Theme: the choice is kept in this browser -------------------------------------------------
+  // The toggle is optional: a page without one still runs the rest of the script.
   const themeSwitch = $('[data-theme-toggle]')
-  const showTheme = (name) => themeSwitch.setAttribute('aria-checked', String(name === 'dark'))
-  showTheme(document.documentElement.dataset.theme)
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches
-  themeSwitch.addEventListener('click', () => {
-    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
-    const apply = () => { document.documentElement.dataset.theme = next; showTheme(next) }
-    if (document.startViewTransition && !still) {
-      const box = themeSwitch.getBoundingClientRect()
-      const root = document.documentElement
-      root.style.setProperty('--tx', `${box.left + box.width / 2}px`)
-      root.style.setProperty('--ty', `${box.top + box.height / 2}px`)
-      root.classList.add('theme-fade')
-      document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-fade'))
-    } else apply()
-    try { localStorage.setItem('nexy-docs-theme', next) } catch {}
-  })
+  if (themeSwitch) {
+    const showTheme = (name) => themeSwitch.setAttribute('aria-checked', String(name === 'dark'))
+    showTheme(document.documentElement.dataset.theme)
+    themeSwitch.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
+      const apply = () => { document.documentElement.dataset.theme = next; showTheme(next) }
+      if (document.startViewTransition && !still) {
+        const box = themeSwitch.getBoundingClientRect()
+        const root = document.documentElement
+        root.style.setProperty('--tx', `${box.left + box.width / 2}px`)
+        root.style.setProperty('--ty', `${box.top + box.height / 2}px`)
+        root.classList.add('theme-fade')
+        document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-fade'))
+      } else apply()
+      try { localStorage.setItem('nexy-docs-theme', next) } catch {}
+    })
+  }
 
   // --- Copy the page as Markdown, to paste into an editor or an AI assistant -------------------------
   // A confirmation with a check mark that draws itself, then the label comes back.
@@ -33,7 +34,7 @@
     setTimeout(() => { button.classList.remove('done'); button.textContent = label }, 1800)
   }
   const copyPage = $('.copy-page')
-  copyPage.addEventListener('click', async () => {
+  if (copyPage) copyPage.addEventListener('click', async () => {
     const label = copyPage.textContent
     try {
       const text = await (await fetch(copyPage.dataset.markdown)).text()
@@ -69,66 +70,40 @@
     }, { passive: true })
   }
 
-  // --- Reading progress in the top bar ------------------------------------------------------------
+  // --- Reading progress: the panel scrolls on a wide screen, the window on a narrow one ---------
+  const panel = $('.panel')
   const progress = $('.progress')
+  const scroller = () => (matchMedia('(min-width: 901px)').matches && panel ? panel : document.scrollingElement)
   const paint = () => {
-    const max = document.documentElement.scrollHeight - innerHeight
-    progress.style.transform = `scaleX(${max > 0 ? Math.min(scrollY / max, 1) : 0})`
+    const box = scroller()
+    const max = box.scrollHeight - box.clientHeight
+    progress.style.transform = `scaleX(${max > 0 ? Math.min(box.scrollTop / max, 1) : 0})`
   }
-  addEventListener('scroll', paint, { passive: true })
+  // A scroll does not bubble, so one listener in the capture phase hears the panel and the window.
+  addEventListener('scroll', paint, { passive: true, capture: true })
   addEventListener('resize', paint)
   paint()
 
-  // --- Menu groups: collapsible sections, remembered per browser ---------------------------------
-  const groups = $$('.side details.group')
-  const empty = $('.side-empty')
-  const closed = new Set(recall('nexy-docs-closed', []))
-  let initialising = true
-
-  const shown = (item) => {
-    if (item.hidden) return false
-    const router = item.dataset.router
-    return !router || router === document.documentElement.dataset.router
-  }
-  const count = () => {
-    groups.forEach((group) => {
-      const pages = $$('li', group).filter(shown).length
-      const badge = $('.group-count', group)
-      if (badge) badge.textContent = pages
-      group.hidden = pages === 0
-    })
-  }
-  groups.forEach((group) => {
-    group.addEventListener('toggle', () => {
-      if (initialising) return
-      if (group.open) closed.delete(group.dataset.section)
-      else closed.add(group.dataset.section)
-      remember('nexy-docs-closed', [...closed])
-    })
-  })
-  const current = $('.side [aria-current]')
-  const currentGroup = current ? current.closest('details') : null
-  if (currentGroup) closed.delete(currentGroup.dataset.section)
-  groups.forEach((group) => { group.open = group === currentGroup || !closed.has(group.dataset.section) })
-  count()
+  // --- Menu: the section of the current page is open, one at a time; bring the page into view ----
+  const current = $('.side [aria-current="page"]')
   if (current) current.scrollIntoView({ block: 'center' })
-  setTimeout(() => { initialising = false }, 0)
 
-  // --- Router switch: the menu shows the docs of one router ------------------------------------
-  const page = document.documentElement
-  const switchButtons = $$('.router-switch button')
-  const press = () => switchButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.router === page.dataset.router)))
-  const own = $('meta[name="nexy-router"]')
-  if (own) { try { localStorage.setItem('nexy-docs-router', own.content) } catch {} }
-  press()
-  switchButtons.forEach((button) => button.addEventListener('click', () => {
-    page.dataset.router = button.dataset.router
-    try { localStorage.setItem('nexy-docs-router', button.dataset.router) } catch {}
-    press()
-    applyFilter()
-    // On a page of the other router the page itself would be wrong: go to the overview of the choice.
-    if (own && own.content !== button.dataset.router) location.href = button.dataset.home
-  }))
+  // --- The menu folds away on a wide screen, and the choice is kept ----------------------------
+  const html = document.documentElement
+  const fold = (closed) => {
+    if (closed) html.dataset.side = 'closed'
+    else delete html.dataset.side
+    $$('.bar-open').forEach((button) => button.setAttribute('aria-expanded', String(!closed)))
+    try { localStorage.setItem('nexy-docs-side', closed ? 'closed' : 'open') } catch {}
+  }
+  $$('.side-toggle').forEach((button) => button.addEventListener('click', () => fold(!html.dataset.side)))
+
+  // --- The area selector closes on a click elsewhere and on Escape ---------------------------------
+  const area = $('.area-select')
+  if (area) {
+    addEventListener('click', (e) => { if (!area.contains(e.target)) area.open = false })
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') area.open = false })
+  }
 
   // --- Copy button on code blocks --------------------------------------------------------------
   // A shell command with no file name gets a "Terminal" bar, like a named file.
@@ -165,7 +140,7 @@
     links.forEach((a, id) => a.classList.toggle('on', Boolean(active) && id === active.id))
   }
   if (targets.length) {
-    addEventListener('scroll', light, { passive: true })
+    addEventListener('scroll', light, { passive: true, capture: true })
     addEventListener('resize', light)
     light()
   }

@@ -74,7 +74,10 @@
   --caution: #fca5a5;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--line-strong); }
+::-webkit-scrollbar-track { background: transparent; }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--top) + 16px); }
 body {
   margin: 0;
@@ -250,12 +253,12 @@ body::before {
   top: 0;
   z-index: 2;
   margin: 0 -0.9rem 0.4rem;
-  padding: 1.1rem 0.9rem 0.8rem;
+  padding: 0.9rem 0.9rem 0.8rem;
   background: color-mix(in srgb, var(--bg-page) 94%, transparent);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
-.side-top .brand { margin: 0.2rem 0.4rem 1rem; }
+
 .panel {
   position: relative;
   min-width: 0;
@@ -289,42 +292,83 @@ body::before {
   overflow: auto;
   overscroll-behavior: contain;
 }
-.router-switch {
+/* The area selector above the menu, drawn like the framework picker of Fumadocs. */
+.side-brand { display: flex; align-items: center; justify-content: space-between; margin: 0.2rem 0.2rem 0.9rem 0.4rem; }
+.side-toggle {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.2rem;
-  margin: 0 0.2rem 0.85rem;
-  padding: 0.2rem;
-  border: 1px solid var(--line);
-  border-radius: 0.5rem;
-  background: var(--soft);
-}
-.router-switch span {
-  grid-column: 1 / -1;
-  padding: 0.22rem 0.3rem 0.12rem;
-  color: var(--muted);
-  font: 500 9.5px/1 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-.router-switch button {
-  padding: 0.34rem 0.4rem;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
   border: 0;
-  border-radius: 0.35rem;
+  border-radius: 0.5rem;
   background: transparent;
   color: var(--muted);
-  font: 500 11px/1.2 var(--sans);
-  white-space: nowrap;
   cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease, transform 0.12s var(--ease);
 }
-.router-switch button:hover { color: var(--ink); }
-html[data-router="fbr"] .router-switch [data-router="fbr"],
-html[data-router="modular"] .router-switch [data-router="modular"] {
+.side-toggle svg { width: 18px; height: 18px; }
+.side-toggle:hover { color: var(--ink); background: var(--soft); }
+.side-toggle:active { transform: scale(0.92); }
+.area-select { position: relative; margin: 0 0 0.6rem; }
+.area-select summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
   background: var(--card);
-  color: var(--ink);
-  font-weight: 600;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  cursor: pointer;
+  list-style: none;
+  transition: border-color 0.12s ease, background 0.12s ease;
 }
+.area-select summary::-webkit-details-marker { display: none; }
+.area-select summary:hover { border-color: var(--line-strong); background: var(--soft); }
+.area-select > summary > svg { width: 14px; height: 14px; margin-left: auto; flex: none; color: var(--muted); }
+.area-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid color-mix(in srgb, var(--signal) 35%, var(--line));
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--signal) 12%, transparent);
+  color: var(--signal);
+}
+.area-icon svg { width: 15px; height: 15px; }
+.area-text { display: grid; min-width: 0; line-height: 1.25; }
+.area-text b { font-size: 13.5px; font-weight: 600; }
+.area-text small { overflow: hidden; color: var(--muted); font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap; }
+.area-select ul {
+  position: absolute;
+  inset: calc(100% + 0.35rem) 0 auto;
+  z-index: 5;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.8rem;
+  background: var(--paper);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.35);
+  transform-origin: top;
+}
+.area-select[open] ul { animation: nx-pop 0.18s var(--ease) both; }
+.area-select li a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 0.55rem;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.12s ease;
+}
+.area-select li a:hover { background: var(--soft); }
+.area-select li a > svg { width: 14px; height: 14px; margin-left: auto; flex: none; color: var(--signal); opacity: 0; }
+.area-select li a[aria-current] > svg { opacity: 1; }
+.area-select li a[aria-current] { background: color-mix(in srgb, var(--signal) 8%, transparent); }
 
 .side details.group { border-top: 1px solid var(--line); padding: 0.3rem 0; }
 .side details.group:first-of-type { border-top: 0; }
@@ -772,6 +816,30 @@ dialog.search input:focus { outline: 0; }
 .skip:focus { left: 0.75rem; }
 .page:focus { outline: 0; }
 
+/* Wide screens: the window never scrolls. The menu and the panel each scroll inside themselves. */
+@media (min-width: 901px) {
+  html, body { height: 100%; overflow: hidden; }
+  .shell { height: 100dvh; transition: grid-template-columns 0.32s var(--ease); }
+  .panel {
+    height: calc(100dvh - 1rem);
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--top) + 16px);
+  }
+  .toc { height: calc(100dvh - var(--top) - 1.5rem); }
+  .side { transition: opacity 0.2s ease, transform 0.32s var(--ease); }
+  html[data-side="closed"] .shell { grid-template-columns: 0 minmax(0, 1fr); }
+  html[data-side="closed"] .side { opacity: 0; transform: translateX(-1rem); pointer-events: none; overflow: hidden; }
+  html[data-side="closed"] .panel { margin-left: 0.5rem; }
+  .bar-open { display: none; margin-right: auto; }
+  html[data-side="closed"] .bar-open { display: grid; }
+}
+@media (max-width: 900px) {
+  .side-brand .side-toggle, .bar-open { display: none; }
+}
+
 /* Narrow screens: the menu becomes a drawer, opened from a thin bar. */
 .scrim {
   position: fixed;
@@ -910,8 +978,6 @@ dialog.search[data-fresh] .results li { animation: nx-rise 0.26s var(--ease) bot
 .tok-err { color: inherit; background: none; border: 0; }
 
 /* Two routers, one menu: the pages of the router that is not chosen are hidden. */
-html[data-router="fbr"] .side li[data-router="modular"],
-html[data-router="modular"] .side li[data-router="fbr"] { display: none; }
 html[data-filtering] .side details.group[hidden] { display: none; }
 
 @media print {

@@ -17,6 +17,6 @@ from src.content import ICONS, MARK, link
     {{ ICONS.icon_search }}<span>Search the docs</span><kbd>Ctrl K</kbd>
   </button>
   <a class="icon-button" href="https://github.com/NexyPy/nexy" aria-label="Nexy on GitHub">{{ ICONS.icon_github }}</a>
-  <button class="icon-button theme" aria-label="Switch between light and dark">{{ ICONS.icon_sun }}{{ ICONS.icon_moon }}</button>
+  <button class="icon-button theme" type="button" role="switch" aria-checked="false" aria-label="Switch between light and dark" data-theme-toggle>{{ ICONS.icon_sun }}{{ ICONS.icon_moon }}</button>
   <span class="progress" aria-hidden="true"></span>
 </header>

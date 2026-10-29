@@ -30,6 +30,18 @@ ARROW_PREV = _arrow("M19 12H5M12 19l-7-7 7-7", "arrow")
 ARROW_NEXT = _arrow("M5 12h14M12 5l7 7-7 7", "arrow")
 
 ICONS = {
+    "icon_sidebar": _icon('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>'),
+    "icon_select": _icon('<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>'),
+    "icon_check": _icon('<path d="M20 6 9 17l-5-5"/>'),
+    "area_nexy": _icon('<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>'),
+    "area_fbr": _icon(
+        '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'
+    ),
+    "area_modular": _icon('<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>'),
+    "area_cli": _icon('<path d="m5 8 5 4-5 4M13 17h6"/>'),
+    "area_core": _icon(
+        '<rect width="14" height="14" x="5" y="5" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'
+    ),
     "icon_search": _icon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
     "icon_menu": _icon('<path d="M4 6h16M4 12h16M4 18h16"/>'),
     "icon_close": _icon('<path d="M18 6 6 18M6 6l12 12"/>'),
