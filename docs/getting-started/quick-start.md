@@ -19,7 +19,7 @@ No uv yet? See [Installation](installation.md).
 uvx nexy new my-app
 ```
 
-`uvx` runs Nexy in a temporary environment, enough to **create** the project. `nexy new` then makes
+`uvx` comes with uv, so install uv first. It runs Nexy in a temporary environment, enough to **create** the project. `nexy new` then makes
 the project's own `.venv` and installs its packages there. Four prompts decide the wiring:
 
 | Prompt | Effect |
