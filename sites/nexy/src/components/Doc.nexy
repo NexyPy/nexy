@@ -1,5 +1,5 @@
 ---
-from src.content import document, link
+from src.content import document, link, markdown_link
 
 slug: prop[str] = ""
 doc = document(slug)
@@ -8,7 +8,10 @@ doc = document(slug)
   <article class="doc{% if not slug %} home{% endif %}">
     <p class="crumb"><a href="/docs">Docs</a><span aria-hidden="true">/</span>{{ doc.section | e }}</p>
     {{ doc.html }}
-    <p class="source"><a href="{{ doc.source }}">Edit this page on GitHub</a></p>
+    <p class="source">
+      <button class="copy-page" type="button" data-markdown="{{ markdown_link(slug) }}">Copy page as Markdown</button>
+      <a href="{{ doc.source }}">Edit this page on GitHub</a>
+    </p>
     <nav class="pager" aria-label="Pages">
       {% if doc.before %}<a rel="prev" href="{{ link(doc.before.slug) }}"><small>Previous</small><span>{{ doc.before.label | e }}</span></a>{% else %}<span></span>{% endif %}
       {% if doc.after %}<a rel="next" href="{{ link(doc.after.slug) }}"><small>Next</small><span>{{ doc.after.label | e }}</span></a>{% else %}<span></span>{% endif %}
