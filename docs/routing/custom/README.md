@@ -1,4 +1,4 @@
-# Custom Router
+# Custom routing
 
 Nexy lets you include an existing FastAPI app as a router into your project. This is useful when you want to reuse backend logic from another service, integrate with third-party APIs, or build a composite application with multiple routing concerns.
 
@@ -116,8 +116,8 @@ The `/login` endpoint is now reachable from your Nexy site without moving a line
 
 ## Next steps
 
-- [File‑based routing](fbr/README.md) – Build pages and simple handlers from files.
-- [Modular routing](modular/README.md) – Structured backends with injection and guards.
-- [Route handlers](fbr/handlers/README.md) – Define Python endpoints.
+- [File‑based routing](../fbr/README.md) – Build pages and simple handlers from files.
+- [Modular routing](../modular/README.md) – Structured backends with injection and guards.
+- [Route handlers](../fbr/handlers/README.md) – Define Python endpoints.
 
 The custom router gives you the flexibility to reuse existing FastAPI code while keeping the simplicity of file‑based pages and modular structure.
