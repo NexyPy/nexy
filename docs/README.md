@@ -186,11 +186,15 @@ Pages, layouts and islands in Solid.
 
 ### Preact
 
-Pages and islands in Preact.
+Pages, layouts and islands in Preact.
 
 | Page | What you will do |
 |---|---|
-| [Preact](views/preact.md) | Use Preact in a page |
+| [Preact](views/preact/README.md) | Enable Preact and pick server or client mode |
+| [Pages](views/preact/pages.md) | Write a `.tsx` page, read its params, know when it renders |
+| [Layouts](views/preact/layouts.md) | Write the `layout.tsx` that owns `<html>` |
+| [Islands](views/preact/islands.md) | Put a Preact component in a `.nexy` page |
+| [Actions and navigation](views/preact/actions-and-navigation.md) | Call Python, link pages, read the URL |
 
 ## Rendering and data
 

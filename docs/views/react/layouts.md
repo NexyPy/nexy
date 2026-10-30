@@ -78,14 +78,6 @@ differs.
   as in the example.
 - Import components from `src/components/`, not from `src/routes/`.
 
-## Preact
-
-The root `layout.tsx` of a Preact project is the same file as the
-[Solid one](../solid/layouts.md) with `class` and `children` (`nx new` creates it). Preact cannot
-hydrate a whole document: its `hydrate` builds a second `<html>` element and leaves the handlers
-unattached. So the browser renders the page body and swaps it in for the one the server sent; `<html>` and `<head>` stay as sent. See
-[how the browser takes over](../../routing/fbr/layouts/README.md#how-the-browser-takes-over-the-document).
-
 ## Next steps
 
 - [Islands](islands.md): React inside a server-mode page, with `layout.nexy`
