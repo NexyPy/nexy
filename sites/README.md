@@ -31,13 +31,15 @@ as callouts; `diagram` fences drawn as framed illustrations; a copy button on co
 heading; previous and next pages; a "skip to content" link; and a layout that holds from a phone to a
 wide screen.
 
-**Two routers, one menu.** Like the docs of Next.js, which has two routers, the menu starts with a
-choice: *File-based* or *Modular*. It shows the pages of the router you chose, plus every page both
-share, and remembers the choice in the browser. A page under `docs/routing/fbr/` or
-`docs/routing/modular/` belongs to that router, so opening one sets the menu by itself, and
-choosing the other router from it leads to that router's overview. The router of a page comes from
-its folder (`router_of` in `shared/docs_source.py`): put a page of a router in its folder, and
-nothing else needs to change.
+**Every section, one router.** The menu shows every section of `docs/README.md` at once (each `##`
+is a heading, each `###` a folder that opens and closes), so a reader never has to switch to find
+React, the route handlers or the reference. The only choice above it is the router: *FBR*
+(file-based routing), *Modular* (controllers, modules and injection) or *Custom Router* (create your
+own). It hides the routing folders of the other routers and is remembered in the browser. A folder
+whose pages all live under `docs/routing/<router>/` belongs to that router (`router_of` in
+`shared/docs_source.py`): opening one of its pages sets the choice by itself, and choosing another
+router from it leads to that router's overview. On a shared page the choice only swaps the folders.
+Previous and next never lead into another router.
 
 The build is in English, like `docs/`. A new language is a new folder of Markdown read the same way,
 not a change to the script.

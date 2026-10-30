@@ -450,6 +450,23 @@ html[data-side="closed"] .side {
 .area-select li a > svg { width: 14px; height: 14px; margin-left: auto; flex: none; color: var(--signal); opacity: 0; }
 .area-select li a[aria-current] > svg { opacity: 1; }
 .area-select li a[aria-current] { background: color-mix(in srgb, var(--signal) 8%, transparent); }
+.area-face { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+
+/* One router at a time: its routing groups and its face in the selector; the others are not drawn. */
+html[data-router="fbr"] .side [data-router]:not([data-router="fbr"]),
+html[data-router="modular"] .side [data-router]:not([data-router="modular"]),
+html[data-router="custom"] .side [data-router]:not([data-router="custom"]) { display: none; }
+
+/* The sections of the menu: a quiet heading over its folders, like Fumadocs. */
+.side-part[hidden] { display: none; }
+.side-section {
+  margin: 1.1rem 0.5rem 0.25rem;
+  color: var(--muted);
+  font: 500 10.5px/1.4 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.side-part:first-child .side-section { margin-top: 0.35rem; }
 
 /* The menu reads like Fumadocs: a folder label, then its pages on a guide line. */
 .side details.group { border-top: 1px solid var(--line); padding: 0.3rem 0 0.4rem; }

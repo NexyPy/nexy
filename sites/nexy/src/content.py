@@ -34,10 +34,11 @@ __all__ = [
     "markdown_link",
     "markdown_source",
     "menu",
+    "router_of",
+    "router_select",
     "search_entries",
     "slug_of",
     "title_of",
-    "track_select",
 ]
 
 
@@ -60,24 +61,25 @@ def _tracks() -> list[source.Track]:
     return source.read_tracks(DOCS)
 
 
-def track_select(slug: str) -> dict[str, Any]:
-    """The choice above the menu: the path of the page, and a link to the start of each other."""
-    tracks = _tracks()
-    here = source.track_of(tracks, slug)
-    choices = []
-    for track in tracks:
-        pages = source.pages_of(track)
-        choices.append(
-            {
-                "slug": track.slug,
-                "label": track.label,
-                "blurb": track.blurb,
-                "icon": ICONS.get(f"track_{track.slug.replace('-', '_')}", ICONS["icon_book"]),
-                "home": link(pages[0].slug) if pages else link(""),
-                "current": track.slug == here.slug,
-            }
-        )
-    return {"choices": choices, "shown": next(c for c in choices if c["current"])}
+def router_select(slug: str) -> list[dict[str, Any]]:
+    """The routers above the menu: each picks its routing groups and leads to its overview."""
+    chosen = source.router_of(slug) or source.ROUTERS[0][0]
+    return [
+        {
+            "key": key,
+            "name": name,
+            "blurb": blurb,
+            "icon": ICONS[f"router_{key}"],
+            "home": link(f"routing/{key}"),
+            "current": key == chosen,
+        }
+        for key, name, blurb in source.ROUTERS
+    ]
+
+
+def router_of(slug: str) -> str:
+    """The router a page belongs to, for the first-paint script; empty for a shared page."""
+    return source.router_of(slug) or ""
 
 
 def title_of(slug: str) -> str:
@@ -102,29 +104,30 @@ def head_of(slug: str) -> str:
     ).html()
 
 
+def _menu_group(group: source.Group, current: str, opened: source.Group) -> dict[str, Any]:
+    return {
+        "title": group.title,
+        "count": len(group.pages),
+        "open": group is opened,
+        "router": group.router or "",
+        "pages": [
+            {"href": link(p.slug), "label": p.label, "current": p.slug == current}
+            for p in group.pages
+        ],
+    }
+
+
 def menu(current: str) -> list[dict[str, Any]]:
-    """The side menu of the page's path: one group per folder, its own folder open."""
-    track = source.track_of(_tracks(), current)
-    # A reader who arrives on the home page has chosen no page yet: the first steps are open.
-    holder = next(
-        (i for i, group in enumerate(track.groups) if any(p.slug == current for p in group.pages)),
-        0,
-    )
+    """The side menu: every section under its heading, the folder of the page open."""
+    tracks = _tracks()
+    # A reader who arrives on the home page has chosen no page yet: the first group is open.
+    opened = source.group_of(tracks, current)
     return [
         {
-            "title": group.title,
-            "count": len(group.pages),
-            "open": i == holder,
-            "pages": [
-                {
-                    "href": link(p.slug),
-                    "label": p.label,
-                    "current": p.slug == current,
-                }
-                for p in group.pages
-            ],
+            "label": track.label,
+            "groups": [_menu_group(group, current, opened) for group in track.groups],
         }
-        for i, group in enumerate(track.groups)
+        for track in tracks
     ]
 
 

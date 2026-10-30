@@ -4,12 +4,13 @@ from "@/components/MobileBar.nexy" import MobileBar
 from "@/components/SearchDialog.nexy" import SearchDialog
 from "@/components/Sidebar.nexy" import Sidebar
 from nexy import usePathname
-from src.content import head_of, slug_of, title_of
+from src.content import head_of, router_of, slug_of, title_of
 
 children: prop[NexyElement]
 current = slug_of(usePathname())
 title = title_of(current)
 head = head_of(current)
+router = router_of(current)
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +18,7 @@ head = head_of(current)
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0a0a0a">
+  {% if router %}<meta name="nexy-router" content="{{ router }}">{% endif %}
   <title>{{ title | e }}</title>
   {{ head | safe }}
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +36,12 @@ head = head_of(current)
     try {
       if (localStorage.getItem("nexy-docs-side") === "closed") document.documentElement.dataset.side = "closed";
     } catch (e) {}
+    // The routing groups of one router: the page's own, else the one chosen last, else FBR.
+    try {
+      var own = document.querySelector('meta[name="nexy-router"]');
+      document.documentElement.dataset.router =
+        (own && own.content) || localStorage.getItem("nexy-docs-router") || "fbr";
+    } catch (e) { document.documentElement.dataset.router = "fbr"; }
   </script>
 </head>
 <body data-root="" data-search="/search-index"{% if current == "" %} data-home="true"{% endif %}>

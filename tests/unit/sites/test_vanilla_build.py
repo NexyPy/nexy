@@ -85,7 +85,7 @@ class TestPageContent:
     def test_the_menu_is_made_of_collapsible_sections(self, html):
         # Each section is a <details>: the one holding the current page is open, the
         # others are not, and opening one never closes another.
-        assert '<details class="group" data-section="Routing">' in html
+        assert '<details class="group" data-section="Routing" data-router="fbr">' in html
         assert '<details class="group" data-section="Forms and actions" open>' in html
 
     def test_a_section_says_how_many_pages_it_holds(self, html):

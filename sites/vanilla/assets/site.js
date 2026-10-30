@@ -104,6 +104,26 @@
     addEventListener('keydown', (e) => { if (e.key === 'Escape') area.open = false })
   }
 
+  // --- The router picks the routing groups of the menu, and the choice is kept -------------------
+  // A shared page stays where it is; a page of another router leads to the overview of the choice.
+  const own = $('meta[name="nexy-router"]')
+  const picks = $$('.area-select [data-pick]')
+  const showRouter = () => picks.forEach((a) => {
+    if (a.dataset.pick === html.dataset.router) a.setAttribute('aria-current', 'true')
+    else a.removeAttribute('aria-current')
+  })
+  const keepRouter = (key) => { try { localStorage.setItem('nexy-docs-router', key) } catch {} }
+  if (own) keepRouter(own.content)
+  showRouter()
+  picks.forEach((a) => a.addEventListener('click', (e) => {
+    keepRouter(a.dataset.pick)
+    if (own && own.content !== a.dataset.pick) return
+    e.preventDefault()
+    html.dataset.router = a.dataset.pick
+    showRouter()
+    area.open = false
+  }))
+
   // --- The filter of the menu: a word keeps the pages that match ---------------------------------
   // The groups come back as they were served when the word is cleared.
   const filter = $('.side-filter input')
@@ -111,6 +131,8 @@
   if (filter) {
     const groups = $$('.side details.group')
     const settled = groups.map((group) => group.open)
+    // The groups of the routers not chosen are not drawn: they hold no match.
+    const unseen = (group) => group.hidden || Boolean(group.dataset.router && group.dataset.router !== html.dataset.router)
     filter.addEventListener('input', () => {
       const word = filter.value.trim().toLowerCase()
       let found = 0
@@ -123,7 +145,10 @@
         })
         group.hidden = Boolean(word) && hits === 0
         group.open = word ? hits > 0 : settled[index]
-        found += hits
+        if (!unseen(group)) found += hits
+      })
+      $$('.side-part').forEach((part) => {
+        part.hidden = Boolean(word) && $$('details.group', part).every(unseen)
       })
       if (empty) empty.hidden = found > 0
     })

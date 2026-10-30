@@ -74,8 +74,8 @@ class TestNeighbours:
 
     def test_the_neighbours_are_read_inside_one_track(self, tracks):
         track = source.track_of(tracks, "guides/actions")
-        before, after = source.neighbours(track, "guides/actions")
-        assert {before.track, after.track} == {track.slug}
+        near = [page for page in source.neighbours(track, "guides/actions") if page]
+        assert near and {page.track for page in near} == {track.slug}
 
 
 class TestRender:

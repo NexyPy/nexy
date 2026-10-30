@@ -1,4 +1,4 @@
-"""The docs speak of two routers, like Next.js speaks of two: the menu shows the one you chose."""
+"""The docs speak of three routers: the menu shows the routing groups of the one you chose."""
 
 from __future__ import annotations
 
@@ -35,9 +35,9 @@ class TestRouterOfAPage:
 
     def test_the_routers_are_named_for_the_selector(self):
         assert source.ROUTERS == (
-            ("fbr", "File-based"),
-            ("modular", "Modular"),
-            ("custom", "Custom"),
+            ("fbr", "FBR", "File-based routing"),
+            ("modular", "Modular", "Controllers, modules and injection"),
+            ("custom", "Custom Router", "Create your own router"),
         )
 
     def test_every_page_of_a_router_folder_knows_its_router(self):
@@ -77,6 +77,27 @@ class TestTracks:
         assert all(group.pages for track in tracks for group in track.groups)
 
 
+class TestGroupRouter:
+    def test_a_group_of_one_router_folder_belongs_to_that_router(self):
+        groups = [g for t in source.read_tracks(DOCS) for g in t.groups]
+        assert {"fbr", "modular", "custom"} <= {g.router for g in groups}
+
+    def test_every_page_of_a_router_group_is_of_that_router(self):
+        groups = [g for t in source.read_tracks(DOCS) for g in t.groups if g.router]
+        assert all(p.router == g.router for g in groups for p in g.pages)
+
+    def test_a_group_of_shared_pages_belongs_to_no_router(self):
+        group = source.group_of(source.read_tracks(DOCS), "guides/actions")
+        assert group.router is None
+
+    def test_the_pager_never_crosses_into_another_router(self):
+        tracks = source.read_tracks(DOCS)
+        for track in tracks:
+            for page in source.pages_of(track):
+                near = [p for p in source.neighbours(track, page.slug) if p]
+                assert {p.router for p in near} <= {None, page.router}, page.slug
+
+
 class TestVanillaMenu:
     @pytest.fixture(scope="class")
     def out(self, tmp_path_factory):
@@ -87,23 +108,35 @@ class TestVanillaMenu:
     def _html(self, out, slug):
         return (out / "docs" / slug / "index.html").read_text(encoding="utf-8")
 
-    def test_the_menu_of_a_page_holds_only_its_area(self, out):
+    def test_the_menu_of_a_page_holds_every_section(self, out):
         html = self._html(out, "routing/modular")
-        assert "Dependency injection" in html and "Dynamic routes" not in html
+        assert all(
+            f'<p class="side-section">{track.label}</p>' in html
+            for track in source.read_tracks(DOCS)
+        )
 
-    def test_the_selector_names_every_track(self, out):
+    def test_the_routing_groups_carry_their_router(self, out):
         html = self._html(out, "guides/actions")
-        assert all(f"<b>{track.label}</b>" in html for track in source.read_tracks(DOCS))
+        assert all(f'data-router="{key}"' in html for key, _name, _blurb in source.ROUTERS)
+
+    def test_the_selector_names_every_router(self, out):
+        html = self._html(out, "guides/actions")
+        assert all(f"<b>{name}</b>" in html for _key, name, _blurb in source.ROUTERS)
 
     def test_every_choice_of_the_selector_has_an_icon(self, out):
         html = self._html(out, "guides/actions")
-        assert html.count('class="area-icon"') == len(source.read_tracks(DOCS)) + 1
+        assert html.count('class="area-icon"') == 2 * len(source.ROUTERS)
 
-    def test_the_selector_marks_the_track_of_the_page(self, out):
-        html = self._html(out, "reference/cli")
-        assert re.search(
-            r'aria-current="true"><span class="area-icon">.*?<b>Reference</b>', html, re.S
-        )
+    def test_the_selector_marks_the_router_of_the_page(self, out):
+        html = self._html(out, "routing/modular")
+        assert 'data-pick="modular" aria-current="true"' in html
+
+    def test_a_router_page_tells_its_router_before_the_first_paint(self, out):
+        html = self._html(out, "routing/modular")
+        assert '<meta name="nexy-router" content="modular">' in html
+
+    def test_a_shared_page_names_no_router(self, out):
+        assert '<meta name="nexy-router"' not in self._html(out, "guides/actions")
 
     def test_only_the_section_of_the_page_is_open(self, out):
         html = self._html(out, "guides/actions")
@@ -114,9 +147,9 @@ class TestVanillaMenu:
         html = self._html(out, "guides/actions")
         assert 'name="nav"' not in html
 
-    def test_the_pager_stays_inside_the_area(self, out):
+    def test_the_pager_stays_inside_the_router(self, out):
         html = self._html(out, "routing/modular")
-        assert "Quick start" not in html.split('class="pager"')[1]
+        assert "/fbr/" not in html.split('class="pager"')[1]
 
 
 class TestAssets:
@@ -127,6 +160,17 @@ class TestAssets:
     def test_the_panel_scrolls_inside_on_a_wide_screen(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert "html, body { height: 100%; overflow: hidden; }" in css
+
+    def test_the_router_choice_is_kept(self):
+        script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")
+        assert "nexy-docs-router" in script
+
+    def test_the_routers_not_chosen_are_not_drawn(self):
+        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
+        assert all(
+            f'html[data-router="{key}"] .side [data-router]:not([data-router="{key}"])' in css
+            for key, _name, _blurb in source.ROUTERS
+        )
 
     def test_the_menu_filter_is_wired(self):
         script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")

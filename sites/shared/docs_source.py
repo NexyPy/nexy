@@ -114,8 +114,13 @@ _SVG = re.compile(r"<svg.*?</svg>", re.DOTALL)
 Link = Callable[[str], str]
 
 
-# The three ways to route a Nexy app, as the docs name them: (folder under docs/routing, label).
-ROUTERS = (("fbr", "File-based"), ("modular", "Modular"), ("custom", "Custom"))
+# The three ways to route a Nexy app, as the selector names them:
+# (folder under docs/routing, name, what it is).
+ROUTERS = (
+    ("fbr", "FBR", "File-based routing"),
+    ("modular", "Modular", "Controllers, modules and injection"),
+    ("custom", "Custom Router", "Create your own router"),
+)
 
 
 @dataclass(frozen=True)
@@ -134,16 +139,21 @@ class Page:
 
 @dataclass(frozen=True)
 class Group:
-    """A menu folder: the pages that answer one question, and a line saying why."""
+    """A menu folder: the pages that answer one question, and a line saying why.
+
+    `router` is set when every page lives in the folder of one router: the menu then shows the
+    group only while that router is chosen.
+    """
 
     title: str
     blurb: str
     pages: list[Page]
+    router: str | None = None
 
 
 @dataclass(frozen=True)
 class Track:
-    """A learning path: one step of the docs, made of ordered groups."""
+    """A section of the menu: a heading over ordered groups, all shown at once."""
 
     slug: str
     label: str
@@ -172,7 +182,7 @@ def slug_of(relative: str) -> str:
 
 def router_of(slug: str) -> str | None:
     """`fbr`, `modular` or `custom` for a `routing/<router>` page; None for the rest."""
-    for router, _label in ROUTERS:
+    for router, _name, _blurb in ROUTERS:
         folder = f"routing/{router}"
         if slug == folder or slug.startswith(f"{folder}/"):
             return router
@@ -217,8 +227,13 @@ def _summary(row: str) -> str:
     return " ".join(cells[1].replace("`", "").split()) if len(cells) > 1 else ""
 
 
+def _router_of_group(pages: list[Page]) -> str | None:
+    routers = {page.router for page in pages}
+    return routers.pop() if len(routers) == 1 else None
+
+
 def read_tracks(docs: Path) -> list[Track]:
-    """The learning path of docs/README.md: `##` a track, `###` a group, each table its pages."""
+    """The menu of docs/README.md: `##` a section, `###` a group, each table its pages."""
     tracks: list[Track] = []
     label = blurb = ""
     groups: list[Group] = []
@@ -230,7 +245,7 @@ def read_tracks(docs: Path) -> list[Track]:
     def close_group() -> None:
         nonlocal group_title, group_blurb, pages
         if group_title and pages:
-            groups.append(Group(group_title, group_blurb, pages))
+            groups.append(Group(group_title, group_blurb, pages, _router_of_group(pages)))
         group_title, group_blurb, pages = "", "", []
 
     def close_track() -> None:
@@ -315,11 +330,12 @@ def find(tracks: list[Track], slug: str) -> Page | None:
 
 
 def neighbours(track: Track, slug: str) -> tuple[Page | None, Page | None]:
-    """The page before and the page after, in the order of the track."""
-    pages = pages_of(track)
-    index = next((i for i, page in enumerate(pages) if page.slug == slug), None)
-    if index is None:
+    """The page before and the page after, in the order of the section, never in another router."""
+    page = next((p for g in track.groups for p in g.pages if p.slug == slug), None)
+    if page is None:
         return None, None
+    pages = [p for g in track.groups for p in g.pages if p.router in (None, page.router)]
+    index = pages.index(page)
     before = pages[index - 1] if index > 0 else None
     after = pages[index + 1] if index + 1 < len(pages) else None
     return before, after

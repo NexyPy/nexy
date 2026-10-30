@@ -68,24 +68,32 @@ def test_links_between_pages_point_to_the_site(answers):
     assert 'href="/docs/guides/middleware-and-security"' in answers[ACTIONS][2]
 
 
-def test_the_menu_of_a_page_holds_only_its_area(answers):
-    """A page of the Nexy area sees its own pages, never those of a router."""
+def test_the_menu_of_a_page_holds_every_section(answers):
     menu = _menu(answers[ACTIONS][2])
-    assert "Actions" in menu and "Dependency injection" not in menu
+    tracks = docs_source.read_tracks(DOCS)
+    assert all(f'<p class="side-section">{track.label}</p>' in menu for track in tracks)
 
 
-def test_the_selector_names_every_track(answers):
+def test_the_groups_of_a_router_name_their_router(answers):
     menu = _menu(answers[ACTIONS][2])
-    assert all(f"<b>{track.label}</b>" in menu for track in docs_source.read_tracks(DOCS))
+    assert all(f'data-router="{key}"' in menu for key, _, _ in docs_source.ROUTERS)
 
 
-def test_the_selector_marks_the_track_of_the_page(answers):
-    body = answers[MODULAR][2]
-    assert re.search(
-        r'aria-current="true"\s*>\s*<span class="area-icon">.*?<b>Advanced</b>',
-        body,
-        re.S,
-    )
+def test_the_selector_names_every_router(answers):
+    menu = _menu(answers[ACTIONS][2])
+    assert all(f"<b>{name}</b>" in menu for _, name, _ in docs_source.ROUTERS)
+
+
+def test_the_selector_marks_the_router_of_the_page(answers):
+    assert re.search(r'data-pick="modular"\s+aria-current="true"', answers[MODULAR][2])
+
+
+def test_a_router_page_names_its_router(answers):
+    assert re.search(r'<meta name="nexy-router" content="modular"', answers[MODULAR][2])
+
+
+def test_a_shared_page_names_no_router(answers):
+    assert '<meta name="nexy-router"' not in answers[ACTIONS][2]
 
 
 def test_only_the_section_of_the_page_is_open(answers):
@@ -108,13 +116,12 @@ def test_the_menu_head_stays_while_the_groups_scroll(answers):
 
 def test_the_menu_is_drawn_by_the_server(answers):
     """No script builds the menu: it is already in the response."""
-    head = answers[ACTIONS][2].split("</head>")[0]
-    assert 'data-section="' in answers[ACTIONS][2] and "dataset.router" not in head
+    assert 'data-section="' in answers[ACTIONS][2]
 
 
-def test_the_pager_stays_inside_the_area(answers):
+def test_the_pager_stays_inside_the_router(answers):
     tail = answers[MODULAR][2].split('class="pager"', 1)[1].split("</nav>", 1)[0]
-    assert "Quick start" not in tail
+    assert "/fbr/" not in tail
 
 
 def test_a_page_that_does_not_exist_is_not_found(answers):

@@ -55,32 +55,40 @@ def _root(current: str) -> str:
     return posixpath.join(*[".."] * depth)
 
 
-def track_select_html(tracks: list[source.Track], current: source.Track, page: str) -> str:
-    """The selector above the menu: the path of the page, and a link to the start of each other."""
+def _router_face(key: str, name: str, blurb: str) -> str:
+    return (
+        f'<span class="area-icon">{ICONS[f"router_{key}"]}</span>'
+        f'<span class="area-text"><b>{escape(name)}</b><small>{escape(blurb)}</small></span>'
+    )
 
-    def first(track: source.Track) -> str:
-        pages = source.pages_of(track)
-        return relative(page, pages[0].slug) if pages else relative(page, "")
 
-    def face(track: source.Track) -> str:
-        icon = ICONS.get(f"track_{track.slug.replace('-', '_')}", ICONS["icon_book"])
-        return (
-            f'<span class="area-icon">{icon}</span>'
-            f'<span class="area-text"><b>{escape(track.label)}</b>'
-            f"<small>{escape(track.blurb)}</small></span>"
-        )
+def router_select_html(page: source.Page) -> str:
+    """The router above the menu: it picks the routing groups; each choice leads to its overview.
 
+    The summary holds every face and the stylesheet shows the chosen one, so a page shared by the
+    three routers is drawn once and still names the router the reader chose.
+    """
+    chosen = page.router or source.ROUTERS[0][0]
+    faces = "".join(
+        f'<span class="area-face" data-router="{key}">{_router_face(key, name, blurb)}</span>'
+        for key, name, blurb in source.ROUTERS
+    )
     items = "".join(
-        f'<li><a href="{first(track)}"'
-        f"{' aria-current="true"' if track.slug == current.slug else ''}>"
-        f"{face(track)}{ICONS['icon_check']}</a></li>"
-        for track in tracks
+        f'<li><a href="{relative(page.slug, f"routing/{key}")}" data-pick="{key}"'
+        f"{' aria-current="true"' if key == chosen else ''}>"
+        f"{_router_face(key, name, blurb)}{ICONS['icon_check']}</a></li>"
+        for key, name, blurb in source.ROUTERS
     )
     return (
-        f'<details class="area-select" aria-label="Documentation path">'
-        f"<summary>{face(current)}{ICONS['icon_select']}</summary>"
+        f'<details class="area-select" aria-label="Router">'
+        f"<summary>{faces}{ICONS['icon_select']}</summary>"
         f"<ul>{items}</ul></details>"
     )
+
+
+def router_meta(page: source.Page) -> str:
+    """Tells the first-paint script which router a page belongs to; nothing for a shared page."""
+    return f'<meta name="nexy-router" content="{page.router}">' if page.router else ""
 
 
 def _nav_item(page: source.Page, current: str) -> str:
@@ -93,24 +101,25 @@ def _nav_group(group: source.Group, current: str, opens: bool) -> str:
     items = "".join(_nav_item(page, current) for page in group.pages)
     count = len(group.pages)
     opened = " open" if opens else ""
+    router = f' data-router="{group.router}"' if group.router else ""
     # The count and the chevron close the line: no other ornament.
     return (
-        f'<details class="group" data-section="{escape(group.title)}"{opened}>'
+        f'<details class="group" data-section="{escape(group.title)}"{router}{opened}>'
         f'<summary><span class="group-name">{escape(group.title)}</span>'
         f'<span class="group-count">{count}</span>{ICONS["icon_chev"]}</summary>'
         f"<ul>{items}</ul></details>"
     )
 
 
-def nav_html(track: source.Track, current: str) -> str:
-    """The side menu of one learning path: one accordion group per folder."""
-    # A reader who arrives on the home page has chosen no page yet: the first steps are open.
-    holder = next(
-        (i for i, group in enumerate(track.groups) if any(p.slug == current for p in group.pages)),
-        0,
-    )
-    groups = "".join(
-        _nav_group(group, current, i == holder) for i, group in enumerate(track.groups)
+def nav_html(tracks: list[source.Track], current: str) -> str:
+    """The side menu: every section under its heading, one accordion group per folder."""
+    # A reader who arrives on the home page has chosen no page yet: the first group is open.
+    opened = source.group_of(tracks, current)
+    parts = "".join(
+        f'<div class="side-part"><p class="side-section">{escape(track.label)}</p>'
+        + "".join(_nav_group(group, current, group is opened) for group in track.groups)
+        + "</div>"
+        for track in tracks
     )
     foot = (
         '<p class="side-empty" hidden>No page matches.</p>'
@@ -119,7 +128,7 @@ def nav_html(track: source.Track, current: str) -> str:
         '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>'
         "</div>"
     )
-    return groups + foot
+    return parts + foot
 
 
 def toc_html(headings: list[source.Heading]) -> str:
@@ -184,8 +193,9 @@ def _page_html(
         seo=_head(page, rendered, site_url),
         root=_root(page.slug),
         home=relative(page.slug, ""),
-        nav=nav_html(track, page.slug),
-        area_select=track_select_html(tracks, track, page.slug),
+        nav=nav_html(tracks, page.slug),
+        area_select=router_select_html(page),
+        router_meta=router_meta(page),
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
         article=rendered.html,
