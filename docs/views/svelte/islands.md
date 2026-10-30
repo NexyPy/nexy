@@ -74,16 +74,14 @@ never reach the component.
 | `client:idle` | when the browser is idle |
 | `client:visible` | when the island scrolls into view |
 | `client:media` | when the `media` query matches |
-| `client:only` | renders in the browser only, no server HTML |
 | `client:manual` | when your code asks |
 
 ```nexy
 <Chart directive="client:visible" />
 <Sidebar directive="client:media" media="(min-width: 768px)" />
-<Map directive="client:only" />
 ```
 
-Use `client:only` for a component that reads `window` while it renders.
+The server renders the island in Node: code that reads `window` or `document` goes in `onMount`.
 
 ## What an island can use
 
