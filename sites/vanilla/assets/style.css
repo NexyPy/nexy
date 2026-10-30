@@ -165,7 +165,6 @@ body::before {
   background: color-mix(in srgb, var(--paper) 82%, transparent);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  view-transition-name: nx-bar;
 }
 .bar-link {
   display: grid;
@@ -246,7 +245,6 @@ body::before {
   overflow: auto;
   overscroll-behavior: contain;
   padding: 0 0.9rem 1.5rem;
-  view-transition-name: nx-side;
 }
 .side-top {
   position: sticky;
@@ -307,65 +305,18 @@ body::before {
   z-index: 1;
 }
 
-/* Single scroll container for sidebar */
 html {
   --side: 16rem;
 }
 @media (max-width: 900px) {
   html { --side: 100%; }
 }
-@media (min-width: 901px) {
-  .side {
-    height: 100vh;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding-bottom: 2rem;
-  }
-  .side-top {
-    position: sticky;
-    top: 0;
-    background: var(--bg-page);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    padding: 0.9rem 0.9rem 0.8rem;
-    z-index: 3;
-  }
-}
-
-/* Motion and page transitions */
 :root {
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --spacing: 16px;
   --duration: 0.32s;
 }
 
-/* Page transitions */
-html {
-  view-transition-name: nx-page;
-}
-::view-transition-old(nx-page),
-::view-transition-new(nx-page) {
-  animation: nx-fade 0.3s var(--ease) both;
-}
-@keyframes nx-fade {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(8px); }
-}
-
-/* Theme transitions */
-.theme-switch {
-  view-transition-name: nx-theme;
-}
-::view-transition-old(nx-theme),
-::view-transition-new(nx-theme) {
-  animation: nx-theme 0.3s var(--ease) both;
-}
-@keyframes nx-theme {
-  from { transform: scale(1); }
-  to { transform: scale(0.9); }
-}
-
-/* Sidebar transitions */
+/* Sidebar transitions: the fold only, never a snapshot of the page. */
 .side {
   transition: transform var(--duration) var(--ease), opacity var(--duration) var(--ease);
 }
@@ -373,20 +324,6 @@ html[data-side="closed"] .side {
   transform: translateX(-1rem);
   opacity: 0;
   pointer-events: none;
-}
-
-/* Progress ring */
-.toc .progress-ring-circle {
-  stroke: var(--signal);
-  opacity: 0.7;
-}
-
-/* Sidebar group animations */
-.side details.group {
-  transition: all 0.2s var(--ease);
-}
-.side details.group[open] .chev {
-  transform: rotate(90deg);
 }
 
 /* Reduced motion support */
@@ -547,7 +484,6 @@ html[data-side="closed"] .side {
   background: color-mix(in srgb, var(--signal) 10%, transparent);
   color: var(--signal);
   font-weight: 600;
-  view-transition-name: nx-current;
 }
 /* The folder holding the page is named in the accent, even while another folder is open. */
 .side details.group:has(a[aria-current="page"]) .group-name { color: var(--signal); }
@@ -625,22 +561,6 @@ html[data-side="closed"] .side {
   text-transform: none;
   letter-spacing: 0;
 }
-.toc .progress-ring {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-}
-.toc .progress-ring svg {
-  width: 100%;
-  height: 100%;
-}
-.toc .progress-ring-circle {
-  transition: stroke-dashoffset 0.1s linear;
-  transform: rotate(-90deg);
-  transform-origin: 50% 50%;
-}
 .toc ul { display: flex; flex-direction: column; }
 .toc a {
   position: relative;
@@ -670,11 +590,6 @@ html[data-side="closed"] .side {
 .toc .top-link { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--line); }
 .toc .top-link a { border-left: 0; padding-left: 0; font: 500 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
 .toc .top-link a::before { display: none; }
-
-/* Hide the page progress bar where the TOC is shown (wider screens) */
-@media (min-width: 901px) {
-  .toc ~ .panel .progress { display: none; }
-}
 
 /* The page. */
 .page { min-width: 0; padding: 1.5rem clamp(1.25rem, 3.5vw, 3rem) 6rem; }
@@ -1137,33 +1052,9 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   .doc table { font-size: 0.85rem; }
 }
 
-/* Motion. Moving between pages is a tab switch: the menu and the bar stay, the content slides. */
-@view-transition { navigation: auto; }
+/* A click never stacks two snapshots of the page: no view transition, no overlay. The theme
+   swaps at once, and only the article rises in on load. */
 :root { interpolate-size: allow-keywords; }
-::view-transition-old(root) { animation: nx-leave 0.16s ease-in both; }
-::view-transition-new(root) { animation: nx-enter 0.32s var(--ease) both; }
-::view-transition-group(nx-side),
-::view-transition-group(nx-bar) { animation-duration: 0s; }
-::view-transition-old(nx-side), ::view-transition-new(nx-side),
-::view-transition-old(nx-bar), ::view-transition-new(nx-bar) { animation: none; mix-blend-mode: normal; }
-::view-transition-group(nx-current) { animation-duration: 0.3s; animation-timing-function: var(--ease); }
-@keyframes nx-leave { to { opacity: 0; transform: translateY(-4px); } }
-@keyframes nx-enter { from { opacity: 0; transform: translateY(14px); } }
-
-/* The theme changes with a circle that grows from the switch. */
-html.theme-fade::view-transition-old(root) { animation: none; }
-html.theme-fade::view-transition-new(root) { animation: nx-reveal 0.4s var(--ease) both; }
-/* The menu and the bar carry their own view-transition names, which page navigation freezes.
-   During a theme change they would flip before the circle reaches them, so they join it. */
-html.theme-fade .side,
-html.theme-fade .panel-bar,
-html.theme-fade .side a[aria-current="page"] { view-transition-name: none; }
-@keyframes nx-reveal {
-  from { clip-path: circle(0 at var(--tx, 100%) var(--ty, 0)); }
-  to { clip-path: circle(150vmax at var(--tx, 100%) var(--ty, 0)); }
-}
-/* Page changes already move the whole root: the article does not move a second time. */
-html:active-view-transition .doc > * { animation: none; }
 
 /* A section of the menu opens in height instead of jumping. */
 .side details::details-content {
@@ -1200,7 +1091,6 @@ dialog.search[data-fresh] .results li { animation: nx-rise 0.26s var(--ease) bot
 @media (prefers-reduced-motion: reduce) {
   html, .panel { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
-  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 
 /* Code colours: Pygments classes written at build time (tok-*), so code is coloured without a script. */
