@@ -1090,10 +1090,20 @@ dialog.search {
   color: var(--ink);
   box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.5);
 }
-dialog.search::backdrop { background: rgb(0 0 0 / 0.5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+/* The backdrop is a dark sheet over a grid: the search floats above the page it dims. */
+dialog.search::backdrop {
+  background-color: rgb(8 8 8 / 0.55);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 8px 8px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
 dialog.search form { margin: 0; }
 dialog.search input { width: 100%; padding: 1rem 1.1rem; border: 0; border-bottom: 1px solid var(--line); border-radius: 0.75rem 0.75rem 0 0; background: transparent; color: inherit; font: 15.5px var(--sans); }
 dialog.search input:focus { outline: 0; }
+dialog.search input::placeholder { color: var(--muted); }
 .results { list-style: none; margin: 0; padding: 0.4rem; max-height: 52vh; overflow: auto; }
 .results a { display: block; padding: 0.65rem 0.75rem; border-radius: 0.4rem; color: var(--ink); text-decoration: none; }
 .results a small { display: block; margin-top: 0.1rem; color: var(--muted); font: 500 10px/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
@@ -1173,7 +1183,11 @@ dialog.search input:focus { outline: 0; }
   position: fixed;
   inset: 0;
   z-index: 25;
-  background: rgb(0 0 0 / 0.5);
+  background-color: rgb(8 8 8 / 0.55);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 8px 8px;
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
   opacity: 0;
