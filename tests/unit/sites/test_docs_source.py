@@ -151,6 +151,18 @@ class TestHighlight:
         html = self._html(tmp_path, "nexy", "<h1>{{ title }}</h1>")
         assert 'class="tok-' in html
 
+    def test_the_logic_of_a_nexy_file_is_coloured_as_python(self, tmp_path):
+        html = self._html(tmp_path, "nexy", "---\ndef run():\n    pass\n---")
+        assert '<span class="tok-k">def</span>' in html
+
+    def test_the_template_after_the_bars_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "nexy", "---\nx = 1\n---\n<h1>{{ x }}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
+
+    def test_the_bars_of_a_nexy_frontmatter_are_kept(self, tmp_path):
+        html = self._html(tmp_path, "nexy", "---\nx = 1\n---\n<p>hi</p>")
+        assert html.count('<span class="tok-bar">---</span>') == 2
+
     def test_an_unknown_language_stays_plain(self, tmp_path):
         assert "tok-" not in self._html(tmp_path, "klingon", "qapla")
 

@@ -677,8 +677,6 @@ html[data-side="closed"] .side {
   color: var(--pre-ink);
   font: 13px/1.7 var(--mono);
   tab-size: 2;
-  --t-key: #ff7b72; --t-str: #a5d6ff; --t-com: #8b949e; --t-fn: #d2a8ff; --t-num: #79c0ff;
-  --t-cls: #ffa657; --t-tag: #7ee787; --t-attr: #79c0ff;
 }
 .doc pre code { display: block; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; white-space: pre; }
 /* One row per line: a marked line paints the whole width of the block. */
@@ -1258,11 +1256,11 @@ dialog.search[data-fresh] .results li { animation: nx-rise 0.26s var(--ease) bot
 /* Code colours: Pygments classes written at build time (tok-*), so code is coloured without a script. */
 :root {
   --t-key: #cf222e; --t-str: #0a3069; --t-com: #6e7781; --t-fn: #8250df; --t-num: #0550ae;
-  --t-cls: #953800; --t-tag: #116329; --t-attr: #0550ae;
+  --t-cls: #953800; --t-tag: #116329; --t-attr: #0550ae; --t-var: #1f4f9c; --t-op: #0550ae;
 }
 :root[data-theme="dark"] {
   --t-key: #ff7b72; --t-str: #a5d6ff; --t-com: #8b949e; --t-fn: #d2a8ff; --t-num: #79c0ff;
-  --t-cls: #ffa657; --t-tag: #7ee787; --t-attr: #79c0ff;
+  --t-cls: #ffa657; --t-tag: #7ee787; --t-attr: #79c0ff; --t-var: #9cdcfe; --t-op: #79c0ff;
 }
 [class^="tok-k"] { color: var(--t-key); }
 [class^="tok-s"] { color: var(--t-str); }
@@ -1270,8 +1268,13 @@ dialog.search[data-fresh] .results li { animation: nx-rise 0.26s var(--ease) bot
 [class^="tok-m"] { color: var(--t-num); }
 .tok-nf, .tok-fm, .tok-nd { color: var(--t-fn); }
 .tok-nc, .tok-nn, .tok-ne, .tok-nb, .tok-bp { color: var(--t-cls); }
+.tok-bar, .tok-cp { color: var(--pre-muted); font-style: normal; }
+.tok-nv { color: var(--t-attr); }
 .tok-nt { color: var(--t-tag); }
 .tok-na { color: var(--t-attr); }
+.tok-n { color: var(--t-var); }
+[class^="tok-o"] { color: var(--t-op); }
+.tok-ow { color: var(--t-key); }
 .tok-err { color: inherit; background: none; border: 0; }
 
 /* The drawer takes the page with it: nothing scrolls or takes a tab stop behind it. */

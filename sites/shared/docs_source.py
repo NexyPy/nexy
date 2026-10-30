@@ -38,6 +38,8 @@ _MARK = re.compile(
 _LINE_KIND = {"++": "add", "--": "del", "highlight": "hl"}
 # Pygments writes spans only: this walks them to close and reopen a token on each newline.
 _TAG = re.compile(r"<span[^>]*>|</span>|\n")
+# A .nexy file opens with its Python logic between two bars; the template follows.
+_FRONTMATTER = re.compile(r"\A---[ \t]*\n(?P<logic>.*?)^---[ \t]*$", re.DOTALL | re.MULTILINE)
 
 # A `diagram` fence is an illustration drawn with characters: no language, no colouring.
 _DIAGRAM = re.compile(r'<pre lang="diagram(__file(\d+))?"><code>(.*?)</code></pre>', re.DOTALL)
@@ -607,20 +609,32 @@ def _lines(coloured: str, kinds: list[str]) -> str:
     return "".join(rows)
 
 
+def _paint(text: str, language: str) -> str:
+    """One stretch of a fence, coloured by the rules of the language it is written in."""
+    lexer = _lexer(language)
+    return text if lexer is None else highlight(text, lexer, _FORMATTER)
 
 
-
-
+def _nexy(text: str) -> str:
+    """A .nexy file is Python between its bars, then the template it renders."""
+    head = _FRONTMATTER.match(text)
+    if head is None:
+        return _paint(text, "nexy").rstrip("\n")
+    bar = '<span class="tok-bar">---</span>'
+    parts = [bar, _paint(head["logic"], "python").rstrip("\n"), bar]
+    view = text[head.end() :].lstrip("\n")
+    if view.strip():
+        parts.append(_paint(view, "nexy").rstrip("\n"))
+    return "\n".join(parts)
 
 
 def _colour(found: re.Match[str]) -> str:
     """Colour one code block at build time, so it needs no script to be readable."""
     language, escaped = found[1], found[2]
-    lexer = _lexer(language)
-    if lexer is None:
+    if _lexer(language) is None:
         return found[0]
     text, kinds = _marked(htmllib.unescape(escaped))
-    coloured = highlight(text, lexer, _FORMATTER).rstrip("\n")
+    coloured = _nexy(text) if language == "nexy" else _paint(text, language).rstrip("\n")
     return f'<pre lang="{language}"><code>{_lines(coloured, kinds)}</code></pre>'
 
 
