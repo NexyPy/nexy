@@ -83,10 +83,10 @@ class TestPageContent:
         assert 'class="pager"' in html
 
     def test_the_menu_is_made_of_collapsible_sections(self, html):
-        # Each section is a <details> of the same accordion, and the one holding
-        # the current page is the only one open.
-        assert '<details class="group" name="nav" data-section="Guides">' in html
-        assert '<details class="group" name="nav" data-section="Build" open>' in html
+        # Each section is a <details>: the one holding the current page is open, the
+        # others are not, and opening one never closes another.
+        assert '<details class="group" data-section="Guides">' in html
+        assert '<details class="group" data-section="Build" open>' in html
 
     def test_a_section_says_how_many_pages_it_holds(self, html):
         # The badge counts the links the section really shows, whatever the README holds.

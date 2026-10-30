@@ -26,13 +26,6 @@ the code.
 - **I must pick an option**: open [Choose](#choose) (router, rendering mode, client framework).
 - **I need an exact name or flag**: open [Reference](#reference).
 
-## Where to start
-
-- **I want to see it work**: [Quick start](getting-started/quick-start.md), then the [Tutorial](getting-started/tutorial.md).
-- **I am building a feature**: open [Build](#build) and follow the task.
-- **I must pick an option**: open [Choose](#choose) (router, rendering mode, client framework).
-- **I need an exact name or flag**: open [Reference](#reference).
-
 ## Getting started
 
 | Page | What you will do |
