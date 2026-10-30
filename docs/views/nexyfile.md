@@ -2,6 +2,9 @@
 
 A `.nexy` file is a component: Python on top, HTML in the middle, CSS at the bottom.
 
+**Before you start:** a project created by the [Quick start](../getting-started/quick-start.md).
+A `.nexy` file needs no build configuration: `nx dev` compiles it on save.
+
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
 from nexy import usePathname
