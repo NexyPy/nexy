@@ -7,7 +7,7 @@ client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an A
 
 - **A page from a file**: `.nexy`, Markdown and MDX routes, layouts, metadata. [Pages](routing/fbr/pages/README.md)
 - **A Python API**: FastAPI handlers named after the HTTP method, validation, WebSocket. [Route handlers](routing/fbr/handlers/README.md)
-- **A client framework**: React, Vue, Svelte, Solid and Preact, mixed in one project. [Views](views/README.md)
+- **A client framework**: React, Vue, Svelte, Solid or Preact, one per project. [Views](views/README.md)
 - **Control over rendering**: SSR, ISR, CSR and islands, per page. [Rendering](rendering/README.md)
 - **A typed call to Python**: Actions, from a form or from TypeScript. [Actions](guides/actions.md)
 - **A structured backend**: Modular router with injection, guards and metadata. [Modular routing](routing/modular/README.md)
@@ -16,20 +16,20 @@ client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an A
 - **A deployable build**: `nx build` and `nx start`, no Node at runtime. [Deploy](deployment/README.md)
 - **Help from a coding agent**: Project rules for Claude Code, Codex and OpenCode. [Coding agents](guides/ai-agents.md)
 
-The docs follow one path. Start with a running page, learn the model behind it, build the features
-you need, then look up exact names when you need them. Every page states what you will be able to do
-and ends with the page that answers the next question.
+The menu holds every section at once. Pick your router once (file-based, modular or custom): only
+the routing pages change with it. Every page states what you will be able to do and ends with the
+page that answers the next question.
 
 ## Where to start
 
 - **I want to see it work**: [Quick start](getting-started/quick-start.md), then the [Tutorial](getting-started/tutorial.md).
-- **I am building a feature**: open [Build](#build) and follow the task.
-- **I must pick an option**: open [Choose your stack](#choose-your-stack) (router, rendering mode, client framework).
+- **I am writing routes**: open [Routing](#routing) for the router you chose.
+- **I am writing a view**: open [Views](#views) at your format: `.nexy`, React, Vue, Svelte, Solid or Preact.
 - **I need an exact name or flag**: open [Reference](#reference).
 
-## Start here
+## Get started
 
-Install, then run a page.
+Install, run, understand.
 
 ### First steps
 
@@ -43,12 +43,14 @@ Install, run, build a page.
 
 ### Understand the model
 
-What Nexy generates.
+What Nexy generates, and what to pick.
 
 | Page | What you will do |
 |---|---|
 | [How Nexy works](getting-started/how-nexy-works.md) | Follow one request from the URL to the file that answers it |
 | [Project structure](getting-started/project-structure.md) | Know what every folder and file in a project is for |
+| [Choose a router](routing/README.md) | Pick the file-based, modular or custom router |
+| [Choose a view format](views/README.md) | Pick `.nexy`, Markdown or a client framework for a page |
 
 ### Coming from elsewhere
 
@@ -59,13 +61,13 @@ Translate, or upgrade.
 | [Coming from another framework](getting-started/coming-from-other-frameworks.md) | Translate FastAPI, Next.js and Express habits into Nexy |
 | [Upgrading to 2.2](getting-started/upgrading.md) | Apply the breaking changes from 2.1 to 2.2 |
 
-## Build
+## Routing
 
-Routes, forms and data.
+The router you picked: a URL, then the code that answers it.
 
 ### Routing
 
-A path becomes a URL.
+A file path becomes a URL.
 
 | Page | What you will do |
 |---|---|
@@ -73,74 +75,113 @@ A path becomes a URL.
 | [Pages](routing/fbr/pages/README.md) | Write a page |
 | [Dynamic routes](routing/fbr/pages/dynamic-routes.md) | Use `[slug]`, `[...path]` and route groups |
 | [Page metadata](routing/fbr/pages/metadata.md) | Set the title, description and share image of a page |
-
-### Layouts
-
-Share a layout.
-
-| Page | What you will do |
-|---|---|
 | [Layouts](routing/fbr/layouts/README.md) | Share a frame between pages |
+| [Inheritance](routing/fbr/inheritance.md) | Read the resolution order of layouts, dependencies and error pages |
+| [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
+| [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | Link pages, navigate on the client, prefetch |
+| [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
 
-### API endpoints
+### Handle routes
 
-Endpoints and status codes.
+Endpoints, guards and errors.
 
 | Page | What you will do |
 |---|---|
 | [Route handlers](routing/fbr/handlers/README.md) | Add a Python endpoint |
 | [Validation and errors](routing/fbr/handlers/validation-and-errors.md) | Answer `422` and `404`, and raise an `HTTPException` |
-
-### Forms and actions
-
-Call Python from a form.
-
-| Page | What you will do |
-|---|---|
-| [Actions](guides/actions.md) | Call a Python function from a form or a typed TypeScript function |
-
-### Navigation
-
-Links and prefetch.
-
-| Page | What you will do |
-|---|---|
-| [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | Link pages, navigate on the client, prefetch |
-| [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
-
-### Views and content
-
-Python, Markdown, components.
-
-| Page | What you will do |
-|---|---|
-| [Views](views/README.md) | Choose the format of a page |
-| [.nexy files](views/nexyfile.md) | Write a page with Python, Jinja2 and props |
-| [Markdown and MDX](views/markdown.md) | Write content pages |
-| [Components](views/components.md) | Use `Image`, `Link`, `Audio`, `Video` and `Import` |
-
-### Data and realtime
-
-Databases, sockets, recipes.
-
-| Page | What you will do |
-|---|---|
 | [WebSocket handlers](routing/fbr/realtime/websocket.md) | Handle a `SOCKET` connection |
-| [Internationalization (i18n)](guides/i18n.md) | Add translations with the library of your choice |
-| [Databases](guides/databases.md) | Choose an ORM and run migrations |
-| [Recipes](guides/recipes.md) | Sign in with a session, build a JSON API and upload a file, all tested |
+| [Dependencies and guards](routing/fbr/dependencies/README.md) | Run `dependencies.py` before a handler, and inherit it |
+| [Middleware files](routing/fbr/middleware/README.md) | Wrap requests with `middleware.py`, inherited by directory |
+| [Error pages](routing/fbr/errors/README.md) | Answer with `notfound.nexy`, `errors.nexy` and JSON errors |
+| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
 
-## Choose your stack
+### Modular router
 
-Router, render, framework.
+Controllers and modules.
 
-### Router comparison
-
-Compare the three routers.
-
-| Page | What you will decide |
+| Page | What you will do |
 |---|---|
-| [Routing](routing/README.md) | The file-based, modular or custom router |
+| [Modular routing](routing/modular/README.md) | Mount controllers and modules |
+| [Nexy and NestJS](routing/modular/vs-nestjs.md) | See what matches NestJS and what is missing |
+
+### Services and guards
+
+Injection and protection.
+
+| Page | What you will do |
+|---|---|
+| [Dependency injection](routing/modular/dependency-injection.md) | Define services, their scopes and the container |
+| [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
+
+### Custom router
+
+Your own router.
+
+| Page | What you will do |
+|---|---|
+| [Custom routing](routing/custom/README.md) | Include an existing FastAPI app |
+
+## Views
+
+What a page is written in.
+
+### Nexy views
+
+Python, Jinja2 and Markdown.
+
+| Page | What you will do |
+|---|---|
+| [.nexy files](views/nexyfile.md) | Write a page with Python, Jinja2 and props |
+| [Components](views/components.md) | Use `Image`, `Link`, `Audio`, `Video` and `Import` |
+| [layout.nexy](routing/fbr/layouts/layout.nexy.md) | Write the server-mode layout |
+| [Markdown and MDX](views/markdown.md) | Write content pages |
+
+### React
+
+Pages and islands in React.
+
+| Page | What you will do |
+|---|---|
+| [React](views/react.md) | Use React in a page |
+| [layout.tsx](routing/fbr/layouts/layout.tsx.md) | Write the React client-mode layout that owns `<html>` |
+
+### Vue
+
+Pages and islands in Vue.
+
+| Page | What you will do |
+|---|---|
+| [Vue](views/vue.md) | Use Vue in a page |
+| [layout.vue](routing/fbr/layouts/layout.vue.md) | Write nested layouts for Vue |
+
+### Svelte
+
+Pages and islands in Svelte.
+
+| Page | What you will do |
+|---|---|
+| [Svelte](views/svelte.md) | Use Svelte in a page |
+| [layout.svelte](routing/fbr/layouts/layout.svelte.md) | Write nested layouts for Svelte |
+
+### Solid
+
+Pages and islands in Solid.
+
+| Page | What you will do |
+|---|---|
+| [Solid](views/solid.md) | Use Solid in a page |
+
+### Preact
+
+Pages and islands in Preact.
+
+| Page | What you will do |
+|---|---|
+| [Preact](views/preact.md) | Use Preact in a page |
+
+## Rendering and data
+
+When a page renders, and where its data comes from.
 
 ### Rendering
 
@@ -153,65 +194,17 @@ When pages are rendered.
 | [ISR](rendering/isr.md) | Cache pages with stale-while-revalidate |
 | [CSR](rendering/csr.md) | Client-side routing |
 | [Islands](rendering/islands.md) | Hydrate on idle, visible or media query |
-| [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
 
-### Client framework
+### Forms and data
 
-React, Vue, Svelte and more.
-
-| Page | What you will decide |
-|---|---|
-| [React](views/react.md) | Use React in a page |
-| [Vue](views/vue.md) | Use Vue in a page |
-| [Svelte](views/svelte.md) | Use Svelte in a page |
-| [Solid](views/solid.md) | Use Solid in a page |
-| [Preact](views/preact.md) | Use Preact in a page |
-
-## Advanced
-
-Layouts, guards, router.
-
-### Resolution and layouts
-
-Which layout answers.
+Actions, databases, translations.
 
 | Page | What you will do |
 |---|---|
-| [Inheritance](routing/fbr/inheritance.md) | Read the resolution order of layouts, dependencies and error pages |
-| [layout.nexy](routing/fbr/layouts/layout.nexy.md) | Write the server-mode layout |
-| [layout.tsx](routing/fbr/layouts/layout.tsx.md) | Write the React client-mode layout that owns `<html>` |
-| [layout.vue](routing/fbr/layouts/layout.vue.md) | Write nested layouts for Vue |
-| [layout.svelte](routing/fbr/layouts/layout.svelte.md) | Write nested layouts for Svelte |
-
-### Guards and errors
-
-Protect routes, handle errors.
-
-| Page | What you will do |
-|---|---|
-| [Dependencies and guards](routing/fbr/dependencies/README.md) | Run `dependencies.py` before a handler, and inherit it |
-| [Middleware files](routing/fbr/middleware/README.md) | Wrap requests with `middleware.py`, inherited by directory |
-| [Error pages](routing/fbr/errors/README.md) | Answer with `notfound.nexy`, `errors.nexy` and JSON errors |
-| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
-
-### Modular router
-
-Controllers and services.
-
-| Page | What you will do |
-|---|---|
-| [Modular routing](routing/modular/README.md) | Mount controllers and modules |
-| [Dependency injection](routing/modular/dependency-injection.md) | Define services, their scopes and the container |
-| [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
-| [Nexy and NestJS](routing/modular/vs-nestjs.md) | See what matches NestJS and what is missing |
-
-### Custom router
-
-Mount a FastAPI app.
-
-| Page | What you will do |
-|---|---|
-| [Custom routing](routing/custom/README.md) | Include an existing FastAPI app |
+| [Actions](guides/actions.md) | Call a Python function from a form or a typed TypeScript function |
+| [Databases](guides/databases.md) | Choose an ORM and run migrations |
+| [Internationalization (i18n)](guides/i18n.md) | Add translations with the library of your choice |
+| [Recipes](guides/recipes.md) | Sign in with a session, build a JSON API and upload a file, all tested |
 
 ## Guides
 

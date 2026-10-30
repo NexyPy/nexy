@@ -54,13 +54,14 @@ class TestTracks:
     @pytest.mark.parametrize(
         ("slug", "track"),
         [
-            ("getting-started/installation", "Start here"),
-            ("routing/fbr/pages", "Build"),
-            ("rendering/ssr", "Choose your stack"),
-            ("routing/modular/dependency-injection", "Advanced"),
+            ("getting-started/installation", "Get started"),
+            ("routing/fbr/pages", "Routing"),
+            ("rendering/ssr", "Rendering and data"),
+            ("routing/modular/dependency-injection", "Routing"),
             ("guides/testing", "Guides"),
             ("reference/cli", "Reference"),
-            ("", "Start here"),
+            ("views/react", "Views"),
+            ("", "Get started"),
         ],
     )
     def test_a_page_belongs_to_the_track_that_holds_it(self, slug, track):

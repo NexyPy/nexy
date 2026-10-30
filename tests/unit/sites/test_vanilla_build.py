@@ -86,7 +86,7 @@ class TestPageContent:
         # Each section is a <details>: the one holding the current page is open, the
         # others are not, and opening one never closes another.
         assert '<details class="group" data-section="Routing" data-router="fbr">' in html
-        assert '<details class="group" data-section="Forms and actions" open>' in html
+        assert '<details class="group" data-section="Forms and data" open>' in html
 
     def test_a_section_says_how_many_pages_it_holds(self, html):
         # The badge counts the links the section really shows, whatever the README holds.
