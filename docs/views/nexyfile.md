@@ -30,7 +30,7 @@ compiled; the rest runs for every request, so it can read request state.
 | What | Example |
 |---|---|
 | Import a module | `import json`, `from datetime import datetime` |
-| Import a component | `from "@components/card.nexy" import Card` |
+| Import a component | `from "@/components/card.nexy" import Card` |
 | Declare a property | `title: prop[str] = "Default"` |
 | Compute a value | `year = datetime.now().year` |
 | Read the request | `pathname = usePathname()` |
@@ -41,8 +41,8 @@ compiled; the rest runs for every request, so it can read request state.
 Properties are the component's API. `prop[type]` declares the type, `= value` gives a default. A
 property without a default must be passed by the parent.
 
-Imports that start with an alias are resolved through `useAliases`. The common setup maps `@` to
-`src/`, which makes `@components/card.nexy` mean `src/components/card.nexy`.
+Imports that start with an alias are resolved through `useAliases`. The setup `nx new` writes maps
+`@` to `src`, which makes `@/components/card.nexy` mean `src/components/card.nexy`.
 
 ## Template
 
@@ -73,7 +73,7 @@ rewrites it to a Jinja call: attributes become keyword arguments.
 
 ```nexy filename="src/routes/index.nexy"
 ---
-from "@components/card.nexy" import Card
+from "@/components/card.nexy" import Card
 from nexy import Audio
 ---
 <Card title="Hello">
