@@ -55,7 +55,7 @@ def _root(current: str) -> str:
     return posixpath.join(*[".."] * depth)
 
 
-def _router_face(key: str, name: str, blurb: str) -> str:
+def _router_face(key: str, name: str, _: str) -> str:
     return (
         f'<span class="area-icon">{ICONS[f"router_{key}"]}</span>'
         f'<span class="area-text"><b>{escape(name)}</b></span>'
@@ -105,7 +105,7 @@ def _nav_group(group: source.Group, current: str, opens: bool) -> str:
     return (
         f'<details class="group" data-section="{escape(group.title)}"{router}{opened}>'
         f'<summary><span class="group-name">{escape(group.title)}</span>'
-        f'{ICONS["icon_chev"]}</summary>'
+        f"{ICONS['icon_chev']}</summary>"
         f"<ul>{items}</ul></details>"
     )
 
@@ -115,7 +115,9 @@ def nav_html(tracks: list[source.Track], current: str) -> str:
     # A reader who arrives on the home page has chosen no page yet: the first group is open.
     opened = source.group_of(tracks, current)
     parts = "".join(
-        f'<div class="side-part">{''.join(_nav_group(group, current, group is opened) for group in track.groups)}</div>'
+        f'<div class="side-part">{
+            "".join(_nav_group(group, current, group is opened) for group in track.groups)
+        }</div>'
         for track in tracks
     )
     foot = (
