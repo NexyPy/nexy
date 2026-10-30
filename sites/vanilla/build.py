@@ -12,7 +12,6 @@ from __future__ import annotations
 import argparse
 import json
 import posixpath
-import re
 import shutil
 import sys
 from html import escape as _escape
@@ -25,6 +24,7 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from sites.shared import docs_source as source  # noqa: E402
+from sites.shared import seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
 
 DOCS = REPO / "docs"
@@ -152,9 +152,17 @@ def pager_html(before: source.Page | None, after: source.Page | None, current: s
     return f'<nav class="pager" aria-label="Pages">{previous}{following}</nav>'
 
 
-def _description(rendered: source.Rendered) -> str:
-    first = re.search(r"<p>(.*?)</p>", rendered.html, re.DOTALL)
-    return escape(source.plain(first[1]))[:200] if first else ""
+def _head(page: source.Page, rendered: source.Rendered, site_url: str) -> str:
+    """The tags a crawler reads: the address of the page, its cards, the menu above it."""
+    url = seo.canonical(site_url, page.slug)
+    return seo.Head(
+        title=page.title,
+        description=seo.description(rendered.html),
+        url=url,
+        site_url=site_url,
+        trail=(("Documentation", seo.home(site_url)), (page.label, url)),
+        page_type="TechArticle" if page.slug else "WebPage",
+    ).html()
 
 
 def _page_html(
@@ -163,6 +171,7 @@ def _page_html(
     page: source.Page,
     section: str,
     rendered: source.Rendered,
+    site_url: str,
 ) -> str:
     area = next(a for a in source.AREAS if a.slug == page.area)
     local = source.in_area(sections, area.slug)
@@ -171,7 +180,7 @@ def _page_html(
     home = not page.slug
     return template.substitute(
         title=escape(page.title),
-        description=_description(rendered),
+        seo=_head(page, rendered, site_url),
         root=_root(page.slug),
         home=relative(page.slug, ""),
         nav=nav_html(local, page.slug),
@@ -206,28 +215,59 @@ def not_found_html(base: str) -> str:
     return template.substitute(base=root, mark=MARK, **ICONS)
 
 
-def build(out: Path, docs: Path = DOCS, base: str = "") -> list[Path]:
-    """Write the whole site into `out` and return the pages it wrote.
-
-    `base` is the folder the site is served from (`/nexy` for a project page). Only 404.html needs
-    it, because the server shows that page at the address that failed, whatever its depth.
-    """
+def _pages(docs: Path) -> list[tuple[source.Page, str]]:
+    """Every page of the site, the home first, each with the section of the menu that lists it."""
     sections = source.read_sections(docs)
-    template = Template((HERE / "template.html").read_text(encoding="utf-8"))
-    entries, written = [], []
-    pages = [(source.home(docs), "Documentation")] + [
+    return [(source.home(docs), "Documentation")] + [
         (p, s.title) for s in sections for p in s.pages
     ]
+
+
+def _write_pages(
+    out: Path,
+    docs: Path,
+    pages: list[tuple[source.Page, str]],
+    template: Template,
+    site_url: str,
+) -> list[Path]:
+    """Write one HTML and one Markdown file per page; return the HTML files."""
+    sections = source.read_sections(docs)
+    written, entries = [], []
     for page, section in pages:
         rendered = source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
         target = out / "docs" / page.slug / "index.html"
-        _write(target, _page_html(template, sections, page, section, rendered))
+        _write(target, _page_html(template, sections, page, section, rendered, site_url))
         _write(target.with_name("index.md"), page.path.read_text(encoding="utf-8"))
         url = f"docs/{page.slug}/" if page.slug else "docs/"
         entries.append(source.search_entry(page, section, rendered, url))
         written.append(target)
     _write(out / "search-index.json", json.dumps(entries, separators=(",", ":")))
-    _write(out / "index.html", _redirect())
+    return written
+
+
+def _write_crawl(out: Path, pages: list[tuple[source.Page, str]], site_url: str) -> None:
+    """Write the two files a crawler asks for: the list of pages, and where that list lives."""
+    _write(out / "robots.txt", seo.robots(site_url))
+    _write(out / "sitemap.xml", seo.sitemap(seo.canonical(site_url, p.slug) for p, _ in pages))
+
+
+def build(
+    out: Path,
+    docs: Path = DOCS,
+    base: str = "",
+    site_url: str = seo.DEFAULT_SITE_URL,
+) -> list[Path]:
+    """Write the whole site into `out` and return the pages it wrote.
+
+    `base` is the folder the site is served from (`/nexy` for a project page): only 404.html needs
+    it, because the server shows that page at the address that failed, whatever its depth.
+    `site_url` is the address the site is published at, for the canonical tags and the sitemap.
+    """
+    template = Template((HERE / "template.html").read_text(encoding="utf-8"))
+    pages = _pages(docs)
+    written = _write_pages(out, docs, pages, template, site_url)
+    _write_crawl(out, pages, site_url)
+    _write(out / "index.html", _redirect(site_url))
     _write(out / "404.html", not_found_html(base))
     _write(out / ".nojekyll", "")
     shutil.copytree(HERE / "assets", out / "assets", dirs_exist_ok=True)
@@ -237,11 +277,13 @@ def build(out: Path, docs: Path = DOCS, base: str = "") -> list[Path]:
     return written
 
 
-def _redirect() -> str:
+def _redirect(site_url: str) -> str:
+    """The root of the site: a short page that hands the reader, and the crawler, to the docs."""
     return (
         '<!doctype html><meta charset="utf-8"><title>Nexy</title>'
         '<meta http-equiv="refresh" content="0; url=docs/">'
-        '<link rel="canonical" href="docs/"><a href="docs/">Nexy documentation</a>'
+        f'<link rel="canonical" href="{seo.home(site_url)}">'
+        '<a href="docs/">Nexy documentation</a>'
     )
 
 
@@ -251,9 +293,15 @@ def _arguments(argv: list[str]) -> argparse.Namespace:
         "folder", nargs="?", type=Path, default=HERE / "dist", help="where to write"
     )
     parser.add_argument("--base", default="", help="folder the site is served from, e.g. /nexy")
+    parser.add_argument(
+        "--site-url",
+        default=seo.DEFAULT_SITE_URL,
+        help="address the site is published at, for canonical tags and the sitemap",
+    )
     return parser.parse_args(argv)
 
 
 if __name__ == "__main__":
     options = _arguments(sys.argv[1:])
-    print(f"{len(build(options.folder, base=options.base))} pages written to {options.folder}")
+    count = len(build(options.folder, base=options.base, site_url=options.site_url))
+    print(f"{count} pages written to {options.folder}")

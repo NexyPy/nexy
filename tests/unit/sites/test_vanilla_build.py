@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from sites.shared import docs_source
+from sites.shared import docs_source, seo
 from sites.vanilla import build
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
@@ -152,3 +152,50 @@ class TestSearch:
 
     def test_an_entry_carries_text_but_no_markup(self, index):
         assert all("<" not in e["text"] for e in index)
+
+
+class TestCrawlers:
+    """What Google reads before a reader does: the sitemap, robots, the head of each page."""
+
+    @pytest.fixture(scope="class")
+    def page(self, out) -> str:
+        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+
+    def test_the_sitemap_lists_every_page_once(self, out):
+        listed = (out / "sitemap.xml").read_text(encoding="utf-8").count("<url>")
+        assert listed == len(_pages(out))
+
+    def test_the_sitemap_names_the_published_address_of_a_page(self):
+        xml = seo.sitemap([seo.canonical(seo.DEFAULT_SITE_URL, "guides/actions")])
+        assert f"<loc>{seo.DEFAULT_SITE_URL}/docs/guides/actions/</loc>" in xml
+
+    def test_robots_points_at_the_sitemap(self, out):
+        robots = (out / "robots.txt").read_text(encoding="utf-8")
+        assert f"Sitemap: {seo.DEFAULT_SITE_URL}/sitemap.xml" in robots
+
+    def test_a_page_declares_one_canonical_address(self, page):
+        assert page.count('rel="canonical"') == 1
+        assert f'<link rel="canonical" href="{seo.DEFAULT_SITE_URL}/docs/guides/actions/">' in page
+
+    def test_a_page_says_what_it_is_about(self, page):
+        assert re.search(r'<meta name="description" content="[^"]{20,}">', page)
+
+    def test_a_page_reads_as_a_card(self, page):
+        assert '<meta property="og:title" content="Actions">' in page
+        assert 'property="og:image"' in page and 'name="twitter:card"' in page
+
+    def test_the_card_picture_ships_with_the_site(self, out):
+        assert (out / "assets" / "og.png").is_file()
+
+    def test_the_home_page_says_it_is_a_website(self, out):
+        home = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert 'property="og:type" content="website"' in home
+
+    def test_the_site_url_given_at_build_time_is_the_one_published(self, tmp_path):
+        build.build(tmp_path, site_url="https://example.test/nexy")
+        page = (tmp_path / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+        assert 'href="https://example.test/nexy/docs/guides/actions/"' in page
+
+    def test_the_root_sends_the_crawler_to_the_docs(self, out):
+        root = (out / "index.html").read_text(encoding="utf-8")
+        assert f'href="{seo.home(seo.DEFAULT_SITE_URL)}"' in root
