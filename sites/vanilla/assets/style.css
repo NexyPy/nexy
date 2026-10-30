@@ -137,8 +137,8 @@ body::before {
   background:
     radial-gradient(50% 60% at 0% 0%, var(--glow-a), transparent 70%),
     radial-gradient(40% 50% at 100% 0%, var(--glow-b), transparent 70%),
-    linear-gradient(var(--grid) 1px, transparent 1px) calc(var(--mx, 0) * -8px) calc(var(--my, 0) * -8px) / 56px 56px,
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px) calc(var(--mx, 0) * -8px) calc(var(--my, 0) * -8px) / 56px 56px;
+    linear-gradient(var(--grid) 1px, transparent 1px) calc(var(--mx, 0) * -8px) calc(var(--my, 0) * -8px) / 18px 18px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) calc(var(--mx, 0) * -8px) calc(var(--my, 0) * -8px) / 18px 18px;
   -webkit-mask-image: radial-gradient(80% 90% at 20% 20%, #000, transparent);
   mask-image: radial-gradient(80% 90% at 20% 20%, #000, transparent);
 }
