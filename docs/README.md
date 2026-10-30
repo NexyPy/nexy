@@ -174,11 +174,15 @@ Pages, layouts and islands in Svelte.
 
 ### Solid
 
-Pages and islands in Solid.
+Pages, layouts and islands in Solid.
 
 | Page | What you will do |
 |---|---|
-| [Solid](views/solid.md) | Use Solid in a page |
+| [Solid](views/solid/README.md) | Enable Solid and pick server or client mode |
+| [Pages](views/solid/pages.md) | Write a `.tsx` page, read its params, know when it renders |
+| [Layouts](views/solid/layouts.md) | Write the `layout.tsx` that owns `<html>` |
+| [Islands](views/solid/islands.md) | Put a Solid component in a `.nexy` page |
+| [Actions and navigation](views/solid/actions-and-navigation.md) | Call Python, link pages, read the URL |
 
 ### Preact
 

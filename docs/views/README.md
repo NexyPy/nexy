@@ -21,7 +21,7 @@ Python endpoint              →  .py        (GET, POST, …)
 | `.nexy` | [.nexy files](nexy/README.md) | Jinja2 + Python logic, streamed | optional | Native Nexy page format |
 | `.md` | [Markdown and MDX](nexy/markdown.md) | cmarkgfm at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
 | `.mdx` | [Markdown and MDX](nexy/markdown.md) | framework SSR | React or Preact | Markdown with components |
-| `.tsx` | [React](react/README.md) or [preact.md](preact.md) | framework SSR / SSG | React or Preact | Component routes |
+| `.tsx` | [React](react/README.md), [Solid](solid/README.md) or [preact.md](preact.md) | framework SSR / SSG | React, Solid or Preact | Component routes |
 | `.vue` | [Vue](vue/README.md) | framework SSR / SSG | Vue | SFC routes |
 | `.svelte` | [Svelte](svelte/README.md) | framework SSR / SSG | Svelte | SFC routes |
 

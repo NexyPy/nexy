@@ -30,32 +30,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 `nx new` with React and `useCSR = True` creates this file. The page is passed as `children`; the
 layout also receives the route's props as `params`.
 
-### Solid
-
-The same file in Solid uses `class` and `props.children`. Do not destructure `children`: Solid reads
-it lazily.
-
-```tsx filename="src/routes/layout.tsx"
-import type { JSX } from "solid-js";
-
-export default function RootLayout(props: { children: JSX.Element }) {
-  return (
-    <html lang="en" class="dark">
-      <head>
-        <meta charset="UTF-8" />
-        <title>My app</title>
-      </head>
-      <body>
-        <main>{props.children}</main>
-      </body>
-    </html>
-  );
-}
-```
-
-Solid has to be compiled for the server as well as the browser, so `nx new` sets
-`solid({ ssr: true })` in `vite.config.ts` when `useCSR = True`. Keep it if you edit the file.
-
 ## Nested layouts
 
 A `layout.tsx` in a subdirectory wraps the pages below it and renders inside its parent. It writes UI
@@ -91,9 +65,8 @@ and the browser renders everything.
 ## Navigation
 
 A click on a `Link` swaps the page and keeps the layouts mounted, including `<html>` and `<body>`:
-their DOM, state and scroll position stay. In React a different chain of layouts rebuilds only what
-differs. In Solid only the page changes in place: a navigation to a page with a different chain of
-layouts loads that page normally.
+their DOM, state and scroll position stay. A different chain of layouts rebuilds only what
+differs.
 
 ## Rules
 
@@ -107,17 +80,11 @@ layouts loads that page normally.
 
 ## Preact
 
-The root `layout.tsx` of a Preact project is the same file as the Solid one with `class` and
-`children` (`nx new` creates it). Preact cannot hydrate a whole document: its `hydrate` builds a second
-`<html>` element and leaves the handlers unattached. So the browser renders the page body and swaps it
-in for the one the server sent; `<html>` and `<head>` stay as sent. See
+The root `layout.tsx` of a Preact project is the same file as the
+[Solid one](../solid/layouts.md) with `class` and `children` (`nx new` creates it). Preact cannot
+hydrate a whole document: its `hydrate` builds a second `<html>` element and leaves the handlers
+unattached. So the browser renders the page body and swaps it in for the one the server sent; `<html>` and `<head>` stay as sent. See
 [how the browser takes over](../../routing/fbr/layouts/README.md#how-the-browser-takes-over-the-document).
-
-## Solid needs the Node renderer
-
-Solid hydrates the server document and cannot build it in the browser alone. When Nexy has no rendered
-document to send (the Vite dev server is not running and nothing was built), the browser logs an error
-instead of rendering. React, Preact, Vue and Svelte render in the browser in that case.
 
 ## Next steps
 
