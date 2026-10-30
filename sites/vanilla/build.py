@@ -116,9 +116,9 @@ def nav_html(tracks: list[source.Track], current: str) -> str:
     # A reader who arrives on the home page has chosen no page yet: the first group is open.
     opened = source.group_of(tracks, current)
     parts = "".join(
-        f'<div class="side-part"><p class="side-section">{escape(track.label)}</p>'
-        + "".join(_nav_group(group, current, group is opened) for group in track.groups)
-        + "</div>"
+        # f'<div class="side-part">'
+         "".join(_nav_group(group, current, group is opened) for group in track.groups)
+        # + "</div>"
         for track in tracks
     )
     foot = (

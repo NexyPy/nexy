@@ -118,7 +118,7 @@ Link = Callable[[str], str]
 # (folder under docs/routing, name, what it is).
 ROUTERS = (
     ("fbr", "FBR", "File-based routing"),
-    ("modular", "Modular", "Controllers, modules and injection"),
+    ("modular", "Modular", "Controllers and modules"),
     ("custom", "Custom Router", "Create your own router"),
 )
 
