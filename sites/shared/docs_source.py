@@ -30,6 +30,15 @@ _HEADING = re.compile(r"<h([2-6])>(.*?)</h\1>", re.DOTALL)
 _CODE = re.compile(r'<pre lang="(\w+)"><code>(.*?)</code></pre>', re.DOTALL)
 _HREF = re.compile(r'href="([^"]+)"')
 
+# A line marker, the way AdonisJS and Shiki read it:
+# `// [!code ++]`, `# [!code --]`, `<!-- [!code highlight] -->`.
+_MARK = re.compile(
+    r"[ \t]*(?://|#|<!--)[ \t]*\[!code (\+{2}|-{2}|highlight)\][ \t]*(?:-->)?[ \t]*$"
+)
+_LINE_KIND = {"++": "add", "--": "del", "highlight": "hl"}
+# Pygments writes spans only: this walks them to close and reopen a token on each newline.
+_TAG = re.compile(r"<span[^>]*>|</span>|\n")
+
 # A `diagram` fence is an illustration drawn with characters: no language, no colouring.
 _DIAGRAM = re.compile(r'<pre lang="diagram(__file(\d+))?"><code>(.*?)</code></pre>', re.DOTALL)
 # A tree drawn with branch glyphs keeps its ASCII shape; anything else is drawn with blocks.
@@ -552,13 +561,50 @@ def _lexer(language: str) -> object | None:
         return None
 
 
+def _marked(text: str) -> tuple[str, list[str]]:
+    """Take the line markers out of the source and say what each line is."""
+    kinds: list[str] = []
+    lines: list[str] = []
+    for line in text.split("\n"):
+        mark = _MARK.search(line)
+        kinds.append(_LINE_KIND[mark[1]] if mark else "")
+        lines.append(line[: mark.start()] if mark else line)
+    return "\n".join(lines), kinds
 
 
+def _rows(coloured: str) -> list[str]:
+    """Split coloured HTML on its newlines, closing and reopening a token on each line."""
+    rows: list[str] = []
+    stack: list[str] = []
+    current: list[str] = []
+    at = 0
+    for tag in _TAG.finditer(coloured):
+        current.append(coloured[at : tag.start()])
+        token = tag[0]
+        if token == "\n":
+            current.extend("</span>" for _ in stack)
+            rows.append("".join(current))
+            current = list(stack)
+        elif token == "</span>":
+            stack.pop()
+            current.append(token)
+        else:
+            stack.append(token)
+            current.append(token)
+        at = tag.end()
+    current.append(coloured[at:])
+    rows.append("".join(current))
+    return rows
 
 
-
-
-
+def _lines(coloured: str, kinds: list[str]) -> str:
+    """One span per line, so a marker can paint the row it marks."""
+    rows = []
+    for index, row in enumerate(_rows(coloured)):
+        kind = kinds[index] if index < len(kinds) else ""
+        name = f"line line-{kind}" if kind else "line"
+        rows.append(f'<span class="{name}">{row or " "}</span>')
+    return "".join(rows)
 
 
 
@@ -573,8 +619,9 @@ def _colour(found: re.Match[str]) -> str:
     lexer = _lexer(language)
     if lexer is None:
         return found[0]
-    coloured = highlight(htmllib.unescape(escaped), lexer, _FORMATTER).rstrip("\n")
-    return f'<pre lang="{language}"><code>{coloured}</code></pre>'
+    text, kinds = _marked(htmllib.unescape(escaped))
+    coloured = highlight(text, lexer, _FORMATTER).rstrip("\n")
+    return f'<pre lang="{language}"><code>{_lines(coloured, kinds)}</code></pre>'
 
 
 

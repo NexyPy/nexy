@@ -680,7 +680,13 @@ html[data-side="closed"] .side {
   --t-key: #ff7b72; --t-str: #a5d6ff; --t-com: #8b949e; --t-fn: #d2a8ff; --t-num: #79c0ff;
   --t-cls: #ffa657; --t-tag: #7ee787; --t-attr: #79c0ff;
 }
-.doc pre code { padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; white-space: pre; }
+.doc pre code { display: block; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; font: inherit; white-space: pre; }
+/* One row per line: a marked line paints the whole width of the block. */
+.doc pre .line { display: block; margin: 0 -1.1rem; padding: 0 1.1rem; }
+.doc pre .line-add { background: var(--diff-add); box-shadow: inset 2px 0 0 #22c55e; }
+.doc pre .line-del { background: var(--diff-del); box-shadow: inset 2px 0 0 #ef4444; }
+.doc pre .line-hl { background: var(--diff-hl); box-shadow: inset 2px 0 0 var(--signal); }
+.doc pre:hover { border-color: var(--line-strong); }
 .doc pre + p, .doc p + pre { margin-top: 1rem; }
 .doc figure {
   margin: 1.5rem 0;

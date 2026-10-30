@@ -161,6 +161,22 @@ class TestHighlight:
         html = self._html(tmp_path, 'python filename="a.py"', "def run(): pass")
         assert "<figcaption>a.py</figcaption>" in html and "tok-k" in html
 
+    def test_an_added_line_is_marked_and_the_marker_is_gone(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1  # [!code ++]")
+        assert 'class="line line-add"' in html and "!code" not in html
+
+    def test_a_removed_line_is_marked(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1  # [!code --]")
+        assert 'class="line line-del"' in html
+
+    def test_a_highlighted_line_is_marked(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1  # [!code highlight]")
+        assert 'class="line line-hl"' in html
+
+    def test_every_line_is_one_row(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1\ny = 2")
+        assert html.count('class="line"') == 2
+
 
 class TestFigures:
     """An image of the docs is an illustration: drawn as a figure, its alt text as the caption."""
