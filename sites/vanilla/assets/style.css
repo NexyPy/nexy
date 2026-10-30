@@ -744,6 +744,139 @@ html[data-side="closed"] .side {
 .doc .diagram code { border: 0; background: none; font: inherit; }
 .doc .diagram pre::after { display: none; }
 
+/* A flow is a row of blocks joined by arrows; a label names the variant the row draws. */
+.doc .flow { display: grid; gap: 0.7rem; padding: 1rem 1.1rem; }
+.doc .flow-row { display: grid; gap: 0.4rem; }
+.doc .flow-label {
+  color: var(--muted);
+  font: 600 10.5px/1.2 var(--mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.doc .flow-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+.doc .flow-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--card);
+  color: var(--ink);
+  font: 500 12.5px/1.3 var(--mono);
+}
+.doc .flow-icon { flex: none; width: 0.95rem; height: 0.95rem; color: var(--muted); }
+.doc .flow-icon svg, .doc .flow-arrow svg { display: block; width: 100%; height: 100%; }
+.doc .flow-arrow { flex: none; width: 0.9rem; height: 0.9rem; color: var(--line-strong); }
+
+/* A mapping is a table of pairs: what it is on the left, what it answers on the right. */
+.doc .map { padding: 0.6rem 0.7rem; }
+.doc .map-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.1fr);
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.45rem;
+}
+.doc .map-row + .map-row { border-top: 1px solid var(--line); border-radius: 0; }
+.doc .map-row:hover { background: var(--card); }
+.doc .map-from, .doc .map-to { display: inline-flex; align-items: center; gap: 0.4rem; min-width: 0; }
+.doc .map-to { justify-content: flex-start; }
+.doc .map-icon { flex: none; width: 1rem; height: 1rem; color: var(--muted); }
+.doc .map-icon svg { display: block; width: 100%; height: 100%; }
+.doc .map-arrow { flex: none; width: 0.9rem; height: 0.9rem; color: var(--line-strong); }
+.doc .map-arrow svg { display: block; width: 100%; height: 100%; }
+.doc .map-from code, .doc .map-to code {
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.35rem;
+  background: var(--card);
+  font: 500 12.5px/1.4 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.doc .map-text { color: var(--ink); font: 12.5px/1.4 var(--sans); }
+.doc .map-to code {
+  background: color-mix(in srgb, var(--signal) 10%, transparent);
+  color: var(--signal);
+}
+.doc .map-note { color: var(--muted); font: 12px/1.4 var(--sans); white-space: nowrap; }
+
+/* A folder listing is an explorer: a grid of paper, guides down the open folders, notes right. */
+.doc figure.diagram.tree {
+  --tree-grid: color-mix(in srgb, var(--grid) 45%, transparent);
+  background-image:
+    linear-gradient(var(--tree-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--tree-grid) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.doc .tree { padding: 0.55rem 0.45rem; }
+.doc .tree-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.8rem;
+  padding: 0 0.5rem;
+  border-radius: 0.4rem;
+  font: 12.5px/1.4 var(--mono);
+}
+.doc .tree-row:hover { background: var(--card); }
+.doc .tree-guides { display: flex; align-self: stretch; flex: none; }
+.doc .tree-guide { position: relative; width: 1.15rem; }
+.doc .tree-guide-line::before,
+.doc .tree-guide-elbow::before,
+.doc .tree-guide-last::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.55rem;
+  border-left: 1px solid var(--line-strong);
+}
+.doc .tree-guide-elbow::before,
+.doc .tree-guide-last::before { bottom: 50%; }
+.doc .tree-guide-elbow::after,
+.doc .tree-guide-last::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0.55rem;
+  width: 0.6rem;
+  border-top: 1px solid var(--line-strong);
+}
+.doc .tree-icon { flex: none; width: 1rem; height: 1rem; color: var(--muted); }
+.doc .tree-icon svg { display: block; width: 100%; height: 100%; }
+.doc .tree-name { flex: none; color: var(--ink); white-space: nowrap; }
+.doc .tree-dir { font-weight: 600; }
+.doc .tree-note {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-left: 1rem;
+  color: var(--muted);
+  font: 12px/1.4 var(--sans);
+  text-align: right;
+}
+.doc .tree-route {
+  flex: none;
+  margin-left: auto;
+  padding: 0.05rem 0.45rem;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--signal) 12%, transparent);
+  color: var(--signal);
+  font: 500 11.5px/1.5 var(--mono);
+  white-space: nowrap;
+}
+.doc .tree-note code {
+  padding: 0 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  background: var(--card);
+  color: var(--ink);
+  font: 11.5px/1.5 var(--mono);
+}
+
 /* Tables: a light grid, the header read as a label. */
 .doc table { display: block; width: 100%; max-width: 100%; margin: 1.4rem 0; overflow-x: auto; border-collapse: collapse; font-size: 0.9rem; }
 .doc th, .doc td { padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
@@ -1057,10 +1190,22 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   .doc.home tr { grid-template-columns: 1fr; }
   .pager { grid-template-columns: 1fr; }
   .pager a[rel="next"] { flex-direction: row; text-align: left; }
+  /* A listing keeps its notes on a second line rather than pushing the name off the card. */
+  .doc .tree-row { flex-wrap: wrap; row-gap: 0.1rem; }
+  .doc .tree-note { flex-basis: 100%; padding-left: 2rem; text-align: left; }
+  /* A mapping stacks: the file on one line, the route it answers on the next. */
+  .doc .map-row { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 0.25rem; }
+  .doc .map-arrow { display: none; }
+  .doc .map-to { margin-left: 0; padding-left: 1.5rem; }
+  .doc .map-note { white-space: normal; }
 }
 @media (max-width: 560px) {
   .doc.home h1 { font-size: 2.15rem; }
   .doc table { font-size: 0.85rem; }
+  /* A phone stacks the flow: each step under the one before, the arrow turned down. */
+  .doc .flow-steps { flex-direction: column; align-items: stretch; }
+  .doc .flow-step { width: 100%; }
+  .doc .flow-arrow { align-self: center; transform: rotate(90deg); }
 }
 
 /* A click never stacks two snapshots of the page: no view transition, no overlay. The theme

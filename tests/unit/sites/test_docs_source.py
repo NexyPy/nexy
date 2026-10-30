@@ -269,6 +269,69 @@ class TestDiagrams:
         html = self._html(tmp_path, "```diagram\nBrowser -> Server\n```\n")
         assert "Browser -&gt; Server" in html
 
+    def test_a_linear_flow_is_drawn_as_blocks(self, tmp_path):
+        fence = "```diagram\nuvx nexy new notes ──► edit layout ──► nx build\n```\n"
+        html = self._html(tmp_path, fence)
+        assert html.count('class="flow-step"') == 3
+
+    def test_a_flow_line_names_its_variant(self, tmp_path):
+        html = self._html(tmp_path, "```diagram\nSSR   request ──► HTML\n```\n")
+        assert '<span class="flow-label">SSR</span>' in html
+
+    def test_a_mapping_is_drawn_as_pairs(self, tmp_path):
+        html = self._html(
+            tmp_path,
+            "```diagram\nsrc/routes/about.nexy   →  /about\nsrc/routes/index.nexy   →  /\n```\n",
+        )
+        assert '<div class="map">' in html and "<code>/about</code>" in html
+
+    def test_a_branch_drawing_stays_ascii(self, tmp_path):
+        html = self._html(tmp_path, "```diagram\nBrowser\n   │\n   ├── HTML\n```\n")
+        assert '<pre lang="diagram"><code>' in html and 'class="flow"' not in html
+
+    def test_a_mapping_note_needs_no_column_gap(self, tmp_path):
+        html = self._html(
+            tmp_path,
+            "```diagram\napp-like page → .tsx .vue (framework files)\nendpoint → .py (GET)\n```\n",
+        )
+        assert '<span class="map-note">(framework files)</span>' in html
+
+
+class TestStructures:
+    @staticmethod
+    def _html(tmp_path: Path, text: str) -> str:
+        path = tmp_path / "p.md"
+        path.write_text(text, encoding="utf-8")
+        return source.render(path, tmp_path, _link).html
+
+    def test_a_folder_listing_becomes_an_explorer(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n├─ routes/\n│  └─ index.nexy\n```\n")
+        assert '<figure class="diagram tree">' in html
+
+    def test_a_folder_is_drawn_apart_from_a_file(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n├─ routes/\n│  └─ index.nexy\n```\n")
+        assert '<span class="tree-name tree-dir">routes/</span>' in html
+
+    def test_a_nested_file_follows_the_guide_of_its_parent(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n├─ routes/\n│  └─ index.nexy\n```\n")
+        assert '<span class="tree-guide tree-guide-line"></span>' in html
+
+    def test_the_last_child_closes_the_line_of_its_folder(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n└─ a.py\n```\n")
+        assert '<span class="tree-guide tree-guide-last"></span>' in html
+
+    def test_a_route_note_is_marked_apart(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n└─ index.nexy   → /\n```\n")
+        assert '<span class="tree-route">→ /</span>' in html
+
+    def test_a_note_keeps_the_names_it_marks_as_code(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n└─ a.css   created by `nexy new`\n```\n")
+        assert "<code>nexy new</code>" in html
+
+    def test_a_plain_listing_stays_a_block(self, tmp_path):
+        html = self._html(tmp_path, "```text\nnexy » error index.py:18\n```\n")
+        assert '<pre lang="text">' in html and 'class="tree"' not in html
+
 
 class TestSearchEntry:
     @staticmethod
