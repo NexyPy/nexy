@@ -150,12 +150,15 @@ Pages, layouts and islands in React.
 
 ### Vue
 
-Pages and islands in Vue.
+Pages, layouts and islands in Vue.
 
 | Page | What you will do |
 |---|---|
-| [Vue](views/vue.md) | Use Vue in a page |
-| [layout.vue](routing/fbr/layouts/layout.vue.md) | Write nested layouts for Vue |
+| [Vue](views/vue/README.md) | Enable Vue and pick server or client mode |
+| [Pages](views/vue/pages.md) | Write a `.vue` page, read its params, know when it renders |
+| [Layouts](views/vue/layouts.md) | Write the `layout.vue` that owns `<html>` |
+| [Islands](views/vue/islands.md) | Put a Vue component in a `.nexy` page |
+| [Actions and navigation](views/vue/actions-and-navigation.md) | Call Python, link pages, read the URL |
 
 ### Svelte
 

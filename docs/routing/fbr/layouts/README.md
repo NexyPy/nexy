@@ -9,7 +9,7 @@ There is one page per layout file type:
 |---|---|---|---|
 | `layout.nexy` | server (`useCSR = False`) | yes, at the root | [layout.nexy](../../../views/nexy/layouts.md) |
 | `layout.tsx` | client (`useCSR = True`) | yes, at the root (React, Solid, Preact) | [layout.tsx](../../../views/react/layouts.md) |
-| `layout.vue` | client | yes, at the root | [layout.vue](layout.vue.md) |
+| `layout.vue` | client | yes, at the root | [layout.vue](../../../views/vue/layouts.md) |
 | `layout.svelte` | client | yes, at the root | [layout.svelte](layout.svelte.md) |
 
 A project uses one family. `layout.nexy` and `layout.tsx` cannot live in the same project: server

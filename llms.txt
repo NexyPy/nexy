@@ -24,7 +24,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [.nexy files](docs/views/nexy/README.md): frontmatter, properties, Jinja2, components
 - [Markdown and MDX](docs/views/nexy/markdown.md): `.md` content, `.mdx` components
 - [Components](docs/views/nexy/components.md): `Image`, `Link`, `Audio`, `Video`, `Import`
-- [React](docs/views/react/README.md), [Vue](docs/views/vue.md), [Svelte](docs/views/svelte.md),
+- [React](docs/views/react/README.md), [Vue](docs/views/vue/README.md), [Svelte](docs/views/svelte.md),
   [Solid](docs/views/solid.md), [Preact](docs/views/preact.md)
 - [API](docs/routing/fbr/handlers/README.md): Python handlers, parameters, responses
 - [Actions](docs/guides/actions.md): `@Action` POST endpoints with generated paths
