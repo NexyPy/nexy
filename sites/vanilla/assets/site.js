@@ -129,27 +129,33 @@
     })
   }
 
-  // --- Copy button on code blocks --------------------------------------------------------------
-  // A shell command with no file name gets a "Terminal" bar, like a named file.
+  // --- Every code block gets a bar: its file name, or its language, and a copy chip -------------
+  // A named block already has its bar; a shell command reads "Terminal"; the rest name their language.
   const SHELLS = ['bash', 'sh', 'shell', 'console', 'powershell']
-  $$('.doc pre').forEach((block) => {
-    if (block.closest('figure') || !SHELLS.includes(block.getAttribute('lang'))) return
-    const figure = document.createElement('figure')
-    figure.className = 'terminal'
-    figure.innerHTML = '<figcaption>Terminal</figcaption>'
-    block.replaceWith(figure)
-    figure.append(block)
-  })
-
+  const LANGUAGES = { py: 'Python', js: 'JavaScript', ts: 'TypeScript', md: 'Markdown' }
+  const label = (block) => {
+    const lang = (block.getAttribute('lang') || '').toLowerCase()
+    if (SHELLS.includes(lang)) return 'Terminal'
+    return LANGUAGES[lang] || (lang ? lang[0].toUpperCase() + lang.slice(1) : 'Code')
+  }
   $$('.doc pre').forEach((block) => {
     if (block.getAttribute('lang') === 'diagram') return
-    const bar = block.closest('figure')?.querySelector('figcaption')
+    let figure = block.closest('figure')
+    if (!figure) {
+      figure = document.createElement('figure')
+      figure.className = SHELLS.includes((block.getAttribute('lang') || '').toLowerCase()) ? 'terminal' : 'code'
+      block.replaceWith(figure)
+      figure.append(block)
+      const bar = document.createElement('figcaption')
+      bar.textContent = label(block)
+      figure.prepend(bar)
+    }
     const button = Object.assign(document.createElement('button'), { className: 'copy', type: 'button', textContent: 'Copy' })
     button.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(block.innerText) } catch { return }
       done(button, 'Copied', 'Copy')
     })
-    ;(bar ?? block).append(button)
+    figure.querySelector('figcaption').append(button)
   })
 
   // --- Outline: the last heading read crosses the line under the top bar --------------------------

@@ -15,12 +15,15 @@
   --signal: #0f766e;
   --on-accent: #fafafa;
   --code-bg: #f5f5f5;
-  /* A code block is a dark panel in both themes, with a bar that names the file. */
-  --pre-bg: #0d1017;
-  --pre-head: #151922;
-  --pre-line: rgba(255, 255, 255, 0.09);
-  --pre-ink: #e6e8ee;
-  --pre-muted: #8b93a7;
+  /* A code block is the same paper as every other block, with a bar that names the file. */
+  --pre-bg: var(--soft);
+  --pre-head: var(--soft);
+  --pre-line: var(--line);
+  --pre-ink: var(--ink);
+  --pre-muted: var(--muted);
+  --diff-add: rgba(34, 197, 94, 0.13);
+  --diff-del: rgba(239, 68, 68, 0.12);
+  --diff-hl: color-mix(in srgb, var(--signal) 11%, transparent);
   --mark: rgba(10, 10, 10, 0.07);
   /* The bar of the starter: ink in both themes, so the wordmark is always white. */
   /* The bar follows the theme, flat, with a rule under it. */
@@ -66,6 +69,14 @@
   --signal: #3fe0c8;
   --on-accent: #0a0a0a;
   --code-bg: #0f0f0f;
+  --pre-bg: var(--soft);
+  --pre-head: var(--soft);
+  --pre-line: rgba(255, 255, 255, 0.09);
+  --pre-ink: #e6e8ee;
+  --pre-muted: #8b93a7;
+  --diff-add: rgba(34, 197, 94, 0.16);
+  --diff-del: rgba(248, 113, 113, 0.15);
+  --diff-hl: color-mix(in srgb, var(--signal) 13%, transparent);
   --mark: rgba(250, 250, 250, 0.09);
   --note: #3fe0c8;
   --tip: #4ade80;
