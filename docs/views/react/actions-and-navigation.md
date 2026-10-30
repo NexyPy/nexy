@@ -122,17 +122,6 @@ router.push("/todos?filter=done", { scroll: false });
 `push`, `replace`, `back`, `forward`, `refresh` and `prefetch(href)`. The object never changes, so
 it is safe in a dependency list.
 
-### Show progress
-
-```tsx
-import { useTransition } from "@nexy/client";
-
-const { pending, next } = useTransition();
-return pending ? <div className="progress">Loading {next?.pathname}</div> : null;
-```
-
-`pending` is `true` while the next page renders; `next` is the location it goes to.
-
 ### Keep the visitor on a page
 
 ```tsx
