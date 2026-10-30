@@ -92,8 +92,13 @@ def test_only_the_section_of_the_page_is_open(answers):
     assert len(re.findall(r'<details class="group"[^>]* open>', answers[ACTIONS][2])) == 1
 
 
-def test_the_sections_are_one_accordion(answers):
-    assert 'name="nav"' in answers[ACTIONS][2]
+def test_the_sections_do_not_close_each_other(answers):
+    """Opening a folder never hides the folder holding the current page."""
+    assert 'name="nav"' not in answers[ACTIONS][2]
+
+
+def test_the_menu_can_be_filtered(answers):
+    assert 'class="side-filter"' in answers[ACTIONS][2]
 
 
 def test_the_menu_is_drawn_by_the_server(answers):

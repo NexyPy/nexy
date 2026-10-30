@@ -432,11 +432,66 @@ body::before {
 }
 .side a:hover { background: var(--soft); color: var(--ink); }
 .side a[aria-current="page"] {
-  background: color-mix(in srgb, var(--signal) 13%, transparent);
+  /* 10% keeps the text at 4.58:1 on the light theme: 13% measured 4.39:1, below AA. */
+  background: color-mix(in srgb, var(--signal) 10%, transparent);
   color: var(--signal);
   font-weight: 600;
   view-transition-name: nx-current;
 }
+/* The folder holding the page is named in the accent, even while another folder is open. */
+.side details.group:has(a[aria-current="page"]) .group-name { color: var(--signal); }
+/* The head of the Nexy site's menu: what this menu is, and its version. */
+.side-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.2rem 0.4rem 0.75rem;
+}
+.side-kicker {
+  color: var(--muted);
+  font: 500 10.5px/1.4 var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.side-version {
+  padding: 0.02rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted);
+  font: 500 10.5px/1.6 var(--mono);
+}
+/* The filter of that menu, drawn like the search button: a word keeps the pages that match. */
+.side-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  margin: 0 0 0.6rem;
+  padding: 0 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--card);
+  color: var(--muted);
+  cursor: text;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.side-filter:hover { border-color: var(--line-strong); }
+.side-filter:focus-within { border-color: var(--line-strong); color: var(--ink); }
+.side-filter svg { width: 15px; height: 15px; flex: none; }
+.side-filter input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 400 13.5px/1 var(--sans);
+  outline: 0;
+}
+.side-filter input::placeholder { color: var(--muted); }
+.side-filter input::-webkit-search-cancel-button { -webkit-appearance: none; }
 .side-foot { margin: 1.25rem 0.2rem 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 .side-foot a { display: block; min-height: 0; padding: 0.2rem 0.35rem; color: var(--muted); text-decoration: none; border-radius: 0.25rem; }
 .side-foot a:hover { color: var(--ink); background: var(--soft); }
@@ -895,6 +950,12 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
 }
 @media (max-width: 900px) {
   .shell { display: block; }
+  /* Touch: every control of the menu and of the bar clears 44px. */
+  .side a { min-height: 2.75rem; }
+  .side summary { padding: 0.65rem 0.5rem; }
+  .side-filter, .search-open { height: 2.75rem; }
+  .menu, .bar-link { width: 2.75rem; height: 2.75rem; }
+  .theme-switch { width: 3.25rem; height: 2rem; }
   .mobilebar {
     position: sticky;
     top: 0;
@@ -950,11 +1011,18 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
 
 /* The theme changes with a circle that grows from the switch. */
 html.theme-fade::view-transition-old(root) { animation: none; }
-html.theme-fade::view-transition-new(root) { animation: nx-reveal 0.55s var(--ease) both; }
+html.theme-fade::view-transition-new(root) { animation: nx-reveal 0.4s var(--ease) both; }
+/* The menu and the bar carry their own view-transition names, which page navigation freezes.
+   During a theme change they would flip before the circle reaches them, so they join it. */
+html.theme-fade .side,
+html.theme-fade .panel-bar,
+html.theme-fade .side a[aria-current="page"] { view-transition-name: none; }
 @keyframes nx-reveal {
   from { clip-path: circle(0 at var(--tx, 100%) var(--ty, 0)); }
   to { clip-path: circle(150vmax at var(--tx, 100%) var(--ty, 0)); }
 }
+/* Page changes already move the whole root: the article does not move a second time. */
+html:active-view-transition .doc > * { animation: none; }
 
 /* A section of the menu opens in height instead of jumping. */
 .side details::details-content {
@@ -989,7 +1057,7 @@ dialog.search[data-fresh] .results li { animation: nx-rise 0.26s var(--ease) bot
 .doc > :nth-child(n+4) { animation-delay: 120ms; }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html, .panel { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
@@ -1013,8 +1081,8 @@ dialog.search[data-fresh] .results li { animation: nx-rise 0.26s var(--ease) bot
 .tok-na { color: var(--t-attr); }
 .tok-err { color: inherit; background: none; border: 0; }
 
-/* Two routers, one menu: the pages of the router that is not chosen are hidden. */
-html[data-filtering] .side details.group[hidden] { display: none; }
+/* The drawer takes the page with it: nothing scrolls or takes a tab stop behind it. */
+body.open { overflow: hidden; }
 
 @media print {
   .mobilebar, .panel-bar, .side, .toc, .pager, .copy, .copy-page, .source { display: none !important; }
