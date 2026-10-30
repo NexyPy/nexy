@@ -28,6 +28,7 @@ _FENCE = re.compile(r'^```(\w*)[ \t]+filename="([^"]+)"[ \t]*$', re.MULTILINE)
 _PRE = re.compile(r'<pre lang="(\w*)__file(\d+)">')
 _HEADING = re.compile(r"<h([2-6])>(.*?)</h\1>", re.DOTALL)
 _CODE = re.compile(r'<pre lang="(\w+)"><code>(.*?)</code></pre>', re.DOTALL)
+_TABLE = re.compile(r"<table>.*?</table>", re.DOTALL)
 _HREF = re.compile(r'href="([^"]+)"')
 
 # A line marker, the way AdonisJS and Shiki read it:
@@ -638,7 +639,9 @@ def _colour(found: re.Match[str]) -> str:
     return f'<pre lang="{language}"><code>{_lines(coloured, kinds)}</code></pre>'
 
 
-
+def _tables(html: str) -> str:
+    """Wrap each table so a wide one scrolls inside its card instead of widening the page."""
+    return _TABLE.sub(lambda found: f'<div class="table-wrap">{found[0]}</div>', html)
 
 
 def _figures(html: str, page: Path, docs: Path) -> str:
@@ -680,6 +683,6 @@ def render(page: Path, docs: Path, link: Link) -> Rendered:
     html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
     shaped = _structures(_diagrams(html, names))
     coloured = _CODE.sub(_colour, _caption(shaped, names))
-    done = _identify(_callouts(coloured))
+    done = _identify(_callouts(_tables(coloured)))
     # The figures are last: nothing else looks at the drawing the SVG carries.
     return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)

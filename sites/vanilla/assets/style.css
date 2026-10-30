@@ -647,7 +647,11 @@ html[data-side="closed"] .side {
 .doc h4 { margin: 1.6rem 0 0.4rem; font-size: 0.95rem; font-weight: 600; letter-spacing: 0; }
 .doc h2:first-of-type { margin-top: 2.75rem; }
 .doc :is(h2, h3, h4)[id]:target { text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 6px; }
-.doc p, .doc li, .doc td { overflow-wrap: anywhere; }
+.doc p, .doc li { overflow-wrap: anywhere; }
+/* A cell breaks a word only when that word alone is wider than the panel: a label keeps its width. */
+.doc td { overflow-wrap: break-word; }
+/* A command, a flag or a path in a cell is one token: it moves to the next column or scrolls. */
+.doc td code { white-space: nowrap; }
 .doc p { margin: 0.9rem 0; }
 .doc ul, .doc ol { margin: 0.9rem 0; padding-left: 1.35rem; }
 .doc li { margin: 0.3rem 0; }
@@ -881,20 +885,26 @@ html[data-side="closed"] .side {
   font: 11.5px/1.5 var(--mono);
 }
 
-/* Tables: a light grid, the header read as a label. */
-.doc table { display: block; width: 100%; max-width: 100%; margin: 1.4rem 0; overflow-x: auto; border-collapse: collapse; font-size: 0.9rem; }
-.doc th, .doc td { padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-.doc th {
-  border-bottom-color: var(--line-strong);
+/* Tables: a shadcn card, a muted header, rows that answer the pointer, no vertical rules. */
+.doc .table-wrap {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--card);
+}
+.doc .table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.doc .table-wrap th,
+.doc .table-wrap td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.doc .table-wrap th {
+  background: var(--soft);
   color: var(--muted);
-  font: 600 10.5px/1.5 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font: 500 12px/1.5 var(--sans);
   white-space: nowrap;
 }
-.doc tr:last-child td { border-bottom: 0; }
-.doc tbody tr { transition: background 0.12s ease; }
-.doc tbody tr:hover td { background: var(--soft); }
+.doc .table-wrap tbody tr { transition: background 0.12s ease; }
+.doc .table-wrap tbody tr:hover { background: color-mix(in srgb, var(--soft) 65%, transparent); }
+.doc .table-wrap tr:last-child td { border-bottom: 0; }
 
 /* The home page: air, a dot field, and each table row as a card. */
 body[data-home] .page { position: relative; }
@@ -915,6 +925,8 @@ body[data-home] .page::before {
 .doc.home h1 { max-width: 22ch; font-size: clamp(2.5rem, 5.2vw, 3.6rem); line-height: 1.02; letter-spacing: -0.035em; }
 .doc.home > h1 + p { max-width: 60ch; font-size: 1.15rem; }
 .doc.home h2 { border-top: 0; padding-top: 0; margin-top: 3.25rem; }
+/* The home page keeps its own card list: the table card around it is invisible. */
+.doc.home .table-wrap { margin: 0; border: 0; border-radius: 0; background: none; overflow: visible; }
 .doc.home table { border-collapse: separate; }
 .doc.home thead {
   position: absolute;
@@ -1205,7 +1217,7 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
 }
 @media (max-width: 560px) {
   .doc.home h1 { font-size: 2.15rem; }
-  .doc table { font-size: 0.85rem; }
+  .doc .table-wrap table { font-size: 0.85rem; }
   /* A phone stacks the flow: each step under the one before, the arrow turned down. */
   .doc .flow-steps { flex-direction: column; align-items: stretch; }
   .doc .flow-step { width: 100%; }

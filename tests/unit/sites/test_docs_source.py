@@ -190,6 +190,14 @@ class TestHighlight:
         assert html.count('class="line"') == 2
 
 
+class TestTables:
+    def test_a_table_scrolls_inside_its_own_card(self, tmp_path):
+        path = tmp_path / "p.md"
+        path.write_text("| A | B |\n| --- | --- |\n| 1 | 2 |\n", encoding="utf-8")
+        html = source.render(path, tmp_path, _link).html
+        assert '<div class="table-wrap"><table>' in html
+
+
 class TestFigures:
     """An image of the docs is an illustration: drawn as a figure, its alt text as the caption."""
 
