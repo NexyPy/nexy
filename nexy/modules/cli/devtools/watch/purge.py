@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import sys
 from collections.abc import Iterable
 from pathlib import Path
@@ -58,10 +59,9 @@ def drop_bytecode(locations: Iterable[str]) -> None:
     for location in locations:
         if not Path(location).is_file():
             continue  # a namespace package folder holds no bytecode
-        try:
+        # an unwritable cache only ever costs a recompile
+        with contextlib.suppress(OSError):
             Path(cache_from_source(location)).unlink(missing_ok=True)
-        except OSError:
-            pass  # an unwritable cache only ever costs a recompile
 
 
 def forget_actions(removed: list[str]) -> None:

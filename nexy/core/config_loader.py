@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import sys
 from pathlib import Path
@@ -66,10 +67,9 @@ def _forget_current(source: Path) -> None:
     from importlib.util import cache_from_source
 
     sys.modules.pop("nexyconfig", None)
-    try:
+    # an unwritable cache only ever costs a recompile
+    with contextlib.suppress(OSError):
         Path(cache_from_source(str(source))).unlink(missing_ok=True)
-    except OSError:
-        pass  # an unwritable cache only ever costs a recompile
 
 
 def _unloadable(error: ModuleNotFoundError) -> str:
