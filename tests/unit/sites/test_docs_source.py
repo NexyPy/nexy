@@ -53,7 +53,8 @@ class TestTracks:
 
     def test_a_page_knows_the_track_and_group_that_hold_it(self, tracks):
         page = source.find(tracks, "guides/actions")
-        assert page is not None and (page.track, page.group) == ("rendering-and-data", "Forms and data")
+        assert page is not None
+        assert (page.track, page.group) == ("rendering-and-data", "Forms and data")
 
     def test_an_unknown_page_is_not_found(self, tracks):
         assert source.find(tracks, "nope/nothing") is None
