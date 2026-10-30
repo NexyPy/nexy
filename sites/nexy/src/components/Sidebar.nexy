@@ -14,7 +14,7 @@ select = area_select(current)
     {{ ICONS.icon_search }}
     <input type="search" placeholder="Filter pages" aria-label="Filter pages" autocomplete="off">
   </label>
-  <details class="area-select">
+  <details class="area-select" aria-label="Documentation area">
     <summary>
       <span class="area-icon">{{ select.shown.icon }}</span>
       <span class="area-text"><b>{{ select.shown.label | e }}</b><small>{{ select.shown.blurb | e }}</small></span>
@@ -31,10 +31,9 @@ select = area_select(current)
     </ul>
   </details>
   {% for group in groups %}
-  <details class="group" name="nav" data-section="{{ group.title | e }}"{% if group.open %} open{% endif %}>
+  <details class="group" data-section="{{ group.title | e }}"{% if group.open %} open{% endif %}>
     <summary>
       <span class="group-name">{{ group.title | e }}</span>
-      <span class="group-rule" aria-hidden="true"></span>
       <span class="group-count">{{ group.count }}</span>
       {{ ICONS.icon_chev }}
     </summary>

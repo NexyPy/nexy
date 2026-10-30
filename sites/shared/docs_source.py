@@ -71,11 +71,11 @@ class Area:
 
 
 AREAS = (
-    Area("nexy", "Nexy", "Pages, views, rendering and guides"),
-    Area("fbr", "FBR Router", "Routes from the files of src/routes"),
-    Area("modular", "Modular Router", "Controllers, modules and injection"),
-    Area("cli", "Nexy CLI", "Create, run, build and ship"),
-    Area("core", "Nexy core", "Configuration, Python API and internals"),
+    Area("nexy", "Nexy", "Pages, views, rendering"),
+    Area("fbr", "FBR Router", "Routes from files"),
+    Area("modular", "Modular Router", "Controllers and injection"),
+    Area("cli", "Nexy CLI", "Create, run, build, ship"),
+    Area("core", "Nexy core", "Config, API and internals"),
 )
 
 # The pages that are not in the default area, by slug prefix. The first prefix that matches wins.
