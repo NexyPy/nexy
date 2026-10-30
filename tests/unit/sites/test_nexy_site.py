@@ -120,6 +120,27 @@ def test_the_button_offers_the_page_as_markdown(answers):
     assert 'data-markdown="/markdown?slug=guides/actions"' in answers[ACTIONS][2]
 
 
+def test_a_page_declares_its_canonical_address(answers):
+    assert (
+        '<link rel="canonical" href="https://nexy.ai/docs/guides/actions/">' in answers[ACTIONS][2]
+    )
+
+
+def test_a_page_reads_as_a_card(answers):
+    body = answers[ACTIONS][2]
+    assert '<meta property="og:title" content="Actions">' in body
+    assert '<meta name="twitter:card" content="summary_large_image">' in body
+
+
+def test_a_page_says_what_it_is_about(answers):
+    assert re.search(r'<meta name="description" content="[^"]{20,}">', answers[ACTIONS][2])
+
+
+def test_a_page_carries_its_linked_data(answers):
+    found = re.search(r'application/ld\+json">(.*?)</script>', answers[ACTIONS][2])
+    assert found and json.loads(found[1])["@graph"][0]["@type"] == "TechArticle"
+
+
 def test_the_markdown_of_a_page_is_its_source_file(answers):
     status, headers, body = answers["/markdown?slug=guides/actions"]
     assert status == 200 and headers["content-type"].startswith("text/markdown")

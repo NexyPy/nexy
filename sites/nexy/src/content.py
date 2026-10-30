@@ -14,17 +14,23 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from sites.shared import docs_source as source  # noqa: E402
+from sites.shared import seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
 
 DOCS = REPO / "docs"
 ASSETS = REPO / "sites" / "vanilla" / "assets"
 
+# The address this site is published at: the canonical tag and the cards are absolute.
+SITE_URL = "https://nexy.ai"
+
 __all__ = [
     "ASSETS",
     "ICONS",
     "MARK",
+    "SITE_URL",
     "area_select",
     "document",
+    "head_of",
     "link",
     "markdown_link",
     "markdown_source",
@@ -82,6 +88,23 @@ def area_select(slug: str) -> dict[str, Any]:
 def title_of(slug: str) -> str:
     found = next((page.title for page, _ in _pages() if page.slug == slug), "Not found")
     return f"{found} - Nexy"
+
+
+def head_of(slug: str) -> str:
+    """What a crawler reads about a page: its summary, its address, its cards, the menu above it."""
+    page = next((page for page, _ in _pages() if page.slug == slug), None)
+    if page is None:
+        return '<meta name="robots" content="noindex">'
+    url = seo.canonical(SITE_URL, slug)
+    rendered = source.render(page.path, DOCS, link)
+    return seo.Head(
+        title=page.title,
+        description=seo.description(rendered.html),
+        url=url,
+        site_url=SITE_URL,
+        trail=(("Documentation", seo.home(SITE_URL)), (page.label, url)),
+        page_type="WebPage" if slug == "" else "TechArticle",
+    ).html()
 
 
 def menu(current: str) -> list[dict[str, Any]]:

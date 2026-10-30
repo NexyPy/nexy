@@ -3,11 +3,12 @@ from "@/components/Header.nexy" import Header
 from "@/components/Sidebar.nexy" import Sidebar
 from "@/components/SearchDialog.nexy" import SearchDialog
 from nexy import usePathname
-from src.content import slug_of, title_of
+from src.content import head_of, slug_of, title_of
 
 children: prop[NexyElement]
 current = slug_of(usePathname())
 title = title_of(current)
+head = head_of(current)
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +17,7 @@ title = title_of(current)
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0a0a0a">
   <title>{{ title | e }}</title>
+  {{ head | safe }}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap" rel="stylesheet">
