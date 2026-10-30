@@ -42,6 +42,26 @@ nothing else needs to change.
 The build is in English, like `docs/`. A new language is a new folder of Markdown read the same way,
 not a change to the script.
 
+## What a crawler reads
+
+Every page is HTML a crawler can index without running a script: one `<h1>`, a `<title>`, a summary
+taken from the opening paragraph, and the whole menu of links. Three more things say what to index.
+
+| What | Where it comes from | What it holds |
+|---|---|---|
+| `sitemap.xml` | `build.py`, from the pages it writes | the absolute address of every page |
+| `robots.txt` | `build.py` | where the sitemap is, and `Disallow: /*.md$` for the raw Markdown copies |
+| the `<head>` | `sites/shared/seo.py` | canonical, `og:*` and `twitter:*` cards, a `TechArticle` graph with the breadcrumb |
+
+`--site-url` is the address the site is published at, `https://nexypy.github.io/nexy` by default;
+`.github/workflows/pages.yml` passes the one GitHub reports, so the canonical tags follow the host
+the site really runs on. The picture the cards show is `vanilla/assets/og.png`, 1200 by 630.
+
+> [!NOTE]
+> A crawler reads `robots.txt`, and the rules inside it, only at the root of the host
+> (`https://nexypy.github.io/robots.txt`), which a project page does not own. The sitemap is still
+> worth submitting in Search Console; the rules apply once the docs have a domain of their own.
+
 ## Nexy
 
 ```bash
@@ -51,7 +71,8 @@ nx dev
 
 The stylesheet and the script come from `sites/vanilla/assets`, served at `/assets/`, so both sites
 look the same and there is one copy to maintain. `useDocs` is off in `nexyconfig.py`: FastAPI's own
-`/docs` would shadow the `/docs` pages.
+`/docs` would shadow the `/docs` pages. It writes the same head tags, from the same module, with
+`SITE_URL` in `src/content.py` as the address it is published at.
 
 ## Tests
 
