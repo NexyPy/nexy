@@ -74,3 +74,9 @@ on Nexy's contract.
 | Name | What it is |
 |---|---|
 | `render` | the HTML of a `.nexy` component for given props, without a server, see [testing](../guides/testing.md) |
+
+## Where next
+
+- [Config](config.md): the `use*` fields behind these names
+- [Exceptions and errors](exceptions.md): what each failure answers
+- [Documentation index](../README.md): the page for what you are building

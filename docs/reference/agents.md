@@ -62,3 +62,9 @@ nx test     # pytest, --client adds vitest
    `nexy/modules/routers/fbrouter/` for routing rules, `nexy/modules/compiler/` for how `.nexy`
    files become modules.
 3. If the docs and the code disagree, trust the code and say so.
+
+## Where next
+
+- [Documentation index](../README.md): the page for the task at hand
+- [Glossary](glossary.md): the words these invariants rely on
+- [File conventions](file-conventions.md): reserved names and routing rules
