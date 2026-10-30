@@ -8,7 +8,7 @@ There is one page per layout file type:
 | File | Mode | Owns the HTML document | Page |
 |---|---|---|---|
 | `layout.nexy` | server (`useCSR = False`) | yes, at the root | [layout.nexy](../../../views/nexy/layouts.md) |
-| `layout.tsx` | client (`useCSR = True`) | yes, at the root (React, Solid, Preact) | [layout.tsx](layout.tsx.md) |
+| `layout.tsx` | client (`useCSR = True`) | yes, at the root (React, Solid, Preact) | [layout.tsx](../../../views/react/layouts.md) |
 | `layout.vue` | client | yes, at the root | [layout.vue](layout.vue.md) |
 | `layout.svelte` | client | yes, at the root | [layout.svelte](layout.svelte.md) |
 
@@ -79,5 +79,5 @@ DOM, state and scroll position are kept. In server mode every navigation is a ne
 ## Next steps
 
 - [layout.nexy](../../../views/nexy/layouts.md)
-- [layout.tsx](layout.tsx.md)
+- [layout.tsx](../../../views/react/layouts.md)
 - [Inheritance](../inheritance.md)

@@ -47,7 +47,7 @@ Server rendering is on by default. Set `useCSR = True` for
 ## Layouts
 
 In client mode the root `layout.tsx` owns the HTML document, as in React, and every `layout.tsx` renders
-its page with `props.children`. See [layout.tsx](../routing/fbr/layouts/layout.tsx.md).
+its page with `props.children`. See [layout.tsx](react/layouts.md).
 
 ## Next steps
 

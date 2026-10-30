@@ -138,12 +138,15 @@ Python, Jinja2 and Markdown.
 
 ### React
 
-Pages and islands in React.
+Pages, layouts and islands in React.
 
 | Page | What you will do |
 |---|---|
-| [React](views/react.md) | Use React in a page |
-| [layout.tsx](routing/fbr/layouts/layout.tsx.md) | Write the React client-mode layout that owns `<html>` |
+| [React](views/react/README.md) | Enable React and pick server or client mode |
+| [Pages](views/react/pages.md) | Write a `.tsx` page, read its params, know when it renders |
+| [Layouts](views/react/layouts.md) | Write the `layout.tsx` that owns `<html>` |
+| [Islands](views/react/islands.md) | Put a React component in a `.nexy` page |
+| [Actions and navigation](views/react/actions-and-navigation.md) | Call Python, link pages, read the URL |
 
 ### Vue
 

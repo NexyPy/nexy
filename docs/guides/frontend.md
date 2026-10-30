@@ -26,7 +26,7 @@ class NexyConfig(NexyConfigModel):
 A framework route is a normal page, not a client-only island: the HTML exists before the bundle runs,
 so the first paint does not wait for JavaScript.
 
-Per-framework setup: [React](../views/react.md), [Vue](../views/vue.md), [Svelte](../views/svelte.md),
+Per-framework setup: [React](../views/react/README.md), [Vue](../views/vue.md), [Svelte](../views/svelte.md),
 [Solid](../views/solid.md), [Preact](../views/preact.md).
 
 ## Development

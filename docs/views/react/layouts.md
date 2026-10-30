@@ -1,7 +1,7 @@
-# layout.tsx
+# React layouts
 
-The layout file of client mode (`useCSR = True`) for React, Solid and Preact. As in the Next.js App Router, the root
-`layout.tsx` defines the whole document: `<!DOCTYPE html>` is added for you, and the layout writes
+A `layout.tsx` wraps every page below it, in client mode (`useCSR = True`). As in the Next.js App
+Router, the root `layout.tsx` defines the whole document: `<!DOCTYPE html>` is added for you, and the layout writes
 `<html>`, `<head>` and `<body>` itself.
 
 ## Root layout
@@ -97,7 +97,7 @@ layouts loads that page normally.
 
 ## Rules
 
-- `layout.tsx` and `layout.nexy` cannot coexist ([modes](../modes.md)).
+- `layout.tsx` and `layout.nexy` cannot coexist ([modes](../../routing/fbr/modes.md)).
 - Only the **root** layout writes `<html>`, `<head>` and `<body>`.
 - The root layout of a static route is rendered once, at build time: it cannot depend on the request
   (cookies, headers). Put request-dependent UI in a client component that reads them in the browser.
@@ -111,7 +111,7 @@ The root `layout.tsx` of a Preact project is the same file as the Solid one with
 `children` (`nx new` creates it). Preact cannot hydrate a whole document: its `hydrate` builds a second
 `<html>` element and leaves the handlers unattached. So the browser renders the page body and swaps it
 in for the one the server sent; `<html>` and `<head>` stay as sent. See
-[how the browser takes over](README.md#how-the-browser-takes-over-the-document).
+[how the browser takes over](../../routing/fbr/layouts/README.md#how-the-browser-takes-over-the-document).
 
 ## Solid needs the Node renderer
 
@@ -121,6 +121,6 @@ instead of rendering. React, Preact, Vue and Svelte render in the browser in tha
 
 ## Next steps
 
-- [Layouts](README.md)
-- [Linking and navigating](../navigation/linking-and-navigating.md)
-- [React](../../../views/react.md)
+- [Islands](islands.md): React inside a server-mode page, with `layout.nexy`
+- [Actions and navigation](actions-and-navigation.md): the `Link` that keeps layouts mounted
+- [Layouts](../../routing/fbr/layouts/README.md): how Nexy resolves a chain of layouts
