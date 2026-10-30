@@ -27,8 +27,8 @@ def _pages(out: Path) -> list[Path]:
 
 class TestPages:
     def test_every_doc_has_a_page(self, out):
-        sections = docs_source.read_sections(DOCS)
-        slugs = {p.slug for s in sections for p in s.pages} | {""}
+        tracks = docs_source.read_tracks(DOCS)
+        slugs = {p.slug for t in tracks for p in docs_source.pages_of(t)} | {""}
         found = {p.parent.relative_to(out / "docs").as_posix() for p in _pages(out)} - {"."}
         found.add("")
         assert found == slugs
@@ -85,14 +85,21 @@ class TestPageContent:
     def test_the_menu_is_made_of_collapsible_sections(self, html):
         # Each section is a <details>: the one holding the current page is open, the
         # others are not, and opening one never closes another.
-        assert '<details class="group" data-section="Guides">' in html
-        assert '<details class="group" data-section="Build" open>' in html
+        assert '<details class="group" data-section="Routing">' in html
+        assert '<details class="group" data-section="Forms and actions" open>' in html
 
     def test_a_section_says_how_many_pages_it_holds(self, html):
         # The badge counts the links the section really shows, whatever the README holds.
-        section = html.split('data-section="Build"', 1)[1].split("</details>", 1)[0]
+        section = html.split('data-section="Routing"', 1)[1].split("</details>", 1)[0]
         badge = re.search(r'<span class="group-count">(\d+)</span>', section)
         assert badge and int(badge.group(1)) == section.count("<li>")
+
+    def test_a_section_carries_no_sentence(self, html):
+        """The accordion holds its name and its pages: the prose stays on the home page."""
+        assert 'class="group-note"' not in html
+
+    def test_only_the_groups_scroll_under_the_menu_head(self, html):
+        assert '<div class="side-scroll">' in html
 
     def test_the_menu_has_a_search_button(self, html):
         assert 'class="search-open"' in html

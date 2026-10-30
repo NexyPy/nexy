@@ -55,28 +55,29 @@ def _root(current: str) -> str:
     return posixpath.join(*[".."] * depth)
 
 
-def area_select_html(sections: list[source.Section], current: source.Area, page: str) -> str:
-    """The selector above the menu: the area of the page, and a link to the start of each other."""
+def track_select_html(tracks: list[source.Track], current: source.Track, page: str) -> str:
+    """The selector above the menu: the path of the page, and a link to the start of each other."""
 
-    def first(area: source.Area) -> str:
-        pages = [p for s in source.in_area(sections, area.slug) for p in s.pages]
+    def first(track: source.Track) -> str:
+        pages = source.pages_of(track)
         return relative(page, pages[0].slug) if pages else relative(page, "")
 
-    def face(area: source.Area) -> str:
+    def face(track: source.Track) -> str:
+        icon = ICONS.get(f"track_{track.slug.replace('-', '_')}", ICONS["icon_book"])
         return (
-            f'<span class="area-icon">{ICONS[f"area_{area.slug}"]}</span>'
-            f'<span class="area-text"><b>{escape(area.label)}</b>'
-            f"<small>{escape(area.blurb)}</small></span>"
+            f'<span class="area-icon">{icon}</span>'
+            f'<span class="area-text"><b>{escape(track.label)}</b>'
+            f"<small>{escape(track.blurb)}</small></span>"
         )
 
     items = "".join(
-        f'<li><a href="{first(area)}"'
-        f"{' aria-current="true"' if area.slug == current.slug else ''}>"
-        f"{face(area)}{ICONS['icon_check']}</a></li>"
-        for area in source.AREAS
+        f'<li><a href="{first(track)}"'
+        f"{' aria-current="true"' if track.slug == current.slug else ''}>"
+        f"{face(track)}{ICONS['icon_check']}</a></li>"
+        for track in tracks
     )
     return (
-        f'<details class="area-select" aria-label="Documentation area">'
+        f'<details class="area-select" aria-label="Documentation path">'
         f"<summary>{face(current)}{ICONS['icon_select']}</summary>"
         f"<ul>{items}</ul></details>"
     )
@@ -87,31 +88,32 @@ def _nav_item(page: source.Page, current: str) -> str:
     return f'<li><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
 
 
-def _nav_group(section: source.Section, current: str, opens: bool) -> str:
-    """An accordion section: the one holding the current page, or the first one, stays open."""
-    items = "".join(_nav_item(page, current) for page in section.pages)
-    count = len(section.pages)
+def _nav_group(group: source.Group, current: str, opens: bool) -> str:
+    """An accordion group: the one holding the current page, or the first one, stays open."""
+    items = "".join(_nav_item(page, current) for page in group.pages)
+    count = len(group.pages)
     opened = " open" if opens else ""
     # The count and the chevron close the line: no other ornament.
     return (
-        f'<details class="group" data-section="{escape(section.title)}"{opened}>'
-        f'<summary><span class="group-name">{escape(section.title)}</span>'
+        f'<details class="group" data-section="{escape(group.title)}"{opened}>'
+        f'<summary><span class="group-name">{escape(group.title)}</span>'
         f'<span class="group-count">{count}</span>{ICONS["icon_chev"]}</summary>'
         f"<ul>{items}</ul></details>"
     )
 
 
-def nav_html(sections: list[source.Section], current: str) -> str:
-    """The side menu of one area: one accordion group per section."""
+def nav_html(track: source.Track, current: str) -> str:
+    """The side menu of one learning path: one accordion group per folder."""
     # A reader who arrives on the home page has chosen no page yet: the first steps are open.
     holder = next(
-        (i for i, section in enumerate(sections) if any(p.slug == current for p in section.pages)),
+        (i for i, group in enumerate(track.groups) if any(p.slug == current for p in group.pages)),
         0,
     )
     groups = "".join(
-        _nav_group(section, current, i == holder) for i, section in enumerate(sections)
+        _nav_group(group, current, i == holder) for i, group in enumerate(track.groups)
     )
     foot = (
+        '<p class="side-empty" hidden>No page matches.</p>'
         '<div class="side-foot">'
         '<a href="https://github.com/NexyPy/nexy">Source on GitHub</a>'
         '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>'
@@ -167,15 +169,14 @@ def _head(page: source.Page, rendered: source.Rendered, site_url: str) -> str:
 
 def _page_html(
     template: Template,
-    sections: list[source.Section],
+    tracks: list[source.Track],
     page: source.Page,
     section: str,
     rendered: source.Rendered,
     site_url: str,
 ) -> str:
-    area = next(a for a in source.AREAS if a.slug == page.area)
-    local = source.in_area(sections, area.slug)
-    before, after = source.neighbours(local, page.slug)
+    track = source.track_of(tracks, page.slug)
+    before, after = source.neighbours(track, page.slug)
     rel = page.path.relative_to(DOCS).as_posix()
     home = not page.slug
     return template.substitute(
@@ -183,8 +184,8 @@ def _page_html(
         seo=_head(page, rendered, site_url),
         root=_root(page.slug),
         home=relative(page.slug, ""),
-        nav=nav_html(local, page.slug),
-        area_select=area_select_html(sections, area, page.slug),
+        nav=nav_html(track, page.slug),
+        area_select=track_select_html(tracks, track, page.slug),
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
         article=rendered.html,
@@ -216,10 +217,10 @@ def not_found_html(base: str) -> str:
 
 
 def _pages(docs: Path) -> list[tuple[source.Page, str]]:
-    """Every page of the site, the home first, each with the section of the menu that lists it."""
-    sections = source.read_sections(docs)
+    """Every page of the site, the home first, each with the group that lists it."""
+    tracks = source.read_tracks(docs)
     return [(source.home(docs), "Documentation")] + [
-        (p, s.title) for s in sections for p in s.pages
+        (page, group.title) for track in tracks for group in track.groups for page in group.pages
     ]
 
 
@@ -231,12 +232,12 @@ def _write_pages(
     site_url: str,
 ) -> list[Path]:
     """Write one HTML and one Markdown file per page; return the HTML files."""
-    sections = source.read_sections(docs)
+    tracks = source.read_tracks(docs)
     written, entries = [], []
     for page, section in pages:
         rendered = source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
         target = out / "docs" / page.slug / "index.html"
-        _write(target, _page_html(template, sections, page, section, rendered, site_url))
+        _write(target, _page_html(template, tracks, page, section, rendered, site_url))
         _write(target.with_name("index.md"), page.path.read_text(encoding="utf-8"))
         url = f"docs/{page.slug}/" if page.slug else "docs/"
         entries.append(source.search_entry(page, section, rendered, url))

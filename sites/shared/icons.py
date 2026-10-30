@@ -33,18 +33,17 @@ ICONS = {
     "icon_sidebar": _icon('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>'),
     "icon_select": _icon('<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>'),
     "icon_check": _icon('<path d="M20 6 9 17l-5-5"/>'),
-    "area_nexy": _icon('<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>'),
-    "area_fbr": _icon(
+    "track_start_here": _icon('<path d="M5 3l14 9-14 9V3z"/>'),
+    "track_build": _icon(
         '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'
     ),
-    "area_modular": _icon('<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>'),
-    "area_cli": _icon('<path d="m5 8 5 4-5 4M13 17h6"/>'),
-    "area_core": _icon(
-        '<rect width="14" height="14" x="5" y="5" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'
+    "track_choose_your_stack": _icon('<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>'),
+    "track_advanced": _icon('<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>'),
+    "track_guides": _icon(
+        '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>'
+        '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'
     ),
-    "area_custom": _icon(
-        '<path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v3h8V4H8zm0 5v10h8V9H8z"/>'
-    ),
+    "track_reference": _icon('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),
     "icon_search": _icon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
     "icon_menu": _icon('<path d="M4 6h16M4 12h16M4 18h16"/>'),
     "icon_close": _icon('<path d="M18 6 6 18M6 6l12 12"/>'),

@@ -17,8 +17,8 @@ def _link(slug: str) -> str:
 
 
 @pytest.fixture(scope="module")
-def sections():
-    return source.read_sections(DOCS)
+def tracks():
+    return source.read_tracks(DOCS)
 
 
 class TestSlug:
@@ -32,35 +32,50 @@ class TestSlug:
         assert source.slug_of("README.md") == ""
 
 
-class TestSections:
-    def test_the_first_section_is_getting_started(self, sections):
-        assert sections[0].title == "Getting started"
+class TestTracks:
+    def test_the_first_track_is_start_here(self, tracks):
+        assert tracks[0].label == "Start here"
 
-    def test_every_page_is_in_the_menu_once(self, sections):
-        listed = sorted(page.slug for section in sections for page in section.pages)
+    def test_every_track_explains_what_it_is_for(self, tracks):
+        assert all(track.blurb for track in tracks)
+
+    def test_every_group_explains_what_it_is_for(self, tracks):
+        assert all(group.blurb for track in tracks for group in track.groups)
+
+    def test_every_page_is_in_the_menu_once(self, tracks):
+        listed = sorted(page.slug for track in tracks for page in source.pages_of(track))
         every = sorted(source.slug_of(p.relative_to(DOCS).as_posix()) for p in DOCS.rglob("*.md"))
         assert listed == [slug for slug in every if slug]
 
-    def test_a_page_has_the_title_of_its_heading(self, sections):
-        page = source.find(sections, "guides/actions")
+    def test_a_page_has_the_title_of_its_heading(self, tracks):
+        page = source.find(tracks, "guides/actions")
         assert page is not None and page.title == "Actions"
 
-    def test_an_unknown_page_is_not_found(self, sections):
-        assert source.find(sections, "nope/nothing") is None
+    def test_a_page_knows_the_track_and_group_that_hold_it(self, tracks):
+        page = source.find(tracks, "guides/actions")
+        assert page is not None and (page.track, page.group) == ("build", "Forms and actions")
+
+    def test_an_unknown_page_is_not_found(self, tracks):
+        assert source.find(tracks, "nope/nothing") is None
 
 
 class TestNeighbours:
-    def test_the_first_page_has_no_previous(self, sections):
-        first = sections[0].pages[0].slug
-        assert source.neighbours(sections, first)[0] is None
+    def test_the_first_page_has_no_previous(self, tracks):
+        first = source.pages_of(tracks[0])[0].slug
+        assert source.neighbours(tracks[0], first)[0] is None
 
-    def test_the_next_page_follows_the_menu(self, sections):
-        first, second = sections[0].pages[0], sections[0].pages[1]
-        assert source.neighbours(sections, first.slug)[1] == second
+    def test_the_next_page_follows_the_menu(self, tracks):
+        first, second = source.pages_of(tracks[0])[:2]
+        assert source.neighbours(tracks[0], first.slug)[1] == second
 
-    def test_the_last_page_has_no_next(self, sections):
-        last = sections[-1].pages[-1].slug
-        assert source.neighbours(sections, last)[1] is None
+    def test_the_last_page_has_no_next(self, tracks):
+        last = source.pages_of(tracks[-1])[-1].slug
+        assert source.neighbours(tracks[-1], last)[1] is None
+
+    def test_the_neighbours_are_read_inside_one_track(self, tracks):
+        track = source.track_of(tracks, "guides/actions")
+        before, after = source.neighbours(track, "guides/actions")
+        assert {before.track, after.track} == {track.slug}
 
 
 class TestRender:
@@ -283,12 +298,12 @@ class TestSearchEntry:
 
 
 class TestRealDocs:
-    def test_every_page_renders(self, sections):
-        pages = [page for section in sections for page in section.pages]
+    def test_every_page_renders(self, tracks):
+        pages = [page for track in tracks for page in source.pages_of(track)]
         assert all(source.render(page.path, DOCS, _link).html for page in pages)
 
-    def test_every_link_to_a_heading_finds_it(self, sections):
-        pages = {p.slug: p for s in sections for p in s.pages}
+    def test_every_link_to_a_heading_finds_it(self, tracks):
+        pages = {p.slug: p for t in tracks for p in source.pages_of(t)}
         ids = {
             slug: {h.id for h in source.render(page.path, DOCS, _link).headings}
             for slug, page in pages.items()

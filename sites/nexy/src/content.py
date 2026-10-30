@@ -28,7 +28,6 @@ __all__ = [
     "ICONS",
     "MARK",
     "SITE_URL",
-    "area_select",
     "document",
     "head_of",
     "link",
@@ -38,6 +37,7 @@ __all__ = [
     "search_entries",
     "slug_of",
     "title_of",
+    "track_select",
 ]
 
 
@@ -51,35 +51,30 @@ def slug_of(pathname: str) -> str:
 
 
 def _pages() -> list[tuple[source.Page, str]]:
-    sections = source.read_sections(DOCS)
     return [(source.home(DOCS), "Documentation")] + [
-        (p, s.title) for s in sections for p in s.pages
+        (page, group.title) for track in _tracks() for group in track.groups for page in group.pages
     ]
 
 
-def _sections() -> list[source.Section]:
-    return source.read_sections(DOCS)
+def _tracks() -> list[source.Track]:
+    return source.read_tracks(DOCS)
 
 
-def _area_sections(slug: str) -> list[source.Section]:
-    """The sections of one area: the menu and the pager of a page stay inside its own area."""
-    return source.in_area(_sections(), source.area_of(slug))
-
-
-def area_select(slug: str) -> dict[str, Any]:
-    """The choice above the menu: the area of the page, and a link to the start of each other."""
-    here = source.area_of(slug)
+def track_select(slug: str) -> dict[str, Any]:
+    """The choice above the menu: the path of the page, and a link to the start of each other."""
+    tracks = _tracks()
+    here = source.track_of(tracks, slug)
     choices = []
-    for area in source.AREAS:
-        pages = [p for s in source.in_area(_sections(), area.slug) for p in s.pages]
+    for track in tracks:
+        pages = source.pages_of(track)
         choices.append(
             {
-                "slug": area.slug,
-                "label": area.label,
-                "blurb": area.blurb,
-                "icon": ICONS[f"area_{area.slug}"],
+                "slug": track.slug,
+                "label": track.label,
+                "blurb": track.blurb,
+                "icon": ICONS.get(f"track_{track.slug.replace('-', '_')}", ICONS["icon_book"]),
                 "home": link(pages[0].slug) if pages else link(""),
-                "current": area.slug == here,
+                "current": track.slug == here.slug,
             }
         )
     return {"choices": choices, "shown": next(c for c in choices if c["current"])}
@@ -108,17 +103,17 @@ def head_of(slug: str) -> str:
 
 
 def menu(current: str) -> list[dict[str, Any]]:
-    """The side menu of the area of the page: one group per section, its own group open."""
-    sections = _area_sections(current)
+    """The side menu of the page's path: one group per folder, its own folder open."""
+    track = source.track_of(_tracks(), current)
     # A reader who arrives on the home page has chosen no page yet: the first steps are open.
     holder = next(
-        (i for i, section in enumerate(sections) if any(p.slug == current for p in section.pages)),
+        (i for i, group in enumerate(track.groups) if any(p.slug == current for p in group.pages)),
         0,
     )
     return [
         {
-            "title": section.title,
-            "count": len(section.pages),
+            "title": group.title,
+            "count": len(group.pages),
             "open": i == holder,
             "pages": [
                 {
@@ -126,10 +121,10 @@ def menu(current: str) -> list[dict[str, Any]]:
                     "label": p.label,
                     "current": p.slug == current,
                 }
-                for p in section.pages
+                for p in group.pages
             ],
         }
-        for i, section in enumerate(sections)
+        for i, group in enumerate(track.groups)
     ]
 
 
@@ -144,7 +139,7 @@ def markdown_source(slug: str) -> str:
 
 
 def _page_of(slug: str) -> source.Page:
-    page = source.home(DOCS) if slug == "" else source.find(_sections(), slug)
+    page = source.home(DOCS) if slug == "" else source.find(_tracks(), slug)
     if page is None:
         raise HTTPException(status_code=404, detail="No such page")
     return page
@@ -152,16 +147,15 @@ def _page_of(slug: str) -> source.Page:
 
 def document(slug: str) -> dict[str, Any]:
     """One page ready to draw: its HTML, its outline and its neighbours. 404 when there is none."""
-    sections = _sections()
-    page = source.home(DOCS) if slug == "" else source.find(sections, slug)
+    tracks = _tracks()
+    page = source.home(DOCS) if slug == "" else source.find(tracks, slug)
     if page is None:
         raise HTTPException(status_code=404, detail="No such page")
     rendered = source.render(page.path, DOCS, link)
-    before, after = source.neighbours(_area_sections(slug), slug)
-    where = next((s.title for s in sections for p in s.pages if p.slug == slug), "Documentation")
+    before, after = source.neighbours(source.track_of(tracks, slug), slug)
     return {
         "page": page,
-        "section": where,
+        "section": page.group or "Documentation",
         "html": rendered.html,
         "outline": [h for h in rendered.headings if h.level <= 3],
         "before": before,

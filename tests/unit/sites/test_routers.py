@@ -41,44 +41,40 @@ class TestRouterOfAPage:
         )
 
     def test_every_page_of_a_router_folder_knows_its_router(self):
-        pages = [p for s in source.read_sections(DOCS) for p in s.pages]
+        pages = [p for t in source.read_tracks(DOCS) for p in source.pages_of(t)]
         wrong = [p.slug for p in pages if p.router != source.router_of(p.slug)]
         assert wrong == []
 
     def test_the_menu_holds_pages_of_both_routers(self):
-        routers = {p.router for s in source.read_sections(DOCS) for p in s.pages}
+        routers = {p.router for t in source.read_tracks(DOCS) for p in source.pages_of(t)}
         assert {"fbr", "modular", "custom", None} <= routers
 
 
-class TestAreas:
+class TestTracks:
     @pytest.mark.parametrize(
-        ("slug", "area"),
+        ("slug", "track"),
         [
-            ("routing/fbr/pages", "fbr"),
-            ("routing/modular/dependency-injection", "modular"),
-            ("routing/custom", "custom"),
-            ("reference/cli", "cli"),
-            ("deployment/performance", "cli"),
-            ("reference/config", "core"),
-            ("getting-started/how-nexy-works", "core"),
-            ("guides/actions", "nexy"),
-            ("routing", "nexy"),
-            ("", "nexy"),
+            ("getting-started/installation", "Start here"),
+            ("routing/fbr/pages", "Build"),
+            ("rendering/ssr", "Choose your stack"),
+            ("routing/modular/dependency-injection", "Advanced"),
+            ("guides/testing", "Guides"),
+            ("reference/cli", "Reference"),
+            ("", "Start here"),
         ],
     )
-    def test_a_page_belongs_to_the_area_of_its_slug(self, slug, area):
-        assert source.area_of(slug) == area
+    def test_a_page_belongs_to_the_track_that_holds_it(self, slug, track):
+        assert source.track_of(source.read_tracks(DOCS), slug).label == track
 
-    def test_every_page_is_in_the_menu_of_one_area(self):
-        sections = source.read_sections(DOCS)
-        listed = [
-            p.slug for a in source.AREAS for s in source.in_area(sections, a.slug) for p in s.pages
-        ]
-        assert sorted(listed) == sorted(p.slug for s in sections for p in s.pages)
+    def test_every_page_is_in_the_menu_of_exactly_one_track(self):
+        tracks = source.read_tracks(DOCS)
+        listed = [p.slug for t in tracks for p in source.pages_of(t)]
+        every = [source.slug_of(p.relative_to(DOCS).as_posix()) for p in DOCS.rglob("*.md")]
+        assert sorted(listed) == sorted(slug for slug in every if slug)
 
-    def test_an_area_menu_never_holds_an_empty_section(self):
-        sections = source.read_sections(DOCS)
-        assert all(s.pages for a in source.AREAS for s in source.in_area(sections, a.slug))
+    def test_a_track_menu_never_holds_an_empty_group(self):
+        tracks = source.read_tracks(DOCS)
+        assert all(group.pages for track in tracks for group in track.groups)
 
 
 class TestVanillaMenu:
@@ -95,16 +91,18 @@ class TestVanillaMenu:
         html = self._html(out, "routing/modular")
         assert "Dependency injection" in html and "Dynamic routes" not in html
 
-    def test_the_selector_names_every_area(self, out):
+    def test_the_selector_names_every_track(self, out):
         html = self._html(out, "guides/actions")
-        assert all(f"<b>{a.label}</b>" in html for a in source.AREAS)
-        # Verify Custom Router area has the icon
-        assert '<svg class="area-icon"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v3h8V4H8zm0 5v10h8V9H8z"/></svg>' in html
+        assert all(f"<b>{track.label}</b>" in html for track in source.read_tracks(DOCS))
 
-    def test_the_selector_marks_the_area_of_the_page(self, out):
+    def test_every_choice_of_the_selector_has_an_icon(self, out):
+        html = self._html(out, "guides/actions")
+        assert html.count('class="area-icon"') == len(source.read_tracks(DOCS)) + 1
+
+    def test_the_selector_marks_the_track_of_the_page(self, out):
         html = self._html(out, "reference/cli")
         assert re.search(
-            r'aria-current="true"><span class="area-icon">.*?<b>Nexy CLI</b>', html, re.S
+            r'aria-current="true"><span class="area-icon">.*?<b>Reference</b>', html, re.S
         )
 
     def test_only_the_section_of_the_page_is_open(self, out):

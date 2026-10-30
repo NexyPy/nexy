@@ -57,72 +57,41 @@ _SVG = re.compile(r"<svg.*?</svg>", re.DOTALL)
 Link = Callable[[str], str]
 
 
-# The two ways to route a Nexy app, as the docs name them: (folder under docs/routing, label).
+# The three ways to route a Nexy app, as the docs name them: (folder under docs/routing, label).
 ROUTERS = (("fbr", "File-based"), ("modular", "Modular"), ("custom", "Custom"))
 
 
 @dataclass(frozen=True)
-class Area:
-    """A part of the docs with its own menu, chosen from the selector above it."""
-
-    slug: str
-    label: str
-    blurb: str
-
-
-AREAS = (
-    Area("nexy", "Nexy", "Pages, views, rendering"),
-    Area("fbr", "FBR Router", "Routes from files"),
-    Area("modular", "Modular Router", "Controllers and injection"),
-    Area("custom", "Custom Router", "Include an existing FastAPI app"),
-    Area("cli", "Nexy CLI", "Create, run, build, ship"),
-    Area("core", "Nexy core", "Config, API and internals"),
-)
-
-# The pages that are not in the default area, by slug prefix. The first prefix that matches wins.
-_AREA_PREFIXES = (
-    ("fbr", ("routing/fbr",)),
-    ("modular", ("routing/modular",)),
-    (
-        "cli",
-        (
-            "getting-started/installation",
-            "getting-started/quick-start",
-            "getting-started/upgrading",
-            "reference/cli",
-            "guides/devtools",
-            "deployment",
-        ),
-    ),
-    (
-        "core",
-        (
-            "getting-started/how-nexy-works",
-            "getting-started/project-structure",
-            "reference",
-        ),
-    ),
-    (
-        "custom",
-        ("routing/custom",),
-    ),
-)
-
-
-@dataclass(frozen=True)
 class Page:
+    """One page of the docs, with the words the menu shows for it."""
+
     slug: str
     title: str
     label: str
     path: Path
     router: str | None = None
-    area: str = "nexy"
+    summary: str = ""
+    track: str = ""
+    group: str = ""
 
 
 @dataclass(frozen=True)
-class Section:
+class Group:
+    """A menu folder: the pages that answer one question, and a line saying why."""
+
     title: str
+    blurb: str
     pages: list[Page]
+
+
+@dataclass(frozen=True)
+class Track:
+    """A learning path: one step of the docs, made of ordered groups."""
+
+    slug: str
+    label: str
+    blurb: str
+    groups: list[Group]
 
 
 @dataclass(frozen=True)
@@ -145,26 +114,12 @@ def slug_of(relative: str) -> str:
 
 
 def router_of(slug: str) -> str | None:
-    """`fbr`, `modular` or `custom` for a page under `routing/fbr`, `routing/modular` or `routing/custom`; None for the rest."""
+    """`fbr`, `modular` or `custom` for a `routing/<router>` page; None for the rest."""
     for router, _label in ROUTERS:
         folder = f"routing/{router}"
         if slug == folder or slug.startswith(f"{folder}/"):
             return router
     return None
-
-
-def area_of(slug: str) -> str:
-    """The area whose menu lists a page: a prefix of its slug, else the default area."""
-    for area, prefixes in _AREA_PREFIXES:
-        if any(slug == prefix or slug.startswith(f"{prefix}/") for prefix in prefixes):
-            return area
-    return AREAS[0].slug
-
-
-def in_area(sections: list[Section], area: str) -> list[Section]:
-    """The sections of one area: each keeps its pages of that area, and none is left empty."""
-    kept = [Section(s.title, [p for p in s.pages if p.area == area]) for s in sections]
-    return [section for section in kept if section.pages]
 
 
 def _title(path: Path) -> str:
@@ -174,12 +129,20 @@ def _title(path: Path) -> str:
     return path.stem
 
 
-def _page(docs: Path, relative: str, label: str) -> Page | None:
+def _page(
+    docs: Path,
+    relative: str,
+    label: str,
+    *,
+    summary: str = "",
+    track: str = "",
+    group: str = "",
+) -> Page | None:
     path = docs / relative
     if not path.is_file():
         return None
     slug = slug_of(relative)
-    return Page(slug, _title(path), label, path, router_of(slug), area_of(slug))
+    return Page(slug, _title(path), label, path, router_of(slug), summary, track, group)
 
 
 def home(docs: Path) -> Page:
@@ -188,25 +151,115 @@ def home(docs: Path) -> Page:
     return Page("", _title(path), "Overview", path)
 
 
-def read_sections(docs: Path) -> list[Section]:
-    """The menu: the sections and tables of docs/README.md, in the order they are written."""
-    sections: list[Section] = []
+def _slugify(label: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+
+
+def _summary(row: str) -> str:
+    cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+    return " ".join(cells[1].replace("`", "").split()) if len(cells) > 1 else ""
+
+
+def read_tracks(docs: Path) -> list[Track]:
+    """The learning path of docs/README.md: `##` a track, `###` a group, each table its pages."""
+    tracks: list[Track] = []
+    label = blurb = ""
+    groups: list[Group] = []
+    group_title = group_blurb = ""
+    pages: list[Page] = []
+    reading: str | None = None
+    fenced = False
+
+    def close_group() -> None:
+        nonlocal group_title, group_blurb, pages
+        if group_title and pages:
+            groups.append(Group(group_title, group_blurb, pages))
+        group_title, group_blurb, pages = "", "", []
+
+    def close_track() -> None:
+        nonlocal label, blurb, groups
+        close_group()
+        if label and groups:
+            tracks.append(Track(_slugify(label), label, blurb, groups))
+        label, blurb, groups = "", "", []
+
     for line in (docs / "README.md").read_text(encoding="utf-8").splitlines():
-        if line.startswith("## "):
-            sections.append(Section(line[3:].strip(), []))
-        elif line.startswith("|") and sections:
-            pages = (_page(docs, rel, label) for label, rel in _ROW_LINK.findall(line))
-            sections[-1].pages.extend(page for page in pages if page)
-    return [section for section in sections if section.pages]
+        text = line.strip()
+        if text.startswith("```"):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        if text.startswith("## "):
+            close_track()
+            label = text[3:].strip()
+            reading = "track"
+            continue
+        if text.startswith("### "):
+            close_group()
+            if label:
+                group_title = text[4:].strip()
+                reading = "group"
+            continue
+        if text.startswith("|"):
+            reading = None
+            found = _ROW_LINK.search(text)
+            if group_title and found:
+                page = _page(
+                    docs,
+                    found[2],
+                    found[1],
+                    summary=_summary(text),
+                    track=_slugify(label),
+                    group=group_title,
+                )
+                if page:
+                    pages.append(page)
+            continue
+        if not text:
+            if (reading == "track" and blurb) or (reading == "group" and group_blurb):
+                reading = None
+            continue
+        if text.startswith(("-", "*", ">", "`")):
+            reading = None
+            continue
+        if reading == "track":
+            blurb = f"{blurb} {text}".strip()
+        elif reading == "group":
+            group_blurb = f"{group_blurb} {text}".strip()
+        else:
+            reading = None
+    close_track()
+    return tracks
 
 
-def find(sections: list[Section], slug: str) -> Page | None:
-    return next((p for s in sections for p in s.pages if p.slug == slug), None)
+def pages_of(track: Track) -> list[Page]:
+    return [page for group in track.groups for page in group.pages]
 
 
-def neighbours(sections: list[Section], slug: str) -> tuple[Page | None, Page | None]:
-    """The page before and the page after, in menu order."""
-    pages = [page for section in sections for page in section.pages]
+def track_of(tracks: list[Track], slug: str) -> Track:
+    """The track that holds a page; the first track when the page is the home page."""
+    for track in tracks:
+        if any(page.slug == slug for page in pages_of(track)):
+            return track
+    return tracks[0]
+
+
+def group_of(tracks: list[Track], slug: str) -> Group:
+    for track in tracks:
+        for group in track.groups:
+            if any(page.slug == slug for page in group.pages):
+                return group
+    return tracks[0].groups[0]
+
+
+def find(tracks: list[Track], slug: str) -> Page | None:
+    return next((page for track in tracks for page in pages_of(track) if page.slug == slug), None)
+
+
+def neighbours(track: Track, slug: str) -> tuple[Page | None, Page | None]:
+    """The page before and the page after, in the order of the track."""
+    pages = pages_of(track)
     index = next((i for i, page in enumerate(pages) if page.slug == slug), None)
     if index is None:
         return None, None

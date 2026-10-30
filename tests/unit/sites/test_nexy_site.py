@@ -74,15 +74,15 @@ def test_the_menu_of_a_page_holds_only_its_area(answers):
     assert "Actions" in menu and "Dependency injection" not in menu
 
 
-def test_the_selector_names_every_area(answers):
+def test_the_selector_names_every_track(answers):
     menu = _menu(answers[ACTIONS][2])
-    assert all(f"<b>{area.label}</b>" in menu for area in docs_source.AREAS)
+    assert all(f"<b>{track.label}</b>" in menu for track in docs_source.read_tracks(DOCS))
 
 
-def test_the_selector_marks_the_area_of_the_page(answers):
+def test_the_selector_marks_the_track_of_the_page(answers):
     body = answers[MODULAR][2]
     assert re.search(
-        r'aria-current="true"\s*>\s*<span class="area-icon">.*?<b>Modular Router</b>',
+        r'aria-current="true"\s*>\s*<span class="area-icon">.*?<b>Advanced</b>',
         body,
         re.S,
     )
@@ -99,6 +99,11 @@ def test_the_sections_do_not_close_each_other(answers):
 
 def test_the_menu_can_be_filtered(answers):
     assert 'class="side-filter"' in answers[ACTIONS][2]
+
+
+def test_the_menu_head_stays_while_the_groups_scroll(answers):
+    body = answers[ACTIONS][2]
+    assert '<div class="side-scroll">' in body and 'class="group-note"' not in body
 
 
 def test_the_menu_is_drawn_by_the_server(answers):
@@ -172,7 +177,7 @@ def test_search_lists_every_page(answers):
 
 
 def test_every_page_of_the_menu_is_served():
-    sections = docs_source.read_sections(DOCS)
-    wanted = {"/docs"} | {f"/docs/{p.slug}" for s in sections for p in s.pages}
+    tracks = docs_source.read_tracks(DOCS)
+    wanted = {"/docs"} | {f"/docs/{p.slug}" for t in tracks for p in docs_source.pages_of(t)}
     found = request(SITE, *[(path, NOTHING) for path in sorted(wanted)])
     assert len(found) == len(wanted) and {status for status, _, _ in found} == {200}
