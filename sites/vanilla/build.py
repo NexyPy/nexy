@@ -58,7 +58,7 @@ def _root(current: str) -> str:
 def _router_face(key: str, name: str, blurb: str) -> str:
     return (
         f'<span class="area-icon">{ICONS[f"router_{key}"]}</span>'
-        f'<span class="area-text"><b>{escape(name)}</b><small>{escape(blurb)}</small></span>'
+        f'<span class="area-text"><b>{escape(name)}</b></span>'
     )
 
 
@@ -99,14 +99,13 @@ def _nav_item(page: source.Page, current: str) -> str:
 def _nav_group(group: source.Group, current: str, opens: bool) -> str:
     """An accordion group: the one holding the current page, or the first one, stays open."""
     items = "".join(_nav_item(page, current) for page in group.pages)
-    count = len(group.pages)
     opened = " open" if opens else ""
     router = f' data-router="{group.router}"' if group.router else ""
-    # The count and the chevron close the line: no other ornament.
+    # The chevron closes the line: no other ornament.
     return (
         f'<details class="group" data-section="{escape(group.title)}"{router}{opened}>'
         f'<summary><span class="group-name">{escape(group.title)}</span>'
-        f'<span class="group-count">{count}</span>{ICONS["icon_chev"]}</summary>'
+        f'{ICONS["icon_chev"]}</summary>'
         f"<ul>{items}</ul></details>"
     )
 
@@ -116,9 +115,7 @@ def nav_html(tracks: list[source.Track], current: str) -> str:
     # A reader who arrives on the home page has chosen no page yet: the first group is open.
     opened = source.group_of(tracks, current)
     parts = "".join(
-        # f'<div class="side-part">'
-         "".join(_nav_group(group, current, group is opened) for group in track.groups)
-        # + "</div>"
+        f'<div class="side-part">{''.join(_nav_group(group, current, group is opened) for group in track.groups)}</div>'
         for track in tracks
     )
     foot = (

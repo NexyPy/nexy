@@ -19,7 +19,7 @@ routers = router_select(current)
         {% for router in routers %}
         <span class="area-face" data-router="{{ router.key }}">
           <span class="area-icon">{{ router.icon }}</span>
-          <span class="area-text"><b>{{ router.name | e }}</b><small>{{ router.blurb | e }}</small></span>
+          <span class="area-text"><b>{{ router.name | e }}</b></span>
         </span>
         {% endfor %}
         {{ ICONS.icon_select }}
@@ -28,7 +28,7 @@ routers = router_select(current)
         {% for router in routers %}
         <li><a href="{{ router.home }}" data-pick="{{ router.key }}"{% if router.current %} aria-current="true"{% endif %}>
           <span class="area-icon">{{ router.icon }}</span>
-          <span class="area-text"><b>{{ router.name | e }}</b><small>{{ router.blurb | e }}</small></span>
+          <span class="area-text"><b>{{ router.name | e }}</b></span>
           {{ ICONS.icon_check }}
         </a></li>
         {% endfor %}
@@ -47,7 +47,6 @@ routers = router_select(current)
       <details class="group" data-section="{{ group.title | e }}"{% if group.router %} data-router="{{ group.router }}"{% endif %}{% if group.open %} open{% endif %}>
         <summary>
           <span class="group-name">{{ group.title | e }}</span>
-          <span class="group-count">{{ group.count }}</span>
           {{ ICONS.icon_chev }}
         </summary>
         <ul>

@@ -461,26 +461,28 @@ html[data-router="custom"] .side [data-router]:not([data-router="custom"]) { dis
 /* The sections of the menu: a quiet heading over its folders, like Fumadocs. */
 .side-part[hidden] { display: none; }
 .side-section {
-  margin: 1.1rem 0.5rem 0.25rem;
+  margin: 1.5rem 0.5rem 0.5rem;
   color: var(--muted);
-  font: 500 10.5px/1.4 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font: 500 12px/1.4 var(--sans);
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.7;
 }
-.side-part:first-child .side-section { margin-top: 0.35rem; }
+.side-part:first-child .side-section { margin-top: 0.5rem; }
 
-
-.side details.group:first-of-type { border-top: 0; padding-top: 0.6rem; }
+/* The menu reads like Next.js: a clean, light list without heavy borders. */
+.side details.group { border-top: 0; padding: 0.2rem 0; }
+.side details.group:first-of-type { border-top: 0; padding-top: 0.2rem; }
 .side summary {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   list-style: none;
-  padding: 0.6rem 0.6rem;
+  padding: 0.5rem 0.6rem;
   border-radius: 0.6rem;
   color: var(--ink);
   cursor: pointer;
-  font: 600 14px/1.4 var(--sans);
+  font: 500 14px/1.4 var(--sans);
   letter-spacing: -0.01em;
   transition: background 0.12s ease, color 0.12s ease;
 }
@@ -494,25 +496,15 @@ html[data-router="custom"] .side [data-router]:not([data-router="custom"]) { dis
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* The dotted rule of the label is gone: the count and the chevron close the line. */
 .side .group-rule { display: none; }
-.side .group-count {
-  flex: none;
-  padding: 0.1rem 0.5rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--card);
-  color: var(--muted);
-  font: 500 11px/1.6 var(--mono);
-  letter-spacing: 0;
-}
+.side .group-count { display: none; }
 .side .chev { flex: none; width: 13px; height: 13px; color: var(--muted); transition: transform 0.18s ease; }
 .side details[open] .chev { transform: rotate(90deg); }
 .side details.group ul, .toc ul { list-style: none; margin: 0; padding: 0; }
 /* The pages of a folder hang from a guide line under its label. */
 .side details.group > ul {
-  margin: 0.4rem 0 0.4rem 0.85rem;
-  padding: 0.2rem 0 0.2rem 0.8rem;
+  margin: 0.2rem 0 0.2rem 0.85rem;
+  position: relative;
   border-left: 1px solid var(--line);
 }
 .side li[hidden] { display: none; }
@@ -521,7 +513,7 @@ html[data-router="custom"] .side [data-router]:not([data-router="custom"]) { dis
   align-items: center;
   min-height: 2.1rem;
   padding: 0.4rem 0.7rem;
-  border-radius: 0.5rem;
+  /* border-radius: 0.5rem; */
   color: var(--muted);
   text-decoration: none;
   font-size: 13.5px;
@@ -530,13 +522,23 @@ html[data-router="custom"] .side [data-router]:not([data-router="custom"]) { dis
 }
 .side a:hover { background: var(--soft); color: var(--ink); }
 .side a[aria-current="page"] {
-  /* 10% keeps the text at 4.58:1 on the light theme: 13% measured 4.39:1, below AA. */
-  background: color-mix(in srgb, var(--signal) 10%, transparent);
-  color: var(--signal);
+  background: rgba(181, 181, 70, 0.201);
+  color: var(--ink);
   font-weight: 600;
+  position: relative;
+}
+.side a[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 2px;
+  background: var(--signal);
+  border-radius: 0 2px 2px 0;
 }
 /* The folder holding the page is named in the accent, even while another folder is open. */
-.side details.group:has(a[aria-current="page"]) .group-name { color: var(--signal); }
+.side details.group:has(a[aria-current="page"]) .group-name { color: var(--ink); font-weight: 600; }
 /* The head of the Nexy site's menu: what this menu is, and its version. */
 .side-head {
   display: flex;
