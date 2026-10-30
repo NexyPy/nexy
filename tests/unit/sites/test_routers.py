@@ -23,6 +23,7 @@ class TestRouterOfAPage:
             ("routing/fbr/pages/dynamic-routes", "fbr"),
             ("routing/modular", "modular"),
             ("routing/modular/guards-and-metadata", "modular"),
+            ("routing/custom", "custom"),
             ("routing", None),
             ("guides/actions", None),
             ("routing/fbrx", None),
@@ -32,8 +33,12 @@ class TestRouterOfAPage:
     def test_it_comes_from_the_folder_of_the_page(self, slug, router):
         assert source.router_of(slug) == router
 
-    def test_the_two_routers_are_named_for_the_selector(self):
-        assert source.ROUTERS == (("fbr", "File-based"), ("modular", "Modular"))
+    def test_the_routers_are_named_for_the_selector(self):
+        assert source.ROUTERS == (
+            ("fbr", "File-based"),
+            ("modular", "Modular"),
+            ("custom", "Custom"),
+        )
 
     def test_every_page_of_a_router_folder_knows_its_router(self):
         pages = [p for s in source.read_sections(DOCS) for p in s.pages]
@@ -42,7 +47,7 @@ class TestRouterOfAPage:
 
     def test_the_menu_holds_pages_of_both_routers(self):
         routers = {p.router for s in source.read_sections(DOCS) for p in s.pages}
-        assert {"fbr", "modular", None} <= routers
+        assert {"fbr", "modular", "custom", None} <= routers
 
 
 class TestAreas:
@@ -51,6 +56,7 @@ class TestAreas:
         [
             ("routing/fbr/pages", "fbr"),
             ("routing/modular/dependency-injection", "modular"),
+            ("routing/custom", "custom"),
             ("reference/cli", "cli"),
             ("deployment/performance", "cli"),
             ("reference/config", "core"),
@@ -92,6 +98,8 @@ class TestVanillaMenu:
     def test_the_selector_names_every_area(self, out):
         html = self._html(out, "guides/actions")
         assert all(f"<b>{a.label}</b>" in html for a in source.AREAS)
+        # Verify Custom Router area has the icon
+        assert '<svg class="area-icon"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v3h8V4H8zm0 5v10h8V9H8z"/></svg>' in html
 
     def test_the_selector_marks_the_area_of_the_page(self, out):
         html = self._html(out, "reference/cli")

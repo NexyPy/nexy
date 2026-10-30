@@ -291,6 +291,112 @@ body::before {
   height: calc(100dvh - var(--top) - 1rem);
   overflow: auto;
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 0.9rem;
+  margin-right: -0.9rem;
+}
+.toc::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  background: linear-gradient(to bottom, transparent, var(--paper) 80%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Single scroll container for sidebar */
+html {
+  --side: 16rem;
+}
+@media (max-width: 900px) {
+  html { --side: 100%; }
+}
+@media (min-width: 901px) {
+  .side {
+    height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: 2rem;
+  }
+  .side-top {
+    position: sticky;
+    top: 0;
+    background: var(--bg-page);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    padding: 0.9rem 0.9rem 0.8rem;
+    z-index: 3;
+  }
+}
+
+/* Motion and page transitions */
+:root {
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --spacing: 16px;
+  --duration: 0.32s;
+}
+
+/* Page transitions */
+html {
+  view-transition-name: nx-page;
+}
+::view-transition-old(nx-page),
+::view-transition-new(nx-page) {
+  animation: nx-fade 0.3s var(--ease) both;
+}
+@keyframes nx-fade {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+/* Theme transitions */
+.theme-switch {
+  view-transition-name: nx-theme;
+}
+::view-transition-old(nx-theme),
+::view-transition-new(nx-theme) {
+  animation: nx-theme 0.3s var(--ease) both;
+}
+@keyframes nx-theme {
+  from { transform: scale(1); }
+  to { transform: scale(0.9); }
+}
+
+/* Sidebar transitions */
+.side {
+  transition: transform var(--duration) var(--ease), opacity var(--duration) var(--ease);
+}
+html[data-side="closed"] .side {
+  transform: translateX(-1rem);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Progress ring */
+.toc .progress-ring-circle {
+  stroke: var(--signal);
+  opacity: 0.7;
+}
+
+/* Sidebar group animations */
+.side details.group {
+  transition: all 0.2s var(--ease);
+}
+.side details.group[open] .chev {
+  transform: rotate(90deg);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 /* The area selector above the menu, drawn like the framework picker of Fumadocs. */
 .side-brand { display: flex; align-items: center; justify-content: space-between; margin: 0.2rem 0.2rem 0.9rem 0.4rem; }
@@ -499,13 +605,36 @@ body::before {
 
 /* The outline: a rail down the page, the heading being read marked on it. */
 .toc { padding: 1.5rem 1.4rem 3rem 0.75rem; }
-.toc h2 {
+.toc .toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   margin: 0 0 0.6rem;
   padding: 0 0 0 0.75rem;
+}
+.toc .toc-header h2 {
+  margin: 0;
   color: var(--muted);
   font: 550 13px/1.4 var(--sans);
   text-transform: none;
   letter-spacing: 0;
+}
+.toc .progress-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+.toc .progress-ring svg {
+  width: 100%;
+  height: 100%;
+}
+.toc .progress-ring-circle {
+  transition: stroke-dashoffset 0.1s linear;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
 }
 .toc ul { display: flex; flex-direction: column; }
 .toc a {
@@ -536,6 +665,11 @@ body::before {
 .toc .top-link { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--line); }
 .toc .top-link a { border-left: 0; padding-left: 0; font: 500 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
 .toc .top-link a::before { display: none; }
+
+/* Hide the page progress bar where the TOC is shown (wider screens) */
+@media (min-width: 901px) {
+  .toc ~ .panel .progress { display: none; }
+}
 
 /* The page. */
 .page { min-width: 0; padding: 1.5rem clamp(1.25rem, 3.5vw, 3rem) 6rem; }
@@ -931,6 +1065,8 @@ dialog.search input:focus { outline: 0; }
   .side-brand .side-toggle, .bar-open { display: none; }
 }
 
+/* Sidebar: always scrolls on a wide screen (Fumadocs-like) */
+.side { overflow-y: auto; }
 /* Narrow screens: the menu becomes a drawer, opened from a thin bar. */
 .scrim {
   position: fixed;

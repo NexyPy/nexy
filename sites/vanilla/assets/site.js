@@ -3,6 +3,8 @@
   const $ = (selector, scope = document) => scope.querySelector(selector)
   const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)]
 
+  // --- Motion: initialized in template ---------------------------------------------------
+
   // --- Theme: the choice is kept in this browser -------------------------------------------------
   // The toggle is optional: a page without one still runs the rest of the script.
   const themeSwitch = $('[data-theme-toggle]')
@@ -18,8 +20,8 @@
         const root = document.documentElement
         root.style.setProperty('--tx', `${box.left + box.width / 2}px`)
         root.style.setProperty('--ty', `${box.top + box.height / 2}px`)
-        root.classList.add('theme-fade')
-        document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-fade'))
+        root.classList.add('theme-wipe')
+        document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-wipe'))
       } else apply()
       try { localStorage.setItem('nexy-docs-theme', next) } catch {}
     })
@@ -88,6 +90,169 @@
   addEventListener('scroll', paint, { passive: true, capture: true })
   addEventListener('resize', paint)
   paint()
+
+  // --- Reading progress ring for the TOC -----------------------------------------------
+  const initProgressRing = () => {
+    const article = document.querySelector('article')
+    const ring = document.querySelector('.progress-ring-circle')
+    if (!article || !ring) return
+    
+    const updateRing = () => {
+      const scrollTop = article.scrollTop
+      const scrollHeight = article.scrollHeight - article.clientHeight
+      const progress = scrollHeight > 0 ? scrollTop / scrollHeight : 0
+      const radius = 18
+      const circumference = 2 * Math.PI * radius
+      const offset = circumference * (1 - progress)
+      ring.style.strokeDashoffset = offset.toString()
+    }
+    
+    article.addEventListener('scroll', updateRing)
+    addEventListener('resize', updateRing)
+    updateRing()
+  }
+  
+  // Initialize reading progress ring after DOM is ready
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initProgressRing()
+  } else {
+    document.addEventListener('DOMContentLoaded', initProgressRing)
+  }
+
+  // --- Page transitions with Motion --------------------------------------------------
+  // Motion loaded via CDN in template: motion@12 or GSAP via loadMotion().
+  // A third-party library (motion or GSAP) is used for fluid page transitions
+  // and sidebar expand/collapse animations, so the reader is not disturbed
+  // by ugly jolts or screen shaking between pages.
+  const initPageTransitions = async () => {
+    if (!window.loadMotion) {
+      console.log('Motion not loaded, using CSS transitions only')
+      return
+    }
+    await window.loadMotion()
+    if (!window.Motion && !window.GSAP) {
+      console.log('Motion not loaded, using CSS transitions only')
+      return
+    }
+    
+    // Iris wipe transition (Motion)
+    if (window.Motion) {
+      document.addEventListener('astro:page-load', () => {
+        const { animate } = window.Motion
+        const overlay = document.createElement('div')
+        overlay.style.position = 'fixed'
+        overlay.style.top = '0'
+        overlay.style.left = '0'
+        overlay.style.width = '100%'
+        overlay.style.height = '100%'
+        overlay.style.backgroundColor = 'var(--bg)'
+        overlay.style.zIndex = '9999'
+        overlay.style.clipPath = 'circle(0% at var(--tx, 50%) var(--ty, 50%))'
+        document.body.appendChild(overlay)
+         
+        const centerX = window.innerWidth / 2
+        const centerY = window.innerHeight / 2
+         
+        animate(overlay, {
+          clipPath: 'circle(150% at var(--tx, 50%) var(--ty, 50%) )'
+        }, {
+          duration: 0.6,
+          easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        })
+         
+        setTimeout(() => {
+          document.body.removeChild(overlay)
+          delete document.body.dataset.theme
+        }, 700)
+      })
+    }
+     
+    // GSAP fallback: smooth page transitions
+    if (window.GSAP) {
+      const { gsap } = window.GSAP
+      document.addEventListener('astro:page-load', () => {
+        gsap.to('body', {
+          duration: 0.3,
+          ease: 'power2.inOut',
+          opacity: 0.9,
+          onComplete: () => gsap.set('body', { opacity: 1 })
+        })
+      })
+    }
+  }
+  
+  // --- Sidebar group animations ------------------------------------------------------
+  // Smooth expand/collapse of sidebar section groups (Motion or GSAP)
+  const initSidebarGroups = () => {
+    const groups = $$('.side details.group')
+    groups.forEach((group) => {
+      group.addEventListener('toggle', () => {
+        if (window.Motion && group.open) {
+          const { animate } = window.Motion
+          const content = group.querySelector('ul')
+          if (content) {
+            animate(content, { height: content.scrollHeight }, {
+              duration: 0.3,
+              easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+              fill: 'forwards'
+            })
+          }
+        } else if (window.GSAP) {
+          const { gsap } = window.GSAP
+          const content = group.querySelector('ul')
+          if (content) {
+            gsap.to(content, {
+              duration: 0.3,
+              height: group.open ? content.scrollHeight : 0,
+              ease: 'power2.inOut'
+            })
+          }
+        }
+      })
+    })
+  }
+  
+  initSidebarGroups()
+
+  // --- TOC rail spring animation ------------------------------------------------------
+  const initTOCRail = () => {
+    const links = $$('.toc a')
+    if (!links.length) return
+    
+    links.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault()
+        const target = document.getElementById(link.getAttribute('href').slice(1))
+        if (!target) return
+        
+        const start = window.pageYOffset
+        const end = target.getBoundingClientRect().top + window.pageYOffset
+        const distance = end - start
+        const duration = 800
+        let startTime = null
+        
+        const ease = (t) => 0.5 - Math.cos(t * Math.PI) / 2
+        
+        const animate = (currentTime) => {
+          if (!startTime) startTime = currentTime
+          const elapsed = currentTime - startTime
+          const progress = Math.min(elapsed / duration, 1)
+          const easeProgress = ease(progress)
+          window.scrollTo(0, start + distance * easeProgress)
+          
+          if (progress < 1) {
+            requestAnimationFrame(animate)
+          } else {
+            link.classList.add('on')
+          }
+        }
+        
+        requestAnimationFrame(animate)
+      })
+    })
+  }
+  
+  initTOCRail()
 
   // --- Menu: the section of the current page is open, one at a time; bring the page into view ----
   const current = $('.side [aria-current="page"]')

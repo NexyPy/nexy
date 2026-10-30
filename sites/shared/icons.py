@@ -42,6 +42,9 @@ ICONS = {
     "area_core": _icon(
         '<rect width="14" height="14" x="5" y="5" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'
     ),
+    "area_custom": _icon(
+        '<path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v3h8V4H8zm0 5v10h8V9H8z"/>'
+    ),
     "icon_search": _icon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
     "icon_menu": _icon('<path d="M4 6h16M4 12h16M4 18h16"/>'),
     "icon_close": _icon('<path d="M18 6 6 18M6 6l12 12"/>'),

@@ -65,8 +65,10 @@ the code.
 
 | Page | What you will decide |
 |---|---|
-| [Routing](routing/README.md) | The file-based or the modular router |
-| [Modular routing](routing/modular/README.md) | Controllers and modules |
+| [Routing](routing/README.md) | The file-based, modular or custom router |
+| [File-based routing](routing/fbr/README.md) | Routes from files |
+| [Modular routing](routing/modular/README.md) | Controllers and injection |
+| [Custom routing](routing/custom/README.md) | Include an existing FastAPI app |
 | [Rendering](rendering/README.md) | Which rendering mode fits a page |
 | [SSR](rendering/ssr.md) | Server rendering, the default |
 | [ISR](rendering/isr.md) | Cache pages with stale-while-revalidate |
@@ -127,7 +129,7 @@ the code.
 docs/
 ├─ README.md
 ├─ getting-started/     installation, quick start, tutorial, project structure, migration
-├─ routing/
+├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
 │  │  ├─ inheritance.md layouts, dependencies, error pages
@@ -139,7 +141,8 @@ docs/
 │  │  ├─ errors/        not-found and error pages
 │  │  ├─ navigation/    links, hooks
 │  │  └─ realtime/      WebSocket
-│  └─ modular/          controllers, injection, guards, NestJS comparison
+│  ├─ modular/          controllers, injection, guards, NestJS comparison
+│  └─ custom/           include an existing FastAPI router
 ├─ rendering/           SSR, ISR, CSR, islands
 ├─ views/               .nexy, Markdown, components, one page per client framework
 ├─ guides/              actions, i18n, databases, middleware, frontend, testing

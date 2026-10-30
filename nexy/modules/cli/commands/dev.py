@@ -121,11 +121,13 @@ def _initialise(config: Config, client_port: int, ssl: bool) -> _Session:
 
 
 def _purge_app_modules() -> None:
-    """Forget the application and the project's modules so a restart serves new code."""
+    """Forget the application, the configuration and the project's modules so a restart
+    serves new code, including an edited nexyconfig.py."""
     for name in list(sys.modules):
         if name.startswith("__nexy__") or name in _APP_MODULES:
             del sys.modules[name]
     purge_project_modules()
+    Config.reset()
 
 
 def _regenerate_client_files() -> None:

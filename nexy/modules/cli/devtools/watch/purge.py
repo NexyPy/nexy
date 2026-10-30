@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -24,16 +25,66 @@ def purge_project_modules(root: Path | None = None) -> list[str]:
     base = (root or Path.cwd()).resolve().as_posix()
     # Decide first, delete after: a namespace package computes its path from its parent, so the
     # parent must still be there when the package is looked at.
-    purged = [
-        name
+    targets = _project_targets(base)
+    purged = [name for name, _ in targets]
+    bytecode = [location for _, module in targets for location in _module_locations(module)]
+    for name in purged:
+        del sys.modules[name]
+    drop_bytecode(bytecode)
+    forget_actions(purged)
+    forget_orm_tables()
+    return purged
+
+
+def _project_targets(base: str) -> list[tuple[str, Any]]:
+    """The project modules to forget, with their objects: decisions need the parent alive."""
+    return [
+        (name, module)
         for name, module in list(sys.modules.items())
         if not (name == "nexy" or name.startswith(("nexy.", "__nexy__")))
         and _is_project_module(module, base)
     ]
-    for name in purged:
-        del sys.modules[name]
-    forget_orm_tables()
-    return purged
+
+
+def drop_bytecode(locations: Iterable[str]) -> None:
+    """Delete the cached bytecode of the purged sources.
+
+    A ``.pyc`` header records its source with one-second granularity: a file saved twice
+    within the same second with the same size would be re-imported from the stale cache,
+    and the restart would serve the previous code.
+    """
+    from importlib.util import cache_from_source
+
+    for location in locations:
+        if not Path(location).is_file():
+            continue  # a namespace package folder holds no bytecode
+        try:
+            Path(cache_from_source(location)).unlink(missing_ok=True)
+        except OSError:
+            pass  # an unwritable cache only ever costs a recompile
+
+
+def forget_actions(removed: list[str]) -> None:
+    """Forget the actions the removed modules defined.
+
+    ``ACTIONS_STORE`` lives in the framework, so dropping the modules is not enough:
+    an action that no longer exists would keep its endpoint and its line in
+    ``actions.ts`` for the whole dev session. Actions of modules that were kept
+    (none, or outside the project) stay registered.
+    """
+    if not removed:
+        return
+    from nexy.modules.routers.actions.store import ACTIONS_STORE
+
+    dropped = set(removed)
+    stale = {
+        func_id
+        for func_id in (*ACTIONS_STORE.registry, *ACTIONS_STORE.path_map)
+        if func_id.rsplit(".", 1)[0] in dropped
+    }
+    for func_id in stale:
+        ACTIONS_STORE.registry.pop(func_id, None)
+        ACTIONS_STORE.path_map.pop(func_id, None)
 
 
 def forget_orm_tables() -> None:

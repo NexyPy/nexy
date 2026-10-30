@@ -21,6 +21,28 @@ $seo
   try {
     if (localStorage.getItem("nexy-docs-side") === "closed") document.documentElement.dataset.side = "closed";
   } catch (e) {}
+  
+  // Load Motion/GSAP from CDN when available
+  // motion@12 pour les transitions de page, GSAP avec ScrollTrigger pour
+  // le scroll-linked animation. Aucun chargement si déjà disponible.
+  window.loadMotion = async () => {
+    if (window.Motion) return; // Already loaded
+    if (window.GSAP) return;
+    try {
+      const Motion = await import('https://cdn.jsdelivr.net/npm/motion@12/+esm');
+      window.Motion = Motion;
+      console.log('Motion loaded successfully');
+    } catch (e) {
+      try {
+        const GSAP = await import('https://cdn.jsdelivr.net/npm/gsap@3/+esm');
+        window.GSAP = GSAP;
+        console.log('GSAP loaded as fallback');
+      } catch (e2) {
+        console.log('Motion/GSAP not available, using CSS fallbacks');
+      }
+    }
+  };
+  window.loadMotion();
 </script>
 </head>
 <body data-root="$root" data-search="$root/search-index.json"$home_attr>

@@ -58,7 +58,7 @@ Link = Callable[[str], str]
 
 
 # The two ways to route a Nexy app, as the docs name them: (folder under docs/routing, label).
-ROUTERS = (("fbr", "File-based"), ("modular", "Modular"))
+ROUTERS = (("fbr", "File-based"), ("modular", "Modular"), ("custom", "Custom"))
 
 
 @dataclass(frozen=True)
@@ -74,6 +74,7 @@ AREAS = (
     Area("nexy", "Nexy", "Pages, views, rendering"),
     Area("fbr", "FBR Router", "Routes from files"),
     Area("modular", "Modular Router", "Controllers and injection"),
+    Area("custom", "Custom Router", "Include an existing FastAPI app"),
     Area("cli", "Nexy CLI", "Create, run, build, ship"),
     Area("core", "Nexy core", "Config, API and internals"),
 )
@@ -100,6 +101,10 @@ _AREA_PREFIXES = (
             "getting-started/project-structure",
             "reference",
         ),
+    ),
+    (
+        "custom",
+        ("routing/custom",),
     ),
 )
 
@@ -140,7 +145,7 @@ def slug_of(relative: str) -> str:
 
 
 def router_of(slug: str) -> str | None:
-    """`fbr` or `modular` for a page under `routing/fbr` or `routing/modular`; None for the rest."""
+    """`fbr`, `modular` or `custom` for a page under `routing/fbr`, `routing/modular` or `routing/custom`; None for the rest."""
     for router, _label in ROUTERS:
         folder = f"routing/{router}"
         if slug == folder or slug.startswith(f"{folder}/"):

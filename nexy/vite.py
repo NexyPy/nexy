@@ -14,21 +14,23 @@ _ENTRY_KEYS = ("__nexy__/main.ts", "/__nexy__/main.ts")
 
 
 def Vite() -> str:
-    """Return the Vite client tag to prepend to every page.
+    """Return the client tags to prepend to every page.
 
-    Dev mode serves the HMR WebSocket script (with the compile-error overlay);
-    prod mode inlines or links the built client from the Vite manifest.
+    Dev mode serves the reload WebSocket script (with the compile-error overlay) on
+    its own, plus the Vite client when the project actually runs Vite; prod mode
+    inlines or links the built client from the Vite manifest.
 
     Returns:
-        The `<script>` (and CSS) markup for the current mode, or an empty
-        string when the project has no vite.config.ts, Vite is disabled in
-        nexyconfig, or the production manifest is missing.
+        The `<script>` (and CSS) markup for the current mode. The reload channel is
+        served even without a vite.config.ts or with Vite disabled, so every kind of
+        project gets live reload; the Vite tags only appear when Vite runs.
     """
-    if not os.path.exists("vite.config.ts") or not Config().useVite:
-        return ""
+    running = os.path.exists("vite.config.ts") and Config().useVite
     if _PRODUCTION_MARKER.is_file():
-        return _production_tags()
-    return _development_tags()
+        return _production_tags() if running else ""
+    if running:
+        return _development_tags()
+    return _hmr_client()
 
 
 @cache

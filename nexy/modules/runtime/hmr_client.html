@@ -1,8 +1,7 @@
     <script type="module">
         (function() {
-            const host = window.location.host;
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const ws = new WebSocket(`${protocol}//${host}/_nexy/hmr`);
+            let hadClosed = false;
+            let attempts = 0;
 
             function escapeHtml(value) {
                 return String(value).replace(/[&<>"']/g, (ch) => ({
@@ -30,48 +29,74 @@
                         + hint;
                 }).join('');
                 overlay.innerHTML = `<h2 style="margin:0 0 1rem;color:#fbbf24">`
-                    + 'Nexy compile error</h2>'
+                    + `Nexy compile error</h2>`
                     + lines;
             }
 
-            ws.onmessage = async (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === 'nexy:error') {
-                    nexyErrorOverlay(data.errors || []);
-                    return;
-                }
-                if (data.type === 'nexy:reload') {
-                    const t0 = performance.now();
-                    console.log(`[Nexy HMR] Reloading due to change in: ${data.path}`);
+            function connect() {
+                const host = window.location.host;
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const ws = new WebSocket(`${protocol}//${host}/_nexy/hmr`);
 
-                    try {
-                        const res = await fetch(window.location.href, {
-                            headers: { 'X-Nexy-HMR': '1' }
-                        });
-                        const html = await res.text();
-
-                        const parser = new DOMParser();
-                        const newDoc = parser.parseFromString(html, 'text/html');
-
-                        document.body.innerHTML = newDoc.body.innerHTML;
-
-                        const scripts = document.body.querySelectorAll('script');
-                        scripts.forEach(oldScript => {
-                            const newScript = document.createElement('script');
-                            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                            oldScript.parentNode.replaceChild(newScript, oldScript);
-                        });
-
-                        console.log(`[Nexy HMR] DOM updated successfully in ${(performance.now() - t0).toFixed(1)}ms.`);
-                    } catch (err) {
-                        console.warn("[Nexy HMR] Partial reload failed, falling back to full reload.", err);
+                ws.onopen = () => {
+                    attempts = 0;
+                    if (hadClosed) {
+                        // The server restarted while this page was open: its Python
+                        // changed, so the page has to come back from the new state.
+                        console.log('[Nexy HMR] Reconnected, reloading the page.');
                         window.location.reload();
                     }
-                }
-            };
+                };
 
-            ws.onclose = () => console.log("[Nexy HMR] Connection closed.");
+                ws.onmessage = async (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'nexy:error') {
+                        nexyErrorOverlay(data.errors || []);
+                        return;
+                    }
+                    if (data.type === 'nexy:reload') {
+                        const t0 = performance.now();
+                        console.log(`[Nexy HMR] Reloading due to change in: ${data.path}`);
+
+                        try {
+                            const res = await fetch(window.location.href, {
+                                headers: { 'X-Nexy-HMR': '1' }
+                            });
+                            const html = await res.text();
+
+                            const parser = new DOMParser();
+                            const newDoc = parser.parseFromString(html, 'text/html');
+
+                            document.body.innerHTML = newDoc.body.innerHTML;
+
+                            const scripts = document.body.querySelectorAll('script');
+                            scripts.forEach(oldScript => {
+                                const newScript = document.createElement('script');
+                                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                                oldScript.parentNode.replaceChild(newScript, oldScript);
+                            });
+
+                            console.log(`[Nexy HMR] DOM updated successfully in ${(performance.now() - t0).toFixed(1)}ms.`);
+                        } catch (err) {
+                            console.warn("[Nexy HMR] Partial reload failed, falling back to full reload.", err);
+                            window.location.reload();
+                        }
+                    }
+                };
+
+                ws.onclose = () => {
+                    hadClosed = true;
+                    if (attempts >= 30) {
+                        console.log("[Nexy HMR] Connection lost, giving up.");
+                        return;
+                    }
+                    attempts += 1;
+                    setTimeout(connect, 1000);
+                };
+            }
+
+            connect();
         })();
     </script>
     
