@@ -18,11 +18,11 @@ The words these docs use, in one place.
 | Route group | A folder in parentheses, such as `(shop)/`, that groups routes without adding to the URL. |
 | Dependency | A function FastAPI runs before the handler; `dependencies.py` applies one to a whole folder. See [dependencies](../routing/fbr/dependencies/README.md). |
 | Guard | A dependency that refuses a request, by raising `HTTPException`. |
-| Island | A client component (React, Vue, ...) mounted inside a server-rendered `.nexy` page. See [components](../views/components.md). |
+| Island | A client component (React, Vue, ...) mounted inside a server-rendered `.nexy` page. See [components](../views/nexy/components.md). |
 | SSG | Static site generation: pages rendered to HTML at build time and read back at request time. |
 | Hydration | The browser attaching a framework to HTML the server already sent. |
 | View | The file that produces a page's HTML: an `.nexy` page, Markdown, MDX or a client component. See [views](../views/README.md). |
-| Component | A reusable piece a page imports; in server mode it is never a route. See [components](../views/components.md). |
+| Component | A reusable piece a page imports; in server mode it is never a route. See [components](../views/nexy/components.md). |
 | Props | Values a parent passes to a component; a `.nexy` prop is declared as `name: prop[type]`, with `= default` when optional. |
 | Frontmatter | The block between `---` lines at the top of a `.nexy` or `.md` file: Python code, props and settings. |
 | Prefetch | Loading the page behind a link before the reader clicks it. See [linking](../routing/fbr/navigation/linking-and-navigating.md). |

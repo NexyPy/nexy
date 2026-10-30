@@ -21,9 +21,9 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [ISR](docs/rendering/isr.md): `revalidate` and stale-while-revalidate
 - [WebSocket](docs/routing/fbr/realtime/websocket.md): `SOCKET` handlers
 - [Views](docs/views/README.md): which view format to use
-- [.nexy files](docs/views/nexyfile.md): frontmatter, properties, Jinja2, components
-- [Markdown and MDX](docs/views/markdown.md): `.md` content, `.mdx` components
-- [Components](docs/views/components.md): `Image`, `Link`, `Audio`, `Video`, `Import`
+- [.nexy files](docs/views/nexy/README.md): frontmatter, properties, Jinja2, components
+- [Markdown and MDX](docs/views/nexy/markdown.md): `.md` content, `.mdx` components
+- [Components](docs/views/nexy/components.md): `Image`, `Link`, `Audio`, `Video`, `Import`
 - [React](docs/views/react.md), [Vue](docs/views/vue.md), [Svelte](docs/views/svelte.md),
   [Solid](docs/views/solid.md), [Preact](docs/views/preact.md)
 - [API](docs/routing/fbr/handlers/README.md): Python handlers, parameters, responses

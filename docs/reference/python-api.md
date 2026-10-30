@@ -9,7 +9,7 @@ Components for `.nexy` templates and the request hooks.
 
 | Name | What it is |
 |---|---|
-| `Audio`, `Video` | native `<audio>` and `<video>` players, see [components](../views/components.md) |
+| `Audio`, `Video` | native `<audio>` and `<video>` players, see [components](../views/nexy/components.md) |
 | `Image` | an `<img>` that loads lazily by default |
 | `Link` | a client-side `<a>` with optional prefetch |
 | `Import` | import a client component into a `.nexy` page |

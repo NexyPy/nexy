@@ -54,5 +54,5 @@ Server rendering is on by default. Set `useCSR = True` for
 ## Next steps
 
 - [Views](README.md): compare formats
-- [Components](components.md): import a component from a `.nexy` page
+- [Components](nexy/components.md): import a component from a `.nexy` page
 - [Frontend](../guides/frontend.md): Vite and the client build

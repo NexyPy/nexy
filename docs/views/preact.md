@@ -37,7 +37,7 @@ The default export is the page component; a named export also works.
 
 > [!NOTE]
 > `.mdx` files are compiled with Preact too when their imports resolve to Preact -
-> see [Markdown](markdown.md).
+> see [Markdown](nexy/markdown.md).
 
 ## Rendering
 
@@ -53,5 +53,5 @@ In client mode the root `layout.tsx` owns the HTML document and every `layout.ts
 ## Next steps
 
 - [Views](README.md): compare formats
-- [Markdown and MDX](markdown.md): `.mdx` routes
+- [Markdown and MDX](nexy/markdown.md): `.mdx` routes
 - [Frontend](../guides/frontend.md): Vite and the client build

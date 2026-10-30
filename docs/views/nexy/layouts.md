@@ -46,7 +46,7 @@ children: prop[NexyElement]
 ## Components and islands
 
 A layout can import `.nexy` components (a header, a footer) and client components. A client
-component in a layout is an [island](../../../rendering/islands.md) like any other:
+component in a layout is an [island](../../rendering/islands.md) like any other:
 
 ```nexy
 ---
@@ -74,11 +74,11 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 ## What it cannot do
 
 - It cannot coexist with `layout.tsx`, `layout.vue` or `layout.svelte`: a server-mode project has
-  no client routes ([modes](../modes.md)).
+  no client routes ([modes](../../routing/fbr/modes.md)).
 - It does not run on the client: use an island for interactivity.
 
 ## Next steps
 
-- [Layouts](README.md)
-- [Inheritance](../inheritance.md)
-- [.nexy files](../../../views/nexyfile.md)
+- [Layouts](../../routing/fbr/layouts/README.md)
+- [Inheritance](../../routing/fbr/inheritance.md)
+- [.nexy files](README.md)

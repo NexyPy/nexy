@@ -62,7 +62,7 @@ Open <http://localhost:3000/hello>. Change `"Hello"` to `"Bonjour"` and save: th
 without a manual reload. If the code is wrong, the browser shows the error instead of a blank page.
 
 `prop[str]` declares a typed property. The markup under the frontmatter is Jinja2 - see
-[.nexy files](../views/nexyfile.md).
+[.nexy files](../views/nexy/README.md).
 
 ## Where next
 

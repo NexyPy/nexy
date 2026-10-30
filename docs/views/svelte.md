@@ -51,4 +51,4 @@ page with `{@render children?.()}`. See [layout.svelte](../routing/fbr/layouts/l
 
 - [Views](README.md): compare formats
 - [Frontend](../guides/frontend.md): Vite and the client build
-- [.nexy files](nexyfile.md): mixing server logic and Svelte islands
+- [.nexy files](nexy/README.md): mixing server logic and Svelte islands

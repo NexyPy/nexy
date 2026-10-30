@@ -69,7 +69,7 @@ Tailwind finds `.nexy` files on its own.
 
 Install them in the project: `@mdx-js/rollup`, `remark-gfm` and `@mdx-js/react` (plus
 `@mdx-js/esbuild` for `nx build`). MDX needs React or Preact in `useFF`. Without a client framework,
-write the page as `.md`. See [Markdown and MDX](../views/markdown.md).
+write the page as `.md`. See [Markdown and MDX](../views/nexy/markdown.md).
 
 ## `No module named 'sqlmodel'` (or any package) when a command starts
 

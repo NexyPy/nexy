@@ -53,4 +53,4 @@ its page with `props.children`. See [layout.tsx](../routing/fbr/layouts/layout.t
 
 - [Views](README.md): compare formats
 - [Frontend](../guides/frontend.md): Vite and the client build
-- [.nexy files](nexyfile.md): mixing server logic and Solid islands
+- [.nexy files](nexy/README.md): mixing server logic and Solid islands

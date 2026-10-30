@@ -120,7 +120,7 @@ from "@/components/Card.nexy" import Card
 
 `title` has no default, so the page must pass it; `tone` falls back to `"neutral"`. The markup
 between the tags arrives inside `<Slot />` (capital S). See
-[.nexy files](nexyfile.md#components) for props, slots and the rules of the tag form.
+[.nexy files](README.md#components) for props, slots and the rules of the tag form.
 
 ## Importing a client component
 
@@ -159,6 +159,6 @@ client bundle in production. Nexy calls it for every page; you rarely need it di
 
 ## Next steps
 
-- [.nexy files](nexyfile.md): where these helpers are used
-- [React](react.md): importing `.tsx` components
-- [Frontend](../guides/frontend.md): how client components are bundled
+- [.nexy files](README.md): where these helpers are used
+- [React](../react.md): importing `.tsx` components
+- [Frontend](../../guides/frontend.md): how client components are bundled

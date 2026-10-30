@@ -2,7 +2,7 @@
 
 A `.nexy` file is a component: Python on top, HTML in the middle, CSS at the bottom.
 
-**Before you start:** a project created by the [Quick start](../getting-started/quick-start.md).
+**Before you start:** a project created by the [Quick start](../../getting-started/quick-start.md).
 A `.nexy` file needs no build configuration: `nx dev` compiles it on save.
 
 ```nexy filename="src/routes/blog/[slug].nexy"
@@ -115,5 +115,5 @@ used in two components is one class. Prefix or namespace your classes.
 ## Next steps
 
 - [Markdown and MDX](markdown.md): content pages
-- [ISR](../rendering/isr.md): cache a page per path
-- [CSR](../rendering/csr.md): client-side rendering
+- [ISR](../../rendering/isr.md): cache a page per path
+- [CSR](../../rendering/csr.md): client-side rendering

@@ -54,4 +54,4 @@ the default `<slot />`. See [layout.vue](../routing/fbr/layouts/layout.vue.md).
 
 - [Views](README.md): compare formats
 - [Frontend](../guides/frontend.md): Vite and the client build
-- [.nexy files](nexyfile.md): mixing server logic and Vue islands
+- [.nexy files](nexy/README.md): mixing server logic and Vue islands

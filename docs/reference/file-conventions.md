@@ -18,7 +18,7 @@ Reserved names and rules under `src/routes/`.
 
 | File | Role | Details |
 |---|---|---|
-| `layout.nexy` | server mode: wraps every page below it; the root one owns the HTML document | [layout.nexy](../routing/fbr/layouts/layout.nexy.md) |
+| `layout.nexy` | server mode: wraps every page below it; the root one owns the HTML document | [layout.nexy](../views/nexy/layouts.md) |
 | `layout.tsx` | client mode (React): the root one owns the HTML document, nested ones wrap pages | [layout.tsx](../routing/fbr/layouts/layout.tsx.md) |
 | `layout.vue`, `layout.svelte` | client mode: nested layouts | [layout.vue](../routing/fbr/layouts/layout.vue.md), [layout.svelte](../routing/fbr/layouts/layout.svelte.md) |
 | `notfound.nexy` | 404 page for its directory | [Error pages](../routing/fbr/errors/README.md) |

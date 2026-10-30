@@ -70,4 +70,4 @@ label: prop[str]
 - [Pages](../pages/README.md): dynamic segments and layouts
 - [Recipes](../../../guides/recipes.md): a tested sign-in flow built on `useSession()`
 - [Config](../../../reference/config.md): enable sessions and locales
-- [.nexy files](../../../views/nexyfile.md): where hooks are usually called
+- [.nexy files](../../../views/nexy/README.md): where hooks are usually called

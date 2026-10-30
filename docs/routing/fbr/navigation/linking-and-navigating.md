@@ -141,4 +141,4 @@ browser's own back button and scroll restoration.
 
 - [Layouts](../layouts/README.md)
 - [CSR](../../../rendering/csr.md)
-- [Components](../../../views/components.md)
+- [Components](../../../views/nexy/components.md)

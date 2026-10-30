@@ -131,10 +131,10 @@ Python, Jinja2 and Markdown.
 
 | Page | What you will do |
 |---|---|
-| [.nexy files](views/nexyfile.md) | Write a page with Python, Jinja2 and props |
-| [Components](views/components.md) | Use `Image`, `Link`, `Audio`, `Video` and `Import` |
-| [layout.nexy](routing/fbr/layouts/layout.nexy.md) | Write the server-mode layout |
-| [Markdown and MDX](views/markdown.md) | Write content pages |
+| [.nexy files](views/nexy/README.md) | Write a page with Python, Jinja2 and props |
+| [Components](views/nexy/components.md) | Use `Image`, `Link`, `Audio`, `Video` and `Import` |
+| [layout.nexy](views/nexy/layouts.md) | Write the server-mode layout |
+| [Markdown and MDX](views/nexy/markdown.md) | Write content pages |
 
 ### React
 
@@ -283,7 +283,7 @@ docs/
 │  │  ├─ modes.md       server mode and client mode
 │  │  ├─ inheritance.md layouts, dependencies, error pages
 │  │  ├─ pages/         pages, dynamic routes, route groups, metadata
-│  │  ├─ layouts/       layout.nexy, layout.tsx, layout.vue, layout.svelte
+│  │  ├─ layouts/       layout resolution, layout.tsx, layout.vue, layout.svelte
 │  │  ├─ handlers/      .py route handlers, validation and errors
 │  │  ├─ dependencies/  dependencies.py, guards
 │  │  ├─ middleware/    middleware.py
@@ -293,7 +293,8 @@ docs/
 │  ├─ modular/          controllers, injection, guards, NestJS comparison
 │  └─ custom/           include an existing FastAPI router
 ├─ rendering/           SSR, ISR, CSR, islands
-├─ views/               .nexy, Markdown, components, one page per client framework
+├─ views/               choose a format, one page per client framework
+│  └─ nexy/             .nexy files, components, layouts, Markdown and MDX
 ├─ guides/              actions, i18n, databases, middleware, frontend, testing
 ├─ deployment/          deploy, performance
 └─ reference/           CLI, config, Python API, exceptions, file conventions, glossary,
