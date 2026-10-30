@@ -89,6 +89,19 @@
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-thumb { border-radius: 999px; background: var(--line-strong); }
 ::-webkit-scrollbar-track { background: transparent; }
+/* Scroll indicators, the Fumadocs way: a thin thumb that shows itself only on the box it scrolls. */
+.side-scroll, .panel, .toc { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.side-scroll:hover, .panel:hover, .toc:hover,
+.side-scroll:focus-within, .panel:focus-within, .toc:focus-within { scrollbar-color: var(--line-strong) transparent; }
+:is(.side-scroll, .panel, .toc)::-webkit-scrollbar { width: 10px; height: 10px; }
+:is(.side-scroll, .panel, .toc)::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+  background-color: transparent;
+}
+:is(.side-scroll, .panel, .toc):hover::-webkit-scrollbar-thumb,
+:is(.side-scroll, .panel, .toc):focus-within::-webkit-scrollbar-thumb { background-color: var(--line-strong); }
 html { scroll-behavior: smooth; scroll-padding-top: calc(var(--top) + 16px); }
 body {
   margin: 0;
@@ -189,6 +202,8 @@ body::before {
 .bar-link svg { width: 18px; height: 18px; }
 .bar-link:hover { color: var(--ink); background: var(--soft); }
 .bar-link:active { transform: scale(0.92); }
+/* The Nexy site searches from the bar: its menu holds the filter instead of the search field. */
+.panel-bar .search-open { padding: 0; border: 0; background: transparent; }
 .progress {
   position: absolute;
   left: 0;
@@ -248,24 +263,31 @@ body::before {
 .mobilebar { display: none; }
 
 /* Frame: the menu on the page, the content in a rounded panel, the outline inside it. */
+/* The menu is a column: its head stays, only the groups scroll. */
 .side {
   position: sticky;
   top: 0;
   align-self: start;
+  display: flex;
+  flex-direction: column;
   height: 100dvh;
-  overflow: auto;
-  overscroll-behavior: contain;
-  padding: 0 0.9rem 1.5rem;
+  overflow: hidden;
+  padding: 0;
 }
 .side-top {
-  position: sticky;
-  top: 0;
+  position: relative;
+  flex: none;
   z-index: 2;
-  margin: 0 -0.9rem 0.4rem;
   padding: 0.9rem 0.9rem 0.8rem;
-  background: color-mix(in srgb, var(--bg-page) 94%, transparent);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background: var(--bg-page);
+}
+.side-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 0.9rem 1.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 
 .panel {
@@ -1128,7 +1150,8 @@ dialog.search input:focus { outline: 0; }
   .panel {
     height: calc(100dvh - 1rem);
     min-height: 0;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     overscroll-behavior: contain;
     scroll-behavior: smooth;
     scroll-padding-top: calc(var(--top) + 16px);
@@ -1145,8 +1168,6 @@ dialog.search input:focus { outline: 0; }
   .side-brand .side-toggle, .bar-open { display: none; }
 }
 
-/* Sidebar: always scrolls on a wide screen (Fumadocs-like) */
-.side { overflow-y: auto; }
 /* Narrow screens: the menu becomes a drawer, opened from a thin bar. */
 .scrim {
   position: fixed;
@@ -1186,17 +1207,21 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
     backdrop-filter: blur(8px);
   }
   .mobilebar .search-open { width: 2rem; padding: 0; justify-content: center; border: 0; background: transparent; }
+  /* A phone carries the search in the mobile bar: the bar above the page would repeat it. */
+  .panel-bar .search-open { display: none; }
   .side {
     position: fixed;
     z-index: 30;
     inset: 0 auto 0 0;
     width: min(310px, 86vw);
-    height: auto;
+    height: 100dvh;
+    overflow: hidden;
     background: var(--card);
     border-right: 1px solid var(--line);
     transform: translateX(-100%);
     transition: transform 0.3s var(--ease);
   }
+  .side-top { background: var(--card); }
   body.open .side { transform: none; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.4); }
   .panel { margin: 0 0.5rem 0.5rem; min-height: calc(100dvh - var(--top) - 0.5rem); }
   .panel-bar { top: var(--top); }
