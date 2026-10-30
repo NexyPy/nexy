@@ -23,7 +23,7 @@ Python endpoint              →  .py        (GET, POST, …)
 | `.mdx` | [Markdown and MDX](nexy/markdown.md) | framework SSR | React or Preact | Markdown with components |
 | `.tsx` | [React](react/README.md) or [preact.md](preact.md) | framework SSR / SSG | React or Preact | Component routes |
 | `.vue` | [Vue](vue/README.md) | framework SSR / SSG | Vue | SFC routes |
-| `.svelte` | [svelte.md](svelte.md) | framework SSR / SSG | Svelte | SFC routes |
+| `.svelte` | [Svelte](svelte/README.md) | framework SSR / SSG | Svelte | SFC routes |
 
 Built-in `Image`, `Link`, `Audio`, `Video` and `Import` helpers: [Components](nexy/components.md).
 

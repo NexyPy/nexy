@@ -162,12 +162,15 @@ Pages, layouts and islands in Vue.
 
 ### Svelte
 
-Pages and islands in Svelte.
+Pages, layouts and islands in Svelte.
 
 | Page | What you will do |
 |---|---|
-| [Svelte](views/svelte.md) | Use Svelte in a page |
-| [layout.svelte](routing/fbr/layouts/layout.svelte.md) | Write nested layouts for Svelte |
+| [Svelte](views/svelte/README.md) | Enable Svelte and pick server or client mode |
+| [Pages](views/svelte/pages.md) | Write a `.svelte` page, read its params, know when it renders |
+| [Layouts](views/svelte/layouts.md) | Write the `layout.svelte` that owns `<html>` |
+| [Islands](views/svelte/islands.md) | Put a Svelte component in a `.nexy` page |
+| [Actions and navigation](views/svelte/actions-and-navigation.md) | Call Python, link pages, read the URL |
 
 ### Solid
 
