@@ -103,9 +103,10 @@ class TestVanillaMenu:
         html = self._html(out, "guides/actions")
         assert len(re.findall(r'<details class="group"[^>]* open>', html)) == 1
 
-    def test_the_sections_are_one_accordion(self, out):
+    def test_the_sections_do_not_close_each_other(self, out):
+        """No exclusive accordion: opening a folder never hides the folder of the current page."""
         html = self._html(out, "guides/actions")
-        assert 'name="nav"' in html
+        assert 'name="nav"' not in html
 
     def test_the_pager_stays_inside_the_area(self, out):
         html = self._html(out, "routing/modular")
@@ -120,3 +121,11 @@ class TestAssets:
     def test_the_panel_scrolls_inside_on_a_wide_screen(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert "html, body { height: 100%; overflow: hidden; }" in css
+
+    def test_the_menu_filter_is_wired(self):
+        script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")
+        assert ".side-filter input" in script
+
+    def test_the_folder_holding_the_page_is_marked(self):
+        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
+        assert ':has(a[aria-current="page"])' in css

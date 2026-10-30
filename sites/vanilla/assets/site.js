@@ -47,14 +47,19 @@
   })
 
   // --- Menu on a narrow screen ---------------------------------------------------------------------
+  // The drawer takes the page with it: the panel behind stops taking tab stops, and closing it
+  // puts the focus back on the button that opened it.
   const menu = $('.menu')
   const scrim = $('.scrim')
-  const setMenu = (open) => {
+  const setMenu = (open, restore) => {
     document.body.classList.toggle('open', open)
     menu.setAttribute('aria-expanded', String(open))
+    const behind = $('.panel')
+    if (behind) behind.inert = open
+    if (restore) menu.focus()
   }
   menu.addEventListener('click', () => setMenu(!document.body.classList.contains('open')))
-  scrim.addEventListener('click', () => setMenu(false))
+  scrim.addEventListener('click', () => setMenu(false, true))
   $('.side').addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false) })
 
   // --- The grid behind the panel follows the pointer by a few pixels -----------------------------
@@ -105,6 +110,31 @@
     addEventListener('keydown', (e) => { if (e.key === 'Escape') area.open = false })
   }
 
+  // --- The filter of the menu: a word keeps the pages that match ---------------------------------
+  // The groups come back as they were served when the word is cleared.
+  const filter = $('.side-filter input')
+  const empty = $('.side-empty')
+  if (filter) {
+    const groups = $$('.side details.group')
+    const settled = groups.map((group) => group.open)
+    filter.addEventListener('input', () => {
+      const word = filter.value.trim().toLowerCase()
+      let found = 0
+      groups.forEach((group, index) => {
+        let hits = 0
+        $$('li', group).forEach((item) => {
+          const keep = !word || item.textContent.toLowerCase().includes(word)
+          item.hidden = !keep
+          if (keep) hits += 1
+        })
+        group.hidden = Boolean(word) && hits === 0
+        group.open = word ? hits > 0 : settled[index]
+        found += hits
+      })
+      if (empty) empty.hidden = found > 0
+    })
+  }
+
   // --- Copy button on code blocks --------------------------------------------------------------
   // A shell command with no file name gets a "Terminal" bar, like a named file.
   const SHELLS = ['bash', 'sh', 'shell', 'console', 'powershell']
@@ -146,6 +176,9 @@
   }
 
   // --- Search: loaded the first time it opens ----------------------------------------------------
+  // The badge tells the truth on the keyboard in front of the reader.
+  const badge = $('.search-open kbd')
+  if (badge && /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)) badge.textContent = '⌘ K'
   const dialog = $('dialog.search')
   const input = $('input', dialog)
   const list = $('.results', dialog)
@@ -239,6 +272,6 @@
   addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); showSearch() }
     else if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); showSearch() }
-    else if (e.key === 'Escape' && document.body.classList.contains('open')) setMenu(false)
+    else if (e.key === 'Escape' && document.body.classList.contains('open')) setMenu(false, true)
   })
 })()
