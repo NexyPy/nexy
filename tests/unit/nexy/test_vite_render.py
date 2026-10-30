@@ -27,9 +27,7 @@ def test_dev_without_vite_config_serves_the_reload_channel(nexy_project) -> None
     assert "/@vite/client" not in markup
 
 
-def test_dev_with_vite_disabled_serves_the_reload_channel(
-    nexy_project, tmp_path: Path
-) -> None:
+def test_dev_with_vite_disabled_serves_the_reload_channel(nexy_project, tmp_path: Path) -> None:
     """Vite off: the project still gets live reload for every kind of file."""
     nexy_project("useVite = False")
     (tmp_path / "vite.config.ts").write_text("", encoding="utf-8")

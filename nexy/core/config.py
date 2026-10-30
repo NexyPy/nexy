@@ -182,7 +182,5 @@ def _copy_default(value: Any) -> Any:
 # Config's own attributes before the first load: what `reset` restores.
 # Captured here, at import time, before any ConfigLoader can touch the class.
 _CLASS_DEFAULTS: dict[str, Any] = {
-    name: _copy_default(value)
-    for name, value in vars(Config).items()
-    if not name.startswith("__")
+    name: _copy_default(value) for name, value in vars(Config).items() if not name.startswith("__")
 }

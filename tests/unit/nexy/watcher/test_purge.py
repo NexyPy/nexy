@@ -216,9 +216,7 @@ class TestPurgeDropsBytecode:
         module.__file__ = str(file)
         monkeypatch.setitem(sys.modules, name, module)
 
-    def test_the_purge_deletes_the_cached_bytecode_of_a_purged_module(
-        self, tmp_path, monkeypatch
-    ):
+    def test_the_purge_deletes_the_cached_bytecode_of_a_purged_module(self, tmp_path, monkeypatch):
         from importlib.util import cache_from_source
 
         from nexy.modules.cli.devtools.watch.purge import purge_project_modules
@@ -273,9 +271,7 @@ class TestPurgeReloadsConfig:
             sys.modules.pop("nexyconfig", None)
             Config.reset()
 
-    def test_a_setting_the_new_config_drops_returns_to_its_default(
-        self, tmp_path, monkeypatch
-    ):
+    def test_a_setting_the_new_config_drops_returns_to_its_default(self, tmp_path, monkeypatch):
         import sys
 
         from nexy.core.config import Config
