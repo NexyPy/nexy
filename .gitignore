@@ -80,6 +80,9 @@ apps/
 __nexy__/
 **/__nexy__/**
 tasks/
+# ...except the documentation programme's task files, which are versioned.
+!TASKS/
+!TASKS/**
 session.ai
 ai
 
