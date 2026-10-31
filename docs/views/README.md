@@ -21,9 +21,9 @@ Python endpoint              →  .py        (GET, POST, …)
 | `.nexy` | [.nexy files](nexy/README.md) | Jinja2 + Python logic, streamed | optional | Native Nexy page format |
 | `.md` | [Markdown and MDX](nexy/markdown.md) | cmarkgfm at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
 | `.mdx` | [Markdown and MDX](nexy/markdown.md) | framework SSR | React or Preact | Markdown with components |
-| `.tsx` | [React](react/README.md), [Solid](solid/README.md) or [Preact](preact/README.md) | framework SSR / SSG | React, Solid or Preact | Component routes |
-| `.vue` | [Vue](vue/README.md) | framework SSR / SSG | Vue | SFC routes |
-| `.svelte` | [Svelte](svelte/README.md) | framework SSR / SSG | Svelte | SFC routes |
+| `.tsx` | [React](react/README.md), [Solid](solid/README.md) or [Preact](preact/README.md) | client mode: the framework, rendered in Node | React, Solid or Preact | Component routes |
+| `.vue` | [Vue](vue/README.md) | client mode: the framework, rendered in Node | Vue | SFC routes |
+| `.svelte` | [Svelte](svelte/README.md) | client mode: the framework, rendered in Node | Svelte | SFC routes |
 
 Built-in `Image`, `Link`, `Audio`, `Video` and `Import` helpers: [Components](nexy/components.md).
 
@@ -40,7 +40,9 @@ class NexyConfig(NexyConfigModel):
     useFF = react()
 ```
 
-With a framework enabled, its extensions become active routes and Vite handles client bundles.
+With a framework enabled, Vite handles its client bundles. In client mode its extensions become
+routes; in server mode the same files are components you import as islands — a framework file under
+`src/routes/` is rejected there. See [server mode and client mode](../routing/fbr/modes.md).
 
 > [!NOTE]
 > in [CSR](../rendering/csr.md) mode, only framework route files are navigable

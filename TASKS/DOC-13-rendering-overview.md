@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P3 — Rendu |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | — |
 | **Débloque** | DOC-14, DOC-15, DOC-16, DOC-17 |
 
@@ -62,12 +62,12 @@ Donner une page où les quatre modes se comparent **ligne à ligne**, sans que l
 
 ## Critère de fin
 
-- [ ] La matrice a une ligne par critère et une colonne par mode, sans cellule vide
-- [ ] Chaque cellule renvoie, si besoin, à la page de mode correspondante
-- [ ] Chaque question ci-dessus a une réponse dans la page
-- [ ] Aucun paragraphe dupliqué avec DOC-14 → DOC-17
-- [ ] Aucune occurrence de « SSG » dans `docs/` sans la mention explicite que ce n'est pas un mode
-- [ ] La page dit au bon grain qui décide : page par page pour SSR/ISR/islands, projet pour CSR
+- [x] La matrice a une ligne par critère et une colonne par mode, sans cellule vide
+- [x] Chaque cellule renvoie, si besoin, à la page de mode correspondante
+- [x] Chaque question ci-dessus a une réponse dans la page
+- [x] Aucun paragraphe dupliqué avec DOC-14 → DOC-17
+- [x] Aucune occurrence de « SSG » dans `docs/` sans la mention explicite que ce n'est pas un mode
+- [x] La page dit au bon grain qui décide : page par page pour SSR/ISR/islands, projet pour CSR
 
 ## Journal
 
@@ -75,3 +75,4 @@ Donner une page où les quatre modes se comparent **ligne à ligne**, sans que l
 |---|---|
 | 2026-10-31 | Tâche créée. Matrice construite à partir des pages existantes et du brief. |
 | 2026-10-31 | Question « est-ce que Nexy fait SSG » tranchée dans le code : non (F13, F14). Prérendu au build documenté comme mécanisme interne, pas comme mode. Correction ajoutée : CSR est un choix de projet, pas de page. |
+| 2026-10-31 | **Fait.** `docs/rendering/README.md` réécrit : matrice 7 critères × 4 modes, deux faits de cycle de vie (projet = un mode, serveur = page par page), section Limitations avec l'absence de SSG. `docs/views/README.md` : « framework SSR / SSG » remplacé par le rendu réel, et la phrase « its extensions become active routes » corrigée (faux en mode serveur). `docs/reference/glossary.md` : SSG redéfini comme « not a Nexy mode ». 434 tests verts. |

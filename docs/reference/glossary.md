@@ -19,7 +19,7 @@ The words these docs use, in one place.
 | Dependency | A function FastAPI runs before the handler; `dependencies.py` applies one to a whole folder. See [dependencies](../routing/fbr/dependencies/README.md). |
 | Guard | A dependency that refuses a request, by raising `HTTPException`. |
 | Island | A client component (React, Vue, ...) mounted inside a server-rendered `.nexy` page. See [components](../views/nexy/components.md). |
-| SSG | Static site generation: pages rendered to HTML at build time and read back at request time. |
+| SSG | Static site generation. **Not a Nexy mode:** HTML is prerendered at build, but always read back through the server, so there is no standalone static output. See [rendering](../rendering/README.md). |
 | Hydration | The browser attaching a framework to HTML the server already sent. |
 | View | The file that produces a page's HTML: an `.nexy` page, Markdown, MDX or a client component. See [views](../views/README.md). |
 | Component | A reusable piece a page imports; in server mode it is never a route. See [components](../views/nexy/components.md). |
