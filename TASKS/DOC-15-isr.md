@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P3 — Rendu |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | DOC-13 |
 | **Débloque** | — |
 
@@ -22,7 +22,7 @@ Faire de l'ISR une fonctionnalité **spécifiée**, pas un cache magique. Le bri
 | Quelle est la clé de cache ? | **L'URL seule** (`request.scope["path"]`) — pas de query string, pas de host |
 | Paramètres dynamiques ? | chaque URL est mise en cache séparément |
 | Fuite entre utilisateurs ? | **risque réel** : une page `revalidate` qui lit la session sert le HTML du premier visiteur à tous ; la réponse part en `cache-control: public` |
-| Invalidation après mutation ? | explicite, depuis une Action (`revalidate(...)`) |
+| Invalidation après mutation ? | **aucune côté serveur.** `revalidate(...)` dans une Action écrit un en-tête `x-nexy-revalidate` que le **navigateur** lit pour recharger une page ; le cache ISR n'est pas purgé (F15). L'invalidation réelle, c'est la fenêtre `revalidate`. |
 | Régénérations simultanées ? | aucune déduplication : plusieurs requêtes simultanées peuvent déclencher plusieurs rendus |
 | Erreur pendant la revalidation ? | l'entrée reste servie périmée, la régénération est retentée à la requête suivante |
 | Portée du cache | mémoire, par process, borné (LRU) : plusieurs workers = plusieurs caches indépendants |
@@ -45,13 +45,14 @@ Chaque limite doit être formulée dans une des trois formes, et une seule :
 
 ## Critère de fin
 
-- [ ] Les 7 questions ci-dessus ont une réponse explicite
-- [ ] La page dit clairement qu'une page ISR ne doit pas dépendre de la session utilisateur (ou explique exactement dans quel cas c'est sûr)
-- [ ] Aucune limite formulée comme une garantie
-- [ ] La section Related renvoie à Actions (invalidation) et à `deployment/performance.md`
+- [x] Les 7 questions ci-dessus ont une réponse explicite
+- [x] La page dit clairement qu'une page ISR ne doit pas dépendre de la session utilisateur (ou explique exactement dans quel cas c'est sûr)
+- [x] Aucune limite formulée comme une garantie
+- [x] La section Related renvoie à Actions (invalidation) et à `deployment/performance.md`
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Limites vérifiées dans `runtime/cache.py` et `fbrouter/handlers.py`. |
+| 2026-10-31 | **Fait.** Réécrite sur le squelette A1, avec un tableau des trois niveaux de garantie (A2). Correction majeure : `revalidate(...)` n'invalide **pas** le cache serveur — c'est un en-tête de rechargement navigateur (F15). Ajout de deux limites qui manquaient : la query string est ignorée (clé = chemin), et une régénération qui échoue reste silencieuse. |
