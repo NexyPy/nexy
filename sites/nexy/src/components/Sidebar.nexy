@@ -44,7 +44,7 @@ routers = router_select(current)
     <div class="side-part">
       <p class="side-section">{{ section.label | e }}</p>
       {% for group in section.groups %}
-      <details class="group" data-section="{{ group.title | e }}"{% if group.router %} data-router="{{ group.router }}"{% endif %}{% if group.open %} open{% endif %}>
+      <details class="group" data-section="{{ group.title | e }}" data-scope="{{ group.scope }}"{% if group.router %} data-router="{{ group.router }}"{% endif %}{% if group.open %} open{% endif %}>
         <summary>
           <span class="group-name">{{ group.title | e }}</span>
           {{ ICONS.icon_chev }}

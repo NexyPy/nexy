@@ -122,6 +122,13 @@ ROUTERS = (
     ("custom", "Custom Router", "Create your own router"),
 )
 
+# The scopes a menu group can declare: the three routers, the advanced bucket, and `core` for the
+# groups every reader sees. A marker (`### Routing {fbr}`) is stripped from the title, here and in
+# the rendered page, so it is a navigation instruction and nothing else.
+SCOPES = ("core", "fbr", "modular", "custom", "advanced")
+_SCOPE = re.compile(r"\s*\{(" + "|".join(SCOPES) + r")\}\s*$")
+_ROUTER_KEYS = tuple(key for key, _name, _blurb in ROUTERS)
+
 
 @dataclass(frozen=True)
 class Page:
@@ -141,14 +148,16 @@ class Page:
 class Group:
     """A menu folder: the pages that answer one question, and a line saying why.
 
-    `router` is set when every page lives in the folder of one router: the menu then shows the
-    group only while that router is chosen.
+    `scope` is what the group declares, or what its pages imply: a router when every page lives in
+    that router's folder, `core` otherwise. `router` is set only for a router scope, so the pager
+    and the page filter keep working; `advanced` is a scope without a router.
     """
 
     title: str
     blurb: str
     pages: list[Page]
     router: str | None = None
+    scope: str = "core"
 
 
 @dataclass(frozen=True)
@@ -237,16 +246,18 @@ def read_tracks(docs: Path) -> list[Track]:
     tracks: list[Track] = []
     label = blurb = ""
     groups: list[Group] = []
-    group_title = group_blurb = ""
+    group_title = group_blurb = group_scope = ""
     pages: list[Page] = []
     reading: str | None = None
     fenced = False
 
     def close_group() -> None:
-        nonlocal group_title, group_blurb, pages
+        nonlocal group_title, group_blurb, group_scope, pages
         if group_title and pages:
-            groups.append(Group(group_title, group_blurb, pages, _router_of_group(pages)))
-        group_title, group_blurb, pages = "", "", []
+            scope = group_scope or _router_of_group(pages) or "core"
+            router = scope if scope in _ROUTER_KEYS else None
+            groups.append(Group(group_title, group_blurb, pages, router, scope))
+        group_title, group_blurb, group_scope, pages = "", "", "", []
 
     def close_track() -> None:
         nonlocal label, blurb, groups
@@ -270,7 +281,10 @@ def read_tracks(docs: Path) -> list[Track]:
         if text.startswith("### "):
             close_group()
             if label:
-                group_title = text[4:].strip()
+                heading = text[4:].strip()
+                marker = _SCOPE.search(heading)
+                group_scope = marker[1] if marker else ""
+                group_title = _SCOPE.sub("", heading).strip()
                 reading = "group"
             continue
         if text.startswith("|"):
@@ -533,7 +547,7 @@ def _identify(html: str) -> Rendered:
     found: list[Heading] = []
 
     def mark(match: re.Match[str]) -> str:
-        level, inner = int(match[1]), match[2]
+        level, inner = int(match[1]), _SCOPE.sub("", match[2])
         base = _anchor(inner)
         count = seen.get(base, 0)
         seen[base] = count + 1

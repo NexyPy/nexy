@@ -103,7 +103,8 @@ def _nav_group(group: source.Group, current: str, opens: bool) -> str:
     router = f' data-router="{group.router}"' if group.router else ""
     # The chevron closes the line: no other ornament.
     return (
-        f'<details class="group" data-section="{escape(group.title)}"{router}{opened}>'
+        f'<details class="group" data-section="{escape(group.title)}"'
+        f' data-scope="{group.scope}"{router}{opened}>'
         f'<summary><span class="group-name">{escape(group.title)}</span>'
         f"{ICONS['icon_chev']}</summary>"
         f"<ul>{items}</ul></details>"

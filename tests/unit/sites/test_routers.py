@@ -119,6 +119,12 @@ class TestVanillaMenu:
         html = self._html(out, "guides/actions")
         assert all(f'data-router="{key}"' in html for key, _name, _blurb in source.ROUTERS)
 
+    def test_every_group_declares_its_scope(self, out):
+        html = self._html(out, "guides/actions")
+        expected = [group.scope for track in source.read_tracks(DOCS) for group in track.groups]
+        found = re.findall(r'class="group" data-section="[^"]+" data-scope="([^"]+)"', html)
+        assert found == expected
+
     def test_the_selector_names_every_router(self, out):
         html = self._html(out, "guides/actions")
         assert all(f"<b>{name}</b>" in html for _key, name, _blurb in source.ROUTERS)
@@ -168,7 +174,15 @@ class TestAssets:
     def test_the_routers_not_chosen_are_not_drawn(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert all(
-            f'html[data-router="{key}"] .side [data-router]:not([data-router="{key}"])' in css
+            f'html[data-router="{key}"] .side .area-face:not([data-router="{key}"])' in css
+            for key, _name, _blurb in source.ROUTERS
+        )
+
+    def test_a_group_of_another_scope_is_not_drawn(self):
+        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
+        assert all(
+            f'html[data-router="{key}"] .side .group[data-scope]:not([data-scope="core"])'
+            f':not([data-scope="{key}"])' in css
             for key, _name, _blurb in source.ROUTERS
         )
 

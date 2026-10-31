@@ -74,6 +74,12 @@ def test_the_menu_of_a_page_holds_every_section(answers):
     assert all(f'<p class="side-section">{track.label}</p>' in menu for track in tracks)
 
 
+def test_the_menu_declares_the_scope_of_every_group(answers):
+    menu = _menu(answers[ACTIONS][2])
+    expected = [g.scope for t in docs_source.read_tracks(DOCS) for g in t.groups]
+    assert re.findall(r'class="group" data-section="[^"]+" data-scope="([^"]+)"', menu) == expected
+
+
 def test_the_groups_of_a_router_name_their_router(answers):
     menu = _menu(answers[ACTIONS][2])
     assert all(f'data-router="{key}"' in menu for key, _, _ in docs_source.ROUTERS)

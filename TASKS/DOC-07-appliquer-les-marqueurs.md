@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Phase** | P2 — Navigation |
-| **Statut** | `bloqué` |
-| **Dépend de** | DOC-06 |
+| **Statut** | `prêt` |
+| **Dépend de** | — |
 | **Débloque** | DOC-08 |
 
 ## Objectif

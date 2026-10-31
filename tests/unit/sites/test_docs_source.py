@@ -54,6 +54,46 @@ class TestTracks:
         assert source.find(tracks, "nope/nothing") is None
 
 
+class TestGroupScope:
+    """A group declares the scope it belongs to: `### Routing {fbr}`."""
+
+    @staticmethod
+    def _tracks(tmp_path: Path, heading: str) -> list[source.Track]:
+        (tmp_path / "guides").mkdir()
+        (tmp_path / "guides" / "actions.md").write_text("# Actions", encoding="utf-8")
+        (tmp_path / "README.md").write_text(
+            "# Docs\n\n## Guides\n\n"
+            f"### {heading}\n"
+            "| Page | What you will do |\n|---|---|\n"
+            "| [Actions](guides/actions.md) | Post a form |\n",
+            encoding="utf-8",
+        )
+        return source.read_tracks(tmp_path)
+
+    def test_a_marker_scopes_the_group_it_names(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {modular}")[0].groups[0]
+        assert (group.scope, group.router) == ("modular", "modular")
+
+    def test_a_marker_is_not_part_of_the_title(self, tmp_path):
+        assert self._tracks(tmp_path, "Forms {modular}")[0].groups[0].title == "Forms"
+
+    def test_a_group_without_a_marker_is_deduced_from_its_pages(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms")[0].groups[0]
+        assert (group.scope, group.router) == ("core", None)
+
+    def test_a_marker_wins_over_the_folder_of_the_pages(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr}")[0].groups[0]
+        assert group.router == "fbr"
+
+    def test_an_advanced_group_belongs_to_no_router(self, tmp_path):
+        group = self._tracks(tmp_path, "Advanced {advanced}")[0].groups[0]
+        assert (group.scope, group.router) == ("advanced", None)
+
+    def test_an_unknown_marker_is_left_visible_in_the_title(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {nope}")[0].groups[0]
+        assert (group.title, group.scope) == ("Forms {nope}", "core")
+
+
 class TestNeighbours:
     def test_the_first_page_has_no_previous(self, tracks):
         first = source.pages_of(tracks[0])[0].slug
@@ -102,6 +142,10 @@ class TestRender:
 
     def test_a_heading_gets_a_github_style_id(self, tmp_path):
         assert '<h2 id="what-to-assert">' in self._html(tmp_path, "## What to assert\n")
+
+    def test_a_group_marker_is_not_drawn_on_the_page(self, tmp_path):
+        html = self._html(tmp_path, "### Routing {fbr}\n")
+        assert '<h3 id="routing">Routing' in html and "{fbr}" not in html
 
     def test_two_equal_headings_get_distinct_ids(self, tmp_path):
         html = self._html(tmp_path, "## Same\n\n## Same\n")
@@ -395,6 +439,10 @@ class TestRealDocs:
     def test_every_page_renders(self, tracks):
         pages = [page for track in tracks for page in source.pages_of(track)]
         assert all(source.render(page.path, DOCS, _link).html for page in pages)
+
+    def test_no_group_title_carries_a_marker(self, tracks):
+        """A typo in a marker would be drawn in the menu instead of scoping the group."""
+        assert [g.title for t in tracks for g in t.groups if "{" in g.title] == []
 
     def test_every_link_to_a_heading_finds_it(self, tracks):
         pages = {p.slug: p for t in tracks for p in source.pages_of(t)}

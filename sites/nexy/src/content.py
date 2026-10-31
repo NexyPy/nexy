@@ -110,6 +110,7 @@ def _menu_group(group: source.Group, current: str, opened: source.Group) -> dict
         "count": len(group.pages),
         "open": group is opened,
         "router": group.router or "",
+        "scope": group.scope,
         "pages": [
             {"href": link(p.slug), "label": p.label, "current": p.slug == current}
             for p in group.pages
