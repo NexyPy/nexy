@@ -3,13 +3,14 @@
 | | |
 |---|---|
 | **Phase** | P3 — Rendu |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | DOC-13 |
 | **Débloque** | — |
 
 ## Objectif
 
-Expliquer le rendu côté client sans laisser croire qu'il impose une SPA, et sans le confondre avec « une page qui contient du JavaScript ».
+Expliquer le rendu côté client sans le confondre avec « une page qui contient du JavaScript », et sans
+laisser croire qu'il se choisit page par page.
 
 ## Squelette imposé (A1)
 
@@ -17,9 +18,14 @@ Expliquer le rendu côté client sans laisser croire qu'il impose une SPA, et sa
 
 ## Points obligatoires
 
-- **CSR n'implique pas SPA.** Le mode se choisit page par page ; une page CSR dans une application par ailleurs SSR est un cas normal.
-- **Ce que le serveur envoie** : un document minimal, puis le bundle client prend le relais.
-- **Ce qui est perdu** : le HTML initial n'existe pas pour les crawlers qui n'exécutent pas JavaScript, et le premier affichage dépend du téléchargement du bundle.
+- **CSR est un choix de projet, pas de page.** `useCSR` engage toute l'application : les deux modes
+  ne se mélangent pas. La phrase « CSR does not require a SPA » du brief est **fausse dans Nexy** et
+  ne doit pas être écrite : ce qui est vrai, c'est que la première réponse est un document rendu par
+  le serveur, pas une coquille vide.
+- **Ce que le serveur envoie** : le document complet rendu en Node (au build en production, à la
+  demande via Vite en développement), plus les assets et la description de page.
+- **Ce qui est perdu** : une route dynamique sans paramètre statique déclaré démarre d'une coquille
+  (layouts autour d'une page vide) ; la page n'apparaît qu'après exécution du navigateur.
 - **Configuration** : renvoie à `routing/fbr/modes.md` (`useCSR`) plutôt que de la redécrire.
 
 ## Fichiers
@@ -31,13 +37,14 @@ Expliquer le rendu côté client sans laisser croire qu'il impose une SPA, et sa
 
 ## Critère de fin
 
-- [ ] La phrase « CSR does not require a SPA » est présente et expliquée
-- [ ] La page ne redécrit pas `useCSR` : elle renvoie à `modes.md`
-- [ ] Aucune contradiction entre les deux pages sur ce que `useCSR` autorise
-- [ ] Les 8 sections existent, dans l'ordre
+- [x] La page dit que CSR engage le projet entier, et n'affirme pas l'inverse
+- [x] La page ne redécrit pas `useCSR` : elle renvoie à `modes.md`
+- [x] Aucune contradiction entre les deux pages sur ce que `useCSR` autorise
+- [x] Les 8 sections existent, dans l'ordre
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Risque de duplication avec `routing/fbr/modes.md` identifié. |
+| 2026-10-31 | **Fait.** La prémisse du brief (« CSR se choisit page par page ») contredisait `modes.md` et `Config.useCSR` : corrigée ici et dans la page. Ajout de `getStaticParams()` — API réelle, jamais documentée (F14) — comme seule façon d'obtenir un document par valeur sur une route dynamique. `modes.md` relu : aucune contradiction, il garde le tableau des fichiers rejetés. |
