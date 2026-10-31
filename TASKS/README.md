@@ -27,11 +27,11 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 | [DOC-10](DOC-10-sync-llms-txt.md) | Synchroniser `llms.txt` | P2 | `bloqué` | D1 |
 | [DOC-11](DOC-11-routing-terminologie.md) | Routing : deux routeurs, une intégration | P3 | `bloqué` | D1 |
 | [DOC-12](DOC-12-views-definitions.md) | Views : page / vue / composant / handler | P3 | `prêt` | — |
-| [DOC-13](DOC-13-rendering-overview.md) | Rendering : matrice de comparaison | P3 | `prêt` | — |
-| [DOC-14](DOC-14-ssr.md) | SSR | P3 | `prêt` | DOC-13 |
-| [DOC-15](DOC-15-isr.md) | ISR | P3 | `prêt` | DOC-13 |
-| [DOC-16](DOC-16-csr.md) | CSR | P3 | `prêt` | DOC-13 |
-| [DOC-17](DOC-17-islands.md) | Islands | P3 | `prêt` | DOC-13 |
+| [DOC-13](DOC-13-rendering-overview.md) | Rendering : matrice de comparaison | P3 | `fait` | — |
+| [DOC-14](DOC-14-ssr.md) | SSR | P3 | `fait` | DOC-13 |
+| [DOC-15](DOC-15-isr.md) | ISR | P3 | `fait` | DOC-13 |
+| [DOC-16](DOC-16-csr.md) | CSR | P3 | `fait` | DOC-13 |
+| [DOC-17](DOC-17-islands.md) | Islands | P3 | `fait` | DOC-13 |
 | [DOC-18](DOC-18-actions.md) | Actions : cycle complet | P3 | `prêt` | — |
 | [DOC-19](DOC-19-getting-started.md) | Getting Started : prérequis et résultat | P3 | `prêt` | — |
 | [DOC-20](DOC-20-frontend-contrats.md) | 4 contrats frontend partagés | P4 | `bloqué` | D4 |
@@ -63,6 +63,7 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 | A3 | Deux axes séparés : sélecteur de routeur (global) ≠ choix frontend (dans `views/*`). |
 | A4 | Le grain du filtrage est **le groupe**, pas la page. |
 | A5 | Ordre : fondations → navigation → terminologie → frontend → exemple. |
+| A6 | Le titre publié de la section 8 du contrat conceptuel est **« Next steps »**, pas « Related » : 81 pages l'utilisent déjà. « Related » reste le nom du point dans `TASKS/`. Un renommage global, s'il a lieu, se décide en DOC-24. |
 
 ### Ouvertes
 
