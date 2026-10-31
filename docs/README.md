@@ -15,6 +15,7 @@ client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an A
 ### Understand the model
 | Page | What you will do |
 |---|---|
+| [Core concepts](getting-started/core-concepts.md) | Get the mental model: route, page, view, component, handler, endpoint |
 | [How Nexy works](getting-started/how-nexy-works.md) | Follow one request from the URL to the file that answers it |
 | [Architecture](architecture.md) | Know which layer does what, and what Nexy leaves to your application |
 | [Project structure](getting-started/project-structure.md) | Know what every folder and file in a project is for |
@@ -201,7 +202,8 @@ Your own router.
 docs/
 ├─ README.md
 ├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, project structure, migration
+├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
+│                       migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

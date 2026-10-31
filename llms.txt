@@ -9,6 +9,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 ## Documentation
 
 - [Index](docs/README.md): every page, one line each
+- [Core concepts](docs/getting-started/core-concepts.md): route, page, view, component, handler, endpoint
 - [Getting started](docs/getting-started/quick-start.md): create a project, run it, build it
 - [How Nexy works](docs/getting-started/how-nexy-works.md): who builds what, and one request
 - [Architecture](docs/architecture.md): the five layers, and what Nexy leaves to you

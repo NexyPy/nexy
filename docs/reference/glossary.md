@@ -1,41 +1,58 @@
 # Glossary
 
-The words these docs use, in one place.
+The words these docs use, one line each, in alphabetical order. A term that needs more than a line
+has a page: follow the link. For how the notions fit together, read
+[Core concepts](../getting-started/core-concepts.md).
 
-| Term | Meaning |
+## Terms
+
+| Term | In one line |
 |---|---|
-| Action | A Python function marked `@Action`, served as a `POST` endpoint and callable from the client as a typed function. See [actions](../guides/actions.md). |
-| Client mode | `useCSR = True`: the browser renders pages; the server answers data and the first document. See [modes](../routing/fbr/modes.md). |
-| Server mode | `useCSR = False` (default): the server renders `.nexy` pages to HTML. |
-| SSR | Server-side rendering: the server renders each page to HTML for the request; the default. See [SSR](../rendering/ssr.md). |
-| CSR | Client-side rendering: the browser renders pages and handles navigation after the first document. See [CSR](../rendering/csr.md). |
-| ISR | Incremental static regeneration: a page cached per path and refreshed in the background after `revalidate` seconds (stale-while-revalidate). See [ISR](../rendering/isr.md). |
-| FBR | File-based routing: a file under `src/routes/` is a route. See [routing](../routing/fbr/README.md). |
-| Modular router | Routing declared with `@Module` and `@Controller` classes under `src/apps`. See [modular](../routing/modular/README.md). |
-| Handler | A function named after an HTTP method (`GET`, `POST`, ...) in a `.py` route file. |
-| Page | A route file that renders a view: `.nexy`, or `.tsx`, `.vue`, `.svelte`, `.md`, `.mdx`. |
-| Layout | A `layout.*` file that wraps the pages below its folder. See [layouts](../routing/fbr/layouts/README.md). |
-| Route group | A folder in parentheses, such as `(shop)/`, that groups routes without adding to the URL. |
-| Dependency | A function FastAPI runs before the handler; `dependencies.py` applies one to a whole folder. See [dependencies](../routing/fbr/dependencies/README.md). |
-| Guard | A dependency that refuses a request, by raising `HTTPException`. |
-| Island | A client component (React, Vue, ...) mounted inside a server-rendered `.nexy` page. See [components](../views/nexy/components.md). |
-| SSG | Static site generation. **Not a Nexy mode:** HTML is prerendered at build, but always read back through the server, so there is no standalone static output. See [rendering](../rendering/README.md). |
-| Hydration | The browser attaching a framework to HTML the server already sent. |
-| View | The file that produces a page's HTML: an `.nexy` page, Markdown, MDX or a client component. See [views](../views/README.md). |
-| Component | A reusable piece a page imports; in server mode it is never a route. See [components](../views/nexy/components.md). |
-| Props | Values a parent passes to a component; a `.nexy` prop is declared as `name: prop[type]`, with `= default` when optional. |
-| Frontmatter | The block between `---` lines at the top of a `.nexy` or `.md` file: Python code, props and settings. |
-| Prefetch | Loading the page behind a link before the reader clicks it. See [linking](../routing/fbr/navigation/linking-and-navigating.md). |
-| Revalidate | The number of seconds after which an ISR page is rebuilt in the background. See [ISR](../rendering/isr.md). |
-| HMR | Hot module replacement: the dev server swaps the modules that changed, without a full reload. See [dev toolbar](../guides/devtools.md). |
-| ASGI | The Python interface of a Nexy application, served by Uvicorn and used by FastAPI and Starlette. |
-| Document shell | The `<html>`, `<head>` and `<body>` around a page: the nearest layout owns it; without one, Nexy renders a minimal shell. |
-| `__nexy__/` | The generated folder: compiled pages, the Vite entry and the action client. Never edit it; it is rebuilt. |
-| `nexyconfig.py` | The project configuration, a `NexyConfig` class of `use*` fields. See [config](config.md). |
-| Skill | A folder with a `SKILL.md` that teaches a coding agent one part of Nexy. See [coding agents](../guides/ai-agents.md). |
+| Action | a Python function marked `@Action`, served as a `POST` and callable from the client ([actions](../guides/actions.md)) |
+| ASGI | the interface Uvicorn speaks, implemented by FastAPI and Starlette |
+| Client mode | `useCSR = True`: framework files are the routes and the browser navigates ([modes](../routing/fbr/modes.md)) |
+| Component | a piece a page imports; not a route in server mode ([components](../views/nexy/components.md)) |
+| CSR | client-side rendering: the browser renders pages after the first document ([CSR](../rendering/csr.md)) |
+| Dependency | a function FastAPI runs before a handler, per route or per folder ([dependencies](../routing/fbr/dependencies/README.md)) |
+| Document shell | the `<html>`, `<head>` and `<body>` around a page, owned by the nearest layout or by Nexy ([layouts](../routing/fbr/layouts/README.md)) |
+| Endpoint | a (URL, method) pair ([handlers](../routing/fbr/handlers/README.md)) |
+| FBR | file-based routing: a file under `src/routes/` is a route ([routing](../routing/fbr/README.md)) |
+| Frontmatter | the Python block between the two `---` lines of a `.nexy` or `.md` file ([.nexy files](../views/nexy/README.md)) |
+| Guard | a dependency that refuses a request by raising `HTTPException` ([guards](../routing/modular/guards-and-metadata.md)) |
+| Handler | the function of a `.py` route file, named after the HTTP method it answers ([handlers](../routing/fbr/handlers/README.md)) |
+| HMR | hot module replacement: the dev server swaps the modules that changed, without a full reload ([frontend](../guides/frontend.md)) |
+| Hydration | the browser attaching a framework to HTML the server already sent ([islands](../rendering/islands.md)) |
+| Island | a client component mounted inside a server-rendered page ([islands](../rendering/islands.md)) |
+| ISR | incremental static regeneration: one cached page per path, refreshed in the background ([ISR](../rendering/isr.md)) |
+| Layout | a `layout.*` file that wraps the pages below its folder ([layouts](../routing/fbr/layouts/README.md)) |
+| Modular router | routes declared with `@Module` and `@Controller` under `src/apps/` ([modular](../routing/modular/README.md)) |
+| Page | a route file that renders a view ([views](../views/README.md)) |
+| Prefetch | loading the page behind a link before the reader clicks it ([linking](../routing/fbr/navigation/linking-and-navigating.md)) |
+| Props | the values a parent passes to a component ([.nexy files](../views/nexy/README.md)) |
+| Revalidate | the number of seconds after which an ISR page is rebuilt in the background ([ISR](../rendering/isr.md)) |
+| Route | a URL pattern, produced by the path of a route file ([routing](../routing/README.md)) |
+| Route group | a folder in parentheses that groups routes without adding a segment ([dynamic routes](../routing/fbr/pages/dynamic-routes.md)) |
+| Route handler | the `GET`, `POST`, … function of a `.py` route file ([handlers](../routing/fbr/handlers/README.md)) |
+| Server mode | `useCSR = False`, the default: the server renders `.nexy` and `.md` pages ([modes](../routing/fbr/modes.md)) |
+| Skill | a folder with a `SKILL.md` that teaches a coding agent one part of Nexy ([coding agents](../guides/ai-agents.md)) |
+| SSG | static site generation; **not a Nexy mode**: the HTML built ahead of time is always read back by the server ([rendering](../rendering/README.md)) |
+| SSR | server-side rendering: the server renders each page for its request, and it is the default ([SSR](../rendering/ssr.md)) |
+| View | what renders the body of a page: Jinja2, Markdown or a client component ([views](../views/README.md)) |
 
-## Where next
+## Files and folders
 
+| Name | In one line |
+|---|---|
+| `__nexy__/` | generated output: compiled pages, the client entry and the action client; never edited, never committed |
+| `nexyconfig.py` | the project configuration, a class of `use*` fields ([config](config.md)) |
+| `public/` | files served at the root, such as `public/logo.svg` → `/logo.svg` ([file conventions](file-conventions.md)) |
+| `src/apps/` | controllers and modules of the modular router ([modular](../routing/modular/README.md)) |
+| `src/components/` | components imported by pages; never routes ([file conventions](file-conventions.md)) |
+| `src/routes/` | the routes of the application ([file conventions](file-conventions.md)) |
+
+## Next steps
+
+- [Core concepts](../getting-started/core-concepts.md): the model these words belong to
 - [Documentation index](../README.md): the page for the task at hand
-- [File conventions](file-conventions.md): the reserved names these definitions refer to
+- [File conventions](file-conventions.md): the reserved names behind these definitions
 - [For AI agents](agents.md): the same invariants, written for an agent

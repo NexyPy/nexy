@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P1 — Fondations |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | — |
 | **Débloque** | DOC-05 |
 
@@ -52,14 +52,15 @@ Authz, database, i18n : à la charge de l'application (A2).
 
 ## Critère de fin
 
-- [ ] Chaque notion : une définition d'une phrase + un lien vers une page existante
-- [ ] Les 5 notions page/vue/composant/route handler/endpoint sont définies ici (DOC-12 s'y réfère)
-- [ ] La section « What Nexy does not do » existe et nomme authz, base de données, i18n
-- [ ] Zéro paragraphe dupliqué avec le glossaire
-- [ ] Page listée dans la nav et dans `llms.txt`
+- [x] Chaque notion : une définition d'une phrase + un lien vers une page existante
+- [x] Les 5 notions page/vue/composant/route handler/endpoint sont définies ici (DOC-12 s'y réfère)
+- [x] La section « What Nexy does not do » existe et nomme authz, base de données, i18n
+- [x] Zéro paragraphe dupliqué avec le glossaire
+- [x] Page listée dans la nav et dans `llms.txt`
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Structure arrêtée ; écriture suspendue à D3. |
+| 2026-10-31 | **Fait.** D3 tranchée (A9) : `getting-started/core-concepts.md` porte le modèle (4 niveaux de lecture, architecture applicative, structure, présentation, interaction, frontières) ; `reference/glossary.md` devient un index strictement alphabétique d'une ligne par terme, plus une table « Files and folders ». Le tableau de structure ajoute `Route` aux 5 notions du brief, parce que « page » n'a de sens qu'opposé à « route » ; chaque ligne a une colonne « what it is not ». Le glossaire ne reprend aucune phrase de la page : ses entrées sont plus courtes, et les notions expliquées renvoient au modèle. Nav, arbre `Layout` et `llms.txt` mis à jour. 438 tests verts. |
