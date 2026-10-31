@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P3 — Rendu |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | DOC-13 |
 | **Débloque** | — |
 
@@ -36,13 +36,14 @@ Expliquer le mode par défaut avec assez de précision pour qu'un lecteur sache 
 
 ## Critère de fin
 
-- [ ] Les 8 sections existent, dans l'ordre, avec ces titres
-- [ ] La première phrase dit que c'est le défaut et qu'il ne demande aucune configuration
-- [ ] La section Limitations nomme le coût par requête et l'absence de cache
-- [ ] Aucune promesse de performance chiffrée sans renvoi à `deployment/performance.md`
+- [x] Les 8 sections existent, dans l'ordre, avec ces titres
+- [x] La première phrase dit que c'est le défaut et qu'il ne demande aucune configuration
+- [x] La section Limitations nomme le coût par requête et l'absence de cache
+- [x] Aucune promesse de performance chiffrée sans renvoi à `deployment/performance.md`
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. |
+| 2026-10-31 | **Fait.** Réécrite sur le squelette A1. Deux corrections de fond par rapport à l'ancienne page : (a) une route composant n'est pas « rendue à chaque requête » — en production, sans layout, c'est le HTML du build qui est servi puis hydraté, sinon le composant monte côté navigateur ; (b) le streaming n'est pas conditionnel, toute réponse est un `StreamingResponse`, mais il ne sert que si le composant yield (F17). |
