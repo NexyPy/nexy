@@ -45,7 +45,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 
 ## Routing
 
-### Routing
+### Routing {fbr}
 | Page | What you will do |
 |---|---|
 | [File-based routing](routing/fbr/README.md) | Turn a file path into a URL |
@@ -58,7 +58,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | Link pages, navigate on the client, prefetch |
 | [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
 
-### Route handlers
+### Route handlers {fbr}
 | Page | What you will do |
 |---|---|
 | [Route handlers](routing/fbr/handlers/README.md) | Add a Python endpoint |
@@ -69,7 +69,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [Error pages](routing/fbr/errors/README.md) | Answer with `notfound.nexy`, `errors.nexy` and JSON errors |
 | [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
 
-### Modular router
+### Modular router {modular}
 Controllers and modules.
 | Page | What you will do |
 |---|---|
@@ -78,7 +78,7 @@ Controllers and modules.
 | [Dependency injection](routing/modular/dependency-injection.md) | Define services, their scopes and the container |
 | [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
 
-### Custom router
+### Custom router integration {custom}
 Your own router.
 | Page | What you will do |
 |---|---|

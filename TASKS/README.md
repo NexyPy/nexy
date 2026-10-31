@@ -21,7 +21,7 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 | [DOC-04](DOC-04-how-nexy-works.md) | How Nexy Works (réécriture) | P1 | `fait` | — |
 | [DOC-05](DOC-05-verifier-vague-1.md) | Vérifier la vague 1 | P1 | `fait` | DOC-01→04 |
 | [DOC-06](DOC-06-marqueurs-de-groupe.md) | Marqueurs de groupe dans la nav | P2 | `fait` | — |
-| [DOC-07](DOC-07-appliquer-les-marqueurs.md) | Appliquer les marqueurs aux groupes | P2 | `prêt` | — |
+| [DOC-07](DOC-07-appliquer-les-marqueurs.md) | Appliquer les marqueurs aux groupes | P2 | `fait` | DOC-06 |
 | [DOC-08](DOC-08-bucket-advanced.md) | Bucket Advanced + « All documentation » | P2 | `prêt` | — |
 | [DOC-09](DOC-09-recherche-contextuelle.md) | Recherche contextuelle | P2 | `prêt` | — |
 | [DOC-10](DOC-10-sync-llms-txt.md) | Synchroniser `llms.txt` | P2 | `prêt` | — |
