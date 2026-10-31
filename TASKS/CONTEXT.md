@@ -18,6 +18,8 @@
 | F10 | Tout lien relatif de `docs/`, `skills/` et des entrées racine doit résoudre ; test paramétré par fichier. | `tests/unit/nexy/docs/test_links.py` |
 | F11 | Getting Started est verrouillé par des tests : pas de `uvx nexy dev`, activation du venv, `uv run nexy dev`, ordre activation → serveur. | `tests/unit/nexy/docs/test_setup_guidance.py` |
 | F12 | `ROUTERS` est asserté à l'identique dans les tests : changer un libellé casse `test_routers.py:36-41`. | `tests/unit/sites/test_routers.py` |
+| F13 | **Il n'existe pas de mode SSG.** `nexy build` prérend en HTML à deux endroits distincts, tous deux consommés **par le serveur Nexy** à la requête : (a) les composants serveur, écrits dans `__nexy__/client/static/**` + `snippets.json` et réinjectés dans les pages `.nexy` (islands) ; (b) les documents client (`useCSR = True` uniquement), écrits en `.document.html` / `.shell.html` / `<path>.html`, puis relus et complétés des assets par `csr_document.py`. Aucun dossier de HTML autonome n'est produit : le serveur reste nécessaire. | `frontend/scripts/ssg.ts:94`, `frontend/document.ts:322-405`, `runtime/csr_document.py:69-88,123-151`, `cli/commands/build.py:105` |
+| F14 | Le prérendu des routes dynamiques client s'appuie sur `getStaticPaths` / `generateStaticParams` / `getStaticParams` exportés par la page. Ces trois noms n'apparaissent **dans aucune page de doc, aucun skill, aucun test**. | `frontend/document.ts:296-310` (seule occurrence du dépôt) |
 
 ## Contraintes dures
 
