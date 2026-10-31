@@ -35,6 +35,7 @@ To skip all of it, create the project with `nx new --no-agents`.
 | `nexy-modular` | controllers, modules, injection and guards of the modular router |
 | `nexy-security` | dependencies, input, sessions, authorization, secrets |
 | `nexy-testing` | the test-first loop and the gates |
+| `nexy-framework-dev` | changing Nexy itself, rather than a project built with Nexy |
 
 The rules they enforce: audit the experience before building a view, write the failing test first,
 one function does one treatment, one class carries one intention, one folder holds one set of
