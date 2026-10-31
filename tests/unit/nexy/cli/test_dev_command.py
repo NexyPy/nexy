@@ -122,7 +122,20 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
 
     monkeypatch.setattr(dev_module, "pycache", lambda: rec("pycache"))
     monkeypatch.setattr(dev_module, "abort_on_invalid_config", lambda: rec("validate"))
-    monkeypatch.setattr(dev_module, "Config", lambda: config)
+
+    class FakeConfig:
+        def __new__(cls):
+            return config
+
+        @staticmethod
+        def reset() -> None:
+            rec("config_reset")
+
+    def fail_on_unexpected_wait(_self) -> None:
+        raise AssertionError("Unexpected wait for a file change")
+
+    monkeypatch.setattr(dev_module, "Config", FakeConfig)
+    monkeypatch.setattr(dev_module._Reloader, "_wait_for_change", fail_on_unexpected_wait)
     monkeypatch.setattr(dev_module, "Server", FakeServer)
     monkeypatch.setattr(dev_module, "FrontendGenerator", FakeFrontend)
     monkeypatch.setattr(dev_module, "Builder", FakeBuilder)

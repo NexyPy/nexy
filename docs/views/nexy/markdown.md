@@ -34,6 +34,6 @@ pre-rendered to HTML by `nx build`.
 
 ## Next steps
 
-- [.nexy files](nexyfile.md): the native page format
-- [Views](README.md): choose a format
-- [i18n](../guides/i18n.md): internationalization
+- [.nexy files](README.md): the native page format
+- [Views](../README.md): choose a format
+- [i18n](../../guides/i18n.md): internationalization

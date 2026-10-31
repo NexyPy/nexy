@@ -93,6 +93,35 @@ from nexy import Audio, Video
 class_name=None, sources=None, **attrs)` and `Video(src, width=None, height=None, ...)` render native
 players. `sources` adds `<source>` tags with the MIME type derived from each extension.
 
+## A component you write yourself
+
+A reusable `.nexy` component is a file under `src/components/`: Python props on top, HTML below.
+It is imported like any other Python module.
+
+```nexy filename="src/components/Card.nexy"
+---
+title: prop[str]
+tone: prop[str] = "neutral"
+---
+<article class="card card-{{ tone }}">
+  <h2>{{ title }}</h2>
+  <Slot />
+</article>
+```
+
+```nexy filename="src/routes/index.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+
+`title` has no default, so the page must pass it; `tone` falls back to `"neutral"`. The markup
+between the tags arrives inside `<Slot />` (capital S). See
+[.nexy files](README.md#components) for props, slots and the rules of the tag form.
+
 ## Importing a client component
 
 From a `.nexy` file, import a framework component by path; the compiler mounts it on the client and
@@ -130,6 +159,6 @@ client bundle in production. Nexy calls it for every page; you rarely need it di
 
 ## Next steps
 
-- [.nexy files](nexyfile.md): where these helpers are used
-- [React](react.md): importing `.tsx` components
-- [Frontend](../guides/frontend.md): how client components are bundled
+- [.nexy files](README.md): where these helpers are used
+- [React](../react/README.md): importing `.tsx` components
+- [Frontend](../../guides/frontend.md): how client components are bundled

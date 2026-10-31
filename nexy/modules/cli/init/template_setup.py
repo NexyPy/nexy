@@ -171,6 +171,9 @@ def _render_overlays(template_name: str, dest: Path, context: dict[str, Any]) ->
     exclude = _excluded_suffixes(context)
     cfg_src = shared_dir / "configs"
     if cfg_src.is_dir():
+        # `src/configs/db.py` is rendered for every template, even when orm is None:
+        # the file is conditionally written inside the Jinja2 by the template itself,
+        # so without an ORM it is either a negligible file or a fragile empty route.
         TemplateRenderer(cfg_src, dest / "src" / "configs", context, exclude).render()
 
     if template_name.endswith("-fbr"):

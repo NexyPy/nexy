@@ -28,7 +28,7 @@ when a server page sits next to a client route.
 | Mode | Pages | Root layout | See |
 |---|---|---|---|
 | Server (`useCSR = False`) | `.nexy`, `.md`, `.mdx` | `layout.nexy` | [Server mode and client mode](modes.md) |
-| Client (`useCSR = True`) | framework files | `layout.tsx` | [layout.tsx](layouts/layout.tsx.md) |
+| Client (`useCSR = True`) | framework files | `layout.tsx` | [layout.tsx](../../views/react/layouts.md) |
 
 `.py` files are API handlers in both modes.
 

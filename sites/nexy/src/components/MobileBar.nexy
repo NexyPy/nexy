@@ -1,0 +1,10 @@
+---
+from src.content import ICONS
+---
+<header class="mobilebar">
+  <button class="menu" type="button" aria-label="Open the menu" aria-expanded="false">{{ ICONS.icon_menu }}</button>
+  <a class="brand" href="/docs" aria-label="Nexy, home">
+    <img class="brand-logo" src="/assets/nexy.svg" alt="Nexy">
+  </a>
+  <button class="search-open" type="button" aria-label="Search the docs">{{ ICONS.icon_search }}</button>
+</header>

@@ -28,10 +28,67 @@ _FENCE = re.compile(r'^```(\w*)[ \t]+filename="([^"]+)"[ \t]*$', re.MULTILINE)
 _PRE = re.compile(r'<pre lang="(\w*)__file(\d+)">')
 _HEADING = re.compile(r"<h([2-6])>(.*?)</h\1>", re.DOTALL)
 _CODE = re.compile(r'<pre lang="(\w+)"><code>(.*?)</code></pre>', re.DOTALL)
+_TABLE = re.compile(r"<table>.*?</table>", re.DOTALL)
 _HREF = re.compile(r'href="([^"]+)"')
+
+# A line marker, the way AdonisJS and Shiki read it:
+# `// [!code ++]`, `# [!code --]`, `<!-- [!code highlight] -->`.
+_MARK = re.compile(
+    r"[ \t]*(?://|#|<!--)[ \t]*\[!code (\+{2}|-{2}|highlight)\][ \t]*(?:-->)?[ \t]*$"
+)
+_LINE_KIND = {"++": "add", "--": "del", "highlight": "hl"}
+# Pygments writes spans only: this walks them to close and reopen a token on each newline.
+_TAG = re.compile(r"<span[^>]*>|</span>|\n")
+# A .nexy file opens with its Python logic between two bars; the template follows.
+_FRONTMATTER = re.compile(r"\A---[ \t]*\n(?P<logic>.*?)^---[ \t]*$", re.DOTALL | re.MULTILINE)
 
 # A `diagram` fence is an illustration drawn with characters: no language, no colouring.
 _DIAGRAM = re.compile(r'<pre lang="diagram(__file(\d+))?"><code>(.*?)</code></pre>', re.DOTALL)
+# A tree drawn with branch glyphs keeps its ASCII shape; anything else is drawn with blocks.
+_BOX = re.compile(r"[│├└┌┐┘┬┴]")
+_ARROW = re.compile(r"\s*(?:──+►|──+>|►|→|=>)\s*")
+_FLOW_LABEL = re.compile(r"^([A-Za-z][\w ]{0,14}?)\s{2,}(\S.*)$")
+_MAP = re.compile(r"^(\S.*?)\s+→\s+(\S.*)$")
+_GAP = re.compile(r"\s{2,}")
+
+# A folder listing, as a `text` fence draws it: `├─ src/`, or a line with no glyph for the root.
+_BRANCH = re.compile(r"[├└]─")
+_BRANCH_LINE = re.compile(r"^(?P<pad>(?:│  |   )*)(?P<glyph>├─|└─) ?(?P<rest>.*)$")
+_TREE_PRE = re.compile(r'<pre lang="text"><code>(.*?)</code></pre>', re.DOTALL)
+
+_ICONS = {
+    "folder": '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5'
+    'a2 2 0 0 1-2-2z"/>',
+    "file": '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>'
+    '<path d="M14 3v5h5"/>',
+    "terminal": '<path d="m5 8 5 4-5 4"/><path d="M13 17h6"/>',
+    "pencil": '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+    "box": '<path d="m21 8-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+    "play": '<path d="m8 5 11 7-11 7z"/>',
+    "plug": '<path d="M9 2v6"/><path d="M15 2v6"/>'
+    '<path d="M6 8h12v3a6 6 0 0 1-12 0z"/><path d="M12 17v5"/>',
+    "database": '<ellipse cx="12" cy="5" rx="8" ry="3"/>'
+    '<path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/>'
+    '<path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+    "globe": '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>'
+    '<path d="M12 3c2.5 2.6 4 5.7 4 9s-1.5 6.4-4 9c-2.5-2.6-4-5.7-4-9s1.5-6.4 4-9z"/>',
+    "dot": '<circle cx="12" cy="12" r="3"/>',
+    "arrow": '<path d="M4 12h15"/><path d="m14 6 6 6-6 6"/>',
+}
+_ICON_TPL = (
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"'
+    ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{}</svg>'
+)
+_STEPS = (
+    (re.compile(r"\b(build|bundle|compile)\b"), "box"),
+    (re.compile(r"\b(start|serve|launch)\b"), "play"),
+    (re.compile(r"^(uvx|nx|nexy|npm|pnpm|uv|pip|python|git|cd|npx)\b"), "terminal"),
+    (re.compile(r"\b(endpoint|api|route|handler)\b"), "plug"),
+    (re.compile(r"\b(data|share|state|store|database)\b"), "database"),
+    (re.compile(r"\b(edit|write)\b"), "pencil"),
+    (re.compile(r"\b(layout|page|file|markdown|mdx?)\b"), "file"),
+    (re.compile(r"\b(request|browser|html|server)\b"), "globe"),
+)
 
 # A GitHub alert (`> [!NOTE]`) becomes a callout: the marker names the kind, the rest is the body.
 _ALERT = re.compile(
@@ -57,67 +114,51 @@ _SVG = re.compile(r"<svg.*?</svg>", re.DOTALL)
 Link = Callable[[str], str]
 
 
-# The two ways to route a Nexy app, as the docs name them: (folder under docs/routing, label).
-ROUTERS = (("fbr", "File-based"), ("modular", "Modular"))
-
-
-@dataclass(frozen=True)
-class Area:
-    """A part of the docs with its own menu, chosen from the selector above it."""
-
-    slug: str
-    label: str
-    blurb: str
-
-
-AREAS = (
-    Area("nexy", "Nexy", "Pages, views, rendering"),
-    Area("fbr", "FBR Router", "Routes from files"),
-    Area("modular", "Modular Router", "Controllers and injection"),
-    Area("cli", "Nexy CLI", "Create, run, build, ship"),
-    Area("core", "Nexy core", "Config, API and internals"),
-)
-
-# The pages that are not in the default area, by slug prefix. The first prefix that matches wins.
-_AREA_PREFIXES = (
-    ("fbr", ("routing/fbr",)),
-    ("modular", ("routing/modular",)),
-    (
-        "cli",
-        (
-            "getting-started/installation",
-            "getting-started/quick-start",
-            "getting-started/upgrading",
-            "reference/cli",
-            "guides/devtools",
-            "deployment",
-        ),
-    ),
-    (
-        "core",
-        (
-            "getting-started/how-nexy-works",
-            "getting-started/project-structure",
-            "reference",
-        ),
-    ),
+# The three ways to route a Nexy app, as the selector names them:
+# (folder under docs/routing, name, what it is).
+ROUTERS = (
+    ("fbr", "FBR", "File-based routing"),
+    ("modular", "Modular", "Controllers and modules"),
+    ("custom", "Custom Router", "Create your own router"),
 )
 
 
 @dataclass(frozen=True)
 class Page:
+    """One page of the docs, with the words the menu shows for it."""
+
     slug: str
     title: str
     label: str
     path: Path
     router: str | None = None
-    area: str = "nexy"
+    summary: str = ""
+    track: str = ""
+    group: str = ""
 
 
 @dataclass(frozen=True)
-class Section:
+class Group:
+    """A menu folder: the pages that answer one question, and a line saying why.
+
+    `router` is set when every page lives in the folder of one router: the menu then shows the
+    group only while that router is chosen.
+    """
+
     title: str
+    blurb: str
     pages: list[Page]
+    router: str | None = None
+
+
+@dataclass(frozen=True)
+class Track:
+    """A section of the menu: a heading over ordered groups, all shown at once."""
+
+    slug: str
+    label: str
+    blurb: str
+    groups: list[Group]
 
 
 @dataclass(frozen=True)
@@ -140,26 +181,12 @@ def slug_of(relative: str) -> str:
 
 
 def router_of(slug: str) -> str | None:
-    """`fbr` or `modular` for a page under `routing/fbr` or `routing/modular`; None for the rest."""
-    for router, _label in ROUTERS:
+    """`fbr`, `modular` or `custom` for a `routing/<router>` page; None for the rest."""
+    for router, _name, _blurb in ROUTERS:
         folder = f"routing/{router}"
         if slug == folder or slug.startswith(f"{folder}/"):
             return router
     return None
-
-
-def area_of(slug: str) -> str:
-    """The area whose menu lists a page: a prefix of its slug, else the default area."""
-    for area, prefixes in _AREA_PREFIXES:
-        if any(slug == prefix or slug.startswith(f"{prefix}/") for prefix in prefixes):
-            return area
-    return AREAS[0].slug
-
-
-def in_area(sections: list[Section], area: str) -> list[Section]:
-    """The sections of one area: each keeps its pages of that area, and none is left empty."""
-    kept = [Section(s.title, [p for p in s.pages if p.area == area]) for s in sections]
-    return [section for section in kept if section.pages]
 
 
 def _title(path: Path) -> str:
@@ -169,12 +196,20 @@ def _title(path: Path) -> str:
     return path.stem
 
 
-def _page(docs: Path, relative: str, label: str) -> Page | None:
+def _page(
+    docs: Path,
+    relative: str,
+    label: str,
+    *,
+    summary: str = "",
+    track: str = "",
+    group: str = "",
+) -> Page | None:
     path = docs / relative
     if not path.is_file():
         return None
     slug = slug_of(relative)
-    return Page(slug, _title(path), label, path, router_of(slug), area_of(slug))
+    return Page(slug, _title(path), label, path, router_of(slug), summary, track, group)
 
 
 def home(docs: Path) -> Page:
@@ -183,28 +218,124 @@ def home(docs: Path) -> Page:
     return Page("", _title(path), "Overview", path)
 
 
-def read_sections(docs: Path) -> list[Section]:
-    """The menu: the sections and tables of docs/README.md, in the order they are written."""
-    sections: list[Section] = []
+def _slugify(label: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+
+
+def _summary(row: str) -> str:
+    cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
+    return " ".join(cells[1].replace("`", "").split()) if len(cells) > 1 else ""
+
+
+def _router_of_group(pages: list[Page]) -> str | None:
+    routers = {page.router for page in pages}
+    return routers.pop() if len(routers) == 1 else None
+
+
+def read_tracks(docs: Path) -> list[Track]:
+    """The menu of docs/README.md: `##` a section, `###` a group, each table its pages."""
+    tracks: list[Track] = []
+    label = blurb = ""
+    groups: list[Group] = []
+    group_title = group_blurb = ""
+    pages: list[Page] = []
+    reading: str | None = None
+    fenced = False
+
+    def close_group() -> None:
+        nonlocal group_title, group_blurb, pages
+        if group_title and pages:
+            groups.append(Group(group_title, group_blurb, pages, _router_of_group(pages)))
+        group_title, group_blurb, pages = "", "", []
+
+    def close_track() -> None:
+        nonlocal label, blurb, groups
+        close_group()
+        if label and groups:
+            tracks.append(Track(_slugify(label), label, blurb, groups))
+        label, blurb, groups = "", "", []
+
     for line in (docs / "README.md").read_text(encoding="utf-8").splitlines():
-        if line.startswith("## "):
-            sections.append(Section(line[3:].strip(), []))
-        elif line.startswith("|") and sections:
-            pages = (_page(docs, rel, label) for label, rel in _ROW_LINK.findall(line))
-            sections[-1].pages.extend(page for page in pages if page)
-    return [section for section in sections if section.pages]
+        text = line.strip()
+        if text.startswith("```"):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        if text.startswith("## "):
+            close_track()
+            label = text[3:].strip()
+            reading = "track"
+            continue
+        if text.startswith("### "):
+            close_group()
+            if label:
+                group_title = text[4:].strip()
+                reading = "group"
+            continue
+        if text.startswith("|"):
+            reading = None
+            found = _ROW_LINK.search(text)
+            if group_title and found:
+                page = _page(
+                    docs,
+                    found[2],
+                    found[1],
+                    summary=_summary(text),
+                    track=_slugify(label),
+                    group=group_title,
+                )
+                if page:
+                    pages.append(page)
+            continue
+        if not text:
+            if (reading == "track" and blurb) or (reading == "group" and group_blurb):
+                reading = None
+            continue
+        if text.startswith(("-", "*", ">", "`")):
+            reading = None
+            continue
+        if reading == "track":
+            blurb = f"{blurb} {text}".strip()
+        elif reading == "group":
+            group_blurb = f"{group_blurb} {text}".strip()
+        else:
+            reading = None
+    close_track()
+    return tracks
 
 
-def find(sections: list[Section], slug: str) -> Page | None:
-    return next((p for s in sections for p in s.pages if p.slug == slug), None)
+def pages_of(track: Track) -> list[Page]:
+    return [page for group in track.groups for page in group.pages]
 
 
-def neighbours(sections: list[Section], slug: str) -> tuple[Page | None, Page | None]:
-    """The page before and the page after, in menu order."""
-    pages = [page for section in sections for page in section.pages]
-    index = next((i for i, page in enumerate(pages) if page.slug == slug), None)
-    if index is None:
+def track_of(tracks: list[Track], slug: str) -> Track:
+    """The track that holds a page; the first track when the page is the home page."""
+    for track in tracks:
+        if any(page.slug == slug for page in pages_of(track)):
+            return track
+    return tracks[0]
+
+
+def group_of(tracks: list[Track], slug: str) -> Group:
+    for track in tracks:
+        for group in track.groups:
+            if any(page.slug == slug for page in group.pages):
+                return group
+    return tracks[0].groups[0]
+
+
+def find(tracks: list[Track], slug: str) -> Page | None:
+    return next((page for track in tracks for page in pages_of(track) if page.slug == slug), None)
+
+
+def neighbours(track: Track, slug: str) -> tuple[Page | None, Page | None]:
+    """The page before and the page after, in the order of the section, never in another router."""
+    page = next((p for g in track.groups for p in g.pages if p.slug == slug), None)
+    if page is None:
         return None, None
+    pages = [p for g in track.groups for p in g.pages if p.router in (None, page.router)]
+    index = pages.index(page)
     before = pages[index - 1] if index > 0 else None
     after = pages[index + 1] if index + 1 < len(pages) else None
     return before, after
@@ -231,17 +362,151 @@ def _caption(html: str, names: list[str]) -> str:
     return re.sub(r"(<figure>.*?</pre>)", r"\1</figure>", named, flags=re.DOTALL)
 
 
+def _icon(name: str) -> str:
+    return _ICON_TPL.format(_ICONS[name])
+
+
 def _diagrams(html: str, names: list[str]) -> str:
     """Draw each `diagram` fence as a figure, named when the fence carries a `filename=`."""
 
     def draw(found: re.Match[str]) -> str:
-        body = f'<pre lang="diagram"><code>{found[3]}</code></pre>'
-        if found[2] is None:
-            return f'<figure class="diagram">{body}</figure>'
-        caption = names[int(found[2])]
-        return f'<figure class="diagram"><figcaption>{caption}</figcaption>{body}</figure>'
+        text = htmllib.unescape(found[3]).strip("\n")
+        caption = names[int(found[2])] if found[2] is not None else ""
+        label = f"<figcaption>{htmllib.escape(caption)}</figcaption>" if caption else ""
+        return f'<figure class="diagram">{label}{_diagram_body(text)}</figure>'
 
     return _DIAGRAM.sub(draw, html)
+
+
+def _diagram_body(text: str) -> str:
+    """A branch drawing stays ASCII; a flow becomes blocks, a mapping a table of pairs."""
+    lines = [line for line in text.splitlines() if line.strip()]
+    if _BOX.search(text):
+        return f'<pre lang="diagram"><code>{htmllib.escape(text)}</code></pre>'
+    if len(lines) > 1 and all(_MAP.match(line) for line in lines):
+        return f'<div class="map">{"".join(_map_row(line) for line in lines)}</div>'
+    if _ARROW.search(text):
+        return f'<div class="flow">{"".join(_flow_row(line) for line in lines)}</div>'
+    return f'<pre lang="diagram"><code>{htmllib.escape(text)}</code></pre>'
+
+
+def _flow_row(line: str) -> str:
+    """One line of a flow: an optional label, then its steps joined by arrows."""
+    found = _FLOW_LABEL.match(line)
+    label, body = (found[1], found[2]) if found else ("", line)
+    chips: list[str] = []
+    for index, step in enumerate(step for step in _ARROW.split(body) if step.strip()):
+        if index:
+            chips.append(f'<span class="flow-arrow">{_icon("arrow")}</span>')
+        chips.append(
+            f'<span class="flow-step"><span class="flow-icon">{_icon(_step_icon(step))}</span>'
+            f'<span class="flow-text">{htmllib.escape(step.strip())}</span></span>'
+        )
+    head = f'<span class="flow-label">{htmllib.escape(label)}</span>' if label else ""
+    return f'<div class="flow-row">{head}<span class="flow-steps">{"".join(chips)}</span></div>'
+
+
+def _step_icon(step: str) -> str:
+    for pattern, name in _STEPS:
+        if pattern.search(step.strip().lower()):
+            return name
+    return "dot"
+
+
+def _map_row(line: str) -> str:
+    """One line of a mapping: the source on the left, what it answers on the right."""
+    found = _MAP.match(line)
+    left, right = found[1].strip(), found[2].strip()
+    parts = _GAP.split(right, maxsplit=1)
+    target = parts[0]
+    note = parts[1] if len(parts) > 1 else ""
+    if not note and " (" in target:
+        target, _, note = target.rpartition(" (")
+        note = f"({note}"
+    tail = f'<span class="map-note">{htmllib.escape(note)}</span>' if note else ""
+    return (
+        f'<div class="map-row">{_map_source(left)}'
+        f'<span class="map-arrow">{_icon("arrow")}</span>'
+        f'<span class="map-to"><code>{htmllib.escape(target)}</code>{tail}</span></div>'
+    )
+
+
+def _map_source(left: str) -> str:
+    if "/" in left or re.search(r"\.\w+$", left):
+        return (
+            f'<span class="map-from"><span class="map-icon">{_icon("file")}</span>'
+            f"<code>{htmllib.escape(left)}</code></span>"
+        )
+    return f'<span class="map-from map-text">{htmllib.escape(left)}</span>'
+
+
+def _structures(html: str) -> str:
+    """Draw a folder listing as an explorer: folders, files, and the note each line carries."""
+
+    def draw(found: re.Match[str]) -> str:
+        text = htmllib.unescape(found[1])
+        if not _BRANCH.search(text):
+            return found[0]
+        rows = _branches(text)
+        if not rows:
+            return found[0]
+        return f'<figure class="diagram tree"><div class="tree">{"".join(rows)}</div></figure>'
+
+    return _TREE_PRE.sub(draw, html)
+
+
+def _branches(text: str) -> list[str]:
+    """Read the glyphs of a listing into rows, each carrying the guides of its ancestors."""
+    rows: list[tuple[str, str, str, str]] = []
+    for line in text.splitlines():
+        branch = _BRANCH_LINE.match(line)
+        if branch:
+            name, note = _split_note(branch["rest"])
+            rows.append((branch["pad"], branch["glyph"], name, note))
+        elif line.strip() and line[:1].isspace() and rows:
+            pad, glyph, name, note = rows[-1]
+            rows[-1] = (pad, glyph, name, f"{note} {line.strip()}".strip())
+        elif line.strip():
+            rows.append(("", "", line.strip(), ""))
+    return [_tree_row(*row) for row in rows]
+
+
+def _split_note(rest: str) -> tuple[str, str]:
+    parts = _GAP.split(rest.strip(), maxsplit=1)
+    return parts[0], parts[1] if len(parts) > 1 else ""
+
+
+def _guides(pad: str, glyph: str) -> str:
+    """One column per ancestor folder: a line while its siblings go on, an elbow for this row."""
+    spans = [
+        f'<span class="tree-guide {"tree-guide-line" if pad[at] == "│" else ""}"></span>'
+        for at in range(0, len(pad), 3)
+    ]
+    if glyph:
+        elbow = "tree-guide-elbow" if glyph == "├─" else "tree-guide-last"
+        spans.append(f'<span class="tree-guide {elbow}"></span>')
+    return "".join(spans)
+
+
+def _tree_row(pad: str, glyph: str, name: str, note: str) -> str:
+    folder = name.endswith("/")
+    icon = _icon("folder" if folder else "file")
+    kind = "tree-icon-folder" if folder else "tree-icon-file"
+    if note.startswith("→"):
+        said = f'<span class="tree-route">{htmllib.escape(note)}</span>'
+    else:
+        said = f'<span class="tree-note">{_note(note)}</span>' if note else ""
+    name_class = "tree-name tree-dir" if folder else "tree-name"
+    return (
+        f'<div class="tree-row"><span class="tree-guides">{_guides(pad, glyph)}</span>'
+        f'<span class="tree-icon {kind}">{icon}</span>'
+        f'<span class="{name_class}">{htmllib.escape(name)}</span>{said}</div>'
+    )
+
+
+def _note(text: str) -> str:
+    """A note keeps the backticked names it carries, drawn as code."""
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", htmllib.escape(text))
 
 
 def _callouts(html: str) -> str:
@@ -315,14 +580,84 @@ def _lexer(language: str) -> object | None:
         return None
 
 
+def _marked(text: str) -> tuple[str, list[str]]:
+    """Take the line markers out of the source and say what each line is."""
+    kinds: list[str] = []
+    lines: list[str] = []
+    for line in text.split("\n"):
+        mark = _MARK.search(line)
+        kinds.append(_LINE_KIND[mark[1]] if mark else "")
+        lines.append(line[: mark.start()] if mark else line)
+    return "\n".join(lines), kinds
+
+
+def _rows(coloured: str) -> list[str]:
+    """Split coloured HTML on its newlines, closing and reopening a token on each line."""
+    rows: list[str] = []
+    stack: list[str] = []
+    current: list[str] = []
+    at = 0
+    for tag in _TAG.finditer(coloured):
+        current.append(coloured[at : tag.start()])
+        token = tag[0]
+        if token == "\n":
+            current.extend("</span>" for _ in stack)
+            rows.append("".join(current))
+            current = list(stack)
+        elif token == "</span>":
+            stack.pop()
+            current.append(token)
+        else:
+            stack.append(token)
+            current.append(token)
+        at = tag.end()
+    current.append(coloured[at:])
+    rows.append("".join(current))
+    return rows
+
+
+def _lines(coloured: str, kinds: list[str]) -> str:
+    """One span per line, so a marker can paint the row it marks."""
+    rows = []
+    for index, row in enumerate(_rows(coloured)):
+        kind = kinds[index] if index < len(kinds) else ""
+        name = f"line line-{kind}" if kind else "line"
+        rows.append(f'<span class="{name}">{row or " "}</span>')
+    return "".join(rows)
+
+
+def _paint(text: str, language: str) -> str:
+    """One stretch of a fence, coloured by the rules of the language it is written in."""
+    lexer = _lexer(language)
+    return text if lexer is None else highlight(text, lexer, _FORMATTER)
+
+
+def _nexy(text: str) -> str:
+    """A .nexy file is Python between its bars, then the template it renders."""
+    head = _FRONTMATTER.match(text)
+    if head is None:
+        return _paint(text, "nexy").rstrip("\n")
+    bar = '<span class="tok-bar">---</span>'
+    parts = [bar, _paint(head["logic"], "python").rstrip("\n"), bar]
+    view = text[head.end() :].lstrip("\n")
+    if view.strip():
+        parts.append(_paint(view, "nexy").rstrip("\n"))
+    return "\n".join(parts)
+
+
 def _colour(found: re.Match[str]) -> str:
     """Colour one code block at build time, so it needs no script to be readable."""
     language, escaped = found[1], found[2]
-    lexer = _lexer(language)
-    if lexer is None:
+    if _lexer(language) is None:
         return found[0]
-    coloured = highlight(htmllib.unescape(escaped), lexer, _FORMATTER).rstrip("\n")
-    return f'<pre lang="{language}"><code>{coloured}</code></pre>'
+    text, kinds = _marked(htmllib.unescape(escaped))
+    coloured = _nexy(text) if language == "nexy" else _paint(text, language).rstrip("\n")
+    return f'<pre lang="{language}"><code>{_lines(coloured, kinds)}</code></pre>'
+
+
+def _tables(html: str) -> str:
+    """Wrap each table so a wide one scrolls inside its card instead of widening the page."""
+    return _TABLE.sub(lambda found: f'<div class="table-wrap">{found[0]}</div>', html)
 
 
 def _figures(html: str, page: Path, docs: Path) -> str:
@@ -362,8 +697,8 @@ def render(page: Path, docs: Path, link: Link) -> Rendered:
     """One page as HTML: illustrations, callouts, captions, linked headings, links to site URLs."""
     text, names = _name_files(page.read_text(encoding="utf-8"))
     html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
-    drawn = _diagrams(html, names)
-    coloured = _CODE.sub(_colour, _caption(drawn, names))
-    done = _identify(_callouts(coloured))
+    shaped = _structures(_diagrams(html, names))
+    coloured = _CODE.sub(_colour, _caption(shaped, names))
+    done = _identify(_callouts(_tables(coloured)))
     # The figures are last: nothing else looks at the drawing the SVG carries.
     return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)

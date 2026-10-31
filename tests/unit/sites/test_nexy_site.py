@@ -68,24 +68,32 @@ def test_links_between_pages_point_to_the_site(answers):
     assert 'href="/docs/guides/middleware-and-security"' in answers[ACTIONS][2]
 
 
-def test_the_menu_of_a_page_holds_only_its_area(answers):
-    """A page of the Nexy area sees its own pages, never those of a router."""
+def test_the_menu_of_a_page_holds_every_section(answers):
     menu = _menu(answers[ACTIONS][2])
-    assert "Actions" in menu and "Dependency injection" not in menu
+    tracks = docs_source.read_tracks(DOCS)
+    assert all(f'<p class="side-section">{track.label}</p>' in menu for track in tracks)
 
 
-def test_the_selector_names_every_area(answers):
+def test_the_groups_of_a_router_name_their_router(answers):
     menu = _menu(answers[ACTIONS][2])
-    assert all(f"<b>{area.label}</b>" in menu for area in docs_source.AREAS)
+    assert all(f'data-router="{key}"' in menu for key, _, _ in docs_source.ROUTERS)
 
 
-def test_the_selector_marks_the_area_of_the_page(answers):
-    body = answers[MODULAR][2]
-    assert re.search(
-        r'aria-current="true"\s*>\s*<span class="area-icon">.*?<b>Modular Router</b>',
-        body,
-        re.S,
-    )
+def test_the_selector_names_every_router(answers):
+    menu = _menu(answers[ACTIONS][2])
+    assert all(f"<b>{name}</b>" in menu for _, name, _ in docs_source.ROUTERS)
+
+
+def test_the_selector_marks_the_router_of_the_page(answers):
+    assert re.search(r'data-pick="modular"\s+aria-current="true"', answers[MODULAR][2])
+
+
+def test_a_router_page_names_its_router(answers):
+    assert re.search(r'<meta name="nexy-router" content="modular"', answers[MODULAR][2])
+
+
+def test_a_shared_page_names_no_router(answers):
+    assert '<meta name="nexy-router"' not in answers[ACTIONS][2]
 
 
 def test_only_the_section_of_the_page_is_open(answers):
@@ -101,15 +109,19 @@ def test_the_menu_can_be_filtered(answers):
     assert 'class="side-filter"' in answers[ACTIONS][2]
 
 
+def test_the_menu_head_stays_while_the_groups_scroll(answers):
+    body = answers[ACTIONS][2]
+    assert '<div class="side-scroll">' in body and 'class="group-note"' not in body
+
+
 def test_the_menu_is_drawn_by_the_server(answers):
     """No script builds the menu: it is already in the response."""
-    head = answers[ACTIONS][2].split("</head>")[0]
-    assert 'data-section="' in answers[ACTIONS][2] and "dataset.router" not in head
+    assert 'data-section="' in answers[ACTIONS][2]
 
 
-def test_the_pager_stays_inside_the_area(answers):
+def test_the_pager_stays_inside_the_router(answers):
     tail = answers[MODULAR][2].split('class="pager"', 1)[1].split("</nav>", 1)[0]
-    assert "Quick start" not in tail
+    assert "/fbr/" not in tail
 
 
 def test_a_page_that_does_not_exist_is_not_found(answers):
@@ -118,6 +130,27 @@ def test_a_page_that_does_not_exist_is_not_found(answers):
 
 def test_the_button_offers_the_page_as_markdown(answers):
     assert 'data-markdown="/markdown?slug=guides/actions"' in answers[ACTIONS][2]
+
+
+def test_a_page_declares_its_canonical_address(answers):
+    assert (
+        '<link rel="canonical" href="https://nexy.ai/docs/guides/actions/">' in answers[ACTIONS][2]
+    )
+
+
+def test_a_page_reads_as_a_card(answers):
+    body = answers[ACTIONS][2]
+    assert '<meta property="og:title" content="Actions">' in body
+    assert '<meta name="twitter:card" content="summary_large_image">' in body
+
+
+def test_a_page_says_what_it_is_about(answers):
+    assert re.search(r'<meta name="description" content="[^"]{20,}">', answers[ACTIONS][2])
+
+
+def test_a_page_carries_its_linked_data(answers):
+    found = re.search(r'application/ld\+json">(.*?)</script>', answers[ACTIONS][2])
+    assert found and json.loads(found[1])["@graph"][0]["@type"] == "TechArticle"
 
 
 def test_the_markdown_of_a_page_is_its_source_file(answers):
@@ -151,7 +184,7 @@ def test_search_lists_every_page(answers):
 
 
 def test_every_page_of_the_menu_is_served():
-    sections = docs_source.read_sections(DOCS)
-    wanted = {"/docs"} | {f"/docs/{p.slug}" for s in sections for p in s.pages}
+    tracks = docs_source.read_tracks(DOCS)
+    wanted = {"/docs"} | {f"/docs/{p.slug}" for t in tracks for p in docs_source.pages_of(t)}
     found = request(SITE, *[(path, NOTHING) for path in sorted(wanted)])
     assert len(found) == len(wanted) and {status for status, _, _ in found} == {200}

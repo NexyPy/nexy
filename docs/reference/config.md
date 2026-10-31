@@ -12,7 +12,7 @@ class NexyConfig(NexyConfigModel):
     useFF = react()
     usePort = 3000
     useTitle = "My App"
-    useAliases = {"@": "src/"}
+    useAliases = {"@": "src"}
 ```
 
 ## Server
@@ -32,7 +32,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | an `APIRouter` instance or class mounted next to the file-based routes; `None` means file-based only |
 | `excludeDirs` | `["templates", "extension", "docs"]` | directories skipped when scanning routes |
-| `useAliases` | `None` | import aliases, e.g. `{"@": "src/"}`; `nx new` writes the one you chose, and Vite and `tsconfig.json` follow it |
+| `useAliases` | `None` | import aliases, e.g. `{"@": "src"}` (`@/components/Counter.tsx` means `src/components/Counter.tsx`); `nx new` writes the one you chose, and Vite and `tsconfig.json` follow it |
 
 ## Frontend
 

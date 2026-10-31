@@ -18,14 +18,14 @@ Python endpoint              →  .py        (GET, POST, …)
 
 | Format | File | Server render | Client framework | Notes |
 |---|---|---|---|---|
-| `.nexy` | [nexyfile.md](nexyfile.md) | Jinja2 + Python logic, streamed | optional | Native Nexy page format |
-| `.md` | [markdown.md](markdown.md) | cmarkgfm at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
-| `.mdx` | [markdown.md](markdown.md) | framework SSR | React or Preact | Markdown with components |
-| `.tsx`, `.jsx` | [react.md](react.md) or [preact.md](preact.md) | framework SSR / SSG | React or Preact | Component routes |
-| `.vue` | [vue.md](vue.md) | framework SSR / SSG | Vue | SFC routes |
-| `.svelte` | [svelte.md](svelte.md) | framework SSR / SSG | Svelte | SFC routes |
+| `.nexy` | [.nexy files](nexy/README.md) | Jinja2 + Python logic, streamed | optional | Native Nexy page format |
+| `.md` | [Markdown and MDX](nexy/markdown.md) | cmarkgfm at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
+| `.mdx` | [Markdown and MDX](nexy/markdown.md) | framework SSR | React or Preact | Markdown with components |
+| `.tsx` | [React](react/README.md), [Solid](solid/README.md) or [Preact](preact/README.md) | framework SSR / SSG | React, Solid or Preact | Component routes |
+| `.vue` | [Vue](vue/README.md) | framework SSR / SSG | Vue | SFC routes |
+| `.svelte` | [Svelte](svelte/README.md) | framework SSR / SSG | Svelte | SFC routes |
 
-Built-in `Image`, `Link`, `Audio`, `Video` and `Import` helpers: [components.md](components.md).
+Built-in `Image`, `Link`, `Audio`, `Video` and `Import` helpers: [Components](nexy/components.md).
 
 ## Enable a framework
 
@@ -52,6 +52,6 @@ A `layout.*` in a directory wraps pages below it. See [layouts](../routing/fbr/l
 
 ## Next steps
 
-- [.nexy files](nexyfile.md): Python + Jinja2 + props
-- [Markdown and MDX](markdown.md): content pages
-- [Components](components.md): built-in HTML helpers
+- [.nexy files](nexy/README.md): Python + Jinja2 + props
+- [Markdown and MDX](nexy/markdown.md): content pages
+- [Components](nexy/components.md): built-in HTML helpers

@@ -1,52 +1,67 @@
 ---
-from src.content import ICONS, area_select, menu
+from src.content import ICONS, menu, router_select
 
 current: prop[str] = ""
-groups = menu(current)
-select = area_select(current)
+sections = menu(current)
+routers = router_select(current)
 ---
 <nav class="side" aria-label="Documentation">
-  <div class="side-head">
-    <span class="side-kicker">Documentation</span>
-    <span class="side-version">2.2</span>
+  <div class="side-top">
+    <div class="side-brand">
+      <a class="brand" href="/docs" aria-label="Nexy, home">
+        <img class="brand-logo" src="/assets/nexy.svg" alt="Nexy">
+      </a>
+      <span class="side-version">2.2</span>
+      <button class="side-toggle" type="button" aria-label="Collapse the menu" aria-expanded="true">{{ ICONS.icon_sidebar }}</button>
+    </div>
+    <details class="area-select" aria-label="Router">
+      <summary>
+        {% for router in routers %}
+        <span class="area-face" data-router="{{ router.key }}">
+          <span class="area-icon">{{ router.icon }}</span>
+          <span class="area-text"><b>{{ router.name | e }}</b></span>
+        </span>
+        {% endfor %}
+        {{ ICONS.icon_select }}
+      </summary>
+      <ul>
+        {% for router in routers %}
+        <li><a href="{{ router.home }}" data-pick="{{ router.key }}"{% if router.current %} aria-current="true"{% endif %}>
+          <span class="area-icon">{{ router.icon }}</span>
+          <span class="area-text"><b>{{ router.name | e }}</b></span>
+          {{ ICONS.icon_check }}
+        </a></li>
+        {% endfor %}
+      </ul>
+    </details>
+    <label class="side-filter">
+      {{ ICONS.icon_search }}
+      <input type="search" placeholder="Filter pages" aria-label="Filter pages" autocomplete="off">
+    </label>
   </div>
-  <label class="side-filter">
-    {{ ICONS.icon_search }}
-    <input type="search" placeholder="Filter pages" aria-label="Filter pages" autocomplete="off">
-  </label>
-  <details class="area-select" aria-label="Documentation area">
-    <summary>
-      <span class="area-icon">{{ select.shown.icon }}</span>
-      <span class="area-text"><b>{{ select.shown.label | e }}</b><small>{{ select.shown.blurb | e }}</small></span>
-      {{ ICONS.icon_select }}
-    </summary>
-    <ul>
-      {% for area in select.choices %}
-      <li><a href="{{ area.home }}"{% if area.current %} aria-current="true"{% endif %}>
-        <span class="area-icon">{{ area.icon }}</span>
-        <span class="area-text"><b>{{ area.label | e }}</b><small>{{ area.blurb | e }}</small></span>
-        {{ ICONS.icon_check }}
-      </a></li>
+  <div class="side-scroll">
+    {% for section in sections %}
+    <div class="side-part">
+      <p class="side-section">{{ section.label | e }}</p>
+      {% for group in section.groups %}
+      <details class="group" data-section="{{ group.title | e }}"{% if group.router %} data-router="{{ group.router }}"{% endif %}{% if group.open %} open{% endif %}>
+        <summary>
+          <span class="group-name">{{ group.title | e }}</span>
+          {{ ICONS.icon_chev }}
+        </summary>
+        <ul>
+          {% for page in group.pages %}
+          <li><a href="{{ page.href }}"{% if page.current %} aria-current="page"{% endif %}>{{ page.label | e }}</a></li>
+          {% endfor %}
+        </ul>
+      </details>
       {% endfor %}
-    </ul>
-  </details>
-  {% for group in groups %}
-  <details class="group" data-section="{{ group.title | e }}"{% if group.open %} open{% endif %}>
-    <summary>
-      <span class="group-name">{{ group.title | e }}</span>
-      <span class="group-count">{{ group.count }}</span>
-      {{ ICONS.icon_chev }}
-    </summary>
-    <ul>
-      {% for page in group.pages %}
-      <li>{% if page.current %}<a href="{{ page.href }}" aria-current="page">{{ page.label | e }}</a>{% else %}<a href="{{ page.href }}">{{ page.label | e }}</a>{% endif %}</li>
-      {% endfor %}
-    </ul>
-  </details>
-  {% endfor %}
-  <p class="side-empty" hidden>No page matches.</p>
-  <div class="side-foot">
-    <a href="https://github.com/NexyPy/nexy">Source on GitHub</a>
-    <a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>
+    </div>
+    {% endfor %}
+    <p class="side-empty" hidden>No page matches.</p>
+    <div class="side-foot">
+      <a href="https://github.com/NexyPy/nexy">Source on GitHub</a>
+      <a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>
+    </div>
   </div>
 </nav>

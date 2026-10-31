@@ -13,7 +13,8 @@ example `uv run nexy dev`: that is where your own packages are.
 | `nx build` | `nx b` | production build |
 | `nx new` | `nx n` | scaffold a project |
 | `nx init` | `nx i` | add Nexy to an existing project |
-| `nx migrate` | `nx m` | migrate from another framework |
+| `nx add` | - | add a UI component from the registry or a URL to `src/components/ui` |
+| `nx migrate` | `nx m` | create or apply database migrations with Alembic or Aerich |
 | `nx check` | `nx c` | type-check: mypy on Python, `tsc` on TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (prettier), `.nexy` files |
 | `nx test` | - | run pytest; `--client` adds vitest |
@@ -31,6 +32,12 @@ example `uv run nexy dev`: that is where your own packages are.
 | `test` | `--no-server` | on - skip pytest when you only want client tests |
 | `new` | `--template`, `-t` | none - clone a registered template without prompts |
 | `new` | `--no-agents` | agents on - skip `AGENTS.md` and the agent skills |
+| `add` | `--ui`, `--url` | off - force a registry name or a URL when it is ambiguous |
+| `add` | `--all`, `-a` | off - add every component of the registry |
+| `add` | `--sha256` | none - expected digest of a remote component; a mismatch aborts |
+| `migrate` | `--init` | off - write the Alembic or Aerich setup |
+| `migrate` | `--upgrade`, `-u` | off - apply the migrations instead of writing a new one |
+| `migrate` | `--message`, `-m` | empty - name of the new revision |
 
 ## Output
 

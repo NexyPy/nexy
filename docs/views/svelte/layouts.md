@@ -1,6 +1,6 @@
-# layout.svelte
+# Svelte layouts
 
-The layout file of client mode (`useCSR = True`) for Svelte. The root `layout.svelte` defines the
+A `layout.svelte` wraps every page below it, in client mode (`useCSR = True`). The root `layout.svelte` defines the
 whole document; a `layout.svelte` in a subdirectory wraps the pages below it, renders them with the
 `children` snippet and keeps its state while the user navigates.
 
@@ -50,7 +50,7 @@ receives the route's props as `params`.
 | `nx dev` | each request asks the Vite dev server to render the layouts and the page in Node. |
 | `nx build` | every static route is rendered to a complete document; a dynamic route is rendered without its page. |
 | `nx start` | Python serves the pre-rendered file and adds the client assets. No Node process runs. |
-| Browser | Svelte builds the body and swaps it in; `<html>` and `<head>` stay as sent. See [how the browser takes over](README.md#how-the-browser-takes-over-the-document). |
+| Browser | Svelte builds the body and swaps it in; `<html>` and `<head>` stay as sent. See [how the browser takes over](../../routing/fbr/layouts/README.md#how-the-browser-takes-over-the-document). |
 
 For the browser, Nexy removes `<html>`, `<head>` and `<body>` from the root layout before Svelte
 compiles it: Svelte cannot create those elements in the browser (and cannot hydrate them), and the
@@ -74,6 +74,6 @@ that differ between two pages are rebuilt.
 
 ## Next steps
 
-- [Layouts](README.md)
-- [Svelte](../../../views/svelte.md)
-- [Linking and navigating](../navigation/linking-and-navigating.md)
+- [Islands](islands.md): Svelte inside a server-mode page, with `layout.nexy`
+- [Actions and navigation](actions-and-navigation.md): the `Link` that keeps layouts mounted
+- [Layouts](../../routing/fbr/layouts/README.md): how Nexy resolves a chain of layouts

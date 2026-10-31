@@ -12,9 +12,9 @@ a different job: read the repository's root `AGENTS.md`.
 | a file's URL | [routing](../routing/README.md) |
 | dynamic segments, layouts, error pages | [pages](../routing/fbr/pages/README.md) |
 | the current path, query, cookies, session | [hooks](../routing/fbr/navigation/hooks.md) |
-| to edit a page | [.nexy files](../views/nexyfile.md) or [views](../views/README.md) |
-| Markdown or MDX | [markdown](../views/markdown.md) |
-| built-in HTML helpers | [components](../views/components.md) |
+| to edit a page | [.nexy files](../views/nexy/README.md) or [views](../views/README.md) |
+| Markdown or MDX | [markdown](../views/nexy/markdown.md) |
+| built-in HTML helpers | [components](../views/nexy/components.md) |
 | rendering mode | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
 | a WebSocket | [websocket](../routing/fbr/realtime/websocket.md) |
 | controllers and modules | [modular](../routing/modular/README.md) |
@@ -62,3 +62,9 @@ nx test     # pytest, --client adds vitest
    `nexy/modules/routers/fbrouter/` for routing rules, `nexy/modules/compiler/` for how `.nexy`
    files become modules.
 3. If the docs and the code disagree, trust the code and say so.
+
+## Where next
+
+- [Documentation index](../README.md): the page for the task at hand
+- [Glossary](glossary.md): the words these invariants rely on
+- [File conventions](file-conventions.md): reserved names and routing rules

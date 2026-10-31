@@ -1,4 +1,4 @@
-<div class="scrim" hidden></div>
+<div class="scrim"></div>
 <dialog class="search" aria-label="Search">
   <form method="dialog"><input type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off"></form>
   <ul class="results" role="listbox"></ul>

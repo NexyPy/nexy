@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from sites.shared import docs_source
+from sites.shared import docs_source, seo
 from sites.vanilla import build
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
@@ -27,8 +27,8 @@ def _pages(out: Path) -> list[Path]:
 
 class TestPages:
     def test_every_doc_has_a_page(self, out):
-        sections = docs_source.read_sections(DOCS)
-        slugs = {p.slug for s in sections for p in s.pages} | {""}
+        tracks = docs_source.read_tracks(DOCS)
+        slugs = {p.slug for t in tracks for p in docs_source.pages_of(t)} | {""}
         found = {p.parent.relative_to(out / "docs").as_posix() for p in _pages(out)} - {"."}
         found.add("")
         assert found == slugs
@@ -85,14 +85,25 @@ class TestPageContent:
     def test_the_menu_is_made_of_collapsible_sections(self, html):
         # Each section is a <details>: the one holding the current page is open, the
         # others are not, and opening one never closes another.
-        assert '<details class="group" data-section="Guides">' in html
-        assert '<details class="group" data-section="Build" open>' in html
+        assert '<details class="group" data-section="Routing" data-router="fbr">' in html
+        assert '<details class="group" data-section="Forms and data" open>' in html
 
-    def test_a_section_says_how_many_pages_it_holds(self, html):
-        # The badge counts the links the section really shows, whatever the README holds.
-        section = html.split('data-section="Build"', 1)[1].split("</details>", 1)[0]
-        badge = re.search(r'<span class="group-count">(\d+)</span>', section)
-        assert badge and int(badge.group(1)) == section.count("<li>")
+    def test_a_section_lists_all_its_pages(self, html):
+        section = html.split('data-section="Routing"', 1)[1].split("</details>", 1)[0]
+        group = next(
+            group
+            for track in docs_source.read_tracks(DOCS)
+            for group in track.groups
+            if group.title == "Routing" and group.router == "fbr"
+        )
+        assert section.count("<li>") == len(group.pages)
+
+    def test_a_section_carries_no_sentence(self, html):
+        """The accordion holds its name and its pages: the prose stays on the home page."""
+        assert 'class="group-note"' not in html
+
+    def test_only_the_groups_scroll_under_the_menu_head(self, html):
+        assert '<div class="side-scroll">' in html
 
     def test_the_menu_has_a_search_button(self, html):
         assert 'class="search-open"' in html
@@ -152,3 +163,50 @@ class TestSearch:
 
     def test_an_entry_carries_text_but_no_markup(self, index):
         assert all("<" not in e["text"] for e in index)
+
+
+class TestCrawlers:
+    """What Google reads before a reader does: the sitemap, robots, the head of each page."""
+
+    @pytest.fixture(scope="class")
+    def page(self, out) -> str:
+        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+
+    def test_the_sitemap_lists_every_page_once(self, out):
+        listed = (out / "sitemap.xml").read_text(encoding="utf-8").count("<url>")
+        assert listed == len(_pages(out))
+
+    def test_the_sitemap_names_the_published_address_of_a_page(self):
+        xml = seo.sitemap([seo.canonical(seo.DEFAULT_SITE_URL, "guides/actions")])
+        assert f"<loc>{seo.DEFAULT_SITE_URL}/docs/guides/actions/</loc>" in xml
+
+    def test_robots_points_at_the_sitemap(self, out):
+        robots = (out / "robots.txt").read_text(encoding="utf-8")
+        assert f"Sitemap: {seo.DEFAULT_SITE_URL}/sitemap.xml" in robots
+
+    def test_a_page_declares_one_canonical_address(self, page):
+        assert page.count('rel="canonical"') == 1
+        assert f'<link rel="canonical" href="{seo.DEFAULT_SITE_URL}/docs/guides/actions/">' in page
+
+    def test_a_page_says_what_it_is_about(self, page):
+        assert re.search(r'<meta name="description" content="[^"]{20,}">', page)
+
+    def test_a_page_reads_as_a_card(self, page):
+        assert '<meta property="og:title" content="Actions">' in page
+        assert 'property="og:image"' in page and 'name="twitter:card"' in page
+
+    def test_the_card_picture_ships_with_the_site(self, out):
+        assert (out / "assets" / "og.png").is_file()
+
+    def test_the_home_page_says_it_is_a_website(self, out):
+        home = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert 'property="og:type" content="website"' in home
+
+    def test_the_site_url_given_at_build_time_is_the_one_published(self, tmp_path):
+        build.build(tmp_path, site_url="https://example.test/nexy")
+        page = (tmp_path / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+        assert 'href="https://example.test/nexy/docs/guides/actions/"' in page
+
+    def test_the_root_sends_the_crawler_to_the_docs(self, out):
+        root = (out / "index.html").read_text(encoding="utf-8")
+        assert f'href="{seo.home(seo.DEFAULT_SITE_URL)}"' in root

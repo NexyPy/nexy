@@ -126,7 +126,21 @@ class Config(NexyConfigModel):
 
     @classmethod
     def reset(cls) -> None:
-        """Reset the singleton (mainly for testing)."""
+        """Reset the singleton and restore every setting to its default.
+
+        A dev restart runs this before the project is imported again, so an edited
+        `nexyconfig.py` is read in full: what the previous configuration derived
+        (watched extensions, route extensions, special file names) goes back to the
+        defaults before the loader derives it again from the new file.
+        """
+        for name in list(vars(cls)):
+            if name.startswith("__"):
+                continue
+            if name in _CLASS_DEFAULTS:
+                setattr(cls, name, _copy_default(_CLASS_DEFAULTS[name]))
+            else:
+                # A `use*` attribute the loader added: the base class default stands again.
+                delattr(cls, name)
         cls._instance = None
         cls._loaded = False
         cls._load_error = None
@@ -152,3 +166,21 @@ class Config(NexyConfigModel):
         error = cls._load_error
         if error and error != MISSING_CONFIG_ERROR:
             raise ValueError(error)
+
+
+def _copy_default(value: Any) -> Any:
+    """A fresh container: the live attribute must never share the saved default."""
+    if isinstance(value, list):
+        return list(value)
+    if isinstance(value, dict):
+        return dict(value)
+    if isinstance(value, set):
+        return set(value)
+    return value
+
+
+# Config's own attributes before the first load: what `reset` restores.
+# Captured here, at import time, before any ConfigLoader can touch the class.
+_CLASS_DEFAULTS: dict[str, Any] = {
+    name: _copy_default(value) for name, value in vars(Config).items() if not name.startswith("__")
+}

@@ -1,4 +1,4 @@
-# API
+# Route handlers
 
 A `.py` file under `src/routes/` is an API handler. The file path is the URL, and each function
 named after an HTTP method becomes an endpoint.
