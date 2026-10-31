@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P0 |
-| **Statut** | `bloqué` |
+| **Statut** | `fait` |
 | **Dépend de** | — |
 | **Débloque** | DOC-02, DOC-03, DOC-06 → DOC-11, DOC-20 → DOC-22 |
 
@@ -43,12 +43,13 @@ Obtenir les quatre décisions qui bloquent 13 tâches. Aucune écriture de conte
 
 ## Critère de fin
 
-- [ ] D1, D2, D3, D4 inscrites dans `TASKS/README.md` §Décisions ouvertes → actées
-- [ ] Les statuts des tâches débloquées passent de `bloqué` à `prêt`
-- [ ] Aucune tâche ne cite encore une décision ouverte
+- [x] D1, D2, D3, D4 inscrites dans `TASKS/README.md` §Décisions ouvertes → actées
+- [x] Les statuts des tâches débloquées passent de `bloqué` à `prêt`
+- [x] Aucune tâche ne cite encore une décision ouverte
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Les 4 questions ont été posées en conversation, sans réponse à ce stade. |
+| 2026-10-31 | **Fait.** Réponses : D1 = `docs/` + `sites/` + `tests/unit/sites/` ; D2 = deux fichiers avec renvois croisés ; D3 = séparation modèle / index ; D4 = consolidation avec redirections. Consignées en A7–A10 dans `TASKS/README.md`. Débloquées : DOC-02, DOC-03, DOC-06, DOC-10, DOC-11, DOC-20. DOC-21 et DOC-22 restent bloquées par DOC-20, pas par une décision. |

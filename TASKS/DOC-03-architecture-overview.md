@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Phase** | P1 — Fondations |
-| **Statut** | `bloqué` (D2) |
-| **Dépend de** | D2 |
+| **Statut** | `prêt` |
+| **Dépend de** | — |
 | **Débloque** | DOC-05 |
 
 ## Objectif

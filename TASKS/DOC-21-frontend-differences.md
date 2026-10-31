@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Phase** | P4 — Frontend |
-| **Statut** | `bloqué` (D4) |
-| **Dépend de** | D4, DOC-20 |
+| **Statut** | `bloqué` |
+| **Dépend de** | DOC-20 |
 | **Débloque** | DOC-22 |
 
 ## Objectif
