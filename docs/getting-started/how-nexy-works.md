@@ -5,18 +5,13 @@ and a page in your browser. Read it once; the rest of the documentation is then 
 
 ## The Nexy architecture
 
-Nexy is a Python server with four moving parts, and one boundary.
+A request crosses five layers: Uvicorn accepts it, middleware decorates it, the router picks a file,
+the renderer turns that file into HTML or JSON, and the client layer takes over if the page has
+JavaScript. Nexy owns the middle three; Vite and your framework own the client; your application
+owns the data, the authentication and the authorisation.
 
-| Part | Responsibility | Does not |
-|---|---|---|
-| Middleware stack | sessions, CORS, gzip, trusted hosts, HTTPS redirect, your own | route, render |
-| Router | turn `src/routes/` into URLs, with layouts, dependencies and error pages | decide what a page contains |
-| Renderer | run the page, produce HTML or JSON | fetch your data |
-| Actions | receive a form post, run a Python function, answer a redirect or a reload | own your business rules |
-
-Outside those parts: Vite and your frontend framework build and run client code, and your
-application owns the data, the authentication and the authorisation. For the packages of Nexy
-itself, see `ARCHITECTURE.md` at the repository root — it is written for contributors.
+Each layer, and what it refuses to do, is in [Architecture](../architecture.md). For the packages of
+Nexy itself, see `ARCHITECTURE.md` at the repository root — it is written for contributors.
 
 ## The application lifecycle
 

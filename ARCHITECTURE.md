@@ -1,5 +1,9 @@
 # Architecture
 
+> For contributors: the packages of Nexy and the mechanisms behind them. If you are writing an
+> application, read [docs/architecture.md](docs/architecture.md) instead: same layers, without the
+> internals.
+
 ## Overview
 
 Nexy is a full-stack Python meta-framework that bridges FastAPI backends with

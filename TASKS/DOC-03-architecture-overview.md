@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P1 — Fondations |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | — |
 | **Débloque** | DOC-05 |
 
@@ -42,13 +42,14 @@ Browser → Nexy Server → Middleware → Dispatcher → FBR | Modular | Custom
 
 ## Critère de fin
 
-- [ ] Chaque couche du diagramme a une ligne de tableau avec « ne fait pas »
-- [ ] La page ne décrit aucun mécanisme interne (VFS, importlib, watcher) — c'est le rôle de `ARCHITECTURE.md`
-- [ ] Une seule source de vérité par couche ; aucun diagramme dupliqué avec `ARCHITECTURE.md`
-- [ ] `docs/getting-started/how-nexy-works.md` renvoie ici au lieu de re-décrire l'architecture
+- [x] Chaque couche du diagramme a une ligne de tableau avec « ne fait pas »
+- [x] La page ne décrit aucun mécanisme interne (VFS, importlib, watcher) — c'est le rôle de `ARCHITECTURE.md`
+- [x] Une seule source de vérité par couche ; aucun diagramme dupliqué avec `ARCHITECTURE.md`
+- [x] `docs/getting-started/how-nexy-works.md` renvoie ici au lieu de re-décrire l'architecture
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Diagramme en couches repris du brief ; écriture suspendue à D2. |
+| 2026-10-31 | **Fait.** D2 tranchée (A8) : `docs/architecture.md` créé, `ARCHITECTURE.md` garde son contenu contributeur et reçoit un renvoi en tête, dans les deux sens. Diagramme en cinq couches (Uvicorn → Middleware → Router → Renderer → Client) : le « Dispatcher » du brief n'existe pas dans le code, il est remplacé par les vrais noms. Sections : couches, qui construit quoi, où la requête est décidée (renvoi DOC-04), dev vs production (quand le travail a lieu, pas qui le fait), frontières (authn, authz, base, i18n, jobs, services). `how-nexy-works.md` : le tableau de couches est remplacé par un paragraphe + renvoi, pour ne pas dupliquer. `llms.txt` : ligne ajoutée, entrée `ARCHITECTURE.md` reformulée « for contributors ». 436 tests verts. |

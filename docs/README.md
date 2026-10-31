@@ -16,6 +16,7 @@ client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an A
 | Page | What you will do |
 |---|---|
 | [How Nexy works](getting-started/how-nexy-works.md) | Follow one request from the URL to the file that answers it |
+| [Architecture](architecture.md) | Know which layer does what, and what Nexy leaves to your application |
 | [Project structure](getting-started/project-structure.md) | Know what every folder and file in a project is for |
 | [Choose a router](routing/README.md) | Pick the file-based, modular or custom router |
 | [Choose a view format](views/README.md) | Pick `.nexy`, Markdown or a client framework for a page |
@@ -199,6 +200,7 @@ Your own router.
 ```text
 docs/
 ├─ README.md
+├─ architecture.md       the layers, and what Nexy leaves to the application
 ├─ getting-started/     installation, quick start, tutorial, project structure, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
