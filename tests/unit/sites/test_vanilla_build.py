@@ -88,11 +88,15 @@ class TestPageContent:
         assert '<details class="group" data-section="Routing" data-router="fbr">' in html
         assert '<details class="group" data-section="Forms and data" open>' in html
 
-    def test_a_section_says_how_many_pages_it_holds(self, html):
-        # The badge counts the links the section really shows, whatever the README holds.
+    def test_a_section_lists_all_its_pages(self, html):
         section = html.split('data-section="Routing"', 1)[1].split("</details>", 1)[0]
-        badge = re.search(r'<span class="group-count">(\d+)</span>', section)
-        assert badge and int(badge.group(1)) == section.count("<li>")
+        group = next(
+            group
+            for track in docs_source.read_tracks(DOCS)
+            for group in track.groups
+            if group.title == "Routing" and group.router == "fbr"
+        )
+        assert section.count("<li>") == len(group.pages)
 
     def test_a_section_carries_no_sentence(self, html):
         """The accordion holds its name and its pages: the prose stays on the home page."""

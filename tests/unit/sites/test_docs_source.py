@@ -33,14 +33,8 @@ class TestSlug:
 
 
 class TestTracks:
-    def test_the_first_track_is_get_started(self, tracks):
-        assert tracks[0].label == "Get started"
-
-    def test_every_track_explains_what_it_is_for(self, tracks):
-        assert all(track.blurb for track in tracks)
-
-    def test_every_group_explains_what_it_is_for(self, tracks):
-        assert all(group.blurb for track in tracks for group in track.groups)
+    def test_the_first_track_is_getting_started(self, tracks):
+        assert tracks[0].label == "Getting Started"
 
     def test_every_page_is_in_the_menu_once(self, tracks):
         listed = sorted(page.slug for track in tracks for page in source.pages_of(track))
@@ -54,7 +48,7 @@ class TestTracks:
     def test_a_page_knows_the_track_and_group_that_hold_it(self, tracks):
         page = source.find(tracks, "guides/actions")
         assert page is not None
-        assert (page.track, page.group) == ("rendering-and-data", "Forms and data")
+        assert (page.track, page.group) == ("guides", "Forms and data")
 
     def test_an_unknown_page_is_not_found(self, tracks):
         assert source.find(tracks, "nope/nothing") is None

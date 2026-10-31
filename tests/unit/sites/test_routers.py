@@ -36,7 +36,7 @@ class TestRouterOfAPage:
     def test_the_routers_are_named_for_the_selector(self):
         assert source.ROUTERS == (
             ("fbr", "FBR", "File-based routing"),
-            ("modular", "Modular", "Controllers, modules and injection"),
+            ("modular", "Modular", "Controllers and modules"),
             ("custom", "Custom Router", "Create your own router"),
         )
 
@@ -54,14 +54,14 @@ class TestTracks:
     @pytest.mark.parametrize(
         ("slug", "track"),
         [
-            ("getting-started/installation", "Get started"),
+            ("getting-started/installation", "Getting Started"),
             ("routing/fbr/pages", "Routing"),
-            ("rendering/ssr", "Rendering and data"),
+            ("rendering/ssr", "Rendering"),
             ("routing/modular/dependency-injection", "Routing"),
             ("guides/testing", "Guides"),
             ("reference/cli", "Reference"),
-            ("views/react", "Views"),
-            ("", "Get started"),
+            ("views/react", "React"),
+            ("", "Getting Started"),
         ],
     )
     def test_a_page_belongs_to_the_track_that_holds_it(self, slug, track):
@@ -111,10 +111,9 @@ class TestVanillaMenu:
 
     def test_the_menu_of_a_page_holds_every_section(self, out):
         html = self._html(out, "routing/modular")
-        assert all(
-            f'<p class="side-section">{track.label}</p>' in html
-            for track in source.read_tracks(DOCS)
-        )
+        expected = [group.title for track in source.read_tracks(DOCS) for group in track.groups]
+        actual = re.findall(r'<details class="group" data-section="([^"]+)"', html)
+        assert actual == expected
 
     def test_the_routing_groups_carry_their_router(self, out):
         html = self._html(out, "guides/actions")
