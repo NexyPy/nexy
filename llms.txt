@@ -1,7 +1,7 @@
 # Nexy
 
-> Fullstack Python meta-framework: FastAPI and Starlette on the server, Vite on the client. A route
-> is a file under `src/routes/`.
+> A Python framework for fullstack web applications: FastAPI and Starlette on the server, Vite on
+> the client, and one origin for both. A route is a file under `src/routes/`.
 
 Nexy is meant to be read without a browser and without a build step. Start with the documentation
 index, follow the page for the task, and trust the source when the two disagree.

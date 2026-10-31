@@ -1,7 +1,22 @@
 # Nexy documentation
 
-Nexy is a fullstack Python meta-framework: FastAPI and Starlette serve the app, Vite builds the
-client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an API handler.
+**A Python framework for fullstack web applications.**
+
+Nexy is about the seam between a Python backend and a browser frontend. Instead of two servers, two
+build systems and two route tables, you get one origin: FastAPI and Starlette serve the application,
+Vite builds the client, and a file under `src/routes/` is a route - `.nexy` is a page, `.py` is an
+API handler.
+
+- **Python first.** Pages, endpoints, forms and actions are Python, and a server-rendered page needs
+  no frontend framework.
+- **Three routers, one integration.** File-based, modular, or an existing FastAPI `APIRouter`.
+- **A frontend when you want one.** React, Vue, Svelte, Solid or Preact, per page as islands, or for
+  the whole project in client mode.
+- **Rendering, one model.** Server rendering, cached pages and islands are decided per page; client
+  routing is a project switch.
+- **Typed actions.** A form post and a typed client call reach the same Python function.
+
+Start with one file under `src/routes/`, and add structure when the project grows.
 
 ## Getting Started
 

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P1 — Fondations |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | — |
 | **Débloque** | DOC-05 |
 
@@ -46,14 +46,15 @@ Start with a single Python file and introduce structure as the project grows.
 
 ## Critère de fin
 
-- [ ] Les quatre questions ont une réponse explicite avant la première mention de Vite ou de Jinja2
-- [ ] Aucune ligne de tableau, aucun `##`/`###` modifié (F1, F2)
-- [ ] `llms.txt` porte la même promesse
-- [ ] `python -m pytest tests/unit/nexy/docs tests/unit/sites -q` vert
-- [ ] Aucune affirmation qui ne soit pas tenue par le reste de la doc (pas de « zero config », pas de « production ready »)
+- [x] Les quatre questions ont une réponse explicite avant la première mention de Vite ou de Jinja2
+- [x] Aucune ligne de tableau, aucun `##`/`###` modifié (F1, F2)
+- [x] `llms.txt` porte la même promesse
+- [x] `python -m pytest tests/unit/nexy/docs tests/unit/sites -q` vert
+- [x] Aucune affirmation qui ne soit pas tenue par le reste de la doc (pas de « zero config », pas de « production ready »)
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Brouillon rédigé à partir de la proposition du brief, à valider avant écriture. |
+| 2026-10-31 | **Fait.** Tête réécrite : promesse (une origine au lieu de deux serveurs, deux builds et deux tables de routes), puis cinq points tenus par la doc. Deux corrections au brouillon : (1) « SSR, ISR, CSR and islands, chosen per page » est faux pour CSR, qui est un commutateur de projet (`useCSR`) — le point dit maintenant « decided per page ; client routing is a project switch » (F15, DOC-16) ; (2) « Start with a single Python file » n'est pas ce que fait `nx new`, qui scaffolde `nexyconfig.py` et `src/routes/` — remplacé par « Start with one file under `src/routes/` », ce que `how-nexy-works.md` démontre. La blockquote de `llms.txt` porte la même promesse. Reste une occurrence de « meta-framework » dans `views/nexy/markdown.md:13`, hors périmètre de cette tâche : à traiter avec la terminologie en DOC-24. 438 tests verts. |

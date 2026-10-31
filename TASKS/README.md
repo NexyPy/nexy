@@ -15,7 +15,7 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 | ID | Tâche | Phase | Statut | Dépend de |
 |---|---|---|---|---|
 | [DOC-00](DOC-00-cadrage.md) | Cadrage : trancher D1–D4 | P0 | `fait` | — |
-| [DOC-01](DOC-01-what-is-nexy.md) | What is Nexy? (tête du README) | P1 | `prêt` | — |
+| [DOC-01](DOC-01-what-is-nexy.md) | What is Nexy? (tête du README) | P1 | `fait` | — |
 | [DOC-02](DOC-02-core-concepts.md) | Core Concepts | P1 | `fait` | — |
 | [DOC-03](DOC-03-architecture-overview.md) | Architecture Overview | P1 | `fait` | — |
 | [DOC-04](DOC-04-how-nexy-works.md) | How Nexy Works (réécriture) | P1 | `fait` | — |
