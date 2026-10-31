@@ -19,7 +19,7 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 | [DOC-02](DOC-02-core-concepts.md) | Core Concepts | P1 | `fait` | — |
 | [DOC-03](DOC-03-architecture-overview.md) | Architecture Overview | P1 | `fait` | — |
 | [DOC-04](DOC-04-how-nexy-works.md) | How Nexy Works (réécriture) | P1 | `fait` | — |
-| [DOC-05](DOC-05-verifier-vague-1.md) | Vérifier la vague 1 | P1 | `bloqué` | DOC-01→04 |
+| [DOC-05](DOC-05-verifier-vague-1.md) | Vérifier la vague 1 | P1 | `fait` | DOC-01→04 |
 | [DOC-06](DOC-06-marqueurs-de-groupe.md) | Marqueurs de groupe dans la nav | P2 | `prêt` | — |
 | [DOC-07](DOC-07-appliquer-les-marqueurs.md) | Appliquer les marqueurs aux groupes | P2 | `bloqué` | DOC-06 |
 | [DOC-08](DOC-08-bucket-advanced.md) | Bucket Advanced + « All documentation » | P2 | `bloqué` | DOC-06 |

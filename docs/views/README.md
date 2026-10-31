@@ -11,7 +11,7 @@ server logic + HTML          →  .nexy      (Python frontmatter + Jinja2)
 prose that changes rarely    →  .md        (GitHub-flavoured Markdown)
 prose + components           →  .mdx       (React or Preact)
 app-like page, client router →  .tsx .vue .svelte (framework files)
-Python endpoint              →  .py        (GET, POST, …)
+API handler                  →  .py        (GET, POST, …)
 ```
 
 ## Formats
