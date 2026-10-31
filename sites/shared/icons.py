@@ -33,19 +33,21 @@ ICONS = {
     "icon_sidebar": _icon('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>'),
     "icon_select": _icon('<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>'),
     "icon_check": _icon('<path d="M20 6 9 17l-5-5"/>'),
-    "area_nexy": _icon('<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>'),
-    "area_fbr": _icon(
+    "router_fbr": _icon(
         '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/>'
     ),
-    "area_modular": _icon('<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>'),
-    "area_cli": _icon('<path d="m5 8 5 4-5 4M13 17h6"/>'),
-    "area_core": _icon(
-        '<rect width="14" height="14" x="5" y="5" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'
+    "router_modular": _icon(
+        '<rect width="7" height="7" x="14" y="3" rx="1"/>'
+        '<path d="M10 21V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5'
+        'a1 1 0 0 0-1-1H3"/>'
+    ),
+    "router_custom": _icon(
+        '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 '
+        '7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'
     ),
     "icon_search": _icon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
     "icon_menu": _icon('<path d="M4 6h16M4 12h16M4 18h16"/>'),
     "icon_close": _icon('<path d="M18 6 6 18M6 6l12 12"/>'),
-    "icon_book": _icon("M5 12h14M12 5l7 7-7 7", ' class="arrow"'),
     "icon_sun": _icon(
         '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4'
         'M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>',

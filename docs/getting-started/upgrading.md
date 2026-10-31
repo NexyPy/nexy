@@ -43,3 +43,9 @@ Three pages said something the code does not do. If you followed them, check you
 - A `.nexy` component file is named in PascalCase: it is imported as a Python module, so a hyphen
   does not compile.
 - For `.mdx`, the framework is Preact when the file imports `preact`, React otherwise.
+
+## Where next
+
+- [Documentation index](../README.md): the page for what you are building
+- [Troubleshooting](../guides/troubleshooting.md): the problems people hit first
+- [Config](../reference/config.md): every `use*` field and its default

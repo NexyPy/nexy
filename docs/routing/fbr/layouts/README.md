@@ -7,10 +7,10 @@ There is one page per layout file type:
 
 | File | Mode | Owns the HTML document | Page |
 |---|---|---|---|
-| `layout.nexy` | server (`useCSR = False`) | yes, at the root | [layout.nexy](layout.nexy.md) |
-| `layout.tsx` | client (`useCSR = True`) | yes, at the root (React, Solid, Preact) | [layout.tsx](layout.tsx.md) |
-| `layout.vue` | client | yes, at the root | [layout.vue](layout.vue.md) |
-| `layout.svelte` | client | yes, at the root | [layout.svelte](layout.svelte.md) |
+| `layout.nexy` | server (`useCSR = False`) | yes, at the root | [layout.nexy](../../../views/nexy/layouts.md) |
+| `layout.tsx` | client (`useCSR = True`) | yes, at the root (React, Solid, Preact) | [React](../../../views/react/layouts.md), [Solid](../../../views/solid/layouts.md), [Preact](../../../views/preact/layouts.md) |
+| `layout.vue` | client | yes, at the root | [layout.vue](../../../views/vue/layouts.md) |
+| `layout.svelte` | client | yes, at the root | [layout.svelte](../../../views/svelte/layouts.md) |
 
 A project uses one family. `layout.nexy` and `layout.tsx` cannot live in the same project: server
 mode has `.nexy` layouts and client mode has framework layouts. See
@@ -78,6 +78,6 @@ DOM, state and scroll position are kept. In server mode every navigation is a ne
 
 ## Next steps
 
-- [layout.nexy](layout.nexy.md)
-- [layout.tsx](layout.tsx.md)
+- [layout.nexy](../../../views/nexy/layouts.md)
+- [layout.tsx](../../../views/react/layouts.md)
 - [Inheritance](../inheritance.md)

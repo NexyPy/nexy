@@ -5,22 +5,23 @@ Client-side rendering turns navigation over to the browser after the first load.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
 
 
 class NexyConfig(NexyConfigModel):
-    useFF = "react"
+    useFF = react()
     useCSR = True
 ```
 
 ## Rules
 
 - `useCSR` requires `useFF`. Validation rejects `useCSR = True` without a client framework.
-- `.nexy` pages are disabled in CSR mode and skipped with a warning. Use framework routes or
-  `.md`/`.mdx`.
+- `.nexy` files are rejected under `src/routes/` before `nx dev` starts; a server that meets one
+  anyway skips it with a warning. Use framework routes or `.md`/`.mdx`.
 - `useRouter` is incompatible with `useCSR`.
 - Only navigable framework route files are handled by the client router: `.tsx`, `.jsx`, `.vue`,
   `.svelte`.
-- `.md` routes can be served with a CSR shell.
+- `.md` and `.mdx` routes are still served: they render on the server inside the client layout.
 
 ## Layout
 

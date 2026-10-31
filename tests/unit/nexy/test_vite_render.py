@@ -19,15 +19,21 @@ def _write_manifest(project: Path, payload: dict) -> None:
     manifest.write_text(json.dumps(payload), encoding="utf-8")
 
 
-def test_returns_empty_without_vite_config(nexy_project) -> None:
+def test_dev_without_vite_config_serves_the_reload_channel(nexy_project) -> None:
+    """No vite.config.ts: pages still get the reload WebSocket, not the Vite client."""
     nexy_project("useVite = True")
-    assert Vite() == ""
+    markup = Vite()
+    assert "_nexy/hmr" in markup
+    assert "/@vite/client" not in markup
 
 
-def test_returns_empty_when_vite_disabled(nexy_project, tmp_path: Path) -> None:
+def test_dev_with_vite_disabled_serves_the_reload_channel(nexy_project, tmp_path: Path) -> None:
+    """Vite off: the project still gets live reload for every kind of file."""
     nexy_project("useVite = False")
     (tmp_path / "vite.config.ts").write_text("", encoding="utf-8")
-    assert Vite() == ""
+    markup = Vite()
+    assert "_nexy/hmr" in markup
+    assert "/@vite/client" not in markup
 
 
 @pytest.mark.usefixtures("vite_project")
@@ -86,4 +92,12 @@ def test_prod_mode_malformed_manifest_returns_empty(vite_project: Path) -> None:
     (client / ".vite").mkdir(parents=True)
     (client / ".vite" / "manifest.json").write_text("{not json", encoding="utf-8")
     (vite_project / "__nexy__" / "nexy.prod").write_text("", encoding="utf-8")
+    assert Vite() == ""
+
+
+def test_prod_mode_without_vite_serves_nothing(nexy_project, tmp_path: Path) -> None:
+    """Prod without Vite: no client bundle and no dev reload channel."""
+    nexy_project("useVite = False")
+    (tmp_path / "__nexy__" / "nexy.prod").parent.mkdir()
+    (tmp_path / "__nexy__" / "nexy.prod").write_text("", encoding="utf-8")
     assert Vite() == ""

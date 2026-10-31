@@ -211,7 +211,7 @@ class NexyConfig(NexyConfigModel):
 With a framework enabled, its extensions become active routes, and `nx new` sets it up with Vite and
 Tailwind. `useVite` defaults to `True`.
 
-[Views →](docs/views/README.md) · [.nexy files →](docs/views/nexyfile.md) · [Markdown →](docs/views/markdown.md)
+[Views →](docs/views/README.md) · [.nexy files →](docs/views/nexy/README.md) · [Markdown →](docs/views/nexy/markdown.md)
 
 ## Rendering modes
 
@@ -332,7 +332,7 @@ Built-in helpers return HTML strings, usable as a Jinja call or as a tag:
 | `Audio`, `Video` | media tags, with `<source>` children derived from `sources` |
 | `Import` | imports a component from Python, like the template syntax |
 
-[Hooks →](docs/routing/fbr/navigation/hooks.md) · [Components →](docs/views/components.md)
+[Hooks →](docs/routing/fbr/navigation/hooks.md) · [Components →](docs/views/nexy/components.md)
 
 ## Internationalization
 
@@ -478,9 +478,9 @@ are written from the code.
 | the URL of a file | [Routing](docs/routing/README.md) |
 | dynamic segments, layouts, error pages | [Pages](docs/routing/fbr/pages/README.md) |
 | the current path, query, cookies, session | [Hooks](docs/routing/fbr/navigation/hooks.md) |
-| to write a page | [.nexy files](docs/views/nexyfile.md) |
-| Markdown or MDX | [Markdown](docs/views/markdown.md) |
-| built-in HTML helpers | [Components](docs/views/components.md) |
+| to write a page | [.nexy files](docs/views/nexy/README.md) |
+| Markdown or MDX | [Markdown](docs/views/nexy/markdown.md) |
+| built-in HTML helpers | [Components](docs/views/nexy/components.md) |
 | SSR, CSR, ISR | [SSR](docs/rendering/ssr.md), [CSR](docs/rendering/csr.md), [ISR](docs/rendering/isr.md) |
 | a WebSocket | [WebSocket](docs/routing/fbr/realtime/websocket.md) |
 | controllers and modules | [Modular routing](docs/routing/modular/README.md) |

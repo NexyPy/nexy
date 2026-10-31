@@ -4,6 +4,9 @@ Modular routing uses classes with decorators instead of files under `src/routes/
 handle requests, modules group them, and providers are injected. Mount the resulting `APIRouter`
 with `useRouter` in `nexyconfig.py`.
 
+**Before you start:** a Nexy project and one working page. The modular router replaces the
+file-based one, so read [Routing](../README.md) first if you have not chosen a router yet.
+
 | Page | What it covers |
 |---|---|
 | This page | Mount a module, write a controller, group controllers |

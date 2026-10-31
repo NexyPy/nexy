@@ -38,7 +38,7 @@ def test_home_renders():
 `nexy.app.app` is the assembled application, built the first time it is read. It reads
 `nexyconfig.py` from the working directory, so run pytest from the project root.
 
-When a test changes configuration, routes or configuration, build a fresh application instead of
+When a test changes configuration or routes, build a fresh application instead of
 reusing the module-level one:
 
 ```python

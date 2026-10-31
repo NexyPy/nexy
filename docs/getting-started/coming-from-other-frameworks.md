@@ -53,3 +53,9 @@ hydrate as islands instead of a whole-page React tree.
 
 Both are scaffolded by `nx new` and covered by the same end-to-end tests. See
 [Routing](../routing/README.md) and [Modular routing](../routing/modular/README.md).
+
+## Where next
+
+- [Quick start](quick-start.md): create a project and run it
+- [Project structure](project-structure.md): where each file belongs
+- [Routing](../routing/README.md): choose the router

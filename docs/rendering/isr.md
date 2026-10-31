@@ -24,4 +24,4 @@ revalidate = 60
 
 - [SSR](ssr.md): how pages are rendered before caching
 - [Pages](../routing/fbr/pages/README.md): layouts and dynamic segments
-- [.nexy files](../views/nexyfile.md): frontmatter reference
+- [.nexy files](../views/nexy/README.md): frontmatter reference
