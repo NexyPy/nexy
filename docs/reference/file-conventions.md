@@ -18,9 +18,9 @@ Reserved names and rules under `src/routes/`.
 
 | File | Role | Details |
 |---|---|---|
-| `layout.nexy` | server mode: wraps every page below it; the root one owns the HTML document | [layout.nexy](../routing/fbr/layouts/layout.nexy.md) |
-| `layout.tsx` | client mode (React): the root one owns the HTML document, nested ones wrap pages | [layout.tsx](../routing/fbr/layouts/layout.tsx.md) |
-| `layout.vue`, `layout.svelte` | client mode: nested layouts | [layout.vue](../routing/fbr/layouts/layout.vue.md), [layout.svelte](../routing/fbr/layouts/layout.svelte.md) |
+| `layout.nexy` | server mode: wraps every page below it; the root one owns the HTML document | [layout.nexy](../views/nexy/layouts.md) |
+| `layout.tsx` | client mode (React): the root one owns the HTML document, nested ones wrap pages | [layout.tsx](../views/react/layouts.md) |
+| `layout.vue`, `layout.svelte` | client mode: nested layouts | [layout.vue](../views/vue/layouts.md), [layout.svelte](../views/svelte/layouts.md) |
 | `notfound.nexy` | 404 page for its directory | [Error pages](../routing/fbr/errors/README.md) |
 | `errors.nexy` | 500 page for its directory | [Error pages](../routing/fbr/errors/README.md) |
 | `forbidden.nexy` | 403 page for its directory | [Error pages per folder](../routing/fbr/errors/folder-pages.md) |

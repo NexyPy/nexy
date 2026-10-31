@@ -21,7 +21,7 @@ title: prop[str] = "About"
 ```
 
 It is served at `/about`. The frontmatter between the `---` lines is Python; the markup below it is
-Jinja2. See [.nexy files](../../../views/nexyfile.md).
+Jinja2. See [.nexy files](../../../views/nexy/README.md).
 
 ## Page formats
 

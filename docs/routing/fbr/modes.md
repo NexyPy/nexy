@@ -39,9 +39,11 @@ class NexyConfig(NexyConfigModel):
 ```
 
 - Pages are the files of your client framework: `.tsx` for React, `.vue`, `.svelte`.
+- `.md` and `.mdx` files stay valid routes: Nexy renders them on the server inside the client
+  layout, and the client router takes over navigation from there.
 - The root layout of any framework (`layout.tsx`, `layout.vue`, `layout.svelte`) owns `<!DOCTYPE html>`, `<html>`, `<head>` and `<body>`, like the
   root layout of the Next.js App Router. Nexy renders it in Node for the first response and the
-  framework hydrates the whole document. See [layout.tsx](layouts/layout.tsx.md).
+  framework hydrates the whole document. See [layout.tsx](../../views/react/layouts.md).
 - `.py` files are API handlers served by FastAPI, next to the client routes.
 - There is no `.nexy` file at all, and no `layout.nexy`.
 - Navigation between pages happens in the browser.

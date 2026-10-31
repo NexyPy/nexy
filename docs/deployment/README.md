@@ -2,6 +2,9 @@
 
 Two commands: `nx build` produces the artifacts, `nx start` serves them.
 
+**Before you start:** a project that builds locally with `nx build`, and - for client pages - the
+frontend toolchain that `nx new` installed.
+
 ```bash
 nx build
 nx start --host 0.0.0.0 --port 8000

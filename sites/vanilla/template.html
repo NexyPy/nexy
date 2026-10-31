@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>$title - Nexy</title>
-<meta name="description" content="$description">
+$seo
 <meta name="theme-color" content="#0a0a0a">
+$router_meta
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
@@ -21,6 +22,12 @@
   try {
     if (localStorage.getItem("nexy-docs-side") === "closed") document.documentElement.dataset.side = "closed";
   } catch (e) {}
+  // The routing groups of one router: the page's own, else the one chosen last, else FBR.
+  try {
+    var own = document.querySelector('meta[name="nexy-router"]');
+    document.documentElement.dataset.router =
+      (own && own.content) || localStorage.getItem("nexy-docs-router") || "fbr";
+  } catch (e) { document.documentElement.dataset.router = "fbr"; }
 </script>
 </head>
 <body data-root="$root" data-search="$root/search-index.json"$home_attr>
@@ -46,7 +53,9 @@
         $icon_search<span>Search</span><kbd>Ctrl K</kbd>
       </button>
     </div>
-    $nav
+    <div class="side-scroll">
+      $nav
+    </div>
   </nav>
   <div class="panel">
     <div class="panel-bar">

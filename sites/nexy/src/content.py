@@ -14,21 +14,28 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from sites.shared import docs_source as source  # noqa: E402
+from sites.shared import seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
 
 DOCS = REPO / "docs"
 ASSETS = REPO / "sites" / "vanilla" / "assets"
 
+# The address this site is published at: the canonical tag and the cards are absolute.
+SITE_URL = "https://nexy.ai"
+
 __all__ = [
     "ASSETS",
     "ICONS",
     "MARK",
-    "area_select",
+    "SITE_URL",
     "document",
+    "head_of",
     "link",
     "markdown_link",
     "markdown_source",
     "menu",
+    "router_of",
+    "router_select",
     "search_entries",
     "slug_of",
     "title_of",
@@ -45,38 +52,34 @@ def slug_of(pathname: str) -> str:
 
 
 def _pages() -> list[tuple[source.Page, str]]:
-    sections = source.read_sections(DOCS)
     return [(source.home(DOCS), "Documentation")] + [
-        (p, s.title) for s in sections for p in s.pages
+        (page, group.title) for track in _tracks() for group in track.groups for page in group.pages
     ]
 
 
-def _sections() -> list[source.Section]:
-    return source.read_sections(DOCS)
+def _tracks() -> list[source.Track]:
+    return source.read_tracks(DOCS)
 
 
-def _area_sections(slug: str) -> list[source.Section]:
-    """The sections of one area: the menu and the pager of a page stay inside its own area."""
-    return source.in_area(_sections(), source.area_of(slug))
+def router_select(slug: str) -> list[dict[str, Any]]:
+    """The routers above the menu: each picks its routing groups and leads to its overview."""
+    chosen = source.router_of(slug) or source.ROUTERS[0][0]
+    return [
+        {
+            "key": key,
+            "name": name,
+            "blurb": blurb,
+            "icon": ICONS[f"router_{key}"],
+            "home": link(f"routing/{key}"),
+            "current": key == chosen,
+        }
+        for key, name, blurb in source.ROUTERS
+    ]
 
 
-def area_select(slug: str) -> dict[str, Any]:
-    """The choice above the menu: the area of the page, and a link to the start of each other."""
-    here = source.area_of(slug)
-    choices = []
-    for area in source.AREAS:
-        pages = [p for s in source.in_area(_sections(), area.slug) for p in s.pages]
-        choices.append(
-            {
-                "slug": area.slug,
-                "label": area.label,
-                "blurb": area.blurb,
-                "icon": ICONS[f"area_{area.slug}"],
-                "home": link(pages[0].slug) if pages else link(""),
-                "current": area.slug == here,
-            }
-        )
-    return {"choices": choices, "shown": next(c for c in choices if c["current"])}
+def router_of(slug: str) -> str:
+    """The router a page belongs to, for the first-paint script; empty for a shared page."""
+    return source.router_of(slug) or ""
 
 
 def title_of(slug: str) -> str:
@@ -84,29 +87,47 @@ def title_of(slug: str) -> str:
     return f"{found} - Nexy"
 
 
+def head_of(slug: str) -> str:
+    """What a crawler reads about a page: its summary, its address, its cards, the menu above it."""
+    page = next((page for page, _ in _pages() if page.slug == slug), None)
+    if page is None:
+        return '<meta name="robots" content="noindex">'
+    url = seo.canonical(SITE_URL, slug)
+    rendered = source.render(page.path, DOCS, link)
+    return seo.Head(
+        title=page.title,
+        description=seo.description(rendered.html),
+        url=url,
+        site_url=SITE_URL,
+        trail=(("Documentation", seo.home(SITE_URL)), (page.label, url)),
+        page_type="WebPage" if slug == "" else "TechArticle",
+    ).html()
+
+
+def _menu_group(group: source.Group, current: str, opened: source.Group) -> dict[str, Any]:
+    return {
+        "title": group.title,
+        "count": len(group.pages),
+        "open": group is opened,
+        "router": group.router or "",
+        "pages": [
+            {"href": link(p.slug), "label": p.label, "current": p.slug == current}
+            for p in group.pages
+        ],
+    }
+
+
 def menu(current: str) -> list[dict[str, Any]]:
-    """The side menu of the area of the page: one group per section, its own group open."""
-    sections = _area_sections(current)
-    # A reader who arrives on the home page has chosen no page yet: the first steps are open.
-    holder = next(
-        (i for i, section in enumerate(sections) if any(p.slug == current for p in section.pages)),
-        0,
-    )
+    """The side menu: every section under its heading, the folder of the page open."""
+    tracks = _tracks()
+    # A reader who arrives on the home page has chosen no page yet: the first group is open.
+    opened = source.group_of(tracks, current)
     return [
         {
-            "title": section.title,
-            "count": len(section.pages),
-            "open": i == holder,
-            "pages": [
-                {
-                    "href": link(p.slug),
-                    "label": p.label,
-                    "current": p.slug == current,
-                }
-                for p in section.pages
-            ],
+            "label": track.label,
+            "groups": [_menu_group(group, current, opened) for group in track.groups],
         }
-        for i, section in enumerate(sections)
+        for track in tracks
     ]
 
 
@@ -121,7 +142,7 @@ def markdown_source(slug: str) -> str:
 
 
 def _page_of(slug: str) -> source.Page:
-    page = source.home(DOCS) if slug == "" else source.find(_sections(), slug)
+    page = source.home(DOCS) if slug == "" else source.find(_tracks(), slug)
     if page is None:
         raise HTTPException(status_code=404, detail="No such page")
     return page
@@ -129,16 +150,15 @@ def _page_of(slug: str) -> source.Page:
 
 def document(slug: str) -> dict[str, Any]:
     """One page ready to draw: its HTML, its outline and its neighbours. 404 when there is none."""
-    sections = _sections()
-    page = source.home(DOCS) if slug == "" else source.find(sections, slug)
+    tracks = _tracks()
+    page = source.home(DOCS) if slug == "" else source.find(tracks, slug)
     if page is None:
         raise HTTPException(status_code=404, detail="No such page")
     rendered = source.render(page.path, DOCS, link)
-    before, after = source.neighbours(_area_sections(slug), slug)
-    where = next((s.title for s in sections for p in s.pages if p.slug == slug), "Documentation")
+    before, after = source.neighbours(source.track_of(tracks, slug), slug)
     return {
         "page": page,
-        "section": where,
+        "section": page.group or "Documentation",
         "html": rendered.html,
         "outline": [h for h in rendered.headings if h.level <= 3],
         "before": before,

@@ -5,6 +5,7 @@
 
   // --- Theme: the choice is kept in this browser -------------------------------------------------
   // The toggle is optional: a page without one still runs the rest of the script.
+  // The change is instant: a cross-fade would stack two snapshots of the page on the click.
   const themeSwitch = $('[data-theme-toggle]')
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches
   if (themeSwitch) {
@@ -12,15 +13,8 @@
     showTheme(document.documentElement.dataset.theme)
     themeSwitch.addEventListener('click', () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
-      const apply = () => { document.documentElement.dataset.theme = next; showTheme(next) }
-      if (document.startViewTransition && !still) {
-        const box = themeSwitch.getBoundingClientRect()
-        const root = document.documentElement
-        root.style.setProperty('--tx', `${box.left + box.width / 2}px`)
-        root.style.setProperty('--ty', `${box.top + box.height / 2}px`)
-        root.classList.add('theme-fade')
-        document.startViewTransition(apply).finished.finally(() => root.classList.remove('theme-fade'))
-      } else apply()
+      document.documentElement.dataset.theme = next
+      showTheme(next)
       try { localStorage.setItem('nexy-docs-theme', next) } catch {}
     })
   }
@@ -110,6 +104,26 @@
     addEventListener('keydown', (e) => { if (e.key === 'Escape') area.open = false })
   }
 
+  // --- The router picks the routing groups of the menu, and the choice is kept -------------------
+  // A shared page stays where it is; a page of another router leads to the overview of the choice.
+  const own = $('meta[name="nexy-router"]')
+  const picks = $$('.area-select [data-pick]')
+  const showRouter = () => picks.forEach((a) => {
+    if (a.dataset.pick === html.dataset.router) a.setAttribute('aria-current', 'true')
+    else a.removeAttribute('aria-current')
+  })
+  const keepRouter = (key) => { try { localStorage.setItem('nexy-docs-router', key) } catch {} }
+  if (own) keepRouter(own.content)
+  showRouter()
+  picks.forEach((a) => a.addEventListener('click', (e) => {
+    keepRouter(a.dataset.pick)
+    if (own && own.content !== a.dataset.pick) return
+    e.preventDefault()
+    html.dataset.router = a.dataset.pick
+    showRouter()
+    area.open = false
+  }))
+
   // --- The filter of the menu: a word keeps the pages that match ---------------------------------
   // The groups come back as they were served when the word is cleared.
   const filter = $('.side-filter input')
@@ -117,6 +131,8 @@
   if (filter) {
     const groups = $$('.side details.group')
     const settled = groups.map((group) => group.open)
+    // The groups of the routers not chosen are not drawn: they hold no match.
+    const unseen = (group) => group.hidden || Boolean(group.dataset.router && group.dataset.router !== html.dataset.router)
     filter.addEventListener('input', () => {
       const word = filter.value.trim().toLowerCase()
       let found = 0
@@ -129,33 +145,42 @@
         })
         group.hidden = Boolean(word) && hits === 0
         group.open = word ? hits > 0 : settled[index]
-        found += hits
+        if (!unseen(group)) found += hits
+      })
+      $$('.side-part').forEach((part) => {
+        part.hidden = Boolean(word) && $$('details.group', part).every(unseen)
       })
       if (empty) empty.hidden = found > 0
     })
   }
 
-  // --- Copy button on code blocks --------------------------------------------------------------
-  // A shell command with no file name gets a "Terminal" bar, like a named file.
+  // --- Every code block gets a bar: its file name, or its language, and a copy chip -------------
+  // A named block already has its bar; a shell command reads "Terminal"; the rest name their language.
   const SHELLS = ['bash', 'sh', 'shell', 'console', 'powershell']
-  $$('.doc pre').forEach((block) => {
-    if (block.closest('figure') || !SHELLS.includes(block.getAttribute('lang'))) return
-    const figure = document.createElement('figure')
-    figure.className = 'terminal'
-    figure.innerHTML = '<figcaption>Terminal</figcaption>'
-    block.replaceWith(figure)
-    figure.append(block)
-  })
-
+  const LANGUAGES = { py: 'Python', js: 'JavaScript', ts: 'TypeScript', md: 'Markdown' }
+  const label = (block) => {
+    const lang = (block.getAttribute('lang') || '').toLowerCase()
+    if (SHELLS.includes(lang)) return 'Terminal'
+    return LANGUAGES[lang] || (lang ? lang[0].toUpperCase() + lang.slice(1) : 'Code')
+  }
   $$('.doc pre').forEach((block) => {
     if (block.getAttribute('lang') === 'diagram') return
-    const bar = block.closest('figure')?.querySelector('figcaption')
+    let figure = block.closest('figure')
+    if (!figure) {
+      figure = document.createElement('figure')
+      figure.className = SHELLS.includes((block.getAttribute('lang') || '').toLowerCase()) ? 'terminal' : 'code'
+      block.replaceWith(figure)
+      figure.append(block)
+      const bar = document.createElement('figcaption')
+      bar.textContent = label(block)
+      figure.prepend(bar)
+    }
     const button = Object.assign(document.createElement('button'), { className: 'copy', type: 'button', textContent: 'Copy' })
     button.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(block.innerText) } catch { return }
       done(button, 'Copied', 'Copy')
     })
-    ;(bar ?? block).append(button)
+    figure.querySelector('figcaption').append(button)
   })
 
   // --- Outline: the last heading read crosses the line under the top bar --------------------------

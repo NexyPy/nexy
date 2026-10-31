@@ -17,8 +17,8 @@ def _link(slug: str) -> str:
 
 
 @pytest.fixture(scope="module")
-def sections():
-    return source.read_sections(DOCS)
+def tracks():
+    return source.read_tracks(DOCS)
 
 
 class TestSlug:
@@ -32,35 +32,45 @@ class TestSlug:
         assert source.slug_of("README.md") == ""
 
 
-class TestSections:
-    def test_the_first_section_is_getting_started(self, sections):
-        assert sections[0].title == "Getting started"
+class TestTracks:
+    def test_the_first_track_is_getting_started(self, tracks):
+        assert tracks[0].label == "Getting Started"
 
-    def test_every_page_is_in_the_menu_once(self, sections):
-        listed = sorted(page.slug for section in sections for page in section.pages)
+    def test_every_page_is_in_the_menu_once(self, tracks):
+        listed = sorted(page.slug for track in tracks for page in source.pages_of(track))
         every = sorted(source.slug_of(p.relative_to(DOCS).as_posix()) for p in DOCS.rglob("*.md"))
         assert listed == [slug for slug in every if slug]
 
-    def test_a_page_has_the_title_of_its_heading(self, sections):
-        page = source.find(sections, "guides/actions")
+    def test_a_page_has_the_title_of_its_heading(self, tracks):
+        page = source.find(tracks, "guides/actions")
         assert page is not None and page.title == "Actions"
 
-    def test_an_unknown_page_is_not_found(self, sections):
-        assert source.find(sections, "nope/nothing") is None
+    def test_a_page_knows_the_track_and_group_that_hold_it(self, tracks):
+        page = source.find(tracks, "guides/actions")
+        assert page is not None
+        assert (page.track, page.group) == ("guides", "Forms and data")
+
+    def test_an_unknown_page_is_not_found(self, tracks):
+        assert source.find(tracks, "nope/nothing") is None
 
 
 class TestNeighbours:
-    def test_the_first_page_has_no_previous(self, sections):
-        first = sections[0].pages[0].slug
-        assert source.neighbours(sections, first)[0] is None
+    def test_the_first_page_has_no_previous(self, tracks):
+        first = source.pages_of(tracks[0])[0].slug
+        assert source.neighbours(tracks[0], first)[0] is None
 
-    def test_the_next_page_follows_the_menu(self, sections):
-        first, second = sections[0].pages[0], sections[0].pages[1]
-        assert source.neighbours(sections, first.slug)[1] == second
+    def test_the_next_page_follows_the_menu(self, tracks):
+        first, second = source.pages_of(tracks[0])[:2]
+        assert source.neighbours(tracks[0], first.slug)[1] == second
 
-    def test_the_last_page_has_no_next(self, sections):
-        last = sections[-1].pages[-1].slug
-        assert source.neighbours(sections, last)[1] is None
+    def test_the_last_page_has_no_next(self, tracks):
+        last = source.pages_of(tracks[-1])[-1].slug
+        assert source.neighbours(tracks[-1], last)[1] is None
+
+    def test_the_neighbours_are_read_inside_one_track(self, tracks):
+        track = source.track_of(tracks, "guides/actions")
+        near = [page for page in source.neighbours(track, "guides/actions") if page]
+        assert near and {page.track for page in near} == {track.slug}
 
 
 class TestRender:
@@ -136,6 +146,18 @@ class TestHighlight:
         html = self._html(tmp_path, "nexy", "<h1>{{ title }}</h1>")
         assert 'class="tok-' in html
 
+    def test_the_logic_of_a_nexy_file_is_coloured_as_python(self, tmp_path):
+        html = self._html(tmp_path, "nexy", "---\ndef run():\n    pass\n---")
+        assert '<span class="tok-k">def</span>' in html
+
+    def test_the_template_after_the_bars_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "nexy", "---\nx = 1\n---\n<h1>{{ x }}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
+
+    def test_the_bars_of_a_nexy_frontmatter_are_kept(self, tmp_path):
+        html = self._html(tmp_path, "nexy", "---\nx = 1\n---\n<p>hi</p>")
+        assert html.count('<span class="tok-bar">---</span>') == 2
+
     def test_an_unknown_language_stays_plain(self, tmp_path):
         assert "tok-" not in self._html(tmp_path, "klingon", "qapla")
 
@@ -145,6 +167,30 @@ class TestHighlight:
     def test_a_named_block_is_coloured_too(self, tmp_path):
         html = self._html(tmp_path, 'python filename="a.py"', "def run(): pass")
         assert "<figcaption>a.py</figcaption>" in html and "tok-k" in html
+
+    def test_an_added_line_is_marked_and_the_marker_is_gone(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1  # [!code ++]")
+        assert 'class="line line-add"' in html and "!code" not in html
+
+    def test_a_removed_line_is_marked(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1  # [!code --]")
+        assert 'class="line line-del"' in html
+
+    def test_a_highlighted_line_is_marked(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1  # [!code highlight]")
+        assert 'class="line line-hl"' in html
+
+    def test_every_line_is_one_row(self, tmp_path):
+        html = self._html(tmp_path, "python", "x = 1\ny = 2")
+        assert html.count('class="line"') == 2
+
+
+class TestTables:
+    def test_a_table_scrolls_inside_its_own_card(self, tmp_path):
+        path = tmp_path / "p.md"
+        path.write_text("| A | B |\n| --- | --- |\n| 1 | 2 |\n", encoding="utf-8")
+        html = source.render(path, tmp_path, _link).html
+        assert '<div class="table-wrap"><table>' in html
 
 
 class TestFigures:
@@ -254,6 +300,69 @@ class TestDiagrams:
         html = self._html(tmp_path, "```diagram\nBrowser -> Server\n```\n")
         assert "Browser -&gt; Server" in html
 
+    def test_a_linear_flow_is_drawn_as_blocks(self, tmp_path):
+        fence = "```diagram\nuvx nexy new notes ──► edit layout ──► nx build\n```\n"
+        html = self._html(tmp_path, fence)
+        assert html.count('class="flow-step"') == 3
+
+    def test_a_flow_line_names_its_variant(self, tmp_path):
+        html = self._html(tmp_path, "```diagram\nSSR   request ──► HTML\n```\n")
+        assert '<span class="flow-label">SSR</span>' in html
+
+    def test_a_mapping_is_drawn_as_pairs(self, tmp_path):
+        html = self._html(
+            tmp_path,
+            "```diagram\nsrc/routes/about.nexy   →  /about\nsrc/routes/index.nexy   →  /\n```\n",
+        )
+        assert '<div class="map">' in html and "<code>/about</code>" in html
+
+    def test_a_branch_drawing_stays_ascii(self, tmp_path):
+        html = self._html(tmp_path, "```diagram\nBrowser\n   │\n   ├── HTML\n```\n")
+        assert '<pre lang="diagram"><code>' in html and 'class="flow"' not in html
+
+    def test_a_mapping_note_needs_no_column_gap(self, tmp_path):
+        html = self._html(
+            tmp_path,
+            "```diagram\napp-like page → .tsx .vue (framework files)\nendpoint → .py (GET)\n```\n",
+        )
+        assert '<span class="map-note">(framework files)</span>' in html
+
+
+class TestStructures:
+    @staticmethod
+    def _html(tmp_path: Path, text: str) -> str:
+        path = tmp_path / "p.md"
+        path.write_text(text, encoding="utf-8")
+        return source.render(path, tmp_path, _link).html
+
+    def test_a_folder_listing_becomes_an_explorer(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n├─ routes/\n│  └─ index.nexy\n```\n")
+        assert '<figure class="diagram tree">' in html
+
+    def test_a_folder_is_drawn_apart_from_a_file(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n├─ routes/\n│  └─ index.nexy\n```\n")
+        assert '<span class="tree-name tree-dir">routes/</span>' in html
+
+    def test_a_nested_file_follows_the_guide_of_its_parent(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n├─ routes/\n│  └─ index.nexy\n```\n")
+        assert '<span class="tree-guide tree-guide-line"></span>' in html
+
+    def test_the_last_child_closes_the_line_of_its_folder(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n└─ a.py\n```\n")
+        assert '<span class="tree-guide tree-guide-last"></span>' in html
+
+    def test_a_route_note_is_marked_apart(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n└─ index.nexy   → /\n```\n")
+        assert '<span class="tree-route">→ /</span>' in html
+
+    def test_a_note_keeps_the_names_it_marks_as_code(self, tmp_path):
+        html = self._html(tmp_path, "```text\nsrc/\n└─ a.css   created by `nexy new`\n```\n")
+        assert "<code>nexy new</code>" in html
+
+    def test_a_plain_listing_stays_a_block(self, tmp_path):
+        html = self._html(tmp_path, "```text\nnexy » error index.py:18\n```\n")
+        assert '<pre lang="text">' in html and 'class="tree"' not in html
+
 
 class TestSearchEntry:
     @staticmethod
@@ -283,12 +392,12 @@ class TestSearchEntry:
 
 
 class TestRealDocs:
-    def test_every_page_renders(self, sections):
-        pages = [page for section in sections for page in section.pages]
+    def test_every_page_renders(self, tracks):
+        pages = [page for track in tracks for page in source.pages_of(track)]
         assert all(source.render(page.path, DOCS, _link).html for page in pages)
 
-    def test_every_link_to_a_heading_finds_it(self, sections):
-        pages = {p.slug: p for s in sections for p in s.pages}
+    def test_every_link_to_a_heading_finds_it(self, tracks):
+        pages = {p.slug: p for t in tracks for p in source.pages_of(t)}
         ids = {
             slug: {h.id for h in source.render(page.path, DOCS, _link).headings}
             for slug, page in pages.items()

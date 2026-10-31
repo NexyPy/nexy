@@ -45,5 +45,5 @@ string containing quotes or tags cannot break out of the markup.
 ## Next steps
 
 - [Rendering](README.md)
-- [Components](../views/components.md)
-- [React](../views/react.md), [Vue](../views/vue.md), [Svelte](../views/svelte.md)
+- [Components](../views/nexy/components.md)
+- [React](../views/react/README.md), [Vue](../views/vue/README.md), [Svelte](../views/svelte/README.md)

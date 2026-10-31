@@ -5,7 +5,7 @@ import typer
 
 from nexy.__version__ import __version__
 from nexy.helpers.common.console import console
-from nexy.modules.cli.commands import build, check, dev, format_, init, start, test
+from nexy.modules.cli.commands import add, build, check, dev, format_, init, start, test
 from nexy.modules.cli.commands.migrate import migrate
 from nexy.modules.cli.commands.new import new
 from nexy.modules.cli.commands.skills import skills
@@ -49,6 +49,7 @@ _COMMANDS: list[tuple[Callable[..., Any], str | None, str | None]] = [
     (test, None, None),
     (init, None, "i"),
     (new, None, "n"),
+    (add, None, None),
     (migrate, None, "m"),
     (skills, None, None),
 ]

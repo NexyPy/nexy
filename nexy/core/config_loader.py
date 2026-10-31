@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import sys
 from pathlib import Path
@@ -28,12 +29,20 @@ def _with(current: list[str], added: list[str]) -> list[str]:
 
 
 def import_nexyconfig() -> Any | None:
-    """The user's nexyconfig module, or the example one, or None.
+    """The user's nexyconfig module as it is on disk now, or the example one, or None.
+
+    The module and its bytecode cache are dropped before importing: a ``.pyc`` records
+    its source with one-second granularity, so a config saved twice within the same
+    second (or re-imported right after a save) would otherwise come back with the
+    previous values.
 
     Raises:
         ModuleNotFoundError: nexyconfig.py exists but imports a package this Python lacks. That is
             a problem to report, not a project without a config.
     """
+    source = _nexyconfig_source()
+    if source is not None:
+        _forget_current(source)
     try:
         import nexyconfig
 
@@ -42,6 +51,25 @@ def import_nexyconfig() -> Any | None:
         if error.name != "nexyconfig":
             raise
         return _import_example()
+
+
+def _nexyconfig_source() -> Path | None:
+    """Where ``import nexyconfig`` would read the file from, None when there is none."""
+    for entry in sys.path:
+        candidate = Path(entry or ".") / "nexyconfig.py"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _forget_current(source: Path) -> None:
+    """Drop the module of *source* from the import cache and delete its bytecode."""
+    from importlib.util import cache_from_source
+
+    sys.modules.pop("nexyconfig", None)
+    # an unwritable cache only ever costs a recompile
+    with contextlib.suppress(OSError):
+        Path(cache_from_source(str(source))).unlink(missing_ok=True)
 
 
 def _unloadable(error: ModuleNotFoundError) -> str:
