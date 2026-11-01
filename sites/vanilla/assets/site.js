@@ -151,6 +151,12 @@
     next.hidden = false
   }
 
+  const allDocs = $('.all-docs')
+  if (allDocs) allDocs.addEventListener('click', (e) => {
+    e.preventDefault()
+    html.dataset.mode = html.dataset.mode === 'all' ? '' : 'all'
+  })
+
   // --- The filter of the menu: a word keeps the pages that match ---------------------------------
   // The groups come back as they were served when the word is cleared.
   const filter = $('.side-filter input')

@@ -41,7 +41,6 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | Page | What you will do |
 |---|---|
 | [Coming from another framework](getting-started/coming-from-other-frameworks.md) | Translate FastAPI, Next.js and Express habits into Nexy |
-| [Upgrading to 2.2](getting-started/upgrading.md) | Apply the breaking changes from 2.1 to 2.2 |
 
 ## Routing
 
@@ -67,19 +66,16 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [Dependencies and guards](routing/fbr/dependencies/README.md) | Run `dependencies.py` before a handler, and inherit it |
 | [Middleware files](routing/fbr/middleware/README.md) | Wrap requests with `middleware.py`, inherited by directory |
 | [Error pages](routing/fbr/errors/README.md) | Answer with `notfound.nexy`, `errors.nexy` and JSON errors |
-| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
 
 ### Modular router {modular}
 Controllers and modules.
 | Page | What you will do |
 |---|---|
 | [Modular routing](routing/modular/README.md) | Mount controllers and modules |
-| [Nexy and NestJS](routing/modular/vs-nestjs.md) | See what matches NestJS and what is missing |
 | [Dependency injection](routing/modular/dependency-injection.md) | Define services, their scopes and the container |
 | [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
 
 ### Custom router integration {custom}
-Your own router.
 | Page | What you will do |
 |---|---|
 | [Custom routing](routing/custom/README.md) | Include an existing FastAPI app |
@@ -167,8 +163,6 @@ Your own router.
 |---|---|
 | [Actions](guides/actions.md) | Call a Python function from a form or a typed TypeScript function |
 | [Databases](guides/databases.md) | Choose an ORM and run migrations |
-| [Internationalization (i18n)](guides/i18n.md) | Add translations with the library of your choice |
-| [Recipes](guides/recipes.md) | Sign in with a session, build a JSON API and upload a file, all tested |
 
 ### Security and deployment
 | Page | What you will do |
@@ -210,7 +204,6 @@ Your own router.
 | [File conventions](reference/file-conventions.md) | Reserved files and routing rules |
 | [Glossary](reference/glossary.md) | The words these docs use |
 | [Security](reference/security.md) | Version floors, rules Nexy follows, audits |
-| [For AI agents](reference/agents.md) | Invariants of a Nexy project, for AI agents |
 
 ## Layout
 ```text
@@ -241,3 +234,16 @@ docs/
 └─ reference/           CLI, config, Python API, exceptions, file conventions, glossary,
                         security, agents
 ```
+
+### Advanced {advanced}
+
+| Page | What you will do |
+|---|---|
+| [Modular router vs NestJS](routing/modular/vs-nestjs.md) | Comparison with NestJS |
+| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Edge case: errors from sub-folders |
+| [Upgrading to 2.2](getting-started/upgrading.md) | Migrate from 2.1 to 2.2 |
+| [Internationalization (i18n)](guides/i18n.md) | Add translations with your choice of library |
+| [Recipes](guides/recipes.md) | Examples and patterns, not a tutorial |
+| [For AI agents](reference/agents.md) | Project invariants for AI agents |
+
+*These pages are not part of the default reading path. An "All documentation" link allows you to see everything.*

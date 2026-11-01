@@ -466,6 +466,9 @@ html[data-router="fbr"] .side .group[data-scope]:not([data-scope="core"]):not([d
 html[data-router="modular"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope="modular"]),
 html[data-router="custom"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope="custom"]) { display: none; }
 
+/* All documentation mode: all groups are shown regardless of router or scope. */
+html[data-mode="all"] .side .group[data-scope] { display: block !important; }
+
 /* The sections of the menu: a quiet heading over its folders, like Fumadocs. */
 .side-part[hidden] { display: none; }
 .side-section {

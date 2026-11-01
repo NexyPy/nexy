@@ -92,13 +92,14 @@ class TestGroupRouter:
         assert group.router is None
 
     def test_only_the_routing_groups_declare_a_scope(self):
-        """Four of the twenty-one groups answer a routing question; the rest are read by all."""
+        """Five groups declare a scope; the rest are read by all."""
         groups = [group for track in source.read_tracks(DOCS) for group in track.groups]
         assert {group.title: group.scope for group in groups if group.scope != "core"} == {
             "Routing": "fbr",
             "Route handlers": "fbr",
             "Modular router": "modular",
             "Custom router integration": "custom",
+            "Advanced": "advanced",
         }
 
     def test_the_pager_never_crosses_into_another_router(self):

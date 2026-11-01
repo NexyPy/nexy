@@ -127,6 +127,7 @@ def nav_html(tracks: list[source.Track], current: str) -> str:
         # The button of the menu is a plain hidden link: `site.js` points it at the next page
         # this browser has not read, so every page serves exactly the same bytes.
         '<a href="#" class="continue" hidden>Continue</a>'
+        '<a href="#" class="all-docs">All documentation</a>'
         '<a href="https://github.com/NexyPy/nexy">Source on GitHub</a>'
         '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>'
         "</div>"
