@@ -22,7 +22,13 @@ def out(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 def _pages(out: Path) -> list[Path]:
-    return sorted((out / "docs").rglob("index.html"))
+    """The pages of the menu: a redirect is served at an old address, it is not a page."""
+    redirects = {f"docs/{slug}" for slug in docs_source.REDIRECTS}
+    return sorted(
+        page
+        for page in (out / "docs").rglob("index.html")
+        if page.parent.relative_to(out).as_posix() not in redirects
+    )
 
 
 def _served_html(out: Path) -> dict[str, str]:

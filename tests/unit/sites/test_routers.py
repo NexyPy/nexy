@@ -60,7 +60,7 @@ class TestTracks:
             ("routing/modular/dependency-injection", "Routing"),
             ("guides/testing", "Guides"),
             ("reference/cli", "Reference"),
-            ("views/react", "React"),
+            ("views/react/differences", "Frontend"),
             ("", "Getting Started"),
         ],
     )

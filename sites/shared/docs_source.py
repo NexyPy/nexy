@@ -123,6 +123,11 @@ ROUTERS = (
 )
 
 REDIRECTS = {
+    "views/react": "views/react/differences",
+    "views/vue": "views/vue/differences",
+    "views/svelte": "views/svelte/differences",
+    "views/solid": "views/solid/differences",
+    "views/preact": "views/preact/differences",
     "views/react/pages": "views/frontend/pages",
     "views/react/layouts": "views/frontend/layouts",
     "views/react/islands": "views/frontend/islands",

@@ -51,36 +51,11 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Frontend layouts](docs/views/frontend/layouts.md): The document shell, nesting, and what a layout cannot do
 - [Frontend islands](docs/views/frontend/islands.md): Hydration, serialisable props and triggers
 - [Frontend actions and navigation](docs/views/frontend/actions-and-navigation.md): Call a typed Action, link pages, read the URL
-- [React](docs/views/react/README.md): Enable React and pick server or client mode
-- [React pages](docs/views/react/pages.md): Write a `.tsx` page, read its params, know when it renders
-- [React layouts](docs/views/react/layouts.md): Write the `layout.tsx` that owns `<html>`
-- [React islands](docs/views/react/islands.md): Put a React component in a `.nexy` page
-- [React actions and navigation](docs/views/react/actions-and-navigation.md): Call Python, link pages, read the URL
-- [React differences](docs/views/react/differences.md): Components, hooks and `layout.tsx`
-- [Vue](docs/views/vue/README.md): Enable Vue and pick server or client mode
-- [Vue pages](docs/views/vue/pages.md): Write a `.vue` page, read its params, know when it renders
-- [Vue layouts](docs/views/vue/layouts.md): Write the `layout.vue` that owns `<html>`
-- [Vue islands](docs/views/vue/islands.md): Put a Vue component in a `.nexy` page
-- [Vue actions and navigation](docs/views/vue/actions-and-navigation.md): Call Python, link pages, read the URL
-- [Vue differences](docs/views/vue/differences.md): SFCs, refs and `layout.vue`
-- [Svelte](docs/views/svelte/README.md): Enable Svelte and pick server or client mode
-- [Svelte pages](docs/views/svelte/pages.md): Write a `.svelte` page, read its params, know when it renders
-- [Svelte layouts](docs/views/svelte/layouts.md): Write the `layout.svelte` that owns `<html>`
-- [Svelte islands](docs/views/svelte/islands.md): Put a Svelte component in a `.nexy` page
-- [Svelte actions and navigation](docs/views/svelte/actions-and-navigation.md): Call Python, link pages, read the URL
-- [Svelte differences](docs/views/svelte/differences.md): Runes, stores and `layout.svelte`
-- [Solid](docs/views/solid/README.md): Enable Solid and pick server or client mode
-- [Solid pages](docs/views/solid/pages.md): Write a `.tsx` page, read its params, know when it renders
-- [Solid layouts](docs/views/solid/layouts.md): Write the `layout.tsx` that owns `<html>`
-- [Solid islands](docs/views/solid/islands.md): Put a Solid component in a `.nexy` page
-- [Solid actions and navigation](docs/views/solid/actions-and-navigation.md): Call Python, link pages, read the URL
-- [Solid differences](docs/views/solid/differences.md): Signals, accessors and `layout.tsx`
-- [Preact](docs/views/preact/README.md): Enable Preact and pick server or client mode
-- [Preact pages](docs/views/preact/pages.md): Write a `.tsx` page, read its params, know when it renders
-- [Preact layouts](docs/views/preact/layouts.md): Write the `layout.tsx` that owns `<html>`
-- [Preact islands](docs/views/preact/islands.md): Put a Preact component in a `.nexy` page
-- [Preact actions and navigation](docs/views/preact/actions-and-navigation.md): Call Python, link pages, read the URL
-- [Preact differences](docs/views/preact/differences.md): Hooks, signals and `layout.tsx`
+- [React differences](docs/views/react/differences.md): Setup, pages, layouts, islands, actions
+- [Vue differences](docs/views/vue/differences.md): Setup, pages, layouts, islands, actions
+- [Svelte differences](docs/views/svelte/differences.md): Setup, pages, layouts, islands, actions
+- [Solid differences](docs/views/solid/differences.md): Setup, pages, layouts, islands, actions
+- [Preact differences](docs/views/preact/differences.md): Setup, pages, layouts, islands, actions
 - [.nexy files](docs/views/nexy/README.md): Write a page with Python, Jinja2 and props
 - [Components](docs/views/nexy/components.md): Use `Image`, `Link`, `Audio`, `Video` and `Import`
 - [layout.nexy](docs/views/nexy/layouts.md): Write the server-mode layout

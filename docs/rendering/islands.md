@@ -98,6 +98,6 @@ from "@/components/Counter.tsx" import Counter
 
 - [Rendering](README.md): the four modes
 - [Components](../views/nexy/components.md): how a `.nexy` page imports one
-- [React](../views/react/README.md), [Vue](../views/vue/README.md),
-  [Svelte](../views/svelte/README.md), [Solid](../views/solid/README.md),
-  [Preact](../views/preact/README.md)
+- [React](../views/react/differences.md), [Vue](../views/vue/differences.md),
+  [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md),
+  [Preact](../views/preact/differences.md)

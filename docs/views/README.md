@@ -27,9 +27,9 @@ API handler                  →  .py        (GET, POST, …)
 | `.nexy` | [.nexy files](nexy/README.md) | Jinja2 + Python logic, streamed | optional | Native Nexy page format |
 | `.md` | [Markdown and MDX](nexy/markdown.md) | cmarkgfm at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
 | `.mdx` | [Markdown and MDX](nexy/markdown.md) | framework SSR | React or Preact | Markdown with components |
-| `.tsx` | [React](react/README.md), [Solid](solid/README.md) or [Preact](preact/README.md) | client mode: the framework, rendered in Node | React, Solid or Preact | Component routes |
-| `.vue` | [Vue](vue/README.md) | client mode: the framework, rendered in Node | Vue | SFC routes |
-| `.svelte` | [Svelte](svelte/README.md) | client mode: the framework, rendered in Node | Svelte | SFC routes |
+| `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) or [Preact](preact/differences.md) | client mode: the framework, rendered in Node | React, Solid or Preact | Component routes |
+| `.vue` | [Vue](vue/differences.md) | client mode: the framework, rendered in Node | Vue | SFC routes |
+| `.svelte` | [Svelte](svelte/differences.md) | client mode: the framework, rendered in Node | Svelte | SFC routes |
 
 Built-in `Image`, `Link`, `Audio`, `Video` and `Import` helpers: [Components](nexy/components.md).
 

@@ -1,13 +1,93 @@
-# Solid Differences
+# Solid
 
-This guide focuses on the specific implementation details for Solid. For universal concepts (how pages, layouts, and islands work), see the [Frontend Contracts](../frontend/pages.md).
+Nexy renders Solid 1.9 components on the server, then Solid takes them over in the browser. Pages,
+layouts, islands and actions are the same in every framework: this page covers setup, then the parts
+that differ from the [shared contracts](../frontend/pages.md).
+
+| Mode | `nexyconfig.py` | Pages are | Solid is |
+|---|---|---|---|
+| Server (default) | `useCSR = False` | `.nexy` files | [islands](../frontend/islands.md) inside those pages |
+| Client | `useCSR = True` | `.tsx` files | the whole page, with [layouts](../frontend/layouts.md) and a client router |
+
+## Start a project
+
+```bash
+nx new my-app --template web-fbr-solid
+```
+
+The template is a server-mode project with Solid islands. Run `nx new my-app` without a template to
+answer the prompts instead: the router, the project type, whether to use client-side routing, then
+the framework.
+
+## Enable Solid in an existing project
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import solid
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = solid()
+    useAliases = {"@": "src"}
+```
+
+```ts filename="vite.config.ts"
+import { defineConfig } from "vite";
+import solid from "vite-plugin-solid";
+import nexy from "./__nexy__/vite";
+
+export default defineConfig({
+  plugins: [nexy(), solid()],
+  customLogger: nexy.log(),
+});
+```
+
+In client mode write `solid({ ssr: true })`: Solid compiles a component differently for the server
+and for the browser, and client mode needs both. `nx new` writes this file; Nexy writes
+`__nexy__/vite.ts` itself, so do not edit it.
+
+| Package | Version `nx new` writes |
+|---|---|
+| `solid-js` | `^1.9.12` |
+| `vite-plugin-solid` | `^2.11.0` (dev dependency) |
+
+## Think in signals
+
+A Solid component function runs **once**. What changes later is read through a signal, and only the
+expressions that read it update:
+
+```tsx filename="src/components/Counter.tsx"
+import { createSignal } from "solid-js";
+
+export default function Counter(props: { start?: number }) {
+  const [count, setCount] = createSignal(props.start ?? 0);
+  return <button onClick={() => setCount(count() + 1)}>{count()}</button>;
+}
+```
+
+- Call the signal, `count()`, inside the JSX, not in a variable above it.
+- Read props as `props.start`. Destructuring `{ start }` reads the value once and loses the updates.
+- Solid writes HTML attributes: `class`, `for`, `charset`, not `className`.
+
+## Rules
+
+- **One framework per project.** `useFF` takes exactly one framework; `useFF = [solid(), react()]`
+  stops the server at startup. With `useFF = solid()`, every `.tsx` file is Solid.
+- **Pages are `.tsx`.** Only a `.tsx` file under `src/routes/` becomes a page; `.jsx` is fine for a
+  component.
+- **Components live outside `src/routes/`**, usually in `src/components/`, so they are not pages.
+- **A server-mode project has no `.tsx` page**, and a client-mode project has no `.nexy` page: Nexy
+  refuses to start and names the file. See [modes](../../routing/fbr/modes.md).
+- **No `.mdx` with Solid.** MDX compiles to React or Preact; `.md` pages work.
 
 ## Pages
 
 In client mode (`useCSR = True`), a page is a `.tsx` file.
 
-### Page Component
-A page is the default export of the file. If no default export exists, Nexy picks the first named export.
+### Page component
+
+A page is the default export of the file. If no default export exists, Nexy picks the first named
+export.
 
 ```tsx filename="src/routes/index.tsx"
 export default function Home() {
@@ -15,7 +95,8 @@ export default function Home() {
 }
 ```
 
-### Dynamic Segments
+### Dynamic segments
+
 URL parameters are available via the `useParams` hook, which returns an accessor:
 
 ```tsx filename="src/routes/blog/[slug].tsx"
@@ -30,6 +111,7 @@ export default function Post() {
 ## Layouts
 
 ### Implementation
+
 The root layout defines the document shell. Nested layouts wrap the content.
 
 ```tsx filename="src/routes/layout.tsx"
@@ -46,33 +128,39 @@ export default function RootLayout(props: { children: JSX.Element }) {
   );
 }
 ```
-Note: Do not destructure `props.children`, as Solid reads it lazily.
+
+Do not destructure `props.children`, as Solid reads it lazily.
 
 ## Islands
 
 In server mode, a Solid component imported into a `.nexy` file is an island.
 
 ### Importing
+
 Import components in the frontmatter of the `.nexy` file:
 
-```nexy filename="src/routes/index.md"
+```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
 
-### Hydration Directives
+### Hydration directives
+
 Use the `directive` prop to control when the island hydrates:
+
 - `client:load` (default): immediately
-- `client:idle`: when browser is idle
+- `client:idle`: when the browser is idle
 - `client:visible`: when it scrolls into view
-- `client:media`: when media query matches
+- `client:media`: when the media query matches
 
-## Actions and Navigation
+## Actions and navigation
 
-### Calling Actions
-Use the `useAction` hook to manage the state of an action call. In Solid, this returns accessors (call them as functions).
+### Calling actions
+
+Use the `useAction` hook to manage the state of an action call. In Solid, this returns accessors (call
+them as functions).
 
 ```tsx
 import { useAction } from "@nexy/client";
@@ -84,6 +172,7 @@ const save = useAction(add_todo);
 ```
 
 ### Navigation
+
 Use the `Link` component for client-side transitions:
 
 ```tsx
@@ -101,9 +190,16 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### URL Access
+### URL access
+
 All location hooks return accessors:
+
 - `usePathname()`: current path
 - `useParams()`: dynamic segments
 - `useSearchParams()`: query string
 - `useLocation()`: full location object
+
+## Next steps
+
+- [Views](../README.md): compare the formats a page can use
+- [Frontend](../../guides/frontend.md): Vite and the client build

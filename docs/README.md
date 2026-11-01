@@ -99,61 +99,6 @@ Controllers and modules.
 | [Solid differences](views/solid/differences.md) | Signals, accessors and `layout.tsx` {new} |
 | [Preact differences](views/preact/differences.md) | Hooks, signals and `layout.tsx` {new} |
 
-## React
-
-### React
-| Page | What you will do |
-|---|---|
-| [React](views/react/README.md) | Enable React and pick server or client mode |
-| [Pages](views/react/pages.md) | Write a `.tsx` page, read its params, know when it renders |
-| [Layouts](views/react/layouts.md) | Write the `layout.tsx` that owns `<html>` |
-| [Islands](views/react/islands.md) | Put a React component in a `.nexy` page |
-| [Actions and navigation](views/react/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Vue
-
-### Vue
-| Page | What you will do |
-|---|---|
-| [Vue](views/vue/README.md) | Enable Vue and pick server or client mode |
-| [Pages](views/vue/pages.md) | Write a `.vue` page, read its params, know when it renders |
-| [Layouts](views/vue/layouts.md) | Write the `layout.vue` that owns `<html>` |
-| [Islands](views/vue/islands.md) | Put a Vue component in a `.nexy` page |
-| [Actions and navigation](views/vue/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Svelte
-
-### Svelte
-| Page | What you will do |
-|---|---|
-| [Svelte](views/svelte/README.md) | Enable Svelte and pick server or client mode |
-| [Pages](views/svelte/pages.md) | Write a `.svelte` page, read its params, know when it renders |
-| [Layouts](views/svelte/layouts.md) | Write the `layout.svelte` that owns `<html>` |
-| [Islands](views/svelte/islands.md) | Put a Svelte component in a `.nexy` page |
-| [Actions and navigation](views/svelte/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Solid
-
-### Solid
-| Page | What you will do |
-|---|---|
-| [Solid](views/solid/README.md) | Enable Solid and pick server or client mode |
-| [Pages](views/solid/pages.md) | Write a `.tsx` page, read its params, know when it renders |
-| [Layouts](views/solid/layouts.md) | Write the `layout.tsx` that owns `<html>` |
-| [Islands](views/solid/islands.md) | Put a Solid component in a `.nexy` page |
-| [Actions and navigation](views/solid/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Preact
-
-### Preact
-| Page | What you will do |
-|---|---|
-| [Preact](views/preact/README.md) | Enable Preact and pick server or client mode |
-| [Pages](views/preact/pages.md) | Write a `.tsx` page, read its params, know when it renders |
-| [Layouts](views/preact/layouts.md) | Write the `layout.tsx` that owns `<html>` |
-| [Islands](views/preact/islands.md) | Put a Preact component in a `.nexy` page |
-| [Actions and navigation](views/preact/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
 ## Nexy Views
 
 ### Nexy views
@@ -254,6 +199,8 @@ docs/
 └─ reference/           CLI, config, Python API, exceptions, file conventions, glossary,
                         security, agents
 ```
+
+## Advanced
 
 ### Advanced {advanced}
 
