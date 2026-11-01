@@ -256,6 +256,16 @@ def _write_pages(
         url = f"docs/{page.slug}/" if page.slug else "docs/"
         entries.append(source.search_entry(page, section, rendered, url))
         written.append(target)
+
+    # Generate redirections for pruned pages
+    for old_slug, new_slug in source.REDIRECTS.items():
+        target = out / "docs" / old_slug / "index.html"
+        _write(
+            target,
+            f'<!doctype html><meta charset="utf-8"><title>Redirecting...</title>'
+            f'<meta http-equiv="refresh" content="0; url={relative("", new_slug)}">',
+        )
+
     _write(out / "search-index.json", json.dumps(entries, separators=(",", ":")))
     return written
 

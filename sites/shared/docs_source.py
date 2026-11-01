@@ -122,6 +122,29 @@ ROUTERS = (
     ("custom", "Custom Integration", "Include an existing FastAPI router"),
 )
 
+REDIRECTS = {
+    "views/react/pages": "views/frontend/pages",
+    "views/react/layouts": "views/frontend/layouts",
+    "views/react/islands": "views/frontend/islands",
+    "views/react/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/vue/pages": "views/frontend/pages",
+    "views/vue/layouts": "views/frontend/layouts",
+    "views/vue/islands": "views/frontend/islands",
+    "views/vue/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/svelte/pages": "views/frontend/pages",
+    "views/svelte/layouts": "views/frontend/layouts",
+    "views/svelte/islands": "views/frontend/islands",
+    "views/svelte/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/solid/pages": "views/frontend/pages",
+    "views/solid/layouts": "views/frontend/layouts",
+    "views/solid/islands": "views/frontend/islands",
+    "views/solid/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/preact/pages": "views/frontend/pages",
+    "views/preact/layouts": "views/frontend/layouts",
+    "views/preact/islands": "views/frontend/islands",
+    "views/preact/actions-and-navigation": "views/frontend/actions-and-navigation",
+}
+
 # The scopes a menu group can declare: the three routers, the advanced bucket, and `core` for the
 # groups every reader sees. A marker (`### Routing {fbr}`) is stripped from the title, here and in
 # the rendered page, so it is a navigation instruction and nothing else.
