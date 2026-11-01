@@ -118,6 +118,88 @@ class TestPageContent:
         assert build.escape('<b>"x"</b>') == "&lt;b&gt;&quot;x&quot;&lt;/b&gt;"
 
 
+CONTINUE = '<a href="#" class="continue" hidden>Continue</a>'
+
+
+class TestProgress:
+    """DOC-26: the pages one browser has read, and the page it offers next.
+
+    The served HTML holds no reading state at all: a hidden link and the scripts that fill it.
+    """
+
+    @staticmethod
+    def _button(html: str) -> str:
+        """The button as it is served: a hidden link, and the same one on every page."""
+        found = re.search(r'<a href="[^"]*" class="continue"[^>]*>[^<]*</a>', html)
+        assert found is not None
+        return found[0]
+
+    @staticmethod
+    def _menu(html: str) -> str:
+        """The nav element of a page: the menu, nothing of what follows it."""
+        return html.split('<nav class="side"', 1)[1].split("</nav>", 1)[0]
+
+    @pytest.fixture(scope="class")
+    def html(self, out):
+        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+
+    def test_the_button_is_a_hidden_link(self, html):
+        assert CONTINUE in html
+
+    def test_every_page_serves_the_same_button(self, out):
+        """Nothing of the reading state is baked: one same button on every page that has a menu."""
+        served = [page.read_text(encoding="utf-8") for page in _pages(out)]
+        with_menu = [text for text in served if '<nav class="side"' in text]
+        assert len(with_menu) > 1
+        assert {self._button(text) for text in with_menu} == {CONTINUE}
+
+    def test_the_menu_itself_holds_no_read_state(self, html):
+        assert "seen" not in self._menu(html)
+
+    def test_the_pager_is_left_alone(self, html):
+        assert 'class="pager"' in html and 'rel="next"' in html
+
+    def test_the_list_is_read_before_the_menu_paints(self, html):
+        assert 'localStorage.getItem("nexy-docs-seen")' in html.split("</head>", 1)[0]
+
+    def test_the_links_are_dimmed_while_the_menu_is_still_parsed(self, html):
+        """Marked after the nav and before the panel: the reader never sees the plain link."""
+        marking = html.index('classList.add("seen")')
+        assert html.index("</nav>") < marking < html.index('<div class="panel"')
+
+    def test_the_seen_key_follows_the_localstorage_patron(self):
+        """One-line try/catch, like nexy-docs-theme, nexy-docs-side and nexy-docs-router."""
+        script = (build.HERE / "assets" / "site.js").read_text(encoding="utf-8")
+        written = next(line for line in script.splitlines() if "setItem('nexy-docs-seen'" in line)
+        assert written.strip().startswith("try {") and "} catch {}" in written
+
+    def test_the_button_offers_the_first_unread_page_of_the_menu(self):
+        """One pass over the menu in served order, the last page read when none is left."""
+        script = (build.HERE / "assets" / "site.js").read_text(encoding="utf-8")
+        assert "!read.includes(slugOf(a.pathname))" in script
+        assert "slugOf(a.pathname) === read.at(-1)" in script
+
+    def test_a_read_page_is_only_dimmed(self):
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        rule = css.split(".side a.seen", 1)[1].split("}", 1)[0]
+        assert "color: var(--faint)" in rule and "content" not in rule
+
+    def test_the_dimming_lets_hover_and_the_current_page_win(self):
+        """The rules that lift a link come after it: order is the whole specificity mechanism."""
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        assert (
+            css.index(".side a.seen")
+            < css.index(".side a:hover")
+            < css.index('.side a[aria-current="page"]')
+        )
+
+    def test_the_dimmed_colour_exists_in_both_themes(self):
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        light = css.split(":root {", 1)[1].split("}", 1)[0]
+        dark = css.split(':root[data-theme="dark"] {', 1)[1].split("}", 1)[0]
+        assert "--faint:" in light and "--faint:" in dark
+
+
 class TestUsability:
     @pytest.fixture(scope="class")
     def html(self, out):

@@ -124,6 +124,33 @@
     area.open = false
   }))
 
+  // --- Progress: the pages this browser has read, and the page it offers next --------------------
+  // The list was read before the menu painted (the inline script dims the links with it). Here the
+  // page just shown joins it, and the hidden button of the menu points at the first page missing
+  // from it - or, when nothing is left to read, back at the last page of the list.
+  const slugOf = (path) => {
+    const parts = path.split('/').filter(Boolean)
+    const at = parts.indexOf('docs')
+    return at < 0 ? '' : parts.slice(at + 1).join('/')
+  }
+  const read = (html.dataset.seen || '').split(',').filter(Boolean)
+  const here = slugOf(location.pathname)
+  if (here && !read.includes(here)) {
+    read.push(here)
+    html.dataset.seen = read.join(',')
+    try { localStorage.setItem('nexy-docs-seen', read.join(',')) } catch {}
+  }
+  const pages = $$('.side .group a')
+  const offer =
+    pages.find((a) => !read.includes(slugOf(a.pathname))) ||
+    pages.find((a) => slugOf(a.pathname) === read.at(-1))
+  const next = $('.side .continue')
+  if (next && offer) {
+    next.href = offer.getAttribute('href')
+    next.textContent = `Continue: ${offer.textContent}`
+    next.hidden = false
+  }
+
   // --- The filter of the menu: a word keeps the pages that match ---------------------------------
   // The groups come back as they were served when the word is cleared.
   const filter = $('.side-filter input')

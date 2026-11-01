@@ -42,6 +42,10 @@ router = router_of(current)
       document.documentElement.dataset.router =
         (own && own.content) || localStorage.getItem("nexy-docs-router") || "fbr";
     } catch (e) { document.documentElement.dataset.router = "fbr"; }
+    // The pages this browser has already read: read before the menu is painted, never after.
+    try {
+      document.documentElement.dataset.seen = localStorage.getItem("nexy-docs-seen") || "";
+    } catch (e) {}
   </script>
 </head>
 <body data-root="" data-search="/search-index"{% if current == "" %} data-home="true"{% endif %}>
@@ -49,6 +53,21 @@ router = router_of(current)
 <div class="shell">
   <MobileBar />
   <Sidebar current="{{ current }}" />
+  <script>
+    // The menu is dimmed as it is parsed, before the browser shows it: a page this browser has
+    // already read never paints bright and then fades, and a reader without JS sees every link.
+    try {
+      var read = (document.documentElement.dataset.seen || "").split(",");
+      var slugOf = function (path) {
+        var parts = path.split("/").filter(Boolean);
+        var at = parts.indexOf("docs");
+        return at < 0 ? "" : parts.slice(at + 1).join("/");
+      };
+      document.querySelectorAll(".side .group a").forEach(function (link) {
+        if (read.indexOf(slugOf(link.pathname)) >= 0) link.classList.add("seen");
+      });
+    } catch (e) {}
+  </script>
   <div class="panel">
     <Header />
     <div class="panel-body">

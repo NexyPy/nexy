@@ -60,6 +60,7 @@ routers = router_select(current)
     {% endfor %}
     <p class="side-empty" hidden>No page matches.</p>
     <div class="side-foot">
+      <a href="#" class="continue" hidden>Continue</a>
       <a href="https://github.com/NexyPy/nexy">Source on GitHub</a>
       <a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>
     </div>

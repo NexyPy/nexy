@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import textwrap
 from pathlib import Path
 
 import pytest
@@ -15,6 +16,7 @@ SITE = Path(__file__).resolve().parents[3] / "sites" / "nexy"
 DOCS = SITE.parents[1] / "docs"
 ACTIONS = "/docs/guides/actions"
 MODULAR = "/docs/routing/modular/dependency-injection"
+CONTINUE = '<a href="#" class="continue" hidden>Continue</a>'
 NOTHING: dict[str, str] = {}
 
 
@@ -57,6 +59,42 @@ def test_a_page_has_its_title(answers):
 
 def test_the_menu_marks_the_current_page(answers):
     assert re.search(r'<a [^>]*aria-current="page"[^>]*>Actions</a>', answers[ACTIONS][2])
+
+
+def _progress_scripts(text: str) -> list[str]:
+    """The inline scripts that carry the reading state, dedented: what both sites must share."""
+    return [
+        textwrap.dedent(block)
+        for block in re.findall(r"<script>(.*?)</script>", text, re.S)
+        if "seen" in block
+    ]
+
+
+def test_the_read_pages_are_dimmed_by_the_same_script_as_the_vanilla_site():
+    """DOC-26: one divergence between the two sites on the reading state is a bug."""
+    vanilla = (SITE.parent / "vanilla" / "template.html").read_text(encoding="utf-8")
+    nexy = (SITE / "src" / "routes" / "layout.nexy").read_text(encoding="utf-8")
+    assert _progress_scripts(vanilla) == _progress_scripts(nexy)
+
+
+def test_the_button_offers_the_reader_a_hidden_link(answers):
+    assert CONTINUE in answers[ACTIONS][2]
+
+
+def test_the_menu_of_this_site_holds_no_read_state(answers):
+    assert "seen" not in _menu(answers[ACTIONS][2])
+
+
+def test_the_list_of_read_pages_is_taken_before_the_menu_paints(answers):
+    body = answers[ACTIONS][2]
+    assert 'localStorage.getItem("nexy-docs-seen")' in body.split("</head>", 1)[0]
+
+
+def test_the_links_are_dimmed_while_the_menu_is_still_parsed(answers):
+    """The marking sits between the menu and the panel: no plain link is ever painted."""
+    body = answers[ACTIONS][2]
+    marking = body.index('classList.add("seen")')
+    assert body.index("</nav>") < marking < body.index('<div class="panel"')
 
 
 def test_a_heading_has_its_anchor_and_a_link_in_the_outline(answers):

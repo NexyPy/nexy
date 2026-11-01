@@ -9,6 +9,8 @@
   --soft: #f5f5f5;
   --ink: #0a0a0a;
   --muted: #737373;
+  /* A page already read in this browser: one step under the muted label of the menu. */
+  --faint: #8a8a8a;
   --line: rgba(153, 153, 153, 0.2);
   --line-strong: rgba(115, 115, 115, 0.35);
   --accent: #0a0a0a;
@@ -63,6 +65,7 @@
   --soft: #141414;
   --ink: #fafafa;
   --muted: #999999;
+  --faint: #6b6b6b;
   --line: rgba(128, 128, 128, 0.2);
   --line-strong: rgba(160, 160, 160, 0.35);
   --accent: #fafafa;
@@ -525,6 +528,8 @@ html[data-router="custom"] .side .group[data-scope]:not([data-scope="core"]):not
   line-height: 1.5;
   transition: background 0.12s ease, color 0.12s ease;
 }
+/* A page this browser has already shown: its label dims, and nothing else - no tick, no icon. */
+.side a.seen { color: var(--faint); }
 .side a:hover { background: var(--soft); color: var(--ink); }
 .side a[aria-current="page"] {
   background: rgba(181, 181, 70, 0.201);
