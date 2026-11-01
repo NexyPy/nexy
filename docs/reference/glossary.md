@@ -11,22 +11,22 @@ has a page: follow the link. For how the notions fit together, read
 | Action | a Python function marked `@Action`, served as a `POST` and callable from the client ([actions](../guides/actions.md)) |
 | ASGI | the interface Uvicorn speaks, implemented by FastAPI and Starlette |
 | Client mode | `useCSR = True`: framework files are the routes and the browser navigates ([modes](../routing/fbr/modes.md)) |
-| Component | a piece a page imports; not a route in server mode ([components](../views/nexy/components.md)) |
+| Component | a reusable UI building block used to compose a view ([views](../views/README.md)) |
 | CSR | client-side rendering: the browser renders pages after the first document ([CSR](../rendering/csr.md)) |
 | Dependency | a function FastAPI runs before a handler, per route or per folder ([dependencies](../routing/fbr/dependencies/README.md)) |
 | Document shell | the `<html>`, `<head>` and `<body>` around a page, owned by the nearest layout or by Nexy ([layouts](../routing/fbr/layouts/README.md)) |
-| Endpoint | a (URL, method) pair ([handlers](../routing/fbr/handlers/README.md)) |
+| Endpoint | the unique combination of a URL and an HTTP method ([views](../views/README.md)) |
 | FBR | file-based routing: a file under `src/routes/` is a route ([routing](../routing/fbr/README.md)) |
 | Frontmatter | the Python block between the two `---` lines of a `.nexy` or `.md` file ([.nexy files](../views/nexy/README.md)) |
 | Guard | a dependency that refuses a request by raising `HTTPException` ([guards](../routing/modular/guards-and-metadata.md)) |
-| Handler | the function of a `.py` route file, named after the HTTP method it answers ([handlers](../routing/fbr/handlers/README.md)) |
+| Handler | a Python function that handles an HTTP request for a specific method ([views](../views/README.md)) |
 | HMR | hot module replacement: the dev server swaps the modules that changed, without a full reload ([frontend](../guides/frontend.md)) |
 | Hydration | the browser attaching a framework to HTML the server already sent ([islands](../rendering/islands.md)) |
 | Island | a client component mounted inside a server-rendered page ([islands](../rendering/islands.md)) |
 | ISR | incremental static regeneration: one cached page per path, refreshed in the background ([ISR](../rendering/isr.md)) |
 | Layout | a `layout.*` file that wraps the pages below its folder ([layouts](../routing/fbr/layouts/README.md)) |
 | Modular router | routes declared with `@Module` and `@Controller` under `src/apps/` ([modular](../routing/modular/README.md)) |
-| Page | a route file that renders a view ([views](../views/README.md)) |
+| Page | an URL-addressable resource defined by a file under `src/routes/` ([views](../views/README.md)) |
 | Prefetch | loading the page behind a link before the reader clicks it ([linking](../routing/fbr/navigation/linking-and-navigating.md)) |
 | Props | the values a parent passes to a component ([.nexy files](../views/nexy/README.md)) |
 | Revalidate | the number of seconds after which an ISR page is rebuilt in the background ([ISR](../rendering/isr.md)) |
@@ -37,7 +37,7 @@ has a page: follow the link. For how the notions fit together, read
 | Skill | a folder with a `SKILL.md` that teaches a coding agent one part of Nexy ([coding agents](../guides/ai-agents.md)) |
 | SSG | static site generation; **not a Nexy mode**: the HTML built ahead of time is always read back by the server ([rendering](../rendering/README.md)) |
 | SSR | server-side rendering: the server renders each page for its request, and it is the default ([SSR](../rendering/ssr.md)) |
-| View | what renders the body of a page: Jinja2, Markdown or a client component ([views](../views/README.md)) |
+| View | the process of producing the response body for a page ([views](../views/README.md)) |
 
 ## Files and folders
 

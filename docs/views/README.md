@@ -1,10 +1,16 @@
 # Views
 
-A view renders the response body for a page. Choose one format and put the file under
-`src/routes/`.
+Before choosing a file format, it is important to distinguish between how Nexy handles resources and how it renders them.
 
-**Not sure? Write a `.nexy` file.** It needs no client framework, and you can add a React, Vue,
-Svelte, Solid or Preact component inside it later, as an island.
+| Term | Definition |
+|---|---|
+| **Page** | An URL-addressable resource of the application. It is defined by a file under `src/routes/`. |
+| **View** | The process of producing the response body for a page. A view transforms logic and data into HTML or JSON. |
+| **Component** | A reusable UI building block used to compose a view. Components can be native Nexy helpers or framework-specific (React, Vue, etc.). |
+| **Route handler** | A Python function that handles an HTTP request for a specific method (e.g., `GET`, `POST`). |
+| **Endpoint** | The unique combination of a URL and an HTTP method that a route handler answers. |
+
+**Not sure? Write a `.nexy` file.** It needs no client framework, and you can add a React, Vue, Svelte, Solid or Preact component inside it later, as an island.
 
 ```diagram filename="Which file for which page"
 server logic + HTML          →  .nexy      (Python frontmatter + Jinja2)
@@ -27,6 +33,12 @@ API handler                  →  .py        (GET, POST, …)
 
 Built-in `Image`, `Link`, `Audio`, `Video` and `Import` helpers: [Components](nexy/components.md).
 
+## Mixing formats
+
+You can mix different technologies within the same project:
+- **Islands**: You can import a React or Vue component inside a `.nexy` page. The server renders the shell, and the framework hydrates the component on the client.
+- **Shared Logic**: Route handlers in `.py` files can provide data to pages in any format via the shared application state or API calls.
+
 ## Enable a framework
 
 Set `useFF` in `nexyconfig.py` and run `nexy new` to add dependencies:
@@ -41,7 +53,7 @@ class NexyConfig(NexyConfigModel):
 ```
 
 With a framework enabled, Vite handles its client bundles. In client mode its extensions become
-routes; in server mode the same files are components you import as islands — a framework file under
+routes; in server mode the same files are components you import as islands - a framework file under
 `src/routes/` is rejected there. See [server mode and client mode](../routing/fbr/modes.md).
 
 > [!NOTE]
