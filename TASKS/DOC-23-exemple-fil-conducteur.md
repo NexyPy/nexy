@@ -57,3 +57,4 @@ L'étape 9 doit montrer que **le chemin d'une Action n'est pas une autorisation*
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Mécanisme `filename=` + `test_recipes.py` identifié comme modèle. |
+| 2026-11-01 | Une réécriture « Rosetta Stone: One App, Five Frameworks » avait remplacé `tutorial.md` : hors périmètre (pas de bloc `filename=`, pas de fil en 10 étapes, activation du venv supprimée, donc F11 rouge). Le tutoriel d'origine est restauré depuis HEAD et `test_setup_guidance.py` repasse. Le brouillon est conservé dans `TASKS/drafts/rosetta-five-frameworks.md`. La tâche reste `prêt`. |

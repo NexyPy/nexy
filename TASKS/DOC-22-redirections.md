@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P4 - Frontend |
-| **Statut** | `bloqué` |
+| **Statut** | `en cours` |
 | **Dépend de** | DOC-21 |
 | **Débloque** | - |
 
@@ -49,3 +49,4 @@ Supprimer 20 pages sans casser une seule URL publiée ni un seul lien entrant.
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Table initiale déduite de DOC-21. |
+| 2026-11-01 | `REDIRECTS` (20 entrées) est exposé par `docs_source.py` ; `sites/vanilla/build.py` écrit une page `meta refresh` par ancienne URL. Reste : la route `sites/nexy/src/routes/docs/[...path].nexy` ne répond pas encore 301, aucun test ne couvre la table, la détection de boucle n'existe pas. |

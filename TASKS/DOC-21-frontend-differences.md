@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P4 - Frontend |
-| **Statut** | `bloqué` |
+| **Statut** | `en cours` |
 | **Dépend de** | DOC-20 |
 | **Débloque** | DOC-22 |
 
@@ -46,3 +46,4 @@ Une page « differences » ne réexplique **jamais** un contrat. Si une phrase e
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Les différences réelles sont vérifiables dans les templates du CLI. |
+| 2026-11-01 | Les 5 pages `differences.md` existent (343 à 373 mots, sous la limite de 400), sont dans un groupe « Framework differences » de la nav et dans `llms.txt`, et renvoient aux contrats. Reste : elles reprennent les 4 sections des pages par framework au lieu des seules différences ; les README par framework ne sont pas réduits ; les 20 pages ne sont pas supprimées (DOC-22). |

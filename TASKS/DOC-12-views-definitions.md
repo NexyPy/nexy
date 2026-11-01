@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P3 - Terminologie |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | - (réutilise DOC-02 si D3 = séparation) |
 | **Débloque** | - |
 
@@ -53,3 +53,4 @@ Définir les cinq notions **avant** de lister les formats de fichiers. Un lecteu
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Définitions reprises du brief, à valider contre le comportement réel. |
+| 2026-11-01 | `docs/views/README.md` définit les cinq termes avant tout format, puis le tableau des formats renvoie à leur page. Le glossaire renvoie à cette page au lieu de redéfinir. Suite docs + sites verte. |

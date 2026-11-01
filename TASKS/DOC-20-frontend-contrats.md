@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P4 - Frontend |
-| **Statut** | `prêt` |
+| **Statut** | `en cours` |
 | **Dépend de** | - |
 | **Débloque** | DOC-21, DOC-22 |
 
@@ -53,3 +53,4 @@
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Périmètre des 4 contrats arrêté. |
+| 2026-11-01 | Les 4 pages existent (`views/frontend/{pages,layouts,islands,actions-and-navigation}.md`), avec un groupe « Shared contracts » dans la nav et 4 lignes dans `llms.txt`. Reste : vérifier chaque contrat ligne à ligne pour les 5 frameworks, et faire renvoyer les pages par framework au contrat au lieu de le répéter. |

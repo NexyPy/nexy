@@ -22,23 +22,26 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 | [DOC-05](DOC-05-verifier-vague-1.md) | Vérifier la vague 1 | P1 | `fait` | DOC-01→04 |
 | [DOC-06](DOC-06-marqueurs-de-groupe.md) | Marqueurs de groupe dans la nav | P2 | `fait` | - |
 | [DOC-07](DOC-07-appliquer-les-marqueurs.md) | Appliquer les marqueurs aux groupes | P2 | `fait` | DOC-06 |
-| [DOC-08](DOC-08-bucket-advanced.md) | Bucket Advanced + « All documentation » | P2 | `prêt` | - |
-| [DOC-09](DOC-09-recherche-contextuelle.md) | Recherche contextuelle | P2 | `prêt` | - |
-| [DOC-10](DOC-10-sync-llms-txt.md) | Synchroniser `llms.txt` | P2 | `prêt` | - |
-| [DOC-11](DOC-11-routing-terminologie.md) | Routing : deux routeurs, une intégration | P3 | `prêt` | - |
-| [DOC-12](DOC-12-views-definitions.md) | Views : page / vue / composant / handler | P3 | `prêt` | - |
+| [DOC-08](DOC-08-bucket-advanced.md) | Bucket Advanced + « All documentation » | P2 | `fait` | - |
+| [DOC-09](DOC-09-recherche-contextuelle.md) | Recherche contextuelle | P2 | `en cours` | - |
+| [DOC-10](DOC-10-sync-llms-txt.md) | Synchroniser `llms.txt` | P2 | `fait` | - |
+| [DOC-11](DOC-11-routing-terminologie.md) | Routing : deux routeurs, une intégration | P3 | `fait` | - |
+| [DOC-12](DOC-12-views-definitions.md) | Views : page / vue / composant / handler | P3 | `fait` | - |
 | [DOC-13](DOC-13-rendering-overview.md) | Rendering : matrice de comparaison | P3 | `fait` | - |
 | [DOC-14](DOC-14-ssr.md) | SSR | P3 | `fait` | DOC-13 |
 | [DOC-15](DOC-15-isr.md) | ISR | P3 | `fait` | DOC-13 |
 | [DOC-16](DOC-16-csr.md) | CSR | P3 | `fait` | DOC-13 |
 | [DOC-17](DOC-17-islands.md) | Islands | P3 | `fait` | DOC-13 |
-| [DOC-18](DOC-18-actions.md) | Actions : cycle complet | P3 | `prêt` | - |
+| [DOC-18](DOC-18-actions.md) | Actions : cycle complet | P3 | `en cours` | - |
 | [DOC-19](DOC-19-getting-started.md) | Getting Started : prérequis et résultat | P3 | `prêt` | - |
-| [DOC-20](DOC-20-frontend-contrats.md) | 4 contrats frontend partagés | P4 | `prêt` | - |
-| [DOC-21](DOC-21-frontend-differences.md) | 1 page « differences » par framework | P4 | `bloqué` | DOC-20 |
-| [DOC-22](DOC-22-redirections.md) | Redirections des anciennes URL | P4 | `bloqué` | DOC-20 |
+| [DOC-20](DOC-20-frontend-contrats.md) | 4 contrats frontend partagés | P4 | `en cours` | - |
+| [DOC-21](DOC-21-frontend-differences.md) | 1 page « differences » par framework | P4 | `en cours` | DOC-20 |
+| [DOC-22](DOC-22-redirections.md) | Redirections des anciennes URL | P4 | `en cours` | DOC-20 |
 | [DOC-23](DOC-23-exemple-fil-conducteur.md) | Exemple fil conducteur exécuté | P5 | `prêt` | - |
-| [DOC-24](DOC-24-regles-editoriales.md) | Règles éditoriales (hors `docs/`) | P6 | `prêt` | - |
+| [DOC-24](DOC-24-regles-editoriales.md) | Règles éditoriales (hors `docs/`) | P6 | `en cours` | - |
+| [DOC-25](DOC-25-promesse-dans-la-sidebar.md) | Promesse d'action dans la sidebar | P2 | `bloqué` (A11) | - |
+| [DOC-26](DOC-26-signaux-de-progression.md) | Signaux de progression : pages lues et reprise | P2 | `fait` | - |
+| [DOC-27](DOC-27-badges-nouveaute.md) | Badges de nouveauté dans la nav | P2 | `fait` | - |
 
 ## Phases
 
@@ -68,6 +71,7 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 | A8 | **D2 = deux fichiers, renvois croisés.** `docs/architecture.md` pour le lecteur, `ARCHITECTURE.md` pour le contributeur, chacun renvoyant à l'autre. Une seule source de vérité par public, aucun diagramme dupliqué. |
 | A9 | **D3 = séparation.** `getting-started/core-concepts.md` porte le modèle en 4 niveaux, `reference/glossary.md` devient un index A→Z d'une phrase plus un lien. Une définition, un seul endroit. |
 | A10 | **D4 = consolidation avec redirections.** 25 → ~11 pages : 4 contrats partagés, une page « differences » par framework, table de redirections dans les deux sites, `llms.txt` mis à jour. |
+| A11 | **Sidebar sobre : labels seuls.** Le menu ne dessine aucune description sous les liens (la promesse reste donnée pour d'autres surfaces, pas pour le menu) ; le badge `{new}` se pose **sur la ligne du label**, jamais en dessous. DOC-25 est revertée sous cette décision. |
 
 ### Ouvertes
 

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P6 - Règles |
-| **Statut** | `prêt` |
+| **Statut** | `en cours` |
 | **Dépend de** | - |
 | **Débloque** | - |
 
@@ -68,3 +68,4 @@ Un test qui vérifie qu'une page conceptuelle contient les 8 titres, et qu'une p
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Emplacement choisi après vérification de F5. |
+| 2026-11-01 | `CONTRIBUTING.md` a une section « Documentation: The Rule of Redundancy » qui fixe la séparation contrats / différences. Reste les 5 sections de la tâche : les deux contrats de page (A1), les trois niveaux de garantie (A2), le vocabulaire imposé, les règles mécaniques, et le renvoi depuis `skills/`. |

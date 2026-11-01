@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P3 - Interaction |
-| **Statut** | `prêt` |
+| **Statut** | `en cours` |
 | **Dépend de** | - |
 | **Débloque** | - |
 
@@ -50,3 +50,4 @@ Faire comprendre que les Actions sont un **mécanisme de communication** entre f
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Vérifié : `origin.py` compare l'origine, il n'authentifie pas. |
+| 2026-11-01 | `guides/actions.md` réécrit autour des 5 étapes. Ajouté : la phrase « the generated path is not an authorization mechanism », les 5 familles d'erreurs séparées (dont 401/403 par votre code), la note explicite que le contrôle d'origine est une protection CSRF et pas une autorisation, le mapping des types Python → TypeScript, `NEXY_ACTION_SECRET` / `__nexy__/action.key`. Les deux tests d'ancre suivent le nouveau titre (`#the-action-cycle`). Reste : un exemple par étape, le renvoi DOC-15 pour `revalidate`, la vérification de `recipes.md`. |

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P3 - Terminologie |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | - |
 | **Débloque** | - |
 
@@ -53,3 +53,4 @@ Mettre fin à l'ambiguïté « Nexy a deux routeurs » vs trois entrées de navi
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Incohérence F9 confirmée dans le code. |
+| 2026-11-01 | Terminologie appliquée : `ROUTERS` annonce « Custom Integration - Include an existing FastAPI router », la page s'intitule « Custom routing integration », `routing/README.md` distingue les deux routeurs natifs de l'intégration et documente la coexistence (ordre d'enregistrement, première route gagnante, aucun diagnostic de collision). `test_routers.py` mis à jour et vert. |

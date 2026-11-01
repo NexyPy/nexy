@@ -57,3 +57,4 @@ Trois phrases à la fin du Quick Start : ce fichier est devenu cette URL parce q
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Contraintes F11 relevées avant toute rédaction. |
+| 2026-11-01 | `tutorial.md` avait été remplacé par un brouillon hors périmètre qui cassait F11 ; restauré depuis HEAD. `installation.md` et `quick-start.md` n'ont pas encore reçu la matrice des prérequis ni le résultat visible. Tâche inchangée : `prêt`. |

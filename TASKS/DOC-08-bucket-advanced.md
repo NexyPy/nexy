@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P2 - Navigation |
-| **Statut** | `prêt` |
+| **Statut** | `fait` |
 | **Dépend de** | - |
 | **Débloque** | DOC-09 |
 
@@ -35,14 +35,15 @@ Chaque page reste accessible, et son lien reste valide : aucun fichier ne bouge.
 
 ## Critère de fin
 
-- [ ] Les 6 pages ne sont plus dans le parcours par défaut
-- [ ] Un clic sur « All documentation » révèle tous les groupes, tous modes confondus
-- [ ] Le mode choisi est visible en permanence dans la sidebar (pas seulement dans le menu déroulant)
-- [ ] Les liens entrants vers ces pages restent valides (F10)
-- [ ] `llms.txt` continue de les lister (les agents ne connaissent pas la notion de mode)
+- [x] Les 6 pages ne sont plus dans le parcours par défaut
+- [x] Un clic sur « All documentation » révèle tous les groupes, tous modes confondus
+- [x] Le mode choisi est visible en permanence dans la sidebar (pas seulement dans le menu déroulant)
+- [x] Les liens entrants vers ces pages restent valides (F10)
+- [x] `llms.txt` continue de les lister (les agents ne connaissent pas la notion de mode)
 
 ## Journal
 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Liste des pages candidates arrêtée. |
+| 2026-10-31 | Nettoyage de docs/README.md, mise en place du bucket {advanced} et du mode « All documentation ». Liens vérifiés. |

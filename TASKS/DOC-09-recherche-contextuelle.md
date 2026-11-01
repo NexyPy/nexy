@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Phase** | P2 - Navigation |
-| **Statut** | `prêt` |
+| **Statut** | `en cours` |
 | **Dépend de** | - |
 | **Débloque** | - |
 
@@ -40,3 +40,4 @@ Faire suivre le mode choisi à la recherche : un lecteur en parcours FBR ne voit
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Champ manquant identifié dans `search_entry`. |
+| 2026-11-01 | `search_entry` publie `router` et `scope` ; `site.js` filtre sur `html.dataset.mode` (`all` ou routeur actif) et masque le bucket Advanced. Reste : badge de périmètre sur chaque résultat, test « un résultat hors mode n'apparaît qu'avec la bascule ». |

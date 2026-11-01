@@ -6,10 +6,10 @@
 
 | # | Fait | Preuve |
 |---|---|---|
-| F1 | `docs/README.md` est **à la fois** la page d'accueil et la source de la navigation. `##` = section, `###` = groupe, chaque ligne de tableau `\| [label](page.md) \| résumé \|` = une page. | `sites/shared/docs_source.py:235` (`read_tracks`) |
+| F1 | `docs/README.md` est **à la fois** la page d'accueil et la source de la navigation. `##` = section, `###` = groupe, chaque ligne de tableau `\| [label](page.md) \| résumé \|` = une page. Un token `{new}` en **fin de cellule résumé** marque la nouveauté de la page (DOC-27) : retiré du résumé, de la recherche et du HTML rendu, il ne change ni la structure de la ligne ni celle du tableau. | `sites/shared/docs_source.py:288` (`read_tracks`), `:272` (`_summary`), `:277` (`_badge`) |
 | F2 | Réécrire l'intro = réécrire les 3 lignes de tête de `README.md`, **sans toucher** la grammaire des tableaux. | `docs/README.md:1-5` |
 | F3 | Le sélecteur de routeur filtre **au plus 3 groupes sur 21** : 4 groupes portent un routeur (Routing et Route handlers → `fbr`, Modular, Custom), les 17 autres restent visibles dans tous les modes. `router_of()` déduit le routeur **du chemin** (`routing/<router>/…`) ; un groupe n'est marqué que si 100 % de ses pages sont sous un seul routeur ; le filtrage est CSS pur. | `docs_source.py:183`, `:230` ; `sites/vanilla/assets/site.js:107-125` ; `test_routers.py:168` |
-| F4 | **Trois index à synchroniser** : tableaux de `README.md`, `llms.txt` (manuel, déjà divergent : ~30 pages, renvoie à `ARCHITECTURE.md` pour l'archi), tests. | `llms.txt:9-51` |
+| F4 | **Trois index à synchroniser** : tableaux de `docs/README.md`, `llms.txt` (manuel, exhaustivité contrôlée par test), tests. L'architecture lecteur pointe vers `docs/architecture.md` ; `ARCHITECTURE.md` reste la référence contributeur. | `llms.txt`, `tests/unit/nexy/docs/test_llms_index.py` |
 | F5 | **Aucun `.md` non listé n'est autorisé dans `docs/`** : un guide de style interne y ferait échouer la suite. | `tests/unit/sites/test_routers.py:70` |
 | F6 | Le code des docs est **déjà exécuté** : chaque bloc ```` ```py filename="…" ```` de `guides/recipes.md` est scaffolé dans un vrai projet et testé en e2e. | `tests/unit/nexy/docs/test_recipes.py` |
 | F7 | Pages **courtes** : médiane ~450 mots, 86 fichiers, max 1 650 (`reference/exceptions.md`). | mesure sur `docs/**/*.md` |
