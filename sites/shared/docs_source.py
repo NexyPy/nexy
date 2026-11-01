@@ -119,7 +119,7 @@ Link = Callable[[str], str]
 ROUTERS = (
     ("fbr", "FBR", "File-based routing"),
     ("modular", "Modular", "Controllers and modules"),
-    ("custom", "Custom Router", "Create your own router"),
+    ("custom", "Custom Integration", "Include an existing FastAPI router"),
 )
 
 # The scopes a menu group can declare: the three routers, the advanced bucket, and `core` for the

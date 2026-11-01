@@ -37,7 +37,7 @@ class TestRouterOfAPage:
         assert source.ROUTERS == (
             ("fbr", "FBR", "File-based routing"),
             ("modular", "Modular", "Controllers and modules"),
-            ("custom", "Custom Router", "Create your own router"),
+            ("custom", "Custom Integration", "Include an existing FastAPI router"),
         )
 
     def test_every_page_of_a_router_folder_knows_its_router(self):

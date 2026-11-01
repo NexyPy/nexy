@@ -1,4 +1,4 @@
-# Custom routing
+# Custom routing integration
 
 Nexy lets you include an existing FastAPI app as a router into your project. This is useful when you want to reuse backend logic from another service, integrate with third-party APIs, or build a composite application with multiple routing concerns.
 
