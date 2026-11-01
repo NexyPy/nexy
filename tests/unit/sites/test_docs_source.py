@@ -94,6 +94,73 @@ class TestGroupScope:
         assert (group.title, group.scope) == ("Forms {nope}", "core")
 
 
+class TestPageBadge:
+    """DOC-27: a `{new}` token at the end of a row's summary marks the page and nothing else."""
+
+    @staticmethod
+    def _page(tmp_path: Path, summary: str) -> source.Page:
+        (tmp_path / "guides").mkdir(exist_ok=True)
+        (tmp_path / "guides" / "actions.md").write_text("# Actions", encoding="utf-8")
+        (tmp_path / "README.md").write_text(
+            "# Docs\n\n## Guides\n\n### Forms\n"
+            "| Page | What you will do |\n|---|---|\n"
+            f"| [Actions](guides/actions.md) | {summary} |\n",
+            encoding="utf-8",
+        )
+        return source.pages_of(source.read_tracks(tmp_path)[0])[0]
+
+    def test_a_token_marks_the_badge_of_the_page(self, tmp_path):
+        assert self._page(tmp_path, "Post a form {new}").badge == "new"
+
+    def test_the_token_leaves_the_summary_of_the_page(self, tmp_path):
+        assert self._page(tmp_path, "Post a form {new}").summary == "Post a form"
+
+    def test_an_unmarked_page_carries_no_badge(self, tmp_path):
+        assert self._page(tmp_path, "Post a form").badge == ""
+
+    def test_an_unknown_token_is_left_visible_in_the_summary(self, tmp_path):
+        page = self._page(tmp_path, "Post a form {neww}")
+        assert (page.badge, page.summary) == ("", "Post a form {neww}")
+
+    def test_a_token_in_the_middle_of_a_sentence_is_not_a_badge(self, tmp_path):
+        page = self._page(tmp_path, "Post {new} a form")
+        assert (page.badge, page.summary) == ("", "Post {new} a form")
+
+    def test_the_token_is_not_drawn_in_a_rendered_page(self, tmp_path):
+        self._page(tmp_path, "Post a form {new}")  # writes guides/actions.md, the table's target
+        path = tmp_path / "guides" / "page.md"
+        path.write_text(
+            "# T\n\n| Page | Summary |\n|---|---|\n| [a](actions.md) | Post a form {new} |\n",
+            encoding="utf-8",
+        )
+        assert "{new}" not in source.render(path, tmp_path, _link).html
+
+    def test_the_token_leaves_the_search_entry_of_the_home(self, tmp_path):
+        row = "| [Actions](guides/actions.md) | Post a form {new} |"
+        (tmp_path / "README.md").write_text(
+            f"# Docs\n\n## Guides\n\n### Forms\n| Page | Summary |\n|---|---|\n{row}\n",
+            encoding="utf-8",
+        )
+        page = source.home(tmp_path)
+        entry = source.search_entry(page, "Docs", source.render(page.path, tmp_path, _link), "docs")
+        assert "{new}" not in entry["text"]
+
+
+class TestRealDocsBadges:
+    """The real menu: a typo in a token would be drawn as a word of the promise."""
+
+    def test_no_summary_carries_a_brace(self, tracks):
+        """Only `{new}` is a token, and `read_tracks` strips it: a `{neww}` would stay visible."""
+        stray = [p.slug for t in tracks for p in source.pages_of(t) if "{" in p.summary]
+        assert stray == []
+
+    def test_a_marked_page_carries_the_token_in_no_word_it_shows(self, tracks):
+        for track in tracks:
+            for page in source.pages_of(track):
+                if page.badge:
+                    assert "{new}" not in f"{page.summary} {page.label} {page.title}"
+
+
 class TestNeighbours:
     def test_the_first_page_has_no_previous(self, tracks):
         first = source.pages_of(tracks[0])[0].slug

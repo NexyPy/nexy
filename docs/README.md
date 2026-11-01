@@ -50,7 +50,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [File-based routing](routing/fbr/README.md) | Turn a file path into a URL |
 | [Pages](routing/fbr/pages/README.md) | Write a page |
 | [Dynamic routes](routing/fbr/pages/dynamic-routes.md) | Use `[slug]`, `[...path]` and route groups |
-| [Page metadata](routing/fbr/pages/metadata.md) | Set the title, description and share image of a page |
+| [Page metadata](routing/fbr/pages/metadata.md) | Set the title, description and share image of a page {new} |
 | [Layouts](routing/fbr/layouts/README.md) | Share a frame between pages |
 | [Inheritance](routing/fbr/inheritance.md) | Read the resolution order of layouts, dependencies and error pages |
 | [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
@@ -93,11 +93,11 @@ Controllers and modules.
 ### Framework differences
 | Page | What changes |
 |---|---|
-| [React differences](views/react/differences.md) | Components, hooks and `layout.tsx` |
-| [Vue differences](views/vue/differences.md) | SFCs, refs and `layout.vue` |
-| [Svelte differences](views/svelte/differences.md) | Runes, stores and `layout.svelte` |
-| [Solid differences](views/solid/differences.md) | Signals, accessors and `layout.tsx` |
-| [Preact differences](views/preact/differences.md) | Hooks, signals and `layout.tsx` |
+| [React differences](views/react/differences.md) | Components, hooks and `layout.tsx` {new} |
+| [Vue differences](views/vue/differences.md) | SFCs, refs and `layout.vue` {new} |
+| [Svelte differences](views/svelte/differences.md) | Runes, stores and `layout.svelte` {new} |
+| [Solid differences](views/solid/differences.md) | Signals, accessors and `layout.tsx` {new} |
+| [Preact differences](views/preact/differences.md) | Hooks, signals and `layout.tsx` {new} |
 
 ## React
 

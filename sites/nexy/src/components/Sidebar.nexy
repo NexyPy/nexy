@@ -51,7 +51,7 @@ routers = router_select(current)
         </summary>
         <ul>
           {% for page in group.pages %}
-          <li><a href="{{ page.href }}"{% if page.current %} aria-current="page"{% endif %}>{{ page.label | e }}</a></li>
+          <li><a href="{{ page.href }}"{% if page.current %} aria-current="page"{% endif %}>{{ page.label | e }}</a>{% if page.badge %}<span class="badge-new">New</span>{% endif %}</li>
           {% endfor %}
         </ul>
       </details>

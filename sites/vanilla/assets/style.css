@@ -519,6 +519,25 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
   border-left: 1px solid var(--line);
 }
 .side li[hidden] { display: none; }
+/* One line per page: the label fills it, the pill rides at its end. */
+.side li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.side li > a { flex: 1 1 auto; min-width: 0; }
+/* One page, one pill: the `{new}` token of docs/README.md, neutral, never a colour of alert. */
+.side .badge-new {
+  flex: none;
+  margin: 0 0.7rem 0 0.5rem;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.6;
+}
 .side a {
   display: flex;
   align-items: center;

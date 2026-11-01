@@ -152,6 +152,12 @@ SCOPES = ("core", "fbr", "modular", "custom", "advanced")
 _SCOPE = re.compile(r"\s*\{(" + "|".join(SCOPES) + r")\}\s*$")
 _ROUTER_KEYS = tuple(key for key, _name, _blurb in ROUTERS)
 
+# The one badge a menu row can carry: `{new}` at the end of the summary cell, the way a heading
+# carries a scope. It marks the page and is read by nobody else: the token is out of the summary,
+# out of the search and out of the rendered home page, whose table shows the very same rows.
+_NEW = re.compile(r"\s*\{new\}\s*$")
+_NEW_HTML = re.compile(r"\s*\{new\}")
+
 
 @dataclass(frozen=True)
 class Page:
@@ -166,6 +172,7 @@ class Page:
     track: str = ""
     group: str = ""
     scope: str = "core"
+    badge: str = ""
 
 
 @dataclass(frozen=True)
@@ -237,12 +244,15 @@ def _page(
     summary: str = "",
     track: str = "",
     group: str = "",
+    badge: str = "",
 ) -> Page | None:
     path = docs / relative
     if not path.is_file():
         return None
     slug = slug_of(relative)
-    return Page(slug, _title(path), label, path, router_of(slug), summary, track, group)
+    return Page(
+        slug, _title(path), label, path, router_of(slug), summary, track, group, "core", badge
+    )
 
 
 def home(docs: Path) -> Page:
@@ -255,9 +265,19 @@ def _slugify(label: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
 
 
+def _cells(row: str) -> list[str]:
+    return [cell.strip() for cell in row.strip().strip("|").split("|")]
+
+
 def _summary(row: str) -> str:
-    cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
-    return " ".join(cells[1].replace("`", "").split()) if len(cells) > 1 else ""
+    cells = _cells(row)
+    return " ".join(_NEW.sub("", cells[1].replace("`", "")).split()) if len(cells) > 1 else ""
+
+
+def _badge(row: str) -> str:
+    """The novelty of a row: the `{new}` token that ends its summary cell, or nothing."""
+    cells = _cells(row)
+    return "new" if len(cells) > 1 and _NEW.search(cells[1].replace("`", "")) else ""
 
 
 def _router_of_group(pages: list[Page]) -> str | None:
@@ -292,6 +312,7 @@ def read_tracks(docs: Path) -> list[Track]:
                     p.track,
                     p.group,
                     scope,
+                    p.badge,
                 )
                 for p in pages
             ]
@@ -337,6 +358,7 @@ def read_tracks(docs: Path) -> list[Track]:
                     summary=_summary(text),
                     track=_slugify(label),
                     group=group_title,
+                    badge=_badge(text),
                 )
                 if page:
                     pages.append(page)
@@ -752,7 +774,9 @@ def render(page: Path, docs: Path, link: Link) -> Rendered:
     """One page as HTML: illustrations, callouts, captions, linked headings, links to site URLs."""
     text, names = _name_files(page.read_text(encoding="utf-8"))
     html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
-    shaped = _structures(_diagrams(html, names))
+    # The navigation tokens are read by `read_tracks`, never shown: the home page is docs/README.md,
+    # so its own table would otherwise draw `{new}` in every cell that carries one.
+    shaped = _structures(_diagrams(_NEW_HTML.sub("", html), names))
     coloured = _CODE.sub(_colour, _caption(shaped, names))
     done = _identify(_callouts(_tables(coloured)))
     # The figures are last: nothing else looks at the drawing the SVG carries.

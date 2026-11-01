@@ -25,6 +25,13 @@ def _pages(out: Path) -> list[Path]:
     return sorted((out / "docs").rglob("index.html"))
 
 
+def _served_html(out: Path) -> dict[str, str]:
+    """Every HTML the build wrote: its path inside the site, and its exact bytes."""
+    return {
+        p.relative_to(out).as_posix(): p.read_text(encoding="utf-8") for p in out.rglob("*.html")
+    }
+
+
 class TestPages:
     def test_every_doc_has_a_page(self, out):
         tracks = docs_source.read_tracks(DOCS)
@@ -101,8 +108,42 @@ class TestPageContent:
         assert section.count("<li>") == len(group.pages)
 
     def test_a_section_carries_no_sentence(self, html):
-        """The accordion holds its name and its pages: the prose stays on the home page."""
+        """The accordion holds its name and its pages: prose stays out of the menu (A11)."""
         assert 'class="group-note"' not in html
+        assert 'class="page-summary"' not in html
+
+    def test_a_menu_item_is_the_link_then_the_pill(self, html):
+        """A menu item is the label alone; only a marked page adds a pill, on the same line."""
+        block = html.split('data-section="Forms and data"', 1)[1].split("</ul>", 1)[0]
+        items = re.findall(r"<li>.*?</li>", block)
+        pattern = re.compile(
+            r'<li><a href="[^"]+"(?: aria-current="page")?>[^<]+</a>'
+            r'(?:<span class="badge-new">New</span>)?</li>'
+        )
+        assert items and all(pattern.fullmatch(item) for item in items)
+
+    def test_the_menu_draws_no_description(self, tmp_path):
+        """A11: a page's summary is data for other surfaces, never a second menu line."""
+        page = docs_source.Page(
+            "only", "Only", "Only", tmp_path / "only.md", summary="Read this page"
+        )
+        group = docs_source.Group("G", "", [page])
+        track = docs_source.Track("t", "T", "", [group])
+        menu = build.nav_html([track], "only")
+        assert "<small" not in menu and "Read this page" not in menu
+
+    def test_the_menu_filter_reads_the_label(self):
+        """Filtering matches a page label only, whatever the item grows into later."""
+        script = (build.HERE / "assets" / "site.js").read_text(encoding="utf-8")
+        keep = next(line for line in script.splitlines() if "const keep =" in line)
+        assert "querySelector" in keep and "item.textContent" not in keep
+
+    def test_the_pill_sits_on_the_label_line(self):
+        """A11: the menu row is a flex line; the pill rides on the label's line, never under it."""
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        row = css.split(".side li {", 1)[1].split("}", 1)[0]
+        pill = css.split(".side .badge-new {", 1)[1].split("}", 1)[0]
+        assert "display: flex" in row and "flex: none" in pill
 
     def test_only_the_groups_scroll_under_the_menu_head(self, html):
         assert '<div class="side-scroll">' in html
@@ -198,6 +239,85 @@ class TestProgress:
         light = css.split(":root {", 1)[1].split("}", 1)[0]
         dark = css.split(':root[data-theme="dark"] {', 1)[1].split("}", 1)[0]
         assert "--faint:" in light and "--faint:" in dark
+
+
+class TestNewBadge:
+    """DOC-27: one `{new}` token in a row of docs/README.md paints one pill in the menu."""
+
+    PILL = '<a href="[^"]*"(?: aria-current="page")?>Page</a><span class="badge-new">New</span>'
+    ROW = "| [Page](only.md) | Read this page {new} |"
+
+    @staticmethod
+    def _docs(root: Path, row: str) -> Path:
+        root.mkdir(parents=True, exist_ok=True)
+        (root / "only.md").write_text("# Only", encoding="utf-8")
+        (root / "README.md").write_text(
+            f"# Docs\n\n## Guides\n\n### Forms\n| Page | What you will do |\n|---|---|\n{row}\n",
+            encoding="utf-8",
+        )
+        return root
+
+    def test_a_marked_row_paints_the_pill_after_the_link(self, tmp_path):
+        menu = build.nav_html(docs_source.read_tracks(self._docs(tmp_path, self.ROW)), "only")
+        assert re.search(self.PILL, menu)
+
+    def test_the_pill_is_labelled_new_and_the_token_is_not_drawn(self, tmp_path):
+        menu = build.nav_html(docs_source.read_tracks(self._docs(tmp_path, self.ROW)), "only")
+        assert menu.count(">New<") == 1 and "{new}" not in menu
+
+    @staticmethod
+    def _page_item(marked: bool) -> str:
+        """The menu item of the one page of this site, exactly as the menu serves it."""
+        pill = '<span class="badge-new">New</span>' if marked else ""
+        return f'<li><a href="only/">Page</a>{pill}</li>'
+
+    def test_an_unmarked_menu_is_the_menu_of_today(self, tmp_path):
+        """Zero regression (F1): no token, no pill - the item is the label alone."""
+        plain = self._docs(tmp_path / "a", "| [Page](only.md) | Read this page |")
+        out = tmp_path / "out"
+        build.build(out, plain)
+        served = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert self._page_item(marked=False) in served
+        assert "badge-new" not in served
+
+    def test_a_marked_menu_adds_the_pill_and_nothing_else(self, tmp_path):
+        """The one difference a token makes in the served bytes: the pill, and only it."""
+        plain = self._docs(tmp_path / "a", "| [Page](only.md) | Read this page |")
+        marked = self._docs(tmp_path / "b", self.ROW)
+        before, after = tmp_path / "before", tmp_path / "after"
+        build.build(before, plain)
+        build.build(after, marked)
+        first, second = _served_html(before), _served_html(after)
+        assert set(first) == set(second)
+        changed = [name for name in first if first[name] != second[name]]
+        assert changed == ["docs/index.html", "docs/only/index.html"]
+        assert self._page_item(marked=True) in second["docs/index.html"]
+        assert self._page_item(marked=False) not in second["docs/index.html"]
+        assert "{new}" not in second["docs/index.html"]
+
+    def test_the_site_of_the_repo_paints_the_badges_of_its_menu(self, out):
+        marked = [
+            page
+            for track in docs_source.read_tracks(DOCS)
+            for page in docs_source.pages_of(track)
+            if page.badge
+        ]
+        assert marked, "docs/README.md marks no page: the pill would go untested"
+        menu = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        for page in marked:
+            pattern = (
+                rf'<a href="{re.escape(build.relative("", page.slug))}"[^>]*>'
+                rf"{re.escape(page.label)}</a><span class=\"badge-new\">New</span>"
+            )
+            assert re.search(pattern, menu), page.slug
+
+    def test_the_token_is_in_no_html_the_site_renders(self, out):
+        stray = [
+            page.relative_to(out).as_posix()
+            for page in _pages(out)
+            if "{new}" in page.read_text(encoding="utf-8")
+        ]
+        assert stray == []
 
 
 class TestUsability:

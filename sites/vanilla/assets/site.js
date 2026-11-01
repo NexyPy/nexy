@@ -172,7 +172,8 @@
       groups.forEach((group, index) => {
         let hits = 0
         $$('li', group).forEach((item) => {
-          const keep = !word || item.textContent.toLowerCase().includes(word)
+          // A promise under the label is read, not matched: the filter knows page labels only.
+          const keep = !word || item.querySelector('a').textContent.toLowerCase().includes(word)
           item.hidden = !keep
           if (keep) hits += 1
         })

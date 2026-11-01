@@ -112,7 +112,12 @@ def _menu_group(group: source.Group, current: str, opened: source.Group) -> dict
         "router": group.router or "",
         "scope": group.scope,
         "pages": [
-            {"href": link(p.slug), "label": p.label, "current": p.slug == current}
+            {
+                "href": link(p.slug),
+                "label": p.label,
+                "badge": p.badge,
+                "current": p.slug == current,
+            }
             for p in group.pages
         ],
     }

@@ -44,6 +44,43 @@ def _menu(body: str) -> str:
     return body.split('<nav class="side"', 1)[1].split("</nav>", 1)[0]
 
 
+class TestNewBadge:
+    """DOC-27: the Nexy site paints the same pill as the vanilla one, and hides the token."""
+
+    def test_a_marked_page_paints_the_pill_after_the_link(self, answers):
+        marked = next(
+            (
+                page
+                for track in docs_source.read_tracks(DOCS)
+                for page in docs_source.pages_of(track)
+                if page.badge
+            ),
+            None,
+        )
+        assert marked is not None, "docs/README.md marks no page: the pill would go untested"
+        pattern = (
+            rf'<a href="/docs/{re.escape(marked.slug)}"[^>]*>'
+            rf'{re.escape(marked.label)}</a><span class="badge-new">New</span>'
+        )
+        assert re.search(pattern, _menu(answers[ACTIONS][2])), marked.slug
+
+    def test_the_token_is_in_no_html_the_site_serves(self, answers):
+        pages = {
+            path: body
+            for path, (_status, _headers, body) in answers.items()
+            if "<!doctype html>" in body.lower()
+        }
+        assert pages and all("{new}" not in body for body in pages.values())
+
+    def test_the_menu_of_every_page_hides_the_token(self, answers):
+        for path, (_status, _headers, body) in answers.items():
+            if '<nav class="side"' in body:
+                assert "{new}" not in _menu(body), path
+
+    def test_the_home_page_hides_the_token_of_its_own_table(self, answers):
+        assert "{new}" not in answers["/docs"][2]
+
+
 def test_the_root_sends_visitors_to_the_docs(answers):
     status, headers, _ = answers["/"]
     assert status in (301, 302, 307, 308) and headers["location"].endswith("/docs")
@@ -59,6 +96,12 @@ def test_a_page_has_its_title(answers):
 
 def test_the_menu_marks_the_current_page(answers):
     assert re.search(r'<a [^>]*aria-current="page"[^>]*>Actions</a>', answers[ACTIONS][2])
+
+
+def test_the_menu_shows_no_description(answers):
+    """A11 mirror: the Nexy site lists labels in the menu, never their summaries."""
+    assert 'class="page-summary"' not in _menu(answers[ACTIONS][2])
+    assert "<small" not in _menu(answers[ACTIONS][2])
 
 
 def _progress_scripts(text: str) -> list[str]:

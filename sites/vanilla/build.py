@@ -93,7 +93,9 @@ def router_meta(page: source.Page) -> str:
 
 def _nav_item(page: source.Page, current: str) -> str:
     mark = ' aria-current="page"' if page.slug == current else ""
-    return f'<li><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
+    badge = '<span class="badge-new">New</span>' if page.badge else ""
+    href = relative(current, page.slug)
+    return f'<li><a href="{href}"{mark}>{escape(page.label)}</a>{badge}</li>'
 
 
 def _nav_group(group: source.Group, current: str, opens: bool) -> str:
@@ -187,10 +189,11 @@ def _page_html(
     section: str,
     rendered: source.Rendered,
     site_url: str,
+    docs: Path,
 ) -> str:
     track = source.track_of(tracks, page.slug)
     before, after = source.neighbours(track, page.slug)
-    rel = page.path.relative_to(DOCS).as_posix()
+    rel = page.path.relative_to(docs).as_posix()
     home = not page.slug
     return template.substitute(
         title=escape(page.title),
@@ -251,7 +254,7 @@ def _write_pages(
     for page, section in pages:
         rendered = source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
         target = out / "docs" / page.slug / "index.html"
-        _write(target, _page_html(template, tracks, page, section, rendered, site_url))
+        _write(target, _page_html(template, tracks, page, section, rendered, site_url, docs))
         _write(target.with_name("index.md"), page.path.read_text(encoding="utf-8"))
         url = f"docs/{page.slug}/" if page.slug else "docs/"
         entries.append(source.search_entry(page, section, rendered, url))
