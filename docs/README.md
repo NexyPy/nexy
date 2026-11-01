@@ -80,6 +80,16 @@ Controllers and modules.
 |---|---|
 | [Custom routing](routing/custom/README.md) | Include an existing FastAPI app |
 
+## Frontend
+
+### Shared contracts
+| Page | What it defines |
+|---|---|
+| [Pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
+| [Layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
+| [Islands](views/frontend/islands.md) | Hydration, serialisable props and triggers |
+| [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
+
 ## React
 
 ### React
@@ -228,6 +238,7 @@ docs/
 │  └─ custom/           include an existing FastAPI router
 ├─ rendering/           SSR, ISR, CSR, islands
 ├─ views/               choose a format, one page per client framework
+│  ├─ frontend/         the four contracts every framework shares
 │  └─ nexy/             .nexy files, components, layouts, Markdown and MDX
 ├─ guides/              actions, i18n, databases, middleware, frontend, testing
 ├─ deployment/          deploy, performance
