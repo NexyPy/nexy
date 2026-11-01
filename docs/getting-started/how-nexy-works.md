@@ -11,7 +11,7 @@ JavaScript. Nexy owns the middle three; Vite and your framework own the client; 
 owns the data, the authentication and the authorisation.
 
 Each layer, and what it refuses to do, is in [Architecture](../architecture.md). For the packages of
-Nexy itself, see `ARCHITECTURE.md` at the repository root — it is written for contributors.
+Nexy itself, see `ARCHITECTURE.md` at the repository root - it is written for contributors.
 
 ## The application lifecycle
 
@@ -24,7 +24,7 @@ Nexy itself, see `ARCHITECTURE.md` at the repository root — it is written for 
 5. starts Vite and waits until it answers;
 6. installs the file watcher, then lets uvicorn import `nexy.modules.routers.app:_server`.
 
-That import assembles the application — middleware, Actions, routers, error handlers — and the
+That import assembles the application - middleware, Actions, routers, error handlers - and the
 first request is served by that assembly. When you save, the watcher restarts uvicorn; a page that
 appeared, disappeared or moved also regenerates the client route list.
 
@@ -93,7 +93,7 @@ edit it, never commit it; delete it to force a clean build.
 ## The frontend integration
 
 **Vite does not replace Nexy.** Vite bundles and serves client code. It does not route a request,
-render a `.nexy` page, run an Action or own the origin. The browser talks to one origin — Nexy's —
+render a `.nexy` page, run an Action or own the origin. The browser talks to one origin - Nexy's -
 and in development Nexy proxies Vite's endpoints through it, so there is no CORS to configure.
 
 **Nexy does not replace React.** Nexy decides which component renders, when, and with which props;

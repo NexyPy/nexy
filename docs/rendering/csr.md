@@ -3,7 +3,7 @@
 ## Definition
 
 CSR hands navigation to the browser: after the first document, moving between pages no longer asks
-the server for HTML. In Nexy it is a **project** decision, not a page one — `useCSR = True` turns the
+the server for HTML. In Nexy it is a **project** decision, not a page one - `useCSR = True` turns the
 whole application client-routed.
 
 ## How it works
@@ -34,7 +34,7 @@ client router takes over from there. `.py` handlers sit next to the routes and a
 ## Rendering lifecycle
 
 1. The request reaches the file-based router, which finds the matching route and its layouts.
-2. The root layout renders the **whole document** in Node — the first response already carries the
+2. The root layout renders the **whole document** in Node - the first response already carries the
    real `<html>`, not an empty shell.
 3. Nexy injects the client assets and a JSON description of the page before `</body>`.
 4. The browser hydrates that document. Nested layouts keep their state from then on.
@@ -43,7 +43,7 @@ client router takes over from there. `.py` handlers sit next to the routes and a
 
 In development the document is rendered on demand by the Vite dev server. In production it is
 rendered once at build: a static route gets its document, a dynamic route gets one per declared
-static param, or a shell — the layouts around an empty page — when it declares none.
+static param, or a shell - the layouts around an empty page - when it declares none.
 
 ## When to use
 
@@ -88,8 +88,8 @@ export default function Home() {
 - **Server data goes through endpoints.** A client route cannot read the database at render time; it
   calls a `.py` handler or an [Action](../guides/actions.md).
 - **A dynamic route needs a declared static param, or it starts from a shell.** Export
-  `getStaticParams()` from the page — the Next.js names `getStaticPaths` and `generateStaticParams`
-  are also accepted — to have one document per value. Without it, the shell carries the layouts and
+  `getStaticParams()` from the page - the Next.js names `getStaticPaths` and `generateStaticParams`
+  are also accepted - to have one document per value. Without it, the shell carries the layouts and
   not the page: the page appears once the browser has run.
 - **CSR is not a blank page, and not a SPA either.** The first document is rendered by the server; it
   is the navigation that happens in the browser.

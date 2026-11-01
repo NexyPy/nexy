@@ -2,7 +2,7 @@
 
 ## Definition
 
-An island is a client component — React, Vue, Svelte, Solid or Preact — imported into a `.nexy`
+An island is a client component - React, Vue, Svelte, Solid or Preact - imported into a `.nexy`
 page. The server renders its HTML; the browser makes that one component interactive. The rest of the
 page stays HTML.
 
@@ -86,7 +86,7 @@ from "@/components/Counter.tsx" import Counter
 - **`client:manual` has no public trigger.** It is also skipped automatically, and the handle that
   resumes it is internal.
 - **Props must be JSON.** They are serialized with `json.dumps`; a value that cannot be serialized is
-  dropped, and the island receives `{}` — silently.
+  dropped, and the island receives `{}` - silently.
 - **An island is not a client component with shared state.** Two islands do not share state without a
   mechanism you add yourself.
 - **The island is not re-rendered by the server.** Its HTML is the build snapshot, plus whatever the

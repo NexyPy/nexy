@@ -10,7 +10,7 @@ is still served while a new one is rendered in the background: that is *stale-wh
 `revalidate = N` in the frontmatter of a `.nexy` page turns it on. `N` is a number of seconds; a
 missing, zero or negative value means no cache at all.
 
-The cache key is the **request path only** — `request.scope["path"]`. The query string is not part
+The cache key is the **request path only** - `request.scope["path"]`. The query string is not part
 of it.
 
 | What | Value |
