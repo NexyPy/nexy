@@ -61,6 +61,10 @@ point `llms.txt`. Do not add a docs site generator. When behaviour changes, upda
 `CHANGELOG.md` in the same change. If the docs and the code disagree, the code is right: fix the
 docs.
 
+Before writing or reshaping a page, follow the editorial contract in
+[CONTRIBUTING.md](../../CONTRIBUTING.md#writing-documentation): two page shapes, three guarantee
+levels, one vocabulary.
+
 ## Commits
 
 Conventional Commits. AI tools never appear as author or co-author; `scripts/check_attribution.py`
