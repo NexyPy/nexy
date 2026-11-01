@@ -165,6 +165,7 @@ class Page:
     summary: str = ""
     track: str = ""
     group: str = ""
+    scope: str = "core"
 
 
 @dataclass(frozen=True)
@@ -279,7 +280,22 @@ def read_tracks(docs: Path) -> list[Track]:
         if group_title and pages:
             scope = group_scope or _router_of_group(pages) or "core"
             router = scope if scope in _ROUTER_KEYS else None
-            groups.append(Group(group_title, group_blurb, pages, router, scope))
+            # Update pages with the final resolved scope
+            updated_pages = [
+                Page(
+                    p.slug,
+                    p.title,
+                    p.label,
+                    p.path,
+                    p.router,
+                    p.summary,
+                    p.track,
+                    p.group,
+                    scope,
+                )
+                for p in pages
+            ]
+            groups.append(Group(group_title, group_blurb, updated_pages, router, scope))
         group_title, group_blurb, group_scope, pages = "", "", "", []
 
     def close_track() -> None:
@@ -719,7 +735,7 @@ def plain(html: str) -> str:
     return _SPACE.sub(" ", _TAGS.sub(" ", _SVG.sub("", html))).strip()
 
 
-def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict[str, str]:
+def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict[str, str | None]:
     """What a search needs to know about a page: where it is and the start of its text."""
     return {
         "title": page.title,
@@ -727,6 +743,8 @@ def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict
         "url": url,
         "headings": " ".join(h.text for h in rendered.headings),
         "text": plain(rendered.html)[:TEXT_LENGTH],
+        "router": page.router,
+        "scope": page.scope,
     }
 
 

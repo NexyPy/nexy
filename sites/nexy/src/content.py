@@ -168,8 +168,8 @@ def document(slug: str) -> dict[str, Any]:
     }
 
 
-def search_entries() -> list[dict[str, str]]:
-    entries = []
+def search_entries() -> list[dict[str, str | None]]:
+    entries: list[dict[str, str | None]] = []
     for page, section in _pages():
         rendered = source.render(page.path, DOCS, link)
         entries.append(source.search_entry(page, section, rendered, link(page.slug).lstrip("/")))

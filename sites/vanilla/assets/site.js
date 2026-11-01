@@ -299,8 +299,24 @@
   }
   const search = () => {
     const words = input.value.toLowerCase().split(/\s+/).filter(Boolean)
+    const router = html.dataset.router
+    const mode = html.dataset.mode
     shownResults = words.length
-      ? index.map((e) => [score(e, words), e]).filter(([s]) => s).sort((a, b) => b[0] - a[0]).slice(0, 8).map(([, e]) => e)
+      ? index
+          .filter((e) => {
+            if (mode === 'all') return true
+            // Show if page is core or matches the active router
+            // Also show if it's a shared page (no router) but not specifically advanced
+            const isCore = e.scope === 'core'
+            const matchesRouter = e.router === router
+            const isAdvanced = e.scope === 'advanced'
+            return (isCore || matchesRouter) && !isAdvanced
+          })
+          .map((e) => [score(e, words), e])
+          .filter(([s]) => s)
+          .sort((a, b) => b[0] - a[0])
+          .slice(0, 8)
+          .map(([, e]) => e)
       : []
     active = 0
     render()
