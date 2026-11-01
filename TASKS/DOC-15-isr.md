@@ -1,11 +1,11 @@
-# DOC-15 — ISR
+# DOC-15 - ISR
 
 | | |
 |---|---|
-| **Phase** | P3 — Rendu |
+| **Phase** | P3 - Rendu |
 | **Statut** | `fait` |
 | **Dépend de** | DOC-13 |
-| **Débloque** | — |
+| **Débloque** | - |
 
 ## Objectif
 
@@ -19,7 +19,7 @@ Faire de l'ISR une fonctionnalité **spécifiée**, pas un cache magique. Le bri
 
 | Question du brief | Réponse à documenter |
 |---|---|
-| Quelle est la clé de cache ? | **L'URL seule** (`request.scope["path"]`) — pas de query string, pas de host |
+| Quelle est la clé de cache ? | **L'URL seule** (`request.scope["path"]`) - pas de query string, pas de host |
 | Paramètres dynamiques ? | chaque URL est mise en cache séparément |
 | Fuite entre utilisateurs ? | **risque réel** : une page `revalidate` qui lit la session sert le HTML du premier visiteur à tous ; la réponse part en `cache-control: public` |
 | Invalidation après mutation ? | **aucune côté serveur.** `revalidate(...)` dans une Action écrit un en-tête `x-nexy-revalidate` que le **navigateur** lit pour recharger une page ; le cache ISR n'est pas purgé (F15). L'invalidation réelle, c'est la fenêtre `revalidate`. |
@@ -55,4 +55,4 @@ Chaque limite doit être formulée dans une des trois formes, et une seule :
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Limites vérifiées dans `runtime/cache.py` et `fbrouter/handlers.py`. |
-| 2026-10-31 | **Fait.** Réécrite sur le squelette A1, avec un tableau des trois niveaux de garantie (A2). Correction majeure : `revalidate(...)` n'invalide **pas** le cache serveur — c'est un en-tête de rechargement navigateur (F15). Ajout de deux limites qui manquaient : la query string est ignorée (clé = chemin), et une régénération qui échoue reste silencieuse. |
+| 2026-10-31 | **Fait.** Réécrite sur le squelette A1, avec un tableau des trois niveaux de garantie (A2). Correction majeure : `revalidate(...)` n'invalide **pas** le cache serveur - c'est un en-tête de rechargement navigateur (F15). Ajout de deux limites qui manquaient : la query string est ignorée (clé = chemin), et une régénération qui échoue reste silencieuse. |

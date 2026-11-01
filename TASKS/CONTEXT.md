@@ -1,4 +1,4 @@
-# CONTEXT — faits vérifiés dans le dépôt
+# CONTEXT - faits vérifiés dans le dépôt
 
 À lire avant toute tâche. Chaque fait a été lu dans le code, pas déduit du site. Si un fait devient faux, le corriger ici **et** dans les tâches qui le citent.
 
@@ -14,7 +14,7 @@
 | F6 | Le code des docs est **déjà exécuté** : chaque bloc ```` ```py filename="…" ```` de `guides/recipes.md` est scaffolé dans un vrai projet et testé en e2e. | `tests/unit/nexy/docs/test_recipes.py` |
 | F7 | Pages **courtes** : médiane ~450 mots, 86 fichiers, max 1 650 (`reference/exceptions.md`). | mesure sur `docs/**/*.md` |
 | F8 | `views/*` = **25 pages sur 86 (29 %)**, 4 sections identiques par framework. | `docs/views/` |
-| F9 | Incohérence : le sélecteur annonce « Custom Router — *Create your own router* », la page dit « Custom routing — *Include an existing FastAPI app* ». | `docs_source.py:122` vs `docs/routing/custom/README.md` |
+| F9 | Incohérence : le sélecteur annonce « Custom Router - *Create your own router* », la page dit « Custom routing - *Include an existing FastAPI app* ». | `docs_source.py:122` vs `docs/routing/custom/README.md` |
 | F10 | Tout lien relatif de `docs/`, `skills/` et des entrées racine doit résoudre ; test paramétré par fichier. | `tests/unit/nexy/docs/test_links.py` |
 | F11 | Getting Started est verrouillé par des tests : pas de `uvx nexy dev`, activation du venv, `uv run nexy dev`, ordre activation → serveur. | `tests/unit/nexy/docs/test_setup_guidance.py` |
 | F12 | `ROUTERS` est asserté à l'identique dans les tests : changer un libellé casse `test_routers.py:36-41`. | `tests/unit/sites/test_routers.py` |

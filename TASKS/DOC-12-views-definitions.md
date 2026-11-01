@@ -1,11 +1,11 @@
-# DOC-12 — Views : page / vue / composant / route handler
+# DOC-12 - Views : page / vue / composant / route handler
 
 | | |
 |---|---|
-| **Phase** | P3 — Terminologie |
+| **Phase** | P3 - Terminologie |
 | **Statut** | `prêt` |
-| **Dépend de** | — (réutilise DOC-02 si D3 = séparation) |
-| **Débloque** | — |
+| **Dépend de** | - (réutilise DOC-02 si D3 = séparation) |
+| **Débloque** | - |
 
 ## Objectif
 
@@ -29,10 +29,10 @@ Définir les cinq notions **avant** de lister les formats de fichiers. Un lecteu
 
 ## Structure cible
 
-1. The five words — tableau ci-dessus.
-2. Which format for which page — tableau format / rendu / quand l'utiliser / page dédiée.
-3. Can I mix them? — oui, et comment (un `.nexy` avec un island React, par exemple).
-4. What Nexy does not do — pas de framework frontend imposé.
+1. The five words - tableau ci-dessus.
+2. Which format for which page - tableau format / rendu / quand l'utiliser / page dédiée.
+3. Can I mix them? - oui, et comment (un `.nexy` avec un island React, par exemple).
+4. What Nexy does not do - pas de framework frontend imposé.
 
 ## Fichiers
 

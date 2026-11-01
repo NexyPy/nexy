@@ -1,11 +1,11 @@
-# DOC-22 — Redirections des anciennes URL
+# DOC-22 - Redirections des anciennes URL
 
 | | |
 |---|---|
-| **Phase** | P4 — Frontend |
+| **Phase** | P4 - Frontend |
 | **Statut** | `bloqué` |
 | **Dépend de** | DOC-21 |
-| **Débloque** | — |
+| **Débloque** | - |
 
 ## Objectif
 

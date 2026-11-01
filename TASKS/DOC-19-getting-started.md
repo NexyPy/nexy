@@ -1,15 +1,15 @@
-# DOC-19 — Getting Started : prérequis et résultat
+# DOC-19 - Getting Started : prérequis et résultat
 
 | | |
 |---|---|
-| **Phase** | P3 — Entrée |
+| **Phase** | P3 - Entrée |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
-| **Débloque** | — |
+| **Dépend de** | - |
+| **Débloque** | - |
 
 ## Objectif
 
-Que le lecteur sache **ce qu'il installe**, **ce qu'il vient de construire**, et **pourquoi** un fichier `.nexy` devient une route — sans quitter le parcours de démarrage.
+Que le lecteur sache **ce qu'il installe**, **ce qu'il vient de construire**, et **pourquoi** un fichier `.nexy` devient une route - sans quitter le parcours de démarrage.
 
 ## Contexte utile
 

@@ -1,11 +1,11 @@
-# DOC-11 — Routing : deux routeurs, une intégration
+# DOC-11 - Routing : deux routeurs, une intégration
 
 | | |
 |---|---|
-| **Phase** | P3 — Terminologie |
+| **Phase** | P3 - Terminologie |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
-| **Débloque** | — |
+| **Dépend de** | - |
+| **Débloque** | - |
 
 ## Objectif
 
@@ -14,8 +14,8 @@ Mettre fin à l'ambiguïté « Nexy a deux routeurs » vs trois entrées de navi
 ## Contexte utile
 
 - Le brief relève : la nav montre FBR / Modular / Custom Router, la page dit « Nexy has two routers ».
-- F9 : le sélecteur annonce « Custom Router — *Create your own router* » ; la page s'intitule « Custom routing — *Include an existing FastAPI app* ». Ce ne sont pas les mêmes promesses.
-- F12 : `ROUTERS` est asserté à l'identique dans `test_routers.py:36-41` — changer un libellé **casse un test**, à mettre à jour dans le même commit.
+- F9 : le sélecteur annonce « Custom Router - *Create your own router* » ; la page s'intitule « Custom routing - *Include an existing FastAPI app* ». Ce ne sont pas les mêmes promesses.
+- F12 : `ROUTERS` est asserté à l'identique dans `test_routers.py:36-41` - changer un libellé **casse un test**, à mettre à jour dans le même commit.
 
 ## Terminologie cible
 
@@ -28,7 +28,7 @@ Mettre fin à l'ambiguïté « Nexy a deux routeurs » vs trois entrées de navi
 ## Points à couvrir dans la page
 
 1. Les deux routeurs natifs, et pourquoi ils coexistent.
-2. Ce que « coexistence » veut dire concrètement : ordre d'enregistrement, priorité, et ce qui se passe en cas de collision d'URL (aujourd'hui : aucun diagnostic — à documenter comme comportement, pas comme garantie).
+2. Ce que « coexistence » veut dire concrètement : ordre d'enregistrement, priorité, et ce qui se passe en cas de collision d'URL (aujourd'hui : aucun diagnostic - à documenter comme comportement, pas comme garantie).
 3. Le Custom Router comme intégration : ce qu'on garde de Nexy, ce qu'on perd.
 4. Quand changer de routeur, et quand ne pas changer.
 

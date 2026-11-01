@@ -1,10 +1,10 @@
-# DOC-04 — How Nexy Works (réécriture)
+# DOC-04 - How Nexy Works (réécriture)
 
 | | |
 |---|---|
-| **Phase** | P1 — Fondations |
+| **Phase** | P1 - Fondations |
 | **Statut** | `fait` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-05 |
 
 ## Objectif
@@ -38,7 +38,7 @@ Faire de cette page la référence conceptuelle : un fichier devient une route, 
 ## Critère de fin
 
 - [x] Les 7 sections existent, dans cet ordre
-- [x] La section 3 dit explicitement ce qui se passe quand deux routeurs produisent la même URL (au minimum : l'ordre d'enregistrement décide — vérifié dans `router_resolver.py`)
+- [x] La section 3 dit explicitement ce qui se passe quand deux routeurs produisent la même URL (au minimum : l'ordre d'enregistrement décide - vérifié dans `router_resolver.py`)
 - [x] La section 6 contient les deux phrases « Vite ne remplace pas Nexy » et « Nexy ne remplace pas React », avec la raison
 - [x] Aucun mécanisme interne de contributeur (VFS, watcher) hors d'une phrase de renvoi
 - [x] Chaque section tient en moins de 150 mots ou renvoie à sa page dédiée
@@ -48,4 +48,4 @@ Faire de cette page la référence conceptuelle : un fichier devient une route, 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Structure en 7 sections arrêtée. |
-| 2026-10-31 | **Fait.** Page réécrite sur les 7 sections. L'ordre de précédence de la section 3 a été relevé dans le code : endpoint Actions → fichiers statiques → `APIRouter` modulaire → routes fichier triées par spécificité (`path_sort_key`), les ex æquo en ordre alphabétique parce que `RouteDiscovery.scan()` renvoie `sorted(valid)` et que le tri du registrar est stable. L'ancienne page disait seulement « the router finds the file ». Section 2 écrite depuis `cli/commands/dev.py` (`_initialise`, `_Reloader`). `.jsx` n'est pas listé dans le tableau des vues : découvert comme route mais non compilable (F18), donc Chantier 2. Reste à faire : le renvoi vers `docs/architecture.md` de la section 1, qui ne peut pas exister avant DOC-03 — c'est DOC-03 qui l'ajoutera (son critère de fin le prévoit déjà). |
+| 2026-10-31 | **Fait.** Page réécrite sur les 7 sections. L'ordre de précédence de la section 3 a été relevé dans le code : endpoint Actions → fichiers statiques → `APIRouter` modulaire → routes fichier triées par spécificité (`path_sort_key`), les ex æquo en ordre alphabétique parce que `RouteDiscovery.scan()` renvoie `sorted(valid)` et que le tri du registrar est stable. L'ancienne page disait seulement « the router finds the file ». Section 2 écrite depuis `cli/commands/dev.py` (`_initialise`, `_Reloader`). `.jsx` n'est pas listé dans le tableau des vues : découvert comme route mais non compilable (F18), donc Chantier 2. Reste à faire : le renvoi vers `docs/architecture.md` de la section 1, qui ne peut pas exister avant DOC-03 - c'est DOC-03 qui l'ajoutera (son critère de fin le prévoit déjà). |

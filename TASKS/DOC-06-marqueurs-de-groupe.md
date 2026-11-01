@@ -1,10 +1,10 @@
-# DOC-06 — Marqueurs de groupe dans la navigation
+# DOC-06 - Marqueurs de groupe dans la navigation
 
 | | |
 |---|---|
-| **Phase** | P2 — Navigation |
+| **Phase** | P2 - Navigation |
 | **Statut** | `fait` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-07, DOC-08, DOC-09 |
 
 ## Objectif
@@ -29,7 +29,7 @@ Remplacer la déduction du routeur par le chemin (F3) par une **déclaration exp
 
 Sans marqueur → déduction par le chemin, puis `core` (toujours visible). Le marqueur est retiré du titre affiché **et du titre rendu** : sans cela, la page d'accueil afficherait `Routing {fbr}` et son ancre serait `routing-fbr`.
 
-Les valeurs acceptées sont `SCOPES = ("core", "fbr", "modular", "custom", "advanced")`. Un marqueur inconnu (`{advnaced}`) n'est pas retiré : il reste visible dans le menu et `test_no_group_title_carries_a_marker` échoue. C'est volontaire — un marqueur qui ne s'applique pas en silence est pire qu'une faute visible.
+Les valeurs acceptées sont `SCOPES = ("core", "fbr", "modular", "custom", "advanced")`. Un marqueur inconnu (`{advnaced}`) n'est pas retiré : il reste visible dans le menu et `test_no_group_title_carries_a_marker` échoue. C'est volontaire - un marqueur qui ne s'applique pas en silence est pire qu'une faute visible.
 
 ## Implémentation
 
@@ -56,4 +56,4 @@ Les valeurs acceptées sont `SCOPES = ("core", "fbr", "modular", "custom", "adva
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Syntaxe et points d'implémentation relevés dans le code. |
-| 2026-10-31 | **Fait.** `Group` gagne `scope` ; `router` reste dérivé de `scope`, donc le pager et le filtre de page ne changent pas et les tests de déduction passent tels quels. Deux écarts au plan, tous deux justifiés par le code : (1) la règle CSS unique `[data-router]` ne pouvait pas devenir `[data-scope]` seule, parce que la face du sélecteur (`.area-face`) porte `data-router` et non `data-scope` — d'où deux règles, une par élément ; (2) le marqueur est aussi retiré dans `_identify()`, sinon `docs/README.md`, qui est aussi la page d'accueil, afficherait `Routing {fbr}` avec l'ancre `routing-fbr`. Le regex est limité aux cinq valeurs connues pour ne pas manger un titre qui finirait par `{slug}`. Conséquence à porter en DOC-08 : un groupe `{advanced}` est masqué dans les trois modes routeur, et rien ne le rouvre avant le mode « All documentation » — aucun groupe n'est marqué `{advanced}` aujourd'hui, donc l'arbre reste utilisable. `site.js` continue d'indexer les groupes masqués pour la recherche : c'est DOC-09. 449 tests verts sur `tests/unit/sites` + `tests/unit/nexy/docs`. |
+| 2026-10-31 | **Fait.** `Group` gagne `scope` ; `router` reste dérivé de `scope`, donc le pager et le filtre de page ne changent pas et les tests de déduction passent tels quels. Deux écarts au plan, tous deux justifiés par le code : (1) la règle CSS unique `[data-router]` ne pouvait pas devenir `[data-scope]` seule, parce que la face du sélecteur (`.area-face`) porte `data-router` et non `data-scope` - d'où deux règles, une par élément ; (2) le marqueur est aussi retiré dans `_identify()`, sinon `docs/README.md`, qui est aussi la page d'accueil, afficherait `Routing {fbr}` avec l'ancre `routing-fbr`. Le regex est limité aux cinq valeurs connues pour ne pas manger un titre qui finirait par `{slug}`. Conséquence à porter en DOC-08 : un groupe `{advanced}` est masqué dans les trois modes routeur, et rien ne le rouvre avant le mode « All documentation » - aucun groupe n'est marqué `{advanced}` aujourd'hui, donc l'arbre reste utilisable. `site.js` continue d'indexer les groupes masqués pour la recherche : c'est DOC-09. 449 tests verts sur `tests/unit/sites` + `tests/unit/nexy/docs`. |

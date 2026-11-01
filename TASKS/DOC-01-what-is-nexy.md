@@ -1,10 +1,10 @@
-# DOC-01 — What is Nexy?
+# DOC-01 - What is Nexy?
 
 | | |
 |---|---|
-| **Phase** | P1 — Fondations |
+| **Phase** | P1 - Fondations |
 | **Statut** | `fait` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-05 |
 
 ## Objectif
@@ -35,11 +35,11 @@ Nexy is a modern Python framework for building fullstack web applications with a
 development experience. Built on FastAPI and Starlette, it keeps Python at the centre while
 letting you add React, Vue, Svelte, Solid or Preact when a page needs them.
 
-- **Python-first** — backend and server-rendered pages in Python.
-- **Flexible architecture** — file-based routing, modular architecture, or an existing FastAPI router.
-- **Frontend freedom** — no frontend framework required; add one when needed.
-- **Unified rendering** — SSR, ISR, CSR and islands, chosen per page.
-- **Developer experience** — integrated tooling and typed server actions.
+- **Python-first** - backend and server-rendered pages in Python.
+- **Flexible architecture** - file-based routing, modular architecture, or an existing FastAPI router.
+- **Frontend freedom** - no frontend framework required; add one when needed.
+- **Unified rendering** - SSR, ISR, CSR and islands, chosen per page.
+- **Developer experience** - integrated tooling and typed server actions.
 
 Start with a single Python file and introduce structure as the project grows.
 ```
@@ -57,4 +57,4 @@ Start with a single Python file and introduce structure as the project grows.
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Brouillon rédigé à partir de la proposition du brief, à valider avant écriture. |
-| 2026-10-31 | **Fait.** Tête réécrite : promesse (une origine au lieu de deux serveurs, deux builds et deux tables de routes), puis cinq points tenus par la doc. Deux corrections au brouillon : (1) « SSR, ISR, CSR and islands, chosen per page » est faux pour CSR, qui est un commutateur de projet (`useCSR`) — le point dit maintenant « decided per page ; client routing is a project switch » (F15, DOC-16) ; (2) « Start with a single Python file » n'est pas ce que fait `nx new`, qui scaffolde `nexyconfig.py` et `src/routes/` — remplacé par « Start with one file under `src/routes/` », ce que `how-nexy-works.md` démontre. La blockquote de `llms.txt` porte la même promesse. Reste une occurrence de « meta-framework » dans `views/nexy/markdown.md:13`, hors périmètre de cette tâche : à traiter avec la terminologie en DOC-24. 438 tests verts. |
+| 2026-10-31 | **Fait.** Tête réécrite : promesse (une origine au lieu de deux serveurs, deux builds et deux tables de routes), puis cinq points tenus par la doc. Deux corrections au brouillon : (1) « SSR, ISR, CSR and islands, chosen per page » est faux pour CSR, qui est un commutateur de projet (`useCSR`) - le point dit maintenant « decided per page ; client routing is a project switch » (F15, DOC-16) ; (2) « Start with a single Python file » n'est pas ce que fait `nx new`, qui scaffolde `nexyconfig.py` et `src/routes/` - remplacé par « Start with one file under `src/routes/` », ce que `how-nexy-works.md` démontre. La blockquote de `llms.txt` porte la même promesse. Reste une occurrence de « meta-framework » dans `views/nexy/markdown.md:13`, hors périmètre de cette tâche : à traiter avec la terminologie en DOC-24. 438 tests verts. |

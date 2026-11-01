@@ -1,8 +1,8 @@
-# DOC-05 — Vérifier la vague 1
+# DOC-05 - Vérifier la vague 1
 
 | | |
 |---|---|
-| **Phase** | P1 — Fondations |
+| **Phase** | P1 - Fondations |
 | **Statut** | `fait` |
 | **Dépend de** | DOC-01, DOC-02, DOC-03, DOC-04 |
 | **Débloque** | P2 |
@@ -18,7 +18,7 @@ S'assurer que les quatre pages de fondation forment un ensemble cohérent **avan
 | Commande | Résultat (2026-10-31) |
 |---|---|
 | `python -m pytest tests/unit/nexy/docs tests/unit/sites -q` | `438 passed` |
-| `python scripts/verify.py` | `lint`, `format`, `typecheck`, `structure`, `test` : verts — `3225 passed, 13 deselected` |
+| `python scripts/verify.py` | `lint`, `format`, `typecheck`, `structure`, `test` : verts - `3225 passed, 13 deselected` |
 
 ### 2. Cohérence croisée
 
@@ -32,9 +32,9 @@ S'assurer que les quatre pages de fondation forment un ensemble cohérent **avan
 
 ### 3. Index
 
-- [x] Les pages créées par P1 figurent dans les tableaux de `docs/README.md` (F5) — `architecture.md` et `getting-started/core-concepts.md`, les deux seules pages nouvelles ; le brief en annonçait trois, la troisième était la tête du README, qui n'est pas une entrée de nav.
-- [x] Les mêmes pages figurent dans `llms.txt` (F4) — `Core concepts` (ligne 12) et `Architecture` (ligne 15).
-- [x] `llms.txt` ne renvoie plus à `ARCHITECTURE.md` pour l'architecture (DOC-03) — le lecteur a `docs/architecture.md` ligne 15 ; `ARCHITECTURE.md` reste ligne 49, sous « Source », étiqueté « for contributors ».
+- [x] Les pages créées par P1 figurent dans les tableaux de `docs/README.md` (F5) - `architecture.md` et `getting-started/core-concepts.md`, les deux seules pages nouvelles ; le brief en annonçait trois, la troisième était la tête du README, qui n'est pas une entrée de nav.
+- [x] Les mêmes pages figurent dans `llms.txt` (F4) - `Core concepts` (ligne 12) et `Architecture` (ligne 15).
+- [x] `llms.txt` ne renvoie plus à `ARCHITECTURE.md` pour l'architecture (DOC-03) - le lecteur a `docs/architecture.md` ligne 15 ; `ARCHITECTURE.md` reste ligne 49, sous « Source », étiqueté « for contributors ».
 
 ## Critère de fin
 
@@ -47,4 +47,4 @@ S'assurer que les quatre pages de fondation forment un ensemble cohérent **avan
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Sert de porte de sortie à P1. |
-| 2026-10-31 | **Fait.** Les deux commandes sont vertes (`438 passed`, puis `scripts/verify.py` : 3225 tests). Deux points méritent d'être retenus pour la suite. (1) Le contrôle « définitions identiques mot pour mot » a été ramené à « aucune contradiction, une définition par endroit » : le littéral aurait dupliqué DOC-02 dans `views/README.md` et contredit A9. (2) Une seule imprécision de vocabulaire dans tout `docs/` : le `.py` étiqueté « Python endpoint » dans le diagramme de `views/README.md` ; corrigé en « API handler ». Le brief parlait de trois pages nouvelles en P1 ; il y en a deux (`architecture.md`, `core-concepts.md`) — la troisième ligne était la tête du README, qui est la page d'accueil, pas une entrée de nav. P2 peut s'ouvrir. |
+| 2026-10-31 | **Fait.** Les deux commandes sont vertes (`438 passed`, puis `scripts/verify.py` : 3225 tests). Deux points méritent d'être retenus pour la suite. (1) Le contrôle « définitions identiques mot pour mot » a été ramené à « aucune contradiction, une définition par endroit » : le littéral aurait dupliqué DOC-02 dans `views/README.md` et contredit A9. (2) Une seule imprécision de vocabulaire dans tout `docs/` : le `.py` étiqueté « Python endpoint » dans le diagramme de `views/README.md` ; corrigé en « API handler ». Le brief parlait de trois pages nouvelles en P1 ; il y en a deux (`architecture.md`, `core-concepts.md`) - la troisième ligne était la tête du README, qui est la page d'accueil, pas une entrée de nav. P2 peut s'ouvrir. |

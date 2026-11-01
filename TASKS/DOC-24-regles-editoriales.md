@@ -1,17 +1,17 @@
-# DOC-24 — Règles éditoriales (hors `docs/`)
+# DOC-24 - Règles éditoriales (hors `docs/`)
 
 | | |
 |---|---|
-| **Phase** | P6 — Règles |
+| **Phase** | P6 - Règles |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
-| **Débloque** | — |
+| **Dépend de** | - |
+| **Débloque** | - |
 
 ## Objectif
 
 Rendre le contrat de page **opposable** : un contributeur doit pouvoir écrire une page conforme sans lire les 86 autres.
 
-## Contexte utile — où ne pas le mettre
+## Contexte utile - où ne pas le mettre
 
 - `docs/` est interdit : tout `.md` de `docs/` doit figurer dans la navigation, sinon `test_routers.py:70` échoue (F5).
 - Emplacements possibles : `skills/` (lu par les agents, liens validés par `test_links.py`) ou `CONTRIBUTING.md` (entrée racine, liens validés aussi).
@@ -22,7 +22,7 @@ Rendre le contrat de page **opposable** : un contributeur doit pouvoir écrire u
 ### 1. Deux contrats de page (A1)
 
 - **Conceptuelle** : Definition · How it works · Lifecycle · When to use · Configuration · Example · Limitations · Related.
-- **Référence** : tableau strict (nom, type, défaut, description, exemple, contraintes, options liées) — aucun paragraphe narratif.
+- **Référence** : tableau strict (nom, type, défaut, description, exemple, contraintes, options liées) - aucun paragraphe narratif.
 
 ### 2. Trois niveaux de garantie (A2)
 
@@ -47,7 +47,7 @@ Route, page, view, component, layout, handler, endpoint, action, island, mode. C
 
 ### 5. Test de conformité (optionnel mais recommandé)
 
-Un test qui vérifie qu'une page conceptuelle contient les 8 titres, et qu'une page de référence ne contient pas de paragraphe hors tableau. À n'écrire que si le coût est faible — sinon, revue humaine.
+Un test qui vérifie qu'une page conceptuelle contient les 8 titres, et qu'une page de référence ne contient pas de paragraphe hors tableau. À n'écrire que si le coût est faible - sinon, revue humaine.
 
 ## Fichiers
 

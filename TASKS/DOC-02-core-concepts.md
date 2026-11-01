@@ -1,10 +1,10 @@
-# DOC-02 — Core Concepts
+# DOC-02 - Core Concepts
 
 | | |
 |---|---|
-| **Phase** | P1 — Fondations |
+| **Phase** | P1 - Fondations |
 | **Statut** | `fait` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-05 |
 
 ## Objectif
@@ -14,7 +14,7 @@ Donner le modèle mental de Nexy **avant** les API : quatre niveaux de lecture, 
 ## Contexte utile
 
 - Aucune page ne joue ce rôle aujourd'hui : `reference/glossary.md` (580 mots) définit les mots, mais ne les hiérarchise pas.
-- Le brief impose de distinguer **page / vue / composant / route handler / endpoint** — c'est la source de confusion n°1 d'un lecteur qui arrive de Next.js.
+- Le brief impose de distinguer **page / vue / composant / route handler / endpoint** - c'est la source de confusion n°1 d'un lecteur qui arrive de Next.js.
 - Si D3 = séparation : cette page porte le **modèle**, le glossaire porte l'**index alphabétique**. Aucune phrase de définition ne doit être copiée entre les deux (une définition, un endroit).
 
 ## Structure proposée
@@ -26,16 +26,16 @@ Donner le modèle mental de Nexy **avant** les API : quatre niveaux de lecture, 
 Les 4 niveaux : architecture applicative → structure → présentation/rendu → interaction.
 
 ## Application architecture
-File-based routing · Modular router · Custom router integration — une phrase + lien.
+File-based routing · Modular router · Custom router integration - une phrase + lien.
 
 ## Application structure
-Route, page, endpoint, module, service, dependency — une phrase + lien.
+Route, page, endpoint, module, service, dependency - une phrase + lien.
 
 ## Presentation and rendering
-View, component, layout, SSR/ISR/CSR/islands — une phrase + lien.
+View, component, layout, SSR/ISR/CSR/islands - une phrase + lien.
 
 ## Application interaction
-Action, form, navigation, data fetching — une phrase + lien.
+Action, form, navigation, data fetching - une phrase + lien.
 
 ## What Nexy does not do
 Authz, database, i18n : à la charge de l'application (A2).

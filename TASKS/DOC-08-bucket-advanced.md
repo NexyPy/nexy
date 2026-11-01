@@ -1,10 +1,10 @@
-# DOC-08 — Bucket Advanced + « All documentation »
+# DOC-08 - Bucket Advanced + « All documentation »
 
 | | |
 |---|---|
-| **Phase** | P2 — Navigation |
+| **Phase** | P2 - Navigation |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-09 |
 
 ## Objectif

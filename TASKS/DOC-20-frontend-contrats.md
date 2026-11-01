@@ -1,10 +1,10 @@
-# DOC-20 — Quatre contrats frontend partagés
+# DOC-20 - Quatre contrats frontend partagés
 
 | | |
 |---|---|
-| **Phase** | P4 — Frontend |
+| **Phase** | P4 - Frontend |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-21, DOC-22 |
 
 ## Objectif

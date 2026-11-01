@@ -1,10 +1,10 @@
-# DOC-03 — Architecture Overview
+# DOC-03 - Architecture Overview
 
 | | |
 |---|---|
-| **Phase** | P1 — Fondations |
+| **Phase** | P1 - Fondations |
 | **Statut** | `fait` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-05 |
 
 ## Objectif
@@ -25,11 +25,11 @@ Browser → Nexy Server → Middleware → Dispatcher → FBR | Modular | Custom
 
 ## Structure proposée
 
-1. **The layers** — le diagramme + un tableau couche / responsabilité / ne fait pas.
-2. **Who builds what** — Nexy (routage, rendu serveur, Actions, compilation `.nexy`), Vite (client, HMR, bundles), le framework frontend (composants, réactivité), l'application (données, authz).
-3. **Where a request is decided** — renvoi vers DOC-04 (How Nexy Works) plutôt que duplication.
-4. **Dev vs production** — deux colonnes, pas deux pages.
-5. **Boundaries** — ce que Nexy ne fait pas (authz, ORM, i18n, file d'attente) et où brancher le reste.
+1. **The layers** - le diagramme + un tableau couche / responsabilité / ne fait pas.
+2. **Who builds what** - Nexy (routage, rendu serveur, Actions, compilation `.nexy`), Vite (client, HMR, bundles), le framework frontend (composants, réactivité), l'application (données, authz).
+3. **Where a request is decided** - renvoi vers DOC-04 (How Nexy Works) plutôt que duplication.
+4. **Dev vs production** - deux colonnes, pas deux pages.
+5. **Boundaries** - ce que Nexy ne fait pas (authz, ORM, i18n, file d'attente) et où brancher le reste.
 
 ## Fichiers
 
@@ -43,7 +43,7 @@ Browser → Nexy Server → Middleware → Dispatcher → FBR | Modular | Custom
 ## Critère de fin
 
 - [x] Chaque couche du diagramme a une ligne de tableau avec « ne fait pas »
-- [x] La page ne décrit aucun mécanisme interne (VFS, importlib, watcher) — c'est le rôle de `ARCHITECTURE.md`
+- [x] La page ne décrit aucun mécanisme interne (VFS, importlib, watcher) - c'est le rôle de `ARCHITECTURE.md`
 - [x] Une seule source de vérité par couche ; aucun diagramme dupliqué avec `ARCHITECTURE.md`
 - [x] `docs/getting-started/how-nexy-works.md` renvoie ici au lieu de re-décrire l'architecture
 

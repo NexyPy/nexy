@@ -1,8 +1,8 @@
-# DOC-07 — Appliquer les marqueurs aux groupes
+# DOC-07 - Appliquer les marqueurs aux groupes
 
 | | |
 |---|---|
-| **Phase** | P2 — Navigation |
+| **Phase** | P2 - Navigation |
 | **Statut** | `fait` |
 | **Dépend de** | DOC-06 |
 | **Débloque** | DOC-08 |
@@ -11,7 +11,7 @@
 
 Déclarer le périmètre des 21 groupes de `docs/README.md` pour que le sélecteur produise un parcours lisible.
 
-## Contexte utile — à lire avant de promettre trois parcours
+## Contexte utile - à lire avant de promettre trois parcours
 
 Le dépôt n'a **que deux routeurs natifs** et une intégration (F3, DOC-11). Sur 21 groupes, 17 sont communs. Le sélecteur ne peut donc pas produire trois documentations distinctes : son plafond réel est **2 à 3 groupes masqués**. Les vrais gains de charge cognitive viendront de DOC-08 (bucket Advanced) et de DOC-20 (25 → 11 pages frontend), pas de ce filtrage. Cette tâche doit rester honnête là-dessus, y compris dans le texte de la sidebar.
 
@@ -26,7 +26,7 @@ Le dépôt n'a **que deux routeurs natifs** et une intégration (F3, DOC-11). Su
 | Route handlers | `{fbr}` |
 | Modular router | `{modular}` |
 | Custom router integration | `{custom}` |
-| React · Vue · Svelte · Solid · Preact | *(core)* — axe séparé (A3) |
+| React · Vue · Svelte · Solid · Preact | *(core)* - axe séparé (A3) |
 | Nexy views | *(core)* |
 | Rendering | *(core)* |
 | Forms and data | *(core)* |
@@ -43,7 +43,7 @@ Le dépôt n'a **que deux routeurs natifs** et une intégration (F3, DOC-11). Su
 |---|---|
 | `docs/README.md` | Ajouter 4 marqueurs (`{fbr}` ×2, `{modular}`, `{custom}`) ; renommer « Custom router » en « Custom router integration » |
 | `tests/unit/sites/test_routers.py` | Figer les quatre groupes marqués, pour qu'un marqueur perdu se voie |
-| `docs/routing/README.md` | Aligner le vocabulaire (DOC-11) — **hors de cette tâche** |
+| `docs/routing/README.md` | Aligner le vocabulaire (DOC-11) - **hors de cette tâche** |
 
 ## Critère de fin
 
@@ -63,7 +63,7 @@ Groupes masqués, calculés depuis le HTML produit (`data-scope`) :
 | `modular` | Routing, Route handlers, Custom router integration |
 | `custom` | Routing, Route handlers, Modular router |
 
-Deux ou trois groupes masqués par mode, jamais plus : c'est le plafond annoncé dans le contexte, et il est tenu. Les 17 autres groupes sont `core`, donc visibles partout — y compris les cinq groupes frontend, qui restent un axe séparé (A3).
+Deux ou trois groupes masqués par mode, jamais plus : c'est le plafond annoncé dans le contexte, et il est tenu. Les 17 autres groupes sont `core`, donc visibles partout - y compris les cinq groupes frontend, qui restent un axe séparé (A3).
 
 ## Journal
 

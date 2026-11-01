@@ -1,11 +1,11 @@
-# DOC-14 — SSR
+# DOC-14 - SSR
 
 | | |
 |---|---|
-| **Phase** | P3 — Rendu |
+| **Phase** | P3 - Rendu |
 | **Statut** | `fait` |
 | **Dépend de** | DOC-13 |
-| **Débloque** | — |
+| **Débloque** | - |
 
 ## Objectif
 
@@ -13,14 +13,14 @@ Expliquer le mode par défaut avec assez de précision pour qu'un lecteur sache 
 
 ## Squelette imposé (A1)
 
-1. **Definition** — le serveur produit le HTML à chaque requête.
-2. **How it works** — où les données sont lues, où la vue est évaluée.
-3. **Rendering lifecycle** — requête → handler → données → rendu → HTML → navigateur.
-4. **When to use** — contenu personnalisé, données fraîches, SEO.
-5. **Configuration** — le défaut ne se configure pas ; dire comment on en sort.
-6. **Example** — une page `.nexy` minimale.
-7. **Limitations** — coût par requête, pas de cache, dépendance à la latence des données.
-8. **Related** — ISR, CSR, islands.
+1. **Definition** - le serveur produit le HTML à chaque requête.
+2. **How it works** - où les données sont lues, où la vue est évaluée.
+3. **Rendering lifecycle** - requête → handler → données → rendu → HTML → navigateur.
+4. **When to use** - contenu personnalisé, données fraîches, SEO.
+5. **Configuration** - le défaut ne se configure pas ; dire comment on en sort.
+6. **Example** - une page `.nexy` minimale.
+7. **Limitations** - coût par requête, pas de cache, dépendance à la latence des données.
+8. **Related** - ISR, CSR, islands.
 
 ## Contexte utile
 
@@ -46,4 +46,4 @@ Expliquer le mode par défaut avec assez de précision pour qu'un lecteur sache 
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. |
-| 2026-10-31 | **Fait.** Réécrite sur le squelette A1. Deux corrections de fond par rapport à l'ancienne page : (a) une route composant n'est pas « rendue à chaque requête » — en production, sans layout, c'est le HTML du build qui est servi puis hydraté, sinon le composant monte côté navigateur ; (b) le streaming n'est pas conditionnel, toute réponse est un `StreamingResponse`, mais il ne sert que si le composant yield (F17). |
+| 2026-10-31 | **Fait.** Réécrite sur le squelette A1. Deux corrections de fond par rapport à l'ancienne page : (a) une route composant n'est pas « rendue à chaque requête » - en production, sans layout, c'est le HTML du build qui est servi puis hydraté, sinon le composant monte côté navigateur ; (b) le streaming n'est pas conditionnel, toute réponse est un `StreamingResponse`, mais il ne sert que si le composant yield (F17). |

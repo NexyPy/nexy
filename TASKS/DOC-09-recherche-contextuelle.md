@@ -1,11 +1,11 @@
-# DOC-09 — Recherche contextuelle
+# DOC-09 - Recherche contextuelle
 
 | | |
 |---|---|
-| **Phase** | P2 — Navigation |
+| **Phase** | P2 - Navigation |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
-| **Débloque** | — |
+| **Dépend de** | - |
+| **Débloque** | - |
 
 ## Objectif
 
@@ -13,7 +13,7 @@ Faire suivre le mode choisi à la recherche : un lecteur en parcours FBR ne voit
 
 ## Contexte utile
 
-- `search_entry()` (`docs_source.py:685`) produit `{title, section, url, headings, text}` — **aucun champ de périmètre**.
+- `search_entry()` (`docs_source.py:685`) produit `{title, section, url, headings, text}` - **aucun champ de périmètre**.
 - `sites/nexy/src/content.py:170` (`search_entries`) agrège sans filtrer.
 - `tests/unit/sites/test_nexy_site.py:183` vérifie que le nombre d'entrées égale le nombre de `.md` : ajouter un champ ne casse rien, en retirer une entrée casserait.
 - La recherche doit rester **complète par défaut dans le fichier d'index** ; c'est l'affichage qui filtre.

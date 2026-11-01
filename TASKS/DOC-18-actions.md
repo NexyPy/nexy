@@ -1,11 +1,11 @@
-# DOC-18 — Actions : cycle complet
+# DOC-18 - Actions : cycle complet
 
 | | |
 |---|---|
-| **Phase** | P3 — Interaction |
+| **Phase** | P3 - Interaction |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
-| **Débloque** | — |
+| **Dépend de** | - |
+| **Débloque** | - |
 
 ## Objectif
 
@@ -23,12 +23,12 @@ Faire comprendre que les Actions sont un **mécanisme de communication** entre f
 
 ## Questions à traiter
 
-- **Pourquoi une Action plutôt qu'un endpoint classique ?** — pas de duplication endpoint + type TS + client HTTP.
-- **Différence entre un appel direct et `useAction`** — quand utiliser l'un ou l'autre.
+- **Pourquoi une Action plutôt qu'un endpoint classique ?** - pas de duplication endpoint + type TS + client HTTP.
+- **Différence entre un appel direct et `useAction`** - quand utiliser l'un ou l'autre.
 - **Erreurs** : distinguer validation, HTTP, métier, réseau, serveur. Un lecteur doit savoir laquelle remonte et sous quelle forme.
-- **Revalidation** : une Action peut invalider des pages ISR (`revalidate(...)`) — renvoyer à DOC-15.
+- **Revalidation** : une Action peut invalider des pages ISR (`revalidate(...)`) - renvoyer à DOC-15.
 - **Authentification / permissions** : **le chemin généré n'est pas une autorisation**. C'est à l'application de vérifier les droits. À écrire noir sur blanc, en gras, et à classer comme « à la charge du développeur » (A2).
-- **Origine** : Nexy refuse les requêtes d'une autre origine — c'est une protection CSRF de navigateur, pas une authentification.
+- **Origine** : Nexy refuse les requêtes d'une autre origine - c'est une protection CSRF de navigateur, pas une authentification.
 
 ## Fichiers
 

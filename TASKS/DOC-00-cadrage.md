@@ -1,10 +1,10 @@
-# DOC-00 — Cadrage : trancher D1–D4
+# DOC-00 - Cadrage : trancher D1–D4
 
 | | |
 |---|---|
 | **Phase** | P0 |
 | **Statut** | `fait` |
-| **Dépend de** | — |
+| **Dépend de** | - |
 | **Débloque** | DOC-02, DOC-03, DOC-06 → DOC-11, DOC-20 → DOC-22 |
 
 ## Objectif
@@ -13,28 +13,28 @@ Obtenir les quatre décisions qui bloquent 13 tâches. Aucune écriture de conte
 
 ## Les quatre décisions
 
-### D1 — Périmètre
+### D1 - Périmètre
 
 | Option | Conséquence |
 |---|---|
 | **A. `docs/` seul** | On améliore le contenu, mais le sélecteur reste un filtre cosmétique (F3). P2 et P4 sont impossibles. |
 | **B. `docs/` + `sites/` + `tests/unit/sites/`** *(recommandé)* | Le sélecteur devient un vrai parcours ; coût : `docs_source.py`, `build.py`, `Sidebar.nexy`, `SearchDialog.nexy`, `site.js`, `style.css`, 2 fichiers de tests. |
 
-### D2 — Architecture
+### D2 - Architecture
 
 | Option | Conséquence |
 |---|---|
 | **A. Nouvelle page `docs/architecture.md`** *(recommandé)* | Lecteurs et contributeurs ont chacun leur page ; deux renvois croisés à maintenir. |
-| **B. Fusion** | Une seule source, mais la page doit alors parler à la fois du modèle conceptuel et du VFS/importlib/watcher — deux publics dans un document. |
+| **B. Fusion** | Une seule source, mais la page doit alors parler à la fois du modèle conceptuel et du VFS/importlib/watcher - deux publics dans un document. |
 
-### D3 — Core Concepts vs Glossary
+### D3 - Core Concepts vs Glossary
 
 | Option | Conséquence |
 |---|---|
 | **A. Séparation** *(recommandé)* | `core-concepts.md` = modèle mental à 4 niveaux + liens ; `glossary.md` = index A→Z d'une ligne. Risque : deux endroits où une définition peut diverger. |
 | **B. Fusion** | Zéro divergence, mais une page qui sert à la fois d'introduction et de dictionnaire. |
 
-### D4 — Consolidation frontend
+### D4 - Consolidation frontend
 
 | Option | Conséquence |
 |---|---|

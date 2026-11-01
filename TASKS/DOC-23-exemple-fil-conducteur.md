@@ -1,17 +1,17 @@
-# DOC-23 — Exemple fil conducteur exécuté
+# DOC-23 - Exemple fil conducteur exécuté
 
 | | |
 |---|---|
-| **Phase** | P5 — Exemple |
+| **Phase** | P5 - Exemple |
 | **Statut** | `prêt` |
 | **Dépend de** | DOC-18 (Actions) idéalement |
-| **Débloque** | — |
+| **Débloque** | - |
 
 ## Objectif
 
-Remplacer les exemples isolés par **une seule application** suivie de bout en bout, dont le code est exécuté par la CI — pas illustré.
+Remplacer les exemples isolés par **une seule application** suivie de bout en bout, dont le code est exécuté par la CI - pas illustré.
 
-## Contexte utile — l'atout du dépôt
+## Contexte utile - l'atout du dépôt
 
 `docs/guides/recipes.md` contient des blocs ```` ```py filename="…" ```` que `test_recipes.py` (F6) scaffolde dans un vrai projet, construit, puis interroge via `TestClient` : login, CRUD, upload, codes d'erreur. C'est exactement le mécanisme à réutiliser : la page devient une **preuve**, pas un tutoriel.
 

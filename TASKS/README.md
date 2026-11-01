@@ -1,4 +1,4 @@
-# TASKS — Chantier 1 : Documentation Nexy
+# TASKS - Chantier 1 : Documentation Nexy
 
 Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentation publiée** : rien ici n'entre dans `docs/`, la navigation, `llms.txt` ou le site. Aucun test ne le lit (vérifié : `test_links.py` ne scanne que les entrées racine + `docs/` + `skills/`).
 
@@ -8,37 +8,37 @@ Suivi de projet et mémoire de travail. **Ce dossier n'est pas de la documentati
 2. **Un statut, une vérité** : `prêt` · `bloqué` · `en cours` · `fait`. Mis à jour dans le fichier *et* dans le tableau ci-dessous.
 3. **Chaque session ajoute une ligne au journal** de la tâche concernée : date, ce qui a été fait, ce qui reste.
 4. **Une tâche bloquée nomme sa décision** (`D1`–`D4`, §Décisions). On ne commence pas une tâche bloquée.
-5. **Aucune tâche ne touche `nexy/`** — c'est le Chantier 2.
+5. **Aucune tâche ne touche `nexy/`** - c'est le Chantier 2.
 
 ## Index
 
 | ID | Tâche | Phase | Statut | Dépend de |
 |---|---|---|---|---|
-| [DOC-00](DOC-00-cadrage.md) | Cadrage : trancher D1–D4 | P0 | `fait` | — |
-| [DOC-01](DOC-01-what-is-nexy.md) | What is Nexy? (tête du README) | P1 | `fait` | — |
-| [DOC-02](DOC-02-core-concepts.md) | Core Concepts | P1 | `fait` | — |
-| [DOC-03](DOC-03-architecture-overview.md) | Architecture Overview | P1 | `fait` | — |
-| [DOC-04](DOC-04-how-nexy-works.md) | How Nexy Works (réécriture) | P1 | `fait` | — |
+| [DOC-00](DOC-00-cadrage.md) | Cadrage : trancher D1–D4 | P0 | `fait` | - |
+| [DOC-01](DOC-01-what-is-nexy.md) | What is Nexy? (tête du README) | P1 | `fait` | - |
+| [DOC-02](DOC-02-core-concepts.md) | Core Concepts | P1 | `fait` | - |
+| [DOC-03](DOC-03-architecture-overview.md) | Architecture Overview | P1 | `fait` | - |
+| [DOC-04](DOC-04-how-nexy-works.md) | How Nexy Works (réécriture) | P1 | `fait` | - |
 | [DOC-05](DOC-05-verifier-vague-1.md) | Vérifier la vague 1 | P1 | `fait` | DOC-01→04 |
-| [DOC-06](DOC-06-marqueurs-de-groupe.md) | Marqueurs de groupe dans la nav | P2 | `fait` | — |
+| [DOC-06](DOC-06-marqueurs-de-groupe.md) | Marqueurs de groupe dans la nav | P2 | `fait` | - |
 | [DOC-07](DOC-07-appliquer-les-marqueurs.md) | Appliquer les marqueurs aux groupes | P2 | `fait` | DOC-06 |
-| [DOC-08](DOC-08-bucket-advanced.md) | Bucket Advanced + « All documentation » | P2 | `prêt` | — |
-| [DOC-09](DOC-09-recherche-contextuelle.md) | Recherche contextuelle | P2 | `prêt` | — |
-| [DOC-10](DOC-10-sync-llms-txt.md) | Synchroniser `llms.txt` | P2 | `prêt` | — |
-| [DOC-11](DOC-11-routing-terminologie.md) | Routing : deux routeurs, une intégration | P3 | `prêt` | — |
-| [DOC-12](DOC-12-views-definitions.md) | Views : page / vue / composant / handler | P3 | `prêt` | — |
-| [DOC-13](DOC-13-rendering-overview.md) | Rendering : matrice de comparaison | P3 | `fait` | — |
+| [DOC-08](DOC-08-bucket-advanced.md) | Bucket Advanced + « All documentation » | P2 | `prêt` | - |
+| [DOC-09](DOC-09-recherche-contextuelle.md) | Recherche contextuelle | P2 | `prêt` | - |
+| [DOC-10](DOC-10-sync-llms-txt.md) | Synchroniser `llms.txt` | P2 | `prêt` | - |
+| [DOC-11](DOC-11-routing-terminologie.md) | Routing : deux routeurs, une intégration | P3 | `prêt` | - |
+| [DOC-12](DOC-12-views-definitions.md) | Views : page / vue / composant / handler | P3 | `prêt` | - |
+| [DOC-13](DOC-13-rendering-overview.md) | Rendering : matrice de comparaison | P3 | `fait` | - |
 | [DOC-14](DOC-14-ssr.md) | SSR | P3 | `fait` | DOC-13 |
 | [DOC-15](DOC-15-isr.md) | ISR | P3 | `fait` | DOC-13 |
 | [DOC-16](DOC-16-csr.md) | CSR | P3 | `fait` | DOC-13 |
 | [DOC-17](DOC-17-islands.md) | Islands | P3 | `fait` | DOC-13 |
-| [DOC-18](DOC-18-actions.md) | Actions : cycle complet | P3 | `prêt` | — |
-| [DOC-19](DOC-19-getting-started.md) | Getting Started : prérequis et résultat | P3 | `prêt` | — |
-| [DOC-20](DOC-20-frontend-contrats.md) | 4 contrats frontend partagés | P4 | `prêt` | — |
+| [DOC-18](DOC-18-actions.md) | Actions : cycle complet | P3 | `prêt` | - |
+| [DOC-19](DOC-19-getting-started.md) | Getting Started : prérequis et résultat | P3 | `prêt` | - |
+| [DOC-20](DOC-20-frontend-contrats.md) | 4 contrats frontend partagés | P4 | `prêt` | - |
 | [DOC-21](DOC-21-frontend-differences.md) | 1 page « differences » par framework | P4 | `bloqué` | DOC-20 |
 | [DOC-22](DOC-22-redirections.md) | Redirections des anciennes URL | P4 | `bloqué` | DOC-20 |
-| [DOC-23](DOC-23-exemple-fil-conducteur.md) | Exemple fil conducteur exécuté | P5 | `prêt` | — |
-| [DOC-24](DOC-24-regles-editoriales.md) | Règles éditoriales (hors `docs/`) | P6 | `prêt` | — |
+| [DOC-23](DOC-23-exemple-fil-conducteur.md) | Exemple fil conducteur exécuté | P5 | `prêt` | - |
+| [DOC-24](DOC-24-regles-editoriales.md) | Règles éditoriales (hors `docs/`) | P6 | `prêt` | - |
 
 ## Phases
 

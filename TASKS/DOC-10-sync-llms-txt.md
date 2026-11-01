@@ -1,11 +1,11 @@
-# DOC-10 — Synchroniser `llms.txt`
+# DOC-10 - Synchroniser `llms.txt`
 
 | | |
 |---|---|
-| **Phase** | P2 — Navigation |
+| **Phase** | P2 - Navigation |
 | **Statut** | `prêt` |
-| **Dépend de** | — |
-| **Débloque** | — |
+| **Dépend de** | - |
+| **Débloque** | - |
 
 ## Objectif
 

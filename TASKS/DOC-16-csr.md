@@ -1,11 +1,11 @@
-# DOC-16 — CSR
+# DOC-16 - CSR
 
 | | |
 |---|---|
-| **Phase** | P3 — Rendu |
+| **Phase** | P3 - Rendu |
 | **Statut** | `fait` |
 | **Dépend de** | DOC-13 |
-| **Débloque** | — |
+| **Débloque** | - |
 
 ## Objectif
 
@@ -47,4 +47,4 @@ laisser croire qu'il se choisit page par page.
 | Date | Note |
 |---|---|
 | 2026-10-31 | Tâche créée. Risque de duplication avec `routing/fbr/modes.md` identifié. |
-| 2026-10-31 | **Fait.** La prémisse du brief (« CSR se choisit page par page ») contredisait `modes.md` et `Config.useCSR` : corrigée ici et dans la page. Ajout de `getStaticParams()` — API réelle, jamais documentée (F14) — comme seule façon d'obtenir un document par valeur sur une route dynamique. `modes.md` relu : aucune contradiction, il garde le tableau des fichiers rejetés. |
+| 2026-10-31 | **Fait.** La prémisse du brief (« CSR se choisit page par page ») contredisait `modes.md` et `Config.useCSR` : corrigée ici et dans la page. Ajout de `getStaticParams()` - API réelle, jamais documentée (F14) - comme seule façon d'obtenir un document par valeur sur une route dynamique. `modes.md` relu : aucune contradiction, il garde le tableau des fichiers rejetés. |

@@ -1,8 +1,8 @@
-# DOC-21 — Une page « differences » par framework
+# DOC-21 - Une page « differences » par framework
 
 | | |
 |---|---|
-| **Phase** | P4 — Frontend |
+| **Phase** | P4 - Frontend |
 | **Statut** | `bloqué` |
 | **Dépend de** | DOC-20 |
 | **Débloque** | DOC-22 |
