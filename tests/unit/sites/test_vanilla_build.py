@@ -77,7 +77,7 @@ class TestPageContent:
         assert re.search(r'<a [^>]*aria-current="page"[^>]*>Actions</a>', html)
 
     def test_the_outline_lists_the_headings(self, html):
-        assert 'href="#define-an-action"' in html
+        assert 'href="#the-action-cycle"' in html
 
     def test_the_pager_names_the_neighbours(self, html):
         assert 'class="pager"' in html

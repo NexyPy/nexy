@@ -61,7 +61,7 @@ def test_the_menu_marks_the_current_page(answers):
 
 def test_a_heading_has_its_anchor_and_a_link_in_the_outline(answers):
     body = answers[ACTIONS][2]
-    assert 'id="define-an-action"' in body and 'href="#define-an-action"' in body
+    assert 'id="the-action-cycle"' in body and 'href="#the-action-cycle"' in body
 
 
 def test_links_between_pages_point_to_the_site(answers):
