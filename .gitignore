@@ -69,6 +69,7 @@ __pycache__
 /packages/docs/sitemap.xml
 /packages/docs/robots.txt
 apps/
+TASK/
 .qoder/
 # Python
 .venv
