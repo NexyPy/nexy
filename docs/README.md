@@ -90,6 +90,15 @@ Controllers and modules.
 | [Islands](views/frontend/islands.md) | Hydration, serialisable props and triggers |
 | [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
 
+### Framework differences
+| Page | What changes |
+|---|---|
+| [React differences](views/react/differences.md) | Components, hooks and `layout.tsx` |
+| [Vue differences](views/vue/differences.md) | SFCs, refs and `layout.vue` |
+| [Svelte differences](views/svelte/differences.md) | Runes, stores and `layout.svelte` |
+| [Solid differences](views/solid/differences.md) | Signals, accessors and `layout.tsx` |
+| [Preact differences](views/preact/differences.md) | Hooks, signals and `layout.tsx` |
+
 ## React
 
 ### React
