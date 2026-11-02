@@ -37,7 +37,7 @@ class TestRouterOfAPage:
         assert source.ROUTERS == (
             ("fbr", "FBR", "File-based routing"),
             ("modular", "Modular", "Controllers and modules"),
-            ("custom", "Custom Router", "Create your own router"),
+            ("custom", "Custom Integration", "Include an existing FastAPI router"),
         )
 
     def test_every_page_of_a_router_folder_knows_its_router(self):
@@ -60,7 +60,7 @@ class TestTracks:
             ("routing/modular/dependency-injection", "Routing"),
             ("guides/testing", "Guides"),
             ("reference/cli", "Reference"),
-            ("views/react", "React"),
+            ("views/react/differences", "Frontend"),
             ("", "Getting Started"),
         ],
     )
@@ -91,6 +91,17 @@ class TestGroupRouter:
         group = source.group_of(source.read_tracks(DOCS), "guides/actions")
         assert group.router is None
 
+    def test_only_the_routing_groups_declare_a_scope(self):
+        """Five groups declare a scope; the rest are read by all."""
+        groups = [group for track in source.read_tracks(DOCS) for group in track.groups]
+        assert {group.title: group.scope for group in groups if group.scope != "core"} == {
+            "Routing": "fbr",
+            "Route handlers": "fbr",
+            "Modular router": "modular",
+            "Custom router integration": "custom",
+            "Advanced": "advanced",
+        }
+
     def test_the_pager_never_crosses_into_another_router(self):
         tracks = source.read_tracks(DOCS)
         for track in tracks:
@@ -118,6 +129,12 @@ class TestVanillaMenu:
     def test_the_routing_groups_carry_their_router(self, out):
         html = self._html(out, "guides/actions")
         assert all(f'data-router="{key}"' in html for key, _name, _blurb in source.ROUTERS)
+
+    def test_every_group_declares_its_scope(self, out):
+        html = self._html(out, "guides/actions")
+        expected = [group.scope for track in source.read_tracks(DOCS) for group in track.groups]
+        found = re.findall(r'class="group" data-section="[^"]+" data-scope="([^"]+)"', html)
+        assert found == expected
 
     def test_the_selector_names_every_router(self, out):
         html = self._html(out, "guides/actions")
@@ -168,7 +185,22 @@ class TestAssets:
     def test_the_routers_not_chosen_are_not_drawn(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert all(
-            f'html[data-router="{key}"] .side [data-router]:not([data-router="{key}"])' in css
+            f'html[data-router="{key}"] .side .area-face:not([data-router="{key}"])' in css
+            for key, _name, _blurb in source.ROUTERS
+        )
+
+    def test_a_group_of_another_scope_is_not_drawn(self):
+        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
+        assert all(
+            f'html[data-router="{key}"] .side .group[data-scope]:not([data-scope="core"])'
+            f':not([data-scope="{key}"])' in css
+            for key, _name, _blurb in source.ROUTERS
+        )
+
+    def test_the_code_of_another_router_is_not_drawn(self):
+        css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
+        assert all(
+            f'html[data-router="{key}"] .router-variant:not([data-router~="{key}"])' in css
             for key, _name, _blurb in source.ROUTERS
         )
 
@@ -179,3 +211,40 @@ class TestAssets:
     def test_the_folder_holding_the_page_is_marked(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert ':has(a[aria-current="page"])' in css
+
+
+class TestBadgeBudget:
+    """DOC-27: one token `{new}`, at the end of a summary cell, at most six active ones."""
+
+    @staticmethod
+    def _marked() -> list[str]:
+        rows = (DOCS / "README.md").read_text(encoding="utf-8").splitlines()
+        return [row.strip() for row in rows if row.strip().startswith("|") and "{new}" in row]
+
+    def test_at_most_six_pages_carry_the_token(self):
+        assert 0 < len(self._marked()) <= 6
+
+    def test_every_token_sits_at_the_end_of_the_summary_cell(self):
+        wrongly = [row for row in self._marked() if not re.search(r"\{new\} *\|$", row)]
+        assert wrongly == []
+
+    def test_every_marked_row_is_a_page_of_the_menu(self):
+        tracks = source.read_tracks(DOCS)
+        menu = {page.slug for track in tracks for page in source.pages_of(track)}
+        found = [row for row in self._marked() if source._ROW_LINK.search(row) is None]
+        missing = [
+            source.slug_of(link[2])
+            for row in self._marked()
+            if (link := source._ROW_LINK.search(row)) and source.slug_of(link[2]) not in menu
+        ]
+        assert found == [] and missing == []
+
+    def test_the_token_breaks_no_row_of_the_menu(self):
+        """F1 unchanged: a page row stays a link cell and a summary cell, token or not."""
+        rows = (DOCS / "README.md").read_text(encoding="utf-8").splitlines()
+        broken = [
+            row.strip()
+            for row in rows
+            if row.strip().startswith("| [") and len(row.strip().strip("|").split("|")) != 2
+        ]
+        assert broken == []

@@ -113,7 +113,7 @@ The `422` body is FastAPI's standard shape, so clients and generated SDKs keep w
 ```
 
 For a form or an action, the client receives an `ActionError` with `status` and `detail`; a `422`
-also fills `error.fields` with one message per field. See [Actions](../guides/actions.md#errors).
+also fills `error.fields` with one message per field. See [Actions](../guides/actions.md#errors-and-failures).
 
 > [!TIP]
 > Validate in the signature when the rule is about one field (`limit: int = 10`). Validate in the

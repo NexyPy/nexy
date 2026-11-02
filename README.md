@@ -492,7 +492,7 @@ are written from the code.
 | every command and flag | [CLI](docs/reference/cli.md) |
 | to test a project | [Testing](docs/guides/testing.md) |
 | build output and Docker | [Deploy](docs/deployment/README.md) |
-| rules for an AI agent | [Agents](docs/reference/agents.md) |
+| rules for an AI agent | [AI agents](docs/guides/ai-agents.md) |
 
 [llms.txt](llms.txt) is the same map in one file, for tools that read plain text.
 

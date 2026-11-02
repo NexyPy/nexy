@@ -69,7 +69,10 @@ __pycache__
 /packages/docs/sitemap.xml
 /packages/docs/robots.txt
 apps/
+TASKS/
 .qoder/
+memoire/
+dd
 # Python
 .venv
 **/.venv/**
@@ -79,7 +82,7 @@ apps/
 # Nexy
 __nexy__/
 **/__nexy__/**
-tasks/
+
 session.ai
 ai
 

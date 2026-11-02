@@ -1,7 +1,20 @@
 (() => {
   const root = document.body.dataset.root
+  const html = document.documentElement
   const $ = (selector, scope = document) => scope.querySelector(selector)
   const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)]
+
+  // --- Language: the site around the English pages follows the choice of this browser -----------
+  // The payload arrives once (assets/i18n.json or /i18n); the first code block already asks its
+  // label before then, hence the English fallback of every lookup.
+  const LANG_KEY = 'nexy-docs-lang'
+  const RTL = ['ar', 'ur']
+  const state = { data: null, lang: html.dataset.lang || 'en' }
+  const tr = (key) => {
+    const ui = state.data && state.data.ui
+    if (!ui) return ''
+    return (ui[state.lang] && ui[state.lang][key]) || ui.en[key] || ''
+  }
 
   // --- Theme: the choice is kept in this browser -------------------------------------------------
   // The toggle is optional: a page without one still runs the rest of the script.
@@ -33,7 +46,7 @@
     try {
       const text = await (await fetch(copyPage.dataset.markdown)).text()
       await navigator.clipboard.writeText(text)
-      done(copyPage, 'Copied', label)
+      done(copyPage, tr('copied') || 'Copied', label)
     } catch {
       copyPage.textContent = 'Copy failed'
       setTimeout(() => { copyPage.textContent = label }, 1800)
@@ -88,7 +101,6 @@
   if (current) current.scrollIntoView({ block: 'center' })
 
   // --- The menu folds away on a wide screen, and the choice is kept ----------------------------
-  const html = document.documentElement
   const fold = (closed) => {
     if (closed) html.dataset.side = 'closed'
     else delete html.dataset.side
@@ -124,6 +136,40 @@
     area.open = false
   }))
 
+  // --- Progress: the pages this browser has read, and the page it offers next --------------------
+  // The list was read before the menu painted (the inline script dims the links with it). Here the
+  // page just shown joins it, and the hidden button of the menu points at the first page missing
+  // from it - or, when nothing is left to read, back at the last page of the list.
+  const slugOf = (path) => {
+    const parts = path.split('/').filter(Boolean)
+    const at = parts.indexOf('docs')
+    return at < 0 ? '' : parts.slice(at + 1).join('/')
+  }
+  const read = (html.dataset.seen || '').split(',').filter(Boolean)
+  const here = slugOf(location.pathname)
+  if (here && !read.includes(here)) {
+    read.push(here)
+    html.dataset.seen = read.join(',')
+    try { localStorage.setItem('nexy-docs-seen', read.join(',')) } catch {}
+  }
+  const pages = $$('.side .group a')
+  const offer =
+    pages.find((a) => !read.includes(slugOf(a.pathname))) ||
+    pages.find((a) => slugOf(a.pathname) === read.at(-1))
+  const next = $('.side .continue')
+  if (next && offer) {
+    next.href = offer.getAttribute('href')
+    next.dataset.label = offer.textContent
+    next.textContent = `Continue: ${offer.textContent}`
+    next.hidden = false
+  }
+
+  const allDocs = $('.all-docs')
+  if (allDocs) allDocs.addEventListener('click', (e) => {
+    e.preventDefault()
+    html.dataset.mode = html.dataset.mode === 'all' ? '' : 'all'
+  })
+
   // --- The filter of the menu: a word keeps the pages that match ---------------------------------
   // The groups come back as they were served when the word is cleared.
   const filter = $('.side-filter input')
@@ -139,7 +185,8 @@
       groups.forEach((group, index) => {
         let hits = 0
         $$('li', group).forEach((item) => {
-          const keep = !word || item.textContent.toLowerCase().includes(word)
+          // A promise under the label is read, not matched: the filter knows page labels only.
+          const keep = !word || item.querySelector('a').textContent.toLowerCase().includes(word)
           item.hidden = !keep
           if (keep) hits += 1
         })
@@ -175,10 +222,10 @@
       bar.textContent = label(block)
       figure.prepend(bar)
     }
-    const button = Object.assign(document.createElement('button'), { className: 'copy', type: 'button', textContent: 'Copy' })
+    const button = Object.assign(document.createElement('button'), { className: 'copy', type: 'button', textContent: tr('copy') || 'Copy' })
     button.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(block.innerText) } catch { return }
-      done(button, 'Copied', 'Copy')
+      done(button, tr('copied') || 'Copied', tr('copy') || 'Copy')
     })
     figure.querySelector('figcaption').append(button)
   })
@@ -262,12 +309,28 @@
       a.append(e.title, Object.assign(document.createElement('small'), { textContent: e.section }), found)
       li.append(a)
       return li
-    }) : [Object.assign(document.createElement('li'), { className: 'none', textContent: input.value ? 'No page matches.' : 'Type to search.' })]))
+    }) : [Object.assign(document.createElement('li'), { className: 'none', textContent: input.value ? tr('no_match') : tr('type_to_search') })]))
   }
   const search = () => {
     const words = input.value.toLowerCase().split(/\s+/).filter(Boolean)
+    const router = html.dataset.router
+    const mode = html.dataset.mode
     shownResults = words.length
-      ? index.map((e) => [score(e, words), e]).filter(([s]) => s).sort((a, b) => b[0] - a[0]).slice(0, 8).map(([, e]) => e)
+      ? index
+          .filter((e) => {
+            if (mode === 'all') return true
+            // Show if page is core or matches the active router
+            // Also show if it's a shared page (no router) but not specifically advanced
+            const isCore = e.scope === 'core'
+            const matchesRouter = e.router === router
+            const isAdvanced = e.scope === 'advanced'
+            return (isCore || matchesRouter) && !isAdvanced
+          })
+          .map((e) => [score(e, words), e])
+          .filter(([s]) => s)
+          .sort((a, b) => b[0] - a[0])
+          .slice(0, 8)
+          .map(([, e]) => e)
       : []
     active = 0
     render()
@@ -299,4 +362,99 @@
     else if (e.key === '/' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); showSearch() }
     else if (e.key === 'Escape' && document.body.classList.contains('open')) setMenu(false, true)
   })
+
+  // --- Language: the menu, the buttons and the home follow the choice; the pages stay English ----
+  // The English words of a node are kept the first time it changes, so picking English gives the
+  // served page back exactly, without another request.
+  const english = new WeakMap()
+  const remember = (element) => {
+    if (!english.has(element)) english.set(element, { html: element.innerHTML })
+    return english.get(element)
+  }
+  const show = (element, value) => {
+    const kept = remember(element)
+    if (state.lang === 'en') element.innerHTML = kept.html
+    else element.textContent = value
+  }
+  const translateHome = () => {
+    const copy = state.data && state.data.home
+    if (!copy || !document.body.dataset.home) return
+    const hero = copy.hero[state.lang] || copy.hero.en
+    const title = $('.doc.home h1')
+    if (title) show(title, hero.title)
+    const lead = $('.doc.home h1 + p')
+    if (lead) show(lead, hero.text.replace(/`/g, ''))
+    $$('.doc.home [data-group]').forEach((heading) => {
+      const value = (copy.groups[state.lang] || copy.groups.en)[heading.dataset.group]
+      if (value) show(heading, value)
+    })
+    $$('.doc.home [data-card]').forEach((card) => {
+      const item = (copy.cards[state.lang] || copy.cards.en)[card.dataset.card]
+      const name = $('.home-card-title', card)
+      const text = $('.home-card-text', card)
+      if (!item || !name || !text) return
+      show(name, item.title)
+      show(text, item.text)
+    })
+  }
+  const translateDynamic = () => {
+    const cont = $('.side .continue')
+    if (cont && cont.dataset.label) cont.textContent = `${tr('continue_prefix') || 'Continue: '}${cont.dataset.label}`
+    $$('.copy').forEach((button) => {
+      if (!button.classList.contains('done')) button.textContent = tr('copy') || 'Copy'
+    })
+    const page = $('.copy-page')
+    if (page && !page.classList.contains('done')) page.textContent = tr('copy_page') || 'Copy page as Markdown'
+  }
+  const applyLanguage = () => {
+    const lang = state.lang
+    html.lang = lang
+    html.dir = RTL.includes(lang) ? 'rtl' : 'ltr'
+    html.dataset.lang = lang
+    $$('[data-i18n]').forEach((element) => {
+      const value = tr(element.dataset.i18n)
+      if (value) element.textContent = value
+    })
+    $$('[data-i18n-aria]').forEach((element) => {
+      const value = tr(element.dataset.i18nAria)
+      if (value) element.setAttribute('aria-label', value)
+    })
+    $$('[data-i18n-placeholder]').forEach((element) => {
+      const value = tr(element.dataset.i18nPlaceholder)
+      if (value) element.setAttribute('placeholder', value)
+    })
+    const code = $('[data-lang-code]')
+    if (code) code.textContent = lang.toUpperCase()
+    $$('.lang-select [data-lang]').forEach((link) => {
+      if (link.dataset.lang === lang) link.setAttribute('aria-current', 'true')
+      else link.removeAttribute('aria-current')
+    })
+    const note = $('[data-lang-note]')
+    if (note) {
+      note.textContent = tr('fallback_note')
+      note.hidden = lang === 'en' || !tr('fallback_note')
+    }
+    translateHome()
+    translateDynamic()
+  }
+  const language = $('.lang-select')
+  if (language) {
+    addEventListener('click', (e) => { if (!language.contains(e.target)) language.open = false })
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') language.open = false })
+    $$('[data-lang]', language).forEach((link) => link.addEventListener('click', (e) => {
+      e.preventDefault()
+      state.lang = link.dataset.lang
+      try { localStorage.setItem(LANG_KEY, state.lang) } catch {}
+      language.open = false
+      applyLanguage()
+    }))
+  }
+  const loadLanguage = async () => {
+    const url = document.body.dataset.i18n
+    if (url) {
+      try { state.data = await (await fetch(url)).json() } catch { state.data = null }
+    }
+    applyLanguage()
+  }
+  loadLanguage()
 })()

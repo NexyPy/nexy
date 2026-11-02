@@ -14,8 +14,9 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from sites.shared import docs_source as source  # noqa: E402
-from sites.shared import seo  # noqa: E402
+from sites.shared import home, i18n, seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
+from sites.shared.version import VERSION  # noqa: E402
 
 DOCS = REPO / "docs"
 ASSETS = REPO / "sites" / "vanilla" / "assets"
@@ -28,12 +29,16 @@ __all__ = [
     "ICONS",
     "MARK",
     "SITE_URL",
+    "VERSION",
     "document",
     "head_of",
+    "i18n_payload",
+    "language_select",
     "link",
     "markdown_link",
     "markdown_source",
     "menu",
+    "redirect_of",
     "router_of",
     "router_select",
     "search_entries",
@@ -46,9 +51,25 @@ def link(slug: str) -> str:
     return f"/docs/{slug}" if slug else "/docs"
 
 
+def language_select() -> str:
+    """The compact language picker of the top bar, in the language of the reader."""
+    return i18n.select_html()
+
+
+def i18n_payload() -> dict[str, object]:
+    """Every word the browser needs to translate the site around the pages."""
+    return i18n.payload()
+
+
 def slug_of(pathname: str) -> str:
     """The page a URL path shows: `/docs/guides/actions` is `guides/actions`."""
     return pathname.removeprefix("/docs").strip("/")
+
+
+def redirect_of(slug: str) -> str:
+    """The new address of a moved page, or the empty string when the page was not moved."""
+    target = source.REDIRECTS.get(slug, "")
+    return link(target) if target else ""
 
 
 def _pages() -> list[tuple[source.Page, str]]:
@@ -87,13 +108,18 @@ def title_of(slug: str) -> str:
     return f"{found} - Nexy"
 
 
+def _rendered(page: source.Page) -> source.Rendered:
+    """A page drawn with this site's URLs: the home shows its cards, not the whole menu."""
+    return home.render(DOCS, link) if page.slug == "" else source.render(page.path, DOCS, link)
+
+
 def head_of(slug: str) -> str:
     """What a crawler reads about a page: its summary, its address, its cards, the menu above it."""
     page = next((page for page, _ in _pages() if page.slug == slug), None)
     if page is None:
         return '<meta name="robots" content="noindex">'
     url = seo.canonical(SITE_URL, slug)
-    rendered = source.render(page.path, DOCS, link)
+    rendered = _rendered(page)
     return seo.Head(
         title=page.title,
         description=seo.description(rendered.html),
@@ -110,8 +136,14 @@ def _menu_group(group: source.Group, current: str, opened: source.Group) -> dict
         "count": len(group.pages),
         "open": group is opened,
         "router": group.router or "",
+        "scope": group.scope,
         "pages": [
-            {"href": link(p.slug), "label": p.label, "current": p.slug == current}
+            {
+                "href": link(p.slug),
+                "label": p.label,
+                "badge": p.badge,
+                "current": p.slug == current,
+            }
             for p in group.pages
         ],
     }
@@ -154,7 +186,7 @@ def document(slug: str) -> dict[str, Any]:
     page = source.home(DOCS) if slug == "" else source.find(tracks, slug)
     if page is None:
         raise HTTPException(status_code=404, detail="No such page")
-    rendered = source.render(page.path, DOCS, link)
+    rendered = _rendered(page)
     before, after = source.neighbours(source.track_of(tracks, slug), slug)
     return {
         "page": page,
@@ -167,9 +199,9 @@ def document(slug: str) -> dict[str, Any]:
     }
 
 
-def search_entries() -> list[dict[str, str]]:
-    entries = []
+def search_entries() -> list[dict[str, str | None]]:
+    entries: list[dict[str, str | None]] = []
     for page, section in _pages():
-        rendered = source.render(page.path, DOCS, link)
+        rendered = _rendered(page)
         entries.append(source.search_entry(page, section, rendered, link(page.slug).lstrip("/")))
     return entries

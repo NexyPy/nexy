@@ -1,0 +1,7 @@
+{
+ "provider": "google",
+ "pages": {
+  "architecture.md": "4104c9d3c01afd7e517423037a14a98d1e7e5cabcbd86a841ce581c528b858e1",
+  "deployment/performance.md": "de5ba442b40ab7fa7b5efdb2759bd4ac58537a94cb7535b9e08c32cee62e07d7"
+ }
+}

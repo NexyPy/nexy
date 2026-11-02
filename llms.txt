@@ -1,50 +1,107 @@
 # Nexy
 
-> Fullstack Python meta-framework: FastAPI and Starlette on the server, Vite on the client. A route
-> is a file under `src/routes/`.
+> A Python framework for fullstack web applications: FastAPI and Starlette on the server, Vite on
+> the client, and one origin for both. A route is a file under `src/routes/`.
 
 Nexy is meant to be read without a browser and without a build step. Start with the documentation
 index, follow the page for the task, and trust the source when the two disagree.
 
 ## Documentation
 
-- [Index](docs/README.md): every page, one line each
-- [Getting started](docs/getting-started/quick-start.md): create a project, run it, build it
-- [How Nexy works](docs/getting-started/how-nexy-works.md): who builds what, and one request
-- [Project structure](docs/getting-started/project-structure.md): files, folders, generated output
-- [Routing](docs/routing/README.md): file path to URL, groups, reserved names
-- [Pages](docs/routing/fbr/pages/README.md): dynamic segments, catch-all, layouts, error pages
-- [Hooks](docs/routing/fbr/navigation/hooks.md): request path, query, cookies, session, TOC from a page
-- [Modular routing](docs/routing/modular/README.md): controllers, modules, injection
-- [SSR](docs/rendering/ssr.md): server rendering, the default
-- [CSR](docs/rendering/csr.md): client-side rendering
-- [ISR](docs/rendering/isr.md): `revalidate` and stale-while-revalidate
-- [WebSocket](docs/routing/fbr/realtime/websocket.md): `SOCKET` handlers
-- [Views](docs/views/README.md): which view format to use
-- [.nexy files](docs/views/nexy/README.md): frontmatter, properties, Jinja2, components
-- [Markdown and MDX](docs/views/nexy/markdown.md): `.md` content, `.mdx` components
-- [Components](docs/views/nexy/components.md): `Image`, `Link`, `Audio`, `Video`, `Import`
-- [React](docs/views/react/README.md), [Vue](docs/views/vue/README.md), [Svelte](docs/views/svelte/README.md),
-  [Solid](docs/views/solid/README.md), [Preact](docs/views/preact/README.md)
-- [API](docs/routing/fbr/handlers/README.md): Python handlers, parameters, responses
-- [Actions](docs/guides/actions.md): `@Action` POST endpoints with generated paths
-- [Frontend](docs/guides/frontend.md): Vite, dev server, build, styling
-- [CLI](docs/reference/cli.md): commands and flags
-- [Testing](docs/guides/testing.md): `nx test`, `TestClient`, vitest, CI
-- [Config](docs/reference/config.md): every `nexyconfig.py` field and its default
-- [Python API](docs/reference/python-api.md): every exported name, by module
-- [Glossary](docs/reference/glossary.md): the words these docs use
-- [i18n](docs/guides/i18n.md): internationalization is up to your application
-- [Deploy](docs/deployment/README.md): build output, Docker, reverse proxy
-- [For AI agents](docs/reference/agents.md): invariants and verification commands
-- [Coding agents](docs/guides/ai-agents.md): skills, `AGENTS.md` and `nx skills`
-- [Troubleshooting](docs/guides/troubleshooting.md): first problems and their fix
-- [Recipes](docs/guides/recipes.md): sign in, a JSON API, file upload; the code is tested
-- [Upgrading to 2.2](docs/getting-started/upgrading.md): what changes for an existing project
+- [Index](docs/README.md): every page in the documentation
+
+### Getting started
+
+- [Installation](docs/getting-started/installation.md): Install uv and the Nexy CLI, then create your first project
+- [Quick start](docs/getting-started/quick-start.md): Create a project, run it with live reload, and build it for production
+- [Tutorial](docs/getting-started/tutorial.md): Build a notes page with an endpoint, shared data and a production build
+- [Core concepts](docs/getting-started/core-concepts.md): Get the mental model: route, page, view, component, handler, endpoint
+- [How Nexy works](docs/getting-started/how-nexy-works.md): Follow one request from the URL to the file that answers it
+- [Architecture](docs/architecture.md): Know which layer does what, and what Nexy leaves to your application
+- [Project structure](docs/getting-started/project-structure.md): Know what every folder and file in a project is for
+- [Choose a router](docs/routing/README.md): Pick the file-based, modular or custom router
+- [Choose a view format](docs/views/README.md): Pick `.nexy`, Markdown or a client framework for a page
+- [Coming from another framework](docs/getting-started/coming-from-other-frameworks.md): Translate FastAPI, Next.js and Express habits into Nexy
+
+### Routing
+
+- [File-based routing](docs/routing/fbr/README.md): Turn a file path into a URL
+- [Pages](docs/routing/fbr/pages/README.md): Write a page
+- [Dynamic routes](docs/routing/fbr/pages/dynamic-routes.md): Use `[slug]`, `[...path]` and route groups
+- [Page metadata](docs/routing/fbr/pages/metadata.md): Set the title, description and share image of a page
+- [Layouts](docs/routing/fbr/layouts/README.md): Share a frame between pages
+- [Inheritance](docs/routing/fbr/inheritance.md): Read the resolution order of layouts, dependencies and error pages
+- [Server mode and client mode](docs/routing/fbr/modes.md): `useCSR`, and what each mode allows
+- [Linking and navigating](docs/routing/fbr/navigation/linking-and-navigating.md): Link pages, navigate on the client, prefetch
+- [Hooks](docs/routing/fbr/navigation/hooks.md): Read the path, query, cookies and session
+- [Route handlers](docs/routing/fbr/handlers/README.md): Add a Python endpoint
+- [Validation and errors](docs/routing/fbr/handlers/validation-and-errors.md): Answer `422` and `404`, and raise an `HTTPException`
+- [WebSocket handlers](docs/routing/fbr/realtime/websocket.md): Handle a `SOCKET` connection
+- [Dependencies and guards](docs/routing/fbr/dependencies/README.md): Run `dependencies.py` before a handler, and inherit it
+- [Middleware files](docs/routing/fbr/middleware/README.md): Wrap requests with `middleware.py`, inherited by directory
+- [Error pages](docs/routing/fbr/errors/README.md): Answer with `notfound.nexy`, `errors.nexy` and JSON errors
+- [Modular routing](docs/routing/modular/README.md): Mount controllers and modules
+- [Dependency injection](docs/routing/modular/dependency-injection.md): Define services, their scopes and the container
+- [Guards and metadata](docs/routing/modular/guards-and-metadata.md): Protect and document routes
+- [Custom routing](docs/routing/custom/README.md): Include an existing FastAPI app
+
+### Frontend views
+
+- [Frontend pages](docs/views/frontend/pages.md): One file, one route: props, rendering, metadata
+- [Frontend layouts](docs/views/frontend/layouts.md): The document shell, nesting, and what a layout cannot do
+- [Frontend actions and navigation](docs/views/frontend/actions-and-navigation.md): Call a typed Action, link pages, read the URL
+- [React differences](docs/views/react/differences.md): Setup, pages, layouts, islands, actions
+- [Vue differences](docs/views/vue/differences.md): Setup, pages, layouts, islands, actions
+- [Svelte differences](docs/views/svelte/differences.md): Setup, pages, layouts, islands, actions
+- [Solid differences](docs/views/solid/differences.md): Setup, pages, layouts, islands, actions
+- [Preact differences](docs/views/preact/differences.md): Setup, pages, layouts, islands, actions
+- [.nexy files](docs/views/nexy/README.md): Write a page with Python, Jinja2 and props
+- [Components](docs/views/nexy/components.md): Use `Image`, `Link`, `Audio`, `Video` and `Import`
+- [layout.nexy](docs/views/nexy/layouts.md): Write the server-mode layout
+- [Markdown and MDX](docs/views/nexy/markdown.md): Write content pages
+
+### Rendering
+
+- [Rendering](docs/rendering/README.md): Which rendering mode fits a page
+- [SSR](docs/rendering/ssr.md): Server rendering, the default
+- [ISR](docs/rendering/isr.md): Cache pages with stale-while-revalidate
+- [CSR](docs/rendering/csr.md): Client-side routing
+- [Islands](docs/rendering/islands.md): Hydrate on idle, visible or media query
+
+### Guides and deployment
+
+- [Actions](docs/guides/actions.md): Call a Python function from a form or a typed TypeScript function
+- [Databases](docs/guides/databases.md): Choose an ORM and run migrations
+- [Middleware and security](docs/guides/middleware-and-security.md): Set up CORS, GZip, trusted hosts and sessions
+- [Deploy](docs/deployment/README.md): Build, containerise and serve
+- [Performance](docs/deployment/performance.md): Measure and tune the defaults
+- [Frontend](docs/guides/frontend.md): Set up Vite, styling and the client build
+- [Testing](docs/guides/testing.md): Test with pytest, `TestClient` and vitest
+- [Dev toolbar](docs/guides/devtools.md): Use the toolbar of `nexy dev`, and turn it off
+- [Coding agents](docs/guides/ai-agents.md): Give Claude Code, Codex and OpenCode the rules of your project
+- [Troubleshooting](docs/guides/troubleshooting.md): Fix the first problems people hit
+
+### Reference
+
+- [CLI](docs/reference/cli.md): Commands, flags, prompts and exit codes
+- [Config](docs/reference/config.md): Every `nexyconfig.py` field and its default
+- [Python API](docs/reference/python-api.md): Every name Nexy exports, by module
+- [Exceptions and errors](docs/reference/exceptions.md): Every failure, its status, and the file that answers it
+- [File conventions](docs/reference/file-conventions.md): Reserved files and routing rules
+- [Glossary](docs/reference/glossary.md): The words these docs use
+- [Security](docs/reference/security.md): Version floors, rules Nexy follows, audits
+
+### Advanced
+
+- [Modular router vs NestJS](docs/routing/modular/vs-nestjs.md): Compare Nexy and NestJS
+- [Error pages per folder](docs/routing/fbr/errors/folder-pages.md): Handle errors from sub-folders
+- [Upgrading to 2.2](docs/getting-started/upgrading.md): Migrate from 2.1 to 2.2
+- [Internationalization (i18n)](docs/guides/i18n.md): Add translations with your choice of library
+- [Recipes](docs/guides/recipes.md): Examples and patterns, not a tutorial
 
 ## Source
 
-- [Architecture](ARCHITECTURE.md): request lifecycle, compiler pipeline, package layout
+- [Architecture](ARCHITECTURE.md): the packages of Nexy and their mechanisms, for contributors
 - [Contributing](CONTRIBUTING.md): development workflow and quality gates
 - `nexy/core/config.py`: option defaults
 - `nexy/modules/routers/fbrouter/`: routing implementation

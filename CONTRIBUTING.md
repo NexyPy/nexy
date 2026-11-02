@@ -220,6 +220,102 @@ python -m mypy nexy --strict
 - No premature abstraction
 - KISS before clever
 
+### Writing documentation
+
+`docs/` is plain Markdown: index in [docs/README.md](docs/README.md), machine entry point in
+[llms.txt](llms.txt). A page is a contract, not an essay: a contributor must be able to write a
+conforming page without reading the other 86.
+
+#### 1. Two page contracts
+
+Pick one shape per page. Never both.
+
+| Page | Answers | Shape |
+|---|---|---|
+| Conceptual | how something works | eight sections, in this order: Definition · How it works · Lifecycle · When to use · Configuration · Example · Limitations · Next steps |
+| Reference | what the options of one thing are | one strict table: name, type, default, description, example, constraints, related options. No narrative paragraph. |
+
+The eighth heading is `## Next steps`, not `## Related`: the pages that exist already use it, and
+renaming it everywhere is a separate decision.
+
+Shared behaviour - how a page is served, how layouts nest, what an action cycle is - is written
+once in the shared contracts under `docs/views/frontend/`. A page under `docs/views/<framework>/`
+only adds the syntax that differs, and links back to the shared page instead of repeating it.
+
+#### 2. Three guarantee levels
+
+One sentence carries one level. Never mix two.
+
+| Form | Means | The reader can |
+|---|---|---|
+| **Nexy guarantees ...** | tested framework behaviour | rely on it; a test fails when it changes |
+| **By convention ...** | what the structure expects of you | follow it, or diverge knowingly |
+| **Your application is responsible for ...** | authorization, data, i18n, secrets | expect no code from Nexy |
+
+"Nexy guarantees the route is mounted, but authorization is yours" is two levels in one sentence:
+split it.
+
+#### 3. Imposed vocabulary
+
+Ten words, one definition each, no synonym. The definitions live in
+[Core concepts](docs/getting-started/core-concepts.md) and [Views](docs/views/README.md); a page
+links to them and never restates them.
+
+| Word | Means | Never write instead |
+|---|---|---|
+| **route** | a URL pattern, produced by the path of a file | path, URL, slug |
+| **page** | a route file that renders a view | screen, template, view |
+| **view** | what produces the body of a page | page, template |
+| **component** | a reusable piece a page imports | widget, partial |
+| **layout** | a `layout.*` file that wraps the pages below its folder | template, wrapper, shell |
+| **handler** | the function of a `.py` route file, named after the HTTP method | controller, view function |
+| **endpoint** | the pair (URL, method) that a handler answers | route, URL, API |
+| **action** | a Python function marked `@Action`, served as a `POST` | mutation, RPC, form handler |
+| **island** | a client component whose HTML the server renders and the browser hydrates | widget, partial |
+| **mode** | who produces the HTML and when: server mode or client mode per project, SSR, ISR, CSR or islands per page | strategy, renderer |
+
+#### 4. Mechanical rules
+
+- **One page, one question.** If the title needs "and", it is two pages.
+- **Every executable code example carries `filename=`**, with the path it would have in a project:
+  `filename="src/routes/index.py"` on the fence. Documentation code is run, not illustrated.
+- **Every new `.md` in `docs/` enters the navigation** in [docs/README.md](docs/README.md) and the
+  index in [llms.txt](llms.txt), in the same change. A page missing from both is invisible, and the
+  suite fails on it.
+- **No performance promise without a link** to [Performance](docs/deployment/performance.md). Numbers
+  live there, not in the page that would like to be fast.
+- **Docs are in English.** French is fine in `TASKS/`, which is not published.
+
+#### 5. Written to be found
+
+The documentation aims to be the first result for the question it answers. Both sites give a search
+engine three things per page (`sites/shared/seo.py`): the canonical address
+`{site}/docs/{slug}/`, the opening paragraph cut at 200 characters as the description, and the menu
+trail as the breadcrumb. A page therefore has four handles, and all four say the same thing:
+
+- **Title** — the question in the words a person types, not an internal name: "Choose a router", not
+  "Routing: architecture".
+- **Opening paragraph** — the answer, complete in one sentence, before any context: it becomes the
+  search result.
+- **Headings** — the words of the query, one idea per heading, so an excerpt answers on its own.
+- **Slug** — the same words again, so the address says what the page is about without the menu.
+
+One question, one page. Two pages on the same words compete with each other, and a search engine
+ranks the pair below either one alone; a page that goes away redirects through
+`sites/shared/docs_source.py` instead of staying online. A page links to its siblings with the words
+of their question, never "here".
+
+#### 6. Conformance
+
+The mechanical half is checked: relative links resolve
+(`tests/unit/nexy/docs/test_links.py`), `llms.txt` is exhaustive
+(`tests/unit/nexy/docs/test_llms_index.py`), and every documentation code block runs
+(`tests/unit/nexy/docs/test_recipes.py`).
+
+The editorial half - two contracts, three guarantee levels, one vocabulary - is a human review. A
+reviewer rejects a page that mixes two guarantee levels, adds a `## Related`, or renames a word, and
+no test will catch it for them. That is the cost of the rule, and it is accepted.
+
 ## Testing
 
 ### Python

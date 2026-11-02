@@ -24,8 +24,9 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from sites.shared import docs_source as source  # noqa: E402
-from sites.shared import seo  # noqa: E402
+from sites.shared import home, i18n, seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
+from sites.shared.version import VERSION  # noqa: E402
 
 DOCS = REPO / "docs"
 
@@ -93,7 +94,9 @@ def router_meta(page: source.Page) -> str:
 
 def _nav_item(page: source.Page, current: str) -> str:
     mark = ' aria-current="page"' if page.slug == current else ""
-    return f'<li><a href="{relative(current, page.slug)}"{mark}>{escape(page.label)}</a></li>'
+    badge = '<span class="badge-new">New</span>' if page.badge else ""
+    href = relative(current, page.slug)
+    return f'<li><a href="{href}"{mark}>{escape(page.label)}</a>{badge}</li>'
 
 
 def _nav_group(group: source.Group, current: str, opens: bool) -> str:
@@ -103,28 +106,35 @@ def _nav_group(group: source.Group, current: str, opens: bool) -> str:
     router = f' data-router="{group.router}"' if group.router else ""
     # The chevron closes the line: no other ornament.
     return (
-        f'<details class="group" data-section="{escape(group.title)}"{router}{opened}>'
+        f'<details class="group" data-section="{escape(group.title)}"'
+        f' data-scope="{group.scope}"{router}{opened}>'
         f'<summary><span class="group-name">{escape(group.title)}</span>'
         f"{ICONS['icon_chev']}</summary>"
         f"<ul>{items}</ul></details>"
     )
 
 
+def _nav_part(track: source.Track, current: str, opened: source.Group | None) -> str:
+    """One section of the menu: its heading, then its folders."""
+    groups = "".join(_nav_group(group, current, group is opened) for group in track.groups)
+    return f'<div class="side-part"><p class="side-section">{escape(track.label)}</p>{groups}</div>'
+
+
 def nav_html(tracks: list[source.Track], current: str) -> str:
     """The side menu: every section under its heading, one accordion group per folder."""
     # A reader who arrives on the home page has chosen no page yet: the first group is open.
     opened = source.group_of(tracks, current)
-    parts = "".join(
-        f'<div class="side-part">{
-            "".join(_nav_group(group, current, group is opened) for group in track.groups)
-        }</div>'
-        for track in tracks
-    )
+    parts = "".join(_nav_part(track, current, opened) for track in tracks)
     foot = (
-        '<p class="side-empty" hidden>No page matches.</p>'
+        '<p class="side-empty" data-i18n="no_match" hidden>No page matches.</p>'
         '<div class="side-foot">'
-        '<a href="https://github.com/NexyPy/nexy">Source on GitHub</a>'
-        '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>'
+        # The button of the menu is a plain hidden link: `site.js` points it at the next page
+        # this browser has not read, so every page serves exactly the same bytes.
+        '<a href="#" class="continue" hidden>Continue</a>'
+        '<a href="#" class="all-docs" data-i18n="all_docs">All documentation</a>'
+        '<a href="https://github.com/NexyPy/nexy" data-i18n="source_github">Source on GitHub</a>'
+        '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt" data-i18n="llms">'
+        "llms.txt for agents</a>"
         "</div>"
     )
     return parts + foot
@@ -139,8 +149,9 @@ def toc_html(headings: list[source.Heading]) -> str:
     if not items:
         return ""
     return (
-        f"<h2>On this page</h2><ul>{items}</ul>"
-        '<p class="top-link"><a href="#content">Back to top</a></p>'
+        '<h2 data-i18n="on_this_page">On this page</h2>'
+        f"<ul>{items}</ul>"
+        '<p class="top-link"><a href="#content" data-i18n="back_to_top">Back to top</a></p>'
     )
 
 
@@ -150,7 +161,7 @@ def pager_html(before: source.Page | None, after: source.Page | None, current: s
             return "<span></span>"
         arrow = ARROW_PREV if rel == "prev" else ARROW_NEXT
         text = (
-            f'<span class="pager-text"><small>{label}</small>'
+            f'<span class="pager-text"><small data-i18n="{label.lower()}">{label}</small>'
             f"<span>{escape(page.label)}</span></span>"
         )
         return (
@@ -182,10 +193,11 @@ def _page_html(
     section: str,
     rendered: source.Rendered,
     site_url: str,
+    docs: Path,
 ) -> str:
     track = source.track_of(tracks, page.slug)
     before, after = source.neighbours(track, page.slug)
-    rel = page.path.relative_to(DOCS).as_posix()
+    rel = page.path.relative_to(docs).as_posix()
     home = not page.slug
     return template.substitute(
         title=escape(page.title),
@@ -194,6 +206,7 @@ def _page_html(
         home=relative(page.slug, ""),
         nav=nav_html(tracks, page.slug),
         area_select=router_select_html(page),
+        language_select=i18n.select_html(),
         router_meta=router_meta(page),
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
@@ -203,6 +216,7 @@ def _page_html(
         section=escape(section),
         source=f"https://github.com/NexyPy/nexy/edit/main/docs/{rel}",
         mark=MARK,
+        version=VERSION,
         **ICONS,
     )
 
@@ -233,6 +247,13 @@ def _pages(docs: Path) -> list[tuple[source.Page, str]]:
     ]
 
 
+def _rendered(page: source.Page, docs: Path) -> source.Rendered:
+    """A page as HTML: the home is composed from Getting Started, not from the whole README."""
+    if not page.slug:
+        return home.render(docs, lambda slug: relative("", slug))
+    return source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
+
+
 def _write_pages(
     out: Path,
     docs: Path,
@@ -244,15 +265,37 @@ def _write_pages(
     tracks = source.read_tracks(docs)
     written, entries = [], []
     for page, section in pages:
-        rendered = source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
+        rendered = _rendered(page, docs)
         target = out / "docs" / page.slug / "index.html"
-        _write(target, _page_html(template, tracks, page, section, rendered, site_url))
+        _write(target, _page_html(template, tracks, page, section, rendered, site_url, docs))
         _write(target.with_name("index.md"), page.path.read_text(encoding="utf-8"))
         url = f"docs/{page.slug}/" if page.slug else "docs/"
         entries.append(source.search_entry(page, section, rendered, url))
         written.append(target)
+
+    # Generate redirections for pruned pages
+    for old_slug, new_slug in source.REDIRECTS.items():
+        target = out / "docs" / old_slug / "index.html"
+        _write(target, redirect_html(old_slug, new_slug, site_url))
+
     _write(out / "search-index.json", json.dumps(entries, separators=(",", ":")))
     return written
+
+
+def redirect_html(old: str, new: str, site_url: str) -> str:
+    """An old address that hands the reader and the crawler to the page that replaced it.
+
+    The address is relative to the old page, so the folder works from any host; the canonical tag
+    names the one address the new page has.
+    """
+    href = relative(old, new)
+    canonical = seo.canonical(site_url, new)
+    return (
+        '<!doctype html><meta charset="utf-8"><title>Redirecting...</title>'
+        f'<meta http-equiv="refresh" content="0; url={href}">'
+        f'<link rel="canonical" href="{canonical}">'
+        f'<a href="{href}">This page has moved</a>'
+    )
 
 
 def _write_crawl(out: Path, pages: list[tuple[source.Page, str]], site_url: str) -> None:
@@ -281,6 +324,10 @@ def build(
     _write(out / "404.html", not_found_html(base))
     _write(out / ".nojekyll", "")
     shutil.copytree(HERE / "assets", out / "assets", dirs_exist_ok=True)
+    _write(
+        out / "assets" / "i18n.json",
+        json.dumps(i18n.payload(), ensure_ascii=False, separators=(",", ":")),
+    )
     # The drawings of the docs: a figure is inlined, but its file travels with the site too.
     if (docs / "assets").is_dir():
         shutil.copytree(docs / "assets", out / "docs" / "assets", dirs_exist_ok=True)

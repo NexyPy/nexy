@@ -22,7 +22,20 @@ def out(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 def _pages(out: Path) -> list[Path]:
-    return sorted((out / "docs").rglob("index.html"))
+    """The pages of the menu: a redirect is served at an old address, it is not a page."""
+    redirects = {f"docs/{slug}" for slug in docs_source.REDIRECTS}
+    return sorted(
+        page
+        for page in (out / "docs").rglob("index.html")
+        if page.parent.relative_to(out).as_posix() not in redirects
+    )
+
+
+def _served_html(out: Path) -> dict[str, str]:
+    """Every HTML the build wrote: its path inside the site, and its exact bytes."""
+    return {
+        p.relative_to(out).as_posix(): p.read_text(encoding="utf-8") for p in out.rglob("*.html")
+    }
 
 
 class TestPages:
@@ -41,6 +54,66 @@ class TestPages:
 
     def test_the_assets_are_copied(self, out):
         assert all((out / "assets" / name).is_file() for name in ("style.css", "site.js"))
+
+
+class TestHomePage:
+    """The home page is a first path: the introduction, then the cards of Getting Started."""
+
+    @pytest.fixture(scope="class")
+    def article(self, out):
+        page = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        return page.split('<article class="doc home">', 1)[1].split("</article>", 1)[0]
+
+    def test_the_article_shows_the_ten_cards_of_getting_started(self, article):
+        assert article.count('class="home-card"') == 10
+
+    def test_no_other_track_is_listed_as_a_card(self, article):
+        slugs = {p.slug for p in docs_source.pages_of(docs_source.read_tracks(DOCS)[0])}
+        hrefs = set(re.findall(r'class="home-card" href="([^"]+)"', article))
+        assert hrefs == {f"{slug}/" for slug in slugs}
+
+    def test_the_menu_still_reaches_every_page(self, out):
+        page = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert 'href="guides/actions/"' in page
+
+    def test_a_card_holds_a_picture_and_a_line(self, article):
+        card = article.split('class="home-card"', 1)[1].split("</a>", 1)[0]
+        assert "<svg" in card and 'class="home-card-text"' in card
+
+    def test_the_outline_lists_the_groups(self, out):
+        page = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert '<a href="#first-steps">First steps</a>' in page
+
+
+class TestRedirects:
+    """DOC-22: an address a reader bookmarked keeps working, and names the page that replaced it."""
+
+    @pytest.mark.parametrize(("old", "new"), sorted(docs_source.REDIRECTS.items()))
+    def test_an_old_address_reaches_the_page_that_replaced_it(self, out, old, new):
+        page = (out / "docs" / old / "index.html").read_text(encoding="utf-8")
+        href = re.search(r'http-equiv="refresh" content="0; url=([^"]+)"', page)[1]
+        target = (out / "docs" / old / href).resolve()
+        assert target == (out / "docs" / new).resolve()
+        assert (target / "index.html").is_file()
+
+    @pytest.mark.parametrize(("old", "new"), sorted(docs_source.REDIRECTS.items()))
+    def test_an_old_address_names_the_one_address_of_the_new_page(self, out, old, new):
+        page = (out / "docs" / old / "index.html").read_text(encoding="utf-8")
+        canonical = seo.canonical(seo.DEFAULT_SITE_URL, new)
+        assert f'<link rel="canonical" href="{canonical}">' in page
+
+    def test_a_redirect_never_overwrites_a_page_of_the_menu(self):
+        listed = {
+            page.slug
+            for track in docs_source.read_tracks(DOCS)
+            for page in docs_source.pages_of(track)
+        }
+        assert set(docs_source.REDIRECTS) & listed == set()
+
+    def test_an_old_address_is_not_in_the_search_index(self, out):
+        index = json.loads((out / "search-index.json").read_text(encoding="utf-8"))
+        urls = {entry["url"] for entry in index}
+        assert [f"docs/{slug}/" for slug in docs_source.REDIRECTS if f"docs/{slug}/" in urls] == []
 
 
 class TestLinks:
@@ -77,16 +150,23 @@ class TestPageContent:
         assert re.search(r'<a [^>]*aria-current="page"[^>]*>Actions</a>', html)
 
     def test_the_outline_lists_the_headings(self, html):
-        assert 'href="#define-an-action"' in html
+        assert 'href="#the-action-cycle"' in html
 
     def test_the_pager_names_the_neighbours(self, html):
         assert 'class="pager"' in html
 
+    def test_the_menu_heads_every_section(self, html):
+        """The sections of the menu read like the Nexy site: one quiet heading per track."""
+        labels = [track.label for track in docs_source.read_tracks(DOCS)]
+        assert re.findall(r'<p class="side-section">([^<]+)</p>', html) == labels
+
     def test_the_menu_is_made_of_collapsible_sections(self, html):
         # Each section is a <details>: the one holding the current page is open, the
         # others are not, and opening one never closes another.
-        assert '<details class="group" data-section="Routing" data-router="fbr">' in html
-        assert '<details class="group" data-section="Forms and data" open>' in html
+        routing = 'data-section="Routing" data-scope="fbr" data-router="fbr"'
+        assert f'<details class="group" {routing}>' in html
+        forms = 'data-section="Forms and data" data-scope="core" open'
+        assert f'<details class="group" {forms}>' in html
 
     def test_a_section_lists_all_its_pages(self, html):
         section = html.split('data-section="Routing"', 1)[1].split("</details>", 1)[0]
@@ -99,8 +179,42 @@ class TestPageContent:
         assert section.count("<li>") == len(group.pages)
 
     def test_a_section_carries_no_sentence(self, html):
-        """The accordion holds its name and its pages: the prose stays on the home page."""
+        """The accordion holds its name and its pages: prose stays out of the menu (A11)."""
         assert 'class="group-note"' not in html
+        assert 'class="page-summary"' not in html
+
+    def test_a_menu_item_is_the_link_then_the_pill(self, html):
+        """A menu item is the label alone; only a marked page adds a pill, on the same line."""
+        block = html.split('data-section="Forms and data"', 1)[1].split("</ul>", 1)[0]
+        items = re.findall(r"<li>.*?</li>", block)
+        pattern = re.compile(
+            r'<li><a href="[^"]+"(?: aria-current="page")?>[^<]+</a>'
+            r'(?:<span class="badge-new">New</span>)?</li>'
+        )
+        assert items and all(pattern.fullmatch(item) for item in items)
+
+    def test_the_menu_draws_no_description(self, tmp_path):
+        """A11: a page's summary is data for other surfaces, never a second menu line."""
+        page = docs_source.Page(
+            "only", "Only", "Only", tmp_path / "only.md", summary="Read this page"
+        )
+        group = docs_source.Group("G", "", [page])
+        track = docs_source.Track("t", "T", "", [group])
+        menu = build.nav_html([track], "only")
+        assert "<small" not in menu and "Read this page" not in menu
+
+    def test_the_menu_filter_reads_the_label(self):
+        """Filtering matches a page label only, whatever the item grows into later."""
+        script = (build.HERE / "assets" / "site.js").read_text(encoding="utf-8")
+        keep = next(line for line in script.splitlines() if "const keep =" in line)
+        assert "querySelector" in keep and "item.textContent" not in keep
+
+    def test_the_pill_sits_on_the_label_line(self):
+        """A11: the menu row is a flex line; the pill rides on the label's line, never under it."""
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        row = css.split(".side li {", 1)[1].split("}", 1)[0]
+        pill = css.split(".side .badge-new {", 1)[1].split("}", 1)[0]
+        assert "display: flex" in row and "flex: none" in pill
 
     def test_only_the_groups_scroll_under_the_menu_head(self, html):
         assert '<div class="side-scroll">' in html
@@ -114,6 +228,167 @@ class TestPageContent:
 
     def test_titles_are_escaped(self):
         assert build.escape('<b>"x"</b>') == "&lt;b&gt;&quot;x&quot;&lt;/b&gt;"
+
+
+CONTINUE = '<a href="#" class="continue" hidden>Continue</a>'
+
+
+class TestProgress:
+    """DOC-26: the pages one browser has read, and the page it offers next.
+
+    The served HTML holds no reading state at all: a hidden link and the scripts that fill it.
+    """
+
+    @staticmethod
+    def _button(html: str) -> str:
+        """The button as it is served: a hidden link, and the same one on every page."""
+        found = re.search(r'<a href="[^"]*" class="continue"[^>]*>[^<]*</a>', html)
+        assert found is not None
+        return found[0]
+
+    @staticmethod
+    def _menu(html: str) -> str:
+        """The nav element of a page: the menu, nothing of what follows it."""
+        return html.split('<nav class="side"', 1)[1].split("</nav>", 1)[0]
+
+    @pytest.fixture(scope="class")
+    def html(self, out):
+        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+
+    def test_the_button_is_a_hidden_link(self, html):
+        assert CONTINUE in html
+
+    def test_every_page_serves_the_same_button(self, out):
+        """Nothing of the reading state is baked: one same button on every page that has a menu."""
+        served = [page.read_text(encoding="utf-8") for page in _pages(out)]
+        with_menu = [text for text in served if '<nav class="side"' in text]
+        assert len(with_menu) > 1
+        assert {self._button(text) for text in with_menu} == {CONTINUE}
+
+    def test_the_menu_itself_holds_no_read_state(self, html):
+        assert "seen" not in self._menu(html)
+
+    def test_the_pager_is_left_alone(self, html):
+        assert 'class="pager"' in html and 'rel="next"' in html
+
+    def test_the_list_is_read_before_the_menu_paints(self, html):
+        assert 'localStorage.getItem("nexy-docs-seen")' in html.split("</head>", 1)[0]
+
+    def test_the_links_are_dimmed_while_the_menu_is_still_parsed(self, html):
+        """Marked after the nav and before the panel: the reader never sees the plain link."""
+        marking = html.index('classList.add("seen")')
+        assert html.index("</nav>") < marking < html.index('<div class="panel"')
+
+    def test_the_seen_key_follows_the_localstorage_patron(self):
+        """One-line try/catch, like nexy-docs-theme, nexy-docs-side and nexy-docs-router."""
+        script = (build.HERE / "assets" / "site.js").read_text(encoding="utf-8")
+        written = next(line for line in script.splitlines() if "setItem('nexy-docs-seen'" in line)
+        assert written.strip().startswith("try {") and "} catch {}" in written
+
+    def test_the_button_offers_the_first_unread_page_of_the_menu(self):
+        """One pass over the menu in served order, the last page read when none is left."""
+        script = (build.HERE / "assets" / "site.js").read_text(encoding="utf-8")
+        assert "!read.includes(slugOf(a.pathname))" in script
+        assert "slugOf(a.pathname) === read.at(-1)" in script
+
+    def test_a_read_page_is_only_dimmed(self):
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        rule = css.split(".side a.seen", 1)[1].split("}", 1)[0]
+        assert "color: var(--faint)" in rule and "content" not in rule
+
+    def test_the_dimming_lets_hover_and_the_current_page_win(self):
+        """The rules that lift a link come after it: order is the whole specificity mechanism."""
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        assert (
+            css.index(".side a.seen")
+            < css.index(".side a:hover")
+            < css.index('.side a[aria-current="page"]')
+        )
+
+    def test_the_dimmed_colour_exists_in_both_themes(self):
+        css = (build.HERE / "assets" / "style.css").read_text(encoding="utf-8")
+        light = css.split(":root {", 1)[1].split("}", 1)[0]
+        dark = css.split(':root[data-theme="dark"] {', 1)[1].split("}", 1)[0]
+        assert "--faint:" in light and "--faint:" in dark
+
+
+class TestNewBadge:
+    """DOC-27: one `{new}` token in a row of docs/README.md paints one pill in the menu."""
+
+    PILL = '<a href="[^"]*"(?: aria-current="page")?>Page</a><span class="badge-new">New</span>'
+    ROW = "| [Page](only.md) | Read this page {new} |"
+
+    @staticmethod
+    def _docs(root: Path, row: str) -> Path:
+        root.mkdir(parents=True, exist_ok=True)
+        (root / "only.md").write_text("# Only", encoding="utf-8")
+        (root / "README.md").write_text(
+            f"# Docs\n\n## Guides\n\n### Forms\n| Page | What you will do |\n|---|---|\n{row}\n",
+            encoding="utf-8",
+        )
+        return root
+
+    def test_a_marked_row_paints_the_pill_after_the_link(self, tmp_path):
+        menu = build.nav_html(docs_source.read_tracks(self._docs(tmp_path, self.ROW)), "only")
+        assert re.search(self.PILL, menu)
+
+    def test_the_pill_is_labelled_new_and_the_token_is_not_drawn(self, tmp_path):
+        menu = build.nav_html(docs_source.read_tracks(self._docs(tmp_path, self.ROW)), "only")
+        assert menu.count(">New<") == 1 and "{new}" not in menu
+
+    @staticmethod
+    def _page_item(marked: bool) -> str:
+        """The menu item of the one page of this site, exactly as the menu serves it."""
+        pill = '<span class="badge-new">New</span>' if marked else ""
+        return f'<li><a href="only/">Page</a>{pill}</li>'
+
+    def test_an_unmarked_menu_is_the_menu_of_today(self, tmp_path):
+        """Zero regression (F1): no token, no pill - the item is the label alone."""
+        plain = self._docs(tmp_path / "a", "| [Page](only.md) | Read this page |")
+        out = tmp_path / "out"
+        build.build(out, plain)
+        served = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert self._page_item(marked=False) in served
+        assert "badge-new" not in served
+
+    def test_a_marked_menu_adds_the_pill_and_nothing_else(self, tmp_path):
+        """The one difference a token makes in the served bytes: the pill, and only it."""
+        plain = self._docs(tmp_path / "a", "| [Page](only.md) | Read this page |")
+        marked = self._docs(tmp_path / "b", self.ROW)
+        before, after = tmp_path / "before", tmp_path / "after"
+        build.build(before, plain)
+        build.build(after, marked)
+        first, second = _served_html(before), _served_html(after)
+        assert set(first) == set(second)
+        changed = [name for name in first if first[name] != second[name]]
+        assert changed == ["docs/index.html", "docs/only/index.html"]
+        assert self._page_item(marked=True) in second["docs/index.html"]
+        assert self._page_item(marked=False) not in second["docs/index.html"]
+        assert "{new}" not in second["docs/index.html"]
+
+    def test_the_site_of_the_repo_paints_the_badges_of_its_menu(self, out):
+        marked = [
+            page
+            for track in docs_source.read_tracks(DOCS)
+            for page in docs_source.pages_of(track)
+            if page.badge
+        ]
+        assert marked, "docs/README.md marks no page: the pill would go untested"
+        menu = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        for page in marked:
+            pattern = (
+                rf'<a href="{re.escape(build.relative("", page.slug))}"[^>]*>'
+                rf"{re.escape(page.label)}</a><span class=\"badge-new\">New</span>"
+            )
+            assert re.search(pattern, menu), page.slug
+
+    def test_the_token_is_in_no_html_the_site_renders(self, out):
+        stray = [
+            page.relative_to(out).as_posix()
+            for page in _pages(out)
+            if "{new}" in page.read_text(encoding="utf-8")
+        ]
+        assert stray == []
 
 
 class TestUsability:

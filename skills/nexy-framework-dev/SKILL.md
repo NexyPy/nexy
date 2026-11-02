@@ -61,8 +61,19 @@ point `llms.txt`. Do not add a docs site generator. When behaviour changes, upda
 `CHANGELOG.md` in the same change. If the docs and the code disagree, the code is right: fix the
 docs.
 
+Every page aims to be the first result for its question: the title is the words people type, the
+first sentence answers them, the headings reuse them, and one question has one page.
+
+Before writing or reshaping a page, follow the editorial contract in
+[CONTRIBUTING.md](../../CONTRIBUTING.md#writing-documentation): two page shapes, three guarantee
+levels, one vocabulary.
+
 ## Commits
 
 Conventional Commits. AI tools never appear as author or co-author; `scripts/check_attribution.py`
 enforces it through `.githooks/commit-msg` (enable with `git config core.hooksPath .githooks`).
 Branches are `feature/*`, `fix/*`, `docs/*`, `perf/*`.
+
+One commit, one unit — a function (the function, its test, its doc line), a logic (one behaviour or
+fix with the test that proves it), or a structure (one move, rename or split that changes no
+behaviour). Never two of them in the same commit.
