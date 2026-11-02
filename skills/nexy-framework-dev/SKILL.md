@@ -70,3 +70,7 @@ levels, one vocabulary.
 Conventional Commits. AI tools never appear as author or co-author; `scripts/check_attribution.py`
 enforces it through `.githooks/commit-msg` (enable with `git config core.hooksPath .githooks`).
 Branches are `feature/*`, `fix/*`, `docs/*`, `perf/*`.
+
+One commit, one unit — a function (the function, its test, its doc line), a logic (one behaviour or
+fix with the test that proves it), or a structure (one move, rename or split that changes no
+behaviour). Never two of them in the same commit.

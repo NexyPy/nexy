@@ -83,6 +83,12 @@ uv pip install -e . --group dev
 
 - **Branches**: `feature/*`, `fix/*`, `docs/*`, `perf/*`
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`)
+- **One commit, one unit** — a function, a logic, or a structure, never two at once:
+  - *a function*: the function, its test and its doc line;
+  - *a logic*: one behaviour or bug fix with the test that proves it;
+  - *a structure*: one move, rename or split that changes no behaviour.
+  A refactor and a feature go in separate commits, so a reviewer reads one intention per commit. If a
+  change needs two of them, make two commits.
 - **Attribution**: AI tools never appear as author or co-author. No `Co-authored-by` with Claude/Codebuff/Freebuff/Copilot/Cursor and no `Generated with` footer. GitHub counts co-author trailers as contributors, so a bot trailer pollutes the contributor graph permanently. `scripts/check_attribution.py` enforces it (`.githooks/commit-msg`; enable with `git config core.hooksPath .githooks`).
 - **i18n**: English default; extract strings to `nexy/modules/i18n/en/`
 - **Coverage target**: ≥95% per module (CONTRIBUTING.md)
