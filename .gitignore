@@ -71,6 +71,8 @@ __pycache__
 apps/
 TASKS/
 .qoder/
+memoire/
+dd
 # Python
 .venv
 **/.venv/**
