@@ -263,14 +263,26 @@ def _write_pages(
     # Generate redirections for pruned pages
     for old_slug, new_slug in source.REDIRECTS.items():
         target = out / "docs" / old_slug / "index.html"
-        _write(
-            target,
-            f'<!doctype html><meta charset="utf-8"><title>Redirecting...</title>'
-            f'<meta http-equiv="refresh" content="0; url={relative("", new_slug)}">',
-        )
+        _write(target, redirect_html(old_slug, new_slug, site_url))
 
     _write(out / "search-index.json", json.dumps(entries, separators=(",", ":")))
     return written
+
+
+def redirect_html(old: str, new: str, site_url: str) -> str:
+    """An old address that hands the reader and the crawler to the page that replaced it.
+
+    The address is relative to the old page, so the folder works from any host; the canonical tag
+    names the one address the new page has.
+    """
+    href = relative(old, new)
+    canonical = seo.canonical(site_url, new)
+    return (
+        '<!doctype html><meta charset="utf-8"><title>Redirecting...</title>'
+        f'<meta http-equiv="refresh" content="0; url={href}">'
+        f'<link rel="canonical" href="{canonical}">'
+        f'<a href="{href}">This page has moved</a>'
+    )
 
 
 def _write_crawl(out: Path, pages: list[tuple[source.Page, str]], site_url: str) -> None:

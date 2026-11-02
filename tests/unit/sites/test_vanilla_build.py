@@ -56,6 +56,37 @@ class TestPages:
         assert all((out / "assets" / name).is_file() for name in ("style.css", "site.js"))
 
 
+class TestRedirects:
+    """DOC-22: an address a reader bookmarked keeps working, and names the page that replaced it."""
+
+    @pytest.mark.parametrize(("old", "new"), sorted(docs_source.REDIRECTS.items()))
+    def test_an_old_address_reaches_the_page_that_replaced_it(self, out, old, new):
+        page = (out / "docs" / old / "index.html").read_text(encoding="utf-8")
+        href = re.search(r'http-equiv="refresh" content="0; url=([^"]+)"', page)[1]
+        target = (out / "docs" / old / href).resolve()
+        assert target == (out / "docs" / new).resolve()
+        assert (target / "index.html").is_file()
+
+    @pytest.mark.parametrize(("old", "new"), sorted(docs_source.REDIRECTS.items()))
+    def test_an_old_address_names_the_one_address_of_the_new_page(self, out, old, new):
+        page = (out / "docs" / old / "index.html").read_text(encoding="utf-8")
+        canonical = seo.canonical(seo.DEFAULT_SITE_URL, new)
+        assert f'<link rel="canonical" href="{canonical}">' in page
+
+    def test_a_redirect_never_overwrites_a_page_of_the_menu(self):
+        listed = {
+            page.slug
+            for track in docs_source.read_tracks(DOCS)
+            for page in docs_source.pages_of(track)
+        }
+        assert set(docs_source.REDIRECTS) & listed == set()
+
+    def test_an_old_address_is_not_in_the_search_index(self, out):
+        index = json.loads((out / "search-index.json").read_text(encoding="utf-8"))
+        urls = {entry["url"] for entry in index}
+        assert [f"docs/{slug}/" for slug in docs_source.REDIRECTS if f"docs/{slug}/" in urls] == []
+
+
 class TestLinks:
     @staticmethod
     def _internal(html: str) -> list[str]:

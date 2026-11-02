@@ -18,6 +18,7 @@ ACTIONS = "/docs/guides/actions"
 MODULAR = "/docs/routing/modular/dependency-injection"
 CONTINUE = '<a href="#" class="continue" hidden>Continue</a>'
 NOTHING: dict[str, str] = {}
+REDIRECTS = sorted(docs_source.REDIRECTS.items())
 
 
 @pytest.fixture(scope="module")
@@ -34,6 +35,7 @@ def answers():
         "/markdown",
         "/markdown?slug=guides/actions",
         "/markdown?slug=nope/nothing",
+        *(f"/docs/{old}" for old, _new in REDIRECTS),
     ]
     found = request(SITE, *[(path, NOTHING) for path in paths])
     return dict(zip(paths, found, strict=True))
@@ -213,6 +215,16 @@ def test_the_pager_stays_inside_the_router(answers):
 
 def test_a_page_that_does_not_exist_is_not_found(answers):
     assert answers["/docs/nope/nothing"][0] == 404
+
+
+@pytest.mark.parametrize("old", [old for old, _ in REDIRECTS])
+def test_an_old_address_answers_with_a_permanent_redirect(answers, old):
+    assert answers[f"/docs/{old}"][0] == 301
+
+
+@pytest.mark.parametrize(("old", "new"), REDIRECTS)
+def test_an_old_address_points_at_the_page_that_replaced_it(answers, old, new):
+    assert answers[f"/docs/{old}"][1]["location"] == f"/docs/{new}"
 
 
 def test_the_button_offers_the_page_as_markdown(answers):

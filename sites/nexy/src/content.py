@@ -34,6 +34,7 @@ __all__ = [
     "markdown_link",
     "markdown_source",
     "menu",
+    "redirect_of",
     "router_of",
     "router_select",
     "search_entries",
@@ -49,6 +50,12 @@ def link(slug: str) -> str:
 def slug_of(pathname: str) -> str:
     """The page a URL path shows: `/docs/guides/actions` is `guides/actions`."""
     return pathname.removeprefix("/docs").strip("/")
+
+
+def redirect_of(slug: str) -> str:
+    """The new address of a moved page, or the empty string when the page was not moved."""
+    target = source.REDIRECTS.get(slug, "")
+    return link(target) if target else ""
 
 
 def _pages() -> list[tuple[source.Page, str]]:
