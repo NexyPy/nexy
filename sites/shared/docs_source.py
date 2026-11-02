@@ -163,6 +163,13 @@ _ROUTER_KEYS = tuple(key for key, _name, _blurb in ROUTERS)
 _NEW = re.compile(r"\s*\{new\}\s*$")
 _NEW_HTML = re.compile(r"\s*\{new\}")
 
+# A router variant: `<!-- router:fbr -->` around the words and the code that only the readers of
+# that router need. The page keeps every variant; the stylesheet draws the one that was chosen, so
+# the choice costs no request and no script.
+_ROUTER_VARIANT = re.compile(
+    r"<!-- router:(" + "|".join(_ROUTER_KEYS) + r") -->(.*?)<!-- /router -->", re.DOTALL
+)
+
 
 @dataclass(frozen=True)
 class Page:
@@ -775,14 +782,27 @@ def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict
     }
 
 
+def _variants(html: str) -> str:
+    """Wrap router-specific blocks so CSS can show only the one chosen."""
+
+    def wrap(found: re.Match[str]) -> str:
+        router = found[1]
+        body = found[2]
+        return f'<div class="router-variant" data-router="{router}">{body}</div>'
+
+    return _ROUTER_VARIANT.sub(wrap, html)
+
+
 def render(page: Path, docs: Path, link: Link) -> Rendered:
     """One page as HTML: illustrations, callouts, captions, linked headings, links to site URLs."""
     text, names = _name_files(page.read_text(encoding="utf-8"))
-    html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
+    html = cmarkgfm.github_flavored_markdown_to_html(
+        text, Options.CMARK_OPT_GITHUB_PRE_LANG | Options.CMARK_OPT_UNSAFE
+    )
     # The navigation tokens are read by `read_tracks`, never shown: the home page is docs/README.md,
     # so its own table would otherwise draw `{new}` in every cell that carries one.
     shaped = _structures(_diagrams(_NEW_HTML.sub("", html), names))
     coloured = _CODE.sub(_colour, _caption(shaped, names))
-    done = _identify(_callouts(_tables(coloured)))
+    done = _identify(_callouts(_tables(_variants(coloured))))
     # The figures are last: nothing else looks at the drawing the SVG carries.
     return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)

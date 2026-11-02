@@ -466,6 +466,11 @@ html[data-router="fbr"] .side .group[data-scope]:not([data-scope="core"]):not([d
 html[data-router="modular"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope="modular"]),
 html[data-router="custom"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope="custom"]) { display: none; }
 
+/* One router at a time in the page: a `router:` block is drawn for its own choice only. */
+html[data-router="fbr"] .router-variant:not([data-router="fbr"]),
+html[data-router="modular"] .router-variant:not([data-router="modular"]),
+html[data-router="custom"] .router-variant:not([data-router="custom"]) { display: none; }
+
 /* All documentation mode: all groups are shown regardless of router or scope. */
 html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 

@@ -237,6 +237,38 @@ class TestRender:
         assert [(h.level, h.id) for h in found] == [(2, "one"), (3, "two")]
 
 
+class TestRouterVariants:
+    """DOC-20: the words and the code of a page follow the router the reader chose."""
+
+    @staticmethod
+    def _html(tmp_path: Path, text: str) -> str:
+        path = tmp_path / "page.md"
+        path.write_text(text, encoding="utf-8")
+        return source.render(path, tmp_path, _link).html
+
+    def test_a_block_is_drawn_under_its_router(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:fbr -->\nThe FBR way.\n<!-- /router -->\n")
+        block = re.search(r'<div class="router-variant" data-router="fbr">(.*?)</div>', html, re.S)
+        assert block and "<p>The FBR way.</p>" in block[1]
+
+    def test_the_markers_leave_no_comment_on_the_page(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:modular -->\nM\n<!-- /router -->\n")
+        assert "router:" not in html
+
+    def test_a_marker_of_an_unknown_router_draws_no_variant(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:nope -->\nShared.\n<!-- /router -->\n")
+        assert 'class="router-variant"' not in html
+
+    def test_a_marker_inside_a_code_block_stays_code(self, tmp_path):
+        html = self._html(tmp_path, "```md\n<!-- router:fbr -->\n```\n")
+        assert 'class="router-variant"' not in html and "router:fbr" in html
+
+    def test_a_heading_inside_a_variant_is_in_the_outline(self, tmp_path):
+        path = tmp_path / "page.md"
+        path.write_text("<!-- router:custom -->\n## Install\n<!-- /router -->\n", encoding="utf-8")
+        assert [h.text for h in source.render(path, tmp_path, _link).headings] == ["Install"]
+
+
 class TestHighlight:
     @staticmethod
     def _html(tmp_path: Path, fence: str, code: str) -> str:
