@@ -74,6 +74,8 @@ Organise by what people come to do, not by how the code is organised.
 - Keep navigation shallow: three levels is a ceiling, not a target.
 - URLs, titles, labels and headings agree with each other.
 - Every list has an order that means something (importance, time, alphabet), not insertion order.
+- Write so search finds the page: the title and the headings are the words a person types, the first
+  sentence answers them, the slug repeats them. One page per question.
 
 ## Commits
 

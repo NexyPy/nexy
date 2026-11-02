@@ -286,7 +286,26 @@ links to them and never restates them.
   live there, not in the page that would like to be fast.
 - **Docs are in English.** French is fine in `TASKS/`, which is not published.
 
-#### 5. Conformance
+#### 5. Written to be found
+
+The documentation aims to be the first result for the question it answers. Both sites give a search
+engine three things per page (`sites/shared/seo.py`): the canonical address
+`{site}/docs/{slug}/`, the opening paragraph cut at 200 characters as the description, and the menu
+trail as the breadcrumb. A page therefore has four handles, and all four say the same thing:
+
+- **Title** — the question in the words a person types, not an internal name: "Choose a router", not
+  "Routing: architecture".
+- **Opening paragraph** — the answer, complete in one sentence, before any context: it becomes the
+  search result.
+- **Headings** — the words of the query, one idea per heading, so an excerpt answers on its own.
+- **Slug** — the same words again, so the address says what the page is about without the menu.
+
+One question, one page. Two pages on the same words compete with each other, and a search engine
+ranks the pair below either one alone; a page that goes away redirects through
+`sites/shared/docs_source.py` instead of staying online. A page links to its siblings with the words
+of their question, never "here".
+
+#### 6. Conformance
 
 The mechanical half is checked: relative links resolve
 (`tests/unit/nexy/docs/test_links.py`), `llms.txt` is exhaustive

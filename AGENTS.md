@@ -89,6 +89,10 @@ uv pip install -e . --group dev
   - *a structure*: one move, rename or split that changes no behaviour.
   A refactor and a feature go in separate commits, so a reviewer reads one intention per commit. If a
   change needs two of them, make two commits.
+- **Write the docs for search**: the title is the question a person types, the first paragraph
+  answers it in one sentence (both sites publish it as the meta description, cut at 200 characters),
+  and the headings and the slug reuse those words. One page per question: a second page on the same
+  words competes with the first instead of backing it up.
 - **Attribution**: AI tools never appear as author or co-author. No `Co-authored-by` with Claude/Codebuff/Freebuff/Copilot/Cursor and no `Generated with` footer. GitHub counts co-author trailers as contributors, so a bot trailer pollutes the contributor graph permanently. `scripts/check_attribution.py` enforces it (`.githooks/commit-msg`; enable with `git config core.hooksPath .githooks`).
 - **i18n**: English default; extract strings to `nexy/modules/i18n/en/`
 - **Coverage target**: ≥95% per module (CONTRIBUTING.md)

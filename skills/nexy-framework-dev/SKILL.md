@@ -61,6 +61,9 @@ point `llms.txt`. Do not add a docs site generator. When behaviour changes, upda
 `CHANGELOG.md` in the same change. If the docs and the code disagree, the code is right: fix the
 docs.
 
+Every page aims to be the first result for its question: the title is the words people type, the
+first sentence answers them, the headings reuse them, and one question has one page.
+
 Before writing or reshaping a page, follow the editorial contract in
 [CONTRIBUTING.md](../../CONTRIBUTING.md#writing-documentation): two page shapes, three guarantee
 levels, one vocabulary.
