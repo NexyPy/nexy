@@ -126,6 +126,11 @@ class TestPageContent:
     def test_the_pager_names_the_neighbours(self, html):
         assert 'class="pager"' in html
 
+    def test_the_menu_heads_every_section(self, html):
+        """The sections of the menu read like the Nexy site: one quiet heading per track."""
+        labels = [track.label for track in docs_source.read_tracks(DOCS)]
+        assert re.findall(r'<p class="side-section">([^<]+)</p>', html) == labels
+
     def test_the_menu_is_made_of_collapsible_sections(self, html):
         # Each section is a <details>: the one holding the current page is open, the
         # others are not, and opening one never closes another.

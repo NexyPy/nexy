@@ -113,16 +113,17 @@ def _nav_group(group: source.Group, current: str, opens: bool) -> str:
     )
 
 
+def _nav_part(track: source.Track, current: str, opened: source.Group | None) -> str:
+    """One section of the menu: its heading, then its folders."""
+    groups = "".join(_nav_group(group, current, group is opened) for group in track.groups)
+    return f'<div class="side-part"><p class="side-section">{escape(track.label)}</p>{groups}</div>'
+
+
 def nav_html(tracks: list[source.Track], current: str) -> str:
     """The side menu: every section under its heading, one accordion group per folder."""
     # A reader who arrives on the home page has chosen no page yet: the first group is open.
     opened = source.group_of(tracks, current)
-    parts = "".join(
-        f'<div class="side-part">{
-            "".join(_nav_group(group, current, group is opened) for group in track.groups)
-        }</div>'
-        for track in tracks
-    )
+    parts = "".join(_nav_part(track, current, opened) for track in tracks)
     foot = (
         '<p class="side-empty" hidden>No page matches.</p>'
         '<div class="side-foot">'
