@@ -373,9 +373,10 @@ html[data-side="closed"] .side {
   }
 }
 /* The area selector above the menu, drawn like the framework picker of Fumadocs. */
-.side-brand { display: flex; align-items: center; gap: 0.45rem; justify-content: space-between; margin: 0.2rem 0.2rem 0.9rem 0.4rem; }
-/* The version sits next to the fold button, both pushed to the right of the logo. */
-.side-brand .side-version { margin-left: auto; }
+.side-brand { display: flex; align-items: center; gap: 0.45rem; justify-content: flex-start; margin: 0.2rem 0.2rem 0.9rem 0.4rem; }
+/* The version sits right next to the logo; the fold button keeps the far edge. */
+.side-brand .side-version { margin-left: 0.1rem; }
+.side-brand .side-toggle { margin-left: auto; }
 .side-toggle {
   display: grid;
   place-items: center;
@@ -455,6 +456,70 @@ html[data-side="closed"] .side {
 .area-select li a[aria-current] > svg { opacity: 1; }
 .area-select li a[aria-current] { background: color-mix(in srgb, var(--signal) 8%, transparent); }
 .area-face { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+
+/* The language of the site: a globe and a code in the top bar, every language under it. */
+.lang-select { position: relative; flex: none; }
+.lang-select summary {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 2rem;
+  padding: 0 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  color: var(--muted);
+  font: 500 11.5px/1 var(--mono);
+  cursor: pointer;
+  list-style: none;
+  transition: color 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+}
+.lang-select summary::-webkit-details-marker { display: none; }
+.lang-select summary:hover { border-color: var(--line); color: var(--ink); background: var(--soft); }
+.lang-select summary svg { width: 15px; height: 15px; flex: none; }
+.lang-select ul {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 30;
+  min-width: 13rem;
+  max-height: 60vh;
+  margin: 0;
+  padding: 0.3rem;
+  overflow: auto;
+  list-style: none;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.8rem;
+  background: var(--paper);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.35);
+}
+.lang-select[open] ul { animation: nx-pop 0.18s var(--ease) both; }
+.lang-select li a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  padding: 0.42rem 0.5rem;
+  border-radius: 0.55rem;
+  color: var(--ink);
+  font-size: 13.5px;
+  text-decoration: none;
+  transition: background 0.12s ease;
+}
+.lang-select li a:hover { background: var(--soft); }
+.lang-select li a[aria-current] { background: color-mix(in srgb, var(--signal) 8%, transparent); }
+.lang-select li small { color: var(--muted); font-size: 11.5px; }
+
+/* One line above a page that has no translation yet: the menu and home did follow the choice. */
+.lang-note {
+  margin: 0 0 1.5rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
 
 /* One router at a time: its face in the selector; the others are not drawn. */
 html[data-router="fbr"] .side .area-face:not([data-router="fbr"]),
@@ -1283,6 +1348,7 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   .side summary { padding: 0.65rem 0.5rem; }
   .side-filter, .search-open { height: 2.75rem; }
   .menu, .bar-link { width: 2.75rem; height: 2.75rem; }
+  .lang-select summary { height: 2.75rem; }
   .theme-switch { width: 3.25rem; height: 2rem; }
   .mobilebar {
     position: sticky;

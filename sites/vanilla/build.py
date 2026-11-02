@@ -23,8 +23,10 @@ REPO = HERE.parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-from sites.shared import docs_source as source, home, seo  # noqa: E402
+from sites.shared import docs_source as source  # noqa: E402
+from sites.shared import home, i18n, seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
+from sites.shared.version import VERSION  # noqa: E402
 
 DOCS = REPO / "docs"
 
@@ -124,14 +126,15 @@ def nav_html(tracks: list[source.Track], current: str) -> str:
     opened = source.group_of(tracks, current)
     parts = "".join(_nav_part(track, current, opened) for track in tracks)
     foot = (
-        '<p class="side-empty" hidden>No page matches.</p>'
+        '<p class="side-empty" data-i18n="no_match" hidden>No page matches.</p>'
         '<div class="side-foot">'
         # The button of the menu is a plain hidden link: `site.js` points it at the next page
         # this browser has not read, so every page serves exactly the same bytes.
         '<a href="#" class="continue" hidden>Continue</a>'
-        '<a href="#" class="all-docs">All documentation</a>'
-        '<a href="https://github.com/NexyPy/nexy">Source on GitHub</a>'
-        '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>'
+        '<a href="#" class="all-docs" data-i18n="all_docs">All documentation</a>'
+        '<a href="https://github.com/NexyPy/nexy" data-i18n="source_github">Source on GitHub</a>'
+        '<a href="https://github.com/NexyPy/nexy/blob/main/llms.txt" data-i18n="llms">'
+        "llms.txt for agents</a>"
         "</div>"
     )
     return parts + foot
@@ -146,8 +149,9 @@ def toc_html(headings: list[source.Heading]) -> str:
     if not items:
         return ""
     return (
-        f"<h2>On this page</h2><ul>{items}</ul>"
-        '<p class="top-link"><a href="#content">Back to top</a></p>'
+        '<h2 data-i18n="on_this_page">On this page</h2>'
+        f"<ul>{items}</ul>"
+        '<p class="top-link"><a href="#content" data-i18n="back_to_top">Back to top</a></p>'
     )
 
 
@@ -157,7 +161,7 @@ def pager_html(before: source.Page | None, after: source.Page | None, current: s
             return "<span></span>"
         arrow = ARROW_PREV if rel == "prev" else ARROW_NEXT
         text = (
-            f'<span class="pager-text"><small>{label}</small>'
+            f'<span class="pager-text"><small data-i18n="{label.lower()}">{label}</small>'
             f"<span>{escape(page.label)}</span></span>"
         )
         return (
@@ -202,6 +206,7 @@ def _page_html(
         home=relative(page.slug, ""),
         nav=nav_html(tracks, page.slug),
         area_select=router_select_html(page),
+        language_select=i18n.select_html(),
         router_meta=router_meta(page),
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
@@ -211,6 +216,7 @@ def _page_html(
         section=escape(section),
         source=f"https://github.com/NexyPy/nexy/edit/main/docs/{rel}",
         mark=MARK,
+        version=VERSION,
         **ICONS,
     )
 
@@ -318,6 +324,10 @@ def build(
     _write(out / "404.html", not_found_html(base))
     _write(out / ".nojekyll", "")
     shutil.copytree(HERE / "assets", out / "assets", dirs_exist_ok=True)
+    _write(
+        out / "assets" / "i18n.json",
+        json.dumps(i18n.payload(), ensure_ascii=False, separators=(",", ":")),
+    )
     # The drawings of the docs: a figure is inlined, but its file travels with the site too.
     if (docs / "assets").is_dir():
         shutil.copytree(docs / "assets", out / "docs" / "assets", dirs_exist_ok=True)

@@ -43,7 +43,7 @@ class TestCards:
 
     def test_a_card_carries_its_summary(self):
         card = re.search(
-            r'<a class="home-card" href="/docs/getting-started/installation">(.*?)</a>',
+            r'<a class="home-card" href="/docs/getting-started/installation"[^>]*>(.*?)</a>',
             _rendered().html,
             re.S,
         )[1]
@@ -70,7 +70,11 @@ class TestIntroduction:
 
     def test_a_group_opens_its_block_of_cards(self):
         html = _rendered().html
-        assert re.search(r'<h2 id="first-steps">First steps</h2><div class="home-cards">', html)
+        assert re.search(
+            r'<h2 id="first-steps" data-group="first-steps">First steps</h2>'
+            r'<div class="home-cards">',
+            html,
+        )
 
 
 class TestOnlyGettingStarted:

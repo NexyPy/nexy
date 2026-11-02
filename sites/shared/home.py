@@ -25,7 +25,7 @@ def _introduction(docs: Path, link: source.Link) -> source.Rendered:
 def _card(page: source.Page, link: source.Link) -> str:
     art = HOME_ART.get(page.slug, HOME_ART[""])
     return (
-        f'<a class="home-card" href="{link(page.slug)}">'
+        f'<a class="home-card" href="{link(page.slug)}" data-card="{page.slug}">'
         f'<span class="home-card-art">{art}</span>'
         f'<span class="home-card-title">{htmllib.escape(page.label)}</span>'
         f'<span class="home-card-text">{htmllib.escape(page.summary)}</span>'
@@ -38,7 +38,8 @@ def _group(group: source.Group, link: source.Link) -> tuple[str, source.Heading]
     cards = "".join(_card(page, link) for page in group.pages)
     heading = source.Heading(2, ident, group.title)
     block = (
-        f'<h2 id="{ident}">{htmllib.escape(group.title)}</h2><div class="home-cards">{cards}</div>'
+        f'<h2 id="{ident}" data-group="{ident}">{htmllib.escape(group.title)}</h2>'
+        f'<div class="home-cards">{cards}</div>'
     )
     return block, heading
 

@@ -35,6 +35,7 @@ def answers():
         "/markdown",
         "/markdown?slug=guides/actions",
         "/markdown?slug=nope/nothing",
+        "/i18n",
         *(f"/docs/{old}" for old, _new in REDIRECTS),
     ]
     found = request(SITE, *[(path, NOTHING) for path in paths])
@@ -288,6 +289,25 @@ def test_a_file_outside_the_assets_cannot_be_read(answers):
 def test_search_lists_every_page(answers):
     entries = json.loads(answers["/search-index"][2])
     assert len(entries) == len(list(DOCS.rglob("*.md")))
+
+
+def test_the_language_payload_is_served(answers):
+    payload = json.loads(answers["/i18n"][2])
+    assert len(payload["languages"]) == 12 and payload["ui"]["de"]["search"] == "Suchen"
+
+
+def test_a_page_carries_the_language_picker(answers):
+    body = answers[ACTIONS][2]
+    assert 'class="lang-select"' in body and body.count("data-lang=") == 12
+
+
+def test_a_page_says_where_the_language_payload_lives(answers):
+    assert 'data-i18n="/i18n"' in answers[ACTIONS][2]
+
+
+def test_the_home_cards_name_their_page(answers):
+    body = answers["/docs"][2]
+    assert 'class="home-card" href="/docs/architecture" data-card="architecture"' in body
 
 
 def test_every_page_of_the_menu_is_served():

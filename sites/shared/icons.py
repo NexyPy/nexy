@@ -46,6 +46,10 @@ ICONS = {
         '7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>'
     ),
     "icon_search": _icon('<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>'),
+    "icon_globe": _icon(
+        '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/>'
+        '<path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/>'
+    ),
     "icon_menu": _icon('<path d="M4 6h16M4 12h16M4 18h16"/>'),
     "icon_close": _icon('<path d="M18 6 6 18M6 6l12 12"/>'),
     "icon_sun": _icon(

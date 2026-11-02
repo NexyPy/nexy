@@ -13,8 +13,10 @@ REPO = Path(__file__).resolve().parents[3]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-from sites.shared import docs_source as source, home, seo  # noqa: E402
+from sites.shared import docs_source as source  # noqa: E402
+from sites.shared import home, i18n, seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
+from sites.shared.version import VERSION  # noqa: E402
 
 DOCS = REPO / "docs"
 ASSETS = REPO / "sites" / "vanilla" / "assets"
@@ -27,8 +29,11 @@ __all__ = [
     "ICONS",
     "MARK",
     "SITE_URL",
+    "VERSION",
     "document",
     "head_of",
+    "i18n_payload",
+    "language_select",
     "link",
     "markdown_link",
     "markdown_source",
@@ -44,6 +49,16 @@ __all__ = [
 
 def link(slug: str) -> str:
     return f"/docs/{slug}" if slug else "/docs"
+
+
+def language_select() -> str:
+    """The compact language picker of the top bar, in the language of the reader."""
+    return i18n.select_html()
+
+
+def i18n_payload() -> dict[str, object]:
+    """Every word the browser needs to translate the site around the pages."""
+    return i18n.payload()
 
 
 def slug_of(pathname: str) -> str:

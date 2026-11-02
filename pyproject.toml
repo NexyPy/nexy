@@ -133,6 +133,9 @@ select = [
 "sites/nexy/**" = ["N802", "N815", "N999"]
 # The icons are SVG path data, not Python.
 "sites/shared/icons.py" = ["E501"]
+# Translations are long strings by necessity.
+"sites/shared/home_strings.py" = ["E501"]
+"sites/shared/i18n.py" = ["E501"]
 "nexy/modules/cli/init/registry.py" = ["E501"]
 # Fakes for `nx dev` mirror the real collaborators' signatures, so some arguments go unused.
 "tests/unit/nexy/cli/test_dev_command.py" = ["ARG"]

@@ -1,5 +1,5 @@
 ---
-from src.content import ICONS, menu, router_select
+from src.content import ICONS, VERSION, menu, router_select
 
 current: prop[str] = ""
 sections = menu(current)
@@ -11,8 +11,8 @@ routers = router_select(current)
       <a class="brand" href="/docs" aria-label="Nexy, home">
         <img class="brand-logo" src="/assets/nexy.svg" alt="Nexy">
       </a>
-      <span class="side-version">2.2</span>
-      <button class="side-toggle" type="button" aria-label="Collapse the menu" aria-expanded="true">{{ ICONS.icon_sidebar }}</button>
+      <span class="side-version" aria-label="Nexy version {{ VERSION }}">{{ VERSION }}</span>
+      <button class="side-toggle" type="button" aria-label="Collapse the menu" aria-expanded="true" data-i18n-aria="collapse_menu">{{ ICONS.icon_sidebar }}</button>
     </div>
     <details class="area-select" aria-label="Router">
       <summary>
@@ -58,12 +58,12 @@ routers = router_select(current)
       {% endfor %}
     </div>
     {% endfor %}
-    <p class="side-empty" hidden>No page matches.</p>
+    <p class="side-empty" data-i18n="no_match" hidden>No page matches.</p>
     <div class="side-foot">
       <a href="#" class="continue" hidden>Continue</a>
-      <a href="#" class="all-docs">All documentation</a>
-      <a href="https://github.com/NexyPy/nexy">Source on GitHub</a>
-      <a href="https://github.com/NexyPy/nexy/blob/main/llms.txt">llms.txt for agents</a>
+      <a href="#" class="all-docs" data-i18n="all_docs">All documentation</a>
+      <a href="https://github.com/NexyPy/nexy" data-i18n="source_github">Source on GitHub</a>
+      <a href="https://github.com/NexyPy/nexy/blob/main/llms.txt" data-i18n="llms">llms.txt for agents</a>
     </div>
   </div>
 </nav>
