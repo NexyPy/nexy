@@ -251,6 +251,10 @@ class TestRouterVariants:
         block = re.search(r'<div class="router-variant" data-router="fbr">(.*?)</div>', html, re.S)
         assert block and "<p>The FBR way.</p>" in block[1]
 
+    def test_a_block_may_serve_several_routers(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:fbr,custom -->\nShared.\n<!-- /router -->\n")
+        assert 'data-router="fbr custom"' in html
+
     def test_the_markers_leave_no_comment_on_the_page(self, tmp_path):
         html = self._html(tmp_path, "<!-- router:modular -->\nM\n<!-- /router -->\n")
         assert "router:" not in html

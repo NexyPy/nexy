@@ -164,11 +164,10 @@ _NEW = re.compile(r"\s*\{new\}\s*$")
 _NEW_HTML = re.compile(r"\s*\{new\}")
 
 # A router variant: `<!-- router:fbr -->` around the words and the code that only the readers of
-# that router need. The page keeps every variant; the stylesheet draws the one that was chosen, so
-# the choice costs no request and no script.
-_ROUTER_VARIANT = re.compile(
-    r"<!-- router:(" + "|".join(_ROUTER_KEYS) + r") -->(.*?)<!-- /router -->", re.DOTALL
-)
+# that router need. A block may name several routers (`router:fbr,custom`) when their example is
+# the same. The page keeps every variant; the stylesheet draws the one that was chosen, so the
+# choice costs no request and no script.
+_ROUTER_VARIANT = re.compile(r"<!-- router:([a-z, ]+) -->(.*?)<!-- /router -->", re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -782,13 +781,20 @@ def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict
     }
 
 
+def _variant_routers(names: str) -> list[str]:
+    """The routers a marker names, in the order of the selector; empty when one is unknown."""
+    keys = [name.strip() for name in names.split(",")]
+    return keys if keys and all(key in _ROUTER_KEYS for key in keys) else []
+
+
 def _variants(html: str) -> str:
     """Wrap router-specific blocks so CSS can show only the one chosen."""
 
     def wrap(found: re.Match[str]) -> str:
-        router = found[1]
-        body = found[2]
-        return f'<div class="router-variant" data-router="{router}">{body}</div>'
+        routers = _variant_routers(found[1])
+        if not routers:
+            return found[0]
+        return f'<div class="router-variant" data-router="{" ".join(routers)}">{found[2]}</div>'
 
     return _ROUTER_VARIANT.sub(wrap, html)
 

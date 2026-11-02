@@ -200,7 +200,7 @@ class TestAssets:
     def test_the_code_of_another_router_is_not_drawn(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert all(
-            f'html[data-router="{key}"] .router-variant:not([data-router="{key}"])' in css
+            f'html[data-router="{key}"] .router-variant:not([data-router~="{key}"])' in css
             for key, _name, _blurb in source.ROUTERS
         )
 
