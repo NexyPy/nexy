@@ -92,6 +92,14 @@ def test_the_docs_home_is_served(answers):
     assert answers["/docs"][0] == 200
 
 
+def test_the_home_page_shows_the_cards_of_getting_started(answers):
+    assert answers["/docs"][2].count('class="home-card"') == 10
+
+
+def test_a_home_card_leads_to_a_page_of_this_site(answers):
+    assert 'class="home-card" href="/docs/getting-started/installation"' in answers["/docs"][2]
+
+
 def test_a_page_has_its_title(answers):
     assert "<title>Actions - Nexy</title>" in answers[ACTIONS][2]
 

@@ -56,6 +56,35 @@ class TestPages:
         assert all((out / "assets" / name).is_file() for name in ("style.css", "site.js"))
 
 
+class TestHomePage:
+    """The home page is a first path: the introduction, then the cards of Getting Started."""
+
+    @pytest.fixture(scope="class")
+    def article(self, out):
+        page = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        return page.split('<article class="doc home">', 1)[1].split("</article>", 1)[0]
+
+    def test_the_article_shows_the_ten_cards_of_getting_started(self, article):
+        assert article.count('class="home-card"') == 10
+
+    def test_no_other_track_is_listed_as_a_card(self, article):
+        slugs = {p.slug for p in docs_source.pages_of(docs_source.read_tracks(DOCS)[0])}
+        hrefs = set(re.findall(r'class="home-card" href="([^"]+)"', article))
+        assert hrefs == {f"{slug}/" for slug in slugs}
+
+    def test_the_menu_still_reaches_every_page(self, out):
+        page = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert 'href="guides/actions/"' in page
+
+    def test_a_card_holds_a_picture_and_a_line(self, article):
+        card = article.split('class="home-card"', 1)[1].split("</a>", 1)[0]
+        assert "<svg" in card and 'class="home-card-text"' in card
+
+    def test_the_outline_lists_the_groups(self, out):
+        page = (out / "docs" / "index.html").read_text(encoding="utf-8")
+        assert '<a href="#first-steps">First steps</a>' in page
+
+
 class TestRedirects:
     """DOC-22: an address a reader bookmarked keeps working, and names the page that replaced it."""
 

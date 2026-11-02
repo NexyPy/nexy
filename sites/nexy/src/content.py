@@ -13,8 +13,7 @@ REPO = Path(__file__).resolve().parents[3]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-from sites.shared import docs_source as source  # noqa: E402
-from sites.shared import seo  # noqa: E402
+from sites.shared import docs_source as source, home, seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
 
 DOCS = REPO / "docs"
@@ -94,13 +93,18 @@ def title_of(slug: str) -> str:
     return f"{found} - Nexy"
 
 
+def _rendered(page: source.Page) -> source.Rendered:
+    """A page drawn with this site's URLs: the home shows its cards, not the whole menu."""
+    return home.render(DOCS, link) if page.slug == "" else source.render(page.path, DOCS, link)
+
+
 def head_of(slug: str) -> str:
     """What a crawler reads about a page: its summary, its address, its cards, the menu above it."""
     page = next((page for page, _ in _pages() if page.slug == slug), None)
     if page is None:
         return '<meta name="robots" content="noindex">'
     url = seo.canonical(SITE_URL, slug)
-    rendered = source.render(page.path, DOCS, link)
+    rendered = _rendered(page)
     return seo.Head(
         title=page.title,
         description=seo.description(rendered.html),
@@ -167,7 +171,7 @@ def document(slug: str) -> dict[str, Any]:
     page = source.home(DOCS) if slug == "" else source.find(tracks, slug)
     if page is None:
         raise HTTPException(status_code=404, detail="No such page")
-    rendered = source.render(page.path, DOCS, link)
+    rendered = _rendered(page)
     before, after = source.neighbours(source.track_of(tracks, slug), slug)
     return {
         "page": page,
@@ -183,6 +187,6 @@ def document(slug: str) -> dict[str, Any]:
 def search_entries() -> list[dict[str, str | None]]:
     entries: list[dict[str, str | None]] = []
     for page, section in _pages():
-        rendered = source.render(page.path, DOCS, link)
+        rendered = _rendered(page)
         entries.append(source.search_entry(page, section, rendered, link(page.slug).lstrip("/")))
     return entries

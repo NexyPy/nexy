@@ -23,8 +23,7 @@ REPO = HERE.parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
-from sites.shared import docs_source as source  # noqa: E402
-from sites.shared import seo  # noqa: E402
+from sites.shared import docs_source as source, home, seo  # noqa: E402
 from sites.shared.icons import ICONS, MARK  # noqa: E402
 
 DOCS = REPO / "docs"
@@ -242,6 +241,13 @@ def _pages(docs: Path) -> list[tuple[source.Page, str]]:
     ]
 
 
+def _rendered(page: source.Page, docs: Path) -> source.Rendered:
+    """A page as HTML: the home is composed from Getting Started, not from the whole README."""
+    if not page.slug:
+        return home.render(docs, lambda slug: relative("", slug))
+    return source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
+
+
 def _write_pages(
     out: Path,
     docs: Path,
@@ -253,7 +259,7 @@ def _write_pages(
     tracks = source.read_tracks(docs)
     written, entries = [], []
     for page, section in pages:
-        rendered = source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
+        rendered = _rendered(page, docs)
         target = out / "docs" / page.slug / "index.html"
         _write(target, _page_html(template, tracks, page, section, rendered, site_url, docs))
         _write(target.with_name("index.md"), page.path.read_text(encoding="utf-8"))

@@ -61,3 +61,52 @@ ICONS = {
         '5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>'
     ),
 }
+
+
+def _art(inner: str) -> str:
+    return (
+        '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" '
+        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        f"{inner}</svg>"
+    )
+
+
+# The picture of a Getting Started card, one per page: a small line drawing, never a photo.
+HOME_ART = {
+    "": _art('<path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>'),
+    "getting-started/installation": _art(
+        '<path d="M12 3v11"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/>'
+    ),
+    "getting-started/quick-start": _art(
+        '<circle cx="12" cy="12" r="8.5"/><path d="m10 8 6 4-6 4z"/>'
+    ),
+    "getting-started/tutorial": _art(
+        '<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18"/>'
+        '<path d="M10 8h5M10 12h5M10 16h3"/>'
+    ),
+    "getting-started/core-concepts": _art(
+        '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>'
+    ),
+    "getting-started/how-nexy-works": _art(
+        '<circle cx="5" cy="5" r="2"/><circle cx="19" cy="19" r="2"/>'
+        '<path d="M5 7v4a4 4 0 0 0 4 4h6a4 4 0 0 1 4 4"/>'
+    ),
+    "architecture": _art(
+        '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>'
+        '<rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
+    ),
+    "getting-started/project-structure": _art(
+        '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
+        '<path d="M3 11h18"/>'
+    ),
+    "routing": _art(
+        '<path d="M12 3v18"/><path d="M12 8h7l3 3-3 3h-7"/><path d="M12 15H7l-3 3 3 3h5"/>'
+    ),
+    "views": _art(
+        '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>'
+        '<path d="M7 6.5h.01M10 6.5h.01"/>'
+    ),
+    "getting-started/coming-from-other-frameworks": _art(
+        '<path d="M4 8h13"/><path d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path d="m10 13-3 3 3 3"/>'
+    ),
+}

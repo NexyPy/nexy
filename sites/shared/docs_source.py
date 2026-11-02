@@ -608,7 +608,8 @@ def _callouts(html: str) -> str:
     return _ALERT.sub(convert, html)
 
 
-def _anchor(text: str) -> str:
+def anchor(text: str) -> str:
+    """The id GitHub gives a heading: its words, lowercased, joined by dashes."""
     plain = _TAGS.sub("", text).strip().lower()
     return re.sub(r"[^\w\- ]", "", plain).replace(" ", "-")
 
@@ -620,13 +621,13 @@ def _identify(html: str) -> Rendered:
 
     def mark(match: re.Match[str]) -> str:
         level, inner = int(match[1]), _SCOPE.sub("", match[2])
-        base = _anchor(inner)
+        base = anchor(inner)
         count = seen.get(base, 0)
         seen[base] = count + 1
         ident = base if count == 0 else f"{base}-{count}"
         found.append(Heading(level, ident, _TAGS.sub("", inner)))
-        anchor = f'<a class="anchor" href="#{ident}" aria-label="Link to this section"></a>'
-        return f'<h{level} id="{ident}">{inner}{anchor}</h{level}>'
+        marker = f'<a class="anchor" href="#{ident}" aria-label="Link to this section"></a>'
+        return f'<h{level} id="{ident}">{inner}{marker}</h{level}>'
 
     return Rendered(_HEADING.sub(mark, html), found)
 
@@ -799,9 +800,8 @@ def _variants(html: str) -> str:
     return _ROUTER_VARIANT.sub(wrap, html)
 
 
-def render(page: Path, docs: Path, link: Link) -> Rendered:
-    """One page as HTML: illustrations, callouts, captions, linked headings, links to site URLs."""
-    text, names = _name_files(page.read_text(encoding="utf-8"))
+def _compose(text: str, page: Path, docs: Path, link: Link) -> Rendered:
+    text, names = _name_files(text)
     html = cmarkgfm.github_flavored_markdown_to_html(
         text, Options.CMARK_OPT_GITHUB_PRE_LANG | Options.CMARK_OPT_UNSAFE
     )
@@ -812,3 +812,13 @@ def render(page: Path, docs: Path, link: Link) -> Rendered:
     done = _identify(_callouts(_tables(_variants(coloured))))
     # The figures are last: nothing else looks at the drawing the SVG carries.
     return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)
+
+
+def render(page: Path, docs: Path, link: Link) -> Rendered:
+    """One page as HTML: illustrations, callouts, captions, linked headings, links to site URLs."""
+    return _compose(page.read_text(encoding="utf-8"), page, docs, link)
+
+
+def render_fragment(text: str, page: Path, docs: Path, link: Link) -> Rendered:
+    """One part of a page, drawn like the whole: the home page keeps only its introduction."""
+    return _compose(text, page, docs, link)
