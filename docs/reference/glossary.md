@@ -55,4 +55,4 @@ has a page: follow the link. For how the notions fit together, read
 - [Core concepts](../getting-started/core-concepts.md): the model these words belong to
 - [Documentation index](../README.md): the page for the task at hand
 - [File conventions](file-conventions.md): the reserved names behind these definitions
-- [For AI agents](agents.md): the same invariants, written for an agent
+- [For AI agents](../guides/ai-agents.md): the same invariants, written for an agent
