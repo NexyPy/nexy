@@ -6,7 +6,7 @@ parts that differ from the [shared contracts](../frontend/pages.md).
 
 | Mode | `nexyconfig.py` | Pages are | Vue is |
 |---|---|---|---|
-| Server (default) | `useCSR = False` | `.nexy` files | [islands](../frontend/islands.md) inside those pages |
+| Server (default) | `useCSR = False` | `.nexy` files | [islands](../../rendering/islands.md) inside those pages |
 | Client | `useCSR = True` | `.vue` files | the whole page, with [layouts](../frontend/layouts.md) and a client router |
 
 ## Start a project

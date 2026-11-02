@@ -49,7 +49,6 @@ index, follow the page for the task, and trust the source when the two disagree.
 
 - [Frontend pages](docs/views/frontend/pages.md): One file, one route: props, rendering, metadata
 - [Frontend layouts](docs/views/frontend/layouts.md): The document shell, nesting, and what a layout cannot do
-- [Frontend islands](docs/views/frontend/islands.md): Hydration, serialisable props and triggers
 - [Frontend actions and navigation](docs/views/frontend/actions-and-navigation.md): Call a typed Action, link pages, read the URL
 - [React differences](docs/views/react/differences.md): Setup, pages, layouts, islands, actions
 - [Vue differences](docs/views/vue/differences.md): Setup, pages, layouts, islands, actions
@@ -99,7 +98,6 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Upgrading to 2.2](docs/getting-started/upgrading.md): Migrate from 2.1 to 2.2
 - [Internationalization (i18n)](docs/guides/i18n.md): Add translations with your choice of library
 - [Recipes](docs/guides/recipes.md): Examples and patterns, not a tutorial
-- [For AI agents](docs/reference/agents.md): Project invariants for AI agents
 
 ## Source
 

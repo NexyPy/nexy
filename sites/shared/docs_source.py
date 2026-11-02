@@ -123,6 +123,8 @@ ROUTERS = (
 )
 
 REDIRECTS = {
+    "reference/agents": "guides/ai-agents",
+    "views/frontend/islands": "rendering/islands",
     "views/react": "views/react/differences",
     "views/vue": "views/vue/differences",
     "views/svelte": "views/svelte/differences",

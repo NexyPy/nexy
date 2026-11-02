@@ -87,8 +87,15 @@ Controllers and modules.
 |---|---|
 | [Pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
 | [Layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
-| [Islands](views/frontend/islands.md) | Hydration, serialisable props and triggers |
 | [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
+
+### Nexy views
+| Page | What you will do |
+|---|---|
+| [.nexy files](views/nexy/README.md) | Write a page with Python, Jinja2 and props |
+| [Components](views/nexy/components.md) | Use `Image`, `Link`, `Audio`, `Video` and `Import` |
+| [layout.nexy](views/nexy/layouts.md) | Write the server-mode layout |
+| [Markdown and MDX](views/nexy/markdown.md) | Write content pages |
 
 ### Framework differences
 | Page | What changes |
@@ -98,16 +105,6 @@ Controllers and modules.
 | [Svelte differences](views/svelte/differences.md) | Runes, stores and `layout.svelte` {new} |
 | [Solid differences](views/solid/differences.md) | Signals, accessors and `layout.tsx` {new} |
 | [Preact differences](views/preact/differences.md) | Hooks, signals and `layout.tsx` {new} |
-
-## Nexy Views
-
-### Nexy views
-| Page | What you will do |
-|---|---|
-| [.nexy files](views/nexy/README.md) | Write a page with Python, Jinja2 and props |
-| [Components](views/nexy/components.md) | Use `Image`, `Link`, `Audio`, `Video` and `Import` |
-| [layout.nexy](views/nexy/layouts.md) | Write the server-mode layout |
-| [Markdown and MDX](views/nexy/markdown.md) | Write content pages |
 
 ## Rendering
 
@@ -211,6 +208,5 @@ docs/
 | [Upgrading to 2.2](getting-started/upgrading.md) | Migrate from 2.1 to 2.2 |
 | [Internationalization (i18n)](guides/i18n.md) | Add translations with your choice of library |
 | [Recipes](guides/recipes.md) | Examples and patterns, not a tutorial |
-| [For AI agents](reference/agents.md) | Project invariants for AI agents |
 
 *These pages are not part of the default reading path. An "All documentation" link allows you to see everything.*
