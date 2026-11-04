@@ -101,16 +101,21 @@ def _lost(answer: str, indices: list[int]) -> int:
     return next(index for index in indices if found.count(index) != 1)
 
 
-# A kept part that opens a piece and sticks to its word: `[[7]]Routing` comes back as `Routing`,
-# where the same part inside a sentence survives. Such a piece travels as the word alone.
+# A kept part that sticks to its word with no space around it: `[[7]]Routing` comes back as
+# `Routing`, and `React.[[8]]` as `React.`, where the same part inside a sentence survives. Such a
+# piece travels as the word alone, the part put back on the side it was.
 _GLUED = re.compile(r"\A(\[\[\d+\]\])(\S+)\Z")
+_GLUED_END = re.compile(r"\A(\S+)(\[\[\d+\]\])\Z")
 
 
 def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -> str:
     """One request, cut in two around a placeholder the service keeps losing."""
-    glued = _GLUED.match(chunk)
-    if glued is not None:
-        return glued[1] + _ask(glued[2], target, engine, retries)
+    opening = _GLUED.match(chunk)
+    if opening is not None:
+        return opening[1] + translate_chunk(opening[2], target, engine, retries)
+    closing = _GLUED_END.match(chunk)
+    if closing is not None:
+        return translate_chunk(closing[1], target, engine, retries) + closing[2]
     indices = _indices(chunk)
     answer = _ask(chunk, target, engine, retries)
     if _keeps(answer, indices):
