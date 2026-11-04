@@ -17,6 +17,12 @@ class TestTranslateChunk:
     def test_a_marker_glued_to_its_word_keeps_the_marker(self):
         assert translate_chunk("[[7]]Routing", "bn", service) == "[[7]]bn:Routing"
 
+    def test_a_marker_glued_after_its_word_keeps_the_marker(self):
+        assert translate_chunk("React.[[8]]", "bn", service) == "bn:React.[[8]]"
+
+    def test_a_word_between_two_markers_keeps_both(self):
+        assert translate_chunk("[[7]]Routing[[8]]", "bn", service) == "[[7]]bn:Routing[[8]]"
+
     def test_a_marker_inside_a_sentence_stays_with_it(self):
         assert translate_chunk("[[7]] Routing", "bn", service) == "bn:[[7]] Routing"
 
