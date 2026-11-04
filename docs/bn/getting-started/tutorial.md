@@ -1,0 +1,203 @@
+# টিউটোরিয়াল: 10 মিনিটের মধ্যে একটি নোট পৃষ্ঠা তৈরি করুন
+
+আপনি একটি প্রকল্প তৈরি করবেন, একটি পৃষ্ঠা যুক্ত করবেন, একটি পাইথন এন্ডপয়েন্ট যুক্ত করবেন, তাদের মধ্যে ডেটা ভাগ করবেন এবং তৈরি করবেন
+উৎপাদনের জন্য। আপনি একটি পৃষ্ঠা এবং JSON হিসাবে পরিবেশিত নোটগুলির একটি তালিকা দিয়ে শেষ করুন৷
+
+Nexy এ নতুন? প্রথমে [দ্রুত শুরু](quick-start.md) করুন: এটি তিন মিনিট সময় নেয়।
+
+```diagram filename="পুরো টিউটোরিয়াল এক লাইনে"
+uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
+```
+
+## 1. প্রকল্পটি তৈরি করুন
+
+```bash
+uvx nexy new notes
+cd notes
+.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
+nexy dev
+```
+
+`uvx` [uv](https://docs.astral.sh/uv/) এর সাথে আসে এবং শুধুমাত্র প্রজেক্ট তৈরি করে। প্রতিটি আদেশ পরে
+এটি প্রজেক্টের ভার্চুয়াল পরিবেশে (বা `uv run nexy dev` হিসাবে) চলে।
+
+ফাইল-ভিত্তিক রাউটার, একটি ওয়েব প্রজেক্ট এবং যেকোনো ক্লায়েন্ট ফ্রেমওয়ার্ক (বা কোনোটিই) বেছে নিন। খোলা
+<http://localhost:3000>। দীর্ঘ পদক্ষেপগুলি তাদের সময়কাল সহ প্রতিটি লাইন মুদ্রণ করে, যেমনটি `uv` করে।
+
+<!-- router:modular -->
+ফাইল-ভিত্তিক রাউটার প্রম্পটে `No` উত্তর দিন: `nx new` মডুলার রাউটারকে `src/apps/` এ স্ক্যাফোল্ড করে।
+`src/routes/` এর পরিবর্তে।
+<!-- /router -->
+
+<!-- router:custom -->
+পৃষ্ঠাগুলির জন্য ফাইল-ভিত্তিক রাউটার প্রম্পটে `Yes` উত্তর দিন, তারপরে আপনার বিদ্যমান `APIRouter` মাউন্ট করুন
+in `nexyconfig.py`: দুটি রাউটার সহাবস্থান করে।
+<!-- /router -->
+
+## ২. লেআউট সম্পাদনা করুন
+
+<!-- router:fbr,custom -->
+`src/routes/layout.nexy` HTML নথির মালিক (প্রতিক্রিয়া ক্লায়েন্ট রাউটিং সহ এটি `layout.tsx`)। পরিবর্তন করুন `<title>`:
+
+```nexy
+<title>Notes</title>
+```
+
+সংরক্ষণ করুন: ব্রাউজার পুনরায় লোড হয়। [লেআউটস](../routing/fbr/layouts/README.md) দেখুন।
+<!-- /router -->
+
+<!-- router:modular -->
+কন্ট্রোলার দৃশ্যের চারপাশে `src/apps/layout.nexy` রেন্ডার করে এবং সেই ফাইলটি HTML এর মালিক
+নথি পরিবর্তন করুন `<title>`:
+
+```nexy
+<title>Notes</title>
+```
+
+সংরক্ষণ করুন: ব্রাউজার পুনরায় লোড হয়। [একটি কন্ট্রোলার থেকে দেখা](../routing/modular/README.md#views-from-a-controller) দেখুন।
+<!-- /router -->
+
+## 3. একটি পৃষ্ঠা যোগ করুন
+
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/notes.nexy"
+---
+notes = ["Buy milk", "Ship Nexy"]
+---
+<h1>Notes</h1>
+<ul>
+  {% for note in notes %}
+  <li>{{ note }}</li>
+  {% endfor %}
+</ul>
+```
+
+খুলুন <http://localhost:3000/notes>: আপনি দুটি বুলেট দেখতে হবে. এটি `/notes` এ পরিবেশিত হয়। `---` এর মধ্যবর্তী অংশটি পাইথন, বাকি অংশটি জিনজা 2।
+<!-- /router -->
+
+<!-- router:modular -->
+একটি নিয়ামক একটি দৃশ্য প্রদান করে। তৈরি করুন `src/apps/notes_view.nexy`:
+
+```nexy filename="src/apps/notes_view.nexy"
+---
+notes = ["Buy milk", "Ship Nexy"]
+---
+<h1>Notes</h1>
+<ul>
+  {% for note in notes %}
+  <li>{{ note }}</li>
+  {% endfor %}
+</ul>
+```
+
+রুটটি `src/apps/app_controller.py` এ ঘোষণা করুন এবং মডিউলে নিয়ামক যোগ করুন:
+
+```python filename="src/apps/app_controller.py"
+@Controller("/notes")
+class NotesController:
+    async def get(self):
+        return useViews("src/apps/layout.nexy", context={
+            "children": useViews("src/apps/notes_view.nexy"),
+        })
+```
+
+```python filename="src/apps/app_module.py"
+from .app_controller import AppController, NotesController
+
+controllers = [AppController, NotesController]
+```
+
+খুলুন <http://localhost:3000/notes>: আপনি দুটি বুলেট দেখতে হবে. `---` এর মধ্যবর্তী অংশটি হল পাইথন,
+বাকি জিনজা 2।
+<!-- /router -->
+
+## 4. একটি শেষ পয়েন্ট যোগ করুন
+
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/notes.py"
+async def GET():
+    return [{"id": 1, "text": "Buy milk"}]
+```
+
+```bash
+curl http://localhost:3000/api/notes
+```
+
+আপনার `[{"id":1,"text":"Buy milk"}]` পাওয়া উচিত। ফাংশনের নাম হল HTTP পদ্ধতি। ইন্টারেক্টিভ API ডক্স `/docs` এ রয়েছে।
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/app_controller.py"
+@Controller("/api/notes")
+class NotesApiController:
+    async def get(self):
+        return [{"id": 1, "text": "Buy milk"}]
+```
+
+`src/apps/app_module.py` এ `NotesApiController` যোগ করুন `controllers`, তারপর চালান:
+
+```bash
+curl http://localhost:3000/api/notes
+```
+
+আপনি `[{"id":1,"text":"Buy milk"}]` পেতে হবে. পদ্ধতির নাম হল HTTP পদ্ধতি। ইন্টারেক্টিভ API ডক্স `/docs` এ রয়েছে।
+<!-- /router -->
+
+## 5. ডেটা শেয়ার করুন
+
+তালিকাটিকে একটি পাইথন মডিউলে সরান এবং উভয় ফাইলে এটি ব্যবহার করুন:
+
+```python filename="src/notes.py"
+NOTES = ["Buy milk", "Ship Nexy"]
+```
+
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/notes.nexy"
+---
+from src.notes import NOTES as notes
+---
+```
+
+```python filename="src/routes/api/notes.py"
+from src.notes import NOTES
+
+
+async def GET():
+    return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/notes_view.nexy"
+---
+from src.notes import NOTES as notes
+---
+```
+
+```python filename="src/apps/app_controller.py"
+from src.notes import NOTES
+
+
+@Controller("/api/notes")
+class NotesApiController:
+    async def get(self):
+        return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
+```
+<!-- /router -->
+
+## 6. তৈরি করুন এবং পরিবেশন করুন
+
+```bash
+nx build
+nx start
+```
+
+`nx build` প্রতিটি পর্যায় তার সময়কাল সহ মুদ্রণ করে। `nx start` এর সাথে কম্পাইল করা আউটপুট পরিবেশন করে
+Uvicorn: রানটাইমে কোন নোড প্রক্রিয়া নেই।
+
+## যেখানে পরবর্তী
+
+- [রাউটিং](../routing/README.md): গতিশীল সেগমেন্ট এবং গ্রুপ
+- [Actions](../guides/actions.md): একটি ফর্ম বা ক্লায়েন্ট থেকে পাইথনকে কল করুন
+- [টেস্টিং](../guides/testing.md): পরীক্ষার পৃষ্ঠা এবং শেষ পয়েন্ট
+- [মোতায়েন](../deployment/README.md): কন্টেইনার এবং রিভার্স প্রক্সি
