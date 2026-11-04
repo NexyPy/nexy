@@ -20,8 +20,6 @@ from pygments.formatters import HtmlFormatter  # type: ignore[import-untyped]
 from pygments.lexers import HtmlDjangoLexer, get_lexer_by_name  # type: ignore[import-untyped]
 from pygments.util import ClassNotFound  # type: ignore[import-untyped]
 
-from sites.shared import i18n
-
 REPOSITORY = "https://github.com/NexyPy/nexy/blob/main/"
 TEXT_LENGTH = 1800
 
