@@ -35,7 +35,10 @@ from sites.shared import i18n, translator  # noqa: E402
 
 DOCS = REPO / "docs"
 MANIFEST = "TRANSLATIONS.json"
-ENDPOINT = "https://translate.googleapis.com/translate_a/single?client=gtx"
+# The endpoint the Chrome extension reads. It answers a page of text as one list of strings, while
+# `translate_a/single` throttles a client that asks for many pages in a row, then answers 429 before
+# it reads the query at all.
+ENDPOINT = "https://translate.googleapis.com/translate_a/t?client=dict-chrome-ex"
 
 # The language codes Google knows, for the twelve the site offers.
 GOOGLE = {code: code for code in (language.code for language in i18n.LANGUAGES)}
@@ -46,14 +49,14 @@ Engine = Callable[[str, str], str]
 
 def google(text: str, target: str) -> str:
     """One request to the public endpoint: the text in the target language."""
-    query = urllib.parse.urlencode({"sl": "en", "tl": GOOGLE.get(target, target), "dt": "t"})
+    query = urllib.parse.urlencode({"sl": "en", "tl": GOOGLE.get(target, target)})
     request = urllib.request.Request(
         f"{ENDPOINT}&{query}&q={urllib.parse.quote(text)}",
         headers={"User-Agent": "Mozilla/5.0"},
     )
     with urllib.request.urlopen(request, timeout=60) as answer:
         data = json.loads(answer.read().decode("utf-8"))
-    return "".join(segment[0] for segment in data[0] if segment[0])
+    return "".join(data)
 
 
 def _pause(engine: Engine) -> None:
