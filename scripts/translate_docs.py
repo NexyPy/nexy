@@ -80,7 +80,7 @@ def _ask(chunk: str, target: str, engine: Engine, retries: int) -> str:
         except Exception as error:
             if attempt == retries:
                 raise
-            wait = attempt * 4
+            wait = attempt * 10
             print(f"  retry {attempt} in {wait}s: {type(error).__name__}", flush=True)
             time.sleep(wait)
             continue
