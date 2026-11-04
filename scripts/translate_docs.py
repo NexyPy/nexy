@@ -24,8 +24,8 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 REPO = Path(__file__).resolve().parent.parent
 if str(REPO) not in sys.path:
@@ -66,9 +66,14 @@ def _indices(chunk: str) -> list[int]:
     return translator.placeholders(chunk)
 
 
-def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -> str:
-    """One request, retried when the service throttles or loses a placeholder."""
-    indices = _indices(chunk)
+def _keeps(answer: str, indices: list[int]) -> bool:
+    """Whether the answer carries every placeholder of the piece, exactly once."""
+    found = translator.placeholders(answer)
+    return all(found.count(index) == 1 for index in indices)
+
+
+def _ask(chunk: str, target: str, engine: Engine, retries: int) -> str:
+    """The service's answer, asked again while it throttles or loses a placeholder."""
     for attempt in range(1, retries + 1):
         try:
             answer = engine(chunk, target)
@@ -79,12 +84,32 @@ def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -
             print(f"  retry {attempt} in {wait}s: {type(error).__name__}", flush=True)
             time.sleep(wait)
             continue
-        found = translator.placeholders(answer)
-        if all(found.count(index) == 1 for index in indices):
+        if _keeps(answer, _indices(chunk)):
             return answer
         print(f"  retry {attempt}: placeholder lost", flush=True)
         _pause(engine)
-    raise RuntimeError(f"the service kept losing placeholders in a chunk of {target}")
+    return answer
+
+
+def _lost(answer: str, indices: list[int]) -> int:
+    """The first placeholder the answer dropped or repeated."""
+    found = translator.placeholders(answer)
+    return next(index for index in indices if found.count(index) != 1)
+
+
+def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -> str:
+    """One request, cut in two around a placeholder the service keeps losing."""
+    indices = _indices(chunk)
+    answer = _ask(chunk, target, engine, retries)
+    if _keeps(answer, indices):
+        return answer
+    lost = _lost(answer, indices)
+    at = chunk.find(f"[[{lost}]]")
+    parts = translator.split(chunk, at) if at >= 0 else None
+    if parts is None:
+        raise RuntimeError(f"the service keeps losing placeholder {lost} in a chunk of {target}")
+    head, between, tail = parts
+    return translate_chunk(head, target, engine) + between + translate_chunk(tail, target, engine)
 
 
 def translate_markdown(markdown: str, target: str, engine: Engine = google) -> str:
@@ -138,7 +163,7 @@ def refresh(
     force: bool = False,
     limit: int | None = None,
 ) -> list[Path]:
-    """Translate the pages whose English source changed into `docs/<code>/`; return those written."""
+    """Translate the changed pages into `docs/<code>/`; return those written."""
     root = docs / code
     manifest = _manifest(root)
     written: list[Path] = []

@@ -37,6 +37,8 @@ _KEPT = re.compile(
 # The paragraph boundary: a chunk never cuts a paragraph in two, so a service sees whole sentences.
 _BLOCK = re.compile(r"\n[ \t]*\n")
 CHUNK = 4500
+# How far from the wanted place a cut may look for a space, when a chunk has to be split again.
+WINDOW = 400
 
 # A named fence shows its file or drawing name in a caption. The fence itself is code and never
 # travels; the caption is prose, and it is the only part of a fence a reader sees translated.
@@ -69,6 +71,25 @@ def chunks(template: str, limit: int = CHUNK) -> list[str]:
     if current:
         pieces.append(current)
     return pieces
+
+
+def split(text: str, near: int | None = None) -> tuple[str, str, str] | None:
+    """The text cut in two at a space, the space kept apart, or None when it has none.
+
+    The space is the one nearest `near` (the middle by default), on its left when there is one
+    there: a kept part that starts a piece survives a service that drops the one ending a piece.
+    """
+    middle = len(text) // 2 if near is None else near
+    cuts = [
+        at
+        for at in range(max(middle - WINDOW, 1), min(middle + WINDOW, len(text) - 1))
+        if text[at] in " \n"
+    ]
+    before = [at for at in cuts if at <= middle]
+    cut = max(before) if before else (min(cuts) if cuts else None)
+    if cut is None:
+        return None
+    return text[:cut], text[cut], text[cut + 1 :]
 
 
 def placeholders(text: str) -> list[int]:

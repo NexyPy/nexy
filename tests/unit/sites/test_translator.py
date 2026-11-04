@@ -54,6 +54,20 @@ class TestChunks:
         assert "\n\n".join(translator.chunks(text, limit=5)) == text
 
 
+class TestSplit:
+    def test_a_piece_cuts_at_the_space_nearest_the_middle(self):
+        assert translator.split("one two three four") == ("one two", " ", "three four")
+
+    def test_a_named_place_is_cut_on_its_left(self):
+        assert translator.split("one two three four", near=12) == ("one two", " ", "three four")
+
+    def test_a_place_on_a_space_keeps_that_space_apart(self):
+        assert translator.split("one two three four", near=13) == ("one two three", " ", "four")
+
+    def test_a_piece_without_a_space_is_not_split(self):
+        assert translator.split("abcdefghij") is None
+
+
 class TestRestore:
     def test_every_kept_part_comes_back(self):
         template, kept = translator.protect(PAGE)
