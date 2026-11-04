@@ -59,7 +59,7 @@ def google(text: str, target: str) -> str:
 def _pause(engine: Engine) -> None:
     """A local service is test-fast; the public one allows a few requests a second."""
     if engine is google:
-        time.sleep(0.4)
+        time.sleep(1.2)
 
 
 def _indices(chunk: str) -> list[int]:
