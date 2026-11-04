@@ -1,0 +1,119 @@
+# .nexy 文件
+
+`.nexy` 文件是一个组件：Python 在顶部，HTML 在中间，CSS 在底部。
+
+**开始之前：**由[快速启动](../../getting-started/quick-start.md)创建的项目。
+`.nexy` 文件不需要构建配置：`nx dev` 在保存时对其进行编译。
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+## 前题
+
+两行 `---` 之间的所有内容都是 Python。当组件被解决时，导入被解决
+编译；其余的针对每个请求运行，因此它可以读取请求状态。
+
+| 什么 | 示例 |
+|---|---|
+| 导入模块 | `import json`, `from datetime import datetime` |
+| 导入组件 | `from "@/components/card.nexy" import Card` |
+| 声明属性 | `title: prop[str] = "Default"` |
+| 计算一个值 | `year = datetime.now().year` |
+| 读取请求 | `pathname = usePathname()` |
+| 缓存页面 (ISR) | `revalidate = 60` |
+
+## 属性
+
+属性是组件的 API。 `prop[type]` 声明类型，`= value` 给出默认值。一个
+没有默认值的属性必须由父级传递。
+
+以别名开头的导入通过 `useAliases` 解析。设置 `nx new` 写入映射
+`@` 到 `src`，这使得 `@/components/card.nexy` 意味着 `src/components/card.nexy`。
+
+## 模板
+
+frontmatter 下面是带有 Jinja2 的 HTML。来自 frontmatter 的变量和属性位于
+范围。
+
+```html
+{% for item in items %}
+  <li>{{ item.name }}</li>
+{% endfor %}
+
+{% if user %}
+  <p>Welcome, {{ user.name }}</p>
+{% endif %}
+```
+
+自动转义为 **off**：模板是项目自己的 HTML，因此 `{{ value }}` 插入为
+写的。使用 `{{ value | e }}` 自己逃避不受信任的值。 `| safe` 因此没有任何改变。
+
+> [！注意]
+> 将包含`{{`或`{%`的JavaScript封装在`{% raw %}...{% endraw %}`中。
+> Vue 和 Svelte 等框架使用相同的大括号。
+
+## 组件
+
+任何名称以大写字母开头的导入的可调用对象都可以用作标签。编译器
+将其重写为 Jinja 调用：属性成为关键字参数。
+
+```nexy filename="src/routes/index.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+
+最后一行正是 `{{ Audio("/theme.mp3", controls=True) }}`。两种语法均适用于
+内置 `Image`、`Link`、`Audio` 和 `Video` 帮助器 - 请参阅
+[组件](components.md#two-syntaxes-one-function)。
+
+子组件通过子组件内的 `<Slot />`（大写 S）以及 `{{ children }}` 进行渲染
+在布局内。
+
+使用 Jinja 在属性内传递计算值：`<Icon path="{{ icon }}" size="{{ size }}" />`。
+诸如 `path=icon` 之类的裸名称是文本 `icon`，而不是变量。为组件提供 CSS
+类，声明一个 `class_name` 属性：`class` 是一个 Python 关键字。
+
+> [！注意]
+> 辅助标签总是自动关闭的。将内容传递给 `Link` 会经过其
+> `children` 参数 (`<Link href="/about" children="About" />`)，不通过元素内容。
+
+## 样式
+
+`<style>` 块与声明它们的页面一起发出。它们没有作用域：类名
+两个组件中使用的是一个类。为您的类添加前缀或命名空间。
+
+## 节省时间的规则
+
+- 每个文件一个组件。文件名是组件名称，采用 PascalCase (`CopyChip.nexy`)。一个
+  `.nexy` 组件作为 Python 模块导入：名称中的连字符 (`copy-chip.nexy`) 不包含连字符
+  编译。
+- 在使用 props 之前声明它们：未声明的变量呈现为空字符串，因为
+  Jinja2的undefined在这里是沉默的。
+- 将副作用保留在函数内部 - frontmatter 在每个请求时都会再次运行。
+
+## 后续步骤
+
+- [Markdown 和 MDX](markdown.md)：内容页面
+- [ISR](../../rendering/isr.md)：每个路径缓存一个页面
+- [CSR](../../rendering/csr.md)：客户端渲染
