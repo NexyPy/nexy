@@ -69,6 +69,7 @@ uv pip install -e . --group dev
 - `test_config.py` uses `hasattr` pattern - watch for config API changes.
 - Integration tests (`tests/integration/`) may require project scaffolding or a temp workspace.
 - `docs/` is **plain Markdown** (no app, no build step, no separate repo) - entry point `docs/README.md`, one question per page, machine entry point `llms.txt`. Do not reintroduce a docs site generator here.
+- `docs/<code>/` holds the same pages in one of the site languages. Nothing there is written by hand: `python scripts/translate_docs.py --lang fr` writes it, `docs/<code>/TRANSLATIONS.json` remembers the hash of the English page each file came from, and `sites/shared/translator.py` is what keeps code, links and table pipes out of the service's hands. Change the English page, then run the script; never edit a translation.
 - `sites/` holds two sites that **show** `docs/` and own no text: `sites/vanilla` (a Python build script, plain HTML/CSS/JS, published to GitHub Pages by `.github/workflows/pages.yml`) and `sites/nexy` (a Nexy project). Both read the Markdown through `sites/shared/docs_source.py`. See `sites/README.md`.
 - `skills/` holds the rules for coding agents (principles, UX audit, one skill per framework,
   styling, backend, testing, framework-dev). Read `skills/nexy-principles/SKILL.md` first; start
