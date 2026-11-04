@@ -146,12 +146,11 @@ def _write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
-def source_pages(docs: Path, codes: set[str]) -> list[Path]:
+def source_pages(docs: Path) -> list[Path]:
     """The English pages: every Markdown of docs/ that is not inside a language tree."""
+    codes = {language.code for language in i18n.LANGUAGES}
     return sorted(
-        path
-        for path in docs.rglob("*.md")
-        if not codes.intersection(path.relative_to(docs).parts)
+        path for path in docs.rglob("*.md") if not codes.intersection(path.relative_to(docs).parts)
     )
 
 
@@ -211,7 +210,7 @@ def arguments(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     options = arguments(sys.argv[1:] if argv is None else argv)
     docs: Path = options.docs
-    pages = source_pages(docs, {option for option in options.lang})
+    pages = source_pages(docs)
     for code in options.lang:
         written = refresh(docs, code, pages, force=options.force, limit=options.limit)
         print(f"[{code}] {len(written)} page(s) written", flush=True)
