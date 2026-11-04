@@ -44,7 +44,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 
 ## Routing
 
-### Routing {fbr}
+### File-based {fbr}
 | Page | What you will do |
 |---|---|
 | [File-based routing](routing/fbr/README.md) | Turn a file path into a URL |
@@ -57,7 +57,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | Link pages, navigate on the client, prefetch |
 | [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
 
-### Route handlers {fbr}
+### Handlers and errors {fbr}
 | Page | What you will do |
 |---|---|
 | [Route handlers](routing/fbr/handlers/README.md) | Add a Python endpoint |
@@ -66,6 +66,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [Dependencies and guards](routing/fbr/dependencies/README.md) | Run `dependencies.py` before a handler, and inherit it |
 | [Middleware files](routing/fbr/middleware/README.md) | Wrap requests with `middleware.py`, inherited by directory |
 | [Error pages](routing/fbr/errors/README.md) | Answer with `notfound.nexy`, `errors.nexy` and JSON errors |
+| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Edge case: errors from sub-folders |
 
 ### Modular router {modular}
 Controllers and modules.
@@ -74,6 +75,7 @@ Controllers and modules.
 | [Modular routing](routing/modular/README.md) | Mount controllers and modules |
 | [Dependency injection](routing/modular/dependency-injection.md) | Define services, their scopes and the container |
 | [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
+| [Modular router vs NestJS](routing/modular/vs-nestjs.md) | Comparison with NestJS |
 
 ### Custom router integration {custom}
 | Page | What you will do |
@@ -85,8 +87,8 @@ Controllers and modules.
 ### Shared contracts
 | Page | What it defines |
 |---|---|
-| [Pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
-| [Layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
+| [Frontend pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
+| [Frontend layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
 | [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
 
 ### Nexy views
@@ -108,7 +110,7 @@ Controllers and modules.
 
 ## Rendering
 
-### Rendering
+### Modes
 | Page | What you will decide |
 |---|---|
 | [Rendering](rendering/README.md) | Which rendering mode fits a page |
@@ -132,10 +134,10 @@ Controllers and modules.
 | [Deploy](deployment/README.md) | Build, containerise and serve |
 | [Performance](deployment/performance.md) | Measure and tune the defaults |
 
-### Frontend and testing
+### Build and test
 | Page | What you will do |
 |---|---|
-| [Frontend](guides/frontend.md) | Set up Vite, styling and the client build |
+| [Vite and styling](guides/frontend.md) | Set up Vite, styling and the client build |
 | [Testing](guides/testing.md) | Test with pytest, `TestClient` and vitest |
 
 ### Tooling and help
@@ -203,8 +205,6 @@ docs/
 
 | Page | What you will do |
 |---|---|
-| [Modular router vs NestJS](routing/modular/vs-nestjs.md) | Comparison with NestJS |
-| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Edge case: errors from sub-folders |
 | [Upgrading to 2.2](getting-started/upgrading.md) | Migrate from 2.1 to 2.2 |
 | [Internationalization (i18n)](guides/i18n.md) | Add translations with your choice of library |
 | [Recipes](guides/recipes.md) | Examples and patterns, not a tutorial |
