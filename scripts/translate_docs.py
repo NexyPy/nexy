@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 import time
@@ -100,8 +101,16 @@ def _lost(answer: str, indices: list[int]) -> int:
     return next(index for index in indices if found.count(index) != 1)
 
 
+# A kept part that opens a piece and sticks to its word: `[[7]]Routing` comes back as `Routing`,
+# where the same part inside a sentence survives. Such a piece travels as the word alone.
+_GLUED = re.compile(r"\A(\[\[\d+\]\])(\S+)\Z")
+
+
 def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -> str:
     """One request, cut in two around a placeholder the service keeps losing."""
+    glued = _GLUED.match(chunk)
+    if glued is not None:
+        return glued[1] + _ask(glued[2], target, engine, retries)
     indices = _indices(chunk)
     answer = _ask(chunk, target, engine, retries)
     if _keeps(answer, indices):
