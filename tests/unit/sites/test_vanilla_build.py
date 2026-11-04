@@ -163,18 +163,18 @@ class TestPageContent:
     def test_the_menu_is_made_of_collapsible_sections(self, html):
         # Each section is a <details>: the one holding the current page is open, the
         # others are not, and opening one never closes another.
-        routing = 'data-section="Routing" data-scope="fbr" data-router="fbr"'
+        routing = 'data-section="File-based" data-scope="fbr" data-router="fbr"'
         assert f'<details class="group" {routing}>' in html
         forms = 'data-section="Forms and data" data-scope="core" open'
         assert f'<details class="group" {forms}>' in html
 
     def test_a_section_lists_all_its_pages(self, html):
-        section = html.split('data-section="Routing"', 1)[1].split("</details>", 1)[0]
+        section = html.split('data-section="File-based"', 1)[1].split("</details>", 1)[0]
         group = next(
             group
             for track in docs_source.read_tracks(DOCS)
             for group in track.groups
-            if group.title == "Routing" and group.router == "fbr"
+            if group.title == "File-based" and group.router == "fbr"
         )
         assert section.count("<li>") == len(group.pages)
 

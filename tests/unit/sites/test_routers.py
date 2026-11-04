@@ -95,8 +95,8 @@ class TestGroupRouter:
         """Five groups declare a scope; the rest are read by all."""
         groups = [group for track in source.read_tracks(DOCS) for group in track.groups]
         assert {group.title: group.scope for group in groups if group.scope != "core"} == {
-            "Routing": "fbr",
-            "Route handlers": "fbr",
+            "File-based": "fbr",
+            "Handlers and errors": "fbr",
             "Modular router": "modular",
             "Custom router integration": "custom",
             "Advanced": "advanced",
