@@ -76,7 +76,7 @@ def _ask(chunk: str, target: str, engine: Engine, retries: int) -> str:
     """The service's answer, asked again while it throttles or loses a placeholder."""
     for attempt in range(1, retries + 1):
         try:
-            answer = engine(chunk, target)
+            answer = translator.heal_opening(engine(chunk, target))
         except Exception as error:
             if attempt == retries:
                 raise

@@ -68,6 +68,17 @@ class TestSplit:
         assert translator.split("abcdefghij") is None
 
 
+class TestHealOpening:
+    def test_a_placeholder_that_opens_a_piece_gets_its_bracket_back(self):
+        assert translator.heal_opening("[80]]Routing") == "[[80]]Routing"
+
+    def test_a_placeholder_in_the_middle_is_left_alone(self):
+        assert translator.heal_opening("a [80]] b") == "a [80]] b"
+
+    def test_a_whole_placeholder_that_opens_a_piece_stays_as_it_is(self):
+        assert translator.heal_opening("[[80]]Routing") == "[[80]]Routing"
+
+
 class TestRestore:
     def test_every_kept_part_comes_back(self):
         template, kept = translator.protect(PAGE)

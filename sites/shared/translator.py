@@ -103,6 +103,17 @@ def missing(translated: str, kept: list[str]) -> list[int]:
     return [index for index in range(len(kept)) if seen.count(index) != 1]
 
 
+# A piece that opens with a placeholder comes back with one bracket fewer: the service reads the
+# first token it meets as a bracket pair and balances it. The number is still there, so the part
+# can be put back instead of asked again.
+_OPENING = re.compile(r"\A\[(?!\[)(\d+)\]\]")
+
+
+def heal_opening(answer: str) -> str:
+    """Give back the bracket a service drops from the placeholder that opens a piece."""
+    return _OPENING.sub(r"[[\1]]", answer, count=1)
+
+
 def restore(translated: list[str], kept: list[str]) -> str:
     """Put the kept parts back into the translated pieces, or fail when an answer lost one."""
     text = "\n\n".join(translated)
