@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from sites.shared import docs_source
+from sites.shared import docs_source, i18n
 from tests.e2e.project import request
 
 SITE = Path(__file__).resolve().parents[3] / "sites" / "nexy"
@@ -288,7 +288,7 @@ def test_a_file_outside_the_assets_cannot_be_read(answers):
 
 def test_search_lists_every_page(answers):
     entries = json.loads(answers["/search-index"][2])
-    assert len(entries) == len(list(DOCS.rglob("*.md")))
+    assert len(entries) == len(i18n.english_pages(DOCS))
 
 
 def test_the_language_payload_is_served(answers):

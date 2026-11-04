@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from html import escape
+from pathlib import Path, PurePosixPath
 
 from sites.shared.icons import ICONS
 
@@ -40,6 +41,22 @@ LANGUAGES = (
 )
 
 DEFAULT = "en"
+CODES = frozenset(language.code for language in LANGUAGES)
+
+
+def is_english(relative: str) -> bool:
+    """Whether a path under docs/ is an English page, not a copy in a language tree."""
+    return not CODES.intersection(PurePosixPath(relative).parts)
+
+
+def english_pages(docs: Path) -> list[str]:
+    """The pages of `docs/` written in English, relative to it: a language tree holds copies."""
+    found: list[str] = []
+    for path in docs.rglob("*.md"):
+        relative = path.relative_to(docs).as_posix()
+        if is_english(relative):
+            found.append(relative)
+    return sorted(found)
 
 
 def find(code: str) -> Language:

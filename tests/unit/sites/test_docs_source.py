@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from sites.shared import docs_source as source
+from sites.shared import i18n
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
 
@@ -38,7 +39,7 @@ class TestTracks:
 
     def test_every_page_is_in_the_menu_once(self, tracks):
         listed = sorted(page.slug for track in tracks for page in source.pages_of(track))
-        every = sorted(source.slug_of(p.relative_to(DOCS).as_posix()) for p in DOCS.rglob("*.md"))
+        every = sorted(source.slug_of(relative) for relative in i18n.english_pages(DOCS))
         assert listed == [slug for slug in every if slug]
 
     def test_a_page_has_the_title_of_its_heading(self, tracks):

@@ -148,10 +148,7 @@ def _write(path: Path, text: str) -> None:
 
 def source_pages(docs: Path) -> list[Path]:
     """The English pages: every Markdown of docs/ that is not inside a language tree."""
-    codes = {language.code for language in i18n.LANGUAGES}
-    return sorted(
-        path for path in docs.rglob("*.md") if not codes.intersection(path.relative_to(docs).parts)
-    )
+    return [docs / relative for relative in i18n.english_pages(docs)]
 
 
 def refresh(
