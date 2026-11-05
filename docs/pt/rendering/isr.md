@@ -1,21 +1,18 @@
-# ISR (obsoleto enquanto revalida)
+# ISR (obsoleto enquanto revalidado)
 
 ## Definição
 
-O ISR armazena em cache o HTML de uma página, por URL, e o veicula até que sua janela expire. A cópia expirada
-ainda é servido enquanto um novo é renderizado em segundo plano: isto é *obsoleto enquanto revalida*.
+O ISR armazena em cache o HTML de uma página, por URL, e o veicula até que sua janela expire. A cópia expirada ainda é veiculada enquanto uma nova é renderizada em segundo plano: isto é *obsoleto enquanto revalida*.
 
 ## Como funciona
 
-`revalidate = N` no frontmatter de uma página `.nexy` ativa-o. `N` é um número de segundos; um
-valor ausente, zero ou negativo significa nenhum cache.
+`revalidate = N` no frontmatter de uma página `.nexy` ativa-o. `N` é um número de segundos; um valor ausente, zero ou negativo significa que não há cache algum.
 
-A chave de cache é apenas o **caminho da solicitação** - `request.scope["path"]`. A string de consulta não faz parte
-disso.
+A chave de cache é apenas o **caminho da solicitação** - `request.scope["path"]`. A string de consulta não faz parte dela.
 
 | Qual | Valor |
 |---|---|
-| Digite | o caminho da URL (`/blog/hello`) |
+| Digite | o caminho do URL (`/blog/hello`) |
 | Armazenamento | na memória, no processo que renderiza a página |
 | Limite | 256 entradas por processo, menos usadas recentemente despejadas |
 | Cabeçalho de resposta | `cache-control: public, s-maxage=N, stale-while-revalidate=N` |
@@ -25,8 +22,7 @@ disso.
 1. Chega uma solicitação para uma página que declara `revalidate`.
 2. Nenhuma entrada ainda: a página é renderizada, armazenada e retornada.
 3. Entrada menor que `N` segundos: retornada como está, a página não é renderizada.
-4. Entrada anterior a `N` segundos: a entrada **obsoleta** é retornada imediatamente e uma tarefa em segundo plano
-   renderiza um novo.
+4. Entrada com mais de `N` segundos: a entrada **obsoleta** é retornada imediatamente e uma tarefa em segundo plano renderiza uma nova.
 5. Se a renderização em segundo plano aumentar, a entrada obsoleta permanecerá e a próxima solicitação obsoleta tentará novamente.
 
 ## Quando usar
@@ -44,8 +40,7 @@ revalidate = 60
 <h1>Rendered at most once per minute</h1>
 ```
 
-`N` é um número inteiro simples. Não há substituição por rota em outro lugar e os manipuladores `.py` não são páginas:
-eles nunca entram neste cache.
+`N` é um número inteiro simples. Não há substituição por rota em outro lugar, e os manipuladores `.py` não são páginas: eles nunca entram neste cache.
 
 ## Exemplo
 
@@ -61,17 +56,13 @@ post = posts.get(slug, {"title": "Untitled"})
 <h1>{{ post.title }}</h1>
 ```
 
-A primeira solicitação para `/blog/hello` renderizar e armazenar. Os próximos 300 segundos são servidos na memória.
-`/blog/other` é uma entrada separada, renderizada e armazenada por conta própria. Em um projeto real `posts` vem
-de um banco de dados ou serviço, chamado uma vez por regeneração.
+A primeira solicitação para `/blog/hello` renderizar e armazenar. Os próximos 300 segundos são servidos na memória. `/blog/other` é uma entrada separada, renderizada e armazenada por conta própria. Em um projeto real `posts` vem de um banco de dados ou serviço, chamado uma vez por regeneração.
 
 ## Limitações
 
-**Nexy garante** que a chave do cache é o caminho, a cópia obsoleta é servida durante a regeneração e o
-store é limitado e seguro para threads.
+**Nexy garante** que a chave do cache é o caminho, a cópia obsoleta é servida durante a regeneração e o armazenamento é limitado e seguro para threads.
 
-**Por convenção**, uma página que declara `revalidate` é conteúdo público. Escreva como se cada visitante
-vê o mesmo HTML.
+**Por convenção**, uma página que declara `revalidate` é conteúdo público. Escreva como se todos os visitantes vissem o mesmo HTML.
 
 **Sua aplicação é responsável por** todo o resto:
 
@@ -87,6 +78,6 @@ vê o mesmo HTML.
 ## Próximas etapas
 
 - [SSR](ssr.md): como a página é renderizada antes de ser armazenada em cache
-- [Ações](../guides/actions.md): o cabeçalho `revalidate` e o que ele não faz
+- [Actions](../guides/actions.md): o cabeçalho `revalidate` e o que ele não faz
 - [Desempenho](../deployment/performance.md)
 - [Páginas](../routing/fbr/pages/README.md): layouts e segmentos dinâmicos
