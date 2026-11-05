@@ -1,13 +1,11 @@
-# Reagieren
+# React
 
-Nexy rendert React 19-Komponenten auf dem Server und React hydratisiert sie dann im Browser. Seiten,
-Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile
-die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
+Nexy rendert React 19 Komponenten auf dem Server und React hydratisiert sie dann im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
-| Modus | `nexyconfig.py` | Seiten sind | Reaktion ist |
+| Modus | `nexyconfig.py` | Seiten sind | React ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Client | `useCSR = True` | `.tsx` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Der Client | `useCSR = True` | `.tsx` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
 
 ## Starten Sie ein Projekt
 
@@ -15,9 +13,7 @@ die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
 nx new my-app --template web-fbr-react
 ```
 
-Die Vorlage ist ein Servermodus-Projekt mit React-Inseln. Führen Sie `nx new my-app` ohne Vorlage aus
-Beantworten Sie stattdessen die Eingabeaufforderungen: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll
-der Rahmen.
+Die Vorlage ist ein Servermodus-Projekt mit React Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
 ## Aktivieren Sie React in einem vorhandenen Projekt
 
@@ -52,13 +48,10 @@ export default defineConfig({
 
 ## Regeln
 
-- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [react(), vue()]` stoppt
-  Der Server beim Start.
-- **Seiten sind `.tsx`.** React besitzt `.tsx` und `.jsx` für Komponenten, aber nur eine `.tsx`-Datei darunter
-  `src/routes/` wird zu einer Seite.
-- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, also sind sie keine Seiten.
-- **Ein Servermodus-Projekt hat keine `.tsx` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy
-  weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [react(), vue()]` stoppt den Server beim Start.
+- **Seiten sind `.tsx`.** React besitzt `.tsx` und `.jsx` für Komponenten, aber nur eine `.tsx`-Datei unter `src/routes/` wird zu einer Seite.
+- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
+- **Ein Servermodus-Projekt hat keine `.tsx` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
 
 ## Seiten
 
@@ -66,8 +59,7 @@ Im Client-Modus (`useCSR = True`) ist eine Seite eine `.tsx`-Datei.
 
 ### Seitenkomponente
 
-Eine Seite ist der Standardexport der Datei. Wenn kein Standardexport vorhanden ist, wählt Nexy den zuerst genannten aus
-exportieren.
+Eine Seite ist der Standardexport der Datei. Wenn kein Standardexport vorhanden ist, wählt Nexy den zuerst benannten Export aus.
 
 ```tsx filename="src/routes/index.tsx"
 export default function Home() {
@@ -90,7 +82,7 @@ export default function Post() {
 
 ## Layouts
 
-### Implementierung
+### Umsetzung
 
 Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt darunter.
 
@@ -112,7 +104,7 @@ Im Servermodus ist eine in eine `.nexy`-Datei importierte React-Komponente eine 
 
 ### Importieren
 
-Importieren Sie Komponenten in die Frontmatter der Datei `.nexy`:
+Importieren Sie Komponenten im Frontmatter der Datei `.nexy`:
 
 ```nexy filename="src/routes/index.nexy"
 ---
@@ -121,7 +113,7 @@ from "@/components/Counter.tsx" import Counter
 <Counter start=3 />
 ```
 
-### Hydrationsanweisungen
+### Trinkrichtlinien
 
 Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
 
