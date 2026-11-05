@@ -76,4 +76,4 @@ my-app/
 
 - [التوجيه](../routing/README.md): كيف يصبح المسار عنوان URL
 - [التكوين](../reference/config.md): كل خيار للمشروع
-- [](../guides/frontend.md): Vite، التصميم وبناء العميل
+- [الواجهة](../guides/frontend.md): Vite، التصميم وبناء العميل
