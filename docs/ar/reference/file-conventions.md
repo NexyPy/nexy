@@ -4,29 +4,29 @@
 
 ## ملفات الطريق
 
-| الملف | يصبح |
+| ملف | يصبح |
 |---|---|
-| `index.nexy`، `index.md`، `index.mdx`، `index.py` | مسار دليله |
+| `index.nexy`، `index.md`، `index.mdx`، `index.py` | مسار الدليل الخاص به |
 | `about.nexy` | `/about` |
-| `[slug].nexy` | المقطع الديناميكي `{slug}` |
-| `[...path].nexy` | جامع `{path:path}` |
-| `(group)/page.nexy` | `/page`: المجموعة لا تظهر في عنوان URL |
+| `[slug].nexy` | الجزء الديناميكي `{slug}` |
+| `[...path].nexy` | الشامل `{path:path}` |
+| `(group)/page.nexy` | `/page`: المجموعة لا تظهر في URL |
 | `name.py` | معالج واجهة برمجة التطبيقات؛ أسماء الوظائف `GET`، `POST`، ... هي الطرق |
-| `name.tsx`، `.jsx`، `.vue`، `.svelte` | مسار العميل عند تمكين إطار العمل مع `useFF` |
+| `name.tsx`، `.jsx`، `.vue`، `.svelte` | مسار العميل عند تمكين إطار العمل باستخدام `useFF` |
 
 ## الملفات المحجوزة
 
 | ملف | الدور | التفاصيل |
 |---|---|---|
-| `layout.nexy` | وضع الخادم: يغلف كل صفحة أسفله؛ يمتلك الجذر مستند HTML | [layout.nexy](../views/nexy/layouts.md) |
-| `layout.tsx` | وضع العميل (React): يمتلك الجذر مستند HTML، أما تلك المتداخلة فتغلف الصفحات | [layout.tsx](../views/react/differences.md) |
-| `layout.vue`، `layout.svelte` | وضع العميل: تخطيطات متداخلة | [layout.vue](../views/vue/differences.md)، [layout.svelte](../views/svelte/differences.md) |
-| `notfound.nexy` | صفحة 404 لدليلها | [صفحات الخطأ](../routing/fbr/errors/README.md) |
+| `layout.nexy` | وضع الخادم: يغلف كل صفحة تحتها؛ يمتلك الجذر مستند HTML | [تخطيط.nexy](../views/nexy/layouts.md) |
+| `layout.tsx` | وضع العميل (React): يمتلك الجذر مستند HTML، ويمتلك الصفحات المتداخلة | [تخطيط.tsx](../views/react/differences.md) |
+| `layout.vue`، `layout.svelte` | وضع العميل: تخطيطات متداخلة | [Layout.vue](../views/vue/differences.md), [layout.svelte](../views/svelte/differences.md) |
+| `notfound.nexy` | 404 صفحة لدليلها | [صفحات الخطأ](../routing/fbr/errors/README.md) |
 | `errors.nexy` | 500 صفحة لدليلها | [صفحات الخطأ](../routing/fbr/errors/README.md) |
-| `forbidden.nexy` | 403 صفحة لدليلها | [صفحات الخطأ في كل مجلد](../routing/fbr/errors/folder-pages.md) |
-| `unauthorized.nexy` | 401 صفحة لدليلها | [صفحات الخطأ في كل مجلد](../routing/fbr/errors/folder-pages.md) |
-| `loading.nexy` | محفوظة؛ لا يوجد تأثير لوقت التشغيل بعد | [صفحات الخطأ](../routing/fbr/errors/README.md) |
-| `middleware.py` | و `async def middleware(request, call_next)` تغليف طلبات الدليل وأدناه | [ملفات البرامج الوسيطة](../routing/fbr/middleware/README.md) |
+| `forbidden.nexy` | 403 صفحة لدليلها | [صفحات الخطأ لكل مجلد](../routing/fbr/errors/folder-pages.md) |
+| `unauthorized.nexy` | 401 صفحة لدليلها | [صفحات الخطأ لكل مجلد](../routing/fbr/errors/folder-pages.md) |
+| `loading.nexy` | محفوظة؛ لا يوجد تأثير وقت التشغيل حتى الآن | [صفحات الخطأ](../routing/fbr/errors/README.md) |
+| `middleware.py` | `async def middleware(request, call_next)` تغليف طلبات الدليل وأدناه | [ملفات الوسيطة](../routing/fbr/middleware/README.md) |
 | `dependencies.py` | قائمة `dependencies = [fn, ...]` مطبقة على الدليل وأبناءه | [التبعيات](../routing/fbr/dependencies/README.md) |
 | `__init__.py` | Python علامة الحزمة | |
 | `favicon.ico` | خدم في `/favicon.ico` | |
@@ -44,12 +44,12 @@
 
 ## خارج `src/routes/`
 
-| المجلد | الغرض |
+| مجلد | الغرض |
 |---|---|
-| `src/components/` | المكونات المستوردة بالصفحات؛ أبدا الطرق |
-| `src/apps/` | وحدات التحكم والوحدات النمطية لجهاز التوجيه المعياري](../routing/modular/README.md) |
-| `public/` | الملفات الثابتة، يتم تقديمها في الجذر: `public/logo.svg` هو `/logo.svg` (أيضًا تحت `/public/`) |
-| `__nexy__/` | المخرجات المولدة؛ لا ترتكب |
+| `src/components/` | المكونات المستوردة عن طريق الصفحات؛ الطرق أبدا |
+| `src/apps/` | وحدات التحكم والوحدات النمطية لـ [modular جهاز التوجيه](../routing/modular/README.md) |
+| `public/` | الملفات الثابتة، التي يتم تقديمها في الجذر: `public/logo.svg` هو `/logo.svg` (أيضًا ضمن `/public/`) |
+| `__nexy__/` | الناتج المتولد؛ لا ترتكب |
 
 ## الخطوات التالية
 
