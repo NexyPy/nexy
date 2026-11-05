@@ -141,5 +141,5 @@ Al inicio, Nexy importa todos los módulos de `src/` para encontrar las acciones
 ## Próximos pasos
 
 - [API](../routing/fbr/handlers/README.md): controladores explícitos
-- [Testing](testing.md#what-to-assert): cómo probar una acción
-- [Config](../reference/config.md): opciones de autenticación y middleware
+- [Pruebas](testing.md#what-to-assert): cómo probar una acción
+- [Configuración](../reference/config.md): opciones de autenticación y middleware
