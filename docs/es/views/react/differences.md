@@ -1,23 +1,19 @@
-# Reaccionar
+# React
 
-Nexy renderiza los componentes de React 19 en el servidor y luego React los hidrata en el navegador. páginas,
-Los diseños, islas y acciones son los mismos en todos los marcos: esta página cubre la configuración, luego las partes.
-que difieren de los [contratos compartidos](../frontend/pages.md).
+Nexy renderiza React 19 componentes en el servidor, luego React los hidrata en el navegador. Las páginas, diseños, islas y acciones son las mismas en todos los marcos: esta página cubre la configuración y luego las partes que difieren de los [contratos compartidos](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | Las páginas son | Reaccionar es |
+| Modo | `nexyconfig.py` | Las páginas son | React es |
 |---|---|---|---|
 | Servidor (predeterminado) | `useCSR = False` | `.nexy` archivos | [islas](../../rendering/islands.md) dentro de esas páginas |
-| Cliente | `useCSR = True` | `.tsx` archivos | toda la página, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+| El cliente | `useCSR = True` | `.tsx` archiva | la página completa, con [diseños](../frontend/layouts.md) y un enrutador cliente |
 
-## Iniciar un proyecto
+## iniciar un proyecto
 
 ```bash
 nx new my-app --template web-fbr-react
 ```
 
-La plantilla es un proyecto en modo servidor con islas React. Ejecute `nx new my-app` sin una plantilla para
-En su lugar, responda las indicaciones: el enrutador, el tipo de proyecto, si desea utilizar el enrutamiento del lado del cliente y luego
-el marco.
+La plantilla es un proyecto en modo servidor con React islas. Ejecute `nx new my-app` sin una plantilla para responder a las indicaciones: el enrutador, el tipo de proyecto, si se utilizará el enrutamiento del lado del cliente y luego el marco.
 
 ## Habilitar React en un proyecto existente
 
@@ -52,22 +48,18 @@ export default defineConfig({
 
 ## Reglas
 
-- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [react(), vue()]` se detiene
-  el servidor al inicio.
-- **Las páginas son `.tsx`.** React posee `.tsx` y `.jsx` para los componentes, pero solo un archivo `.tsx` bajo
-  `src/routes/` se convierte en una página.
-- **Los componentes viven fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
-- **Un proyecto en modo servidor no tiene `.tsx` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy
-  se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
+- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [react(), vue()]` detiene el servidor al inicio.
+- **Las páginas son `.tsx`.** React posee `.tsx` y `.jsx` para los componentes, pero solo un archivo `.tsx` bajo `src/routes/` se convierte en una página.
+- **Los componentes se encuentran fuera de `src/routes/`**, normalmente en `src/components/`, por lo que no son páginas.
+- **Un proyecto en modo servidor no tiene `.tsx` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
 
-## Páginas
+## paginas
 
 En modo cliente (`useCSR = True`), una página es un archivo `.tsx`.
 
 ### Componente de página
 
-Una página es la exportación predeterminada del archivo. Si no existe una exportación predeterminada, Nexy elige la primera nombrada
-exportar.
+Una página es la exportación predeterminada del archivo. Si no existe una exportación predeterminada, Nexy elige la primera exportación nombrada.
 
 ```tsx filename="src/rutas/index.tsx"
 export default function Home() {
@@ -77,7 +69,7 @@ export default function Home() {
 
 ### Segmentos dinámicos
 
-Los parámetros de URL están disponibles a través del enlace `useParams`:
+Los parámetros de URL están disponibles a través del gancho `useParams`:
 
 ```tsx filename="src/rutas/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -108,7 +100,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ## Islas
 
-En modo servidor, un componente de React importado a un archivo `.nexy` es una isla.
+En modo servidor, un componente React importado a un archivo `.nexy` es una isla.
 
 ### Importando
 
@@ -132,7 +124,7 @@ Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
 
 ## Acciones y navegación
 
-### Llamando acciones
+### Llamar a acciones
 
 Utilice el gancho `useAction` para administrar el estado de una llamada a la acción:
 
@@ -164,7 +156,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Acceso URL
+### acceso URL
 
 - `usePathname()`: ruta actual
 - `useParams()`: segmentos dinámicos
