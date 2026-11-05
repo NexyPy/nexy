@@ -39,7 +39,7 @@ nexy dev
 
 Buka <http://localhost:3000>. Anda akan melihat halaman awal. Port berasal dari `usePort` (default `3000`); `--port` dan `--host` menimpanya per proses.
 
-> [!CATATAN]
+> [!NOTE]
 > Jalankan setiap perintah kecuali `new` dan `init` di dalam lingkungan virtual proyek, atau awali dengan `uv run`, seperti pada `uv run nexy dev`. Di luar itu, proyek yang membutuhkan `sqlmodel` gagal dengan `No module named 'sqlmodel'`.
 
 ## 3. Ubah halaman
