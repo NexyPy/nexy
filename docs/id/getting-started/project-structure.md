@@ -30,7 +30,7 @@ Untuk memilih folder, tanyakan file apa itu:
 - **Pengontrol router modular** - `src/apps/`.
 - **Dihasilkan** - `__nexy__/`; jangan pernah mengeditnya.
 
-> [!PERINGATAN]
+> [!WARNING]
 > `src/routes/` dipindai: pembantu yang ditempatkan di sana menjadi rute. Letakkan helper yang bukan merupakan rute di luar `src/routes/`, atau awali namanya dengan `_`.
 
 ## `src/routes/`
@@ -48,7 +48,7 @@ Setiap file menjadi rute, kecuali nama yang dicadangkan di bawah. Jalur file tan
 
 Setiap nama halaman juga ada per kerangka. Dengan `react()` dikonfigurasi, `layout.jsx` dan `layout.tsx` dicadangkan persis seperti `layout.nexy`. Daftar dibuat di `nexy/core/config.py` (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
 
-> [!CATATAN]
+> [!NOTE]
 > `notfound.nexy` dan `errors.nexy` hanya diinstal ketika salinan ada di root rute. Salinan dalam subdirektori kemudian menyaring halaman untuk awalan tersebut.
 
 ## `src/apps/`
