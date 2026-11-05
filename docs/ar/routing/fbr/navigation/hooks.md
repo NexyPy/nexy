@@ -62,4 +62,4 @@ label: prop[str]
 - [الصفحات](../pages/README.md): المقاطع والتخطيطات الديناميكية
 - [الوصفات](../../../guides/recipes.md): تدفق تسجيل دخول تم اختباره مبني على `useSession()`
 - [التكوين](../../../reference/config.md): تمكين الجلسات واللغات
-- [.nexy files](../../../views/nexy/README.md): حيث يتم استدعاء الخطافات عادةً
+- [ملفات .nexy](../../../views/nexy/README.md): حيث يتم استدعاء الخطافات عادةً
