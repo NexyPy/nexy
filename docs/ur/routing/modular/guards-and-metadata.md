@@ -25,7 +25,7 @@ class AdminController:
 
 ## مڈل ویئر ڈیکوریٹر
 
-`@Middleware(*middlewares)` اسی طرح برتاؤ کرتا ہے: یہ FastAPI انحصار ہیں، ASGI مڈل ویئر نہیں۔ حقیقی ASGI مڈل ویئر کے لیے [Config](../../reference/config.md) یا [Midleware and security](../../guides/middleware-and-security.md) میں `useMiddlewares` کا استعمال کریں۔
+`@Middleware(*middlewares)` اسی طرح برتاؤ کرتا ہے: یہ FastAPI انحصار ہیں، ASGI مڈل ویئر نہیں۔ حقیقی ASGI مڈل ویئر کے لیے [کنفیگ](../../reference/config.md) یا [Midleware and security](../../guides/middleware-and-security.md) میں `useMiddlewares` کا استعمال کریں۔
 
 ## روٹ میٹا ڈیٹا
 
