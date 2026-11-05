@@ -136,7 +136,7 @@ nx test
 
 `nx build` فشل بسبب خطأ في الترجمة؛ `nx test` يفشل في التأكيد الفاشل ويخرج من الصفر. `nx check` يضيف mypy و `tsc` إلى التشغيل.
 
-يستخدم العمل على Nexy نفسه أوامر مختلفة: راجع [المساهمة](../../CONTRIBUTING.md).
+يستخدم العمل على Nexy نفسه أوامر مختلفة: راجع [المساهمة](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md).
 
 ## الخطوات التالية
 
