@@ -23,7 +23,7 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> [！注意]
+> [!NOTE]
 > 列出函数本身。列表中的 `Depends(...)` 对象将被忽略。
 
 `src/routes/admin/` 下的每个路由现在都需要标头、`.py` 处理程序和 `.nexy` 页面。
@@ -86,7 +86,7 @@ async def GET():
 
 ## 依赖失败
 
-依赖项通过引发来拒绝请求。 `HTTPException` 回答您提出的状态，作为 API 客户端 (`Accept: application/json`) 的 JSON 和浏览器的错误页面。请参阅[验证和错误](../handlers/validation-and-errors.md)。
+依赖项通过引发来拒绝请求。 `HTTPException` 以您提出的状态作为 API 客户端 (`Accept: application/json`) 的 JSON 和浏览器的错误页面进行回答。请参阅[验证和错误](../handlers/validation-and-errors.md)。
 
 ## 后续步骤
 
