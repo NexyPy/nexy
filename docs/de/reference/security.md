@@ -9,10 +9,10 @@ Nexy hängt von FastAPI, Starlette, Jinja2, Vite und React ab. Ein Boden ist die
 | Paket | Boden | Warum |
 |---|---|---|
 | `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): Ein manipulierter `Host`-Header ändert den Pfad, den Starlette an die Middleware meldet, wodurch die auf `request.url.path` geschriebene Autorisierung umgangen wird. Von CISA als ausgenutzt aufgeführt. |
-| `fastapi` | 0.133.0 | die erste Version, die ein festes Starlette | akzeptiert
+| `fastapi` | 0,133,0 | die erste Version, die ein festes Starlette akzeptiert |
 | `jinja2` | 3.1.6 | Sandbox-Flucht durch den `attr`-Filter (CVE-2025-27516) |
 | `vite` (Gerüstprojekte) | 6.4.3 | `server.fs.deny` Umgehung auf alternativen Windows-Pfaden (CVE-2026-53571); Die frühere Umgehung der Abfragezeichenfolge (CVE-2026-39364) betrifft nur Vite 7.1-7.3.1 und 8.0.0-8.0.4 |
-| `react`, `react-dom` | 19.2.5 | Die 2026 React-Advisories betreffen die `react-server-dom-*`-Pakete, die Nexy nicht verwendet; Der Boden hält die Linie geflickt |
+| `react`, `react-dom` | 19.2.5 | die 2026 React-Advisories betreffen die `react-server-dom-*`-Pakete, die Nexy nicht verwendet; Der Boden hält die Linie geflickt |
 
 Überprüfen Sie Ihre gelösten Versionen:
 
@@ -60,4 +60,4 @@ Siehe [Middleware und Sicherheit](../guides/middleware-and-security.md).
 
 - [Middleware und Sicherheit](../guides/middleware-and-security.md)
 - [Bereitstellen](../deployment/README.md)
-- [Config](config.md)
+- [Konfiguration](config.md)
