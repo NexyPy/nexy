@@ -5,10 +5,10 @@ Sebelum memilih format file, penting untuk membedakan antara cara Nexy menangani
 | Istilah | Definisi |
 |---|---|
 | **Halaman** | Sumber daya aplikasi yang dapat dialamatkan URL. Ini ditentukan oleh file di bawah `src/routes/`. |
-| **View** | Proses menghasilkan isi respons untuk sebuah halaman. Tampilan mengubah logika dan data menjadi HTML atau JSON. |
-| **Component** | Blok penyusun UI yang dapat digunakan kembali untuk menyusun tampilan. Komponen dapat berupa pembantu asli Nexy atau khusus kerangka kerja (React, Vue, dll.). |
+| **Lihat** | Proses menghasilkan badan respons untuk sebuah halaman. Tampilan mengubah logika dan data menjadi HTML atau JSON. |
+| **Komponen** | Blok penyusun UI yang dapat digunakan kembali untuk menyusun tampilan. Komponen dapat berupa pembantu asli Nexy atau khusus kerangka kerja (React, Vue, dll.). |
 | **Pengendali rute** | Fungsi Python yang menangani permintaan HTTP untuk metode tertentu (misalnya, `GET`, `POST`). |
-| **Endpoint** | Kombinasi unik dari URL dan metode HTTP yang dijawab oleh pengendali rute. |
+| **Titik akhir** | Kombinasi unik dari URL dan metode HTTP yang dijawab oleh pengendali rute. |
 
 **Tidak yakin? Tulis file `.nexy`.** Tidak memerlukan kerangka klien, dan Anda dapat menambahkan komponen React, Vue, Svelte, Solid atau Preact di dalamnya nanti, sebagai sebuah pulau.
 
@@ -22,13 +22,13 @@ API handler                  →  .py        (GET, POST, …)
 
 ## Format
 
-| Format | File | Render server | Kerangka klien | Catatan |
+| Format | Mengajukan | Penyajian server | Kerangka klien | Catatan |
 |---|---|---|---|---|
-| `.nexy` | [berkas .nexy](nexy/README.md) | Jinja2 + Python logika, dialirkan | opsional | Format halaman Nexy asli |
-| `.md` | [Markdown dan MDX](nexy/markdown.md) | cmarkgfm pada waktu permintaan | opsional melalui tata letak | Murni Markdown, GFM, dibungkus tata letak |
-| `.mdx` | [Markdown dan MDX](nexy/markdown.md) | framework SSR | React atau Preact | Markdown dengan komponen |
+| `.nexy` | [file .nexy](nexy/README.md) | Logika Jinja2 + Python, dialirkan | opsional | Format halaman Nexy asli |
+| `.md` | [Markdown dan MDX](nexy/markdown.md) | Markdown pada waktu permintaan | opsional melalui tata letak | Murni Markdown, GFM, dibungkus tata letak |
+| `.mdx` | [Markdown dan MDX](nexy/markdown.md) | kerangka RSK | React atau Preact | Markdown dengan komponen |
 | `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) atau [Preact](preact/differences.md) | mode klien: kerangka kerja, dirender dalam Node | React, Solid atau Preact | Rute komponen |
-| `.vue` | [Vue](vue/differences.md) | mode klien: kerangka kerja, dirender dalam Node | Vue | rute SFC |
+| `.vue` | [Vue](vue/differences.md) | mode klien: kerangka kerja, dirender dalam Node | Vue | Rute SFC |
 | `.svelte` | [Svelte](svelte/differences.md) | mode klien: kerangka kerja, dirender dalam Node | Svelte | Rute SFC |
 
 Pembantu bawaan `Image`, `Link`, `Audio`, `Video` dan `Import`: [Komponen](nexy/components.md).
@@ -63,6 +63,6 @@ A `layout.*` dalam direktori membungkus halaman di bawahnya. Lihat [tata letak](
 
 ## Langkah selanjutnya
 
-- [file .nexy](nexy/README.md): Python + Jinja2 + alat peraga
+- [File .nexy](nexy/README.md): Python + Jinja2 + alat peraga
 - [Markdown dan MDX](nexy/markdown.md): halaman konten
 - [Komponen](nexy/components.md): pembantu HTML bawaan
