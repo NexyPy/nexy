@@ -1,6 +1,6 @@
 # Meningkatkan ke 2.2
 
-Perubahan apa yang terjadi pada proyek yang sudah ada saat Anda berpindah dari 2.1 ke 2.2, dan apa yang harus dilakukan untuk mengatasinya. Daftar selengkapnya ada di [changelog](../../CHANGELOG.md).
+Perubahan apa yang terjadi pada proyek yang sudah ada saat Anda berpindah dari 2.1 ke 2.2, dan apa yang harus dilakukan untuk mengatasinya. Daftar selengkapnya ada di [catatan perubahan](../../CHANGELOG.md).
 
 ```bash
 uv add "nexy>=2.2"            # or: uv tool upgrade nexy
@@ -41,4 +41,4 @@ Tiga halaman mengatakan sesuatu yang tidak dilakukan kode tersebut. Jika Anda me
 
 - [Indeks dokumentasi](../README.md): halaman untuk apa yang sedang Anda buat
 - [Pemecahan masalah](../guides/troubleshooting.md): masalah yang pertama kali dihadapi orang
-- [Config](../reference/config.md): setiap kolom `use*` dan defaultnya
+- [Konfigurasi](../reference/config.md): setiap kolom `use*` dan defaultnya
