@@ -48,6 +48,24 @@ class TestProtect:
         assert kept[0] == "#" and _template.startswith("[[0]] Choose")
 
 
+class TestNames:
+    def test_a_product_name_never_reaches_the_translator(self):
+        template, kept = translator.protect("Python serves, Vite builds.")
+        assert "Python" not in template and "Python" in kept and "Vite" in kept
+
+    def test_a_longer_name_wins_over_its_prefix(self):
+        _template, kept = translator.protect("Read Jinja2 and Next.js docs.")
+        assert kept == ["Jinja2", "Next.js"]
+
+    def test_a_name_inside_a_word_is_left_alone(self):
+        _template, kept = translator.protect("A reactive view.")
+        assert kept == []
+
+    def test_a_marker_is_structure_and_a_name_is_not(self):
+        _template, kept = translator.protect("## Python\n")
+        assert translator.structural(kept) == frozenset({0})
+
+
 class TestChunks:
     def test_a_chunk_never_cuts_a_paragraph(self):
         text = "\n\n".join(["word " * 40] * 4)
@@ -137,3 +155,27 @@ class TestUnwrap:
     def test_a_comment_line_stays_apart(self):
         text = "<!-- router:fbr -->\nSome text\n<!-- /router -->\n"
         assert translator.unwrap(text) == text
+
+
+class TestRespace:
+    def test_a_space_the_service_ate_after_a_name_comes_back(self):
+        assert translator.respace("[[1]]documentation", "[[1]] docs") == "[[1]] documentation"
+
+    def test_a_space_the_service_ate_before_a_name_comes_back(self):
+        assert translator.respace("un[[1]] ici", "a [[1]] here") == "un [[1]] ici"
+
+    def test_a_name_glued_in_the_source_stays_glued(self):
+        assert translator.respace("[[1]]docs", "[[1]]docs") == "[[1]]docs"
+
+
+class TestTidyEmphasis:
+    def test_the_spaces_inside_bold_are_dropped(self):
+        assert translator.tidy("- ** A frontend **  text\n") == "- **A frontend**  text\n"
+
+    def test_bold_in_a_fence_is_left_alone(self):
+        text = "```python\nf(** kw )\n```\n"
+        assert translator.tidy(text) == text
+
+    def test_a_line_with_bold_in_code_is_left_alone(self):
+        text = "Use `** kw` and ** this **\n"
+        assert translator.tidy(text) == text
