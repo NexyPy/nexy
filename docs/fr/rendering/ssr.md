@@ -6,11 +6,11 @@ SSR est la valeur par défaut : le serveur restitue la page au format HTML pour
 
 ## Comment ça marche
 
-| Fichier de route | Qu'est-ce qui produit le HTML | Quand |
+| Fichier d'itinéraire | Qu'est-ce qui produit le HTML | Quand |
 |---|---|---|
-| `.nexy` | le module Python compilé, à travers Jinja2 | chaque requête |
-| `.md` | `cmarkgfm`, puis la mise en page la plus proche | à chaque requête |
-| `.mdx`, `.tsx`, `.vue`, `.svelte` | le framework, rendu dans Node | à la construction lorsque la route n'a pas de layout, sinon dans le navigateur |
+| `.nexy` | le module Python compilé, via Jinja2 | chaque demande |
+| `.md` | Markdown, puis la mise en page la plus proche | chaque demande |
+| `.mdx`, `.tsx`, `.vue`, `.svelte` | le framework, rendu dans Node | à la construction lorsque la route n'a pas de tracé, sinon dans le navigateur |
 | `.py` | rien : il renvoie du JSON ou un `Response` | - |
 
 Une route de composants est le seul cas qui nécessite une deuxième phrase. En production, une route de composant **sans** une mise en page est servie avec le HTML produit lors de la construction, et le composant l'hydrate. Avec une mise en page, ou en développement, le conteneur est vide et le composant s'affiche dans le navigateur - la page est alors un shell qui se remplit tout seul.
@@ -35,10 +35,10 @@ Une erreur générée lors du rendu est transformée en page par `errors.nexy` l
 
 Aucun. Deux issues, et elles n’ont pas le même grain :
 
-| Pour quitter SSR pour | Faites ceci | Grain |
+| Quitter la RSS pour | Fais ceci | Céréales |
 |---|---|---|
-| une page, avec un cache | `revalidate = 60` dans son frontmatter → [ISR](isr.md) | page |
-| l'ensemble du projet, acheminé par le client | `useCSR = True` dans `nexyconfig.py` → [CSR](csr.md) | projet |
+| une page, avec un cache | `revalidate = 60` dans son contenu → [ISR](isr.md) | page |
+| l'ensemble du projet, acheminé par le client | `useCSR = True` dans `nexyconfig.py` → [RSE](csr.md) | projet |
 
 ## Exemple
 
@@ -61,7 +61,7 @@ slug: prop[str] = "untitled"
 
 ## Prochaines étapes
 
-- [ISR](isr.md) : mettre en cache cette page par URL
-- [Îles](islands.md) : conserver SSR et rendre un widget interactif
+- [ISR](isr.md) : met en cache cette page par URL
+- [Îles](islands.md) : conservez SSR et rendez un widget interactif
 - [CSR](csr.md) : navigation manuelle vers le navigateur
 - [Performances](../deployment/performance.md)
