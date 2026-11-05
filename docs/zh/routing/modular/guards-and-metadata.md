@@ -25,7 +25,7 @@ class AdminController:
 
 ## 中间件装饰器
 
-`@Middleware(*middlewares)` 的行为方式相同：这些是 FastAPI 依赖项，而不是 ASGI 中间件。对于真正的 ASGI 中间件，请使用 [Config](../../reference/config.md) 或 [Middleware and security](../../guides/middleware-and-security.md) 中的 `useMiddlewares`。
+`@Middleware(*middlewares)` 的行为方式相同：这些是 FastAPI 依赖项，而不是 ASGI 中间件。对于真正的 ASGI 中间件，请使用 [配置](../../reference/config.md) 或 [中间件与安全](../../guides/middleware-and-security.md) 中的 `useMiddlewares`。
 
 ## 路由元数据
 
