@@ -63,7 +63,8 @@ class TestNewBadge:
         assert marked is not None, "docs/README.md marks no page: the pill would go untested"
         pattern = (
             rf'<a href="/docs/{re.escape(marked.slug)}"[^>]*>'
-            rf'{re.escape(marked.label)}</a><span class="badge-new">New</span>'
+            rf"{re.escape(marked.label)}</a>"
+            r'<span class="badge-new" data-i18n="new_badge">New</span>'
         )
         assert re.search(pattern, _menu(answers[ACTIONS][2])), marked.slug
 
@@ -179,7 +180,7 @@ def test_the_groups_of_a_router_name_their_router(answers):
 
 def test_the_selector_names_every_router(answers):
     menu = _menu(answers[ACTIONS][2])
-    assert all(f"<b>{name}</b>" in menu for _, name, _ in docs_source.ROUTERS)
+    assert all(f">{name}</b>" in menu for _, name, _ in docs_source.ROUTERS)
 
 
 def test_the_selector_marks_the_router_of_the_page(answers):
