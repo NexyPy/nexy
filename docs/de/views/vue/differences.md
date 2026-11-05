@@ -1,13 +1,11 @@
 # Vue
 
-Nexy rendert Vue 3-Einzeldateikomponenten auf dem Server, dann übernimmt Vue sie im Browser.
-Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Diese Seite behandelt die Einrichtung, dann die
-Teile, die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
+Nexy rendert Vue 3 Einzeldateikomponenten auf dem Server und übernimmt sie dann Vue im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
 | Modus | `nexyconfig.py` | Seiten sind | Vue ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Client | `useCSR = True` | `.vue` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Der Client | `useCSR = True` | `.vue` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
 
 ## Starten Sie ein Projekt
 
@@ -15,9 +13,7 @@ Teile, die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
 nx new my-app --template web-fbr-vue
 ```
 
-Die Vorlage ist ein Servermodus-Projekt mit Vue-Inseln. Führen Sie `nx new my-app` ohne Vorlage aus
-Beantworten Sie stattdessen die Eingabeaufforderungen: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll
-der Rahmen.
+Die Vorlage ist ein Servermodus-Projekt mit Vue Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
 ## Aktivieren Sie Vue in einem vorhandenen Projekt
 
@@ -51,13 +47,10 @@ export default defineConfig({
 
 ## Regeln
 
-- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [vue(), react()]` stoppt
-  Der Server beim Start.
-- **Eine Komponente pro Datei.** Eine `.vue` Datei exportiert ihre Komponente standardmäßig; den Namen, den Sie importieren
-  Darunter steht nur das Tag, das Sie schreiben.
-- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, also sind sie keine Seiten.
-- **Ein Projekt im Servermodus hat keine `.vue` Seite**, und ein Projekt im Clientmodus hat keine `.nexy` Seite: Nexy
-  weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [vue(), react()]` stoppt den Server beim Start.
+- **Eine Komponente pro Datei.** Eine `.vue`-Datei exportiert ihre Komponente standardmäßig; Der Name, unter dem Sie es importieren, ist nur das Tag, das Sie schreiben.
+- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
+- **Ein Servermodus-Projekt hat keine `.vue` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
 
 ## Seiten
 
@@ -91,7 +84,7 @@ Alternativ können Sie den Hook `useParams` von `@nexy/client` in einer beliebig
 
 ## Layouts
 
-### Implementierung
+### Umsetzung
 
 Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt in ihrem Standard-Slot.
 
@@ -121,7 +114,7 @@ from "@/components/Counter.vue" import Counter
 <Counter start=3 />
 ```
 
-### Hydrationsanweisungen
+### Trinkrichtlinien
 
 Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
 
@@ -134,8 +127,7 @@ Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisi
 
 ### Aktionen aufrufen
 
-Verwenden Sie den Hook `useAction`, um den Status eines Aktionsaufrufs zu verwalten. In Vue der zurückgegebene Zustand
-(`pending`, `data`, `error`) sind berechnete Referenzen.
+Verwenden Sie den Hook `useAction`, um den Status eines Aktionsaufrufs zu verwalten. In Vue sind die zurückgegebenen Zustände (`pending`, `data`, `error`) berechnete Referenzen.
 
 ```vue
 <script setup lang="ts">
