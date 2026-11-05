@@ -84,4 +84,4 @@ class AppController:
 - [Внедрение зависимостей](dependency-injection.md): сервисы и области действия
 - [Охрана и метаданные](guards-and-metadata.md): защищайте и документируйте маршруты
 - [Маршрутизация](../README.md): файловый маршрутизатор
-- [Config](../../reference/config.md): все опции, включая `useRouter`
+- [Конфигурация](../../reference/config.md): все опции, включая `useRouter`
