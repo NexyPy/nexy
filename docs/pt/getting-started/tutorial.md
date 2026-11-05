@@ -1,7 +1,6 @@
 # Tutorial: crie uma página de notas em 10 minutos
 
-Você criará um projeto, adicionará uma página, adicionará um endpoint Python, compartilhará dados entre eles e construirá
-para produção. Você termina com uma lista de notas servidas como página e como JSON.
+Você criará um projeto, adicionará uma página, adicionará um endpoint Python, compartilhará dados entre eles e construirá para produção. Você termina com uma lista de notas servidas como página e como JSON.
 
 Novo no Nexy? Faça o [Início rápido](quick-start.md) primeiro: leva três minutos.
 
@@ -18,26 +17,23 @@ cd notes
 nexy dev
 ```
 
-`uvx` vem com [uv](https://docs.astral.sh/uv/) e apenas cria o projeto. Cada comando depois
-ele roda dentro do ambiente virtual do projeto (ou como `uv run nexy dev`).
+`uvx` vem com [uv](https://docs.astral.sh/uv/) e apenas cria o projeto. Cada comando após ser executado dentro do ambiente virtual do projeto (ou como `uv run nexy dev`).
 
 Escolha o roteador baseado em arquivo, um projeto web e qualquer estrutura de cliente (ou nenhuma). Abrir
-<http://localhost:3000>. Passos longos imprimem uma linha cada com sua duração, como `uv` faz.
+<http://localhost:3000>. Etapas longas imprimem uma linha cada uma com sua duração, como faz `uv`.
 
 <!-- router:modular -->
-Responda `No` ao prompt do roteador baseado em arquivo: `nx new` estrutura o roteador modular em `src/apps/`
-em vez de `src/routes/`.
+Responda `No` ao prompt do roteador baseado em arquivo: `nx new` estrutura o roteador modular em `src/apps/` em vez de `src/routes/`.
 <!-- /router -->
 
 <!-- router:custom -->
-Responda `Yes` ao prompt do roteador baseado em arquivo para as páginas e, em seguida, monte seu `APIRouter` existente
-em `nexyconfig.py`: os dois roteadores coexistem.
+Responda `Yes` ao prompt do roteador baseado em arquivo para as páginas e, em seguida, monte seu `APIRouter` existente em `nexyconfig.py`: os dois roteadores coexistem.
 <!-- /router -->
 
 ## 2. Edite o layout
 
 <!-- router:fbr,custom -->
-`src/routes/layout.nexy` possui o documento HTML (com roteamento do cliente React é `layout.tsx`). Altere o `<title>`:
+`src/routes/layout.nexy` possui o documento HTML (com React roteamento do cliente é `layout.tsx`). Altere o `<title>`:
 
 ```nexy
 <title>Notes</title>
@@ -47,8 +43,7 @@ Salvar: o navegador recarrega. Consulte [Layouts](../routing/fbr/layouts/README.
 <!-- /router -->
 
 <!-- router:modular -->
-O controlador renderiza `src/apps/layout.nexy` em torno da visualização, e esse arquivo possui o HTML
-documento. Altere o `<title>`:
+O controlador renderiza `src/apps/layout.nexy` em torno da visualização, e esse arquivo possui o documento HTML. Altere o `<title>`:
 
 ```nexy
 <title>Notes</title>
@@ -57,7 +52,7 @@ documento. Altere o `<title>`:
 Salvar: o navegador recarrega. Consulte [Visualizações de um controlador](../routing/modular/README.md#views-from-a-controller).
 <!-- /router -->
 
-## 3. Adicionar uma página
+## 3. Adicione uma página
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/notes.nexy"
@@ -107,11 +102,10 @@ from .app_controller import AppController, NotesController
 controllers = [AppController, NotesController]
 ```
 
-Abra <http://localhost:3000/notes>: você deverá ver dois marcadores. A parte entre `---` é Python,
-o resto é Jinja2.
+Abra <http://localhost:3000/notes>: você deverá ver dois marcadores. A parte entre `---` é Python, o resto é Jinja2.
 <!-- /router -->
 
-## 4. Adicionar um ponto de extremidade
+## 4. Adicione um terminal
 
 <!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes.py"
@@ -192,12 +186,11 @@ nx build
 nx start
 ```
 
-`nx build` imprime cada fase com sua duração. `nx start` serve a saída compilada com
-Uvicorn: nenhum processo do Node em tempo de execução.
+`nx build` imprime cada fase com sua duração. `nx start` fornece a saída compilada com Uvicorn: no Node process at runtime.
 
 ## Onde será o próximo
 
 - [Roteamento](../routing/README.md): segmentos e grupos dinâmicos
-- [Ações](../guides/actions.md): chamar Python de um formulário ou do cliente
-- [Testes](../guides/testing.md): páginas de teste e endpoints
-- [Deploy](../deployment/README.md): contêineres e proxies reversos
+- [Actions](../guides/actions.md): chame Python de um formulário ou do cliente
+- [Teste](../guides/testing.md): páginas de teste e endpoints
+- [Implantar](../deployment/README.md): contêineres e proxies reversos
