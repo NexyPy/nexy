@@ -74,7 +74,7 @@ nx skills
 | عنوان URL للملف | [التوجيه](../routing/README.md) |
 | الأجزاء الديناميكية، التخطيطات، صفحات الخطأ | [الصفحات](../routing/fbr/pages/README.md) |
 | المسار الحالي، الاستعلام، ملفات تعريف الارتباط، الجلسة | [الخطافات](../routing/fbr/navigation/hooks.md) |
-| لتحرير صفحة | [.nexy files](../views/nexy/README.md) أو [المشاهدات](../views/README.md) |
+| لتحرير صفحة | [ملفات .nexy](../views/nexy/README.md) أو [المشاهدات](../views/README.md) |
 | Markdown أو MDX | [تخفيض السعر](../views/nexy/markdown.md) |
 | مساعدات HTML المضمنة | [المكونات](../views/nexy/components.md) |
 | وضع العرض | [SSR](../rendering/ssr.md)، [CSR](../rendering/csr.md)، [ISR](../rendering/isr.md) |
