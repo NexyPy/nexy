@@ -2,7 +2,7 @@
 
 一个请求可能会在四个地方失败，并且 Nexy 对每个地方的响应都不同。此页面是索引：找到您看到的状态，然后是生成它的行，然后是决定正文的文件。
 
-> [！注意]
+> [!NOTE]
 > 三件事是独立且容易混淆的：**HTTP 应答**（状态和正文）、**错误页面**（`notfound.nexy`、`errors.nexy`）和 **日志行**（您在终端中读取的内容）。更改页面不会更改状态，自定义页面不会隐藏日志。
 
 ## 简短版本
@@ -27,7 +27,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [！警告]
+> [!WARNING]
 > `curl` 默认发送 `Accept: */*`，获取 HTML 页面。测试 JSON 形状时添加 `-H "Accept: application/json"`。浏览器不断获取页面。
 
 ## 失败从何而来
@@ -76,8 +76,8 @@ async def GET(slug: str):
 | `unauthorized(detail=None, scheme=None)` | `401` | 访客必须先登录 |
 | `forbidden(detail=None)` | `403` | 访问者是已知的，但可能看不到此 |
 | `redirect(url, status=307)` | `307` | 将它们发送到其他地方，保留方法 |
-| `redirect(url, status=303)` | `303` | 表单之后：下一个请求是 `GET` |
-| `permanentRedirect(url)` | `308` | 搜索引擎应该记住的已移动页面 |
+| 表单后的 `redirect(url, status=303)` | `303` |：下一个请求是 `GET` |
+| `permanentRedirect(url)` | `308` | 搜索引擎应记住的已移动页面 |
 
 根据您信任的价值观打造目的地。 `redirect(request.query_params["next"])` 将访问者发送到链接所在的任何地方；这是一个开放的重定向。包含换行符的目的地将被拒绝。
 
@@ -104,10 +104,10 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 {"detail": [{"loc": ["query", "q"], "msg": "Field required", "type": "missing"}]}
 ```
 
-对于表单或操作，客户端会收到带有 `status` 和 `detail` 的 `ActionError`； a `422` 还为每个字段填充一条消息 `error.fields`。请参阅[操作](../guides/actions.md#errors-and-failures)。
+对于表单或操作，客户端会收到带有 `status` 和 `detail` 的 `ActionError`； `422` 还用每个字段一条消息填充 `error.fields`。请参阅[操作](../guides/actions.md#errors-and-failures)。
 
-> [!提示]
-> 当规则涉及一个字段 (`limit: int = 10`) 时，在签名中进行验证。当规则需要数据库或其他字段（“此电子邮件已被使用”）时在正文中进行验证：引发 `HTTPException(409)` 并为客户端保留消息。
+> [!TIP]
+> 当规则涉及一个字段 (`limit: int = 10`) 时，在签名中进行验证。当规则需要数据库或其他字段（“此电子邮件已被使用”）时，在正文中进行验证：引发 `HTTPException(409)` 并为客户端保留消息。
 
 ## 自定义错误页面
 
@@ -126,14 +126,14 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 | `src/routes/notfound.nexy` | `404` | 该项目的每条路线 |
 | `src/routes/errors.nexy` | `500` | 该项目的每条路线 |
 | `src/routes/forbidden.nexy` | `403` | 该项目的每条路线 |
-| `src/routes/unauthorized.nexy` | `401` | 项目的每条路线 |
+| `src/routes/unauthorized.nexy` | `401` | 该项目的每条路线 |
 | `src/routes/blog/notfound.nexy` | `404` | `/blog` 及以下 |
 | `src/routes/blog/errors.nexy` | `500` | `/blog` 及以下 |
 | `src/routes/loading.nexy` | - | 保留，还没有运行时效果 |
 
 路由中某处的一个文件会安装其状态的答案：根目录中的副本会回答整个项目，文件夹中的副本会回答该文件夹，而与 URL 匹配的最深文件将获胜。每个副本外部的 URL 以及根本没有文件的状态，获取内置样式的页面。请参阅[每个文件夹的错误页](../routing/fbr/errors/folder-pages.md)。
 
-> [！重要]
+> [!IMPORTANT]
 > `errors.nexy` 页面取代 `500` 页面；它不会捕获异常，也不会更改日志行。如果引发的处理程序是页面本身，则页面无法显示自己的错误详细信息：保持 `errors.nexy` 简单且独立。
 
 ## 未处理的异常
@@ -155,7 +155,7 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 参考号是八个字符，每次失败都是新的。访问者可以引用它，您可以通过在日志中搜索它来找到回溯。异常和代码都不会到达生产中的访问者。
 
-> [！警告]
+> [!CAUTION]
 > 不要将回溯返回给生产中的访问者，也不要将机密放入错误消息中：`HTTPException` 的 `detail` 被发送到客户端，经过 HTML 转义。将秘密放在日志中，而不是答案中。
 
 ## 动作和形式
