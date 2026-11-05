@@ -50,8 +50,7 @@ setMetadata(title_template="%s | My site")
 </html>
 ```
 
-Uma página é executada antes de seus layouts, para que o layout encontre o que a página solicitou. Uma página que diz
-nada recebe o `useTitle` do seu `nexyconfig.py`, e nenhuma outra tag.
+Uma página é executada antes de seus layouts, para que o layout encontre o que a página solicitou. Uma página que não diz nada recebe o `useTitle` do seu `nexyconfig.py`, e nenhuma outra tag.
 
 ## Os campos
 
@@ -66,14 +65,11 @@ nada recebe o `useTitle` do seu `nexyconfig.py`, e nenhuma outra tag.
 | `twitter` | um `<meta name="twitter:...">` por chave |
 | `extra` | uma lista de dictos de atributos, um `<meta>` cada: `[{"name": "theme-color", "content": "#fff"}]` |
 
-Uma chamada posterior substitui um valor; `og`, `twitter` e `extra` adicionam ao que está lá. Um campo que faz
-not exist aumenta `TypeError`, então um erro de digitação não faz nada silenciosamente.
+Uma chamada posterior substitui um valor; `og`, `twitter` e `extra` adicionam ao que está lá. Um campo que não existe gera `TypeError`, portanto, um erro de digitação não faz nada silenciosamente.
 
 ## Seguro por padrão
 
-Cada valor tem escape de HTML, portanto, um título criado a partir de uma URL ou do banco de dados não pode fechar a tag
-e injetar um script. Um valor é escapado uma vez, quando o layout chama `html()`: não escape dele
-você mesmo.
+Cada valor tem escape de HTML, portanto, um título construído a partir de uma URL ou do banco de dados não pode fechar a tag e injetar um script. Um valor é escapado uma vez, quando o layout chama `html()`: não escape dele você mesmo.
 
 ## Próximas etapas
 
