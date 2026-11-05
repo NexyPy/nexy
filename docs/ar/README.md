@@ -139,7 +139,7 @@ Nexy يدور حول التماس بين الواجهة الخلفية Python و
 |---|---|
 | [[شريط أدوات التطوير](guides/devtools.md) | استخدم شريط الأدوات `nexy dev`، وقم بإيقاف تشغيله |
 | [وكلاء الترميز](guides/ai-agents.md) | أعطِ Claude Code و Codex و OpenCode قواعد مشروعك |
-| [](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الأشخاص |
+| [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي أصابت الناس |
 
 ## مرجع
 
