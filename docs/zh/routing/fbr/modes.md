@@ -55,13 +55,13 @@ src/routes/
 
 Nexy 在 `nx dev`、`nx start` 和 `nx build` 之前检查项目并停止并显示文件列表：
 
-| 模式 | 拒绝 | 消息 |
+| 模式 | 被拒绝 | 留言 |
 |---|---|---|
-| `src/routes/` | 下的服务器 | `.tsx`、`.jsx`、`.vue` 或 `.svelte` 将组件移至 `src/components/`，或设置 `useCSR = True` |
-| 客户端 | `src/routes/` | 下的任何 `.nexy` 文件将它们写入框架组件，或设置 `useCSR = False` |
-| | `useFF` | `useFF must configure exactly one frontend framework` | 中都有多个前端框架
-| 客户端 | `useRouter`（模块化路由器）| `useCSR requires file-based routing` |
-| 客户端 | 无 `useFF` | `useCSR requires a client framework` |
+| 服务器 | `src/routes/` 下的 `.tsx`、`.jsx`、`.vue` 或 `.svelte` | 将组件移动到 `src/components/`，或设置 `useCSR = True` |
+| 客户 | `src/routes/` 下的任何 `.nexy` 文件 | 将它们编写为框架组件，或设置 `useCSR = False` |
+| 两者 | `useFF` 中不止一个前端框架 | `useFF must configure exactly one frontend framework` |
+| 客户 | `useRouter`（模块化路由器） | `useCSR requires file-based routing` |
+| 客户 | 没有 `useFF` | `useCSR requires a client framework` |
 
 此检查将忽略以 `_` 或 `.` 开头的文件和文件夹。
 
