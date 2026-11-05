@@ -57,11 +57,11 @@ O vocabulário HTTP de um manipulador. Importe daqui em vez de FastAPI, para que
 
 | Nome | O que é |
 |---|---|
-| `Action` | transformar uma função em um endpoint `POST`, consulte [actions](../guides/actions.md) |
+| `Action` | transformar uma função em um endpoint `POST`, consulte [ações](../guides/actions.md) |
 | `revalidate` | informa ao navegador quais páginas uma ação tornou obsoleta |
 | `Module`, `Controller` | declara um módulo e um controlador no [roteador modular](../routing/modular/README.md) |
 | `Injectable`, `Container`, `Scope` | [injeção de dependência](../routing/modular/dependency-injection.md) e seus tempos de vida |
-| `UseGuard`, `Middleware` | proteja ou envolva um manipulador, consulte [guards](../routing/modular/guards-and-metadata.md) |
+| `UseGuard`, `Middleware` | proteja ou envolva um manipulador, consulte [guardas](../routing/modular/guards-and-metadata.md) |
 | `UseRoute`, `useRoute`, `RouteMeta` | nomeie uma rota e descreva-a para OpenAPI |
 | `UseResponse`, `ResponseMeta` | descrevem a resposta de uma rota |
 | `HTTP_METHODS` | os métodos HTTP que um arquivo manipulador pode definir |
@@ -71,10 +71,10 @@ O vocabulário HTTP de um manipulador. Importe daqui em vez de FastAPI, para que
 
 | Nome | O que é |
 |---|---|
-| `render` | o HTML de um componente `.nexy` para determinados adereços, sem um servidor, consulte [testing](../guides/testing.md) |
+| `render` | o HTML de um componente `.nexy` para determinados adereços, sem um servidor, consulte [testes](../guides/testing.md) |
 
 ## Onde será o próximo
 
-- [Config](config.md): os campos `use*` por trás desses nomes
+- [Configuração](config.md): os campos `use*` por trás desses nomes
 - [Exceções e erros](exceptions.md): o que cada falha responde
 - [Índice de documentação](../README.md): a página do que você está construindo
