@@ -1,8 +1,16 @@
-blank_issues_enabled: true
+# A tracked issue is work someone will do. A question, an idea or a security
+# report has its own place, so the issue list stays readable.
+blank_issues_enabled: false
 contact_links:
-  - name: Nexy Documentation
-    url: https://nexy.ai/docs
-    about: Check the documentation for answers to common questions.
-  - name: GitHub Discussions
-    url: https://github.com/NexyPy/nexy/discussions
-    about: Ask questions and discuss ideas with the community.
+  - name: Documentation
+    url: https://nexypy.github.io/nexy/
+    about: Every page, with a search, in eleven languages. Read it before opening an issue.
+  - name: Ask a question
+    url: https://github.com/NexyPy/nexy/discussions/new?category=q-a
+    about: "\"How do I…?\" goes to Discussions Q&A, where the answer stays findable for the next person."
+  - name: Suggest a feature
+    url: https://github.com/NexyPy/nexy/discussions/new?category=ideas
+    about: Talk the idea through before it becomes an issue, so the shape is settled first.
+  - name: Report a vulnerability
+    url: mailto:hopcy.forcy@gmail.com
+    about: Privately, never in a public issue. SECURITY.md says what to include.
