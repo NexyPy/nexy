@@ -1,9 +1,6 @@
 # Agentes de codificação
 
-Um projeto feito com `nx new` carrega as regras que um agente de codificação precisa para escrever o código Nexy do seu jeito:
-a ordem de trabalho, o código e as regras de redação e uma habilidade por tópico. Esta página diz o que você recebe,
-para onde vai e como mantê-lo atualizado. Trabalhar no Nexy em si é um trabalho diferente: leia o
-raiz do repositório `AGENTS.md`.
+Um projeto feito com `nx new` carrega as regras que um agente de codificação precisa para escrever o código Nexy do seu jeito: a ordem de trabalho, o código e as regras de escrita, e uma habilidade por tópico. Esta página diz o que você obtém, para onde vai e como mantê-lo atualizado. Trabalhar no Nexy em si é um trabalho diferente: ler a raiz do repositório `AGENTS.md`.
 
 ## O que `nx new` adiciona
 
@@ -14,10 +11,7 @@ raiz do repositório `AGENTS.md`.
 | `.agents/skills/` | Codex, OpenCode | as habilidades |
 | `.claude/skills/` | Claude Code, OpenCode | as mesmas habilidades |
 
-`AGENTS.md` é curto e personalizado. Um projeto Vue roteado pelo cliente diz "roteado pelo cliente, Vue, estilizado
-com Tailwind"; um projeto de API é informado de que não há visualizações. Apenas as habilidades adequadas são copiadas: um
-O projeto React obtém `nexy-react` e nenhuma habilidade Vue, um projeto de servidor obtém `.nexy` e Markdown
-habilidades, um projeto de API não adquire nenhuma habilidade sobre visualizações.
+`AGENTS.md` é curto e personalizado. Um projeto Vue roteado pelo cliente lê "roteado pelo cliente, Vue, estilizado com Tailwind"; um projeto de API é informado de que não há visualizações. Somente as habilidades adequadas são copiadas: um projeto React obtém `nexy-react` e nenhuma habilidade Vue, um projeto de servidor obtém as habilidades `.nexy` e Markdown, um projeto de API não obtém nenhuma habilidade sobre visualizações.
 
 Para pular tudo isso, crie o projeto com `nx new --no-agents`.
 
@@ -25,7 +19,7 @@ Para pular tudo isso, crie o projeto com `nx new --no-agents`.
 
 | Habilidade | Capas |
 |---|---|
-| `nexy-principles` | ordem de trabalho, regras de código, regras de escrita |
+| `nexy-principles` | ordem de trabalho, regras de código, regras de redação |
 | `nexy-ux-audit` | a experiência e a auditoria de arquitetura de informação a serem executadas antes de qualquer visão |
 | `nexy-project` | modos, pastas, convenções de arquivos, configuração, comandos |
 | `nexy-file` | `.nexy` páginas, adereços, ganchos, ilhas |
@@ -38,10 +32,7 @@ Para pular tudo isso, crie o projeto com `nx new --no-agents`.
 | `nexy-testing` | o primeiro loop de teste e as portas |
 | `nexy-framework-dev` | mudando o próprio Nexy, em vez de um projeto construído com Nexy |
 
-As regras que eles impõem: auditar a experiência antes de criar uma visualização, escrever primeiro o teste que falhou,
-uma função faz um tratamento, uma classe carrega uma intenção, uma pasta contém um conjunto de
-intenções relacionadas, sem emoji, ícones SVG reais, texto simples escrito para pessoas e sem escrita à mão
-Scripts DOM em React, Vue, Svelte, Solid ou Preact.
+As regras que eles impõem: auditar a experiência antes de construir uma visualização, escrever primeiro o teste com falha, uma função faz um tratamento, uma classe carrega uma intenção, uma pasta contém um conjunto de intenções relacionadas, nenhum emoji, ícones SVG reais, texto simples escrito para pessoas e nenhum script DOM escrito à mão em React, Vue, Svelte, Solid ou Preact.
 
 ## Adicione-os a um projeto existente
 
@@ -49,38 +40,28 @@ Scripts DOM em React, Vue, Svelte, Solid ou Preact.
 nx skills
 ```
 
-Execute-o na raiz do projeto. Ele lê `nexyconfig.py` e `package.json` para encontrar a pilha,
-copia as habilidades correspondentes e escreve `AGENTS.md` e `CLAUDE.md` quando elas estão faltando.
+Execute-o na raiz do projeto. Ele lê `nexyconfig.py` e `package.json` para encontrar a pilha, copia as habilidades correspondentes e escreve `AGENTS.md` e `CLAUDE.md` quando elas estão faltando.
 
-Ele nunca sobrescreve um arquivo que você escreveu: um `AGENTS.md` ou `CLAUDE.md` existente é mantido, e o
-comando diz isso a você. Adicione a lista de habilidades ao seu próprio arquivo manualmente, se desejar. Uma habilidade de
-o seu em `.claude/skills/` ou `.agents/skills/` é deixado de lado; apenas as `nexy-*` habilidades são
-atualizado.
+Ele nunca substitui um arquivo que você escreveu: um `AGENTS.md` ou `CLAUDE.md` existente é mantido e o comando informa isso. Adicione a lista de habilidades ao seu próprio arquivo manualmente, se desejar. Uma habilidade sua em `.claude/skills/` ou `.agents/skills/` é deixada de lado; apenas as habilidades `nexy-*` são atualizadas.
 
-Execute `nx skills` novamente após atualizar o Nexy para atualizar as cópias e confirme o resultado para que o
-toda a equipe compartilha isso.
+Execute `nx skills` novamente após atualizar o Nexy para atualizar as cópias e confirme o resultado para que toda a equipe o compartilhe.
 
 ## Como um agente os encontra
 
-- `AGENTS.md` (ou `CLAUDE.md`, que o importa) é lido no início de cada sessão. Ele nomeia
-  as habilidades.
-- Cada habilidade começa com um nome e uma descrição que diz o que ela cobre e quando carregá-la. O
-  o agente os lê primeiro e abre uma habilidade somente quando a tarefa corresponde.
+- `AGENTS.md` (ou `CLAUDE.md`, que o importa) é lido no início de cada sessão. Ele nomeia as habilidades.
+- Cada habilidade começa com um nome e uma descrição que diz o que abrange e quando carregá-la. O agente os lê primeiro e abre uma habilidade somente quando a tarefa corresponde.
 
-As habilidades seguem o [formato de habilidades do agente](https://agentskills.io/specification) aberto, então outros
-agentes que leem pastas `SKILL.md` também podem usá-las.
+As habilidades seguem o [formato de habilidades do agente](https://agentskills.io/specification) aberto, para que outros agentes que leiam as pastas `SKILL.md` também possam usá-las.
 
 ## O que eles não fazem
 
 As habilidades dizem ao agente como trabalhar; eles não tornam sua saída correta. Mantenha suas próprias verificações:
 
 - Leia o que o agente mudou.
-- Execute `nx check`, `nx test` e `nx build`. As habilidades pedem isso e que o resultado seja
-  relatado, não resumido.
+- Execute `nx check`, `nx test` e `nx build`. As competências exigem isso e que os resultados sejam relatados, e não resumidos.
 - Dependências de auditoria que o agente adiciona (`nexy-security` explica como).
 
-Os exemplos nas habilidades são verificados pelos próprios testes do Nexy: as importações existem, a configuração
-os campos existem, os comandos existem, o Python analisa. Isso detecta desvios, não erros de julgamento.
+Os exemplos nas habilidades são verificados pelos próprios testes do Nexy: as importações existem, os campos de configuração existem, os comandos existem, as análises Python. Isso detecta desvios, não erros de julgamento.
 
 ## Mapa
 
@@ -94,7 +75,7 @@ Um agente responde mais rápido quando sabe qual página contém a resposta.
 | segmentos dinâmicos, layouts, páginas de erro | [páginas](../routing/fbr/pages/README.md) |
 | o caminho atual, consulta, cookies, sessão | [hooks](../routing/fbr/navigation/hooks.md) |
 | para editar uma página | [.nexy files](../views/nexy/README.md) ou [views](../views/README.md) |
-| Markdown ou MDX | [markdown](../views/nexy/markdown.md) |
+| Markdown ou MDX | [redução](../views/nexy/markdown.md) |
 | ajudantes HTML integrados | [componentes](../views/nexy/components.md) |
 | modo de renderização | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
 | um WebSocket | [websocket](../routing/fbr/realtime/websocket.md) |
@@ -111,14 +92,11 @@ Um agente responde mais rápido quando sabe qual página contém a resposta.
 
 1. `__nexy__/` é gerado. Nunca edite, nunca confirme. Exclua-o para forçar uma compilação limpa.
 2. Um arquivo por URL. `index.nexy` e `index.py` para o mesmo caminho é um bug, não uma regra de prioridade.
-3. Nomes reservados dentro de `src/routes/`: `layout.nexy`, `loading.nexy`, `errors.nexy`,
-   `notfound.nexy`, `dependencies.py`, `__init__.py`. Não os use para conteúdo.
-4. `.nexy` frontmatter é Python executado por solicitação. Sem efeitos colaterais no nível do módulo: nenhum arquivo
-   identificadores, sem conexões de banco de dados, sem chamadas de rede na importação.
+3. Nomes reservados dentro de `src/routes/`: `layout.nexy`, `loading.nexy`, `errors.nexy`, `notfound.nexy`, `dependencies.py`, `__init__.py`. Não os use para conteúdo.
+4. `.nexy` frontmatter é Python executado por solicitação. Sem efeitos colaterais no nível do módulo: sem identificadores de arquivo, sem conexões de banco de dados, sem chamadas de rede na importação.
 5. `.py` em `src/routes/` é um manipulador de API. Métodos são nomes de funções (`GET`, `POST`, ...).
-6. A configuração reside em `nexyconfig.py`, não em variáveis de ambiente e não em variáveis
-   constantes.
-7. Autoescaping está desativado em modelos `.nexy`: escape de valores não confiáveis ​​com `| e`.
+6. A configuração reside em `nexyconfig.py`, não em variáveis ​​de ambiente e não em constantes dispersas.
+7. O escape automático está desativado em modelos `.nexy`: escape de valores não confiáveis ​​com `| e`.
 
 ```bash
 nx dev      # development
@@ -127,13 +105,11 @@ nx start    # production server
 nx test     # pytest, --client adds vitest
 ```
 
-Quando os documentos e o código discordam, confie no código e diga o seguinte: `nexy/core/config.py` contém todos
-opção, `nexy/modules/routers/fbrouter/` as regras de roteamento, `nexy/modules/compiler/` como `.nexy`
-arquivos se tornam módulos.
+Quando os documentos e o código discordam, confie no código e diga o seguinte: `nexy/core/config.py` contém todas as opções, `nexy/modules/routers/fbrouter/` as regras de roteamento, `nexy/modules/compiler/` como `.nexy` arquivos se tornam módulos.
 
 ## Próximas etapas
 
 - [CLI](../reference/cli.md): `nx new` e `nx skills`
 - [Convenções de arquivo](../reference/file-conventions.md): nomes reservados e regras de roteamento
 - [Glossário](../reference/glossary.md): as palavras nas quais essas regras se baseiam
-- [Segurança](../reference/security.md): a versão leva os pontos de habilidade de segurança para
+- [Segurança](../reference/security.md): a versão atinge os pontos da habilidade de segurança
