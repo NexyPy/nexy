@@ -1,9 +1,8 @@
 # Abhängigkeitsinjektion
 
-Nexy löst Konstruktorabhängigkeiten für Controller und Dienste auf. Eine Klasse meldet sich bei
-`@Injectable()`.
+Nexy löst Konstruktorabhängigkeiten für Controller und Dienste auf. Eine Klasse meldet sich mit `@Injectable()` an.
 
-## Einen Dienst einfügen
+## Fügen Sie einen Dienst ein
 
 ```python filename="src/apps/users/user_service.py"
 from nexy.decorators import Injectable
@@ -29,8 +28,7 @@ class UserController:
         return self.svc.get_all()
 ```
 
-Registrieren Sie den Controller in einem Modul. Durch das Auflisten des Dienstes in `providers` wird das Problem zusätzlich behoben
-eifrig beim Start:
+Registrieren Sie den Controller in einem Modul. Durch das Auflisten des Dienstes in `providers` wird das Problem außerdem sofort beim Start behoben:
 
 ```python filename="src/apps/users/users_module.py"
 from nexy.decorators import Module
@@ -46,14 +44,12 @@ class UsersModule:
 
 ## So funktioniert die Auflösung
 
-- Jeder `__init__` Parameter wird aus seiner **Typanmerkung** aufgelöst. Die Anmerkung muss eine sein
-  `@Injectable()` Klasse, oder der Parameter muss einen Standardwert haben; andernfalls wird die Auflösung erhöht
-  `ValueError`.
+- Jeder `__init__`-Parameter wird aus seiner **Typanmerkung** aufgelöst. Die Annotation muss eine `@Injectable()`-Klasse sein oder der Parameter muss einen Standardwert haben; andernfalls erhöht sich die Auflösung `ValueError`.
 - Controller werden beim Start mit `Container.resolve()` instanziiert.
-- Ein Abhängigkeitszyklus löst `RecursionError` die Benennung der Klasse aus.
-- Dienste können andere Dienste in beliebiger Tiefe injizieren.
+- Ein Abhängigkeitszyklus löst `RecursionError` bei der Benennung der Klasse aus.
+- Dienste können andere Dienste beliebig tief injizieren.
 
-## Umfang
+## Bereiche
 
 ```python
 from nexy.decorators import Injectable, Scope
@@ -63,7 +59,7 @@ from nexy.decorators import Injectable, Scope
 class CurrentUser: ...
 ```
 
-| Umfang | Lebensdauer |
+| Geltungsbereich | Lebensdauer |
 |---|---|
 | `Scope.SINGLETON` (Standard) | eine Instanz für den gesamten Prozess |
 | `Scope.REQUEST` | eine Instanz pro Anforderungskontext |
@@ -77,8 +73,7 @@ from nexy.decorators import Container
 service = Container.resolve(UserService)
 ```
 
-Wenn Sie selbst eine `@Injectable()`-Klasse erstellen, wird `TypeError` ausgelöst: Der Container besitzt seinen Lebenszyklus.
-Verwenden Sie `Container.resolve(...)` oder empfangen Sie die Klasse über einen anderen Konstruktor.
+Wenn Sie selbst eine `@Injectable()`-Klasse erstellen, wird `TypeError` ausgelöst: Der Container besitzt seinen Lebenszyklus. Verwenden Sie `Container.resolve(...)` oder empfangen Sie die Klasse über einen anderen Konstruktor.
 
 `Container.clear_request_scope()` löscht die Instanzen der aktuellen Anfrage.
 
@@ -95,9 +90,7 @@ def get(self, limit: int = Depends(pagination)) -> list[dict]: ...
 
 ## Grenzen
 
-Der Container ist prozessweit. Anbieter sind nicht pro Modul isoliert, `exports` entscheidet nur welche
-Provider werden von einem Importmodul problemlos aufgelöst, und es gibt keine öffentliche API zum Austauschen eines Providers
-Tests. Den vollständigen Vergleich finden Sie unter [Nexy und NestJS](vs-nestjs.md).
+Der Container ist prozessweit. Anbieter sind nicht pro Modul isoliert, `exports` entscheidet nur, welche Anbieter ein importierendes Modul eifrig auflöst, und es gibt keine öffentliche API, um einen Anbieter in Tests auszutauschen. Den vollständigen Vergleich finden Sie unter [Nexy und NestJS](vs-nestjs.md).
 
 ## Nächste Schritte
 
