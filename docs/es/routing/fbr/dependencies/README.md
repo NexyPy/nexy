@@ -23,10 +23,10 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> [!NOTA]
+> [!NOTE]
 > Enumere las funciones en sí. Se ignora un objeto `Depends(...)` en la lista.
 
-Cada ruta en `src/routes/admin/` ahora requiere el encabezado, los controladores `.py` y las páginas `.nexy` por igual.
+Cada ruta bajo `src/routes/admin/` ahora requiere el encabezado, los controladores `.py` y las páginas `.nexy` por igual.
 
 ## herencia
 
@@ -42,7 +42,7 @@ src/routes/
       └─ index.py               4. handler guards, then the handler
 ```
 
-Para `GET /admin/users` el orden es `root`, `admin`, `users`, las funciones del controlador `@UseGuard`, sus funciones `@Middleware`, luego el controlador. Un grupo de rutas (`(group)/`) es un directorio como cualquier otro, por lo que su `dependencies.py` interviene.
+Para `GET /admin/users` el orden es `root`, `admin`, `users`, las funciones `@UseGuard` del controlador, sus funciones `@Middleware` y luego el controlador. Un grupo de rutas (`(group)/`) es un directorio como cualquier otro, por lo que su `dependencies.py` interviene.
 
 ## Por manejador
 
