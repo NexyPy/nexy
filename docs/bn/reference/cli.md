@@ -94,7 +94,7 @@
 
 `nx build` রুটগুলি কম্পাইল করে, তারপর যখন `useVite` চালু থাকে তখন ক্লায়েন্টকে বান্ডিল করে।
 
-> [!দ্রষ্টব্য]
+> [!NOTE]
 > কোন `--static` পতাকা নেই। স্ট্যাটিক হোস্টিং একটি স্থাপনার পছন্দ, একটি বিল্ড মোড নয় - দেখুন [Deploy](../deployment/README.md)।
 
 ## নেক্সিতে নিজেই কাজ করছেন
@@ -108,6 +108,6 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 ## পরবর্তী পদক্ষেপ
 
-- [শুরু করা ](../getting-started/quick-start.md): প্রথম প্রকল্প
+- [শুরু করা](../getting-started/quick-start.md): প্রথম প্রকল্প
 - [টেস্টিং](../guides/testing.md): কি `nx test` রান করে
-- ](../deployment/README.md): `build` এবং `start` উৎপাদনে
+- [মোতায়েন](../deployment/README.md): `build` এবং `start` উৎপাদনে
