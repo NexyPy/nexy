@@ -78,6 +78,6 @@ async def GET():
 
 ## اگلے اقدامات
 
-- [Config](../reference/config.md): HTTPS، قابل اعتماد میزبان، سیشن
+- [کنفیگ](../reference/config.md): HTTPS، قابل اعتماد میزبان، سیشن
 - [فرنٹ اینڈ](../guides/frontend.md): کیا Vite بناتا ہے۔
 - [ٹیسٹنگ](../guides/testing.md): CI میں چلانے کے لیے کمانڈز
