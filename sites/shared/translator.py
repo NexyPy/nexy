@@ -10,8 +10,9 @@ Nothing here talks to a network: the same three functions serve the tests and th
 
 from __future__ import annotations
 
+import posixpath
 import re
-from collections.abc import Collection
+from collections.abc import Callable, Collection
 from itertools import pairwise
 
 from sites.shared import glossary
@@ -396,14 +397,44 @@ def _relabel_prose(prose: str, lang: str) -> str:
     return _LINK_TEXT.sub(swap, prose)
 
 
+def _prose_only(markdown: str, change: Callable[[str], str]) -> str:
+    """The page with `change` applied to its prose; a fence is code and stays as it is."""
+    parts, start = [], 0
+    for found in _FENCE_BLOCK.finditer(markdown):
+        parts += [change(markdown[start : found.start()]), found[0]]
+        start = found.end()
+    return "".join(parts) + change(markdown[start:])
+
+
 def relabel(markdown: str, lang: str) -> str:
     """Give a link the service sent back in English the word of the glossary."""
-    fences = [found.span() for found in _FENCE_BLOCK.finditer(markdown)]
-    parts, start = [], 0
-    for begin, end in fences:
-        parts += [_relabel_prose(markdown[start:begin], lang), markdown[begin:end]]
-        start = end
-    return "".join(parts) + _relabel_prose(markdown[start:], lang)
+    return _prose_only(markdown, lambda prose: _relabel_prose(prose, lang))
+
+
+# Where a link that leaves docs/ points: a translation sits one folder deeper than its English
+# page, so `../../CHANGELOG.md` would leave the repository. The sites show the same address.
+REPOSITORY = "https://github.com/NexyPy/nexy/blob/main/"
+_LINK_TARGET = re.compile(r"(\]\()([^)\s#]+)")
+_ADDRESS = re.compile(r"[a-z][a-z0-9+.-]*:|/")
+
+
+def _outward_prose(prose: str, folder: str) -> str:
+    def swap(found: re.Match[str]) -> str:
+        if _ADDRESS.match(found[2]):
+            return found[0]
+        path = posixpath.normpath(f"{folder}/{found[2]}")
+        return found[0] if path.startswith("docs/") else f"{found[1]}{REPOSITORY}{path}"
+
+    return _LINK_TARGET.sub(swap, prose)
+
+
+def outward(markdown: str, relative: str) -> str:
+    """The page with each link that leaves docs/ as its address on GitHub.
+
+    `relative` is the place of the English page under docs/: links are written from there.
+    """
+    folder = posixpath.dirname(f"docs/{relative}")
+    return _prose_only(markdown, lambda prose: _outward_prose(prose, folder))
 
 
 # A row of a table travels one cell per line, each line opened by a marker that never travels: a
