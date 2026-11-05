@@ -1,13 +1,11 @@
-# Schlank
+# Svelte
 
-Nexy rendert Svelte 5-Komponenten auf dem Server, dann übernimmt Svelte sie im Browser. Seiten,
-Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile
-die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
+Nexy rendert Svelte 5 Komponenten auf dem Server, dann Svelte übernimmt sie im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
 | Modus | `nexyconfig.py` | Seiten sind | Svelte ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Client | `useCSR = True` | `.svelte` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Der Client | `useCSR = True` | `.svelte` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
 
 ## Starten Sie ein Projekt
 
@@ -15,9 +13,7 @@ die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
 nx new my-app --template web-fbr-svelte
 ```
 
-Die Vorlage ist ein Servermodus-Projekt mit Svelte-Inseln. Führen Sie `nx new my-app` ohne Vorlage aus
-Beantworten Sie stattdessen die Eingabeaufforderungen: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll
-der Rahmen.
+Die Vorlage ist ein Servermodus-Projekt mit Svelte Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
 ## Aktivieren Sie Svelte in einem vorhandenen Projekt
 
@@ -52,12 +48,10 @@ export default defineConfig({
 ## Regeln
 
 - **Svelte 5.** Komponenten verwenden Runen: `$props()`, `$state()` und Schnipsel für Kinder.
-- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [svelte(), vue()]`
-  Stoppt den Server beim Start.
+- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [svelte(), vue()]` stoppt den Server beim Start.
 - **Eine Komponente pro Datei.** Der Name, unter dem Sie eine `.svelte` Datei importieren, ist nur das Tag, das Sie schreiben.
-- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, also sind sie keine Seiten.
-- **Ein Projekt im Servermodus hat keine `.svelte` Seite**, und ein Projekt im Clientmodus hat keine `.nexy` Seite: Nexy
-  weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
+- **Ein Servermodus-Projekt hat keine `.svelte` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
 
 ## Seiten
 
@@ -90,10 +84,9 @@ Alternativ können Sie den Speicher `$params` von `@nexy/client` in einer belieb
 
 ## Layouts
 
-### Implementierung
+### Umsetzung
 
-Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt mit dem `children`
-Ausschnitt.
+Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt mit dem Snippet `children`.
 
 ```svelte filename="src/routes/layout.svelte"
 <script lang="ts">
@@ -124,7 +117,7 @@ from "@/components/Counter.svelte" import Counter
 <Counter start=3 />
 ```
 
-### Hydrationsanweisungen
+### Trinkrichtlinien
 
 Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
 
@@ -137,8 +130,7 @@ Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisi
 
 ### Aktionen aufrufen
 
-Verwenden Sie den Hook `useAction`, um den Status eines Aktionsaufrufs zu verwalten. In Svelte gibt dies einen Store zurück (read
-mit `$`).
+Verwenden Sie den Hook `useAction`, um den Status eines Aktionsaufrufs zu verwalten. In Svelte gibt dies einen Speicher zurück (gelesen mit `$`).
 
 ```svelte
 <script lang="ts">
@@ -167,7 +159,7 @@ Verwenden Sie die Komponente `Link` für clientseitige Übergänge:
 <Link href="/about" activeClass="active">About</Link>
 ```
 
-Für die programmatische Navigation verwenden Sie das `router`-Objekt von `@nexy/client`:
+Verwenden Sie für die programmatische Navigation das `router`-Objekt von `@nexy/client`:
 
 ```ts
 import { router } from "@nexy/client";
