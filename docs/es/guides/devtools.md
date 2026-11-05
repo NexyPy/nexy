@@ -30,5 +30,5 @@ La barra de herramientas es un bloque de estilo y un script agregado antes de `<
 
 ## Próximos pasos
 
-- [Config](../reference/config.md): todas las opciones
+- [Configuración](../reference/config.md): todas las opciones
 - [Probando](testing.md): prueba una página o un componente
