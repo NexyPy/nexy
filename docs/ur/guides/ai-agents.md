@@ -4,12 +4,12 @@
 
 ## کیا `nx new` جوڑتا ہے۔
 
-| فائل | پڑھیں | ہولڈز |
+| فائل | کی طرف سے پڑھیں | رکھتا ہے۔ |
 |---|---|---|
 | `AGENTS.md` | Codex، OpenCode | منصوبے کا ڈھیر، کام کی ترتیب، قواعد، مہارتوں کی فہرست |
 | `CLAUDE.md` | Claude Code | ایک سطر، `@AGENTS.md`، تو دونوں ایک ہی عبارت پڑھیں |
-| `.agents/skills/` | Codex، OpenCode | ہنر |
-| `.claude/skills/` | Claude Code، OpenCode | وہی مہارتیں |
+| `.agents/skills/` | Codex، OpenCode | مہارت |
+| `.claude/skills/` | Claude Code، OpenCode | ایک ہی مہارت |
 
 `AGENTS.md` مختصر اور موزوں ہے۔ ایک کلائنٹ روٹڈ Vue پروجیکٹ پڑھتا ہے "کلائنٹ روٹڈ، Vue، Tailwind کے ساتھ اسٹائل شدہ"؛ ایک API پروجیکٹ کو بتایا جاتا ہے کہ کوئی آراء نہیں ہیں۔ صرف وہی مہارتیں نقل کی جاتی ہیں جو فٹ ہوتی ہیں: ایک React پروجیکٹ کو `nexy-react` اور کوئی Vue مہارت نہیں ملتی، سرور پروجیکٹ کو `.nexy` اور Markdown کی مہارت ملتی ہے، ایک API پروجیکٹ کو آراء کے بارے میں کوئی مہارت حاصل نہیں ہوتی۔
 
@@ -17,19 +17,19 @@
 
 ## ہنر
 
-| مہارت | کور |
+| ہنر | احاطہ کرتا ہے۔ |
 |---|---|
-| `nexy-principles` | کام کا حکم، ضابطہ اخلاق، تحریری قواعد |
+| `nexy-principles` | کام کی ترتیب، ضابطہ اخلاق، تحریری اصول |
 | `nexy-ux-audit` | کسی بھی نظارے سے پہلے چلانے کے لیے تجربہ اور معلوماتی فن تعمیر کا آڈٹ |
 | `nexy-project` | موڈز، فولڈرز، فائل کنونشنز، کنفیگریشن، کمانڈز |
-| `nexy-file` | `.nexy` صفحات، پرپس، ہکس، جزائر |
+| `nexy-file` | `.nexy` صفحات، سہارے، کانٹے، جزیرے۔ |
 | `nexy-markdown` | `.md` اور `.mdx` مواد |
-| `nexy-react`، `nexy-preact`، `nexy-solid`، `nexy-vue`، `nexy-svelte` | کلائنٹ کے فریم ورک کے لیے محاوراتی کوڈ |
+| `nexy-react`، `nexy-preact`، `nexy-solid`، `nexy-vue`، `nexy-svelte` | کلائنٹ فریم ورک کے لیے محاوراتی کوڈ |
 | `nexy-styling` | Tailwind، UnoCSS یا سادہ سی ایس ایس، اور ڈیزائن ٹوکن |
 | `nexy-backend` | API ہینڈلرز، ایکشنز، WebSocket، ISR، مڈل ویئر |
 | `nexy-modular` | ماڈیولر روٹر کے کنٹرولرز، ماڈیولز، انجیکشن اور گارڈز |
 | `nexy-security` | انحصار، ان پٹ، سیشن، اجازت، راز |
-| `nexy-testing` | ٹیسٹ کا پہلا لوپ اور دروازے |
+| `nexy-testing` | ٹیسٹ فرسٹ لوپ اور گیٹس |
 | `nexy-framework-dev` | Nexy کے ساتھ بنائے گئے پروجیکٹ کے بجائے خود Nexy کو تبدیل کرنا |
 
 وہ قوانین جو وہ نافذ کرتے ہیں: ویو بنانے سے پہلے تجربے کا آڈٹ کریں، پہلے فیلنگ ٹیسٹ لکھیں، ایک فنکشن ایک علاج کرتا ہے، ایک کلاس ایک ارادہ رکھتی ہے، ایک فولڈر میں متعلقہ ارادوں کا ایک سیٹ ہوتا ہے، کوئی ایموجی نہیں، اصلی SVG آئیکنز، سادہ متن لوگوں کے لیے لکھا جاتا ہے، اور ہاتھ سے لکھا ہوا DOM اسکرپٹ نہیں ہوتا ہے۔ React، Vue، Svelte، Solid یا Preact۔
@@ -67,26 +67,26 @@ nx skills
 
 ایک ایجنٹ تیزی سے جواب دیتا ہے جب اسے معلوم ہوتا ہے کہ کون سا صفحہ جواب رکھتا ہے۔
 
-| آپ کو | پڑھنے کی ضرورت ہے |
+| آپ کی ضرورت ہے۔ | پڑھیں |
 |---|---|
-| پروڈکٹ، ایک صفحے میں | [README](../README.md) |
+| مصنوعات، ایک صفحے میں | [README](../README.md) |
 | ایک پروجیکٹ کو چلانے کے لیے | [شروع کرنا](../getting-started/quick-start.md) |
-| فائل کا URL | [روٹنگ](../routing/README.md) |
-| متحرک طبقات، ترتیب، خرابی کے صفحات | [صفحات](../routing/fbr/pages/README.md) |
-| موجودہ راستہ، استفسار، کوکیز، سیشن | [ہکس](../routing/fbr/navigation/hooks.md) |
-| صفحہ میں ترمیم کرنے کے لیے | [.nexy فائلز](../views/nexy/README.md) یا [دیکھے](../views/README.md) |
-| Markdown یا MDX | [مارک ڈاؤن](../views/nexy/markdown.md) |
+| ایک فائل کا URL | [روٹنگ](../routing/README.md) |
+| متحرک طبقات، ترتیب، خرابی والے صفحات | [صفحات](../routing/fbr/pages/README.md) |
+| موجودہ راستہ، استفسار، کوکیز، سیشن | [کانٹے](../routing/fbr/navigation/hooks.md) |
+| ایک صفحہ میں ترمیم کرنے کے لیے | [.nexy فائلیں](../views/nexy/README.md) یا [ملاحظات](../views/README.md) |
+| Markdown یا MDX | [مارک ڈاؤن ](../views/nexy/markdown.md) |
 | بلٹ ان HTML مددگار | [اجزاء](../views/nexy/components.md) |
 | رینڈرنگ موڈ | [SSR](../rendering/ssr.md)، [CSR](../rendering/csr.md)، [ISR](../rendering/isr.md) |
-| ایک WebSocket | [ویب ساکٹ](../routing/fbr/realtime/websocket.md) |
+| ایک WebSocket | [ویب ساکٹ ](../routing/fbr/realtime/websocket.md) |
 | کنٹرولرز اور ماڈیولز | [ماڈیولر](../routing/modular/README.md) |
 | ایک اختتامی نقطہ شامل کرنے کے لیے | [API](../routing/fbr/handlers/README.md) |
-| ایک صفحہ | [کارروائیوں](actions.md) | سے شائع کردہ فارم
-| درخواست کیوں ناکام ہوئی، اور کون سا صفحہ اس کا جواب دیتا ہے | [استثنیات](../reference/exceptions.md) |
-| ترجمہ | [i18n](i18n.md) |
-| ایک کنفگ فیلڈ | [ترتیب](../reference/config.md) |
-| ایپ کو جانچنے کے لیے | [ٹیسٹنگ](testing.md) |
-| کلائنٹ کی تعمیر | [فرنٹ اینڈ](frontend.md) |
+| ایک صفحہ سے پوسٹ کیا گیا فارم | [اعمال](actions.md) |
+| درخواست کیوں ناکام ہوئی، اور کون سا صفحہ اس کا جواب دیتا ہے۔ | [مستثنیات](../reference/exceptions.md) |
+| ترجمے | [i18n](i18n.md) |
+| ایک تشکیل فیلڈ | [تشکیل ](../reference/config.md) |
+| ایپ کو جانچنے کے لیے | [جانچ](testing.md) |
+| کلائنٹ کی تعمیر | [فرنٹ اینڈ ](frontend.md) |
 
 ## پروجیکٹ انویرینٹس
 
@@ -111,5 +111,5 @@ nx test     # pytest, --client adds vitest
 
 - [CLI](../reference/cli.md): `nx new` اور `nx skills`
 - [فائل کنونشنز](../reference/file-conventions.md): مخصوص نام اور روٹنگ کے اصول
-- [ لغت ](../reference/glossary.md): وہ الفاظ جن پر یہ اصول انحصار کرتے ہیں۔
-- [سیکیورٹی](../reference/security.md): اس ورژن میں سیکیورٹی کی مہارت کی طرف اشارہ کیا گیا ہے۔
+- [لغت ](../reference/glossary.md): وہ الفاظ جن پر یہ اصول انحصار کرتے ہیں۔
+- [سیکیورٹی](../reference/security.md): ورژن سیکیورٹی کی مہارت کی طرف اشارہ کرتا ہے۔
