@@ -49,7 +49,7 @@ Mulailah dengan satu file di bawah `src/routes/`, dan tambahkan struktur saat pr
 | [Warisan](routing/fbr/inheritance.md) | Membaca urutan resolusi tata letak, dependensi, dan halaman kesalahan |
 | [Mode server dan mode klien](routing/fbr/modes.md) | `useCSR`, dan apa yang dimungkinkan oleh masing-masing mode |
 | [Menautkan dan menavigasi](routing/fbr/navigation/linking-and-navigating.md) | Tautkan halaman, navigasi di klien, ambil terlebih dahulu |
-| [Hooks](routing/fbr/navigation/hooks.md) | Membaca jalur, kueri, cookie, dan sesi |
+| [Hook](routing/fbr/navigation/hooks.md) | Membaca jalur, kueri, cookie, dan sesi |
 
 ### Penangan dan kesalahan {fbr}
 | Halaman | Apa yang akan Anda lakukan |
@@ -88,7 +88,7 @@ Pengontrol dan modul.
 ### Tampilan Nexy
 | Halaman | Apa yang akan Anda lakukan |
 |---|---|
-| [.nexy files](views/nexy/README.md) | Tulis halaman dengan Python, Jinja2 dan props |
+| [berkas .nexy](views/nexy/README.md) | Tulis halaman dengan Python, Jinja2 dan props |
 | [Komponen](views/nexy/components.md) | Gunakan `Image`, `Link`, `Audio`, `Video` dan `Import` |
 | [layout.nexy](views/nexy/layouts.md) | Tulis tata letak mode server |
 | [Markdown dan MDX](views/nexy/markdown.md) | Menulis halaman konten |
@@ -107,7 +107,7 @@ Pengontrol dan modul.
 ### Mode
 | Halaman | Apa yang akan Anda putuskan |
 |---|---|
-| [Rendering](rendering/README.md) | Mode rendering mana yang sesuai dengan halaman |
+| [Perenderan](rendering/README.md) | Mode rendering mana yang sesuai dengan halaman |
 | [SSR](rendering/ssr.md) | Render server, default |
 | [ISR](rendering/isr.md) | Halaman cache dengan basi-saat-validasi ulang |
 | [CSR](rendering/csr.md) | Perutean sisi klien |
@@ -125,7 +125,7 @@ Pengontrol dan modul.
 | Halaman | Apa yang akan Anda lakukan |
 |---|---|
 | [Middleware dan keamanan](guides/middleware-and-security.md) | Menyiapkan CORS, GZip, host dan sesi tepercaya |
-| [Deploy](deployment/README.md) | Bangun, masukkan ke dalam container, dan sajikan |
+| [Penerapan](deployment/README.md) | Bangun, masukkan ke dalam container, dan sajikan |
 | [Kinerja](deployment/performance.md) | Mengukur dan menyetel default |
 
 ### Bangun dan uji
@@ -137,7 +137,7 @@ Pengontrol dan modul.
 ### Perkakas dan bantuan
 | Halaman | Apa yang akan Anda lakukan |
 |---|---|
-| [Dev toolbar](guides/devtools.md) | Gunakan toolbar `nexy dev`, dan matikan |
+| [Toolbar pengembangan](guides/devtools.md) | Gunakan toolbar `nexy dev`, dan matikan |
 | [Agen pengkodean](guides/ai-agents.md) | Berikan Claude Code, Codex dan OpenCode aturan proyek Anda |
 | [Pemecahan masalah](guides/troubleshooting.md) | Memperbaiki masalah pertama yang dialami orang |
 
@@ -147,12 +147,12 @@ Pengontrol dan modul.
 | Halaman | Apa yang dicantumkan |
 |---|---|
 | [CLI](reference/cli.md) | Perintah, tanda, perintah, dan kode keluar |
-| [Config](reference/config.md) | Setiap kolom `nexyconfig.py` dan defaultnya |
+| [Konfigurasi](reference/config.md) | Setiap kolom `nexyconfig.py` dan defaultnya |
 
 ### Python API dan kesalahan
 | Halaman | Apa yang dicantumkan |
 |---|---|
-| [Python API](reference/python-api.md) | Setiap nama yang diekspor Nexy, berdasarkan modul |
+| [API Python](reference/python-api.md) | Setiap nama yang diekspor Nexy, berdasarkan modul |
 | [Pengecualian dan kesalahan](reference/exceptions.md) | Setiap kegagalan, statusnya, dan file yang menjawabnya |
 
 ### Konvensi dan konsep
