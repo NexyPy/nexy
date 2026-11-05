@@ -56,7 +56,7 @@ Debajo de la portada está HTML con Jinja2. Las variables del frontmatter y las 
 
 El escape automático está **desactivado**: las plantillas son el propio HTML del proyecto, por lo que `{{ value }}` se inserta tal como está escrito. Escape usted mismo de los valores que no son de confianza con `{{ value | e }}`. `| safe` por lo tanto no cambia nada.
 
-> [!NOTA]
+> [!NOTE]
 > ajuste JavaScript que contiene `{{` o `{%` en `{% raw %}...{% endraw %}`. Marcos como Vue y Svelte usan las mismas llaves.
 
 ## Componentes
@@ -81,7 +81,7 @@ Los niños se representan a través de `<Slot />` (S mayúscula) dentro del comp
 
 Pase un valor calculado con Jinja dentro del atributo: `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nombre simple como `path=icon` es el texto `icon`, no la variable. Para darle a un componente una clase CSS, declare una propiedad `class_name`: `class` es una palabra clave Python.
 
-> [!NOTA]
+> [!NOTE]
 > una etiqueta auxiliar siempre se cierra sola. Pasar contenido a `Link` pasa por su argumento `children` (`<Link href="/about" children="About" />`), no por el contenido del elemento.
 
 ## Estilos
