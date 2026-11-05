@@ -8,7 +8,7 @@ O modelo mental, antes da API: quatro níveis de leitura, depois as noções que
 |---|---|---|
 | Arquitetura da aplicação | qual camada responde a uma solicitação e o que ela se recusa a fazer | [Arquitetura](../architecture.md) |
 | Estrutura do aplicativo | onde fica o código e o que um arquivo se torna | [Estrutura do projeto](project-structure.md) |
-| Apresentação e renderização | do que o leitor vê e quem produz o HTML | [Views](../views/README.md), [Renderização](../rendering/README.md) |
+| Apresentação e renderização | do que o leitor vê e quem produz o HTML | [Visualizações](../views/README.md), [Renderização](../rendering/README.md) |
 | Interação do aplicativo | o que o leitor faz e o que é executado em resposta | [Ações](../guides/actions.md) |
 
 Os níveis são lidos nessa ordem uma vez. Depois disso, a página que você precisa é uma pesquisa, não um curso.
@@ -47,7 +47,7 @@ Mais duas palavras que voltam em todos os lugares:
 
 Duas decisões independentes, muitas vezes confusas:
 
-- **O formato** decide qual arquivo renderiza a página: [Views](../views/README.md).
+- **O formato** decide qual arquivo renderiza a página: [Visualizações](../views/README.md).
 - **O modo** decide quem produz o HTML e quando: [Renderização](../rendering/README.md).
 
 | Noção | Uma linha |
@@ -62,10 +62,10 @@ Duas decisões independentes, muitas vezes confusas:
 
 | Noção | Uma linha |
 |---|---|
-| Ação | uma função Python marcada como `@Action`, servida como `POST`, que pode ser chamada de um formulário ou como uma função digitada ([actions](../guides/actions.md)) |
-| Formulário | um formulário HTML que posta em uma ação, com erros de validação voltando para a página ([actions](../guides/actions.md)) |
+| Ação | uma função Python marcada como `@Action`, servida como `POST`, que pode ser chamada de um formulário ou como uma função digitada ([ações](../guides/actions.md)) |
+| Formulário | um formulário HTML que posta em uma ação, com erros de validação voltando para a página ([ações](../guides/actions.md)) |
 | Navegação | links que pré-buscam e ganchos que leem o caminho, a consulta, os cookies e a sessão ([hooks](../routing/fbr/navigation/hooks.md)) |
-| Busca de dados | feita pela página ou pelo manipulador que necessita; Nexy não fornece nenhuma camada de dados do cliente ([handlers](../routing/fbr/handlers/README.md)) |
+| Busca de dados | feita pela página ou pelo manipulador que necessita; Nexy não fornece nenhuma camada de dados do cliente ([manipuladores](../routing/fbr/handlers/README.md)) |
 
 ## O que Nexy não faz
 
