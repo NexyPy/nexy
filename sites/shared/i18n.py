@@ -80,6 +80,21 @@ def preferred(accept_language: str) -> str:
     return DEFAULT
 
 
+# The letters of the right-to-left scripts the site speaks: Arabic and Urdu.
+_RTL_LETTER = re.compile("[\u0590-\u08ff\ufb1d-\ufdff\ufe70-\ufeff]")
+
+
+def isolate(text: str, code: str) -> str:
+    """The `dir` a short label needs on a page that reads right to left.
+
+    A label with no right-to-left letter (`src/routes/`) reads left to right, or its slashes move
+    to the other end; any other label follows the page.
+    """
+    if find(code).direction != "rtl" or _RTL_LETTER.search(text):
+        return ""
+    return ' dir="ltr"'
+
+
 def is_known(code: str) -> bool:
     return any(language.code == code for language in LANGUAGES)
 
