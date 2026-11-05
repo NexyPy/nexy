@@ -79,5 +79,5 @@ async def GET():
 ## الخطوات التالية
 
 - [التكوين](../reference/config.md): HTTPS، المضيفين الموثوقين، الجلسات
-- [](../guides/frontend.md): ما يبني Vite
+- [الواجهة](../guides/frontend.md): ما يبني Vite
 - [اختبار](../guides/testing.md): الأوامر المطلوب تشغيلها في CI
