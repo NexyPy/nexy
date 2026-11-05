@@ -190,3 +190,11 @@ class TestHeal:
 
     def test_the_bracket_dropped_at_the_opening_comes_back(self):
         assert translator.heal("[1]] text") == "[[1]] text"
+
+
+class TestHealInside:
+    def test_a_placeholder_that_lost_a_bracket_inside_a_link_comes_back(self):
+        assert translator.heal("دیکھیں [لے آؤٹس[153]]۔") == "دیکھیں [لے آؤٹس[[153]]۔"
+
+    def test_a_whole_placeholder_is_left_alone(self):
+        assert translator.heal("a [[1]] b") == "a [[1]] b"
