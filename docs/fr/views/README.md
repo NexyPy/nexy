@@ -2,15 +2,15 @@
 
 Avant de choisir un format de fichier, il est important de faire la distinction entre la manière dont Nexy gère les ressources et la manière dont il les restitue.
 
-| Terme | Définition |
+| Durée | Définition |
 |---|---|
 | **Page** | Une ressource adressable par URL de l'application. Il est défini par un fichier sous `src/routes/`. |
-| **View** | Processus de production du corps de réponse pour une page. Une vue transforme la logique et les données en HTML ou JSON. |
-| **Component** | Un bloc de construction d'interface utilisateur réutilisable utilisé pour composer une vue. Les composants peuvent être des assistants Nexy natifs ou spécifiques au framework (React, Vue, etc.). |
+| **Voir** | Processus de production du corps de réponse pour une page. Une vue transforme la logique et les données en HTML ou JSON. |
+| **Composant** | Un bloc de construction d'interface utilisateur réutilisable utilisé pour composer une vue. Les composants peuvent être des assistants Nexy natifs ou spécifiques au framework (React, Vue, etc.). |
 | **Gestionnaire de route** | Une fonction Python qui gère une requête HTTP pour une méthode spécifique (par exemple, `GET`, `POST`). |
-| **Endpoint** | La combinaison unique d'une URL et d'une méthode HTTP à laquelle répond un gestionnaire de route. |
+| **Point de terminaison** | Combinaison unique d'une URL et d'une méthode HTTP à laquelle répond un gestionnaire de route. |
 
-**Vous n'êtes pas sûr ? Écrivez un fichier `.nexy`.** Il ne nécessite aucun framework client et vous pouvez y ajouter un composant React, Vue, Svelte, Solid ou Preact plus tard, en tant qu'îlot.
+**Pas sûr? Écrivez un fichier `.nexy`.** Il ne nécessite aucun framework client et vous pouvez y ajouter un composant React, Vue, Svelte, Solid ou Preact plus tard, en tant qu'îlot.
 
 ```diagram filename="Quel fichier pour quelle page"
 server logic + HTML          →  .nexy      (Python frontmatter + Jinja2)
@@ -22,14 +22,14 @@ API handler                  →  .py        (GET, POST, …)
 
 ## Formats
 
-| Format | Fichier | Rendu serveur | Framework client | Notes |
+| Formater | Fichier | Rendu du serveur | Cadre client | Remarques |
 |---|---|---|---|---|
-| `.nexy` | [fichiers .nexy](nexy/README.md) | Jinja2 + Python logique, streaming | facultatif | Format de page natif Nexy |
-| `.md` | [Markdown et MDX](nexy/markdown.md) | cmarkgfm au moment de la demande | facultatif via la mise en page | Pure Markdown, GFM, encapsulé dans la mise en page |
-| `.mdx` | [Markdown et MDX](nexy/markdown.md) | cadre SSR | React ou Preact | Markdown avec composants |
-| `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) ou [Preact](preact/differences.md) | mode client : le framework, rendu dans Node | React, Solid ou Preact | Routes de composants |
-| `.vue` | [Vue](vue/differences.md) | mode client : le framework, rendu dans Node | Vue | Routes SFC |
-| `.svelte` | [Svelte](svelte/differences.md) | mode client : le framework, rendu dans Node | Svelte | Routes SFC |
+| `.nexy` | [Fichiers .nexy](nexy/README.md) | Jinja2 + Python logique, diffusée en continu | facultatif | Format de page Natif Nexy |
+| `.md` | [Markdown et MDX](nexy/markdown.md) | Markdown au moment de la demande | en option via la mise en page | Pure Markdown, GFM, encapsulé dans la mise en page |
+| `.mdx` | [Markdown et MDX](nexy/markdown.md) | cadre RSS | React ou Preact | Markdown avec des composants |
+| `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) ou [Preact](preact/differences.md) | mode client : le framework, rendu en Node | React, Solid ou Preact | Itinéraires de composants |
+| `.vue` | [Vue](vue/differences.md) | mode client : le framework, rendu en Node | Vue | Itinéraires SFC |
+| `.svelte` | [Svelte](svelte/differences.md) | mode client : le framework, rendu en Node | Svelte | Itinéraires SFC |
 
 Assistants `Image`, `Link`, `Audio`, `Video` et `Import` intégrés : [Composants](nexy/components.md).
 
@@ -63,6 +63,6 @@ Un `layout.*` dans un répertoire enveloppe les pages en dessous. Voir [mises en
 
 ## Prochaines étapes
 
-- [fichiers .nexy](nexy/README.md) : Python + Jinja2 + accessoires
+- [Fichiers .nexy](nexy/README.md) : Python + Jinja2 + accessoires
 - [Markdown et MDX](nexy/markdown.md) : pages de contenu
 - [Composants](nexy/components.md) : assistants HTML intégrés
