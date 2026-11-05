@@ -50,6 +50,6 @@ Der Schutz pro Route verwendet FastAPI Abhängigkeiten. Ein `dependencies.py` in
 
 ## Nächste Schritte
 
-- [Config](../reference/config.md): jedes Middleware-Feld
+- [Konfiguration](../reference/config.md): jedes Middleware-Feld
 - [Bereitstellen](../deployment/README.md)
 - [Leistung](../deployment/performance.md)
