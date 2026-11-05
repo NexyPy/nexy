@@ -1,9 +1,8 @@
 # المكونات
 
-يقوم Nexy بتصدير مجموعة صغيرة من المساعدين الذين يقومون بإرجاع سلاسل HTML. يتم استخدام كل واحد بطريقتين في
-`.nexy` القالب: كنداء جينجا، أو كعلامة نمط HTML.
+يقوم Nexy بتصدير مجموعة صغيرة من المساعدين الذين يقومون بإرجاع سلاسل HTML. يتم استخدام كل واحد بطريقتين في قالب `.nexy`: كمكالمة Jinja، أو كعلامة نمط HTML.
 
-## نحيان، دالة واحدة
+## تركيبان، وظيفة واحدة
 
 ```nexy filename="src/routes/index.nexy"
 ---
@@ -20,8 +19,7 @@ from nexy import Audio
 <audio preload="metadata" controls><source src="/theme.mp3" type="audio/mp3" /></audio>
 ```
 
-يعيد المترجم كتابة `<Audio ... />` إلى `{{ Audio(...) }}`، وبالتالي فإن نموذج العلامة ليس واجهة برمجة تطبيقات ثانية:
-السمات هي وسيطات الكلمة الأساسية للوظيفة.
+يعيد المترجم كتابة `<Audio ... />` إلى `{{ Audio(...) }}`، وبالتالي فإن نموذج العلامة ليس واجهة برمجة تطبيقات ثانية: السمات هي وسيطات الكلمة الرئيسية للوظيفة.
 
 ## قواعد نموذج العلامة
 
@@ -30,19 +28,15 @@ from nexy import Audio
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`، منطقية حقيقية |
 | `width=640` | `width=640`، عدد |
-| `src="{{ url }}"` | `src=(url)`، تم تقييمه في جينجا |
-| أي غيره `value` | `"value"`، سلسلة |
+| `src="{{ url }}"` | `src=(url)`، تم التقييم في Jinja |
+| أي `value` | `"value"`، سلسلة |
 
-- يجب أن تبدأ العلامة بحرف كبير ويتم استيرادها في المادة الأمامية؛ وإلا فإن
-  المترجم يرفع `Missing Import: <Name> used but not declared.`
-- نموذج العلامة هو **الإغلاق الذاتي**. `<Audio src="/a.mp3" />` و
-  `{{ Audio("/a.mp3") }}` متكافئين؛ كتابة الأطفال داخل علامة المساعدة غير مدعومة.
-- سمة HTML المجردة ليست منطقية هنا: `controls` تصبح `controls=""`، وهذا غير صحيح.
-  اكتب `controls=True`.
+- يجب أن تبدأ العلامة بحرف كبير وأن يتم استيرادها في المادة الأمامية؛ وإلا فإن المترجم يرفع `Missing Import: <Name> used but not declared.`
+- نموذج العلامة هو **الإغلاق الذاتي**. `<Audio src="/a.mp3" />` و `{{ Audio("/a.mp3") }}` متساويان؛ كتابة الأطفال داخل علامة المساعدة غير مدعومة.
+- سمة HTML المجردة ليست منطقية هنا: `controls` تصبح `controls=""`، ​​وهذا خطأ. اكتب `controls=True`.
 
 > [!ملاحظة]
-> `class_name` هي الكلمة الأساسية الموثقة لفئات CSS. وسيطات الكلمات الرئيسية الإضافية
->  تصبح سمات HTML، لذلك يصل `class="nav"` أيضًا إلى الإخراج.
+> `class_name` هي الكلمة الأساسية الموثقة لفئات CSS. تصبح وسيطات الكلمات الرئيسية الإضافية سمات HTML، لذلك يصل `class="nav"` أيضًا إلى المخرجات.
 
 ## صورة
 
@@ -55,10 +49,9 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` يجعل
-`<img>` مع التحميل البطيء بشكل افتراضي.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` يعرض `<img>` مع التحميل البطيء بشكل افتراضي.
 
-##  الرابط
+## رابط
 
 ```nexy
 ---
@@ -67,16 +60,12 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` يجعل `<a data-nexy-link>`
-يتم التعامل معها بواسطة جهاز توجيه العميل. مع `prefetch=True`، يؤدي التمرير أو لمس الرابط إلى تدفئة الهدف
-من خلال `window.__nexy_prefetch`.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` يعرض `<a data-nexy-link>` تتم معالجته بواسطة جهاز توجيه العميل. مع `prefetch=True`، يؤدي التمرير أو لمس الرابط إلى تسخين الهدف من خلال `window.__nexy_prefetch`.
 
 > [!ملاحظة]
-> يأخذ نموذج العلامة التسمية كـ `children`، وليس كمحتوى عنصر:
-> `<Link href="/about" children="About" />`. لوضع علامة داخل رابط، استخدم نموذج الاتصال مع
-> `children=` أو مكون `.nexy` يعرض `<Slot />`.
+> يأخذ نموذج العلامة التسمية كـ `children`، وليس كمحتوى عنصر: `<Link href="/about" children="About" />`. لوضع علامة داخل رابط، استخدم نموذج الاستدعاء مع `children=` أو مكون `.nexy` الذي يعرض `<Slot />`.
 
-##  الصوت والفيديو
+## الصوت والفيديو
 
 ```nexy
 ---
@@ -89,14 +78,11 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`الصوت (src، عناصر التحكم = صحيح، التشغيل التلقائي = خطأ، حلقة = خطأ، كتم الصوت = خطأ، التحميل المسبق = "بيانات التعريف"،
-class_name=None, Resources=None, **attrs)` and `Video(src, width=None, height=None, ...)` تقديم أصلي
-اللاعبين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل امتداد.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` و `Video(src, width=None, height=None, ...)` يقدمان لاعبين أصليين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل امتداد.
 
 ## مكون تكتبه بنفسك
 
-المكون `.nexy` القابل لإعادة الاستخدام هو ملف ضمن `src/components/`: دعائم Python في الأعلى، وHTML أدناه.
-يتم استيراده مثل أي وحدة بايثون أخرى.
+المكون `.nexy` القابل لإعادة الاستخدام هو ملف ضمن `src/components/`: دعائم Python في الأعلى، وHTML أدناه. يتم استيراده مثل أي وحدة Python أخرى.
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -118,14 +104,11 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`title` ليس له افتراضي، لذا يجب على الصفحة اجتيازه؛ `tone` يرجع إلى `"neutral"`. العلامات
-بين العلامات يصل إلى داخل `<Slot />` (الحرف الكبير S). انظر
-[ملفات .nexy](README.md#components) للدعائم والفتحات وقواعد نموذج العلامة.
+`title` ليس له افتراضي، لذا يجب على الصفحة اجتيازه؛ `tone` يرجع إلى `"neutral"`. تصل العلامات بين العلامات إلى داخل `<Slot />` (بالحرف S الكبير). راجع [.nexy files](README.md#components) للتعرف على الدعائم والفتحات وقواعد نموذج العلامة.
 
 ## استيراد مكون العميل
 
-من ملف `.nexy`، قم باستيراد مكون إطار العمل حسب المسار؛ يقوم المترجم بتثبيته على العميل و
-يمرر السمات كدعائم:
+من ملف `.nexy`، قم باستيراد مكون إطار العمل حسب المسار؛ يقوم المترجم بتثبيته على العميل ويمرر السمات كدعائم:
 
 ```nexy
 ---
@@ -134,7 +117,7 @@ from "@/components/Counter.tsx" import Counter
 <Counter start="0" />
 ```
 
-`Import(path, framework, symbol)` يفعل نفس الشيء في بايثون:
+`Import(path, framework, symbol)` يفعل نفس الشيء في Python:
 
 ```python
 from nexy import Import
@@ -145,15 +128,13 @@ html = counter(start=0)
 
 نفس بناء جملة الاستيراد يحل `.json`، `.css` وملفات الصور إلى عناوين URL الخاصة بها.
 
-##  القالب والفيت
+## القالب و Vite
 
-`Template().render(path, context)` يعرض ملف قالب (Jinja2، أو Markdown يتم تقديمه إلى HTML لـ
-`.md` الطرق). `Template().invalidate(path)` يسقطه من ذاكرة التخزين المؤقت.
+`Template().render(path, context)` يعرض ملف قالب (Jinja2، أو Markdown يتم عرضه إلى HTML للمسارات `.md`). `Template().invalidate(path)` يسقطه من ذاكرة التخزين المؤقت.
 
-`Vite()` يقوم بإرجاع علامات العميل للوضع الحالي: البرنامج النصي HMR قيد التطوير، المدمج
-حزمة العميل في الإنتاج. يطلق عليه Nexy لكل صفحة؛ نادرا ما تحتاج إليها بشكل مباشر.
+`Vite()` يقوم بإرجاع علامات العميل للوضع الحالي: البرنامج النصي HMR قيد التطوير، وحزمة العميل المضمنة في الإنتاج. يطلق عليه Nexy لكل صفحة؛ نادرا ما تحتاج إليها بشكل مباشر.
 
-## لم يتم التنفيذ بعد
+## لم يتم تنفيذها بعد
 
 `Form` و `Script` عبارة عن عناصر نائبة مُصدَّرة بدون أي سلوك. لا تعتمد عليهم.
 
@@ -161,4 +142,4 @@ html = counter(start=0)
 
 - [.nexy files](README.md): حيث يتم استخدام هؤلاء المساعدين
 - [React](../react/differences.md): استيراد مكونات `.tsx`
-- [Frontend](../../guides/frontend.md): كيفية تجميع مكونات العميل
+- [الواجهة الأمامية](../../guides/frontend.md): كيفية تجميع مكونات العميل
