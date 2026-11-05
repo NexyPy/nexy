@@ -17,12 +17,79 @@
 | डीटीओ सत्यापन (`class-validator`) | Pydantic मॉडल, FastAPI के मूल निवासी |
 | परिपत्र निर्भरता का पता लगाना | `RecursionError` वर्ग का नामकरण |
 
+वही नियंत्रक और उसकी इंजेक्टेड सेवा, NestJS पहले:
+
+```ts filename="उपयोगकर्ता.नियंत्रक.ts"
+@Injectable()
+export class UsersService {
+  findAll() {
+    return [{ id: 1, name: "Ada" }];
+  }
+}
+
+@Controller("users")
+export class UsersController {
+  constructor(private readonly users: UsersService) {}
+
+  @Get()
+  findAll() {
+    return this.users.findAll();
+  }
+}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller, Injectable
+
+
+@Injectable()
+class UserService:
+    def find_all(self) -> list[dict]:
+        return [{"id": 1, "name": "Ada"}]
+
+
+@Controller(prefix="/users")
+class UserController:
+    def __init__(self, users: UserService) -> None:
+        self.users = users
+
+    async def get(self) -> list[dict]:
+        return self.users.find_all()
+```
+
 ## क्या अलग है
 
 - हैंडलर HTTP क्रिया (`get`, `post`...), प्रति नियंत्रक एक के नाम पर नामित विधियां हैं।
 - गार्ड और मिडलवेयर डेकोरेटर FastAPI `Depends` हैं, न कि `canActivate` वाले वर्ग।
 - पैरामीटर (`@Body`, `@Param`, `@Query`) FastAPI पैरामीटर हैं: प्रकार एनोटेशन, `Query`, `Path`, `Body`।
 - पाइप्स Pydantic सत्यापन और FastAPI निर्भरताएँ हैं।
+
+`@Query()`, एक डीटीओ और एक गार्ड वर्ग एक एनोटेशन, एक Pydantic मॉडल और एक फ़ंक्शन बन जाते हैं:
+
+```python filename="src/apps/posts/post_controller.py"
+from fastapi import Header, HTTPException, Query
+from pydantic import BaseModel
+from nexy.decorators import Controller, UseGuard
+
+
+class NewPost(BaseModel):
+    title: str
+
+
+def require_token(x_token: str = Header(...)) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+@Controller(prefix="/posts")
+@UseGuard(require_token)
+class PostController:
+    async def get(self, limit: int = Query(10)) -> list[dict]:
+        return []
+
+    async def post(self, body: NewPost) -> dict:
+        return {"title": body.title}
+```
 
 ## क्या कमी है
 
@@ -37,6 +104,23 @@
 | अपवाद फ़िल्टर | FastAPI अपवाद हैंडलर का उपयोग करें |
 | प्रदाता के साथ परीक्षण मॉड्यूल ओवरराइड करता है | कोई सार्वजनिक एपीआई नहीं; FastAPI `dependency_overrides` और `TestClient` का उपयोग करें |
 | कॉन्फिग मॉड्यूल, शेड्यूलिंग, क्यू, सीक्यूआरएस, माइक्रोसर्विसेज, कैशिंग | नेक्सी का हिस्सा नहीं; Python पारिस्थितिकी तंत्र का उपयोग करें |
+
+`useFactory` प्रदाता के स्थान पर, `Depends` के पीछे एक सादा फ़ंक्शन, जिसे एक परीक्षण `dependency_overrides` के साथ ओवरराइड करता है:
+
+```python filename="src/apps/reports/report_controller.py"
+from fastapi import Depends
+from nexy.decorators import Controller
+
+
+def get_settings() -> dict:
+    return {"currency": "EUR"}
+
+
+@Controller(prefix="/reports")
+class ReportController:
+    async def get(self, settings: dict = Depends(get_settings)) -> dict:
+        return {"currency": settings["currency"]}
+```
 
 ## इसे कब चुनना है
 

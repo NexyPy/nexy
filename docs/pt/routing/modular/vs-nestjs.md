@@ -9,13 +9,53 @@ O roteador modular é inspirado em NestJS: controladores, módulos e injeção d
 | `@Controller('users')` | `@Controller(prefix="/users")` |
 | `@Module({ controllers, providers, imports, exports })` | `@Module()` com os mesmos quatro atributos de classe |
 | `@Injectable()` | `@Injectable()` |
-| Parâmetros de injeção de construtor | `__init__` resolvidos a partir de anotações de tipo |
+| Injeção de construtor | `__init__` parâmetros resolvidos a partir de anotações de tipo |
 | Singleton, solicitação e escopos transitórios | `Scope.SINGLETON`, `Scope.REQUEST`, `Scope.TRANSIENT` |
 | `@UseGuards(AuthGuard)` | `@UseGuard(guard)` (uma dependência FastAPI) |
 | `@ApiOperation`, `@ApiResponse` (arrogância) | `@UseRoute`, `@UseResponse` (OpenAPI, servido em `/docs`) |
-| WebSocket gateways | `async def SOCKET(...)` em um controlador |
+| WebSocket portais | `async def SOCKET(...)` em um controlador |
 | Validação DTO (`class-validator`) | Pydantic modelos, nativos de FastAPI |
 | Detecção de dependência circular | `RecursionError` nomeando a classe |
+
+O mesmo controlador e seu serviço injetado, NestJS primeiro:
+
+```ts filename="usuários.controller.ts"
+@Injectable()
+export class UsersService {
+  findAll() {
+    return [{ id: 1, name: "Ada" }];
+  }
+}
+
+@Controller("users")
+export class UsersController {
+  constructor(private readonly users: UsersService) {}
+
+  @Get()
+  findAll() {
+    return this.users.findAll();
+  }
+}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller, Injectable
+
+
+@Injectable()
+class UserService:
+    def find_all(self) -> list[dict]:
+        return [{"id": 1, "name": "Ada"}]
+
+
+@Controller(prefix="/users")
+class UserController:
+    def __init__(self, users: UserService) -> None:
+        self.users = users
+
+    async def get(self) -> list[dict]:
+        return self.users.find_all()
+```
 
 ## O que difere
 
@@ -24,19 +64,63 @@ O roteador modular é inspirado em NestJS: controladores, módulos e injeção d
 - Parâmetros (`@Body`, `@Param`, `@Query`) são parâmetros FastAPI: anotações de tipo, `Query`, `Path`, `Body`.
 - Pipes são Pydantic validação e FastAPI dependências.
 
+`@Query()`, um DTO e uma classe de guarda tornam-se uma anotação, um modelo Pydantic e uma função:
+
+```python filename="src/apps/posts/post_controller.py"
+from fastapi import Header, HTTPException, Query
+from pydantic import BaseModel
+from nexy.decorators import Controller, UseGuard
+
+
+class NewPost(BaseModel):
+    title: str
+
+
+def require_token(x_token: str = Header(...)) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+@Controller(prefix="/posts")
+@UseGuard(require_token)
+class PostController:
+    async def get(self, limit: int = Query(10)) -> list[dict]:
+        return []
+
+    async def post(self, body: NewPost) -> dict:
+        return {"title": body.title}
+```
+
 ## O que está faltando
 
-| NestJS recurso | Status no Nexy |
+| NestJS recurso | Status em Nexy |
 |---|---|
-| Provedores personalizados (`useValue`, `useFactory`, `useClass`, tokens de string) | não disponíveis: apenas `@Injectable()` classes |
-| Injeção por interface ou classe abstrata | não disponível |
-| Encapsulamento do módulo | não aplicado: o contêiner abrange todo o processo, `exports` controla apenas a resolução antecipada |
-| Módulos dinâmicos e globais (`forRoot`, `@Global`) | não disponíveis |
-| Ganchos de ciclo de vida (`onModuleInit`, `onApplicationShutdown`) | não disponíveis |
-| Interceptores | usam middleware ASGI (`useMiddlewares`) ou dependências |
-| Filtros de exceção | usam FastAPI manipuladores de exceção |
-| Módulo de teste com substituições de provedor | sem API pública; use FastAPI `dependency_overrides` e `TestClient` |
-| Módulo de configuração, agendamento, filas, CQRS, microsserviços, cache | não faz parte do Nexy; use o ecossistema Python |
+| Provedores personalizados (`useValue`, `useFactory`, `useClass`, tokens de string) | não disponível: apenas `@Injectable()` turmas |
+| Injetando por interface ou classe abstrata | não disponível |
+| Encapsulamento de módulo | não aplicado: o contêiner abrange todo o processo, `exports` controla apenas a resolução antecipada |
+| Módulos dinâmicos e globais (`forRoot`, `@Global`) | não disponível |
+| Ganchos de ciclo de vida (`onModuleInit`, `onApplicationShutdown`) | não disponível |
+| Interceptadores | use middleware ASGI (`useMiddlewares`) ou dependências |
+| Filtros de exceção | use manipuladores de exceção FastAPI |
+| Módulo de teste com substituições de provedor | nenhuma API pública; use FastAPI `dependency_overrides` e `TestClient` |
+| Módulo de configuração, agendamento, filas, CQRS, microsserviços, cache | não faz parte da Nexy; use o ecossistema Python |
+
+No lugar de um provedor `useFactory`, uma função simples atrás de `Depends`, que um teste substitui por `dependency_overrides`:
+
+```python filename="src/apps/reports/report_controller.py"
+from fastapi import Depends
+from nexy.decorators import Controller
+
+
+def get_settings() -> dict:
+    return {"currency": "EUR"}
+
+
+@Controller(prefix="/reports")
+class ReportController:
+    async def get(self, settings: dict = Depends(get_settings)) -> dict:
+        return {"currency": settings["currency"]}
+```
 
 ## Quando escolher
 

@@ -9,13 +9,53 @@ Router modular terinspirasi oleh NestJS: pengontrol, modul, dan injeksi konstruk
 | `@Controller('users')` | `@Controller(prefix="/users")` |
 | `@Module({ controllers, providers, imports, exports })` | `@Module()` dengan empat atribut kelas yang sama |
 | `@Injectable()` | `@Injectable()` |
-| Parameter injeksi konstruktor | `__init__` diselesaikan dari anotasi tipe |
-| Cakupan tunggal, permintaan, dan sementara | `Scope.SINGLETON`, `Scope.REQUEST`, `Scope.TRANSIENT` |
+| Injeksi konstruktor | `__init__` parameter diselesaikan dari anotasi tipe |
+| Cakupan singleton, permintaan, dan sementara | `Scope.SINGLETON`, `Scope.REQUEST`, `Scope.TRANSIENT` |
 | `@UseGuards(AuthGuard)` | `@UseGuard(guard)` (ketergantungan FastAPI) |
-| `@ApiOperation`, `@ApiResponse` (Swagger) | `@UseRoute`, `@UseResponse` (OpenAPI, bertugas di `/docs`) |
-| WebSocket gateway | `async def SOCKET(...)` pada pengontrol |
-| Validasi DTO (`class-validator`) | Pydantic model, asli dari FastAPI |
+| `@ApiOperation`, `@ApiResponse` (Keangkuhan) | `@UseRoute`, `@UseResponse` (OpenAPI, disajikan di `/docs`) |
+| WebSocket gerbang | `async def SOCKET(...)` pada pengontrol |
+| Validasi DTO (`class-validator`) | Pydantic model, asli FastAPI |
 | Deteksi ketergantungan melingkar | `RecursionError` memberi nama kelas |
+
+Pengontrol yang sama dan layanan yang disuntikkan, NestJS terlebih dahulu:
+
+```ts filename="pengguna.controller.ts"
+@Injectable()
+export class UsersService {
+  findAll() {
+    return [{ id: 1, name: "Ada" }];
+  }
+}
+
+@Controller("users")
+export class UsersController {
+  constructor(private readonly users: UsersService) {}
+
+  @Get()
+  findAll() {
+    return this.users.findAll();
+  }
+}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller, Injectable
+
+
+@Injectable()
+class UserService:
+    def find_all(self) -> list[dict]:
+        return [{"id": 1, "name": "Ada"}]
+
+
+@Controller(prefix="/users")
+class UserController:
+    def __init__(self, users: UserService) -> None:
+        self.users = users
+
+    async def get(self) -> list[dict]:
+        return self.users.find_all()
+```
 
 ## Apa yang berbeda
 
@@ -24,19 +64,63 @@ Router modular terinspirasi oleh NestJS: pengontrol, modul, dan injeksi konstruk
 - Parameter (`@Body`, `@Param`, `@Query`) adalah parameter FastAPI: anotasi tipe, `Query`, `Path`, `Body`.
 - Pipa adalah Pydantic validasi dan FastAPI dependensi.
 
+`@Query()`, DTO dan kelas penjaga menjadi anotasi, model Pydantic dan fungsi:
+
+```python filename="src/apps/posts/post_controller.py"
+from fastapi import Header, HTTPException, Query
+from pydantic import BaseModel
+from nexy.decorators import Controller, UseGuard
+
+
+class NewPost(BaseModel):
+    title: str
+
+
+def require_token(x_token: str = Header(...)) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+
+@Controller(prefix="/posts")
+@UseGuard(require_token)
+class PostController:
+    async def get(self, limit: int = Query(10)) -> list[dict]:
+        return []
+
+    async def post(self, body: NewPost) -> dict:
+        return {"title": body.title}
+```
+
 ## Apa yang hilang
 
 | NestJS fitur | Status di Nexy |
 |---|---|
-| Penyedia khusus (`useValue`, `useFactory`, `useClass`, token string) | tidak tersedia: hanya kelas `@Injectable()` |
+| Penyedia khusus (`useValue`, `useFactory`, `useClass`, token string) | tidak tersedia: hanya `@Injectable()` kelas |
 | Menyuntikkan berdasarkan antarmuka atau kelas abstrak | tidak tersedia |
 | Enkapsulasi modul | tidak diterapkan: container mencakup seluruh proses, `exports` hanya mengontrol resolusi yang diinginkan |
 | Modul dinamis dan global (`forRoot`, `@Global`) | tidak tersedia |
 | Kait siklus hidup (`onModuleInit`, `onApplicationShutdown`) | tidak tersedia |
-| Pencegat | menggunakan middleware ASGI (`useMiddlewares`) atau dependensi |
-| Filter pengecualian | menggunakan FastAPI penangan pengecualian |
-| Modul pengujian dengan penyedia mengesampingkan | tanpa API publik; gunakan FastAPI `dependency_overrides` dan `TestClient` |
-| Modul konfigurasi, penjadwalan, antrian, CQRS, layanan mikro, caching | bukan bagian dari Nexy; memanfaatkan ekosistem Python |
+| Pencegat | gunakan middleware ASGI (`useMiddlewares`) atau dependensi |
+| Filter pengecualian | gunakan FastAPI penangan pengecualian |
+| Modul pengujian dengan penggantian penyedia | tidak ada API publik; gunakan FastAPI `dependency_overrides` dan `TestClient` |
+| Modul konfigurasi, penjadwalan, antrian, CQRS, layanan mikro, caching | bukan bagian dari Nexy; menggunakan ekosistem Python. |
+
+Sebagai pengganti penyedia `useFactory`, fungsi biasa di belakang `Depends`, yang ditimpa oleh pengujian dengan `dependency_overrides`:
+
+```python filename="src/apps/reports/report_controller.py"
+from fastapi import Depends
+from nexy.decorators import Controller
+
+
+def get_settings() -> dict:
+    return {"currency": "EUR"}
+
+
+@Controller(prefix="/reports")
+class ReportController:
+    async def get(self, settings: dict = Depends(get_settings)) -> dict:
+        return {"currency": settings["currency"]}
+```
 
 ## Kapan harus mengambilnya
 
