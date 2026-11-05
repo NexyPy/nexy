@@ -67,5 +67,5 @@ Placez les fichiers statiques dans `public/` - ils sont servis à partir de `/` 
 ## Prochaines étapes
 
 - [Vues](../views/README.md) : choisissez un format de page
-- [Config](../reference/config.md) : `useFF`, `useVite`, alias
-- [Deploy](../deployment/README.md) : ce que produit le build
+- [Configuration](../reference/config.md) : `useFF`, `useVite`, alias
+- [Déploiement](../deployment/README.md) : ce que produit le build
