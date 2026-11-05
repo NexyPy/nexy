@@ -46,7 +46,7 @@ Browser hanya berbicara ke port `3000`. Tidak ada URL kedua untuk dibuka dan tid
 
 Vite menangani bundel klien; SSR HTML diproduksi per file oleh esbuild.
 
-> [!CATATAN]
+> [!NOTE]
 > rute yang rendering servernya gagal dilaporkan sebagai rute khusus klien dan bukannya menggagalkan keseluruhan build.
 
 ## Penataan gaya
