@@ -17,13 +17,13 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 | | SSR | ISR | CSR | Inseln |
 |---|---|---|---|---|
-| Daten werden gelesen | bei jeder Anfrage | bei jeder Regeneration | im Browser | bei jeder Anfrage |
-| Der HTML-Code kommt von | dem Server | dem Server, dann einem Cache | dem Server für das erste Dokument, dem Browser danach | dem Server |
+| Daten werden gelesen | auf jede Anfrage | bei jeder Regeneration | im Browser | auf jede Anfrage |
+| Der HTML-Code stammt von | Der Server | der Server, dann ein Cache | Der Server für das erste Dokument, der Browser danach | Der Server |
 | JavaScript | nur für Inseln | nur für Inseln | das Framework-Bundle | nur die Insel |
 | Flüssigkeitszufuhr | keine | keine | das gesamte Dokument | die Insel |
 | Cache | keine | pro URL, im Speicher | keine | keine |
-| Entschieden durch | Standard | `revalidate = N` auf der Seite | `useCSR = True` im Projekt | `directive` auf der Komponente |
-| Körnung | Seite | Seite | **Projekt** | Komponente |
+| Beschlossen von | Standard | `revalidate = N` auf der Seite | `useCSR = True` im Projekt | `directive` auf der Komponente |
+| Getreide | Seite | Seite | **Projekt** | Komponente |
 
 ## Rendering-Lebenszyklus
 
@@ -43,11 +43,11 @@ Im Client-Modus wird immer noch ein echtes Dokument gesendet: Nexy rendert es in
 
 ## Konfiguration
 
-| Modus | Wobei |
+| Modus | Wo |
 |---|---|
 | SSR | nirgendwo: Es ist die Standardeinstellung |
-| ISR | `revalidate = 60` im Titelblatt einer `.nexy` Seite |
-| CSR | `useCSR = True` in `nexyconfig.py`, wobei `useFF` auf | gesetzt ist
+| ISR | `revalidate = 60` im Titelblatt einer `.nexy`-Seite |
+| CSR | `useCSR = True` in `nexyconfig.py`, mit `useFF` eingestellt |
 | Inseln | `directive="client:visible"` auf dem Komponenten-Tag |
 
 ## Beispiel
