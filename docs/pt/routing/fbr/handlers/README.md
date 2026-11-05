@@ -1,9 +1,8 @@
 # Manipuladores de rota
 
-Um arquivo `.py` em `src/routes/` é um manipulador de API. O caminho do arquivo é o URL e cada função
-nomeado após um método HTTP se tornar um endpoint.
+Um arquivo `.py` em `src/routes/` é um manipulador de API. O caminho do arquivo é o URL e cada função nomeada após um método HTTP se torna um terminal.
 
-## Crie um endpoint
+## Crie um ponto final
 
 ```python filename="src/routes/api/items.py"
 from nexy.http import Request
@@ -24,8 +23,7 @@ async def POST(request: Request, body: Item):
 
 Este arquivo responde `GET /api/items` e `POST /api/items`.
 
-Nomes de funções suportadas: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HEAD`. `SOCKET` abre
-um WebSocket no mesmo caminho - consulte [WebSocket](../realtime/websocket.md).
+Nomes de funções suportadas: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HEAD`. `SOCKET` abre um WebSocket no mesmo caminho - veja [WebSocket](../realtime/websocket.md).
 
 ## O vocabulário HTTP
 
@@ -35,11 +33,7 @@ Importe o que um manipulador precisa de `nexy.http`:
 from nexy.http import Depends, Header, HTTPException, JSONResponse, Request, status
 ```
 
-Ele expõe as classes de solicitação e resposta (`Request`, `Response`, `JSONResponse`, `HTMLResponse`,
-`PlainTextResponse`, `RedirectResponse`, `StreamingResponse`, `FileResponse`), as fontes dos parâmetros
-(`Header`, `Query`, `Cookie`, `Path`, `Body`), `Depends`, `BackgroundTasks`, `HTTPException` e
-`status`. Os manipuladores escritos neste módulo dependem do contrato da Nexy, não do mecanismo que
-os serve. Os modelos Pydantic descrevem corpos e respostas como de costume.
+Ele expõe as classes de solicitação e resposta (`Request`, `Response`, `JSONResponse`, `HTMLResponse`, `PlainTextResponse`, `RedirectResponse`, `StreamingResponse`, `FileResponse`), as fontes de parâmetros (`Header`, `Query`, `Cookie`, `Path`, `Body`), `Depends`, `BackgroundTasks`, `HTTPException` e `status`. Os manipuladores escritos neste módulo dependem do contrato da Nexy, não do mecanismo que os atende. Pydantic modelos descrevem corpos e respostas como de costume.
 
 ## Parâmetros
 
@@ -47,21 +41,19 @@ os serve. Os modelos Pydantic descrevem corpos e respostas como de costume.
 |---|---|
 | Segmento de caminho `[id]` | argumento de função `id`, convertido em sua anotação |
 | Sequência de consulta | `page: int = 1` |
-| Corpo JSON | Argumento do modelo Pydantic |
-| Primitivas FastAPI | `Depends`, `Header`, `Cookie`, `Form`, `UploadFile` - inalteradas |
+| Corpo JSON | Pydantic argumento do modelo |
+| FastAPI primitivas | `Depends`, `Header`, `Cookie`, `Form`, `UploadFile` - inalteradas |
 
 ```python filename="src/rotas/api/users/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
 
-O segmento do caminho é `{id}`, então FastAPI valida `id: int`. Um valor que não é um número inteiro responde
-`404`, porque uma rota dinâmica captura qualquer URL e uma URL que não pode ser convertida não existe.
-Consulte [Validação e erros](validation-and-errors.md).
+O segmento do caminho é `{id}`, então FastAPI valida `id: int`. Um valor que não é um número inteiro responde `404`, porque uma rota dinâmica captura qualquer URL e uma URL que não pode ser convertida não existe. Consulte [Validação e erros](validation-and-errors.md).
 
 ## Respostas
 
-| Retorno | Resposta |
+| Retornar | Resposta |
 |---|---|
 | `dict`, `list`, `BaseModel` | JSON |
 | `JSONResponse`, `HTMLResponse`, qualquer `Response` | exatamente como declarado |
@@ -79,21 +71,16 @@ async def POST():
 
 ## Erros
 
-Levante exceções FastAPI para clientes. Um cliente que envia `Accept: application/json` recebe
-`{"detail": "..."}` com o status que você elevou; um navegador recebe a página de erro. `notfound.nexy`
-renderiza `404` e `errors.nexy` renderiza `500`, cada um com escopo em seu diretório. Veja
-[Validação e erros](validation-and-errors.md) e [Páginas de erro](../errors/README.md).
+Levante FastAPI exceções para clientes. Um cliente que envia `Accept: application/json` recebe `{"detail": "..."}` com o status que você levantou; um navegador recebe a página de erro. `notfound.nexy` renderiza `404` e `errors.nexy` renderiza `500`, cada um com escopo em seu diretório. Consulte [Validação e erros](validation-and-errors.md) e [Páginas de erro](../errors/README.md).
 
 ## OpenAPI
 
-Cada rota de API aparece no esquema gerado, porque as rotas são rotas FastAPI simples. O
-o esquema é servido em `/openapi.json` e renderizado por Scalar em `/docs`. Desative ambos com
-`useDocs = False` em `nexyconfig.py`.
+Cada rota da API aparece no esquema gerado, porque as rotas são rotas simples FastAPI. O esquema é servido em `/openapi.json` e renderizado por Scalar em `/docs`. Desative ambos com `useDocs = False` em `nexyconfig.py`.
 
 ## Próximas etapas
 
 - [Dependências](../dependencies/README.md): autenticação e configuração compartilhadas por manipulador ou por diretório
 - [Validação e erros](validation-and-errors.md): `422`, `404` e erros JSON
-- [Routing](../../README.md): caminho do arquivo para URL
-- [Ações](../../../guides/actions.md): endpoints com caminhos gerados
+- [Roteamento](../../README.md): caminho do arquivo para URL
+- [Actions](../../../guides/actions.md): endpoints com caminhos gerados
 - [Config](../../../reference/config.md): middleware, CORS, sessões
