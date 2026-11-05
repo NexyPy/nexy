@@ -30,5 +30,5 @@ Bilah alat adalah blok gaya dan skrip yang ditambahkan sebelum `</body>`: tidak 
 
 ## Langkah selanjutnya
 
-- [Config](../reference/config.md): setiap opsi
-- [Testing](testing.md): menguji halaman atau komponen
+- [Konfigurasi](../reference/config.md): setiap opsi
+- [Pengujian](testing.md): menguji halaman atau komponen
