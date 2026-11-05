@@ -521,6 +521,10 @@ class TestLanguages:
     def test_an_arabic_page_reads_right_to_left(self, out):
         assert '<html lang="ar" dir="rtl"' in self._page(out, "ar/guides/actions")
 
+    def test_a_code_label_of_the_outline_reads_left_to_right_in_arabic(self, out):
+        page = self._page(out, "ar/getting-started/project-structure")
+        assert 'href="#srcroutes" dir="ltr">src/routes/<' in page
+
     def test_the_words_of_the_site_follow_the_language(self, out):
         assert '<span data-i18n="search">Rechercher</span>' in self._page(out, "fr/guides/actions")
 
