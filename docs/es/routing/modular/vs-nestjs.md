@@ -42,7 +42,7 @@ El enrutador modular está inspirado en NestJS: controladores, módulos e inyecc
 
 Elija el enrutador modular cuando desee una estructura basada en clases con inyección para una API más grande. Elija el enrutador basado en archivos cuando la estructura de URL sea el principio organizador. Ambos están estructurados por `nx new`, se ejecutan en la misma FastAPI aplicación y pueden coexistir.
 
-> [!NOTA]
+> [!NOTE]
 > Los elementos que faltan arriba son la brecha honesta. Si necesita proveedores `useFactory` o proveedores reemplazables en las pruebas actuales, mantenga la lógica en funciones simples y FastAPI `Depends`, que se componen y anulan de forma natural.
 
 ## Próximos pasos
