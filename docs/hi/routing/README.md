@@ -21,7 +21,7 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 | राउटर | स्रोत | द्वारा सक्षम |
 |---|---|---|
-| [फ़ाइल-आधारित (एफबीआर)](fbr/README.md) | `src/routes/` | के अंतर्गत प्रत्येक फ़ाइल निर्देशिका मौजूद है |
+| [फ़ाइल-आधारित (एफबीआर)](fbr/README.md) | `src/routes/` | निर्देशिका के अंतर्गत प्रत्येक फ़ाइल मौजूद है |
 | [मॉड्यूलर](modular/README.md) | नियंत्रक और मॉड्यूल | `useRouter = AppModule` में `nexyconfig.py` |
 
 जब भी `src/routes/` मौजूद होता है तो एफबीआर को स्कैन किया जाता है, यहां तक कि मॉड्यूलर राउटर पर भी।
@@ -34,13 +34,12 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 ## फ़ाइल-आधारित रूटिंग
 
-रूट एक फ़ाइल है. URL `src/routes/` के अंतर्गत इसका पथ है, एक्सटेंशन को घटाकर। Next.js की तरह, a
-प्रोजेक्ट दो मोड में से एक में है, जिसे `useCSR` के साथ चुना गया है:
+रूट एक फ़ाइल है. URL `src/routes/` के अंतर्गत इसका पथ है, एक्सटेंशन को घटाकर। Next.js की तरह, एक प्रोजेक्ट दो मोड में से एक में होता है, जिसे `useCSR` के साथ चुना जाता है:
 
 | | `useCSR = False` (डिफ़ॉल्ट) | `useCSR = True` |
 |---|---|---|
 | पेज | `.nexy`, `.md`, `.mdx` | आपके क्लाइंट फ्रेमवर्क की फ़ाइलें |
-| रूट लेआउट | `layout.nexy` | `layout.tsx` (प्रतिक्रिया) |
+| रूट लेआउट | `layout.nexy` | `layout.tsx` (React) |
 | क्लाइंट घटकों | की अनुमति है, पृष्ठों के अंदर द्वीपों के रूप में | पृष्ठ स्वयं |
 | एपीआई मार्ग | `.py` | `.py` |
 
@@ -48,24 +47,23 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 | धारा | इसमें क्या शामिल है |
 |---|---|
-| [एफबीआर/पेज](fbr/pages/README.md) | पेज, [डायनामिक रूट](fbr/pages/dynamic-routes.md) और रूट समूह |
+| [fbr/पेज](fbr/pages/README.md) | पृष्ठ, [गतिशील मार्ग](fbr/pages/dynamic-routes.md) और मार्ग समूह |
 | [एफबीआर/लेआउट्स](fbr/layouts/README.md) | `layout.nexy`, `layout.tsx`, `layout.vue`, `layout.svelte` |
 | [एफबीआर/हैंडलर](fbr/handlers/README.md) | `.py` रूट हैंडलर, [सत्यापन और त्रुटियां](fbr/handlers/validation-and-errors.md) |
-| [एफबीआर/निर्भरताएं](fbr/dependencies/README.md) | `dependencies.py` और गार्ड, निर्देशिका द्वारा विरासत में मिले |
+| [fbr/निर्भरताएं](fbr/dependencies/README.md) | `dependencies.py` और गार्ड, निर्देशिका द्वारा विरासत में मिले |
 | [एफबीआर/मिडलवेयर](fbr/middleware/README.md) | `middleware.py`, निर्देशिका से विरासत में मिला है |
 | [एफबीआर/त्रुटियां](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, जेएसओएन त्रुटियां |
 | [एफबीआर/नेविगेशन](fbr/navigation/linking-and-navigating.md) | लिंकिंग, क्लाइंट नेविगेशन, [हुक](fbr/navigation/hooks.md) |
-| [एफबीआर/रीयलटाइम](fbr/realtime/websocket.md) | वेबसॉकेट हैंडलर |
-| [एफबीआर/विरासत](fbr/inheritance.md) | लेआउट, निर्भरता और त्रुटि पृष्ठ कैसे विरासत में मिलते हैं |
+| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket हैंडलर |
+| [fbr/inheritance](fbr/inheritance.md) | लेआउट, निर्भरता और त्रुटि पृष्ठ कैसे इनहेरिट करते हैं |
 
 ## मॉड्यूलर रूटिंग
 
-NestJS की शैली में नियंत्रक, मॉड्यूल और निर्भरता इंजेक्शन। देखिये
-[मॉड्यूलर रूटिंग](modular/README.md) और [नेक्सी और नेस्टजेएस](modular/vs-nestjs.md)।
+नियंत्रक, मॉड्यूल और निर्भरता इंजेक्शन, NestJS की शैली में। [मॉड्यूलर रूटिंग](modular/README.md) और [नेक्सी और NestJS](modular/vs-nestjs.md) देखें।
 
 ## कस्टम एकीकरण
 
-आप मौजूदा फास्टएपीआई राउटर को अपने नेक्सी प्रोजेक्ट में भी एकीकृत कर सकते हैं। [कस्टम रूटिंग एकीकरण](custom/README.md) देखें।
+आप अपने नेक्सी प्रोजेक्ट में मौजूदा FastAPI राउटर को भी एकीकृत कर सकते हैं। [कस्टम रूटिंग एकीकरण](custom/README.md) देखें।
 
 ## अगले चरण
 
