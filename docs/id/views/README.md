@@ -54,7 +54,7 @@ class NexyConfig(NexyConfigModel):
 
 Dengan kerangka kerja yang diaktifkan, Vite menangani bundel kliennya. Dalam mode klien, ekstensinya menjadi rute; dalam mode server, file yang sama adalah komponen yang Anda impor sebagai pulau - file kerangka kerja di bawah `src/routes/` ditolak di sana. Lihat [mode server dan mode klien](../routing/fbr/modes.md).
 
-> [!CATATAN]
+> [!NOTE]
 > dalam mode [CSR](../rendering/csr.md), hanya file rute kerangka kerja yang dapat dinavigasi di sisi klien.
 
 ## Tata Letak
