@@ -1,7 +1,6 @@
 # Configuração
 
-A configuração é uma classe em `nexyconfig.py` na raiz do projeto. Nexy carrega-o do diretório
-entra correndo; um projeto sem o arquivo usa os padrões.
+A configuração é uma classe em `nexyconfig.py` na raiz do projeto. Nexy carrega-o do diretório em que é executado; um projeto sem o arquivo usa os padrões.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -32,25 +31,23 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | uma instância ou classe `APIRouter` montada próxima às rotas baseadas em arquivo; `None` significa apenas baseado em arquivo |
 | `excludeDirs` | `["templates", "extension", "docs"]` | diretórios ignorados ao verificar rotas |
-| `useAliases` | `None` | aliases de importação, por exemplo. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escreve o que você escolheu, e Vite e `tsconfig.json` seguem |
+| `useAliases` | `None` | aliases de importação, por exemplo. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escreve o que você escolheu, e Vite e `tsconfig.json` seguem-no |
 
-## Front-end
+## Interface
 
 | Campo | Padrão | Significado |
 |---|---|---|
 | `useFF` | `None` | fábrica de estrutura do cliente: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | construir e servir pacotes de clientes com Vite |
 | `useMarkdownExtensions` | `[]` | extensões extras para `.md`/`.mdx` renderização |
-| `useWatchExtensions` | `None` | extensões extras que o servidor de desenvolvimento observa |
-| `useWatchExcludePatterns` | `None` | padrões globais que o servidor de desenvolvimento ignora |
+| `useWatchExtensions` | `None` | extensões extras que o servidor de desenvolvimento monitora |
+| `useWatchExcludePatterns` | `None` | padrões glob que o servidor de desenvolvimento ignora |
 
-> **É bom saber**: `NexyConfigModel` declara `useVite = False`; o tempo de execução `Config` padrão é
-> `True`.
+> **É bom saber**: `NexyConfigModel` declara `useVite = False`; o tempo de execução `Config` padrão é `True`.
 
 ## Nomes de arquivos reservados
 
-Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = ["md"]` faz `layout.md`
-reservado, exatamente como `layout.nexy`.
+Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = ["md"]` torna `layout.md` reservado, exatamente como `layout.nexy`.
 
 | Campo | Adiciona extensões a |
 |---|---|
@@ -65,10 +62,10 @@ reservado, exatamente como `layout.nexy`.
 
 | Campo | Padrão | Significado |
 |---|---|---|
-| `useDocs` | `True` | servem o esquema OpenAPI e sua página de referência escalar |
+| `useDocs` | `True` | serve o esquema OpenAPI e sua página de referência escalar |
 | `useDocsUrl` | `"/docs"` | caminho da página de referência da API |
 | `useRedocsUrl` | `"/redocs"` | declarada mas nenhuma rota está montada |
-| `useTitle` | `"Nexy App"` | Título OpenAPI e título da página (`"Nexy"` em `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI título e título da página (`"Nexy"` em `NexyConfigModel`) |
 
 ## Middleware
 
@@ -82,18 +79,17 @@ reservado, exatamente como `layout.nexy`.
 | `useAuth` | `None` | configuração de middleware de autenticação |
 | `useHTTPSRedirect` | `False` | redirecionar HTTP para HTTPS |
 
-## Redução
+## Markdown
 
 | Campo | Padrão | Significado |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | níveis de títulos incluídos no índice |
-| `useTocTitle` | `"Table of Contents"` | Título do índice |
-| `useTocAuto` | `True` | gerar o índice para páginas Markdown |
+| `useTocTitle` | `"Table of Contents"` | Título do sumário |
+| `useTocAuto` | `True` | gerar o índice para Markdown páginas |
 
 ## Rotas fora da árvore de arquivos
 
-Construa uma FastAPI `APIRouter` e monte-a com `useRouter`. É servido próximo ao baseado em arquivo
-rotas:
+Construa um FastAPI `APIRouter` e monte-o com `useRouter`. É servido próximo às rotas baseadas em arquivo:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
