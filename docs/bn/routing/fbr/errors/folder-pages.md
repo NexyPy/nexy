@@ -83,7 +83,7 @@ dependencies = [require_login]
 
 `unauthorized(scheme="Bearer")` উভয় উত্তরেই `WWW-Authenticate: Bearer` যোগ করে। ব্যবহারকারীর ইনপুট থেকে তৈরি একটি বিশদ পৃষ্ঠায় HTML-এস্কেপড।
 
-> [!টিপ]
+> [!TIP]
 > `Accept: */*`, `curl` এবং অনেক HTTP লাইব্রেরির ডিফল্ট, HTML পৃষ্ঠা দুটির জন্যই জিজ্ঞাসা করে না এবং গ্রহণ করে না। আপনি যখন JSON উত্তর চান তখন `-H "Accept: application/json"` যোগ করুন।
 
 ## এটা পরীক্ষা করুন
