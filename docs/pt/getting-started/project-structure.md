@@ -31,39 +31,31 @@ Para escolher uma pasta, pergunte qual é o arquivo:
 - **Gerado** - `__nexy__/`; nunca edite.
 
 > [!AVISO]
-> `src/routes/` é escaneado: um ajudante colocado lá se torna uma rota. Coloque um ajudante que não seja uma rota
-> fora de `src/routes/`, ou inicie seu nome com `_`.
+> `src/routes/` é escaneado: um ajudante ali colocado se torna uma rota. Coloque um helper que não seja uma rota fora de `src/routes/`, ou inicie seu nome com `_`.
 
 ## `src/routes/`
 
-Cada arquivo se torna uma rota, exceto os nomes reservados abaixo. O caminho do arquivo menos a extensão é
-o URL - consulte [roteamento](../routing/README.md).
+Cada arquivo se torna uma rota, exceto os nomes reservados abaixo. O caminho do arquivo menos a extensão é o URL - consulte [roteamento](../routing/README.md).
 
 | Arquivo | Função |
 |---|---|
 | `layout.nexy` | envolve páginas irmãs e filhas |
 | `errors.nexy` | 500 páginas para o diretório |
-| `notfound.nexy` | 404 página para o diretório |
-| `dependencies.py` | dependências FastAPI compartilhadas para o diretório |
-| `__init__.py` | Marcador de pacote Python |
+| `notfound.nexy` | página 404 para o diretório |
+| `dependencies.py` | dependências compartilhadas FastAPI para o diretório |
+| `__init__.py` | Python marcador de pacote |
 | `loading.nexy` | reservado - excluído das rotas, mas ainda não tem efeito de tempo de execução |
 
-Cada nome de página também existe por estrutura. Com `react()` configurado, `layout.jsx` e `layout.tsx`
-são reservados exatamente como `layout.nexy`. As listas são construídas em `nexy/core/config.py`
-(`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
+Cada nome de página também existe por estrutura. Com `react()` configurado, `layout.jsx` e `layout.tsx` são reservados exatamente como `layout.nexy`. As listas são construídas em `nexy/core/config.py` (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
 
 > [!NOTA]
-> `notfound.nexy` e `errors.nexy` só são instalados quando existe uma cópia no
-> rotas raiz. Uma cópia em um subdiretório refina a página para esse prefixo.
+> `notfound.nexy` e `errors.nexy` só são instalados quando existe uma cópia na raiz das rotas. Uma cópia em um subdiretório refina a página para esse prefixo.
 
 ## `src/apps/`
 
-O diretório `nexy new` usado para o roteador modular: registradores de controladores, módulos e provedores
-suas rotas através de decoradores de `nexy.decorators`, então o agregado `APIRouter` é montado
-com `useRouter` em `nexyconfig.py`.
+O diretório que `nexy new` utiliza para o roteador modular: controladores, módulos e provedores registram suas rotas através de decoradores de `nexy.decorators`, então o agregado `APIRouter` é montado com `useRouter` em `nexyconfig.py`.
 
-Um projeto pode ter ambos os roteadores: `useRouter` monta o roteador modular e `src/routes/` é verificado
-sempre que esse diretório existir. Consulte [roteamento modular](../routing/modular/README.md).
+Um projeto pode ter ambos os roteadores: `useRouter` monta o roteador modular e `src/routes/` é verificado sempre que esse diretório existir. Consulte [roteamento modular](../routing/modular/README.md).
 
 ## `public/`
 
@@ -75,11 +67,10 @@ Gerado por `nx build` (e por `nx dev` para as peças necessárias). Ele contém:
 
 - os módulos de rota compilados, como um pacote Python (`__nexy__/src/routes/...`);
 - os pontos de entrada do cliente gerados (`main.ts`, `vite.ts`, `*.auto.ts`);
-- `client/` após uma construção do Vite - ativos, manifesto, HTML pré-renderizado;
+- `client/` após uma compilação Vite - ativos, manifesto, HTML pré-renderizado;
 - `build-cache.json`.
 
-Trate todo o diretório como descartável: exclua-o e reconstrua-o. Editá-lo manualmente perde a alteração
-na próxima construção. Adicione-o a `.gitignore`.
+Trate todo o diretório como descartável: exclua-o e reconstrua-o. Editá-lo manualmente perde a alteração na próxima compilação. Adicione-o a `.gitignore`.
 
 ## Próximas etapas
 
