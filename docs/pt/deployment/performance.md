@@ -7,7 +7,7 @@ O que `nx start` faz por padrão, o que ligar e o que foi medido.
 | Preocupação | Padrão | Alterar |
 |---|---|---|
 | Processa | um Uvicorn trabalhador por CPU no Linux e macOS, um no Windows | `nx start` executa o aplicativo por meio de Uvicorn |
-| Compactação | desativada | `useGZip = {"minimum_size": 1000}` em [Config](../reference/config.md), ou compactação no proxy reverso |
+| Compactação | desativada | `useGZip = {"minimum_size": 1000}` em [Configuração](../reference/config.md), ou compactação no proxy reverso |
 | Arquivos estáticos | servidos com `ETag` e `Last-Modified`, não `Cache-Control` | definem cache de longa duração no proxy reverso ou CDN para pacotes com hash |
 | Páginas HTML | renderizadas por solicitação, sem cache | [ISR](../rendering/isr.md) com `revalidate = N` |
 | Documentos da API | em | `useDocs = False` em produção |
