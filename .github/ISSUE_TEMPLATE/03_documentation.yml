@@ -25,7 +25,7 @@ body:
     attributes:
       label: Location
       description: Where did you find the issue? (URL, file path, or section name)
-      placeholder: e.g. README.md, ARCHITECTURE.md, or https://nexy.ai/docs/routing
+      placeholder: e.g. README.md, ARCHITECTURE.md, or https://nexypy.github.io/nexy/docs/routing/
 
   - type: textarea
     id: description
