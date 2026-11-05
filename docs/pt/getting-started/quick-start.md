@@ -83,7 +83,7 @@ controllers = [AppController, AboutController, HelloController]
 
 Abra <http://localhost:3000/hello>. Altere `"Hello"` para `"Bonjour"` e salve: a página é atualizada sem recarregar manualmente. Se o código estiver errado, o navegador mostra o erro em vez de uma página em branco.
 
-`prop[str]` declara uma propriedade digitada. A marcação sob o frontmatter é Jinja2 - veja [.nexy files](../views/nexy/README.md).
+`prop[str]` declara uma propriedade digitada. A marcação sob o frontmatter é Jinja2 - veja [arquivos .nexy](../views/nexy/README.md).
 
 ## Onde será o próximo
 
