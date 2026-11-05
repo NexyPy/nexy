@@ -118,6 +118,6 @@ useRouter = api
 
 - [基于文件的路由](../fbr/README.md) – 从文件构建页面和简单的处理程序。
 - [模块化路由](../modular/README.md) – 具有注入和防护的结构化后端。
-- [Route handlers](../fbr/handlers/README.md) – 定义 Python 端点。
+- [路由处理函数](../fbr/handlers/README.md) – 定义 Python 端点。
 
 自定义路由器使您可以灵活地重用现有的 FastAPI 代码，同时保持基于文件的页面和模块化结构的简单性。
