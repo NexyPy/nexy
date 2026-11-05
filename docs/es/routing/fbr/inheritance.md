@@ -1,7 +1,6 @@
-# Herencia
+# herencia
 
-Varios archivos en `src/routes/` se aplican a todo lo que se encuentra debajo de su directorio. Todos resuelven lo mismo
-Camino: Nexy comienza en el directorio de la ruta y camina hasta `src/routes/`.
+Varios archivos en `src/routes/` se aplican a todo lo que se encuentra debajo de su directorio. Todos se resuelven de la misma manera: Nexy comienza en el directorio de la ruta y camina hasta `src/routes/`.
 
 ```text
 src/routes/
@@ -25,36 +24,27 @@ src/routes/
 | `dependencies.py` | cada archivo desde la raíz hasta la ruta se ejecuta, **el más externo primero**, luego los propios guardias del controlador |
 | `notfound.nexy`, `errors.nexy` | el **más cercano** gana, según el código de estado |
 
-Para la página anterior, los diseños se anidan como
-`root layout > (shop) layout > cart layout > page`, y las dependencias se ejecutan como
-`root > (shop) > cart > handler guards`.
+Para la página anterior, los diseños se anidan como `root layout > (shop) layout > cart layout > page` y las dependencias se ejecutan como `root > (shop) > cart > handler guards`.
 
-## Por qué lo más externo primero
+## ¿Por qué lo más externo primero?
 
-Un diseño exterior dibuja el marco y una dependencia exterior decide quién puede entrar. poniéndolos
-primero significa que los internos pueden confiar en ellos: un directorio que requiere autenticación se ejecuta antes de que un
-manejador que lee al usuario.
+Un diseño exterior dibuja el marco y una dependencia exterior decide quién puede entrar. Ponerlos en primer lugar significa que los internos pueden confiar en ellos: un directorio que requiere autenticación se ejecuta antes que un controlador que lee al usuario.
 
 ## Diseños
 
-Todos los archivos de diseño de una pila de familia de carpetas: consulte [Diseños](layouts/README.md). Diferentes familias lo hacen
-no mezclar: un `layout.vue` nunca envuelve una página `.tsx` y un proyecto tiene `layout.nexy` o cliente
-diseños, nunca ambos ([modos](modes.md)).
+Todos los archivos de diseño de una pila de familia de carpetas: consulte [Diseños](layouts/README.md). Las diferentes familias no se mezclan: un `layout.vue` nunca envuelve una página `.tsx`, y un proyecto tiene `layout.nexy` o diseños de cliente, nunca ambos ([modos](modes.md)).
 
-## Archivos de middleware
+## Archivos de software intermedio
 
-Consulte [Archivos middleware](middleware/README.md): se ejecutan antes de las dependencias y pueden responder
-sin llegar a la ruta.
+Ver [Archivos middleware](middleware/README.md): se ejecutan antes de las dependencias y pueden responder sin llegar a la ruta.
 
 ## Dependencias
 
-Consulte [Dependencias](dependencies/README.md) para conocer el orden en un archivo de controlador, incluido `@UseGuard`
-y `@Middleware`.
+Consulte [Dependencias](dependencies/README.md) para conocer el orden en un archivo de controlador, incluidos `@UseGuard` y `@Middleware`.
 
 ## Páginas de error
 
-`notfound.nexy` y `errors.nexy` se instalan una vez en la raíz de las rutas; una copia en un subdirectorio
-refina la página para ese prefijo. Consulte [Páginas de error](errors/README.md).
+`notfound.nexy` y `errors.nexy` se instalan una vez en la raíz de las rutas; una copia en un subdirectorio refina la página para ese prefijo. Consulte [Páginas de error](errors/README.md).
 
 ## Próximos pasos
 
