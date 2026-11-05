@@ -65,7 +65,7 @@ Tres preguntas deciden todo lo que nota el lector:
 
 | Pregunta | Respuesta | Página |
 |---|---|---|
-| ¿Quién produce el HTML? | el servidor, o el navegador para una ruta de cliente | [Rendering](../rendering/README.md) |
+| ¿Quién produce el HTML? | el servidor, o el navegador para una ruta de cliente | [Renderizado](../rendering/README.md) |
 | ¿Cuándo se leen los datos? | en cada solicitud, en cada regeneración o en el navegador | [SSR](../rendering/ssr.md), [ISR](../rendering/isr.md) |
 | ¿Cuándo llega JavaScript? | solo para una isla, o para todo el documento | [Islas](../rendering/islands.md), [CSR](../rendering/csr.md) |
 
