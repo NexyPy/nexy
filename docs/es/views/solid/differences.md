@@ -1,25 +1,21 @@
-# Sólido
+# Solid
 
-Nexy renderiza los componentes de Solid 1.9 en el servidor y luego Solid los toma en el navegador. páginas,
-Los diseños, islas y acciones son los mismos en todos los marcos: esta página cubre la configuración, luego las partes.
-que difieren de los [contratos compartidos](../frontend/pages.md).
+Nexy renderiza los componentes Solid 1.9 en el servidor, luego Solid los toma en el navegador. Las páginas, diseños, islas y acciones son las mismas en todos los marcos: esta página cubre la configuración y luego las partes que difieren de los [contratos compartidos](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | Las páginas son | El sólido es |
+| Modo | `nexyconfig.py` | Las páginas son | Solid es |
 |---|---|---|---|
 | Servidor (predeterminado) | `useCSR = False` | `.nexy` archivos | [islas](../../rendering/islands.md) dentro de esas páginas |
-| Cliente | `useCSR = True` | `.tsx` archivos | toda la página, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+| El cliente | `useCSR = True` | `.tsx` archiva | la página completa, con [diseños](../frontend/layouts.md) y un enrutador cliente |
 
-## Iniciar un proyecto
+## iniciar un proyecto
 
 ```bash
 nx new my-app --template web-fbr-solid
 ```
 
-La plantilla es un proyecto en modo servidor con islas Solid. Ejecute `nx new my-app` sin una plantilla para
-En su lugar, responda las indicaciones: el enrutador, el tipo de proyecto, si desea utilizar el enrutamiento del lado del cliente y luego
-el marco.
+La plantilla es un proyecto en modo servidor con Solid islas. Ejecute `nx new my-app` sin una plantilla para responder a las indicaciones: el enrutador, el tipo de proyecto, si se utilizará el enrutamiento del lado del cliente y luego el marco.
 
-## Habilitar Sólido en un proyecto existente
+## Habilitar Solid en un proyecto existente
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -42,9 +38,7 @@ export default defineConfig({
 });
 ```
 
-En modo cliente escriba `solid({ ssr: true })`: Solid compila un componente de manera diferente para el servidor
-y para el navegador, y el modo cliente necesita ambos. `nx new` escribe este archivo; Nexy escribe
-`__nexy__/vite.ts` en sí, así que no lo edites.
+En modo cliente, escriba `solid({ ssr: true })`: Solid compila un componente de manera diferente para el servidor y para el navegador, y el modo cliente necesita ambos. `nx new` escribe este archivo; Nexy escribe `__nexy__/vite.ts` por sí mismo, así que no lo edites.
 
 | Paquete | Versión `nx new` escribe |
 |---|---|
@@ -53,8 +47,7 @@ y para el navegador, y el modo cliente necesita ambos. `nx new` escribe este arc
 
 ## Piensa en señales
 
-Una función de componente sólido se ejecuta **una vez**. Lo que cambia después se lee a través de una señal, y sólo el
-las expresiones que lo leen se actualizan:
+Una función de componente Solid se ejecuta **una vez**. Lo que cambia después se lee a través de una señal, y solo se actualizan las expresiones que la leen:
 
 ```tsx filename="src/components/Counter.tsx"
 import { createSignal } from "solid-js";
@@ -71,23 +64,19 @@ export default function Counter(props: { start?: number }) {
 
 ## Reglas
 
-- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [solid(), react()]`
-  detiene el servidor al inicio. Con `useFF = solid()`, cada archivo `.tsx` es Sólido.
-- **Las páginas son `.tsx`.** Sólo un archivo `.tsx` bajo `src/routes/` se convierte en una página; `.jsx` está bien para un
-  componente.
-- **Los componentes viven fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
-- **Un proyecto en modo servidor no tiene `.tsx` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy
-  se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
+- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [solid(), react()]` detiene el servidor al inicio. Con `useFF = solid()`, cada archivo `.tsx` es Solid.
+- **Las páginas son `.tsx`.** Sólo un archivo `.tsx` bajo `src/routes/` se convierte en una página; `.jsx` está bien para un componente.
+- **Los componentes se encuentran fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
+- **Un proyecto en modo servidor no tiene `.tsx` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
 - **No `.mdx` con Solid.** MDX compila en React o Preact; `.md` páginas funcionan.
 
-## Páginas
+## paginas
 
 En modo cliente (`useCSR = True`), una página es un archivo `.tsx`.
 
 ### Componente de página
 
-Una página es la exportación predeterminada del archivo. Si no existe una exportación predeterminada, Nexy elige la primera nombrada
-exportar.
+Una página es la exportación predeterminada del archivo. Si no existe una exportación predeterminada, Nexy elige la primera exportación nombrada.
 
 ```tsx filename="src/rutas/index.tsx"
 export default function Home() {
@@ -97,7 +86,7 @@ export default function Home() {
 
 ### Segmentos dinámicos
 
-Los parámetros de URL están disponibles a través del enlace `useParams`, que devuelve un descriptor de acceso:
+Los parámetros de URL están disponibles a través del gancho `useParams`, que devuelve un descriptor de acceso:
 
 ```tsx filename="src/rutas/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -129,7 +118,7 @@ export default function RootLayout(props: { children: JSX.Element }) {
 }
 ```
 
-No desestructurar `props.children`, como Solid lo lee con pereza.
+No desestructurar `props.children`, como lo lee Solid con pereza.
 
 ## Islas
 
@@ -157,10 +146,9 @@ Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
 
 ## Acciones y navegación
 
-### Llamando acciones
+### Llamar a acciones
 
-Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Solid, esto devuelve accesores (llame
-ellos como funciones).
+Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Solid, esto devuelve descriptores de acceso (llámelos como funciones).
 
 ```tsx
 import { useAction } from "@nexy/client";
@@ -190,7 +178,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Acceso URL
+### acceso URL
 
 Todos los ganchos de ubicación devuelven descriptores de acceso:
 
