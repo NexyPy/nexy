@@ -1,4 +1,4 @@
-# WebSocket-Handler
+# WebSocket Handler
 
 Behandeln Sie WebSocket-Verbindungen in einer `.py`-Routendatei, indem Sie `SOCKET` definieren.
 
@@ -14,9 +14,9 @@ async def SOCKET(websocket: WebSocket):
 
 ## Regeln
 
-- Die URL ist der Dateipfad, dieselbe Regel wie beim [Routing](../../README.md).
-- Nur `.py` Routendateien registrieren WebSocket-Handler über `SOCKET`.
-- Stellen Sie sicher, dass Ihr Reverse-Proxy WebSocket-Upgrade-Anfragen weiterleitet.
+- Die URL ist der Dateipfad, dieselbe Regel wie [routing](../../README.md).
+- Nur `.py` Routendateien registrieren WebSocket Handler über `SOCKET`.
+- Stellen Sie sicher, dass Ihr Reverse-Proxy WebSocket Upgrade-Anfragen weiterleitet.
 
 ## Nächste Schritte
 
