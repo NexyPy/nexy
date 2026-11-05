@@ -7,21 +7,21 @@
 
 ## হুক
 
-| হুক | রিটার্ন |
+| হুক | রিটার্নস |
 |---|---|
 | `usePathname()` | অনুরোধের পথ, যেমন `"/blog/post-1"` |
 | `useSearchParams()` | ক্যোয়ারী স্ট্রিং হিসাবে `dict[str, str]`, প্রতি কী প্রথম মান |
-| `useParams()` | গতিশীল পথ পরামিতি, যেমন `{"slug": "post-1"}` |
+| `useParams()` | ডায়নামিক পাথ প্যারামিটার, যেমন `{"slug": "post-1"}` |
 | `useQuery()` | `useParams()` এর আসল নাম, বিদ্যমান পৃষ্ঠাগুলির জন্য রাখা হয়েছে |
-| `useRequest()` | Starlette অনুরোধ, যা অন্যান্য হুকগুলিকে আবৃত করে না |
-| `useHeaders()` | অনুরোধ শিরোনামগুলি `dict[str, str]` হিসাবে, নামগুলি ছোট হাতের |
+| `useRequest()` | Starlette অনুরোধ, যা অন্যান্য হুকগুলি আবৃত করে না |
+| `useHeaders()` | অনুরোধের শিরোনামগুলি `dict[str, str]` হিসাবে, ছোট হাতের নাম |
 | `useUrl()` | সম্পূর্ণ URL: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
-| `useIsActive(href, exact=False)` | `href` বর্তমান পৃষ্ঠা হোক বা এর পিতামাতার একজন |
+| `useIsActive(href, exact=False)` | `href` বর্তমান পৃষ্ঠা বা এর পিতামাতার একজন কিনা |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | সমস্ত কুকিজ হিসাবে `dict[str, str]` |
-| `useSession()` | অধিবেশনের নির্দেশ, `{}` যখন সেশনগুলি সক্রিয় করা হয় না |
-| `useToc(depth_range="2-6")` | বর্তমান পৃষ্ঠার জন্য HTML বিষয়বস্তুর সারণী, `""` যখন কোনোটিই |
-| `useViews(path, context=None)` | আরেকটি ভিউ রেন্ডার করে এবং একটি `HTMLResponse` | ফেরত দেয়
+| `useSession()` | সেশন ডিক্ট, `{}` যখন সেশন সক্রিয় করা হয় না |
+| `useToc(depth_range="2-6")` | বর্তমান পৃষ্ঠার জন্য বিষয়বস্তুর সারণী HTML, `""` যখন কোনটি নেই |
+| `useViews(path, context=None)` | অন্য ভিউ রেন্ডার করে এবং একটি `HTMLResponse` ফেরত দেয় |
 
 ## অনুরোধ পড়ুন
 
