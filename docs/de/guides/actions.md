@@ -2,8 +2,7 @@
 
 Ein `@Action` verwandelt eine Python-Funktion in einen `POST`-Endpunkt. Im Gegensatz zu einem Standard-API-Handler ist es als typisierte Kommunikationsbrücke konzipiert: Nexy generiert automatisch den TypeScript-Client, validiert die Eingabe und verarbeitet die Antwort.
 
-**Bevor Sie beginnen:** ein Projekt, das durch den [Schnellstart](../getting-started/quick-start.md) erstellt wurde.
-Aktionen werden neben den Seiten in `src/actions/` angezeigt.
+**Bevor Sie beginnen:** ein Projekt, das durch den [Schnellstart](../getting-started/quick-start.md) erstellt wurde. Aktionen werden neben den Seiten in `src/actions/` angezeigt.
 
 ```diagram filename="Der Aktionszyklus"
 Client (UI)  ─── 1. Call (Typed Input) ───► [ Nexy Bridge ]
@@ -34,19 +33,19 @@ async def create_user(name: str, age: int = 0) -> User:
     return User(name=name, age=age)
 ```
 
-Die Parameter sind die von Pydantic validierten Eingaben. Ein Parameter mit dem Namen `request` oder `response` wird eingefügt und ist nicht Teil der Eingabe.
+Die Parameter sind die Eingabe, validiert durch Pydantic. Ein Parameter mit dem Namen `request` oder `response` wird eingefügt und ist nicht Teil der Eingabe.
 
 ### 2. Validieren
 Wenn die Aktion aufgerufen wird, validiert Nexy die Eingabe anhand der Typhinweise der Funktion. Wenn ein Feld fehlt oder den falschen Typ hat, wird die Aktion nicht ausgeführt und ein `422 Unprocessable Entity` zurückgegeben.
 
 ### 3. Ausführen
-Die Logik läuft auf dem Server. Da es sich um eine Standard-Python-Funktion handelt, können Sie jede beliebige Bibliothek verwenden, auf die Datenbank zugreifen oder andere Dienste aufrufen. Sie können eine Seitenaktualisierung auch mit `revalidate()` auslösen.
+Die Logik läuft auf dem Server. Da es sich um eine Standardfunktion Python handelt, können Sie jede Bibliothek verwenden, auf die Datenbank zugreifen oder andere Dienste aufrufen. Sie können eine Seitenaktualisierung auch mit `revalidate()` auslösen.
 
 ### 4. Serialisieren
 Der Rückgabewert wird automatisch in JSON serialisiert. Pydantic-Modelle werden nativ verarbeitet und Standard-Python-Typen werden ihren JSON-Äquivalenten zugeordnet.
 
 ### 5. Konsumieren
-Das Frontend erhält das Ergebnis mit voller Typsicherheit. Nexy schreibt `__nexy__/src/actions.ts` aus Ihren Unterschriften und `@nexy/actions` beschließt, es zu tun.
+Das Frontend erhält das Ergebnis mit voller Typsicherheit. Nexy schreibt `__nexy__/src/actions.ts` aus Ihren Unterschriften, und `@nexy/actions` beschließt, es zu tun.
 
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
@@ -67,16 +66,14 @@ Ohne Hook ist eine Aktion nur eine `async`-Funktion: `const user = await create_
 
 | Framework | Was `useAction` zurückgibt |
 |---|---|
-| Reagieren, Vorwirken | `{ pending, data, error, run, reset }` |
-| Festkörper | das Gleiche, mit `pending()`, `data()` und `error()` als Accessoren |
+| React, Preact | `{ pending, data, error, run, reset }` |
+| Solid | das Gleiche, mit `pending()`, `data()` und `error()` als Accessoren |
 | Vue | das Gleiche, mit `pending`, `data` und `error` als Referenzen |
 | Svelte | ein Geschäft: `$save.pending`, `$save.data`, `$save.error`, plus `save.run(input)` und `save.reset()` |
 
 `useAction(action, { onSuccess, onError })` nimmt auch zwei Rückrufe entgegen. `run` wirft nie: Ein Fehlschlag landet in `error` und `run` wird mit `undefined` aufgelöst.
 
-Die Typen stammen aus Python: `str` ist `string`, `int` und `float` sind `number`, `list[T]` ist `T[]`,
-Ein Pydantic-Modell oder ein `Enum` ist ein benannter Typ, und ein Feld mit einem Standardwert ist in der Eingabe optional.
-Ein Typ, den Pydantic nicht beschreiben kann, wird zu `unknown`.
+Die Typen stammen von Python: `str` ist `string`, `int` und `float` sind `number`, `list[T]` ist `T[]`, ein Pydantic-Modell oder ein `Enum` ist ein benannter Typ, und ein Feld mit einem Standardwert ist in der Eingabe optional. Ein Typ, den Pydantic nicht beschreiben kann, wird zu `unknown`.
 
 ## Fehler und Ausfälle
 
@@ -85,11 +82,10 @@ Eine Aktion kann in verschiedenen Phasen fehlschlagen. Sie sollten in Ihrer Benu
 1.  **Validierungsfehler (422)**: Die Eingabe stimmte nicht mit der Python-Signatur überein. `error.fields` ordnet jedes ungültige Feld seiner Nachricht zu.
 2.  **Geschäftsfehler (`HTTPException`)**: Ihr Code hat den Anruf abgelehnt, zum Beispiel `403 Forbidden` oder `409 Conflict`.
 3.  **Serverfehler (500)**: In Ihrem Python-Code ist eine nicht behandelte Ausnahme aufgetreten.
-4.  **Netzwerkfehler**: Die Anfrage hat den Server nie erreicht, zum Beispiel aufgrund einer Zeitüberschreitung oder einer verlorenen Verbindung.
-5.  **Autorisierungsfehler (401, 403)**: Ihr eigener Scheck hat den Anrufer abgelehnt. Nexy entscheidet dies nicht für Sie.
+4.  **Netzwerkfehler**: Die Anfrage hat den Server nie erreicht, z. B. eine Zeitüberschreitung oder ein Verbindungsverlust.
+5.  **Autorisierungsfehler (401, 403)**: Ihre eigene Prüfung hat den Anrufer abgelehnt. Nexy entscheidet dies nicht für Sie.
 
-Bei der unten beschriebenen Ursprungsprüfung handelt es sich um einen CSRF-Schutz, nicht um eine Autorisierung: Sie gibt an, wo der Aufruf erfolgt
-kommt, niemals wer es machen darf.
+Bei der unten beschriebenen Ursprungsprüfung handelt es sich um einen CSRF-Schutz, nicht um eine Autorisierung: Sie sagt aus, woher der Anruf kam, niemals, wer ihn tätigen darf.
 
 ## Aktualisieren Sie die Seite nach einer Aktion
 
@@ -120,10 +116,7 @@ Bei Erfolg wird der Besucher mit dem Status `303` auf die Seite zurückgeleitet,
 ## Sicherheit
 
 ### Pfadunklarheit ist keine Autorisierung
-Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Moduls der Funktion, seinem Namen und einem Geheimnis des
-Projekt. Es wird durch `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gehalten, was `nx build`
-Erstellt also das Client-Bundle und `nx start` stimmt zu: Behalte diese Datei beim Build. Der Pfad verbirgt die
-Endpunkt von Casual Discovery, und **der generierte Pfad ist kein Autorisierungsmechanismus**.
+Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Funktionsmoduls, seinem Namen und einem Geheimnis des Projekts. Es wird von `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gespeichert, das `nx build` erstellt, sodass das Client-Bundle und `nx start` zustimmen: Behalten Sie diese Datei beim Build. Der Pfad verbirgt den Endpunkt vor zufälliger Entdeckung und **der generierte Pfad ist kein Autorisierungsmechanismus**.
 
 Jeder, der den Weg kennt, kann die Aktion aufrufen. Sie **müssen** die Identität und Berechtigungen des Benutzers innerhalb der Aktion überprüfen:
 ```python
@@ -134,7 +127,7 @@ async def delete_user(user_id: str, request: Request):
     # ...
 ```
 
-### Ursprungsschutz
+### Herkunftsschutz
 Um Cross-Site Request Forgery (CSRF) zu verhindern, lehnt Nexy Anfragen ab, deren `Origin` eine andere Site ist oder die der Browser `Sec-Fetch-Site: cross-site` mit einem `403` markiert. Listen Sie die Websites auf, die Ihre Aktionen in `NEXY_ALLOWED_ORIGINS` aufrufen können. Anrufe ohne `Origin` (wie `curl`) werden angenommen.
 
 ## Importfehler
