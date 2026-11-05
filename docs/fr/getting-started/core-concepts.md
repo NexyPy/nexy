@@ -1,12 +1,12 @@
 # Concepts de base
 
-Le modèle mental, avant l'API : quatre niveaux de lecture, puis les notions qui reviennent à chaque page. Chaque notion reçoit ici une ligne et un lien vers la page qui va plus loin.
+Les mots utilisés par le reste de la documentation - route, page, vue, composant, gestionnaire, point de terminaison - chacun sur une seule ligne, avec un lien vers la page qui va plus loin. Nouveau sur Nexy ? Commencez par [Qu'est-ce que Nexy ?](what-is-nexy.md).
 
 ## Comment lire ces documents
 
 | Niveau | La question à laquelle il répond | Commencez par |
 |---|---|---|
-| Architecture des applications | quelle couche répond à une demande et ce qu'elle refuse de faire | [Architecture](../architecture.md) |
+| Architecture des applications | quelle couche répond à une demande et ce qu'elle refuse de faire | [Comment fonctionne Nexy](how-nexy-works.md) |
 | Structure de la candidature | où se trouve le code et ce que devient un fichier | [Structure du projet](project-structure.md) |
 | Présentation et rendu | ce que le lecteur voit et qui produit le HTML | [Vues](../views/README.md), [Rendu](../rendering/README.md) |
 | Interaction avec les applications | ce que fait le lecteur et ce qui s'exécute en réponse | [Actions](../guides/actions.md) |
@@ -34,7 +34,7 @@ Cinq notions qu'un lecteur venant de Next.js fusionne habituellement en une seul
 | **Voir** | ce qui produit le corps d'une page : Jinja2 et Python, Markdown, ou un composant client | un itinéraire : une même vue peut servir plusieurs pages |
 | **Composant** | une pièce réutilisable qu'une page importe | une route : en mode serveur un composant n'est jamais servi seul |
 | **Gestionnaire de route** | la fonction d'un fichier de route `.py`, nommé d'après la méthode HTTP (`GET`, `POST`, …) | une page : elle renvoie du JSON, un fichier ou un `Response` |
-| **Point final** | la paire (URL, méthode) à laquelle un gestionnaire répond | un gestionnaire : un fichier peut répondre à plusieurs points de terminaison |
+| **Point de terminaison** | la paire (URL, méthode) à laquelle un gestionnaire répond | un gestionnaire : un fichier peut répondre à plusieurs points de terminaison |
 
 En une phrase : **une page est un fichier de route, une vue est ce qui le restitue, un composant est ce qu'une page réutilise, un gestionnaire répond à un point de terminaison.**
 
@@ -69,13 +69,12 @@ Deux décisions indépendantes, souvent confondues :
 
 ## Ce que Nexy ne fait pas
 
-L'authentification, l'autorisation, la base de données, l'internationalisation, les tâches en arrière-plan, le courrier électronique, les paiements et la recherche relèvent de **la responsabilité de votre application**, et non celle du framework. Nexy donne les points d'extension et dit où brancher chacun d'eux : voir [les limites](../architecture.md#boundaries).
+L'authentification, l'autorisation, la base de données, l'internationalisation, les tâches en arrière-plan, la messagerie électronique, les paiements et la recherche relèvent de **la responsabilité de votre application**, et non celle du framework. Nexy donne les points d'extension et indique où brancher chacun d'eux : voir [Ce que Nexy vous laisse](how-nexy-works.md#what-nexy-leaves-to-you).
 
 La raison n'est pas le minimalisme en soi : un framework qui sélectionne votre ORM ou votre bibliothèque d'authentification a décidé quelque chose que seule votre application peut décider.
 
 ## Prochaines étapes
 
-- [Architecture](../architecture.md) : les couches, et qui construit quoi
 - [Structure du projet](project-structure.md) : chaque dossier et fichier d'un projet
 - [Glossaire](../reference/glossary.md) : les mêmes mots, dans un index alphabétique
-- [Comment fonctionne Nexy](how-nexy-works.md) : une requête, étape par étape
+- [Comment fonctionne Nexy](how-nexy-works.md) : les couches, qui construit quoi et ce que Nexy vous laisse
