@@ -1,25 +1,46 @@
 # So funktioniert Nexy
 
-Das mentale Modell auf einer Seite: Was Nexy erstellt, was Vite erstellt und was zwischen einer Datei und einer Seite in Ihrem Browser passiert. Lesen Sie es einmal; Der Rest der Dokumentation besteht dann aus einer Reihe von Details.
+Was passiert zwischen einer Datei, die Sie schreiben, und der Seite im Browser: die Ebenen, die eine Anfrage durchquert, wer was erstellt und was Nexy Ihrer Anwendung überlässt. Sie benötigen diese Seite nicht zum Starten; Es beantwortet später die Fragen „Warum funktioniert das so?“.
 
-## Die Nexy-Architektur
+## Die Schichten
 
-Eine Anfrage durchquert fünf Ebenen: Uvicorn akzeptiert sie, Middleware dekoriert sie, der Router wählt eine Datei aus, der Renderer wandelt diese Datei in HTML oder JSON um und die Client-Ebene übernimmt, wenn die Seite über JavaScript verfügt. Nexy besitzt die mittleren drei; Vite und Ihr Framework besitzen den Client; Ihre Anwendung besitzt die Daten, die Authentifizierung und die Autorisierung.
+```diagram filename="Eine Anfrage, fünf Schichten"
+Browser
+   │
+   ▼
+Uvicorn ───── ASGI transport
+   │
+   ▼
+Middleware ── sessions, CORS, gzip, trusted hosts, your own
+   │
+   ▼
+Router ────── FBR | Modular | Custom ── picks the file that answers
+   │
+   ▼
+Renderer ──── HTML (Jinja2, Markdown, Node) or JSON
+   │
+   ▼
+Response
+```
 
-Jede Schicht und was sie nicht tut, befindet sich in der [Architektur](../architecture.md). Informationen zu den Paketen von Nexy selbst finden Sie unter `ARCHITECTURE.md` im Repository-Stammverzeichnis – es ist für Mitwirkende geschrieben.
+| Schicht | Verantwortung | Nicht |
+|---|---|---|
+| Uvicorn | Akzeptieren Sie die Verbindung, sprechen Sie ASGI | wissen, was eine Seite ist |
+| Middleware | Dekorieren Sie die Anfrage: Sitzung, CORS, gzip, vertrauenswürdige Hosts, HTTPS-Umleitung, Ihre | Wählen Sie eine Route |
+| Router | Ordnen Sie die URL einer Datei mit ihren Layouts, Abhängigkeiten und Fehlerseiten zu | Inhalte produzieren |
+| Renderer | Führen Sie die Seite aus und wandeln Sie das Ergebnis in HTML oder JSON um | Rufen Sie Ihre Daten ab |
+| Kunde | Vite und Ihr Framework: Bundles, Flüssigkeitszufuhr, Client-Navigation | eine Serveranfrage beantworten |
 
-## Der Anwendungslebenszyklus
+## Wer baut was?
 
-`nx dev` führt vor der ersten Anfrage sechs Dinge aus:
+| Schauspieler | Besitzt | Besitzt nicht |
+|---|---|---|
+| Nexy | Routing, Server-Rendering, Aktionen, `.nexy` Kompilierung, ein Ursprung | Komponenten, Reaktivität, Daten |
+| Vite | Client-Bundles, der Entwicklungsserver, Hot-Reload | Routing, Server-Rendering, Aktionen |
+| Ihr Rahmen | Komponenten, Reaktivität, das Ökosystem | Routing, das Dokument (Nexy fragt nach seinem Layout) |
+| Ihre Bewerbung | Daten, Authentifizierung, Autorisierung, Geschäftsregeln | Transport, Rendering |
 
-1. validiert `nexyconfig.py` und stoppt bei einer ungültigen Konfiguration;
-2. stellt sicher, dass die Python-Pakete des Projekts importierbar sind;
-3. löst die Ports auf und löscht die veraltete `__nexy__/nexy.prod`-Markierung;
-4. generiert die Client-Dateien und kompiliert parallel die Routen;
-5. startet Vite und wartet, bis es antwortet;
-6. Installiert den Datei-Watcher und lässt dann uvicorn `nexy.modules.routers.app:_server` importieren.
-
-Durch diesen Import wird die Anwendung assembliert – Middleware, Aktionen, Router, Fehlerhandler – und die erste Anfrage wird von dieser Assembly bedient. Wenn Sie speichern, startet der Watcher uvicorn neu. Eine Seite, die angezeigt, verschwunden oder verschoben wurde, generiert auch die Client-Routenliste neu.
+Die Regel hinter der Tabelle: **Nexy erstellt, was es besitzt, und kompiliert niemals, was Vite kompiliert.**
 
 ## Das Routing-System
 
@@ -50,7 +71,7 @@ Die Erweiterung einer Datei entscheidet darüber, um was es sich handelt, und di
 | Erweiterung | Aktiv wann | Zusammengestellt von | Serviert als |
 |---|---|---|---|
 | `.nexy` | Servermodus | Nexy: Frontmatter wird zu Python, das Markup wird zu Jinja2 | eine Seite |
-| `.md` | immer | Nexy: GitHub-basiertes Markdown, Überschriften-IDs, Inhaltsverzeichnis | eine Seite, innerhalb des nächstgelegenen Layouts |
+| `.md` | immer | Nexy: GitHub-angepasst Markdown, Überschriften-IDs, Inhaltsverzeichnis | eine Seite, innerhalb des nächstgelegenen Layouts |
 | `.mdx` | immer | Vite, mit React oder Preact | eine Komponentenroute |
 | `.tsx` | `useFF` ist React, Solid oder Preact | Vite und das Framework | eine Komponentenroute |
 | `.vue` | `useFF` ist Vue | Vite und Vue | eine Komponentenroute |
@@ -65,7 +86,7 @@ Drei Fragen entscheiden über alles, was dem Leser auffällt:
 
 | Frage | Antwort | Seite |
 |---|---|---|
-| Wer erstellt den HTML-Code? | der Server oder der Browser für eine Client-Route | [Rendering](../rendering/README.md) |
+| Wer erstellt den HTML-Code? | der Server oder der Browser für eine Client-Route | [Rendern](../rendering/README.md) |
 | Wann werden die Daten gelesen? | bei jeder Anfrage, bei jeder Neugenerierung oder im Browser | [SSR](../rendering/ssr.md), [ISR](../rendering/isr.md) |
 | Wann kommt JavaScript? | nur für eine Insel oder für das gesamte Dokument | [Inseln](../rendering/islands.md), [CSR](../rendering/csr.md) |
 
@@ -75,13 +96,15 @@ Im Servermodus rendert der Server jede Seite, `revalidate` speichert eine Seite 
 
 ## Die Frontend-Integration
 
-**Vite ersetzt Nexy nicht.** Vite bündelt und stellt Client-Code bereit. Es leitet keine Anfrage weiter, rendert keine `.nexy` Seite, führt keine Aktion aus und besitzt keinen Ursprung. Der Browser kommuniziert mit einem Ursprung – Nexys – und in der Entwicklung stellt Nexy Vites Endpunkte darüber als Proxy bereit, sodass kein CORS konfiguriert werden muss.
+**Vite ersetzt Nexy nicht.** Vite bündelt und stellt Client-Code bereit. Es leitet keine Anfrage weiter, rendert keine `.nexy`-Seite, führt keine Aktion aus und besitzt keinen Ursprung. Der Browser kommuniziert mit einem Ursprung – Nexys – und in der Entwicklung stellt Nexy Vites Endpunkte darüber als Proxy bereit, sodass kein CORS konfiguriert werden muss.
 
 **Nexy ersetzt nicht React.** Nexy entscheidet, welche Komponente wann und mit welchen Requisiten gerendert wird; Das Framework besitzt das Komponentenmodell, die Reaktivität und das Ökosystem. Eine `.nexy`-Seite importiert eine Komponente als Insel; Im Client-Modus ist eine Route eine Komponente.
 
 Für eine Komponentenroute schreibt Python nur ein Thin-Wrapper-Modul, das auf die Datei zeigt. Die Kompilierung und das serverseitige Rendering sind Aufgabe von Vite.
 
 ## Entwicklung und Produktion
+
+`nx dev` prüft `nexyconfig.py`, kompiliert die Seiten, startet Vite, wenn das Projekt über ein Frontend-Framework verfügt, und startet den Server neu, wenn Sie speichern. `nx build` erledigt die gleiche Arbeit einmal im Voraus und `nx start` liefert das Ergebnis.
 
 | | `nx dev` | `nx build` dann `nx start` |
 |---|---|---|
@@ -93,9 +116,24 @@ Für eine Komponentenroute schreibt Python nur ein Thin-Wrapper-Modul, das auf d
 
 Was sich nicht ändert: die gleichen Routing-Regeln, die gleichen Auslagerungsdateien, die gleichen `nexyconfig.py`. Eine Seite, die sich bei beiden unterschiedlich verhält, ist ein Fehler, kein Modus.
 
-## Tiefer gehen
+## Was Nexy Ihnen überlässt
 
-- [Projektstruktur](project-structure.md): jeder Ordner eines Projekts
+Nexy stoppt absichtlich am Rand Ihrer Anwendung:
+
+| Sorge | Was Nexy bietet | Was du schreibst |
+|---|---|---|
+| Authentifizierung | Sitzungs-Middleware, `AuthenticationMiddleware`, wenn aktiviert | die Anmeldung, die Benutzersuche, die Cookie-Richtlinie |
+| Autorisierung | `dependencies.py`, Wächter, Vererbung pro Ordner | die Regel selbst |
+| Datenbank | kein eigenes ORM; `nx new` kann ein Gerüst bilden für SQLModel, SQLAlchemy oder Tortoise, `nx migrate` läuft Alembic oder Aerich | die Modelle und die Abfragen ([Datenbanken](../guides/databases.md)) |
+| Internationalisierung | nichts für Ihre Seiten; nur die CLI wird übersetzt | die Bibliothek und die Nachrichten ([i18n](../guides/i18n.md)) |
+| Hintergrundjobs | nichts: keine Warteschlange, kein Planer | ein Arbeitsprozess |
+| E-Mail, Zahlungen, Suche | nichts | den Service, den Sie wählen |
+
+Der Grund ist für alle sechs derselbe: Ein Framework, das Ihr ORM oder Ihre Authentifizierungsbibliothek auswählt, entscheidet über Dinge, die nur Ihre Anwendung entscheiden kann. Die Kosten liegen auf der Hand: Sie müssen nichts verkabeln, und in den in der Tabelle verlinkten Anleitungen ist angegeben, wo die einzelnen Anschlüsse angeschlossen werden müssen.
+
+## Nächste Schritte
+
+- [Projektstruktur](project-structure.md): Wo jeder Teil in einem Projekt lebt
+- [Routing](../routing/README.md): die dateibasierten, modularen und benutzerdefinierten Router
 - [Rendering](../rendering/README.md): SSR, ISR, CSR und Inseln
 - [Frontend](../guides/frontend.md): Vite, Styling und der Client-Build
-- [Routing](../routing/README.md): die dateibasierten, modularen und benutzerdefinierten Router
