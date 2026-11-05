@@ -1,10 +1,8 @@
-# Ver
+# Vue
 
-Nexy renderiza componentes de arquivo único do Vue 3 no servidor e, em seguida, o Vue os assume no navegador.
-Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração, depois o
-partes que diferem dos [contratos compartilhados](../frontend/pages.md).
+Nexy renderiza Vue 3 componentes de arquivo único no servidor e, em seguida, Vue os assume no navegador. Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração e depois as partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | As páginas são | Vue é |
+| Modo | `nexyconfig.py` | As páginas são | Vue são |
 |---|---|---|---|
 | Servidor (padrão) | `useCSR = False` | `.nexy` arquivos | [ilhas](../../rendering/islands.md) dentro dessas páginas |
 | Cliente | `useCSR = True` | `.vue` arquiva | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
@@ -15,11 +13,9 @@ partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 nx new my-app --template web-fbr-vue
 ```
 
-O modelo é um projeto em modo servidor com ilhas Vue. Execute `nx new my-app` sem um modelo para
-em vez disso, responda aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida,
-o quadro.
+O modelo é um projeto em modo servidor com Vue ilhas. Execute `nx new my-app` sem um modelo para responder aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida, a estrutura.
 
-## Ativar o Vue em um projeto existente
+## Habilite Vue em um projeto existente
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -51,13 +47,10 @@ export default defineConfig({
 
 ## Regras
 
-- **Uma estrutura por projeto.** `useFF` usa exatamente uma estrutura; `useFF = [vue(), react()]` paradas
-  o servidor na inicialização.
-- **Um componente por arquivo.** Um arquivo `.vue` exporta seu componente como padrão; o nome que você importa
-  abaixo está apenas a tag que você escreve.
-- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto, não são páginas.
-- **Um projeto em modo servidor não tem página `.vue`**, e um projeto em modo cliente não tem página `.nexy`: Nexy
-  se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
+- **Uma estrutura por projeto.** `useFF` leva exatamente uma estrutura; `useFF = [vue(), react()]` interrompe o servidor na inicialização.
+- **Um componente por arquivo.** Um arquivo `.vue` exporta seu componente como padrão; o nome com o qual você o importa é apenas a tag que você escreve.
+- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
+- **Um projeto em modo servidor não tem `.vue` página**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Veja [modos](../../routing/fbr/modes.md).
 
 ## Páginas
 
@@ -132,10 +125,9 @@ Use a propriedade `directive` para controlar quando a ilha hidrata:
 
 ## Ações e navegação
 
-### Ações de chamada
+### Chamando ações
 
-Use o gancho `useAction` para gerenciar o estado de uma chamada de ação. No Vue, o estado retornado
-(`pending`, `data`, `error`) são referências calculadas.
+Use o gancho `useAction` para gerenciar o estado de uma chamada de ação. Em Vue, o estado retornado (`pending`, `data`, `error`) são referências calculadas.
 
 ```vue
 <script setup lang="ts">
@@ -176,7 +168,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Acesso ao URL
+### Acesso URL
 
 Todos os ganchos de localização retornam referências computadas:
 
@@ -188,4 +180,4 @@ Todos os ganchos de localização retornam referências computadas:
 ## Próximas etapas
 
 - [Visualizações](../README.md): compare os formatos que uma página pode usar
-- [Frontend](../../guides/frontend.md): Vite e a construção do cliente
+- [Frontend](../../guides/frontend.md): Vite e a compilação do cliente
