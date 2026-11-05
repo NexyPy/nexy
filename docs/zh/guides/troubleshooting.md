@@ -95,4 +95,4 @@ nexy dev
 ## 仍然卡住
 
 - 阅读[文档索引](../README.md)中的功能页面。
-- 如果文档和代码不一致，则代码是正确的：请打开一个命名页面的 [issue](https://github.com/NexyPy/nexy/issues)。
+- 如果文档和代码不一致，则代码是正确的：请打开一个命名页面的 [问题](https://github.com/NexyPy/nexy/issues)。
