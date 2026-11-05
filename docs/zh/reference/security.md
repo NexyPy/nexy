@@ -8,11 +8,11 @@ Nexy 取决于 FastAPI、Starlette、Jinja2、Vite 和 React。楼层是 Nexy �
 
 | 套餐 | 楼层 | 为什么 |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost)：精心设计的 `Host` 标头更改了 Starlette 向中间件报告的路径，从而绕过了 `request.url.path` 上写入的授权。被 CISA 列为利用。 |
-| `fastapi` | 0.133.0 | 接受固定 Starlette | 的第一个版本
+| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost)：精心设计的 `Host` 标头更改了 Starlette 报告到中间件的路径，从而绕过了 `request.url.path` 上写入的授权。被 CISA 列为利用。 |
+| `fastapi` | 0.133.0 | 第一个接受固定 Starlette 的版本 |
 | `jinja2` | 3.1.6 | 通过 `attr` 过滤器逃逸沙箱 (CVE-2025-27516) |
-| `vite`（脚手架项目）| 6.4.3 | `server.fs.deny` 在 Windows 备用路径上绕过 (CVE-2026-53571)；早期的查询字符串绕过 (CVE-2026-39364) 仅影响 Vite 7.1-7.3.1 和 8.0.0-8.0.4 |
-| `react`、`react-dom` | 19.2.5 | 2026 React 公告涉及 `react-server-dom-*` 软件包，Nexy 不使用该软件包；地板使线路保持修补状态 |
+| `vite`（脚手架项目） | 6.4.3 | `server.fs.deny` 绕过 Windows 备用路径 (CVE-2026-53571)；早期的查询字符串绕过 (CVE-2026-39364) 仅影响 Vite 7.1-7.3.1 和 8.0.0-8.0.4 |
+| `react`，`react-dom` | 19.2.5 | 2026 React 公告涉及 `react-server-dom-*` 软件包，Nexy 不使用该软件包；地板保持线路修补 |
 
 检查您已解决的版本：
 
@@ -51,13 +51,13 @@ Nexy 自己的存储库在其检查中运行第一个和第三个。通过升高
 
 ## 来源
 
-- Starlette](https://www.penligent.ai/hackinglabs/cve-2026-48710/) 中的 [CVE-2026-48710 (BadHost)
+- [CVE-2026-48710（BadHost）位于 Starlette](https://www.penligent.ai/hackinglabs/cve-2026-48710/)
 - [Vite 咨询 GHSA-fx2h-pf6j-xcff](https://github.com/advisories/GHSA-fx2h-pf6j-xcff) 和 [GHSA-v2wj-q39q-566r](https://github.com/advisories/GHSA-v2wj-q39q-566r)
 - [Jinja2 CVE-2025-27516](https://advisories.gitlab.com/pypi/jinja2/CVE-2025-27516/)
 - [React 服务器包CVE-2026-44907](https://www.wiz.io/vulnerability-database/cve/cve-2026-44907)
 
 ## 后续步骤
 
-- [中间件和安全性](../guides/middleware-and-security.md)
+- [中间件和安全](../guides/middleware-and-security.md)
 - [部署](../deployment/README.md)
 - [配置](config.md)
