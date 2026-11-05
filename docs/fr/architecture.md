@@ -88,5 +88,5 @@ La raison est la même pour les six : un framework qui sélectionne votre ORM o
 
 - [Comment fonctionne Nexy](getting-started/how-nexy-works.md) : une requête, étape par étape
 - [Structure du projet](getting-started/project-structure.md) : où vit chaque couche dans un projet
-- [Routing](routing/README.md) : les trois routeurs, et comment choisir
+- [Routage](routing/README.md) : les trois routeurs, et comment choisir
 - [Rendu](rendering/README.md) : d'où vient le HTML
