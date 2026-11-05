@@ -13,13 +13,12 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from posixpath import normpath
 
-import cmarkgfm  # type: ignore[import-untyped]
-from cmarkgfm.cmark import Options  # type: ignore[import-untyped]
 from pygments import highlight  # type: ignore[import-untyped]
 from pygments.formatters import HtmlFormatter  # type: ignore[import-untyped]
 from pygments.lexers import HtmlDjangoLexer, get_lexer_by_name  # type: ignore[import-untyped]
 from pygments.util import ClassNotFound  # type: ignore[import-untyped]
 
+from nexy.modules.runtime.markdown import render_markdown
 from sites.shared import i18n
 
 REPOSITORY = "https://github.com/NexyPy/nexy/blob/main/"
@@ -853,9 +852,8 @@ def _variants(html: str) -> str:
 def _compose(text: str, page: Path, docs: Path, link: Link) -> Rendered:
     page = english_twin(page, docs)
     text, names = _name_files(text)
-    html = cmarkgfm.github_flavored_markdown_to_html(
-        text, Options.CMARK_OPT_GITHUB_PRE_LANG | Options.CMARK_OPT_UNSAFE
-    )
+    # The docs are written by the project, so their raw HTML is kept.
+    html = render_markdown(text, unsafe=True)
     # The navigation tokens are read by `read_tracks`, never shown: the home page is docs/README.md,
     # so its own table would otherwise draw `{new}` in every cell that carries one.
     shaped = _structures(_diagrams(_NEW_HTML.sub("", html), names))
