@@ -70,7 +70,7 @@ Permintaan pertama untuk `/blog/hello` dirender dan disimpan. 300 detik berikutn
 |---|---|
 | String kueri diabaikan | `/search?q=a` dan `/search?q=b` berbagi satu entri. Jangan menyimpan halaman pencarian dalam cache. |
 | Sesi tidak terisolasi | Responsnya mengatakan `public`, dan HTML pengunjung pertama disajikan ke semua. Jangan pernah membaca sesi di halaman dengan `revalidate`. |
-| Tidak ada pembatalan sisi server | Tidak ada yang membersihkan entri sebelum jendelanya berakhir. `revalidate(...)` di dalam [Action](../guides/actions.md) hanya memberitahu **browser** untuk memuat ulang jalur; itu tidak menyentuh cache ini. |
+| Tidak ada pembatalan sisi server | Tidak ada yang membersihkan entri sebelum jendelanya berakhir. `revalidate(...)` di dalam [Aksi](../guides/actions.md) hanya memberitahu **browser** untuk memuat ulang jalur; itu tidak menyentuh cache ini. |
 | Satu cache per proses | Beberapa pekerja menyimpan beberapa cache, dengan konten berbeda. |
 | Regenerasi serentak | Tidak ada yang dapat menghapus duplikatnya: sepuluh permintaan basi dapat memulai sepuluh render. |
 | Kesalahan tidak terdengar | Regenerasi yang gagal tetap menampilkan halaman lama; kegagalan dicatat, tidak dikembalikan. |
@@ -78,6 +78,6 @@ Permintaan pertama untuk `/blog/hello` dirender dan disimpan. 300 detik berikutn
 ## Langkah selanjutnya
 
 - [SSR](ssr.md): bagaimana halaman dirender sebelum di-cache
-- [Actions](../guides/actions.md): header `revalidate`, dan apa yang tidak dilakukannya
+- [Aksi](../guides/actions.md): header `revalidate`, dan apa yang tidak dilakukannya
 - [Kinerja](../deployment/performance.md)
-- [Pages](../routing/fbr/pages/README.md): tata letak dan segmen dinamis
+- [Halaman](../routing/fbr/pages/README.md): tata letak dan segmen dinamis
