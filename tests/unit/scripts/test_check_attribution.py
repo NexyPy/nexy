@@ -206,3 +206,31 @@ def test_is_ai_author_rejects_opencode_freebuff_and_qoder(
     checker: types.ModuleType, identity: str
 ) -> None:
     assert checker.is_ai_author(identity)
+
+
+def test_current_identities_is_empty_when_git_knows_no_identity(
+    checker: types.ModuleType, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def no_identity(*_args: str) -> str:
+        raise SystemExit("git var failed: Author identity unknown")
+
+    monkeypatch.setattr(checker, "_git", no_identity)
+
+    assert checker.current_identities() == ("", "")
+
+
+def test_main_checks_a_message_without_a_git_identity(
+    checker: types.ModuleType, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    message_file = tmp_path / "COMMIT_EDITMSG"
+    message_file.write_text("feat: x\n\nCo-authored-by: Copilot <copilot@github.com>\n")
+    for key in ("GIT_AUTHOR_NAME", "GIT_AUTHOR_EMAIL", "GIT_COMMITTER_NAME", "GIT_COMMITTER_EMAIL"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(tmp_path / "none"))
+    monkeypatch.setenv("EMAIL", "")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["check_attribution", "--message-file", str(message_file)])
+
+    assert checker.main() == 1
