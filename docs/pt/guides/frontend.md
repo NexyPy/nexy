@@ -1,9 +1,8 @@
-# Front-end
+# Interface
 
-Nexy não envia seu próprio sistema de componentes para o cliente. Baseia-se em Vite: React, Vue, Svelte,
-Solid e Preact são todos suportados, e as páginas vanilla funcionam sem nenhuma estrutura de cliente.
+Nexy não envia seu próprio sistema de componentes para o cliente. Ele se baseia em Vite: React, Vue, Svelte, Solid e Preact são todos suportados, e as páginas vanilla funcionam sem nenhuma estrutura de cliente.
 
-## Ativar uma estrutura
+## Habilitar uma estrutura
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -23,12 +22,9 @@ class NexyConfig(NexyConfigModel):
 | `.nexy`, `.md` | por Nexy no momento da solicitação |
 | `.mdx`, `.tsx`, `.jsx`, `.vue`, `.svelte` | pela estrutura do cliente; pré-renderizado para HTML no momento da construção e então assumido pelo pacote do cliente |
 
-Uma rota de estrutura é uma página normal, não uma ilha somente cliente: o HTML existe antes da execução do pacote,
-então a primeira pintura não espera pelo JavaScript.
+Uma rota de framework é uma página normal, não uma ilha somente cliente: o HTML existe antes do pacote ser executado, então a primeira pintura não espera por JavaScript.
 
-Configuração por estrutura: [React](../views/react/differences.md), [Vue](../views/vue/differences.md),
-[Esbelto](../views/svelte/differences.md), [Sólido](../views/solid/differences.md),
-[Pré-agir](../views/preact/differences.md).
+Configuração por estrutura: [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md).
 
 ## Desenvolvimento
 
@@ -36,7 +32,7 @@ Configuração por estrutura: [React](../views/react/differences.md), [Vue](../v
 
 1. o aplicativo recompila as rotas que você altera, servidor e cliente;
 2. Vite roda em uma porta interna e serve módulos de framework;
-3. Nexy faz proxy dos endpoints do Vite através de sua própria origem.
+3. Nexy proxies Vite endpoints do Nexy através de sua própria origem.
 
 O navegador só conversa com a porta `3000`. Não há um segundo URL para abrir e nenhum CORS para configurar.
 
@@ -44,31 +40,25 @@ O navegador só conversa com a porta `3000`. Não há um segundo URL para abrir 
 
 `nx build` produz:
 
-- HTML pré-renderizado para rotas de framework;
-- o pacote de clientes, com ativos sob `__nexy__/client/`;
-- as rotas Python compiladas.
+- HTML pré-renderizado para rotas de estrutura;
+- o pacote de clientes, com ativos abaixo de `__nexy__/client/`;
+- as rotas compiladas Python.
 
-Vite cuida do pacote do cliente; SSR HTML é produzido por arquivo por esbuild.
+Vite lida com o pacote do cliente; SSR HTML é produzido por arquivo por esbuild.
 
 > [!NOTA]
-> uma rota cuja renderização do servidor falha é relatada como uma rota somente cliente em vez de
-> falha em toda a compilação.
+> uma rota cuja renderização do servidor falha é relatada como uma rota somente cliente em vez de falhar em toda a construção.
 
 ## Estilo
 
-`nexy new` solicita um modo de estilo e o configura para a estrutura do cliente escolhida: Tailwind,
-UnoCSS ou CSS simples. Os tokens de design (cores, fontes, tema escuro) são variáveis CSS em
-`src/globale.css`, o arquivo que o scaffold cria.
+`nexy new` solicita um modo de estilo e o configura para a estrutura do cliente que você escolher: Tailwind, UnoCSS ou CSS simples. Os tokens de design (cores, fontes, tema escuro) são variáveis ​​CSS em `src/globale.css`, o arquivo que o andaime cria.
 
 | Modo | As páginas iniciais são escritas com |
 |---|---|
 | Tailwind, UnoCSS | classes utilitárias na marcação, com os tokens mapeados para nomes de classes |
-| CSS simples | nomes de classes semânticas e CSS em `src/globale.css` |
+| Nomes de classe semântica CSS simples | e CSS em `src/globale.css` |
 
-Siga o modo do seu projeto ao adicionar uma página: classes utilitárias em um projeto utilitário, CSS em um
-CSS simples um. Mantenha o CSS do componente que os utilitários não podem expressar no bloco `<style>` do componente.
-Em um projeto de servidor (`.nexy` páginas) UnoCSS lê os `.nexy` arquivos para classes; Tailwind os encontra
-por conta própria.
+Siga o modo do seu projeto ao adicionar uma página: classes utilitárias em um projeto utilitário, CSS em um projeto CSS simples. Mantenha o CSS do componente que os utilitários não podem expressar no bloco `<style>` do componente. Em um projeto de servidor (`.nexy` páginas) UnoCSS lê os arquivos `.nexy` para classes; Tailwind os encontra por conta própria.
 
 ## Fontes, imagens, scripts
 
