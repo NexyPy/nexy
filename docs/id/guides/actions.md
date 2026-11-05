@@ -141,5 +141,5 @@ Saat startup Nexy mengimpor setiap modul `src/` untuk menemukan tindakan. Modul 
 ## Langkah selanjutnya
 
 - [API](../routing/fbr/handlers/README.md): penangan eksplisit
-- [Testing](testing.md#what-to-assert): cara menguji suatu tindakan
-- [Config](../reference/config.md): opsi middleware dan autentikasi
+- [Pengujian](testing.md#what-to-assert): cara menguji suatu tindakan
+- [Konfigurasi](../reference/config.md): opsi middleware dan autentikasi
