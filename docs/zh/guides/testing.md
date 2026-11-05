@@ -136,7 +136,7 @@ nx test
 
 `nx build` 因编译错误而失败； `nx test` 在断言失败时失败并以非零值退出。 `nx check` 将 mypy 和 `tsc` 添加到运行中。
 
-Nexy 本身的工作使用不同的命令：请参阅 [CONTRIBUTING](../../CONTRIBUTING.md)。
+Nexy 本身的工作使用不同的命令：请参阅 [CONTRIBUTING](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md)。
 
 ## 后续步骤
 
