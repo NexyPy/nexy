@@ -168,6 +168,22 @@ def placeholders(text: str) -> list[int]:
     return [int(found[1]) for found in _PLACEHOLDER.finditer(text)]
 
 
+_EMPTY_LINK = re.compile(r"(?<!!)\[\s*(?=\[\[(\d+)\]\])")
+
+
+def empty_links(text: str) -> int:
+    """How many links of a piece have no words: `[[[3]]` is a link the service emptied."""
+    return len(_EMPTY_LINK.findall(text))
+
+
+def emptied(answer: str, chunk: str) -> int | None:
+    """The placeholder closing a link the service emptied, or None when every link has words."""
+    if empty_links(answer) <= empty_links(chunk):
+        return None
+    before = set(_EMPTY_LINK.findall(chunk))
+    return next(int(n) for n in _EMPTY_LINK.findall(answer) if n not in before)
+
+
 def has_words(text: str) -> bool:
     """Whether a piece holds anything to translate once its placeholders are set aside."""
     return any(char.isalpha() for char in _PLACEHOLDER.sub("", text))
@@ -196,9 +212,15 @@ _INVISIBLE = "[\u200b\ufeff]*"
 _SPLIT_PLACEHOLDER = re.compile(rf"\[{_INVISIBLE}\[{_INVISIBLE}(\d+){_INVISIBLE}\]{_INVISIBLE}\]")
 
 
+# A placeholder right after the text of a link (`[layouts[[3]]`) comes back with one bracket: the
+# service pairs the bracket of the link with the first one of the placeholder.
+_HALF = re.compile(r"(?<=[^\[\s])\[(\d+)\]\](?!\])")
+
+
 def heal(answer: str) -> str:
     """Mend the placeholders of an answer: their dropped bracket, the invisible spaces inside."""
-    return heal_opening(_SPLIT_PLACEHOLDER.sub(r"[[\1]]", answer))
+    whole = _SPLIT_PLACEHOLDER.sub(r"[[\1]]", answer)
+    return heal_opening(_HALF.sub(r"[[\1]]", whole))
 
 
 # The placeholders that open a line: a heading marker, a bullet, the first pipe of a row. Some
