@@ -212,7 +212,7 @@ def localized(docs: Path, lang: str, relative: str) -> Path:
     return docs / relative
 
 
-def _twin(page: Path, docs: Path) -> Path:
+def english_twin(page: Path, docs: Path) -> Path:
     """The English page a translation stands for: its links and figures resolve from there."""
     parts = page.relative_to(docs).parts
     if len(parts) > 1 and parts[0] in i18n.CODES - {i18n.DEFAULT}:
@@ -846,7 +846,7 @@ def _variants(html: str) -> str:
 
 
 def _compose(text: str, page: Path, docs: Path, link: Link) -> Rendered:
-    page = _twin(page, docs)
+    page = english_twin(page, docs)
     text, names = _name_files(text)
     html = cmarkgfm.github_flavored_markdown_to_html(
         text, Options.CMARK_OPT_GITHUB_PRE_LANG | Options.CMARK_OPT_UNSAFE
