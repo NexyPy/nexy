@@ -39,6 +39,7 @@ __all__ = [
     "head_of",
     "home_link",
     "i18n_payload",
+    "isolate",
     "language_of",
     "language_select",
     "link",
@@ -90,6 +91,11 @@ def language_select(address: str = "") -> str:
 def preferred_language(accept_language: str) -> str:
     """The language the browser asks for first among those of the site."""
     return i18n.preferred(accept_language)
+
+
+def isolate(text: str, lang: str) -> str:
+    """The `dir` a label of the outline needs on a page that reads right to left."""
+    return i18n.isolate(text, lang)
 
 
 def localize(html: str, address: str) -> str:
