@@ -75,5 +75,5 @@ my-app/
 ## Следующие шаги
 
 - [Маршрутизация](../routing/README.md): как путь становится URL-адресом
-- [Config](../reference/config.md): каждый вариант проекта.
-- [Frontend](../guides/frontend.md): Vite, стиль и сборка клиента
+- [Конфигурация](../reference/config.md): каждый вариант проекта.
+- [Фронтенд](../guides/frontend.md): Vite, стиль и сборка клиента
