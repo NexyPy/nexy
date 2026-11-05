@@ -23,11 +23,11 @@ Nexy is a fullstack Python meta-framework.
 - يتطلب الحزم الاختيارية `@mdx-js/rollup` و `remark-gfm` و `@mdx-js/react` (و `@mdx-js/esbuild` للإنشاء). Vite يخبرك أيهما مفقود.
 - يتم اكتشاف إطار العمل تلقائيًا من الواردات: Preact عندما يستورد الملف `preact`، React بخلاف ذلك.
 
-> [!ملاحظة]
+> [!NOTE]
 > استخدم `.nexy` إذا كنت بحاجة إلى منطق Python في المادة الأمامية.
 
 ## الخطوات التالية
 
-- [.nexy files](README.md): تنسيق الصفحة الأصلية
+- [ملفات .nexy](README.md): تنسيق الصفحة الأصلية
 - [المشاهدات](../README.md): اختر الشكل
 - [i18n](../../guides/i18n.md): التدويل
