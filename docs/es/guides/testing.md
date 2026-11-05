@@ -88,7 +88,7 @@ def test_form_posts_to_action(client):
 
 Una llamada con JSON responde con el resultado, y `422` con los campos no válidos.
 
-> [!NOTA]
+> [!NOTE]
 > Las rutas de acción son específicas del proyecto y se generan. Nunca codifique `/_nx_<hash>` en una prueba.
 
 ## Probar un componente `.nexy`
