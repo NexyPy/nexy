@@ -14,7 +14,7 @@ async def SOCKET(websocket: WebSocket):
 
 ## Regeln
 
-- Die URL ist der Dateipfad, dieselbe Regel wie [routing](../../README.md).
+- Die URL ist der Dateipfad, dieselbe Regel wie [Routing](../../README.md).
 - Nur `.py` Routendateien registrieren WebSocket Handler über `SOCKET`.
 - Stellen Sie sicher, dass Ihr Reverse-Proxy WebSocket Upgrade-Anfragen weiterleitet.
 
