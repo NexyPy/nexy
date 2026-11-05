@@ -116,3 +116,13 @@ class TestStyle:
     def test_the_old_table_cards_are_gone(self):
         css = STYLE.read_text(encoding="utf-8")
         assert ".doc.home .table-wrap" not in css
+
+
+class TestLanguage:
+    def test_the_home_of_a_language_reads_its_translated_introduction(self):
+        intro = source.home(DOCS, "fr").path.read_text(encoding="utf-8").split("\n", 1)[0][2:]
+        assert intro in home.render(DOCS, _link, "fr").html
+
+    def test_the_cards_of_a_language_name_its_translated_pages(self):
+        first = source.read_tracks(DOCS, "fr")[0].groups[0].pages[0]
+        assert first.label in home.render(DOCS, _link, "fr").html
