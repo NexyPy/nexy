@@ -97,5 +97,5 @@
 
 - [بنية المشروع](project-structure.md): كل مجلد من مجلدات المشروع
 - [تقديم](../rendering/README.md): SSR، ISR، CSR والجزر
-- [](../guides/frontend.md): Vite، التصميم وبناء العميل
+- [الواجهة](../guides/frontend.md): Vite، التصميم وبناء العميل
 - [التوجيه](../routing/README.md): أجهزة التوجيه القائمة على الملفات والوحدات والمخصصة
