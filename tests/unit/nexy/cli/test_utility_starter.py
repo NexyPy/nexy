@@ -28,11 +28,11 @@ SHARED = [
 ]
 # (framework, client-routed, extension, components besides the shared ones, logo label)
 TARGETS = {
-    "react": ("react", True, "tsx", ["theme-script"], "React"),
-    "preact": ("preact", True, "tsx", ["theme-script"], "Preact"),
-    "solid": ("solid", True, "tsx", ["theme-script"], "Solid"),
-    "vue": ("vue", True, "vue", ["live-row", "step-check"], "Vue"),
-    "svelte": ("svelte", True, "svelte", ["live-row", "step-check"], "Svelte"),
+    "react": ("react", True, "tsx", ["theme-script", "sheet"], "React"),
+    "preact": ("preact", True, "tsx", ["theme-script", "sheet"], "Preact"),
+    "solid": ("solid", True, "tsx", ["theme-script", "sheet"], "Solid"),
+    "vue": ("vue", True, "vue", ["live-row", "step-check", "sheet"], "Vue"),
+    "svelte": ("svelte", True, "svelte", ["live-row", "step-check", "sheet"], "Svelte"),
     "none": ("none", False, "nexy", ["live-row"], "JavaScript"),
     "react-server": ("react", False, "nexy", ["live-row"], "React"),
 }

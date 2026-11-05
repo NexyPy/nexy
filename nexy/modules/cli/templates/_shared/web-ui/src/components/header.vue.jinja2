@@ -5,6 +5,7 @@ import { Link } from "@nexy/client";
 import Button from "@/components/button.vue";
 import Icon from "@/components/icon.vue";
 import LinePattern from "@/components/line-pattern.vue";
+import Sheet from "@/components/sheet.vue";
 import ThemeToggle from "@/components/theme-toggle.vue";
 
 const LINK =
@@ -47,16 +48,13 @@ const close = () => (open.value = false);
           <Icon :path="open ? CLOSE : MENU" />
         </button>
       </div>
-
-      <div
-        v-if="open"
-        class="absolute inset-x-0 top-full flex flex-col border border-t-0 border-paper/10 bg-ink p-3 sm:hidden"
-      >
-        <Link href="/" :class="LINK" @click="close">Home</Link>
-        <Link href="/about" :class="LINK" @click="close">About</Link>
-        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" :class="LINK" @click="close">Docs</a>
-      </div>
     </nav>
   </header>
+
+  <Sheet :open="open" label="Menu" @close="close">
+    <Link href="/" :class="LINK" @click="close">Home</Link>
+    <Link href="/about" :class="LINK" @click="close">About</Link>
+    <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" :class="LINK" @click="close">Docs</a>
+  </Sheet>
 </template>
 {% endraw %}{% endif %}

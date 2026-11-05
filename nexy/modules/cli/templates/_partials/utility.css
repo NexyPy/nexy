@@ -103,6 +103,27 @@
     transform: rotate(360deg);
   }
 }
+/* The mobile menu is a sheet: the scrim fades and the panel comes in from the left edge.
+   Written here rather than as a utility class because an entry animation needs keyframes,
+   and this file is the one both Tailwind and UnoCSS read. */
+@keyframes sheet-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes sheet-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+@layer components {
+  .sheet {
+    animation: sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .sheet-scrim {
+    animation: sheet-scrim-in 0.2s ease both;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -110,6 +131,10 @@
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .sheet,
+  .sheet-scrim {
     animation: none !important;
   }
 }
