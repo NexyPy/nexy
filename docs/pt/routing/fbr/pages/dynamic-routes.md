@@ -4,8 +4,7 @@ Um segmento de caminho escrito entre colchetes corresponde a qualquer valor e o 
 
 ## Segmentos dinâmicos
 
-`blog/[slug].nexy` serve `/blog/{slug}`. Numa página, declare o segmento como uma propriedade; em um Python
-manipulador, tome isso como um argumento.
+`blog/[slug].nexy` serve `/blog/{slug}`. Numa página, declare o segmento como uma propriedade; em um manipulador Python, tome isso como um argumento.
 
 ```nexy filename="src/rotas/blog/[slug].nexy"
 ---
@@ -26,16 +25,13 @@ A anotação decide o tipo.
 | Onde | Conversão |
 |---|---|
 | `.py` manipulador | qualquer anotação de tipo FastAPI (`int`, `UUID`, `Enum`...) |
-| `.nexy` páginas | `int` e `float` são convertidas; todo o resto permanece uma string |
+| `.nexy` página | `int` e `float` são convertidos; todo o resto permanece uma string |
 
-Um valor que não corresponde à anotação é **não encontrado**: `/api/users/abc` respostas `404`, porque
-uma rota dinâmica captura qualquer URL e uma URL que não pode ser convertida simplesmente não existe. Veja
-[Validação e erros](../handlers/validation-and-errors.md).
+Um valor que não corresponde à anotação é **não encontrado**: `/api/users/abc` respostas `404`, porque uma rota dinâmica captura qualquer URL e uma URL que não pode ser convertida simplesmente não existe. Consulte [Validação e erros](../handlers/validation-and-errors.md).
 
 ## Segmentos abrangentes
 
-`docs/[...path].nexy` serve `/docs/{path:path}`. Os segmentos restantes chegam como uma string,
-barras incluídas.
+`docs/[...path].nexy` serve `/docs/{path:path}`. Os segmentos restantes chegam como uma string, incluindo barras.
 
 ```nexy filename="src/routes/docs/[...caminho].nexy"
 ---
@@ -48,8 +44,7 @@ path: prop[str]
 
 ## Grupos de rotas
 
-Um diretório entre parênteses organiza os arquivos sem aparecer na URL. Ainda participa
-[herança](../inheritance.md): seus `layout.*` e `dependencies.py` se aplicam ao que está dentro.
+Um diretório entre parênteses organiza os arquivos sem aparecer na URL. Ele ainda participa da [herança](../inheritance.md): seus `layout.*` e `dependencies.py` aplicam-se ao que está dentro.
 
 ```text
 src/routes/
@@ -65,13 +60,11 @@ Use grupos para fornecer layouts diferentes a seções diferentes sem alterar se
 
 ## Prioridade
 
-As rotas estáticas vencem as dinâmicas, e as dinâmicas vencem as abrangentes:
-`/blog/new` corresponde a `blog/new.nexy` antes de `blog/[slug].nexy`.
+As rotas estáticas vencem as dinâmicas, e as dinâmicas vencem as abrangentes: `/blog/new` corresponde a `blog/new.nexy` antes de `blog/[slug].nexy`.
 
 ## Um arquivo por URL
 
-Dois arquivos que resolvem para o mesmo URL são registrados. Não coloque `blog.nexy` próximo a
-`blog/index.nexy`, ou misture `index.nexy` e `index.py` para o mesmo caminho.
+Dois arquivos que resolvem para o mesmo URL são registrados. Não coloque `blog.nexy` próximo a `blog/index.nexy`, ou misture `index.nexy` e `index.py` para o mesmo caminho.
 
 ## Próximas etapas
 
