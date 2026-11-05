@@ -191,6 +191,6 @@ nx start
 ## Onde será o próximo
 
 - [Roteamento](../routing/README.md): segmentos e grupos dinâmicos
-- [Actions](../guides/actions.md): chame Python de um formulário ou do cliente
+- [Ações](../guides/actions.md): chame Python de um formulário ou do cliente
 - [Teste](../guides/testing.md): páginas de teste e endpoints
 - [Implantar](../deployment/README.md): contêineres e proxies reversos
