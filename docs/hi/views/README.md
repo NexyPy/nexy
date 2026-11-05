@@ -12,7 +12,7 @@
 
 **निश्चित नहीं? एक `.nexy` फ़ाइल लिखें।** इसके लिए किसी क्लाइंट फ्रेमवर्क की आवश्यकता नहीं है, और आप बाद में एक द्वीप के रूप में इसके अंदर एक React, Vue, Svelte, Solid या Preact घटक जोड़ सकते हैं।
 
-```diagram filename="किस पेज के लिए कौन सी फ़ाइल"
+```diagram filename=""
 server logic + HTML          →  .nexy      (Python frontmatter + Jinja2)
 prose that changes rarely    →  .md        (GitHub-flavoured Markdown)
 prose + components           →  .mdx       (React or Preact)
@@ -43,7 +43,7 @@ API handler                  →  .py        (GET, POST, …)
 
 `useFF` को `nexyconfig.py` में सेट करें और निर्भरताएँ जोड़ने के लिए `nexy new` चलाएँ:
 
-```python filename="nexyconfig.py"
+```python filename=""
 from nexy.core.models import NexyConfigModel
 from nexy.frontend import react
 
@@ -54,12 +54,12 @@ class NexyConfig(NexyConfigModel):
 
 एक फ्रेमवर्क सक्षम होने पर, Vite अपने क्लाइंट बंडलों को संभालता है। क्लाइंट मोड में इसके एक्सटेंशन रूट बन जाते हैं; सर्वर मोड में वही फ़ाइलें घटक हैं जिन्हें आप द्वीपों के रूप में आयात करते हैं - `src/routes/` के तहत एक फ्रेमवर्क फ़ाइल को वहां अस्वीकार कर दिया जाता है। [सर्वर मोड और क्लाइंट मोड](../routing/fbr/modes.md) देखें।
 
-> [!नोट]
-> [सीएसआर](../rendering/csr.md) मोड में, केवल फ्रेमवर्क रूट फ़ाइलें नेविगेशन योग्य क्लाइंट-साइड हैं।
+> [!NOTE]
+> in [CSR](../rendering/csr.md) mode, only framework route files are navigable client-side.
 
 ## लेआउट
 
-एक निर्देशिका में एक `layout.*` इसके नीचे के पृष्ठों को लपेटता है। [लेआउट](../routing/fbr/layouts/README.md) देखें।
+एक निर्देशिका में एक `layout.*` इसके नीचे पृष्ठों को लपेटता है। [लेआउट](../routing/fbr/layouts/README.md) देखें।
 
 ## अगले चरण
 
