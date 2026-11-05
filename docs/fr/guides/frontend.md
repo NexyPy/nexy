@@ -17,10 +17,10 @@ class NexyConfig(NexyConfigModel):
 
 ## Fichiers d'itinéraire
 
-| Extension | Rendu |
+| Rallonge | Rendu |
 |---|---|
 | `.nexy`, `.md` | par Nexy au moment de la demande |
-| `.mdx`, `.tsx`, `.jsx`, `.vue`, `.svelte` | par le framework client ; pré-rendu au format HTML au moment de la construction, puis repris par le bundle client |
+| `.mdx`, `.tsx`, `.jsx`, `.vue`, `.svelte` | par le cadre client ; pré-rendu au format HTML au moment de la construction, puis repris par le bundle client |
 
 Une route framework est une page normale, pas un îlot réservé au client : le code HTML existe avant l'exécution du bundle, donc le premier paint n'attend pas JavaScript.
 
@@ -44,7 +44,7 @@ Le navigateur ne parle qu'au port `3000`. Il n'y a pas de deuxième URL à ouvri
 - le forfait client, avec des actifs inférieurs à `__nexy__/client/` ;
 - les routes Python compilées.
 
-Vite gère le bundle client ; Le HTML SSR est produit par fichier par esbuild.
+Vite construit le bundle client ; le HTML du serveur de chaque page de composant est écrit au moment de la construction.
 
 > [!NOTE]
 > une route dont le rendu du serveur échoue est signalée comme une route réservée au client au lieu d'échouer toute la construction.
@@ -56,7 +56,7 @@ Vite gère le bundle client ; Le HTML SSR est produit par fichier par esbuild.
 | Mode | Les pages de démarrage sont écrites avec |
 |---|---|
 | Tailwind, UnoCSS | classes utilitaires dans le balisage, avec les jetons mappés aux noms de classe |
-| Noms de classes sémantiques CSS simples | et CSS dans `src/globale.css` |
+| CSS simple | les noms de classes sémantiques et le CSS dans `src/globale.css` |
 
 Suivez le mode de votre projet lorsque vous ajoutez une page : classes utilitaires dans un projet utilitaire, CSS dans un projet plain-CSS. Conservez le CSS du composant que les utilitaires ne peuvent pas exprimer dans le bloc `<style>` du composant. Dans un projet serveur (`.nexy` pages) UnoCSS lit les fichiers `.nexy` des classes ; Tailwind les trouve tout seul.
 
