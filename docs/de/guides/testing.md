@@ -11,10 +11,10 @@ nx test --no-server --client  # vitest only
 
 ## Was läuft
 
-| Teil | Befehl | Bedingung |
+| Teil | Befehl | Zustand |
 |---|---|---|
-| Server | `pytest` | läuft auf `tests/`, wenn er existiert, andernfalls auf dem Projektstamm; wird mit einer Warnung übersprungen, wenn pytest nicht installiert ist |
-| Client | `npx vitest run` | nur mit `--client` und nur wenn `vitest.config.ts` existiert oder `vitest` in `package.json` | erscheint
+| Server | `pytest` | läuft auf `tests/`, wenn es existiert, andernfalls auf dem Projektstamm; wird mit einer Warnung übersprungen, wenn pytest nicht installiert ist |
+| Kunde | `npx vitest run` | nur mit `--client` und nur wenn `vitest.config.ts` existiert oder `vitest` in `package.json` erscheint |
 
 Es gibt keinen integrierten End-to-End-Läufer. Steuern Sie den Server mit `TestClient` und fügen Sie Playwright oder Cypress selbst für das Browserverhalten hinzu.
 
