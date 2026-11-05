@@ -1,13 +1,11 @@
-# Vorwirken
+# Preact
 
-Nexy rendert Preact 10-Komponenten auf dem Server, dann übernimmt Preact sie im Browser. Seiten,
-Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile
-die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
+Nexy rendert Preact 10 Komponenten auf dem Server, dann Preact übernimmt sie im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
 | Modus | `nexyconfig.py` | Seiten sind | Preact ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Client | `useCSR = True` | `.tsx` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Der Client | `useCSR = True` | `.tsx` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
 
 ## Starten Sie ein Projekt
 
@@ -15,9 +13,7 @@ die von den [gemeinsamen Verträgen](../frontend/pages.md) abweichen.
 nx new my-app --template web-fbr-preact
 ```
 
-Die Vorlage ist ein Servermodus-Projekt mit Preact-Inseln. Führen Sie `nx new my-app` ohne Vorlage aus
-Beantworten Sie stattdessen die Eingabeaufforderungen: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll
-der Rahmen.
+Die Vorlage ist ein Servermodus-Projekt mit Preact Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
 ## Aktivieren Sie Preact in einem vorhandenen Projekt
 
@@ -50,7 +46,7 @@ export default defineConfig({
 | `@preact/preset-vite` | `^2.10.1` (Entwicklerabhängigkeit) |
 | `preact-render-to-string` | `^6.7.0` (Entwicklerabhängigkeit, Renderings auf dem Server) |
 
-## Preact schreiben
+## Schreiben Sie Preact
 
 Eine Preact-Komponente ist eine Funktion im React-Stil. Die Unterschiede, auf die es hier ankommt:
 
@@ -63,21 +59,16 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
-- Hooks kommen von `preact/hooks`, Typen wie `ComponentChildren` von `preact`.
-- HTML-Attribute schreiben: `class`, `for`, `charset`. `Link` liest seine Klassen aus `class`.
+- Haken kommen von `preact/hooks`, Typen wie `ComponentChildren` von `preact`.
+- Schreiben Sie HTML-Attribute: `class`, `for`, `charset`. `Link` liest seine Klassen aus `class`.
 
 ## Regeln
 
-- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [preact(), react()]`
-  Stoppt den Server beim Start. Mit `useFF = preact()` ist jede `.tsx`-Datei Preact.
-- **Seiten sind `.tsx`.** Nur eine `.tsx`-Datei unter `src/routes/` wird zu einer Seite; `.jsx` ist in Ordnung für a
-  Komponente.
-- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, also sind sie keine Seiten.
-- **Ein Projekt im Servermodus hat keine `.tsx` Seite**, und ein Projekt im Clientmodus hat keine `.nexy` Seite: Nexy
-  weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
-- **Eine `.mdx`-Seite wird aus `"preact"` importiert.** Nexy kompiliert eine `.mdx`-Datei mit Preact nur, wenn es
-  sieht diesen Import, zum Beispiel `import { h } from "preact"`, und ansonsten mit React. Siehe
-  [Markdown und MDX](../nexy/markdown.md).
+- **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [preact(), react()]` stoppt den Server beim Start. Bei `useFF = preact()` ist jede `.tsx`-Datei Preact.
+- **Seiten sind `.tsx`.** Nur eine `.tsx`-Datei unter `src/routes/` wird zu einer Seite; `.jsx` ist für eine Komponente in Ordnung.
+- **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
+- **Ein Servermodus-Projekt hat keine `.tsx` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+- **Eine `.mdx`-Seite importiert aus `"preact"`.** Nexy kompiliert eine `.mdx`-Datei mit Preact nur, wenn es diesen Import sieht, zum Beispiel `import { h } from "preact"`, andernfalls mit React. Siehe [Markdown und MDX](../nexy/markdown.md).
 
 ## Seiten
 
@@ -85,8 +76,7 @@ Im Client-Modus (`useCSR = True`) ist eine Seite eine `.tsx`-Datei.
 
 ### Seitenkomponente
 
-Eine Seite ist der Standardexport der Datei. Wenn kein Standardexport vorhanden ist, wählt Nexy den zuerst genannten aus
-exportieren.
+Eine Seite ist der Standardexport der Datei. Wenn kein Standardexport vorhanden ist, wählt Nexy den zuerst benannten Export aus.
 
 ```tsx filename="src/routes/index.tsx"
 export default function Home() {
@@ -109,7 +99,7 @@ export default function Post() {
 
 ## Layouts
 
-### Implementierung
+### Umsetzung
 
 Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt.
 
@@ -143,7 +133,7 @@ from "@/components/Counter.tsx" import Counter
 <Counter start=3 />
 ```
 
-### Hydrationsanweisungen
+### Trinkrichtlinien
 
 Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
 
@@ -169,8 +159,7 @@ const { run, pending, error, data } = useAction(add_todo);
 
 ### Navigation
 
-Verwenden Sie die Komponente `Link` für clientseitige Übergänge. Beachten Sie, dass Preact `class` anstelle von verwendet
-`className`:
+Verwenden Sie die Komponente `Link` für clientseitige Übergänge. Beachten Sie, dass Preact `class` anstelle von `className` verwendet:
 
 ```tsx
 import { Link } from "@nexy/client";
