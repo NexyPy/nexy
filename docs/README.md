@@ -2,27 +2,27 @@
 
 **A Python framework for fullstack web applications.**
 
-Nexy is about the seam between a Python backend and a browser frontend. Instead of two servers, two
-build systems and two route tables, you get one origin: FastAPI and Starlette serve the application,
-Vite builds the client, and a file under `src/routes/` is a route - `.nexy` is a page, `.py` is an
-API handler.
+Nexy puts your pages and your API in one Python project, served by one server. Version 2.2 is built
+on FastAPI: every API route is a FastAPI route, listed in an OpenAPI schema that Scalar shows at
+`/docs`.
 
-- **Python first.** Pages, endpoints, forms and actions are Python, and a server-rendered page needs
-  no frontend framework.
-- **Three routers, one integration.** File-based, modular, or an existing FastAPI `APIRouter`.
-- **A frontend when you want one.** React, Vue, Svelte, Solid or Preact, per page as islands, or for
-  the whole project in client mode.
-- **Rendering, one model.** Server rendering, cached pages and islands are decided per page; client
-  routing is a project switch.
-- **Typed actions.** A form post and a typed client call reach the same Python function.
+- **Python first.** Pages, endpoints, forms and actions are Python, and a page needs no JavaScript.
+- **A frontend when you want one.** React, Vue, Svelte, Solid or Preact, for one component or for
+  the whole site.
+- **One file, one URL.** A file under `src/routes/` is a route: `.nexy` is a page, `.py` is an API
+  endpoint.
+- **Room to grow.** Start with one file; move to modules, or plug in an existing FastAPI router, when
+  the project grows.
 
-Start with one file under `src/routes/`, and add structure when the project grows.
+New here? Read [What is Nexy?](getting-started/what-is-nexy.md), then the
+[Quick start](getting-started/quick-start.md).
 
 ## Getting Started
 
 ### First steps
 | Page | What you will do |
 |---|---|
+| [What is Nexy?](getting-started/what-is-nexy.md) | Know what Nexy is, what it is built on and what you get |
 | [Installation](getting-started/installation.md) | Install uv and the Nexy CLI, then create your first project |
 | [Quick start](getting-started/quick-start.md) | Create a project, run it with live reload, and build it for production |
 | [Tutorial](getting-started/tutorial.md) | Build a notes page with an endpoint, shared data and a production build in 10 minutes |
@@ -31,8 +31,6 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | Page | What you will do |
 |---|---|
 | [Core concepts](getting-started/core-concepts.md) | Get the mental model: route, page, view, component, handler, endpoint |
-| [How Nexy works](getting-started/how-nexy-works.md) | Follow one request from the URL to the file that answers it |
-| [Architecture](architecture.md) | Know which layer does what, and what Nexy leaves to your application |
 | [Project structure](getting-started/project-structure.md) | Know what every folder and file in a project is for |
 | [Choose a router](routing/README.md) | Pick the file-based, modular or custom router |
 | [Choose a view format](views/README.md) | Pick `.nexy`, Markdown or a client framework for a page |
@@ -172,9 +170,8 @@ Controllers and modules.
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -205,6 +202,7 @@ docs/
 
 | Page | What you will do |
 |---|---|
+| [How Nexy works](getting-started/how-nexy-works.md) | See what happens between a file and a page, and what Nexy leaves to you |
 | [Upgrading to 2.2](getting-started/upgrading.md) | Migrate from 2.1 to 2.2 |
 | [Internationalization (i18n)](guides/i18n.md) | Add translations with your choice of library |
 | [Recipes](guides/recipes.md) | Examples and patterns, not a tutorial |
