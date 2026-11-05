@@ -78,3 +78,11 @@ def test_no_link_lost_its_words(pair):
     english, translated = pair
     empty = re.compile(r"(?<!!)\[\s*\]\(")
     assert len(empty.findall(_prose(translated))) == len(empty.findall(_prose(english)))
+
+
+_ALERT = re.compile(r"^>\s*\[!\w+\]\s*$", re.MULTILINE)
+
+
+def test_every_callout_keeps_its_marker(pair):
+    english, translated = pair
+    assert _ALERT.findall(_prose(translated)) == _ALERT.findall(_prose(english))
