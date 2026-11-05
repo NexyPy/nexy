@@ -49,6 +49,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ### Fixed
 
+- **`uvx nexy new` installs on Python 3.15, Windows included.** Markdown was rendered by `cmarkgfm`,
+  a C extension with no wheel for Python 3.15: uv built it from source and failed without Microsoft
+  C++ Build Tools. Markdown is now rendered by `markdown-it-py`, which is pure Python. Raw HTML in a
+  `.md` page is now shown as text instead of being dropped, and a bare `www.` address is no longer
+  turned into a link: write the scheme (`https://`).
 - **`revalidate` in a `.nexy` page now switches the ISR cache on.** The frontmatter runs inside the
   component, so `revalidate = 60` was a local variable the router never saw and the page answered
   with no cache header. A literal `revalidate` or `metadata` is now an attribute of the module.
