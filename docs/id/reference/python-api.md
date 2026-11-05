@@ -14,7 +14,7 @@ Komponen untuk templat `.nexy` dan kait permintaan.
 | `Import` | mengimpor komponen klien ke halaman `.nexy` |
 | `Template` | render Jinja2 dan Markdown template |
 | `Vite` | tag klien Vite yang dibutuhkan setiap halaman |
-| `Form` | placeholder tanpa perilaku: gunakan `<form>` biasa dengan [action](../guides/actions.md) |
+| `Form` | placeholder tanpa perilaku: gunakan `<form>` biasa dengan [aksi](../guides/actions.md) |
 | `usePathname` | jalur permintaan saat ini |
 | `useSearchParams` | string kueri sebagai dict |
 | `useParams` | parameter jalur dinamis sebagai dict, seperti `useParams()` pada klien |
@@ -71,10 +71,10 @@ Kosakata HTTP dari seorang penangan. Impor dari sini, bukan dari FastAPI, sehing
 
 | Nama | Apa itu |
 |---|---|
-| `render` | HTML komponen `.nexy` untuk props tertentu, tanpa server, lihat [testing](../guides/testing.md) |
+| `render` | HTML komponen `.nexy` untuk props tertentu, tanpa server, lihat [pengujian](../guides/testing.md) |
 
 ## Dimana selanjutnya
 
-- [Config](config.md): kolom `use*` di belakang nama-nama ini
+- [Konfigurasi](config.md): kolom `use*` di belakang nama-nama ini
 - [Pengecualian dan kesalahan](exceptions.md): jawaban dari setiap kegagalan
 - [Indeks dokumentasi](../README.md): halaman untuk apa yang sedang Anda buat
