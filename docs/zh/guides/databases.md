@@ -9,7 +9,7 @@
 | `src/configs/db.py` | 引擎（SQLModel、SQLAlchemy）或 `TORTOISE_ORM` 设置 |
 | `src/models/` | 模型类 |
 | `src/services/` | 查询模型的函数 |
-| `.env` | `DATABASE_URL`，在 `nx new` | 期间提供数据库 URL 时写入
+| `.env` | `DATABASE_URL`，当您在 `nx new` 期间提供数据库 URL 时写入 |
 
 连接字符串来自 `DATABASE_URL` 环境变量。当它被取消设置时，脚手架引擎会回退到本地 SQLite 文件，`dev.db`。
 
@@ -41,10 +41,10 @@ async def GET():
 
 页面在服务器的事件循环中运行并且无法等待它，因此 `asyncio.run(...)` 在那里失败并显示“无法从正在运行的事件循环中调用”。脚手架 `src/configs/db.py` 在一个线程中为 Tortoise 提供了一个自己的循环，以及两个向其发送协程的助手：
 
-| 您在哪里 | 致电 | 是否 |
+| 你在哪里 | 致电 | 是否 |
 |---|---|---|
-| 同步代码，例如页面 | `run(UserService.get_all())` | 运行它并返回结果 |
-| 异步代码，例如处理程序或控制器 | `await arun(UserService.get_all())` | 相同，而不阻塞服务器 |
+| 同步代码，例如页面 | `run(UserService.get_all())` | 运行并返回结果 |
+| 异步代码，例如处理程序或控制器 | `await arun(UserService.get_all())` | 一样，不阻塞服务器 |
 
 ```nexy filename="src/routes/users/index.nexy"
 ---
@@ -62,7 +62,7 @@ Tortoise 在第一次调用其中一个时连接。从 `async def`（服务内�
 
 `nx migrate` 为您的 ORM 选择工具：Alembic 代表 SQLModel，SQLAlchemy，Aerich 代表 Tortoise-ORM。
 
-| 命令 | 执行 |
+| 命令 | 是否 |
 |---|---|
 | `nx migrate --init` | 初始化项目的迁移工具 |
 | `nx migrate -m "add users"` | 根据模型更改创建迁移 |
