@@ -47,6 +47,45 @@ _CAPTION = re.compile(r'^```\w+[ \t]+filename="(?P<caption>[^"\n]*)"', re.MULTIL
 _CELL_COMMA = re.compile(r"(\|[ \t]*),[ \t]*")
 
 
+# A line that opens a block of its own: it is never glued to the line above it.
+_OPENS_BLOCK = re.compile(r"^(#{1,6}\s|[-*+]\s|\d+[.)]\s|\||```|<|>|(-{3,}|\*{3,}|_{3,})\s*$)")
+# A line after which the next one starts afresh: a heading, a row, a tag, an alert, a hard break.
+_CLOSES_LINE = re.compile(r"(^#{1,6}\s|^\||^```|^\[!\w+\]$|>$|\\$|  $)")
+_FENCE_LINE = re.compile(r"^\s*```")
+
+
+def _quoted(line: str) -> str | None:
+    """The text of a blockquote line, or None when the line is not quoted."""
+    stripped = line.lstrip()
+    return stripped[1:].strip() if stripped.startswith(">") else None
+
+
+def _glues(previous: str, line: str) -> bool:
+    """Whether `line` continues the sentence of `previous`, wrapped only for the editor."""
+    above, below = _quoted(previous), _quoted(line)
+    if (above is None) != (below is None):
+        return False
+    top, bottom = (above, below) if above is not None else (previous.strip(), line.strip())
+    if not top or not bottom or (above is None and previous.endswith("  ")):
+        return False
+    return not _CLOSES_LINE.search(top) and not _OPENS_BLOCK.match(bottom)
+
+
+def unwrap(markdown: str) -> str:
+    """Each paragraph on one line: a service translates a line alone, so a wrap cuts a sentence."""
+    lines: list[str] = []
+    fenced = False
+    for line in markdown.split("\n"):
+        if _FENCE_LINE.match(line):
+            fenced = not fenced
+        elif not fenced and lines and _glues(lines[-1], line):
+            text = _quoted(line)
+            lines[-1] += " " + (text if text is not None else line.strip())
+            continue
+        lines.append(line)
+    return "\n".join(lines)
+
+
 def protect(markdown: str) -> tuple[str, list[str]]:
     """The page as a template where every kept part is `[[n]]`, and the parts themselves."""
     kept: list[str] = []
