@@ -98,6 +98,6 @@ Untuk Tortoise-ORM, daftarkan modulnya di `TORTOISE_ORM` (lihat di atas).
 
 ## Langkah selanjutnya
 
-- [Testing](testing.md): menguji penangan terhadap database sementara
+- [Pengujian](testing.md): menguji penangan terhadap database sementara
 - [Konfigurasi](../reference/config.md)
-- [Deploy](../deployment/README.md): mengatur `DATABASE_URL` dalam produksi
+- [Penerapan](../deployment/README.md): mengatur `DATABASE_URL` dalam produksi
