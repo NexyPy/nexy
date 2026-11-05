@@ -13,8 +13,8 @@ nx test --no-server --client  # vitest only
 
 | 部分 | 命令 | 条件 |
 |---|---|---|
-| 服务器 | `pytest` | 存在时在 `tests/` 上运行，否则在项目根目录上运行；未安装 pytest 时跳过并出现警告 |
-| 客户端 | `npx vitest run` | 仅具有 `--client`，且仅当 `vitest.config.ts` 存在或 `vitest` 出现在 `package.json` | 中时
+| 服务器 | `pytest` | 如果存在，则在 `tests/` 上运行，否则在项目根目录上运行；未安装 pytest 时跳过并出现警告 |
+| 客户 | `npx vitest run` | 仅与 `--client` 一起，并且仅当 `vitest.config.ts` 存在或 `vitest` 出现在 `package.json` 中时 |
 
 没有内置的端到端运行器。使用 `TestClient` 驱动服务器并自行添加 Playwright 或 Cypress 以实现浏览器行为。
 
