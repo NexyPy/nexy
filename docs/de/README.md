@@ -18,23 +18,23 @@ Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, 
 | Seite | Was Sie tun werden |
 |---|---|
 | [Installation](getting-started/installation.md) | Installieren Sie uv und die Nexy-CLI und erstellen Sie dann Ihr erstes Projekt |
-| [Schnellstart](getting-started/quick-start.md) | Erstellen Sie ein Projekt, führen Sie es mit Live-Reload aus und erstellen Sie es für die Produktion |
-| [Tutorial](getting-started/tutorial.md) | Erstellen Sie eine Notizenseite mit einem Endpunkt, freigegebenen Daten und einem Produktions-Build in 10 Minuten |
+| [Schnellstart](getting-started/quick-start.md) | Erstellen Sie ein Projekt, führen Sie es per Live-Reload aus und erstellen Sie es für die Produktion |
+| [Tutorial](getting-started/tutorial.md) | Erstellen Sie in 10 Minuten eine Notizenseite mit einem Endpunkt, freigegebenen Daten und einem Produktions-Build |
 
 ### Verstehen Sie das Modell
 | Seite | Was Sie tun werden |
 |---|---|
 | [Kernkonzepte](getting-started/core-concepts.md) | Holen Sie sich das mentale Modell: Route, Seite, Ansicht, Komponente, Handler, Endpunkt |
-| [Wie Nexy funktioniert](getting-started/how-nexy-works.md) | Folgen Sie einer Anfrage von der URL zu der Datei, die darauf antwortet |
+| [Wie Nexy funktioniert](getting-started/how-nexy-works.md) | Folgen Sie einer Anfrage von der URL zu der Datei, die sie beantwortet |
 | [Architektur](architecture.md) | Wissen Sie, welche Schicht was tut und was Nexy Ihrer Anwendung überlässt |
-| [Projektstruktur](getting-started/project-structure.md) | Wissen, wozu jeder Ordner und jede Datei in einem Projekt dient |
+| [Projektstruktur](getting-started/project-structure.md) | Wissen Sie, wozu jeder Ordner und jede Datei in einem Projekt dient |
 | [Wählen Sie einen Router](routing/README.md) | Wählen Sie den dateibasierten, modularen oder benutzerdefinierten Router |
 | [Wählen Sie ein Ansichtsformat](views/README.md) | Wählen Sie `.nexy`, Markdown oder ein Client-Framework für eine Seite |
 
 ### Kommt von woanders
 | Seite | Was Sie tun werden |
 |---|---|
-| [Aus einem anderen Framework stammend](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
+| [Kommt aus einem anderen Rahmen](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
 
 ## Routenführung
 
@@ -42,39 +42,39 @@ Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, 
 | Seite | Was Sie tun werden |
 |---|---|
 | [Dateibasiertes Routing](routing/fbr/README.md) | Verwandeln Sie einen Dateipfad in eine URL |
-| [Seiten](routing/fbr/pages/README.md) | Eine Seite schreiben |
+| [Seiten](routing/fbr/pages/README.md) | Schreiben Sie eine Seite |
 | [Dynamische Routen](routing/fbr/pages/dynamic-routes.md) | Verwenden Sie `[slug]`, `[...path]` und Routengruppen |
 | [Seitenmetadaten](routing/fbr/pages/metadata.md) | Legen Sie den Titel, die Beschreibung und das Freigabebild einer Seite fest {new} |
-| [Layouts](routing/fbr/layouts/README.md) | Einen Rahmen zwischen Seiten teilen |
+| [Layouts](routing/fbr/layouts/README.md) | Teilen Sie einen Rahmen zwischen Seiten |
 | [Vererbung](routing/fbr/inheritance.md) | Lesen Sie die Auflösungsreihenfolge von Layouts, Abhängigkeiten und Fehlerseiten |
 | [Servermodus und Clientmodus](routing/fbr/modes.md) | `useCSR` und was jeder Modus ermöglicht |
 | [Verknüpfen und Navigieren](routing/fbr/navigation/linking-and-navigating.md) | Seiten verlinken, auf dem Client navigieren, Prefetch |
-| [Hooks](routing/fbr/navigation/hooks.md) | Pfad, Abfrage, Cookies und Sitzung lesen |
+| [Haken](routing/fbr/navigation/hooks.md) | Lesen Sie den Pfad, die Abfrage, die Cookies und die Sitzung |
 
 ### Handler und Fehler {fbr}
 | Seite | Was Sie tun werden |
 |---|---|
-| [Routenhandler](routing/fbr/handlers/README.md) | Fügen Sie einen Python Endpunkt hinzu |
-| [Validierung und Fehler](routing/fbr/handlers/validation-and-errors.md) | Beantworten Sie `422` und `404` und lösen Sie eine `HTTPException` | aus.
-| [WebSocket Handler](routing/fbr/realtime/websocket.md) | Verarbeiten einer `SOCKET` Verbindung |
-| [Abhängigkeiten und Wächter](routing/fbr/dependencies/README.md) | Führen Sie `dependencies.py` vor einem Handler aus und erben Sie ihn |
-| [Middleware-Dateien](routing/fbr/middleware/README.md) | Wrap-Anfragen mit `middleware.py`, geerbt von Verzeichnis |
-| [Fehlerseiten](routing/fbr/errors/README.md) | Antwort mit `notfound.nexy`, `errors.nexy` und JSON-Fehlern |
+| [Routenhandler](routing/fbr/handlers/README.md) | Fügen Sie einen Python-Endpunkt hinzu |
+| [Validierung und Fehler](routing/fbr/handlers/validation-and-errors.md) | Beantworten Sie `422` und `404` und erheben Sie eine `HTTPException` |
+| [WebSocket Handler](routing/fbr/realtime/websocket.md) | Behandeln Sie eine `SOCKET`-Verbindung |
+| [Abhängigkeiten und Wachen](routing/fbr/dependencies/README.md) | Führen Sie `dependencies.py` vor einem Handler aus und erben Sie ihn |
+| [Middleware-Dateien](routing/fbr/middleware/README.md) | Anfragen mit `middleware.py` umschließen, geerbt vom Verzeichnis |
+| [Fehlerseiten](routing/fbr/errors/README.md) | Antworten Sie mit `notfound.nexy`-, `errors.nexy`- und JSON-Fehlern |
 | [Fehlerseiten pro Ordner](routing/fbr/errors/folder-pages.md) | Randfall: Fehler aus Unterordnern |
 
 ### Modularer Router {modular}
 Controller und Module.
 | Seite | Was Sie tun werden |
 |---|---|
-| [Modulares Routing](routing/modular/README.md) | Controller und Module montieren |
+| [Modulares Routing](routing/modular/README.md) | Montieren Sie Controller und Module |
 | [Abhängigkeitsinjektion](routing/modular/dependency-injection.md) | Definieren Sie Dienste, ihre Bereiche und den Container |
-| [Schutz und Metadaten](routing/modular/guards-and-metadata.md) | Routen schützen und dokumentieren |
+| [Schutzmaßnahmen und Metadaten](routing/modular/guards-and-metadata.md) | Routen schützen und dokumentieren |
 | [Modularer Router vs. NestJS](routing/modular/vs-nestjs.md) | Vergleich mit NestJS |
 
 ### Benutzerdefinierte Router-Integration {custom}
 | Seite | Was Sie tun werden |
 |---|---|
-| [Benutzerdefiniertes Routing](routing/custom/README.md) | Eine vorhandene FastAPI App einschließen |
+| [Benutzerdefiniertes Routing](routing/custom/README.md) | Fügen Sie eine vorhandene FastAPI-App hinzu |
 
 ## Frontend
 
@@ -82,16 +82,16 @@ Controller und Module.
 | Seite | Was es definiert |
 |---|---|
 | [Frontend-Seiten](views/frontend/pages.md) | Eine Datei, eine Route: Requisiten, Rendering, Metadaten |
-| [Frontend-Layouts](views/frontend/layouts.md) | Die Dokumenthülle, die Verschachtelung und was ein Layout nicht kann |
-| [Aktionen und Navigation](views/frontend/actions-and-navigation.md) | Rufen Sie eine eingegebene Aktion auf, verlinken Sie Seiten, lesen Sie die URL |
+| [Frontend-Layouts](views/frontend/layouts.md) | Die Dokumenthülle, die Verschachtelung und was ein Layout nicht leisten kann |
+| [Aktionen und Navigation](views/frontend/actions-and-navigation.md) | Rufen Sie eine eingegebene Aktion auf, verlinken Sie Seiten und lesen Sie die URL |
 
 ### Nexy-Ansichten
 | Seite | Was Sie tun werden |
 |---|---|
 | [.nexy-Dateien](views/nexy/README.md) | Schreiben Sie eine Seite mit Python, Jinja2 und Requisiten |
-| [Komponenten](views/nexy/components.md) | Verwenden Sie `Image`, `Link`, `Audio`, `Video` und `Import` |
+| [Komponenten](views/nexy/components.md) | Verwenden Sie `Image`, `Link`, `Audio`, `Video` und `Import`. |
 | [layout.nexy](views/nexy/layouts.md) | Schreiben Sie das Servermodus-Layout |
-| [Markdown und MDX](views/nexy/markdown.md) | Inhaltsseiten schreiben |
+| [Markdown und MDX](views/nexy/markdown.md) | Schreiben Sie Inhaltsseiten |
 
 ### Rahmenunterschiede
 | Seite | Was ändert sich |
@@ -107,39 +107,39 @@ Controller und Module.
 ### Modi
 | Seite | Was Sie entscheiden werden |
 |---|---|
-| [Rendering](rendering/README.md) | Welcher Rendering-Modus passt zu einer Seite |
+| [Rendering](rendering/README.md) | Welcher Rendering-Modus passt zu einer Seite? |
 | [SSR](rendering/ssr.md) | Server-Rendering, die Standardeinstellung |
 | [ISR](rendering/isr.md) | Cache-Seiten mit Stale-While-Revalidate |
 | [CSR](rendering/csr.md) | Clientseitiges Routing |
-| [Inseln](rendering/islands.md) | Hydratisieren bei Leerlauf-, sichtbarer oder Medienabfrage |
+| [Inseln](rendering/islands.md) | Hydratisieren bei Leerlauf-, Sichtbarkeits- oder Medienabfrage |
 
 ## Führer
 
 ### Formulare und Daten
 | Seite | Was Sie tun werden |
 |---|---|
-| [Aktionen](guides/actions.md) | Rufen Sie eine Python Funktion aus einem Formular oder einer typisierten TypeScript Funktion auf |
+| [Aktionen](guides/actions.md) | Rufen Sie eine Python-Funktion aus einem Formular oder einer typisierten TypeScript-Funktion auf |
 | [Datenbanken](guides/databases.md) | Wählen Sie einen ORM und führen Sie Migrationen aus |
 
 ### Sicherheit und Bereitstellung
 | Seite | Was Sie tun werden |
 |---|---|
-| [Middleware und Sicherheit](guides/middleware-and-security.md) | Einrichten von CORS, GZip, vertrauenswürdigen Hosts und Sitzungen |
-| [Bereitstellen](deployment/README.md) | Erstellen, Containerisieren und Bereitstellen |
+| [Middleware und Sicherheit](guides/middleware-and-security.md) | Richten Sie CORS, GZip, vertrauenswürdige Hosts und Sitzungen ein |
+| [Bereitstellen](deployment/README.md) | Zusammenstellen, in Behälter füllen und servieren |
 | [Leistung](deployment/performance.md) | Messen und optimieren Sie die Standardwerte |
 
 ### Bauen und testen
 | Seite | Was Sie tun werden |
 |---|---|
-| [Vite und Styling](guides/frontend.md) | Einrichten Vite, Styling und der Client-Build |
-| [Testen](guides/testing.md) | Test mit pytest, `TestClient` und vitest |
+| [Vite und Styling](guides/frontend.md) | Richten Sie Vite, das Styling und den Client-Build ein |
+| [Testen](guides/testing.md) | Testen Sie mit pytest, `TestClient` und vitest |
 
 ### Werkzeuge und Hilfe
 | Seite | Was Sie tun werden |
 |---|---|
 | [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
-| [Coding Agents](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
-| [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die die Leute stoßen |
+| [Kodierungsagenten](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
+| [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 
 ## Referenz
 
@@ -147,12 +147,12 @@ Controller und Module.
 | Seite | Was darin aufgeführt ist |
 |---|---|
 | [CLI](reference/cli.md) | Befehle, Flags, Eingabeaufforderungen und Exit-Codes |
-| [Config](reference/config.md) | Jedes `nexyconfig.py` Feld und sein Standard |
+| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py`-Feld und seine Standardeinstellung |
 
 ### Python API und Fehler
 | Seite | Was darin aufgeführt ist |
 |---|---|
-| [Python API](reference/python-api.md) | Jeder Name, den Nexy exportiert, nach Modul |
+| [Python-API](reference/python-api.md) | Jeder Name, den Nexy exportiert, nach Modul |
 | [Ausnahmen und Fehler](reference/exceptions.md) | Jeder Fehler, sein Status und die Datei, die ihn beantwortet |
 
 ### Konventionen und Konzepte
@@ -160,7 +160,7 @@ Controller und Module.
 |---|---|
 | [Dateikonventionen](reference/file-conventions.md) | Reservierte Dateien und Routing-Regeln |
 | [Glossar](reference/glossary.md) | Die in diesen Dokumenten verwendeten Wörter |
-| [Sicherheit](reference/security.md) | Versionsuntergrenzen, Regeln, denen Nexy folgt, Audits |
+| [Sicherheit](reference/security.md) | Versionsebenen, Regeln, denen Nexy folgt, Audits |
 
 ## Layout
 ```text
@@ -199,7 +199,7 @@ docs/
 
 | Seite | Was Sie tun werden |
 |---|---|
-| [Upgrade auf 2.2](getting-started/upgrading.md) | Migration von 2.1 auf 2.2 |
+| [Upgrade auf 2.2](getting-started/upgrading.md) | Von 2.1 auf 2.2 migrieren |
 | [Internationalisierung (i18n)](guides/i18n.md) | Fügen Sie Übersetzungen mit der Bibliothek Ihrer Wahl hinzu |
 | [Rezepte](guides/recipes.md) | Beispiele und Muster, kein Tutorial |
 
