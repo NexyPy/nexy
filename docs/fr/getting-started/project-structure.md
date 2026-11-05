@@ -35,7 +35,7 @@ Pour choisir un dossier, demandez quel est le fichier :
 
 ## `src/routes/`
 
-Chaque fichier devient une route, à l'exception des noms réservés ci-dessous. Le chemin du fichier moins l'extension est l'URL - voir [routing](../routing/README.md).
+Chaque fichier devient une route, à l'exception des noms réservés ci-dessous. Le chemin du fichier moins l'extension est l'URL - voir [routage](../routing/README.md).
 
 | Fichier | Rôle |
 |---|---|
@@ -74,6 +74,6 @@ Traitez l'ensemble du répertoire comme jetable : supprimez-le, reconstruisez-l
 
 ## Prochaines étapes
 
-- [Routing](../routing/README.md) : comment un chemin devient une URL
-- [Config](../reference/config.md) : chaque option du projet
+- [Routage](../routing/README.md) : comment un chemin devient une URL
+- [Configuration](../reference/config.md) : chaque option du projet
 - [Frontend](../guides/frontend.md) : Vite, style et build client
