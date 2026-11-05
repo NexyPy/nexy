@@ -48,14 +48,14 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 | `unauthorized.nexy` | `401` 为其目录 |
 | `loading.nexy` | 保留；还没有运行时效果 |
 
-| 情况 | 答案 |
+| 情况 | 回答 |
 |---|---|
 | 没有路线匹配 | `404` |
 | 动态段无法转换为其注释 | `404` |
 | 页面或 API 处理程序中未处理的异常 | `500` |
-| `raise HTTPException(status_code=403)` | 您提出的状态，采用 HTML 或 JSON |
-| `notFound()`、`forbidden()`、`unauthorized()` | `404`、`403`、`401`，来自请求 | 中的任何位置
-| `redirect()`、`permanentRedirect()` | 真正的重定向，没有错误页面 |
+| `raise HTTPException(status_code=403)` | 您提出的状态，HTML 或 JSON 格式 |
+| `notFound()`，`forbidden()`，`unauthorized()` | `404`、`403`、`401`，来自请求中的任何位置 |
+| `redirect()`，`permanentRedirect()` | 真正的重定向，没有错误页面 |
 
 ## 通过代码留下页面或答案
 
@@ -77,13 +77,13 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| 呼叫 | 应答 |
+| 致电 | 回答 |
 |---|---|
-| `redirect(url)` | `307`； `redirect(url, status=303)` 在表单 | 之后将 POST 转换为 GET
+| `redirect(url)` | `307`； `redirect(url, status=303)` 将表单后的 POST 转换为 GET |
 | `permanentRedirect(url)` | `308`；浏览器和搜索引擎会记住它 |
 | `notFound(detail=None)` | `404`：`notfound` 页面，或 API 客户端的 JSON |
-| `forbidden(detail=None)` | `403`：访问者是已知的，但可能看不到此 |
-| `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` 添加 `WWW-Authenticate` |
+| `forbidden(detail=None)` | `403`：访问者是已知的，但可能看不到此内容 |
+| `unauthorized(detail=None, scheme=None)` | `401`； `scheme="Bearer"` 添加 `WWW-Authenticate` |
 
 重定向响应带有 `Location` 标头，但没有页面，也返回到 API 客户端。根据您信任的价值观构建目的地：`redirect(request.query_params["next"])` 将访问者发送到链接所说的任何地方。带有换行符的目的地将被拒绝。
 
@@ -133,8 +133,8 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| 浏览器 | 出现错误的页面、引发该错误的代码行以及完整回溯 | 内置 `500` 页面（或您的 `errors.nexy`）以及引用 |
-| JSON 客户端 | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| 浏览器 | 包含错误的页面、引发错误的代码行以及完整的回溯 | 带有参考的内置 `500` 页面（或您的 `errors.nexy`） |
+| JSON客户端 | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
 | 服务器日志 | 异常和代码行 | 异常和整个回溯，具有相同的引用 |
 
 ```text
