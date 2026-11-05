@@ -208,3 +208,107 @@ class TestAlerts:
     def test_an_alert_marker_is_layout(self):
         _template, kept = translator.protect("> [!TIP]\n")
         assert kept.index("[!TIP]") in translator.structural(kept)
+
+
+class TestRelabel:
+    def test_a_link_left_in_english_takes_the_word_of_the_glossary(self):
+        assert translator.relabel("voir les [views](a.md)", "fr") == "voir les [vues](a.md)"
+
+    def test_a_translated_link_stays_as_it_is(self):
+        assert translator.relabel("voir [Dépannage](a.md)", "fr") == "voir [Dépannage](a.md)"
+
+    def test_an_image_keeps_its_text(self):
+        assert translator.relabel("![views](a.png)", "fr") == "![views](a.png)"
+
+    def test_a_link_inside_a_code_fence_is_code(self):
+        fence = "```md\n[views](a.md)\n```\n"
+        assert translator.relabel(fence, "fr") == fence
+
+    def test_an_english_page_is_left_alone(self):
+        assert translator.relabel("[views](a.md)", "en") == "[views](a.md)"
+
+
+class TestCells:
+    @staticmethod
+    def _round_trip(markdown: str) -> str:
+        template, kept = translator.protect(markdown)
+        template, kept = translator.cells(template, kept)
+        return translator.rows(translator.restore([template], kept))
+
+    def test_a_row_puts_each_cell_on_its_own_line(self):
+        template, kept = translator.cells(*translator.protect("| a | b |"))
+        assert len(template.split("\n")) == 2
+
+    def test_a_row_comes_back_as_it_was(self):
+        assert self._round_trip("| a | b |") == "| a | b |"
+
+    def test_an_empty_cell_comes_back_empty(self):
+        assert self._round_trip("| a |  | c |") == "| a | | c |"
+
+    def test_a_pipe_inside_code_is_not_a_cell(self):
+        assert self._round_trip("| `a | b` | c |") == "| `a | b` | c |"
+
+    def test_an_escaped_pipe_is_not_a_cell(self):
+        assert self._round_trip("| a \\| b | c |") == "| a \\| b | c |"
+
+    def test_a_table_separator_stays_on_its_line(self):
+        table = "| a | b |\n| --- | --- |\n| c | d |"
+        assert self._round_trip(table) == table
+
+    def test_no_pipe_of_a_row_reaches_the_service(self):
+        template, kept = translator.cells(*translator.protect("| a | b |"))
+        body, _ = translator.leads(template, translator.structural(kept))
+        assert body == "a\nb"
+
+    def test_a_row_cut_between_two_chunks_is_joined_again(self):
+        template, kept = translator.cells(*translator.protect("| a | b |"))
+        first, second = template.split("\n")
+        assert translator.rows(translator.restore([first, second], kept)) == "| a | b |"
+
+    def test_an_empty_last_cell_comes_back_empty(self):
+        assert self._round_trip("| a | |") == "| a | |"
+
+
+class TestLinkOpenings:
+    def test_a_link_opening_a_line_keeps_its_bracket_out_of_the_request(self):
+        body, openings = translator.leads("[[1]] [Performance[[2]]", frozenset({1}))
+        assert body == "Performance[[2]]"
+
+    def test_the_bracket_of_a_link_opening_a_line_comes_back(self):
+        _, openings = translator.leads("[[1]] [Performance[[2]]", frozenset({1}))
+        assert translator.with_leads("کارکردگی [[2]]", openings) == "[[1]] [کارکردگی [[2]]"
+
+    def test_a_placeholder_opening_a_line_is_not_a_link(self):
+        body, _ = translator.leads("[[1]] text", frozenset())
+        assert body == "[[1]] text"
+
+    def test_a_link_whose_bracket_was_lost_names_its_placeholder(self):
+        assert translator.unopened("voir Dépannage[[1]].", "See [Troubleshooting[[1]].") == 1
+
+    def test_a_link_moved_after_its_text_names_its_placeholder(self):
+        assert translator.unopened("a[[1]] dans [b", "the [b in a[[1]]") == 1
+
+    def test_a_link_on_a_name_whose_bracket_was_lost_names_the_name(self):
+        assert translator.unopened("et [[3]][[4]].", "and [[[3]][[4]].") == 3
+
+    def test_a_link_with_its_bracket_names_nothing(self):
+        assert translator.unopened("voir [Dépannage[[1]].", "See [Troubleshooting[[1]].") is None
+
+    def test_a_task_box_opening_a_line_travels(self):
+        body, _ = translator.leads("[[1]] [ ] ship it", frozenset({1}))
+        assert body == "[ ] ship it"
+
+    def test_a_ticked_task_box_opening_a_line_travels(self):
+        body, _ = translator.leads("[[1]] [x] ship it", frozenset({1}))
+        assert body == "[x] ship it"
+
+
+class TestStrayed:
+    def test_a_code_moved_to_the_next_cell_names_its_placeholder(self):
+        assert translator.strayed("a\n[[1]] b", "a [[1]]\nb") == 1
+
+    def test_a_code_on_its_own_line_names_nothing(self):
+        assert translator.strayed("x [[1]]\ny", "a [[1]]\nb") is None
+
+    def test_an_answer_with_other_lines_is_left_to_the_other_checks(self):
+        assert translator.strayed("a [[1]] b", "a [[1]]\nb") is None
