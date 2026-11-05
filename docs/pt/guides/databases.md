@@ -98,6 +98,6 @@ Para Tortoise-ORM, liste o módulo em `TORTOISE_ORM` (veja acima).
 
 ## Próximas etapas
 
-- [Testing](testing.md): manipuladores de teste em um banco de dados temporário
+- [Testes](testing.md): manipuladores de teste em um banco de dados temporário
 - [Configuração](../reference/config.md)
 - [Implantar](../deployment/README.md): definir `DATABASE_URL` em produção
