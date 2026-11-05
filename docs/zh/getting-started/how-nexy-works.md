@@ -25,7 +25,7 @@
 
 `src/routes/` 下的路径通过四个规则成为 URL：
 
-| 文件 | URL |
+| 文件 | 网址 |
 |---|---|
 | `blog/index.nexy` | `/blog` |
 | `blog/[slug].nexy` | `/blog/hello` |
@@ -47,15 +47,15 @@
 
 文件的扩展名决定它是什么，项目配置决定哪些扩展名处于活动状态。
 
-| 扩展 | 当 | 由 | 编译 充当 | 时有效
+| 扩展 | 活跃时 | 编译者 | 担任 |
 |---|---|---|---|
-| `.nexy` | 服务器模式 | Nexy：frontmatter 变为 Python，标记变为 Jinja2 | 页面 |
-| `.md` | 总是 | Nexy：GitHub 风格的 Markdown，标题 ID，目录 | 页面，在最近的布局 | 内
-| `.mdx` | 始终 | Vite，其中 React 或 Preact | 为组件路由 |
-| `.tsx` | `useFF` 是 React、Solid 或 Preact | Vite，框架 | 是组件路由 |
-| `.vue` | `useFF` 是 Vue | Vite 和 Vue | 组件路由 |
-| `.svelte` | `useFF` 是 Svelte | Vite 和 Svelte | 组件路由 |
-| `.py` | 始终 | Python | API 处理程序：`GET`、`POST`、... 是方法 |
+| `.nexy` | 服务器模式 | Nexy：frontmatter 变为 Python，标记变为 Jinja2 | 一页 |
+| `.md` | 总是 | Nexy：GitHub 风格的 Markdown、标题 ID、目录 | 一个页面，位于最近的布局内 |
+| `.mdx` | 总是 | Vite，与 React 或 Preact | 组件路径 |
+| `.tsx` | `useFF` 是 React、Solid 或 Preact | Vite 和框架 | 组件路径 |
+| `.vue` | `useFF` 是 Vue | Vite 和 Vue | 组件路径 |
+| `.svelte` | `useFF` 是 Svelte | Vite 和 Svelte | 组件路径 |
+| `.py` | 总是 | Python | API 处理程序：`GET`、`POST`、... 是方法 |
 
 扩展名未激活的文件将被跳过并出现警告，且不会提供服务。在客户端模式下，`.nexy` 在服务器启动之前被拒绝。请参阅[文件约定](../reference/file-conventions.md)。
 
@@ -63,11 +63,11 @@
 
 三个问题决定读者注意到的一切：
 
-| 问题 | 答案 | 页 |
+| 问题 | 回答 | 页面 |
 |---|---|---|
-| 谁生成 HTML？ | 服务器，或客户端路由的浏览器 | [渲染](../rendering/README.md) |
+| 谁生成 HTML？ | 服务器或客户端路由的浏览器 | [渲染](../rendering/README.md) |
 | 什么时候读取数据？ | 在每个请求、每次重新生成或在浏览器中 | [SSR](../rendering/ssr.md)、[ISR](../rendering/isr.md) |
-| JavaScript 什么时候到达？ | 仅适用于一个岛屿，或适用于整个文档 | [岛屿](../rendering/islands.md)、[CSR](../rendering/csr.md) |
+| JavaScript 什么时候到达？ | 仅针对一个岛屿，或针对整个文档 | [岛屿](../rendering/islands.md)、[企业社会责任](../rendering/csr.md) |
 
 在服务器模式下，服务器呈现每一页，`revalidate` 为每个 URL 缓存一页，岛将 JavaScript 添加到一个组件。在客户端模式下，第一个文档在 Node 中呈现，然后在浏览器中进行导航。
 
@@ -85,11 +85,11 @@
 
 | | `nx dev` | `nx build` 然后 `nx start` |
 |---|---|---|
-| 保存 | 时编译的页面 | 提前编译一次 |
-| 客户端代码 | Vite 具有热重载功能的开发服务器，位于 `__nexy__/client/` 中的 Nexy 自己的源 | 捆绑包之后，预渲染 HTML |
-| Node.js | 在 Python | 旁边运行，不需要服务 |
+| 页数 | 保存时编译 | 提前编译一次 |
+| 客户端代码 | Vite 具有热重载功能的开发服务器，位于 Nexy 自己的起源之后 | 捆绑在 `__nexy__/client/` 中，预渲染 HTML |
+| Node.js | 在 Python 旁边运行 | 不需要服务 |
 | 错误 | 覆盖在浏览器中，每个页面上的工具栏 | 没有详细信息的状态页面 |
-| 始发地 | 1 个端口，`3000` | 1 个端口 |
+| 产地 | 一个端口，`3000` | 一个端口 |
 
 不变的是：相同的路由规则，相同的页面文件，相同的 `nexyconfig.py`。两者之间行为不同的页面是错误，而不是模式。
 
