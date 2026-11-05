@@ -8,9 +8,9 @@ SSR é o padrão: o servidor renderiza a página em HTML para cada solicitação
 
 | Arquivo de rota | O que produz o HTML | Quando |
 |---|---|---|
-| `.nexy` | o módulo compilado Python, através de Jinja2 | cada solicitação |
-| `.md` | `cmarkgfm`, então o layout mais próximo | a cada solicitação |
-| `.mdx`, `.tsx`, `.vue`, `.svelte` | o framework, renderizado no Node | na construção quando a rota não tem layout, caso contrário no navegador |
+| `.nexy` | o módulo Python compilado, até Jinja2 | cada pedido |
+| `.md` | Markdown, então o layout mais próximo | cada pedido |
+| `.mdx`, `.tsx`, `.vue`, `.svelte` | a estrutura, renderizada em Node | na construção quando a rota não tem layout, caso contrário no navegador |
 | `.py` | nada: retorna JSON ou um `Response` | - |
 
 Uma rota componente é o único caso que precisa de uma segunda frase. Na produção, uma rota de componente **sem** um layout é veiculada com o HTML produzido na construção, e o componente o hidrata. Com um layout, ou em desenvolvimento, o contêiner fica vazio e o componente é renderizado no navegador - a página é então um shell que se preenche sozinho.
@@ -35,9 +35,9 @@ Um erro gerado durante a renderização é transformado em uma página por `erro
 
 Nenhum. Duas saídas, e elas não têm a mesma granulação:
 
-| Para deixar SSR para | Faça isso | Grão |
+| Para deixar o SSR para | Faça isso | Grão |
 |---|---|---|
-| uma página, com um cache | `revalidate = 60` em seu frontmatter → [ISR](isr.md) | página |
+| uma página, com cache | `revalidate = 60` em seu frontmatter → [ISR](isr.md) | página |
 | todo o projeto, roteado pelo cliente | `useCSR = True` em `nexyconfig.py` → [CSR](csr.md) | projeto |
 
 ## Exemplo

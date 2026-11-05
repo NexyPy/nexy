@@ -4,7 +4,7 @@
 
 | Anforderung | Warum |
 |---|---|
-| Python 3.12+ | `requires-python` in `pyproject.toml` |
+| Python 3.12+ | `requires-python` in `pyproject.toml`; kein C-Compiler erforderlich, Windows inklusive |
 | [uv](https://docs.astral.sh/uv/) | erstellt das Projekt, installiert seine Pakete und führt Nexy aus |
 | Node.js 18+ | nur für ein Client-Framework (React, Vue, Svelte, Solid, Preact) |
 
@@ -46,7 +46,7 @@ Jeder andere Befehl (`nexy dev`, `nexy build`, `nexy migrate`...) muss **in der 
 
 Aktivieren Sie es einmal pro Terminal aus dem Projektordner:
 
-| Shell | Befehl |
+| Muschel | Befehl |
 |---|---|
 | PowerShell, cmd (Windows) | `.venv\Scripts\activate` |
 | macOS, Linux | `source .venv/bin/activate` |
@@ -77,6 +77,6 @@ nexy init
 ## Nächste Schritte
 
 - [Schnellstart](quick-start.md)
-- [Tutorial](tutorial.md)
+- [Anleitung](tutorial.md)
 - [Projektstruktur](project-structure.md)
 - [Fehlerbehebung](../guides/troubleshooting.md)

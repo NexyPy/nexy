@@ -2,13 +2,13 @@
 
 قبل اختيار تنسيق الملف، من المهم التمييز بين كيفية تعامل Nexy مع الموارد وكيفية عرضها.
 
-| المصطلح | التعريف |
+| مصطلح | التعريف |
 |---|---|
-| **صفحة** | مصدر للتطبيق يمكن عنونة عنوان URL له. يتم تعريفه بواسطة ملف تحت `src/routes/`. |
+| **الصفحة** | مورد يمكن عنونة URL للتطبيق. يتم تعريفه بواسطة ملف تحت `src/routes/`. |
 | **عرض** | عملية إنتاج نص الاستجابة للصفحة. يقوم العرض بتحويل المنطق والبيانات إلى HTML أو JSON. |
 | **المكون** | كتلة بناء لواجهة المستخدم قابلة لإعادة الاستخدام تُستخدم لإنشاء طريقة عرض. يمكن أن تكون المكونات مساعدات Nexy أصلية أو خاصة بإطار العمل (React، Vue، وما إلى ذلك). |
 | **معالج المسار** | دالة Python تعالج طلب HTTP لطريقة محددة (على سبيل المثال، `GET`، `POST`). |
-| **نقطة النهاية** | التركيبة الفريدة من عنوان URL وطريقة HTTP التي يجيب عليها معالج المسار. |
+| **نقطة النهاية** | المزيج الفريد من عنوان URL وطريقة HTTP التي يجيب عليها معالج المسار. |
 
 **لست متأكدا؟ اكتب ملف `.nexy`.** لا يحتاج إلى إطار عمل للعميل، ويمكنك إضافة مكون React أو Vue أو Svelte أو Solid أو Preact بداخله لاحقًا، كجزيرة.
 
@@ -22,14 +22,14 @@ API handler                  →  .py        (GET, POST, …)
 
 ## التنسيقات
 
-| التنسيق | الملف | تقديم الخادم | إطار عمل العميل | ملاحظات |
+| التنسيق | ملف | تقديم الخادم | إطار العميل | ملاحظات |
 |---|---|---|---|---|
 | `.nexy` | [ملفات .nexy](nexy/README.md) | Jinja2 + Python منطق، متدفق | اختياري | تنسيق صفحة Nexy الأصلي |
-| `.md` | [Markdown و MDX ](nexy/markdown.md) | cmarkgfm في وقت الطلب | اختياري عبر التخطيط | نقي Markdown، GFM، مغلف بالتخطيط |
-| `.mdx` | [Markdown و MDX ](nexy/markdown.md) | إطار عمل SSR | React أو Preact | Markdown مع المكونات |
-| `.tsx` | [React ](react/differences.md)، [Solid ](solid/differences.md) أو [Preact ](preact/differences.md) | وضع العميل: إطار العمل، المقدم في العقدة | React، Solid أو Preact | مسارات المكونات |
-| `.vue` | [Vue](vue/differences.md) | وضع العميل: إطار العمل، المقدم في العقدة | Vue | مسارات SFC |
-| `.svelte` | [Svelte](svelte/differences.md) | وضع العميل: إطار العمل، المقدم في العقدة | Svelte | مسارات SFC |
+| `.md` | [Markdown و MDX](nexy/markdown.md) | Markdown عند الطلب | اختياري عبر التخطيط | نقي Markdown، GFM، مغلف بالتخطيط |
+| `.mdx` | [Markdown و MDX](nexy/markdown.md) | الإطار SSR | React أو Preact | Markdown بالمكونات |
+| `.tsx` | [React ](react/differences.md)، [Solid ](solid/differences.md) أو [Preact ](preact/differences.md) | وضع العميل: الإطار المعروض في Node | React أو Solid أو Preact | طرق المكونات |
+| `.vue` | [Vue](vue/differences.md) | وضع العميل: الإطار المعروض في Node | Vue | طرق SFC |
+| `.svelte` | [Svelte](svelte/differences.md) | وضع العميل: الإطار المعروض في Node | Svelte | طرق SFC |
 
 المساعدين المدمجين `Image`، `Link`، `Audio`، `Video` و `Import`: [المكونات](nexy/components.md).
 

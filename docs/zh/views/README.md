@@ -25,7 +25,7 @@ API handler                  →  .py        (GET, POST, …)
 | 格式 | 文件 | 服务器渲染 | 客户端框架 | 注释 |
 |---|---|---|---|---|
 | `.nexy` | [.nexy 文件](nexy/README.md) | Jinja2 + Python 逻辑，流式传输 | 可选的 | 本机 Nexy 页面格式 |
-| `.md` | [Markdown 和 MDX](nexy/markdown.md) | cmarkgfm 在请求时 | 可选的过孔布局 | 纯 Markdown、GFM、布局包装 |
+| `.md` | [Markdown 和 MDX](nexy/markdown.md) | Markdown 在请求时 | 可选的过孔布局 | 纯 Markdown、GFM、布局包装 |
 | `.mdx` | [Markdown 和 MDX](nexy/markdown.md) | 框架SSR | React 或 Preact | Markdown 与组件 |
 | `.tsx` | [React](react/differences.md)、[Solid](solid/differences.md) 或 [Preact](preact/differences.md) | 客户端模式：框架，在 Node 中渲染 | React、Solid 或 Preact | 组件路线 |
 | `.vue` | [Vue](vue/differences.md) | 客户端模式：框架，在 Node 中渲染 | Vue | 证监会航线 |
@@ -63,6 +63,6 @@ class NexyConfig(NexyConfigModel):
 
 ## 后续步骤
 
-- [.nexy 文件](nexy/README.md): Python + Jinja2 + 道具
+- [.nexy 文件](nexy/README.md)：Python + Jinja2 + 道具
 - [Markdown 和 MDX](nexy/markdown.md)：内容页面
 - [组件](nexy/components.md)：内置 HTML 帮助器

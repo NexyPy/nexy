@@ -69,3 +69,20 @@ def test_the_importer_is_installed_once():
     install_vfs_importer()
     install_vfs_importer()
     assert sum(isinstance(item, NexyVFSFinder) for item in sys.meta_path) == 1
+
+
+def test_a_module_spec_names_the_file_it_comes_from(finder):
+    _put("__nexy__/page.py")
+    spec = finder.find_spec("__nexy__.page", None)
+    assert (spec.origin, spec.has_location) == ("__nexy__/page.py", True)
+
+
+def test_a_module_spec_is_not_a_package(finder):
+    _put("__nexy__/page.py")
+    assert finder.find_spec("__nexy__.page", None).submodule_search_locations is None
+
+
+def test_a_package_spec_searches_its_own_folder(finder):
+    _put("__nexy__/src/__init__.py")
+    spec = finder.find_spec("__nexy__.src", None)
+    assert spec.submodule_search_locations == ["__nexy__/src"]

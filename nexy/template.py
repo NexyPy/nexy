@@ -10,7 +10,7 @@ from nexy.helpers.fs.vfs import VFS
 
 from .core.config import Config
 from .modules.runtime.markdown import inject_heading_ids as _inject_heading_ids
-from .modules.runtime.markdown import render_markdown as _cmark_render_markdown
+from .modules.runtime.markdown import render_markdown as _markdown_to_html
 
 _ENV_LOCK = threading.Lock()
 _SHARED_ENV: Environment | None = None
@@ -89,7 +89,7 @@ class Template:
             del self.env.cache[path]
 
     def _render_markdown(self, content: str) -> str:
-        return _cmark_render_markdown(content)
+        return _markdown_to_html(content)
 
     def render(self, path: str, context: dict[str, Any] | None = None) -> str:
         """Render a template file, converting Markdown routes to HTML.

@@ -7,9 +7,12 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from html import escape
 
-import cmarkgfm  # type: ignore[import-untyped]
-
-from nexy.core.config import Config
+from markdown_it import MarkdownIt
+from markdown_it.common.utils import escapeHtml
+from markdown_it.renderer import RendererHTML
+from markdown_it.token import Token
+from markdown_it.utils import EnvType, OptionsDict
+from mdit_py_plugins.tasklists import tasklists_plugin
 
 _HEADING_OPEN = re.compile(r"<h([1-6])(?:\s+[^>]*)?>", re.IGNORECASE)
 _HEADING_CLOSE = {n: re.compile(rf"</h{n}>", re.IGNORECASE) for n in range(1, 7)}
@@ -34,10 +37,44 @@ def _slugify(text: str) -> str:
     return re.sub(r"[-\s]+", "-", slug)
 
 
-def render_markdown(content: str) -> str:
-    """Render a markdown string to HTML using cmarkgfm (GFM)."""
-    options = getattr(Config, "MARKDOWN_OPTIONS", 0)
-    return str(cmarkgfm.github_flavored_markdown_to_html(content, options))
+def _fence(
+    _self: RendererHTML, tokens: list[Token], idx: int, _options: OptionsDict, _env: EnvType
+) -> str:
+    """A code block as GitHub writes it: `<pre lang="python"><code>`."""
+    token = tokens[idx]
+    language = token.info.split(maxsplit=1)[0] if token.info.strip() else ""
+    attribute = f' lang="{escapeHtml(language)}"' if language else ""
+    return f"<pre{attribute}><code>{escapeHtml(token.content)}</code></pre>\n"
+
+
+def _deleted(
+    _self: RendererHTML, tokens: list[Token], idx: int, _options: OptionsDict, _env: EnvType
+) -> str:
+    """Strikethrough as GitHub writes it: `<del>`, not `<s>`."""
+    return "<del>" if tokens[idx].nesting == 1 else "</del>"
+
+
+def _parser(unsafe: bool) -> MarkdownIt:
+    """GitHub-flavoured Markdown: tables, strikethrough, task lists and links with a scheme."""
+    # Raw HTML is read only from a trusted page; elsewhere it is shown as text.
+    md = MarkdownIt("commonmark", {"html": unsafe, "linkify": True})
+    md.enable(["table", "strikethrough", "linkify"]).use(tasklists_plugin)
+    if md.linkify is not None:
+        # Without a scheme, `app.py` would link to the domain `.py`.
+        md.linkify.set({"fuzzy_link": False, "fuzzy_email": False})
+    md.add_render_rule("fence", _fence)
+    md.add_render_rule("s_open", _deleted)
+    md.add_render_rule("s_close", _deleted)
+    return md
+
+
+_SAFE = _parser(unsafe=False)
+_UNSAFE = _parser(unsafe=True)
+
+
+def render_markdown(content: str, *, unsafe: bool = False) -> str:
+    """Render GitHub-flavoured Markdown to HTML; raw HTML is kept only when *unsafe*."""
+    return str((_UNSAFE if unsafe else _SAFE).render(content))
 
 
 def scan_headings(html: str) -> Iterator[Heading]:

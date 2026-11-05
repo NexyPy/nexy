@@ -4,11 +4,11 @@ Antes de elegir un formato de archivo, es importante distinguir entre cómo Nexy
 
 | Término | Definición |
 |---|---|
-| **Página** | Un recurso de la aplicación al que se puede dirigir mediante URL. Está definido por un archivo en `src/routes/`. |
-| **Ver** | El proceso de producir el cuerpo de respuesta para una página. Una vista transforma la lógica y los datos en HTML o JSON. |
+| **Página** | Un recurso de la aplicación direccionable por URL. Está definido por un archivo en `src/routes/`. |
+| **Ver** | El proceso de producir el cuerpo de respuesta de una página. Una vista transforma la lógica y los datos en HTML o JSON. |
 | **Componente** | Un bloque de construcción de interfaz de usuario reutilizable que se utiliza para componer una vista. Los componentes pueden ser ayudantes nativos de Nexy o específicos del marco (React, Vue, etc.). |
 | **Controlador de ruta** | Una función Python que maneja una solicitud HTTP para un método específico (por ejemplo, `GET`, `POST`). |
-| **Punto final** | La combinación única de una URL y un método HTTP que responde un controlador de ruta. |
+| **Punto final** | La combinación única de una URL y un método HTTP a la que responde un controlador de ruta. |
 
 **¿No estás seguro? Escriba un archivo `.nexy`.** No necesita marco de cliente, y puede agregar un componente React, Vue, Svelte, Solid o Preact dentro de él más tarde, como una isla.
 
@@ -22,14 +22,14 @@ API handler                  →  .py        (GET, POST, …)
 
 ## Formatos
 
-| Formato | Archivo | Representación del servidor | Marco del cliente | Notas |
+| Formato | Archivo | renderizado del servidor | Marco de cliente | Notas |
 |---|---|---|---|---|
-| `.nexy` | [archivos .nexy](nexy/README.md) | Jinja2 + Python lógica, transmitida | opcional | Formato de página Nexy nativo |
-| `.md` | [Markdown y MDX](nexy/markdown.md) | cmargfm en el momento de la solicitud | opcional mediante diseño | Puro Markdown, GFM, envuelto en diseño |
-| `.mdx` | [Markdown y MDX](nexy/markdown.md) | marco SSR | React o Preact | Markdown con componentes |
+| `.nexy` | [Archivos .nexy](nexy/README.md) | Jinja2 + Python lógica, transmitida | opcional | Formato de página nativo de Nexy |
+| `.md` | [Markdown y MDX](nexy/markdown.md) | Markdown en el momento de la solicitud | opcional a través del diseño | Puro Markdown, GFM, envuelto en diseño |
+| `.mdx` | [Markdown y MDX](nexy/markdown.md) | marco RSS | React o Preact | Markdown con componentes |
 | `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) o [Preact](preact/differences.md) | modo cliente: el marco, renderizado en Node | React, Solid o Preact | Rutas de componentes |
-| `.vue` | [Vue](vue/differences.md) | modo cliente: el marco, renderizado en Node | Vue | rutas SFC |
-| `.svelte` | [Svelte](svelte/differences.md) | modo cliente: el framework, renderizado en Node | Svelte | rutas SFC |
+| `.vue` | [Vue](vue/differences.md) | modo cliente: el marco, renderizado en Node | Vue | Rutas SFC |
+| `.svelte` | [Svelte](svelte/differences.md) | modo cliente: el marco, renderizado en Node | Svelte | Rutas SFC |
 
 Ayudantes `Image`, `Link`, `Audio`, `Video` y `Import` integrados: [Componentes](nexy/components.md).
 
@@ -63,6 +63,6 @@ Un `layout.*` en un directorio envuelve las páginas debajo de él. Ver [diseño
 
 ## Próximos pasos
 
-- [archivos .nexy](nexy/README.md): Python + Jinja2 + accesorios
+- [Archivos .nexy](nexy/README.md): Python + Jinja2 + accesorios
 - [Markdown y MDX](nexy/markdown.md): páginas de contenido
 - [Componentes](nexy/components.md): ayudantes HTML integrados

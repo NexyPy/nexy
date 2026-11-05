@@ -11,17 +11,24 @@ keywords = [
 ]
 
 dependencies = [
-    "cmarkgfm>=2024.1.4",
     "fastapi>=0.133.0",
     "httpx>=0.28.0",
     "jinja2>=3.1.6",
-    "pygments>=2.20.0",
+    # Markdown in pure Python: wheels for every Python and every OS, no C compiler needed.
+    "linkify-it-py>=2.0.3",
+    "markdown-it-py>=3.0.0",
+    "mdit-py-plugins>=0.4.2",
     "prompt-toolkit>=3.0.52",
     "scalar-fastapi>=1.8.2",
     # CVE-2026-48710 (BadHost): Host-header path confusion fixed in Starlette 1.0.1.
     "starlette>=1.0.1",
     "typer>=0.21.1",
-    "uvicorn[standard]>=0.40.0",
+    # uvicorn[standard] without pyyaml: Nexy passes its log config as a dict, never a YAML file.
+    "uvicorn>=0.40.0",
+    "httptools>=0.6.3",
+    # `nx migrate` reads DATABASE_URL from the .env that `nx new` writes.
+    "python-dotenv>=1.0.1",
+    "uvloop>=0.21.0; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'",
     "watchfiles>=1.0",
     "websockets>=13.0",
 ]
@@ -32,6 +39,8 @@ dev = [
     "deep-translator>=1.11.0",
     "mypy>=1.19.1",
     "pip-audit>=2.8.0",
+    # Colours the code of the docs sites (sites/shared/docs_source.py), not used by nexy/.
+    "pygments>=2.20.0",
     "pytest>=9.0.2",
     "pytest-cov>=6.0.0",
     "pytest-playwright>=0.7.0",

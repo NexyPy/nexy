@@ -4,8 +4,9 @@ Two formats for content pages: `.md` when you only need Markdown, `.mdx` when yo
 
 ## `.md`: pure Markdown
 
-A `.md` file is pure content. Nexy renders it with `cmarkgfm` (GFM), adds heading IDs, derives a
-table of contents, and wraps it in the nearest `layout.*`.
+A `.md` file is pure content. Nexy renders it as GitHub-flavoured Markdown (tables, task lists,
+strikethrough, links), adds heading IDs, derives a table of contents, and wraps it in the nearest
+`layout.*`.
 
 ```md filename="src/routes/about.md"
 # About
@@ -14,6 +15,7 @@ Nexy is a fullstack Python meta-framework.
 ```
 
 - Frontmatter in `.md` is not used as Python logic. If you need server logic, use `.nexy`.
+- Raw HTML in a `.md` page is shown as text, never run. If you need HTML, use `.nexy`.
 - Layout wrapping, error pages and dynamic segments work the same way as other pages.
 
 ## `.mdx`: Markdown with components

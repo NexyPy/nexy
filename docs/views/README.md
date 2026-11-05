@@ -25,7 +25,7 @@ API handler                  →  .py        (GET, POST, …)
 | Format | File | Server render | Client framework | Notes |
 |---|---|---|---|---|
 | `.nexy` | [.nexy files](nexy/README.md) | Jinja2 + Python logic, streamed | optional | Native Nexy page format |
-| `.md` | [Markdown and MDX](nexy/markdown.md) | cmarkgfm at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
+| `.md` | [Markdown and MDX](nexy/markdown.md) | Markdown at request time | optional via layout | Pure Markdown, GFM, layout-wrapped |
 | `.mdx` | [Markdown and MDX](nexy/markdown.md) | framework SSR | React or Preact | Markdown with components |
 | `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) or [Preact](preact/differences.md) | client mode: the framework, rendered in Node | React, Solid or Preact | Component routes |
 | `.vue` | [Vue](vue/differences.md) | client mode: the framework, rendered in Node | Vue | SFC routes |
