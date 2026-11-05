@@ -4,7 +4,7 @@
 
 | প্রয়োজনীয়তা | কেন |
 |---|---|
-| Python 3.12+ | `requires-python` `pyproject.toml` মধ্যে |
+| Python 3.12+ | `requires-python` `pyproject.toml` মধ্যে; কোন সি কম্পাইলারের প্রয়োজন নেই, উইন্ডোজ অন্তর্ভুক্ত |
 | [uv](https://docs.astral.sh/uv/) | প্রকল্প তৈরি করে, এর প্যাকেজ ইনস্টল করে এবং Nexy চালায় |
 | Node.js 18+ | শুধুমাত্র একটি ক্লায়েন্ট ফ্রেমওয়ার্কের জন্য (React, Vue, Svelte, Solid, Preact) |
 
@@ -78,5 +78,5 @@ nexy init
 
 - [দ্রুত শুরু](quick-start.md)
 - [টিউটোরিয়াল](tutorial.md)
-- [প্রকল্প কাঠামো](project-structure.md)
-- [সমস্যা নিবারণ](../guides/troubleshooting.md)
+- [প্রকল্পের কাঠামো ](project-structure.md)
+- [সমস্যা সমাধান](../guides/troubleshooting.md)

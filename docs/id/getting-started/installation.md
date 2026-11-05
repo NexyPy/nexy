@@ -4,8 +4,8 @@
 
 | Persyaratan | Mengapa |
 |---|---|
-| Python 3.12+ | `requires-python` di `pyproject.toml` |
-| [uv](https://docs.astral.sh/uv/) | membuat proyek, menginstal paket-paketnya dan menjalankan Nexy |
+| Python 3.12+ | `requires-python` di `pyproject.toml`; tidak diperlukan kompiler C, termasuk Windows |
+| [uv](https://docs.astral.sh/uv/) | membuat proyek, menginstal paketnya dan menjalankan Nexy |
 | Node.js 18+ | hanya untuk kerangka klien (React, Vue, Svelte, Solid, Preact) |
 
 Sebuah proyek tanpa kerangka klien tidak memerlukan Node.js sama sekali.
@@ -46,7 +46,7 @@ Setiap perintah lainnya (`nexy dev`, `nexy build`, `nexy migrate`...) harus dija
 
 Aktifkan sekali per terminal, dari folder proyek:
 
-| Kerang | Perintah |
+| cangkang | Perintah |
 |---|---|
 | PowerShell, cmd (Windows) | `.venv\Scripts\activate` |
 | macOS, Linux | `source .venv/bin/activate` |

@@ -9,7 +9,7 @@ SSR ist die Standardeinstellung: Der Server rendert die Seite für jede Anfrage 
 | Routendatei | Was erzeugt den HTML | Wann |
 |---|---|---|
 | `.nexy` | das kompilierte Modul Python bis Jinja2 | jede Anfrage |
-| `.md` | `cmarkgfm`, dann das nächstgelegene Layout | jede Anfrage |
+| `.md` | Markdown, dann das nächstgelegene Layout | jede Anfrage |
 | `.mdx`, `.tsx`, `.vue`, `.svelte` | das Framework, gerendert in Node | beim Build, wenn die Route kein Layout hat, andernfalls im Browser |
 | `.py` | nichts: Es gibt JSON oder ein `Response` zurück. | - |
 

@@ -6,11 +6,11 @@ SSR es el valor predeterminado: el servidor representa la página en HTML para c
 
 ## como funciona
 
-| Archivo de ruta | Qué produce el HTML | Cuándo |
+| Archivo de ruta | ¿Qué produce el HTML? | cuando |
 |---|---|---|
-| `.nexy` | el módulo compilado Python, a través de Jinja2 | cada solicitud |
-| `.md` | `cmarkgfm`, luego el diseño más cercano | cada solicitud |
-| `.mdx`, `.tsx`, `.vue`, `.svelte` | el marco, representado en el Nodo | en la compilación cuando la ruta no tiene diseño; de lo contrario, en el navegador |
+| `.nexy` | el módulo compilado Python, hasta Jinja2 | cada solicitud |
+| `.md` | Markdown, luego el diseño más cercano | cada solicitud |
+| `.mdx`, `.tsx`, `.vue`, `.svelte` | el marco, representado en Node | en la compilación cuando la ruta no tiene diseño; de lo contrario, en el navegador |
 | `.py` | nada: devuelve JSON o un `Response` | - |
 
 Una ruta componente es el único caso que necesita una segunda oración. En producción, una ruta de componente **sin** un diseño se entrega con el HTML producido en la compilación y el componente lo hidrata. Con un diseño, o en desarrollo, el contenedor está vacío y el componente se representa en el navegador; la página es entonces un caparazón que se llena solo.
@@ -35,10 +35,10 @@ Un error generado durante el renderizado se convierte en una página mediante `e
 
 Ninguno. Dos salidas y no tienen el mismo grano:
 
-| Para dejar SSR para | Haga esto | Grano |
+| Dejar SSR por | haz esto | grano |
 |---|---|---|
-| una página, con un caché | `revalidate = 60` en su portada → [ISR](isr.md) | página |
-| todo el proyecto, enrutado por el cliente | `useCSR = True` en `nexyconfig.py` → [CSR](csr.md) | proyecto |
+| una página, con un caché | `revalidate = 60` en su introducción → [ISR](isr.md) | página |
+| todo el proyecto, enrutado por el cliente | `useCSR = True` en `nexyconfig.py` → [RSE](csr.md) | proyecto |
 
 ## Ejemplo
 
@@ -62,6 +62,6 @@ slug: prop[str] = "untitled"
 ## Próximos pasos
 
 - [ISR](isr.md): almacena en caché esta página por URL
-- [Islas](islands.md): mantener SSR y hacer un widget interactivo
+- [Islas](islands.md): mantenga SSR y haga que un widget sea interactivo
 - [CSR](csr.md): navegación manual al navegador
 - [Rendimiento](../deployment/performance.md)

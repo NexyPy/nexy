@@ -4,7 +4,7 @@
 
 | ضرورت | کیوں |
 |---|---|
-| Python 3.12+ | `requires-python` میں `pyproject.toml` |
+| Python 3.12+ | `requires-python` میں `pyproject.toml`؛ سی کمپائلر کی ضرورت نہیں، ونڈوز بھی شامل ہے۔ |
 | [uv](https://docs.astral.sh/uv/) | پروجیکٹ بناتا ہے، اس کے پیکجز انسٹال کرتا ہے اور Nexy چلاتا ہے۔ |
 | Node.js 18+ | صرف کلائنٹ فریم ورک کے لیے (React، Vue، Svelte، Solid، Preact) |
 
@@ -77,6 +77,6 @@ nexy init
 ## اگلے اقدامات
 
 - [فوری آغاز](quick-start.md)
-- [ٹیوٹوریل](tutorial.md)
-- [پروجیکٹ ڈھانچہ](project-structure.md)
-- [مسئلہ حل کرنا](../guides/troubleshooting.md)
+- [سبق ](tutorial.md)
+- [منصوبے کا ڈھانچہ ](project-structure.md)
+- [خرابیوں کا سراغ لگانا ](../guides/troubleshooting.md)
