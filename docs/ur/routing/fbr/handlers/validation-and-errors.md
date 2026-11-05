@@ -14,10 +14,10 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
 
-| مسئلہ | کیفیت | جسم |
+| مسئلہ | حیثیت | جسم |
 |---|---|---|
 | غائب یا غلط استفسار، ہیڈر، کوکی یا باڈی فیلڈ | `422` | `{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}` |
-| غلط **پاتھ** سیگمنٹ (`/api/users/abc` کے لیے `id: int`) | `404` | نہ ملا صفحہ، یا `Accept: application/json` | کے لیے JSON
+| غلط **پاتھ** طبقہ (`/api/users/abc` `id: int` کے لیے) | `404` | نہ ملا صفحہ، یا `Accept: application/json` کے لیے JSON |
 
 ایک پاتھ سیگمنٹ جسے تبدیل نہیں کیا جا سکتا وہ `422` کے بجائے `404` ہے: ایک متحرک راستہ کسی بھی یو آر ایل کو پکڑتا ہے، اور ایسا یو آر ایل جو تبدیل نہیں کیا جاسکتا وہ موجود نہیں ہے۔
 
@@ -36,10 +36,10 @@ async def GET(id: int):
     return item
 ```
 
-| کلائنٹ | جواب بھیجتا ہے |
+| کلائنٹ بھیجتا ہے۔ | جواب |
 |---|---|
 | `Accept: application/json` | `{"detail": "No such item"}` حیثیت کے ساتھ `404` |
-| `Accept: text/html` | [غلطی کا صفحہ](../errors/README.md) |
+| `Accept: text/html` | [خرابی کا صفحہ](../errors/README.md) |
 | `Accept: */*` | غلطی کا صفحہ |
 
 API کلائنٹس میں `Accept: application/json` سیٹ کریں۔ براؤزرز کو صفحات ملتے رہتے ہیں۔
