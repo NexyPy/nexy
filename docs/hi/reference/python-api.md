@@ -11,26 +11,26 @@
 | `Audio`, `Video` | देशी `<audio>` और `<video>` खिलाड़ी, देखें [घटक](../views/nexy/components.md) |
 | `Image` | एक `<img>` जो डिफ़ॉल्ट रूप से सुस्ती से लोड होता है |
 | `Link` | एक क्लाइंट-साइड `<a>` वैकल्पिक प्रीफ़ेच के साथ |
-| `Import` | एक क्लाइंट घटक को `.nexy` पेज में आयात करें |
-| `Template` | प्रस्तुत करें Jinja2 और Markdown टेम्पलेट्स |
-| `Vite` | Vite क्लाइंट टैग की हर पेज को जरूरत होती है |
-| `Form` | एक प्लेसहोल्डर जिसका कोई व्यवहार नहीं है: एक [क्रिया](../guides/actions.md) | के साथ एक सादे `<form>` का उपयोग करें
+| `Import` | एक क्लाइंट घटक को `.nexy` पृष्ठ में आयात करें |
+| `Template` | Jinja2 और Markdown टेम्पलेट प्रस्तुत करें |
+| `Vite` | Vite क्लाइंट टैग की प्रत्येक पृष्ठ को आवश्यकता होती है |
+| `Form` | बिना किसी व्यवहार वाला प्लेसहोल्डर: एक [क्रिया](../guides/actions.md) के साथ एक सादे `<form>` का उपयोग करें |
 | `usePathname` | वर्तमान अनुरोध का पथ |
-| `useSearchParams` | एक निर्देश के रूप में क्वेरी स्ट्रिंग |
-| `useParams` | डायनेमिक पथ पैरामीटर एक निर्देश के रूप में, जैसे क्लाइंट पर `useParams()` |
-| `useQuery` | `useParams` का मूल नाम, मौजूदा पृष्ठों के लिए रखा गया है (यह क्वेरी स्ट्रिंग नहीं पढ़ता है) |
-| `useRequest` | वर्तमान अनुरोध, जो अन्य हुक में शामिल नहीं है |
+| `useSearchParams` | क्वेरी स्ट्रिंग एक निर्देश के रूप में |
+| `useParams` | डायनेमिक पथ पैरामीटर को एक निर्देश के रूप में, जैसे क्लाइंट पर `useParams()` |
+| `useQuery` | `useParams` का मूल नाम, मौजूदा पृष्ठों के लिए रखा गया है (यह क्वेरी स्ट्रिंग को नहीं पढ़ता है) |
+| `useRequest` | वर्तमान अनुरोध, अन्य हुक में क्या शामिल नहीं है |
 | `useHeaders` | अनुरोध हेडर को लोअर-केस नामों के साथ एक निर्देश के रूप में |
 | `useUrl` | पूरा यूआरएल: `.scheme`, `.hostname`, `.path`, `.query` |
 | `useIsActive` | चाहे कोई लिंक नेविगेशन बार के लिए वर्तमान पृष्ठ या उसके माता-पिता में से किसी एक पर इंगित करता हो |
 | `useRouter` | `path`, `base_url` और `url_for` वर्तमान अनुरोध के |
-| `useSession` | सत्र निर्देश, सत्र बंद होने पर खाली |
-| `useCookies` | एक आदेश के रूप में कुकीज़ का अनुरोध करें |
+| `useSession` | सत्र बंद होने पर सत्र निर्देश खाली हो जाता है |
+| `useCookies` | एक निर्देश के रूप में कुकीज़ का अनुरोध करें |
 | `useToc` | वर्तमान पृष्ठ की सामग्री तालिका, HTML के रूप में |
-| `useViews` | एक हैंडलर से `about.tsx` जैसी एक दृश्य फ़ाइल प्रस्तुत करें |
-| `setMetadata`, `useMetadata` | किसी पृष्ठ के शीर्षक और हेड टैग को नाम दें, और उन्हें लेआउट में लिखें |
+| `useViews` | एक हैंडलर से `about.tsx` जैसी दृश्य फ़ाइल प्रस्तुत करें |
+| `setMetadata`, `useMetadata` | किसी पृष्ठ के शीर्षक और हेड टैग को नाम दें और उन्हें लेआउट में लिखें |
 | `redirect`, `permanentRedirect` | विज़िटर को अन्यत्र भेजें (307, 308) और अनुरोध रोकें |
-| `notFound`, `forbidden`, `unauthorized` | उत्तर 404, 403 या 401 कहीं से भी |
+| `notFound`, `forbidden`, `unauthorized` | कहीं से भी उत्तर 404, 403 या 401 दें |
 
 हुक केवल अनुरोध के अंदर काम करते हैं: [हुक](../routing/fbr/navigation/hooks.md) देखें।
 
@@ -40,32 +40,32 @@
 
 | नाम | यह क्या है |
 |---|---|
-| `Request`, `Response` | आने वाला अनुरोध और जावक प्रतिक्रिया |
-| `HTTPException` | एक स्थिति और एक `detail` | के साथ हैंडलर को रोकें
-| `status` | नामित स्थिति कोड, जैसे `status.HTTP_404_NOT_FOUND` |
-| `Depends` | पहले एक फ़ंक्शन चलाएं और उसका परिणाम | में पास करें
-| `Header`, `Cookie`, `Query`, `Path`, `Body` | जहां एक पैरामीटर | से आता है
-| `Form`, `File`, `UploadFile` | फॉर्म फ़ील्ड और अपलोड (आवश्यकता है `python-multipart`) |
+| `Request`, `Response` | आने वाला अनुरोध और बाहर जाने वाला प्रत्युत्तर |
+| `HTTPException` | हैंडलर को एक स्थिति और एक `detail` के साथ रोकें |
+| `status` | नामित स्थिति कोड, जैसे कि `status.HTTP_404_NOT_FOUND` |
+| `Depends` | पहले एक फ़ंक्शन चलाएं और उसका परिणाम पास करें |
+| `Header`, `Cookie`, `Query`, `Path`, `Body` | पैरामीटर कहां से आता है |
+| `Form`, `File`, `UploadFile` | प्रपत्र फ़ील्ड और अपलोड (आवश्यकता है `python-multipart`) |
 | `BackgroundTasks` | उत्तर भेजे जाने के बाद चलने वाला कार्य |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | एक निश्चित सामग्री प्रकार के साथ उत्तर |
 | `RedirectResponse` | एक HTTP रीडायरेक्ट |
-| `redirect`, `permanentRedirect` | एक पृष्ठ, एक हैंडलर, एक नियंत्रक या एक गार्ड से एक रीडायरेक्ट (307, 308) बढ़ाएं |
-| `notFound`, `forbidden`, `unauthorized` | उन्हीं स्थानों से 404, 403 या 401 जुटाएं |
-| `FileResponse`, `StreamingResponse` | फ़ाइल या स्ट्रीम के साथ उत्तर दें |
+| `redirect`, `permanentRedirect` | किसी पेज, हैंडलर, कंट्रोलर या गार्ड से रीडायरेक्ट (307, 308) बढ़ाएं |
+| `notFound`, `forbidden`, `unauthorized` | उन्हीं स्थानों से 404, 403 या 401 उठाएँ |
+| `FileResponse`, `StreamingResponse` | किसी फ़ाइल या स्ट्रीम के साथ उत्तर दें |
 
 ## `nexy.decorators`
 
 | नाम | यह क्या है |
 |---|---|
-| `Action` | किसी फ़ंक्शन को `POST` एंडपॉइंट में बदलें, देखें [क्रियाएं](../guides/actions.md) |
-| `revalidate` | ब्राउज़र को बताएं कि किसी कार्रवाई के कारण कौन से पेज पुराने हो गए हैं |
-| `Module`, `Controller` | [मॉड्यूलर राउटर](../routing/modular/README.md) | में एक मॉड्यूल और एक नियंत्रक घोषित करें
+| `Action` | किसी फ़ंक्शन को `POST` एंडपॉइंट में बदलें, [कार्रवाइयां](../guides/actions.md) देखें |
+| `revalidate` | ब्राउज़र को बताएं कि किसी कार्रवाई के कारण कौन से पृष्ठ पुराने हो गए हैं |
+| `Module`, `Controller` | [मॉड्यूलर राउटर](../routing/modular/README.md) में एक मॉड्यूल और एक नियंत्रक घोषित करें |
 | `Injectable`, `Container`, `Scope` | [निर्भरता इंजेक्शन](../routing/modular/dependency-injection.md) और इसका जीवनकाल |
-| `UseGuard`, `Middleware` | एक हैंडलर की रक्षा करें या लपेटें, देखें [गार्ड](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`, `useRoute`, `RouteMeta` | एक मार्ग का नाम बताएं और OpenAPI | के लिए इसका वर्णन करें
-| `UseResponse`, `ResponseMeta` | एक मार्ग के उत्तर का वर्णन करें |
+| `UseGuard`, `Middleware` | एक हैंडलर की रक्षा करें या उसे लपेटें, देखें [रक्षक](../routing/modular/guards-and-metadata.md) |
+| `UseRoute`, `useRoute`, `RouteMeta` | एक मार्ग को नाम दें और उसका वर्णन करें OpenAPI |
+| `UseResponse`, `ResponseMeta` | किसी मार्ग के उत्तर का वर्णन करें |
 | `HTTP_METHODS` | एक हैंडलर फ़ाइल HTTP विधियों को परिभाषित कर सकती है |
-| `ACTIONS_STORE` | टूलींग और परीक्षणों के लिए कार्यों की रजिस्ट्री |
+| `ACTIONS_STORE` | टूलींग और परीक्षण के लिए क्रियाओं की रजिस्ट्री |
 
 ## `nexy.testing`
 
