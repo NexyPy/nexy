@@ -2,7 +2,7 @@
 
 Nexy possui dois roteadores nativos. Você pode escolher um por recurso; eles podem coexistir no mesmo aplicativo.
 
-**Não tem certeza? Use roteamento baseado em arquivo.** Abrange páginas e endpoints de API sem configuração. Adicione o roteador modular quando um back-end precisar de controladores, serviços injetados ou protetores.
+**Não tenho certeza? Use roteamento baseado em arquivo.** Abrange páginas e endpoints de API sem configuração. Adicione o roteador modular quando um back-end precisar de controladores, serviços injetados ou protetores.
 
 | Você está construindo | Use |
 |---|---|
@@ -34,13 +34,12 @@ Você pode combinar integração FBR, modular e personalizada. Nexy registra ess
 
 ## Roteamento baseado em arquivo
 
-Uma rota é um arquivo. A URL é o caminho em `src/routes/`, menos a extensão. Como Next.js, um
-o projeto está em um dos dois modos, escolhidos com `useCSR`:
+Uma rota é um arquivo. A URL é o caminho em `src/routes/`, menos a extensão. Assim como Next.js, um projeto está em um dos dois modos, escolhidos com `useCSR`:
 
 | | `useCSR = False` (padrão) | `useCSR = True` |
 |---|---|---|
 | Páginas | `.nexy`, `.md`, `.mdx` | arquivos de sua estrutura de cliente |
-| Layout raiz | `layout.nexy` | `layout.tsx` (Reagir) |
+| Layout raiz | `layout.nexy` | `layout.tsx` (React) |
 | Componentes do cliente | permitidos, como ilhas dentro das páginas | as próprias páginas |
 | Rotas de API | `.py` | `.py` |
 
@@ -53,17 +52,16 @@ Consulte [Modo servidor e modo cliente](fbr/modes.md).
 | [fbr/handlers](fbr/handlers/README.md) | `.py` manipuladores de rota, [validação e erros](fbr/handlers/validation-and-errors.md) |
 | [fbr/dependencies](fbr/dependencies/README.md) | `dependencies.py` e guardas, herdados pelo diretório |
 | [fbr/middleware](fbr/middleware/README.md) | `middleware.py`, herdado pelo diretório |
-| [fbr/erros](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, erros JSON |
+| [fbr/errors](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, erros JSON |
 | [fbr/navigation](fbr/navigation/linking-and-navigating.md) | vinculação, navegação do cliente, [hooks](fbr/navigation/hooks.md) |
-| [fbr/realtime](fbr/realtime/websocket.md) | Manipuladores WebSocket |
+| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket manipuladores |
 | [fbr/inheritance](fbr/inheritance.md) | como layouts, dependências e páginas de erro herdam |
 
 ## Roteamento modular
 
-Controladores, módulos e injeção de dependências, no estilo NestJS. Veja
-[Roteamento modular](modular/README.md) e [Nexy e NestJS](modular/vs-nestjs.md).
+Controladores, módulos e injeção de dependência, no estilo de NestJS. Consulte [Roteamento modular](modular/README.md) e [Nexy e NestJS](modular/vs-nestjs.md).
 
-## Integração personalizada
+## Integração Personalizada
 
 Você também pode integrar um roteador FastAPI existente em seu projeto Nexy. Consulte [Integração de roteamento personalizado](custom/README.md).
 
@@ -71,4 +69,4 @@ Você também pode integrar um roteador FastAPI existente em seu projeto Nexy. C
 
 - [Roteamento baseado em arquivo](fbr/README.md)
 - [Renderização](../rendering/README.md)
-- [Visualizações](../views/README.md): o que há dentro dos arquivos
+- [Views](../views/README.md): o que há dentro dos arquivos
