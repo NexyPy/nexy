@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from sites.shared import docs_source, seo
+from sites.shared import docs_source, i18n, seo
 from sites.vanilla import build
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
@@ -21,14 +21,35 @@ def out(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return target
 
 
+TRANSLATED = {language.code for language in i18n.LANGUAGES} - {i18n.DEFAULT}
+
+
+def _english(name: str) -> bool:
+    """Whether a path under docs/ of the site is an English page, not one of a language."""
+    parts = Path(name).parts
+    return not (len(parts) > 1 and parts[0] == "docs" and parts[1] in TRANSLATED)
+
+
 def _pages(out: Path) -> list[Path]:
-    """The pages of the menu: a redirect is served at an old address, it is not a page."""
+    """The English pages of the menu: a redirect is served at an old address, it is not a page."""
     redirects = {f"docs/{slug}" for slug in docs_source.REDIRECTS}
     return sorted(
         page
         for page in (out / "docs").rglob("index.html")
         if page.parent.relative_to(out).as_posix() not in redirects
+        and _english(page.relative_to(out).as_posix())
     )
+
+
+def _published(docs: Path) -> int:
+    """The pages a crawler is told about: every English page and every real translation."""
+    count = 0
+    for language in i18n.LANGUAGES:
+        tracks = docs_source.read_tracks(docs, language.code)
+        pages = [docs_source.home(docs, language.code)]
+        pages += [page for track in tracks for page in docs_source.pages_of(track)]
+        count += sum(1 for page in pages if not page.fallback)
+    return count
 
 
 def _served_html(out: Path) -> dict[str, str]:
@@ -360,7 +381,7 @@ class TestNewBadge:
         build.build(after, marked)
         first, second = _served_html(before), _served_html(after)
         assert set(first) == set(second)
-        changed = [name for name in first if first[name] != second[name]]
+        changed = [name for name in first if first[name] != second[name] and _english(name)]
         assert changed == ["docs/index.html", "docs/only/index.html"]
         assert self._page_item(marked=True) in second["docs/index.html"]
         assert self._page_item(marked=False) not in second["docs/index.html"]
@@ -449,7 +470,7 @@ class TestCrawlers:
 
     def test_the_sitemap_lists_every_page_once(self, out):
         listed = (out / "sitemap.xml").read_text(encoding="utf-8").count("<url>")
-        assert listed == len(_pages(out))
+        assert listed == _published(DOCS)
 
     def test_the_sitemap_names_the_published_address_of_a_page(self):
         xml = seo.sitemap([seo.canonical(seo.DEFAULT_SITE_URL, "guides/actions")])
@@ -485,3 +506,72 @@ class TestCrawlers:
     def test_the_root_sends_the_crawler_to_the_docs(self, out):
         root = (out / "index.html").read_text(encoding="utf-8")
         assert f'href="{seo.home(seo.DEFAULT_SITE_URL)}"' in root
+
+
+class TestLanguages:
+    """Each language is a tree of its own under /docs/<code>/, served in that language."""
+
+    @staticmethod
+    def _page(out: Path, address: str) -> str:
+        return (out / "docs" / address / "index.html").read_text(encoding="utf-8")
+
+    def test_a_translated_page_is_served_in_its_language(self, out):
+        assert '<html lang="fr" dir="ltr"' in self._page(out, "fr/guides/actions")
+
+    def test_an_arabic_page_reads_right_to_left(self, out):
+        assert '<html lang="ar" dir="rtl"' in self._page(out, "ar/guides/actions")
+
+    def test_the_words_of_the_site_follow_the_language(self, out):
+        assert '<span data-i18n="search">Rechercher</span>' in self._page(out, "fr/guides/actions")
+
+    def test_the_picker_links_to_the_same_page_in_english(self, out):
+        assert 'href="../../../guides/actions/" data-lang="en"' in self._page(
+            out, "fr/guides/actions"
+        )
+
+    def test_the_menu_stays_in_the_language(self, out):
+        assert 'href="../../getting-started/quick-start/"' in self._page(out, "fr/guides/actions")
+
+    def test_a_page_names_its_translations_for_crawlers(self, out):
+        assert 'hreflang="de" href=' in self._page(out, "fr/guides/actions")
+
+    def test_each_language_searches_its_own_pages(self, out):
+        index = json.loads((out / "search-index.fr.json").read_text(encoding="utf-8"))
+        assert all(entry["url"].startswith("docs/fr") for entry in index)
+
+    def test_a_page_says_which_index_it_searches(self, out):
+        assert 'data-search="../../../../search-index.fr.json"' in self._page(
+            out, "fr/guides/actions"
+        )
+
+    def test_the_edit_link_opens_the_english_source(self, out):
+        assert "edit/main/docs/guides/actions.md" in self._page(out, "fr/guides/actions")
+
+    def test_the_root_opens_the_language_of_the_reader(self, out):
+        assert "nexy-docs-lang" in (out / "index.html").read_text(encoding="utf-8")
+
+
+class TestUntranslatedPage:
+    """A page with no translation yet is served in English under the language, and says so."""
+
+    @pytest.fixture(scope="class")
+    def page(self, tmp_path_factory: pytest.TempPathFactory) -> str:
+        docs = tmp_path_factory.mktemp("docs")
+        (docs / "README.md").write_text(
+            "# Docs\n\n## Guides\n\n### Forms\n| Page | Summary |\n|---|---|\n"
+            "| [Only](only.md) | Read this page |\n",
+            encoding="utf-8",
+        )
+        (docs / "only.md").write_text("# Only\n\nThe text.\n", encoding="utf-8")
+        out = tmp_path_factory.mktemp("site")
+        build.build(out, docs)
+        return (out / "docs" / "fr" / "only" / "index.html").read_text(encoding="utf-8")
+
+    def test_it_says_it_is_still_in_english(self, page):
+        assert 'class="lang-note"' in page and "encore en anglais" in page
+
+    def test_its_canonical_is_the_english_page(self, page):
+        assert f'rel="canonical" href="{seo.DEFAULT_SITE_URL}/docs/only/"' in page
+
+    def test_it_claims_no_translation(self, page):
+        assert 'rel="alternate" hreflang="fr"' not in page
