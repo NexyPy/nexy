@@ -400,7 +400,10 @@ long-lived PyPI token.
 
 ## Getting help
 
+- **Documentation**: <https://nexypy.github.io/nexy/> — every page, with a search.
+- **Questions**: [Discussions Q&A](https://github.com/NexyPy/nexy/discussions/new?category=q-a) — an answer there is findable by the next person.
+- **Ideas**: [Discussions Ideas](https://github.com/NexyPy/nexy/discussions/new?category=ideas) — the shape gets settled before an issue is opened.
+- **What you built**: [Show and tell](https://github.com/NexyPy/nexy/discussions/new?category=show-and-tell).
 - **Bug reports**: open a [GitHub Issue](https://github.com/NexyPy/nexy/issues/new/choose)
-- **Questions**: [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
 - **Security issues**: see [SECURITY.md](SECURITY.md)
 - **Everything else**: see [SUPPORT.md](SUPPORT.md)

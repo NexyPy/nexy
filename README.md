@@ -16,6 +16,13 @@ page. Sub-second startup, HMR in under 100 ms.
   <a href="https://github.com/NexyPy/nexy/commits/main"><img src="https://img.shields.io/github/last-commit/NexyPy/nexy?color=%2334D058" alt="Last commit"></a>
 </p>
 
+<p align="center">
+  <a href="https://nexypy.github.io/nexy/"><strong>Documentation</strong></a> ·
+  <a href="#quickstart">Quickstart</a> ·
+  <a href="https://github.com/NexyPy/nexy/discussions">Discussions</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
 ## Why Nexy
 
 A route is a file. Put a `.nexy` file under `src/routes/` and you get a page: Python for the logic,
@@ -179,7 +186,7 @@ one.
 Dynamic segments become page properties: `[slug]` gives a `str`, `[...path]` gives one string with
 the slashes included. In a `.nexy` page only `int` and `float` annotations are converted.
 
-[Routing reference →](docs/routing/README.md)
+[Routing reference →](https://nexypy.github.io/nexy/docs/routing/)
 
 ## Views
 
@@ -188,7 +195,7 @@ A view renders the page body. Pick one format per file.
 | Format | File | Server render | Client framework |
 |---|---|---|---|
 | `.nexy` | page | Jinja2 + Python logic, streamed | optional |
-| `.md` | pure Markdown | cmarkgfm at request time, GFM, layout-wrapped | optional via layout |
+| `.md` | pure Markdown | markdown-it-py at request time, GFM, layout-wrapped | optional via layout |
 | `.mdx` | Markdown with components | framework SSR | React or Preact |
 | `.tsx`, `.jsx` | component | framework SSR / SSG | React or Preact |
 | `.vue` | SFC | framework SSR / SSG | Vue |
@@ -211,7 +218,7 @@ class NexyConfig(NexyConfigModel):
 With a framework enabled, its extensions become active routes, and `nx new` sets it up with Vite and
 Tailwind. `useVite` defaults to `True`.
 
-[Views →](docs/views/README.md) · [.nexy files →](docs/views/nexy/README.md) · [Markdown →](docs/views/nexy/markdown.md)
+[Views →](https://nexypy.github.io/nexy/docs/views/) · [.nexy files →](https://nexypy.github.io/nexy/docs/views/nexy/) · [Markdown →](https://nexypy.github.io/nexy/docs/views/nexy/markdown/)
 
 ## Rendering modes
 
@@ -225,7 +232,7 @@ Tailwind. `useVite` defaults to `True`.
 CSR requires a client framework and is incompatible with a modular `useRouter`. Only `.tsx`,
 `.jsx`, `.vue` and `.svelte` routes are navigable client-side; `.md` can use a CSR shell.
 
-[SSR →](docs/rendering/ssr.md) · [CSR →](docs/rendering/csr.md) · [ISR →](docs/rendering/isr.md)
+[SSR →](https://nexypy.github.io/nexy/docs/rendering/ssr/) · [CSR →](https://nexypy.github.io/nexy/docs/rendering/csr/) · [ISR →](https://nexypy.github.io/nexy/docs/rendering/isr/)
 
 ## More server features
 
@@ -272,7 +279,7 @@ classes are resolved into a controller's `__init__`, with `Scope.SINGLETON`, `Sc
 `Scope.TRANSIENT` lifetimes, and `@UseGuard()` / `@Middleware()` add FastAPI dependencies.
 File-based routing keeps working alongside a modular router.
 
-[Modular routing →](docs/routing/modular/README.md)
+[Modular routing →](https://nexypy.github.io/nexy/docs/routing/modular/)
 
 ### Actions
 
@@ -299,7 +306,7 @@ async def create_user(name: str) -> dict:
 The path is deterministic (a hash of the module and function name). It keeps the endpoint out of
 casual discovery but is not a secret; do not rely on it for authorization.
 
-[Actions →](docs/guides/actions.md)
+[Actions →](https://nexypy.github.io/nexy/docs/guides/actions/)
 
 ## Hooks and components
 
@@ -332,12 +339,12 @@ Built-in helpers return HTML strings, usable as a Jinja call or as a tag:
 | `Audio`, `Video` | media tags, with `<source>` children derived from `sources` |
 | `Import` | imports a component from Python, like the template syntax |
 
-[Hooks →](docs/routing/fbr/navigation/hooks.md) · [Components →](docs/views/nexy/components.md)
+[Hooks →](https://nexypy.github.io/nexy/docs/routing/fbr/navigation/hooks/) · [Components →](https://nexypy.github.io/nexy/docs/views/nexy/components/)
 
 ## Internationalization
 
 Nexy ships no runtime i18n: an application picks the library it prefers. The command line itself is
-translated. See the [i18n guide](docs/guides/i18n.md).
+translated. See the [i18n guide](https://nexypy.github.io/nexy/docs/guides/i18n/).
 
 ## Config
 
@@ -367,7 +374,7 @@ class NexyConfig(NexyConfigModel):
 | Middleware | `useMiddlewares`, `useCORS`, `useGZip`, `useTrustedHost`, `useSession`, `useAuth`, `useHTTPSRedirect` |
 | Markdown | `useTocDepth`, `useTocTitle`, `useTocAuto` |
 
-[Every field and its default →](docs/reference/config.md)
+[Every field and its default →](https://nexypy.github.io/nexy/docs/reference/config/)
 
 ## CLI
 
@@ -390,7 +397,7 @@ uv); run every other command inside the project's virtual environment.
 mypy after `build`, and reports instead of rewriting for `format`; `--template` / `-t` skips the
 `new` prompts.
 
-[All flags →](docs/reference/cli.md)
+[All flags →](https://nexypy.github.io/nexy/docs/reference/cli/)
 
 ## Build and deploy
 
@@ -427,7 +434,7 @@ Static hosting is a deployment choice, not a build mode: there is no `--static` 
 files in `public/`; they are served from `/` in development and production. Behind a reverse proxy,
 remember to forward WebSocket upgrade requests.
 
-[Deploy guide →](docs/deployment/README.md)
+[Deploy guide →](https://nexypy.github.io/nexy/docs/deployment/)
 
 ## How it works
 
@@ -473,26 +480,26 @@ are written from the code.
 
 | I want | Read |
 |---|---|
-| to create a project and run it | [Getting started](docs/getting-started/quick-start.md) |
-| the files and folders | [Project structure](docs/getting-started/project-structure.md) |
-| the URL of a file | [Routing](docs/routing/README.md) |
-| dynamic segments, layouts, error pages | [Pages](docs/routing/fbr/pages/README.md) |
-| the current path, query, cookies, session | [Hooks](docs/routing/fbr/navigation/hooks.md) |
-| to write a page | [.nexy files](docs/views/nexy/README.md) |
-| Markdown or MDX | [Markdown](docs/views/nexy/markdown.md) |
-| built-in HTML helpers | [Components](docs/views/nexy/components.md) |
-| SSR, CSR, ISR | [SSR](docs/rendering/ssr.md), [CSR](docs/rendering/csr.md), [ISR](docs/rendering/isr.md) |
-| a WebSocket | [WebSocket](docs/routing/fbr/realtime/websocket.md) |
-| controllers and modules | [Modular routing](docs/routing/modular/README.md) |
-| to add an endpoint | [API](docs/routing/fbr/handlers/README.md) |
-| a form posted from a page | [Actions](docs/guides/actions.md) |
-| translations | [i18n](docs/guides/i18n.md) |
-| a config field | [Config](docs/reference/config.md) |
-| the client build and Vite | [Frontend](docs/guides/frontend.md) |
-| every command and flag | [CLI](docs/reference/cli.md) |
-| to test a project | [Testing](docs/guides/testing.md) |
-| build output and Docker | [Deploy](docs/deployment/README.md) |
-| rules for an AI agent | [AI agents](docs/guides/ai-agents.md) |
+| to create a project and run it | [Getting started](https://nexypy.github.io/nexy/docs/getting-started/quick-start/) |
+| the files and folders | [Project structure](https://nexypy.github.io/nexy/docs/getting-started/project-structure/) |
+| the URL of a file | [Routing](https://nexypy.github.io/nexy/docs/routing/) |
+| dynamic segments, layouts, error pages | [Pages](https://nexypy.github.io/nexy/docs/routing/fbr/pages/) |
+| the current path, query, cookies, session | [Hooks](https://nexypy.github.io/nexy/docs/routing/fbr/navigation/hooks/) |
+| to write a page | [.nexy files](https://nexypy.github.io/nexy/docs/views/nexy/) |
+| Markdown or MDX | [Markdown](https://nexypy.github.io/nexy/docs/views/nexy/markdown/) |
+| built-in HTML helpers | [Components](https://nexypy.github.io/nexy/docs/views/nexy/components/) |
+| SSR, CSR, ISR | [SSR](https://nexypy.github.io/nexy/docs/rendering/ssr/), [CSR](https://nexypy.github.io/nexy/docs/rendering/csr/), [ISR](https://nexypy.github.io/nexy/docs/rendering/isr/) |
+| a WebSocket | [WebSocket](https://nexypy.github.io/nexy/docs/routing/fbr/realtime/websocket/) |
+| controllers and modules | [Modular routing](https://nexypy.github.io/nexy/docs/routing/modular/) |
+| to add an endpoint | [API](https://nexypy.github.io/nexy/docs/routing/fbr/handlers/) |
+| a form posted from a page | [Actions](https://nexypy.github.io/nexy/docs/guides/actions/) |
+| translations | [i18n](https://nexypy.github.io/nexy/docs/guides/i18n/) |
+| a config field | [Config](https://nexypy.github.io/nexy/docs/reference/config/) |
+| the client build and Vite | [Frontend](https://nexypy.github.io/nexy/docs/guides/frontend/) |
+| every command and flag | [CLI](https://nexypy.github.io/nexy/docs/reference/cli/) |
+| to test a project | [Testing](https://nexypy.github.io/nexy/docs/guides/testing/) |
+| build output and Docker | [Deploy](https://nexypy.github.io/nexy/docs/deployment/) |
+| rules for an AI agent | [AI agents](https://nexypy.github.io/nexy/docs/guides/ai-agents/) |
 
 [llms.txt](llms.txt) is the same map in one file, for tools that read plain text.
 
