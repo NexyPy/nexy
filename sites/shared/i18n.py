@@ -66,6 +66,18 @@ def find(code: str) -> Language:
     return next((language for language in LANGUAGES if language.code == code), LANGUAGES[0])
 
 
+def preferred(accept_language: str) -> str:
+    """The first language of an Accept-Language header the site speaks, else English.
+
+    The header lists them in the order the reader set: `fr-CA,fr;q=0.9,en;q=0.8` reads French.
+    """
+    for item in accept_language.split(","):
+        code = item.split(";", 1)[0].strip()[:2].lower()
+        if code in CODES:
+            return code
+    return DEFAULT
+
+
 def is_known(code: str) -> bool:
     return any(language.code == code for language in LANGUAGES)
 
