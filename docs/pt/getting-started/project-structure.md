@@ -30,7 +30,7 @@ Para escolher uma pasta, pergunte qual é o arquivo:
 - **Um controlador do roteador modular** - `src/apps/`.
 - **Gerado** - `__nexy__/`; nunca edite.
 
-> [!AVISO]
+> [!WARNING]
 > `src/routes/` é escaneado: um ajudante ali colocado se torna uma rota. Coloque um helper que não seja uma rota fora de `src/routes/`, ou inicie seu nome com `_`.
 
 ## `src/routes/`
@@ -48,7 +48,7 @@ Cada arquivo se torna uma rota, exceto os nomes reservados abaixo. O caminho do 
 
 Cada nome de página também existe por estrutura. Com `react()` configurado, `layout.jsx` e `layout.tsx` são reservados exatamente como `layout.nexy`. As listas são construídas em `nexy/core/config.py` (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
 
-> [!NOTA]
+> [!NOTE]
 > `notfound.nexy` e `errors.nexy` só são instalados quando existe uma cópia na raiz das rotas. Uma cópia em um subdiretório refina a página para esse prefixo.
 
 ## `src/apps/`
