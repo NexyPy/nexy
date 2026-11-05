@@ -25,7 +25,7 @@ class AdminController:
 
 ## Декоратор промежуточного программного обеспечения
 
-`@Middleware(*middlewares)` ведет себя таким же образом: это зависимости FastAPI, а не промежуточное ПО ASGI. Для реального промежуточного программного обеспечения ASGI используйте `useMiddlewares` в [Config](../../reference/config.md) или [Промежуточное программное обеспечение и безопасность](../../guides/middleware-and-security.md).
+`@Middleware(*middlewares)` ведет себя таким же образом: это зависимости FastAPI, а не промежуточное ПО ASGI. Для реального промежуточного программного обеспечения ASGI используйте `useMiddlewares` в [Конфигурация](../../reference/config.md) или [Промежуточное программное обеспечение и безопасность](../../guides/middleware-and-security.md).
 
 ## Метаданные маршрута
 
