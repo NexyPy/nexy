@@ -23,7 +23,7 @@ Nexy is a fullstack Python meta-framework.
 - 需要可选包 `@mdx-js/rollup`、`remark-gfm` 和 `@mdx-js/react`（以及用于构建的 `@mdx-js/esbuild`）。 Vite 告诉您缺少哪一个。
 - 当文件导入 `preact` 时，框架会从导入中自动检测：Preact，否则导入 React。
 
-> [！注意]
+> [!NOTE]
 > 如果您需要在 frontmatter 中使用 Python 逻辑，请使用 `.nexy`。
 
 ## 后续步骤
