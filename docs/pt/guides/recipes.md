@@ -1,15 +1,12 @@
 # Receitas
 
-Três coisas que quase todos os aplicativos precisam: arquivos completos que você pode copiar. Cada bloco de código abaixo com um
-`filename` é escrito em um novo projeto e exercido pelo conjunto de testes, então o que você lê é o que
-corre.
+Três coisas que quase todos os aplicativos precisam: arquivos completos que você pode copiar. Cada bloco de código abaixo com `filename` é escrito em um novo projeto e exercitado pelo conjunto de testes, então o que você lê é o que é executado.
 
 Eles usam manipuladores de API simples; as mesmas funções funcionam atrás de uma página em [mode](../routing/fbr/modes.md).
 
-## Fazer login com uma sessão
+## Faça login com uma sessão
 
-Um visitante posta um nome e uma senha, o servidor os lembra em um cookie assinado e tudo mais
-em `/api/account` está fechado para qualquer outra pessoa.
+Um visitante publica um nome e uma senha, o servidor os lembra em um cookie assinado e tudo em `/api/account` é fechado para qualquer outra pessoa.
 
 Ative as sessões. Eles precisam de `itsdangerous` (`uv add itsdangerous`):
 
@@ -76,13 +73,11 @@ async def GET(request: Request):
 ```
 
 > [!NOTA]
-> mantenha senhas reais fora da fonte. Armazene um hash (`argon2`, `bcrypt`) e leia
-> a chave secreta do ambiente. O cookie de sessão é assinado, não criptografado.
+> mantenha senhas reais fora da fonte. Armazene um hash (`argon2`, `bcrypt`) e leia a chave secreta do ambiente. O cookie de sessão é assinado, não criptografado.
 
 ## Uma API JSON com criação, leitura e exclusão
 
-Uma loja em módulo, uma rota de coleta e uma rota de item. Substitua o dicionário por
-[um banco de dados](databases.md) quando os dados devem sobreviver a uma reinicialização.
+Uma loja em módulo, uma rota de coleta e uma rota de item. Substitua o dicionário por [um banco de dados](databases.md) quando os dados precisarem sobreviver a uma reinicialização.
 
 ```python filename="src/notes.py"
 from pydantic import BaseModel
@@ -134,14 +129,11 @@ async def DELETE(id: int) -> dict[str, bool]:
     return {"deleted": True}
 ```
 
-Um corpo que não cabe em `NewNote` é recusado com `422` antes que seu código seja executado e o retorno
-a anotação se torna a resposta documentada. Veja
-[validação e erros](../routing/fbr/handlers/validation-and-errors.md).
+Um corpo que não se ajusta a `NewNote` é recusado com `422` antes que seu código seja executado, e a anotação de retorno se torna a resposta documentada. Veja [validação e erros](../routing/fbr/handlers/validation-and-errors.md).
 
 ## Receber um arquivo
 
-Os uploads precisam de `python-multipart` (`uv add python-multipart`). Verifique você mesmo o tamanho e nunca use
-o nome do arquivo do cliente como caminho:
+Os uploads precisam de `python-multipart` (`uv add python-multipart`). Verifique você mesmo o tamanho e nunca use o nome do arquivo do cliente como caminho:
 
 ```python filename="src/routes/api/upload.py"
 from pathlib import Path
@@ -159,11 +151,10 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
     return {"name": name, "size": len(data)}
 ```
 
-`Path(...).name` descarta qualquer pasta que o cliente colocou no nome, como `../../etc/passwd`. Salve o
-bytes sob um nome que você gera, não sob este.
+`Path(...).name` descarta qualquer pasta que o cliente colocou no nome, como `../../etc/passwd`. Salve os bytes com um nome que você gerar, não com este.
 
 ## Próximas etapas
 
-- [Ações](actions.md): funções de servidor digitadas para formulários e botões
+- [Actions](actions.md): funções de servidor digitadas para formulários e botões
 - [Middleware e segurança](middleware-and-security.md): CORS, hosts, sessões
-- [Testing](testing.md): teste seus próprios manipuladores da mesma maneira
+- [Teste](testing.md): teste seus próprios manipuladores da mesma maneira
