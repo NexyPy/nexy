@@ -50,6 +50,6 @@ A proteção por rota usa FastAPI dependências. Um `dependencies.py` em um dire
 
 ## Próximas etapas
 
-- [Config](../reference/config.md): todos os campos de middleware
+- [Configuração](../reference/config.md): todos os campos de middleware
 - [Implantar](../deployment/README.md)
 - [Desempenho](../deployment/performance.md)
