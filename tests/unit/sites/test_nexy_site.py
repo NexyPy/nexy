@@ -297,8 +297,8 @@ def test_the_language_payload_is_served(answers):
 
 
 def test_a_page_carries_the_language_picker(answers):
-    body = answers[ACTIONS][2]
-    assert 'class="lang-select"' in body and body.count("data-lang=") == 12
+    picker = answers[ACTIONS][2].split('class="lang-select"', 1)[1].split("</details>", 1)[0]
+    assert picker.count("data-lang=") == 12
 
 
 def test_a_page_says_where_the_language_payload_lives(answers):
@@ -315,3 +315,56 @@ def test_every_page_of_the_menu_is_served():
     wanted = {"/docs"} | {f"/docs/{p.slug}" for t in tracks for p in docs_source.pages_of(t)}
     found = request(SITE, *[(path, NOTHING) for path in sorted(wanted)])
     assert len(found) == len(wanted) and {status for status, _, _ in found} == {200}
+
+
+FRENCH = "/docs/fr/guides/actions"
+
+
+@pytest.fixture(scope="module")
+def french():
+    asks = [
+        (FRENCH, NOTHING),
+        ("/docs/fr", NOTHING),
+        ("/search-index?lang=fr", NOTHING),
+        ("/markdown?slug=fr/guides/actions", NOTHING),
+        ("/", {"accept-language": "de-DE,de;q=0.9,en;q=0.8"}),
+    ]
+    found = request(SITE, *asks)
+    return dict(zip([path for path, _ in asks[:-1]] + ["/ (de)"], found, strict=True))
+
+
+class TestLanguages:
+    """DOC-30: the Nexy site serves each language under /docs/<code>/, like the vanilla one."""
+
+    def test_a_translated_page_is_served(self, french):
+        assert french[FRENCH][0] == 200
+
+    def test_it_is_served_in_its_language(self, french):
+        assert '<html lang="fr" dir="ltr"' in french[FRENCH][2]
+
+    def test_the_words_of_the_site_follow_the_language(self, french):
+        assert f'data-i18n="edit_github">{i18n.text("fr", "edit_github")}<' in french[FRENCH][2]
+
+    def test_the_menu_stays_in_the_language(self, french):
+        assert 'href="/docs/fr/getting-started/installation"' in _menu(french[FRENCH][2])
+
+    def test_the_picker_links_to_the_same_page_in_english(self, french):
+        assert 'href="/docs/guides/actions" data-lang="en"' in french[FRENCH][2]
+
+    def test_a_page_names_its_translations_for_crawlers(self, french):
+        assert 'rel="alternate" hreflang="de"' in french[FRENCH][2]
+
+    def test_the_home_of_a_language_is_served_in_it(self, french):
+        assert '<html lang="fr"' in french["/docs/fr"][2]
+
+    def test_each_language_searches_its_own_pages(self, french):
+        entries = json.loads(french["/search-index?lang=fr"][2])
+        assert entries and all(entry["url"].startswith("docs/fr") for entry in entries)
+
+    def test_the_copy_button_copies_the_translation(self, french):
+        text = (DOCS / "fr" / "guides" / "actions.md").read_text(encoding="utf-8")
+        assert french["/markdown?slug=fr/guides/actions"][2] == text
+
+    def test_the_root_opens_the_language_the_browser_asks_for(self, french):
+        status, headers, _ = french["/ (de)"]
+        assert status in (301, 302, 307, 308) and headers["location"].endswith("/docs/de")
