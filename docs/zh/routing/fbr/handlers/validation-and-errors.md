@@ -17,10 +17,9 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 | 问题 | 状态 | 正文 |
 |---|---|---|
 | 查询、标头、cookie 或正文字段缺失或无效 | `422` | `{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}` |
-| 无效的 **路径** 段（`id: int` 的 `/api/users/abc`） | `404` | 未找到的页面，或 `Accept: application/json` | 的 JSON
+| 无效的 **path** 段（`id: int` 的 `/api/users/abc`）| `404` | 未找到的页面，或 `Accept: application/json` | 的 JSON
 
-无法转换的路径段是 `404` 而不是 `422`：动态路由捕获任何
-URL，且无法转换的URL不存在。
+无法转换的路径段是 `404` 而不是 `422`：动态路由捕获任何URL，并且不存在无法转换的URL。
 
 `422` 主体是 FastAPI 的标准形状，因此现有客户端和生成的 SDK 可以继续工作。
 
@@ -47,7 +46,7 @@ async def GET(id: int):
 
 ## 未处理的异常
 
-例外情况是，您的处理程序无法捕获具有相同 HTML 或 JSON 选择的答案 `500`。
+一个例外是您的处理程序无法捕获具有相同 HTML 或 JSON 选择的答案 `500`。
 
 ## 自定义响应
 
@@ -63,6 +62,6 @@ async def POST():
 
 ## 后续步骤
 
-- [API 路由](README.md)
+- [API 路线](README.md)
 - [错误页面](../errors/README.md)
 - [测试](../../../guides/testing.md)
