@@ -3,6 +3,7 @@
     python scripts/translate_docs.py                 # every language, pages whose source changed
     python scripts/translate_docs.py --lang fr,de    # two languages
     python scripts/translate_docs.py --force         # translate again, keep nothing
+    python scripts/translate_docs.py --relabel       # apply the glossary, without the service
 
 The English tree stays the source of truth. Each language gets its own copy under `docs/<code>/`,
 with the same file names, so a translated page has the same slug and its relative links keep
@@ -117,15 +118,23 @@ def _ask(
 
 
 def _sound(answer: str, chunk: str) -> bool:
-    """Every placeholder back once, and every link still with its words."""
-    return _keeps(answer, _indices(chunk)) and translator.emptied(answer, chunk) is None
+    """Every placeholder back once, and every link still with its words and its bracket."""
+    return (
+        _keeps(answer, _indices(chunk))
+        and translator.emptied(answer, chunk) is None
+        and translator.unopened(answer, chunk) is None
+        and translator.strayed(answer, chunk) is None
+    )
 
 
 def _lost(answer: str, chunk: str) -> int:
-    """The first placeholder the answer dropped or repeated, or the one of a link it emptied."""
+    """The first placeholder the answer dropped or repeated, or the one of a link it broke."""
     found = translator.placeholders(answer)
     lost = [index for index in _indices(chunk) if found.count(index) != 1]
-    return lost[0] if lost else translator.emptied(answer, chunk) or 0
+    if lost:
+        return lost[0]
+    broken = translator.emptied(answer, chunk) or translator.unopened(answer, chunk)
+    return broken or translator.strayed(answer, chunk) or 0
 
 
 # A kept part that sticks to its word with no space around it: `[[7]]Routing` comes back as
@@ -167,13 +176,13 @@ def translate_chunk(
 
 def translate_markdown(markdown: str, target: str, engine: Engine = google) -> str:
     """A whole page in another language, its skeleton intact."""
-    template, kept = translator.protect(translator.unwrap(markdown))
+    template, kept = translator.cells(*translator.protect(translator.unwrap(markdown)))
     shape = translator.structural(kept)
     translated = []
     for chunk in translator.chunks(template):
         translated.append(translate_chunk(chunk, target, engine, opening=shape))
         _pause(engine)
-    text = translator.restore(translated, kept)
+    text = translator.rows(translator.restore(translated, kept))
     captions = translator.captions(markdown)
     if captions:
         mapping = {}
@@ -181,7 +190,7 @@ def translate_markdown(markdown: str, target: str, engine: Engine = google) -> s
             mapping[caption] = translate_chunk(caption, target, engine)
             _pause(engine)
         text = translator.with_captions(text, mapping)
-    return translator.tidy(text)
+    return translator.relabel(translator.tidy(text), target)
 
 
 def _digest(path: Path) -> str:
@@ -260,11 +269,26 @@ def _copy_assets(docs: Path, root: Path) -> None:
         shutil.copytree(docs / "assets", root / "assets", dirs_exist_ok=True)
 
 
+def relabel_tree(docs: Path, code: str) -> list[Path]:
+    """Give the links of a translated tree the words of the glossary, without the service."""
+    changed: list[Path] = []
+    for page in sorted((docs / code).rglob("*.md")):
+        text = page.read_text(encoding="utf-8")
+        relabelled = translator.relabel(text, code)
+        if relabelled != text:
+            _write(page, relabelled)
+            changed.append(page)
+    return changed
+
+
 def arguments(argv: list[str]) -> argparse.Namespace:
     every = [language.code for language in i18n.LANGUAGES if language.code != i18n.DEFAULT]
     parser = argparse.ArgumentParser(description="Translate docs/ into the languages of the site.")
     parser.add_argument("--lang", default="", help=f"comma list among {','.join(every)}")
     parser.add_argument("--force", action="store_true", help="translate again, keep nothing")
+    parser.add_argument(
+        "--relabel", action="store_true", help="apply the glossary to the pages already written"
+    )
     parser.add_argument("--limit", type=int, default=None, help="pages per language, for a check")
     parser.add_argument("--docs", type=Path, default=DOCS, help="the English tree")
     options = parser.parse_args(argv)
@@ -280,6 +304,10 @@ def main(argv: list[str] | None = None) -> int:
     options = arguments(sys.argv[1:] if argv is None else argv)
     docs: Path = options.docs
     pages = source_pages(docs)
+    if options.relabel:
+        for code in options.lang:
+            print(f"[{code}] {len(relabel_tree(docs, code))} page(s) relabelled", flush=True)
+        return 0
     failures = 0
     for code in options.lang:
         written, failed = refresh(docs, code, pages, force=options.force, limit=options.limit)
