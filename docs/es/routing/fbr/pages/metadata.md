@@ -2,7 +2,7 @@
 
 Una página nombra su título y sus etiquetas de encabezado, y el diseño raíz las escribe una vez.
 
-## Dilo en la página
+## Dilo en la pagina
 
 Para una página que nunca cambia, escribe un literal en la parte superior de la portada:
 
@@ -50,10 +50,9 @@ setMetadata(title_template="%s | My site")
 </html>
 ```
 
-Una página se ejecuta antes que sus diseños, por lo que el diseño encuentra lo que la página solicitó. una pagina que dice
-nada obtiene el `useTitle` de tu `nexyconfig.py`, y ninguna otra etiqueta.
+Una página se ejecuta antes que sus diseños, por lo que el diseño encuentra lo que la página solicitó. Una página que no dice nada obtiene el `useTitle` de su `nexyconfig.py` y ninguna otra etiqueta.
 
-## Los campos
+## los campos
 
 | Campo | Escrito como |
 |---|---|
@@ -66,14 +65,11 @@ nada obtiene el `useTitle` de tu `nexyconfig.py`, y ninguna otra etiqueta.
 | `twitter` | uno `<meta name="twitter:...">` por clave |
 | `extra` | una lista de dictados de atributos, uno `<meta>` cada uno: `[{"name": "theme-color", "content": "#fff"}]` |
 
-Una llamada posterior reemplaza un valor; `og`, `twitter` y `extra` se suman a lo que hay allí. Un campo que hace
-not exist plantea `TypeError`, por lo que un error tipográfico no hace nada silenciosamente.
+Una llamada posterior reemplaza un valor; `og`, `twitter` y `extra` se suman a lo que hay allí. Un campo que no existe genera `TypeError`, por lo que un error tipográfico no hace nada en silencio.
 
 ## Seguro por defecto
 
-Cada valor tiene un formato de escape HTML, por lo que un título creado a partir de una URL o de la base de datos no puede cerrar la etiqueta.
-e inyectar un guión. Un valor se escapa una vez, cuando el diseño llama a `html()`: no escape
-usted mismo.
+Cada valor tiene un formato de escape HTML, por lo que un título creado a partir de una URL o de la base de datos no puede cerrar la etiqueta e inyectar un script. Un valor se escapa una vez, cuando el diseño llama a `html()`: no escape usted mismo.
 
 ## Próximos pasos
 
