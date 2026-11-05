@@ -142,4 +142,4 @@ html = counter(start=0)
 
 - [.nexy файлы](README.md): где используются эти помощники
 - [React](../react/differences.md): импорт компонентов `.tsx`
-- [Frontend](../../guides/frontend.md): как связаны клиентские компоненты
+- [Фронтенд](../../guides/frontend.md): как связаны клиентские компоненты
