@@ -95,7 +95,7 @@ Yang lainnya adalah bahasa Inggris, begitu pula pesan apa pun yang belum dimilik
 `nx build` mengkompilasi rute, lalu menggabungkan klien ketika `useVite` aktif.
 
 > [!NOTE]
-> tidak ada bendera `--static`. Hosting statis adalah pilihan penerapan, bukan mode build - lihat [Deploy](../deployment/README.md).
+> tidak ada bendera `--static`. Hosting statis adalah pilihan penerapan, bukan mode build - lihat [Penerapan](../deployment/README.md).
 
 ## Mengerjakan Nexy itu sendiri
 
@@ -109,5 +109,5 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 ## Langkah selanjutnya
 
 - [Memulai](../getting-started/quick-start.md): proyek pertama
-- [Testing](../guides/testing.md): apa yang `nx test` dijalankan
-- [Deploy](../deployment/README.md): `build` dan `start` dalam produksi
+- [Pengujian](../guides/testing.md): apa yang `nx test` dijalankan
+- [Penerapan](../deployment/README.md): `build` dan `start` dalam produksi
