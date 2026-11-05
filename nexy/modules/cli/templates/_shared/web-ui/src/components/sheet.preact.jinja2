@@ -1,0 +1,63 @@
+{% if useCSR %}{% raw %}import { useEffect, useRef } from "preact/hooks";
+import type { ComponentChildren } from "preact";
+
+import Icon from "@/components/icon.tsx";
+
+const CLOSE = "M18 6L6 18M6 6l12 12";
+
+type SheetProps = {
+  open: boolean;
+  onClose: () => void;
+  /** Name of the dialog for a screen reader. */
+  label: string;
+  children: ComponentChildren;
+};
+
+// A panel that slides in from the left edge, over a scrim. While it is open the page
+// behind it holds still, and the keyboard belongs to the panel: Escape closes it.
+export default function Sheet({ open, onClose, label, children }: SheetProps) {
+  const panel = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    panel.current?.focus();
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  return (
+    <div class="fixed inset-0 z-40 sm:hidden">
+      <div class="sheet-scrim absolute inset-0 bg-ink/60" onClick={onClose} aria-hidden="true" />
+      <div
+        ref={panel}
+        tabIndex={-1}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") onClose();
+        }}
+        class="sheet absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col overflow-y-auto border-r border-paper/10 bg-ink p-5 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] outline-none"
+        role="dialog"
+        aria-modal="true"
+        aria-label={label}
+        data-side="left"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close menu"
+          class="mb-4 ml-auto grid size-8 place-items-center"
+        >
+          <Icon path={CLOSE} />
+        </button>
+        <nav class="flex flex-col" aria-label={label}>
+          {children}
+        </nav>
+      </div>
+    </div>
+  );
+}
+{% endraw %}{% endif %}

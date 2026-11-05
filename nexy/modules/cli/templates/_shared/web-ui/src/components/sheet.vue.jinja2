@@ -1,0 +1,64 @@
+{% if useCSR %}{% raw %}<script setup lang="ts">
+import { nextTick, onBeforeUnmount, ref, watch } from "vue";
+
+import Icon from "@/components/icon.vue";
+
+const props = defineProps<{ open: boolean; label: string }>();
+const emit = defineEmits<{ close: [] }>();
+
+const CLOSE = "M18 6L6 18M6 6l12 12";
+
+const panel = ref<HTMLElement | null>(null);
+
+function onKey(event: KeyboardEvent) {
+  if (event.key === "Escape") emit("close");
+}
+
+function release() {
+  document.body.style.overflow = "";
+}
+
+// While it is open the page behind it holds still, and the keyboard belongs to the panel.
+watch(
+  () => props.open,
+  (open) => {
+    if (open) {
+      nextTick(() => panel.value?.focus());
+      document.body.style.overflow = "hidden";
+    } else {
+      release();
+    }
+  },
+);
+
+onBeforeUnmount(release);
+</script>
+
+<template>
+  <div v-if="open" class="fixed inset-0 z-40 sm:hidden">
+    <div class="sheet-scrim absolute inset-0 bg-ink/60" aria-hidden="true" @click="emit('close')" />
+    <div
+      ref="panel"
+      tabindex="-1"
+      class="sheet absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col overflow-y-auto border-r border-paper/10 bg-ink p-5 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] outline-none"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="label"
+      data-side="left"
+      @keydown="onKey"
+    >
+      <button
+        type="button"
+        class="mb-4 ml-auto grid size-8 place-items-center"
+        aria-label="Close menu"
+        @click="emit('close')"
+      >
+        <Icon :path="CLOSE" />
+      </button>
+      <nav class="flex flex-col" :aria-label="label">
+        <slot />
+      </nav>
+    </div>
+  </div>
+</template>
+{% endraw %}{% endif %}

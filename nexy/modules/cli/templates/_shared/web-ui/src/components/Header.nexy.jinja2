@@ -37,38 +37,84 @@ pages = [("/", "Home"), ("/about", "About")]
         type="button"
         aria-label="Open menu"
         aria-expanded="false"
-        data-menu-button
+        aria-controls="mobile-menu"
+        data-sheet-button
         class="ml-1 grid size-8 place-items-center sm:hidden"
       >
-        <span data-menu-open><Icon path="{{ menu }}" /></span>
-        <span class="hidden" data-menu-close><Icon path="{{ close }}" /></span>
+        <span data-sheet-open><Icon path="{{ menu }}" /></span>
+        <span class="hidden" data-sheet-close-icon><Icon path="{{ close }}" /></span>
       </button>
     </div>
+  </nav>
+</header>
 
-    <div
-      class="absolute inset-x-0 top-full hidden flex-col border border-t-0 border-paper/10 bg-ink p-3 sm:hidden"
-      data-menu
+<div class="hidden" data-sheet>
+  <div class="sheet-scrim fixed inset-0 z-40 bg-ink/60" data-sheet-scrim aria-hidden="true"></div>
+  <div
+    id="mobile-menu"
+    class="sheet fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85%] flex-col border-r border-paper/10 bg-ink p-5 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] sm:hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu"
+    tabindex="-1"
+    data-side="left"
+  >
+    <button
+      type="button"
+      aria-label="Close menu"
+      data-sheet-dismiss
+      class="mb-4 ml-auto grid size-8 place-items-center"
     >
+      <Icon path="{{ close }}" />
+    </button>
+    <nav class="flex flex-col" aria-label="Menu">
       {% for href, label in pages %}
       <a href="{{ href }}" class="{{ link }}"{% if pathname == href %} aria-current="page"{% endif %}>{{ label }}</a>
       {% endfor %}
       <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="{{ link }}">Docs</a>
-    </div>
-  </nav>
-</header>
+    </nav>
+  </div>
+</div>
 <script>
   (function () {
-    var button = document.querySelector("[data-menu-button]");
-    var panel = document.querySelector("[data-menu]");
-    if (!button || !panel) return;
-    button.addEventListener("click", function () {
-      var open = button.getAttribute("aria-expanded") !== "true";
+    var button = document.querySelector("[data-sheet-button]");
+    var sheet = document.querySelector("[data-sheet]");
+    if (!button || !sheet) return;
+    var opener = null;
+
+    function isOpen() {
+      return button.getAttribute("aria-expanded") === "true";
+    }
+
+    function setOpen(open) {
       button.setAttribute("aria-expanded", String(open));
       button.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-      panel.classList.toggle("hidden", !open);
-      panel.classList.toggle("flex", open);
-      button.querySelector("[data-menu-open]").classList.toggle("hidden", open);
-      button.querySelector("[data-menu-close]").classList.toggle("hidden", !open);
+      sheet.classList.toggle("hidden", !open);
+      document.body.style.overflow = open ? "hidden" : "";
+      button.querySelector("[data-sheet-open]").classList.toggle("hidden", open);
+      button.querySelector("[data-sheet-close-icon]").classList.toggle("hidden", !open);
+      var panel = sheet.querySelector("[role='dialog']");
+      if (open) {
+        opener = document.activeElement;
+        panel.focus();
+      } else if (opener) {
+        opener.focus();
+        opener = null;
+      }
+    }
+
+    button.addEventListener("click", function () {
+      setOpen(!isOpen());
+    });
+
+    // The scrim and the close button both dismiss: one listener on the sheet reads the target.
+    sheet.addEventListener("click", function (event) {
+      if (event.target.closest("[data-sheet-dismiss],[data-sheet-scrim]")) setOpen(false);
+    });
+
+    // The panel holds the focus while it is open, so Escape arrives here without a global listener.
+    sheet.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") setOpen(false);
     });
   })();
 </script>
