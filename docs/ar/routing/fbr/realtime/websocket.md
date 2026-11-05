@@ -1,6 +1,6 @@
-# معالجات WebSocket
+# WebSocket المعالجين
 
-التعامل مع اتصالات WebSocket في ملف توجيه `.py` عن طريق تحديد `SOCKET`.
+تعامل مع اتصالات WebSocket في ملف مسار `.py` عن طريق تعريف `SOCKET`.
 
 ```python filename="src/routes/ws/chat.py"
 from fastapi import WebSocket
@@ -16,7 +16,7 @@ async def SOCKET(websocket: WebSocket):
 
 - عنوان URL هو مسار الملف، وهو نفس قاعدة [routing](../../README.md).
 - فقط `.py` تسجل ملفات المسار معالجات WebSocket عبر `SOCKET`.
-- تأكد من قيام الوكيل العكسي بإعادة توجيه طلبات ترقية WebSocket.
+- تأكد من أن الوكيل العكسي الخاص بك يقوم بإعادة توجيه WebSocket طلبات الترقية.
 
 ## الخطوات التالية
 
