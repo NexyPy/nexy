@@ -69,4 +69,4 @@ Você também pode integrar um roteador FastAPI existente em seu projeto Nexy. C
 
 - [Roteamento baseado em arquivo](fbr/README.md)
 - [Renderização](../rendering/README.md)
-- [Views](../views/README.md): o que há dentro dos arquivos
+- [Visualizações](../views/README.md): o que há dentro dos arquivos
