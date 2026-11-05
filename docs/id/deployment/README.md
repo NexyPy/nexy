@@ -78,6 +78,6 @@ Setiap halaman adalah HTML, tetapi Nexy mengasumsikan server untuk perutean dan 
 
 ## Langkah selanjutnya
 
-- [Config](../reference/config.md): HTTPS, host tepercaya, sesi
+- [Konfigurasi](../reference/config.md): HTTPS, host tepercaya, sesi
 - [Frontend](../guides/frontend.md): apa yang Vite buat
-- [Testing](../guides/testing.md): perintah untuk dijalankan di CI
+- [Pengujian](../guides/testing.md): perintah untuk dijalankan di CI
