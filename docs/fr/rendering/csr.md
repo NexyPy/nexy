@@ -2,9 +2,7 @@
 
 ## Définition
 
-La RSE confie la navigation au navigateur : après le premier document, le déplacement entre les pages ne demande plus
-le serveur pour HTML. Dans Nexy, c'est une décision de **projet**, pas une première page - `useCSR = True` transforme le
-l'ensemble de l'application est acheminé par le client.
+CSR confie la navigation au navigateur : après le premier document, le déplacement entre les pages ne demande plus de code HTML au serveur. Dans Nexy, il s'agit d'une décision de **projet**, pas d'une première page - `useCSR = True` transforme l'ensemble de l'application en client.
 
 ## Comment ça marche
 
@@ -28,22 +26,17 @@ Le projet change alors de forme :
 | `.nexy` sous `src/routes/` | le format de page | rejeté avant `nx dev`, `nx start` et `nx build` |
 | Navigation | une requête complète par lien | le routeur client |
 
-`.md` et `.mdx` restent valides : Nexy les restitue sur le serveur à l'intérieur du layout client, et le
-Le routeur client prend le relais à partir de là. Les gestionnaires `.py` se trouvent à côté des routes et sont servis par FastAPI.
+`.md` et `.mdx` restent valables : Nexy les restitue sur le serveur à l'intérieur de la configuration client, et le routeur client prend le relais à partir de là. Les gestionnaires de `.py` sont assis à côté des itinéraires et sont servis par FastAPI.
 
 ## Cycle de vie du rendu
 
 1. La requête atteint le routeur basé sur des fichiers, qui trouve l'itinéraire correspondant et ses tracés.
-2. La mise en page racine restitue le **document entier** dans Node - la première réponse porte déjà le
-   un vrai `<html>`, pas une coquille vide.
+2. La disposition racine restitue le **document entier** dans Node - la première réponse contient déjà le vrai `<html>`, pas une coquille vide.
 3. Nexy injecte les actifs du client et une description JSON de la page avant `</body>`.
 4. Le navigateur hydrate ce document. Les mises en page imbriquées conservent désormais leur état.
-5. Un lien vers une autre route est géré par le routeur client : pas de demande de document, la page est
-   rendu dans le navigateur.
+5. Un lien vers une autre route est géré par le routeur client : pas de demande de document, la page est rendue dans le navigateur.
 
-En développement, le document est rendu à la demande par le serveur de développement Vite. En production, c'est
-rendu une fois à la construction : une route statique récupère son document, une route dynamique en obtient un par déclaré
-paramètre statique, ou un shell - les mises en page autour d'une page vide - lorsqu'il n'en déclare aucun.
+En développement, le document est rendu à la demande par le serveur de développement Vite. En production, il est rendu une fois lors de la construction : une route statique obtient son document, une route dynamique en obtient un par paramètre statique déclaré, ou un shell - les mises en page autour d'une page vide - lorsqu'il n'en déclare aucun.
 
 ## Quand utiliser
 
@@ -53,7 +46,7 @@ paramètre statique, ou un shell - les mises en page autour d'une page vide - lo
 
 ## Configuration
 
-| Réglage | Valeur |
+| Réglage de la valeur | |
 |---|---|
 | `useFF` | requis : `useCSR` sans framework client est rejeté |
 | `useCSR` | `True` |
@@ -80,19 +73,13 @@ export default function Home() {
 }
 ```
 
-## Contraintes
+## Limites
 
-- **L'ensemble du projet.** Vous ne pouvez pas mélanger une page CSR dans un projet en mode serveur : choisissez le mode pour
-  l'application, puis utilisez [islands](islands.md) pour les parties interactives d'une page en mode serveur.
-- **Aucune route `.nexy`.** Tout ce que vous avez écrit dans `.nexy` doit devenir un composant de framework.
-- **Les données du serveur passent par les points de terminaison.** Une route client ne peut pas lire la base de données au moment du rendu ; il
-  appelle un gestionnaire `.py` ou une [Action](../guides/actions.md).
-- **Une route dynamique a besoin d'un paramètre statique déclaré, ou elle démarre à partir d'un shell.** Exporter
-  `getStaticParams()` de la page - les noms Next.js `getStaticPaths` et `generateStaticParams`
-  sont également acceptés - avoir un document par valeur. Sans cela, le shell porte les mises en page et
-  pas la page : la page apparaît une fois le navigateur exécuté.
-- **La RSE n'est pas une page blanche, ni une SPA non plus.** Le premier document est restitué par le serveur ; il
-  est la navigation qui se produit dans le navigateur.
+- **L'ensemble du projet.** Vous ne pouvez pas mélanger une page CSR dans un projet en mode serveur : choisissez le mode de l'application, puis utilisez [islands](islands.md) pour les parties interactives d'une page en mode serveur.
+- **Pas de routes `.nexy`.** Tout ce que vous avez écrit dans `.nexy` doit devenir un composant de framework.
+- **Les données du serveur passent par les points de terminaison.** Une route client ne peut pas lire la base de données au moment du rendu ; il appelle un gestionnaire `.py` ou une [Action](../guides/actions.md).
+- **Une route dynamique nécessite un paramètre statique déclaré, ou elle démarre à partir d'un shell.** Exportez `getStaticParams()` depuis la page - les noms Next.js `getStaticPaths` et `generateStaticParams` sont également acceptés - pour avoir un document par valeur. Sans cela, le shell porte les mises en page et non la page : la page apparaît une fois le navigateur exécuté.
+- **La CSR n'est pas une page blanche, ni une SPA non plus.** Le premier document est restitué par le serveur ; c'est la navigation qui se produit dans le navigateur.
 
 ## Prochaines étapes
 
