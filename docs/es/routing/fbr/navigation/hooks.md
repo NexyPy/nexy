@@ -59,7 +59,7 @@ label: prop[str]
 
 ## Próximos pasos
 
-- [Pages](../pages/README.md): segmentos y diseños dinámicos
+- [Páginas](../pages/README.md): segmentos y diseños dinámicos
 - [Recetas](../../../guides/recipes.md): un flujo de inicio de sesión probado basado en `useSession()`
-- [Config](../../../reference/config.md): habilita sesiones y configuraciones regionales
+- [Configuración](../../../reference/config.md): habilita sesiones y configuraciones regionales
 - [archivos .nexy](../../../views/nexy/README.md): donde normalmente se llaman los ganchos
