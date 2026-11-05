@@ -57,10 +57,10 @@ src/routes/
 
 | मोड | अस्वीकृत | संदेश |
 |---|---|---|
-| सर्वर | `.tsx`, `.jsx`, `.vue` या `.svelte` `src/routes/` | के अंतर्गत घटकों को `src/components/` पर ले जाएं, या `useCSR = True` | सेट करें
-| क्लाइंट | किसी भी `.nexy` फ़ाइल को `src/routes/` | के अंतर्गत फ्रेमवर्क घटकों के रूप में लिखें, या सेट करें `useCSR = False` |
-| दोनों | में एक से अधिक फ्रंटएंड फ्रेमवर्क `useFF` | `useFF must configure exactly one frontend framework` |
-| क्लाइंट | `useRouter` (मॉड्यूलर राउटर) | `useCSR requires file-based routing` |
+| सर्वर | `.tsx`, `.jsx`, `.vue` या `.svelte` `src/routes/` के अंतर्गत | घटकों को `src/components/` पर ले जाएं, या `useCSR = True` सेट करें |
+| ग्राहक | `src/routes/` के अंतर्गत कोई भी `.nexy` फ़ाइल | उन्हें फ्रेमवर्क घटकों के रूप में लिखें, या सेट करें `useCSR = False` |
+| दोनों | `useFF` में एक से अधिक फ्रंटएंड फ्रेमवर्क | `useFF must configure exactly one frontend framework` |
+| ग्राहक | `useRouter` (मॉड्यूलर राउटर) | `useCSR requires file-based routing` |
 | ग्राहक | नहीं `useFF` | `useCSR requires a client framework` |
 
 `_` या `.` से शुरू होने वाली फ़ाइलों और फ़ोल्डरों को इस जाँच द्वारा अनदेखा कर दिया जाता है।
