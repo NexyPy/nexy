@@ -109,17 +109,23 @@ def _ask(
             print(f"  retry {attempt} in {wait}s: {type(error).__name__}", flush=True)
             time.sleep(wait)
             continue
-        if _keeps(answer, _indices(chunk)):
+        if _sound(answer, chunk):
             return answer
         print(f"  retry {attempt}: placeholder lost", flush=True)
         _pause(engine)
     return answer
 
 
-def _lost(answer: str, indices: list[int]) -> int:
-    """The first placeholder the answer dropped or repeated."""
+def _sound(answer: str, chunk: str) -> bool:
+    """Every placeholder back once, and every link still with its words."""
+    return _keeps(answer, _indices(chunk)) and translator.emptied(answer, chunk) is None
+
+
+def _lost(answer: str, chunk: str) -> int:
+    """The first placeholder the answer dropped or repeated, or the one of a link it emptied."""
     found = translator.placeholders(answer)
-    return next(index for index in indices if found.count(index) != 1)
+    lost = [index for index in _indices(chunk) if found.count(index) != 1]
+    return lost[0] if lost else translator.emptied(answer, chunk) or 0
 
 
 # A kept part that sticks to its word with no space around it: `[[7]]Routing` comes back as
@@ -146,11 +152,10 @@ def translate_chunk(
     closing = _GLUED_END.match(chunk)
     if closing is not None:
         return translate_chunk(closing[1], target, engine, retries, opening) + closing[2]
-    indices = _indices(chunk)
     answer = _ask(chunk, target, engine, retries, opening)
-    if _keeps(answer, indices):
+    if _sound(answer, chunk):
         return answer
-    lost = _lost(answer, indices)
+    lost = _lost(answer, chunk)
     at = chunk.find(f"[[{lost}]]")
     parts = translator.split(chunk, at) if at >= 0 else None
     if parts is None:
