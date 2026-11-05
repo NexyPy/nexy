@@ -69,7 +69,7 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 
 ## Чего он не может сделать
 
-- Он не может сосуществовать с `layout.tsx`, `layout.vue` или `layout.svelte`: проект в режиме сервера не имеет клиентских маршрутов ([modes](../../routing/fbr/modes.md)).
+- Он не может сосуществовать с `layout.tsx`, `layout.vue` или `layout.svelte`: проект в режиме сервера не имеет клиентских маршрутов ([режимы](../../routing/fbr/modes.md)).
 - Он не запускается на клиенте: используйте остров для интерактивности.
 
 ## Следующие шаги
