@@ -12,6 +12,9 @@ from __future__ import annotations
 
 import re
 from collections.abc import Collection
+from itertools import pairwise
+
+from sites.shared import glossary
 
 _PLACEHOLDER = re.compile(r"\[\[\s*(\d+)\s*\]\]")
 
@@ -123,6 +126,7 @@ _SHAPE = re.compile(
     r"\A(?:[ \t]*(?:[#]{1,6}|[-*+]|\d+\.|>)|\*\*|__|\||[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*)\Z"
     r"|\A\|?[ \t]*:?-{2,}"
     r"|\A\[![A-Z]+\]\Z"
+    r"|\A[\x1d-\x1f]\Z"
 )
 
 
@@ -186,6 +190,41 @@ def emptied(answer: str, chunk: str) -> int | None:
     return next(int(n) for n in _EMPTY_LINK.findall(answer) if n not in before)
 
 
+# A placeholder, else a bracket of the text: `[[[3]]` is a bracket, then placeholder 3.
+_TOKEN = re.compile(r"\[\[\s*(\d+)\s*\]\]|\[")
+
+
+def _opened(text: str) -> set[int]:
+    """The placeholders that come first after a bracket of the text: `[Routing[[3]]` gives 3."""
+    found: set[int] = set()
+    pending = False
+    for token in _TOKEN.finditer(text):
+        if token[1] is None:
+            pending = True
+        elif pending:
+            found.add(int(token[1]))
+            pending = False
+    return found
+
+
+def unopened(answer: str, chunk: str) -> int | None:
+    """The first placeholder of a link the answer lost the bracket of, or None when none is lost."""
+    lost = _opened(chunk) - _opened(answer)
+    return min(lost) if lost else None
+
+
+def strayed(answer: str, chunk: str) -> int | None:
+    """The first placeholder the answer moved to another line: a code that left its cell."""
+    asked, answered = chunk.split("\n"), answer.split("\n")
+    if len(asked) != len(answered):
+        return None
+    for one, other in zip(asked, answered, strict=True):
+        moved = set(placeholders(one)) ^ set(placeholders(other))
+        if moved:
+            return min(moved)
+    return None
+
+
 def has_words(text: str) -> bool:
     """Whether a piece holds anything to translate once its placeholders are set aside."""
     return any(char.isalpha() for char in _PLACEHOLDER.sub("", text))
@@ -230,12 +269,21 @@ def heal(answer: str) -> str:
 _LEAD = re.compile(r"\[\[(\d+)\]\][ \t]*")
 
 
+# The bracket of a link that opens a line: a service drops it, as it drops a marker there. A
+# task box (`[ ]`, `[x]`) and an alert are not links.
+_LINK_OPEN = re.compile(r"\[(?![\[\s!]|[xX]\])")
+
+
 def _opening(line: str, shape: Collection[int] | None) -> str:
-    """The layout placeholders a line opens with; a name or a code that starts a sentence stays."""
+    """The layout placeholders a line opens with, and the bracket of a link right after them.
+
+    A name or a code that starts a sentence stays in the line.
+    """
     end = 0
     while (found := _LEAD.match(line, end)) and (shape is None or int(found[1]) in shape):
         end = found.end()
-    return line[:end]
+    bracket = _LINK_OPEN.match(line, end)
+    return line[: bracket.end() if bracket else end]
 
 
 def leads(chunk: str, shape: Collection[int] | None = None) -> tuple[str, list[str]]:
@@ -333,3 +381,76 @@ def respace(answer: str, chunk: str) -> str:
     before = {found[1] for found in _SPACED_BEFORE.finditer(chunk)}
     answer = re.sub(r"\[\[(\d+)\]\](?=\w)", lambda m: m[0] + " " if m[1] in after else m[0], answer)
     return re.sub(r"(?<=\w)\[\[(\d+)\]\]", lambda m: " " + m[0] if m[1] in before else m[0], answer)
+
+
+# The text of a link, not of an image; and a fence, inside which a link is code.
+_LINK_TEXT = re.compile(r"(?<!!)\[([^\[\]\n]+)\](?=\()")
+_FENCE_BLOCK = re.compile(r"^```.*?^```", re.MULTILINE | re.DOTALL)
+
+
+def _relabel_prose(prose: str, lang: str) -> str:
+    def swap(found: re.Match[str]) -> str:
+        word = glossary.term(found[1], lang)
+        return f"[{word}]" if word else found[0]
+
+    return _LINK_TEXT.sub(swap, prose)
+
+
+def relabel(markdown: str, lang: str) -> str:
+    """Give a link the service sent back in English the word of the glossary."""
+    fences = [found.span() for found in _FENCE_BLOCK.finditer(markdown)]
+    parts, start = [], 0
+    for begin, end in fences:
+        parts += [_relabel_prose(markdown[start:begin], lang), markdown[begin:end]]
+        start = end
+    return "".join(parts) + _relabel_prose(markdown[start:], lang)
+
+
+# A row of a table travels one cell per line, each line opened by a marker that never travels: a
+# pipe inside a sentence is a token the service moves, so `| a | b |` came back as `| a b |`.
+# (`\s` is no class to read them with: Python counts `\x1c`-`\x1f` as white space.)
+_ROW_START, _CELL, _ROW_END = "\x1e", "\x1f", "\x1d"
+_TEMPLATE_PART = re.compile(r"(?<!\\)\[\[(\d+)\]\]")
+
+
+def _pipes(line: str, kept: list[str]) -> list[re.Match[str]]:
+    """The pipes of a row of the template, or none when the line is not a whole row."""
+    pipes = [found for found in _TEMPLATE_PART.finditer(line) if kept[int(found[1])] == "|"]
+    whole = len(pipes) > 1 and pipes[0].start() == 0 and not line[pipes[-1].end() :].strip()
+    return pipes if whole else []
+
+
+def _explode(line: str, kept: list[str]) -> str:
+    """One row of the template as one line per cell; an empty cell carries an empty part."""
+    pipes = _pipes(line, kept)
+    if not pipes:
+        return line
+    lines = []
+    for number, (left, right) in enumerate(pairwise(pipes)):
+        kept[int(left[1])] = _ROW_START if number == 0 else _CELL
+        cell = line[left.end() : right.start()].strip()
+        if not cell:
+            kept.append("")
+            cell = f"[[{len(kept) - 1}]]"
+        lines.append(f"{left[0]} {cell}")
+    kept[int(pipes[-1][1])] = _ROW_END
+    lines[-1] = lines[-1].replace(" ", f" {pipes[-1][0]} ", 1)
+    return "\n".join(lines)
+
+
+def cells(template: str, kept: list[str]) -> tuple[str, list[str]]:
+    """The template with each row of a table cut into its cells, and the parts that mark them."""
+    marked = list(kept)
+    lines = [_explode(line, marked) for line in template.split("\n")]
+    return "\n".join(lines), marked
+
+
+_LAST_CELL = re.compile(r"[ \t]*\n[ \t\n]*\x1f[ \t]*\x1d[ \t]*(.*)$", re.MULTILINE)
+_NEXT_CELL = re.compile(r"[ \t]*\n[ \t\n]*\x1f[ \t]*")
+_FIRST_CELL = re.compile(r"\x1e[ \t]*")
+
+
+def rows(text: str) -> str:
+    """The cells of each row on one line again, between the pipes they had."""
+    text = _LAST_CELL.sub(lambda found: f" | {found[1]} |" if found[1] else " | |", text)
+    return _FIRST_CELL.sub("| ", _NEXT_CELL.sub(" | ", text))
