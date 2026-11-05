@@ -118,5 +118,5 @@ class NexyConfig(NexyConfigModel):
 ## Следующие шаги
 
 - [i18n](../guides/i18n.md): интернационализация
-- [Frontend](../guides/frontend.md): `useFF` и клиентская сборка
+- [Фронтенд](../guides/frontend.md): `useFF` и клиентская сборка
 - [Развертывание](../deployment/README.md): варианты производства
