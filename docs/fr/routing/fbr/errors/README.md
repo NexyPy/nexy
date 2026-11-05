@@ -1,11 +1,8 @@
 # Pages d'erreur
 
-Une requête qui échoue devrait quand même répondre comme le reste de votre site : une page dans vos propres mots pour un
-visiteur, même échec que JSON pour un client API. Nexy répond aux deux, et un fichier remplace chacun
-réponse.
+Une requête qui échoue devrait quand même répondre comme le reste de votre site : une page dans vos propres mots pour un visiteur, le même échec que JSON pour un client API. Nexy répond aux deux réponses et un fichier remplace chaque réponse.
 
-Cette page est la carte : quel fichier répond à quel statut, et comment créer votre premier. Les pages de
-un dossier récupère [leur propre page](folder-pages.md).
+Cette page est la carte : quel fichier répond à quel statut, et comment créer votre premier. Les pages d'un dossier obtiennent [leur propre page](folder-pages.md).
 
 ## Un échec, deux réponses
 
@@ -39,9 +36,7 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 # HTTP/1.1 404 Not Found
 ```
 
-Le fichier à la racine des routes répond à l'ensemble du projet ; une copie dans un dossier ne répond qu'à ce dossier
-et [garde le reste tel quel](folder-pages.md). Sans aucun fichier, Nexy sert son style intégré
-page.
+Le fichier à la racine des routes répond à l'ensemble du projet ; une copie dans un dossier ne répond qu'à ce dossier et [conserve le reste tel quel](folder-pages.md). Sans aucun fichier, Nexy sert sa page stylisée intégrée.
 
 ## Quel fichier répond
 
@@ -64,9 +59,7 @@ page.
 
 ## Laisser une page ou répondre à partir du code
 
-`redirect`, `permanentRedirect`, `notFound`, `forbidden` et `unauthorized` déclenchent une exception HTTP,
-donc le même appel fonctionne dans une page `.nexy`, un gestionnaire d'API, un contrôleur modulaire, un garde et un
-`dependencies.py`. Ils portent les mêmes noms sur le client (`@nexy/client`).
+`redirect`, `permanentRedirect`, `notFound`, `forbidden` et `unauthorized` déclenchent une exception HTTP, donc le même appel fonctionne dans une page `.nexy`, un gestionnaire d'API, un contrôleur modulaire, un garde et un `dependencies.py`. Ils portent les mêmes noms sur le client (`@nexy/client`).
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -86,15 +79,13 @@ if post.moved_to:
 
 | Appeler | Répondre |
 |---|---|
-| `redirect(url)` | `307` ; `redirect(url, status=303)` transforme un POST en GET après un formulaire |
+| `redirect(url)` | `307`; `redirect(url, status=303)` transforme un POST en GET après un formulaire |
 | `permanentRedirect(url)` | `308` ; les navigateurs et les moteurs de recherche s'en souviennent |
 | `notFound(detail=None)` | `404` : la page `notfound`, ou JSON pour un client API |
 | `forbidden(detail=None)` | `403` : le visiteur est connu mais ne peut pas le voir |
 | `unauthorized(detail=None, scheme=None)` | `401` ; `scheme="Bearer"` ajoute `WWW-Authenticate` |
 
-Une redirection répond avec l'en-tête `Location` et aucune page, également vers un client API. Construire le
-destination à partir de valeurs de confiance : un `redirect(request.query_params["next"])` envoie les visiteurs
-partout où le lien le dit. Une destination avec un saut de ligne est refusée.
+Une redirection répond avec l'en-tête `Location` et aucune page, également vers un client API. Construisez la destination à partir de valeurs auxquelles vous faites confiance : un `redirect(request.query_params["next"])` envoie les visiteurs là où le lien l'indique. Une destination avec un saut de ligne est refusée.
 
 Une garde protège un dossier entier :
 
@@ -115,10 +106,8 @@ dependencies = [require_login]
 
 La même exception répond différemment selon qui demande :
 
-- Un navigateur (`Accept: text/html`) obtient une page HTML. Le détail est échappé en HTML, donc un message est généré
-  à partir de l'entrée de l'utilisateur ne peut pas injecter de balisage.
-- Un client qui demande du JSON et non une page (`Accept: application/json`) obtient
-  `{"detail": "..."}` avec le même code d'état.
+- Un navigateur (`Accept: text/html`) obtient une page HTML. Les détails sont échappés en HTML, donc un message construit à partir de l'entrée de l'utilisateur ne peut pas injecter de balisage.
+- Un client qui demande du JSON et non une page (`Accept: application/json`) obtient `{"detail": "..."}` avec le même code d'état.
 
 ```python filename="src/routes/api/items/[id].py"
 from nexy.http import HTTPException
@@ -136,17 +125,15 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 ```
 
 > [!REMARQUE]
-> un client qui envoie `Accept: */*` (la valeur par défaut de `curl` et de nombreux HTTP
-> bibliothèques) reçoit la page HTML. Définissez `Accept: application/json` pour les erreurs JSON.
+> un client qui envoie `Accept: */*` (la valeur par défaut de `curl` et de nombreuses bibliothèques HTTP) reçoit la page HTML. Définissez `Accept: application/json` pour les erreurs JSON.
 
 ## Exceptions non gérées
 
-Une exception dont rien n'est géré est enregistrée une seule fois, avec l'exception, d'où elle vient et le
-code autour de lui, et répondu selon le mode.
+Une exception dont rien n'est géré est enregistrée une fois, avec l'exception, son origine et le code qui l'entoure, et répondue en fonction du mode.
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| Navigateur | une page avec l'erreur, les lignes de votre code qui l'ont déclenchée et le traçage complet | la page intégrée `500` (ou votre `errors.nexy`) avec une référence |
+| Navigateur | une page avec l'erreur, les lignes de votre code qui l'ont déclenchée et le traçage complet | la page `500` intégrée (ou votre `errors.nexy`) avec une référence |
 | Client JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
 | Journal du serveur | l'exception et les lignes de votre code | l'exception et tout le traçage, avec la même référence |
 
@@ -157,18 +144,15 @@ code autour de lui, et répondu selon le mode.
        2 |     return {"a": 1 / 0}
 ```
 
-La référence est de huit caractères, nouveaux à chaque échec. Un visiteur peut le citer, et vous trouvez le
-traceback en le recherchant dans le journal. Ni l'exception ni le code ne parviennent au visiteur dans
-fabrication. Un `errors.nexy` personnalisé remplace la page uniquement ; la ligne de journal reste.
+La référence est de huit caractères, nouveaux à chaque échec. Un visiteur peut le citer et vous trouvez le traçage en le recherchant dans le journal. Ni l'exception ni le code n'atteignent le visiteur en production. Un `errors.nexy` personnalisé remplace la page uniquement ; la ligne de journal reste.
 
 ## Erreurs de validation
 
-Un en-tête, un paramètre de requête ou un champ de corps manquant répond `422` avec le corps JSON de FastAPI, pour chaque
-cliente. Voir [Validation et erreurs](../handlers/validation-and-errors.md).
+Un en-tête, un paramètre de requête ou un champ de corps manquant répond à `422` avec le corps JSON de FastAPI, pour chaque client. Voir [Validation et erreurs](../handlers/validation-and-errors.md).
 
-## Étapes suivantes
+## Prochaines étapes
 
-- [Pages d'erreur par dossier](folder-pages.md) : votre propre 404, 403 ou 401 dans un dossier
+- [Pages d'erreur par dossier](folder-pages.md) : un 404, 403 ou 401 de votre choix dans un dossier
 - [Itinéraires dynamiques](../pages/dynamic-routes.md)
 - [Routes API](../handlers/README.md)
 - [Tests](../../../guides/testing.md)
