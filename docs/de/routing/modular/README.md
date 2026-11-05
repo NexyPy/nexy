@@ -23,7 +23,7 @@ class NexyConfig(NexyConfigModel):
 ```
 
 > [!NOTE]
-> Das dateibasierte Routing funktioniert weiterhin. Wenn `src/routes/` vorhanden ist, wird es gescannt, auch wenn `useRouter` festgelegt ist.
+> Das dateibasierte Routing funktioniert weiterhin. Wenn `src/routes/` vorhanden ist, wird es gescannt, auch wenn `useRouter` eingestellt ist.
 
 ## Schreiben Sie einen Controller
 
