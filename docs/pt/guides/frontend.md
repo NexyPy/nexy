@@ -17,9 +17,9 @@ class NexyConfig(NexyConfigModel):
 
 ## Arquivos de rota
 
-| Extensão | Renderizada |
+| Extensão | Renderizado |
 |---|---|
-| `.nexy`, `.md` | por Nexy no momento da solicitação |
+| `.nexy`, `.md` | por Nexy na hora da solicitação |
 | `.mdx`, `.tsx`, `.jsx`, `.vue`, `.svelte` | pela estrutura do cliente; pré-renderizado para HTML no momento da construção e então assumido pelo pacote do cliente |
 
 Uma rota de framework é uma página normal, não uma ilha somente cliente: o HTML existe antes do pacote ser executado, então a primeira pintura não espera por JavaScript.
@@ -44,7 +44,7 @@ O navegador só conversa com a porta `3000`. Não há um segundo URL para abrir 
 - o pacote de clientes, com ativos abaixo de `__nexy__/client/`;
 - as rotas compiladas Python.
 
-Vite lida com o pacote do cliente; SSR HTML é produzido por arquivo por esbuild.
+Vite constrói o pacote do cliente; o HTML do servidor de cada página do componente é escrito em tempo de construção.
 
 > [!NOTE]
 > uma rota cuja renderização do servidor falha é relatada como uma rota somente cliente em vez de falhar em toda a construção.
@@ -56,7 +56,7 @@ Vite lida com o pacote do cliente; SSR HTML é produzido por arquivo por esbuild
 | Modo | As páginas iniciais são escritas com |
 |---|---|
 | Tailwind, UnoCSS | classes utilitárias na marcação, com os tokens mapeados para nomes de classes |
-| Nomes de classe semântica CSS simples | e CSS em `src/globale.css` |
+| CSS simples | nomes de classes semânticas e CSS em `src/globale.css` |
 
 Siga o modo do seu projeto ao adicionar uma página: classes utilitárias em um projeto utilitário, CSS em um projeto CSS simples. Mantenha o CSS do componente que os utilitários não podem expressar no bloco `<style>` do componente. Em um projeto de servidor (`.nexy` páginas) UnoCSS lê os `.nexy` arquivos para classes; Tailwind os encontra por conta própria.
 
@@ -67,5 +67,5 @@ Coloque arquivos estáticos em `public/` - eles são servidos por `/` tanto no d
 ## Próximas etapas
 
 - [Visualizações](../views/README.md): escolha um formato de página
-- [Configuração](../reference/config.md): `useFF`, `useVite`, apelidos
+- [Configuração](../reference/config.md): `useFF`, `useVite`, aliases
 - [Implantação](../deployment/README.md): o que a compilação produz
