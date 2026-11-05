@@ -63,7 +63,7 @@ nexy dev
 
 要跳过激活，请让 uv 对一个命令执行此操作：`uv run nexy dev`。
 
-> [！注意]
+> [!NOTE]
 > `nexy` 和 `nx` 是相同的二进制文件。使用 `uv tool install nexy` 安装的副本存在于其自己的环境中，例如 `uvx`，因此使用它来创建项目并运行项目环境中的其他所有内容。
 
 ## 将 Nexy 添加到现有项目
