@@ -4,9 +4,9 @@ Ein mit `nx new` erstelltes Projekt enthält die Regeln, die ein Programmieragen
 
 ## Was `nx new` hinzufügt
 
-| Datei | Gelesen von | Enthält |
+| Datei | Gelesen von | Hält |
 |---|---|---|
-| `AGENTS.md` | Codex, OpenCode | der Stapel des Projekts, die Reihenfolge der Arbeit, die Regeln, die Liste der Fähigkeiten |
+| `AGENTS.md` | Codex, OpenCode | der Stapel des Projekts, die Arbeitsreihenfolge, die Regeln, die Liste der Fähigkeiten |
 | `CLAUDE.md` | Claude Code | eine Zeile, `@AGENTS.md`, also lesen beide den gleichen Text |
 | `.agents/skills/` | Codex, OpenCode | die Fähigkeiten |
 | `.claude/skills/` | Claude Code, OpenCode | die gleichen Fähigkeiten |
@@ -17,20 +17,20 @@ Um alles zu überspringen, erstellen Sie das Projekt mit `nx new --no-agents`.
 
 ## Die Fähigkeiten
 
-| Fertigkeit | Deckt | ab
+| Geschicklichkeit | Abdeckungen |
 |---|---|
 | `nexy-principles` | Arbeitsreihenfolge, Coderegeln, Schreibregeln |
-| `nexy-ux-audit` | Das Erfahrungs- und Informationsarchitektur-Audit, das vor jeder Ansicht durchgeführt werden muss |
+| `nexy-ux-audit` | Das Erlebnis- und Informationsarchitektur-Audit muss vor jeder Ansicht durchgeführt werden |
 | `nexy-project` | Modi, Ordner, Dateikonventionen, Konfiguration, Befehle |
 | `nexy-file` | `.nexy` Seiten, Requisiten, Haken, Inseln |
 | `nexy-markdown` | `.md` und `.mdx` Inhalt |
 | `nexy-react`, `nexy-preact`, `nexy-solid`, `nexy-vue`, `nexy-svelte` | Idiomatischer Code für das Client-Framework |
 | `nexy-styling` | Tailwind, UnoCSS oder einfaches CSS und die Design-Tokens |
 | `nexy-backend` | API-Handler, Aktionen, WebSocket, ISR, Middleware |
-| `nexy-modular` | Controller, Module, Injektion und Schutzvorrichtungen des modularen Routers |
+| `nexy-modular` | Controller, Module, Einspritzung und Schutzvorrichtungen des modularen Routers |
 | `nexy-security` | Abhängigkeiten, Eingaben, Sitzungen, Autorisierung, Geheimnisse |
 | `nexy-testing` | die Test-First-Schleife und die Tore |
-| `nexy-framework-dev` | Nexy selbst ändern, anstatt ein mit Nexy erstelltes Projekt |
+| `nexy-framework-dev` | Ändern von Nexy selbst und nicht eines mit Nexy erstellten Projekts |
 
 Die Regeln, die sie durchsetzen: Überprüfen Sie die Erfahrung, bevor Sie eine Ansicht erstellen, schreiben Sie zuerst den fehlgeschlagenen Test, eine Funktion führt eine Behandlung durch, eine Klasse trägt eine Absicht, ein Ordner enthält einen Satz verwandter Absichten, keine Emojis, echte SVG-Symbole, einfacher Text für Personen und keine handgeschriebenen DOM-Skripte in React, Vue, Svelte, Solid oder Preact.
 
@@ -67,25 +67,25 @@ Die Beispiele in den Fertigkeiten werden durch Nexys eigene Tests überprüft: D
 
 Ein Agent antwortet schneller, wenn er weiß, auf welcher Seite sich die Antwort befindet.
 
-| Sie benötigen | Lesen Sie |
+| Du brauchst | Lesen |
 |---|---|
-| das Produkt, auf einer Seite | [README](../README.md) |
-| ein Projekt ausführen | [erste Schritte](../getting-started/quick-start.md) |
-| die URL einer Datei | [routing](../routing/README.md) |
+| das Produkt auf einer Seite | [README](../README.md) |
+| ein Projekt ausführen | [Erste Schritte](../getting-started/quick-start.md) |
+| die URL einer Datei | [Weiterleitung](../routing/README.md) |
 | dynamische Segmente, Layouts, Fehlerseiten | [Seiten](../routing/fbr/pages/README.md) |
-| der aktuelle Pfad, Abfrage, Cookies, Sitzung | [Hooks](../routing/fbr/navigation/hooks.md) |
+| der aktuelle Pfad, die Abfrage, die Cookies, die Sitzung | [Haken](../routing/fbr/navigation/hooks.md) |
 | um eine Seite zu bearbeiten | [.nexy-Dateien](../views/nexy/README.md) oder [Ansichten](../views/README.md) |
 | Markdown oder MDX | [Abschlag](../views/nexy/markdown.md) |
-| integrierte HTML-Helfer | [components](../views/nexy/components.md) |
+| integrierte HTML-Helfer | [Komponenten](../views/nexy/components.md) |
 | Rendering-Modus | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
-| a WebSocket | [websocket](../routing/fbr/realtime/websocket.md) |
+| ein WebSocket | [Websocket](../routing/fbr/realtime/websocket.md) |
 | Controller und Module | [modular](../routing/modular/README.md) |
 | um einen Endpunkt hinzuzufügen | [API](../routing/fbr/handlers/README.md) |
-| ein Formular, das von einer Seite | [Aktionen](actions.md) | gepostet wurde
-| Warum eine Anfrage fehlgeschlagen ist und welche Seite darauf antwortet | [Ausnahmen](../reference/exceptions.md) |
+| ein von einer Seite gepostetes Formular | [Aktionen](actions.md) |
+| warum eine Anfrage fehlgeschlagen ist und welche Seite darauf antwortet | [Ausnahmen](../reference/exceptions.md) |
 | Übersetzungen | [i18n](i18n.md) |
-| ein Konfigurationsfeld | [config](../reference/config.md) |
-| um die App zu testen | [testing](testing.md) |
+| ein Konfigurationsfeld | [Konfiguration](../reference/config.md) |
+| um die App zu testen | [Testen](testing.md) |
 | der Client-Build | [Frontend](frontend.md) |
 
 ## Projektinvarianten
