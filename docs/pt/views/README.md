@@ -54,8 +54,8 @@ class NexyConfig(NexyConfigModel):
 
 Com uma estrutura habilitada, Vite lida com seus pacotes de clientes. No modo cliente suas extensões tornam-se rotas; no modo servidor, os mesmos arquivos são componentes que você importa como ilhas - um arquivo de estrutura em `src/routes/` é rejeitado lá. Consulte [modo servidor e modo cliente](../routing/fbr/modes.md).
 
-> [!NOTA]
-> no modo [CSR](../rendering/csr.md), apenas os arquivos de rota da estrutura são navegáveis no lado do cliente.
+> [!NOTE]
+> no modo [CSR](../rendering/csr.md), apenas os arquivos de rota da estrutura são navegáveis ​​no lado do cliente.
 
 ## Layouts
 
