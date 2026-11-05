@@ -1,6 +1,5 @@
 import importlib.abc
 import importlib.machinery
-import importlib.util
 import sys
 from collections.abc import Sequence
 
@@ -37,6 +36,19 @@ def _spellings(path: str) -> list[str]:
     return [head + variant for variant in variants if variant != tail]
 
 
+def _spec(fullname: str, path: str, is_package: bool) -> importlib.machinery.ModuleSpec:
+    """The spec of a compiled module, located at *path* in the VFS.
+
+    Built by hand: on Python 3.15 the stubs of `spec_from_loader` still ask for `load_module`,
+    which 3.15 removed from `SourceLoader`.
+    """
+    spec = importlib.machinery.ModuleSpec(fullname, NexyVFSLoader(path), origin=path)
+    spec.has_location = True
+    if is_package:
+        spec.submodule_search_locations = [path.rsplit("/", 1)[0]]
+    return spec
+
+
 class NexyVFSFinder(importlib.abc.MetaPathFinder):
     def __init__(self) -> None:
         self.vfs = VFS()
@@ -56,10 +68,7 @@ class NexyVFSFinder(importlib.abc.MetaPathFinder):
         for suffix, is_package in _CANDIDATES:
             found = self._find_vfs_path(base_path + suffix)
             if found:
-                loader = NexyVFSLoader(found)
-                return importlib.util.spec_from_loader(
-                    fullname, loader, is_package=is_package or None
-                )
+                return _spec(fullname, found, is_package)
         return None
 
 
