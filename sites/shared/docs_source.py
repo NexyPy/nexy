@@ -9,7 +9,7 @@ from __future__ import annotations
 import html as htmllib
 import re
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from posixpath import normpath
 
@@ -19,6 +19,8 @@ from pygments import highlight  # type: ignore[import-untyped]
 from pygments.formatters import HtmlFormatter  # type: ignore[import-untyped]
 from pygments.lexers import HtmlDjangoLexer, get_lexer_by_name  # type: ignore[import-untyped]
 from pygments.util import ClassNotFound  # type: ignore[import-untyped]
+
+from sites.shared import i18n
 
 REPOSITORY = "https://github.com/NexyPy/nexy/blob/main/"
 TEXT_LENGTH = 1800
@@ -119,8 +121,58 @@ Link = Callable[[str], str]
 ROUTERS = (
     ("fbr", "FBR", "File-based routing"),
     ("modular", "Modular", "Controllers and modules"),
-    ("custom", "Custom Router", "Create your own router"),
+    ("custom", "Custom Integration", "Include an existing FastAPI router"),
 )
+
+REDIRECTS = {
+    "architecture": "getting-started/how-nexy-works",
+    "reference/agents": "guides/ai-agents",
+    "views/frontend/islands": "rendering/islands",
+    "views/react": "views/react/differences",
+    "views/vue": "views/vue/differences",
+    "views/svelte": "views/svelte/differences",
+    "views/solid": "views/solid/differences",
+    "views/preact": "views/preact/differences",
+    "views/react/pages": "views/frontend/pages",
+    "views/react/layouts": "views/frontend/layouts",
+    "views/react/islands": "views/frontend/islands",
+    "views/react/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/vue/pages": "views/frontend/pages",
+    "views/vue/layouts": "views/frontend/layouts",
+    "views/vue/islands": "views/frontend/islands",
+    "views/vue/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/svelte/pages": "views/frontend/pages",
+    "views/svelte/layouts": "views/frontend/layouts",
+    "views/svelte/islands": "views/frontend/islands",
+    "views/svelte/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/solid/pages": "views/frontend/pages",
+    "views/solid/layouts": "views/frontend/layouts",
+    "views/solid/islands": "views/frontend/islands",
+    "views/solid/actions-and-navigation": "views/frontend/actions-and-navigation",
+    "views/preact/pages": "views/frontend/pages",
+    "views/preact/layouts": "views/frontend/layouts",
+    "views/preact/islands": "views/frontend/islands",
+    "views/preact/actions-and-navigation": "views/frontend/actions-and-navigation",
+}
+
+# The scopes a menu group can declare: the three routers, the advanced bucket, and `core` for the
+# groups every reader sees. A marker (`### Routing {fbr}`) is stripped from the title, here and in
+# the rendered page, so it is a navigation instruction and nothing else.
+SCOPES = ("core", "fbr", "modular", "custom", "advanced")
+_SCOPE = re.compile(r"\s*\{(" + "|".join(SCOPES) + r")\}\s*$")
+_ROUTER_KEYS = tuple(key for key, _name, _blurb in ROUTERS)
+
+# The one badge a menu row can carry: `{new}` at the end of the summary cell, the way a heading
+# carries a scope. It marks the page and is read by nobody else: the token is out of the summary,
+# out of the search and out of the rendered home page, whose table shows the very same rows.
+_NEW = re.compile(r"\s*\{new\}\s*$")
+_NEW_HTML = re.compile(r"\s*\{new\}")
+
+# A router variant: `<!-- router:fbr -->` around the words and the code that only the readers of
+# that router need. A block may name several routers (`router:fbr,custom`) when their example is
+# the same. The page keeps every variant; the stylesheet draws the one that was chosen, so the
+# choice costs no request and no script.
+_ROUTER_VARIANT = re.compile(r"<!-- router:([a-z, ]+) -->(.*?)<!-- /router -->", re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -135,20 +187,54 @@ class Page:
     summary: str = ""
     track: str = ""
     group: str = ""
+    scope: str = "core"
+    badge: str = ""
+    lang: str = i18n.DEFAULT
+    fallback: bool = False
+
+    @property
+    def address(self) -> str:
+        """Where the page lives under /docs/: its slug, behind its language unless English."""
+        return address_of(self.lang, self.slug)
+
+
+def address_of(lang: str, slug: str) -> str:
+    """`fr/guides/actions` for a French page, `guides/actions` for the English one."""
+    if lang == i18n.DEFAULT:
+        return slug
+    return f"{lang}/{slug}" if slug else lang
+
+
+def localized(docs: Path, lang: str, relative: str) -> Path:
+    """The file of a page in a language: its translation, or the English page when it has none."""
+    translated = docs / lang / relative
+    if lang != i18n.DEFAULT and translated.is_file():
+        return translated
+    return docs / relative
+
+
+def english_twin(page: Path, docs: Path) -> Path:
+    """The English page a translation stands for: its links and figures resolve from there."""
+    parts = page.relative_to(docs).parts
+    if len(parts) > 1 and parts[0] in i18n.CODES - {i18n.DEFAULT}:
+        return docs.joinpath(*parts[1:])
+    return page
 
 
 @dataclass(frozen=True)
 class Group:
     """A menu folder: the pages that answer one question, and a line saying why.
 
-    `router` is set when every page lives in the folder of one router: the menu then shows the
-    group only while that router is chosen.
+    `scope` is what the group declares, or what its pages imply: a router when every page lives in
+    that router's folder, `core` otherwise. `router` is set only for a router scope, so the pager
+    and the page filter keep working; `advanced` is a scope without a router.
     """
 
     title: str
     blurb: str
     pages: list[Page]
     router: str | None = None
+    scope: str = "core"
 
 
 @dataclass(frozen=True)
@@ -204,27 +290,60 @@ def _page(
     summary: str = "",
     track: str = "",
     group: str = "",
+    badge: str = "",
+    lang: str = i18n.DEFAULT,
 ) -> Page | None:
-    path = docs / relative
-    if not path.is_file():
+    if not (docs / relative).is_file():
         return None
+    path = localized(docs, lang, relative)
     slug = slug_of(relative)
-    return Page(slug, _title(path), label, path, router_of(slug), summary, track, group)
+    fallback = lang != i18n.DEFAULT and path == docs / relative
+    return Page(
+        slug,
+        _title(path),
+        label,
+        path,
+        router_of(slug),
+        summary,
+        track,
+        group,
+        "core",
+        badge,
+        lang,
+        fallback,
+    )
 
 
-def home(docs: Path) -> Page:
-    """The landing page of the docs: their README."""
-    path = docs / "README.md"
-    return Page("", _title(path), "Overview", path)
+def home(docs: Path, lang: str = i18n.DEFAULT) -> Page:
+    """The landing page of the docs in a language: their README."""
+    path = localized(docs, lang, "README.md")
+    return Page(
+        "",
+        _title(path),
+        "Overview",
+        path,
+        lang=lang,
+        fallback=path == docs / "README.md" and lang != i18n.DEFAULT,
+    )
 
 
 def _slugify(label: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
 
 
+def _cells(row: str) -> list[str]:
+    return [cell.strip() for cell in row.strip().strip("|").split("|")]
+
+
 def _summary(row: str) -> str:
-    cells = [cell.strip() for cell in row.strip().strip("|").split("|")]
-    return " ".join(cells[1].replace("`", "").split()) if len(cells) > 1 else ""
+    cells = _cells(row)
+    return " ".join(_NEW.sub("", cells[1].replace("`", "")).split()) if len(cells) > 1 else ""
+
+
+def _badge(row: str) -> str:
+    """The novelty of a row: the `{new}` token that ends its summary cell, or nothing."""
+    cells = _cells(row)
+    return "new" if len(cells) > 1 and _NEW.search(cells[1].replace("`", "")) else ""
 
 
 def _router_of_group(pages: list[Page]) -> str | None:
@@ -232,21 +351,29 @@ def _router_of_group(pages: list[Page]) -> str | None:
     return routers.pop() if len(routers) == 1 else None
 
 
-def read_tracks(docs: Path) -> list[Track]:
-    """The menu of docs/README.md: `##` a section, `###` a group, each table its pages."""
+def read_tracks(docs: Path, lang: str = i18n.DEFAULT) -> list[Track]:
+    """The menu of docs/README.md in a language: `##` a section, `###` a group, a table its pages.
+
+    A language reads `docs/<lang>/README.md` and its pages, and the English page where one has no
+    translation yet.
+    """
     tracks: list[Track] = []
     label = blurb = ""
     groups: list[Group] = []
-    group_title = group_blurb = ""
+    group_title = group_blurb = group_scope = ""
     pages: list[Page] = []
     reading: str | None = None
     fenced = False
 
     def close_group() -> None:
-        nonlocal group_title, group_blurb, pages
+        nonlocal group_title, group_blurb, group_scope, pages
         if group_title and pages:
-            groups.append(Group(group_title, group_blurb, pages, _router_of_group(pages)))
-        group_title, group_blurb, pages = "", "", []
+            scope = group_scope or _router_of_group(pages) or "core"
+            router = scope if scope in _ROUTER_KEYS else None
+            # Update pages with the final resolved scope
+            updated_pages = [replace(p, scope=scope) for p in pages]
+            groups.append(Group(group_title, group_blurb, updated_pages, router, scope))
+        group_title, group_blurb, group_scope, pages = "", "", "", []
 
     def close_track() -> None:
         nonlocal label, blurb, groups
@@ -255,7 +382,7 @@ def read_tracks(docs: Path) -> list[Track]:
             tracks.append(Track(_slugify(label), label, blurb, groups))
         label, blurb, groups = "", "", []
 
-    for line in (docs / "README.md").read_text(encoding="utf-8").splitlines():
+    for line in localized(docs, lang, "README.md").read_text(encoding="utf-8").splitlines():
         text = line.strip()
         if text.startswith("```"):
             fenced = not fenced
@@ -270,7 +397,10 @@ def read_tracks(docs: Path) -> list[Track]:
         if text.startswith("### "):
             close_group()
             if label:
-                group_title = text[4:].strip()
+                heading = text[4:].strip()
+                marker = _SCOPE.search(heading)
+                group_scope = marker[1] if marker else ""
+                group_title = _SCOPE.sub("", heading).strip()
                 reading = "group"
             continue
         if text.startswith("|"):
@@ -284,6 +414,8 @@ def read_tracks(docs: Path) -> list[Track]:
                     summary=_summary(text),
                     track=_slugify(label),
                     group=group_title,
+                    badge=_badge(text),
+                    lang=lang,
                 )
                 if page:
                     pages.append(page)
@@ -516,13 +648,15 @@ def _callouts(html: str) -> str:
         kind = found[1]
         body = found[2].lstrip()
         body = body[4:].lstrip() if body.startswith("</p>") else f"<p>{body}"
-        title = f'<p class="callout-title">{_ALERT_TITLES[kind]}</p>'
+        word = f"callout_{kind.lower()}"
+        title = f'<p class="callout-title" data-i18n="{word}">{_ALERT_TITLES[kind]}</p>'
         return f'<aside class="callout callout-{kind.lower()}">{title}{body}</aside>'
 
     return _ALERT.sub(convert, html)
 
 
-def _anchor(text: str) -> str:
+def anchor(text: str) -> str:
+    """The id GitHub gives a heading: its words, lowercased, joined by dashes."""
     plain = _TAGS.sub("", text).strip().lower()
     return re.sub(r"[^\w\- ]", "", plain).replace(" ", "-")
 
@@ -533,14 +667,17 @@ def _identify(html: str) -> Rendered:
     found: list[Heading] = []
 
     def mark(match: re.Match[str]) -> str:
-        level, inner = int(match[1]), match[2]
-        base = _anchor(inner)
+        level, inner = int(match[1]), _SCOPE.sub("", match[2])
+        base = anchor(inner)
         count = seen.get(base, 0)
         seen[base] = count + 1
         ident = base if count == 0 else f"{base}-{count}"
         found.append(Heading(level, ident, _TAGS.sub("", inner)))
-        anchor = f'<a class="anchor" href="#{ident}" aria-label="Link to this section"></a>'
-        return f'<h{level} id="{ident}">{inner}{anchor}</h{level}>'
+        marker = (
+            f'<a class="anchor" href="#{ident}" aria-label="Link to this section"'
+            ' data-i18n-aria="anchor"></a>'
+        )
+        return f'<h{level} id="{ident}">{inner}{marker}</h{level}>'
 
     return Rendered(_HEADING.sub(mark, html), found)
 
@@ -682,7 +819,7 @@ def plain(html: str) -> str:
     return _SPACE.sub(" ", _TAGS.sub(" ", _SVG.sub("", html))).strip()
 
 
-def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict[str, str]:
+def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict[str, str | None]:
     """What a search needs to know about a page: where it is and the start of its text."""
     return {
         "title": page.title,
@@ -690,15 +827,49 @@ def search_entry(page: Page, section: str, rendered: Rendered, url: str) -> dict
         "url": url,
         "headings": " ".join(h.text for h in rendered.headings),
         "text": plain(rendered.html)[:TEXT_LENGTH],
+        "router": page.router,
+        "scope": page.scope,
     }
+
+
+def _variant_routers(names: str) -> list[str]:
+    """The routers a marker names, in the order of the selector; empty when one is unknown."""
+    keys = [name.strip() for name in names.split(",")]
+    return keys if keys and all(key in _ROUTER_KEYS for key in keys) else []
+
+
+def _variants(html: str) -> str:
+    """Wrap router-specific blocks so CSS can show only the one chosen."""
+
+    def wrap(found: re.Match[str]) -> str:
+        routers = _variant_routers(found[1])
+        if not routers:
+            return found[0]
+        return f'<div class="router-variant" data-router="{" ".join(routers)}">{found[2]}</div>'
+
+    return _ROUTER_VARIANT.sub(wrap, html)
+
+
+def _compose(text: str, page: Path, docs: Path, link: Link) -> Rendered:
+    page = english_twin(page, docs)
+    text, names = _name_files(text)
+    html = cmarkgfm.github_flavored_markdown_to_html(
+        text, Options.CMARK_OPT_GITHUB_PRE_LANG | Options.CMARK_OPT_UNSAFE
+    )
+    # The navigation tokens are read by `read_tracks`, never shown: the home page is docs/README.md,
+    # so its own table would otherwise draw `{new}` in every cell that carries one.
+    shaped = _structures(_diagrams(_NEW_HTML.sub("", html), names))
+    coloured = _CODE.sub(_colour, _caption(shaped, names))
+    done = _identify(_callouts(_tables(_variants(coloured))))
+    # The figures are last: nothing else looks at the drawing the SVG carries.
+    return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)
 
 
 def render(page: Path, docs: Path, link: Link) -> Rendered:
     """One page as HTML: illustrations, callouts, captions, linked headings, links to site URLs."""
-    text, names = _name_files(page.read_text(encoding="utf-8"))
-    html = cmarkgfm.github_flavored_markdown_to_html(text, Options.CMARK_OPT_GITHUB_PRE_LANG)
-    shaped = _structures(_diagrams(html, names))
-    coloured = _CODE.sub(_colour, _caption(shaped, names))
-    done = _identify(_callouts(_tables(coloured)))
-    # The figures are last: nothing else looks at the drawing the SVG carries.
-    return Rendered(_figures(_rewrite(done.html, page, docs, link), page, docs), done.headings)
+    return _compose(page.read_text(encoding="utf-8"), page, docs, link)
+
+
+def render_fragment(text: str, page: Path, docs: Path, link: Link) -> Rendered:
+    """One part of a page, drawn like the whole: the home page keeps only its introduction."""
+    return _compose(text, page, docs, link)

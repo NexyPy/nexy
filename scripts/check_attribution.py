@@ -1,9 +1,10 @@
-"""Reject AI attribution in commit messages.
+"""Reject AI attribution in commits: in their messages and in who made them.
 
 GitHub counts every ``Co-authored-by`` trailer as a contributor. An AI trailer
 therefore adds a bot account to the contributor graph and misattributes work
 the human owns. The same applies to the "Generated with" boilerplate that some
-tools append.
+tools append, and to a commit whose author or committer is an agent account
+(copilot-swe-agent[bot], cursoragent, devin-ai-integration[bot], ...).
 
 Usage:
     python scripts/check_attribution.py --message-file .git/COMMIT_EDITMSG
@@ -41,7 +42,10 @@ AI_TOOLS: tuple[str, ...] = (
     "mistral",
     "ollama",
     "openai",
+    "opencode",
     "openhands",
+    "qoder",
+    "qodercli",
     "qodo",
     "qwen",
     "replit",
@@ -80,13 +84,39 @@ AI_DOMAINS: tuple[str, ...] = (
     "cursor.com",
     "cursor.sh",
     "devin.ai",
+    "freebuff.com",
     "openai.com",
+    "opencode.ai",
+    "qoder.com",
     "qodo.ai",
     "sourcegraph.com",
     "windsurf.com",
 )
 
+# GitHub accounts that coding agents commit as: `<id>+<login>@users.noreply.github.com`.
+# Copilot (copilot-swe-agent[bot], Copilot), Cursor (cursoragent), Devin, Google Jules, Codex.
+AI_ACCOUNTS: tuple[str, ...] = (
+    "amazon-q-developer",
+    "chatgpt-codex-connector",
+    "claude",
+    "coderabbitai",
+    "copilot",
+    "copilot-swe-agent",
+    "cursoragent",
+    "devin-ai-integration",
+    "gemini-code-assist",
+    "google-labs-jules",
+    "openhands-agent",
+    "sweep-ai",
+)
+
+# Author names an agent writes when it has no account of its own.
+AI_NAMES: frozenset[str] = frozenset(
+    {*AI_TOOLS, *AI_ACCOUNTS, "github copilot", "cursor agent", "claude code", "openai codex"}
+)
+
 _IDENTITY = re.compile(r"^(?P<name>.*?)\s*(?:<(?P<email>[^>]*)>)?\s*$")
+_NOREPLY = re.compile(r"^(?:\d+\+)?(?P<login>[^@]+?)(?:\[bot\])?@users\.noreply\.github\.com$")
 
 
 def names_ai(text: str) -> bool:
@@ -98,6 +128,38 @@ def names_ai(text: str) -> bool:
     return any(
         re.search(rf"(?<![a-z0-9]){re.escape(tool)}(?![a-z0-9])", lowered) for tool in AI_TOOLS
     )
+
+
+def _split(identity: str) -> tuple[str, str]:
+    """The name and the lower-case mail of a ``Name <email>`` identity."""
+    match = _IDENTITY.match(identity.strip())
+    name = (match.group("name") if match else identity).strip()
+    return name, ((match.group("email") if match else "") or "").strip().lower()
+
+
+def _vendor(email: str) -> bool:
+    domain = email.rpartition("@")[2]
+    return any(domain == vendor or domain.endswith("." + vendor) for vendor in AI_DOMAINS)
+
+
+def is_ai_author(identity: str) -> bool:
+    """Return True when a commit author or committer is a coding agent, not a person.
+
+    A bot of a tool that writes no code (dependabot) and GitHub's own merge identity pass:
+    only an agent account, a vendor mail, an agent name or aider's ``(aider)`` mark fail.
+    """
+    name, email = _split(identity)
+    account = _NOREPLY.match(email)
+    if account and account.group("login") in AI_ACCOUNTS:
+        return True
+    plain = name.lower().removesuffix("[bot]").strip()
+    return _vendor(email) or plain in AI_NAMES or "(aider)" in name.lower()
+
+
+def offending_identities(author: str, committer: str) -> list[str]:
+    """Return the author and committer lines of a commit made by a coding agent."""
+    roles = (("Author", author), ("Committer", committer))
+    return [f"{role}: {who}" for role, who in roles if is_ai_author(who)]
 
 
 def is_ai_identity(value: str) -> bool:
@@ -141,10 +203,9 @@ def offending_lines(message: str) -> list[str]:
     return found
 
 
-def messages_in_range(rev_range: str) -> list[tuple[str, str]]:
-    """Return ``(sha, message)`` for every commit in *rev_range*."""
+def _git(*args: str) -> str:
     result = subprocess.run(  # nosec B603/B607 - fixed argv, user-supplied revision
-        ["git", "log", f"--format=%H{_FIELD_SEPARATOR}%B{_RECORD_SEPARATOR}", rev_range],
+        ["git", *args],
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -152,41 +213,60 @@ def messages_in_range(rev_range: str) -> list[tuple[str, str]]:
         check=False,
     )
     if result.returncode != 0:
-        raise SystemExit(f"git log failed: {result.stderr.strip()}")
+        raise SystemExit(f"git {args[0]} failed: {result.stderr.strip()}")
+    return result.stdout
 
-    commits: list[tuple[str, str]] = []
-    for record in result.stdout.split(_RECORD_SEPARATOR):
-        if not record.strip():
-            continue
-        sha, _, body = record.partition(_FIELD_SEPARATOR)
-        commits.append((sha.strip(), body))
+
+def commits_in_range(rev_range: str) -> list[tuple[str, str, str, str]]:
+    """Return ``(sha, author, committer, message)`` for every commit in *rev_range*."""
+    fields = _FIELD_SEPARATOR.join(("%H", "%an <%ae>", "%cn <%ce>", "%B"))
+    output = _git("log", f"--format={fields}{_RECORD_SEPARATOR}", rev_range)
+    commits: list[tuple[str, str, str, str]] = []
+    for record in output.split(_RECORD_SEPARATOR):
+        if record.strip():
+            sha, author, committer, body = record.split(_FIELD_SEPARATOR, 3)
+            commits.append((sha.strip(), author, committer, body))
     return commits
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    source = parser.add_mutually_exclusive_group(required=True)
-    source.add_argument("--message-file", type=Path, help="commit message file to check")
-    source.add_argument("--range", dest="rev_range", help="git revision range to check")
-    args = parser.parse_args()
+def messages_in_range(rev_range: str) -> list[tuple[str, str]]:
+    """Return ``(sha, message)`` for every commit in *rev_range*."""
+    return [(sha, body) for sha, _, _, body in commits_in_range(rev_range)]
 
-    if args.message_file is not None:
-        message = args.message_file.read_text(encoding="utf-8", errors="replace")
-        violations = offending_lines(message)
-        if violations:
-            print("[attribution] commit message rejected:", file=sys.stderr)
-            for line in violations:
-                print(f"  {line}", file=sys.stderr)
-            print(
-                "[attribution] remove the AI trailer; the human owns the contribution.",
-                file=sys.stderr,
-            )
-            return 1
+
+_IDENTS = ("GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT")
+
+
+def _identity(key: str) -> str:
+    """One identity git will write, or the empty string when git knows none (a bare CI runner)."""
+    try:
+        return _git("var", key).rsplit(" ", 2)[0]
+    except SystemExit:
+        return ""
+
+
+def current_identities() -> tuple[str, str]:
+    """The author and committer the commit being written will carry."""
+    author, committer = (_identity(key) for key in _IDENTS)
+    return author, committer
+
+
+def _check_message_file(path: Path) -> int:
+    message = path.read_text(encoding="utf-8", errors="replace")
+    violations = offending_lines(message) + offending_identities(*current_identities())
+    if not violations:
         return 0
+    print("[attribution] commit rejected:", file=sys.stderr)
+    for line in violations:
+        print(f"  {line}", file=sys.stderr)
+    print("[attribution] a person owns the contribution, not an AI.", file=sys.stderr)
+    return 1
 
+
+def _check_range(rev_range: str) -> int:
     failures = 0
-    for sha, message in messages_in_range(args.rev_range):
-        violations = offending_lines(message)
+    for sha, author, committer, message in commits_in_range(rev_range):
+        violations = offending_identities(author, committer) + offending_lines(message)
         if violations:
             failures += 1
             subject = message.strip().splitlines()[0] if message.strip() else ""
@@ -199,8 +279,18 @@ def main() -> int:
             "See CONTRIBUTING.md, section Attribution.",
             file=sys.stderr,
         )
-        return 1
-    return 0
+    return 1 if failures else 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--message-file", type=Path, help="commit message file to check")
+    source.add_argument("--range", dest="rev_range", help="git revision range to check")
+    args = parser.parse_args()
+    if args.message_file is not None:
+        return _check_message_file(args.message_file)
+    return _check_range(args.rev_range)
 
 
 if __name__ == "__main__":

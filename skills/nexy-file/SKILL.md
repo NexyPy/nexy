@@ -80,8 +80,9 @@ makes it interactive. `directive` says when.
 ```
 
 Use the default for content above the fold, `client:visible` below it, `client:idle` for
-non-essential widgets, `client:media` for desktop-only, `client:only` for code that reads `window`
-while rendering. `directive` and `media` are consumed by Nexy and not passed as props.
+non-essential widgets, `client:media` for desktop-only. Do not use `client:only`: the runtime skips
+it, so the component never mounts. `directive` and `media` are consumed by Nexy and not passed as
+props.
 
 ## Styles
 

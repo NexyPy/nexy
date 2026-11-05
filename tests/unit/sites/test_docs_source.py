@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from sites.shared import docs_source as source
+from sites.shared import i18n
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
 
@@ -38,7 +39,7 @@ class TestTracks:
 
     def test_every_page_is_in_the_menu_once(self, tracks):
         listed = sorted(page.slug for track in tracks for page in source.pages_of(track))
-        every = sorted(source.slug_of(p.relative_to(DOCS).as_posix()) for p in DOCS.rglob("*.md"))
+        every = sorted(source.slug_of(relative) for relative in i18n.english_pages(DOCS))
         assert listed == [slug for slug in every if slug]
 
     def test_a_page_has_the_title_of_its_heading(self, tracks):
@@ -52,6 +53,113 @@ class TestTracks:
 
     def test_an_unknown_page_is_not_found(self, tracks):
         assert source.find(tracks, "nope/nothing") is None
+
+
+class TestGroupScope:
+    """A group declares the scope it belongs to: `### Routing {fbr}`."""
+
+    @staticmethod
+    def _tracks(tmp_path: Path, heading: str) -> list[source.Track]:
+        (tmp_path / "guides").mkdir()
+        (tmp_path / "guides" / "actions.md").write_text("# Actions", encoding="utf-8")
+        (tmp_path / "README.md").write_text(
+            "# Docs\n\n## Guides\n\n"
+            f"### {heading}\n"
+            "| Page | What you will do |\n|---|---|\n"
+            "| [Actions](guides/actions.md) | Post a form |\n",
+            encoding="utf-8",
+        )
+        return source.read_tracks(tmp_path)
+
+    def test_a_marker_scopes_the_group_it_names(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {modular}")[0].groups[0]
+        assert (group.scope, group.router) == ("modular", "modular")
+
+    def test_a_marker_is_not_part_of_the_title(self, tmp_path):
+        assert self._tracks(tmp_path, "Forms {modular}")[0].groups[0].title == "Forms"
+
+    def test_a_group_without_a_marker_is_deduced_from_its_pages(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms")[0].groups[0]
+        assert (group.scope, group.router) == ("core", None)
+
+    def test_a_marker_wins_over_the_folder_of_the_pages(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr}")[0].groups[0]
+        assert group.router == "fbr"
+
+    def test_an_advanced_group_belongs_to_no_router(self, tmp_path):
+        group = self._tracks(tmp_path, "Advanced {advanced}")[0].groups[0]
+        assert (group.scope, group.router) == ("advanced", None)
+
+    def test_an_unknown_marker_is_left_visible_in_the_title(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {nope}")[0].groups[0]
+        assert (group.title, group.scope) == ("Forms {nope}", "core")
+
+
+class TestPageBadge:
+    """DOC-27: a `{new}` token at the end of a row's summary marks the page and nothing else."""
+
+    @staticmethod
+    def _page(tmp_path: Path, summary: str) -> source.Page:
+        (tmp_path / "guides").mkdir(exist_ok=True)
+        (tmp_path / "guides" / "actions.md").write_text("# Actions", encoding="utf-8")
+        (tmp_path / "README.md").write_text(
+            "# Docs\n\n## Guides\n\n### Forms\n"
+            "| Page | What you will do |\n|---|---|\n"
+            f"| [Actions](guides/actions.md) | {summary} |\n",
+            encoding="utf-8",
+        )
+        return source.pages_of(source.read_tracks(tmp_path)[0])[0]
+
+    def test_a_token_marks_the_badge_of_the_page(self, tmp_path):
+        assert self._page(tmp_path, "Post a form {new}").badge == "new"
+
+    def test_the_token_leaves_the_summary_of_the_page(self, tmp_path):
+        assert self._page(tmp_path, "Post a form {new}").summary == "Post a form"
+
+    def test_an_unmarked_page_carries_no_badge(self, tmp_path):
+        assert self._page(tmp_path, "Post a form").badge == ""
+
+    def test_an_unknown_token_is_left_visible_in_the_summary(self, tmp_path):
+        page = self._page(tmp_path, "Post a form {neww}")
+        assert (page.badge, page.summary) == ("", "Post a form {neww}")
+
+    def test_a_token_in_the_middle_of_a_sentence_is_not_a_badge(self, tmp_path):
+        page = self._page(tmp_path, "Post {new} a form")
+        assert (page.badge, page.summary) == ("", "Post {new} a form")
+
+    def test_the_token_is_not_drawn_in_a_rendered_page(self, tmp_path):
+        self._page(tmp_path, "Post a form {new}")  # writes guides/actions.md, the table's target
+        path = tmp_path / "guides" / "page.md"
+        path.write_text(
+            "# T\n\n| Page | Summary |\n|---|---|\n| [a](actions.md) | Post a form {new} |\n",
+            encoding="utf-8",
+        )
+        assert "{new}" not in source.render(path, tmp_path, _link).html
+
+    def test_the_token_leaves_the_search_entry_of_the_home(self, tmp_path):
+        row = "| [Actions](guides/actions.md) | Post a form {new} |"
+        (tmp_path / "README.md").write_text(
+            f"# Docs\n\n## Guides\n\n### Forms\n| Page | Summary |\n|---|---|\n{row}\n",
+            encoding="utf-8",
+        )
+        page = source.home(tmp_path)
+        entry = source.search_entry(page, "Docs", source.render(page.path, tmp_path, _link), "docs")
+        assert "{new}" not in entry["text"]
+
+
+class TestRealDocsBadges:
+    """The real menu: a typo in a token would be drawn as a word of the promise."""
+
+    def test_no_summary_carries_a_brace(self, tracks):
+        """Only `{new}` is a token, and `read_tracks` strips it: a `{neww}` would stay visible."""
+        stray = [p.slug for t in tracks for p in source.pages_of(t) if "{" in p.summary]
+        assert stray == []
+
+    def test_a_marked_page_carries_the_token_in_no_word_it_shows(self, tracks):
+        for track in tracks:
+            for page in source.pages_of(track):
+                if page.badge:
+                    assert "{new}" not in f"{page.summary} {page.label} {page.title}"
 
 
 class TestNeighbours:
@@ -103,6 +211,10 @@ class TestRender:
     def test_a_heading_gets_a_github_style_id(self, tmp_path):
         assert '<h2 id="what-to-assert">' in self._html(tmp_path, "## What to assert\n")
 
+    def test_a_group_marker_is_not_drawn_on_the_page(self, tmp_path):
+        html = self._html(tmp_path, "### Routing {fbr}\n")
+        assert '<h3 id="routing">Routing' in html and "{fbr}" not in html
+
     def test_two_equal_headings_get_distinct_ids(self, tmp_path):
         html = self._html(tmp_path, "## Same\n\n## Same\n")
         assert 'id="same"' in html and 'id="same-1"' in html
@@ -124,6 +236,42 @@ class TestRender:
         path.write_text("# T\n\n## One\n\n### Two\n", encoding="utf-8")
         found = source.render(path, tmp_path, _link).headings
         assert [(h.level, h.id) for h in found] == [(2, "one"), (3, "two")]
+
+
+class TestRouterVariants:
+    """DOC-20: the words and the code of a page follow the router the reader chose."""
+
+    @staticmethod
+    def _html(tmp_path: Path, text: str) -> str:
+        path = tmp_path / "page.md"
+        path.write_text(text, encoding="utf-8")
+        return source.render(path, tmp_path, _link).html
+
+    def test_a_block_is_drawn_under_its_router(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:fbr -->\nThe FBR way.\n<!-- /router -->\n")
+        block = re.search(r'<div class="router-variant" data-router="fbr">(.*?)</div>', html, re.S)
+        assert block and "<p>The FBR way.</p>" in block[1]
+
+    def test_a_block_may_serve_several_routers(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:fbr,custom -->\nShared.\n<!-- /router -->\n")
+        assert 'data-router="fbr custom"' in html
+
+    def test_the_markers_leave_no_comment_on_the_page(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:modular -->\nM\n<!-- /router -->\n")
+        assert "router:" not in html
+
+    def test_a_marker_of_an_unknown_router_draws_no_variant(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:nope -->\nShared.\n<!-- /router -->\n")
+        assert 'class="router-variant"' not in html
+
+    def test_a_marker_inside_a_code_block_stays_code(self, tmp_path):
+        html = self._html(tmp_path, "```md\n<!-- router:fbr -->\n```\n")
+        assert 'class="router-variant"' not in html and "router:fbr" in html
+
+    def test_a_heading_inside_a_variant_is_in_the_outline(self, tmp_path):
+        path = tmp_path / "page.md"
+        path.write_text("<!-- router:custom -->\n## Install\n<!-- /router -->\n", encoding="utf-8")
+        assert [h.text for h in source.render(path, tmp_path, _link).headings] == ["Install"]
 
 
 class TestHighlight:
@@ -261,7 +409,7 @@ class TestCallouts:
         assert "<p>Useful information.</p>" in html
 
     def test_the_callout_names_its_kind(self, tmp_path):
-        assert '<p class="callout-title">Warning</p>' in self._html(
+        assert '<p class="callout-title" data-i18n="callout_warning">Warning</p>' in self._html(
             tmp_path, "> [!WARNING]\n> Careful.\n"
         )
 
@@ -396,6 +544,10 @@ class TestRealDocs:
         pages = [page for track in tracks for page in source.pages_of(track)]
         assert all(source.render(page.path, DOCS, _link).html for page in pages)
 
+    def test_no_group_title_carries_a_marker(self, tracks):
+        """A typo in a marker would be drawn in the menu instead of scoping the group."""
+        assert [g.title for t in tracks for g in t.groups if "{" in g.title] == []
+
     def test_every_link_to_a_heading_finds_it(self, tracks):
         pages = {p.slug: p for t in tracks for p in source.pages_of(t)}
         ids = {
@@ -409,3 +561,72 @@ class TestRealDocs:
                 if target.strip("/") in ids and anchor not in ids[target.strip("/")]:
                     missing.append(f"{slug} -> {target}#{anchor}")
         assert missing == []
+
+
+class TestLanguageTree:
+    """A language reads its menu and pages from `docs/<code>/`, English where one is missing."""
+
+    MENU = (
+        "## {track}\n\n### {group}\n| Page | Summary |\n|---|---|\n"
+        "| [{a}](guides/a.md) | {s} |\n| [B](guides/b.md) | b |\n"
+    )
+
+    @classmethod
+    def _docs(cls, tmp_path: Path) -> Path:
+        (tmp_path / "guides").mkdir()
+        (tmp_path / "README.md").write_text(
+            "# Docs\n\n" + cls.MENU.format(track="Guides", group="Forms", a="A", s="a"),
+            encoding="utf-8",
+        )
+        (tmp_path / "guides" / "a.md").write_text(
+            "# A\n\n![Art](../assets/x.svg)\n", encoding="utf-8"
+        )
+        (tmp_path / "guides" / "b.md").write_text("# B\n", encoding="utf-8")
+        (tmp_path / "assets").mkdir()
+        (tmp_path / "assets" / "x.svg").write_text("<svg>art</svg>", encoding="utf-8")
+        french = tmp_path / "fr" / "guides"
+        french.mkdir(parents=True)
+        (tmp_path / "fr" / "README.md").write_text(
+            "# Docs\n\n" + cls.MENU.format(track="Guides", group="Formulaires", a="Un A", s="un"),
+            encoding="utf-8",
+        )
+        (french / "a.md").write_text("# Un A\n\n![Dessin](../assets/x.svg)\n", encoding="utf-8")
+        return tmp_path
+
+    def test_the_menu_comes_from_the_language_tree(self, tmp_path):
+        group = source.read_tracks(self._docs(tmp_path), "fr")[0].groups[0]
+        assert group.title == "Formulaires"
+
+    def test_a_translated_page_is_read_from_the_language_tree(self, tmp_path):
+        docs = self._docs(tmp_path)
+        page = source.find(source.read_tracks(docs, "fr"), "guides/a")
+        assert page is not None and page.path == docs / "fr" / "guides" / "a.md"
+
+    def test_a_missing_translation_falls_back_to_english(self, tmp_path):
+        docs = self._docs(tmp_path)
+        page = source.find(source.read_tracks(docs, "fr"), "guides/b")
+        assert page is not None and page.fallback and page.path == docs / "guides" / "b.md"
+
+    def test_a_translated_page_lives_under_its_language(self, tmp_path):
+        page = source.find(source.read_tracks(self._docs(tmp_path), "fr"), "guides/a")
+        assert page is not None and page.address == "fr/guides/a"
+
+    def test_an_english_page_lives_at_its_slug(self, tmp_path):
+        page = source.find(source.read_tracks(self._docs(tmp_path)), "guides/a")
+        assert page is not None and page.address == "guides/a"
+
+    def test_the_home_of_a_language_lives_at_its_code(self, tmp_path):
+        assert source.home(self._docs(tmp_path), "fr").address == "fr"
+
+    def test_a_translated_page_draws_the_figures_of_the_english_tree(self, tmp_path):
+        docs = self._docs(tmp_path)
+        rendered = source.render(docs / "fr" / "guides" / "a.md", docs, _link)
+        assert "<svg>art</svg>" in rendered.html
+
+    def test_a_translated_link_leaving_docs_reaches_the_repository(self, tmp_path):
+        docs = self._docs(tmp_path)
+        (docs / "fr" / "guides" / "c.md").write_text(
+            "[Log](../../CHANGELOG.md)\n", encoding="utf-8"
+        )
+        rendered = source.render(docs / "fr" / "guides" / "c.md", docs, _link)
+        assert f'href="{source.REPOSITORY}CHANGELOG.md"' in rendered.html

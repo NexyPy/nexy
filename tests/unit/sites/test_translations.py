@@ -1,0 +1,126 @@
+"""Every translated page keeps the skeleton of its English page: code, links, headings, tables."""
+
+from __future__ import annotations
+
+import re
+from collections import Counter
+from pathlib import Path
+
+import pytest
+
+from sites.shared import i18n, translator
+
+DOCS = Path(__file__).resolve().parents[3] / "docs"
+CODES = [one.code for one in i18n.LANGUAGES if one.code != i18n.DEFAULT]
+
+_FENCE = re.compile(r"^```.*?^```", re.DOTALL | re.MULTILINE)
+_LINK = re.compile(r"\]\(([^)\s]+)\)")
+_HEADING = re.compile(r"^(#{1,6}) ", re.MULTILINE)
+_ROW = re.compile(r"^\|", re.MULTILINE)
+_PLACEHOLDER = re.compile(r"\[\[\s*\d+\s*\]\]")
+_FILENAME = re.compile(r'filename="[^"]*"')
+
+
+def _pairs() -> list[tuple[str, str]]:
+    return [
+        (code, relative)
+        for code in CODES
+        for relative in i18n.english_pages(DOCS)
+        if (DOCS / code / relative).is_file()
+    ]
+
+
+def _code(text: str) -> list[str]:
+    """The fences of a page; a caption is prose and is translated, the code is not."""
+    return [_FILENAME.sub("", fence) for fence in _FENCE.findall(text)]
+
+
+def _prose(text: str) -> str:
+    return _FENCE.sub("", text)
+
+
+PAIRS = _pairs()
+
+
+@pytest.fixture(scope="module", params=PAIRS, ids=[f"{code}/{rel}" for code, rel in PAIRS])
+def pair(request: pytest.FixtureRequest) -> tuple[str, str]:
+    code, relative = request.param
+    # A link out of docs/ is an address on GitHub in a translation, one folder deeper.
+    english = translator.outward((DOCS / relative).read_text(encoding="utf-8"), relative)
+    return english, (DOCS / code / relative).read_text(encoding="utf-8")
+
+
+def test_the_code_is_the_code_of_the_english_page(pair):
+    english, translated = pair
+    assert _code(translated) == _code(english)
+
+
+def test_every_link_points_where_the_english_one_does(pair):
+    english, translated = pair
+    assert Counter(_LINK.findall(_prose(translated))) == Counter(_LINK.findall(_prose(english)))
+
+
+def test_the_outline_has_the_same_headings(pair):
+    english, translated = pair
+    assert _HEADING.findall(_prose(translated)) == _HEADING.findall(_prose(english))
+
+
+def test_every_table_row_survives(pair):
+    english, translated = pair
+    assert len(_ROW.findall(_prose(translated))) == len(_ROW.findall(_prose(english)))
+
+
+def test_no_placeholder_is_left_behind(pair):
+    _english, translated = pair
+    assert not _PLACEHOLDER.search(_prose(translated))
+
+
+def test_no_link_lost_its_words(pair):
+    english, translated = pair
+    empty = re.compile(r"(?<!!)\[\s*\]\(")
+    assert len(empty.findall(_prose(translated))) == len(empty.findall(_prose(english)))
+
+
+_ALERT = re.compile(r"^>\s*\[!\w+\]\s*$", re.MULTILINE)
+
+
+def test_every_callout_keeps_its_marker(pair):
+    english, translated = pair
+    assert _ALERT.findall(_prose(translated)) == _ALERT.findall(_prose(english))
+
+
+@pytest.mark.parametrize(("code", "relative"), PAIRS, ids=[f"{c}/{r}" for c, r in PAIRS])
+def test_no_link_is_left_in_english(code, relative):
+    translated = (DOCS / code / relative).read_text(encoding="utf-8")
+    assert translator.relabel(translated, code) == translated
+
+
+_CODE = re.compile(r"`[^`\n]*`")
+
+
+def _cells(text: str) -> list[tuple[bool, ...]]:
+    """Which cells of each row are empty, pipes inside code aside: a moved pipe empties one."""
+    rows = [_CODE.sub("x", line) for line in _prose(text).splitlines() if line.startswith("|")]
+    return [tuple(not cell.strip() for cell in row.split("|")) for row in rows]
+
+
+def test_every_table_row_keeps_its_cells(pair):
+    english, translated = pair
+    assert _cells(translated) == _cells(english)
+
+
+def _unopened(text: str) -> int:
+    """The links of a page whose closing bracket has no opening one before it on its line."""
+    count = 0
+    for line in _CODE.sub("", _prose(text)).splitlines():
+        depth = 0
+        for at, char in enumerate(line):
+            if char == "]" and depth == 0 and line[at + 1 : at + 2] == "(":
+                count += 1
+            depth = depth + 1 if char == "[" else max(depth - (char == "]"), 0)
+    return count
+
+
+def test_every_link_keeps_its_opening_bracket(pair):
+    english, translated = pair
+    assert _unopened(translated) == _unopened(english)

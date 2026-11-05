@@ -32,3 +32,8 @@ module that serves it; Vite compiles the MDX and the build pre-renders it to HTM
 Run `nexy-ux-audit` for content pages too: one page, one job, the answer
 first, headings that are questions or tasks a person would recognise, and a title that matches the
 link that leads to it.
+
+Search is a reader too. The title is the question people type, the first paragraph answers it in one
+sentence (the docs sites publish it as the description, cut at 200 characters), the headings reuse
+those words, and the slug says the same. One question, one page: a second page on the same words
+competes with the first.

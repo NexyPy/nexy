@@ -1,6 +1,6 @@
 <div class="scrim"></div>
-<dialog class="search" aria-label="Search">
-  <form method="dialog"><input type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off"></form>
+<dialog class="search" aria-label="Search" data-i18n-aria="search">
+  <form method="dialog"><input type="search" placeholder="Search the docs" aria-label="Search the docs" autocomplete="off" data-i18n-placeholder="search_aria" data-i18n-aria="search_aria"></form>
   <ul class="results" role="listbox"></ul>
-  <p class="hint">Enter opens the result, Esc closes.</p>
+  <p class="hint" data-i18n="enter_hint">Enter opens the result, Esc closes.</p>
 </dialog>

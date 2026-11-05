@@ -21,3 +21,9 @@ topic comes up (see `skills/README.md`).
 - Match the style mode of the project (Tailwind, UnoCSS or plain CSS) and the idioms of its
   framework. No hand-written DOM scripts in React, Vue, Svelte, Solid or Preact code.
 - `__nexy__/` is generated: never edit it, never commit it.
+
+## Commits
+
+One commit, one unit: a function (the function, its test, its doc line), a logic (one behaviour or
+fix with the test that proves it), or a structure (one move, rename or split that changes no
+behaviour). Never two at once, and AI tools never appear as author or co-author.
