@@ -54,7 +54,7 @@ label: prop[str]
 
 - `useQuery()` gibt die Parameter **Pfad** zurück, nicht die Abfragezeichenfolge, weshalb `useParams()` existiert. Die Abfragezeichenfolge ist `useSearchParams()`.
 - `useRouter()` Hier ist der Anfrage-Hook. Es ist nicht das Konfigurationsfeld `useRouter`, das ein `APIRouter` bereitstellt.
-- `useSession()` benötigt `useSession = {...}` in `nexyconfig.py`; ohne es ist das Diktat leer.
+- `useSession()` braucht `useSession = {...}` in `nexyconfig.py`; ohne es ist das Diktat leer.
 - `useViews("about.tsx", {"title": "About"})` gibt HTML zurück: Eine `.nexy`-Ansicht wird von ihrem kompilierten Modul gerendert, eine `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx`-Ansicht wird zu einem Client-Mount-Container.
 
 ## Nächste Schritte
