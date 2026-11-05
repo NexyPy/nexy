@@ -4,11 +4,11 @@ Sie erstellen ein Nexy-Projekt, führen es aus und sehen beim Bearbeiten eine Se
 
 ## Bevor Sie beginnen
 
-| Sie benötigen | Warum |
+| Du brauchst | Warum |
 |---|---|
 | Python 3.12+ | `requires-python` in `pyproject.toml` |
 | [uv](https://docs.astral.sh/uv/) | stellt `uvx` bereit, erstellt das Projekt und installiert seine Pakete |
-| Node.js 18+ | nur, wenn Sie ein Client-Framework verwenden (React, Vue, Svelte, Solid, Preact) |
+| Node.js 18+ | nur wenn Sie ein Client-Framework verwenden (React, Vue, Svelte, Solid, Preact) |
 
 Noch kein uv? Siehe [Installation](installation.md).
 
@@ -20,12 +20,12 @@ uvx nexy new my-app
 
 `uvx` wird mit uv geliefert, also installieren Sie zuerst uv. Es führt Nexy in einer temporären Umgebung aus, die ausreicht, um das Projekt zu **erstellen**. `nexy new` erstellt dann das projekteigene `.venv` und installiert seine Pakete dort. Vier Eingabeaufforderungen entscheiden über die Verkabelung:
 
-| Aufforderung | Wirkung |
+| Prompt | Wirkung |
 |---|---|
-| Dateibasierter Router? | `Yes` scannt `src/routes/`; `No` baut den modularen Router in `src/apps/` | auf
-| Projekttyp | `Web` fügt ein Layout und Client-Assets hinzu, `API` beginnt ohne Ansichten |
-| Client-Komponente? | fügt ein Framework und dessen Vite Setup hinzu |
-| ORM / Datenbank | fügt eine Modellebene hinzu oder nichts |
+| Dateibasierter Router? | `Yes` scannt `src/routes/`; `No` baut den modularen Router in `src/apps/` auf |
+| Projekttyp | `Web` fügt ein Layout und Client-Assets hinzu, `API` startet ohne Ansichten |
+| Client-Komponente? | fügt ein Framework und dessen Vite-Setup hinzu |
+| ORM / Datenbank | Fügt eine Modellebene hinzu oder nichts |
 
 Nicht sicher? Antwort `Yes`, `Web` und keine Client-Komponente. Sie können jedes später hinzufügen.
 
@@ -87,9 +87,9 @@ controllers = [AppController, AboutController, HelloController]
 
 ## Wohin als nächstes
 
-| Sie möchten | lesen |
+| Du willst | Lesen |
 |---|---|
-| Fügen Sie einen Python Endpunkt hinzu und versenden Sie einen Build | [Tutorial](tutorial.md) |
-| Wissen, wo jede Datei hingehört | [Projektstruktur](project-structure.md) |
+| Fügen Sie einen Python-Endpunkt hinzu und versenden Sie einen Build | [Tutorial](tutorial.md) |
+| Wissen Sie, wo jede Datei hingehört | [Projektstruktur](project-structure.md) |
 | Verstehen Sie, wer was baut | [Wie Nexy funktioniert](how-nexy-works.md) |
-| Verwenden Sie React, Vue, Svelte, Solid oder Preact | [Ansichten](../views/README.md) |
+| Verwenden Sie React, Vue, Svelte, Solid oder Preact. | [Ansichten](../views/README.md) |
