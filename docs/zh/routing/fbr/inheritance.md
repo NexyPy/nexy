@@ -32,7 +32,7 @@ src/routes/
 
 ## 布局
 
-文件夹族堆栈的所有布局文件：请参阅[布局](layouts/README.md)。不同的系列不会混合：`layout.vue` 永远不会包装 `.tsx` 页面，并且项目具有 `layout.nexy` 或客户端布局，而绝不会同时具有两者 ([modes](modes.md))。
+文件夹族堆栈的所有布局文件：请参阅[布局](layouts/README.md)。不同的系列不会混合：`layout.vue` 永远不会包装 `.tsx` 页面，并且项目具有 `layout.nexy` 或客户端布局，而绝不会同时具有两者 ([模式](modes.md))。
 
 ## 中间件文件
 
