@@ -98,6 +98,6 @@ Para Tortoise-ORM, enumere el módulo en `TORTOISE_ORM` (ver arriba).
 
 ## Próximos pasos
 
-- [Testing](testing.md): prueba los controladores contra una base de datos temporal
+- [Pruebas](testing.md): prueba los controladores contra una base de datos temporal
 - [Configuración](../reference/config.md)
 - [Implementar](../deployment/README.md): establecer `DATABASE_URL` en producción
