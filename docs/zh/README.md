@@ -2,21 +2,21 @@
 
 **用于全栈 Web 应用程序的 Python 框架。**
 
-Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一个源，而不是两台服务器、两个构建系统和两个路由表：FastAPI 和 Starlette 为应用程序提供服务，Vite 构建客户端，`src/routes/` 下的文件是一个路由 - `.nexy` 是一个页面，`.py` 是一个 API 处理程序。
+Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器提供服务。版本 2.2 构建于 FastAPI 之上：每个 API 路由都是 FastAPI 路由，列在 Scalar 在 `/docs` 中显示的 OpenAPI 模式中。
 
-- **Python 首先。** 页面、端点、表单和操作是 Python，服务器渲染的页面不需要前端框架。
-- **三个路由器，一个集成。** 基于文件、模块化或现有的 FastAPI `APIRouter`。
-- **当您需要一个前端时。** React、Vue、Svelte、Solid 或 Preact，每页作为岛屿，或在客户端模式下用于整个项目。
-- **渲染，一个模型。** 服务器渲染，缓存页面和孤岛是按页面决定的；客户端路由是一个项目交换机。
-- **键入的操作。** 表单发布和键入的客户端调用达到相同的 Python 函数。
+- **Python 首先。** 页面、端点、表单和操作是 Python，页面不需要 JavaScript。
+- **当您需要一个前端时，可以使用它。** React、Vue、Svelte、Solid 或 Preact，适用于一个组件或整个站点。
+- **一个文件，一个 URL。** `src/routes/` 下的文件是一个路由：`.nexy` 是一个页面，`.py` 是一个 API 端点。
+- **成长空间。** 从一个文件开始；当项目增长时，移动到模块，或插入现有的 FastAPI 路由器。
 
-从 `src/routes/` 下的一个文件开始，并在项目增长时添加结构。
+新来的？请阅读[什么是 Nexy？](getting-started/what-is-nexy.md)，然后阅读[快速入门](getting-started/quick-start.md)。
 
 ## 开始使用
 
 ### 第一步
 | 页面 | 你会做什么 |
 |---|---|
+| [Nexy是什么？](getting-started/what-is-nexy.md) | 了解 Nexy 是什么、它的构建基础以及您能获得什么 |
 | [安装](getting-started/installation.md) | 安装 uv 和 Nexy CLI，然后创建您的第一个项目 |
 | [快速启动](getting-started/quick-start.md) | 创建一个项目，通过实时重新加载运行它，并构建它以用于生产 |
 | [教程](getting-started/tutorial.md) | 在 10 分钟内构建一个带有端点、共享数据和生产版本的笔记页面 |
@@ -25,8 +25,6 @@ Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一�
 | 页面 | 你会做什么 |
 |---|---|
 | [核心概念](getting-started/core-concepts.md) | 获取心智模型：路由、页面、视图、组件、处理程序、端点 |
-| [Nexy 的工作原理](getting-started/how-nexy-works.md) | 遵循从 URL 到响应该请求的文件的一个请求 |
-| [建筑](architecture.md) | 了解哪一层做什么，以及 Nexy 留给您的应用程序什么 |
 | [项目结构](getting-started/project-structure.md) | 了解项目中每个文件夹和文件的用途 |
 | [选择路由器](routing/README.md) | 选择基于文件的、模块化的或自定义的路由器 |
 | [选择视图格式](views/README.md) | 为页面选择 `.nexy`、Markdown 或客户端框架 |
@@ -34,7 +32,7 @@ Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一�
 ### 来自其他地方
 | 页面 | 你会做什么 |
 |---|---|
-| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Expresshabits 翻译为 Nexy |
+| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译成 Nexy |
 
 ## 路由
 
@@ -69,7 +67,7 @@ Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一�
 | [模块化路由](routing/modular/README.md) | 安装控制器和模块 |
 | [依赖注入](routing/modular/dependency-injection.md) | 定义服务、其范围和容器 |
 | [守卫和元数据](routing/modular/guards-and-metadata.md) | 保护和记录路线 |
-| [模块化路由器与 NestJS](routing/modular/vs-nestjs.md) | 与 NestJS比较 |
+| [模块化路由器与 NestJS](routing/modular/vs-nestjs.md) | 与 NestJS 比较 |
 
 ### 自定义路由器集成 {custom}
 | 页面 | 你会做什么 |
@@ -96,7 +94,7 @@ Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一�
 ### 框架差异
 | 页面 | 有什么变化 |
 |---|---|
-| [React 差异](views/react/differences.md) | 组件、钩子和 `layout.tsx` {new} |
+| [React 差异](views/react/differences.md) | 组件、挂钩和 `layout.tsx` {new} |
 | [Vue 差异](views/vue/differences.md) | 证监会、参考文献和 `layout.vue` {new} |
 | [Svelte 差异](views/svelte/differences.md) | 符文、商店和 `layout.svelte` {new} |
 | [Solid 差异](views/solid/differences.md) | 信号、访问器和 `layout.tsx` {new} |
@@ -108,8 +106,8 @@ Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一�
 | 页面 | 你将决定什么 |
 |---|---|
 | [渲染](rendering/README.md) | 哪种渲染模式适合页面 |
-| [SSR](rendering/ssr.md) | 服务器渲染，默认 |
-| [ISR](rendering/isr.md) | 使用 stale-while-revalidate 缓存页面 |
+| [苏维埃社会主义共和国](rendering/ssr.md) | 服务器渲染，默认 |
+| [情监侦](rendering/isr.md) | 使用 stale-while-revalidate 缓存页面 |
 | [企业社会责任](rendering/csr.md) | 客户端路由 |
 | [岛屿](rendering/islands.md) | 空闲、可见或媒体查询时进行水合 |
 
@@ -138,7 +136,7 @@ Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一�
 | 页面 | 你会做什么 |
 |---|---|
 | [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
-| [编码剂](guides/ai-agents.md) | 为 Claude Code、Codex 和 OpenCode 提供您项目的规则 |
+| [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 项目的规则 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
 ## 参考
@@ -166,9 +164,8 @@ Nexy 是关于 Python 后端和浏览器前端之间的接缝。您将获得一�
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -199,6 +196,7 @@ docs/
 
 | 页面 | 你会做什么 |
 |---|---|
+| [Nexy 的工作原理](getting-started/how-nexy-works.md) | 查看文件和页面之间发生的情况，以及 Nexy 留给您的内容 |
 | [升级到2.2](getting-started/upgrading.md) | 从 2.1 迁移到 2.2 |
 | [国际化 (i18n)](guides/i18n.md) | 使用您选择的库添加翻译 |
 | [食谱](guides/recipes.md) | 示例和模式，而不是教程 |
