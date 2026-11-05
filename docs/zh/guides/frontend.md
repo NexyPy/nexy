@@ -44,7 +44,7 @@ class NexyConfig(NexyConfigModel):
 - 客户端捆绑包，其资产位于 `__nexy__/client/` 下；
 - 已编译的 Python 路线。
 
-Vite 处理客户端包； SSR HTML 由 esbuild 按文件生成。
+Vite 构建客户端包；每个组件页面的服务器 HTML 是在构建时编写的。
 
 > [!NOTE]
 > 服务器渲染失败的路由将被报告为仅客户端路由，而不是整个构建失败。
@@ -67,5 +67,5 @@ Vite 处理客户端包； SSR HTML 由 esbuild 按文件生成。
 ## 后续步骤
 
 - [视图](../views/README.md)：选择页面格式
-- [配置](../reference/config.md)：`useFF`、`useVite`、别名
+- [配置](../reference/config.md)：`useFF`，`useVite`，别名
 - [部署](../deployment/README.md)：构建产生什么
