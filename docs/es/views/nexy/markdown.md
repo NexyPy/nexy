@@ -23,7 +23,7 @@ Los archivos `.mdx` son compilados por **Vite**, a través de la canalización d
 - Requiere los paquetes opcionales `@mdx-js/rollup`, `remark-gfm` y `@mdx-js/react` (y `@mdx-js/esbuild` para la compilación). Vite te dice cuál falta.
 - El marco se detecta automáticamente a partir de importaciones: Preact cuando el archivo importa `preact`, React en caso contrario.
 
-> [!NOTA]
+> [!NOTE]
 > use `.nexy` si necesita Python lógica al frente.
 
 ## Próximos pasos
