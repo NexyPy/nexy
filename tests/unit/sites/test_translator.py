@@ -97,3 +97,39 @@ class TestRestore:
     def test_a_restored_page_holds_no_placeholder(self):
         template, kept = translator.protect(PAGE)
         assert "[[" not in translator.restore([template], kept)
+
+
+class TestUnwrap:
+    def test_a_wrapped_paragraph_becomes_one_line(self):
+        assert (
+            translator.unwrap("Two servers, two\nbuild systems.\n")
+            == "Two servers, two build systems.\n"
+        )
+
+    def test_a_list_item_keeps_its_continuation(self):
+        text = "- **Python.** A page needs\n  no framework.\n- Next item\n"
+        assert translator.unwrap(text) == "- **Python.** A page needs no framework.\n- Next item\n"
+
+    def test_a_fence_keeps_its_lines(self):
+        text = "```python\na = 1\nb = 2\n```\n"
+        assert translator.unwrap(text) == text
+
+    def test_table_rows_stay_apart(self):
+        text = "| A | B |\n|---|---|\n| 1 | 2 |\n"
+        assert translator.unwrap(text) == text
+
+    def test_a_heading_keeps_the_next_line_apart(self):
+        text = "# Title\nFirst line.\n"
+        assert translator.unwrap(text) == text
+
+    def test_an_alert_marker_keeps_its_own_line(self):
+        text = "> [!NOTE]\n> One line\n> and the next.\n"
+        assert translator.unwrap(text) == "> [!NOTE]\n> One line and the next.\n"
+
+    def test_a_hard_break_is_kept(self):
+        text = "First line\\\nsecond line\n"
+        assert translator.unwrap(text) == text
+
+    def test_a_comment_line_stays_apart(self):
+        text = "<!-- router:fbr -->\nSome text\n<!-- /router -->\n"
+        assert translator.unwrap(text) == text
