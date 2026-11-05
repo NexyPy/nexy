@@ -4,12 +4,12 @@
 
 ## `nx new` 添加了什么
 
-| 文件 | 由 | 读取并保留 |
+| 文件 | 阅读者 | 持有 |
 |---|---|---|
-| `AGENTS.md` | Codex、OpenCode | 项目堆栈、工作顺序、规则、技能列表 |
-| `CLAUDE.md` | Claude Code | 一行，`@AGENTS.md`，因此两者读取相同的文本 |
-| `.agents/skills/` | Codex、OpenCode | 技能 |
-| `.claude/skills/` | Claude Code、OpenCode | 相同技能 |
+| `AGENTS.md` | Codex，OpenCode | 项目堆栈、工作顺序、规则、技能列表 |
+| `CLAUDE.md` | Claude Code | 一行，`@AGENTS.md`，所以两者读取相同的文本 |
+| `.agents/skills/` | Codex，OpenCode | 技能 |
+| `.claude/skills/` | Claude Code，OpenCode | 相同的技能 |
 
 `AGENTS.md` 简短且量身定制。客户端路由的 Vue 项目显示为“客户端路由，Vue，样式为 Tailwind”； API 项目被告知没有视图。仅复制适合的技能：React 项目获得 `nexy-react` 但没有 Vue 技能，服务器项目获得 `.nexy` 和 Markdown 技能，API 项目没有关于视图的技能。
 
@@ -17,10 +17,10 @@
 
 ## 技能
 
-| 技能 | 覆盖 |
+| 技能 | 封面 |
 |---|---|
 | `nexy-principles` | 工作顺序、代码规则、编写规则 |
-| `nexy-ux-audit` | 在任何视图之前运行的经验和信息架构审核 |
+| `nexy-ux-audit` | 在任何视图之前运行的体验和信息架构审核 |
 | `nexy-project` | 模式、文件夹、文件约定、配置、命令 |
 | `nexy-file` | `.nexy` 页面、道具、挂钩、岛屿 |
 | `nexy-markdown` | `.md` 和 `.mdx` 内容 |
@@ -30,7 +30,7 @@
 | `nexy-modular` | 模块化路由器的控制器、模块、注入和防护 |
 | `nexy-security` | 依赖项、输入、会话、授权、秘密 |
 | `nexy-testing` | 测试优先循环和门 |
-| `nexy-framework-dev` | 更改 Nexy 本身，而不是使用 Nexy 构建的项目 |
+| `nexy-framework-dev` | 改变 Nexy 本身，而不是用 Nexy 构建的项目 |
 
 他们执行的规则是：在构建视图之前审核体验，首先编写失败的测试，一个函数执行一种处理，一个类承载一种意图，一个文件夹包含一组相关意图，没有表情符号，真正的 SVG 图标，为人们编写的纯文本，并且 React、Vue、Svelte、Solid 或 Preact 中没有手写的 DOM 脚本。
 
@@ -67,24 +67,24 @@ nx skills
 
 当代理知道哪个页面包含答案时，它会更快地回答。
 
-| 您需要 | 阅读 |
+| 你需要 | 阅读 |
 |---|---|
-| 产品，一页 | [自述文件 ](../README.md) |
-| 运行项目 | [入门](../getting-started/quick-start.md) |
+| 产品，在一页中 | [自述文件](../README.md) |
+| 运行一个项目 | [入门](../getting-started/quick-start.md) |
 | 文件的 URL | [路由](../routing/README.md) |
-| 动态段、布局、错误页面 | [页面](../routing/fbr/pages/README.md) |
-| 当前路径、查询、cookies、会话 | [hooks](../routing/fbr/navigation/hooks.md) |
+| 动态段、布局、错误页面 | [页数](../routing/fbr/pages/README.md) |
+| 当前路径、查询、cookies、会话 | [钩子](../routing/fbr/navigation/hooks.md) |
 | 编辑页面 | [.nexy 文件](../views/nexy/README.md) 或 [视图](../views/README.md) |
-| Markdown 或 MDX | [降价 ](../views/nexy/markdown.md) |
-| 内置 HTML 帮助器 | [组件 ](../views/nexy/components.md) |
+| Markdown 或 MDX | [降价](../views/nexy/markdown.md) |
+| 内置 HTML 帮助器 | [组件](../views/nexy/components.md) |
 | 渲染模式 | [SSR](../rendering/ssr.md)、[CSR](../rendering/csr.md)、[ISR](../rendering/isr.md) |
-| WebSocket | [websocket](../routing/fbr/realtime/websocket.md) |
+| 一个 WebSocket | [网络套接字](../routing/fbr/realtime/websocket.md) |
 | 控制器和模块 | [模块化](../routing/modular/README.md) |
 | 添加端点 | [API](../routing/fbr/handlers/README.md) |
-| 从页面 | [actions](actions.md) | 发布的表单
-| 为什么请求失败，以及哪个页面响应它 | [异常](../reference/exceptions.md) |
-| 翻译 | [i18n](i18n.md) |
-| 配置字段 | [配置](../reference/config.md) |
+| 从页面发布的表单 | [行动](actions.md) |
+| 请求失败的原因以及哪个页面应答了该请求 | [例外情况](../reference/exceptions.md) |
+| 翻译 | [国际化](i18n.md) |
+| 一个配置字段 | [配置](../reference/config.md) |
 | 测试应用程序 | [测试](testing.md) |
 | 客户端构建 | [前端](frontend.md) |
 
