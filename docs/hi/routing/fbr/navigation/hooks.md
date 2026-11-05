@@ -7,21 +7,21 @@
 
 ## हुक
 
-| हुक | रिटर्न्स |
+| हुक | रिटर्न |
 |---|---|
 | `usePathname()` | अनुरोध पथ, उदा. `"/blog/post-1"` |
-| `useSearchParams()` | क्वेरी स्ट्रिंग `dict[str, str]` के रूप में, प्रति कुंजी पहला मान |
+| `useSearchParams()` | `dict[str, str]` के रूप में क्वेरी स्ट्रिंग, प्रति कुंजी पहला मान |
 | `useParams()` | गतिशील पथ पैरामीटर, उदा. `{"slug": "post-1"}` |
 | `useQuery()` | `useParams()` का मूल नाम, मौजूदा पृष्ठों के लिए रखा गया है |
-| `useRequest()` | Starlette अनुरोध, जो अन्य हुक में शामिल नहीं है |
+| `useRequest()` | Starlette अनुरोध, अन्य हुक में क्या शामिल नहीं है |
 | `useHeaders()` | अनुरोध शीर्षलेख `dict[str, str]`, छोटे अक्षरों में नाम |
 | `useUrl()` | पूरा यूआरएल: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
 | `useIsActive(href, exact=False)` | क्या `href` वर्तमान पृष्ठ है या उसके माता-पिता में से एक है |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
-| `useCookies()` | सभी कुकीज़ `dict[str, str]` | के रूप में
+| `useCookies()` | सभी कुकीज़ `dict[str, str]` के रूप में |
 | `useSession()` | सत्र निर्देश, `{}` जब सत्र सक्षम नहीं होते हैं |
 | `useToc(depth_range="2-6")` | वर्तमान पृष्ठ के लिए सामग्री तालिका HTML, `""` जब कोई नहीं |
-| `useViews(path, context=None)` | एक और दृश्य प्रस्तुत करता है और एक `HTMLResponse` | लौटाता है
+| `useViews(path, context=None)` | एक और दृश्य प्रस्तुत करता है और एक `HTMLResponse` लौटाता है |
 
 ## अनुरोध पढ़ें
 
