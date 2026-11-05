@@ -67,5 +67,5 @@ Coloque arquivos estáticos em `public/` - eles são servidos por `/` tanto no d
 ## Próximas etapas
 
 - [Visualizações](../views/README.md): escolha um formato de página
-- [Config](../reference/config.md): `useFF`, `useVite`, apelidos
-- [Deploy](../deployment/README.md): o que a compilação produz
+- [Configuração](../reference/config.md): `useFF`, `useVite`, apelidos
+- [Implantação](../deployment/README.md): o que a compilação produz
