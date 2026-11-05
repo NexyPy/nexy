@@ -39,7 +39,7 @@ nexy dev
 
 Abra <http://localhost:3000>. Deberías ver la página de inicio. El puerto proviene de `usePort` (predeterminado `3000`); `--port` y `--host` lo anulan por ejecución.
 
-> [!NOTA]
+> [!NOTE]
 > Ejecute todos los comandos excepto `new` y `init` dentro del entorno virtual del proyecto, o prefije `uv run`, como en `uv run nexy dev`. Fuera de él, un proyecto que necesita `sqlmodel` falla con `No module named 'sqlmodel'`.
 
 ## 3. Cambiar una página
