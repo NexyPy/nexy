@@ -77,13 +77,13 @@ export default function Home() {
 
 - **Keseluruhan proyek.** Anda tidak dapat menggabungkan satu halaman CSR ke dalam proyek mode server: pilih mode untuk aplikasi, lalu gunakan [pulau](islands.md) untuk bagian interaktif halaman mode server.
 - **Tidak ada rute `.nexy`.** Apa pun yang Anda tulis di `.nexy` harus menjadi komponen kerangka kerja.
-- **Data server melewati titik akhir.** Rute klien tidak dapat membaca database pada waktu render; ia memanggil pengendali `.py` atau [Action](../guides/actions.md).
+- **Data server melewati titik akhir.** Rute klien tidak dapat membaca database pada waktu render; ia memanggil pengendali `.py` atau [Aksi](../guides/actions.md).
 - **Rute dinamis memerlukan param statis yang dideklarasikan, atau dimulai dari shell.** Ekspor `getStaticParams()` dari halaman - nama Next.js `getStaticPaths` dan `generateStaticParams` juga diterima - untuk memiliki satu dokumen per nilai. Tanpanya, shell membawa tata letak dan bukan halaman: halaman muncul setelah browser dijalankan.
 - **CSR bukanlah halaman kosong, dan juga bukan SPA.** Dokumen pertama dirender oleh server; itu adalah navigasi yang terjadi di browser.
 
 ## Langkah selanjutnya
 
 - [Mode server dan mode klien](../routing/fbr/modes.md): pemeriksaan dan file yang ditolak
-- [Layouts](../routing/fbr/layouts/README.md): file mana yang memiliki dokumen
+- [Tata letak](../routing/fbr/layouts/README.md): file mana yang memiliki dokumen
 - [SSR](ssr.md): default, halaman demi halaman
 - [Frontend](../guides/frontend.md): server pengembang dan build klien
