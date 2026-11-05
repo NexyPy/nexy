@@ -56,7 +56,7 @@ Di bawah frontmatter adalah HTML dengan Jinja2. Variabel dari frontmatter dan pr
 
 Pelarian otomatis **nonaktif**: templat adalah HTML milik proyek, jadi `{{ value }}` dimasukkan seperti yang tertulis. Hilangkan nilai-nilai yang tidak dipercaya dengan `{{ value | e }}`. `| safe` oleh karena itu tidak mengubah apa pun.
 
-> [!CATATAN]
+> [!NOTE]
 > bungkus JavaScript yang berisi `{{` atau `{%` di `{% raw %}...{% endraw %}`. Kerangka kerja seperti Vue dan Svelte menggunakan tanda kurung kurawal yang sama.
 
 ## Komponen
@@ -81,7 +81,7 @@ Anak-anak dirender melalui `<Slot />` (huruf kapital S) di dalam komponen anak, 
 
 Berikan nilai yang dihitung dengan Jinja di dalam atribut: `<Icon path="{{ icon }}" size="{{ size }}" />`. Nama kosong seperti `path=icon` adalah teks `icon`, bukan variabelnya. Untuk memberikan komponen kelas CSS, deklarasikan prop `class_name`: `class` adalah kata kunci Python.
 
-> [!CATATAN]
+> [!NOTE]
 > tag pembantu selalu menutup sendiri. Meneruskan konten ke `Link` melewati argumen `children` (`<Link href="/about" children="About" />`), bukan melalui konten elemen.
 
 ## Gaya
