@@ -17,10 +17,10 @@ class NexyConfig(NexyConfigModel):
 
 ## 路线文件
 
-| 扩展 | 渲染 |
+| 扩展 | 渲染的 |
 |---|---|
-| `.nexy`、`.md` | 由 Nexy 在请求时间 |
-| `.mdx`、`.tsx`、`.jsx`、`.vue`、`.svelte` | 由客户端框架提供；在构建时预渲染为 HTML，然后由客户端包接管 |
+| `.nexy`，`.md` | 由 Nexy 在请求时提供 |
+| `.mdx`、`.tsx`、`.jsx`、`.vue`、`.svelte` | 由客户端框架；在构建时预渲染为 HTML，然后由客户端包接管 |
 
 框架路由是一个普通页面，而不是仅客户端的孤岛：HTML 在包运行之前就存在，因此第一次绘制不会等待 JavaScript。
 
@@ -53,10 +53,10 @@ Vite 处理客户端包； SSR HTML 由 esbuild 按文件生成。
 
 `nexy new` 请求样式模式并为您选择的客户端框架进行设置：Tailwind、UnoCSS 或纯 CSS。设计标记（颜色、字体、深色主题）是脚手架创建的文件 `src/globale.css` 中的 CSS 变量。
 
-| 模式 | 起始页用 | 写入
+| 模式 | 起始页写有 |
 |---|---|
-| 标记中的 Tailwind、UnoCSS | 实用程序类，标记映射到类名 |
-| 纯 CSS | 语义类名称和 `src/globale.css` | 中的 CSS
+| Tailwind，UnoCSS | 标记中的实用程序类，标记映射到类名 |
+| 纯CSS | 语义类名和 `src/globale.css` 中的 CSS |
 
 添加页面时请遵循项目的模式：实用程序项目中的实用程序类，纯 CSS 项目中的 CSS。保留实用程序无法在组件的 `<style>` 块中表达的组件 CSS。在服务器项目（`.nexy` 页）中，UnoCSS 读取类的 `.nexy` 文件； Tailwind 自行找到它们。
 
@@ -66,6 +66,6 @@ Vite 处理客户端包； SSR HTML 由 esbuild 按文件生成。
 
 ## 后续步骤
 
-- [Views](../views/README.md)：选择页面格式
+- [视图](../views/README.md)：选择页面格式
 - [配置](../reference/config.md)：`useFF`、`useVite`、别名
 - [部署](../deployment/README.md)：构建产生什么
