@@ -1,17 +1,15 @@
-# Abhängigkeiten und Wächter
+# Abhängigkeiten und Wachen
 
-Teilen Sie Authentifizierung, Datenbanksitzungen und andere Einstellungen über Routen hinweg mit FastAPI-Abhängigkeiten.
-Sie arbeiten auf zwei Ebenen und die Verzeichnisebene wird wie Layouts vererbt.
+Teilen Sie Authentifizierung, Datenbanksitzungen und andere Einstellungen über Routen hinweg mit FastAPI-Abhängigkeiten. Sie arbeiten auf zwei Ebenen und die Verzeichnisebene wird wie Layouts vererbt.
 
-| Level | Wobei | gilt für |
+| Ebene | Wobei | gilt für |
 |---|---|---|
 | Verzeichnis | `dependencies.py` | jede Route im Verzeichnis und darunter, einschließlich Seiten |
 | Handler | `Depends`, `@UseGuard`, `@Middleware` | ein Handler |
 
 ## Pro Verzeichnis: `dependencies.py`
 
-Ein `dependencies.py` deklariert eine `dependencies`-Liste einfacher Funktionen. Nexy verpackt jeden einzelnen
-`Depends`.
+Ein `dependencies.py` deklariert eine `dependencies`-Liste einfacher Funktionen. Nexy verpackt jedes einzelne in `Depends`.
 
 ```python filename="src/routes/admin/dependencies.py"
 from nexy.http import Header, HTTPException
@@ -28,13 +26,11 @@ dependencies = [require_admin]
 > [!NOTE]
 > Listen Sie die Funktionen selbst auf. Ein `Depends(...)`-Objekt in der Liste wird ignoriert.
 
-Jede Route unter `src/routes/admin/` erfordert jetzt den Header, `.py`-Handler und `.nexy`-Seiten
-gleichermaßen.
+Jede Route unter `src/routes/admin/` erfordert jetzt den Header, `.py`-Handler und `.nexy`-Seiten gleichermaßen.
 
 ## Vererbung
 
-Abhängigkeiten werden vom Routenstamm bis zum Verzeichnis der Route gesammelt, **äußerstes zuerst**,
-genau wie Layouts, und die eigenen Wachen des Handlers laufen zuletzt:
+Abhängigkeiten werden vom Routenstamm bis hinunter zum Verzeichnis der Route gesammelt, **äußerstes zuerst**, genau wie Layouts, und die eigenen Wachen des Handlers werden zuletzt ausgeführt:
 
 ```text
 src/routes/
@@ -46,9 +42,7 @@ src/routes/
       └─ index.py               4. handler guards, then the handler
 ```
 
-Für `GET /admin/users` ist die Reihenfolge `root`, `admin`, `users`, die `@UseGuard`-Funktionen des Handlers,
-seine `@Middleware`-Funktionen, dann der Handler. Eine Routengruppe (`(group)/`) ist ein Verzeichnis wie jedes andere
-andere, also nimmt `dependencies.py` teil.
+Für `GET /admin/users` lautet die Reihenfolge `root`, `admin`, `users`, die `@UseGuard`-Funktionen des Handlers, seine `@Middleware`-Funktionen und dann der Handler. Eine Routengruppe (`(group)/`) ist ein Verzeichnis wie jedes andere, daher nimmt ihr `dependencies.py` teil.
 
 ## Pro Handler
 
@@ -70,8 +64,7 @@ async def GET(user: str = Depends(current_user)):
 
 ## Guards und Middleware auf einem Handler
 
-`@UseGuard` und `@Middleware` hängen FastAPI-Abhängigkeiten an einen Handler an, ohne ihn zu ändern
-Unterschrift. Beides sind Abhängigkeiten, keine ASGI-Middleware:
+`@UseGuard` und `@Middleware` hängen FastAPI Abhängigkeiten an einen Handler an, ohne seine Signatur zu ändern. Beides sind Abhängigkeiten, keine ASGI-Middleware:
 
 ```python filename="src/routes/admin/users/index.py"
 from nexy.decorators import Middleware, UseGuard
@@ -89,14 +82,11 @@ async def GET():
     return {"ok": True}
 ```
 
-Für echte ASGI-Middleware (CORS, GZip, Sitzungen, Ihre eigene) verwenden Sie `useMiddlewares` und die `use*`
-Optionen in [Middleware und Sicherheit](../../../guides/middleware-and-security.md).
+Für echte ASGI-Middleware (CORS, GZip, Sitzungen, Ihre eigene) verwenden Sie `useMiddlewares` und die `use*`-Optionen in [Middleware und Sicherheit](../../../guides/middleware-and-security.md).
 
-## Eine Abhängigkeit ist fehlgeschlagen
+## Eine Abhängigkeit scheitert
 
-Eine Abhängigkeit lehnt eine Anfrage durch Auslösen ab. `HTTPException` antwortet mit dem Status, den Sie angegeben haben, als
-JSON für API-Clients (`Accept: application/json`) und als Fehlerseite für Browser. Siehe
-[Validierung und Fehler](../handlers/validation-and-errors.md).
+Eine Abhängigkeit lehnt eine Anfrage durch Auslösen ab. `HTTPException` antwortet mit dem von Ihnen angesprochenen Status, als JSON für API-Clients (`Accept: application/json`) und als Fehlerseite für Browser. Siehe [Validierung und Fehler](../handlers/validation-and-errors.md).
 
 ## Nächste Schritte
 
