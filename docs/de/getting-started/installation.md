@@ -10,9 +10,9 @@
 
 Ein Projekt ohne Client-Framework benötigt überhaupt kein Node.js.
 
-## Installieren Sie zuerst UV
+## Installieren Sie zuerst uv.
 
-`uvx` ist kein separates Tool: Es wird mit UV geliefert, also installieren Sie UV vor allem anderen.
+`uvx` ist kein separates Tool: Es wird mit uv geliefert, also installieren Sie uv vor allem anderen.
 
 ```bash
 # macOS and Linux
@@ -30,14 +30,9 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 uvx nexy new my-app
 ```
 
-`uvx` führt Nexy in einer temporären Umgebung aus und hinterlässt nichts. Das reicht aus, um ein **zu erstellen**.
-Projekt (`new`, `init`) und nichts weiter: Die temporäre Umgebung enthält Nexy und kein anderes
-Paket. `nexy new` erstellt die eigene virtuelle Umgebung des Projekts, `.venv`, und installiert seine Pakete
-dort.
+`uvx` führt Nexy in einer temporären Umgebung aus und hinterlässt nichts. Das reicht aus, um ein Projekt (`new`, `init`) **zu erstellen** und nichts weiter: Die temporäre Umgebung enthält Nexy und kein anderes Paket. `nexy new` erstellt die eigene virtuelle Umgebung des Projekts, `.venv`, und installiert dort seine Pakete.
 
-`nexy new my-app` stellt vier Fragen: Router (dateibasiert oder modular), Projekttyp (Web oder API),
-Client-Framework, ORM. Die Installation von Python- und Node-Abhängigkeiten erfolgt dann mit jeweils einer Zeile
-Schritt und seine Dauer. Siehe [CLI](../reference/cli.md).
+`nexy new my-app` stellt vier Fragen: Router (dateibasiert oder modular), Projekttyp (Web oder API), Client-Framework, ORM. Die Installation von Python und Node-Abhängigkeiten läuft dann mit einer Zeile pro Schritt und deren Dauer. Siehe [CLI](../reference/cli.md).
 
 Überspringen Sie die Eingabeaufforderungen mit einer registrierten Vorlage:
 
@@ -47,10 +42,7 @@ uvx nexy new my-app --template <name>
 
 ## Arbeiten Sie in der virtuellen Umgebung des Projekts
 
-Jeder andere Befehl (`nexy dev`, `nexy build`, `nexy migrate`...) muss innerhalb des Projekts ** ausgeführt werden
-virtuelle Umgebung**. Dort leben Ihre eigenen Pakete: Ihr ORM, Ihre Bibliotheken und der Nexy
-Das Projekt wurde mit gebaut. Außerhalb davon scheitert ein Projekt, das `sqlmodel` benötigt
-`ModuleNotFoundError: No module named 'sqlmodel'`.
+Jeder andere Befehl (`nexy dev`, `nexy build`, `nexy migrate`...) muss **in der virtuellen Umgebung des Projekts** ausgeführt werden. Dort leben Ihre eigenen Pakete: Ihr ORM, Ihre Bibliotheken und der Nexy, mit dem das Projekt erstellt wurde. Außerhalb davon scheitert ein Projekt, das `sqlmodel` benötigt, mit `ModuleNotFoundError: No module named 'sqlmodel'`.
 
 Aktivieren Sie es einmal pro Terminal aus dem Projektordner:
 
@@ -69,16 +61,14 @@ nexy dev
 
 Öffnen Sie <http://localhost:3000>.
 
-Um die Aktivierung zu überspringen, lassen Sie uv dies mit einem Befehl tun: `uv run nexy dev`.
+Um die Aktivierung zu überspringen, lassen Sie uv dies für einen Befehl tun: `uv run nexy dev`.
 
 > [!NOTE]
-> `nexy` und `nx` sind die gleichen Binärdateien. Eine Kopie, die mit „uv tool install“ installiert wurde
-> nexy` lives in its own environment, like `uvx`, also verwenden Sie es, um Projekte zu erstellen und alles auszuführen
-> sonst aus der Projektumgebung.
+> `nexy` und `nx` sind dieselbe Binärdatei. Eine mit `uv tool install nexy` installierte Kopie befindet sich in einer eigenen Umgebung, wie `uvx`, also verwenden Sie sie, um Projekte zu erstellen und alles andere in der Projektumgebung auszuführen.
 
-## Nexy zu einem vorhandenen Projekt hinzufügen
+## Fügen Sie Nexy zu einem vorhandenen Projekt hinzu
 
-Führen Sie es aus der virtuellen Umgebung des Projekts aus, mit Nexy unter seinen Paketen (`uv add nexy`):
+Führen Sie es in der virtuellen Umgebung des Projekts aus, mit Nexy unter seinen Paketen (`uv add nexy`):
 
 ```bash
 nexy init
