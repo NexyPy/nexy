@@ -51,7 +51,9 @@ jobs:
 
   quality:
     needs: gate
-    if: needs.gate.outputs.run != 'false'
+    # always(): a skipped `gate` is a pushed branch covered by no PR, and GitHub would
+    # otherwise skip this job too, leaving a PR with no matrix at all.
+    if: always() && needs.gate.outputs.run != 'false'
     runs-on: ubuntu-latest
     strategy:
       matrix:

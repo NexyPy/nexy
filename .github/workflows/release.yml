@@ -125,3 +125,25 @@ jobs:
 
       - name: Publish to PyPI
         run: uv publish --trusted-publishing always
+
+  # PyPI and GitHub are two different readings of the same tag: the package page says
+  # what a user installs, the release page says what changed. Only after PyPI accepted
+  # the files, so a failed upload never announces a version nobody can install.
+  release:
+    name: Publish the GitHub release
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Create the release from the tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes
