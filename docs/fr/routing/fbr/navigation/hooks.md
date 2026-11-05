@@ -61,5 +61,5 @@ label: prop[str]
 
 - [Pages](../pages/README.md) : segments et mises en page dynamiques
 - [Recettes](../../../guides/recipes.md) : un flux de connexion testé basé sur `useSession()`
-- [Config](../../../reference/config.md) : activer les sessions et les paramètres régionaux
+- [Configuration](../../../reference/config.md) : activer les sessions et les paramètres régionaux
 - [fichiers .nexy](../../../views/nexy/README.md) : où les hooks sont généralement appelés
