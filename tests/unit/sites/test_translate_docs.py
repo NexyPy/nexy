@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from scripts.translate_docs import translate_chunk, translate_markdown
+import json
+import re
+
+from scripts.translate_docs import refresh, translate_chunk, translate_markdown
 
 
 def service(text: str, target: str) -> str:
@@ -72,3 +75,34 @@ class TestOpeningWords:
         asked: list[str] = []
         translate_chunk("[[0]] [[1]] first", "fr", lambda t, _: asked.append(t) or t, opening={0})
         assert asked == ["[[1]] first"]
+
+
+class TestWordless:
+    def test_a_piece_with_no_word_is_never_sent(self):
+        asked: list[str] = []
+        assert translate_chunk("[[183]]", "zh", lambda t, _: asked.append(t) or t) == "[[183]]"
+        assert asked == []
+
+
+class TestRefresh:
+    @staticmethod
+    def _docs(tmp_path):
+        (tmp_path / "a.md").write_text("# Good\n", encoding="utf-8")
+        (tmp_path / "b.md").write_text("Broken`x`glued\n", encoding="utf-8")
+        return tmp_path
+
+    @staticmethod
+    def _service(text: str, target: str) -> str:
+        """Loses every placeholder: a piece with no space to cut at cannot be saved."""
+        return re.sub(r"\[\[\d+\]\]", "", f"{target}:{text}")
+
+    def test_a_page_the_service_breaks_does_not_stop_the_others(self, tmp_path):
+        docs = self._docs(tmp_path)
+        written, failed = refresh(docs, "fr", [docs / "a.md", docs / "b.md"], self._service)
+        assert (written, failed) == ([docs / "fr" / "a.md"], [docs / "b.md"])
+
+    def test_the_manifest_remembers_only_what_was_written(self, tmp_path):
+        docs = self._docs(tmp_path)
+        refresh(docs, "fr", [docs / "a.md", docs / "b.md"], self._service)
+        manifest = json.loads((docs / "fr" / "TRANSLATIONS.json").read_text(encoding="utf-8"))
+        assert list(manifest["pages"]) == ["a.md"]
