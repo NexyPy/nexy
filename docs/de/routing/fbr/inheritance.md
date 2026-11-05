@@ -32,7 +32,7 @@ Ein äußeres Layout bildet den Rahmen und eine äußere Abhängigkeit entscheid
 
 ## Layouts
 
-Alle Layoutdateien eines Ordnerfamilienstapels: siehe [Layouts](layouts/README.md). Verschiedene Familien vermischen sich nicht: Ein `layout.vue` umschließt niemals eine `.tsx`-Seite, und ein Projekt hat entweder `layout.nexy` oder Client-Layouts, niemals beides ([modes](modes.md)).
+Alle Layoutdateien eines Ordnerfamilienstapels: siehe [Layouts](layouts/README.md). Verschiedene Familien vermischen sich nicht: Ein `layout.vue` umschließt niemals eine `.tsx`-Seite, und ein Projekt hat entweder `layout.nexy` oder Client-Layouts, niemals beides ([Modi](modes.md)).
 
 ## Middleware-Dateien
 
