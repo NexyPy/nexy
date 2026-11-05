@@ -1,10 +1,8 @@
 # Rendu
 
-Le rendu répond à une question : **qui produit le HTML et quand**. Nexy a quatre réponses et une
-par défaut.
+Le rendu répond à une question : **qui produit le HTML et quand**. Nexy a quatre réponses et une par défaut.
 
-**Vous n'êtes pas sûr ? Gardez SSR.** Changez une page uniquement lorsque vous pouvez en nommer la raison : un contenu qui change rarement
-(ISR), un widget nécessitant le navigateur (île) ou une navigation de type application (CSR).
+**Pas sûr? Conservez SSR.** Modifiez une page uniquement lorsque vous pouvez en nommer la raison : un contenu qui change rarement (ISR), un widget qui nécessite le navigateur (île) ou une navigation de type application (CSR).
 
 ## Comment ça marche
 
@@ -20,32 +18,28 @@ Islands   request ──► server renders the page ──► one widget hydrate
 | | SSR | ISR | CSR | Îles |
 |---|---|---|---|---|
 | Les données sont lues | à chaque requête | à chaque régénération | dans le navigateur | à chaque requête |
-| Le HTML provient | du serveur | du serveur, puis d'un cache | du serveur pour le premier document, du navigateur ensuite | du serveur |
-| JavaScript | uniquement pour les îles | uniquement pour les îles | le framework bundle | uniquement l'île |
+| Le HTML vient du | du serveur | du serveur, puis d'un cache | du serveur pour le premier document, du navigateur ensuite | du serveur |
+| JavaScript | uniquement pour les îles | uniquement pour les îles | le bundle cadre | uniquement l'île |
 | Hydratation | aucune | aucune | l'ensemble du document | l'île |
 | Cache | aucun | par URL, en mémoire | aucun | aucun |
-| Décidé par | par défaut | `revalidate = N` dans la page | `useCSR = True` dans le projet | `directive` sur le composant |
+| Décidé par | par défaut | `revalidate = N` dans la page | `useCSR = True` du projet | `directive` sur le composant |
 | Grain | page | page | **projet** | composant |
 
 ## Cycle de vie du rendu
 
 Deux faits expliquent la plupart des surprises.
 
-1. **Un projet est dans un seul mode.** `useCSR` choisit entre le mode serveur (SSR, ISR, îles, `.nexy`,
-   `.md`, `.mdx` routes) et le mode client (routes framework et un routeur client). Les deux ne peuvent pas être
-   mixte : voir [mode serveur et mode client](../routing/fbr/modes.md).
-2. **En mode serveur, le mode est par page.** Une page peut être mise en cache avec `revalidate`, une autre
-   peut détenir une île, un troisième ne peut faire ni l'un ni l'autre.
+1. **Un projet est dans un seul mode.** `useCSR` choisit entre le mode serveur (SSR, ISR, îles, routes `.nexy`, `.md`, `.mdx`) et le mode client (routes framework et un routeur client). Les deux ne peuvent pas être mélangés : voir [mode serveur et mode client](../routing/fbr/modes.md).
+2. **En mode serveur, le mode est par page.** Une page peut être mise en cache avec `revalidate`, une autre peut contenir une île, une troisième ne peut faire ni l'un ni l'autre.
 
-Le mode client envoie toujours un vrai document : Nexy le restitue dans Node pour la première réponse, puis le
-le navigateur prend en charge la navigation. Une page RSE n’est pas une page blanche en attente d’un bundle.
+Le mode client envoie toujours un vrai document : Nexy le restitue dans Node pour la première réponse, puis le navigateur reprend la navigation. Une page RSE n’est pas une page blanche en attente d’un bundle.
 
 ## Quand utiliser
 
 - **Contenu, marketing, documentation** : SSR, plus ISR lorsque le contenu change rarement.
-- **Une page essentiellement statique avec un widget interactif** : SSR avec une île.
-- **Tableaux de bord, éditeurs, navigation de type application** : CSR.
-- **Une page lue constamment et rarement modifiée** : ISR.
+- **Une page essentiellement statique avec un widget interactif** : SSR avec une île.
+- **Tableaux de bord, éditeurs, navigation de type application** : RSE.
+- **Une page lue constamment et rarement modifiée** : ISR.
 
 ## Configuration
 
@@ -67,21 +61,17 @@ revalidate = 60
 
 La même page sans la ligne d'introduction est SSR.
 
-## Contraintes
+## Limites
 
-- **Il n'y a pas de mode SSG.** Nexy pré-rend le HTML au moment de la construction (composant HTML, documents clients),
-  mais le relit toujours via le serveur : pas de commande d'exportation, pas de dossier autonome à héberger
-  statiquement. Pour le contenu gelé, utilisez ISR avec une longue fenêtre.
-- **ISR n'est pas un CDN.** Le cache réside dans le processus qui restitue la page ; plusieurs ouvriers gardent
-  plusieurs caches. Voir [ISR](isr.md).
+- **Il n'y a pas de mode SSG.** Nexy pré-rend le HTML au moment de la construction (composant HTML, documents client), mais le relit toujours via le serveur : pas de commande d'exportation, pas de dossier autonome à héberger de manière statique. Pour le contenu gelé, utilisez ISR avec une longue fenêtre.
+- **ISR n'est pas un CDN.** Le cache réside dans le processus qui restitue la page ; plusieurs travailleurs gardent plusieurs caches. Voir [ISR](isr.md).
 - **La RSE est une décision de projet.** Vous ne pouvez pas créer une page de RSE et conserver le reste de la RSE.
-- **Les îles hydratent l'île, pas la page.** Une page dont les îles dépendent toutes les unes des autres est un
-  Page RSE déguisée.
+- **Les îles hydratent l'île, pas la page.** Une page dont les îles dépendent toutes les unes des autres est une page RSE déguisée.
 
 ## Prochaines étapes
 
 - [SSR](ssr.md) : la valeur par défaut
-- [ISR](isr.md) : cache une page par URL
+- [ISR](isr.md) : mettre en cache une page par URL
 - [CSR](csr.md) : navigation manuelle vers le navigateur
 - [Îles](islands.md) : hydrater un widget
 - [Performances](../deployment/performance.md)
