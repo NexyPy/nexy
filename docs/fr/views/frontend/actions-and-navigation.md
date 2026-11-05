@@ -2,11 +2,11 @@
 
 L'interaction dans Nexy est gérée via un système unifié d'**Actions** et de **Navigation**, garantissant que le frontend et le backend restent synchronisés sans code de colle API manuel.
 
-## Le Contrat d'Action
+## Le contrat d'action
 
 Une **Action** est une fonction côté serveur qui gère une mutation (par exemple, la mise à jour d'une base de données). 
 
-1.  **Entrée typée** : les actions sont définies en Python avec des indices de type. Nexy génère un client TypeScript correspondant, vous obtenez donc la saisie semi-automatique et la validation dans votre IDE.
+1.  **Entrée typée** : les actions sont définies dans Python avec des indications de type. Nexy génère un client TypeScript correspondant, vous obtenez donc la saisie semi-automatique et la validation dans votre IDE.
 2.  **Exécution atomique** : une action est une seule requête `POST`.
 3.  **Gestion des résultats** : les actions renvoient un résultat typé que le client peut utiliser pour mettre à jour l'interface utilisateur.
 
@@ -29,10 +29,10 @@ Le modèle le plus courant consiste à effectuer une action, puis à diriger l'u
 
 ## Mise en œuvre du cadre
 
-L'API pour appeler des actions et naviguer varie selon le framework. Consultez le guide des **Différences** correspondant à la technologie que vous avez choisie :
+L'API pour appeler des actions et naviguer varie selon le framework. Consultez le guide des **Différences** pour la technologie que vous avez choisie :
 
-- [Réagir aux différences](../react/differences.md)
-- [Différences de vue](../vue/differences.md)
-- [Sveltes différences](../svelte/differences.md)
-- [Des différences solides](../solid/differences.md)
-- [Différences préact](../preact/differences.md)
+- [React Différences](../react/differences.md)
+- [Vue Différences](../vue/differences.md)
+- [Svelte Différences](../svelte/differences.md)
+- [Solid Différences](../solid/differences.md)
+- [Preact Différences](../preact/differences.md)
