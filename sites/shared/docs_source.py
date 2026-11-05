@@ -9,7 +9,7 @@ from __future__ import annotations
 import html as htmllib
 import re
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from posixpath import normpath
 
@@ -19,6 +19,8 @@ from pygments import highlight  # type: ignore[import-untyped]
 from pygments.formatters import HtmlFormatter  # type: ignore[import-untyped]
 from pygments.lexers import HtmlDjangoLexer, get_lexer_by_name  # type: ignore[import-untyped]
 from pygments.util import ClassNotFound  # type: ignore[import-untyped]
+
+from sites.shared import i18n
 
 REPOSITORY = "https://github.com/NexyPy/nexy/blob/main/"
 TEXT_LENGTH = 1800
@@ -186,6 +188,36 @@ class Page:
     group: str = ""
     scope: str = "core"
     badge: str = ""
+    lang: str = i18n.DEFAULT
+    fallback: bool = False
+
+    @property
+    def address(self) -> str:
+        """Where the page lives under /docs/: its slug, behind its language unless English."""
+        return address_of(self.lang, self.slug)
+
+
+def address_of(lang: str, slug: str) -> str:
+    """`fr/guides/actions` for a French page, `guides/actions` for the English one."""
+    if lang == i18n.DEFAULT:
+        return slug
+    return f"{lang}/{slug}" if slug else lang
+
+
+def localized(docs: Path, lang: str, relative: str) -> Path:
+    """The file of a page in a language: its translation, or the English page when it has none."""
+    translated = docs / lang / relative
+    if lang != i18n.DEFAULT and translated.is_file():
+        return translated
+    return docs / relative
+
+
+def _twin(page: Path, docs: Path) -> Path:
+    """The English page a translation stands for: its links and figures resolve from there."""
+    parts = page.relative_to(docs).parts
+    if len(parts) > 1 and parts[0] in i18n.CODES - {i18n.DEFAULT}:
+        return docs.joinpath(*parts[1:])
+    return page
 
 
 @dataclass(frozen=True)
@@ -258,20 +290,40 @@ def _page(
     track: str = "",
     group: str = "",
     badge: str = "",
+    lang: str = i18n.DEFAULT,
 ) -> Page | None:
-    path = docs / relative
-    if not path.is_file():
+    if not (docs / relative).is_file():
         return None
+    path = localized(docs, lang, relative)
     slug = slug_of(relative)
+    fallback = lang != i18n.DEFAULT and path == docs / relative
     return Page(
-        slug, _title(path), label, path, router_of(slug), summary, track, group, "core", badge
+        slug,
+        _title(path),
+        label,
+        path,
+        router_of(slug),
+        summary,
+        track,
+        group,
+        "core",
+        badge,
+        lang,
+        fallback,
     )
 
 
-def home(docs: Path) -> Page:
-    """The landing page of the docs: their README."""
-    path = docs / "README.md"
-    return Page("", _title(path), "Overview", path)
+def home(docs: Path, lang: str = i18n.DEFAULT) -> Page:
+    """The landing page of the docs in a language: their README."""
+    path = localized(docs, lang, "README.md")
+    return Page(
+        "",
+        _title(path),
+        "Overview",
+        path,
+        lang=lang,
+        fallback=path == docs / "README.md" and lang != i18n.DEFAULT,
+    )
 
 
 def _slugify(label: str) -> str:
@@ -298,8 +350,12 @@ def _router_of_group(pages: list[Page]) -> str | None:
     return routers.pop() if len(routers) == 1 else None
 
 
-def read_tracks(docs: Path) -> list[Track]:
-    """The menu of docs/README.md: `##` a section, `###` a group, each table its pages."""
+def read_tracks(docs: Path, lang: str = i18n.DEFAULT) -> list[Track]:
+    """The menu of docs/README.md in a language: `##` a section, `###` a group, a table its pages.
+
+    A language reads `docs/<lang>/README.md` and its pages, and the English page where one has no
+    translation yet.
+    """
     tracks: list[Track] = []
     label = blurb = ""
     groups: list[Group] = []
@@ -314,21 +370,7 @@ def read_tracks(docs: Path) -> list[Track]:
             scope = group_scope or _router_of_group(pages) or "core"
             router = scope if scope in _ROUTER_KEYS else None
             # Update pages with the final resolved scope
-            updated_pages = [
-                Page(
-                    p.slug,
-                    p.title,
-                    p.label,
-                    p.path,
-                    p.router,
-                    p.summary,
-                    p.track,
-                    p.group,
-                    scope,
-                    p.badge,
-                )
-                for p in pages
-            ]
+            updated_pages = [replace(p, scope=scope) for p in pages]
             groups.append(Group(group_title, group_blurb, updated_pages, router, scope))
         group_title, group_blurb, group_scope, pages = "", "", "", []
 
@@ -339,7 +381,7 @@ def read_tracks(docs: Path) -> list[Track]:
             tracks.append(Track(_slugify(label), label, blurb, groups))
         label, blurb, groups = "", "", []
 
-    for line in (docs / "README.md").read_text(encoding="utf-8").splitlines():
+    for line in localized(docs, lang, "README.md").read_text(encoding="utf-8").splitlines():
         text = line.strip()
         if text.startswith("```"):
             fenced = not fenced
@@ -372,6 +414,7 @@ def read_tracks(docs: Path) -> list[Track]:
                     track=_slugify(label),
                     group=group_title,
                     badge=_badge(text),
+                    lang=lang,
                 )
                 if page:
                     pages.append(page)
@@ -803,6 +846,7 @@ def _variants(html: str) -> str:
 
 
 def _compose(text: str, page: Path, docs: Path, link: Link) -> Rendered:
+    page = _twin(page, docs)
     text, names = _name_files(text)
     html = cmarkgfm.github_flavored_markdown_to_html(
         text, Options.CMARK_OPT_GITHUB_PRE_LANG | Options.CMARK_OPT_UNSAFE
