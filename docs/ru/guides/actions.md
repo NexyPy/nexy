@@ -142,4 +142,4 @@ async def delete_user(user_id: str, request: Request):
 
 - [API](../routing/fbr/handlers/README.md): явные обработчики
 - [Тестирование](testing.md#what-to-assert): как протестировать действие
-- [Config](../reference/config.md): промежуточное программное обеспечение и параметры аутентификации
+- [Конфигурация](../reference/config.md): промежуточное программное обеспечение и параметры аутентификации
