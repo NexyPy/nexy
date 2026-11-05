@@ -26,44 +26,36 @@ Pour choisir un dossier, demandez quel est le fichier :
 
 - **Quelque chose que le navigateur peut ouvrir** - un itinéraire : `src/routes/`.
 - **Une pièce utilisée par plusieurs itinéraires** - un composant ou un module : `src/components/`, `src/`.
-- **Un fichier servi tel quel** - `public/`.
+- **Un dossier servi tel quel** - `public/`.
 - **Un contrôleur du routeur modulaire** - `src/apps/`.
 - **Généré** - `__nexy__/` ; ne le modifiez jamais.
 
 > [!AVERTISSEMENT]
-> `src/routes/` est scanné : un assistant placé là devient un itinéraire. Mettre une aide qui n'est pas une route
-> à l'extérieur de `src/routes/`, ou commencez son nom par `_`.
+> `src/routes/` est scanné : un assistant placé là devient un itinéraire. Placez un assistant qui n'est pas une route en dehors de `src/routes/`, ou commencez son nom par `_`.
 
 ## `src/routes/`
 
-Chaque fichier devient une route, à l'exception des noms réservés ci-dessous. Le chemin du fichier moins l'extension est
-l'URL - voir [routage](../routing/README.md).
+Chaque fichier devient une route, à l'exception des noms réservés ci-dessous. Le chemin du fichier moins l'extension est l'URL - voir [routing](../routing/README.md).
 
 | Fichier | Rôle |
 |---|---|
 | `layout.nexy` | enveloppe les pages frères et sœurs et enfants |
 | `errors.nexy` | 500 pages pour le répertoire |
 | `notfound.nexy` | Page 404 pour le répertoire |
-| `dependencies.py` | Dépendances FastAPI partagées pour le répertoire |
-| `__init__.py` | Marqueur de package Python |
+| `dependencies.py` | dépendances FastAPI partagées pour le répertoire |
+| `__init__.py` | Python marqueur de paquet |
 | `loading.nexy` | réservé - exclu des routes, mais n'a pas encore d'effet d'exécution |
 
-Chaque nom de page existe également par framework. Avec `react()` configuré, `layout.jsx` et `layout.tsx`
-sont réservés exactement comme `layout.nexy`. Les listes sont construites en `nexy/core/config.py`
-(`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
+Chaque nom de page existe également par framework. Avec `react()` configuré, `layout.jsx` et `layout.tsx` sont réservés exactement comme `layout.nexy`. Les listes sont construites en `nexy/core/config.py` (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
 
 > [!REMARQUE]
-> `notfound.nexy` et `errors.nexy` ne sont installés que lorsqu'une copie existe au niveau
-> routes racine. Une copie dans un sous-répertoire affine ensuite la page pour ce préfixe.
+> `notfound.nexy` et `errors.nexy` ne sont installés que lorsqu'une copie existe à la racine des routes. Une copie dans un sous-répertoire affine ensuite la page pour ce préfixe.
 
 ## `src/apps/`
 
-Le répertoire que `nexy new` utilise pour le routeur modulaire : registre des contrôleurs, modules et fournisseurs
-leurs itinéraires à travers les décorateurs de `nexy.decorators`, puis l'agrégat `APIRouter` est monté
-avec `useRouter` dans `nexyconfig.py`.
+Le répertoire que `nexy new` utilise pour le routeur modulaire : les contrôleurs, les modules et les fournisseurs enregistrent leurs routes via les décorateurs de `nexy.decorators`, puis l'agrégat `APIRouter` est monté avec `useRouter` dans `nexyconfig.py`.
 
-Un projet peut avoir les deux routeurs : `useRouter` monte le routeur modulaire et `src/routes/` est analysé
-chaque fois que ce répertoire existe. Voir [routage modulaire](../routing/modular/README.md).
+Un projet peut avoir les deux routeurs : `useRouter` monte le routeur modulaire et `src/routes/` est analysé chaque fois que ce répertoire existe. Voir [routage modulaire](../routing/modular/README.md).
 
 ## `public/`
 
@@ -74,15 +66,14 @@ Les fichiers ici sont servis depuis la racine du site : `/favicon.ico`, `/robot
 Généré par `nx build` (et par `nx dev` pour les pièces dont il a besoin). Il contient :
 
 - les modules de route compilés, sous forme de package Python (`__nexy__/src/routes/...`) ;
-- les points d'entrée clients générés (`main.ts`, `vite.ts`, `*.auto.ts`) ;
-- `client/` après une build Vite - actifs, manifeste, HTML pré-rendu ;
+- les points d'entrée client générés (`main.ts`, `vite.ts`, `*.auto.ts`) ;
+- `client/` après une Vite build - actifs, manifeste, HTML pré-rendu ;
 - `build-cache.json`.
 
-Traitez l'ensemble du répertoire comme jetable : supprimez-le, reconstruisez-le. Le modifier à la main perd la modification
-sur la prochaine construction. Ajoutez-le à `.gitignore`.
+Traitez l'ensemble du répertoire comme jetable : supprimez-le, reconstruisez-le. Le modifier à la main perd la modification lors de la prochaine version. Ajoutez-le à `.gitignore`.
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [Routing](../routing/README.md) : comment un chemin devient une URL
 - [Config](../reference/config.md) : chaque option du projet
-- [Frontend](../guides/frontend.md) : Vite, style et build client
+- [Frontend](../guides/frontend.md) : Vite, style et build du client
