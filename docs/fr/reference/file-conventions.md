@@ -31,7 +31,7 @@ Noms et règles réservés sous `src/routes/`.
 | `__init__.py` | Python marqueur de paquet | |
 | `favicon.ico` | servi à `/favicon.ico` | |
 
-`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` et `useLoadingExtensions` réservent davantage d'extensions pour ces noms. Voir [Config](config.md).
+`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` et `useLoadingExtensions` réservent davantage d'extensions pour ces noms. Voir [Configuration](config.md).
 
 ## Fichiers ignorés
 
