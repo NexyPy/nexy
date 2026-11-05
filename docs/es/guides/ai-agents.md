@@ -84,8 +84,8 @@ Un agente responde más rápido cuando sabe qué página contiene la respuesta.
 | un formulario publicado desde una página | [acciones](actions.md) |
 | por qué falló una solicitud y qué página la responde | [excepciones](../reference/exceptions.md) |
 | traducciones | [i18n](i18n.md) |
-| un campo de configuración | [config](../reference/config.md) |
-| para probar la aplicación | [testing](testing.md) |
+| un campo de configuración | [configuración](../reference/config.md) |
+| para probar la aplicación | [pruebas](testing.md) |
 | la compilación del cliente | [frontend](frontend.md) |
 
 ## Invariantes del proyecto
