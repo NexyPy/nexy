@@ -44,7 +44,7 @@ children: prop[NexyElement]
 
 ## 组件和岛屿
 
-布局可以导入 `.nexy` 组件（页眉、页脚）和客户端组件。布局中的客户端组件与其他组件一样是一个 [island](../../rendering/islands.md)：
+布局可以导入 `.nexy` 组件（页眉、页脚）和客户端组件。布局中的客户端组件与其他组件一样是一个 [岛屿](../../rendering/islands.md)：
 
 ```nexy
 ---
@@ -69,7 +69,7 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 
 ## 它不能做什么
 
-- 它不能与 `layout.tsx`、`layout.vue` 或 `layout.svelte` 共存：服务器模式项目没有客户端路由 ([modes](../../routing/fbr/modes.md))。
+- 它不能与 `layout.tsx`、`layout.vue` 或 `layout.svelte` 共存：服务器模式项目没有客户端路由 ([模式](../../routing/fbr/modes.md))。
 - 它不在客户端上运行：使用孤岛进行交互。
 
 ## 后续步骤
