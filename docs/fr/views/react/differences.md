@@ -5,7 +5,7 @@ Nexy restitue React 19 composants sur le serveur, puis React les hydrate dans le
 | Mode | `nexyconfig.py` | Les pages sont | React est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
+| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [mises en page](../frontend/layouts.md) et un routeur client |
 
 ## Démarrer un projet
 
