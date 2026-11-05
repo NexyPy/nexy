@@ -1,20 +1,14 @@
 # Nexy-Dokumentation
 
-**Ein Python-Framework für Fullstack-Webanwendungen.**
+**Ein Python Framework für Fullstack-Webanwendungen.**
 
-Bei Nexy geht es um die Nahtstelle zwischen einem Python-Backend und einem Browser-Frontend. Statt zwei Servern zwei
-Wenn Sie Systeme und zwei Routentabellen erstellen, erhalten Sie einen Ursprung: FastAPI und Starlette bedienen die Anwendung.
-Vite erstellt den Client und eine Datei unter `src/routes/` ist eine Route – `.nexy` ist eine Seite, `.py` ist eine
-API-Handler.
+Bei Nexy geht es um die Nahtstelle zwischen einem Python Backend und einem Browser-Frontend. Anstelle von zwei Servern, zwei Build-Systemen und zwei Routing-Tabellen erhalten Sie einen Ursprung: FastAPI und Starlette dienen der Anwendung, Vite erstellt den Client und eine Datei unter `src/routes/` ist eine Route – `.nexy` ist eine Seite, `.py` ist ein API-Handler.
 
-- **Python zuerst.** Seiten, Endpunkte, Formulare und Aktionen sind Python und eine vom Server gerenderte Seite ist erforderlich
-  kein Frontend-Framework.
-- **Drei Router, eine Integration.** Dateibasiert, modular oder eine vorhandene FastAPI `APIRouter`.
-- **Ein Frontend, wenn Sie eines wollen.** Reagieren, Vue, Svelte, Solid oder Preact, pro Seite als Inseln oder für
-  das gesamte Projekt im Client-Modus.
-- **Rendering, ein Modell.** Server-Rendering, zwischengespeicherte Seiten und Inseln werden pro Seite entschieden; Kunde
-  Routing ist ein Projektwechsel.
-- **Typisierte Aktionen.** Ein Formularbeitrag und ein typisierter Clientaufruf erreichen dieselbe Python-Funktion.
+- **Python zuerst.** Seiten, Endpunkte, Formulare und Aktionen sind Python, und eine vom Server gerenderte Seite benötigt kein Frontend-Framework.
+- **Drei Router, eine Integration.** Dateibasiert, modular oder eine bestehende FastAPI `APIRouter`.
+- **Ein Frontend, wenn Sie eines wollen.** React, Vue, Svelte, Solid oder Preact, pro Seite als Inseln oder für das gesamte Projekt im Client-Modus.
+- **Rendering, ein Modell.** Server-Rendering, zwischengespeicherte Seiten und Inseln werden pro Seite entschieden; Client-Routing ist ein Projektwechsel.
+- **Typisierte Aktionen.** Ein Formularbeitrag und ein eingegebener Kundenaufruf erreichen dieselbe Python Funktion.
 
 Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, wenn das Projekt wächst.
 
@@ -37,12 +31,12 @@ Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, 
 | [Wählen Sie einen Router](routing/README.md) | Wählen Sie den dateibasierten, modularen oder benutzerdefinierten Router |
 | [Wählen Sie ein Ansichtsformat](views/README.md) | Wählen Sie `.nexy`, Markdown oder ein Client-Framework für eine Seite |
 
-### Komme von anderswo
+### Kommt von woanders
 | Seite | Was Sie tun werden |
 |---|---|
-| [Kommt aus einem anderen Framework](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI-, Next.js- und Express-Gewohnheiten in Nexy |
+| [Aus einem anderen Framework stammend](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
 
-## Weiterleitung
+## Routenführung
 
 ### Dateibasiert {fbr}
 | Seite | Was Sie tun werden |
@@ -60,9 +54,9 @@ Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, 
 ### Handler und Fehler {fbr}
 | Seite | Was Sie tun werden |
 |---|---|
-| [Routenhandler](routing/fbr/handlers/README.md) | Einen Python-Endpunkt hinzufügen |
+| [Routenhandler](routing/fbr/handlers/README.md) | Fügen Sie einen Python Endpunkt hinzu |
 | [Validierung und Fehler](routing/fbr/handlers/validation-and-errors.md) | Beantworten Sie `422` und `404` und lösen Sie eine `HTTPException` | aus.
-| [WebSocket-Handler](routing/fbr/realtime/websocket.md) | Verarbeiten einer `SOCKET` Verbindung |
+| [WebSocket Handler](routing/fbr/realtime/websocket.md) | Verarbeiten einer `SOCKET` Verbindung |
 | [Abhängigkeiten und Wächter](routing/fbr/dependencies/README.md) | Führen Sie `dependencies.py` vor einem Handler aus und erben Sie ihn |
 | [Middleware-Dateien](routing/fbr/middleware/README.md) | Wrap-Anfragen mit `middleware.py`, geerbt von Verzeichnis |
 | [Fehlerseiten](routing/fbr/errors/README.md) | Antwort mit `notfound.nexy`, `errors.nexy` und JSON-Fehlern |
@@ -80,11 +74,11 @@ Controller und Module.
 ### Benutzerdefinierte Router-Integration {custom}
 | Seite | Was Sie tun werden |
 |---|---|
-| [Benutzerdefiniertes Routing](routing/custom/README.md) | Eine vorhandene FastAPI-App einschließen |
+| [Benutzerdefiniertes Routing](routing/custom/README.md) | Eine vorhandene FastAPI App einschließen |
 
 ## Frontend
 
-### Gemeinsame Verträge
+### Geteilte Verträge
 | Seite | Was es definiert |
 |---|---|
 | [Frontend-Seiten](views/frontend/pages.md) | Eine Datei, eine Route: Requisiten, Rendering, Metadaten |
@@ -99,16 +93,16 @@ Controller und Module.
 | [layout.nexy](views/nexy/layouts.md) | Schreiben Sie das Servermodus-Layout |
 | [Markdown und MDX](views/nexy/markdown.md) | Inhaltsseiten schreiben |
 
-### Framework-Unterschiede
+### Rahmenunterschiede
 | Seite | Was ändert sich |
 |---|---|
-| [Unterschiede reagieren](views/react/differences.md) | Komponenten, Haken und `layout.tsx` {new} |
-| [Vue-Unterschiede](views/vue/differences.md) | SFCs, Refs und `layout.vue` {new} |
-| [Geringe Unterschiede](views/svelte/differences.md) | Runen, Geschäfte und `layout.svelte` {new} |
-| [Feste Unterschiede](views/solid/differences.md) | Signale, Accessoren und `layout.tsx` {new} |
-| [Präakte Unterschiede](views/preact/differences.md) | Haken, Signale und `layout.tsx` {new} |
+| [React Unterschiede](views/react/differences.md) | Komponenten, Haken und `layout.tsx` {new} |
+| [Vue Unterschiede](views/vue/differences.md) | SFCs, Refs und `layout.vue` {new} |
+| [Svelte Unterschiede](views/svelte/differences.md) | Runen, Geschäfte und `layout.svelte` {new} |
+| [Solid Unterschiede](views/solid/differences.md) | Signale, Accessoren und `layout.tsx` {new} |
+| [Preact Unterschiede](views/preact/differences.md) | Haken, Signale und `layout.tsx` {new} |
 
-## Rendering
+## Rendern
 
 ### Modi
 | Seite | Was Sie entscheiden werden |
@@ -117,35 +111,35 @@ Controller und Module.
 | [SSR](rendering/ssr.md) | Server-Rendering, die Standardeinstellung |
 | [ISR](rendering/isr.md) | Cache-Seiten mit Stale-While-Revalidate |
 | [CSR](rendering/csr.md) | Clientseitiges Routing |
-| [Inseln](rendering/islands.md) | Hydratisierung bei Leerlauf-, sichtbarer oder Medienabfrage |
+| [Inseln](rendering/islands.md) | Hydratisieren bei Leerlauf-, sichtbarer oder Medienabfrage |
 
-## Anleitungen
+## Führer
 
 ### Formulare und Daten
 | Seite | Was Sie tun werden |
 |---|---|
-| [Aktionen](guides/actions.md) | Rufen Sie eine Python-Funktion aus einem Formular oder einer typisierten TypeScript-Funktion auf |
+| [Aktionen](guides/actions.md) | Rufen Sie eine Python Funktion aus einem Formular oder einer typisierten TypeScript Funktion auf |
 | [Datenbanken](guides/databases.md) | Wählen Sie einen ORM und führen Sie Migrationen aus |
 
 ### Sicherheit und Bereitstellung
 | Seite | Was Sie tun werden |
 |---|---|
-| [Middleware und Sicherheit](guides/middleware-and-security.md) | CORS, GZip, vertrauenswürdige Hosts und Sitzungen einrichten |
+| [Middleware und Sicherheit](guides/middleware-and-security.md) | Einrichten von CORS, GZip, vertrauenswürdigen Hosts und Sitzungen |
 | [Bereitstellen](deployment/README.md) | Erstellen, Containerisieren und Bereitstellen |
 | [Leistung](deployment/performance.md) | Messen und optimieren Sie die Standardwerte |
 
-### Erstellen und testen
+### Bauen und testen
 | Seite | Was Sie tun werden |
 |---|---|
-| [Vite und Styling](guides/frontend.md) | Vite, Styling und den Client-Build einrichten |
-| [Testen](guides/testing.md) | Test mit Pytest, `TestClient` und Vitest |
+| [Vite und Styling](guides/frontend.md) | Einrichten Vite, Styling und der Client-Build |
+| [Testen](guides/testing.md) | Test mit pytest, `TestClient` und vitest |
 
 ### Werkzeuge und Hilfe
 | Seite | Was Sie tun werden |
 |---|---|
 | [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
-| [Codierungsagenten](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts |
-| [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Leute stoßen |
+| [Coding Agents](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
+| [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die die Leute stoßen |
 
 ## Referenz
 
@@ -153,12 +147,12 @@ Controller und Module.
 | Seite | Was darin aufgeführt ist |
 |---|---|
 | [CLI](reference/cli.md) | Befehle, Flags, Eingabeaufforderungen und Exit-Codes |
-| [Config](reference/config.md) | Jedes `nexyconfig.py` Feld und seine Standardeinstellung |
+| [Config](reference/config.md) | Jedes `nexyconfig.py` Feld und sein Standard |
 
-### Python-API und Fehler
+### Python API und Fehler
 | Seite | Was darin aufgeführt ist |
 |---|---|
-| [Python-API](reference/python-api.md) | Jeder Name, den Nexy exportiert, nach Modul |
+| [Python API](reference/python-api.md) | Jeder Name, den Nexy exportiert, nach Modul |
 | [Ausnahmen und Fehler](reference/exceptions.md) | Jeder Fehler, sein Status und die Datei, die ihn beantwortet |
 
 ### Konventionen und Konzepte
@@ -199,9 +193,9 @@ docs/
                         security, agents
 ```
 
-## Erweitert
+## Fortgeschritten
 
-### Fortgeschritten {advanced}
+### Erweitert {advanced}
 
 | Seite | Was Sie tun werden |
 |---|---|
