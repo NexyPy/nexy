@@ -72,7 +72,7 @@ async def GET(request: Request):
     return {"user": request.session["user"]}
 ```
 
-> [!REMARQUE]
+> [!NOTE]
 > gardez les vrais mots de passe hors de la source. Stockez un hachage (`argon2`, `bcrypt`) et lisez la clé secrète de l'environnement. Le cookie de session est signé et non crypté.
 
 ## Une API JSON avec création, lecture et suppression
@@ -151,7 +151,7 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
     return {"name": name, "size": len(data)}
 ```
 
-`Path(...).name` supprime tout dossier que le client a mis dans le nom, tel que `../../etc/passwd`. Enregistrez les octets sous un nom que vous générez, pas sous celui-ci.
+`Path(...).name` supprime tout dossier que le client a indiqué, tel que `../../etc/passwd`. Enregistrez les octets sous un nom que vous générez, pas sous celui-ci.
 
 ## Prochaines étapes
 
