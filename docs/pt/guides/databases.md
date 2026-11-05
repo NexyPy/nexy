@@ -1,19 +1,17 @@
 # Bancos de dados
 
-`nx new` pode criar uma camada de modelo com SQLModel, SQLAlchemy ou Tortoise-ORM. Nexy não embrulha
-o ORM: você o usa diretamente, a partir de manipuladores e páginas.
+`nx new` pode criar uma camada de modelo com SQLModel, SQLAlchemy ou Tortoise-ORM. Nexy não envolve o ORM: você o usa diretamente, a partir de manipuladores e páginas.
 
 ## O que o andaime adiciona
 
 | Arquivo | Finalidade |
 |---|---|
-| `src/configs/db.py` | o mecanismo (SQLModel, SQLAlchemy) ou as configurações `TORTOISE_ORM` |
+| `src/configs/db.py` | o motor (SQLModel, SQLAlchemy) ou as configurações `TORTOISE_ORM` |
 | `src/models/` | classes de modelo |
 | `src/services/` | funções que consultam os modelos |
 | `.env` | `DATABASE_URL`, escrito quando você fornece uma URL de banco de dados durante `nx new` |
 
-A string de conexão vem da variável de ambiente `DATABASE_URL`. Quando não estiver definido, o
-o mecanismo scaffolded recorre a um arquivo SQLite local, `dev.db`.
+A string de conexão vem da variável de ambiente `DATABASE_URL`. Quando não é definido, o mecanismo de scaffolded volta para um arquivo local SQLite, `dev.db`.
 
 ## Use um serviço em uma página
 
@@ -29,7 +27,7 @@ users = UserService.get_all()
 </ul>
 ```
 
-## Usar um serviço em um manipulador de API
+## Use um serviço em um manipulador de API
 
 ```python filename="src/routes/api/users.py"
 from src.services.user_service import UserService
@@ -41,11 +39,9 @@ async def GET():
 
 ## Tortoise-ORM é assíncrono
 
-Uma página é executada no loop de eventos do servidor e não pode esperar por ela, então `asyncio.run(...)` falha lá com
-"não pode ser chamado de um loop de eventos em execução". O andaime `src/configs/db.py` dá à Tartaruga uma
-loop próprio, em um thread, e dois auxiliares que enviam uma corrotina para ele:
+Uma página é executada no loop de eventos do servidor e não pode esperar por ela, então `asyncio.run(...)` falha lá com "não pode ser chamada a partir de um loop de eventos em execução". O scaffolded `src/configs/db.py` fornece ao Tortoise um loop próprio, em um thread, e dois auxiliares que enviam uma corrotina para ele:
 
-| Onde você está | Ligue para | Faz |
+| Onde você está | Liga para | Faz |
 |---|---|---|
 | código de sincronização, como uma página | `run(UserService.get_all())` | executa-o e retorna o resultado |
 | código assíncrono, como um manipulador ou um controlador | `await arun(UserService.get_all())` | o mesmo, sem bloquear o servidor |
@@ -58,18 +54,13 @@ users = run(UserService.get_all())
 ---
 ```
 
-A tartaruga se conecta na primeira vez que um deles é chamado. Chame o modelo de um `async def`
-(`await UserModel.all()` dentro de um serviço), não no nível do módulo: uma chamada fora de uma corrotina é executada
-antes que o Tortoise se conecte.
+Tortoise conecta na primeira vez que um deles é chamado. Chame o modelo de um `async def` (`await UserModel.all()` dentro de um serviço), não no nível do módulo: uma chamada fora de uma corrotina é executada antes de Tortoise ser conectado.
 
-Liste todos os módulos que contêm modelos em `TORTOISE_ORM` (a entrada `models` de `src/configs/db.py`).
-O andaime lista o modelo do usuário e `aerich.models`; um modelo em um módulo que não está listado não é
-encontrado.
+Liste todos os módulos que contêm modelos em `TORTOISE_ORM` (a entrada `models` de `src/configs/db.py`). O andaime lista o modelo do usuário e `aerich.models`; um modelo em um módulo que não está listado não foi encontrado.
 
 ## Migrações
 
-`nx migrate` escolhe a ferramenta para seu ORM: Alembic para SQLModel e SQLAlchemy, Aerich para
-Tartaruga-ORM.
+`nx migrate` escolhe a ferramenta para o seu ORM: Alembic para SQLModel e SQLAlchemy, Aerich para Tortoise-ORM.
 
 | Comando | Faz |
 |---|---|
@@ -77,21 +68,15 @@ Tartaruga-ORM.
 | `nx migrate -m "add users"` | crie uma migração a partir das alterações do seu modelo |
 | `nx migrate --upgrade` | aplicar migrações pendentes |
 
-Com Aerich, o primeiro `nx migrate` executa `aerich init-db`, que cria a primeira migração e a
-mesas juntas; os próximos executam `aerich migrate --name "..."` e `--upgrade` executam
-`aerich upgrade`.
+Com Aerich, o primeiro `nx migrate` executa `aerich init-db`, que cria a primeira migração e as tabelas juntas; os próximos executam `aerich migrate --name "..."` e `--upgrade` executam `aerich upgrade`.
 
-`nx migrate` para com uma mensagem clara quando `DATABASE_URL` está faltando ou o banco de dados não pode ser
-alcançado (Apenas Alambique: Aerich relata seus próprios erros).
+`nx migrate` para com uma mensagem clara quando `DATABASE_URL` está faltando ou o banco de dados não pode ser alcançado (Alembic apenas: Aerich relata seus próprios erros).
 
 ### A primeira migração é feita para você
 
-Quando você escolhe um ORM e fornece uma URL de banco de dados, `nx new` configura a ferramenta de migração, cria o
-primeira migração e a aplica, então a página do usuário responde na primeira `nexy dev`. A migração
-ferramenta (`alembic` ou `aerich`) é instalada no projeto com o ORM.
+Quando você escolhe um ORM e fornece uma URL de banco de dados, `nx new` configura a ferramenta de migração, cria a primeira migração e a aplica, para que a página do usuário responda na primeira `nexy dev`. A ferramenta de migração (`alembic` ou `aerich`) é instalada no projeto com o ORM.
 
-Se o banco de dados não responder (um servidor PostgreSQL que não está em execução, um driver ausente), `nx new`
-diz o porquê, ignora a migração e lista os dois comandos a serem executados quando estiver pronto:
+Se o banco de dados não responder (um servidor PostgreSQL que não está rodando, um driver ausente), `nx new` diz o porquê, pula a migração e lista os dois comandos para executar quando estiver pronto:
 
 ```bash
 nexy migrate -m "create tables"
@@ -102,8 +87,7 @@ Até que as tabelas existam, uma página que lê o banco de dados falha com "nen
 
 ### Adicionar um modelo
 
-Alembic compara o banco de dados com os modelos que `alembic/env.py` importa. Um modelo em um novo
-O módulo não é visto até que esse módulo seja importado para lá, próximo ao modelo do usuário:
+Alembic compara o banco de dados com os modelos que `alembic/env.py` importa. Um modelo em um novo módulo não é visto até que esse módulo seja importado para lá, próximo ao modelo do usuário:
 
 ```python filename="alambique/env.py"
 import src.models.user_model  # noqa: F401
