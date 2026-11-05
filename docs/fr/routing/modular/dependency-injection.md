@@ -1,7 +1,6 @@
-# Injection de dépendance
+# Injection de dépendances
 
-Nexy résout les dépendances du constructeur pour les contrôleurs et les services. Une classe s'inscrit avec
-`@Injectable()`.
+Nexy résout les dépendances du constructeur pour les contrôleurs et les services. Une classe s'inscrit avec `@Injectable()`.
 
 ## Injecter un service
 
@@ -29,8 +28,7 @@ class UserController:
         return self.svc.get_all()
 ```
 
-Enregistrez le contrôleur dans un module. La liste du service dans `providers` le résout en outre
-avec impatience au démarrage :
+Enregistrez le contrôleur dans un module. La liste du service dans `providers` le résout également rapidement au démarrage :
 
 ```python filename="src/apps/users/users_module.py"
 from nexy.decorators import Module
@@ -46,12 +44,10 @@ class UsersModule:
 
 ## Comment fonctionne la résolution
 
-- Chaque paramètre `__init__` est résolu à partir de son **annotation de type**. L'annotation doit être un
-  `@Injectable()` classe, ou le paramètre doit avoir une valeur par défaut ; sinon la résolution augmente
-  `ValueError`.
+- Chaque paramètre `__init__` est résolu à partir de son **annotation de type**. L'annotation doit être une classe `@Injectable()`, ou le paramètre doit avoir une valeur par défaut ; sinon la résolution augmente `ValueError`.
 - Les contrôleurs sont instanciés avec `Container.resolve()` au démarrage.
-- Un cycle de dépendance déclenche `RecursionError` en nommant la classe.
-- Les services peuvent injecter d'autres services, à n'importe quelle profondeur.
+- Un cycle de dépendance génère `RecursionError` en nommant la classe.
+- Les services peuvent injecter d’autres services, à n’importe quelle profondeur.
 
 ## Portées
 
@@ -77,8 +73,7 @@ from nexy.decorators import Container
 service = Container.resolve(UserService)
 ```
 
-Construire soi-même une classe `@Injectable()` génère `TypeError` : le conteneur est propriétaire de son cycle de vie.
-Utilisez `Container.resolve(...)` ou recevez la classe via un autre constructeur.
+Construire soi-même une classe `@Injectable()` génère `TypeError` : le conteneur est propriétaire de son cycle de vie. Utilisez `Container.resolve(...)` ou recevez la classe via un autre constructeur.
 
 `Container.clear_request_scope()` supprime les instances de la requête actuelle.
 
@@ -95,9 +90,7 @@ def get(self, limit: int = Depends(pagination)) -> list[dict]: ...
 
 ## Limites
 
-Le conteneur s'étend à l'ensemble du processus. Les fournisseurs ne sont pas isolés par module, `exports` décide uniquement quels
-fournisseurs qu'un module d'importation résout avec impatience, et il n'y a pas d'API publique pour échanger un fournisseur
-essais. Voir [Nexy et NestJS](vs-nestjs.md) pour la comparaison complète.
+Le conteneur s'étend à l'ensemble du processus. Les fournisseurs ne sont pas isolés par module, `exports` décide uniquement quels fournisseurs un module d'importation résout avec impatience, et il n'y a pas d'API publique pour échanger un fournisseur dans les tests. Voir [Nexy et NestJS](vs-nestjs.md) pour la comparaison complète.
 
 ## Prochaines étapes
 
