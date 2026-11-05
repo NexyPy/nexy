@@ -7,18 +7,18 @@
 
 ## 简短版本
 
-| 发生了什么 | 状态 | 浏览器看到 | API 客户端看到 |
+| 发生了什么 | 状态 | 浏览器看到 | API客户端看到 |
 |---|---|---|---|
-| 没有路由与 URL | `404` | `notfound.nexy` 匹配，否则内置页面 | `{"detail": "Not Found"}` |
-| 路径段不适合其注释 | `404` | 同一页面 | `{"detail": "Not Found"}` |
+| 没有路由与 URL 匹配 | `404` | `notfound.nexy`，否则为内置页面 | `{"detail": "Not Found"}` |
+| 路径段不适合其注释 | `404` | 同一页 | `{"detail": "Not Found"}` |
 | 查询、标头、cookie 或正文字段丢失或无效 | `422` | FastAPI 的 JSON 正文 | FastAPI 的 JSON 正文 |
-| `notFound()` | `404` | 页 | `{"detail": ...}` |
+| `notFound()` | `404` | 页面 | `{"detail": ...}` |
 | `unauthorized()` | `401` | 内置页面 | `{"detail": ...}` |
 | `forbidden()` | `403` | 内置页面 | `{"detail": ...}` |
 | `raise HTTPException(409, ...)` | `409` | 内置页面 | `{"detail": ...}` |
-| 没有捕获任何异常 | `500` | `errors.nexy`，否则内置页面 | `{"detail", "reference"}` |
-| `redirect(url)` | `307` | 目标，无页面 | 目标，无正文 |
-| `permanentRedirect(url)` | `308` | 目的地，无页 | 目的地 |
+| 没有捕获任何异常 | `500` | `errors.nexy`，否则为内置页面 | `{"detail", "reference"}` |
+| `redirect(url)` | `307` | 目的地，无页面 | 目的地，没有尸体 |
+| `permanentRedirect(url)` | `308` | 目的地，无页面 | 目的地 |
 
 API 客户端是一个请求，其 `Accept` 标头要求 JSON，而不是页面：
 
@@ -42,14 +42,14 @@ Browser ──► Middleware ──► Router ──► Page or handler
                  └─ raises ──────────────────────────────────────► 500
 ```
 
-| 阶段 | 什么会失败 | 答案 |
+| 舞台 | 什么会失败 | 答案 |
 |---|---|---|
-| 中间件 | 您的 `middleware.py`、CORS、会话 | 异常状态，否则 `500` |
-| 路由器 | URL 与文件不匹配 | `404` |
+| 中间件 | 您的 `middleware.py`、CORS、会话 | 异常的状态，否则 `500` |
+| 路由器 | URL 不匹配任何文件 | `404` |
 | 验证 | 路径段无法转换 | `404` |
 | 验证 | 查询、标头、cookie 或正文字段 | `422` |
-| 页面、处理程序、操作、防护 | `HTTPException` | 其状态 |
-| 页面、处理程序、操作、防护 | 任何其他内容 | `500` |
+| 页面、处理程序、操作、防护 | `HTTPException` | 它的状态 |
+| 页面、处理程序、操作、防护 | 还有什么 | `500` |
 
 ## 从任何地方离开
 
@@ -70,14 +70,14 @@ async def GET(slug: str):
     return post
 ```
 
-| 呼叫 | 应答 | 当 |
+| 致电 | 回答 | 当 |
 |---|---|---|
-| `notFound(detail=None)` | `404` | 资源不存在 |
+| `notFound(detail=None)` | `404` | 该资源不存在 |
 | `unauthorized(detail=None, scheme=None)` | `401` | 访客必须先登录 |
-| `forbidden(detail=None)` | `403` | 访问者是已知的，但可能看不到此 |
+| `forbidden(detail=None)` | `403` | 访客是已知的，但可能看不到此内容 |
 | `redirect(url, status=307)` | `307` | 将它们发送到其他地方，保留方法 |
-| 表单后的 `redirect(url, status=303)` | `303` |：下一个请求是 `GET` |
-| `permanentRedirect(url)` | `308` | 搜索引擎应记住的已移动页面 |
+| `redirect(url, status=303)` | `303` | 表单之后：下一个请求是 `GET` |
+| `permanentRedirect(url)` | `308` | 搜索引擎应该记住的移动页面 |
 
 根据您信任的价值观打造目的地。 `redirect(request.query_params["next"])` 将访问者发送到链接所在的任何地方；这是一个开放的重定向。包含换行符的目的地将被拒绝。
 
@@ -95,8 +95,8 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 | 问题 | 状态 | 为什么 |
 |---|---|---|
-| 查询、标头、cookie 或正文字段缺失或无效 | `422` | 请求已到达处理程序，数据错误 |
-| 无效路径段（`id: int` 的 `/api/users/abc`） | `404` | 该文件夹没有非数字的路由，因此 URL 不存在 |
+| 查询、标头、cookie 或正文字段缺失或无效 | `422` | 请求到达处理程序，数据错误 |
+| 无效路径段（`/api/users/abc` 对于 `id: int`） | `404` | 该文件夹没有非号码的路由，因此该 URL 不存在 |
 
 `422` 主体是 FastAPI 的标准形状，因此客户端和生成的 SDK 可以继续工作：
 
@@ -121,12 +121,12 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 <p>Try again in a moment.</p>
 ```
 
-| 文件 | 状态 | 范围 |
+| 文件 | 状态 | 适用范围 |
 |---|---|---|
-| `src/routes/notfound.nexy` | `404` | 该项目的每条路线 |
-| `src/routes/errors.nexy` | `500` | 该项目的每条路线 |
-| `src/routes/forbidden.nexy` | `403` | 该项目的每条路线 |
-| `src/routes/unauthorized.nexy` | `401` | 该项目的每条路线 |
+| `src/routes/notfound.nexy` | `404` | 项目的每条路线 |
+| `src/routes/errors.nexy` | `500` | 项目的每条路线 |
+| `src/routes/forbidden.nexy` | `403` | 项目的每条路线 |
+| `src/routes/unauthorized.nexy` | `401` | 项目的每条路线 |
 | `src/routes/blog/notfound.nexy` | `404` | `/blog` 及以下 |
 | `src/routes/blog/errors.nexy` | `500` | `/blog` 及以下 |
 | `src/routes/loading.nexy` | - | 保留，还没有运行时效果 |
@@ -142,8 +142,8 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 | | `nexy dev` | `nexy build` 然后 `nexy start` |
 |---|---|---|
-| 浏览器 | 错误、代码行和回溯 | `errors.nexy`，否则内置页面，带有引用 |
-| API 客户端 | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| 浏览器 | 错误、代码行和回溯 | `errors.nexy`，否则内置页面，带有参考 |
+| API客户端 | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
 | 终端 | 异常和代码行 | 异常、整个回溯和引用 |
 
 ```text
@@ -162,11 +162,11 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 操作是具有生成路径的 `POST` 端点。它的失败遵循相同的规则：
 
-| 情况 | 状态 | 客户端 |
+| 情况 | 状态 | 客户 |
 |---|---|---|
-| 字段缺失或无效 | `422` | `ActionError` 和 `fields` |
-| `HTTPException(403)` 在 | `403` | `ActionError` 中与 `status` 和 `detail` | 一起提出
-| 未处理的异常 | `500` | `ActionError`；参考位于服务器日志 |
+| 字段缺失或无效 | `422` | `ActionError` 与 `fields` |
+| `HTTPException(403)` 在行动中提出 | `403` | `ActionError` 与 `status` 和 `detail` |
+| 未处理的异常 | `500` | `ActionError`；参考位于服务器日志中 |
 | `Origin` 标头是另一个站点 | `403` | 在操作运行之前被拒绝 |
 
 没有 JavaScript 的表单发布到操作路径；成功则返回 `303` 页面，失败则显示错误页面。请参阅[操作](../guides/actions.md#forms-without-javascript)。
