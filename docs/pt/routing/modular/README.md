@@ -83,5 +83,5 @@ Veja `examples/Modular/api/minimal/`.
 
 - [Injeção de dependência](dependency-injection.md): serviços e escopos
 - [Guardas e metadados](guards-and-metadata.md): proteger e documentar rotas
-- [Routing](../README.md): o roteador baseado em arquivo
-- [Config](../../reference/config.md): todas as opções, incluindo `useRouter`
+- [Roteamento](../README.md): o roteador baseado em arquivo
+- [Configuração](../../reference/config.md): todas as opções, incluindo `useRouter`
