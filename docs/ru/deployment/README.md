@@ -78,6 +78,6 @@ async def GET():
 
 ## Следующие шаги
 
-- [Config](../reference/config.md): HTTPS, доверенные хосты, сеансы.
+- [Конфигурация](../reference/config.md): HTTPS, доверенные хосты, сеансы.
 - [Фронтенд](../guides/frontend.md): что строит Vite
 - [Тестирование](../guides/testing.md): команды для запуска в CI
