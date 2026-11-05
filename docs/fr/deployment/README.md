@@ -64,7 +64,7 @@ async def GET():
 
 Chaque page est HTML, mais Nexy suppose un serveur pour le routage et pour les gestionnaires d'API.
 
-> [!REMARQUE]
+> [!NOTE]
 > il n'y a pas de mode de construction `--static`. Une exportation purement statique doit être générée dans votre pipeline à partir de la sortie `nx build`.
 
 ## Liste de contrôle
