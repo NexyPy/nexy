@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from sites.shared import docs_source, home_strings, i18n, version
+from sites.shared import docs_source, i18n, version
 from sites.vanilla import build
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
@@ -47,17 +47,6 @@ class TestPayload:
 
     def test_the_payload_lists_every_language(self, payload):
         assert [one["code"] for one in payload["languages"]] == CODES
-
-    def test_the_payload_carries_the_hero_of_every_language(self, payload):
-        assert set(payload["home"]["hero"]) == set(CODES)
-
-    def test_every_language_names_the_three_groups_of_the_home(self, payload):
-        expected = {"first-steps", "understand-the-model", "coming-from-elsewhere"}
-        assert all(set(groups) == expected for groups in payload["home"]["groups"].values())
-
-    def test_every_language_has_a_card_for_every_page(self, payload):
-        slugs = {page.slug for page in docs_source.pages_of(docs_source.read_tracks(DOCS)[0])}
-        assert all(set(cards) == slugs for cards in payload["home"]["cards"].values())
 
     def test_the_payload_is_json_ready(self, payload):
         assert json.loads(json.dumps(payload))["ui"]["fr"]["search"] == "Rechercher"
@@ -99,7 +88,7 @@ class TestLocalize:
 class TestVanilla:
     def test_the_build_writes_the_payload(self, out):
         payload = json.loads((out / "assets" / "i18n.json").read_text(encoding="utf-8"))
-        assert set(payload) == {"languages", "ui", "home"}
+        assert set(payload) == {"languages", "ui"}
 
     def test_a_page_carries_the_picker(self, out):
         page = (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
@@ -120,10 +109,6 @@ class TestVanilla:
         page = (out / "docs" / "index.html").read_text(encoding="utf-8")
         assert f'<span class="side-version" aria-label="Nexy version {version.VERSION}">' in page
         assert version.VERSION == "V2.2"
-
-
-def test_the_home_translations_cover_every_language():
-    assert set(home_strings.HERO) == set(CODES)
 
 
 class TestPreferred:
