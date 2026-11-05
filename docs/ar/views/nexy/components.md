@@ -35,7 +35,7 @@ from nexy import Audio
 - نموذج العلامة هو **الإغلاق الذاتي**. `<Audio src="/a.mp3" />` و `{{ Audio("/a.mp3") }}` متساويان؛ كتابة الأطفال داخل علامة المساعدة غير مدعومة.
 - سمة HTML المجردة ليست منطقية هنا: `controls` تصبح `controls=""`، ​​وهذا خطأ. اكتب `controls=True`.
 
-> [!ملاحظة]
+> [!NOTE]
 > `class_name` هي الكلمة الأساسية الموثقة لفئات CSS. تصبح وسيطات الكلمات الرئيسية الإضافية سمات HTML، لذلك يصل `class="nav"` أيضًا إلى المخرجات.
 
 ## صورة
@@ -62,7 +62,7 @@ from nexy import Link
 
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` يعرض `<a data-nexy-link>` تتم معالجته بواسطة جهاز توجيه العميل. مع `prefetch=True`، يؤدي التمرير أو لمس الرابط إلى تسخين الهدف من خلال `window.__nexy_prefetch`.
 
-> [!ملاحظة]
+> [!NOTE]
 > يأخذ نموذج العلامة التسمية كـ `children`، وليس كمحتوى عنصر: `<Link href="/about" children="About" />`. لوضع علامة داخل رابط، استخدم نموذج الاستدعاء مع `children=` أو مكون `.nexy` الذي يعرض `<Slot />`.
 
 ## الصوت والفيديو
@@ -78,7 +78,7 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` و `Video(src, width=None, height=None, ...)` يقدمان لاعبين أصليين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل امتداد.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` و `Video(src, width=None, height=None, ...)` يقدمان لاعبين أصليين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل ملحق.
 
 ## مكون تكتبه بنفسك
 
@@ -104,7 +104,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`title` ليس له افتراضي، لذا يجب على الصفحة اجتيازه؛ `tone` يرجع إلى `"neutral"`. تصل العلامات بين العلامات إلى داخل `<Slot />` (بالحرف S الكبير). راجع [.nexy files](README.md#components) للتعرف على الدعائم والفتحات وقواعد نموذج العلامة.
+`title` ليس له افتراضي، لذا يجب على الصفحة اجتيازه؛ `tone` يرجع إلى `"neutral"`. تصل العلامات بين العلامات داخل `<Slot />` (الحرف الكبير S). راجع [ملفات .nexy](README.md#components) للتعرف على الدعائم والفتحات وقواعد نموذج العلامة.
 
 ## استيراد مكون العميل
 
