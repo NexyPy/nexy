@@ -10,7 +10,7 @@ Noms et règles réservés sous `src/routes/`.
 | `about.nexy` | `/about` |
 | `[slug].nexy` | segment dynamique `{slug}` |
 | `[...path].nexy` | fourre-tout `{path:path}` |
-| `(group)/page.nexy` | `/page` : le groupe n'apparaît pas dans l'URL |
+| `(group)/page.nexy` | `/page` : le groupe n'apparaît pas dans l'URL |
 | `name.py` | Gestionnaire d'API ; les noms de fonctions `GET`, `POST`, ... sont les méthodes |
 | `name.tsx`, `.jsx`, `.vue`, `.svelte` | route client lorsque le framework est activé avec `useFF` |
 
@@ -19,21 +19,19 @@ Noms et règles réservés sous `src/routes/`.
 | Fichier | Rôle | Détails |
 |---|---|---|
 | `layout.nexy` | mode serveur : encapsule chaque page en dessous ; le root possède le document HTML | [layout.nexy](../views/nexy/layouts.md) |
-| `layout.tsx` | mode client (React) : le root est propriétaire du document HTML, les imbriqués enveloppent les pages | [layout.tsx](../views/react/differences.md) |
+| `layout.tsx` | mode client (React) : la racine est propriétaire du document HTML, les imbriquées enveloppent les pages | [layout.tsx](../views/react/differences.md) |
 | `layout.vue`, `layout.svelte` | mode client : mises en page imbriquées | [layout.vue](../views/vue/differences.md), [layout.svelte](../views/svelte/differences.md) |
 | `notfound.nexy` | Page 404 pour son répertoire | [Pages d'erreur](../routing/fbr/errors/README.md) |
 | `errors.nexy` | 500 pages pour son répertoire | [Pages d'erreur](../routing/fbr/errors/README.md) |
 | `forbidden.nexy` | 403 pages pour son répertoire | [Pages d'erreur par dossier](../routing/fbr/errors/folder-pages.md) |
-| `unauthorized.nexy` | Page 401 pour son répertoire | [Pages d'erreur par dossier](../routing/fbr/errors/folder-pages.md) |
+| `unauthorized.nexy` | 401 pages pour son répertoire | [Pages d'erreur par dossier](../routing/fbr/errors/folder-pages.md) |
 | `loading.nexy` | réservé ; aucun effet d'exécution pour l'instant | [Pages d'erreur](../routing/fbr/errors/README.md) |
 | `middleware.py` | et `async def middleware(request, call_next)` encapsulant les requêtes du répertoire et ci-dessous | [Fichiers Middleware](../routing/fbr/middleware/README.md) |
-| `dependencies.py` | une liste `dependencies = [fn, ...]` appliquée au répertoire et à ses enfants | [Dépendances](../routing/fbr/dependencies/README.md) |
-| `__init__.py` | Marqueur de package Python | |
+| `dependencies.py` | une `dependencies = [fn, ...]` liste appliquée au répertoire et à ses enfants | [Dépendances](../routing/fbr/dependencies/README.md) |
+| `__init__.py` | Python marqueur de paquet | |
 | `favicon.ico` | servi à `/favicon.ico` | |
 
-`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`,
-`useUnauthorizedExtensions` et `useLoadingExtensions` réservent plus d'extensions pour ces noms. Voir
-[Configuration](config.md).
+`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` et `useLoadingExtensions` réservent davantage d'extensions pour ces noms. Voir [Config](config.md).
 
 ## Fichiers ignorés
 
@@ -42,10 +40,9 @@ Noms et règles réservés sous `src/routes/`.
 
 ## Un fichier par URL
 
-Deux fichiers qui renvoient à la même URL sont tous deux enregistrés. Ne mettez pas `blog.nexy` à côté de
-`blog/index.nexy`.
+Deux fichiers qui renvoient à la même URL sont tous deux enregistrés. Ne mettez pas `blog.nexy` à côté de `blog/index.nexy`.
 
-## Dehors `src/routes/`
+## À l'extérieur `src/routes/`
 
 | Dossier | Objectif |
 |---|---|
@@ -54,7 +51,7 @@ Deux fichiers qui renvoient à la même URL sont tous deux enregistrés. Ne mett
 | `public/` | fichiers statiques, servis à la racine : `public/logo.svg` est `/logo.svg` (également sous `/public/`) |
 | `__nexy__/` | sortie générée ; ne commettez pas |
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [Routage](../routing/README.md)
 - [Structure du projet](../getting-started/project-structure.md)
