@@ -18,12 +18,12 @@ class NexyConfig(NexyConfigModel):
 
 然后该项目改变形状：
 
-| | 服务器模式 (`False`) | 客户端模式 (`True`) |
+| | 服务器模式（`False`） | 客户端模式（`True`） |
 |---|---|---|
 | 路线 | `.nexy`、`.md`、`.mdx` | `.tsx`、`.jsx`、`.vue`、`.svelte` |
-| 文档 | `layout.nexy` | 根 `layout.tsx` / `.vue` / `.svelte` 拥有 `<html>`、`<head>`、`<body>` |
+| 文件 | `layout.nexy` | 根 `layout.tsx` / `.vue` / `.svelte` 拥有 `<html>`、`<head>`、`<body>` |
 | 客户端组件 | 页面内的岛屿 | 页面本身 |
-| `src/routes/` | 下的 `.nexy` 页面格式 | 在 `nx dev`、`nx start` 和 `nx build` | 之前被拒绝
+| `.nexy` 下 `src/routes/` | 页面格式 | 在 `nx dev`、`nx start` 和 `nx build` 之前被拒绝 |
 | 导航 | 每个链接的完整请求 | 客户端路由器 |
 
 `.md` 和 `.mdx` 保持有效：Nexy 将它们呈现在客户端布局内的服务器上，客户端路由器从那里接管。 `.py` 处理人员坐在路线旁边，并由 FastAPI 提供服务。
@@ -46,9 +46,9 @@ class NexyConfig(NexyConfigModel):
 
 ## 配置
 
-| 设置 | 值 |
+| 设置 | 价值 |
 |---|---|
-| `useFF` | 必需：`useCSR` 没有客户端框架会被拒绝 |
+| `useFF` | 必需：`useCSR` 没有客户端框架被拒绝 |
 | `useCSR` | `True` |
 | `useRouter` | 必须保持关闭状态：模块化路由器在客户端模式下被拒绝 |
 
@@ -75,9 +75,9 @@ export default function Home() {
 
 ## 局限性
 
-- **整个项目。** 您不能将一个 CSR 页面混合到服务器模式项目中：选择应用程序的模式，然后将 [islands](islands.md) 用于服务器模式页面的交互部分。
+- **整个项目。** 您不能将一个 CSR 页面混合到服务器模式项目中：选择应用程序的模式，然后将 [岛屿](islands.md) 用于服务器模式页面的交互部分。
 - **没有 `.nexy` 路由。** 你在 `.nexy` 中编写的任何内容都必须成为框架组件。
-- **服务器数据通过端点。** 客户端路由无法在渲染时读取数据库；它调用 `.py` 处理程序或 [Action](../guides/actions.md)。
+- **服务器数据通过端点。** 客户端路由无法在渲染时读取数据库；它调用 `.py` 处理程序或 [操作](../guides/actions.md)。
 - **动态路由需要声明的静态参数，或者从 shell 开始。** 从页面导出 `getStaticParams()` - Next.js 名称 `getStaticPaths` 和 `generateStaticParams` 也被接受 - 每个值都有一个文档。如果没有它，外壳将携带布局而不是页面：浏览器运行后页面就会出现。
 - **CSR不是空白页，也不是SPA。** 第一个文档由服务器渲染；这是在浏览器中发生的导航。
 
@@ -86,4 +86,4 @@ export default function Home() {
 - [服务器模式和客户端模式](../routing/fbr/modes.md)：检查和拒绝的文件
 - [布局](../routing/fbr/layouts/README.md)：哪个文件拥有该文档
 - [SSR](ssr.md)：默认，逐页
-- [Frontend](../guides/frontend.md)：开发服务器和客户端构建
+- [前端](../guides/frontend.md)：开发服务器和客户端构建
