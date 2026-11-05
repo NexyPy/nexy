@@ -2,7 +2,7 @@
 
 Nexy dispose de deux routeurs natifs. Vous pouvez en choisir un par fonctionnalité ; ils peuvent coexister dans la même application.
 
-**Vous n'êtes pas sûr ? Utilisez le routage basé sur des fichiers.** Il couvre les pages et les points de terminaison de l'API sans configuration. Ajoutez le routeur modulaire lorsqu'un backend a besoin de contrôleurs, de services injectés ou de gardes.
+**Pas sûr? Utilisez le routage basé sur des fichiers.** Il couvre les pages et les points de terminaison de l'API sans configuration. Ajoutez le routeur modulaire lorsqu'un backend a besoin de contrôleurs, de services injectés ou de gardes.
 
 | Vous construisez | Utilisez |
 |---|---|
@@ -34,14 +34,13 @@ Vous pouvez combiner une intégration FBR, modulaire et personnalisée. Nexy enr
 
 ## Routage basé sur des fichiers
 
-Un itinéraire est un fichier. L'URL est son chemin sous `src/routes/`, moins l'extension. Comme Next.js, un
-le projet est dans l'un des deux modes, choisis avec `useCSR` :
+Un itinéraire est un fichier. L'URL est son chemin sous `src/routes/`, moins l'extension. Comme Next.js, un projet est dans l'un des deux modes, choisis avec `useCSR` :
 
 | | `useCSR = False` (par défaut) | `useCSR = True` |
 |---|---|---|
 | Pages | `.nexy`, `.md`, `.mdx` | fichiers de votre framework client |
-| Disposition racine | `layout.nexy` | `layout.tsx` (React) |
-| Composants clients | autorisés, en tant qu'îlots à l'intérieur des pages | les pages elles-mêmes |
+| Disposition des racines | `layout.nexy` | `layout.tsx` (React) |
+| Composants clients | autorisés, sous forme d'îlots à l'intérieur des pages | les pages elles-mêmes |
 | Routes API | `.py` | `.py` |
 
 Voir [Mode serveur et mode client](fbr/modes.md).
@@ -55,20 +54,19 @@ Voir [Mode serveur et mode client](fbr/modes.md).
 | [fbr/middleware](fbr/middleware/README.md) | `middleware.py`, hérité du répertoire |
 | [fbr/erreurs](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, erreurs JSON |
 | [fbr/navigation](fbr/navigation/linking-and-navigating.md) | liaison, navigation client, [hooks](fbr/navigation/hooks.md) |
-| [fbr/realtime](fbr/realtime/websocket.md) | Gestionnaires WebSocket |
+| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket gestionnaires |
 | [fbr/inheritance](fbr/inheritance.md) | comment les mises en page, les dépendances et les pages d'erreur héritent |
 
 ## Routage modulaire
 
-Contrôleurs, modules et injection de dépendances, à la manière de NestJS. Voir
-[Routage modulaire](modular/README.md) et [Nexy et NestJS](modular/vs-nestjs.md).
+Contrôleurs, modules et injection de dépendances, à la manière de NestJS. Voir [Routage modulaire](modular/README.md) et [Nexy et NestJS](modular/vs-nestjs.md).
 
 ## Intégration personnalisée
 
 Vous pouvez également intégrer un routeur FastAPI existant dans votre projet Nexy. Voir [Intégration du routage personnalisé](custom/README.md).
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [Routage basé sur des fichiers](fbr/README.md)
 - [Rendu](../rendering/README.md)
-- [Vues](../views/README.md) : ce qui se passe à l'intérieur des fichiers
+- [Views](../views/README.md) : ce qui se passe à l'intérieur des fichiers
