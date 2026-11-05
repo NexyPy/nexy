@@ -30,5 +30,5 @@ La barre d'outils est un bloc de style et un script ajouté avant `</body>` : pa
 
 ## Prochaines étapes
 
-- [Config](../reference/config.md) : toutes les options
-- [Testing](testing.md) : tester une page ou un composant
+- [Configuration](../reference/config.md) : toutes les options
+- [Tests](testing.md) : tester une page ou un composant
