@@ -125,6 +125,7 @@ ROUTERS = (
 )
 
 REDIRECTS = {
+    "architecture": "getting-started/how-nexy-works",
     "reference/agents": "guides/ai-agents",
     "views/frontend/islands": "rendering/islands",
     "views/react": "views/react/differences",
