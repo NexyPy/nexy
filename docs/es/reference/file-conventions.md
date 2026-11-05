@@ -4,7 +4,7 @@ Nombres y reglas reservados en `src/routes/`.
 
 ## Archivos de ruta
 
-| Archivo | Se convierte en |
+| El archivo | se convierte en |
 |---|---|
 | `index.nexy`, `index.md`, `index.mdx`, `index.py` | la ruta de su directorio |
 | `about.nexy` | `/about` |
@@ -23,27 +23,24 @@ Nombres y reglas reservados en `src/routes/`.
 | `layout.vue`, `layout.svelte` | modo cliente: diseños anidados | [layout.vue](../views/vue/differences.md), [layout.svelte](../views/svelte/differences.md) |
 | `notfound.nexy` | Página 404 para su directorio | [Páginas de error](../routing/fbr/errors/README.md) |
 | `errors.nexy` | 500 páginas para su directorio | [Páginas de error](../routing/fbr/errors/README.md) |
-| `forbidden.nexy` | 403 página para su directorio | [Páginas de error por carpeta](../routing/fbr/errors/folder-pages.md) |
+| `forbidden.nexy` | 403 páginas para su directorio | [Páginas de error por carpeta](../routing/fbr/errors/folder-pages.md) |
 | `unauthorized.nexy` | 401 página para su directorio | [Páginas de error por carpeta](../routing/fbr/errors/folder-pages.md) |
 | `loading.nexy` | reservado; aún no hay efecto de tiempo de ejecución | [Páginas de error](../routing/fbr/errors/README.md) |
 | `middleware.py` | y `async def middleware(request, call_next)` envolviendo las solicitudes del directorio y debajo | [Archivos middleware](../routing/fbr/middleware/README.md) |
 | `dependencies.py` | una lista `dependencies = [fn, ...]` aplicada al directorio y sus hijos | [Dependencias](../routing/fbr/dependencies/README.md) |
-| `__init__.py` | Marcador de paquete Python | |
+| `__init__.py` | Python marcador de paquete | |
 | `favicon.ico` | servido en `/favicon.ico` | |
 
-`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`,
-`useUnauthorizedExtensions` y `useLoadingExtensions` reservan más extensiones para estos nombres. Ver
-[Configuración](config.md).
+`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` y `useLoadingExtensions` reservan más extensiones para estos nombres. Consulte [Configuración](config.md).
 
 ## Archivos ignorados
 
-- Un archivo o carpeta que comienza con `_` o `.`: úselo para parciales, borradores y ayudas.
+- Un archivo o carpeta que comience con `_` o `.`: utilícelo para parciales, borradores y ayudas.
 - Un archivo cuya extensión no está activa para el proyecto: se omite con una advertencia.
 
 ## Un archivo por URL
 
-Se registran dos archivos que se resuelven en la misma URL. No pongas `blog.nexy` al lado de
-`blog/index.nexy`.
+Se registran dos archivos que se resuelven en la misma URL. No coloque `blog.nexy` al lado de `blog/index.nexy`.
 
 ## Afuera `src/routes/`
 
