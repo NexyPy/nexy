@@ -1,6 +1,6 @@
 # Pages
 
-Un fichier d'échange renvoie du HTML. Le type de fichier que vous utilisez modifie la façon dont il est produit : voir [views](../../../views/README.md). Cette section couvre les règles de routage qui s'appliquent à chaque format de page.
+Un fichier d'échange renvoie du HTML. Le type de fichier que vous utilisez modifie la façon dont il est produit : voir [vues](../../../views/README.md). Cette section couvre les règles de routage qui s'appliquent à chaque format de page.
 
 | Page | Ce qu'il couvre |
 |---|---|
