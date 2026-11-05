@@ -1,20 +1,16 @@
 # Páginas de erro por pasta
 
-Uma pasta pode responder aos seus próprios erros: um blog com 404 nas suas próprias palavras, uma área privada que oferece
-o formulário de login em vez de um simples `401`. O resto do site mantém a página que já possuía.
+Uma pasta pode responder aos seus próprios erros: um blog com um 404 em suas próprias palavras, uma área privada que oferece o formulário de login em vez de um simples `401`. O resto do site mantém a página que já possuía.
 
 Esta página adiciona um desses arquivos e mostra a resposta.
 
 ## A regra
 
-**O arquivo mais profundo que corresponde às respostas do URL.** Todo o resto permanece como está: o mesmo status
-códigos, JSON para um cliente API e a página integrada, uma vez que nenhuma pasta da cadeia possui um arquivo.
+**O arquivo mais profundo que corresponde à URL responde.** Todo o resto permanece como está: os mesmos códigos de status, JSON para um cliente API e a página integrada, uma vez que nenhuma pasta da cadeia possui um arquivo.
 
 ![Os escopos de uma página de erro](../../../assets/error-page-scopes.svg)
 
-Para `/blog/2024/hello` Nexy sobe na árvore: `/blog/2024`, depois `/blog`, depois `/`. O primeiro
-pasta contendo um arquivo de respostas. Uma pasta é correspondida inteira: `/blogger/hello` não está abaixo de `/blog`, então
-uma cópia em `blog/` nunca responde.
+Para `/blog/2024/hello` Nexy sobe na árvore: `/blog/2024`, depois `/blog`, depois `/`. A primeira pasta contendo um arquivo responde. Uma pasta é correspondida inteira: `/blogger/hello` não está abaixo de `/blog`, então uma cópia em `blog/` nunca responde.
 
 ## Os quatro arquivos
 
@@ -27,11 +23,7 @@ uma cópia em `blog/` nunca responde.
 
 `loading.nexy` permanece reservado: ainda não tem efeito de execução.
 
-Um arquivo em algum lugar em `src/routes/` é suficiente para Nexy responder a esse status: uma cópia na raiz
-responde a todo o projeto, uma cópia em uma pasta responde a essa pasta e uma URL fora de cada cópia
-obtém a página interna. Reserve outra extensão para esses nomes em `nexyconfig.py` com
-`useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions` e
-`useUnauthorizedExtensions`.
+Um arquivo em algum lugar em `src/routes/` é suficiente para Nexy responder a esse status: uma cópia na raiz responde a todo o projeto, uma cópia em uma pasta responde a essa pasta e uma URL fora de cada cópia obtém a página interna. Reserve outra extensão para esses nomes em `nexyconfig.py` com `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions` e `useUnauthorizedExtensions`.
 
 ## Sua primeira página de pasta
 
@@ -89,14 +81,12 @@ Cada chamada e cada status mantém suas duas respostas:
 | Navegador (`Accept: text/html`) | a página da pasta | a página interna |
 | Cliente (`Accept: application/json`) | `{"detail": "..."}` | `{"detail": "..."}` |
 
-`unauthorized(scheme="Bearer")` adiciona `WWW-Authenticate: Bearer` a ambas as respostas. Um detalhe construído
-da entrada do usuário tem escape de HTML na página.
+`unauthorized(scheme="Bearer")` adiciona `WWW-Authenticate: Bearer` a ambas as respostas. Um detalhe criado a partir da entrada do usuário tem escape de HTML na página.
 
-> [!DICA]
-> `Accept: */*`, o padrão de `curl` e de muitas bibliotecas HTTP, não solicita nenhum dos dois e recebe o
-> Página HTML. Adicione `-H "Accept: application/json"` quando quiser a resposta JSON.
+> [!TIP]
+> `Accept: */*`, o padrão de `curl` e de muitas bibliotecas HTTP, não solicita nenhuma delas e recebe a página HTML. Adicione `-H "Accept: application/json"` quando quiser a resposta JSON.
 
-## Confira
+## Verifique
 
 ```python filename="testes/test_private.py"
 from fastapi.testclient import TestClient
