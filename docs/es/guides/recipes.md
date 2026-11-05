@@ -72,7 +72,7 @@ async def GET(request: Request):
     return {"user": request.session["user"]}
 ```
 
-> [!NOTA]
+> [!NOTE]
 > Mantenga las contraseñas reales fuera de la fuente. Almacene un hash (`argon2`, `bcrypt`) y lea la clave secreta del entorno. La cookie de sesión está firmada, no cifrada.
 
 ## Una API JSON con creación, lectura y eliminación.
@@ -157,4 +157,4 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
 
 - [Acciones](actions.md): funciones de servidor escritas para formularios y botones
 - [Middleware y seguridad](middleware-and-security.md): CORS, hosts, sesiones
-- [Prueba](testing.md): prueba tus propios controladores de la misma manera
+- [Pruebas](testing.md): prueba tus propios controladores de la misma manera
