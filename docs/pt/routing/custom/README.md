@@ -7,7 +7,7 @@ Ao contrário dos roteadores modulares e baseados em arquivo, que são intrínse
 ## Quando usar um roteador personalizado
 
 - **Serviços de terceiros**: você tem um aplicativo FastAPI existente que deseja expor por meio do cliente Nexy.
-- **Reutilização de código**: Extraia a lógica de back-end de outro projeto em um roteador e inclua-a em um novo.
+- **Reutilização de código**: Extraia a lógica de backend de outro projeto em um roteador e inclua-a em um novo.
 - **Padrões multilocatários ou microfrontend**: cada locatário ou módulo fornece seu próprio roteador.
 - **Migração gradual**: Comece com um `APIRouter` e evolua-o para um módulo Nexy completo posteriormente.
 
@@ -66,7 +66,7 @@ Todos os três coexistem; cada rota é registrada apenas uma vez. O roteador bas
 
 Os comandos `nexy dev` e `nx` operam no roteador montado como um roteador integrado. Você obtém:
 
-- Recarga a quente para endpoints definidos no roteador personalizado (se usar `nexy` ou os recursos usuais do servidor de desenvolvimento do FastAPI)
+- Recarga a quente para endpoints definidos no roteador personalizado (se ele usar os recursos usuais do servidor de desenvolvimento de `nexy` ou FastAPI)
 - Validação em `nexyconfig.py` (qualquer `APIRouter` trabalho)
 - Documentos gerados automaticamente para as rotas incluídas (se você ativá-las)
 
@@ -75,10 +75,10 @@ Os comandos `nexy dev` e `nx` operam no roteador montado como um roteador integr
 Como o roteador está incluído e não montado via `app.mount`, não há camada ASGI extra. O roteador reside no mesmo objeto de aplicativo que suas rotas modulares e baseadas em arquivo. Isso significa:
 
 - O middleware adicionado pelo roteador personalizado se aplica a todas as solicitações.
-- Guardas e injeção de dependência definidas no roteador personalizado podem acessar o mesmo contêiner que seu próprio código (se você usar injeção modular).
+- Os protetores e a injeção de dependência definidos no roteador personalizado podem acessar o mesmo contêiner que seu próprio código (se você usar injeção modular).
 - Não há nenhum prefixo de URL além do que o próprio roteador define.
 
-Se precisar de isolamento, envolva o roteador em um subaplicativo antes de incluí-lo ou use técnicas FastAPI padrão.
+Se você precisar de isolamento, envolva o roteador em um subaplicativo antes de incluí-lo ou use técnicas padrão FastAPI.
 
 ## Exemplo: Incluindo um projeto FastAPI existente
 
@@ -111,13 +111,13 @@ O endpoint `/login` agora pode ser acessado em seu site Nexy sem mover uma linha
 
 1. Crie seu `APIRouter` (ou encontre um em um pacote existente).
 2. Aponte `useRouter` para ele em `nexyconfig.py`.
-3. Acesse suas rotas através de suas páginas, manipuladores ou estruturas de cliente.
-4. Se você precisar de mais controle, converta o roteador personalizado em um roteador modular usando `AppModule`.
+3. Acesse suas rotas por meio de suas páginas, manipuladores ou estruturas de cliente.
+4. Se precisar de mais controle, converta o roteador personalizado em um roteador modular usando `AppModule`.
 
 ## Próximas etapas
 
 - [Roteamento baseado em arquivo](../fbr/README.md) – Crie páginas e manipuladores simples a partir de arquivos.
 - [Roteamento modular](../modular/README.md) – Backends estruturados com injeção e proteções.
-- [Route handlers](../fbr/handlers/README.md) – Defina endpoints Python.
+- [Route handlers](../fbr/handlers/README.md) – Defina Python pontos finais.
 
-O roteador personalizado oferece flexibilidade para reutilizar o código FastAPI existente, mantendo a simplicidade das páginas baseadas em arquivos e da estrutura modular.
+O roteador personalizado oferece flexibilidade para reutilizar o código FastAPI existente, mantendo a simplicidade das páginas baseadas em arquivo e da estrutura modular.
