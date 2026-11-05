@@ -35,8 +35,8 @@ El compilador reescribe `<Audio ... />` a `{{ Audio(...) }}`, por lo que el form
 - El formato de la etiqueta es **de cierre automático**. `<Audio src="/a.mp3" />` y `{{ Audio("/a.mp3") }}` son ​​equivalentes; No se admite escribir niños dentro de una etiqueta auxiliar.
 - Un atributo HTML simple no es booleano aquí: `controls` se convierte en `controls=""`, lo cual es falso. Escribe `controls=True`.
 
-> [!NOTA]
-> `class_name` es la palabra clave documentada para las clases CSS. Los argumentos de palabras clave adicionales se convierten en atributos HTML, por lo que `class="nav"` también llega al resultado.
+> [!NOTE]
+> `class_name` es la palabra clave documentada para las clases de CSS. Los argumentos de palabras clave adicionales se convierten en atributos HTML, por lo que `class="nav"` también llega al resultado.
 
 ## Imagen
 
@@ -62,7 +62,7 @@ from nexy import Link
 
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` representa un `<a data-nexy-link>` manejado por el enrutador del cliente. Con `prefetch=True`, pasar el cursor o tocar el enlace calienta el objetivo a través de `window.__nexy_prefetch`.
 
-> [!NOTA]
+> [!NOTE]
 > el formulario de etiqueta toma la etiqueta como `children`, no como contenido del elemento: `<Link href="/about" children="About" />`. Para colocar marcas dentro de un enlace, use el formulario de llamada con `children=` o un componente `.nexy` que represente un `<Slot />`.
 
 ## Audio y Vídeo
@@ -132,7 +132,7 @@ La misma sintaxis de importación resuelve `.json`, `.css` y archivos de imagen 
 
 `Template().render(path, context)` renderiza un archivo de plantilla (Jinja2, o Markdown renderiza en HTML para `.md` rutas). `Template().invalidate(path)` lo elimina del caché.
 
-`Vite()` devuelve las etiquetas del cliente para el modo actual: el script HMR en desarrollo, el paquete de cliente creado en producción. Nexy lo llama para cada página; rara vez lo necesitas directamente.
+`Vite()` devuelve las etiquetas de cliente para el modo actual: el script HMR en desarrollo, el paquete de cliente creado en producción. Nexy lo llama para cada página; rara vez lo necesitas directamente.
 
 ## Aún no implementado
 
