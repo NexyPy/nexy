@@ -2,7 +2,7 @@
 
 Les hooks lisent la requête HTTP actuelle depuis une page `.nexy`, un gestionnaire d'API ou un contrôleur modulaire. Leurs noms correspondent aux hooks du routeur client (`@nexy/client`) où ils font la même chose.
 
-> [!REMARQUE]
+> [!NOTE]
 > les hooks ne fonctionnent que pendant qu’une demande est en cours de traitement. En appeler un ailleurs génère `RuntimeError`.
 
 ## Les crochets
@@ -20,7 +20,7 @@ Les hooks lisent la requête HTTP actuelle depuis une page `.nexy`, un gestionna
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | tous les cookies comme `dict[str, str]` |
 | `useSession()` | le dict de session, `{}` lorsque les sessions ne sont pas activées |
-| `useToc(depth_range="2-6")` | table des matières HTML de la page actuelle, `""` lorsqu'il n'y en a pas |
+| `useToc(depth_range="2-6")` | table des matières HTML pour la page actuelle, `""` lorsqu'il n'y en a pas |
 | `useViews(path, context=None)` | rend une autre vue et renvoie un `HTMLResponse` |
 
 ## Lire la demande
