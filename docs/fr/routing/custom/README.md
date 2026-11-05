@@ -1,4 +1,4 @@
-# Intégration du routage personnalisé
+# Intégration de routage personnalisé
 
 Nexy vous permet d'inclure une application FastAPI existante en tant que routeur dans votre projet. Ceci est utile lorsque vous souhaitez réutiliser la logique backend d'un autre service, intégrer des API tierces ou créer une application composite avec plusieurs problèmes de routage.
 
@@ -9,7 +9,7 @@ Contrairement aux routeurs modulaires et basés sur des fichiers, intrinsèques 
 - **Services tiers** : vous disposez d'une application FastAPI existante que vous souhaitez exposer via le client de Nexy.
 - **Réutilisation du code** : extrayez la logique backend d'un autre projet dans un routeur et incluez-la dans un nouveau.
 - **Modèles multi-locataires ou micro-frontend** : chaque locataire ou module fournit son propre routeur.
-- **Migration progressive** : commencez avec un `APIRouter` et faites-le évoluer vers un module Nexy complet plus tard.
+- **Migration progressive** : Commencez avec un `APIRouter` et faites-le évoluer plus tard vers un module Nexy complet.
 
 ## Comment ça marche
 
@@ -29,7 +29,7 @@ useRouter = third_party
 
 Le routeur est monté automatiquement par le résolveur de routeur de Nexy. Ses itinéraires sont disponibles sous le même modèle d'URL que dans l'application d'origine. Aucune configuration supplémentaire n'est nécessaire.
 
-## Créer un routeur personnalisé
+## Construire un routeur personnalisé
 
 1. **Créer le routeur**
    ```python
@@ -66,7 +66,7 @@ Tous les trois coexistent ; chaque itinéraire n'est enregistré qu'une seule fo
 
 Les commandes `nexy dev` et `nx` fonctionnent sur le routeur monté comme un routeur intégré. Vous obtenez :
 
-- Rechargement à chaud pour les points de terminaison définis dans le routeur personnalisé (s'il utilise `nexy` ou les fonctionnalités habituelles du serveur de développement de FastAPI)
+- Rechargement à chaud pour les points de terminaison définis dans le routeur personnalisé (s'il utilise les fonctionnalités habituelles du serveur de développement `nexy` ou FastAPI)
 - Validation dans `nexyconfig.py` (tous `APIRouter` travaux)
 - Documents générés automatiquement pour les itinéraires inclus (si vous les activez)
 
@@ -78,7 +78,7 @@ Les commandes `nexy dev` et `nx` fonctionnent sur le routeur monté comme un rou
 - Les gardes et l'injection de dépendances définis dans le routeur personnalisé peuvent accéder au même conteneur que votre propre code (si vous utilisez l'injection modulaire).
 - Il n'y a pas de préfixe d'URL autre que celui défini par le routeur lui-même.
 
-Si vous avez besoin d'isolation, enveloppez le routeur dans une sous-application avant de l'inclure ou utilisez les techniques FastAPI standard.
+Si vous avez besoin d'isolation, enveloppez le routeur dans une sous-application avant de l'inclure, ou utilisez les techniques FastAPI standard.
 
 ## Exemple : Inclusion d'un projet FastAPI existant
 
@@ -107,7 +107,7 @@ useRouter = api
 
 Le point de terminaison `/login` est désormais accessible depuis votre site Nexy sans déplacer une ligne de code.
 
-## Comment démarrer
+## Comment commencer
 
 1. Créez votre `APIRouter` (ou trouvez-en un dans un package existant).
 2. Pointez `useRouter` dessus dans `nexyconfig.py`.
@@ -118,6 +118,6 @@ Le point de terminaison `/login` est désormais accessible depuis votre site Nex
 
 - [Routage basé sur des fichiers](../fbr/README.md) – Créez des pages et des gestionnaires simples à partir de fichiers.
 - [Routage modulaire](../modular/README.md) – Backends structurés avec injection et gardes.
-- [Gestionnaires de routes](../fbr/handlers/README.md) – Définir les points de terminaison Python.
+- [Gestionnaires d'itinéraires](../fbr/handlers/README.md) – Définir les points de terminaison Python.
 
 Le routeur personnalisé vous offre la flexibilité de réutiliser le code FastAPI existant tout en conservant la simplicité des pages basées sur des fichiers et de la structure modulaire.
