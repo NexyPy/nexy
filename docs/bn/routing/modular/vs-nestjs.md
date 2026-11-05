@@ -9,13 +9,13 @@
 | `@Controller('users')` | `@Controller(prefix="/users")` |
 | `@Module({ controllers, providers, imports, exports })` | `@Module()` একই চার শ্রেণীর বৈশিষ্ট্য সহ |
 | `@Injectable()` | `@Injectable()` |
-| কনস্ট্রাক্টর ইনজেকশন | `__init__` প্যারামিটার টাইপ টীকা থেকে সমাধান করা হয়েছে |
+| কনস্ট্রাক্টর ইনজেকশন | `__init__` পরামিতি টাইপ টীকা থেকে সমাধান করা হয়েছে |
 | সিঙ্গেলটন, অনুরোধ এবং ক্ষণস্থায়ী সুযোগ | `Scope.SINGLETON`, `Scope.REQUEST`, `Scope.TRANSIENT` |
 | `@UseGuards(AuthGuard)` | `@UseGuard(guard)` (একটি FastAPI নির্ভরতা) |
-| `@ApiOperation`, `@ApiResponse` (Swagger) | `@UseRoute`, `@UseResponse` (OpenAPI, `/docs`] এ পরিবেশিত) |
-| WebSocket গেটওয়ে | `async def SOCKET(...)` একটি কন্ট্রোলারে |
-| DTO বৈধতা (`class-validator`) | Pydantic মডেল, স্থানীয় FastAPI |
-| বৃত্তাকার নির্ভরতা সনাক্তকরণ | `RecursionError` শ্রেণির নামকরণ |
+| `@ApiOperation`, `@ApiResponse` (সোয়াগার) | `@UseRoute`, `@UseResponse` (OpenAPI, `/docs` এ পরিবেশিত) |
+| WebSocket গেটওয়ে | `async def SOCKET(...)` একটি নিয়ামক উপর |
+| ডিটিও বৈধতা (`class-validator`) | Pydantic মডেল, স্থানীয় FastAPI |
+| সার্কুলার নির্ভরতা সনাক্তকরণ | `RecursionError` ক্লাসের নামকরণ |
 
 ## কি পার্থক্য
 
@@ -26,17 +26,17 @@
 
 ## কি অনুপস্থিত
 
-| NestJS বৈশিষ্ট্য | নেক্সিতে স্থিতি |
+| NestJS বৈশিষ্ট্য | নেক্সিতে স্ট্যাটাস |
 |---|---|
 | কাস্টম প্রদানকারী (`useValue`, `useFactory`, `useClass`, স্ট্রিং টোকেন) | উপলব্ধ নয়: শুধুমাত্র `@Injectable()` ক্লাস |
 | ইন্টারফেস বা বিমূর্ত শ্রেণী দ্বারা ইনজেকশন | উপলব্ধ নয় |
 | মডিউল এনক্যাপসুলেশন | প্রয়োগ করা হয়নি: ধারকটি প্রক্রিয়া-প্রশস্ত, `exports` শুধুমাত্র আগ্রহী রেজোলিউশন নিয়ন্ত্রণ করে |
 | ডাইনামিক এবং গ্লোবাল মডিউল (`forRoot`, `@Global`) | উপলব্ধ নয় |
 | লাইফসাইকেল হুক (`onModuleInit`, `onApplicationShutdown`) | উপলব্ধ নয় |
-| ইন্টারসেপ্টর | ASGI মিডলওয়্যার (`useMiddlewares`) বা নির্ভরতা ব্যবহার করে |
-| ব্যতিক্রম ফিল্টার | ব্যবহার FastAPI ব্যতিক্রম হ্যান্ডলার |
-| প্রোভাইডার ওভাররাইড সহ টেস্টিং মডিউল | কোনো পাবলিক API নেই; FastAPI `dependency_overrides` এবং `TestClient` | ব্যবহার করুন
-| কনফিগ মডিউল, সময়সূচী, সারি, CQRS, মাইক্রোসার্ভিসেস, ক্যাশিং | নেক্সির অংশ নয়; Python ইকোসিস্টেম | ব্যবহার করুন
+| ইন্টারসেপ্টর | ASGI মিডলওয়্যার (`useMiddlewares`) বা নির্ভরতা ব্যবহার করুন |
+| ব্যতিক্রম ফিল্টার | FastAPI ব্যতিক্রম হ্যান্ডলার ব্যবহার করুন |
+| প্রদানকারী ওভাররাইড সহ পরীক্ষা মডিউল | কোন পাবলিক API; FastAPI `dependency_overrides` এবং `TestClient` ব্যবহার করুন |
+| কনফিগ মডিউল, সময়সূচী, সারি, CQRS, মাইক্রোসার্ভিসেস, ক্যাশিং | Nexy এর অংশ নয়; Python ইকোসিস্টেম ব্যবহার করুন |
 
 ## কখন বাছাই করবেন
 
