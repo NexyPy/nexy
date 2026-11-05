@@ -98,4 +98,4 @@ O que não muda: as mesmas regras de roteamento, os mesmos arquivos de páginas,
 - [Estrutura do projeto](project-structure.md): todas as pastas de um projeto
 - [Renderização](../rendering/README.md): SSR, ISR, CSR e ilhas
 - [Frontend](../guides/frontend.md): Vite, estilo e construção do cliente
-- [Routing](../routing/README.md): os roteadores baseados em arquivos, modulares e personalizados
+- [Roteamento](../routing/README.md): os roteadores baseados em arquivos, modulares e personalizados
