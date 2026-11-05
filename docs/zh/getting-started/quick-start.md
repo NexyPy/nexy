@@ -39,7 +39,7 @@ nexy dev
 
 打开 <http://localhost:3000>。您应该看到起始页。端口来自 `usePort`（默认 `3000`）； `--port` 和 `--host` 每次运行都会覆盖它。
 
-> [！注意]
+> [!NOTE]
 > 在项目的虚拟环境中运行除 `new` 和 `init` 之外的所有命令，或在其前面加上 `uv run` 前缀，如 `uv run nexy dev` 中所示。在它之外，需要 `sqlmodel` 的项目会失败并显示 `No module named 'sqlmodel'`。
 
 ## 3. 更改页面
