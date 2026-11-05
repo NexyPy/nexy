@@ -1,10 +1,8 @@
-# Sólido
+# Solid
 
-Nexy renderiza os componentes do Solid 1.9 no servidor e, em seguida, o Solid os assume no navegador. Páginas,
-layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração, depois as partes
-que diferem dos [contratos compartilhados](../frontend/pages.md).
+Nexy renderiza Solid componentes 1.9 no servidor e então Solid os assume no navegador. Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração e depois as partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | As páginas são | Sólidas são |
+| Modo | `nexyconfig.py` | As páginas são | Solid são |
 |---|---|---|---|
 | Servidor (padrão) | `useCSR = False` | `.nexy` arquivos | [ilhas](../../rendering/islands.md) dentro dessas páginas |
 | Cliente | `useCSR = True` | `.tsx` arquiva | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
@@ -15,11 +13,9 @@ que diferem dos [contratos compartilhados](../frontend/pages.md).
 nx new my-app --template web-fbr-solid
 ```
 
-O modelo é um projeto em modo servidor com ilhas sólidas. Execute `nx new my-app` sem um modelo para
-em vez disso, responda aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida,
-o quadro.
+O modelo é um projeto em modo servidor com Solid ilhas. Execute `nx new my-app` sem um modelo para responder aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida, a estrutura.
 
-## Ativar Solid em um projeto existente
+## Habilite Solid em um projeto existente
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -42,9 +38,7 @@ export default defineConfig({
 });
 ```
 
-No modo cliente escreva `solid({ ssr: true })`: Solid compila um componente de forma diferente para o servidor
-e para o navegador, e o modo cliente precisa de ambos. `nx new` grava este arquivo; Nexy escreve
-`__nexy__/vite.ts` em si, portanto não o edite.
+No modo cliente escreva `solid({ ssr: true })`: Solid compila um componente de maneira diferente para o servidor e para o navegador, e o modo cliente precisa de ambos. `nx new` grava este arquivo; Nexy escreve `__nexy__/vite.ts` sozinho, então não o edite.
 
 | Pacote | Versão `nx new` escreve |
 |---|---|
@@ -53,8 +47,7 @@ e para o navegador, e o modo cliente precisa de ambos. `nx new` grava este arqui
 
 ## Pense em sinais
 
-Uma função de componente sólido é executada **uma vez**. O que muda depois é lido através de um sinal, e somente o
-expressões que o leem são atualizadas:
+Uma função de componente Solid é executada **uma vez**. O que muda depois é lido através de um sinal, e apenas as expressões que o leem são atualizadas:
 
 ```tsx filename="src/componentes/Counter.tsx"
 import { createSignal } from "solid-js";
@@ -67,17 +60,14 @@ export default function Counter(props: { start?: number }) {
 
 - Chame o sinal, `count()`, dentro do JSX, não em uma variável acima dele.
 - Leia adereços como `props.start`. A desestruturação `{ start }` lê o valor uma vez e perde as atualizações.
-- Solid grava atributos HTML: `class`, `for`, `charset`, não `className`.
+- Solid escreve atributos HTML: `class`, `for`, `charset`, não `className`.
 
 ## Regras
 
-- **Uma estrutura por projeto.** `useFF` usa exatamente uma estrutura; `useFF = [solid(), react()]`
-  interrompe o servidor na inicialização. Com `useFF = solid()`, todo arquivo `.tsx` é sólido.
-- **Páginas são `.tsx`.** Somente um arquivo `.tsx` em `src/routes/` se torna uma página; `.jsx` é bom para um
-  componente.
-- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto, não são páginas.
-- **Um projeto em modo servidor não tem página `.tsx`**, e um projeto em modo cliente não tem página `.nexy`: Nexy
-  se recusa a iniciar e nomeia o arquivo. Veja [modos](../../routing/fbr/modes.md).
+- **Uma estrutura por projeto.** `useFF` leva exatamente uma estrutura; `useFF = [solid(), react()]` interrompe o servidor na inicialização. Com `useFF = solid()`, cada arquivo `.tsx` é Solid.
+- **As páginas são `.tsx`.** Somente um arquivo `.tsx` em `src/routes/` se torna uma página; `.jsx` é adequado para um componente.
+- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
+- **Um projeto em modo servidor não tem página `.tsx`**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
 - **Não `.mdx` com Solid.** MDX compila para React ou Preact; `.md` páginas funcionam.
 
 ## Páginas
@@ -86,8 +76,7 @@ No modo cliente (`useCSR = True`), uma página é um arquivo `.tsx`.
 
 ### Componente de página
 
-Uma página é a exportação padrão do arquivo. Se não existir nenhuma exportação padrão, Nexy escolhe o primeiro nomeado
-exportar.
+Uma página é a exportação padrão do arquivo. Se não existir nenhuma exportação padrão, Nexy escolhe a primeira exportação nomeada.
 
 ```tsx filename="src/rotas/index.tsx"
 export default function Home() {
@@ -133,7 +122,7 @@ Não desestruturar `props.children`, pois Solid lê preguiçosamente.
 
 ## Ilhas
 
-No modo servidor, um componente sólido importado para um arquivo `.nexy` é uma ilha.
+No modo servidor, um componente Solid importado para um arquivo `.nexy` é uma ilha.
 
 ### Importando
 
@@ -157,10 +146,9 @@ Use a propriedade `directive` para controlar quando a ilha hidrata:
 
 ## Ações e navegação
 
-### Ações de chamada
+### Chamando ações
 
-Use o gancho `useAction` para gerenciar o estado de uma chamada de ação. No Solid, isso retorna acessadores (chamada
-eles como funções).
+Use o gancho `useAction` para gerenciar o estado de uma chamada de ação. Em Solid, isso retorna acessadores (chame-os como funções).
 
 ```tsx
 import { useAction } from "@nexy/client";
@@ -190,7 +178,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Acesso ao URL
+### Acesso URL
 
 Todos os ganchos de localização retornam acessadores:
 
@@ -202,4 +190,4 @@ Todos os ganchos de localização retornam acessadores:
 ## Próximas etapas
 
 - [Visualizações](../README.md): compare os formatos que uma página pode usar
-- [Frontend](../../guides/frontend.md): Vite e a construção do cliente
+- [Frontend](../../guides/frontend.md): Vite e a compilação do cliente
