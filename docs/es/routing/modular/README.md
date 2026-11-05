@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [!NOTA]
+> [!NOTE]
 > el enrutamiento basado en archivos sigue funcionando. Si existe `src/routes/`, se escanea incluso cuando se establece `useRouter`.
 
 ## escribir un controlador
