@@ -2,7 +2,7 @@
 
 Hooks membaca permintaan HTTP saat ini dari dalam halaman `.nexy`, pengendali API, atau pengontrol modular. Nama mereka cocok dengan kait router klien (`@nexy/client`) tempat mereka melakukan hal yang sama.
 
-> [!CATATAN]
+> [!NOTE]
 > kait hanya berfungsi saat permintaan sedang ditangani. Memanggil seseorang ke tempat lain akan memunculkan `RuntimeError`.
 
 ## Kaitnya
@@ -21,7 +21,7 @@ Hooks membaca permintaan HTTP saat ini dari dalam halaman `.nexy`, pengendali AP
 | `useCookies()` | semua cookie sebagai `dict[str, str]` |
 | `useSession()` | dict sesi, `{}` ketika sesi tidak diaktifkan |
 | `useToc(depth_range="2-6")` | daftar isi HTML untuk halaman saat ini, `""` bila tidak ada |
-| `useViews(path, context=None)` | menampilkan tampilan lain dan mengembalikan `HTMLResponse` |
+| `useViews(path, context=None)` | merender tampilan lain dan mengembalikan `HTMLResponse` |
 
 ## Baca permintaannya
 
