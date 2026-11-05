@@ -54,7 +54,7 @@ class NexyConfig(NexyConfigModel):
 
 Avec un framework activé, Vite gère ses bundles clients. En mode client, ses extensions deviennent des routes ; en mode serveur, les mêmes fichiers sont des composants que vous importez en tant qu'îlots - un fichier framework sous `src/routes/` y est rejeté. Voir [mode serveur et mode client](../routing/fbr/modes.md).
 
-> [!REMARQUE]
+> [!NOTE]
 > en mode [CSR](../rendering/csr.md), seuls les fichiers de routes du framework sont navigables côté client.
 
 ## Mises en page
