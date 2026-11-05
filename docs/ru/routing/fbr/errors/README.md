@@ -124,7 +124,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!ПРИМЕЧАНИЕ]
+> [!NOTE]
 > клиент, который отправляет `Accept: */*` (по умолчанию `curl` и многие HTTP-библиотеки), получает HTML-страницу. Установите `Accept: application/json` для ошибок JSON.
 
 ## Необработанные исключения
@@ -152,7 +152,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 ## Следующие шаги
 
-- [Страницы с ошибками в папке](folder-pages.md): ваша собственная ошибка 404, 403 или 401 в одной папке.
+- [Страницы ошибок в папке](folder-pages.md): ваша собственная ошибка 404, 403 или 401 в одной папке.
 - [Динамические маршруты](../pages/dynamic-routes.md)
 - [Маршруты API](../handlers/README.md)
 - [Тестирование](../../../guides/testing.md)
