@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [!نوٹ]
+> [!NOTE]
 > فائل پر مبنی روٹنگ کام کرتی رہتی ہے۔ اگر `src/routes/` موجود ہے تو اسے `useRouter` سیٹ ہونے پر بھی اسکین کیا جاتا ہے۔
 
 ## ایک کنٹرولر لکھیں۔
@@ -73,11 +73,11 @@ class AppController:
         })
 ```
 
-دیکھیں [لے آؤٹ](../fbr/layouts/README.md)۔
+دیکھیں [لے آؤٹس](../fbr/layouts/README.md)۔
 
 ## مثال
 
-دیکھیں `examples/Modular/api/minimal/`۔
+دیکھئے `examples/Modular/api/minimal/`۔
 
 ## اگلے اقدامات
 
