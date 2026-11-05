@@ -136,7 +136,7 @@ nx test
 
 `nx build` schlägt aufgrund eines Kompilierungsfehlers fehl; `nx test` schlägt bei einer fehlerhaften Behauptung fehl und wird mit einem Wert ungleich Null beendet. `nx check` fügt mypy und `tsc` zum Lauf hinzu.
 
-Die Arbeit an Nexy selbst verwendet verschiedene Befehle: siehe [CONTRIBUTING](../../CONTRIBUTING.md).
+Die Arbeit an Nexy selbst verwendet verschiedene Befehle: siehe [CONTRIBUTING](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md).
 
 ## Nächste Schritte
 
