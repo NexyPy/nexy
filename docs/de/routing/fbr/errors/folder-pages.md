@@ -1,24 +1,20 @@
 # Fehlerseiten pro Ordner
 
-Ein Ordner kann seine eigenen Fehler beantworten: ein Blog mit einem 404 in seinen eigenen Worten, ein privater Bereich, der bietet
-das Anmeldeformular anstelle eines bloßen `401`. Der Rest der Website behält die Seite, die sie bereits hatte.
+Ein Ordner kann seine eigenen Fehler beantworten: ein Blog mit einem 404 in seinen eigenen Worten, ein privater Bereich, der das Anmeldeformular anstelle eines bloßen `401` anbietet. Der Rest der Website behält die Seite, die sie bereits hatte.
 
 Auf dieser Seite wird eine dieser Dateien hinzugefügt und die Antwort angezeigt.
 
 ## Die Regel
 
-**Die tiefste Datei, die mit den URL-Antworten übereinstimmt.** Alles andere bleibt wie es ist: der gleiche Status
-Codes, JSON für einen API-Client und die integrierte Seite, sobald kein Ordner der Kette eine Datei enthält.
+**Die tiefste Datei, die den URL-Antworten entspricht.** Alles andere bleibt wie es ist: die gleichen Statuscodes, JSON für einen API-Client und die integrierte Seite, sobald kein Ordner der Kette eine Datei enthält.
 
 ![Die Bereiche einer Fehlerseite](../../../assets/error-page-scopes.svg)
 
-Für `/blog/2024/hello` geht Nexy den Baum hinauf: `/blog/2024`, dann `/blog`, dann `/`. Der Erste
-Ordner mit einer Datei mit Antworten. Ein Ordner wird als Ganzes abgeglichen: `/blogger/hello` liegt nicht unter `/blog`, also
-Eine Kopie in `blog/` beantwortet sie nie.
+Für `/blog/2024/hello` geht Nexy den Baum hinauf: `/blog/2024`, dann `/blog`, dann `/`. Der erste Ordner mit einer Datei antwortet. Ein Ordner wird als Ganzes abgeglichen: `/blogger/hello` liegt nicht unter `/blog`, daher antwortet eine Kopie in `blog/` nie darauf.
 
-## Die vier Dateien
+## Die vier Akten
 
-| Datei | Antworten | Was dazu führt |
+| Datei | Antworten | Was erreicht es |
 |---|---|---|
 | `notfound.nexy` | `404` | eine URL, zu der keine Route passt, `notFound()` |
 | `errors.nexy` | `500` | eine Ausnahme, die nicht behandelt wurde |
@@ -27,11 +23,7 @@ Eine Kopie in `blog/` beantwortet sie nie.
 
 `loading.nexy` bleibt reserviert: Es hat noch keinen Laufzeiteffekt.
 
-Eine Datei irgendwo in `src/routes/` reicht für Nexy aus, um diesen Status zu beantworten: eine Kopie im Stammverzeichnis
-beantwortet das gesamte Projekt, eine Kopie in einem Ordner beantwortet diesen Ordner und eine URL außerhalb jeder Kopie
-Ruft die integrierte Seite ab. Reservieren Sie eine weitere Erweiterung für diese Namen in `nexyconfig.py` mit
-`useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions` und
-`useUnauthorizedExtensions`.
+Eine Datei irgendwo in `src/routes/` reicht für Nexy aus, um diesen Status zu beantworten: Eine Kopie im Stammverzeichnis antwortet auf das gesamte Projekt, eine Kopie in einem Ordner antwortet auf diesen Ordner und eine URL außerhalb jeder Kopie erhält die integrierte Seite. Reservieren Sie eine weitere Erweiterung für diese Namen in `nexyconfig.py` mit `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions` und `useUnauthorizedExtensions`.
 
 ## Ihre erste Ordnerseite
 
@@ -89,12 +81,10 @@ Jeder Anruf und jeder Status behält seine zwei Antworten:
 | Browser (`Accept: text/html`) | die Seite des Ordners | die integrierte Seite |
 | Kunde (`Accept: application/json`) | `{"detail": "..."}` | `{"detail": "..."}` |
 
-`unauthorized(scheme="Bearer")` fügt `WWW-Authenticate: Bearer` zu beiden Antworten hinzu. Ein Detail gebaut
-aus Benutzereingaben wird auf der Seite mit HTML-Escapezeichen versehen.
+`unauthorized(scheme="Bearer")` fügt `WWW-Authenticate: Bearer` zu beiden Antworten hinzu. Ein aus Benutzereingaben erstelltes Detail wird auf der Seite mit HTML-Escapezeichen versehen.
 
 > [!TIP]
-> `Accept: */*`, die Standardeinstellung von `curl` und vielen HTTP-Bibliotheken, fragt nach keinem von beiden und empfängt das
-> HTML-Seite. Fügen Sie `-H "Accept: application/json"` hinzu, wenn Sie die JSON-Antwort wünschen.
+> `Accept: */*`, die Standardeinstellung von `curl` und vielen HTTP-Bibliotheken, fragt nach keinem von beiden und empfängt die HTML-Seite. Fügen Sie `-H "Accept: application/json"` hinzu, wenn Sie die JSON-Antwort wünschen.
 
 ## Überprüfen Sie es
 
