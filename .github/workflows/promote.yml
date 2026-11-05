@@ -1,0 +1,76 @@
+name: Promote develop to staging
+
+# When CI passes on a push to develop, the open pull request from develop to staging is
+# assigned to whoever pushed, then merged. The pull request is opened when there is none.
+# A workflow_run workflow only runs from the default branch: it starts once it is on main.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [develop]
+
+permissions: {}
+
+# One promotion at a time; a second green run waits instead of racing the first.
+concurrency:
+  group: promote-staging
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: Merge develop into staging
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      # The commit CI tested, and who pushed it: never interpolated into a script.
+      TESTED: ${{ github.event.workflow_run.head_sha }}
+      AUTHOR: ${{ github.event.workflow_run.actor.login }}
+
+    steps:
+      # A newer push to develop has its own CI run, which promotes it once it passes.
+      - name: Check develop is still the commit CI tested
+        id: check
+        run: |
+          head=$(gh api "repos/$GH_REPO/branches/develop" --jq .commit.sha)
+          ahead=$(gh api "repos/$GH_REPO/compare/staging...$TESTED" --jq .ahead_by)
+          if [ "$head" != "$TESTED" ]; then
+            echo "::notice::develop moved past $TESTED; its own CI run will promote it"
+          elif [ "$ahead" = "0" ]; then
+            echo "::notice::staging already has $TESTED"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open the pull request, or find the open one
+        id: pr
+        if: steps.check.outputs.go == 'true'
+        run: |
+          number=$(gh pr list --base staging --head develop --state open \
+            --json number --jq '.[0].number // empty')
+          if [ -z "$number" ]; then
+            url=$(gh pr create --base staging --head develop \
+              --title "Promote develop to staging" \
+              --body "Opened by the promote workflow: CI passed on develop at $TESTED.")
+            number=${url##*/}
+          fi
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      # A bot (dependabot, github-actions) cannot be assigned.
+      - name: Assign the author of the push
+        if: steps.pr.outputs.number != '' && !endsWith(github.event.workflow_run.actor.login, '[bot]')
+        env:
+          NUMBER: ${{ steps.pr.outputs.number }}
+        run: gh pr edit "$NUMBER" --add-assignee "$AUTHOR"
+
+      # --match-head-commit refuses the merge if develop moved since the check.
+      - name: Merge
+        if: steps.pr.outputs.number != ''
+        env:
+          NUMBER: ${{ steps.pr.outputs.number }}
+        run: gh pr merge "$NUMBER" --merge --match-head-commit "$TESTED"
