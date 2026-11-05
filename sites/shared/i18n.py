@@ -129,6 +129,11 @@ UI: dict[str, dict[str, str]] = {
         "fallback_note": (
             "This page is still in English. The menu and the home page follow your language."
         ),
+        "lost_title": "This page does not exist",
+        "lost_text": (
+            "The address may be mistyped, or the page may have moved. Start from the overview and pick the topic you need."
+        ),
+        "lost_link": "Open the documentation",
     },
     "zh": {
         "skip": "跳到正文",
@@ -155,6 +160,9 @@ UI: dict[str, dict[str, str]] = {
         "llms": "面向智能体的 llms.txt",
         "docs": "文档",
         "fallback_note": "本页仍为英文。菜单和首页已使用你选择的语言。",
+        "lost_title": "此页面不存在",
+        "lost_text": ("地址可能有误，或页面已被移动。请从概览开始，选择你需要的主题。"),
+        "lost_link": "打开文档",
     },
     "hi": {
         "skip": "सामग्री पर जाएँ",
@@ -181,6 +189,9 @@ UI: dict[str, dict[str, str]] = {
         "llms": "एजेंटों के लिए llms.txt",
         "docs": "दस्तावेज़",
         "fallback_note": "यह पृष्ठ अभी अंग्रेज़ी में है। मेन्यू और मुखपृष्ठ आपकी भाषा में हैं।",
+        "lost_title": "यह पृष्ठ मौजूद नहीं है",
+        "lost_text": ("पता गलत लिखा हो सकता है, या पृष्ठ हट गया हो। अवलोकन से शुरू करें और अपना विषय चुनें।"),
+        "lost_link": "दस्तावेज़ खोलें",
     },
     "es": {
         "skip": "Saltar al contenido",
@@ -209,6 +220,11 @@ UI: dict[str, dict[str, str]] = {
         "fallback_note": (
             "Esta página sigue en inglés. El menú y la página de inicio usan tu idioma."
         ),
+        "lost_title": "Esta página no existe",
+        "lost_text": (
+            "Puede que la dirección esté mal escrita o que la página se haya movido. Empieza por la introducción y elige el tema que necesitas."
+        ),
+        "lost_link": "Abrir la documentación",
     },
     "fr": {
         "skip": "Aller au contenu",
@@ -237,6 +253,11 @@ UI: dict[str, dict[str, str]] = {
         "fallback_note": (
             "Cette page est encore en anglais. Le menu et l'accueil suivent votre langue."
         ),
+        "lost_title": "Cette page n'existe pas",
+        "lost_text": (
+            "L'adresse est peut-être mal saisie, ou la page a été déplacée. Partez de la vue d'ensemble et choisissez le sujet qui vous intéresse."
+        ),
+        "lost_link": "Ouvrir la documentation",
     },
     "ar": {
         "skip": "تخطَّ إلى المحتوى",
@@ -263,6 +284,11 @@ UI: dict[str, dict[str, str]] = {
         "llms": "ملف llms.txt للوكلاء",
         "docs": "الوثائق",
         "fallback_note": "هذه الصفحة ما زالت بالإنجليزية. القائمة والصفحة الرئيسية تتبع لغتك.",
+        "lost_title": "هذه الصفحة غير موجودة",
+        "lost_text": (
+            "ربما كُتب العنوان بشكل خاطئ، أو نُقلت الصفحة. ابدأ من النظرة العامة واختر الموضوع الذي تحتاجه."
+        ),
+        "lost_link": "افتح التوثيق",
     },
     "bn": {
         "skip": "বিষয়বস্তুতে যান",
@@ -289,6 +315,11 @@ UI: dict[str, dict[str, str]] = {
         "llms": "এজেন্টদের জন্য llms.txt",
         "docs": "ডকুমেন্টেশন",
         "fallback_note": "এই পাতাটি এখনো ইংরেজিতে। মেনু ও হোমপেজ আপনার ভাষায়।",
+        "lost_title": "এই পাতাটি নেই",
+        "lost_text": (
+            "ঠিকানাটি হয়তো ভুল লেখা হয়েছে, অথবা পাতাটি সরানো হয়েছে। সংক্ষিপ্ত পরিচিতি থেকে শুরু করে আপনার প্রয়োজনীয় বিষয়টি বেছে নিন।"
+        ),
+        "lost_link": "ডকুমেন্টেশন খুলুন",
     },
     "pt": {
         "skip": "Ir para o conteúdo",
@@ -315,6 +346,11 @@ UI: dict[str, dict[str, str]] = {
         "llms": "llms.txt para agentes",
         "docs": "Docs",
         "fallback_note": "Esta página ainda está em inglês. O menu e a página inicial usam o seu idioma.",
+        "lost_title": "Esta página não existe",
+        "lost_text": (
+            "O endereço pode estar errado, ou a página pode ter mudado de lugar. Comece pela visão geral e escolha o tema de que precisa."
+        ),
+        "lost_link": "Abrir a documentação",
     },
     "ru": {
         "skip": "Перейти к содержимому",
@@ -341,6 +377,11 @@ UI: dict[str, dict[str, str]] = {
         "llms": "llms.txt для агентов",
         "docs": "Документация",
         "fallback_note": "Эта страница пока на английском. Меню и главная следуют вашему языку.",
+        "lost_title": "Такой страницы нет",
+        "lost_text": (
+            "Возможно, адрес набран с ошибкой или страница переехала. Начните с обзора и выберите нужную тему."
+        ),
+        "lost_link": "Открыть документацию",
     },
     "ur": {
         "skip": "مواد پر جائیں",
@@ -367,6 +408,11 @@ UI: dict[str, dict[str, str]] = {
         "llms": "ایجنٹوں کے لیے llms.txt",
         "docs": "دستاویزات",
         "fallback_note": "یہ صفحہ ابھی انگریزی میں ہے۔ مینو اور ہوم صفحہ آپ کی زبان میں ہیں۔",
+        "lost_title": "یہ صفحہ موجود نہیں",
+        "lost_text": (
+            "ممکن ہے پتہ غلط لکھا گیا ہو، یا صفحہ منتقل ہو گیا ہو۔ جائزے سے شروع کریں اور اپنا مطلوبہ موضوع چنیں۔"
+        ),
+        "lost_link": "دستاویزات کھولیں",
     },
     "id": {
         "skip": "Lompat ke isi",
@@ -393,6 +439,11 @@ UI: dict[str, dict[str, str]] = {
         "llms": "llms.txt untuk agen",
         "docs": "Dokumentasi",
         "fallback_note": "Halaman ini masih dalam bahasa Inggris. Menu dan beranda mengikuti bahasa Anda.",
+        "lost_title": "Halaman ini tidak ada",
+        "lost_text": (
+            "Alamatnya mungkin salah ketik, atau halamannya sudah dipindahkan. Mulailah dari ringkasan dan pilih topik yang Anda perlukan."
+        ),
+        "lost_link": "Buka dokumentasi",
     },
     "de": {
         "skip": "Zum Inhalt springen",
@@ -421,6 +472,11 @@ UI: dict[str, dict[str, str]] = {
         "fallback_note": (
             "Diese Seite ist noch auf Englisch. Menü und Startseite folgen deiner Sprache."
         ),
+        "lost_title": "Diese Seite gibt es nicht",
+        "lost_text": (
+            "Die Adresse ist vielleicht falsch geschrieben, oder die Seite wurde verschoben. Beginne bei der Übersicht und wähle das Thema, das du brauchst."
+        ),
+        "lost_link": "Dokumentation öffnen",
     },
 }
 
