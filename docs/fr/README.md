@@ -15,14 +15,14 @@ Commencez avec un fichier sous `src/routes/` et ajoutez une structure lorsque le
 ## Commencer
 
 ### Premiers pas
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
 | [Installation](getting-started/installation.md) | Installez uv et la CLI Nexy, puis créez votre premier projet |
-| [Démarrage rapide](getting-started/quick-start.md) | Créez un projet, exécutez-le avec live reload et construisez-le pour la production |
+| [Démarrage rapide](getting-started/quick-start.md) | Créez un projet, exécutez-le avec Live Reload et construisez-le pour la production |
 | [Tutoriel](getting-started/tutorial.md) | Créez une page de notes avec un point de terminaison, des données partagées et une version de production en 10 minutes |
 
 ### Comprendre le modèle
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
 | [Concepts de base](getting-started/core-concepts.md) | Obtenez le modèle mental : route, page, vue, composant, gestionnaire, point de terminaison |
 | [Comment fonctionne Nexy](getting-started/how-nexy-works.md) | Suivez une requête depuis l'URL jusqu'au fichier qui y répond |
@@ -32,69 +32,69 @@ Commencez avec un fichier sous `src/routes/` et ajoutez une structure lorsque le
 | [Choisissez un format d'affichage](views/README.md) | Choisissez `.nexy`, Markdown ou un framework client pour une page |
 
 ### Venant d'ailleurs
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Venant d'un autre framework](getting-started/coming-from-other-frameworks.md) | Traduire FastAPI, Next.js et exprimer ses habitudes en Nexy |
+| [Venant d'un autre cadre](getting-started/coming-from-other-frameworks.md) | Traduire FastAPI, Next.js et exprimer les habitudes dans Nexy |
 
 ## Routage
 
 ### Basé sur un fichier {fbr}
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
 | [Routage basé sur des fichiers](routing/fbr/README.md) | Transformer un chemin de fichier en URL |
 | [Pages](routing/fbr/pages/README.md) | Écrire une page |
-| [Routes dynamiques](routing/fbr/pages/dynamic-routes.md) | Utiliser `[slug]`, `[...path]` et les groupes de routes |
-| [Métadonnées de la page](routing/fbr/pages/metadata.md) | Définir le titre, la description et l'image de partage d'une page {new} |
-| [Mises en page](routing/fbr/layouts/README.md) | Partager un cadre entre les pages |
+| [Itinéraires dynamiques](routing/fbr/pages/dynamic-routes.md) | Utiliser `[slug]`, `[...path]` et les groupes de routes |
+| [Métadonnées de la page](routing/fbr/pages/metadata.md) | Définir le titre, la description et partager l'image d'une page {new} |
+| [Mise en page](routing/fbr/layouts/README.md) | Partager un cadre entre les pages |
 | [Héritage](routing/fbr/inheritance.md) | Lire l'ordre de résolution des mises en page, des dépendances et des pages d'erreur |
 | [Mode serveur et mode client](routing/fbr/modes.md) | `useCSR`, et ce que chaque mode permet |
-| [Lier et naviguer](routing/fbr/navigation/linking-and-navigating.md) | Lier des pages, naviguer sur le client, préfetch |
-| [Hooks](routing/fbr/navigation/hooks.md) | Lire le chemin, la requête, les cookies et la session |
+| [Lien et navigation](routing/fbr/navigation/linking-and-navigating.md) | Lier des pages, naviguer sur le client, pré-extraire |
+| [Crochets](routing/fbr/navigation/hooks.md) | Lire le chemin, la requête, les cookies et la session |
 
 ### Gestionnaires et erreurs {fbr}
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Gestionnaires de routes](routing/fbr/handlers/README.md) | Ajouter un point de terminaison Python |
-| [Validation et erreurs](routing/fbr/handlers/validation-and-errors.md) | Répondez à `422` et `404`, et générez un `HTTPException` |
+| [Gestionnaires d'itinéraires](routing/fbr/handlers/README.md) | Ajouter un point de terminaison Python |
+| [Validation et erreurs](routing/fbr/handlers/validation-and-errors.md) | Répondez à `422` et `404` et lancez un `HTTPException` |
 | [WebSocket gestionnaires](routing/fbr/realtime/websocket.md) | Gérer une connexion `SOCKET` |
-| [Dépendances et gardes](routing/fbr/dependencies/README.md) | Exécuter `dependencies.py` avant un gestionnaire et en hériter |
-| [Fichiers middleware](routing/fbr/middleware/README.md) | Encapsuler les requêtes avec `middleware.py`, hérités du répertoire |
-| [Pages d'erreur](routing/fbr/errors/README.md) | Réponse avec `notfound.nexy`, `errors.nexy` et erreurs JSON |
-| [Pages d'erreur par dossier](routing/fbr/errors/folder-pages.md) | Cas limite : erreurs des sous-dossiers |
+| [Dépendances et gardiens](routing/fbr/dependencies/README.md) | Exécutez `dependencies.py` avant un gestionnaire et héritez-en |
+| [Fichiers middleware](routing/fbr/middleware/README.md) | Envelopper les requêtes avec `middleware.py`, hérité par répertoire |
+| [Pages d'erreur](routing/fbr/errors/README.md) | Répondez avec les erreurs `notfound.nexy`, `errors.nexy` et JSON |
+| [Pages d'erreur par dossier](routing/fbr/errors/folder-pages.md) | Cas limite : erreurs provenant des sous-dossiers |
 
 ### Routeur modulaire {modular}
 Contrôleurs et modules.
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Routage modulaire](routing/modular/README.md) | Montage de contrôleurs et de modules |
-| [Injection de dépendances](routing/modular/dependency-injection.md) | Définir les services, leurs scopes et le conteneur |
+| [Routage modulaire](routing/modular/README.md) | Monter des contrôleurs et des modules |
+| [Injection de dépendances](routing/modular/dependency-injection.md) | Définir les services, leurs portées et le conteneur |
 | [Gardes et métadonnées](routing/modular/guards-and-metadata.md) | Protéger et documenter les itinéraires |
 | [Routeur modulaire vs NestJS](routing/modular/vs-nestjs.md) | Comparaison avec NestJS |
 
 ### Intégration de routeur personnalisé {custom}
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
 | [Routage personnalisé](routing/custom/README.md) | Inclure une application FastAPI existante |
 
 ## Front-end
 
 ### Contrats partagés
-| Page | Ce qu'il définit |
+| Pages | Ce qu'il définit |
 |---|---|
-| [Pages frontend](views/frontend/pages.md) | Un fichier, une route : accessoires, rendu, métadonnées |
-| [Mise en page du frontend](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
-| [Actions et navigation](views/frontend/actions-and-navigation.md) | Appeler une action saisie, lier des pages, lire l'URL |
+| [Pages frontales](views/frontend/pages.md) | Un fichier, une route : accessoires, rendu, métadonnées |
+| [Dispositions du frontend](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
+| [Actions et navigation](views/frontend/actions-and-navigation.md) | Appeler une action tapée, lier des pages, lire l'URL |
 
 ### Vues Nexy
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [fichiers .nexy](views/nexy/README.md) | Écrivez une page avec Python, Jinja2 et les accessoires |
-| [Composants](views/nexy/components.md) | Utiliser `Image`, `Link`, `Audio`, `Video` et `Import` |
-| [layout.nexy](views/nexy/layouts.md) | Écrire la mise en page en mode serveur |
-| [Markdown et MDX](views/nexy/markdown.md) | Écrire des pages de contenu |
+| [fichiers .nexy](views/nexy/README.md) | Écrivez une page avec Python, Jinja2 et des accessoires |
+| [Composants](views/nexy/components.md) | Utilisez `Image`, `Link`, `Audio`, `Video` et `Import` |
+| [layout.nexy](views/nexy/layouts.md) | Écrire la disposition en mode serveur |
+| [Markdown et MDX](views/nexy/markdown.md) | Rédiger des pages de contenu |
 
 ### Différences de cadre
-| Page | Ce qui change |
+| Pages | Quels changements |
 |---|---|
 | [React différences](views/react/differences.md) | Composants, crochets et `layout.tsx` {new} |
 | [Vue différences](views/vue/differences.md) | SFC, références et `layout.vue` {new} |
@@ -105,62 +105,62 @@ Contrôleurs et modules.
 ## Rendu
 
 ### Modes
-| Page | Ce que vous déciderez |
+| Pages | Ce que vous déciderez |
 |---|---|
 | [Rendu](rendering/README.md) | Quel mode de rendu correspond à une page |
-| [SSR](rendering/ssr.md) | Rendu du serveur, valeur par défaut |
-| [ISR](rendering/isr.md) | Pages de cache avec périmée pendant la revalidation |
-| [CSR](rendering/csr.md) | Routage côté client |
+| [RSS](rendering/ssr.md) | Rendu du serveur, la valeur par défaut |
+| [ISR](rendering/isr.md) | Mettre en cache les pages avec une revalidation obsolète |
+| [RSE](rendering/csr.md) | Routage côté client |
 | [Îles](rendering/islands.md) | Hydratez-vous en cas de requête inactive, visible ou multimédia |
 
 ## Guides
 
 ### Formulaires et données
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Actions](guides/actions.md) | Appeler une fonction Python depuis un formulaire ou une fonction TypeScript saisie |
-| [Bases de données](guides/databases.md) | Choisir un ORM et exécuter des migrations |
+| [Actions](guides/actions.md) | Appeler une fonction Python depuis un formulaire ou une fonction TypeScript tapée |
+| [Bases de données](guides/databases.md) | Choisissez un ORM et effectuez des migrations |
 
 ### Sécurité et déploiement
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Middleware et sécurité](guides/middleware-and-security.md) | Configurer CORS, GZip, les hôtes et les sessions de confiance |
-| [Déployer](deployment/README.md) | Créer, conteneuriser et servir |
-| [Performance](deployment/performance.md) | Mesurer et régler les valeurs par défaut |
+| [Middleware et sécurité](guides/middleware-and-security.md) | Configurer CORS, GZip, des hôtes et des sessions de confiance |
+| [Déployer](deployment/README.md) | Construire, conteneuriser et servir |
+| [Performances](deployment/performance.md) | Mesurer et ajuster les valeurs par défaut |
 
 ### Construire et tester
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, style et build client |
-| [Testing](guides/testing.md) | Test avec pytest, `TestClient` et vitest |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
+| [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Barre d'outils Dev](guides/devtools.md) | Utilisez la barre d'outils de `nexy dev` et désactivez-la |
+| [Barre d'outils de développement](guides/devtools.md) | Utilisez la barre d'outils de `nexy dev` et désactivez-la |
 | [Agents de codage](guides/ai-agents.md) | Donnez à Claude Code, Codex et OpenCode les règles de votre projet |
-| [Dépannage](guides/troubleshooting.md) | Résoudre les premiers problèmes rencontrés |
+| [Dépannage](guides/troubleshooting.md) | Résolvez les premiers problèmes rencontrés par les gens |
 
 ## Référence
 
 ### Commandes et configuration
-| Page | Ce qu'elle répertorie |
+| Pages | Ce qu'il répertorie |
 |---|---|
 | [CLI](reference/cli.md) | Commandes, indicateurs, invites et codes de sortie |
-| [Config](reference/config.md) | Chaque champ `nexyconfig.py` et son | par défaut
+| [Configuration](reference/config.md) | Chaque champ `nexyconfig.py` et sa valeur par défaut |
 
 ### Python API et erreurs
-| Page | Ce qu'elle répertorie |
+| Pages | Ce qu'il répertorie |
 |---|---|
-| [Python API](reference/python-api.md) | Chaque nom exporté par Nexy, par module |
+| [API Python](reference/python-api.md) | Tous les noms que Nexy exporte, par module |
 | [Exceptions et erreurs](reference/exceptions.md) | Chaque panne, son statut et le fichier qui y répond |
 
 ### Conventions et concepts
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
-| [Conventions sur les fichiers](reference/file-conventions.md) | Fichiers réservés et règles de routage |
-| [Glossaire](reference/glossary.md) | Les mots utilisés dans ces documents |
-| [Sécurité](reference/security.md) | Étages de version, règles suivies par Nexy, audits |
+| [Conventions de fichiers](reference/file-conventions.md) | Fichiers réservés et règles de routage |
+| [Glossaire](reference/glossary.md) | Les mots utilisés par ces documents |
+| [Sécurité](reference/security.md) | Planchers de versions, règles suivies par Nexy, audits |
 
 ## Disposition
 ```text
@@ -197,10 +197,10 @@ docs/
 
 ### Avancé {advanced}
 
-| Page | Ce que vous ferez |
+| Pages | Ce que tu feras |
 |---|---|
 | [Mise à niveau vers 2.2](getting-started/upgrading.md) | Migrer de 2.1 vers 2.2 |
-| [Internationalisation (i18n)](guides/i18n.md) | Ajoutez des traductions avec la bibliothèque de votre choix |
+| [Internationalisation (i18n)](guides/i18n.md) | Ajoutez des traductions avec votre choix de bibliothèque |
 | [Recettes](guides/recipes.md) | Exemples et modèles, pas un tutoriel |
 
 *Ces pages ne font pas partie du chemin de lecture par défaut. Un lien "Toute la documentation" permet de tout voir.*
