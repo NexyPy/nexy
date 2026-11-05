@@ -104,7 +104,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`title` não tem padrão, então a página deve passá-lo; `tone` volta para `"neutral"`. A marcação entre as tags chega dentro de `<Slot />` (S maiúsculo). Veja [.nexy files](README.md#components) para adereços, slots e as regras do formulário de tag.
+`title` não tem padrão, então a página deve passá-lo; `tone` volta para `"neutral"`. A marcação entre as tags chega dentro de `<Slot />` (S maiúsculo). Veja [arquivos .nexy](README.md#components) para adereços, slots e as regras do formulário de tag.
 
 ## Importando um componente cliente
 
@@ -140,6 +140,6 @@ A mesma sintaxe de importação resolve `.json`, `.css` e arquivos de imagem par
 
 ## Próximas etapas
 
-- [.nexy files](README.md): onde esses auxiliares são usados
+- [arquivos .nexy](README.md): onde esses auxiliares são usados
 - [React](../react/differences.md): importando `.tsx` componentes
 - [Frontend](../../guides/frontend.md): como os componentes do cliente são agrupados
