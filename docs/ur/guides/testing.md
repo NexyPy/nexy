@@ -136,7 +136,7 @@ nx test
 
 `nx build` تالیف کی غلطی پر ناکام ہو جاتا ہے۔ `nx test` ناکام ہونے والے دعوے پر ناکام ہو جاتا ہے اور غیر صفر سے نکل جاتا ہے۔ `nx check` mypy اور `tsc` کو رن میں شامل کرتا ہے۔
 
-Nexy پر کام کرنا خود مختلف کمانڈز کا استعمال کرتا ہے: دیکھیں [CONTRIBUTING](../../CONTRIBUTING.md)۔
+Nexy پر کام کرنا خود مختلف کمانڈز کا استعمال کرتا ہے: دیکھیں [CONTRIBUTING](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md)۔
 
 ## اگلے اقدامات
 
