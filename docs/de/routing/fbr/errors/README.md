@@ -1,11 +1,8 @@
 # Fehlerseiten
 
-Eine fehlgeschlagene Anfrage sollte trotzdem wie der Rest Ihrer Website antworten: eine Seite in Ihren eigenen Worten für a
-Besucher, der gleiche Fehler wie JSON für einen API-Client. Nexy beantwortet beides und jeweils eine Datei ersetzt sie
-Antwort.
+Eine fehlgeschlagene Anfrage sollte trotzdem wie der Rest Ihrer Website antworten: eine Seite in Ihren eigenen Worten für einen Besucher, derselbe Fehler wie JSON für einen API-Client. Nexy beantwortet beide und eine Datei ersetzt jede Antwort.
 
-Diese Seite ist die Karte: Welche Datei antwortet auf welchen Status und wie Sie Ihren ersten erstellen. Die Seiten von
-Ein Ordner erhält [seine eigene Seite](folder-pages.md).
+Diese Seite ist die Karte: Welche Datei antwortet auf welchen Status und wie Sie Ihren ersten erstellen. Die Seiten eines Ordners erhalten [ihre eigene Seite](folder-pages.md).
 
 ## Ein Fehler, zwei Antworten
 
@@ -39,9 +36,7 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 # HTTP/1.1 404 Not Found
 ```
 
-Die Datei im Routen-Stammverzeichnis beantwortet das gesamte Projekt; Eine Kopie in einem Ordner beantwortet nur diesen Ordner
-und [lässt den Rest so wie er ist](folder-pages.md). Ohne Datei bietet Nexy seinen integrierten Stil
-Seite.
+Die Datei im Routen-Stammverzeichnis beantwortet das gesamte Projekt; Eine Kopie in einem Ordner antwortet nur auf diesen Ordner und [behält den Rest so, wie er ist](folder-pages.md). Ohne eine Datei stellt Nexy seine integrierte gestaltete Seite bereit.
 
 ## Welche Datei antwortet
 
@@ -57,16 +52,14 @@ Seite.
 |---|---|
 | Keine Routenübereinstimmungen | `404` |
 | Ein dynamisches Segment kann nicht in seine Annotation konvertiert werden | `404` |
-| Eine nicht behandelte Ausnahme auf einer Seite oder einem API-Handler | `500` |
+| Eine nicht behandelte Ausnahme in einer Seite oder einem API-Handler | `500` |
 | `raise HTTPException(status_code=403)` | der von Ihnen angegebene Status, als HTML oder JSON |
 | `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, von überall in einer Anfrage |
 | `redirect()`, `permanentRedirect()` | eine echte Weiterleitung ohne Fehlerseite |
 
 ## Hinterlassen Sie eine Seite oder antworten Sie über den Code
 
-`redirect`, `permanentRedirect`, `notFound`, `forbidden` und `unauthorized` lösen eine HTTP-Ausnahme aus.
-Derselbe Aufruf funktioniert also in einer `.nexy`-Seite, einem API-Handler, einem modularen Controller, einem Guard und einem
-`dependencies.py`. Sie haben auf dem Client denselben Namen (`@nexy/client`).
+`redirect`, `permanentRedirect`, `notFound`, `forbidden` und `unauthorized` lösen eine HTTP-Ausnahme aus, sodass derselbe Aufruf auf einer `.nexy`-Seite, einem API-Handler, einem modularen Controller, einem Guard und einem `dependencies.py` funktioniert. Sie haben auf dem Client denselben Namen (`@nexy/client`).
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -92,9 +85,7 @@ if post.moved_to:
 | `forbidden(detail=None)` | `403`: Der Besucher ist bekannt, sieht dies aber möglicherweise nicht |
 | `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` fügt `WWW-Authenticate` | hinzu
 
-Eine Weiterleitung antwortet mit dem Header `Location` und ohne Seite, auch an einen API-Client. Bauen Sie die
-Ziel aus Werten, denen Sie vertrauen: Ein `redirect(request.query_params["next"])` sendet Besucher
-wo immer der Link sagt. Ein Ziel mit Zeilenumbruch wird abgelehnt.
+Eine Weiterleitung antwortet mit dem Header `Location` und ohne Seite, auch an einen API-Client. Bauen Sie das Ziel auf Werten auf, denen Sie vertrauen: Ein `redirect(request.query_params["next"])` schickt Besucher dorthin, wohin der Link sagt. Ein Ziel mit Zeilenumbruch wird abgelehnt.
 
 Ein Wächter schützt einen ganzen Ordner:
 
@@ -115,10 +106,8 @@ dependencies = [require_login]
 
 Die gleiche Ausnahme antwortet unterschiedlich, je nachdem, wer fragt:
 
-- Ein Browser (`Accept: text/html`) erhält eine HTML-Seite. Das Detail ist HTML-escaped, sodass eine Nachricht erstellt wird
-  aus Benutzereingaben kann kein Markup eingefügt werden.
-- Ein Client, der nach JSON fragt und nicht nach einer Seite (`Accept: application/json`), erhält
-  `{"detail": "..."}` mit demselben Statuscode.
+- Ein Browser (`Accept: text/html`) erhält eine HTML-Seite. Das Detail ist HTML-escaped, sodass eine aus Benutzereingaben erstellte Nachricht kein Markup einfügen kann.
+- Ein Client, der nach JSON und nicht nach einer Seite (`Accept: application/json`) fragt, erhält `{"detail": "..."}` mit demselben Statuscode.
 
 ```python filename="src/routes/api/items/[id].py"
 from nexy.http import HTTPException
@@ -136,13 +125,11 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 ```
 
 > [!NOTE]
-> ein Client, der `Accept: */*` sendet (die Standardeinstellung von `curl` und viele HTTP
-> Bibliotheken) empfängt die HTML-Seite. Legen Sie `Accept: application/json` für JSON-Fehler fest.
+> Ein Client, der `Accept: */*` sendet (die Standardeinstellung von `curl` und vielen HTTP-Bibliotheken), empfängt die HTML-Seite. Legen Sie `Accept: application/json` für JSON-Fehler fest.
 
-## Unbehandelte Ausnahmen
+## Nicht behandelte Ausnahmen
 
-Eine Ausnahme, bei der nichts behandelt wird, wird einmal protokolliert, mit der Ausnahme, woher sie kam und wie
-Code um ihn herum und antwortete entsprechend dem Modus.
+Eine Ausnahme, bei der nichts behandelt wird, wird einmal protokolliert, mit der Ausnahme, woher sie kommt und dem Code um sie herum, und entsprechend dem Modus beantwortet.
 
 | | `nx dev` | `nx start` |
 |---|---|---|
@@ -157,14 +144,11 @@ Code um ihn herum und antwortete entsprechend dem Modus.
        2 |     return {"a": 1 / 0}
 ```
 
-Die Referenz besteht aus acht Zeichen und ist für jeden Fehler neu. Ein Besucher kann es zitieren, und Sie finden es
-Traceback, indem Sie das Protokoll danach durchsuchen. Weder die Ausnahme noch der Code erreichen den Besucher
-Produktion. Ein benutzerdefiniertes `errors.nexy` ersetzt nur die Seite; Die Protokollzeile bleibt bestehen.
+Die Referenz besteht aus acht Zeichen und ist für jeden Fehler neu. Ein Besucher kann es zitieren, und Sie finden den Traceback, indem Sie das Protokoll danach durchsuchen. Weder die Ausnahme noch der Code erreichen den Besucher in der Produktion. Ein benutzerdefiniertes `errors.nexy` ersetzt nur die Seite; Die Protokollzeile bleibt bestehen.
 
 ## Validierungsfehler
 
-Ein fehlender Header, Abfrageparameter oder Body-Feld antwortet `422` mit dem JSON-Body von FastAPI, für jeden
-Kunde. Siehe [Validierung und Fehler](../handlers/validation-and-errors.md).
+Ein fehlender Header, Abfrageparameter oder Textfeld antwortet `422` mit dem JSON-Text von FastAPI für jeden Client. Siehe [Validierung und Fehler](../handlers/validation-and-errors.md).
 
 ## Nächste Schritte
 
