@@ -49,7 +49,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` executa este modelo uma vez, com `slug` definido como `hello`. Uma segunda solicitação o executa novamente: nada é mantido entre os dois. A string de consulta não é uma propriedade - leia-a com os ganchos em [navigation](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` executa este modelo uma vez, com `slug` definido como `hello`. Uma segunda solicitação o executa novamente: nada é mantido entre os dois. A string de consulta não é uma propriedade - leia-a com os ganchos em [navegação](../routing/fbr/navigation/hooks.md).
 
 ## Limitações
 
