@@ -2,173 +2,170 @@
 
 **إطار عمل Python لتطبيقات الويب الكاملة.**
 
-Nexy يدور حول التماس بين الواجهة الخلفية Python والواجهة الأمامية للمتصفح. بدلاً من خادمين ونظامي بناء وجدولي توجيه، تحصل على أصل واحد: FastAPI و Starlette يخدمان التطبيق، Vite يبني العميل، والملف الموجود تحت `src/routes/` هو مسار - `.nexy` هو صفحة، `.py` هو معالج API.
+يقوم Nexy بوضع صفحاتك وواجهة برمجة التطبيقات (API) الخاصة بك في مشروع واحد Python، يخدمه خادم واحد. الإصدار 2.2 مبني على FastAPI: كل مسار API هو مسار FastAPI، مدرج في مخطط OpenAPI الذي يعرضه Scalar في `/docs`.
 
-- **Python أولاً.** الصفحات ونقاط النهاية والنماذج والإجراءات هي Python، ولا تحتاج الصفحة المعروضة بواسطة الخادم إلى إطار عمل للواجهة الأمامية.
-- **ثلاثة أجهزة توجيه، تكامل واحد.** قائم على الملفات، أو معياري، أو موجود FastAPI `APIRouter`.
-- **واجهة أمامية عندما تريد واحدة.** React، Vue، Svelte، Solid أو Preact، لكل صفحة كجزر، أو للمشروع بأكمله في وضع العميل.
-- **العرض، نموذج واحد.** يتم تحديد عرض الخادم والصفحات المخزنة مؤقتًا والجزر لكل صفحة؛ توجيه العميل هو مفتاح المشروع.
-- **الإجراءات المكتوبة.** يصل منشور النموذج ومكالمة العميل المكتوبة إلى نفس الوظيفة Python.
+- **Python أولاً.** الصفحات ونقاط النهاية والنماذج والإجراءات هي Python، والصفحة لا تحتاج إلى JavaScript.
+- **واجهة أمامية عندما تريد واحدة.** React، Vue، Svelte، Solid أو Preact، لمكون واحد أو للموقع بأكمله.
+- **ملف واحد، عنوان URL واحد.** الملف الموجود ضمن `src/routes/` هو مسار: `.nexy` عبارة عن صفحة، `.py` هي نقطة نهاية API.
+- **مجال للنمو.** ابدأ بملف واحد؛ انتقل إلى الوحدات النمطية، أو قم بتوصيل جهاز توجيه FastAPI موجود، عندما ينمو المشروع.
 
-ابدأ بملف واحد ضمن `src/routes/`، وأضف البنية عندما ينمو المشروع.
+جديد هنا؟ اقرأ [ما هو النكسي؟](getting-started/what-is-nexy.md)، ثم [البداية السريعة](getting-started/quick-start.md).
 
 ## البدء
 
 ### الخطوات الأولى
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [التثبيت](getting-started/installation.md) | قم بتثبيت uv وNexy CLI، ثم أنشئ مشروعك الأول |
-| [بداية سريعة](getting-started/quick-start.md) | إنشاء مشروع وتشغيله مع إعادة التحميل المباشر وإنشاءه للإنتاج |
-| [البرنامج التعليمي](getting-started/tutorial.md) | إنشاء صفحة ملاحظات بنقطة نهاية وبيانات مشتركة وبناء إنتاج في 10 دقائق |
+| [ما هو النكسي؟](getting-started/what-is-nexy.md) | تعرف على ما هو Nexy وما الذي بني عليه وما الذي تحصل عليه |
+| [التثبيت](getting-started/installation.md) | قم بتثبيت uv وNexy CLI، ثم قم بإنشاء مشروعك الأول |
+| [بداية سريعة](getting-started/quick-start.md) | أنشئ مشروعًا، وقم بتشغيله من خلال التحديث المباشر، ثم قم ببنائه للإنتاج |
+| [البرنامج التعليمي](getting-started/tutorial.md) | أنشئ صفحة ملاحظات بنقطة نهاية وبيانات مشتركة وبناء إنتاج في 10 دقائق |
 
 ### فهم النموذج
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
 | [المفاهيم الأساسية](getting-started/core-concepts.md) | احصل على النموذج العقلي: المسار، الصفحة، العرض، المكون، المعالج، نقطة النهاية |
-| [كيف يعمل Nexy](getting-started/how-nexy-works.md) | اتبع طلبًا واحدًا من عنوان URL إلى الملف الذي يجيب عليه |
-| [الهندسة المعمارية](architecture.md) | تعرف على الطبقة التي تفعل ماذا، وما يتركه Nexy لتطبيقك |
-| [بنية المشروع](getting-started/project-structure.md) | معرفة الغرض من كل مجلد وملف في المشروع |
-| [اختيار جهاز توجيه](routing/README.md) | اختر جهاز توجيه قائم على الملف أو معياري أو مخصص |
-| [اختيار تنسيق عرض](views/README.md) | اختيار `.nexy`، Markdown أو إطار عمل عميل لصفحة |
+| [هيكل المشروع](getting-started/project-structure.md) | تعرف على الغرض من كل مجلد وملف في المشروع |
+| [اختيار جهاز التوجيه](routing/README.md) | اختر جهاز التوجيه المستند إلى الملف أو المعياري أو المخصص |
+| [اختر تنسيق العرض](views/README.md) | اختر `.nexy`، Markdown أو إطار عمل عميل للصفحة |
 
 ### قادمة من مكان آخر
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [قادم من إطار آخر](getting-started/coming-from-other-frameworks.md) | ترجمة FastAPI، Next.js والتعبير عن العادات إلى نكسي |
+| [قادمة من إطار آخر](getting-started/coming-from-other-frameworks.md) | ترجمة FastAPI، Next.js والتعبير عن العادات إلى Nexy |
 
 ## التوجيه
 
 ### القائم على الملف {fbr}
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [التوجيه المعتمد على الملف](routing/fbr/README.md) | تحويل مسار الملف إلى عنوان URL |
+| [التوجيه القائم على الملف](routing/fbr/README.md) | تحويل مسار الملف إلى عنوان URL |
 | [الصفحات](routing/fbr/pages/README.md) | اكتب صفحة |
-| [المسارات الديناميكية](routing/fbr/pages/dynamic-routes.md) | استخدم `[slug]`، `[...path]` ومجموعات المسار |
-| [البيانات الوصفية للصفحة](routing/fbr/pages/metadata.md) | تعيين عنوان ووصف ومشاركة صورة للصفحة {new} |
+| [المسارات الديناميكية](routing/fbr/pages/dynamic-routes.md) | استخدم `[slug]`، `[...path]` ومجموعات التوجيه |
+| [البيانات التعريفية للصفحة](routing/fbr/pages/metadata.md) | تعيين عنوان ووصف ومشاركة صورة للصفحة {new} |
 | [التخطيطات](routing/fbr/layouts/README.md) | مشاركة إطار بين الصفحات |
-| [الميراث](routing/fbr/inheritance.md) | اقرأ ترتيب دقة التخطيطات والتبعيات وصفحات الأخطاء |
+| [الميراث](routing/fbr/inheritance.md) | اقرأ ترتيب دقة التخطيطات والتبعيات وصفحات الخطأ |
 | [وضع الخادم ووضع العميل](routing/fbr/modes.md) | `useCSR`، وما يسمح به كل وضع |
-| [الربط والتنقل](routing/fbr/navigation/linking-and-navigating.md) | ربط الصفحات، التنقل على العميل، الجلب المسبق |
-| [الخطافات](routing/fbr/navigation/hooks.md) | قراءة المسار والاستعلام وملفات تعريف الارتباط والجلسة |
+| [الارتباط والتنقل](routing/fbr/navigation/linking-and-navigating.md) | ربط الصفحات، والتنقل على العميل، والجلب المسبق |
+| [خطافات](routing/fbr/navigation/hooks.md) | اقرأ المسار والاستعلام وملفات تعريف الارتباط والجلسة |
 
 ### المعالجات والأخطاء {fbr}
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [معالجات المسار](routing/fbr/handlers/README.md) | إضافة نقطة نهاية Python |
-| [التصديق والأخطاء](routing/fbr/handlers/validation-and-errors.md) | الجواب `422` و `404`، ورفع `HTTPException` |
-| [WebSocket معالجات](routing/fbr/realtime/websocket.md) | التعامل مع `SOCKET` اتصال |
-| [التبعيات والحراس](routing/fbr/dependencies/README.md) | قم بتشغيل `dependencies.py` قبل المعالج، ويرثه |
-| [ملفات البرامج الوسيطة](routing/fbr/middleware/README.md) | التفاف الطلبات مع `middleware.py`، الموروثة بالدليل |
-| [صفحات الخطأ](routing/fbr/errors/README.md) | الإجابة مع `notfound.nexy`، `errors.nexy` وأخطاء JSON |
+| [معالجات المسار](routing/fbr/handlers/README.md) | أضف Python نقطة نهاية |
+| [التحقق من الصحة والأخطاء](routing/fbr/handlers/validation-and-errors.md) | أجيب `422` و `404`، وارفع `HTTPException` |
+| [WebSocket معالجات](routing/fbr/realtime/websocket.md) | التعامل مع اتصال `SOCKET` |
+| [التبعيات والحراس](routing/fbr/dependencies/README.md) | قم بتشغيل `dependencies.py` قبل المعالج، ورثه |
+| [ملفات الوسيطة](routing/fbr/middleware/README.md) | التفاف الطلبات مع `middleware.py`، ورثت عن طريق الدليل |
+| [صفحات الخطأ](routing/fbr/errors/README.md) | أجب بأخطاء `notfound.nexy` و `errors.nexy` وJSON |
 | [صفحات الخطأ لكل مجلد](routing/fbr/errors/folder-pages.md) | حالة الحافة: أخطاء من المجلدات الفرعية |
 
 ### جهاز التوجيه المعياري {modular}
 وحدات التحكم والوحدات.
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [التوجيه المعياري](routing/modular/README.md) | تركيب وحدات التحكم والوحدات |
-| [حقن التبعية](routing/modular/dependency-injection.md) | تعريف الخدمات ونطاقاتها والحاوية |
-| [الحراسات والبيانات الوصفية](routing/modular/guards-and-metadata.md) | حماية المسارات وتوثيقها |
-| [جهاز التوجيه المعياري مقابل NestJS ](routing/modular/vs-nestjs.md) | مقارنة مع NestJS |
+| [التوجيه المعياري](routing/modular/README.md) | وحدات التحكم والوحدات |
+| [حقن التبعية](routing/modular/dependency-injection.md) | تحديد الخدمات ونطاقاتها والحاوية |
+| [الحراس والبيانات الوصفية](routing/modular/guards-and-metadata.md) | حماية وتوثيق المسارات |
+| [جهاز التوجيه المعياري مقابل NestJS](routing/modular/vs-nestjs.md) | مقارنة مع NestJS |
 
 ### تكامل جهاز التوجيه المخصص {custom}
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [توجيه مخصص](routing/custom/README.md) | تضمين تطبيق FastAPI موجود |
+| [التوجيه المخصص](routing/custom/README.md) | تضمين تطبيق FastAPI موجود |
 
 ## الواجهة الأمامية
 
 ### العقود المشتركة
-| صفحة | ما تحدده |
+| الصفحة | ما يحدده |
 |---|---|
-| [صفحات الواجهة](views/frontend/pages.md) | ملف واحد، مسار واحد: الدعائم، العرض، البيانات الوصفية |
+| [صفحات الواجهة](views/frontend/pages.md) | ملف واحد، طريق واحد: الدعائم، العرض، البيانات الوصفية |
 | [تخطيطات الواجهة الأمامية](views/frontend/layouts.md) | غلاف المستند والتداخل وما لا يستطيع التخطيط فعله |
-| [الإجراءات والتنقل](views/frontend/actions-and-navigation.md) | استدعاء إجراء مكتوب، ربط الصفحات، قراءة عنوان URL |
+| [الإجراءات والملاحة](views/frontend/actions-and-navigation.md) | قم باستدعاء إجراء مكتوب، وربط الصفحات، وقراءة عنوان URL |
 
 ### وجهات نظر نكسي
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [ملفات .nexy](views/nexy/README.md) | اكتب صفحة تحتوي على Python، Jinja2 والدعائم |
 | [المكونات](views/nexy/components.md) | استخدم `Image`، `Link`، `Audio`، `Video` و `Import` |
-| [layout.nexy](views/nexy/layouts.md) | كتابة تخطيط وضع الخادم |
+| [تخطيط.nexy](views/nexy/layouts.md) | اكتب تخطيط وضع الخادم |
 | [Markdown و MDX](views/nexy/markdown.md) | كتابة صفحات المحتوى |
 
 ### اختلافات الإطار
-| صفحة | ما يتغير |
+| الصفحة | ما يتغير |
 |---|---|
 | [React الاختلافات](views/react/differences.md) | المكونات والخطافات و `layout.tsx` {new} |
 | [Vue الاختلافات](views/vue/differences.md) | SFCs والمراجع و `layout.vue` {new} |
-| [Svelte الاختلافات](views/svelte/differences.md) | الأحرف الرونية والمخازن و `layout.svelte` {new} |
-| [Solid الاختلافات](views/solid/differences.md) | الإشارات والوصلات و `layout.tsx` {new} |
-| [Preact الفروق](views/preact/differences.md) | الخطافات والإشارات و `layout.tsx` {new} |
+| [Svelte الاختلافات](views/svelte/differences.md) | الرونية والمخازن و `layout.svelte` {new} |
+| [Solid الاختلافات](views/solid/differences.md) | الإشارات والتوصيل و `layout.tsx` {new} |
+| [Preact الاختلافات](views/preact/differences.md) | السنانير والإشارات و `layout.tsx` {new} |
 
 ## التقديم
 
 ### وسائط
-| صفحة | ماذا ستقرر |
+| الصفحة | ماذا ستقرر |
 |---|---|
-| [العرض](rendering/README.md) | ما هو وضع العرض المناسب للصفحة |
-| [SSR](rendering/ssr.md) | عرض الخادم، الافتراضي |
-| [ISR](rendering/isr.md) | صفحات التخزين المؤقت التي لا معنى لها أثناء إعادة التحقق |
-| [CSR](rendering/csr.md) | التوجيه من جانب العميل |
-| [الجزر](rendering/islands.md) | الترطيب عند الاستعلام الخامل أو المرئي أو الوسائط |
+| [التقديم](rendering/README.md) | ما هو وضع العرض المناسب للصفحة |
+| [إصلاحية القطاع الخاص](rendering/ssr.md) | تقديم الخادم، الافتراضي |
+| [الاستخبارات والمراقبة](rendering/isr.md) | صفحات التخزين المؤقت التي لا معنى لها أثناء إعادة التحقق |
+| [المسؤولية الاجتماعية للشركات](rendering/csr.md) | التوجيه من جانب العميل |
+| [الجزر](rendering/islands.md) | هيدرات على الاستعلام الخامل أو المرئي أو الوسائط |
 
 ## أدلة
 
 ### النماذج والبيانات
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [الإجراءات](guides/actions.md) | استدعاء دالة Python من نموذج أو دالة TypeScript مكتوبة |
+| [الإجراءات](guides/actions.md) | استدعاء دالة Python من نموذج أو دالة مكتوبة TypeScript |
 | [قواعد البيانات](guides/databases.md) | اختر ORM وقم بتشغيل عمليات الترحيل |
 
 ### الأمن والنشر
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [البرامج الوسيطة والأمان](guides/middleware-and-security.md) | إعداد CORS وGZip والمضيفين والجلسات الموثوقة |
-| [نشر](deployment/README.md) | البناء والحاويات والخدمة |
+| [الوسيطة والأمن](guides/middleware-and-security.md) | قم بإعداد CORS وGZip والمضيفين والجلسات الموثوقة |
+| [نشر](deployment/README.md) | بناء، حاويات وخدمة |
 | [الأداء](deployment/performance.md) | قياس وضبط الإعدادات الافتراضية |
 
 ### بناء واختبار
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
 | [Vite والتصميم](guides/frontend.md) | إعداد Vite والتصميم وبناء العميل |
-| [الاختبار](guides/testing.md) | الاختبار مع pytest، `TestClient` وفيتيست |
+| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتست |
 
 ### الأدوات والمساعدة
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [[شريط أدوات التطوير](guides/devtools.md) | استخدم شريط الأدوات `nexy dev`، وقم بإيقاف تشغيله |
-| [وكلاء الترميز](guides/ai-agents.md) | أعطِ Claude Code و Codex و OpenCode قواعد مشروعك |
-| [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي أصابت الناس |
+| [شريط أدوات التطوير](guides/devtools.md) | استخدم شريط الأدوات `nexy dev`، وقم بإيقاف تشغيله |
+| [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
+| [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
 ## مرجع
 
 ### الأوامر والتكوين
-| الصفحة | ما تتضمنه |
+| الصفحة | ما يسرد |
 |---|---|
-| [CLI](reference/cli.md) | الأوامر والإشارات والمطالبات ورموز الخروج |
-| [التكوين](reference/config.md) | كل حقل `nexyconfig.py` وحقله الافتراضي |
+| [سطر الأوامر](reference/cli.md) | الأوامر والأعلام والمطالبات ورموز الخروج |
+| [التكوين](reference/config.md) | كل `nexyconfig.py` الحقل والافتراضي الخاص به |
 
 ### Python API والأخطاء
-| صفحة | ما تتضمنه |
+| الصفحة | ما يسرد |
 |---|---|
-| [واجهة Python البرمجية](reference/python-api.md) | كل اسم يصدره Nexy، حسب الوحدة |
-| [[الاستثناءات والأخطاء](reference/exceptions.md) | كل فشل وحالته والملف الذي يجيب عليه |
+| [Python واجهة برمجة التطبيقات](reference/python-api.md) | كل اسم يصدره Nexy، حسب الوحدة |
+| [الاستثناءات والأخطاء](reference/exceptions.md) | كل فشل وحالته والملف الذي يجيب عليه |
 
 ### الاتفاقيات والمفاهيم
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [اصطلاحات الملفات](reference/file-conventions.md) | الملفات المحجوزة وقواعد التوجيه |
-| [المسرد](reference/glossary.md) | الكلمات التي تستخدمها هذه المستندات |
-| [الأمان](reference/security.md) | طوابق الإصدار، القواعد التي يتبعها Nexy، عمليات التدقيق |
+| [اصطلاحات الملف](reference/file-conventions.md) | الملفات المحجوزة وقواعد التوجيه |
+| [معجم](reference/glossary.md) | الكلمات التي تستخدمها هذه المستندات |
+| [الأمن](reference/security.md) | طوابق الإصدار، والقواعد التي يتبعها Nexy، وعمليات التدقيق |
 
 ## التخطيط
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -197,10 +194,11 @@ docs/
 
 ### متقدم {advanced}
 
-| صفحة | ماذا ستفعل |
+| الصفحة | ماذا ستفعل |
 |---|---|
-| [الترقية إلى 2.2](getting-started/upgrading.md) | الترحيل من 2.1 إلى 2.2 |
-| [التدويل (i18n)](guides/i18n.md) | إضافة الترجمات مع اختيارك للمكتبة |
-| [وصفات](guides/recipes.md) | أمثلة وأنماط وليست دروسا |
+| [كيف يعمل نيكسي](getting-started/how-nexy-works.md) | تعرف على ما يحدث بين الملف والصفحة، وما يتركه لك Nexy |
+| [الترقية إلى 2.2](getting-started/upgrading.md) | الهجرة من 2.1 إلى 2.2 |
+| [التدويل (i18n)](guides/i18n.md) | أضف الترجمات مع اختيارك للمكتبة |
+| [وصفات](guides/recipes.md) | أمثلة وأنماط، وليس البرنامج التعليمي |
 
 *هذه الصفحات ليست جزءًا من مسار القراءة الافتراضي. يتيح لك رابط "جميع الوثائق" رؤية كل شيء.*
