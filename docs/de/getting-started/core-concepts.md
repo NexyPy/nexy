@@ -1,12 +1,12 @@
 # Kernkonzepte
 
-Das mentale Modell vor der API: vier Leseebenen, dann die Begriffe, die auf jeder Seite wiederkommen. Jeder Begriff erhält hier eine Zeile und einen Link zu der Seite, die tiefer geht.
+Die Wörter, die in den übrigen Dokumenten verwendet werden – Route, Seite, Ansicht, Komponente, Handler, Endpunkt – jeweils in einer Zeile, mit einem Link zu der Seite, die tiefer geht. Neu bei Nexy? Beginnen Sie mit [Was ist Nexy?](what-is-nexy.md).
 
 ## So lesen Sie diese Dokumente
 
 | Ebene | Die Frage, die es beantwortet | Beginnen Sie mit |
 |---|---|---|
-| Anwendungsarchitektur | welche Schicht eine Anfrage beantwortet und was sie ablehnt | [Architektur](../architecture.md) |
+| Anwendungsarchitektur | welche Schicht eine Anfrage beantwortet und was sie ablehnt | [Wie Nexy funktioniert](how-nexy-works.md) |
 | Anwendungsstruktur | wo sich der Code befindet und was aus einer Datei wird | [Projektstruktur](project-structure.md) |
 | Präsentation und Rendering | was der Leser sieht und wer den HTML-Code erstellt | [Ansichten](../views/README.md), [Rendering](../rendering/README.md) |
 | Anwendungsinteraktion | was der Leser tut und was als Reaktion darauf ausgeführt wird | [Aktionen](../guides/actions.md) |
@@ -40,7 +40,7 @@ In einem Satz: **Eine Seite ist eine Routendatei, eine Ansicht ist das, was sie 
 
 Zwei weitere Wörter, die überall wiederkehren:
 
-- **Layout**: eine `layout.*`-Datei, die die Seiten unter ihrem Ordner umschließt; Der Root besitzt das HTML-Dokument. Siehe [Layouts](../routing/fbr/layouts/README.md).
+- **Layout**: eine `layout.*`-Datei, die die Seiten unterhalb ihres Ordners umschließt; Der Root besitzt das HTML-Dokument. Siehe [Layouts](../routing/fbr/layouts/README.md).
 - **Abhängigkeit**: eine Funktion, die vor einem Handler ausgeführt wird und pro Route oder pro Ordner angewendet wird. Siehe [Abhängigkeiten](../routing/fbr/dependencies/README.md).
 
 ## Präsentation und Rendering
@@ -48,7 +48,7 @@ Zwei weitere Wörter, die überall wiederkehren:
 Zwei unabhängige Entscheidungen, oft verwechselt:
 
 - **Das Format** entscheidet, welche Datei die Seite rendert: [Ansichten](../views/README.md).
-- **Der Modus** entscheidet, wer den HTML-Code wann produziert: [Rendering](../rendering/README.md).
+- **Der Modus** entscheidet, wer wann den HTML-Code produziert: [Rendering](../rendering/README.md).
 
 | Vorstellung | Eine Zeile |
 |---|---|
@@ -62,20 +62,19 @@ Zwei unabhängige Entscheidungen, oft verwechselt:
 
 | Vorstellung | Eine Zeile |
 |---|---|
-| Aktion | eine Python-Funktion mit der Markierung `@Action`, die als `POST` diente und über ein Formular oder als typisierte Funktion ([Aktionen](../guides/actions.md)) aufgerufen werden konnte. |
+| Aktion | eine Python-Funktion mit der Markierung `@Action`, die als `POST` diente und über ein Formular oder als typisierte Funktion aufgerufen werden konnte ([Aktionen](../guides/actions.md)) |
 | Formular | ein HTML-Formular, das an eine Aktion sendet, wobei Validierungsfehler auf die Seite zurückkommen ([Aktionen](../guides/actions.md)) |
 | Navigation | Links, die vorab abrufen, und Hooks, die den Pfad, die Abfrage, die Cookies und die Sitzung lesen ([Hooks](../routing/fbr/navigation/hooks.md)) |
 | Datenabruf | wird von der Seite oder dem Handler erledigt, der es benötigt; Nexy liefert keine Client-Datenschicht ([Handler](../routing/fbr/handlers/README.md)) |
 
 ## Was Nexy nicht macht
 
-Authentifizierung, Autorisierung, Datenbank, Internationalisierung, Hintergrundjobs, E-Mail, Zahlungen und Suche liegen **in der Verantwortung Ihrer Anwendung**, nicht in der des Frameworks. Nexy gibt die Erweiterungspunkte an und sagt, wo sie jeweils angeschlossen werden müssen: siehe [die Grenzen](../architecture.md#boundaries).
+Authentifizierung, Autorisierung, Datenbank, Internationalisierung, Hintergrundjobs, E-Mail, Zahlungen und Suche liegen **in der Verantwortung Ihrer Anwendung**, nicht in der des Frameworks. Nexy gibt die Erweiterungspunkte an und sagt, wo sie jeweils angeschlossen werden müssen: siehe [Was Nexy Ihnen hinterlässt](how-nexy-works.md#what-nexy-leaves-to-you).
 
 Der Grund dafür ist nicht Minimalismus an sich: Ein Framework, das Ihr ORM oder Ihre Authentifizierungsbibliothek auswählt, hat etwas entschieden, über das nur Ihre Anwendung entscheiden kann.
 
 ## Nächste Schritte
 
-- [Architektur](../architecture.md): die Schichten und wer was baut
 - [Projektstruktur](project-structure.md): jeder Ordner und jede Datei eines Projekts
 - [Glossar](../reference/glossary.md): dieselben Wörter in einem alphabetischen Index
-- [Wie Nexy funktioniert](how-nexy-works.md): eine Anfrage, Schritt für Schritt
+- [Wie Nexy funktioniert](how-nexy-works.md): die Schichten, wer was baut und was Nexy Ihnen überlässt
