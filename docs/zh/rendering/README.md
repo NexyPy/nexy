@@ -15,15 +15,15 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 ## 四种模式
 
-| | 潜艇监视监视 | 情报监视监视 | 企业监视监视 | 岛屿 |
+| | 固态继电器 | 情报监视与侦察 | 企业社会责任 | 岛屿 |
 |---|---|---|---|---|
-| 每次请求 | 时，浏览器中的每次重新生成 | 时 | 都会读取数据 |，每次请求 |
-| HTML 来自 | 服务器 | 服务器，然后是第一个文档的缓存 | 服务器，然后是浏览器 | 服务器 |
-| JavaScript | 仅适用于岛屿 | 仅适用于岛屿 | 框架捆绑 | 仅适用于岛屿 |
-| 水合作用 | 无 | 无 | 整个文档 | 岛屿 |
-| 每个 URL 缓存 | 无 |，在内存中 | 无 | 无 |
-| 由组件 | 上项目 | `directive` 页面 | `useCSR = True` 中的 | 默认 | `revalidate = N` 决定
-| 谷物 | 页 | 页 | **项目** | 组件 |
+| 数据已读取 | 根据每个要求 | 每次再生时 | 在浏览器中 | 根据每个要求 |
+| HTML 来自 | 服务器 | 服务器，然后是缓存 | 第一个文档的服务器，然后是浏览器 | 服务器 |
+| JavaScript | 仅适用于岛屿 | 仅适用于岛屿 | 框架包 | 只有岛屿 |
+| 保湿 | 无 | 无 | 整个文件 | 岛屿 |
+| 缓存 | 无 | 每个 URL，在内存中 | 无 | 无 |
+| 决定于 | 默认 | 页面中的 `revalidate = N` | `useCSR = True` 在项目中 | 组件上的 `directive` |
+| 谷物 | 页面 | 页面 | **项目** | 组件 |
 
 ## 渲染生命周期
 
@@ -43,12 +43,12 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 ## 配置
 
-| 模式 | 其中 |
+| 模式 | 哪里 |
 |---|---|
-| SSR | 无处：它是默认的 |
-| ISR | `revalidate = 60` 位于 `.nexy` 页 | 的 frontmatter
-| CSR | `useCSR = True` 在 `nexyconfig.py` 中，`useFF` 设置为 |
-| 组件标签 | 上的岛屿 | `directive="client:visible"`
+| 固态继电器 | 无处：这是默认值 |
+| 情报监视与侦察 | `revalidate = 60` 在 `.nexy` 页面的首页 |
+| 企业社会责任 | `nexyconfig.py` 中的 `useCSR = True`，设置了 `useFF` |
+| 岛屿 | 组件标签上的 `directive="client:visible"` |
 
 ## 示例
 
