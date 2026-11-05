@@ -1,13 +1,11 @@
 # Svelte
 
-Nexy restitue les composants Svelte 5 sur le serveur, puis Svelte les reprend dans le navigateur. Pages,
-les dispositions, les îlots et les actions sont les mêmes dans chaque framework : cette page couvre la configuration, puis les parties
-qui diffèrent des [contrats partagés](../frontend/pages.md).
+Nexy restitue Svelte 5 composants sur le serveur, puis Svelte les reprend dans le navigateur. Les pages, mises en page, îlots et actions sont les mêmes dans tous les frameworks : cette page couvre la configuration, puis les parties qui diffèrent des [contrats partagés](../frontend/pages.md).
 
 | Mode | `nexyconfig.py` | Les pages sont | Svelte est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Client | `useCSR = True` | `.svelte` fichier | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
+| Le client | `useCSR = True` | `.svelte` classe | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
 
 ## Démarrer un projet
 
@@ -15,9 +13,7 @@ qui diffèrent des [contrats partagés](../frontend/pages.md).
 nx new my-app --template web-fbr-svelte
 ```
 
-Le modèle est un projet en mode serveur avec des îles Svelte. Exécutez `nx new my-app` sans modèle pour
-répondez plutôt aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis
-le cadre.
+Le modèle est un projet en mode serveur avec Svelte îles. Exécutez `nx new my-app` sans modèle pour répondre aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis le framework.
 
 ## Activer Svelte dans un projet existant
 
@@ -44,7 +40,7 @@ export default defineConfig({
 
 `nx new` écrit ce fichier ; Nexy écrit lui-même `__nexy__/vite.ts`, alors ne le modifiez pas.
 
-| Package | Version `nx new` écrit |
+| Le package | Version `nx new` écrit |
 |---|---|
 | `svelte` | `^5.20.2` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
@@ -52,18 +48,16 @@ export default defineConfig({
 ## Règles
 
 - **Svelte 5.** Les composants utilisent des runes : `$props()`, `$state()` et des extraits pour les enfants.
-- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [svelte(), vue()]`
-  arrête le serveur au démarrage.
+- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [svelte(), vue()]` arrête le serveur au démarrage.
 - **Un composant par fichier.** Le nom sous lequel vous importez un fichier `.svelte` est uniquement la balise que vous écrivez.
 - **Les composants se trouvent à l'extérieur de `src/routes/`**, généralement dans `src/components/`, ce ne sont donc pas des pages.
-- **Un projet en mode serveur n'a pas de `.svelte` page**, et un projet en mode client n'a pas de page `.nexy` : Nexy
-  refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
+- **Un projet en mode serveur n'a pas de page `.svelte`**, et un projet en mode client n'a pas de page `.nexy` : Nexy refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
 
 ## Pages
 
 En mode client (`useCSR = True`), une page est un fichier `.svelte`.
 
-### Composant Page
+### Composant de page
 
 La page est le composant défini par le bloc de script du fichier `.svelte`.
 
@@ -88,12 +82,11 @@ Les paramètres d'URL atteignent la page en tant qu'accessoires via la rune `$pr
 
 Vous pouvez également utiliser le magasin `$params` de `@nexy/client` dans n'importe quel composant.
 
-## Mise en page
+## Mises en page
 
 ### Mise en œuvre
 
-La disposition racine définit le shell du document. Les mises en page imbriquées enveloppent le contenu à l'aide du `children`
-extrait.
+La disposition racine définit le shell du document. Les mises en page imbriquées enveloppent le contenu à l'aide de l'extrait `children`.
 
 ```svelte filename="src/routes/layout.svelte"
 <script lang="ts">
@@ -137,8 +130,7 @@ Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate
 
 ### Appeler des actions
 
-Utilisez le hook `useAction` pour gérer l'état d'un appel à l'action. Dans Svelte, cela renvoie un magasin (lire
-avec `$`).
+Utilisez le hook `useAction` pour gérer l'état d'un appel à l'action. Dans Svelte, cela renvoie un magasin (lu avec `$`).
 
 ```svelte
 <script lang="ts">
@@ -175,7 +167,7 @@ import { router } from "@nexy/client";
 router.push("/dashboard");
 ```
 
-### Accès URL
+### Accès aux URL
 
 Toutes les données de localisation sont fournies sous forme de magasins :
 
@@ -184,7 +176,7 @@ Toutes les données de localisation sont fournies sous forme de magasins :
 - `$searchParams` : chaîne de requête
 - `$location` : objet de localisation complet
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et la build client
+- [Frontend](../../guides/frontend.md) : Vite et le build client
