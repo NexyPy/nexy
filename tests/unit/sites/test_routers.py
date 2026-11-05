@@ -139,7 +139,7 @@ class TestVanillaMenu:
 
     def test_the_selector_names_every_router(self, out):
         html = self._html(out, "guides/actions")
-        assert all(f"<b>{name}</b>" in html for _key, name, _blurb in source.ROUTERS)
+        assert all(f">{name}</b>" in html for _key, name, _blurb in source.ROUTERS)
 
     def test_every_choice_of_the_selector_has_an_icon(self, out):
         html = self._html(out, "guides/actions")
