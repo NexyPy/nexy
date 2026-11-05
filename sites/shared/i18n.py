@@ -1,9 +1,11 @@
-"""The languages the documentation site speaks, and the words it says in each.
+"""The languages the documentation sites speak, and the words of the site in each.
 
-The pages of `docs/` are written in English. A language translates the site around them - menu,
-pager, search, code chips - and the home page. A reader who picks another language still opens the
-English page, with one line saying so, until that page has a translation. The languages are the
-twelve most spoken ones; adding one is a block below, nothing else.
+The pages of `docs/` are written in English, and `scripts/translate_docs.py` writes each language
+under `docs/<code>/`. A site publishes every language at `/docs/<code>/`: the pages and the menu
+come from that tree, the words of the site around them (buttons, labels, search) from `UI` below,
+written into the page on the server by `localize`. A page with no translation yet is served in
+English under the language, with one line saying so. The languages are the twelve most spoken
+ones; adding one is a block below, then a run of the script.
 """
 
 from __future__ import annotations
@@ -82,8 +84,8 @@ def is_known(code: str) -> bool:
     return any(language.code == code for language in LANGUAGES)
 
 
-# The words of the site itself: one block per language, the same keys everywhere. The pages stay in
-# English, so this is what a reader actually changes when they pick a language.
+# The words of the site itself: one block per language, the same keys everywhere. The pages and the
+# menu come from docs/<code>/; these are the buttons, labels and messages around them.
 UI: dict[str, dict[str, str]] = {
     "en": {
         "skip": "Skip to content",
@@ -466,9 +468,7 @@ def localize(html: str, code: str) -> str:
 
 
 def payload() -> dict[str, object]:
-    """Everything the browser needs to translate the site, as JSON-ready data."""
-    from sites.shared import home_strings
-
+    """The words the script writes itself (copy chips, search messages), as JSON-ready data."""
     return {
         "languages": [
             {
@@ -480,9 +480,4 @@ def payload() -> dict[str, object]:
             for language in LANGUAGES
         ],
         "ui": UI,
-        "home": {
-            "hero": home_strings.HERO,
-            "groups": home_strings.GROUPS,
-            "cards": home_strings.CARDS,
-        },
     }
