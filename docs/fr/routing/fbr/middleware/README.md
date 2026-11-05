@@ -52,7 +52,7 @@ Une URL qui ne correspond à aucune route (un 404) ne reçoit que le middleware 
 | `middleware.py` | vous avez également besoin de la **réponse** : en-têtes, redirections, timing, court-circuit pour toute une zone |
 | [`dependencies.py`](../dependencies/README.md) | vous avez besoin de paramètres analysés ou d'injecter une valeur (utilisateur actuel, session de base de données) |
 | `@UseGuard` sur un gestionnaire | une route nécessite une vérification supplémentaire |
-| `useMiddlewares` dans [config](../../../reference/config.md) | un middleware ASGI pour l'ensemble de l'application (CORS, GZip, sessions) |
+| `useMiddlewares` dans [configuration](../../../reference/config.md) | un middleware ASGI pour l'ensemble de l'application (CORS, GZip, sessions) |
 
 Les fichiers middleware exécutent **avant** dépendances : la requête a transmis tous les `middleware.py` de ses répertoires lorsque les dépendances démarrent.
 
