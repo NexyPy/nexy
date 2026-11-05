@@ -83,4 +83,4 @@ Jede API-Route erscheint im generierten Schema, da es sich bei den Routen um ein
 - [Validierung und Fehler](validation-and-errors.md): `422`, `404` und JSON-Fehler
 - [Routing](../../README.md): Dateipfad zur URL
 - [Aktionen](../../../guides/actions.md): Endpunkte mit generierten Pfaden
-- [Config](../../../reference/config.md): Middleware, CORS, Sitzungen
+- [Konfiguration](../../../reference/config.md): Middleware, CORS, Sitzungen
