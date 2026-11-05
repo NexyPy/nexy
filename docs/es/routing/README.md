@@ -8,7 +8,7 @@ Nexy tiene dos enrutadores nativos. Puedes elegir uno por función; pueden coexi
 |---|---|
 | Páginas, contenido, un sitio con algunos puntos finales | Basado en archivos |
 | Una gran API con servicios compartidos entre rutas | Modular |
-| Ambos: páginas para personas, una API estructurada para máquinas | Basados en archivos y modulares juntos |
+| Ambos: páginas para personas, una API estructurada para máquinas | Basado en archivos y modular en conjunto |
 
 ```diagram filename="El enrutador basado en archivos, de un vistazo"
 src/routes/index.nexy           →  /
@@ -34,8 +34,7 @@ Puede combinar FBR, Modular e integración personalizada. Nexy registra estas ru
 
 ## Enrutamiento basado en archivos
 
-Una ruta es un archivo. La URL es su ruta en `src/routes/`, menos la extensión. Como Next.js, un
-El proyecto está en uno de dos modos, elegido con `useCSR`:
+Una ruta es un archivo. La URL es su ruta en `src/routes/`, menos la extensión. Al igual que Next.js, un proyecto está en uno de dos modos, elegidos con `useCSR`:
 
 | | `useCSR = False` (predeterminado) | `useCSR = True` |
 |---|---|---|
@@ -50,18 +49,17 @@ Consulte [Modo servidor y modo cliente](fbr/modes.md).
 |---|---|
 | [fbr/pages](fbr/pages/README.md) | páginas, [rutas dinámicas](fbr/pages/dynamic-routes.md) y grupos de rutas |
 | [fbr/layouts](fbr/layouts/README.md) | `layout.nexy`, `layout.tsx`, `layout.vue`, `layout.svelte` |
-| [fbr/handlers](fbr/handlers/README.md) | `.py` manejadores de ruta, [validación y errores](fbr/handlers/validation-and-errors.md) |
+| [fbr/handlers](fbr/handlers/README.md) | `.py` controladores de ruta, [validación y errores](fbr/handlers/validation-and-errors.md) |
 | [fbr/dependencies](fbr/dependencies/README.md) | `dependencies.py` y guardias, heredados por directorio |
 | [fbr/middleware](fbr/middleware/README.md) | `middleware.py`, heredado por directorio |
 | [fbr/errors](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, errores JSON |
 | [fbr/navigation](fbr/navigation/linking-and-navigating.md) | vinculación, navegación del cliente, [hooks](fbr/navigation/hooks.md) |
-| [fbr/realtime](fbr/realtime/websocket.md) | Controladores WebSocket |
+| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket controladores |
 | [fbr/inheritance](fbr/inheritance.md) | cómo se heredan los diseños, las dependencias y las páginas de error |
 
 ## Enrutamiento modular
 
-Controladores, módulos e inyección de dependencias, al estilo NestJS. Ver
-[Enrutamiento modular](modular/README.md) y [Nexy y NestJS](modular/vs-nestjs.md).
+Controladores, módulos e inyección de dependencias, al estilo de NestJS. Consulte [Enrutamiento modular](modular/README.md) y [Nexy y NestJS](modular/vs-nestjs.md).
 
 ## Integración personalizada
 
@@ -70,5 +68,5 @@ También puede integrar un enrutador FastAPI existente en su proyecto Nexy. Cons
 ## Próximos pasos
 
 - [Enrutamiento basado en archivos](fbr/README.md)
-- [Renderizado](../rendering/README.md)
+- [Representación](../rendering/README.md)
 - [Vistas](../views/README.md): qué va dentro de los archivos
