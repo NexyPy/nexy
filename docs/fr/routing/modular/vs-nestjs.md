@@ -42,7 +42,7 @@ Le routeur modulaire s'inspire de NestJS : contrôleurs, modules et injection d
 
 Choisissez le routeur modulaire lorsque vous souhaitez une structure basée sur les classes avec injection pour une API plus grande. Choisissez le routeur basé sur des fichiers lorsque la structure de l'URL est le principe d'organisation. Les deux sont échafaudés par `nx new`, exécutés sur la même application FastAPI et peuvent coexister.
 
-> [!REMARQUE]
+> [!NOTE]
 > les éléments manquants ci-dessus constituent l'écart honnête. Si vous avez besoin de fournisseurs `useFactory` ou de fournisseurs remplaçables dans les tests aujourd'hui, conservez la logique dans les fonctions simples et FastAPI `Depends`, qui composent et remplacent naturellement.
 
 ## Prochaines étapes
