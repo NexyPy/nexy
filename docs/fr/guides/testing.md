@@ -88,12 +88,12 @@ def test_form_posts_to_action(client):
 
 Un appel avec JSON répond avec le résultat, et `422` avec les champs invalides.
 
-> [!REMARQUE]
+> [!NOTE]
 > les chemins d’action sont spécifiques au projet et générés. Ne codez jamais en dur `/_nx_<hash>` dans un test.
 
 ## Tester un composant `.nexy`
 
-`nexy.testing.render` compile un composant, avec les composants qu'il importe, et renvoie son code HTML. Les accessoires sont des arguments de mots-clés et `children=` remplit l'espace :
+`nexy.testing.render` compile un composant, avec les composants qu'il importe, et renvoie son code HTML. Les accessoires sont des arguments de mots-clés et `children=` remplit l'emplacement :
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
