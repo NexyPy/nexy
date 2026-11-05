@@ -52,7 +52,7 @@ Una URL que no coincide con ninguna ruta (un 404) solo recibe el middleware de d
 | `middleware.py` | también necesitas la **respuesta**: encabezados, redirecciones, sincronización, cortocircuitos para un área completa |
 | [`dependencies.py`](../dependencies/README.md) | necesita parámetros analizados o inyectar un valor (usuario actual, sesión de base de datos) |
 | `@UseGuard` en un controlador | una ruta necesita una verificación adicional |
-| `useMiddlewares` en [config](../../../reference/config.md) | un middleware ASGI para toda la aplicación (CORS, GZip, sesiones) |
+| `useMiddlewares` en [configuración](../../../reference/config.md) | un middleware ASGI para toda la aplicación (CORS, GZip, sesiones) |
 
 Los archivos de middleware se ejecutan **antes de las** dependencias: la solicitud ha pasado por cada `middleware.py` de sus directorios cuando comienzan las dependencias.
 
