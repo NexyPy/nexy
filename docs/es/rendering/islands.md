@@ -83,6 +83,6 @@ from "@/components/Counter.tsx" import Counter
 
 ## Próximos pasos
 
-- [Rendering](README.md): los cuatro modos
+- [Renderizado](README.md): los cuatro modos
 - [Componentes](../views/nexy/components.md): cómo una página `.nexy` importa una
 - [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md)
