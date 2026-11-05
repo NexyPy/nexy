@@ -17,7 +17,7 @@ class NexyConfig(NexyConfigModel):
 
 ## Archivos de ruta
 
-| Extensión | Representada |
+| Extensión | Renderizado |
 |---|---|
 | `.nexy`, `.md` | por Nexy en el momento de la solicitud |
 | `.mdx`, `.tsx`, `.jsx`, `.vue`, `.svelte` | por el marco del cliente; pre-renderizado a HTML en el momento de la compilación, luego asumido por el paquete del cliente |
@@ -44,7 +44,7 @@ El navegador sólo habla con el puerto `3000`. No hay una segunda URL para abrir
 - el paquete de clientes, con activos bajo `__nexy__/client/`;
 - las rutas compiladas Python.
 
-Vite maneja el paquete del cliente; SSR HTML se produce por archivo mediante esbuild.
+Vite construye el paquete de cliente; El HTML del servidor de cada página componente se escribe en el momento de la compilación.
 
 > [!NOTE]
 > una ruta cuyo procesamiento del servidor falla se informa como una ruta solo para el cliente en lugar de fallar en toda la compilación.
@@ -53,10 +53,10 @@ Vite maneja el paquete del cliente; SSR HTML se produce por archivo mediante esb
 
 `nexy new` solicita un modo de estilo y lo configura para el marco de trabajo del cliente que elijas: Tailwind, UnoCSS o CSS simple. Los tokens de diseño (colores, fuentes, el tema oscuro) son variables CSS en `src/globale.css`, el archivo que crea el andamio.
 
-| Modo | Las páginas de inicio se escriben con |
+| Modo | Las páginas iniciales están escritas con |
 |---|---|
 | Tailwind, UnoCSS | clases de utilidad en el marcado, con los tokens asignados a nombres de clases |
-| Nombres de clases semánticas de CSS simple | y CSS en `src/globale.css` |
+| CSS simple | nombres de clases semánticas y CSS en `src/globale.css` |
 
 Siga el modo de su proyecto cuando agregue una página: clases de utilidad en un proyecto de utilidad, CSS en uno de CSS simple. Mantenga el CSS del componente que las utilidades no puedan expresar en el bloque `<style>` del componente. En un proyecto de servidor (`.nexy` páginas) UnoCSS lee los `.nexy` archivos de clases; Tailwind los encuentra por sí solo.
 
