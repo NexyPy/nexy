@@ -1,11 +1,10 @@
 # Gardes et métadonnées
 
-Décorateurs qui protègent une route et la décrivent dans le schéma OpenAPI.
+Décorateurs qui protègent un itinéraire et le décrivent dans le schéma OpenAPI.
 
 ## Gardes
 
-`@UseGuard(*guards)` fonctionne sur un contrôleur (chaque méthode) ou sur une méthode. Chaque garde est ajouté en tant que
-FastAPI `Depends`, il déclare donc les paramètres dont il a besoin et déclenche pour rejeter l'appel :
+`@UseGuard(*guards)` fonctionne sur un contrôleur (chaque méthode) ou sur une méthode. Chaque garde est ajouté en tant que FastAPI `Depends`, il déclare donc les paramètres dont il a besoin et déclenche pour rejeter l'appel :
 
 ```python filename="src/apps/admin/admin_controller.py"
 from fastapi import Header, HTTPException
@@ -26,28 +25,25 @@ class AdminController:
 
 ## Décorateur middleware
 
-`@Middleware(*middlewares)` se comporte de la même manière : ce sont des dépendances FastAPI, pas ASGI
-middleware. Pour un véritable middleware ASGI, utilisez `useMiddlewares` dans
-[Config](../../reference/config.md) ou [Middleware et sécurité](../../guides/middleware-and-security.md).
+`@Middleware(*middlewares)` se comporte de la même manière : ce sont des dépendances FastAPI, pas un middleware ASGI. Pour un véritable middleware ASGI, utilisez `useMiddlewares` dans [Config](../../reference/config.md) ou [Middleware and security](../../guides/middleware-and-security.md).
 
-## Métadonnées de l'itinéraire
+## Métadonnées d'itinéraire
 
-`@UseRoute(...)` définit les métadonnées OpenAPI. Cela ne change pas le chemin.
+`@UseRoute(...)` définit les métadonnées de OpenAPI. Cela ne change pas le chemin.
 
 | Argument | Signification |
 |---|---|
 | `name` | nom de l'itinéraire |
-| `tags` | Balises OpenAPI |
+| `tags` | OpenAPI balises |
 | `summary`, `description` | texte dans la référence API |
 | `deprecated` | marque l'opération comme obsolète |
 | `include_in_schema` | masquer la route du schéma |
 | `operation_id` | identifiant d'opération explicite |
-| `openapi_extra` | champs OpenAPI supplémentaires |
+| `openapi_extra` | champs supplémentaires OpenAPI |
 
 ## Réponses
 
-`@UseResponse(...)` définit `status_code`, `response_class`, `response_model`, `responses` et le
-options de sérialisation.
+`@UseResponse(...)` définit `status_code`, `response_class`, `response_model`, `responses` et les options de sérialisation.
 
 ```python
 from nexy.decorators import Controller, UseResponse, UseRoute
@@ -66,4 +62,4 @@ La référence API générée est servie à `/docs` sauf si `useDocs = False`.
 ## Prochaines étapes
 
 - [Injection de dépendances](dependency-injection.md)
-- [API routes](../fbr/handlers/README.md) : les mêmes options pour les gestionnaires basés sur des fichiers
+- [Routes API](../fbr/handlers/README.md) : les mêmes options pour les gestionnaires basés sur des fichiers
