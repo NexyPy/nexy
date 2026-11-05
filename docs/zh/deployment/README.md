@@ -64,7 +64,7 @@ async def GET():
 
 每个页面都是 HTML，但 Nexy 假定有一个用于路由和 API 处理程序的服务器。
 
-> [！注意]
+> [!NOTE]
 > 没有 `--static` 构建模式。必须在管道中从 `nx build` 输出生成纯静态导出。
 
 ## 清单
@@ -72,7 +72,7 @@ async def GET():
 - [ ] `nx build` 在 CI 中，对于您希望在服务器上呈现的路由没有警告
 - 当路由文件无法加载时，[ ] `nx start` 退出并显示代码 1，并且不启动任何内容
 - [ ] `NEXY_ACTION_SECRET` 设置，或 `__nexy__/action.key` 与构建一起保留
-- [ ] `useDocs = False` 在生产中如果 API 模式不应公开
+- 如果 API 模式不应公开，则 [ ] `useDocs = False` 在生产中
 - [ ] `useTrustedHost` 和 `useHTTPSRedirect` 设置为公共部署
 - [ ] `__nexy__/` 未提交
 
