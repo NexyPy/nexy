@@ -179,3 +179,14 @@ class TestTidyEmphasis:
     def test_a_line_with_bold_in_code_is_left_alone(self):
         text = "Use `** kw` and ** this **\n"
         assert translator.tidy(text) == text
+
+
+class TestHeal:
+    def test_zero_width_spaces_inside_a_placeholder_are_dropped(self):
+        assert translator.heal("a [[183]\u200b\u200b] b") == "a [[183]] b"
+
+    def test_a_zero_width_joiner_in_the_text_is_kept(self):
+        assert translator.heal("ক্‍ষ [[1]]") == "ক্‍ষ [[1]]"
+
+    def test_the_bracket_dropped_at_the_opening_comes_back(self):
+        assert translator.heal("[1]] text") == "[[1]] text"
