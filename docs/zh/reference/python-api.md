@@ -1,7 +1,6 @@
 # Python API
 
-Nexy 按模块将每个名称导出到您的 Python 代码。测试根据中的代码检查此页面
-双向：此处列出的名称必须存在，并且此处必须列出代码导出的名称。
+Nexy 按模块将每个名称导出到您的 Python 代码。测试会在两个方向上对照代码检查此页面：此处列出的名称必须存在，并且此处必须列出代码导出的名称。
 
 ## `nexy`
 
@@ -14,17 +13,17 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试根据中的�
 | `Link` | 具有可选预取 | 的客户端 `<a>`
 | `Import` | 将客户端组件导入 `.nexy` 页面 |
 | `Template` | 渲染 Jinja2 和 Markdown 模板 |
-| `Vite` |每个页面需要的Vite客户端标签|
+| `Vite` | Vite 每个页面都需要 | 客户端标签
 | `Form` | 没有行为的占位符：使用带有 [action](../guides/actions.md) | 的普通 `<form>`
 | `usePathname` | 当前请求的路径 |
 | `useSearchParams` | 作为字典的查询字符串 |
 | `useParams` | 动态路径参数作为字典，就像客户端上的 `useParams()` |
 | `useQuery` | `useParams` 的原始名称，为现有页面保留（它不读取查询字符串）|
-| `useRequest` | 当前请求，其他钩子未覆盖的内容 |
+| `useRequest` | 当前请求，其他钩子未涵盖的内容 |
 | `useHeaders` | 请求标头作为具有小写名称的字典 |
 | `useUrl` | 完整 URL：`.scheme`、`.hostname`、`.path`、`.query` |
 | `useIsActive` | 对于导航栏，链接是否指向当前页面或其父页面之一 |
-当前请求 | 的 | `useRouter` | `path`、`base_url` 和 `url_for`
+| 当前请求 | 的 `useRouter` | `path`、`base_url` 和 `url_for`
 | `useSession` | 会话字典，会话关闭时为空 |
 | `useCookies` | 请求 cookie 作为字典 |
 | `useToc` | 当前页面的目录，HTML 格式 |
@@ -37,8 +36,7 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试根据中的�
 
 ## `nexy.http`
 
-处理程序的 HTTP 词汇。从此处导入而不是从 FastAPI 导入，因此您的处理程序取决于
-关于 Nexy 的合同。
+处理程序的 HTTP 词汇。从这里导入而不是从 FastAPI 导入，因此您的处理程序取决于 Nexy 的合同。
 
 | 名称 | 它是什么 |
 |---|---|
@@ -61,10 +59,10 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试根据中的�
 |---|---|
 | `Action` | 将函数转换为 `POST` 端点，请参阅 [actions](../guides/actions.md) |
 | `revalidate` | 告诉浏览器哪些页面的操作已过时 |
-| `Module`，`Controller` | 在[模块化路由器](../routing/modular/README.md) |中声明一个模块和一个控制器
-| `Injectable`、`Container`、`Scope` | [依赖注入](../routing/modular/dependency-injection.md)及其生命周期|
+| `Module`, `Controller` | 在[模块化路由器](../routing/modular/README.md) | 中声明一个模块和一个控制器
+| `Injectable`、`Container`、`Scope` | [依赖注入](../routing/modular/dependency-injection.md) 及其生命周期 |
 | `UseGuard`、`Middleware` | 保护或包装一个处理程序，请参阅 [guards](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`、`useRoute`、`RouteMeta` | 为 OpenAPI 命名路由并对其进行描述 |
+| `UseRoute`、`useRoute`、`RouteMeta` | 命名一条路线并为 OpenAPI | 描述它
 | `UseResponse`, `ResponseMeta` | 描述路线的答案 |
 | `HTTP_METHODS` | 处理程序文件可以定义的 HTTP 方法 |
 | `ACTIONS_STORE` | 操作注册表，用于工具和测试 |
@@ -75,7 +73,7 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试根据中的�
 |---|---|
 | `render` | 给定 props 的 `.nexy` 组件的 HTML，没有服务器，请参阅 [testing](../guides/testing.md) |
 
-## 下一步在哪里
+## 下一步去哪里
 
 - [Config](config.md)：这些名称后面的 `use*` 字段
 - [异常和错误](exceptions.md)：每个失败的答案
