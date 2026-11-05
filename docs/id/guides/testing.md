@@ -142,4 +142,4 @@ Pengerjaan Nexy sendiri menggunakan perintah yang berbeda: lihat [KONTRIBUSI](..
 
 - [CLI](../reference/cli.md): setiap bendera `nx test`
 - [API](../routing/fbr/handlers/README.md): apa yang dikembalikan oleh titik akhir
-- [Deploy](../deployment/README.md): buat sebelum Anda menguji di CI
+- [Penerapan](../deployment/README.md): buat sebelum Anda menguji di CI
