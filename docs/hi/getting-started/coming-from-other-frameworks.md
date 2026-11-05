@@ -15,6 +15,24 @@
 
 `src/routes/*.py` के अंतर्गत सब कुछ सामान्य है FastAPI: निर्भरताएं, Pydantic मॉडल, मिडलवेयर और `/docs` काम करते रहते हैं।
 
+पहले और बाद में वही समापन बिंदु:
+
+```python filename="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id}
+```
+
 ## से Next.js
 
 | Next.js | नेक्सी |
@@ -31,6 +49,27 @@
 
 बैकएंड Python है, इसलिए आपका एपीआई आपके डेटा और एमएल कार्य के साथ कोड साझा करता है। क्लाइंट घटक पूरे पृष्ठ React पेड़ के बजाय द्वीपों के रूप में हाइड्रेट होते हैं।
 
+एक Next.js पेज लगभग वैसे ही चलता रहता है, और इसका `"use client"` घटक एक सर्वर पेज का एक द्वीप बन जाता है:
+
+```tsx filename="src/routes/blog/[slug].tsx"
+import { useParams } from "@nexy/client";
+
+export default function Post() {
+  const { slug } = useParams<{ slug: string }>();
+  return <h1>{slug}</h1>;
+}
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
+
 ## एक्सप्रेस या नोड बैकएंड से
 
 | एक्सप्रेस | नेक्सी |
@@ -41,6 +80,22 @@
 | ईजेएस/पग दृश्य | `.nexy` (Jinja2) पृष्ठ |
 | `npm run dev` | `nx dev` |
 
+`app.use(...)` `nexyconfig.py` का फ़ील्ड बन जाता है, और `res.json(...)` रिटर्न मान बन जाता है:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+
 ## राउटर चुनना
 
 | उपयोग करें | कब |
@@ -48,7 +103,29 @@
 | फ़ाइल-आधारित राउटर | फ़ाइलों से मैप किए गए पृष्ठ और समापन बिंदु; डिफ़ॉल्ट |
 | मॉड्यूलर राउटर | नियंत्रक, मॉड्यूल और निर्भरता इंजेक्शन, NestJS-शैली |
 
-दोनों को `nx new` द्वारा तैयार किया गया है और एक ही एंड-टू-एंड परीक्षणों द्वारा कवर किया गया है। [रूटिंग](../routing/README.md) और [मॉड्यूलर रूटिंग](../routing/modular/README.md) देखें।
+दो फाइलों में मॉड्यूलर राउटर: एक नियंत्रक, और मॉड्यूल `nexyconfig.py` `useRouter = AppModule` की ओर इशारा करता है:
+
+```python filename="src/apps/app_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller()
+class AppController:
+    async def get(self):
+        return {"message": "Hello"}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+from .app_controller import AppController
+
+
+@Module()
+class AppModule:
+    controllers = [AppController]
+```
+
+दोनों को `nx new` द्वारा तैयार किया गया है और अंत-से-अंत तक समान परीक्षणों द्वारा कवर किया गया है। [रूटिंग](../routing/README.md) और [मॉड्यूलर रूटिंग](../routing/modular/README.md) देखें।
 
 ## आगे कहाँ
 

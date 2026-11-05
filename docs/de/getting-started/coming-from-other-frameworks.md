@@ -15,6 +15,24 @@ Nexy ist FastAPI plus dateibasiertes Routing, servergerenderte Seiten und option
 
 Alles unter `src/routes/*.py` ist normal FastAPI: Abhängigkeiten, Pydantic Modelle, Middleware und `/docs` funktionieren weiterhin.
 
+Derselbe Endpunkt, vorher und nachher:
+
+```python filename="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id}
+```
+
 ## Von Next.js
 
 | Next.js | Nexy |
@@ -25,11 +43,32 @@ Alles unter `src/routes/*.py` ist normal FastAPI: Abhängigkeiten, Pydantic Mode
 | verschachtelt `layout.tsx` | verschachtelt `layout.tsx` / `layout.vue` / `layout.svelte` im Client-Modus, verschachtelt `layout.nexy` im Server-Modus |
 | `use client` Komponenten auf einer Serverseite | [Inseln](../rendering/islands.md) im Servermodus |
 | Routenhandler `route.ts` | `src/routes/api/x.py`, geschrieben in Python |
-| `(group)`-Ordner | gleich: `(group)/` |
+| `(group)` Ordner | gleich: `(group)/` |
 | Serveraktionen | [`@Action`](../guides/actions.md) Funktionen, die aus einem Formular oder als typisierte Clientfunktionen aufgerufen werden |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
-Das Backend ist Python, sodass Ihre API Code mit Ihren Daten und ML-Arbeit teilt. Client-Komponenten hydratisieren als Inseln statt als ganzseitiger React Baum.
+Das Backend ist Python, sodass Ihre API den Code mit Ihren Daten und Ihrer ML-Arbeit teilt. Client-Komponenten hydratisieren als Inseln anstelle eines ganzseitigen React-Baums.
+
+Eine Next.js-Seite bewegt sich fast so, wie sie ist, und ihre `"use client"`-Komponente wird zu einer Insel einer Serverseite:
+
+```tsx filename="src/routes/blog/[slug].tsx"
+import { useParams } from "@nexy/client";
+
+export default function Post() {
+  const { slug } = useParams<{ slug: string }>();
+  return <h1>{slug}</h1>;
+}
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
 
 ## Von Express- oder Node-Backends
 
@@ -41,6 +80,22 @@ Das Backend ist Python, sodass Ihre API Code mit Ihren Daten und ML-Arbeit teilt
 | EJS/Pug-Ansichten | `.nexy` (Jinja2) Seiten |
 | `npm run dev` | `nx dev` |
 
+`app.use(...)` wird zu einem Feld von `nexyconfig.py` und `res.json(...)` wird zu einem Rückgabewert:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+
 ## Auswahl eines Routers
 
 | Benutzen | Wann |
@@ -48,7 +103,29 @@ Das Backend ist Python, sodass Ihre API Code mit Ihren Daten und ML-Arbeit teilt
 | Dateibasierter Router | aus Dateien zugeordnete Seiten und Endpunkte; die Standardeinstellung |
 | Modularer Router | Controller, Module und Abhängigkeitsinjektion im NestJS-Stil |
 
-Beide basieren auf `nx new` und werden durch dieselben End-to-End-Tests abgedeckt. Siehe [Routing](../routing/README.md) und [Modulares Routing](../routing/modular/README.md).
+Der modulare Router besteht aus zwei Dateien: einem Controller und dem Modul `nexyconfig.py` mit `useRouter = AppModule`:
+
+```python filename="src/apps/app_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller()
+class AppController:
+    async def get(self):
+        return {"message": "Hello"}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+from .app_controller import AppController
+
+
+@Module()
+class AppModule:
+    controllers = [AppController]
+```
+
+Beide basieren auf `nx new` und werden von denselben End-to-End-Tests abgedeckt. Siehe [Routing](../routing/README.md) und [Modulares Routing](../routing/modular/README.md).
 
 ## Wohin als nächstes
 

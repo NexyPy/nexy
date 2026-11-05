@@ -15,6 +15,24 @@ Nexy, c'est FastAPI plus un routage basé sur des fichiers, des pages rendues pa
 
 Tout sous `src/routes/*.py` est ordinaire FastAPI : les dépendances, les modèles Pydantic, le middleware et `/docs` continuent de fonctionner.
 
+Le même point final, avant et après :
+
+```python filename="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id}
+```
+
 ## De Next.js
 
 | Next.js | Nexy |
@@ -31,6 +49,27 @@ Tout sous `src/routes/*.py` est ordinaire FastAPI : les dépendances, les modè
 
 Le backend est Python, donc votre API partage le code avec vos données et votre travail de ML. Les composants clients s'hydratent sous forme d'îlots au lieu d'une page entière React arbre.
 
+Une page Next.js se déplace presque telle quelle et son composant `"use client"` devient un îlot d'une page serveur :
+
+```tsx filename="src/routes/blog/[slug].tsx"
+import { useParams } from "@nexy/client";
+
+export default function Post() {
+  const { slug } = useParams<{ slug: string }>();
+  return <h1>{slug}</h1>;
+}
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
+
 ## Depuis les backends Express ou Node
 
 | Exprimer | Nexy |
@@ -41,12 +80,50 @@ Le backend est Python, donc votre API partage le code avec vos données et votre
 | Vues EJS / Carlin | `.nexy` (Jinja2) pages |
 | `npm run dev` | `nx dev` |
 
+`app.use(...)` devient un champ de `nexyconfig.py` et `res.json(...)` devient une valeur de retour :
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+
 ## Choisir un routeur
 
 | Utiliser | Quand |
 |---|---|
 | Routeur basé sur des fichiers | pages et points de terminaison mappés à partir de fichiers ; la valeur par défaut |
 | Routeur modulaire | contrôleurs, modules et injection de dépendances, style NestJS |
+
+Le routeur modulaire en deux fichiers : un contrôleur, et le module `nexyconfig.py` pointe avec `useRouter = AppModule` :
+
+```python filename="src/apps/app_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller()
+class AppController:
+    async def get(self):
+        return {"message": "Hello"}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+from .app_controller import AppController
+
+
+@Module()
+class AppModule:
+    controllers = [AppController]
+```
 
 Les deux sont échafaudés par `nx new` et couverts par les mêmes tests de bout en bout. Voir [Routage](../routing/README.md) et [Routage modulaire](../routing/modular/README.md).
 

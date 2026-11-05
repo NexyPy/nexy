@@ -17,6 +17,24 @@ Solid or Preact islands. This page maps what you already know.
 Everything under `src/routes/*.py` is ordinary FastAPI: dependencies, Pydantic models, middleware
 and `/docs` keep working.
 
+The same endpoint, before and after:
+
+```python filename="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id}
+```
+
 ## From Next.js
 
 | Next.js | Nexy |
@@ -34,6 +52,28 @@ and `/docs` keep working.
 The backend is Python, so your API shares code with your data and ML work. Client components
 hydrate as islands instead of a whole-page React tree.
 
+A Next.js page moves over almost as it is, and its `"use client"` component becomes an island of a
+server page:
+
+```tsx filename="src/routes/blog/[slug].tsx"
+import { useParams } from "@nexy/client";
+
+export default function Post() {
+  const { slug } = useParams<{ slug: string }>();
+  return <h1>{slug}</h1>;
+}
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
+
 ## From Express or Node backends
 
 | Express | Nexy |
@@ -44,12 +84,51 @@ hydrate as islands instead of a whole-page React tree.
 | EJS / Pug views | `.nexy` (Jinja2) pages |
 | `npm run dev` | `nx dev` |
 
+`app.use(...)` becomes a field of `nexyconfig.py`, and `res.json(...)` becomes a return value:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/routes/users/[id].py"
+async def GET(id: int):
+    return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+
 ## Choosing a router
 
 | Use | When |
 |---|---|
 | File-based router | pages and endpoints mapped from files; the default |
 | Modular router | controllers, modules and dependency injection, NestJS-style |
+
+The modular router in two files: a controller, and the module `nexyconfig.py` points at with
+`useRouter = AppModule`:
+
+```python filename="src/apps/app_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller()
+class AppController:
+    async def get(self):
+        return {"message": "Hello"}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+from .app_controller import AppController
+
+
+@Module()
+class AppModule:
+    controllers = [AppController]
+```
 
 Both are scaffolded by `nx new` and covered by the same end-to-end tests. See
 [Routing](../routing/README.md) and [Modular routing](../routing/modular/README.md).
