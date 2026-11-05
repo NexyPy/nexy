@@ -22,8 +22,8 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [!REMARQUE]
-> Le routage basé sur des fichiers continue de fonctionner. Si `src/routes/` existe, il est analysé même lorsque `useRouter` est défini.
+> [!NOTE]
+> Le routage basé sur des fichiers continue de fonctionner. Si `src/routes/` existe, il est numérisé même lorsque `useRouter` est défini.
 
 ## Écrire un contrôleur
 
