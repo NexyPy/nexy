@@ -2,7 +2,7 @@
 
 Le routage modulaire utilise des classes avec des décorateurs au lieu de fichiers sous `src/routes/` : les contrôleurs gèrent les requêtes, les modules les regroupent et les fournisseurs sont injectés. Montez le `APIRouter` résultant avec `useRouter` dans `nexyconfig.py`.
 
-**Avant de commencer :** un projet Nexy et une page de travail. Le routeur modulaire remplace celui basé sur des fichiers, alors lisez d'abord [Routing](../README.md) si vous n'avez pas encore choisi de routeur.
+**Avant de commencer :** un projet Nexy et une page de travail. Le routeur modulaire remplace celui basé sur des fichiers, alors lisez d'abord [Routage](../README.md) si vous n'avez pas encore choisi de routeur.
 
 | Page | Ce qu'il couvre |
 |---|---|
@@ -83,5 +83,5 @@ Voir `examples/Modular/api/minimal/`.
 
 - [Injection de dépendances](dependency-injection.md) : services et scopes
 - [Gardes et métadonnées](guards-and-metadata.md) : protéger et documenter les itinéraires
-- [Routing](../README.md) : le routeur basé sur les fichiers
-- [Config](../../reference/config.md) : toutes les options, y compris `useRouter`
+- [Routage](../README.md) : le routeur basé sur les fichiers
+- [Configuration](../../reference/config.md) : toutes les options, y compris `useRouter`
