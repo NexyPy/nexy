@@ -65,7 +65,7 @@ Tiga pertanyaan menentukan semua yang diperhatikan pembaca:
 
 | Pertanyaan | Jawaban | Halaman |
 |---|---|---|
-| Siapa yang memproduksi HTML? | server, atau browser untuk rute klien | [Rendering](../rendering/README.md) |
+| Siapa yang memproduksi HTML? | server, atau browser untuk rute klien | [Perenderan](../rendering/README.md) |
 | Kapan data dibaca? | pada setiap permintaan, pada setiap regenerasi, atau di browser | [SSR](../rendering/ssr.md), [ISR](../rendering/isr.md) |
 | Kapan JavaScript tiba? | hanya untuk sebuah pulau, atau untuk keseluruhan dokumen | [Pulau](../rendering/islands.md), [CSR](../rendering/csr.md) |
 
@@ -96,6 +96,6 @@ Apa yang tidak berubah: aturan routing yang sama, file halaman yang sama, `nexyc
 ## Lebih dalam
 
 - [Struktur proyek](project-structure.md): setiap folder proyek
-- [Rendering](../rendering/README.md): SSR, ISR, CSR dan kepulauan
+- [Perenderan](../rendering/README.md): SSR, ISR, CSR dan kepulauan
 - [Frontend](../guides/frontend.md): Vite, gaya dan pembuatan klien
 - [Perutean](../routing/README.md): router berbasis file, modular, dan khusus
