@@ -23,13 +23,13 @@ Kompiler menulis ulang `<Audio ... />` menjadi `{{ Audio(...) }}`, sehingga bent
 
 ## Aturan formulir tag
 
-| Di tag | Menjadi |
+| Di dalam tag | Menjadi |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, boolean nyata |
-| `width=640` | `width=640`, angka |
-| `src="{{ url }}"` | `src=(url)`, dievaluasi dalam Jinja |
-| `value` | `"value"` lainnya, string |
+| `width=640` | `width=640`, sebuah angka |
+| `src="{{ url }}"` | `src=(url)`, dievaluasi pada Jinja |
+| lainnya `value` | `"value"`, sebuah string |
 
 - Tag harus dimulai dengan huruf besar dan diimpor di bagian depan; jika tidak, kompiler akan memunculkan `Missing Import: <Name> used but not declared.`
 - Bentuk tagnya adalah **menutup sendiri**. `<Audio src="/a.mp3" />` dan `{{ Audio("/a.mp3") }}` setara; menulis anak-anak di dalam tag pembantu tidak didukung.
@@ -104,7 +104,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`title` tidak memiliki default, jadi halaman harus meneruskannya; `tone` kembali ke `"neutral"`. Markup di antara tag berada di dalam `<Slot />` (huruf kapital S). Lihat [.nexy files](README.md#components) untuk props, slot dan aturan bentuk tag.
+`title` tidak memiliki default, jadi halaman harus meneruskannya; `tone` kembali ke `"neutral"`. Markup di antara tag berada di dalam `<Slot />` (huruf kapital S). Lihat [berkas .nexy](README.md#components) untuk props, slot dan aturan bentuk tag.
 
 ## Mengimpor komponen klien
 
@@ -140,6 +140,6 @@ Sintaks impor yang sama menyelesaikan `.json`, `.css` dan file gambar ke URL-nya
 
 ## Langkah selanjutnya
 
-- [.nexy files](README.md): tempat pembantu ini digunakan
+- [berkas .nexy](README.md): tempat pembantu ini digunakan
 - [React](../react/differences.md): mengimpor komponen `.tsx`
 - [Frontend](../../guides/frontend.md): bagaimana komponen klien digabungkan
