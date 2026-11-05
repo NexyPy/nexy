@@ -83,7 +83,7 @@ Setiap panggilan dan status menyimpan dua jawabannya:
 
 `unauthorized(scheme="Bearer")` menambahkan `WWW-Authenticate: Bearer` ke kedua jawaban. Detail yang dibuat dari masukan pengguna di-escape dalam HTML di halaman.
 
-> [!TIPS]
+> [!TIP]
 > `Accept: */*`, default `curl` dan banyak perpustakaan HTTP, tidak meminta keduanya dan menerima halaman HTML. Tambahkan `-H "Accept: application/json"` bila Anda menginginkan jawaban JSON.
 
 ## Periksa itu
