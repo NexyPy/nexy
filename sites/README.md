@@ -41,8 +41,37 @@ whose pages all live under `docs/routing/<router>/` belongs to that router (`rou
 router from it leads to that router's overview. On a shared page the choice only swaps the folders.
 Previous and next never lead into another router.
 
-The build is in English, like `docs/`. A new language is a new folder of Markdown read the same way,
-not a change to the script.
+## Languages
+
+Both sites publish the docs in twelve languages. English lives at `/docs/<slug>/`, and every other
+language at `/docs/<code>/<slug>/`, read from `docs/<code>/`, so a translated page keeps the slug
+and the relative links of its English twin.
+
+| What | Where it comes from |
+|---|---|
+| the page, the menu, the home | `docs/<code>/`, written by `scripts/translate_docs.py` |
+| the words around them (buttons, labels, search messages) | `UI` in `shared/i18n.py`, written into the page on the server by `i18n.localize` |
+| `lang`, `dir`, `og:locale`, `hreflang` | the language of the address; Arabic and Urdu read right to left |
+| search | one index per language: `search-index.<code>.json` (vanilla), `/search-index?lang=<code>` (Nexy) |
+
+The language picker is a list of plain links to the same page in each language, so it works without
+JavaScript. The root of the site opens the docs in the language the reader chose last, else the one
+the browser asks for, else English.
+
+A page with no translation yet is still served under its language, in English, with one line saying
+so. It names the English page as its canonical address and is left out of the sitemap and the
+`hreflang` links, so a crawler never sees the same words at two addresses.
+
+To translate after editing an English page:
+
+```bash
+uv run python scripts/translate_docs.py              # every language, only the pages that changed
+uv run python scripts/translate_docs.py --lang fr    # one language
+```
+
+Code, link targets, table pipes, heading markers and product names (`Python`, `FastAPI`, `Vue`...)
+never reach the service: see `shared/translator.py`. Never edit a file under `docs/<code>/` by
+hand: the next run of the script would overwrite it.
 
 ## What a crawler reads
 
@@ -51,9 +80,9 @@ taken from the opening paragraph, and the whole menu of links. Three more things
 
 | What | Where it comes from | What it holds |
 |---|---|---|
-| `sitemap.xml` | `build.py`, from the pages it writes | the absolute address of every page |
+| `sitemap.xml` | `build.py`, from the pages it writes | the absolute address of every page, in every language it is translated into |
 | `robots.txt` | `build.py` | where the sitemap is, and `Disallow: /*.md$` for the raw Markdown copies |
-| the `<head>` | `sites/shared/seo.py` | canonical, `og:*` and `twitter:*` cards, a `TechArticle` graph with the breadcrumb |
+| the `<head>` | `sites/shared/seo.py` | canonical, `hreflang` links to each translation, `og:*` and `twitter:*` cards, a `TechArticle` graph with the breadcrumb |
 
 `--site-url` is the address the site is published at, `https://nexypy.github.io/nexy` by default;
 `.github/workflows/pages.yml` passes the one GitHub reports, so the canonical tags follow the host
@@ -79,11 +108,13 @@ look the same and there is one copy to maintain. `useDocs` is off in `nexyconfig
 ## Tests
 
 `tests/unit/sites/` builds the vanilla site and checks that every page exists, every relative link
-resolves to a file and search lists every page. It also runs the Nexy site and requests each page of
-the menu. Another test checks that every `page.md#heading` link in `docs/` finds its heading.
+resolves to a file and search lists every page, in each language. It also runs the Nexy site and
+requests each page of the menu, and a translated one. Another test checks that every
+`page.md#heading` link in `docs/` finds its heading.
 
 ## Rules
 
-- The text lives in `docs/`. Do not write prose in a site.
+- The text lives in `docs/`. Do not write prose in a site; the words of the site itself live in
+  `shared/i18n.py`, one block per language.
 - Keep the vanilla site free of frameworks and of a build step other than `build.py`.
 - A new site reads `docs/` through `shared/docs_source.py` and passes its own `link` function.
