@@ -1,6 +1,6 @@
-# Test
+# Tests
 
-`nx test` exécute les tests du serveur avec pytest et les tests du client avec vitest lorsque vous les demandez.
+`nx test` exécute les tests du serveur avec pytest et le client teste avec vitest lorsque vous les demandez.
 
 ```bash
 nx test                       # pytest
@@ -9,17 +9,16 @@ nx test --client              # pytest, then vitest
 nx test --no-server --client  # vitest only
 ```
 
-## Ce qui court
+## Qu'est-ce qui court
 
-| Pièce | Commande | Condition |
+| Partie | Commande | Condition |
 |---|---|---|
-| Le serveur | `pytest` | s'exécute sur `tests/` lorsqu'il existe, sinon à la racine du projet ; ignoré avec un avertissement lorsque pytest n'est pas installé |
+| Le serveur | `pytest` | s'exécute sur `tests/` lorsqu'il existe, sinon à la racine du projet ; ignoré avec un avertissement lorsque pytest n'est pas installé |
 | Client | `npx vitest run` | uniquement avec `--client`, et uniquement lorsque `vitest.config.ts` existe ou que `vitest` apparaît dans `package.json` |
 
-Il n’y a pas d’exécuteur de bout en bout intégré. Pilotez le serveur avec `TestClient` et ajoutez Playwright ou
-Cypressez-vous pour le comportement du navigateur.
+Il n’y a pas d’exécuteur de bout en bout intégré. Pilotez le serveur avec `TestClient` et ajoutez vous-même Playwright ou Cypress pour le comportement du navigateur.
 
-## Tester le serveur
+## Testez le serveur
 
 Le client de test communique avec l'application ASGI en cours de processus : aucun serveur à démarrer, aucun port à sélectionner.
 
@@ -35,11 +34,9 @@ def test_home_renders():
     assert response.status_code == 200
 ```
 
-`nexy.app.app` est l'application assemblée, construite lors de sa première lecture. Il lit
-`nexyconfig.py` depuis le répertoire de travail, exécutez donc pytest depuis la racine du projet.
+`nexy.app.app` est l'application assemblée, construite lors de sa première lecture. Il lit `nexyconfig.py` à partir du répertoire de travail, alors exécutez pytest à partir de la racine du projet.
 
-Lorsqu'un test modifie la configuration ou les itinéraires, créez une nouvelle application au lieu de
-réutilisation de celui au niveau du module :
+Lorsqu'un test modifie la configuration ou les itinéraires, créez une nouvelle application au lieu de réutiliser celle au niveau du module :
 
 ```python
 from fastapi.testclient import TestClient
@@ -52,8 +49,7 @@ def test_api_hello():
     assert response.json() == {"message": "Hello"}
 ```
 
-`AppServer().run()` réassemble les routes, les middlewares, les sessions et les traductions, pour que chaque appel démarre
-à partir de l'état actuel du répertoire du projet.
+`AppServer().run()` réassemble les routes, les middlewares, les sessions et les traductions, de sorte que chaque appel démarre à partir de l'état actuel du répertoire du projet.
 
 ## Que affirmer
 
@@ -65,16 +61,14 @@ def test_blog_page_renders_slug(client):
     assert "post-1" in response.text
 ```
 
-Un gestionnaire d'API renvoie JSON. Un échec de validation est un `422` et une route manquante est un `404`
-répondu par `notfound.nexy` lorsque ce fichier existe :
+Un gestionnaire d'API renvoie JSON. Un échec de validation est un `422`, et une route manquante est un `404` répondu par `notfound.nexy` lorsque ce fichier existe :
 
 ```python
 def test_create_item_validates_body(client):
     assert client.post("/api/items", json={}).status_code == 422
 ```
 
-Pour une action, testez directement la fonction - c'est une fonction normale - et testez le point de terminaison HTTP en
-lire son chemin généré à partir de la page qui l'expose :
+Pour une action, testez directement la fonction - c'est une fonction normale - et testez le point de terminaison HTTP en lisant son chemin généré depuis la page qui l'expose :
 
 ```python
 from src.actions.user import create_user
@@ -95,13 +89,11 @@ def test_form_posts_to_action(client):
 Un appel avec JSON répond avec le résultat, et `422` avec les champs invalides.
 
 > [!REMARQUE]
-> les chemins d'action sont spécifiques au projet et générés. Jamais de code en dur
-> `/_nx_<hash>` dans un test.
+> les chemins d’action sont spécifiques au projet et générés. Ne codez jamais en dur `/_nx_<hash>` dans un test.
 
 ## Tester un composant `.nexy`
 
-`nexy.testing.render` compile un composant, avec les composants qu'il importe, et renvoie son code HTML.
-Les accessoires sont des arguments de mots-clés et `children=` remplit l'espace :
+`nexy.testing.render` compile un composant, avec les composants qu'il importe, et renvoie son code HTML. Les accessoires sont des arguments de mots-clés et `children=` remplit l'espace :
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -111,9 +103,7 @@ def test_button_shows_its_label():
     assert "Save" in render("src/components/button.nexy", label="Save")
 ```
 
-Exécutez pytest depuis la racine du projet : les fichiers compilés vont dans `__nexy__/`, comme avec `nx dev`. Un
-le composant qui lit la requête (`usePathname`, `useSession`) a besoin d'un test de page avec `TestClient`
-à la place.
+Exécutez pytest depuis la racine du projet : les fichiers compilés vont dans `__nexy__/`, comme pour `nx dev`. Un composant qui lit la requête (`usePathname`, `useSession`) a besoin d'un test de page avec `TestClient` à la place.
 
 ## Tester le client
 
@@ -133,8 +123,7 @@ describe("Counter", () => {
 });
 ```
 
-`vitest` et la bibliothèque de tests sont des dépendances du projet : `nexy new` n'installe pas de pile de tests.
-Ajoutez `vitest.config.ts` avec l'environnement dont vous avez besoin (jsdom ou happy-dom pour les composants).
+`vitest` et la bibliothèque de tests sont des dépendances du projet : `nexy new` n'installe pas de pile de tests. Ajoutez `vitest.config.ts` avec l'environnement dont vous avez besoin (jsdom ou happy-dom pour les composants).
 
 ## Intégration continue
 
@@ -145,8 +134,7 @@ nx build
 nx test
 ```
 
-`nx build` échoue en raison d'une erreur de compilation ; `nx test` échoue en cas d'assertion défaillante et sort non nul.
-`nx check` ajoute mypy et `tsc` à l'exécution.
+`nx build` échoue en raison d'une erreur de compilation ; `nx test` échoue en cas d'assertion défaillante et sort non nul. `nx check` ajoute mypy et `tsc` à l'exécution.
 
 Travailler sur Nexy lui-même utilise différentes commandes : voir [CONTRIBUTING](../../CONTRIBUTING.md).
 
