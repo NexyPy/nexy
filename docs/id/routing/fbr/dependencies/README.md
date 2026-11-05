@@ -23,14 +23,14 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> [!CATATAN]
+> [!NOTE]
 > daftar fungsinya sendiri. Objek `Depends(...)` dalam daftar diabaikan.
 
 Setiap rute di bawah `src/routes/admin/` sekarang memerlukan header, penangan `.py`, dan halaman `.nexy`.
 
 ## Warisan
 
-Ketergantungan dikumpulkan dari root rute hingga ke direktori rute, **terluar pertama**, persis seperti tata letak, dan penjaga handler dijalankan terakhir:
+Dependensi dikumpulkan dari root rute hingga ke direktori rute, **terluar terlebih dahulu**, persis seperti tata letak, dan penjaga handler dijalankan terakhir:
 
 ```text
 src/routes/
