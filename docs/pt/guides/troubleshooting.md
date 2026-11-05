@@ -4,15 +4,13 @@ Os problemas que as pessoas enfrentam primeiro, com o que você vê e o que faze
 
 ## Uma página responde 404 mas seu arquivo existe
 
-Veja o terminal que executa `nx dev` ou `nx start`. Quando uma página não pode ser importada, Nexy relata
-o erro com seu arquivo e linha, e a rota não está registrada:
+Veja o terminal que executa `nx dev` ou `nx start`. Quando uma página não pode ser importada, o Nexy reporta o erro com seu arquivo e linha, e a rota não é registrada:
 
 ```text
 nexy » error __nexy__/src/routes/index.py:18  ImportError: cannot import name 'FrameworkLogo' ...
 ```
 
-Corrija a importação nomeada lá. As causas usuais são um componente cujo nome de função não corresponde
-o que você importa (veja o próximo item) e um erro de digitação no caminho.
+Corrija a importação nomeada lá. As causas comuns são um componente cujo nome de função não corresponde ao que você importa (veja o próximo item) e um erro de digitação no caminho.
 
 ## Uma página `.nexy` não compila: "Erro de análise lógica"
 
@@ -20,8 +18,7 @@ o que você importa (veja o próximo item) e um erro de digitação no caminho.
 src/components/live-panel.nexy - Logic Parse Error: invalid syntax
 ```
 
-Um componente `.nexy` é importado como um módulo Python, portanto, seu nome de arquivo deve ser um nome válido. Um hífen
-não é. Nomeie-o em PascalCase, `LivePanel.nexy` e importe-o com o mesmo nome:
+Um componente `.nexy` é importado como um módulo Python, portanto seu nome de arquivo deve ser um nome válido. Um hífen não é. Nomeie-o em PascalCase, `LivePanel.nexy` e importe-o com o mesmo nome:
 
 ```nexy
 from "@/components/LivePanel.nexy" import LivePanel
@@ -29,28 +26,24 @@ from "@/components/LivePanel.nexy" import LivePanel
 
 ## Um componente renderiza seus filhos como o texto `<slot />`
 
-Um componente `.nexy` coloca seus filhos com `<Slot />`, com S maiúsculo. Um `<slot />` minúsculo é
-deixado na página como está. O Vue, que possui seu próprio `<slot />`, não é afetado.
+Um componente `.nexy` coloca seus filhos com `<Slot />`, com S maiúsculo. Um `<slot />` minúsculo é deixado na página como está. Vue, que possui seu próprio `<slot />`, não é afetado.
 
-## Uma prop mostra o nome da variável
+## Um suporte mostra o nome da variável
 
 ```nexy
 <Icon path=icon />          renders: icon
 <Icon path="{{ icon }}" />  renders: the value of icon
 ```
 
-Um atributo sem colchetes é o texto. Coloque a expressão Jinja no atributo para passar um cálculo
-valor.
+Um atributo sem colchetes é o texto. Coloque a expressão Jinja no atributo para passar um valor calculado.
 
 ## Um valor em `{{ ... }}` fica vazio
 
-Jinja2 esconde uma variável indefinida. Declare todas as propriedades que você usa no frontmatter
-(`title: prop[str] = ""`) e verifique a ortografia.
+Jinja2 esconde uma variável indefinida. Declare todas as propriedades que você usa no frontmatter (`title: prop[str] = ""`) e verifique a ortografia.
 
-## As classes utilitárias não têm efeito em uma página `.nexy` (UnoCSS)
+## Classes utilitárias não têm efeito em uma página `.nexy` (UnoCSS)
 
-UnoCSS lê um arquivo somente quando sua extensão está em seu pipeline de conteúdo. Um projeto de servidor criado
-por `nx new` com UnoCSS já lista `.nexy`; um mais velho precisa disso em `uno.config.ts`:
+UnoCSS lê um arquivo somente quando sua extensão está em seu pipeline de conteúdo. Um projeto de servidor criado por `nx new` com UnoCSS já lista `.nexy`; um mais velho precisa disso em `uno.config.ts`:
 
 ```ts
 content: {
@@ -67,9 +60,7 @@ Tailwind encontra `.nexy` arquivos por conta própria.
 [nexy] MDX support requires optional packages that are not installed.
 ```
 
-Instale-os no projeto: `@mdx-js/rollup`, `remark-gfm` e `@mdx-js/react` (mais
-`@mdx-js/esbuild` para `nx build`). MDX precisa de React ou Preact em `useFF`. Sem uma estrutura de cliente,
-escreva a página como `.md`. Consulte [Markdown e MDX](../views/nexy/markdown.md).
+Instale-os no projeto: `@mdx-js/rollup`, `remark-gfm` e `@mdx-js/react` (mais `@mdx-js/esbuild` para `nx build`). MDX precisa de React ou Preact em `useFF`. Sem uma estrutura de cliente, escreva a página como `.md`. Consulte [Markdown e MDX](../views/nexy/markdown.md).
 
 ## `No module named 'sqlmodel'` (ou qualquer pacote) quando um comando é iniciado
 
@@ -78,9 +69,7 @@ nexy » nexyconfig.py cannot be loaded: No module named 'sqlmodel'. If it is a p
 in this Python (...) or activate the project's virtual environment.
 ```
 
-O comando foi executado no Python errado. Os pacotes do seu projeto (seu ORM, suas bibliotecas) estão em
-seu `.venv`, e `uvx nexy` ou um `nexy` global é executado em um ambiente próprio que não possui nenhum dos
-eles.
+O comando foi executado de forma errada Python. Os pacotes do seu projeto (seu ORM, suas bibliotecas) estão em seu `.venv`, e `uvx nexy` ou um `nexy` global roda em um ambiente próprio que não possui nenhum deles.
 
 Ative o ambiente virtual do projeto, na pasta do projeto, e execute novamente o comando:
 
@@ -89,26 +78,21 @@ Ative o ambiente virtual do projeto, na pasta do projeto, e execute novamente o 
 nexy dev
 ```
 
-O prompt começa com `(.venv)` quando está ativo. Ou pule a ativação com
-`uv run nexy dev`. Se o pacote estiver realmente faltando no projeto, adicione-o com `uv add sqlmodel`.
+O prompt começa com `(.venv)` quando está ativo. Ou pule a ativação com `uv run nexy dev`. Se o pacote estiver realmente faltando no projeto, adicione-o com `uv add sqlmodel`.
 
 ## `nx dev` mostra um erro e espera
 
-Quando sua aplicação não pode ser iniciada, `nx dev` informa o motivo e aguarda a próxima alteração no arquivo; isso acontece
-não sair. Corrija o arquivo e salve. Apenas Ctrl+C interrompe isso.
+Quando sua aplicação não pode ser iniciada, `nx dev` informa o motivo e aguarda a próxima alteração do arquivo; não sai. Corrija o arquivo e salve. Apenas Ctrl+C interrompe isso.
 
-## A porta está ocupada
+## O porto está ocupado
 
-`nx dev` pega a próxima porta livre e a imprime. Para escolher um, use `--port` ou defina `usePort` em
-`nexyconfig.py`.
+`nx dev` pega a próxima porta livre e a imprime. Para escolher um, use `--port` ou defina `usePort` em `nexyconfig.py`.
 
 ## O tema pisca em branco em uma página escura
 
-O tema salvo deve ser aplicado antes da primeira pintura. Mantenha o pequeno script do starter no
-`<head>` do layout raiz e coloque `suppressHydrationWarning` em `<html>` no React.
+O tema salvo deve ser aplicado antes da primeira pintura. Mantenha o pequeno script do starter no `<head>` do layout raiz e coloque `suppressHydrationWarning` em `<html>` em React.
 
 ## Ainda preso
 
 - Leia a página do recurso no [índice da documentação](../README.md).
-- Se os documentos e o código discordam, o código está certo: abra um
-  [problema](https://github.com/NexyPy/nexy/issues) nomeando a página.
+- Se a documentação e o código discordarem, o código está correto: abra um [issue](https://github.com/NexyPy/nexy/issues) nomeando a página.
