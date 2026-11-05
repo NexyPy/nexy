@@ -10,16 +10,88 @@ Les mises en page suivent une structure hiérarchique basée sur l'arborescence 
 2.  **Mises en page imbriquées** : n'importe quel dossier peut contenir son propre fichier `layout.*`. Cette mise en page enveloppe toutes les pages et sous-mises en page de ce dossier.
 3.  **Héritage** : une page est enveloppée par toutes les mises en page depuis la racine jusqu'à son propre dossier.
 
+```text
+src/routes/
+├─ layout.tsx            root: <html>, <head>, <body>
+├─ index.tsx             root > page
+└─ dashboard/
+   ├─ layout.tsx         nested: the dashboard menu
+   └─ settings.tsx       root > dashboard > page
+```
+
+Une mise en page imbriquée dessine uniquement sa partie de l'interface utilisateur et place la page là où va `children` :
+
+```tsx filename="src/routes/dashboard/layout.tsx"
+import type { ReactNode } from "react";
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="dashboard">
+      <nav>Dashboard</nav>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
 ## État partagé et composition
 
-Les mises en page sont conçues pour être stables. Lors de la navigation entre deux pages partageant la même mise en page, la mise en page n'est **pas** restituée ; seul le contenu enfant change.
+Les mises en page sont conçues pour être stables. En mode client, lors de la navigation entre deux pages partageant la même mise en page, la mise en page n'est **pas** restituée ; seul le contenu enfant change. En mode serveur, chaque navigation est un nouveau document.
 
-- **Slots** : les mises en page fournissent un "slot" (généralement `children` dans JSX ou `{{ content }}` dans Jinja2) où la page imbriquée est injectée.
+- **Slots** : les mises en page fournissent un emplacement dans lequel la page imbriquée est injectée : `children` dans JSX et le prop `children` dans une mise en page `.nexy`.
 - **Préservation de l'état** : étant donné que la mise en page reste montée, tout état qu'elle contient (par exemple, une requête de recherche dans un en-tête) est préservé pendant la navigation.
+
+Le même emplacement dans une disposition `.nexy` :
+
+```nexy filename="src/routes/layout.nexy"
+---
+children: prop[NexyElement]
+---
+<!DOCTYPE html>
+<html>
+  <body>{{ children }}</body>
+</html>
+```
+
+Le champ de recherche ci-dessous conserve ce que l'utilisateur a saisi lorsqu'il se déplace entre les pages du tableau de bord, car la mise en page qui le contient ne se démonte jamais :
+
+```tsx filename="src/routes/dashboard/layout.tsx"
+import { useState, type ReactNode } from "react";
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const [query, setQuery] = useState("");
+  return (
+    <>
+      <input value={query} onChange={(event) => setQuery(event.target.value)} />
+      {children}
+    </>
+  );
+}
+```
 
 ## Contraintes statiques
 
 Pour les itinéraires pré-rendus (SSG), la disposition racine ne peut pas dépendre des données de temps de requête telles que les cookies ou les en-têtes. Il doit être représentable comme une coque statique que le client hydrate ensuite.
+
+Lisez plutôt le thème depuis le navigateur, dans un script du shell statique :
+
+```tsx filename="src/routes/layout.tsx"
+import type { ReactNode } from "react";
+
+const theme = `document.documentElement.dataset.theme =
+  localStorage.getItem("theme") ?? "light";`;
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: theme }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
 
 ## Mise en œuvre du cadre
 
