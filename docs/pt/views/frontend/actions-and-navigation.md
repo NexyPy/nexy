@@ -8,13 +8,13 @@ Uma **Action** é uma função do lado do servidor que lida com uma mutação (p
 
 1.  **Entrada digitada**: As ações são definidas em Python com dicas de tipo. Nexy gera um cliente TypeScript correspondente, para que você obtenha preenchimento automático e validação em seu IDE.
 2.  **Execução Atômica**: Uma ação é uma única solicitação `POST`.
-3.  **Tratamento de resultados**: as ações retornam um resultado digitado que o cliente pode usar para atualizar a IU.
+3.  **Tratamento de resultados**: As ações retornam um resultado digitado que o cliente pode usar para atualizar a UI.
 
 ## Navegação do lado do cliente
 
 A navegação no Nexy é "inteligente". Em vez de recarregar completamente o navegador, o Nexy troca o conteúdo da página atual enquanto mantém os layouts ativos montados.
 
-- **O componente `Link`**: Use o componente específico da estrutura `Link` para realizar transições no lado do cliente.
+- **O `Link` Componente**: Use o componente específico da estrutura `Link` para realizar transições do lado do cliente.
 - **Navegação programática**: Use a função `navigate()` de `@nexy/client` para alterar páginas em resposta à lógica (por exemplo, após um login bem-sucedido).
 
 ## Coordenação: Ação → Navegação
@@ -31,8 +31,8 @@ O padrão mais comum é executar uma ação e então direcionar o usuário para 
 
 A API para chamar ações e navegar varia de acordo com a estrutura. Consulte o guia **Diferenças** da tecnologia escolhida:
 
-- [Reagir diferenças](../react/differences.md)
-- [Diferenças de Vue](../vue/differences.md)
-- [Diferenças esbeltas](../svelte/differences.md)
-- [Diferenças sólidas](../solid/differences.md)
-- [Pré-agir diferenças](../preact/differences.md)
+- [React Diferenças](../react/differences.md)
+- [Vue Diferenças](../vue/differences.md)
+- [Svelte Diferenças](../svelte/differences.md)
+- [Solid Diferenças](../solid/differences.md)
+- [Preact Diferenças](../preact/differences.md)
