@@ -140,6 +140,6 @@ html = counter(start=0)
 
 ## الخطوات التالية
 
-- [.nexy files](README.md): حيث يتم استخدام هؤلاء المساعدين
+- [ملفات .nexy](README.md): حيث يتم استخدام هؤلاء المساعدين
 - [React](../react/differences.md): استيراد مكونات `.tsx`
 - [الواجهة الأمامية](../../guides/frontend.md): كيفية تجميع مكونات العميل
