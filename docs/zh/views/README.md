@@ -54,12 +54,12 @@ class NexyConfig(NexyConfigModel):
 
 启用框架后，Vite 处理其客户端捆绑包。在客户端模式下，其扩展成为路由；在服务器模式下，相同的文件是您作为孤岛导入的组件 - `src/routes/` 下的框架文件被拒绝。请参阅[服务器模式和客户端模式](../routing/fbr/modes.md)。
 
-> [！注意]
+> [!NOTE]
 > 在 [CSR](../rendering/csr.md) 模式下，只有框架路由文件可以在客户端导航。
 
 ## 布局
 
-目录中的 `layout.*` 包含其下面的页面。请参阅[布局](../routing/fbr/layouts/README.md)。
+目录中的 `layout.*` 包裹其下方的页面。请参阅[布局](../routing/fbr/layouts/README.md)。
 
 ## 后续步骤
 
