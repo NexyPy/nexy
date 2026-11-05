@@ -1,23 +1,19 @@
-# Esbelto
+# Svelte
 
-Nexy renderiza los componentes de Svelte 5 en el servidor, luego Svelte los toma en el navegador. páginas,
-Los diseños, islas y acciones son los mismos en todos los marcos: esta página cubre la configuración, luego las partes.
-que difieren de los [contratos compartidos](../frontend/pages.md).
+Nexy renderiza Svelte 5 componentes en el servidor, luego Svelte los toma en el navegador. Las páginas, diseños, islas y acciones son las mismas en todos los marcos: esta página cubre la configuración y luego las partes que difieren de los [contratos compartidos](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | Las páginas son | Esbeltas son |
+| Modo | `nexyconfig.py` | Las páginas son | Svelte es |
 |---|---|---|---|
 | Servidor (predeterminado) | `useCSR = False` | `.nexy` archivos | [islas](../../rendering/islands.md) dentro de esas páginas |
-| Cliente | `useCSR = True` | `.svelte` archivos | toda la página, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+| El cliente | `useCSR = True` | `.svelte` archiva | la página completa, con [diseños](../frontend/layouts.md) y un enrutador cliente |
 
-## Iniciar un proyecto
+## iniciar un proyecto
 
 ```bash
 nx new my-app --template web-fbr-svelte
 ```
 
-La plantilla es un proyecto en modo servidor con islas Svelte. Ejecute `nx new my-app` sin una plantilla para
-En su lugar, responda las indicaciones: el enrutador, el tipo de proyecto, si desea utilizar el enrutamiento del lado del cliente y luego
-el marco.
+La plantilla es un proyecto en modo servidor con Svelte islas. Ejecute `nx new my-app` sin una plantilla para responder a las indicaciones: el enrutador, el tipo de proyecto, si se utilizará el enrutamiento del lado del cliente y luego el marco.
 
 ## Habilitar Svelte en un proyecto existente
 
@@ -52,14 +48,12 @@ export default defineConfig({
 ## Reglas
 
 - **Svelte 5.** Los componentes usan runas: `$props()`, `$state()` y fragmentos para niños.
-- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [svelte(), vue()]`
-  detiene el servidor al inicio.
-- **Un componente por archivo.** El nombre con el que importas un archivo `.svelte` es solo la etiqueta que escribes.
-- **Los componentes viven fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
-- **Un proyecto en modo servidor no tiene `.svelte` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy
-  se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
+- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [svelte(), vue()]` detiene el servidor al inicio.
+- **Un componente por archivo.** El nombre con el que importa un archivo `.svelte` es solo la etiqueta que escribe.
+- **Los componentes se encuentran fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
+- **Un proyecto en modo servidor no tiene `.svelte` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
 
-## Páginas
+## paginas
 
 En modo cliente (`useCSR = True`), una página es un archivo `.svelte`.
 
@@ -92,8 +86,7 @@ Alternativamente, use la tienda `$params` de `@nexy/client` en cualquier compone
 
 ### Implementación
 
-El diseño raíz define el shell del documento. Los diseños anidados envuelven el contenido usando el `children`
-fragmento.
+El diseño raíz define el shell del documento. Los diseños anidados envuelven el contenido usando el fragmento `children`.
 
 ```svelte filename="src/routes/layout.svelte"
 <script lang="ts">
@@ -135,10 +128,9 @@ Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
 
 ## Acciones y navegación
 
-### Llamando acciones
+### Llamar a acciones
 
-Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Svelte, esto devuelve una tienda (leer
-con `$`).
+Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Svelte, esto devuelve una tienda (léase con `$`).
 
 ```svelte
 <script lang="ts">
@@ -175,7 +167,7 @@ import { router } from "@nexy/client";
 router.push("/dashboard");
 ```
 
-### Acceso URL
+### acceso URL
 
 Todos los datos de ubicación se proporcionan como tiendas:
 
