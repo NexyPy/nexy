@@ -74,6 +74,6 @@ Trate todo o diretório como descartável: exclua-o e reconstrua-o. Editá-lo ma
 
 ## Próximas etapas
 
-- [Routing](../routing/README.md): como um caminho se torna uma URL
-- [Config](../reference/config.md): todas as opções do projeto
+- [Roteamento](../routing/README.md): como um caminho se torna uma URL
+- [Configuração](../reference/config.md): todas as opções do projeto
 - [Frontend](../guides/frontend.md): Vite, estilo e construção do cliente
