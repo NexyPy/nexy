@@ -1,13 +1,28 @@
 # Nexy documentation
 
-Nexy is a fullstack Python meta-framework: FastAPI and Starlette serve the app, Vite builds the
-client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an API handler.
+**A Python framework for fullstack web applications.**
+
+Nexy puts your pages and your API in one Python project, served by one server. Version 2.2 is built
+on FastAPI: every API route is a FastAPI route, listed in an OpenAPI schema that Scalar shows at
+`/docs`.
+
+- **Python first.** Pages, endpoints, forms and actions are Python, and a page needs no JavaScript.
+- **A frontend when you want one.** React, Vue, Svelte, Solid or Preact, for one component or for
+  the whole site.
+- **One file, one URL.** A file under `src/routes/` is a route: `.nexy` is a page, `.py` is an API
+  endpoint.
+- **Room to grow.** Start with one file; move to modules, or plug in an existing FastAPI router, when
+  the project grows.
+
+New here? Read [What is Nexy?](getting-started/what-is-nexy.md), then the
+[Quick start](getting-started/quick-start.md).
 
 ## Getting Started
 
 ### First steps
 | Page | What you will do |
 |---|---|
+| [What is Nexy?](getting-started/what-is-nexy.md) | Know what Nexy is, what it is built on and what you get |
 | [Installation](getting-started/installation.md) | Install uv and the Nexy CLI, then create your first project |
 | [Quick start](getting-started/quick-start.md) | Create a project, run it with live reload, and build it for production |
 | [Tutorial](getting-started/tutorial.md) | Build a notes page with an endpoint, shared data and a production build in 10 minutes |
@@ -15,7 +30,7 @@ client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an A
 ### Understand the model
 | Page | What you will do |
 |---|---|
-| [How Nexy works](getting-started/how-nexy-works.md) | Follow one request from the URL to the file that answers it |
+| [Core concepts](getting-started/core-concepts.md) | Get the mental model: route, page, view, component, handler, endpoint |
 | [Project structure](getting-started/project-structure.md) | Know what every folder and file in a project is for |
 | [Choose a router](routing/README.md) | Pick the file-based, modular or custom router |
 | [Choose a view format](views/README.md) | Pick `.nexy`, Markdown or a client framework for a page |
@@ -24,24 +39,23 @@ client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an A
 | Page | What you will do |
 |---|---|
 | [Coming from another framework](getting-started/coming-from-other-frameworks.md) | Translate FastAPI, Next.js and Express habits into Nexy |
-| [Upgrading to 2.2](getting-started/upgrading.md) | Apply the breaking changes from 2.1 to 2.2 |
 
 ## Routing
 
-### Routing
+### File-based {fbr}
 | Page | What you will do |
 |---|---|
 | [File-based routing](routing/fbr/README.md) | Turn a file path into a URL |
 | [Pages](routing/fbr/pages/README.md) | Write a page |
 | [Dynamic routes](routing/fbr/pages/dynamic-routes.md) | Use `[slug]`, `[...path]` and route groups |
-| [Page metadata](routing/fbr/pages/metadata.md) | Set the title, description and share image of a page |
+| [Page metadata](routing/fbr/pages/metadata.md) | Set the title, description and share image of a page {new} |
 | [Layouts](routing/fbr/layouts/README.md) | Share a frame between pages |
 | [Inheritance](routing/fbr/inheritance.md) | Read the resolution order of layouts, dependencies and error pages |
 | [Server mode and client mode](routing/fbr/modes.md) | `useCSR`, and what each mode allows |
 | [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | Link pages, navigate on the client, prefetch |
 | [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
 
-### Route handlers
+### Handlers and errors {fbr}
 | Page | What you will do |
 |---|---|
 | [Route handlers](routing/fbr/handlers/README.md) | Add a Python endpoint |
@@ -50,79 +64,30 @@ client. A route is a file under `src/routes/` - `.nexy` is a page, `.py` is an A
 | [Dependencies and guards](routing/fbr/dependencies/README.md) | Run `dependencies.py` before a handler, and inherit it |
 | [Middleware files](routing/fbr/middleware/README.md) | Wrap requests with `middleware.py`, inherited by directory |
 | [Error pages](routing/fbr/errors/README.md) | Answer with `notfound.nexy`, `errors.nexy` and JSON errors |
-| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Answer 404, 500, 403 and 401 from a folder |
+| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Edge case: errors from sub-folders |
 
-### Modular router
+### Modular router {modular}
 Controllers and modules.
 | Page | What you will do |
 |---|---|
 | [Modular routing](routing/modular/README.md) | Mount controllers and modules |
-| [Nexy and NestJS](routing/modular/vs-nestjs.md) | See what matches NestJS and what is missing |
 | [Dependency injection](routing/modular/dependency-injection.md) | Define services, their scopes and the container |
 | [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
+| [Modular router vs NestJS](routing/modular/vs-nestjs.md) | Comparison with NestJS |
 
-### Custom router
-Your own router.
+### Custom router integration {custom}
 | Page | What you will do |
 |---|---|
 | [Custom routing](routing/custom/README.md) | Include an existing FastAPI app |
 
-## React
+## Frontend
 
-### React
-| Page | What you will do |
+### Shared contracts
+| Page | What it defines |
 |---|---|
-| [React](views/react/README.md) | Enable React and pick server or client mode |
-| [Pages](views/react/pages.md) | Write a `.tsx` page, read its params, know when it renders |
-| [Layouts](views/react/layouts.md) | Write the `layout.tsx` that owns `<html>` |
-| [Islands](views/react/islands.md) | Put a React component in a `.nexy` page |
-| [Actions and navigation](views/react/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Vue
-
-### Vue
-| Page | What you will do |
-|---|---|
-| [Vue](views/vue/README.md) | Enable Vue and pick server or client mode |
-| [Pages](views/vue/pages.md) | Write a `.vue` page, read its params, know when it renders |
-| [Layouts](views/vue/layouts.md) | Write the `layout.vue` that owns `<html>` |
-| [Islands](views/vue/islands.md) | Put a Vue component in a `.nexy` page |
-| [Actions and navigation](views/vue/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Svelte
-
-### Svelte
-| Page | What you will do |
-|---|---|
-| [Svelte](views/svelte/README.md) | Enable Svelte and pick server or client mode |
-| [Pages](views/svelte/pages.md) | Write a `.svelte` page, read its params, know when it renders |
-| [Layouts](views/svelte/layouts.md) | Write the `layout.svelte` that owns `<html>` |
-| [Islands](views/svelte/islands.md) | Put a Svelte component in a `.nexy` page |
-| [Actions and navigation](views/svelte/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Solid
-
-### Solid
-| Page | What you will do |
-|---|---|
-| [Solid](views/solid/README.md) | Enable Solid and pick server or client mode |
-| [Pages](views/solid/pages.md) | Write a `.tsx` page, read its params, know when it renders |
-| [Layouts](views/solid/layouts.md) | Write the `layout.tsx` that owns `<html>` |
-| [Islands](views/solid/islands.md) | Put a Solid component in a `.nexy` page |
-| [Actions and navigation](views/solid/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Preact
-
-### Preact
-| Page | What you will do |
-|---|---|
-| [Preact](views/preact/README.md) | Enable Preact and pick server or client mode |
-| [Pages](views/preact/pages.md) | Write a `.tsx` page, read its params, know when it renders |
-| [Layouts](views/preact/layouts.md) | Write the `layout.tsx` that owns `<html>` |
-| [Islands](views/preact/islands.md) | Put a Preact component in a `.nexy` page |
-| [Actions and navigation](views/preact/actions-and-navigation.md) | Call Python, link pages, read the URL |
-
-## Nexy Views
+| [Frontend pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
+| [Frontend layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
+| [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
 
 ### Nexy views
 | Page | What you will do |
@@ -132,9 +97,18 @@ Your own router.
 | [layout.nexy](views/nexy/layouts.md) | Write the server-mode layout |
 | [Markdown and MDX](views/nexy/markdown.md) | Write content pages |
 
+### Framework differences
+| Page | What changes |
+|---|---|
+| [React differences](views/react/differences.md) | Components, hooks and `layout.tsx` {new} |
+| [Vue differences](views/vue/differences.md) | SFCs, refs and `layout.vue` {new} |
+| [Svelte differences](views/svelte/differences.md) | Runes, stores and `layout.svelte` {new} |
+| [Solid differences](views/solid/differences.md) | Signals, accessors and `layout.tsx` {new} |
+| [Preact differences](views/preact/differences.md) | Hooks, signals and `layout.tsx` {new} |
+
 ## Rendering
 
-### Rendering
+### Modes
 | Page | What you will decide |
 |---|---|
 | [Rendering](rendering/README.md) | Which rendering mode fits a page |
@@ -150,8 +124,6 @@ Your own router.
 |---|---|
 | [Actions](guides/actions.md) | Call a Python function from a form or a typed TypeScript function |
 | [Databases](guides/databases.md) | Choose an ORM and run migrations |
-| [Internationalization (i18n)](guides/i18n.md) | Add translations with the library of your choice |
-| [Recipes](guides/recipes.md) | Sign in with a session, build a JSON API and upload a file, all tested |
 
 ### Security and deployment
 | Page | What you will do |
@@ -160,10 +132,10 @@ Your own router.
 | [Deploy](deployment/README.md) | Build, containerise and serve |
 | [Performance](deployment/performance.md) | Measure and tune the defaults |
 
-### Frontend and testing
+### Build and test
 | Page | What you will do |
 |---|---|
-| [Frontend](guides/frontend.md) | Set up Vite, styling and the client build |
+| [Vite and styling](guides/frontend.md) | Set up Vite, styling and the client build |
 | [Testing](guides/testing.md) | Test with pytest, `TestClient` and vitest |
 
 ### Tooling and help
@@ -193,13 +165,13 @@ Your own router.
 | [File conventions](reference/file-conventions.md) | Reserved files and routing rules |
 | [Glossary](reference/glossary.md) | The words these docs use |
 | [Security](reference/security.md) | Version floors, rules Nexy follows, audits |
-| [For AI agents](reference/agents.md) | Invariants of a Nexy project, for AI agents |
 
 ## Layout
 ```text
 docs/
 ├─ README.md
-├─ getting-started/     installation, quick start, tutorial, project structure, migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -216,9 +188,23 @@ docs/
 │  └─ custom/           include an existing FastAPI router
 ├─ rendering/           SSR, ISR, CSR, islands
 ├─ views/               choose a format, one page per client framework
+│  ├─ frontend/         the four contracts every framework shares
 │  └─ nexy/             .nexy files, components, layouts, Markdown and MDX
 ├─ guides/              actions, i18n, databases, middleware, frontend, testing
 ├─ deployment/          deploy, performance
 └─ reference/           CLI, config, Python API, exceptions, file conventions, glossary,
                         security, agents
 ```
+
+## Advanced
+
+### Advanced {advanced}
+
+| Page | What you will do |
+|---|---|
+| [How Nexy works](getting-started/how-nexy-works.md) | See what happens between a file and a page, and what Nexy leaves to you |
+| [Upgrading to 2.2](getting-started/upgrading.md) | Migrate from 2.1 to 2.2 |
+| [Internationalization (i18n)](guides/i18n.md) | Add translations with your choice of library |
+| [Recipes](guides/recipes.md) | Examples and patterns, not a tutorial |
+
+*These pages are not part of the default reading path. An "All documentation" link allows you to see everything.*

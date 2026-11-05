@@ -104,6 +104,9 @@ class Head:
     site_url: str
     trail: Sequence[tuple[str, str]]
     page_type: str = "TechArticle"
+    lang: str = "en"
+    # The same page in every language it is published in, as (code, address); English first.
+    alternates: Sequence[tuple[str, str]] = ()
 
     @property
     def image(self) -> str:
@@ -116,7 +119,17 @@ class Head:
         if self.description:
             tags.append(_meta("description", self.description))
         tags.append(f'<link rel="canonical" href="{htmllib.escape(self.url, quote=True)}">')
-        return tags
+        return tags + self._languages()
+
+    def _languages(self) -> list[str]:
+        """One link per language of the page, and English for a reader whose language is not one."""
+        links = [(code, url) for code, url in self.alternates]
+        if self.alternates:
+            links.append(("x-default", self.alternates[0][1]))
+        return [
+            f'<link rel="alternate" hreflang="{code}" href="{htmllib.escape(url, quote=True)}">'
+            for code, url in links
+        ]
 
     def _cards(self) -> list[str]:
         """What a link looks like when it is pasted elsewhere: Open Graph, then Twitter."""
@@ -125,7 +138,7 @@ class Head:
         graph = [
             _meta("og:type", kind, prop=True),
             _meta("og:site_name", SITE_NAME, prop=True),
-            _meta("og:locale", "en", prop=True),
+            _meta("og:locale", self.lang, prop=True),
             _meta("og:title", self.title, prop=True),
             _meta("og:url", self.url, prop=True),
             *summary,
@@ -143,7 +156,7 @@ class Head:
             "@id": self.url,
             "headline": self.title,
             "url": self.url,
-            "inLanguage": "en",
+            "inLanguage": self.lang,
             "image": self.image,
             "isPartOf": {
                 "@type": "WebSite",

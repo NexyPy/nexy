@@ -1,0 +1,204 @@
+# Nexy 文档
+
+**用于全栈 Web 应用程序的 Python 框架。**
+
+Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器提供服务。版本 2.2 构建于 FastAPI 之上：每个 API 路由都是 FastAPI 路由，列在 Scalar 在 `/docs` 中显示的 OpenAPI 模式中。
+
+- **Python 首先。** 页面、端点、表单和操作是 Python，页面不需要 JavaScript。
+- **当您需要一个前端时，可以使用它。** React、Vue、Svelte、Solid 或 Preact，适用于一个组件或整个站点。
+- **一个文件，一个 URL。** `src/routes/` 下的文件是一个路由：`.nexy` 是一个页面，`.py` 是一个 API 端点。
+- **成长空间。** 从一个文件开始；当项目增长时，移动到模块，或插入现有的 FastAPI 路由器。
+
+新来的？请阅读[什么是 Nexy？](getting-started/what-is-nexy.md)，然后阅读[快速入门](getting-started/quick-start.md)。
+
+## 开始使用
+
+### 第一步
+| 页面 | 你会做什么 |
+|---|---|
+| [Nexy是什么？](getting-started/what-is-nexy.md) | 了解 Nexy 是什么、它的构建基础以及您能获得什么 |
+| [安装](getting-started/installation.md) | 安装 uv 和 Nexy CLI，然后创建您的第一个项目 |
+| [快速启动](getting-started/quick-start.md) | 创建一个项目，通过实时重新加载运行它，并构建它以用于生产 |
+| [教程](getting-started/tutorial.md) | 在 10 分钟内构建一个带有端点、共享数据和生产版本的笔记页面 |
+
+### 了解模型
+| 页面 | 你会做什么 |
+|---|---|
+| [核心概念](getting-started/core-concepts.md) | 获取心智模型：路由、页面、视图、组件、处理程序、端点 |
+| [项目结构](getting-started/project-structure.md) | 了解项目中每个文件夹和文件的用途 |
+| [选择路由器](routing/README.md) | 选择基于文件的、模块化的或自定义的路由器 |
+| [选择视图格式](views/README.md) | 为页面选择 `.nexy`、Markdown 或客户端框架 |
+
+### 来自其他地方
+| 页面 | 你会做什么 |
+|---|---|
+| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译成 Nexy |
+
+## 路由
+
+### 基于文件的 {fbr}
+| 页面 | 你会做什么 |
+|---|---|
+| [基于文件的路由](routing/fbr/README.md) | 将文件路径转换为 URL |
+| [页数](routing/fbr/pages/README.md) | 写一页 |
+| [动态路线](routing/fbr/pages/dynamic-routes.md) | 使用 `[slug]`、`[...path]` 和路由组 |
+| [页面元数据](routing/fbr/pages/metadata.md) | 设置页面的标题、描述和共享图像 {new} |
+| [布局](routing/fbr/layouts/README.md) | 在页面之间共享框架 |
+| [继承](routing/fbr/inheritance.md) | 读取布局、依赖关系和错误页面的解析顺序 |
+| [服务器模式和客户端模式](routing/fbr/modes.md) | `useCSR`，以及每种模式允许的内容 |
+| [链接和导航](routing/fbr/navigation/linking-and-navigating.md) | 链接页面、在客户端上导航、预取 |
+| [挂钩](routing/fbr/navigation/hooks.md) | 读取路径、查询、cookie 和会话 |
+
+### 处理程序和错误 {fbr}
+| 页面 | 你会做什么 |
+|---|---|
+| [路由处理程序](routing/fbr/handlers/README.md) | 添加 Python 端点 |
+| [验证和错误](routing/fbr/handlers/validation-and-errors.md) | 回答 `422` 和 `404`，并提出 `HTTPException` |
+| [WebSocket 处理程序](routing/fbr/realtime/websocket.md) | 处理 `SOCKET` 连接 |
+| [依赖项和守卫](routing/fbr/dependencies/README.md) | 在处理程序之前运行 `dependencies.py` 并继承它 |
+| [中间件文件](routing/fbr/middleware/README.md) | 用 `middleware.py` 包装请求，由目录继承 |
+| [错误页面](routing/fbr/errors/README.md) | 回答 `notfound.nexy`、`errors.nexy` 和 JSON 错误 |
+| [每个文件夹的错误页](routing/fbr/errors/folder-pages.md) | 边缘情况：来自子文件夹的错误 |
+
+### 模块化路由器 {modular}
+控制器和模块。
+| 页面 | 你会做什么 |
+|---|---|
+| [模块化路由](routing/modular/README.md) | 安装控制器和模块 |
+| [依赖注入](routing/modular/dependency-injection.md) | 定义服务、其范围和容器 |
+| [守卫和元数据](routing/modular/guards-and-metadata.md) | 保护和记录路线 |
+| [模块化路由器与 NestJS](routing/modular/vs-nestjs.md) | 与 NestJS 比较 |
+
+### 自定义路由器集成 {custom}
+| 页面 | 你会做什么 |
+|---|---|
+| [自定义路由](routing/custom/README.md) | 包含现有的 FastAPI 应用程序 |
+
+## 前端
+
+### 共享合约
+| 页面 | 它定义了什么 |
+|---|---|
+| [前端页面](views/frontend/pages.md) | 一个文件，一条路线：道具、渲染、元数据 |
+| [前端布局](views/frontend/layouts.md) | 文档外壳、嵌套以及布局不能做的事情 |
+| [操作和导航](views/frontend/actions-and-navigation.md) | 调用键入的操作、链接页面、读取 URL |
+
+### 邻国意见
+| 页面 | 你会做什么 |
+|---|---|
+| [.nexy 文件](views/nexy/README.md) | 使用 Python、Jinja2 和 props 编写一个页面 |
+| [组件](views/nexy/components.md) | 使用 `Image`、`Link`、`Audio`、`Video` 和 `Import` |
+| [布局.nexy](views/nexy/layouts.md) | 编写服务器模式布局 |
+| [Markdown 和 MDX](views/nexy/markdown.md) | 编写内容页面 |
+
+### 框架差异
+| 页面 | 有什么变化 |
+|---|---|
+| [React 差异](views/react/differences.md) | 组件、挂钩和 `layout.tsx` {new} |
+| [Vue 差异](views/vue/differences.md) | 证监会、参考文献和 `layout.vue` {new} |
+| [Svelte 差异](views/svelte/differences.md) | 符文、商店和 `layout.svelte` {new} |
+| [Solid 差异](views/solid/differences.md) | 信号、访问器和 `layout.tsx` {new} |
+| [Preact 差异](views/preact/differences.md) | 钩子、信号和 `layout.tsx` {new} |
+
+## 渲染
+
+### 模式
+| 页面 | 你将决定什么 |
+|---|---|
+| [渲染](rendering/README.md) | 哪种渲染模式适合页面 |
+| [苏维埃社会主义共和国](rendering/ssr.md) | 服务器渲染，默认 |
+| [情监侦](rendering/isr.md) | 使用 stale-while-revalidate 缓存页面 |
+| [企业社会责任](rendering/csr.md) | 客户端路由 |
+| [岛屿](rendering/islands.md) | 空闲、可见或媒体查询时进行水合 |
+
+## 指南
+
+### 表格和数据
+| 页面 | 你会做什么 |
+|---|---|
+| [行动](guides/actions.md) | 从表单或类型化的 TypeScript 函数调用 Python 函数 |
+| [数据库](guides/databases.md) | 选择 ORM 并运行迁移 |
+
+### 安全与部署
+| 页面 | 你会做什么 |
+|---|---|
+| [中间件和安全性](guides/middleware-and-security.md) | 设置 CORS、GZip、可信主机和会话 |
+| [部署](deployment/README.md) | 构建、容器化和服务 |
+| [性能](deployment/performance.md) | 测量和调整默认值 |
+
+### 构建和测试
+| 页面 | 你会做什么 |
+|---|---|
+| [Vite 和造型](guides/frontend.md) | 设置 Vite、样式和客户端构建 |
+| [测试](guides/testing.md) | 使用 pytest、`TestClient` 和 vitest 进行测试 |
+
+### 工具和帮助
+| 页面 | 你会做什么 |
+|---|---|
+| [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
+| [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 项目的规则 |
+| [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
+
+## 参考
+
+### 命令和配置
+| 页面 | 它列出了什么 |
+|---|---|
+| [CLI](reference/cli.md) | 命令、标志、提示和退出代码 |
+| [配置](reference/config.md) | 每个 `nexyconfig.py` 字段及其默认值 |
+
+### Python API 和错误
+| 页面 | 它列出了什么 |
+|---|---|
+| [Python API](reference/python-api.md) | Nexy 按模块导出的每个名称 |
+| [异常和错误](reference/exceptions.md) | 每个故障、其状态以及解决该故障的文件 |
+
+### 惯例和概念
+| 页面 | 你会做什么 |
+|---|---|
+| [文件约定](reference/file-conventions.md) | 保留文件和路由规则 |
+| [术语表](reference/glossary.md) | 这些文档使用的词语 |
+| [安全](reference/security.md) | 版本底线、Nexy 遵循的规则、审核 |
+
+## 布局
+```text
+docs/
+├─ README.md
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
+├─ routing/             FBR Router, Modular Router, Custom Router
+│  ├─ fbr/              file-based routing
+│  │  ├─ modes.md       server mode and client mode
+│  │  ├─ inheritance.md layouts, dependencies, error pages
+│  │  ├─ pages/         pages, dynamic routes, route groups, metadata
+│  │  ├─ layouts/       layout resolution, layout.tsx, layout.vue, layout.svelte
+│  │  ├─ handlers/      .py route handlers, validation and errors
+│  │  ├─ dependencies/  dependencies.py, guards
+│  │  ├─ middleware/    middleware.py
+│  │  ├─ errors/        not-found and error pages
+│  │  ├─ navigation/    links, hooks
+│  │  └─ realtime/    WebSocket
+│  ├─ modular/          controllers, injection, guards, NestJS comparison
+│  └─ custom/           include an existing FastAPI router
+├─ rendering/           SSR, ISR, CSR, islands
+├─ views/               choose a format, one page per client framework
+│  ├─ frontend/         the four contracts every framework shares
+│  └─ nexy/             .nexy files, components, layouts, Markdown and MDX
+├─ guides/              actions, i18n, databases, middleware, frontend, testing
+├─ deployment/          deploy, performance
+└─ reference/           CLI, config, Python API, exceptions, file conventions, glossary,
+                        security, agents
+```
+
+## 高级
+
+### 高级 {advanced}
+
+| 页面 | 你会做什么 |
+|---|---|
+| [Nexy 的工作原理](getting-started/how-nexy-works.md) | 查看文件和页面之间发生的情况，以及 Nexy 留给您的内容 |
+| [升级到2.2](getting-started/upgrading.md) | 从 2.1 迁移到 2.2 |
+| [国际化 (i18n)](guides/i18n.md) | 使用您选择的库添加翻译 |
+| [食谱](guides/recipes.md) | 示例和模式，而不是教程 |
+
+*这些页面不属于默认阅读路径。 “所有文档”链接可让您查看所有内容。*

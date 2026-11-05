@@ -49,6 +49,7 @@ Open <http://localhost:3000>. You should see the starter page. The port comes fr
 
 ## 3. Change a page
 
+<!-- router:fbr,custom -->
 A file under `src/routes/` is a route. Create `src/routes/hello.nexy`:
 
 ```nexy filename="src/routes/hello.nexy"
@@ -57,6 +58,33 @@ title: prop[str] = "Hello"
 ---
 <h1>{{ title }}</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+A controller returns a view. Create `src/apps/hello_view.nexy`:
+
+```nexy filename="src/apps/hello_view.nexy"
+---
+title: prop[str] = "Hello"
+---
+<h1>{{ title }}</h1>
+```
+
+Then declare the page in `src/apps/app_controller.py` and add it to the module:
+
+```python filename="src/apps/app_controller.py"
+@Controller("/hello")
+class HelloController:
+    async def get(self):
+        return useViews(LAYOUT, context={"children": useViews("src/apps/hello_view.nexy")})
+```
+
+```python filename="src/apps/app_module.py"
+from .app_controller import AboutController, AppController, HelloController
+
+controllers = [AppController, AboutController, HelloController]
+```
+<!-- /router -->
 
 Open <http://localhost:3000/hello>. Change `"Hello"` to `"Bonjour"` and save: the page updates
 without a manual reload. If the code is wrong, the browser shows the error instead of a blank page.

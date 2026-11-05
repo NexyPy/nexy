@@ -161,7 +161,7 @@ class TestPurgeForgetsOrmTables:
 class TestPurgeForgetsActions:
     """`ACTIONS_STORE` lives in the framework: purging modules must forget their actions.
 
-    Dropping the modules is not enough — a re-import overwrites its own entries, but an
+    Dropping the modules is not enough - a re-import overwrites its own entries, but an
     action whose module is gone would keep its endpoint and its line in `actions.ts`.
     """
 

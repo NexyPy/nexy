@@ -74,9 +74,20 @@ Organise by what people come to do, not by how the code is organised.
 - Keep navigation shallow: three levels is a ceiling, not a target.
 - URLs, titles, labels and headings agree with each other.
 - Every list has an order that means something (importance, time, alphabet), not insertion order.
+- Write so search finds the page: the title and the headings are the words a person types, the first
+  sentence answers them, the slug repeats them. One page per question.
 
 ## Commits
 
 Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`. The message
 says why. AI tools never appear as author or co-author: no `Co-authored-by`, no "Generated with"
 footer.
+
+**One commit, one unit: a function, a logic, or a structure, never two at once.**
+
+- *A function*: the function, its test, and its doc line.
+- *A logic*: one behaviour or bug fix, with the test that proves it.
+- *A structure*: one move, rename or split that changes no behaviour.
+
+A refactor and a feature never share a commit: a reviewer must be able to read one intention per
+commit, and revert it alone. If a change needs two of them, make two commits.

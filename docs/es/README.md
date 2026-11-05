@@ -1,0 +1,204 @@
+# Documentación Nexy
+
+**Un marco Python para aplicaciones web fullstack.**
+
+Nexy coloca sus páginas y su API en un Python proyecto, atendido por un servidor. La versión 2.2 se basa en FastAPI: cada ruta API es una ruta FastAPI, enumerada en un esquema OpenAPI que Scalar muestra en `/docs`.
+
+- **Python primero.** Las páginas, los puntos finales, los formularios y las acciones son Python, y una página no necesita JavaScript.
+- **Un frontend cuando lo desees.** React, Vue, Svelte, Solid o Preact, para un componente o para todo el sitio.
+- **Un archivo, una URL.** Un archivo en `src/routes/` es una ruta: `.nexy` es una página, `.py` es un punto final API.
+- **Espacio para crecer.** Comience con un archivo; pasar a módulos o conectar un enrutador FastAPI existente, cuando el proyecto crezca.
+
+¿Nuevo aquí? Lea [¿Qué es Nexy?](getting-started/what-is-nexy.md), luego el [Inicio rápido](getting-started/quick-start.md).
+
+## Empezando
+
+### Primeros pasos
+| Página | que haras |
+|---|---|
+| [¿Qué es Nexy?](getting-started/what-is-nexy.md) | Sepa qué es Nexy, en qué se basa y qué obtiene |
+| [Instalación](getting-started/installation.md) | Instale uv y Nexy CLI, luego cree su primer proyecto |
+| [Inicio rápido](getting-started/quick-start.md) | Cree un proyecto, ejecútelo con recarga en vivo y constrúyalo para producción |
+| [Tutorial](getting-started/tutorial.md) | Cree una página de notas con un punto final, datos compartidos y una compilación de producción en 10 minutos |
+
+### entender el modelo
+| Página | que haras |
+|---|---|
+| [Conceptos básicos](getting-started/core-concepts.md) | Obtenga el modelo mental: ruta, página, vista, componente, controlador, punto final |
+| [Estructura del proyecto](getting-started/project-structure.md) | Sepa para qué sirve cada carpeta y archivo de un proyecto |
+| [Elija un enrutador](routing/README.md) | Elija el enrutador basado en archivos, modular o personalizado |
+| [Elija un formato de visualización](views/README.md) | Elija `.nexy`, Markdown o un marco de cliente para una página |
+
+### Viniendo de otro lugar
+| Página | que haras |
+|---|---|
+| [Procedente de otro marco](getting-started/coming-from-other-frameworks.md) | Traducir FastAPI, Next.js y expresar hábitos a Nexy |
+
+## Enrutamiento
+
+### Basado en archivos {fbr}
+| Página | que haras |
+|---|---|
+| [Enrutamiento basado en archivos](routing/fbr/README.md) | Convertir la ruta de un archivo en una URL |
+| [Páginas](routing/fbr/pages/README.md) | escribir una pagina |
+| [Rutas dinámicas](routing/fbr/pages/dynamic-routes.md) | Utilice `[slug]`, `[...path]` y grupos de rutas |
+| [Metadatos de la página](routing/fbr/pages/metadata.md) | Establecer el título, la descripción y compartir imagen de una página {new} |
+| [Diseños](routing/fbr/layouts/README.md) | Compartir un marco entre páginas |
+| [Herencia](routing/fbr/inheritance.md) | Leer el orden de resolución de diseños, dependencias y páginas de error. |
+| [Modo servidor y modo cliente](routing/fbr/modes.md) | `useCSR`, y lo que permite cada modo |
+| [Vincular y navegar](routing/fbr/navigation/linking-and-navigating.md) | Vincular páginas, navegar en el cliente, captar previamente |
+| [Ganchos](routing/fbr/navigation/hooks.md) | Leer la ruta, consulta, cookies y sesión. |
+
+### Controladores y errores {fbr}
+| Página | que haras |
+|---|---|
+| [Controladores de ruta](routing/fbr/handlers/README.md) | Agregar un punto final Python |
+| [Validación y errores](routing/fbr/handlers/validation-and-errors.md) | Responda `422` y `404`, y plantee un `HTTPException` |
+| [WebSocket manejadores](routing/fbr/realtime/websocket.md) | Manejar una conexión `SOCKET` |
+| [Dependencias y guardias](routing/fbr/dependencies/README.md) | Ejecute `dependencies.py` antes de un controlador y heredéelo |
+| [Archivos de middleware](routing/fbr/middleware/README.md) | Envolver solicitudes con `middleware.py`, heredadas por directorio |
+| [Páginas de error](routing/fbr/errors/README.md) | Responda con errores `notfound.nexy`, `errors.nexy` y JSON |
+| [Páginas de error por carpeta](routing/fbr/errors/folder-pages.md) | Caso extremo: errores de subcarpetas |
+
+### Enrutador modular {modular}
+Controladores y módulos.
+| Página | que haras |
+|---|---|
+| [Enrutamiento modular](routing/modular/README.md) | Montar controladores y módulos |
+| [Inyección de dependencia](routing/modular/dependency-injection.md) | Definir servicios, sus alcances y el contenedor. |
+| [Guardias y metadatos](routing/modular/guards-and-metadata.md) | Proteger y documentar rutas |
+| [Enrutador modular frente a NestJS](routing/modular/vs-nestjs.md) | Comparación con NestJS |
+
+### Integración de enrutador personalizado {custom}
+| Página | que haras |
+|---|---|
+| [Enrutamiento personalizado](routing/custom/README.md) | Incluir una aplicación FastAPI existente |
+
+## Interfaz
+
+### Contratos compartidos
+| Página | lo que define |
+|---|---|
+| [Páginas frontales](views/frontend/pages.md) | Un archivo, una ruta: accesorios, renderizado, metadatos |
+| [Diseños de interfaz](views/frontend/layouts.md) | La estructura del documento, el anidamiento y lo que un diseño no puede hacer |
+| [Acciones y navegación](views/frontend/actions-and-navigation.md) | Llame a una acción escrita, vincule páginas, lea la URL |
+
+### Vistas nexy
+| Página | que haras |
+|---|---|
+| [Archivos .nexy](views/nexy/README.md) | Escribe una página con Python, Jinja2 y accesorios. |
+| [Componentes](views/nexy/components.md) | Utilice `Image`, `Link`, `Audio`, `Video` y `Import` |
+| [diseño.nexy](views/nexy/layouts.md) | Escribir el diseño en modo servidor |
+| [Markdown y MDX](views/nexy/markdown.md) | Escribir páginas de contenido |
+
+### Diferencias marco
+| Página | que cambia |
+|---|---|
+| [React diferencias](views/react/differences.md) | Componentes, ganchos y `layout.tsx` {new} |
+| [Vue diferencias](views/vue/differences.md) | SFC, referencias y `layout.vue` {new} |
+| [Svelte diferencias](views/svelte/differences.md) | Runas, tiendas y `layout.svelte` {new} |
+| [Solid diferencias](views/solid/differences.md) | Señales, accesores y `layout.tsx` {new} |
+| [Preact diferencias](views/preact/differences.md) | Ganchos, señales y `layout.tsx` {new} |
+
+## Representación
+
+### Modos
+| Página | que decidiras |
+|---|---|
+| [Representación](rendering/README.md) | ¿Qué modo de renderizado se ajusta a una página? |
+| [RSS](rendering/ssr.md) | Representación del servidor, la opción predeterminada |
+| [ISR](rendering/isr.md) | Caché de páginas con estado obsoleto mientras se revalida |
+| [RSE](rendering/csr.md) | Enrutamiento del lado del cliente |
+| [Islas](rendering/islands.md) | Hidratar en inactividad, visible o consulta de medios |
+
+## Guías
+
+### Formularios y datos
+| Página | que haras |
+|---|---|
+| [Acciones](guides/actions.md) | Llamar a una función Python desde un formulario o una función TypeScript escrita |
+| [Bases de datos](guides/databases.md) | Elija un ORM y ejecute migraciones |
+
+### Seguridad e implementación
+| Página | que haras |
+|---|---|
+| [Middleware y seguridad](guides/middleware-and-security.md) | Configure CORS, GZip, hosts y sesiones confiables |
+| [Implementar](deployment/README.md) | Construir, colocar en contenedores y servir |
+| [Rendimiento](deployment/performance.md) | Mida y ajuste los valores predeterminados |
+
+### Construir y probar
+| Página | que haras |
+|---|---|
+| [Vite y estilo](guides/frontend.md) | Configurar Vite, diseñar y crear el cliente |
+| [Pruebas](guides/testing.md) | Prueba con pytest, `TestClient` y vitest |
+
+### Herramientas y ayuda
+| Página | que haras |
+|---|---|
+| [Barra de herramientas de desarrollo](guides/devtools.md) | Utilice la barra de herramientas de `nexy dev` y apáguela. |
+| [Agentes codificadores](guides/ai-agents.md) | Dale a Claude Code, Codex y OpenCode las reglas de tu proyecto |
+| [Solución de problemas](guides/troubleshooting.md) | Solucionar los primeros problemas a los que se enfrenta la gente |
+
+## Referencia
+
+### Comandos y configuración
+| Página | lo que enumera |
+|---|---|
+| [CLI](reference/cli.md) | Comandos, indicadores, mensajes y códigos de salida |
+| [Configuración](reference/config.md) | Cada campo `nexyconfig.py` y su valor predeterminado |
+
+### Python API y errores
+| Página | lo que enumera |
+|---|---|
+| [API de Python](reference/python-api.md) | Cada nombre que Nexy exporta, por módulo |
+| [Excepciones y errores](reference/exceptions.md) | Cada falla, su estado y el archivo que la responde |
+
+### Convenciones y conceptos
+| Página | que haras |
+|---|---|
+| [Convenciones de archivos](reference/file-conventions.md) | Archivos reservados y reglas de enrutamiento |
+| [Glosario](reference/glossary.md) | Las palabras que usan estos médicos |
+| [Seguridad](reference/security.md) | Pisos de versiones, reglas que sigue Nexy, auditorías |
+
+## Diseño
+```text
+docs/
+├─ README.md
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
+├─ routing/             FBR Router, Modular Router, Custom Router
+│  ├─ fbr/              file-based routing
+│  │  ├─ modes.md       server mode and client mode
+│  │  ├─ inheritance.md layouts, dependencies, error pages
+│  │  ├─ pages/         pages, dynamic routes, route groups, metadata
+│  │  ├─ layouts/       layout resolution, layout.tsx, layout.vue, layout.svelte
+│  │  ├─ handlers/      .py route handlers, validation and errors
+│  │  ├─ dependencies/  dependencies.py, guards
+│  │  ├─ middleware/    middleware.py
+│  │  ├─ errors/        not-found and error pages
+│  │  ├─ navigation/    links, hooks
+│  │  └─ realtime/    WebSocket
+│  ├─ modular/          controllers, injection, guards, NestJS comparison
+│  └─ custom/           include an existing FastAPI router
+├─ rendering/           SSR, ISR, CSR, islands
+├─ views/               choose a format, one page per client framework
+│  ├─ frontend/         the four contracts every framework shares
+│  └─ nexy/             .nexy files, components, layouts, Markdown and MDX
+├─ guides/              actions, i18n, databases, middleware, frontend, testing
+├─ deployment/          deploy, performance
+└─ reference/           CLI, config, Python API, exceptions, file conventions, glossary,
+                        security, agents
+```
+
+## Avanzado
+
+### Avanzado {advanced}
+
+| Página | que haras |
+|---|---|
+| [Cómo funciona Nexy](getting-started/how-nexy-works.md) | Mira qué sucede entre un archivo y una página, y qué te deja Nexy |
+| [Actualizando a 2.2](getting-started/upgrading.md) | Migrar de 2.1 a 2.2 |
+| [Internacionalización (i18n)](guides/i18n.md) | Agregue traducciones con la biblioteca que elija |
+| [Recetas](guides/recipes.md) | Ejemplos y patrones, no un tutorial. |
+
+*Estas páginas no forman parte de la ruta de lectura predeterminada. Un enlace "Toda la documentación" le permite verlo todo.*

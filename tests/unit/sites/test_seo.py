@@ -101,6 +101,37 @@ class TestHead:
         assert [crumb["name"] for crumb in crumbs] == ["Documentation", "Actions"]
 
 
+class TestLanguage:
+    ALTERNATES = (("en", URL), ("fr", "https://example.test/docs/fr/guides/actions/"))
+
+    def test_a_page_names_its_language(self):
+        assert '<meta property="og:locale" content="fr">' in _head(lang="fr")
+
+    def test_the_linked_data_names_the_language(self):
+        assert _graph(_head(lang="fr"))[0]["inLanguage"] == "fr"
+
+    def test_a_page_links_to_each_of_its_languages(self):
+        html = seo.Head(**{**self._facts(), "alternates": self.ALTERNATES}).html()
+        assert (
+            '<link rel="alternate" hreflang="fr" href="https://example.test/docs/fr/guides/actions/">'
+            in html
+        )
+
+    def test_english_is_the_default_alternate(self):
+        html = seo.Head(**{**self._facts(), "alternates": self.ALTERNATES}).html()
+        assert f'<link rel="alternate" hreflang="x-default" href="{URL}">' in html
+
+    @staticmethod
+    def _facts() -> dict[str, object]:
+        return {
+            "title": "Actions",
+            "description": "",
+            "url": URL,
+            "site_url": "https://example.test",
+            "trail": TRAIL,
+        }
+
+
 class TestFiles:
     def test_the_sitemap_lists_each_address_once(self):
         xml = seo.sitemap([seo.home("https://example.test"), URL])

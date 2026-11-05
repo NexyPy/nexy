@@ -1,29 +1,32 @@
 # Actions
 
-`@Action` turns a Python function into a `POST` endpoint. A page calls it as a typed function, or
-a plain HTML form posts to it, and no route file is needed.
+An `@Action` turns a Python function into a `POST` endpoint. Unlike a standard API handler, it is designed as a typed communication bridge: Nexy automatically generates the TypeScript client, validates the input, and handles the response.
 
 **Before you start:** a project created by the [Quick start](../getting-started/quick-start.md).
 Actions live next to the pages, in `src/actions/`.
 
-```diagram filename="One function, two callers"
-page (Jinja2 form)  ── POST ──┐
-                               ├──► /_nx_/<hash> ──► async def create_user ──► JSON
-client (TypeScript) ── fetch ──┘                                        └──► 303 after a form
+```diagram filename="The Action Cycle"
+Client (UI)  ─── 1. Call (Typed Input) ───► [ Nexy Bridge ]
+                                                  │
+                                                  ▼
+                                      2. Validate & Execute (Python)
+                                                  │
+                                                  ▼
+Client (UI)  ◄─── 5. Consume (Typed Result) ◄── 4. Serialize ◄── 3. Result
 ```
 
-## Define an action
+## The Action Cycle
+
+### 1. Define
+An action is a normal Python function marked with `@Action`. Nexy uses its signature to define the API contract.
 
 ```python filename="src/actions/user.py"
 from pydantic import BaseModel
-
 from nexy.decorators import Action, revalidate
-
 
 class User(BaseModel):
     name: str
     age: int = 0
-
 
 @Action
 async def create_user(name: str, age: int = 0) -> User:
@@ -31,14 +34,19 @@ async def create_user(name: str, age: int = 0) -> User:
     return User(name=name, age=age)
 ```
 
-The parameters are the input, validated by Pydantic. A parameter named `request` or `response` is
-injected and is not part of the input. The function may be `async` or not, and stays a normal
-function you can call and test directly.
+The parameters are the input, validated by Pydantic. A parameter named `request` or `response` is injected and is not part of the input.
 
-## Call it from the client
+### 2. Validate
+When the action is called, Nexy validates the input against the function's type hints. If a field is missing or has the wrong type, the action is not executed, and a `422 Unprocessable Entity` is returned.
 
-Nexy writes `__nexy__/src/actions.ts` from your signatures, with the input and result types, and
-`@nexy/actions` resolves to it:
+### 3. Execute
+The logic runs on the server. Since it is a standard Python function, you can use any library, access the database, or call other services. You can also trigger a page refresh using `revalidate()`.
+
+### 4. Serialize
+The return value is automatically serialized to JSON. Pydantic models are handled natively, and standard Python types are mapped to their JSON equivalents.
+
+### 5. Consume
+The frontend receives the result with full type safety. Nexy writes `__nexy__/src/actions.ts` from your signatures, and `@nexy/actions` resolves to it.
 
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
@@ -55,7 +63,7 @@ export default function NewUser() {
 }
 ```
 
-Without a hook, an action is an `async` function: `const user = await create_user({ name: "Ada" })`.
+Without a hook, an action is just an `async` function: `const user = await create_user({ name: "Ada" })`.
 
 | Framework | What `useAction` returns |
 |---|---|
@@ -64,21 +72,24 @@ Without a hook, an action is an `async` function: `const user = await create_use
 | Vue | the same, with `pending`, `data` and `error` as refs |
 | Svelte | a store: `$save.pending`, `$save.data`, `$save.error`, plus `save.run(input)` and `save.reset()` |
 
-`useAction(action, { onSuccess, onError })` also takes two callbacks. `run` never throws: a failure
-lands in `error` and `run` resolves with `undefined`. Only the latest call updates the state.
-
-### Errors
-
-A failed call throws (or sets `error` to) an `ActionError` with the HTTP `status` and the server's
-`detail`. For a `422`, `error.fields` maps each invalid field to its message:
-
-```ts
-error.fields // { name: "Field required" }
-```
+`useAction(action, { onSuccess, onError })` also takes two callbacks. `run` never throws: a failure lands in `error` and `run` resolves with `undefined`.
 
 The types come from Python: `str` is `string`, `int` and `float` are `number`, `list[T]` is `T[]`,
 a Pydantic model or an `Enum` is a named type, and a field with a default is optional in the input.
 A type Pydantic cannot describe becomes `unknown`.
+
+## Errors and Failures
+
+An action can fail at different stages. You should distinguish between them in your UI:
+
+1.  **Validation errors (422)**: the input did not match the Python signature. `error.fields` maps each invalid field to its message.
+2.  **Business errors (`HTTPException`)**: your code refused the call, for example `403 Forbidden` or `409 Conflict`.
+3.  **Server errors (500)**: an unhandled exception occurred in your Python code.
+4.  **Network errors**: the request never reached the server, for example a timeout or a lost connection.
+5.  **Authorization errors (401, 403)**: your own check rejected the caller. Nexy does not decide this for you.
+
+The origin check described below is a CSRF protection, not an authorization: it says where the call
+came from, never who is allowed to make it.
 
 ## Refresh the page after an action
 
@@ -89,13 +100,11 @@ revalidate()            # the page that is open
 revalidate("/users")    # that page, if it is the one open
 ```
 
-The answer carries the paths in an `x-nexy-revalidate` header. The client then re-fetches the
-current page through the router, or reloads it when there is no client router. An action that
-never calls `revalidate` refreshes nothing.
+The answer carries the paths in an `x-nexy-revalidate` header. The client then re-fetches the current page through the router, or reloads it when there is no client router.
 
 ## Forms without JavaScript
 
-An action also takes a form, so the page works before any script loads:
+An action also takes a standard HTML form, so the page works before any script loads:
 
 ```html
 <form method="post" action="{{ __actions_path['create_user'] }}">
@@ -104,34 +113,33 @@ An action also takes a form, so the page works before any script loads:
 </form>
 ```
 
-In a `.nexy` template `__actions_path["name"]` is the path, `__actions["name"]` the function, and
-the function is also in scope under its own name. In client code `create_user.url` is the same
-path.
+In a `.nexy` template `__actions_path["name"]` is the path, `__actions["name"]` the function, and the function is also in scope under its own name.
 
-The fields are validated like a JSON input (a name that appears twice becomes a list). On success
-the visitor is sent back to the page the form was on, with status `303`. To answer differently,
-return a response from the action, for example `RedirectResponse("/done", status_code=303)`:
-a returned `Response` is sent as it is.
+On success, the visitor is sent back to the page the form was on, with status `303`. To answer differently, return a `Response` object (e.g., `RedirectResponse("/done", status_code=303)`).
 
 ## Security
 
-- **Origin**: a call whose `Origin` is another site, or that the browser marks
-  `Sec-Fetch-Site: cross-site`, is refused with `403`. List the sites that may call your actions in
-  `NEXY_ALLOWED_ORIGINS` (comma-separated, for example `https://app.example.com`). Calls without an
-  `Origin`, such as `curl` or a test client, are accepted.
-- **Path**: the path is `/_nx_` and a hash of the function's module, its name and a secret of the
-  project. It is set by `NEXY_ACTION_SECRET`, or kept in `__nexy__/action.key`, which `nx build`
-  creates so the client bundle and `nx start` agree. Keep that file with the build. The path
-  hides the endpoint from casual discovery; it is not authorization, so check the user in the
-  action.
+### Path obscurity is not authorization
+The action path is `/_nx_` followed by a hash of the function's module, its name and a secret of the
+project. It is set by `NEXY_ACTION_SECRET`, or kept in `__nexy__/action.key`, which `nx build`
+creates so the client bundle and `nx start` agree: keep that file with the build. The path hides the
+endpoint from casual discovery, and **the generated path is not an authorization mechanism**.
 
-Authorization is yours: read the session or cookies from `request`, and raise
-`HTTPException(403)` when the caller may not do it.
+Anyone who knows the path can call the action. You **must** verify the user's identity and permissions inside the action:
+```python
+@Action
+async def delete_user(user_id: str, request: Request):
+    if not request.state.user.is_admin:
+        raise HTTPException(403, "Admin rights required")
+    # ...
+```
+
+### Origin protection
+To prevent Cross-Site Request Forgery (CSRF), Nexy refuses requests whose `Origin` is another site or that the browser marks `Sec-Fetch-Site: cross-site` with a `403`. List the sites that may call your actions in `NEXY_ALLOWED_ORIGINS`. Calls without an `Origin` (like `curl`) are accepted.
 
 ## Import errors
 
-At startup Nexy imports every module of `src/` to find the actions. A module that fails to import
-is reported, with its file and line, and the others still load:
+At startup Nexy imports every module of `src/` to find the actions. A module that fails to import is reported, and the others still load:
 
 ```text
   x src.actions.billing: src/actions/billing.py:3  ModuleNotFoundError: No module named 'stripe'

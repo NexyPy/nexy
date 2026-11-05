@@ -1,9 +1,8 @@
 # Routing
 
-Nexy has two routers. Pick one per feature; they can coexist in the same application.
+Nexy has two native routers. You can pick one per feature; they can coexist in the same application.
 
-**Not sure? Use file-based routing.** It covers pages and API endpoints with no setup. Add the
-modular router when a backend needs controllers, injected services or guards.
+**Not sure? Use file-based routing.** It covers pages and API endpoints with no setup. Add the modular router when a backend needs controllers, injected services or guards.
 
 | You are building | Use |
 |---|---|
@@ -26,6 +25,12 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 | [Modular](modular/README.md) | controllers and modules | `useRouter = AppModule` in `nexyconfig.py` |
 
 FBR is scanned whenever `src/routes/` exists, even with a modular router mounted.
+
+## Coexistence and priorities
+
+You can combine FBR, Modular, and custom integration. Nexy registers these routes in the order they are discovered. If two routers define the same URL path, the first one registered wins. 
+
+*Note: Nexy does not currently provide a diagnostic for URL collisions; the first route to claim a path simply shadows the others.*
 
 ## File-based routing
 
@@ -57,6 +62,10 @@ See [Server mode and client mode](fbr/modes.md).
 
 Controllers, modules and dependency injection, in the style of NestJS. See
 [Modular routing](modular/README.md) and [Nexy and NestJS](modular/vs-nestjs.md).
+
+## Custom Integration
+
+You can also integrate an existing FastAPI router into your Nexy project. See [Custom routing integration](custom/README.md).
 
 ## Next steps
 

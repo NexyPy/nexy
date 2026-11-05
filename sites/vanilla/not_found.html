@@ -22,10 +22,29 @@
 </a>
 <main class="lost">
   <p class="crumb">404</p>
-  <h1>This page does not exist</h1>
-  <p>The address may be mistyped, or the page may have moved. The documentation is organised in sections: start from the overview and pick the topic you need.</p>
-  <p><a class="button" href="${base}docs/">Open the documentation</a></p>
+  <h1 data-i18n="lost_title">This page does not exist</h1>
+  <p data-i18n="lost_text">The address may be mistyped, or the page may have moved. The documentation is organised in sections: start from the overview and pick the topic you need.</p>
+  <p><a class="button" href="${base}docs/" data-i18n="lost_link">Open the documentation</a></p>
 </main>
+<script>
+  // GitHub serves this one page at every wrong address: the folder after /docs/ names the language.
+  (function () {
+    var words = ${words};
+    var parts = location.pathname.split("/");
+    var at = parts.indexOf("docs");
+    var code = at >= 0 ? parts[at + 1] : "";
+    var chosen = words[code];
+    if (!chosen) return;
+    document.documentElement.lang = code;
+    document.documentElement.dir = code === "ar" || code === "ur" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-i18n]").forEach(function (node) {
+      node.textContent = chosen[node.dataset.i18n] || node.textContent;
+    });
+    document.querySelectorAll('a[href="${base}docs/"]').forEach(function (link) {
+      link.href = "${base}docs/" + code + "/";
+    });
+  })();
+</script>
 <script src="${base}assets/site.js" defer></script>
 </body>
 </html>
