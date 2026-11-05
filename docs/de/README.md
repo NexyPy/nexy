@@ -2,31 +2,29 @@
 
 **Ein Python Framework für Fullstack-Webanwendungen.**
 
-Bei Nexy geht es um die Nahtstelle zwischen einem Python Backend und einem Browser-Frontend. Anstelle von zwei Servern, zwei Build-Systemen und zwei Routing-Tabellen erhalten Sie einen Ursprung: FastAPI und Starlette dienen der Anwendung, Vite erstellt den Client und eine Datei unter `src/routes/` ist eine Route – `.nexy` ist eine Seite, `.py` ist ein API-Handler.
+Nexy fügt Ihre Seiten und Ihre API in einem Python Projekt zusammen, das von einem Server bedient wird. Version 2.2 basiert auf FastAPI: Jede API-Route ist eine FastAPI-Route, aufgeführt in einem OpenAPI-Schema, das Scalar unter `/docs` anzeigt.
 
-- **Python zuerst.** Seiten, Endpunkte, Formulare und Aktionen sind Python, und eine vom Server gerenderte Seite benötigt kein Frontend-Framework.
-- **Drei Router, eine Integration.** Dateibasiert, modular oder eine bestehende FastAPI `APIRouter`.
-- **Ein Frontend, wenn Sie eines wollen.** React, Vue, Svelte, Solid oder Preact, pro Seite als Inseln oder für das gesamte Projekt im Client-Modus.
-- **Rendering, ein Modell.** Server-Rendering, zwischengespeicherte Seiten und Inseln werden pro Seite entschieden; Client-Routing ist ein Projektwechsel.
-- **Typisierte Aktionen.** Ein Formularbeitrag und ein eingegebener Kundenaufruf erreichen dieselbe Python Funktion.
+- **Python zuerst.** Seiten, Endpunkte, Formulare und Aktionen sind Python, und eine Seite benötigt kein JavaScript.
+- **Ein Frontend, wenn Sie eines wollen.** React, Vue, Svelte, Solid oder Preact, für eine Komponente oder für die gesamte Site.
+- **Eine Datei, eine URL.** Eine Datei unter `src/routes/` ist eine Route: `.nexy` ist eine Seite, `.py` ist ein API-Endpunkt.
+- **Raum zum Wachsen.** Beginnen Sie mit einer Datei; Wechseln Sie zu Modulen oder schließen Sie einen vorhandenen FastAPI Router an, wenn das Projekt wächst.
 
-Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, wenn das Projekt wächst.
+Neu hier? Lesen Sie [Was ist Nexy?](getting-started/what-is-nexy.md) und dann den [Schnellstart](getting-started/quick-start.md).
 
 ## Erste Schritte
 
 ### Erste Schritte
 | Seite | Was Sie tun werden |
 |---|---|
+| [Was ist Nexy?](getting-started/what-is-nexy.md) | Erfahren Sie, was Nexy ist, worauf es aufbaut und was Sie bekommen |
 | [Installation](getting-started/installation.md) | Installieren Sie uv und die Nexy-CLI und erstellen Sie dann Ihr erstes Projekt |
 | [Schnellstart](getting-started/quick-start.md) | Erstellen Sie ein Projekt, führen Sie es per Live-Reload aus und erstellen Sie es für die Produktion |
-| [Tutorial](getting-started/tutorial.md) | Erstellen Sie in 10 Minuten eine Notizenseite mit einem Endpunkt, freigegebenen Daten und einem Produktions-Build |
+| [Anleitung](getting-started/tutorial.md) | Erstellen Sie in 10 Minuten eine Notizenseite mit einem Endpunkt, freigegebenen Daten und einem Produktions-Build |
 
 ### Verstehen Sie das Modell
 | Seite | Was Sie tun werden |
 |---|---|
 | [Kernkonzepte](getting-started/core-concepts.md) | Holen Sie sich das mentale Modell: Route, Seite, Ansicht, Komponente, Handler, Endpunkt |
-| [Wie Nexy funktioniert](getting-started/how-nexy-works.md) | Folgen Sie einer Anfrage von der URL zu der Datei, die sie beantwortet |
-| [Architektur](architecture.md) | Wissen Sie, welche Schicht was tut und was Nexy Ihrer Anwendung überlässt |
 | [Projektstruktur](getting-started/project-structure.md) | Wissen Sie, wozu jeder Ordner und jede Datei in einem Projekt dient |
 | [Wählen Sie einen Router](routing/README.md) | Wählen Sie den dateibasierten, modularen oder benutzerdefinierten Router |
 | [Wählen Sie ein Ansichtsformat](views/README.md) | Wählen Sie `.nexy`, Markdown oder ein Client-Framework für eine Seite |
@@ -34,7 +32,7 @@ Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, 
 ### Kommt von woanders
 | Seite | Was Sie tun werden |
 |---|---|
-| [Kommt aus einem anderen Rahmen](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
+| [Aus einem anderen Rahmen kommend](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
 
 ## Routenführung
 
@@ -56,10 +54,10 @@ Beginnen Sie mit einer Datei unter `src/routes/` und fügen Sie Struktur hinzu, 
 |---|---|
 | [Routenhandler](routing/fbr/handlers/README.md) | Fügen Sie einen Python-Endpunkt hinzu |
 | [Validierung und Fehler](routing/fbr/handlers/validation-and-errors.md) | Beantworten Sie `422` und `404` und erheben Sie eine `HTTPException` |
-| [WebSocket Handler](routing/fbr/realtime/websocket.md) | Behandeln Sie eine `SOCKET`-Verbindung |
+| [WebSocket Handler](routing/fbr/realtime/websocket.md) | Behandelt eine `SOCKET`-Verbindung |
 | [Abhängigkeiten und Wachen](routing/fbr/dependencies/README.md) | Führen Sie `dependencies.py` vor einem Handler aus und erben Sie ihn |
 | [Middleware-Dateien](routing/fbr/middleware/README.md) | Anfragen mit `middleware.py` umschließen, geerbt vom Verzeichnis |
-| [Fehlerseiten](routing/fbr/errors/README.md) | Antworten Sie mit `notfound.nexy`-, `errors.nexy`- und JSON-Fehlern |
+| [Fehlerseiten](routing/fbr/errors/README.md) | Antworten Sie mit `notfound.nexy`, `errors.nexy` und JSON-Fehlern |
 | [Fehlerseiten pro Ordner](routing/fbr/errors/folder-pages.md) | Randfall: Fehler aus Unterordnern |
 
 ### Modularer Router {modular}
@@ -68,7 +66,7 @@ Controller und Module.
 |---|---|
 | [Modulares Routing](routing/modular/README.md) | Montieren Sie Controller und Module |
 | [Abhängigkeitsinjektion](routing/modular/dependency-injection.md) | Definieren Sie Dienste, ihre Bereiche und den Container |
-| [Schutzmaßnahmen und Metadaten](routing/modular/guards-and-metadata.md) | Routen schützen und dokumentieren |
+| [Guards und Metadaten](routing/modular/guards-and-metadata.md) | Routen schützen und dokumentieren |
 | [Modularer Router vs. NestJS](routing/modular/vs-nestjs.md) | Vergleich mit NestJS |
 
 ### Benutzerdefinierte Router-Integration {custom}
@@ -107,7 +105,7 @@ Controller und Module.
 ### Modi
 | Seite | Was Sie entscheiden werden |
 |---|---|
-| [Rendering](rendering/README.md) | Welcher Rendering-Modus passt zu einer Seite? |
+| [Rendern](rendering/README.md) | Welcher Rendering-Modus passt zu einer Seite? |
 | [SSR](rendering/ssr.md) | Server-Rendering, die Standardeinstellung |
 | [ISR](rendering/isr.md) | Cache-Seiten mit Stale-While-Revalidate |
 | [CSR](rendering/csr.md) | Clientseitiges Routing |
@@ -138,7 +136,7 @@ Controller und Module.
 | Seite | Was Sie tun werden |
 |---|---|
 | [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
-| [Kodierungsagenten](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
+| [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 
 ## Referenz
@@ -166,9 +164,8 @@ Controller und Module.
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -199,6 +196,7 @@ docs/
 
 | Seite | Was Sie tun werden |
 |---|---|
+| [Wie Nexy funktioniert](getting-started/how-nexy-works.md) | Sehen Sie, was zwischen einer Datei und einer Seite passiert und was Nexy Ihnen hinterlässt |
 | [Upgrade auf 2.2](getting-started/upgrading.md) | Von 2.1 auf 2.2 migrieren |
 | [Internationalisierung (i18n)](guides/i18n.md) | Fügen Sie Übersetzungen mit der Bibliothek Ihrer Wahl hinzu |
 | [Rezepte](guides/recipes.md) | Beispiele und Muster, kein Tutorial |
