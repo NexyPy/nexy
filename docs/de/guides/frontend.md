@@ -53,10 +53,10 @@ Vite verwaltet das Client-Bundle; SSR-HTML wird von esbuild pro Datei erstellt.
 
 `nexy new` fragt nach einem Stilmodus und richtet ihn für das von Ihnen ausgewählte Client-Framework ein: Tailwind, UnoCSS oder einfaches CSS. Die Design-Tokens (Farben, Schriftarten, das dunkle Thema) sind CSS-Variablen in `src/globale.css`, der Datei, die das Gerüst erstellt.
 
-| Modus | Die Startseiten werden mit | geschrieben.
+| Modus | Die Startseiten werden mit geschrieben |
 |---|---|
-| Tailwind, UnoCSS | Dienstprogrammklassen im Markup, wobei die Token Klassennamen zugeordnet sind |
-| Einfache CSS | semantische Klassennamen und das CSS in `src/globale.css` |
+| Tailwind, UnoCSS | Dienstprogrammklassen im Markup, wobei die Token den Klassennamen zugeordnet sind |
+| Einfaches CSS | semantische Klassennamen und das CSS in `src/globale.css` |
 
 Befolgen Sie den Modus Ihres Projekts, wenn Sie eine Seite hinzufügen: Dienstprogrammklassen in einem Dienstprogrammprojekt, CSS in einem einfachen CSS-Projekt. Behalten Sie Komponenten-CSS bei, das Dienstprogramme nicht im `<style>`-Block der Komponente ausdrücken können. In einem Serverprojekt (`.nexy` Seiten) liest UnoCSS die `.nexy` Dateien für Klassen; Tailwind findet sie selbstständig.
 
@@ -67,5 +67,5 @@ Legen Sie statische Dateien in `public/` ab – sie werden von `/` sowohl in der
 ## Nächste Schritte
 
 - [Ansichten](../views/README.md): Wählen Sie ein Seitenformat
-- [Config](../reference/config.md): `useFF`, `useVite`, Aliase
-- [Deploy](../deployment/README.md): was der Build erzeugt
+- [Konfiguration](../reference/config.md): `useFF`, `useVite`, Aliase
+- [Deployment](../deployment/README.md): was der Build erzeugt
