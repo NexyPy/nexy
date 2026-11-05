@@ -78,6 +78,6 @@ Cada página es HTML, pero Nexy asume un servidor para el enrutamiento y para lo
 
 ## Próximos pasos
 
-- [Config](../reference/config.md): HTTPS, hosts confiables, sesiones
+- [Configuración](../reference/config.md): HTTPS, hosts confiables, sesiones
 - [Frontend](../guides/frontend.md): qué construye Vite
 - [Prueba](../guides/testing.md): los comandos a ejecutar en CI
