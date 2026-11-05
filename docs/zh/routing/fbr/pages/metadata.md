@@ -54,9 +54,9 @@ setMetadata(title_template="%s | My site")
 
 ## 田野
 
-| 字段 | 写为 |
+| 领域 | 写为 |
 |---|---|
-| `title` | `<title>`； `title_template="%s \| My site"` 的标题放在 `%s` | 中
+| `title` | `<title>`； `title_template="%s \| My site"` 的标题放在 `%s` 中 |
 | `description` | `<meta name="description">` |
 | `canonical` | `<link rel="canonical">` |
 | `robots` | `<meta name="robots">`，例如 `"noindex"` |
