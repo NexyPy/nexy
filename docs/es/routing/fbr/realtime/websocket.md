@@ -1,4 +1,4 @@
-# Manejadores WebSocket
+# WebSocket manejadores
 
 Maneje las conexiones WebSocket en un archivo de ruta `.py` definiendo `SOCKET`.
 
@@ -15,8 +15,8 @@ async def SOCKET(websocket: WebSocket):
 ## Reglas
 
 - La URL es la ruta del archivo, la misma regla que [enrutamiento](../../README.md).
-- Solo los archivos de ruta `.py` registran controladores WebSocket a través de `SOCKET`.
-- Asegúrese de que su proxy inverso reenvíe las solicitudes de actualización de WebSocket.
+- Sólo los archivos de ruta `.py` registran WebSocket controladores a través de `SOCKET`.
+- Asegúrese de que su proxy inverso reenvíe WebSocket solicitudes de actualización.
 
 ## Próximos pasos
 
