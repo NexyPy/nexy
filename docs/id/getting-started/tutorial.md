@@ -191,6 +191,6 @@ nx start
 ## Dimana selanjutnya
 
 - [Perutean](../routing/README.md): segmen dan grup dinamis
-- [Actions](../guides/actions.md): memanggil Python dari formulir atau dari klien
-- [Testing](../guides/testing.md): halaman pengujian dan titik akhir
-- [Deploy](../deployment/README.md): container dan proksi terbalik
+- [Aksi](../guides/actions.md): memanggil Python dari formulir atau dari klien
+- [Pengujian](../guides/testing.md): halaman pengujian dan titik akhir
+- [Penerapan](../deployment/README.md): container dan proksi terbalik
