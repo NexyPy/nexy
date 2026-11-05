@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [!CATATAN]
+> [!NOTE]
 > perutean berbasis file tetap berfungsi. Jika `src/routes/` ada, itu dipindai bahkan ketika `useRouter` diatur.
 
 ## Tulis pengontrol
@@ -38,7 +38,7 @@ class AppController:
         return {"message": "Welcome to Nexy Modular API"}
 ```
 
-Metode dicocokkan berdasarkan nama, tanpa membedakan huruf besar/kecil: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
+Metode dicocokkan berdasarkan nama, tidak membedakan huruf besar/kecil: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
 
 Sebuah pengontrol mendeklarasikan satu penangan per metode HTTP; duplikat meningkat saat startup. Tambahkan awalan dengan `@Controller(prefix="/users")` - setiap penangan dipasang di `prefix/`. `async def SOCKET(...)` pada pengontrol mendaftarkan WebSocket di jalur yang sama.
 
