@@ -68,7 +68,7 @@ Um die Aktivierung zu überspringen, lassen Sie uv dies für einen Befehl tun: `
 
 ## Fügen Sie Nexy zu einem vorhandenen Projekt hinzu
 
-Führen Sie es in der virtuellen Umgebung des Projekts aus, mit Nexy unter seinen Paketen (`uv add nexy`):
+Führen Sie es aus der virtuellen Umgebung des Projekts aus, mit Nexy unter seinen Paketen (`uv add nexy`):
 
 ```bash
 nexy init
