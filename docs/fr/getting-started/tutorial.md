@@ -1,7 +1,6 @@
 # Tutoriel : créer une page de notes en 10 minutes
 
-Vous allez créer un projet, ajouter une page, ajouter un point de terminaison Python, partager des données entre eux et construire
-pour la production. Vous terminez avec une liste de notes servie sous forme de page et sous forme de JSON.
+Vous allez créer un projet, ajouter une page, ajouter un point de terminaison Python, partager des données entre eux et créer pour la production. Vous terminez avec une liste de notes servie sous forme de page et sous forme de JSON.
 
 Nouveau sur Nexy ? Effectuez d'abord le [Démarrage rapide](quick-start.md) : cela prend trois minutes.
 
@@ -9,7 +8,7 @@ Nouveau sur Nexy ? Effectuez d'abord le [Démarrage rapide](quick-start.md) : c
 uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
 ```
 
-## 1. Créer le projet
+## 1. Créez le projet
 
 ```bash
 uvx nexy new notes
@@ -18,26 +17,23 @@ cd notes
 nexy dev
 ```
 
-`uvx` est livré avec [uv](https://docs.astral.sh/uv/) et crée uniquement le projet. Chaque commande après
-il s'exécute dans l'environnement virtuel du projet (ou en tant que `uv run nexy dev`).
+`uvx` est livré avec [uv](https://docs.astral.sh/uv/) et crée uniquement le projet. Chaque commande qui suit s'exécute dans l'environnement virtuel du projet (ou en tant que `uv run nexy dev`).
 
 Choisissez le routeur basé sur des fichiers, un projet Web et n'importe quel framework client (ou aucun). Ouvert
 <http://localhost:3000>. Les étapes longues impriment chacune une ligne avec leur durée, comme le fait `uv`.
 
 <!-- router:modular -->
-Répondez `No` à l'invite du routeur basé sur un fichier : `nx new` échafaude le routeur modulaire dans `src/apps/`
-au lieu de `src/routes/`.
+Répondez `No` à l'invite du routeur basé sur un fichier : `nx new` échafaude le routeur modulaire en `src/apps/` au lieu de `src/routes/`.
 <!-- /router -->
 
 <!-- router:custom -->
-Répondez `Yes` à l'invite du routeur basé sur des fichiers pour les pages, puis montez votre `APIRouter` existant.
-dans `nexyconfig.py` : les deux routeurs cohabitent.
+Répondez `Yes` à l'invite du routeur basé sur un fichier pour les pages, puis montez votre `APIRouter` existant dans `nexyconfig.py` : les deux routeurs coexistent.
 <!-- /router -->
 
-## 2. Modifier la mise en page
+## 2. Modifiez la mise en page
 
 <!-- router:fbr,custom -->
-`src/routes/layout.nexy` est propriétaire du document HTML (avec le routage du client React, il s'agit de `layout.tsx`). Modifiez le `<title>` :
+`src/routes/layout.nexy` est propriétaire du document HTML (avec le routage client React, il s'agit de `layout.tsx`). Modifiez le `<title>` :
 
 ```nexy
 <title>Notes</title>
@@ -47,8 +43,7 @@ Enregistrer : le navigateur se recharge. Voir [Mise en page](../routing/fbr/layo
 <!-- /router -->
 
 <!-- router:modular -->
-Le contrôleur restitue `src/apps/layout.nexy` autour de la vue, et ce fichier possède le HTML
-documenter. Modifiez le `<title>` :
+Le contrôleur restitue `src/apps/layout.nexy` autour de la vue et ce fichier possède le document HTML. Modifiez le `<title>` :
 
 ```nexy
 <title>Notes</title>
@@ -107,8 +102,7 @@ from .app_controller import AppController, NotesController
 controllers = [AppController, NotesController]
 ```
 
-Ouvrez <http://localhost:3000/notes> : vous devriez voir deux puces. La partie entre `---` est Python,
-le reste est Jinja2.
+Ouvrez <http://localhost:3000/notes> : vous devriez voir deux puces. La partie entre `---` est Python, le reste est Jinja2.
 <!-- /router -->
 
 ## 4. Ajouter un point de terminaison
@@ -192,12 +186,11 @@ nx build
 nx start
 ```
 
-`nx build` imprime chaque phase avec sa durée. `nx start` sert la sortie compilée avec
-Uvicorn : pas de processus Node au moment de l'exécution.
+`nx build` imprime chaque phase avec sa durée. `nx start` sert la sortie compilée avec Uvicorn : aucun processus Node au moment de l'exécution.
 
 ## Où ensuite
 
 - [Routage](../routing/README.md) : segments et groupes dynamiques
 - [Actions](../guides/actions.md) : appeler Python depuis un formulaire ou depuis le client
 - [Testing](../guides/testing.md) : pages de test et points de terminaison
-- [Déployer](../deployment/README.md) : conteneurs et proxy inverses
+- [Deploy](../deployment/README.md) : conteneurs et proxys inverses
