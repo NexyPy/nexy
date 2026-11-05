@@ -179,3 +179,30 @@ def test_main_rejects_a_range_authored_by_an_agent(
     monkeypatch.setattr(sys, "argv", ["check_attribution", "--range", "HEAD"])
 
     assert checker.main() == 1
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "Co-Authored-By: opencode <noreply@opencode.ai>",
+        "Generated with [opencode](https://opencode.ai)",
+        "Co-authored-by: Freebuff <noreply@freebuff.com>",
+        "Generated with Freebuff",
+        "Co-authored-by: Qoder <noreply@qoder.com>",
+        "Generated with Qoder CLI",
+    ],
+)
+def test_offending_lines_rejects_opencode_freebuff_and_qoder(
+    checker: types.ModuleType, line: str
+) -> None:
+    assert checker.offending_lines(f"feat: x\n\n{line}") == [line]
+
+
+@pytest.mark.parametrize(
+    "identity",
+    ["opencode <noreply@opencode.ai>", "Freebuff <bot@freebuff.com>", "qodercli <cli@qoder.com>"],
+)
+def test_is_ai_author_rejects_opencode_freebuff_and_qoder(
+    checker: types.ModuleType, identity: str
+) -> None:
+    assert checker.is_ai_author(identity)
