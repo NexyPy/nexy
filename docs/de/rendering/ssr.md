@@ -13,11 +13,41 @@ SSR ist die Standardeinstellung: Der Server rendert die Seite für jede Anfrage 
 | `.mdx`, `.tsx`, `.vue`, `.svelte` | das Framework, gerendert in Node | beim Build, wenn die Route kein Layout hat, andernfalls im Browser |
 | `.py` | nichts: Es gibt JSON oder ein `Response` zurück. | - |
 
+Eine Markdown-Seite und ein Handler nebeneinander im selben Projekt:
+
+```md filename="src/routes/changelog.md"
+# Changelog
+
+Rendered to HTML on every request, then wrapped in the nearest layout.
+```
+
+```python filename="src/routes/api/health.py"
+async def GET():
+    return {"status": "ok"}
+```
+
 Eine Komponentenroute ist der einzige Fall, der einen zweiten Satz benötigt. In der Produktion wird eine Komponentenroute **ohne** ein Layout mit dem beim Build erzeugten HTML bereitgestellt und die Komponente hydratisiert es. Bei einem Layout oder in der Entwicklung ist der Container leer und die Komponente wird im Browser gerendert – die Seite ist dann eine Hülle, die sich selbst füllt.
+
+Die Komponentenroute der Tabelle ohne Layout, sodass die Produktion ihren HTML-Code aus dem Build bereitstellt:
+
+```tsx filename="src/routes/pricing.tsx"
+export default function Pricing() {
+  return <h1>Pricing</h1>;
+}
+```
 
 ## Rendering-Lebenszyklus
 
 1. Die Anfrage erreicht den dateibasierten Router. Der Pfad wird abgeglichen und dynamische Segmente werden in die von der Komponente deklarierten Typen umgewandelt.
+
+   „nexy filename="src/routes/orders/[id].nexy"
+   ---
+   id: prop[int]
+   ---
+   <h1>Bestellnummer{{ id + 1000 }}</h1>
+   „
+
+   `/orders/42` rendert `Order #1042`; `/orders/abc` antwortet `404`.
 2. Die Komponente läuft. Eines, das auf Node wartet – ein Clientdokument – ​​wird in einem Thread-Pool ausgeführt, sodass die Ereignisschleife nicht blockiert wird.
 3. Der Körper wird als `text/html` gestreamt. Eine Komponente, die Chunks erzeugt, streamt diese, während sie sie erstellt.
 4. Der Browser empfängt HTML. Inseln hydratisieren gemäß ihrer [Richtlinie](islands.md).
@@ -31,6 +61,17 @@ Ein beim Rendern ausgelöster Fehler wird von `errors.nexy` in eine Seite umgewa
 - Der Inhalt muss im HTML für Crawler vorliegen, die nicht JavaScript ausführen.
 - Die Seite ist kostengünstig zu rendern: eine Abfrage, eine Vorlage.
 
+Der erste Fall, eine Seite, die den Leser aus der Sitzung begrüßt:
+
+```nexy filename="src/routes/account.nexy"
+---
+from nexy import useSession
+
+user = useSession().get("user", "guest")
+---
+<h1>Signed in as {{ user }}</h1>
+```
+
 ## Konfiguration
 
 Keine. Zwei Auswege, und sie haben nicht die gleiche Körnung:
@@ -39,6 +80,18 @@ Keine. Zwei Auswege, und sie haben nicht die gleiche Körnung:
 |---|---|---|
 | eine Seite, mit Cache | `revalidate = 60` im Vorwort → [ISR](isr.md) | Seite |
 | das gesamte Projekt, vom Kunden weitergeleitet | `useCSR = True` in `nexyconfig.py` → [CSR](csr.md) | Projekt |
+
+Der projektweite Schalter, in `nexyconfig.py`. Der Client-Modus benötigt ein Client-Framework:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()
+    useCSR = True
+```
 
 ## Beispiel
 
@@ -59,9 +112,18 @@ slug: prop[str] = "untitled"
 - **Keine statische Ausgabe.** Im Servermodus wird beim Erstellen nichts eingefroren: Es gibt keinen SSG-Modus und keinen Exportbefehl. Siehe [Rendering](README.md).
 - **Autoescaping ist in `.nexy` Vorlagen deaktiviert**. Entkommen Sie nicht vertrauenswürdigen Werten mit `| e`.
 
+```nexy filename="src/routes/search.nexy"
+---
+from nexy import useSearchParams
+
+q = useSearchParams().get("q", "")
+---
+<p>Results for {{ q | e }}</p>
+```
+
 ## Nächste Schritte
 
 - [ISR](isr.md): Diese Seite pro URL zwischenspeichern
-- [Inseln](islands.md): Behalten Sie SSR bei und machen Sie ein Widget interaktiv
+- [Inseln](islands.md): SSR beibehalten und ein Widget interaktiv machen
 - [CSR](csr.md): Handnavigation zum Browser
 - [Leistung](../deployment/performance.md)

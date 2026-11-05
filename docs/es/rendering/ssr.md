@@ -13,11 +13,41 @@ SSR es el valor predeterminado: el servidor representa la página en HTML para c
 | `.mdx`, `.tsx`, `.vue`, `.svelte` | el marco, representado en Node | en la compilación cuando la ruta no tiene diseño; de lo contrario, en el navegador |
 | `.py` | nada: devuelve JSON o un `Response` | - |
 
+Una página Markdown y un controlador, uno al lado del otro en el mismo proyecto:
+
+```md filename="src/rutas/changelog.md"
+# Changelog
+
+Rendered to HTML on every request, then wrapped in the nearest layout.
+```
+
+```python filename="src/rutas/api/health.py"
+async def GET():
+    return {"status": "ok"}
+```
+
 Una ruta componente es el único caso que necesita una segunda oración. En producción, una ruta de componente **sin** un diseño se entrega con el HTML producido en la compilación y el componente lo hidrata. Con un diseño, o en desarrollo, el contenedor está vacío y el componente se representa en el navegador; la página es entonces un caparazón que se llena solo.
+
+La ruta del componente de la tabla, sin diseño, por lo que la producción entrega su HTML desde la compilación:
+
+```tsx filename="src/rutas/precios.tsx"
+export default function Pricing() {
+  return <h1>Pricing</h1>;
+}
+```
 
 ## Ciclo de vida de renderizado
 
 1. La solicitud llega al enrutador basado en archivos. La ruta coincide y los segmentos dinámicos se convierten en los tipos que declara el componente.
+
+   ```nexy nombre de archivo="src/routes/orders/[id].nexy"
+   ---
+   id: propiedad[int]
+   ---
+   <h1>N.º de pedido{{ id + 1000 }}</h1>
+   ```
+
+   `/orders/42` representa `Order #1042`; `/orders/abc` responde `404`.
 2. El componente se ejecuta. Uno que espera en Node (un documento de cliente) se ejecuta en un grupo de subprocesos, por lo que no detiene el bucle de eventos.
 3. El cuerpo se transmite como `text/html`. Un componente que produce trozos los transmite a medida que los produce.
 4. El navegador recibe HTML. Las islas se hidratan según su [directiva](islands.md).
@@ -31,6 +61,17 @@ Un error generado durante el renderizado se convierte en una página mediante `e
 - El contenido debe estar en HTML para los rastreadores que no ejecutan JavaScript.
 - La página es barata de renderizar: una consulta, una plantilla.
 
+El primer caso, una página que saluda al lector desde la sesión:
+
+```nexy filename="src/rutas/cuenta.nexy"
+---
+from nexy import useSession
+
+user = useSession().get("user", "guest")
+---
+<h1>Signed in as {{ user }}</h1>
+```
+
 ## Configuración
 
 Ninguno. Dos salidas y no tienen el mismo grano:
@@ -39,6 +80,18 @@ Ninguno. Dos salidas y no tienen el mismo grano:
 |---|---|---|
 | una página, con un caché | `revalidate = 60` en su introducción → [ISR](isr.md) | página |
 | todo el proyecto, enrutado por el cliente | `useCSR = True` en `nexyconfig.py` → [RSE](csr.md) | proyecto |
+
+El cambio de todo el proyecto, en `nexyconfig.py`. El modo cliente necesita un marco de cliente:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()
+    useCSR = True
+```
 
 ## Ejemplo
 
@@ -49,7 +102,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` ejecuta esta plantilla una vez, con `slug` establecida en `hello`. Una segunda solicitud lo ejecuta nuevamente: no se guarda nada entre los dos. La cadena de consulta no es un accesorio; léala con los ganchos en [navegación](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` ejecuta esta plantilla una vez, con `slug` establecido en `hello`. Una segunda solicitud lo ejecuta nuevamente: no se guarda nada entre los dos. La cadena de consulta no es un accesorio; léala con los ganchos en [navegación](../routing/fbr/navigation/hooks.md).
 
 ## Limitaciones
 
@@ -57,7 +110,16 @@ slug: prop[str] = "untitled"
 - **Sin caché.** No hay un caché de respuesta compartido para calentar: [ISR](isr.md) agrega uno por URL.
 - **La transmisión por secuencias solo ayuda a un componente que produce rendimiento.** Una consulta lenta en la parte superior de la página aún retrasa el primer byte.
 - **Sin salida estática.** En el modo servidor, nada se congela en la compilación: no hay modo SSG ni comando de exportación. Consulte [Renderizado](README.md).
-- **El escape automático está desactivado** en `.nexy` plantillas. Escapa de valores que no son de confianza con `| e`.
+- **El escape automático está desactivado** en las plantillas `.nexy`. Escapa de valores que no son de confianza con `| e`.
+
+```nexy filename="src/rutas/search.nexy"
+---
+from nexy import useSearchParams
+
+q = useSearchParams().get("q", "")
+---
+<p>Results for {{ q | e }}</p>
+```
 
 ## Próximos pasos
 

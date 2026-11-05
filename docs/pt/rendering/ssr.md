@@ -13,11 +13,41 @@ SSR é o padrão: o servidor renderiza a página em HTML para cada solicitação
 | `.mdx`, `.tsx`, `.vue`, `.svelte` | a estrutura, renderizada em Node | na construção quando a rota não tem layout, caso contrário no navegador |
 | `.py` | nada: retorna JSON ou um `Response` | - |
 
+Uma página Markdown e um manipulador, lado a lado no mesmo projeto:
+
+```md filename="src/routes/changelog.md"
+# Changelog
+
+Rendered to HTML on every request, then wrapped in the nearest layout.
+```
+
+```python filename="src/routes/api/health.py"
+async def GET():
+    return {"status": "ok"}
+```
+
 Uma rota componente é o único caso que precisa de uma segunda frase. Na produção, uma rota de componente **sem** um layout é veiculada com o HTML produzido na construção, e o componente o hidrata. Com um layout, ou em desenvolvimento, o contêiner fica vazio e o componente é renderizado no navegador - a página é então um shell que se preenche sozinho.
+
+A rota do componente da tabela, sem layout, portanto a produção serve seu HTML desde o build:
+
+```tsx filename="src/routes/pricing.tsx"
+export default function Pricing() {
+  return <h1>Pricing</h1>;
+}
+```
 
 ## Ciclo de vida de renderização
 
 1. A solicitação chega ao roteador baseado em arquivo. O caminho é correspondido e os segmentos dinâmicos são convertidos nos tipos declarados pelo componente.
+
+   ```nexy filename="src/routes/orders/[id].nexy"
+   ---
+   id: prop[int]
+   ---
+   <h1>Pedido nº{{ id + 1000 }}</h1>
+   ```
+
+   `/orders/42` renderiza `Order #1042`; `/orders/abc` respostas `404`.
 2. O componente é executado. Aquele que espera no Node - um documento cliente - é executado em um pool de threads, portanto não paralisa o loop de eventos.
 3. O corpo é transmitido como `text/html`. Um componente que produz pedaços os transmite à medida que os produz.
 4. O navegador recebe HTML. As ilhas hidratam de acordo com sua [diretiva](islands.md).
@@ -31,6 +61,17 @@ Um erro gerado durante a renderização é transformado em uma página por `erro
 - O conteúdo deve estar no HTML para crawlers que não rodam JavaScript.
 - A página é barata para renderizar: uma consulta, um modelo.
 
+O primeiro caso, uma página que saúda o leitor da sessão:
+
+```nexy filename="src/rotas/account.nexy"
+---
+from nexy import useSession
+
+user = useSession().get("user", "guest")
+---
+<h1>Signed in as {{ user }}</h1>
+```
+
 ## Configuração
 
 Nenhum. Duas saídas, e elas não têm a mesma granulação:
@@ -39,6 +80,18 @@ Nenhum. Duas saídas, e elas não têm a mesma granulação:
 |---|---|---|
 | uma página, com cache | `revalidate = 60` em seu frontmatter → [ISR](isr.md) | página |
 | todo o projeto, roteado pelo cliente | `useCSR = True` em `nexyconfig.py` → [CSR](csr.md) | projeto |
+
+A opção em todo o projeto, em `nexyconfig.py`. O modo cliente precisa de uma estrutura de cliente:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()
+    useCSR = True
+```
 
 ## Exemplo
 
@@ -58,6 +111,15 @@ slug: prop[str] = "untitled"
 - **O streaming ajuda apenas um componente que produz.** Uma consulta lenta no topo da página ainda atrasa o primeiro byte.
 - **Nenhuma saída estática.** No modo servidor nada é congelado na construção: não há modo SSG e nenhum comando de exportação. Consulte [Renderização](README.md).
 - **O escape automático está desativado** em `.nexy` modelos. Escape de valores não confiáveis ​​com `| e`.
+
+```nexy filename="src/rotas/search.nexy"
+---
+from nexy import useSearchParams
+
+q = useSearchParams().get("q", "")
+---
+<p>Results for {{ q | e }}</p>
+```
 
 ## Próximas etapas
 
