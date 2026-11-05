@@ -124,8 +124,8 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!नोट]
-> एक क्लाइंट जो `Accept: */*` भेजता है (`curl` और कई HTTP लाइब्रेरीज़ का डिफ़ॉल्ट) HTML पेज प्राप्त करता है। JSON त्रुटियों के लिए `Accept: application/json` सेट करें।
+> [!NOTE]
+> एक क्लाइंट जो `Accept: */*` (`curl` और कई HTTP लाइब्रेरीज़ का डिफ़ॉल्ट) भेजता है उसे HTML पेज प्राप्त होता है। JSON त्रुटियों के लिए `Accept: application/json` सेट करें।
 
 ## हैंडल न किए गए अपवाद
 
