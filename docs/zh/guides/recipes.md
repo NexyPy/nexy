@@ -72,7 +72,7 @@ async def GET(request: Request):
     return {"user": request.session["user"]}
 ```
 
-> [！注意]
+> [!NOTE]
 > 将真实密码保留在来源之外。存储哈希值 (`argon2`, `bcrypt`) 并从环境中读取密钥。会话 cookie 已签名，未加密。
 
 ## 具有创建、读取和删除功能的 JSON API
