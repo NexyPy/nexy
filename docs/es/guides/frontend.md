@@ -46,7 +46,7 @@ El navegador sólo habla con el puerto `3000`. No hay una segunda URL para abrir
 
 Vite maneja el paquete del cliente; SSR HTML se produce por archivo mediante esbuild.
 
-> [!NOTA]
+> [!NOTE]
 > una ruta cuyo procesamiento del servidor falla se informa como una ruta solo para el cliente en lugar de fallar en toda la compilación.
 
 ## Estilo
@@ -58,14 +58,14 @@ Vite maneja el paquete del cliente; SSR HTML se produce por archivo mediante esb
 | Tailwind, UnoCSS | clases de utilidad en el marcado, con los tokens asignados a nombres de clases |
 | Nombres de clases semánticas de CSS simple | y CSS en `src/globale.css` |
 
-Siga el modo de su proyecto cuando agregue una página: clases de utilidad en un proyecto de utilidad, CSS en uno de CSS simple. Mantenga el CSS del componente que las utilidades no puedan expresar en el bloque `<style>` del componente. En un proyecto de servidor (`.nexy` páginas) UnoCSS lee los `.nexy` archivos para las clases; Tailwind los encuentra por sí solo.
+Siga el modo de su proyecto cuando agregue una página: clases de utilidad en un proyecto de utilidad, CSS en uno de CSS simple. Mantenga el CSS del componente que las utilidades no puedan expresar en el bloque `<style>` del componente. En un proyecto de servidor (`.nexy` páginas) UnoCSS lee los `.nexy` archivos de clases; Tailwind los encuentra por sí solo.
 
 ## Fuentes, imágenes, guiones.
 
-Coloque los archivos estáticos en `public/`; se sirven desde `/` tanto en desarrollo como en producción.
+Coloque los archivos estáticos en `public/`; se entregan desde `/` tanto en desarrollo como en producción.
 
 ## Próximos pasos
 
 - [Vistas](../views/README.md): elige un formato de página
-- [Configuración](../reference/config.md): `useFF`, `useVite`, alias
+- [Config](../reference/config.md): `useFF`, `useVite`, alias
 - [Implementar](../deployment/README.md): lo que produce la compilación
