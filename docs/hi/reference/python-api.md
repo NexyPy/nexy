@@ -34,6 +34,17 @@
 
 हुक केवल अनुरोध के अंदर काम करते हैं: [हुक](../routing/fbr/navigation/hooks.md) देखें।
 
+```nexy filename="src/routes/index.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+
 ## `nexy.http`
 
 एक हैंडलर की HTTP शब्दावली। FastAPI के बजाय यहां से आयात करें, इसलिए आपके संचालक नेक्सी के अनुबंध पर निर्भर हैं।
@@ -53,11 +64,25 @@
 | `notFound`, `forbidden`, `unauthorized` | उन्हीं स्थानों से 404, 403 या 401 उठाएँ |
 | `FileResponse`, `StreamingResponse` | किसी फ़ाइल या स्ट्रीम के साथ उत्तर दें |
 
+```python filename="src/routes/api/items/[id].py"
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+async def GET(id: int, key: str = Depends(api_key)):
+    return {"id": id}
+```
+
 ## `nexy.decorators`
 
 | नाम | यह क्या है |
 |---|---|
-| `Action` | किसी फ़ंक्शन को `POST` एंडपॉइंट में बदलें, [कार्रवाइयां](../guides/actions.md) देखें |
+| `Action` | किसी फ़ंक्शन को `POST` समापन बिंदु में बदलें, [क्रियाएँ](../guides/actions.md) देखें |
 | `revalidate` | ब्राउज़र को बताएं कि किसी कार्रवाई के कारण कौन से पृष्ठ पुराने हो गए हैं |
 | `Module`, `Controller` | [मॉड्यूलर राउटर](../routing/modular/README.md) में एक मॉड्यूल और एक नियंत्रक घोषित करें |
 | `Injectable`, `Container`, `Scope` | [निर्भरता इंजेक्शन](../routing/modular/dependency-injection.md) और इसका जीवनकाल |
@@ -67,14 +92,32 @@
 | `HTTP_METHODS` | एक हैंडलर फ़ाइल HTTP विधियों को परिभाषित कर सकती है |
 | `ACTIONS_STORE` | टूलींग और परीक्षण के लिए क्रियाओं की रजिस्ट्री |
 
+```python filename="src/actions/posts.py"
+from nexy.decorators import Action, revalidate
+
+
+@Action
+async def publish(post_id: int) -> bool:
+    revalidate("/blog")
+    return True
+```
+
 ## `nexy.testing`
 
 | नाम | यह क्या है |
 |---|---|
 | `render` | दिए गए प्रॉप्स के लिए `.nexy` घटक का HTML, बिना सर्वर के, देखें [परीक्षण](../guides/testing.md) |
 
+```python filename="परीक्षण/test_button.py"
+from nexy.testing import render
+
+
+def test_the_button_shows_its_label():
+    assert "Save" in render("src/components/button.nexy", label="Save")
+```
+
 ## आगे कहाँ
 
-- [कॉन्फिग](config.md): इन नामों के पीछे `use*` फ़ील्ड
-- [अपवाद और त्रुटियां](exceptions.md): प्रत्येक विफलता क्या उत्तर देती है
-- [दस्तावेज़ीकरण सूचकांक](../README.md): आप जो बना रहे हैं उसका पृष्ठ
+- [कॉन्फ़िग](config.md): इन नामों के पीछे `use*` फ़ील्ड
+- [अपवाद और त्रुटियाँ](exceptions.md): प्रत्येक विफलता क्या उत्तर देती है
+- [दस्तावेज़ीकरण सूचकांक](../README.md): आप जो बना रहे हैं उसके लिए पृष्ठ
