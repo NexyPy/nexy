@@ -22,8 +22,8 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [！注意]
-> 基于文件的路由继续工作。如果存在 `src/routes/`，则即使设置了 `useRouter` 也会扫描。
+> [!NOTE]
+> 基于文件的路由继续工作。如果存在 `src/routes/`，即使设置了 `useRouter` 也会扫描。
 
 ## 写一个控制器
 
