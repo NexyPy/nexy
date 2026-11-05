@@ -94,7 +94,7 @@
 
 `nx build` 编译路由，然后在 `useVite` 开启时捆绑客户端。
 
-> [！注意]
+> [!NOTE]
 > 没有 `--static` 标志。静态托管是一种部署选择，而不是构建模式 - 请参阅[部署](../deployment/README.md)。
 
 ## 致力于 Nexy 本身
