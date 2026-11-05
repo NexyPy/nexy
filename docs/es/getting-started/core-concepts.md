@@ -48,13 +48,13 @@ Dos palabras más que vuelven por todas partes:
 Dos decisiones independientes, a menudo confundidas:
 
 - **El formato** decide qué archivo representa la página: [Vistas](../views/README.md).
-- **El modo** decide quién produce el HTML y cuándo: [Rendering](../rendering/README.md).
+- **El modo** decide quién produce el HTML y cuándo: [Renderizado](../rendering/README.md).
 
 | Noción | Una línea |
 |---|---|
 | Modo servidor | el servidor representa `.nexy` y `.md` páginas; los componentes son islas ([modos](../routing/fbr/modes.md)) |
 | Modo cliente | `useCSR = True`: los archivos de marco son las rutas y la navegación se realiza en el navegador |
-| SSR, ISR, CSR, islas | cuatro modos de renderizado, decididos por página excepto CSR, que es por proyecto ([rendering](../rendering/README.md)) |
+| SSR, ISR, CSR, islas | cuatro modos de renderizado, decididos por página excepto CSR, que es por proyecto ([renderizado](../rendering/README.md)) |
 | Hidratación | el navegador adjuntando un framework al HTML el servidor ya envió ([islas](../rendering/islands.md)) |
 | Props | los valores que un padre pasa a un componente, declarados `name: prop[type]` en un archivo `.nexy` (archivos [.nexy](../views/nexy/README.md)) |
 
@@ -63,9 +63,9 @@ Dos decisiones independientes, a menudo confundidas:
 | Noción | Una línea |
 |---|---|
 | Acción | una función Python marcada `@Action`, servida como `POST`, invocable desde un formulario o como una función escrita ([acciones](../guides/actions.md)) |
-| Formulario | un formulario HTML que se publica en una acción, con errores de validación que regresan a la página ([actions](../guides/actions.md)) |
+| Formulario | un formulario HTML que se publica en una acción, con errores de validación que regresan a la página ([acciones](../guides/actions.md)) |
 | Enlaces de navegación | que precargan y enlaces que leen la ruta, la consulta, las cookies y la sesión ([hooks](../routing/fbr/navigation/hooks.md)) |
-| Obtención de datos | realizada por la página o el controlador que lo necesita; Nexy no incluye ninguna capa de datos del cliente ([handlers](../routing/fbr/handlers/README.md)) |
+| Obtención de datos | realizada por la página o el controlador que lo necesita; Nexy no incluye ninguna capa de datos del cliente ([manejadores](../routing/fbr/handlers/README.md)) |
 
 ## Lo que Nexy no hace
 
