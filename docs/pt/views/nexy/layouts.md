@@ -30,8 +30,7 @@ children: prop[NexyElement]
 
 ## Layouts aninhados
 
-Um `layout.nexy` em um subdiretório envolve essa subárvore e é renderizado dentro de seu pai. Não se repete
-as tags do documento:
+Um `layout.nexy` em um subdiretório envolve essa subárvore e é renderizado dentro de seu pai. Não repete as tags do documento:
 
 ```nexy filename="src/routes/blog/layout.nexy"
 ---
@@ -45,8 +44,7 @@ children: prop[NexyElement]
 
 ## Componentes e ilhas
 
-Um layout pode importar `.nexy` componentes (um cabeçalho, um rodapé) e componentes do cliente. Um cliente
-componente em um layout é uma [ilha](../../rendering/islands.md) como qualquer outra:
+Um layout pode importar `.nexy` componentes (um cabeçalho, um rodapé) e componentes do cliente. Um componente cliente em um layout é uma [ilha](../../rendering/islands.md) como qualquer outra:
 
 ```nexy
 ---
@@ -59,9 +57,7 @@ from "@/components/theme/theme.tsx" import Theme
 
 ## Sem layout
 
-Um projeto sem `layout.nexy` ainda responde com um documento válido: Nexy volta ao mínimo
-shell com `<!DOCTYPE html>`, a meta da janela de visualização e as tags Vite. Adicione um layout assim que precisar
-um título, fontes ou navegação.
+Um projeto sem `layout.nexy` ainda responde com um documento válido: Nexy volta para um shell mínimo com `<!DOCTYPE html>`, a meta da janela de visualização e as tags Vite. Adicione um layout assim que precisar de título, fontes ou navegação.
 
 ## No roteador modular
 
@@ -73,12 +69,11 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 
 ## O que não pode fazer
 
-- Não pode coexistir com `layout.tsx`, `layout.vue` ou `layout.svelte`: um projeto em modo servidor tem
-  nenhuma rota de cliente ([modos](../../routing/fbr/modes.md)).
+- Não pode coexistir com `layout.tsx`, `layout.vue` ou `layout.svelte`: um projeto em modo servidor não possui rotas de cliente ([modos](../../routing/fbr/modes.md)).
 - Não roda no cliente: use uma ilha para interatividade.
 
 ## Próximas etapas
 
 - [Layouts](../../routing/fbr/layouts/README.md)
 - [Herança](../../routing/fbr/inheritance.md)
-- [.arquivos .nexy](README.md)
+- [arquivos .nexy](README.md)
