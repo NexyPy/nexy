@@ -73,6 +73,28 @@ class TestSelector:
         assert 'data-lang="fr"' in html and 'aria-current="true"' in html.split('data-lang="fr"')[1]
         assert "data-lang-code>FR<" in html
 
+    def test_each_language_links_to_the_same_page_in_that_language(self):
+        html = i18n.select_html("en", lambda code: f"/docs/{code}/guides/actions/")
+        assert 'href="/docs/de/guides/actions/"' in html
+
+
+class TestLocalize:
+    def test_a_word_of_the_site_is_written_in_the_language(self):
+        html = i18n.localize('<span data-i18n="search">Search</span>', "fr")
+        assert html == '<span data-i18n="search">Rechercher</span>'
+
+    def test_a_label_is_written_in_the_language(self):
+        html = i18n.localize('<button aria-label="Search the docs" data-i18n-aria="search">', "fr")
+        assert 'aria-label="Rechercher"' in html
+
+    def test_a_placeholder_is_written_in_the_language(self):
+        html = i18n.localize('<input placeholder="Search" data-i18n-placeholder="search">', "fr")
+        assert 'placeholder="Rechercher"' in html
+
+    def test_english_leaves_the_page_untouched(self):
+        html = '<span data-i18n="search">Look</span>'
+        assert i18n.localize(html, "en") == html
+
 
 class TestVanilla:
     def test_the_build_writes_the_payload(self, out):
@@ -81,7 +103,8 @@ class TestVanilla:
 
     def test_a_page_carries_the_picker(self, out):
         page = (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
-        assert 'class="lang-select"' in page and page.count("data-lang=") == 12
+        picker = page.split('class="lang-select"', 1)[1].split("</details>", 1)[0]
+        assert picker.count("data-lang=") == 12
 
     def test_a_page_says_where_the_payload_lives(self, out):
         page = (out / "docs" / "index.html").read_text(encoding="utf-8")
