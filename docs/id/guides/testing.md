@@ -136,7 +136,7 @@ nx test
 
 `nx build` gagal karena kesalahan kompilasi; `nx test` gagal pada pernyataan yang gagal dan keluar bukan nol. `nx check` menambahkan mypy dan `tsc` ke proses.
 
-Pengerjaan Nexy sendiri menggunakan perintah yang berbeda: lihat [KONTRIBUSI](../../CONTRIBUTING.md).
+Pengerjaan Nexy sendiri menggunakan perintah yang berbeda: lihat [KONTRIBUSI](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md).
 
 ## Langkah selanjutnya
 
