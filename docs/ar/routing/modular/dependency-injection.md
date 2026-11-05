@@ -1,9 +1,8 @@
 # حقن التبعية
 
-يقوم Nexy بحل تبعيات المنشئ لوحدات التحكم والخدمات. فئة تختار مع
-`@Injectable()`.
+يقوم Nexy بحل تبعيات المنشئ لوحدات التحكم والخدمات. يختار الفصل الدراسي الاشتراك بـ `@Injectable()`.
 
-## ادخل خدمة
+## حقن الخدمة
 
 ```python filename="src/apps/users/user_service.py"
 from nexy.decorators import Injectable
@@ -29,8 +28,7 @@ class UserController:
         return self.svc.get_all()
 ```
 
-قم بتسجيل وحدة التحكم في الوحدة النمطية. إدراج الخدمة في `providers` يحل المشكلة أيضًا
-بفارغ الصبر عند بدء التشغيل:
+قم بتسجيل وحدة التحكم في الوحدة النمطية. يؤدي إدراج الخدمة في `providers` أيضًا إلى حلها بفارغ الصبر عند بدء التشغيل:
 
 ```python filename="src/apps/users/users_module.py"
 from nexy.decorators import Module
@@ -44,13 +42,11 @@ class UsersModule:
     providers = [UserService]
 ```
 
-## كيفية عمل القرار
+## كيف يعمل القرار
 
-- يتم حل كل `__init__` من المعلمة من **التعليق التوضيحي للنوع**. يجب أن يكون التعليق التوضيحي
-  `@Injectable()` فئة، أو يجب أن يكون للمعلمة قيمة افتراضية؛ خلاف ذلك يثير القرار
-  `ValueError`.
+- يتم حل كل معلمة `__init__` من **التعليق التوضيحي للنوع**. يجب أن يكون التعليق التوضيحي فئة `@Injectable()`، أو يجب أن يكون للمعلمة قيمة افتراضية؛ وإلا فإن القرار يرفع `ValueError`.
 - يتم إنشاء مثيل لوحدات التحكم باستخدام `Container.resolve()` عند بدء التشغيل.
-- تؤدي دورة التبعية إلى رفع `RecursionError` تسمية الفئة.
+- تثير دورة التبعية `RecursionError` تسمية الفصل.
 - يمكن للخدمات أن تضخ خدمات أخرى، إلى أي عمق.
 
 ## النطاقات
@@ -67,9 +63,9 @@ class CurrentUser: ...
 |---|---|
 | `Scope.SINGLETON` (افتراضي) | مثيل واحد للعملية بأكملها |
 | `Scope.REQUEST` | مثيل واحد لكل سياق طلب |
-| `Scope.TRANSIENT` | مثيل جديد على كل قرار |
+| `Scope.TRANSIENT` | مثيل جديد في كل قرار |
 
-##  الحاوية
+## الحاوية
 
 ```python
 from nexy.decorators import Container
@@ -77,14 +73,13 @@ from nexy.decorators import Container
 service = Container.resolve(UserService)
 ```
 
-يؤدي إنشاء فئة `@Injectable()` بنفسك إلى رفع `TypeError`: الحاوية تمتلك دورة حياتها.
-استخدم `Container.resolve(...)` أو احصل على الفصل من خلال مُنشئ آخر.
+يؤدي إنشاء فئة `@Injectable()` بنفسك إلى رفع `TypeError`: الحاوية تمتلك دورة حياتها. استخدم `Container.resolve(...)` أو احصل على الفصل من خلال مُنشئ آخر.
 
 `Container.clear_request_scope()` يسقط مثيلات الطلب الحالي.
 
-## معلمات المسار
+## معلمات الطريق
 
-يعمل FastAPI `Depends` كالمعتاد لمعلمات المعالج، بجوار حقن المُنشئ:
+FastAPI `Depends` يعمل كالمعتاد لمعلمات المعالج، بجانب حقن المنشئ:
 
 ```python
 from fastapi import Depends
@@ -93,13 +88,11 @@ from fastapi import Depends
 def get(self, limit: int = Depends(pagination)) -> list[dict]: ...
 ```
 
-## الحدود
+## حدود
 
-الحاوية على مستوى العملية. لا يتم عزل موفري الخدمة لكل وحدة، `exports` هم فقط من يقرر أي منهم
-يتم حل وحدة الاستيراد بفارغ الصبر، ولا توجد واجهة برمجة تطبيقات عامة لتبديل الموفر بها
-الاختبارات. راجع [Nexy وNestJS](vs-nestjs.md) للمقارنة الكاملة.
+الحاوية على مستوى العملية. لا يتم عزل الموفرين لكل وحدة، `exports` يقرر فقط الموفرين الذين تحلهم وحدة الاستيراد بفارغ الصبر، ولا توجد واجهة برمجة تطبيقات عامة لتبديل الموفر في الاختبارات. راجع [[Nexy و NestJS](vs-nestjs.md) للمقارنة الكاملة.
 
 ## الخطوات التالية
 
-- [الحراسات والبيانات الوصفية](guards-and-metadata.md)
--  [الاختبار](../../guides/testing.md)
+- [الحراس والبيانات الوصفية](guards-and-metadata.md)
+- [الاختبار](../../guides/testing.md)
