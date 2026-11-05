@@ -1,4 +1,4 @@
-# Páginas frontais
+# Páginas de front-end
 
 Uma **Página** é a unidade básica de um aplicativo Nexy. É um recurso endereçável por URL definido por um arquivo em `src/routes/`. 
 
@@ -9,10 +9,10 @@ Independentemente da estrutura do cliente usada, cada página segue o mesmo cicl
 Quando um usuário navega para uma página, Nexy executa as seguintes etapas:
 
 1.  **Route Matching**: O roteador identifica o arquivo correspondente à URL.
-2.  **Busca de dados**: O servidor executa a lógica da página (frontmatter Python ou carregador de estrutura) para buscar os dados necessários.
+2.  **Busca de dados**: O servidor executa a lógica da página (Python frontmatter ou carregador de estrutura) para buscar os dados necessários.
 3.  **Composição**: A página é agrupada em seu `layout.nexy` mais próximo (ou layout de estrutura).
 4.  **Renderização**: O resultado é renderizado em HTML (via Jinja2, Markdown ou framework SSR).
-5.  **Hidratação**: Se a página usar uma estrutura cliente, o navegador anexa a lógica interativa ao HTML estático.
+5.  **Hidratação**: Se a página usa uma estrutura cliente, o navegador anexa a lógica interativa ao HTML estático.
 
 ## Roteamento e URLs
 
@@ -34,8 +34,8 @@ Cada página pode definir metadados (título, descrição, tags OpenGraph) que N
 ## Implementação da Estrutura
 Os conceitos acima são universais. Para ver como implementar uma página em seu framework específico, consulte o guia **Diferenças**:
 
-- [Reagir diferenças](../react/differences.md)
-- [Diferenças de Vue](../vue/differences.md)
-- [Diferenças esbeltas](../svelte/differences.md)
-- [Diferenças sólidas](../solid/differences.md)
-- [Pré-agir diferenças](../preact/differences.md)
+- [React Diferenças](../react/differences.md)
+- [Vue Diferenças](../vue/differences.md)
+- [Svelte Diferenças](../svelte/differences.md)
+- [Solid Diferenças](../solid/differences.md)
+- [Preact Diferenças](../preact/differences.md)
