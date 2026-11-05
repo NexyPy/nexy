@@ -1,6 +1,6 @@
 # Upgrade auf 2.2
 
-Was ändert sich für ein bestehendes Projekt, wenn Sie von 2.1 auf 2.2 wechseln, und was ist dagegen zu tun? Die vollständige Liste finden Sie im [Änderungsprotokoll](../../CHANGELOG.md).
+Was ändert sich für ein bestehendes Projekt, wenn Sie von 2.1 auf 2.2 wechseln, und was ist dagegen zu tun? Die vollständige Liste finden Sie im [Änderungsprotokoll](https://github.com/NexyPy/nexy/blob/main/CHANGELOG.md).
 
 ```bash
 uv add "nexy>=2.2"            # or: uv tool upgrade nexy
