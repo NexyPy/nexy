@@ -32,7 +32,7 @@ Une disposition externe dessine le cadre et une dépendance externe décide qui 
 
 ## Mises en page
 
-Tous les fichiers de mise en page d'une pile de familles de dossiers : voir [Layouts](layouts/README.md). Les différentes familles ne se mélangent pas : un `layout.vue` ne enveloppe jamais une page `.tsx`, et un projet a soit des mises en page `layout.nexy`, soit des mises en page client, jamais les deux ([modes](modes.md)).
+Tous les fichiers de mise en page d'une pile de familles de dossiers : voir [Mises en page](layouts/README.md). Les différentes familles ne se mélangent pas : un `layout.vue` ne enveloppe jamais une page `.tsx`, et un projet a soit des mises en page `layout.nexy`, soit des mises en page client, jamais les deux ([modes](modes.md)).
 
 ## Fichiers middleware
 
