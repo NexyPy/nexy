@@ -6,12 +6,12 @@ SSR 是默认设置：服务器针对每个请求将页面呈现为 HTML。没�
 
 ## 它是如何运作的
 
-| 路由文件 | 生成 HTML 的条件 | 何时 |
+| 路线文件 | HTML 是由什么产生的 | 当 |
 |---|---|---|
-| `.nexy` | 编译的 Python 模块，通过 Jinja2 | 每个请求 |
-| `.md` | `cmarkgfm`，然后每个请求的最近布局 | |
-| `.mdx`、`.tsx`、`.vue`、`.svelte` | 框架，当路由没有布局时在构建时在 Node | 中渲染，否则在浏览器中 |
-| `.py` | 什么也没有：它返回 JSON 或 `Response` | - |
+| `.nexy` | 编译后的 Python 模块，通过 Jinja2 | 每个请求 |
+| `.md` | `cmarkgfm`，然后是最近的布局 | 每个请求 |
+| `.mdx`、`.tsx`、`.vue`、`.svelte` | 框架，在 Node 中呈现 | 在构建时，当路由没有布局时，否则在浏览器中 |
+| `.py` | 什么都没有：它返回 JSON 或 `Response` | - |
 
 组件路由是需要第二句话的一种情况。在生产中，没有**布局的组件路线**与构建时生成的HTML一起提供，并且组件将其水化。对于布局或在开发中，容器是空的，组件在浏览器中呈现 - 然后页面是一个填充自身的外壳。
 
@@ -35,10 +35,10 @@ SSR 是默认设置：服务器针对每个请求将页面呈现为 HTML。没�
 
 没有。有两种出路，而且它们的粒度不同：
 
-| 将 SSR 留给 | 执行此操作 | 谷物 |
+| 离开SSR | 这样做 | 谷物 |
 |---|---|---|
-| 一页，其 frontmatter 中有一个缓存 | `revalidate = 60` → [ISR](isr.md) | 页 |
-| 整个项目，客户端路由 | `useCSR = True` 在 `nexyconfig.py` → [CSR](csr.md) | 项目 |
+| 一页，带有缓存 | `revalidate = 60` 在其 frontmatter → [ISR](isr.md) | 页面 |
+| 整个项目，由客户主导 | `nexyconfig.py` 中的 `useCSR = True` → [CSR](csr.md) | 项目 |
 
 ## 示例
 
@@ -49,7 +49,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` 运行此模板一次，并将 `slug` 设置为 `hello`。第二个请求再次运行它：两者之间没有任何保留。查询字符串不是道具 - 使用 [navigation](../routing/fbr/navigation/hooks.md) 中的钩子读取它。
+`GET /blog/hello` 运行此模板一次，并将 `slug` 设置为 `hello`。第二个请求再次运行它：两者之间没有任何保留。查询字符串不是道具 - 使用 [导航](../routing/fbr/navigation/hooks.md) 中的钩子读取它。
 
 ## 局限性
 
@@ -62,6 +62,6 @@ slug: prop[str] = "untitled"
 ## 后续步骤
 
 - [ISR](isr.md)：按 URL 缓存此页面
-- [Islands](islands.md)：保持 SSR 并使一个小部件具有交互性
+- [岛屿](islands.md)：保持 SSR 并使一个小部件具有交互性
 - [CSR](csr.md)：手动导航到浏览器
 - [性能](../deployment/performance.md)
