@@ -23,7 +23,7 @@ Os arquivos `.mdx` são compilados por **Vite**, através do pipeline de rota da
 - Requer os pacotes opcionais `@mdx-js/rollup`, `remark-gfm` e `@mdx-js/react` (e `@mdx-js/esbuild` para a compilação). Vite informa qual está faltando.
 - A estrutura é detectada automaticamente nas importações: Preact quando o arquivo importa `preact`, React caso contrário.
 
-> [!NOTA]
+> [!NOTE]
 > use `.nexy` se precisar de lógica Python no frontmatter.
 
 ## Próximas etapas
