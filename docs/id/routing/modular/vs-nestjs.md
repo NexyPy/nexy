@@ -42,7 +42,7 @@ Router modular terinspirasi oleh NestJS: pengontrol, modul, dan injeksi konstruk
 
 Pilih router modular bila Anda menginginkan struktur berbasis kelas dengan injeksi untuk API yang lebih besar. Pilih router berbasis file ketika struktur URL adalah prinsip pengorganisasiannya. Keduanya di-scaffold oleh `nx new`, dijalankan pada aplikasi FastAPI yang sama, dan dapat hidup berdampingan.
 
-> [!CATATAN]
+> [!NOTE]
 > item yang hilang di atas adalah kesenjangan yang jujur. Jika Anda memerlukan penyedia `useFactory` atau penyedia yang dapat diganti dalam pengujian hari ini, pertahankan logika dalam fungsi biasa dan FastAPI `Depends`, yang menyusun dan mengganti secara alami.
 
 ## Langkah selanjutnya
