@@ -2,21 +2,21 @@
 
 **Un framework Python pour les applications Web fullstack.**
 
-Nexy est à la frontière entre un backend Python et une interface de navigateur. Au lieu de deux serveurs, deux systèmes de build et deux tables de routage, vous obtenez une origine : FastAPI et Starlette servent l'application, Vite construit le client et un fichier sous `src/routes/` est une route - `.nexy` est une page, `.py` est un gestionnaire d'API.
+Nexy place vos pages et votre API dans un seul projet Python, servi par un seul serveur. La version 2.2 est construite sur FastAPI : chaque route API est une route FastAPI, répertoriée dans un schéma OpenAPI que Scalar affiche dans `/docs`.
 
-- **Python en premier.** Les pages, les points de terminaison, les formulaires et les actions sont Python, et une page rendue par le serveur n'a besoin d'aucun framework frontend.
-- **Trois routeurs, une intégration.** Basé sur des fichiers, modulaire ou existant FastAPI `APIRouter`.
-- **Un frontend quand vous en voulez un.** React, Vue, Svelte, Solid ou Preact, par page en îlots, ou pour l'ensemble du projet en mode client.
-- **Rendu, un modèle.** Le rendu du serveur, les pages mises en cache et les îlots sont décidés par page ; Le routage client est un changement de projet.
-- **Actions typées.** Une publication de formulaire et un appel client tapé atteignent la même fonction Python.
+- **Python en premier.** Les pages, les points de terminaison, les formulaires et les actions sont Python, et une page n'a pas besoin de JavaScript.
+- **Un frontend quand vous en voulez un.** React, Vue, Svelte, Solid ou Preact, pour un composant ou pour l'ensemble du site.
+- **Un fichier, une URL.** Un fichier sous `src/routes/` est une route : `.nexy` est une page, `.py` est un point de terminaison d'API.
+- **De la place pour grandir.** Commencez avec un seul fichier ; déplacez-vous vers des modules ou branchez un routeur FastAPI existant, lorsque le projet se développe.
 
-Commencez avec un fichier sous `src/routes/` et ajoutez une structure lorsque le projet se développe.
+Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), puis le [Démarrage rapide](getting-started/quick-start.md).
 
 ## Commencer
 
 ### Premiers pas
 | Pages | Ce que tu feras |
 |---|---|
+| [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md) | Sachez ce qu'est Nexy, sur quoi il est construit et ce que vous obtenez |
 | [Installation](getting-started/installation.md) | Installez uv et la CLI Nexy, puis créez votre premier projet |
 | [Démarrage rapide](getting-started/quick-start.md) | Créez un projet, exécutez-le avec Live Reload et construisez-le pour la production |
 | [Tutoriel](getting-started/tutorial.md) | Créez une page de notes avec un point de terminaison, des données partagées et une version de production en 10 minutes |
@@ -25,8 +25,6 @@ Commencez avec un fichier sous `src/routes/` et ajoutez une structure lorsque le
 | Pages | Ce que tu feras |
 |---|---|
 | [Concepts de base](getting-started/core-concepts.md) | Obtenez le modèle mental : route, page, vue, composant, gestionnaire, point de terminaison |
-| [Comment fonctionne Nexy](getting-started/how-nexy-works.md) | Suivez une requête depuis l'URL jusqu'au fichier qui y répond |
-| [Architecture](architecture.md) | Sachez quelle couche fait quoi et ce que Nexy laisse à votre application |
 | [Structure du projet](getting-started/project-structure.md) | Savoir à quoi servent chaque dossier et fichier d'un projet |
 | [Choisissez un routeur](routing/README.md) | Choisissez le routeur basé sur des fichiers, modulaire ou personnalisé |
 | [Choisissez un format d'affichage](views/README.md) | Choisissez `.nexy`, Markdown ou un framework client pour une page |
@@ -34,7 +32,7 @@ Commencez avec un fichier sous `src/routes/` et ajoutez une structure lorsque le
 ### Venant d'ailleurs
 | Pages | Ce que tu feras |
 |---|---|
-| [Venant d'un autre cadre](getting-started/coming-from-other-frameworks.md) | Traduire FastAPI, Next.js et exprimer les habitudes dans Nexy |
+| [Venant d'un autre cadre](getting-started/coming-from-other-frameworks.md) | Traduire FastAPI, Next.js et exprimer ses habitudes dans Nexy |
 
 ## Routage
 
@@ -45,16 +43,16 @@ Commencez avec un fichier sous `src/routes/` et ajoutez une structure lorsque le
 | [Pages](routing/fbr/pages/README.md) | Écrire une page |
 | [Itinéraires dynamiques](routing/fbr/pages/dynamic-routes.md) | Utiliser `[slug]`, `[...path]` et les groupes de routes |
 | [Métadonnées de la page](routing/fbr/pages/metadata.md) | Définir le titre, la description et partager l'image d'une page {new} |
-| [Mise en page](routing/fbr/layouts/README.md) | Partager un cadre entre les pages |
+| [Mises en page](routing/fbr/layouts/README.md) | Partager un cadre entre les pages |
 | [Héritage](routing/fbr/inheritance.md) | Lire l'ordre de résolution des mises en page, des dépendances et des pages d'erreur |
 | [Mode serveur et mode client](routing/fbr/modes.md) | `useCSR`, et ce que chaque mode permet |
-| [Lien et navigation](routing/fbr/navigation/linking-and-navigating.md) | Lier des pages, naviguer sur le client, pré-extraire |
+| [Liens et navigation](routing/fbr/navigation/linking-and-navigating.md) | Lier des pages, naviguer sur le client, pré-extraire |
 | [Crochets](routing/fbr/navigation/hooks.md) | Lire le chemin, la requête, les cookies et la session |
 
 ### Gestionnaires et erreurs {fbr}
 | Pages | Ce que tu feras |
 |---|---|
-| [Gestionnaires d'itinéraires](routing/fbr/handlers/README.md) | Ajouter un point de terminaison Python |
+| [Gestionnaires de routes](routing/fbr/handlers/README.md) | Ajouter un point de terminaison Python |
 | [Validation et erreurs](routing/fbr/handlers/validation-and-errors.md) | Répondez à `422` et `404` et lancez un `HTTPException` |
 | [WebSocket gestionnaires](routing/fbr/realtime/websocket.md) | Gérer une connexion `SOCKET` |
 | [Dépendances et gardiens](routing/fbr/dependencies/README.md) | Exécutez `dependencies.py` avant un gestionnaire et héritez-en |
@@ -82,13 +80,13 @@ Contrôleurs et modules.
 | Pages | Ce qu'il définit |
 |---|---|
 | [Pages frontales](views/frontend/pages.md) | Un fichier, une route : accessoires, rendu, métadonnées |
-| [Dispositions du frontend](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
+| [Dispositions frontales](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
 | [Actions et navigation](views/frontend/actions-and-navigation.md) | Appeler une action tapée, lier des pages, lire l'URL |
 
 ### Vues Nexy
 | Pages | Ce que tu feras |
 |---|---|
-| [fichiers .nexy](views/nexy/README.md) | Écrivez une page avec Python, Jinja2 et des accessoires |
+| [Fichiers .nexy](views/nexy/README.md) | Écrivez une page avec Python, Jinja2 et des accessoires |
 | [Composants](views/nexy/components.md) | Utilisez `Image`, `Link`, `Audio`, `Video` et `Import` |
 | [layout.nexy](views/nexy/layouts.md) | Écrire la disposition en mode serveur |
 | [Markdown et MDX](views/nexy/markdown.md) | Rédiger des pages de contenu |
@@ -131,7 +129,7 @@ Contrôleurs et modules.
 ### Construire et tester
 | Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la build client |
 | [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
@@ -166,9 +164,8 @@ Contrôleurs et modules.
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -199,6 +196,7 @@ docs/
 
 | Pages | Ce que tu feras |
 |---|---|
+| [Comment fonctionne Nexy](getting-started/how-nexy-works.md) | Voyez ce qui se passe entre un fichier et une page, et ce que Nexy vous laisse |
 | [Mise à niveau vers 2.2](getting-started/upgrading.md) | Migrer de 2.1 vers 2.2 |
 | [Internationalisation (i18n)](guides/i18n.md) | Ajoutez des traductions avec votre choix de bibliothèque |
 | [Recettes](guides/recipes.md) | Exemples et modèles, pas un tutoriel |
