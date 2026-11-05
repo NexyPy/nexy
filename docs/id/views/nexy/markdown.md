@@ -23,7 +23,7 @@ File `.mdx` dikompilasi oleh **Vite**, melalui pipeline rute kerangka kerja (Rea
 - Memerlukan paket opsional `@mdx-js/rollup`, `remark-gfm` dan `@mdx-js/react` (dan `@mdx-js/esbuild` untuk build). Vite memberi tahu Anda mana yang hilang.
 - Kerangka kerja ini terdeteksi secara otomatis dari impor: Preact ketika file mengimpor `preact`, React sebaliknya.
 
-> [!CATATAN]
+> [!NOTE]
 > gunakan `.nexy` jika Anda memerlukan logika Python di materi depan.
 
 ## Langkah selanjutnya
