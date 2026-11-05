@@ -94,7 +94,7 @@ uv pip install -e . --group dev
   answers it in one sentence (both sites publish it as the meta description, cut at 200 characters),
   and the headings and the slug reuse those words. One page per question: a second page on the same
   words competes with the first instead of backing it up.
-- **Attribution**: AI tools never appear as author or co-author. No `Co-authored-by` with Claude/Codebuff/Freebuff/Copilot/Cursor and no `Generated with` footer. GitHub counts co-author trailers as contributors, so a bot trailer pollutes the contributor graph permanently. `scripts/check_attribution.py` enforces it (`.githooks/commit-msg`; enable with `git config core.hooksPath .githooks`).
+- **Attribution**: AI tools never appear as author or co-author. No `Co-authored-by` with Claude/Codebuff/Freebuff/OpenCode/Qoder/Copilot/Cursor, no agent account as author or committer, and no `Generated with` footer. GitHub counts co-author trailers as contributors, so a bot trailer pollutes the contributor graph permanently. `scripts/check_attribution.py` enforces it (`.githooks/commit-msg`; enable with `git config core.hooksPath .githooks`).
 - **i18n**: English default; extract strings to `nexy/modules/i18n/en/`
 - **Coverage target**: ≥95% per module (CONTRIBUTING.md)
 
