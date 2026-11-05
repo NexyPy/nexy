@@ -70,8 +70,18 @@ uv run python scripts/translate_docs.py --lang fr    # one language
 ```
 
 Code, link targets, table pipes, heading markers and product names (`Python`, `FastAPI`, `Vue`...)
-never reach the service: see `shared/translator.py`. Never edit a file under `docs/<code>/` by
+never reach the service: see `shared/translator.py`. A table row travels one cell per line, so the
+service cannot move a pipe into the middle of a sentence. Never edit a file under `docs/<code>/` by
 hand: the next run of the script would overwrite it.
+
+A word alone in a link (`[views](...)`, `[Testing](...)`) comes back from the service in English,
+and asked alone it takes the wrong sense (`hooks` as coat hooks). `shared/glossary.py` gives each
+such word the term a reader expects, in every language. After adding a term, apply it to the pages
+already written, without the service:
+
+```bash
+uv run python scripts/translate_docs.py --relabel
+```
 
 ## What a crawler reads
 
