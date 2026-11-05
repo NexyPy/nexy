@@ -12,12 +12,11 @@ index, follow the page for the task, and trust the source when the two disagree.
 
 ### Getting started
 
+- [What is Nexy?](docs/getting-started/what-is-nexy.md): Know what Nexy is, what it is built on and what you get
 - [Installation](docs/getting-started/installation.md): Install uv and the Nexy CLI, then create your first project
 - [Quick start](docs/getting-started/quick-start.md): Create a project, run it with live reload, and build it for production
 - [Tutorial](docs/getting-started/tutorial.md): Build a notes page with an endpoint, shared data and a production build
 - [Core concepts](docs/getting-started/core-concepts.md): Get the mental model: route, page, view, component, handler, endpoint
-- [How Nexy works](docs/getting-started/how-nexy-works.md): Follow one request from the URL to the file that answers it
-- [Architecture](docs/architecture.md): Know which layer does what, and what Nexy leaves to your application
 - [Project structure](docs/getting-started/project-structure.md): Know what every folder and file in a project is for
 - [Choose a router](docs/routing/README.md): Pick the file-based, modular or custom router
 - [Choose a view format](docs/views/README.md): Pick `.nexy`, Markdown or a client framework for a page
@@ -95,6 +94,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 
 - [Modular router vs NestJS](docs/routing/modular/vs-nestjs.md): Compare Nexy and NestJS
 - [Error pages per folder](docs/routing/fbr/errors/folder-pages.md): Handle errors from sub-folders
+- [How Nexy works](docs/getting-started/how-nexy-works.md): See what happens between a file and a page, and what Nexy leaves to you
 - [Upgrading to 2.2](docs/getting-started/upgrading.md): Migrate from 2.1 to 2.2
 - [Internationalization (i18n)](docs/guides/i18n.md): Add translations with your choice of library
 - [Recipes](docs/guides/recipes.md): Examples and patterns, not a tutorial
