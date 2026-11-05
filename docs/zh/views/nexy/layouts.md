@@ -25,13 +25,12 @@ children: prop[NexyElement]
 ```
 
 - `<!DOCTYPE html>`、`<html>`、`<head>` 和 `<body>` 住在这里，没有其他地方。
-- `<Vite />` 在 `<head>` 中注入客户端脚本和样式一次。
+- `<Vite />` 在 `<head>` 中注入一次客户端脚本和样式。
 - `{{ children | safe }}` 是页面或下一个嵌套布局的呈现位置。
 
 ## 嵌套布局
 
-子目录中的 `layout.nexy` 包装该子树并在其父级内部呈现。它不重复
-文档标签：
+子目录中的 `layout.nexy` 包装该子树并在其父级内部呈现。它不重复文档标签：
 
 ```nexy filename="src/routes/blog/layout.nexy"
 ---
@@ -45,8 +44,7 @@ children: prop[NexyElement]
 
 ## 组件和岛屿
 
-布局可以导入 `.nexy` 组件（页眉、页脚）和客户端组件。一位客户
-布局中的组件与其他组件一样是一个 [island](../../rendering/islands.md)：
+布局可以导入 `.nexy` 组件（页眉、页脚）和客户端组件。布局中的客户端组件与其他组件一样是一个 [island](../../rendering/islands.md)：
 
 ```nexy
 ---
@@ -59,9 +57,7 @@ from "@/components/theme/theme.tsx" import Theme
 
 ## 没有布局
 
-没有 `layout.nexy` 的项目仍然会用有效的文档进行回答：Nexy 回落到最低限度
-带有 `<!DOCTYPE html>`、视口元和 Vite 标签的 shell。根据需要立即添加布局
-标题、字体或导航。
+没有 `layout.nexy` 的项目仍然会使用有效文档进行回答：Nexy 回退到带有 `<!DOCTYPE html>`、视口元和 Vite 标签的最小 shell。当您需要标题、字体或导航时，请立即添加布局。
 
 ## 在模块化路由器中
 
@@ -73,8 +69,7 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 
 ## 它不能做什么
 
-- 它不能与`layout.tsx`、`layout.vue`或`layout.svelte`共存：服务器模式项目有
-  无客户端路由（[模式](../../routing/fbr/modes.md)）。
+- 它不能与 `layout.tsx`、`layout.vue` 或 `layout.svelte` 共存：服务器模式项目没有客户端路由 ([modes](../../routing/fbr/modes.md))。
 - 它不在客户端上运行：使用孤岛进行交互。
 
 ## 后续步骤
