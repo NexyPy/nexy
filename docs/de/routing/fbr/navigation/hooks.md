@@ -1,22 +1,19 @@
 # Haken
 
-Hooks lesen die aktuelle HTTP-Anfrage aus einer `.nexy`-Seite, einem API-Handler oder einem Modul
-Controller. Ihre Namen stimmen mit den Hooks des Client-Routers (`@nexy/client`) überein, wo sie dasselbe tun
-Sache.
+Hooks lesen die aktuelle HTTP-Anfrage aus einer `.nexy`-Seite, einem API-Handler oder einem modularen Controller. Ihre Namen stimmen mit den Hooks des Client-Routers (`@nexy/client`) überein, wo sie dasselbe tun.
 
 > [!NOTE]
-> Hooks funktionieren nur, während eine Anfrage bearbeitet wird. Rufen Sie irgendwo anders an
-> erhöht `RuntimeError`.
+> Hooks funktionieren nur, während eine Anfrage bearbeitet wird. Wenn man irgendwo anders anruft, wird `RuntimeError` ausgelöst.
 
 ## Die Haken
 
 | Hook | Gibt | zurück
 |---|---|
-| `usePathname()` | Anforderungspfad, z.B. `"/blog/post-1"` |
+| `usePathname()` | Anfragepfad, z.B. `"/blog/post-1"` |
 | `useSearchParams()` | Abfragezeichenfolge als `dict[str, str]`, erster Wert pro Schlüssel |
 | `useParams()` | dynamische Pfadparameter, z.B. `{"slug": "post-1"}` |
 | `useQuery()` | der ursprüngliche Name von `useParams()`, beibehalten für bestehende Seiten |
-| `useRequest()` | die Starlette-Anfrage, für das, was die anderen Hooks nicht abdecken |
+| `useRequest()` | die Starlette Anfrage, für das, was die anderen Hooks nicht abdecken |
 | `useHeaders()` | die Anforderungsheader als `dict[str, str]`, Namen in Kleinbuchstaben |
 | `useUrl()` | die vollständige URL: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
 | `useIsActive(href, exact=False)` | ob `href` die aktuelle Seite oder eine ihrer Eltern ist |
@@ -41,9 +38,7 @@ theme = useCookies().get("theme", "light")
 
 ## Ein aktiver Link in einer Navigationsleiste
 
-`useIsActive` folgt der gleichen Regel wie auf dem Client: der Abfragezeichenfolge, dem Fragment und einem Trailing
-Schrägstriche ignoriert werden, ist ein Link zu einem übergeordneten Element für seine untergeordneten Elemente aktiv, sofern nicht `exact` und `/` festgelegt sind
-nur aktiv am `/`.
+`useIsActive` folgt der gleichen Regel wie auf dem Client: Die Abfragezeichenfolge, das Fragment und ein abschließender Schrägstrich werden ignoriert, ein Link zu einem übergeordneten Element ist auf seinen untergeordneten Elementen aktiv, sofern nicht `exact` festgelegt ist, und `/` ist nur auf `/` aktiv.
 
 ```nexy filename="src/components/NavLink.nexy"
 ---
@@ -57,13 +52,10 @@ label: prop[str]
 
 ## Notizen
 
-- `useQuery()` gibt die Parameter **Pfad** zurück, nicht die Abfragezeichenfolge, weshalb `useParams()`
-  existiert. Die Abfragezeichenfolge ist `useSearchParams()`.
-- `useRouter()` hier ist der Anfrage-Hook. Es ist nicht das `useRouter`-Konfigurationsfeld, das ein mountet
-  `APIRouter`.
+- `useQuery()` gibt die Parameter **Pfad** zurück, nicht die Abfragezeichenfolge, weshalb `useParams()` existiert. Die Abfragezeichenfolge ist `useSearchParams()`.
+- `useRouter()` Hier ist der Anfrage-Hook. Es ist nicht das Konfigurationsfeld `useRouter`, das ein `APIRouter` bereitstellt.
 - `useSession()` benötigt `useSession = {...}` in `nexyconfig.py`; ohne es ist das Diktat leer.
-- `useViews("about.tsx", {"title": "About"})` gibt HTML zurück: Eine `.nexy`-Ansicht wird von ihr gerendert
-  Mit dem kompilierten Modul wird eine `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx`-Ansicht zu einem Client-Mount-Container.
+- `useViews("about.tsx", {"title": "About"})` gibt HTML zurück: Eine `.nexy`-Ansicht wird von ihrem kompilierten Modul gerendert, eine `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx`-Ansicht wird zu einem Client-Mount-Container.
 
 ## Nächste Schritte
 
