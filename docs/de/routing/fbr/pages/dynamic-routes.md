@@ -4,8 +4,7 @@ Ein in eckigen Klammern geschriebenes Pfadsegment entspricht einem beliebigen We
 
 ## Dynamische Segmente
 
-`blog/[slug].nexy` dient `/blog/{slug}`. Deklarieren Sie auf einer Seite das Segment als Eigenschaft. in einem Python
-Handler, nimm es als Argument.
+`blog/[slug].nexy` dient `/blog/{slug}`. Deklarieren Sie auf einer Seite das Segment als Eigenschaft. Nehmen Sie es in einem Python-Handler als Argument.
 
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
@@ -25,17 +24,14 @@ Die Annotation entscheidet über den Typ.
 
 | Wobei | Konvertierung |
 |---|---|
-| `.py` Handler | jede FastAPI-Typanmerkung (`int`, `UUID`, `Enum`...) |
+| `.py` Handler | jede FastAPI Typanmerkung (`int`, `UUID`, `Enum`...) |
 | `.nexy` Seite | `int` und `float` werden konvertiert; alles andere bleibt eine Schnur |
 
-Ein Wert, der nicht mit der Anmerkung übereinstimmt, ist **nicht gefunden**: `/api/users/abc` antwortet `404`, weil
-Eine dynamische Route erfasst jede URL und eine URL, die nicht konvertiert werden kann, existiert einfach nicht. Siehe
-[Validierung und Fehler](../handlers/validation-and-errors.md).
+Ein Wert, der nicht mit der Annotation übereinstimmt, ist **nicht gefunden**: `/api/users/abc` antwortet `404`, da eine dynamische Route jede URL erfasst und eine URL, die nicht konvertiert werden kann, einfach nicht existiert. Siehe [Validierung und Fehler](../handlers/validation-and-errors.md).
 
 ## Catch-All-Segmente
 
-`docs/[...path].nexy` dient `/docs/{path:path}`. Die restlichen Segmente kommen als eine Zeichenfolge an,
-Schrägstriche enthalten.
+`docs/[...path].nexy` dient `/docs/{path:path}`. Die restlichen Segmente kommen als eine Zeichenfolge an, einschließlich Schrägstrichen.
 
 ```nexy filename="src/routes/docs/[...path].nexy"
 ---
@@ -48,8 +44,7 @@ path: prop[str]
 
 ## Routengruppen
 
-Ein Verzeichnis in Klammern organisiert Dateien, die nicht in der URL erscheinen. Es nimmt immer noch teil
-[Vererbung](../inheritance.md): Seine `layout.*` und `dependencies.py` gelten für das, was sich darin befindet.
+Ein Verzeichnis in Klammern organisiert Dateien, die nicht in der URL erscheinen. Es nimmt immer noch an der [Vererbung](../inheritance.md) teil: seine `layout.*` und `dependencies.py` gelten für das, was sich darin befindet.
 
 ```text
 src/routes/
@@ -65,13 +60,11 @@ Verwenden Sie Gruppen, um verschiedenen Abschnitten unterschiedliche Layouts zu 
 
 ## Priorität
 
-Statische Routen gewinnen gegenüber dynamischen und dynamische gegenüber Catch-Alls:
-`/blog/new` entspricht `blog/new.nexy` vor `blog/[slug].nexy`.
+Statische Routen gewinnen über dynamische und dynamische über Catch-Alls: `/blog/new` entspricht `blog/new.nexy` vor `blog/[slug].nexy`.
 
 ## Eine Datei pro URL
 
-Zwei Dateien, die zur gleichen URL aufgelöst werden, werden beide registriert. Setzen Sie nicht `blog.nexy` daneben
-`blog/index.nexy` oder mischen Sie `index.nexy` und `index.py` für denselben Pfad.
+Zwei Dateien, die zur gleichen URL aufgelöst werden, werden beide registriert. Platzieren Sie `blog.nexy` nicht neben `blog/index.nexy` und mischen Sie auch nicht `index.nexy` und `index.py` für denselben Pfad.
 
 ## Nächste Schritte
 
