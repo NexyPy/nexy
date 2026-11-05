@@ -23,7 +23,7 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> [!REMARQUE]
+> [!NOTE]
 > lister les fonctions elles-mêmes. Un objet `Depends(...)` dans la liste est ignoré.
 
 Chaque route sous `src/routes/admin/` nécessite désormais l'en-tête, les gestionnaires `.py` et les pages `.nexy`.
@@ -64,7 +64,7 @@ async def GET(user: str = Depends(current_user)):
 
 ## Gardes et middleware sur un gestionnaire
 
-`@UseGuard` et `@Middleware` attachent des dépendances FastAPI à un gestionnaire sans changer sa signature. Les deux sont des dépendances, pas un middleware ASGI :
+`@UseGuard` et `@Middleware` attachent les dépendances FastAPI à un gestionnaire sans changer sa signature. Les deux sont des dépendances, pas un middleware ASGI :
 
 ```python filename="src/routes/admin/users/index.py"
 from nexy.decorators import Middleware, UseGuard
