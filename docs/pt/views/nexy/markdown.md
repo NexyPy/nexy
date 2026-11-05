@@ -28,6 +28,6 @@ Os arquivos `.mdx` são compilados por **Vite**, através do pipeline de rota da
 
 ## Próximas etapas
 
-- [.nexy files](README.md): o formato da página nativa
+- [arquivos .nexy](README.md): o formato da página nativa
 - [Visualizações](../README.md): escolha um formato
 - [i18n](../../guides/i18n.md): internacionalização
