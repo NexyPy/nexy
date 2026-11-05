@@ -40,10 +40,10 @@ Nexy 在构建时呈现组件、存储其 HTML 并将其放置在页面内。页
 
 | 指令 | 水合物 |
 |---|---|
-| 无，或立即 `client:load` | |
-| `client:idle` | 当浏览器空闲时（`requestIdleCallback`，2 秒超时）|
-| `client:visible` | 当岛屿进入视口时，提前 200 像素 |
-| `client:media` | 当媒体查询匹配时；使用 `media` 属性 | 设置它
+| 无，或 `client:load` | 立即 |
+| `client:idle` | 当浏览器空闲时（`requestIdleCallback`，2秒超时） |
+| `client:visible` | 当岛屿进入视口时，提前 200 px |
+| `client:media` | 当媒体查询匹配时；使用 `media` 属性设置它 |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
