@@ -1,25 +1,46 @@
 # Nexy 的工作原理
 
-一页中的心理模型：Nexy 构建什么、Vite 构建什么以及浏览器中的文件和页面之间会发生什么。读一遍；文档的其余部分是一组详细信息。
+您编写的文件和浏览器中的页面之间会发生什么：请求跨越的层、谁构建什么以及 Nexy 留给您的应用程序什么。您不需要此页面即可启动；它稍后回答了“为什么它会那样工作”的问题。
 
-## Nexy 架构
+## 各层
 
-请求跨越五层：Uvicorn 接受它，中间件装饰它，路由器选择一个文件，渲染器将该文件转换为 HTML 或 JSON，如果页面有 JavaScript，则客户端层接管。 Nexy 拥有中间三名； Vite 并且您的框架拥有客户端；您的应用程序拥有数据、身份验证和授权。
+```diagram filename="一个请求，五层"
+Browser
+   │
+   ▼
+Uvicorn ───── ASGI transport
+   │
+   ▼
+Middleware ── sessions, CORS, gzip, trusted hosts, your own
+   │
+   ▼
+Router ────── FBR | Modular | Custom ── picks the file that answers
+   │
+   ▼
+Renderer ──── HTML (Jinja2, Markdown, Node) or JSON
+   │
+   ▼
+Response
+```
 
-每一层以及它拒绝执行的操作都在[架构](../architecture.md)中。对于 Nexy 本身的软件包，请参阅存储库根目录的 `ARCHITECTURE.md` - 它是为贡献者编写的。
+| 图层 | 责任 | 不 |
+|---|---|---|
+| Uvicorn | 接受连接，说出 ASGI | 知道什么是页面 |
+| 中间件 | 修饰请求：会话、CORS、gzip、受信任的主机、HTTPS 重定向、您的 | 选择路线 |
+| 路由器 | 将 URL 与文件及其布局、依赖项和错误页面相匹配 | 产生内容 |
+| 渲染器 | 运行页面并将其结果转换为 HTML 或 JSON | 获取你的数据 |
+| 客户 | Vite 和你的框架：捆绑、水合作用、客户端导航 | 应答服务器请求 |
 
-## 应用程序生命周期
+## 谁建造什么
 
-`nx dev` 在第一个请求之前做了六件事：
+| 演员 | 拥有 | 不拥有 |
+|---|---|---|
+| 内克西 | 路由、服务器渲染、操作、`.nexy` 编译、同源 | 成分、反应性、数据 |
+| Vite | 客户端捆绑包、开发服务器、热重载 | 路由、服务器渲染、动作 |
+| 你的框架 | 成分、反应性、生态系统 | 路由、文档（Nexy 询问其布局） |
+| 您的申请 | 数据、认证、授权、业务规则 | 运输、渲染 |
 
-1. 验证 `nexyconfig.py`，并在无效配置上停止；
-2. 确保项目的 Python 包是可导入的；
-3. 解析端口，并删除过时的 `__nexy__/nexy.prod` 标记；
-4. 并行生成客户端文件并编译路由；
-5. 启动 Vite 并等待直到它回答；
-6. 安装文件观察器，然后让 uvicorn 导入 `nexy.modules.routers.app:_server`。
-
-该导入组装了应用程序 - 中间件、操作、路由器、错误处理程序 - 并且第一个请求由该程序集提供服务。当你保存时，观察者会重新启动 uvicorn；出现、消失或移动的页面也会重新生成客户端路由列表。
+表背后的规则：**Nexy 构建它拥有的内容，并且从不编译 Vite 编译的内容。**
 
 ## 路由系统
 
@@ -66,8 +87,8 @@
 | 问题 | 回答 | 页面 |
 |---|---|---|
 | 谁生成 HTML？ | 服务器或客户端路由的浏览器 | [渲染](../rendering/README.md) |
-| 什么时候读取数据？ | 在每个请求、每次重新生成或在浏览器中 | [SSR](../rendering/ssr.md)、[ISR](../rendering/isr.md) |
-| JavaScript 什么时候到达？ | 仅针对一个岛屿，或针对整个文档 | [岛屿](../rendering/islands.md)、[企业社会责任](../rendering/csr.md) |
+| 什么时候读取数据？ | 在每个请求、每次重新生成或在浏览器中 | [SSR](../rendering/ssr.md)，[ISR](../rendering/isr.md) |
+| JavaScript 什么时候到达？ | 仅针对一个岛屿，或针对整个文档 | [岛屿](../rendering/islands.md)，[企业社会责任](../rendering/csr.md) |
 
 在服务器模式下，服务器呈现每一页，`revalidate` 为每个 URL 缓存一页，岛将 JavaScript 添加到一个组件。在客户端模式下，第一个文档在 Node 中呈现，然后在浏览器中进行导航。
 
@@ -83,6 +104,8 @@
 
 ## 开发生产
 
+`nx dev` 检查 `nexyconfig.py`，编译页面，当项目有前端框架时启动 Vite，并在保存时重新启动服务器。 `nx build` 提前执行一次相同的工作，并且 `nx start` 提供结果。
+
 | | `nx dev` | `nx build` 然后 `nx start` |
 |---|---|---|
 | 页数 | 保存时编译 | 提前编译一次 |
@@ -93,9 +116,24 @@
 
 不变的是：相同的路由规则，相同的页面文件，相同的 `nexyconfig.py`。两者之间行为不同的页面是错误，而不是模式。
 
-## 更深入
+## Nexy 留给你什么
 
-- [项目结构](project-structure.md)：项目的每个文件夹
+Nexy 故意停在您的应用程序边缘：
+
+| 关注 | Nexy 提供什么 | 你写的是什么 |
+|---|---|---|
+| 认证 | 会话中间件，`AuthenticationMiddleware` 启用时 | 登录、用户查找、cookie 策略 |
+| 授权 | `dependencies.py`，守卫，每个文件夹继承 | 规则本身 |
+| 数据库 | 没有自己的 ORM； `nx new` 可以支架 SQLModel、SQLAlchemy 或 Tortoise、`nx migrate` 运行 Alembic 或 Aerich | 模型和查询（[数据库](../guides/databases.md)） |
+| 国际化 | 您的页面没有任何内容；仅翻译 CLI | 库和消息 ([i18n](../guides/i18n.md)) |
+| 后台工作 | 无：没有队列，没有调度程序 | 一个工作进程 |
+| 电子邮件、付款、搜索 | 什么都没有 | 您选择的服务 |
+
+对于所有六个来说，原因都是相同的：选择 ORM 或身份验证库的框架决定只有您的应用程序才能决定的事情。成本是明确的：没有为您接线，表中链接的指南说明了每个插头的插入位置。
+
+## 后续步骤
+
+- [项目结构](project-structure.md)：每个部分都位于项目中
+- [路由](../routing/README.md)：基于文件的、模块化的和自定义的路由器
 - [渲染](../rendering/README.md)：SSR、ISR、CSR和岛屿
 - [前端](../guides/frontend.md)：Vite，样式和客户端构建
-- [路由](../routing/README.md)：基于文件的、模块化的和自定义的路由器
