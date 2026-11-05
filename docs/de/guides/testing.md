@@ -1,6 +1,6 @@
 # Testen
 
-`nx test` führt die Servertests mit pytest und die Clienttests mit vitest aus, wenn Sie danach fragen.
+`nx test` führt die Servertests mit pytest aus und die Clienttests mit vitest, wenn Sie danach fragen.
 
 ```bash
 nx test                       # pytest
@@ -14,10 +14,9 @@ nx test --no-server --client  # vitest only
 | Teil | Befehl | Bedingung |
 |---|---|---|
 | Server | `pytest` | läuft auf `tests/`, wenn er existiert, andernfalls auf dem Projektstamm; wird mit einer Warnung übersprungen, wenn pytest nicht installiert ist |
-| Client | `npx vitest run` | nur mit `--client` und nur wenn `vitest.config.ts` existiert oder `vitest` in `package.json` erscheint |
+| Client | `npx vitest run` | nur mit `--client` und nur wenn `vitest.config.ts` existiert oder `vitest` in `package.json` | erscheint
 
-Es gibt keinen integrierten End-to-End-Läufer. Fahren Sie den Server mit `TestClient` und fügen Sie Playwright oder hinzu
-Machen Sie sich Sorgen wegen Ihres Browserverhaltens.
+Es gibt keinen integrierten End-to-End-Läufer. Steuern Sie den Server mit `TestClient` und fügen Sie Playwright oder Cypress selbst für das Browserverhalten hinzu.
 
 ## Testen Sie den Server
 
@@ -35,11 +34,9 @@ def test_home_renders():
     assert response.status_code == 200
 ```
 
-`nexy.app.app` ist die zusammengestellte Anwendung, die beim ersten Lesen erstellt wird. Es liest
-`nexyconfig.py` aus dem Arbeitsverzeichnis, also führen Sie pytest aus dem Projektstammverzeichnis aus.
+`nexy.app.app` ist die zusammengestellte Anwendung, die beim ersten Lesen erstellt wird. Es liest `nexyconfig.py` aus dem Arbeitsverzeichnis, also führen Sie pytest aus dem Projektstammverzeichnis aus.
 
-Wenn ein Test die Konfiguration oder Routen ändert, erstellen Sie stattdessen eine neue Anwendung
-Wiederverwendung der Modulebene:
+Wenn ein Test die Konfiguration oder Routen ändert, erstellen Sie eine neue Anwendung, anstatt die Anwendung auf Modulebene wiederzuverwenden:
 
 ```python
 from fastapi.testclient import TestClient
@@ -52,10 +49,9 @@ def test_api_hello():
     assert response.json() == {"message": "Hello"}
 ```
 
-`AppServer().run()` setzt Routen, Middleware, Sitzungen und Übersetzungen neu zusammen, sodass jeder Anruf beginnt
-aus dem aktuellen Stand des Projektverzeichnisses.
+`AppServer().run()` setzt Routen, Middleware, Sitzungen und Übersetzungen neu zusammen, sodass jeder Aufruf mit dem aktuellen Status des Projektverzeichnisses beginnt.
 
-## Was zu behaupten ist
+## Was soll ich behaupten?
 
 Eine Seite gibt HTML zurück. Bestätigen Sie den Status und dann den Inhalt, der Ihnen wichtig ist:
 
@@ -65,16 +61,14 @@ def test_blog_page_renders_slug(client):
     assert "post-1" in response.text
 ```
 
-Ein API-Handler gibt JSON zurück. Ein Validierungsfehler ist ein `422` und eine fehlende Route ist ein `404`
-beantwortet von `notfound.nexy`, wenn diese Datei existiert:
+Ein API-Handler gibt JSON zurück. Ein Validierungsfehler ist ein `422`, und eine fehlende Route ist ein `404`, der mit `notfound.nexy` beantwortet wird, wenn diese Datei vorhanden ist:
 
 ```python
 def test_create_item_validates_body(client):
     assert client.post("/api/items", json={}).status_code == 422
 ```
 
-Testen Sie für eine Aktion die Funktion direkt – es handelt sich um eine normale Funktion – und testen Sie den HTTP-Endpunkt per
-Lesen des generierten Pfads von der Seite, die ihn verfügbar macht:
+Testen Sie für eine Aktion die Funktion direkt – es handelt sich um eine normale Funktion – und testen Sie den HTTP-Endpunkt, indem Sie seinen generierten Pfad von der Seite lesen, die ihn verfügbar macht:
 
 ```python
 from src.actions.user import create_user
@@ -95,13 +89,11 @@ def test_form_posts_to_action(client):
 Ein Anruf mit JSON antwortet mit dem Ergebnis und `422` mit den ungültigen Feldern.
 
 > [!NOTE]
-> Aktionspfade sind projektspezifisch und werden generiert. Niemals fest codieren
-> `/_nx_<hash>` in einem Test.
+> Aktionspfade sind projektspezifisch und generiert. Kodieren Sie niemals `/_nx_<hash>` in einem Test fest.
 
-## Testen Sie eine `.nexy` Komponente
+## Testen Sie eine `.nexy`-Komponente
 
-`nexy.testing.render` kompiliert eine Komponente mit den importierten Komponenten und gibt deren HTML zurück.
-Requisiten sind Schlüsselwortargumente und `children=` füllt den Platz:
+`nexy.testing.render` kompiliert eine Komponente mit den importierten Komponenten und gibt deren HTML zurück. Requisiten sind Schlüsselwortargumente und `children=` füllt den Platz:
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -111,9 +103,7 @@ def test_button_shows_its_label():
     assert "Save" in render("src/components/button.nexy", label="Save")
 ```
 
-Führen Sie pytest im Projektstammverzeichnis aus: Die kompilierten Dateien werden wie bei `nx dev` nach `__nexy__/` verschoben. A
-Komponente, die die Anfrage liest (`usePathname`, `useSession`), benötigt einen Seitentest mit `TestClient`
-stattdessen.
+Führen Sie pytest aus dem Projektstammverzeichnis aus: Die kompilierten Dateien werden wie bei `nx dev` nach `__nexy__/` verschoben. Eine Komponente, die die Anfrage (`usePathname`, `useSession`) liest, benötigt stattdessen einen Seitentest mit `TestClient`.
 
 ## Testen Sie den Client
 
@@ -133,8 +123,7 @@ describe("Counter", () => {
 });
 ```
 
-`vitest` und die Testbibliothek sind Projektabhängigkeiten: `nexy new` installiert keinen Test-Stack.
-Fügen Sie `vitest.config.ts` mit der Umgebung hinzu, die Sie benötigen (jsdom oder happy-dom für Komponenten).
+`vitest` und die Testbibliothek sind Projektabhängigkeiten: `nexy new` installiert keinen Test-Stack. Fügen Sie `vitest.config.ts` mit der Umgebung hinzu, die Sie benötigen (jsdom oder happy-dom für Komponenten).
 
 ## Kontinuierliche Integration
 
@@ -145,13 +134,12 @@ nx build
 nx test
 ```
 
-`nx build` schlägt aufgrund eines Kompilierungsfehlers fehl; `nx test` schlägt bei einer fehlerhaften Behauptung fehl und wird mit einem Wert ungleich Null beendet.
-`nx check` fügt mypy und `tsc` zum Lauf hinzu.
+`nx build` schlägt aufgrund eines Kompilierungsfehlers fehl; `nx test` schlägt bei einer fehlerhaften Behauptung fehl und wird mit einem Wert ungleich Null beendet. `nx check` fügt mypy und `tsc` zum Lauf hinzu.
 
 Die Arbeit an Nexy selbst verwendet verschiedene Befehle: siehe [CONTRIBUTING](../../CONTRIBUTING.md).
 
 ## Nächste Schritte
 
-- [CLI](../reference/cli.md): jede Flagge von `nx test`
+- [CLI](../reference/cli.md): jedes Flag von `nx test`
 - [API](../routing/fbr/handlers/README.md): Was ein Endpunkt zurückgibt
 - [Bereitstellen](../deployment/README.md): Erstellen Sie, bevor Sie in CI testen
