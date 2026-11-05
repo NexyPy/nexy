@@ -174,3 +174,19 @@ class TestStrayedCode:
         assert translate_chunk("a [[1]]\nb", "fr", lambda _t, _target: next(answers)) == (
             "a [[1]]\nb"
         )
+
+
+class TestOutwardTree:
+    def test_relabel_points_a_link_out_of_docs_at_github(self, tmp_path):
+        page = tmp_path / "fr" / "guides" / "a.md"
+        page.parent.mkdir(parents=True)
+        page.write_text("[c](../../CONTRIBUTING.md)\n", encoding="utf-8")
+        relabel_tree(tmp_path, "fr")
+        assert "](https://github.com/" in page.read_text(encoding="utf-8")
+
+    def test_a_new_translation_points_a_link_out_of_docs_at_github(self, tmp_path):
+        (tmp_path / "guides").mkdir()
+        (tmp_path / "guides" / "a.md").write_text("[c](../../X.md)\n", encoding="utf-8")
+        refresh(tmp_path, "fr", [tmp_path / "guides" / "a.md"], lambda t, _: t)
+        written = (tmp_path / "fr" / "guides" / "a.md").read_text(encoding="utf-8")
+        assert written == f"[c]({translator.REPOSITORY}X.md)\n"
