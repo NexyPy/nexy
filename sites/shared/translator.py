@@ -33,6 +33,7 @@ _NAME = "|".join(re.escape(name) for name in sorted(NAMES, key=len, reverse=True
 _KEPT = re.compile(
     r"""
     (?P<fence>^```[^\n]*\n.*?^```[ \t]*$)
+  | (?P<alert>\[![A-Z]+\])
   | (?P<comment><!--.*?-->)
   | (?P<tag><[^>]+>)
   | (?P<code>`[^`\n]+`)
@@ -121,6 +122,7 @@ def protect(markdown: str) -> tuple[str, list[str]]:
 _SHAPE = re.compile(
     r"\A(?:[ \t]*(?:[#]{1,6}|[-*+]|\d+\.|>)|\*\*|__|\||[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*)\Z"
     r"|\A\|?[ \t]*:?-{2,}"
+    r"|\A\[![A-Z]+\]\Z"
 )
 
 
