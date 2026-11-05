@@ -57,10 +57,10 @@ Nexy پروجیکٹ کو `nx dev`، `nx start` اور `nx build` سے پہلے �
 
 | موڈ | مسترد | پیغام |
 |---|---|---|
-| سرور | `.tsx`، `.jsx`، `.vue` یا `.svelte` `src/routes/` | کے تحت اجزاء کو `src/components/` پر منتقل کریں، یا `useCSR = True` | سیٹ کریں۔
-| کلائنٹ | `src/routes/` | کے تحت کسی بھی `.nexy` فائل کو فریم ورک کے اجزاء کے طور پر لکھیں، یا سیٹ کریں `useCSR = False` |
-| دونوں | `useFF` | `useFF must configure exactly one frontend framework` | میں ایک سے زیادہ فرنٹ اینڈ فریم ورک
-| کلائنٹ | `useRouter` (ماڈیولر روٹر) | `useCSR requires file-based routing` |
+| سرور | `.tsx`، `.jsx`، `.vue` یا `.svelte` `src/routes/` کے تحت | اجزاء کو `src/components/` میں منتقل کریں، یا سیٹ کریں `useCSR = True` |
+| کلائنٹ | `src/routes/` کے تحت کوئی بھی `.nexy` فائل | انہیں فریم ورک کے اجزاء کے طور پر لکھیں، یا سیٹ کریں `useCSR = False` |
+| دونوں | `useFF` میں ایک سے زیادہ فرنٹ اینڈ فریم ورک | `useFF must configure exactly one frontend framework` |
+| کلائنٹ | `useRouter` (ماڈیولر راؤٹر) | `useCSR requires file-based routing` |
 | کلائنٹ | نہیں `useFF` | `useCSR requires a client framework` |
 
 `_` یا `.` سے شروع ہونے والی فائلوں اور فولڈرز کو اس چیک سے نظر انداز کیا جاتا ہے۔
@@ -73,6 +73,6 @@ Nexy پروجیکٹ کو `nx dev`، `nx start` اور `nx build` سے پہلے �
 
 ## اگلے اقدامات
 
-- [لے آؤٹ](layouts/README.md)
+- [لے آؤٹس](layouts/README.md)
 - [رینڈرنگ](../../rendering/README.md)
 - [ترتیب ](../../reference/config.md)
