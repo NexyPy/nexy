@@ -1,6 +1,6 @@
 # Teste
 
-`nx test` executa os testes do servidor com pytest, e o cliente testa com vitest quando você os solicita.
+`nx test` executa os testes do servidor com pytest, e os testes do cliente com vitest quando você os solicita.
 
 ```bash
 nx test                       # pytest
@@ -13,11 +13,10 @@ nx test --no-server --client  # vitest only
 
 | Parte | Comando | Condição |
 |---|---|---|
-| Servidor | `pytest` | roda em `tests/` quando existe, caso contrário, na raiz do projeto; ignorado com um aviso quando o pytest não está instalado |
+| O servidor | `pytest` | é executado em `tests/` quando existe, caso contrário, na raiz do projeto; ignorado com um aviso quando pytest não está instalado |
 | Cliente | `npx vitest run` | somente com `--client`, e somente quando `vitest.config.ts` existir ou `vitest` aparecer em `package.json` |
 
-Não há corredor de ponta a ponta integrado. Dirija o servidor com `TestClient` e adicione Playwright ou
-Cypress você mesmo pelo comportamento do navegador.
+Não há corredor de ponta a ponta integrado. Dirija o servidor com `TestClient` e adicione Playwright ou Cypress você mesmo para comportamento do navegador.
 
 ## Teste o servidor
 
@@ -35,11 +34,9 @@ def test_home_renders():
     assert response.status_code == 200
 ```
 
-`nexy.app.app` é a aplicação montada, construída na primeira vez que é lida. Ele lê
-`nexyconfig.py` do diretório de trabalho, então execute pytest na raiz do projeto.
+`nexy.app.app` é a aplicação montada, construída na primeira vez que é lida. Ele lê `nexyconfig.py` do diretório de trabalho, então execute pytest da raiz do projeto.
 
-Quando um teste altera a configuração ou as rotas, crie um novo aplicativo em vez de
-reutilizando o nível do módulo:
+Quando um teste altera a configuração ou as rotas, crie um novo aplicativo em vez de reutilizar o de nível de módulo:
 
 ```python
 from fastapi.testclient import TestClient
@@ -52,8 +49,7 @@ def test_api_hello():
     assert response.json() == {"message": "Hello"}
 ```
 
-`AppServer().run()` remonta rotas, middleware, sessões e traduções, para que cada chamada seja iniciada
-do estado atual do diretório do projeto.
+`AppServer().run()` remonta rotas, middleware, sessões e traduções, para que cada chamada comece a partir do estado atual do diretório do projeto.
 
 ## O que afirmar
 
@@ -65,16 +61,14 @@ def test_blog_page_renders_slug(client):
     assert "post-1" in response.text
 ```
 
-Um manipulador de API retorna JSON. Uma falha de validação é um `422` e uma rota ausente é um `404`
-respondido por `notfound.nexy` quando esse arquivo existe:
+Um manipulador de API retorna JSON. Uma falha de validação é `422` e uma rota ausente é `404` respondida por `notfound.nexy` quando esse arquivo existe:
 
 ```python
 def test_create_item_validates_body(client):
     assert client.post("/api/items", json={}).status_code == 422
 ```
 
-Para uma ação, teste a função diretamente - é uma função normal - e teste o endpoint HTTP
-lendo seu caminho gerado na página que o expõe:
+Para uma ação, teste a função diretamente - é uma função normal - e teste o endpoint HTTP lendo seu caminho gerado na página que o expõe:
 
 ```python
 from src.actions.user import create_user
@@ -95,13 +89,11 @@ def test_form_posts_to_action(client):
 Uma chamada com JSON responde com o resultado e `422` com os campos inválidos.
 
 > [!NOTA]
-> os caminhos de ação são específicos do projeto e gerados. Nunca codifique
-> `/_nx_<hash>` em um teste.
+> os caminhos de ação são específicos do projeto e gerados. Nunca codifique `/_nx_<hash>` em um teste.
 
 ## Teste um componente `.nexy`
 
-`nexy.testing.render` compila um componente, com os componentes que ele importa, e retorna seu HTML.
-Props são argumentos de palavras-chave e `children=` preenche o espaço:
+`nexy.testing.render` compila um componente, com os componentes que ele importa, e retorna seu HTML. Props são argumentos de palavras-chave e `children=` preenche o espaço:
 
 ```python filename="testes/test_button.py"
 from nexy.testing import render
@@ -111,9 +103,7 @@ def test_button_shows_its_label():
     assert "Save" in render("src/components/button.nexy", label="Save")
 ```
 
-Execute pytest a partir da raiz do projeto: os arquivos compilados vão para `__nexy__/`, como acontece com `nx dev`. Um
-componente que lê a solicitação (`usePathname`, `useSession`) precisa de um teste de página com `TestClient`
-em vez disso.
+Execute pytest a partir da raiz do projeto: os arquivos compilados vão para `__nexy__/`, como acontece com `nx dev`. Um componente que lê a solicitação (`usePathname`, `useSession`) precisa de um teste de página com `TestClient`.
 
 ## Teste o cliente
 
@@ -133,8 +123,7 @@ describe("Counter", () => {
 });
 ```
 
-`vitest` e a biblioteca de testes são dependências do projeto: `nexy new` não instala uma pilha de testes.
-Adicione `vitest.config.ts` com o ambiente que você precisa (jsdom ou happy-dom para componentes).
+`vitest` e a biblioteca de testes são dependências do projeto: `nexy new` não instala uma pilha de testes. Adicione `vitest.config.ts` com o ambiente que você precisa (jsdom ou happy-dom para componentes).
 
 ## Integração contínua
 
@@ -145,8 +134,7 @@ nx build
 nx test
 ```
 
-`nx build` falha devido a um erro de compilação; `nx test` falha em uma asserção com falha e sai diferente de zero.
-`nx check` adiciona mypy e `tsc` à execução.
+`nx build` falha devido a um erro de compilação; `nx test` falha em uma asserção com falha e sai diferente de zero. `nx check` adiciona mypy e `tsc` à execução.
 
 Trabalhar no próprio Nexy usa comandos diferentes: veja [CONTRIBUTING](../../CONTRIBUTING.md).
 
