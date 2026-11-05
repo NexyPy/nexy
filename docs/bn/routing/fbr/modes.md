@@ -55,10 +55,10 @@ src/routes/
 
 Nexy প্রকল্পটি `nx dev`, `nx start` এবং `nx build` এর আগে পরীক্ষা করে এবং ফাইলগুলির তালিকা দিয়ে থামে:
 
-| মোড | প্রত্যাখ্যান | বার্তা |
+| মোড | প্রত্যাখ্যাত | বার্তা |
 |---|---|---|
-| সার্ভার | `.tsx`, `.jsx`, `.vue` বা `.svelte` `src/routes/` | এর অধীনে উপাদানগুলি `src/components/` এ সরান, অথবা `useCSR = True` | সেট করুন
-| ক্লায়েন্ট | `src/routes/` | এর অধীনে যেকোন `.nexy` ফাইলগুলিকে ফ্রেমওয়ার্ক উপাদান হিসাবে লিখুন, বা সেট করুন `useCSR = False` |
+| সার্ভার | `.tsx`, `.jsx`, `.vue` বা `.svelte` `src/routes/` এর অধীনে | উপাদানগুলি `src/components/` এ সরান, অথবা `useCSR = True` সেট করুন |
+| ক্লায়েন্ট | `src/routes/` এর অধীনে যে কোনো `.nexy` ফাইল | ফ্রেমওয়ার্ক উপাদান হিসাবে লিখুন, অথবা সেট `useCSR = False` |
 | উভয় | একাধিক ফ্রন্টএন্ড ফ্রেমওয়ার্ক `useFF` | `useFF must configure exactly one frontend framework` |
 | ক্লায়েন্ট | `useRouter` (মডুলার রাউটার) | `useCSR requires file-based routing` |
 | ক্লায়েন্ট | না `useFF` | `useCSR requires a client framework` |
