@@ -18,7 +18,6 @@ dependencies = [
     "linkify-it-py>=2.0.3",
     "markdown-it-py>=3.0.0",
     "mdit-py-plugins>=0.4.2",
-    "pygments>=2.20.0",
     "prompt-toolkit>=3.0.52",
     "scalar-fastapi>=1.8.2",
     # CVE-2026-48710 (BadHost): Host-header path confusion fixed in Starlette 1.0.1.
@@ -35,6 +34,8 @@ dev = [
     "deep-translator>=1.11.0",
     "mypy>=1.19.1",
     "pip-audit>=2.8.0",
+    # Colours the code of the docs sites (sites/shared/docs_source.py), not used by nexy/.
+    "pygments>=2.20.0",
     "pytest>=9.0.2",
     "pytest-cov>=6.0.0",
     "pytest-playwright>=0.7.0",
