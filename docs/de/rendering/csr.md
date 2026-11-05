@@ -77,7 +77,7 @@ export default function Home() {
 
 - **Das gesamte Projekt.** Sie können nicht eine CSR-Seite in ein Servermodus-Projekt mischen: Wählen Sie den Modus für die Anwendung aus und verwenden Sie dann [Inseln](islands.md) für die interaktiven Teile einer Servermodus-Seite.
 - **Keine `.nexy` Routen.** Alles, was Sie in `.nexy` geschrieben haben, muss eine Framework-Komponente werden.
-- **Serverdaten durchlaufen Endpunkte.** Eine Client-Route kann die Datenbank zur Renderzeit nicht lesen; es ruft einen `.py`-Handler oder eine [Action](../guides/actions.md) auf.
+- **Serverdaten durchlaufen Endpunkte.** Eine Client-Route kann die Datenbank zur Renderzeit nicht lesen; es ruft einen `.py`-Handler oder eine [Aktion](../guides/actions.md) auf.
 - **Eine dynamische Route benötigt einen deklarierten statischen Parameter oder sie startet von einer Shell.** Exportieren Sie `getStaticParams()` von der Seite – die Next.js Namen `getStaticPaths` und `generateStaticParams` werden ebenfalls akzeptiert – um ein Dokument pro Wert zu haben. Ohne sie trägt die Shell die Layouts und nicht die Seite: Die Seite erscheint, sobald der Browser ausgeführt wurde.
 - **CSR ist keine leere Seite und auch kein SPA.** Das erste Dokument wird vom Server gerendert; Es ist die Navigation, die im Browser stattfindet.
 
