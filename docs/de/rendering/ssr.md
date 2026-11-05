@@ -6,12 +6,12 @@ SSR ist die Standardeinstellung: Der Server rendert die Seite für jede Anfrage 
 
 ## Wie es funktioniert
 
-| Routendatei | Was erzeugt den HTML-Code | Wann |
+| Routendatei | Was erzeugt den HTML | Wann |
 |---|---|---|
-| `.nexy` | das kompilierte Python Modul, durch Jinja2 | jede Anfrage |
-| `.md` | `cmarkgfm`, dann das nächstgelegene Layout | bei jeder Anfrage |
-| `.mdx`, `.tsx`, `.vue`, `.svelte` | das Framework, gerendert im Knoten | beim Build, wenn die Route kein Layout hat, andernfalls im Browser |
-| `.py` | nichts: Es wird JSON oder ein `Response` | - | zurückgegeben.
+| `.nexy` | das kompilierte Modul Python bis Jinja2 | jede Anfrage |
+| `.md` | `cmarkgfm`, dann das nächstgelegene Layout | jede Anfrage |
+| `.mdx`, `.tsx`, `.vue`, `.svelte` | das Framework, gerendert in Node | beim Build, wenn die Route kein Layout hat, andernfalls im Browser |
+| `.py` | nichts: Es gibt JSON oder ein `Response` zurück. | - |
 
 Eine Komponentenroute ist der einzige Fall, der einen zweiten Satz benötigt. In der Produktion wird eine Komponentenroute **ohne** ein Layout mit dem beim Build erzeugten HTML bereitgestellt und die Komponente hydratisiert es. Bei einem Layout oder in der Entwicklung ist der Container leer und die Komponente wird im Browser gerendert – die Seite ist dann eine Hülle, die sich selbst füllt.
 
@@ -37,7 +37,7 @@ Keine. Zwei Auswege, und sie haben nicht die gleiche Körnung:
 
 | SSR verlassen für | Tun Sie dies | Getreide |
 |---|---|---|
-| eine Seite, mit einem Cache | `revalidate = 60` in der Titelseite → [ISR](isr.md) | Seite |
+| eine Seite, mit Cache | `revalidate = 60` im Vorwort → [ISR](isr.md) | Seite |
 | das gesamte Projekt, vom Kunden weitergeleitet | `useCSR = True` in `nexyconfig.py` → [CSR](csr.md) | Projekt |
 
 ## Beispiel
@@ -49,7 +49,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` führt diese Vorlage einmal aus, wobei `slug` auf `hello` gesetzt ist. Eine zweite Anfrage führt es erneut aus: Zwischen den beiden bleibt nichts bestehen. Die Abfragezeichenfolge ist keine Requisite – lesen Sie sie mit den Hooks in [navigation](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` führt diese Vorlage einmal aus, wobei `slug` auf `hello` gesetzt ist. Eine zweite Anfrage führt es erneut aus: Zwischen den beiden bleibt nichts bestehen. Die Abfragezeichenfolge ist keine Requisite – lesen Sie sie mit den Hooks in [Navigation](../routing/fbr/navigation/hooks.md).
 
 ## Einschränkungen
 
