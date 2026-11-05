@@ -9,9 +9,9 @@ Nomes e regras reservados em `src/routes/`.
 | `index.nexy`, `index.md`, `index.mdx`, `index.py` | a rota de seu diretório |
 | `about.nexy` | `/about` |
 | `[slug].nexy` | segmento dinâmico `{slug}` |
-| `[...path].nexy` | pega-tudo `{path:path}` |
+| `[...path].nexy` | abrangente `{path:path}` |
 | `(group)/page.nexy` | `/page`: o grupo não aparece na URL |
-| `name.py` | manipulador de API; nomes de funções `GET`, `POST`, ... são os métodos |
+| `name.py` | Manipulador de API; nomes de funções `GET`, `POST`, ... são os métodos |
 | `name.tsx`, `.jsx`, `.vue`, `.svelte` | rota do cliente quando a estrutura está habilitada com `useFF` |
 
 ## Arquivos reservados
@@ -24,16 +24,14 @@ Nomes e regras reservados em `src/routes/`.
 | `notfound.nexy` | página 404 para seu diretório | [Páginas de erro](../routing/fbr/errors/README.md) |
 | `errors.nexy` | 500 páginas para seu diretório | [Páginas de erro](../routing/fbr/errors/README.md) |
 | `forbidden.nexy` | página 403 para seu diretório | [Páginas de erro por pasta](../routing/fbr/errors/folder-pages.md) |
-| `unauthorized.nexy` | 401 página para seu diretório | [Páginas de erro por pasta](../routing/fbr/errors/folder-pages.md) |
+| `unauthorized.nexy` | página 401 para seu diretório | [Páginas de erro por pasta](../routing/fbr/errors/folder-pages.md) |
 | `loading.nexy` | reservado; nenhum efeito de tempo de execução ainda | [Páginas de erro](../routing/fbr/errors/README.md) |
 | `middleware.py` | um `async def middleware(request, call_next)` agrupando as solicitações do diretório e abaixo de | [Arquivos de middleware](../routing/fbr/middleware/README.md) |
 | `dependencies.py` | uma lista `dependencies = [fn, ...]` aplicada ao diretório e seus filhos | [Dependências](../routing/fbr/dependencies/README.md) |
-| `__init__.py` | Marcador de pacote Python | |
+| `__init__.py` | Python marcador de pacote | |
 | `favicon.ico` | servido em `/favicon.ico` | |
 
-`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`,
-`useUnauthorizedExtensions` e `useLoadingExtensions` reservam mais extensões para esses nomes. Veja
-[Configuração](config.md).
+`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` e `useLoadingExtensions` reservam mais extensões para esses nomes. Consulte [Configuração](config.md).
 
 ## Arquivos ignorados
 
@@ -42,8 +40,7 @@ Nomes e regras reservados em `src/routes/`.
 
 ## Um arquivo por URL
 
-Dois arquivos que resolvem para o mesmo URL são registrados. Não coloque `blog.nexy` próximo a
-`blog/index.nexy`.
+Dois arquivos que resolvem para o mesmo URL são registrados. Não coloque `blog.nexy` próximo a `blog/index.nexy`.
 
 ## Fora `src/routes/`
 
