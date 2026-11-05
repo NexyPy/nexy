@@ -8,34 +8,34 @@
 |---|---|---|
 | `nx dev` | `nx d` | 开发服务器：更改时编译，Vite，HMR |
 | `nx start` | `nx s` | 生产服务器上的编译输出 |
-| `nx build` | `nx b` | 生产版本 |
+| `nx build` | `nx b` | 生产构建 |
 | `nx new` | `nx n` | 搭建一个项目 |
 | `nx init` | `nx i` | 将 Nexy 添加到现有项目 |
 | `nx add` | - | 从注册表或 URL 添加 UI 组件到 `src/components/ui` |
-| `nx migrate` | `nx m` | 使用 Alembic 或 Aerich | 创建或应用数据库迁移
+| `nx migrate` | `nx m` | 使用 Alembic 或 Aerich 创建或应用数据库迁移 |
 | `nx check` | `nx c` | 类型检查：mypy on Python, `tsc` on TypeScript |
-| `nx format` | `nx f` | 格式 Python（皱褶）、JS/TS（更漂亮）、`.nexy` 文件 |
+| `nx format` | `nx f` | 格式 Python（ruff）、JS/TS（更漂亮）、`.nexy` 文件 |
 | `nx test` | - | 运行 pytest； `--client` 添加 vitest |
-| `nx skills` | - | 添加或刷新技能，`AGENTS.md` 和 `CLAUDE.md` 用于编码特工 |
+| `nx skills` | - | 添加或刷新编码代理的技能 `AGENTS.md` 和 `CLAUDE.md` |
 
 ## 旗帜
 
-| 命令 | 标志 | 默认 |
+| 命令 | 旗帜 | 默认 |
 |---|---|---|
-| `dev`、`start` | `--port` | `usePort`、`3000` |
-| `dev`、`start` | `--host` | `useHost`、`0.0.0.0` |
-| `build` | `--check` | off - 在构建后运行 ruff 和 mypy |
-| `format` | `--check` | 关闭 - 报告而不是重写 |
-| `test` | `--client` | 关闭 - 也运行 vitest 而不是单独运行 pytest |
-| `test` | `--no-server` | on - 当您只需要客户端测试 | 时跳过 pytest
-| `new` | `--template`、`-t` | 无 - 克隆注册模板而不提示 |
-| `new`|`--no-agents`| 特工 - 跳过 `AGENTS.md` 和特工技能 |
-| `add` | `--ui`、`--url` | off - 当注册表名称或 URL 不明确时强制使用它 |
-| `add` | `--all`、`-a` | 关闭 - 添加注册表的每个组件 |
+| `dev`，`start` | `--port` | `usePort`，`3000` |
+| `dev`，`start` | `--host` | `useHost`，`0.0.0.0` |
+| `build` | `--check` | off - 构建后运行 ruff 和 mypy |
+| `format` | `--check` | off - 报告而不是重写 |
+| `test` | `--client` | off - 还运行 vitest 而不是单独运行 pytest |
+| `test` | `--no-server` | on - 当您只想进行客户端测试时跳过 pytest |
+| `new` | `--template`，`-t` | none - 克隆注册模板而不提示 |
+| `new` | `--no-agents` | 特工 - 跳过 `AGENTS.md` 和特工技能 |
+| `add` | `--ui`，`--url` | off - 当注册表名称或 URL 不明确时强制使用该名称或 URL |
+| `add` | `--all`，`-a` | off - 添加注册表的每个组件 |
 | `add` | `--sha256` | none - 远程组件的预期摘要；不匹配中止 |
-| `migrate` | `--init` | 关闭 - 写入 Alembic 或 Aerich 设置 |
-| `migrate` | `--upgrade`, `-u` | off - 应用迁移而不是编写新的迁移 |
-| `migrate` | `--message`, `-m` | 空 - 新修订版本的名称 |
+| `migrate` | `--init` | off - 写入 Alembic 或 Aerich 设置 |
+| `migrate` | `--upgrade`，`-u` | off - 应用迁移而不是编写新迁移 |
+| `migrate` | `--message`，`-m` | 空 - 新修订的名称 |
 
 ## 输出
 
@@ -68,9 +68,9 @@
 | 问题 | 选择 |
 |---|---|
 | 导入别名 | `@`（`@/components/...` 指向 `src/`），或其他前缀，例如 `~` 或 `#app` |
-| 样式 | Tailwind CSS、UnoCSS、Vanilla CSS、其他（无 CSS 工具，与 Vanilla 相同的普通样式表）|
+| 风格 | Tailwind CSS、UnoCSS、Vanilla CSS、其他（无 CSS 工具，与 Vanilla 相同的普通样式表） |
 | ORM | SQLModel，SQLAlchemy，Tortoise-ORM，无数据库 |
-| 数据库（带有 ORM）| SQLite、PostgreSQL、Neon、MySQL / MariaDB、其他（您键入 URL）|
+| 数据库（带有 ORM） | SQLite、PostgreSQL、Neon、MySQL / MariaDB、其他（您输入 URL） |
 
 所选 ORM 的数据库驱动程序随其一起安装（`psycopg`、`pymysql`、`asyncpg` 或 `aiomysql`），并且 URL 写入 `.env`。
 
