@@ -6,12 +6,12 @@ Cómo Nexy mantiene pequeña su propia superficie de ataque, qué versiones requ
 
 Nexy depende de FastAPI, Starlette, Jinja2, Vite y React. Un piso es la versión más baja que permite Nexy; cada uno responde a un aviso publicado.
 
-| Paquete | Piso | Por qué |
+| Paquete | piso | ¿Por qué? |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): un encabezado `Host` diseñado cambia la ruta de los informes Starlette al middleware, lo que omite la autorización escrita en `request.url.path`. Catalogado como explotado por CISA. |
-| `fastapi` | 0.133.0 | la primera versión que acepta un Starlette | fijo
+| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): un encabezado `Host` modificado cambia la ruta Starlette informa al middleware, lo que omite la autorización escrita en `request.url.path`. Catalogado como explotado por CISA. |
+| `fastapi` | 0.133.0 | la primera versión que acepta un Starlette fijo |
 | `jinja2` | 3.1.6 | escape del sandbox a través del filtro `attr` (CVE-2025-27516) |
-| `vite` (proyectos con scaffolding) | 6.4.3 | `server.fs.deny` omisión de rutas alternativas de Windows (CVE-2026-53571); la omisión de cadena de consulta anterior (CVE-2026-39364) afecta solo a Vite 7.1-7.3.1 y 8.0.0-8.0.4 |
+| `vite` (proyectos estructurados) | 6.4.3 | `server.fs.deny` omitir rutas alternativas de Windows (CVE-2026-53571); la omisión de cadena de consulta anterior (CVE-2026-39364) afecta solo a Vite 7.1-7.3.1 y 8.0.0-8.0.4 |
 | `react`, `react-dom` | 19.2.5 | los avisos de 2026 React se refieren a los paquetes `react-server-dom-*`, que Nexy no utiliza; el piso mantiene la línea parchada |
 
 Comprueba tus versiones resueltas:
