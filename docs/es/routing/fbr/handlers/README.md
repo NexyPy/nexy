@@ -83,4 +83,4 @@ Cada ruta API aparece en el esquema generado, porque las rutas son rutas FastAPI
 - [Validación y errores](validation-and-errors.md): `422`, `404` y errores JSON
 - [Enrutamiento](../../README.md): ruta del archivo a la URL
 - [Acciones](../../../guides/actions.md): puntos finales con rutas generadas
-- [Config](../../../reference/config.md): middleware, CORS, sesiones
+- [Configuración](../../../reference/config.md): middleware, CORS, sesiones
