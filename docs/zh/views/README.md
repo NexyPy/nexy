@@ -2,15 +2,15 @@
 
 在选择文件格式之前，区分 Nexy 如何处理资源以及如何呈现资源非常重要。
 
-| 术语 | 定义 |
+| 期限 | 定义 |
 |---|---|
-| **Page** | 应用程序的 URL 可寻址资源。它由 `src/routes/` 下的文件定义。 |
-| **View** | 生成页面响应正文的过程。视图将逻辑和数据转换为 HTML 或 JSON。 |
-| **Component** | 用于组成视图的可重用 UI 构建块。组件可以是本机 Nexy 帮助程序或特定于框架的组件（React、Vue 等）。 |
-| **路由处理程序** | 处理特定方法（例如，`GET`、`POST`）的 HTTP 请求的 Python 函数。 |
-| **Endpoint** | 路由处理程序应答的 URL 和 HTTP 方法的唯一组合。 |
+| **页码** | 应用程序的 URL 可寻址资源。它由 `src/routes/` 下的文件定义。 |
+| **查看** | 生成页面响应正文的过程。视图将逻辑和数据转换为 HTML 或 JSON。 |
+| **组件** | 用于组成视图的可重用 UI 构建块。组件可以是本机 Nexy 帮助程序或特定于框架的组件（React、Vue 等）。 |
+| **路线处理程序** | 处理特定方法的 HTTP 请求的 Python 函数（例如，`GET`、`POST`）。 |
+| **端点** | 路由处理程序应答的 URL 和 HTTP 方法的唯一组合。 |
 
-**不确定？编写一个 `.nexy` 文件。** 它不需要客户端框架，你可以稍后在其中添加 React、Vue、Svelte、Solid 或 Preact 组件，作为一个岛。
+**没有把握？编写一个 `.nexy` 文件。** 它不需要客户端框架，你可以稍后在其中添加 React、Vue、Svelte、Solid 或 Preact 组件，作为一个岛。
 
 ```diagram filename="哪个文件对应哪个页面"
 server logic + HTML          →  .nexy      (Python frontmatter + Jinja2)
@@ -24,14 +24,14 @@ API handler                  →  .py        (GET, POST, …)
 
 | 格式 | 文件 | 服务器渲染 | 客户端框架 | 注释 |
 |---|---|---|---|---|
-| `.nexy` | [.nexy 文件](nexy/README.md) | Jinja2 + Python 逻辑，流式 | 可选 | 本机 Nexy 页面格式 |
-| `.md` | [Markdown 和 MDX](nexy/markdown.md) | cmarkgfm 在请求时 | 可选通过布局 | 纯 Markdown、GFM、布局包装 |
-| `.mdx` | [Markdown 和 MDX](nexy/markdown.md) | 框架 SSR | React 或 Preact | Markdown 以及组件 |
-| `.tsx` | [React](react/differences.md)、[Solid](solid/differences.md) 或 [Preact](preact/differences.md) | 客户端模式：框架，在节点 | React、Solid 或 Preact | 组件路由中渲染 |
-| `.vue` | [Vue](vue/differences.md) | 客户端模式：框架，在节点 | Vue | SFC 路由 | 中呈现
-| `.svelte` | [Svelte](svelte/differences.md) | 客户端模式：框架，在 Node | Svelte | SFC 路由 | 中呈现
+| `.nexy` | [.nexy 文件](nexy/README.md) | Jinja2 + Python 逻辑，流式传输 | 可选的 | 本机 Nexy 页面格式 |
+| `.md` | [Markdown 和 MDX](nexy/markdown.md) | cmarkgfm 在请求时 | 可选的过孔布局 | 纯 Markdown、GFM、布局包装 |
+| `.mdx` | [Markdown 和 MDX](nexy/markdown.md) | 框架SSR | React 或 Preact | Markdown 与组件 |
+| `.tsx` | [React](react/differences.md)、[Solid](solid/differences.md) 或 [Preact](preact/differences.md) | 客户端模式：框架，在 Node 中渲染 | React、Solid 或 Preact | 组件路线 |
+| `.vue` | [Vue](vue/differences.md) | 客户端模式：框架，在 Node 中渲染 | Vue | 证监会航线 |
+| `.svelte` | [Svelte](svelte/differences.md) | 客户端模式：框架，在 Node 中渲染 | Svelte | 证监会航线 |
 
-内置 `Image`、`Link`、`Audio`、`Video` 和 `Import` 帮助器：[Components](nexy/components.md)。
+内置 `Image`、`Link`、`Audio`、`Video` 和 `Import` 帮助器：[组件](nexy/components.md)。
 
 ## 混合格式
 
