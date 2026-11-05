@@ -35,7 +35,7 @@ Kompiler menulis ulang `<Audio ... />` menjadi `{{ Audio(...) }}`, sehingga bent
 - Bentuk tagnya adalah **menutup sendiri**. `<Audio src="/a.mp3" />` dan `{{ Audio("/a.mp3") }}` setara; menulis anak-anak di dalam tag pembantu tidak didukung.
 - Atribut HTML kosong bukan boolean di sini: `controls` menjadi `controls=""`, yang merupakan kesalahan. Tulis `controls=True`.
 
-> [!CATATAN]
+> [!NOTE]
 > `class_name` adalah kata kunci yang didokumentasikan untuk kelas CSS. Argumen kata kunci tambahan menjadi atribut HTML, sehingga `class="nav"` juga mencapai output.
 
 ## Gambar
@@ -62,7 +62,7 @@ from nexy import Link
 
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` merender `<a data-nexy-link>` yang ditangani oleh router klien. Dengan `prefetch=True`, mengarahkan atau menyentuh tautan akan menghangatkan target melalui `window.__nexy_prefetch`.
 
-> [!CATATAN]
+> [!NOTE]
 > bentuk tag mengambil label sebagai `children`, bukan sebagai konten elemen: `<Link href="/about" children="About" />`. Untuk menempatkan markup di dalam tautan, gunakan formulir panggilan dengan komponen `children=` atau `.nexy` yang merender `<Slot />`.
 
 ## Audio dan Video
