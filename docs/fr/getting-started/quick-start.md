@@ -39,7 +39,7 @@ nexy dev
 
 Ouvrez <http://localhost:3000>. Vous devriez voir la page de démarrage. Le port provient de `usePort` (par défaut `3000`) ; `--port` et `--host` le remplacent par exécution.
 
-> [!REMARQUE]
+> [!NOTE]
 > Exécutez toutes les commandes sauf `new` et `init` dans l'environnement virtuel du projet, ou préfixez-la avec `uv run`, comme dans `uv run nexy dev`. En dehors de cela, un projet qui a besoin de `sqlmodel` échoue avec `No module named 'sqlmodel'`.
 
 ## 3. Changer une page
@@ -89,7 +89,7 @@ Ouvrez <http://localhost:3000/hello>. Remplacez `"Hello"` par `"Bonjour"` et enr
 
 | Vous souhaitez | Lire |
 |---|---|
-| Ajoutez un point de terminaison Python et expédiez une build | [Tutorial](tutorial.md) |
+| Ajoutez un point de terminaison Python et expédiez une build | [Tutoriel](tutorial.md) |
 | Savoir où appartient chaque fichier | [Structure du projet](project-structure.md) |
 | Comprendre qui construit quoi | [Comment fonctionne Nexy](how-nexy-works.md) |
 | Utilisez React, Vue, Svelte, Solid ou Preact | [Vues](../views/README.md) |
