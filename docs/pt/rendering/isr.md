@@ -70,7 +70,7 @@ A primeira solicitação para `/blog/hello` renderizar e armazenar. Os próximos
 |---|---|
 | String de consulta ignorada | `/search?q=a` e `/search?q=b` compartilham uma entrada. Não armazene em cache uma página de pesquisa. |
 | Sessão não isolada | A resposta diz `public`, e o HTML do primeiro visitante é servido a todos. Nunca leia a sessão em uma página com `revalidate`. |
-| Nenhuma invalidação do lado do servidor | Nada limpa uma entrada antes que sua janela termine. `revalidate(...)` dentro de uma [Action](../guides/actions.md) apenas diz ao **navegador** para recarregar um caminho; ele não toca neste cache. |
+| Nenhuma invalidação do lado do servidor | Nada limpa uma entrada antes que sua janela termine. `revalidate(...)` dentro de uma [Ação](../guides/actions.md) apenas diz ao **navegador** para recarregar um caminho; ele não toca neste cache. |
 | Um cache por processo | Vários trabalhadores mantêm vários caches, com conteúdos diferentes. |
 | Regenerações simultâneas | Nada as desduplica: dez solicitações obsoletas podem iniciar dez renderizações. |
 | Os erros são silenciosos | Uma regeneração com falha continua servindo a página antiga; a falha é registrada, não retornada. |
@@ -78,6 +78,6 @@ A primeira solicitação para `/blog/hello` renderizar e armazenar. Os próximos
 ## Próximas etapas
 
 - [SSR](ssr.md): como a página é renderizada antes de ser armazenada em cache
-- [Actions](../guides/actions.md): o cabeçalho `revalidate` e o que ele não faz
+- [Ações](../guides/actions.md): o cabeçalho `revalidate` e o que ele não faz
 - [Desempenho](../deployment/performance.md)
 - [Páginas](../routing/fbr/pages/README.md): layouts e segmentos dinâmicos
