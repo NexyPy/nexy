@@ -50,6 +50,6 @@ HTTPS کو براہ راست `useSslKeyfile` اور `useSslCertfile` کے سات
 
 ## اگلے اقدامات
 
-- [تشکیل](../reference/config.md): ہر مڈل ویئر فیلڈ
-- [تعینات کریں۔](../deployment/README.md)
-- کارکردگی ](../deployment/performance.md)
+- [کنفیگ ](../reference/config.md): ہر مڈل ویئر فیلڈ
+- [تعیناتی ](../deployment/README.md)
+- [کارکردگی ](../deployment/performance.md)
