@@ -1,13 +1,11 @@
-# Préagir
+# Preact
 
-Nexy restitue les composants Preact 10 sur le serveur, puis Preact les reprend dans le navigateur. Pages,
-les dispositions, les îlots et les actions sont les mêmes dans chaque framework : cette page couvre la configuration, puis les parties
-qui diffèrent des [contrats partagés](../frontend/pages.md).
+Nexy restitue Preact 10 composants sur le serveur, puis Preact les reprend dans le navigateur. Les pages, mises en page, îlots et actions sont les mêmes dans tous les frameworks : cette page couvre la configuration, puis les parties qui diffèrent des [contrats partagés](../frontend/pages.md).
 
 | Mode | `nexyconfig.py` | Les pages sont | Preact est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Client | `useCSR = True` | `.tsx` fichier | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
+| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
 
 ## Démarrer un projet
 
@@ -15,9 +13,7 @@ qui diffèrent des [contrats partagés](../frontend/pages.md).
 nx new my-app --template web-fbr-preact
 ```
 
-Le modèle est un projet en mode serveur avec des îlots Preact. Exécutez `nx new my-app` sans modèle pour
-répondez plutôt aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis
-le cadre.
+Le modèle est un projet en mode serveur avec Preact îles. Exécutez `nx new my-app` sans modèle pour répondre aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis le framework.
 
 ## Activer Preact dans un projet existant
 
@@ -44,13 +40,13 @@ export default defineConfig({
 
 `nx new` écrit ce fichier ; Nexy écrit lui-même `__nexy__/vite.ts`, alors ne le modifiez pas.
 
-| Package | Version `nx new` écrit |
+| Le package | Version `nx new` écrit |
 |---|---|
 | `preact` | `^10.25.4` |
 | `@preact/preset-vite` | `^2.10.1` (dépendance du développeur) |
-| `preact-render-to-string` | `^6.7.0` (dépendance du développeur, rendu sur le serveur) |
+| `preact-render-to-string` | `^6.7.0` (dépendance de développement, rendu sur le serveur) |
 
-## Écrire le préacte
+## Écrivez Preact
 
 Un composant Preact est une fonction de style React. Les différences qui comptent ici :
 
@@ -63,30 +59,24 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
-- Les crochets proviennent de `preact/hooks`, des types tels que `ComponentChildren` de `preact`.
-- Écrire les attributs HTML : `class`, `for`, `charset`. `Link` lit ses classes à partir de `class`.
+- Les hooks proviennent de `preact/hooks`, des types tels que `ComponentChildren` de `preact`.
+- Écrivez les attributs HTML : `class`, `for`, `charset`. `Link` lit ses classes à partir de `class`.
 
 ## Règles
 
-- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [preact(), react()]`
-  arrête le serveur au démarrage. Avec `useFF = preact()`, chaque fichier `.tsx` est Preact.
-- **Les pages sont `.tsx`.** Seul un fichier `.tsx` sous `src/routes/` devient une page ; `.jsx` est bien pour un
-  composant.
+- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [preact(), react()]` arrête le serveur au démarrage. Avec `useFF = preact()`, chaque fichier `.tsx` est Preact.
+- **Les pages sont `.tsx`.** Seul un fichier `.tsx` sous `src/routes/` devient une page ; `.jsx` convient parfaitement à un composant.
 - **Les composants se trouvent à l'extérieur de `src/routes/`**, généralement dans `src/components/`, ce ne sont donc pas des pages.
-- **Un projet en mode serveur n'a pas de `.tsx` page**, et un projet en mode client n'a pas de page `.nexy` : Nexy
-  refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
-- **Une page `.mdx` importée depuis `"preact"`.** Nexy compile un fichier `.mdx` avec Preact uniquement lorsqu'il
-  voit cette importation, par exemple `import { h } from "preact"`, et avec React autrement. Voir
-  [Markdown et MDX](../nexy/markdown.md).
+- **Un projet en mode serveur n'a pas de page `.tsx`**, et un projet en mode client n'a pas de page `.nexy` : Nexy refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
+- **Une page `.mdx` importe depuis `"preact"`.** Nexy compile un fichier `.mdx` avec Preact uniquement lorsqu'il voit cette importation, par exemple `import { h } from "preact"`, et avec React sinon. Voir [Markdown et MDX](../nexy/markdown.md).
 
 ## Pages
 
 En mode client (`useCSR = True`), une page est un fichier `.tsx`.
 
-### Composant Page
+### Composant de page
 
-Une page est l'exportation par défaut du fichier. Si aucun export par défaut n'existe, Nexy sélectionne le premier nommé
-exporter.
+Une page est l'exportation par défaut du fichier. Si aucune exportation par défaut n'existe, Nexy sélectionne la première exportation nommée.
 
 ```tsx filename="src/routes/index.tsx"
 export default function Home() {
@@ -107,7 +97,7 @@ export default function Post() {
 }
 ```
 
-## Mise en page
+## Mises en page
 
 ### Mise en œuvre
 
@@ -169,8 +159,7 @@ const { run, pending, error, data } = useAction(add_todo);
 
 ### Navigation
 
-Utilisez le composant `Link` pour les transitions côté client. Notez que Preact utilise `class` au lieu de
-`className` :
+Utilisez le composant `Link` pour les transitions côté client. Notez que Preact utilise `class` au lieu de `className` :
 
 ```tsx
 import { Link } from "@nexy/client";
@@ -187,14 +176,14 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Accès URL
+### Accès aux URL
 
 - `usePathname()` : chemin actuel
 - `useParams()` : segments dynamiques
 - `useSearchParams()` : chaîne de requête
 - `useLocation()` : objet de localisation complet
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et la build client
+- [Frontend](../../guides/frontend.md) : Vite et le build client
