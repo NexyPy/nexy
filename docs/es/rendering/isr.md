@@ -80,4 +80,4 @@ La primera solicitud a `/blog/hello` renderiza y almacena. Los siguientes 300 se
 - [SSR](ssr.md): cómo se representa la página antes de almacenarla en caché
 - [Acciones](../guides/actions.md): el encabezado `revalidate` y lo que no hace
 - [Rendimiento](../deployment/performance.md)
-- [Pages](../routing/fbr/pages/README.md): diseños y segmentos dinámicos
+- [Páginas](../routing/fbr/pages/README.md): diseños y segmentos dinámicos
