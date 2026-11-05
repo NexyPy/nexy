@@ -50,6 +50,6 @@ Perlindungan per rute menggunakan dependensi FastAPI. `dependencies.py` dalam di
 
 ## Langkah selanjutnya
 
-- [Config](../reference/config.md): setiap bidang middleware
+- [Konfigurasi](../reference/config.md): setiap bidang middleware
 - [Menyebarkan](../deployment/README.md)
 - [Kinerja](../deployment/performance.md)
