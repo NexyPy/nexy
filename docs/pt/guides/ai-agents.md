@@ -74,7 +74,7 @@ Um agente responde mais rápido quando sabe qual página contém a resposta.
 | URL de um arquivo | [roteamento](../routing/README.md) |
 | segmentos dinâmicos, layouts, páginas de erro | [páginas](../routing/fbr/pages/README.md) |
 | o caminho atual, consulta, cookies, sessão | [hooks](../routing/fbr/navigation/hooks.md) |
-| para editar uma página | [.nexy files](../views/nexy/README.md) ou [views](../views/README.md) |
+| para editar uma página | [arquivos .nexy](../views/nexy/README.md) ou [visualizações](../views/README.md) |
 | Markdown ou MDX | [redução](../views/nexy/markdown.md) |
 | ajudantes HTML integrados | [componentes](../views/nexy/components.md) |
 | modo de renderização | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
@@ -84,7 +84,7 @@ Um agente responde mais rápido quando sabe qual página contém a resposta.
 | um formulário postado em uma página | [ações](actions.md) |
 | por que uma solicitação falhou e qual página a responde | [exceções](../reference/exceptions.md) |
 | traduções | [i18n](i18n.md) |
-| um campo de configuração | [config](../reference/config.md) |
+| um campo de configuração | [configuração](../reference/config.md) |
 | para testar o aplicativo | [testando](testing.md) |
 | a compilação do cliente | [frontend](frontend.md) |
 
