@@ -2,8 +2,7 @@
 
 Eine `.nexy`-Datei ist eine Komponente: Python oben, HTML in der Mitte, CSS unten.
 
-**Bevor Sie beginnen:** ein Projekt, das durch den [Schnellstart](../../getting-started/quick-start.md) erstellt wurde.
-Eine `.nexy`-Datei benötigt keine Build-Konfiguration: `nx dev` kompiliert sie beim Speichern.
+**Bevor Sie beginnen:** ein Projekt, das durch den [Schnellstart](../../getting-started/quick-start.md) erstellt wurde. Eine `.nexy`-Datei benötigt keine Build-Konfiguration: `nx dev` kompiliert sie beim Speichern.
 
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
@@ -24,8 +23,7 @@ pathname = usePathname()
 
 ## Frontmatter
 
-Alles zwischen den beiden `---`-Zeilen ist Python. Importe werden aufgelöst, wenn die Komponente vorhanden ist
-zusammengestellt; Der Rest wird für jede Anfrage ausgeführt, sodass der Anfragestatus gelesen werden kann.
+Alles zwischen den beiden `---`-Zeilen ist Python. Importe werden aufgelöst, wenn die Komponente kompiliert wird; Der Rest wird für jede Anfrage ausgeführt, sodass der Anfragestatus gelesen werden kann.
 
 | Was | Beispiel |
 |---|---|
@@ -38,16 +36,13 @@ zusammengestellt; Der Rest wird für jede Anfrage ausgeführt, sodass der Anfrag
 
 ## Eigenschaften
 
-Eigenschaften sind die API der Komponente. `prop[type]` deklariert den Typ, `= value` gibt einen Standardwert an. A
-Eine Eigenschaft ohne Standard muss vom übergeordneten Element übergeben werden.
+Eigenschaften sind die API der Komponente. `prop[type]` deklariert den Typ, `= value` gibt einen Standardwert an. Eine Eigenschaft ohne Standard muss vom übergeordneten Element übergeben werden.
 
-Importe, die mit einem Alias ​​beginnen, werden über `useAliases` aufgelöst. Das Setup `nx new` schreibt Karten
-`@` bis `src`, was bedeutet, dass `@/components/card.nexy` `src/components/card.nexy` bedeutet.
+Importe, die mit einem Alias ​​beginnen, werden über `useAliases` aufgelöst. Das Setup `nx new` schreibt Zuordnungen von `@` zu `src`, was bedeutet, dass `@/components/card.nexy` `src/components/card.nexy` bedeutet.
 
 ## Vorlage
 
-Unterhalb der Vorderseite befindet sich HTML mit Jinja2. Variablen aus der Frontmatter und den Eigenschaften sind in
-Umfang.
+Unterhalb der Vorderseite befindet sich HTML mit Jinja2. Variablen aus der Frontmatter und den Eigenschaften liegen im Gültigkeitsbereich.
 
 ```html
 {% for item in items %}
@@ -59,17 +54,14 @@ Umfang.
 {% endif %}
 ```
 
-Autoescaping ist **aus**: Vorlagen sind der eigene HTML-Code des Projekts, daher wird `{{ value }}` als eingefügt
-geschrieben. Entfliehen Sie selbst unsicheren Werten mit `{{ value | e }}`. `| safe` ändert also nichts.
+Autoescaping ist **aus**: Vorlagen sind der eigene HTML-Code des Projekts, daher wird `{{ value }}` wie geschrieben eingefügt. Entfliehen Sie selbst unsicheren Werten mit `{{ value | e }}`. `| safe` ändert also nichts.
 
 > [!NOTE]
-> JavaScript, das `{{` oder `{%` enthält, in `{% raw %}...{% endraw %}` einschließen.
-> Frameworks wie Vue und Svelte verwenden die gleichen Klammern.
+> Wickeln Sie JavaScript ein, das `{{` oder `{%` in `{% raw %}...{% endraw %}` enthält. Frameworks wie Vue und Svelte verwenden dieselben geschweiften Klammern.
 
 ## Komponenten
 
-Jedes importierte Callable, dessen Name mit einem Großbuchstaben beginnt, kann als Tag verwendet werden. Der Compiler
-schreibt es in einen Jinja-Aufruf um: Attribute werden zu Schlüsselwortargumenten.
+Jedes importierte Callable, dessen Name mit einem Großbuchstaben beginnt, kann als Tag verwendet werden. Der Compiler schreibt es in einen Jinja-Aufruf um: Attribute werden zu Schlüsselwortargumenten.
 
 ```nexy filename="src/routes/index.nexy"
 ---
@@ -83,33 +75,23 @@ from nexy import Audio
 <Audio src="/theme.mp3" controls=True />
 ```
 
-Die letzte Zeile ist genau `{{ Audio("/theme.mp3", controls=True) }}`. Beide Syntaxen gelten für
-integrierte `Image`-, `Link`-, `Audio`- und `Video`-Helfer – siehe
-[Komponenten](components.md#two-syntaxes-one-function).
+Die letzte Zeile ist genau `{{ Audio("/theme.mp3", controls=True) }}`. Beide Syntaxen gelten für die integrierten Helfer `Image`, `Link`, `Audio` und `Video` – siehe [components](components.md#two-syntaxes-one-function).
 
-Untergeordnete Elemente werden durch `<Slot />` (Großbuchstabe S) innerhalb der untergeordneten Komponente und durch `{{ children }}` dargestellt.
-innerhalb eines Layouts.
+Untergeordnete Elemente werden durch `<Slot />` (Großbuchstabe S) innerhalb der untergeordneten Komponente und durch `{{ children }}` innerhalb eines Layouts gerendert.
 
-Übergeben Sie einen berechneten Wert mit Jinja innerhalb des Attributs: `<Icon path="{{ icon }}" size="{{ size }}" />`.
-Ein bloßer Name wie `path=icon` ist der Text `icon`, nicht die Variable. Um einer Komponente ein CSS zu geben
-Klasse, deklariere eine `class_name`-Requisite: `class` ist ein Python-Schlüsselwort.
+Übergeben Sie einen berechneten Wert mit Jinja innerhalb des Attributs: `<Icon path="{{ icon }}" size="{{ size }}" />`. Ein bloßer Name wie `path=icon` ist der Text `icon`, nicht die Variable. Um einer Komponente eine CSS-Klasse zu geben, deklarieren Sie eine `class_name`-Requisite: `class` ist ein Python-Schlüsselwort.
 
 > [!NOTE]
-> Ein Hilfstag ist immer selbstschließend. Die Weitergabe von Inhalten an `Link` erfolgt über dessen
-> `children` Argument (`<Link href="/about" children="About" />`), nicht durch Elementinhalt.
+> Ein Hilfstag ist immer selbstschließend. Die Übergabe von Inhalten an `Link` erfolgt über dessen `children`-Argument (`<Link href="/about" children="About" />`), nicht über den Elementinhalt.
 
 ## Stile
 
-`<style>` Blöcke werden mit der Seite ausgegeben, die sie deklariert. Sie haben keinen Gültigkeitsbereich: ein Klassenname
-in zwei Komponenten verwendet wird, ist eine Klasse. Setzen Sie Ihren Klassen ein Präfix oder einen Namensraum.
+`<style>`-Blöcke werden mit der Seite ausgegeben, die sie deklariert. Sie haben keinen Gültigkeitsbereich: Ein Klassenname, der in zwei Komponenten verwendet wird, ist eine Klasse. Setzen Sie Ihren Klassen ein Präfix oder einen Namensraum.
 
 ## Regeln, die Zeit sparen
 
-- Eine Komponente pro Datei. Der Dateiname ist der Komponentenname in PascalCase (`CopyChip.nexy`). A
-  Die Komponente `.nexy` wird als Python-Modul importiert, ein Bindestrich im Namen (`copy-chip.nexy`) jedoch nicht
-  kompilieren.
-- Deklarieren Sie Requisiten, bevor Sie sie verwenden: Eine nicht deklarierte Variable wird als leere Zeichenfolge gerendert, weil
-  Das Undefinierte von Jinja2 schweigt hier.
+- Eine Komponente pro Datei. Der Dateiname ist der Komponentenname in PascalCase (`CopyChip.nexy`). Eine `.nexy`-Komponente wird als Python-Modul importiert: Ein Bindestrich im Namen (`copy-chip.nexy`) wird nicht kompiliert.
+- Deklarieren Sie Requisiten, bevor Sie sie verwenden: Eine nicht deklarierte Variable wird als leere Zeichenfolge gerendert, da die undefinierte Variable von Jinja2 hier stumm ist.
 - Behalten Sie Nebenwirkungen innerhalb der Funktionen bei – der Frontmatter wird bei jeder Anfrage erneut ausgeführt.
 
 ## Nächste Schritte
