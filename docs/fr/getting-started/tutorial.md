@@ -192,5 +192,5 @@ nx start
 
 - [Routage](../routing/README.md) : segments et groupes dynamiques
 - [Actions](../guides/actions.md) : appeler Python depuis un formulaire ou depuis le client
-- [Testing](../guides/testing.md) : pages de test et points de terminaison
-- [Deploy](../deployment/README.md) : conteneurs et proxys inverses
+- [Tests](../guides/testing.md) : pages de test et points de terminaison
+- [Déploiement](../deployment/README.md) : conteneurs et proxys inverses
