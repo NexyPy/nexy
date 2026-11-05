@@ -61,5 +61,5 @@ label: prop[str]
 
 - [页面](../pages/README.md)：动态段和布局
 - [食谱](../../../guides/recipes.md)：基于 `useSession()` 构建的经过测试的登录流程
-- [Config](../../../reference/config.md)：启用会话和区域设置
+- [配置](../../../reference/config.md)：启用会话和区域设置
 - [.nexy 文件](../../../views/nexy/README.md)：通常调用钩子的地方
