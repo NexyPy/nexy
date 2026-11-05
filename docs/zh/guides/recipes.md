@@ -155,6 +155,6 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
 
 ## 后续步骤
 
-- [Actions](actions.md)：表单和按钮的类型化服务器函数
+- [操作](actions.md)：表单和按钮的类型化服务器函数
 - [中间件和安全性](middleware-and-security.md)：CORS、主机、会话
 - [测试](testing.md)：以同样的方式测试你自己的处理程序
