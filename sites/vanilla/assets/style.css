@@ -1324,7 +1324,7 @@ dialog.search input::placeholder { color: var(--muted); }
   html[data-side="closed"] .bar-open { display: grid; }
 }
 @media (max-width: 900px) {
-  .side-brand .side-toggle, .bar-open { display: none; }
+  .bar-open { display: none; }
 }
 
 /* Narrow screens: the menu becomes a drawer, opened from a thin bar. */
@@ -1357,36 +1357,47 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   .menu, .bar-link { width: 2.75rem; height: 2.75rem; }
   .lang-select summary { height: 2.75rem; }
   .theme-switch { width: 3.25rem; height: 2rem; }
+  /* The bar of Fumadocs: the logo on the start side, the search and the menu on the end side. */
   .mobilebar {
     position: sticky;
     top: 0;
     z-index: 20;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    height: var(--top);
-    padding: 0 0.75rem;
-    background: color-mix(in srgb, var(--bg-page) 85%, transparent);
+    height: 3.5rem;
+    padding-inline: 1rem 0.625rem;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-page) 80%, transparent);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
   }
-  .mobilebar .search-open { width: 2rem; padding: 0; justify-content: center; border: 0; background: transparent; }
+  .mobilebar .brand { margin-inline-end: auto; }
+  .mobilebar .search-open { width: 2.75rem; padding: 0; justify-content: center; border: 0; background: transparent; color: var(--muted); }
+  .mobilebar .menu { color: var(--muted); }
+  .mobilebar :is(.search-open, .menu) svg { width: 18px; height: 18px; }
+  .mobilebar :is(.search-open, .menu):hover { color: var(--ink); background: var(--soft); }
   /* A phone carries the search in the mobile bar: the bar above the page would repeat it. */
   .panel-bar .search-open { display: none; }
+  /* The drawer comes in from the end edge, under the thumb that pressed the menu button. */
   .side {
     position: fixed;
     z-index: 30;
-    inset: 0 auto 0 0;
-    width: min(310px, 86vw);
+    inset-block: 0;
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    width: min(380px, 85vw);
     height: 100dvh;
     overflow: hidden;
     background: var(--card);
-    border-right: 1px solid var(--line);
-    transform: translateX(-100%);
+    border-inline-start: 1px solid var(--line);
+    transform: translateX(var(--drawer-out));
     transition: transform 0.3s var(--ease);
   }
+  /* A menu folded on a wide screen is still a drawer here: the fold never hides it. */
+  html[data-side="closed"] .side { opacity: 1; pointer-events: auto; transform: translateX(var(--drawer-out)); }
   .side-top { background: var(--card); }
-  body.open .side { transform: none; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.4); }
+  body.open .side,
+  html[data-side="closed"] body.open .side { transform: none; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.4); }
   .panel { margin: 0 0.5rem 0.5rem; min-height: calc(100dvh - var(--top) - 0.5rem); }
   .panel-bar { top: var(--top); }
   .page { padding: 1.25rem 1.1rem 4.5rem; }
@@ -1497,15 +1508,12 @@ body.open { overflow: hidden; }
 [dir="rtl"] .pager-arrow svg { transform: scaleX(-1); }
 [dir="rtl"] .side details:not([open]) .chev { transform: scaleX(-1); }
 [dir="rtl"] .side .chev { transition: none; }
-html[dir="rtl"][data-side="closed"] .side { transform: translateX(1rem); }
-@media (max-width: 900px) {
-  [dir="rtl"] .side {
-    inset: 0 0 0 auto;
-    border-right: 0;
-    border-left: 1px solid var(--line);
-    transform: translateX(100%);
-  }
+@media (min-width: 901px) {
+  html[dir="rtl"][data-side="closed"] .side { transform: translateX(1rem); }
 }
+/* The drawer leaves by the end edge: the right one, the left one in a right-to-left page. */
+:root { --drawer-out: 100%; }
+[dir="rtl"] { --drawer-out: -100%; }
 /* Scripts whose letters join or carry marks never get tracking: spaced letters break the joins of
    Arabic and Urdu and the vowel signs of Hindi and Bengali, and Chinese is set solid. */
 html:is([lang="ar"], [lang="ur"], [lang="hi"], [lang="bn"], [lang="zh"]) body * {

@@ -106,7 +106,11 @@
     $$('.bar-open').forEach((button) => button.setAttribute('aria-expanded', String(!closed)))
     try { localStorage.setItem('nexy-docs-side', closed ? 'closed' : 'open') } catch {}
   }
-  $$('.side-toggle').forEach((button) => button.addEventListener('click', () => fold(!html.dataset.side)))
+  // On a phone the button at the top of the drawer closes it, as the one of Fumadocs does.
+  const narrow = () => matchMedia('(max-width: 900px)').matches
+  $$('.side-toggle').forEach((button) => button.addEventListener('click', () => {
+    narrow() ? setMenu(false, true) : fold(!html.dataset.side)
+  }))
 
   // --- The area selector closes on a click elsewhere and on Escape ---------------------------------
   const area = $('.area-select')
