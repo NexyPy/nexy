@@ -1,7 +1,6 @@
 # Componentes
 
-Nexy exporta un pequeño conjunto de ayudas que devuelven cadenas HTML. Cada uno se usa de dos maneras en un
-Plantilla `.nexy`: como una llamada de Jinja o como una etiqueta de estilo HTML.
+Nexy exporta un pequeño conjunto de ayudas que devuelven cadenas HTML. Cada uno se usa de dos maneras en una plantilla `.nexy`: como una llamada Jinja o como una etiqueta de estilo HTML.
 
 ## Dos sintaxis, una función
 
@@ -20,12 +19,11 @@ Ambas líneas producen el mismo marcado:
 <audio preload="metadata" controls><source src="/theme.mp3" type="audio/mp3" /></audio>
 ```
 
-El compilador reescribe `<Audio ... />` a `{{ Audio(...) }}`, por lo que el formulario de etiqueta no es una segunda API:
-Los atributos son los argumentos de palabras clave de la función.
+El compilador reescribe `<Audio ... />` a `{{ Audio(...) }}`, por lo que el formulario de etiqueta no es una segunda API: los atributos son los argumentos de palabras clave de la función.
 
-## Reglas del formulario de etiqueta
+## Reglas del formulario de etiqueta.
 
-| En la etiqueta | Se convierte en |
+| En la etiqueta | se convierte en |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, un verdadero booleano |
@@ -33,16 +31,12 @@ Los atributos son los argumentos de palabras clave de la función.
 | `src="{{ url }}"` | `src=(url)`, evaluado en Jinja |
 | cualquier otro `value` | `"value"`, una cadena |
 
-- La etiqueta debe comenzar con una letra mayúscula y importarse en el frontmatter; de lo contrario el
-  el compilador genera `Missing Import: <Name> used but not declared.`
-- El formulario de la etiqueta es **de cierre automático**. `<Audio src="/a.mp3" />` y
-  `{{ Audio("/a.mp3") }}` son equivalentes; No se admite escribir niños dentro de una etiqueta auxiliar.
-- Un atributo HTML simple no es booleano aquí: `controls` se convierte en `controls=""`, lo cual es falso.
-  Escribe `controls=True`.
+- La etiqueta debe comenzar con una letra mayúscula y importarse en el frontmatter; de lo contrario, el compilador genera `Missing Import: <Name> used but not declared.`
+- El formato de la etiqueta es **de cierre automático**. `<Audio src="/a.mp3" />` y `{{ Audio("/a.mp3") }}` son ​​equivalentes; No se admite escribir niños dentro de una etiqueta auxiliar.
+- Un atributo HTML simple no es booleano aquí: `controls` se convierte en `controls=""`, lo cual es falso. Escribe `controls=True`.
 
 > [!NOTA]
-> `class_name` es la palabra clave documentada para las clases CSS. Argumentos de palabras clave adicionales
-> se convierten en atributos HTML, por lo que `class="nav"` también llega a la salida.
+> `class_name` es la palabra clave documentada para las clases CSS. Los argumentos de palabras clave adicionales se convierten en atributos HTML, por lo que `class="nav"` también llega al resultado.
 
 ## Imagen
 
@@ -55,8 +49,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` representa un
-`<img>` con carga diferida de forma predeterminada.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` representa un `<img>` con carga diferida de forma predeterminada.
 
 ## Enlace
 
@@ -67,16 +60,12 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` representa un `<a data-nexy-link>`
-manejado por el enrutador del cliente. Con `prefetch=True`, pasar el cursor sobre el enlace o tocarlo calienta el objetivo.
-hasta `window.__nexy_prefetch`.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` representa un `<a data-nexy-link>` manejado por el enrutador del cliente. Con `prefetch=True`, pasar el cursor o tocar el enlace calienta el objetivo a través de `window.__nexy_prefetch`.
 
 > [!NOTA]
-> el formulario de etiqueta toma la etiqueta como `children`, no como contenido del elemento:
-> `<Link href="/about" children="About" />`. Para poner marcas dentro de un enlace, use el formulario de llamada con
-> `children=` o un componente `.nexy` que representa un `<Slot />`.
+> el formulario de etiqueta toma la etiqueta como `children`, no como contenido del elemento: `<Link href="/about" children="About" />`. Para colocar marcas dentro de un enlace, use el formulario de llamada con `children=` o un componente `.nexy` que represente un `<Slot />`.
 
-## Audio y vídeo
+## Audio y Vídeo
 
 ```nexy
 ---
@@ -89,16 +78,13 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, controles=True, reproducción automática=False, loop=False, silenciado=False, preload="metadatos",
-class_name=Ninguno, fuentes=Ninguno, **attrs)` and `Video(src, ancho=Ninguno, alto=Ninguno, ...)` renderizado nativo
-jugadores. `sources` agrega `<source>` etiquetas con el tipo MIME derivado de cada extensión.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` y `Video(src, width=None, height=None, ...)` renderizan reproductores nativos. `sources` agrega `<source>` etiquetas con el tipo MIME derivado de cada extensión.
 
 ## Un componente que escribes tú mismo.
 
-Un componente `.nexy` reutilizable es un archivo en `src/components/`: accesorios de Python en la parte superior, HTML debajo.
-Se importa como cualquier otro módulo de Python.
+Un componente `.nexy` reutilizable es un archivo debajo de `src/components/`: Python accesorios en la parte superior, HTML debajo. Se importa como cualquier otro módulo Python.
 
-```nexy filename=""
+```nexy filename="src/components/Card.nexy"
 ---
 title: prop[str]
 tone: prop[str] = "neutral"
@@ -118,14 +104,11 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`title` no tiene ningún valor predeterminado, por lo que la página debe pasarlo; `tone` vuelve a `"neutral"`. el marcado
-entre las etiquetas llega dentro de `<Slot />` (S mayúscula). Ver
-[archivos .nexy](README.md#components) para accesorios, espacios y las reglas del formulario de etiqueta.
+`title` no tiene ningún valor predeterminado, por lo que la página debe pasarlo; `tone` vuelve a `"neutral"`. El marcado entre las etiquetas llega dentro de `<Slot />` (S mayúscula). Consulte los [archivos .nexy](README.md#components) para conocer los accesorios, los espacios y las reglas del formulario de etiqueta.
 
-## Importando un componente de cliente
+## Importar un componente de cliente
 
-Desde un archivo `.nexy`, importe un componente del marco por ruta; el compilador lo monta en el cliente y
-pasa los atributos como accesorios:
+Desde un archivo `.nexy`, importe un componente del marco por ruta; el compilador lo monta en el cliente y pasa los atributos como accesorios:
 
 ```nexy
 ---
@@ -145,13 +128,11 @@ html = counter(start=0)
 
 La misma sintaxis de importación resuelve `.json`, `.css` y archivos de imagen en sus URL.
 
-## Plantilla y invitación
+## Plantilla y Vite
 
-`Template().render(path, context)` representa un archivo de plantilla (Jinja2 o Markdown renderizado en HTML para
-`.md` rutas). `Template().invalidate(path)` lo elimina del caché.
+`Template().render(path, context)` renderiza un archivo de plantilla (Jinja2, o Markdown renderiza en HTML para `.md` rutas). `Template().invalidate(path)` lo elimina del caché.
 
-`Vite()` devuelve las etiquetas del cliente para el modo actual: el script HMR en desarrollo, el construido
-paquete de clientes en producción. Nexy lo llama para cada página; rara vez lo necesitas directamente.
+`Vite()` devuelve las etiquetas del cliente para el modo actual: el script HMR en desarrollo, el paquete de cliente creado en producción. Nexy lo llama para cada página; rara vez lo necesitas directamente.
 
 ## Aún no implementado
 
