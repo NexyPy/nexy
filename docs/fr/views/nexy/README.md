@@ -56,7 +56,7 @@ Sous le thème se trouve du HTML avec Jinja2. Les variables du frontmatter et le
 
 L'échappement automatique est **désactivé** : les modèles sont le propre HTML du projet, donc `{{ value }}` est inséré tel qu'écrit. Échappez-vous aux valeurs non fiables avec `{{ value | e }}`. `| safe` ne change donc rien.
 
-> [!REMARQUE]
+> [!NOTE]
 > enveloppez JavaScript qui contient `{{` ou `{%` dans `{% raw %}...{% endraw %}`. Les frameworks tels que Vue et Svelte utilisent les mêmes accolades.
 
 ## Composants
@@ -81,12 +81,12 @@ Les enfants sont rendus via `<Slot />` (S majuscule) à l'intérieur du composan
 
 Passez une valeur calculée avec Jinja à l'intérieur de l'attribut : `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nom simple tel que `path=icon` est le texte `icon`, pas la variable. Pour donner à un composant une classe CSS, déclarez un accessoire `class_name` : `class` est un mot-clé Python.
 
-> [!REMARQUE]
+> [!NOTE]
 > une balise d'assistance se ferme toujours automatiquement. Passer du contenu à `Link` passe par son argument `children` (`<Link href="/about" children="About" />`), et non par le contenu de l'élément.
 
 ## Styles
 
-`<style>` les blocs sont émis avec la page qui les déclare. Ils n'ont pas de portée : un nom de classe utilisé dans deux composants constitue une seule classe. Préfixez ou espacez vos classes.
+Les blocs `<style>` sont émis avec la page qui les déclare. Ils n'ont pas de portée : un nom de classe utilisé dans deux composants constitue une seule classe. Préfixez ou espacez vos classes.
 
 ## Des règles qui font gagner du temps
 
