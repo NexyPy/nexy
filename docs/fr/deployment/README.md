@@ -78,6 +78,6 @@ Chaque page est HTML, mais Nexy suppose un serveur pour le routage et pour les g
 
 ## Prochaines étapes
 
-- [Config](../reference/config.md) : HTTPS, hôtes de confiance, sessions
+- [Configuration](../reference/config.md) : HTTPS, hôtes de confiance, sessions
 - [Frontend](../guides/frontend.md) : ce que Vite construit
-- [Testing](../guides/testing.md) : les commandes à exécuter en CI
+- [Tests](../guides/testing.md) : les commandes à exécuter en CI
