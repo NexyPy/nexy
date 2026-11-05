@@ -23,13 +23,13 @@ from nexy import Audio
 
 ## 标签形式规则
 
-| 标签中的 | 变为 |
+| 在标签中 | 成为 |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`，一个真正的布尔值 |
 | `width=640` | `width=640`，一个数字 |
-| `src="{{ url }}"` | `src=(url)`，在 Jinja | 中评估
-| 任何其他 `value` | `"value"`、字符串 |
+| `src="{{ url }}"` | `src=(url)`，在 Jinja 中评估 |
+| 任何其他 `value` | `"value"`，一个字符串 |
 
 - 标签必须以大写字母开头，并在 frontmatter 中导入；否则编译器会引发 `Missing Import: <Name> used but not declared.`
 - 标签形式是 **自闭合**。 `<Audio src="/a.mp3" />` 和 `{{ Audio("/a.mp3") }}` 是等价的；不支持在辅助标记内写入子项。
@@ -104,7 +104,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`title` 没有默认值，因此页面必须通过它； `tone` 回落到 `"neutral"`。标签之间的标记到达 `<Slot />`（大写 S）内部。有关 props、slots 和标签形式的规则，请参阅 [.nexy files](README.md#components)。
+`title` 没有默认值，因此页面必须通过它； `tone` 回落到 `"neutral"`。标签之间的标记到达 `<Slot />`（大写 S）内部。有关 props、slots 和标签形式的规则，请参阅 [.nexy 文件](README.md#components)。
 
 ## 导入客户端组件
 
