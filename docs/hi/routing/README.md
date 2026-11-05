@@ -6,8 +6,8 @@
 
 | आप निर्माण कर रहे हैं | उपयोग करें |
 |---|---|
-| पेज, सामग्री, कुछ अंतिम बिंदुओं वाली एक साइट | फ़ाइल-आधारित |
-| मार्गों पर साझा की जाने वाली सेवाओं के साथ एक बड़ी एपीआई | मॉड्यूलर |
+| पेज, सामग्री, कुछ अंतिम बिंदुओं वाली साइट | फ़ाइल आधारित |
+| सभी मार्गों पर साझा की जाने वाली सेवाओं के साथ एक बड़ी एपीआई | मॉड्यूलर |
 | दोनों: लोगों के लिए पेज, मशीनों के लिए एक संरचित एपीआई | फ़ाइल-आधारित और मॉड्यूलर एक साथ |
 
 ```diagram filename="फ़ाइल-आधारित राउटर, एक नज़र में"
@@ -21,7 +21,7 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 | राउटर | स्रोत | द्वारा सक्षम |
 |---|---|---|
-| [फ़ाइल-आधारित (एफबीआर)](fbr/README.md) | `src/routes/` | निर्देशिका के अंतर्गत प्रत्येक फ़ाइल मौजूद है |
+| [फ़ाइल-आधारित (एफबीआर)](fbr/README.md) | `src/routes/` के अंतर्गत प्रत्येक फ़ाइल | निर्देशिका मौजूद है |
 | [मॉड्यूलर](modular/README.md) | नियंत्रक और मॉड्यूल | `useRouter = AppModule` में `nexyconfig.py` |
 
 जब भी `src/routes/` मौजूद होता है तो एफबीआर को स्कैन किया जाता है, यहां तक कि मॉड्यूलर राउटर पर भी।
@@ -38,24 +38,24 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 | | `useCSR = False` (डिफ़ॉल्ट) | `useCSR = True` |
 |---|---|---|
-| पेज | `.nexy`, `.md`, `.mdx` | आपके क्लाइंट फ्रेमवर्क की फ़ाइलें |
+| पन्ने | `.nexy`, `.md`, `.mdx` | आपके क्लाइंट फ्रेमवर्क की फ़ाइलें |
 | रूट लेआउट | `layout.nexy` | `layout.tsx` (React) |
-| क्लाइंट घटकों | की अनुमति है, पृष्ठों के अंदर द्वीपों के रूप में | पृष्ठ स्वयं |
+| ग्राहक घटक | पृष्ठों के अंदर द्वीपों के रूप में अनुमति दी गई है | पन्ने स्वयं |
 | एपीआई मार्ग | `.py` | `.py` |
 
 [सर्वर मोड और क्लाइंट मोड](fbr/modes.md) देखें।
 
 | धारा | इसमें क्या शामिल है |
 |---|---|
-| [fbr/पेज](fbr/pages/README.md) | पृष्ठ, [गतिशील मार्ग](fbr/pages/dynamic-routes.md) और मार्ग समूह |
+| [एफबीआर/पेज](fbr/pages/README.md) | पृष्ठ, [गतिशील मार्ग](fbr/pages/dynamic-routes.md) और मार्ग समूह |
 | [एफबीआर/लेआउट्स](fbr/layouts/README.md) | `layout.nexy`, `layout.tsx`, `layout.vue`, `layout.svelte` |
 | [एफबीआर/हैंडलर](fbr/handlers/README.md) | `.py` रूट हैंडलर, [सत्यापन और त्रुटियां](fbr/handlers/validation-and-errors.md) |
-| [fbr/निर्भरताएं](fbr/dependencies/README.md) | `dependencies.py` और गार्ड, निर्देशिका द्वारा विरासत में मिले |
-| [एफबीआर/मिडलवेयर](fbr/middleware/README.md) | `middleware.py`, निर्देशिका से विरासत में मिला है |
-| [एफबीआर/त्रुटियां](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, जेएसओएन त्रुटियां |
-| [एफबीआर/नेविगेशन](fbr/navigation/linking-and-navigating.md) | लिंकिंग, क्लाइंट नेविगेशन, [हुक](fbr/navigation/hooks.md) |
-| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket हैंडलर |
-| [fbr/inheritance](fbr/inheritance.md) | लेआउट, निर्भरता और त्रुटि पृष्ठ कैसे इनहेरिट करते हैं |
+| [एफबीआर/निर्भरताएं](fbr/dependencies/README.md) | `dependencies.py` और गार्ड, निर्देशिका द्वारा विरासत में मिले |
+| [एफबीआर/मिडलवेयर](fbr/middleware/README.md) | `middleware.py`, निर्देशिका द्वारा विरासत में मिला |
+| [एफबीआर/त्रुटियाँ](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, JSON त्रुटियाँ |
+| [एफबीआर/नेविगेशन](fbr/navigation/linking-and-navigating.md) | लिंक करना, क्लाइंट नेविगेशन, [हुक](fbr/navigation/hooks.md) |
+| [एफबीआर/रीयलटाइम](fbr/realtime/websocket.md) | WebSocket संचालक |
+| [एफबीआर/विरासत](fbr/inheritance.md) | लेआउट, निर्भरताएँ और त्रुटि पृष्ठ कैसे प्राप्त होते हैं |
 
 ## मॉड्यूलर रूटिंग
 
