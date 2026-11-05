@@ -2,7 +2,7 @@
 
 Une demande peut échouer à quatre endroits, et Nexy répond à chacun différemment. Cette page est l'index : recherchez le statut que vous voyez, puis la ligne qui l'a produit, puis le fichier qui décide du corps.
 
-> [!REMARQUE]
+> [!NOTE]
 > Trois éléments sont distincts et faciles à confondre : la **réponse HTTP** (un statut et un corps), la **page d'erreur** (`notfound.nexy`, `errors.nexy`) et la **ligne de journal** (ce que vous lisez dans le terminal). La modification de la page ne modifie pas le statut et la personnalisation de la page ne masque pas le journal.
 
 ## La version courte
@@ -27,7 +27,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!AVERTISSEMENT]
+> [!WARNING]
 > `curl` envoie `Accept: */*` par défaut, qui récupère la page HTML. Ajoutez `-H "Accept: application/json"` lorsque vous testez la forme JSON. Les navigateurs continuent de recevoir des pages.
 
 ## D'où vient un échec
@@ -74,7 +74,7 @@ async def GET(slug: str):
 |---|---|---|
 | `notFound(detail=None)` | `404` | la ressource n'existe pas |
 | `unauthorized(detail=None, scheme=None)` | `401` | le visiteur doit d'abord se connecter |
-| `forbidden(detail=None)` | `403` | le visiteur est connu mais peut ne pas le voir |
+| `forbidden(detail=None)` | `403` | le visiteur est connu mais ne peut pas le voir |
 | `redirect(url, status=307)` | `307` | les envoyer ailleurs en gardant la méthode |
 | `redirect(url, status=303)` | `303` | après un formulaire : la requête suivante est un `GET` |
 | `permanentRedirect(url)` | `308` | une page déplacée dont les moteurs de recherche devraient se souvenir |
@@ -106,7 +106,7 @@ Le corps de `422` est la forme standard de FastAPI, donc les clients et les SDK 
 
 Pour un formulaire ou une action, le client reçoit un `ActionError` avec `status` et `detail` ; un `422` remplit également `error.fields` avec un message par champ. Voir [Actions](../guides/actions.md#errors-and-failures).
 
-> [!ASTUCE]
+> [!TIP]
 > Validez dans la signature lorsque la règle porte sur un champ (`limit: int = 10`). Validez dans le corps lorsque la règle a besoin de la base de données ou d'un autre champ ("cet email est déjà utilisé") : relancez `HTTPException(409)` et conservez le message pour le client.
 
 ## Pages d'erreur personnalisées
@@ -129,7 +129,7 @@ Pour un formulaire ou une action, le client reçoit un `ActionError` avec `statu
 | `src/routes/unauthorized.nexy` | `401` | chaque tracé du projet |
 | `src/routes/blog/notfound.nexy` | `404` | `/blog` et inférieurs |
 | `src/routes/blog/errors.nexy` | `500` | `/blog` et inférieurs |
-| `src/routes/loading.nexy` | - | réservé, pas encore d'effet d'exécution |
+| `src/routes/loading.nexy` | - | réservé, aucun effet d'exécution pour le moment |
 
 Un fichier quelque part dans les routes installe la réponse à son statut : une copie à la racine répond à l'ensemble du projet, une copie dans un dossier répond à ce dossier et le fichier le plus profond qui correspond à l'URL l'emporte. Une URL en dehors de chaque copie et un statut sans aucun fichier obtiennent les pages stylisées intégrées. Voir [Pages d'erreur par dossier](../routing/fbr/errors/folder-pages.md).
 
@@ -155,7 +155,7 @@ Une exception qui n'a rien détecté est enregistrée une seule fois, avec sa r�
 
 La référence est de huit caractères, nouveaux à chaque échec. Un visiteur peut le citer et vous trouvez le traçage en le recherchant dans le journal. Ni l'exception ni le code n'atteignent le visiteur en production.
 
-> [!ATTENTION]
+> [!CAUTION]
 > Ne renvoyez pas le traçage à un visiteur en production, et ne mettez pas de secrets dans un message d'erreur : le `detail` d'un `HTTPException` est envoyé au client, échappé en HTML. Mettez le secret dans le journal, pas dans la réponse.
 
 ## Actions et formulaires
@@ -169,11 +169,11 @@ Une action est un point de terminaison `POST` avec un chemin généré. Ses éch
 | une exception non gérée | `500` | `ActionError` ; la référence est dans le journal du serveur |
 | l'en-tête `Origin` est un autre site | `403` | refusé avant l'exécution de l'action |
 
-Un formulaire sans JavaScript publications dans le chemin d'action ; un succès répond `303` retour à la page, un échec affiche la page d'erreur. Voir [Actions](../guides/actions.md#forms-without-javascript).
+Un formulaire sans JavaScript est publié dans le chemin d'action ; un succès renvoie `303` à la page, un échec affiche la page d'erreur. Voir [Actions](../guides/actions.md#forms-without-javascript).
 
 ## Une liste de contrôle lorsqu'une page répond à la mauvaise chose
 
-1. **Regardez le statut**, pas la page. Une coutume `notfound.nexy` répond toujours `404`.
+1. **Regardez le statut**, pas la page. Un `notfound.nexy` personnalisé répond toujours à `404`.
 2. **Lisez le terminal.** Une page dont l'importation échoue n'est pas enregistrée, donc son URL répond `404` tant que le fichier existe. L'erreur d'importation est dans le journal.
 3. **Vérifiez l'extension.** Avec `useCSR = True`, les pages `.nexy` appartiennent au mode serveur ; une page dans le mauvais mode n'est pas un itinéraire.
 4. **Vérifiez la profondeur.** Un `notfound.nexy` ou `errors.nexy` ne fonctionne que lorsque la copie racine existe.
