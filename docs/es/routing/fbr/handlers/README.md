@@ -1,7 +1,6 @@
-# Manejadores de ruta
+# Controladores de ruta
 
-Un archivo `.py` en `src/routes/` es un controlador de API. La ruta del archivo es la URL y cada función
-El nombre de un método HTTP se convierte en un punto final.
+Un archivo `.py` en `src/routes/` es un controlador de API. La ruta del archivo es la URL y cada función que lleva el nombre de un método HTTP se convierte en un punto final.
 
 ## Crear un punto final
 
@@ -24,8 +23,7 @@ async def POST(request: Request, body: Item):
 
 Este archivo responde a `GET /api/items` y `POST /api/items`.
 
-Nombres de funciones admitidas: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HEAD`. `SOCKET` abre
-un WebSocket en la misma ruta; consulte [WebSocket](../realtime/websocket.md).
+Nombres de funciones admitidas: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, `HEAD`. `SOCKET` abre un WebSocket en la misma ruta; consulte [WebSocket](../realtime/websocket.md).
 
 ## El vocabulario HTTP
 
@@ -35,11 +33,7 @@ Importe lo que necesita un controlador de `nexy.http`:
 from nexy.http import Depends, Header, HTTPException, JSONResponse, Request, status
 ```
 
-Expone las clases de solicitud y respuesta (`Request`, `Response`, `JSONResponse`, `HTMLResponse`,
-`PlainTextResponse`, `RedirectResponse`, `StreamingResponse`, `FileResponse`), las fuentes de parámetros
-(`Header`, `Query`, `Cookie`, `Path`, `Body`), `Depends`, `BackgroundTasks`, `HTTPException` y
-`status`. Los controladores escritos en este módulo dependen del contrato de Nexy, no del motor que
-les sirve. Los modelos Pydantic describen cuerpos y respuestas como de costumbre.
+Expone las clases de solicitud y respuesta (`Request`, `Response`, `JSONResponse`, `HTMLResponse`, `PlainTextResponse`, `RedirectResponse`, `StreamingResponse`, `FileResponse`), las fuentes de parámetros (`Header`, `Query`, `Cookie`, `Path`, `Body`), `Depends`, `BackgroundTasks`, `HTTPException` y `status`. Los controladores escritos en este módulo dependen del contrato de Nexy, no del motor que les sirve. Pydantic los modelos describen cuerpos y respuestas como de costumbre.
 
 ## Parámetros
 
@@ -47,17 +41,15 @@ les sirve. Los modelos Pydantic describen cuerpos y respuestas como de costumbre
 |---|---|
 | Segmento de ruta `[id]` | argumento de función `id`, convertido a su anotación |
 | Cadena de consulta | `page: int = 1` |
-| Cuerpo JSON | Argumento del modelo Pydantic |
-| Primitivas FastAPI | `Depends`, `Header`, `Cookie`, `Form`, `UploadFile` - sin cambios |
+| Cuerpo JSON | Pydantic argumento del modelo |
+| FastAPI primitivas | `Depends`, `Header`, `Cookie`, `Form`, `UploadFile` - sin cambios |
 
 ```python filename="src/rutas/api/usuarios/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
 
-El segmento de ruta es `{id}`, por lo que FastAPI valida `id: int`. Un valor que no es un número entero responde
-`404`, porque una ruta dinámica captura cualquier URL y una URL que no se puede convertir no existe.
-Ver [Validación y errores](validation-and-errors.md).
+El segmento de ruta es `{id}`, por lo que FastAPI valida `id: int`. Un valor que no es un número entero responde `404`, porque una ruta dinámica captura cualquier URL y una URL que no se puede convertir no existe. Ver [Validación y errores](validation-and-errors.md).
 
 ## Respuestas
 
@@ -79,16 +71,11 @@ async def POST():
 
 ## Errores
 
-Generar excepciones de FastAPI para los clientes. Un cliente que envía `Accept: application/json` recibe
-`{"detail": "..."}` con el estatus que planteaste; un navegador recibe la página de error. `notfound.nexy`
-representa `404` y `errors.nexy` representa `500`, cada uno con su ámbito en su directorio. Ver
-[Validación y errores](validation-and-errors.md) y [Páginas de error](../errors/README.md).
+Plantear FastAPI excepciones para clientes. Un cliente que envía `Accept: application/json` recibe `{"detail": "..."}` con el estado que usted planteó; un navegador recibe la página de error. `notfound.nexy` representa `404` y `errors.nexy` representa `500`, cada uno con el ámbito de su directorio. Consulte [Validación y errores](validation-and-errors.md) y [Páginas de error](../errors/README.md).
 
-## API abierta
+## OpenAPI
 
-Cada ruta API aparece en el esquema generado, porque las rutas son rutas FastAPI simples. el
-El esquema se sirve en `/openapi.json` y Scalar lo representa en `/docs`. Desactivar ambos con
-`useDocs = False` en `nexyconfig.py`.
+Cada ruta API aparece en el esquema generado, porque las rutas son rutas FastAPI simples. El esquema se entrega en `/openapi.json` y Scalar lo representa en `/docs`. Deshabilite ambos con `useDocs = False` en `nexyconfig.py`.
 
 ## Próximos pasos
 
