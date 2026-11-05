@@ -198,3 +198,13 @@ class TestHealInside:
 
     def test_a_whole_placeholder_is_left_alone(self):
         assert translator.heal("a [[1]] b") == "a [[1]] b"
+
+
+class TestAlerts:
+    def test_an_alert_marker_never_reaches_the_translator(self):
+        template, kept = translator.protect("> [!NOTE]\n> Read this.\n")
+        assert "NOTE" not in template and "[!NOTE]" in kept
+
+    def test_an_alert_marker_is_layout(self):
+        _template, kept = translator.protect("> [!TIP]\n")
+        assert kept.index("[!TIP]") in translator.structural(kept)
