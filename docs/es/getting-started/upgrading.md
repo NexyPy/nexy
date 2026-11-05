@@ -41,4 +41,4 @@ Tres páginas decían algo que el código no hace. Si los seguiste, revisa tus a
 
 - [Índice de documentación](../README.md): la página de lo que estás creando
 - [Solución de problemas](../guides/troubleshooting.md): los problemas a los que se enfrenta primero la gente
-- [Config](../reference/config.md): cada campo `use*` y su valor predeterminado
+- [Configuración](../reference/config.md): cada campo `use*` y su valor predeterminado
