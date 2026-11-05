@@ -61,5 +61,5 @@ label: prop[str]
 
 - [Halaman](../pages/README.md): segmen dan tata letak dinamis
 - [Resep](../../../guides/recipes.md): alur masuk teruji yang dibangun di `useSession()`
-- [Config](../../../reference/config.md): mengaktifkan sesi dan lokal
-- [.nexy files](../../../views/nexy/README.md): tempat kait biasanya dipanggil
+- [Konfigurasi](../../../reference/config.md): mengaktifkan sesi dan lokal
+- [berkas .nexy](../../../views/nexy/README.md): tempat kait biasanya dipanggil
