@@ -23,7 +23,12 @@ dependencies = [
     # CVE-2026-48710 (BadHost): Host-header path confusion fixed in Starlette 1.0.1.
     "starlette>=1.0.1",
     "typer>=0.21.1",
-    "uvicorn[standard]>=0.40.0",
+    # uvicorn[standard] without pyyaml: Nexy passes its log config as a dict, never a YAML file.
+    "uvicorn>=0.40.0",
+    "httptools>=0.6.3",
+    # `nx migrate` reads DATABASE_URL from the .env that `nx new` writes.
+    "python-dotenv>=1.0.1",
+    "uvloop>=0.21.0; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'",
     "watchfiles>=1.0",
     "websockets>=13.0",
 ]
