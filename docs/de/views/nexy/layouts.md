@@ -69,7 +69,7 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 
 ## Was es nicht kann
 
-- Es kann nicht mit `layout.tsx`, `layout.vue` oder `layout.svelte` koexistieren: Ein Projekt im Servermodus hat keine Client-Routen ([modes](../../routing/fbr/modes.md)).
+- Es kann nicht mit `layout.tsx`, `layout.vue` oder `layout.svelte` koexistieren: Ein Projekt im Servermodus hat keine Client-Routen ([Modi](../../routing/fbr/modes.md)).
 - Es läuft nicht auf dem Client: Verwenden Sie eine Insel für Interaktivität.
 
 ## Nächste Schritte
