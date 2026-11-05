@@ -30,5 +30,5 @@ Die Symbolleiste ist ein Stilblock und ein vor `</body>` hinzugefügtes Skript: 
 
 ## Nächste Schritte
 
-- [Config](../reference/config.md): jede Option
+- [Konfiguration](../reference/config.md): jede Option
 - [Testen](testing.md): Testen Sie eine Seite oder eine Komponente
