@@ -1,12 +1,12 @@
 # 核心理念
 
-API 之前的心智模型：四个级别的阅读，然后是每一页上出现的概念。每个概念在这里都占一行，并有一个指向更深入页面的链接。
+文档的其余部分使用的单词 - 路由、页面、视图、组件、处理程序、端点 - 每个都在一行中，并带有指向更深入页面的链接。新来内克西？从[Nexy 是什么？](what-is-nexy.md) 开始。
 
 ## 如何阅读这些文档
 
 | 级别 | 它回答的问题 | 开始于 |
 |---|---|---|
-| 应用架构 | 哪一层响应请求，以及拒绝执行什么操作 | [架构](../architecture.md) |
+| 应用架构 | 哪一层响应请求，以及拒绝执行什么操作 | [Nexy 的工作原理](how-nexy-works.md) |
 | 应用结构 | 代码所在的位置以及文件的内容 | [项目结构](project-structure.md) |
 | 演示和渲染 | 读者看到什么以及谁生成 HTML | [视图](../views/README.md)、[渲染](../rendering/README.md) |
 | 应用交互 | 读者做了什么，以及响应了什么 | [行动](../guides/actions.md) |
@@ -56,7 +56,7 @@ API 之前的心智模型：四个级别的阅读，然后是每一页上出现�
 | 客户端模式 | `useCSR = True`：框架文件是路线，导航发生在浏览器中 |
 | SSR、ISR、CSR、岛屿 | 四种渲染模式，按页面决定，CSR 除外，CSR 是按项目决定的 ([渲染](../rendering/README.md)) |
 | 保湿 | 浏览器将框架附加到服务器已发送的 HTML ([岛屿](../rendering/islands.md)) |
-| 道具 | 父级传递给组件的值，在 `.nexy` 文件（[.nexy 文件](../views/nexy/README.md)）中声明为 `name: prop[type]` |
+| 道具 | 父级传递给组件的值，在 `.nexy` 文件 ([.nexy 文件](../views/nexy/README.md)) 中声明 `name: prop[type]` |
 
 ## 应用交互
 
@@ -64,18 +64,17 @@ API 之前的心智模型：四个级别的阅读，然后是每一页上出现�
 |---|---|
 | 行动 | 标记为 `@Action` 的 Python 函数，用作 `POST`，可从表单调用或作为类型化函数 ([操作](../guides/actions.md)) |
 | 形式 | 发布到操作的 HTML 表单，验证错误返回到页面 ([操作](../guides/actions.md)) |
-| 导航 | 预取的链接，以及读取路径、查询、cookie 和会话的钩子 ([钩子](../routing/fbr/navigation/hooks.md)) |
+| 导航 | 预取的链接，以及读取路径、查询、cookie 和会话的挂钩 ([钩子](../routing/fbr/navigation/hooks.md)) |
 | 数据获取 | 由需要它的页面或处理程序完成； Nexy 不提供客户端数据层（[处理函数](../routing/fbr/handlers/README.md)） |
 
 ## Nexy 不做什么
 
-身份验证、授权、数据库、国际化、后台作业、电子邮件、付款和搜索是 **您的应用程序的责任**，而不是框架的责任。 Nexy 给出了扩展点并说明了每个扩展点的插入位置：请参阅[边界](../architecture.md#boundaries)。
+身份验证、授权、数据库、国际化、后台作业、电子邮件、付款和搜索是 **您的应用程序的责任**，而不是框架的责任。 Nexy 给出了扩展点并说明了每个扩展点的插入位置：请参阅 [Nexy 留给您的内容 ](how-nexy-works.md#what-nexy-leaves-to-you)。
 
 原因并不是极简主义本身：选择 ORM 或身份验证库的框架已经决定了只有您的应用程序才能决定的事情。
 
 ## 后续步骤
 
-- [架构](../architecture.md)：层，以及谁构建什么
 - [项目结构](project-structure.md)：项目的每个文件夹和文件
 - [词汇表](../reference/glossary.md)：相同的单词，在一个字母索引中
-- [Nexy 的工作原理](how-nexy-works.md)：一个请求，一步一步
+- [Nexy 的工作原理](how-nexy-works.md)：层、谁构建什么以及 Nexy 留给您什么
