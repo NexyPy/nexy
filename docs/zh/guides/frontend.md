@@ -46,7 +46,7 @@ class NexyConfig(NexyConfigModel):
 
 Vite 处理客户端包； SSR HTML 由 esbuild 按文件生成。
 
-> [！注意]
+> [!NOTE]
 > 服务器渲染失败的路由将被报告为仅客户端路由，而不是整个构建失败。
 
 ## 造型
