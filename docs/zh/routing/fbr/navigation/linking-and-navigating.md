@@ -109,7 +109,7 @@ from nexy import Link
 在导航上，路由器：
 
 1. 将路径与客户端路由进行匹配（`.tsx`、`.jsx`、`.vue`、`.svelte`）；
-2. 导入并渲染页面及其 [layouts](../layouts/README.md) **first**，然后才使用 `history.pushState` 移动 URL，因此地址栏永远不会显示失败的页面；
+2. 导入并渲染页面及其 [布局](../layouts/README.md) **first**，然后才使用 `history.pushState` 移动 URL，因此地址栏永远不会显示失败的页面；
 3. 在 `document` 上调度 `nexy:navigated` 事件；
 4. 滚动到顶部，或滚动到 `#fragment` 目标。
 
