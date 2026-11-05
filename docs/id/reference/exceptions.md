@@ -2,7 +2,7 @@
 
 Sebuah permintaan bisa gagal di empat tempat, dan Nexy menjawab masing-masing permintaan secara berbeda. Halaman ini adalah indeksnya: temukan status yang Anda lihat, lalu baris yang menghasilkannya, lalu file yang menentukan isi.
 
-> [!CATATAN]
+> [!NOTE]
 > Ada tiga hal yang terpisah dan mudah tercampur: **Jawaban HTTP** (status dan isi), **halaman kesalahan** (`notfound.nexy`, `errors.nexy`), dan **baris log** (apa yang Anda baca di terminal). Mengubah halaman tidak mengubah status, dan menyesuaikan halaman tidak menyembunyikan log.
 
 ## Versi pendek
@@ -27,7 +27,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!PERINGATAN]
+> [!WARNING]
 > `curl` mengirimkan `Accept: */*` secara default, yang mendapatkan halaman HTML. Tambahkan `-H "Accept: application/json"` saat Anda menguji bentuk JSON. Browser terus mendapatkan halaman.
 
 ## Dari mana sebuah kegagalan berasal
@@ -44,7 +44,7 @@ Browser ──► Middleware ──► Router ──► Page or handler
 
 | Tahap | Apa yang bisa gagal | Jawabannya |
 |---|---|---|
-| Middleware | `middleware.py` Anda, CORS, sesi | status pengecualian, yang lain `500` |
+| Middleware | `middleware.py`, CORS, sesi | status pengecualian Anda, yang lain `500` |
 | Router | URL tidak cocok dengan file | `404` |
 | Validasi | segmen jalur tidak dapat dikonversi | `404` |
 | Validasi | bidang kueri, header, cookie, atau isi | `422` |
@@ -106,7 +106,7 @@ Isi `422` adalah bentuk standar FastAPI, sehingga klien dan SDK yang dihasilkan 
 
 Untuk formulir atau tindakan, klien menerima `ActionError` dengan `status` dan `detail`; a `422` juga mengisi `error.fields` dengan satu pesan per kolom. Lihat [Tindakan](../guides/actions.md#errors-and-failures).
 
-> [!TIPS]
+> [!TIP]
 > Validasi tanda tangan ketika aturannya tentang satu bidang (`limit: int = 10`). Validasi di isi ketika aturan memerlukan database atau bidang lain ("email ini sudah digunakan"): naikkan `HTTPException(409)` dan simpan pesan untuk klien.
 
 ## Halaman kesalahan khusus
@@ -133,7 +133,7 @@ Untuk formulir atau tindakan, klien menerima `ActionError` dengan `status` dan `
 
 Satu file di suatu tempat di rute menginstal jawaban untuk statusnya: salinan di root menjawab keseluruhan proyek, salinan di folder menjawab folder itu, dan file terdalam yang cocok dengan URL menang. URL di luar setiap salinan, dan status tanpa file sama sekali, mendapatkan halaman bergaya bawaan. Lihat [Halaman kesalahan per folder](../routing/fbr/errors/folder-pages.md).
 
-> [!PENTING]
+> [!IMPORTANT]
 > Halaman `errors.nexy` menggantikan halaman `500`; itu tidak menangkap pengecualian dan tidak mengubah baris log. Jika pengendali yang dimunculkan adalah halaman itu sendiri, halaman tersebut tidak dapat menampilkan detail kesalahannya sendiri: pertahankan `errors.nexy` sederhana dan independen.
 
 ## Pengecualian yang tidak tertangani
@@ -155,7 +155,7 @@ Pengecualian bahwa tidak ada yang tertangkap dicatat satu kali, dengan referensi
 
 Referensinya adalah delapan karakter, baru untuk setiap kegagalan. Pengunjung dapat mengutipnya, dan Anda menemukan penelusuran baliknya dengan mencari lognya. Baik pengecualian maupun kode tidak sampai ke pengunjung dalam produksi.
 
-> [!PERHATIAN]
+> [!CAUTION]
 > Jangan mengembalikan penelusuran balik ke pengunjung dalam produksi, dan jangan menaruh rahasia dalam pesan kesalahan: `detail` dari `HTTPException` dikirim ke klien, dengan lolos HTML. Letakkan rahasianya di log, bukan di jawabannya.
 
 ## Tindakan dan bentuk
