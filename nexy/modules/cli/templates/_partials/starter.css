@@ -29,10 +29,25 @@
     transform: translateY(14px);
   }
 }
+/* The mobile menu is a sheet: the scrim fades and the panel comes in from the left edge. */
+@keyframes nx-sheet-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes nx-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .nx-sheet,
+  .nx-sheet-scrim {
     animation: none !important;
   }
 }
@@ -136,6 +151,96 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+  }
+
+  /* The mobile menu: a sheet from the left edge, so the thumb reaches it. It is a
+     layer of its own, outside the header, because the header blurs its backdrop and
+     that would anchor a fixed panel to the bar instead of the screen. */
+  .nx-menu-button {
+    display: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid var(--border-second);
+    border-radius: 0.625rem;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+  }
+  .nx-menu-icon {
+    display: grid;
+    place-items: center;
+  }
+  .nx-menu-icon svg {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .nx-sheet-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+  }
+  .nx-sheet-scrim {
+    position: absolute;
+    inset: 0;
+    background: light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.6));
+    animation: nx-scrim-in 0.2s ease both;
+  }
+  .nx-sheet {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 18rem;
+    max-width: 85%;
+    padding: 1.25rem;
+    overflow-y: auto;
+    background: var(--background);
+    border-right: 1px solid var(--border);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.55);
+    animation: nx-sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .nx-sheet:focus {
+    outline: none;
+  }
+  .nx-sheet-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .nx-sheet-link {
+    padding: 0.6rem 0.85rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--foreground-second);
+    text-decoration: none;
+    transition: color 0.15s, background-color 0.15s;
+  }
+  .nx-sheet-link:hover,
+  .nx-sheet-link[aria-current="page"] {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+  /* The bar keeps its links on a wide screen and trades them for the button on a phone.
+     Only a header that carries a sheet does this, so a client-routed page, where no
+     script runs, keeps the links it has always shown. */
+  @media (max-width: 47.99rem) {
+    .nx-header[data-menu] .nx-nav-links {
+      display: none;
+    }
+    .nx-header[data-menu] .nx-menu-button {
+      display: grid;
+    }
+  }
+  /* The close button of the sheet is always visible, unlike the one in the bar. */
+  .nx-menu-close {
+    display: grid;
+    margin-left: auto;
   }
 
   /* The light/dark switch: the thumb holds the icon of the current mode. */
