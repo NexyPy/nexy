@@ -84,4 +84,4 @@ class AppController:
 - [依赖注入](dependency-injection.md)：服务和范围
 - [守卫和元数据](guards-and-metadata.md)：保护和记录路径
 - [路由](../README.md)：基于文件的路由器
-- [Config](../../reference/config.md)：每个选项，包括 `useRouter`
+- [配置](../../reference/config.md)：每个选项，包括 `useRouter`
