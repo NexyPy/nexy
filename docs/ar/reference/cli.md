@@ -94,7 +94,7 @@
 
 `nx build` يجمع المسارات، ثم يجمع العميل عندما يكون `useVite` قيد التشغيل.
 
-> [!ملاحظة]
+> [!NOTE]
 > ليس هناك `--static` علم. الاستضافة الثابتة هي خيار نشر، وليست وضع بناء - راجع [نشر](../deployment/README.md).
 
 ## العمل على Nexy نفسه
@@ -108,6 +108,6 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 ## الخطوات التالية
 
-- [البدء](../getting-started/quick-start.md)]: المشروع الأول
+- [البدء](../getting-started/quick-start.md): المشروع الأول
 - [الاختبار](../guides/testing.md): ما يجري `nx test`.
 - [نشر](../deployment/README.md): `build` و `start` في الإنتاج
