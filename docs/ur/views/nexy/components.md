@@ -23,12 +23,12 @@ from nexy import Audio
 
 ## ٹیگ فارم کے قواعد
 
-| ٹیگ میں | بن جاتا ہے |
+| ٹیگ میں | بن جاتا ہے۔ |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`، ایک حقیقی بولین |
-| `width=640` | `width=640`، ایک نمبر |
-| `src="{{ url }}"` | `src=(url)`، Jinja | میں جانچا گیا
+| `width=640` | `width=640`، ایک عدد |
+| `src="{{ url }}"` | `src=(url)`، Jinja میں تشخیص |
 | کوئی اور `value` | `"value"`، ایک تار |
 
 - ٹیگ کو ایک بڑے حروف سے شروع ہونا چاہیے اور فرنٹ میٹر میں درآمد کیا جانا چاہیے۔ ورنہ مرتب کرنے والا اٹھاتا ہے `Missing Import: <Name> used but not declared.`
