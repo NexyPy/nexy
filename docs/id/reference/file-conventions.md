@@ -26,7 +26,7 @@ Nama dan aturan yang dicadangkan di bawah `src/routes/`.
 | `forbidden.nexy` | 403 halaman untuk direktorinya | [Halaman kesalahan per folder](../routing/fbr/errors/folder-pages.md) |
 | `unauthorized.nexy` | 401 halaman untuk direktorinya | [Halaman kesalahan per folder](../routing/fbr/errors/folder-pages.md) |
 | `loading.nexy` | dicadangkan; belum ada efek runtime | [Halaman kesalahan](../routing/fbr/errors/README.md) |
-| `middleware.py` | dan `async def middleware(request, call_next)` membungkus permintaan direktori dan di bawah | [Middleware files](../routing/fbr/middleware/README.md) |
+| `middleware.py` | dan `async def middleware(request, call_next)` membungkus permintaan direktori dan di bawah | [Berkas middleware](../routing/fbr/middleware/README.md) |
 | `dependencies.py` | daftar `dependencies = [fn, ...]` yang diterapkan pada direktori dan turunannya | [Dependensi](../routing/fbr/dependencies/README.md) |
 | `__init__.py` | Python penanda paket | |
 | `favicon.ico` | bertugas di `/favicon.ico` | |
