@@ -5,7 +5,7 @@ Nexy merender Vue 3 komponen file tunggal di server, lalu Vue mengambil alihnya 
 | Mode | `nexyconfig.py` | Halaman adalah | Vue adalah |
 |---|---|---|---|
 | Server (default) | `useCSR = False` | `.nexy` file | [pulau](../../rendering/islands.md) di dalam halaman tersebut |
-| Klien | `useCSR = True` | `.vue` mengarsipkan | seluruh halaman, dengan [layouts](../frontend/layouts.md) dan router klien |
+| Klien | `useCSR = True` | `.vue` mengarsipkan | seluruh halaman, dengan [tata letak](../frontend/layouts.md) dan router klien |
 
 ## Mulai sebuah proyek
 
@@ -179,5 +179,5 @@ Semua kait lokasi mengembalikan referensi yang dihitung:
 
 ## Langkah selanjutnya
 
-- [Views](../README.md): membandingkan format yang dapat digunakan suatu halaman
+- [Tampilan](../README.md): membandingkan format yang dapat digunakan suatu halaman
 - [Frontend](../../guides/frontend.md): Vite dan build klien
