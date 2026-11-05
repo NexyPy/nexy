@@ -5,7 +5,7 @@ Nexy restitue les composants Solid 1.9 sur le serveur, puis Solid les reprend da
 | Mode | `nexyconfig.py` | Les pages sont | Solid est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
+| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [mises en page](../frontend/layouts.md) et un routeur client |
 
 ## Démarrer un projet
 
