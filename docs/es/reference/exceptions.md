@@ -2,7 +2,7 @@
 
 Una solicitud puede fallar en cuatro lugares y Nexy responde a cada uno de manera diferente. Esta página es el índice: busque el estado que ve, luego la línea que lo produjo, luego el archivo que decide el cuerpo.
 
-> [!NOTA]
+> [!NOTE]
 > Tres cosas están separadas y son fáciles de mezclar: la **respuesta HTTP** (un estado y un cuerpo), la **página de error** (`notfound.nexy`, `errors.nexy`) y la **línea de registro** (lo que lees en la terminal). Cambiar la página no cambia el estado y personalizar la página no oculta el registro.
 
 ## La versión corta
@@ -27,7 +27,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!ADVERTENCIA]
+> [!WARNING]
 > `curl` envía `Accept: */*` de forma predeterminada, que obtiene la página HTML. Agregue `-H "Accept: application/json"` cuando pruebe la forma JSON. Los navegadores siguen recibiendo páginas.
 
 ## De donde viene un fracaso
@@ -104,9 +104,9 @@ El cuerpo de `422` tiene la forma estándar de FastAPI, por lo que los clientes 
 {"detail": [{"loc": ["query", "q"], "msg": "Field required", "type": "missing"}]}
 ```
 
-Para un formulario o una acción, el cliente recibe un `ActionError` con `status` y `detail`; un `422` también llena `error.fields` con un mensaje por campo. Consulte [Acciones](../guides/actions.md#errors-and-failures).
+Para un formulario o una acción, el cliente recibe un `ActionError` con `status` y `detail`; un `422` también llena `error.fields` con un mensaje por campo. Ver [Acciones](../guides/actions.md#errors-and-failures).
 
-> [!CONSEJO]
+> [!TIP]
 > Validar en la firma cuando la regla sea de un campo (`limit: int = 10`). Validar en el cuerpo cuando la regla necesita la base de datos u otro campo ("este correo ya está usado"): subir `HTTPException(409)` y conservar el mensaje para el cliente.
 
 ## Páginas de error personalizadas
@@ -133,7 +133,7 @@ Para un formulario o una acción, el cliente recibe un `ActionError` con `status
 
 Un archivo en algún lugar de las rutas instala la respuesta para su estado: una copia en la raíz responde a todo el proyecto, una copia en una carpeta responde a esa carpeta y gana el archivo más profundo que coincida con la URL. Una URL fuera de cada copia y un estado sin ningún archivo obtienen las páginas con estilo integradas. Consulte [Páginas de error por carpeta](../routing/fbr/errors/folder-pages.md).
 
-> [!IMPORTANTE]
+> [!IMPORTANT]
 > Una página `errors.nexy` reemplaza a la página `500`; no detecta la excepción y no cambia la línea de registro. Si el controlador que generó es la página misma, la página no puede mostrar sus propios detalles de error: mantenga `errors.nexy` simple e independiente.
 
 ## Excepciones no controladas
@@ -155,7 +155,7 @@ Una excepción en la que no se detecta nada se registra una vez, con su referenc
 
 La referencia son ocho caracteres, nuevos para cada fallo. Un visitante puede citarlo y usted encontrará el rastreo buscándolo en el registro. Ni la excepción ni el código llegan al visitante en producción.
 
-> [!PRECAUCIÓN]
+> [!CAUTION]
 > No devuelva el rastreo a un visitante en producción y no incluya secretos en un mensaje de error: el `detail` de un `HTTPException` se envía al cliente con formato de escape HTML. Pon el secreto en el registro, no en la respuesta.
 
 ## Acciones y formas
@@ -169,13 +169,13 @@ Una acción es un punto final `POST` con una ruta generada. Sus fallos siguen la
 | una excepción no controlada | `500` | `ActionError`; la referencia está en el registro del servidor |
 | el encabezado `Origin` es otro sitio | `403` | rechazado antes de que se ejecute la acción |
 
-Un formulario sin JavaScript publicaciones en la ruta de acción; un éxito responde `303` de regreso a la página, un error muestra la página de error. Ver [Acciones](../guides/actions.md#forms-without-javascript).
+Un formulario sin JavaScript publicaciones en la ruta de acción; un éxito responde `303` de regreso a la página, un error muestra la página de error. Consulte [Acciones](../guides/actions.md#forms-without-javascript).
 
 ## Una lista de verificación cuando una página responde algo incorrecto
 
 1. **Mire el estado**, no la página. Un `notfound.nexy` personalizado todavía responde `404`.
 2. **Lea la terminal.** Una página que no se puede importar no está registrada, por lo que su URL responde `404` mientras el archivo existe. El error de importación está en el registro.
-3. **Verifique la extensión.** Con `useCSR = True`, las páginas `.nexy` pertenecen al modo servidor; una página en el modo incorrecto no es una ruta.
+3. **Verifique la extensión.** Con `useCSR = True`, `.nexy` las páginas pertenecen al modo servidor; una página en el modo incorrecto no es una ruta.
 4. **Verifique la profundidad.** Un `notfound.nexy` o `errors.nexy` solo funciona cuando existe la copia raíz.
 5. **Solicite JSON** con `Accept: application/json` para ver la forma que recibe su cliente API.
 6. **Cite la referencia** de un `500` cuando abra un número o busque en el registro.
