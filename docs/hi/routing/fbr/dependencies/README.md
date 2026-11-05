@@ -23,7 +23,7 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> [!नोट]
+> [!NOTE]
 > कार्यों को स्वयं सूचीबद्ध करें। सूची में एक `Depends(...)` ऑब्जेक्ट को नजरअंदाज कर दिया गया है।
 
 `src/routes/admin/` के अंतर्गत प्रत्येक रूट के लिए अब हेडर, `.py` हैंडलर और `.nexy` पेजों की आवश्यकता होती है।
@@ -64,7 +64,7 @@ async def GET(user: str = Depends(current_user)):
 
 ## एक हैंडलर पर गार्ड और मिडलवेयर
 
-`@UseGuard` और `@Middleware` एक हैंडलर के हस्ताक्षर को बदले बिना उस पर FastAPI निर्भरताएँ जोड़ते हैं। दोनों निर्भरताएँ हैं, ASGI मिडलवेयर नहीं:
+`@UseGuard` और `@Middleware` किसी हैंडलर के हस्ताक्षर को बदले बिना उस पर FastAPI निर्भरताएँ जोड़ते हैं। दोनों निर्भरताएँ हैं, ASGI मिडलवेयर नहीं:
 
 ```python filename="src/routes/admin/users/index.py"
 from nexy.decorators import Middleware, UseGuard
