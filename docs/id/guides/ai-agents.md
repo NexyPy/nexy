@@ -74,7 +74,7 @@ Agen menjawab lebih cepat ketika mengetahui halaman mana yang menyimpan jawabann
 | URL file | [perutean](../routing/README.md) |
 | segmen dinamis, tata letak, halaman kesalahan | [halaman](../routing/fbr/pages/README.md) |
 | jalur saat ini, kueri, cookie, sesi | [kait](../routing/fbr/navigation/hooks.md) |
-| untuk mengedit halaman | [.nexy files](../views/nexy/README.md) atau [views](../views/README.md) |
+| untuk mengedit halaman | [berkas .nexy](../views/nexy/README.md) atau [tampilan](../views/README.md) |
 | Markdown atau MDX | [penurunan harga](../views/nexy/markdown.md) |
 | pembantu HTML bawaan | [komponen](../views/nexy/components.md) |
 | mode rendering | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
@@ -84,7 +84,7 @@ Agen menjawab lebih cepat ketika mengetahui halaman mana yang menyimpan jawabann
 | formulir yang diposting dari halaman | [tindakan](actions.md) |
 | mengapa permintaan gagal, dan halaman mana yang menjawabnya | [pengecualian](../reference/exceptions.md) |
 | terjemahan | [i18n](i18n.md) |
-| bidang konfigurasi | [config](../reference/config.md) |
+| bidang konfigurasi | [konfigurasi](../reference/config.md) |
 | untuk menguji aplikasi | [pengujian](testing.md) |
 | build klien | [frontend](frontend.md) |
 
