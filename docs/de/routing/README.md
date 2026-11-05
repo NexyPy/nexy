@@ -1,10 +1,10 @@
-# Weiterleitung
+# Routenführung
 
 Nexy verfügt über zwei native Router. Sie können eine pro Funktion auswählen. Sie können in derselben Anwendung koexistieren.
 
 **Nicht sicher? Verwenden Sie dateibasiertes Routing.** Es deckt Seiten und API-Endpunkte ohne Einrichtung ab. Fügen Sie den modularen Router hinzu, wenn ein Backend Controller, injizierte Dienste oder Wachen benötigt.
 
-| Sie bauen | Verwenden Sie |
+| Sie bauen | und verwenden |
 |---|---|
 | Seiten, Inhalte, eine Site mit einigen Endpunkten | Dateibasiert |
 | Eine große API mit Diensten, die über mehrere Routen hinweg gemeinsam genutzt werden | Modular |
@@ -26,7 +26,7 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 FBR wird immer dann gescannt, wenn `src/routes/` vorhanden ist, auch wenn ein modularer Router montiert ist.
 
-## Koexistenz und Prioritäten
+## Zusammenleben und Prioritäten
 
 Sie können FBR, Modular und benutzerdefinierte Integration kombinieren. Nexy registriert diese Routen in der Reihenfolge, in der sie entdeckt werden. Wenn zwei Router denselben URL-Pfad definieren, gewinnt der zuerst registrierte. 
 
@@ -34,14 +34,13 @@ Sie können FBR, Modular und benutzerdefinierte Integration kombinieren. Nexy re
 
 ## Dateibasiertes Routing
 
-Eine Route ist eine Datei. Die URL ist der Pfad unter `src/routes/`, abzüglich der Erweiterung. Wie Next.js, a
-Das Projekt befindet sich in einem von zwei Modi, ausgewählt mit `useCSR`:
+Eine Route ist eine Datei. Die URL ist der Pfad unter `src/routes/`, abzüglich der Erweiterung. Wie Next.js befindet sich ein Projekt in einem von zwei Modi, ausgewählt mit `useCSR`:
 
 | | `useCSR = False` (Standard) | `useCSR = True` |
 |---|---|---|
 | Seiten | `.nexy`, `.md`, `.mdx` | Dateien Ihres Client-Frameworks |
-| Root-Layout | `layout.nexy` | `layout.tsx` (Reagieren) |
-| Client-Komponenten | zulässig, als Inseln innerhalb von Seiten | die Seiten selbst |
+| Root-Layout | `layout.nexy` | `layout.tsx` (React) |
+| Client-Komponenten | erlaubt, als Inseln innerhalb von Seiten | die Seiten selbst |
 | API-Routen | `.py` | `.py` |
 
 Siehe [Servermodus und Clientmodus](fbr/modes.md).
@@ -55,17 +54,16 @@ Siehe [Servermodus und Clientmodus](fbr/modes.md).
 | [fbr/middleware](fbr/middleware/README.md) | `middleware.py`, geerbt von Verzeichnis |
 | [fbr/errors](fbr/errors/README.md) | `notfound.nexy`, `errors.nexy`, JSON-Fehler |
 | [fbr/navigation](fbr/navigation/linking-and-navigating.md) | Verlinkung, Client-Navigation, [Hooks](fbr/navigation/hooks.md) |
-| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket-Handler |
+| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket Handler |
 | [fbr/inheritance](fbr/inheritance.md) | wie Layouts, Abhängigkeiten und Fehlerseiten erben |
 
 ## Modulares Routing
 
-Controller, Module und Abhängigkeitsinjektion im Stil von NestJS. Siehe
-[Modulares Routing](modular/README.md) und [Nexy und NestJS](modular/vs-nestjs.md).
+Controller, Module und Abhängigkeitsinjektion im Stil von NestJS. Siehe [Modulares Routing](modular/README.md) und [Nexy und NestJS](modular/vs-nestjs.md).
 
 ## Benutzerdefinierte Integration
 
-Sie können auch einen vorhandenen FastAPI-Router in Ihr Nexy-Projekt integrieren. Siehe [Benutzerdefinierte Routing-Integration](custom/README.md).
+Sie können auch einen vorhandenen FastAPI Router in Ihr Nexy-Projekt integrieren. Siehe [Benutzerdefinierte Routing-Integration](custom/README.md).
 
 ## Nächste Schritte
 
