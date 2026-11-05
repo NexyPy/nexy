@@ -13,7 +13,7 @@
 
 ## قم بإعداد جهاز التوجيه
 
-```python filename="nexyconfig.py"
+```python filename=""
 from nexy.core.models import NexyConfigModel
 from src.apps.app_module import AppModule
 
@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [!ملاحظة]
+> [!NOTE]
 > يستمر التوجيه المستند إلى الملف في العمل. إذا كان `src/routes/` موجودًا، فسيتم مسحه ضوئيًا حتى عند ضبط `useRouter`.
 
 ## اكتب وحدة تحكم
