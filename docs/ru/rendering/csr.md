@@ -86,4 +86,4 @@ export default function Home() {
 - [Режим сервера и режим клиента](../routing/fbr/modes.md): проверки и отклоненные файлы
 - [Макеты](../routing/fbr/layouts/README.md): какому файлу принадлежит документ
 - [SSR](ssr.md): значение по умолчанию, страница за страницей.
-- [Frontend](../guides/frontend.md): сервер разработки и сборка клиента
+- [Фронтенд](../guides/frontend.md): сервер разработки и сборка клиента
