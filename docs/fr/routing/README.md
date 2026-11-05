@@ -69,4 +69,4 @@ Vous pouvez également intégrer un routeur FastAPI existant dans votre projet N
 
 - [Routage basé sur des fichiers](fbr/README.md)
 - [Rendu](../rendering/README.md)
-- [Views](../views/README.md) : ce qui se passe à l'intérieur des fichiers
+- [Vues](../views/README.md) : ce qui se passe à l'intérieur des fichiers
