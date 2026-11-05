@@ -98,6 +98,6 @@ Pour Tortoise-ORM, répertoriez plutôt le module dans `TORTOISE_ORM` (voir ci-d
 
 ## Prochaines étapes
 
-- [Testing](testing.md) : tester les gestionnaires sur une base de données temporaire
+- [Tests](testing.md) : tester les gestionnaires sur une base de données temporaire
 - [Configuration](../reference/config.md)
-- [Deploy](../deployment/README.md) : définir `DATABASE_URL` en production
+- [Déploiement](../deployment/README.md) : définir `DATABASE_URL` en production
