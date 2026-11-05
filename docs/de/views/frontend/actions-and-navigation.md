@@ -10,12 +10,65 @@ Eine **Aktion** ist eine serverseitige Funktion, die eine Mutation verarbeitet (
 2.  **Atomare Ausführung**: Eine Aktion ist eine einzelne `POST` Anfrage.
 3.  **Ergebnisverarbeitung**: Aktionen geben ein typisiertes Ergebnis zurück, das der Client zum Aktualisieren der Benutzeroberfläche verwenden kann.
 
+```python filename="src/actions/todos.py"
+from pydantic import BaseModel
+from nexy.decorators import Action
+
+
+class Todo(BaseModel):
+    title: str
+    done: bool = False
+
+
+@Action
+async def add_todo(title: str) -> Todo:
+    return Todo(title=title)
+```
+
+Die Seite ruft es mit der deklarierten Eingabe Python auf und erhält ein eingegebenes `Todo` zurück:
+
+```tsx filename="src/routes/todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export default function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
 ## Clientseitige Navigation
 
 Die Navigation in Nexy ist „intelligent“. Anstelle eines vollständigen Neuladens des Browsers tauscht Nexy den Inhalt der aktuellen Seite aus, während die aktiven Layouts weiterhin bereitgestellt bleiben.
 
 - **Die `Link`-Komponente**: Verwenden Sie die Framework-spezifische `Link`-Komponente, um clientseitige Übergänge durchzuführen.
-- **Programmatische Navigation**: Verwenden Sie die Funktion `navigate()` von `@nexy/client`, um Seiten als Reaktion auf die Logik zu wechseln (z. B. nach einer erfolgreichen Anmeldung).
+- **Programmatische Navigation**: Verwenden Sie `useRouter()` von `@nexy/client` und rufen Sie `push()` auf, um die Seiten als Reaktion auf die Logik zu wechseln (z. B. nach einer erfolgreichen Anmeldung).
+
+```tsx filename="src/components/Nav.tsx"
+import { Link } from "@nexy/client";
+
+export function Nav() {
+  return (
+    <nav>
+      <Link href="/">Home</Link>
+      <Link href="/about" activeClassName="active">About</Link>
+    </nav>
+  );
+}
+```
+
+```tsx filename="src/components/Done.tsx"
+import { useRouter } from "@nexy/client";
+
+export function Done() {
+  const router = useRouter();
+  return <button onClick={() => router.push("/dashboard")}>Continue</button>;
+}
+```
 
 ## Koordination: Aktion → Navigation
 
@@ -24,8 +77,36 @@ Das häufigste Muster besteht darin, eine Aktion auszuführen und den Benutzer d
 **Der Revalidierungsablauf:**
 1.  Der Client ruft eine Aktion auf.
 2.  Die Aktion wird auf dem Server ausgeführt und ruft `revalidate("/path")` auf.
-3.  Der Server gibt das Ergebnis zusammen mit einem Signal zum Aktualisieren des angegebenen Pfads zurück.
+3.  Der Server gibt das Ergebnis mit einem `x-nexy-revalidate`-Header zurück, der die veralteten Pfade benennt.
 4.  Der Client aktualisiert den Seiteninhalt, um den neuen Status widerzuspiegeln.
+
+```python filename="src/actions/session.py"
+from nexy.decorators import Action, revalidate
+
+
+@Action
+async def sign_in(email: str, password: str) -> bool:
+    ok = check_password(email, password)
+    revalidate("/dashboard")
+    return ok
+```
+
+```tsx filename="src/routes/login.tsx"
+import { useAction, useRouter } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export default function Login() {
+  const router = useRouter();
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) router.push("/dashboard");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+
+`check_password` steht für Ihren eigenen Scheck. Siehe [Aktionen](../../guides/actions.md) für Fehler, Formulare ohne JavaScript und Sicherheit.
 
 ## Framework-Implementierung
 
