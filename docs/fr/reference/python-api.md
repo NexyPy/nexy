@@ -1,7 +1,6 @@
-# API Python
+# Python API
 
-Chaque nom Nexy exporte vers votre code Python, par module. Un test vérifie cette page par rapport au code dans
-dans les deux sens : un nom répertorié ici doit exister et un nom que le code exporte doit être répertorié ici.
+Chaque nom Nexy exporte vers votre code Python, par module. Un test vérifie cette page par rapport au code dans les deux sens : un nom répertorié ici doit exister et un nom que le code exporte doit être répertorié ici.
 
 ## `nexy`
 
@@ -9,7 +8,7 @@ Composants pour les modèles `.nexy` et les hooks de requête.
 
 | Nom | Qu'est-ce que c'est |
 |---|---|
-| `Audio`, `Video` | lecteurs natifs `<audio>` et `<video>`, voir [composants](../views/nexy/components.md) |
+| Lecteurs `Audio`, `Video` | natifs `<audio>` et `<video>`, voir [composants](../views/nexy/components.md) |
 | `Image` | et `<img>` qui se charge paresseusement par défaut |
 | `Link` | un côté client `<a>` avec prélecture facultative |
 | `Import` | importer un composant client dans une page `.nexy` |
@@ -37,22 +36,21 @@ Les hooks fonctionnent uniquement à l'intérieur d'une requête : voir [hooks]
 
 ## `nexy.http`
 
-Le vocabulaire HTTP d'un gestionnaire. Importez depuis ici plutôt que depuis FastAPI, vos gestionnaires dépendent donc
-sur le contrat de Nexy.
+Le vocabulaire HTTP d'un gestionnaire. Importez depuis ici plutôt que depuis FastAPI, vos gestionnaires dépendent donc du contrat de Nexy.
 
 | Nom | Qu'est-ce que c'est |
 |---|---|
 | `Request`, `Response` | la requête entrante et une réponse sortante |
-| `HTTPException` | arrêter le gestionnaire avec un statut et un `detail` |
+| `HTTPException` | arrête le gestionnaire avec un statut et un `detail` |
 | `status` | codes d'état nommés, tels que `status.HTTP_404_NOT_FOUND` |
 | `Depends` | exécutez d'abord une fonction et transmettez son résultat dans |
-| `Header`, `Cookie`, `Query`, `Path`, `Body` | où un paramètre provient de |
+| `Header`, `Cookie`, `Query`, `Path`, `Body` | d'où provient un paramètre |
 | `Form`, `File`, `UploadFile` | champs de formulaire et téléchargements (besoin de `python-multipart`) |
 | `BackgroundTasks` | travail qui s'exécute après l'envoi de la réponse |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | réponses avec un type de contenu fixe |
 | `RedirectResponse` | une redirection HTTP |
 | `redirect`, `permanentRedirect` | déclenchent une redirection (307, 308) depuis une page, un gestionnaire, un contrôleur ou un garde |
-| `notFound`, `forbidden`, `unauthorized` | relancer un 404, 403 ou 401 aux mêmes endroits |
+| `notFound`, `forbidden`, `unauthorized` | relancent un 404, 403 ou 401 aux mêmes endroits |
 | `FileResponse`, `StreamingResponse` | répondent avec un fichier ou un flux |
 
 ## `nexy.decorators`
@@ -64,7 +62,7 @@ sur le contrat de Nexy.
 | `Module`, `Controller` | déclarent un module et un contrôleur dans le [routeur modulaire](../routing/modular/README.md) |
 | `Injectable`, `Container`, `Scope` | [injection de dépendances](../routing/modular/dependency-injection.md) et ses durées de vie |
 | `UseGuard`, `Middleware` | gardent ou enveloppent un gestionnaire, voir [gardes](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`, `useRoute`, `RouteMeta` | nommer une route et la décrire pour OpenAPI |
+| `UseRoute`, `useRoute`, `RouteMeta` | nommer un itinéraire et le décrire pour OpenAPI |
 | `UseResponse`, `ResponseMeta` | décrire la réponse d'un itinéraire |
 | `HTTP_METHODS` | les méthodes HTTP qu'un fichier de gestionnaire peut définir |
 | `ACTIONS_STORE` | le registre des actions, pour les outillages et les tests |
@@ -78,5 +76,5 @@ sur le contrat de Nexy.
 ## Où ensuite
 
 - [Config](config.md) : les champs `use*` derrière ces noms
-- [Exceptions et erreurs](exceptions.md) : à quoi répond chaque échec
+- [Exceptions et erreurs](exceptions.md) : à quoi répond chaque échec
 - [Index de la documentation](../README.md) : la page de ce que vous construisez
