@@ -88,7 +88,7 @@ def test_form_posts_to_action(client):
 
 Panggilan dengan JSON menjawab dengan hasilnya, dan `422` dengan bidang yang tidak valid.
 
-> [!CATATAN]
+> [!NOTE]
 > jalur tindakan khusus untuk proyek dan dihasilkan. Jangan pernah melakukan hardcode `/_nx_<hash>` dalam pengujian.
 
 ## Uji komponen `.nexy`
