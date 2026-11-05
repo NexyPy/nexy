@@ -1,11 +1,11 @@
-{%- macro nav_link(href, label) -%}
+{%- macro nav_link(href, label, extra_class="nx-nav-link") -%}
 {%- if useCSR -%}
-<Link href="{{ href }}" {{ cls }}="nx-nav-link">{{ label }}</Link>
+<Link href="{{ href }}" {{ cls }}="{{ extra_class }}">{{ label }}</Link>
 {%- else -%}
-<a href="{{ href }}" {{ cls }}="nx-nav-link">{{ label }}</a>
+<a href="{{ href }}" {{ cls }}="{{ extra_class }}">{{ label }}</a>
 {%- endif -%}
 {%- endmacro -%}
-<header {{ cls }}="nx-header">
+<header {{ cls }}="nx-header"{% if not useCSR %} data-menu{% endif %}>
   <nav {{ cls }}="nx-container nx-header-inner" aria-label="Main">
     <div {{ cls }}="nx-nav">
       <a href="/" aria-label="Nexy, home" {{ cls }}="nx-brand">
@@ -22,16 +22,75 @@
       <ThemeToggle />
 {% else %}
 {% include "theme_switch.html.jinja2" %}
+      <button type="button" {{ cls }}="nx-menu-button" aria-label="Open menu" aria-expanded="false" aria-controls="nx-menu" data-menu-button>
+        <span {{ cls }}="nx-menu-icon" data-menu-open aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16" /></svg></span>
+        <span {{ cls }}="nx-menu-icon" data-menu-close aria-hidden="true" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
+      </button>
 {% endif %}
     </div>
   </nav>
 </header>
 {% if not useCSR %}
+<div {{ cls }}="nx-sheet-layer" data-menu-panel hidden>
+  <div {{ cls }}="nx-sheet-scrim" data-menu-scrim aria-hidden="true"></div>
+  <div {{ cls }}="nx-sheet" id="nx-menu" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1" data-menu-dialog>
+    <button type="button" {{ cls }}="nx-menu-button nx-menu-close" aria-label="Close menu" data-menu-dismiss>
+      <span {{ cls }}="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
+    </button>
+    <nav {{ cls }}="nx-sheet-links" aria-label="Menu">
+      {{ nav_link("/", "Home", "nx-sheet-link") }}
+      {{ nav_link("/about", "About", "nx-sheet-link") }}
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-sheet-link">Docs</a>
+    </nav>
+  </div>
+</div>
 <script>
   // Server pages reload on every link: mark the current one.
   const here = location.pathname.replace(/\/$/, "") || "/";
   for (const link of document.querySelectorAll("header a[href^='/']")) {
     if ((link.pathname.replace(/\/$/, "") || "/") === here) link.setAttribute("aria-current", "page");
   }
+
+  // The mobile menu: a sheet from the left edge. The button, the scrim and Escape
+  // all close it, and the page behind it holds still while it is open.
+  (function () {
+    const button = document.querySelector("[data-menu-button]");
+    const layer = document.querySelector("[data-menu-panel]");
+    if (!button || !layer) return;
+    const dialog = layer.querySelector("[data-menu-dialog]");
+    const open_icon = button.querySelector("[data-menu-open]");
+    const close_icon = button.querySelector("[data-menu-close]");
+    let opener = null;
+
+    function set_open(open) {
+      button.setAttribute("aria-expanded", String(open));
+      button.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      layer.hidden = !open;
+      document.body.style.overflow = open ? "hidden" : "";
+      open_icon.hidden = open;
+      close_icon.hidden = !open;
+      if (open) {
+        opener = document.activeElement;
+        dialog.focus();
+      } else if (opener) {
+        opener.focus();
+        opener = null;
+      }
+    }
+
+    button.addEventListener("click", function () {
+      set_open(button.getAttribute("aria-expanded") !== "true");
+    });
+
+    // The scrim and the close button both dismiss: one listener on the layer reads the target.
+    layer.addEventListener("click", function (event) {
+      if (event.target.closest("[data-menu-dismiss],[data-menu-scrim]")) set_open(false);
+    });
+
+    // The panel holds the focus while it is open, so Escape arrives here without a global listener.
+    layer.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") set_open(false);
+    });
+  })();
 </script>
 {% endif %}
