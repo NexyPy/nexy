@@ -54,9 +54,9 @@ setMetadata(title_template="%s | My site")
 
 ## खेत
 
-| फ़ील्ड | को | के रूप में लिखा गया है
+| मैदान | के रूप में लिखा गया है |
 |---|---|
-| `title` | `<title>`; `title_template="%s \| My site"` के साथ शीर्षक को `%s` | में रखा गया है
+| `title` | `<title>`; `title_template="%s \| My site"` के साथ शीर्षक को `%s` में रखा गया है |
 | `description` | `<meta name="description">` |
 | `canonical` | `<link rel="canonical">` |
 | `robots` | `<meta name="robots">`, उदाहरण के लिए `"noindex"` |
