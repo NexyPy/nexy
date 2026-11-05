@@ -1,8 +1,6 @@
 # Páginas
 
-Um arquivo de página retorna HTML. O tipo de arquivo que você usa altera a forma como ele é produzido: consulte
-[visualizações](../../../views/README.md). Esta seção cobre as regras de roteamento que se aplicam a cada página
-formato.
+Um arquivo de página retorna HTML. O tipo de arquivo usado altera a forma como ele é produzido: consulte [visualizações](../../../views/README.md). Esta seção aborda as regras de roteamento que se aplicam a todos os formatos de página.
 
 | Página | O que cobre |
 |---|---|
@@ -20,30 +18,25 @@ title: prop[str] = "About"
 <h1>{{ title }}</h1>
 ```
 
-É servido em `/about`. O frontmatter entre as `---` linhas é Python; a marcação abaixo é
-Jinja2. Consulte [arquivos .nexy](../../../views/nexy/README.md).
+É servido em `/about`. O frontmatter entre as `---` linhas é Python; a marcação abaixo é Jinja2. Veja [arquivos .nexy](../../../views/nexy/README.md).
 
 ## Formatos de página
 
 | Modo | Arquivo | Produz |
 |---|---|---|
-| Servidor | `.nexy` | HTML renderizado por servidor de Python e Jinja2 |
+| Servidor | `.nexy` | HTML renderizado pelo servidor de Python e Jinja2 |
 | Servidor | `.md`, `.mdx` | páginas de conteúdo |
 | Cliente | `.tsx`, `.jsx`, `.vue`, `.svelte` | componentes do framework, renderizados e navegados no navegador |
 
-Os dois modos não podem ser misturados em um projeto. Consulte [Modo servidor e modo cliente](../modes.md).
-Os componentes do cliente ainda podem aparecer no modo servidor, como [ilhas](../../../rendering/islands.md)
-dentro de uma página `.nexy`.
+Os dois modos não podem ser misturados em um projeto. Consulte [Modo servidor e modo cliente](../modes.md). Os componentes do cliente ainda podem aparecer no modo servidor, como [ilhas](../../../rendering/islands.md) dentro de uma página `.nexy`.
 
 ## Cache incremental
 
-Adicione `revalidate = 60` a uma página `.nexy` para armazená-la em cache com obsoleto enquanto revalida. Veja
-[ISR](../../../rendering/isr.md).
+Adicione `revalidate = 60` a uma página `.nexy` para armazená-la em cache com obsoleto enquanto revalida. Veja [ISR](../../../rendering/isr.md).
 
-## Lendo a solicitação
+## Lendo o pedido
 
-Uma página lê o caminho, a string de consulta, os cookies e a sessão por meio de ganchos. Veja
-[Ganchos](../navigation/hooks.md).
+Uma página lê o caminho, a string de consulta, os cookies e a sessão por meio de ganchos. Consulte [Ganchos](../navigation/hooks.md).
 
 ## Próximas etapas
 
