@@ -4,9 +4,9 @@ Nexy کے دو مقامی راؤٹرز ہیں۔ آپ فی فیچر میں سے �
 
 **یقین نہیں ہے؟ فائل پر مبنی استعمال کریں۔ روٹنگ** یہ بغیر کسی سیٹ اپ کے صفحات اور API کے اختتامی نکات کا احاطہ کرتا ہے۔ ماڈیولر راؤٹر شامل کریں جب بیک اینڈ کو کنٹرولرز، انجیکشن سروسز یا گارڈز کی ضرورت ہو۔
 
-| آپ تعمیر کر رہے ہیں | استعمال کریں |
+| آپ تعمیر کر رہے ہیں۔ | استعمال کریں۔ |
 |---|---|
-| صفحات، مواد، چند اختتامی نقطوں والی سائٹ | فائل پر مبنی |
+| صفحات، مواد، چند اختتامی پوائنٹس والی سائٹ | فائل پر مبنی |
 | تمام راستوں پر مشترکہ خدمات کے ساتھ ایک بڑا API | ماڈیولر |
 | دونوں: لوگوں کے لیے صفحات، مشینوں کے لیے ایک منظم API | فائل پر مبنی اور ماڈیولر ایک ساتھ |
 
@@ -19,10 +19,10 @@ src/routes/(app)/dashboard.nexy →  /dashboard
 src/routes/api/users.py         →  /api/users  (GET, POST, …)
 ```
 
-| راؤٹر | ذریعہ | | کے ذریعہ فعال
+| راؤٹر | ماخذ | کی طرف سے فعال |
 |---|---|---|
-| [فائل پر مبنی (FBR)](fbr/README.md) | `src/routes/` | کے تحت ہر فائل ڈائریکٹری موجود ہے |
-| [ماڈیولر](modular/README.md) | کنٹرولرز اور ماڈیولز | `useRouter = AppModule` `nexyconfig.py` | میں
+| [فائل پر مبنی (FBR)](fbr/README.md) | ہر فائل کے تحت `src/routes/` | ڈائریکٹری موجود ہے |
+| [ماڈیولر](modular/README.md) | کنٹرولرز اور ماڈیولز | `useRouter = AppModule` میں `nexyconfig.py` |
 
 جب بھی `src/routes/` موجود ہوتا ہے تو ایف بی آر کو اسکین کیا جاتا ہے، یہاں تک کہ ماڈیولر راؤٹر لگا ہوا ہو۔
 
@@ -38,24 +38,24 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 | | `useCSR = False` (پہلے سے طے شدہ) | `useCSR = True` |
 |---|---|---|
-| آپ کے کلائنٹ فریم ورک کے صفحات | `.nexy`، `.md`، `.mdx` | فائلیں |
+| صفحات | `.nexy`، `.md`، `.mdx` | آپ کے کلائنٹ فریم ورک کی فائلیں۔ |
 | روٹ لے آؤٹ | `layout.nexy` | `layout.tsx` (React) |
-| کلائنٹ کے اجزاء | کی اجازت ہے، جیسا کہ صفحات کے اندر جزیرے | صفحات خود |
-| API روٹس | `.py` | `.py` |
+| کلائنٹ کے اجزاء | صفحات کے اندر جزائر کے طور پر اجازت دی گئی ہے۔ | صفحات خود |
+| API کے راستے | `.py` | `.py` |
 
 دیکھیں [سرور موڈ اور کلائنٹ موڈ](fbr/modes.md)۔
 
-| سیکشن | جس کا احاطہ کرتا ہے |
+| سیکشن | یہ کیا احاطہ کرتا ہے |
 |---|---|
 | [fbr/صفحات](fbr/pages/README.md) | صفحات، [متحرک راستے](fbr/pages/dynamic-routes.md) اور روٹ گروپس |
 | [fbr/layouts](fbr/layouts/README.md) | `layout.nexy`، `layout.tsx`، `layout.vue`، `layout.svelte` |
-| [fbr/handlers](fbr/handlers/README.md) | `.py` روٹ ہینڈلرز، [تصدیق اور غلطیاں](fbr/handlers/validation-and-errors.md) |
-| [fbr/dependencies](fbr/dependencies/README.md) | `dependencies.py` اور گارڈز، ڈائرکٹری سے وراثت میں ملے |
-| [fbr/midleware](fbr/middleware/README.md) | `middleware.py`، ڈائرکٹری | سے وراثت میں ملا۔
-| [fbr/غلطیاں](fbr/errors/README.md) | `notfound.nexy`، `errors.nexy`، JSON کی خرابیاں |
-| [fbr/navigation](fbr/navigation/linking-and-navigating.md) | لنکنگ، کلائنٹ نیویگیشن، [ہکس](fbr/navigation/hooks.md) |
-| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket ہینڈلر |
-| [fbr/inheritance](fbr/inheritance.md) | ترتیب، انحصار اور غلطی کے صفحات کیسے وراثت میں آتے ہیں |
+| [fbr/handlers](fbr/handlers/README.md) | `.py` روٹ ہینڈلر، [توثیق اور غلطیاں](fbr/handlers/validation-and-errors.md) |
+| [fbr/انحصار](fbr/dependencies/README.md) | `dependencies.py` اور گارڈز، ڈائرکٹری کے ذریعہ وراثت میں ملے |
+| [fbr/midleware](fbr/middleware/README.md) | `middleware.py`، ڈائرکٹری سے وراثت میں ملا |
+| [fbr/غلطیاں](fbr/errors/README.md) | `notfound.nexy`، `errors.nexy`، JSON کی غلطیاں |
+| [fbr/نیویگیشن](fbr/navigation/linking-and-navigating.md) | لنکنگ، کلائنٹ نیویگیشن، [ہکس](fbr/navigation/hooks.md) |
+| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket ہینڈلرز |
+| [fbr/وراثت](fbr/inheritance.md) | لے آؤٹ، انحصار اور خرابی والے صفحات کیسے وراثت میں آتے ہیں۔ |
 
 ## ماڈیولر روٹنگ
 
