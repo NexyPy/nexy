@@ -17,7 +17,7 @@ class NexyConfig(NexyConfigModel):
 
 ## File rute
 
-| Ekstensi | Dirender |
+| Ekstensi | Diberikan |
 |---|---|
 | `.nexy`, `.md` | oleh Nexy pada waktu permintaan |
 | `.mdx`, `.tsx`, `.jsx`, `.vue`, `.svelte` | oleh kerangka klien; dipra-render ke HTML pada waktu pembuatan, kemudian diambil alih oleh bundel klien |
@@ -44,7 +44,7 @@ Browser hanya berbicara ke port `3000`. Tidak ada URL kedua untuk dibuka dan tid
 - paket klien, dengan aset di bawah `__nexy__/client/`;
 - rute Python yang dikompilasi.
 
-Vite menangani bundel klien; SSR HTML diproduksi per file oleh esbuild.
+Vite membangun bundel klien; HTML server dari setiap halaman komponen ditulis pada waktu pembuatan.
 
 > [!NOTE]
 > rute yang rendering servernya gagal dilaporkan sebagai rute khusus klien dan bukannya menggagalkan keseluruhan build.
@@ -53,10 +53,10 @@ Vite menangani bundel klien; SSR HTML diproduksi per file oleh esbuild.
 
 `nexy new` meminta mode gaya dan mengaturnya untuk kerangka klien yang Anda pilih: Tailwind, UnoCSS atau CSS biasa. Token desain (warna, font, tema gelap) adalah variabel CSS di `src/globale.css`, file yang dibuat oleh scaffold.
 
-| Mode | Halaman awal ditulis dengan |
+| Modus | Halaman awal ditulis dengan |
 |---|---|
-| Tailwind, UnoCSS | kelas utilitas dalam markup, dengan token dipetakan ke nama kelas |
-| Nama kelas semantik CSS biasa | dan CSS di `src/globale.css` |
+| Tailwind, UnoCSS | kelas utilitas di markup, dengan token dipetakan ke nama kelas |
+| CSS biasa | nama kelas semantik dan CSS di `src/globale.css` |
 
 Ikuti mode proyek Anda saat Anda menambahkan halaman: kelas utilitas dalam proyek utilitas, CSS dalam CSS biasa. Simpan komponen CSS yang tidak dapat diungkapkan oleh utilitas di blok `<style>` komponen. Dalam proyek server (`.nexy` halaman) UnoCSS membaca file `.nexy` untuk kelas; Tailwind menemukannya dengan sendirinya.
 
