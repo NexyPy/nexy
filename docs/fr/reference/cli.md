@@ -95,7 +95,7 @@ Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas enco
 `nx build` compile les routes, puis regroupe le client lorsque `useVite` est activé.
 
 > [!NOTE]
-> il n'y a pas de drapeau `--static`. L'hébergement statique est un choix de déploiement, pas un mode de construction - voir [Deploy](../deployment/README.md).
+> il n'y a pas de drapeau `--static`. L'hébergement statique est un choix de déploiement, pas un mode de construction - voir [Déploiement](../deployment/README.md).
 
 ## Travailler sur Nexy lui-même
 
