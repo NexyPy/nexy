@@ -54,15 +54,15 @@ setMetadata(title_template="%s | My site")
 
 ## ক্ষেত্রগুলি
 
-| ক্ষেত্র | হিসাবে লিখিত |
+| মাঠ | হিসেবে লেখা |
 |---|---|
-| `title` | `<title>`; `title_template="%s \| My site"` এর সাথে শিরোনামটি `%s` | এ রাখা হয়েছে
+| `title` | `<title>`; `title_template="%s \| My site"` এর সাথে শিরোনামটি `%s` এ রাখা হয়েছে |
 | `description` | `<meta name="description">` |
 | `canonical` | `<link rel="canonical">` |
 | `robots` | `<meta name="robots">`, উদাহরণস্বরূপ `"noindex"` |
 | `icon` | `<link rel="icon">` |
 | `og` | প্রতি চাবিতে একটি `<meta property="og:...">`: `{"image": "/cover.png"}` দেয় `og:image` |
-| `twitter` | একটি `<meta name="twitter:...">` প্রতি কী |
+| `twitter` | প্রতি চাবিতে একটি `<meta name="twitter:...">` |
 | `extra` | বৈশিষ্ট্য নির্দেশের একটি তালিকা, একটি `<meta>` প্রতিটি: `[{"name": "theme-color", "content": "#fff"}]` |
 
 একটি পরবর্তী কল একটি মান প্রতিস্থাপন করে; `og`, `twitter` এবং `extra` যা আছে তাতে যোগ করুন। একটি ক্ষেত্র যা বিদ্যমান নেই তা উত্থাপন করে `TypeError`, তাই একটি টাইপো চুপচাপ কিছু করে না।
