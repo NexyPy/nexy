@@ -1,17 +1,14 @@
 # 食谱
 
-几乎每个应用程序都需要三件事，作为您可以复制的完整文件。下面的每个代码块都带有
-`filename` 被写入一个新项目并由测试套件执行，所以您读到的就是
-运行。
+几乎每个应用程序都需要三件事，作为您可以复制的完整文件。下面带有 `filename` 的每个代码块都被写入一个新项目并由测试套件执行，因此您阅读的就是运行的。
 
 他们使用简单的 API 处理程序；相同的功能在任一[模式](../routing/fbr/modes.md)下的页面后面工作。
 
-## 通过会话登录
+## 使用会话登录
 
-访问者发布姓名和密码，服务器会在签名的 cookie 中记住它们，以及所有内容
-`/api/account` 下的内容对其他人不开放。
+访问者发布名称和密码，服务器会在签名的 cookie 中记住它们，并且 `/api/account` 下的所有内容对其他人都是关闭的。
 
-打开会话。他们需要`itsdangerous`（`uv add itsdangerous`）：
+打开会话。他们需要 `itsdangerous`（`uv add itsdangerous`）：
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -75,14 +72,12 @@ async def GET(request: Request):
     return {"user": request.session["user"]}
 ```
 
-> [!注意]
-> 不要将真实密码泄露给来源。存储哈希值 (`argon2`, `bcrypt`) 并读取
-> 来自环境的密钥。会话 cookie 已签名，未加密。
+> [！注意]
+> 将真实密码保留在来源之外。存储哈希值 (`argon2`, `bcrypt`) 并从环境中读取密钥。会话 cookie 已签名，未加密。
 
 ## 具有创建、读取和删除功能的 JSON API
 
-模块中的商店、收集路线和物品路线。将字典替换为
-[数据库](databases.md)，数据必须在重新启动后继续存在。
+模块中的商店、收集路线和物品路线。当数据必须在重新启动后继续存在时，将字典替换为 [数据库](databases.md)。
 
 ```python filename="src/notes.py"
 from pydantic import BaseModel
@@ -134,14 +129,11 @@ async def DELETE(id: int) -> dict[str, bool]:
     return {"deleted": True}
 ```
 
-在代码运行之前，不适合 `NewNote` 的主体会被 `422` 拒绝，并且返回
-注释成为记录的响应。参见
-[验证和错误](../routing/fbr/handlers/validation-and-errors.md)。
+在代码运行之前，不适合 `NewNote` 的正文将被 `422` 拒绝，并且返回注释将成为记录的响应。请参阅[验证和错误](../routing/fbr/handlers/validation-and-errors.md)。
 
 ## 接收文件
 
-上传需要`python-multipart`（`uv add python-multipart`）。请自行检查尺寸，切勿使用
-客户端的文件名作为路径：
+上传需要 `python-multipart`（`uv add python-multipart`）。自己检查大小，切勿使用客户端的文件名作为路径：
 
 ```python filename="src/routes/api/upload.py"
 from pathlib import Path
@@ -159,8 +151,7 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
     return {"name": name, "size": len(data)}
 ```
 
-`Path(...).name` 删除客户端输入名称的任何文件夹，例如 `../../etc/passwd`。保存
-bytes 在您生成的名称下，而不是在此名称下。
+`Path(...).name` 删除客户端输入名称的任何文件夹，例如 `../../etc/passwd`。将字节保存在您生成的名称下，而不是此名称下。
 
 ## 后续步骤
 
