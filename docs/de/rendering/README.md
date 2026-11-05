@@ -1,10 +1,8 @@
-# Rendering
+# Rendern
 
-Das Rendern beantwortet eine Frage: **Wer produziert den HTML-Code und wann**. Nexy hat vier Antworten und eine
-Standard.
+Das Rendern beantwortet eine Frage: **Wer produziert den HTML-Code und wann**. Nexy hat vier Antworten und eine Standardantwort.
 
-**Nicht sicher? Behalten Sie SSR bei.** Ändern Sie eine Seite nur, wenn Sie den Grund nennen können: Inhalte, die sich selten ändern
-(ISR), ein Widget, das den Browser benötigt (Insel), oder App-ähnliche Navigation (CSR).
+**Nicht sicher? Behalten Sie SSR bei.** Ändern Sie eine Seite nur, wenn Sie den Grund nennen können: Inhalt, der sich selten ändert (ISR), ein Widget, das den Browser benötigt (Insel) oder App-ähnliche Navigation (CSR).
 
 ## Wie es funktioniert
 
@@ -31,19 +29,15 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 Zwei Fakten erklären die meisten Überraschungen.
 
-1. **Ein Projekt befindet sich in einem Modus.** `useCSR` wählt zwischen Servermodus (SSR, ISR, Inseln, `.nexy`,
-   `.md`, `.mdx` Routen) und Client-Modus (Framework-Routen und ein Client-Router). Die beiden können nicht sein
-   gemischt: siehe [Servermodus und Clientmodus](../routing/fbr/modes.md).
-2. **Im Servermodus erfolgt der Modus pro Seite.** Eine Seite kann mit `revalidate` zwischengespeichert werden, eine andere
-   kann eine Insel halten, ein Dritter kann keines von beidem.
+1. **Ein Projekt befindet sich in einem Modus.** `useCSR` wählt zwischen Servermodus (SSR, ISR, Inseln, `.nexy`, `.md`, `.mdx` Routen) und Clientmodus (Framework-Routen und ein Client-Router). Die beiden können nicht gemischt werden: siehe [Servermodus und Clientmodus](../routing/fbr/modes.md).
+2. **Im Servermodus erfolgt der Modus pro Seite.** Eine Seite kann mit `revalidate` zwischengespeichert werden, eine andere kann eine Insel enthalten, eine dritte kann keines von beidem.
 
-Der Client-Modus sendet immer noch ein echtes Dokument: Nexy rendert es in Node für die erste Antwort, dann die
-Der Browser übernimmt die Navigation. Eine CSR-Seite ist keine leere Seite, die auf ein Paket wartet.
+Im Client-Modus wird immer noch ein echtes Dokument gesendet: Nexy rendert es in Node für die erste Antwort, dann übernimmt der Browser die Navigation. Eine CSR-Seite ist keine leere Seite, die auf ein Paket wartet.
 
 ## Wann zu verwenden
 
-- **Inhalt, Marketing, Dokumentation**: SSR plus ISR, wenn sich der Inhalt selten ändert.
-- **Eine überwiegend statische Seite mit einem interaktiven Widget**: SSR mit einer Insel.
+- **Inhalt, Marketing, Dokumentation**: SSR, plus ISR, wenn sich der Inhalt selten ändert.
+- **Eine größtenteils statische Seite mit einem interaktiven Widget**: SSR mit einer Insel.
 - **Dashboards, Editoren, App-ähnliche Navigation**: CSR.
 - **Eine Seite, die ständig gelesen und selten geändert wird**: ISR.
 
@@ -53,7 +47,7 @@ Der Browser übernimmt die Navigation. Eine CSR-Seite ist keine leere Seite, die
 |---|---|
 | SSR | nirgendwo: Es ist die Standardeinstellung |
 | ISR | `revalidate = 60` im Titelblatt einer `.nexy` Seite |
-| CSR | `useCSR = True` in `nexyconfig.py`, mit `useFF` eingestellt |
+| CSR | `useCSR = True` in `nexyconfig.py`, wobei `useFF` auf | gesetzt ist
 | Inseln | `directive="client:visible"` auf dem Komponenten-Tag |
 
 ## Beispiel
@@ -69,19 +63,15 @@ Die gleiche Seite ohne die Frontmatter-Zeile ist SSR.
 
 ## Einschränkungen
 
-- **Es gibt keinen SSG-Modus.** Nexy rendert HTML zur Erstellungszeit vor (Komponenten-HTML, Client-Dokumente),
-  liest es aber immer über den Server zurück: kein Exportbefehl, kein eigenständiger Ordner zum Hosten
-  statisch. Für eingefrorene Inhalte verwenden Sie ISR mit einem langen Fenster.
-- **ISR ist kein CDN.** Der Cache befindet sich in dem Prozess, der die Seite rendert; mehrere Arbeiter behalten
-  mehrere Caches. Siehe [ISR](isr.md).
+- **Es gibt keinen SSG-Modus.** Nexy rendert HTML zur Erstellungszeit vor (Komponenten-HTML, Clientdokumente), liest es jedoch immer über den Server zurück: kein Exportbefehl, kein eigenständiger Ordner zum statischen Hosten. Für eingefrorene Inhalte verwenden Sie ISR mit einem langen Fenster.
+- **ISR ist kein CDN.** Der Cache befindet sich in dem Prozess, der die Seite rendert; Mehrere Arbeiter halten mehrere Caches. Siehe [ISR](isr.md).
 - **CSR ist eine Projektentscheidung.** Sie können nicht eine Seite CSR erstellen und die restliche Seite SSR behalten.
-- **Inseln befeuchten die Insel, nicht die Seite.** Eine Seite, deren Inseln alle voneinander abhängen, ist a
-  Getarnte CSR-Seite.
+- **Inseln befeuchten die Insel, nicht die Seite.** Eine Seite, deren Inseln alle voneinander abhängen, ist eine getarnte CSR-Seite.
 
 ## Nächste Schritte
 
 - [SSR](ssr.md): die Standardeinstellung
 - [ISR](isr.md): Eine Seite pro URL zwischenspeichern
 - [CSR](csr.md): Handnavigation zum Browser
-- [Inseln](islands.md): Hydrat ein Widget
+- [Inseln](islands.md): Hydrate ein Widget
 - [Leistung](../deployment/performance.md)
