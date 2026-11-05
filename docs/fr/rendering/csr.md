@@ -21,10 +21,10 @@ Le projet change alors de forme :
 | | Mode serveur (`False`) | Mode client (`True`) |
 |---|---|---|
 | Itinéraires | `.nexy`, `.md`, `.mdx` | `.tsx`, `.jsx`, `.vue`, `.svelte` |
-| Document | `layout.nexy` | la racine `layout.tsx` / `.vue` / `.svelte` possède `<html>`, `<head>`, `<body>` |
-| Composants clients | îlots à l'intérieur d'une page | les pages elles-mêmes |
-| `.nexy` sous `src/routes/` | le format de page | rejeté avant `nx dev`, `nx start` et `nx build` |
-| Navigation | une requête complète par lien | le routeur client |
+| Documenter | `layout.nexy` | la racine `layout.tsx` / `.vue` / `.svelte` possède `<html>`, `<head>`, `<body>` |
+| Composants clients | îles à l'intérieur d'une page | les pages elles-mêmes |
+| `.nexy` sous `src/routes/` | le format des pages | rejeté avant `nx dev`, `nx start` et `nx build` |
+| Navigation | une demande complète par lien | le routeur client |
 
 `.md` et `.mdx` restent valables : Nexy les restitue sur le serveur à l'intérieur de la configuration client, et le routeur client prend le relais à partir de là. Les gestionnaires de `.py` sont assis à côté des itinéraires et sont servis par FastAPI.
 
@@ -46,7 +46,7 @@ En développement, le document est rendu à la demande par le serveur de dévelo
 
 ## Configuration
 
-| Réglage de la valeur | |
+| Paramètre | Valeur |
 |---|---|
 | `useFF` | requis : `useCSR` sans framework client est rejeté |
 | `useCSR` | `True` |
@@ -75,7 +75,7 @@ export default function Home() {
 
 ## Limites
 
-- **L'ensemble du projet.** Vous ne pouvez pas mélanger une page CSR dans un projet en mode serveur : choisissez le mode de l'application, puis utilisez [islands](islands.md) pour les parties interactives d'une page en mode serveur.
+- **L'ensemble du projet.** Vous ne pouvez pas mélanger une page CSR dans un projet en mode serveur : choisissez le mode de l'application, puis utilisez [îlots](islands.md) pour les parties interactives d'une page en mode serveur.
 - **Pas de routes `.nexy`.** Tout ce que vous avez écrit dans `.nexy` doit devenir un composant de framework.
 - **Les données du serveur passent par les points de terminaison.** Une route client ne peut pas lire la base de données au moment du rendu ; il appelle un gestionnaire `.py` ou une [Action](../guides/actions.md).
 - **Une route dynamique nécessite un paramètre statique déclaré, ou elle démarre à partir d'un shell.** Exportez `getStaticParams()` depuis la page - les noms Next.js `getStaticPaths` et `generateStaticParams` sont également acceptés - pour avoir un document par valeur. Sans cela, le shell porte les mises en page et non la page : la page apparaît une fois le navigateur exécuté.
@@ -84,6 +84,6 @@ export default function Home() {
 ## Prochaines étapes
 
 - [Mode serveur et mode client](../routing/fbr/modes.md) : les contrôles et les fichiers rejetés
-- [Layouts](../routing/fbr/layouts/README.md) : quel fichier possède le document
+- [Mises en page](../routing/fbr/layouts/README.md) : quel fichier possède le document
 - [SSR](ssr.md) : la valeur par défaut, page par page
 - [Frontend](../guides/frontend.md) : le serveur de développement et le build client
