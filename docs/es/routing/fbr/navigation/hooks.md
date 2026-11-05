@@ -2,7 +2,7 @@
 
 Los ganchos leen la solicitud HTTP actual desde dentro de una página `.nexy`, un controlador API o un controlador modular. Sus nombres coinciden con los ganchos del enrutador del cliente (`@nexy/client`) donde hacen lo mismo.
 
-> [!NOTA]
+> [!NOTE]
 > Los ganchos solo funcionan mientras se maneja una solicitud. Llamar a uno en cualquier otro lugar aumenta `RuntimeError`.
 
 ## los ganchos
