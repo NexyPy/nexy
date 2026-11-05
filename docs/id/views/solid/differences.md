@@ -5,7 +5,7 @@ Nexy merender Solid 1.9 komponen di server, lalu Solid mengambilnya di browser. 
 | Mode | `nexyconfig.py` | Halaman adalah | Solid adalah |
 |---|---|---|---|
 | Server (default) | `useCSR = False` | `.nexy` file | [pulau](../../rendering/islands.md) di dalam halaman tersebut |
-| Klien | `useCSR = True` | `.tsx` mengarsipkan | seluruh halaman, dengan [layouts](../frontend/layouts.md) dan router klien |
+| Klien | `useCSR = True` | `.tsx` mengarsipkan | seluruh halaman, dengan [tata letak](../frontend/layouts.md) dan router klien |
 
 ## Mulai sebuah proyek
 
@@ -189,5 +189,5 @@ Semua pengakses pengembalian kait lokasi:
 
 ## Langkah selanjutnya
 
-- [Views](../README.md): membandingkan format yang dapat digunakan suatu halaman
+- [Tampilan](../README.md): membandingkan format yang dapat digunakan suatu halaman
 - [Frontend](../../guides/frontend.md): Vite dan build klien
