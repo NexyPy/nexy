@@ -74,7 +74,7 @@ Un agent répond plus rapidement lorsqu’il sait quelle page contient la répon
 | l'URL d'un fichier | [routage](../routing/README.md) |
 | segments dynamiques, mises en page, pages d'erreur | [pages](../routing/fbr/pages/README.md) |
 | le chemin actuel, la requête, les cookies, la session | [hooks](../routing/fbr/navigation/hooks.md) |
-| pour éditer une page | [fichiers .nexy](../views/nexy/README.md) ou [views](../views/README.md) |
+| pour éditer une page | [fichiers .nexy](../views/nexy/README.md) ou [vues](../views/README.md) |
 | Markdown ou MDX | [markdown](../views/nexy/markdown.md) |
 | assistants HTML intégrés | [composants](../views/nexy/components.md) |
 | mode de rendu | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
@@ -84,8 +84,8 @@ Un agent répond plus rapidement lorsqu’il sait quelle page contient la répon
 | un formulaire posté à partir d'une page | [actions](actions.md) |
 | pourquoi une requête a échoué et quelle page y répond | [exceptions](../reference/exceptions.md) |
 | traductions | [i18n](i18n.md) |
-| un champ de configuration | [config](../reference/config.md) |
-| pour tester l'application | [testing](testing.md) |
+| un champ de configuration | [configuration](../reference/config.md) |
+| pour tester l'application | [tests](testing.md) |
 | la build du client | [frontend](frontend.md) |
 
 ## Invariants du projet
