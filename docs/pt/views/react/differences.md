@@ -1,10 +1,8 @@
-# Reagir
+# React
 
-Nexy renderiza os componentes do React 19 no servidor e, em seguida, o React os hidrata no navegador. Páginas,
-layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração, depois as partes
-que diferem dos [contratos compartilhados](../frontend/pages.md).
+Nexy renderiza React 19 componentes no servidor e, em seguida, React os hidrata no navegador. Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração e depois as partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | As páginas são | React é |
+| Modo | `nexyconfig.py` | As páginas são | React são |
 |---|---|---|---|
 | Servidor (padrão) | `useCSR = False` | `.nexy` arquivos | [ilhas](../../rendering/islands.md) dentro dessas páginas |
 | Cliente | `useCSR = True` | `.tsx` arquiva | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
@@ -15,11 +13,9 @@ que diferem dos [contratos compartilhados](../frontend/pages.md).
 nx new my-app --template web-fbr-react
 ```
 
-O modelo é um projeto em modo servidor com ilhas React. Execute `nx new my-app` sem um modelo para
-em vez disso, responda aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida,
-o quadro.
+O modelo é um projeto em modo servidor com React ilhas. Execute `nx new my-app` sem um modelo para responder aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida, a estrutura.
 
-## Ativar React em um projeto existente
+## Habilite React em um projeto existente
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -52,13 +48,10 @@ export default defineConfig({
 
 ## Regras
 
-- **Uma estrutura por projeto.** `useFF` usa exatamente uma estrutura; `useFF = [react(), vue()]` paradas
-  o servidor na inicialização.
-- **As páginas são `.tsx`.** React possui `.tsx` e `.jsx` para componentes, mas apenas um arquivo `.tsx` em
-  `src/routes/` se torna uma página.
-- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto, não são páginas.
-- **Um projeto em modo servidor não tem nenhuma página `.tsx`**, e um projeto em modo cliente não tem nenhuma página `.nexy`: Nexy
-  se recusa a iniciar e nomeia o arquivo. Veja [modos](../../routing/fbr/modes.md).
+- **Uma estrutura por projeto.** `useFF` leva exatamente uma estrutura; `useFF = [react(), vue()]` interrompe o servidor na inicialização.
+- **As páginas são `.tsx`.** React possui `.tsx` e `.jsx` para componentes, mas apenas um arquivo `.tsx` em `src/routes/` se torna uma página.
+- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
+- **Um projeto em modo servidor não tem `.tsx` página**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
 
 ## Páginas
 
@@ -66,8 +59,7 @@ No modo cliente (`useCSR = True`), uma página é um arquivo `.tsx`.
 
 ### Componente de página
 
-Uma página é a exportação padrão do arquivo. Se não existir nenhuma exportação padrão, Nexy escolhe o primeiro nomeado
-exportar.
+Uma página é a exportação padrão do arquivo. Se não existir nenhuma exportação padrão, Nexy escolhe a primeira exportação nomeada.
 
 ```tsx filename="src/rotas/index.tsx"
 export default function Home() {
@@ -132,7 +124,7 @@ Use a propriedade `directive` para controlar quando a ilha hidrata:
 
 ## Ações e navegação
 
-### Ações de chamada
+### Chamando ações
 
 Use o gancho `useAction` para gerenciar o estado de uma chamada de ação:
 
@@ -164,7 +156,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Acesso ao URL
+### Acesso URL
 
 - `usePathname()`: caminho atual
 - `useParams()`: segmentos dinâmicos
@@ -174,4 +166,4 @@ router.push("/dashboard");
 ## Próximas etapas
 
 - [Visualizações](../README.md): compare os formatos que uma página pode usar
-- [Frontend](../../guides/frontend.md): Vite e a construção do cliente
+- [Frontend](../../guides/frontend.md): Vite e a compilação do cliente
