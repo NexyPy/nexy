@@ -30,7 +30,7 @@ my-app/
 - **模块化路由器** - `src/apps/`的控制器。
 - **生成** - `__nexy__/`；永远不要编辑它。
 
-> [！警告]
+> [!WARNING]
 > `src/routes/` 被扫描：放置在那里的助手成为一条路线。放置一个不是 `src/routes/` 之外的路由的助手，或者其名称以 `_` 开头。
 
 ## `src/routes/`
@@ -42,18 +42,18 @@ my-app/
 | `layout.nexy` | 包装兄弟页面和子页面 |
 | `errors.nexy` | 目录 | 500 页
 | `notfound.nexy` | 目录 | 的 404 页面
-| `dependencies.py` | 共享 FastAPI 目录 | 的依赖项
+| `dependencies.py` | 目录 | 的共享 FastAPI 依赖项
 | `__init__.py` | Python 封装标记 |
 | `loading.nexy` | 保留 - 从路由中排除，但它还没有运行时效果 |
 
-每个页面名称也存在于每个框架中。配置 `react()` 后，`layout.jsx` 和 `layout.tsx` 被保留，与 `layout.nexy` 完全相同。这些列表是在 `nexy/core/config.py`（`LAYOUT_FILE_NAMES`、`ERROR_FILE_NAMES`、`NOTFOUND_FILE_NAMES`、`LOADING_FILE_NAMES`）中构建的。
+每个页面名称也存在于每个框架中。配置 `react()` 后，`layout.jsx` 和 `layout.tsx` 被保留，与 `layout.nexy`完全相同。这些列表是在 `nexy/core/config.py`（`LAYOUT_FILE_NAMES`、`ERROR_FILE_NAMES`、`NOTFOUND_FILE_NAMES`、`LOADING_FILE_NAMES`）中构建的。
 
-> [！注意]
+> [!NOTE]
 > 仅当路由根目录存在副本时才会安装 `notfound.nexy` 和 `errors.nexy`。然后，子目录中的副本会优化该前缀的页面。
 
 ## `src/apps/`
 
-目录 `nexy new` 用于模块化路由器：控制器、模块和提供者通过来自 `nexy.decorators` 的装饰器注册其路由，然后聚合 `APIRouter` 与 `nexyconfig.py` 中的 `useRouter` 一起安装。
+目录 `nexy new` 用于模块化路由器：控制器、模块和提供者通过 `nexy.decorators` 中的装饰器注册其路由，然后聚合 `APIRouter` 与 `nexyconfig.py` 中的 `useRouter` 一起安装。
 
 一个项目可以拥有两个路由器：`useRouter` 安装模块化路由器，只要该目录存在，`src/routes/` 就会被扫描。请参阅[模块化路由](../routing/modular/README.md)。
 
@@ -63,7 +63,7 @@ my-app/
 
 ## `__nexy__/`
 
-由 `nx build` 生成（以及由 `nx dev` 生成其所需的部分）。它包含：
+由 `nx build` 生成（以及由 `nx dev` 生成它所需的部分）。它包含：
 
 - 已编译的路由模块，作为 Python 包 (`__nexy__/src/routes/...`)；
 - 生成的客户端入口点（`main.ts`、`vite.ts`、`*.auto.ts`）；
