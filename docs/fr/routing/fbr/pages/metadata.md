@@ -50,8 +50,7 @@ setMetadata(title_template="%s | My site")
 </html>
 ```
 
-Une page s'exécute avant ses mises en page, de sorte que la mise en page trouve ce que la page a demandé. Une page qui dit
-rien n'obtient le `useTitle` de votre `nexyconfig.py`, et aucune autre balise.
+Une page s'exécute avant ses mises en page, de sorte que la mise en page trouve ce que la page a demandé. Une page qui ne dit rien obtient le `useTitle` de votre `nexyconfig.py`, et aucune autre balise.
 
 ## Les champs
 
@@ -63,20 +62,17 @@ rien n'obtient le `useTitle` de votre `nexyconfig.py`, et aucune autre balise.
 | `robots` | `<meta name="robots">`, par exemple `"noindex"` |
 | `icon` | `<link rel="icon">` |
 | `og` | un `<meta property="og:...">` par touche : `{"image": "/cover.png"}` donne `og:image` |
-| `twitter` | un `<meta name="twitter:...">` par touche |
+| `twitter` | un `<meta name="twitter:...">` par clé |
 | `extra` | une liste de dictionnaires d'attributs, un `<meta>` chacun : `[{"name": "theme-color", "content": "#fff"}]` |
 
-Un appel ultérieur remplace une valeur ; `og`, `twitter` et `extra` s'ajoutent à ce qui est là. Un domaine qui fait
-not exist soulève `TypeError`, donc une faute de frappe ne fait rien en silence.
+Un appel ultérieur remplace une valeur ; `og`, `twitter` et `extra` s'ajoutent à ce qui est là. Un champ qui n'existe pas génère `TypeError`, donc une faute de frappe ne fait rien en silence.
 
 ## Coffre-fort par défaut
 
-Chaque valeur est échappée au format HTML, donc un titre construit à partir d'une URL ou de la base de données ne peut pas fermer la balise
-et injecter un script. Une valeur est échappée une fois, lorsque la mise en page appelle `html()` : ne l'échappez pas
-vous-même.
+Chaque valeur est échappée en HTML, donc un titre construit à partir d'une URL ou de la base de données ne peut pas fermer la balise et injecter un script. Une valeur est échappée une fois, lorsque la mise en page appelle `html()` : ne l'échappez pas vous-même.
 
 ## Prochaines étapes
 
 - [Pages](README.md)
-- [Mise en page](../layouts/README.md)
+- [Mises en page](../layouts/README.md)
 - [Pages d'erreur](../errors/README.md)
