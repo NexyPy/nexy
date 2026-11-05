@@ -1,23 +1,19 @@
-# 苗条
+# Svelte
 
-Nexy 在服务器上呈现 Svelte 5 组件，然后 Svelte 在浏览器中接管它们。页数，
-每个框架中的布局、岛和操作都是相同的：此页面介绍设置，然后是各个部分
-与[共享合约](../frontend/pages.md)不同。
+Nexy 在服务器上渲染 Svelte 5 个组件，然后 Svelte 在浏览器中接管它们。每个框架中的页面、布局、岛和操作都是相同的：此页面涵盖设置，然后是与[共享合约](../frontend/pages.md)不同的部分。
 
-| 模式 | `nexyconfig.py` | 页面为 | 精简为 |
+| 模式 | `nexyconfig.py` | 页数为 | Svelte 为 |
 |---|---|---|---|
 | 服务器（默认）| `useCSR = False` | `.nexy` 这些页面 | 内的文件 | [岛屿 ](../../rendering/islands.md)
 | 客户端 | `useCSR = True` | `.svelte` 文件 | 整个页面，带有 [布局 ](../frontend/layouts.md) 和客户端路由器 |
 
-## 启动一个项目
+## 开始一个项目
 
 ```bash
 nx new my-app --template web-fbr-svelte
 ```
 
-该模板是一个带有 Svelte 岛屿的服务器模式项目。在没有模板的情况下运行 `nx new my-app`
-回答提示：路由器、项目类型、是否使用客户端路由，然后
-框架。
+该模板是一个带有 Svelte 岛屿的服务器模式项目。在没有模板的情况下运行 `nx new my-app` 来回答提示：路由器、项目类型、是否使用客户端路由，然后是框架。
 
 ## 在现有项目中启用 Svelte
 
@@ -52,20 +48,18 @@ export default defineConfig({
 ## 规则
 
 - **Svelte 5.** 组件使用符文：`$props()`、`$state()` 和子级片段。
-- **每个项目一个框架。** `useFF` 只需要一个框架； `useFF = [svelte(), vue()]`
-  在启动时停止服务器。
-- **每个文件一个组件。**您导入的`.svelte`文件的名称只是您编写的标签。
-- **组件位于`src/routes/`**之外，通常位于`src/components/`中，因此它们不是页面。
-- **服务器模式项目没有 `.svelte` 页面 **，客户端模式项目没有 `.nexy` 页面：Nexy
-  拒绝启动并命名文件。请参阅[模式](../../routing/fbr/modes.md)。
+- **每个项目一个框架。** `useFF` 只需要一个框架； `useFF = [svelte(), vue()]` 在启动时停止服务器。
+- **每个文件一个组件。** 您导入的 `.svelte` 文件的名称只是您编写的标签。
+- **组件位于 `src/routes/`** 之外，通常位于 `src/components/` 中，因此它们不是页面。
+- **服务器模式项目没有 `.svelte` 页面**，客户端模式项目没有 `.nexy` 页面：Nexy 拒绝启动并命名文件。请参阅[模式](../../routing/fbr/modes.md)。
 
-## 页
+## 页数
 
-在客户端模式（`useCSR = True`）下，页面是一个`.svelte`文件。
+在客户端模式（`useCSR = True`）下，页面是一个 `.svelte` 文件。
 
 ### 页面组件
 
-该页面是由`.svelte`文件的脚本块定义的组件。
+该页面是由 `.svelte` 文件的脚本块定义的组件。
 
 ```svelte filename="src/routes/index.svelte"
 <script lang="ts">
@@ -74,7 +68,7 @@ export default defineConfig({
 <h1>Hello</h1>
 ```
 
-### 动态片段
+### 动态细分
 
 URL 参数通过 `$props()` 符文作为 props 到达页面：
 
@@ -92,8 +86,7 @@ URL 参数通过 `$props()` 符文作为 props 到达页面：
 
 ### 实施
 
-根布局定义文档外壳。嵌套布局使用 `children` 包裹内容
-片段。
+根布局定义文档外壳。嵌套布局使用 `children` 片段包裹内容。
 
 ```svelte filename="src/routes/layout.svelte"
 <script lang="ts">
@@ -124,7 +117,7 @@ from "@/components/Counter.svelte" import Counter
 <Counter start=3 />
 ```
 
-### 水合作用指令
+### 补水指令
 
 使用 `directive` 道具来控制岛屿何时水合：
 
@@ -135,10 +128,9 @@ from "@/components/Counter.svelte" import Counter
 
 ## 操作和导航
 
-### 调用操作
+### 调用动作
 
-使用 `useAction` 挂钩来管理操作调用的状态。在 Svelte 中，这会返回一个存储（读取
-与`$`）。
+使用 `useAction` 挂钩来管理操作调用的状态。在 Svelte 中，这将返回一个存储（用 `$` 读取）。
 
 ```svelte
 <script lang="ts">
@@ -186,5 +178,5 @@ router.push("/dashboard");
 
 ## 后续步骤
 
-- [视图](../README.md)：比较页面可以使用的格式
-- [Frontend](../../guides/frontend.md)：Vite 和客户端构建
+- [Views](../README.md)：比较页面可以使用的格式
+- [前端](../../guides/frontend.md)：Vite 和客户端构建
