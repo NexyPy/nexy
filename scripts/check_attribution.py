@@ -237,9 +237,17 @@ def messages_in_range(rev_range: str) -> list[tuple[str, str]]:
 _IDENTS = ("GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT")
 
 
+def _identity(key: str) -> str:
+    """One identity git will write, or the empty string when git knows none (a bare CI runner)."""
+    try:
+        return _git("var", key).rsplit(" ", 2)[0]
+    except SystemExit:
+        return ""
+
+
 def current_identities() -> tuple[str, str]:
     """The author and committer the commit being written will carry."""
-    author, committer = (_git("var", key).rsplit(" ", 2)[0] for key in _IDENTS)
+    author, committer = (_identity(key) for key in _IDENTS)
     return author, committer
 
 
