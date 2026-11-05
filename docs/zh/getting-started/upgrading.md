@@ -10,11 +10,11 @@ nx test
 
 ## 你可能需要改变什么
 
-| 更改 | 执行此操作 |
+| 改变 | 这样做 |
 |---|---|
-| **`.mdx` 仅由 Vite 编译。** Python 编译器不再渲染它 | 将 React 或 Preact 保留在 `useFF` 中并安装 `@mdx-js/rollup`、`remark-gfm` 和 `@mdx-js/react`。没有组件的页面可以是 `.md` 文件，而不是 |
-| **`useBadge` 消失了。** “Built with Nexy”标签不再存在 | 从 `nexyconfig.py` 中删除该行。剩余的行将被忽略 |
-| **`nx check` 不再编译 `.mdx`** | 没有：Vite 在构建 | 时报告 MDX 错误
+| **`.mdx` 仅由 Vite 编译。** Python 编译器不再渲染它 | 将 React 或 Preact 保留在 `useFF` 中并安装 `@mdx-js/rollup`、`remark-gfm` 和 `@mdx-js/react`。没有组件的页面可以是 `.md` 文件 |
+| **`useBadge` 消失了。** “Built with Nexy”标签不再存在 | 删除 `nexyconfig.py` 中的行。剩余的行将被忽略 |
+| **`nx check` 不再编译 `.mdx`** | 什么都没有： Vite 在构建时报告 MDX 错误 |
 
 ## 什么保持不变
 
