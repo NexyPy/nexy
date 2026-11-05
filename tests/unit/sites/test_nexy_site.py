@@ -95,7 +95,7 @@ def test_the_docs_home_is_served(answers):
 
 
 def test_the_home_page_shows_the_cards_of_getting_started(answers):
-    assert answers["/docs"][2].count('class="home-card"') == 10
+    assert answers["/docs"][2].count('class="home-card"') == 9
 
 
 def test_a_home_card_leads_to_a_page_of_this_site(answers):
@@ -308,7 +308,8 @@ def test_a_page_says_where_the_language_payload_lives(answers):
 
 def test_the_home_cards_name_their_page(answers):
     body = answers["/docs"][2]
-    assert 'class="home-card" href="/docs/architecture" data-card="architecture"' in body
+    card = 'class="home-card" href="/docs/getting-started/what-is-nexy"'
+    assert f'{card} data-card="getting-started/what-is-nexy"' in body
 
 
 def test_every_page_of_the_menu_is_served():
