@@ -48,7 +48,7 @@ The browser only ever talks to port `3000`. There is no second URL to open and n
 - the client bundle, with assets under `__nexy__/client/`;
 - the compiled Python routes.
 
-Vite handles the client bundle; SSR HTML is produced per file by esbuild.
+Vite builds the client bundle; the server HTML of each component page is written at build time.
 
 > [!NOTE]
 > a route whose server render fails is reported as a client-only route instead of
