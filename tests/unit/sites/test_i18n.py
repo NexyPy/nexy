@@ -124,3 +124,14 @@ class TestVanilla:
 
 def test_the_home_translations_cover_every_language():
     assert set(home_strings.HERO) == set(CODES)
+
+
+class TestPreferred:
+    def test_the_first_known_language_of_the_browser_wins(self):
+        assert i18n.preferred("xx, fr-CA;q=0.9, de;q=0.8") == "fr"
+
+    def test_a_browser_that_asks_for_nothing_known_reads_english(self):
+        assert i18n.preferred("xx, yy") == "en"
+
+    def test_no_header_reads_english(self):
+        assert i18n.preferred("") == "en"
