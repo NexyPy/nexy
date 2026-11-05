@@ -14,17 +14,16 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
 
-| Problème | État | Corps |
+| Problème | Statut | Corps |
 |---|---|---|
 | requête, en-tête, cookie ou champ de corps manquant ou invalide | `422` | `{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}` |
 | segment **chemin** non valide (`/api/users/abc` pour `id: int`) | `404` | la page introuvable, ou JSON pour `Accept: application/json` |
 
-Un segment de chemin qui ne peut pas être converti est un `404` plutôt qu'un `422` : un itinéraire dynamique capture tout
-URL, et il n’existe pas d’URL qui ne peut pas être convertie.
+Un segment de chemin qui ne peut pas être converti est un `404` plutôt qu'un `422` : une route dynamique capture n'importe quelle URL et une URL qui ne peut pas être convertie n'existe pas.
 
-Le corps `422` est la forme standard de FastAPI, donc les clients existants et les SDK générés continuent de fonctionner.
+Le corps de `422` est la forme standard de FastAPI, donc les clients existants et les SDK générés continuent de fonctionner.
 
-## Réveil d'erreurs
+## Générer des erreurs
 
 ```python filename="src/routes/api/items/[id].py"
 from nexy.http import HTTPException
