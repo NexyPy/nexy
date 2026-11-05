@@ -1,7 +1,6 @@
 # Injeção de dependência
 
-Nexy resolve dependências de construtor para controladores e serviços. Uma turma aceita
-`@Injectable()`.
+Nexy resolve dependências de construtor para controladores e serviços. Uma turma aceita `@Injectable()`.
 
 ## Injetar um serviço
 
@@ -29,8 +28,7 @@ class UserController:
         return self.svc.get_all()
 ```
 
-Registre o controlador em um módulo. Listar o serviço em `providers` também resolve o problema
-ansiosamente na inicialização:
+Registre o controlador em um módulo. Listar o serviço em `providers` também resolve o problema na inicialização:
 
 ```python filename="src/apps/users/users_module.py"
 from nexy.decorators import Module
@@ -46,9 +44,7 @@ class UsersModule:
 
 ## Como funciona a resolução
 
-- Cada parâmetro `__init__` é resolvido a partir de sua **anotação de tipo**. A anotação deve ser uma
-  classe `@Injectable()`, ou o parâmetro deve ter um valor padrão; caso contrário, a resolução aumenta
-  `ValueError`.
+- Cada parâmetro `__init__` é resolvido a partir de sua **anotação de tipo**. A anotação deve ser uma classe `@Injectable()` ou o parâmetro deve ter um valor padrão; caso contrário, a resolução aumenta `ValueError`.
 - Os controladores são instanciados com `Container.resolve()` na inicialização.
 - Um ciclo de dependência gera `RecursionError` nomeando a classe.
 - Os serviços podem injetar outros serviços, em qualquer profundidade.
@@ -77,8 +73,7 @@ from nexy.decorators import Container
 service = Container.resolve(UserService)
 ```
 
-Construir você mesmo uma classe `@Injectable()` aumenta `TypeError`: o contêiner possui seu ciclo de vida.
-Use `Container.resolve(...)` ou receba a classe através de outro construtor.
+Construir você mesmo uma classe `@Injectable()` aumenta `TypeError`: o contêiner possui seu ciclo de vida. Use `Container.resolve(...)` ou receba a classe através de outro construtor.
 
 `Container.clear_request_scope()` descarta as instâncias da solicitação atual.
 
@@ -95,11 +90,9 @@ def get(self, limit: int = Depends(pagination)) -> list[dict]: ...
 
 ## Limites
 
-O contêiner abrange todo o processo. Os provedores não ficam isolados por módulo, `exports` apenas decide quais
-provedores, um módulo de importação resolve prontamente e não há API pública para trocar um provedor
-testes. Veja [Nexy e NestJS](vs-nestjs.md) para a comparação completa.
+O contêiner abrange todo o processo. Os provedores não são isolados por módulo, `exports` apenas decide quais provedores um módulo importador resolve avidamente e não há API pública para trocar um provedor em testes. Veja [Nexy e NestJS](vs-nestjs.md) para a comparação completa.
 
 ## Próximas etapas
 
 - [Guardas e metadados](guards-and-metadata.md)
-- [Testes](../../guides/testing.md)
+- [Teste](../../guides/testing.md)
