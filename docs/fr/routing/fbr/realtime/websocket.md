@@ -14,7 +14,7 @@ async def SOCKET(websocket: WebSocket):
 
 ## Règles
 
-- L'URL est le chemin du fichier, même règle que [routing](../../README.md).
+- L'URL est le chemin du fichier, même règle que [routage](../../README.md).
 - Seuls les fichiers de route `.py` enregistrent les gestionnaires WebSocket via `SOCKET`.
 - Assurez-vous que votre proxy inverse transfère les demandes de mise à niveau WebSocket.
 
