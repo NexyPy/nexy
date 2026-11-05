@@ -3,7 +3,7 @@
     python scripts/translate_docs.py                 # every language, pages whose source changed
     python scripts/translate_docs.py --lang fr,de    # two languages
     python scripts/translate_docs.py --force         # translate again, keep nothing
-    python scripts/translate_docs.py --relabel       # apply the glossary, without the service
+    python scripts/translate_docs.py --relabel       # glossary and GitHub links, no service
 
 The English tree stays the source of truth. Each language gets its own copy under `docs/<code>/`,
 with the same file names, so a translated page has the same slug and its relative links keep
@@ -218,14 +218,14 @@ def _save(root: Path, manifest: dict[str, Any]) -> None:
     _write(root / MANIFEST, json.dumps(manifest, ensure_ascii=False, indent=1) + "\n")
 
 
-def _translate_page(page: Path, target: Path, code: str, engine: Engine) -> bool:
+def _translate_page(page: Path, target: Path, code: str, engine: Engine, relative: str) -> bool:
     """Write one translated page; on a page the service keeps breaking, keep the old one."""
     try:
         text = translate_markdown(page.read_text(encoding="utf-8"), code, engine)
     except RuntimeError as error:
         print(f"[{code}] kept the previous version: {error}", flush=True)
         return False
-    _write(target, text)
+    _write(target, translator.outward(text, relative))
     return True
 
 
@@ -252,7 +252,7 @@ def refresh(
         if not force and target.is_file() and manifest["pages"].get(relative, digest) == digest:
             continue
         print(f"[{code}] {number}/{len(selected)} {relative}", flush=True)
-        if not _translate_page(page, target, code, engine):
+        if not _translate_page(page, target, code, engine, relative):
             failed.append(page)
             continue
         manifest["pages"][relative] = digest
@@ -270,11 +270,12 @@ def _copy_assets(docs: Path, root: Path) -> None:
 
 
 def relabel_tree(docs: Path, code: str) -> list[Path]:
-    """Give the links of a translated tree the words of the glossary, without the service."""
+    """Give the links of a translated tree their glossary words and GitHub addresses, offline."""
     changed: list[Path] = []
     for page in sorted((docs / code).rglob("*.md")):
         text = page.read_text(encoding="utf-8")
-        relabelled = translator.relabel(text, code)
+        relative = page.relative_to(docs / code).as_posix()
+        relabelled = translator.outward(translator.relabel(text, code), relative)
         if relabelled != text:
             _write(page, relabelled)
             changed.append(page)
@@ -287,7 +288,7 @@ def arguments(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--lang", default="", help=f"comma list among {','.join(every)}")
     parser.add_argument("--force", action="store_true", help="translate again, keep nothing")
     parser.add_argument(
-        "--relabel", action="store_true", help="apply the glossary to the pages already written"
+        "--relabel", action="store_true", help="glossary and GitHub links, no service"
     )
     parser.add_argument("--limit", type=int, default=None, help="pages per language, for a check")
     parser.add_argument("--docs", type=Path, default=DOCS, help="the English tree")
