@@ -3,6 +3,33 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.2.2] - 2026-11-05
+
+### Fixed
+
+- **`uvx nexy` on Python 3.15 and Windows.** `cmarkgfm` has no wheel there, so uv
+  built it from source and demanded Microsoft C++ Build Tools before Nexy was
+  installed at all. `markdown-it-py` replaces it: pure Python, GFM output and
+  heading IDs unchanged.
+- **`mypy --strict` on Python 3.15.** The 3.15 stubs type `spec_from_loader`
+  more strictly than 3.12 to 3.14; the module spec of a compiled module is now
+  built by hand.
+- **`uvicorn` extras** listed one by one, without `pyyaml`, which Nexy never used.
+
+### Added
+
+- **A GitHub release for every tag**, written after PyPI accepted the files, so
+  a version nobody can install is never announced.
+- **CI on a pushed branch.** `feature/*`, `fix/*`, `docs/*` and `perf/*` run the
+  matrix without waiting for a pull request. When a pull request already covers
+  the branch, its run is the only one.
+
+### Changed
+
+- **The README and the issue templates** link the published documentation
+  instead of raw Markdown files and an unrelated site. Blank issues are closed:
+  a question, an idea and a security report each have their own place.
+
 ## [Unreleased]
 
 ### Added
