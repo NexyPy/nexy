@@ -118,7 +118,7 @@ Controladores e módulos.
 ### Formulários e dados
 | Página | O que você fará |
 |---|---|
-| [Actions](guides/actions.md) | Chame uma função Python de um formulário ou uma função digitada TypeScript |
+| [Ações](guides/actions.md) | Chame uma função Python de um formulário ou uma função digitada TypeScript |
 | [Bancos de dados](guides/databases.md) | Escolha um ORM e execute migrações |
 
 ### Segurança e implantação
@@ -147,12 +147,12 @@ Controladores e módulos.
 | Página | O que lista |
 |---|---|
 | [CLI](reference/cli.md) | Comandos, sinalizadores, prompts e códigos de saída |
-| [Config](reference/config.md) | Cada campo `nexyconfig.py` e seu padrão |
+| [Configuração](reference/config.md) | Cada campo `nexyconfig.py` e seu padrão |
 
 ### Python API e erros
 | Página | O que lista |
 |---|---|
-| [Python API](reference/python-api.md) | Todo nome que Nexy exporta, por módulo |
+| [API Python](reference/python-api.md) | Todo nome que Nexy exporta, por módulo |
 | [Exceções e erros](reference/exceptions.md) | Cada falha, seu status e o arquivo que a responde |
 
 ### Convenções e conceitos
