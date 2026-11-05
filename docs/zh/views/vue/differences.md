@@ -2,10 +2,10 @@
 
 Nexy 在服务器上渲染 Vue 3 个单文件组件，然后 Vue 在浏览器中接管它们。每个框架中的页面、布局、岛和操作都是相同的：此页面涵盖设置，然后是与[共享合约](../frontend/pages.md)不同的部分。
 
-| 模式 | `nexyconfig.py` | 页数为 | Vue 为 |
+| 模式 | `nexyconfig.py` | 页面是 | Vue 是 |
 |---|---|---|---|
-| 服务器（默认）| `useCSR = False` | `.nexy` 这些页面 | 内的文件 | [岛屿 ](../../rendering/islands.md)
-| 客户端 | `useCSR = True` | `.vue` 文件 | 整个页面，带有 [布局 ](../frontend/layouts.md) 和客户端路由器 |
+| 服务器（默认） | `useCSR = False` | `.nexy` 文件 | 这些页面内的[岛屿](../../rendering/islands.md) |
+| 客户 | `useCSR = True` | `.vue` 文件 | 整个页面，带有 [布局](../frontend/layouts.md) 和客户端路由器 |
 
 ## 开始一个项目
 
@@ -40,7 +40,7 @@ export default defineConfig({
 
 `nx new` 写入此文件； Nexy 自己编写 `__nexy__/vite.ts`，因此请勿编辑它。
 
-| 包 | 版本 `nx new` 写入 |
+| 套餐 | 版本 `nx new` 写道 |
 |---|---|
 | `vue` | `^3.5.33` |
 | `@vitejs/plugin-vue` | `^6.0.0` |
@@ -179,5 +179,5 @@ router.push("/dashboard");
 
 ## 后续步骤
 
-- [Views](../README.md)：比较页面可以使用的格式
+- [视图](../README.md)：比较页面可以使用的格式
 - [前端](../../guides/frontend.md)：Vite 和客户端构建
