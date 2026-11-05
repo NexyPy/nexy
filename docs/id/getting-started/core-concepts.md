@@ -8,7 +8,7 @@ Model mental, sebelum API: empat tingkat pembacaan, kemudian gagasan yang muncul
 |---|---|---|
 | Arsitektur aplikasi | lapisan mana yang menjawab permintaan, dan apa yang ditolaknya | [Arsitektur](../architecture.md) |
 | Struktur aplikasi | tempat kode berada, dan menjadi apa sebuah file | [Struktur proyek](project-structure.md) |
-| Presentasi dan rendering | apa yang dilihat pembaca, dan siapa yang menghasilkan HTML | [Views](../views/README.md), [Rendering](../rendering/README.md) |
+| Presentasi dan rendering | apa yang dilihat pembaca, dan siapa yang menghasilkan HTML | [Tampilan](../views/README.md), [Perenderan](../rendering/README.md) |
 | Interaksi aplikasi | apa yang dilakukan pembaca, dan apa yang dijalankan sebagai respons | [Tindakan](../guides/actions.md) |
 
 Level dibaca dalam urutan itu satu kali. Setelah itu, halaman yang Anda perlukan adalah pencarian, bukan kursus.
@@ -47,16 +47,16 @@ Dua kata lagi yang muncul kembali di mana-mana:
 
 Dua keputusan independen, yang sering membingungkan:
 
-- **Format** memutuskan file mana yang merender halaman: [Views](../views/README.md).
-- **Mode** memutuskan siapa yang memproduksi HTML dan kapan: [Rendering](../rendering/README.md).
+- **Format** memutuskan file mana yang merender halaman: [Tampilan](../views/README.md).
+- **Mode** memutuskan siapa yang memproduksi HTML dan kapan: [Perenderan](../rendering/README.md).
 
 | Gagasan | Satu baris |
 |---|---|
-| Mode server | server merender halaman `.nexy` dan `.md`; komponennya adalah pulau ([modes](../routing/fbr/modes.md)) |
+| Mode server | server merender halaman `.nexy` dan `.md`; komponennya adalah pulau ([mode](../routing/fbr/modes.md)) |
 | Mode klien | `useCSR = True`: file kerangka adalah rutenya, dan navigasi terjadi di browser |
-| SSR, ISR, CSR, pulau | empat mode rendering, ditentukan per halaman kecuali CSR, yaitu per proyek ([rendering](../rendering/README.md)) |
+| SSR, ISR, CSR, pulau | empat mode rendering, ditentukan per halaman kecuali CSR, yaitu per proyek ([perenderan](../rendering/README.md)) |
 | Hidrasi | browser melampirkan kerangka kerja ke HTML yang sudah dikirim server ([pulau](../rendering/islands.md)) |
-| Props | nilai yang diberikan induk ke komponen, dideklarasikan `name: prop[type]` dalam file `.nexy` ([.nexy files](../views/nexy/README.md)) |
+| Props | nilai yang diberikan induk ke komponen, dideklarasikan `name: prop[type]` dalam file `.nexy` ([berkas .nexy](../views/nexy/README.md)) |
 
 ## Interaksi aplikasi
 
@@ -65,7 +65,7 @@ Dua keputusan independen, yang sering membingungkan:
 | Tindakan | fungsi Python yang ditandai `@Action`, berfungsi sebagai `POST`, dapat dipanggil dari formulir atau sebagai fungsi yang diketik ([tindakan](../guides/actions.md)) |
 | Formulir | formulir HTML yang diposkan ke suatu Tindakan, dengan kesalahan validasi kembali ke halaman ([tindakan](../guides/actions.md)) |
 | Navigasi | tautan yang mengambil terlebih dahulu, dan kait yang membaca jalur, kueri, cookie, dan sesi ([kait](../routing/fbr/navigation/hooks.md)) |
-| Pengambilan data | dilakukan oleh halaman atau penangan yang membutuhkannya; Nexy tidak mengirimkan lapisan data klien ([handlers](../routing/fbr/handlers/README.md)) |
+| Pengambilan data | dilakukan oleh halaman atau penangan yang membutuhkannya; Nexy tidak mengirimkan lapisan data klien ([handler](../routing/fbr/handlers/README.md)) |
 
 ## Apa yang Nexy tidak lakukan
 
