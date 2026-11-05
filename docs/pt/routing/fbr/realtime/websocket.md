@@ -1,4 +1,4 @@
-# Manipuladores WebSocket
+# WebSocket manipuladores
 
 Lide com conexões WebSocket em um arquivo de rota `.py` definindo `SOCKET`.
 
@@ -14,9 +14,9 @@ async def SOCKET(websocket: WebSocket):
 
 ## Regras
 
-- A URL é o caminho do arquivo, mesma regra do [roteamento](../../README.md).
-- Apenas `.py` arquivos de rota registram manipuladores WebSocket via `SOCKET`.
-- Certifique-se de que seu proxy reverso encaminhe solicitações de atualização do WebSocket.
+- A URL é o caminho do arquivo, mesma regra de [routing](../../README.md).
+- Somente `.py` arquivos de rota registram WebSocket manipuladores via `SOCKET`.
+- Certifique-se de que seu proxy reverso encaminhe WebSocket solicitações de atualização.
 
 ## Próximas etapas
 
