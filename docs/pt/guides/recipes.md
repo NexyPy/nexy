@@ -72,7 +72,7 @@ async def GET(request: Request):
     return {"user": request.session["user"]}
 ```
 
-> [!NOTA]
+> [!NOTE]
 > mantenha senhas reais fora da fonte. Armazene um hash (`argon2`, `bcrypt`) e leia a chave secreta do ambiente. O cookie de sessão é assinado, não criptografado.
 
 ## Uma API JSON com criação, leitura e exclusão
