@@ -1,15 +1,12 @@
 # Rezepte
 
-Drei Dinge, die fast jede App benötigt, nämlich vollständige Dateien, die Sie kopieren können. Jeder Codeblock unten mit a
-`filename` wird in ein neues Projekt geschrieben und von der Testsuite ausgeführt, Sie lesen also, was
-läuft.
+Drei Dinge, die fast jede App benötigt, nämlich vollständige Dateien, die Sie kopieren können. Jeder Codeblock unten mit einem `filename` wird in ein neues Projekt geschrieben und von der Testsuite ausgeführt, sodass das, was Sie lesen, auch ausgeführt wird.
 
 Sie verwenden einfache API-Handler; Die gleichen Funktionen funktionieren hinter einer Seite in jedem [Modus](../routing/fbr/modes.md).
 
 ## Melden Sie sich mit einer Sitzung an
 
-Ein Besucher gibt einen Namen und ein Passwort ein, der Server speichert sie in einem signierten Cookie und so weiter
-unter `/api/account` ist für alle anderen geschlossen.
+Ein Besucher gibt einen Namen und ein Passwort ein, der Server merkt sich diese in einem signierten Cookie und alles unter `/api/account` ist für alle anderen gesperrt.
 
 Schalten Sie Sitzungen ein. Sie benötigen `itsdangerous` (`uv add itsdangerous`):
 
@@ -76,13 +73,11 @@ async def GET(request: Request):
 ```
 
 > [!NOTE]
-> Halten Sie echte Passwörter von der Quelle fern. Speichern Sie einen Hash (`argon2`, `bcrypt`) und lesen Sie ihn
-> der geheime Schlüssel aus der Umgebung. Das Sitzungscookie ist signiert und nicht verschlüsselt.
+> Halten Sie echte Passwörter von der Quelle fern. Speichern Sie einen Hash (`argon2`, `bcrypt`) und lesen Sie den geheimen Schlüssel aus der Umgebung. Das Sitzungscookie ist signiert und nicht verschlüsselt.
 
 ## Eine JSON-API mit Erstellen, Lesen und Löschen
 
-Ein Speicher in einem Modul, eine Sammelroute und eine Artikelroute. Ersetzen Sie das Wörterbuch durch
-[eine Datenbank](databases.md), wenn die Daten einen Neustart überstehen müssen.
+Ein Speicher in einem Modul, eine Sammelroute und eine Artikelroute. Ersetzen Sie das Wörterbuch durch [eine Datenbank](databases.md), wenn die Daten einen Neustart überstehen müssen.
 
 ```python filename="src/notes.py"
 from pydantic import BaseModel
@@ -134,14 +129,11 @@ async def DELETE(id: int) -> dict[str, bool]:
     return {"deleted": True}
 ```
 
-Ein Körper, der nicht zu `NewNote` passt, wird mit `422` abgelehnt, bevor Ihr Code ausgeführt wird, und die Rückgabe erfolgt
-Die Anmerkung wird zur dokumentierten Antwort. Siehe
-[Validierung und Fehler](../routing/fbr/handlers/validation-and-errors.md).
+Ein Körper, der nicht zu `NewNote` passt, wird mit `422` abgelehnt, bevor Ihr Code ausgeführt wird, und die Rückgabeanmerkung wird zur dokumentierten Antwort. Siehe [Validierung und Fehler](../routing/fbr/handlers/validation-and-errors.md).
 
-## Empfangen Sie eine Datei
+## Erhalten Sie eine Datei
 
-Uploads benötigen `python-multipart` (`uv add python-multipart`). Überprüfen Sie die Größe selbst und verwenden Sie sie niemals
-der Dateiname des Clients als Pfad:
+Uploads benötigen `python-multipart` (`uv add python-multipart`). Überprüfen Sie die Größe selbst und verwenden Sie niemals den Dateinamen des Clients als Pfad:
 
 ```python filename="src/routes/api/upload.py"
 from pathlib import Path
@@ -159,8 +151,7 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
     return {"name": name, "size": len(data)}
 ```
 
-`Path(...).name` löscht alle Ordner, die der Client in den Namen eingegeben hat, z. B. `../../etc/passwd`. Speichern Sie die
-Bytes unter einem von Ihnen generierten Namen, nicht unter diesem.
+`Path(...).name` löscht alle Ordner, die der Client in den Namen eingegeben hat, z. B. `../../etc/passwd`. Speichern Sie die Bytes unter einem von Ihnen generierten Namen, nicht unter diesem.
 
 ## Nächste Schritte
 
