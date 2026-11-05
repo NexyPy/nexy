@@ -166,7 +166,13 @@ tools out of the Git metadata:
 - No `Generated with ...`, `Generated-by:`, `Assisted-by:`, or equivalent
   footer, including the boilerplate that Claude Code, Codebuff/Freebuff,
   Copilot, Cursor, and similar tools append.
-- No bot account as commit author or PR author.
+- No coding agent as commit author or committer: `copilot-swe-agent[bot]`,
+  `cursoragent`, `devin-ai-integration[bot]`, `google-labs-jules[bot]`,
+  `chatgpt-codex-connector[bot]`, an AI vendor mail (`anthropic.com`,
+  `openai.com`, `cursor.com`...) or aider's `Name (aider)`. The check reads the
+  identity git is about to use, and every commit of a branch in CI. Tool bots
+  that write no code, such as dependabot, and GitHub's own merge identity pass.
+- No bot account as PR author.
 - Do not describe agent output as independently reviewed. If you produced it,
   you are not its reviewer.
 
