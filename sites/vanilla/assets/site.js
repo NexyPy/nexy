@@ -208,7 +208,7 @@
   const LANGUAGES = { py: 'Python', js: 'JavaScript', ts: 'TypeScript', md: 'Markdown' }
   const label = (block) => {
     const lang = (block.getAttribute('lang') || '').toLowerCase()
-    if (SHELLS.includes(lang)) return 'Terminal'
+    if (SHELLS.includes(lang)) return tr('terminal') || 'Terminal'
     return LANGUAGES[lang] || (lang ? lang[0].toUpperCase() + lang.slice(1) : 'Code')
   }
   $$('.doc pre').forEach((block) => {
