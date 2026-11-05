@@ -83,6 +83,6 @@ from "@/components/Counter.tsx" import Counter
 
 ## Langkah selanjutnya
 
-- [Rendering](README.md): empat mode
+- [Perenderan](README.md): empat mode
 - [Komponen](../views/nexy/components.md): bagaimana halaman `.nexy` mengimpornya
 - [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md)
