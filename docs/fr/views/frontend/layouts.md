@@ -6,9 +6,9 @@ Un **Layout** est un wrapper qui définit la structure partagée autour d'une ou
 
 Les mises en page suivent une structure hiérarchique basée sur l'arborescence des répertoires sous `src/routes/`.
 
-1.  **Root Layout** : chaque projet a une disposition racine (par exemple, `src/routes/layout.nexy`). Il s'agit de la seule mise en page responsable de la définition du shell du document : `<html>`, `<head>` et `<body>`.
-2.  **Mise en page imbriquée** : n'importe quel dossier peut contenir son propre fichier `layout.*`. Cette mise en page enveloppe toutes les pages et sous-mises en page de ce dossier.
-3.  **Héritage** : Une page est enveloppée par toutes les mises en page, de la racine jusqu'à son propre dossier.
+1.  **Disposition racine** : chaque projet a une disposition racine (par exemple, `src/routes/layout.nexy`). Il s'agit de la seule mise en page responsable de la définition du shell du document : `<html>`, `<head>` et `<body>`.
+2.  **Mises en page imbriquées** : n'importe quel dossier peut contenir son propre fichier `layout.*`. Cette mise en page enveloppe toutes les pages et sous-mises en page de ce dossier.
+3.  **Héritage** : une page est enveloppée par toutes les mises en page depuis la racine jusqu'à son propre dossier.
 
 ## État partagé et composition
 
@@ -25,8 +25,8 @@ Pour les itinéraires pré-rendus (SSG), la disposition racine ne peut pas dépe
 
 La mise en œuvre des slots et de l’imbrication varie légèrement selon le framework. Consultez le guide des **Différences** pour la technologie que vous avez choisie :
 
-- [Réagir aux différences](../react/differences.md)
-- [Différences de vue](../vue/differences.md)
-- [Sveltes différences](../svelte/differences.md)
-- [Des différences solides](../solid/differences.md)
-- [Différences pré-actives](../preact/differences.md)
+- [React Différences](../react/differences.md)
+- [Vue Différences](../vue/differences.md)
+- [Svelte Différences](../svelte/differences.md)
+- [Solid Différences](../solid/differences.md)
+- [Preact Différences](../preact/differences.md)
