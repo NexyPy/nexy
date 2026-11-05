@@ -35,7 +35,7 @@ Untuk memilih folder, tanyakan file apa itu:
 
 ## `src/routes/`
 
-Setiap file menjadi rute, kecuali nama yang dicadangkan di bawah. Jalur file tanpa ekstensi adalah URL - lihat [routing](../routing/README.md).
+Setiap file menjadi rute, kecuali nama yang dicadangkan di bawah. Jalur file tanpa ekstensi adalah URL - lihat [perutean](../routing/README.md).
 
 | File | Peran |
 |---|---|
@@ -74,6 +74,6 @@ Perlakukan seluruh direktori sebagai sekali pakai: hapus, bangun kembali. Menged
 
 ## Langkah selanjutnya
 
-- [Routing](../routing/README.md): bagaimana jalur menjadi URL
-- [Config](../reference/config.md): setiap opsi proyek
+- [Perutean](../routing/README.md): bagaimana jalur menjadi URL
+- [Konfigurasi](../reference/config.md): setiap opsi proyek
 - [Frontend](../guides/frontend.md): Vite, gaya dan pembuatan klien
