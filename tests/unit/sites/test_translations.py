@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from sites.shared import i18n
+from sites.shared import i18n, translator
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
 CODES = [one.code for one in i18n.LANGUAGES if one.code != i18n.DEFAULT]
@@ -86,3 +86,40 @@ _ALERT = re.compile(r"^>\s*\[!\w+\]\s*$", re.MULTILINE)
 def test_every_callout_keeps_its_marker(pair):
     english, translated = pair
     assert _ALERT.findall(_prose(translated)) == _ALERT.findall(_prose(english))
+
+
+@pytest.mark.parametrize(("code", "relative"), PAIRS, ids=[f"{c}/{r}" for c, r in PAIRS])
+def test_no_link_is_left_in_english(code, relative):
+    translated = (DOCS / code / relative).read_text(encoding="utf-8")
+    assert translator.relabel(translated, code) == translated
+
+
+_CODE = re.compile(r"`[^`\n]*`")
+
+
+def _cells(text: str) -> list[tuple[bool, ...]]:
+    """Which cells of each row are empty, pipes inside code aside: a moved pipe empties one."""
+    rows = [_CODE.sub("x", line) for line in _prose(text).splitlines() if line.startswith("|")]
+    return [tuple(not cell.strip() for cell in row.split("|")) for row in rows]
+
+
+def test_every_table_row_keeps_its_cells(pair):
+    english, translated = pair
+    assert _cells(translated) == _cells(english)
+
+
+def _unopened(text: str) -> int:
+    """The links of a page whose closing bracket has no opening one before it on its line."""
+    count = 0
+    for line in _CODE.sub("", _prose(text)).splitlines():
+        depth = 0
+        for at, char in enumerate(line):
+            if char == "]" and depth == 0 and line[at + 1 : at + 2] == "(":
+                count += 1
+            depth = depth + 1 if char == "[" else max(depth - (char == "]"), 0)
+    return count
+
+
+def test_every_link_keeps_its_opening_bracket(pair):
+    english, translated = pair
+    assert _unopened(translated) == _unopened(english)
