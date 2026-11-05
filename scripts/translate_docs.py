@@ -27,6 +27,7 @@ import urllib.parse
 import urllib.request
 from collections.abc import Callable, Collection
 from pathlib import Path
+from typing import Any
 
 REPO = Path(__file__).resolve().parent.parent
 if str(REPO) not in sys.path:
@@ -86,10 +87,10 @@ def _request(
     """
     body, openings = translator.leads(chunk, opening)
     words = body.strip()
-    if not words:
+    if not translator.has_words(words):
         return chunk
     start = body.index(words)
-    answer = translator.heal_opening(engine(words, target))
+    answer = translator.heal(engine(words, target))
     whole = body[:start] + answer + body[start + len(words) :]
     return translator.respace(translator.with_leads(whole, openings) or whole, chunk)
 
@@ -182,7 +183,7 @@ def _digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _manifest(root: Path) -> dict[str, object]:
+def _manifest(root: Path) -> dict[str, Any]:
     path = root / MANIFEST
     if not path.is_file():
         return {"provider": "google", "pages": {}}
@@ -199,6 +200,21 @@ def source_pages(docs: Path) -> list[Path]:
     return [docs / relative for relative in i18n.english_pages(docs)]
 
 
+def _save(root: Path, manifest: dict[str, Any]) -> None:
+    _write(root / MANIFEST, json.dumps(manifest, ensure_ascii=False, indent=1) + "\n")
+
+
+def _translate_page(page: Path, target: Path, code: str, engine: Engine) -> bool:
+    """Write one translated page; on a page the service keeps breaking, keep the old one."""
+    try:
+        text = translate_markdown(page.read_text(encoding="utf-8"), code, engine)
+    except RuntimeError as error:
+        print(f"[{code}] kept the previous version: {error}", flush=True)
+        return False
+    _write(target, text)
+    return True
+
+
 def refresh(
     docs: Path,
     code: str,
@@ -206,28 +222,31 @@ def refresh(
     engine: Engine = google,
     force: bool = False,
     limit: int | None = None,
-) -> list[Path]:
-    """Translate the changed pages into `docs/<code>/`; return those written."""
+) -> tuple[list[Path], list[Path]]:
+    """Translate the changed pages into `docs/<code>/`; return those written and those failed.
+
+    The manifest is saved after each page, so a run cut short resumes where it stopped.
+    """
     root = docs / code
     manifest = _manifest(root)
     written: list[Path] = []
+    failed: list[Path] = []
     selected = pages[:limit] if limit else pages
     for number, page in enumerate(selected, start=1):
         relative = page.relative_to(docs).as_posix()
-        target = root / relative
-        digest = _digest(page)
+        target, digest = root / relative, _digest(page)
         if not force and target.is_file() and manifest["pages"].get(relative, digest) == digest:
-            manifest["pages"][relative] = digest
             continue
         print(f"[{code}] {number}/{len(selected)} {relative}", flush=True)
-        text = translate_markdown(page.read_text(encoding="utf-8"), code, engine)
-        _write(target, text)
+        if not _translate_page(page, target, code, engine):
+            failed.append(page)
+            continue
         manifest["pages"][relative] = digest
         written.append(target)
+        _save(root, manifest)
     if written:
-        _write(root / MANIFEST, json.dumps(manifest, ensure_ascii=False, indent=1) + "\n")
         _copy_assets(docs, root)
-    return written
+    return written, failed
 
 
 def _copy_assets(docs: Path, root: Path) -> None:
@@ -256,10 +275,12 @@ def main(argv: list[str] | None = None) -> int:
     options = arguments(sys.argv[1:] if argv is None else argv)
     docs: Path = options.docs
     pages = source_pages(docs)
+    failures = 0
     for code in options.lang:
-        written = refresh(docs, code, pages, force=options.force, limit=options.limit)
-        print(f"[{code}] {len(written)} page(s) written", flush=True)
-    return 0
+        written, failed = refresh(docs, code, pages, force=options.force, limit=options.limit)
+        print(f"[{code}] {len(written)} page(s) written, {len(failed)} failed", flush=True)
+        failures += len(failed)
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":
