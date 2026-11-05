@@ -52,7 +52,7 @@ Eine URL, die keiner Route entspricht (a 404), erhält nur die Middleware von Ve
 | `middleware.py` | Sie benötigen auch die **Antwort**: Header, Weiterleitungen, Timing, Kurzschließen für einen ganzen Bereich |
 | [`dependencies.py`](../dependencies/README.md) | Sie benötigen geparste Parameter oder um einen Wert einzufügen (aktueller Benutzer, Datenbanksitzung) |
 | `@UseGuard` auf einem Handler | eine Route benötigt eine zusätzliche Prüfung |
-| `useMiddlewares` in [config](../../../reference/config.md) | eine ASGI-Middleware für die gesamte Anwendung (CORS, GZip, Sitzungen) |
+| `useMiddlewares` in [Konfiguration](../../../reference/config.md) | eine ASGI-Middleware für die gesamte Anwendung (CORS, GZip, Sitzungen) |
 
 Middleware-Dateien werden **vor** Abhängigkeiten ausgeführt: Die Anfrage hat jedes `middleware.py` ihrer Verzeichnisse passiert, als die Abhängigkeiten beginnen.
 
