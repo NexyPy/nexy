@@ -1,20 +1,14 @@
 # Documentação Nexy
 
-**Uma estrutura Python para aplicações web fullstack.**
+**Uma Python estrutura para aplicações web fullstack.**
 
-Nexy trata da junção entre um back-end Python e um front-end de navegador. Em vez de dois servidores, dois
-construir sistemas e duas tabelas de rotas, você obtém uma origem: FastAPI e Starlette atendem o aplicativo,
-Vite constrói o cliente, e um arquivo em `src/routes/` é uma rota - `.nexy` é uma página, `.py` é um
-Manipulador de API.
+Nexy é sobre a junção entre um backend Python e um frontend de navegador. Em vez de dois servidores, dois sistemas de construção e duas tabelas de rotas, você obtém uma origem: FastAPI e Starlette atendem o aplicativo, Vite constrói o cliente e um arquivo em `src/routes/` é uma rota - `.nexy` é uma página, `.py` é um manipulador de API.
 
-- **Python primeiro.** Páginas, endpoints, formulários e ações são Python, e uma página renderizada pelo servidor precisa
-  sem estrutura de front-end.
-- **Três roteadores, uma integração.** Baseado em arquivo, modular ou FastAPI existente `APIRouter`.
-- **Um frontend quando você quiser.** React, Vue, Svelte, Solid ou Preact, por página como ilhas, ou para
-  todo o projeto em modo cliente.
-- **Renderização, um modelo.** A renderização do servidor, as páginas em cache e as ilhas são decididas por página; cliente
-  o roteamento é uma mudança de projeto.
-- **Ações digitadas.** Uma postagem de formulário e uma chamada de cliente digitada alcançam a mesma função Python.
+- **Python primeiro.** Páginas, endpoints, formulários e ações são Python, e uma página renderizada pelo servidor não precisa de estrutura de frontend.
+- **Três roteadores, uma integração.** Baseado em arquivo, modular ou existente FastAPI `APIRouter`.
+- **Um frontend quando você quiser.** React, Vue, Svelte, Solid ou Preact, por página como ilhas, ou para todo o projeto em modo cliente.
+- **Renderização, um modelo.** A renderização do servidor, as páginas em cache e as ilhas são decididas por página; o roteamento do cliente é uma mudança de projeto.
+- **Ações digitadas.** Uma postagem de formulário e uma chamada de cliente digitada atingem a mesma função Python.
 
 Comece com um arquivo em `src/routes/` e adicione estrutura quando o projeto crescer.
 
@@ -23,7 +17,7 @@ Comece com um arquivo em `src/routes/` e adicione estrutura quando o projeto cre
 ### Primeiros passos
 | Página | O que você fará |
 |---|---|
-| [Instalação](getting-started/installation.md) | Instale o uv e o Nexy CLI e crie seu primeiro projeto |
+| [Instalação](getting-started/installation.md) | Instale uv e o Nexy CLI e crie seu primeiro projeto |
 | [Início rápido](getting-started/quick-start.md) | Crie um projeto, execute-o com recarga ao vivo e construa-o para produção |
 | [Tutorial](getting-started/tutorial.md) | Crie uma página de notas com um endpoint, dados compartilhados e uma construção de produção em 10 minutos |
 
@@ -40,7 +34,7 @@ Comece com um arquivo em `src/routes/` e adicione estrutura quando o projeto cre
 ### Vindo de outro lugar
 | Página | O que você fará |
 |---|---|
-| [Vindo de outro framework](getting-started/coming-from-other-frameworks.md) | Traduzir FastAPI, Next.js e hábitos Express em Nexy |
+| [Vindo de outra estrutura](getting-started/coming-from-other-frameworks.md) | Traduzir FastAPI, Next.js e expressar hábitos em Nexy |
 
 ## Roteamento
 
@@ -60,9 +54,9 @@ Comece com um arquivo em `src/routes/` e adicione estrutura quando o projeto cre
 ### Manipuladores e erros {fbr}
 | Página | O que você fará |
 |---|---|
-| [Route handlers](routing/fbr/handlers/README.md) | Adicionar um endpoint Python |
+| [Manipuladores de rota](routing/fbr/handlers/README.md) | Adicionar um ponto de extremidade Python |
 | [Validação e erros](routing/fbr/handlers/validation-and-errors.md) | Responda `422` e `404` e gere um `HTTPException` |
-| [Manipuladores WebSocket](routing/fbr/realtime/websocket.md) | Tratar uma conexão `SOCKET` |
+| [WebSocket manipuladores](routing/fbr/realtime/websocket.md) | Manipular uma conexão `SOCKET` |
 | [Dependências e guardas](routing/fbr/dependencies/README.md) | Execute `dependencies.py` antes de um manipulador e herde-o |
 | [Arquivos de middleware](routing/fbr/middleware/README.md) | Encapsular solicitações com `middleware.py`, herdado pelo diretório |
 | [Páginas de erro](routing/fbr/errors/README.md) | Responda com `notfound.nexy`, `errors.nexy` e erros JSON |
@@ -82,7 +76,7 @@ Controladores e módulos.
 |---|---|
 | [Roteamento personalizado](routing/custom/README.md) | Incluir um aplicativo FastAPI existente |
 
-## Front-end
+## Interface
 
 ### Contratos compartilhados
 | Página | O que define |
@@ -94,7 +88,7 @@ Controladores e módulos.
 ### Visualizações próximas
 | Página | O que você fará |
 |---|---|
-| [.nexy files](views/nexy/README.md) | Escreva uma página com Python, Jinja2 e props |
+| [.arquivos nexy](views/nexy/README.md) | Escreva uma página com Python, Jinja2 e adereços |
 | [Componentes](views/nexy/components.md) | Use `Image`, `Link`, `Audio`, `Video` e `Import` |
 | [layout.nexy](views/nexy/layouts.md) | Escreva o layout do modo servidor |
 | [Markdown e MDX](views/nexy/markdown.md) | Escreva páginas de conteúdo |
@@ -102,18 +96,18 @@ Controladores e módulos.
 ### Diferenças de estrutura
 | Página | O que muda |
 |---|---|
-| [Reagir diferenças](views/react/differences.md) | Componentes, ganchos e `layout.tsx` {new} |
-| [Diferenças Vue](views/vue/differences.md) | SFCs, referências e `layout.vue` {new} |
+| [React diferenças](views/react/differences.md) | Componentes, ganchos e `layout.tsx` {new} |
+| [Vue diferenças](views/vue/differences.md) | SFCs, referências e `layout.vue` {new} |
 | [Svelte diferenças](views/svelte/differences.md) | Runas, lojas e `layout.svelte` {new} |
-| [Diferenças sólidas](views/solid/differences.md) | Sinais, acessadores e `layout.tsx` {new} |
-| [Pré-diferenças](views/preact/differences.md) | Ganchos, sinais e `layout.tsx` {new} |
+| [Solid diferenças](views/solid/differences.md) | Sinais, acessadores e `layout.tsx` {new} |
+| [Preact diferenças](views/preact/differences.md) | Ganchos, sinais e `layout.tsx` {new} |
 
 ## Renderização
 
 ### Modos
 | Página | O que você decidirá |
 |---|---|
-| [Renderização](rendering/README.md) | Qual modo de renderização se ajusta a uma página |
+| [Renderização](rendering/README.md) | Qual modo de renderização cabe em uma página |
 | [SSR](rendering/ssr.md) | Renderização do servidor, o padrão |
 | [ISR](rendering/isr.md) | Armazenar páginas em cache com obsoletas enquanto revalidam |
 | [CSR](rendering/csr.md) | Roteamento do lado do cliente |
@@ -124,7 +118,7 @@ Controladores e módulos.
 ### Formulários e dados
 | Página | O que você fará |
 |---|---|
-| [Actions](guides/actions.md) | Chame uma função Python a partir de um formulário ou de uma função TypeScript digitada |
+| [Actions](guides/actions.md) | Chame uma função Python de um formulário ou uma função digitada TypeScript |
 | [Bancos de dados](guides/databases.md) | Escolha um ORM e execute migrações |
 
 ### Segurança e implantação
@@ -138,7 +132,7 @@ Controladores e módulos.
 | Página | O que você fará |
 |---|---|
 | [Vite e estilo](guides/frontend.md) | Configurar Vite, estilo e construção do cliente |
-| [Teste](guides/testing.md) | Teste com pytest, `TestClient` e vitest |
+| [Testando](guides/testing.md) | Teste com pytest, `TestClient` e vitest |
 
 ### Ferramentas e ajuda
 | Página | O que você fará |
@@ -149,16 +143,16 @@ Controladores e módulos.
 
 ## Referência
 
-### Comandos e configurações
+### Comandos e configuração
 | Página | O que lista |
 |---|---|
 | [CLI](reference/cli.md) | Comandos, sinalizadores, prompts e códigos de saída |
 | [Config](reference/config.md) | Cada campo `nexyconfig.py` e seu padrão |
 
-### API Python e erros
+### Python API e erros
 | Página | O que lista |
 |---|---|
-| [API Python](reference/python-api.md) | Cada nome que Nexy exporta, por módulo |
+| [Python API](reference/python-api.md) | Todo nome que Nexy exporta, por módulo |
 | [Exceções e erros](reference/exceptions.md) | Cada falha, seu status e o arquivo que a responde |
 
 ### Convenções e conceitos
@@ -168,7 +162,7 @@ Controladores e módulos.
 | [Glossário](reference/glossary.md) | As palavras que esses documentos usam |
 | [Segurança](reference/security.md) | Pisos de versão, regras que Nexy segue, auditorias |
 
-## Layout
+## Disposição
 ```text
 docs/
 ├─ README.md
