@@ -16,13 +16,12 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 | Problem | Status | Text |
 |---|---|---|
-| fehlendes oder ungültiges Abfrage-, Header-, Cookie- oder Textfeld | `422` | `{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}` |
+| Fehlendes oder ungültiges Abfrage-, Header-, Cookie- oder Textfeld | `422` | `{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}` |
 | ungültiges **Pfad**-Segment (`/api/users/abc` für `id: int`) | `404` | die nicht gefundene Seite oder JSON für `Accept: application/json` |
 
-Ein Pfadsegment, das nicht konvertiert werden kann, ist ein `404` und nicht ein `422`: Eine dynamische Route erfasst jedes
-URL, und eine URL, die nicht konvertiert werden kann, existiert nicht.
+Ein Pfadsegment, das nicht konvertiert werden kann, ist ein `404` und nicht ein `422`: Eine dynamische Route erfasst jede URL, und eine URL, die nicht konvertiert werden kann, existiert nicht.
 
-Der `422`-Körper hat die Standardform von FastAPI, sodass vorhandene Clients und generierte SDKs weiterhin funktionieren.
+Der `422`-Körper hat die Standardform von FastAPI, sodass bestehende Clients und generierte SDKs weiterhin funktionieren.
 
 ## Fehler melden
 
@@ -45,7 +44,7 @@ async def GET(id: int):
 
 Legen Sie `Accept: application/json` in API-Clients fest. Browser rufen ständig Seiten auf.
 
-## Unbehandelte Ausnahmen
+## Nicht behandelte Ausnahmen
 
 Eine Ausnahme besteht darin, dass Ihr Handler keine Antworten `500` mit derselben HTML- oder JSON-Auswahl abfängt.
 
