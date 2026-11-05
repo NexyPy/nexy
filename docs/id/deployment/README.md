@@ -64,7 +64,7 @@ async def GET():
 
 Setiap halaman adalah HTML, tetapi Nexy mengasumsikan server untuk perutean dan penangan API.
 
-> [!CATATAN]
+> [!NOTE]
 > tidak ada mode pembuatan `--static`. Ekspor statis murni harus dibuat di saluran Anda dari keluaran `nx build`.
 
 ## Daftar periksa
