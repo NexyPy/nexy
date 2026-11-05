@@ -52,7 +52,7 @@ URL yang tidak cocok dengan rute (404) hanya menerima middleware dari direktori 
 | `middleware.py` | Anda memerlukan **respons** juga: header, pengalihan, pengaturan waktu, hubungan arus pendek untuk seluruh area |
 | [`dependencies.py`](../dependencies/README.md) | Anda memerlukan parsing parameter atau memasukkan nilai (pengguna saat ini, sesi database) |
 | `@UseGuard` pada handler | satu rute memerlukan pemeriksaan ekstra |
-| `useMiddlewares` di [config](../../../reference/config.md) | middleware ASGI untuk seluruh aplikasi (CORS, GZip, sesi) |
+| `useMiddlewares` di [konfigurasi](../../../reference/config.md) | middleware ASGI untuk seluruh aplikasi (CORS, GZip, sesi) |
 
 File middleware dijalankan **sebelum** dependensi: permintaan telah melewati setiap `middleware.py` direktorinya saat dependensi dimulai.
 
