@@ -9,7 +9,7 @@ SSR 是默认设置：服务器针对每个请求将页面呈现为 HTML。没�
 | 路线文件 | HTML 是由什么产生的 | 当 |
 |---|---|---|
 | `.nexy` | 编译后的 Python 模块，通过 Jinja2 | 每个请求 |
-| `.md` | `cmarkgfm`，然后是最近的布局 | 每个请求 |
+| `.md` | Markdown，然后是最近的布局 | 每个请求 |
 | `.mdx`、`.tsx`、`.vue`、`.svelte` | 框架，在 Node 中呈现 | 在构建时，当路由没有布局时，否则在浏览器中 |
 | `.py` | 什么都没有：它返回 JSON 或 `Response` | - |
 
@@ -62,6 +62,6 @@ slug: prop[str] = "untitled"
 ## 后续步骤
 
 - [ISR](isr.md)：按 URL 缓存此页面
-- [岛屿](islands.md)：保持 SSR 并使一个小部件具有交互性
+- [群岛](islands.md)：保持 SSR 并使一个小部件具有交互性
 - [CSR](csr.md)：手动导航到浏览器
 - [性能](../deployment/performance.md)
