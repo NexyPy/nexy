@@ -30,8 +30,7 @@ children: prop[NexyElement]
 
 ## Verschachtelte Layouts
 
-Ein `layout.nexy` in einem Unterverzeichnis umschließt diesen Unterbaum und rendert ihn in seinem übergeordneten Verzeichnis. Es wiederholt sich nicht
-die Dokument-Tags:
+Ein `layout.nexy` in einem Unterverzeichnis umschließt diesen Unterbaum und rendert ihn in seinem übergeordneten Verzeichnis. Die Dokument-Tags werden nicht wiederholt:
 
 ```nexy filename="src/routes/blog/layout.nexy"
 ---
@@ -45,8 +44,7 @@ children: prop[NexyElement]
 
 ## Komponenten und Inseln
 
-Ein Layout kann `.nexy` Komponenten (eine Kopfzeile, eine Fußzeile) und Client-Komponenten importieren. Ein Kunde
-Komponente in einem Layout ist eine [Insel](../../rendering/islands.md) wie jede andere:
+Ein Layout kann `.nexy` Komponenten (eine Kopfzeile, eine Fußzeile) und Client-Komponenten importieren. Eine Client-Komponente in einem Layout ist eine [Insel](../../rendering/islands.md) wie jede andere:
 
 ```nexy
 ---
@@ -59,9 +57,7 @@ from "@/components/theme/theme.tsx" import Theme
 
 ## Ohne Layout
 
-Ein Projekt ohne `layout.nexy` antwortet immer noch mit einem gültigen Dokument: Nexy fällt auf ein Minimum zurück
-Shell mit `<!DOCTYPE html>`, dem Viewport-Meta und den Vite-Tags. Fügen Sie bei Bedarf ein Layout hinzu
-ein Titel, Schriftarten oder eine Navigation.
+Ein Projekt ohne `layout.nexy` antwortet immer noch mit einem gültigen Dokument: Nexy greift auf eine minimale Shell mit `<!DOCTYPE html>`, dem Viewport-Meta und den Vite-Tags zurück. Fügen Sie ein Layout hinzu, sobald Sie einen Titel, Schriftarten oder eine Navigation benötigen.
 
 ## Im modularen Router
 
@@ -73,8 +69,7 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 
 ## Was es nicht kann
 
-- Es kann nicht mit `layout.tsx`, `layout.vue` oder `layout.svelte` koexistieren: Ein Servermodus-Projekt hat
-  keine Client-Routen ([modes](../../routing/fbr/modes.md)).
+- Es kann nicht mit `layout.tsx`, `layout.vue` oder `layout.svelte` koexistieren: Ein Projekt im Servermodus hat keine Client-Routen ([modes](../../routing/fbr/modes.md)).
 - Es läuft nicht auf dem Client: Verwenden Sie eine Insel für Interaktivität.
 
 ## Nächste Schritte
