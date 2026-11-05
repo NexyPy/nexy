@@ -124,7 +124,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!REMARQUE]
+> [!NOTE]
 > un client qui envoie `Accept: */*` (la valeur par défaut de `curl` et de nombreuses bibliothèques HTTP) reçoit la page HTML. Définissez `Accept: application/json` pour les erreurs JSON.
 
 ## Exceptions non gérées
