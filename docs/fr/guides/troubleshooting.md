@@ -95,4 +95,4 @@ Le thème enregistré doit être appliqué avant la première peinture. Conserve
 ## Toujours coincé
 
 - Lisez la page de la fonctionnalité dans [l'index de la documentation](../README.md).
-- Si la documentation et le code ne sont pas d'accord, le code est correct : veuillez ouvrir un [issue](https://github.com/NexyPy/nexy/issues) nommant la page.
+- Si la documentation et le code ne sont pas d'accord, le code est correct : veuillez ouvrir un [ticket](https://github.com/NexyPy/nexy/issues) nommant la page.
