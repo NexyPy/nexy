@@ -22,8 +22,8 @@ def _rendered() -> source.Rendered:
 
 
 class TestCards:
-    def test_the_home_shows_the_ten_pages_of_getting_started(self):
-        assert _rendered().html.count('class="home-card"') == 10
+    def test_the_home_shows_the_nine_pages_of_getting_started(self):
+        assert _rendered().html.count('class="home-card"') == 9
 
     def test_a_card_leads_to_a_page_of_getting_started(self):
         slugs = {_link(page.slug) for page in source.pages_of(source.read_tracks(DOCS)[0])}
