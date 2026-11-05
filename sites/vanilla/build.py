@@ -63,6 +63,11 @@ def _router_face(key: str, name: str, _: str) -> str:
     )
 
 
+def _at(page: source.Page, slug: str) -> str:
+    """The address of another page of the same language."""
+    return source.address_of(page.lang, slug)
+
+
 def router_select_html(page: source.Page) -> str:
     """The router above the menu: it picks the routing groups; each choice leads to its overview.
 
@@ -75,7 +80,7 @@ def router_select_html(page: source.Page) -> str:
         for key, name, blurb in source.ROUTERS
     )
     items = "".join(
-        f'<li><a href="{relative(page.slug, f"routing/{key}")}" data-pick="{key}"'
+        f'<li><a href="{relative(page.address, _at(page, f"routing/{key}"))}" data-pick="{key}"'
         f"{' aria-current="true"' if key == chosen else ''}>"
         f"{_router_face(key, name, blurb)}{ICONS['icon_check']}</a></li>"
         for key, name, blurb in source.ROUTERS
@@ -95,7 +100,7 @@ def router_meta(page: source.Page) -> str:
 def _nav_item(page: source.Page, current: str) -> str:
     mark = ' aria-current="page"' if page.slug == current else ""
     badge = '<span class="badge-new">New</span>' if page.badge else ""
-    href = relative(current, page.slug)
+    href = relative(_at(page, current), page.address)
     return f'<li><a href="{href}"{mark}>{escape(page.label)}</a>{badge}</li>'
 
 
@@ -165,7 +170,7 @@ def pager_html(before: source.Page | None, after: source.Page | None, current: s
             f"<span>{escape(page.label)}</span></span>"
         )
         return (
-            f'<a rel="{rel}" href="{relative(current, page.slug)}">'
+            f'<a rel="{rel}" href="{relative(_at(page, current), page.address)}">'
             f'<span class="pager-arrow" aria-hidden="true">{arrow}</span>{text}</a>'
         )
 
@@ -173,17 +178,47 @@ def pager_html(before: source.Page | None, after: source.Page | None, current: s
     return f'<nav class="pager" aria-label="Pages">{previous}{following}</nav>'
 
 
-def _head(page: source.Page, rendered: source.Rendered, site_url: str) -> str:
-    """The tags a crawler reads: the address of the page, its cards, the menu above it."""
-    url = seo.canonical(site_url, page.slug)
+def _alternates(page: source.Page, docs: Path, site_url: str) -> tuple[tuple[str, str], ...]:
+    """The address of the page in every language it is translated into, English first."""
+    english = source.english_twin(page.path, docs).relative_to(docs).as_posix()
+    return tuple(
+        (one.code, seo.canonical(site_url, source.address_of(one.code, page.slug)))
+        for one in i18n.LANGUAGES
+        if one.code == i18n.DEFAULT or (docs / one.code / english).is_file()
+    )
+
+
+def _head(page: source.Page, rendered: source.Rendered, site_url: str, docs: Path) -> str:
+    """The tags a crawler reads: the address of the page, its cards, the menu above it.
+
+    A page still in English names the English page as its own: the same words at two addresses
+    would compete with each other.
+    """
+    url = seo.canonical(site_url, page.slug if page.fallback else page.address)
+    home_url = seo.canonical(site_url, _at(page, ""))
     return seo.Head(
         title=page.title,
         description=seo.description(rendered.html),
         url=url,
         site_url=site_url,
-        trail=(("Documentation", seo.home(site_url)), (page.label, url)),
+        trail=(("Documentation", home_url), (page.label, url)),
         page_type="TechArticle" if page.slug else "WebPage",
+        lang=i18n.DEFAULT if page.fallback else page.lang,
+        alternates=_alternates(page, docs, site_url),
     ).html()
+
+
+def _lang_note(page: source.Page) -> str:
+    """One line above a page still in English, in the language the reader chose."""
+    if not page.fallback:
+        return ""
+    note = escape(i18n.text(page.lang, "fallback_note"))
+    return f'<p class="lang-note" data-i18n="fallback_note">{note}</p>'
+
+
+def search_file(lang: str) -> str:
+    """The search index of a language: one file each, so a reader searches what they read."""
+    return "search-index.json" if lang == i18n.DEFAULT else f"search-index.{lang}.json"
 
 
 def _page_html(
@@ -197,16 +232,23 @@ def _page_html(
 ) -> str:
     track = source.track_of(tracks, page.slug)
     before, after = source.neighbours(track, page.slug)
-    rel = page.path.relative_to(docs).as_posix()
+    rel = source.english_twin(page.path, docs).relative_to(docs).as_posix()
     home = not page.slug
-    return template.substitute(
+    language = i18n.find(page.lang)
+    html = template.substitute(
+        lang=language.code,
+        dir=language.direction,
         title=escape(page.title),
-        seo=_head(page, rendered, site_url),
-        root=_root(page.slug),
-        home=relative(page.slug, ""),
+        seo=_head(page, rendered, site_url, docs),
+        root=_root(page.address),
+        search_index=search_file(page.lang),
+        home=relative(page.address, _at(page, "")),
         nav=nav_html(tracks, page.slug),
         area_select=router_select_html(page),
-        language_select=i18n.select_html(),
+        language_select=i18n.select_html(
+            page.lang, lambda code: relative(page.address, source.address_of(code, page.slug))
+        ),
+        lang_note=_lang_note(page),
         router_meta=router_meta(page),
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
@@ -219,6 +261,7 @@ def _page_html(
         version=VERSION,
         **ICONS,
     )
+    return i18n.localize(html, page.lang)
 
 
 def _write(path: Path, text: str) -> None:
@@ -239,19 +282,23 @@ def not_found_html(base: str) -> str:
     return template.substitute(base=root, mark=MARK, **ICONS)
 
 
-def _pages(docs: Path) -> list[tuple[source.Page, str]]:
-    """Every page of the site, the home first, each with the group that lists it."""
-    tracks = source.read_tracks(docs)
-    return [(source.home(docs), "Documentation")] + [
+def _pages(docs: Path, lang: str = i18n.DEFAULT) -> list[tuple[source.Page, str]]:
+    """Every page of a language, the home first, each with the group that lists it."""
+    tracks = source.read_tracks(docs, lang)
+    return [(source.home(docs, lang), "Documentation")] + [
         (page, group.title) for track in tracks for group in track.groups for page in group.pages
     ]
 
 
 def _rendered(page: source.Page, docs: Path) -> source.Rendered:
     """A page as HTML: the home is composed from Getting Started, not from the whole README."""
+
+    def link(slug: str) -> str:
+        return relative(page.address, _at(page, slug))
+
     if not page.slug:
-        return home.render(docs, lambda slug: relative("", slug))
-    return source.render(page.path, docs, lambda slug, cur=page.slug: relative(cur, slug))
+        return home.render(docs, link, page.lang)
+    return source.render(page.path, docs, link)
 
 
 def _write_pages(
@@ -261,25 +308,27 @@ def _write_pages(
     template: Template,
     site_url: str,
 ) -> list[Path]:
-    """Write one HTML and one Markdown file per page; return the HTML files."""
-    tracks = source.read_tracks(docs)
+    """Write one HTML and one Markdown file per page of a language; return the HTML files."""
+    lang = pages[0][0].lang
+    tracks = source.read_tracks(docs, lang)
     written, entries = [], []
     for page, section in pages:
         rendered = _rendered(page, docs)
-        target = out / "docs" / page.slug / "index.html"
+        target = out / "docs" / page.address / "index.html"
         _write(target, _page_html(template, tracks, page, section, rendered, site_url, docs))
         _write(target.with_name("index.md"), page.path.read_text(encoding="utf-8"))
-        url = f"docs/{page.slug}/" if page.slug else "docs/"
+        url = f"docs/{page.address}/" if page.address else "docs/"
         entries.append(source.search_entry(page, section, rendered, url))
         written.append(target)
-
-    # Generate redirections for pruned pages
-    for old_slug, new_slug in source.REDIRECTS.items():
-        target = out / "docs" / old_slug / "index.html"
-        _write(target, redirect_html(old_slug, new_slug, site_url))
-
-    _write(out / "search-index.json", json.dumps(entries, separators=(",", ":")))
+    payload = json.dumps(entries, ensure_ascii=False, separators=(",", ":"))
+    _write(out / search_file(lang), payload)
     return written
+
+
+def _write_redirects(out: Path, site_url: str) -> None:
+    """An old address of a page that moved hands the reader to the new one."""
+    for old_slug, new_slug in source.REDIRECTS.items():
+        _write(out / "docs" / old_slug / "index.html", redirect_html(old_slug, new_slug, site_url))
 
 
 def redirect_html(old: str, new: str, site_url: str) -> str:
@@ -301,7 +350,8 @@ def redirect_html(old: str, new: str, site_url: str) -> str:
 def _write_crawl(out: Path, pages: list[tuple[source.Page, str]], site_url: str) -> None:
     """Write the two files a crawler asks for: the list of pages, and where that list lives."""
     _write(out / "robots.txt", seo.robots(site_url))
-    _write(out / "sitemap.xml", seo.sitemap(seo.canonical(site_url, p.slug) for p, _ in pages))
+    urls = (seo.canonical(site_url, p.address) for p, _ in pages if not p.fallback)
+    _write(out / "sitemap.xml", seo.sitemap(urls))
 
 
 def build(
@@ -317,8 +367,12 @@ def build(
     `site_url` is the address the site is published at, for the canonical tags and the sitemap.
     """
     template = Template((HERE / "template.html").read_text(encoding="utf-8"))
-    pages = _pages(docs)
-    written = _write_pages(out, docs, pages, template, site_url)
+    pages, written = [], []
+    for language in i18n.LANGUAGES:
+        found = _pages(docs, language.code)
+        written += _write_pages(out, docs, found, template, site_url)
+        pages += found
+    _write_redirects(out, site_url)
     _write_crawl(out, pages, site_url)
     _write(out / "index.html", _redirect(site_url))
     _write(out / "404.html", not_found_html(base))
@@ -334,10 +388,23 @@ def build(
     return written
 
 
+# The root picks the language the reader chose last, else the first one the browser prefers that
+# the site speaks, else English. A crawler and a reader without script follow the refresh.
+_PICK = (
+    "<script>try{{var k={codes},s=localStorage.getItem('nexy-docs-lang'),"
+    "w=[s].concat(navigator.languages||[navigator.language]),c='en';"
+    "for(var i=0;i<w.length;i++){{var l=String(w[i]||'').slice(0,2).toLowerCase();"
+    "if(k.indexOf(l)>=0){{c=l;break}}}}"
+    "location.replace(c==='en'?'docs/':'docs/'+c+'/')}}catch(e){{}}</script>"
+)
+
+
 def _redirect(site_url: str) -> str:
     """The root of the site: a short page that hands the reader, and the crawler, to the docs."""
+    codes = json.dumps([language.code for language in i18n.LANGUAGES])
     return (
         '<!doctype html><meta charset="utf-8"><title>Nexy</title>'
+        f"{_PICK.format(codes=codes)}"
         '<meta http-equiv="refresh" content="0; url=docs/">'
         f'<link rel="canonical" href="{seo.home(site_url)}">'
         '<a href="docs/">Nexy documentation</a>'
