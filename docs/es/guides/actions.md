@@ -1,9 +1,8 @@
 # Acciones
 
-Un `@Action` convierte una función de Python en un punto final `POST`. A diferencia de un controlador API estándar, está diseñado como un puente de comunicación escrito: Nexy genera automáticamente el cliente TypeScript, valida la entrada y maneja la respuesta.
+Un `@Action` convierte una función Python en un punto final `POST`. A diferencia de un controlador API estándar, está diseñado como un puente de comunicación escrito: Nexy genera automáticamente el cliente TypeScript, valida la entrada y maneja la respuesta.
 
-**Antes de comenzar:** un proyecto creado por el [Inicio rápido](../getting-started/quick-start.md).
-Las acciones se encuentran junto a las páginas, en `src/actions/`.
+**Antes de comenzar:** un proyecto creado por el [Inicio rápido](../getting-started/quick-start.md). Las acciones se encuentran junto a las páginas, en `src/actions/`.
 
 ```diagram filename="El ciclo de acción"
 Client (UI)  ─── 1. Call (Typed Input) ───► [ Nexy Bridge ]
@@ -18,7 +17,7 @@ Client (UI)  ◄─── 5. Consume (Typed Result) ◄── 4. Serialize ◄�
 ## El ciclo de acción
 
 ### 1. Definir
-Una acción es una función normal de Python marcada con `@Action`. Nexy usa su firma para definir el contrato API.
+Una acción es una función normal Python marcada con `@Action`. Nexy usa su firma para definir el contrato API.
 
 ```python filename="src/acciones/usuario.py"
 from pydantic import BaseModel
@@ -39,13 +38,13 @@ Los parámetros son la entrada, validada por Pydantic. Se inyecta un parámetro 
 ### 2. Validar
 Cuando se llama a la acción, Nexy valida la entrada con las sugerencias de tipo de la función. Si falta un campo o tiene un tipo incorrecto, la acción no se ejecuta y se devuelve un `422 Unprocessable Entity`.
 
-### 3. ejecutar
-La lógica se ejecuta en el servidor. Dado que es una función estándar de Python, puede usar cualquier biblioteca, acceder a la base de datos o llamar a otros servicios. También puede activar una actualización de la página usando `revalidate()`.
+### 3. Ejecutar
+La lógica se ejecuta en el servidor. Dado que es una función estándar Python, puede usar cualquier biblioteca, acceder a la base de datos o llamar a otros servicios. También puede activar una actualización de la página usando `revalidate()`.
 
-### 4. serializar
-El valor de retorno se serializa automáticamente a JSON. Los modelos Pydantic se manejan de forma nativa y los tipos estándar de Python se asignan a sus equivalentes JSON.
+### 4. Serializar
+El valor de retorno se serializa automáticamente a JSON. Los modelos Pydantic se manejan de forma nativa y los tipos estándar Python se asignan a sus equivalentes JSON.
 
-### 5. consumir
+### 5. Consumir
 La interfaz recibe el resultado con total seguridad de tipo. Nexy escribe `__nexy__/src/actions.ts` a partir de sus firmas y `@nexy/actions` lo resuelve.
 
 ```tsx filename="src/rutas/usuarios.tsx"
@@ -67,33 +66,30 @@ Sin un gancho, una acción es solo una función `async`: `const user = await cre
 
 | Marco | Qué `useAction` devuelve |
 |---|---|
-| Reaccionar, Preactuar | `{ pending, data, error, run, reset }` |
-| Sólido | igual, con `pending()`, `data()` y `error()` como descriptores de acceso |
+| React, Preact | `{ pending, data, error, run, reset }` |
+| Solid | lo mismo, con `pending()`, `data()` y `error()` como accesores |
 | Vue | lo mismo, con `pending`, `data` y `error` como referencias |
 | Svelte | una tienda: `$save.pending`, `$save.data`, `$save.error`, más `save.run(input)` y `save.reset()` |
 
 `useAction(action, { onSuccess, onError })` también acepta dos devoluciones de llamada. `run` nunca lanza: un fallo aterriza en `error` y `run` se resuelve con `undefined`.
 
-Los tipos provienen de Python: `str` es `string`, `int` y `float` son `number`, `list[T]` es `T[]`,
-un modelo Pydantic o un `Enum` es un tipo con nombre y un campo con un valor predeterminado es opcional en la entrada.
-Un tipo que Pydantic no puede describir se convierte en `unknown`.
+Los tipos provienen de Python: `str` es `string`, `int` y `float` son ​​`number`, `list[T]` es `T[]`, un modelo Pydantic o un `Enum` es un tipo con nombre, y un campo con un valor predeterminado es opcional en la entrada. Un tipo Pydantic que no se puede describir se convierte en `unknown`.
 
 ## Errores y fallas
 
 Una acción puede fallar en diferentes etapas. Debes distinguir entre ellos en tu UI:
 
-1.  **Errores de validación (422)**: la entrada no coincidía con la firma de Python. `error.fields` asigna cada campo no válido a su mensaje.
-2.  **Errores comerciales (`HTTPException`)**: tu código rechazó la llamada, por ejemplo `403 Forbidden` o `409 Conflict`.
+1.  **Errores de validación (422)**: la entrada no coincidía con la firma Python. `error.fields` asigna cada campo no válido a su mensaje.
+2.  **Errores comerciales (`HTTPException`)**: su código rechazó la llamada, por ejemplo `403 Forbidden` o `409 Conflict`.
 3.  **Errores del servidor (500)**: se produjo una excepción no controlada en su código Python.
 4.  **Errores de red**: la solicitud nunca llegó al servidor, por ejemplo, un tiempo de espera o una conexión perdida.
-5.  **Errores de autorización (401, 403)**: tu propio cheque rechazó a la persona que llama. Nexy no decide esto por ti.
+5.  **Errores de autorización (401, 403)**: su propio cheque rechazó a la persona que llama. Nexy no decide esto por ti.
 
-La verificación de origen que se describe a continuación es una protección CSRF, no una autorización: dice dónde se realizó la llamada.
-vino, nunca a quién se le permite hacerlo.
+La verificación de origen que se describe a continuación es una protección CSRF, no una autorización: dice de dónde vino la llamada, nunca quién puede realizarla.
 
-## Actualizar la página después de una acción
+## Actualizar la página después de una acción.
 
-Una acción indica qué páginas su cambio dejó obsoletas, como lo hace Next.js con `revalidatePath`:
+Una acción dice qué páginas su cambio dejó obsoletas, como lo hace Next.js con `revalidatePath`:
 
 ```python
 revalidate()            # the page that is open
@@ -119,11 +115,8 @@ Si tiene éxito, el visitante regresa a la página en la que se encontraba el fo
 
 ## Seguridad
 
-### La oscuridad del camino no es autorización
-La ruta de acción es `/_nx_` seguida de un hash del módulo de la función, su nombre y un secreto de la
-proyecto. Se establece en `NEXY_ACTION_SECRET`, o se mantiene en `__nexy__/action.key`, lo que `nx build`
-crea para que el paquete del cliente y `nx start` acuerden: conservar ese archivo con la compilación. El camino esconde el
-punto final del descubrimiento casual, y **la ruta generada no es un mecanismo de autorización**.
+### La oscuridad del camino no es autorización.
+La ruta de acción es `/_nx_` seguida de un hash del módulo de la función, su nombre y un secreto del proyecto. Lo establece `NEXY_ACTION_SECRET`, o lo guarda en `__nexy__/action.key`, que `nx build` crea para que el paquete del cliente y `nx start` acuerden: conservar ese archivo con la compilación. La ruta oculta el punto final del descubrimiento casual y **la ruta generada no es un mecanismo de autorización**.
 
 Cualquiera que conozca el camino puede iniciar la acción. Usted **debe** verificar la identidad y los permisos del usuario dentro de la acción:
 ```python
