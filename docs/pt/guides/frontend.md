@@ -46,7 +46,7 @@ O navegador só conversa com a porta `3000`. Não há um segundo URL para abrir 
 
 Vite lida com o pacote do cliente; SSR HTML é produzido por arquivo por esbuild.
 
-> [!NOTA]
+> [!NOTE]
 > uma rota cuja renderização do servidor falha é relatada como uma rota somente cliente em vez de falhar em toda a construção.
 
 ## Estilo
@@ -58,7 +58,7 @@ Vite lida com o pacote do cliente; SSR HTML é produzido por arquivo por esbuild
 | Tailwind, UnoCSS | classes utilitárias na marcação, com os tokens mapeados para nomes de classes |
 | Nomes de classe semântica CSS simples | e CSS em `src/globale.css` |
 
-Siga o modo do seu projeto ao adicionar uma página: classes utilitárias em um projeto utilitário, CSS em um projeto CSS simples. Mantenha o CSS do componente que os utilitários não podem expressar no bloco `<style>` do componente. Em um projeto de servidor (`.nexy` páginas) UnoCSS lê os arquivos `.nexy` para classes; Tailwind os encontra por conta própria.
+Siga o modo do seu projeto ao adicionar uma página: classes utilitárias em um projeto utilitário, CSS em um projeto CSS simples. Mantenha o CSS do componente que os utilitários não podem expressar no bloco `<style>` do componente. Em um projeto de servidor (`.nexy` páginas) UnoCSS lê os `.nexy` arquivos para classes; Tailwind os encontra por conta própria.
 
 ## Fontes, imagens, scripts
 
@@ -67,5 +67,5 @@ Coloque arquivos estáticos em `public/` - eles são servidos por `/` tanto no d
 ## Próximas etapas
 
 - [Visualizações](../views/README.md): escolha um formato de página
-- [Config](../reference/config.md): `useFF`, `useVite`, aliases
+- [Config](../reference/config.md): `useFF`, `useVite`, apelidos
 - [Deploy](../deployment/README.md): o que a compilação produz
