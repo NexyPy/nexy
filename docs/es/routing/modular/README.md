@@ -84,4 +84,4 @@ Véase `examples/Modular/api/minimal/`.
 - [Inyección de dependencia](dependency-injection.md): servicios y alcances
 - [Guardias y metadatos](guards-and-metadata.md): proteger y documentar rutas
 - [Enrutamiento](../README.md): el enrutador basado en archivos
-- [Config](../../reference/config.md): todas las opciones, incluida `useRouter`
+- [Configuración](../../reference/config.md): todas las opciones, incluida `useRouter`
