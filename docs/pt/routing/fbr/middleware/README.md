@@ -52,7 +52,7 @@ Uma URL que não corresponde a nenhuma rota (a 404) recebe apenas o middleware d
 | `middleware.py` | você também precisa da **resposta**: cabeçalhos, redirecionamentos, tempo, curto-circuito para uma área inteira |
 | [`dependencies.py`](../dependencies/README.md) | você precisa de parâmetros analisados ou para injetar um valor (usuário atual, sessão de banco de dados) |
 | `@UseGuard` em um manipulador | uma rota precisa de uma verificação extra |
-| `useMiddlewares` em [config](../../../reference/config.md) | um middleware ASGI para toda a aplicação (CORS, GZip, sessões) |
+| `useMiddlewares` em [configuração](../../../reference/config.md) | um middleware ASGI para toda a aplicação (CORS, GZip, sessões) |
 
 Os arquivos de middleware são executados **antes** das dependências: a solicitação passou por cada `middleware.py` de seus diretórios quando as dependências são iniciadas.
 
