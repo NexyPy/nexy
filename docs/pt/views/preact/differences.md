@@ -1,10 +1,8 @@
-# Pré-agir
+# Preact
 
-Nexy renderiza os componentes do Preact 10 no servidor e, em seguida, o Preact os assume no navegador. Páginas,
-layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração, depois as partes
-que diferem dos [contratos compartilhados](../frontend/pages.md).
+Nexy renderiza Preact 10 componentes no servidor e então Preact os assume no navegador. Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração e depois as partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | As páginas são | Preact é |
+| Modo | `nexyconfig.py` | As páginas são | Preact são |
 |---|---|---|---|
 | Servidor (padrão) | `useCSR = False` | `.nexy` arquivos | [ilhas](../../rendering/islands.md) dentro dessas páginas |
 | Cliente | `useCSR = True` | `.tsx` arquiva | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
@@ -15,11 +13,9 @@ que diferem dos [contratos compartilhados](../frontend/pages.md).
 nx new my-app --template web-fbr-preact
 ```
 
-O modelo é um projeto em modo servidor com ilhas Preact. Execute `nx new my-app` sem um modelo para
-em vez disso, responda aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida,
-o quadro.
+O modelo é um projeto em modo servidor com Preact ilhas. Execute `nx new my-app` sem um modelo para responder aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida, a estrutura.
 
-## Ativar o Preact em um projeto existente
+## Habilite Preact em um projeto existente
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -50,7 +46,7 @@ export default defineConfig({
 | `@preact/preset-vite` | `^2.10.1` (dependência de desenvolvimento) |
 | `preact-render-to-string` | `^6.7.0` (dependência de desenvolvimento, renderização no servidor) |
 
-## Escrever Pré-agir
+## Escreva Preact
 
 Um componente Preact é uma função no estilo React. As diferenças que importam aqui:
 
@@ -63,21 +59,16 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
-- Hooks vêm de `preact/hooks`, tipos como `ComponentChildren` de `preact`.
+- Ganchos vêm de `preact/hooks`, tipos como `ComponentChildren` de `preact`.
 - Escreva atributos HTML: `class`, `for`, `charset`. `Link` lê suas classes de `class`.
 
 ## Regras
 
-- **Uma estrutura por projeto.** `useFF` usa exatamente uma estrutura; `useFF = [preact(), react()]`
-  interrompe o servidor na inicialização. Com `useFF = preact()`, todo arquivo `.tsx` é Preact.
-- **Páginas são `.tsx`.** Somente um arquivo `.tsx` em `src/routes/` se torna uma página; `.jsx` é bom para um
-  componente.
-- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto, não são páginas.
-- **Um projeto em modo servidor não tem página `.tsx`**, e um projeto em modo cliente não tem página `.nexy`: Nexy
-  se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
-- **Uma página `.mdx` é importada de `"preact"`.** Nexy compila um arquivo `.mdx` com Preact somente quando
-  vê essa importação, por exemplo `import { h } from "preact"`, e com React caso contrário. Veja
-  [Markdown e MDX](../nexy/markdown.md).
+- **Uma estrutura por projeto.** `useFF` leva exatamente uma estrutura; `useFF = [preact(), react()]` interrompe o servidor na inicialização. Com `useFF = preact()`, todo arquivo `.tsx` é Preact.
+- **As páginas são `.tsx`.** Somente um arquivo `.tsx` em `src/routes/` se torna uma página; `.jsx` é adequado para um componente.
+- **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
+- **Um projeto em modo servidor não tem página `.tsx`**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
+- **Uma página `.mdx` importa de `"preact"`.** Nexy compila um arquivo `.mdx` com Preact somente quando vê essa importação, por exemplo `import { h } from "preact"`, e com React caso contrário. Consulte [Markdown e MDX](../nexy/markdown.md).
 
 ## Páginas
 
@@ -85,8 +76,7 @@ No modo cliente (`useCSR = True`), uma página é um arquivo `.tsx`.
 
 ### Componente de página
 
-Uma página é a exportação padrão do arquivo. Se não existir nenhuma exportação padrão, Nexy escolhe o primeiro nomeado
-exportar.
+Uma página é a exportação padrão do arquivo. Se não existir nenhuma exportação padrão, Nexy escolhe a primeira exportação nomeada.
 
 ```tsx filename="src/rotas/index.tsx"
 export default function Home() {
@@ -154,7 +144,7 @@ Use a propriedade `directive` para controlar quando a ilha hidrata:
 
 ## Ações e navegação
 
-### Ações de chamada
+### Chamando ações
 
 Use o gancho `useAction` para gerenciar o estado de uma chamada de ação:
 
@@ -169,8 +159,7 @@ const { run, pending, error, data } = useAction(add_todo);
 
 ### Navegação
 
-Use o componente `Link` para transições do lado do cliente. Observe que Preact usa `class` em vez de
-`className`:
+Use o componente `Link` para transições do lado do cliente. Observe que Preact usa `class` em vez de `className`:
 
 ```tsx
 import { Link } from "@nexy/client";
@@ -187,7 +176,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Acesso ao URL
+### Acesso URL
 
 - `usePathname()`: caminho atual
 - `useParams()`: segmentos dinâmicos
@@ -197,4 +186,4 @@ router.push("/dashboard");
 ## Próximas etapas
 
 - [Visualizações](../README.md): compare os formatos que uma página pode usar
-- [Frontend](../../guides/frontend.md): Vite e a construção do cliente
+- [Frontend](../../guides/frontend.md): Vite e a compilação do cliente
