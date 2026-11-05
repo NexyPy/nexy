@@ -146,3 +146,21 @@ def test_every_language_picker_closes_on_a_click_elsewhere():
 
 def test_the_close_button_closes_the_drawer():
     assert "$('.side-close').addEventListener('click', () => setMenu(false, true))" in JS
+
+
+def _sheet_languages() -> str:
+    """The rule of the language list opened in the drawer."""
+    return _narrow().split(".sheet-bar .lang-select ul {", 1)[1].split("}", 1)[0]
+
+
+def test_the_language_list_takes_the_row_of_the_sheet():
+    # Anchored to the row, not to its button: the list cannot run past either edge of the sheet.
+    assert ".sheet-bar .lang-select { position: static; }" in _narrow()
+
+
+def test_the_language_list_spans_both_edges_in_either_direction():
+    assert "inset-inline: 0" in _sheet_languages()
+
+
+def test_the_language_list_shows_every_language():
+    assert "max-height: calc(100dvh - 6rem)" in _sheet_languages()

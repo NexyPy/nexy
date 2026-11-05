@@ -1425,6 +1425,15 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
     color: var(--muted);
   }
   .side .sheet-bar .bar-link { display: grid; min-height: 0; padding: 0; margin-inline-end: auto; }
+  /* The language list hangs from the row, not from its button: it spans the sheet between its
+     paddings whatever the direction of the page, and is tall enough for every language. */
+  .sheet-bar { position: relative; }
+  .sheet-bar .lang-select { position: static; }
+  .sheet-bar .lang-select ul {
+    inset-inline: 0;
+    min-width: 0;
+    max-height: calc(100dvh - 6rem);
+  }
   .side-brand, .side-top > .search-open { display: none; }
   body.open .side,
   html[data-side="closed"] body.open .side { transform: none; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.4); }
