@@ -60,7 +60,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` rendert ein `<a data-nexy-link>`, das vom Client-Router verarbeitet wird. Mit `prefetch=True` wird das Ziel durch Bewegen des Mauszeigers oder durch Berühren des Links durch `window.__nexy_prefetch` erwärmt.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` rendert ein `<a data-nexy-link>`, das vom Client-Router verarbeitet wird. Mit `prefetch=True` wird das Ziel durch Schweben oder Berühren des Links durch `window.__nexy_prefetch` erwärmt.
 
 > [!NOTE]
 > Die Tag-Form nimmt die Bezeichnung als `children` an, nicht als Elementinhalt: `<Link href="/about" children="About" />`. Um Markup in einen Link einzufügen, verwenden Sie das Aufrufformular mit `children=` oder eine `.nexy`-Komponente, die ein `<Slot />` rendert.
@@ -78,7 +78,7 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` und `Video(src, width=None, height=None, ...)` rendern native Player. `sources` fügt `<source>`-Tags mit dem von jeder Erweiterung abgeleiteten MIME-Typ hinzu.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` und `Video(src, width=None, height=None, ...)` rendern native Player. `sources` fügt `<source>` Tags mit dem von jeder Erweiterung abgeleiteten MIME-Typ hinzu.
 
 ## Eine Komponente, die Sie selbst schreiben
 
@@ -108,7 +108,7 @@ from "@/components/Card.nexy" import Card
 
 ## Importieren einer Client-Komponente
 
-Importieren Sie aus einer `.nexy`-Datei eine Framework-Komponente nach Pfad; Der Compiler mountet es auf dem Client und übergibt die Attribute als Requisiten:
+Importieren Sie aus einer `.nexy`-Datei eine Framework-Komponente nach Pfad. Der Compiler mountet es auf dem Client und übergibt die Attribute als Requisiten:
 
 ```nexy
 ---
@@ -130,7 +130,7 @@ Die gleiche Importsyntax löst `.json`-, `.css`- und Bilddateien in ihre URLs au
 
 ## Vorlage und Vite
 
-`Template().render(path, context)` rendert eine Vorlagendatei (Jinja2 oder Markdown in HTML gerendert für `.md` Routen). `Template().invalidate(path)` löscht es aus dem Cache.
+`Template().render(path, context)` rendert eine Vorlagendatei (Jinja2 oder Markdown wird in HTML für `.md` Routen gerendert). `Template().invalidate(path)` löscht es aus dem Cache.
 
 `Vite()` gibt die Client-Tags für den aktuellen Modus zurück: das HMR-Skript in der Entwicklung, das erstellte Client-Bundle in der Produktion. Nexy ruft es für jede Seite auf; man braucht es selten direkt.
 
