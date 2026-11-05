@@ -73,6 +73,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   answer, it says why and lists `nexy migrate -m "create tables"` and `nexy migrate --upgrade`.
 - **The dev toolbar badge shows the Nexy mark, not a letter.** The round badge now holds the
   roof-cut N of the Nexy logo, drawn as an icon.
+- **The mobile menu of the starter is a sheet from the left edge.** It was a dropdown under the
+  header, too small for a thumb and easy to miss. It is now a `Sheet` component, one per client
+  framework plus the server-rendered header: a dialog role, a scrim, a close button, Escape, and a
+  page that does not scroll behind it. The entry animation lives in the stylesheet rather than in a
+  utility class: Tailwind and UnoCSS both read `globale.css`, and no utility carries keyframes.
 
 ### Fixed
 
