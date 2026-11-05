@@ -1,8 +1,6 @@
 # Pages
 
-Un fichier d'échange renvoie du HTML. Le type de fichier que vous utilisez modifie la manière dont il est produit : voir
-[vues](../../../views/README.md). Cette section couvre les règles de routage qui s'appliquent à chaque page
-formater.
+Un fichier d'échange renvoie du HTML. Le type de fichier que vous utilisez modifie la façon dont il est produit : voir [views](../../../views/README.md). Cette section couvre les règles de routage qui s'appliquent à chaque format de page.
 
 | Page | Ce qu'il couvre |
 |---|---|
@@ -20,30 +18,25 @@ title: prop[str] = "About"
 <h1>{{ title }}</h1>
 ```
 
-Il est servi à `/about`. Le sujet entre les lignes `---` est Python ; le balisage en dessous est
-Jinja2. Voir [fichiers .nexy](../../../views/nexy/README.md).
+Il est servi à `/about`. Le frontmatter entre les lignes `---` est Python ; le balisage en dessous est Jinja2. Voir [fichiers .nexy](../../../views/nexy/README.md).
 
-## Formats des pages
+## Formats de pages
 
 | Mode | Fichier | Produit |
 |---|---|---|
 | Serveur | `.nexy` | HTML rendu par le serveur à partir de Python et Jinja2 |
 | Serveur | `.md`, `.mdx` | pages de contenu |
-| Client | `.tsx`, `.jsx`, `.vue`, `.svelte` | composants du framework, rendus et parcourus dans le navigateur |
+| Composants du framework client | `.tsx`, `.jsx`, `.vue`, `.svelte` | rendus et parcourus dans le navigateur |
 
-Les deux modes ne peuvent pas être mélangés dans un seul projet. Voir [Mode serveur et mode client](../modes.md).
-Les composants clients peuvent toujours apparaître en mode serveur, comme [islands](../../../rendering/islands.md)
-à l'intérieur d'une page `.nexy`.
+Les deux modes ne peuvent pas être mélangés dans un seul projet. Voir [Mode serveur et mode client](../modes.md). Les composants clients peuvent toujours apparaître en mode serveur, sous forme d'[îlots](../../../rendering/islands.md) dans une page `.nexy`.
 
 ## Mise en cache incrémentielle
 
-Ajoutez `revalidate = 60` à une page `.nexy` pour la mettre en cache avec une revalidation obsolète. Voir
-[ISR](../../../rendering/isr.md).
+Ajoutez `revalidate = 60` à une page `.nexy` pour la mettre en cache avec une revalidation obsolète. Voir [ISR](../../../rendering/isr.md).
 
 ## Lecture de la demande
 
-Une page lit le chemin, la chaîne de requête, les cookies et la session via des hooks. Voir
-[Crochets](../navigation/hooks.md).
+Une page lit le chemin, la chaîne de requête, les cookies et la session via des hooks. Voir [Crochets](../navigation/hooks.md).
 
 ## Prochaines étapes
 
