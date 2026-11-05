@@ -83,8 +83,8 @@ dependencies = [require_login]
 
 `unauthorized(scheme="Bearer")` نے دونوں جوابات میں `WWW-Authenticate: Bearer` کا اضافہ کیا۔ صارف کے ان پٹ سے تیار کردہ ایک تفصیل صفحہ میں HTML سے بچ گئی ہے۔
 
-> [!ٹپ]
-> `Accept: */*`، `curl` اور بہت سی HTTP لائبریریوں کا ڈیفالٹ، نہ تو مانگتا ہے اور نہ ہی HTML صفحہ حاصل کرتا ہے۔ جب آپ JSON جواب چاہتے ہیں تو `-H "Accept: application/json"` شامل کریں۔
+> [!TIP]
+> `Accept: */*`، `curl` اور بہت سی HTTP لائبریریوں کا ڈیفالٹ، نہ تو مانگتا ہے اور نہ ہی HTML صفحہ وصول کرتا ہے۔ جب آپ JSON جواب چاہتے ہیں تو `-H "Accept: application/json"` شامل کریں۔
 
 ## اسے چیک کریں۔
 
