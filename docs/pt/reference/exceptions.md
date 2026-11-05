@@ -2,7 +2,7 @@
 
 Uma solicitação pode falhar em quatro lugares e o Nexy responde a cada um de maneira diferente. Esta página é o índice: encontre o status que você vê, depois a linha que o produziu e depois o arquivo que decide o corpo.
 
-> [!NOTA]
+> [!NOTE]
 > Três coisas são separadas e fáceis de misturar: a **resposta HTTP** (um status e um corpo), a **página de erro** (`notfound.nexy`, `errors.nexy`) e a **linha de log** (o que você lê no terminal). Alterar a página não altera o status e personalizar a página não oculta o log.
 
 ## A versão curta
@@ -27,7 +27,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!AVISO]
+> [!WARNING]
 > `curl` envia `Accept: */*` por padrão, que obtém a página HTML. Adicione `-H "Accept: application/json"` ao testar a forma JSON. Os navegadores continuam recebendo páginas.
 
 ## De onde vem uma falha
@@ -133,7 +133,7 @@ Para um formulário ou ação, o cliente recebe um `ActionError` com `status` e 
 
 Um arquivo em algum lugar nas rotas instala a resposta para seu status: uma cópia na raiz responde a todo o projeto, uma cópia em uma pasta responde a essa pasta e o arquivo mais profundo que corresponde à URL vence. Um URL fora de cada cópia e um status sem nenhum arquivo obtêm as páginas com estilo integrado. Consulte [Páginas de erro por pasta](../routing/fbr/errors/folder-pages.md).
 
-> [!IMPORTANTE]
+> [!IMPORTANT]
 > Uma página `errors.nexy` substitui a página `500`; ele não captura a exceção e não altera a linha do log. Se o manipulador gerado for a própria página, a página não poderá mostrar seus próprios detalhes de erro: mantenha `errors.nexy` simples e independente.
 
 ## Exceções não tratadas
@@ -155,7 +155,7 @@ Uma exceção que nada capturado é registrado uma vez, com sua referência, de 
 
 A referência são oito caracteres, novos para cada falha. Um visitante pode citá-lo e você encontrará o rastreamento pesquisando-o no log. Nem a exceção nem o código chegam ao visitante em produção.
 
-> [!CUIDADO]
+> [!CAUTION]
 > Não retorne o traceback para um visitante em produção e não coloque segredos em uma mensagem de erro: o `detail` de um `HTTPException` é enviado ao cliente, com escape de HTML. Coloque o segredo no log, não na resposta.
 
 ## Ações e formulários
