@@ -83,7 +83,7 @@ dependencies = [require_login]
 
 `unauthorized(scheme="Bearer")` 将 `WWW-Authenticate: Bearer` 添加到两个答案中。根据用户输入构建的详细信息在页面中进行 HTML 转义。
 
-> [!提示]
+> [!TIP]
 > `Accept: */*`，`curl` 和许多 HTTP 库的默认值，都不要求任何内容并接收 HTML 页面。当您需要 JSON 答案时添加 `-H "Accept: application/json"`。
 
 ## 检查一下
