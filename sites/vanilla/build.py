@@ -280,7 +280,18 @@ def not_found_html(base: str) -> str:
     """The page for a wrong address. GitHub Pages serves it at any depth, so links are absolute."""
     root = base_of(base)
     template = Template((HERE / "not_found.html").read_text(encoding="utf-8"))
-    return template.substitute(base=root, mark=MARK, **ICONS)
+    return template.substitute(base=root, mark=MARK, words=_lost_words(), **ICONS)
+
+
+def _lost_words() -> str:
+    """The words of the 404 page in every language but English, for the script that picks one."""
+    keys = ("lost_title", "lost_text", "lost_link")
+    words = {
+        one.code: {key: i18n.text(one.code, key) for key in keys}
+        for one in i18n.LANGUAGES
+        if one.code != i18n.DEFAULT
+    }
+    return json.dumps(words, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
 
 
 def _pages(docs: Path, lang: str = i18n.DEFAULT) -> list[tuple[source.Page, str]]:
