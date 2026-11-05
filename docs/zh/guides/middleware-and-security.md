@@ -50,6 +50,6 @@ class NexyConfig(NexyConfigModel):
 
 ## 后续步骤
 
-- [Config](../reference/config.md)：每个中间件字段
+- [配置](../reference/config.md)：每个中间件字段
 - [部署](../deployment/README.md)
 - [性能](../deployment/performance.md)
