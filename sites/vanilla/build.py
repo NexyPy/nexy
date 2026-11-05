@@ -56,10 +56,15 @@ def _root(current: str) -> str:
     return posixpath.join(*[".."] * depth)
 
 
+def _router_word(key: str) -> str:
+    """The key that translates the name of a router; FBR is a name in every language."""
+    return f' data-i18n="router_{key}"' if key != "fbr" else ""
+
+
 def _router_face(key: str, name: str, _: str) -> str:
     return (
         f'<span class="area-icon">{ICONS[f"router_{key}"]}</span>'
-        f'<span class="area-text"><b>{escape(name)}</b></span>'
+        f'<span class="area-text"><b{_router_word(key)}>{escape(name)}</b></span>'
     )
 
 
@@ -86,7 +91,7 @@ def router_select_html(page: source.Page) -> str:
         for key, name, blurb in source.ROUTERS
     )
     return (
-        f'<details class="area-select" aria-label="Router">'
+        f'<details class="area-select" aria-label="Router" data-i18n-aria="router_aria">'
         f"<summary>{faces}{ICONS['icon_select']}</summary>"
         f"<ul>{items}</ul></details>"
     )
@@ -99,7 +104,7 @@ def router_meta(page: source.Page) -> str:
 
 def _nav_item(page: source.Page, current: str) -> str:
     mark = ' aria-current="page"' if page.slug == current else ""
-    badge = '<span class="badge-new">New</span>' if page.badge else ""
+    badge = '<span class="badge-new" data-i18n="new_badge">New</span>' if page.badge else ""
     href = relative(_at(page, current), page.address)
     return f'<li><a href="{href}"{mark}>{escape(page.label)}</a>{badge}</li>'
 
@@ -176,7 +181,8 @@ def pager_html(before: source.Page | None, after: source.Page | None, current: s
         )
 
     previous, following = link(before, "prev", "Previous"), link(after, "next", "Next")
-    return f'<nav class="pager" aria-label="Pages">{previous}{following}</nav>'
+    label = 'aria-label="Pages" data-i18n-aria="pager_aria"'
+    return f'<nav class="pager" {label}>{previous}{following}</nav>'
 
 
 def _alternates(page: source.Page, docs: Path, site_url: str) -> tuple[tuple[str, str], ...]:
