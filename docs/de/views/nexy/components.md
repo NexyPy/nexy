@@ -1,7 +1,6 @@
 # Komponenten
 
-Nexy exportiert eine kleine Reihe von Hilfsprogrammen, die HTML-Strings zurückgeben. Jeder wird auf zwei Arten verwendet
-`.nexy` Vorlage: als Jinja-Aufruf oder als Tag im HTML-Stil.
+Nexy exportiert eine kleine Reihe von Hilfsprogrammen, die HTML-Strings zurückgeben. Jedes wird in einer `.nexy`-Vorlage auf zwei Arten verwendet: als Jinja-Aufruf oder als HTML-Tag.
 
 ## Zwei Syntaxen, eine Funktion
 
@@ -20,8 +19,7 @@ Beide Zeilen erzeugen das gleiche Markup:
 <audio preload="metadata" controls><source src="/theme.mp3" type="audio/mp3" /></audio>
 ```
 
-Der Compiler schreibt `<Audio ... />` in `{{ Audio(...) }}` um, sodass die Tag-Form keine zweite API ist:
-Attribute sind die Schlüsselwortargumente der Funktion.
+Der Compiler schreibt `<Audio ... />` in `{{ Audio(...) }}` um, sodass die Tag-Form keine zweite API ist: Attribute sind die Schlüsselwortargumente der Funktion.
 
 ## Regeln der Tag-Form
 
@@ -31,18 +29,14 @@ Attribute sind die Schlüsselwortargumente der Funktion.
 | `controls=True` | `controls=True`, ein echter Boolescher Wert |
 | `width=640` | `width=640`, eine Zahl |
 | `src="{{ url }}"` | `src=(url)`, bewertet in Jinja |
-| irgendein anderes `value` | `"value"`, eine Zeichenfolge |
+| jede andere `value` | `"value"`, eine Zeichenfolge |
 
-- Das Tag muss mit einem Großbuchstaben beginnen und in die Frontmatter importiert werden; sonst die
-  Compiler löst `Missing Import: <Name> used but not declared.` aus
-- Die Tag-Form ist **selbstschließend**. `<Audio src="/a.mp3" />` und
-  `{{ Audio("/a.mp3") }}` sind gleichwertig; Das Schreiben von untergeordneten Elementen innerhalb eines Hilfstags wird nicht unterstützt.
-- Ein bloßes HTML-Attribut ist hier kein boolescher Wert: `controls` wird zu `controls=""`, was falsch ist.
-  Schreiben Sie `controls=True`.
+- Das Tag muss mit einem Großbuchstaben beginnen und in die Frontmatter importiert werden; andernfalls löst der Compiler `Missing Import: <Name> used but not declared.` aus.
+- Die Tag-Form ist **selbstschließend**. `<Audio src="/a.mp3" />` und `{{ Audio("/a.mp3") }}` sind gleichwertig; Das Schreiben von untergeordneten Elementen innerhalb eines Hilfstags wird nicht unterstützt.
+- Ein bloßes HTML-Attribut ist hier kein boolescher Wert: `controls` wird zu `controls=""`, was falsch ist. Schreiben Sie `controls=True`.
 
 > [!NOTE]
-> `class_name` ist das dokumentierte Schlüsselwort für CSS-Klassen. Zusätzliche Schlüsselwortargumente
-> werden zu HTML-Attributen, sodass `class="nav"` auch die Ausgabe erreicht.
+> `class_name` ist das dokumentierte Schlüsselwort für CSS-Klassen. Zusätzliche Schlüsselwortargumente werden zu HTML-Attributen, sodass `class="nav"` auch die Ausgabe erreicht.
 
 ## Bild
 
@@ -55,8 +49,7 @@ from nexy import Image
 <Image src="/logo.png" alt="Logo" width=128 height=32 />
 ```
 
-`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` rendert eine
-`<img>` standardmäßig mit Lazy Loading.
+`Image(src, alt="", width=None, height=None, loading="lazy", class_name=None, **attrs)` rendert ein `<img>` standardmäßig mit Lazy Loading.
 
 ## Link
 
@@ -67,14 +60,10 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` rendert ein `<a data-nexy-link>`
-wird vom Client-Router verarbeitet. Bei `prefetch=True` wird das Ziel durch Bewegen des Mauszeigers oder durch Berühren des Links erwärmt
-bis `window.__nexy_prefetch`.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` rendert ein `<a data-nexy-link>`, das vom Client-Router verarbeitet wird. Mit `prefetch=True` wird das Ziel durch Bewegen des Mauszeigers oder durch Berühren des Links durch `window.__nexy_prefetch` erwärmt.
 
 > [!NOTE]
-> Die Tag-Form nimmt die Bezeichnung als `children` an, nicht als Elementinhalt:
-> `<Link href="/about" children="About" />`. Um Markup in einen Link einzufügen, verwenden Sie das Aufrufformular mit
-> `children=` oder eine `.nexy`-Komponente, die ein `<Slot />` rendert.
+> Die Tag-Form nimmt die Bezeichnung als `children` an, nicht als Elementinhalt: `<Link href="/about" children="About" />`. Um Markup in einen Link einzufügen, verwenden Sie das Aufrufformular mit `children=` oder eine `.nexy`-Komponente, die ein `<Slot />` rendert.
 
 ## Audio und Video
 
@@ -89,14 +78,11 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, Controls=True, Autoplay=False, Loop=False, Muted=False, Preload="Metadata",
-class_name=Keine, Quellen=Keine, **attrs)` and `Video(src, width=Keine, height=Keine, ...)` nativ rendern
-Spieler. `sources` fügt `<source>` Tags mit dem von jeder Erweiterung abgeleiteten MIME-Typ hinzu.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` und `Video(src, width=None, height=None, ...)` rendern native Player. `sources` fügt `<source>`-Tags mit dem von jeder Erweiterung abgeleiteten MIME-Typ hinzu.
 
 ## Eine Komponente, die Sie selbst schreiben
 
-Eine wiederverwendbare `.nexy`-Komponente ist eine Datei unter `src/components/`: Python-Requisiten oben, HTML unten.
-Es wird wie jedes andere Python-Modul importiert.
+Eine wiederverwendbare `.nexy`-Komponente ist eine Datei unter `src/components/`: Python Requisiten oben, HTML unten. Es wird wie jedes andere Python-Modul importiert.
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -118,14 +104,11 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`title` hat keinen Standardwert, daher muss die Seite ihn übergeben; `tone` fällt auf `"neutral"` zurück. Das Markup
-zwischen den Tags kommt innerhalb von `<Slot />` (Großbuchstabe S) an. Siehe
-[.nexy-Dateien](README.md#components) für Requisiten, Slots und die Regeln der Tag-Form.
+`title` hat keinen Standardwert, daher muss die Seite ihn übergeben; `tone` fällt auf `"neutral"` zurück. Der Markup zwischen den Tags kommt innerhalb von `<Slot />` (Großbuchstabe S) an. Siehe [.nexy-Dateien](README.md#components) für Requisiten, Slots und die Regeln der Tag-Form.
 
 ## Importieren einer Client-Komponente
 
-Importieren Sie aus einer `.nexy`-Datei eine Framework-Komponente nach Pfad. Der Compiler mountet es auf dem Client und
-übergibt die Attribute als Requisiten:
+Importieren Sie aus einer `.nexy`-Datei eine Framework-Komponente nach Pfad; Der Compiler mountet es auf dem Client und übergibt die Attribute als Requisiten:
 
 ```nexy
 ---
@@ -147,11 +130,9 @@ Die gleiche Importsyntax löst `.json`-, `.css`- und Bilddateien in ihre URLs au
 
 ## Vorlage und Vite
 
-`Template().render(path, context)` rendert eine Vorlagendatei (Jinja2 oder Markdown, gerendert in HTML für
-`.md` Routen). `Template().invalidate(path)` löscht es aus dem Cache.
+`Template().render(path, context)` rendert eine Vorlagendatei (Jinja2 oder Markdown in HTML gerendert für `.md` Routen). `Template().invalidate(path)` löscht es aus dem Cache.
 
-`Vite()` gibt die Client-Tags für den aktuellen Modus zurück: das HMR-Skript in Entwicklung, das erstellte
-Client-Bundle in Produktion. Nexy ruft es für jede Seite auf; man braucht es selten direkt.
+`Vite()` gibt die Client-Tags für den aktuellen Modus zurück: das HMR-Skript in der Entwicklung, das erstellte Client-Bundle in der Produktion. Nexy ruft es für jede Seite auf; man braucht es selten direkt.
 
 ## Noch nicht implementiert
 
@@ -159,6 +140,6 @@ Client-Bundle in Produktion. Nexy ruft es für jede Seite auf; man braucht es se
 
 ## Nächste Schritte
 
-- [.nexy-Dateien](README.md): wo diese Helfer verwendet werden
-- [Reagieren](../react/differences.md): Importieren von `.tsx` Komponenten
+- [.nexy-Dateien](README.md): Hier werden diese Helfer verwendet
+- [React](../react/differences.md): Importieren von `.tsx` Komponenten
 - [Frontend](../../guides/frontend.md): wie Client-Komponenten gebündelt werden
