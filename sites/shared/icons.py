@@ -88,16 +88,16 @@ HOME_ART = {
         '<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18"/>'
         '<path d="M10 8h5M10 12h5M10 16h3"/>'
     ),
+    "getting-started/what-is-nexy": _art(
+        '<circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/>'
+        '<path d="M12 17h.01"/>'
+    ),
     "getting-started/core-concepts": _art(
         '<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>'
     ),
     "getting-started/how-nexy-works": _art(
         '<circle cx="5" cy="5" r="2"/><circle cx="19" cy="19" r="2"/>'
         '<path d="M5 7v4a4 4 0 0 0 4 4h6a4 4 0 0 1 4 4"/>'
-    ),
-    "architecture": _art(
-        '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>'
-        '<rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'
     ),
     "getting-started/project-structure": _art(
         '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
