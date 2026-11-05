@@ -1,7 +1,6 @@
 # Dependencias y guardias
 
-Comparta autenticación, sesiones de bases de datos y otras configuraciones a través de rutas con dependencias FastAPI.
-Funcionan en dos niveles y el nivel del directorio se hereda como los diseños.
+Comparta autenticación, sesiones de bases de datos y otras configuraciones a través de rutas con FastAPI dependencias. Funcionan en dos niveles y el nivel del directorio se hereda como los diseños.
 
 | Nivel | Donde | Se aplica a |
 |---|---|---|
@@ -10,8 +9,7 @@ Funcionan en dos niveles y el nivel del directorio se hereda como los diseños.
 
 ## Por directorio: `dependencies.py`
 
-Un `dependencies.py` declara una `dependencies` lista de funciones simples. Nexy envuelve cada uno en
-`Depends`.
+Un `dependencies.py` declara una `dependencies` lista de funciones simples. Nexy envuelve cada uno en `Depends`.
 
 ```python filename="src/rutas/admin/dependencias.py"
 from nexy.http import Header, HTTPException
@@ -26,15 +24,13 @@ dependencies = [require_admin]
 ```
 
 > [!NOTA]
-> enumera las funciones en sí. Se ignora un objeto `Depends(...)` en la lista.
+> Enumere las funciones en sí. Se ignora un objeto `Depends(...)` en la lista.
 
-Cada ruta en `src/routes/admin/` ahora requiere el encabezado, los controladores `.py` y las páginas `.nexy`
-por igual.
+Cada ruta en `src/routes/admin/` ahora requiere el encabezado, los controladores `.py` y las páginas `.nexy` por igual.
 
-## Herencia
+## herencia
 
-Las dependencias se recopilan desde la raíz de las rutas hasta el directorio de la ruta, **más externo primero**,
-exactamente igual que los diseños, y los propios guardias del controlador corren al final:
+Las dependencias se recopilan desde la raíz de las rutas hasta el directorio de la ruta, **la más externa primero**, exactamente igual que los diseños, y las propias guardias del controlador se ejecutan al final:
 
 ```text
 src/routes/
@@ -46,11 +42,9 @@ src/routes/
       └─ index.py               4. handler guards, then the handler
 ```
 
-Para `GET /admin/users` el orden es `root`, `admin`, `users`, las funciones `@UseGuard` del controlador,
-sus funciones `@Middleware`, luego el controlador. Un grupo de rutas (`(group)/`) es un directorio como cualquier
-otro, por lo que su `dependencies.py` participa.
+Para `GET /admin/users` el orden es `root`, `admin`, `users`, las funciones del controlador `@UseGuard`, sus funciones `@Middleware`, luego el controlador. Un grupo de rutas (`(group)/`) es un directorio como cualquier otro, por lo que su `dependencies.py` interviene.
 
-## Por controlador
+## Por manejador
 
 Utilice `Depends` en la firma, como en cualquier aplicación FastAPI:
 
@@ -70,8 +64,7 @@ async def GET(user: str = Depends(current_user)):
 
 ## Guardias y middleware en un controlador
 
-`@UseGuard` y `@Middleware` adjuntan dependencias FastAPI a un controlador sin cambiar su
-firma. Ambas son dependencias, no middleware ASGI:
+`@UseGuard` y `@Middleware` adjuntan FastAPI dependencias a un controlador sin cambiar su firma. Ambas son dependencias, no middleware ASGI:
 
 ```python filename="src/rutas/admin/users/index.py"
 from nexy.decorators import Middleware, UseGuard
@@ -89,14 +82,11 @@ async def GET():
     return {"ok": True}
 ```
 
-Para middleware ASGI real (CORS, GZip, sesiones, el suyo propio) utilice `useMiddlewares` y `use*`
-opciones en [Middleware y seguridad](../../../guides/middleware-and-security.md).
+Para middleware ASGI real (CORS, GZip, sesiones, el suyo propio) utilice las opciones `useMiddlewares` y `use*` en [Middleware y seguridad](../../../guides/middleware-and-security.md).
 
-## Fallando una dependencia
+## Fallar una dependencia
 
-Una dependencia rechaza una solicitud planteando. `HTTPException` responde con el estado que planteaste, como
-JSON para clientes API (`Accept: application/json`) y como página de error para navegadores. Ver
-[Validación y errores](../handlers/validation-and-errors.md).
+Una dependencia rechaza una solicitud planteando. `HTTPException` responde con el estado que planteaste, como JSON para clientes API (`Accept: application/json`) y como página de error para navegadores. Ver [Validación y errores](../handlers/validation-and-errors.md).
 
 ## Próximos pasos
 
