@@ -23,8 +23,8 @@ O projeto então muda de forma:
 | Rotas | `.nexy`, `.md`, `.mdx` | `.tsx`, `.jsx`, `.vue`, `.svelte` |
 | Documento | `layout.nexy` | a raiz `layout.tsx` / `.vue` / `.svelte` possui `<html>`, `<head>`, `<body>` |
 | Componentes do cliente | ilhas dentro de uma página | as próprias páginas |
-| `.nexy` sob `src/routes/` | o formato de página | rejeitado antes de `nx dev`, `nx start` e `nx build` |
-| Navegação | uma solicitação completa por link | o roteador cliente |
+| `.nexy` em `src/routes/` | o formato da página | rejeitado antes de `nx dev`, `nx start` e `nx build` |
+| Navegação | uma solicitação completa por link | o roteador do cliente |
 
 `.md` e `.mdx` permanecem válidos: Nexy os renderiza no servidor dentro do layout do cliente, e o roteador do cliente assume a partir daí. `.py` manipuladores ficam próximos às rotas e são atendidos por FastAPI.
 
@@ -46,7 +46,7 @@ No desenvolvimento, o documento é renderizado sob demanda pelo servidor de dese
 
 ## Configuração
 
-| Configuração do valor | |
+| Configuração | Valor |
 |---|---|
 | `useFF` | obrigatório: `useCSR` sem uma estrutura de cliente é rejeitado |
 | `useCSR` | `True` |
