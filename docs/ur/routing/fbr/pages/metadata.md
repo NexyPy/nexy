@@ -54,9 +54,9 @@ setMetadata(title_template="%s | My site")
 
 ## کھیتیاں
 
-| فیلڈ | لکھا گیا |
+| میدان | کے طور پر لکھا گیا۔ |
 |---|---|
-| `title` | `<title>`; `title_template="%s \| My site"` کے ساتھ عنوان `%s` | میں رکھا گیا ہے۔
+| `title` | `<title>`؛ `title_template="%s \| My site"` کے ساتھ عنوان `%s` میں رکھا گیا ہے۔ |
 | `description` | `<meta name="description">` |
 | `canonical` | `<link rel="canonical">` |
 | `robots` | `<meta name="robots">`، مثال کے طور پر `"noindex"` |
