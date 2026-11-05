@@ -4,7 +4,7 @@
 
 | প্রয়োজনীয়তা | কেন |
 |---|---|
-| Python 3.12+ | `requires-python` `pyproject.toml` | এ
+| Python 3.12+ | `requires-python` `pyproject.toml` মধ্যে |
 | [uv](https://docs.astral.sh/uv/) | প্রকল্প তৈরি করে, এর প্যাকেজ ইনস্টল করে এবং Nexy চালায় |
 | Node.js 18+ | শুধুমাত্র একটি ক্লায়েন্ট ফ্রেমওয়ার্কের জন্য (React, Vue, Svelte, Solid, Preact) |
 
@@ -46,10 +46,10 @@ uvx nexy new my-app --template <name>
 
 প্রকল্প ফোল্ডার থেকে প্রতি টার্মিনাল একবার এটি সক্রিয় করুন:
 
-| শেল | কমান্ড |
+| শেল | আদেশ |
 |---|---|
-| পাওয়ারশেল, cmd (উইন্ডোজ) | `.venv\Scripts\activate` |
-| macOS, Linux | `source .venv/bin/activate` |
+| পাওয়ারশেল, সিএমডি (উইন্ডোজ) | `.venv\Scripts\activate` |
+| macOS, লিনাক্স | `source .venv/bin/activate` |
 
 প্রম্পট তারপর শুরু হয় `(.venv)` দিয়ে। সেখান থেকে:
 
