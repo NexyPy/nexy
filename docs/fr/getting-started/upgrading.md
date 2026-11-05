@@ -1,6 +1,6 @@
 # Mise à niveau vers 2.2
 
-Qu'est-ce qui change pour un projet existant lorsque vous passez de la version 2.1 à la version 2.2, et que faire à ce sujet. La liste complète se trouve dans le [journal des modifications](../../CHANGELOG.md).
+Qu'est-ce qui change pour un projet existant lorsque vous passez de la version 2.1 à la version 2.2, et que faire à ce sujet. La liste complète se trouve dans le [journal des modifications](https://github.com/NexyPy/nexy/blob/main/CHANGELOG.md).
 
 ```bash
 uv add "nexy>=2.2"            # or: uv tool upgrade nexy
