@@ -94,7 +94,7 @@ Qualquer outra coisa é inglês, assim como qualquer mensagem que um idioma aind
 
 `nx build` compila as rotas e agrupa o cliente quando `useVite` está ativado.
 
-> [!NOTA]
+> [!NOTE]
 > não há sinalizador `--static`. A hospedagem estática é uma opção de implantação, não um modo de construção - consulte [Deploy](../deployment/README.md).
 
 ## Trabalhando no próprio Nexy
@@ -109,5 +109,5 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 ## Próximas etapas
 
 - [Primeiros passos](../getting-started/quick-start.md): primeiro projeto
-- [Teste](../guides/testing.md): o que `nx test` é executado
+- [Testando](../guides/testing.md): o que `nx test` é executado
 - [Implantar](../deployment/README.md): `build` e `start` em produção
