@@ -2,14 +2,14 @@
 
 Os ganchos leem a solicitação HTTP atual de dentro de uma página `.nexy`, um manipulador de API ou um controlador modular. Seus nomes correspondem aos ganchos do roteador cliente (`@nexy/client`) onde eles fazem a mesma coisa.
 
-> [!NOTA]
+> [!NOTE]
 > os ganchos só funcionam enquanto uma solicitação está sendo tratada. Pagar um em qualquer outro lugar aumenta `RuntimeError`.
 
 ## Os ganchos
 
 | Gancho | Retorna |
 |---|---|
-| `usePathname()` | caminho da solicitação, por exemplo `"/blog/post-1"` |
+| `usePathname()` | caminho de solicitação, por exemplo. `"/blog/post-1"` |
 | `useSearchParams()` | string de consulta como `dict[str, str]`, primeiro valor por chave |
 | `useParams()` | parâmetros de caminho dinâmico, por ex. `{"slug": "post-1"}` |
 | `useQuery()` | o nome original de `useParams()`, mantido para páginas existentes |
