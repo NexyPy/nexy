@@ -6,6 +6,7 @@ import json
 import re
 
 from scripts.translate_docs import refresh, translate_chunk, translate_markdown
+from sites.shared import translator
 
 
 def service(text: str, target: str) -> str:
@@ -106,3 +107,14 @@ class TestRefresh:
         refresh(docs, "fr", [docs / "a.md", docs / "b.md"], self._service)
         manifest = json.loads((docs / "fr" / "TRANSLATIONS.json").read_text(encoding="utf-8"))
         assert list(manifest["pages"]) == ["a.md"]
+
+
+class TestLinkWords:
+    def test_a_link_whose_words_were_eaten_is_asked_again(self):
+        answers = iter(["voir [[[1]].", "voir [Dépannage[[1]]."])
+        assert translate_chunk(
+            "See [Troubleshooting[[1]].", "fr", lambda _t, _target: next(answers)
+        ) == ("voir [Dépannage[[1]].")
+
+    def test_an_emptied_link_names_its_placeholder(self):
+        assert translator.emptied("voir [[[1]].", "See [Troubleshooting[[1]].") == 1
