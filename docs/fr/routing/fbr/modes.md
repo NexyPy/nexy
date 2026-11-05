@@ -1,7 +1,6 @@
 # Mode serveur et mode client
 
-Un projet Nexy est soit **rendu par serveur**, soit **routé par client**, comme un projet Next.js est soit
-pages rendues sur le serveur ou une application cliente. `useCSR` dans `nexyconfig.py` choisit.
+Un projet Nexy est soit **rendu par le serveur**, soit **routé par le client**, comme un projet Next.js est soit des pages rendues sur le serveur, soit une application client. `useCSR` dans `nexyconfig.py` choisit.
 
 ## Mode serveur (`useCSR = False`)
 
@@ -16,8 +15,7 @@ class NexyConfig(NexyConfigModel):
 
 - Les pages sont des fichiers `.nexy`, `.md` ou `.mdx` sous `src/routes/`.
 - La racine `layout.nexy` possède `<!DOCTYPE html>`, `<html>`, `<head>` et `<body>`.
-- Les composants clients (React, Vue, Svelte, Solid ou Preact) sont autorisés en tant qu'**îlots** : vous en importez un
-  à partir d'une page `.nexy` et il s'hydrate dans le navigateur. Voir [Îles](../../rendering/islands.md).
+- Les composants clients (React, Vue, Svelte, Solid ou Preact) sont autorisés en tant qu'**îles** : vous en importez un à partir d'une page `.nexy` et il s'hydrate dans le navigateur. Voir [Îles](../../rendering/islands.md).
 - Un composant client n'est jamais une route. Gardez-les dans `src/components/`.
 - Un framework client à la fois.
 
@@ -38,13 +36,10 @@ class NexyConfig(NexyConfigModel):
     useCSR = True
 ```
 
-- Les pages sont les fichiers de votre framework client : `.tsx` pour React, `.vue`, `.svelte`.
-Les fichiers - `.md` et `.mdx` restent des routes valides : Nexy les restitue sur le serveur à l'intérieur du client
-  disposition, et le routeur client prend en charge la navigation à partir de là.
-- La disposition racine de tout framework (`layout.tsx`, `layout.vue`, `layout.svelte`) possède `<!DOCTYPE html>`, `<html>`, `<head>` et `<body>`, comme le
-  disposition racine du routeur d’application Next.js. Nexy le restitue dans Node pour la première réponse et le
-  Le cadre hydrate l’ensemble du document. Voir [layout.tsx](../../views/react/differences.md).
-Les fichiers - `.py` sont des gestionnaires d'API servis par FastAPI, à côté des routes client.
+- Les pages sont les fichiers de votre framework client : `.tsx` pour React, `.vue`, `.svelte`.
+- Les fichiers `.md` et `.mdx` restent des itinéraires valides : Nexy les restitue sur le serveur à l'intérieur de la configuration client, et le routeur client prend en charge la navigation à partir de là.
+- La disposition racine de n'importe quel framework (`layout.tsx`, `layout.vue`, `layout.svelte`) possède `<!DOCTYPE html>`, `<html>`, `<head>` et `<body>`, comme la disposition racine du routeur d'application Next.js. Nexy le restitue dans Node pour la première réponse et le framework hydrate l'ensemble du document. Voir [layout.tsx](../../views/react/differences.md).
+- Les fichiers `.py` sont des gestionnaires d'API servis par FastAPI, à côté des routes client.
 - Il n'y a aucun fichier `.nexy` du tout, ni aucun `layout.nexy`.
 - La navigation entre les pages s'effectue dans le navigateur.
 
@@ -62,8 +57,8 @@ Nexy vérifie le projet avant `nx dev`, `nx start` et `nx build` et s'arrête av
 
 | Mode | Rejeté | Message |
 |---|---|---|
-| serveur | `.tsx`, `.jsx`, `.vue` ou `.svelte` sous `src/routes/` | déplacer les composants vers `src/components/` ou définir `useCSR = True` |
-| client | n'importe quel fichier `.nexy` sous `src/routes/` | écrivez-les en tant que composants de framework ou définissez `useCSR = False` |
+| serveur | `.tsx`, `.jsx`, `.vue` ou `.svelte` sous `src/routes/` | déplacer les composants vers `src/components/`, ou définir `useCSR = True` |
+| client | n'importe quel fichier `.nexy` sous `src/routes/` | écrivez-les en tant que composants du framework, ou définissez `useCSR = False` |
 | les deux | plus d'un framework frontend dans `useFF` | `useFF must configure exactly one frontend framework` |
 | client | `useRouter` (routeur modulaire) | `useCSR requires file-based routing` |
 | client | non `useFF` | `useCSR requires a client framework` |
@@ -72,12 +67,12 @@ Les fichiers et dossiers commençant par `_` ou `.` sont ignorés par cette vér
 
 ## Lequel
 
-- **Contenu, marketing, docs, sites SEO-first** : mode serveur avec îlots.
+- **Contenu, marketing, documentation, sites SEO-first** : mode serveur avec îlots.
 - **Tableaux de bord et applications avec navigation client riche** : mode client.
-- **Une API Python avec une application client en haut** : mode client, avec des gestionnaires `.py` à côté des pages.
+- **Une Python API avec une application client en haut** : mode client, avec des `.py` gestionnaires à côté des pages.
 
 ## Prochaines étapes
 
-- [Mise en page](layouts/README.md)
+- [Mises en page](layouts/README.md)
 - [Rendu](../../rendering/README.md)
 - [Configuration](../../reference/config.md)
