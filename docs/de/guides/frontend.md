@@ -44,7 +44,7 @@ Der Browser kommuniziert immer nur mit Port `3000`. Es muss keine zweite URL ge�
 - das Kundenpaket mit Vermögenswerten unter `__nexy__/client/`;
 - die zusammengestellten Python Routen.
 
-Vite verwaltet das Client-Bundle; SSR-HTML wird von esbuild pro Datei erstellt.
+Vite erstellt das Client-Bundle; Der Server-HTML-Code jeder Komponentenseite wird zum Zeitpunkt der Erstellung geschrieben.
 
 > [!NOTE]
 > Eine Route, deren Server-Rendering fehlschlägt, wird als Nur-Client-Route gemeldet, anstatt dass der gesamte Build fehlschlägt.
