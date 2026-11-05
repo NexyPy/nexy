@@ -2,21 +2,21 @@
 
 **Un marco Python para aplicaciones web fullstack.**
 
-Nexy trata sobre la unión entre un backend Python y una interfaz de navegador. En lugar de dos servidores, dos sistemas de compilación y dos tablas de rutas, obtienes un origen: FastAPI y Starlette sirven la aplicación, Vite construye el cliente y un archivo en `src/routes/` es una ruta; `.nexy` es una página, `.py` es un controlador de API.
+Nexy coloca sus páginas y su API en un Python proyecto, atendido por un servidor. La versión 2.2 se basa en FastAPI: cada ruta API es una ruta FastAPI, enumerada en un esquema OpenAPI que Scalar muestra en `/docs`.
 
-- **Python primero.** Las páginas, los puntos finales, los formularios y las acciones son Python, y una página renderizada por el servidor no necesita un marco de interfaz.
-- **Tres enrutadores, una integración.** Basado en archivos, modular o existente FastAPI `APIRouter`.
-- **Un frontend cuando lo desees.** React, Vue, Svelte, Solid o Preact, por página como islas, o para todo el proyecto en modo cliente.
-- **Representación, un modelo.** La representación del servidor, las páginas en caché y las islas se deciden por página; el enrutamiento del cliente es un cambio de proyecto.
-- **Acciones escritas.** Una publicación de formulario y una llamada de cliente escrita llegan a la misma Python función.
+- **Python primero.** Las páginas, los puntos finales, los formularios y las acciones son Python, y una página no necesita JavaScript.
+- **Un frontend cuando lo desees.** React, Vue, Svelte, Solid o Preact, para un componente o para todo el sitio.
+- **Un archivo, una URL.** Un archivo en `src/routes/` es una ruta: `.nexy` es una página, `.py` es un punto final API.
+- **Espacio para crecer.** Comience con un archivo; pasar a módulos o conectar un enrutador FastAPI existente, cuando el proyecto crezca.
 
-Comience con un archivo en `src/routes/` y agregue estructura cuando el proyecto crezca.
+¿Nuevo aquí? Lea [¿Qué es Nexy?](getting-started/what-is-nexy.md), luego el [Inicio rápido](getting-started/quick-start.md).
 
 ## Empezando
 
 ### Primeros pasos
 | Página | que haras |
 |---|---|
+| [¿Qué es Nexy?](getting-started/what-is-nexy.md) | Sepa qué es Nexy, en qué se basa y qué obtiene |
 | [Instalación](getting-started/installation.md) | Instale uv y Nexy CLI, luego cree su primer proyecto |
 | [Inicio rápido](getting-started/quick-start.md) | Cree un proyecto, ejecútelo con recarga en vivo y constrúyalo para producción |
 | [Tutorial](getting-started/tutorial.md) | Cree una página de notas con un punto final, datos compartidos y una compilación de producción en 10 minutos |
@@ -25,8 +25,6 @@ Comience con un archivo en `src/routes/` y agregue estructura cuando el proyecto
 | Página | que haras |
 |---|---|
 | [Conceptos básicos](getting-started/core-concepts.md) | Obtenga el modelo mental: ruta, página, vista, componente, controlador, punto final |
-| [Cómo funciona Nexy](getting-started/how-nexy-works.md) | Siga una solicitud desde la URL hasta el archivo que la responde |
-| [Arquitectura](architecture.md) | Sepa qué capa hace qué y qué deja Nexy a su aplicación |
 | [Estructura del proyecto](getting-started/project-structure.md) | Sepa para qué sirve cada carpeta y archivo de un proyecto |
 | [Elija un enrutador](routing/README.md) | Elija el enrutador basado en archivos, modular o personalizado |
 | [Elija un formato de visualización](views/README.md) | Elija `.nexy`, Markdown o un marco de cliente para una página |
@@ -44,17 +42,17 @@ Comience con un archivo en `src/routes/` y agregue estructura cuando el proyecto
 | [Enrutamiento basado en archivos](routing/fbr/README.md) | Convertir la ruta de un archivo en una URL |
 | [Páginas](routing/fbr/pages/README.md) | escribir una pagina |
 | [Rutas dinámicas](routing/fbr/pages/dynamic-routes.md) | Utilice `[slug]`, `[...path]` y grupos de rutas |
-| [Metadatos de la página](routing/fbr/pages/metadata.md) | Establecer el título, descripción y compartir imagen de una página {new} |
+| [Metadatos de la página](routing/fbr/pages/metadata.md) | Establecer el título, la descripción y compartir imagen de una página {new} |
 | [Diseños](routing/fbr/layouts/README.md) | Compartir un marco entre páginas |
 | [Herencia](routing/fbr/inheritance.md) | Leer el orden de resolución de diseños, dependencias y páginas de error. |
 | [Modo servidor y modo cliente](routing/fbr/modes.md) | `useCSR`, y lo que permite cada modo |
-| [Enlazando y navegando](routing/fbr/navigation/linking-and-navigating.md) | Vincular páginas, navegar en el cliente, captar previamente |
+| [Vincular y navegar](routing/fbr/navigation/linking-and-navigating.md) | Vincular páginas, navegar en el cliente, captar previamente |
 | [Ganchos](routing/fbr/navigation/hooks.md) | Leer la ruta, consulta, cookies y sesión. |
 
 ### Controladores y errores {fbr}
 | Página | que haras |
 |---|---|
-| [Manejadores de ruta](routing/fbr/handlers/README.md) | Agregar un punto final Python |
+| [Controladores de ruta](routing/fbr/handlers/README.md) | Agregar un punto final Python |
 | [Validación y errores](routing/fbr/handlers/validation-and-errors.md) | Responda `422` y `404`, y plantee un `HTTPException` |
 | [WebSocket manejadores](routing/fbr/realtime/websocket.md) | Manejar una conexión `SOCKET` |
 | [Dependencias y guardias](routing/fbr/dependencies/README.md) | Ejecute `dependencies.py` antes de un controlador y heredéelo |
@@ -74,21 +72,21 @@ Controladores y módulos.
 ### Integración de enrutador personalizado {custom}
 | Página | que haras |
 |---|---|
-| [Ruta personalizada](routing/custom/README.md) | Incluir una aplicación FastAPI existente |
+| [Enrutamiento personalizado](routing/custom/README.md) | Incluir una aplicación FastAPI existente |
 
 ## Interfaz
 
 ### Contratos compartidos
 | Página | lo que define |
 |---|---|
-| [Portadas](views/frontend/pages.md) | Un archivo, una ruta: accesorios, renderizado, metadatos |
+| [Páginas frontales](views/frontend/pages.md) | Un archivo, una ruta: accesorios, renderizado, metadatos |
 | [Diseños de interfaz](views/frontend/layouts.md) | La estructura del documento, el anidamiento y lo que un diseño no puede hacer |
 | [Acciones y navegación](views/frontend/actions-and-navigation.md) | Llame a una acción escrita, vincule páginas, lea la URL |
 
 ### Vistas nexy
 | Página | que haras |
 |---|---|
-| [archivos .nexy](views/nexy/README.md) | Escribe una página con Python, Jinja2 y accesorios. |
+| [Archivos .nexy](views/nexy/README.md) | Escribe una página con Python, Jinja2 y accesorios. |
 | [Componentes](views/nexy/components.md) | Utilice `Image`, `Link`, `Audio`, `Video` y `Import` |
 | [diseño.nexy](views/nexy/layouts.md) | Escribir el diseño en modo servidor |
 | [Markdown y MDX](views/nexy/markdown.md) | Escribir páginas de contenido |
@@ -166,9 +164,8 @@ Controladores y módulos.
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -199,6 +196,7 @@ docs/
 
 | Página | que haras |
 |---|---|
+| [Cómo funciona Nexy](getting-started/how-nexy-works.md) | Mira qué sucede entre un archivo y una página, y qué te deja Nexy |
 | [Actualizando a 2.2](getting-started/upgrading.md) | Migrar de 2.1 a 2.2 |
 | [Internacionalización (i18n)](guides/i18n.md) | Agregue traducciones con la biblioteca que elija |
 | [Recetas](guides/recipes.md) | Ejemplos y patrones, no un tutorial. |
