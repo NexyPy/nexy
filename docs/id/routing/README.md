@@ -69,4 +69,4 @@ Anda juga dapat mengintegrasikan router FastAPI yang ada ke dalam proyek Nexy An
 
 - [Perutean berbasis file](fbr/README.md)
 - [Render](../rendering/README.md)
-- [Views](../views/README.md): apa yang ada di dalam file
+- [Tampilan](../views/README.md): apa yang ada di dalam file
