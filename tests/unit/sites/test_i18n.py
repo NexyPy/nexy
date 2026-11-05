@@ -107,7 +107,7 @@ class TestVanilla:
 
     def test_the_version_sits_next_to_the_logo(self, out):
         page = (out / "docs" / "index.html").read_text(encoding="utf-8")
-        assert f'<span class="side-version" aria-label="Nexy version {version.VERSION}">' in page
+        assert f'<span class="side-version" aria-label="Nexy {version.VERSION}">' in page
         assert version.VERSION == "V2.2"
 
 
@@ -131,3 +131,36 @@ class TestIsolate:
 
     def test_a_left_to_right_page_needs_nothing(self):
         assert i18n.isolate("src/routes/", "fr") == ""
+
+
+class TestLocalizeEveryAttribute:
+    def test_a_tag_with_a_label_and_a_placeholder_gets_both(self):
+        tag = (
+            '<input placeholder="Search" aria-label="Search"'
+            ' data-i18n-placeholder="search" data-i18n-aria="search_aria">'
+        )
+        html = i18n.localize(tag, "fr")
+        assert 'placeholder="Rechercher"' in html and 'aria-label="Rechercher dans' in html
+
+
+# The English words of the site around a page: none of them may survive on a German page, a
+# language where none of them is spelled the same.
+CHROME = (
+    'aria-label="Nexy, home"',
+    'aria-label="Documentation"',
+    'aria-label="Pages"',
+    'aria-label="Nexy on GitHub"',
+    'aria-label="Search the docs"',
+    'aria-label="Link to this section"',
+    ">New<",
+    "<b>Modular</b>",
+    "<b>Custom Integration</b>",
+    'data-i18n="callout_note">Note<',
+)
+
+
+@pytest.mark.parametrize("english", CHROME)
+def test_a_german_page_keeps_no_english_word_of_the_site(out, english):
+    pages = [out / "docs" / "de" / "guides" / "actions" / "index.html"]
+    pages += [out / "docs" / "de" / "reference" / "cli" / "index.html"]
+    assert not any(english in page.read_text(encoding="utf-8") for page in pages)
