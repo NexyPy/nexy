@@ -109,7 +109,7 @@ from nexy import Link
 Sur une navigation, le routeur :
 
 1. fait correspondre le chemin avec les routes client (`.tsx`, `.jsx`, `.vue`, `.svelte`) ;
-2. importe et restitue la page et ses [layouts](../layouts/README.md) **d'abord**, puis déplace ensuite l'URL avec `history.pushState`, de sorte que la barre d'adresse n'affiche jamais une page qui a échoué ;
+2. importe et restitue la page et ses [mises en page](../layouts/README.md) **d'abord**, puis déplace ensuite l'URL avec `history.pushState`, de sorte que la barre d'adresse n'affiche jamais une page qui a échoué ;
 3. distribue un événement `nexy:navigated` sur `document` ;
 4. fait défiler vers le haut ou vers la cible `#fragment`.
 
