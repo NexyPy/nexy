@@ -21,6 +21,26 @@
 - **模块化路由器**：`src/apps/`下的控制器和模块，用装饰器声明，用于NestJS风格的代码库。
 - **自定义路由器**：应用程序中包含的现有 FastAPI `APIRouter`。
 
+选择是 `nexyconfig.py` 中的一行。基于文件的路由不需要任何内容​​：没有 `useRouter`，Nexy 读取 `src/routes/`。
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
 选择三者之一就是一个决定。选择前端框架是另一个单独的框架：请参阅[选择路由器](../routing/README.md) 和[视图](../views/README.md)。
 
 ## 应用结构
@@ -37,6 +57,38 @@
 | **端点** | 处理程序回答的对（URL、方法） | 处理程序：一个文件可以回答多个端点 |
 
 用一句话来说：**页面是一个路由文件，视图是呈现它的内容，组件是页面重用的内容，处理程序回答端点。**
+
+五合一小项目：
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+frontmatter及其下面的模板是页面的视图； `Like` 是它重用的组件。
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 还有两个词随处可见：
 
@@ -56,7 +108,17 @@
 | 客户端模式 | `useCSR = True`：框架文件是路线，导航发生在浏览器中 |
 | SSR、ISR、CSR、岛屿 | 四种渲染模式，按页面决定，CSR 除外，CSR 是按项目决定的 ([渲染](../rendering/README.md)) |
 | 保湿 | 浏览器将框架附加到服务器已发送的 HTML ([岛屿](../rendering/islands.md)) |
-| 道具 | 父级传递给组件的值，在 `.nexy` 文件 ([.nexy 文件](../views/nexy/README.md)) 中声明 `name: prop[type]` |
+| 道具 | 父级传递给组件的值，在 `.nexy` 文件（[.nexy 文件](../views/nexy/README.md)）中声明为 `name: prop[type]` |
+
+具有一个岛的服务器模式页面：服务器呈现页面，浏览器仅在图表滚动到视图中时才对图表进行水合。
+
+```nexy filename="src/routes/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
 
 ## 应用交互
 
@@ -64,12 +126,45 @@
 |---|---|
 | 行动 | 标记为 `@Action` 的 Python 函数，用作 `POST`，可从表单调用或作为类型化函数 ([操作](../guides/actions.md)) |
 | 形式 | 发布到操作的 HTML 表单，验证错误返回到页面 ([操作](../guides/actions.md)) |
-| 导航 | 预取的链接，以及读取路径、查询、cookie 和会话的挂钩 ([钩子](../routing/fbr/navigation/hooks.md)) |
+| 导航 | 预取的链接，以及读取路径、查询、cookie 和会话的钩子 ([钩子](../routing/fbr/navigation/hooks.md)) |
 | 数据获取 | 由需要它的页面或处理程序完成； Nexy 不提供客户端数据层（[处理函数](../routing/fbr/handlers/README.md)） |
+
+一个操作和发布到它的表单，在任何脚本加载之前起作用：
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/routes/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
 
 ## Nexy 不做什么
 
 身份验证、授权、数据库、国际化、后台作业、电子邮件、付款和搜索是 **您的应用程序的责任**，而不是框架的责任。 Nexy 给出了扩展点并说明了每个扩展点的插入位置：请参阅 [Nexy 留给您的内容 ](how-nexy-works.md#what-nexy-leaves-to-you)。
+
+例如，身份验证插入到其保护的文件夹的依赖项中。 Nexy 在下面的每条路线之前运行它；用户是谁由您决定：
+
+```python filename="src/routes/account/dependencies.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 原因并不是极简主义本身：选择 ORM 或身份验证库的框架已经决定了只有您的应用程序才能决定的事情。
 
