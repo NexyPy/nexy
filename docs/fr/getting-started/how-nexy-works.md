@@ -98,4 +98,4 @@ Ce qui ne change pas : les mêmes règles de routage, les mêmes fichiers de pag
 - [Structure du projet](project-structure.md) : chaque dossier d'un projet
 - [Rendu](../rendering/README.md) : SSR, ISR, CSR et îles
 - [Frontend](../guides/frontend.md) : Vite, style et build client
-- [Routing](../routing/README.md) : les routeurs basés sur fichiers, modulaires et personnalisés
+- [Routage](../routing/README.md) : les routeurs basés sur fichiers, modulaires et personnalisés
