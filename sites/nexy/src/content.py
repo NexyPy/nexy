@@ -148,6 +148,8 @@ def router_select(address: str) -> list[dict[str, Any]]:
             "blurb": blurb,
             "icon": ICONS[f"router_{key}"],
             "home": link(f"routing/{key}", lang),
+            # FBR is a name in every language; the two others are translated words.
+            "word": "" if key == "fbr" else f"router_{key}",
             "current": key == chosen,
         }
         for key, name, blurb in source.ROUTERS
