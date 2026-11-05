@@ -5,7 +5,7 @@ Nexy restitue Preact 10 composants sur le serveur, puis Preact les reprend dans 
 | Mode | `nexyconfig.py` | Les pages sont | Preact est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
+| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [mises en page](../frontend/layouts.md) et un routeur client |
 
 ## Démarrer un projet
 
