@@ -1,7 +1,6 @@
-# Archivos de middleware
+# Archivos de software intermedio
 
-Un `middleware.py` en un directorio de rutas envuelve las solicitudes manejadas por ese directorio. Como diseños y
-`dependencies.py`, los archivos se apilan desde la raíz de las rutas hacia abajo, primero la más externa.
+Un `middleware.py` en un directorio de rutas envuelve las solicitudes manejadas por ese directorio. Al igual que los diseños y `dependencies.py`, los archivos se apilan desde la raíz de las rutas hacia abajo, primero la más externa.
 
 ```python filename="src/rutas/admin/middleware.py"
 from nexy.http import Request
@@ -16,14 +15,11 @@ async def middleware(request: Request, call_next):
     return response
 ```
 
-La función es `async def middleware(request, call_next)`: la firma de FastAPI
-`@app.middleware("http")`. Llame a `await call_next(request)` para continuar la ruta, o devolver un
-respuesta para detenerse allí. El código después de que la llamada se ejecuta al salir y puede cambiar la respuesta.
+La función es `async def middleware(request, call_next)`: la firma del `@app.middleware("http")` de FastAPI. Llame a `await call_next(request)` para continuar con la ruta o devuelva una respuesta para detenerse allí. El código después de que la llamada se ejecuta al salir y puede cambiar la respuesta.
 
-## Lo que envuelve
+## lo que envuelve
 
-Un middleware se aplica a las **rutas cuyo archivo está en su directorio** o debajo, páginas y API
-Manejadores por igual, los grupos de rutas incluyen:
+Un middleware se aplica a las **rutas cuyo archivo está en su directorio** o debajo, tanto páginas como controladores API, incluidos los grupos de rutas:
 
 ```text
 src/routes/
@@ -39,16 +35,14 @@ src/routes/
    └─ cart.py                root > shop     (URL: /cart)
 ```
 
-Para una solicitud a `/admin/users` el orden es `root`, `admin`, `users`, luego la ruta. Un grupo no tiene
-URL propia, por lo que coincide a través de la ruta que atiende la solicitud, no a través de la URL.
+Para una solicitud a `/admin/users` el orden es `root`, `admin`, `users`, luego la ruta. Un grupo no tiene una URL propia, por lo que se empareja a través de la ruta que atiende la solicitud, no a través de la URL.
 
-Una URL que no coincide con ninguna ruta (un 404) sólo recibe el middleware de directorios que no son grupos,
-seleccionado por prefijo de URL. `[slug]` coincide con un segmento y `[...rest]` coincide con el resto.
+Una URL que no coincide con ninguna ruta (un 404) solo recibe el middleware de directorios que no son grupos, seleccionados por prefijo de URL. `[slug]` coincide con un segmento y `[...rest]` coincide con el resto.
 
 ## Lo que no envuelve
 
 - URL de marco y activos: `/__nexy__/`, `/_nexy/`, `/public/`, `/assets/` y `/@...` (Vite).
-- Manejadores de WebSocket y vida útil del servidor: solo solicitudes HTTP.
+- WebSocket controladores y vida útil del servidor: solo solicitudes HTTP.
 - Archivos en directorios que comienzan con `_` o `.`.
 
 ## Middleware, dependencias o guardias
@@ -60,23 +54,18 @@ seleccionado por prefijo de URL. `[slug]` coincide con un segmento y `[...rest]`
 | `@UseGuard` en un controlador | una ruta necesita una verificación adicional |
 | `useMiddlewares` en [config](../../../reference/config.md) | un middleware ASGI para toda la aplicación (CORS, GZip, sesiones) |
 
-Los archivos de middleware se ejecutan **antes de las ** dependencias: la solicitud ha pasado cada `middleware.py` de sus
-directorios cuando comienzan las dependencias.
+Los archivos de middleware se ejecutan **antes de las** dependencias: la solicitud ha pasado por cada `middleware.py` de sus directorios cuando comienzan las dependencias.
 
 ## Reglas
 
-- El archivo debe definir `async def middleware(request, call_next)`. De lo contrario, Nexy se detiene al iniciar y
-  nombra el archivo.
+- El archivo debe definir `async def middleware(request, call_next)`. De lo contrario, Nexy se detiene al inicio y nombra el archivo.
 - Es un módulo Python normal: importa lo que necesites. Se carga una vez, cuando se inicia el servidor.
 - Nunca es una ruta: `/middleware` es una 404.
-- Verificaciones de ruta base en `request.scope["path"]`, nunca en `request.url.path` o en el encabezado `Host`: desde
-  CVE-2026-48710 el objeto URL puede no coincidir con la ruta que recibió el servidor. Ver
-  [Seguridad](../../../reference/security.md).
+- La ruta base verifica en `request.scope["path"]`, nunca en `request.url.path` o el encabezado `Host`: desde CVE-2026-48710, el objeto URL puede no coincidir con la ruta que recibió el servidor. Consulte [Seguridad](../../../reference/security.md).
 
 ## Costo
 
-Un proyecto sin `middleware.py` no paga nada: la capa no está instalada. Con archivos, cada uno
-el middleware coincidente agrega una Starlette `BaseHTTPMiddleware`; mantenlos pequeños.
+Un proyecto sin ningún `middleware.py` no paga nada: la capa no está instalada. Con los archivos, cada middleware coincidente agrega un Starlette `BaseHTTPMiddleware`; mantenlos pequeños.
 
 ## Próximos pasos
 
