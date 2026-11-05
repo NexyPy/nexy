@@ -23,7 +23,7 @@ Les fichiers `.mdx` sont compilés par **Vite**, via le pipeline framework route
 - Nécessite les packages facultatifs `@mdx-js/rollup`, `remark-gfm` et `@mdx-js/react` (et `@mdx-js/esbuild` pour la build). Vite vous indique lequel manque.
 - Le framework est auto-détecté à partir des importations : Preact lorsque le fichier importe `preact`, React sinon.
 
-> [!REMARQUE]
+> [!NOTE]
 > utilisez `.nexy` si vous avez besoin de la logique Python en premier lieu.
 
 ## Prochaines étapes
