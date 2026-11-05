@@ -1,4 +1,4 @@
-# layout.nexy
+# mise en page.nexy
 
 Le fichier de mise en page du mode serveur (`useCSR = False`). La racine est propriétaire du document HTML.
 
@@ -28,10 +28,9 @@ children: prop[NexyElement]
 - `<Vite />` injecte les scripts et styles client une fois, dans le `<head>`.
 - `{{ children | safe }}` est l'endroit où la page, ou la mise en page imbriquée suivante, s'affiche.
 
-## Mise en page imbriquée
+## Dispositions imbriquées
 
-Un `layout.nexy` dans un sous-répertoire enveloppe ce sous-arbre et s'affiche à l'intérieur de son parent. Cela ne se répète pas
-les balises du document :
+Un `layout.nexy` dans un sous-répertoire enveloppe ce sous-arbre et s'affiche à l'intérieur de son parent. Il ne répète pas les balises du document :
 
 ```nexy filename="src/routes/blog/layout.nexy"
 ---
@@ -45,8 +44,7 @@ children: prop[NexyElement]
 
 ## Composants et îlots
 
-Une mise en page peut importer des composants `.nexy` (un en-tête, un pied de page) et des composants clients. Un client
-Le composant dans une mise en page est un [îlot](../../rendering/islands.md) comme les autres :
+Une mise en page peut importer des composants `.nexy` (un en-tête, un pied de page) et des composants clients. Un composant client dans une mise en page est un [îlot](../../rendering/islands.md) comme les autres :
 
 ```nexy
 ---
@@ -59,9 +57,7 @@ from "@/components/theme/theme.tsx" import Theme
 
 ## Sans mise en page
 
-Un projet sans `layout.nexy` répond quand même par un document valide : Nexy se rabat sur un minimum
-shell avec `<!DOCTYPE html>`, la méta de la fenêtre d'affichage et les balises Vite. Ajoutez une mise en page dès que vous en avez besoin
-un titre, des polices ou une navigation.
+Un projet sans `layout.nexy` répond toujours avec un document valide : Nexy se rabat sur un shell minimal avec `<!DOCTYPE html>`, la méta viewport et les balises Vite. Ajoutez une mise en page dès que vous avez besoin d'un titre, de polices ou de navigation.
 
 ## Dans le routeur modulaire
 
@@ -73,12 +69,11 @@ return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/
 
 ## Ce qu'il ne peut pas faire
 
-- Il ne peut pas coexister avec `layout.tsx`, `layout.vue` ou `layout.svelte` : un projet en mode serveur a
-  aucune route client ([modes](../../routing/fbr/modes.md)).
+- Il ne peut pas coexister avec `layout.tsx`, `layout.vue` ou `layout.svelte` : un projet en mode serveur n'a pas de routes client ([modes](../../routing/fbr/modes.md)).
 - Il ne fonctionne pas sur le client : utilisez un îlot pour l'interactivité.
 
 ## Prochaines étapes
 
-- [Mise en page](../../routing/fbr/layouts/README.md)
+- [Mises en page](../../routing/fbr/layouts/README.md)
 - [Héritage](../../routing/fbr/inheritance.md)
-- [Fichiers .nexy](README.md)
+- [fichiers .nexy](README.md)
