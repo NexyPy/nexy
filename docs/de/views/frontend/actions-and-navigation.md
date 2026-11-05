@@ -7,7 +7,7 @@ Die Interaktion in Nexy wird über ein einheitliches System von **Aktionen** und
 Eine **Aktion** ist eine serverseitige Funktion, die eine Mutation verarbeitet (z. B. das Aktualisieren einer Datenbank). 
 
 1.  **Typisierte Eingabe**: Aktionen werden in Python mit Typhinweisen definiert. Nexy generiert einen passenden TypeScript-Client, sodass Sie in Ihrer IDE eine automatische Vervollständigung und Validierung erhalten.
-2.  **Atomic Execution**: Eine Aktion ist eine einzelne `POST` Anfrage.
+2.  **Atomare Ausführung**: Eine Aktion ist eine einzelne `POST` Anfrage.
 3.  **Ergebnisverarbeitung**: Aktionen geben ein typisiertes Ergebnis zurück, das der Client zum Aktualisieren der Benutzeroberfläche verwenden kann.
 
 ## Clientseitige Navigation
@@ -31,8 +31,8 @@ Das häufigste Muster besteht darin, eine Aktion auszuführen und den Benutzer d
 
 Die API zum Aufrufen von Aktionen und Navigieren variiert je nach Framework. Sehen Sie sich den Leitfaden **Unterschiede** für die von Ihnen gewählte Technologie an:
 
-- [Auf Unterschiede reagieren](../react/differences.md)
-- [Vue-Unterschiede](../vue/differences.md)
-- [Kleine Unterschiede](../svelte/differences.md)
-- [Feste Unterschiede](../solid/differences.md)
-- [Preact-Unterschiede](../preact/differences.md)
+- [React Unterschiede](../react/differences.md)
+- [Vue Unterschiede](../vue/differences.md)
+- [Svelte Unterschiede](../svelte/differences.md)
+- [Solid Unterschiede](../solid/differences.md)
+- [Preact Unterschiede](../preact/differences.md)
