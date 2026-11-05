@@ -2,10 +2,9 @@
 
 Decoradores que protegen una ruta y la describen en el esquema OpenAPI.
 
-## Guardias
+## guardias
 
-`@UseGuard(*guards)` funciona en un controlador (cada método) o en un método. Cada guardia se agrega como un
-FastAPI `Depends`, por lo que declara los parámetros que necesita y levanta para rechazar la llamada:
+`@UseGuard(*guards)` funciona en un controlador (cada método) o en un método. Cada guardia se agrega como un FastAPI `Depends`, por lo que declara los parámetros que necesita y levanta para rechazar la llamada:
 
 ```python filename="src/apps/admin/admin_controller.py"
 from fastapi import Header, HTTPException
@@ -24,30 +23,27 @@ class AdminController:
         return {"ok": True}
 ```
 
-## Decorador de middleware
+## decorador de middleware
 
-`@Middleware(*middlewares)` se comporta de la misma manera: estas son dependencias FastAPI, no ASGI
-software intermedio. Para middleware ASGI real, utilice `useMiddlewares` en
-[Config](../../reference/config.md) o [Middleware y seguridad](../../guides/middleware-and-security.md).
+`@Middleware(*middlewares)` se comporta de la misma manera: estas son FastAPI dependencias, no middleware ASGI. Para middleware ASGI real, utilice `useMiddlewares` en [Config](../../reference/config.md) o [Middleware y seguridad](../../guides/middleware-and-security.md).
 
 ## Metadatos de ruta
 
-`@UseRoute(...)` establece metadatos de OpenAPI. No cambia el camino.
+`@UseRoute(...)` establece OpenAPI metadatos. No cambia el camino.
 
 | Argumento | Significado |
 |---|---|
 | `name` | nombre de ruta |
-| `tags` | Etiquetas OpenAPI |
+| `tags` | OpenAPI etiquetas |
 | `summary`, `description` | texto en la referencia API |
-| `deprecated` | marcan la operación como obsoleta |
+| `deprecated` | marca la operación como obsoleta |
 | `include_in_schema` | ocultar la ruta del esquema |
 | `operation_id` | ID de operación explícita |
-| `openapi_extra` | campos OpenAPI adicionales |
+| `openapi_extra` | campos adicionales OpenAPI |
 
 ## Respuestas
 
-`@UseResponse(...)` establece `status_code`, `response_class`, `response_model`, `responses` y el
-Opciones de serialización.
+`@UseResponse(...)` establece `status_code`, `response_class`, `response_model`, `responses` y las opciones de serialización.
 
 ```python
 from nexy.decorators import Controller, UseResponse, UseRoute
@@ -66,4 +62,4 @@ La referencia de API generada se sirve en `/docs` a menos que `useDocs = False`.
 ## Próximos pasos
 
 - [Inyección de dependencia](dependency-injection.md)
-- [Rutas API](../fbr/handlers/README.md): las mismas opciones para los manejadores basados en archivos
+- [Rutas API](../fbr/handlers/README.md): las mismas opciones para controladores basados en archivos
