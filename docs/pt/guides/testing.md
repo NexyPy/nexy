@@ -88,7 +88,7 @@ def test_form_posts_to_action(client):
 
 Uma chamada com JSON responde com o resultado e `422` com os campos inválidos.
 
-> [!NOTA]
+> [!NOTE]
 > os caminhos de ação são específicos do projeto e gerados. Nunca codifique `/_nx_<hash>` em um teste.
 
 ## Teste um componente `.nexy`
