@@ -15,18 +15,18 @@
 | غلاف المستند | و `<html>` و `<head>` و `<body>` حول الصفحة، مملوك لأقرب تخطيط أو Nexy ([تخطيطات](../routing/fbr/layouts/README.md)) |
 | نقطة النهاية | مزيج فريد من عنوان URL وطريقة HTTP ([المشاهدات](../views/README.md)) |
 | FBR | التوجيه المستند إلى الملف: الملف الموجود ضمن `src/routes/` هو مسار ([توجيه](../routing/fbr/README.md)) |
-| Frontmatter | الكتلة Python بين السطرين `---` لملف `.nexy` أو `.md` ([.nexy files](../views/nexy/README.md)) |
-| حراسة | تبعية ترفض الطلب عن طريق رفع `HTTPException` ([guards](../routing/modular/guards-and-metadata.md)) |
+| Frontmatter | الكتلة Python بين السطرين `---` لملف `.nexy` أو `.md` ([ملفات .nexy](../views/nexy/README.md)) |
+| حراسة | تبعية ترفض الطلب عن طريق رفع `HTTPException` ([الحراس](../routing/modular/guards-and-metadata.md)) |
 | المعالج | وظيفة Python التي تعالج طلب HTTP لطريقة معينة ([المشاهدات](../views/README.md)) |
 | HMR | استبدال الوحدة الساخنة: يقوم خادم التطوير بتبديل الوحدات التي تم تغييرها، دون إعادة تحميل كاملة ([الواجهة الأمامية](../guides/frontend.md)) |
 | الترطيب | المتصفح الذي يرفق إطار عمل بـ HTML الذي أرسله الخادم بالفعل ([الجزر](../rendering/islands.md)) |
 | الجزيرة | مكون العميل المثبت داخل الصفحة المعروضة بواسطة الخادم ([الجزر](../rendering/islands.md)) |
 | ISR | التجديد الثابت التزايدي: صفحة واحدة مخبأة لكل مسار، يتم تحديثها في الخلفية ([ISR](../rendering/isr.md)) |
 | التخطيط | ملف `layout.*` الذي يغلف الصفحات الموجودة أسفل مجلده ([التخطيطات](../routing/fbr/layouts/README.md)) |
-| تم الإعلان عن مسارات جهاز التوجيه المعياري | بـ `@Module` و `@Controller` ضمن `src/apps/` ([modular](../routing/modular/README.md)) |
+| تم الإعلان عن مسارات جهاز التوجيه المعياري | بـ `@Module` و `@Controller` ضمن `src/apps/` ([المعياري](../routing/modular/README.md)) |
 | صفحة | مورد يمكن عنونة عنوان URL محدد بواسطة ملف ضمن `src/routes/` ([المشاهدات](../views/README.md)) |
 | الجلب المسبق | تحميل الصفحة خلف الرابط قبل أن ينقر القارئ عليها ([ربط](../routing/fbr/navigation/linking-and-navigating.md)) |
-| الدعائم | القيم التي يمررها أحد الوالدين إلى المكون ([.nexy files](../views/nexy/README.md)) |
+| الدعائم | القيم التي يمررها أحد الوالدين إلى المكون ([ملفات .nexy](../views/nexy/README.md)) |
 | إعادة التحقق من | عدد الثواني التي يتم بعدها إعادة إنشاء صفحة ISR في الخلفية ([ISR](../rendering/isr.md)) |
 | توجيه | نمط عنوان URL، الناتج عن مسار ملف التوجيه ([توجيه](../routing/README.md)) |
 | مجموعة التوجيه | مجلد بين قوسين يقوم بتجميع المسارات دون إضافة مقطع ([المسارات الديناميكية](../routing/fbr/pages/dynamic-routes.md)) |
@@ -42,9 +42,9 @@
 | الاسم | في سطر واحد |
 |---|---|
 | `__nexy__/` | المخرجات المولدة: الصفحات المجمعة، وإدخال العميل وعميل الإجراء؛ لم يتم تحريره مطلقًا، ولم يتم الالتزام به مطلقًا |
-| `nexyconfig.py` | تكوين المشروع، فئة `use*` الحقول ([config](config.md)) |
+| `nexyconfig.py` | تكوين المشروع، فئة `use*` الحقول ([الإعداد](config.md)) |
 | `public/` | الملفات المقدمة في الجذر، مثل `public/logo.svg` → `/logo.svg` ([اصطلاحات الملفات](file-conventions.md)) |
-| `src/apps/` | وحدات التحكم والوحدات النمطية لجهاز التوجيه المعياري ([modular](../routing/modular/README.md)) |
+| `src/apps/` | وحدات التحكم والوحدات النمطية لجهاز التوجيه المعياري ([المعياري](../routing/modular/README.md)) |
 | `src/components/` | المكونات المستوردة بالصفحات؛ لا يوجه أبدًا ([اصطلاحات الملف](file-conventions.md)) |
 | `src/routes/` | مسارات التطبيق ([اصطلاحات الملف](file-conventions.md)) |
 
