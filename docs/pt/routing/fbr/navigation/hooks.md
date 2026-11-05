@@ -61,5 +61,5 @@ label: prop[str]
 
 - [Páginas](../pages/README.md): segmentos dinâmicos e layouts
 - [Receitas](../../../guides/recipes.md): um fluxo de login testado baseado em `useSession()`
-- [Config](../../../reference/config.md): habilitar sessões e localidades
-- [.nexy files](../../../views/nexy/README.md): onde os ganchos geralmente são chamados
+- [Configuração](../../../reference/config.md): habilitar sessões e localidades
+- [arquivos .nexy](../../../views/nexy/README.md): onde os ganchos geralmente são chamados
