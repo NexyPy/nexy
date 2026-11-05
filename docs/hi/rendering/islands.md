@@ -38,12 +38,12 @@ from "@/components/Counter.tsx" import Counter
 
 ## विन्यास
 
-| निर्देश | हाइड्रेट्स |
+| निर्देश | हाइड्रेट |
 |---|---|
 | कोई नहीं, या `client:load` | तुरंत |
 | `client:idle` | जब ब्राउज़र निष्क्रिय हो (`requestIdleCallback`, 2 सेकंड का समय समाप्त) |
-| `client:visible` | जब द्वीप व्यूपोर्ट में प्रवेश करता है, 200 पिक्सल जल्दी |
-| `client:media` | जब कोई मीडिया क्वेरी मेल खाती है; इसे `media` प्रोप | के साथ सेट करें
+| `client:visible` | जब द्वीप व्यूपोर्ट में प्रवेश करता है, तो 200 पिक्सेल जल्दी |
+| `client:media` | जब कोई मीडिया क्वेरी मेल खाती है; इसे `media` प्रोप के साथ सेट करें |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
