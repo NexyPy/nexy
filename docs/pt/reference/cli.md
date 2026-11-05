@@ -95,7 +95,7 @@ Qualquer outra coisa é inglês, assim como qualquer mensagem que um idioma aind
 `nx build` compila as rotas e agrupa o cliente quando `useVite` está ativado.
 
 > [!NOTE]
-> não há sinalizador `--static`. A hospedagem estática é uma opção de implantação, não um modo de construção - consulte [Deploy](../deployment/README.md).
+> não há sinalizador `--static`. A hospedagem estática é uma opção de implantação, não um modo de construção - consulte [Implantação](../deployment/README.md).
 
 ## Trabalhando no próprio Nexy
 
