@@ -42,7 +42,7 @@ O roteador modular é inspirado em NestJS: controladores, módulos e injeção d
 
 Escolha o roteador modular quando desejar uma estrutura baseada em classes com injeção para uma API maior. Escolha o roteador baseado em arquivo quando a estrutura da URL for o princípio de organização. Ambos são estruturados por `nx new`, executados na mesma aplicação FastAPI e podem coexistir.
 
-> [!NOTA]
+> [!NOTE]
 > os itens que faltam acima são a lacuna honesta. Se você precisar de `useFactory` provedores ou provedores substituíveis em testes hoje, mantenha a lógica em funções simples e FastAPI `Depends`, que compõem e substituem naturalmente.
 
 ## Próximas etapas
