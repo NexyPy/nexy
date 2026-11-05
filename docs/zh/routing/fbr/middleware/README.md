@@ -52,7 +52,7 @@ src/routes/
 | `middleware.py` | 你也需要 **响应**：整个区域的标头、重定向、计时、短路 |
 | [`dependencies.py`](../dependencies/README.md) | 你需要解析参数或注入一个值（当前用户，数据库会话）|
 | `@UseGuard` 在处理程序上 | 一条路由需要额外检查 |
-| [[config](../../../reference/config.md)] | 中的 `useMiddlewares` 用于整个应用程序（CORS、GZip、会话）的 ASGI 中间件 |
+| [[配置](../../../reference/config.md)] | 中的 `useMiddlewares` 用于整个应用程序（CORS、GZip、会话）的 ASGI 中间件 |
 
 中间件文件在 **依赖项之前运行**：当依赖项启动时，请求已通过其目录的每个 `middleware.py`。
 
