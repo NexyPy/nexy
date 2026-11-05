@@ -157,4 +157,4 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
 
 - [Actions](actions.md) : fonctions serveur typées pour les formulaires et les boutons
 - [Middleware et sécurité](middleware-and-security.md) : CORS, hôtes, sessions
-- [Testing](testing.md) : testez vos propres gestionnaires de la même manière
+- [Tests](testing.md) : testez vos propres gestionnaires de la même manière
