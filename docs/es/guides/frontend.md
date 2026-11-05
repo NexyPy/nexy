@@ -67,5 +67,5 @@ Coloque los archivos estáticos en `public/`; se entregan desde `/` tanto en des
 ## Próximos pasos
 
 - [Vistas](../views/README.md): elige un formato de página
-- [Config](../reference/config.md): `useFF`, `useVite`, alias
+- [Configuración](../reference/config.md): `useFF`, `useVite`, alias
 - [Implementar](../deployment/README.md): lo que produce la compilación
