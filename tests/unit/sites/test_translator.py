@@ -39,9 +39,13 @@ class TestProtect:
         assert " Router " in template and " Fits " in template
         assert kept.count("|") == 6
 
+    def test_a_marker_leaves_its_space_to_the_text(self):
+        template, kept = translator.protect("### Modes\n")
+        assert template == "[[0]] Modes\n" and kept == ["###"]
+
     def test_a_heading_keeps_its_marker(self):
         _template, kept = translator.protect(PAGE)
-        assert kept[0] == "# "
+        assert kept[0] == "#" and _template.startswith("[[0]] Choose")
 
 
 class TestChunks:
