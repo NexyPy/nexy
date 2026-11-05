@@ -35,7 +35,7 @@ Um einen Ordner auszuwählen, fragen Sie nach der Datei:
 
 ## `src/routes/`
 
-Jede Datei wird zu einer Route, mit Ausnahme der unten aufgeführten reservierten Namen. Der Dateipfad abzüglich der Erweiterung ist die URL – siehe [routing](../routing/README.md).
+Jede Datei wird zu einer Route, mit Ausnahme der unten aufgeführten reservierten Namen. Der Dateipfad abzüglich der Erweiterung ist die URL – siehe [Routing](../routing/README.md).
 
 | Datei | Rolle |
 |---|---|
@@ -75,5 +75,5 @@ Behandeln Sie das gesamte Verzeichnis als Wegwerfverzeichnis: Löschen Sie es un
 ## Nächste Schritte
 
 - [Routing](../routing/README.md): Wie aus einem Pfad eine URL wird
-- [Config](../reference/config.md): jede Projektoption
+- [Konfiguration](../reference/config.md): jede Projektoption
 - [Frontend](../guides/frontend.md): Vite, Styling und der Client-Build
