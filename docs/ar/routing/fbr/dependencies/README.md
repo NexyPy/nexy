@@ -23,10 +23,10 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> [!ملاحظة]
+> [!NOTE]
 > قائمة الوظائف نفسها. يتم تجاهل كائن `Depends(...)` في القائمة.
 
-يتطلب كل مسار ضمن `src/routes/admin/` الآن الرأس ومعالجات `.py` و `.nexy` الصفحات على حدٍ سواء.
+يتطلب كل مسار ضمن `src/routes/admin/` الآن الرأس ومعالجات `.py` والصفحات `.nexy` على حدٍ سواء.
 
 ## الميراث
 
@@ -86,7 +86,7 @@ async def GET():
 
 ## فشل التبعية
 
-التبعية ترفض الطلب عن طريق الرفع. `HTTPException` يجيب بالحالة التي أثرتها، مثل JSON لعملاء API (`Accept: application/json`) وكصفحة خطأ للمتصفحات. انظر [التصديق والأخطاء](../handlers/validation-and-errors.md).
+التبعية ترفض الطلب عن طريق الرفع. `HTTPException` يجيب بالحالة التي قمت بإثارتها، مثل JSON لعملاء API (`Accept: application/json`) وكصفحة خطأ للمتصفحات. انظر [التصديق والأخطاء](../handlers/validation-and-errors.md).
 
 ## الخطوات التالية
 
