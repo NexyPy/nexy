@@ -1,0 +1,38 @@
+name: Assign
+
+# Nothing sits unowned. Every issue and every pull request gets the maintainer
+# as soon as it exists, so the list answers "who is on this?" without asking.
+#
+# pull_request_target, not pull_request: a pull request from a fork gets a
+# read-only token there, and assigning needs write. No code from the pull
+# request is checked out or run, so the target context is safe here.
+on:
+  issues:
+    types: [opened, reopened]
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  assign:
+    name: Give it an owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Assign the maintainer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          OWNER: Espoir-Loem
+          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          IS_PULL_REQUEST: ${{ github.event_name == 'pull_request_target' }}
+        run: |
+          if [ "$IS_PULL_REQUEST" = "true" ]; then
+            gh pr edit "$NUMBER" --add-assignee "$OWNER"
+          else
+            gh issue edit "$NUMBER" --add-assignee "$OWNER"
+          fi
