@@ -142,4 +142,4 @@ async def delete_user(user_id: str, request: Request):
 
 - [API](../routing/fbr/handlers/README.md)：显式处理程序
 - [测试](testing.md#what-to-assert)：如何测试动作
-- [Config](../reference/config.md)：中间件和身份验证选项
+- [配置](../reference/config.md)：中间件和身份验证选项
