@@ -56,7 +56,7 @@ frontmatter 下面是带有 Jinja2 的 HTML。来自 frontmatter 的变量和属
 
 自动转义为 **off**：模板是项目自己的 HTML，因此 `{{ value }}` 按编写插入。使用 `{{ value | e }}` 自己逃避不受信任的值。 `| safe` 因此没有任何改变。
 
-> [！注意]
+> [!NOTE]
 > 将包含 `{{` 或 `{%` 的 JavaScript 包装在 `{% raw %}...{% endraw %}` 中。 Vue 和 Svelte 等框架使用相同的大括号。
 
 ## 组件
@@ -81,7 +81,7 @@ from nexy import Audio
 
 在属性 `<Icon path="{{ icon }}" size="{{ size }}" />` 内传递一个带有 Jinja 的计算值。诸如 `path=icon` 之类的裸名称是文本 `icon`，而不是变量。要为组件提供 CSS 类，请声明 `class_name` 属性：`class` 是 Python 关键字。
 
-> [！注意]
+> [!NOTE]
 > 辅助标签总是自动关闭的。将内容传递给 `Link` 会通过其 `children` 参数 (`<Link href="/about" children="About" />`)，而不是通过元素内容。
 
 ## 风格
