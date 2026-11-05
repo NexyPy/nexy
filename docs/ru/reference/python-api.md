@@ -61,7 +61,7 @@ HTTP-словарь обработчика. Импортируйте отсюд�
 | `revalidate` | сообщите браузеру, на каких страницах действие стало устаревшим |
 | `Module`, `Controller` | объявите модуль и контроллер в [модульном маршрутизаторе](../routing/modular/README.md) |
 | `Injectable`, `Container`, `Scope` | [внедрение зависимостей](../routing/modular/dependency-injection.md) и время его существования |
-| `UseGuard`, `Middleware` | защитите или оберните один обработчик, см. [guards](../routing/modular/guards-and-metadata.md) |
+| `UseGuard`, `Middleware` | защитите или оберните один обработчик, см. [гарды](../routing/modular/guards-and-metadata.md) |
 | `UseRoute`, `useRoute`, `RouteMeta` | назовите маршрут и опишите его для OpenAPI |
 | `UseResponse`, `ResponseMeta` | описывают ответ маршрута |
 | `HTTP_METHODS` | HTTP-методы, которые может определить файл-обработчик |
@@ -75,6 +75,6 @@ HTTP-словарь обработчика. Импортируйте отсюд�
 
 ## Где дальше
 
-- [Config](config.md): поля `use*` за этими именами.
+- [Конфигурация](config.md): поля `use*` за этими именами.
 - [Исключения и ошибки](exceptions.md): на что отвечает каждый сбой
 - [Указатель документации](../README.md): страница того, что вы создаете.
