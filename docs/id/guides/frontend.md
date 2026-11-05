@@ -67,5 +67,5 @@ Letakkan file statis di `public/` - file tersebut disajikan dari `/` dalam penge
 ## Langkah selanjutnya
 
 - [Tampilan](../views/README.md): pilih format halaman
-- [Config](../reference/config.md): `useFF`, `useVite`, alias
-- [Deploy](../deployment/README.md): apa yang dihasilkan oleh build
+- [Konfigurasi](../reference/config.md): `useFF`, `useVite`, alias
+- [Penerapan](../deployment/README.md): apa yang dihasilkan oleh build
