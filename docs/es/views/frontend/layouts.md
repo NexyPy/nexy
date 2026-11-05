@@ -8,7 +8,7 @@ Los diseños siguen una estructura jerárquica basada en el árbol de directorio
 
 1.  **Diseño raíz**: Cada proyecto tiene un diseño raíz (por ejemplo, `src/routes/layout.nexy`). Este es el único diseño responsable de definir el shell del documento: `<html>`, `<head>` y `<body>`.
 2.  **Diseños anidados**: cualquier carpeta puede contener su propio archivo `layout.*`. Este diseño envuelve todas las páginas y subdiseños dentro de esa carpeta.
-3.  **Herencia**: Una página está empaquetada por todos los diseños desde la raíz hasta su propia carpeta.
+3.  **Herencia**: una página está empaquetada por todos los diseños desde la raíz hasta su propia carpeta.
 
 ## Estado compartido y composición
 
@@ -25,8 +25,8 @@ Para las rutas preprocesadas (SSG), el diseño raíz no puede depender de datos 
 
 La implementación de ranuras y anidamientos varía ligeramente según el marco. Consulte la guía **Diferencias** para la tecnología elegida:
 
-- [Reaccionar diferencias](../react/differences.md)
-- [Diferencias de Vue](../vue/differences.md)
-- [Diferencias esbeltas](../svelte/differences.md)
-- [Diferencias sólidas](../solid/differences.md)
-- [Diferencias previas](../preact/differences.md)
+- [React Diferencias](../react/differences.md)
+- [Vue Diferencias](../vue/differences.md)
+- [Svelte Diferencias](../svelte/differences.md)
+- [Solid Diferencias](../solid/differences.md)
+- [Preact Diferencias](../preact/differences.md)
