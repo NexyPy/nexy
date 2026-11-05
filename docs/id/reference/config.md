@@ -119,4 +119,4 @@ Bidang ini ada di `NexyConfigModel` tetapi tidak ada kode yang menggunakannya. M
 
 - [i18n](../guides/i18n.md): internasionalisasi
 - [Frontend](../guides/frontend.md): `useFF` dan build klien
-- [Deploy](../deployment/README.md): opsi produksi
+- [Penerapan](../deployment/README.md): opsi produksi
