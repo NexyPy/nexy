@@ -67,5 +67,5 @@ Vite обрабатывает клиентский пакет; SSR HTML созд
 ## Следующие шаги
 
 - [Просмотры](../views/README.md): выберите формат страницы.
-- [Config](../reference/config.md): `useFF`, `useVite`, псевдонимы
-- [Deploy](../deployment/README.md): что производит сборка
+- [Конфигурация](../reference/config.md): `useFF`, `useVite`, псевдонимы
+- [Развёртывание](../deployment/README.md): что производит сборка
