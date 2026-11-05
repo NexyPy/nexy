@@ -4,8 +4,8 @@
 
 | ضرورت | کیوں |
 |---|---|
-| Python 3.12+ | `requires-python` `pyproject.toml` | میں
-| [uv](https://docs.astral.sh/uv/) | پروجیکٹ بناتا ہے، اس کے پیکجز انسٹال کرتا ہے اور Nexy چلاتا ہے |
+| Python 3.12+ | `requires-python` میں `pyproject.toml` |
+| [uv](https://docs.astral.sh/uv/) | پروجیکٹ بناتا ہے، اس کے پیکجز انسٹال کرتا ہے اور Nexy چلاتا ہے۔ |
 | Node.js 18+ | صرف کلائنٹ فریم ورک کے لیے (React، Vue، Svelte، Solid، Preact) |
 
 کلائنٹ فریم ورک کے بغیر کسی پروجیکٹ کو Node.js کی ضرورت ہی نہیں ہے۔
@@ -46,10 +46,10 @@ uvx nexy new my-app --template <name>
 
 پروجیکٹ فولڈر سے فی ٹرمینل ایک بار اسے چالو کریں:
 
-| شیل | کمانڈ |
+| شیل | حکم |
 |---|---|
 | پاور شیل، سی ایم ڈی (ونڈوز) | `.venv\Scripts\activate` |
-| macOS، Linux | `source .venv/bin/activate` |
+| میکوس، لینکس | `source .venv/bin/activate` |
 
 اس کے بعد پرامپٹ `(.venv)` سے شروع ہوتا ہے۔ وہاں سے:
 
