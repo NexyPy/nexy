@@ -83,7 +83,7 @@ Chaque appel et chaque statut garde ses deux réponses :
 
 `unauthorized(scheme="Bearer")` ajoute `WWW-Authenticate: Bearer` aux deux réponses. Un détail construit à partir de la saisie de l'utilisateur est échappé en HTML dans la page.
 
-> [!ASTUCE]
+> [!TIP]
 > `Accept: */*`, la valeur par défaut de `curl` et de nombreuses bibliothèques HTTP, ne demande ni l'une ni l'autre et reçoit la page HTML. Ajoutez `-H "Accept: application/json"` lorsque vous voulez la réponse JSON.
 
 ## Vérifiez-le
