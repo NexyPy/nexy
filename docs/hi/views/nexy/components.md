@@ -28,7 +28,7 @@ from nexy import Audio
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, एक वास्तविक बूलियन |
 | `width=640` | `width=640`, एक संख्या |
-| `src="{{ url }}"` | `src=(url)`, Jinja | में मूल्यांकन किया गया
+| `src="{{ url }}"` | `src=(url)`, Jinja में मूल्यांकन किया गया |
 | कोई अन्य `value` | `"value"`, एक स्ट्रिंग |
 
 - टैग को बड़े अक्षर से शुरू होना चाहिए और फ्रंटमैटर में आयात किया जाना चाहिए; अन्यथा संकलक उठाता है `Missing Import: <Name> used but not declared.`
