@@ -35,16 +35,59 @@ An outer layout draws the frame and an outer dependency decides who may come in 
 first means the inner ones can rely on them: a directory that requires authentication runs before a
 handler that reads the user.
 
+The `(shop)` dependency of the tree checks the cart cookie, so the cart dependency below it can read
+the cart without checking again:
+
+```python filename="src/routes/(shop)/dependencies.py"
+from nexy.http import HTTPException, Request
+
+
+def require_cart(request: Request) -> None:
+    if "cart" not in request.cookies:
+        raise HTTPException(status_code=400, detail="No cart")
+
+
+dependencies = [require_cart]
+```
+
 ## Layouts
 
 All layout files of a folder family stack: see [Layouts](layouts/README.md). Different families do
 not mix: a `layout.vue` never wraps a `.tsx` page, and a project has either `layout.nexy` or client
 layouts, never both ([modes](modes.md)).
 
+The innermost layout of the tree only adds its own frame: the root layout around it still draws the
+document.
+
+```nexy filename="src/routes/(shop)/cart/layout.nexy"
+---
+children: prop[NexyElement]
+---
+<section class="cart">
+  <h2>Your cart</h2>
+  {{ children | safe }}
+</section>
+```
+
 ## Middleware files
 
 See [Middleware files](middleware/README.md): they run before dependencies and can answer
 without reaching the route.
+
+A root `middleware.py` wraps every route of the tree, the cart included:
+
+```python filename="src/routes/middleware.py"
+import time
+
+from nexy.http import Request
+
+
+async def middleware(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    response.headers["x-time-ms"] = f"{(time.perf_counter() - start) * 1000:.1f}"
+    return response
+```
 
 ## Dependencies
 
@@ -55,6 +98,16 @@ and `@Middleware`.
 
 `notfound.nexy` and `errors.nexy` are installed once at the routes root; a copy in a subdirectory
 refines the page for that prefix. See [Error pages](errors/README.md).
+
+A copy in `cart/` answers the 404s under `/cart`, and the root one keeps the rest:
+
+```nexy filename="src/routes/(shop)/cart/notfound.nexy"
+---
+title: Product not found
+---
+<h1>This product is gone</h1>
+<p><a href="/cart">Back to your cart</a></p>
+```
 
 ## Next steps
 
