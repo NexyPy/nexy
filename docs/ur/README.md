@@ -2,21 +2,21 @@
 
 **فل اسٹیک ویب ایپلیکیشنز کے لیے ایک Python فریم ورک۔**
 
-Nexy ایک Python بیک اینڈ اور براؤزر فرنٹ اینڈ کے درمیان سیون کے بارے میں ہے۔ دو سرورز، دو بلڈ سسٹمز اور دو روٹ ٹیبلز کے بجائے، آپ کو ایک اصل ملتا ہے: FastAPI اور Starlette ایپلی کیشن کو پیش کرتا ہے، Vite کلائنٹ بناتا ہے، اور `src/routes/` کے نیچے فائل ایک روٹ ہے - `.nexy` ایک صفحہ ہے، `.py` ایک API ہینڈلر ہے۔
+Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ میں رکھتا ہے، جو ایک سرور کے ذریعے پیش کیا جاتا ہے۔ ورژن 2.2 FastAPI پر بنایا گیا ہے: ہر API روٹ ایک FastAPI روٹ ہے، ایک OpenAPI اسکیما میں درج ہے جسے اسکیلر `/docs` پر دکھاتا ہے۔
 
-- **Python پہلے۔** صفحات، اختتامی نکات، شکلیں اور اعمال Python ہیں، اور سرور کے ذریعے پیش کردہ صفحہ کو فرنٹ اینڈ فریم ورک کی ضرورت نہیں ہے۔
-- **تین راؤٹرز، ایک انضمام۔** فائل پر مبنی، ماڈیولر، یا موجودہ FastAPI `APIRouter`۔
-- **ایک فرنٹ اینڈ جب آپ چاہتے ہیں** React، Vue، Svelte، Solid یا Preact، فی صفحہ جزائر کے طور پر، یا کلائنٹ موڈ میں پورے پروجیکٹ کے لیے۔
-- **رینڈرنگ، ایک ماڈل** سرور رینڈرنگ، کیشڈ صفحات اور جزائر فی صفحہ طے کیے جاتے ہیں۔ کلائنٹ روٹنگ ایک پروجیکٹ سوئچ ہے۔
-- **ٹائپ شدہ اعمال** ایک فارم پوسٹ اور ایک ٹائپ شدہ کلائنٹ کال اسی Python فنکشن تک پہنچتی ہے۔
+- **Python پہلے** صفحات، اختتامی نقطے، شکلیں اور اعمال Python ہیں، اور کسی صفحہ کو JavaScript کی ضرورت نہیں ہے۔
+- **ایک فرنٹ اینڈ جب آپ چاہتے ہیں کہ** React، Vue، Svelte، Solid یا Preact، ایک جزو کے لیے یا پوری سائٹ کے لیے۔
+- **ایک فائل، ایک URL** `src/routes/` کے تحت فائل ایک روٹ ہے: `.nexy` ایک صفحہ ہے، `.py` ایک API اینڈ پوائنٹ ہے۔
+- **بڑھنے کے لیے کمرہ** ایک فائل سے شروع کریں۔ جب پروجیکٹ بڑھتا ہے تو ماڈیولز پر جائیں، یا موجودہ FastAPI روٹر میں پلگ ان کریں۔
 
-`src/routes/` کے تحت ایک فائل سے شروع کریں، اور جب پروجیکٹ بڑھے تو ڈھانچہ شامل کریں۔
+یہاں نیا؟ پڑھیں [Nexy کیا ہے؟](getting-started/what-is-nexy.md)، پھر [کوئیک اسٹارٹ](getting-started/quick-start.md)۔
 
 ## شروع کرنا
 
 ### پہلے اقدامات
 | صفحہ | آپ کیا کریں گے |
 |---|---|
+| [Nexy کیا ہے؟](getting-started/what-is-nexy.md) | جانیں کہ Nexy کیا ہے، یہ کس چیز پر بنایا گیا ہے اور آپ کو کیا ملتا ہے۔ |
 | [تنصیب](getting-started/installation.md) | uv اور Nexy CLI انسٹال کریں، پھر اپنا پہلا پروجیکٹ بنائیں |
 | [فوری آغاز](getting-started/quick-start.md) | ایک پروجیکٹ بنائیں، اسے لائیو ری لوڈ کے ساتھ چلائیں، اور اسے پروڈکشن کے لیے بنائیں |
 | [سبق ](getting-started/tutorial.md) | 10 منٹ میں اختتامی نقطہ، مشترکہ ڈیٹا اور پروڈکشن کی تعمیر کے ساتھ نوٹس کا صفحہ بنائیں |
@@ -25,11 +25,9 @@ Nexy ایک Python بیک اینڈ اور براؤزر فرنٹ اینڈ کے د
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [بنیادی تصورات ](getting-started/core-concepts.md) | ذہنی ماڈل حاصل کریں: راستہ، صفحہ، منظر، جزو، ہینڈلر، اختتامی نقطہ |
-| [Nexy کیسے کام کرتا ہے](getting-started/how-nexy-works.md) | یو آر ایل سے اس فائل کی ایک درخواست پر عمل کریں جو اس کا جواب دیتی ہے۔ |
-| [فن تعمیر ](architecture.md) | جانیں کہ کون سی پرت کیا کرتی ہے، اور Nexy آپ کی ایپلیکیشن میں کیا چھوڑتا ہے۔ |
-| [پروجیکٹ کا ڈھانچہ ](getting-started/project-structure.md) | جانیں کہ پروجیکٹ میں ہر فولڈر اور فائل کس کے لیے ہے۔ |
+| [منصوبے کا ڈھانچہ ](getting-started/project-structure.md) | جانیں کہ پروجیکٹ میں ہر فولڈر اور فائل کس کے لیے ہے۔ |
 | [ایک راؤٹر کا انتخاب کریں ](routing/README.md) | فائل پر مبنی، ماڈیولر یا کسٹم راؤٹر کا انتخاب کریں۔ |
-| [ویو فارمیٹ کا انتخاب کریں](views/README.md) | کسی صفحہ کے لیے `.nexy`، Markdown یا کلائنٹ کا فریم ورک چنیں۔ |
+| [ویو فارمیٹ کا انتخاب کریں](views/README.md) | کسی صفحے کے لیے `.nexy`، Markdown یا کلائنٹ کا فریم ورک چنیں۔ |
 
 ### کہیں اور سے آرہا ہے۔
 | صفحہ | آپ کیا کریں گے |
@@ -44,21 +42,21 @@ Nexy ایک Python بیک اینڈ اور براؤزر فرنٹ اینڈ کے د
 | [فائل پر مبنی روٹنگ](routing/fbr/README.md) | فائل کے راستے کو URL میں تبدیل کریں۔ |
 | [صفحات](routing/fbr/pages/README.md) | ایک صفحہ لکھیں۔ |
 | [متحرک راستے](routing/fbr/pages/dynamic-routes.md) | `[slug]`، `[...path]` اور روٹ گروپس کا استعمال کریں۔ |
-| [صفحہ میٹا ڈیٹا ](routing/fbr/pages/metadata.md) | صفحہ کا عنوان، تفصیل اور تصویر شیئر کریں {new} |
+| [صفحہ میٹا ڈیٹا](routing/fbr/pages/metadata.md) | صفحہ کا عنوان، تفصیل اور تصویر کا اشتراک کریں {new} |
 | [لے آؤٹ ](routing/fbr/layouts/README.md) | صفحات کے درمیان ایک فریم کا اشتراک کریں |
 | [وراثت](routing/fbr/inheritance.md) | لے آؤٹ، انحصار اور خرابی والے صفحات کا ریزولوشن آرڈر پڑھیں |
 | [سرور موڈ اور کلائنٹ موڈ](routing/fbr/modes.md) | `useCSR`، اور ہر موڈ کی اجازت دیتا ہے۔ |
 | [لنک کرنا اور نیویگیٹ کرنا](routing/fbr/navigation/linking-and-navigating.md) | صفحات کو لنک کریں، کلائنٹ پر نیویگیٹ کریں، پری فیچ کریں۔ |
-| [ہکس](routing/fbr/navigation/hooks.md) | راستہ، استفسار، کوکیز اور سیشن پڑھیں |
+| [کانٹے](routing/fbr/navigation/hooks.md) | راستہ، استفسار، کوکیز اور سیشن پڑھیں |
 
 ### ہینڈلر اور غلطیاں {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [روٹ ہینڈلر](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
-| [توثیق اور غلطیاں](routing/fbr/handlers/validation-and-errors.md) | جواب دیں `422` اور `404`، اور بلند کریں `HTTPException` |
+| [توثیق اور غلطیاں](routing/fbr/handlers/validation-and-errors.md) | جواب دیں `422` اور `404`، اور ایک `HTTPException` اٹھائیں |
 | [WebSocket ہینڈلر](routing/fbr/realtime/websocket.md) | ایک `SOCKET` کنکشن کو ہینڈل کریں۔ |
 | [انحصار اور محافظ ](routing/fbr/dependencies/README.md) | ہینڈلر سے پہلے `dependencies.py` چلائیں، اور اسے وارث بنائیں |
-| [مڈل ویئر فائلیں](routing/fbr/middleware/README.md) | درخواستوں کو `middleware.py` کے ساتھ لپیٹنا، ڈائرکٹری سے وراثت میں ملا |
+| [مڈل ویئر فائلیں](routing/fbr/middleware/README.md) | ڈائرکٹری سے وراثت میں ملنے والی درخواستوں کو `middleware.py` کے ساتھ لپیٹیں۔ |
 | [خرابی صفحات](routing/fbr/errors/README.md) | `notfound.nexy`، `errors.nexy` اور JSON کی غلطیوں کے ساتھ جواب دیں۔ |
 | [خامی صفحات فی فولڈر](routing/fbr/errors/folder-pages.md) | ایج کیس: ذیلی فولڈرز سے غلطیاں |
 
@@ -66,9 +64,9 @@ Nexy ایک Python بیک اینڈ اور براؤزر فرنٹ اینڈ کے د
 کنٹرولرز اور ماڈیولز۔
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [ماڈیولر روٹنگ](routing/modular/README.md) | ماؤنٹ کنٹرولرز اور ماڈیولز |
+| [ماڈیولر روٹنگ ](routing/modular/README.md) | ماؤنٹ کنٹرولرز اور ماڈیولز |
 | [انحصار انجکشن](routing/modular/dependency-injection.md) | خدمات، ان کے دائرہ کار اور کنٹینر کی وضاحت کریں۔ |
-| [گارڈز اور میٹا ڈیٹا](routing/modular/guards-and-metadata.md) | راستوں کی حفاظت اور دستاویز کریں۔ |
+| [گارڈز اور میٹا ڈیٹا ](routing/modular/guards-and-metadata.md) | راستوں کی حفاظت اور دستاویز کریں۔ |
 | [ماڈیولر روٹر بمقابلہ NestJS](routing/modular/vs-nestjs.md) | کے ساتھ موازنہ NestJS |
 
 ### حسب ضرورت روٹر انضمام {custom}
@@ -126,7 +124,7 @@ Nexy ایک Python بیک اینڈ اور براؤزر فرنٹ اینڈ کے د
 |---|---|
 | [مڈل ویئر اور سیکورٹی](guides/middleware-and-security.md) | CORS، GZip، قابل اعتماد میزبان اور سیشنز ترتیب دیں۔ |
 | [تعیناتی](deployment/README.md) | بنائیں، کنٹینر بنائیں اور سرو کریں۔ |
-| [کارکردگی](deployment/performance.md) | ڈیفالٹس کی پیمائش اور ٹیون کریں۔ |
+| [کارکردگی ](deployment/performance.md) | ڈیفالٹس کی پیمائش اور ٹیون کریں۔ |
 
 ### بنائیں اور ٹیسٹ کریں۔
 | صفحہ | آپ کیا کریں گے |
@@ -138,7 +136,7 @@ Nexy ایک Python بیک اینڈ اور براؤزر فرنٹ اینڈ کے د
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [دیو ٹول بار](guides/devtools.md) | `nexy dev` کا ٹول بار استعمال کریں، اور اسے آف کریں۔ |
-| [کوڈنگ ایجنٹس](guides/ai-agents.md) | اپنے پروجیکٹ کے قوانین Claude Code، Codex اور OpenCode بتائیں |
+| [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قوانین Claude Code، Codex اور OpenCode کو بتائیں |
 | [خرابیوں کا سراغ لگانا](guides/troubleshooting.md) | لوگوں کے پہلے مسائل کو حل کریں۔ |
 
 ## حوالہ
@@ -166,9 +164,8 @@ Nexy ایک Python بیک اینڈ اور براؤزر فرنٹ اینڈ کے د
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -195,10 +192,11 @@ docs/
 
 ## اعلی درجے کی
 
-### اعلی درجے کی {advanced}
+### ترقی یافتہ {advanced}
 
 | صفحہ | آپ کیا کریں گے |
 |---|---|
+| [Nexy کیسے کام کرتا ہے](getting-started/how-nexy-works.md) | دیکھیں کہ فائل اور صفحہ کے درمیان کیا ہوتا ہے، اور Nexy آپ کے لیے کیا چھوڑتا ہے۔ |
 | [2.2 تک اپ گریڈ کرنا](getting-started/upgrading.md) | 2.1 سے 2.2 تک منتقل کریں۔ |
 | [بین الاقوامی کاری (i18n)](guides/i18n.md) | اپنی پسند کی لائبریری کے ساتھ ترجمے شامل کریں۔ |
 | [ترکیبیں](guides/recipes.md) | مثالیں اور نمونے، ٹیوٹوریل نہیں۔ |
