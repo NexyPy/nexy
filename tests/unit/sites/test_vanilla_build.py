@@ -435,6 +435,14 @@ class TestUsability:
         build.build(tmp_path, base="")
         assert 'href="/assets/style.css"' in (tmp_path / "404.html").read_text(encoding="utf-8")
 
+    def test_a_wrong_address_speaks_the_language_of_its_folder(self):
+        page = build.not_found_html("")
+        assert '"fr":{"lost_title":"Cette page n\'existe pas"' in page
+
+    def test_the_words_of_the_wrong_address_page_are_marked(self):
+        page = build.not_found_html("")
+        assert all(f'data-i18n="{key}"' in page for key in ("lost_title", "lost_text", "lost_link"))
+
     def test_the_base_is_normalised(self):
         assert [build.base_of(x) for x in ("", "/", "nexy", "/nexy", "/nexy/")] == [
             "/",
