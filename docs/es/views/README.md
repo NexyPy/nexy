@@ -54,7 +54,7 @@ class NexyConfig(NexyConfigModel):
 
 Con un marco habilitado, Vite maneja sus paquetes de clientes. En modo cliente sus extensiones se convierten en rutas; en el modo servidor, los mismos archivos son componentes que usted importa como islas; allí se rechaza un archivo de marco en `src/routes/`. Consulte [modo servidor y modo cliente](../routing/fbr/modes.md).
 
-> [!NOTA]
+> [!NOTE]
 > en el modo [CSR](../rendering/csr.md), solo los archivos de ruta del marco son navegables en el lado del cliente.
 
 ## Diseños
