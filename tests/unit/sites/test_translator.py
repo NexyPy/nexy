@@ -312,3 +312,24 @@ class TestStrayed:
 
     def test_an_answer_with_other_lines_is_left_to_the_other_checks(self):
         assert translator.strayed("a [[1]] b", "a [[1]]\nb") is None
+
+
+class TestOutward:
+    def test_a_link_out_of_docs_becomes_an_address_on_github(self):
+        text = translator.outward("[log](../../CHANGELOG.md)", "getting-started/upgrading.md")
+        assert text == f"[log]({translator.REPOSITORY}CHANGELOG.md)"
+
+    def test_a_link_out_of_docs_keeps_its_fragment(self):
+        text = translator.outward("[log](../../CHANGELOG.md#v2)", "guides/testing.md")
+        assert text == f"[log]({translator.REPOSITORY}CHANGELOG.md#v2)"
+
+    def test_a_link_inside_docs_stays_relative(self):
+        assert translator.outward("[a](../guides/a.md)", "rendering/b.md") == "[a](../guides/a.md)"
+
+    def test_an_address_stays_as_it_is(self):
+        link = "[a](https://example.com/x)"
+        assert translator.outward(link, "guides/a.md") == link
+
+    def test_a_link_inside_a_code_fence_is_code(self):
+        fence = "```md\n[log](../../CHANGELOG.md)\n```\n"
+        assert translator.outward(fence, "guides/a.md") == fence
