@@ -1,13 +1,11 @@
-# Réagir
+# React
 
-Nexy restitue les composants React 19 sur le serveur, puis React les hydrate dans le navigateur. Pages,
-les dispositions, les îlots et les actions sont les mêmes dans chaque framework : cette page couvre la configuration, puis les parties
-qui diffèrent des [contrats partagés](../frontend/pages.md).
+Nexy restitue React 19 composants sur le serveur, puis React les hydrate dans le navigateur. Les pages, mises en page, îlots et actions sont les mêmes dans tous les frameworks : cette page couvre la configuration, puis les parties qui diffèrent des [contrats partagés](../frontend/pages.md).
 
 | Mode | `nexyconfig.py` | Les pages sont | React est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Client | `useCSR = True` | `.tsx` fichier | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
+| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
 
 ## Démarrer un projet
 
@@ -15,9 +13,7 @@ qui diffèrent des [contrats partagés](../frontend/pages.md).
 nx new my-app --template web-fbr-react
 ```
 
-Le modèle est un projet en mode serveur avec des îlots React. Exécutez `nx new my-app` sans modèle pour
-répondez plutôt aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis
-le cadre.
+Le modèle est un projet en mode serveur avec React îles. Exécutez `nx new my-app` sans modèle pour répondre aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis le framework.
 
 ## Activer React dans un projet existant
 
@@ -44,7 +40,7 @@ export default defineConfig({
 
 `nx new` écrit ce fichier ; Nexy écrit lui-même `__nexy__/vite.ts`, alors ne le modifiez pas.
 
-| Package | Version `nx new` écrit |
+| Le package | Version `nx new` écrit |
 |---|---|
 | `react`, `react-dom` | `^19.2.5` |
 | `@vitejs/plugin-react` | `^5.2.0` |
@@ -52,22 +48,18 @@ export default defineConfig({
 
 ## Règles
 
-- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [react(), vue()]` s'arrête
-  le serveur au démarrage.
-- **Les pages sont `.tsx`.** React possède `.tsx` et `.jsx` pour les composants, mais seulement un fichier `.tsx` sous
-  `src/routes/` devient une page.
+- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [react(), vue()]` arrête le serveur au démarrage.
+- **Les pages sont `.tsx`.** React possède `.tsx` et `.jsx` pour les composants, mais seul un fichier `.tsx` sous `src/routes/` devient une page.
 - **Les composants se trouvent à l'extérieur de `src/routes/`**, généralement dans `src/components/`, ce ne sont donc pas des pages.
-- **Un projet en mode serveur n'a pas de `.tsx` page**, et un projet en mode client n'a pas de page `.nexy` : Nexy
-  refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
+- **Un projet en mode serveur n'a pas de page `.tsx`**, et un projet en mode client n'a pas de page `.nexy` : Nexy refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
 
 ## Pages
 
 En mode client (`useCSR = True`), une page est un fichier `.tsx`.
 
-### Composant Page
+### Composant de page
 
-Une page est l'exportation par défaut du fichier. Si aucun export par défaut n'existe, Nexy sélectionne le premier nommé
-exporter.
+Une page est l'exportation par défaut du fichier. Si aucune exportation par défaut n'existe, Nexy sélectionne la première exportation nommée.
 
 ```tsx filename="src/routes/index.tsx"
 export default function Home() {
@@ -88,7 +80,7 @@ export default function Post() {
 }
 ```
 
-## Mise en page
+## Mises en page
 
 ### Mise en œuvre
 
@@ -128,7 +120,7 @@ Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate
 - `client:load` (par défaut) : immédiatement
 - `client:idle` : lorsque le navigateur est inactif
 - `client:visible` : lorsqu'il défile dans la vue
-- `client:media` : lorsque la requête média correspond
+- `client:media` : lorsque la requête multimédia correspond
 
 ## Actions et navigation
 
@@ -164,14 +156,14 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Accès URL
+### Accès aux URL
 
 - `usePathname()` : chemin actuel
 - `useParams()` : segments dynamiques
 - `useSearchParams()` : chaîne de requête
 - `useLocation()` : objet de localisation complet
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et la build client
+- [Frontend](../../guides/frontend.md) : Vite et le build client
