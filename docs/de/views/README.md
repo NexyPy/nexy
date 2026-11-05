@@ -31,7 +31,7 @@ API handler                  →  .py        (GET, POST, …)
 | `.vue` | [Vue](vue/differences.md) | Client-Modus: das Framework, gerendert in Knoten | Vue | SFC-Routen |
 | `.svelte` | [Svelte](svelte/differences.md) | Client-Modus: das Framework, gerendert in Knoten | Svelte | SFC-Routen |
 
-Eingebaute `Image`-, `Link`-, `Audio`-, `Video`- und `Import`-Helfer: [Components](nexy/components.md).
+Eingebaute `Image`-, `Link`-, `Audio`-, `Video`- und `Import`-Helfer: [Komponenten](nexy/components.md).
 
 ## Formate mischen
 
