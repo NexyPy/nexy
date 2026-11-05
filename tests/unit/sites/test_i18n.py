@@ -120,3 +120,14 @@ class TestPreferred:
 
     def test_no_header_reads_english(self):
         assert i18n.preferred("") == "en"
+
+
+class TestIsolate:
+    def test_a_code_heading_on_an_arabic_page_reads_left_to_right(self):
+        assert i18n.isolate("src/routes/", "ar") == ' dir="ltr"'
+
+    def test_an_arabic_heading_keeps_the_page_direction(self):
+        assert i18n.isolate("المستوى الأعلى", "ar") == ""
+
+    def test_a_left_to_right_page_needs_nothing(self):
+        assert i18n.isolate("src/routes/", "fr") == ""
