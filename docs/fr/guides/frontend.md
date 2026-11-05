@@ -46,7 +46,7 @@ Le navigateur ne parle qu'au port `3000`. Il n'y a pas de deuxième URL à ouvri
 
 Vite gère le bundle client ; Le HTML SSR est produit par fichier par esbuild.
 
-> [!REMARQUE]
+> [!NOTE]
 > une route dont le rendu du serveur échoue est signalée comme une route réservée au client au lieu d'échouer toute la construction.
 
 ## Stylisme
