@@ -6,7 +6,7 @@ Im Gegensatz zu dateibasierten und modularen Routern, die in Nexy integriert sin
 
 ## Wann sollte ein benutzerdefinierter Router verwendet werden?
 
-- **Drittanbieterdienste**: Sie verfügen über eine bestehende FastAPI-App, die Sie über den Nexy-Client verfügbar machen möchten.
+- **Dienste von Drittanbietern**: Sie haben eine bestehende FastAPI App, die Sie über den Nexy-Client verfügbar machen möchten.
 - **Code-Wiederverwendung**: Backend-Logik aus einem anderen Projekt in einen Router extrahieren und in ein neues einbinden.
 - **Multi-Tenant- oder Micro-Frontend-Muster**: Jeder Mandant oder jedes Modul stellt seinen eigenen Router bereit.
 - **Schrittweise Migration**: Beginnen Sie mit einem `APIRouter` und entwickeln Sie es später zu einem vollständigen Nexy-Modul weiter.
@@ -29,7 +29,7 @@ useRouter = third_party
 
 Der Router wird automatisch vom Router-Resolver von Nexy gemountet. Die Routen sind unter demselben URL-Muster wie in der Original-App verfügbar. Es ist keine zusätzliche Konfiguration erforderlich.
 
-## Einen benutzerdefinierten Router erstellen
+## Erstellen eines benutzerdefinierten Routers
 
 1. **Erstellen Sie den Router**
    „Python
@@ -62,11 +62,11 @@ Ein Nexy-Projekt kann Folgendes kombinieren:
 
 Alle drei existieren nebeneinander; Jede Route wird nur einmal registriert. Der dateibasierte Router wird immer gescannt, wenn `src/routes/` vorhanden ist.
 
-## CLI-Zugriff auf die enthaltene App
+## CLI-Zugriff auf die mitgelieferte App
 
 Die Befehle `nexy dev` und `nx` funktionieren auf dem gemounteten Router genau wie bei einem integrierten Router. Sie erhalten:
 
-- Hot-Reload für Endpunkte, die im benutzerdefinierten Router definiert sind (wenn dieser `nexy` oder die üblichen Entwicklungsserverfunktionen von FastAPI verwendet)
+- Hot-Reload für Endpunkte, die im benutzerdefinierten Router definiert sind (wenn dieser die üblichen Entwicklungsserverfunktionen von `nexy` oder FastAPI verwendet)
 - Validierung in `nexyconfig.py` (alle `APIRouter` Werke)
 - Automatisch generierte Dokumente für die enthaltenen Routen (sofern Sie sie aktivieren)
 
@@ -74,13 +74,13 @@ Die Befehle `nexy dev` und `nx` funktionieren auf dem gemounteten Router genau w
 
 Da der Router im Lieferumfang enthalten und nicht über `app.mount` gemountet ist, gibt es keine zusätzliche ASGI-Schicht. Der Router befindet sich im selben Anwendungsobjekt wie Ihre dateibasierten und modularen Routen. Das bedeutet:
 
-- Die vom benutzerdefinierten Router hinzugefügte Middleware gilt für alle Anfragen.
-- Im benutzerdefinierten Router definierte Schutzvorrichtungen und Abhängigkeitsinjektionen können auf denselben Container wie Ihr eigener Code zugreifen (wenn Sie modulare Injektion verwenden).
+- Vom benutzerdefinierten Router hinzugefügte Middleware gilt für alle Anforderungen.
+- Im benutzerdefinierten Router definierte Guards und Abhängigkeitsinjektionen können auf denselben Container zugreifen wie Ihr eigener Code (wenn Sie modulare Injektion verwenden).
 - Es gibt kein anderes URL-Präfix als das, was der Router selbst definiert.
 
-Wenn Sie eine Isolierung benötigen, binden Sie den Router in eine Unteranwendung ein, bevor Sie ihn einbinden, oder verwenden Sie Standard-FastAPI-Techniken.
+Wenn Sie eine Isolierung benötigen, binden Sie den Router in eine Unteranwendung ein, bevor Sie ihn einbinden, oder verwenden Sie Standardtechniken FastAPI.
 
-## Beispiel: Einbinden eines vorhandenen FastAPI-Projekts
+## Beispiel: Einbinden eines bestehenden FastAPI-Projekts
 
 Angenommen, Sie haben `auth.py` in einem anderen Paket:
 
@@ -107,17 +107,17 @@ useRouter = api
 
 Der `/login`-Endpunkt ist jetzt von Ihrer Nexy-Site aus erreichbar, ohne eine Codezeile verschieben zu müssen.
 
-## Wie man anfängt
+## Wie fange ich an?
 
 1. Erstellen Sie Ihr `APIRouter` (oder suchen Sie eines in einem vorhandenen Paket).
 2. Zeigen Sie `useRouter` darauf in `nexyconfig.py`.
 3. Greifen Sie über Ihre Seiten, Handler oder Client-Frameworks auf seine Routen zu.
-4. Wenn Sie mehr Kontrolle benötigen, wandeln Sie den benutzerdefinierten Router mit `AppModule` in einen modularen Router um.
+4. Wenn Sie mehr Kontrolle benötigen, wandeln Sie den benutzerdefinierten Router mithilfe von `AppModule` in einen modularen Router um.
 
 ## Nächste Schritte
 
 - [Dateibasiertes Routing](../fbr/README.md) – Erstellen Sie Seiten und einfache Handler aus Dateien.
-- [Modulares Routing](../modular/README.md) – Strukturierte Backends mit Injektion und Wachen.
-- [Routenhandler](../fbr/handlers/README.md) – Definieren Sie Python-Endpunkte.
+- [Modulares Routing](../modular/README.md) – Strukturierte Backends mit Injektion und Schutzvorrichtungen.
+- [Routenhandler](../fbr/handlers/README.md) – Definieren Sie Python Endpunkte.
 
 Der benutzerdefinierte Router bietet Ihnen die Flexibilität, vorhandenen FastAPI-Code wiederzuverwenden und gleichzeitig die Einfachheit dateibasierter Seiten und die modulare Struktur beizubehalten.
