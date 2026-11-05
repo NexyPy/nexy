@@ -51,9 +51,9 @@ Die Datei im Routen-Stammverzeichnis beantwortet das gesamte Projekt; Eine Kopie
 | Situation | Antwort |
 |---|---|
 | Keine Routenübereinstimmungen | `404` |
-| Ein dynamisches Segment kann nicht in seine Annotation konvertiert werden | `404` |
-| Eine nicht behandelte Ausnahme in einer Seite oder einem API-Handler | `500` |
-| `raise HTTPException(status_code=403)` | der von Ihnen angegebene Status, als HTML oder JSON |
+| Ein dynamisches Segment kann nicht in seine Anmerkung konvertiert werden | `404` |
+| Eine nicht behandelte Ausnahme auf einer Seite oder einem API-Handler | `500` |
+| `raise HTTPException(status_code=403)` | den Status, den Sie angehoben haben, als HTML oder JSON |
 | `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, von überall in einer Anfrage |
 | `redirect()`, `permanentRedirect()` | eine echte Weiterleitung ohne Fehlerseite |
 
@@ -77,13 +77,13 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| Anrufen | Antworten |
+| Rufen Sie an | Antwort |
 |---|---|
-| `redirect(url)` | `307`; `redirect(url, status=303)` verwandelt einen POST in ein GET nach einem Formular |
+| `redirect(url)` | `307`; `redirect(url, status=303)` wandelt einen POST nach einem Formular in ein GET um |
 | `permanentRedirect(url)` | `308`; Browser und Suchmaschinen erinnern sich daran |
 | `notFound(detail=None)` | `404`: die Seite `notfound` oder JSON für einen API-Client |
 | `forbidden(detail=None)` | `403`: Der Besucher ist bekannt, sieht dies aber möglicherweise nicht |
-| `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` fügt `WWW-Authenticate` | hinzu
+| `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` fügt hinzu `WWW-Authenticate` |
 
 Eine Weiterleitung antwortet mit dem Header `Location` und ohne Seite, auch an einen API-Client. Bauen Sie das Ziel auf Werten auf, denen Sie vertrauen: Ein `redirect(request.query_params["next"])` schickt Besucher dorthin, wohin der Link sagt. Ein Ziel mit Zeilenumbruch wird abgelehnt.
 
@@ -133,9 +133,9 @@ Eine Ausnahme, bei der nichts behandelt wird, wird einmal protokolliert, mit der
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| Durchsuchen Sie | eine Seite mit dem Fehler, den Zeilen Ihres Codes, die ihn ausgelöst haben, und dem vollständigen Traceback | die integrierte `500`-Seite (oder Ihre `errors.nexy`) mit einer Referenz |
+| Browser | eine Seite mit dem Fehler, den Zeilen Ihres Codes, die ihn ausgelöst haben, und dem vollständigen Traceback | die integrierte `500`-Seite (oder Ihre `errors.nexy`) mit einer Referenz |
 | JSON-Client | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Serverprotokoll | die Ausnahme und die Zeilen Ihres Codes | die Ausnahme und den gesamten Traceback, mit derselben Referenz |
+| Serverprotokoll | die Ausnahme und die Zeilen Ihres Codes | die Ausnahme und das gesamte Traceback mit derselben Referenz |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
