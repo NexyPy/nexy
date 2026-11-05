@@ -13,9 +13,34 @@ Was `nx start` standardmäßig tut, was eingeschaltet werden soll und was gemess
 | API-Dokumente | auf | `useDocs = False` in der Produktion |
 | Knoten zur Laufzeit | keine | `nx build` rendert Clientkomponenten vorab |
 
+Die beiden Schalter der Tabelle in `nexyconfig.py` und ISR auf einer Seite:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useGZip = {"minimum_size": 1000}
+    useDocs = False
+```
+
+```nexy filename="src/routes/blog/index.nexy"
+---
+revalidate = 60
+---
+<h1>Rendered at most once per minute</h1>
+```
+
 ## Gemessen
 
 Eine lokale Ausführung, ein Uvicorn Worker, Windows, Python 3.13, Keep-Alive-Verbindungen von einem Python Lastgenerator auf demselben Computer. Behandeln Sie die Zahlen als Grundlage für den Vergleich von Änderungen und nicht als Maßstab für andere Frameworks.
+
+Die Nexy-JSON-Route der Tabelle ist diese Datei:
+
+```python filename="src/routes/api/ping.py"
+async def GET():
+    return {"ok": True}
+```
 
 | Route | Parallelität | Anfragen pro Sekunde | S. 50 | S. 99 |
 |---|---|---|---|---|
@@ -34,12 +59,32 @@ Lesen der Tabelle:
 
 1. Stellen Sie Nginx, Caddy oder den Edge Ihrer Plattform in den Vordergrund: TLS, HTTP/2, Brotli und langlebiges Caching für `/__nexy__/client/` Assets sind ihre Stärken. Siehe [Bereitstellen](README.md).
 2. Verwenden Sie [ISR](../rendering/isr.md) für Seiten, die sich weniger als einmal pro Minute ändern.
-3. Hydratieren Sie langsam mit [Inseln](../rendering/islands.md), damit die erste Ladung weniger versendet JavaScript.
-4. Halten Sie die Anzahl der `.nexy` Komponenten pro Seite angemessen: Jede davon ist ein separates Vorlagenrendering.
+3. Hydratieren Sie langsam mit [Inseln](../rendering/islands.md), damit die erste Ladung weniger JavaScript verschickt.
+4. Halten Sie die Anzahl der `.nexy` Komponenten pro Seite angemessen: Jede einzelne ist ein separates Vorlagenrendering.
 5. Messen Sie Ihre eigenen Routen. Ein lokaler Lastgenerator, der die Verbindungen aufrechterhält, reicht aus, um zwei Versionen einer Seite zu vergleichen.
+
+Tipp 1 mit Nginx: Die gehashten Client-Bundles werden ein Jahr lang zwischengespeichert, der Rest geht an Nexy.
+
+```nginx filename="/etc/nginx/conf.d/my-app.conf"
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    location /__nexy__/client/ {
+        proxy_pass http://127.0.0.1:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ## Nächste Schritte
 
 - [Bereitstellen](README.md)
-- [Rendering](../rendering/README.md)
+- [Rendern](../rendering/README.md)
 - [Konfiguration](../reference/config.md)

@@ -13,9 +13,34 @@
 | एपीआई दस्तावेज़ | पर | `useDocs = False` उत्पादन में |
 | रनटाइम पर नोड | कोई नहीं | `nx build` क्लाइंट घटकों को प्री-रेंडर करता है |
 
+`nexyconfig.py` में तालिका के दो स्विच, और एक पृष्ठ में आईएसआर:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useGZip = {"minimum_size": 1000}
+    useDocs = False
+```
+
+```nexy filename="src/routes/blog/index.nexy"
+---
+revalidate = 60
+---
+<h1>Rendered at most once per minute</h1>
+```
+
 ## नापा गया
 
 एक स्थानीय रन, एक Uvicorn कार्यकर्ता, विंडोज़, Python 3.13, एक ही मशीन पर Python लोड जनरेटर से सक्रिय कनेक्शन। परिवर्तनों की तुलना के लिए संख्याओं को आधार रेखा के रूप में मानें, न कि अन्य ढाँचों के विरुद्ध बेंचमार्क के रूप में।
+
+तालिका का नेक्सी JSON मार्ग यह फ़ाइल है:
+
+```python filename="src/routes/api/ping.py"
+async def GET():
+    return {"ok": True}
+```
 
 | मार्ग | समवर्ती | प्रति सेकंड अनुरोध | p50 | पी99 |
 |---|---|---|---|---|
@@ -34,12 +59,32 @@
 
 1. Nginx, Caddy या अपने प्लेटफ़ॉर्म के किनारे को सामने रखें: टीएलएस, एचटीटीपी/2, ब्रॉटली और `/__nexy__/client/` संपत्तियों के लिए लंबे समय तक चलने वाली कैशिंग उनकी ताकत हैं। [तैनाती](README.md) देखें।
 2. उन पृष्ठों के लिए [ISR](../rendering/isr.md) का उपयोग करें जो एक मिनट में एक बार से कम बदलते हैं।
-3. [द्वीपों](../rendering/islands.md) के साथ आराम से हाइड्रेट करें ताकि पहले लोड जहाज कम हों JavaScript।
+3. [द्वीपों](../rendering/islands.md) के साथ आराम से हाइड्रेट करें ताकि पहले लोड जहाज कम JavaScript हों।
 4. प्रति पृष्ठ `.nexy` घटकों की संख्या उचित रखें: प्रत्येक एक अलग टेम्पलेट रेंडर है।
 5. अपने स्वयं के मार्ग मापें. एक स्थानीय लोड जनरेटर जो कनेक्शन को जीवित रखता है, एक पृष्ठ के दो संस्करणों की तुलना करने के लिए पर्याप्त है।
+
+Nginx के साथ सलाह 1: हैश किए गए क्लाइंट बंडलों को एक वर्ष के लिए कैश किया जाता है, बाकी नेक्सी को जाता है।
+
+```nginx filename="/etc/nginx/conf.d/my-app.conf"
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    location /__nexy__/client/ {
+        proxy_pass http://127.0.0.1:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ## अगले चरण
 
 - [तैनाती](README.md)
 - [प्रतिपादन](../rendering/README.md)
-- [कॉन्फिग](../reference/config.md)
+- [कॉन्फ़िग](../reference/config.md)
