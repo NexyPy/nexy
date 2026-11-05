@@ -4,12 +4,12 @@ Das mentale Modell vor der API: vier Leseebenen, dann die Begriffe, die auf jede
 
 ## So lesen Sie diese Dokumente
 
-| Level | Die Frage, die es beantwortet | Beginnen Sie mit |
+| Ebene | Die Frage, die es beantwortet | Beginnen Sie mit |
 |---|---|---|
-| Anwendungsarchitektur | Welche Schicht beantwortet eine Anfrage und was verweigert sie | [Architektur](../architecture.md) |
+| Anwendungsarchitektur | welche Schicht eine Anfrage beantwortet und was sie ablehnt | [Architektur](../architecture.md) |
 | Anwendungsstruktur | wo sich der Code befindet und was aus einer Datei wird | [Projektstruktur](project-structure.md) |
-| Präsentation und Wiedergabe | was der Leser sieht und wer das HTML erstellt | [Ansichten](../views/README.md), [Wiedergabe](../rendering/README.md) |
-| Anwendungsinteraktion | was der Leser tut und was als Antwort ausgeführt wird | [Aktionen](../guides/actions.md) |
+| Präsentation und Rendering | was der Leser sieht und wer den HTML-Code erstellt | [Ansichten](../views/README.md), [Rendering](../rendering/README.md) |
+| Anwendungsinteraktion | was der Leser tut und was als Reaktion darauf ausgeführt wird | [Aktionen](../guides/actions.md) |
 
 Die Level werden in dieser Reihenfolge einmal gelesen. Danach handelt es sich bei der Seite, die Sie benötigen, um eine Nachschlageseite und nicht um einen Kurs.
 
@@ -29,11 +29,11 @@ Fünf Vorstellungen, die ein Leser aus Next.js normalerweise zu einer einzigen v
 
 | Vorstellung | Was es ist | Was es nicht ist |
 |---|---|---|
-| **Route** | ein URL-Muster, erzeugt durch den Pfad einer Datei | eine Datei: Eine Datei kann auf mehrere URLs antworten (`[slug]`) |
+| **Route** | ein URL-Muster, das durch den Pfad einer Datei erzeugt wird | eine Datei: Eine Datei kann auf mehrere URLs antworten (`[slug]`) |
 | **Seite** | eine Routendatei, die eine Ansicht rendert: `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | ein Endpunkt: Er antwortet auf ein Dokument, nicht auf Daten |
-| **Anzeigen** | was den Hauptteil einer Seite erzeugt: Jinja2 und Python, Markdown oder eine Client-Komponente | eine Route: Die gleiche Ansicht kann mehrere Seiten bedienen |
-| **Komponente** | ein wiederverwendbares Stück, das eine Seite importiert | eine Route: Im Servermodus wird eine Komponente niemals alleine bereitgestellt |
-| **Routenhandler** | die Funktion einer `.py` Routendatei, benannt nach der HTTP-Methode (`GET`, `POST`, …) | eine Seite: Sie gibt JSON, eine Datei oder eine `Response` | zurück.
+| **Anzeigen** | Was erzeugt den Hauptteil einer Seite: Jinja2 und Python, Markdown oder eine Client-Komponente | eine Route: Die gleiche Ansicht kann mehrere Seiten bedienen |
+| **Komponente** | ein wiederverwendbarer Teil, den eine Seite importiert | eine Route: Im Servermodus wird eine Komponente niemals alleine bedient |
+| **Routenhandler** | die Funktion einer `.py`-Routendatei, benannt nach der HTTP-Methode (`GET`, `POST`, …) | eine Seite: Sie gibt JSON, eine Datei oder ein `Response` zurück. |
 | **Endpunkt** | das Paar (URL, Methode), auf das ein Handler antwortet | ein Handler: Eine Datei kann mehrere Endpunkte beantworten |
 
 In einem Satz: **Eine Seite ist eine Routendatei, eine Ansicht ist das, was sie rendert, eine Komponente ist das, was eine Seite wiederverwendet, ein Handler antwortet einem Endpunkt.**
@@ -50,22 +50,22 @@ Zwei unabhängige Entscheidungen, oft verwechselt:
 - **Das Format** entscheidet, welche Datei die Seite rendert: [Ansichten](../views/README.md).
 - **Der Modus** entscheidet, wer den HTML-Code wann produziert: [Rendering](../rendering/README.md).
 
-| Begriff | Eine Zeile |
+| Vorstellung | Eine Zeile |
 |---|---|
-| Servermodus | Der Server rendert `.nexy` und `.md` Seiten; Komponenten sind Inseln ([modes](../routing/fbr/modes.md)) |
+| Servermodus | Der Server rendert die Seiten `.nexy` und `.md`. Komponenten sind Inseln ([Modi](../routing/fbr/modes.md)) |
 | Client-Modus | `useCSR = True`: Framework-Dateien sind die Routen, und die Navigation erfolgt im Browser |
 | SSR, ISR, CSR, Inseln | vier Rendering-Modi, die pro Seite festgelegt werden, mit Ausnahme von CSR, das pro Projekt gilt ([Rendering](../rendering/README.md)) |
-| Hydration | Der Browser fügt ein Framework an HTML an, das der Server bereits gesendet hat ([islands](../rendering/islands.md)) |
-| Props | die Werte, die ein übergeordnetes Element an eine Komponente übergibt, deklariert `name: prop[type]` in einer `.nexy`-Datei ([.nexy-Dateien](../views/nexy/README.md)) |
+| Flüssigkeitszufuhr | Der Browser fügt ein Framework an HTML an, das der Server bereits gesendet hat ([Inseln](../rendering/islands.md)) |
+| Requisiten | die Werte, die ein übergeordnetes Element an eine Komponente übergibt, deklariert `name: prop[type]` in einer `.nexy`-Datei ([.nexy-Dateien](../views/nexy/README.md)) |
 
 ## Anwendungsinteraktion
 
-| Begriff | Eine Zeile |
+| Vorstellung | Eine Zeile |
 |---|---|
-| Aktion | eine Python Funktion mit der Markierung `@Action`, diente als `POST`, aufrufbar aus einem Formular oder als typisierte Funktion ([actions](../guides/actions.md)) |
-| Formular | ein HTML-Formular, das an eine Aktion sendet, wobei Validierungsfehler auf die Seite zurückkommen ([actions](../guides/actions.md)) |
-| Navigation | Links zum Vorabrufen und Hooks, die den Pfad, die Abfrage, die Cookies und die Sitzung lesen ([hooks](../routing/fbr/navigation/hooks.md)) |
-| Datenabruf | erfolgt durch die Seite oder den Handler, der sie benötigt; Nexy liefert keine Client-Datenschicht ([Handler](../routing/fbr/handlers/README.md)) |
+| Aktion | eine Python-Funktion mit der Markierung `@Action`, die als `POST` diente und über ein Formular oder als typisierte Funktion ([Aktionen](../guides/actions.md)) aufgerufen werden konnte. |
+| Formular | ein HTML-Formular, das an eine Aktion sendet, wobei Validierungsfehler auf die Seite zurückkommen ([Aktionen](../guides/actions.md)) |
+| Navigation | Links, die vorab abrufen, und Hooks, die den Pfad, die Abfrage, die Cookies und die Sitzung lesen ([Hooks](../routing/fbr/navigation/hooks.md)) |
+| Datenabruf | wird von der Seite oder dem Handler erledigt, der es benötigt; Nexy liefert keine Client-Datenschicht ([Handler](../routing/fbr/handlers/README.md)) |
 
 ## Was Nexy nicht macht
 
