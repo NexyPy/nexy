@@ -1,7 +1,6 @@
 # Middleware und Sicherheit
 
-Nexy läuft auf FastAPI und Starlette, daher gilt deren Middleware. Die häufigsten sind eine Zeile in
-`nexyconfig.py`.
+Nexy läuft auf FastAPI und Starlette, daher gilt deren Middleware. Die häufigsten sind eine Zeile in `nexyconfig.py`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -19,8 +18,7 @@ class NexyConfig(NexyConfigModel):
     useSession = {"secret_key": "change-me"}
 ```
 
-Jedes `use*`-Wörterbuch wird als Schlüsselwortargumente an die passende Starlette-Middleware übergeben:
-`CORSMiddleware`, `GZipMiddleware`, `TrustedHostMiddleware`, `SessionMiddleware`.
+Jedes `use*`-Wörterbuch wird als Schlüsselwortargumente an die passende Starlette-Middleware übergeben: `CORSMiddleware`, `GZipMiddleware`, `TrustedHostMiddleware`, `SessionMiddleware`.
 
 ## Ihre eigene Middleware
 
@@ -36,24 +34,19 @@ class NexyConfig(NexyConfigModel):
 
 ## HTTPS
 
-Stellen Sie HTTPS direkt mit `useSslKeyfile` und `useSslCertfile` bereit oder beenden Sie TLS an einem Reverse-Proxy
-und stellen Sie `useHTTPSRedirect` ein. In der Entwicklung bleibt der Vite-Entwicklungsserver auf Loopback-HTTP hinter dem
-Nexy-Ursprung, daher erreicht TLS ihn nie.
+Stellen Sie HTTPS direkt mit `useSslKeyfile` und `useSslCertfile` bereit oder beenden Sie TLS an einem Reverse-Proxy und legen Sie `useHTTPSRedirect` fest. In der Entwicklung bleibt der Vite-Entwicklungsserver auf Loopback-HTTP hinter dem Nexy-Ursprung, sodass TLS ihn nie erreicht.
 
-## Produktionscheckliste
+## Checkliste für die Produktion
 
-- `useDocs = False` wenn das OpenAPI-Schema nicht öffentlich sein soll.
+- `useDocs = False`, wenn das OpenAPI-Schema nicht öffentlich sein soll.
 - `useTrustedHost` auf Ihre Domains eingestellt, um Host-Header-Angriffe zu blockieren.
 - `useCORS` mit expliziter Herkunft, niemals `["*"]` zusammen mit Anmeldeinformationen.
 - Ein echtes `secret_key` für Sitzungen, gelesen aus der Umgebung.
-- An Client-Komponenten übergebene Requisiten werden von Nexy mit HTML-Escapezeichen versehen. Benutzereingabe nicht markieren `| safe` in
-  Vorlagen.
+- An Client-Komponenten übergebene Requisiten werden von Nexy mit HTML-Escapezeichen versehen. Markieren Sie Benutzereingaben nicht als `| safe` in Vorlagen.
 
-## Schutz und Abhängigkeiten
+## Wachen und Abhängigkeiten
 
-Der Schutz pro Route nutzt FastAPI-Abhängigkeiten. Ein `dependencies.py` in einem Routenverzeichnis gilt für
-alles darunter: siehe [Abhängigkeiten](../routing/fbr/dependencies/README.md). Im modularen Routereinsatz
-[`@UseGuard`](../routing/modular/guards-and-metadata.md).
+Der Schutz pro Route verwendet FastAPI Abhängigkeiten. Ein `dependencies.py` in einem Routenverzeichnis gilt für alles darunter: siehe [Abhängigkeiten](../routing/fbr/dependencies/README.md). Verwenden Sie im modularen Router [`@UseGuard`](../routing/modular/guards-and-metadata.md).
 
 ## Nächste Schritte
 
