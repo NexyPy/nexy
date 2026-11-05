@@ -1,21 +1,21 @@
 ---
-from src.content import document, link, markdown_link
+from src.content import document, isolate, link, markdown_link
 
 slug: prop[str] = ""
 doc = document(slug)
 ---
 <main class="page" id="content" tabindex="-1">
   <article class="doc{% if not slug %} home{% endif %}">
-    <p class="crumb"><a href="/docs" data-i18n="docs">Docs</a><span aria-hidden="true">/</span>{{ doc.section | e }}</p>
-    <p class="lang-note" data-lang-note hidden></p>
+    <p class="crumb"><a href="{{ doc.home }}" data-i18n="docs">Docs</a><span aria-hidden="true">/</span>{{ doc.section | e }}</p>
+    {% if doc.note %}<p class="lang-note" data-i18n="fallback_note">{{ doc.note | e }}</p>{% endif %}
     {{ doc.html }}
     <p class="source">
       <button class="copy-page" type="button" data-markdown="{{ markdown_link(slug) }}" data-i18n="copy_page">Copy page as Markdown</button>
       <a href="{{ doc.source }}" data-i18n="edit_github">Edit on GitHub</a>
     </p>
-    <nav class="pager" aria-label="Pages">
-      {% if doc.before %}<a rel="prev" href="{{ link(doc.before.slug) }}"><small data-i18n="previous">Previous</small><span>{{ doc.before.label | e }}</span></a>{% else %}<span></span>{% endif %}
-      {% if doc.after %}<a rel="next" href="{{ link(doc.after.slug) }}"><small data-i18n="next">Next</small><span>{{ doc.after.label | e }}</span></a>{% else %}<span></span>{% endif %}
+    <nav class="pager" aria-label="Pages" data-i18n-aria="pager_aria">
+      {% if doc.before %}<a rel="prev" href="{{ link(doc.before.slug, doc.page.lang) }}"><small data-i18n="previous">Previous</small><span>{{ doc.before.label | e }}</span></a>{% else %}<span></span>{% endif %}
+      {% if doc.after %}<a rel="next" href="{{ link(doc.after.slug, doc.page.lang) }}"><small data-i18n="next">Next</small><span>{{ doc.after.label | e }}</span></a>{% else %}<span></span>{% endif %}
     </nav>
   </article>
 </main>
@@ -24,7 +24,7 @@ doc = document(slug)
   <h2 data-i18n="on_this_page">On this page</h2>
   <ul>
     {% for heading in doc.outline %}
-    <li class="l{{ heading.level }}"><a href="#{{ heading.id }}">{{ heading.text | e }}</a></li>
+    <li class="l{{ heading.level }}"><a href="#{{ heading.id }}"{{ isolate(heading.text, doc.page.lang) }}>{{ heading.text | e }}</a></li>
     {% endfor %}
   </ul>
   <p class="top-link"><a href="#content" data-i18n="back_to_top">Back to top</a></p>

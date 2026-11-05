@@ -1,32 +1,48 @@
 # How Nexy works
 
-The mental model in one page: what Nexy builds, what Vite builds, and what happens between a file
-and a page in your browser. Read it once; the rest of the documentation is then a set of details.
+What happens between a file you write and the page in the browser: the layers a request crosses, who
+builds what, and what Nexy leaves to your application. You do not need this page to start; it
+answers the "why does it work like that" questions later.
 
-## The Nexy architecture
+## The layers
 
-A request crosses five layers: Uvicorn accepts it, middleware decorates it, the router picks a file,
-the renderer turns that file into HTML or JSON, and the client layer takes over if the page has
-JavaScript. Nexy owns the middle three; Vite and your framework own the client; your application
-owns the data, the authentication and the authorisation.
+```diagram filename="One request, five layers"
+Browser
+   │
+   ▼
+Uvicorn ───── ASGI transport
+   │
+   ▼
+Middleware ── sessions, CORS, gzip, trusted hosts, your own
+   │
+   ▼
+Router ────── FBR | Modular | Custom ── picks the file that answers
+   │
+   ▼
+Renderer ──── HTML (Jinja2, Markdown, Node) or JSON
+   │
+   ▼
+Response
+```
 
-Each layer, and what it refuses to do, is in [Architecture](../architecture.md). For the packages of
-Nexy itself, see `ARCHITECTURE.md` at the repository root - it is written for contributors.
+| Layer | Responsibility | Does not |
+|---|---|---|
+| Uvicorn | accept the connection, speak ASGI | know what a page is |
+| Middleware | decorate the request: session, CORS, gzip, trusted hosts, HTTPS redirect, yours | choose a route |
+| Router | match the URL to a file, with its layouts, dependencies and error pages | produce content |
+| Renderer | run the page and turn its result into HTML or JSON | fetch your data |
+| Client | Vite and your framework: bundles, hydration, client navigation | answer a server request |
 
-## The application lifecycle
+## Who builds what
 
-`nx dev` does six things before the first request:
+| Actor | Owns | Does not own |
+|---|---|---|
+| Nexy | routing, server rendering, Actions, `.nexy` compilation, one origin | components, reactivity, data |
+| Vite | client bundles, the dev server, hot reload | routing, server rendering, Actions |
+| Your framework | components, reactivity, the ecosystem | routing, the document (Nexy asks its layout for it) |
+| Your application | data, authentication, authorisation, business rules | transport, rendering |
 
-1. validates `nexyconfig.py`, and stops on an invalid config;
-2. ensures the project's Python packages are importable;
-3. resolves the ports, and deletes the stale `__nexy__/nexy.prod` marker;
-4. generates the client files and compiles the routes, in parallel;
-5. starts Vite and waits until it answers;
-6. installs the file watcher, then lets uvicorn import `nexy.modules.routers.app:_server`.
-
-That import assembles the application - middleware, Actions, routers, error handlers - and the
-first request is served by that assembly. When you save, the watcher restarts uvicorn; a page that
-appeared, disappeared or moved also regenerates the client route list.
+The rule behind the table: **Nexy builds what it owns, and never compiles what Vite compiles.**
 
 ## The routing system
 
@@ -105,6 +121,10 @@ compilation and the server-side rendering are Vite's job.
 
 ## Development and production
 
+`nx dev` checks `nexyconfig.py`, compiles the pages, starts Vite when the project has a frontend
+framework, and restarts the server when you save. `nx build` does the same work once, ahead of
+time, and `nx start` serves the result.
+
 | | `nx dev` | `nx build` then `nx start` |
 |---|---|---|
 | Pages | compiled when you save | compiled once, ahead of time |
@@ -116,9 +136,26 @@ compilation and the server-side rendering are Vite's job.
 What does not change: the same routing rules, the same page files, the same `nexyconfig.py`. A page
 that behaves differently between the two is a bug, not a mode.
 
-## Going deeper
+## What Nexy leaves to you
 
-- [Project structure](project-structure.md): every folder of a project
+Nexy stops at the edge of your application, on purpose:
+
+| Concern | What Nexy provides | What you write |
+|---|---|---|
+| Authentication | session middleware, `AuthenticationMiddleware` when enabled | the login, the user lookup, the cookie policy |
+| Authorisation | `dependencies.py`, guards, per-folder inheritance | the rule itself |
+| Database | no ORM of its own; `nx new` can scaffold SQLModel, SQLAlchemy or Tortoise, `nx migrate` runs Alembic or Aerich | the models and the queries ([Databases](../guides/databases.md)) |
+| Internationalisation | nothing for your pages; only the CLI is translated | the library and the messages ([i18n](../guides/i18n.md)) |
+| Background jobs | nothing: no queue, no scheduler | a worker process |
+| Email, payments, search | nothing | the service you choose |
+
+The reason is the same for all six: a framework that picks your ORM or your auth library decides
+things only your application can decide. The cost is explicit: nothing is wired for you, and the
+guides linked in the table say where to plug each one in.
+
+## Next steps
+
+- [Project structure](project-structure.md): where each part lives in a project
+- [Routing](../routing/README.md): the file-based, modular and custom routers
 - [Rendering](../rendering/README.md): SSR, ISR, CSR and islands
 - [Frontend](../guides/frontend.md): Vite, styling and the client build
-- [Routing](../routing/README.md): the file-based, modular and custom routers

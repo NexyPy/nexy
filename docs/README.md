@@ -2,27 +2,27 @@
 
 **A Python framework for fullstack web applications.**
 
-Nexy is about the seam between a Python backend and a browser frontend. Instead of two servers, two
-build systems and two route tables, you get one origin: FastAPI and Starlette serve the application,
-Vite builds the client, and a file under `src/routes/` is a route - `.nexy` is a page, `.py` is an
-API handler.
+Nexy puts your pages and your API in one Python project, served by one server. Version 2.2 is built
+on FastAPI: every API route is a FastAPI route, listed in an OpenAPI schema that Scalar shows at
+`/docs`.
 
-- **Python first.** Pages, endpoints, forms and actions are Python, and a server-rendered page needs
-  no frontend framework.
-- **Three routers, one integration.** File-based, modular, or an existing FastAPI `APIRouter`.
-- **A frontend when you want one.** React, Vue, Svelte, Solid or Preact, per page as islands, or for
-  the whole project in client mode.
-- **Rendering, one model.** Server rendering, cached pages and islands are decided per page; client
-  routing is a project switch.
-- **Typed actions.** A form post and a typed client call reach the same Python function.
+- **Python first.** Pages, endpoints, forms and actions are Python, and a page needs no JavaScript.
+- **A frontend when you want one.** React, Vue, Svelte, Solid or Preact, for one component or for
+  the whole site.
+- **One file, one URL.** A file under `src/routes/` is a route: `.nexy` is a page, `.py` is an API
+  endpoint.
+- **Room to grow.** Start with one file; move to modules, or plug in an existing FastAPI router, when
+  the project grows.
 
-Start with one file under `src/routes/`, and add structure when the project grows.
+New here? Read [What is Nexy?](getting-started/what-is-nexy.md), then the
+[Quick start](getting-started/quick-start.md).
 
 ## Getting Started
 
 ### First steps
 | Page | What you will do |
 |---|---|
+| [What is Nexy?](getting-started/what-is-nexy.md) | Know what Nexy is, what it is built on and what you get |
 | [Installation](getting-started/installation.md) | Install uv and the Nexy CLI, then create your first project |
 | [Quick start](getting-started/quick-start.md) | Create a project, run it with live reload, and build it for production |
 | [Tutorial](getting-started/tutorial.md) | Build a notes page with an endpoint, shared data and a production build in 10 minutes |
@@ -31,8 +31,6 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | Page | What you will do |
 |---|---|
 | [Core concepts](getting-started/core-concepts.md) | Get the mental model: route, page, view, component, handler, endpoint |
-| [How Nexy works](getting-started/how-nexy-works.md) | Follow one request from the URL to the file that answers it |
-| [Architecture](architecture.md) | Know which layer does what, and what Nexy leaves to your application |
 | [Project structure](getting-started/project-structure.md) | Know what every folder and file in a project is for |
 | [Choose a router](routing/README.md) | Pick the file-based, modular or custom router |
 | [Choose a view format](views/README.md) | Pick `.nexy`, Markdown or a client framework for a page |
@@ -44,7 +42,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 
 ## Routing
 
-### Routing {fbr}
+### File-based {fbr}
 | Page | What you will do |
 |---|---|
 | [File-based routing](routing/fbr/README.md) | Turn a file path into a URL |
@@ -57,7 +55,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [Linking and navigating](routing/fbr/navigation/linking-and-navigating.md) | Link pages, navigate on the client, prefetch |
 | [Hooks](routing/fbr/navigation/hooks.md) | Read the path, query, cookies and session |
 
-### Route handlers {fbr}
+### Handlers and errors {fbr}
 | Page | What you will do |
 |---|---|
 | [Route handlers](routing/fbr/handlers/README.md) | Add a Python endpoint |
@@ -66,6 +64,7 @@ Start with one file under `src/routes/`, and add structure when the project grow
 | [Dependencies and guards](routing/fbr/dependencies/README.md) | Run `dependencies.py` before a handler, and inherit it |
 | [Middleware files](routing/fbr/middleware/README.md) | Wrap requests with `middleware.py`, inherited by directory |
 | [Error pages](routing/fbr/errors/README.md) | Answer with `notfound.nexy`, `errors.nexy` and JSON errors |
+| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Edge case: errors from sub-folders |
 
 ### Modular router {modular}
 Controllers and modules.
@@ -74,6 +73,7 @@ Controllers and modules.
 | [Modular routing](routing/modular/README.md) | Mount controllers and modules |
 | [Dependency injection](routing/modular/dependency-injection.md) | Define services, their scopes and the container |
 | [Guards and metadata](routing/modular/guards-and-metadata.md) | Protect and document routes |
+| [Modular router vs NestJS](routing/modular/vs-nestjs.md) | Comparison with NestJS |
 
 ### Custom router integration {custom}
 | Page | What you will do |
@@ -85,8 +85,8 @@ Controllers and modules.
 ### Shared contracts
 | Page | What it defines |
 |---|---|
-| [Pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
-| [Layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
+| [Frontend pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
+| [Frontend layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
 | [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
 
 ### Nexy views
@@ -108,7 +108,7 @@ Controllers and modules.
 
 ## Rendering
 
-### Rendering
+### Modes
 | Page | What you will decide |
 |---|---|
 | [Rendering](rendering/README.md) | Which rendering mode fits a page |
@@ -132,10 +132,10 @@ Controllers and modules.
 | [Deploy](deployment/README.md) | Build, containerise and serve |
 | [Performance](deployment/performance.md) | Measure and tune the defaults |
 
-### Frontend and testing
+### Build and test
 | Page | What you will do |
 |---|---|
-| [Frontend](guides/frontend.md) | Set up Vite, styling and the client build |
+| [Vite and styling](guides/frontend.md) | Set up Vite, styling and the client build |
 | [Testing](guides/testing.md) | Test with pytest, `TestClient` and vitest |
 
 ### Tooling and help
@@ -170,9 +170,8 @@ Controllers and modules.
 ```text
 docs/
 ├─ README.md
-├─ architecture.md       the layers, and what Nexy leaves to the application
-├─ getting-started/     installation, quick start, tutorial, core concepts, project structure,
-│                       migration
+├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
+│                       project structure, how Nexy works, migration
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -203,8 +202,7 @@ docs/
 
 | Page | What you will do |
 |---|---|
-| [Modular router vs NestJS](routing/modular/vs-nestjs.md) | Comparison with NestJS |
-| [Error pages per folder](routing/fbr/errors/folder-pages.md) | Edge case: errors from sub-folders |
+| [How Nexy works](getting-started/how-nexy-works.md) | See what happens between a file and a page, and what Nexy leaves to you |
 | [Upgrading to 2.2](getting-started/upgrading.md) | Migrate from 2.1 to 2.2 |
 | [Internationalization (i18n)](guides/i18n.md) | Add translations with your choice of library |
 | [Recipes](guides/recipes.md) | Examples and patterns, not a tutorial |

@@ -22,8 +22,8 @@ def _rendered() -> source.Rendered:
 
 
 class TestCards:
-    def test_the_home_shows_the_ten_pages_of_getting_started(self):
-        assert _rendered().html.count('class="home-card"') == 10
+    def test_the_home_shows_the_nine_pages_of_getting_started(self):
+        assert _rendered().html.count('class="home-card"') == 9
 
     def test_a_card_leads_to_a_page_of_getting_started(self):
         slugs = {_link(page.slug) for page in source.pages_of(source.read_tracks(DOCS)[0])}
@@ -116,3 +116,13 @@ class TestStyle:
     def test_the_old_table_cards_are_gone(self):
         css = STYLE.read_text(encoding="utf-8")
         assert ".doc.home .table-wrap" not in css
+
+
+class TestLanguage:
+    def test_the_home_of_a_language_reads_its_translated_introduction(self):
+        intro = source.home(DOCS, "fr").path.read_text(encoding="utf-8").split("\n", 1)[0][2:]
+        assert intro in home.render(DOCS, _link, "fr").html
+
+    def test_the_cards_of_a_language_name_its_translated_pages(self):
+        first = source.read_tracks(DOCS, "fr")[0].groups[0].pages[0]
+        assert first.label in home.render(DOCS, _link, "fr").html

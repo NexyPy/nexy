@@ -1,13 +1,14 @@
 # Core concepts
 
-The mental model, before the API: four levels of reading, then the notions that come back on every
-page. Each notion gets one line here and a link to the page that goes deeper.
+The words the rest of the docs use - route, page, view, component, handler, endpoint - each in one
+line, with a link to the page that goes deeper. New to Nexy? Start with
+[What is Nexy?](what-is-nexy.md).
 
 ## How to read these docs
 
 | Level | The question it answers | Start with |
 |---|---|---|
-| Application architecture | which layer answers a request, and what it refuses to do | [Architecture](../architecture.md) |
+| Application architecture | which layer answers a request, and what it refuses to do | [How Nexy works](how-nexy-works.md) |
 | Application structure | where the code lives, and what a file becomes | [Project structure](project-structure.md) |
 | Presentation and rendering | what the reader sees, and who produces the HTML | [Views](../views/README.md), [Rendering](../rendering/README.md) |
 | Application interaction | what the reader does, and what runs in response | [Actions](../guides/actions.md) |
@@ -78,14 +79,13 @@ Two independent decisions, often confused:
 
 Authentication, authorisation, database, internationalisation, background jobs, email, payments and
 search are **your application's responsibility**, not the framework's. Nexy gives the extension
-points and says where to plug each one: see [the boundaries](../architecture.md#boundaries).
+points and says where to plug each one: see [What Nexy leaves to you](how-nexy-works.md#what-nexy-leaves-to-you).
 
 The reason is not minimalism for its own sake: a framework that picks your ORM or your auth library
 has decided something only your application can decide.
 
 ## Next steps
 
-- [Architecture](../architecture.md): the layers, and who builds what
 - [Project structure](project-structure.md): every folder and file of a project
 - [Glossary](../reference/glossary.md): the same words, in one alphabetical index
-- [How Nexy works](how-nexy-works.md): one request, step by step
+- [How Nexy works](how-nexy-works.md): the layers, who builds what, and what Nexy leaves to you

@@ -1,0 +1,80 @@
+# Concepts de base
+
+Les mots utilisés par le reste de la documentation - route, page, vue, composant, gestionnaire, point de terminaison - chacun sur une seule ligne, avec un lien vers la page qui va plus loin. Nouveau sur Nexy ? Commencez par [Qu'est-ce que Nexy ?](what-is-nexy.md).
+
+## Comment lire ces documents
+
+| Niveau | La question à laquelle il répond | Commencez par |
+|---|---|---|
+| Architecture des applications | quelle couche répond à une demande et ce qu'elle refuse de faire | [Comment fonctionne Nexy](how-nexy-works.md) |
+| Structure de la candidature | où se trouve le code et ce que devient un fichier | [Structure du projet](project-structure.md) |
+| Présentation et rendu | ce que le lecteur voit et qui produit le HTML | [Vues](../views/README.md), [Rendu](../rendering/README.md) |
+| Interaction avec les applications | ce que fait le lecteur et ce qui s'exécute en réponse | [Actions](../guides/actions.md) |
+
+Les niveaux sont lus une fois dans cet ordre. Après cela, une page dont vous avez besoin est une recherche, pas un cours.
+
+## Architecture des applications
+
+Trois façons de décider quel code répond à une URL. Ce sont des alternatives, pas des couches :
+
+- **Routage basé sur des fichiers (FBR)** : un fichier sous `src/routes/` est une route. La valeur par défaut.
+- **Routeur modulaire** : contrôleurs et modules sous `src/apps/`, déclarés auprès des décorateurs, pour une base de code de style NestJS.
+- **Routeur personnalisé** : un FastAPI `APIRouter` existant inclus dans l'application.
+
+Choisir l’un des trois est une décision. Le choix d'un framework frontend en est un autre, distinct : voir [Choisir un routeur](../routing/README.md) et [Vues](../views/README.md).
+
+## Structure de la candidature
+
+Cinq notions qu'un lecteur venant de Next.js fusionne habituellement en une seule. Ce n'est pas la même chose, et la différence explique la plupart des questions « pourquoi ma page ne s'affiche-t-elle pas ».
+
+| Notion | Qu'est-ce que c'est | Ce que ce n'est pas |
+|---|---|---|
+| **Itinéraire** | un modèle d'URL, produit par le chemin d'un fichier | un fichier : un fichier peut répondre à plusieurs URL (`[slug]`) |
+| **Page** | un fichier de route qui restitue une vue : `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | un endpoint : il répond à un document, pas à des données |
+| **Voir** | ce qui produit le corps d'une page : Jinja2 et Python, Markdown, ou un composant client | un itinéraire : une même vue peut servir plusieurs pages |
+| **Composant** | une pièce réutilisable qu'une page importe | une route : en mode serveur un composant n'est jamais servi seul |
+| **Gestionnaire de route** | la fonction d'un fichier de route `.py`, nommé d'après la méthode HTTP (`GET`, `POST`, …) | une page : elle renvoie du JSON, un fichier ou un `Response` |
+| **Point de terminaison** | la paire (URL, méthode) à laquelle un gestionnaire répond | un gestionnaire : un fichier peut répondre à plusieurs points de terminaison |
+
+En une phrase : **une page est un fichier de route, une vue est ce qui le restitue, un composant est ce qu'une page réutilise, un gestionnaire répond à un point de terminaison.**
+
+Encore deux mots qui reviennent partout :
+
+- **Layout** : un fichier `layout.*` qui enveloppe les pages sous son dossier ; la racine est propriétaire du document HTML. Voir [Mise en page](../routing/fbr/layouts/README.md).
+- **Dépendance** : une fonction qui s'exécute avant un gestionnaire, appliquée par route ou par dossier. Voir [Dépendances](../routing/fbr/dependencies/README.md).
+
+## Présentation et rendu
+
+Deux décisions indépendantes, souvent confondues :
+
+- **Le format** décide quel fichier restitue la page : [Vues](../views/README.md).
+- **Le mode** décide qui produit le HTML et quand : [Rendu](../rendering/README.md).
+
+| Notion | Une ligne |
+|---|---|
+| Mode serveur | le serveur restitue les pages `.nexy` et `.md` ; les composants sont des îlots ([modes](../routing/fbr/modes.md)) |
+| Mode client | `useCSR = True` : les fichiers framework sont les itinéraires et la navigation se fait dans le navigateur |
+| SSR, ISR, CSR, îles | quatre modes de rendu, décidés par page sauf CSR, qui est par projet ([rendu](../rendering/README.md)) |
+| Hydratation | le navigateur attachant un framework au HTML que le serveur a déjà envoyé ([îlots](../rendering/islands.md)) |
+| Accessoires | les valeurs qu'un parent transmet à un composant, déclarées `name: prop[type]` dans un fichier `.nexy` ([fichiers .nexy](../views/nexy/README.md)) |
+
+## Interaction avec les applications
+
+| Notion | Une ligne |
+|---|---|
+| Action | une fonction Python marquée `@Action`, servant de `POST`, appelable depuis un formulaire ou comme fonction typée ([actions](../guides/actions.md)) |
+| Formulaire | un formulaire HTML qui publie dans une action, avec des erreurs de validation revenant sur la page ([actions](../guides/actions.md)) |
+| Navigation | des liens qui prélevent et des hooks qui lisent le chemin, la requête, les cookies et la session ([hooks](../routing/fbr/navigation/hooks.md)) |
+| Récupération de données | effectué par la page ou le gestionnaire qui en a besoin ; Nexy ne fournit aucune couche de données client ([gestionnaires](../routing/fbr/handlers/README.md)) |
+
+## Ce que Nexy ne fait pas
+
+L'authentification, l'autorisation, la base de données, l'internationalisation, les tâches en arrière-plan, la messagerie électronique, les paiements et la recherche relèvent de **la responsabilité de votre application**, et non celle du framework. Nexy donne les points d'extension et indique où brancher chacun d'eux : voir [Ce que Nexy vous laisse](how-nexy-works.md#what-nexy-leaves-to-you).
+
+La raison n'est pas le minimalisme en soi : un framework qui sélectionne votre ORM ou votre bibliothèque d'authentification a décidé quelque chose que seule votre application peut décider.
+
+## Prochaines étapes
+
+- [Structure du projet](project-structure.md) : chaque dossier et fichier d'un projet
+- [Glossaire](../reference/glossary.md) : les mêmes mots, dans un index alphabétique
+- [Comment fonctionne Nexy](how-nexy-works.md) : les couches, qui construit quoi et ce que Nexy vous laisse

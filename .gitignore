@@ -72,7 +72,7 @@ apps/
 TASKS/
 .qoder/
 memoire/
-dd
+dd.md
 # Python
 .venv
 **/.venv/**

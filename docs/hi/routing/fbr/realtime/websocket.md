@@ -1,0 +1,25 @@
+# WebSocket संचालक
+
+`SOCKET` को परिभाषित करके `.py` रूट फ़ाइल में WebSocket कनेक्शन को संभालें।
+
+```python filename="src/routes/ws/chat.py"
+from fastapi import WebSocket
+
+
+async def SOCKET(websocket: WebSocket):
+    await websocket.accept()
+    await websocket.send_text("hello")
+    await websocket.close()
+```
+
+## नियम
+
+- यूआरएल फ़ाइल पथ है, [रूटिंग](../../README.md) के समान नियम।
+- केवल `.py` रूट फ़ाइलें WebSocket हैंडलर को `SOCKET` के माध्यम से पंजीकृत करती हैं।
+- सुनिश्चित करें कि आपका रिवर्स प्रॉक्सी अपग्रेड अनुरोधों को आगे बढ़ाए WebSocket।
+
+## अगले चरण
+
+- [एपीआई](../handlers/README.md): समान फ़ाइलों में HTTP हैंडलर
+- [तैनाती](../../../deployment/README.md): प्रॉक्सी कॉन्फ़िगरेशन
+- [मॉड्यूलर रूटिंग](../../modular/README.md): `SOCKET` एक नियंत्रक पर

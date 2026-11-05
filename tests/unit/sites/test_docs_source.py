@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from sites.shared import docs_source as source
+from sites.shared import i18n
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
 
@@ -38,7 +39,7 @@ class TestTracks:
 
     def test_every_page_is_in_the_menu_once(self, tracks):
         listed = sorted(page.slug for track in tracks for page in source.pages_of(track))
-        every = sorted(source.slug_of(p.relative_to(DOCS).as_posix()) for p in DOCS.rglob("*.md"))
+        every = sorted(source.slug_of(relative) for relative in i18n.english_pages(DOCS))
         assert listed == [slug for slug in every if slug]
 
     def test_a_page_has_the_title_of_its_heading(self, tracks):
@@ -408,7 +409,7 @@ class TestCallouts:
         assert "<p>Useful information.</p>" in html
 
     def test_the_callout_names_its_kind(self, tmp_path):
-        assert '<p class="callout-title">Warning</p>' in self._html(
+        assert '<p class="callout-title" data-i18n="callout_warning">Warning</p>' in self._html(
             tmp_path, "> [!WARNING]\n> Careful.\n"
         )
 
@@ -560,3 +561,72 @@ class TestRealDocs:
                 if target.strip("/") in ids and anchor not in ids[target.strip("/")]:
                     missing.append(f"{slug} -> {target}#{anchor}")
         assert missing == []
+
+
+class TestLanguageTree:
+    """A language reads its menu and pages from `docs/<code>/`, English where one is missing."""
+
+    MENU = (
+        "## {track}\n\n### {group}\n| Page | Summary |\n|---|---|\n"
+        "| [{a}](guides/a.md) | {s} |\n| [B](guides/b.md) | b |\n"
+    )
+
+    @classmethod
+    def _docs(cls, tmp_path: Path) -> Path:
+        (tmp_path / "guides").mkdir()
+        (tmp_path / "README.md").write_text(
+            "# Docs\n\n" + cls.MENU.format(track="Guides", group="Forms", a="A", s="a"),
+            encoding="utf-8",
+        )
+        (tmp_path / "guides" / "a.md").write_text(
+            "# A\n\n![Art](../assets/x.svg)\n", encoding="utf-8"
+        )
+        (tmp_path / "guides" / "b.md").write_text("# B\n", encoding="utf-8")
+        (tmp_path / "assets").mkdir()
+        (tmp_path / "assets" / "x.svg").write_text("<svg>art</svg>", encoding="utf-8")
+        french = tmp_path / "fr" / "guides"
+        french.mkdir(parents=True)
+        (tmp_path / "fr" / "README.md").write_text(
+            "# Docs\n\n" + cls.MENU.format(track="Guides", group="Formulaires", a="Un A", s="un"),
+            encoding="utf-8",
+        )
+        (french / "a.md").write_text("# Un A\n\n![Dessin](../assets/x.svg)\n", encoding="utf-8")
+        return tmp_path
+
+    def test_the_menu_comes_from_the_language_tree(self, tmp_path):
+        group = source.read_tracks(self._docs(tmp_path), "fr")[0].groups[0]
+        assert group.title == "Formulaires"
+
+    def test_a_translated_page_is_read_from_the_language_tree(self, tmp_path):
+        docs = self._docs(tmp_path)
+        page = source.find(source.read_tracks(docs, "fr"), "guides/a")
+        assert page is not None and page.path == docs / "fr" / "guides" / "a.md"
+
+    def test_a_missing_translation_falls_back_to_english(self, tmp_path):
+        docs = self._docs(tmp_path)
+        page = source.find(source.read_tracks(docs, "fr"), "guides/b")
+        assert page is not None and page.fallback and page.path == docs / "guides" / "b.md"
+
+    def test_a_translated_page_lives_under_its_language(self, tmp_path):
+        page = source.find(source.read_tracks(self._docs(tmp_path), "fr"), "guides/a")
+        assert page is not None and page.address == "fr/guides/a"
+
+    def test_an_english_page_lives_at_its_slug(self, tmp_path):
+        page = source.find(source.read_tracks(self._docs(tmp_path)), "guides/a")
+        assert page is not None and page.address == "guides/a"
+
+    def test_the_home_of_a_language_lives_at_its_code(self, tmp_path):
+        assert source.home(self._docs(tmp_path), "fr").address == "fr"
+
+    def test_a_translated_page_draws_the_figures_of_the_english_tree(self, tmp_path):
+        docs = self._docs(tmp_path)
+        rendered = source.render(docs / "fr" / "guides" / "a.md", docs, _link)
+        assert "<svg>art</svg>" in rendered.html
+
+    def test_a_translated_link_leaving_docs_reaches_the_repository(self, tmp_path):
+        docs = self._docs(tmp_path)
+        (docs / "fr" / "guides" / "c.md").write_text(
+            "[Log](../../CHANGELOG.md)\n", encoding="utf-8"
+        )
+        rendered = source.render(docs / "fr" / "guides" / "c.md", docs, _link)
+        assert f'href="{source.REPOSITORY}CHANGELOG.md"' in rendered.html

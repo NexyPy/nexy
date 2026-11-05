@@ -69,6 +69,7 @@ uv pip install -e . --group dev
 - `test_config.py` uses `hasattr` pattern - watch for config API changes.
 - Integration tests (`tests/integration/`) may require project scaffolding or a temp workspace.
 - `docs/` is **plain Markdown** (no app, no build step, no separate repo) - entry point `docs/README.md`, one question per page, machine entry point `llms.txt`. Do not reintroduce a docs site generator here.
+- `docs/<code>/` holds the same pages in one of the site languages. Nothing there is written by hand: `python scripts/translate_docs.py --lang fr` writes it, `docs/<code>/TRANSLATIONS.json` remembers the hash of the English page each file came from, and `sites/shared/translator.py` is what keeps code, links and table pipes out of the service's hands. Change the English page, then run the script; never edit a translation. Both sites publish each tree at `/docs/<code>/<slug>/` (see `sites/README.md#languages`).
 - `sites/` holds two sites that **show** `docs/` and own no text: `sites/vanilla` (a Python build script, plain HTML/CSS/JS, published to GitHub Pages by `.github/workflows/pages.yml`) and `sites/nexy` (a Nexy project). Both read the Markdown through `sites/shared/docs_source.py`. See `sites/README.md`.
 - `skills/` holds the rules for coding agents (principles, UX audit, one skill per framework,
   styling, backend, testing, framework-dev). Read `skills/nexy-principles/SKILL.md` first; start
@@ -93,7 +94,7 @@ uv pip install -e . --group dev
   answers it in one sentence (both sites publish it as the meta description, cut at 200 characters),
   and the headings and the slug reuse those words. One page per question: a second page on the same
   words competes with the first instead of backing it up.
-- **Attribution**: AI tools never appear as author or co-author. No `Co-authored-by` with Claude/Codebuff/Freebuff/Copilot/Cursor and no `Generated with` footer. GitHub counts co-author trailers as contributors, so a bot trailer pollutes the contributor graph permanently. `scripts/check_attribution.py` enforces it (`.githooks/commit-msg`; enable with `git config core.hooksPath .githooks`).
+- **Attribution**: AI tools never appear as author or co-author. No `Co-authored-by` with Claude/Codebuff/Freebuff/OpenCode/Qoder/Copilot/Cursor, no agent account as author or committer, and no `Generated with` footer. GitHub counts co-author trailers as contributors, so a bot trailer pollutes the contributor graph permanently. `scripts/check_attribution.py` enforces it (`.githooks/commit-msg`; enable with `git config core.hooksPath .githooks`).
 - **i18n**: English default; extract strings to `nexy/modules/i18n/en/`
 - **Coverage target**: ≥95% per module (CONTRIBUTING.md)
 

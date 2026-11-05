@@ -1,0 +1,71 @@
+# Front-end
+
+Nexy ne livre pas son propre système de composants au client. Il s'appuie sur Vite : React, Vue, Svelte, Solid et Preact sont tous pris en charge et les pages Vanilla fonctionnent sans aucun framework client.
+
+## Activer un cadre
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()   # vue(), svelte(), solid(), preact()
+```
+
+`useVite` est par défaut `True` ; conservez-le lorsqu’un framework est configuré.
+
+## Fichiers d'itinéraire
+
+| Rallonge | Rendu |
+|---|---|
+| `.nexy`, `.md` | par Nexy au moment de la demande |
+| `.mdx`, `.tsx`, `.jsx`, `.vue`, `.svelte` | par le cadre client ; pré-rendu au format HTML au moment de la construction, puis repris par le bundle client |
+
+Une route framework est une page normale, pas un îlot réservé au client : le code HTML existe avant l'exécution du bundle, donc le premier paint n'attend pas JavaScript.
+
+Configuration par framework : [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md).
+
+## Développement
+
+`nx dev` démarre un serveur sur un port :
+
+1. l'application recompile les itinéraires que vous modifiez, serveur et client ;
+2. Vite fonctionne sur un port interne et sert des modules de framework ;
+3. Nexy proxy les points de terminaison de Vite via sa propre origine.
+
+Le navigateur ne parle qu'au port `3000`. Il n'y a pas de deuxième URL à ouvrir ni de CORS à configurer.
+
+## Construire
+
+`nx build` produit :
+
+- HTML pré-rendu pour les routes du framework ;
+- le forfait client, avec des actifs inférieurs à `__nexy__/client/` ;
+- les routes Python compilées.
+
+Vite construit le bundle client ; le HTML du serveur de chaque page de composant est écrit au moment de la construction.
+
+> [!NOTE]
+> une route dont le rendu du serveur échoue est signalée comme une route réservée au client au lieu d'échouer toute la construction.
+
+## Stylisme
+
+`nexy new` demande un mode de style et le configure pour le framework client que vous choisissez : Tailwind, UnoCSS ou CSS simple. Les jetons de conception (couleurs, polices, thème sombre) sont des variables CSS dans `src/globale.css`, le fichier créé par l'échafaudage.
+
+| Mode | Les pages de démarrage sont écrites avec |
+|---|---|
+| Tailwind, UnoCSS | classes utilitaires dans le balisage, avec les jetons mappés aux noms de classe |
+| CSS simple | les noms de classes sémantiques et le CSS dans `src/globale.css` |
+
+Suivez le mode de votre projet lorsque vous ajoutez une page : classes utilitaires dans un projet utilitaire, CSS dans un projet plain-CSS. Conservez le CSS du composant que les utilitaires ne peuvent pas exprimer dans le bloc `<style>` du composant. Dans un projet serveur (`.nexy` pages) UnoCSS lit les fichiers `.nexy` des classes ; Tailwind les trouve tout seul.
+
+## Polices, images, scripts
+
+Placez les fichiers statiques dans `public/` - ils sont servis à partir de `/` à la fois en développement et en production.
+
+## Prochaines étapes
+
+- [Vues](../views/README.md) : choisissez un format de page
+- [Configuration](../reference/config.md) : `useFF`, `useVite`, alias
+- [Déploiement](../deployment/README.md) : ce que produit le build

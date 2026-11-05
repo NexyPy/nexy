@@ -1,8 +1,8 @@
 # Architecture
 
 > For contributors: the packages of Nexy and the mechanisms behind them. If you are writing an
-> application, read [docs/architecture.md](docs/architecture.md) instead: same layers, without the
-> internals.
+> application, read [How Nexy works](docs/getting-started/how-nexy-works.md) instead: same
+> layers, without the internals.
 
 ## Overview
 

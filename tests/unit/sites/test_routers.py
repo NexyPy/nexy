@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from sites.shared import docs_source as source
+from sites.shared import i18n
 from sites.vanilla import build
 
 DOCS = Path(__file__).resolve().parents[3] / "docs"
@@ -70,7 +71,7 @@ class TestTracks:
     def test_every_page_is_in_the_menu_of_exactly_one_track(self):
         tracks = source.read_tracks(DOCS)
         listed = [p.slug for t in tracks for p in source.pages_of(t)]
-        every = [source.slug_of(p.relative_to(DOCS).as_posix()) for p in DOCS.rglob("*.md")]
+        every = [source.slug_of(relative) for relative in i18n.english_pages(DOCS)]
         assert sorted(listed) == sorted(slug for slug in every if slug)
 
     def test_a_track_menu_never_holds_an_empty_group(self):
@@ -95,8 +96,8 @@ class TestGroupRouter:
         """Five groups declare a scope; the rest are read by all."""
         groups = [group for track in source.read_tracks(DOCS) for group in track.groups]
         assert {group.title: group.scope for group in groups if group.scope != "core"} == {
-            "Routing": "fbr",
-            "Route handlers": "fbr",
+            "File-based": "fbr",
+            "Handlers and errors": "fbr",
             "Modular router": "modular",
             "Custom router integration": "custom",
             "Advanced": "advanced",
@@ -138,7 +139,7 @@ class TestVanillaMenu:
 
     def test_the_selector_names_every_router(self, out):
         html = self._html(out, "guides/actions")
-        assert all(f"<b>{name}</b>" in html for _key, name, _blurb in source.ROUTERS)
+        assert all(f">{name}</b>" in html for _key, name, _blurb in source.ROUTERS)
 
     def test_every_choice_of_the_selector_has_an_icon(self, out):
         html = self._html(out, "guides/actions")

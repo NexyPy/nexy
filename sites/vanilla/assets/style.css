@@ -167,7 +167,7 @@ body::before {
   transition: color 0.12s ease, border-color 0.12s ease, transform 0.12s var(--ease);
 }
 .search-open svg { width: 15px; height: 15px; flex: none; }
-.search-open span { flex: 1; text-align: left; }
+.search-open span { flex: 1; text-align: start; }
 .search-open kbd {
   padding: 0.15rem 0.35rem;
   border: 1px solid var(--line);
@@ -209,7 +209,7 @@ body::before {
 .panel-bar .search-open { padding: 0; border: 0; background: transparent; }
 .progress {
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   bottom: 0;
   width: 100%;
   height: 2px;
@@ -327,8 +327,8 @@ body::before {
   overflow: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  padding-right: 0.9rem;
-  margin-right: -0.9rem;
+  padding-inline-end: 0.9rem;
+  margin-inline-end: -0.9rem;
 }
 .toc::after {
   content: "";
@@ -375,8 +375,8 @@ html[data-side="closed"] .side {
 /* The area selector above the menu, drawn like the framework picker of Fumadocs. */
 .side-brand { display: flex; align-items: center; gap: 0.45rem; justify-content: flex-start; margin: 0.2rem 0.2rem 0.9rem 0.4rem; }
 /* The version sits right next to the logo; the fold button keeps the far edge. */
-.side-brand .side-version { margin-left: 0.1rem; }
-.side-brand .side-toggle { margin-left: auto; }
+.side-brand .side-version { margin-inline-start: 0.1rem; }
+.side-brand .side-toggle { margin-inline-start: auto; }
 .side-toggle {
   display: grid;
   place-items: center;
@@ -397,6 +397,7 @@ html[data-side="closed"] .side {
 .area-select summary {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.6rem;
   padding: 0.45rem 0.55rem;
   border: 1px solid var(--line);
@@ -408,7 +409,7 @@ html[data-side="closed"] .side {
 }
 .area-select summary::-webkit-details-marker { display: none; }
 .area-select summary:hover { border-color: var(--line-strong); background: var(--soft); }
-.area-select > summary > svg { width: 14px; height: 14px; margin-left: auto; flex: none; color: var(--muted); }
+.area-select > summary > svg { width: 14px; height: 14px; margin-inline-start: auto; flex: none; color: var(--muted); }
 .area-icon {
   display: grid;
   place-items: center;
@@ -444,6 +445,7 @@ html[data-side="closed"] .side {
 .area-select li a {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.6rem;
   padding: 0.45rem 0.5rem;
   border-radius: 0.55rem;
@@ -452,7 +454,7 @@ html[data-side="closed"] .side {
   transition: background 0.12s ease;
 }
 .area-select li a:hover { background: var(--soft); }
-.area-select li a > svg { width: 14px; height: 14px; margin-left: auto; flex: none; color: var(--signal); opacity: 0; }
+.area-select li a > svg { width: 14px; height: 14px; margin-inline-start: auto; flex: none; color: var(--signal); opacity: 0; }
 .area-select li a[aria-current] > svg { opacity: 1; }
 .area-select li a[aria-current] { background: color-mix(in srgb, var(--signal) 8%, transparent); }
 .area-face { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
@@ -479,7 +481,7 @@ html[data-side="closed"] .side {
 .lang-select ul {
   position: absolute;
   top: calc(100% + 0.35rem);
-  right: 0;
+  inset-inline-end: 0;
   z-index: 30;
   min-width: 13rem;
   max-height: 60vh;
@@ -584,9 +586,10 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 .side details.group ul, .toc ul { list-style: none; margin: 0; padding: 0; }
 /* The pages of a folder hang from a guide line under its label. */
 .side details.group > ul {
-  margin: 0.2rem 0 0.2rem 0.85rem;
+  margin-block: 0.2rem;
+  margin-inline: 0.85rem 0;
   position: relative;
-  border-left: 1px solid var(--line);
+  border-inline-start: 1px solid var(--line);
 }
 .side li[hidden] { display: none; }
 /* One line per page: the label fills it, the pill rides at its end. */
@@ -632,7 +635,7 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 .side a[aria-current="page"]::before {
   content: "";
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   top: 0.4rem;
   bottom: 0.4rem;
   width: 2px;
@@ -719,22 +722,23 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 .toc a {
   position: relative;
   display: block;
-  padding: 0.28rem 0.5rem 0.28rem 0.8rem;
-  border-left: 1px solid var(--line);
+  padding-block: 0.28rem;
+  padding-inline: 0.8rem 0.5rem;
+  border-inline-start: 1px solid var(--line);
   color: var(--muted);
   text-decoration: none;
   font-size: 12.75px;
   line-height: 1.5;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
-.toc .l3 a { padding-left: 1.55rem; font-size: 12.25px; }
-.toc a:hover { color: var(--ink); border-left-color: var(--line-strong); }
-.toc a.on { color: var(--signal); border-left-color: var(--signal); font-weight: 600; }
+.toc .l3 a { padding-inline-start: 1.55rem; font-size: 12.25px; }
+.toc a:hover { color: var(--ink); border-inline-start-color: var(--line-strong); }
+.toc a.on { color: var(--signal); border-inline-start-color: var(--signal); font-weight: 600; }
 /* The mark on the rail sits over the line, so the text never moves. */
 .toc a.on::before {
   content: "";
   position: absolute;
-  left: -1px;
+  inset-inline-start: -1px;
   top: 0;
   bottom: 0;
   width: 2px;
@@ -742,7 +746,7 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
   background: var(--signal);
 }
 .toc .top-link { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--line); }
-.toc .top-link a { border-left: 0; padding-left: 0; font: 500 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+.toc .top-link a { border-inline-start: 0; padding-inline-start: 0; font: 500 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
 .toc .top-link a::before { display: none; }
 
 /* The page. */
@@ -796,7 +800,7 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 /* A command, a flag or a path in a cell is one token: it moves to the next column or scrolls. */
 .doc td code { white-space: nowrap; }
 .doc p { margin: 0.9rem 0; }
-.doc ul, .doc ol { margin: 0.9rem 0; padding-left: 1.35rem; }
+.doc ul, .doc ol { margin: 0.9rem 0; padding-inline-start: 1.35rem; }
 .doc li { margin: 0.3rem 0; }
 .doc li::marker { color: var(--line-strong); }
 .doc strong { font-weight: 600; }
@@ -1038,7 +1042,7 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 }
 .doc .table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .doc .table-wrap th,
-.doc .table-wrap td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.doc .table-wrap td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--line); text-align: start; vertical-align: top; }
 .doc .table-wrap th {
   background: var(--soft);
   color: var(--muted);
@@ -1055,7 +1059,7 @@ body[data-home] .page::before {
   content: "";
   position: absolute;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   width: min(54%, 34rem);
   height: 22rem;
   pointer-events: none;
@@ -1126,7 +1130,7 @@ body[data-home] .page::before {
 .copy {
   position: absolute;
   top: 0.5rem;
-  right: 0.5rem;
+  inset-inline-end: 0.5rem;
   padding: 0.2rem 0.45rem;
   border: 1px solid var(--pre-line);
   border-radius: 0.3rem;
@@ -1140,7 +1144,7 @@ body[data-home] .page::before {
 pre:hover .copy, .copy:focus-visible { opacity: 1; }
 .copy:hover { border-color: rgba(255, 255, 255, 0.28); color: var(--pre-ink); }
 /* In a bar the chip sits at the right edge, always visible. */
-figcaption > .copy { position: static; margin-left: auto; opacity: 1; }
+figcaption > .copy { position: static; margin-inline-start: auto; opacity: 1; }
 
 /* The edit link, under a dashed rule like the end of a section. */
 .source {
@@ -1183,7 +1187,7 @@ figcaption > .copy { position: static; margin-left: auto; opacity: 1; }
   text-decoration: none;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
-.pager a[rel="next"] { flex-direction: row-reverse; text-align: right; }
+.pager a[rel="next"] { flex-direction: row-reverse; text-align: end; }
 .pager a:hover { border-color: var(--line-strong); background: var(--soft); }
 .pager .pager-text { display: grid; gap: 0.15rem; min-width: 0; }
 .pager small { color: var(--muted); font: 500 10px/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.08em; }
@@ -1274,16 +1278,19 @@ dialog.search input::placeholder { color: var(--muted); }
 .button:hover { opacity: 0.85; }
 
 /* A link to a heading, shown when the heading is hovered or focused. */
-.doc .anchor { margin-left: 0.35em; color: var(--muted); text-decoration: none; opacity: 0; font-family: var(--mono); }
+.doc .anchor { margin-inline-start: 0.35em; color: var(--muted); text-decoration: none; opacity: 0; font-family: var(--mono); }
 .doc .anchor::before { content: "#"; }
 .doc :is(h2, h3, h4):hover .anchor, .doc .anchor:focus-visible { opacity: 1; }
 @media (hover: none) { .doc .anchor { opacity: 0.5; } }
 
 /* For keyboard users: jump over the menu. */
+/* Hidden above the page rather than far to one side: a link 9999px to the left widens a page that
+   reads right to left by as much. */
 .skip {
   position: absolute;
-  left: -9999px;
+  inset-inline-start: 0.75rem;
   top: 0.5rem;
+  transform: translateY(-200%);
   z-index: 50;
   padding: 0.5rem 0.9rem;
   border-radius: 0.375rem;
@@ -1292,7 +1299,7 @@ dialog.search input::placeholder { color: var(--muted); }
   font-weight: 600;
   text-decoration: none;
 }
-.skip:focus { left: 0.75rem; }
+.skip:focus { transform: none; }
 .page:focus { outline: 0; }
 
 /* Wide screens: the window never scrolls. The menu and the panel each scroll inside themselves. */
@@ -1312,8 +1319,8 @@ dialog.search input::placeholder { color: var(--muted); }
   .side { transition: opacity 0.2s ease, transform 0.32s var(--ease); }
   html[data-side="closed"] .shell { grid-template-columns: 0 minmax(0, 1fr); }
   html[data-side="closed"] .side { opacity: 0; transform: translateX(-1rem); pointer-events: none; overflow: hidden; }
-  html[data-side="closed"] .panel { margin-left: 0.5rem; }
-  .bar-open { display: none; margin-right: auto; }
+  html[data-side="closed"] .panel { margin-inline-start: 0.5rem; }
+  .bar-open { display: none; margin-inline-end: auto; }
   html[data-side="closed"] .bar-open { display: grid; }
 }
 @media (max-width: 900px) {
@@ -1387,7 +1394,7 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   body[data-home] .page::before { display: none; }
   .doc.home tr { grid-template-columns: 1fr; }
   .pager { grid-template-columns: 1fr; }
-  .pager a[rel="next"] { flex-direction: row; text-align: left; }
+  .pager a[rel="next"] { flex-direction: row; text-align: start; }
   /* A listing keeps its notes on a second line rather than pushing the name off the card. */
   .doc .tree-row { flex-wrap: wrap; row-gap: 0.1rem; }
   .doc .tree-note { flex-basis: 100%; padding-left: 2rem; text-align: left; }
@@ -1427,7 +1434,7 @@ dialog.search[data-fresh] .results li { animation: nx-rise 0.26s var(--ease) bot
 @keyframes nx-rise { from { opacity: 0; transform: translateY(6px); } }
 
 /* Copy: the chip confirms with a check that draws itself. */
-.copy.done svg, .copy-page.done svg { width: 12px; height: 12px; margin-right: 0.25rem; vertical-align: -1px; }
+.copy.done svg, .copy-page.done svg { width: 12px; height: 12px; margin-inline-end: 0.25rem; vertical-align: -1px; }
 .copy.done path, .copy-page.done path { stroke-dasharray: 16; stroke-dashoffset: 16; animation: nx-draw 0.28s 0.04s var(--ease) forwards; }
 @keyframes nx-draw { to { stroke-dashoffset: 0; } }
 
@@ -1479,4 +1486,28 @@ body.open { overflow: hidden; }
   .frame { display: block; padding-top: 0; }
   .page { padding: 0; }
   body[data-home] .page::before { display: none; }
+}
+
+/* Right to left (Arabic, Urdu): the page mirrors, the code does not. Code, file trees and the
+   theme switch read left to right in every language; the arrows and the drawer turn around. */
+.doc pre, .doc .tree, .doc code, .theme-switch { direction: ltr; }
+.doc code { unicode-bidi: isolate; }
+[dir="rtl"] .doc pre, [dir="rtl"] .doc .tree { text-align: left; }
+[dir="rtl"] .progress { transform-origin: 100% 50%; }
+[dir="rtl"] .pager-arrow svg { transform: scaleX(-1); }
+[dir="rtl"] .side details:not([open]) .chev { transform: scaleX(-1); }
+[dir="rtl"] .side .chev { transition: none; }
+html[dir="rtl"][data-side="closed"] .side { transform: translateX(1rem); }
+@media (max-width: 900px) {
+  [dir="rtl"] .side {
+    inset: 0 0 0 auto;
+    border-right: 0;
+    border-left: 1px solid var(--line);
+    transform: translateX(100%);
+  }
+}
+/* Scripts whose letters join or carry marks never get tracking: spaced letters break the joins of
+   Arabic and Urdu and the vowel signs of Hindi and Bengali, and Chinese is set solid. */
+html:is([lang="ar"], [lang="ur"], [lang="hi"], [lang="bn"], [lang="zh"]) body * {
+  letter-spacing: normal !important;
 }

@@ -1,9 +1,11 @@
 ---
-from src.content import ICONS
+from src.content import ICONS, home_link
+
+current: prop[str] = ""
 ---
 <header class="mobilebar">
   <button class="menu" type="button" aria-label="Open the menu" aria-expanded="false" data-i18n-aria="open_menu">{{ ICONS.icon_menu }}</button>
-  <a class="brand" href="/docs" aria-label="Nexy, home">
+  <a class="brand" href="{{ home_link(current) }}" aria-label="Nexy, home" data-i18n-aria="home_aria">
     <img class="brand-logo" src="/assets/nexy.svg" alt="Nexy">
   </a>
   <button class="search-open" type="button" aria-label="Search the docs" data-i18n-aria="search_aria">{{ ICONS.icon_search }}</button>
