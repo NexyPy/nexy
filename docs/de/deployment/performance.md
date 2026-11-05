@@ -4,23 +4,23 @@ Was `nx start` standardmäßig tut, was eingeschaltet werden soll und was gemess
 
 ## Standardeinstellungen
 
-| Bedenken | Standard | Ändern |
+| Sorge | Standard | Ändere es |
 |---|---|---|
-| Verarbeitet | einen Uvicorn Worker pro CPU unter Linux und macOS, einen unter Windows | `nx start` und führt die App über Uvicorn | aus.
-| Komprimierung | aus | `useGZip = {"minimum_size": 1000}` in [Config](../reference/config.md), oder Komprimierung am Reverse-Proxy |
-| Statische Dateien | werden mit `ETag` und `Last-Modified` bereitgestellt, kein `Cache-Control` | setzt langlebiges Caching am Reverse-Proxy oder CDN für Hash-Bundles |
-| HTML-Seiten | werden pro Anfrage gerendert, kein Cache | [ISR](../rendering/isr.md) mit `revalidate = N` |
-| API-Dokumente | zu | `useDocs = False` in der Produktion |
-| Knoten zur Laufzeit | keiner | `nx build` rendert Client-Komponenten vor |
+| Prozesse | ein Uvicorn Worker pro CPU unter Linux und macOS, einer unter Windows | `nx start` führt die App durch Uvicorn |
+| Komprimierung | aus | `useGZip = {"minimum_size": 1000}` in [Konfiguration](../reference/config.md) oder komprimieren Sie am Reverse-Proxy |
+| Statische Dateien | serviert mit `ETag` und `Last-Modified`, nein `Cache-Control` | Legen Sie langlebiges Caching am Reverse-Proxy oder CDN für Hash-Bundles fest |
+| HTML-Seiten | Wird pro Anfrage gerendert, kein Cache | [ISR](../rendering/isr.md) mit `revalidate = N` |
+| API-Dokumente | auf | `useDocs = False` in der Produktion |
+| Knoten zur Laufzeit | keine | `nx build` rendert Clientkomponenten vorab |
 
 ## Gemessen
 
 Eine lokale Ausführung, ein Uvicorn Worker, Windows, Python 3.13, Keep-Alive-Verbindungen von einem Python Lastgenerator auf demselben Computer. Behandeln Sie die Zahlen als Grundlage für den Vergleich von Änderungen und nicht als Maßstab für andere Frameworks.
 
-| Route | Parallelität | Anfragen pro Sekunde | p50 | p99 |
+| Route | Parallelität | Anfragen pro Sekunde | S. 50 | S. 99 |
 |---|---|---|---|---|
 | Nackte FastAPI JSON-Route | 16 | ~4.500 | 3,4 ms | 5,1 ms |
-| Nexy JSON-Route (`src/routes/api/ping.py`) | 16 | ~2.900 | 5,2 ms | 9,8 ms |
+| Nexy-JSON-Route (`src/routes/api/ping.py`) | 16 | ~2.900 | 5,2 ms | 9,8 ms |
 | Nexy SSR-Seite (16 KB, 16 Komponenten) | 1 | ~500 | 1,9 ms | 3,0 ms |
 | Nexy SSR-Seite (16 KB, 16 Komponenten) | 64 | ~670 | 94 ms | 126 ms |
 
@@ -42,4 +42,4 @@ Lesen der Tabelle:
 
 - [Bereitstellen](README.md)
 - [Rendering](../rendering/README.md)
-- [Config](../reference/config.md)
+- [Konfiguration](../reference/config.md)
