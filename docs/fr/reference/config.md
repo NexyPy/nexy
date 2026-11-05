@@ -1,7 +1,6 @@
 # Configuration
 
-La configuration est une classe dans `nexyconfig.py` à la racine du projet. Nexy le charge depuis le répertoire dans lequel il
-arrive; un projet sans le fichier utilise les valeurs par défaut.
+La configuration est une classe dans `nexyconfig.py` à la racine du projet. Nexy le charge à partir du répertoire dans lequel il s'exécute ; un projet sans le fichier utilise les valeurs par défaut.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -36,7 +35,7 @@ class NexyConfig(NexyConfigModel):
 
 ## Front-end
 
-| Champ | Valeur par défaut | Signification |
+| Champ | Par défaut | Signification |
 |---|---|---|
 | `useFF` | `None` | fabrique de framework client : `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | créer et servir des bundles clients avec Vite |
@@ -44,13 +43,11 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | extensions supplémentaires surveillées par le serveur de développement |
 | `useWatchExcludePatterns` | `None` | modèles globaux que le serveur de développement ignore |
 
-> **Bon à savoir** : `NexyConfigModel` déclare `useVite = False`; la valeur par défaut du runtime `Config` est
-> `True`.
+> **Bon à savoir** : `NexyConfigModel` déclare `useVite = False` ; la valeur par défaut du runtime `Config` est `True`.
 
 ## Noms de fichiers réservés
 
-Chaque champ ajoute des extensions à un rôle réservé. `useLayoutExtensions = ["md"]` fait `layout.md`
-réservé, exactement comme `layout.nexy`.
+Chaque champ ajoute des extensions à un rôle réservé. `useLayoutExtensions = ["md"]` rend `layout.md` réservé, exactement comme `layout.nexy`.
 
 | Champ | Ajoute des extensions à |
 |---|---|
@@ -68,9 +65,9 @@ réservé, exactement comme `layout.nexy`.
 | `useDocs` | `True` | servir le schéma OpenAPI et sa page de référence Scalar |
 | `useDocsUrl` | `"/docs"` | chemin de la page de référence de l'API |
 | `useRedocsUrl` | `"/redocs"` | déclaré mais aucune route n'est montée |
-| `useTitle` | `"Nexy App"` | Titre OpenAPI et titre de la page (`"Nexy"` dans `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI titre et titre de la page (`"Nexy"` dans `NexyConfigModel`) |
 
-## Middleware
+## Intergiciel
 
 | Champ | Par défaut | Signification |
 |---|---|---|
@@ -82,18 +79,17 @@ réservé, exactement comme `layout.nexy`.
 | `useAuth` | `None` | configuration du middleware d'authentification |
 | `useHTTPSRedirect` | `False` | rediriger HTTP vers HTTPS |
 
-## Marquage
+## Markdown
 
 | Champ | Par défaut | Signification |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | niveaux de titres inclus dans la table des matières |
 | `useTocTitle` | `"Table of Contents"` | Titre de la table des matières |
-| `useTocAuto` | `True` | générer la table des matières des pages Markdown |
+| `useTocAuto` | `True` | générer la table des matières des Markdown pages |
 
-## Routes en dehors de l'arborescence des fichiers
+## Itinéraires en dehors de l’arborescence des fichiers
 
-Créez un FastAPI `APIRouter` et montez-le avec `useRouter`. Il est servi à côté du fichier
-itinéraires :
+Construisez un FastAPI `APIRouter` et montez-le avec `useRouter`. Il est servi à côté des routes basées sur des fichiers :
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
@@ -119,7 +115,7 @@ Ces champs existent dans `NexyConfigModel` mais aucun code ne les consomme. Leur
 
 `useViteDevUrl`, `useRTL`.
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [i18n](../guides/i18n.md) : internationalisation
 - [Frontend](../guides/frontend.md) : `useFF` et la version client
