@@ -8,6 +8,8 @@ twelve most spoken ones; adding one is a block below, nothing else.
 
 from __future__ import annotations
 
+import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from html import escape
 from pathlib import Path, PurePosixPath
@@ -399,11 +401,16 @@ def text(code: str, key: str) -> str:
     return UI.get(code, UI[DEFAULT]).get(key) or UI[DEFAULT][key]
 
 
-def select_html(current: str = DEFAULT) -> str:
-    """The compact language picker of the top bar: a globe, the code, then every language."""
+def select_html(current: str = DEFAULT, href: Callable[[str], str] | None = None) -> str:
+    """The compact language picker of the top bar: a globe, the code, then every language.
+
+    `href` gives the address of the same page in a language, so a choice is a plain link.
+    """
     language = find(current)
+    where = href or (lambda _code: "#")
     items = "".join(
-        f'<li><a href="#" data-lang="{one.code}" lang="{one.code}" hreflang="{one.code}"'
+        f'<li><a href="{escape(where(one.code))}" data-lang="{one.code}" lang="{one.code}"'
+        f' hreflang="{one.code}"'
         f"{' aria-current="true"' if one.code == language.code else ''}>"
         f"<span>{escape(one.native)}</span><small>{escape(one.english)}</small></a></li>"
         for one in LANGUAGES
@@ -414,6 +421,36 @@ def select_html(current: str = DEFAULT) -> str:
         f"<summary>{ICONS['icon_globe']}<span data-lang-code>{language.code.upper()}</span></summary>"
         f"<ul>{items}</ul></details>"
     )
+
+
+# A word of the site in a page: its text, its label or its placeholder names the key it shows.
+_TEXT = re.compile(r'(<[^>]*\bdata-i18n="(\w+)"[^>]*>)([^<]*)(<)')
+_ATTRIBUTE = re.compile(r'<[^>]*\bdata-i18n-(aria|placeholder)="(\w+)"[^>]*>')
+_NAMES = {"aria": "aria-label", "placeholder": "placeholder"}
+
+
+def _words(found: re.Match[str], code: str) -> str:
+    """One element whose text now says the word in the language; an unknown key stays as it is."""
+    if found[2] not in UI[DEFAULT]:
+        return found[0]
+    return f"{found[1]}{escape(text(code, found[2]), quote=False)}{found[4]}"
+
+
+def _attribute(found: re.Match[str], code: str) -> str:
+    """One tag whose label or placeholder now says the word in the language."""
+    if found[2] not in UI[DEFAULT]:
+        return found[0]
+    name = _NAMES[found[1]]
+    value = escape(text(code, found[2]), quote=True)
+    return re.sub(rf'\b{name}="[^"]*"', f'{name}="{value}"', found[0], count=1)
+
+
+def localize(html: str, code: str) -> str:
+    """The page with every word of the site in the language: no script needed to read it."""
+    if code == DEFAULT:
+        return html
+    html = _TEXT.sub(lambda found: _words(found, code), html)
+    return _ATTRIBUTE.sub(lambda found: _attribute(found, code), html)
 
 
 def payload() -> dict[str, object]:
