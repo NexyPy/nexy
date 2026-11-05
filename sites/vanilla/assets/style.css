@@ -696,6 +696,24 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 }
 .side-filter input::placeholder { color: var(--muted); }
 .side-filter input::-webkit-search-cancel-button { -webkit-appearance: none; }
+/* The logo of the menu is a mark, not a link of the list: no padding, no hover background. */
+.side .brand, .side .brand:hover { min-height: 0; padding: 0; background: none; }
+/* The top row of the drawer, as in Fumadocs: GitHub, the language, the theme, then close. */
+.sheet-bar { display: none; }
+.side-close {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.side-close svg { width: 18px; height: 18px; }
+.side-close:hover { color: var(--ink); background: var(--soft); }
 .side-foot { margin: 1.25rem 0.2rem 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 .side-foot a { display: block; min-height: 0; padding: 0.2rem 0.35rem; color: var(--muted); text-decoration: none; border-radius: 0.25rem; }
 .side-foot a:hover { color: var(--ink); background: var(--soft); }
@@ -1357,6 +1375,7 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   .menu, .bar-link { width: 2.75rem; height: 2.75rem; }
   .lang-select summary { height: 2.75rem; }
   .theme-switch { width: 3.25rem; height: 2rem; }
+  :root { --top: 3.5rem; }
   /* The bar of Fumadocs: the logo on the start side, the search and the menu on the end side. */
   .mobilebar {
     position: sticky;
@@ -1395,11 +1414,36 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   }
   /* A menu folded on a wide screen is still a drawer here: the fold never hides it. */
   html[data-side="closed"] .side { opacity: 1; pointer-events: auto; transform: translateX(var(--drawer-out)); }
-  .side-top { background: var(--card); }
+  .side-top { padding: 1rem 1rem 0.5rem; background: var(--card); }
+  /* The drawer opens on its row of controls: the logo and the search are in the bar above. */
+  .sheet-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+    color: var(--muted);
+  }
+  .side .sheet-bar .bar-link { display: grid; min-height: 0; padding: 0; margin-inline-end: auto; }
+  .side-brand, .side-top > .search-open { display: none; }
   body.open .side,
   html[data-side="closed"] body.open .side { transform: none; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.4); }
-  .panel { margin: 0 0.5rem 0.5rem; min-height: calc(100dvh - var(--top) - 0.5rem); }
-  .panel-bar { top: var(--top); }
+  /* The page has no frame on a phone: it runs from edge to edge under the bar. */
+  .panel {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    min-height: calc(100dvh - var(--top));
+  }
+  /* The controls of the page bar live in the drawer here: only the reading progress stays. */
+  .panel-bar {
+    top: var(--top);
+    height: 0;
+    padding: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .panel-bar > :not(.progress) { display: none; }
   .page { padding: 1.25rem 1.1rem 4.5rem; }
   .doc h1 { font-size: 2rem; }
   body[data-home] .page::before { display: none; }

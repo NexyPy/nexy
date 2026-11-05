@@ -113,7 +113,8 @@ def test_the_menu_marks_the_current_page(answers):
 def test_the_menu_shows_no_description(answers):
     """A11 mirror: the Nexy site lists labels in the menu, never their summaries."""
     assert 'class="page-summary"' not in _menu(answers[ACTIONS][2])
-    assert "<small" not in _menu(answers[ACTIONS][2])
+    pages = _menu(answers[ACTIONS][2]).split('<div class="side-scroll">', 1)[1]
+    assert "<small" not in pages
 
 
 def _progress_scripts(text: str) -> list[str]:

@@ -72,13 +72,67 @@ def test_the_drawer_takes_85_percent_up_to_380px():
     assert "width: min(380px, 85vw)" in side
 
 
-def test_the_drawer_keeps_its_close_button():
-    assert ".side-brand .side-toggle, .bar-open { display: none; }" not in CSS
-
-
 def test_a_menu_folded_on_a_wide_screen_still_opens_on_a_phone():
     assert 'html[data-side="closed"] body.open .side' in _narrow()
 
 
-def test_the_close_button_of_the_drawer_closes_it_on_a_phone():
-    assert "narrow() ? setMenu(false, true) : fold(!html.dataset.side)" in JS
+@pytest.fixture(params=["vanilla", "nexy"])
+def sheet(request: pytest.FixtureRequest) -> str:
+    """The top row of the drawer: GitHub, the language, the theme and the close button."""
+    page = request.getfixturevalue(request.param)
+    return page.split('<div class="sheet-bar">', 1)[1].split('<details class="area-select"', 1)[0]
+
+
+def test_the_sheet_links_to_github(sheet):
+    assert 'href="https://github.com/NexyPy/nexy"' in sheet
+
+
+def test_the_sheet_picks_the_language(sheet):
+    assert 'class="lang-select"' in sheet
+
+
+def test_the_sheet_switches_the_theme(sheet):
+    assert "data-theme-toggle" in sheet
+
+
+def test_the_sheet_ends_with_its_close_button(sheet):
+    assert sheet.index("data-theme-toggle") < sheet.index('class="side-close"')
+
+
+def test_the_close_button_draws_the_sidebar_icon(sheet):
+    close = sheet.split('class="side-close"', 1)[1].split("</button>", 1)[0]
+    assert ICONS["icon_sidebar"] in close
+
+
+def test_the_sheet_row_is_hidden_on_a_wide_screen():
+    assert ".sheet-bar { display: none; }" in CSS
+
+
+def test_the_sheet_row_shows_on_a_phone():
+    assert ".sheet-bar {\n    display: flex;" in _narrow()
+
+
+def test_the_logo_of_the_menu_has_no_hover_background():
+    rule = ".side .brand, .side .brand:hover { min-height: 0; padding: 0; background: none; }"
+    assert rule in CSS
+
+
+def test_the_page_has_no_frame_on_a_phone():
+    panel = _narrow().split("  .panel {", 1)[1].split("}", 1)[0]
+    assert "border: 0" in panel and "border-radius: 0" in panel and "margin: 0" in panel
+
+
+def test_the_bar_of_the_page_leaves_its_controls_to_the_sheet():
+    assert ".panel-bar > :not(.progress) { display: none; }" in _narrow()
+
+
+def test_every_theme_switch_changes_the_theme():
+    assert "$$('[data-theme-toggle]')" in JS
+
+
+def test_every_language_picker_closes_on_a_click_elsewhere():
+    assert "$$('.lang-select').forEach" in JS
+
+
+def test_the_close_button_closes_the_drawer():
+    assert "$('.side-close').addEventListener('click', () => setMenu(false, true))" in JS
