@@ -4,11 +4,11 @@
 
 ## 开始之前
 
-| 您需要 | 为什么 |
+| 你需要 | 为什么 |
 |---|---|
 | Python 3.12+ | `requires-python` 在 `pyproject.toml` |
-| [uv](https://docs.astral.sh/uv/) | 提供 `uvx`，创建项目并安装其软件包 |
-| Node.js 18+ | 仅当您使用客户端框架时（React、Vue、Svelte、Solid、Preact）|
+| [uv](https://docs.astral.sh/uv/) | 提供 `uvx`，创建项目并安装其包 |
+| Node.js 18+ | 仅当您使用客户端框架时（React、Vue、Svelte、Solid、Preact） |
 
 还没有 uv 吗？请参阅[安装](installation.md)。
 
@@ -22,10 +22,10 @@ uvx nexy new my-app
 
 | 提示 | 效果 |
 |---|---|
-| 基于文件的路由器？ | `Yes` 扫描 `src/routes/`； `No` 在 `src/apps/` | 中搭建模块化路由器
+| 基于文件的路由器？ | `Yes` 扫描 `src/routes/`； `No` 在 `src/apps/` 中搭建模块化路由器 |
 | 项目类型 | `Web` 添加布局和客户端资源，`API` 开始时没有视图 |
-| 客户端组件？ | 添加了一个框架及其 Vite 设置 |
-| ORM / 数据库 | 添加模型层，或者什么都不添加 |
+| 客户端组件？ | 添加一个框架及其 Vite 设置 |
+| ORM/数据库 | 添加模型层，或者什么都不添加 |
 
 不确定？回答 `Yes`、`Web`，并且没有客户端组件。您可以稍后添加。
 
@@ -87,9 +87,9 @@ controllers = [AppController, AboutController, HelloController]
 
 ## 下一步去哪里
 
-| 您想要 | 阅读 |
+| 你想要 | 阅读 |
 |---|---|
 | 添加 Python 端点并发布构建 | [教程](tutorial.md) |
 | 知道每个文件所属的位置 | [项目结构](project-structure.md) |
-| 了解谁构建了什么 | [Nexy 的工作原理 ](how-nexy-works.md) |
-| 使用 React、Vue、Svelte、Solid 或 Preact | [视图 ](../views/README.md) |
+| 了解谁建造了什么 | [Nexy 的工作原理](how-nexy-works.md) |
+| 使用 React、Vue、Svelte、Solid 或 Preact | [浏览次数](../views/README.md) |
