@@ -30,5 +30,5 @@ A barra de ferramentas é um bloco de estilo e um script adicionado antes de `</
 
 ## Próximas etapas
 
-- [Config](../reference/config.md): todas as opções
+- [Configuração](../reference/config.md): todas as opções
 - [Teste](testing.md): teste uma página ou um componente
