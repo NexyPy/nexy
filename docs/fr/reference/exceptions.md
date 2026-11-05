@@ -9,14 +9,14 @@ Une demande peut échouer à quatre endroits, et Nexy répond à chacun différe
 
 | Que s'est-il passé | Statut | Le navigateur voit | Le client API voit |
 |---|---|---|---|
-| aucune route ne correspond à l'URL | `404` | `notfound.nexy`, sinon la page intégrée | `{"detail": "Not Found"}` |
+| aucun itinéraire ne correspond à l'URL | `404` | `notfound.nexy`, sinon la page intégrée | `{"detail": "Not Found"}` |
 | un segment de chemin ne correspond pas à son annotation | `404` | la même page | `{"detail": "Not Found"}` |
-| une requête, un en-tête, un cookie ou un champ de corps est manquant ou invalide | Corps JSON de `422` | FastAPI Corps JSON de | Corps JSON de FastAPI |
+| une requête, un en-tête, un cookie ou un champ de corps est manquant ou invalide | `422` | Corps JSON de FastAPI | Corps JSON de FastAPI |
 | `notFound()` | `404` | la page | `{"detail": ...}` |
 | `unauthorized()` | `401` | la page intégrée | `{"detail": ...}` |
 | `forbidden()` | `403` | la page intégrée | `{"detail": ...}` |
 | `raise HTTPException(409, ...)` | `409` | la page intégrée | `{"detail": ...}` |
-| une exception, rien n'a été détecté | `500` | `errors.nexy`, sinon la page intégrée | `{"detail", "reference"}` |
+| une exception, rien n'a été pris | `500` | `errors.nexy`, sinon la page intégrée | `{"detail", "reference"}` |
 | `redirect(url)` | `307` | la destination, pas de page | la destination, pas de corps |
 | `permanentRedirect(url)` | `308` | la destination, pas de page | la destination |
 
@@ -42,12 +42,12 @@ Browser ──► Middleware ──► Router ──► Page or handler
                  └─ raises ──────────────────────────────────────► 500
 ```
 
-| Étape | Ce qui peut échouer | La réponse |
+| Scène | Qu'est-ce qui peut échouer | La réponse |
 |---|---|---|
-| Middleware | vos `middleware.py`, CORS, sessions | le statut de l'exception, sinon `500` |
+| Intergiciel | vos `middleware.py`, CORS, sessions | le statut de l'exception, sinon `500` |
 | Routeur | l'URL ne correspond à aucun fichier | `404` |
 | Validation | un segment de chemin ne peut pas être converti | `404` |
-| Validation | d'une requête, d'un en-tête, d'un cookie ou d'un champ de corps | `422` |
+| Validation | une requête, un en-tête, un cookie ou un champ de corps | `422` |
 | Page, gestionnaire, action, garde | `HTTPException` | son statut |
 | Page, gestionnaire, action, garde | autre chose | `500` |
 
@@ -70,12 +70,12 @@ async def GET(slug: str):
     return post
 ```
 
-| Appeler | Répondre | Lorsque |
+| Appeler | Réponse | Quand |
 |---|---|---|
 | `notFound(detail=None)` | `404` | la ressource n'existe pas |
 | `unauthorized(detail=None, scheme=None)` | `401` | le visiteur doit d'abord se connecter |
-| `forbidden(detail=None)` | `403` | le visiteur est connu mais ne peut pas le voir |
-| `redirect(url, status=307)` | `307` | les envoyer ailleurs en gardant la méthode |
+| `forbidden(detail=None)` | `403` | le visiteur est connu mais ne le verra peut-être pas |
+| `redirect(url, status=307)` | `307` | envoyez-les ailleurs en gardant la méthode |
 | `redirect(url, status=303)` | `303` | après un formulaire : la requête suivante est un `GET` |
 | `permanentRedirect(url)` | `308` | une page déplacée dont les moteurs de recherche devraient se souvenir |
 
@@ -95,7 +95,7 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 | Problème | Statut | Pourquoi |
 |---|---|---|
-| requête, en-tête, cookie ou champ de corps manquant ou invalide | `422` | la requête a atteint le gestionnaire, les données sont erronées |
+| requête, en-tête, cookie ou champ de corps manquant ou invalide | `422` | la demande a atteint le gestionnaire, les données sont fausses |
 | segment de chemin invalide (`/api/users/abc` pour `id: int`) | `404` | le dossier n'a pas de route pour un non-numéro, donc l'URL n'existe pas |
 
 Le corps de `422` est la forme standard de FastAPI, donc les clients et les SDK générés continuent de fonctionner :
@@ -123,13 +123,13 @@ Pour un formulaire ou une action, le client reçoit un `ActionError` avec `statu
 
 | Fichier | Statut | Portée |
 |---|---|---|
-| `src/routes/notfound.nexy` | `404` | chaque tracé du projet |
-| `src/routes/errors.nexy` | `500` | chaque tracé du projet |
-| `src/routes/forbidden.nexy` | `403` | chaque tracé du projet |
-| `src/routes/unauthorized.nexy` | `401` | chaque tracé du projet |
-| `src/routes/blog/notfound.nexy` | `404` | `/blog` et inférieurs |
-| `src/routes/blog/errors.nexy` | `500` | `/blog` et inférieurs |
-| `src/routes/loading.nexy` | - | réservé, aucun effet d'exécution pour le moment |
+| `src/routes/notfound.nexy` | `404` | chaque itinéraire du projet |
+| `src/routes/errors.nexy` | `500` | chaque itinéraire du projet |
+| `src/routes/forbidden.nexy` | `403` | chaque itinéraire du projet |
+| `src/routes/unauthorized.nexy` | `401` | chaque itinéraire du projet |
+| `src/routes/blog/notfound.nexy` | `404` | `/blog` et inférieur |
+| `src/routes/blog/errors.nexy` | `500` | `/blog` et inférieur |
+| `src/routes/loading.nexy` | - | réservé, pas encore d'effet d'exécution |
 
 Un fichier quelque part dans les routes installe la réponse à son statut : une copie à la racine répond à l'ensemble du projet, une copie dans un dossier répond à ce dossier et le fichier le plus profond qui correspond à l'URL l'emporte. Une URL en dehors de chaque copie et un statut sans aucun fichier obtiennent les pages stylisées intégrées. Voir [Pages d'erreur par dossier](../routing/fbr/errors/folder-pages.md).
 
@@ -142,9 +142,9 @@ Une exception qui n'a rien détecté est enregistrée une seule fois, avec sa r�
 
 | | `nexy dev` | `nexy build` puis `nexy start` |
 |---|---|---|
-| Navigateur | l'erreur, les lignes de votre code et le traceback | `errors.nexy`, sinon la page intégrée, avec une référence |
+| Navigateur | l'erreur, les lignes de votre code et le traçage | `errors.nexy`, sinon la page intégrée, avec une référence |
 | Client API | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Terminal | l'exception et les lignes de votre code | l'exception, tout le traçage et la référence |
+| Borne | l'exception et les lignes de votre code | l'exception, tout le traçage et la référence |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
@@ -165,9 +165,9 @@ Une action est un point de terminaison `POST` avec un chemin généré. Ses éch
 | Situation | Statut | Client |
 |---|---|---|
 | un champ est manquant ou invalide | `422` | `ActionError` avec `fields` |
-| `HTTPException(403)` soulevée dans le cadre de l'action | `403` | `ActionError` avec `status` et `detail` |
-| une exception non gérée | `500` | `ActionError` ; la référence est dans le journal du serveur |
-| l'en-tête `Origin` est un autre site | `403` | refusé avant l'exécution de l'action |
+| `HTTPException(403)` soulevés dans l'action | `403` | `ActionError` avec `status` et `detail` |
+| une exception non gérée | `500` | `ActionError`; la référence est dans le journal du serveur |
+| l'en-tête `Origin` est un autre site | `403` | refusé avant le déroulement de l'action |
 
 Un formulaire sans JavaScript est publié dans le chemin d'action ; un succès renvoie `303` à la page, un échec affiche la page d'erreur. Voir [Actions](../guides/actions.md#forms-without-javascript).
 
@@ -185,4 +185,4 @@ Un formulaire sans JavaScript est publié dans le chemin d'action ; un succès 
 - [Pages d'erreur](../routing/fbr/errors/README.md) : le comportement de la page entière, avec des exemples
 - [Validation et erreurs](../routing/fbr/handlers/validation-and-errors.md) : gestionnaires d'API
 - [Dépannage](../guides/troubleshooting.md) : les erreurs que les gens rencontrent réellement
-- [Testing](../guides/testing.md) : affirmer un statut et un corps
+- [Tester](../guides/testing.md) : affirmer un statut et un corps
