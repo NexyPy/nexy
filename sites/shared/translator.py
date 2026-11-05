@@ -11,8 +11,22 @@ Nothing here talks to a network: the same three functions serve the tests and th
 from __future__ import annotations
 
 import re
+from collections.abc import Collection
 
 _PLACEHOLDER = re.compile(r"\[\[\s*(\d+)\s*\]\]")
+
+# The names a service must not touch: a product is not a word to translate. A service rewrites
+# `Python` as the snake, `Vue` as a view and `FastAPI` letter by letter. The longest name first,
+# so `Jinja2` is not read as `Jinja` and a `2`.
+NAMES = (
+    "Claude Code", "Next.js", "Node.js", "SolidJS", "Jinja2", "Jinja", "Python",
+    "FastAPI", "Starlette", "Uvicorn", "Pydantic", "Vite", "React", "Preact", "Vue", "Svelte",
+    "Solid", "NestJS", "Django", "Flask", "Remix", "Astro", "Markdown", "MDX", "TypeScript",
+    "JavaScript", "Tailwind", "UnoCSS", "Tortoise", "SQLModel", "SQLAlchemy", "Alembic",
+    "Aerich", "SQLite", "PostgreSQL", "WebSocket", "OpenAPI", "GitHub", "Nginx", "Caddy",
+    "Docker", "Codex", "OpenCode", "pnpm", "npm", "pytest", "uv",
+)  # fmt: skip
+_NAME = "|".join(re.escape(name) for name in sorted(NAMES, key=len, reverse=True))
 
 # What must survive the trip, in the order that keeps the longest match first: a fenced block is
 # read before a lone backtick, a comment before a tag, a link target before a bare URL.
@@ -24,6 +38,9 @@ _KEPT = re.compile(
   | (?P<code>`[^`\n]+`)
   | (?P<link>\][(][^)\s]+[)])
   | (?P<url>https?://[^\s)>\]]+)
+  | (?P<name>(?<![\w.-])(?:"""
+    + _NAME
+    + r""")(?![\w-]))
   | (?P<separator>^\|?[ \t]*:?-{2,}:?[ \t]*(\|[ \t]*:?-{2,}:?[ \t]*)*\|?[ \t]*$)
   | (?P<marker>^[ \t]*([#]{1,6}|[-*+]|\d+\.|>)[ \t]+)
   | (?P<rule>^[ \t]*(-{3,}|\*{3,}|_{3,})[ \t]*$)
@@ -100,6 +117,18 @@ def protect(markdown: str) -> tuple[str, list[str]]:
     return _KEPT.sub(swap, markdown), kept
 
 
+# The kept parts that only shape the text: a reader sees them as layout, never as a word.
+_SHAPE = re.compile(
+    r"\A(?:[ \t]*(?:[#]{1,6}|[-*+]|\d+\.|>)|\*\*|__|\||[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*)\Z"
+    r"|\A\|?[ \t]*:?-{2,}"
+)
+
+
+def structural(kept: list[str]) -> frozenset[int]:
+    """The placeholders that are layout: a marker, a pipe, an emphasis, a table separator."""
+    return frozenset(index for index, part in enumerate(kept) if _SHAPE.match(part))
+
+
 def chunks(template: str, limit: int = CHUNK) -> list[str]:
     """The template cut at paragraph boundaries, each piece short enough for one request."""
     pieces: list[str] = []
@@ -156,6 +185,41 @@ def heal_opening(answer: str) -> str:
     return _OPENING.sub(r"[[\1]]", answer, count=1)
 
 
+# The placeholders that open a line: a heading marker, a bullet, the first pipe of a row. Some
+# services drop one that stands before a short line (`[[3]] Reference` comes back as one word).
+_LEAD = re.compile(r"\[\[(\d+)\]\][ \t]*")
+
+
+def _opening(line: str, shape: Collection[int] | None) -> str:
+    """The layout placeholders a line opens with; a name or a code that starts a sentence stays."""
+    end = 0
+    while (found := _LEAD.match(line, end)) and (shape is None or int(found[1]) in shape):
+        end = found.end()
+    return line[:end]
+
+
+def leads(chunk: str, shape: Collection[int] | None = None) -> tuple[str, list[str]]:
+    """The chunk without the layout placeholders that open its lines, and those, line by line.
+
+    `shape` names the placeholders that are layout (see `structural`); without it, every
+    placeholder that opens a line is taken out.
+    """
+    lines = chunk.split("\n")
+    openings = [_opening(line, shape) for line in lines]
+    bodies = [line[len(head) :] for line, head in zip(lines, openings, strict=True)]
+    return "\n".join(bodies), openings
+
+
+def with_leads(answer: str, openings: list[str]) -> str | None:
+    """The openings put back at the start of their lines; None when the answer has other lines."""
+    lines = answer.split("\n")
+    if len(lines) != len(openings):
+        return None
+    return "\n".join(
+        head + line.lstrip() if head else line for line, head in zip(lines, openings, strict=True)
+    )
+
+
 def restore(translated: list[str], kept: list[str]) -> str:
     """Put the kept parts back into the translated pieces, or fail when an answer lost one."""
     text = "\n\n".join(translated)
@@ -187,6 +251,45 @@ def with_captions(markdown: str, translated: dict[str, str]) -> str:
     return _CAPTION.sub(swap, markdown)
 
 
+_CODE_SPAN = re.compile(r"`[^`\n]*`")
+
+
+def _bold(line: str) -> str:
+    """A line whose bold spans hold no space inside their stars: `** a **` reads `**a**`."""
+    if "**" not in line or "**" in "".join(_CODE_SPAN.findall(line)):
+        return line
+    parts = line.split("**")
+    if len(parts) % 2 == 0:
+        return line
+    return "**".join(part.strip() if index % 2 else part for index, part in enumerate(parts))
+
+
+def _bolds(markdown: str) -> str:
+    """Every line outside a fence with its bold spans closed tight, so Markdown draws them."""
+    lines, fenced = [], False
+    for line in markdown.split("\n"):
+        if _FENCE_LINE.match(line):
+            fenced = not fenced
+        lines.append(line if fenced or _FENCE_LINE.match(line) else _bold(line))
+    return "\n".join(lines)
+
+
 def tidy(markdown: str) -> str:
-    """Drop the list comma a service inserts at the start of a table cell."""
-    return _CELL_COMMA.sub(r"\1 ", markdown)
+    """Drop the list comma a service puts at the start of a cell, and the spaces inside bold."""
+    return _bolds(_CELL_COMMA.sub(r"\1 ", markdown))
+
+
+_SPACED_AFTER = re.compile(r"\[\[(\d+)\]\](?=\s)")
+_SPACED_BEFORE = re.compile(r"(?<=\s)\[\[(\d+)\]\]")
+
+
+def respace(answer: str, chunk: str) -> str:
+    """Give back the space a service ate between a placeholder and a word.
+
+    A space is put back only where the chunk had one, so a placeholder glued to its word in the
+    source stays glued, and a language written without spaces gets none it did not ask for.
+    """
+    after = {found[1] for found in _SPACED_AFTER.finditer(chunk)}
+    before = {found[1] for found in _SPACED_BEFORE.finditer(chunk)}
+    answer = re.sub(r"\[\[(\d+)\]\](?=\w)", lambda m: m[0] + " " if m[1] in after else m[0], answer)
+    return re.sub(r"(?<=\w)\[\[(\d+)\]\]", lambda m: " " + m[0] if m[1] in before else m[0], answer)
