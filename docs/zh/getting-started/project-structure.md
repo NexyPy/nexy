@@ -40,10 +40,10 @@ my-app/
 | 文件 | 角色 |
 |---|---|
 | `layout.nexy` | 包装兄弟页面和子页面 |
-| `errors.nexy` | 目录 | 500 页
-| `notfound.nexy` | 目录 | 的 404 页面
-| `dependencies.py` | 目录 | 的共享 FastAPI 依赖项
-| `__init__.py` | Python 封装标记 |
+| `errors.nexy` | 目录 500 页 |
+| `notfound.nexy` | 目录的 404 页面 |
+| `dependencies.py` | 目录的共享 FastAPI 依赖项 |
+| `__init__.py` | Python 包标记 |
 | `loading.nexy` | 保留 - 从路由中排除，但它还没有运行时效果 |
 
 每个页面名称也存在于每个框架中。配置 `react()` 后，`layout.jsx` 和 `layout.tsx` 被保留，与 `layout.nexy`完全相同。这些列表是在 `nexy/core/config.py`（`LAYOUT_FILE_NAMES`、`ERROR_FILE_NAMES`、`NOTFOUND_FILE_NAMES`、`LOADING_FILE_NAMES`）中构建的。
@@ -75,5 +75,5 @@ my-app/
 ## 后续步骤
 
 - [路由](../routing/README.md)：路径如何变成 URL
-- [Config](../reference/config.md)：每个项目选项
+- [配置](../reference/config.md)：每个项目选项
 - [前端](../guides/frontend.md)：Vite，样式和客户端构建
