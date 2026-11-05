@@ -91,8 +91,11 @@ def protect(markdown: str) -> tuple[str, list[str]]:
     kept: list[str] = []
 
     def swap(found: re.Match[str]) -> str:
-        kept.append(found[0])
-        return f"[[{len(kept) - 1}]]"
+        # The space after a marker stays in the text: `[[3]]Modes` is a word a service rewrites,
+        # `[[3]] Modes` a token it keeps.
+        part = found[0].rstrip(" \t")
+        kept.append(part)
+        return f"[[{len(kept) - 1}]]{found[0][len(part) :]}"
 
     return _KEPT.sub(swap, markdown), kept
 
