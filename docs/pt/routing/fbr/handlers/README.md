@@ -82,5 +82,5 @@ Cada rota da API aparece no esquema gerado, porque as rotas são rotas simples F
 - [Dependências](../dependencies/README.md): autenticação e configuração compartilhadas por manipulador ou por diretório
 - [Validação e erros](validation-and-errors.md): `422`, `404` e erros JSON
 - [Roteamento](../../README.md): caminho do arquivo para URL
-- [Actions](../../../guides/actions.md): endpoints com caminhos gerados
-- [Config](../../../reference/config.md): middleware, CORS, sessões
+- [Ações](../../../guides/actions.md): endpoints com caminhos gerados
+- [Configuração](../../../reference/config.md): middleware, CORS, sessões
