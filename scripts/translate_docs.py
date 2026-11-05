@@ -131,7 +131,7 @@ def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -
 
 def translate_markdown(markdown: str, target: str, engine: Engine = google) -> str:
     """A whole page in another language, its skeleton intact."""
-    template, kept = translator.protect(markdown)
+    template, kept = translator.protect(translator.unwrap(markdown))
     translated = []
     for chunk in translator.chunks(template):
         translated.append(translate_chunk(chunk, target, engine))
