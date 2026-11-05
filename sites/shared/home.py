@@ -10,16 +10,15 @@ import html as htmllib
 from pathlib import Path
 
 from sites.shared import docs_source as source
+from sites.shared import i18n
 from sites.shared.icons import HOME_ART
 
-FIRST_TRACK = "getting-started"
 
-
-def _introduction(docs: Path, link: source.Link) -> source.Rendered:
+def _introduction(docs: Path, link: source.Link, lang: str) -> source.Rendered:
     """The words of README.md before its first section, drawn like any page."""
-    page = source.home(docs)
+    page = source.home(docs, lang)
     text = page.path.read_text(encoding="utf-8").split("\n## ", 1)[0]
-    return source.render_fragment(text, page, docs, link)
+    return source.render_fragment(text, page.path, docs, link)
 
 
 def _card(page: source.Page, link: source.Link) -> str:
@@ -44,16 +43,13 @@ def _group(group: source.Group, link: source.Link) -> tuple[str, source.Heading]
     return block, heading
 
 
-def render(docs: Path, link: source.Link) -> source.Rendered:
-    """The home page: its introduction, then one card per page of Getting Started."""
-    intro = _introduction(docs, link)
+def render(docs: Path, link: source.Link, lang: str = i18n.DEFAULT) -> source.Rendered:
+    """The home page: its introduction, then one card per page of the first section."""
+    intro = _introduction(docs, link, lang)
     blocks = [intro.html]
     headings = list(intro.headings)
-    for track in source.read_tracks(docs):
-        if track.slug != FIRST_TRACK:
-            continue
-        for group in track.groups:
-            block, heading = _group(group, link)
-            blocks.append(block)
-            headings.append(heading)
+    for group in source.read_tracks(docs, lang)[0].groups:
+        block, heading = _group(group, link)
+        blocks.append(block)
+        headings.append(heading)
     return source.Rendered("".join(blocks), headings)
