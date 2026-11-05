@@ -4,8 +4,7 @@ Decoradores que protegem uma rota e a descrevem no esquema OpenAPI.
 
 ## Guardas
 
-`@UseGuard(*guards)` funciona em um controlador (todos os métodos) ou em um método. Cada guarda é adicionada como um
-FastAPI `Depends`, então ele declara os parâmetros necessários e levanta para rejeitar a chamada:
+`@UseGuard(*guards)` funciona em um controlador (todos os métodos) ou em um método. Cada guarda é adicionado como um FastAPI `Depends`, então ele declara os parâmetros necessários e aumenta para rejeitar a chamada:
 
 ```python filename="src/apps/admin/admin_controller.py"
 from fastapi import Header, HTTPException
@@ -26,28 +25,25 @@ class AdminController:
 
 ## Decorador de middleware
 
-`@Middleware(*middlewares)` se comporta da mesma maneira: são dependências FastAPI, não ASGI
-intermediário. Para middleware ASGI real, use `useMiddlewares` em
-[Config](../../reference/config.md) ou [Middleware e segurança](../../guides/middleware-and-security.md).
+`@Middleware(*middlewares)` se comporta da mesma maneira: são dependências FastAPI, não middleware ASGI. Para middleware ASGI real, use `useMiddlewares` em [Config](../../reference/config.md) ou [Middleware e segurança](../../guides/middleware-and-security.md).
 
 ## Metadados de rota
 
-`@UseRoute(...)` define metadados OpenAPI. Isso não muda o caminho.
+`@UseRoute(...)` define OpenAPI metadados. Isso não muda o caminho.
 
 | Argumento | Significado |
 |---|---|
 | `name` | nome da rota |
-| `tags` | Tags OpenAPI |
+| `tags` | OpenAPI tags |
 | `summary`, `description` | texto na referência da API |
 | `deprecated` | marca a operação obsoleta |
 | `include_in_schema` | ocultar a rota do esquema |
 | `operation_id` | ID de operação explícita |
-| `openapi_extra` | campos extras do OpenAPI |
+| `openapi_extra` | OpenAPI campos extras |
 
 ## Respostas
 
-`@UseResponse(...)` define `status_code`, `response_class`, `response_model`, `responses` e o
-opções de serialização.
+`@UseResponse(...)` define `status_code`, `response_class`, `response_model`, `responses` e as opções de serialização.
 
 ```python
 from nexy.decorators import Controller, UseResponse, UseRoute
