@@ -168,6 +168,11 @@ def placeholders(text: str) -> list[int]:
     return [int(found[1]) for found in _PLACEHOLDER.finditer(text)]
 
 
+def has_words(text: str) -> bool:
+    """Whether a piece holds anything to translate once its placeholders are set aside."""
+    return any(char.isalpha() for char in _PLACEHOLDER.sub("", text))
+
+
 def missing(translated: str, kept: list[str]) -> list[int]:
     """The placeholders the answer dropped or repeated, so the caller can retry before giving up."""
     seen = placeholders(translated)
@@ -183,6 +188,17 @@ _OPENING = re.compile(r"\A\[(?!\[)(\d+)\]\]")
 def heal_opening(answer: str) -> str:
     """Give back the bracket a service drops from the placeholder that opens a piece."""
     return _OPENING.sub(r"[[\1]]", answer, count=1)
+
+
+# A zero-width space a service slips between the brackets of a placeholder (Chinese does). Only
+# that one and the BOM: the zero-width joiners carry meaning in Urdu, Hindi and Bengali.
+_INVISIBLE = "[\u200b\ufeff]*"
+_SPLIT_PLACEHOLDER = re.compile(rf"\[{_INVISIBLE}\[{_INVISIBLE}(\d+){_INVISIBLE}\]{_INVISIBLE}\]")
+
+
+def heal(answer: str) -> str:
+    """Mend the placeholders of an answer: their dropped bracket, the invisible spaces inside."""
+    return heal_opening(_SPLIT_PLACEHOLDER.sub(r"[[\1]]", answer))
 
 
 # The placeholders that open a line: a heading marker, a bullet, the first pipe of a row. Some
