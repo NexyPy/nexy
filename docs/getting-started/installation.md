@@ -4,7 +4,7 @@
 
 | Requirement | Why |
 |---|---|
-| Python 3.12+ | `requires-python` in `pyproject.toml` |
+| Python 3.12+ | `requires-python` in `pyproject.toml`; no C compiler needed, Windows included |
 | [uv](https://docs.astral.sh/uv/) | creates the project, installs its packages and runs Nexy |
 | Node.js 18+ | only for a client framework (React, Vue, Svelte, Solid, Preact) |
 
