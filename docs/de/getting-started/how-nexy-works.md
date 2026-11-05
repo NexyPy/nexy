@@ -47,10 +47,10 @@ Zwei Dateirouten gleicher Spezifität werden in alphabetischer Pfadreihenfolge r
 
 Die Erweiterung einer Datei entscheidet darüber, um was es sich handelt, und die Projektkonfiguration entscheidet, welche Erweiterungen aktiv sind.
 
-| Erweiterung | Aktiv, wenn | zusammengestellt von | serviert als |
+| Erweiterung | Aktiv wann | Zusammengestellt von | Serviert als |
 |---|---|---|---|
 | `.nexy` | Servermodus | Nexy: Frontmatter wird zu Python, das Markup wird zu Jinja2 | eine Seite |
-| `.md` | immer | Nexy: GitHub-Geschmack Markdown, Überschriften-IDs, Inhaltsverzeichnis | eine Seite, innerhalb des nächstgelegenen Layouts |
+| `.md` | immer | Nexy: GitHub-basiertes Markdown, Überschriften-IDs, Inhaltsverzeichnis | eine Seite, innerhalb des nächstgelegenen Layouts |
 | `.mdx` | immer | Vite, mit React oder Preact | eine Komponentenroute |
 | `.tsx` | `useFF` ist React, Solid oder Preact | Vite und das Framework | eine Komponentenroute |
 | `.vue` | `useFF` ist Vue | Vite und Vue | eine Komponentenroute |
@@ -66,7 +66,7 @@ Drei Fragen entscheiden über alles, was dem Leser auffällt:
 | Frage | Antwort | Seite |
 |---|---|---|
 | Wer erstellt den HTML-Code? | der Server oder der Browser für eine Client-Route | [Rendering](../rendering/README.md) |
-| Wann werden die Daten gelesen? | bei jeder Anfrage, bei jeder Regeneration oder im Browser | [SSR](../rendering/ssr.md), [ISR](../rendering/isr.md) |
+| Wann werden die Daten gelesen? | bei jeder Anfrage, bei jeder Neugenerierung oder im Browser | [SSR](../rendering/ssr.md), [ISR](../rendering/isr.md) |
 | Wann kommt JavaScript? | nur für eine Insel oder für das gesamte Dokument | [Inseln](../rendering/islands.md), [CSR](../rendering/csr.md) |
 
 Im Servermodus rendert der Server jede Seite, `revalidate` speichert eine Seite pro URL im Cache und Inseln fügen JavaScript zu einer Komponente hinzu. Im Client-Modus wird das erste Dokument in Node gerendert und die Navigation erfolgt dann im Browser.
@@ -85,11 +85,11 @@ Für eine Komponentenroute schreibt Python nur ein Thin-Wrapper-Modul, das auf d
 
 | | `nx dev` | `nx build` dann `nx start` |
 |---|---|---|
-| Seiten | werden beim Speichern zusammengestellt | werden einmalig im Voraus zusammengestellt |
-| Client-Code | Vite Entwicklungsserver mit Hot-Reload, hinter Nexys eigenem Ursprungs-|-Bundle in `__nexy__/client/`, vorgerendertes HTML |
-| Node.js | läuft neben Python | wird nicht benötigt, um | zu dienen
-| Fehler | Einblendung im Browser, Symbolleiste auf jeder Seite | Statusseiten ohne Details |
-| Ursprung | ein Hafen, `3000` | ein Hafen |
+| Seiten | beim Speichern kompiliert | Einmal im Voraus zusammengestellt |
+| Kundencode | Vite Entwicklungsserver mit Hot-Reload, hinter Nexys eigenem Ursprung | Bundle in `__nexy__/client/`, vorgerendertes HTML |
+| Node.js | läuft neben Python | zum Servieren nicht nötig |
+| Fehler | Overlay im Browser, Symbolleiste auf jeder Seite | Statusseiten ohne Details |
+| Herkunft | ein Port, `3000` | ein Port |
 
 Was sich nicht ändert: die gleichen Routing-Regeln, die gleichen Auslagerungsdateien, die gleichen `nexyconfig.py`. Eine Seite, die sich bei beiden unterschiedlich verhält, ist ein Fehler, kein Modus.
 
