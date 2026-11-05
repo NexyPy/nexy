@@ -9,8 +9,8 @@ Unabhängig vom verwendeten Client-Framework folgt jede Seite denselben universe
 Wenn ein Benutzer zu einer Seite navigiert, führt Nexy die folgenden Schritte aus:
 
 1.  **Route Matching**: Der Router identifiziert die Datei, die der URL entspricht.
-2.  **Datenabruf**: Der Server führt die Logik der Seite (Python-Frontmatter oder Framework-Loader) aus, um die erforderlichen Daten abzurufen.
-3.  **Zusammensetzung**: Die Seite wird in ihr nächstgelegenes `layout.nexy` (oder Framework-Layout) eingebunden.
+2.  **Datenabruf**: Der Server führt die Logik der Seite aus (Python Frontmatter oder Framework Loader), um die erforderlichen Daten abzurufen.
+3.  **Komposition**: Die Seite wird in ihr nächstgelegenes `layout.nexy` (oder Framework-Layout) eingebunden.
 4.  **Rendering**: Das Ergebnis wird in HTML gerendert (über Jinja2, Markdown oder Framework SSR).
 5.  **Hydration**: Wenn die Seite ein Client-Framework verwendet, hängt der Browser die interaktive Logik an den statischen HTML-Code an.
 
@@ -34,8 +34,8 @@ Jede Seite kann Metadaten (Titel, Beschreibung, OpenGraph-Tags) definieren, die 
 ## Framework-Implementierung
 Die oben genannten Konzepte sind universell. Um zu erfahren, wie Sie eine Seite in Ihrem spezifischen Framework implementieren, lesen Sie die Anleitung **Unterschiede**:
 
-- [Auf Unterschiede reagieren](../react/differences.md)
-- [Vue-Unterschiede](../vue/differences.md)
-- [Kleine Unterschiede](../svelte/differences.md)
-- [Feste Unterschiede](../solid/differences.md)
-- [Preact-Unterschiede](../preact/differences.md)
+- [React Unterschiede](../react/differences.md)
+- [Vue Unterschiede](../vue/differences.md)
+- [Svelte Unterschiede](../svelte/differences.md)
+- [Solid Unterschiede](../solid/differences.md)
+- [Preact Unterschiede](../preact/differences.md)
