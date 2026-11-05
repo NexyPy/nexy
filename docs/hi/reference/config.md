@@ -16,32 +16,32 @@ class NexyConfig(NexyConfigModel):
 
 ## सर्वर
 
-| फ़ील्ड | डिफ़ॉल्ट | अर्थ |
+| मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `usePort` | `3000` | पोर्ट `dev` और `start` | के लिए
-| `useHost` | `"0.0.0.0"` | बाइंड पता |
+| `usePort` | `3000` | `dev` और `start` के लिए पोर्ट |
+| `useHost` | `"0.0.0.0"` | बाइंड एड्रेस |
 | `useSslKeyfile`, `useSslCertfile` | `None` | सीधे HTTPS परोसें |
-| `useDevTools` | `True` | टूलबार `nexy dev` प्रत्येक पृष्ठ पर जुड़ता है (पृष्ठ जानकारी, मार्ग, त्रुटियां, कॉन्फ़िगरेशन); `False` इसे हटा देता है। उत्पादन में कभी मौजूद नहीं |
-| `useWorkers` | `0` | प्रक्रियाएं `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक है |
+| `useDevTools` | `True` | टूलबार `nexy dev` प्रत्येक पृष्ठ पर जुड़ता है (पृष्ठ जानकारी, मार्ग, त्रुटियाँ, कॉन्फ़िगरेशन); `False` इसे हटा देता है। उत्पादन में कभी मौजूद नहीं |
+| `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 
 ## मार्ग
 
-| फ़ील्ड | डिफ़ॉल्ट | अर्थ |
+| मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useRouter` | `None` | एक `APIRouter` उदाहरण या वर्ग फ़ाइल-आधारित मार्गों के बगल में स्थापित; `None` का अर्थ केवल फ़ाइल-आधारित है |
-| `excludeDirs` | `["templates", "extension", "docs"]` | मार्गों को स्कैन करते समय निर्देशिकाएं छूट गईं |
+| `useRouter` | `None` | फ़ाइल-आधारित मार्गों के बगल में स्थापित एक `APIRouter` उदाहरण या वर्ग; `None` का अर्थ केवल फ़ाइल-आधारित है |
+| `excludeDirs` | `["templates", "extension", "docs"]` | मार्गों को स्कैन करते समय निर्देशिकाएँ छूट गईं |
 | `useAliases` | `None` | उपनाम आयात करें, उदा. `{"@": "src"}` (`@/components/Counter.tsx` का अर्थ है `src/components/Counter.tsx`); `nx new` जिसे आपने चुना है उसे लिखता है, और Vite और `tsconfig.json` उसका अनुसरण करते हैं |
 
 ## अग्रभाग
 
-| फ़ील्ड | डिफ़ॉल्ट | अर्थ |
+| मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useFF` | `None` | क्लाइंट फ्रेमवर्क फैक्ट्री: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
-| `useVite` | `True` | Vite | के साथ क्लाइंट बंडल बनाएं और परोसें
+| `useFF` | `None` | क्लाइंट फ्रेमवर्क फ़ैक्टरी: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
+| `useVite` | `True` | Vite के साथ क्लाइंट बंडल बनाएं और परोसें |
 | `useMarkdownExtensions` | `[]` | `.md`/`.mdx` प्रतिपादन के लिए अतिरिक्त एक्सटेंशन |
 | `useWatchExtensions` | `None` | डेव सर्वर अतिरिक्त एक्सटेंशन देखता है |
-| `useWatchExcludePatterns` | `None` | ग्लोब पैटर्न को डेव सर्वर नजरअंदाज कर देता है |
+| `useWatchExcludePatterns` | `None` | ग्लोब पैटर्न को डेव सर्वर अनदेखा कर देता है |
 
 > **जानकर अच्छा लगा**: `NexyConfigModel` घोषणा करता है `useVite = False`; रनटाइम `Config` डिफ़ॉल्ट `True` है।
 
@@ -49,7 +49,7 @@ class NexyConfig(NexyConfigModel):
 
 प्रत्येक फ़ील्ड आरक्षित भूमिका में एक्सटेंशन जोड़ता है। `useLayoutExtensions = ["md"]` `layout.md` को बिल्कुल `layout.nexy` की तरह आरक्षित बनाता है।
 
-| फ़ील्ड | | में एक्सटेंशन जोड़ता है
+| मैदान | में एक्सटेंशन जोड़ता है |
 |---|---|
 | `useLayoutExtensions` | `layout.*` |
 | `useNotFoundExtensions` | `notfound.*` |
@@ -60,30 +60,30 @@ class NexyConfig(NexyConfigModel):
 
 ## एपीआई दस्तावेज़ीकरण
 
-| फ़ील्ड | डिफ़ॉल्ट | अर्थ |
+| मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
 | `useDocs` | `True` | OpenAPI स्कीमा और उसके स्केलर संदर्भ पृष्ठ की सेवा करें |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
-| `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई मार्ग तय नहीं किया गया है |
+| `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
 | `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` में `NexyConfigModel`) |
 
 ## मिडलवेयर
 
-| फ़ील्ड | डिफ़ॉल्ट | अर्थ |
+| मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
 | `useMiddlewares` | `[]` | एएसजीआई मिडलवेयर क्लासेस |
-| `useCORS` | `None` | क्वार्ग्स के लिए `CORSMiddleware` |
-| `useGZip` | `None` | क्वार्ग्स के लिए `GZipMiddleware` |
-| `useTrustedHost` | `None` | क्वार्ग्स के लिए `TrustedHostMiddleware` |
-| `useSession` | `None` | क्वार्ग्स के लिए `SessionMiddleware` |
+| `useCORS` | `None` | `CORSMiddleware` के लिए क्वार्ग्स |
+| `useGZip` | `None` | `GZipMiddleware` के लिए क्वार्ग्स |
+| `useTrustedHost` | `None` | `TrustedHostMiddleware` के लिए क्वार्ग्स |
+| `useSession` | `None` | `SessionMiddleware` के लिए क्वार्ग्स |
 | `useAuth` | `None` | प्रमाणीकरण मिडलवेयर कॉन्फ़िगरेशन |
 | `useHTTPSRedirect` | `False` | HTTP को HTTPS पर रीडायरेक्ट करें |
 
 ## Markdown
 
-| फ़ील्ड | डिफ़ॉल्ट | अर्थ |
+| मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useTocDepth` | `"2-6"` | विषय-सूची में शामिल शीर्षक स्तर |
+| `useTocDepth` | `"2-6"` | सामग्री की तालिका में शामिल शीर्षक स्तर |
 | `useTocTitle` | `"Table of Contents"` | टीओसी शीर्षक |
 | `useTocAuto` | `True` | Markdown पृष्ठों के लिए सामग्री तालिका तैयार करें |
 
