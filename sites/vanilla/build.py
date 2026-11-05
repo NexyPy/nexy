@@ -145,9 +145,10 @@ def nav_html(tracks: list[source.Track], current: str) -> str:
     return parts + foot
 
 
-def toc_html(headings: list[source.Heading]) -> str:
+def toc_html(headings: list[source.Heading], lang: str = i18n.DEFAULT) -> str:
     items = "".join(
-        f'<li class="l{h.level}"><a href="#{h.id}">{escape(h.text)}</a></li>'
+        f'<li class="l{h.level}"><a href="#{h.id}"{i18n.isolate(h.text, lang)}>'
+        f"{escape(h.text)}</a></li>"
         for h in headings
         if h.level <= 3
     )
@@ -253,7 +254,7 @@ def _page_html(
         home_attr=' data-home="true"' if home else "",
         article_class="doc home" if home else "doc",
         article=rendered.html,
-        toc=toc_html(rendered.headings),
+        toc=toc_html(rendered.headings, page.lang),
         pager=pager_html(before, after, page.slug),
         section=escape(section),
         source=f"https://github.com/NexyPy/nexy/edit/main/docs/{rel}",
