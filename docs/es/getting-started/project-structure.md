@@ -75,5 +75,5 @@ Trate todo el directorio como desechable: elimínelo, reconstrúyalo. Al editarl
 ## Próximos pasos
 
 - [Enrutamiento](../routing/README.md): cómo una ruta se convierte en una URL
-- [Config](../reference/config.md): cada opción del proyecto
+- [Configuración](../reference/config.md): cada opción del proyecto
 - [Frontend](../guides/frontend.md): Vite, estilo y compilación del cliente
