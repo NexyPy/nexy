@@ -50,8 +50,7 @@ setMetadata(title_template="%s | My site")
 </html>
 ```
 
-Eine Seite wird vor ihren Layouts ausgeführt, sodass das Layout findet, wonach die Seite gefragt hat. Eine Seite, die sagt
-Nichts erhält das `useTitle` Ihres `nexyconfig.py` und kein anderes Tag.
+Eine Seite wird vor ihren Layouts ausgeführt, sodass das Layout findet, wonach die Seite gefragt hat. Eine Seite, die nichts sagt, erhält das `useTitle` Ihres `nexyconfig.py` und kein anderes Tag.
 
 ## Die Felder
 
@@ -66,14 +65,11 @@ Nichts erhält das `useTitle` Ihres `nexyconfig.py` und kein anderes Tag.
 | `twitter` | ein `<meta name="twitter:...">` pro Schlüssel |
 | `extra` | eine Liste von Attributdiktaten, jeweils eins `<meta>`: `[{"name": "theme-color", "content": "#fff"}]` |
 
-Ein späterer Aufruf ersetzt einen Wert; `og`, `twitter` und `extra` ergänzen das, was da ist. Ein Feld, das das tut
-not exist löst `TypeError` aus, sodass ein Tippfehler nicht stillschweigend nichts bewirkt.
+Ein späterer Aufruf ersetzt einen Wert; `og`, `twitter` und `extra` ergänzen das, was da ist. Ein Feld, das nicht existiert, löst `TypeError` aus, sodass ein Tippfehler nicht stillschweigend nichts bewirkt.
 
 ## Standardmäßig sicher
 
-Jeder Wert ist mit HTML-Escapezeichen versehen, sodass ein aus einer URL oder aus der Datenbank erstellter Titel das Tag nicht schließen kann
-und ein Skript einfügen. Ein Wert wird einmal maskiert, wenn das Layout `html()` aufruft: maskieren Sie ihn nicht
-sich selbst.
+Jeder Wert ist mit HTML-Escapezeichen versehen, sodass ein aus einer URL oder aus der Datenbank erstellter Titel das Tag nicht schließen und ein Skript einfügen kann. Ein Wert wird einmal maskiert, wenn das Layout `html()` aufruft: maskieren Sie ihn nicht selbst.
 
 ## Nächste Schritte
 
