@@ -13,7 +13,7 @@ doc = document(slug)
       <button class="copy-page" type="button" data-markdown="{{ markdown_link(slug) }}" data-i18n="copy_page">Copy page as Markdown</button>
       <a href="{{ doc.source }}" data-i18n="edit_github">Edit on GitHub</a>
     </p>
-    <nav class="pager" aria-label="Pages">
+    <nav class="pager" aria-label="Pages" data-i18n-aria="pager_aria">
       {% if doc.before %}<a rel="prev" href="{{ link(doc.before.slug, doc.page.lang) }}"><small data-i18n="previous">Previous</small><span>{{ doc.before.label | e }}</span></a>{% else %}<span></span>{% endif %}
       {% if doc.after %}<a rel="next" href="{{ link(doc.after.slug, doc.page.lang) }}"><small data-i18n="next">Next</small><span>{{ doc.after.label | e }}</span></a>{% else %}<span></span>{% endif %}
     </nav>
