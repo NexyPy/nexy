@@ -32,7 +32,7 @@ Um layout externo desenha a moldura e uma dependência externa decide quem pode 
 
 ## Layouts
 
-Todos os arquivos de layout de uma pilha de família de pastas: consulte [Layouts](layouts/README.md). Famílias diferentes não se misturam: um `layout.vue` nunca quebra uma página `.tsx`, e um projeto tem `layout.nexy` ou layouts de cliente, nunca ambos ([modes](modes.md)).
+Todos os arquivos de layout de uma pilha de família de pastas: consulte [Layouts](layouts/README.md). Famílias diferentes não se misturam: um `layout.vue` nunca quebra uma página `.tsx`, e um projeto tem `layout.nexy` ou layouts de cliente, nunca ambos ([modos](modes.md)).
 
 ## Arquivos de middleware
 
