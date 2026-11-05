@@ -31,39 +31,31 @@ Para elegir una carpeta, pregunte cuál es el archivo:
 - **Generado** - `__nexy__/`; nunca lo edites.
 
 > [!ADVERTENCIA]
-Se escanea > `src/routes/`: un ayudante colocado allí se convierte en una ruta. Pon un ayudante que no sea una ruta.
-> fuera de `src/routes/`, o comience su nombre con `_`.
+> `src/routes/` es escaneado: un ayudante colocado allí se convierte en una ruta. Coloque un ayudante que no sea una ruta fuera de `src/routes/`, o comience su nombre con `_`.
 
 ## `src/routes/`
 
-Cada archivo se convierte en una ruta, excepto los nombres reservados a continuación. La ruta del archivo menos la extensión es
-la URL - consulte [enrutamiento](../routing/README.md).
+Cada archivo se convierte en una ruta, excepto los nombres reservados a continuación. La ruta del archivo menos la extensión es la URL; consulte [enrutamiento](../routing/README.md).
 
 | Archivo | Rol |
 |---|---|
 | `layout.nexy` | envuelve las páginas hermanas y secundarias |
 | `errors.nexy` | 500 páginas para el directorio |
-| `notfound.nexy` | Página 404 para el directorio |
-| `dependencies.py` | dependencias FastAPI compartidas para el directorio |
-| `__init__.py` | Marcador de paquete Python |
+| `notfound.nexy` | 404 página para el directorio |
+| `dependencies.py` | dependencias compartidas FastAPI para el directorio |
+| `__init__.py` | Python marcador de paquete |
 | `loading.nexy` | reservado: excluido de las rutas, pero aún no tiene efecto de tiempo de ejecución |
 
-El nombre de cada página también existe por marco. Con `react()` configurado, `layout.jsx` y `layout.tsx`
-están reservados exactamente como `layout.nexy`. Las listas están construidas en `nexy/core/config.py`
-(`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
+El nombre de cada página también existe por marco. Con `react()` configurado, `layout.jsx` y `layout.tsx` se reservan exactamente igual que `layout.nexy`. Las listas están construidas en `nexy/core/config.py` (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
 
 > [!NOTA]
-> `notfound.nexy` y `errors.nexy` solo se instalan cuando existe una copia en el
-> rutas raíz. Luego, una copia en un subdirectorio refina la página para ese prefijo.
+> `notfound.nexy` y `errors.nexy` solo se instalan cuando existe una copia en la raíz de las rutas. Luego, una copia en un subdirectorio refina la página para ese prefijo.
 
 ## `src/apps/`
 
-El directorio `nexy new` utiliza para el enrutador modular: registro de controladores, módulos y proveedores.
-sus rutas a través de decoradores de `nexy.decorators`, luego se monta el agregado `APIRouter`
-con `useRouter` en `nexyconfig.py`.
+El directorio `nexy new` se utiliza para el enrutador modular: los controladores, módulos y proveedores registran sus rutas a través de decoradores desde `nexy.decorators`, luego el agregado `APIRouter` se monta con `useRouter` en `nexyconfig.py`.
 
-Un proyecto puede tener ambos enrutadores: `useRouter` monta el enrutador modular y `src/routes/` se escanea
-siempre que ese directorio exista. Consulte [enrutamiento modular](../routing/modular/README.md).
+Un proyecto puede tener ambos enrutadores: `useRouter` monta el enrutador modular y `src/routes/` se escanea siempre que exista ese directorio. Consulte [enrutamiento modular](../routing/modular/README.md).
 
 ## `public/`
 
@@ -75,11 +67,10 @@ Generado por `nx build` (y por `nx dev` para las piezas que necesita). Contiene:
 
 - los módulos de ruta compilados, como un paquete Python (`__nexy__/src/routes/...`);
 - los puntos de entrada del cliente generados (`main.ts`, `vite.ts`, `*.auto.ts`);
-- `client/` después de una compilación de Vite: activos, manifiesto, HTML prerenderizado;
+- `client/` después de una compilación Vite - recursos, manifiesto, HTML prerenderizado;
 - `build-cache.json`.
 
-Trate todo el directorio como desechable: elimínelo, reconstrúyalo. Al editarlo a mano se pierde el cambio.
-en la próxima construcción. Agréguelo a `.gitignore`.
+Trate todo el directorio como desechable: elimínelo, reconstrúyalo. Al editarlo a mano, se pierde el cambio en la siguiente compilación. Agréguelo a `.gitignore`.
 
 ## Próximos pasos
 
