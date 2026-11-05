@@ -75,7 +75,7 @@ from nexy import Audio
 <Audio src="/theme.mp3" controls=True />
 ```
 
-Die letzte Zeile ist genau `{{ Audio("/theme.mp3", controls=True) }}`. Beide Syntaxen gelten für die integrierten Helfer `Image`, `Link`, `Audio` und `Video` – siehe [components](components.md#two-syntaxes-one-function).
+Die letzte Zeile ist genau `{{ Audio("/theme.mp3", controls=True) }}`. Beide Syntaxen gelten für die integrierten Helfer `Image`, `Link`, `Audio` und `Video` – siehe [Komponenten](components.md#two-syntaxes-one-function).
 
 Untergeordnete Elemente werden durch `<Slot />` (Großbuchstabe S) innerhalb der untergeordneten Komponente und durch `{{ children }}` innerhalb eines Layouts gerendert.
 
