@@ -14,16 +14,13 @@ Una ruta es un archivo. La URL es la ruta del archivo relativa a `src/routes/`, 
 | `(marketing)/pricing.nexy` | `/pricing` |
 | `api/users.py` | `/api/users` |
 
-`index` se asigna a su directorio, no a `/index`. Un directorio entre paréntesis es un **grupo**:
-organiza archivos sin aparecer en la URL.
+`index` se asigna a su directorio, no a `/index`. Un directorio entre paréntesis es un **grupo**: organiza archivos sin aparecer en la URL.
 
-En modo cliente los archivos de página son `.tsx`, `.vue` o `.svelte` en lugar de `.nexy`; las reglas de URL son
-lo mismo.
+En modo cliente los archivos de página son `.tsx`, `.vue` o `.svelte` en lugar de `.nexy`; las reglas de URL son las mismas.
 
 ## Dos modos
 
-`useCSR` decide cuáles son las páginas. Los dos no se pueden mezclar en un solo proyecto: Nexy se niega a empezar
-cuando una página de servidor se encuentra al lado de una ruta de cliente.
+`useCSR` decide cuáles son las páginas. Los dos no se pueden mezclar en un proyecto: Nexy se niega a iniciarse cuando una página del servidor se encuentra al lado de la ruta de un cliente.
 
 | Modo | Páginas | Diseño raíz | Ver |
 |---|---|---|---|
@@ -32,18 +29,15 @@ cuando una página de servidor se encuentra al lado de una ruta de cliente.
 
 `.py` los archivos son controladores de API en ambos modos.
 
-## ¿Qué no es una ruta?
+## que no es una ruta
 
-- Nombres de archivos reservados: `layout.*`, `loading.nexy`, `errors.nexy`, `notfound.nexy`,
-  `dependencies.py`, `middleware.py`, `__init__.py`.
+- Nombres de archivos reservados: `layout.*`, `loading.nexy`, `errors.nexy`, `notfound.nexy`, `dependencies.py`, `middleware.py`, `__init__.py`.
 - Archivos y carpetas que comienzan con `_` o `.`: utilícelos para parciales y borradores.
-- Extensiones que no están activas para tu proyecto. Un archivo cuya extensión está inactiva se omite con
-  una advertencia.
+- Extensiones que no están activas para su proyecto. Un archivo cuya extensión está inactiva se omite con una advertencia.
 
 ## Un archivo por URL
 
-Se registran dos archivos que se resuelven en la misma URL. No cree `blog.nexy` junto a
-`blog/index.nexy`, y no mezcle `index.nexy` y `index.py` para la misma ruta. Elige uno.
+Se registran dos archivos que se resuelven en la misma URL. No cree `blog.nexy` junto a `blog/index.nexy` y no mezcle `index.nexy` y `index.py` para la misma ruta. Elige uno.
 
 ## En esta sección
 
