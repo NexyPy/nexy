@@ -1,10 +1,12 @@
 ---
 from src.content import ICONS, language_select
+
+current: prop[str] = ""
 ---
 <header class="panel-bar">
   <button class="side-toggle bar-open" type="button" aria-label="Open the menu" aria-expanded="false" data-i18n-aria="open_menu">{{ ICONS.icon_sidebar }}</button>
   <span class="progress" aria-hidden="true"></span>
-  {{ language_select() }}
+  {{ language_select(current) }}
   <button class="bar-link search-open" type="button" aria-label="Search the docs" data-i18n-aria="search_aria">{{ ICONS.icon_search }}</button>
   <a class="bar-link" href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" aria-label="Nexy on GitHub">{{ ICONS.icon_github }}</a>
   <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Switch between light and dark" data-i18n-aria="theme" data-theme-toggle>
