@@ -1,13 +1,12 @@
 {
  "provider": "google",
  "pages": {
-  "architecture.md": "4104c9d3c01afd7e517423037a14a98d1e7e5cabcbd86a841ce581c528b858e1",
-  "README.md": "65651133bdd754f84ce62262b9d0fe3f822d2510814e0535d57079b9dc17bc74",
+  "README.md": "ea4aac0d1b42e6aee2592c3ddfac69d3a76e711b0e19691183db3e20193e0c5d",
   "deployment/README.md": "031b2dfe0494a9320ed4d6d414c285ef7035a82f109d3319659d130fa13d029d",
   "deployment/performance.md": "26a332d0d9af814758e5ec342b6743f90bb317eea2b12c723e4c059fde933fa0",
   "getting-started/coming-from-other-frameworks.md": "e13434c1041116bbed9f4a1537e45cebc65430dbb7b7e8d6ee20a62c4bd9793a",
-  "getting-started/core-concepts.md": "831e9083c526fa6b98643978ca6e92e226ec5c4edaf7a6403c4b98a033100bdc",
-  "getting-started/how-nexy-works.md": "f058541074ecb9b5ba8b07005510dbcbedae282e7adcff50e342f9593ef5ebb0",
+  "getting-started/core-concepts.md": "75aba56d7b526c299d3b81893c7225209691dda5575c674a795bd960653deb46",
+  "getting-started/how-nexy-works.md": "f2b24027ce7b009acbb3dc3d9a4513365667d6219cedd2b893acd97328b0c14d",
   "getting-started/installation.md": "b68ea6c01f747b1b6644c34abbf19eccd070065c21f7113493bc77c9f21c16ff",
   "getting-started/project-structure.md": "a0855cef9f1d89ea9fdbb738d02289a82bbefa8b548a01d2cea6628cac8e7baa",
   "getting-started/quick-start.md": "2200a4fb89a57708ea5ec9d9db75184866288c453cb9e52fbdfdbd81f2fc87ec",
@@ -17,7 +16,7 @@
   "guides/ai-agents.md": "0acdc279156cb2867c04cf060e0b390a35afb29a92ee871c37903c3b6b5b1e47",
   "guides/databases.md": "92e29509cdb28aa2e507360c184b66c7a42fd3cd71cb50561ea972df1c816fdc",
   "guides/devtools.md": "d5a3b1d3460c6dc417bd97eec35c4e1c8d4f38641900129ad2327f4a063160e6",
-  "guides/frontend.md": "87d722f05a9a08095405f1243f284ec2838e89e200bb05e16de97821d477a3af",
+  "guides/frontend.md": "0db56d3d8cfd7082970ae3fbe4afa16bf5258d5d9d6f3c83c415533d9fb4ff33",
   "guides/i18n.md": "6e5c569a0c59b3f59b832123a9cdd1fa858902df881f7bce7fdb3b90f8d3114e",
   "guides/middleware-and-security.md": "43a929132016c72dfc685dba0efabc58df6d770b687e82a411b1a114e06d9ed8",
   "guides/recipes.md": "922848a3ef71f76c8a95c97b72976a9eca875143116bfe699b87ead3ef7de0cb",
@@ -69,6 +68,7 @@
   "views/react/differences.md": "271a289ebd6510d3a0035c352c4db258f54bbbba018c45e91c5124f2008dcd73",
   "views/solid/differences.md": "834040802a3743bb65cb7d8ad82605495c5b90b0c0bcfd546462fd01b9196b00",
   "views/svelte/differences.md": "1ace6cfef77822db519dff401a2df68699256f5b797c752513e0502b18ca1b9f",
-  "views/vue/differences.md": "4730d8933d07eb1343cccece93bfbf199e58d2c8a6723bd21727cbe849d165b3"
+  "views/vue/differences.md": "4730d8933d07eb1343cccece93bfbf199e58d2c8a6723bd21727cbe849d165b3",
+  "getting-started/what-is-nexy.md": "2141cd47faa4b9986ca8e60bd4bea250b8d296b9a450b63b910bc0d0370dc4d0"
  }
 }
