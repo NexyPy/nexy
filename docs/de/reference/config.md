@@ -1,7 +1,6 @@
 # Konfig
 
-Konfiguration ist eine Klasse in `nexyconfig.py` im Projektstamm. Nexy lädt es aus dem Verzeichnis
-läuft hinein; Ein Projekt ohne die Datei verwendet die Standardeinstellungen.
+Konfiguration ist eine Klasse in `nexyconfig.py` im Projektstamm. Nexy lädt es aus dem Verzeichnis, in dem es ausgeführt wird; Ein Projekt ohne die Datei verwendet die Standardeinstellungen.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -20,10 +19,10 @@ class NexyConfig(NexyConfigModel):
 | Feld | Standard | Bedeutung |
 |---|---|---|
 | `usePort` | `3000` | Port für `dev` und `start` |
-| `useHost` | `"0.0.0.0"` | Bindeadresse |
-| `useSslKeyfile`, `useSslCertfile` | `None` | HTTPS direkt bereitstellen |
-| `useDevTools` | `True` | Die Symbolleiste `nexy dev` fügt jeder Seite hinzu (Seiteninformationen, Routen, Fehler, Konfiguration); `False` entfernt es. Niemals in der Produktion vorhanden |
-| `useWorkers` | `0` | Prozesse `nx start` läuft; `0` ist eine pro CPU unter Linux und macOS, eine unter Windows |
+| `useHost` | `"0.0.0.0"` | Bindungsadresse |
+| `useSslKeyfile`, `useSslCertfile` | `None` | stellen HTTPS direkt bereit |
+| `useDevTools` | `True` | Die Symbolleiste `nexy dev` fügt zu jeder Seite hinzu (Seiteninformationen, Routen, Fehler, Konfiguration); `False` entfernt es. Niemals in der Produktion vorhanden |
+| `useWorkers` | `0` | Prozesse `nx start` Läufe; `0` ist eine pro CPU unter Linux und macOS, eine unter Windows |
 | `useCSR` | `False` | Client-seitiger Routing-Modus; `.nexy` Routen sind deaktiviert |
 
 ## Routen
@@ -39,18 +38,16 @@ class NexyConfig(NexyConfigModel):
 | Feld | Standard | Bedeutung |
 |---|---|---|
 | `useFF` | `None` | Client-Framework-Fabrik: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
-| `useVite` | `True` | Client-Bundles mit Vite erstellen und bereitstellen |
-| `useMarkdownExtensions` | `[]` | zusätzliche Erweiterungen für das Rendern von `.md`/`.mdx` |
+| `useVite` | `True` | Erstellen und Bereitstellen von Client-Bundles mit Vite |
+| `useMarkdownExtensions` | `[]` | Zusätzliche Erweiterungen für das Rendern von `.md`/`.mdx` |
 | `useWatchExtensions` | `None` | Zusätzliche Erweiterungen, die der Entwicklungsserver überwacht |
 | `useWatchExcludePatterns` | `None` | Glob-Muster, die der Entwicklungsserver ignoriert |
 
-> **Gut zu wissen**: `NexyConfigModel` erklärt `useVite = False`; Der Laufzeitstandard `Config` ist
-> `True`.
+> **Gut zu wissen**: `NexyConfigModel` erklärt `useVite = False`; Der Standardwert für die Laufzeit `Config` ist `True`.
 
 ## Reservierte Dateinamen
 
-Jedes Feld fügt einer reservierten Rolle Erweiterungen hinzu. `useLayoutExtensions = ["md"]` macht `layout.md`
-reserviert, genau wie `layout.nexy`.
+Jedes Feld fügt einer reservierten Rolle Erweiterungen hinzu. `useLayoutExtensions = ["md"]` macht `layout.md` reserviert, genau wie `layout.nexy`.
 
 | Feld | Fügt Erweiterungen zu | hinzu
 |---|---|
@@ -65,10 +62,10 @@ reserviert, genau wie `layout.nexy`.
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useDocs` | `True` | dient dem OpenAPI-Schema und seiner Scalar-Referenzseite |
+| `useDocs` | `True` | dienen dem OpenAPI-Schema und seiner Skalar-Referenzseite |
 | `useDocsUrl` | `"/docs"` | Pfad der API-Referenzseite |
 | `useRedocsUrl` | `"/redocs"` | deklariert, aber keine Route ist gemountet |
-| `useTitle` | `"Nexy App"` | OpenAPI-Titel und Seitentitel (`"Nexy"` in `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI Titel und Seitentitel (`"Nexy"` in `NexyConfigModel`) |
 
 ## Middleware
 
@@ -82,18 +79,17 @@ reserviert, genau wie `layout.nexy`.
 | `useAuth` | `None` | Authentifizierungs-Middleware-Konfiguration |
 | `useHTTPSRedirect` | `False` | HTTP zu HTTPS umleiten |
 
-## Abschlag
+## Markdown
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | Überschriftenebenen im Inhaltsverzeichnis |
 | `useTocTitle` | `"Table of Contents"` | Inhaltsverzeichnis-Titel |
-| `useTocAuto` | `True` | generiert das Inhaltsverzeichnis für Markdown-Seiten |
+| `useTocAuto` | `True` | generiert das Inhaltsverzeichnis für Markdown Seiten |
 
 ## Routen außerhalb des Dateibaums
 
-Erstellen Sie eine FastAPI `APIRouter` und mounten Sie sie mit `useRouter`. Es wird neben der dateibasierten bereitgestellt
-Routen:
+Baue ein FastAPI `APIRouter` und montiere es mit `useRouter`. Es wird neben den dateibasierten Routen bereitgestellt:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
