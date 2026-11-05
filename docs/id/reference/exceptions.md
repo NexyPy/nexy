@@ -185,4 +185,4 @@ Formulir tanpa JavaScript memposting ke jalur tindakan; jika berhasil menjawab `
 - [Halaman kesalahan](../routing/fbr/errors/README.md): perilaku halaman penuh, dengan contoh
 - [Validasi dan kesalahan](../routing/fbr/handlers/validation-and-errors.md): penangan API
 - [Pemecahan masalah](../guides/troubleshooting.md): kesalahan yang sebenarnya terjadi
-- [Testing](../guides/testing.md): menegaskan status dan isi
+- [Pengujian](../guides/testing.md): menegaskan status dan isi
