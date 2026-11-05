@@ -28,6 +28,6 @@ File `.mdx` dikompilasi oleh **Vite**, melalui pipeline rute kerangka kerja (Rea
 
 ## Langkah selanjutnya
 
-- [.nexy files](README.md): format halaman asli
+- [berkas .nexy](README.md): format halaman asli
 - [Tampilan](../README.md): pilih format
 - [i18n](../../guides/i18n.md): internasionalisasi
