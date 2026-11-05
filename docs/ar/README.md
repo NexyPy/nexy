@@ -88,7 +88,7 @@ Nexy يدور حول التماس بين الواجهة الخلفية Python و
 ### وجهات نظر نكسي
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [.nexy files](views/nexy/README.md) | اكتب صفحة تحتوي على Python، Jinja2 والدعائم |
+| [ملفات .nexy](views/nexy/README.md) | اكتب صفحة تحتوي على Python، Jinja2 والدعائم |
 | [المكونات](views/nexy/components.md) | استخدم `Image`، `Link`، `Audio`، `Video` و `Import` |
 | [layout.nexy](views/nexy/layouts.md) | كتابة تخطيط وضع الخادم |
 | [Markdown و MDX](views/nexy/markdown.md) | كتابة صفحات المحتوى |
@@ -152,7 +152,7 @@ Nexy يدور حول التماس بين الواجهة الخلفية Python و
 ### Python API والأخطاء
 | صفحة | ما تتضمنه |
 |---|---|
-| [Python API](reference/python-api.md) | كل اسم يصدره Nexy، حسب الوحدة |
+| [واجهة Python البرمجية](reference/python-api.md) | كل اسم يصدره Nexy، حسب الوحدة |
 | [[الاستثناءات والأخطاء](reference/exceptions.md) | كل فشل وحالته والملف الذي يجيب عليه |
 
 ### الاتفاقيات والمفاهيم
