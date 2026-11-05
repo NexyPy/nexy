@@ -78,6 +78,6 @@ Jede Seite ist HTML, aber Nexy geht von einem Server für das Routing und für A
 
 ## Nächste Schritte
 
-- [Config](../reference/config.md): HTTPS, vertrauenswürdige Hosts, Sitzungen
+- [Konfiguration](../reference/config.md): HTTPS, vertrauenswürdige Hosts, Sitzungen
 - [Frontend](../guides/frontend.md): was Vite erstellt
 - [Testen](../guides/testing.md): die Befehle, die in CI ausgeführt werden sollen
