@@ -2,7 +2,7 @@
 
 Perutean modular menggunakan kelas dengan dekorator alih-alih file di bawah `src/routes/`: pengontrol menangani permintaan, modul mengelompokkannya, dan penyedia dimasukkan. Pasang `APIRouter` yang dihasilkan dengan `useRouter` di `nexyconfig.py`.
 
-**Sebelum Anda memulai:** proyek Nexy dan satu halaman kerja. Router modular menggantikan router berbasis file, jadi bacalah [Routing](../README.md) terlebih dahulu jika Anda belum memilih router.
+**Sebelum Anda memulai:** proyek Nexy dan satu halaman kerja. Router modular menggantikan router berbasis file, jadi bacalah [Perutean](../README.md) terlebih dahulu jika Anda belum memilih router.
 
 | Halaman | Cakupannya |
 |---|---|
@@ -83,5 +83,5 @@ Lihat `examples/Modular/api/minimal/`.
 
 - [Injeksi ketergantungan](dependency-injection.md): layanan dan cakupan
 - [Penjaga dan metadata](guards-and-metadata.md): melindungi dan mendokumentasikan rute
-- [Routing](../README.md): router berbasis file
-- [Config](../../reference/config.md): setiap opsi, termasuk `useRouter`
+- [Perutean](../README.md): router berbasis file
+- [Konfigurasi](../../reference/config.md): setiap opsi, termasuk `useRouter`
