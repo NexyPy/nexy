@@ -63,7 +63,7 @@ Abra <http://localhost:3000>.
 
 Para pular a ativação, deixe uv fazer isso com um comando: `uv run nexy dev`.
 
-> [!NOTA]
+> [!NOTE]
 > `nexy` e `nx` são o mesmo binário. Uma cópia instalada com `uv tool install nexy` reside em seu próprio ambiente, como `uvx`, então use-a para criar projetos e executar todo o resto no ambiente do projeto.
 
 ## Adicione Nexy a um projeto existente
