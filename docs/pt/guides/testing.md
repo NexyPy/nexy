@@ -142,4 +142,4 @@ Trabalhar no próprio Nexy usa comandos diferentes: veja [CONTRIBUTING](../../CO
 
 - [CLI](../reference/cli.md): cada sinalizador de `nx test`
 - [API](../routing/fbr/handlers/README.md): o que um endpoint retorna
-- [Deploy](../deployment/README.md): crie antes de testar no CI
+- [Implantação](../deployment/README.md): crie antes de testar no CI
