@@ -81,6 +81,6 @@ Setiap rute API muncul dalam skema yang dihasilkan, karena rute tersebut adalah 
 
 - [Dependensi](../dependencies/README.md): autentikasi dan pengaturan bersama per penangan atau per direktori
 - [Validasi dan kesalahan](validation-and-errors.md): `422`, `404` dan kesalahan JSON
-- [Routing](../../README.md): jalur file ke URL
-- [Actions](../../../guides/actions.md): titik akhir dengan jalur yang dihasilkan
-- [Config](../../../reference/config.md): middleware, CORS, sesi
+- [Perutean](../../README.md): jalur file ke URL
+- [Aksi](../../../guides/actions.md): titik akhir dengan jalur yang dihasilkan
+- [Konfigurasi](../../../reference/config.md): middleware, CORS, sesi
