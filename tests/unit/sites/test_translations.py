@@ -45,7 +45,8 @@ PAIRS = _pairs()
 @pytest.fixture(scope="module", params=PAIRS, ids=[f"{code}/{rel}" for code, rel in PAIRS])
 def pair(request: pytest.FixtureRequest) -> tuple[str, str]:
     code, relative = request.param
-    english = (DOCS / relative).read_text(encoding="utf-8")
+    # A link out of docs/ is an address on GitHub in a translation, one folder deeper.
+    english = translator.outward((DOCS / relative).read_text(encoding="utf-8"), relative)
     return english, (DOCS / code / relative).read_text(encoding="utf-8")
 
 
