@@ -4,8 +4,7 @@ Un segment de chemin écrit entre crochets correspond à n’importe quelle vale
 
 ## Segments dynamiques
 
-`blog/[slug].nexy` sert `/blog/{slug}`. Dans une page, déclarez le segment comme propriété ; dans un Python
-gestionnaire, prenez-le comme un argument.
+`blog/[slug].nexy` sert `/blog/{slug}`. Dans une page, déclarez le segment comme propriété ; dans un gestionnaire Python, prenez-le comme argument.
 
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
@@ -26,16 +25,13 @@ L'annotation décide du type.
 | Où | Conversion |
 |---|---|
 | `.py` gestionnaire | toute annotation de type FastAPI (`int`, `UUID`, `Enum`...) |
-| `.nexy` pages | `int` et `float` sont convertis ; tout le reste reste une chaîne |
+| `.nexy` pages | `int` et `float` sont converties ; tout le reste reste une chaîne |
 
-Une valeur qui ne correspond pas à l'annotation est **introuvable** : `/api/users/abc` répond à `404`, car
-un itinéraire dynamique capture n'importe quelle URL et une URL qui ne peut pas être convertie n'existe tout simplement pas. Voir
-[Validation et erreurs](../handlers/validation-and-errors.md).
+Une valeur qui ne correspond pas à l'annotation est **introuvable** : `/api/users/abc` répond à `404`, car une route dynamique capture n'importe quelle URL et une URL qui ne peut pas être convertie n'existe tout simplement pas. Voir [Validation et erreurs](../handlers/validation-and-errors.md).
 
 ## Segments fourre-tout
 
-`docs/[...path].nexy` sert `/docs/{path:path}`. Les segments restants arrivent sous forme d'une seule chaîne,
-barres obliques incluses.
+`docs/[...path].nexy` sert `/docs/{path:path}`. Les segments restants arrivent sous la forme d’une seule chaîne, barres obliques incluses.
 
 ```nexy filename="src/routes/docs/[...chemin].nexy"
 ---
@@ -48,8 +44,7 @@ path: prop[str]
 
 ## Groupes d'itinéraires
 
-Un répertoire entre parenthèses organise les fichiers sans apparaître dans l'URL. Il participe toujours à
-[héritage](../inheritance.md) : ses `layout.*` et `dependencies.py` s'appliquent à ce qui est à l'intérieur.
+Un répertoire entre parenthèses organise les fichiers sans apparaître dans l'URL. Il participe toujours à l'[héritage](../inheritance.md) : ses `layout.*` et `dependencies.py` s'appliquent à ce qui est à l'intérieur.
 
 ```text
 src/routes/
@@ -65,16 +60,14 @@ Utilisez des groupes pour donner différentes mises en page à différentes sect
 
 ## Priorité
 
-Les itinéraires statiques l'emportent sur les itinéraires dynamiques, et les itinéraires dynamiques sur les fourre-tout :
-`/blog/new` correspond à `blog/new.nexy` avant `blog/[slug].nexy`.
+Les itinéraires statiques l'emportent sur les itinéraires dynamiques et les itinéraires dynamiques sur les fourre-tout : `/blog/new` correspond à `blog/new.nexy` avant `blog/[slug].nexy`.
 
 ## Un fichier par URL
 
-Deux fichiers qui renvoient à la même URL sont tous deux enregistrés. Ne mettez pas `blog.nexy` à côté de
-`blog/index.nexy`, ou mélangez `index.nexy` et `index.py` pour le même chemin.
+Deux fichiers qui renvoient à la même URL sont tous deux enregistrés. Ne mettez pas `blog.nexy` à côté de `blog/index.nexy`, et ne mélangez pas `index.nexy` et `index.py` pour le même chemin.
 
 ## Prochaines étapes
 
 - [Pages](README.md)
 - [Pages d'erreur](../errors/README.md)
-- [Conventions des fichiers](../../../reference/file-conventions.md)
+- [Conventions de fichiers](../../../reference/file-conventions.md)
