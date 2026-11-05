@@ -4,7 +4,7 @@ Como um manipulador de API relata uma solicitação incorreta.
 
 ## Validação
 
-Os parâmetros do manipulador são validados pelo FastAPI em relação às suas anotações.
+Os parâmetros do manipulador são validados por FastAPI em relação às suas anotações.
 
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
@@ -19,10 +19,9 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 | consulta, cabeçalho, cookie ou campo de corpo ausentes ou inválidos | `422` | `{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}` |
 | segmento **caminho** inválido (`/api/users/abc` para `id: int`) | `404` | a página não encontrada ou JSON para `Accept: application/json` |
 
-Um segmento de caminho que não pode ser convertido é um `404` em vez de um `422`: uma rota dinâmica captura qualquer
-URL e não existe um URL que não possa ser convertido.
+Um segmento de caminho que não pode ser convertido é um `404` em vez de um `422`: uma rota dinâmica captura qualquer URL e uma URL que não pode ser convertida não existe.
 
-O corpo `422` é o formato padrão do FastAPI, portanto, os clientes existentes e os SDKs gerados continuam funcionando.
+O corpo do `422` é o formato padrão do FastAPI, portanto, os clientes existentes e os SDKs gerados continuam funcionando.
 
 ## Levantando erros
 
@@ -65,4 +64,4 @@ async def POST():
 
 - [Rotas de API](README.md)
 - [Páginas de erro](../errors/README.md)
-- [Testes](../../../guides/testing.md)
+- [Teste](../../../guides/testing.md)
