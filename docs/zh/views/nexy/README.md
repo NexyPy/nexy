@@ -75,7 +75,7 @@ from nexy import Audio
 <Audio src="/theme.mp3" controls=True />
 ```
 
-最后一行正是 `{{ Audio("/theme.mp3", controls=True) }}`。这两种语法对于内置的 `Image`、`Link`、`Audio` 和 `Video` 帮助器都有效 - 请参阅 [components](components.md#two-syntaxes-one-function)。
+最后一行正是 `{{ Audio("/theme.mp3", controls=True) }}`。这两种语法对于内置的 `Image`、`Link`、`Audio` 和 `Video` 帮助器都有效 - 请参阅 [组件](components.md#two-syntaxes-one-function)。
 
 子组件通过子组件内的 `<Slot />`（大写 S）以及布局内的 `{{ children }}` 进行渲染。
 
