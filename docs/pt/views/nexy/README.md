@@ -56,12 +56,12 @@ Abaixo do frontmatter está HTML com Jinja2. Variáveis ​​do frontmatter e d
 
 O escape automático está **desativado**: os modelos são o próprio HTML do projeto, então `{{ value }}` é inserido como está escrito. Fuja de valores não confiáveis ​​com `{{ value | e }}`. `| safe` portanto não muda nada.
 
-> [!NOTA]
+> [!NOTE]
 > envolva JavaScript que contém `{{` ou `{%` em `{% raw %}...{% endraw %}`. Frameworks como Vue e Svelte usam os mesmos colchetes.
 
 ## Componentes
 
-Qualquer callable importado cujo nome comece com uma letra maiúscula pode ser usado como tag. O compilador o reescreve em uma chamada Jinja: atributos tornam-se argumentos de palavras-chave.
+Qualquer callable importado cujo nome comece com uma letra maiúscula pode ser usado como tag. O compilador o reescreve em uma chamada Jinja: os atributos tornam-se argumentos de palavras-chave.
 
 ```nexy filename="src/rotas/index.nexy"
 ---
@@ -81,7 +81,7 @@ Os filhos são renderizados por meio de `<Slot />` (S maiúsculo) dentro do comp
 
 Passe um valor calculado com Jinja dentro do atributo: `<Icon path="{{ icon }}" size="{{ size }}" />`. Um nome simples como `path=icon` é o texto `icon`, não a variável. Para dar a um componente uma classe CSS, declare uma prop `class_name`: `class` é uma palavra-chave Python.
 
-> [!NOTA]
+> [!NOTE]
 > uma tag auxiliar sempre fecha automaticamente. Passar conteúdo para `Link` passa pelo argumento `children` (`<Link href="/about" children="About" />`), não pelo conteúdo do elemento.
 
 ## Estilos
