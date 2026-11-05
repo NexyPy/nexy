@@ -1,9 +1,8 @@
 # Actions
 
-Un `@Action` transforme une fonction Python en un point de terminaison `POST`. Contrairement à un gestionnaire d'API standard, il est conçu comme un pont de communication typé : Nexy génère automatiquement le client TypeScript, valide l'entrée et gère la réponse.
+Un `@Action` transforme une fonction Python en un point final `POST`. Contrairement à un gestionnaire d'API standard, il est conçu comme un pont de communication typé : Nexy génère automatiquement le client TypeScript, valide l'entrée et gère la réponse.
 
-**Avant de commencer :** un projet créé par le [Démarrage rapide](../getting-started/quick-start.md).
-Les actions se trouvent à côté des pages, dans `src/actions/`.
+**Avant de commencer :** un projet créé par le [Démarrage rapide](../getting-started/quick-start.md). Les actions se trouvent à côté des pages, dans `src/actions/`.
 
 ```diagram filename="Le cycle d'action"
 Client (UI)  ─── 1. Call (Typed Input) ───► [ Nexy Bridge ]
@@ -36,7 +35,7 @@ async def create_user(name: str, age: int = 0) -> User:
 
 Les paramètres sont l'entrée, validée par Pydantic. Un paramètre nommé `request` ou `response` est injecté et ne fait pas partie de l'entrée.
 
-### 2. Valider
+### 2. Validez
 Lorsque l'action est appelée, Nexy valide l'entrée par rapport aux indications de type de la fonction. Si un champ est manquant ou a un type incorrect, l'action n'est pas exécutée et un `422 Unprocessable Entity` est renvoyé.
 
 ### 3. Exécuter
@@ -67,16 +66,14 @@ Sans hook, une action n'est qu'une fonction `async` : `const user = await create
 
 | Framework | Ce que `useAction` renvoie |
 |---|---|
-| Réagir, Préagir | `{ pending, data, error, run, reset }` |
-| Solide | pareil, avec `pending()`, `data()` et `error()` comme accesseurs |
+| React, Preact | `{ pending, data, error, run, reset }` |
+| Solid | pareil, avec `pending()`, `data()` et `error()` comme accesseurs |
 | Vue | pareil, avec `pending`, `data` et `error` comme références |
 | Svelte | un magasin : `$save.pending`, `$save.data`, `$save.error`, plus `save.run(input)` et `save.reset()` |
 
 `useAction(action, { onSuccess, onError })` prend également deux rappels. `run` ne lance jamais : un échec atterrit dans `error` et `run` se résout avec `undefined`.
 
-Les types viennent de Python : `str` est `string`, `int` et `float` sont `number`, `list[T]` est `T[]`,
-un modèle Pydantic ou un `Enum` est un type nommé, et un champ avec une valeur par défaut est facultatif dans l'entrée.
-Un type que Pydantic ne peut pas décrire devient `unknown`.
+Les types proviennent de Python : `str` est `string`, `int` et `float` sont `number`, `list[T]` est `T[]`, un modèle Pydantic ou un `Enum` est un type nommé, et un champ avec une valeur par défaut est facultatif dans l'entrée. Un type que Pydantic ne peut pas décrire devient `unknown`.
 
 ## Erreurs et échecs
 
@@ -85,11 +82,10 @@ Une action peut échouer à différentes étapes. Vous devez les distinguer dans
 1.  **Erreurs de validation (422)** : l'entrée ne correspondait pas à la signature Python. `error.fields` mappe chaque champ invalide à son message.
 2.  **Erreurs commerciales (`HTTPException`)** : votre code a refusé l'appel, par exemple `403 Forbidden` ou `409 Conflict`.
 3.  **Erreurs de serveur (500)** : une exception non gérée s'est produite dans votre code Python.
-4.  **Erreurs réseau** : la requête n'est jamais parvenue au serveur, par exemple un timeout ou une perte de connexion.
+4.  **Erreurs réseau** : la requête n'a jamais atteint le serveur, par exemple un timeout ou une perte de connexion.
 5.  **Erreurs d'autorisation (401, 403)** : votre propre chèque a rejeté l'appelant. Nexy ne décide pas de cela à votre place.
 
-Le contrôle d'origine décrit ci-dessous est une protection CSRF, pas une autorisation : il indique où l'appel
-est venu, jamais qui est autorisé à le faire.
+Le contrôle d'origine décrit ci-dessous est une protection CSRF, pas une autorisation : il indique d'où vient l'appel, jamais qui est autorisé à le passer.
 
 ## Actualiser la page après une action
 
@@ -120,10 +116,7 @@ En cas de succès, le visiteur est renvoyé vers la page sur laquelle se trouvai
 ## Sécurité
 
 ### L'obscurité du chemin n'est pas une autorisation
-Le chemin de l'action est `/_nx_` suivi d'un hachage du module de la fonction, de son nom et d'un secret du
-projet. Il est défini par `NEXY_ACTION_SECRET`, ou conservé dans `__nexy__/action.key`, ce qui `nx build`
-crée ainsi le bundle client et `nx start` sont d'accord : conservez ce fichier avec la build. Le chemin cache le
-point de terminaison d'une découverte occasionnelle, et **le chemin généré n'est pas un mécanisme d'autorisation**.
+Le chemin de l'action est `/_nx_` suivi d'un hachage du module de la fonction, de son nom et d'un secret du projet. Il est défini par `NEXY_ACTION_SECRET`, ou conservé dans `__nexy__/action.key`, que `nx build` crée afin que le bundle client et `nx start` soient d'accord : conservez ce fichier avec la build. Le chemin cache le point de terminaison de toute découverte occasionnelle et **le chemin généré n'est pas un mécanisme d'autorisation**.
 
 Quiconque connaît le chemin peut déclencher l'action. Vous **devez** vérifier l'identité et les autorisations de l'utilisateur dans l'action :
 ```python
@@ -145,7 +138,7 @@ Au démarrage, Nexy importe chaque module de `src/` pour retrouver les actions. 
   x src.actions.billing: src/actions/billing.py:3  ModuleNotFoundError: No module named 'stripe'
 ```
 
-## Étapes suivantes
+## Prochaines étapes
 
 - [API](../routing/fbr/handlers/README.md) : gestionnaires explicites
 - [Testing](testing.md#what-to-assert) : comment tester une action
