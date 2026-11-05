@@ -142,4 +142,4 @@ Beim Start importiert Nexy jedes Modul von `src/`, um die Aktionen zu finden. Es
 
 - [API](../routing/fbr/handlers/README.md): explizite Handler
 - [Testen](testing.md#what-to-assert): So testen Sie eine Aktion
-- [Config](../reference/config.md): Middleware- und Authentifizierungsoptionen
+- [Konfiguration](../reference/config.md): Middleware- und Authentifizierungsoptionen
