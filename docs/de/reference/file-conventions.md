@@ -4,15 +4,15 @@ Reservierte Namen und Regeln unter `src/routes/`.
 
 ## Dateien weiterleiten
 
-| Datei | wird zu |
+| Datei | Wird |
 |---|---|
 | `index.nexy`, `index.md`, `index.mdx`, `index.py` | die Route seines Verzeichnisses |
 | `about.nexy` | `/about` |
 | `[slug].nexy` | dynamisches Segment `{slug}` |
-| `[...path].nexy` | Sammelbegriff `{path:path}` |
+| `[...path].nexy` | Alleskönner `{path:path}` |
 | `(group)/page.nexy` | `/page`: Die Gruppe erscheint nicht in der URL |
 | `name.py` | API-Handler; Funktionsnamen `GET`, `POST`, ... sind die Methoden |
-| `name.tsx`, `.jsx`, `.vue`, `.svelte` | Client-Route, wenn das Framework mit `useFF` | aktiviert ist
+| `name.tsx`, `.jsx`, `.vue`, `.svelte` | Client-Route, wenn das Framework mit `useFF` aktiviert ist |
 
 ## Reservierte Dateien
 
@@ -26,12 +26,12 @@ Reservierte Namen und Regeln unter `src/routes/`.
 | `forbidden.nexy` | 403-Seite für sein Verzeichnis | [Fehlerseiten pro Ordner](../routing/fbr/errors/folder-pages.md) |
 | `unauthorized.nexy` | 401-Seite für sein Verzeichnis | [Fehlerseiten pro Ordner](../routing/fbr/errors/folder-pages.md) |
 | `loading.nexy` | reserviert; Noch kein Laufzeiteffekt | [Fehlerseiten](../routing/fbr/errors/README.md) |
-| `middleware.py` | und `async def middleware(request, call_next)` umschließen die Anforderungen des Verzeichnisses und darunter | [Middleware-Dateien](../routing/fbr/middleware/README.md) |
-| `dependencies.py` | eine `dependencies = [fn, ...]` Liste, die auf das Verzeichnis und seine untergeordneten Elemente angewendet wird | [Abhängigkeiten](../routing/fbr/dependencies/README.md) |
+| `middleware.py` | ein `async def middleware(request, call_next)`, der die Anforderungen des Verzeichnisses und darunter umschließt | [Middleware-Dateien](../routing/fbr/middleware/README.md) |
+| `dependencies.py` | eine `dependencies = [fn, ...]`-Liste, die auf das Verzeichnis und seine untergeordneten Verzeichnisse angewendet wird | [Abhängigkeiten](../routing/fbr/dependencies/README.md) |
 | `__init__.py` | Python Paketmarkierung | |
-| `favicon.ico` | diente bei `/favicon.ico` | |
+| `favicon.ico` | serviert bei `/favicon.ico` | |
 
-`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` und `useLoadingExtensions` reservieren weitere Erweiterungen für diese Namen. Siehe [Config](config.md).
+`useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` und `useLoadingExtensions` reservieren weitere Erweiterungen für diese Namen. Siehe [Konfiguration](config.md).
 
 ## Ignorierte Dateien
 
@@ -49,7 +49,7 @@ Zwei Dateien, die zur gleichen URL aufgelöst werden, werden beide registriert. 
 | `src/components/` | Von Seiten importierte Komponenten; niemals Routen |
 | `src/apps/` | Controller und Module des [modularen Routers](../routing/modular/README.md) |
 | `public/` | statische Dateien, bereitgestellt im Stammverzeichnis: `public/logo.svg` ist `/logo.svg` (auch unter `/public/`) |
-| `__nexy__/` | generierte Ausgabe; begehen Sie nicht |
+| `__nexy__/` | generierte Ausgabe; nicht festlegen |
 
 ## Nächste Schritte
 
