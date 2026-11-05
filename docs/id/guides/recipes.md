@@ -72,7 +72,7 @@ async def GET(request: Request):
     return {"user": request.session["user"]}
 ```
 
-> [!CATATAN]
+> [!NOTE]
 > jauhkan kata sandi asli dari sumbernya. Simpan hash (`argon2`, `bcrypt`) dan baca kunci rahasia dari lingkungan. Cookie sesi ditandatangani, tidak dienkripsi.
 
 ## API JSON dengan buat, baca, dan hapus
@@ -133,7 +133,7 @@ Isi yang tidak cocok dengan `NewNote` ditolak dengan `422` sebelum kode Anda dij
 
 ## Terima berkas
 
-Upload membutuhkan `python-multipart` (`uv add python-multipart`). Periksa sendiri ukurannya, dan jangan pernah menggunakan nama file klien sebagai jalur:
+Upload perlu `python-multipart` (`uv add python-multipart`). Periksa sendiri ukurannya, dan jangan pernah menggunakan nama file klien sebagai jalur:
 
 ```python filename="src/routes/api/upload.py"
 from pathlib import Path
