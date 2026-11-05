@@ -6,12 +6,12 @@
 
 | FastAPI | नेक्सी |
 |---|---|
-| `@app.get("/users")` एक मॉड्यूल में आप | `GET` फ़ंक्शन को `src/routes/users.py` | में आयात करते हैं
-| `app.include_router(router)` | फ़ाइल पथ यूआरएल है; पंजीकरण के लिए कुछ भी नहीं |
+| `@app.get("/users")` आपके द्वारा आयातित मॉड्यूल में | `GET` में फ़ंक्शन `src/routes/users.py` |
+| `app.include_router(router)` | फ़ाइल पथ URL है; रजिस्टर करने के लिए कुछ भी नहीं |
 | पथ परम `/users/{id}` | `src/routes/users/[id].py` |
 | `Depends(...)` | अभी भी `Depends(...)`: हैंडलर FastAPI हैंडलर हैं |
 | Jinja2 `TemplateResponse` | समापन बिंदु के बगल में एक `.nexy` पृष्ठ |
-| `uvicorn main:app` | `nx dev` के साथ चलाएँ, फिर `nx build && nx start` |
+| `uvicorn main:app` के साथ चलाएँ | `nx dev`, फिर `nx build && nx start` |
 
 `src/routes/*.py` के अंतर्गत सब कुछ सामान्य है FastAPI: निर्भरताएं, Pydantic मॉडल, मिडलवेयर और `/docs` काम करते रहते हैं।
 
@@ -24,8 +24,8 @@
 | `app/layout.tsx` (`<html>` का मालिक है) | `src/routes/layout.tsx` के साथ `useCSR = True` (React), या `src/routes/layout.nexy` सर्वर मोड में |
 | नेस्टेड `layout.tsx` | नेस्टेड `layout.tsx` / `layout.vue` / `layout.svelte` क्लाइंट मोड में, नेस्टेड `layout.nexy` सर्वर मोड में |
 | `use client` सर्वर पेज में घटक | [द्वीप](../rendering/islands.md) सर्वर मोड में |
-| रूट हैंडलर `route.ts` | `src/routes/api/x.py`, Python | में लिखा गया है
-| `(group)` फ़ोल्डर्स | वही: `(group)/` |
+| मार्ग संचालक `route.ts` | `src/routes/api/x.py`, Python में लिखा गया है |
+| `(group)` फ़ोल्डर | वही: `(group)/` |
 | सर्वर क्रियाएँ | [`@Action`](../guides/actions.md) फ़ंक्शंस को किसी फ़ॉर्म से या टाइप किए गए क्लाइंट फ़ंक्शंस के रूप में बुलाया जाता है |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
@@ -36,17 +36,17 @@
 | एक्सप्रेस | नेक्सी |
 |---|---|
 | `app.get("/users/:id", handler)` | `src/routes/users/[id].py` के साथ `async def GET(id)` |
-| `app.use(middleware)` | FastAPI मिडलवेयर, `nexyconfig.py` | से पंजीकृत
-| `res.json(obj)` | एक निर्देश या Pydantic मॉडल लौटाएं |
-| ईजेएस / पग दृश्य | `.nexy` (Jinja2) पृष्ठ |
+| `app.use(middleware)` | FastAPI मिडलवेयर, `nexyconfig.py` से पंजीकृत |
+| `res.json(obj)` | एक आदेश या एक Pydantic मॉडल लौटाएँ |
+| ईजेएस/पग दृश्य | `.nexy` (Jinja2) पृष्ठ |
 | `npm run dev` | `nx dev` |
 
 ## राउटर चुनना
 
-| | का उपयोग करें जब |
+| उपयोग करें | कब |
 |---|---|
-| फ़ाइल-आधारित राउटर | पृष्ठों और समापन बिंदुओं को फ़ाइलों से मैप किया गया; डिफ़ॉल्ट |
-| मॉड्यूलर राउटर | नियंत्रक, मॉड्यूल और निर्भरता इंजेक्शन, नेस्टजेएस-शैली |
+| फ़ाइल-आधारित राउटर | फ़ाइलों से मैप किए गए पृष्ठ और समापन बिंदु; डिफ़ॉल्ट |
+| मॉड्यूलर राउटर | नियंत्रक, मॉड्यूल और निर्भरता इंजेक्शन, NestJS-शैली |
 
 दोनों को `nx new` द्वारा तैयार किया गया है और एक ही एंड-टू-एंड परीक्षणों द्वारा कवर किया गया है। [रूटिंग](../routing/README.md) और [मॉड्यूलर रूटिंग](../routing/modular/README.md) देखें।
 
