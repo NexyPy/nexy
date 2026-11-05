@@ -2,14 +2,63 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, V2]
+    # A pushed fix/feature branch gets a run of its own: a failure should not have to
+    # wait for a pull request before it shows up.
+    branches:
+      - main
+      - develop
+      - V2
+      - "feature/**"
+      - "fix/**"
+      - "docs/**"
+      - "perf/**"
   pull_request:
     branches: [main, develop, V2]
 
+# A new push to the same ref makes the previous run obsolete. A push and the
+# pull_request it also triggers stay in separate groups: the `gate` job decides
+# which of the two runs the matrix.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
+  # A pushed branch that an open pull request already covers must not run the matrix
+  # twice. The pull_request run is the one the PR shows, so the push run steps aside;
+  # a push without a PR keeps its run. The integration branches always run: a PR from
+  # develop to staging must not silence the CI of develop itself. Empty on a
+  # pull_request run, where the gate is skipped, and `needs.<skipped job>.outputs` is
+  # then an empty string.
+  gate:
+    name: Decide whether a push runs
+    if: github.event_name == 'push' && !contains(fromJSON('["main","develop","V2"]'), github.ref_name)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ steps.open.outputs.count == '0' }}
+
+    steps:
+      - id: open
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$GITHUB_REF_NAME" \
+            --state open --json number --jq 'length')
+          echo "count=${count}" >> "$GITHUB_OUTPUT"
+
   quality:
+    needs: gate
+    # always(): a skipped `gate` is a pushed branch covered by no PR, and GitHub would
+    # otherwise skip this job too, leaving a PR with no matrix at all.
+    if: always() && needs.gate.outputs.run != 'false'
     runs-on: ubuntu-latest
     strategy:
+      # A failure on 3.15 must not cancel the runs of 3.12, 3.13 and 3.14: four
+      # answers, or the red says nothing about the versions that passed.
+      fail-fast: false
       matrix:
         python-version: ["3.12", "3.13", "3.14", "3.15"]
 
