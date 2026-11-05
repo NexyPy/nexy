@@ -136,7 +136,7 @@ nx test
 
 `nx build` falla por un error de compilación; `nx test` falla en una aserción fallida y sale de un valor distinto de cero. `nx check` agrega mypy y `tsc` a la ejecución.
 
-Trabajar en Nexy utiliza diferentes comandos: consulte [CONTRIBUCIÓN](../../CONTRIBUTING.md).
+Trabajar en Nexy utiliza diferentes comandos: consulte [CONTRIBUCIÓN](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md).
 
 ## Próximos pasos
 
