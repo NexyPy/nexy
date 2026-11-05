@@ -14,12 +14,12 @@ async def SOCKET(websocket: WebSocket):
 
 ## Aturan
 
-- URL adalah jalur file, aturannya sama seperti [routing](../../README.md).
+- URL adalah jalur file, aturannya sama seperti [perutean](../../README.md).
 - Hanya file rute `.py` yang mendaftarkan penangan WebSocket melalui `SOCKET`.
 - Pastikan proksi terbalik Anda meneruskan WebSocket permintaan peningkatan.
 
 ## Langkah selanjutnya
 
 - [API](../handlers/README.md): Penangan HTTP dalam file yang sama
-- [Deploy](../../../deployment/README.md): konfigurasi proksi
+- [Penerapan](../../../deployment/README.md): konfigurasi proksi
 - [Perutean modular](../../modular/README.md): `SOCKET` pada pengontrol
