@@ -134,6 +134,22 @@ UI: dict[str, dict[str, str]] = {
             "The address may be mistyped, or the page may have moved. Start from the overview and pick the topic you need."
         ),
         "lost_link": "Open the documentation",
+        "nav_aria": "Documentation",
+        "home_aria": "Nexy, home",
+        "github_aria": "Nexy on GitHub",
+        "router_aria": "Router",
+        "pager_aria": "Pages",
+        "anchor": "Link to this section",
+        "filter": "Filter pages",
+        "new_badge": "New",
+        "router_modular": "Modular",
+        "router_custom": "Custom Integration",
+        "callout_note": "Note",
+        "callout_tip": "Tip",
+        "callout_important": "Important",
+        "callout_warning": "Warning",
+        "callout_caution": "Caution",
+        "terminal": "Terminal",
     },
     "zh": {
         "skip": "跳到正文",
@@ -163,6 +179,22 @@ UI: dict[str, dict[str, str]] = {
         "lost_title": "此页面不存在",
         "lost_text": ("地址可能有误，或页面已被移动。请从概览开始，选择你需要的主题。"),
         "lost_link": "打开文档",
+        "nav_aria": "文档",
+        "home_aria": "Nexy，首页",
+        "github_aria": "Nexy 的 GitHub",
+        "router_aria": "路由器",
+        "pager_aria": "页面",
+        "anchor": "链接到此部分",
+        "filter": "筛选页面",
+        "new_badge": "新",
+        "router_modular": "模块化",
+        "router_custom": "自定义集成",
+        "callout_note": "注意",
+        "callout_tip": "提示",
+        "callout_important": "重要",
+        "callout_warning": "警告",
+        "callout_caution": "小心",
+        "terminal": "终端",
     },
     "hi": {
         "skip": "सामग्री पर जाएँ",
@@ -192,6 +224,22 @@ UI: dict[str, dict[str, str]] = {
         "lost_title": "यह पृष्ठ मौजूद नहीं है",
         "lost_text": ("पता गलत लिखा हो सकता है, या पृष्ठ हट गया हो। अवलोकन से शुरू करें और अपना विषय चुनें।"),
         "lost_link": "दस्तावेज़ खोलें",
+        "nav_aria": "दस्तावेज़",
+        "home_aria": "Nexy, मुखपृष्ठ",
+        "github_aria": "GitHub पर Nexy",
+        "router_aria": "राउटर",
+        "pager_aria": "पृष्ठ",
+        "anchor": "इस भाग का लिंक",
+        "filter": "पृष्ठ छाँटें",
+        "new_badge": "नया",
+        "router_modular": "मॉड्यूलर",
+        "router_custom": "कस्टम इंटीग्रेशन",
+        "callout_note": "नोट",
+        "callout_tip": "सुझाव",
+        "callout_important": "महत्वपूर्ण",
+        "callout_warning": "चेतावनी",
+        "callout_caution": "सावधानी",
+        "terminal": "टर्मिनल",
     },
     "es": {
         "skip": "Saltar al contenido",
@@ -225,6 +273,22 @@ UI: dict[str, dict[str, str]] = {
             "Puede que la dirección esté mal escrita o que la página se haya movido. Empieza por la introducción y elige el tema que necesitas."
         ),
         "lost_link": "Abrir la documentación",
+        "nav_aria": "Documentación",
+        "home_aria": "Nexy, inicio",
+        "github_aria": "Nexy en GitHub",
+        "router_aria": "Enrutador",
+        "pager_aria": "Páginas",
+        "anchor": "Enlace a esta sección",
+        "filter": "Filtrar páginas",
+        "new_badge": "Nuevo",
+        "router_modular": "Modular",
+        "router_custom": "Integración personalizada",
+        "callout_note": "Nota",
+        "callout_tip": "Consejo",
+        "callout_important": "Importante",
+        "callout_warning": "Advertencia",
+        "callout_caution": "Precaución",
+        "terminal": "Terminal",
     },
     "fr": {
         "skip": "Aller au contenu",
@@ -258,6 +322,22 @@ UI: dict[str, dict[str, str]] = {
             "L'adresse est peut-être mal saisie, ou la page a été déplacée. Partez de la vue d'ensemble et choisissez le sujet qui vous intéresse."
         ),
         "lost_link": "Ouvrir la documentation",
+        "nav_aria": "Documentation",
+        "home_aria": "Nexy, accueil",
+        "github_aria": "Nexy sur GitHub",
+        "router_aria": "Routeur",
+        "pager_aria": "Pages",
+        "anchor": "Lien vers cette section",
+        "filter": "Filtrer les pages",
+        "new_badge": "Nouveau",
+        "router_modular": "Modulaire",
+        "router_custom": "Intégration personnalisée",
+        "callout_note": "Remarque",
+        "callout_tip": "Astuce",
+        "callout_important": "Important",
+        "callout_warning": "Attention",
+        "callout_caution": "Prudence",
+        "terminal": "Terminal",
     },
     "ar": {
         "skip": "تخطَّ إلى المحتوى",
@@ -289,6 +369,22 @@ UI: dict[str, dict[str, str]] = {
             "ربما كُتب العنوان بشكل خاطئ، أو نُقلت الصفحة. ابدأ من النظرة العامة واختر الموضوع الذي تحتاجه."
         ),
         "lost_link": "افتح التوثيق",
+        "nav_aria": "التوثيق",
+        "home_aria": "Nexy، الصفحة الرئيسية",
+        "github_aria": "Nexy على GitHub",
+        "router_aria": "الموجّه",
+        "pager_aria": "الصفحات",
+        "anchor": "رابط إلى هذا القسم",
+        "filter": "تصفية الصفحات",
+        "new_badge": "جديد",
+        "router_modular": "معياري",
+        "router_custom": "تكامل مخصص",
+        "callout_note": "ملاحظة",
+        "callout_tip": "نصيحة",
+        "callout_important": "مهم",
+        "callout_warning": "تحذير",
+        "callout_caution": "تنبيه",
+        "terminal": "الطرفية",
     },
     "bn": {
         "skip": "বিষয়বস্তুতে যান",
@@ -320,6 +416,22 @@ UI: dict[str, dict[str, str]] = {
             "ঠিকানাটি হয়তো ভুল লেখা হয়েছে, অথবা পাতাটি সরানো হয়েছে। সংক্ষিপ্ত পরিচিতি থেকে শুরু করে আপনার প্রয়োজনীয় বিষয়টি বেছে নিন।"
         ),
         "lost_link": "ডকুমেন্টেশন খুলুন",
+        "nav_aria": "ডকুমেন্টেশন",
+        "home_aria": "Nexy, হোম",
+        "github_aria": "GitHub-এ Nexy",
+        "router_aria": "রাউটার",
+        "pager_aria": "পাতা",
+        "anchor": "এই অংশের লিংক",
+        "filter": "পাতা ছাঁকুন",
+        "new_badge": "নতুন",
+        "router_modular": "মডিউলার",
+        "router_custom": "কাস্টম ইন্টিগ্রেশন",
+        "callout_note": "নোট",
+        "callout_tip": "টিপ",
+        "callout_important": "গুরুত্বপূর্ণ",
+        "callout_warning": "সতর্কতা",
+        "callout_caution": "সাবধান",
+        "terminal": "টার্মিনাল",
     },
     "pt": {
         "skip": "Ir para o conteúdo",
@@ -351,6 +463,22 @@ UI: dict[str, dict[str, str]] = {
             "O endereço pode estar errado, ou a página pode ter mudado de lugar. Comece pela visão geral e escolha o tema de que precisa."
         ),
         "lost_link": "Abrir a documentação",
+        "nav_aria": "Documentação",
+        "home_aria": "Nexy, início",
+        "github_aria": "Nexy no GitHub",
+        "router_aria": "Roteador",
+        "pager_aria": "Páginas",
+        "anchor": "Link para esta seção",
+        "filter": "Filtrar páginas",
+        "new_badge": "Novo",
+        "router_modular": "Modular",
+        "router_custom": "Integração personalizada",
+        "callout_note": "Nota",
+        "callout_tip": "Dica",
+        "callout_important": "Importante",
+        "callout_warning": "Aviso",
+        "callout_caution": "Cuidado",
+        "terminal": "Terminal",
     },
     "ru": {
         "skip": "Перейти к содержимому",
@@ -382,6 +510,22 @@ UI: dict[str, dict[str, str]] = {
             "Возможно, адрес набран с ошибкой или страница переехала. Начните с обзора и выберите нужную тему."
         ),
         "lost_link": "Открыть документацию",
+        "nav_aria": "Документация",
+        "home_aria": "Nexy, главная",
+        "github_aria": "Nexy на GitHub",
+        "router_aria": "Маршрутизатор",
+        "pager_aria": "Страницы",
+        "anchor": "Ссылка на этот раздел",
+        "filter": "Фильтр страниц",
+        "new_badge": "Новое",
+        "router_modular": "Модульный",
+        "router_custom": "Своя интеграция",
+        "callout_note": "Примечание",
+        "callout_tip": "Совет",
+        "callout_important": "Важно",
+        "callout_warning": "Предупреждение",
+        "callout_caution": "Осторожно",
+        "terminal": "Терминал",
     },
     "ur": {
         "skip": "مواد پر جائیں",
@@ -413,6 +557,22 @@ UI: dict[str, dict[str, str]] = {
             "ممکن ہے پتہ غلط لکھا گیا ہو، یا صفحہ منتقل ہو گیا ہو۔ جائزے سے شروع کریں اور اپنا مطلوبہ موضوع چنیں۔"
         ),
         "lost_link": "دستاویزات کھولیں",
+        "nav_aria": "دستاویزات",
+        "home_aria": "Nexy، ہوم",
+        "github_aria": "GitHub پر Nexy",
+        "router_aria": "راؤٹر",
+        "pager_aria": "صفحات",
+        "anchor": "اس حصے کا لنک",
+        "filter": "صفحات چھانٹیں",
+        "new_badge": "نیا",
+        "router_modular": "ماڈیولر",
+        "router_custom": "حسب ضرورت انضمام",
+        "callout_note": "نوٹ",
+        "callout_tip": "مشورہ",
+        "callout_important": "اہم",
+        "callout_warning": "انتباہ",
+        "callout_caution": "احتیاط",
+        "terminal": "ٹرمینل",
     },
     "id": {
         "skip": "Lompat ke isi",
@@ -444,6 +604,22 @@ UI: dict[str, dict[str, str]] = {
             "Alamatnya mungkin salah ketik, atau halamannya sudah dipindahkan. Mulailah dari ringkasan dan pilih topik yang Anda perlukan."
         ),
         "lost_link": "Buka dokumentasi",
+        "nav_aria": "Dokumentasi",
+        "home_aria": "Nexy, beranda",
+        "github_aria": "Nexy di GitHub",
+        "router_aria": "Router",
+        "pager_aria": "Halaman",
+        "anchor": "Tautan ke bagian ini",
+        "filter": "Saring halaman",
+        "new_badge": "Baru",
+        "router_modular": "Modular",
+        "router_custom": "Integrasi kustom",
+        "callout_note": "Catatan",
+        "callout_tip": "Tips",
+        "callout_important": "Penting",
+        "callout_warning": "Peringatan",
+        "callout_caution": "Hati-hati",
+        "terminal": "Terminal",
     },
     "de": {
         "skip": "Zum Inhalt springen",
@@ -477,6 +653,22 @@ UI: dict[str, dict[str, str]] = {
             "Die Adresse ist vielleicht falsch geschrieben, oder die Seite wurde verschoben. Beginne bei der Übersicht und wähle das Thema, das du brauchst."
         ),
         "lost_link": "Dokumentation öffnen",
+        "nav_aria": "Dokumentation",
+        "home_aria": "Nexy, Startseite",
+        "github_aria": "Nexy auf GitHub",
+        "router_aria": "Router",
+        "pager_aria": "Seiten",
+        "anchor": "Link zu diesem Abschnitt",
+        "filter": "Seiten filtern",
+        "new_badge": "Neu",
+        "router_modular": "Modular",
+        "router_custom": "Eigene Integration",
+        "callout_note": "Hinweis",
+        "callout_tip": "Tipp",
+        "callout_important": "Wichtig",
+        "callout_warning": "Warnung",
+        "callout_caution": "Vorsicht",
+        "terminal": "Terminal",
     },
 }
 
@@ -510,7 +702,8 @@ def select_html(current: str = DEFAULT, href: Callable[[str], str] | None = None
 
 # A word of the site in a page: its text, its label or its placeholder names the key it shows.
 _TEXT = re.compile(r'(<[^>]*\bdata-i18n="(\w+)"[^>]*>)([^<]*)(<)')
-_ATTRIBUTE = re.compile(r'<[^>]*\bdata-i18n-(aria|placeholder)="(\w+)"[^>]*>')
+_ATTRIBUTE = re.compile(r'<[^>]*\bdata-i18n-(?:aria|placeholder)="\w+"[^>]*>')
+_PAIR = re.compile(r'\bdata-i18n-(aria|placeholder)="(\w+)"')
 _NAMES = {"aria": "aria-label", "placeholder": "placeholder"}
 
 
@@ -522,12 +715,13 @@ def _words(found: re.Match[str], code: str) -> str:
 
 
 def _attribute(found: re.Match[str], code: str) -> str:
-    """One tag whose label or placeholder now says the word in the language."""
-    if found[2] not in UI[DEFAULT]:
-        return found[0]
-    name = _NAMES[found[1]]
-    value = escape(text(code, found[2]), quote=True)
-    return re.sub(rf'\b{name}="[^"]*"', f'{name}="{value}"', found[0], count=1)
+    """One tag whose labels and placeholders now say their words in the language."""
+    tag = found[0]
+    for kind, key in _PAIR.findall(tag):
+        if key in UI[DEFAULT]:
+            name, value = _NAMES[kind], escape(text(code, key), quote=True)
+            tag = re.sub(rf'(?<![\w-]){name}="[^"]*"', f'{name}="{value}"', tag, count=1)
+    return tag
 
 
 def localize(html: str, code: str) -> str:
