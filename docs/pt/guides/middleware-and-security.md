@@ -1,7 +1,6 @@
 # Middleware e segurança
 
-Nexy é executado em FastAPI e Starlette, portanto seu middleware se aplica. Os comuns são uma linha em
-`nexyconfig.py`.
+Nexy é executado em FastAPI e Starlette, portanto seu middleware se aplica. Os comuns são uma linha em `nexyconfig.py`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -19,8 +18,7 @@ class NexyConfig(NexyConfigModel):
     useSession = {"secret_key": "change-me"}
 ```
 
-Cada dicionário `use*` é passado como argumentos de palavras-chave para o middleware Starlette correspondente:
-`CORSMiddleware`, `GZipMiddleware`, `TrustedHostMiddleware`, `SessionMiddleware`.
+Cada dicionário `use*` é passado como argumentos de palavra-chave para o middleware Starlette correspondente: `CORSMiddleware`, `GZipMiddleware`, `TrustedHostMiddleware`, `SessionMiddleware`.
 
 ## Seu próprio middleware
 
@@ -36,9 +34,7 @@ class NexyConfig(NexyConfigModel):
 
 ## HTTPS
 
-Sirva HTTPS diretamente com `useSslKeyfile` e `useSslCertfile` ou encerre o TLS em um proxy reverso
-e defina `useHTTPSRedirect`. No desenvolvimento, o servidor de desenvolvimento Vite permanece em loopback HTTP atrás do
-Origem Nexy, então o TLS nunca a alcança.
+Sirva HTTPS diretamente com `useSslKeyfile` e `useSslCertfile` ou encerre o TLS em um proxy reverso e defina `useHTTPSRedirect`. No desenvolvimento, o Vite servidor de desenvolvimento permanece em loopback HTTP atrás da origem Nexy, então o TLS nunca o alcança.
 
 ## Lista de verificação de produção
 
@@ -46,14 +42,11 @@ Origem Nexy, então o TLS nunca a alcança.
 - `useTrustedHost` definido para seus domínios, para bloquear ataques de cabeçalho de host.
 - `useCORS` com origens explícitas, nunca `["*"]` junto com credenciais.
 - Um verdadeiro `secret_key` para sessões, lido no ambiente.
-- Props passados ​​para componentes do cliente são escapados por HTML pelo Nexy. Não marque a entrada do usuário `| safe` em
-  modelos.
+- Os acessórios passados ​​para os componentes do cliente são escapados por HTML pelo Nexy. Não marque a entrada do usuário `| safe` nos modelos.
 
 ## Guardas e dependências
 
-A proteção por rota usa dependências FastAPI. Um `dependencies.py` em um diretório de rotas se aplica a
-tudo abaixo: veja [Dependências](../routing/fbr/dependencies/README.md). No uso do roteador modular
-[`@UseGuard`](../routing/modular/guards-and-metadata.md).
+A proteção por rota usa FastAPI dependências. Um `dependencies.py` em um diretório de rotas se aplica a tudo abaixo dele: veja [Dependências](../routing/fbr/dependencies/README.md). No roteador modular use [`@UseGuard`](../routing/modular/guards-and-metadata.md).
 
 ## Próximas etapas
 
