@@ -54,6 +54,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   C++ Build Tools. Markdown is now rendered by `markdown-it-py`, which is pure Python. Raw HTML in a
   `.md` page is now shown as text instead of being dropped, and a bare `www.` address is no longer
   turned into a link: write the scheme (`https://`).
+- **Nexy no longer installs PyYAML.** `uvicorn[standard]` pulled it in for YAML log files, which
+  Nexy never uses; its other extras (`httptools`, `uvloop`, `python-dotenv`) are now listed one by
+  one. Every package Nexy installs now has a wheel for Python 3.15 on Windows.
 - **`revalidate` in a `.nexy` page now switches the ISR cache on.** The frontmatter runs inside the
   component, so `revalidate = 60` was a local variable the router never saw and the page answered
   with no cache header. A literal `revalidate` or `metadata` is now an attribute of the module.
