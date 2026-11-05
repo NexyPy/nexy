@@ -50,6 +50,6 @@ class NexyConfig(NexyConfigModel):
 
 ## Следующие шаги
 
-- [Config](../reference/config.md): каждое поле промежуточного программного обеспечения.
+- [Конфигурация](../reference/config.md): каждое поле промежуточного программного обеспечения.
 - [Развернуть](../deployment/README.md)
 - [Производительность](../deployment/performance.md)
