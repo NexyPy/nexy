@@ -2,7 +2,7 @@
 
 Três coisas que quase todos os aplicativos precisam: arquivos completos que você pode copiar. Cada bloco de código abaixo com `filename` é escrito em um novo projeto e exercitado pelo conjunto de testes, então o que você lê é o que é executado.
 
-Eles usam manipuladores de API simples; as mesmas funções funcionam atrás de uma página em [mode](../routing/fbr/modes.md).
+Eles usam manipuladores de API simples; as mesmas funções funcionam atrás de uma página em [modo](../routing/fbr/modes.md).
 
 ## Faça login com uma sessão
 
@@ -155,6 +155,6 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
 
 ## Próximas etapas
 
-- [Actions](actions.md): funções de servidor digitadas para formulários e botões
+- [Ações](actions.md): funções de servidor digitadas para formulários e botões
 - [Middleware e segurança](middleware-and-security.md): CORS, hosts, sessões
 - [Teste](testing.md): teste seus próprios manipuladores da mesma maneira
