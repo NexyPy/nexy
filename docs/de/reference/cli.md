@@ -4,37 +4,37 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 
 ## Befehle
 
-| Befehl | Alias | Was es tut |
+| Befehl | Alias | Was es bewirkt |
 |---|---|---|
 | `nx dev` | `nx d` | Entwicklungsserver: Bei Änderung kompilieren, Vite, HMR |
-| `nx start` | `nx s` | Produktionsserver auf der kompilierten Ausgabe |
+| `nx start` | `nx s` | Produktionsserver für die kompilierte Ausgabe |
 | `nx build` | `nx b` | Produktionsaufbau |
 | `nx new` | `nx n` | ein Projekt aufbauen |
 | `nx init` | `nx i` | Nexy zu einem bestehenden Projekt hinzufügen |
-| `nx add` | – | Fügen Sie eine UI-Komponente aus der Registrierung oder eine URL zu `src/components/ui` | hinzu.
-| `nx migrate` | `nx m` | Erstellen oder Anwenden von Datenbankmigrationen mit Alembic oder Aerich |
+| `nx add` | - | Fügen Sie eine UI-Komponente aus der Registrierung oder eine URL zu `src/components/ui` hinzu. |
+| `nx migrate` | `nx m` | Datenbankmigrationen mit Alembic oder Aerich erstellen oder anwenden |
 | `nx check` | `nx c` | Typprüfung: mypy auf Python, `tsc` auf TypeScript |
-| `nx format` | `nx f` | Format Python (Ruff), JS/TS (hübscher), `.nexy` Dateien |
-| `nx test` | - | Lauf pytest; `--client` fügt vitest hinzu |
-| `nx skills` | – | die Fähigkeiten hinzufügen oder auffrischen, `AGENTS.md` und `CLAUDE.md` für Codierungsagenten |
+| `nx format` | `nx f` | Formatieren Sie Python (Ruff), JS/TS (hübscher), `.nexy` Dateien |
+| `nx test` | - | führe pytest aus; `--client` fügt vitest hinzu |
+| `nx skills` | - | Fügen Sie die Fähigkeiten `AGENTS.md` und `CLAUDE.md` für Codierungsagenten hinzu oder aktualisieren Sie sie |
 
 ## Flaggen
 
-| Befehl | Flag | Standard |
+| Befehl | Flagge | Standard |
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `build` | `--check` | off – führt Ruff und Mypy nach dem Build aus |
-| `format` | `--check` | aus - Bericht statt Umschreiben |
-| `test` | `--client` | aus – auch vitest ausführen statt pytest alleine |
-| `test` | `--no-server` | ein – überspringen Sie pytest, wenn Sie nur Client-Tests wünschen |
-| `new` | `--template`, `-t` | keine – eine registrierte Vorlage ohne Eingabeaufforderungen klonen |
-| `new` | `--no-agents` | Agenten ein – überspringen `AGENTS.md` und die Agentenfähigkeiten |
-| `add` | `--ui`, `--url` | aus – einen Registrierungsnamen oder eine URL erzwingen, wenn diese nicht eindeutig ist |
-| `add` | `--all`, `-a` | aus – fügen Sie alle Komponenten der Registrierung hinzu |
+| `build` | `--check` | off – führt ruff und mypy nach dem Build aus |
+| `format` | `--check` | aus – melden statt umschreiben |
+| `test` | `--client` | off - Führen Sie auch vitest anstelle von pytest allein aus |
+| `test` | `--no-server` | on – Überspringen Sie pytest, wenn Sie nur Clienttests wünschen |
+| `new` | `--template`, `-t` | none – Klonen Sie eine registrierte Vorlage ohne Eingabeaufforderungen |
+| `new` | `--no-agents` | Agenten ein – überspringen Sie `AGENTS.md` und die Agentenfähigkeiten |
+| `add` | `--ui`, `--url` | off – erzwingt einen Registrierungsnamen oder eine URL, wenn diese nicht eindeutig ist |
+| `add` | `--all`, `-a` | off – Fügen Sie alle Komponenten der Registrierung hinzu |
 | `add` | `--sha256` | keine – erwarteter Digest einer Remote-Komponente; eine Nichtübereinstimmung bricht ab |
-| `migrate` | `--init` | aus - schreiben Sie das Alembic- oder Aerich-Setup |
-| `migrate` | `--upgrade`, `-u` | aus – wenden Sie die Migrationen an, anstatt eine neue zu schreiben |
+| `migrate` | `--init` | off - Schreiben Sie das Alembic- oder Aerich-Setup |
+| `migrate` | `--upgrade`, `-u` | off – Wenden Sie die Migrationen an, anstatt eine neue zu schreiben |
 | `migrate` | `--message`, `-m` | leer – Name der neuen Revision |
 
 ## Ausgabe
@@ -67,7 +67,7 @@ Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein
 
 | Frage | Auswahlmöglichkeiten |
 |---|---|
-| Importalias | `@` (`@/components/...` zeigt auf `src/`) oder ein anderes Präfix wie `~` oder `#app` |
+| Alias importieren | `@` (`@/components/...` zeigt auf `src/`) oder ein anderes Präfix wie `~` oder `#app` |
 | Stil | Tailwind CSS, UnoCSS, Vanilla CSS, Andere (kein CSS-Tool, dasselbe einfache Stylesheet wie Vanilla) |
 | ORM | SQLModel, SQLAlchemy, Tortoise-ORM, Keine Datenbank |
 | Datenbank (mit einem ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Andere (Sie geben die URL ein) |
