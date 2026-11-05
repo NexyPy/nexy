@@ -1,7 +1,6 @@
-# واجهة برمجة تطبيقات بايثون
+# Python واجهة برمجة التطبيقات
 
-كل اسم يصدره Nexy إلى كود Python الخاص بك، حسب الوحدة. يقوم الاختبار بفحص هذه الصفحة مقابل الكود الموجود
-كلا الاتجاهين: الاسم المدرج هنا يجب أن يكون موجودًا، والاسم الذي يصدره الكود يجب أن يكون مدرجًا هنا.
+كل اسم يصدره Nexy إلى كود Python الخاص بك، حسب الوحدة. يقوم الاختبار بفحص هذه الصفحة مقابل الكود في كلا الاتجاهين: الاسم المدرج هنا يجب أن يكون موجودًا، والاسم الذي يصدره الكود يجب أن يكون مدرجًا هنا.
 
 ## `nexy`
 
@@ -10,11 +9,11 @@
 | الاسم | ما هو |
 |---|---|
 | `Audio`، `Video` | اللاعبين الأصليين `<audio>` و `<video>`، انظر [المكونات](../views/nexy/components.md) |
-| `Image` | وهو `<img>` يتم التحميل ببطء بشكل افتراضي |
+| `Image` | و `<img>` يتم التحميل ببطء بشكل افتراضي |
 | `Link` | من جانب العميل `<a>` مع جلب مسبق اختياري |
 | `Import` | استيراد مكون العميل إلى صفحة `.nexy` |
-| `Template` | عرض قوالب Jinja2 وMarkdown |
-| `Vite` | علامة عميل Vite التي تحتاجها كل صفحة |
+| `Template` | عرض Jinja2 و Markdown قوالب |
+| `Vite` | علامة العميل Vite التي تحتاجها كل صفحة |
 | `Form` | عنصر نائب بدون سلوك: استخدم `<form>` عادي مع [إجراء](../guides/actions.md) |
 | `usePathname` | مسار الطلب الحالي |
 | `useSearchParams` | سلسلة الاستعلام كإملاء |
@@ -29,7 +28,7 @@
 | `useCookies` | ملفات تعريف الارتباط للطلب كإملاء |
 | `useToc` | جدول محتويات الصفحة الحالية، بتنسيق HTML |
 | `useViews` | عرض ملف عرض مثل `about.tsx` من معالج |
-| `setMetadata`، `useMetadata` | تسمية العنوان وعلامات الرأس للصفحة، وكتابتها في التخطيط |
+| `setMetadata`، `useMetadata` | قم بتسمية العنوان وعلامات الرأس الخاصة بالصفحة، واكتبها في التخطيط |
 | `redirect`، `permanentRedirect` | أرسل الزائر إلى مكان آخر (307، 308) وأوقف الطلب |
 | `notFound`، `forbidden`، `unauthorized` | الإجابة على 404 أو 403 أو 401 من أي مكان |
 
@@ -37,23 +36,22 @@
 
 ## `nexy.http`
 
-مفردات HTTP للمعالج. قم بالاستيراد من هنا بدلاً من FastAPI، بحيث يعتمد المعالجون لديك
-على عقد Nexy.
+مفردات HTTP للمعالج. قم بالاستيراد من هنا وليس من FastAPI، لذلك يعتمد معالجوك على عقد Nexy.
 
 | الاسم | ما هو |
 |---|---|
 | `Request`، `Response` | الطلب الوارد والرد الصادر |
-| `HTTPException` | إيقاف المعالج بالحالة و `detail` |
+| `HTTPException` | أوقف المعالج بالحالة و `detail` |
 | `status` | رموز الحالة المسماة، مثل `status.HTTP_404_NOT_FOUND` |
 | `Depends` | قم بتشغيل دالة أولاً وتمرير نتيجتها إلى |
 | `Header`، `Cookie`، `Query`، `Path`، `Body` | حيث تأتي المعلمة من |
 | `Form`، `File`، `UploadFile` | حقول النموذج والتحميلات (تحتاج إلى `python-multipart`) |
-| `BackgroundTasks` | العمل الذي يتم بعد إرسال الإجابة |
+| `BackgroundTasks` | العمل الذي يتم بعد إرسال الجواب |
 | `JSONResponse`، `HTMLResponse`، `PlainTextResponse` | إجابات ذات نوع محتوى ثابت |
 | `RedirectResponse` | إعادة توجيه HTTP |
 | `redirect`، `permanentRedirect` | رفع إعادة توجيه (307، 308) من صفحة أو معالج أو وحدة تحكم أو حارس |
-| `notFound`، `forbidden`، `unauthorized` | جمع 404 أو 403 أو 401 من نفس الأماكن |
-| `FileResponse`، `StreamingResponse` | الجواب بملف أو دفق |
+| `notFound`، `forbidden`، `unauthorized` | رفع 404 أو 403 أو 401 من نفس الأماكن |
+| `FileResponse`, `StreamingResponse` | الإجابة بملف أو دفق |
 
 ## `nexy.decorators`
 
@@ -61,11 +59,11 @@
 |---|---|
 | `Action` | تحويل دالة إلى نقطة نهاية `POST`، راجع [الإجراءات](../guides/actions.md) |
 | `revalidate` | أخبر المتصفح بالصفحات التي أصبح الإجراء قديمًا |
-| `Module`، `Controller` | يعلن عن وحدة ووحدة تحكم في [جهاز التوجيه المعياري](../routing/modular/README.md) |
+| `Module`، `Controller` | يعلن عن وحدة نمطية ووحدة تحكم في [جهاز التوجيه المعياري](../routing/modular/README.md) |
 | `Injectable`، `Container`، `Scope` | [حقن التبعية](../routing/modular/dependency-injection.md) وعمرها |
 | `UseGuard`، `Middleware` | حراسة أو لف معالج واحد، انظر [الحراس](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`، `useRoute`، `RouteMeta` | قم بتسمية المسار ووصفه لـ OpenAPI |
-| `UseResponse`، `ResponseMeta` | وصف جواب الطريق |
+| `UseRoute`، `useRoute`، `RouteMeta` | تسمية الطريق ووصفه لـ OpenAPI |
+| `UseResponse`، `ResponseMeta` | وصف إجابة الطريق |
 | `HTTP_METHODS` | طرق HTTP التي قد يحددها ملف المعالج |
 | `ACTIONS_STORE` | سجل الإجراءات للأدوات والاختبارات |
 
@@ -75,8 +73,8 @@
 |---|---|
 | `render` | HTML لمكون `.nexy` لدعائم معينة، بدون خادم، راجع [اختبار](../guides/testing.md) |
 
-## إلى أين بعد ذلك
+## أين التالي
 
 - [التكوين](config.md): الحقول `use*` خلف هذه الأسماء
 - [الاستثناءات والأخطاء](exceptions.md): ما يجيب عليه كل فشل
-- [فهرس التوثيق](../README.md): الصفحة الخاصة بما تقوم ببنائه
+- [فهرس التوثيق](../README.md)]: صفحة ما تقوم ببنائه
