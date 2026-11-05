@@ -118,6 +118,6 @@ O endpoint `/login` agora pode ser acessado em seu site Nexy sem mover uma linha
 
 - [Roteamento baseado em arquivo](../fbr/README.md) – Crie páginas e manipuladores simples a partir de arquivos.
 - [Roteamento modular](../modular/README.md) – Backends estruturados com injeção e proteções.
-- [Route handlers](../fbr/handlers/README.md) – Defina Python pontos finais.
+- [Manipuladores de rota](../fbr/handlers/README.md) – Defina Python pontos finais.
 
 O roteador personalizado oferece flexibilidade para reutilizar o código FastAPI existente, mantendo a simplicidade das páginas baseadas em arquivo e da estrutura modular.
