@@ -6,7 +6,7 @@ Um **Layout** é um wrapper que define a estrutura compartilhada em torno de uma
 
 Os layouts seguem uma estrutura hierárquica baseada na árvore de diretórios em `src/routes/`.
 
-1.  **Layout raiz**: Todo projeto tem um layout raiz (por exemplo, `src/routes/layout.nexy`). Este é o único layout responsável por definir o shell do documento: `<html>`, `<head>` e `<body>`.
+1.  **Layout raiz**: Todo projeto possui um layout raiz (por exemplo, `src/routes/layout.nexy`). Este é o único layout responsável por definir o shell do documento: `<html>`, `<head>` e `<body>`.
 2.  **Layouts aninhados**: Qualquer pasta pode conter seu próprio arquivo `layout.*`. Este layout envolve todas as páginas e sublayouts dessa pasta.
 3.  **Herança**: Uma página é agrupada por todos os layouts desde a raiz até sua própria pasta.
 
@@ -25,8 +25,8 @@ Para rotas pré-renderizadas (SSG), o layout raiz não pode depender de dados de
 
 A implementação de slots e aninhamento varia ligeiramente de acordo com a estrutura. Consulte o guia **Diferenças** da tecnologia escolhida:
 
-- [Reagir diferenças](../react/differences.md)
-- [Diferenças de Vue](../vue/differences.md)
-- [Diferenças esbeltas](../svelte/differences.md)
-- [Diferenças sólidas](../solid/differences.md)
-- [Pré-agir diferenças](../preact/differences.md)
+- [React Diferenças](../react/differences.md)
+- [Vue Diferenças](../vue/differences.md)
+- [Svelte Diferenças](../svelte/differences.md)
+- [Solid Diferenças](../solid/differences.md)
+- [Preact Diferenças](../preact/differences.md)
