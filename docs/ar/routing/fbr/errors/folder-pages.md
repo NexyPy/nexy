@@ -83,7 +83,7 @@ dependencies = [require_login]
 
 `unauthorized(scheme="Bearer")` يضيف `WWW-Authenticate: Bearer` إلى كلا الإجابتين. التفاصيل التي تم إنشاؤها من إدخال المستخدم يتم تخطيها بتنسيق HTML في الصفحة.
 
-> [!نصيحة]
+> [!TIP]
 > `Accept: */*`، الإعداد الافتراضي لـ `curl` والعديد من مكتبات HTTP، لا يطلب أيًا منهما ويستقبل صفحة HTML. أضف `-H "Accept: application/json"` عندما تريد إجابة JSON.
 
 ## التحقق من ذلك
