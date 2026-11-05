@@ -88,12 +88,12 @@ def test_form_posts_to_action(client):
 
 مكالمة مع JSON تجيب بالنتيجة، و `422` بالحقول غير الصالحة.
 
-> [!ملاحظة]
+> [!NOTE]
 > مسارات العمل خاصة بالمشروع وتم إنشاؤها. لا تستخدم الكود الثابت أبدًا `/_nx_<hash>` في الاختبار.
 
 ## اختبار مكون `.nexy`
 
-`nexy.testing.render` يقوم بتجميع مكون، مع المكونات التي يستوردها، وإرجاع HTML الخاص به. الدعائم هي وسائط الكلمات الرئيسية و `children=` تملأ الفتحة:
+`nexy.testing.render` يقوم بتجميع مكون، مع المكونات التي يستوردها، وإرجاع HTML الخاص به. الدعائم هي وسيطات للكلمات الرئيسية و `children=` تملأ الفتحة:
 
 ```python filename="الاختبارات/test_button.py"
 from nexy.testing import render
@@ -103,7 +103,7 @@ def test_button_shows_its_label():
     assert "Save" in render("src/components/button.nexy", label="Save")
 ```
 
-قم بتشغيل pytest من جذر المشروع: تذهب الملفات المترجمة إلى `__nexy__/`، كما هو الحال مع `nx dev`. يحتاج المكون الذي يقرأ الطلب (`usePathname`، `useSession`) إلى اختبار صفحة باستخدام `TestClient` بدلاً من ذلك.
+قم بتشغيل pytest من جذر المشروع: تذهب الملفات المترجمة إلى `__nexy__/`، كما هو الحال مع `nx dev`. يحتاج المكون الذي يقرأ الطلب (`usePathname`، `useSession`) إلى اختبار الصفحة باستخدام `TestClient` بدلاً من ذلك.
 
 ## اختبر العميل
 
