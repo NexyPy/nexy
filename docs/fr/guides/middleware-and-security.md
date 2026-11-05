@@ -50,6 +50,6 @@ La protection par route utilise des dépendances FastAPI. Un `dependencies.py` d
 
 ## Prochaines étapes
 
-- [Config](../reference/config.md) : chaque champ middleware
+- [Configuration](../reference/config.md) : chaque champ middleware
 - [Déployer](../deployment/README.md)
 - [Performances](../deployment/performance.md)
