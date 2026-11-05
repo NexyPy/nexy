@@ -83,7 +83,7 @@ controllers = [AppController, AboutController, HelloController]
 
 Buka <http://localhost:3000/hello>. Ubah `"Hello"` menjadi `"Bonjour"` dan simpan: halaman diperbarui tanpa memuat ulang secara manual. Jika kodenya salah, browser menampilkan kesalahan tersebut, bukan halaman kosong.
 
-`prop[str]` mendeklarasikan properti yang diketik. Markup di bawah frontmatter adalah Jinja2 - lihat [.nexy files](../views/nexy/README.md).
+`prop[str]` mendeklarasikan properti yang diketik. Markup di bawah frontmatter adalah Jinja2 - lihat [berkas .nexy](../views/nexy/README.md).
 
 ## Dimana selanjutnya
 
