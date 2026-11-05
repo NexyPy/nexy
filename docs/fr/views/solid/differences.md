@@ -1,13 +1,11 @@
-# Solide
+# Solid
 
-Nexy restitue les composants Solid 1.9 sur le serveur, puis Solid les reprend dans le navigateur. Pages,
-les dispositions, les îlots et les actions sont les mêmes dans chaque framework : cette page couvre la configuration, puis les parties
-qui diffèrent des [contrats partagés](../frontend/pages.md).
+Nexy restitue les composants Solid 1.9 sur le serveur, puis Solid les reprend dans le navigateur. Les pages, mises en page, îlots et actions sont les mêmes dans tous les frameworks : cette page couvre la configuration, puis les parties qui diffèrent des [contrats partagés](../frontend/pages.md).
 
-| Mode | `nexyconfig.py` | Les pages sont | Solides est |
+| Mode | `nexyconfig.py` | Les pages sont | Solid est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Client | `useCSR = True` | `.tsx` fichier | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
+| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [layouts](../frontend/layouts.md) et un routeur client |
 
 ## Démarrer un projet
 
@@ -15,9 +13,7 @@ qui diffèrent des [contrats partagés](../frontend/pages.md).
 nx new my-app --template web-fbr-solid
 ```
 
-Le modèle est un projet en mode serveur avec des îlots Solid. Exécutez `nx new my-app` sans modèle pour
-répondez plutôt aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis
-le cadre.
+Le modèle est un projet en mode serveur avec Solid îles. Exécutez `nx new my-app` sans modèle pour répondre aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis le framework.
 
 ## Activer Solid dans un projet existant
 
@@ -42,19 +38,16 @@ export default defineConfig({
 });
 ```
 
-En mode client écrire `solid({ ssr: true })` : Solid compile un composant différemment pour le serveur
-et pour le navigateur, et le mode client a besoin des deux. `nx new` écrit ce fichier ; Nexy écrit
-`__nexy__/vite.ts` lui-même, alors ne le modifiez pas.
+En mode client, écrivez `solid({ ssr: true })` : Solid compile un composant différemment pour le serveur et pour le navigateur, et le mode client a besoin des deux. `nx new` écrit ce fichier ; Nexy écrit lui-même `__nexy__/vite.ts`, alors ne le modifiez pas.
 
-| Package | Version `nx new` écrit |
+| Le package | Version `nx new` écrit |
 |---|---|
 | `solid-js` | `^1.9.12` |
 | `vite-plugin-solid` | `^2.11.0` (dépendance du développeur) |
 
-## Penser en signaux
+## Pensez aux signaux
 
-Une fonction de composant solide s'exécute **une fois**. Ce qui change plus tard est lu via un signal, et seul le
-les expressions qui le lisent sont mises à jour :
+Une fonction de composant Solid s'exécute **une fois**. Ce qui change plus tard est lu via un signal, et seules les expressions qui le lisent sont mises à jour :
 
 ```tsx filename="src/components/Counter.tsx"
 import { createSignal } from "solid-js";
@@ -66,28 +59,24 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - Appelez le signal, `count()`, à l'intérieur du JSX, pas dans une variable au-dessus.
-- Lire les accessoires comme `props.start`. La déstructuration `{ start }` lit la valeur une fois et perd les mises à jour.
-- Solid écrit les attributs HTML : `class`, `for`, `charset`, pas `className`.
+- Lisez les accessoires comme `props.start`. La déstructuration `{ start }` lit la valeur une fois et perd les mises à jour.
+- Solid écrit les attributs HTML : `class`, `for`, `charset`, et non `className`.
 
 ## Règles
 
-- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [solid(), react()]`
-  arrête le serveur au démarrage. Avec `useFF = solid()`, chaque fichier `.tsx` est Solid.
-- **Les pages sont `.tsx`.** Seul un fichier `.tsx` sous `src/routes/` devient une page ; `.jsx` est bien pour un
-  composant.
+- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [solid(), react()]` arrête le serveur au démarrage. Avec `useFF = solid()`, chaque fichier `.tsx` est Solid.
+- **Les pages sont `.tsx`.** Seul un fichier `.tsx` sous `src/routes/` devient une page ; `.jsx` convient parfaitement à un composant.
 - **Les composants se trouvent à l'extérieur de `src/routes/`**, généralement dans `src/components/`, ce ne sont donc pas des pages.
-- **Un projet en mode serveur n'a pas de `.tsx` page**, et un projet en mode client n'a pas de page `.nexy` : Nexy
-  refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
+- **Un projet en mode serveur n'a pas de page `.tsx`**, et un projet en mode client n'a pas de page `.nexy` : Nexy refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
 - **Non `.mdx` avec Solid.** MDX se compile en React ou Preact ; `.md` pages fonctionnent.
 
 ## Pages
 
 En mode client (`useCSR = True`), une page est un fichier `.tsx`.
 
-### Composant Page
+### Composant de page
 
-Une page est l'exportation par défaut du fichier. Si aucun export par défaut n'existe, Nexy sélectionne le premier nommé
-exporter.
+Une page est l'exportation par défaut du fichier. Si aucune exportation par défaut n'existe, Nexy sélectionne la première exportation nommée.
 
 ```tsx filename="src/routes/index.tsx"
 export default function Home() {
@@ -108,7 +97,7 @@ export default function Post() {
 }
 ```
 
-## Mise en page
+## Mises en page
 
 ### Mise en œuvre
 
@@ -159,8 +148,7 @@ Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate
 
 ### Appeler des actions
 
-Utilisez le hook `useAction` pour gérer l'état d'un appel à l'action. Dans Solid, cela renvoie les accesseurs (appelez
-les comme fonctions).
+Utilisez le hook `useAction` pour gérer l'état d'un appel à l'action. Dans Solid, cela renvoie les accesseurs (appelez-les en tant que fonctions).
 
 ```tsx
 import { useAction } from "@nexy/client";
@@ -190,7 +178,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Accès URL
+### Accès aux URL
 
 Tous les hooks de localisation renvoient des accesseurs :
 
@@ -202,4 +190,4 @@ Tous les hooks de localisation renvoient des accesseurs :
 ## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et la build client
+- [Frontend](../../guides/frontend.md) : Vite et le build client
