@@ -4,9 +4,9 @@
 
 | 要求 | 为什么 |
 |---|---|
-| Python 3.12+ | `requires-python` 在 `pyproject.toml` |
-| [uv](https://docs.astral.sh/uv/) | 创建项目，安装其软件包并运行 Nexy |
-| Node.js 18+ | 仅适用于客户端框架（React、Vue、Svelte、Solid、Preact）|
+| Python 3.12+ | `pyproject.toml`中的 `requires-python`；无需 C 编译器，包括 Windows |
+| [uv](https://docs.astral.sh/uv/) | 创建项目、安装其软件包并运行 Nexy |
+| Node.js 18+ | 仅适用于客户端框架（React、Vue、Svelte、Solid、Preact） |
 
 没有客户端框架的项目根本不需要 Node.js。
 
@@ -46,7 +46,7 @@ uvx nexy new my-app --template <name>
 
 从项目文件夹中为每个终端激活一次：
 
-| 外壳程序 | 命令 |
+| 壳牌 | 命令 |
 |---|---|
 | PowerShell、cmd (Windows) | `.venv\Scripts\activate` |
 | macOS、Linux | `source .venv/bin/activate` |

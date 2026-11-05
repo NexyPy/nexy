@@ -2,9 +2,9 @@
 
 ## المتطلبات
 
-| المتطلب | لماذا |
+| المتطلبات | لماذا |
 |---|---|
-| Python 3.12+ | `requires-python` في `pyproject.toml` |
+| Python 3.12+ | `requires-python` في `pyproject.toml`؛ لا حاجة لمترجم C، بما في ذلك نظام التشغيل Windows |
 | [uv](https://docs.astral.sh/uv/) | يقوم بإنشاء المشروع وتثبيت حزمه وتشغيل Nexy |
 | Node.js 18+ | فقط لإطار عمل العميل (React، Vue، Svelte، Solid، Preact) |
 
@@ -46,7 +46,7 @@ uvx nexy new my-app --template <name>
 
 قم بتنشيطه مرة واحدة لكل محطة، من مجلد المشروع:
 
-| شل | الأمر |
+| شل | القيادة |
 |---|---|
 | بوويرشيل، كمد (ويندوز) | `.venv\Scripts\activate` |
 | ماك، لينكس | `source .venv/bin/activate` |

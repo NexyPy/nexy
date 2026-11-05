@@ -4,11 +4,11 @@ Bevor Sie ein Dateiformat auswählen, ist es wichtig zu unterscheiden, wie Nexy 
 
 | Begriff | Definition |
 |---|---|
-| **Seite** | Eine URL-adressierbare Ressource der Anwendung. Es wird durch eine Datei unter `src/routes/` definiert. |
-| **View** | Der Prozess der Erstellung des Antworttexts für eine Seite. Eine Ansicht wandelt Logik und Daten in HTML oder JSON um. |
-| **Component** | Ein wiederverwendbarer UI-Baustein, der zum Erstellen einer Ansicht verwendet wird. Komponenten können native Nexy-Helfer oder Framework-spezifisch sein (React, Vue usw.). |
-| **Routenhandler** | Eine Python Funktion, die eine HTTP-Anfrage für eine bestimmte Methode verarbeitet (z. B. `GET`, `POST`). |
-| **Endpunkt** | Die einzigartige Kombination aus einer URL und einer HTTP-Methode, die ein Route-Handler antwortet. |
+| **Seite** | Eine per URL adressierbare Ressource der Anwendung. Es wird durch eine Datei unter `src/routes/` definiert. |
+| **Anzeigen** | Der Prozess der Erstellung des Antworttexts für eine Seite. Eine Ansicht wandelt Logik und Daten in HTML oder JSON um. |
+| **Komponente** | Ein wiederverwendbarer UI-Baustein, der zum Erstellen einer Ansicht verwendet wird. Komponenten können native Nexy-Helfer oder Framework-spezifisch sein (React, Vue usw.). |
+| **Routenhandler** | Eine Python-Funktion, die eine HTTP-Anfrage für eine bestimmte Methode verarbeitet (z. B. `GET`, `POST`). |
+| **Endpunkt** | Die einzigartige Kombination aus einer URL und einer HTTP-Methode, auf die ein Route-Handler antwortet. |
 
 **Nicht sicher? Schreiben Sie eine `.nexy`-Datei.** Es ist kein Client-Framework erforderlich, und Sie können später eine React-, Vue-, Svelte-, Solid- oder Preact-Komponente als Insel hinzufügen.
 
@@ -22,16 +22,16 @@ API handler                  →  .py        (GET, POST, …)
 
 ## Formate
 
-| Format | Datei | Server-Rendering | Client-Framework | Notizen |
+| Formatieren | Datei | Server-Rendering | Client-Framework | Notizen |
 |---|---|---|---|---|
 | `.nexy` | [.nexy-Dateien](nexy/README.md) | Jinja2 + Python Logik, gestreamt | optional | Natives Nexy-Seitenformat |
-| `.md` | [Markdown und MDX](nexy/markdown.md) | cmarkgfm zum Zeitpunkt der Anfrage | optional über Layout | Rein Markdown, GFM, im Layout verpackt |
-| `.mdx` | [Markdown und MDX](nexy/markdown.md) | Framework SSR | React oder Preact | Markdown mit Komponenten |
-| `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) oder [Preact](preact/differences.md) | Client-Modus: das Framework, gerendert in Knoten | React, Solid oder Preact | Komponentenrouten |
-| `.vue` | [Vue](vue/differences.md) | Client-Modus: das Framework, gerendert in Knoten | Vue | SFC-Routen |
-| `.svelte` | [Svelte](svelte/differences.md) | Client-Modus: das Framework, gerendert in Knoten | Svelte | SFC-Routen |
+| `.md` | [Markdown und MDX](nexy/markdown.md) | Markdown zum Zeitpunkt der Anfrage | optional über Layout | Rein Markdown, GFM, im Layout verpackt |
+| `.mdx` | [Markdown und MDX](nexy/markdown.md) | Rahmen SSR | React oder Preact | Markdown mit Komponenten |
+| `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) oder [Preact](preact/differences.md) | Client-Modus: das Framework, gerendert in Node | React, Solid oder Preact | Komponentenrouten |
+| `.vue` | [Vue](vue/differences.md) | Client-Modus: das Framework, gerendert in Node | Vue | SFC-Routen |
+| `.svelte` | [Svelte](svelte/differences.md) | Client-Modus: das Framework, gerendert in Node | Svelte | SFC-Routen |
 
-Eingebaute `Image`-, `Link`-, `Audio`-, `Video`- und `Import`-Helfer: [Komponenten](nexy/components.md).
+Eingebaute `Image`, `Link`, `Audio`, `Video` und `Import` Helfer: [Komponenten](nexy/components.md).
 
 ## Formate mischen
 

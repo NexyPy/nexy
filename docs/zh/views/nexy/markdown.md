@@ -4,7 +4,7 @@
 
 ## `.md`：纯 Markdown
 
-`.md` 文件是纯内容。 Nexy 使用 `cmarkgfm` (GFM) 呈现它，添加标题 ID，导出目录，并将其包装在最近的 `layout.*` 中。
+`.md` 文件是纯内容。 Nexy 将其呈现为 GitHub 风格的 Markdown（表格、任务列表、删除线、链接），添加标题 ID，派生目录，并将其包装在最近的 `layout.*` 中。
 
 ```md filename="src/routes/about.md"
 # About
@@ -13,6 +13,7 @@ Nexy is a fullstack Python meta-framework.
 ```
 
 - `.md` 中的 Frontmatter 不用作 Python 逻辑。如果您需要服务器逻辑，请使用 `.nexy`。
+- `.md` 页面中的原始 HTML 显示为文本，从不运行。如果您需要 HTML，请使用 `.nexy`。
 - 布局换行、错误页面和动态段的工作方式与其他页面相同。
 
 ## `.mdx`: Markdown 与组件

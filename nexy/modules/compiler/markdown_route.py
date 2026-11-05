@@ -56,7 +56,7 @@ def relative_to_project(src: Path) -> str:
 class MarkdownRouteCompiler:
     """Compiles markdown content routes (.md) into Python wrapper modules.
 
-    A .md route is pure content: it is rendered to HTML with cmarkgfm at request time, heading
+    A .md route is pure content: it is rendered to HTML with markdown-it-py at request time, heading
     ids and a TOC are derived, then the body is wrapped by the nearest layout.* (layout.nexy,
     layout.tsx, ...).
     """

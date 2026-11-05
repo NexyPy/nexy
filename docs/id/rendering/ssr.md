@@ -6,11 +6,11 @@ SSR adalah defaultnya: server merender halaman ke HTML untuk setiap permintaan. 
 
 ## Bagaimana cara kerjanya
 
-| File rute | Apa yang menghasilkan HTML | Kapan |
+| Berkas rute | Apa yang menghasilkan HTML | Kapan |
 |---|---|---|
 | `.nexy` | modul Python yang dikompilasi, melalui Jinja2 | setiap permintaan |
-| `.md` | `cmarkgfm`, lalu tata letak terdekat | setiap permintaan |
-| `.mdx`, `.tsx`, `.vue`, `.svelte` | kerangka kerja, dirender dalam Node | saat dibangun ketika rute tidak memiliki tata letak, sebaliknya di browser |
+| `.md` | Markdown, lalu tata letak terdekat | setiap permintaan |
+| `.mdx`, `.tsx`, `.vue`, `.svelte` | kerangka kerja, dirender di Node | di build ketika rute tidak memiliki tata letak, sebaliknya di browser |
 | `.py` | tidak ada: ia mengembalikan JSON atau `Response` | - |
 
 Rute komponen adalah satu kasus yang memerlukan kalimat kedua. Dalam produksi, rute komponen **tanpa** tata letak disajikan dengan HTML yang diproduksi saat build, dan komponen menghidrasinya. Dengan tata letak, atau dalam pengembangan, wadahnya kosong dan komponen dirender di browser - halaman tersebut kemudian menjadi shell yang mengisi dirinya sendiri.
@@ -35,10 +35,10 @@ Kesalahan muncul saat rendering diubah menjadi halaman oleh `errors.nexy` ketika
 
 Tidak ada. Ada dua jalan keluar, dan mereka tidak memiliki butir yang sama:
 
-| Untuk meninggalkan SSR untuk | Lakukan ini | Grain |
+| Meninggalkan SSR untuk | Lakukan ini | Gandum |
 |---|---|---|
 | satu halaman, dengan cache | `revalidate = 60` di bagian depannya → [ISR](isr.md) | halaman |
-| keseluruhan proyek, diarahkan ke klien | `useCSR = True` di `nexyconfig.py` → [CSR](csr.md) | proyek |
+| keseluruhan proyek, dialihkan ke klien | `useCSR = True` di `nexyconfig.py` → [CSR](csr.md) | proyek |
 
 ## Contoh
 

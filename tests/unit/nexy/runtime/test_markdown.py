@@ -94,3 +94,53 @@ def test_build_toc_keeps_only_the_depth_asked_for() -> None:
 
 def test_build_toc_falls_back_to_the_default_depth_on_nonsense() -> None:
     assert "A" in build_toc_html("<h2>A</h2>", "not-a-range")
+
+
+def test_render_markdown_draws_a_table() -> None:
+    assert "<th>a</th>" in render_markdown("| a |\n|---|\n| 1 |")
+
+
+def test_render_markdown_strikes_through() -> None:
+    assert "<del>gone</del>" in render_markdown("~~gone~~")
+
+
+def test_render_markdown_draws_a_checked_task() -> None:
+    assert "checked" in render_markdown("- [x] done")
+
+
+def test_render_markdown_links_an_address_with_a_scheme() -> None:
+    assert '<a href="https://nexy.dev">' in render_markdown("see https://nexy.dev now")
+
+
+def test_render_markdown_leaves_a_file_name_unlinked() -> None:
+    assert "<a" not in render_markdown("edit app.py")
+
+
+def test_render_markdown_does_not_render_raw_html_by_default() -> None:
+    assert "<b>" not in render_markdown("<b>hi</b>")
+
+
+def test_render_markdown_keeps_raw_html_when_unsafe() -> None:
+    assert "<b>hi</b>" in render_markdown("<b>hi</b>", unsafe=True)
+
+
+def test_render_markdown_names_the_language_of_a_fence() -> None:
+    assert render_markdown("```python\nx = 1 < 2\n```") == (
+        '<pre lang="python"><code>x = 1 &lt; 2\n</code></pre>\n'
+    )
+
+
+def test_render_markdown_takes_the_first_word_of_the_fence_info() -> None:
+    assert '<pre lang="python">' in render_markdown('```python filename="a.py"\nx\n```')
+
+
+def test_render_markdown_draws_a_fence_without_language() -> None:
+    assert "<pre><code>x\n</code></pre>" in render_markdown("```\nx\n```")
+
+
+def test_render_markdown_refuses_a_javascript_link() -> None:
+    assert 'href="javascript' not in render_markdown("[x](javascript:alert(1))")
+
+
+def test_render_markdown_breaks_a_line_on_two_spaces() -> None:
+    assert "<br />" in render_markdown("a  \nb")
