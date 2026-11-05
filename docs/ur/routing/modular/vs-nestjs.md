@@ -4,17 +4,17 @@
 
 ## کیا مماثل ہے
 
-| NestJS | Nexy |
+| NestJS | نیکسی |
 |---|---|
 | `@Controller('users')` | `@Controller(prefix="/users")` |
 | `@Module({ controllers, providers, imports, exports })` | `@Module()` ایک ہی چار طبقاتی صفات کے ساتھ |
 | `@Injectable()` | `@Injectable()` |
-| کنسٹرکٹر انجیکشن | `__init__` پیرامیٹرز ٹائپ تشریحات سے حل ہوئے |
+| کنسٹرکٹر انجیکشن | `__init__` پیرامیٹرز ٹائپ تشریحات سے حل ہوئے۔ |
 | سنگلٹن، درخواست اور عارضی دائرہ کار | `Scope.SINGLETON`، `Scope.REQUEST`، `Scope.TRANSIENT` |
 | `@UseGuards(AuthGuard)` | `@UseGuard(guard)` (ایک FastAPI انحصار) |
-| `@ApiOperation`، `@ApiResponse` (Swagger) | `@UseRoute`، `@UseResponse` (OpenAPI، `/docs` میں پیش کیا گیا) |
-| WebSocket گیٹ وے | `async def SOCKET(...)` ایک کنٹرولر پر |
-| ڈی ٹی او کی توثیق (`class-validator`) | Pydantic ماڈل، FastAPI | کے مقامی
+| `@ApiOperation`، `@ApiResponse` (بیڑیاں) | `@UseRoute`، `@UseResponse` (OpenAPI، پیش خدمت `/docs`) |
+| WebSocket گیٹ ویز | ایک کنٹرولر پر `async def SOCKET(...)` |
+| ڈی ٹی او کی توثیق (`class-validator`) | Pydantic ماڈل، FastAPI کے مقامی |
 | سرکلر انحصار کا پتہ لگانا | `RecursionError` کلاس کا نام دینا |
 
 ## کیا فرق ہے
@@ -29,14 +29,14 @@
 | NestJS خصوصیت | Nexy میں حیثیت |
 |---|---|
 | حسب ضرورت فراہم کنندگان (`useValue`، `useFactory`، `useClass`، سٹرنگ ٹوکنز) | دستیاب نہیں: صرف `@Injectable()` کلاسز |
-| انٹرفیس یا خلاصہ کلاس کے ذریعہ انجیکشن | دستیاب نہیں ہے |
-| ماڈیول انکیپسولیشن | نافذ نہیں کیا گیا: کنٹینر عمل میں وسیع ہے، `exports` صرف بے چین ریزولوشن کو کنٹرول کرتا ہے |
+| انٹرفیس یا خلاصہ کلاس کے ذریعہ انجیکشن لگانا | دستیاب نہیں |
+| ماڈیول انکیپسولیشن | نافذ نہیں کیا گیا: کنٹینر وسیع پیمانے پر ہے، `exports` صرف بے چین ریزولوشن کو کنٹرول کرتا ہے |
 | متحرک اور عالمی ماڈیولز (`forRoot`، `@Global`) | دستیاب نہیں |
 | لائف سائیکل ہکس (`onModuleInit`، `onApplicationShutdown`) | دستیاب نہیں |
-| انٹرسیپٹرز | ASGI مڈل ویئر (`useMiddlewares`) یا انحصار کا استعمال کرتے ہیں |
-| استثنائی فلٹرز | استعمال کرتے ہیں FastAPI استثنائی ہینڈلرز |
-| فراہم کنندہ کے ساتھ ٹیسٹنگ ماڈیول | کوئی عوامی API نہیں؛ استعمال کریں FastAPI `dependency_overrides` اور `TestClient` |
-| کنفیگ ماڈیول، شیڈولنگ، قطار، CQRS، مائیکرو سروسز، کیشنگ | Nexy کا حصہ نہیں؛ Python ماحولیاتی نظام | کا استعمال کریں
+| انٹرسیپٹرز | ASGI مڈل ویئر (`useMiddlewares`) یا انحصار استعمال کریں۔ |
+| استثنائی فلٹرز | FastAPI استثنائی ہینڈلرز استعمال کریں۔ |
+| فراہم کنندہ اوور رائیڈز کے ساتھ ٹیسٹنگ ماڈیول | کوئی عوامی API نہیں؛ استعمال کریں FastAPI `dependency_overrides` اور `TestClient` |
+| کنفیگ ماڈیول، شیڈولنگ، قطاریں، CQRS، مائیکرو سروسز، کیشنگ | Nexy کا حصہ نہیں؛ Python ماحولیاتی نظام کا استعمال کریں۔ |
 
 ## اسے کب چننا ہے۔
 
