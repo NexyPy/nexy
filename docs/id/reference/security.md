@@ -8,11 +8,11 @@ Nexy bergantung pada FastAPI, Starlette, Jinja2, Vite dan React. Lantai adalah v
 
 | Paket | Lantai | Mengapa |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): header `Host` yang dibuat mengubah jalur laporan Starlette ke middleware, yang melewati otorisasi yang tertulis pada `request.url.path`. Terdaftar sebagai dieksploitasi oleh CISA. |
-| `fastapi` | 0.133.0 | rilis pertama yang menerima Starlette | tetap
-| `jinja2` | 3.1.6 | escape sandbox melalui filter `attr` (CVE-2025-27516) |
+| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): header `Host` yang dibuat mengubah jalur Starlette laporan ke middleware, yang melewati otorisasi yang tertulis di `request.url.path`. Terdaftar sebagai dieksploitasi oleh CISA. |
+| `fastapi` | 0.133.0 | rilis pertama yang menerima Starlette tetap |
+| `jinja2` | 3.1.6 | pelarian sandbox melalui filter `attr` (CVE-2025-27516) |
 | `vite` (proyek perancah) | 6.4.3 | `server.fs.deny` melewati jalur alternatif Windows (CVE-2026-53571); bypass string kueri sebelumnya (CVE-2026-39364) hanya memengaruhi Vite 7.1-7.3.1 dan 8.0.0-8.0.4 |
-| `react`, `react-dom` | 19.2.5 | nasihat React tahun 2026 berkaitan dengan paket `react-server-dom-*`, yang tidak digunakan Nexy; lantai menjaga garis tetap ditambal |
+| `react`, `react-dom` | 19.2.5 | nasihat tahun 2026 React berkaitan dengan paket `react-server-dom-*`, yang tidak digunakan Nexy; lantai membuat garis tetap ditambal |
 
 Periksa versi penyelesaian Anda:
 
