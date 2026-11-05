@@ -1,6 +1,6 @@
 # Atualizando para 2.2
 
-O que muda em um projeto existente quando você passa da versão 2.1 para a 2.2 e o que fazer a respeito. A lista completa está no [changelog](../../CHANGELOG.md).
+O que muda em um projeto existente quando você passa da versão 2.1 para a 2.2 e o que fazer a respeito. A lista completa está no [registro de alterações](../../CHANGELOG.md).
 
 ```bash
 uv add "nexy>=2.2"            # or: uv tool upgrade nexy
@@ -41,4 +41,4 @@ Três páginas diziam algo que o código não faz. Se você os seguiu, verifique
 
 - [Índice de documentação](../README.md): a página do que você está construindo
 - [Solução de problemas](../guides/troubleshooting.md): os problemas que as pessoas enfrentam primeiro
-- [Config](../reference/config.md): cada campo `use*` e seu padrão
+- [Configuração](../reference/config.md): cada campo `use*` e seu padrão
