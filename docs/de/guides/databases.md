@@ -6,10 +6,10 @@
 
 | Datei | Zweck |
 |---|---|
-| `src/configs/db.py` | die Engine (SQLModel, SQLAlchemy) oder die `TORTOISE_ORM` Einstellungen |
+| `src/configs/db.py` | die Engine (SQLModel, SQLAlchemy) oder die `TORTOISE_ORM`-Einstellungen |
 | `src/models/` | Modellklassen |
 | `src/services/` | Funktionen, die die Modelle abfragen |
-| `.env` | `DATABASE_URL`, geschrieben, wenn Sie während `nx new` | eine Datenbank-URL angeben
+| `.env` | `DATABASE_URL`, geschrieben, wenn Sie während `nx new` eine Datenbank-URL angeben |
 
 Die Verbindungszeichenfolge stammt aus der Umgebungsvariablen `DATABASE_URL`. Wenn es nicht festgelegt ist, greift die Gerüst-Engine auf eine lokale SQLite-Datei, `dev.db` zurück.
 
@@ -41,10 +41,10 @@ async def GET():
 
 Eine Seite läuft in der Ereignisschleife des Servers und kann nicht darauf warten, daher schlägt `asyncio.run(...)` dort mit „kann nicht aus einer laufenden Ereignisschleife aufgerufen werden“ fehl. Das Gerüst `src/configs/db.py` gibt Tortoise eine eigene Schleife in einem Thread und zwei Helfer, die ihm eine Coroutine senden:
 
-| Wo Sie sind | Rufen Sie an | Hat |
+| Wo du bist | Rufen Sie an | Tut |
 |---|---|---|
-| Synchronisierungscode, z. B. eine Seite | `run(UserService.get_all())` | führt ihn aus und gibt das Ergebnis zurück |
-| Asynchroner Code, z. B. ein Handler oder ein Controller | `await arun(UserService.get_all())` | derselbe, ohne den Server zu blockieren |
+| Synchronisierungscode, z. B. eine Seite | `run(UserService.get_all())` | führt es aus und gibt das Ergebnis zurück |
+| asynchroner Code, z. B. ein Handler oder ein Controller | `await arun(UserService.get_all())` | das Gleiche, ohne den Server zu blockieren |
 
 ```nexy filename="src/routes/users/index.nexy"
 ---
@@ -62,9 +62,9 @@ Listen Sie jedes Modul auf, das Modelle in `TORTOISE_ORM` enthält (der `models`
 
 `nx migrate` wählt das Tool für Ihr ORM aus: Alembic für SQLModel und SQLAlchemy, Aerich für Tortoise-ORM.
 
-| Befehl | führt | aus
+| Befehl | Tut |
 |---|---|
-| `nx migrate --init` | das Migrationstool für das Projekt initialisieren |
+| `nx migrate --init` | Initialisieren Sie das Migrationstool für das Projekt |
 | `nx migrate -m "add users"` | Erstellen Sie eine Migration aus Ihren Modelländerungen |
 | `nx migrate --upgrade` | Ausstehende Migrationen anwenden |
 
@@ -99,5 +99,5 @@ Listen Sie für Tortoise-ORM das Modul stattdessen in `TORTOISE_ORM` auf (siehe 
 ## Nächste Schritte
 
 - [Testen](testing.md): Testhandler anhand einer temporären Datenbank
-- [Config](../reference/config.md)
-- [Deploy](../deployment/README.md): `DATABASE_URL` in der Produktion festlegen
+- [Konfiguration](../reference/config.md)
+- [Deployment](../deployment/README.md): `DATABASE_URL` in der Produktion festlegen
