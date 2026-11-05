@@ -39,18 +39,18 @@ $router_meta
 <div class="shell">
   <header class="mobilebar">
     <button class="menu" type="button" aria-label="Open the menu" aria-expanded="false" data-i18n-aria="open_menu">$icon_menu</button>
-    <a class="brand" href="$home" aria-label="Nexy, home">
+    <a class="brand" href="$home" aria-label="Nexy, home" data-i18n-aria="home_aria">
       <img class="brand-logo" src="$root/assets/nexy.svg" alt="Nexy">
     </a>
     <button class="search-open" type="button" aria-label="Search the docs" data-i18n-aria="search_aria">$icon_search</button>
   </header>
-  <nav class="side" aria-label="Documentation">
+  <nav class="side" aria-label="Documentation" data-i18n-aria="nav_aria">
     <div class="side-top">
       <div class="side-brand">
-        <a class="brand" href="$home" aria-label="Nexy, home">
+        <a class="brand" href="$home" aria-label="Nexy, home" data-i18n-aria="home_aria">
           <img class="brand-logo" src="$root/assets/nexy.svg" alt="Nexy">
         </a>
-        <span class="side-version" aria-label="Nexy version $version">$version</span>
+        <span class="side-version" aria-label="Nexy $version">$version</span>
         <button class="side-toggle" type="button" aria-label="Collapse the menu" aria-expanded="true" data-i18n-aria="collapse_menu">$icon_sidebar</button>
       </div>
       $area_select
@@ -84,7 +84,7 @@ $router_meta
       <button class="side-toggle bar-open" type="button" aria-label="Open the menu" aria-expanded="false" data-i18n-aria="open_menu">$icon_sidebar</button>
       <span class="progress" aria-hidden="true"></span>
       $language_select
-      <a class="bar-link" href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" aria-label="Nexy on GitHub">$icon_github</a>
+      <a class="bar-link" href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" aria-label="Nexy on GitHub" data-i18n-aria="github_aria">$icon_github</a>
       <button class="theme-switch" type="button" role="switch" aria-checked="false" aria-label="Switch between light and dark" data-i18n-aria="theme" data-theme-toggle>
         <span class="theme-knob">$icon_sun$icon_moon</span>
       </button>
