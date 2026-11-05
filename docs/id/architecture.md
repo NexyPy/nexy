@@ -88,5 +88,5 @@ Alasannya sama untuk keenamnya: kerangka kerja yang memilih ORM atau perpustakaa
 
 - [Cara kerja Nexy](getting-started/how-nexy-works.md): satu permintaan, langkah demi langkah
 - [Struktur proyek](getting-started/project-structure.md): tempat setiap lapisan berada dalam sebuah proyek
-- [Routing](routing/README.md): tiga router, dan cara memilih
-- [Rendering](rendering/README.md): dari mana HTML berasal
+- [Perutean](routing/README.md): tiga router, dan cara memilih
+- [Perenderan](rendering/README.md): dari mana HTML berasal
