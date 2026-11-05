@@ -30,7 +30,7 @@ Para elegir una carpeta, pregunte cuál es el archivo:
 - **Un controlador del enrutador modular** - `src/apps/`.
 - **Generado** - `__nexy__/`; nunca lo edites.
 
-> [!ADVERTENCIA]
+> [!WARNING]
 > `src/routes/` es escaneado: un ayudante colocado allí se convierte en una ruta. Coloque un ayudante que no sea una ruta fuera de `src/routes/`, o comience su nombre con `_`.
 
 ## `src/routes/`
@@ -46,9 +46,9 @@ Cada archivo se convierte en una ruta, excepto los nombres reservados a continua
 | `__init__.py` | Python marcador de paquete |
 | `loading.nexy` | reservado: excluido de las rutas, pero aún no tiene efecto de tiempo de ejecución |
 
-El nombre de cada página también existe por marco. Con `react()` configurado, `layout.jsx` y `layout.tsx` se reservan exactamente igual que `layout.nexy`. Las listas están construidas en `nexy/core/config.py` (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
+El nombre de cada página también existe por marco. Con `react()` configurado, `layout.jsx` y `layout.tsx` se reservan exactamente como `layout.nexy`. Las listas están construidas en `nexy/core/config.py` (`LAYOUT_FILE_NAMES`, `ERROR_FILE_NAMES`, `NOTFOUND_FILE_NAMES`, `LOADING_FILE_NAMES`).
 
-> [!NOTA]
+> [!NOTE]
 > `notfound.nexy` y `errors.nexy` solo se instalan cuando existe una copia en la raíz de las rutas. Luego, una copia en un subdirectorio refina la página para ese prefijo.
 
 ## `src/apps/`
@@ -67,7 +67,7 @@ Generado por `nx build` (y por `nx dev` para las piezas que necesita). Contiene:
 
 - los módulos de ruta compilados, como un paquete Python (`__nexy__/src/routes/...`);
 - los puntos de entrada del cliente generados (`main.ts`, `vite.ts`, `*.auto.ts`);
-- `client/` después de una compilación Vite - recursos, manifiesto, HTML prerenderizado;
+- `client/` después de una compilación Vite - activos, manifiesto, HTML prerenderizado;
 - `build-cache.json`.
 
 Trate todo el directorio como desechable: elimínelo, reconstrúyalo. Al editarlo a mano, se pierde el cambio en la siguiente compilación. Agréguelo a `.gitignore`.
