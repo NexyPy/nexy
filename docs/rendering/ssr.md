@@ -11,7 +11,7 @@ no flag turns it off - a server-mode project renders on every request unless a p
 | Route file | What produces the HTML | When |
 |---|---|---|
 | `.nexy` | the compiled Python module, through Jinja2 | every request |
-| `.md` | `cmarkgfm`, then the nearest layout | every request |
+| `.md` | Markdown, then the nearest layout | every request |
 | `.mdx`, `.tsx`, `.vue`, `.svelte` | the framework, rendered in Node | at build when the route has no layout, otherwise in the browser |
 | `.py` | nothing: it returns JSON or a `Response` | - |
 
