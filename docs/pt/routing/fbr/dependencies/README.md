@@ -23,7 +23,7 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-> [!NOTA]
+> [!NOTE]
 > liste as próprias funções. Um objeto `Depends(...)` na lista é ignorado.
 
 Cada rota em `src/routes/admin/` agora requer o cabeçalho, `.py` manipuladores e `.nexy` páginas semelhantes.
@@ -82,7 +82,7 @@ async def GET():
     return {"ok": True}
 ```
 
-Para middleware ASGI real (CORS, GZip, sessões, seu próprio) use `useMiddlewares` e as opções `use*` em [Middleware e segurança](../../../guides/middleware-and-security.md).
+Para middleware ASGI real (CORS, GZip, sessões, suas próprias) use `useMiddlewares` e as opções `use*` em [Middleware e segurança](../../../guides/middleware-and-security.md).
 
 ## Falhando em uma dependência
 
