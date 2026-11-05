@@ -77,7 +77,7 @@ async def GET(request: Request):
 
 ## API JSON dengan buat, baca, dan hapus
 
-Penyimpanan dalam modul, rute pengumpulan, dan rute item. Ganti kamus dengan [a database](databases.md) ketika data harus bertahan jika dimulai ulang.
+Penyimpanan dalam modul, rute pengumpulan, dan rute item. Ganti kamus dengan [basis data](databases.md) ketika data harus bertahan jika dimulai ulang.
 
 ```python filename="src/catatan.py"
 from pydantic import BaseModel
@@ -155,6 +155,6 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
 
 ## Langkah selanjutnya
 
-- [Actions](actions.md): fungsi server yang diketik untuk formulir dan tombol
+- [Aksi](actions.md): fungsi server yang diketik untuk formulir dan tombol
 - [Middleware dan keamanan](middleware-and-security.md): CORS, host, sesi
-- [Testing](testing.md): uji penangan Anda sendiri dengan cara yang sama
+- [Pengujian](testing.md): uji penangan Anda sendiri dengan cara yang sama
