@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from scripts.translate_docs import translate_chunk
+from scripts.translate_docs import translate_chunk, translate_markdown
 
 
 def service(text: str, target: str) -> str:
@@ -28,3 +28,12 @@ class TestTranslateChunk:
 
     def test_a_piece_the_service_keeps_whole_is_asked_once(self):
         assert translate_chunk("a [[1]] b", "bn", service) == "bn:a [[1]] b"
+
+
+class TestTranslateMarkdown:
+    def test_a_wrapped_paragraph_reaches_the_service_whole(self):
+        asked: list[str] = []
+        translate_markdown(
+            "Two servers, two\nbuild systems.\n", "fr", lambda t, _: asked.append(t) or t
+        )
+        assert asked == ["Two servers, two build systems.\n"]
