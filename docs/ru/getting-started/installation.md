@@ -4,7 +4,7 @@
 
 | Требование | Почему |
 |---|---|
-| Python 3.12+ | `requires-python` в `pyproject.toml` |
+| Python 3.12+ | `requires-python` в `pyproject.toml`; компилятор C не требуется, Windows включена |
 | [uv](https://docs.astral.sh/uv/) | создает проект, устанавливает его пакеты и запускает Nexy |
 | Node.js 18+ | только для клиентской платформы (React, Vue, Svelte, Solid, Preact) |
 
@@ -46,10 +46,10 @@ uvx nexy new my-app --template <name>
 
 Активируйте его один раз для каждого терминала из папки проекта:
 
-| Оболочка | Команда |
+| Ракушка | Команда |
 |---|---|
 | PowerShell, cmd (Windows) | `.venv\Scripts\activate` |
-| macOS, Linux | `source .venv/bin/activate` |
+| макОС, Линукс | `source .venv/bin/activate` |
 
 Затем приглашение начинается с `(.venv)`. Отсюда:
 
@@ -77,6 +77,6 @@ nexy init
 ## Следующие шаги
 
 - [Быстрый старт](quick-start.md)
-- [Учебник](tutorial.md)
+- [Учебное пособие](tutorial.md)
 - [Структура проекта](project-structure.md)
 - [Устранение неполадок](../guides/troubleshooting.md)
