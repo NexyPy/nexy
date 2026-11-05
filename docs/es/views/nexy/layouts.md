@@ -2,7 +2,7 @@
 
 El archivo de diseño del modo servidor (`useCSR = False`). El raíz posee el documento HTML.
 
-## Diseño raíz
+## Diseño de raíz
 
 ```nexy filename="src/rutas/layout.nexy"
 ---
@@ -26,12 +26,11 @@ children: prop[NexyElement]
 
 - `<!DOCTYPE html>`, `<html>`, `<head>` y `<body>` viven aquí y en ningún otro lugar.
 - `<Vite />` inyecta los scripts y estilos del cliente una vez, en `<head>`.
-- `{{ children | safe }}` es donde se representa la página o el siguiente diseño anidado.
+- `{{ children | safe }}` es donde se representa la página, o el siguiente diseño anidado.
 
 ## Diseños anidados
 
-Un `layout.nexy` en un subdirectorio envuelve ese subárbol y lo representa dentro de su padre. no se repite
-las etiquetas del documento:
+Un `layout.nexy` en un subdirectorio envuelve ese subárbol y lo representa dentro de su padre. No repite las etiquetas del documento:
 
 ```nexy filename="src/rutas/blog/layout.nexy"
 ---
@@ -45,8 +44,7 @@ children: prop[NexyElement]
 
 ## Componentes e islas
 
-Un diseño puede importar `.nexy` componentes (un encabezado, un pie de página) y componentes del cliente. un cliente
-El componente en un diseño es una [isla](../../rendering/islands.md) como cualquier otra:
+Un diseño puede importar `.nexy` componentes (un encabezado, un pie de página) y componentes del cliente. Un componente cliente en un diseño es una [isla](../../rendering/islands.md) como cualquier otra:
 
 ```nexy
 ---
@@ -59,9 +57,7 @@ from "@/components/theme/theme.tsx" import Theme
 
 ## Sin diseño
 
-Un proyecto sin `layout.nexy` aún responde con un documento válido: Nexy vuelve al mínimo
-shell con `<!DOCTYPE html>`, el meta de la ventana gráfica y las etiquetas Vite. Añade un diseño tan pronto como lo necesites
-un título, fuentes o navegación.
+Un proyecto sin `layout.nexy` aún responde con un documento válido: Nexy recurre a un shell mínimo con `<!DOCTYPE html>`, el meta de la ventana gráfica y las etiquetas Vite. Agregue un diseño tan pronto como necesite un título, fuentes o navegación.
 
 ## En el enrutador modular
 
@@ -71,10 +67,9 @@ Los controladores eligen sus vistas, por lo que ellos mismos componen el diseño
 return useViews("src/apps/layout.nexy", context={"children": useViews("src/apps/app_view.nexy")})
 ```
 
-## Lo que no puede hacer
+## lo que no puede hacer
 
-- No puede coexistir con `layout.tsx`, `layout.vue` o `layout.svelte`: un proyecto en modo servidor tiene
-  sin rutas de cliente ([modos](../../routing/fbr/modes.md)).
+- No puede coexistir con `layout.tsx`, `layout.vue` o `layout.svelte`: un proyecto en modo servidor no tiene rutas de cliente ([modos](../../routing/fbr/modes.md)).
 - No se ejecuta en el cliente: utiliza una isla para interactividad.
 
 ## Próximos pasos
