@@ -75,7 +75,7 @@ from nexy import Audio
 <Audio src="/theme.mp3" controls=True />
 ```
 
-La dernière ligne est exactement `{{ Audio("/theme.mp3", controls=True) }}`. Les deux syntaxes sont valables pour les assistants intégrés `Image`, `Link`, `Audio` et `Video` - voir [components](components.md#two-syntaxes-one-function).
+La dernière ligne est exactement `{{ Audio("/theme.mp3", controls=True) }}`. Les deux syntaxes sont valables pour les assistants intégrés `Image`, `Link`, `Audio` et `Video` - voir [composants](components.md#two-syntaxes-one-function).
 
 Les enfants sont rendus via `<Slot />` (S majuscule) à l'intérieur du composant enfant et via `{{ children }}` à l'intérieur d'une mise en page.
 
