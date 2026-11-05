@@ -56,14 +56,14 @@ Eine Seite wird vor ihren Layouts ausgeführt, sodass das Layout findet, wonach 
 
 | Feld | Geschrieben als |
 |---|---|
-| `title` | `<title>`; mit `title_template="%s \| My site"` wird der Titel in das `%s` | gesetzt
+| `title` | `<title>`; mit `title_template="%s \| My site"` wird der Titel in das `%s` eingefügt |
 | `description` | `<meta name="description">` |
 | `canonical` | `<link rel="canonical">` |
 | `robots` | `<meta name="robots">`, zum Beispiel `"noindex"` |
 | `icon` | `<link rel="icon">` |
 | `og` | ein `<meta property="og:...">` pro Schlüssel: `{"image": "/cover.png"}` ergibt `og:image` |
 | `twitter` | ein `<meta name="twitter:...">` pro Schlüssel |
-| `extra` | eine Liste von Attributdiktaten, jeweils eins `<meta>`: `[{"name": "theme-color", "content": "#fff"}]` |
+| `extra` | eine Liste von Attribut-Diktaten, jeweils ein `<meta>`: `[{"name": "theme-color", "content": "#fff"}]` |
 
 Ein späterer Aufruf ersetzt einen Wert; `og`, `twitter` und `extra` ergänzen das, was da ist. Ein Feld, das nicht existiert, löst `TypeError` aus, sodass ein Tippfehler nicht stillschweigend nichts bewirkt.
 
