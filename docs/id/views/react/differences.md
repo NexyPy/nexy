@@ -5,7 +5,7 @@ Nexy merender React 19 komponen di server, lalu React menghidrasinya di browser.
 | Mode | `nexyconfig.py` | Halaman adalah | React adalah |
 |---|---|---|---|
 | Server (default) | `useCSR = False` | `.nexy` file | [pulau](../../rendering/islands.md) di dalam halaman tersebut |
-| Klien | `useCSR = True` | `.tsx` mengarsipkan | seluruh halaman, dengan [layouts](../frontend/layouts.md) dan router klien |
+| Klien | `useCSR = True` | `.tsx` mengarsipkan | seluruh halaman, dengan [tata letak](../frontend/layouts.md) dan router klien |
 
 ## Mulai sebuah proyek
 
@@ -165,5 +165,5 @@ router.push("/dashboard");
 
 ## Langkah selanjutnya
 
-- [Views](../README.md): membandingkan format yang dapat digunakan suatu halaman
+- [Tampilan](../README.md): membandingkan format yang dapat digunakan suatu halaman
 - [Frontend](../../guides/frontend.md): Vite dan build klien
