@@ -1,7 +1,6 @@
-# Configuración
+# configuración
 
-La configuración es una clase en `nexyconfig.py` en la raíz del proyecto. Nexy lo carga desde el directorio
-entra corriendo; un proyecto sin el archivo utiliza los valores predeterminados.
+La configuración es una clase en `nexyconfig.py` en la raíz del proyecto. Nexy lo carga desde el directorio en el que se ejecuta; un proyecto sin el archivo utiliza los valores predeterminados.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -23,18 +22,18 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | dirección de enlace |
 | `useSslKeyfile`, `useSslCertfile` | `None` | sirven HTTPS directamente |
 | `useDevTools` | `True` | la barra de herramientas `nexy dev` agrega a cada página (información de la página, rutas, errores, configuración); `False` lo elimina. Nunca presente en producción |
-| `useWorkers` | `0` | procesos `nx start` se ejecutan; `0` es uno por CPU en Linux y macOS, uno en Windows |
+| `useWorkers` | `0` | procesos `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
 
 ## Rutas
 
-| Campo | Predeterminado | Significado |
+| Campo | Por defecto | Significado |
 |---|---|---|
 | `useRouter` | `None` | una `APIRouter` instancia o clase montada junto a las rutas basadas en archivos; `None` significa basado únicamente en archivos |
 | `excludeDirs` | `["templates", "extension", "docs"]` | directorios omitidos al escanear rutas |
 | `useAliases` | `None` | importar alias, p.e. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escribe el que elegiste, y Vite y `tsconfig.json` lo siguen |
 
-## Frontal
+## Interfaz
 
 | Campo | Predeterminado | Significado |
 |---|---|---|
@@ -44,13 +43,11 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | extensiones adicionales que el servidor de desarrollo observa |
 | `useWatchExcludePatterns` | `None` | patrones globales que el servidor de desarrollo ignora |
 
-> **Es bueno saberlo**: `NexyConfigModel` declara `useVite = False`; el tiempo de ejecución `Config` predeterminado es
-> `True`.
+> **Es bueno saberlo**: `NexyConfigModel` declara `useVite = False`; el tiempo de ejecución `Config` predeterminado es `True`.
 
 ## Nombres de archivos reservados
 
-Cada campo agrega extensiones a un rol reservado. `useLayoutExtensions = ["md"]` hace `layout.md`
-reservado, exactamente como `layout.nexy`.
+Cada campo agrega extensiones a un rol reservado. `useLayoutExtensions = ["md"]` hace que `layout.md` esté reservado, exactamente como `layout.nexy`.
 
 | Campo | Agrega extensiones a |
 |---|---|
@@ -65,12 +62,12 @@ reservado, exactamente como `layout.nexy`.
 
 | Campo | Predeterminado | Significado |
 |---|---|---|
-| `useDocs` | `True` | sirven el esquema OpenAPI y su página de referencia Scalar |
+| `useDocs` | `True` | sirven el esquema OpenAPI y su página de referencia escalar |
 | `useDocsUrl` | `"/docs"` | ruta de la página de referencia de API |
 | `useRedocsUrl` | `"/redocs"` | declarado pero no se monta ninguna ruta |
-| `useTitle` | `"Nexy App"` | Título de OpenAPI y título de página (`"Nexy"` en `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI título y título de página (`"Nexy"` en `NexyConfigModel`) |
 
-## Middleware
+## software intermedio
 
 | Campo | Predeterminado | Significado |
 |---|---|---|
@@ -82,18 +79,17 @@ reservado, exactamente como `layout.nexy`.
 | `useAuth` | `None` | configuración de middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
 
-## Rebaja
+## Markdown
 
 | Campo | Predeterminado | Significado |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | niveles de encabezado incluidos en el índice |
 | `useTocTitle` | `"Table of Contents"` | Título del TOC |
-| `useTocAuto` | `True` | generar la tabla de contenidos para las páginas Markdown |
+| `useTocAuto` | `True` | generar la tabla de contenidos para las Markdown páginas |
 
 ## Rutas fuera del árbol de archivos
 
-Construya una FastAPI `APIRouter` y móntela con `useRouter`. Se sirve junto al archivo basado
-rutas:
+Construye un FastAPI `APIRouter` y móntalo con `useRouter`. Se sirve junto a las rutas basadas en archivos:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
