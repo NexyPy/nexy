@@ -42,7 +42,7 @@ Browser ──► Middleware ──► Router ──► Page or handler
                  └─ raises ──────────────────────────────────────► 500
 ```
 
-| Stufe | Was scheitern kann | Die Antwort |
+| Phase | Was scheitern kann | Die Antwort |
 |---|---|---|
 | Middleware | Ihre `middleware.py`, CORS, Sitzungen | der Status der Ausnahme, sonst `500` |
 | Router | Die URL stimmt mit keiner Datei überein | `404` |
@@ -95,7 +95,7 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 | Problem | Status | Warum |
 |---|---|---|
-| fehlendes oder ungültiges Abfrage-, Header-, Cookie- oder Body-Feld | `422` | Die Anfrage hat den Handler erreicht, die Daten sind falsch |
+| Abfrage-, Header-, Cookie- oder Body-Feld fehlt oder ist ungültig | `422` | Die Anfrage hat den Handler erreicht, die Daten sind falsch |
 | ungültiges Pfadsegment (`/api/users/abc` für `id: int`) | `404` | Der Ordner hat keine Route für eine Nicht-Nummer, daher existiert die URL nicht |
 
 Der `422`-Körper hat die Standardform von FastAPI, sodass Clients und generierte SDKs weiterhin funktionieren:
@@ -107,7 +107,7 @@ Der `422`-Körper hat die Standardform von FastAPI, sodass Clients und generiert
 Für ein Formular oder eine Aktion erhält der Client ein `ActionError` mit `status` und `detail`; a `422` füllt auch `error.fields` mit einer Nachricht pro Feld. Siehe [Aktionen](../guides/actions.md#errors-and-failures).
 
 > [!TIP]
-> Validieren Sie die Signatur, wenn die Regel ein Feld betrifft (`limit: int = 10`). Validieren Sie im Hauptteil, wenn die Regel die Datenbank oder ein anderes Feld benötigt („Diese E-Mail-Adresse wird bereits verwendet“): Erhöhen Sie `HTTPException(409)` und behalten Sie die Nachricht für den Client bei.
+> Validieren Sie die Signatur, wenn die Regel ein Feld betrifft (`limit: int = 10`). Validieren Sie im Text, wenn die Regel die Datenbank oder ein anderes Feld benötigt („Diese E-Mail-Adresse wird bereits verwendet“): Erhöhen Sie `HTTPException(409)` und behalten Sie die Nachricht für den Client bei.
 
 ## Benutzerdefinierte Fehlerseiten
 
@@ -155,7 +155,7 @@ Eine Ausnahme, bei der nichts abgefangen wurde, wird einmalig protokolliert, mit
 
 Die Referenz besteht aus acht Zeichen und ist für jeden Fehler neu. Ein Besucher kann es zitieren, und Sie finden den Traceback, indem Sie das Protokoll danach durchsuchen. Weder die Ausnahme noch der Code erreichen den Besucher in der Produktion.
 
-> [!VORSICHT]
+> [!CAUTION]
 > Geben Sie den Traceback nicht an einen Besucher in der Produktion zurück und fügen Sie keine Geheimnisse in eine Fehlermeldung ein: Der `detail` eines `HTTPException` wird mit HTML-Escape an den Client gesendet. Tragen Sie das Geheimnis in das Protokoll ein, nicht in die Antwort.
 
 ## Aktionen und Formen
@@ -174,7 +174,7 @@ Ein Formular ohne JavaScript Beiträge zum Aktionspfad; Bei Erfolg wird `303` au
 ## Eine Checkliste, wenn eine Seite die falsche Antwort gibt
 
 1. **Sehen Sie sich den Status** an, nicht die Seite. Ein Brauch `notfound.nexy` antwortet immer noch `404`.
-2. **Lesen Sie das Terminal.** Eine Seite, deren Import fehlschlägt, ist nicht registriert, daher antwortet ihre URL `404`, solange die Datei vorhanden ist. Der Importfehler steht im Protokoll.
+2. **Lesen Sie das Terminal.** Eine Seite, deren Import fehlschlägt, wird nicht registriert, daher antwortet ihre URL `404`, solange die Datei vorhanden ist. Der Importfehler steht im Protokoll.
 3. **Überprüfen Sie die Erweiterung.** Mit `useCSR = True` gehören `.nexy` Seiten zum Servermodus; Eine Seite im falschen Modus ist keine Route.
 4. **Überprüfen Sie die Tiefe.** Ein `notfound.nexy` oder `errors.nexy` funktioniert nur, wenn die Root-Kopie vorhanden ist.
 5. **Fragen Sie nach JSON** mit `Accept: application/json`, um die Form zu sehen, die Ihr API-Client erhält.
