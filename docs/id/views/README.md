@@ -24,7 +24,7 @@ API handler                  →  .py        (GET, POST, …)
 
 | Format | File | Render server | Kerangka klien | Catatan |
 |---|---|---|---|---|
-| `.nexy` | [.nexy files](nexy/README.md) | Jinja2 + Python logika, dialirkan | opsional | Format halaman Nexy asli |
+| `.nexy` | [berkas .nexy](nexy/README.md) | Jinja2 + Python logika, dialirkan | opsional | Format halaman Nexy asli |
 | `.md` | [Markdown dan MDX](nexy/markdown.md) | cmarkgfm pada waktu permintaan | opsional melalui tata letak | Murni Markdown, GFM, dibungkus tata letak |
 | `.mdx` | [Markdown dan MDX](nexy/markdown.md) | framework SSR | React atau Preact | Markdown dengan komponen |
 | `.tsx` | [React](react/differences.md), [Solid](solid/differences.md) atau [Preact](preact/differences.md) | mode klien: kerangka kerja, dirender dalam Node | React, Solid atau Preact | Rute komponen |
