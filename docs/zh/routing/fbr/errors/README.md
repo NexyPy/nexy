@@ -124,8 +124,8 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [！注意]
-> 发送 `Accept: */*`（`curl` 和许多 HTTP 库的默认设置）的客户端接收 HTML 页面。针对 JSON 错误设置 `Accept: application/json`。
+> [!NOTE]
+> 发送 `Accept: */*`（`curl` 和许多 HTTP 库的默认值）的客户端接收 HTML 页面。针对 JSON 错误设置 `Accept: application/json`。
 
 ## 未处理的异常
 
@@ -133,7 +133,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| 浏览器 | 出现错误的页面、引发错误的代码行以及完整回溯 | 内置 `500` 页面（或您的 `errors.nexy`）以及引用 |
+| 浏览器 | 出现错误的页面、引发该错误的代码行以及完整回溯 | 内置 `500` 页面（或您的 `errors.nexy`）以及引用 |
 | JSON 客户端 | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
 | 服务器日志 | 异常和代码行 | 异常和整个回溯，具有相同的引用 |
 
