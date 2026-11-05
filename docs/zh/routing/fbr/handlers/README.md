@@ -37,12 +37,12 @@ from nexy.http import Depends, Header, HTTPException, JSONResponse, Request, sta
 
 ## 参数
 
-| 来源 | 它如何到达 |
+| 来源 | 它是如何到达的 |
 |---|---|
 | 路径段 `[id]` | 函数参数 `id`，转换为其注释 |
 | 查询字符串 | `page: int = 1` |
-| JSON 主体 | Pydantic 模型参数 |
-| FastAPI 原语 | `Depends`、`Header`、`Cookie`、`Form`、`UploadFile` - 未更改 |
+| JSON 正文 | Pydantic 模型论证 |
+| FastAPI 原语 | `Depends`、`Header`、`Cookie`、`Form`、`UploadFile` - 不变 |
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int):
@@ -53,10 +53,10 @@ async def GET(id: int):
 
 ## 回应
 
-| 返回 | 响应 |
+| 返回 | 回应 |
 |---|---|
 | `dict`、`list`、`BaseModel` | JSON |
-| `JSONResponse`、`HTMLResponse`、任何 `Response` | 与声明的 | 完全相同
+| `JSONResponse`、`HTMLResponse`、任意 `Response` | 完全按照声明的那样 |
 | `None` | 空响应 - 当状态重要时返回 `Response` |
 
 对于自定义状态代码或内容类型，返回响应对象：
