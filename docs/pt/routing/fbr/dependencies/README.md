@@ -1,7 +1,6 @@
 # Dependências e guardas
 
-Compartilhe autenticação, sessões de banco de dados e outras configurações entre rotas com dependências FastAPI.
-Eles funcionam em dois níveis, e o nível do diretório é herdado como layouts.
+Compartilhe autenticação, sessões de banco de dados e outras configurações entre rotas com dependências FastAPI. Eles funcionam em dois níveis, e o nível do diretório é herdado como layouts.
 
 | Nível | Onde | se aplica a |
 |---|---|---|
@@ -10,8 +9,7 @@ Eles funcionam em dois níveis, e o nível do diretório é herdado como layouts
 
 ## Por diretório: `dependencies.py`
 
-Um `dependencies.py` declara uma lista `dependencies` de funções simples. Nexy envolve cada um em
-`Depends`.
+Um `dependencies.py` declara uma lista `dependencies` de funções simples. Nexy envolve cada um em `Depends`.
 
 ```python filename="src/routes/admin/dependencies.py"
 from nexy.http import Header, HTTPException
@@ -28,13 +26,11 @@ dependencies = [require_admin]
 > [!NOTA]
 > liste as próprias funções. Um objeto `Depends(...)` na lista é ignorado.
 
-Cada rota em `src/routes/admin/` agora requer o cabeçalho, `.py` manipuladores e `.nexy` páginas
-iguais.
+Cada rota em `src/routes/admin/` agora requer o cabeçalho, `.py` manipuladores e `.nexy` páginas semelhantes.
 
 ## Herança
 
-As dependências são coletadas da raiz das rotas até o diretório da rota, **mais externo primeiro**,
-exatamente como os layouts, e os próprios guardas do manipulador são executados por último:
+As dependências são coletadas da raiz das rotas até o diretório da rota, **mais externo primeiro**, exatamente como os layouts, e os próprios guardas do manipulador são executados por último:
 
 ```text
 src/routes/
@@ -46,9 +42,7 @@ src/routes/
       └─ index.py               4. handler guards, then the handler
 ```
 
-Para `GET /admin/users` a ordem é `root`, `admin`, `users`, as funções do manipulador `@UseGuard`,
-suas funções `@Middleware` e, em seguida, o manipulador. Um grupo de rotas (`(group)/`) é um diretório como qualquer outro
-outro, então seu `dependencies.py` participa.
+Para `GET /admin/users` a ordem é `root`, `admin`, `users`, as funções `@UseGuard` do manipulador, suas funções `@Middleware` e depois o manipulador. Um grupo de rotas (`(group)/`) é um diretório como qualquer outro, então seu `dependencies.py` faz parte.
 
 ## Por manipulador
 
@@ -70,8 +64,7 @@ async def GET(user: str = Depends(current_user)):
 
 ## Guardas e middleware em um manipulador
 
-`@UseGuard` e `@Middleware` anexam dependências FastAPI a um manipulador sem alterar seu
-assinatura. Ambos são dependências, não middleware ASGI:
+`@UseGuard` e `@Middleware` anexam FastAPI dependências a um manipulador sem alterar sua assinatura. Ambos são dependências, não middleware ASGI:
 
 ```python filename="src/routes/admin/users/index.py"
 from nexy.decorators import Middleware, UseGuard
@@ -89,14 +82,11 @@ async def GET():
     return {"ok": True}
 ```
 
-Para middleware ASGI real (CORS, GZip, sessões, seu próprio) use `useMiddlewares` e o `use*`
-opções em [Middleware e segurança](../../../guides/middleware-and-security.md).
+Para middleware ASGI real (CORS, GZip, sessões, seu próprio) use `useMiddlewares` e as opções `use*` em [Middleware e segurança](../../../guides/middleware-and-security.md).
 
 ## Falhando em uma dependência
 
-Uma dependência rejeita uma solicitação aumentando. `HTTPException` responde com o status que você levantou, como
-JSON para clientes API (`Accept: application/json`) e como página de erro para navegadores. Veja
-[Validação e erros](../handlers/validation-and-errors.md).
+Uma dependência rejeita uma solicitação aumentando. `HTTPException` responde com o status que você levantou, como JSON para clientes API (`Accept: application/json`) e como página de erro para navegadores. Consulte [Validação e erros](../handlers/validation-and-errors.md).
 
 ## Próximas etapas
 
