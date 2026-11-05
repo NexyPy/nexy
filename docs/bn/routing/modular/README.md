@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [!দ্রষ্টব্য]
+> [!NOTE]
 > ফাইল-ভিত্তিক রাউটিং কাজ করে। যদি `src/routes/` বিদ্যমান থাকে, তবে `useRouter` সেট থাকা অবস্থায়ও এটি স্ক্যান করা হয়।
 
 ## একটি নিয়ামক লিখুন
