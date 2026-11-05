@@ -7,21 +7,21 @@ Hooks lesen die aktuelle HTTP-Anfrage aus einer `.nexy`-Seite, einem API-Handler
 
 ## Die Haken
 
-| Hook | Gibt | zurück
+| Haken | Rückgaben |
 |---|---|
 | `usePathname()` | Anfragepfad, z.B. `"/blog/post-1"` |
 | `useSearchParams()` | Abfragezeichenfolge als `dict[str, str]`, erster Wert pro Schlüssel |
 | `useParams()` | dynamische Pfadparameter, z.B. `{"slug": "post-1"}` |
-| `useQuery()` | der ursprüngliche Name von `useParams()`, beibehalten für bestehende Seiten |
-| `useRequest()` | die Starlette Anfrage, für das, was die anderen Hooks nicht abdecken |
+| `useQuery()` | der ursprüngliche Name von `useParams()`, der für vorhandene Seiten beibehalten wird |
+| `useRequest()` | die Starlette-Anfrage, für das, was die anderen Hooks nicht abdecken |
 | `useHeaders()` | die Anforderungsheader als `dict[str, str]`, Namen in Kleinbuchstaben |
 | `useUrl()` | die vollständige URL: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
 | `useIsActive(href, exact=False)` | ob `href` die aktuelle Seite oder eine ihrer Eltern ist |
 | `useRouter()` | `{"path", "base_url", "url_for"}` |
 | `useCookies()` | alle Cookies als `dict[str, str]` |
-| `useSession()` | das Sitzungsdikt, `{}` wenn Sitzungen nicht aktiviert sind |
-| `useToc(depth_range="2-6")` | Inhaltsverzeichnis HTML für die aktuelle Seite, `""` wenn keines vorhanden ist |
-| `useViews(path, context=None)` | rendert eine andere Ansicht und gibt ein `HTMLResponse` | zurück
+| `useSession()` | das Sitzungsdikt, `{}`, wenn Sitzungen nicht aktiviert sind |
+| `useToc(depth_range="2-6")` | Inhaltsverzeichnis HTML für die aktuelle Seite, `""`, wenn keines vorhanden ist |
+| `useViews(path, context=None)` | rendert eine andere Ansicht und gibt ein `HTMLResponse` zurück |
 
 ## Lesen Sie die Anfrage
 
@@ -61,5 +61,5 @@ label: prop[str]
 
 - [Seiten](../pages/README.md): dynamische Segmente und Layouts
 - [Rezepte](../../../guides/recipes.md): ein getesteter Anmeldeablauf basierend auf `useSession()`
-- [Config](../../../reference/config.md): Sitzungen und Gebietsschemas aktivieren
+- [Konfiguration](../../../reference/config.md): Sitzungen und Gebietsschemas aktivieren
 - [.nexy-Dateien](../../../views/nexy/README.md): Hier werden normalerweise Hooks aufgerufen
