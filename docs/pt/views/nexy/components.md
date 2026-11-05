@@ -35,7 +35,7 @@ O compilador reescreve `<Audio ... />` para `{{ Audio(...) }}`, então o formato
 - O formato da tag é **fechamento automático**. `<Audio src="/a.mp3" />` e `{{ Audio("/a.mp3") }}` são equivalentes; escrever filhos dentro de uma tag auxiliar não é suportado.
 - Um atributo HTML simples não é booleano aqui: `controls` torna-se `controls=""`, o que é falso. Escreva `controls=True`.
 
-> [!NOTA]
+> [!NOTE]
 > `class_name` é a palavra-chave documentada para classes CSS. Argumentos extras de palavras-chave tornam-se atributos HTML, então `class="nav"` também atinge a saída.
 
 ## Imagem
@@ -62,7 +62,7 @@ from nexy import Link
 
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` renderiza um `<a data-nexy-link>` manipulado pelo roteador cliente. Com `prefetch=True`, passar o mouse ou tocar no link aquece o alvo através de `window.__nexy_prefetch`.
 
-> [!NOTA]
+> [!NOTE]
 > o formato da tag leva o rótulo como `children`, não como conteúdo do elemento: `<Link href="/about" children="About" />`. Para colocar marcação dentro de um link, use o formulário de chamada com `children=` ou um componente `.nexy` que renderiza um `<Slot />`.
 
 ## Áudio e Vídeo
