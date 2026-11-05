@@ -24,7 +24,7 @@ API handler                  →  .py        (GET, POST, …)
 
 | التنسيق | الملف | تقديم الخادم | إطار عمل العميل | ملاحظات |
 |---|---|---|---|---|
-| `.nexy` | [.nexy files](nexy/README.md) | Jinja2 + Python منطق، متدفق | اختياري | تنسيق صفحة Nexy الأصلي |
+| `.nexy` | [ملفات .nexy](nexy/README.md) | Jinja2 + Python منطق، متدفق | اختياري | تنسيق صفحة Nexy الأصلي |
 | `.md` | [Markdown و MDX ](nexy/markdown.md) | cmarkgfm في وقت الطلب | اختياري عبر التخطيط | نقي Markdown، GFM، مغلف بالتخطيط |
 | `.mdx` | [Markdown و MDX ](nexy/markdown.md) | إطار عمل SSR | React أو Preact | Markdown مع المكونات |
 | `.tsx` | [React ](react/differences.md)، [Solid ](solid/differences.md) أو [Preact ](preact/differences.md) | وضع العميل: إطار العمل، المقدم في العقدة | React، Solid أو Preact | مسارات المكونات |
@@ -63,6 +63,6 @@ class NexyConfig(NexyConfigModel):
 
 ## الخطوات التالية
 
-- [.nexy files](nexy/README.md): Python + Jinja2 + الدعائم
+- [ملفات .nexy](nexy/README.md): Python + Jinja2 + الدعائم
 - [Markdown و MDX](nexy/markdown.md): صفحات المحتوى
 - [المكونات](nexy/components.md): مساعدات HTML المضمنة
