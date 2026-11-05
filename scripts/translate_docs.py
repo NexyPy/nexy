@@ -25,7 +25,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -76,11 +76,31 @@ def _keeps(answer: str, indices: list[int]) -> bool:
     return all(found.count(index) == 1 for index in indices)
 
 
-def _ask(chunk: str, target: str, engine: Engine, retries: int) -> str:
+def _request(
+    chunk: str, target: str, engine: Engine, opening: Collection[int] | None = None
+) -> str:
+    """One answer of the service; the placeholders that open a line never travel.
+
+    Nor do the blank lines around the text, which the service drops: they are put back as they
+    were, and a piece with no words left is not sent at all.
+    """
+    body, openings = translator.leads(chunk, opening)
+    words = body.strip()
+    if not words:
+        return chunk
+    start = body.index(words)
+    answer = translator.heal_opening(engine(words, target))
+    whole = body[:start] + answer + body[start + len(words) :]
+    return translator.respace(translator.with_leads(whole, openings) or whole, chunk)
+
+
+def _ask(
+    chunk: str, target: str, engine: Engine, retries: int, opening: Collection[int] | None
+) -> str:
     """The service's answer, asked again while it throttles or loses a placeholder."""
     for attempt in range(1, retries + 1):
         try:
-            answer = translator.heal_opening(engine(chunk, target))
+            answer = _request(chunk, target, engine, opening)
         except Exception as error:
             if attempt == retries:
                 raise
@@ -108,16 +128,25 @@ _GLUED = re.compile(r"\A(\[\[\d+\]\])(\S+)\Z")
 _GLUED_END = re.compile(r"\A(\S+)(\[\[\d+\]\])\Z")
 
 
-def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -> str:
-    """One request, cut in two around a placeholder the service keeps losing."""
-    opening = _GLUED.match(chunk)
-    if opening is not None:
-        return opening[1] + translate_chunk(opening[2], target, engine, retries)
+def translate_chunk(
+    chunk: str,
+    target: str,
+    engine: Engine,
+    retries: int = 4,
+    opening: Collection[int] | None = None,
+) -> str:
+    """One request, cut in two around a placeholder the service keeps losing.
+
+    `opening` names the layout placeholders, kept out of the request when they open a line.
+    """
+    glued = _GLUED.match(chunk)
+    if glued is not None:
+        return glued[1] + translate_chunk(glued[2], target, engine, retries, opening)
     closing = _GLUED_END.match(chunk)
     if closing is not None:
-        return translate_chunk(closing[1], target, engine, retries) + closing[2]
+        return translate_chunk(closing[1], target, engine, retries, opening) + closing[2]
     indices = _indices(chunk)
-    answer = _ask(chunk, target, engine, retries)
+    answer = _ask(chunk, target, engine, retries, opening)
     if _keeps(answer, indices):
         return answer
     lost = _lost(answer, indices)
@@ -126,15 +155,17 @@ def translate_chunk(chunk: str, target: str, engine: Engine, retries: int = 4) -
     if parts is None:
         raise RuntimeError(f"the service keeps losing placeholder {lost} in a chunk of {target}")
     head, between, tail = parts
-    return translate_chunk(head, target, engine) + between + translate_chunk(tail, target, engine)
+    first = translate_chunk(head, target, engine, retries, opening)
+    return first + between + translate_chunk(tail, target, engine, retries, opening)
 
 
 def translate_markdown(markdown: str, target: str, engine: Engine = google) -> str:
     """A whole page in another language, its skeleton intact."""
     template, kept = translator.protect(translator.unwrap(markdown))
+    shape = translator.structural(kept)
     translated = []
     for chunk in translator.chunks(template):
-        translated.append(translate_chunk(chunk, target, engine))
+        translated.append(translate_chunk(chunk, target, engine, opening=shape))
         _pause(engine)
     text = translator.restore(translated, kept)
     captions = translator.captions(markdown)
