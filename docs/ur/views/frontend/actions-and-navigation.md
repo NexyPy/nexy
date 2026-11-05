@@ -10,12 +10,65 @@ Nexy میں تعامل کو **Actions** اور **نیویگیشن** کے متح�
 2.  **ایٹمی عمل**: ایک عمل ایک واحد `POST` درخواست ہے۔
 3.  **رزلٹ ہینڈلنگ**: ایکشن ایک ٹائپ شدہ نتیجہ لوٹاتا ہے جسے کلائنٹ UI کو اپ ڈیٹ کرنے کے لیے استعمال کر سکتا ہے۔
 
+```python filename="src/actions/todos.py"
+from pydantic import BaseModel
+from nexy.decorators import Action
+
+
+class Todo(BaseModel):
+    title: str
+    done: bool = False
+
+
+@Action
+async def add_todo(title: str) -> Todo:
+    return Todo(title=title)
+```
+
+صفحہ اسے اعلان کردہ ان پٹ Python کے ساتھ کال کرتا ہے، اور ایک ٹائپ شدہ `Todo` واپس ملتا ہے:
+
+```tsx filename="src/routes/todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export default function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
 ## کلائنٹ سائیڈ نیویگیشن
 
 Nexy میں نیویگیشن "ذہین" ہے۔ مکمل براؤزر کو دوبارہ لوڈ کرنے کے بجائے، Nexy موجودہ صفحہ کے مواد کو تبدیل کرتا ہے جبکہ فعال لے آؤٹ کو نصب رکھتا ہے۔
 
 - **`Link` اجزاء**: کلائنٹ سائیڈ ٹرانزیشن کو انجام دینے کے لیے فریم ورک کے لیے مخصوص `Link` جزو کا استعمال کریں۔
-- **پروگرامیٹک نیویگیشن**: منطق کے جواب میں صفحات کو تبدیل کرنے کے لیے `navigate()` فنکشن کو `@nexy/client` سے استعمال کریں (مثال کے طور پر، کامیاب لاگ ان کے بعد)۔
+- **پروگرامیٹک نیویگیشن**: `@nexy/client` سے `useRouter()` کا استعمال کریں اور منطق کے جواب میں صفحات کو تبدیل کرنے کے لیے `push()` کو کال کریں (مثال کے طور پر، کامیاب لاگ ان کے بعد)۔
+
+```tsx filename="src/components/Nav.tsx"
+import { Link } from "@nexy/client";
+
+export function Nav() {
+  return (
+    <nav>
+      <Link href="/">Home</Link>
+      <Link href="/about" activeClassName="active">About</Link>
+    </nav>
+  );
+}
+```
+
+```tsx filename="src/components/Done.tsx"
+import { useRouter } from "@nexy/client";
+
+export function Done() {
+  const router = useRouter();
+  return <button onClick={() => router.push("/dashboard")}>Continue</button>;
+}
+```
 
 ## کوآرڈینیشن: ایکشن → نیویگیشن
 
@@ -24,8 +77,36 @@ Nexy میں نیویگیشن "ذہین" ہے۔ مکمل براؤزر کو دوب
 **بحالی کا بہاؤ:**
 1.  کلائنٹ ایک ایکشن کو کال کرتا ہے۔
 2.  ایکشن سرور پر عمل کرتا ہے اور کال کرتا ہے `revalidate("/path")`۔
-3.  سرور مخصوص راستے کو تازہ کرنے کے لیے سگنل کے ساتھ نتیجہ واپس کرتا ہے۔
+3.  سرور ایک `x-nexy-revalidate` ہیڈر کے ساتھ نتیجہ واپس کرتا ہے جس میں باسی راستوں کا نام ہوتا ہے۔
 4.  کلائنٹ نئی حالت کی عکاسی کرنے کے لیے صفحہ کے مواد کو اپ ڈیٹ کرتا ہے۔
+
+```python filename="src/actions/session.py"
+from nexy.decorators import Action, revalidate
+
+
+@Action
+async def sign_in(email: str, password: str) -> bool:
+    ok = check_password(email, password)
+    revalidate("/dashboard")
+    return ok
+```
+
+```tsx filename="src/routes/login.tsx"
+import { useAction, useRouter } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export default function Login() {
+  const router = useRouter();
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) router.push("/dashboard");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+
+`check_password` کا مطلب ہے آپ کی اپنی جانچ۔ غلطیوں کے لیے [ایکشنز](../../guides/actions.md) دیکھیں، بغیر JavaScript کے فارم اور سیکیورٹی دیکھیں۔
 
 ## فریم ورک کا نفاذ
 
