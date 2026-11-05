@@ -57,11 +57,11 @@ El vocabulario HTTP de un controlador. Importe desde aquí en lugar de FastAPI, 
 
 | Nombre | Qué es |
 |---|---|
-| `Action` | convierte una función en un `POST` punto final, ver [actions](../guides/actions.md) |
+| `Action` | convierte una función en un `POST` punto final, ver [acciones](../guides/actions.md) |
 | `revalidate` | decirle al navegador qué páginas una acción dejó obsoletas |
 | `Module`, `Controller` | declaran un módulo y un controlador en el [enrutador modular](../routing/modular/README.md) |
 | `Injectable`, `Container`, `Scope` | [inyección de dependencia](../routing/modular/dependency-injection.md) y sus tiempos de vida |
-| `UseGuard`, `Middleware` | protegen o envuelven a un controlador, ver [guards](../routing/modular/guards-and-metadata.md) |
+| `UseGuard`, `Middleware` | protegen o envuelven a un controlador, ver [guardas](../routing/modular/guards-and-metadata.md) |
 | `UseRoute`, `useRoute`, `RouteMeta` | nombra una ruta y descríbela para OpenAPI |
 | `UseResponse`, `ResponseMeta` | describen la respuesta de una ruta |
 | `HTTP_METHODS` | los métodos HTTP que un archivo controlador puede definir |
@@ -75,6 +75,6 @@ El vocabulario HTTP de un controlador. Importe desde aquí en lugar de FastAPI, 
 
 ## donde sigue
 
-- [Config](config.md): los campos `use*` detrás de estos nombres
+- [Configuración](config.md): los campos `use*` detrás de estos nombres
 - [Excepciones y errores](exceptions.md): qué responde cada fallo
 - [Índice de documentación](../README.md): la página de lo que estás creando
