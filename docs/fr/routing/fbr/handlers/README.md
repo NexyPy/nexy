@@ -83,4 +83,4 @@ Chaque route API apparaît dans le schéma généré, car les routes sont des ro
 - [Validation et erreurs](validation-and-errors.md) : `422`, `404` et erreurs JSON
 - [Routage](../../README.md) : chemin du fichier vers l'URL
 - [Actions](../../../guides/actions.md) : points de terminaison avec chemins générés
-- [Config](../../../reference/config.md) : middleware, CORS, sessions
+- [Configuration](../../../reference/config.md) : middleware, CORS, sessions
