@@ -4,17 +4,17 @@
 
 ## 什么匹配
 
-| NestJS | 尼克西 |
+| NestJS | 内克西 |
 |---|---|
 | `@Controller('users')` | `@Controller(prefix="/users")` |
 | `@Module({ controllers, providers, imports, exports })` | `@Module()` 具有相同的四个类属性 |
 | `@Injectable()` | `@Injectable()` |
-| 从类型注释 | 解析的构造函数注入 | `__init__` 参数
+| 构造函数注入 | `__init__` 从类型注释解析的参数 |
 | 单例、请求和瞬态作用域 | `Scope.SINGLETON`、`Scope.REQUEST`、`Scope.TRANSIENT` |
-| `@UseGuards(AuthGuard)` | `@UseGuard(guard)`（FastAPI 依赖项）|
-| `@ApiOperation`、`@ApiResponse`（招摇）| `@UseRoute`、`@UseResponse`（OpenAPI，服务于 `/docs`）|
-| 控制器 | 上的 WebSocket 网关 | `async def SOCKET(...)`
-| DTO 验证 (`class-validator`) | Pydantic 模型，原生于 FastAPI |
+| `@UseGuards(AuthGuard)` | `@UseGuard(guard)`（FastAPI 依赖） |
+| `@ApiOperation`、`@ApiResponse`（招摇） | `@UseRoute`，`@UseResponse`（OpenAPI，服务于 `/docs`） |
+| WebSocket 网关 | `async def SOCKET(...)` 在控制器上 |
+| DTO 验证（`class-validator`） | Pydantic 模型，原生于 FastAPI |
 | 循环依赖检测 | `RecursionError` 命名类 |
 
 ## 有什么不同
@@ -26,17 +26,17 @@
 
 ## 缺少什么
 
-| NestJS 功能 | Nexy 的状态 |
+| NestJS 特征 | 内克西的现状 |
 |---|---|
-| 自定义提供程序（`useValue`、`useFactory`、`useClass`、字符串标记）| 不可用：仅 `@Injectable()` 类 |
+| 自定义提供程序（`useValue`、`useFactory`、`useClass`、字符串标记） | 不可用：仅 `@Injectable()` 类 |
 | 通过接口或抽象类注入 | 不可用 |
-| 不强制执行模块封装 |：容器是进程范围的，`exports` 仅控制急切解析 |
-| 动态和全局模块（`forRoot`、`@Global`）| 不可用 |
-| 生命周期挂钩（`onModuleInit`、`onApplicationShutdown`）| 不可用 |
-| 拦截器 | 使用ASGI中间件（`useMiddlewares`）或依赖项 |
+| 模块封装 | 不强制：容器是进程范围的，`exports` 仅控制急切解析 |
+| 动态和全局模块（`forRoot`、`@Global`） | 不可用 |
+| 生命周期挂钩（`onModuleInit`、`onApplicationShutdown`） | 不可用 |
+| 拦截器 | 使用 ASGI 中间件（`useMiddlewares`）或依赖项 |
 | 异常过滤器 | 使用 FastAPI 异常处理程序 |
-| 使用提供者覆盖的测试模块 | 无公共 API；使用 FastAPI `dependency_overrides` 和 `TestClient` |
-| 配置模块、调度、队列、CQRS、微服务、缓存 | 不是 Nexy 的一部分；使用 Python 生态系统 |
+| 使用提供者覆盖测试模块 | 没有公共API；使用 FastAPI `dependency_overrides` 和 `TestClient` |
+| 配置模块、调度、队列、CQRS、微服务、缓存 | 不属于 Nexy 的一部分；使用 Python 生态系统 |
 
 ## 什么时候去采摘
 
