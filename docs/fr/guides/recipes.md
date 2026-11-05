@@ -1,15 +1,12 @@
 # Recettes
 
-Trois choses dont presque toutes les applications ont besoin, sous forme de fichiers complets que vous pouvez copier. Chaque bloc de code ci-dessous avec un
-`filename` est écrit dans un nouveau projet et exercé par la suite de tests, donc ce que vous lisez est ce que
-court.
+Trois choses dont presque toutes les applications ont besoin, sous forme de fichiers complets que vous pouvez copier. Chaque bloc de code ci-dessous avec un `filename` est écrit dans un nouveau projet et utilisé par la suite de tests, donc ce que vous lisez est ce qui s'exécute.
 
 Ils utilisent des gestionnaires d'API simples ; les mêmes fonctions fonctionnent derrière une page en [mode](../routing/fbr/modes.md).
 
 ## Connectez-vous avec une session
 
-Un visiteur poste un nom et un mot de passe, le serveur les mémorise dans un cookie signé, et tout
-sous `/api/account` est fermé à toute autre personne.
+Un visiteur publie un nom et un mot de passe, le serveur les mémorise dans un cookie signé et tout ce qui se trouve sous `/api/account` est fermé à toute autre personne.
 
 Activez les sessions. Ils ont besoin de `itsdangerous` (`uv add itsdangerous`) :
 
@@ -76,13 +73,11 @@ async def GET(request: Request):
 ```
 
 > [!REMARQUE]
-> garder les vrais mots de passe hors de la source. Stockez un hachage (`argon2`, `bcrypt`) et lisez
-> la clé secrète de l'environnement. Le cookie de session est signé et non crypté.
+> gardez les vrais mots de passe hors de la source. Stockez un hachage (`argon2`, `bcrypt`) et lisez la clé secrète de l'environnement. Le cookie de session est signé et non crypté.
 
 ## Une API JSON avec création, lecture et suppression
 
-Un magasin dans un module, un parcours de collecte et un parcours d'articles. Remplacez le dictionnaire par
-[une base de données](databases.md) lorsque les données doivent survivre à un redémarrage.
+Un magasin dans un module, un parcours de collecte et un parcours d'articles. Remplacez le dictionnaire par [une base de données](databases.md) lorsque les données doivent survivre à un redémarrage.
 
 ```python filename="src/notes.py"
 from pydantic import BaseModel
@@ -134,14 +129,11 @@ async def DELETE(id: int) -> dict[str, bool]:
     return {"deleted": True}
 ```
 
-Un corps qui ne rentre pas dans `NewNote` est refusé avec `422` avant l'exécution de votre code, et le retour
-l'annotation devient la réponse documentée. Voir
-[validation et erreurs](../routing/fbr/handlers/validation-and-errors.md).
+Un corps qui ne correspond pas à `NewNote` est refusé avec `422` avant l'exécution de votre code, et l'annotation de retour devient la réponse documentée. Voir [validation et erreurs](../routing/fbr/handlers/validation-and-errors.md).
 
 ## Recevoir un fichier
 
-Les téléchargements nécessitent `python-multipart` (`uv add python-multipart`). Vérifiez vous-même la taille et ne l'utilisez jamais
-le nom du fichier client comme chemin :
+Les téléchargements nécessitent `python-multipart` (`uv add python-multipart`). Vérifiez vous-même la taille et n'utilisez jamais le nom de fichier du client comme chemin :
 
 ```python filename="src/routes/api/upload.py"
 from pathlib import Path
@@ -159,11 +151,10 @@ async def POST(file: UploadFile) -> dict[str, int | str]:
     return {"name": name, "size": len(data)}
 ```
 
-`Path(...).name` supprime tout dossier que le client a indiqué, tel que `../../etc/passwd`. Enregistrez le
-octets sous un nom que vous générez, pas sous celui-ci.
+`Path(...).name` supprime tout dossier que le client a mis dans le nom, tel que `../../etc/passwd`. Enregistrez les octets sous un nom que vous générez, pas sous celui-ci.
 
 ## Prochaines étapes
 
-- [Actions](actions.md) : fonctions serveur typées pour les formulaires et les boutons
+- [Actions](actions.md) : fonctions serveur typées pour les formulaires et les boutons
 - [Middleware et sécurité](middleware-and-security.md) : CORS, hôtes, sessions
 - [Testing](testing.md) : testez vos propres gestionnaires de la même manière
