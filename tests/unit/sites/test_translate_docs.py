@@ -5,7 +5,12 @@ from __future__ import annotations
 import json
 import re
 
-from scripts.translate_docs import refresh, translate_chunk, translate_markdown
+from scripts.translate_docs import (
+    refresh,
+    relabel_tree,
+    translate_chunk,
+    translate_markdown,
+)
 from sites.shared import translator
 
 
@@ -118,3 +123,54 @@ class TestLinkWords:
 
     def test_an_emptied_link_names_its_placeholder(self):
         assert translator.emptied("voir [[[1]].", "See [Troubleshooting[[1]].") == 1
+
+
+class TestRelabelTree:
+    def test_relabel_rewrites_a_translated_page_without_the_service(self, tmp_path):
+        page = tmp_path / "fr" / "a.md"
+        page.parent.mkdir()
+        page.write_text("Voir [Testing](b.md).\n", encoding="utf-8")
+        relabel_tree(tmp_path, "fr")
+        assert page.read_text(encoding="utf-8") == "Voir [Tests](b.md).\n"
+
+    def test_relabel_returns_the_pages_it_changed(self, tmp_path):
+        (tmp_path / "fr").mkdir()
+        (tmp_path / "fr" / "a.md").write_text("[Testing](b.md)\n", encoding="utf-8")
+        (tmp_path / "fr" / "c.md").write_text("[Tests](b.md)\n", encoding="utf-8")
+        assert relabel_tree(tmp_path, "fr") == [tmp_path / "fr" / "a.md"]
+
+    def test_a_new_translation_takes_the_glossary_word(self):
+        assert translate_markdown("[Testing](b.md)\n", "fr", lambda t, _: t) == "[Tests](b.md)\n"
+
+
+class TestTableCells:
+    def test_a_service_never_sees_the_pipes_of_a_row(self):
+        asked: list[str] = []
+        translate_markdown("| Name | What it does |\n", "fr", lambda t, _: asked.append(t) or t)
+        assert asked == ["Name\nWhat it does"]
+
+    def test_a_translated_row_keeps_its_cells(self):
+        answer = translate_markdown("| Name | What it does |\n", "fr", lambda t, _: t.upper())
+        assert answer == "| NAME | WHAT IT DOES |\n"
+
+
+class TestLinkBrackets:
+    def test_a_link_whose_bracket_was_lost_is_asked_again(self):
+        answers = iter(["voir Dépannage[[1]].", "voir [Dépannage[[1]]."])
+        assert translate_chunk(
+            "See [Troubleshooting[[1]].", "fr", lambda _t, _target: next(answers)
+        ) == ("voir [Dépannage[[1]].")
+
+    def test_a_cell_opening_on_a_link_keeps_its_bracket(self):
+        answer = translate_markdown(
+            "| [Performance](a.md) | b |\n", "ur", lambda t, _: t.replace("Performance", "x")
+        )
+        assert answer == "| [x](a.md) | b |\n"
+
+
+class TestStrayedCode:
+    def test_a_code_moved_to_another_cell_is_asked_again(self):
+        answers = iter(["a\n[[1]] b", "a [[1]]\nb"])
+        assert translate_chunk("a [[1]]\nb", "fr", lambda _t, _target: next(answers)) == (
+            "a [[1]]\nb"
+        )
