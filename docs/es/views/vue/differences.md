@@ -1,23 +1,19 @@
-# vista
+# Vue
 
-Nexy renderiza los componentes de un solo archivo de Vue 3 en el servidor y luego Vue los toma en el navegador.
-Las páginas, diseños, islas y acciones son las mismas en todos los marcos: esta página cubre la configuración, luego el
-partes que difieren de los [contratos compartidos](../frontend/pages.md).
+Nexy renderiza Vue 3 componentes de un solo archivo en el servidor, luego Vue los toma en el navegador. Las páginas, diseños, islas y acciones son las mismas en todos los marcos: esta página cubre la configuración y luego las partes que difieren de los [contratos compartidos](../frontend/pages.md).
 
 | Modo | `nexyconfig.py` | Las páginas son | Vue es |
 |---|---|---|---|
 | Servidor (predeterminado) | `useCSR = False` | `.nexy` archivos | [islas](../../rendering/islands.md) dentro de esas páginas |
-| Cliente | `useCSR = True` | `.vue` archivos | toda la página, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+| El cliente | `useCSR = True` | `.vue` archiva | la página completa, con [diseños](../frontend/layouts.md) y un enrutador cliente |
 
-## Iniciar un proyecto
+## iniciar un proyecto
 
 ```bash
 nx new my-app --template web-fbr-vue
 ```
 
-La plantilla es un proyecto en modo servidor con islas Vue. Ejecute `nx new my-app` sin una plantilla para
-En su lugar, responda las indicaciones: el enrutador, el tipo de proyecto, si desea utilizar el enrutamiento del lado del cliente y luego
-el marco.
+La plantilla es un proyecto en modo servidor con Vue islas. Ejecute `nx new my-app` sin una plantilla para responder a las indicaciones: el enrutador, el tipo de proyecto, si se utilizará el enrutamiento del lado del cliente y luego el marco.
 
 ## Habilitar Vue en un proyecto existente
 
@@ -51,15 +47,12 @@ export default defineConfig({
 
 ## Reglas
 
-- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [vue(), react()]` se detiene
-  el servidor al inicio.
-- **Un componente por archivo.** Un archivo `.vue` exporta su componente de forma predeterminada; el nombre lo importas
-  debajo está solo la etiqueta que escribes.
-- **Los componentes viven fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
-- **Un proyecto en modo servidor no tiene `.vue` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy
-  se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
+- **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [vue(), react()]` detiene el servidor al inicio.
+- **Un componente por archivo.** Un archivo `.vue` exporta su componente de forma predeterminada; el nombre con el que lo importa es solo la etiqueta que escribe.
+- **Los componentes se encuentran fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
+- **Un proyecto en modo servidor no tiene `.vue` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
 
-## Páginas
+## paginas
 
 En modo cliente (`useCSR = True`), una página es un archivo `.vue`.
 
@@ -108,7 +101,7 @@ El diseño raíz define el shell del documento. Los diseños anidados envuelven 
 
 ## Islas
 
-En modo servidor, un componente de Vue importado a un archivo `.nexy` es una isla.
+En modo servidor, un componente Vue importado a un archivo `.nexy` es una isla.
 
 ### Importando
 
@@ -123,7 +116,7 @@ from "@/components/Counter.vue" import Counter
 
 ### Directivas de hidratación
 
-Usa el accesorio `directive` para controlar cuándo se hidrata la isla:
+Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
 
 - `client:load` (predeterminado): inmediatamente
 - `client:idle`: cuando el navegador está inactivo
@@ -132,10 +125,9 @@ Usa el accesorio `directive` para controlar cuándo se hidrata la isla:
 
 ## Acciones y navegación
 
-### Llamando acciones
+### Llamar a acciones
 
-Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Vue, el estado devuelto.
-(`pending`, `data`, `error`) son referencias calculadas.
+Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Vue, el estado devuelto (`pending`, `data`, `error`) son referencias calculadas.
 
 ```vue
 <script setup lang="ts">
@@ -176,7 +168,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### Acceso URL
+### acceso URL
 
 Todos los ganchos de ubicación devuelven referencias calculadas:
 
