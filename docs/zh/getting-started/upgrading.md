@@ -1,6 +1,6 @@
 # 升级到2.2
 
-当您从 2.1 迁移到 2.2 时，现有项目会发生哪些变化，以及如何处理。完整列表位于[变更日志](../../CHANGELOG.md)中。
+当您从 2.1 迁移到 2.2 时，现有项目会发生哪些变化，以及如何处理。完整列表位于[变更日志](https://github.com/NexyPy/nexy/blob/main/CHANGELOG.md)中。
 
 ```bash
 uv add "nexy>=2.2"            # or: uv tool upgrade nexy
