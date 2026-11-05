@@ -94,7 +94,7 @@
 
 `nx build` روٹس کو مرتب کرتا ہے، پھر جب `useVite` آن ہوتا ہے تو کلائنٹ کو بنڈل کرتا ہے۔
 
-> [!نوٹ]
+> [!NOTE]
 > کوئی `--static` جھنڈا نہیں ہے۔ جامد ہوسٹنگ ایک تعیناتی کا انتخاب ہے، نہ کہ تعمیراتی طرز - دیکھیں [تعینات](../deployment/README.md)۔
 
 ## خود Nexy پر کام کرنا
@@ -108,6 +108,6 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 ## اگلے اقدامات
 
-- [حاصل کرنا شروع کیا گیا ](../getting-started/quick-start.md): پہلا منصوبہ
+- [شروع کرنا](../getting-started/quick-start.md): پہلا پروجیکٹ
 - [ٹیسٹنگ](../guides/testing.md): کیا `nx test` چلتا ہے۔
 - [تعینات](../deployment/README.md): `build` اور `start` پیداوار میں
