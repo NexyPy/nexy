@@ -647,7 +647,8 @@ def _callouts(html: str) -> str:
         kind = found[1]
         body = found[2].lstrip()
         body = body[4:].lstrip() if body.startswith("</p>") else f"<p>{body}"
-        title = f'<p class="callout-title">{_ALERT_TITLES[kind]}</p>'
+        word = f"callout_{kind.lower()}"
+        title = f'<p class="callout-title" data-i18n="{word}">{_ALERT_TITLES[kind]}</p>'
         return f'<aside class="callout callout-{kind.lower()}">{title}{body}</aside>'
 
     return _ALERT.sub(convert, html)
@@ -671,7 +672,10 @@ def _identify(html: str) -> Rendered:
         seen[base] = count + 1
         ident = base if count == 0 else f"{base}-{count}"
         found.append(Heading(level, ident, _TAGS.sub("", inner)))
-        marker = f'<a class="anchor" href="#{ident}" aria-label="Link to this section"></a>'
+        marker = (
+            f'<a class="anchor" href="#{ident}" aria-label="Link to this section"'
+            ' data-i18n-aria="anchor"></a>'
+        )
         return f'<h{level} id="{ident}">{inner}{marker}</h{level}>'
 
     return Rendered(_HEADING.sub(mark, html), found)
