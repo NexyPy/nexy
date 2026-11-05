@@ -1,20 +1,16 @@
 # Páginas de error por carpeta
 
-Una carpeta puede responder a sus propios errores: un blog con un 404 en sus propias palabras, un área privada que ofrece
-el formulario de inicio de sesión en lugar de un simple `401`. El resto del sitio mantiene la página que ya tenía.
+Una carpeta puede responder a sus propios errores: un blog con un 404 en sus propias palabras, un área privada que ofrece el formulario de inicio de sesión en lugar de un simple `401`. El resto del sitio mantiene la página que ya tenía.
 
 Esta página agrega uno de esos archivos y muestra su respuesta.
 
-## La regla
+## la regla
 
-**El archivo más profundo que coincide con la URL responde.** Todo lo demás permanece como está: el mismo estado
-códigos, JSON para un cliente API y la página incorporada una vez que ninguna carpeta de la cadena tiene un archivo.
+**El archivo más profundo que coincide con la URL responde.** Todo lo demás permanece como está: los mismos códigos de estado, JSON para un cliente API y la página incorporada una vez que ninguna carpeta de la cadena tiene un archivo.
 
 ![Los alcances de una página de error](../../../assets/error-page-scopes.svg)
 
-Para `/blog/2024/hello` Nexy sube al árbol: `/blog/2024`, luego `/blog`, luego `/`. el primero
-carpeta que contiene un archivo de respuestas. Una carpeta coincide completa: `/blogger/hello` no está debajo de `/blog`, por lo que
-una copia en `blog/` nunca responde.
+Para `/blog/2024/hello` Nexy sube al árbol: `/blog/2024`, luego `/blog`, luego `/`. La primera carpeta que contiene un archivo responde. Una carpeta coincide completa: `/blogger/hello` no está en `/blog`, por lo que una copia en `blog/` nunca responde.
 
 ## Los cuatro archivos
 
@@ -27,11 +23,7 @@ una copia en `blog/` nunca responde.
 
 `loading.nexy` permanece reservado: aún no tiene efecto de tiempo de ejecución.
 
-Un archivo en algún lugar de `src/routes/` es suficiente para que Nexy responda a ese estado: una copia en la raíz
-responde a todo el proyecto, una copia en una carpeta responde a esa carpeta y una URL fuera de cada copia
-Obtiene la página incorporada. Reserve otra extensión para estos nombres en `nexyconfig.py` con
-`useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions` y
-`useUnauthorizedExtensions`.
+Un archivo en algún lugar de `src/routes/` es suficiente para que Nexy responda a ese estado: una copia en la raíz responde a todo el proyecto, una copia en una carpeta responde a esa carpeta y una URL fuera de cada copia obtiene la página incorporada. Reserve otra extensión para estos nombres en `nexyconfig.py` con `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions` y `useUnauthorizedExtensions`.
 
 ## Tu primera página de carpeta
 
@@ -89,12 +81,10 @@ Cada llamada y cada estado conserva sus dos respuestas:
 | Navegador (`Accept: text/html`) | la página de la carpeta | la página incorporada |
 | Cliente (`Accept: application/json`) | `{"detail": "..."}` | `{"detail": "..."}` |
 
-`unauthorized(scheme="Bearer")` agrega `WWW-Authenticate: Bearer` a ambas respuestas. Un detalle construido
-de la entrada del usuario tiene formato de escape HTML en la página.
+`unauthorized(scheme="Bearer")` agrega `WWW-Authenticate: Bearer` a ambas respuestas. Un detalle creado a partir de la entrada del usuario tiene un formato de escape HTML en la página.
 
 > [!CONSEJO]
-> `Accept: */*`, el valor predeterminado de `curl` y de muchas bibliotecas HTTP, no solicita ninguna de las dos cosas y recibe la
-> Página HTML. Agregue `-H "Accept: application/json"` cuando desee la respuesta JSON.
+> `Accept: */*`, el valor predeterminado de `curl` y de muchas bibliotecas HTTP, no solicita ninguna de las dos cosas y recibe la página HTML. Agregue `-H "Accept: application/json"` cuando desee la respuesta JSON.
 
 ## Compruébalo
 
@@ -121,4 +111,4 @@ def test_an_api_client_gets_json():
 
 - [Páginas de error](README.md): qué activa cada estado, HTML o JSON
 - [Dependencias y guardias](../dependencies/README.md): protege una carpeta completa
-- [Probando](../../../guides/testing.md): `TestClient` desde la primera prueba
+- [Prueba](../../../guides/testing.md): `TestClient` de la primera prueba
