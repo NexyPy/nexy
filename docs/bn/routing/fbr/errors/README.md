@@ -124,8 +124,8 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 # {"detail":"Out of range"}
 ```
 
-> [!দ্রষ্টব্য]
-> একটি ক্লায়েন্ট যে `Accept: */*` পাঠায় (`curl` এবং অনেক HTTP লাইব্রেরির ডিফল্ট) এইচটিএমএল পৃষ্ঠা গ্রহণ করে। JSON ত্রুটির জন্য `Accept: application/json` সেট করুন।
+> [!NOTE]
+> একটি ক্লায়েন্ট যেটি `Accept: */*` পাঠায় (`curl` এবং অনেক HTTP লাইব্রেরির ডিফল্ট) এইচটিএমএল পৃষ্ঠা গ্রহণ করে। JSON ত্রুটির জন্য `Accept: application/json` সেট করুন।
 
 ## অব্যবহিত ব্যতিক্রম
 
