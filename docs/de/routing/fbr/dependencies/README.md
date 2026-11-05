@@ -42,7 +42,7 @@ src/routes/
       └─ index.py               4. handler guards, then the handler
 ```
 
-Für `GET /admin/users` lautet die Reihenfolge `root`, `admin`, `users`, die `@UseGuard`-Funktionen des Handlers, seine `@Middleware`-Funktionen und dann der Handler. Eine Routengruppe (`(group)/`) ist ein Verzeichnis wie jedes andere, daher nimmt ihr `dependencies.py` teil.
+Für `GET /admin/users` ist die Reihenfolge `root`, `admin`, `users`, die `@UseGuard`-Funktionen des Handlers, seine `@Middleware`-Funktionen und dann der Handler. Eine Routengruppe (`(group)/`) ist ein Verzeichnis wie jedes andere, daher nimmt ihr `dependencies.py` teil.
 
 ## Pro Handler
 
