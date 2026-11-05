@@ -210,7 +210,7 @@ class TestPageContent:
         items = re.findall(r"<li>.*?</li>", block)
         pattern = re.compile(
             r'<li><a href="[^"]+"(?: aria-current="page")?>[^<]+</a>'
-            r'(?:<span class="badge-new">New</span>)?</li>'
+            r'(?:<span class="badge-new" data-i18n="new_badge">New</span>)?</li>'
         )
         assert items and all(pattern.fullmatch(item) for item in items)
 
@@ -336,7 +336,10 @@ class TestProgress:
 class TestNewBadge:
     """DOC-27: one `{new}` token in a row of docs/README.md paints one pill in the menu."""
 
-    PILL = '<a href="[^"]*"(?: aria-current="page")?>Page</a><span class="badge-new">New</span>'
+    PILL = (
+        '<a href="[^"]*"(?: aria-current="page")?>Page</a>'
+        '<span class="badge-new" data-i18n="new_badge">New</span>'
+    )
     ROW = "| [Page](only.md) | Read this page {new} |"
 
     @staticmethod
@@ -360,7 +363,7 @@ class TestNewBadge:
     @staticmethod
     def _page_item(marked: bool) -> str:
         """The menu item of the one page of this site, exactly as the menu serves it."""
-        pill = '<span class="badge-new">New</span>' if marked else ""
+        pill = '<span class="badge-new" data-i18n="new_badge">New</span>' if marked else ""
         return f'<li><a href="only/">Page</a>{pill}</li>'
 
     def test_an_unmarked_menu_is_the_menu_of_today(self, tmp_path):
@@ -399,7 +402,8 @@ class TestNewBadge:
         for page in marked:
             pattern = (
                 rf'<a href="{re.escape(build.relative("", page.slug))}"[^>]*>'
-                rf"{re.escape(page.label)}</a><span class=\"badge-new\">New</span>"
+                rf"{re.escape(page.label)}</a>"
+                r'<span class="badge-new" data-i18n="new_badge">New</span>'
             )
             assert re.search(pattern, menu), page.slug
 
