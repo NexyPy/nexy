@@ -1,11 +1,10 @@
-# الحراسات والبيانات الوصفية
+# الحراس والبيانات الوصفية
 
-أدوات الديكور التي تحمي المسار وتصفه في مخطط OpenAPI.
+أدوات تزيين تحمي المسار وتصفه في مخطط OpenAPI.
 
-##  الحراس
+## حراس
 
-`@UseGuard(*guards)` يعمل على وحدة تحكم (كل طريقة) أو على طريقة واحدة. تتم إضافة كل حارس كـ
-FastAPI `Depends`، لذلك يعلن عن المعلمات التي يحتاجها ويرفعها لرفض الاستدعاء:
+`@UseGuard(*guards)` يعمل على وحدة تحكم (كل طريقة) أو على طريقة واحدة. تتم إضافة كل حارس كـ FastAPI `Depends`، لذلك يعلن عن المعلمات التي يحتاجها ويرفع لرفض الاستدعاء:
 
 ```python filename="src/apps/admin/admin_controller.py"
 from fastapi import Header, HTTPException
@@ -24,30 +23,27 @@ class AdminController:
         return {"ok": True}
 ```
 
-## مصمم البرمجيات الوسيطة
+## مصمم ديكورات وسطية
 
-`@Middleware(*middlewares)` يتصرف بنفس الطريقة: هذه هي تبعيات FastAPI، وليست ASGI
-الوسيطة. بالنسبة للبرامج الوسيطة الحقيقية لـ ASGI، استخدم `useMiddlewares` في
-[التكوين](../../reference/config.md) أو [البرامج الوسيطة والأمان](../../guides/middleware-and-security.md).
+`@Middleware(*middlewares)` يتصرف بنفس الطريقة: هذه هي FastAPI تبعيات، وليست برامج ASGI الوسيطة. بالنسبة للبرامج الوسيطة الحقيقية لـ ASGI، استخدم `useMiddlewares` في [التكوين](../../reference/config.md) أو [البرامج الوسيطة والأمان](../../guides/middleware-and-security.md).
 
-## بيانات تعريف المسار
+## البيانات الوصفية للطريق
 
-`@UseRoute(...)` يقوم بتعيين البيانات التعريفية لـ OpenAPI. لا يغير المسار.
+`@UseRoute(...)` يقوم بتعيين OpenAPI البيانات الوصفية. لا يغير المسار.
 
 | الحجة | المعنى |
 |---|---|
 | `name` | اسم الطريق |
-| `tags` | علامات OpenAPI |
-| `summary`، `description` | النص في مرجع API |
+| `tags` | OpenAPI العلامات |
+| `summary`، `description` | نص في مرجع واجهة برمجة التطبيقات |
 | `deprecated` | وضع علامة على العملية المهملة |
 | `include_in_schema` | إخفاء المسار من المخطط |
 | `operation_id` | معرف العملية الصريحة |
-| `openapi_extra` | حقول OpenAPI الإضافية |
+| `openapi_extra` | حقول إضافية OpenAPI |
 
 ## الردود
 
-`@UseResponse(...)` مجموعات `status_code`، `response_class`، `response_model`، `responses` و
-خيارات التسلسل.
+`@UseResponse(...)` يحدد `status_code`، `response_class`، `response_model`، `responses` وخيارات التسلسل.
 
 ```python
 from nexy.decorators import Controller, UseResponse, UseRoute
