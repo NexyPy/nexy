@@ -1,14 +1,11 @@
 # Ganchos
 
-Los ganchos leen la solicitud HTTP actual desde dentro de una página `.nexy`, un controlador API o un módulo
-controlador. Sus nombres coinciden con los ganchos del enrutador del cliente (`@nexy/client`) donde hacen lo mismo
-cosa.
+Los ganchos leen la solicitud HTTP actual desde dentro de una página `.nexy`, un controlador API o un controlador modular. Sus nombres coinciden con los ganchos del enrutador del cliente (`@nexy/client`) donde hacen lo mismo.
 
 > [!NOTA]
-> los ganchos solo funcionan mientras se maneja una solicitud. Llamar a uno a cualquier otro lugar
-> sube `RuntimeError`.
+> Los ganchos solo funcionan mientras se maneja una solicitud. Llamar a uno en cualquier otro lugar aumenta `RuntimeError`.
 
-## Los ganchos
+## los ganchos
 
 | Gancho | Devuelve |
 |---|---|
@@ -16,7 +13,7 @@ cosa.
 | `useSearchParams()` | cadena de consulta como `dict[str, str]`, primer valor por clave |
 | `useParams()` | parámetros de ruta dinámica, p.e. `{"slug": "post-1"}` |
 | `useQuery()` | el nombre original de `useParams()`, conservado para las páginas existentes |
-| `useRequest()` | la petición de Starlette, por lo que los demás ganchos no cubren |
+| `useRequest()` | la solicitud Starlette, por lo que los otros ganchos no cubren |
 | `useHeaders()` | los encabezados de solicitud como `dict[str, str]`, nombres en minúsculas |
 | `useUrl()` | la URL completa: `.scheme`, `.hostname`, `.port`, `.path`, `.query` |
 | `useIsActive(href, exact=False)` | si `href` es la página actual o una de sus padres |
@@ -39,11 +36,9 @@ theme = useCookies().get("theme", "light")
 <p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
 ```
 
-## Un enlace activo en una barra de navegación
+## Un enlace activo en una barra de navegación.
 
-`useIsActive` sigue la misma regla que en el cliente: la cadena de consulta, el fragmento y un final
-se ignoran las barras diagonales, un enlace a un padre está activo en sus hijos a menos que se establezca `exact` y `/`
-sólo activo en `/`.
+`useIsActive` sigue la misma regla que en el cliente: la cadena de consulta, el fragmento y una barra diagonal se ignoran, un enlace a un padre está activo en sus hijos a menos que `exact` esté configurado y `/` solo está activo en `/`.
 
 ```nexy filename="src/components/NavLink.nexy"
 ---
@@ -57,17 +52,14 @@ label: prop[str]
 
 ## Notas
 
-- `useQuery()` devuelve los parámetros **ruta**, no la cadena de consulta, razón por la cual `useParams()`
-  existe. La cadena de consulta es `useSearchParams()`.
-- `useRouter()` aquí está el enlace de solicitud. No es el campo de configuración `useRouter` el que monta un
-  `APIRouter`.
+- `useQuery()` devuelve los parámetros **ruta**, no la cadena de consulta, razón por la cual existe `useParams()`. La cadena de consulta es `useSearchParams()`.
+- `useRouter()` aquí está el enlace de solicitud. No es el campo de configuración `useRouter` el que monta un `APIRouter`.
 - `useSession()` necesita `useSession = {...}` en `nexyconfig.py`; sin él, el dictado está vacío.
-- `useViews("about.tsx", {"title": "About"})` devuelve HTML: una vista `.nexy` se representa por su
-  módulo compilado, una vista `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx` se convierte en un contenedor de montaje del cliente.
+- `useViews("about.tsx", {"title": "About"})` devuelve HTML: una vista `.nexy` se representa mediante su módulo compilado, una vista `.tsx`/`.jsx`/`.vue`/`.svelte`/`.mdx` se convierte en un contenedor de montaje del cliente.
 
 ## Próximos pasos
 
 - [Pages](../pages/README.md): segmentos y diseños dinámicos
-- [Recetas](../../../guides/recipes.md): un flujo de inicio de sesión probado construido sobre `useSession()`
+- [Recetas](../../../guides/recipes.md): un flujo de inicio de sesión probado basado en `useSession()`
 - [Config](../../../reference/config.md): habilita sesiones y configuraciones regionales
 - [archivos .nexy](../../../views/nexy/README.md): donde normalmente se llaman los ganchos
