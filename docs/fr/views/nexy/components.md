@@ -35,7 +35,7 @@ Le compilateur réécrit `<Audio ... />` en `{{ Audio(...) }}`, donc la forme de
 - La forme de l'étiquette est **à fermeture automatique**. `<Audio src="/a.mp3" />` et `{{ Audio("/a.mp3") }}` sont équivalents ; l'écriture d'enfants à l'intérieur d'une balise d'assistance n'est pas prise en charge.
 - Un simple attribut HTML n'est pas ici un booléen : `controls` devient `controls=""`, ce qui est faux. Écrivez `controls=True`.
 
-> [!REMARQUE]
+> [!NOTE]
 > `class_name` est le mot-clé documenté pour les classes CSS. Les arguments de mots-clés supplémentaires deviennent des attributs HTML, donc `class="nav"` atteint également la sortie.
 
 ## Images
@@ -62,7 +62,7 @@ from nexy import Link
 
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` restitue un `<a data-nexy-link>` géré par le routeur client. Avec `prefetch=True`, survoler ou toucher le lien réchauffe la cible via `window.__nexy_prefetch`.
 
-> [!REMARQUE]
+> [!NOTE]
 > la forme de balise prend l'étiquette comme `children`, et non comme contenu d'élément : `<Link href="/about" children="About" />`. Pour placer un balisage dans un lien, utilisez le formulaire d'appel avec `children=` ou un composant `.nexy` qui restitue un `<Slot />`.
 
 ## Audio et vidéo
@@ -117,7 +117,7 @@ from "@/components/Counter.tsx" import Counter
 <Counter start="0" />
 ```
 
-`Import(path, framework, symbol)` fait de même dans Python :
+`Import(path, framework, symbol)` fait la même chose dans Python :
 
 ```python
 from nexy import Import
@@ -130,7 +130,7 @@ La même syntaxe d'importation résout les fichiers `.json`, `.css` et image en 
 
 ## Modèle et Vite
 
-`Template().render(path, context)` restitue un fichier modèle (Jinja2 ou Markdown rendu au format HTML pour les itinéraires `.md`). `Template().invalidate(path)` le supprime du cache.
+`Template().render(path, context)` restitue un fichier modèle (Jinja2 ou Markdown rendu au format HTML pour les routes `.md`). `Template().invalidate(path)` le supprime du cache.
 
 `Vite()` renvoie les balises client pour le mode actuel : le script HMR en développement, le bundle client construit en production. Nexy l'appelle pour chaque page ; vous en avez rarement besoin directement.
 
