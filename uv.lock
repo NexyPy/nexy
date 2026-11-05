@@ -1200,16 +1200,19 @@ version = "2.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
+    { name = "httptools" },
     { name = "httpx" },
     { name = "jinja2" },
     { name = "linkify-it-py" },
     { name = "markdown-it-py" },
     { name = "mdit-py-plugins" },
     { name = "prompt-toolkit" },
+    { name = "python-dotenv" },
     { name = "scalar-fastapi" },
     { name = "starlette" },
     { name = "typer" },
-    { name = "uvicorn", extra = ["standard"] },
+    { name = "uvicorn" },
+    { name = "uvloop", marker = "platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'" },
     { name = "watchfiles" },
     { name = "websockets" },
 ]
@@ -1238,16 +1241,19 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.133.0" },
+    { name = "httptools", specifier = ">=0.6.3" },
     { name = "httpx", specifier = ">=0.28.0" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "linkify-it-py", specifier = ">=2.0.3" },
     { name = "markdown-it-py", specifier = ">=3.0.0" },
     { name = "mdit-py-plugins", specifier = ">=0.4.2" },
     { name = "prompt-toolkit", specifier = ">=3.0.52" },
+    { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "scalar-fastapi", specifier = ">=1.8.2" },
     { name = "starlette", specifier = ">=1.0.1" },
     { name = "typer", specifier = ">=0.21.1" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.40.0" },
+    { name = "uvicorn", specifier = ">=0.40.0" },
+    { name = "uvloop", marker = "platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'", specifier = ">=0.21.0" },
     { name = "watchfiles", specifier = ">=1.0" },
     { name = "websockets", specifier = ">=13.0" },
 ]
@@ -2083,16 +2089,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/da/34/30e9280707135d2cfc589dfff3cb796bd07a3aeb1a3e415ba09dd89d7bb4/uvicorn-0.54.0.tar.gz", hash = "sha256:a2e33cbfaa0306f8e6b0c13e0cb89d7d7a2da3e62b90c66e18c33d9807b28620", size = 112283, upload-time = "2026-09-25T06:52:37.601Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/38/0c/b54a4fdd7f90a3af8b02ebc9ce6712c2c208b7926a2f7bad95c33ebbe943/uvicorn-0.54.0-py3-none-any.whl", hash = "sha256:505bdb0f318731d45f1f712071fc781a8981f6847a31c902c9f5e652d4f67faf", size = 87427, upload-time = "2026-09-25T06:52:35.829Z" },
-]
-
-[package.optional-dependencies]
-standard = [
-    { name = "httptools" },
-    { name = "python-dotenv" },
-    { name = "pyyaml" },
-    { name = "uvloop", marker = "platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'" },
-    { name = "watchfiles" },
-    { name = "websockets" },
 ]
 
 [[package]]
