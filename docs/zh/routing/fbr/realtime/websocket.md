@@ -14,12 +14,12 @@ async def SOCKET(websocket: WebSocket):
 
 ## 规则
 
-- URL是文件路径，与[路由](../../README.md)相同。
-- 只有`.py`路由文件通过`SOCKET`注册WebSocket处理程序。
+- URL是文件路径，与[routing](../../README.md)相同。
+- 只有 `.py` 路由文件通过 `SOCKET` 注册 WebSocket 处理程序。
 - 确保您的反向代理转发 WebSocket 升级请求。
 
 ## 后续步骤
 
 - [API](../handlers/README.md)：同一文件中的 HTTP 处理程序
 - [部署](../../../deployment/README.md)：代理配置
-- [模块化路由](../../modular/README.md)：控制器上的`SOCKET`
+- 控制器上的[模块化路由](../../modular/README.md)：`SOCKET`
