@@ -16,30 +16,30 @@ class NexyConfig(NexyConfigModel):
 
 ## 服务器
 
-| 字段 | 默认 | 含义 |
+| 领域 | 默认 | 含义 |
 |---|---|---|
-| `usePort` | `3000` | 端口用于 `dev` 和 `start` |
+| `usePort` | `3000` | `dev` 和 `start` 的端口 |
 | `useHost` | `"0.0.0.0"` | 绑定地址 |
-| `useSslKeyfile`、`useSslCertfile` | `None` | 直接提供 HTTPS |
+| `useSslKeyfile`，`useSslCertfile` | `None` | 直接提供HTTPS服务 |
 | `useDevTools` | `True` | 工具栏 `nexy dev` 添加到每个页面（页面信息、路由、错误、配置）； `False` 将其删除。从未出现在生产中 |
-| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 在 Linux 和 macOS 上是每个 CPU 一个，在 Windows 上是每个 CPU |
+| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 在 Linux 和 macOS 上是每个 CPU 一个，在 Windows 上是一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 
 ## 路线
 
-| 字段 | 默认 | 含义 |
+| 领域 | 默认 | 含义 |
 |---|---|---|
-| `useRouter` | `None` | 一个 `APIRouter` 实例或类安装在基于文件的路由旁边； `None` 表示仅基于文件 |
-| `excludeDirs` | `["templates", "extension", "docs"]` | 扫描路线时跳过的目录 |
+| `useRouter` | `None` | 安装在基于文件的路由旁边的 `APIRouter` 实例或类； `None` 表示仅基于文件 |
+| `excludeDirs` | `["templates", "extension", "docs"]` | 扫描路由时跳过的目录 |
 | `useAliases` | `None` | 导入别名，例如 `{"@": "src"}`（`@/components/Counter.tsx` 表示 `src/components/Counter.tsx`）； `nx new` 写入您选择的内容，Vite 和 `tsconfig.json` 紧随其后 |
 
 ## 前端
 
-| 字段 | 默认 | 含义 |
+| 领域 | 默认 | 含义 |
 |---|---|---|
 | `useFF` | `None` | 客户端框架工厂：`react()`、`vue()`、`svelte()`、`solid()`、`preact()` |
-| `useVite` | `True` | 使用 Vite | 构建并提供客户端捆绑包
-| `useMarkdownExtensions` | `[]` | 用于 `.md`/`.mdx` 渲染 | 的额外扩展
+| `useVite` | `True` | 使用 Vite 构建并提供客户端捆绑包 |
+| `useMarkdownExtensions` | `[]` | `.md`/`.mdx` 渲染的额外扩展 |
 | `useWatchExtensions` | `None` | 开发服务器监视的额外扩展 |
 | `useWatchExcludePatterns` | `None` | 开发服务器忽略的 glob 模式 |
 
@@ -49,7 +49,7 @@ class NexyConfig(NexyConfigModel):
 
 每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 保留 `layout.md`，与 `layout.nexy` 完全相同。
 
-| 字段 | 将扩展添加到 |
+| 领域 | 添加扩展 |
 |---|---|
 | `useLayoutExtensions` | `layout.*` |
 | `useNotFoundExtensions` | `notfound.*` |
@@ -60,32 +60,32 @@ class NexyConfig(NexyConfigModel):
 
 ## API文档
 
-| 字段 | 默认 | 含义 |
+| 领域 | 默认 | 含义 |
 |---|---|---|
-| `useDocs` | `True` | 服务于 OpenAPI 模式及其标量参考页 |
-| `useDocsUrl` | `"/docs"` | API 参考页面的路径 |
-| `useRedocsUrl` | `"/redocs"` | 声明但未安装路由 |
-| `useTitle` | `"Nexy App"` | OpenAPI 标题和页面标题（`NexyConfigModel` 中的 `"Nexy"`）|
+| `useDocs` | `True` | 提供 OpenAPI 模式及其标量参考页面 |
+| `useDocsUrl` | `"/docs"` | API参考页面路径 |
+| `useRedocsUrl` | `"/redocs"` | 已声明但未安装路由 |
+| `useTitle` | `"Nexy App"` | OpenAPI 标题和页面标题（`NexyConfigModel` 中的 `"Nexy"`） |
 
 ## 中间件
 
-| 字段 | 默认 | 含义 |
+| 领域 | 默认 | 含义 |
 |---|---|---|
-| `useMiddlewares` | `[]` | ASGI 中间件类 |
-| `useCORS` | `None` | kwargs 为 `CORSMiddleware` |
-| `useGZip` | `None` | kwargs 为 `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs 为 `TrustedHostMiddleware` |
-| `useSession` | `None` | kwargs 为 `SessionMiddleware` |
+| `useMiddlewares` | `[]` | ASGI中间件类 |
+| `useCORS` | `None` | 夸格斯 `CORSMiddleware` |
+| `useGZip` | `None` | 夸格斯 `GZipMiddleware` |
+| `useTrustedHost` | `None` | 夸格斯 `TrustedHostMiddleware` |
+| `useSession` | `None` | 夸格斯 `SessionMiddleware` |
 | `useAuth` | `None` | 身份验证中间件配置 |
 | `useHTTPSRedirect` | `False` | 将 HTTP 重定向到 HTTPS |
 
 ## Markdown
 
-| 字段 | 默认 | 含义 |
+| 领域 | 默认 | 含义 |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | 目录中包含的标题级别 |
 | `useTocTitle` | `"Table of Contents"` | 目录标题 |
-| `useTocAuto` | `True` | 生成 Markdown 页 | 的目录
+| `useTocAuto` | `True` | 生成 Markdown 页的目录 |
 
 ## 文件树外的路由
 
