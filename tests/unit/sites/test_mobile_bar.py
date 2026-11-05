@@ -126,6 +126,16 @@ def test_the_bar_of_the_page_leaves_its_controls_to_the_sheet():
     assert ".panel-bar > :not(.progress) { display: none; }" in _narrow()
 
 
+def test_the_theme_switch_keeps_the_size_its_knob_is_drawn_for():
+    # A taller track leaves room under the knob, which sits 2px from the top.
+    assert ".theme-switch { width" not in _narrow()
+
+
+def test_the_theme_switch_still_takes_a_44px_tap():
+    tap = '.theme-switch::after { content: ""; position: absolute; inset: -0.5rem -0.25rem; }'
+    assert tap in _narrow()
+
+
 def test_every_theme_switch_changes_the_theme():
     assert "$$('[data-theme-toggle]')" in JS
 

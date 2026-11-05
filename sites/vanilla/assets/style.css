@@ -1374,7 +1374,8 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   .side-filter, .search-open { height: 2.75rem; }
   .menu, .bar-link { width: 2.75rem; height: 2.75rem; }
   .lang-select summary { height: 2.75rem; }
-  .theme-switch { width: 3.25rem; height: 2rem; }
+  /* The track keeps the size its knob is drawn for; only the tap grows past 44px. */
+  .theme-switch::after { content: ""; position: absolute; inset: -0.5rem -0.25rem; }
   :root { --top: 3.5rem; }
   /* The bar of Fumadocs: the logo on the start side, the search and the menu on the end side. */
   .mobilebar {
