@@ -71,10 +71,10 @@ Le vocabulaire HTTP d'un gestionnaire. Importez depuis ici plutôt que depuis Fa
 
 | Nom | Qu'est-ce que c'est |
 |---|---|
-| `render` | le HTML d'un composant `.nexy` pour des accessoires donnés, sans serveur, voir [testing](../guides/testing.md) |
+| `render` | le HTML d'un composant `.nexy` pour des accessoires donnés, sans serveur, voir [tests](../guides/testing.md) |
 
 ## Où ensuite
 
-- [Config](config.md) : les champs `use*` derrière ces noms
+- [Configuration](config.md) : les champs `use*` derrière ces noms
 - [Exceptions et erreurs](exceptions.md) : à quoi répond chaque échec
 - [Index de la documentation](../README.md) : la page de ce que vous construisez
