@@ -409,7 +409,7 @@ class TestCallouts:
         assert "<p>Useful information.</p>" in html
 
     def test_the_callout_names_its_kind(self, tmp_path):
-        assert '<p class="callout-title">Warning</p>' in self._html(
+        assert '<p class="callout-title" data-i18n="callout_warning">Warning</p>' in self._html(
             tmp_path, "> [!WARNING]\n> Careful.\n"
         )
 
