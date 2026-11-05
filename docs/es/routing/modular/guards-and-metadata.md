@@ -25,7 +25,7 @@ class AdminController:
 
 ## decorador de middleware
 
-`@Middleware(*middlewares)` se comporta de la misma manera: estas son FastAPI dependencias, no middleware ASGI. Para middleware ASGI real, utilice `useMiddlewares` en [Config](../../reference/config.md) o [Middleware y seguridad](../../guides/middleware-and-security.md).
+`@Middleware(*middlewares)` se comporta de la misma manera: estas son FastAPI dependencias, no middleware ASGI. Para middleware ASGI real, utilice `useMiddlewares` en [Configuración](../../reference/config.md) o [Middleware y seguridad](../../guides/middleware-and-security.md).
 
 ## Metadatos de ruta
 
