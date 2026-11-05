@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = AppModule
 ```
 
-> [!NOTA]
+> [!NOTE]
 > o roteamento baseado em arquivo continua funcionando. Se `src/routes/` existir, ele será verificado mesmo quando `useRouter` estiver definido.
 
 ## Escreva um controlador
