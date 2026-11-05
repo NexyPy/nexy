@@ -1,6 +1,6 @@
 # Meningkatkan ke 2.2
 
-Perubahan apa yang terjadi pada proyek yang sudah ada saat Anda berpindah dari 2.1 ke 2.2, dan apa yang harus dilakukan untuk mengatasinya. Daftar selengkapnya ada di [catatan perubahan](../../CHANGELOG.md).
+Perubahan apa yang terjadi pada proyek yang sudah ada saat Anda berpindah dari 2.1 ke 2.2, dan apa yang harus dilakukan untuk mengatasinya. Daftar selengkapnya ada di [catatan perubahan](https://github.com/NexyPy/nexy/blob/main/CHANGELOG.md).
 
 ```bash
 uv add "nexy>=2.2"            # or: uv tool upgrade nexy
