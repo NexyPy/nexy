@@ -84,4 +84,4 @@ Siehe `examples/Modular/api/minimal/`.
 - [Abhängigkeitsinjektion](dependency-injection.md): Dienste und Bereiche
 - [Schutz und Metadaten](guards-and-metadata.md): Routen schützen und dokumentieren
 - [Routing](../README.md): der dateibasierte Router
-- [Config](../../reference/config.md): jede Option, einschließlich `useRouter`
+- [Konfiguration](../../reference/config.md): jede Option, einschließlich `useRouter`
