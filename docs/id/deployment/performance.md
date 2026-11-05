@@ -7,7 +7,7 @@ Apa yang dilakukan `nx start` secara default, apa yang harus diaktifkan, dan apa
 | Masalah | Default | Ubah |
 |---|---|---|
 | Memproses | satu Uvicorn pekerja per CPU di Linux dan macOS, satu di Windows | `nx start` menjalankan aplikasi melalui Uvicorn |
-| Kompresi | nonaktif | `useGZip = {"minimum_size": 1000}` di [Config](../reference/config.md), atau kompres di proksi terbalik |
+| Kompresi | nonaktif | `useGZip = {"minimum_size": 1000}` di [Konfigurasi](../reference/config.md), atau kompres di proksi terbalik |
 | File statis | disajikan dengan `ETag` dan `Last-Modified`, tidak ada `Cache-Control` | yang menyetel cache jangka panjang di proksi terbalik atau CDN untuk bundel hash |
 | Halaman HTML | dirender per permintaan, tanpa cache | [ISR](../rendering/isr.md) dengan `revalidate = N` |
 | Dokumen API | pada | `useDocs = False` dalam produksi |
