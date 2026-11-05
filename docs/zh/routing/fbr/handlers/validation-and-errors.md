@@ -14,10 +14,10 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
 
-| 问题 | 状态 | 正文 |
+| 问题 | 状态 | 身体 |
 |---|---|---|
 | 查询、标头、cookie 或正文字段缺失或无效 | `422` | `{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}` |
-| 无效的 **path** 段（`id: int` 的 `/api/users/abc`）| `404` | 未找到的页面，或 `Accept: application/json` | 的 JSON
+| **路径** 段无效（`/api/users/abc` 对于 `id: int`） | `404` | 未找到的页面，或 `Accept: application/json` 的 JSON |
 
 无法转换的路径段是 `404` 而不是 `422`：动态路由捕获任何URL，并且不存在无法转换的URL。
 
@@ -36,7 +36,7 @@ async def GET(id: int):
     return item
 ```
 
-| 客户端发送 | 响应 |
+| 客户端发送 | 回应 |
 |---|---|
 | `Accept: application/json` | `{"detail": "No such item"}` 状态为 `404` |
 | `Accept: text/html` | [错误页面](../errors/README.md) |
