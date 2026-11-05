@@ -94,7 +94,7 @@ Todo lo demás es inglés, al igual que cualquier mensaje que un idioma no tenga
 
 `nx build` compila las rutas y luego agrupa el cliente cuando `useVite` está activado.
 
-> [!NOTA]
+> [!NOTE]
 > no hay ninguna bandera `--static`. El alojamiento estático es una opción de implementación, no un modo de compilación; consulte [Implementar](../deployment/README.md).
 
 ## Trabajando en Nexy
