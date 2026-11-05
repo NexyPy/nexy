@@ -142,4 +142,4 @@ Na inicialização, o Nexy importa todos os módulos de `src/` para encontrar as
 
 - [API](../routing/fbr/handlers/README.md): manipuladores explícitos
 - [Teste](testing.md#what-to-assert): como testar uma ação
-- [Config](../reference/config.md): opções de middleware e autenticação
+- [Configuração](../reference/config.md): opções de middleware e autenticação
