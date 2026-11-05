@@ -57,10 +57,10 @@ Nexy prüft das Projekt vor `nx dev`, `nx start` und `nx build` und stoppt mit d
 
 | Modus | Abgelehnt | Nachricht |
 |---|---|---|
-| Server | `.tsx`, `.jsx`, `.vue` oder `.svelte` unter `src/routes/` | Komponenten nach `src/components/` verschieben oder `useCSR = True` | festlegen
-| Client | jede `.nexy` Datei unter `src/routes/` | schreibe sie als Framework-Komponenten oder setze `useCSR = False` |
-| beide | mehr als ein Frontend-Framework in `useFF` | `useFF must configure exactly one frontend framework` |
-| Client | `useRouter` (modularer Router) | `useCSR requires file-based routing` |
+| Server | `.tsx`, `.jsx`, `.vue` oder `.svelte` unter `src/routes/` | Komponenten nach `src/components/` verschieben oder `useCSR = True` festlegen |
+| Kunde | jede `.nexy`-Datei unter `src/routes/` | Schreiben Sie sie als Framework-Komponenten oder legen Sie fest `useCSR = False` |
+| beides | mehr als ein Frontend-Framework in `useFF` | `useFF must configure exactly one frontend framework` |
+| Kunde | `useRouter` (modularer Router) | `useCSR requires file-based routing` |
 | Kunde | nein `useFF` | `useCSR requires a client framework` |
 
 Dateien und Ordner, die mit `_` oder `.` beginnen, werden bei dieser Prüfung ignoriert.
@@ -75,4 +75,4 @@ Dateien und Ordner, die mit `_` oder `.` beginnen, werden bei dieser Prüfung ig
 
 - [Layouts](layouts/README.md)
 - [Rendering](../../rendering/README.md)
-- [Config](../../reference/config.md)
+- [Konfiguration](../../reference/config.md)
