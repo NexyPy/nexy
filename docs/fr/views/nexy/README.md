@@ -1,9 +1,8 @@
-# .fichiers suivants
+# Fichiers .nexy
 
-Un fichier `.nexy` est un composant : Python en haut, HTML au milieu, CSS en bas.
+Un fichier `.nexy` est un composant : Python en haut, HTML au milieu, CSS en bas.
 
-**Avant de commencer :** un projet créé par le [Démarrage rapide](../../getting-started/quick-start.md).
-Un fichier `.nexy` ne nécessite aucune configuration de construction : `nx dev` le compile lors de la sauvegarde.
+**Avant de commencer :** un projet créé par le [Démarrage rapide](../../getting-started/quick-start.md). Un fichier `.nexy` ne nécessite aucune configuration de construction : `nx dev` le compile lors de la sauvegarde.
 
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
@@ -22,10 +21,9 @@ pathname = usePathname()
 </style>
 ```
 
-## Première question
+## Frontière
 
-Tout entre les deux lignes `---` est Python. Les importations sont résolues lorsque le composant est
-compilé; le reste s'exécute pour chaque requête, afin qu'il puisse lire l'état de la requête.
+Tout ce qui se trouve entre les deux lignes `---` est Python. Les importations sont résolues lorsque le composant est compilé ; le reste s'exécute pour chaque requête, afin qu'il puisse lire l'état de la requête.
 
 | Quoi | Exemple |
 |---|---|
@@ -38,16 +36,13 @@ compilé; le reste s'exécute pour chaque requête, afin qu'il puisse lire l'ét
 
 ## Propriétés
 
-Les propriétés sont l'API du composant. `prop[type]` déclare le type, `= value` donne une valeur par défaut. Un
-la propriété sans valeur par défaut doit être transmise par le parent.
+Les propriétés sont l'API du composant. `prop[type]` déclare le type, `= value` donne une valeur par défaut. Une propriété sans valeur par défaut doit être transmise par le parent.
 
-Les importations commençant par un alias sont résolues via `useAliases`. La configuration `nx new` écrit des cartes
-`@` à `src`, ce qui fait que `@/components/card.nexy` signifie `src/components/card.nexy`.
+Les importations commençant par un alias sont résolues via `useAliases`. La configuration `nx new` écrit les cartes `@` sur `src`, ce qui fait que `@/components/card.nexy` signifie `src/components/card.nexy`.
 
 ## Modèle
 
-Sous le thème principal se trouve du HTML avec Jinja2. Les variables du frontmatter et les propriétés sont dans
-portée.
+Sous le thème se trouve du HTML avec Jinja2. Les variables du frontmatter et les propriétés sont dans la portée.
 
 ```html
 {% for item in items %}
@@ -59,17 +54,14 @@ portée.
 {% endif %}
 ```
 
-L'échappement automatique est **désactivé** : les modèles sont le propre HTML du projet, donc `{{ value }}` est inséré comme
-écrit. Échappez-vous aux valeurs non fiables avec `{{ value | e }}`. `| safe` ne change donc rien.
+L'échappement automatique est **désactivé** : les modèles sont le propre HTML du projet, donc `{{ value }}` est inséré tel qu'écrit. Échappez-vous aux valeurs non fiables avec `{{ value | e }}`. `| safe` ne change donc rien.
 
 > [!REMARQUE]
-> envelopper du JavaScript qui contient `{{` ou `{%` dans `{% raw %}...{% endraw %}`.
-> Les frameworks tels que Vue et Svelte utilisent les mêmes accolades.
+> enveloppez JavaScript qui contient `{{` ou `{%` dans `{% raw %}...{% endraw %}`. Les frameworks tels que Vue et Svelte utilisent les mêmes accolades.
 
 ## Composants
 
-Tout appelable importé dont le nom commence par une lettre majuscule peut être utilisé comme balise. Le compilateur
-le réécrit dans un appel Jinja : les attributs deviennent des arguments de mots-clés.
+Tout appelable importé dont le nom commence par une lettre majuscule peut être utilisé comme balise. Le compilateur le réécrit en un appel Jinja : les attributs deviennent des arguments de mot-clé.
 
 ```nexy filename="src/routes/index.nexy"
 ---
@@ -83,37 +75,27 @@ from nexy import Audio
 <Audio src="/theme.mp3" controls=True />
 ```
 
-La dernière ligne est exactement `{{ Audio("/theme.mp3", controls=True) }}`. Les deux syntaxes sont valables pour le
-assistants intégrés `Image`, `Link`, `Audio` et `Video` - voir
-[composants](components.md#two-syntaxes-one-function).
+La dernière ligne est exactement `{{ Audio("/theme.mp3", controls=True) }}`. Les deux syntaxes sont valables pour les assistants intégrés `Image`, `Link`, `Audio` et `Video` - voir [components](components.md#two-syntaxes-one-function).
 
-Les enfants sont rendus via `<Slot />` (S majuscule) à l'intérieur du composant enfant et via `{{ children }}`
-à l'intérieur d'une mise en page.
+Les enfants sont rendus via `<Slot />` (S majuscule) à l'intérieur du composant enfant et via `{{ children }}` à l'intérieur d'une mise en page.
 
-Passez une valeur calculée avec Jinja à l'intérieur de l'attribut : `<Icon path="{{ icon }}" size="{{ size }}" />`.
-Un nom simple tel que `path=icon` est le texte `icon`, pas la variable. Pour donner un CSS à un composant
-classe, déclarez un accessoire `class_name` : `class` est un mot-clé Python.
+Passez une valeur calculée avec Jinja à l'intérieur de l'attribut : `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nom simple tel que `path=icon` est le texte `icon`, pas la variable. Pour donner à un composant une classe CSS, déclarez un accessoire `class_name` : `class` est un mot-clé Python.
 
 > [!REMARQUE]
-> une balise d'assistance se ferme toujours automatiquement. Passer du contenu à `Link` passe par son
-> `children` argument (`<Link href="/about" children="About" />`), pas via le contenu de l'élément.
+> une balise d'assistance se ferme toujours automatiquement. Passer du contenu à `Link` passe par son argument `children` (`<Link href="/about" children="About" />`), et non par le contenu de l'élément.
 
 ## Styles
 
-Les blocs `<style>` sont émis avec la page qui les déclare. Ils n'ont pas de portée : un nom de classe
-utilisé dans deux composants est une classe. Préfixez ou espacez vos classes.
+`<style>` les blocs sont émis avec la page qui les déclare. Ils n'ont pas de portée : un nom de classe utilisé dans deux composants constitue une seule classe. Préfixez ou espacez vos classes.
 
 ## Des règles qui font gagner du temps
 
-- Un composant par fichier. Le nom du fichier est le nom du composant, en PascalCase (`CopyChip.nexy`). Un
-  Le composant `.nexy` est importé en tant que module Python : un trait d'union dans le nom (`copy-chip.nexy`) n'a pas d'effet.
-  compiler.
-- Déclarez les accessoires avant de les utiliser : une variable non déclarée s'affiche sous la forme d'une chaîne vide, car
-  L'indéfini de Jinja2 est silencieux ici.
-- Gardez les effets secondaires dans les fonctions - le frontmatter s'exécute à nouveau à chaque requête.
+- Un composant par fichier. Le nom du fichier est le nom du composant, en PascalCase (`CopyChip.nexy`). Un composant `.nexy` est importé en tant que module Python : un trait d'union dans le nom (`copy-chip.nexy`) ne compile pas.
+- Déclarez les accessoires avant de les utiliser : une variable non déclarée s'affiche sous la forme d'une chaîne vide, car l'indéfini de Jinja2 est silencieux ici.
+- Gardez les effets secondaires dans les fonctions - le frontmatter s'exécute à nouveau à chaque demande.
 
 ## Prochaines étapes
 
 - [Markdown et MDX](markdown.md) : pages de contenu
-- [ISR](../../rendering/isr.md) : cache une page par chemin
+- [ISR](../../rendering/isr.md) : mettre en cache une page par chemin
 - [CSR](../../rendering/csr.md) : rendu côté client
