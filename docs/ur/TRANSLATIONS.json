@@ -83,6 +83,7 @@
   "coming-from/remix.md": "e94e2e9ace5f0f05078329a938ef52bb12ced1e4e69f03abba41ae1c3a830ab1",
   "coming-from/sveltekit.md": "fa7a8a0b0c6707d7603f3e57577430a600249a9d69fb94349c37417396143484",
   "coming-from/nextjs.md": "940b55efc317f9c2f4b2d99a7ec9bf6c8ab3e0c7ce06e88530434f7611751ebd",
-  "coming-from/spring-boot.md": "35aeaff29584840c2af1acb06565a1cd2b4a69146a136c5d9c2a0834f87db6b6"
+  "coming-from/spring-boot.md": "35aeaff29584840c2af1acb06565a1cd2b4a69146a136c5d9c2a0834f87db6b6",
+  "databases/mysql-mariadb.md": "63e755c012d961d9c30ece40cca71309c310afec3e5c1e6b807ef1e78dfd1a16"
  }
 }
