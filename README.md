@@ -1,26 +1,27 @@
 <p align="center">
-  <img src="./nexy.png" alt="Nexy - one file is a page, an endpoint, or an island" width="100%" />
+  <img src="./nexy.png" alt="Nexy - Next.js, in Python" width="100%" />
 </p>
 
 # Nexy
 
-**One file is a page, an endpoint, or an island.** A fullstack Python framework: FastAPI and Vite in
-one process, so a project keeps one server, one origin, and no CORS block between the front end and
-the API.
+**Next.js, in Python.** Same file routes, same layouts, same islands. The server code becomes Python:
+a page, a route handler and a server action are Python files, and FastAPI and Vite run in one
+process, so a project keeps one server, one origin, and no CORS block.
 
 <p>
-  <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pypi/v/nexy?color=%2334D058&label=version" alt="PyPI version"></a>
-  <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pypi/pyversions/nexy?color=%2334D058" alt="Python versions"></a>
-  <a href="https://github.com/NexyPy/nexy/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/NexyPy/nexy/ci.yml?branch=main&color=%2334D058" alt="CI"></a>
-  <a href="https://github.com/NexyPy/nexy"><img src="https://img.shields.io/github/stars/NexyPy/nexy?style=flat&color=%2334D058" alt="GitHub stars"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/NexyPy/nexy?color=%2334D058" alt="License"></a>
-  <a href="https://github.com/NexyPy/nexy/commits/main"><img src="https://img.shields.io/github/last-commit/NexyPy/nexy?color=%2334D058" alt="Last commit"></a>
+  <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pypi/v/nexy?color=%230F766E&label=version" alt="PyPI version"></a>
+  <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pypi/pyversions/nexy?color=%230F766E" alt="Python versions"></a>
+  <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pepy/dt/nexy?color=%230F766E&label=downloads" alt="PyPI downloads"></a>
+  <a href="https://github.com/NexyPy/nexy/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/NexyPy/nexy/ci.yml?branch=main&color=%230F766E" alt="CI"></a>
+  <a href="https://github.com/NexyPy/nexy"><img src="https://img.shields.io/github/stars/NexyPy/nexy?style=flat&color=%230F766E" alt="GitHub stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/NexyPy/nexy?color=%230F766E" alt="License"></a>
+  <a href="https://github.com/NexyPy/nexy/commits/main"><img src="https://img.shields.io/github/last-commit/NexyPy/nexy?color=%230F766E" alt="Last commit"></a>
 </p>
 
 <p align="center">
   <a href="https://nexypy.github.io/nexy/"><strong>Documentation</strong></a> ·
   <a href="#quick-start">Quick start</a> ·
-  <a href="#coming-from-another-framework">Coming from another framework</a> ·
+  <a href="#coming-from-nextjs">From Next.js</a> ·
   <a href="https://github.com/NexyPy/nexy/discussions">Discussions</a> ·
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
@@ -38,23 +39,42 @@ Python 3.12+ and [uv](https://docs.astral.sh/uv/). Node.js 18+ only when the pro
 framework.
 
 `uvx` runs Nexy in a temporary environment: enough to **create** a project, nothing more. Any other
-command runs inside the project's `.venv`, where your own packages live — outside it, a page fails
+command runs inside the project's `.venv`, where your own packages live - outside it, a page fails
 with `ModuleNotFoundError: No module named 'sqlmodel'`. `uv run nexy dev` skips the activation.
 
-`new` asks four questions — file-based or modular router, web or API, client framework or none,
-ORM or none — and the answers decide what the scaffold writes, including the Node package manager
+`new` asks four questions - file-based or modular router, web or API, client framework or none,
+ORM or none - and the answers decide what the scaffold writes, including the Node package manager
 it reuses: a committed lockfile wins when that tool is installed, otherwise `bun`, `pnpm` then
 `npm` by priority.
 
+## Coming from Next.js
+
+`src/routes/` replaces `app/`, and a route is a file rather than a `page.tsx` inside a folder:
+
+| Next.js | Nexy |
+|---|---|
+| `app/page.tsx` | `src/routes/index.tsx`, or `index.nexy` with Python in it |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx` |
+| `app/layout.tsx` | `src/routes/layout.tsx`, or `layout.nexy` |
+| `app/api/items/route.ts` | `src/routes/api/items.py`, with `GET` and `POST` functions |
+| `app/loading.tsx`, `error.tsx`, `not-found.tsx` | `loading.nexy`, `errors.nexy`, `notfound.nexy` |
+| a `"use client"` component | the same `.tsx` file, imported as an island |
+| a Server Action | an `@Action` function |
+
+One setting decides the shape in `nexyconfig.py`: `useCSR = True` keeps `.tsx` pages and client
+navigation, like `app/`; the default renders `.nexy` pages on the server, with the React components
+you already have as islands. Either way the server is FastAPI, `/docs` lists every handler, and one
+process serves the HTML and the API.
+
 ## Coming from another framework
 
-Nexy is not a Next.js clone with Python in it, and it is not only that shape either. It keeps the
-file routes, layouts and islands of the JavaScript meta-frameworks, and the controllers, modules and
-injectable services of the backend ones. What carries over depends on where you come from:
+The Next.js shape is one door; the others lead to the same framework. The file routes, layouts and
+islands of the JavaScript meta-frameworks carry over, and so do the controllers, modules and
+injectable services of the backend ones:
 
 | You come from | What carries over |
 |---|---|
-| **Next.js**, Remix, Nuxt, SvelteKit | file routes, layouts, islands, Server Actions written in Python |
+| **Remix**, Nuxt, SvelteKit | file routes, layouts, islands, Server Actions written in Python |
 | **Astro** | server-first HTML, the same islands and `client:*` directives, Markdown pages |
 | **NestJS**, Spring Boot | controllers, modules, injectable services, guards |
 | **Django**, Flask, FastAPI | views, endpoints, `Depends`, Pydantic models |
@@ -534,7 +554,7 @@ Contributions are welcome - seasoned engineers and first-time PR authors alike.
 - [Good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 - [CONTRIBUTING.md](CONTRIBUTING.md) - setup, quality gates, pull requests
 - [ARCHITECTURE.md](ARCHITECTURE.md) - internals
-- [Discussions](https://github.com/NexyPy/nexy/discussions) and [Discord](https://discord.gg/nexy)
+- [Discussions](https://github.com/NexyPy/nexy/discussions) for questions, ideas and showing what you built
 - [Issues](https://github.com/NexyPy/nexy/issues) - bugs and feature requests
 
 Security issues: see [SECURITY.md](SECURITY.md). Do not open a public issue for a vulnerability.
