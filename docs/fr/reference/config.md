@@ -19,10 +19,10 @@ class NexyConfig(NexyConfigModel):
 | Champ | Par défaut | Signification |
 |---|---|---|
 | `usePort` | `3000` | port pour `dev` et `start` |
-| `useHost` | `"0.0.0.0"` | adresse de liaison |
-| `useSslKeyfile`, `useSslCertfile` | `None` | servent HTTPS directement |
+| `useHost` | `"0.0.0.0"` | lier l'adresse |
+| `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS directement |
 | `useDevTools` | `True` | la barre d'outils `nexy dev` ajoute à chaque page (informations sur la page, itinéraires, erreurs, configuration) ; `False` le supprime. Jamais présent en production |
-| `useWorkers` | `0` | traite `nx start` exécutions ; `0` est un par processeur sous Linux et macOS, un sous Windows |
+| `useWorkers` | `0` | traite les exécutions de `nx start` ; `0` est un par processeur sous Linux et macOS, un sous Windows |
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 
 ## Itinéraires
@@ -62,16 +62,30 @@ Chaque champ ajoute des extensions à un rôle réservé. `useLayoutExtensions =
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useDocs` | `True` | servir le schéma OpenAPI et sa page de référence Scalar |
+| `useDocs` | `True` | servir la page de référence Scalar ; `/openapi.json` est servi dans les deux sens |
 | `useDocsUrl` | `"/docs"` | chemin de la page de référence de l'API |
 | `useRedocsUrl` | `"/redocs"` | déclaré mais aucune route n'est montée |
-| `useTitle` | `"Nexy App"` | OpenAPI titre et titre de la page (`"Nexy"` dans `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | Titre de OpenAPI et titre de la page (`"Nexy"` dans `NexyConfigModel`) |
+
+### `/docs` gratuit pour une page du projet
+
+La référence de l'API répond à `/docs` avant toute route, donc `src/routes/docs.nexy` ou `src/routes/docs/[[...slug]].nexy` n'y sont jamais servis. `nx dev` et `nx start` nomment une telle page au démarrage. Déplacez la référence avec `useDocsUrl` :
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+Ou éteignez-le avec `useDocs = False`. `/openapi.json` reste servi dans les deux cas : garder les itinéraires du projet hors de ce chemin.
 
 ## Intergiciel
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useMiddlewares` | `[]` | Classes middleware ASGI |
+| `useMiddlewares` | `[]` | Classes de middleware ASGI |
 | `useCORS` | `None` | kwargs pour `CORSMiddleware` |
 | `useGZip` | `None` | kwargs pour `GZipMiddleware` |
 | `useTrustedHost` | `None` | kwargs pour `TrustedHostMiddleware` |
@@ -85,7 +99,7 @@ Chaque champ ajoute des extensions à un rôle réservé. `useLayoutExtensions =
 |---|---|---|
 | `useTocDepth` | `"2-6"` | niveaux de titres inclus dans la table des matières |
 | `useTocTitle` | `"Table of Contents"` | Titre de la table des matières |
-| `useTocAuto` | `True` | générer la table des matières des Markdown pages |
+| `useTocAuto` | `True` | générer la table des matières pour Markdown pages |
 
 ## Itinéraires en dehors de l’arborescence des fichiers
 
@@ -117,6 +131,6 @@ Ces champs existent dans `NexyConfigModel` mais aucun code ne les consomme. Leur
 
 ## Prochaines étapes
 
-- [i18n](../guides/i18n.md) : internationalisation
+- [i18n](../guides/i18n.md) : internationalisation
 - [Frontend](../guides/frontend.md) : `useFF` et la version client
 - [Déployer](../deployment/README.md) : options de production

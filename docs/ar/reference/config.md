@@ -16,30 +16,30 @@ class NexyConfig(NexyConfigModel):
 
 ## الخادم
 
-| الحقل | الافتراضي | المعنى |
+| الميدان | الافتراضي | معنى |
 |---|---|---|
 | `usePort` | `3000` | منفذ لـ `dev` و `start` |
-| `useHost` | `"0.0.0.0"` | عنوان الربط |
-| `useSslKeyfile`، `useSslCertfile` | `None` | يخدم HTTPS مباشرة |
-| `useDevTools` | `True` | يضيف شريط الأدوات `nexy dev` إلى كل صفحة (معلومات الصفحة، والمسارات، والأخطاء، والتكوين)؛ `False` يزيله. لم يسبق له مثيل في الإنتاج |
-| `useWorkers` | `0` | يعمل على تشغيل `nx start`؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
+| `useHost` | `"0.0.0.0"` | ربط العنوان |
+| `useSslKeyfile`، `useSslCertfile` | `None` | خدمة HTTPS مباشرة |
+| `useDevTools` | `True` | يضيف شريط الأدوات `nexy dev` إلى كل صفحة (معلومات الصفحة، والمسارات، والأخطاء، والتكوين)؛ `False` يزيله. لا يوجد أبدا في الإنتاج |
+| `useWorkers` | `0` | العمليات `nx start` تجري؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
 | `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
 
 ## الطرق
 
-| الحقل | الافتراضي | المعنى |
+| الميدان | الافتراضي | معنى |
 |---|---|---|
 | `useRouter` | `None` | مثيل أو فئة `APIRouter` مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
 | `excludeDirs` | `["templates", "extension", "docs"]` | تم تخطي الدلائل عند مسح المسارات |
-| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال. `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، و Vite و `tsconfig.json` يتبعه |
+| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، ويتبعه Vite و `tsconfig.json` |
 
 ## الواجهة الأمامية
 
-| الحقل | الافتراضي | المعنى |
+| الميدان | الافتراضي | معنى |
 |---|---|---|
 | `useFF` | `None` | مصنع إطار العميل: `react()`، `vue()`، `svelte()`، `solid()`، `preact()` |
-| `useVite` | `True` | إنشاء حزم العملاء وخدمتها باستخدام Vite |
-| `useMarkdownExtensions` | `[]` | ملحقات إضافية لعرض `.md`/`.mdx` |
+| `useVite` | `True` | بناء وتقديم حزم العملاء مع Vite |
+| `useMarkdownExtensions` | `[]` | ملحقات إضافية للعرض `.md`/`.mdx` |
 | `useWatchExtensions` | `None` | ملحقات إضافية يشاهدها خادم التطوير |
 | `useWatchExcludePatterns` | `None` | أنماط الكرة الأرضية التي يتجاهلها خادم التطوير |
 
@@ -49,7 +49,7 @@ class NexyConfig(NexyConfigModel):
 
 يضيف كل حقل ملحقات إلى دور محجوز. `useLayoutExtensions = ["md"]` يجعل `layout.md` محجوزاً، مثل `layout.nexy` تماماً.
 
-| الحقل | يضيف الامتدادات إلى |
+| الميدان | يضيف ملحقات إلى |
 |---|---|
 | `useLayoutExtensions` | `layout.*` |
 | `useNotFoundExtensions` | `notfound.*` |
@@ -60,32 +60,46 @@ class NexyConfig(NexyConfigModel):
 
 ## وثائق واجهة برمجة التطبيقات
 
-| الحقل | الافتراضي | المعنى |
+| الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useDocs` | `True` | يخدم مخطط OpenAPI والصفحة المرجعية الخاصة به |
+| `useDocs` | `True` | خدمة الصفحة المرجعية العددية؛ `/openapi.json` يقدم على كلا الحالتين |
 | `useDocsUrl` | `"/docs"` | مسار الصفحة المرجعية لواجهة برمجة التطبيقات |
 | `useRedocsUrl` | `"/redocs"` | تم الإعلان عنه ولكن لم يتم تثبيت أي طريق |
 | `useTitle` | `"Nexy App"` | OpenAPI العنوان وعنوان الصفحة (`"Nexy"` في `NexyConfigModel`) |
 
+### مجاناً `/docs` لصفحة من المشروع
+
+يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+أو أطفئه ب `useDocs = False`. `/openapi.json` يبقى مخدومًا في الحالتين: أبعد مسارات المشروع عن ذلك المسار.
+
 ## الوسيطة
 
-| الحقل | الافتراضي | المعنى |
+| الميدان | الافتراضي | معنى |
 |---|---|---|
 | `useMiddlewares` | `[]` | فئات البرمجيات الوسيطة ASGI |
-| `useCORS` | `None` | كوارج لـ `CORSMiddleware` |
-| `useGZip` | `None` | كوارج لـ `GZipMiddleware` |
-| `useTrustedHost` | `None` | كوارج لـ `TrustedHostMiddleware` |
-| `useSession` | `None` | كوارج لـ `SessionMiddleware` |
+| `useCORS` | `None` | كوارج ل `CORSMiddleware` |
+| `useGZip` | `None` | كوارج ل `GZipMiddleware` |
+| `useTrustedHost` | `None` | كوارج ل `TrustedHostMiddleware` |
+| `useSession` | `None` | كوارج ل `SessionMiddleware` |
 | `useAuth` | `None` | تكوين البرامج الوسيطة للمصادقة |
 | `useHTTPSRedirect` | `False` | إعادة توجيه HTTP إلى HTTPS |
 
 ## Markdown
 
-| الحقل | الافتراضي | المعنى |
+| الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useTocDepth` | `"2-6"` | مستويات العناوين المضمنة في جدول المحتويات |
+| `useTocDepth` | `"2-6"` | مستويات العناوين المدرجة في جدول المحتويات |
 | `useTocTitle` | `"Table of Contents"` | عنوان جدول المحتويات |
-| `useTocAuto` | `True` | إنشاء جدول محتويات لـ Markdown صفحات |
+| `useTocAuto` | `True` | إنشاء جدول محتويات لـ Markdown صفحة |
 
 ## الطرق خارج شجرة الملفات
 

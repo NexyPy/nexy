@@ -19,29 +19,29 @@ class NexyConfig(NexyConfigModel):
 | Поле | По умолчанию | Значение |
 |---|---|---|
 | `usePort` | `3000` | порт для `dev` и `start` |
-| `useHost` | `"0.0.0.0"` | адрес привязки |
-| `useSslKeyfile`, `useSslCertfile` | `None` | напрямую обслуживают HTTPS |
-| `useDevTools` | `True` | панель инструментов `nexy dev` добавляется на каждую страницу (информация о странице, маршруты, ошибки, конфигурация); `False` удаляет его. Никогда не присутствует в производстве |
-| `useWorkers` | `0` | процессы `nx start` выполняются; `0` — по одному на каждый процессор в Linux и macOS, по одному в Windows |
+| `useHost` | `"0.0.0.0"` | привязать адрес |
+| `useSslKeyfile`, `useSslCertfile` | `None` | обслуживать HTTPS напрямую |
+| `useDevTools` | `True` | панель инструментов `nexy dev` добавляет на каждую страницу (информацию о странице, маршруты, ошибки, конфиг); `False` удаляет его. Никогда не присутствует в производстве |
+| `useWorkers` | `0` | процессы `nx start` выполняются; `0` — по одному на каждый процессор в Linux и macOS, по одному в Windows. |
 | `useCSR` | `False` | режим маршрутизации на стороне клиента; `.nexy` маршруты отключены |
 
 ## Маршруты
 
 | Поле | По умолчанию | Значение |
 |---|---|---|
-| `useRouter` | `None` | экземпляр или класс `APIRouter` смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
+| `useRouter` | `None` | экземпляр или класс `APIRouter`, смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
 | `excludeDirs` | `["templates", "extension", "docs"]` | каталоги пропускаются при сканировании маршрутов |
-| `useAliases` | `None` | импортируйте псевдонимы, например `{"@": "src"}` (`@/components/Counter.tsx` означает `src/components/Counter.tsx`); `nx new` записывает тот, который вы выбрали, а Vite и `tsconfig.json` следуют за ним |
+| `useAliases` | `None` | импортировать псевдонимы, например. `{"@": "src"}` (`@/components/Counter.tsx` означает `src/components/Counter.tsx`); `nx new` записывает тот, который вы выбрали, а Vite и `tsconfig.json` следуют за ним |
 
 ## Фронтенд
 
 | Поле | По умолчанию | Значение |
 |---|---|---|
-| `useFF` | `None` | фабрика клиентской платформы: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
-| `useVite` | `True` | создавайте и обслуживайте клиентские пакеты с помощью Vite |
-| `useMarkdownExtensions` | `[]` | дополнительные расширения для `.md`/`.mdx` рендеринга |
-| `useWatchExtensions` | `None` | дополнительные расширения, которые отслеживает сервер разработки |
-| `useWatchExcludePatterns` | `None` | шаблоны шаблонов, которые сервер разработки игнорирует |
+| `useFF` | `None` | фабрика клиентских фреймворков: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
+| `useVite` | `True` | создавать и обслуживать клиентские пакеты с помощью Vite |
+| `useMarkdownExtensions` | `[]` | дополнительные расширения для рендеринга `.md`/`.mdx` |
+| `useWatchExtensions` | `None` | дополнительные расширения, которые наблюдает сервер разработчиков |
+| `useWatchExcludePatterns` | `None` | шаблоны glob, которые сервер разработки игнорирует |
 
 > **Полезно знать**: `NexyConfigModel` объявляет `useVite = False`; значение по умолчанию во время выполнения `Config` — `True`.
 
@@ -49,7 +49,7 @@ class NexyConfig(NexyConfigModel):
 
 Каждое поле добавляет расширения к зарезервированной роли. `useLayoutExtensions = ["md"]` делает `layout.md` зарезервированным, точно так же, как `layout.nexy`.
 
-| Поле | Добавляет расширения к |
+| Поле | Добавляет расширения в |
 |---|---|
 | `useLayoutExtensions` | `layout.*` |
 | `useNotFoundExtensions` | `notfound.*` |
@@ -62,10 +62,24 @@ class NexyConfig(NexyConfigModel):
 
 | Поле | По умолчанию | Значение |
 |---|---|---|
-| `useDocs` | `True` | обслуживают схему OpenAPI и ее скалярную справочную страницу |
+| `useDocs` | `True` | обслуживать справочную страницу Scalar; `/openapi.json` обслуживается в любом случае |
 | `useDocsUrl` | `"/docs"` | путь к справочной странице API |
 | `useRedocsUrl` | `"/redocs"` | объявлено, но маршрут не установлен |
 | `useTitle` | `"Nexy App"` | OpenAPI заголовок и заголовок страницы (`"Nexy"` в `NexyConfigModel`) |
+
+### Бесплатно `/docs` на страницу проекта
+
+Ссылка API отвечает на `/docs` перед любым маршрутом, поэтому `src/routes/docs.nexy` или `src/routes/docs/[[...slug]].nexy` там никогда не обслуживаются. `nx dev` и `nx start` называют такую ​​страницу при запуске. Переместите ссылку с помощью `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+Или выключите его с помощью `useDocs = False`. `/openapi.json` остается обслуживаемым в обоих случаях: держите маршруты проекта подальше от этого пути.
 
 ## Промежуточное ПО
 
@@ -77,14 +91,14 @@ class NexyConfig(NexyConfigModel):
 | `useTrustedHost` | `None` | кварги для `TrustedHostMiddleware` |
 | `useSession` | `None` | кварги для `SessionMiddleware` |
 | `useAuth` | `None` | конфигурация промежуточного программного обеспечения аутентификации |
-| `useHTTPSRedirect` | `False` | перенаправление HTTP на HTTPS |
+| `useHTTPSRedirect` | `False` | перенаправить HTTP на HTTPS |
 
 ## Markdown
 
 | Поле | По умолчанию | Значение |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | уровни заголовков, включенные в оглавление |
-| `useTocTitle` | `"Table of Contents"` | Оглавление |
+| `useTocTitle` | `"Table of Contents"` | заголовок оглавления |
 | `useTocAuto` | `True` | создать оглавление для Markdown страниц |
 
 ## Маршруты вне файлового дерева

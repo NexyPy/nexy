@@ -1,6 +1,6 @@
 # কনফিগার
 
-কনফিগারেশন হল প্রোজেক্ট রুটে `nexyconfig.py`-এর একটি ক্লাস। Nexy এটি যে ডিরেক্টরিতে চলে সেখান থেকে এটি লোড করে; ফাইল ছাড়া একটি প্রকল্প ডিফল্ট ব্যবহার করে।
+কনফিগারেশন হল প্রোজেক্ট রুটে `nexyconfig.py`-এ একটি ক্লাস। Nexy এটি যে ডিরেক্টরিতে চলে সেখান থেকে এটি লোড করে; ফাইল ছাড়া একটি প্রকল্প ডিফল্ট ব্যবহার করে।
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -62,10 +62,24 @@ class NexyConfig(NexyConfigModel):
 
 | মাঠ | ডিফল্ট | অর্থ |
 |---|---|---|
-| `useDocs` | `True` | OpenAPI স্কিমা এবং এর স্কেলার রেফারেন্স পৃষ্ঠা পরিবেশন করুন |
+| `useDocs` | `True` | স্কেলার রেফারেন্স পৃষ্ঠা পরিবেশন করুন; `/openapi.json` যে কোন উপায়ে পরিবেশন করা হয় |
 | `useDocsUrl` | `"/docs"` | API রেফারেন্স পৃষ্ঠার পথ |
 | `useRedocsUrl` | `"/redocs"` | ঘোষিত কিন্তু কোন রুট মাউন্ট করা হয় না |
 | `useTitle` | `"Nexy App"` | OpenAPI শিরোনাম এবং পৃষ্ঠার শিরোনাম (`"Nexy"` `NexyConfigModel`]) |
+
+### প্রকল্পের একটি পৃষ্ঠার জন্য বিনামূল্যে `/docs`
+
+এপিআই রেফারেন্স কোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+অথবা `useDocs = False` দিয়ে এটি বন্ধ করুন। `/openapi.json` উভয় ক্ষেত্রেই পরিবেশিত থাকে: প্রকল্পের রুটগুলিকে সেই পথ থেকে দূরে রাখুন।
 
 ## মিডলওয়্যার
 
@@ -119,4 +133,4 @@ class NexyConfig(NexyConfigModel):
 
 - [i18n](../guides/i18n.md): আন্তর্জাতিকীকরণ
 - [ফ্রন্টএন্ড](../guides/frontend.md): `useFF` এবং ক্লায়েন্ট বিল্ড
-- [মোতায়েন](../deployment/README.md): উৎপাদন বিকল্প
+- [স্থাপন ](../deployment/README.md): উত্পাদন বিকল্প

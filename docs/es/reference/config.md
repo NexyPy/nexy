@@ -16,31 +16,31 @@ class NexyConfig(NexyConfigModel):
 
 ## Servidor
 
-| Campo | Por defecto | Significado |
+| campo | Predeterminado | Significado |
 |---|---|---|
 | `usePort` | `3000` | puerto para `dev` y `start` |
 | `useHost` | `"0.0.0.0"` | dirección de enlace |
-| `useSslKeyfile`, `useSslCertfile` | `None` | sirven HTTPS directamente |
-| `useDevTools` | `True` | la barra de herramientas `nexy dev` agrega a cada página (información de la página, rutas, errores, configuración); `False` lo elimina. Nunca presente en producción |
+| `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS directamente |
+| `useDevTools` | `True` | la barra de herramientas `nexy dev` agrega a cada página (información de la página, rutas, errores, configuración); `False` lo elimina. Nunca presente en producción. |
 | `useWorkers` | `0` | procesos `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
 
 ## Rutas
 
-| Campo | Por defecto | Significado |
+| campo | Predeterminado | Significado |
 |---|---|---|
-| `useRouter` | `None` | una `APIRouter` instancia o clase montada junto a las rutas basadas en archivos; `None` significa basado únicamente en archivos |
+| `useRouter` | `None` | una instancia o clase `APIRouter` montada junto a las rutas basadas en archivos; `None` significa basado únicamente en archivos |
 | `excludeDirs` | `["templates", "extension", "docs"]` | directorios omitidos al escanear rutas |
-| `useAliases` | `None` | importar alias, p.e. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escribe el que elegiste, y Vite y `tsconfig.json` lo siguen |
+| `useAliases` | `None` | importar alias, p. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escribe el que elegiste, y Vite y `tsconfig.json` lo siguen |
 
 ## Interfaz
 
-| Campo | Predeterminado | Significado |
+| campo | Predeterminado | Significado |
 |---|---|---|
 | `useFF` | `None` | fábrica de marcos de clientes: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | crear y servir paquetes de clientes con Vite |
-| `useMarkdownExtensions` | `[]` | extensiones adicionales para `.md`/`.mdx` renderizado |
-| `useWatchExtensions` | `None` | extensiones adicionales que el servidor de desarrollo observa |
+| `useMarkdownExtensions` | `[]` | extensiones adicionales para el renderizado `.md`/`.mdx` |
+| `useWatchExtensions` | `None` | extensiones adicionales que observa el servidor de desarrollo |
 | `useWatchExcludePatterns` | `None` | patrones globales que el servidor de desarrollo ignora |
 
 > **Es bueno saberlo**: `NexyConfigModel` declara `useVite = False`; el tiempo de ejecución `Config` predeterminado es `True`.
@@ -49,7 +49,7 @@ class NexyConfig(NexyConfigModel):
 
 Cada campo agrega extensiones a un rol reservado. `useLayoutExtensions = ["md"]` hace que `layout.md` esté reservado, exactamente como `layout.nexy`.
 
-| Campo | Agrega extensiones a |
+| campo | Agrega extensiones a |
 |---|---|
 | `useLayoutExtensions` | `layout.*` |
 | `useNotFoundExtensions` | `notfound.*` |
@@ -60,32 +60,46 @@ Cada campo agrega extensiones a un rol reservado. `useLayoutExtensions = ["md"]`
 
 ## Documentación API
 
-| Campo | Predeterminado | Significado |
+| campo | Predeterminado | Significado |
 |---|---|---|
-| `useDocs` | `True` | sirven el esquema OpenAPI y su página de referencia escalar |
+| `useDocs` | `True` | servir la página de referencia de Scalar; `/openapi.json` se sirve de cualquier manera |
 | `useDocsUrl` | `"/docs"` | ruta de la página de referencia de API |
 | `useRedocsUrl` | `"/redocs"` | declarado pero no se monta ninguna ruta |
 | `useTitle` | `"Nexy App"` | OpenAPI título y título de página (`"Nexy"` en `NexyConfigModel`) |
 
+### Gratis `/docs` para una página del proyecto
+
+La referencia de API responde `/docs` antes de cualquier ruta, por lo que `src/routes/docs.nexy` o `src/routes/docs/[[...slug]].nexy` nunca se sirven allí. `nx dev` y `nx start` nombran dicha página al inicio. Mover la referencia con `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+O apáguelo con `useDocs = False`. `/openapi.json` permanece atendido en ambos casos: mantener las rutas del proyecto fuera de ese camino.
+
 ## software intermedio
 
-| Campo | Predeterminado | Significado |
+| campo | Predeterminado | Significado |
 |---|---|---|
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
-| `useCORS` | `None` | kwargs por `CORSMiddleware` |
-| `useGZip` | `None` | kwargs por `GZipMiddleware` |
+| `useCORS` | `None` | kwargs para `CORSMiddleware` |
+| `useGZip` | `None` | kwargs para `GZipMiddleware` |
 | `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs por `SessionMiddleware` |
-| `useAuth` | `None` | configuración de middleware de autenticación |
+| `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
 
 ## Markdown
 
-| Campo | Predeterminado | Significado |
+| campo | Predeterminado | Significado |
 |---|---|---|
-| `useTocDepth` | `"2-6"` | niveles de encabezado incluidos en el índice |
+| `useTocDepth` | `"2-6"` | niveles de encabezado incluidos en la tabla de contenido |
 | `useTocTitle` | `"Table of Contents"` | Título del TOC |
-| `useTocAuto` | `True` | generar la tabla de contenidos para las Markdown páginas |
+| `useTocAuto` | `True` | generar la tabla de contenidos para Markdown páginas |
 
 ## Rutas fuera del árbol de archivos
 
