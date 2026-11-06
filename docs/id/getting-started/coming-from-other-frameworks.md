@@ -2,6 +2,15 @@
 
 Nexy adalah FastAPI plus perutean berbasis file, halaman yang dirender oleh server, dan pulau opsional React, Vue, Svelte, Solid atau Preact. Halaman ini memetakan apa yang sudah Anda ketahui.
 
+Setiap kerangka kerja di bawah ini juga memiliki halamannya sendiri, tugas demi tugas, dengan kode yang Anda ketahui dan kemudian kode Nexy:
+
+| Python | Bagian belakang | tumpukan penuh JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [Ekspresikan](../coming-from/express.md), [Percepat](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md), [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [Elysia](../coming-from/elysia.md), [Hono](../coming-from/hono.md) | [Selanjutnya](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md), [Sepatu Bot Musim Semi](../coming-from/spring-boot.md) | [SvelteKit](../coming-from/sveltekit.md) |
+| | [Laravel](../coming-from/laravel.md), [Ruby di Rel](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## Dari FastAPI
 
 | FastAPI | Nexy |
@@ -13,7 +22,7 @@ Nexy adalah FastAPI plus perutean berbasis file, halaman yang dirender oleh serv
 | Jinja2 `TemplateResponse` | halaman `.nexy` di sebelah titik akhir |
 | Jalankan dengan `uvicorn main:app` | `nx dev`, lalu `nx build && nx start` |
 
-Segala sesuatu di bawah `src/routes/*.py` biasa saja FastAPI: dependensi, model Pydantic, middleware, dan `/docs` tetap berfungsi.
+Segala sesuatu di bawah `src/routes/*.py` adalah FastAPI biasa: dependensi, model Pydantic, middleware, dan `/docs` tetap berfungsi.
 
 Titik akhir yang sama, sebelum dan sesudah:
 
@@ -47,9 +56,9 @@ async def GET(id: int):
 | Tindakan Server | [`@Action`](../guides/actions.md) fungsi dipanggil dari formulir atau seperti fungsi klien yang diketik |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
-Backendnya adalah Python, jadi API Anda berbagi kode dengan data dan pekerjaan ML Anda. Komponen klien terhidrasi sebagai pulau, bukan pohon React satu halaman penuh.
+Backendnya adalah Python, sehingga API Anda berbagi kode dengan data dan pekerjaan ML Anda. Komponen klien terhidrasi sebagai pulau, bukan pohon React satu halaman penuh.
 
-Halaman Next.js berpindah hampir seperti semula, dan komponen `"use client"`-nya menjadi sebuah pulau di halaman server:
+Halaman Next.js berpindah hampir seperti semula, dan komponen `"use client"` menjadi sebuah pulau di halaman server:
 
 ```tsx filename="src/rute/blog/[siput].tsx"
 import { useParams } from "@nexy/client";
@@ -125,7 +134,7 @@ class AppModule:
     controllers = [AppController]
 ```
 
-Keduanya dirangkai oleh `nx new` dan dicakup oleh pengujian end-to-end yang sama. Lihat [Perutean](../routing/README.md) dan [Perutean modular](../routing/modular/README.md).
+Keduanya di-scaffold oleh `nx new` dan dicakup oleh pengujian end-to-end yang sama. Lihat [Perutean](../routing/README.md) dan [Perutean modular](../routing/modular/README.md).
 
 ## Dimana selanjutnya
 

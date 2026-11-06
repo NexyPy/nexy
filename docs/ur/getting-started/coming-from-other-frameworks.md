@@ -2,6 +2,15 @@
 
 Nexy FastAPI کے علاوہ فائل پر مبنی روٹنگ، سرور کے ذریعے پیش کردہ صفحات اور اختیاری React، Vue، Svelte، Solid یا Preact جزیرے ہیں۔ یہ صفحہ نقشہ بناتا ہے جو آپ پہلے سے جانتے ہیں۔
 
+نیچے دیئے گئے ہر فریم ورک کا اپنا ایک صفحہ بھی ہوتا ہے، ٹاسک کے لحاظ سے، اس کوڈ کے ساتھ جو آپ جانتے ہیں اور پھر Nexy کوڈ:
+
+| Python | بیک اینڈ | فل اسٹیک JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [ایکسپریس](../coming-from/express.md)، [فاسٹیفائی](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md)، [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [ایلیسیا](../coming-from/elysia.md)، [ہونو](../coming-from/hono.md) | [نکسٹ ](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md)، [اسپرنگ بوٹ](../coming-from/spring-boot.md) | [SvelteKit ](../coming-from/sveltekit.md) |
+| | [لارویل](../coming-from/laravel.md)، [روبی آن ریلز](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## سے FastAPI
 
 | FastAPI | نیکسی |
@@ -9,11 +18,11 @@ Nexy FastAPI کے علاوہ فائل پر مبنی روٹنگ، سرور کے �
 | `@app.get("/users")` ایک ماڈیول میں جو آپ درآمد کرتے ہیں۔ | `GET` فنکشن `src/routes/users.py` میں |
 | `app.include_router(router)` | فائل کا راستہ URL ہے؛ رجسٹر کرنے کے لئے کچھ نہیں |
 | راہ پرم `/users/{id}` | `src/routes/users/[id].py` |
-| `Depends(...)` | اب بھی `Depends(...)`: ہینڈلرز FastAPI ہینڈلر ہیں۔ |
+| `Depends(...)` | اب بھی `Depends(...)`: ہینڈلر FastAPI ہینڈلر ہیں۔ |
 | Jinja2 `TemplateResponse` | اختتامی نقطہ کے ساتھ ایک `.nexy` صفحہ |
 | کے ساتھ چلائیں `uvicorn main:app` | `nx dev`، پھر `nx build && nx start` |
 
-`src/routes/*.py` کے تحت سب کچھ عام ہے FastAPI: انحصار، Pydantic ماڈل، مڈل ویئر اور `/docs` کام کرتے رہتے ہیں۔
+`src/routes/*.py` کے تحت ہر چیز عام ہے FastAPI: انحصار، Pydantic ماڈل، مڈل ویئر اور `/docs` کام کرتے رہتے ہیں۔
 
 ایک ہی اختتامی نقطہ، پہلے اور بعد:
 
@@ -41,7 +50,7 @@ async def GET(id: int):
 | `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug].tsx` |
 | `app/layout.tsx` (اپنے `<html>`] | `src/routes/layout.tsx` سرور موڈ میں `useCSR = True` (React)، یا `src/routes/layout.nexy` کے ساتھ |
 | گھریلو `layout.tsx` | کلائنٹ موڈ میں نیسٹڈ `layout.tsx` / `layout.vue` / `layout.svelte`، سرور موڈ میں نیسٹڈ `layout.nexy` |
-| سرور کے صفحے میں `use client` اجزاء | [سرور موڈ میں جزائر](../rendering/islands.md) |
+| `use client` سرور کے صفحے میں اجزاء | [سرور موڈ میں جزائر](../rendering/islands.md) |
 | روٹ ہینڈلرز `route.ts` | `src/routes/api/x.py`، Python میں لکھا گیا |
 | `(group)` فولڈرز | وہی: `(group)/` |
 | سرور کے اعمال | [`@Action`](../guides/actions.md) فنکشنز کو فارم سے بلایا جاتا ہے یا بطور ٹائپ شدہ کلائنٹ فنکشنز |
@@ -131,4 +140,4 @@ class AppModule:
 
 - [فوری آغاز](quick-start.md): ایک پروجیکٹ بنائیں اور اسے چلائیں۔
 - [پروجیکٹ کا ڈھانچہ](project-structure.md): جہاں ہر فائل کا تعلق ہے۔
-- [روٹنگ ](../routing/README.md): راؤٹر کا انتخاب کریں۔
+- [روٹنگ ](../routing/README.md): روٹر کا انتخاب کریں۔

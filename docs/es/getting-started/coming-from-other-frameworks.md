@@ -2,11 +2,20 @@
 
 Nexy es FastAPI más enrutamiento basado en archivos, páginas renderizadas por servidor e islas opcionales React, Vue, Svelte, Solid o Preact. Esta página mapea lo que ya sabes.
 
+Cada marco a continuación también tiene una página propia, tarea por tarea, con el código que conoce y luego el código Nexy:
+
+| Python | backend | Pila completa JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [Expresar](../coming-from/express.md), [Fastificar](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md), [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [Elysia](../coming-from/elysia.md), [Hono](../coming-from/hono.md) | [Nuxt](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md), [Bota de primavera](../coming-from/spring-boot.md) | [Kit esbelto](../coming-from/sveltekit.md) |
+| | [Laravel](../coming-from/laravel.md), [Ruby on Rails](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## Desde FastAPI
 
 | FastAPI | nexy |
 |---|---|
-| `@app.get("/users")` en un módulo que importas | `GET` función en `src/routes/users.py` |
+| `@app.get("/users")` en un módulo que importas | Función `GET` en `src/routes/users.py` |
 | `app.include_router(router)` | la ruta del archivo es la URL; nada que registrar |
 | Parámetro de ruta `/users/{id}` | `src/routes/users/[id].py` |
 | `Depends(...)` | todavía `Depends(...)`: los controladores son FastAPI controladores |

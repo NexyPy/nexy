@@ -2,6 +2,15 @@
 
 Nexy هو FastAPI بالإضافة إلى التوجيه المستند إلى الملف والصفحات المقدمة من الخادم والجزر الاختيارية React أو Vue أو Svelte أو Solid أو Preact. تعرض هذه الصفحة ما تعرفه بالفعل.
 
+يحتوي كل إطار أدناه أيضًا على صفحة خاصة به، مهمة بمهمة، تحتوي على الكود الذي تعرفه ثم كود Nexy:
+
+| Python | الخلفية | المكدس الكامل JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [اكسبرس](../coming-from/express.md)، [فاستيفي](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md)، [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [إليسيا](../coming-from/elysia.md)، [هونو](../coming-from/hono.md) | [نوكست](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md)، [حذاء الربيع](../coming-from/spring-boot.md) | [سفيلتكيت](../coming-from/sveltekit.md) |
+| | [لارافيل](../coming-from/laravel.md), [روبي أون ريلز](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## من FastAPI
 
 | FastAPI | نكسي |
@@ -13,7 +22,7 @@ Nexy هو FastAPI بالإضافة إلى التوجيه المستند إلى �
 | Jinja2 `TemplateResponse` | صفحة `.nexy` بجوار نقطة النهاية |
 | تشغيل مع `uvicorn main:app` | `nx dev`، ثم `nx build && nx start` |
 
-كل شيء ضمن `src/routes/*.py` عادي FastAPI: التبعيات، Pydantic النماذج، البرامج الوسيطة و `/docs` تستمر في العمل.
+كل شيء تحت `src/routes/*.py` عادي FastAPI: التبعيات، Pydantic النماذج، البرامج الوسيطة و `/docs` تستمر في العمل.
 
 نفس نقطة النهاية قبل وبعد:
 
@@ -43,7 +52,7 @@ async def GET(id: int):
 | متداخلة `layout.tsx` | متداخل `layout.tsx` / `layout.vue` / `layout.svelte` في وضع العميل، متداخل `layout.nexy` في وضع الخادم |
 | `use client` مكونات في صفحة الخادم | [الجزر](../rendering/islands.md) في وضع الخادم |
 | معالجات الطريق `route.ts` | `src/routes/api/x.py`، مكتوب في Python |
-| `(group)` المجلدات | نفسه: `(group)/` |
+| `(group)` المجلدات | نفسه : `(group)/` |
 | إجراءات الخادم | [`@Action` ](../guides/actions.md) يتم استدعاء الوظائف من نموذج أو كوظائف عميل مكتوبة |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
@@ -77,7 +86,7 @@ slug: prop[str]
 | `app.get("/users/:id", handler)` | `src/routes/users/[id].py` مع `async def GET(id)` |
 | `app.use(middleware)` | FastAPI البرامج الوسيطة، مسجلة من `nexyconfig.py` |
 | `res.json(obj)` | إرجاع إملاء أو نموذج Pydantic |
-| مشاهدات EJS / الصلصال | `.nexy` (Jinja2) صفحات |
+| مشاهدات EJS / الصلصال | `.nexy` (Jinja2) صفحة |
 | `npm run dev` | `nx dev` |
 
 يصبح `app.use(...)` حقلاً لـ `nexyconfig.py`، ويصبح `res.json(...)` قيمة مُرجعة:

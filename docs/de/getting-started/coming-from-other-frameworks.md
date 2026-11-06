@@ -2,6 +2,15 @@
 
 Nexy ist FastAPI plus dateibasiertes Routing, servergerenderte Seiten und optionale React-, Vue-, Svelte-, Solid- oder Preact-Inseln. Diese Seite stellt dar, was Sie bereits wissen.
 
+Jedes der folgenden Frameworks hat außerdem eine eigene Seite, Aufgabe für Aufgabe, mit dem Code, den Sie kennen, und dann dem Nexy-Code:
+
+| Python | Backend | Fullstack JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [Express](../coming-from/express.md), [Fastify](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md), [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [Elysia](../coming-from/elysia.md), [Hono](../coming-from/hono.md) | [Nuxt](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md), [Frühlingsstiefel](../coming-from/spring-boot.md) | [SvelteKit](../coming-from/sveltekit.md) |
+| | [Laravel](../coming-from/laravel.md), [Ruby on Rails](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## Von FastAPI
 
 | FastAPI | Nexy |
@@ -47,7 +56,7 @@ async def GET(id: int):
 | Serveraktionen | [`@Action`](../guides/actions.md) Funktionen, die aus einem Formular oder als typisierte Clientfunktionen aufgerufen werden |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
-Das Backend ist Python, sodass Ihre API den Code mit Ihren Daten und Ihrer ML-Arbeit teilt. Client-Komponenten hydratisieren als Inseln anstelle eines ganzseitigen React-Baums.
+Das Backend ist Python, sodass Ihre API Code mit Ihren Daten und ML-Arbeit teilt. Client-Komponenten hydratisieren als Inseln anstelle eines ganzseitigen React-Baums.
 
 Eine Next.js-Seite bewegt sich fast so, wie sie ist, und ihre `"use client"`-Komponente wird zu einer Insel einer Serverseite:
 
@@ -103,7 +112,7 @@ async def GET(id: int):
 | Dateibasierter Router | aus Dateien zugeordnete Seiten und Endpunkte; die Standardeinstellung |
 | Modularer Router | Controller, Module und Abhängigkeitsinjektion im NestJS-Stil |
 
-Der modulare Router besteht aus zwei Dateien: einem Controller und dem Modul `nexyconfig.py` mit `useRouter = AppModule`:
+Der modulare Router besteht aus zwei Dateien: einem Controller und einem Modul, auf das `nexyconfig.py` mit `useRouter = AppModule` zeigt:
 
 ```python filename="src/apps/app_controller.py"
 from nexy.decorators import Controller

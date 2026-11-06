@@ -2,6 +2,15 @@
 
 नेक्सी FastAPI प्लस फ़ाइल-आधारित रूटिंग, सर्वर-रेंडर किए गए पेज और वैकल्पिक React, Vue, Svelte, Solid या Preact द्वीप हैं। यह पृष्ठ वही दर्शाता है जो आप पहले से जानते हैं।
 
+नीचे दिए गए प्रत्येक ढाँचे का अपना एक पृष्ठ भी है, कार्य दर कार्य, आपके द्वारा ज्ञात कोड और फिर नेक्सी कोड के साथ:
+
+| Python | बैकएंड | फुलस्टैक JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [एक्सप्रेस](../coming-from/express.md), [फास्टिफाइ](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md), [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [एलिसिया](../coming-from/elysia.md), [होनो](../coming-from/hono.md) | [अगला](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md), [स्प्रिंग बूट](../coming-from/spring-boot.md) | [स्वेलटेकिट](../coming-from/sveltekit.md) |
+| | [लारवेल](../coming-from/laravel.md), [रूबी ऑन रेल्स](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## से FastAPI
 
 | FastAPI | नेक्सी |
@@ -33,7 +42,7 @@ async def GET(id: int):
     return {"id": id}
 ```
 
-## से Next.js
+## Next.js से
 
 | Next.js | नेक्सी |
 |---|---|
@@ -49,7 +58,7 @@ async def GET(id: int):
 
 बैकएंड Python है, इसलिए आपका एपीआई आपके डेटा और एमएल कार्य के साथ कोड साझा करता है। क्लाइंट घटक पूरे पृष्ठ React पेड़ के बजाय द्वीपों के रूप में हाइड्रेट होते हैं।
 
-एक Next.js पेज लगभग वैसे ही चलता रहता है, और इसका `"use client"` घटक एक सर्वर पेज का एक द्वीप बन जाता है:
+एक Next.js पेज लगभग वैसे ही चलता रहता है, और उसका `"use client"` घटक एक सर्वर पेज का एक द्वीप बन जाता है:
 
 ```tsx filename="src/routes/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -80,7 +89,7 @@ slug: prop[str]
 | ईजेएस/पग दृश्य | `.nexy` (Jinja2) पृष्ठ |
 | `npm run dev` | `nx dev` |
 
-`app.use(...)` `nexyconfig.py` का फ़ील्ड बन जाता है, और `res.json(...)` रिटर्न मान बन जाता है:
+`app.use(...)` `nexyconfig.py` का एक क्षेत्र बन जाता है, और `res.json(...)` एक रिटर्न मान बन जाता है:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -125,7 +134,7 @@ class AppModule:
     controllers = [AppController]
 ```
 
-दोनों को `nx new` द्वारा तैयार किया गया है और अंत-से-अंत तक समान परीक्षणों द्वारा कवर किया गया है। [रूटिंग](../routing/README.md) और [मॉड्यूलर रूटिंग](../routing/modular/README.md) देखें।
+दोनों को `nx new` द्वारा तैयार किया गया है और एक ही एंड-टू-एंड परीक्षणों द्वारा कवर किया गया है। [रूटिंग](../routing/README.md) और [मॉड्यूलर रूटिंग](../routing/modular/README.md) देखें।
 
 ## आगे कहाँ
 

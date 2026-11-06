@@ -2,11 +2,20 @@
 
 Nexy হল FastAPI প্লাস ফাইল-ভিত্তিক রাউটিং, সার্ভার-রেন্ডার করা পৃষ্ঠা এবং ঐচ্ছিক React, Vue, Svelte, Solid বা Preact দ্বীপ। এই পৃষ্ঠাটি ম্যাপ করে যা আপনি ইতিমধ্যেই জানেন।
 
+নীচের প্রতিটি ফ্রেমওয়ার্কের নিজস্ব একটি পৃষ্ঠা রয়েছে, কাজ অনুসারে কাজ, আপনার জানা কোড এবং তারপরে Nexy কোড সহ:
+
+| Python | ব্যাকএন্ড | ফুলস্ট্যাক JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [এক্সপ্রেস](../coming-from/express.md), [ফাস্টফাই](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md), [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [এলিসিয়া](../coming-from/elysia.md), [হনো](../coming-from/hono.md) | [Nuxt](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md), [স্প্রিং বুট](../coming-from/spring-boot.md) | [SvelteKit](../coming-from/sveltekit.md) |
+| | [লারাভেল ](../coming-from/laravel.md), [রুবি অন রেল](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## থেকে FastAPI
 
 | FastAPI | নেক্সি |
 |---|---|
-| `@app.get("/users")` আপনার আমদানি করা একটি মডিউলে | `GET` ফাংশন `src/routes/users.py` এ |
+| `@app.get("/users")` আপনি আমদানি করেন এমন একটি মডিউলে | `GET` ফাংশন `src/routes/users.py` এ |
 | `app.include_router(router)` | ফাইল পাথ হল URL; নিবন্ধন করার কিছু নেই |
 | পথ পরম `/users/{id}` | `src/routes/users/[id].py` |
 | `Depends(...)` | এখনও `Depends(...)`: হ্যান্ডলাররা হল FastAPI হ্যান্ডলার |
@@ -41,10 +50,10 @@ async def GET(id: int):
 | `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug].tsx` |
 | `app/layout.tsx` (মালিক `<html>`) | `src/routes/layout.tsx` `useCSR = True` (React), অথবা `src/routes/layout.nexy` সার্ভার মোডে |
 | নেস্টেড `layout.tsx` | ক্লায়েন্ট মোডে নেস্টেড `layout.tsx` / `layout.vue` / `layout.svelte`, সার্ভার মোডে নেস্টেড `layout.nexy` |
-| `use client` একটি সার্ভার পৃষ্ঠায় উপাদান | [সার্ভার মোডে দ্বীপগুলি](../rendering/islands.md) |
+| `use client` একটি সার্ভার পৃষ্ঠায় উপাদান | [সার্ভার মোডে দ্বীপসমূহ](../rendering/islands.md) |
 | রুট হ্যান্ডলার `route.ts` | `src/routes/api/x.py`, লেখা Python |
 | `(group)` ফোল্ডার | একই: `(group)/` |
-| সার্ভার অ্যাকশন | [`@Action`](../guides/actions.md) ফাংশনগুলি একটি ফর্ম থেকে বা টাইপ করা ক্লায়েন্ট ফাংশন হিসাবে ডাকা হয় |
+| সার্ভার অ্যাকশন | [`@Action`](../guides/actions.md) ফাংশনগুলি একটি ফর্ম থেকে বা টাইপ করা ক্লায়েন্ট ফাংশন হিসাবে বলা হয় |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
 ব্যাকএন্ড হল Python, তাই আপনার API আপনার ডেটা এবং ML কাজের সাথে কোড শেয়ার করে। ক্লায়েন্ট উপাদানগুলি একটি সম্পূর্ণ-পৃষ্ঠা React গাছের পরিবর্তে দ্বীপ হিসাবে হাইড্রেট করে।
@@ -80,7 +89,7 @@ slug: prop[str]
 | ইজেএস/পগ ভিউ | `.nexy` (Jinja2) পৃষ্ঠা |
 | `npm run dev` | `nx dev` |
 
-`app.use(...)` `nexyconfig.py` এর একটি ক্ষেত্র হয়ে যায়, এবং `res.json(...)` একটি রিটার্ন মান হয়ে যায়:
+`app.use(...)` `nexyconfig.py` এর একটি ক্ষেত্র হয়ে যায় এবং `res.json(...)` একটি রিটার্ন মান হয়ে যায়:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

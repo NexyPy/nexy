@@ -3,6 +3,16 @@
 Nexy is FastAPI plus file-based routing, server-rendered pages and optional React, Vue, Svelte,
 Solid or Preact islands. This page maps what you already know.
 
+Each framework below also has a page of its own, task by task, with the code you know and then the
+Nexy code:
+
+| Python | Backend | Fullstack JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [Express](../coming-from/express.md), [Fastify](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md), [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [Elysia](../coming-from/elysia.md), [Hono](../coming-from/hono.md) | [Nuxt](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md), [Spring Boot](../coming-from/spring-boot.md) | [SvelteKit](../coming-from/sveltekit.md) |
+| | [Laravel](../coming-from/laravel.md), [Ruby on Rails](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## From FastAPI
 
 | FastAPI | Nexy |

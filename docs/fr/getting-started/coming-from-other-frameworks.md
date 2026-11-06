@@ -2,6 +2,15 @@
 
 Nexy, c'est FastAPI plus un routage basé sur des fichiers, des pages rendues par le serveur et des îles optionnelles React, Vue, Svelte, Solid ou Preact. Cette page cartographie ce que vous savez déjà.
 
+Chaque framework ci-dessous possède également sa propre page, tâche par tâche, avec le code que vous connaissez puis le code Nexy :
+
+| Python | Back-end | Pile complète JavaScript |
+|---|---|---|
+| [FastAPI](../coming-from/fastapi.md) | [Express](../coming-from/express.md), [Fastify](../coming-from/fastify.md) | [Next.js](../coming-from/nextjs.md), [Remix](../coming-from/remix.md) |
+| [Flask](../coming-from/flask.md) | [Élysie](../coming-from/elysia.md), [Hono](../coming-from/hono.md) | [Nuxt](../coming-from/nuxt.md) |
+| [Django](../coming-from/django.md) | [NestJS](../coming-from/nestjs.md), [Spring Boot](../coming-from/spring-boot.md) | [SvelteKit](../coming-from/sveltekit.md) |
+| | [Laravel](../coming-from/laravel.md), [Ruby sur Rails](../coming-from/rails.md) | [Astro](../coming-from/astro.md) |
+
 ## De FastAPI
 
 | FastAPI | Nexy |
@@ -11,7 +20,7 @@ Nexy, c'est FastAPI plus un routage basé sur des fichiers, des pages rendues pa
 | Paramètres de chemin `/users/{id}` | `src/routes/users/[id].py` |
 | `Depends(...)` | toujours `Depends(...)` : les gestionnaires sont des FastAPI gestionnaires |
 | Jinja2 `TemplateResponse` | une page `.nexy` à côté du point de terminaison |
-| Courir avec `uvicorn main:app` | `nx dev`, puis `nx build && nx start` |
+| Courez avec `uvicorn main:app` | `nx dev`, puis `nx build && nx start` |
 
 Tout sous `src/routes/*.py` est ordinaire FastAPI : les dépendances, les modèles Pydantic, le middleware et `/docs` continuent de fonctionner.
 
@@ -33,7 +42,7 @@ async def GET(id: int):
     return {"id": id}
 ```
 
-## De Next.js
+## À partir de Next.js
 
 | Next.js | Nexy |
 |---|---|
@@ -131,4 +140,4 @@ Les deux sont échafaudés par `nx new` et couverts par les mêmes tests de bout
 
 - [Démarrage rapide](quick-start.md) : créez un projet et exécutez-le
 - [Structure du projet](project-structure.md) : où appartient chaque fichier
-- [Routage](../routing/README.md) : choisissez le routeur
+- [Routage](../routing/README.md) : choisissez le routeur
