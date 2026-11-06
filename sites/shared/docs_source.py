@@ -15,7 +15,12 @@ from posixpath import normpath
 
 from pygments import highlight  # type: ignore[import-untyped]
 from pygments.formatters import HtmlFormatter  # type: ignore[import-untyped]
-from pygments.lexers import HtmlDjangoLexer, get_lexer_by_name  # type: ignore[import-untyped]
+from pygments.lexers import (  # type: ignore[import-untyped]
+    HtmlDjangoLexer,
+    HtmlLexer,
+    PhpLexer,
+    get_lexer_by_name,
+)
 from pygments.util import ClassNotFound  # type: ignore[import-untyped]
 
 from nexy.modules.runtime.markdown import render_markdown
@@ -706,10 +711,23 @@ def _rewrite(html: str, page: Path, docs: Path, link: Link) -> str:
 _FORMATTER = HtmlFormatter(nowrap=True, classprefix="tok-")
 
 
+# Fence languages Pygments lacks or reads too strictly: a .nexy or Blade view is HTML with `{{ }}`,
+# a .svelte or .astro view is HTML with its scripts, and PHP shows without its `<?php` line.
+_OWN_LEXERS = {
+    "nexy": HtmlDjangoLexer,
+    "blade": HtmlDjangoLexer,
+    "svelte": HtmlLexer,
+    "astro": HtmlLexer,
+    "php": lambda: PhpLexer(startinline=True),
+}
+# A file that opens with a frontmatter between bars: (language of the logic, language of the view).
+_FRAMED = {"nexy": ("python", "nexy"), "astro": ("typescript", "astro")}
+
+
 def _lexer(language: str) -> object | None:
-    """The colouring rules for a fence language; a .nexy file is HTML with Jinja."""
-    if language == "nexy":
-        return HtmlDjangoLexer()
+    """The colouring rules for a fence language, or None when it has none."""
+    if language in _OWN_LEXERS:
+        return _OWN_LEXERS[language]()
     try:
         return get_lexer_by_name(language)
     except ClassNotFound:
@@ -768,16 +786,16 @@ def _paint(text: str, language: str) -> str:
     return text if lexer is None else highlight(text, lexer, _FORMATTER)
 
 
-def _nexy(text: str) -> str:
-    """A .nexy file is Python between its bars, then the template it renders."""
+def _framed(text: str, logic: str, view_language: str) -> str:
+    """A .nexy or .astro file: its logic between the bars, then the template it renders."""
     head = _FRONTMATTER.match(text)
     if head is None:
-        return _paint(text, "nexy").rstrip("\n")
+        return _paint(text, view_language).rstrip("\n")
     bar = '<span class="tok-bar">---</span>'
-    parts = [bar, _paint(head["logic"], "python").rstrip("\n"), bar]
+    parts = [bar, _paint(head["logic"], logic).rstrip("\n"), bar]
     view = text[head.end() :].lstrip("\n")
     if view.strip():
-        parts.append(_paint(view, "nexy").rstrip("\n"))
+        parts.append(_paint(view, view_language).rstrip("\n"))
     return "\n".join(parts)
 
 
@@ -787,7 +805,10 @@ def _colour(found: re.Match[str]) -> str:
     if _lexer(language) is None:
         return found[0]
     text, kinds = _marked(htmllib.unescape(escaped))
-    coloured = _nexy(text) if language == "nexy" else _paint(text, language).rstrip("\n")
+    if language in _FRAMED:
+        coloured = _framed(text, *_FRAMED[language])
+    else:
+        coloured = _paint(text, language).rstrip("\n")
     return f'<pre lang="{language}"><code>{_lines(coloured, kinds)}</code></pre>'
 
 

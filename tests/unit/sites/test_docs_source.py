@@ -306,6 +306,34 @@ class TestHighlight:
         html = self._html(tmp_path, "nexy", "---\nx = 1\n---\n<p>hi</p>")
         assert html.count('<span class="tok-bar">---</span>') == 2
 
+    def test_php_without_an_opening_tag_is_coloured(self, tmp_path):
+        html = self._html(tmp_path, "php", "function run() { return 1; }")
+        assert '<span class="tok-k">function</span>' in html
+
+    def test_a_svelte_file_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "svelte", "<h1>{name}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
+
+    def test_the_script_of_a_svelte_file_is_coloured_as_javascript(self, tmp_path):
+        html = self._html(tmp_path, "svelte", "<script>\nlet count = 0;\n</script>")
+        assert '<span class="tok-kd">let</span>' in html
+
+    def test_the_frontmatter_of_an_astro_file_is_coloured_as_typescript(self, tmp_path):
+        html = self._html(tmp_path, "astro", "---\nconst title = 'About';\n---\n<h1>{title}</h1>")
+        assert '<span class="tok-kd">const</span>' in html
+
+    def test_the_template_of_an_astro_file_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "astro", "---\nconst x = 1;\n---\n<h1>{x}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
+
+    def test_the_bars_of_an_astro_frontmatter_are_kept(self, tmp_path):
+        html = self._html(tmp_path, "astro", "---\nconst x = 1;\n---\n<p>hi</p>")
+        assert html.count('<span class="tok-bar">---</span>') == 2
+
+    def test_a_blade_template_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "blade", "<h1>{{ $title }}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
+
     def test_an_unknown_language_stays_plain(self, tmp_path):
         assert "tok-" not in self._html(tmp_path, "klingon", "qapla")
 
