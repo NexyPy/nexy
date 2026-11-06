@@ -88,6 +88,7 @@ SOLICIT_RE = tuple(re.compile(pattern, re.IGNORECASE) for pattern in SOLICIT)
 ANNOUNCE_RE = tuple(re.compile(pattern, re.IGNORECASE) for pattern in ANNOUNCE)
 VOWEL_GROUP = re.compile(r"[aeiouy]+")
 WORD = re.compile(r"[A-Za-z']+")
+FENCE = re.compile(r"^```.*?^```", re.MULTILINE | re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -226,7 +227,10 @@ def _matches(item: Item, patterns: tuple[re.Pattern[str], ...], why: str) -> lis
 
 
 def _symmetric(body: str) -> bool:
-    paragraphs = [part.strip() for part in re.split(r"\n\s*\n", body) if part.strip()]
+    """Two prose paragraphs of the same length: a code block is split into pieces by its blank
+    lines, so it is removed before the paragraphs are counted."""
+    prose = FENCE.sub("", body)
+    paragraphs = [part.strip() for part in re.split(r"\n\s*\n", prose) if part.strip()]
     for first, second in zip(paragraphs, paragraphs[1:], strict=False):
         longer, shorter = max(len(first), len(second)), min(len(first), len(second))
         if longer > 80 and shorter / longer > 0.9:

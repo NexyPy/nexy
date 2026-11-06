@@ -218,3 +218,10 @@ def test_one_invitation_in_four_posts_is_accepted(tmp_path: Path) -> None:
     ]
     posts[0] = _item(tmp_path, slug="2026-11-0", published=date(2026, 11, 1), ask="run")
     assert voice.density(posts) == []
+
+
+def test_a_code_block_is_not_counted_as_two_paragraphs(tmp_path: Path) -> None:
+    _proof(tmp_path)
+    body = "47 ms.\n\n```python\na = 1\n\nb = 2\n```\n\nThat is the whole run."
+    report = voice.check(_item(tmp_path, body=body, proof=("hmr-2026-11.md",)), tmp_path)
+    assert not any("symmetry" in warning for warning in report.warnings)
