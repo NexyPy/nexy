@@ -1,27 +1,58 @@
 # स्प्रिंग बूट से नेक्सी तक
 
-नेक्सी में एक स्प्रिंग `@RestController` विधि `src/routes/` के तहत फ़ाइल में एक फ़ंक्शन बन जाती है, या मॉड्यूलर राउटर में `@Controller` क्लास की एक विधि बन जाती है: बीन वैलिडेशन Pydantic बन जाता है, और स्प्रिंगडॉक का OpenAPI पेज बनाया जाता है।
+नेक्सी का मॉड्यूलर राउटर स्प्रिंग बूट ऐप का आकार रखता है: एक `@RestController` एक `@Controller` वर्ग है, एक `@Service` एक `@Injectable` है जिसे `__init__` के माध्यम से इंजेक्ट किया जाता है, और एक मॉड्यूल उन्हें समूहित करता है। बीन वैलिडेशन Pydantic बन जाता है, और स्प्रिंगडॉक का OpenAPI पेज बनाया जाता है।
 
 नीचे प्रत्येक अनुभाग स्प्रिंग बूट आदत दिखाता है, फिर नेक्सी में भी यही चीज़।
+
+## मॉड्यूलर राउटर चालू करना
+
+```java filename="डेमोएप्लिकेशन.जावा"
+@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) { SpringApplication.run(DemoApplication.class, args); }
+}
+```
+
+रूट मॉड्यूल `nexyconfig.py` का एक क्षेत्र है, और `nx dev` इसकी सेवा करता है:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule
+```
+
+स्प्रिंग पैकेजों को स्कैन करके अपनी फलियाँ ढूंढता है; एक नेक्सी मॉड्यूल उन्हें सूचीबद्ध करता है, इसलिए एक मॉड्यूल जो कार्य करता है वह एक ही स्थान पर लिखा होता है।
 
 ## एक नियंत्रक
 
 ```java filename="HelloController.java"
 @RestController
+@RequestMapping("/api/hello")
 public class HelloController {
-    @GetMapping("/api/hello")
+    @GetMapping
     public Map<String, String> hello() {
         return Map.of("message", "Hello");
     }
 }
 ```
 
-फ़ाइल पथ URL है, फ़ंक्शन नाम HTTP विधि है:
+पथ `@Controller` का पहला तर्क है, और विधि का नाम HTTP क्रिया है:
 
-```python filename="src/routes/api/hello.py"
-async def GET():
-    return {"message": "Hello"}
+```python filename="src/apps/hello/hello_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/hello")
+class HelloController:
+    async def get(self) -> dict:
+        return {"message": "Hello"}
 ```
+
+एक नियंत्रक के पास प्रति क्रिया एक हैंडलर होता है, इसलिए `@GetMapping` और `@PostMapping` एक पथ पर एक वर्ग के `get` और `post` तरीके हैं। `GET /items` और `GET /items/{id}` दो नियंत्रक हैं।
 
 ## `@PathVariable` और `@RequestParam`
 
@@ -33,14 +64,19 @@ public Map<String, Object> user(@PathVariable long id,
 }
 ```
 
-`{id}` एक `[id]` खंड है; अनुरोध पैरामीटर एक डिफ़ॉल्ट पैरामीटर है:
+`{id}` पथ में रहता है और एक टाइप किया हुआ पैरामीटर बन जाता है; अनुरोध पैरामीटर एक डिफ़ॉल्ट पैरामीटर है:
 
-```python filename="src/routes/api/users/[id].py"
-async def GET(id: int, fields: str = ""):
-    return {"id": id, "fields": fields}
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/users/{id}")
+class UserController:
+    async def get(self, id: int, fields: str = "") -> dict:
+        return {"id": id, "fields": fields}
 ```
 
-एक गैर-संख्यात्मक `id` उत्तर देता है `404`, एक ख़राब अनुरोध पैरामीटर `422`।
+एक गैर-संख्यात्मक `id` उत्तर `404`, और गलत प्रकार का एक अनुरोध पैरामीटर `422`।
 
 ## `@RequestBody`, `@Valid` और `ResponseEntity`
 
@@ -56,12 +92,12 @@ public ResponseEntity<NewItem> create(@Valid @RequestBody NewItem item) {
 }
 ```
 
-रिकॉर्ड और उसके एनोटेशन एक Pydantic मॉडल हैं, जो हमेशा मान्य होते हैं:
+रिकॉर्ड और उसके एनोटेशन एक Pydantic मॉडल हैं, जो हमेशा मान्य होते हैं, और `@UseResponse` स्थिति निर्धारित करते हैं:
 
-```python filename="src/routes/api/items.py"
+```python filename="src/apps/items/items_controller.py"
 from pydantic import BaseModel, Field
 
-from nexy.http import JSONResponse
+from nexy.decorators import Controller, UseResponse
 
 
 class NewItem(BaseModel):
@@ -69,28 +105,11 @@ class NewItem(BaseModel):
     price: float = Field(gt=0)
 
 
-async def POST(item: NewItem):
-    return JSONResponse(item.model_dump(), status_code=201)
-```
-
-## `@RequestMapping` कक्षा में
-
-```java filename="AdminController.java"
-@RestController
-@RequestMapping("/admin")
-public class AdminController {
-    @GetMapping("/stats")
-    public Map<String, Integer> stats() {
-        return Map.of("users", 3);
-    }
-}
-```
-
-फ़ोल्डर मैपिंग है:
-
-```python filename="src/routes/admin/stats.py"
-async def GET():
-    return {"users": 3}
+@Controller("/api/items")
+class ItemsController:
+    @UseResponse(status_code=201)
+    async def post(self, item: NewItem) -> NewItem:
+        return item
 ```
 
 ## `@Service` और कंस्ट्रक्टर इंजेक्शन
@@ -102,41 +121,145 @@ public class GreetingService {
 }
 
 @RestController
+@RequestMapping("/api/greet")
 public class GreetingController {
     private final GreetingService greetings;
 
     public GreetingController(GreetingService greetings) { this.greetings = greetings; }
 
-    @GetMapping("/api/greet")
+    @GetMapping
     public Map<String, String> greet(@RequestParam String name) {
         return Map.of("message", greetings.greet(name));
     }
 }
 ```
 
-रूट फ़ाइल में, सेवा एक निर्भरता है:
+`@Service` है `@Injectable()`, और `__init__` का एनोटेशन कंटेनर को बताता है कि क्या इंजेक्ट करना है:
 
-```python filename="src/services/greeting.py"
+```python filename="src/apps/greet/greeting_service.py"
+from nexy.decorators import Injectable
+
+
+@Injectable()
 class GreetingService:
     def greet(self, name: str) -> str:
         return f"Hello {name}"
-
-
-def get_greetings() -> GreetingService:
-    return GreetingService()
 ```
 
-```python filename="src/routes/api/greet.py"
-from nexy.http import Depends
+```python filename="src/apps/greet/greeting_controller.py"
+from nexy.decorators import Controller
 
-from src.services.greeting import GreetingService, get_greetings
+from .greeting_service import GreetingService
 
 
-async def GET(name: str, greetings: GreetingService = Depends(get_greetings)):
-    return {"message": greetings.greet(name)}
+@Controller("/api/greet")
+class GreetingController:
+    def __init__(self, greetings: GreetingService) -> None:
+        self.greetings = greetings
+
+    async def get(self, name: str) -> dict:
+        return {"message": self.greetings.greet(name)}
 ```
 
-`@Service` सिंगलटन और अनुरोध स्कोप के साथ कंस्ट्रक्टर के माध्यम से इंजेक्ट की गई कक्षाओं के लिए, [मॉड्यूलर राउटर ](../routing/modular/dependency-injection.md) का उपयोग करें: `@Injectable()` और `@Controller()` उसी तरह काम करते हैं जैसे `@Service` और `@RestController` करते हैं।
+एक बीन डिफ़ॉल्ट रूप से एक सिंगलटन है, जैसे कि स्प्रिंग में। `@RequestScope` है `@Injectable(scope=Scope.REQUEST)`, और `@Scope("prototype")` है `Scope.TRANSIENT`। [निर्भरता इंजेक्शन](../routing/modular/dependency-injection.md) देखें।
+
+## `@Configuration` कक्षाएं और मॉड्यूल
+
+एक मॉड्यूल अपने नियंत्रकों और उनके द्वारा उपयोग की जाने वाली सेवाओं को सूचीबद्ध करता है, और निर्यात करता है कि अन्य मॉड्यूल क्या इंजेक्ट कर सकते हैं:
+
+```python filename="src/apps/greet/greet_module.py"
+from nexy.decorators import Module
+
+from .greeting_controller import GreetingController
+from .greeting_service import GreetingService
+
+
+@Module()
+class GreetModule:
+    controllers = [GreetingController]
+    providers = [GreetingService]
+    exports = [GreetingService]
+```
+
+रूट मॉड्यूल दूसरों को आयात करता है:
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .admin.admin_module import AdminModule
+from .greet.greet_module import GreetModule
+from .health_controller import PublicHealthController
+from .hello.hello_controller import HelloController
+from .items.items_controller import ItemsController
+from .orders.orders_controller import OrderController
+from .posts.posts_module import PostsModule
+from .signup.signup_controller import SignupController
+from .users.user_controller import UserController
+from .users.users_page_controller import UsersPageController
+from .ws.echo_controller import EchoController
+
+
+@Module()
+class AppModule:
+    controllers = [
+        HelloController,
+        UserController,
+        ItemsController,
+        OrderController,
+        SignupController,
+        PublicHealthController,
+        UsersPageController,
+        EchoController,
+    ]
+    imports = [GreetModule, AdminModule, PostsModule]
+```
+
+## `@RequestMapping` कक्षा में
+
+```java filename="AdminController.java"
+@RestController
+@RequestMapping("/admin")
+public class AdminController {
+    @GetMapping("/stats")
+    public Map<String, Integer> stats() { return Map.of("users", 3); }
+
+    @GetMapping("/health")
+    public Map<String, String> health() { return Map.of("status", "UP"); }
+}
+```
+
+एक साझा मैपिंग एक मॉड्यूल का `prefix` है, और प्रत्येक उप-पथ उस मॉड्यूल का नियंत्रक है:
+
+```python filename="src/apps/admin/admin_controllers.py"
+from nexy.decorators import Controller, UseGuard
+
+from .guards import require_admin
+
+
+@Controller("/stats")
+@UseGuard(require_admin)
+class StatsController:
+    async def get(self) -> dict:
+        return {"users": 3}
+
+
+@Controller("/health")
+@UseGuard(require_admin)
+class HealthController:
+    async def get(self) -> dict:
+        return {"status": "UP"}
+```
+
+```python filename="src/apps/admin/admin_module.py"
+from nexy.decorators import Module
+
+from .admin_controllers import HealthController, StatsController
+
+
+@Module(prefix="/admin")
+class AdminModule:
+    controllers = [StatsController, HealthController]
+```
 
 ## स्प्रिंग सुरक्षा
 
@@ -150,21 +273,18 @@ SecurityFilterChain filters(HttpSecurity http) throws Exception {
 }
 ```
 
-`/admin/**` `admin/` फ़ोल्डर है, और इसका `dependencies.py` नियम है:
+गार्ड एक ऐसा फ़ंक्शन है जो तब उठता है जब अनुरोध जारी नहीं हो पाता। `@UseGuard` इसे नियंत्रक पर, या एक विधि पर रखता है, जैसे `@PreAuthorize`:
 
-```python filename="src/routes/admin/dependents.py"
+```python filename="src/apps/admin/guards.py"
 from nexy.http import Header, HTTPException
 
 
 def require_admin(x_role: str = Header("")) -> None:
     if x_role != "admin":
         raise HTTPException(status_code=403, detail="Admins only")
-
-
-dependencies = [require_admin]
 ```
 
-## फ़िल्टर और `HandlerInterceptor`
+## फिल्टर
 
 ```java filename="AppHeaderFilter.java"
 @Component
@@ -178,15 +298,32 @@ public class AppHeaderFilter extends OncePerRequestFilter {
 }
 ```
 
-```python filename="src/routes/middleware.py"
-from nexy.http import Request
+प्रत्येक अनुरोध के लिए एक फ़िल्टर एक ASGI मिडलवेयर क्लास है, जो `nexyconfig.py` में सूचीबद्ध है:
+
+```python filename="src/middlewares/app_header.py"
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
-async def middleware(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["x-app"] = "demo"
-    return response
+class AppHeader(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        response.headers["x-app"] = "demo"
+        return response
 ```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.apps.app_module import AppModule
+from src.middlewares.app_header import AppHeader
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule
+    useMiddlewares = [(AppHeader, {})]
+```
+
+एक `HandlerInterceptor` जो केवल कुछ नियंत्रकों के सामने चलता है उन पर एक गार्ड है।
 
 ## `ResponseStatusException` और `@ControllerAdvice`
 
@@ -198,23 +335,22 @@ public Order order(@PathVariable long id) {
 }
 ```
 
-```python filename="src/routes/api/orders/[id].py"
+```python filename="src/apps/orders/orders_controller.py"
+from nexy.decorators import Controller
 from nexy.http import HTTPException
 
 ORDERS = {1: {"id": 1, "total": 42}}
 
 
-async def GET(id: int):
-    if id not in ORDERS:
-        raise HTTPException(status_code=404, detail="No such order")
-    return ORDERS[id]
+@Controller("/api/orders/{id}")
+class OrderController:
+    async def get(self, id: int) -> dict:
+        if id not in ORDERS:
+            raise HTTPException(status_code=404, detail="No such order")
+        return ORDERS[id]
 ```
 
-उत्तर है `{"detail": "No such order"}`. HTML `error/404.html` के लिए, रूट रूट पर `notfound.nexy` लगाएं:
-
-```nexy filename="src/routes/notfound.nexy"
-<h1>Not found</h1>
-```
+एक एपीआई क्लाइंट जो `Accept: application/json` भेजता है उसे आपके द्वारा बढ़ाए गए स्टेटस के साथ `{"detail": "No such order"}` मिलता है; ब्राउज़र को HTML नॉट-फाउंड पेज मिलता है।
 
 ## थाइमेलिफ़
 
@@ -235,18 +371,32 @@ public class UserPageController {
 </ul>
 ```
 
-```nexy filename="src/routes/users.nexy"
+एक नियंत्रक एक दृश्य को उसी तरह लौटाता है जैसे वह लौटाता है `"users"`: `useViews` एक `.nexy` फ़ाइल को प्रस्तुत करता है, और इसका `context` `Model` है:
+
+```nexy filename="src/apps/users/users_view.nexy"
 ---
-users = [{"name": "Ada"}, {"name": "Alan"}]
+users: prop[list]
 ---
 <ul>
   {% for user in users %}
-  <li>{{ user.name }}</li>
+  <li>{{ user.name | e }}</li>
   {% endfor %}
 </ul>
 ```
 
-`th:text` बच जाता है और `{{ }}` नहीं बचता: विज़िटर ने `| e` के साथ जो टाइप किया है वह बच जाता है।
+```python filename="src/apps/users/users_page_controller.py"
+from nexy import useViews
+from nexy.decorators import Controller
+
+
+@Controller("/users")
+class UsersPageController:
+    async def get(self):
+        users = [{"name": "Ada"}, {"name": "Alan"}]
+        return useViews("src/apps/users/users_view.nexy", context={"users": users})
+```
+
+`th:text` बच जाता है और `{{ }}` नहीं बचता: विज़िटर ने `| e` के साथ जो टाइप किया है वह बच जाता है। एक पेज में नियंत्रकों के बगल में `src/routes/` की फ़ाइल भी रखी जा सकती है।
 
 ## जेपीए इकाइयां और रिपॉजिटरी
 
@@ -263,7 +413,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 }
 ```
 
-SQLModel के साथ, ओआरएम में से एक `nx new` मचान बना सकता है:
+इकाई एक SQLModel वर्ग है, और भंडार एक सत्र के आसपास एक इंजेक्टेबल सेवा है:
 
 ```python filename="src/models/post_model.py"
 from sqlmodel import Field, SQLModel
@@ -275,17 +425,47 @@ class Post(SQLModel, table=True):
     published: bool = False
 ```
 
-```python filename="src/routes/api/posts/published.py"
+```python filename="src/apps/posts/post_repository.py"
 from sqlmodel import Session, select
 
+from nexy.decorators import Injectable
 from src.configs.db import engine
 from src.models.post_model import Post
 
 
-async def GET():
-    with Session(engine) as session:
-        posts = session.exec(select(Post).where(Post.published)).all()
-    return {"titles": [post.title for post in posts]}
+@Injectable()
+class PostRepository:
+    def find_by_published_true(self) -> list[Post]:
+        with Session(engine) as session:
+            return list(session.exec(select(Post).where(Post.published)))
+```
+
+```python filename="src/apps/posts/posts_controller.py"
+from nexy.decorators import Controller
+
+from .post_repository import PostRepository
+
+
+@Controller("/api/posts/published")
+class PublishedPostsController:
+    def __init__(self, posts: PostRepository) -> None:
+        self.posts = posts
+
+    async def get(self) -> dict:
+        return {"titles": [post.title for post in self.posts.find_by_published_true()]}
+```
+
+```python filename="src/apps/posts/posts_module.py"
+from nexy.decorators import Module
+
+from .post_repository import PostRepository
+from .posts_controller import PublishedPostsController
+
+
+@Module()
+class PostsModule:
+    controllers = [PublishedPostsController]
+    providers = [PostRepository]
 ```
 
 फ्लाईवे या लिक्विबेस माइग्रेशन `nx migrate -m "add posts"` और `nx migrate --upgrade` बन जाते हैं। [डेटाबेस](../guides/databases.md) देखें।
@@ -304,8 +484,11 @@ async def GET():
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
 
+from src.apps.app_module import AppModule
+
 
 class NexyConfig(NexyConfigModel):
+    useRouter = AppModule
     usePort = 8080
     useCORS = {"allow_origins": ["https://example.com"]}
     useGZip = {"minimum_size": 1000}
@@ -317,11 +500,16 @@ class NexyConfig(NexyConfigModel):
 management.endpoints.web.exposure.include=health
 ```
 
-स्वास्थ्य जांच किसी भी अन्य की तरह एक मार्ग है:
+स्वास्थ्य जांच किसी भी अन्य की तरह एक नियंत्रक है, यहां `/admin/health` ऊपर वाला है। एक सार्वजनिक रूट मॉड्यूल में जाता है:
 
-```python filename="src/routes/health.py"
-async def GET():
-    return {"status": "UP"}
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class PublicHealthController:
+    async def get(self) -> dict:
+        return {"status": "UP"}
 ```
 
 ## `@Async` और `@Scheduled`
@@ -331,18 +519,22 @@ async def GET():
 public void sendWelcome(String email) { ... }
 ```
 
-उत्तर के बाद चलने वाला कार्य एक पृष्ठभूमि कार्य है:
+उत्तर के बाद चलने वाला कार्य एक पृष्ठभूमि कार्य है, जिसे एक पैरामीटर के रूप में लिया जाता है:
 
-```python filename="src/routes/api/signup.py"
-from nexy.http import BackgroundTasks, JSONResponse
+```python filename="src/apps/signup/signup_controller.py"
+from nexy.decorators import Controller, UseResponse
+from nexy.http import BackgroundTasks
 
 
 def send_welcome(email: str) -> None: ...
 
 
-async def POST(email: str, tasks: BackgroundTasks):
-    tasks.add_task(send_welcome, email)
-    return JSONResponse({"queued": True}, status_code=202)
+@Controller("/api/signup")
+class SignupController:
+    @UseResponse(status_code=202)
+    async def post(self, email: str, tasks: BackgroundTasks) -> dict:
+        tasks.add_task(send_welcome, email)
+        return {"queued": True}
 ```
 
 `@Scheduled` नौकरियों के लिए, `nx start` के बगल में एक शेड्यूलर जैसे एपीएस शेड्यूलर, या क्रॉन जॉब चलाएँ।
@@ -358,14 +550,22 @@ public class EchoHandler extends TextWebSocketHandler {
 }
 ```
 
-```python filename="src/routes/ws/echo.py"
+एक `socket` विधि अपने नियंत्रक के पथ पर एक WebSocket खोलती है:
+
+```python filename="src/apps/ws/echo_controller.py"
 from fastapi import WebSocket
 
+from nexy.decorators import Controller
 
-async def SOCKET(websocket: WebSocket):
-    await websocket.accept()
-    await websocket.send_text(await websocket.receive_text())
+
+@Controller("/ws/echo")
+class EchoController:
+    async def socket(self, websocket: WebSocket) -> None:
+        await websocket.accept()
+        await websocket.send_text(await websocket.receive_text())
 ```
+
+ग्राहक अनुगामी स्लैश के साथ `/ws/echo/` से जुड़ते हैं।
 
 ## MockMvc के साथ परीक्षण
 
@@ -395,14 +595,14 @@ def test_hello():
 
 | स्प्रिंग बूट | नेक्सी |
 |---|---|
-| प्रारंभ.वसंत.io | `nx new` |
+| प्रारंभ.वसंत.io | `nx new`, मॉड्यूलर राउटर के साथ |
 | `./mvnw spring-boot:run` DevTools के साथ | `nx dev` |
 | `./mvnw package && java -jar app.jar` | `nx build`, फिर `nx start` |
 | `./mvnw test` | `nx test` |
 
 ## अगले चरण
 
-- [से NestJS से नेक्सी](nestjs.md): मॉड्यूलर राउटर, वर्ग दर वर्ग
+- [मॉड्यूलर रूटिंग](../routing/modular/README.md)
 - [निर्भरता इंजेक्शन](../routing/modular/dependency-injection.md)
-- [मार्ग संचालक](../routing/fbr/handlers/README.md)
-- [डेटाबेस](../guides/databases.md)
+- [गार्ड और मेटाडेटा](../routing/modular/guards-and-metadata.md)
+- [से NestJS से नेक्सी](nestjs.md): वही राउटर, TypeScript से

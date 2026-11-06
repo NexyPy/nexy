@@ -1,27 +1,58 @@
 # Von Spring Boot bis Nexy
 
-In Nexy wird eine Spring-Methode `@RestController` zu einer Funktion in einer Datei unter `src/routes/` oder zu einer Methode einer Klasse `@Controller` im modularen Router: Bean Validation wird zu Pydantic, und die Seite OpenAPI von springdoc ist integriert.
+Der modulare Router von Nexy behält die Form einer Spring Boot-App: Eine `@RestController` ist eine `@Controller`-Klasse, eine `@Service` ist eine über `__init__` injizierte `@Injectable` und ein Modul gruppiert sie. Die Bean-Validierung wird zu Pydantic und die Seite OpenAPI von springdoc ist integriert.
 
 Jeder Abschnitt unten zeigt eine Spring Boot-Gewohnheit, dann dasselbe in Nexy.
+
+## Einschalten des modularen Routers
+
+```java filename="DemoApplication.java"
+@SpringBootApplication
+public class DemoApplication {
+    public static void main(String[] args) { SpringApplication.run(DemoApplication.class, args); }
+}
+```
+
+Das Stammmodul ist ein Feld von `nexyconfig.py` und `nx dev` bedient es:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule
+```
+
+Der Frühling findet seine Stärken, indem er Pakete scannt; Ein Nexy-Modul listet sie auf, sodass die Aufgaben eines Moduls an einer Stelle geschrieben werden.
 
 ## Ein Controller
 
 ```java filename="HelloController.java"
 @RestController
+@RequestMapping("/api/hello")
 public class HelloController {
-    @GetMapping("/api/hello")
+    @GetMapping
     public Map<String, String> hello() {
         return Map.of("message", "Hello");
     }
 }
 ```
 
-Der Dateipfad ist die URL, der Funktionsname ist die HTTP-Methode:
+Der Pfad ist das erste Argument von `@Controller` und der Methodenname ist das HTTP-Verb:
 
-```python filename="src/routes/api/hello.py"
-async def GET():
-    return {"message": "Hello"}
+```python filename="src/apps/hello/hello_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/hello")
+class HelloController:
+    async def get(self) -> dict:
+        return {"message": "Hello"}
 ```
+
+Ein Controller hat einen Handler pro Verb, daher sind `@GetMapping` und `@PostMapping` auf einem Pfad die Methoden `get` und `post` einer Klasse. `GET /items` und `GET /items/{id}` sind zwei Controller.
 
 ## `@PathVariable` und `@RequestParam`
 
@@ -33,14 +64,19 @@ public Map<String, Object> user(@PathVariable long id,
 }
 ```
 
-`{id}` ist ein `[id]`-Segment; Ein Anforderungsparameter ist ein Parameter mit einem Standardwert:
+`{id}` bleibt im Pfad und wird zu einem typisierten Parameter; Ein Anforderungsparameter ist ein Parameter mit einem Standardwert:
 
-```python filename="src/routes/api/users/[id].py"
-async def GET(id: int, fields: str = ""):
-    return {"id": id, "fields": fields}
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/users/{id}")
+class UserController:
+    async def get(self, id: int, fields: str = "") -> dict:
+        return {"id": id, "fields": fields}
 ```
 
-Ein nicht numerischer `id` antwortet `404`, ein fehlerhafter Anfrageparameter `422`.
+Ein nicht numerischer Wert `id` antwortet `404` und ein Anforderungsparameter vom falschen Typ `422`.
 
 ## `@RequestBody`, `@Valid` und `ResponseEntity`
 
@@ -56,12 +92,12 @@ public ResponseEntity<NewItem> create(@Valid @RequestBody NewItem item) {
 }
 ```
 
-Der Datensatz und seine Anmerkungen sind ein Pydantic Modell, immer validiert:
+Der Datensatz und seine Anmerkungen sind ein Pydantic-Modell, immer validiert, und `@UseResponse` legt den Status fest:
 
-```python filename="src/routes/api/items.py"
+```python filename="src/apps/items/items_controller.py"
 from pydantic import BaseModel, Field
 
-from nexy.http import JSONResponse
+from nexy.decorators import Controller, UseResponse
 
 
 class NewItem(BaseModel):
@@ -69,28 +105,11 @@ class NewItem(BaseModel):
     price: float = Field(gt=0)
 
 
-async def POST(item: NewItem):
-    return JSONResponse(item.model_dump(), status_code=201)
-```
-
-## `@RequestMapping` über die Klasse
-
-```java filename="AdminController.java"
-@RestController
-@RequestMapping("/admin")
-public class AdminController {
-    @GetMapping("/stats")
-    public Map<String, Integer> stats() {
-        return Map.of("users", 3);
-    }
-}
-```
-
-Der Ordner ist das Mapping:
-
-```python filename="src/routes/admin/stats.py"
-async def GET():
-    return {"users": 3}
+@Controller("/api/items")
+class ItemsController:
+    @UseResponse(status_code=201)
+    async def post(self, item: NewItem) -> NewItem:
+        return item
 ```
 
 ## `@Service` und Konstruktorinjektion
@@ -102,41 +121,145 @@ public class GreetingService {
 }
 
 @RestController
+@RequestMapping("/api/greet")
 public class GreetingController {
     private final GreetingService greetings;
 
     public GreetingController(GreetingService greetings) { this.greetings = greetings; }
 
-    @GetMapping("/api/greet")
+    @GetMapping
     public Map<String, String> greet(@RequestParam String name) {
         return Map.of("message", greetings.greet(name));
     }
 }
 ```
 
-In einer Routendatei ist der Dienst eine Abhängigkeit:
+`@Service` ist `@Injectable()`, und die Annotation von `__init__` teilt dem Container mit, was injiziert werden soll:
 
-```python filename="src/services/greeting.py"
+```python filename="src/apps/greet/greeting_service.py"
+from nexy.decorators import Injectable
+
+
+@Injectable()
 class GreetingService:
     def greet(self, name: str) -> str:
         return f"Hello {name}"
-
-
-def get_greetings() -> GreetingService:
-    return GreetingService()
 ```
 
-```python filename="src/routes/api/greet.py"
-from nexy.http import Depends
+```python filename="src/apps/greet/greeting_controller.py"
+from nexy.decorators import Controller
 
-from src.services.greeting import GreetingService, get_greetings
+from .greeting_service import GreetingService
 
 
-async def GET(name: str, greetings: GreetingService = Depends(get_greetings)):
-    return {"message": greetings.greet(name)}
+@Controller("/api/greet")
+class GreetingController:
+    def __init__(self, greetings: GreetingService) -> None:
+        self.greetings = greetings
+
+    async def get(self, name: str) -> dict:
+        return {"message": self.greetings.greet(name)}
 ```
 
-Für `@Service`-Klassen, die über Konstruktoren mit Singleton- und Anforderungsbereichen injiziert werden, verwenden Sie den [modularen Router](../routing/modular/dependency-injection.md): `@Injectable()` und `@Controller()` funktionieren auf die gleiche Weise wie `@Service` und `@RestController`.
+Eine Bean ist standardmäßig ein Singleton, wie in Spring. `@RequestScope` ist `@Injectable(scope=Scope.REQUEST)` und `@Scope("prototype")` ist `Scope.TRANSIENT`. Siehe [Abhängigkeitsinjektion](../routing/modular/dependency-injection.md).
+
+## `@Configuration` Kurse und Module
+
+Ein Modul listet seine Controller und die von ihnen genutzten Dienste auf und exportiert, was andere Module möglicherweise injizieren:
+
+```python filename="src/apps/greet/greet_module.py"
+from nexy.decorators import Module
+
+from .greeting_controller import GreetingController
+from .greeting_service import GreetingService
+
+
+@Module()
+class GreetModule:
+    controllers = [GreetingController]
+    providers = [GreetingService]
+    exports = [GreetingService]
+```
+
+Das Root-Modul importiert die anderen:
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .admin.admin_module import AdminModule
+from .greet.greet_module import GreetModule
+from .health_controller import PublicHealthController
+from .hello.hello_controller import HelloController
+from .items.items_controller import ItemsController
+from .orders.orders_controller import OrderController
+from .posts.posts_module import PostsModule
+from .signup.signup_controller import SignupController
+from .users.user_controller import UserController
+from .users.users_page_controller import UsersPageController
+from .ws.echo_controller import EchoController
+
+
+@Module()
+class AppModule:
+    controllers = [
+        HelloController,
+        UserController,
+        ItemsController,
+        OrderController,
+        SignupController,
+        PublicHealthController,
+        UsersPageController,
+        EchoController,
+    ]
+    imports = [GreetModule, AdminModule, PostsModule]
+```
+
+## `@RequestMapping` über die Klasse
+
+```java filename="AdminController.java"
+@RestController
+@RequestMapping("/admin")
+public class AdminController {
+    @GetMapping("/stats")
+    public Map<String, Integer> stats() { return Map.of("users", 3); }
+
+    @GetMapping("/health")
+    public Map<String, String> health() { return Map.of("status", "UP"); }
+}
+```
+
+Eine gemeinsame Zuordnung ist die `prefix` eines Moduls, und jeder Unterpfad ist ein Controller dieses Moduls:
+
+```python filename="src/apps/admin/admin_controllers.py"
+from nexy.decorators import Controller, UseGuard
+
+from .guards import require_admin
+
+
+@Controller("/stats")
+@UseGuard(require_admin)
+class StatsController:
+    async def get(self) -> dict:
+        return {"users": 3}
+
+
+@Controller("/health")
+@UseGuard(require_admin)
+class HealthController:
+    async def get(self) -> dict:
+        return {"status": "UP"}
+```
+
+```python filename="src/apps/admin/admin_module.py"
+from nexy.decorators import Module
+
+from .admin_controllers import HealthController, StatsController
+
+
+@Module(prefix="/admin")
+class AdminModule:
+    controllers = [StatsController, HealthController]
+```
 
 ## Frühlingssicherheit
 
@@ -150,21 +273,18 @@ SecurityFilterChain filters(HttpSecurity http) throws Exception {
 }
 ```
 
-`/admin/**` ist der Ordner `admin/` und sein `dependencies.py` ist die Regel:
+Ein Guard ist eine Funktion, die ausgelöst wird, wenn die Anfrage möglicherweise nicht ausgeführt wird. `@UseGuard` legt es auf einen Controller oder auf eine Methode, wie `@PreAuthorize`:
 
-```python filename="src/routes/admin/dependencies.py"
+```python filename="src/apps/admin/guards.py"
 from nexy.http import Header, HTTPException
 
 
 def require_admin(x_role: str = Header("")) -> None:
     if x_role != "admin":
         raise HTTPException(status_code=403, detail="Admins only")
-
-
-dependencies = [require_admin]
 ```
 
-## Filter und `HandlerInterceptor`
+## Filter
 
 ```java filename="AppHeaderFilter.java"
 @Component
@@ -178,15 +298,32 @@ public class AppHeaderFilter extends OncePerRequestFilter {
 }
 ```
 
-```python filename="src/routes/middleware.py"
-from nexy.http import Request
+Ein Filter für jede Anfrage ist eine ASGI-Middleware-Klasse, aufgeführt in `nexyconfig.py`:
+
+```python filename="src/middlewares/app_header.py"
+from starlette.middleware.base import BaseHTTPMiddleware
 
 
-async def middleware(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["x-app"] = "demo"
-    return response
+class AppHeader(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        response.headers["x-app"] = "demo"
+        return response
 ```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.apps.app_module import AppModule
+from src.middlewares.app_header import AppHeader
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule
+    useMiddlewares = [(AppHeader, {})]
+```
+
+Ein `HandlerInterceptor`, der nur vor einigen Controllern läuft, schützt sie.
 
 ## `ResponseStatusException` und `@ControllerAdvice`
 
@@ -198,23 +335,22 @@ public Order order(@PathVariable long id) {
 }
 ```
 
-```python filename="src/routes/api/orders/[id].py"
+```python filename="src/apps/orders/orders_controller.py"
+from nexy.decorators import Controller
 from nexy.http import HTTPException
 
 ORDERS = {1: {"id": 1, "total": 42}}
 
 
-async def GET(id: int):
-    if id not in ORDERS:
-        raise HTTPException(status_code=404, detail="No such order")
-    return ORDERS[id]
+@Controller("/api/orders/{id}")
+class OrderController:
+    async def get(self, id: int) -> dict:
+        if id not in ORDERS:
+            raise HTTPException(status_code=404, detail="No such order")
+        return ORDERS[id]
 ```
 
-Die Antwort lautet `{"detail": "No such order"}`. Fügen Sie für ein HTML `error/404.html` ein `notfound.nexy` am Routenstamm ein:
-
-```nexy filename="src/routes/notfound.nexy"
-<h1>Not found</h1>
-```
+Ein API-Client, der `Accept: application/json` sendet, erhält `{"detail": "No such order"}` mit dem von Ihnen ausgelösten Status; Ein Browser erhält die HTML-Seite „Nicht gefunden“.
 
 ## Thymianblatt
 
@@ -235,18 +371,32 @@ public class UserPageController {
 </ul>
 ```
 
-```nexy filename="src/routes/users.nexy"
+Ein Controller gibt eine Ansicht auf die Art und Weise zurück, wie er `"users"` zurückgibt: `useViews` rendert eine `.nexy`-Datei, und ihr `context` ist das `Model`:
+
+```nexy filename="src/apps/users/users_view.nexy"
 ---
-users = [{"name": "Ada"}, {"name": "Alan"}]
+users: prop[list]
 ---
 <ul>
   {% for user in users %}
-  <li>{{ user.name }}</li>
+  <li>{{ user.name | e }}</li>
   {% endfor %}
 </ul>
 ```
 
-`th:text` entgeht und `{{ }}` nicht: Entkommt dem, was ein Besucher mit `| e` eingegeben hat.
+```python filename="src/apps/users/users_page_controller.py"
+from nexy import useViews
+from nexy.decorators import Controller
+
+
+@Controller("/users")
+class UsersPageController:
+    async def get(self):
+        users = [{"name": "Ada"}, {"name": "Alan"}]
+        return useViews("src/apps/users/users_view.nexy", context={"users": users})
+```
+
+`th:text` entgeht und `{{ }}` nicht: Entkommt dem, was ein Besucher mit `| e` eingegeben hat. Eine Seite kann auch eine Datei von `src/routes/` sein, die neben den Controllern bereitgestellt wird.
 
 ## JPA-Entitäten und Repositorys
 
@@ -263,7 +413,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 }
 ```
 
-Mit SQLModel kann einer der ORMs `nx new` Folgendes aufbauen:
+Die Entität ist eine SQLModel-Klasse und das Repository ein injizierbarer Dienst rund um eine Sitzung:
 
 ```python filename="src/models/post_model.py"
 from sqlmodel import Field, SQLModel
@@ -275,17 +425,47 @@ class Post(SQLModel, table=True):
     published: bool = False
 ```
 
-```python filename="src/routes/api/posts/published.py"
+```python filename="src/apps/posts/post_repository.py"
 from sqlmodel import Session, select
 
+from nexy.decorators import Injectable
 from src.configs.db import engine
 from src.models.post_model import Post
 
 
-async def GET():
-    with Session(engine) as session:
-        posts = session.exec(select(Post).where(Post.published)).all()
-    return {"titles": [post.title for post in posts]}
+@Injectable()
+class PostRepository:
+    def find_by_published_true(self) -> list[Post]:
+        with Session(engine) as session:
+            return list(session.exec(select(Post).where(Post.published)))
+```
+
+```python filename="src/apps/posts/posts_controller.py"
+from nexy.decorators import Controller
+
+from .post_repository import PostRepository
+
+
+@Controller("/api/posts/published")
+class PublishedPostsController:
+    def __init__(self, posts: PostRepository) -> None:
+        self.posts = posts
+
+    async def get(self) -> dict:
+        return {"titles": [post.title for post in self.posts.find_by_published_true()]}
+```
+
+```python filename="src/apps/posts/posts_module.py"
+from nexy.decorators import Module
+
+from .post_repository import PostRepository
+from .posts_controller import PublishedPostsController
+
+
+@Module()
+class PostsModule:
+    controllers = [PublishedPostsController]
+    providers = [PostRepository]
 ```
 
 Flyway- oder Liquibase-Migrationen werden zu `nx migrate -m "add posts"` und `nx migrate --upgrade`. Siehe [Datenbanken](../guides/databases.md).
@@ -304,8 +484,11 @@ Flyway- oder Liquibase-Migrationen werden zu `nx migrate -m "add posts"` und `nx
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
 
+from src.apps.app_module import AppModule
+
 
 class NexyConfig(NexyConfigModel):
+    useRouter = AppModule
     usePort = 8080
     useCORS = {"allow_origins": ["https://example.com"]}
     useGZip = {"minimum_size": 1000}
@@ -317,11 +500,16 @@ class NexyConfig(NexyConfigModel):
 management.endpoints.web.exposure.include=health
 ```
 
-Ein Gesundheitscheck ist ein Weg wie jeder andere:
+Ein Gesundheitscheck ist ein Controller wie jeder andere, hier der `/admin/health` oben. Ein öffentliches Modul befindet sich im Root-Modul:
 
-```python filename="src/routes/health.py"
-async def GET():
-    return {"status": "UP"}
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class PublicHealthController:
+    async def get(self) -> dict:
+        return {"status": "UP"}
 ```
 
 ## `@Async` und `@Scheduled`
@@ -331,18 +519,22 @@ async def GET():
 public void sendWelcome(String email) { ... }
 ```
 
-Die Arbeit, die nach der Antwort ausgeführt wird, ist eine Hintergrundaufgabe:
+Die Arbeit, die nach der Antwort ausgeführt wird, ist eine Hintergrundaufgabe, die als Parameter verwendet wird:
 
-```python filename="src/routes/api/signup.py"
-from nexy.http import BackgroundTasks, JSONResponse
+```python filename="src/apps/signup/signup_controller.py"
+from nexy.decorators import Controller, UseResponse
+from nexy.http import BackgroundTasks
 
 
 def send_welcome(email: str) -> None: ...
 
 
-async def POST(email: str, tasks: BackgroundTasks):
-    tasks.add_task(send_welcome, email)
-    return JSONResponse({"queued": True}, status_code=202)
+@Controller("/api/signup")
+class SignupController:
+    @UseResponse(status_code=202)
+    async def post(self, email: str, tasks: BackgroundTasks) -> dict:
+        tasks.add_task(send_welcome, email)
+        return {"queued": True}
 ```
 
 Führen Sie für `@Scheduled`-Jobs einen Planer wie APScheduler oder einen Cron-Job neben `nx start` aus.
@@ -358,14 +550,22 @@ public class EchoHandler extends TextWebSocketHandler {
 }
 ```
 
-```python filename="src/routes/ws/echo.py"
+Eine `socket`-Methode öffnet eine WebSocket auf dem Pfad ihres Controllers:
+
+```python filename="src/apps/ws/echo_controller.py"
 from fastapi import WebSocket
 
+from nexy.decorators import Controller
 
-async def SOCKET(websocket: WebSocket):
-    await websocket.accept()
-    await websocket.send_text(await websocket.receive_text())
+
+@Controller("/ws/echo")
+class EchoController:
+    async def socket(self, websocket: WebSocket) -> None:
+        await websocket.accept()
+        await websocket.send_text(await websocket.receive_text())
 ```
+
+Clients stellen eine Verbindung zu `/ws/echo/` mit dem abschließenden Schrägstrich her.
 
 ## Tests mit MockMvc
 
@@ -395,14 +595,14 @@ def test_hello():
 
 | Frühlingsstiefel | Nexy |
 |---|---|
-| start.spring.io | `nx new` |
+| start.spring.io | `nx new`, mit dem modularen Router |
 | `./mvnw spring-boot:run` mit DevTools | `nx dev` |
 | `./mvnw package && java -jar app.jar` | `nx build`, dann `nx start` |
 | `./mvnw test` | `nx test` |
 
 ## Nächste Schritte
 
-- [Von NestJS bis Nexy](nestjs.md): der modulare Router, Klasse für Klasse
+- [Modulares Routing](../routing/modular/README.md)
 - [Abhängigkeitsinjektion](../routing/modular/dependency-injection.md)
-- [Routenhandler](../routing/fbr/handlers/README.md)
-- [Datenbanken](../guides/databases.md)
+- [Guards und Metadaten](../routing/modular/guards-and-metadata.md)
+- [Von NestJS zu Nexy](nestjs.md): derselbe Router, von TypeScript
