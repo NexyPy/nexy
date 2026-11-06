@@ -4,6 +4,7 @@ Un archivo `.nexy` es un componente: Python en la parte superior, HTML en el med
 
 **Antes de comenzar:** un proyecto creado por el [Inicio rápido](../../getting-started/quick-start.md). Un archivo `.nexy` no necesita configuración de compilación: `nx dev` lo compila al guardarlo.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/blog/[slug].nexy"
 ---
 from nexy import usePathname
@@ -20,19 +21,52 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+El controlador pasa `slug` de su ruta:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## Frontasunto
 
 Todo lo que está entre las dos líneas `---` es Python. Las importaciones se resuelven cuando se compila el componente; el resto se ejecuta para cada solicitud, por lo que puede leer el estado de la solicitud.
 
-| Qué | Ejemplo |
+| que | Ejemplo |
 |---|---|
 | Importar un módulo | `import json`, `from datetime import datetime` |
 | Importar un componente | `from "@/components/card.nexy" import Card` |
 | Declarar una propiedad | `title: prop[str] = "Default"` |
 | Calcular un valor | `year = datetime.now().year` |
 | Leer la solicitud | `pathname = usePathname()` |
-| Almacenar en caché la página (ISR) | `revalidate = 60` |
+| Caché de la página (ISR) | `revalidate = 60` |
 
 ## Propiedades
 
@@ -54,15 +88,16 @@ Debajo de la portada está HTML con Jinja2. Las variables del frontmatter y las 
 {% endif %}
 ```
 
-El escape automático está **desactivado**: las plantillas son el propio HTML del proyecto, por lo que `{{ value }}` se inserta tal como está escrito. Escape usted mismo de los valores que no son de confianza con `{{ value | e }}`. `| safe` por lo tanto no cambia nada.
+El escape automático está **desactivado**: las plantillas son el propio HTML del proyecto, por lo que `{{ value }}` se inserta tal como está escrito. Escápese usted mismo de los valores que no le son de confianza con `{{ value | e }}`. `| safe` por lo tanto no cambia nada.
 
 > [!NOTE]
-> ajuste JavaScript que contiene `{{` o `{%` en `{% raw %}...{% endraw %}`. Marcos como Vue y Svelte usan las mismas llaves.
+> ajuste JavaScript que contiene `{{` o `{%` en `{% raw %}...{% endraw %}`. Marcos como Vue y Svelte utilizan las mismas llaves.
 
 ## Componentes
 
 Cualquier invocable importado cuyo nombre comience con una letra mayúscula se puede utilizar como etiqueta. El compilador lo reescribe en una llamada Jinja: los atributos se convierten en argumentos de palabras clave.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -74,6 +109,21 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 La última línea es exactamente `{{ Audio("/theme.mp3", controls=True) }}`. Ambas sintaxis son válidas para los ayudantes integrados `Image`, `Link`, `Audio` y `Video`; consulte [componentes](components.md#two-syntaxes-one-function).
 

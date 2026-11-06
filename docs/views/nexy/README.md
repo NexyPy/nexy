@@ -5,6 +5,7 @@ A `.nexy` file is a component: Python on top, HTML in the middle, CSS at the bot
 **Before you start:** a project created by the [Quick start](../../getting-started/quick-start.md).
 A `.nexy` file needs no build configuration: `nx dev` compiles it on save.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
 from nexy import usePathname
@@ -21,6 +22,39 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+The controller passes `slug` from its path:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## Frontmatter
 
@@ -71,6 +105,7 @@ written. Escape untrusted values yourself with `{{ value | e }}`. `| safe` there
 Any imported callable whose name starts with an uppercase letter can be used as a tag. The compiler
 rewrites it to a Jinja call: attributes become keyword arguments.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -82,6 +117,21 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 The last line is exactly `{{ Audio("/theme.mp3", controls=True) }}`. Both syntaxes are valid for the
 built-in `Image`, `Link`, `Audio` and `Video` helpers - see
