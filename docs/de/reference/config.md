@@ -29,7 +29,7 @@ class NexyConfig(NexyConfigModel):
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen bereitgestellt wird; `None` bedeutet nur dateibasiert |
+| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen gemountet ist; `None` bedeutet nur dateibasiert |
 | `excludeDirs` | `["templates", "extension", "docs"]` | Beim Scannen von Routen werden Verzeichnisse übersprungen |
 | `useAliases` | `None` | Aliase importieren, z.B. `{"@": "src"}` (`@/components/Counter.tsx` bedeutet `src/components/Counter.tsx`); `nx new` schreibt die von Ihnen gewählte, und Vite und `tsconfig.json` folgen ihr |
 
@@ -62,10 +62,24 @@ Jedes Feld fügt einer reservierten Rolle Erweiterungen hinzu. `useLayoutExtensi
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useDocs` | `True` | dienen dem OpenAPI-Schema und seiner Skalar-Referenzseite |
+| `useDocs` | `True` | Bereitstellung der Scalar-Referenzseite; `/openapi.json` wird in beide Richtungen serviert |
 | `useDocsUrl` | `"/docs"` | Pfad der API-Referenzseite |
 | `useRedocsUrl` | `"/redocs"` | deklariert, aber keine Route gemountet |
 | `useTitle` | `"Nexy App"` | OpenAPI Titel und Seitentitel (`"Nexy"` in `NexyConfigModel`) |
+
+### Kostenlos `/docs` für eine Seite des Projekts
+
+Die API-Referenz antwortet `/docs` vor jeder Route, daher wird `src/routes/docs.nexy` oder `src/routes/docs/[[...slug]].nexy` dort nie bereitgestellt. `nx dev` und `nx start` benennen eine solche Seite beim Start. Verschieben Sie die Referenz mit `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+Oder schalten Sie es mit `useDocs = False` aus. `/openapi.json` bleibt in beiden Fällen erhalten: Halten Sie die Routen des Projekts von diesem Pfad fern.
 
 ## Middleware
 
@@ -119,4 +133,4 @@ Diese Felder sind in `NexyConfigModel` vorhanden, aber kein Code nutzt sie. Das 
 
 - [i18n](../guides/i18n.md): Internationalisierung
 - [Frontend](../guides/frontend.md): `useFF` und der Client-Build
-- [Bereitstellen](../deployment/README.md): Produktionsoptionen
+- [Deployment](../deployment/README.md): Produktionsoptionen
