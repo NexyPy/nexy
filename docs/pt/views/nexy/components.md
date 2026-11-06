@@ -4,6 +4,7 @@ Nexy exporta um pequeno conjunto de auxiliares que retornam strings HTML. Cada u
 
 ## Duas sintaxes, uma função
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Ambas as linhas produzem a mesma marcação:
 
@@ -23,15 +36,15 @@ O compilador reescreve `<Audio ... />` para `{{ Audio(...) }}`, então o formato
 
 ## Regras do formulário de tag
 
-| Na tag | Torna-se |
+| Na etiqueta | Torna-se |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, um verdadeiro booleano |
 | `width=640` | `width=640`, um número |
 | `src="{{ url }}"` | `src=(url)`, avaliado em Jinja |
-| qualquer outro `value` | `"value"`, uma string |
+| qualquer outro `value` | `"value"`, uma sequência |
 
-- A tag deve começar com letra maiúscula e ser importada no frontmatter; caso contrário, o compilador levanta `Missing Import: <Name> used but not declared.`
+- A tag deve começar com letra maiúscula e ser importada no frontmatter; caso contrário, o compilador gera `Missing Import: <Name> used but not declared.`
 - O formato da tag é **fechamento automático**. `<Audio src="/a.mp3" />` e `{{ Audio("/a.mp3") }}` são equivalentes; escrever filhos dentro de uma tag auxiliar não é suportado.
 - Um atributo HTML simples não é booleano aqui: `controls` torna-se `controls=""`, o que é falso. Escreva `controls=True`.
 
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,6 +117,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` não tem padrão, então a página deve passá-lo; `tone` volta para `"neutral"`. A marcação entre as tags chega dentro de `<Slot />` (S maiúsculo). Veja [arquivos .nexy](README.md#components) para adereços, slots e as regras do formulário de tag.
 
@@ -140,6 +166,6 @@ A mesma sintaxe de importação resolve `.json`, `.css` e arquivos de imagem par
 
 ## Próximas etapas
 
-- [arquivos .nexy](README.md): onde esses auxiliares são usados
+- [Arquivos .nexy](README.md): onde esses auxiliares são usados
 - [React](../react/differences.md): importando `.tsx` componentes
 - [Frontend](../../guides/frontend.md): como os componentes do cliente são agrupados

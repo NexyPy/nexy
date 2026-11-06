@@ -5,6 +5,7 @@ Nexy exports a small set of helpers that return HTML strings. Each one is used t
 
 ## Two syntaxes, one function
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import Audio
@@ -13,6 +14,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Both lines produce the same markup:
 
@@ -109,6 +122,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -117,6 +131,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` has no default, so the page must pass it; `tone` falls back to `"neutral"`. The markup
 between the tags arrives inside `<Slot />` (capital S). See
