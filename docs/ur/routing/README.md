@@ -10,6 +10,7 @@ Nexy کے دو مقامی راؤٹرز ہیں۔ آپ فی فیچر میں سے �
 | تمام راستوں پر مشترکہ خدمات کے ساتھ ایک بڑا API | ماڈیولر |
 | دونوں: لوگوں کے لیے صفحات، مشینوں کے لیے ایک منظم API | فائل پر مبنی اور ماڈیولر ایک ساتھ |
 
+<!-- router:fbr,custom -->
 ```diagram filename="فائل پر مبنی روٹر، ایک نظر میں"
 src/routes/index.nexy           →  /
 src/routes/about.nexy           →  /about
@@ -18,6 +19,17 @@ src/routes/blog/[slug].nexy     →  /blog/:slug
 src/routes/(app)/dashboard.nexy →  /dashboard
 src/routes/api/users.py         →  /api/users  (GET, POST, …)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```diagram filename="ماڈیولر روٹر، ایک نظر میں"
+@Controller()             class AppController   →  /
+@Controller("/about")     class AboutController →  /about/
+@Controller("/api/users") class UserController  →  /api/users/  (get, post, …)
+@Module()                 class AppModule       →  lists the controllers
+useRouter = AppModule     nexyconfig.py         →  mounts the module
+```
+<!-- /router -->
 
 | راؤٹر | ماخذ | کی طرف سے فعال |
 |---|---|---|
@@ -32,6 +44,7 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 *نوٹ: Nexy فی الحال URL کے تصادم کی تشخیص فراہم نہیں کرتا ہے۔ کسی راستے کا دعوی کرنے کا پہلا راستہ صرف دوسروں پر سایہ ڈالتا ہے۔*
 
+<!-- router:fbr,custom -->
 ## فائل پر مبنی روٹنگ
 
 روٹ ایک فائل ہے۔ یو آر ایل اس کا راستہ ہے `src/routes/` کے نیچے، مائنس ایکسٹینشن۔ Next.js کی طرح، ایک پروجیکٹ دو طریقوں میں سے ایک میں ہوتا ہے، جس کا انتخاب `useCSR` کے ساتھ ہوتا ہے:
@@ -53,20 +66,36 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 | [fbr/انحصار](fbr/dependencies/README.md) | `dependencies.py` اور گارڈز، ڈائرکٹری کے ذریعہ وراثت میں ملے |
 | [fbr/midleware](fbr/middleware/README.md) | `middleware.py`، ڈائرکٹری سے وراثت میں ملا |
 | [fbr/غلطیاں](fbr/errors/README.md) | `notfound.nexy`، `errors.nexy`، JSON کی غلطیاں |
-| [fbr/نیویگیشن](fbr/navigation/linking-and-navigating.md) | لنکنگ، کلائنٹ نیویگیشن، [ہکس](fbr/navigation/hooks.md) |
-| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket ہینڈلرز |
+| [fbr/نیویگیشن](fbr/navigation/linking-and-navigating.md) | لنک کرنا، کلائنٹ نیویگیشن، [ہکس](fbr/navigation/hooks.md) |
+| [fbr/realtime](fbr/realtime/websocket.md) | WebSocket ہینڈلر |
 | [fbr/وراثت](fbr/inheritance.md) | لے آؤٹ، انحصار اور خرابی والے صفحات کیسے وراثت میں آتے ہیں۔ |
+<!-- /router -->
 
 ## ماڈیولر روٹنگ
 
-کنٹرولرز، ماڈیولز اور انحصار انجکشن، NestJS کے انداز میں۔ دیکھیں [ماڈیولر روٹنگ](modular/README.md) اور [Nexy اور NestJS](modular/vs-nestjs.md)۔
+کنٹرولرز، ماڈیولز اور انحصار انجیکشن، NestJS کے انداز میں۔ دیکھیں [ماڈیولر روٹنگ](modular/README.md) اور [Nexy اور NestJS](modular/vs-nestjs.md)۔
 
-## حسب ضرورت انٹیگریشن
+<!-- router:modular -->
+| سیکشن | یہ کیا احاطہ کرتا ہے |
+|---|---|
+| [ماڈیولر](modular/README.md) | `@Controller`، `@Module`، درآمدات اور برآمدات |
+| [ماڈیولر/انحصار-انجیکشن](modular/dependency-injection.md) | `@Injectable`، اسکوپس اور کنٹینر |
+| [ماڈیولر/گارڈز اور میٹا ڈیٹا](modular/guards-and-metadata.md) | `@UseGuard`، `@UseResponse` اور OpenAPI میٹا ڈیٹا |
+
+ایک کنٹرولر `.nexy` منظر کو `useViews` کے ساتھ لوٹاتا ہے، اور اسے ہاتھ سے اس کے لے آؤٹ میں منتقل کرتا ہے: فولڈر کے ذریعہ کوئی `layout.nexy` لاگو نہیں ہوتا ہے۔
+<!-- /router -->
+
+## حسب ضرورت انضمام
 
 آپ اپنے Nexy پروجیکٹ میں موجودہ FastAPI روٹر کو بھی ضم کر سکتے ہیں۔ دیکھیں [کسٹم روٹنگ انضمام](custom/README.md)۔
 
 ## اگلے اقدامات
 
+<!-- router:fbr,custom -->
 - [فائل پر مبنی روٹنگ](fbr/README.md)
-- [رینڈرنگ](../rendering/README.md)
-- [ملاحظات](../views/README.md): فائلوں کے اندر کیا جاتا ہے۔
+<!-- /router -->
+<!-- router:modular -->
+- [ماڈیولر روٹنگ ](modular/README.md)
+<!-- /router -->
+- [انجام دینا](../rendering/README.md)
+- [مناظر](../views/README.md): فائلوں کے اندر کیا جاتا ہے۔
