@@ -73,7 +73,7 @@ def Controller(
 
     def wrapper(cls: type[Any]) -> type[Any]:
         cls.__is_controller__ = True
-        cls.__controller_prefix__ = controller_path
+        cls.__controller_path__ = controller_path
         cls.__controller_tags__ = tags or [cls.__name__]
         return cls
 
