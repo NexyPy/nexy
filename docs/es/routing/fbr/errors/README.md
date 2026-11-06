@@ -23,7 +23,7 @@ Crea `src/routes/notfound.nexy` y escribe lo que un visitante debe leer:
 
 ```nexy filename="src/rutas/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -48,12 +48,12 @@ El archivo en la raíz de rutas responde a todo el proyecto; una copia en una ca
 | `unauthorized.nexy` | `401` para su directorio |
 | `loading.nexy` | reservado; aún no hay efecto de tiempo de ejecución |
 
-| Situación | Respuesta |
+| Situación | respuesta |
 |---|---|
-| Ninguna ruta coincide | `404` |
-| Un segmento dinámico no se puede convertir a su anotación | `404` |
+| No hay coincidencias de ruta | `404` |
+| Un segmento dinámico no se puede convertir a su anotación. | `404` |
 | Una excepción no controlada, en una página o en un controlador API | `500` |
-| `raise HTTPException(status_code=403)` | el estado que levantaste, como HTML o JSON |
+| `raise HTTPException(status_code=403)` | el estado que planteaste, como HTML o JSON |
 | `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, desde cualquier lugar de una solicitud |
 | `redirect()`, `permanentRedirect()` | una redirección real sin página de error |
 
@@ -77,12 +77,12 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| Llamar | Responder |
+| llamar | respuesta |
 |---|---|
 | `redirect(url)` | `307`; `redirect(url, status=303)` convierte un POST en un GET después de un formulario |
-| `permanentRedirect(url)` | `308`; Los navegadores y motores de búsqueda lo recuerdan |
+| `permanentRedirect(url)` | `308`; Los navegadores y motores de búsqueda lo recuerdan. |
 | `notFound(detail=None)` | `404`: la página `notfound`, o JSON para un cliente API |
-| `forbidden(detail=None)` | `403`: el visitante es conocido pero puede que no lo vea |
+| `forbidden(detail=None)` | `403`: el visitante es conocido pero puede que no vea esto |
 | `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` agrega `WWW-Authenticate` |
 
 Una redirección responde con el encabezado `Location` y sin página, también a un cliente API. Construya el destino a partir de valores en los que confíe: un `redirect(request.query_params["next"])` envía visitantes a donde dice el enlace. Se rechaza un destino con un salto de línea.
@@ -135,7 +135,7 @@ Una excepción que no se maneja nada se registra una vez, con la excepción, de 
 |---|---|---|
 | Navegador | una página con el error, las líneas de su código que lo generaron y el rastreo completo | la página incorporada `500` (o su `errors.nexy`) con una referencia |
 | Cliente JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Registro del servidor | la excepción y las líneas de su código | la excepción y el rastreo completo, con la misma referencia |
+| Registro del servidor | la excepción y las líneas de tu código | la excepción y el rastreo completo, con la misma referencia |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217

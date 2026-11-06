@@ -23,7 +23,7 @@ the HTML page
 
 ```nexy filename="src/routes/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -42,20 +42,20 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 
 | فائل | جوابات |
 |---|---|
-| `notfound.nexy` | `404` اس کی ڈائرکٹری کے لیے |
-| `errors.nexy` | `500` اس کی ڈائرکٹری کے لیے |
-| `forbidden.nexy` | `403` اس کی ڈائریکٹری کے لیے |
+| `notfound.nexy` | `404` اس کی ڈائریکٹری کے لیے |
+| `errors.nexy` | اس کی ڈائریکٹری کے لیے `500` |
+| `forbidden.nexy` | اس کی ڈائرکٹری کے لیے `403` |
 | `unauthorized.nexy` | `401` اس کی ڈائریکٹری کے لیے |
-| `loading.nexy` | محفوظ؛ ابھی تک کوئی رن ٹائم اثر نہیں |
+| `loading.nexy` | محفوظ ابھی تک کوئی رن ٹائم اثر نہیں ہے۔ |
 
-| صورتحال | جواب |
+| صورتحال | جواب دیں۔ |
 |---|---|
-| کوئی راستہ نہیں ملتا | `404` |
+| کوئی راستہ مماثل نہیں ہے۔ | `404` |
 | ایک متحرک طبقہ کو اس کی تشریح میں تبدیل نہیں کیا جا سکتا | `404` |
 | صفحہ یا API ہینڈلر میں ایک غیر ہینڈل شدہ استثناء | `500` |
-| `raise HTTPException(status_code=403)` | وہ اسٹیٹس جسے آپ نے اٹھایا، بطور HTML یا JSON |
+| `raise HTTPException(status_code=403)` | HTML یا JSON کے بطور آپ نے جو اسٹیٹس اٹھایا ہے۔ |
 | `notFound()`، `forbidden()`، `unauthorized()` | `404`، `403`، `401`، درخواست میں کہیں سے بھی |
-| `redirect()`، `permanentRedirect()` | ایک حقیقی ری ڈائریکٹ بغیر کسی خامی کے صفحہ |
+| `redirect()`، `permanentRedirect()` | ایک حقیقی ری ڈائریکٹ جس میں کوئی خامی صفحہ نہیں ہے۔ |
 
 ## ایک صفحہ چھوڑیں یا کوڈ سے جواب دیں۔
 
@@ -77,12 +77,12 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| کال | جواب |
+| کال کریں۔ | جواب دیں۔ |
 |---|---|
-| `redirect(url)` | `307`؛ `redirect(url, status=303)` فارم کے بعد پوسٹ کو GET میں بدل دیتا ہے |
-| `permanentRedirect(url)` | `308`؛ براؤزر اور سرچ انجن اسے یاد رکھتے ہیں |
-| `notFound(detail=None)` | `404`: `notfound` صفحہ، یا API کلائنٹ کے لیے JSON |
-| `forbidden(detail=None)` | `403`: آنے والا جانتا ہے لیکن اسے دیکھ نہیں سکتا |
+| `redirect(url)` | `307`؛ `redirect(url, status=303)` فارم کے بعد پوسٹ کو GET میں بدل دیتا ہے۔ |
+| `permanentRedirect(url)` | `308`؛ براؤزر اور سرچ انجن اسے یاد رکھتے ہیں۔ |
+| `notFound(detail=None)` | `404`: ایک API کلائنٹ کے لیے `notfound` صفحہ، یا JSON |
+| `forbidden(detail=None)` | `403`: آنے والا معلوم ہے لیکن اسے نظر نہیں آتا |
 | `unauthorized(detail=None, scheme=None)` | `401`؛ `scheme="Bearer"` شامل کرتا ہے `WWW-Authenticate` |
 
 ایک API کلائنٹ کو بھی `Location` ہیڈر اور بغیر صفحہ کے جوابات کو ری ڈائریکٹ کرتا ہے۔ ان اقدار سے منزل کی تعمیر کریں جن پر آپ بھروسہ کرتے ہیں: a `redirect(request.query_params["next"])` جہاں بھی لنک کہتا ہے وہاں آنے والوں کو بھیجتا ہے۔ لائن بریک والی منزل سے انکار کر دیا گیا ہے۔
@@ -133,9 +133,9 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| براؤزر | خرابی والا صفحہ، آپ کے کوڈ کی لائنیں جنہوں نے اسے اٹھایا اور مکمل ٹریس بیک | بلٹ ان `500` صفحہ (یا آپ کا `errors.nexy`) حوالہ کے ساتھ |
+| براؤزر | غلطی والا صفحہ، آپ کے کوڈ کی لائنیں جنہوں نے اسے اٹھایا اور مکمل ٹریس بیک | بلٹ ان `500` صفحہ (یا آپ کا `errors.nexy`) حوالہ کے ساتھ |
 | JSON کلائنٹ | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| سرور لاگ | استثناء اور آپ کے کوڈ کی لائنیں | استثناء اور پورا ٹریس بیک، اسی حوالہ کے ساتھ |
+| سرور لاگ | استثناء اور آپ کے کوڈ کی لائنیں۔ | استثناء اور پورا ٹریس بیک، ایک ہی حوالہ کے ساتھ |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
@@ -152,7 +152,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 ## اگلے اقدامات
 
-- [خرابی صفحات فی فولڈر](folder-pages.md): ایک فولڈر میں آپ کا اپنا 404، 403 یا 401
+- [خامی کے صفحات فی فولڈر](folder-pages.md): ایک فولڈر میں آپ کا اپنا 404، 403 یا 401
 - [متحرک راستے](../pages/dynamic-routes.md)
-- [API روٹس](../handlers/README.md)
-- [ٹیسٹنگ](../../../guides/testing.md)
+- [API راستے](../handlers/README.md)
+- [جانچ](../../../guides/testing.md)

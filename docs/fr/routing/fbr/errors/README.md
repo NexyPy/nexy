@@ -23,7 +23,7 @@ Créez `src/routes/notfound.nexy` et écrivez ce qu'un visiteur doit lire :
 
 ```nexy filename="src/routes/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -46,11 +46,11 @@ Le fichier à la racine des routes répond à l'ensemble du projet ; une copie 
 | `errors.nexy` | `500` pour son répertoire |
 | `forbidden.nexy` | `403` pour son répertoire |
 | `unauthorized.nexy` | `401` pour son répertoire |
-| `loading.nexy` | réservé ; pas encore d'effet d'exécution |
+| `loading.nexy` | réservé; pas encore d'effet d'exécution |
 
 | Situation | Réponse |
 |---|---|
-| Aucun itinéraire ne correspond à | `404` |
+| Aucun itinéraire ne correspond | `404` |
 | Un segment dynamique ne peut pas être converti en son annotation | `404` |
 | Une exception non gérée, dans une page ou un gestionnaire d'API | `500` |
 | `raise HTTPException(status_code=403)` | le statut que vous avez généré, au format HTML ou JSON |
@@ -77,13 +77,13 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| Appeler | Répondre |
+| Appeler | Réponse |
 |---|---|
 | `redirect(url)` | `307`; `redirect(url, status=303)` transforme un POST en GET après un formulaire |
-| `permanentRedirect(url)` | `308` ; les navigateurs et les moteurs de recherche s'en souviennent |
-| `notFound(detail=None)` | `404` : la page `notfound`, ou JSON pour un client API |
+| `permanentRedirect(url)` | `308`; les navigateurs et les moteurs de recherche s'en souviennent |
+| `notFound(detail=None)` | `404` : la page `notfound`, ou JSON pour un client API |
 | `forbidden(detail=None)` | `403` : le visiteur est connu mais ne peut pas le voir |
-| `unauthorized(detail=None, scheme=None)` | `401` ; `scheme="Bearer"` ajoute `WWW-Authenticate` |
+| `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` ajoute `WWW-Authenticate` |
 
 Une redirection répond avec l'en-tête `Location` et aucune page, également vers un client API. Construisez la destination à partir de valeurs auxquelles vous faites confiance : un `redirect(request.query_params["next"])` envoie les visiteurs là où le lien l'indique. Une destination avec un saut de ligne est refusée.
 
@@ -134,7 +134,7 @@ Une exception dont rien n'est géré est enregistrée une fois, avec l'exception
 | | `nx dev` | `nx start` |
 |---|---|---|
 | Navigateur | une page avec l'erreur, les lignes de votre code qui l'ont déclenchée et le traçage complet | la page `500` intégrée (ou votre `errors.nexy`) avec une référence |
-| Client JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| ClientJSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
 | Journal du serveur | l'exception et les lignes de votre code | l'exception et tout le traçage, avec la même référence |
 
 ```text
@@ -152,7 +152,7 @@ Un en-tête, un paramètre de requête ou un champ de corps manquant répond à 
 
 ## Prochaines étapes
 
-- [Pages d'erreur par dossier](folder-pages.md) : un 404, 403 ou 401 de votre choix dans un dossier
+- [Pages d'erreur par dossier](folder-pages.md) : votre propre 404, 403 ou 401 dans un dossier
 - [Itinéraires dynamiques](../pages/dynamic-routes.md)
 - [Routes API](../handlers/README.md)
 - [Tests](../../../guides/testing.md)
