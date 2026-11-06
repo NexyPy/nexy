@@ -84,6 +84,9 @@ export function refreshAll(): Promise<void> {
   return Promise.all([...entries.keys()].map(refresh)).then(() => undefined)
 }
 
+// An action that calls `revalidate()` announces it with this event: the data on the page reloads.
+if (typeof window !== 'undefined') window.addEventListener('nexy:revalidate', () => void refreshAll())
+
 /** The state of one URL, outside any framework: the adapters wrap it for theirs. */
 export function createFetchState<Data>(url: string) {
   const entry = entryOf(url)

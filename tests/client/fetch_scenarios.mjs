@@ -1,5 +1,7 @@
 // The framework-free state behind useFetch (nexy/modules/frontend/client/fetch.ts), fetch replaced.
-import { createFetchState, refreshAll } from "../../nexy/modules/frontend/client/fetch.ts";
+// A window to hear `nexy:revalidate` on, before the module listens to it.
+globalThis.window = new EventTarget();
+const { createFetchState, refreshAll } = await import("../../nexy/modules/frontend/client/fetch.ts");
 
 const calls = [];
 let answer;
@@ -53,6 +55,11 @@ answer = (url) => json({ url });
 const before = calls.length;
 await refreshAll();
 out.refreshAll = calls.slice(before).map((call) => call.url).sort();
+
+const beforeEvent = calls.length;
+window.dispatchEvent(new Event("nexy:revalidate"));
+await new Promise((resolve) => setTimeout(resolve, 20));
+out.revalidateEvent = calls.length - beforeEvent;
 
 stop();
 console.log("@@" + JSON.stringify(out) + "@@");

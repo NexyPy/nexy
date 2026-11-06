@@ -59,6 +59,9 @@ class TestSharing:
     def test_refresh_all_reloads_every_url_loaded(self, seen):
         assert seen["refreshAll"] == ["/api/broken", "/api/posts/9", "/api/users"]
 
+    def test_a_revalidate_event_reloads_every_url_loaded(self, seen):
+        assert seen["revalidateEvent"] == 3
+
 
 class TestErrors:
     def test_an_error_status_is_a_fetch_error_with_its_detail(self, seen):
