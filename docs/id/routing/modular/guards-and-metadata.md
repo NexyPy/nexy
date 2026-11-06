@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -31,15 +31,15 @@ class AdminController:
 
 `@UseRoute(...)` menyetel metadata OpenAPI. Itu tidak mengubah jalur.
 
-| Argumen | Arti |
+| Argumen | Artinya |
 |---|---|
 | `name` | nama rute |
 | `tags` | OpenAPI tag |
 | `summary`, `description` | teks dalam referensi API |
-| `deprecated` | tandai operasi tidak digunakan lagi |
-| `include_in_schema` | menyembunyikan rute dari skema |
+| `deprecated` | tandai operasi tersebut tidak berlaku lagi |
+| `include_in_schema` | sembunyikan rute dari skema |
 | `operation_id` | id operasi eksplisit |
-| `openapi_extra` | kolom tambahan OpenAPI |
+| `openapi_extra` | bidang OpenAPI tambahan |
 
 ## Tanggapan
 
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)

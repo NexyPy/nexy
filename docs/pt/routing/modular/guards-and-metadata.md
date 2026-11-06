@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -36,7 +36,7 @@ class AdminController:
 | `name` | nome da rota |
 | `tags` | OpenAPI tags |
 | `summary`, `description` | texto na referência da API |
-| `deprecated` | marca a operação obsoleta |
+| `deprecated` | marque a operação obsoleta |
 | `include_in_schema` | ocultar a rota do esquema |
 | `operation_id` | ID de operação explícita |
 | `openapi_extra` | OpenAPI campos extras |
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)
@@ -62,4 +62,4 @@ A referência de API gerada é veiculada em `/docs`, a menos que `useDocs = Fals
 ## Próximas etapas
 
 - [Injeção de dependência](dependency-injection.md)
-- [rotas de API](../fbr/handlers/README.md): as mesmas opções para manipuladores baseados em arquivo
+- [Rotas API](../fbr/handlers/README.md): as mesmas opções para manipuladores baseados em arquivo

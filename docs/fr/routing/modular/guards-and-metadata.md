@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -31,15 +31,15 @@ class AdminController:
 
 `@UseRoute(...)` définit les métadonnées de OpenAPI. Cela ne change pas le chemin.
 
-| Argument | Signification |
+| Argumentation | Signification |
 |---|---|
 | `name` | nom de l'itinéraire |
 | `tags` | OpenAPI balises |
-| `summary`, `description` | texte dans la référence API |
-| `deprecated` | marque l'opération comme obsolète |
-| `include_in_schema` | masquer la route du schéma |
+| `summary`, `description` | texte dans la référence de l'API |
+| `deprecated` | marquer l'opération comme obsolète |
+| `include_in_schema` | cacher l'itinéraire du schéma |
 | `operation_id` | identifiant d'opération explicite |
-| `openapi_extra` | champs supplémentaires OpenAPI |
+| `openapi_extra` | champs OpenAPI supplémentaires |
 
 ## Réponses
 
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)
