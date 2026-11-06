@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` — это `src/routes/index.tsx`, а `app/blog/page.tsx` — это `src/routes/blog/index.tsx`.
 
+## Маршрутизация файлов, маршрутизатор приложений и маршрутизатор страниц
+
+Оба маршрутизатора Next.js отображаются на `src/routes/`. Файл Pages Router сохраняет свой путь; `page.tsx` App Router становится `index.tsx` или файлом, названным в честь его папки:
+
+| Next.js | Некси |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx` или `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx` или `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py` или `src/routes/api/items/[id]/index.py` |
+
+Файл `.tsx` — это страница, а файл `.py` — это обработчик: расширение указывает, что это такое, поэтому обработчик маршрута теряет свою папку `/route`.
+
 ## Динамические сегменты и `params`
 
 ```tsx filename="приложение/блог/[слаг]/page.tsx"
@@ -61,7 +78,7 @@ export default function Post() {
 }
 ```
 
-`[...slug]` и группы маршрутов, такие как `(marketing)` работают так же, как в Next.js.
+`[...slug]` и группы маршрутов, такие как `(marketing)`, работают так же, как в Next.js.
 
 ## `generateStaticParams`
 
@@ -181,14 +198,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 ```
 
-Тот же экспорт `GET`, в Python, без `/route`:
+Тот же экспорт `GET` в формате Python без `/route`:
 
 ```python filename="src/маршруты/api/items/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
 
-Тело представляет собой модель Pydantic, а `/docs` перечисляет все обработчики:
+Тело — это модель Pydantic, а `/docs` перечисляет все обработчики:
 
 ```python filename="src/routes/api/items/index.py"
 from pydantic import BaseModel
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` и `useFormStatus` отображаются на `pending`, `error` и `data` из `useAction`.
 
-## Компоненты сервера, считывающие данные
+## Компоненты сервера — это `.nexy` страниц.
 
 ```tsx filename="приложение/пользователи/page.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-В клиентском режиме страница не может читать базу данных во время рендеринга: она вызывает обработчик или действие.
+Серверный компонент Next.js запускается на сервере, считывает данные и отправляет HTML. Страница `.nexy` — это то же самое в режиме сервера: ее фронтальная часть — это тело асинхронного компонента в Python, а шаблон — это то, что она возвращает.
+
+```nexy filename="src/маршруты/people.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js серверный компонент | `.nexy` страница |
+|---|---|
+| `app/users/page.tsx`, нет `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` в компоненте | запрос в заголовке |
+| `{params}` и `{searchParams}` | `slug: prop[str]` и `useSearchParams()` |
+| `cookies()` и `headers()` из `next/headers` | `useCookies()` и `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| компонент `"use client"` внутри него | остров: `<Counter directive="client:load" />` |
+
+В клиентском режиме страница `.tsx` запускается в браузере, поэтому она считывает данные из обработчика:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -279,19 +318,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-В режиме сервера именно это и делает страница `.nexy`: ее главным элементом является асинхронный серверный компонент.
-
-```nexy filename="src/маршруты/people.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` компоненты внутри страниц сервера

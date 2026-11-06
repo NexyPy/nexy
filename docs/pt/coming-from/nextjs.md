@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` é `src/routes/index.tsx` e `app/blog/page.tsx` é `src/routes/blog/index.tsx`.
 
+## Arquivos de rota, roteador de aplicativos e roteador de páginas
+
+Ambos os roteadores de Next.js mapeiam para `src/routes/`. Um arquivo do Pages Router mantém seu caminho; um `page.tsx` do App Router se torna `index.tsx`, ou um arquivo com o nome de sua pasta:
+
+| Next.js | Nexy |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx` ou `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx` ou `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py` ou `src/routes/api/items/[id]/index.py` |
+
+Um arquivo `.tsx` é uma página e um arquivo `.py` é um manipulador: a extensão diz qual, então um manipulador de rota perde sua pasta `/route`.
+
 ## Segmentos dinâmicos e `params`
 
 ```tsx filename="app/blog/[slug]/page.tsx"
@@ -71,7 +88,7 @@ export async function generateStaticParams() {
 }
 ```
 
-A mesma exportação, com este nome ou `getStaticParams`, fornece um documento pré-renderizado por valor. Nexy chama sem `await`, então retorne o próprio array:
+A mesma exportação, com este nome ou `getStaticParams`, fornece um documento pré-renderizado por valor. Nexy o chama sem `await`, então retorne o próprio array:
 
 ```tsx filename="src/rotas/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` e `useFormStatus` mapeiam para `pending`, `error` e `data` de `useAction`.
 
-## Componentes do servidor que leem dados
+## Os componentes do servidor são `.nexy` páginas
 
 ```tsx filename="app/usuários/page.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-No modo cliente, uma página não pode ler o banco de dados enquanto é renderizada: ela chama um manipulador ou uma ação.
+Um componente de servidor Next.js é executado no servidor, lê dados e envia HTML. Uma página `.nexy` é a mesma coisa no modo servidor: seu frontmatter é o corpo do componente assíncrono, em Python, e o template é o que ele retorna.
+
+```nexy filename="src/rotas/pessoas.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js componente do servidor | `.nexy` página |
+|---|---|
+| `app/users/page.tsx`, não `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` no componente | uma consulta no frontmatter |
+| `{params}` e `{searchParams}` | `slug: prop[str]` e `useSearchParams()` |
+| `cookies()` e `headers()` de `next/headers` | `useCookies()` e `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| um componente `"use client"` dentro dele | uma ilha: `<Counter directive="client:load" />` |
+
+No modo cliente, uma página `.tsx` é executada no navegador, então ela lê os dados de um manipulador:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -279,19 +318,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-No modo servidor, é isso que uma página `.nexy` faz: seu frontmatter é o componente de servidor assíncrono.
-
-```nexy filename="src/rotas/pessoas.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` componentes dentro das páginas do servidor
@@ -328,7 +354,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
-Consulte [Ilhas](../rendering/islands.md) para `client:load`, `client:idle`, `client:visible` e `client:media`.
+Veja [Ilhas](../rendering/islands.md) para `client:load`, `client:idle`, `client:visible` e `client:media`.
 
 ## ISR com `revalidate`
 

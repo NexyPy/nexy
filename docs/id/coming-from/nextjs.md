@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` adalah `src/routes/index.tsx`, dan `app/blog/page.tsx` adalah `src/routes/blog/index.tsx`.
 
+## File rute, Router Aplikasi, dan Router Halaman
+
+Kedua router Next.js dipetakan ke `src/routes/`. File dari Pages Router menyimpan jalurnya; a `page.tsx` dari App Router menjadi `index.tsx`, atau file yang diberi nama sesuai foldernya:
+
+| Next.js | Nexy |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx`, atau `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx`, atau `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py`, atau `src/routes/api/items/[id]/index.py` |
+
+File `.tsx` adalah halaman dan file `.py` adalah penangannya: ekstensi menyatakan yang mana, sehingga penangan rute kehilangan folder `/route` miliknya.
+
 ## Segmen dinamis dan `params`
 
 ```tsx filename="aplikasi/blog/[siput]/halaman.tsx"
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` dan `useFormStatus` dipetakan ke `pending`, `error` dan `data` dari `useAction`.
 
-## Komponen server yang membaca data
+## Komponen server adalah `.nexy` halaman
 
 ```tsx filename="aplikasi/pengguna/halaman.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-Dalam mode klien, halaman tidak dapat membaca database saat sedang dirender: halaman memanggil pengendali atau tindakan.
+Komponen server Next.js berjalan di server, membaca data dan mengirimkan HTML. Halaman `.nexy` sama saja dalam mode server: materi depannya adalah isi komponen async, di Python, dan templatnya adalah apa yang dikembalikannya.
+
+```nexy filename="src/rute/orang.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js komponen server | `.nexy` halaman |
+|---|---|
+| `app/users/page.tsx`, tidak `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` dalam komponen | kueri di frontmatter |
+| `{params}` dan `{searchParams}` | `slug: prop[str]` dan `useSearchParams()` |
+| `cookies()` dan `headers()` dari `next/headers` | `useCookies()` dan `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| komponen `"use client"` di dalamnya | sebuah pulau: `<Counter directive="client:load" />` |
+
+Dalam mode klien, halaman `.tsx` berjalan di browser, sehingga membaca data dari pengendali:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -279,19 +318,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-Dalam mode server, itulah yang dilakukan halaman `.nexy`: materi depannya adalah komponen server asinkron.
-
-```nexy filename="src/rute/orang.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` komponen di dalam halaman server

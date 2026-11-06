@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` হল `src/routes/index.tsx`, এবং `app/blog/page.tsx` হল `src/routes/blog/index.tsx`।
 
+## রুট ফাইল, অ্যাপ রাউটার এবং পেজ রাউটার
+
+উভয় রাউটার এর Next.js মানচিত্রে `src/routes/`. পেজ রাউটারের একটি ফাইল তার পথ ধরে রাখে; অ্যাপ রাউটারের একটি `page.tsx` হয়ে যায় `index.tsx`, অথবা একটি ফাইল এর ফোল্ডারের নামে নামকরণ করা হয়:
+
+| Next.js | নেক্সি |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx`, বা `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx`, বা `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py`, বা `src/routes/api/items/[id]/index.py` |
+
+একটি `.tsx` ফাইল হল একটি পৃষ্ঠা এবং একটি `.py` ফাইল হল একটি হ্যান্ডলার: এক্সটেনশন যা বলে, তাই একটি রুট হ্যান্ডলার তার `/route` ফোল্ডারটি হারিয়ে ফেলে।
+
 ## গতিশীল সেগমেন্ট এবং `params`
 
 ```tsx filename="app/blog/[slug]/page.tsx"
@@ -71,7 +88,7 @@ export async function generateStaticParams() {
 }
 ```
 
-একই রপ্তানি, এই নামে বা `getStaticParams` এর অধীনে, প্রতি মূল্যে একটি প্রাক-রেন্ডার করা নথি দেয়। Nexy এটিকে `await` ছাড়াই কল করে, তাই অ্যারে নিজেই ফেরত দিন:
+একই রপ্তানি, এই নামের অধীনে বা `getStaticParams`, প্রতি মূল্যে একটি পূর্ব-প্রস্তুত নথি দেয়। Nexy এটিকে `await` ছাড়াই কল করে, তাই অ্যারে নিজেই ফিরিয়ে দিন:
 
 ```tsx filename="src/routes/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -204,7 +221,7 @@ async def POST(item: NewItem):
     return JSONResponse({"created": item.name}, status_code=201)
 ```
 
-## সার্ভার অ্যাকশন এবং `revalidatePath`
+## সার্ভার কর্ম এবং `revalidatePath`
 
 ```ts filename="app/actions.ts"
 "use server";
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` এবং `useFormStatus` মানচিত্র `pending`, `error` এবং `data` এর `useAction`।
 
-## সার্ভারের উপাদান যা ডেটা পড়ে
+## সার্ভার উপাদান হল `.nexy` পৃষ্ঠা
 
 ```tsx filename="app/users/page.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-ক্লায়েন্ট মোডে একটি পৃষ্ঠা রেন্ডার করার সময় ডাটাবেস পড়তে পারে না: এটি একটি হ্যান্ডলার বা একটি অ্যাকশনকে কল করে।
+একটি Next.js সার্ভার কম্পোনেন্ট সার্ভারে চলে, ডেটা পড়ে এবং এইচটিএমএল পাঠায়। সার্ভার মোডে একটি `.nexy` পৃষ্ঠা একই জিনিস: এর ফ্রন্টম্যাটার হল অ্যাসিঙ্ক কম্পোনেন্টের বডি, Python-এ, এবং টেমপ্লেট হল এটি যা রিটার্ন করে।
+
+```nexy filename="src/routes/people.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js সার্ভার উপাদান | `.nexy` পৃষ্ঠা |
+|---|---|
+| `app/users/page.tsx`, না `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` উপাদানে | সামনে একটি প্রশ্ন |
+| `{params}` এবং `{searchParams}` | `slug: prop[str]` এবং `useSearchParams()` |
+| `cookies()` এবং `headers()` `next/headers` থেকে | `useCookies()` এবং `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| এর ভিতরে একটি `"use client"` উপাদান | একটি দ্বীপ: `<Counter directive="client:load" />` |
+
+ক্লায়েন্ট মোডে, একটি `.tsx` পৃষ্ঠা ব্রাউজারে চলে, তাই এটি একটি হ্যান্ডলার থেকে ডেটা পড়ে:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -279,19 +318,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-সার্ভার মোডে, এটি একটি `.nexy` পৃষ্ঠা করে: এর ফ্রন্টম্যাটার হল অ্যাসিঙ্ক সার্ভার উপাদান।
-
-```nexy filename="src/routes/people.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` সার্ভার পৃষ্ঠার ভিতরে উপাদান
@@ -406,7 +432,7 @@ import Image from "next/image";
 <Image src="/logo.png" alt="Logo" width={128} height={32} />
 ```
 
-একটি `.nexy` পৃষ্ঠায়, `Image` এর উপাদান `nexy`:
+একটি `.nexy` পৃষ্ঠায়, `nexy` এর `Image` উপাদান:
 
 ```nexy filename="src/routes/brand.nexy"
 ---

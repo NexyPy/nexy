@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` है `src/routes/index.tsx`, और `app/blog/page.tsx` है `src/routes/blog/index.tsx`।
 
+## रूट फ़ाइलें, ऐप राउटर और पेज राउटर
+
+Next.js के दोनों राउटर `src/routes/` पर मैप करते हैं। पेज राउटर की एक फ़ाइल अपना पथ बनाए रखती है; ऐप राउटर का `page.tsx` `index.tsx` बन जाता है, या उसके फ़ोल्डर के नाम पर एक फ़ाइल बन जाती है:
+
+| Next.js | नेक्सी |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx`, या `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx`, या `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py`, या `src/routes/api/items/[id]/index.py` |
+
+एक `.tsx` फ़ाइल एक पेज है और एक `.py` फ़ाइल एक हैंडलर है: एक्सटेंशन कहता है, इसलिए एक रूट हैंडलर अपना `/route` फ़ोल्डर खो देता है।
+
 ## गतिशील खंड और `params`
 
 ```tsx filename="ऐप/ब्लॉग/[स्लग]/पेज.tsx"
@@ -61,7 +78,7 @@ export default function Post() {
 }
 ```
 
-`[...slug]` और `(marketing)` जैसे रूट समूह Next.js की तरह काम करते हैं।
+`[...slug]` और मार्ग समूह जैसे `(marketing)` Next.js की तरह काम करते हैं।
 
 ## `generateStaticParams`
 
@@ -153,7 +170,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 ```
 
-`@nexy/client` से वही नाम:
+वही नाम, `@nexy/client` से:
 
 ```tsx filename="src/components/Nav.tsx"
 import { Link, usePathname, useRouter } from "@nexy/client";
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` और `useFormStatus` का नक्शा `pending`, `error` और `data` का `useAction`।
 
-## सर्वर घटक जो डेटा पढ़ते हैं
+## सर्वर घटक `.nexy` पृष्ठ हैं
 
 ```tsx filename="ऐप/उपयोगकर्ता/पेज.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-क्लाइंट मोड में कोई पेज रेंडर करते समय डेटाबेस को नहीं पढ़ सकता है: यह एक हैंडलर या एक एक्शन को कॉल करता है।
+एक Next.js सर्वर घटक सर्वर पर चलता है, डेटा पढ़ता है और HTML भेजता है। एक `.nexy` पेज सर्वर मोड में एक ही चीज़ है: इसका फ्रंटमैटर Python में एसिंक घटक का मुख्य भाग है, और टेम्पलेट वह है जो यह लौटाता है।
+
+```nexy filename="src/routes/people.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js सर्वर घटक | `.nexy` पेज |
+|---|---|
+| `app/users/page.tsx`, नहीं `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` घटक में | फ्रंटमैटर में एक प्रश्न |
+| `{params}` और `{searchParams}` | `slug: prop[str]` और `useSearchParams()` |
+| `cookies()` और `headers()` से `next/headers` | `useCookies()` और `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| इसके अंदर एक `"use client"` घटक | एक द्वीप: `<Counter directive="client:load" />` |
+
+क्लाइंट मोड में, एक `.tsx` पेज ब्राउज़र में चलता है, इसलिए यह एक हैंडलर से डेटा पढ़ता है:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -279,19 +318,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-सर्वर मोड में, `.nexy` पेज यही करता है: इसका फ्रंटमैटर एसिंक सर्वर घटक है।
-
-```nexy filename="src/routes/people.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` सर्वर पेजों के अंदर घटक

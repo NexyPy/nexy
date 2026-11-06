@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` ist `src/routes/index.tsx` und `app/blog/page.tsx` ist `src/routes/blog/index.tsx`.
 
+## Dateien weiterleiten, App Router und Pages Router
+
+Beide Router von Next.js werden auf `src/routes/` abgebildet. Eine Datei des Pages Routers behält ihren Pfad; Ein `page.tsx` des App Routers wird zu `index.tsx`, oder eine nach ihrem Ordner benannte Datei:
+
+| Next.js | Nexy |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx` oder `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx` oder `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py` oder `src/routes/api/items/[id]/index.py` |
+
+Eine `.tsx`-Datei ist eine Seite und eine `.py`-Datei ist ein Handler: Die Erweiterung sagt welche, also verliert ein Routenhandler seinen `/route`-Ordner.
+
 ## Dynamische Segmente und `params`
 
 ```tsx filename="app/blog/[slug]/page.tsx"
@@ -71,7 +88,7 @@ export async function generateStaticParams() {
 }
 ```
 
-Der gleiche Export unter diesem Namen oder `getStaticParams` liefert ein vorgerendertes Dokument pro Wert. Nexy ruft es ohne `await` auf, also gibt das Array selbst zurück:
+Der gleiche Export unter diesem Namen oder `getStaticParams` liefert ein vorgerendertes Dokument pro Wert. Nexy ruft es ohne `await` auf, also gibt es das Array selbst zurück:
 
 ```tsx filename="src/routes/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` und `useFormStatus` werden den `pending`, `error` und `data` von `useAction` zugeordnet.
 
-## Serverkomponenten, die Daten lesen
+## Serverkomponenten sind `.nexy` Seiten
 
 ```tsx filename="app/users/page.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-Im Clientmodus kann eine Seite die Datenbank beim Rendern nicht lesen: Sie ruft einen Handler oder eine Aktion auf.
+Eine Next.js Serverkomponente läuft auf dem Server, liest Daten und sendet HTML. Eine `.nexy`-Seite ist im Servermodus dasselbe: Ihr Frontmatter ist der Hauptteil der asynchronen Komponente in Python, und die Vorlage ist das, was sie zurückgibt.
+
+```nexy filename="src/routes/people.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js Serverkomponente | `.nexy` Seite |
+|---|---|
+| `app/users/page.tsx`, nein `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` in der Komponente | eine Abfrage im Vordergrund |
+| `{params}` und `{searchParams}` | `slug: prop[str]` und `useSearchParams()` |
+| `cookies()` und `headers()` von `next/headers` | `useCookies()` und `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| eine `"use client"`-Komponente darin | eine Insel: `<Counter directive="client:load" />` |
+
+Im Client-Modus wird eine `.tsx`-Seite im Browser ausgeführt, sodass diese die Daten von einem Handler liest:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -279,19 +318,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-Im Servermodus ist es genau das, was eine `.nexy`-Seite tut: Ihr Hauptbestandteil ist die asynchrone Serverkomponente.
-
-```nexy filename="src/routes/people.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` Komponenten innerhalb von Serverseiten

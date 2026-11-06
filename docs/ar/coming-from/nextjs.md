@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` هو `src/routes/index.tsx`، و `app/blog/page.tsx` هو `src/routes/blog/index.tsx`.
 
+## توجيه الملفات، وجهاز توجيه التطبيقات، وجهاز توجيه الصفحات
+
+يقوم كلا الموجهين لـ Next.js بتعيين `src/routes/`. يحتفظ ملف جهاز توجيه الصفحات بمساره؛ يصبح `page.tsx` لجهاز توجيه التطبيقات `index.tsx`، أو ملفًا مسمى على اسم المجلد الخاص به:
+
+| Next.js | نكسي |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx`، أو `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx`، أو `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py`، أو `src/routes/api/items/[id]/index.py` |
+
+الملف `.tsx` هو صفحة والملف `.py` هو معالج: الامتداد يقول ذلك، لذلك يفقد معالج المسار المجلد `/route` الخاص به.
+
 ## القطاعات الديناميكية و `params`
 
 ```tsx filename="app/blog/[slug]/page.tsx"
@@ -121,7 +138,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 export const metadata = { title: "Blog", description: "Posts about Nexy" };
 ```
 
-لا تحتوي الصفحة `.tsx` على تصدير `metadata`: اكتب العلامات في التخطيط الجذر. في وضع الخادم، تقوم صفحة `.nexy` بتعيينها لكل صفحة:
+لا تحتوي صفحة `.tsx` على تصدير `metadata`: اكتب العلامات في تخطيط الجذر. في وضع الخادم، تقوم صفحة `.nexy` بتعيينها لكل صفحة:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -181,7 +198,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 }
 ```
 
-نفس `GET` التصدير، في Python، بدون `/route`:
+نفس `GET` التصدير، في Python، دون `/route`:
 
 ```python filename="src/routes/api/items/[id].py"
 async def GET(id: int):
@@ -216,7 +233,7 @@ export async function addTodo(title: string) {
 }
 ```
 
-الفعل هو دالة Python . يقوم Nexy بإنشاء عميله المكتوب في `@nexy/actions`:
+والفعل هو دالة Python . يقوم Nexy بإنشاء عميله المكتوب في `@nexy/actions`:
 
 ```python filename="src/actions/todos.py"
 from pydantic import BaseModel
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` و `useFormStatus` خريطة إلى `pending` و `error` و `data` من `useAction`.
 
-## مكونات الخادم التي تقرأ البيانات
+## مكونات الخادم هي `.nexy` صفحة
 
 ```tsx filename="التطبيق/المستخدمين/page.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-في وضع العميل، لا يمكن للصفحة قراءة قاعدة البيانات أثناء عرضها: فهي تستدعي معالجًا أو إجراءً.
+يتم تشغيل مكون الخادم Next.js على الخادم، ويقرأ البيانات ويرسل HTML. صفحة `.nexy` هي نفس الشيء في وضع الخادم: مادتها الأمامية هي نص المكون غير المتزامن، في Python، والقالب هو ما تُرجعه.
+
+```nexy filename="src/routes/people.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js مكون الخادم | `.nexy` صفحة |
+|---|---|
+| `app/users/page.tsx`، لا `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` في المكون | استعلام في المسألة الأمامية |
+| `{params}` و `{searchParams}` | `slug: prop[str]` و `useSearchParams()` |
+| `cookies()` و `headers()` من `next/headers` | `useCookies()` و `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| مكون `"use client"` بداخله | جزيرة : `<Counter directive="client:load" />` |
+
+في وضع العميل، يتم تشغيل صفحة `.tsx` في المتصفح، بحيث تقرأ البيانات من المعالج:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -281,20 +320,7 @@ export default function Users() {
 }
 ```
 
-في وضع الخادم، هذا ما تفعله صفحة `.nexy`: مادتها الأمامية هي مكون الخادم غير المتزامن.
-
-```nexy filename="src/routes/people.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
-```
-
-## `"use client"` المكونات الموجودة داخل صفحات الخادم
+## `"use client"` مكونات داخل صفحات الخادم
 
 ```tsx filename="app/page.tsx"
 import Counter from "./counter"; // "use client"

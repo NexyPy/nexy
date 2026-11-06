@@ -46,6 +46,25 @@ export default function About() {
 
 `app/page.tsx` is `src/routes/index.tsx`, and `app/blog/page.tsx` is `src/routes/blog/index.tsx`.
 
+## Route files, App Router and Pages Router
+
+Both routers of Next.js map to `src/routes/`. A file of the Pages Router keeps its path; a
+`page.tsx` of the App Router becomes `index.tsx`, or a file named after its folder:
+
+| Next.js | Nexy |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx`, or `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx`, or `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py`, or `src/routes/api/items/[id]/index.py` |
+
+A `.tsx` file is a page and a `.py` file is a handler: the extension says which, so a route handler
+loses its `/route` folder.
+
 ## Dynamic segments and `params`
 
 ```tsx filename="app/blog/[slug]/page.tsx"
@@ -257,7 +276,7 @@ export default function Todos() {
 
 `useActionState` and `useFormStatus` map to the `pending`, `error` and `data` of `useAction`.
 
-## Server components that read data
+## Server components are `.nexy` pages
 
 ```tsx filename="app/users/page.tsx"
 export default async function Users() {
@@ -266,7 +285,31 @@ export default async function Users() {
 }
 ```
 
-In client mode a page cannot read the database while it renders: it calls a handler or an action.
+A Next.js server component runs on the server, reads data and sends HTML. A `.nexy` page is the
+same thing in server mode: its frontmatter is the body of the async component, in Python, and the
+template is what it returns.
+
+```nexy filename="src/routes/people.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js server component | `.nexy` page |
+|---|---|
+| `app/users/page.tsx`, no `"use client"` | `src/routes/users.nexy` |
+| `await db.user.findMany()` in the component | a query in the frontmatter |
+| `{params}` and `{searchParams}` | `slug: prop[str]` and `useSearchParams()` |
+| `cookies()` and `headers()` from `next/headers` | `useCookies()` and `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| a `"use client"` component inside it | an island: `<Counter directive="client:load" />` |
+
+In client mode, a `.tsx` page runs in the browser, so it reads the data from a handler:
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -285,19 +328,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-In server mode, that is what a `.nexy` page does: its frontmatter is the async server component.
-
-```nexy filename="src/routes/people.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` components inside server pages

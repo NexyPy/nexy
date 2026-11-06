@@ -43,6 +43,23 @@ export default function About() {
 
 `app/page.tsx` 是 `src/routes/index.tsx`，`app/blog/page.tsx` 是 `src/routes/blog/index.tsx`。
 
+## 路由文件、App Router 和 Pages Router
+
+Next.js 的两个路由器都映射到 `src/routes/`。 Pages Router 的文件保留其路径； App Router 的 `page.tsx` 变为 `index.tsx`，或以其文件夹命名的文件：
+
+| Next.js | 内克西 |
+|---|---|
+| `pages/about.tsx` | `src/routes/about.tsx` |
+| `pages/blog/[slug].tsx` | `src/routes/blog/[slug].tsx` |
+| `app/about/page.tsx` | `src/routes/about/index.tsx` 或 `src/routes/about.tsx` |
+| `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug]/index.tsx` 或 `src/routes/blog/[slug].tsx` |
+| `app/docs/[...slug]/page.tsx` | `src/routes/docs/[...slug].tsx` |
+| `app/(marketing)/pricing/page.tsx` | `src/routes/(marketing)/pricing.tsx` |
+| `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
+| `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py` 或 `src/routes/api/items/[id]/index.py` |
+
+`.tsx` 文件是一个页面，`.py` 文件是一个处理程序：扩展名说明了哪个文件，因此路由处理程序会丢失其 `/route` 文件夹。
+
 ## 动态段和 `params`
 
 ```tsx filename="应用程序/博客/[slug]/page.tsx"
@@ -71,7 +88,7 @@ export async function generateStaticParams() {
 }
 ```
 
-同一导出，在此名称或 `getStaticParams` 下，为每个值提供一个预渲染文档。 Nexy 调用它时不带 `await`，因此返回数组本身：
+同一导出，在此名称或 `getStaticParams` 下，为每个值提供一个预渲染文档。 Nexy 在没有 `await` 的情况下调用它，因此返回数组本身：
 
 ```tsx filename="src/routes/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -100,7 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 同一个文件，上一个文件夹：根布局拥有 `<html>`，子文件夹中的 `layout.tsx` 嵌套在其中。
 
-```tsx filename="src/routes/layout.tsx"
+```tsx filename=""
 import type { ReactNode } from "react";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -117,7 +134,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 ## `metadata`
 
-```tsx filename=""
+```tsx filename="应用程序/博客/page.tsx"
 export const metadata = { title: "Blog", description: "Posts about Nexy" };
 ```
 
@@ -130,7 +147,7 @@ metadata = {"title": "Blog", "description": "Posts about Nexy"}
 <h1>Blog</h1>
 ```
 
-根 `layout.nexy` 在 Next.js 的位置写入标签，在 `<head>` 中：
+根 `layout.nexy` 在 Next.js 中写入标签，在 `<head>` 中：
 
 ```nexy filename="src/routes/layout.nexy"
 ---
@@ -251,7 +268,7 @@ export default function Todos() {
 
 `useActionState` 和 `useFormStatus` 映射到 `useAction` 的 `pending`、`error` 和 `data`。
 
-## 读取数据的服务器组件
+## 服务器组件是 `.nexy` 页面
 
 ```tsx filename="应用程序/用户/page.tsx"
 export default async function Users() {
@@ -260,7 +277,29 @@ export default async function Users() {
 }
 ```
 
-在客户端模式下，页面在呈现时无法读取数据库：它调用处理程序或操作。
+Next.js 服务器组件在服务器上运行，读取数据并发送 HTML。 `.nexy` 页面在服务器模式下是相同的：它的 frontmatter 是异步组件的主体，在 Python 中，模板是它返回的内容。
+
+```nexy filename="src/routes/people.nexy"
+---
+users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+
+| Next.js 服务器组件 | `.nexy` 页 |
+|---|---|
+| `app/users/page.tsx`，无 `"use client"` | `src/routes/users.nexy` |
+| 组件中的 `await db.user.findMany()` | frontmatter 中的查询 |
+| `{params}` 和 `{searchParams}` | `slug: prop[str]` 和 `useSearchParams()` |
+| `cookies()` 和 `headers()` 来自 `next/headers` | `useCookies()` 和 `useHeaders()` |
+| `export const revalidate = 60` | `revalidate = 60` |
+| 里面有一个 `"use client"` 组件 | 一座岛屿：`<Counter directive="client:load" />` |
+
+在客户端模式下，`.tsx` 页面在浏览器中运行，因此它从处理程序读取数据：
 
 ```python filename="src/routes/api/users.py"
 async def GET():
@@ -279,19 +318,6 @@ export default function Users() {
   }, []);
   return <ul>{users.map((user) => <li key={user.id}>{user.name}</li>)}</ul>;
 }
-```
-
-在服务器模式下，这就是 `.nexy` 页面的作用：它的 frontmatter 是异步服务器组件。
-
-```nexy filename="src/routes/people.nexy"
----
-users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
----
-<ul>
-  {% for user in users %}
-  <li>{{ user.name }}</li>
-  {% endfor %}
-</ul>
 ```
 
 ## `"use client"` 服务器页面内的组件
