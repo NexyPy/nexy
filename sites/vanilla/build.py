@@ -150,9 +150,16 @@ def nav_html(tracks: list[source.Track], current: str) -> str:
     return parts + foot
 
 
+def _toc_item_class(heading: source.Heading) -> str:
+    """The class of an outline entry: a heading of a router variant is hidden like its variant."""
+    if not heading.routers:
+        return f'class="l{heading.level}"'
+    return f'class="l{heading.level} router-variant" data-router="{heading.routers}"'
+
+
 def toc_html(headings: list[source.Heading], lang: str = i18n.DEFAULT) -> str:
     items = "".join(
-        f'<li class="l{h.level}"><a href="#{h.id}"{i18n.isolate(h.text, lang)}>'
+        f'<li {_toc_item_class(h)}><a href="#{h.id}"{i18n.isolate(h.text, lang)}>'
         f"{escape(h.text)}</a></li>"
         for h in headings
         if h.level <= 3

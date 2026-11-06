@@ -591,3 +591,15 @@ class TestUntranslatedPage:
 
     def test_it_claims_no_translation(self, page):
         assert 'rel="alternate" hreflang="fr"' not in page
+
+
+class TestOutline:
+    """The outline lists the headings the reader's router shows, as the page draws them."""
+
+    def test_a_heading_of_a_variant_is_listed_under_its_routers(self):
+        heading = docs_source.Heading(2, "apps", "src/apps/", "modular")
+        assert '<li class="l2 router-variant" data-router="modular">' in build.toc_html([heading])
+
+    def test_a_shared_heading_is_listed_for_every_router(self):
+        heading = docs_source.Heading(2, "public", "public/")
+        assert '<li class="l2">' in build.toc_html([heading])
