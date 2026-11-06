@@ -33,6 +33,7 @@ ACCENT_LIT = "#5eead4"
 
 CARD = (1080, 1350)
 TERMINAL = (1200, 675)
+COVER = (1200, 630)
 MARGIN = 64
 FOOTER = 40
 HEADLINE = 92
@@ -93,13 +94,19 @@ SPECS: dict[str, Spec] = {
     "2026-11-six-routes": Spec(
         kind="carousel",
         cards=(
-            Card("A file is a route.", "routes/about.nexy"),
+            Card("A route is a file.", "routes/about.nexy"),
             Card("The folder is the URL.", "routes/blog/[slug].nexy"),
             Card("Markdown is a route.", "routes/changelog.md"),
-            Card("Your React file is an island.", "routes/counter.tsx"),
-            Card("Your Python is the API.", "routes/hello.py"),
-            Card("One origin. One port.", "nx dev  ->  :8000"),
+            Card("React is a route too.", "routes/counter.tsx"),
+            Card("Python is the API.", "routes/api/users.py"),
+            Card("One origin. No CORS.", "nx dev  ->  :3000"),
         ),
+    ),
+    "2026-11-why-a-file-is-a-route": Spec(
+        kind="cover",
+        folder="blogs",
+        title="Why a route is a file",
+        capture=("file-based routing, FastAPI and React", "nexypy.github.io/nexy"),
     ),
 }
 
@@ -129,11 +136,13 @@ def _parser() -> argparse.ArgumentParser:
 
 def draw(spec: Spec, folder: Path) -> list[str]:
     """Write the media into the item folder and return the names written."""
+    folder.mkdir(parents=True, exist_ok=True)
     if spec.kind == "terminal":
-        folder.mkdir(parents=True, exist_ok=True)
-        image = _capture(spec)
-        image.save(folder / "image.png")
+        _capture(spec).save(folder / "image.png")
         return ["image.png"]
+    if spec.kind == "cover":
+        _cover(spec).save(folder / "cover.png")
+        return ["cover.png"]
     cards = folder / "carousel"
     cards.mkdir(parents=True, exist_ok=True)
     names = []
@@ -238,6 +247,27 @@ def _capture(spec: Spec) -> Image.Image:
 def _capture_fill(line: str) -> str:
     """The summary lines carry the accent; everything else is plain terminal text."""
     return ACCENT_LIT if line.split()[:1] in (["median"], ["min"], ["max"]) else PAPER
+
+
+def _cover(spec: Spec) -> Image.Image:
+    """A blog cover: the title, the one line under it, and the monogram. Nothing else."""
+    image = Image.new("RGB", COVER, INK)
+    draw_ = ImageDraw.Draw(image)
+    headline = _wrap(spec.title, _font("bold", 72), COVER[0] - 2 * MARGIN)
+    y = _block(draw_, headline, (MARGIN, 150), _font("bold", 72), PAPER, 84)
+    if spec.capture:
+        _block(draw_, [spec.capture[0]], (MARGIN, y + 30), _font("mono", 28), ACCENT_LIT, 38)
+    draw_.text((MARGIN, COVER[1] - MARGIN - FOOTER), "nx", font=_font("mono", FOOTER), fill=PAPER)
+    right = spec.capture[1] if len(spec.capture) > 1 else ""
+    if right:
+        mono = _font("mono", 24)
+        draw_.text(
+            (COVER[0] - MARGIN - mono.getlength(right), COVER[1] - MARGIN - 30),
+            right,
+            font=mono,
+            fill=MUTED,
+        )
+    return image
 
 
 def _size(path: Path) -> str:

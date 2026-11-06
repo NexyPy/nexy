@@ -36,6 +36,13 @@ def test_a_terminal_capture_is_a_sixteen_by_nine_image(
         assert (image.width, image.height) == (1200, 675)
 
 
+def test_a_blog_cover_is_the_open_graph_size(media: types.ModuleType, tmp_path: Path) -> None:
+    spec = media.SPECS["2026-11-why-a-file-is-a-route"]
+    media.draw(spec, tmp_path)
+    with Image.open(tmp_path / "cover.png") as image:
+        assert (image.width, image.height) == (1200, 630)
+
+
 def test_a_carousel_is_one_card_per_idea(media: types.ModuleType, tmp_path: Path) -> None:
     spec = media.SPECS["2026-11-six-routes"]
     names = media.draw(spec, tmp_path)
