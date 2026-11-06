@@ -29,11 +29,6 @@ Nexy coloca sus páginas y su API en un Python proyecto, atendido por un servido
 | [Elija un enrutador](routing/README.md) | Elija el enrutador basado en archivos, modular o personalizado |
 | [Elija un formato de visualización](views/README.md) | Elija `.nexy`, Markdown o un marco de cliente para una página |
 
-### Viniendo de otro lugar
-| Página | que haras |
-|---|---|
-| [Procedente de otro marco](getting-started/coming-from-other-frameworks.md) | Traducir FastAPI, Next.js y expresar hábitos a Nexy |
-
 ## Enrutamiento
 
 ### Basado en archivos {fbr}
@@ -56,7 +51,7 @@ Nexy coloca sus páginas y su API en un Python proyecto, atendido por un servido
 | [Validación y errores](routing/fbr/handlers/validation-and-errors.md) | Responda `422` y `404`, y plantee un `HTTPException` |
 | [WebSocket manejadores](routing/fbr/realtime/websocket.md) | Manejar una conexión `SOCKET` |
 | [Dependencias y guardias](routing/fbr/dependencies/README.md) | Ejecute `dependencies.py` antes de un controlador y heredéelo |
-| [Archivos de middleware](routing/fbr/middleware/README.md) | Envolver solicitudes con `middleware.py`, heredadas por directorio |
+| [Archivos de middleware](routing/fbr/middleware/README.md) | Ajustar solicitudes con `middleware.py`, heredadas por directorio |
 | [Páginas de error](routing/fbr/errors/README.md) | Responda con errores `notfound.nexy`, `errors.nexy` y JSON |
 | [Páginas de error por carpeta](routing/fbr/errors/folder-pages.md) | Caso extremo: errores de subcarpetas |
 
@@ -139,37 +134,56 @@ Controladores y módulos.
 | [Agentes codificadores](guides/ai-agents.md) | Dale a Claude Code, Codex y OpenCode las reglas de tu proyecto |
 | [Solución de problemas](guides/troubleshooting.md) | Solucionar los primeros problemas a los que se enfrenta la gente |
 
+## Bases de datos
+
+### bases de datos SQL
+| Página | que haras |
+|---|---|
+| [SQLite](databases/sqlite.md) | Utilice un archivo, ningún servidor: motor, pragmas, migraciones y pruebas |
+| [PostgreSQL](databases/postgresql.md) | Conéctese con psycopg, use JSONB, matrices, búsqueda y upserts |
+| [Neón](databases/neon.md) | Usar sin servidor PostgreSQL: host agrupado, suspensión automática y sucursales |
+| [MySQL y MariaDB](databases/mysql-mariadb.md) | Conéctese con pymysql, use utf8mb4, upserts y búsqueda de texto completo |
+
 ## viniendo de
 
 Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
 
-### Python marcos
+### Descripción general
 | Página | que haras |
 |---|---|
-| [Desde FastAPI](coming-from/fastapi.md) | Mueva FastAPI puntos finales, enrutadores y dependencias a archivos de ruta |
+| [Procedente de otro marco](getting-started/coming-from-other-frameworks.md) | Traducir FastAPI, Next.js y expresar hábitos a Nexy |
+
+### Python marcos {fbr}
+| Página | que haras |
+|---|---|
+| [Desde FastAPI](coming-from/fastapi.md) | Conserva tu código FastAPI: solo `@app.get` se convierte en un archivo |
 | [Desde Flask](coming-from/flask.md) | Convierta vistas, planos, plantillas y formularios en rutas Nexy |
 | [Desde Django](coming-from/django.md) | Asigne vistas, plantillas, modelos, formularios y configuraciones a Nexy |
 
-### Marcos de fondo
+### JavaScript servidores {fbr}
 | Página | que haras |
 |---|---|
 | [Desde expreso](coming-from/express.md) | Traducir rutas, middleware y `req`/`res` en Python controladores |
 | [Desde Fastify](coming-from/fastify.md) | Convierta esquemas, complementos y enlaces en modelos, carpetas y archivos |
-| [De Elysia](coming-from/elysia.md) | Asigne `t` esquemas, guardias y Eden a Pydantic y acciones escritas |
+| [De Elysia](coming-from/elysia.md) | Asigne `t` esquemas, guardias y Edén a Pydantic y acciones escritas |
 | [De Hono](coming-from/hono.md) | Mapear rutas, middleware y el cliente `hc` a Nexy |
-| [Desde NestJS](coming-from/nestjs.md) | Mueva controladores, módulos, proveedores y guardias al enrutador modular |
-| [De Laravel](coming-from/laravel.md) | Mapear rutas, controladores, Blade, Eloquent y colas a Nexy |
-| [Desde arranque de primavera](coming-from/spring-boot.md) | Controladores de mapas, validación de Bean, JPA y filtros para Nexy |
-| [De Ruby on Rails](coming-from/rails.md) | Asigne rutas, controladores, ERB, Active Record y trabajos a Nexy |
 
-### Marcos Fullstack JavaScript
+### Marcos de trabajo completos {fbr}
 | Página | que haras |
 |---|---|
 | [Desde Next.js](coming-from/nextjs.md) | Conserve sus páginas React y mueva el código del servidor a Python |
 | [Desde Remix](coming-from/remix.md) | Convierta cargadores y acciones en Python controladores y acciones |
 | [Desde Nuxt](coming-from/nuxt.md) | Conserve sus Vue páginas y mueva `server/` a Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conserva tus Svelte páginas y mueve cargas, acciones y enlaces a Python |
-| [Desde Astro](coming-from/astro.md) | Escribe Astro páginas como `.nexy` páginas, con las mismas islas |
+| [Desde Astro](coming-from/astro.md) | Escribe Astro páginas como `.nexy` páginas, con las mismas islas. |
+| [De Laravel](coming-from/laravel.md) | Mapear rutas, controladores, Blade, Eloquent y colas a Nexy |
+| [De Ruby on Rails](coming-from/rails.md) | Asigne rutas, controladores, ERB, Active Record y trabajos a Nexy |
+
+### Marcos de controlador {modular}
+| Página | que haras |
+|---|---|
+| [Desde NestJS](coming-from/nestjs.md) | Mueva controladores, módulos, proveedores y guardias al enrutador modular |
+| [Desde arranque de primavera](coming-from/spring-boot.md) | Mueva controladores, servicios y filtros al enrutador modular |
 
 ## Referencia
 
@@ -198,7 +212,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
-├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

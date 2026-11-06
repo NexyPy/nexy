@@ -2,7 +2,7 @@
 
 **Ein Python Framework für Fullstack-Webanwendungen.**
 
-Nexy fügt Ihre Seiten und Ihre API in einem Python Projekt zusammen, das von einem Server bedient wird. Version 2.2 basiert auf FastAPI: Jede API-Route ist eine FastAPI-Route, aufgeführt in einem OpenAPI-Schema, das Scalar unter `/docs` anzeigt.
+Nexy fügt Ihre Seiten und Ihre API in einem Python Projekt zusammen, das von einem Server bedient wird. Version 2.2 basiert auf FastAPI: Jede API-Route ist eine FastAPI-Route, aufgelistet in einem OpenAPI-Schema, das Scalar unter `/docs` anzeigt.
 
 - **Python zuerst.** Seiten, Endpunkte, Formulare und Aktionen sind Python, und eine Seite benötigt kein JavaScript.
 - **Ein Frontend, wenn Sie eines wollen.** React, Vue, Svelte, Solid oder Preact, für eine Komponente oder für die gesamte Site.
@@ -28,11 +28,6 @@ Neu hier? Lesen Sie [Was ist Nexy?](getting-started/what-is-nexy.md) und dann de
 | [Projektstruktur](getting-started/project-structure.md) | Wissen Sie, wozu jeder Ordner und jede Datei in einem Projekt dient |
 | [Wählen Sie einen Router](routing/README.md) | Wählen Sie den dateibasierten, modularen oder benutzerdefinierten Router |
 | [Wählen Sie ein Ansichtsformat](views/README.md) | Wählen Sie `.nexy`, Markdown oder ein Client-Framework für eine Seite |
-
-### Kommt von woanders
-| Seite | Was Sie tun werden |
-|---|---|
-| [Aus einem anderen Rahmen kommend](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
 
 ## Routenführung
 
@@ -139,37 +134,56 @@ Controller und Module.
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 
+## Datenbanken
+
+### SQL-Datenbanken
+| Seite | Was Sie tun werden |
+|---|---|
+| [SQLite](databases/sqlite.md) | Verwenden Sie eine Datei, keinen Server: Engine, Pragmas, Migrationen und Tests |
+| [PostgreSQL](databases/postgresql.md) | Verbinden Sie sich mit psycopg, verwenden Sie JSONB, Arrays, Suche und Upserts |
+| [Neon](databases/neon.md) | Verwenden Sie serverloses PostgreSQL: gepoolten Host, automatische Suspendierung und Verzweigungen |
+| [MySQL und MariaDB](databases/mysql-mariadb.md) | Stellen Sie eine Verbindung mit pymysql her, verwenden Sie utf8mb4, Upserts und die Volltextsuche |
+
 ## Kommt von
 
 Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in Nexy.
 
-### Python Frameworks
+### Übersicht
 | Seite | Was Sie tun werden |
 |---|---|
-| [Von FastAPI](coming-from/fastapi.md) | Verschieben Sie FastAPI Endpunkte, Router und Abhängigkeiten in Routendateien |
+| [Aus einem anderen Rahmen kommend](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
+
+### Python Frameworks {fbr}
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von FastAPI](coming-from/fastapi.md) | Behalten Sie Ihren FastAPI-Code: Nur `@app.get` wird zu einer Datei |
 | [Von Flask](coming-from/flask.md) | Verwandeln Sie Ansichten, Blaupausen, Vorlagen und Formulare in Nexy-Routen |
 | [Von Django](coming-from/django.md) | Ordnen Sie Ansichten, Vorlagen, Modelle, Formulare und Einstellungen Nexy zu |
 
-### Backend-Frameworks
+### JavaScript Backends {fbr}
 | Seite | Was Sie tun werden |
 |---|---|
 | [Von Express](coming-from/express.md) | Übersetzen Sie Routen, Middleware und `req`/`res` in Python-Handler |
 | [Von Fastify](coming-from/fastify.md) | Verwandeln Sie Schemata, Plugins und Hooks in Modelle, Ordner und Dateien |
 | [Aus Elysia](coming-from/elysia.md) | Ordnen Sie `t` Schemata, Wachen und Eden Pydantic und typisierten Aktionen zu |
 | [Von Hono](coming-from/hono.md) | Ordnen Sie Routen, Middleware und den `hc`-Client Nexy zu |
-| [Von NestJS](coming-from/nestjs.md) | Verschieben Sie Controller, Module, Provider und Guards auf den modularen Router |
-| [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
-| [Von Spring Boot](coming-from/spring-boot.md) | Ordnen Sie Controller, Bean-Validierung, JPA und Filter Nexy zu |
-| [Von Ruby on Rails](coming-from/rails.md) | Ordnen Sie Routen, Controller, ERB, Active Record und Jobs Nexy zu |
 
-### Fullstack JavaScript Frameworks
+### Fullstack-Frameworks {fbr}
 | Seite | Was Sie tun werden |
 |---|---|
 | [Von Next.js](coming-from/nextjs.md) | Behalten Sie Ihre React-Seiten und verschieben Sie den Servercode nach Python |
 | [Von Remix](coming-from/remix.md) | Verwandeln Sie Loader und Aktionen in Python Handler und Aktionen |
-| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue Seiten und verschieben Sie `server/` nach Python |
-| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte Seiten und verschieben Sie Lasten, Aktionen und Hooks auf Python |
+| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue-Seiten und verschieben Sie `server/` nach Python |
+| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte-Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
 | [Von Astro](coming-from/astro.md) | Schreiben Sie Astro Seiten als `.nexy` Seiten mit denselben Inseln |
+| [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
+| [Von Ruby on Rails](coming-from/rails.md) | Ordnen Sie Routen, Controller, ERB, Active Record und Jobs Nexy zu |
+
+### Controller-Frameworks {modular}
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von NestJS](coming-from/nestjs.md) | Verschieben Sie Controller, Module, Provider und Guards auf den modularen Router |
+| [Von Spring Boot](coming-from/spring-boot.md) | Verschieben Sie Controller, Dienste und Filter auf den modularen Router |
 
 ## Referenz
 
@@ -177,7 +191,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 | Seite | Was darin aufgeführt ist |
 |---|---|
 | [CLI](reference/cli.md) | Befehle, Flags, Eingabeaufforderungen und Exit-Codes |
-| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py`-Feld und seine Standardeinstellung |
+| [Konfig](reference/config.md) | Jedes `nexyconfig.py`-Feld und seine Standardeinstellung |
 
 ### Python API und Fehler
 | Seite | Was darin aufgeführt ist |
@@ -198,7 +212,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
-├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

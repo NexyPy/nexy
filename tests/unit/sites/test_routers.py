@@ -43,7 +43,8 @@ class TestRouterOfAPage:
 
     def test_every_page_of_a_router_folder_knows_its_router(self):
         pages = [p for t in source.read_tracks(DOCS) for p in source.pages_of(t)]
-        wrong = [p.slug for p in pages if p.router != source.router_of(p.slug)]
+        in_folders = [p for p in pages if source.router_of(p.slug)]
+        wrong = [p.slug for p in in_folders if p.router != source.router_of(p.slug)]
         assert wrong == []
 
     def test_the_menu_holds_pages_of_both_routers(self):
@@ -92,14 +93,18 @@ class TestGroupRouter:
         group = source.group_of(source.read_tracks(DOCS), "guides/actions")
         assert group.router is None
 
-    def test_only_the_routing_groups_declare_a_scope(self):
-        """Five groups declare a scope; the rest are read by all."""
+    def test_only_the_routing_and_coming_from_groups_declare_a_scope(self):
+        """The routing and Coming from groups declare a scope; the rest are read by all."""
         groups = [group for track in source.read_tracks(DOCS) for group in track.groups]
         assert {group.title: group.scope for group in groups if group.scope != "core"} == {
             "File-based": "fbr",
             "Handlers and errors": "fbr",
             "Modular router": "modular",
             "Custom router integration": "custom",
+            "Python frameworks": "fbr",
+            "JavaScript backends": "fbr",
+            "Fullstack frameworks": "fbr",
+            "Controller frameworks": "modular",
             "Advanced": "advanced",
         }
 

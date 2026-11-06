@@ -95,7 +95,7 @@ def test_the_docs_home_is_served(answers):
 
 
 def test_the_home_page_shows_the_cards_of_getting_started(answers):
-    assert answers["/docs"][2].count('class="home-card"') == 9
+    assert answers["/docs"][2].count('class="home-card"') == 8
 
 
 def test_a_home_card_leads_to_a_page_of_this_site(answers):

@@ -85,8 +85,8 @@ class TestHomePage:
         page = (out / "docs" / "index.html").read_text(encoding="utf-8")
         return page.split('<article class="doc home">', 1)[1].split("</article>", 1)[0]
 
-    def test_the_article_shows_the_nine_cards_of_getting_started(self, article):
-        assert article.count('class="home-card"') == 9
+    def test_the_article_shows_the_eight_cards_of_getting_started(self, article):
+        assert article.count('class="home-card"') == 8
 
     def test_no_other_track_is_listed_as_a_card(self, article):
         slugs = {p.slug for p in docs_source.pages_of(docs_source.read_tracks(DOCS)[0])}

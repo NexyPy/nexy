@@ -29,11 +29,6 @@
 | [اختيار جهاز التوجيه](routing/README.md) | اختر جهاز التوجيه المستند إلى الملف أو المعياري أو المخصص |
 | [اختر تنسيق العرض](views/README.md) | اختر `.nexy`، Markdown أو إطار عمل عميل للصفحة |
 
-### قادمة من مكان آخر
-| الصفحة | ماذا ستفعل |
-|---|---|
-| [قادمة من إطار آخر](getting-started/coming-from-other-frameworks.md) | ترجمة FastAPI، Next.js والتعبير عن العادات إلى Nexy |
-
 ## التوجيه
 
 ### القائم على الملف {fbr}
@@ -52,7 +47,7 @@
 ### المعالجات والأخطاء {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [معالجات المسار](routing/fbr/handlers/README.md) | أضف Python نقطة نهاية |
+| [معالجات الطريق](routing/fbr/handlers/README.md) | أضف Python نقطة نهاية |
 | [التحقق من الصحة والأخطاء](routing/fbr/handlers/validation-and-errors.md) | أجيب `422` و `404`، وارفع `HTTPException` |
 | [WebSocket معالجات](routing/fbr/realtime/websocket.md) | التعامل مع اتصال `SOCKET` |
 | [التبعيات والحراس](routing/fbr/dependencies/README.md) | قم بتشغيل `dependencies.py` قبل المعالج، ورثه |
@@ -67,7 +62,7 @@
 | [التوجيه المعياري](routing/modular/README.md) | وحدات التحكم والوحدات |
 | [حقن التبعية](routing/modular/dependency-injection.md) | تحديد الخدمات ونطاقاتها والحاوية |
 | [الحراس والبيانات الوصفية](routing/modular/guards-and-metadata.md) | حماية وتوثيق المسارات |
-| [جهاز التوجيه المعياري مقابل NestJS](routing/modular/vs-nestjs.md) | مقارنة مع NestJS |
+| [جهاز التوجيه المعياري مقابل NestJS](routing/modular/vs-nestjs.md) | المقارنة مع NestJS |
 
 ### تكامل جهاز التوجيه المخصص {custom}
 | الصفحة | ماذا ستفعل |
@@ -130,7 +125,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [Vite والتصميم](guides/frontend.md) | إعداد Vite والتصميم وبناء العميل |
-| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتست |
+| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتيست |
 
 ### الأدوات والمساعدة
 | الصفحة | ماذا ستفعل |
@@ -139,30 +134,41 @@
 | [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
 | [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
+## قواعد البيانات
+
+### قواعد بيانات SQL
+| الصفحة | ماذا ستفعل |
+|---|---|
+| [SQLite](databases/sqlite.md) | استخدم ملفًا واحدًا، بدون خادم: المحرك والبراغمات والترحيلات والاختبارات |
+| [PostgreSQL](databases/postgresql.md) | تواصل مع psycopg، واستخدم JSONB، والمصفوفات، والبحث، والرسائل |
+| [نيون](databases/neon.md) | استخدم بدون خادم PostgreSQL: المضيف المجمع والتعليق التلقائي والفروع |
+| [ماي إس كيو إل و ماريا دي بي](databases/mysql-mariadb.md) | تواصل مع pymysql، استخدم utf8mb4، upserts والبحث عن النص الكامل |
+
 ## قادم من
 
 نفس المهام المكتوبة في الإطار الذي تعرفه ثم في Nexy.
 
-### Python الأطر
+### نظرة عامة
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [من FastAPI](coming-from/fastapi.md) | انقل FastAPI نقاط النهاية وأجهزة التوجيه والتبعيات إلى ملفات المسار |
+| [قادمة من إطار آخر](getting-started/coming-from-other-frameworks.md) | ترجمة FastAPI، Next.js والتعبير عن العادات إلى Nexy |
+
+### Python أطر {fbr}
+| الصفحة | ماذا ستفعل |
+|---|---|
+| [من FastAPI](coming-from/fastapi.md) | احتفظ بكود FastAPI الخاص بك: فقط `@app.get` يصبح ملفًا |
 | [من Flask](coming-from/flask.md) | قم بتحويل طرق العرض والمخططات والقوالب والنماذج إلى مسارات Nexy |
 | [من Django](coming-from/django.md) | خريطة طرق العرض والقوالب والنماذج والنماذج والإعدادات إلى Nexy |
 
-### الأطر الخلفية
+### JavaScript الواجهات الخلفية {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من اكسبرس](coming-from/express.md) | ترجمة المسارات والبرامج الوسيطة و `req`/`res` إلى معالجات Python |
 | [من فاستيفاي](coming-from/fastify.md) | تحويل المخططات والمكونات الإضافية والخطافات إلى نماذج ومجلدات وملفات |
-| [من إليسيا](coming-from/elysia.md) | قم بتعيين مخططات `t` والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
+| [من إليسيا](coming-from/elysia.md) | خريطة `t` المخططات والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
 | [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
-| [من NestJS](coming-from/nestjs.md) | انقل وحدات التحكم والوحدات والموفرين والحراس إلى جهاز التوجيه المعياري |
-| [من لارافيل](coming-from/laravel.md) | قم بتعيين المسارات ووحدات التحكم وBlade وEloquent وقوائم الانتظار إلى Nexy |
-| [من التمهيد الربيعي](coming-from/spring-boot.md) | وحدات تحكم الخريطة، التحقق من صحة الفول، JPA والمرشحات إلى Nexy |
-| [من روبي أون ريلز](coming-from/rails.md) | قم بتعيين المسارات ووحدات التحكم وERB وActive Record والوظائف إلى Nexy |
 
-### أطر عمل Fullstack JavaScript
+### أطر عمل Fullstack {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |
@@ -170,6 +176,14 @@
 | [من نوكست](coming-from/nuxt.md) | احتفظ بصفحاتك Vue وانقل `server/` إلى Python |
 | [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
 | [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |
+| [من لارافيل](coming-from/laravel.md) | قم بتعيين المسارات ووحدات التحكم وBlade وEloquent وقوائم الانتظار إلى Nexy |
+| [من روبي أون ريلز](coming-from/rails.md) | قم بتعيين المسارات ووحدات التحكم وERB وActive Record والوظائف إلى Nexy |
+
+### أطر التحكم {modular}
+| الصفحة | ماذا ستفعل |
+|---|---|
+| [من NestJS](coming-from/nestjs.md) | انقل وحدات التحكم والوحدات والموفرين والحراس إلى جهاز التوجيه المعياري |
+| [من التمهيد الربيعي](coming-from/spring-boot.md) | انقل وحدات التحكم والخدمات والمرشحات إلى جهاز التوجيه المعياري |
 
 ## مرجع
 
@@ -198,7 +212,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
-├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

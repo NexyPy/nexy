@@ -29,11 +29,6 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | [Choisissez un routeur](routing/README.md) | Choisissez le routeur basé sur des fichiers, modulaire ou personnalisé |
 | [Choisissez un format d'affichage](views/README.md) | Choisissez `.nexy`, Markdown ou un framework client pour une page |
 
-### Venant d'ailleurs
-| Pages | Ce que tu feras |
-|---|---|
-| [Venant d'un autre cadre](getting-started/coming-from-other-frameworks.md) | Traduire FastAPI, Next.js et exprimer ses habitudes dans Nexy |
-
 ## Routage
 
 ### Basé sur un fichier {fbr}
@@ -129,7 +124,7 @@ Contrôleurs et modules.
 ### Construire et tester
 | Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la build client |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
 | [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
@@ -139,37 +134,56 @@ Contrôleurs et modules.
 | [Agents de codage](guides/ai-agents.md) | Donnez à Claude Code, Codex et OpenCode les règles de votre projet |
 | [Dépannage](guides/troubleshooting.md) | Résolvez les premiers problèmes rencontrés par les gens |
 
+## Bases de données
+
+### Bases de données SQL
+| Pages | Ce que tu feras |
+|---|---|
+| [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
+| [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
+| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
+| [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
+
 ## Venant de
 
 Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nexy.
 
-### Python cadres
+### Aperçu
 | Pages | Ce que tu feras |
 |---|---|
-| [De FastAPI](coming-from/fastapi.md) | Déplacez les FastAPI points de terminaison, routeurs et dépendances dans des fichiers de route |
+| [Venant d'un autre cadre](getting-started/coming-from-other-frameworks.md) | Traduire FastAPI, Next.js et exprimer les habitudes dans Nexy |
+
+### Python cadres {fbr}
+| Pages | Ce que tu feras |
+|---|---|
+| [De FastAPI](coming-from/fastapi.md) | Conservez votre code FastAPI : seul `@app.get` devient un fichier |
 | [De Flask](coming-from/flask.md) | Transformez les vues, les plans, les modèles et les formulaires en itinéraires Nexy |
 | [De Django](coming-from/django.md) | Mapper les vues, modèles, modèles, formulaires et paramètres vers Nexy |
 
-### Cadres back-end
+### JavaScript backends {fbr}
 | Pages | Ce que tu feras |
 |---|---|
 | [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en Python gestionnaires |
 | [De Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
 | [D'Élysée](coming-from/elysia.md) | Mapper les schémas `t`, les gardes et l'Eden aux Pydantic et aux actions typées |
 | [De Hono](coming-from/hono.md) | Mapper les routes, le middleware et le client `hc` vers Nexy |
-| [De NestJS](coming-from/nestjs.md) | Déplacez les contrôleurs, les modules, les fournisseurs et les gardes vers le routeur modulaire |
-| [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
-| [À partir de Spring Boot](coming-from/spring-boot.md) | Mapper les contrôleurs, la validation des haricots, JPA et les filtres vers Nexy |
-| [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
 
-### Cadres Fullstack JavaScript
+### Cadres Fullstack {fbr}
 | Pages | Ce que tu feras |
 |---|---|
 | [De Next.js](coming-from/nextjs.md) | Conservez vos pages React et déplacez le code du serveur vers Python |
 | [De Remix](coming-from/remix.md) | Transformez les chargeurs et les actions en Python gestionnaires et actions |
 | [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos pages Vue et déplacez `server/` vers Python |
-| [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
+| [De SvelteKit](coming-from/sveltekit.md) | Conservez vos pages Svelte et déplacez les charges, actions et hooks vers Python |
 | [De Astro](coming-from/astro.md) | Écrivez les pages Astro sous forme de pages `.nexy`, avec les mêmes îlots |
+| [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
+| [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
+
+### Frameworks de contrôleurs {modular}
+| Pages | Ce que tu feras |
+|---|---|
+| [De NestJS](coming-from/nestjs.md) | Déplacez les contrôleurs, les modules, les fournisseurs et les gardes vers le routeur modulaire |
+| [À partir de Spring Boot](coming-from/spring-boot.md) | Déplacez les contrôleurs, les services et les filtres vers le routeur modulaire |
 
 ## Référence
 
@@ -198,7 +212,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
-├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

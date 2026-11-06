@@ -29,11 +29,6 @@ Baru di sini? Baca [Apa itu Nexy?](getting-started/what-is-nexy.md), lalu [Mulai
 | [Pilih router](routing/README.md) | Pilih router berbasis file, modular, atau khusus |
 | [Pilih format tampilan](views/README.md) | Pilih `.nexy`, Markdown atau kerangka klien untuk sebuah halaman |
 
-### Datang dari tempat lain
-| Halaman | Apa yang akan kamu lakukan |
-|---|---|
-| [Berasal dari kerangka lain](getting-started/coming-from-other-frameworks.md) | Terjemahkan FastAPI, Next.js dan Ekspresikan kebiasaan ke dalam Nexy |
-
 ## Perutean
 
 ### Berbasis file {fbr}
@@ -139,37 +134,56 @@ Pengontrol dan modul.
 | [Agen pengkodean](guides/ai-agents.md) | Berikan Claude Code, Codex dan OpenCode aturan proyek Anda |
 | [Pemecahan Masalah](guides/troubleshooting.md) | Perbaiki masalah pertama yang dialami orang |
 
+## Basis Data
+
+### database SQL
+| Halaman | Apa yang akan kamu lakukan |
+|---|---|
+| [SQLite](databases/sqlite.md) | Gunakan satu file, tanpa server: mesin, pragma, migrasi, dan pengujian |
+| [PostgreSQL](databases/postgresql.md) | Terhubung dengan psycopg, gunakan JSONB, array, pencarian, dan upsert |
+| [Neon](databases/neon.md) | Gunakan tanpa server PostgreSQL: host gabungan, penangguhan otomatis, dan cabang |
+| [MySQL dan MariaDB](databases/mysql-mariadb.md) | Terhubung dengan pymysql, gunakan utf8mb4, upserts dan pencarian teks lengkap |
+
 ## Berasal dari
 
 Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 
-### Python kerangka kerja
+### Ikhtisar
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
-| [Dari FastAPI](coming-from/fastapi.md) | Pindahkan FastAPI titik akhir, router, dan dependensi ke dalam file rute |
+| [Berasal dari kerangka lain](getting-started/coming-from-other-frameworks.md) | Terjemahkan FastAPI, Next.js dan Ekspresikan kebiasaan ke dalam Nexy |
+
+### Python kerangka kerja {fbr}
+| Halaman | Apa yang akan kamu lakukan |
+|---|---|
+| [Dari FastAPI](coming-from/fastapi.md) | Simpan kode FastAPI Anda: hanya `@app.get` yang menjadi file |
 | [Dari Flask](coming-from/flask.md) | Ubah tampilan, cetak biru, templat, dan formulir menjadi rute Nexy |
 | [Dari Django](coming-from/django.md) | Tampilan peta, templat, model, formulir, dan pengaturan ke Nexy |
 
-### Kerangka kerja backend
+### JavaScript ujung belakang {fbr}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
-| [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
+| [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware, dan `req`/`res` ke dalam penangan Python |
 | [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
 | [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan ketikkan tindakan |
 | [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
-| [Dari NestJS](coming-from/nestjs.md) | Pindahkan pengontrol, modul, penyedia, dan penjaga ke router modular |
-| [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
-| [Dari Sepatu Musim Semi](coming-from/spring-boot.md) | Pengontrol peta, Validasi Bean, JPA dan filter ke Nexy |
-| [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
 
-### Kerangka kerja Fullstack JavaScript
+### Kerangka kerja fullstack {fbr}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Dari Next.js](coming-from/nextjs.md) | Simpan halaman React Anda dan pindahkan kode server ke Python |
 | [Dari Remix](coming-from/remix.md) | Ubah pemuat dan tindakan menjadi Python penangan dan tindakan |
 | [Dari Nuxt](coming-from/nuxt.md) | Simpan halaman Vue Anda dan pindahkan `server/` ke Python |
 | [Dari SvelteKit](coming-from/sveltekit.md) | Simpan halaman Svelte Anda dan pindahkan muatan, tindakan, dan pengait ke Python |
-| [Dari Astro](coming-from/astro.md) | Tulis halaman Astro sebagai halaman `.nexy`, dengan pulau yang sama |
+| [Dari Astro](coming-from/astro.md) | Tulis Astro halaman sebagai `.nexy` halaman, dengan pulau yang sama |
+| [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
+| [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
+
+### Kerangka kerja pengontrol {modular}
+| Halaman | Apa yang akan kamu lakukan |
+|---|---|
+| [Dari NestJS](coming-from/nestjs.md) | Pindahkan pengontrol, modul, penyedia, dan penjaga ke router modular |
+| [Dari Sepatu Musim Semi](coming-from/spring-boot.md) | Pindahkan pengontrol, layanan, dan filter ke router modular |
 
 ## Referensi
 
@@ -198,7 +212,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
-├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

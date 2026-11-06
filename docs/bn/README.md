@@ -29,11 +29,6 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 | [একটি রাউটার চয়ন করুন ](routing/README.md) | ফাইল-ভিত্তিক, মডুলার বা কাস্টম রাউটার চয়ন করুন |
 | [একটি ভিউ ফরম্যাট বেছে নিন](views/README.md) | একটি পৃষ্ঠার জন্য `.nexy`, Markdown বা একটি ক্লায়েন্ট ফ্রেমওয়ার্ক বেছে নিন |
 
-### অন্য জায়গা থেকে আসছে
-| পাতা | আপনি কি করবেন |
-|---|---|
-| [অন্য কাঠামো থেকে আসছে ](getting-started/coming-from-other-frameworks.md) | অনুবাদ করুন FastAPI, Next.js এবং নেক্সিতে অভ্যাস প্রকাশ করুন |
-
 ## রাউটিং
 
 ### ফাইল-ভিত্তিক {fbr}
@@ -46,14 +41,14 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 | [বিন্যাস](routing/fbr/layouts/README.md) | পৃষ্ঠাগুলির মধ্যে একটি ফ্রেম ভাগ করুন |
 | [উত্তরাধিকার ](routing/fbr/inheritance.md) | লেআউট, নির্ভরতা এবং ত্রুটি পৃষ্ঠাগুলির রেজোলিউশন অর্ডার পড়ুন |
 | [সার্ভার মোড এবং ক্লায়েন্ট মোড](routing/fbr/modes.md) | `useCSR`, এবং প্রতিটি মোড কি অনুমতি দেয় |
-| [লিঙ্ক করা এবং নেভিগেট করা](routing/fbr/navigation/linking-and-navigating.md) | পৃষ্ঠাগুলি লিঙ্ক করুন, ক্লায়েন্টে নেভিগেট করুন, প্রিফেচ করুন |
+| [লিঙ্ক করা এবং নেভিগেট করা ](routing/fbr/navigation/linking-and-navigating.md) | পৃষ্ঠাগুলি লিঙ্ক করুন, ক্লায়েন্টে নেভিগেট করুন, প্রিফেচ করুন |
 | [হুকস](routing/fbr/navigation/hooks.md) | পাথ, ক্যোয়ারী, কুকিজ এবং সেশন পড়ুন |
 
 ### হ্যান্ডলার এবং ত্রুটি {fbr}
 | পাতা | আপনি কি করবেন |
 |---|---|
-| [রুট হ্যান্ডলার](routing/fbr/handlers/README.md) | একটি Python শেষ বিন্দু যোগ করুন |
-| [বৈধতা এবং ত্রুটি ](routing/fbr/handlers/validation-and-errors.md) | উত্তর দাও `422` এবং `404`, এবং একটি `HTTPException` বাড়াও |
+| [রুট হ্যান্ডলার ](routing/fbr/handlers/README.md) | একটি Python শেষ বিন্দু যোগ করুন |
+| [বৈধতা এবং ত্রুটি](routing/fbr/handlers/validation-and-errors.md) | উত্তর দাও `422` এবং `404`, এবং একটি `HTTPException` বাড়াও |
 | [WebSocket হ্যান্ডলার](routing/fbr/realtime/websocket.md) | একটি `SOCKET` সংযোগ পরিচালনা করুন |
 | [নির্ভরতা এবং প্রহরী](routing/fbr/dependencies/README.md) | একটি হ্যান্ডলারের আগে `dependencies.py` চালান, এবং এটিকে উত্তরাধিকারী করুন |
 | [মিডলওয়্যার ফাইল](routing/fbr/middleware/README.md) | ডিরেক্টরি দ্বারা উত্তরাধিকারসূত্রে প্রাপ্ত `middleware.py` সহ অনুরোধগুলি মোড়ানো |
@@ -65,14 +60,14 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 | পাতা | আপনি কি করবেন |
 |---|---|
 | [মডুলার রাউটিং](routing/modular/README.md) | মাউন্ট কন্ট্রোলার এবং মডিউল |
-| [নির্ভরতা ইনজেকশন](routing/modular/dependency-injection.md) | পরিষেবা, তাদের সুযোগ এবং ধারক সংজ্ঞায়িত করুন |
+| [নির্ভরতা ইনজেকশন ](routing/modular/dependency-injection.md) | পরিষেবা, তাদের সুযোগ এবং ধারক সংজ্ঞায়িত করুন |
 | [গার্ড এবং মেটাডেটা](routing/modular/guards-and-metadata.md) | সুরক্ষা এবং নথি রুট |
 | [মডুলার রাউটার বনাম NestJS](routing/modular/vs-nestjs.md) | সাথে তুলনা NestJS |
 
 ### কাস্টম রাউটার ইন্টিগ্রেশন {custom}
 | পাতা | আপনি কি করবেন |
 |---|---|
-| [কাস্টম রাউটিং](routing/custom/README.md) | একটি বিদ্যমান FastAPI অ্যাপ অন্তর্ভুক্ত করুন |
+| [কাস্টম রাউটিং ](routing/custom/README.md) | একটি বিদ্যমান FastAPI অ্যাপ অন্তর্ভুক্ত করুন |
 
 ## ফ্রন্টেন্ড
 
@@ -105,8 +100,8 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 ### মোড
 | পাতা | আপনি কি সিদ্ধান্ত নেবেন |
 |---|---|
-| [রেন্ডারিং](rendering/README.md) | কোন রেন্ডারিং মোড একটি পৃষ্ঠার সাথে ফিট করে |
-| [এসএসআর](rendering/ssr.md) | সার্ভার রেন্ডারিং, ডিফল্ট |
+| [রেন্ডারিং ](rendering/README.md) | কোন রেন্ডারিং মোড একটি পৃষ্ঠার সাথে ফিট করে |
+| [SSR](rendering/ssr.md) | সার্ভার রেন্ডারিং, ডিফল্ট |
 | [আইএসআর](rendering/isr.md) | stale-while-revalidate সহ ক্যাশে পৃষ্ঠা |
 | [CSR](rendering/csr.md) | ক্লায়েন্ট-সাইড রাউটিং |
 | [দ্বীপপুঞ্জ](rendering/islands.md) | নিষ্ক্রিয়, দৃশ্যমান বা মিডিয়া ক্যোয়ারীতে হাইড্রেট করুন |
@@ -124,7 +119,7 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 |---|---|
 | [মিডলওয়্যার এবং নিরাপত্তা ](guides/middleware-and-security.md) | CORS, GZip, বিশ্বস্ত হোস্ট এবং সেশন সেট আপ করুন |
 | [স্থাপন ](deployment/README.md) | নির্মাণ, ধারক এবং পরিবেশন |
-| [কর্মক্ষমতা](deployment/performance.md) | ডিফল্টগুলি পরিমাপ করুন এবং সুর করুন |
+| [কর্মক্ষমতা ](deployment/performance.md) | ডিফল্টগুলি পরিমাপ করুন এবং সুর করুন |
 
 ### নির্মাণ এবং পরীক্ষা
 | পাতা | আপনি কি করবেন |
@@ -137,39 +132,58 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 |---|---|
 | [দেব টুলবার](guides/devtools.md) | `nexy dev` এর টুলবার ব্যবহার করুন এবং এটি বন্ধ করুন |
 | [কোডিং এজেন্ট](guides/ai-agents.md) | আপনার প্রকল্পের নিয়মগুলি Claude Code, Codex এবং OpenCode দিন |
-| [সমস্যা সমাধান](guides/troubleshooting.md) | মানুষ আঘাত প্রথম সমস্যা ঠিক করুন |
+| [সমস্যা সমাধান ](guides/troubleshooting.md) | মানুষ আঘাত প্রথম সমস্যা ঠিক করুন |
+
+## ডাটাবেস
+
+### এসকিউএল ডাটাবেস
+| পাতা | আপনি কি করবেন |
+|---|---|
+| [SQLite](databases/sqlite.md) | একটি ফাইল ব্যবহার করুন, কোনো সার্ভার নেই: ইঞ্জিন, প্রগমাস, মাইগ্রেশন এবং পরীক্ষা |
+| [PostgreSQL](databases/postgresql.md) | সাইকোপজির সাথে সংযোগ করুন, JSONB, অ্যারে, অনুসন্ধান এবং আপসার্ট ব্যবহার করুন |
+| [নিয়ন ](databases/neon.md) | সার্ভারহীন PostgreSQL ব্যবহার করুন: পুল হোস্ট, অটোসাসপেন্ড এবং শাখা |
+| [মাইএসকিউএল এবং মারিয়াডিবি](databases/mysql-mariadb.md) | pymysql এর সাথে সংযোগ করুন, utf8mb4 ব্যবহার করুন, আপসার্ট এবং পূর্ণ-পাঠ্য অনুসন্ধান করুন |
 
 ## থেকে আসছে
 
 একই কাজ, আপনার জানা ফ্রেমওয়ার্ক এবং তারপর Nexy এ লেখা।
 
-### Python ফ্রেমওয়ার্ক
+### ওভারভিউ
 | পাতা | আপনি কি করবেন |
 |---|---|
-| [থেকে FastAPI](coming-from/fastapi.md) | রুট ফাইলগুলিতে FastAPI এন্ডপয়েন্ট, রাউটার এবং নির্ভরতাগুলি সরান |
+| [অন্য কাঠামো থেকে আসছে ](getting-started/coming-from-other-frameworks.md) | অনুবাদ করুন FastAPI, Next.js এবং নেক্সিতে অভ্যাস প্রকাশ করুন |
+
+### Python কাঠামো {fbr}
+| পাতা | আপনি কি করবেন |
+|---|---|
+| [থেকে FastAPI](coming-from/fastapi.md) | আপনার FastAPI কোড রাখুন: শুধুমাত্র `@app.get` একটি ফাইল হয়ে যায় |
 | [থেকে Flask](coming-from/flask.md) | ভিউ, ব্লুপ্রিন্ট, টেমপ্লেট এবং ফর্মগুলিকে Nexy রুটে পরিণত করুন৷ |
 | [থেকে Django](coming-from/django.md) | নেক্সিতে মানচিত্র দৃশ্য, টেমপ্লেট, মডেল, ফর্ম এবং সেটিংস |
 
-### ব্যাকএন্ড ফ্রেমওয়ার্ক
+### JavaScript ব্যাকএন্ড {fbr}
 | পাতা | আপনি কি করবেন |
 |---|---|
-| [এক্সপ্রেস থেকে](coming-from/express.md) | রুট, মিডলওয়্যার এবং `req`/`res` হ্যান্ডলারে অনুবাদ করুন Python |
+| [এক্সপ্রেস থেকে](coming-from/express.md) | রুট, মিডলওয়্যার এবং `req`/`res` কে Python হ্যান্ডলারে অনুবাদ করুন |
 | [Fastify](coming-from/fastify.md) থেকে | স্কিমা, প্লাগইন এবং হুকগুলিকে মডেল, ফোল্ডার এবং ফাইলে পরিণত করুন |
 | [Elysia থেকে](coming-from/elysia.md) | ম্যাপ `t` স্কিমা, গার্ড এবং ইডেন থেকে Pydantic এবং টাইপ করা অ্যাকশন |
 | [হোনো থেকে](coming-from/hono.md) | ম্যাপ রুট, মিডলওয়্যার এবং নেক্সিতে `hc` ক্লায়েন্ট |
-| [থেকে NestJS](coming-from/nestjs.md) | মডুলার রাউটারে কন্ট্রোলার, মডিউল, প্রদানকারী এবং গার্ড সরান |
-| [লারাভেল থেকে](coming-from/laravel.md) | মানচিত্র রুট, কন্ট্রোলার, ব্লেড, বাগ্মী এবং Nexy এর সারি |
-| [স্প্রিং বুট থেকে](coming-from/spring-boot.md) | মানচিত্র নিয়ন্ত্রক, বিন বৈধতা, JPA এবং ফিল্টার Nexy |
-| [রুবি অন রেল থেকে](coming-from/rails.md) | নেক্সিতে ম্যাপ রুট, কন্ট্রোলার, ERB, অ্যাক্টিভ রেকর্ড এবং চাকরি |
 
-### ফুলস্ট্যাক JavaScript ফ্রেমওয়ার্ক
+### ফুলস্ট্যাক ফ্রেমওয়ার্ক {fbr}
 | পাতা | আপনি কি করবেন |
 |---|---|
 | [থেকে Next.js](coming-from/nextjs.md) | আপনার React পৃষ্ঠাগুলি রাখুন এবং সার্ভার কোডকে Python এ সরান |
-| [থেকে Remix](coming-from/remix.md) | লোডার এবং অ্যাকশনকে Python হ্যান্ডলার এবং অ্যাকশনে পরিণত করুন |
+| [থেকে Remix](coming-from/remix.md) | লোডার এবং অ্যাকশনগুলিকে Python হ্যান্ডলার এবং অ্যাকশনে পরিণত করুন |
 | [Nuxt ](coming-from/nuxt.md) থেকে | আপনার Vue পৃষ্ঠাগুলি রাখুন এবং `server/` থেকে Python এ সরান |
 | [SvelteKit থেকে](coming-from/sveltekit.md) | আপনার Svelte পৃষ্ঠাগুলি রাখুন এবং লোড, অ্যাকশন এবং হুকগুলি Python এ সরান |
 | [থেকে Astro](coming-from/astro.md) | একই দ্বীপের সাথে Astro পৃষ্ঠাগুলিকে `.nexy` পৃষ্ঠা হিসাবে লিখুন |
+| [লারাভেল থেকে](coming-from/laravel.md) | মানচিত্র রুট, কন্ট্রোলার, ব্লেড, বাগ্মী এবং Nexy এর সারি |
+| [রুবি অন রেল থেকে](coming-from/rails.md) | নেক্সিতে ম্যাপ রুট, কন্ট্রোলার, ERB, অ্যাক্টিভ রেকর্ড এবং চাকরি |
+
+### কন্ট্রোলার ফ্রেমওয়ার্ক {modular}
+| পাতা | আপনি কি করবেন |
+|---|---|
+| [থেকে NestJS](coming-from/nestjs.md) | মডুলার রাউটারে কন্ট্রোলার, মডিউল, প্রদানকারী এবং গার্ড সরান |
+| [স্প্রিং বুট থেকে](coming-from/spring-boot.md) | মডুলার রাউটারে কন্ট্রোলার, পরিষেবা এবং ফিল্টারগুলি সরান |
 
 ## রেফারেন্স
 
@@ -198,7 +212,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
-├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -229,8 +244,8 @@ docs/
 
 | পাতা | আপনি কি করবেন |
 |---|---|
-| [কিভাবে Nexy কাজ করে ](getting-started/how-nexy-works.md) | একটি ফাইল এবং একটি পৃষ্ঠার মধ্যে কী ঘটে এবং Nexy আপনার কাছে কী রেখে যায় তা দেখুন৷ |
-| [2.2 ](getting-started/upgrading.md) এ আপগ্রেড করা হচ্ছে | 2.1 থেকে 2.2 পর্যন্ত স্থানান্তর করুন৷ |
+| [কিভাবে Nexy কাজ করে](getting-started/how-nexy-works.md) | একটি ফাইল এবং একটি পৃষ্ঠার মধ্যে কী ঘটে এবং Nexy আপনার কাছে কী রেখে যায় তা দেখুন৷ |
+| [2.2 এ আপগ্রেড করা হচ্ছে](getting-started/upgrading.md) | 2.1 থেকে 2.2 পর্যন্ত স্থানান্তর করুন৷ |
 | [আন্তর্জাতিকীকরণ (i18n)](guides/i18n.md) | আপনার পছন্দের লাইব্রেরির সাথে অনুবাদ যোগ করুন |
 | [রেসিপি ](guides/recipes.md) | উদাহরণ এবং নিদর্শন, একটি টিউটোরিয়াল নয় |
 
