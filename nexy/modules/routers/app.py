@@ -17,6 +17,7 @@ from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.access_log import AccessLogMiddleware
 from nexy.helpers.server.devtools import DevToolsMiddleware
 from nexy.helpers.server.devtools.state import setup_devtools
+from nexy.helpers.server.head_requests import HeadRequestsMiddleware
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
@@ -134,6 +135,8 @@ class AppServer:
 
     def _add_middlewares(self, server: FastAPI) -> None:
         """The middlewares, innermost first: each one added wraps the ones before it."""
+        # Innermost: a HEAD asked again as GET does not run the project's middlewares twice.
+        server.add_middleware(HeadRequestsMiddleware)
         install_directory_middleware(server, routes=self._file_routes)
         server.add_middleware(PathMiddleware)
         if is_dev() and self.config.useDevTools:
