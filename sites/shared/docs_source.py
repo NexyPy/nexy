@@ -32,7 +32,9 @@ TEXT_LENGTH = 1800
 _ROW_LINK = re.compile(r"\[([^\]]+)\]\(([^)#\s]+\.md)\)")
 _FENCE = re.compile(r'^```(\w*)[ \t]+filename="([^"]+)"[ \t]*$', re.MULTILINE)
 _PRE = re.compile(r'<pre lang="(\w*)__file(\d+)">')
-_HEADING = re.compile(r"<h([2-6])>(.*?)</h\1>", re.DOTALL)
+# A heading inside a router variant carries its routers, for the outline to hide it the same way.
+_HEADING = re.compile(r'<h([2-6])(?: data-router="([a-z ]*)")?>(.*?)</h\1>', re.DOTALL)
+_VARIANT_HEADING = re.compile(r"<h([2-6])>")
 _CODE = re.compile(r'<pre lang="(\w+)"><code>(.*?)</code></pre>', re.DOTALL)
 _TABLE = re.compile(r"<table>.*?</table>", re.DOTALL)
 _HREF = re.compile(r'href="([^"]+)"')
@@ -270,6 +272,7 @@ class Heading:
     level: int
     id: str
     text: str
+    routers: str = ""
 
 
 @dataclass(frozen=True)
@@ -683,12 +686,12 @@ def _identify(html: str) -> Rendered:
     found: list[Heading] = []
 
     def mark(match: re.Match[str]) -> str:
-        level, inner = int(match[1]), _scope_of(match[2])[0]
+        level, inner = int(match[1]), _scope_of(match[3])[0]
         base = anchor(inner)
         count = seen.get(base, 0)
         seen[base] = count + 1
         ident = base if count == 0 else f"{base}-{count}"
-        found.append(Heading(level, ident, _TAGS.sub("", inner)))
+        found.append(Heading(level, ident, _TAGS.sub("", inner), match[2] or ""))
         marker = (
             f'<a class="anchor" href="#{ident}" aria-label="Link to this section"'
             ' data-i18n-aria="anchor"></a>'
@@ -877,7 +880,9 @@ def _variants(html: str) -> str:
         routers = _variant_routers(found[1])
         if not routers:
             return found[0]
-        return f'<div class="router-variant" data-router="{" ".join(routers)}">{found[2]}</div>'
+        names = " ".join(routers)
+        inner = _VARIANT_HEADING.sub(rf'<h\1 data-router="{names}">', found[2])
+        return f'<div class="router-variant" data-router="{names}">{inner}</div>'
 
     return _ROUTER_VARIANT.sub(wrap, html)
 

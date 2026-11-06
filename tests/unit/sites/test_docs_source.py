@@ -296,6 +296,22 @@ class TestRouterVariants:
         path.write_text("<!-- router:custom -->\n## Install\n<!-- /router -->\n", encoding="utf-8")
         assert [h.text for h in source.render(path, tmp_path, _link).headings] == ["Install"]
 
+    def test_a_heading_inside_a_variant_names_its_routers(self, tmp_path):
+        path = tmp_path / "page.md"
+        path.write_text(
+            "<!-- router:fbr,custom -->\n## Files\n<!-- /router -->\n", encoding="utf-8"
+        )
+        assert source.render(path, tmp_path, _link).headings[0].routers == "fbr custom"
+
+    def test_a_heading_outside_any_variant_names_no_router(self, tmp_path):
+        path = tmp_path / "page.md"
+        path.write_text("## Shared\n", encoding="utf-8")
+        assert source.render(path, tmp_path, _link).headings[0].routers == ""
+
+    def test_a_heading_inside_a_variant_keeps_its_id(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:modular -->\n## Apps\n<!-- /router -->\n")
+        assert '<h2 id="apps">' in html
+
 
 class TestHighlight:
     @staticmethod
