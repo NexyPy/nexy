@@ -299,12 +299,12 @@ engine three things per page (`sites/shared/seo.py`): the canonical address
 `{site}/docs/{slug}/`, the opening paragraph cut at 200 characters as the description, and the menu
 trail as the breadcrumb. A page therefore has four handles, and all four say the same thing:
 
-- **Title** — the question in the words a person types, not an internal name: "Choose a router", not
+- **Title** - the question in the words a person types, not an internal name: "Choose a router", not
   "Routing: architecture".
-- **Opening paragraph** — the answer, complete in one sentence, before any context: it becomes the
+- **Opening paragraph** - the answer, complete in one sentence, before any context: it becomes the
   search result.
-- **Headings** — the words of the query, one idea per heading, so an excerpt answers on its own.
-- **Slug** — the same words again, so the address says what the page is about without the menu.
+- **Headings** - the words of the query, one idea per heading, so an excerpt answers on its own.
+- **Slug** - the same words again, so the address says what the page is about without the menu.
 
 One question, one page. Two pages on the same words compete with each other, and a search engine
 ranks the pair below either one alone; a page that goes away redirects through
@@ -400,9 +400,9 @@ long-lived PyPI token.
 
 ## Getting help
 
-- **Documentation**: <https://nexypy.github.io/nexy/> — every page, with a search.
-- **Questions**: [Discussions Q&A](https://github.com/NexyPy/nexy/discussions/new?category=q-a) — an answer there is findable by the next person.
-- **Ideas**: [Discussions Ideas](https://github.com/NexyPy/nexy/discussions/new?category=ideas) — the shape gets settled before an issue is opened.
+- **Documentation**: <https://nexypy.github.io/nexy/> - every page, with a search.
+- **Questions**: [Discussions Q&A](https://github.com/NexyPy/nexy/discussions/new?category=q-a) - an answer there is findable by the next person.
+- **Ideas**: [Discussions Ideas](https://github.com/NexyPy/nexy/discussions/new?category=ideas) - the shape gets settled before an issue is opened.
 - **What you built**: [Show and tell](https://github.com/NexyPy/nexy/discussions/new?category=show-and-tell).
 - **Bug reports**: open a [GitHub Issue](https://github.com/NexyPy/nexy/issues/new/choose)
 - **Security issues**: see [SECURITY.md](SECURITY.md)
