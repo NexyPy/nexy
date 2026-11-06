@@ -44,7 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.check:
         return _check(found, root)
     if args.pack is not None:
-        return _pack(found, args.pack)
+        return _pack(found, args.pack, root.parent / cards.PACK_DIR)
     if args.dry_run:
         return _dry_run(found, root, args.lang, args.platform)
     _parser().print_help()
@@ -98,15 +98,15 @@ def _check(found: list[Item], root: Path) -> int:
     return 0 if not errors else 1
 
 
-def _pack(found: list[Item], slug: str) -> int:
+def _pack(found: list[Item], slug: str, out_dir: Path) -> int:
     with_cards = [item for item in found if item.media and item.media.kind.value == "carousel"]
     chosen = [item for item in with_cards if not slug or item.slug == slug]
     if not chosen:
         print(f"no carousel to pack{' for ' + slug if slug else ''}")
         return 1
     for item in chosen:
-        document = cards.pack(item)
-        sheet = cards.contact_sheet(item)
+        document = cards.pack(item, out_dir)
+        sheet = cards.contact_sheet(item, out_dir)
         print(f"{item.name()}: {document} and {sheet}")
     return 0
 

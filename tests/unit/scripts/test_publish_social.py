@@ -82,6 +82,7 @@ def test_pack_writes_the_pdf_and_the_contact_sheet(
     _post(_root(tmp_path))
     assert cli.main(["--root", str(tmp_path / "COM"), "--pack"]) == 0
     assert "2026-11-hmr-feed.png" in capsys.readouterr().out
+    assert (tmp_path / "build" / "com" / "2026-11-hmr.pdf").is_file()
 
 
 def test_pack_without_a_carousel_says_so(cli: types.ModuleType, tmp_path: Path) -> None:
