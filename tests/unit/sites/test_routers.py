@@ -180,6 +180,10 @@ class TestAssets:
         script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")
         assert "nexy-docs-side" in script
 
+    def test_the_search_finds_the_pages_of_a_group_of_several_routers(self):
+        script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")
+        assert "e.scope.split(' ').includes(router)" in script
+
     def test_the_panel_scrolls_inside_on_a_wide_screen(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert "html, body { height: 100%; overflow: hidden; }" in css
