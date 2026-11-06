@@ -73,5 +73,6 @@ def request(
         check=False,
     )
     assert "@@" in done.stdout, done.stderr[-1500:]
-    answers: list[Any] = json.loads(done.stdout.split("@@")[1])
+    payload = done.stdout.split("@@", 1)[1].rsplit("@@", 1)[0]
+    answers: list[Any] = json.loads(payload)
     return [(status, headers, body) for status, headers, body in answers]
