@@ -80,6 +80,13 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Coding agents](docs/guides/ai-agents.md): Give Claude Code, Codex and OpenCode the rules of your project
 - [Troubleshooting](docs/guides/troubleshooting.md): Fix the first problems people hit
 
+### Databases
+
+- [SQLite](docs/databases/sqlite.md): A database in one file, with SQLModel, SQLAlchemy or Tortoise
+- [PostgreSQL](docs/databases/postgresql.md): Connect, query and migrate PostgreSQL from routes and pages
+- [Neon](docs/databases/neon.md): Serverless PostgreSQL, pooled and direct connection URLs
+- [MySQL and MariaDB](docs/databases/mysql-mariadb.md): Drivers, URLs and migrations for MySQL or MariaDB
+
 ### Coming from
 
 - [From FastAPI](docs/coming-from/fastapi.md): Move FastAPI endpoints, routers and dependencies into route files
