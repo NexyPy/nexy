@@ -21,6 +21,26 @@ Tres formas de decidir qué código responde a una URL. Son alternativas, no cap
 - **Enrutador modular**: controladores y módulos bajo `src/apps/`, declarados con decoradores, para una base de código estilo NestJS.
 - **Enrutador personalizado**: un FastAPI `APIRouter` existente incluido en la aplicación.
 
+La elección es una línea de `nexyconfig.py`. El enrutamiento basado en archivos no necesita nada: sin `useRouter`, Nexy lee `src/routes/`.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
 Elegir uno de los tres es una decisión. La elección de un marco de interfaz de usuario es otra opción independiente: consulte [Elija un enrutador](../routing/README.md) y [Vistas](../views/README.md).
 
 ## Estructura de la aplicación
@@ -37,6 +57,38 @@ Cinco nociones que un lector procedente de Next.js suele fusionar en una sola. N
 | **Punto final** | el par (URL, método) que responde un controlador | un controlador: un archivo puede responder a varios puntos finales |
 
 En una frase: **una página es un archivo de ruta, una vista es lo que la representa, un componente es lo que una página reutiliza, un controlador responde a un punto final.**
+
+Los cinco en un pequeño proyecto:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/rutas/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+La portada y la plantilla debajo son la vista de la página; `Like` es el componente que reutiliza.
+
+```python filename="src/rutas/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 Dos palabras más que vuelven por todas partes:
 
@@ -58,6 +110,16 @@ Dos decisiones independientes, a menudo confundidas:
 | Hidratación | el navegador adjunta un marco al HTML que el servidor ya envió ([islas](../rendering/islands.md)) |
 | Accesorios | los valores que un padre pasa a un componente, declarados `name: prop[type]` en un archivo `.nexy` (archivos [.nexy](../views/nexy/README.md)) |
 
+Una página en modo servidor con una isla: el servidor representa la página, el navegador hidrata el gráfico solo cuando se desplaza a la vista.
+
+```nexy filename="src/rutas/ventas.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
 ## Interacción de la aplicación
 
 | noción | una linea |
@@ -67,9 +129,42 @@ Dos decisiones independientes, a menudo confundidas:
 | Navegación | enlaces que captan previamente y ganchos que leen la ruta, la consulta, las cookies y la sesión ([ganchos](../routing/fbr/navigation/hooks.md)) |
 | Obtención de datos | hecho por la página o el controlador que lo necesita; Nexy no incluye ninguna capa de datos del cliente ([manejadores](../routing/fbr/handlers/README.md)) |
 
+Una acción y el formulario que se publica en ella, que funciona antes de que se cargue cualquier script:
+
+```python filename="src/acciones/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/rutas/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+
 ## Lo que Nexy no hace
 
 La autenticación, autorización, base de datos, internacionalización, trabajos en segundo plano, correo electrónico, pagos y búsqueda son **responsabilidad de su aplicación**, no del marco. Nexy proporciona los puntos de extensión y dice dónde conectar cada uno: consulte [Lo que Nexy te deja](how-nexy-works.md#what-nexy-leaves-to-you).
+
+La autenticación, por ejemplo, se conecta a una dependencia de la carpeta que protege. Nexy lo ejecuta antes de cada ruta a continuación; quién es el usuario sigue siendo tu decisión:
+
+```python filename="src/rutas/cuenta/dependencias.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 La razón no es el minimalismo en sí: un marco que elige su ORM o su biblioteca de autenticación ha decidido algo que solo su aplicación puede decidir.
 

@@ -21,7 +21,27 @@
 - **Модульный маршрутизатор**: контроллеры и модули из `src/apps/`, объявленные с помощью декораторов, для кодовой базы в стиле NestJS.
 - **Пользовательский маршрутизатор**: существующий FastAPI `APIRouter`, включенный в приложение.
 
-Выбор одного из трех – это одно решение. Выбор внешнего интерфейса — это еще один отдельный вопрос: см. [Выбор маршрутизатора](../routing/README.md) и [Просмотры](../views/README.md)].
+Выбор — одна строка из `nexyconfig.py`. Маршрутизация на основе файлов не требуется: без `useRouter` Nexy читает `src/routes/`.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
+Выбор одного из трех – это одно решение. Выбор внешнего интерфейса — это еще один отдельный вопрос: см. [Выбор маршрутизатора](../routing/README.md) и [Представления](../views/README.md)].
 
 ## Структура приложения
 
@@ -33,10 +53,42 @@
 | **Страница** | файл маршрута, который отображает представление: `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | конечная точка: она отвечает на документ, а не на данные |
 | **Посмотреть** | что создает тело страницы: Jinja2 и Python, Markdown или клиентский компонент | маршрут: одно и то же представление может обслуживать несколько страниц |
 | **Компонент** | многоразовый фрагмент, импортируемый страницей | маршрут: в режиме сервера компонент никогда не обслуживается сам по себе |
-| **Обработчик маршрута** | функция файла маршрута `.py`, названная в честь метода HTTP (`GET`, `POST`, …) | страница: она возвращает JSON, файл или `Response` |
+| **Обработчик маршрута** | функция файла маршрута `.py`, названная в честь метода HTTP (`GET`, `POST`, …) | страница: возвращает JSON, файл или `Response` |
 | **Конечная точка** | пара (URL, метод), на которую отвечает обработчик | обработчик: один файл может отвечать нескольким конечным точкам |
 
 В одном предложении: **страница — это файл маршрута, представление — это то, что ее отображает, компонент — это то, что страница повторно использует, обработчик отвечает конечной точке.**
+
+Все пять в одном небольшом проекте:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/маршруты/блог/[слизняк].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+Фронтальная часть и шаблон под ней представляют собой вид страницы; `Like` — это компонент, который он использует повторно.
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 Еще два слова, которые повторяются повсюду:
 
@@ -58,6 +110,16 @@
 | Увлажнение | браузер прикрепляет фреймворк к уже отправленному сервером HTML ([острова](../rendering/islands.md)) |
 | Реквизит | значения, которые родитель передает компоненту, объявленному `name: prop[type]` в файле `.nexy` ([файлы .nexy](../views/nexy/README.md)) |
 
+Страница в режиме сервера с одним островом: сервер отображает страницу, браузер увлажняет диаграмму только при ее прокрутке в поле зрения.
+
+```nexy filename="источник/маршруты/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
 ## Взаимодействие с приложением
 
 | Понятие | Одна линия |
@@ -67,9 +129,42 @@
 | Навигация | ссылки, выполняющие предварительную выборку, и перехватчики, считывающие путь, запрос, файлы cookie и сеанс ([хуки](../routing/fbr/navigation/hooks.md)) |
 | Получение данных | выполняется страницей или обработчиком, которому это необходимо; Nexy не поставляет уровень клиентских данных ([обработчики](../routing/fbr/handlers/README.md)) |
 
+Действие и форма, которая его отправляет, которая работает до загрузки любого скрипта:
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="источник/маршруты/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+
 ## Чего Nexy не делает
 
 Аутентификация, авторизация, база данных, интернационализация, фоновые задания, электронная почта, платежи и поиск — это **ответственность вашего приложения**, а не фреймворка. Nexy дает точки расширения и говорит, куда подключить каждую: см. [Что Nexy оставляет вам](how-nexy-works.md#what-nexy-leaves-to-you).
+
+Например, аутентификация подключается к зависимости от папки, которую она защищает. Nexy запускает его перед каждым маршрутом ниже; кто пользователь, остается за вами:
+
+```python filename="src/routes/account/dependents.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 Причина не в минимализме как таковом: фреймворк, который выбирает ваш ORM или вашу библиотеку аутентификации, решил что-то, что может решить только ваше приложение.
 

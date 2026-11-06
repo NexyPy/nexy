@@ -21,6 +21,26 @@
 - **ماڈیولر راؤٹر**: NestJS طرز کے کوڈ بیس کے لیے `src/apps/` کے تحت کنٹرولرز اور ماڈیولز، ڈیکوریٹرز کے ساتھ اعلان کردہ۔
 - **حسب ضرورت روٹر**: ایک موجودہ FastAPI `APIRouter` ایپلی کیشن میں شامل ہے۔
 
+انتخاب `nexyconfig.py` کی ایک سطر ہے۔ فائل پر مبنی روٹنگ کو کسی کی ضرورت نہیں ہے: بغیر `useRouter`، Nexy پڑھتا ہے `src/routes/`۔
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
 تین میں سے کسی ایک کا انتخاب کرنا ایک فیصلہ ہے۔ فرنٹ اینڈ فریم ورک کا انتخاب ایک اور ہے، الگ الگ: دیکھیں [روٹر کا انتخاب کریں](../routing/README.md) اور [دیکھے](../views/README.md)۔
 
 ## درخواست کا ڈھانچہ
@@ -34,9 +54,41 @@
 | **دیکھیں** | صفحہ کا باڈی کیا بناتا ہے: Jinja2 اور Python، Markdown، یا کلائنٹ کا جزو | ایک راستہ: ایک ہی منظر کئی صفحات کی خدمت کرسکتا ہے۔ |
 | **جزو** | دوبارہ قابل استعمال ٹکڑا ایک صفحہ درآمد کرتا ہے۔ | ایک راستہ: سرور موڈ میں ایک جزو کبھی بھی خود سے پیش نہیں ہوتا ہے۔ |
 | **روٹ ہینڈلر** | ایک `.py` روٹ فائل کا فنکشن، جس کا نام HTTP طریقہ (`GET`، `POST`، …) | ایک صفحہ: یہ JSON، ایک فائل یا ایک `Response` لوٹاتا ہے |
-| **نقطہ اختتام** | جوڑا (URL، طریقہ) جس کا ہینڈلر جواب دیتا ہے۔ | ایک ہینڈلر: ایک فائل کئی اختتامی نکات کا جواب دے سکتی ہے۔ |
+| **اختتامی نقطہ** | جوڑا (URL، طریقہ) جس کا ہینڈلر جواب دیتا ہے۔ | ایک ہینڈلر: ایک فائل کئی اختتامی نکات کا جواب دے سکتی ہے۔ |
 
 ایک جملے میں: **ایک صفحہ ایک روٹ فائل ہے، ایک منظر وہ ہے جو اسے پیش کرتا ہے، ایک جزو وہ ہے جسے صفحہ دوبارہ استعمال کرتا ہے، ایک ہینڈلر ایک اختتامی نقطہ کا جواب دیتا ہے۔**
+
+تمام پانچ ایک چھوٹے پروجیکٹ میں:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+فرنٹ میٹر اور اس کے نیچے کا سانچہ صفحہ کا منظر ہے۔ `Like` وہ جزو ہے جسے یہ دوبارہ استعمال کرتا ہے۔
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 دو مزید الفاظ جو ہر جگہ واپس آتے ہیں:
 
@@ -48,28 +100,71 @@
 دو آزاد فیصلے، اکثر الجھ جاتے ہیں:
 
 - **فارمیٹ** فیصلہ کرتا ہے کہ کون سی فائل صفحہ کو رینڈر کرتی ہے: [ملاحظات](../views/README.md)۔
-- **موڈ** فیصلہ کرتا ہے کہ HTML کون تیار کرتا ہے اور کب: [رینڈرنگ](../rendering/README.md)۔
+- **موڈ** فیصلہ کرتا ہے کہ ایچ ٹی ایم ایل کون تیار کرتا ہے اور کب: [رینڈرنگ](../rendering/README.md)۔
 
 | تصور | ایک لائن |
 |---|---|
 | سرور موڈ | سرور `.nexy` اور `.md` صفحات پیش کرتا ہے۔ اجزاء جزیرے ہیں ([موڈز](../routing/fbr/modes.md)) |
 | کلائنٹ موڈ | `useCSR = True`: فریم ورک فائلیں راستے ہیں، اور نیویگیشن براؤزر میں ہوتی ہے۔ |
 | SSR، ISR، CSR، جزائر | چار رینڈرنگ موڈز، فی صفحہ طے کیا گیا سوائے CSR کے، جو فی پروجیکٹ ہے ([رینڈرنگ](../rendering/README.md)) |
-| ہائیڈریشن | براؤزر HTML کے ساتھ فریم ورک منسلک کر رہا ہے جو سرور نے پہلے ہی بھیج دیا ہے ([جزیرے](../rendering/islands.md)) |
-| سہارے | وہ اقدار جو والدین کسی جزو کو منتقل کرتے ہیں، `name: prop[type]` کو `.nexy` فائل ([.nexy فائلیں](../views/nexy/README.md)) میں قرار دیا گیا ہے۔ |
+| ہائیڈریشن | HTML کے ساتھ ایک فریم ورک منسلک کرنے والا براؤزر پہلے ہی بھیجے ہوئے سرور ([جزیرے](../rendering/islands.md)) |
+| سہارے | وہ اقدار جو والدین کسی جزو کو منتقل کرتے ہیں، `name: prop[type]` کا اعلان `.nexy` فائل میں کیا جاتا ہے ([.nexy فائلز](../views/nexy/README.md)) |
+
+ایک جزیرے کے ساتھ سرور موڈ کا صفحہ: سرور صفحہ کو رینڈر کرتا ہے، براؤزر صرف اس وقت چارٹ کو ہائیڈریٹ کرتا ہے جب وہ منظر میں اسکرول کرتا ہے۔
+
+```nexy filename="src/routes/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
 
 ## درخواست کا تعامل
 
 | تصور | ایک لائن |
 |---|---|
-| ایکشن | ایک Python فنکشن نشان زد `@Action`، ایک `POST` کے طور پر پیش کیا گیا، فارم سے کال کیا جا سکتا ہے یا ٹائپ شدہ فنکشن کے طور پر ([عمل](../guides/actions.md)) |
-| فارم | ایک ایچ ٹی ایم ایل فارم جو ایک ایکشن پر پوسٹ کرتا ہے، توثیق کی خرابیوں کے ساتھ صفحہ پر واپس آتا ہے ([ایکشن](../guides/actions.md)) |
+| ایکشن | ایک Python فنکشن نشان زد `@Action`، ایک `POST` کے طور پر پیش کیا گیا، فارم سے کال کیا جا سکتا ہے یا ٹائپ شدہ فنکشن کے طور پر ([ایکشنز](../guides/actions.md)) |
+| فارم | ایک ایچ ٹی ایم ایل فارم جو ایک ایکشن پر پوسٹ کرتا ہے، توثیق کی غلطیوں کے ساتھ صفحہ پر واپس آتا ہے ([ایکشن](../guides/actions.md)) |
 | نیویگیشن | لنکس جو پہلے سے تیار کرتے ہیں، اور ہکس جو راستے، استفسار، کوکیز اور سیشن کو پڑھتے ہیں ([ہکس](../routing/fbr/navigation/hooks.md)) |
-| ڈیٹا بازیافت کرنا | صفحہ یا ہینڈلر کے ذریعہ کیا گیا ہے جس کی ضرورت ہے۔ Nexy بغیر کلائنٹ کی ڈیٹا لیئر بھیجتا ہے ([ہینڈلرز](../routing/fbr/handlers/README.md)) |
+| ڈیٹا بازیافت کرنا | صفحہ یا ہینڈلر کے ذریعہ کیا گیا ہے جس کی ضرورت ہے۔ Nexy بغیر کلائنٹ کی ڈیٹا لیئر بھیجتا ہے ([ہینڈلر](../routing/fbr/handlers/README.md)) |
+
+ایک عمل اور فارم جو اس پر پوسٹ کرتا ہے، جو کسی بھی اسکرپٹ کے لوڈ ہونے سے پہلے کام کرتا ہے:
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/routes/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
 
 ## Nexy کیا نہیں کرتا
 
 توثیق، اجازت، ڈیٹا بیس، بین الاقوامی کاری، پس منظر کی ملازمتیں، ای میل، ادائیگیاں اور تلاش **آپ کی درخواست کی ذمہ داری** ہیں، فریم ورک کی نہیں۔ Nexy ایکسٹینشن پوائنٹ دیتا ہے اور کہتا ہے کہ ہر ایک کو کہاں سے لگانا ہے: دیکھیں [Nexy آپ کے لیے کیا چھوڑتا ہے](how-nexy-works.md#what-nexy-leaves-to-you)۔
+
+توثیق، مثال کے طور پر، اس فولڈر کے انحصار میں پلگ ان کی حفاظت کرتا ہے۔ Nexy اسے نیچے کے ہر راستے سے پہلے چلاتا ہے۔ صارف کون ہے آپ کا فیصلہ برقرار ہے:
+
+```python filename="src/routes/account/dependencies.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 وجہ اس کی اپنی خاطر minimalism نہیں ہے: ایک فریم ورک جو آپ کے ORM یا آپ کی auth لائبریری کو چنتا ہے اس نے کچھ فیصلہ کیا ہے جس کا فیصلہ صرف آپ کی درخواست ہی کر سکتی ہے۔
 
