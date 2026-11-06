@@ -51,7 +51,7 @@
   "routing/fbr/pages/README.md": "83807f6453ae35c51e80c6c12698455dabf463116029bd712da6169d7a104b6b",
   "routing/fbr/README.md": "f240b546ade8a21fa1eb20601454c18daf71386ea14e846317e3b8a7492b7291",
   "routing/fbr/realtime/websocket.md": "e3d3778f26205debfb633d14a7a5a852f7ddb38b9770705692e3629f70dda150",
-  "routing/modular/dependency-injection.md": "fdc67d0c2d160d3c76495526bd77f77a81e0f971bb3c42426d6c50f42296dfe4",
+  "routing/modular/dependency-injection.md": "475676e510c672faa048623e8c39d653e6440c9e6fc5940cdb82695fc7ffe1ae",
   "routing/modular/guards-and-metadata.md": "192067ecfaa2ea4398ee1c0009b4798bcd035c39c79f1fd53464a9f836e8acdb",
   "routing/modular/README.md": "abcd6b3e7d0d383f80c392d7670462cb818d16965edadd17149b033febbda62e",
   "routing/modular/vs-nestjs.md": "f54cf8efec5c5d43872c18dd3a8087adbc792703599df7bd84953cfd388d33f4",

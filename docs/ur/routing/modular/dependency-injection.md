@@ -19,7 +19,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc
@@ -59,10 +59,10 @@ from nexy.decorators import Injectable, Scope
 class CurrentUser: ...
 ```
 
-| دائرہ کار | تاحیات |
+| دائرہ کار | زندگی بھر |
 |---|---|
-| `Scope.SINGLETON` (پہلے سے طے شدہ) | پورے عمل کے لئے ایک مثال |
-| `Scope.REQUEST` | ایک مثال فی درخواست سیاق و سباق |
+| `Scope.SINGLETON` (پہلے سے طے شدہ) | پورے عمل کے لیے ایک مثال |
+| `Scope.REQUEST` | درخواست کے سیاق و سباق کے مطابق ایک مثال |
 | `Scope.TRANSIENT` | ہر قرارداد پر ایک نئی مثال |
 
 ## کنٹینر
@@ -94,5 +94,5 @@ def get(self, limit: int = Depends(pagination)) -> list[dict]: ...
 
 ## اگلے اقدامات
 
-- [گارڈز اور میٹا ڈیٹا](guards-and-metadata.md)
-- [ٹیسٹنگ](../../guides/testing.md)
+- [گارڈز اور میٹا ڈیٹا ](guards-and-metadata.md)
+- [جانچ ](../../guides/testing.md)
