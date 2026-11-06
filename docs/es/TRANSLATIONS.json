@@ -72,6 +72,7 @@
   "getting-started/what-is-nexy.md": "2141cd47faa4b9986ca8e60bd4bea250b8d296b9a450b63b910bc0d0370dc4d0",
   "coming-from/fastapi.md": "6602c92c3ba5207dc615975ee31c3789f576b4ca2808613297e7dc10eccb55fc",
   "coming-from/flask.md": "8a6b415cbb83871db1277c992555294cf7830706bfee52d96c7c30bc8fd61ab1",
-  "coming-from/django.md": "13aeee09739de72867e5f1f92acd83124d82d92bb648108e92aae4053cbb5daa"
+  "coming-from/django.md": "13aeee09739de72867e5f1f92acd83124d82d92bb648108e92aae4053cbb5daa",
+  "coming-from/nestjs.md": "ab4433944fb880607b755bc88c4e39df60a2614d4ef38fc6a1833660c1216644"
  }
 }
