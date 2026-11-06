@@ -16,6 +16,7 @@ SITE = Path(__file__).resolve().parents[3] / "sites" / "nexy"
 DOCS = SITE.parents[1] / "docs"
 ACTIONS = "/docs/guides/actions"
 MODULAR = "/docs/routing/modular/dependency-injection"
+STRUCTURE = "/docs/getting-started/project-structure"
 CONTINUE = '<a href="#" class="continue" hidden>Continue</a>'
 NOTHING: dict[str, str] = {}
 REDIRECTS = sorted(docs_source.REDIRECTS.items())
@@ -29,6 +30,7 @@ def answers():
         ACTIONS,
         "/docs/nope/nothing",
         MODULAR,
+        STRUCTURE,
         "/assets/style.css",
         "/assets/%2e%2e%2f%2e%2e%2fnexy%2fnexyconfig.py",
         "/search-index",
@@ -155,6 +157,11 @@ def test_the_links_are_dimmed_while_the_menu_is_still_parsed(answers):
 def test_a_heading_has_its_anchor_and_a_link_in_the_outline(answers):
     body = answers[ACTIONS][2]
     assert 'id="the-action-cycle"' in body and 'href="#the-action-cycle"' in body
+
+
+def test_a_heading_of_a_router_variant_is_hidden_in_the_outline_like_its_variant(answers):
+    body = answers[STRUCTURE][2]
+    assert '<li class="l2 router-variant" data-router="modular"><a href="#srcapps"' in body
 
 
 def test_links_between_pages_point_to_the_site(answers):
