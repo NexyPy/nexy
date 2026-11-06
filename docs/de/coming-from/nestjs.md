@@ -46,7 +46,7 @@ Der Methodenname ist das HTTP-Verb:
 from nexy.decorators import Controller
 
 
-@Controller(prefix="/cats")
+@Controller("/cats")
 class CatsController:
     async def get(self) -> list[dict]:
         return [{"name": "Tom"}]
@@ -66,13 +66,13 @@ export class CatController {
 }
 ```
 
-`@Param` und `ParseIntPipe` werden zu einem `{id}` im Präfix und einer `int`-Anmerkung:
+`@Param` und `ParseIntPipe` werden zu einem `{id}` im Pfad und einer `int`-Anmerkung:
 
 ```python filename="src/apps/cats/cat_controller.py"
 from nexy.decorators import Controller
 
 
-@Controller(prefix="/cats/{id}")
+@Controller("/cats/{id}")
 class CatController:
     async def get(self, id: int) -> dict:
         return {"id": id}
@@ -93,7 +93,7 @@ Ein Abfrageparameter ist ein Parameter mit einem Standardwert:
 from nexy.decorators import Controller
 
 
-@Controller(prefix="/search")
+@Controller("/search")
 class SearchController:
     async def get(self, q: str = "", limit: int = 10) -> dict:
         return {"q": q, "limit": limit}
@@ -138,7 +138,7 @@ from nexy.decorators import Controller
 from .cats_dto import CreateCat
 
 
-@Controller(prefix="/cats/new")
+@Controller("/cats/new")
 class NewCatController:
     async def post(self, body: CreateCat) -> CreateCat:
         return body
@@ -183,7 +183,7 @@ from nexy.decorators import Controller
 from .cats_service import CatsService
 
 
-@Controller(prefix="/cats")
+@Controller("/cats")
 class CatsController:
     def __init__(self, cats: CatsService) -> None:
         self.cats = cats
@@ -286,7 +286,7 @@ def require_token(x_token: str = Header("")) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -365,7 +365,7 @@ Es gibt kein `SwaggerModule.setup`: Jeder Controller befindet sich im Schema, da
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/documented")
+@Controller("/documented")
 class DocumentedController:
     @UseRoute(summary="List cats", tags=["cats"])
     @UseResponse(status_code=200)
@@ -393,7 +393,7 @@ from fastapi import WebSocket
 from nexy.decorators import Controller
 
 
-@Controller(prefix="/ws/echo")
+@Controller("/ws/echo")
 class EchoController:
     async def SOCKET(self, websocket: WebSocket) -> None:
         await websocket.accept()
@@ -459,7 +459,7 @@ Um einen Dienst in einem Test zu ersetzen, verlassen Sie sich über `Depends` au
 
 ## Oder Dateien statt Klassen
 
-Eine NestJS-App, die größtenteils CRUD ist, kann auch auf den dateibasierten Router verschoben werden, wo der Ordner das Präfix ist und es keine Module gibt, die synchronisiert werden müssen:
+Eine NestJS-App, die größtenteils CRUD ist, kann auch auf den dateibasierten Router verschoben werden, wo der Ordner der Pfad ist und es keine Module gibt, die synchronisiert werden müssen:
 
 ```python filename="src/routes/cats/[id].py"
 async def GET(id: int):
