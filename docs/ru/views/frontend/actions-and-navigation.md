@@ -27,6 +27,7 @@ async def add_todo(title: str) -> Todo:
 
 Страница вызывает его с объявленным вводом Python и получает в ответ типизированный `Todo`:
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/маршруты/todos.tsx"
 import { useAction } from "@nexy/client";
 import { add_todo } from "@nexy/actions";
@@ -40,6 +41,32 @@ export default function Todos() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Компонент представляет собой остров представления, а контроллер возвращает представление:
+
+```tsx filename="источник/компоненты/Todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/todos_view.nexy"
+---
+from "@/components/Todos.tsx" import Todos
+---
+<Todos directive="client:load" />
+```
+<!-- /router -->
 
 ## Клиентская навигация
 
@@ -91,6 +118,7 @@ async def sign_in(email: str, password: str) -> bool:
     return ok
 ```
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/маршруты/login.tsx"
 import { useAction, useRouter } from "@nexy/client";
 import { sign_in } from "@nexy/actions";
@@ -105,6 +133,23 @@ export default function Login() {
   return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```tsx filename="src/компоненты/Login.tsx"
+import { useAction } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export function Login() {
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) window.location.assign("/dashboard/");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+<!-- /router -->
 
 `check_password` означает вашу собственную проверку. См. [Действия](../../guides/actions.md) для ошибок, форм без JavaScript и безопасности.
 

@@ -27,6 +27,7 @@ async def add_todo(title: str) -> Todo:
 
 صفحہ اسے اعلان کردہ ان پٹ Python کے ساتھ کال کرتا ہے، اور ایک ٹائپ شدہ `Todo` واپس ملتا ہے:
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/todos.tsx"
 import { useAction } from "@nexy/client";
 import { add_todo } from "@nexy/actions";
@@ -40,13 +41,39 @@ export default function Todos() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+جز ایک منظر کا جزیرہ ہے، اور ایک کنٹرولر منظر کو واپس کرتا ہے:
+
+```tsx filename="src/components/Todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/todos_view.nexy"
+---
+from "@/components/Todos.tsx" import Todos
+---
+<Todos directive="client:load" />
+```
+<!-- /router -->
 
 ## کلائنٹ سائیڈ نیویگیشن
 
 Nexy میں نیویگیشن "ذہین" ہے۔ مکمل براؤزر کو دوبارہ لوڈ کرنے کے بجائے، Nexy موجودہ صفحہ کے مواد کو تبدیل کرتا ہے جبکہ فعال لے آؤٹ کو نصب رکھتا ہے۔
 
 - **`Link` اجزاء**: کلائنٹ سائیڈ ٹرانزیشن کو انجام دینے کے لیے فریم ورک کے لیے مخصوص `Link` جزو کا استعمال کریں۔
-- **پروگرامیٹک نیویگیشن**: `@nexy/client` سے `useRouter()` کا استعمال کریں اور منطق کے جواب میں صفحات کو تبدیل کرنے کے لیے `push()` کو کال کریں (مثال کے طور پر، کامیاب لاگ ان کے بعد)۔
+- **پروگرامیٹک نیویگیشن**: `@nexy/client` سے `useRouter()` کا استعمال کریں اور منطق کے جواب میں صفحات کو تبدیل کرنے کے لیے `push()` کو کال کریں (جیسے، کامیاب لاگ ان کے بعد)۔
 
 ```tsx filename="src/components/Nav.tsx"
 import { Link } from "@nexy/client";
@@ -91,6 +118,7 @@ async def sign_in(email: str, password: str) -> bool:
     return ok
 ```
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/login.tsx"
 import { useAction, useRouter } from "@nexy/client";
 import { sign_in } from "@nexy/actions";
@@ -105,8 +133,25 @@ export default function Login() {
   return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
 }
 ```
+<!-- /router -->
 
-`check_password` کا مطلب ہے آپ کی اپنی جانچ۔ غلطیوں کے لیے [ایکشنز](../../guides/actions.md) دیکھیں، بغیر JavaScript کے فارم اور سیکیورٹی دیکھیں۔
+<!-- router:modular -->
+```tsx filename="src/components/Login.tsx"
+import { useAction } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export function Login() {
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) window.location.assign("/dashboard/");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+<!-- /router -->
+
+`check_password` کا مطلب ہے آپ کی اپنی جانچ۔ غلطیوں کے لیے [ایکشنز](../../guides/actions.md) دیکھیں، بغیر JavaScript کے فارم اور سیکیورٹی۔
 
 ## فریم ورک کا نفاذ
 
