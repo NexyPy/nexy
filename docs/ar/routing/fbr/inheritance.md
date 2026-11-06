@@ -90,9 +90,6 @@ async def middleware(request: Request, call_next):
 نسخة في `cart/` تجيب على الـ 404 تحت `/cart`، ويحتفظ الجذر بالباقي:
 
 ```nexy filename="src/routes/(shop)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

@@ -90,9 +90,6 @@ Siehe [Abhängigkeiten](dependencies/README.md) für die Reihenfolge in einer Ha
 Eine Kopie in `cart/` beantwortet die 404er unter `/cart`, und die Wurzelkopie behält den Rest:
 
 ```nexy filename="src/routes/(shop)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

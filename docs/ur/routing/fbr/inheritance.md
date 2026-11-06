@@ -90,9 +90,6 @@ async def middleware(request: Request, call_next):
 `cart/` میں ایک کاپی `/cart` کے تحت 404 کا جواب دیتی ہے، اور جڑ باقی رکھتی ہے:
 
 ```nexy filename="src/routes/(shop)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

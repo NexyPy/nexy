@@ -102,9 +102,6 @@ refines the page for that prefix. See [Error pages](errors/README.md).
 A copy in `cart/` answers the 404s under `/cart`, and the root one keeps the rest:
 
 ```nexy filename="src/routes/(shop)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

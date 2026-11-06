@@ -90,9 +90,6 @@ async def middleware(request: Request, call_next):
 `cart/` 中的副本回答 `/cart` 下的 404，根副本保留其余部分：
 
 ```nexy filename="src/routes/(shop)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

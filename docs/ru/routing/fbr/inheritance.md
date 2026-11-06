@@ -90,9 +90,6 @@ async def middleware(request: Request, call_next):
 Копия в `cart/` отвечает на 404 в `/cart`, а корневая копия сохраняет все остальное:
 
 ```nexy filename="src/routes/(магазин)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

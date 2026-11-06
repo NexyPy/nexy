@@ -90,9 +90,6 @@ Voir [Dépendances](dependencies/README.md) pour l'ordre dans un fichier de gest
 Une copie dans `cart/` répond aux 404 sous `/cart`, et la racine garde le reste :
 
 ```nexy filename="src/routes/(boutique)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

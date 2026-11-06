@@ -90,9 +90,6 @@ Consulte [Dependencias](dependencies/README.md) para conocer el orden en un arch
 Una copia en `cart/` responde a los 404 en `/cart`, y la raíz se queda con el resto:
 
 ```nexy filename="src/routes/(tienda)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

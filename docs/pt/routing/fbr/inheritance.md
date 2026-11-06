@@ -90,9 +90,6 @@ Consulte [Dependências](dependencies/README.md) para a ordem em um arquivo mani
 Uma cópia em `cart/` responde aos 404 em `/cart`, e a raiz mantém o resto:
 
 ```nexy filename="src/rotas/(loja)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

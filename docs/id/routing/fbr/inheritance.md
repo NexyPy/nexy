@@ -90,9 +90,6 @@ Lihat [Dependensi](dependencies/README.md) untuk urutan dalam file handler, term
 Salinan di `cart/` menjawab 404 di bawah `/cart`, dan akarnya menyimpan sisanya:
 
 ```nexy filename="src/routes/(toko)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```

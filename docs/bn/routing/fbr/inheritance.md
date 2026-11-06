@@ -48,7 +48,7 @@ dependencies = [require_cart]
 
 একটি ফোল্ডার ফ্যামিলি স্ট্যাকের সমস্ত লেআউট ফাইল: [লেআউটস](layouts/README.md) দেখুন। বিভিন্ন পরিবার মিশ্রিত হয় না: একটি `layout.vue` কখনও একটি `.tsx` পৃষ্ঠা মোড়ানো হয় না, এবং একটি প্রকল্পে হয় `layout.nexy` বা ক্লায়েন্ট লেআউট থাকে, উভয়ই ([মোড](modes.md)) নয়।
 
-গাছের অভ্যন্তরীণ লেআউটটি শুধুমাত্র তার নিজস্ব ফ্রেম যুক্ত করে: এর চারপাশের মূল বিন্যাসটি এখনও নথিটি আঁকে।
+গাছের অভ্যন্তরীণ লেআউটটি শুধুমাত্র তার নিজস্ব ফ্রেম যুক্ত করে: এর চারপাশে মূল বিন্যাসটি এখনও নথিটি আঁকে।
 
 ```nexy filename="src/routes/(shop)/cart/layout.nexy"
 ---
@@ -90,9 +90,6 @@ async def middleware(request: Request, call_next):
 `cart/` এর একটি অনুলিপি `/cart` এর অধীনে 404 এর উত্তর দেয়, এবং মূলটি বাকিটি রাখে:
 
 ```nexy filename="src/routes/(shop)/cart/notfound.nexy"
----
-title: Product not found
----
 <h1>This product is gone</h1>
 <p><a href="/cart">Back to your cart</a></p>
 ```
