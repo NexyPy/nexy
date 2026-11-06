@@ -57,7 +57,7 @@ class Item:
     description: str | None = None
     platforms: tuple[str, ...] = ()
     link: str | None = None
-    cta: str = "none"
+    cta: str = ""
     ask: str = "none"
     proof: tuple[str, ...] = ()
     tags: tuple[str, ...] = ()

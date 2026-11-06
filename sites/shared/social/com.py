@@ -113,7 +113,7 @@ def read_item(path: Path) -> Item:
         description=_text(meta.get("description"), "description", path),
         platforms=_tuple(meta.get("platforms"), "platforms", path),
         link=_text(meta.get("link"), "link", path),
-        cta=_text(meta.get("cta"), "cta", path) or "none",
+        cta=_text(meta.get("cta"), "cta", path) or "",
         ask=_text(meta.get("ask"), "ask", path) or "none",
         proof=_tuple(meta.get("proof"), "proof", path),
         tags=_tuple(meta.get("tags"), "tags", path),
