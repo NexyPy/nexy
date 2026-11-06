@@ -65,7 +65,7 @@ glass, no 3D tilt, no floating pane over a blurred screenshot of the same pane. 
 opacity is not depth, it is a smudge that makes text at 14 px harder to read.
 
 The only shadow in the system is on things that genuinely float above the page and can be dismissed
-— a menu, a dialog, the dev toolbar — and it is `0 1px 2px rgb(0 0 0 / 0.06)`.
+- a menu, a dialog, the dev toolbar - and it is `0 1px 2px rgb(0 0 0 / 0.06)`.
 
 Radius: `2px` on inputs and code blocks, `0` everywhere else. Not 16 px on everything: a uniform
 16 px radius is the strongest single signal that a page came out of a template, because a human
@@ -88,7 +88,7 @@ one makes a project look like it was described rather than built.
 1. **Purple-to-indigo gradient** on a hero, a button or a heading. It arrived with AI landing pages
    and it now reads as "no designer was involved". Our accent is one flat teal.
 2. **Inter everywhere**, with a 700 weight headline and `-0.02em` tracking applied to everything.
-3. **A centred hero, a subtitle, two buttons, then three cards with an icon each** — "Fast", "Simple",
+3. **A centred hero, a subtitle, two buttons, then three cards with an icon each** - "Fast", "Simple",
    "Powerful". Our homepage leads with a command that runs.
 4. **Uniform 16 px radius on every surface**, plus a 1 px border on cards that also have a shadow.
 5. **A 10 % black shadow under every card** to fake depth on a flat page.
