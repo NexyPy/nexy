@@ -72,7 +72,10 @@ class TestRevalidate:
         assert seen["reloadListedPage"] == 2
 
     def test_the_router_refreshes_instead_of_reloading(self, seen):
-        assert seen["routerRefresh"] == {"refreshed": 1, "reloaded": 2}
+        assert (seen["routerRefresh"]["refreshed"], seen["routerRefresh"]["reloaded"]) == (1, 2)
+
+    def test_a_router_refresh_announces_it_to_use_fetch(self, seen):
+        assert seen["routerRefresh"]["announced"] == 1
 
     def test_an_answer_without_the_header_does_nothing(self, seen):
         assert seen["noHeaderNoReload"] == 0

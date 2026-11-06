@@ -18,6 +18,20 @@ Uma rota é um arquivo. A URL é o caminho do arquivo relativo a `src/routes/`, 
 
 No modo cliente, os arquivos de página são `.tsx`, `.vue` ou `.svelte` em vez de `.nexy`; as regras de URL são as mesmas.
 
+Dois arquivos dessa tabela: uma página que lê seu segmento e um manipulador que responde JSON.
+
+```nexy filename="src/rotas/blog/[slug].nexy"
+---
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+```
+
+```python filename="src/routes/api/users.py"
+async def GET():
+    return {"users": []}
+```
+
 ## Dois modos
 
 `useCSR` decide quais são as páginas. Os dois não podem ser misturados em um projeto: Nexy se recusa a iniciar quando uma página do servidor fica próxima a uma rota do cliente.
@@ -29,26 +43,54 @@ No modo cliente, os arquivos de página são `.tsx`, `.vue` ou `.svelte` em vez 
 
 `.py` arquivos são manipuladores de API em ambos os modos.
 
+A opção é uma linha de `nexyconfig.py`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()
+    useCSR = True  # client mode: src/routes/*.tsx are the pages
+```
+
 ## O que não é uma rota
 
 - Nomes de arquivos reservados: `layout.*`, `loading.nexy`, `errors.nexy`, `notfound.nexy`, `dependencies.py`, `middleware.py`, `__init__.py`.
 - Arquivos e pastas começando com `_` ou `.`: use-os para parciais e rascunhos.
 - Extensões que não estão ativas para o seu projeto. Um arquivo cuja extensão está inativa é ignorado com um aviso.
 
+```text
+src/routes/
+├─ layout.nexy          wraps the pages, not a route
+├─ middleware.py        wraps the requests, not a route
+├─ index.nexy           /
+├─ _card.nexy           a partial: no URL
+└─ .draft.nexy          a draft: no URL
+```
+
 ## Um arquivo por URL
 
 Dois arquivos que resolvem para o mesmo URL são registrados. Não crie `blog.nexy` próximo a `blog/index.nexy` e não misture `index.nexy` e `index.py` para o mesmo caminho. Escolha um.
 
+```text
+src/routes/
+├─ blog.nexy            /blog
+└─ blog/
+   └─ index.nexy        /blog as well: delete one of the two
+```
+
 ## Nesta seção
 
-| Pasta | O que ela cobre |
+| Pasta | O que cobre |
 |---|---|
 | [páginas/](pages/README.md) | páginas, [rotas dinâmicas](pages/dynamic-routes.md), grupos de rotas |
 | [layouts/](layouts/README.md) | uma página por tipo de arquivo de layout |
 | [manipuladores/](handlers/README.md) | `.py` manipuladores, validação e erros |
 | [dependências/](dependencies/README.md) | `dependencies.py`, guardas |
-| [middleware/](middleware/README.md) | `middleware.py` |
-| [erros/](errors/README.md) | páginas de erro e não encontradas |
+| [intermediário/](middleware/README.md) | `middleware.py` |
+| [erros/](errors/README.md) | páginas não encontradas e de erro |
 | [navegação/](navigation/linking-and-navigating.md) | links, ganchos |
 | [tempo real/](realtime/websocket.md) | WebSocket |
 | [herança](inheritance.md) | as regras de herança em uma tabela |

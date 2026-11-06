@@ -33,6 +33,7 @@ import {
   type ActionOptions,
   type ActionState
 } from './action-runtime.ts'
+import { createFetchState, FetchError, type FetchState } from './fetch-runtime.ts'
 
 /** A route of the project, with an optional query or fragment, or a link out of the app. */
 export type Href =
@@ -216,5 +217,22 @@ export function useAction<Input, Output>(action: Action<Input, Output>, options?
     error: () => state().error,
     run: store.run,
     reset: store.reset
+  }
+}
+
+export { FetchError }
+export type { FetchState }
+
+/** Read JSON from the server. Each field is an accessor: `data()`, `error()`, `pending()`. */
+export function useFetch<Data = unknown>(url: string) {
+  const store = createFetchState<Data>(url)
+  const [state, setState] = createSignal(store.getState())
+  onCleanup(store.subscribe(() => setState(store.getState())))
+  onMount(() => void store.start())
+  return {
+    data: () => state().data,
+    error: () => state().error,
+    pending: () => state().pending,
+    refresh: store.refresh
   }
 }

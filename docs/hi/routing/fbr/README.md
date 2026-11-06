@@ -18,37 +18,79 @@
 
 क्लाइंट मोड में पेज फ़ाइलें `.nexy` के बजाय `.tsx`, `.vue` या `.svelte` हैं; यूआरएल नियम समान हैं.
 
+उस तालिका की दो फ़ाइलें: एक पृष्ठ जो उसके खंड को पढ़ता है, और एक हैंडलर जो JSON का उत्तर देता है।
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+```
+
+```python filename="src/routes/api/users.py"
+async def GET():
+    return {"users": []}
+```
+
 ## दो मोड
 
 `useCSR` तय करता है कि पेज कौन से हैं। दोनों को एक प्रोजेक्ट में मिश्रित नहीं किया जा सकता: जब सर्वर पेज क्लाइंट रूट के बगल में बैठता है तो नेक्सी शुरू करने से इंकार कर देता है।
 
-| मोड | पेज | रूट लेआउट | देखें |
+| मोड | पन्ने | रूट लेआउट | देखिये |
 |---|---|---|---|
-| सर्वर (`useCSR = False`) | `.nexy`, `.md`, `.mdx` | `layout.nexy` | [सर्वर मोड और क्लाइंट मोड ](modes.md) |
-| क्लाइंट (`useCSR = True`) | फ्रेमवर्क फ़ाइलें | `layout.tsx` | [लेआउट.tsx](../../views/react/differences.md) |
+| सर्वर (`useCSR = False`) | `.nexy`, `.md`, `.mdx` | `layout.nexy` | [सर्वर मोड और क्लाइंट मोड](modes.md) |
+| ग्राहक (`useCSR = True`) | रूपरेखा फ़ाइलें | `layout.tsx` | [लेआउट.tsx](../../views/react/differences.md) |
 
 `.py` फ़ाइलें दोनों मोड में एपीआई हैंडलर हैं।
+
+स्विच `nexyconfig.py` की एक पंक्ति है:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()
+    useCSR = True  # client mode: src/routes/*.tsx are the pages
+```
 
 ## जो मार्ग नहीं है
 
 - आरक्षित फ़ाइल नाम: `layout.*`, `loading.nexy`, `errors.nexy`, `notfound.nexy`, `dependencies.py`, `middleware.py`, `__init__.py`।
-- `_` या `.` से शुरू होने वाली फ़ाइलें और फ़ोल्डर: उनका उपयोग आंशिक और ड्राफ्ट के लिए करें।
+- `_` या `.` से शुरू होने वाली फ़ाइलें और फ़ोल्डर्स: उन्हें आंशिक और ड्राफ्ट के लिए उपयोग करें।
 - वे एक्सटेंशन जो आपके प्रोजेक्ट के लिए सक्रिय नहीं हैं. एक फ़ाइल जिसका एक्सटेंशन निष्क्रिय है उसे एक चेतावनी के साथ छोड़ दिया जाता है।
+
+```text
+src/routes/
+├─ layout.nexy          wraps the pages, not a route
+├─ middleware.py        wraps the requests, not a route
+├─ index.nexy           /
+├─ _card.nexy           a partial: no URL
+└─ .draft.nexy          a draft: no URL
+```
 
 ## प्रति यूआरएल एक फ़ाइल
 
 दो फ़ाइलें जो समान URL पर हल होती हैं, दोनों पंजीकृत होती हैं। `blog/index.nexy` के आगे `blog.nexy` न बनाएं, और एक ही पथ के लिए `index.nexy` और `index.py` को न मिलाएं। एक चुनें.
 
+```text
+src/routes/
+├─ blog.nexy            /blog
+└─ blog/
+   └─ index.nexy        /blog as well: delete one of the two
+```
+
 ## इस अनुभाग में
 
 | फ़ोल्डर | इसमें क्या शामिल है |
 |---|---|
-| [पेज/](pages/README.md) | पेज, [गतिशील मार्ग](pages/dynamic-routes.md), मार्ग समूह |
+| [पेज/](pages/README.md) | पृष्ठ, [गतिशील मार्ग](pages/dynamic-routes.md), मार्ग समूह |
 | [लेआउट/](layouts/README.md) | प्रति लेआउट फ़ाइल प्रकार एक पृष्ठ |
-| [हैंडलर/](handlers/README.md) | `.py` हैंडलर, सत्यापन और त्रुटियां |
-| [निर्भरता/](dependencies/README.md) | `dependencies.py`, गार्ड |
+| [संचालक/](handlers/README.md) | `.py` हैंडलर, सत्यापन और त्रुटियां |
+| [निर्भरता/](dependencies/README.md) | `dependencies.py`, रक्षक |
 | [मिडलवेयर/](middleware/README.md) | `middleware.py` |
-| [त्रुटियाँ/](errors/README.md) | नहीं मिले और त्रुटि पृष्ठ |
+| [त्रुटियाँ/](errors/README.md) | नहीं मिला और त्रुटि पृष्ठ |
 | [नेविगेशन/](navigation/linking-and-navigating.md) | लिंक, हुक |
 | [वास्तविक समय/](realtime/websocket.md) | WebSocket |
 | [विरासत](inheritance.md) | एक तालिका में वंशानुक्रम नियम |

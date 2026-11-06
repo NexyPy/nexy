@@ -21,8 +21,8 @@ class NexyConfig(NexyConfigModel):
 | `usePort` | `3000` | porta para `dev` e `start` |
 | `useHost` | `"0.0.0.0"` | endereço de ligação |
 | `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS diretamente |
-| `useDevTools` | `True` | a barra de ferramentas `nexy dev` adiciona a cada página (informações da página, rotas, erros, configuração); `False` remove-o. Nunca presente na produção |
-| `useWorkers` | `0` | processa `nx start` é executado; `0` é um por CPU no Linux e macOS, um no Windows |
+| `useDevTools` | `True` | a barra de ferramentas `nexy dev` adiciona informações a cada página (informações da página, rotas, erros, configuração); `False` remove-o. Nunca presente na produção |
+| `useWorkers` | `0` | processos `nx start` executados; `0` é um por CPU no Linux e macOS, um no Windows |
 | `useCSR` | `False` | modo de roteamento do lado do cliente; `.nexy` rotas estão desativadas |
 
 ## Rotas
@@ -31,7 +31,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | uma instância ou classe `APIRouter` montada próxima às rotas baseadas em arquivo; `None` significa apenas baseado em arquivo |
 | `excludeDirs` | `["templates", "extension", "docs"]` | diretórios ignorados ao verificar rotas |
-| `useAliases` | `None` | aliases de importação, por exemplo. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escreve o que você escolheu, e Vite e `tsconfig.json` seguem-no |
+| `useAliases` | `None` | aliases de importação, por ex. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escreve o que você escolheu e Vite e `tsconfig.json` seguem-no |
 
 ## Interface
 
@@ -39,8 +39,8 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useFF` | `None` | fábrica de estrutura do cliente: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | construir e servir pacotes de clientes com Vite |
-| `useMarkdownExtensions` | `[]` | extensões extras para `.md`/`.mdx` renderização |
-| `useWatchExtensions` | `None` | extensões extras que o servidor de desenvolvimento monitora |
+| `useMarkdownExtensions` | `[]` | extensões extras para renderização `.md`/`.mdx` |
+| `useWatchExtensions` | `None` | extensões extras que o servidor de desenvolvimento observa |
 | `useWatchExcludePatterns` | `None` | padrões glob que o servidor de desenvolvimento ignora |
 
 > **É bom saber**: `NexyConfigModel` declara `useVite = False`; o tempo de execução `Config` padrão é `True`.
@@ -62,10 +62,24 @@ Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = 
 
 | Campo | Padrão | Significado |
 |---|---|---|
-| `useDocs` | `True` | serve o esquema OpenAPI e sua página de referência escalar |
+| `useDocs` | `True` | servir a página de referência escalar; `/openapi.json` é servido de qualquer maneira |
 | `useDocsUrl` | `"/docs"` | caminho da página de referência da API |
 | `useRedocsUrl` | `"/redocs"` | declarada mas nenhuma rota está montada |
 | `useTitle` | `"Nexy App"` | OpenAPI título e título da página (`"Nexy"` em `NexyConfigModel`) |
+
+### Grátis `/docs` para uma página do projeto
+
+A referência da API responde `/docs` antes de qualquer rota, então `src/routes/docs.nexy` ou `src/routes/docs/[[...slug]].nexy` nunca é servido lá. `nx dev` e `nx start` nomeiam essa página na inicialização. Mova a referência com `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+Ou desligue-o com `useDocs = False`. `/openapi.json` permanece atendido em ambos os casos: manter as rotas do projeto fora desse caminho.
 
 ## Middleware
 
@@ -74,7 +88,7 @@ Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = 
 | `useMiddlewares` | `[]` | Classes de middleware ASGI |
 | `useCORS` | `None` | kwargs para `CORSMiddleware` |
 | `useGZip` | `None` | kwargs para `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs para `TrustedHostMiddleware` |
+| `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuração de middleware de autenticação |
 | `useHTTPSRedirect` | `False` | redirecionar HTTP para HTTPS |
@@ -118,5 +132,5 @@ Esses campos existem em `NexyConfigModel` mas nenhum código os consome. Configu
 ## Próximas etapas
 
 - [i18n](../guides/i18n.md): internacionalização
-- [Frontend](../guides/frontend.md): `useFF` e a compilação do cliente
+- [Frontend](../guides/frontend.md): `useFF` e a construção do cliente
 - [Implantar](../deployment/README.md): opções de produção

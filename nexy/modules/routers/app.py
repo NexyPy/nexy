@@ -6,6 +6,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from rich.markup import escape
 from scalar_fastapi import get_scalar_api_reference
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
@@ -13,10 +14,12 @@ from starlette.types import ASGIApp
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
+from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.access_log import AccessLogMiddleware
 from nexy.helpers.server.devtools import DevToolsMiddleware
 from nexy.helpers.server.devtools.state import setup_devtools
+from nexy.helpers.server.head_requests import HeadRequestsMiddleware
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
@@ -36,6 +39,7 @@ from nexy.modules.routers.fbrouter.directory_middleware import (
 )
 from nexy.modules.routers.hmr import setup_hmr
 from nexy.modules.routers.middlewares import PathMiddleware, setup_middlewares
+from nexy.modules.routers.reserved_paths import shadowed_routes
 from nexy.modules.routers.router_resolver import resolve_router
 from nexy.modules.routers.static_assets import setup_favicon, setup_static_files
 from nexy.modules.runtime.importer import install_vfs_importer
@@ -113,6 +117,11 @@ class AppServer:
         r_url = conf.useRedocsUrl
         return d_url, r_url
 
+    def _warn_shadowed_routes(self, server: FastAPI) -> None:
+        """Name each project route that the API reference, served first, keeps from answering."""
+        for line in shadowed_routes(server.routes, self._docs_url, self.scalar_html):
+            console.print(tagged("nexy", escape(line), "yellow"))
+
     def _file_routes(self) -> list[tuple[str, tuple[str, ...]]]:
         """``(url, source directory parts)`` of every file route, for ``middleware.py`` scoping."""
         if self.fb_router is None:
@@ -134,6 +143,8 @@ class AppServer:
 
     def _add_middlewares(self, server: FastAPI) -> None:
         """The middlewares, innermost first: each one added wraps the ones before it."""
+        # Innermost: a HEAD asked again as GET does not run the project's middlewares twice.
+        server.add_middleware(HeadRequestsMiddleware)
         install_directory_middleware(server, routes=self._file_routes)
         server.add_middleware(PathMiddleware)
         if is_dev() and self.config.useDevTools:
@@ -158,6 +169,7 @@ class AppServer:
         ACTION_ENGINE.discover()
         ACTION_ENGINE.generate_client()
         self.fb_router = resolve_router(server, self.config, self.scalar_html, self._docs_url)
+        self._warn_shadowed_routes(server)
         if is_dev():
             setup_hmr(server)
             if self.config.useDevTools:

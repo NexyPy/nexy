@@ -56,6 +56,7 @@ export default function RootLayout(props: { children: JSX.Element }) {
 - Solid hydrates the server document and needs the Node renderer; keep `solid({ ssr: true })` in
   `vite.config.ts` in client mode.
 - `useAction` returns accessors: `pending()`, `data()`, `error()`.
+- `useFetch('/api/x')` reads JSON from a handler and returns accessors too, plus `refresh()`.
 - Import with `@/`. Navigate with `Link` from `@nexy/client`.
 - Icons are SVG components. No emoji.
 

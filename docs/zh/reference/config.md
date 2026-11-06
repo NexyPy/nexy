@@ -22,7 +22,7 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | 绑定地址 |
 | `useSslKeyfile`，`useSslCertfile` | `None` | 直接提供HTTPS服务 |
 | `useDevTools` | `True` | 工具栏 `nexy dev` 添加到每个页面（页面信息、路由、错误、配置）； `False` 将其删除。从未出现在生产中 |
-| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 在 Linux 和 macOS 上是每个 CPU 一个，在 Windows 上是一个 |
+| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 是 Linux 和 macOS 上每个 CPU 一个，Windows 上一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 
 ## 路线
@@ -62,10 +62,24 @@ class NexyConfig(NexyConfigModel):
 
 | 领域 | 默认 | 含义 |
 |---|---|---|
-| `useDocs` | `True` | 提供 OpenAPI 模式及其标量参考页面 |
+| `useDocs` | `True` | 提供标量参考页面； `/openapi.json` 的服务方式有两种 |
 | `useDocsUrl` | `"/docs"` | API参考页面路径 |
 | `useRedocsUrl` | `"/redocs"` | 已声明但未安装路由 |
 | `useTitle` | `"Nexy App"` | OpenAPI 标题和页面标题（`NexyConfigModel` 中的 `"Nexy"`） |
+
+### 项目页面的免费 `/docs`
+
+API 参考在任何路由之前回答 `/docs`，因此永远不会在那里提供 `src/routes/docs.nexy` 或 `src/routes/docs/[[...slug]].nexy`。 `nx dev` 和 `nx start` 在启动时命名这样的页面。使用 `useDocsUrl` 移动参考：
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+或者使用 `useDocs = False` 将其关闭。 `/openapi.json` 在这两种情况下都保持服务：使项目的路线远离该路径。
 
 ## 中间件
 

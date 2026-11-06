@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Callable, Mapping
 from collections.abc import Set as AbstractSet
 from dataclasses import dataclass, fields
@@ -53,10 +54,26 @@ def route_options(
     return {name: value for name, value in values.items() if value is not None and name not in skip}
 
 
-def Controller(prefix: str = "", tags: list[str] | None = None) -> Callable[[type[Any]], type[Any]]:
+def _controller_path(path: str, prefix: str | None) -> str:
+    """The path a controller answers on, from `path` or from its old name `prefix`."""
+    if prefix is None:
+        return path
+    if path:
+        raise TypeError("Controller takes `path` or `prefix`, not both: keep `path`")
+    message = "Controller(prefix=...) is deprecated: write Controller(path=...) or Controller(...)"
+    warnings.warn(message, DeprecationWarning, stacklevel=3)
+    return prefix
+
+
+def Controller(
+    path: str = "", tags: list[str] | None = None, *, prefix: str | None = None
+) -> Callable[[type[Any]], type[Any]]:
+    """Mark a class as a controller answering on *path*: `@Controller("/cats")`."""
+    controller_path = _controller_path(path, prefix)
+
     def wrapper(cls: type[Any]) -> type[Any]:
         cls.__is_controller__ = True
-        cls.__controller_prefix__ = prefix
+        cls.__controller_path__ = controller_path
         cls.__controller_tags__ = tags or [cls.__name__]
         return cls
 

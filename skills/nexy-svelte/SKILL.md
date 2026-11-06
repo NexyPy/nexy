@@ -40,6 +40,8 @@ The one allowed script is a short one in the layout head that sets the saved the
 - Buttons are `<button type="button">`; navigation is a link. Labels on every field.
 - Import with `@/`. Server calls: `useAction` from `@nexy/client` is a store (`$save.pending`,
   `$save.data`, `$save.error`, `save.run(input)`).
+- `useFetch('/api/x')` from `@nexy/client` reads JSON from a handler as a store: `$users.data`,
+  `$users.pending`, `$users.error`, `users.refresh()`.
 - Icons are SVG components. No emoji.
 - Inside a `.nexy` template, wrap Svelte's `{ }` blocks in `{% raw %}...{% endraw %}`.
 

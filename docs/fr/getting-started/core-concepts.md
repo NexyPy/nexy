@@ -21,6 +21,26 @@ Trois façons de décider quel code répond à une URL. Ce sont des alternatives
 - **Routeur modulaire** : contrôleurs et modules sous `src/apps/`, déclarés auprès des décorateurs, pour une base de code de style NestJS.
 - **Routeur personnalisé** : un FastAPI `APIRouter` existant inclus dans l'application.
 
+Le choix est une ligne de `nexyconfig.py`. Le routage basé sur fichiers n'en a besoin : sans `useRouter`, Nexy lit `src/routes/`.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
 Choisir l’un des trois est une décision. Le choix d'un framework frontend en est un autre, distinct : voir [Choisir un routeur](../routing/README.md) et [Vues](../views/README.md).
 
 ## Structure de la candidature
@@ -33,10 +53,42 @@ Cinq notions qu'un lecteur venant de Next.js fusionne habituellement en une seul
 | **Page** | un fichier de route qui restitue une vue : `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | un endpoint : il répond à un document, pas à des données |
 | **Voir** | ce qui produit le corps d'une page : Jinja2 et Python, Markdown, ou un composant client | un itinéraire : une même vue peut servir plusieurs pages |
 | **Composant** | une pièce réutilisable qu'une page importe | une route : en mode serveur un composant n'est jamais servi seul |
-| **Gestionnaire de route** | la fonction d'un fichier de route `.py`, nommé d'après la méthode HTTP (`GET`, `POST`, …) | une page : elle renvoie du JSON, un fichier ou un `Response` |
+| **Gestionnaire de route** | la fonction d'un fichier de route `.py`, nommé d'après la méthode HTTP (`GET`, `POST`, …) | une page : elle renvoie du JSON, un fichier ou un `Response` |
 | **Point de terminaison** | la paire (URL, méthode) à laquelle un gestionnaire répond | un gestionnaire : un fichier peut répondre à plusieurs points de terminaison |
 
 En une phrase : **une page est un fichier de route, une vue est ce qui le restitue, un composant est ce qu'une page réutilise, un gestionnaire répond à un point de terminaison.**
+
+Les cinq dans un petit projet :
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+Le frontmatter et le modèle en dessous sont la vue de la page ; `Like` est le composant qu'il réutilise.
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 Encore deux mots qui reviennent partout :
 
@@ -58,6 +110,16 @@ Deux décisions indépendantes, souvent confondues :
 | Hydratation | le navigateur attachant un framework au HTML que le serveur a déjà envoyé ([îlots](../rendering/islands.md)) |
 | Accessoires | les valeurs qu'un parent transmet à un composant, déclarées `name: prop[type]` dans un fichier `.nexy` ([fichiers .nexy](../views/nexy/README.md)) |
 
+Une page en mode serveur avec un îlot : le serveur restitue la page, le navigateur hydrate le graphique uniquement lorsqu'il défile.
+
+```nexy filename="src/routes/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
 ## Interaction avec les applications
 
 | Notion | Une ligne |
@@ -67,9 +129,42 @@ Deux décisions indépendantes, souvent confondues :
 | Navigation | des liens qui prélevent et des hooks qui lisent le chemin, la requête, les cookies et la session ([hooks](../routing/fbr/navigation/hooks.md)) |
 | Récupération de données | effectué par la page ou le gestionnaire qui en a besoin ; Nexy ne fournit aucune couche de données client ([gestionnaires](../routing/fbr/handlers/README.md)) |
 
+Une action et le formulaire qui y est publié, qui fonctionne avant le chargement de tout script :
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/routes/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+
 ## Ce que Nexy ne fait pas
 
 L'authentification, l'autorisation, la base de données, l'internationalisation, les tâches en arrière-plan, la messagerie électronique, les paiements et la recherche relèvent de **la responsabilité de votre application**, et non celle du framework. Nexy donne les points d'extension et indique où brancher chacun d'eux : voir [Ce que Nexy vous laisse](how-nexy-works.md#what-nexy-leaves-to-you).
+
+L'authentification, par exemple, se connecte à une dépendance du dossier qu'elle protège. Nexy l'exécute avant chaque itinéraire ci-dessous ; qui est l'utilisateur reste votre décision :
+
+```python filename="src/routes/compte/dependencies.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 La raison n'est pas le minimalisme en soi : un framework qui sélectionne votre ORM ou votre bibliothèque d'authentification a décidé quelque chose que seule votre application peut décider.
 

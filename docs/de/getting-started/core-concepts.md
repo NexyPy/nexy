@@ -21,6 +21,26 @@ Drei Möglichkeiten, um zu entscheiden, welcher Code auf eine URL antwortet. Es 
 - **Modularer Router**: Controller und Module unter `src/apps/`, deklariert mit Dekoratoren, für eine Codebasis im NestJS-Stil.
 - **Benutzerdefinierter Router**: ein vorhandener FastAPI `APIRouter`, der in der Anwendung enthalten ist.
 
+Die Auswahl ist eine Zeile von `nexyconfig.py`. Dateibasiertes Routing benötigt keines: Ohne `useRouter` liest Nexy `src/routes/`.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
 Sich für einen der drei zu entscheiden, ist eine Entscheidung. Die Auswahl eines Frontend-Frameworks ist eine andere, separate Angelegenheit: siehe [Router auswählen](../routing/README.md) und [Ansichten](../views/README.md).
 
 ## Anwendungsstruktur
@@ -38,9 +58,41 @@ Fünf Vorstellungen, die ein Leser aus Next.js normalerweise zu einer einzigen v
 
 In einem Satz: **Eine Seite ist eine Routendatei, eine Ansicht ist das, was sie rendert, eine Komponente ist das, was eine Seite wiederverwendet, ein Handler antwortet einem Endpunkt.**
 
+Alle fünf in einem kleinen Projekt:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+Die Vorderseite und die Vorlage darunter sind die Ansicht der Seite; `Like` ist die Komponente, die es wiederverwendet.
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
+
 Zwei weitere Wörter, die überall wiederkehren:
 
-- **Layout**: eine `layout.*`-Datei, die die Seiten unterhalb ihres Ordners umschließt; Der Root besitzt das HTML-Dokument. Siehe [Layouts](../routing/fbr/layouts/README.md).
+- **Layout**: eine `layout.*`-Datei, die die Seiten unter ihrem Ordner umschließt; Der Root besitzt das HTML-Dokument. Siehe [Layouts](../routing/fbr/layouts/README.md).
 - **Abhängigkeit**: eine Funktion, die vor einem Handler ausgeführt wird und pro Route oder pro Ordner angewendet wird. Siehe [Abhängigkeiten](../routing/fbr/dependencies/README.md).
 
 ## Präsentation und Rendering
@@ -58,18 +110,61 @@ Zwei unabhängige Entscheidungen, oft verwechselt:
 | Flüssigkeitszufuhr | Der Browser fügt ein Framework an HTML an, das der Server bereits gesendet hat ([Inseln](../rendering/islands.md)) |
 | Requisiten | die Werte, die ein übergeordnetes Element an eine Komponente übergibt, deklariert `name: prop[type]` in einer `.nexy`-Datei ([.nexy-Dateien](../views/nexy/README.md)) |
 
+Eine Seite im Servermodus mit einer Insel: Der Server rendert die Seite, der Browser hydriert das Diagramm nur, wenn es in die Ansicht scrollt.
+
+```nexy filename="src/routes/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
 ## Anwendungsinteraktion
 
 | Vorstellung | Eine Zeile |
 |---|---|
-| Aktion | eine Python-Funktion mit der Markierung `@Action`, die als `POST` diente und über ein Formular oder als typisierte Funktion aufgerufen werden konnte ([Aktionen](../guides/actions.md)) |
+| Aktion | eine Python-Funktion mit der Markierung `@Action`, die als `POST` diente und über ein Formular oder als typisierte Funktion ([Aktionen](../guides/actions.md)) aufgerufen werden konnte. |
 | Formular | ein HTML-Formular, das an eine Aktion sendet, wobei Validierungsfehler auf die Seite zurückkommen ([Aktionen](../guides/actions.md)) |
 | Navigation | Links, die vorab abrufen, und Hooks, die den Pfad, die Abfrage, die Cookies und die Sitzung lesen ([Hooks](../routing/fbr/navigation/hooks.md)) |
 | Datenabruf | wird von der Seite oder dem Handler erledigt, der es benötigt; Nexy liefert keine Client-Datenschicht ([Handler](../routing/fbr/handlers/README.md)) |
 
+Eine Aktion und das Formular, das an sie sendet und das funktioniert, bevor ein Skript geladen wird:
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/routes/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+
 ## Was Nexy nicht macht
 
 Authentifizierung, Autorisierung, Datenbank, Internationalisierung, Hintergrundjobs, E-Mail, Zahlungen und Suche liegen **in der Verantwortung Ihrer Anwendung**, nicht in der des Frameworks. Nexy gibt die Erweiterungspunkte an und sagt, wo sie jeweils angeschlossen werden müssen: siehe [Was Nexy Ihnen hinterlässt](how-nexy-works.md#what-nexy-leaves-to-you).
+
+Die Authentifizierung stellt beispielsweise eine Verbindung zu einer Abhängigkeit des Ordners her, den sie schützt. Nexy führt es vor jeder Route unten aus; Wer der Benutzer ist, bleibt Ihre Entscheidung:
+
+```python filename="src/routes/account/dependencies.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 Der Grund dafür ist nicht Minimalismus an sich: Ein Framework, das Ihr ORM oder Ihre Authentifizierungsbibliothek auswählt, hat etwas entschieden, über das nur Ihre Anwendung entscheiden kann.
 

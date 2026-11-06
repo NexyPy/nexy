@@ -70,6 +70,8 @@ function isInstalled(name: string): boolean {
 
 let nexySSGDone = false
 let isSSRBuild = false
+// `vite` dev also calls closeBundle, when the server stops: the static pages are a build's only.
+let isServe = false
 let isProduction = false
 
 // MDX is optional: a project that never uses .mdx must not need the MDX
@@ -218,6 +220,7 @@ function nexyPlugin(): Plugin {
 
     configResolved(config) {
       isSSRBuild = !!config.build?.ssr
+      isServe = config.command === 'serve'
     },
 
     // --- HMR for non-JS files (Python, Nexy, MDX) ---
@@ -319,7 +322,7 @@ function nexyPlugin(): Plugin {
 
     // --- Static Site Generation (SSG) ---
     closeBundle() {
-      if (isSSRBuild || nexySSGDone || process.env.NEXY_RENDER_ONLY) return
+      if (isServe || isSSRBuild || nexySSGDone || process.env.NEXY_RENDER_ONLY) return
       nexySSGDone = true
 
       console.log(`${c.dim}[nexy] Building client bundles...${c.reset}`)

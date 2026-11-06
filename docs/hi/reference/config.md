@@ -62,10 +62,24 @@ class NexyConfig(NexyConfigModel):
 
 | मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useDocs` | `True` | OpenAPI स्कीमा और उसके स्केलर संदर्भ पृष्ठ की सेवा करें |
+| `useDocs` | `True` | स्केलर संदर्भ पृष्ठ परोसें; `/openapi.json` किसी भी तरह से परोसा जाता है |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
 | `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
 | `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` में `NexyConfigModel`) |
+
+### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
+
+एपीआई संदर्भ किसी भी मार्ग से पहले `/docs` उत्तर देता है, इसलिए `src/routes/docs.nexy` या `src/routes/docs/[[...slug]].nexy` वहां कभी नहीं परोसा जाता है। `nx dev` और `nx start` स्टार्टअप पर ऐसे पेज को नाम दें। `useDocsUrl` के साथ संदर्भ को स्थानांतरित करें:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+या इसे `useDocs = False` से बंद कर दें। `/openapi.json` दोनों ही मामलों में सेवा बरकरार रहेगी: परियोजना के मार्गों को उस पथ से दूर रखें।
 
 ## मिडलवेयर
 
@@ -89,7 +103,7 @@ class NexyConfig(NexyConfigModel):
 
 ## फ़ाइल ट्री के बाहर के रूट
 
-एक FastAPI `APIRouter` बनाएं और इसे `useRouter` के साथ माउंट करें। इसे फ़ाइल-आधारित मार्गों के बगल में परोसा जाता है:
+एक FastAPI `APIRouter` बनाएं और इसे `useRouter` से माउंट करें। इसे फ़ाइल-आधारित मार्गों के बगल में परोसा जाता है:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
@@ -115,8 +129,8 @@ class NexyConfig(NexyConfigModel):
 
 `useViteDevUrl`, `useRTL`।
 
-## अगले चरण
+## अगले कदम
 
 - [i18n](../guides/i18n.md): अंतर्राष्ट्रीयकरण
 - [फ्रंटएंड](../guides/frontend.md): `useFF` और क्लाइंट बिल्ड
-- [तैनाती](../deployment/README.md): उत्पादन विकल्प
+- [परिनियोजन](../deployment/README.md): उत्पादन विकल्प
