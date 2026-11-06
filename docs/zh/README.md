@@ -139,6 +139,38 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 项目的规则 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
+## 来自
+
+相同的任务，先用您熟悉的框架编写，然后再用 Nexy 编写。
+
+### Python 框架
+| 页面 | 你会做什么 |
+|---|---|
+| [来自 FastAPI](coming-from/fastapi.md) | 将 FastAPI 端点、路由器和依赖项移动到路由文件中 |
+| [来自 Flask](coming-from/flask.md) | 将视图、蓝图、模板和表单转变为 Nexy 路线 |
+| [来自 Django](coming-from/django.md) | 将视图、模板、模型、表单和设置映射到 Nexy |
+
+### 后端框架
+| 页面 | 你会做什么 |
+|---|---|
+| [来自快递](coming-from/express.md) | 将路由、中间件和 `req`/`res` 转换为 Python 处理程序 |
+| [来自 Fastify](coming-from/fastify.md) | 将模式、插件和挂钩转换为模型、文件夹和文件 |
+| [来自艾丽西亚](coming-from/elysia.md) | 将 `t` 模式、守卫和 Eden 映射到 Pydantic 并键入操作 |
+| [从霍诺出发](coming-from/hono.md) | 将路由、中间件和 `hc` 客户端映射到 Nexy |
+| [来自 NestJS](coming-from/nestjs.md) | 将控制器、模块、提供程序和防护程序移至模块化路由器 |
+| [来自 Laravel](coming-from/laravel.md) | 将路由、控制器、Blade、Eloquent 和队列映射到 Nexy |
+| [来自 Spring Boot](coming-from/spring-boot.md) | 将控制器、Bean 验证、JPA 和过滤器映射到 Nexy |
+| [来自 Ruby on Rails](coming-from/rails.md) | 将路线、控制器、ERB、Active Record 和作业映射到 Nexy |
+
+### 全栈 JavaScript 框架
+| 页面 | 你会做什么 |
+|---|---|
+| [来自 Next.js](coming-from/nextjs.md) | 保留您的 React 页面并将服务器代码移至 Python |
+| [来自 Remix](coming-from/remix.md) | 将加载程序和操作转换为 Python 处理程序和操作 |
+| [来自 Nuxt](coming-from/nuxt.md) | 保留 Vue 页面并将 `server/` 移至 Python |
+| [来自 SvelteKit](coming-from/sveltekit.md) | 保留您的 Svelte 页面并将负载、操作和挂钩移至 Python |
+| [来自 Astro](coming-from/astro.md) | 将 Astro 页写入 `.nexy` 页，具有相同的岛 |
+
 ## 参考
 
 ### 命令和配置
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

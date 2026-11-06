@@ -139,6 +139,38 @@ Controladores y módulos.
 | [Agentes codificadores](guides/ai-agents.md) | Dale a Claude Code, Codex y OpenCode las reglas de tu proyecto |
 | [Solución de problemas](guides/troubleshooting.md) | Solucionar los primeros problemas a los que se enfrenta la gente |
 
+## viniendo de
+
+Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
+
+### Python marcos
+| Página | que haras |
+|---|---|
+| [Desde FastAPI](coming-from/fastapi.md) | Mueva FastAPI puntos finales, enrutadores y dependencias a archivos de ruta |
+| [Desde Flask](coming-from/flask.md) | Convierta vistas, planos, plantillas y formularios en rutas Nexy |
+| [Desde Django](coming-from/django.md) | Asigne vistas, plantillas, modelos, formularios y configuraciones a Nexy |
+
+### Marcos de fondo
+| Página | que haras |
+|---|---|
+| [Desde expreso](coming-from/express.md) | Traducir rutas, middleware y `req`/`res` en Python controladores |
+| [Desde Fastify](coming-from/fastify.md) | Convierta esquemas, complementos y enlaces en modelos, carpetas y archivos |
+| [De Elysia](coming-from/elysia.md) | Asigne `t` esquemas, guardias y Eden a Pydantic y acciones escritas |
+| [De Hono](coming-from/hono.md) | Mapear rutas, middleware y el cliente `hc` a Nexy |
+| [Desde NestJS](coming-from/nestjs.md) | Mueva controladores, módulos, proveedores y guardias al enrutador modular |
+| [De Laravel](coming-from/laravel.md) | Mapear rutas, controladores, Blade, Eloquent y colas a Nexy |
+| [Desde arranque de primavera](coming-from/spring-boot.md) | Controladores de mapas, validación de Bean, JPA y filtros para Nexy |
+| [De Ruby on Rails](coming-from/rails.md) | Asigne rutas, controladores, ERB, Active Record y trabajos a Nexy |
+
+### Marcos Fullstack JavaScript
+| Página | que haras |
+|---|---|
+| [Desde Next.js](coming-from/nextjs.md) | Conserve sus páginas React y mueva el código del servidor a Python |
+| [Desde Remix](coming-from/remix.md) | Convierta cargadores y acciones en Python controladores y acciones |
+| [Desde Nuxt](coming-from/nuxt.md) | Conserve sus Vue páginas y mueva `server/` a Python |
+| [De SvelteKit](coming-from/sveltekit.md) | Conserva tus Svelte páginas y mueve cargas, acciones y enlaces a Python |
+| [Desde Astro](coming-from/astro.md) | Escribe Astro páginas como `.nexy` páginas, con las mismas islas |
+
 ## Referencia
 
 ### Comandos y configuración
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

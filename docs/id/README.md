@@ -139,6 +139,38 @@ Pengontrol dan modul.
 | [Agen pengkodean](guides/ai-agents.md) | Berikan Claude Code, Codex dan OpenCode aturan proyek Anda |
 | [Pemecahan Masalah](guides/troubleshooting.md) | Perbaiki masalah pertama yang dialami orang |
 
+## Berasal dari
+
+Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
+
+### Python kerangka kerja
+| Halaman | Apa yang akan kamu lakukan |
+|---|---|
+| [Dari FastAPI](coming-from/fastapi.md) | Pindahkan FastAPI titik akhir, router, dan dependensi ke dalam file rute |
+| [Dari Flask](coming-from/flask.md) | Ubah tampilan, cetak biru, templat, dan formulir menjadi rute Nexy |
+| [Dari Django](coming-from/django.md) | Tampilan peta, templat, model, formulir, dan pengaturan ke Nexy |
+
+### Kerangka kerja backend
+| Halaman | Apa yang akan kamu lakukan |
+|---|---|
+| [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
+| [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
+| [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan ketikkan tindakan |
+| [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
+| [Dari NestJS](coming-from/nestjs.md) | Pindahkan pengontrol, modul, penyedia, dan penjaga ke router modular |
+| [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
+| [Dari Sepatu Musim Semi](coming-from/spring-boot.md) | Pengontrol peta, Validasi Bean, JPA dan filter ke Nexy |
+| [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
+
+### Kerangka kerja Fullstack JavaScript
+| Halaman | Apa yang akan kamu lakukan |
+|---|---|
+| [Dari Next.js](coming-from/nextjs.md) | Simpan halaman React Anda dan pindahkan kode server ke Python |
+| [Dari Remix](coming-from/remix.md) | Ubah pemuat dan tindakan menjadi Python penangan dan tindakan |
+| [Dari Nuxt](coming-from/nuxt.md) | Simpan halaman Vue Anda dan pindahkan `server/` ke Python |
+| [Dari SvelteKit](coming-from/sveltekit.md) | Simpan halaman Svelte Anda dan pindahkan muatan, tindakan, dan pengait ke Python |
+| [Dari Astro](coming-from/astro.md) | Tulis halaman Astro sebagai halaman `.nexy`, dengan pulau yang sama |
+
 ## Referensi
 
 ### Perintah dan konfigurasi
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

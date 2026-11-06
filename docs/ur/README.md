@@ -139,12 +139,44 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قوانین Claude Code، Codex اور OpenCode کو بتائیں |
 | [خرابیوں کا سراغ لگانا](guides/troubleshooting.md) | لوگوں کے پہلے مسائل کو حل کریں۔ |
 
+## سے آرہا ہے۔
+
+وہی کام، جو آپ جانتے ہیں اور پھر Nexy میں لکھے گئے فریم ورک میں۔
+
+### Python فریم ورک
+| صفحہ | آپ کیا کریں گے |
+|---|---|
+| [منجانب FastAPI](coming-from/fastapi.md) | روٹ فائلوں میں FastAPI اینڈ پوائنٹس، روٹرز اور انحصار کو منتقل کریں۔ |
+| [منجانب Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
+| [منجانب Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
+
+### بیک اینڈ فریم ورک
+| صفحہ | آپ کیا کریں گے |
+|---|---|
+| [ایکسپریس سے ](coming-from/express.md) | روٹس، مڈل ویئر اور `req`/`res` کو Python ہینڈلرز میں ترجمہ کریں |
+| [فاسٹائف ](coming-from/fastify.md) سے | اسکیموں، پلگ انز اور ہکس کو ماڈلز، فولڈرز اور فائلوں میں تبدیل کریں۔ |
+| [سے ایلیسیا](coming-from/elysia.md) | نقشہ `t` اسکیماس، گارڈز اور ایڈن سے Pydantic اور ٹائپ کردہ اعمال |
+| [ہونو سے ](coming-from/hono.md) | نقشے کے راستوں، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
+| [منجانب NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، پرووائیڈرز اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
+| [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستوں، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
+| [اسپرنگ بوٹ سے ](coming-from/spring-boot.md) | نقشہ کنٹرولرز، بین کی توثیق، JPA اور Nexy کے فلٹرز |
+| [روبی آن ریلز سے ](coming-from/rails.md) | نقشے کے راستے، کنٹرولرز، ERB، ایکٹو ریکارڈ اور Nexy کے لیے نوکریاں |
+
+### فل اسٹیک JavaScript فریم ورک
+| صفحہ | آپ کیا کریں گے |
+|---|---|
+| [منجانب Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
+| [منجانب Remix](coming-from/remix.md) | لوڈرز اور ایکشن کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
+| [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات رکھیں اور `server/` کو Python پر منتقل کریں۔ |
+| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات کو رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
+| [سے Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
+
 ## حوالہ
 
 ### کمانڈز اور تشکیل
 | صفحہ | اس میں کیا درج ہے۔ |
 |---|---|
-| [CLI ](reference/cli.md) | کمانڈز، جھنڈے، پرامپٹس اور ایگزٹ کوڈز |
+| [CLI](reference/cli.md) | کمانڈز، جھنڈے، پرامپٹس اور ایگزٹ کوڈز |
 | [ترتیب ](reference/config.md) | ہر `nexyconfig.py` فیلڈ اور اس کا ڈیفالٹ |
 
 ### Python API اور غلطیاں
@@ -158,7 +190,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 |---|---|
 | [فائل کنونشنز](reference/file-conventions.md) | محفوظ فائلیں اور روٹنگ کے اصول |
 | [لغت ](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
-| [سلامتی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
+| [سیکورٹی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
 
 ## لے آؤٹ
 ```text
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -192,7 +225,7 @@ docs/
 
 ## اعلی درجے کی
 
-### ترقی یافتہ {advanced}
+### اعلی درجے کی {advanced}
 
 | صفحہ | آپ کیا کریں گے |
 |---|---|

@@ -139,6 +139,38 @@ Nexy объединяет ваши страницы и ваш API в один Py
 | [Агенты кодирования](guides/ai-agents.md) | Дайте Claude Code, Codex и OpenCode правила вашего проекта. |
 | [Устранение неполадок](guides/troubleshooting.md) | Исправляйте первые проблемы, с которыми сталкиваются люди |
 
+## Исходя из
+
+Те же задачи, написанные в знакомом вам фреймворке, а затем в Nexy.
+
+### Python фреймворки
+| Страница | Что ты будешь делать |
+|---|---|
+| [От FastAPI](coming-from/fastapi.md) | Переместите FastAPI конечные точки, маршрутизаторы и зависимости в файлы маршрутов. |
+| [От Flask](coming-from/flask.md) | Превратите представления, чертежи, шаблоны и формы в маршруты Nexy |
+| [От Django](coming-from/django.md) | Сопоставление представлений, шаблонов, моделей, форм и настроек с Nexy |
+
+### Бэкэнд-фреймворки
+| Страница | Что ты будешь делать |
+|---|---|
+| [Из экспресса](coming-from/express.md) | Преобразование маршрутов, промежуточного программного обеспечения и `req`/`res` в обработчики Python |
+| [Из Fastify](coming-from/fastify.md) | Превратите схемы, плагины и перехватчики в модели, папки и файлы. |
+| [Из Элизии](coming-from/elysia.md) | Сопоставьте схемы `t`, охранников и Эдем с Pydantic и типизированными действиями. |
+| [Из Хоно](coming-from/hono.md) | Сопоставьте маршруты, промежуточное программное обеспечение и клиент `hc` с Nexy. |
+| [От NestJS](coming-from/nestjs.md) | Переместите контроллеры, модули, провайдеры и охранники на модульный маршрутизатор. |
+| [Из Ларавел](coming-from/laravel.md) | Сопоставление маршрутов, контроллеров, Blade, Eloquent и очередей в Nexy |
+| [Из Spring Boot](coming-from/spring-boot.md) | Сопоставьте контроллеры, проверку компонентов, JPA и фильтры с Nexy |
+| [Из Ruby on Rails](coming-from/rails.md) | Сопоставление маршрутов, контроллеров, ERB, Active Record и заданий с Nexy |
+
+### Fullstack JavaScript фреймворки
+| Страница | Что ты будешь делать |
+|---|---|
+| [От Next.js](coming-from/nextjs.md) | Сохраните свои страницы React и переместите код сервера в Python |
+| [От Remix](coming-from/remix.md) | Превратите загрузчики и действия в Python обработчики и действия. |
+| [Из Нукста](coming-from/nuxt.md) | Сохраните свои страницы Vue и переместите `server/` на Python |
+| [Из SvelteKit](coming-from/sveltekit.md) | Сохраните свои страницы Svelte и переместите нагрузки, действия и хуки на Python |
+| [От Astro](coming-from/astro.md) | Напишите Astro страниц как `.nexy` страниц с теми же островами. |
+
 ## Ссылка
 
 ### Команды и конфигурация
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

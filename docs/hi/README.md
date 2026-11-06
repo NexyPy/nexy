@@ -139,6 +139,38 @@
 | [कोडिंग एजेंट](guides/ai-agents.md) | Claude Code, Codex और OpenCode अपने प्रोजेक्ट के नियम बताएं |
 | [समस्या निवारण](guides/troubleshooting.md) | लोगों द्वारा झेली गई पहली समस्याओं को ठीक करें |
 
+## से आ रहा है
+
+वही कार्य, जो आप जानते हैं ढांचे में लिखे गए हैं और फिर नेक्सी में।
+
+### Python रूपरेखाएँ
+| पेज | तुम क्या करोगे |
+|---|---|
+| [से FastAPI](coming-from/fastapi.md) | FastAPI एंडपॉइंट, राउटर और निर्भरता को रूट फ़ाइलों में ले जाएँ |
+| [से Flask](coming-from/flask.md) | व्यू, ब्लूप्रिंट, टेम्प्लेट और फॉर्म को नेक्सी रूट में बदलें |
+| [से Django](coming-from/django.md) | नेक्सी पर मानचित्र दृश्य, टेम्पलेट, मॉडल, फॉर्म और सेटिंग्स |
+
+### बैकएंड ढाँचे
+| पेज | तुम क्या करोगे |
+|---|---|
+| [एक्सप्रेस से](coming-from/express.md) | रूट, मिडलवेयर और `req`/`res` का Python हैंडलर में अनुवाद करें |
+| [फास्टिफाई से](coming-from/fastify.md) | स्कीमा, प्लगइन और हुक को मॉडल, फ़ोल्डर और फ़ाइलों में बदलें |
+| [एलिसिया से](coming-from/elysia.md) | मानचित्र `t` स्कीमा, गार्ड और ईडन से Pydantic और टाइप की गई गतिविधियां |
+| [होनो से](coming-from/hono.md) | नेक्सी के लिए रूट, मिडलवेयर और `hc` क्लाइंट को मैप करें |
+| [से NestJS](coming-from/nestjs.md) | नियंत्रकों, मॉड्यूल, प्रदाताओं और गार्डों को मॉड्यूलर राउटर पर ले जाएं |
+| [लारवेल से](coming-from/laravel.md) | नेक्सी के लिए मार्ग, नियंत्रक, ब्लेड, एलोक्वेंट और कतारें मैप करें |
+| [स्प्रिंग बूट से](coming-from/spring-boot.md) | मानचित्र नियंत्रक, बीन सत्यापन, जेपीए और नेक्सी के लिए फ़िल्टर |
+| [रूबी ऑन रेल्स से](coming-from/rails.md) | नेक्सी के लिए मानचित्र मार्ग, नियंत्रक, ईआरबी, सक्रिय रिकॉर्ड और नौकरियां |
+
+### फ़ुलस्टैक JavaScript ढाँचे
+| पेज | तुम क्या करोगे |
+|---|---|
+| [से Next.js](coming-from/nextjs.md) | अपने React पेज रखें और सर्वर कोड को Python पर ले जाएं |
+| [से Remix](coming-from/remix.md) | लोडर और क्रियाओं को Python हैंडलर और क्रियाओं में बदलें |
+| [नक्सट से](coming-from/nuxt.md) | अपने Vue पेज रखें और `server/` को Python पर ले जाएं |
+| [स्वेलटेकिट से](coming-from/sveltekit.md) | अपने Svelte पेज रखें और लोड, क्रियाएं और हुक्स को Python पर ले जाएं |
+| [से Astro](coming-from/astro.md) | Astro पृष्ठों को समान द्वीपों के साथ `.nexy` पृष्ठों के रूप में लिखें |
+
 ## संदर्भ
 
 ### कमांड और कॉन्फिग
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

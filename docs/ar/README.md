@@ -139,6 +139,38 @@
 | [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
 | [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
+## قادم من
+
+نفس المهام المكتوبة في الإطار الذي تعرفه ثم في Nexy.
+
+### Python الأطر
+| الصفحة | ماذا ستفعل |
+|---|---|
+| [من FastAPI](coming-from/fastapi.md) | انقل FastAPI نقاط النهاية وأجهزة التوجيه والتبعيات إلى ملفات المسار |
+| [من Flask](coming-from/flask.md) | قم بتحويل طرق العرض والمخططات والقوالب والنماذج إلى مسارات Nexy |
+| [من Django](coming-from/django.md) | خريطة طرق العرض والقوالب والنماذج والنماذج والإعدادات إلى Nexy |
+
+### الأطر الخلفية
+| الصفحة | ماذا ستفعل |
+|---|---|
+| [من اكسبرس](coming-from/express.md) | ترجمة المسارات والبرامج الوسيطة و `req`/`res` إلى معالجات Python |
+| [من فاستيفاي](coming-from/fastify.md) | تحويل المخططات والمكونات الإضافية والخطافات إلى نماذج ومجلدات وملفات |
+| [من إليسيا](coming-from/elysia.md) | قم بتعيين مخططات `t` والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
+| [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
+| [من NestJS](coming-from/nestjs.md) | انقل وحدات التحكم والوحدات والموفرين والحراس إلى جهاز التوجيه المعياري |
+| [من لارافيل](coming-from/laravel.md) | قم بتعيين المسارات ووحدات التحكم وBlade وEloquent وقوائم الانتظار إلى Nexy |
+| [من التمهيد الربيعي](coming-from/spring-boot.md) | وحدات تحكم الخريطة، التحقق من صحة الفول، JPA والمرشحات إلى Nexy |
+| [من روبي أون ريلز](coming-from/rails.md) | قم بتعيين المسارات ووحدات التحكم وERB وActive Record والوظائف إلى Nexy |
+
+### أطر عمل Fullstack JavaScript
+| الصفحة | ماذا ستفعل |
+|---|---|
+| [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |
+| [من Remix](coming-from/remix.md) | تحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
+| [من نوكست](coming-from/nuxt.md) | احتفظ بصفحاتك Vue وانقل `server/` إلى Python |
+| [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
+| [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |
+
 ## مرجع
 
 ### الأوامر والتكوين
@@ -147,7 +179,7 @@
 | [سطر الأوامر](reference/cli.md) | الأوامر والأعلام والمطالبات ورموز الخروج |
 | [التكوين](reference/config.md) | كل `nexyconfig.py` الحقل والافتراضي الخاص به |
 
-### Python API والأخطاء
+### Python واجهة برمجة التطبيقات والأخطاء
 | الصفحة | ما يسرد |
 |---|---|
 | [Python واجهة برمجة التطبيقات](reference/python-api.md) | كل اسم يصدره Nexy، حسب الوحدة |
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

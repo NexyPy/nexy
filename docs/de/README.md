@@ -139,6 +139,38 @@ Controller und Module.
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 
+## Kommt von
+
+Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in Nexy.
+
+### Python Frameworks
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von FastAPI](coming-from/fastapi.md) | Verschieben Sie FastAPI Endpunkte, Router und Abhängigkeiten in Routendateien |
+| [Von Flask](coming-from/flask.md) | Verwandeln Sie Ansichten, Blaupausen, Vorlagen und Formulare in Nexy-Routen |
+| [Von Django](coming-from/django.md) | Ordnen Sie Ansichten, Vorlagen, Modelle, Formulare und Einstellungen Nexy zu |
+
+### Backend-Frameworks
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von Express](coming-from/express.md) | Übersetzen Sie Routen, Middleware und `req`/`res` in Python-Handler |
+| [Von Fastify](coming-from/fastify.md) | Verwandeln Sie Schemata, Plugins und Hooks in Modelle, Ordner und Dateien |
+| [Aus Elysia](coming-from/elysia.md) | Ordnen Sie `t` Schemata, Wachen und Eden Pydantic und typisierten Aktionen zu |
+| [Von Hono](coming-from/hono.md) | Ordnen Sie Routen, Middleware und den `hc`-Client Nexy zu |
+| [Von NestJS](coming-from/nestjs.md) | Verschieben Sie Controller, Module, Provider und Guards auf den modularen Router |
+| [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
+| [Von Spring Boot](coming-from/spring-boot.md) | Ordnen Sie Controller, Bean-Validierung, JPA und Filter Nexy zu |
+| [Von Ruby on Rails](coming-from/rails.md) | Ordnen Sie Routen, Controller, ERB, Active Record und Jobs Nexy zu |
+
+### Fullstack JavaScript Frameworks
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von Next.js](coming-from/nextjs.md) | Behalten Sie Ihre React-Seiten und verschieben Sie den Servercode nach Python |
+| [Von Remix](coming-from/remix.md) | Verwandeln Sie Loader und Aktionen in Python Handler und Aktionen |
+| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue Seiten und verschieben Sie `server/` nach Python |
+| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte Seiten und verschieben Sie Lasten, Aktionen und Hooks auf Python |
+| [Von Astro](coming-from/astro.md) | Schreiben Sie Astro Seiten als `.nexy` Seiten mit denselben Inseln |
+
 ## Referenz
 
 ### Befehle und Konfiguration
@@ -166,6 +198,7 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/        one page per framework: FastAPI, Django, Express, Next.js...
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
