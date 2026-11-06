@@ -10,16 +10,88 @@
 2.  **নেস্টেড লেআউটস**: যেকোনো ফোল্ডারের নিজস্ব `layout.*` ফাইল থাকতে পারে। এই লেআউটটি সেই ফোল্ডারের মধ্যে সমস্ত পৃষ্ঠা এবং সাব-লেআউটগুলিকে মোড়ানো হয়।
 3.  **উত্তরাধিকার**: একটি পৃষ্ঠা রুট থেকে তার নিজস্ব ফোল্ডারে সমস্ত লেআউট দ্বারা মোড়ানো হয়।
 
+```text
+src/routes/
+├─ layout.tsx            root: <html>, <head>, <body>
+├─ index.tsx             root > page
+└─ dashboard/
+   ├─ layout.tsx         nested: the dashboard menu
+   └─ settings.tsx       root > dashboard > page
+```
+
+একটি নেস্টেড লেআউট শুধুমাত্র তার UI এর অংশ আঁকে এবং পৃষ্ঠাটি রাখে যেখানে `children` যায়:
+
+```tsx filename="src/routes/dashboard/layout.tsx"
+import type { ReactNode } from "react";
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="dashboard">
+      <nav>Dashboard</nav>
+      <main>{children}</main>
+    </div>
+  );
+}
+```
+
 ## শেয়ার্ড স্টেট এবং কম্পোজিশন
 
-লেআউট স্থিতিশীল হতে ডিজাইন করা হয়েছে. একই লেআউট ভাগ করে এমন দুটি পৃষ্ঠার মধ্যে নেভিগেট করার সময়, লেআউটটি পুনরায় রেন্ডার করা হয় না **নয়**; শুধুমাত্র শিশু বিষয়বস্তু পরিবর্তন.
+লেআউট স্থিতিশীল হতে ডিজাইন করা হয়েছে. ক্লায়েন্ট মোডে, একই লেআউট ভাগ করে এমন দুটি পৃষ্ঠার মধ্যে নেভিগেট করার সময়, লেআউটটি পুনরায় রেন্ডার করা হয় না **নয়**; শুধুমাত্র শিশু বিষয়বস্তু পরিবর্তন. সার্ভার মোডে প্রতিটি নেভিগেশন একটি নতুন নথি।
 
-- **স্লট**: লেআউটগুলি একটি "স্লট" প্রদান করে (সাধারণত JSX-এ `children` বা `{{ content }}` Jinja2-এ যেখানে নেস্টেড পৃষ্ঠাটি ইনজেকশন করা হয়।
-- **রাজ্য সংরক্ষণ**: লেআউটটি মাউন্ট করা থাকার কারণে, এর মধ্যে থাকা যেকোনো অবস্থা (যেমন, একটি হেডারে একটি অনুসন্ধান প্রশ্ন) নেভিগেশনের সময় সংরক্ষিত হয়।
+- **স্লট**: লেআউটগুলি একটি স্লট প্রদান করে যেখানে নেস্টেড পৃষ্ঠাটি ইনজেকশন করা হয়: JSX-এ `children`, এবং `children` একটি `.nexy` লেআউটে প্রপ।
+- **রাষ্ট্রীয় সংরক্ষণ**: লেআউটটি মাউন্ট থাকার কারণে, এর মধ্যে থাকা যেকোনো অবস্থা (যেমন, একটি হেডারে একটি অনুসন্ধান প্রশ্ন) নেভিগেশনের সময় সংরক্ষিত হয়।
+
+একটি `.nexy` বিন্যাসে একই স্লট:
+
+```nexy filename="src/routes/layout.nexy"
+---
+children: prop[NexyElement]
+---
+<!DOCTYPE html>
+<html>
+  <body>{{ children }}</body>
+</html>
+```
+
+নীচের অনুসন্ধান ক্ষেত্রটি ব্যবহারকারীরা ড্যাশবোর্ড পৃষ্ঠাগুলির মধ্যে সরানোর সময় যা টাইপ করেছে তা রাখে, কারণ যে লেআউটটি এটি ধরে রাখে তা কখনও আনমাউন্ট হয় না:
+
+```tsx filename="src/routes/dashboard/layout.tsx"
+import { useState, type ReactNode } from "react";
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const [query, setQuery] = useState("");
+  return (
+    <>
+      <input value={query} onChange={(event) => setQuery(event.target.value)} />
+      {children}
+    </>
+  );
+}
+```
 
 ## স্ট্যাটিক সীমাবদ্ধতা
 
 প্রি-রেন্ডার করা (SSG) রুটের জন্য রুট লেআউট অনুরোধ-সময়ের ডেটা যেমন কুকিজ বা হেডারের উপর নির্ভর করতে পারে না। এটি অবশ্যই একটি স্ট্যাটিক শেল হিসাবে উপস্থাপনযোগ্য হতে হবে যা ক্লায়েন্ট তখন হাইড্রেট করে।
+
+স্ট্যাটিক শেলের একটি স্ক্রিপ্টে পরিবর্তে ব্রাউজার থেকে থিমটি পড়ুন:
+
+```tsx filename="src/routes/layout.tsx"
+import type { ReactNode } from "react";
+
+const theme = `document.documentElement.dataset.theme =
+  localStorage.getItem("theme") ?? "light";`;
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: theme }} />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
 
 ## ফ্রেমওয়ার্ক বাস্তবায়ন
 

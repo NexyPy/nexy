@@ -90,6 +90,10 @@ uv pip install -e . --group dev
   - *a structure*: one move, rename or split that changes no behaviour.
   A refactor and a feature go in separate commits, so a reviewer reads one intention per commit. If a
   change needs two of them, make two commits.
+- **One file, one commit**: a commit changes one file written by hand. It carries only what comes
+  from that file or proves it: its test, and for a page of `docs/` its translations under
+  `docs/<code>/` with the line of that page in each `TRANSLATIONS.json`. Two pages, or two modules,
+  are two commits, even when one change touches both.
 - **Write the docs for search**: the title is the question a person types, the first paragraph
   answers it in one sentence (both sites publish it as the meta description, cut at 200 characters),
   and the headings and the slug reuse those words. One page per question: a second page on the same

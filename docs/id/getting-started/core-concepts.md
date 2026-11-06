@@ -21,7 +21,27 @@ Tiga cara untuk memutuskan kode mana yang menjawab URL. Itu adalah alternatif, b
 - **Router modular**: pengontrol dan modul di bawah `src/apps/`, dideklarasikan dengan dekorator, untuk basis kode bergaya NestJS.
 - **Router khusus**: FastAPI `APIRouter` yang sudah ada yang disertakan dalam aplikasi.
 
-Memilih salah satu dari ketiganya adalah satu keputusan. Memilih kerangka frontend adalah hal lain yang terpisah: lihat [Memilih router](../routing/README.md) dan [Tampilan](../views/README.md).
+Pilihannya adalah satu baris `nexyconfig.py`. Perutean berbasis file tidak memerlukan apa pun: tanpa `useRouter`, Nexy membaca `src/routes/`.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
+Memilih salah satu dari ketiganya adalah satu keputusan. Memilih kerangka kerja frontend adalah hal lain yang terpisah: lihat [Memilih router](../routing/README.md) dan [Tampilan](../views/README.md).
 
 ## Struktur aplikasi
 
@@ -33,10 +53,42 @@ Lima gagasan yang berasal dari pembaca Next.js biasanya digabungkan menjadi satu
 | **Halaman** | file rute yang merender tampilan: `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | titik akhir: ia menjawab dokumen, bukan data |
 | **Lihat** | apa yang menghasilkan isi halaman: Jinja2 dan Python, Markdown, atau komponen klien | sebuah rute: tampilan yang sama dapat menyajikan beberapa halaman |
 | **Komponen** | bagian yang dapat digunakan kembali yang diimpor halaman | sebuah rute: dalam mode server, sebuah komponen tidak pernah dilayani sendiri |
-| **Pengendali rute** | fungsi file rute `.py`, dinamai berdasarkan metode HTTP (`GET`, `POST`, …) | halaman: ia mengembalikan JSON, file atau `Response` |
+| **Pengendali rute** | fungsi file rute `.py`, dinamai menurut metode HTTP (`GET`, `POST`, …) | halaman: ia mengembalikan JSON, file atau `Response` |
 | **Titik akhir** | pasangan (URL, metode) yang dijawab oleh penangan | seorang penangan: satu file dapat menjawab beberapa titik akhir |
 
 Dalam satu kalimat: **halaman adalah file rute, tampilan adalah apa yang merendernya, komponen adalah apa yang digunakan kembali oleh halaman, penangan menjawab titik akhir.**
+
+Kelimanya dalam satu proyek kecil:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/rute/blog/[siput].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+Frontmatter dan template di bawahnya adalah tampilan halaman; `Like` adalah komponen yang digunakan kembali.
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 Dua kata lagi yang muncul kembali di mana-mana:
 
@@ -52,11 +104,21 @@ Dua keputusan independen, yang sering membingungkan:
 
 | Gagasan | Satu baris |
 |---|---|
-| Modus pelayan | server merender halaman `.nexy` dan `.md`; komponen adalah pulau ([mode](../routing/fbr/modes.md)) |
+| Modus pelayan | server merender halaman `.nexy` dan `.md`; komponennya adalah pulau ([mode](../routing/fbr/modes.md)) |
 | Modus klien | `useCSR = True`: file kerangka adalah rutenya, dan navigasi terjadi di browser |
 | SSR, ISR, CSR, kepulauan | empat mode rendering, ditentukan per halaman kecuali CSR, yaitu per proyek ([perenderan](../rendering/README.md)) |
 | Hidrasi | browser yang melampirkan kerangka kerja ke HTML yang sudah dikirim server ([pulau](../rendering/islands.md)) |
 | Alat peraga | nilai yang diberikan induk ke komponen, dideklarasikan `name: prop[type]` dalam file `.nexy` ([berkas .nexy](../views/nexy/README.md)) |
+
+Halaman mode server dengan satu pulau: server merender halaman, browser menghidrasi grafik hanya ketika grafik digulir hingga terlihat.
+
+```nexy filename="src/rute/penjualan.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
 
 ## Interaksi aplikasi
 
@@ -67,9 +129,42 @@ Dua keputusan independen, yang sering membingungkan:
 | Navigasi | tautan yang mengambil terlebih dahulu, dan kait yang membaca jalur, kueri, cookie, dan sesi ([kait](../routing/fbr/navigation/hooks.md)) |
 | Pengambilan data | dilakukan oleh halaman atau penangan yang memerlukannya; Nexy tidak mengirimkan lapisan data klien ([handler](../routing/fbr/handlers/README.md)) |
 
+Tindakan dan formulir yang diposkan ke dalamnya, yang berfungsi sebelum skrip apa pun dimuat:
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/rute/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+
 ## Apa yang Nexy tidak lakukan
 
-Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran, dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan tanggung jawab kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus memasang masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
+Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus menyambungkan masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
+
+Otentikasi, misalnya, dihubungkan ke ketergantungan folder yang dilindunginya. Nexy menjalankannya sebelum setiap rute di bawah; siapa penggunanya tetap menjadi keputusan Anda:
+
+```python filename="src/routes/akun/dependensi.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 Alasannya bukan karena minimalisme itu sendiri: kerangka kerja yang memilih ORM atau perpustakaan autentikasi Anda telah memutuskan sesuatu yang hanya dapat diputuskan oleh aplikasi Anda.
 

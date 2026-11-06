@@ -14,6 +14,30 @@ Reserved names and rules under `src/routes/`.
 | `name.py` | API handler; function names `GET`, `POST`, ... are the methods |
 | `name.tsx`, `.jsx`, `.vue`, `.svelte` | client route when the framework is enabled with `useFF` |
 
+```text
+src/routes/
+├─ index.nexy           /
+├─ about.nexy           /about
+├─ (marketing)/
+│  └─ pricing.nexy      /pricing
+├─ blog/
+│  ├─ index.md          /blog
+│  └─ [slug].nexy       /blog/{slug}
+├─ docs/
+│  └─ [...path].nexy    /docs/{path:path}
+└─ api/
+   └─ users.py          GET /api/users, POST /api/users
+```
+
+```python filename="src/routes/api/users.py"
+async def GET():
+    return {"users": []}
+
+
+async def POST():
+    return {"created": True}
+```
+
 ## Reserved files
 
 | File | Role | Details |
@@ -35,15 +59,62 @@ Reserved names and rules under `src/routes/`.
 `useUnauthorizedExtensions` and `useLoadingExtensions` reserve more extensions for these names. See
 [Config](config.md).
 
+The two Python files of the table, side by side in one folder:
+
+```python filename="src/routes/admin/middleware.py"
+from nexy.http import Request
+
+
+async def middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["x-admin"] = "1"
+    return response
+```
+
+```python filename="src/routes/admin/dependencies.py"
+from nexy.http import Header, HTTPException
+
+
+def require_admin(x_role: str = Header(...)) -> None:
+    if x_role != "admin":
+        raise HTTPException(status_code=403, detail="Admins only")
+
+
+dependencies = [require_admin]
+```
+
+And a page that answers the 404 of its folder:
+
+```nexy filename="src/routes/notfound.nexy"
+<h1>Page not found</h1>
+<p><a href="/">Back home</a></p>
+```
+
 ## Ignored files
 
 - A file or folder starting with `_` or `.`: use it for partials, drafts and helpers.
 - A file whose extension is not active for the project: it is skipped with a warning.
 
+```text
+src/routes/
+├─ index.nexy           /
+├─ _card.nexy           ignored: a partial the pages include
+├─ _helpers/            ignored, with everything inside
+│  └─ format.py
+└─ .draft.nexy          ignored: a draft
+```
+
 ## One file per URL
 
 Two files that resolve to the same URL both register. Do not put `blog.nexy` next to
 `blog/index.nexy`.
+
+```text
+src/routes/
+├─ blog.nexy            /blog
+└─ blog/
+   └─ index.nexy        /blog as well: keep only one of the two
+```
 
 ## Outside `src/routes/`
 
@@ -53,6 +124,19 @@ Two files that resolve to the same URL both register. Do not put `blog.nexy` nex
 | `src/apps/` | controllers and modules of the [modular router](../routing/modular/README.md) |
 | `public/` | static files, served at the root: `public/logo.svg` is `/logo.svg` (also under `/public/`) |
 | `__nexy__/` | generated output; do not commit |
+
+```text
+my-app/
+├─ nexyconfig.py
+├─ public/
+│  └─ logo.svg          /logo.svg
+├─ src/
+│  ├─ routes/           the routes
+│  ├─ components/
+│  │  └─ Counter.tsx    imported by pages, never served on its own
+│  └─ apps/             the modular router, when you use it
+└─ __nexy__/            generated: add it to .gitignore
+```
 
 ## Next steps
 

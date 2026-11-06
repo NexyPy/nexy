@@ -14,33 +14,104 @@
 | `name.py` | एपीआई हैंडलर; फ़ंक्शन नाम `GET`, `POST`, ... विधियां हैं |
 | `name.tsx`, `.jsx`, `.vue`, `.svelte` | जब फ़्रेमवर्क को `useFF` के साथ सक्षम किया जाता है तो क्लाइंट रूट |
 
+```text
+src/routes/
+├─ index.nexy           /
+├─ about.nexy           /about
+├─ (marketing)/
+│  └─ pricing.nexy      /pricing
+├─ blog/
+│  ├─ index.md          /blog
+│  └─ [slug].nexy       /blog/{slug}
+├─ docs/
+│  └─ [...path].nexy    /docs/{path:path}
+└─ api/
+   └─ users.py          GET /api/users, POST /api/users
+```
+
+```python filename="src/routes/api/users.py"
+async def GET():
+    return {"users": []}
+
+
+async def POST():
+    return {"created": True}
+```
+
 ## आरक्षित फ़ाइलें
 
 | फ़ाइल | भूमिका | विवरण |
 |---|---|---|
 | `layout.nexy` | सर्वर मोड: इसके नीचे प्रत्येक पृष्ठ को लपेटता है; रूट वाला HTML दस्तावेज़ का स्वामी है | [लेआउट.नेक्सी](../views/nexy/layouts.md) |
 | `layout.tsx` | क्लाइंट मोड (React): रूट वाले के पास HTML दस्तावेज़ होता है, नेस्टेड वाले पेजों को लपेटते हैं | [लेआउट.tsx](../views/react/differences.md) |
-| `layout.vue`, `layout.svelte` | क्लाइंट मोड: नेस्टेड लेआउट | [लेआउट.व्यू](../views/vue/differences.md), [लेआउट.स्वेल्टे](../views/svelte/differences.md) |
+| `layout.vue`, `layout.svelte` | क्लाइंट मोड: नेस्टेड लेआउट | [लेआउट.व्यू](../views/vue/differences.md), [लेआउट.स्वेल्ट](../views/svelte/differences.md) |
 | `notfound.nexy` | इसकी निर्देशिका के लिए 404 पेज | [त्रुटि पृष्ठ](../routing/fbr/errors/README.md) |
 | `errors.nexy` | इसकी निर्देशिका के लिए 500 पेज | [त्रुटि पृष्ठ](../routing/fbr/errors/README.md) |
 | `forbidden.nexy` | इसकी निर्देशिका के लिए 403 पेज | [प्रति फ़ोल्डर त्रुटि पृष्ठ](../routing/fbr/errors/folder-pages.md) |
 | `unauthorized.nexy` | इसकी निर्देशिका के लिए 401 पृष्ठ | [प्रति फ़ोल्डर त्रुटि पृष्ठ](../routing/fbr/errors/folder-pages.md) |
 | `loading.nexy` | आरक्षित; अभी तक कोई रनटाइम प्रभाव नहीं है | [त्रुटि पृष्ठ](../routing/fbr/errors/README.md) |
-| `middleware.py` | एक `async def middleware(request, call_next)` निर्देशिका और नीचे के अनुरोधों को लपेटते हुए | [मिडिलवेयर फ़ाइलें](../routing/fbr/middleware/README.md) |
-| `dependencies.py` | एक `dependencies = [fn, ...]` सूची निर्देशिका और उसके बच्चों पर लागू होती है | [निर्भरताएं](../routing/fbr/dependencies/README.md) |
+| `middleware.py` | एक `async def middleware(request, call_next)` निर्देशिका और नीचे के अनुरोधों को लपेटते हुए | [मिडलवेयर फ़ाइलें](../routing/fbr/middleware/README.md) |
+| `dependencies.py` | एक `dependencies = [fn, ...]` सूची निर्देशिका और उसके बच्चों पर लागू होती है | [निर्भरताएँ](../routing/fbr/dependencies/README.md) |
 | `__init__.py` | Python पैकेज मार्कर | |
 | `favicon.ico` | `/favicon.ico` में सेवा दी गई | |
 
 `useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` और `useLoadingExtensions` इन नामों के लिए अधिक एक्सटेंशन आरक्षित करते हैं। [कॉन्फिग](config.md) देखें।
+
+तालिका की दो Python फ़ाइलें, एक फ़ोल्डर में साथ-साथ:
+
+```python filename="src/routes/admin/middleware.py"
+from nexy.http import Request
+
+
+async def middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["x-admin"] = "1"
+    return response
+```
+
+```python filename="src/routes/admin/dependents.py"
+from nexy.http import Header, HTTPException
+
+
+def require_admin(x_role: str = Header(...)) -> None:
+    if x_role != "admin":
+        raise HTTPException(status_code=403, detail="Admins only")
+
+
+dependencies = [require_admin]
+```
+
+और एक पृष्ठ जो इसके फ़ोल्डर के 404 का उत्तर देता है:
+
+```nexy filename="src/routes/notfound.nexy"
+<h1>Page not found</h1>
+<p><a href="/">Back home</a></p>
+```
 
 ## उपेक्षित फ़ाइलें
 
 - `_` या `.` से शुरू होने वाली फ़ाइल या फ़ोल्डर: इसे आंशिक, ड्राफ्ट और सहायकों के लिए उपयोग करें।
 - एक फ़ाइल जिसका एक्सटेंशन प्रोजेक्ट के लिए सक्रिय नहीं है: इसे एक चेतावनी के साथ छोड़ दिया जाता है।
 
+```text
+src/routes/
+├─ index.nexy           /
+├─ _card.nexy           ignored: a partial the pages include
+├─ _helpers/            ignored, with everything inside
+│  └─ format.py
+└─ .draft.nexy          ignored: a draft
+```
+
 ## प्रति यूआरएल एक फ़ाइल
 
 दो फ़ाइलें जो समान URL पर हल होती हैं, दोनों पंजीकृत होती हैं। `blog.nexy` को `blog/index.nexy` के आगे न रखें।
+
+```text
+src/routes/
+├─ blog.nexy            /blog
+└─ blog/
+   └─ index.nexy        /blog as well: keep only one of the two
+```
 
 ## बाहर `src/routes/`
 
@@ -50,6 +121,19 @@
 | `src/apps/` | [मॉड्यूलर राउटर](../routing/modular/README.md) के नियंत्रक और मॉड्यूल |
 | `public/` | स्थिर फ़ाइलें, रूट पर दी गई: `public/logo.svg` `/logo.svg` है (`/public/` के अंतर्गत भी) |
 | `__nexy__/` | उत्पन्न आउटपुट; प्रतिबद्ध मत हो |
+
+```text
+my-app/
+├─ nexyconfig.py
+├─ public/
+│  └─ logo.svg          /logo.svg
+├─ src/
+│  ├─ routes/           the routes
+│  ├─ components/
+│  │  └─ Counter.tsx    imported by pages, never served on its own
+│  └─ apps/             the modular router, when you use it
+└─ __nexy__/            generated: add it to .gitignore
+```
 
 ## अगले चरण
 
