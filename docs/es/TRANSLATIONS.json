@@ -83,6 +83,7 @@
   "coming-from/rails.md": "38feadfac74414228ed1c313151b7ade35eda690d21ba13117bfc70ba4eea7e2",
   "coming-from/nextjs.md": "0b86a2d237e7dcbd77db5323db14df434230c5b0379b40329057f87b6d95855c",
   "coming-from/nuxt.md": "57a23b5d304e84bb887b419f7e2ac0d4dfe471008d169eaef2e78fa4886a5793",
-  "coming-from/sveltekit.md": "fa7a8a0b0c6707d7603f3e57577430a600249a9d69fb94349c37417396143484"
+  "coming-from/sveltekit.md": "fa7a8a0b0c6707d7603f3e57577430a600249a9d69fb94349c37417396143484",
+  "coming-from/astro.md": "1474e51a7b39475365d618228482d671d6b150e44dabc5c969a9c4dbf48bd24e"
  }
 }
