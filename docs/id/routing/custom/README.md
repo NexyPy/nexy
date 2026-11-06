@@ -1,123 +1,171 @@
-# Integrasi perutean khusus
+# Sertakan router FastAPI yang ada di Nexy
 
-Nexy memungkinkan Anda memasukkan aplikasi FastAPI yang ada sebagai router ke dalam proyek Anda. Ini berguna ketika Anda ingin menggunakan kembali logika backend dari layanan lain, berintegrasi dengan API pihak ketiga, atau membangun aplikasi komposit dengan beberapa masalah perutean.
-
-Tidak seperti router berbasis file dan modular, yang merupakan bagian intrinsik Nexy, router khusus hanyalah sebuah `APIRouter` yang Anda pasang ke dalam aplikasi Anda.
+Untuk menyertakan router FastAPI yang ada di Nexy, setel `useRouter` ke `APIRouter` tersebut di kelas `NexyConfig` dari `nexyconfig.py`: rutenya disajikan apa adanya, di sebelah file `src/routes/`.
 
 ## Kapan menggunakan router khusus
 
-- **Layanan pihak ketiga**: Anda sudah memiliki aplikasi FastAPI yang ingin Anda ekspos melalui klien Nexy.
-- **Penggunaan kembali kode**: Ekstrak logika backend dari proyek lain ke dalam router dan sertakan dalam yang baru.
-- **Pola multi-penyewa atau mikro-frontend**: Setiap penyewa atau modul menyediakan routernya sendiri.
-- **Migrasi bertahap**: Mulailah dengan `APIRouter` dan kembangkan menjadi modul Nexy lengkap nanti.
+- **Migrasi bertahap**: aplikasi FastAPI berpindah ke rute Nexy berdasarkan rute, dan sementara itu rute lamanya tetap menjawab.
+- **Penggunaan kembali kode**: sebuah paket sudah mengekspos `APIRouter`, untuk otentikasi atau penagihan.
+- **Backend yang Anda simpan**: API tetap biasa FastAPI, dan Nexy menambahkan halamannya.
 
-## Bagaimana cara kerjanya
+## Atur `useRouter` di `nexyconfig.py`
 
-```python
+Routernya adalah FastAPI `APIRouter` apa saja, ditulis seperti yang sudah Anda tulis:
+
+```python filename="src/legacy/api.py"
 from fastapi import APIRouter
-from nexy import useRouter
 
-# An existing FastAPI router (from another service)
-third_party = APIRouter()
-@third_party.get("/info")
-async def info():
-    return {"name": "Foo"}
+router = APIRouter(prefix="/api")
 
-# In your nexyconfig.py:
-useRouter = third_party
+
+@router.get("/status")
+async def status():
+    return {"status": "ok"}
+
+
+@router.get("/users/{id}")
+async def user(id: int):
+    return {"id": id}
 ```
 
-Router dipasang secara otomatis oleh pemecah router Nexy. Rutenya tersedia dengan pola URL yang sama seperti di aplikasi aslinya. Tidak diperlukan konfigurasi tambahan.
+`useRouter` adalah bidang kelas `NexyConfig`, seperti setiap pengaturan proyek:
 
-## Membangun router khusus
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-1. **Buat routernya**
-   ``` ular piton
-   dari fastapi impor APIRouter
+from src.legacy.api import router
 
-   api = APIRouter()
-   @api.get("/status")
-   status def async():
-       kembalikan {"status": "oke"}
-   ```
 
-2. **Referensikan di `nexyconfig.py`**
-   ``` ular piton
-   dari .my_backend impor api
+class NexyConfig(NexyConfigModel):
+    useRouter = router
+```
 
-   gunakanRouter = api
-   ```
+`nx dev` lalu menjawab `GET /api/status` dan `GET /api/users/{id}`, dan `/docs` mencantumkannya.
 
-3. **Akses rute**
-   - Halaman berbasis file (`.nexy`, `.md`) dan pengendali modular dapat mereferensikan `/status` seperti pada rute lainnya.
-   - Router berjalan dalam proses yang sama, sehingga dependensi, koneksi database, dan autentikasi berfungsi persis seperti di aplikasi aslinya.
+> [!NOTE]
+> `useRouter` di `nexyconfig.py` adalah sebuah pengaturan. `from nexy import useRouter` adalah hal lain: pengait yang digunakan halaman `.nexy` untuk membaca rute saat ini. Jangan mengimpornya untuk mengkonfigurasi router.
 
-## Integrasi dengan router lain
+## Beberapa router
 
-Proyek Nexy dapat menggabungkan:
+`useRouter` membutuhkan satu router. Kumpulkan beberapa di bawah satu orang tua dengan `include_router`:
 
-- **Perutean berbasis file** (`src/routes/`) untuk halaman dan titik akhir sederhana
-- **Perutean modular** (`useRouter = AppModule`) untuk backend terstruktur
-- **Perutean khusus** (`useRouter = APIRouter`) untuk kode pihak ketiga
+```python filename="src/warisan/__init__.py"
+from fastapi import APIRouter
 
-Ketiganya hidup berdampingan; setiap rute didaftarkan hanya satu kali. Router berbasis file selalu dipindai ketika `src/routes/` ada.
+from .api import router as api
+from .auth import router as auth
 
-## Akses CLI ke aplikasi yang disertakan
+router = APIRouter()
+router.include_router(api)
+router.include_router(auth, prefix="/auth")
+```
 
-Perintah `nexy dev` dan `nx` beroperasi pada router yang terpasang seperti router bawaan. Anda mendapatkan:
+```python filename="src/legacy/auth.py"
+from fastapi import APIRouter
 
-- Hot reload untuk titik akhir yang ditentukan di router khusus (jika menggunakan fitur server pengembang biasa `nexy` atau FastAPI)
-- Validasi di `nexyconfig.py` (semua `APIRouter` berfungsi)
-- Dokumen yang dibuat secara otomatis untuk rute yang disertakan (jika Anda mengaktifkannya)
+router = APIRouter()
 
-## Keamanan dan isolasi
 
-Karena router disertakan, tidak dipasang melalui `app.mount`, tidak ada lapisan ASGI tambahan. Router berada di objek aplikasi yang sama dengan rute berbasis file dan modular Anda. Artinya:
-
-- Middleware yang ditambahkan oleh router khusus berlaku untuk semua permintaan.
-- Penjaga dan injeksi ketergantungan yang ditentukan di router khusus dapat mengakses wadah yang sama dengan kode Anda sendiri (jika Anda menggunakan injeksi modular).
-- Tidak ada awalan URL selain yang ditentukan oleh router itu sendiri.
-
-Jika Anda memerlukan isolasi, gabungkan router dalam sub-aplikasi sebelum memasukkannya, atau gunakan teknik standar FastAPI.
-
-## Contoh: Menyertakan proyek FastAPI yang sudah ada
-
-Misalkan Anda memiliki `auth.py` di paket lain:
-
-```python
-from fastapi import FastAPI, APIRouter
-
-auth = FastAPI(title="Auth service")
-api = APIRouter()
-
-@api.get("/login")
+@router.post("/login")
 async def login():
-    return {"msg": "Login"}
-
-auth.include_router(api)
+    return {"token": "demo"}
 ```
 
-Dalam `nexyconfig.py`:
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-```python
-from other_package.auth import api
+from src.legacy import router
 
-useRouter = api
+
+class NexyConfig(NexyConfigModel):
+    useRouter = router
 ```
 
-Titik akhir `/login` sekarang dapat dijangkau dari situs Nexy Anda tanpa memindahkan sebaris kode pun.
+## Halaman dan rutekan file di sebelahnya
 
-## Bagaimana memulainya
+`src/routes/` masih dibaca ketika `useRouter` disetel: halaman `.nexy` atau jawaban file rute `.py` di sebelah rute yang disertakan.
 
-1. Buat `APIRouter` Anda (atau temukan di paket yang sudah ada).
-2. Arahkan `useRouter` ke dalamnya di `nexyconfig.py`.
-3. Akses rutenya melalui halaman, penangan, atau kerangka klien Anda.
-4. Jika Anda memerlukan kontrol lebih besar, ubah router khusus menjadi router modular menggunakan `AppModule`.
+```nexy filename="src/rute/index.nexy"
+---
+title = "Home"
+---
+<h1>{{ title }}</h1>
+```
+
+```python filename="src/routes/api/health.py"
+async def GET():
+    return {"ok": True}
+```
+
+Dua batasan saat `useRouter` disetel:
+
+- halaman tidak dibungkus oleh `layout.nexy`;
+- `useCSR = True` ditolak: `nx dev` dan `nx build` jawaban `useCSR requires file-based routing`.
+
+URL dijawab satu kali. Berikan awalan pada router yang disertakan, di sini `/api`, dan jauhkan file `src/routes/` dari jalur yang digunakannya.
+
+## Seluruh aplikasi FastAPI
+
+`useRouter` membutuhkan aplikasi `APIRouter`, bukan `FastAPI`. Rute aplikasi berada pada atribut `router`:
+
+```python filename="src/legacy/service.py"
+from fastapi import FastAPI
+
+service = FastAPI(title="Billing")
+
+
+@service.get("/billing/invoices")
+async def invoices():
+    return []
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.legacy.service import service
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = service.router
+```
+
+Middleware, pengendali pengecualian, dan peristiwa startup milik aplikasi tetap berada di belakang: pindahkan ke `useMiddlewares` dan bidang lain di `nexyconfig.py`.
+
+## Dependensi, autentikasi, dan database
+
+Router berjalan dalam proses Nexy, jadi `Depends`, skema keamanan dan sesi database berfungsi seperti pada aplikasi asli:
+
+```python filename="src/legacy/secure.py"
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+
+def require_token(x_token: str = Header("")) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=401, detail="Bad token")
+
+
+router = APIRouter(prefix="/secure", dependencies=[Depends(require_token)])
+
+
+@router.get("/data")
+async def data():
+    return {"data": 42}
+```
+
+## Ujilah
+
+```python filename="tes/test_legacy.py"
+from fastapi.testclient import TestClient
+
+from nexy.app import app
+
+
+def test_the_included_route_answers():
+    assert TestClient(app).get("/api/status").json() == {"status": "ok"}
+```
 
 ## Langkah selanjutnya
 
-- [Perutean berbasis file](../fbr/README.md) – Membangun halaman dan penangan sederhana dari file.
-- [Perutean modular](../modular/README.md) – Backend terstruktur dengan injeksi dan pelindung.
-- [Penanganan rute](../fbr/handlers/README.md) – Tentukan Python titik akhir.
-
-Router khusus memberi Anda fleksibilitas untuk menggunakan kembali kode FastAPI yang ada sambil menjaga kesederhanaan halaman berbasis file dan struktur modular.
+- [Dari FastAPI ke Nexy](../../coming-from/fastapi.md): pindahkan rute ke file, satu per satu
+- [Perutean berbasis file](../fbr/README.md)
+- [Perutean modular](../modular/README.md): `useRouter = AppModule`
