@@ -1,6 +1,7 @@
 // Client navigation for React: Link, Image and the hooks of the router.
 //
 //   import { Link, Image, useRouter, usePathname, useParams, useSearchParams } from '@nexy/client'
+//   import { useFetch, useAction } from '@nexy/client'
 //
 // Written with createElement (no JSX) so it needs no compiler setting of its own.
 import {
@@ -43,6 +44,7 @@ import {
   type ActionOptions,
   type ActionState
 } from './action-runtime.ts'
+import { createFetchState, FetchError, type FetchState } from './fetch-runtime.ts'
 
 /** A route of the project, with an optional query or fragment, or a link out of the app. */
 export type Href =
@@ -217,4 +219,15 @@ export function useAction<Input, Output>(action: Action<Input, Output>, options?
   const store = useMemo(() => createActionState(action, options), [action])
   const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
   return { ...state, run: store.run, reset: store.reset }
+}
+
+export { FetchError }
+export type { FetchState }
+
+/** Read JSON from the server: `const { data, error, pending, refresh } = useFetch<User[]>('/api/users')`. */
+export function useFetch<Data = unknown>(url: string) {
+  const store = useMemo(() => createFetchState<Data>(url), [url])
+  const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
+  useEffect(() => void store.start(), [store])
+  return { ...state, refresh: store.refresh }
 }
