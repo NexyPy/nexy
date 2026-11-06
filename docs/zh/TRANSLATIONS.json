@@ -78,6 +78,7 @@
   "coming-from/fastify.md": "5a49c5cbc044ec64f0356d7b24fe25a4d6fd317fa1df684b961c8b4be7f2a38a",
   "coming-from/elysia.md": "bce339331e339445b5b1580685cea93adf46be5fd2b3e7ce9c20880da595b6aa",
   "coming-from/hono.md": "f18d32bb9ca8f8fa64c19f04f89deb06b0d8ffd8ff6a11923e408c57743bc61e",
-  "coming-from/laravel.md": "0efa781810e14175a4a5b80ceb99bd4d7e070fe3baf16f48a20c23893b407fc4"
+  "coming-from/laravel.md": "0efa781810e14175a4a5b80ceb99bd4d7e070fe3baf16f48a20c23893b407fc4",
+  "coming-from/spring-boot.md": "468ff65c30d48067542e45ce4341b012121e2318b6d6be1e539105717d2f6e9c"
  }
 }
