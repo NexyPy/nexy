@@ -8,6 +8,7 @@ Las islas existen en modo servidor. En modo cliente, los componentes *son* las p
 
 ## como funciona
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy renderiza el componente en el momento de la compilación, almacena su HTML y lo coloca dentro de la página. La respuesta de la página lleva ese HTML más los accesorios como un atributo JSON. En el navegador, el tiempo de ejecución de la isla carga el componente y se hace cargo del contenedor.
 
@@ -38,7 +50,7 @@ En desarrollo no hay una instantánea de compilación: el contenedor está vací
 
 ## Configuración
 
-| Directiva | Hidratos |
+| Directiva | Hidrata |
 |---|---|
 | ninguno, o `client:load` | inmediatamente |
 | `client:idle` | cuando el navegador está inactivo (`requestIdleCallback`, tiempo de espera de 2 s) |
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,12 +84,23 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## Limitaciones
 
 - **`client:only` nunca se hidrata.** Se acepta, pero el tiempo de ejecución lo omite, por lo que el HTML del servidor permanece inerte. Utilice una ruta de cliente ([CSR](csr.md)) cuando un componente no pueda renderizarse en el servidor.
 - **`client:manual` no tiene ningún disparador público.** También se omite automáticamente y el identificador que lo reanuda es interno.
-- **Los accesorios deben ser JSON.** Están serializados con `json.dumps`; un valor que no se puede serializar se elimina y la isla recibe `{}` - silenciosamente.
+- **Los accesorios deben ser JSON.** Están serializados con `json.dumps`; se elimina un valor que no se puede serializar y la isla recibe `{}` - silenciosamente.
 - **Una isla no es un componente cliente con estado compartido.** Dos islas no comparten estado sin un mecanismo que usted mismo agregue.
 - **El servidor no vuelve a renderizar la isla.** Su HTML es la instantánea de compilación, más todo lo que hace el componente una vez hidratado.
 - **Una página de islas es una página de CSR disfrazada.** Si cada bloque necesita comunicarse entre sí, elige el modo cliente.

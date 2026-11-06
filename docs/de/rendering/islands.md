@@ -8,6 +8,7 @@ Inseln existieren im Servermodus. Im Client-Modus *sind* die Komponenten die Sei
 
 ## Wie es funktioniert
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy rendert die Komponente zum Zeitpunkt der Erstellung, speichert ihren HTML-Code und platziert ihn auf der Seite. Die Seitenantwort enthält diesen HTML-Code und die Requisiten als JSON-Attribut. Im Browser lädt die Insellaufzeit die Komponente und übernimmt den Container.
 
@@ -38,18 +50,18 @@ In der Entwicklung gibt es keinen Build-Snapshot: Der Container ist leer und die
 
 ## Konfiguration
 
-| Richtlinie | Hydrate |
+| Richtlinie | Spendet Feuchtigkeit |
 |---|---|
 | keine, oder `client:load` | sofort |
 | `client:idle` | wenn der Browser inaktiv ist (`requestIdleCallback`, 2 s Timeout) |
-| `client:visible` | wenn die Insel das Ansichtsfenster betritt, 200 px früher |
-| `client:media` | wenn eine Medienabfrage übereinstimmt; setze es mit der Requisite `media` |
+| `client:visible` | wenn die Insel das Ansichtsfenster betritt, 200 Pixel früher |
+| `client:media` | wenn eine Medienanfrage übereinstimmt; Stellen Sie es mit der Requisite `media` ein |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
 ```
 
-`client:media` ist standardmäßig `(min-width: 768px)`, wenn `media` nicht vorhanden ist, und hydratisiert einmal. In einem Browser ohne `IntersectionObserver` fällt `client:visible` auf den Leerlauf zurück.
+`client:media` wird standardmäßig auf `(min-width: 768px)` gesetzt, wenn `media` nicht vorhanden ist, und hydratisiert einmal. Bei einem Browser ohne `IntersectionObserver` fällt `client:visible` auf den Leerlauf zurück.
 
 `directive` und `media` werden von Nexy verbraucht: Sie werden nicht an Ihre Komponente übergeben.
 
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,13 +84,24 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## Einschränkungen
 
 - **`client:only` spendet nie Feuchtigkeit.** Es wird akzeptiert, aber die Laufzeit überspringt es, sodass das Server-HTML inaktiv bleibt. Verwenden Sie eine Client-Route ([CSR](csr.md)), wenn eine Komponente nicht auf dem Server gerendert werden kann.
 - **`client:manual` hat keinen öffentlichen Auslöser.** Es wird auch automatisch übersprungen und das Handle, das es fortsetzt, ist intern.
-- **Requisiten müssen JSON sein.** Sie werden mit `json.dumps` serialisiert; ein Wert, der nicht serialisiert werden kann, wird gelöscht und die Insel empfängt `{}` – stillschweigend.
-- **Eine Insel ist keine Client-Komponente mit gemeinsamem Status.** Zwei Inseln teilen keinen Status ohne einen Mechanismus, den Sie selbst hinzufügen.
+- **Requisiten müssen JSON sein.** Sie werden mit `json.dumps` serialisiert; Ein Wert, der nicht serialisiert werden kann, wird gelöscht und die Insel empfängt `{}` – stillschweigend.
+- **Eine Insel ist keine Client-Komponente mit gemeinsamem Status.** Ohne einen Mechanismus, den Sie selbst hinzufügen, teilen sich zwei Inseln keinen Status.
 - **Die Insel wird vom Server nicht neu gerendert.** Ihr HTML ist der Build-Snapshot sowie alles, was die Komponente nach der Hydratisierung tut.
 - **Eine Inselseite ist eine getarnte CSR-Seite.** Wenn jeder Block mit jedem anderen kommunizieren muss, wählen Sie stattdessen den Client-Modus.
 
