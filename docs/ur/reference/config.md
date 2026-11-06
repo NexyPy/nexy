@@ -20,7 +20,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `usePort` | `3000` | `dev` اور `start` کے لیے بندرگاہ |
 | `useHost` | `"0.0.0.0"` | پتہ باندھنا |
-| `useSslKeyfile`، `useSslCertfile` | `None` | HTTPS کو براہ راست پیش کریں۔ |
+| `useSslKeyfile`، `useSslCertfile` | `None` | براہ راست HTTPS کی خدمت کریں۔ |
 | `useDevTools` | `True` | ٹول بار `nexy dev` ہر صفحہ میں اضافہ کرتا ہے (صفحہ کی معلومات، راستے، غلطیاں، تشکیل)؛ `False` اسے ہٹاتا ہے۔ پروڈکشن میں کبھی موجود نہ ہوں۔ |
 | `useWorkers` | `0` | عمل `nx start` چلتا ہے؛ `0` لینکس اور میک او ایس پر ایک فی سی پی یو ہے، ونڈوز پر ایک |
 | `useCSR` | `False` | کلائنٹ سائڈ روٹنگ موڈ؛ `.nexy` راستے غیر فعال ہیں۔ |
@@ -62,10 +62,24 @@ class NexyConfig(NexyConfigModel):
 
 | میدان | طے شدہ | مطلب |
 |---|---|---|
-| `useDocs` | `True` | OpenAPI اسکیما اور اس کے اسکیلر حوالہ صفحہ کی خدمت کریں۔ |
+| `useDocs` | `True` | اسکیلر حوالہ صفحہ پیش کریں؛ `/openapi.json` کسی بھی طرح پیش کیا جاتا ہے۔ |
 | `useDocsUrl` | `"/docs"` | API حوالہ صفحہ کا راستہ |
 | `useRedocsUrl` | `"/redocs"` | اعلان کیا گیا ہے لیکن کوئی راستہ نہیں لگایا گیا ہے۔ |
 | `useTitle` | `"Nexy App"` | OpenAPI عنوان اور صفحہ کا عنوان (`"Nexy"` `NexyConfigModel` میں) |
+
+### منصوبے کے ایک صفحے کے لیے مفت `/docs`
+
+API کا حوالہ کسی بھی راستے سے پہلے `/docs` کا جواب دیتا ہے، اس لیے وہاں کبھی بھی `src/routes/docs.nexy` یا `src/routes/docs/[[...slug]].nexy` پیش نہیں کیا جاتا۔ `nx dev` اور `nx start` شروع میں ایسے صفحہ کا نام دیں۔ حوالہ `useDocsUrl` کے ساتھ منتقل کریں:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+یا اسے `useDocs = False` کے ساتھ بند کردیں۔ `/openapi.json` دونوں صورتوں میں کام جاری رہتا ہے: منصوبے کے راستوں کو اس راستے سے دور رکھیں۔
 
 ## مڈل ویئر
 
@@ -74,8 +88,8 @@ class NexyConfig(NexyConfigModel):
 | `useMiddlewares` | `[]` | ASGI مڈل ویئر کلاسز |
 | `useCORS` | `None` | `CORSMiddleware` کے لیے kwargs |
 | `useGZip` | `None` | `GZipMiddleware` کے لیے کوارگز |
-| `useTrustedHost` | `None` | `TrustedHostMiddleware` کے لیے kwargs |
-| `useSession` | `None` | `SessionMiddleware` کے لیے کوارگز |
+| `useTrustedHost` | `None` | `TrustedHostMiddleware` کے لیے کوارگز |
+| `useSession` | `None` | `SessionMiddleware` کے لیے kwargs |
 | `useAuth` | `None` | توثیق مڈل ویئر کی تشکیل |
 | `useHTTPSRedirect` | `False` | HTTP کو HTTPS پر ری ڈائریکٹ کریں۔ |
 
@@ -89,7 +103,7 @@ class NexyConfig(NexyConfigModel):
 
 ## فائل ٹری سے باہر کے راستے
 
-ایک FastAPI `APIRouter` بنائیں اور اسے `useRouter` کے ساتھ چڑھائیں۔ یہ فائل پر مبنی راستوں کے آگے پیش کیا جاتا ہے:
+ایک FastAPI `APIRouter` بنائیں اور اسے `useRouter` کے ساتھ ماؤنٹ کریں۔ یہ فائل پر مبنی راستوں کے آگے پیش کیا جاتا ہے:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
@@ -118,5 +132,5 @@ class NexyConfig(NexyConfigModel):
 ## اگلے اقدامات
 
 - [i18n](../guides/i18n.md): بین الاقوامی کاری
-- [فرنٹ اینڈ](../guides/frontend.md): `useFF` اور کلائنٹ کی تعمیر
-- [تعینات](../deployment/README.md): پیداوار کے اختیارات
+- [فرنٹ اینڈ ](../guides/frontend.md): `useFF` اور کلائنٹ کی تعمیر
+- [تعیناتی](../deployment/README.md): پیداوار کے اختیارات

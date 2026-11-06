@@ -51,6 +51,13 @@ def _optional_middleware(
     return [(middleware, options)]
 
 
+def _as_pair(entry: Any) -> tuple[Any, dict[str, Any]] | None:
+    """A `useMiddlewares` entry as (class, options): a bare class takes no options."""
+    if isinstance(entry, tuple) and len(entry) == 2:
+        return entry
+    return (entry, {}) if isinstance(entry, type) else None
+
+
 def collect_middlewares(config: Config) -> list[tuple[Any, dict[str, Any]]]:
     """Build the (class, options) list implied by the project config."""
     middlewares: list[tuple[Any, dict[str, Any]]] = []
@@ -68,7 +75,7 @@ def collect_middlewares(config: Config) -> list[tuple[Any, dict[str, Any]]]:
         middlewares += _optional_middleware(
             "starlette.middleware.authentication", "AuthenticationMiddleware", config.useAuth
         )
-    middlewares += [e for e in config.useMiddlewares if isinstance(e, tuple) and len(e) == 2]
+    middlewares += [pair for e in config.useMiddlewares if (pair := _as_pair(e)) is not None]
     return middlewares
 
 

@@ -1,11 +1,12 @@
 <p align="center">
-  <img src="./nexy.png" alt="Nexy - The Python fullstack meta-framework: FastAPI backend, Vite frontend, zero config" width="100%" />
+  <img src="./nexy.png" alt="Nexy - one file is a page, an endpoint, or an island" width="100%" />
 </p>
 
 # Nexy
 
-**The fullstack Python meta-framework.** FastAPI on the server, Vite on the client, one file per
-page. Sub-second startup, HMR in under 100 ms.
+**One file is a page, an endpoint, or an island.** A fullstack Python framework: FastAPI and Vite in
+one process, so a project keeps one server, one origin, and no CORS block between the front end and
+the API.
 
 <p>
   <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pypi/v/nexy?color=%2334D058&label=version" alt="PyPI version"></a>
@@ -18,10 +19,48 @@ page. Sub-second startup, HMR in under 100 ms.
 
 <p align="center">
   <a href="https://nexypy.github.io/nexy/"><strong>Documentation</strong></a> ·
-  <a href="#quickstart">Quickstart</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#coming-from-another-framework">Coming from another framework</a> ·
   <a href="https://github.com/NexyPy/nexy/discussions">Discussions</a> ·
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
+
+## Quick start
+
+```bash
+uvx nexy new my-app        # scaffold the project and its .venv
+cd my-app
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+nexy dev                   # http://localhost:3000
+```
+
+Python 3.12+ and [uv](https://docs.astral.sh/uv/). Node.js 18+ only when the project uses a client
+framework.
+
+`uvx` runs Nexy in a temporary environment: enough to **create** a project, nothing more. Any other
+command runs inside the project's `.venv`, where your own packages live — outside it, a page fails
+with `ModuleNotFoundError: No module named 'sqlmodel'`. `uv run nexy dev` skips the activation.
+
+`new` asks four questions — file-based or modular router, web or API, client framework or none,
+ORM or none — and the answers decide what the scaffold writes, including the Node package manager
+it reuses: a committed lockfile wins when that tool is installed, otherwise `bun`, `pnpm` then
+`npm` by priority.
+
+## Coming from another framework
+
+Nexy is not a Next.js clone with Python in it, and it is not only that shape either. It keeps the
+file routes, layouts and islands of the JavaScript meta-frameworks, and the controllers, modules and
+injectable services of the backend ones. What carries over depends on where you come from:
+
+| You come from | What carries over |
+|---|---|
+| **Next.js**, Remix, Nuxt, SvelteKit | file routes, layouts, islands, Server Actions written in Python |
+| **Astro** | server-first HTML, the same islands and `client:*` directives, Markdown pages |
+| **NestJS**, Spring Boot | controllers, modules, injectable services, guards |
+| **Django**, Flask, FastAPI | views, endpoints, `Depends`, Pydantic models |
+
+[Coming from another framework](https://nexypy.github.io/nexy/docs/getting-started/coming-from-other-frameworks/)
+maps sixteen of them, one page per framework, with the code you know and then the Nexy code.
 
 ## Why Nexy
 
@@ -34,40 +73,21 @@ glue project between the frontend and the backend.
 
 | You get | Instead of |
 |---|---|
-| Sub-second startup | 10-30 s waiting for Next.js, Rails, Django |
+| One process, one origin | A front end, an API, and a CORS block between them |
 | One file = server logic, markup, interactive island | Separate API, UI and build-tooling projects |
 | Zero-config Vite integration | Hand-wiring Webpack, Vite or Parcel |
 | Any supported client framework, or none | Being locked into React or Vue |
 | SSR, ISR and parallel SSG built in | SSG bolted on afterwards |
 
-## Quickstart
-
-```bash
-uvx nexy new my-app            # creates the project and its .venv
-cd my-app
-.venv\Scripts\activate         # Windows; on macOS and Linux: source .venv/bin/activate
-nexy dev
-```
-
-Open <http://localhost:3000>.
-
-- **Install [uv](https://docs.astral.sh/uv/) first**: `uvx` comes with uv, it is not a separate
-  tool. It runs Nexy in a temporary environment, which is enough to **create** a project and nothing
-  more.
-- **Stay in the project's virtual environment** for every other command (`nexy dev`, `build`,
-  `migrate`...). Your own packages, such as your ORM, live in its `.venv`; outside it, a project
-  fails with `ModuleNotFoundError: No module named 'sqlmodel'`. To skip the activation, run one
-  command through uv: `uv run nexy dev`.
-
-`new` asks four questions: file-based router or modular, web or API, client framework or none, ORM or
-none. The answers decide what the scaffold writes, including the Node package manager it reuses: a
-committed lockfile wins when that tool is installed, otherwise `bun`, `pnpm` then `npm` by priority.
-
-Change a file, the page reloads. `nx dev` compiles the routes you touched and proxies Vite through
+Change a file, the page reloads: `nx dev` recompiles the routes you touched and proxies Vite through
 its own port, so the browser only ever talks to `3000`.
 
-**Requirements**: Python 3.12+, [uv](https://docs.astral.sh/uv/), and Node.js 18+ only when you use
-a client framework.
+**Measured, not claimed**: an 87-line page with three component imports compiles in 1.6 ms, median of
+25 runs on a Ryzen 5 4500U. That is the compile step alone: a browser reload also pays for Vite's
+module graph and the browser's own render, so this is not an HMR figure.
+
+An issue queue that gets answered: 204 issues closed, 92 pull requests merged, latest 2.2.2 on
+2026-11-05.
 
 ## A page, an endpoint, an island
 
@@ -451,15 +471,19 @@ Internals, request lifecycle and compiler pipeline: [ARCHITECTURE.md](ARCHITECTU
 
 ## How it compares
 
+Capabilities, not timings. This repository has measured its own compile step and nothing else, so
+the only figure it publishes is that one: the startup and HMR numbers you read elsewhere were taken
+on another machine, against another project, and are not comparable.
+
 | Feature | Nexy | Next.js | Django + HTMX | Remix |
 |---|---|---|---|---|
 | Language | Python + any JS framework | JS/TS only | Python + HTMX | JS/TS only |
 | Server process | Uvicorn + FastAPI, one process | Node | Python (ASGI/WSGI) | Node |
-| Startup | < 1 s | 10-30 s | 3-8 s | 8-15 s |
-| HMR | < 100 ms | ~500 ms | N/A | ~300 ms |
 | File format | `.nexy` (Python + Jinja2 + UI) | `.tsx` / `.jsx` | `.py` + `.html` | `.tsx` |
 | SSR | Built-in (esbuild) | Built-in (React) | Manual | Built-in (React) |
-| SSG | Parallel worker pool | `next export` | Third-party | Via Vite |
+| SSG | Parallel worker pool | `output: 'export'` | Third-party | Via Vite |
+| Islands | Any of five frameworks | Client components | HTMX attributes | Hydrated routes |
+| Server actions | `@Action` | Server Actions | Form posts | `action` |
 | Routing | File-based + modular | File-based | Manual | File-based |
 
 ## Framework support

@@ -16,7 +16,7 @@ class NexyConfig(NexyConfigModel):
 
 ## pelayan
 
-| Bidang | Default | Arti |
+| Bidang | Bawaan | Artinya |
 |---|---|---|
 | `usePort` | `3000` | port untuk `dev` dan `start` |
 | `useHost` | `"0.0.0.0"` | mengikat alamat |
@@ -27,20 +27,20 @@ class NexyConfig(NexyConfigModel):
 
 ## Rute
 
-| Bidang | Default | Arti |
+| Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useRouter` | `None` | sebuah instance atau kelas `APIRouter` yang dipasang di sebelah rute berbasis file; `None` berarti hanya berbasis file |
 | `excludeDirs` | `["templates", "extension", "docs"]` | direktori dilewati saat memindai rute |
-| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` ikuti |
+| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` mengikutinya |
 
 ## Bagian depan
 
-| Bidang | Default | Arti |
+| Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useFF` | `None` | pabrik kerangka klien: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
-| `useVite` | `True` | membangun dan melayani paket klien dengan Vite |
-| `useMarkdownExtensions` | `[]` | ekstensi tambahan untuk `.md`/`.mdx` rendering |
-| `useWatchExtensions` | `None` | ekstensi tambahan yang diawasi oleh server pengembang |
+| `useVite` | `True` | membangun dan melayani bundel klien dengan Vite |
+| `useMarkdownExtensions` | `[]` | ekstensi tambahan untuk rendering `.md`/`.mdx` |
+| `useWatchExtensions` | `None` | ekstensi tambahan yang diawasi oleh server dev |
 | `useWatchExcludePatterns` | `None` | pola glob yang diabaikan oleh server pengembang |
 
 > **Perlu diketahui**: `NexyConfigModel` menyatakan `useVite = False`; waktu proses `Config` defaultnya adalah `True`.
@@ -60,32 +60,46 @@ Setiap bidang menambahkan ekstensi ke peran yang dicadangkan. `useLayoutExtensio
 
 ## dokumentasi API
 
-| Bidang | Default | Arti |
+| Bidang | Bawaan | Artinya |
 |---|---|---|
-| `useDocs` | `True` | melayani skema OpenAPI dan halaman referensi Skalarnya |
+| `useDocs` | `True` | melayani halaman referensi Skalar; `/openapi.json` disajikan dengan cara apa pun |
 | `useDocsUrl` | `"/docs"` | jalur halaman referensi API |
 | `useRedocsUrl` | `"/redocs"` | dideklarasikan tetapi tidak ada rute yang dipasang |
 | `useTitle` | `"Nexy App"` | OpenAPI judul dan judul halaman (`"Nexy"` di `NexyConfigModel`) |
 
+### Gratis `/docs` untuk satu halaman proyek
+
+Referensi API menjawab `/docs` sebelum rute mana pun, jadi `src/routes/docs.nexy` atau `src/routes/docs/[[...slug]].nexy` tidak pernah disajikan di sana. `nx dev` dan `nx start` beri nama halaman tersebut saat startup. Pindahkan referensi dengan `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+Atau matikan dengan `useDocs = False`. `/openapi.json` tetap dilayani dalam kedua kasus: menjaga rute proyek keluar dari jalur tersebut.
+
 ## Perangkat Tengah
 
-| Bidang | Default | Arti |
+| Bidang | Bawaan | Artinya |
 |---|---|---|
-| `useMiddlewares` | `[]` | kelas middleware ASGI |
+| `useMiddlewares` | `[]` | Kelas middleware ASGI |
 | `useCORS` | `None` | kwarg untuk `CORSMiddleware` |
 | `useGZip` | `None` | kwarg untuk `GZipMiddleware` |
 | `useTrustedHost` | `None` | kwarg untuk `TrustedHostMiddleware` |
 | `useSession` | `None` | kwarg untuk `SessionMiddleware` |
-| `useAuth` | `None` | konfigurasi middleware autentikasi |
+| `useAuth` | `None` | konfigurasi middleware otentikasi |
 | `useHTTPSRedirect` | `False` | mengalihkan HTTP ke HTTPS |
 
 ## Markdown
 
-| Bidang | Default | Arti |
+| Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | tingkat judul yang disertakan dalam daftar isi |
-| `useTocTitle` | `"Table of Contents"` | Judul Daftar Isi |
-| `useTocAuto` | `True` | membuat daftar isi untuk Markdown halaman |
+| `useTocTitle` | `"Table of Contents"` | Judul TOC |
+| `useTocAuto` | `True` | menghasilkan daftar isi untuk Markdown halaman |
 
 ## Rute di luar pohon file
 

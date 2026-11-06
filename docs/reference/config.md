@@ -65,10 +65,27 @@ reserved, exactly like `layout.nexy`.
 
 | Field | Default | Meaning |
 |---|---|---|
-| `useDocs` | `True` | serve the OpenAPI schema and its Scalar reference page |
+| `useDocs` | `True` | serve the Scalar reference page; `/openapi.json` is served either way |
 | `useDocsUrl` | `"/docs"` | path of the API reference page |
 | `useRedocsUrl` | `"/redocs"` | declared but no route is mounted |
 | `useTitle` | `"Nexy App"` | OpenAPI title and page title (`"Nexy"` in `NexyConfigModel`) |
+
+### Free `/docs` for a page of the project
+
+The API reference answers `/docs` before any route, so `src/routes/docs.nexy` or
+`src/routes/docs/[[...slug]].nexy` is never served there. `nx dev` and `nx start` name such a page
+at startup. Move the reference with `useDocsUrl`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useDocsUrl = "/api-reference"
+```
+
+Or turn it off with `useDocs = False`. `/openapi.json` stays served in both cases: keep the
+routes of the project off that path.
 
 ## Middleware
 

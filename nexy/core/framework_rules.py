@@ -9,7 +9,7 @@ from nexy.core.models import FrontendFramework
 FrameworkChoice = FrontendFramework | list[FrontendFramework] | None
 
 ALWAYS_ACTIVE_EXTENSIONS = (".nexy", ".md", ".mdx", ".py")
-_SPECIAL_WITH_NEXY = ("layout", "errors", "loading")
+_SPECIAL_WITH_NEXY = ("layout", "errors", "loading", "notfound", "forbidden", "unauthorized")
 
 
 def dotted(extension: str) -> str:

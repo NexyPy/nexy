@@ -24,6 +24,27 @@ Three ways to decide which code answers a URL. They are alternatives, not layers
   NestJS-style codebase.
 - **Custom router**: an existing FastAPI `APIRouter` included in the application.
 
+The choice is one line of `nexyconfig.py`. File-based routing needs none: without `useRouter`,
+Nexy reads `src/routes/`.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
 Choosing one of the three is one decision. Choosing a frontend framework is another, separate one:
 see [Choose a router](../routing/README.md) and [Views](../views/README.md).
 
@@ -43,6 +64,39 @@ and the difference explains most "why is my page not rendering" questions.
 
 In one sentence: **a page is a route file, a view is what renders it, a component is what a page
 reuses, a handler answers an endpoint.**
+
+All five in one small project:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+The frontmatter and the template below it are the view of the page; `Like` is the component it
+reuses.
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 Two more words that come back everywhere:
 
@@ -66,6 +120,17 @@ Two independent decisions, often confused:
 | Hydration | the browser attaching a framework to HTML the server already sent ([islands](../rendering/islands.md)) |
 | Props | the values a parent passes to a component, declared `name: prop[type]` in a `.nexy` file ([.nexy files](../views/nexy/README.md)) |
 
+A server-mode page with one island: the server renders the page, the browser hydrates the chart
+only when it scrolls into view.
+
+```nexy filename="src/routes/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
 ## Application interaction
 
 | Notion | One line |
@@ -75,11 +140,45 @@ Two independent decisions, often confused:
 | Navigation | links that prefetch, and hooks that read the path, the query, the cookies and the session ([hooks](../routing/fbr/navigation/hooks.md)) |
 | Data fetching | done by the page or the handler that needs it; Nexy ships no client data layer ([handlers](../routing/fbr/handlers/README.md)) |
 
+An action and the form that posts to it, which works before any script loads:
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/routes/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+
 ## What Nexy does not do
 
 Authentication, authorisation, database, internationalisation, background jobs, email, payments and
 search are **your application's responsibility**, not the framework's. Nexy gives the extension
 points and says where to plug each one: see [What Nexy leaves to you](how-nexy-works.md#what-nexy-leaves-to-you).
+
+Authentication, for example, plugs into a dependency of the folder it protects. Nexy runs it before
+every route below; who the user is stays your decision:
+
+```python filename="src/routes/account/dependencies.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 The reason is not minimalism for its own sake: a framework that picks your ORM or your auth library
 has decided something only your application can decide.

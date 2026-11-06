@@ -65,6 +65,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 - Import with the `@/` alias: `import Button from "@/components/button.tsx"`.
 - Navigate with `Link` from `@nexy/client`; keep `<a>` for external URLs.
 - Call the server with `useAction` from `@nexy/client` and the typed functions in `@nexy/actions`.
+- Read JSON from a handler with `useFetch('/api/x')` from `@nexy/client`: `{ data, error, pending,
+  refresh }`, one request per URL shared by every component.
 - Pass the server's idea of state through props or actions, not through globals.
 - Interactive controls are `button`s and `a`s with real labels, not clickable `div`s.
 - Icons are SVG components (a `path` prop), `aria-hidden="true"` when decorative. No emoji.

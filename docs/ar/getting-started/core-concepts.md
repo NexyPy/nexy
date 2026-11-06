@@ -21,7 +21,27 @@
 - **جهاز التوجيه المعياري**: وحدات التحكم والوحدات ضمن `src/apps/`، المُعلن عنها باستخدام أدوات الديكور، لقاعدة تعليمات برمجية على طراز NestJS.
 - **جهاز التوجيه المخصص**: موجود FastAPI `APIRouter` موجود في التطبيق.
 
-اختيار واحد من الثلاثة هو قرار واحد. اختيار إطار عمل للواجهة الأمامية هو أمر آخر منفصل: راجع [اختيار جهاز توجيه](../routing/README.md) و[طرق العرض](../views/README.md).
+والاختيار هو سطر واحد من `nexyconfig.py`. لا يحتاج التوجيه المستند إلى الملف إلى أي شيء: بدون `useRouter`، يقرأ Nexy `src/routes/`.
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
+اختيار واحد من الثلاثة هو قرار واحد. يعد اختيار إطار عمل الواجهة الأمامية أمرًا منفصلاً: راجع [اختيار جهاز توجيه](../routing/README.md) و[طرق العرض](../views/README.md).
 
 ## هيكل التطبيق
 
@@ -37,6 +57,38 @@
 | **نقطة النهاية** | الزوج (URL، الطريقة) الذي يجيب عليه المعالج | المعالج: يمكن لملف واحد الإجابة على عدة نقاط نهاية |
 
 في جملة واحدة: **الصفحة هي ملف توجيه، والعرض هو ما يعرضه، والمكون هو ما تعيد الصفحة استخدامه، والمعالج يجيب على نقطة النهاية.**
+
+الخمسة في مشروع واحد صغير:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+يمثل الجزء الأمامي والقالب الموجود أسفله عرض الصفحة؛ `Like` هو المكون الذي يعيد استخدامه.
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 كلمتان أخريان تعودان في كل مكان:
 
@@ -58,23 +110,66 @@
 | الترطيب | المتصفح الذي يقوم بإرفاق إطار عمل بـ HTML الذي أرسله الخادم بالفعل ([الجزر](../rendering/islands.md)) |
 | الدعائم | القيم التي يمررها أحد الوالدين إلى المكون، المعلن عنها `name: prop[type]` في ملف `.nexy` ([ملفات .nexy](../views/nexy/README.md)) |
 
+صفحة في وضع الخادم بجزيرة واحدة: يعرض الخادم الصفحة، ويقوم المتصفح بترطيب المخطط فقط عند تمريره إلى العرض.
+
+```nexy filename="src/routes/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
 ## تفاعل التطبيق
 
 | فكرة | سطر واحد |
 |---|---|
 | العمل | دالة Python تم وضع علامة `@Action` عليها، بمثابة `POST`، قابلة للاستدعاء من نموذج أو كدالة مكتوبة ([الإجراءات](../guides/actions.md)) |
-| النموذج | نموذج HTML يتم نشره في أحد الإجراءات، مع عودة أخطاء التحقق من الصحة إلى الصفحة ([الإجراءات](../guides/actions.md)) |
+| النموذج | نموذج HTML ينشر إلى إجراء، مع عودة أخطاء التحقق من الصحة إلى الصفحة ([الإجراءات](../guides/actions.md)) |
 | الملاحة | الروابط التي تجلب مسبقًا، والخطافات التي تقرأ المسار والاستعلام وملفات تعريف الارتباط والجلسة ([الخطافات](../routing/fbr/navigation/hooks.md)) |
 | جلب البيانات | تتم بواسطة الصفحة أو المعالج الذي يحتاج إليها؛ لا يقوم Nexy بشحن طبقة بيانات العميل ([معالجات](../routing/fbr/handlers/README.md)) |
+
+الإجراء والنموذج الذي يتم النشر إليه، والذي يعمل قبل تحميل أي برنامج نصي:
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/routes/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
 
 ## ما لا يفعله نيكي
 
 المصادقة والترخيص وقاعدة البيانات والتدويل والوظائف الأساسية والبريد الإلكتروني والمدفوعات والبحث هي **مسؤولية تطبيقك**، وليست مسؤولية إطار العمل. يعطي Nexy نقاط الامتداد ويقول مكان توصيل كل واحدة منها: راجع [ما يتركه Nexy لك](how-nexy-works.md#what-nexy-leaves-to-you).
 
+المصادقة، على سبيل المثال، يتم توصيلها بتبعية المجلد الذي تحميه. يقوم Nexy بتشغيله قبل كل طريق أدناه؛ من هو المستخدم يبقى قرارك:
+
+```python filename="src/routes/account/dependeency.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
+
 السبب ليس البساطة في حد ذاتها: إن إطار العمل الذي يختار ORM الخاص بك أو مكتبة المصادقة الخاصة بك قد قرر شيئًا لا يمكن لأحد أن يقرره إلا تطبيقك.
 
 ## الخطوات التالية
 
-- [هيكل المشروع](project-structure.md): كل مجلد وملف للمشروع
+- [هيكل المشروع](project-structure.md): كل مجلد وملف من المشروع
 - [المعجم](../reference/glossary.md): الكلمات نفسها، في فهرس أبجدي واحد
-- [كيف يعمل Nexy](how-nexy-works.md): الطبقات، من يبني ماذا، وماذا يترك لك Nexy
+- [كيف يعمل Nexy](how-nexy-works.md): الطبقات، ومن يبني ماذا، وماذا يترك لك Nexy
