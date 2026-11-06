@@ -45,9 +45,9 @@ class AppController:
 Methods are matched by name, case-insensitively: `get`, `post`, `put`, `patch`, `delete`, `options`,
 `head`, `trace`.
 
-A controller declares one handler per HTTP method; a duplicate raises at startup. Add a prefix with
-`@Controller(prefix="/users")` - every handler is mounted on `prefix/`. `async def SOCKET(...)` on a
-controller registers a WebSocket at the same path.
+A controller declares one handler per HTTP method; a duplicate raises at startup. The first
+argument of `@Controller("/users")` is the path every handler answers on, `/users/`.
+`async def SOCKET(...)` on a controller registers a WebSocket at the same path.
 
 ## Group controllers in a module
 

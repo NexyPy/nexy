@@ -52,7 +52,7 @@
   "routing/fbr/pages/dynamic-routes.md": "dff1d6477c57aa217d09937970327f3d8f6ba569a3d8b5597547d125a4ef8e19",
   "routing/fbr/pages/metadata.md": "1e1ba4185717fa3047dd77244e0a7e5471a391b80cb81533a23e6e3c97d4614f",
   "routing/fbr/realtime/websocket.md": "e3d3778f26205debfb633d14a7a5a852f7ddb38b9770705692e3629f70dda150",
-  "routing/modular/README.md": "5f8f64c9383f3520ef0d9844d6e331290759558ec84b0acc2b3a9d149e0602fe",
+  "routing/modular/README.md": "abcd6b3e7d0d383f80c392d7670462cb818d16965edadd17149b033febbda62e",
   "routing/modular/dependency-injection.md": "fdc67d0c2d160d3c76495526bd77f77a81e0f971bb3c42426d6c50f42296dfe4",
   "routing/modular/guards-and-metadata.md": "3351857ce281443dfaf0545c8dd34b56133bda73f88b1b3a073295564a81f15b",
   "routing/modular/vs-nestjs.md": "58eee012b564b7fda591c95af32216035bac36ca96d81aede43ef7cbff8beed8",

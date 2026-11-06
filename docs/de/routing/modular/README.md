@@ -6,10 +6,10 @@ Modulares Routing verwendet Klassen mit Dekoratoren anstelle von Dateien unter `
 
 | Seite | Was es abdeckt |
 |---|---|
-| Diese Seite | Ein Modul montieren, einen Controller schreiben, Controller gruppieren |
+| Diese Seite | Montieren Sie ein Modul, schreiben Sie einen Controller, gruppieren Sie Controller |
 | [Abhängigkeitsinjektion](dependency-injection.md) | `@Injectable`, Bereiche, der Container |
-| [Schutzvorrichtungen und Metadaten](guards-and-metadata.md) | `@UseGuard`, `@Middleware`, `@UseRoute`, `@UseResponse` |
-| [Nexy und NestJS](vs-nestjs.md) | Was passt zu NestJS und was nicht zu |
+| [Guards und Metadaten](guards-and-metadata.md) | `@UseGuard`, `@Middleware`, `@UseRoute`, `@UseResponse` |
+| [Nexy und NestJS](vs-nestjs.md) | Was passt zu NestJS und was nicht |
 
 ## Richten Sie den Router ein
 
@@ -40,7 +40,7 @@ class AppController:
 
 Methoden werden nach Namen ohne Berücksichtigung der Groß- und Kleinschreibung abgeglichen: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
 
-Ein Controller deklariert einen Handler pro HTTP-Methode; Beim Start wird ein Duplikat ausgelöst. Fügen Sie ein Präfix mit `@Controller(prefix="/users")` hinzu – jeder Handler wird auf `prefix/` gemountet. `async def SOCKET(...)` auf einem Controller registriert einen WebSocket auf demselben Pfad.
+Ein Controller deklariert einen Handler pro HTTP-Methode. Beim Start wird ein Duplikat ausgelöst. Das erste Argument von `@Controller("/users")` ist der Pfad, auf dem jeder Handler antwortet, `/users/`. `async def SOCKET(...)` auf einem Controller registriert einen WebSocket auf demselben Pfad.
 
 ## Gruppieren Sie Controller in einem Modul
 
@@ -82,6 +82,6 @@ Siehe `examples/Modular/api/minimal/`.
 ## Nächste Schritte
 
 - [Abhängigkeitsinjektion](dependency-injection.md): Dienste und Bereiche
-- [Schutz und Metadaten](guards-and-metadata.md): Routen schützen und dokumentieren
+- [Guards und Metadaten](guards-and-metadata.md): Routen schützen und dokumentieren
 - [Routing](../README.md): der dateibasierte Router
 - [Konfiguration](../../reference/config.md): jede Option, einschließlich `useRouter`

@@ -4,16 +4,16 @@
 
 **قبل أن تبدأ:** مشروع Nexy وصفحة عمل واحدة. يحل جهاز التوجيه المعياري محل جهاز التوجيه المعتمد على الملفات، لذا اقرأ [التوجيه](../README.md) أولاً إذا لم تكن قد اخترت جهاز توجيه بعد.
 
-| صفحة | ما تتناوله |
+| الصفحة | ما يغطيه |
 |---|---|
 | هذه الصفحة | تركيب وحدة، كتابة وحدة تحكم، وحدات تحكم المجموعة |
 | [حقن التبعية](dependency-injection.md) | `@Injectable`، النطاقات، الحاوية |
 | [الحراس والبيانات الوصفية](guards-and-metadata.md) | `@UseGuard`، `@Middleware`، `@UseRoute`، `@UseResponse` |
-| [[نيكسي و NestJS](vs-nestjs.md) | ما يوافق NestJS وما لا |
+| [نكسي و NestJS](vs-nestjs.md) | ما يوافق NestJS وما لا يوافق |
 
 ## قم بإعداد جهاز التوجيه
 
-```python filename=""
+```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
 from src.apps.app_module import AppModule
 
@@ -40,7 +40,7 @@ class AppController:
 
 تتم مطابقة الطرق بالاسم، بشكل غير حساس لحالة الأحرف: `get`، `post`، `put`، `patch`، `delete`، `options`، `head`، `trace`.
 
-تعلن وحدة التحكم عن معالج واحد لكل طريقة HTTP؛ يثير نسخة مكررة عند بدء التشغيل. أضف بادئة بـ `@Controller(prefix="/users")` - يتم تثبيت كل معالج على `prefix/`. `async def SOCKET(...)` على وحدة التحكم يسجل WebSocket في نفس المسار.
+تعلن وحدة التحكم عن معالج واحد لكل طريقة HTTP؛ يثير نسخة مكررة عند بدء التشغيل. الوسيطة الأولى لـ `@Controller("/users")` هي المسار الذي يجيب عليه كل معالج، `/users/`. `async def SOCKET(...)` على وحدة التحكم يسجل WebSocket في نفس المسار.
 
 ## وحدات تحكم المجموعة في الوحدة النمطية
 
@@ -82,6 +82,6 @@ class AppController:
 ## الخطوات التالية
 
 - [حقن التبعية](dependency-injection.md): الخدمات والنطاقات
-- [الحراسات والبيانات الوصفية](guards-and-metadata.md): حماية المسارات وتوثيقها
+- [الحراس والبيانات الوصفية](guards-and-metadata.md): حماية وتوثيق المسارات
 - [التوجيه](../README.md): جهاز التوجيه القائم على الملف
 - [التكوين](../../reference/config.md): كل خيار، بما في ذلك `useRouter`
