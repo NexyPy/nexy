@@ -162,9 +162,23 @@ REDIRECTS = {
 # The scopes a menu group can declare: the three routers, the advanced bucket, and `core` for the
 # groups every reader sees. A marker (`### Routing {fbr}`) is stripped from the title, here and in
 # the rendered page, so it is a navigation instruction and nothing else.
+# A group shared by some routers only names them all: `### Pages {fbr,custom}` gives the scope
+# `fbr custom`, which the stylesheet reads word by word.
 SCOPES = ("core", "fbr", "modular", "custom", "advanced")
-_SCOPE = re.compile(r"\s*\{(" + "|".join(SCOPES) + r")\}\s*$")
+_SCOPE = re.compile(r"\s*\{([a-z, ]+)\}\s*$")
 _ROUTER_KEYS = tuple(key for key, _name, _blurb in ROUTERS)
+
+
+def _scope_of(heading: str) -> tuple[str, str]:
+    """`(title, scope)` of a group heading; the scope is empty when it carries no known marker."""
+    marker = _SCOPE.search(heading)
+    words = [word.strip() for word in marker[1].split(",")] if marker else []
+    single = len(words) == 1 and words[0] in SCOPES
+    several = len(words) > 1 and all(word in _ROUTER_KEYS for word in words)
+    if not (single or several):
+        return heading, ""
+    return heading[: marker.start()].strip() if marker else heading, " ".join(words)
+
 
 # The one badge a menu row can carry: `{new}` at the end of the summary cell, the way a heading
 # carries a scope. It marks the page and is read by nobody else: the token is out of the summary,
@@ -402,9 +416,7 @@ def read_tracks(docs: Path, lang: str = i18n.DEFAULT) -> list[Track]:
             close_group()
             if label:
                 heading = text[4:].strip()
-                marker = _SCOPE.search(heading)
-                group_scope = marker[1] if marker else ""
-                group_title = _SCOPE.sub("", heading).strip()
+                group_title, group_scope = _scope_of(heading)
                 reading = "group"
             continue
         if text.startswith("|"):
@@ -671,7 +683,7 @@ def _identify(html: str) -> Rendered:
     found: list[Heading] = []
 
     def mark(match: re.Match[str]) -> str:
-        level, inner = int(match[1]), _SCOPE.sub("", match[2])
+        level, inner = int(match[1]), _scope_of(match[2])[0]
         base = anchor(inner)
         count = seen.get(base, 0)
         seen[base] = count + 1

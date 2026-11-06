@@ -98,6 +98,21 @@ class TestGroupScope:
         group = self._tracks(tmp_path, "Advanced {advanced}")[0].groups[0]
         assert (group.scope, group.router) == ("advanced", None)
 
+    def test_a_marker_can_name_several_routers(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr,custom}")[0].groups[0]
+        assert group.scope == "fbr custom"
+
+    def test_a_group_of_several_routers_belongs_to_none_of_them(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr, custom}")[0].groups[0]
+        assert group.router is None
+
+    def test_a_marker_of_several_routers_is_not_part_of_the_title(self, tmp_path):
+        assert self._tracks(tmp_path, "Forms {fbr,custom}")[0].groups[0].title == "Forms"
+
+    def test_a_marker_mixing_a_router_and_an_unknown_word_stays_in_the_title(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr,nope}")[0].groups[0]
+        assert (group.title, group.scope) == ("Forms {fbr,nope}", "core")
+
     def test_an_unknown_marker_is_left_visible_in_the_title(self, tmp_path):
         group = self._tracks(tmp_path, "Forms {nope}")[0].groups[0]
         assert (group.title, group.scope) == ("Forms {nope}", "core")
