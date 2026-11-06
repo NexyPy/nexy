@@ -268,6 +268,11 @@ class TestClientAdapters:
         src = self._generate(tmp_path, nexy_project, framework)
         assert (src / "router.ts").is_file() and (src / "shared.ts").is_file()
 
+    @pytest.mark.parametrize("framework", sorted(FILES))
+    def test_the_fetch_runtime_comes_with_it(self, tmp_path, nexy_project, framework):
+        src = self._generate(tmp_path, nexy_project, framework)
+        assert "export function createFetchState" in (src / "fetch-runtime.ts").read_text("utf-8")
+
     def test_a_project_without_a_framework_gets_no_adapter(self, tmp_path, nexy_project):
         src = self._generate(tmp_path, nexy_project, None)
         assert not any((src / name).exists() for name in self.EVERY_ADAPTER_FILE)
