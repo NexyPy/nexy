@@ -29,6 +29,14 @@ class TestTranslateChunk:
     def test_a_marker_glued_after_its_word_keeps_the_marker(self):
         assert translate_chunk("React.[[8]]", "bn", service) == "bn:React.[[8]]"
 
+    def test_a_marker_the_service_answers_with_single_brackets_is_restored(self):
+        def single_brackets(text: str, target: str) -> str:
+            # What Google answers for `Recipes[[145]]` in Urdu: `ترکیبیں[145]`.
+            return f"{target}:" + text.replace("[[", "[").replace("]]", "]")
+
+        chunk = "[[144]] [Recipes[[145]]\n"
+        assert translate_chunk(chunk, "ur", single_brackets, 1) == "[[144]] [ur:Recipes[[145]]\n"
+
     def test_a_word_between_two_markers_keeps_both(self):
         assert translate_chunk("[[7]]Routing[[8]]", "bn", service) == "[[7]]bn:Routing[[8]]"
 
