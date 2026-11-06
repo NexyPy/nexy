@@ -85,6 +85,7 @@
   "coming-from/nextjs.md": "940b55efc317f9c2f4b2d99a7ec9bf6c8ab3e0c7ce06e88530434f7611751ebd",
   "coming-from/spring-boot.md": "35aeaff29584840c2af1acb06565a1cd2b4a69146a136c5d9c2a0834f87db6b6",
   "databases/mysql-mariadb.md": "63e755c012d961d9c30ece40cca71309c310afec3e5c1e6b807ef1e78dfd1a16",
-  "databases/neon.md": "19f5b2e986279c140b9d6e12f504c1d94e7a0651405697d3a5a55b0909f1942b"
+  "databases/neon.md": "19f5b2e986279c140b9d6e12f504c1d94e7a0651405697d3a5a55b0909f1942b",
+  "databases/postgresql.md": "f906ed7b92aa526cee7eea5ddf6b5ad22568a6155f06bc7a2824a1de03c424d8"
  }
 }
