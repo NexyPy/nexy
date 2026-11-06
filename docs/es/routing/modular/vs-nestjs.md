@@ -6,7 +6,7 @@ El enrutador modular está inspirado en NestJS: controladores, módulos e inyecc
 
 | NestJS | nexy |
 |---|---|
-| `@Controller('users')` | `@Controller(prefix="/users")` |
+| `@Controller('users')` | `@Controller("/users")` |
 | `@Module({ controllers, providers, imports, exports })` | `@Module()` con los mismos cuatro atributos de clase |
 | `@Injectable()` | `@Injectable()` |
 | inyección de constructor | `__init__` parámetros resueltos a partir de anotaciones de tipo |
@@ -48,7 +48,7 @@ class UserService:
         return [{"id": 1, "name": "Ada"}]
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, users: UserService) -> None:
         self.users = users
@@ -81,7 +81,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/posts")
+@Controller("/posts")
 @UseGuard(require_token)
 class PostController:
     async def get(self, limit: int = Query(10)) -> list[dict]:
@@ -116,7 +116,7 @@ def get_settings() -> dict:
     return {"currency": "EUR"}
 
 
-@Controller(prefix="/reports")
+@Controller("/reports")
 class ReportController:
     async def get(self, settings: dict = Depends(get_settings)) -> dict:
         return {"currency": settings["currency"]}

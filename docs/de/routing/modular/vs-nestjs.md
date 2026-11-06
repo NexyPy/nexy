@@ -6,7 +6,7 @@ Der modulare Router ist inspiriert von NestJS: Controller, Module und Konstrukto
 
 | NestJS | Nexy |
 |---|---|
-| `@Controller('users')` | `@Controller(prefix="/users")` |
+| `@Controller('users')` | `@Controller("/users")` |
 | `@Module({ controllers, providers, imports, exports })` | `@Module()` mit den gleichen vier Klassenattributen |
 | `@Injectable()` | `@Injectable()` |
 | Konstruktorinjektion | `__init__` Parameter aus Typanmerkungen aufgelöst |
@@ -48,7 +48,7 @@ class UserService:
         return [{"id": 1, "name": "Ada"}]
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, users: UserService) -> None:
         self.users = users
@@ -81,7 +81,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/posts")
+@Controller("/posts")
 @UseGuard(require_token)
 class PostController:
     async def get(self, limit: int = Query(10)) -> list[dict]:
@@ -116,7 +116,7 @@ def get_settings() -> dict:
     return {"currency": "EUR"}
 
 
-@Controller(prefix="/reports")
+@Controller("/reports")
 class ReportController:
     async def get(self, settings: dict = Depends(get_settings)) -> dict:
         return {"currency": settings["currency"]}
