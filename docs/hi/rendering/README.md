@@ -4,6 +4,11 @@
 
 **निश्चित नहीं? एसएसआर रखें।** कोई पृष्ठ तभी बदलें जब आप कारण बता सकें: सामग्री जो शायद ही कभी बदलती है (आईएसआर), एक विजेट जिसके लिए ब्राउज़र की आवश्यकता होती है (द्वीप), या ऐप-जैसे नेविगेशन (सीएसआर)।
 
+<!-- router:modular -->
+> [!NOTE]
+> मॉड्यूलर राउटर सर्वर पर हर दृश्य को उन द्वीपों के साथ प्रस्तुत करता है जहां एक दृश्य उन्हें रखता है। ISR और CSR फ़ाइल पेजों के तरीके हैं: उन्हें फ़ाइल-आधारित राउटर की आवश्यकता होती है।
+<!-- /router -->
+
 ## यह कैसे काम करता है
 
 ```diagram filename="HTML का निर्माण कौन करता है, और कब करता है"
@@ -52,6 +57,7 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 ## उदाहरण
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
@@ -60,6 +66,19 @@ revalidate = 60
 ```
 
 फ्रंटमैटर लाइन के बिना वही पेज SSR है।
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Rendered on every request</h1>
+<Chart directive="client:visible" />
+```
+
+दृश्य एसएसआर है, और चार्ट एक द्वीप है जो दृश्य में स्क्रॉल करने पर हाइड्रेट होता है।
+<!-- /router -->
 
 ## सीमाएँ
 

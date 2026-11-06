@@ -4,6 +4,11 @@
 
 **没有把握？保留 SSR。** 仅当您能说出原因时才更改页面：很少更改的内容 (ISR)、需要浏览器的一个小部件（孤岛）或类似应用程序的导航 (CSR)。
 
+<!-- router:modular -->
+> [!NOTE]
+> 模块化路由器渲染服务器上的每个视图，并在视图中包含它们的岛屿。 ISR和CSR是文件页面的模式：它们需要基于文件的路由器。
+<!-- /router -->
+
 ## 它是如何运作的
 
 ```diagram filename="谁生成 HTML 以及何时生成"
@@ -30,7 +35,7 @@ Islands   request ──► server renders the page ──► one widget hydrate
 有两个事实可以解释最令人惊讶的事情。
 
 1. **项目处于一种模式。** `useCSR` 在服务器模式（SSR、ISR、岛屿、`.nexy`、`.md`、`.mdx` 路由）和客户端模式（框架路由和客户端路由器）之间进行选择。两者不能混合：参见[服务器模式和客户端模式](../routing/fbr/modes.md)。
-2. **在服务器模式中，该模式是每页。** 一个页面可以使用 `revalidate`进行缓存，另一个可以容纳一个岛，第三个则两者都不能。
+2. **在服务器模式中，模式是每页。** 一个页面可以用 `revalidate`缓存，另一个可以容纳一个岛，第三个都不能。
 
 客户端模式仍然发送真实的文档：Nexy 在 Node 中呈现它作为第一个响应，然后浏览器接管导航。 CSR 页面不是等待捆绑的空白页面。
 
@@ -46,12 +51,13 @@ Islands   request ──► server renders the page ──► one widget hydrate
 | 模式 | 哪里 |
 |---|---|
 | 固态继电器 | 无处：这是默认值 |
-| 情报监视与侦察 | `revalidate = 60` 在 `.nexy` 页面的首页 |
+| 情报监视与侦察 | `revalidate = 60` 位于 `.nexy` 页面的首页 |
 | 企业社会责任 | `nexyconfig.py` 中的 `useCSR = True`，设置了 `useFF` |
 | 岛屿 | 组件标签上的 `directive="client:visible"` |
 
 ## 示例
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
@@ -60,6 +66,19 @@ revalidate = 60
 ```
 
 没有 frontmatter 行的同一页面是 SSR。
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Rendered on every request</h1>
+<Chart directive="client:visible" />
+```
+
+视图是 SSR，图表是一个滚动到视图中时会水合的岛屿。
+<!-- /router -->
 
 ## 局限性
 
@@ -70,7 +89,7 @@ revalidate = 60
 
 ## 后续步骤
 
-- [SSR](ssr.md)：默认
+- [SSR](ssr.md)：默认值
 - [ISR](isr.md)：为每个 URL 缓存一个页面
 - [CSR](csr.md)：手动导航到浏览器
 - [岛屿](islands.md)：水合一个小部件
