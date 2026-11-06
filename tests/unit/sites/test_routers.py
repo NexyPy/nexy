@@ -195,11 +195,11 @@ class TestAssets:
             for key, _name, _blurb in source.ROUTERS
         )
 
-    def test_a_group_of_another_scope_is_not_drawn(self):
+    def test_a_group_of_another_scope_is_not_drawn_even_when_it_names_several(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert all(
             f'html[data-router="{key}"] .side .group[data-scope]:not([data-scope="core"])'
-            f':not([data-scope="{key}"])' in css
+            f':not([data-scope~="{key}"])' in css
             for key, _name, _blurb in source.ROUTERS
         )
 

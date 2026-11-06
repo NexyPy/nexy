@@ -529,9 +529,9 @@ html[data-router="modular"] .side .area-face:not([data-router="modular"]),
 html[data-router="custom"] .side .area-face:not([data-router="custom"]) { display: none; }
 
 /* One scope at a time: the groups of the other routers, and the advanced ones, are not drawn. */
-html[data-router="fbr"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope="fbr"]),
-html[data-router="modular"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope="modular"]),
-html[data-router="custom"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope="custom"]) { display: none; }
+html[data-router="fbr"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope~="fbr"]),
+html[data-router="modular"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope~="modular"]),
+html[data-router="custom"] .side .group[data-scope]:not([data-scope="core"]):not([data-scope~="custom"]) { display: none; }
 
 /* One router at a time in the page: a `router:` block is drawn for its own choice only. */
 html[data-router="fbr"] .router-variant:not([data-router~="fbr"]),
