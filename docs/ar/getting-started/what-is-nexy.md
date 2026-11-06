@@ -5,8 +5,16 @@ Nexy هو إطار عمل Python لتطبيقات الويب الكاملة: ص�
 ## ما تحصل عليه
 
 - **الصفحات في Python.** الملف `.nexy` هو ملف HTML مع بضعة أسطر من Python في الأعلى؛ الملف `.md` هو صفحة أيضًا. ليس هناك حاجة إلى JavaScript لعرض الصفحة.
+<!-- router:fbr -->
 - **واجهة برمجة تطبيقات في نفس المشروع.** ملف `.py` ضمن `src/routes/` يجيب على طلبات HTTP: دالة اسمها `GET` تجيب `GET`، وظيفة اسمها `POST` تجيب `POST`.
-- **وثائق واجهة برمجة التطبيقات (API) مجانًا.** يظهر كل مسار واجهة برمجة التطبيقات (API) في مخطط OpenAPI، ويعرضه Scalar كمرجع تفاعلي في `/docs`.
+<!-- /router -->
+<!-- router:modular -->
+- **واجهة برمجة تطبيقات في نفس المشروع.** تجيب وحدة التحكم على طلبات HTTP: طريقتها `get` تجيب على `GET`، وطريقتها `post` تجيب على `POST`، والوحدة النمطية تجمع وحدات التحكم وخدماتها.
+<!-- /router -->
+<!-- router:custom -->
+- **واجهة برمجة تطبيقات في نفس المشروع.** جهاز التوجيه FastAPI الذي لديك بالفعل يستمر في الإجابة، والصفحات وملفات التوجيه الخاصة بـ `src/routes/` تجيب بجواره.
+<!-- /router -->
+- **وثائق واجهة برمجة التطبيقات (API) مجانًا.** يظهر كل مسار واجهة برمجة التطبيقات (API) في مخطط OpenAPI، ويظهره Scalar كمرجع تفاعلي في `/docs`.
 - **النماذج التي تستدعي Python.** يصل النموذج، أو المكالمة المكتوبة من المتصفح، إلى نفس الوظيفة Python.
 - **إطار عمل للواجهة الأمامية عندما تريد واحدًا.** React، Vue، Svelte، Solid أو Preact، لمكون واحد أو للموقع بأكمله.
 - **أمر واحد للعمل، وواحد للشحن.** `nx dev` يُعاد التحميل أثناء الحفظ؛ `nx build` يجهز الإنتاج.
@@ -24,6 +32,7 @@ Nexy هو إطار عمل Python لتطبيقات الويب الكاملة: ص�
 
 ## الصفحة الأولى ونقطة النهاية الأولى
 
+<!-- router:fbr,custom -->
 صفحة، في `/hello`:
 
 ```nexy filename="src/routes/hello.nexy"
@@ -42,6 +51,48 @@ from nexy.http import Request
 async def GET(request: Request):
     return {"items": []}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+وجهة نظر، ومتحكمات تجيب `/hello/` و `GET /api/items/`. يتم إدراج نقطة النهاية في `/docs` بدون أي رمز إضافي، ويعيد عنوان URL الذي لا يحتوي على الشرطة المائلة الأخيرة التوجيه إليها:
+
+```nexy filename="src/apps/hello_view.nexy"
+---
+title: prop[str] = "Hello"
+---
+<h1>{{ title }}</h1>
+```
+
+```python filename="src/apps/hello_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/hello")
+class HelloController:
+    async def get(self):
+        return useViews("src/apps/hello_view.nexy", context={"title": "Hello"})
+
+
+@Controller("/api/items")
+class ItemsController:
+    async def get(self):
+        return {"items": []}
+```
+
+تسردها الوحدة الجذرية، ويقوم `useRouter = AppModule` في `nexyconfig.py` بتثبيتها:
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .hello_controller import HelloController, ItemsController
+
+
+@Module()
+class AppModule:
+    controllers = [HelloController, ItemsController]
+```
+<!-- /router -->
 
 ## ما يتركه لك Nexy
 
@@ -49,6 +100,6 @@ async def GET(request: Request):
 
 ## الخطوات التالية
 
-- [التثبيت ](installation.md): تثبيت uv وإنشاء المشروع
+- [التثبيت](installation.md): تثبيت uv وإنشاء المشروع
 - [البداية السريعة](quick-start.md): تشغيلها، تغيير الصفحة، إنشائها
 - [المفاهيم الأساسية](core-concepts.md): الكلمات القليلة التي تستخدمها بقية المستندات

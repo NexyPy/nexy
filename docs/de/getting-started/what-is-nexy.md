@@ -5,10 +5,18 @@ Nexy ist ein Python Framework für Fullstack-Webanwendungen: Ihre Seiten und Ihr
 ## Was Sie bekommen
 
 - **Seiten in Python.** Eine `.nexy`-Datei ist HTML mit ein paar Zeilen Python oben; Eine `.md`-Datei ist auch eine Seite. Zum Rendern einer Seite ist kein JavaScript erforderlich.
+<!-- router:fbr -->
 - **Eine API im selben Projekt.** Eine `.py`-Datei unter `src/routes/` beantwortet HTTP-Anfragen: Eine Funktion namens `GET` antwortet `GET`, eine Funktion namens `POST` antwortet `POST`.
-- **Kostenlose API-Dokumentation.** Jede API-Route erscheint in einem OpenAPI-Schema und Scalar zeigt sie als interaktive Referenz unter `/docs`.
+<!-- /router -->
+<!-- router:modular -->
+- **Eine API im selben Projekt.** Ein Controller beantwortet HTTP-Anfragen: seine Methode `get` antwortet `GET`, seine Methode `post` antwortet `POST` und ein Modul gruppiert Controller und ihre Dienste.
+<!-- /router -->
+<!-- router:custom -->
+- **Eine API im selben Projekt.** Der FastAPI-Router, den Sie bereits haben, antwortet weiterhin, und die Seiten und Routendateien von `src/routes/` antworten daneben.
+<!-- /router -->
+- **API-Dokumentation kostenlos.** Jede API-Route erscheint in einem OpenAPI Schema und Scalar zeigt sie als interaktive Referenz unter `/docs`.
 - **Formulare, die Python.** aufrufen. Ein Formular oder ein eingegebener Aufruf vom Browser erreicht dieselbe Python-Funktion.
-- **Ein Frontend-Framework, wenn Sie eines wünschen.** React, Vue, Svelte, Solid oder Preact, für eine Komponente oder für die gesamte Site.
+- **Ein Frontend-Framework, wenn Sie eines benötigen.** React, Vue, Svelte, Solid oder Preact, für eine Komponente oder für die gesamte Site.
 - **Ein Befehl zum Arbeiten, einer zum Versenden.** `nx dev` wird beim Speichern neu geladen; `nx build` bereitet die Produktion vor.
 
 ## Worauf es aufgebaut ist
@@ -24,7 +32,8 @@ Die aktuelle Version 2.2 basiert auf Tools, die Sie vielleicht bereits kennen:
 
 ## Eine erste Seite und ein erster Endpunkt
 
-Eine Seite, unter `/hello`:
+<!-- router:fbr,custom -->
+Eine Seite, bei `/hello`:
 
 ```nexy filename="src/routes/hello.nexy"
 ---
@@ -42,6 +51,48 @@ from nexy.http import Request
 async def GET(request: Request):
     return {"items": []}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Eine Ansicht und die Controller, die `/hello/` und `GET /api/items/` beantworten. Der Endpunkt wird ohne zusätzlichen Code unter `/docs` aufgeführt, und eine URL ohne den letzten Schrägstrich leitet dorthin weiter:
+
+```nexy filename="src/apps/hello_view.nexy"
+---
+title: prop[str] = "Hello"
+---
+<h1>{{ title }}</h1>
+```
+
+```python filename="src/apps/hello_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/hello")
+class HelloController:
+    async def get(self):
+        return useViews("src/apps/hello_view.nexy", context={"title": "Hello"})
+
+
+@Controller("/api/items")
+class ItemsController:
+    async def get(self):
+        return {"items": []}
+```
+
+Das Root-Modul listet sie auf und `useRouter = AppModule` in `nexyconfig.py` mountet sie:
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .hello_controller import HelloController, ItemsController
+
+
+@Module()
+class AppModule:
+    controllers = [HelloController, ItemsController]
+```
+<!-- /router -->
 
 ## Was Nexy Ihnen überlässt
 
