@@ -88,6 +88,7 @@
   "databases/neon.md": "19f5b2e986279c140b9d6e12f504c1d94e7a0651405697d3a5a55b0909f1942b",
   "databases/postgresql.md": "f906ed7b92aa526cee7eea5ddf6b5ad22568a6155f06bc7a2824a1de03c424d8",
   "databases/sqlite.md": "3e3fc5a9bd30d0072ce3b40a14e5c98638b2f9f9c1feee75aba8d72dd606f854",
-  "coming-from/express.md": "3ad60c394ae8908756e8c901a4955ef784f8b9456040b43d3b359eb3c2872783"
+  "coming-from/express.md": "3ad60c394ae8908756e8c901a4955ef784f8b9456040b43d3b359eb3c2872783",
+  "coming-from/rails.md": "38feadfac74414228ed1c313151b7ade35eda690d21ba13117bfc70ba4eea7e2"
  }
 }
