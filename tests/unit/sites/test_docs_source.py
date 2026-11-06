@@ -86,6 +86,14 @@ class TestGroupScope:
         group = self._tracks(tmp_path, "Forms {fbr}")[0].groups[0]
         assert group.router == "fbr"
 
+    def test_a_page_of_a_marked_group_belongs_to_its_router(self, tmp_path):
+        page = self._tracks(tmp_path, "Forms {modular}")[0].groups[0].pages[0]
+        assert page.router == "modular"
+
+    def test_a_page_of_an_advanced_group_belongs_to_no_router(self, tmp_path):
+        page = self._tracks(tmp_path, "Advanced {advanced}")[0].groups[0].pages[0]
+        assert page.router is None
+
     def test_an_advanced_group_belongs_to_no_router(self, tmp_path):
         group = self._tracks(tmp_path, "Advanced {advanced}")[0].groups[0]
         assert (group.scope, group.router) == ("advanced", None)

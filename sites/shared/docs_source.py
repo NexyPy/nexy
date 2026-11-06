@@ -374,8 +374,8 @@ def read_tracks(docs: Path, lang: str = i18n.DEFAULT) -> list[Track]:
         if group_title and pages:
             scope = group_scope or _router_of_group(pages) or "core"
             router = scope if scope in _ROUTER_KEYS else None
-            # Update pages with the final resolved scope
-            updated_pages = [replace(p, scope=scope) for p in pages]
+            # A page takes the scope of its group, and the router a marker gives it.
+            updated_pages = [replace(p, scope=scope, router=router or p.router) for p in pages]
             groups.append(Group(group_title, group_blurb, updated_pages, router, scope))
         group_title, group_blurb, group_scope, pages = "", "", "", []
 
