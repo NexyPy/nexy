@@ -198,6 +198,7 @@ Zwei unabhängige Entscheidungen, oft verwechselt:
 
 Eine Seite im Servermodus mit einer Insel: Der Server rendert die Seite, der Browser hydriert das Diagramm nur, wenn es in die Ansicht scrollt.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -205,6 +206,30 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Die Insel wird in die Ansicht verschoben und der Controller gibt die Ansicht zurück:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## Anwendungsinteraktion
 
@@ -226,12 +251,23 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/routes/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## Was Nexy nicht macht
 

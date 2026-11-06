@@ -198,6 +198,7 @@ async def create_post():
 
 صفحة في وضع الخادم بجزيرة واحدة: يعرض الخادم الصفحة، ويقوم المتصفح بترطيب المخطط فقط عند تمريره إلى العرض.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -205,13 +206,37 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+تظهر الجزيرة في العرض، وتقوم وحدة التحكم بإرجاع العرض:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## تفاعل التطبيق
 
 | فكرة | سطر واحد |
 |---|---|
-| العمل | دالة Python تم وضع علامة `@Action` عليها، بمثابة `POST`، قابلة للاستدعاء من نموذج أو كدالة مكتوبة ([الإجراءات](../guides/actions.md)) |
-| النموذج | نموذج HTML يتم نشره في أحد الإجراءات، مع عودة أخطاء التحقق من الصحة إلى الصفحة ([الإجراءات](../guides/actions.md)) |
+| العمل | دالة Python تم وضع علامة `@Action` عليها، بمثابة `POST`، قابلة للاستدعاء من نموذج أو كدالة مكتوبة ([إجراءات](../guides/actions.md)) |
+| النموذج | نموذج HTML ينشر إلى إجراء، مع عودة أخطاء التحقق من الصحة إلى الصفحة ([الإجراءات](../guides/actions.md)) |
 | الملاحة | الروابط التي تجلب مسبقًا، والخطافات التي تقرأ المسار والاستعلام وملفات تعريف الارتباط والجلسة ([الخطافات](../routing/fbr/navigation/hooks.md)) |
 | جلب البيانات | تتم بواسطة الصفحة أو المعالج الذي يحتاج إليها؛ لا يقوم Nexy بشحن طبقة بيانات العميل ([معالجات](../routing/fbr/handlers/README.md)) |
 
@@ -226,12 +251,23 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/routes/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## ما لا يفعله نيكي
 
@@ -299,6 +335,6 @@ api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
 
 ## الخطوات التالية
 
-- [هيكل المشروع](project-structure.md): كل مجلد وملف من المشروع
-- [المعجم](../reference/glossary.md): الكلمات نفسها، في فهرس أبجدي واحد
+- [هيكل المشروع](project-structure.md): كل مجلد وملف للمشروع
+- [المعجم](../reference/glossary.md): الكلمات نفسها في فهرس أبجدي واحد
 - [كيف يعمل Nexy](how-nexy-works.md): الطبقات، ومن يبني ماذا، وماذا يترك لك Nexy

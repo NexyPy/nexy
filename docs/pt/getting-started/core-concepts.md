@@ -198,6 +198,7 @@ Duas decisões independentes, muitas vezes confundidas:
 
 Uma página em modo servidor com uma ilha: o servidor renderiza a página, o navegador hidrata o gráfico apenas quando ele rola para visualização.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -205,6 +206,30 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+A ilha entra na view e o controlador retorna a view:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## Interação do aplicativo
 
@@ -226,12 +251,23 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/rotas/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## O que Nexy não faz
 

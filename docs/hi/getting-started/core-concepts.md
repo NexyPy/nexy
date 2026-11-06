@@ -198,6 +198,7 @@ async def create_post():
 
 एक द्वीप के साथ एक सर्वर-मोड पृष्ठ: सर्वर पृष्ठ को प्रस्तुत करता है, ब्राउज़र चार्ट को केवल तभी हाइड्रेट करता है जब वह दृश्य में स्क्रॉल करता है।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -205,13 +206,37 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+द्वीप दृश्य में चला जाता है, और नियंत्रक दृश्य लौटाता है:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## अनुप्रयोग इंटरैक्शन
 
 | धारणा | एक पंक्ति |
 |---|---|
 | कार्रवाई | एक Python फ़ंक्शन को `@Action` के रूप में चिह्नित किया गया है, जिसे `POST` के रूप में कार्य किया जाता है, जिसे किसी फॉर्म से या टाइप किए गए फ़ंक्शन के रूप में कॉल किया जा सकता है ([क्रियाएं](../guides/actions.md)) |
-| प्रपत्र | एक HTML फॉर्म जो किसी क्रिया पर पोस्ट करता है, सत्यापन त्रुटियों के साथ पृष्ठ पर वापस आता है ([कार्रवाइयां](../guides/actions.md)) |
+| प्रपत्र | एक HTML फ़ॉर्म जो किसी क्रिया पर पोस्ट करता है, सत्यापन त्रुटियों के साथ पृष्ठ पर वापस आता है ([क्रियाएँ](../guides/actions.md)) |
 | नेविगेशन | लिंक जो प्रीफ़ेच करते हैं, और हुक जो पथ, क्वेरी, कुकीज़ और सत्र को पढ़ते हैं ([हुक](../routing/fbr/navigation/hooks.md)) |
 | डेटा लाया जा रहा है | उस पृष्ठ या हैंडलर द्वारा किया गया जिसे इसकी आवश्यकता है; Nexy कोई क्लाइंट डेटा परत शिप नहीं करता ([हैंडलर](../routing/fbr/handlers/README.md)) |
 
@@ -226,12 +251,23 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/routes/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## नेक्सी क्या नहीं करती
 

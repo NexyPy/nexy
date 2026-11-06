@@ -198,6 +198,7 @@ async def create_post():
 
 Страница в режиме сервера с одним островом: сервер отображает страницу, браузер увлажняет диаграмму только при ее прокрутке в поле зрения.
 
+<!-- router:fbr,custom -->
 ```nexy filename="источник/маршруты/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -205,6 +206,30 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Остров попадает в представление, а контроллер возвращает представление:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## Взаимодействие с приложением
 
@@ -226,16 +251,27 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="источник/маршруты/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## Чего Nexy не делает
 
-Аутентификация, авторизация, база данных, интернационализация, фоновые задания, электронная почта, платежи и поиск — это ответственность **вашего приложения**, а не платформы. Nexy дает точки расширения и говорит, куда подключить каждую: см. [Что Nexy оставляет вам](how-nexy-works.md#what-nexy-leaves-to-you).
+Аутентификация, авторизация, база данных, интернационализация, фоновые задания, электронная почта, платежи и поиск — это **ответственность вашего приложения**, а не фреймворка. Nexy дает точки расширения и говорит, куда подключить каждую: см. [Что Nexy оставляет вам](how-nexy-works.md#what-nexy-leaves-to-you).
 
 <!-- router:fbr -->
 Например, аутентификация подключается к зависимости от папки, которую она защищает. Nexy запускает его перед каждым маршрутом ниже; кто пользователь, остается за вами:

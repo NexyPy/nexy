@@ -198,6 +198,7 @@ Dua keputusan independen, yang sering membingungkan:
 
 Halaman mode server dengan satu pulau: server merender halaman, browser menghidrasi grafik hanya ketika grafik digulir hingga terlihat.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/penjualan.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -205,6 +206,30 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Pulau masuk dalam tampilan, dan pengontrol mengembalikan tampilan:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## Interaksi aplikasi
 
@@ -226,16 +251,27 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/rute/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## Apa yang Nexy tidak lakukan
 
-Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran, dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan tanggung jawab kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus memasang masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
+Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus memasang masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
 
 <!-- router:fbr -->
 Otentikasi, misalnya, dihubungkan ke ketergantungan folder yang dilindunginya. Nexy menjalankannya sebelum setiap rute di bawah; siapa penggunanya tetap menjadi keputusan Anda:

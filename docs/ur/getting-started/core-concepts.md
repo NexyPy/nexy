@@ -198,6 +198,7 @@ async def create_post():
 
 ایک جزیرے کے ساتھ سرور موڈ کا صفحہ: سرور صفحہ کو رینڈر کرتا ہے، براؤزر صرف اس وقت چارٹ کو ہائیڈریٹ کرتا ہے جب وہ منظر میں اسکرول کرتا ہے۔
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -205,15 +206,39 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+جزیرہ منظر میں جاتا ہے، اور کنٹرولر منظر کو واپس کرتا ہے:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## درخواست کا تعامل
 
 | تصور | ایک لائن |
 |---|---|
-| ایکشن | ایک Python فنکشن نشان زد `@Action`، ایک `POST` کے طور پر پیش کیا گیا، فارم سے کال کیا جا سکتا ہے یا ٹائپ شدہ فنکشن کے طور پر ([ایکشنز](../guides/actions.md)) |
-| فارم | ایک ایچ ٹی ایم ایل فارم جو ایکشن پر پوسٹ کرتا ہے، توثیق کی غلطیوں کے ساتھ صفحہ پر واپس آتی ہے ([ایکشن](../guides/actions.md)) |
-| نیویگیشن | وہ لنک جو پہلے سے تیار کرتے ہیں، اور ہکس جو راستے، استفسار، کوکیز اور سیشن کو پڑھتے ہیں ([ہکس](../routing/fbr/navigation/hooks.md)) |
-| ڈیٹا بازیافت کرنا | صفحہ یا ہینڈلر کے ذریعہ کیا گیا ہے جس کی ضرورت ہے۔ Nexy بغیر کلائنٹ ڈیٹا لیئر بھیجتا ہے ([ہینڈلرز](../routing/fbr/handlers/README.md)) |
+| ایکشن | ایک Python فنکشن نشان زد `@Action`، ایک `POST` کے طور پر پیش کیا گیا، فارم سے کال کیا جا سکتا ہے یا ٹائپ شدہ فنکشن کے طور پر ([عمل](../guides/actions.md)) |
+| فارم | ایک ایچ ٹی ایم ایل فارم جو ایک ایکشن پر پوسٹ کرتا ہے، توثیق کی خرابیوں کے ساتھ صفحہ پر واپس آتا ہے ([ایکشن](../guides/actions.md)) |
+| نیویگیشن | لنکس جو پہلے سے تیار کرتے ہیں، اور ہکس جو راستے، استفسار، کوکیز اور سیشن کو پڑھتے ہیں ([ہکس](../routing/fbr/navigation/hooks.md)) |
+| ڈیٹا بازیافت کرنا | صفحہ یا ہینڈلر کے ذریعہ کیا گیا ہے جس کی ضرورت ہے۔ Nexy بغیر کسی کلائنٹ کی ڈیٹا لیئر بھیجتا ہے ([ہینڈلرز](../routing/fbr/handlers/README.md)) |
 
 ایک عمل اور فارم جو اس پر پوسٹ کرتا ہے، جو کسی بھی اسکرپٹ کے لوڈ ہونے سے پہلے کام کرتا ہے:
 
@@ -226,16 +251,27 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/routes/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## Nexy کیا نہیں کرتا
 
-توثیق، اجازت، ڈیٹا بیس، بین الاقوامی کاری، پس منظر کی ملازمتیں، ای میل، ادائیگیاں اور تلاش **آپ کی درخواست کی ذمہ داری** ہیں، فریم ورک کی نہیں۔ Nexy ایکسٹینشن پوائنٹ دیتا ہے اور کہتا ہے کہ ہر ایک کو کہاں سے لگانا ہے: دیکھیں [Nexy آپ کے لیے کیا چھوڑتا ہے](how-nexy-works.md#what-nexy-leaves-to-you)۔
+تصدیق، اجازت، ڈیٹا بیس، بین الاقوامی کاری، پس منظر کی ملازمتیں، ای میل، ادائیگیاں اور تلاش **آپ کی درخواست کی ذمہ داری** ہیں، نہ کہ فریم ورک کی۔ Nexy ایکسٹینشن پوائنٹ دیتا ہے اور کہتا ہے کہ ہر ایک کو کہاں سے لگانا ہے: دیکھیں [Nexy آپ کے لیے کیا چھوڑتا ہے](how-nexy-works.md#what-nexy-leaves-to-you)۔
 
 <!-- router:fbr -->
 توثیق، مثال کے طور پر، اس فولڈر کے انحصار میں پلگ ان کی حفاظت کرتا ہے۔ Nexy اسے نیچے کے ہر راستے سے پہلے چلاتا ہے۔ صارف کون ہے آپ کا فیصلہ برقرار ہے:
