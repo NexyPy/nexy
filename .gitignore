@@ -104,3 +104,6 @@ requirements-audit.txt
 **/public/fonts/
 **/public/font/
 examples/test/
+
+# Social cards packed for LinkedIn: the cards are the source, the PDF is an artifact
+build/com/
