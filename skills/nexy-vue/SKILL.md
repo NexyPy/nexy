@@ -45,6 +45,8 @@ const count = ref(0);
 - Buttons are `<button type="button">`; navigation is a link. Labels on every field.
 - Import with `@/`. Server calls: `useAction` from `@nexy/client` returns refs (`pending`, `data`,
   `error`).
+- `useFetch('/api/x')` from `@nexy/client` reads JSON from a handler: refs `data`, `error`,
+  `pending`, and `refresh()`.
 - Icons are SVG components. No emoji.
 - Inside a `.nexy` template, wrap Vue's `{{ }}` in `{% raw %}...{% endraw %}`.
 

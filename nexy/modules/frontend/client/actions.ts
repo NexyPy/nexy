@@ -44,8 +44,10 @@ async function refreshPage(header: string | null): Promise<void> {
   const paths = header.split(',')
   if (!paths.includes('*') && !paths.includes(location.pathname)) return
   const router = getRouter()
-  if (router) await router.refresh()
-  else location.reload()
+  if (!router) return location.reload()
+  await router.refresh()
+  // useFetch reads its data outside the page render: tell it to fetch again too.
+  window.dispatchEvent(new Event('nexy:revalidate'))
 }
 
 async function detailOf(response: Response): Promise<unknown> {

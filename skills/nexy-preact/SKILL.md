@@ -50,6 +50,8 @@ export default function RootLayout({ children }: { children: ComponentChildren }
 - Stable `key`s on lists. Real `button` and `a` elements.
 - Import with `@/`. Navigate with `Link` from `@nexy/client`. Server calls go through `useAction`
   from `@nexy/client`.
+- Read JSON from a handler with `useFetch('/api/x')` from `@nexy/client`: `{ data, error, pending,
+  refresh }`, one request per URL shared by every component.
 - Icons are SVG components. No emoji.
 
 Run `nexy-ux-audit` before building a view, follow
