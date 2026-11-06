@@ -74,8 +74,6 @@ Controladores e módulos.
 ### Contratos compartilhados
 | Página | O que define |
 |---|---|
-| [Páginas front-end](views/frontend/pages.md) | Um arquivo, uma rota: adereços, renderização, metadados |
-| [Layouts de front-end](views/frontend/layouts.md) | O shell do documento, o aninhamento e o que um layout não pode fazer |
 | [Ações e navegação](views/frontend/actions-and-navigation.md) | Chame uma ação digitada, vincule páginas, leia o URL |
 
 ### Visualizações próximas
@@ -83,6 +81,12 @@ Controladores e módulos.
 |---|---|
 | [Arquivos .nexy](views/nexy/README.md) | Escreva uma página com Python, Jinja2 e adereços |
 | [Componentes](views/nexy/components.md) | Use `Image`, `Link`, `Audio`, `Video` e `Import` |
+
+### Páginas e layouts em arquivos {fbr,custom}
+| Página | O que define |
+|---|---|
+| [Páginas de front-end](views/frontend/pages.md) | Um arquivo, uma rota: adereços, renderização, metadados |
+| [Layouts de front-end](views/frontend/layouts.md) | O shell do documento, o aninhamento e o que um layout não pode fazer |
 | [layout.nexy](views/nexy/layouts.md) | Escreva o layout do modo servidor |
 | [Markdown e MDX](views/nexy/markdown.md) | Escreva páginas de conteúdo |
 
@@ -102,16 +106,20 @@ Controladores e módulos.
 |---|---|
 | [Renderização](rendering/README.md) | Qual modo de renderização se ajusta a uma página |
 | [RSS](rendering/ssr.md) | Renderização de servidor, o padrão |
+| [Ilhas](rendering/islands.md) | Hidrate-se em consultas ociosas, visíveis ou de mídia |
+
+### Modos de páginas de arquivo {fbr,custom}
+| Página | O que você vai decidir |
+|---|---|
 | [ISR](rendering/isr.md) | Armazenar páginas em cache com obsoletos enquanto revalidam |
 | [RSE](rendering/csr.md) | Roteamento do lado do cliente |
-| [Ilhas](rendering/islands.md) | Hidrate-se em consultas ociosas, visíveis ou de mídia |
 
 ## Guias
 
 ### Formulários e dados
 | Página | O que você fará |
 |---|---|
-| [Ações](guides/actions.md) | Chame uma função Python de um formulário ou de uma função TypeScript digitada |
+| [Ações](guides/actions.md) | Chame uma função Python de um formulário ou uma função TypeScript digitada |
 | [Bancos de dados](guides/databases.md) | Escolha um ORM e execute migrações |
 
 ### Segurança e implantação
@@ -165,7 +173,7 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 |---|---|
 | [Do Expresso](coming-from/express.md) | Traduzir rotas, middleware e `req`/`res` em manipuladores Python |
 | [Do Fastify](coming-from/fastify.md) | Transforme esquemas, plugins e ganchos em modelos, pastas e arquivos |
-| [De Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Éden para Pydantic e ações digitadas |
+| [De Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Eden para Pydantic e ações digitadas |
 | [De Hono](coming-from/hono.md) | Mapeie rotas, middleware e o cliente `hc` para Nexy |
 
 ### Estruturas Fullstack {fbr}
@@ -199,10 +207,14 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 | [API Python](reference/python-api.md) | Cada nome que Nexy exporta, por módulo |
 | [Exceções e erros](reference/exceptions.md) | Cada falha, seu status e o arquivo que a responde |
 
-### Convenções e conceitos
+### Convenções de arquivo {fbr,custom}
 | Página | O que você fará |
 |---|---|
 | [Convenções de arquivo](reference/file-conventions.md) | Arquivos reservados e regras de roteamento |
+
+### Convenções e conceitos
+| Página | O que você fará |
+|---|---|
 | [Glossário](reference/glossary.md) | As palavras que esses documentos usam |
 | [Segurança](reference/security.md) | Pisos de versão, regras que Nexy segue, auditorias |
 

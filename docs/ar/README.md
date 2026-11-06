@@ -74,8 +74,6 @@
 ### العقود المشتركة
 | الصفحة | ما يحدده |
 |---|---|
-| [صفحات الواجهة](views/frontend/pages.md) | ملف واحد، طريق واحد: الدعائم، العرض، البيانات الوصفية |
-| [تخطيطات الواجهة الأمامية](views/frontend/layouts.md) | غلاف المستند والتداخل وما لا يستطيع التخطيط فعله |
 | [الإجراءات والملاحة](views/frontend/actions-and-navigation.md) | قم باستدعاء إجراء مكتوب، وربط الصفحات، وقراءة عنوان URL |
 
 ### وجهات نظر نكسي
@@ -83,6 +81,12 @@
 |---|---|
 | [ملفات .nexy](views/nexy/README.md) | اكتب صفحة تحتوي على Python، Jinja2 والدعائم |
 | [المكونات](views/nexy/components.md) | استخدم `Image`، `Link`، `Audio`، `Video` و `Import` |
+
+### الصفحات والتخطيطات في الملفات {fbr,custom}
+| الصفحة | ما يحدده |
+|---|---|
+| [صفحات الواجهة](views/frontend/pages.md) | ملف واحد، طريق واحد: الدعائم، العرض، البيانات الوصفية |
+| [تخطيطات الواجهة الأمامية](views/frontend/layouts.md) | غلاف المستند والتداخل وما لا يستطيع التخطيط فعله |
 | [تخطيط.nexy](views/nexy/layouts.md) | اكتب تخطيط وضع الخادم |
 | [Markdown و MDX](views/nexy/markdown.md) | كتابة صفحات المحتوى |
 
@@ -90,9 +94,9 @@
 | الصفحة | ما يتغير |
 |---|---|
 | [React الاختلافات](views/react/differences.md) | المكونات والخطافات و `layout.tsx` {new} |
-| [Vue الاختلافات](views/vue/differences.md) | SFCs والمراجع و `layout.vue` {new} |
+| [Vue الاختلافات](views/vue/differences.md) | SFCs، المراجع و `layout.vue` {new} |
 | [Svelte الاختلافات](views/svelte/differences.md) | الرونية والمخازن و `layout.svelte` {new} |
-| [Solid الاختلافات](views/solid/differences.md) | الإشارات والتوصيل و `layout.tsx` {new} |
+| [Solid الاختلافات](views/solid/differences.md) | الإشارات والملحقات و `layout.tsx` {new} |
 | [Preact الاختلافات](views/preact/differences.md) | السنانير والإشارات و `layout.tsx` {new} |
 
 ## التقديم
@@ -102,9 +106,13 @@
 |---|---|
 | [التقديم](rendering/README.md) | ما هو وضع العرض المناسب للصفحة |
 | [إصلاحية القطاع الخاص](rendering/ssr.md) | تقديم الخادم، الافتراضي |
+| [الجزر](rendering/islands.md) | هيدرات على الاستعلام الخامل أو المرئي أو الوسائط |
+
+### أوضاع صفحات الملفات {fbr,custom}
+| الصفحة | ماذا ستقرر |
+|---|---|
 | [الاستخبارات والمراقبة](rendering/isr.md) | صفحات التخزين المؤقت التي لا معنى لها أثناء إعادة التحقق |
 | [المسؤولية الاجتماعية للشركات](rendering/csr.md) | التوجيه من جانب العميل |
-| [الجزر](rendering/islands.md) | هيدرات على الاستعلام الخامل أو المرئي أو الوسائط |
 
 ## أدلة
 
@@ -125,7 +133,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [Vite والتصميم](guides/frontend.md) | إعداد Vite والتصميم وبناء العميل |
-| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتيست |
+| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتست |
 
 ### الأدوات والمساعدة
 | الصفحة | ماذا ستفعل |
@@ -172,7 +180,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |
-| [من Remix](coming-from/remix.md) | تحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
+| [من Remix](coming-from/remix.md) | قم بتحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
 | [من نوكست](coming-from/nuxt.md) | احتفظ بصفحاتك Vue وانقل `server/` إلى Python |
 | [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
 | [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |
@@ -199,10 +207,14 @@
 | [Python واجهة برمجة التطبيقات](reference/python-api.md) | كل اسم يصدره Nexy، حسب الوحدة |
 | [الاستثناءات والأخطاء](reference/exceptions.md) | كل فشل وحالته والملف الذي يجيب عليه |
 
-### الاتفاقيات والمفاهيم
+### اصطلاحات الملف {fbr,custom}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [اصطلاحات الملف](reference/file-conventions.md) | الملفات المحجوزة وقواعد التوجيه |
+
+### الاتفاقيات والمفاهيم
+| الصفحة | ماذا ستفعل |
+|---|---|
 | [معجم](reference/glossary.md) | الكلمات التي تستخدمها هذه المستندات |
 | [الأمن](reference/security.md) | طوابق الإصدار، والقواعد التي يتبعها Nexy، وعمليات التدقيق |
 

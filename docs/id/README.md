@@ -74,8 +74,6 @@ Pengontrol dan modul.
 ### Kontrak bersama
 | Halaman | Apa yang didefinisikannya |
 |---|---|
-| [Halaman depan](views/frontend/pages.md) | Satu file, satu rute: props, rendering, metadata |
-| [Tata letak bagian depan](views/frontend/layouts.md) | Shell dokumen, sarangnya, dan apa yang tidak bisa dilakukan oleh tata letak |
 | [Tindakan dan navigasi](views/frontend/actions-and-navigation.md) | Panggil Tindakan yang diketik, tautkan halaman, baca URL-nya |
 
 ### Tampilan Nexy
@@ -83,6 +81,12 @@ Pengontrol dan modul.
 |---|---|
 | [file .nexy](views/nexy/README.md) | Tulis halaman dengan Python, Jinja2 dan alat peraga |
 | [Komponen](views/nexy/components.md) | Gunakan `Image`, `Link`, `Audio`, `Video` dan `Import` |
+
+### Halaman dan tata letak dalam file {fbr,custom}
+| Halaman | Apa yang didefinisikannya |
+|---|---|
+| [Halaman depan](views/frontend/pages.md) | Satu file, satu rute: props, rendering, metadata |
+| [Tata letak bagian depan](views/frontend/layouts.md) | Shell dokumen, sarangnya, dan apa yang tidak bisa dilakukan oleh tata letak |
 | [tata letak.nexy](views/nexy/layouts.md) | Tulis tata letak mode server |
 | [Markdown dan MDX](views/nexy/markdown.md) | Tulis halaman konten |
 
@@ -102,9 +106,13 @@ Pengontrol dan modul.
 |---|---|
 | [Merender](rendering/README.md) | Mode rendering mana yang sesuai dengan halaman |
 | [RSK](rendering/ssr.md) | Render server, default |
+| [Kepulauan](rendering/islands.md) | Hidrasi saat idle, terlihat, atau permintaan media |
+
+### Mode halaman file {fbr,custom}
+| Halaman | Apa yang akan Anda putuskan |
+|---|---|
 | [ISR](rendering/isr.md) | Cache halaman dengan basi-saat-validasi ulang |
 | [CSR](rendering/csr.md) | Perutean sisi klien |
-| [Kepulauan](rendering/islands.md) | Hidrasi saat idle, terlihat, atau permintaan media |
 
 ## Panduan
 
@@ -124,7 +132,7 @@ Pengontrol dan modul.
 ### Bangun dan uji
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
-| [Vite dan penataan gaya](guides/frontend.md) | Siapkan Vite, penataan gaya, dan pembuatan klien |
+| [Vite dan gaya](guides/frontend.md) | Siapkan Vite, penataan gaya, dan pembuatan klien |
 | [Pengujian](guides/testing.md) | Uji dengan pytest, `TestClient` dan vitest |
 
 ### Perkakas dan bantuan
@@ -163,7 +171,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 ### JavaScript ujung belakang {fbr}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
-| [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware, dan `req`/`res` ke dalam penangan Python |
+| [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
 | [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
 | [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan ketikkan tindakan |
 | [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
@@ -199,10 +207,14 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 | [API Python](reference/python-api.md) | Setiap nama yang diekspor Nexy, berdasarkan modul |
 | [Pengecualian dan kesalahan](reference/exceptions.md) | Setiap kegagalan, statusnya, dan file yang menjawabnya |
 
-### Konvensi dan konsep
+### Konvensi file {fbr,custom}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Konvensi file](reference/file-conventions.md) | File cadangan dan aturan perutean |
+
+### Konvensi dan konsep
+| Halaman | Apa yang akan kamu lakukan |
+|---|---|
 | [Glosarium](reference/glossary.md) | Kata-kata yang digunakan dokumen ini |
 | [Keamanan](reference/security.md) | Lantai versi, aturan yang diikuti Nexy, audit |
 

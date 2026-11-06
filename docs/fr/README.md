@@ -74,8 +74,6 @@ Contrôleurs et modules.
 ### Contrats partagés
 | Pages | Ce qu'il définit |
 |---|---|
-| [Pages frontales](views/frontend/pages.md) | Un fichier, une route : accessoires, rendu, métadonnées |
-| [Dispositions frontales](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
 | [Actions et navigation](views/frontend/actions-and-navigation.md) | Appeler une action tapée, lier des pages, lire l'URL |
 
 ### Vues Nexy
@@ -83,6 +81,12 @@ Contrôleurs et modules.
 |---|---|
 | [Fichiers .nexy](views/nexy/README.md) | Écrivez une page avec Python, Jinja2 et des accessoires |
 | [Composants](views/nexy/components.md) | Utilisez `Image`, `Link`, `Audio`, `Video` et `Import` |
+
+### Pages et mises en page dans des fichiers {fbr,custom}
+| Pages | Ce qu'il définit |
+|---|---|
+| [Pages frontales](views/frontend/pages.md) | Un fichier, une route : accessoires, rendu, métadonnées |
+| [Dispositions frontales](views/frontend/layouts.md) | Le shell du document, l'imbrication et ce qu'une mise en page ne peut pas faire |
 | [layout.nexy](views/nexy/layouts.md) | Écrire la disposition en mode serveur |
 | [Markdown et MDX](views/nexy/markdown.md) | Rédiger des pages de contenu |
 
@@ -102,9 +106,13 @@ Contrôleurs et modules.
 |---|---|
 | [Rendu](rendering/README.md) | Quel mode de rendu correspond à une page |
 | [RSS](rendering/ssr.md) | Rendu du serveur, la valeur par défaut |
+| [Îles](rendering/islands.md) | Hydratez-vous en cas de requête inactive, visible ou multimédia |
+
+### Modes des pages de fichiers {fbr,custom}
+| Pages | Ce que vous déciderez |
+|---|---|
 | [ISR](rendering/isr.md) | Mettre en cache les pages avec une revalidation obsolète |
 | [RSE](rendering/csr.md) | Routage côté client |
-| [Îles](rendering/islands.md) | Hydratez-vous en cas de requête inactive, visible ou multimédia |
 
 ## Guides
 
@@ -124,7 +132,7 @@ Contrôleurs et modules.
 ### Construire et tester
 | Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la build client |
 | [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
@@ -141,7 +149,7 @@ Contrôleurs et modules.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
 | [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
-| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
+| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte poolé, suspension automatique et branches |
 | [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
 
 ## Venant de
@@ -163,7 +171,7 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 ### JavaScript backends {fbr}
 | Pages | Ce que tu feras |
 |---|---|
-| [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en Python gestionnaires |
+| [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en gestionnaires Python |
 | [De Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
 | [D'Élysée](coming-from/elysia.md) | Mapper les schémas `t`, les gardes et l'Eden aux Pydantic et aux actions typées |
 | [De Hono](coming-from/hono.md) | Mapper les routes, le middleware et le client `hc` vers Nexy |
@@ -174,12 +182,12 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | [De Next.js](coming-from/nextjs.md) | Conservez vos pages React et déplacez le code du serveur vers Python |
 | [De Remix](coming-from/remix.md) | Transformez les chargeurs et les actions en Python gestionnaires et actions |
 | [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos pages Vue et déplacez `server/` vers Python |
-| [De SvelteKit](coming-from/sveltekit.md) | Conservez vos pages Svelte et déplacez les charges, actions et hooks vers Python |
-| [De Astro](coming-from/astro.md) | Écrivez les pages Astro sous forme de pages `.nexy`, avec les mêmes îlots |
+| [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
+| [De Astro](coming-from/astro.md) | Écrivez Astro pages sous forme de `.nexy` pages, avec les mêmes îlots |
 | [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
 | [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
 
-### Frameworks de contrôleurs {modular}
+### Cadres de contrôleurs {modular}
 | Pages | Ce que tu feras |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Déplacez les contrôleurs, les modules, les fournisseurs et les gardes vers le routeur modulaire |
@@ -199,10 +207,14 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | [API Python](reference/python-api.md) | Tous les noms que Nexy exporte, par module |
 | [Exceptions et erreurs](reference/exceptions.md) | Chaque panne, son statut et le fichier qui y répond |
 
-### Conventions et concepts
+### Conventions de fichiers {fbr,custom}
 | Pages | Ce que tu feras |
 |---|---|
 | [Conventions de fichiers](reference/file-conventions.md) | Fichiers réservés et règles de routage |
+
+### Conventions et concepts
+| Pages | Ce que tu feras |
+|---|---|
 | [Glossaire](reference/glossary.md) | Les mots utilisés par ces documents |
 | [Sécurité](reference/security.md) | Planchers de versions, règles suivies par Nexy, audits |
 

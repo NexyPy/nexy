@@ -74,8 +74,6 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### 共享合约
 | 页面 | 它定义了什么 |
 |---|---|
-| [前端页面](views/frontend/pages.md) | 一个文件，一条路线：道具、渲染、元数据 |
-| [前端布局](views/frontend/layouts.md) | 文档外壳、嵌套以及布局不能做的事情 |
 | [操作和导航](views/frontend/actions-and-navigation.md) | 调用键入的操作、链接页面、读取 URL |
 
 ### 邻国意见
@@ -83,6 +81,12 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 |---|---|
 | [.nexy 文件](views/nexy/README.md) | 使用 Python、Jinja2 和 props 编写一个页面 |
 | [组件](views/nexy/components.md) | 使用 `Image`、`Link`、`Audio`、`Video` 和 `Import` |
+
+### 文件中的页面和布局 {fbr,custom}
+| 页面 | 它定义了什么 |
+|---|---|
+| [前端页面](views/frontend/pages.md) | 一个文件，一条路线：道具、渲染、元数据 |
+| [前端布局](views/frontend/layouts.md) | 文档外壳、嵌套以及布局不能做的事情 |
 | [布局.nexy](views/nexy/layouts.md) | 编写服务器模式布局 |
 | [Markdown 和 MDX](views/nexy/markdown.md) | 编写内容页面 |
 
@@ -102,9 +106,13 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 |---|---|
 | [渲染](rendering/README.md) | 哪种渲染模式适合页面 |
 | [苏维埃社会主义共和国](rendering/ssr.md) | 服务器渲染，默认 |
+| [岛屿](rendering/islands.md) | 空闲、可见或媒体查询时进行水合 |
+
+### 文件页面模式 {fbr,custom}
+| 页面 | 你将决定什么 |
+|---|---|
 | [情监侦](rendering/isr.md) | 使用 stale-while-revalidate 缓存页面 |
 | [企业社会责任](rendering/csr.md) | 客户端路由 |
-| [岛屿](rendering/islands.md) | 空闲、可见或媒体查询时进行水合 |
 
 ## 指南
 
@@ -124,14 +132,14 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### 构建和测试
 | 页面 | 你会做什么 |
 |---|---|
-| [Vite 和造型](guides/frontend.md) | 设置 Vite、样式和客户端构建 |
+| [Vite 和样式](guides/frontend.md) | 设置 Vite、样式和客户端构建 |
 | [测试](guides/testing.md) | 使用 pytest、`TestClient` 和 vitest 进行测试 |
 
 ### 工具和帮助
 | 页面 | 你会做什么 |
 |---|---|
 | [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
-| [编码剂](guides/ai-agents.md) | 为 Claude Code、Codex 和 OpenCode 提供您项目的规则 |
+| [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 项目的规则 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
 ## 数据库
@@ -199,10 +207,14 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [Python API](reference/python-api.md) | Nexy 按模块导出的每个名称 |
 | [异常和错误](reference/exceptions.md) | 每个故障、其状态以及解决该故障的文件 |
 
-### 惯例和概念
+### 文件约定 {fbr,custom}
 | 页面 | 你会做什么 |
 |---|---|
 | [文件约定](reference/file-conventions.md) | 保留文件和路由规则 |
+
+### 惯例和概念
+| 页面 | 你会做什么 |
+|---|---|
 | [术语表](reference/glossary.md) | 这些文档使用的词语 |
 | [安全](reference/security.md) | 版本底线、Nexy 遵循的规则、审核 |
 
@@ -246,7 +258,7 @@ docs/
 |---|---|
 | [Nexy 的工作原理](getting-started/how-nexy-works.md) | 查看文件和页面之间发生的情况，以及 Nexy 留给您的内容 |
 | [升级到2.2](getting-started/upgrading.md) | 从 2.1 迁移到 2.2 |
-| [国际化（i18n）](guides/i18n.md) | 使用您选择的库添加翻译 |
+| [国际化 (i18n)](guides/i18n.md) | 使用您选择的库添加翻译 |
 | [食谱](guides/recipes.md) | 示例和模式，而不是教程 |
 
 *这些页面不属于默认阅读路径。 “所有文档”链接可让您查看所有内容。*

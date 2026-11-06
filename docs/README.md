@@ -80,8 +80,6 @@ Controllers and modules.
 ### Shared contracts
 | Page | What it defines |
 |---|---|
-| [Frontend pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
-| [Frontend layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
 | [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
 
 ### Nexy views
@@ -89,6 +87,12 @@ Controllers and modules.
 |---|---|
 | [.nexy files](views/nexy/README.md) | Write a page with Python, Jinja2 and props |
 | [Components](views/nexy/components.md) | Use `Image`, `Link`, `Audio`, `Video` and `Import` |
+
+### Pages and layouts in files {fbr,custom}
+| Page | What it defines |
+|---|---|
+| [Frontend pages](views/frontend/pages.md) | One file, one route: props, rendering, metadata |
+| [Frontend layouts](views/frontend/layouts.md) | The document shell, nesting, and what a layout cannot do |
 | [layout.nexy](views/nexy/layouts.md) | Write the server-mode layout |
 | [Markdown and MDX](views/nexy/markdown.md) | Write content pages |
 
@@ -108,9 +112,13 @@ Controllers and modules.
 |---|---|
 | [Rendering](rendering/README.md) | Which rendering mode fits a page |
 | [SSR](rendering/ssr.md) | Server rendering, the default |
+| [Islands](rendering/islands.md) | Hydrate on idle, visible or media query |
+
+### Modes of file pages {fbr,custom}
+| Page | What you will decide |
+|---|---|
 | [ISR](rendering/isr.md) | Cache pages with stale-while-revalidate |
 | [CSR](rendering/csr.md) | Client-side routing |
-| [Islands](rendering/islands.md) | Hydrate on idle, visible or media query |
 
 ## Guides
 
@@ -205,10 +213,14 @@ The same tasks, written in the framework you know and then in Nexy.
 | [Python API](reference/python-api.md) | Every name Nexy exports, by module |
 | [Exceptions and errors](reference/exceptions.md) | Every failure, its status, and the file that answers it |
 
-### Conventions and concepts
+### File conventions {fbr,custom}
 | Page | What you will do |
 |---|---|
 | [File conventions](reference/file-conventions.md) | Reserved files and routing rules |
+
+### Conventions and concepts
+| Page | What you will do |
+|---|---|
 | [Glossary](reference/glossary.md) | The words these docs use |
 | [Security](reference/security.md) | Version floors, rules Nexy follows, audits |
 

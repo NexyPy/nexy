@@ -93,14 +93,17 @@ class TestGroupRouter:
         group = source.group_of(source.read_tracks(DOCS), "guides/actions")
         assert group.router is None
 
-    def test_only_the_routing_and_coming_from_groups_declare_a_scope(self):
-        """The routing and Coming from groups declare a scope; the rest are read by all."""
+    def test_the_groups_of_some_routers_declare_them(self):
+        """A group a router has no use for names the routers it is for; the rest are read by all."""
         groups = [group for track in source.read_tracks(DOCS) for group in track.groups]
         assert {group.title: group.scope for group in groups if group.scope != "core"} == {
             "File-based": "fbr",
             "Handlers and errors": "fbr",
             "Modular router": "modular",
             "Custom router integration": "custom",
+            "Pages and layouts in files": "fbr custom",
+            "Modes of file pages": "fbr custom",
+            "File conventions": "fbr custom",
             "Python frameworks": "fbr",
             "JavaScript backends": "fbr",
             "Fullstack frameworks": "fbr",
