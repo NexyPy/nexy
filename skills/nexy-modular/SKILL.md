@@ -28,7 +28,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc
@@ -54,8 +54,8 @@ class UsersModule:
 - A method is matched to an HTTP verb by its name, case-insensitively: `get`, `post`, `put`,
   `patch`, `delete`, `options`, `head`, `trace`. A controller declares **one handler per verb**: a
   duplicate raises at startup.
-- `@Controller(prefix="/users")` mounts every handler under the prefix. `async def SOCKET(...)`
-  registers a WebSocket at the same path.
+- `@Controller("/users")` is the path every handler of the class answers on (`prefix=` is its
+  deprecated name). `async def SOCKET(...)` registers a WebSocket at the same path.
 - `controllers` is required in a module; `providers`, `imports` and `exports` are optional.
   `@Module(prefix="/api")` returns an `APIRouter`.
 
@@ -97,7 +97,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:

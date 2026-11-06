@@ -92,10 +92,10 @@ def _route_arguments(
 
 
 def register_controller(ctrl_cls: type[Any], parent_router: APIRouter) -> None:
-    """Add the handlers of *ctrl_cls* to *parent_router*, under the controller's prefix."""
-    prefix = getattr(ctrl_cls, "__controller_prefix__", "")
-    tag = parent_router.prefix + prefix if (parent_router.prefix or prefix) else "/"
-    router = APIRouter(prefix=prefix, tags=[tag])
+    """Add the handlers of *ctrl_cls* to *parent_router*, on the controller's path."""
+    path = getattr(ctrl_cls, "__controller_path__", "")
+    tag = parent_router.prefix + path if (parent_router.prefix or path) else "/"
+    router = APIRouter(prefix=path, tags=[tag])
     instance = Container.resolve(ctrl_cls)
     for verb, name, method in _handlers(ctrl_cls, instance):
         if verb == "SOCKET":
