@@ -14,9 +14,33 @@ Reservierte Namen und Regeln unter `src/routes/`.
 | `name.py` | API-Handler; Funktionsnamen `GET`, `POST`, ... sind die Methoden |
 | `name.tsx`, `.jsx`, `.vue`, `.svelte` | Client-Route, wenn das Framework mit `useFF` aktiviert ist |
 
+```text
+src/routes/
+├─ index.nexy           /
+├─ about.nexy           /about
+├─ (marketing)/
+│  └─ pricing.nexy      /pricing
+├─ blog/
+│  ├─ index.md          /blog
+│  └─ [slug].nexy       /blog/{slug}
+├─ docs/
+│  └─ [...path].nexy    /docs/{path:path}
+└─ api/
+   └─ users.py          GET /api/users, POST /api/users
+```
+
+```python filename="src/routes/api/users.py"
+async def GET():
+    return {"users": []}
+
+
+async def POST():
+    return {"created": True}
+```
+
 ## Reservierte Dateien
 
-| Datei | Rolle | Details |
+| Datei | Rolle | Einzelheiten |
 |---|---|---|
 | `layout.nexy` | Servermodus: umschließt jede Seite darunter; Der Root besitzt das HTML-Dokument | [layout.nexy](../views/nexy/layouts.md) |
 | `layout.tsx` | Client-Modus (React): Der Root besitzt das HTML-Dokument, verschachtelte Seiten umschließen | [layout.tsx](../views/react/differences.md) |
@@ -33,14 +57,61 @@ Reservierte Namen und Regeln unter `src/routes/`.
 
 `useLayoutExtensions`, `useNotFoundExtensions`, `useErrorsExtensions`, `useForbiddenExtensions`, `useUnauthorizedExtensions` und `useLoadingExtensions` reservieren weitere Erweiterungen für diese Namen. Siehe [Konfiguration](config.md).
 
+Die beiden Python Dateien der Tabelle nebeneinander in einem Ordner:
+
+```python filename="src/routes/admin/middleware.py"
+from nexy.http import Request
+
+
+async def middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["x-admin"] = "1"
+    return response
+```
+
+```python filename="src/routes/admin/dependencies.py"
+from nexy.http import Header, HTTPException
+
+
+def require_admin(x_role: str = Header(...)) -> None:
+    if x_role != "admin":
+        raise HTTPException(status_code=403, detail="Admins only")
+
+
+dependencies = [require_admin]
+```
+
+Und eine Seite, die den 404-Fehler ihres Ordners beantwortet:
+
+```nexy filename="src/routes/notfound.nexy"
+<h1>Page not found</h1>
+<p><a href="/">Back home</a></p>
+```
+
 ## Ignorierte Dateien
 
 - Eine Datei oder ein Ordner, die mit `_` oder `.` beginnt: Verwenden Sie sie für Teiltexte, Entwürfe und Hilfsdateien.
 - Eine Datei, deren Erweiterung für das Projekt nicht aktiv ist: Sie wird mit einer Warnung übersprungen.
 
+```text
+src/routes/
+├─ index.nexy           /
+├─ _card.nexy           ignored: a partial the pages include
+├─ _helpers/            ignored, with everything inside
+│  └─ format.py
+└─ .draft.nexy          ignored: a draft
+```
+
 ## Eine Datei pro URL
 
 Zwei Dateien, die zur gleichen URL aufgelöst werden, werden beide registriert. Setzen Sie `blog.nexy` nicht neben `blog/index.nexy`.
+
+```text
+src/routes/
+├─ blog.nexy            /blog
+└─ blog/
+   └─ index.nexy        /blog as well: keep only one of the two
+```
 
 ## Draußen `src/routes/`
 
@@ -51,7 +122,20 @@ Zwei Dateien, die zur gleichen URL aufgelöst werden, werden beide registriert. 
 | `public/` | statische Dateien, bereitgestellt im Stammverzeichnis: `public/logo.svg` ist `/logo.svg` (auch unter `/public/`) |
 | `__nexy__/` | generierte Ausgabe; nicht festlegen |
 
+```text
+my-app/
+├─ nexyconfig.py
+├─ public/
+│  └─ logo.svg          /logo.svg
+├─ src/
+│  ├─ routes/           the routes
+│  ├─ components/
+│  │  └─ Counter.tsx    imported by pages, never served on its own
+│  └─ apps/             the modular router, when you use it
+└─ __nexy__/            generated: add it to .gitignore
+```
+
 ## Nächste Schritte
 
-- [Routenführung](../routing/README.md)
+- [Routing](../routing/README.md)
 - [Projektstruktur](../getting-started/project-structure.md)

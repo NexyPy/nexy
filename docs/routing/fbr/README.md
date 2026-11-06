@@ -20,6 +20,20 @@ organises files without appearing in the URL.
 In client mode the page files are `.tsx`, `.vue` or `.svelte` instead of `.nexy`; the URL rules are
 the same.
 
+Two files of that table: a page that reads its segment, and a handler that answers JSON.
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+```
+
+```python filename="src/routes/api/users.py"
+async def GET():
+    return {"users": []}
+```
+
 ## Two modes
 
 `useCSR` decides what the pages are. The two cannot be mixed in one project: Nexy refuses to start
@@ -32,6 +46,18 @@ when a server page sits next to a client route.
 
 `.py` files are API handlers in both modes.
 
+The switch is one line of `nexyconfig.py`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()
+    useCSR = True  # client mode: src/routes/*.tsx are the pages
+```
+
 ## What is not a route
 
 - Reserved filenames: `layout.*`, `loading.nexy`, `errors.nexy`, `notfound.nexy`,
@@ -40,10 +66,26 @@ when a server page sits next to a client route.
 - Extensions that are not active for your project. A file whose extension is inactive is skipped with
   a warning.
 
+```text
+src/routes/
+├─ layout.nexy          wraps the pages, not a route
+├─ middleware.py        wraps the requests, not a route
+├─ index.nexy           /
+├─ _card.nexy           a partial: no URL
+└─ .draft.nexy          a draft: no URL
+```
+
 ## One file per URL
 
 Two files that resolve to the same URL both register. Do not create `blog.nexy` next to
 `blog/index.nexy`, and do not mix `index.nexy` and `index.py` for the same path. Pick one.
+
+```text
+src/routes/
+├─ blog.nexy            /blog
+└─ blog/
+   └─ index.nexy        /blog as well: delete one of the two
+```
 
 ## In this section
 
