@@ -12,12 +12,13 @@ know, an admitted limit, a sentence that could sit in any other framework's post
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 from sites.shared.social import Item, Kind
 
-__all__ = ["ASK", "CTA", "HOOK", "Report", "check", "hook", "readability"]
+__all__ = ["ASK", "CTA", "HOOK", "Report", "check", "density", "hook", "readability"]
 
 HOOK = 90
 CTA = ("link", "comment", "none")
@@ -108,6 +109,16 @@ def check(item: Item, root: Path) -> Report:
     errors.extend(_proof(item, root))
     errors.extend(_blog(item))
     return Report(errors=tuple(errors), warnings=tuple(_warnings(item)))
+
+
+def density(items: Sequence[Item], window: int = 4) -> list[str]:
+    """One invitation in four posts at most: past that, even a good invitation is a campaign."""
+    posts = sorted((item for item in items if item.platforms), key=lambda item: item.published)
+    return [
+        f"{posts[index].name()}: {window} posts in a row already carry an `ask`, this one waits"
+        for index in range(window - 1, len(posts))
+        if sum(1 for item in posts[index - window + 1 : index + 1] if item.ask != "none") > 1
+    ]
 
 
 def hook(body: str) -> str:

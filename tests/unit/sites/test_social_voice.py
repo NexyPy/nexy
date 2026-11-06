@@ -201,3 +201,20 @@ def test_hook_returns_the_first_non_empty_line() -> None:
 
 def test_readability_of_an_empty_text_is_zero() -> None:
     assert voice.readability("") == 0.0
+
+
+def test_two_invitations_in_four_posts_are_reported(tmp_path: Path) -> None:
+    posts = [
+        _item(tmp_path, slug=f"2026-11-{index}", published=date(2026, 11, index + 1), ask="run")
+        for index in range(4)
+    ]
+    assert voice.density(posts)
+
+
+def test_one_invitation_in_four_posts_is_accepted(tmp_path: Path) -> None:
+    posts = [
+        _item(tmp_path, slug=f"2026-11-{index}", published=date(2026, 11, index + 1))
+        for index in range(4)
+    ]
+    posts[0] = _item(tmp_path, slug="2026-11-0", published=date(2026, 11, 1), ask="run")
+    assert voice.density(posts) == []
