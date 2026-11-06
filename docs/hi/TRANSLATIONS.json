@@ -75,6 +75,7 @@
   "coming-from/django.md": "13aeee09739de72867e5f1f92acd83124d82d92bb648108e92aae4053cbb5daa",
   "coming-from/nestjs.md": "ab4433944fb880607b755bc88c4e39df60a2614d4ef38fc6a1833660c1216644",
   "coming-from/express.md": "3ad60c394ae8908756e8c901a4955ef784f8b9456040b43d3b359eb3c2872783",
-  "coming-from/fastify.md": "5a49c5cbc044ec64f0356d7b24fe25a4d6fd317fa1df684b961c8b4be7f2a38a"
+  "coming-from/fastify.md": "5a49c5cbc044ec64f0356d7b24fe25a4d6fd317fa1df684b961c8b4be7f2a38a",
+  "coming-from/elysia.md": "bce339331e339445b5b1580685cea93adf46be5fd2b3e7ce9c20880da595b6aa"
  }
 }
