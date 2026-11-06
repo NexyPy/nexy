@@ -1,8 +1,22 @@
 # 从 FastAPI 到 Nexy
 
-Nexy 处理程序是文件中的 FastAPI 处理程序，其路径是 URL：您的模型、依赖项和 `/docs` 保留，装饰器和 `include_router` 调用继续。
+Nexy 是 FastAPI，路线写为文件：在 `@app.get("/x")` 下回答的函数在 `src/routes/x.py` 中回答为 `GET`，其余代码保持不变。
 
-下面的每个部分都显示了一个 FastAPI 习惯，然后 Nexy 中也显示了相同的内容。
+## 什么留下，什么改变
+
+Nexy serves your handlers with FastAPI itself, so everything inside a handler works unchanged:
+
+| 保持不变 | 变化 |
+|---|---|
+| Pydantic 模型、请求机构和响应 | `@app.get("/x")` 变为 `src/routes/x.py` 和 `async def GET()` |
+| `Depends`、`Query`、`Header`、`Cookie`、`Form`、`File` | 路径中的 `{id}` 变为 `[id].py` 文件或 `[id]/` 文件夹 |
+| `HTTPException`、`status`、`JSONResponse`、`RedirectResponse` | `APIRouter(prefix="/users")` 成为文件夹 `users/` |
+| `Request`、`BackgroundTasks`、`UploadFile`、WebSocket | 路由器上的 `dependencies=[...]` 变成 `dependencies.py` 文件 |
+| 中间件类，`/docs`，`TestClient` | `app.add_middleware(...)` 成为 `nexyconfig.py` 的字段：`useCORS`、`useGZip`、`useMiddlewares` |
+
+像以前一样从 `fastapi` 导入它们，或者从 `nexy.http` 导入它们，这会重新导出相同的对象。
+
+Each section below shows a FastAPI habit, then the same thing in Nexy.
 
 ## 一个端点
 
@@ -34,7 +48,7 @@ async def get_user(id: int, fields: str | None = None):
     return {"id": id, "fields": fields}
 ```
 
-路径参数成为文件名的 `[id]` 段。查询参数不动：
+The path parameter becomes a `[id]` segment of the file name.查询参数不动：
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int, fields: str | None = None):

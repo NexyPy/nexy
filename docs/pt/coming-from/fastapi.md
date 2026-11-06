@@ -1,6 +1,20 @@
 # De FastAPI para Nexy
 
-Um manipulador Nexy é um manipulador FastAPI em um arquivo cujo caminho é a URL: seus modelos, dependências e `/docs` permanecem, e os decoradores e as chamadas `include_router` vão.
+Nexy é FastAPI com a rota escrita como um arquivo: uma função que responde em `@app.get("/x")` responde em `src/routes/x.py` como `GET`, e o resto do seu código permanece o mesmo.
+
+## O que fica, o que muda
+
+Nexy atende seus manipuladores com o próprio FastAPI, então tudo dentro de um manipulador funciona inalterado:
+
+| Permanece o mesmo | Mudanças |
+|---|---|
+| Pydantic modelos, órgãos de solicitação e respostas | `@app.get("/x")` torna-se `src/routes/x.py` com `async def GET()` |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` no caminho se torna um arquivo `[id].py` ou pasta `[id]/` |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` se torna a pasta `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, WebSockets | `dependencies=[...]` em um roteador se torna um arquivo `dependencies.py` |
+| Classes de middleware, `/docs`, `TestClient` | `app.add_middleware(...)` torna-se um campo de `nexyconfig.py`: `useCORS`, `useGZip`, `useMiddlewares` |
+
+Importe-os de `fastapi` como antes, ou de `nexy.http`, que reexporta os mesmos objetos.
 
 Cada seção abaixo mostra um hábito FastAPI, então a mesma coisa no Nexy.
 

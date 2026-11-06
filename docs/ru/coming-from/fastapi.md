@@ -1,6 +1,20 @@
 # От FastAPI до Некси
 
-Обработчик Nexy — это обработчик FastAPI в файле, путь которого — это URL-адрес: ваши модели, зависимости и `/docs` остаются, а декораторы и вызовы `include_router` уходят.
+Nexy — это FastAPI с маршрутом, записанным в виде файла: функция, которая отвечает на `@app.get("/x")`, отвечает на `src/routes/x.py` как `GET`, а остальная часть вашего кода остается прежней.
+
+## Что остается, что меняется
+
+Nexy обслуживает ваши обработчики с помощью FastAPI, поэтому все внутри обработчика работает без изменений:
+
+| Остается прежним | Изменения |
+|---|---|
+| Pydantic модели, тела запросов и ответы | `@app.get("/x")` становится `src/routes/x.py` с `async def GET()` |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` в пути становится файлом `[id].py` или папкой `[id]/` |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` становится папкой `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, веб-сокеты | `dependencies=[...]` на маршрутизаторе становится файлом `dependencies.py` |
+| Классы промежуточного программного обеспечения, `/docs`, `TestClient` | `app.add_middleware(...)` становится полем `nexyconfig.py`: `useCORS`, `useGZip`, `useMiddlewares` |
+
+Импортируйте их из `fastapi`, как раньше, или из `nexy.http`, который реэкспортирует те же объекты.
 
 В каждом разделе ниже показана привычка FastAPI, затем то же самое в Nexy.
 
@@ -178,7 +192,7 @@ async def add_header(request: Request, call_next):
     return response
 ```
 
-`middleware.py` оборачивает маршруты своей папки, корневая — их всех:
+`middleware.py` оборачивает маршруты своей папки, корневая оборачивает их все:
 
 ```python filename="src/routes/middleware.py"
 from nexy.http import Request
@@ -346,7 +360,7 @@ def test_hello():
 |---|---|
 | `uvicorn main:app --reload` | `nx dev` |
 | `uvicorn main:app --workers 4` | `nx build`, затем `nx start` |
-| `/docs` из `FastAPI()` | `/docs`, список всех маршрутов `.py` |
+| `/docs` из `FastAPI()` | `/docs`, список всех `.py` маршрутов |
 
 ## Сохранение существующего приложения
 

@@ -1,6 +1,20 @@
 # Dari FastAPI hingga Nexy
 
-Penangan Nexy adalah penangan FastAPI dalam file yang jalurnya adalah URL: model, dependensi, dan `/docs` Anda tetap ada, serta dekorator dan panggilan `include_router` pergi.
+Nexy adalah FastAPI dengan rute yang ditulis sebagai file: fungsi yang menjawab di bawah `@app.get("/x")` menjawab di `src/routes/x.py` sebagai `GET`, dan kode Anda lainnya tetap sama.
+
+## Apa yang bertahan, apa yang berubah
+
+Nexy melayani penangan Anda dengan FastAPI itu sendiri, sehingga semua yang ada di dalam penangan berfungsi tidak berubah:
+
+| Tetap sama | Perubahan |
+|---|---|
+| Pydantic model, badan permintaan dan tanggapan | `@app.get("/x")` menjadi `src/routes/x.py` dengan `async def GET()` |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` di jalur menjadi file `[id].py` atau folder `[id]/`. |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` menjadi folder `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, WebSockets | `dependencies=[...]` pada router menjadi file `dependencies.py` |
+| Kelas middleware, `/docs`, `TestClient` | `app.add_middleware(...)` menjadi bidang `nexyconfig.py`: `useCORS`, `useGZip`, `useMiddlewares` |
+
+Impornya dari `fastapi` seperti sebelumnya, atau dari `nexy.http`, yang mengekspor ulang objek yang sama.
 
 Setiap bagian di bawah menunjukkan kebiasaan FastAPI, lalu hal yang sama di Nexy.
 
@@ -247,7 +261,7 @@ users = [{"name": "Ada"}, {"name": "Alan"}]
 </html>
 ```
 
-A `layout.nexy` membungkus setiap halaman foldernya, tanpa `{% extends %}` di halaman:
+`layout.nexy` membungkus setiap halaman foldernya, tanpa `{% extends %}` di halaman:
 
 ```nexy filename="src/routes/layout.nexy"
 ---
@@ -267,7 +281,7 @@ from fastapi.staticfiles import StaticFiles
 app.mount("/static", StaticFiles(directory="static"), name="static")
 ```
 
-File di `public/` dilayani dari root: `public/robots.txt` adalah `/robots.txt`.
+File di `public/` disajikan dari root: `public/robots.txt` adalah `/robots.txt`.
 
 ```text
 public/
@@ -288,7 +302,7 @@ async def not_found(request: Request, exc: StarletteHTTPException):
     return HTMLResponse("<h1>Not found</h1>", status_code=exc.status_code)
 ```
 
-`notfound.nexy` menjawab browser, dan klien API masih mendapatkan `{"detail": ...}`:
+A `notfound.nexy` menjawab browser, dan klien API masih mendapatkan `{"detail": ...}`:
 
 ```nexy filename="src/rute/tidak ditemukan.nexy"
 <h1>Not found</h1>
@@ -366,7 +380,7 @@ Rute lama Anda dan file `src/routes/` lalu jawab secara berdampingan. Saat `useR
 
 ## Langkah selanjutnya
 
-- [Pengendali rute](../routing/fbr/handlers/README.md)
-- [Dependensi dan penjaga](../routing/fbr/dependencies/README.md)
+- [Penangan rute](../routing/fbr/handlers/README.md)
+- [Ketergantungan dan penjaga](../routing/fbr/dependencies/README.md)
 - [file .nexy](../views/nexy/README.md)
 - [Berasal dari kerangka lain](../getting-started/coming-from-other-frameworks.md)

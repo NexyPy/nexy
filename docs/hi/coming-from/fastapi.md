@@ -1,6 +1,20 @@
 # FastAPI से नेक्सी तक
 
-एक नेक्सी हैंडलर एक फ़ाइल में एक FastAPI हैंडलर है जिसका पथ यूआरएल है: आपके मॉडल, निर्भरताएं और `/docs` रहते हैं, और डेकोरेटर और `include_router` कॉल चलते हैं।
+नेक्सी एक फ़ाइल के रूप में लिखे गए रूट के साथ FastAPI है: एक फ़ंक्शन जो `@app.get("/x")` के तहत उत्तर देता है `src/routes/x.py` में `GET` के रूप में उत्तर देता है, और आपका बाकी कोड वही रहता है।
+
+## क्या रहता है, क्या बदलता है
+
+नेक्सी आपके हैंडलर को FastAPI से ही सेवा प्रदान करता है, इसलिए हैंडलर के अंदर सब कुछ अपरिवर्तित काम करता है:
+
+| वैसा ही रहता है | परिवर्तन |
+|---|---|
+| Pydantic मॉडल, अनुरोध निकाय और प्रतिक्रियाएं | `@app.get("/x")` `async def GET()` के साथ `src/routes/x.py` बन जाता है |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` पथ में एक `[id].py` फ़ाइल या `[id]/` फ़ोल्डर बन जाता है |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` फ़ोल्डर बन जाता है `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, वेबसॉकेट | `dependencies=[...]` राउटर पर एक `dependencies.py` फ़ाइल बन जाती है |
+| मिडलवेयर क्लासेस, `/docs`, `TestClient` | `app.add_middleware(...)` `nexyconfig.py` का एक क्षेत्र बन जाता है: `useCORS`, `useGZip`, `useMiddlewares` |
+
+उन्हें पहले की तरह `fastapi` से आयात करें, या `nexy.http` से, जो उन्हीं वस्तुओं को फिर से निर्यात करता है।
 
 नीचे प्रत्येक अनुभाग एक FastAPI आदत दिखाता है, फिर नेक्सी में भी वही चीज़।
 
@@ -137,7 +151,7 @@ def require_admin(x_role: str = Header(...)) -> None:
 admin = APIRouter(prefix="/admin", dependencies=[Depends(require_admin)])
 ```
 
-फ़ोल्डर में एक `dependencies.py` उसके नीचे के प्रत्येक रूट से पहले चलता है:
+फ़ोल्डर में एक `dependencies.py` उसके नीचे प्रत्येक रूट से पहले चलता है:
 
 ```python filename="src/routes/admin/dependents.py"
 from nexy.http import Header, HTTPException
@@ -200,7 +214,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["https://example.com"])
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 ```
 
-प्रत्येक एक समान तर्कों के साथ `nexyconfig.py` का एक क्षेत्र है:
+प्रत्येक एक `nexyconfig.py` का एक क्षेत्र है, समान तर्कों के साथ:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -288,7 +302,7 @@ async def not_found(request: Request, exc: StarletteHTTPException):
     return HTMLResponse("<h1>Not found</h1>", status_code=exc.status_code)
 ```
 
-एक `notfound.nexy` ब्राउज़रों को उत्तर देता है, और एपीआई क्लाइंट को अभी भी `{"detail": ...}` मिलता है:
+ए `notfound.nexy` ब्राउज़रों को उत्तर देता है, और एपीआई क्लाइंट को अभी भी `{"detail": ...}` मिलता है:
 
 ```nexy filename="src/routes/notfound.nexy"
 <h1>Not found</h1>

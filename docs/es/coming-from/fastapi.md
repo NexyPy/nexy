@@ -1,6 +1,20 @@
 # De FastAPI a Nexy
 
-Un controlador Nexy es un controlador FastAPI en un archivo cuya ruta es la URL: sus modelos, dependencias y `/docs` permanecen, y los decoradores y las llamadas `include_router` se van.
+Nexy es FastAPI con la ruta escrita como un archivo: una función que responde en `@app.get("/x")` responde en `src/routes/x.py` como `GET`, y el resto de su código permanece igual.
+
+## Lo que queda, lo que cambia.
+
+Nexy sirve a sus controladores con FastAPI en sí, por lo que todo dentro de un controlador funciona sin cambios:
+
+| sigue igual | Cambios |
+|---|---|
+| Pydantic modelos, cuerpos de solicitud y respuestas | `@app.get("/x")` se convierte en `src/routes/x.py` con `async def GET()` |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` en la ruta se convierte en un archivo `[id].py` o una carpeta `[id]/` |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` se convierte en la carpeta `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, WebSockets | `dependencies=[...]` en un enrutador se convierte en un archivo `dependencies.py` |
+| Clases de middleware, `/docs`, `TestClient` | `app.add_middleware(...)` se convierte en un campo de `nexyconfig.py`: `useCORS`, `useGZip`, `useMiddlewares` |
+
+Importarlos desde `fastapi` como antes, o desde `nexy.http`, que reexporta los mismos objetos.
 
 Cada sección a continuación muestra un hábito FastAPI, luego lo mismo en Nexy.
 
@@ -350,7 +364,7 @@ def test_hello():
 
 ## Mantener una aplicación existente
 
-No es necesario moverse por todas las rutas a la vez. Un `APIRouter` ya lo tienes montado tal cual:
+No es necesario moverse por todas las rutas a la vez. Un `APIRouter` ya tiene montajes tal cual:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

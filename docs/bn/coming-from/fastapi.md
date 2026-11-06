@@ -1,6 +1,20 @@
 # FastAPI থেকে নেক্সি পর্যন্ত
 
-একটি Nexy হ্যান্ডলার হল একটি ফাইলের একটি FastAPI হ্যান্ডলার যার পাথ হল URL: আপনার মডেল, নির্ভরতা এবং `/docs` থাকে, এবং ডেকোরেটর এবং `include_router` কল যায়।
+Nexy হল FastAPI একটি ফাইল হিসাবে লেখা রুট সহ: একটি ফাংশন যা `@app.get("/x")` এর অধীনে উত্তর দেয় `src/routes/x.py` হিসাবে `GET`, এবং আপনার বাকি কোড একই থাকে।
+
+## কি থাকে, কি পরিবর্তন হয়
+
+Nexy আপনার হ্যান্ডলারগুলিকে FastAPI দিয়েই পরিবেশন করে, তাই হ্যান্ডলারের ভিতরে সবকিছু অপরিবর্তিত কাজ করে:
+
+| একই থাকে | পরিবর্তন |
+|---|---|
+| Pydantic মডেল, অনুরোধ সংস্থা এবং প্রতিক্রিয়া | `@app.get("/x")` `async def GET()` এর সাথে `src/routes/x.py` হয়ে যায় |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | পাথে `{id}` একটি `[id].py` ফাইল বা `[id]/` ফোল্ডার হয়ে যায় |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` ফোল্ডার হয়ে যায় `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, ওয়েবসকেট | একটি রাউটারে `dependencies=[...]` একটি `dependencies.py` ফাইল হয়ে যায় |
+| মিডলওয়্যার ক্লাস, `/docs`, `TestClient` | `app.add_middleware(...)` একটি ক্ষেত্র হয়ে যায় `nexyconfig.py`: `useCORS`, `useGZip`, `useMiddlewares` |
+
+আগের মতই `fastapi` থেকে অথবা `nexy.http` থেকে এগুলি আমদানি করুন, যা একই বস্তুকে পুনরায় রপ্তানি করে।
 
 নীচের প্রতিটি বিভাগ একটি FastAPI অভ্যাস দেখায়, তারপর Nexy তে একই জিনিস।
 
@@ -34,7 +48,7 @@ async def get_user(id: int, fields: str | None = None):
     return {"id": id, "fields": fields}
 ```
 
-পাথ প্যারামিটার ফাইল নামের একটি `[id]` সেগমেন্টে পরিণত হয়। ক্যোয়ারী প্যারামিটার সরে না:
+পাথ প্যারামিটার ফাইল নামের একটি `[id]` সেগমেন্ট হয়ে যায়। ক্যোয়ারী প্যারামিটার সরে না:
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int, fields: str | None = None):
@@ -178,7 +192,7 @@ async def add_header(request: Request, call_next):
     return response
 ```
 
-A `middleware.py` তার ফোল্ডারের রুটগুলিকে মোড়ানো করে, রুটটি সেগুলিকে মুড়ে দেয়:
+একটি `middleware.py` তার ফোল্ডারের রুটগুলিকে মোড়ানো করে, রুটটি সেগুলিকে মুড়ে দেয়:
 
 ```python filename="src/routes/middleware.py"
 from nexy.http import Request
@@ -226,7 +240,7 @@ async def users_page(request: Request):
     return templates.TemplateResponse(request, "users.html", {"users": users})
 ```
 
-একটি `.nexy` পৃষ্ঠা একটি ফাইলে `---` লাইনের উপরে Python এবং এর নীচে Jinja2 ধরে রাখে:
+একটি `.nexy` পৃষ্ঠা একটি ফাইলে `---` লাইনের উপরে Python এবং এটির নীচে Jinja2 ধরে রাখে:
 
 ```nexy filename="src/routes/users.nexy"
 ---
@@ -247,7 +261,7 @@ users = [{"name": "Ada"}, {"name": "Alan"}]
 </html>
 ```
 
-একটি `layout.nexy` তার ফোল্ডারের প্রতিটি পৃষ্ঠাকে মুড়ে দেয়, পৃষ্ঠাগুলিতে `{% extends %}` নেই:
+একটি `layout.nexy` তার ফোল্ডারের প্রতিটি পৃষ্ঠা মুড়ে দেয়, পৃষ্ঠাগুলিতে `{% extends %}` নেই:
 
 ```nexy filename="src/routes/layout.nexy"
 ---
@@ -267,7 +281,7 @@ from fastapi.staticfiles import StaticFiles
 app.mount("/static", StaticFiles(directory="static"), name="static")
 ```
 
-`public/` ফাইলগুলি রুট থেকে পরিবেশিত হয়: `public/robots.txt` হল `/robots.txt`।
+`public/` ফাইলগুলি রুট থেকে পরিবেশন করা হয়: `public/robots.txt` হল `/robots.txt`।
 
 ```text
 public/

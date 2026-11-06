@@ -1,6 +1,20 @@
 # Von FastAPI zu Nexy
 
-Ein Nexy-Handler ist ein FastAPI-Handler in einer Datei, deren Pfad die URL ist: Ihre Modelle, Abhängigkeiten und `/docs` bleiben erhalten, und die Dekoratoren und `include_router`-Aufrufe gehen.
+Nexy ist FastAPI mit der als Datei geschriebenen Route: eine Funktion, die unter `@app.get("/x")` antwortet, antwortet in `src/routes/x.py` als `GET`, und der Rest Ihres Codes bleibt gleich.
+
+## Was bleibt, was verändert sich
+
+Nexy bedient Ihre Handler mit FastAPI selbst, sodass alles innerhalb eines Handlers unverändert funktioniert:
+
+| Bleibt gleich | Änderungen |
+|---|---|
+| Pydantic Modelle, Anfragetexte und Antworten | `@app.get("/x")` wird zu `src/routes/x.py` mit `async def GET()` |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` im Pfad wird zu einer `[id].py`-Datei oder einem `[id]/`-Ordner |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` wird zum Ordner `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, WebSockets | `dependencies=[...]` auf einem Router wird zu einer `dependencies.py`-Datei |
+| Middleware-Klassen, `/docs`, `TestClient` | `app.add_middleware(...)` wird zu einem Feld von `nexyconfig.py`: `useCORS`, `useGZip`, `useMiddlewares` |
+
+Importieren Sie sie wie zuvor aus `fastapi` oder aus `nexy.http`, wodurch dieselben Objekte erneut exportiert werden.
 
 Jeder Abschnitt unten zeigt eine FastAPI-Gewohnheit, dann dasselbe in Nexy.
 
@@ -362,7 +376,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = router
 ```
 
-Ihre alten Routen und die Dateien von `src/routes/` antworten dann nebeneinander. Während `useRouter` festgelegt ist, werden `.nexy`-Seiten nicht von `layout.nexy` umbrochen: Verschieben Sie zuerst die API, dann die Seiten und dann das Feld. Siehe [Benutzerdefinierte Router-Integration](../routing/custom/README.md).
+Ihre alten Routen und die Dateien von `src/routes/` antworten dann nebeneinander. Während `useRouter` festgelegt ist, werden `.nexy` Seiten nicht von `layout.nexy` umbrochen: Verschieben Sie zuerst die API, dann die Seiten und dann das Feld. Siehe [Benutzerdefinierte Router-Integration](../routing/custom/README.md).
 
 ## Nächste Schritte
 

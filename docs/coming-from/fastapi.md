@@ -1,7 +1,21 @@
 # From FastAPI to Nexy
 
-A Nexy handler is a FastAPI handler in a file whose path is the URL: your models, dependencies and
-`/docs` stay, and the decorators and `include_router` calls go.
+Nexy is FastAPI with the route written as a file: a function that answers under `@app.get("/x")`
+answers in `src/routes/x.py` as `GET`, and the rest of your code stays the same.
+
+## What stays, what changes
+
+Nexy serves your handlers with FastAPI itself, so everything inside a handler works unchanged:
+
+| Stays the same | Changes |
+|---|---|
+| Pydantic models, request bodies and responses | `@app.get("/x")` becomes `src/routes/x.py` with `async def GET()` |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` in the path becomes a `[id].py` file or `[id]/` folder |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` becomes the folder `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, WebSockets | `dependencies=[...]` on a router becomes a `dependencies.py` file |
+| Middleware classes, `/docs`, `TestClient` | `app.add_middleware(...)` becomes a field of `nexyconfig.py`: `useCORS`, `useGZip`, `useMiddlewares` |
+
+Import them from `fastapi` as before, or from `nexy.http`, which re-exports the same objects.
 
 Each section below shows a FastAPI habit, then the same thing in Nexy.
 

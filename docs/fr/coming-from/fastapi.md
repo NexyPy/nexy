@@ -1,6 +1,20 @@
 # De FastAPI à Nexy
 
-Un gestionnaire Nexy est un gestionnaire FastAPI dans un fichier dont le chemin est l'URL : vos modèles, dépendances et `/docs` restent, et les décorateurs et les appels `include_router` disparaissent.
+Nexy est FastAPI avec la route écrite sous forme de fichier : une fonction qui répond sous `@app.get("/x")` répond dans `src/routes/x.py` comme `GET`, et le reste de votre code reste le même.
+
+## Ce qui reste, ce qui change
+
+Nexy sert vos gestionnaires avec FastAPI lui-même, donc tout ce qui se trouve à l'intérieur d'un gestionnaire fonctionne inchangé :
+
+| Reste le même | Changements |
+|---|---|
+| Pydantic modèles, corps de requête et réponses | `@app.get("/x")` devient `src/routes/x.py` avec `async def GET()` |
+| `Depends`, `Query`, `Header`, `Cookie`, `Form`, `File` | `{id}` dans le chemin devient un fichier `[id].py` ou un dossier `[id]/` |
+| `HTTPException`, `status`, `JSONResponse`, `RedirectResponse` | `APIRouter(prefix="/users")` devient le dossier `users/` |
+| `Request`, `BackgroundTasks`, `UploadFile`, WebSockets | `dependencies=[...]` sur un routeur devient un fichier `dependencies.py` |
+| Classes de middleware, `/docs`, `TestClient` | `app.add_middleware(...)` devient un champ de `nexyconfig.py` : `useCORS`, `useGZip`, `useMiddlewares` |
+
+Importez-les depuis `fastapi` comme auparavant, ou depuis `nexy.http`, qui réexporte les mêmes objets.
 
 Chaque section ci-dessous montre une habitude FastAPI, puis la même chose dans Nexy.
 
@@ -137,7 +151,7 @@ def require_admin(x_role: str = Header(...)) -> None:
 admin = APIRouter(prefix="/admin", dependencies=[Depends(require_admin)])
 ```
 
-Un `dependencies.py` dans le dossier s'exécute avant chaque itinéraire en dessous :
+Un `dependencies.py` dans le dossier s'exécute avant chaque route située en dessous :
 
 ```python filename="src/routes/admin/dependencies.py"
 from nexy.http import Header, HTTPException
@@ -350,7 +364,7 @@ def test_hello():
 
 ## Conserver une application existante
 
-Vous n’êtes pas obligé de déplacer tous les itinéraires en même temps. Un `APIRouter`, vous avez déjà des montures telles quelles :
+Vous n’êtes pas obligé de déplacer tous les itinéraires en même temps. Un `APIRouter` vous avez déjà des montures telles quelles :
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

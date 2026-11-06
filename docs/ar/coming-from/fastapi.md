@@ -1,12 +1,26 @@
 # من FastAPI إلى النكسي
 
-معالج Nexy هو معالج FastAPI في ملف مساره هو عنوان URL: تبقى نماذجك وتبعياتك و `/docs`، وتذهب أدوات الديكور واستدعاءات `include_router`.
+Nexy هو FastAPI مع كتابة المسار كملف: دالة تجيب ضمن `@app.get("/x")` تجيب في `src/routes/x.py` كـ `GET`، وتبقى بقية التعليمات البرمجية الخاصة بك كما هي.
+
+## ما يبقى، ما يتغير
+
+يخدم Nexy معالجاتك مع FastAPI نفسه، لذلك كل شيء داخل المعالج يعمل دون تغيير:
+
+| يبقى كما هو | التغييرات |
+|---|---|
+| Pydantic النماذج وهيئات الطلب والردود | `@app.get("/x")` يصبح `src/routes/x.py` مع `async def GET()` |
+| `Depends`، `Query`، `Header`، `Cookie`، `Form`، `File` | `{id}` في المسار يصبح ملف `[id].py` أو `[id]/` مجلد |
+| `HTTPException`، `status`، `JSONResponse`، `RedirectResponse` | `APIRouter(prefix="/users")` يصبح المجلد `users/` |
+| `Request`، `BackgroundTasks`، `UploadFile`، ويب سوكيتس | `dependencies=[...]` على جهاز التوجيه يصبح ملف `dependencies.py` |
+| فئات البرمجيات الوسيطة، `/docs`، `TestClient` | `app.add_middleware(...)` يصبح حقل `nexyconfig.py`: `useCORS`، `useGZip`، `useMiddlewares` |
+
+قم باستيرادها من `fastapi` كما في السابق، أو من `nexy.http`، الذي يعيد تصدير نفس الكائنات.
 
 كل قسم أدناه يوضح عادة FastAPI، ثم نفس الشيء في Nexy.
 
 ## نقطة نهاية
 
-FastAPI يسجل دالة في تطبيق باستخدام مصمم ديكور:
+FastAPI يسجل دالة في تطبيق باستخدام مصمم الديكور:
 
 ```python filename="main.py"
 from fastapi import FastAPI
@@ -41,7 +55,7 @@ async def GET(id: int, fields: str | None = None):
     return {"id": id, "fields": fields}
 ```
 
-`/api/users/abc` يجيب `404`، لأن `abc` ليس `int`.
+`/api/users/abc` يجيب `404`، لأن `abc` ليس ب `int`.
 
 ## هيئة طلب
 
@@ -59,7 +73,7 @@ async def create_item(item: NewItem):
     return item
 ```
 
-النموذج Pydantic هو نفسه. ينتقل رمز الحالة إلى الاستجابة:
+والنموذج Pydantic هو نفسه. ينتقل رمز الحالة إلى الاستجابة:
 
 ```python filename="src/routes/api/items.py"
 from pydantic import BaseModel
@@ -151,7 +165,7 @@ def require_admin(x_role: str = Header(...)) -> None:
 dependencies = [require_admin]
 ```
 
-لا تزال التبعية لمعالج واحد `Depends`، في توقيعه:
+لا تزال تبعية معالج واحد `Depends`، في توقيعه:
 
 ```python filename="src/routes/api/me.py"
 from nexy.http import Depends, Header
@@ -362,7 +376,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = router
 ```
 
-مساراتك القديمة وملفات `src/routes/` ثم قم بالإجابة جنبًا إلى جنب. أثناء تعيين `useRouter`، لا يتم تغليف الصفحات `.nexy` بواسطة `layout.nexy`: انقل واجهة برمجة التطبيقات أولاً، ثم الصفحات، ثم قم بإزالة الحقل. راجع [تكامل جهاز التوجيه المخصص](../routing/custom/README.md).
+مساراتك القديمة وملفات `src/routes/` ثم أجب جنبًا إلى جنب. أثناء تعيين `useRouter`، لا يتم تغليف الصفحات `.nexy` بواسطة `layout.nexy`: انقل واجهة برمجة التطبيقات أولاً، ثم الصفحات، ثم قم بإزالة الحقل. انظر [تكامل جهاز التوجيه المخصص](../routing/custom/README.md).
 
 ## الخطوات التالية
 

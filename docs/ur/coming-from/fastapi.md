@@ -1,6 +1,20 @@
 # FastAPI سے Nexy تک
 
-ایک Nexy ہینڈلر ایک فائل میں ایک FastAPI ہینڈلر ہے جس کا راستہ URL ہے: آپ کے ماڈل، انحصار اور `/docs` قیام، اور ڈیکوریٹرز اور `include_router` کالیں جاتی ہیں۔
+Nexy ایک فائل کے طور پر لکھے گئے راستے کے ساتھ FastAPI ہے: ایک فنکشن جو `@app.get("/x")` کے تحت جوابات `src/routes/x.py` میں `GET` کے طور پر دیتا ہے، اور آپ کا باقی کوڈ وہی رہتا ہے۔
+
+## کیا رہتا ہے، کیا بدلتا ہے۔
+
+Nexy آپ کے ہینڈلرز کو خود FastAPI کے ساتھ کام کرتا ہے، لہذا ہینڈلر کے اندر موجود ہر چیز بغیر کسی تبدیلی کے کام کرتی ہے:
+
+| وہی رہتا ہے۔ | تبدیلیاں |
+|---|---|
+| Pydantic ماڈلز، باڈیز اور جوابات کی درخواست کرتے ہیں۔ | `@app.get("/x")` `async def GET()` کے ساتھ `src/routes/x.py` بن جاتا ہے۔ |
+| `Depends`، `Query`، `Header`، `Cookie`، `Form`، `File` | راستے میں `{id}` ایک `[id].py` فائل یا `[id]/` فولڈر بن جاتا ہے۔ |
+| `HTTPException`، `status`، `JSONResponse`، `RedirectResponse` | `APIRouter(prefix="/users")` فولڈر بن جاتا ہے `users/` |
+| `Request`، `BackgroundTasks`، `UploadFile`، ویب ساکٹس | روٹر پر `dependencies=[...]` ایک `dependencies.py` فائل بن جاتی ہے۔ |
+| مڈل ویئر کلاسز، `/docs`، `TestClient` | `app.add_middleware(...)` ایک میدان بن جاتا ہے `nexyconfig.py`: `useCORS`، `useGZip`، `useMiddlewares` |
+
+انہیں پہلے کی طرح `fastapi` سے درآمد کریں، یا `nexy.http` سے، جو وہی اشیاء کو دوبارہ برآمد کرتا ہے۔
 
 ذیل میں ہر سیکشن ایک FastAPI عادت دکھاتا ہے، پھر Nexy میں وہی چیز۔
 
@@ -34,7 +48,7 @@ async def get_user(id: int, fields: str | None = None):
     return {"id": id, "fields": fields}
 ```
 
-پاتھ پیرامیٹر فائل کے نام کا `[id]` سیگمنٹ بن جاتا ہے۔ استفسار پیرامیٹر منتقل نہیں ہوتا ہے:
+پاتھ پیرامیٹر فائل کے نام کا ایک `[id]` سیگمنٹ بن جاتا ہے۔ استفسار پیرامیٹر منتقل نہیں ہوتا ہے:
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int, fields: str | None = None):
@@ -247,7 +261,7 @@ users = [{"name": "Ada"}, {"name": "Alan"}]
 </html>
 ```
 
-ایک `layout.nexy` اپنے فولڈر کے ہر صفحے کو سمیٹتا ہے، صفحات میں کوئی `{% extends %}` نہیں:
+ایک `layout.nexy` اپنے فولڈر کے ہر صفحے کو سمیٹتا ہے، صفحات میں `{% extends %}` کے بغیر:
 
 ```nexy filename="src/routes/layout.nexy"
 ---
@@ -362,11 +376,11 @@ class NexyConfig(NexyConfigModel):
     useRouter = router
 ```
 
-آپ کے پرانے راستے اور `src/routes/` کی فائلیں تو ساتھ ساتھ جواب دیں۔ جب کہ `useRouter` سیٹ ہے، `.nexy` صفحات کو `layout.nexy` سے لپیٹ نہیں کیا جاتا ہے: پہلے API کو منتقل کریں، پھر صفحات، پھر فیلڈ کو ہٹا دیں۔ دیکھیں [کسٹم راؤٹر انٹیگریشن](../routing/custom/README.md)۔
+آپ کے پرانے راستے اور `src/routes/` کی فائلیں تو ساتھ ساتھ جواب دیں۔ جبکہ `useRouter` سیٹ ہے، `.nexy` صفحات کو `layout.nexy` کے ذریعے لپیٹ نہیں کیا جاتا ہے: پہلے API کو منتقل کریں، پھر صفحات، پھر فیلڈ کو ہٹا دیں۔ دیکھیں [کسٹم راؤٹر انٹیگریشن](../routing/custom/README.md)۔
 
 ## اگلے اقدامات
 
 - [روٹ ہینڈلر](../routing/fbr/handlers/README.md)
-- [انحصار اور محافظ](../routing/fbr/dependencies/README.md)
+- [انحصار اور محافظ ](../routing/fbr/dependencies/README.md)
 - [.nexy فائلیں](../views/nexy/README.md)
 - [دوسرے فریم ورک سے آرہا ہے](../getting-started/coming-from-other-frameworks.md)
