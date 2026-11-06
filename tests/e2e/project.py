@@ -28,8 +28,9 @@ from nexy.modules.routers.app import AppServer
 requests = json.loads(sys.argv[1])
 out = []
 with TestClient(AppServer().run(), raise_server_exceptions=False) as client:
-    for path, headers in requests:
-        response = client.get(path, headers=headers, follow_redirects=False)
+    for path, headers, *method in requests:
+        verb = method[0] if method else "GET"
+        response = client.request(verb, path, headers=headers, follow_redirects=False)
         out.append([response.status_code, dict(response.headers), response.text])
 sys.stdout.write("@@" + json.dumps(out) + "@@")
 """
@@ -59,9 +60,10 @@ def write(root: Path, rel: str, content: str) -> None:
 
 
 def request(
-    project: Path, *requests: tuple[str, dict[str, str]]
+    project: Path, *requests: tuple[str, dict[str, str]] | tuple[str, dict[str, str], str]
 ) -> list[tuple[int, dict[str, str], str]]:
-    """GET each ``(path, headers)`` against the project; return status, headers and body."""
+    """Send each ``(path, headers)``, as GET, or ``(path, headers, method)`` to the project;
+    return status, headers and body."""
     done = subprocess.run(
         [sys.executable, "-c", _RUNNER, json.dumps(requests)],
         cwd=project,
