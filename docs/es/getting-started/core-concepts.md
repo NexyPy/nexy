@@ -21,25 +21,47 @@ Tres formas de decidir qué código responde a una URL. Son alternativas, no cap
 - **Enrutador modular**: controladores y módulos bajo `src/apps/`, declarados con decoradores, para una base de código estilo NestJS.
 - **Enrutador personalizado**: un FastAPI `APIRouter` existente incluido en la aplicación.
 
-La elección es una línea de `nexyconfig.py`. El enrutamiento basado en archivos no necesita nada: sin `useRouter`, Nexy lee `src/routes/`.
+La elección es una línea de la clase `NexyConfig` en `nexyconfig.py`.
+
+<!-- router:fbr -->
+El enrutamiento basado en archivos no necesita línea: sin `useRouter`, Nexy lee `src/routes/`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+El enrutador modular es el módulo raíz de `src/apps/`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+Un enrutador personalizado es un `APIRouter` que ya tienes:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
 Elegir uno de los tres es una decisión. La elección de un marco de interfaz de usuario es otra opción independiente: consulte [Elija un enrutador](../routing/README.md) y [Vistas](../views/README.md).
 
@@ -58,6 +80,7 @@ Cinco nociones que un lector procedente de Next.js suele fusionar en una sola. N
 
 En una frase: **una página es un archivo de ruta, una vista es lo que la representa, un componente es lo que una página reutiliza, un controlador responde a un punto final.**
 
+<!-- router:fbr -->
 Los cinco en un pequeño proyecto:
 
 ```text
@@ -89,6 +112,69 @@ async def GET():  # the endpoint GET /api/posts
 async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
+
+<!-- /router -->
+
+<!-- router:modular -->
+Con el enrutador modular, una ruta es la ruta de un controlador y un controlador es uno de sus métodos, llamado así por el verbo HTTP:
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+Una página sigue siendo un archivo de `src/routes/`, o una vista que devuelve un controlador con `useViews`.
+<!-- /router -->
+
+<!-- router:custom -->
+Con un enrutador personalizado, una ruta es una ruta de su `APIRouter` y un controlador es la función que registra su decorador:
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+Las páginas siguen siendo archivos de `src/routes/`: una página `.nexy` responde junto a las rutas incluidas.
+<!-- /router -->
 
 Dos palabras más que vuelven por todas partes:
 
@@ -151,6 +237,7 @@ async def subscribe(email: str) -> bool:
 
 La autenticación, autorización, base de datos, internacionalización, trabajos en segundo plano, correo electrónico, pagos y búsqueda son **responsabilidad de su aplicación**, no del marco. Nexy proporciona los puntos de extensión y dice dónde conectar cada uno: consulte [Lo que Nexy te deja](how-nexy-works.md#what-nexy-leaves-to-you).
 
+<!-- router:fbr -->
 La autenticación, por ejemplo, se conecta a una dependencia de la carpeta que protege. Nexy lo ejecuta antes de cada ruta a continuación; quién es el usuario sigue siendo tu decisión:
 
 ```python filename="src/rutas/cuenta/dependencias.py"
@@ -165,6 +252,48 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+La autenticación, por ejemplo, se conecta a una protección del controlador que protege. Nexy lo ejecuta antes que cada controlador de la clase; quién es el usuario sigue siendo tu decisión:
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+La autenticación, por ejemplo, se conecta a una dependencia del enrutador que protege, como en FastAPI; quién es el usuario sigue siendo tu decisión:
+
+```python filename="src/cuenta.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 La razón no es el minimalismo en sí: un marco que elige su ORM o su biblioteca de autenticación ha decidido algo que solo su aplicación puede decidir.
 

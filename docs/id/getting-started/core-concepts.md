@@ -21,25 +21,47 @@ Tiga cara untuk memutuskan kode mana yang menjawab URL. Itu adalah alternatif, b
 - **Router modular**: pengontrol dan modul di bawah `src/apps/`, dideklarasikan dengan dekorator, untuk basis kode bergaya NestJS.
 - **Router khusus**: FastAPI `APIRouter` yang sudah ada yang disertakan dalam aplikasi.
 
-Pilihannya adalah satu baris `nexyconfig.py`. Perutean berbasis file tidak memerlukan apa pun: tanpa `useRouter`, Nexy membaca `src/routes/`.
+Pilihannya adalah satu baris kelas `NexyConfig` di `nexyconfig.py`.
+
+<!-- router:fbr -->
+Perutean berbasis file tidak memerlukan baris: tanpa `useRouter`, Nexy membaca `src/routes/`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+Router modular adalah modul root `src/apps/`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+Router khusus adalah `APIRouter` yang sudah Anda miliki:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
 Memilih salah satu dari ketiganya adalah satu keputusan. Memilih kerangka kerja frontend adalah hal lain yang terpisah: lihat [Memilih router](../routing/README.md) dan [Tampilan](../views/README.md).
 
@@ -58,6 +80,7 @@ Lima gagasan yang berasal dari pembaca Next.js biasanya digabungkan menjadi satu
 
 Dalam satu kalimat: **halaman adalah file rute, tampilan adalah apa yang merendernya, komponen adalah apa yang digunakan kembali oleh halaman, penangan menjawab titik akhir.**
 
+<!-- router:fbr -->
 Kelimanya dalam satu proyek kecil:
 
 ```text
@@ -89,6 +112,69 @@ async def GET():  # the endpoint GET /api/posts
 async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
+
+<!-- /router -->
+
+<!-- router:modular -->
+Pada router modular, rute adalah jalur pengontrol, dan penangan adalah salah satu metodenya, dinamai berdasarkan kata kerja HTTP:
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+Halaman tetap berupa file `src/routes/`, atau tampilan yang dikembalikan pengontrol dengan `useViews`.
+<!-- /router -->
+
+<!-- router:custom -->
+Dengan router khusus, rute adalah jalur `APIRouter` Anda, dan pengendali adalah fungsi yang didaftarkan oleh dekoratornya:
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+Halaman masih berupa file `src/routes/`: halaman `.nexy` menjawab di sebelah rute yang disertakan.
+<!-- /router -->
 
 Dua kata lagi yang muncul kembali di mana-mana:
 
@@ -149,8 +235,9 @@ async def subscribe(email: str) -> bool:
 
 ## Apa yang Nexy tidak lakukan
 
-Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus menyambungkan masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
+Otentikasi, otorisasi, database, internasionalisasi, pekerjaan latar belakang, email, pembayaran, dan pencarian adalah **tanggung jawab aplikasi Anda**, bukan tanggung jawab kerangka kerja. Nexy memberikan poin ekstensi dan mengatakan di mana harus memasang masing-masing poin: lihat [Apa yang diserahkan Nexy kepada Anda](how-nexy-works.md#what-nexy-leaves-to-you).
 
+<!-- router:fbr -->
 Otentikasi, misalnya, dihubungkan ke ketergantungan folder yang dilindunginya. Nexy menjalankannya sebelum setiap rute di bawah; siapa penggunanya tetap menjadi keputusan Anda:
 
 ```python filename="src/routes/akun/dependensi.py"
@@ -165,6 +252,48 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Otentikasi, misalnya, dihubungkan ke pelindung pada pengontrol yang dilindunginya. Nexy menjalankannya sebelum setiap penangan kelas; siapa penggunanya tetap menjadi keputusan Anda:
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+Otentikasi, misalnya, dihubungkan ke ketergantungan router yang dilindunginya, seperti pada FastAPI; siapa penggunanya tetap menjadi keputusan Anda:
+
+```python filename="src/akun.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 Alasannya bukan karena minimalisme itu sendiri: kerangka kerja yang memilih ORM atau perpustakaan autentikasi Anda telah memutuskan sesuatu yang hanya dapat diputuskan oleh aplikasi Anda.
 
@@ -172,4 +301,4 @@ Alasannya bukan karena minimalisme itu sendiri: kerangka kerja yang memilih ORM 
 
 - [Struktur proyek](project-structure.md): setiap folder dan file proyek
 - [Glosarium](../reference/glossary.md): kata-kata yang sama, dalam satu indeks abjad
-- [Cara kerja Nexy](how-nexy-works.md): lapisannya, siapa yang membangun apa, dan apa yang Nexy serahkan kepada Anda
+- [Cara kerja Nexy](how-nexy-works.md): lapisannya, siapa yang membuat apa, dan apa yang Nexy serahkan kepada Anda

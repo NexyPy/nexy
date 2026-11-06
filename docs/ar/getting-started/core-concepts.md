@@ -21,27 +21,49 @@
 - **جهاز التوجيه المعياري**: وحدات التحكم والوحدات ضمن `src/apps/`، المُعلن عنها باستخدام أدوات الديكور، لقاعدة تعليمات برمجية على طراز NestJS.
 - **جهاز التوجيه المخصص**: موجود FastAPI `APIRouter` موجود في التطبيق.
 
-والاختيار هو سطر واحد من `nexyconfig.py`. لا يحتاج التوجيه المستند إلى الملف إلى أي شيء: بدون `useRouter`، يقرأ Nexy `src/routes/`.
+والاختيار هو سطر واحد من الصنف `NexyConfig` في `nexyconfig.py`.
+
+<!-- router:fbr -->
+لا يحتاج التوجيه المستند إلى الملف إلى سطر: بدون `useRouter`، يقرأ Nexy `src/routes/`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+جهاز التوجيه المعياري هو الوحدة الجذرية لـ `src/apps/`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+جهاز التوجيه المخصص هو `APIRouter` لديك بالفعل:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
-اختيار واحد من الثلاثة هو قرار واحد. يعد اختيار إطار عمل الواجهة الأمامية أمرًا منفصلاً: راجع [اختيار جهاز توجيه](../routing/README.md) و[طرق العرض](../views/README.md).
+اختيار واحد من الثلاثة هو قرار واحد. اختيار إطار عمل للواجهة الأمامية هو أمر آخر منفصل: راجع [اختر جهاز توجيه](../routing/README.md) و[طرق العرض](../views/README.md).
 
 ## هيكل التطبيق
 
@@ -53,11 +75,12 @@ class NexyConfig(NexyConfigModel):
 | **الصفحة** | ملف مسار يعرض طريقة عرض: `.nexy`، `.md`، `.mdx`، `.tsx`، `.vue`، `.svelte` | نقطة النهاية: فهي تجيب على مستند، وليس على البيانات |
 | **عرض** | ما الذي ينتج نص الصفحة: Jinja2 و Python، أو Markdown، أو مكون العميل | المسار: نفس العرض يمكن أن يخدم عدة صفحات |
 | **المكون** | قطعة قابلة لإعادة الاستخدام تستوردها الصفحة | المسار: في وضع الخادم، لا يتم تقديم المكون بمفرده أبدًا |
-| **معالج الطريق** | وظيفة ملف المسار `.py`، المسمى على اسم طريقة HTTP (`GET`، `POST`، …) | صفحة: تقوم بإرجاع JSON أو ملف أو `Response` |
+| **معالج المسار** | وظيفة ملف المسار `.py`، المسمى على اسم طريقة HTTP (`GET`، `POST`، …) | صفحة: تقوم بإرجاع JSON أو ملف أو `Response` |
 | **نقطة النهاية** | الزوج (URL، الطريقة) الذي يجيب عليه المعالج | المعالج: يمكن لملف واحد الإجابة على عدة نقاط نهاية |
 
 في جملة واحدة: **الصفحة هي ملف توجيه، والعرض هو ما يعرضه، والمكون هو ما تعيد الصفحة استخدامه، والمعالج يجيب على نقطة النهاية.**
 
+<!-- router:fbr -->
 الخمسة في مشروع واحد صغير:
 
 ```text
@@ -89,6 +112,69 @@ async def GET():  # the endpoint GET /api/posts
 async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
+
+<!-- /router -->
+
+<!-- router:modular -->
+مع جهاز التوجيه المعياري، المسار هو مسار وحدة التحكم، والمعالج هو أحد أساليبه، والذي سمي على اسم فعل HTTP:
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+لا تزال الصفحة ملفًا لـ `src/routes/`، أو طريقة عرض ترجعها وحدة التحكم بـ `useViews`.
+<!-- /router -->
+
+<!-- router:custom -->
+مع جهاز التوجيه المخصص، المسار هو مسار `APIRouter` الخاص بك، والمعالج هو الوظيفة التي يسجلها الديكور الخاص به:
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+لا تزال الصفحات عبارة عن ملفات `src/routes/`: تجيب الصفحة `.nexy` بجوار المسارات المضمنة.
+<!-- /router -->
 
 كلمتان أخريان تعودان في كل مكان:
 
@@ -125,7 +211,7 @@ from "@/components/Chart.tsx" import Chart
 | فكرة | سطر واحد |
 |---|---|
 | العمل | دالة Python تم وضع علامة `@Action` عليها، بمثابة `POST`، قابلة للاستدعاء من نموذج أو كدالة مكتوبة ([الإجراءات](../guides/actions.md)) |
-| النموذج | نموذج HTML ينشر إلى إجراء، مع عودة أخطاء التحقق من الصحة إلى الصفحة ([الإجراءات](../guides/actions.md)) |
+| النموذج | نموذج HTML يتم نشره في أحد الإجراءات، مع عودة أخطاء التحقق من الصحة إلى الصفحة ([الإجراءات](../guides/actions.md)) |
 | الملاحة | الروابط التي تجلب مسبقًا، والخطافات التي تقرأ المسار والاستعلام وملفات تعريف الارتباط والجلسة ([الخطافات](../routing/fbr/navigation/hooks.md)) |
 | جلب البيانات | تتم بواسطة الصفحة أو المعالج الذي يحتاج إليها؛ لا يقوم Nexy بشحن طبقة بيانات العميل ([معالجات](../routing/fbr/handlers/README.md)) |
 
@@ -151,6 +237,7 @@ async def subscribe(email: str) -> bool:
 
 المصادقة والترخيص وقاعدة البيانات والتدويل والوظائف الأساسية والبريد الإلكتروني والمدفوعات والبحث هي **مسؤولية تطبيقك**، وليست مسؤولية إطار العمل. يعطي Nexy نقاط الامتداد ويقول مكان توصيل كل واحدة منها: راجع [ما يتركه Nexy لك](how-nexy-works.md#what-nexy-leaves-to-you).
 
+<!-- router:fbr -->
 المصادقة، على سبيل المثال، يتم توصيلها بتبعية المجلد الذي تحميه. يقوم Nexy بتشغيله قبل كل طريق أدناه؛ من هو المستخدم يبقى قرارك:
 
 ```python filename="src/routes/account/dependeency.py"
@@ -165,6 +252,48 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+على سبيل المثال، يتم توصيل المصادقة بوحدة حماية على وحدة التحكم التي تحميها. يقوم Nexy بتشغيله قبل كل معالج للفئة؛ من هو المستخدم يبقى قرارك:
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+المصادقة، على سبيل المثال، يتم توصيلها بتبعية جهاز التوجيه الذي تحميه، كما في FastAPI؛ من هو المستخدم يبقى قرارك:
+
+```python filename="src/account.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 السبب ليس البساطة في حد ذاتها: إن إطار العمل الذي يختار ORM الخاص بك أو مكتبة المصادقة الخاصة بك قد قرر شيئًا لا يمكن لأحد أن يقرره إلا تطبيقك.
 

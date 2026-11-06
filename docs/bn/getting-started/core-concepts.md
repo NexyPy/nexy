@@ -21,27 +21,49 @@
 - **মডুলার রাউটার**: একটি NestJS-স্টাইল কোডবেসের জন্য `src/apps/` এর অধীনে কন্ট্রোলার এবং মডিউল, ডেকোরেটরদের সাথে ঘোষিত।
 - **কাস্টম রাউটার**: একটি বিদ্যমান FastAPI `APIRouter` অ্যাপ্লিকেশন অন্তর্ভুক্ত।
 
-পছন্দ হল এক লাইনের `nexyconfig.py`। ফাইল-ভিত্তিক রাউটিং এর প্রয়োজন নেই: `useRouter` ছাড়া, Nexy পড়ে `src/routes/`।
+পছন্দ হল এক লাইন `NexyConfig` ক্লাসে `nexyconfig.py`।
+
+<!-- router:fbr -->
+ফাইল-ভিত্তিক রাউটিং কোন লাইনের প্রয়োজন নেই: `useRouter` ছাড়া, Nexy পড়ে `src/routes/`।
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+মডুলার রাউটার হল `src/apps/` এর রুট মডিউল:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+একটি কাস্টম রাউটার হল একটি `APIRouter` আপনার কাছে ইতিমধ্যেই আছে:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
-তিনটির মধ্যে একটি বেছে নেওয়া একটি সিদ্ধান্ত। একটি ফ্রন্টএন্ড ফ্রেমওয়ার্ক বেছে নেওয়া আরেকটি, আলাদা একটি: দেখুন [একটি রাউটার চয়ন করুন](../routing/README.md) এবং [দর্শন](../views/README.md)।
+তিনটির মধ্যে একটি বেছে নেওয়া একটি সিদ্ধান্ত। ফ্রন্টএন্ড ফ্রেমওয়ার্ক বেছে নেওয়া আরেকটি, আলাদা আলাদা: দেখুন [একটি রাউটার চয়ন করুন](../routing/README.md) এবং [ভিউ](../views/README.md)।
 
 ## আবেদন কাঠামো
 
@@ -49,15 +71,16 @@ class NexyConfig(NexyConfigModel):
 
 | ধারণা | এটা কি | এটা কি না |
 |---|---|---|
-| **রুট** | একটি URL প্যাটার্ন, একটি ফাইলের পথ দ্বারা উত্পাদিত | একটি ফাইল: একটি ফাইল বিভিন্ন URL এর উত্তর দিতে পারে (`[slug]`) |
+| **রুট** | একটি URL প্যাটার্ন, একটি ফাইলের পথ দ্বারা উত্পাদিত | একটি ফাইল: একটি ফাইল একাধিক URL এর উত্তর দিতে পারে (`[slug]`) |
 | **পৃষ্ঠা** | একটি রুট ফাইল যা একটি ভিউ রেন্ডার করে: `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | একটি শেষ পয়েন্ট: এটি একটি নথির উত্তর দেয়, ডেটা নয় |
 | **দেখুন** | একটি পৃষ্ঠার মূল অংশ কী তৈরি করে: Jinja2 এবং Python, Markdown, বা একটি ক্লায়েন্ট উপাদান | একটি রুট: একই দৃশ্য বেশ কয়েকটি পৃষ্ঠা পরিবেশন করতে পারে |
 | **উপাদান** | একটি পুনঃব্যবহারযোগ্য টুকরা একটি পৃষ্ঠা আমদানি করে | একটি রুট: সার্ভার মোডে একটি উপাদান কখনই নিজে থেকে পরিবেশিত হয় না |
-| **রুট হ্যান্ডলার** | একটি `.py` রুট ফাইলের ফাংশন, HTTP পদ্ধতি (`GET`, `POST`, …) | একটি পৃষ্ঠা: এটি JSON, একটি ফাইল বা একটি `Response` প্রদান করে |
+| **রুট হ্যান্ডলার** | একটি `.py` রুট ফাইলের ফাংশন, HTTP পদ্ধতির নামানুসারে (`GET`, `POST`, …) | একটি পৃষ্ঠা: এটি JSON, একটি ফাইল বা একটি `Response` প্রদান করে |
 | **শেষ বিন্দু** | জোড়া (URL, পদ্ধতি) যা একজন হ্যান্ডলার উত্তর দেয় | একটি হ্যান্ডলার: একটি ফাইল বেশ কয়েকটি শেষ পয়েন্টের উত্তর দিতে পারে |
 
-এক বাক্যে: **একটি পৃষ্ঠা হল একটি রুট ফাইল, একটি ভিউ হল যা এটিকে রেন্ডার করে, একটি উপাদান হল যা একটি পৃষ্ঠা পুনঃব্যবহার করে, একটি হ্যান্ডলার একটি এন্ডপয়েন্টের উত্তর দেয়।**
+একটি বাক্যে: **একটি পৃষ্ঠা হল একটি রুট ফাইল, একটি ভিউ হল যা এটিকে রেন্ডার করে, একটি উপাদান হল যা একটি পৃষ্ঠা পুনঃব্যবহার করে, একজন হ্যান্ডলার একটি এন্ডপয়েন্টের উত্তর দেয়।**
 
+<!-- router:fbr -->
 একটি ছোট প্রকল্পের মধ্যে পাঁচটি:
 
 ```text
@@ -90,6 +113,69 @@ async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
 
+<!-- /router -->
+
+<!-- router:modular -->
+মডুলার রাউটারের সাথে, একটি রুট হল একটি কন্ট্রোলারের পথ, এবং একটি হ্যান্ডলার হল এর একটি পদ্ধতি, HTTP ক্রিয়াটির নামকরণ করা হয়েছে:
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+একটি পৃষ্ঠা এখনও `src/routes/` এর একটি ফাইল, অথবা একটি দৃশ্য একটি নিয়ামক `useViews` এর সাথে ফিরে আসে।
+<!-- /router -->
+
+<!-- router:custom -->
+একটি কাস্টম রাউটারের সাথে, একটি রুট হল আপনার `APIRouter` এর একটি পথ, এবং একটি হ্যান্ডলার হল এটির ডেকোরেটর রেজিস্টার করার ফাংশন:
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+পৃষ্ঠাগুলি এখনও `src/routes/` এর ফাইল: অন্তর্ভুক্ত রুটের পাশে একটি `.nexy` পৃষ্ঠা উত্তর দেয়।
+<!-- /router -->
+
 আরও দুটি শব্দ যা সর্বত্র ফিরে আসে:
 
 - **লেআউট**: একটি `layout.*` ফাইল যা তার ফোল্ডারের নিচের পৃষ্ঠাগুলিকে মোড়ানো করে; এইচটিএমএল ডকুমেন্টের মালিক রুট। [লেআউটস](../routing/fbr/layouts/README.md) দেখুন।
@@ -99,15 +185,15 @@ async def POST():  # the endpoint POST /api/posts
 
 দুটি স্বাধীন সিদ্ধান্ত, প্রায়ই বিভ্রান্ত হয়:
 
-- **বিন্যাস** সিদ্ধান্ত নেয় কোন ফাইলটি পৃষ্ঠাটি রেন্ডার করবে: [দর্শন](../views/README.md)।
-- **মোড** কে এইচটিএমএল তৈরি করে এবং কখন: [রেন্ডারিং](../rendering/README.md) নির্ধারণ করে।
+- **বিন্যাস** সিদ্ধান্ত নেয় কোন ফাইলটি পৃষ্ঠাটিকে রেন্ডার করবে: [দর্শন](../views/README.md)।
+- **মোড** নির্ধারণ করে কে এইচটিএমএল তৈরি করে এবং কখন: [রেন্ডারিং](../rendering/README.md)।
 
 | ধারণা | এক লাইন |
 |---|---|
 | সার্ভার মোড | সার্ভার রেন্ডার করে `.nexy` এবং `.md` পৃষ্ঠা; উপাদান হল দ্বীপ ([মোড](../routing/fbr/modes.md)) |
-| ক্লায়েন্ট মোড | `useCSR = True`: ফ্রেমওয়ার্ক ফাইল হল রুট, এবং নেভিগেশন ব্রাউজারে ঘটে |
+| ক্লায়েন্ট মোড | `useCSR = True`: ফ্রেমওয়ার্ক ফাইলগুলি হল রুট, এবং নেভিগেশন ব্রাউজারে ঘটে |
 | SSR, ISR, CSR, দ্বীপপুঞ্জ | চারটি রেন্ডারিং মোড, সিএসআর ব্যতীত প্রতি পৃষ্ঠায় সিদ্ধান্ত নেওয়া হয়েছে, যা প্রতি প্রকল্প ([রেন্ডারিং](../rendering/README.md)) |
-| হাইড্রেশন | ব্রাউজারটি HTML এর সাথে একটি ফ্রেমওয়ার্ক সংযুক্ত করছে সার্ভারটি ইতিমধ্যেই পাঠিয়েছে ([দ্বীপ](../rendering/islands.md)) |
+| হাইড্রেশন | ব্রাউজারটি HTML এর সাথে একটি ফ্রেমওয়ার্ক সংযুক্ত করছে সার্ভারটি ইতিমধ্যেই পাঠিয়েছে ([দ্বীপগুলি](../rendering/islands.md)) |
 | প্রপস | অভিভাবক যে মানগুলি একটি উপাদানে পাস করেন, একটি `.nexy` ফাইলে `name: prop[type]` ঘোষণা করা হয় ([.nexy ফাইল](../views/nexy/README.md)) |
 
 একটি দ্বীপ সহ একটি সার্ভার-মোড পৃষ্ঠা: সার্ভারটি পৃষ্ঠাটি রেন্ডার করে, ব্রাউজারটি চার্টটিকে হাইড্রেট করে যখন এটি দৃশ্যে স্ক্রোল করে।
@@ -126,8 +212,8 @@ from "@/components/Chart.tsx" import Chart
 |---|---|
 | অ্যাকশন | একটি Python ফাংশন চিহ্নিত `@Action`, একটি `POST` হিসাবে পরিবেশিত, একটি ফর্ম থেকে কলযোগ্য বা একটি টাইপ করা ফাংশন হিসাবে ([ক্রিয়া](../guides/actions.md)) |
 | ফর্ম | একটি এইচটিএমএল ফর্ম যা একটি অ্যাকশনে পোস্ট করে, বৈধতা ত্রুটিগুলি পৃষ্ঠায় ফিরে আসে ([ক্রিয়া](../guides/actions.md)) |
-| নেভিগেশন | যে লিঙ্কগুলি প্রিফেচ করে, এবং হুকগুলি যা পথ, ক্যোয়ারী, কুকিজ এবং সেশন ([হুকস](../routing/fbr/navigation/hooks.md)) পড়ে |
-| ডেটা আনা হচ্ছে | পৃষ্ঠা বা হ্যান্ডলার যে এটি প্রয়োজন দ্বারা সম্পন্ন; Nexy কোনো ক্লায়েন্ট ডেটা স্তর পাঠায় না ([হ্যান্ডলার](../routing/fbr/handlers/README.md)) |
+| নেভিগেশন | যে লিঙ্কগুলি প্রিফেচ করে, এবং হুকগুলি যা পথ, ক্যোয়ারী, কুকিজ এবং সেশন ([হুক](../routing/fbr/navigation/hooks.md)) পড়ে |
+| ডেটা আনা হচ্ছে | পৃষ্ঠা বা হ্যান্ডলার যে এটি প্রয়োজন দ্বারা সম্পন্ন; Nexy ক্লায়েন্ট ডেটা লেয়ার পাঠায় না ([হ্যান্ডলার](../routing/fbr/handlers/README.md)) |
 
 একটি ক্রিয়া এবং ফর্ম যা এটিতে পোস্ট করে, যা কোনো স্ক্রিপ্ট লোড হওয়ার আগে কাজ করে:
 
@@ -151,6 +237,7 @@ async def subscribe(email: str) -> bool:
 
 প্রমাণীকরণ, অনুমোদন, ডাটাবেস, আন্তর্জাতিকীকরণ, ব্যাকগ্রাউন্ড জব, ইমেল, অর্থপ্রদান এবং অনুসন্ধান **আপনার আবেদনের দায়িত্ব**, কাঠামোর নয়। Nexy এক্সটেনশন পয়েন্ট দেয় এবং বলে যে প্রতিটিকে কোথায় প্লাগ করতে হবে: দেখুন [Nexy আপনার কাছে কী রেখে যায়](how-nexy-works.md#what-nexy-leaves-to-you)।
 
+<!-- router:fbr -->
 প্রমাণীকরণ, উদাহরণস্বরূপ, এটি সুরক্ষিত ফোল্ডারের একটি নির্ভরতা প্লাগ ইন করে। Nexy নিচের প্রতিটি রুটের আগে এটি চালায়; ব্যবহারকারী কে আপনার সিদ্ধান্ত থেকে যায়:
 
 ```python filename="src/routes/account/dependencies.py"
@@ -165,6 +252,48 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+প্রমাণীকরণ, উদাহরণস্বরূপ, এটি সুরক্ষিত কন্ট্রোলারের গার্ডে প্লাগ করে। Nexy ক্লাসের প্রতিটি হ্যান্ডলারের আগে এটি চালায়; ব্যবহারকারী কে আপনার সিদ্ধান্ত থেকে যায়:
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+প্রমাণীকরণ, উদাহরণস্বরূপ, এটি সুরক্ষিত রাউটারের নির্ভরতার সাথে প্লাগ করে, যেমন FastAPI; ব্যবহারকারী কে আপনার সিদ্ধান্ত থেকে যায়:
+
+```python filename="src/account.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 কারণটি তার নিজের স্বার্থে ন্যূনতমতা নয়: একটি কাঠামো যা আপনার ORM বা আপনার প্রমাণীকরণ লাইব্রেরি বাছাই করে এমন কিছু সিদ্ধান্ত নিয়েছে শুধুমাত্র আপনার অ্যাপ্লিকেশন সিদ্ধান্ত নিতে পারে।
 

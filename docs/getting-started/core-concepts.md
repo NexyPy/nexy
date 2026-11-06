@@ -24,26 +24,47 @@ Three ways to decide which code answers a URL. They are alternatives, not layers
   NestJS-style codebase.
 - **Custom router**: an existing FastAPI `APIRouter` included in the application.
 
-The choice is one line of `nexyconfig.py`. File-based routing needs none: without `useRouter`,
-Nexy reads `src/routes/`.
+The choice is one line of the `NexyConfig` class in `nexyconfig.py`.
+
+<!-- router:fbr -->
+File-based routing needs no line: without `useRouter`, Nexy reads `src/routes/`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+The modular router is the root module of `src/apps/`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+A custom router is an `APIRouter` you already have:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
 Choosing one of the three is one decision. Choosing a frontend framework is another, separate one:
 see [Choose a router](../routing/README.md) and [Views](../views/README.md).
@@ -65,6 +86,7 @@ and the difference explains most "why is my page not rendering" questions.
 In one sentence: **a page is a route file, a view is what renders it, a component is what a page
 reuses, a handler answers an endpoint.**
 
+<!-- router:fbr -->
 All five in one small project:
 
 ```text
@@ -97,6 +119,71 @@ async def GET():  # the endpoint GET /api/posts
 async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
+
+<!-- /router -->
+
+<!-- router:modular -->
+With the modular router, a route is the path of a controller, and a handler is one of its methods,
+named after the HTTP verb:
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+A page is still a file of `src/routes/`, or a view a controller returns with `useViews`.
+<!-- /router -->
+
+<!-- router:custom -->
+With a custom router, a route is a path of your `APIRouter`, and a handler is the function its
+decorator registers:
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+Pages are still files of `src/routes/`: a `.nexy` page answers next to the included routes.
+<!-- /router -->
 
 Two more words that come back everywhere:
 
@@ -164,6 +251,7 @@ Authentication, authorisation, database, internationalisation, background jobs, 
 search are **your application's responsibility**, not the framework's. Nexy gives the extension
 points and says where to plug each one: see [What Nexy leaves to you](how-nexy-works.md#what-nexy-leaves-to-you).
 
+<!-- router:fbr -->
 Authentication, for example, plugs into a dependency of the folder it protects. Nexy runs it before
 every route below; who the user is stays your decision:
 
@@ -179,6 +267,50 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Authentication, for example, plugs into a guard on the controller it protects. Nexy runs it before
+every handler of the class; who the user is stays your decision:
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+Authentication, for example, plugs into a dependency of the router it protects, as in FastAPI;
+who the user is stays your decision:
+
+```python filename="src/account.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 The reason is not minimalism for its own sake: a framework that picks your ORM or your auth library
 has decided something only your application can decide.
