@@ -21,7 +21,27 @@
 - **मॉड्यूलर राउटर**: `src/apps/` के अंतर्गत नियंत्रक और मॉड्यूल, नेस्टजेएस-शैली कोडबेस के लिए डेकोरेटर के साथ घोषित।
 - **कस्टम राउटर**: एक मौजूदा FastAPI `APIRouter` एप्लिकेशन में शामिल है।
 
-तीनों में से किसी एक को चुनना एक निर्णय है। फ्रंटएंड फ्रेमवर्क चुनना एक अलग, अलग मामला है: देखें [राउटर चुनें](../routing/README.md) और [व्यूज़](../views/README.md)।
+विकल्प `nexyconfig.py` की एक पंक्ति है। फ़ाइल-आधारित रूटिंग के लिए किसी की आवश्यकता नहीं है: `useRouter` के बिना, नेक्सी `src/routes/` पढ़ता है।
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.apps.app_module import AppModule
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = AppModule  # modular: the root module of src/apps/
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+from src.legacy import api  # an APIRouter you already have
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = api  # custom: your router, included as it is
+```
+
+तीनों में से किसी एक को चुनना एक निर्णय है। फ्रंटएंड फ्रेमवर्क चुनना एक अलग, अलग मामला है: [राउटर चुनें](../routing/README.md) और [व्यूज़](../views/README.md) देखें।
 
 ## अनुप्रयोग संरचना
 
@@ -37,6 +57,38 @@
 | **समापन बिंदु** | जोड़ी (यूआरएल, विधि) जिसका उत्तर हैंडलर देता है | एक हैंडलर: एक फ़ाइल कई समापन बिंदुओं का उत्तर दे सकती है |
 
 एक वाक्य में: **एक पृष्ठ एक रूट फ़ाइल है, एक दृश्य वह है जो इसे प्रस्तुत करता है, एक घटक वह है जिसे एक पृष्ठ पुन: उपयोग करता है, एक हैंडलर एक समापन बिंदु का उत्तर देता है।**
+
+एक छोटे प्रोजेक्ट में सभी पाँच:
+
+```text
+src/
+├─ routes/
+│  ├─ blog/[slug].nexy    a route (/blog/{slug}) whose file is a page
+│  └─ api/posts.py        a route whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```nexy filename="src/routes/blog/[slug].nexy"
+---
+from "@/components/Like.tsx" import Like
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Like post="{{ slug }}" />
+```
+
+अग्रभाग और उसके नीचे का टेम्पलेट पृष्ठ का दृश्य है; `Like` वह घटक है जिसका वह पुन: उपयोग करता है।
+
+```python filename="src/routes/api/posts.py"
+async def GET():  # the endpoint GET /api/posts
+    return {"posts": []}
+
+
+async def POST():  # the endpoint POST /api/posts
+    return {"created": True}
+```
 
 दो और शब्द जो हर जगह वापस आते हैं:
 
@@ -58,6 +110,16 @@
 | जलयोजन | ब्राउज़र HTML में एक फ़्रेमवर्क संलग्न कर रहा है, सर्वर पहले ही भेज चुका है ([द्वीप](../rendering/islands.md)) |
 | सहारा | वे मान जो माता-पिता किसी घटक को देते हैं, `name: prop[type]` को `.nexy` फ़ाइल में घोषित करते हैं ([.nexy फ़ाइलें](../views/nexy/README.md)) |
 
+एक द्वीप के साथ एक सर्वर-मोड पृष्ठ: सर्वर पृष्ठ को प्रस्तुत करता है, ब्राउज़र चार्ट को केवल तभी हाइड्रेट करता है जब वह दृश्य में स्क्रॉल करता है।
+
+```nexy filename="src/routes/sales.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
 ## अनुप्रयोग इंटरैक्शन
 
 | धारणा | एक पंक्ति |
@@ -67,9 +129,42 @@
 | नेविगेशन | लिंक जो प्रीफ़ेच करते हैं, और हुक जो पथ, क्वेरी, कुकीज़ और सत्र को पढ़ते हैं ([हुक](../routing/fbr/navigation/hooks.md)) |
 | डेटा लाया जा रहा है | उस पृष्ठ या हैंडलर द्वारा किया गया जिसे इसकी आवश्यकता है; Nexy कोई क्लाइंट डेटा परत शिप नहीं करता ([हैंडलर](../routing/fbr/handlers/README.md)) |
 
+एक क्रिया और उस पर पोस्ट करने वाला फ़ॉर्म, जो किसी भी स्क्रिप्ट के लोड होने से पहले काम करता है:
+
+```python filename="src/actions/newsletter.py"
+from nexy.decorators import Action
+
+
+@Action
+async def subscribe(email: str) -> bool:
+    return True
+```
+
+```html filename="src/routes/index.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+
 ## नेक्सी क्या नहीं करती
 
 प्रमाणीकरण, प्राधिकरण, डेटाबेस, अंतर्राष्ट्रीयकरण, पृष्ठभूमि नौकरियां, ईमेल, भुगतान और खोज **आपके एप्लिकेशन की ज़िम्मेदारी हैं**, फ़्रेमवर्क की नहीं। नेक्सी विस्तार बिंदु देता है और बताता है कि प्रत्येक को कहां प्लग करना है: देखें [नेक्सी आप पर क्या छोड़ती है](how-nexy-works.md#what-nexy-leaves-to-you)।
+
+उदाहरण के लिए, प्रमाणीकरण उस फ़ोल्डर की निर्भरता में प्लग हो जाता है जिसकी वह सुरक्षा करता है। नेक्सी इसे नीचे दिए गए प्रत्येक मार्ग से पहले चलाता है; उपयोगकर्ता कौन है यह आपका निर्णय है:
+
+```python filename="src/routes/account/dependents.py"
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+dependencies = [require_login]
+```
 
 इसका कारण अपने आप में अतिसूक्ष्मवाद नहीं है: एक ढांचा जो आपके ओआरएम या आपकी ऑथ लाइब्रेरी को चुनता है, उसने कुछ ऐसा तय किया है जो केवल आपका एप्लिकेशन ही तय कर सकता है।
 
