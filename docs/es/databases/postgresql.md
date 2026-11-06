@@ -252,13 +252,13 @@ nx migrate --upgrade
 ## Asíncrono con `asyncpg`
 
 ```python filename="src/configs/async_db.py"
-import os
-
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from src.configs.db import database_url
+
 async_engine = create_async_engine(
-    os.environ["DATABASE_URL"].replace("+psycopg", "+asyncpg", 1), pool_pre_ping=True
+    database_url().replace("+psycopg", "+asyncpg", 1), pool_pre_ping=True
 )
 
 
@@ -287,7 +287,7 @@ psycopg 3 también se ejecuta asíncrono: `postgresql+psycopg://` también funci
 
 Cada prueba se ejecuta dentro de una transacción que se revierte, por lo que la base de datos de prueba permanece vacía:
 
-```python filename="pruebas/conftest.py"
+```python filename=""
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
 

@@ -252,13 +252,13 @@ nx migrate --upgrade
 ## Асинхронно с `asyncpg`
 
 ```python filename="src/configs/async_db.py"
-import os
-
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from src.configs.db import database_url
+
 async_engine = create_async_engine(
-    os.environ["DATABASE_URL"].replace("+psycopg", "+asyncpg", 1), pool_pre_ping=True
+    database_url().replace("+psycopg", "+asyncpg", 1), pool_pre_ping=True
 )
 
 

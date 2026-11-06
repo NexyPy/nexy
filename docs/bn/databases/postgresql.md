@@ -39,7 +39,7 @@ DATABASE_URL=postgresql+psycopg://postgres:secret@localhost:5432/app
 
 হোস্টিং প্ল্যাটফর্মগুলি প্রায়ই একটি `postgres://` URL দেয়। ইঞ্জিন যেখানে তৈরি করা হয় সেখানে এটি রূপান্তর করুন:
 
-```python filename="src/configs/db.py"
+```python filename=""
 import os
 
 from dotenv import load_dotenv
@@ -252,13 +252,13 @@ nx migrate --upgrade
 ## সাথে অ্যাসিঙ্ক করুন `asyncpg`
 
 ```python filename="src/configs/async_db.py"
-import os
-
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from src.configs.db import database_url
+
 async_engine = create_async_engine(
-    os.environ["DATABASE_URL"].replace("+psycopg", "+asyncpg", 1), pool_pre_ping=True
+    database_url().replace("+psycopg", "+asyncpg", 1), pool_pre_ping=True
 )
 
 
