@@ -12,7 +12,7 @@ import pytest
 HERE = Path(__file__).resolve().parent
 NODE = shutil.which("node")
 
-FRAMEWORKS = ("react", "preact", "vue", "svelte")
+FRAMEWORKS = ("react", "preact", "vue", "svelte", "solid")
 
 
 @pytest.fixture(scope="module", params=FRAMEWORKS)
