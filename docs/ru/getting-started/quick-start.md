@@ -83,7 +83,7 @@ controllers = [AppController, AboutController, HelloController]
 
 Откройте <http://localhost:3000/hello>. Измените `"Hello"` на `"Bonjour"` и сохраните: страница обновится без перезагрузки вручную. Если код неправильный, браузер вместо пустой страницы отображает ошибку.
 
-`prop[str]` объявляет типизированное свойство. Разметка под заголовком — Jinja2 — см. файлы [.nexy](../views/nexy/README.md).
+`prop[str]` объявляет типизированное свойство. Разметка под заголовком - Jinja2 - см. файлы [.nexy](../views/nexy/README.md).
 
 ## Где дальше
 

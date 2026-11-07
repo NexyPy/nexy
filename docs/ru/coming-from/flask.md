@@ -17,7 +17,7 @@ def hello():
     return {"message": "Hello"}
 ```
 
-Путь к файлу — это URL-адрес, а имя функции — это метод:
+Путь к файлу - это URL-адрес, а имя функции - это метод:
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -32,14 +32,14 @@ def get_user(id):
     return {"id": id}
 ```
 
-Конвертер становится аннотацией типа, а переменная — сегментом `[id]`:
+Конвертер становится аннотацией типа, а переменная - сегментом `[id]`:
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
 
-`<path:rest>` — это универсальный сегмент, `[...rest].py`.
+`<path:rest>` - это универсальный сегмент, `[...rest].py`.
 
 ## Строки запроса
 
@@ -54,7 +54,7 @@ def search():
     return {"q": q, "page": page}
 ```
 
-Глобального `request` нет: параметр запроса — это параметр функции, преобразованный и проверенный:
+Глобального `request` нет: параметр запроса - это параметр функции, преобразованный и проверенный:
 
 ```python filename="src/routes/api/search.py"
 async def GET(q: str = "", page: int = 1):
@@ -120,7 +120,7 @@ def users():
     return render_template("users.html", users=[{"name": "Ada"}, {"name": "Alan"}])
 ```
 
-Представление и его шаблон — это один файл `.nexy`: Python над строкой `---`, тот же Jinja2 снизу:
+Представление и его шаблон - это один файл `.nexy`: Python над строкой `---`, тот же Jinja2 снизу:
 
 ```nexy filename="src/маршруты/users.nexy"
 ---
@@ -183,7 +183,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`@` — это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
+`@` - это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
 
 ## Чертежи
 
@@ -201,7 +201,7 @@ def stats():
 app.register_blueprint(admin)
 ```
 
-Папка — это префикс, и ничего не прописано:
+Папка - это префикс, и ничего не прописано:
 
 ```python filename="src/routes/admin/stats.py"
 async def GET():
@@ -267,7 +267,7 @@ def add_note():
     return redirect(url_for("notes"))
 ```
 
-Действие — это функция Python, в которую отправляется форма. Nexy задает ему путь, считывает поля формы как параметры и отправляет посетителя обратно на страницу с помощью `303`:
+Действие - это функция Python, в которую отправляется форма. Nexy задает ему путь, считывает поля формы как параметры и отправляет посетителя обратно на страницу с помощью `303`:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action
@@ -434,7 +434,7 @@ def test_hello():
 
 ## Следующие шаги
 
-- [От FastAPI до Nexy](fastapi.md): обработчики Nexy — это обработчики FastAPI
+- [От FastAPI до Nexy](fastapi.md): обработчики Nexy - это обработчики FastAPI
 - [Действия](../guides/actions.md)
 - [файлы .nexy](../views/nexy/README.md)
 - [Рецепты](../guides/recipes.md): вход в систему, CRUD и загрузка

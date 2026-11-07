@@ -16,7 +16,7 @@ app.get("/api/hello", (c) => c.json({ message: "Hello" }));
 export default app;
 ```
 
-Путь к файлу — это URL-адрес, имя функции — это метод, а возвращаемое значение `dict` — это `c.json`:
+Путь к файлу - это URL-адрес, имя функции - это метод, а возвращаемое значение `dict` - это `c.json`:
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -99,7 +99,7 @@ const requireAdmin = createMiddleware(async (c, next) => {
 app.use("/admin/*", requireAdmin);
 ```
 
-`/admin/*` — это папка: `dependencies.py` там выполняется перед каждым маршрутом ниже нее.
+`/admin/*` - это папка: `dependencies.py` там выполняется перед каждым маршрутом ниже нее.
 
 ```python filename="src/routes/admin/dependents.py"
 from nexy.http import Header, HTTPException
@@ -325,7 +325,7 @@ const client = hc<AppType>("http://localhost:3000");
 const todo = await (await client.todos.$post({ json: { title: "Write the docs" } })).json();
 ```
 
-Действие — это функция сервера и типизированный клиент в одном лице. Nexy записывает типы TypeScript из сигнатуры Python:
+Действие - это функция сервера и типизированный клиент в одном лице. Nexy записывает типы TypeScript из сигнатуры Python:
 
 ```python filename="src/actions/todos.py"
 from pydantic import BaseModel

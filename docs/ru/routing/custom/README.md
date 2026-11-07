@@ -10,7 +10,7 @@
 
 ## Установите `useRouter` в `nexyconfig.py`
 
-Маршрутизатор — это любой FastAPI `APIRouter`, написанный так, как вы его уже пишете:
+Маршрутизатор - это любой FastAPI `APIRouter`, написанный так, как вы его уже пишете:
 
 ```python filename="src/legacy/api.py"
 from fastapi import APIRouter
@@ -28,7 +28,7 @@ async def user(id: int):
     return {"id": id}
 ```
 
-`useRouter` — поле класса `NexyConfig`, как и все настройки проекта:
+`useRouter` - поле класса `NexyConfig`, как и все настройки проекта:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -43,7 +43,7 @@ class NexyConfig(NexyConfigModel):
 Затем `nx dev` отвечает на `GET /api/status` и `GET /api/users/{id}`, а `/docs` перечисляет их.
 
 > [!NOTE]
-> `useRouter` в `nexyconfig.py` — это настройка. `from nexy import useRouter` — это еще одна вещь: перехватчик, который страница `.nexy` использует для чтения текущего маршрута. Не импортируйте его для настройки маршрутизатора.
+> `useRouter` в `nexyconfig.py` - это настройка. `from nexy import useRouter` - это еще одна вещь: перехватчик, который страница `.nexy` использует для чтения текущего маршрута. Не импортируйте его для настройки маршрутизатора.
 
 ## Несколько роутеров
 

@@ -1,6 +1,6 @@
 # От Astro до Некси
 
-Страница Nexy `.nexy` — это страница Astro с Python во фронтальной части `---` вместо TypeScript: тот же HTML-код, ориентированный на сервер, те же острова и `client:*` директивы, отображаемые при каждом запросе.
+Страница Nexy `.nexy` - это страница Astro с Python во фронтальной части `---` вместо TypeScript: тот же HTML-код, ориентированный на сервер, те же острова и `client:*` директивы, отображаемые при каждом запросе.
 
 В каждом разделе ниже показана привычка Astro, затем то же самое в Nexy.
 
@@ -13,7 +13,7 @@ const title = "About";
 <h1>{title}</h1>
 ```
 
-Вступление — Python и шаблон — Jinja2:
+Вступление - Python и шаблон - Jinja2:
 
 ```nexy filename="источник/маршруты/about.nexy"
 ---
@@ -22,7 +22,7 @@ title = "About"
 <h1>{{ title }}</h1>
 ```
 
-`src/pages/` — это `src/routes/`, а `index.astro` — это `index.nexy`.
+`src/pages/` - это `src/routes/`, а `index.astro` - это `index.nexy`.
 
 ## Циклы и условия
 
@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-Свойства объявляются с помощью `prop[...]`, значением по умолчанию является Python по умолчанию, а `<slot />` — это `<Slot />`:
+Свойства объявляются с помощью `prop[...]`, значением по умолчанию является Python по умолчанию, а `<slot />` - это `<Slot />`:
 
 ```nexy filename="источник/компоненты/Card.nexy"
 ---
@@ -83,7 +83,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`@` — это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
+`@` - это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
 
 ## Макеты
 
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-Динамическая страница `.nexy` отображается по запросу, поэтому список путей отсутствует: сегмент является реквизитом, а неизвестный — `404`.
+Динамическая страница `.nexy` отображается по запросу, поэтому список путей отсутствует: сегмент является реквизитом, а неизвестный - `404`.
 
 ```nexy filename="src/маршруты/сообщения/[слизень].nexy"
 ---
@@ -161,7 +161,7 @@ title = POSTS[slug]
 <h1>{{ title }}</h1>
 ```
 
-`[...path].astro` — это `[...path].nexy`.
+`[...path].astro` - это `[...path].nexy`.
 
 ## Острова и `client:*`
 
@@ -212,7 +212,7 @@ layout: ../layouts/Base.astro
 # Changelog
 ```
 
-Файл `.md` в папке `src/routes/` — это страница, завернутая в ближайший макет без ключа `layout:`:
+Файл `.md` в папке `src/routes/` - это страница, завернутая в ближайший макет без ключа `layout:`:
 
 ```md filename="источник/маршруты/changelog.md"
 # Changelog
@@ -235,7 +235,7 @@ async def GET(id: int):
     return {"id": id}
 ```
 
-Тело — это модель Pydantic, проверенная перед запуском функции:
+Тело - это модель Pydantic, проверенная перед запуском функции:
 
 ```python filename="src/routes/api/items/index.py"
 from pydantic import BaseModel
@@ -262,7 +262,7 @@ const page = Astro.url.searchParams.get("page") ?? "1";
 <p>{theme} theme, page {page}</p>
 ```
 
-Те же чтения — это хуки, а редирект — функция:
+Те же чтения - это хуки, а редирект - функция:
 
 ```nexy filename="src/маршруты/account.nexy"
 ---
@@ -325,7 +325,7 @@ import { actions } from "astro:actions";
 </form>
 ```
 
-Действие — это функция Python в `src/actions/`; форма отправляет сообщения по своему пути:
+Действие - это функция Python в `src/actions/`; форма отправляет сообщения по своему пути:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action

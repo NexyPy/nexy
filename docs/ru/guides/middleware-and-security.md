@@ -1,6 +1,6 @@
 # Промежуточное ПО и безопасность
 
-Nexy работает на FastAPI и Starlette, поэтому применяется их промежуточное программное обеспечение. Общие — одна строка в `nexyconfig.py`.
+Nexy работает на FastAPI и Starlette, поэтому применяется их промежуточное программное обеспечение. Общие - одна строка в `nexyconfig.py`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

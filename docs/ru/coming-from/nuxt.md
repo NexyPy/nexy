@@ -38,7 +38,7 @@ class NexyConfig(NexyConfigModel):
 </template>
 ```
 
-`pages/index.vue` — это `src/routes/index.vue`, `pages/blog/index.vue` — это `src/routes/blog/index.vue`.
+`pages/index.vue` - это `src/routes/index.vue`, `pages/blog/index.vue` - это `src/routes/blog/index.vue`.
 
 ## Динамические страницы и `useRoute().params`
 
@@ -407,7 +407,7 @@ export default defineNuxtConfig({
 });
 ```
 
-Настройки сервера — это переменные среды, читаемые в Python:
+Настройки сервера - это переменные среды, читаемые в Python:
 
 ```python filename="источник/settings.py"
 import os
