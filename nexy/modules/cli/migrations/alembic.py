@@ -13,10 +13,20 @@ _URL_LINE = re.compile(r"^sqlalchemy\.url\s*=.*", re.MULTILINE)
 
 
 def models_module(project: Path) -> str:
-    """The module that holds the models the scaffold wrote: `src/models`, or the users module."""
-    if (project / "src" / "models").is_dir():
-        return "src.models.user_model"
-    return "src.apps.users.user_model"
+    """The module that holds the models: the scaffold's user model, else the first `*_model.py`.
+
+    Without any model file yet, the module the scaffold would write: `src/models`, or the users
+    module of a modular project.
+    """
+    flat = project / "src" / "models"
+    found = sorted(flat.glob("*_model.py")) or sorted(
+        (project / "src" / "apps").glob("**/*_model.py")
+    )
+    scaffolded = [path for path in found if path.name == "user_model.py"]
+    if scaffolded or found:
+        relative = (scaffolded or found)[0].relative_to(project).with_suffix("")
+        return ".".join(relative.parts)
+    return "src.models.user_model" if flat.is_dir() else "src.apps.users.user_model"
 
 
 def render_env(alembic_dir: Path, orm: str, models: str = "src.models.user_model") -> None:

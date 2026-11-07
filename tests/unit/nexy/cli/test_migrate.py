@@ -224,6 +224,16 @@ class TestAlembicEnv:
     def test_a_modular_project_keeps_them_with_the_users_module(self, tmp_path):
         assert alembic.models_module(tmp_path) == "src.apps.users.user_model"
 
+    def test_a_project_without_the_user_model_imports_the_model_it_has(self, tmp_path):
+        (tmp_path / "src" / "models").mkdir(parents=True)
+        (tmp_path / "src" / "models" / "note_model.py").write_text("")
+        assert alembic.models_module(tmp_path) == "src.models.note_model"
+
+    def test_a_modular_project_without_users_imports_its_feature_model(self, tmp_path):
+        (tmp_path / "src" / "apps" / "notes").mkdir(parents=True)
+        (tmp_path / "src" / "apps" / "notes" / "note_model.py").write_text("")
+        assert alembic.models_module(tmp_path) == "src.apps.notes.note_model"
+
 
 class TestMigrationTemplate:
     """SQLModel columns are written as `sqlmodel.sql.sqltypes...`: a migration must import it."""
