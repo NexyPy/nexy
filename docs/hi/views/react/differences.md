@@ -2,16 +2,30 @@
 
 नेक्सी सर्वर पर React 19 घटकों को प्रस्तुत करता है, फिर React उन्हें ब्राउज़र में हाइड्रेट करता है। पेज, लेआउट, द्वीप और क्रियाएं हर ढांचे में समान हैं: यह पेज सेटअप को कवर करता है, फिर वे हिस्से जो [साझा अनुबंध ](../frontend/pages.md) से भिन्न होते हैं।
 
-| मोड | `nexyconfig.py` | पेज हैं | React है |
+<!-- router:fbr,custom -->
+| मोड | `nexyconfig.py` | पन्ने हैं | React है |
 |---|---|---|---|
-| सर्वर (डिफ़ॉल्ट) | `useCSR = False` | `.nexy` फ़ाइलें | [द्वीप](../../rendering/islands.md) उन पृष्ठों के अंदर |
-| क्लाइंट | `useCSR = True` | `.tsx` फ़ाइलें | संपूर्ण पृष्ठ, [लेआउट्स](../frontend/layouts.md) और एक क्लाइंट राउटर के साथ |
+| सर्वर (डिफ़ॉल्ट) | `useCSR = False` | `.nexy` फ़ाइलें | [उन पन्नों के अंदर द्वीप](../../rendering/islands.md) |
+| ग्राहक | `useCSR = True` | `.tsx` फ़ाइलें | संपूर्ण पृष्ठ, [लेआउट](../frontend/layouts.md) और एक क्लाइंट राउटर के साथ |
+<!-- /router -->
+
+<!-- router:modular -->
+मॉड्यूलर राउटर के साथ, React घटक `.nexy` दृश्यों के अंदर [द्वीप](../../rendering/islands.md) होते हैं, एक नियंत्रक रिटर्न देता है: कोई पेज फ़ाइल नहीं है और कोई क्लाइंट राउटर नहीं है।
+<!-- /router -->
 
 ## एक प्रोजेक्ट प्रारंभ करें
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-react
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-react
+```
+<!-- /router -->
 
 टेम्प्लेट React द्वीपों वाला एक सर्वर-मोड प्रोजेक्ट है। इसके बजाय संकेतों का उत्तर देने के लिए टेम्पलेट के बिना `nx new my-app` चलाएं: राउटर, प्रोजेक्ट प्रकार, क्लाइंट-साइड रूटिंग का उपयोग करना है या नहीं, फिर फ्रेमवर्क।
 
@@ -44,15 +58,21 @@ export default defineConfig({
 |---|---|
 | `react`, `react-dom` | `^19.2.5` |
 | `@vitejs/plugin-react` | `^5.2.0` |
-| `@types/react`, `@types/react-dom` | देव निर्भरताएं |
+| `@types/react`, `@types/react-dom` | देव निर्भरताएँ |
 
 ## नियम
 
 - **प्रति प्रोजेक्ट एक ढाँचा।** `useFF` बिल्कुल एक ढाँचा लेता है; `useFF = [react(), vue()]` स्टार्टअप पर सर्वर को रोक देता है।
+<!-- router:fbr,custom -->
 - **पृष्ठ `.tsx` हैं।** React घटकों के लिए `.tsx` और `.jsx` का स्वामी है, लेकिन `src/routes/` के अंतर्गत केवल `.tsx` फ़ाइल एक पृष्ठ बन जाती है।
 - **घटक `src/routes/`** के बाहर रहते हैं, आमतौर पर `src/components/` में, इसलिए वे पृष्ठ नहीं हैं।
 - **सर्वर-मोड प्रोजेक्ट में कोई `.tsx` पेज** नहीं है, और क्लाइंट-मोड प्रोजेक्ट में कोई `.nexy` पेज नहीं है: नेक्सी शुरू करने से इंकार कर देता है और फ़ाइल को नाम देता है। [मोड](../../routing/fbr/modes.md) देखें।
+<!-- /router -->
+<!-- router:modular -->
+- **घटक `src/components/`** में रहते हैं, और एक दृश्य उन्हें द्वीपों के रूप में आयात करता है।
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## पन्ने
 
 क्लाइंट मोड (`useCSR = True`) में, एक पेज एक `.tsx` फ़ाइल है।
@@ -97,6 +117,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 }
 ```
+<!-- /router -->
 
 ## द्वीप
 
@@ -106,12 +127,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
 `.nexy` फ़ाइल के फ्रंटमैटर में घटकों को आयात करें:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### जलयोजन निर्देश
 
@@ -165,5 +197,5 @@ router.push("/dashboard");
 
 ## अगले चरण
 
-- [दृश्य](../README.md): उन प्रारूपों की तुलना करें जिनका उपयोग पृष्ठ कर सकता है
+- [दृश्य](../README.md): उन स्वरूपों की तुलना करें जिनका उपयोग पृष्ठ कर सकता है
 - [फ्रंटएंड](../../guides/frontend.md): Vite और क्लाइंट बिल्ड

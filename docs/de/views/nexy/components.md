@@ -4,6 +4,7 @@ Nexy exportiert eine kleine Reihe von Hilfsprogrammen, die HTML-Strings zurückg
 
 ## Zwei Syntaxen, eine Funktion
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Beide Zeilen erzeugen das gleiche Markup:
 
@@ -23,13 +36,13 @@ Der Compiler schreibt `<Audio ... />` in `{{ Audio(...) }}` um, sodass die Tag-F
 
 ## Regeln der Tag-Form
 
-| Im Tag wird | zu |
+| Im Tag | Wird |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, ein echter Boolescher Wert |
 | `width=640` | `width=640`, eine Zahl |
 | `src="{{ url }}"` | `src=(url)`, bewertet in Jinja |
-| jede andere `value` | `"value"`, eine Zeichenfolge |
+| irgendein anderes `value` | `"value"`, eine Zeichenfolge |
 
 - Das Tag muss mit einem Großbuchstaben beginnen und in die Frontmatter importiert werden; andernfalls löst der Compiler `Missing Import: <Name> used but not declared.` aus.
 - Die Tag-Form ist **selbstschließend**. `<Audio src="/a.mp3" />` und `{{ Audio("/a.mp3") }}` sind gleichwertig; Das Schreiben von untergeordneten Elementen innerhalb eines Hilfstags wird nicht unterstützt.
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,6 +117,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` hat keinen Standardwert, daher muss die Seite ihn übergeben; `tone` fällt auf `"neutral"` zurück. Der Markup zwischen den Tags kommt innerhalb von `<Slot />` (Großbuchstabe S) an. Siehe [.nexy-Dateien](README.md#components) für Requisiten, Slots und die Regeln der Tag-Form.
 

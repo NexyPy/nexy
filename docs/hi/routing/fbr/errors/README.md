@@ -23,7 +23,7 @@ the HTML page
 
 ```nexy filename="src/routes/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -46,7 +46,7 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 | `errors.nexy` | `500` इसकी निर्देशिका के लिए |
 | `forbidden.nexy` | `403` इसकी निर्देशिका के लिए |
 | `unauthorized.nexy` | `401` इसकी निर्देशिका के लिए |
-| `loading.nexy` | आरक्षित; अभी तक कोई रनटाइम प्रभाव नहीं |
+| `loading.nexy` | आरक्षित; अभी तक कोई रनटाइम प्रभाव नहीं है |
 
 | स्थिति | उत्तर |
 |---|---|
@@ -55,7 +55,7 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 | किसी पेज या एपीआई हैंडलर में एक हैंडल न किया गया अपवाद | `500` |
 | `raise HTTPException(status_code=403)` | आपके द्वारा उठाया गया स्टेटस, HTML या JSON के रूप में |
 | `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, अनुरोध में कहीं से भी |
-| `redirect()`, `permanentRedirect()` | बिना किसी त्रुटि वाला एक वास्तविक रीडायरेक्ट पृष्ठ |
+| `redirect()`, `permanentRedirect()` | बिना किसी त्रुटि वाले पेज वाला एक वास्तविक रीडायरेक्ट |
 
 ## एक पेज छोड़ें या कोड से उत्तर दें
 
@@ -77,12 +77,12 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| कॉल करें | उत्तर दें |
+| बुलाओ | उत्तर |
 |---|---|
-| `redirect(url)` | `307`; `redirect(url, status=303)` एक फॉर्म के बाद एक पोस्ट को जीईटी में बदल देता है |
+| `redirect(url)` | `307`; `redirect(url, status=303)` एक फॉर्म के बाद एक POST को GET में बदल देता है |
 | `permanentRedirect(url)` | `308`; ब्राउज़र और खोज इंजन इसे याद रखते हैं |
 | `notFound(detail=None)` | `404`: `notfound` पेज, या एपीआई क्लाइंट के लिए JSON |
-| `forbidden(detail=None)` | `403`: आगंतुक को पता है लेकिन वह इसे नहीं देख सकता है |
+| `forbidden(detail=None)` | `403`: आगंतुक को पता है लेकिन हो सकता है कि वह इसे न देखे |
 | `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` जोड़ता है `WWW-Authenticate` |
 
 एक रीडायरेक्ट उत्तर `Location` हेडर और बिना किसी पेज के, एक एपीआई क्लाइंट को भी देता है। गंतव्य का निर्माण उन मूल्यों से करें जिन पर आप भरोसा करते हैं: एक `redirect(request.query_params["next"])` जहां भी लिंक कहता है वहां आगंतुकों को भेजता है। लाइन ब्रेक वाले गंतव्य को अस्वीकार कर दिया जाता है।
@@ -133,7 +133,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| ब्राउज़र | त्रुटि वाला एक पृष्ठ, आपके कोड की पंक्तियाँ जिसने इसे उठाया और पूर्ण ट्रेसबैक | अंतर्निहित `500` पृष्ठ (या आपका `errors.nexy`) एक संदर्भ के साथ |
+| ब्राउज़र | त्रुटि वाला एक पृष्ठ, आपके कोड की पंक्तियाँ जिसने इसे उठाया और पूरा ट्रेसबैक | अंतर्निहित `500` पृष्ठ (या आपका `errors.nexy`) एक संदर्भ के साथ |
 | JSON क्लाइंट | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
 | सर्वर लॉग | अपवाद और आपके कोड की पंक्तियाँ | अपवाद और संपूर्ण ट्रेसबैक, एक ही संदर्भ के साथ |
 
@@ -152,7 +152,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 ## अगले चरण
 
-- [त्रुटि पृष्ठ प्रति फ़ोल्डर](folder-pages.md): एक फ़ोल्डर में आपका स्वयं का 404, 403 या 401
+- [प्रति फ़ोल्डर त्रुटि पृष्ठ](folder-pages.md): एक फ़ोल्डर में आपका स्वयं का 404, 403 या 401
 - [गतिशील मार्ग](../pages/dynamic-routes.md)
 - [एपीआई मार्ग](../handlers/README.md)
 - [परीक्षण](../../../guides/testing.md)

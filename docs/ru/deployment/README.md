@@ -53,12 +53,30 @@ nx start --host 127.0.0.1 --port 8000
 
 ## Проверка здоровья
 
+<!-- router:fbr,custom -->
 Добавьте файл-обработчик `src/routes/api/health.py` и проверьте `/api/health` — вместо страницы, которая может отображаться медленно:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Добавьте контроллер и проверьте `/health/` — вместо представления, которое может отображаться медленно:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+Перечислите его в `controllers` корневого модуля.
+<!-- /router -->
 
 ## Статический хостинг
 
@@ -71,7 +89,7 @@ async def GET():
 
 - [ ] `nx build` в CI нет предупреждений для маршрутов, которые вы планируете отображать на сервере.
 - [ ] `nx start` завершается с кодом 1 и ничего не запускает, если файл маршрута не может загрузиться
-- [ ] `NEXY_ACTION_SECRET` устанавливается или `__nexy__/action.key` сохраняется вместе со сборкой
+- [ ] `NEXY_ACTION_SECRET` установлено или `__nexy__/action.key` сохраняется вместе со сборкой
 - [ ] `useDocs = False` в производстве, если схема API не должна быть общедоступной
 - [ ] `useTrustedHost` и `useHTTPSRedirect` установлены для публичного развертывания.
 - [ ] `__nexy__/` не зафиксировано

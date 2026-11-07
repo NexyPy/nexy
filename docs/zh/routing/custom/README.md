@@ -1,123 +1,171 @@
-# 自定义路由集成
+# 在 Nexy 中包含现有的 FastAPI 路由器
 
-Nexy 允许您将现有的 FastAPI 应用程序作为路由器包含到您的项目中。当您想要重用其他服务的后端逻辑、与第三方 API 集成或构建具有多个路由问题的复合应用程序时，这非常有用。
-
-与 Nexy 固有的基于文件和模块化路由器不同，自定义路由器只是您安装到应用程序中的 `APIRouter`。
+要在 Nexy 中包含现有的 FastAPI 路由器，请将 `useRouter` 设置为 `nexyconfig.py` 的 `NexyConfig` 类中的 `APIRouter`：其路由按原样提供，位于 `src/routes/` 的文件旁边。
 
 ## 何时使用自定义路由器
 
-- **第三方服务**：您有一个现有的 FastAPI 应用程序，您希望通过 Nexy 的客户端公开该应用程序。
-- **代码重用**：将后端逻辑从另一个项目提取到路由器中并将其包含在新项目中。
-- **多租户或微前端模式**：每个租户或模块提供自己的路由器。
-- **逐步迁移**：从 `APIRouter` 开始，稍后将其演变成完整的Nexy模块。
+- **逐步迁移**：一个 FastAPI 应用按路由迁移到Nexy路由，同时其旧路由继续应答。
+- **代码重用**：包已经公开了 `APIRouter`，用于身份验证或计费。
+- **您保留的后端**：API 保持简单 FastAPI，Nexy 添加页面。
 
-## 它是如何运作的
+## 在 `nexyconfig.py` 中设置 `useRouter`
 
-```python
+路由器是任何 FastAPI `APIRouter`，按照您已经编写的方式编写：
+
+```python filename="src/legacy/api.py"
 from fastapi import APIRouter
-from nexy import useRouter
 
-# An existing FastAPI router (from another service)
-third_party = APIRouter()
-@third_party.get("/info")
-async def info():
-    return {"name": "Foo"}
+router = APIRouter(prefix="/api")
 
-# In your nexyconfig.py:
-useRouter = third_party
+
+@router.get("/status")
+async def status():
+    return {"status": "ok"}
+
+
+@router.get("/users/{id}")
+async def user(id: int):
+    return {"id": id}
 ```
 
-路由器由 Nexy 的路由器解析器自动安装。它的路由在与原始应用程序相同的 URL 模式下可用。不需要额外的配置。
+`useRouter` 是 `NexyConfig` 类的一个字段，就像项目的每个设置一样：
 
-## 构建自定义路由器
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-1. **创建路由器**
-   ````蟒蛇
-   从 fastapi 导入 APIRouter
+from src.legacy.api import router
 
-   api = API 路由器()
-   @api.get("/状态")
-   异步定义状态（）：
-       返回{“状态”：“确定”}
-   ````
 
-2. **参考 `nexyconfig.py`**
-   ````蟒蛇
-   从 .my_backend 导入 api
+class NexyConfig(NexyConfigModel):
+    useRouter = router
+```
 
-   使用路由器=api
-   ````
+`nx dev` 然后回答 `GET /api/status` 和 `GET /api/users/{id}`，`/docs` 列出它们。
 
-3. **访问路线**
-   - 基于文件的页面（`.nexy`、`.md`）和模块化处理程序可以像引用任何其他路由一样引用 `/status`。
-   - 路由器在同一进程中运行，因此依赖项、数据库连接和身份验证的工作方式与原始应用程序中完全相同。
+> [!NOTE]
+> `nexyconfig.py` 中的 `useRouter` 是一个设置。 `from nexy import useRouter` 是另一回事：`.nexy` 页面用来读取当前路由的钩子。不要导入它来配置路由器。
 
-## 与其他路由器集成
+## 几个路由器
 
-Nexy 项目可以结合：
+`useRouter` 需要一台路由器。使用 `include_router` 在一个父项下收集多个：
 
-- **用于页面和简单端点的基于文件的路由**（`src/routes/`）
-- **用于结构化后端的模块化路由**（`useRouter = AppModule`）
-- **用于第三方代码的自定义路由** (`useRouter = APIRouter`)
+```python filename="src/legacy/__init__.py"
+from fastapi import APIRouter
 
-三者共存；每条路线仅注册一次。当 `src/routes/` 存在时，始终会扫描基于文件的路由器。
+from .api import router as api
+from .auth import router as auth
 
-## CLI 访问包含的应用程序
+router = APIRouter()
+router.include_router(api)
+router.include_router(auth, prefix="/auth")
+```
 
-`nexy dev` 和 `nx` 命令在已安装的路由器上运行，就像内置路由器一样。你得到：
+```python filename="src/legacy/auth.py"
+from fastapi import APIRouter
 
-- 自定义路由器中定义的端点的热重载（如果它使用 `nexy` 或 FastAPI 的常用开发服务器功能）
-- `nexyconfig.py` 中的验证（任何 `APIRouter` 都有效）
-- 为包含的路由自动生成文档（如果启用它们）
+router = APIRouter()
 
-## 安全与隔离
 
-因为包含路由器，而不是通过 `app.mount` 安装，所以没有额外的 ASGI 层。路由器与基于文件的模块化路由位于同一应用程序对象中。这意味着：
-
-- 自定义路由器添加的中间件适用于所有请求。
-- 自定义路由器中定义的防护和依赖项注入可以访问与您自己的代码相同的容器（如果您使用模块化注入）。
-- 除了路由器本身定义的前缀之外，没有其他 URL 前缀。
-
-如果需要隔离，请在包含路由器之前将其包装在子应用程序中，或使用标准 FastAPI 技术。
-
-## 示例：包括现有的 FastAPI 项目
-
-假设你在另一个包中有 `auth.py`：
-
-```python
-from fastapi import FastAPI, APIRouter
-
-auth = FastAPI(title="Auth service")
-api = APIRouter()
-
-@api.get("/login")
+@router.post("/login")
 async def login():
-    return {"msg": "Login"}
-
-auth.include_router(api)
+    return {"token": "demo"}
 ```
 
-在 `nexyconfig.py`中：
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-```python
-from other_package.auth import api
+from src.legacy import router
 
-useRouter = api
+
+class NexyConfig(NexyConfigModel):
+    useRouter = router
 ```
 
-现在无需移动任何代码即可从您的 Nexy 站点访问 `/login` 端点。
+## 页面和旁边的路由文件
 
-## 如何开始
+设置 `useRouter` 时仍会读取 `src/routes/`：`.nexy` 页面或 `.py` 路线文件在包含的路线旁边进行应答。
 
-1. 创建您的 `APIRouter`（或在现有包中找到一个）。
-2. 将 `useRouter` 指向 `nexyconfig.py` 中的它。
-3. 通过页面、处理程序或客户端框架访问其路由。
-4. 如果您需要更多控制，请使用 `AppModule` 将自定义路由器转换为模块化路由器。
+```nexy filename="src/routes/index.nexy"
+---
+title = "Home"
+---
+<h1>{{ title }}</h1>
+```
+
+```python filename="src/routes/api/health.py"
+async def GET():
+    return {"ok": True}
+```
+
+设置 `useRouter` 时有两个限制：
+
+- 页面没有被 `layout.nexy` 包裹；
+- `useCSR = True` 被拒绝：`nx dev` 和 `nx build` 回答 `useCSR requires file-based routing`。
+
+URL 被应答一次。为包含的路由器指定一个前缀，此处为 `/api`，并将 `src/routes/` 的文件保留在其使用的路径之外。
+
+## 整个 FastAPI 应用程序
+
+`useRouter` 需要 `APIRouter`，而不是 `FastAPI` 应用程序。应用程序的路由位于其 `router` 属性上：
+
+```python filename="src/legacy/service.py"
+from fastapi import FastAPI
+
+service = FastAPI(title="Billing")
+
+
+@service.get("/billing/invoices")
+async def invoices():
+    return []
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.legacy.service import service
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = service.router
+```
+
+应用程序自己的中间件、异常处理程序和启动事件保留在后面：将它们移至 `useMiddlewares` 和 `nexyconfig.py` 的其他字段。
+
+## 依赖项、身份验证和数据库
+
+路由器在 Nexy 进程中运行，因此 `Depends`、安全方案和数据库会话的工作方式与原始应用程序中一样：
+
+```python filename="src/legacy/secure.py"
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+
+def require_token(x_token: str = Header("")) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=401, detail="Bad token")
+
+
+router = APIRouter(prefix="/secure", dependencies=[Depends(require_token)])
+
+
+@router.get("/data")
+async def data():
+    return {"data": 42}
+```
+
+## 测试一下
+
+```python filename="测试/test_legacy.py"
+from fastapi.testclient import TestClient
+
+from nexy.app import app
+
+
+def test_the_included_route_answers():
+    assert TestClient(app).get("/api/status").json() == {"status": "ok"}
+```
 
 ## 后续步骤
 
-- [基于文件的路由](../fbr/README.md) – 从文件构建页面和简单的处理程序。
-- [模块化路由](../modular/README.md) – 具有注入和防护的结构化后端。
-- [路由处理函数](../fbr/handlers/README.md) – 定义 Python 端点。
-
-自定义路由器使您可以灵活地重用现有的 FastAPI 代码，同时保持基于文件的页面和模块化结构的简单性。
+- [从 FastAPI 到Nexy](../../coming-from/fastapi.md)：将路由一一移动到文件
+- [基于文件的路由](../fbr/README.md)
+- [模块化路由](../modular/README.md)：`useRouter = AppModule`

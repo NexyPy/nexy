@@ -2,16 +2,30 @@
 
 Nexy merender React 19 komponen di server, lalu React menghidrasinya di browser. Halaman, tata letak, pulau, dan tindakan sama di setiap kerangka kerja: halaman ini mencakup penyiapan, lalu bagian-bagian yang berbeda dari [kontrak bersama](../frontend/pages.md).
 
-| Mode | `nexyconfig.py` | Halaman adalah | React adalah |
+<!-- router:fbr,custom -->
+| Modus | `nexyconfig.py` | Halaman adalah | React adalah |
 |---|---|---|---|
-| Server (default) | `useCSR = False` | `.nexy` file | [pulau](../../rendering/islands.md) di dalam halaman tersebut |
-| Klien | `useCSR = True` | `.tsx` mengarsipkan | seluruh halaman, dengan [tata letak](../frontend/layouts.md) dan router klien |
+| Server (bawaan) | `useCSR = False` | `.nexy` file | [pulau](../../rendering/islands.md) di dalam halaman tersebut |
+| Klien | `useCSR = True` | `.tsx` file | seluruh halaman, dengan [tata letak](../frontend/layouts.md) dan router klien |
+<!-- /router -->
+
+<!-- router:modular -->
+Dengan router modular, komponen React adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan oleh pengontrol: tidak ada file halaman dan tidak ada router klien.
+<!-- /router -->
 
 ## Mulai sebuah proyek
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-react
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-react
+```
+<!-- /router -->
 
 Templatnya adalah proyek mode server dengan pulau React. Jalankan `nx new my-app` tanpa templat untuk menjawab petunjuknya: router, jenis proyek, apakah akan menggunakan perutean sisi klien, lalu kerangka kerja.
 
@@ -44,15 +58,21 @@ export default defineConfig({
 |---|---|
 | `react`, `react-dom` | `^19.2.5` |
 | `@vitejs/plugin-react` | `^5.2.0` |
-| `@types/react`, `@types/react-dom` | dependensi pengembang |
+| `@types/react`, `@types/react-dom` | ketergantungan dev |
 
 ## Aturan
 
 - **Satu kerangka kerja per proyek.** `useFF` membutuhkan tepat satu kerangka kerja; `useFF = [react(), vue()]` menghentikan server saat startup.
+<!-- router:fbr,custom -->
 - **Halaman adalah `.tsx`.** React memiliki `.tsx` dan `.jsx` untuk komponen, tetapi hanya file `.tsx` di bawah `src/routes/` yang menjadi halaman.
 - **Komponen berada di luar `src/routes/`**, biasanya di `src/components/`, jadi bukan halaman.
 - **Proyek mode server tidak memiliki halaman `.tsx`**, dan proyek mode klien tidak memiliki halaman `.nexy`: Nexy menolak untuk memulai dan memberi nama file. Lihat [mode](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Komponen berada di `src/components/`**, dan pandangan mengimpornya sebagai pulau.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Halaman
 
 Dalam mode klien (`useCSR = True`), halaman adalah file `.tsx`.
@@ -97,6 +117,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 }
 ```
+<!-- /router -->
 
 ## Pulau
 
@@ -106,12 +127,23 @@ Dalam mode server, komponen React yang diimpor ke file `.nexy` adalah sebuah pul
 
 Impor komponen di frontmatter file `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Arahan hidrasi
 

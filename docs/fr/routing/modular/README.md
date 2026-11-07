@@ -4,12 +4,12 @@ Le routage modulaire utilise des classes avec des décorateurs au lieu de fichie
 
 **Avant de commencer :** un projet Nexy et une page de travail. Le routeur modulaire remplace celui basé sur des fichiers, alors lisez d'abord [Routage](../README.md) si vous n'avez pas encore choisi de routeur.
 
-| Page | Ce qu'il couvre |
+| Pages | Ce qu'il couvre |
 |---|---|
 | Cette page | Monter un module, écrire un contrôleur, regrouper des contrôleurs |
 | [Injection de dépendances](dependency-injection.md) | `@Injectable`, les scopes, le conteneur |
 | [Gardes et métadonnées](guards-and-metadata.md) | `@UseGuard`, `@Middleware`, `@UseRoute`, `@UseResponse` |
-| [Nexy et NestJS](vs-nestjs.md) | Ce qui correspond à NestJS et ce qui ne correspond pas |
+| [Nexy et NestJS](vs-nestjs.md) | Qu'est-ce qui correspond à NestJS et qu'est-ce qui ne correspond pas |
 
 ## Configurer le routeur
 
@@ -40,7 +40,7 @@ class AppController:
 
 Les méthodes sont mises en correspondance par nom, sans tenir compte de la casse : `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
 
-Un contrôleur déclare un gestionnaire par méthode HTTP ; un doublon apparaît au démarrage. Ajoutez un préfixe avec `@Controller(prefix="/users")` - chaque gestionnaire est monté sur `prefix/`. `async def SOCKET(...)` sur un contrôleur enregistre un WebSocket sur le même chemin.
+Un contrôleur déclare un gestionnaire par méthode HTTP ; un doublon apparaît au démarrage. Le premier argument de `@Controller("/users")` est le chemin sur lequel chaque gestionnaire répond, `/users/`. `async def SOCKET(...)` sur un contrôleur enregistre un WebSocket sur le même chemin.
 
 ## Regrouper les contrôleurs dans un module
 

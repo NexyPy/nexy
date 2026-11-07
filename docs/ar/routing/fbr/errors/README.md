@@ -23,7 +23,7 @@ the HTML page
 
 ```nexy filename="src/routes/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -40,22 +40,22 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 
 ## أي ملف يجيب
 
-| الملف | الإجابات |
+| ملف | الإجابات |
 |---|---|
-| `notfound.nexy` | `404` لدليلها |
-| `errors.nexy` | `500` لدليلها |
-| `forbidden.nexy` | `403` لدليلها |
-| `unauthorized.nexy` | `401` لدليلها |
+| `notfound.nexy` | `404` لدليله |
+| `errors.nexy` | `500` لدليله |
+| `forbidden.nexy` | `403` لدليله |
+| `unauthorized.nexy` | `401` لدليله |
 | `loading.nexy` | محفوظة؛ لا يوجد تأثير وقت التشغيل حتى الآن |
 
-| الموقف | الجواب |
+| الوضع | الإجابة |
 |---|---|
-| لا يوجد طريق يطابق | `404` |
+| لا يوجد مسار مطابق | `404` |
 | لا يمكن تحويل المقطع الديناميكي إلى التعليق التوضيحي الخاص به | `404` |
-| استثناء غير معالج، في صفحة أو معالج API | `500` |
+| استثناء لم تتم معالجته، في صفحة أو معالج API | `500` |
 | `raise HTTPException(status_code=403)` | الحالة التي قمت برفعها، مثل HTML أو JSON |
-| `notFound()`، `forbidden()`، `unauthorized()` | `404`، `403`، `401`، من أي مكان في طلب |
-| `redirect()`، `permanentRedirect()` | إعادة توجيه حقيقية بدون صفحة خطأ |
+| `notFound()`، `forbidden()`، `unauthorized()` | `404`، `403`، `401`، من أي مكان في الطلب |
+| `redirect()`، `permanentRedirect()` | إعادة توجيه حقيقية مع عدم وجود صفحة خطأ |
 
 ## اترك صفحة أو إجابة من الكود
 
@@ -77,13 +77,13 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| اتصل | الرد |
+| اتصل | الإجابة |
 |---|---|
-| `redirect(url)` | `307`؛ `redirect(url, status=303)` يحول POST إلى GET بعد النموذج |
-| `permanentRedirect(url)` | `308`؛ المتصفحات ومحركات البحث تتذكره |
+| `redirect(url)` | `307`; `redirect(url, status=303)` يحول POST إلى GET بعد النموذج |
+| `permanentRedirect(url)` | `308`; المتصفحات ومحركات البحث تتذكرها |
 | `notFound(detail=None)` | `404`: صفحة `notfound`، أو JSON لعميل API |
-| `forbidden(detail=None)` | `403`: الزائر معروف ولكن قد لا يرى هذا |
-| `unauthorized(detail=None, scheme=None)` | `401`؛ `scheme="Bearer"` يضيف `WWW-Authenticate` |
+| `forbidden(detail=None)` | `403`: الزائر معروف ولكن قد لا يرى ذلك |
+| `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` يضيف `WWW-Authenticate` |
 
 إعادة توجيه الإجابات برأس `Location` وبدون صفحة، أيضًا إلى عميل API. قم ببناء الوجهة من القيم التي تثق بها: أ `redirect(request.query_params["next"])` يرسل الزوار أينما يشير الرابط. تم رفض الوجهة التي تحتوي على فاصل أسطر.
 
@@ -133,9 +133,9 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| المتصفح | صفحة تحتوي على الخطأ، وأسطر التعليمات البرمجية التي رفعتها والتتبع الكامل | صفحة `500` المضمنة (أو `errors.nexy`) مع مرجع |
-| عميل JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| سجل الخادم | الاستثناء وأسطر التعليمات البرمجية الخاصة بك | الاستثناء والتتبع بالكامل، بنفس المرجع |
+| المتصفح | صفحة تحتوي على الخطأ، وسطور التعليمات البرمجية التي أدت إلى ظهورها، والتتبع الكامل | صفحة `500` المضمنة (أو صفحة `errors.nexy` الخاصة بك) مع مرجع |
+| عميل جيسون | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| سجل الخادم | الاستثناء وأسطر التعليمات البرمجية الخاصة بك | الاستثناء والتتبع كله، مع نفس المرجع |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
@@ -153,6 +153,6 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 ## الخطوات التالية
 
 - [صفحات الخطأ لكل مجلد](folder-pages.md): 404 أو 403 أو 401 خاصة بك في مجلد واحد
-- [الطرق الديناميكية](../pages/dynamic-routes.md)
-- [طرق واجهة برمجة التطبيقات](../handlers/README.md)
+- [المسارات الديناميكية](../pages/dynamic-routes.md)
+- [مسارات واجهة برمجة التطبيقات](../handlers/README.md)
 - [الاختبار](../../../guides/testing.md)

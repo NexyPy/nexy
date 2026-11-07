@@ -2,16 +2,30 @@
 
 Nexy 在服务器上渲染 Preact 10 个组件，然后 Preact 在浏览器中接管它们。每个框架中的页面、布局、岛和操作都是相同的：此页面涵盖设置，然后是与[共享合约](../frontend/pages.md)不同的部分。
 
+<!-- router:fbr,custom -->
 | 模式 | `nexyconfig.py` | 页面是 | Preact 是 |
 |---|---|---|---|
-| 服务器（默认） | `useCSR = False` | `.nexy` 文件 | 这些页面内的[岛屿](../../rendering/islands.md) |
+| 服务器（默认） | `useCSR = False` | `.nexy` 文件 | [这些页面内的岛屿](../../rendering/islands.md) |
 | 客户 | `useCSR = True` | `.tsx` 文件 | 整个页面，带有 [布局](../frontend/layouts.md) 和客户端路由器 |
+<!-- /router -->
+
+<!-- router:modular -->
+对于模块化路由器，Preact 组件是控制器返回的 `.nexy` 视图内的[岛](../../rendering/islands.md)：没有页面文件，也没有客户端路由器。
+<!-- /router -->
 
 ## 开始一个项目
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-preact
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-preact
+```
+<!-- /router -->
 
 该模板是一个带有 Preact 岛屿的服务器模式项目。在没有模板的情况下运行 `nx new my-app` 来回答提示：路由器、项目类型、是否使用客户端路由，然后是框架。
 
@@ -65,11 +79,17 @@ export default function Counter({ start = 0 }: { start?: number }) {
 ## 规则
 
 - **每个项目一个框架。** `useFF` 只需要一个框架； `useFF = [preact(), react()]` 在启动时停止服务器。对于 `useFF = preact()`，每个 `.tsx` 文件都是 Preact。
+<!-- router:fbr,custom -->
 - **页面为 `.tsx`.** 只有 `src/routes/` 下的 `.tsx` 文件才成为页面； `.jsx` 对于组件来说很好。
 - **组件位于 `src/routes/`** 之外，通常位于 `src/components/` 中，因此它们不是页面。
 - **服务器模式项目没有 `.tsx` 页面**，客户端模式项目没有 `.nexy` 页面：Nexy 拒绝启动并命名文件。请参阅[模式](../../routing/fbr/modes.md)。
-- **`.mdx` 页面从 `"preact"`.** 导入，Nexy 仅在看到导入时才使用 Preact 编译 `.mdx` 文件，例如 `import { h } from "preact"`，否则使用 React。请参阅[Markdown 和 MDX](../nexy/markdown.md)。
+<!-- /router -->
+<!-- router:modular -->
+- **组件位于 `src/components/`** 中，视图将它们作为岛屿导入。
+<!-- /router -->
+- **`.mdx` 页面从 `"preact"`.** 导入，仅当 Nexy 看到导入时，才会使用 Preact 编译 `.mdx` 文件，例如 `import { h } from "preact"`，否则使用 React。请参阅[Markdown 和 MDX](../nexy/markdown.md)。
 
+<!-- router:fbr,custom -->
 ## 页数
 
 在客户端模式（`useCSR = True`）下，页面是一个 `.tsx` 文件。
@@ -117,6 +137,7 @@ export default function RootLayout({ children }: { children: ComponentChildren }
   );
 }
 ```
+<!-- /router -->
 
 ## 岛屿
 
@@ -126,12 +147,23 @@ export default function RootLayout({ children }: { children: ComponentChildren }
 
 在 `.nexy` 文件的 frontmatter 中导入组件：
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### 补水指令
 

@@ -9,15 +9,15 @@ Eine Anfrage kann an vier Stellen fehlschlagen, und Nexy antwortet jeweils ander
 
 | Was ist passiert? | Status | Browser sieht | API-Client sieht |
 |---|---|---|---|
-| Keine Route entspricht der URL | `404` | `notfound.nexy`, sonst die integrierte Seite | `{"detail": "Not Found"}` |
-| Ein Pfadsegment passt nicht zu seiner Anmerkung | `404` | auf derselben Seite | `{"detail": "Not Found"}` |
-| Eine Abfrage, ein Header, ein Cookie oder ein Textfeld fehlt oder ist ungültig. | `422` | FastAPI JSON-Text | FastAPI JSON-Text |
+| Keine Route entspricht der URL | `404` | `notfound.nexy`, sonst die eingebaute Seite | `{"detail": "Not Found"}` |
+| Ein Pfadsegment passt nicht zu seiner Anmerkung | `404` | die gleiche Seite | `{"detail": "Not Found"}` |
+| Ein Abfrage-, Header-, Cookie- oder Textfeld fehlt oder ist ungültig | `422` | FastAPIs JSON-Text | FastAPIs JSON-Text |
 | `notFound()` | `404` | die Seite | `{"detail": ...}` |
 | `unauthorized()` | `401` | die integrierte Seite | `{"detail": ...}` |
 | `forbidden()` | `403` | die integrierte Seite | `{"detail": ...}` |
 | `raise HTTPException(409, ...)` | `409` | die integrierte Seite | `{"detail": ...}` |
-| eine Ausnahme, nichts abgefangen | `500` | `errors.nexy`, sonst die eingebaute Seite | `{"detail", "reference"}` |
-| `redirect(url)` | `307` | das Ziel, keine Seite | das Ziel, kein Text |
+| Eine Ausnahme, nichts gefangen | `500` | `errors.nexy`, sonst die eingebaute Seite | `{"detail", "reference"}` |
+| `redirect(url)` | `307` | das Ziel, keine Seite | das Ziel, kein Körper |
 | `permanentRedirect(url)` | `308` | das Ziel, keine Seite | das Ziel |
 
 Ein API-Client ist eine Anfrage, deren Header `Accept` nach JSON und nicht nach einer Seite fragt:
@@ -42,19 +42,20 @@ Browser ──► Middleware ──► Router ──► Page or handler
                  └─ raises ──────────────────────────────────────► 500
 ```
 
-| Phase | Was scheitern kann | Die Antwort |
+| Bühne | Was kann scheitern | Die Antwort |
 |---|---|---|
 | Middleware | Ihre `middleware.py`, CORS, Sitzungen | der Status der Ausnahme, sonst `500` |
 | Router | Die URL stimmt mit keiner Datei überein | `404` |
-| Validierung | ein Pfadsegment kann nicht konvertiert werden | `404` |
-| Validierung | einer Abfrage, eines Headers, eines Cookies oder eines Textfelds | `422` |
-| Seite, Handler, Aktion, Wache | `HTTPException` | sein Status |
-| Seite, Handler, Aktion, Wache | alles andere | `500` |
+| Validierung | Ein Pfadsegment kann nicht konvertiert werden | `404` |
+| Validierung | ein Abfrage-, Header-, Cookie- oder Textfeld | `422` |
+| Seite, Handler, Aktion, Wache | `HTTPException` | seinen Status |
+| Seite, Handler, Aktion, Wache | irgendetwas anderes | `500` |
 
 ## Von überall losfahren
 
 `redirect`, `permanentRedirect`, `notFound`, `forbidden` und `unauthorized` lösen eine HTTP-Ausnahme aus, sodass derselbe Aufruf auf einer `.nexy`-Seite, einem API-Handler, einem modularen Controller, einem Guard, einem `dependencies.py` und einer Aktion funktioniert.
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/posts/[slug].py"
 from nexy import notFound, redirect
 
@@ -69,15 +70,38 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
 
-| Anrufen | Antworten | Wenn |
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+Listen Sie den Controller im `controllers` des Root-Moduls auf.
+<!-- /router -->
+
+| Rufen Sie an | Antwort | Wann |
 |---|---|---|
-| `notFound(detail=None)` | `404` | die Ressource existiert nicht |
-| `unauthorized(detail=None, scheme=None)` | `401` | Der Besucher muss sich zuerst anmelden |
-| `forbidden(detail=None)` | `403` | Der Besucher ist bekannt, sieht dies aber möglicherweise nicht |
-| `redirect(url, status=307)` | `307` | schicken Sie sie woanders hin und behalten Sie dabei die Methode bei |
+| `notFound(detail=None)` | `404` | Die Ressource existiert nicht |
+| `unauthorized(detail=None, scheme=None)` | `401` | Der Besucher muss sich zunächst anmelden |
+| `forbidden(detail=None)` | `403` | Der Besucher ist zwar bekannt, sieht dies aber möglicherweise nicht |
+| `redirect(url, status=307)` | `307` | Schicken Sie sie woanders hin und behalten Sie dabei die Methode bei |
 | `redirect(url, status=303)` | `303` | nach einem Formular: Die nächste Anfrage ist ein `GET` |
-| `permanentRedirect(url)` | `308` | eine verschobene Seite, die sich Suchmaschinen merken sollten |
+| `permanentRedirect(url)` | `308` | eine verschobene Seite, an die sich Suchmaschinen erinnern sollten |
 
 Bauen Sie das Ziel auf der Grundlage von Werten auf, denen Sie vertrauen. `redirect(request.query_params["next"])` schickt Besucher dorthin, wo der Link steht; Es handelt sich um eine offene Weiterleitung. Ein Ziel, das einen Zeilenumbruch enthält, wird abgelehnt.
 
@@ -85,6 +109,7 @@ Bauen Sie das Ziel auf der Grundlage von Werten auf, denen Sie vertrauen. `redir
 
 Handler-Parameter werden von FastAPI anhand ihrer Anmerkungen validiert.
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
 
@@ -92,11 +117,27 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+Listen Sie den Controller im `controllers` des Root-Moduls auf.
+<!-- /router -->
 
 | Problem | Status | Warum |
 |---|---|---|
-| Abfrage-, Header-, Cookie- oder Body-Feld fehlt oder ist ungültig | `422` | Die Anfrage hat den Handler erreicht, die Daten sind falsch |
-| ungültiges Pfadsegment (`/api/users/abc` für `id: int`) | `404` | Der Ordner hat keine Route für eine Nicht-Nummer, daher existiert die URL nicht |
+| Fehlendes oder ungültiges Abfrage-, Header-, Cookie- oder Textfeld | `422` | Die Anfrage hat den Handler erreicht, die Daten sind falsch |
+| Ungültiges Pfadsegment (`/api/users/abc` für `id: int`) | `404` | Der Ordner hat keine Route für eine Nicht-Nummer, daher existiert die URL nicht |
 
 Der `422`-Körper hat die Standardform von FastAPI, sodass Clients und generierte SDKs weiterhin funktionieren:
 
@@ -111,6 +152,7 @@ Für ein Formular oder eine Aktion erhält der Client ein `ActionError` mit `sta
 
 ## Benutzerdefinierte Fehlerseiten
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notfound.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -135,6 +177,11 @@ Eine Datei irgendwo in den Routen installiert die Antwort für ihren Status: Ein
 
 > [!IMPORTANT]
 > Eine `errors.nexy`-Seite ersetzt die `500`-Seite; Die Ausnahme wird nicht abgefangen und die Protokollzeile wird nicht geändert. Wenn der ausgelöste Handler die Seite selbst ist, kann die Seite ihre eigenen Fehlerdetails nicht anzeigen: Halten Sie `errors.nexy` einfach und unabhängig.
+<!-- /router -->
+
+<!-- router:modular -->
+Der modulare Router hat keine Fehlerseite in einer Datei: `404`, `500`, `403` oder `401` erhält die integrierte gestaltete Seite. Fehlerseiten pro Ordner sind eine Konvention des dateibasierten Routers.
+<!-- /router -->
 
 ## Nicht behandelte Ausnahmen
 
@@ -142,7 +189,7 @@ Eine Ausnahme, bei der nichts abgefangen wurde, wird einmalig protokolliert, mit
 
 | | `nexy dev` | `nexy build` dann `nexy start` |
 |---|---|---|
-| Durchsuchen Sie | den Fehler, die Zeilen Ihres Codes und den Traceback | `errors.nexy`, ansonsten die integrierte Seite mit einer Referenz |
+| Browser | den Fehler, die Zeilen Ihres Codes und den Traceback | `errors.nexy`, sonst die integrierte Seite, mit einer Referenz |
 | API-Client | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
 | Terminal | die Ausnahme und die Zeilen Ihres Codes | die Ausnahme, der gesamte Traceback und die Referenz |
 
@@ -156,7 +203,7 @@ Eine Ausnahme, bei der nichts abgefangen wurde, wird einmalig protokolliert, mit
 Die Referenz besteht aus acht Zeichen und ist für jeden Fehler neu. Ein Besucher kann es zitieren, und Sie finden den Traceback, indem Sie das Protokoll danach durchsuchen. Weder die Ausnahme noch der Code erreichen den Besucher in der Produktion.
 
 > [!CAUTION]
-> Geben Sie den Traceback nicht an einen Besucher in der Produktion zurück und fügen Sie keine Geheimnisse in eine Fehlermeldung ein: Der `detail` eines `HTTPException` wird mit HTML-Escape an den Client gesendet. Tragen Sie das Geheimnis in das Protokoll ein, nicht in die Antwort.
+> Geben Sie den Traceback nicht an einen Besucher in der Produktion zurück und fügen Sie keine Geheimnisse in eine Fehlermeldung ein: Der `detail` eines `HTTPException` wird mit HTML-Escapezeichen an den Client gesendet. Tragen Sie das Geheimnis in das Protokoll ein, nicht in die Antwort.
 
 ## Aktionen und Formen
 
@@ -165,16 +212,16 @@ Eine Aktion ist ein `POST` Endpunkt mit einem generierten Pfad. Seine Fehler fol
 | Situation | Status | Kunde |
 |---|---|---|
 | Ein Feld fehlt oder ist ungültig | `422` | `ActionError` mit `fields` |
-| `HTTPException(403)` erhoben in der Klage | `403` | `ActionError` mit `status` und `detail` |
-| eine nicht behandelte Ausnahme | `500` | `ActionError`; Die Referenz befindet sich im Serverprotokoll |
-| Der `Origin`-Header ist eine andere Site, die | `403` | abgelehnt hat, bevor die Aktion ausgeführt wird |
+| `HTTPException(403)` in der Klage erhoben | `403` | `ActionError` mit `status` und `detail` |
+| eine unbehandelte Ausnahme | `500` | `ActionError`; Die Referenz befindet sich im Serverprotokoll |
+| Der `Origin`-Header ist eine andere Site | `403` | abgelehnt, bevor die Aktion ausgeführt wird |
 
 Ein Formular ohne JavaScript Beiträge zum Aktionspfad; Bei Erfolg wird `303` auf die Seite zurückgeleitet, bei Fehler wird die Fehlerseite angezeigt. Siehe [Aktionen](../guides/actions.md#forms-without-javascript).
 
 ## Eine Checkliste, wenn eine Seite die falsche Antwort gibt
 
 1. **Sehen Sie sich den Status** an, nicht die Seite. Ein Brauch `notfound.nexy` antwortet immer noch `404`.
-2. **Lesen Sie das Terminal.** Eine Seite, deren Import fehlschlägt, wird nicht registriert, daher antwortet ihre URL `404`, solange die Datei vorhanden ist. Der Importfehler steht im Protokoll.
+2. **Lesen Sie das Terminal.** Eine Seite, deren Import fehlschlägt, ist nicht registriert, daher antwortet ihre URL `404`, solange die Datei vorhanden ist. Der Importfehler steht im Protokoll.
 3. **Überprüfen Sie die Erweiterung.** Mit `useCSR = True` gehören `.nexy` Seiten zum Servermodus; Eine Seite im falschen Modus ist keine Route.
 4. **Überprüfen Sie die Tiefe.** Ein `notfound.nexy` oder `errors.nexy` funktioniert nur, wenn die Root-Kopie vorhanden ist.
 5. **Fragen Sie nach JSON** mit `Accept: application/json`, um die Form zu sehen, die Ihr API-Client erhält.
@@ -182,7 +229,7 @@ Ein Formular ohne JavaScript Beiträge zum Aktionspfad; Bei Erfolg wird `303` au
 
 ## Nächste Schritte
 
-- [Fehlerseiten](../routing/fbr/errors/README.md): das Verhalten der gesamten Seite mit Beispielen
+- [Fehlerseiten](../routing/fbr/errors/README.md): das vollständige Seitenverhalten mit Beispielen
 - [Validierung und Fehler](../routing/fbr/handlers/validation-and-errors.md): API-Handler
 - [Fehlerbehebung](../guides/troubleshooting.md): Die Fehler, auf die die Leute tatsächlich stoßen
 - [Testen](../guides/testing.md): Stellen Sie einen Status und einen Körper sicher

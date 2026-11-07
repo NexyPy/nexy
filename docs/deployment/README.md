@@ -60,6 +60,7 @@ the original host - FastAPI builds absolute URLs from it.
 
 ## Health check
 
+<!-- router:fbr,custom -->
 Add a handler file, `src/routes/api/health.py`, and probe `/api/health` - rather than a page that may
 render slowly:
 
@@ -67,6 +68,23 @@ render slowly:
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Add a controller, and probe `/health/` - rather than a view that may render slowly:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+List it in the `controllers` of the root module.
+<!-- /router -->
 
 ## Static hosting
 

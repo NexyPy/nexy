@@ -4,6 +4,7 @@ Nexy mengekspor sekumpulan kecil pembantu yang mengembalikan string HTML. Masing
 
 ## Dua sintaksis, satu fungsi
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Kedua baris menghasilkan markup yang sama:
 
@@ -19,7 +32,7 @@ Kedua baris menghasilkan markup yang sama:
 <audio preload="metadata" controls><source src="/theme.mp3" type="audio/mp3" /></audio>
 ```
 
-Kompiler menulis ulang `<Audio ... />` menjadi `{{ Audio(...) }}`, sehingga bentuk tag bukanlah API kedua: atribut adalah argumen kata kunci fungsi.
+Kompilator menulis ulang `<Audio ... />` menjadi `{{ Audio(...) }}`, sehingga bentuk tag bukanlah API kedua: atribut adalah argumen kata kunci fungsi.
 
 ## Aturan formulir tag
 
@@ -28,7 +41,7 @@ Kompiler menulis ulang `<Audio ... />` menjadi `{{ Audio(...) }}`, sehingga bent
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, boolean nyata |
 | `width=640` | `width=640`, sebuah angka |
-| `src="{{ url }}"` | `src=(url)`, dievaluasi pada Jinja |
+| `src="{{ url }}"` | `src=(url)`, dievaluasi dalam Jinja |
 | lainnya `value` | `"value"`, sebuah string |
 
 - Tag harus dimulai dengan huruf besar dan diimpor di bagian depan; jika tidak, kompiler akan memunculkan `Missing Import: <Name> used but not declared.`
@@ -78,7 +91,7 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` dan `Video(src, width=None, height=None, ...)` menampilkan pemain asli. `sources` menambahkan tag `<source>` dengan tipe MIME yang berasal dari setiap ekstensi.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` dan `Video(src, width=None, height=None, ...)` merender pemain asli. `sources` menambahkan tag `<source>` dengan tipe MIME yang berasal dari setiap ekstensi.
 
 ## Komponen yang Anda tulis sendiri
 
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,6 +117,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` tidak memiliki default, jadi halaman harus meneruskannya; `tone` kembali ke `"neutral"`. Markup di antara tag berada di dalam `<Slot />` (huruf kapital S). Lihat [berkas .nexy](README.md#components) untuk props, slot dan aturan bentuk tag.
 

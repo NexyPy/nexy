@@ -4,6 +4,11 @@ El renderizado responde a una pregunta: **quién produce el HTML y cuándo**. Ne
 
 **¿No estás seguro? Mantenga SSR.** Cambie una página solo cuando pueda nombrar el motivo: contenido que rara vez cambia (ISR), un widget que necesita el navegador (isla) o navegación similar a una aplicación (CSR).
 
+<!-- router:modular -->
+> [!NOTE]
+> El enrutador modular representa todas las vistas en el servidor, con islas donde las contiene una vista. ISR y CSR son modos de páginas de archivos: necesitan el enrutador basado en archivos.
+<!-- /router -->
+
 ## como funciona
 
 ```diagram filename="¿Quién produce el HTML y cuándo?"
@@ -15,21 +20,21 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 ## Los cuatro modos
 
-| | SSR | ISR | CSR | Islas |
+| | RSS | ISR | RSE | Islas |
 |---|---|---|---|---|
-| Los datos se leen | en cada solicitud | en cada regeneración | en el navegador | en cada solicitud |
+| Se leen los datos | en cada solicitud | en cada regeneración | en el navegador | en cada solicitud |
 | El HTML proviene de | el servidor | el servidor, luego un caché | el servidor para el primer documento, el navegador después | el servidor |
-| JavaScript | solo para islas | solo para islas | el paquete marco | solo la isla |
-| Hidratación | ninguna | ninguna | el documento completo | la isla |
-| Caché | ninguno | por URL, en memoria | ninguno | ninguno |
+| JavaScript | solo para islas | solo para islas | el paquete de marco | solo la isla |
+| Hidratación | ninguno | ninguno | todo el documento | la isla |
+| caché | ninguno | por URL, en memoria | ninguno | ninguno |
 | Decidido por | predeterminado | `revalidate = N` en la página | `useCSR = True` en el proyecto | `directive` en el componente |
-| Grano | página | página | **proyecto** | componente |
+| grano | página | página | **proyecto** | componente |
 
 ## Ciclo de vida de renderizado
 
 Dos hechos explican la mayoría de las sorpresas.
 
-1. **Un proyecto está en un modo.** `useCSR` elige entre modo servidor (SSR, ISR, islas, `.nexy`, `.md`, `.mdx` rutas) y modo cliente (rutas de marco y un enrutador cliente). Los dos no se pueden mezclar: consulte [modo servidor y modo cliente](../routing/fbr/modes.md).
+1. **Un proyecto está en un modo.** `useCSR` elige entre el modo servidor (SSR, ISR, islas, `.nexy`, `.md`, `.mdx` rutas) y el modo cliente (rutas de marco y un enrutador cliente). Los dos no se pueden mezclar: consulte [modo servidor y modo cliente](../routing/fbr/modes.md).
 2. **Dentro del modo servidor, el modo es por página.** Una página se puede almacenar en caché con `revalidate`, otra puede contener una isla y una tercera no puede hacer ninguna de las dos cosas.
 
 El modo cliente aún envía un documento real: Nexy lo representa en Node para la primera respuesta, luego el navegador se hace cargo de la navegación. Una página de CSR no es una página en blanco esperando un paquete.
@@ -38,20 +43,21 @@ El modo cliente aún envía un documento real: Nexy lo representa en Node para l
 
 - **Contenido, marketing, documentación**: SSR, más ISR cuando el contenido rara vez cambia.
 - **Una página mayoritariamente estática con un widget interactivo**: SSR con una isla.
-- **Paneles, editores, navegación tipo aplicación**: RSE.
+- **Paneles de control, editores, navegación tipo aplicación**: RSE.
 - **Una página leída constantemente y rara vez cambiada**: ISR.
 
 ## Configuración
 
-| Modo | Donde |
+| Modo | donde |
 |---|---|
-| SSR | en ninguna parte: es el valor predeterminado |
-| ISR | `revalidate = 60` en la portada de una `.nexy` página |
-| CSR | `useCSR = True` en `nexyconfig.py`, con `useFF` establecido |
+| RSS | en ninguna parte: es el valor predeterminado |
+| ISR | `revalidate = 60` en la portada de una página `.nexy` |
+| RSE | `useCSR = True` en `nexyconfig.py`, con `useFF` configurado |
 | Islas | `directive="client:visible"` en la etiqueta del componente |
 
 ## Ejemplo
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/blog/index.nexy"
 ---
 revalidate = 60
@@ -60,6 +66,19 @@ revalidate = 60
 ```
 
 La misma página sin la primera línea es SSR.
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Rendered on every request</h1>
+<Chart directive="client:visible" />
+```
+
+La vista es SSR y el gráfico es una isla que se hidrata cuando aparece en la vista.
+<!-- /router -->
 
 ## Limitaciones
 

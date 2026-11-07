@@ -4,17 +4,18 @@
 
 ## ما تضيفه السقالة
 
-| الملف | الغرض |
+| ملف | الغرض |
 |---|---|
 | `src/configs/db.py` | المحرك (SQLModel، SQLAlchemy) أو إعدادات `TORTOISE_ORM` |
-| `src/models/` | فئات النموذج |
-| `src/services/` | الدوال التي تستعلم عن النماذج |
+| `src/models/` | فئات نموذجية |
+| `src/services/` | الوظائف التي تستعلم عن النماذج |
 | `.env` | `DATABASE_URL`، يتم كتابته عند إعطاء عنوان URL لقاعدة البيانات أثناء `nx new` |
 
 تأتي سلسلة الاتصال من متغير البيئة `DATABASE_URL`. عندما يتم عدم ضبطه، يعود محرك السقالات إلى ملف SQLite محلي، `dev.db`.
 
 ## استخدام الخدمة في الصفحة
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,16 +37,53 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+تستدعي وحدة التحكم الخدمة، وتمرر الصفوف إلى طريقة العرض الخاصة بها أو ترجعها بتنسيق JSON:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM غير متزامن
 
 يتم تشغيل الصفحة في حلقة حدث الخادم ولا يمكنها الانتظار، لذلك يفشل `asyncio.run(...)` هناك مع "لا يمكن استدعاؤها من حلقة حدث قيد التشغيل". السقالة `src/configs/db.py` تعطي Tortoise حلقة خاصة بها، في خيط واحد، ومساعدين يرسلان لها كوروتين:
 
-| أين أنت | اتصل بـ | هل |
+| أين أنت | اتصل | هل |
 |---|---|---|
-| رمز المزامنة، مثل صفحة | `run(UserService.get_all())` | يقوم بتشغيلها وإرجاع النتيجة |
-| كود غير متزامن، مثل المعالج أو وحدة التحكم | `await arun(UserService.get_all())` | نفس الشيء، دون حظر الخادم |
+| رمز المزامنة، مثل صفحة | `run(UserService.get_all())` | تشغيله وإرجاع النتيجة |
+| رمز غير متزامن، مثل معالج أو وحدة تحكم | `await arun(UserService.get_all())` | نفس الشيء، دون حظر الخادم |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -53,6 +91,26 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+وحدة التحكم غير متزامنة: تنتظر الخدمة من خلال `arun`، ويظهر العرض الصفوف فقط:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise يتصل أول مرة يتم استدعاء أحدهما. استدعاء النموذج من `async def` (`await UserModel.all()` داخل الخدمة)، وليس على مستوى الوحدة: يتم تشغيل مكالمة خارج coroutine قبل اتصال Tortoise.
 
@@ -62,11 +120,11 @@ Tortoise يتصل أول مرة يتم استدعاء أحدهما. استدعا
 
 `nx migrate` يختار الأداة لـ ORM الخاص بك: Alembic لـ SQLModel و SQLAlchemy، Aerich لـ Tortoise-ORM.
 
-| الأمر | يفعل |
+| القيادة | هل |
 |---|---|
 | `nx migrate --init` | تهيئة أداة الترحيل للمشروع |
 | `nx migrate -m "add users"` | إنشاء ترحيل من تغييرات النموذج الخاص بك |
-| `nx migrate --upgrade` | تطبيق الترحيلات المعلقة |
+| `nx migrate --upgrade` | تطبيق عمليات الترحيل المعلقة |
 
 مع Aerich، يتم تشغيل `nx migrate` الأول `aerich init-db`، مما يؤدي إلى إنشاء الترحيل الأول والجداول معًا؛ التالية تجري `aerich migrate --name "..."`، و `--upgrade` تجري `aerich upgrade`.
 
@@ -87,7 +145,7 @@ nexy migrate --upgrade
 
 ### إضافة نموذج
 
-Alembic يقارن قاعدة البيانات بالنماذج التي يستوردها `alembic/env.py`. لا يتم رؤية النموذج الموجود في وحدة نمطية جديدة حتى يتم استيراد تلك الوحدة هناك، بجوار نموذج المستخدم:
+Alembic يقارن قاعدة البيانات مع النماذج التي يستوردها `alembic/env.py`. لا يتم رؤية النموذج الموجود في وحدة نمطية جديدة حتى يتم استيراد تلك الوحدة هناك، بجوار نموذج المستخدم:
 
 ```python filename="الإنبك/env.py"
 import src.models.user_model  # noqa: F401
@@ -98,6 +156,6 @@ import src.models.post_model  # noqa: F401
 
 ## الخطوات التالية
 
-- [اختبار](testing.md): اختبار المعالجات مقابل قاعدة بيانات مؤقتة
+- [الاختبار ](testing.md): اختبار المعالجات مقابل قاعدة بيانات مؤقتة
 - [التكوين](../reference/config.md)
-- [نشر](../deployment/README.md): تعيين `DATABASE_URL` في الإنتاج
+- [نشر ](../deployment/README.md): تعيين `DATABASE_URL` في الإنتاج

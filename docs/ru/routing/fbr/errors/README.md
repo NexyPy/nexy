@@ -23,7 +23,7 @@ the HTML page
 
 ```nexy filename="источник/маршруты/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -46,16 +46,16 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 | `errors.nexy` | `500` для своего каталога |
 | `forbidden.nexy` | `403` для своего каталога |
 | `unauthorized.nexy` | `401` для своего каталога |
-| `loading.nexy` | зарезервировано; пока нет эффекта времени выполнения |
+| `loading.nexy` | зарезервирован; пока нет эффекта времени выполнения |
 
 | Ситуация | Ответ |
 |---|---|
 | Ни один маршрут не соответствует | `404` |
-| Динамический сегмент невозможно преобразовать в его аннотацию | `404` |
-| Необработанное исключение на странице или в обработчике API | `500` |
+| Динамический сегмент невозможно преобразовать в его аннотацию. | `404` |
+| Необработанное исключение на странице или в обработчике API. | `500` |
 | `raise HTTPException(status_code=403)` | статус, который вы подняли, в формате HTML или JSON |
 | `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, из любого места запроса |
-| `redirect()`, `permanentRedirect()` | настоящий редирект без страницы с ошибками |
+| `redirect()`, `permanentRedirect()` | настоящий редирект без страницы ошибок |
 
 ## Оставить страницу или ответить из кода
 
@@ -77,11 +77,11 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| Позвонить | Ответить |
+| Позвонить | Ответ |
 |---|---|
 | `redirect(url)` | `307`; `redirect(url, status=303)` превращает POST в GET после формы |
-| `permanentRedirect(url)` | `308`; браузеры и поисковые системы запоминают это |
-| `notFound(detail=None)` | `404`: страница `notfound` или JSON для API-клиента |
+| `permanentRedirect(url)` | `308`; браузеры и поисковые системы это помнят |
+| `notFound(detail=None)` | `404`: страница `notfound` или JSON для клиента API. |
 | `forbidden(detail=None)` | `403`: посетитель известен, но может не видеть это |
 | `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` добавляет `WWW-Authenticate` |
 
@@ -133,9 +133,9 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| Браузер | страница с ошибкой, строки вашего кода, вызвавшие ее, и полная трассировка | встроенной `500` страницы (или вашей `errors.nexy`) со ссылкой |
-| Клиент JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Журнал сервера | исключение и строки вашего кода | исключение и вся трассировка с той же ссылкой |
+| Браузер | страница с ошибкой, строки вашего кода, которые ее вызвали, и полная обратная трассировка | встроенная страница `500` (или ваша `errors.nexy`) со ссылкой |
+| JSON-клиент | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| Журнал сервера | исключение и строки вашего кода | исключение и вся обратная трассировка с одной и той же ссылкой |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
@@ -152,7 +152,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 ## Следующие шаги
 
-- [Страницы ошибок в папке](folder-pages.md): ваша собственная ошибка 404, 403 или 401 в одной папке.
+- [Страницы ошибок в каждой папке](folder-pages.md): ваша собственная ошибка 404, 403 или 401 в одной папке.
 - [Динамические маршруты](../pages/dynamic-routes.md)
 - [Маршруты API](../handlers/README.md)
 - [Тестирование](../../../guides/testing.md)

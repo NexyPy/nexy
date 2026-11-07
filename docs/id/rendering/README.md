@@ -4,6 +4,11 @@ Rendering menjawab satu pertanyaan: **siapa yang memproduksi HTML, dan kapan**. 
 
 **Tidak yakin? Pertahankan SSR.** Ubah halaman hanya jika Anda dapat menyebutkan alasannya: konten yang jarang berubah (ISR), satu widget yang memerlukan browser (pulau), atau navigasi seperti aplikasi (CSR).
 
+<!-- router:modular -->
+> [!NOTE]
+> Router modular merender setiap tampilan di server, dengan pulau-pulau tempat tampilan menampungnya. ISR dan CSR adalah mode halaman file: mereka memerlukan router berbasis file.
+<!-- /router -->
+
 ## Bagaimana cara kerjanya
 
 ```diagram filename="Siapa yang memproduksi HTML, dan kapan"
@@ -15,15 +20,15 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 ## Empat mode
 
-| | RSK | ISR | CSR | Kepulauan |
+| | RSK | ISR | CSR | Pulau |
 |---|---|---|---|---|
-| Data dibaca | pada setiap permintaan | pada setiap regenerasi | di browser | pada setiap permintaan |
-| HTML berasal dari | server | server, kemudian cache | server untuk dokumen pertama, browser setelahnya | server |
-| JavaScript | hanya untuk pulau | hanya untuk pulau | kumpulan kerangka kerja | hanya pulau |
+| Data dibaca | pada setiap permintaan | pada setiap regenerasi | di peramban | pada setiap permintaan |
+| HTML berasal dari | server | server, lalu cache | server untuk dokumen pertama, browser setelahnya | server |
+| JavaScript | hanya untuk pulau-pulau | hanya untuk pulau-pulau | bundel kerangka | hanya pulau itu |
 | Hidrasi | tidak ada | tidak ada | seluruh dokumen | pulau |
-| Cache | tidak ada | per URL, di memori | tidak ada | tidak ada |
-| Diputuskan oleh | default | `revalidate = N` di halaman | `useCSR = True` dalam proyek | `directive` pada komponen |
-| Butir | halaman | halaman | **proyek** | komponen |
+| Tembolok | tidak ada | per URL, di memori | tidak ada | tidak ada |
+| Diputuskan oleh | bawaan | `revalidate = N` di halaman | `useCSR = True` dalam proyek | `directive` pada komponen |
+| Gandum | halaman | halaman | **proyek** | komponen |
 
 ## Siklus hidup rendering
 
@@ -45,13 +50,14 @@ Mode klien masih mengirimkan dokumen nyata: Nexy merendernya di Node untuk respo
 
 | Modus | Dimana |
 |---|---|
-| SSR | tidak ada di mana pun: ini adalah default |
-| ISR | `revalidate = 60` di bagian depan `.nexy` halaman |
+| RSK | tidak ada tempat: ini adalah default |
+| ISR | `revalidate = 60` di bagian depan halaman `.nexy`. |
 | CSR | `useCSR = True` di `nexyconfig.py`, dengan `useFF` disetel |
 | Pulau | `directive="client:visible"` pada tag komponen |
 
 ## Contoh
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
@@ -60,6 +66,19 @@ revalidate = 60
 ```
 
 Halaman yang sama tanpa garis frontmatter adalah SSR.
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Rendered on every request</h1>
+<Chart directive="client:visible" />
+```
+
+Tampilannya adalah SSR, dan grafiknya adalah pulau yang terhidrasi saat ditampilkan.
+<!-- /router -->
 
 ## Keterbatasan
 
@@ -70,7 +89,7 @@ Halaman yang sama tanpa garis frontmatter adalah SSR.
 
 ## Langkah selanjutnya
 
-- [SSR](ssr.md): bawaan
+- [SSR](ssr.md): bawaannya
 - [ISR](isr.md): menyimpan halaman per URL dalam cache
 - [CSR](csr.md): navigasi tangan ke browser
 - [Pulau](islands.md): menghidrasi satu widget

@@ -4,23 +4,70 @@ Qué hace `nx start` de forma predeterminada, qué activar y qué se midió.
 
 ## Valores predeterminados
 
-| Preocupación | Predeterminado | Cámbielo |
+| Preocupación | Predeterminado | cambiarlo |
 |---|---|---|
-| Procesa | un Uvicorn trabajador por CPU en Linux y macOS, uno en Windows | `nx start` ejecuta la aplicación a través de Uvicorn |
-| Compresión | desactivada | `useGZip = {"minimum_size": 1000}` en [Configuración](../reference/config.md), o comprimir en el proxy inverso |
-| Archivos estáticos | servidos con `ETag` y `Last-Modified`, sin `Cache-Control` | configurar el almacenamiento en caché de larga duración en el proxy inverso o CDN para paquetes hash |
-| Páginas HTML | renderizadas por solicitud, sin caché | [ISR](../rendering/isr.md) con `revalidate = N` |
+| Procesos | un Uvicorn trabajador por CPU en Linux y macOS, uno en Windows | `nx start` ejecuta la aplicación a través de Uvicorn |
+| Compresión | apagado | `useGZip = {"minimum_size": 1000}` en [Configuración](../reference/config.md), o comprimir en el proxy inverso |
+| Archivos estáticos | servido con `ETag` y `Last-Modified`, no `Cache-Control` | configurar el almacenamiento en caché de larga duración en el proxy inverso o CDN para paquetes hash |
+| páginas HTML | renderizado por solicitud, sin caché | [ISR](../rendering/isr.md) con `revalidate = N` |
 | Documentos API | en | `useDocs = False` en producción |
-| Nodo en tiempo de ejecución | ninguno | `nx build` pre-renderiza los componentes del cliente |
+| Nodo en tiempo de ejecución | ninguno | `nx build` pre-renderiza componentes del cliente |
+
+Los dos interruptores de la tabla en `nexyconfig.py` e ISR en una página:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useGZip = {"minimum_size": 1000}
+    useDocs = False
+```
+
+<!-- router:fbr,custom -->
+```nexy filename="src/rutas/blog/index.nexy"
+---
+revalidate = 60
+---
+<h1>Rendered at most once per minute</h1>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR es un modo de páginas de archivos: en cada solicitud se representa una vista que devuelve un controlador.
+<!-- /router -->
 
 ## medido
 
-Una ejecución local, un trabajador Uvicorn, Windows, Python 3.13, conexiones de mantenimiento de actividad desde un generador de carga Python en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
+Una ejecución local, un trabajador Uvicorn, Windows, Python 3.13, conexiones de mantenimiento desde un generador de carga Python en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
 
-| Ruta | Simultaneidad | Solicitudes por segundo | p50 | p99 |
+La ruta Nexy JSON de la tabla es este archivo:
+
+<!-- router:fbr,custom -->
+```python filename="src/rutas/api/ping.py"
+async def GET():
+    return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+Las cifras siguientes se midieron con la ruta del archivo. Mida un controlador de la misma manera antes de confiar en él.
+<!-- /router -->
+
+| Ruta | concurrencia | Solicitudes por segundo | p50 | p99 |
 |---|---|---|---|---|
-| Ruta JSON desnuda FastAPI | 16 | ~4500 | 3,4 ms | 5,1 ms |
-| Ruta Nexy JSON (`src/routes/api/ping.py`) | 16 | ~2900 | 5,2 ms | 9,8 ms |
+| Ruta JSON desnuda FastAPI | 16 | ~4,500 | 3,4 ms | 5,1 ms |
+| Ruta Nexy JSON (`src/routes/api/ping.py`) | 16 | ~2,900 | 5,2 ms | 9,8 ms |
 | Página Nexy SSR (16 KB, 16 componentes) | 1 | ~500 | 1,9 ms | 3,0 ms |
 | Página Nexy SSR (16 KB, 16 componentes) | 64 | ~670 | 94 ms | 126 ms |
 
@@ -35,8 +82,28 @@ Leyendo la tabla:
 1. Coloque Nginx, Caddy o la ventaja de su plataforma al frente: TLS, HTTP/2, Brotli y el almacenamiento en caché de larga duración para `/__nexy__/client/` activos son sus puntos fuertes. Consulte [Implementar](README.md).
 2. Utilice [ISR](../rendering/isr.md) para páginas que cambian menos de una vez por minuto.
 3. Hidrátate lentamente con [islas](../rendering/islands.md) para que la primera carga envíe menos JavaScript.
-4. Mantenga razonable el número de `.nexy` componentes por página: cada uno es una representación de plantilla independiente.
+4. Mantenga un número razonable de `.nexy` componentes por página: cada uno es una representación de plantilla independiente.
 5. Mide tus propias rutas. Un generador de carga local que mantenga vivas las conexiones es suficiente para comparar dos versiones de una página.
+
+Consejo 1 con Nginx: los paquetes de clientes con hash se almacenan en caché durante un año, el resto va a Nexy.
+
+```nginx filename="/etc/nginx/conf.d/my-app.conf"
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    location /__nexy__/client/ {
+        proxy_pass http://127.0.0.1:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ## Próximos pasos
 

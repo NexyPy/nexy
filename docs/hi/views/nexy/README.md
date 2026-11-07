@@ -4,6 +4,7 @@
 
 **शुरू करने से पहले:** [त्वरित शुरुआत](../../getting-started/quick-start.md) द्वारा बनाया गया एक प्रोजेक्ट। एक `.nexy` फ़ाइल को किसी बिल्ड कॉन्फ़िगरेशन की आवश्यकता नहीं है: `nx dev` इसे सहेजने पर संकलित करता है।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
 from nexy import usePathname
@@ -20,6 +21,39 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+नियंत्रक अपने पथ से `slug` गुजरता है:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## फ्रंटमैटर
 
@@ -29,16 +63,16 @@ pathname = usePathname()
 |---|---|
 | एक मॉड्यूल आयात करें | `import json`, `from datetime import datetime` |
 | एक घटक आयात करें | `from "@/components/card.nexy" import Card` |
-| एक संपत्ति घोषित करें | `title: prop[str] = "Default"` |
+| संपत्ति घोषित करें | `title: prop[str] = "Default"` |
 | एक मान की गणना करें | `year = datetime.now().year` |
 | अनुरोध पढ़ें | `pathname = usePathname()` |
-| पेज को कैश करें (आईएसआर) | `revalidate = 60` |
+| पेज कैश करें (ISR) | `revalidate = 60` |
 
 ## गुण
 
 गुण घटक की एपीआई हैं। `prop[type]` प्रकार घोषित करता है, `= value` एक डिफ़ॉल्ट देता है। बिना किसी डिफ़ॉल्ट के संपत्ति को माता-पिता द्वारा पारित किया जाना चाहिए।
 
-उपनाम से शुरू होने वाले आयात का समाधान `useAliases` के माध्यम से किया जाता है। सेटअप `nx new` मानचित्र `@` से `src` लिखता है, जिससे `@/components/card.nexy` का अर्थ `src/components/card.nexy` हो जाता है।
+जो आयात उपनाम से शुरू होते हैं उनका समाधान `useAliases` के माध्यम से किया जाता है। सेटअप `nx new` मानचित्र `@` से `src` लिखता है, जिससे `@/components/card.nexy` का अर्थ `src/components/card.nexy` हो जाता है।
 
 ## टेम्पलेट
 
@@ -54,7 +88,7 @@ pathname = usePathname()
 {% endif %}
 ```
 
-ऑटोएस्केपिंग **बंद है**: टेम्प्लेट प्रोजेक्ट का अपना HTML है, इसलिए `{{ value }}` को लिखित रूप में डाला गया है। `{{ value | e }}` के साथ स्वयं अविश्वसनीय मूल्यों से बचें। `| safe` इसलिए कुछ भी नहीं बदलता।
+ऑटोएस्केपिंग **बंद** है: टेम्प्लेट प्रोजेक्ट का स्वयं का HTML है, इसलिए `{{ value }}` को लिखित रूप में डाला जाता है। `{{ value | e }}` के साथ स्वयं अविश्वसनीय मूल्यों से बचें। `| safe` इसलिए कुछ भी नहीं बदलता।
 
 > [!NOTE]
 > JavaScript को लपेटें जिसमें `{% raw %}...{% endraw %}` में `{{` या `{%` हो। Vue और Svelte जैसे फ्रेमवर्क समान ब्रेसिज़ का उपयोग करते हैं।
@@ -63,6 +97,7 @@ pathname = usePathname()
 
 कोई भी आयातित कॉल करने योग्य जिसका नाम बड़े अक्षर से शुरू होता है, उसे टैग के रूप में उपयोग किया जा सकता है। कंपाइलर इसे Jinja कॉल पर फिर से लिखता है: विशेषताएँ कीवर्ड तर्क बन जाती हैं।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -74,15 +109,30 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
 
-अंतिम पंक्ति बिलकुल `{{ Audio("/theme.mp3", controls=True) }}` है। दोनों वाक्यविन्यास अंतर्निहित `Image`, `Link`, `Audio` और `Video` सहायकों के लिए मान्य हैं - [घटक](components.md#two-syntaxes-one-function) देखें।
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
+
+अंतिम पंक्ति बिलकुल `{{ Audio("/theme.mp3", controls=True) }}` है। दोनों वाक्यविन्यास अंतर्निहित `Image`, `Link`, `Audio` और `Video` सहायकों के लिए मान्य हैं - [घटक ](components.md#two-syntaxes-one-function) देखें।
 
 बच्चों को चाइल्ड घटक के अंदर `<Slot />` (बड़े एस) के माध्यम से, और एक लेआउट के अंदर `{{ children }}` के माध्यम से प्रस्तुत किया जाता है।
 
 विशेषता के अंदर Jinja के साथ एक परिकलित मान पास करें: `<Icon path="{{ icon }}" size="{{ size }}" />`। `path=icon` जैसा एक खाली नाम टेक्स्ट `icon` है, वेरिएबल नहीं। किसी घटक को सीएसएस वर्ग देने के लिए, एक `class_name` प्रोप घोषित करें: `class` एक Python कीवर्ड है।
 
 > [!NOTE]
-> एक सहायक टैग हमेशा स्वतः बंद हो जाता है। `Link` को सामग्री पास करना उसके `children` तर्क (`<Link href="/about" children="About" />`) के माध्यम से होता है, तत्व सामग्री के माध्यम से नहीं।
+> एक सहायक टैग हमेशा स्वतः बंद हो जाता है। सामग्री को `Link` में पास करना उसके `children` तर्क (`<Link href="/about" children="About" />`) के माध्यम से होता है, तत्व सामग्री के माध्यम से नहीं।
 
 ## शैलियाँ
 

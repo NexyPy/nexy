@@ -10,6 +10,7 @@
 | सभी मार्गों पर साझा की जाने वाली सेवाओं के साथ एक बड़ी एपीआई | मॉड्यूलर |
 | दोनों: लोगों के लिए पेज, मशीनों के लिए एक संरचित एपीआई | फ़ाइल-आधारित और मॉड्यूलर एक साथ |
 
+<!-- router:fbr,custom -->
 ```diagram filename="फ़ाइल-आधारित राउटर, एक नज़र में"
 src/routes/index.nexy           →  /
 src/routes/about.nexy           →  /about
@@ -18,6 +19,17 @@ src/routes/blog/[slug].nexy     →  /blog/:slug
 src/routes/(app)/dashboard.nexy →  /dashboard
 src/routes/api/users.py         →  /api/users  (GET, POST, …)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```diagram filename="मॉड्यूलर राउटर, एक नज़र में"
+@Controller()             class AppController   →  /
+@Controller("/about")     class AboutController →  /about/
+@Controller("/api/users") class UserController  →  /api/users/  (get, post, …)
+@Module()                 class AppModule       →  lists the controllers
+useRouter = AppModule     nexyconfig.py         →  mounts the module
+```
+<!-- /router -->
 
 | राउटर | स्रोत | द्वारा सक्षम |
 |---|---|---|
@@ -32,6 +44,7 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 *नोट: नेक्सी वर्तमान में यूआरएल टकराव के लिए निदान प्रदान नहीं करता है; किसी पथ पर दावा करने का पहला मार्ग बस दूसरों को छाया देता है।*
 
+<!-- router:fbr,custom -->
 ## फ़ाइल-आधारित रूटिंग
 
 रूट एक फ़ाइल है. URL `src/routes/` के अंतर्गत इसका पथ है, एक्सटेंशन को घटाकर। Next.js की तरह, एक प्रोजेक्ट दो मोड में से एक में होता है, जिसे `useCSR` के साथ चुना जाता है:
@@ -56,10 +69,21 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 | [एफबीआर/नेविगेशन](fbr/navigation/linking-and-navigating.md) | लिंक करना, क्लाइंट नेविगेशन, [हुक](fbr/navigation/hooks.md) |
 | [एफबीआर/रीयलटाइम](fbr/realtime/websocket.md) | WebSocket संचालक |
 | [एफबीआर/विरासत](fbr/inheritance.md) | लेआउट, निर्भरताएँ और त्रुटि पृष्ठ कैसे प्राप्त होते हैं |
+<!-- /router -->
 
 ## मॉड्यूलर रूटिंग
 
 नियंत्रक, मॉड्यूल और निर्भरता इंजेक्शन, NestJS की शैली में। [मॉड्यूलर रूटिंग](modular/README.md) और [नेक्सी और NestJS](modular/vs-nestjs.md) देखें।
+
+<!-- router:modular -->
+| धारा | इसमें क्या शामिल है |
+|---|---|
+| [मॉड्यूलर](modular/README.md) | `@Controller`, `@Module`, आयात और निर्यात |
+| [मॉड्यूलर/निर्भरता-इंजेक्शन](modular/dependency-injection.md) | `@Injectable`, स्कोप और कंटेनर |
+| [मॉड्यूलर/गार्ड-और-मेटाडेटा](modular/guards-and-metadata.md) | `@UseGuard`, `@UseResponse` और OpenAPI मेटाडेटा |
+
+एक नियंत्रक `useViews` के साथ एक `.nexy` दृश्य लौटाता है, और इसे हाथ से इसके लेआउट में भेजता है: फ़ोल्डर द्वारा कोई `layout.nexy` लागू नहीं किया जाता है।
+<!-- /router -->
 
 ## कस्टम एकीकरण
 
@@ -67,6 +91,11 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 ## अगले चरण
 
+<!-- router:fbr,custom -->
 - [फ़ाइल-आधारित रूटिंग](fbr/README.md)
+<!-- /router -->
+<!-- router:modular -->
+- [मॉड्यूलर रूटिंग](modular/README.md)
+<!-- /router -->
 - [प्रतिपादन](../rendering/README.md)
 - [दृश्य](../views/README.md): फाइलों के अंदर क्या जाता है

@@ -4,6 +4,11 @@ Das Rendern beantwortet eine Frage: **Wer produziert den HTML-Code und wann**. N
 
 **Nicht sicher? Behalten Sie SSR bei.** Ändern Sie eine Seite nur, wenn Sie den Grund nennen können: Inhalt, der sich selten ändert (ISR), ein Widget, das den Browser benötigt (Insel) oder App-ähnliche Navigation (CSR).
 
+<!-- router:modular -->
+> [!NOTE]
+> Der modulare Router rendert jede Ansicht auf dem Server, mit Inseln, auf denen eine Ansicht sie hält. ISR und CSR sind Modi von Dateiseiten: Sie benötigen den dateibasierten Router.
+<!-- /router -->
+
 ## Wie es funktioniert
 
 ```diagram filename="Wer erstellt den HTML-Code und wann?"
@@ -36,8 +41,8 @@ Im Client-Modus wird immer noch ein echtes Dokument gesendet: Nexy rendert es in
 
 ## Wann zu verwenden
 
-- **Inhalt, Marketing, Dokumentation**: SSR, plus ISR, wenn sich der Inhalt selten ändert.
-- **Eine größtenteils statische Seite mit einem interaktiven Widget**: SSR mit einer Insel.
+- **Inhalt, Marketing, Dokumentation**: SSR plus ISR, wenn sich der Inhalt selten ändert.
+- **Eine überwiegend statische Seite mit einem interaktiven Widget**: SSR mit einer Insel.
 - **Dashboards, Editoren, App-ähnliche Navigation**: CSR.
 - **Eine Seite, die ständig gelesen und selten geändert wird**: ISR.
 
@@ -47,11 +52,12 @@ Im Client-Modus wird immer noch ein echtes Dokument gesendet: Nexy rendert es in
 |---|---|
 | SSR | nirgendwo: Es ist die Standardeinstellung |
 | ISR | `revalidate = 60` im Titelblatt einer `.nexy`-Seite |
-| CSR | `useCSR = True` in `nexyconfig.py`, mit `useFF` eingestellt |
+| CSR | `useCSR = True` in `nexyconfig.py`, mit `useFF` gesetzt |
 | Inseln | `directive="client:visible"` auf dem Komponenten-Tag |
 
 ## Beispiel
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
@@ -60,6 +66,19 @@ revalidate = 60
 ```
 
 Die gleiche Seite ohne die Frontmatter-Zeile ist SSR.
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Rendered on every request</h1>
+<Chart directive="client:visible" />
+```
+
+Die Ansicht ist SSR und die Karte ist eine Insel, die beim Scrollen in die Ansicht hydratisiert.
+<!-- /router -->
 
 ## Einschränkungen
 
@@ -73,5 +92,5 @@ Die gleiche Seite ohne die Frontmatter-Zeile ist SSR.
 - [SSR](ssr.md): die Standardeinstellung
 - [ISR](isr.md): Eine Seite pro URL zwischenspeichern
 - [CSR](csr.md): Handnavigation zum Browser
-- [Inseln](islands.md): Hydrate ein Widget
+- [Inseln](islands.md): Hydrat ein Widget
 - [Leistung](../deployment/performance.md)

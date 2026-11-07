@@ -43,7 +43,8 @@ class TestRouterOfAPage:
 
     def test_every_page_of_a_router_folder_knows_its_router(self):
         pages = [p for t in source.read_tracks(DOCS) for p in source.pages_of(t)]
-        wrong = [p.slug for p in pages if p.router != source.router_of(p.slug)]
+        in_folders = [p for p in pages if source.router_of(p.slug)]
+        wrong = [p.slug for p in in_folders if p.router != source.router_of(p.slug)]
         assert wrong == []
 
     def test_the_menu_holds_pages_of_both_routers(self):
@@ -92,14 +93,21 @@ class TestGroupRouter:
         group = source.group_of(source.read_tracks(DOCS), "guides/actions")
         assert group.router is None
 
-    def test_only_the_routing_groups_declare_a_scope(self):
-        """Five groups declare a scope; the rest are read by all."""
+    def test_the_groups_of_some_routers_declare_them(self):
+        """A group a router has no use for names the routers it is for; the rest are read by all."""
         groups = [group for track in source.read_tracks(DOCS) for group in track.groups]
         assert {group.title: group.scope for group in groups if group.scope != "core"} == {
             "File-based": "fbr",
             "Handlers and errors": "fbr",
             "Modular router": "modular",
             "Custom router integration": "custom",
+            "Pages and layouts in files": "fbr custom",
+            "Modes of file pages": "fbr custom",
+            "File conventions": "fbr custom",
+            "Python frameworks": "fbr",
+            "JavaScript backends": "fbr",
+            "Fullstack frameworks": "fbr",
+            "Controller frameworks": "modular",
             "Advanced": "advanced",
         }
 
@@ -175,6 +183,10 @@ class TestAssets:
         script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")
         assert "nexy-docs-side" in script
 
+    def test_the_search_finds_the_pages_of_a_group_of_several_routers(self):
+        script = (VANILLA / "assets" / "site.js").read_text(encoding="utf-8")
+        assert "e.scope.split(' ').includes(router)" in script
+
     def test_the_panel_scrolls_inside_on_a_wide_screen(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert "html, body { height: 100%; overflow: hidden; }" in css
@@ -190,11 +202,11 @@ class TestAssets:
             for key, _name, _blurb in source.ROUTERS
         )
 
-    def test_a_group_of_another_scope_is_not_drawn(self):
+    def test_a_group_of_another_scope_is_not_drawn_even_when_it_names_several(self):
         css = (VANILLA / "assets" / "style.css").read_text(encoding="utf-8")
         assert all(
             f'html[data-router="{key}"] .side .group[data-scope]:not([data-scope="core"])'
-            f':not([data-scope="{key}"])' in css
+            f':not([data-scope~="{key}"])' in css
             for key, _name, _blurb in source.ROUTERS
         )
 

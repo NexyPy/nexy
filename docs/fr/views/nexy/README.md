@@ -4,6 +4,7 @@ Un fichier `.nexy` est un composant : Python en haut, HTML au milieu, CSS en ba
 
 **Avant de commencer :** un projet créé par le [Démarrage rapide](../../getting-started/quick-start.md). Un fichier `.nexy` ne nécessite aucune configuration de construction : `nx dev` le compile lors de la sauvegarde.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
 from nexy import usePathname
@@ -20,6 +21,39 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+Le contrôleur passe `slug` depuis son chemin :
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## Frontière
 
@@ -32,7 +66,7 @@ Tout ce qui se trouve entre les deux lignes `---` est Python. Les importations s
 | Déclarer une propriété | `title: prop[str] = "Default"` |
 | Calculer une valeur | `year = datetime.now().year` |
 | Lire la demande | `pathname = usePathname()` |
-| Cacher la page (ISR) | `revalidate = 60` |
+| Mettre la page en cache (ISR) | `revalidate = 60` |
 
 ## Propriétés
 
@@ -63,6 +97,7 @@ L'échappement automatique est **désactivé** : les modèles sont le propre HT
 
 Tout appelable importé dont le nom commence par une lettre majuscule peut être utilisé comme balise. Le compilateur le réécrit en un appel Jinja : les attributs deviennent des arguments de mot-clé.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -74,6 +109,21 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 La dernière ligne est exactement `{{ Audio("/theme.mp3", controls=True) }}`. Les deux syntaxes sont valables pour les assistants intégrés `Image`, `Link`, `Audio` et `Video` - voir [composants](components.md#two-syntaxes-one-function).
 
@@ -82,7 +132,7 @@ Les enfants sont rendus via `<Slot />` (S majuscule) à l'intérieur du composan
 Passez une valeur calculée avec Jinja à l'intérieur de l'attribut : `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nom simple tel que `path=icon` est le texte `icon`, pas la variable. Pour donner à un composant une classe CSS, déclarez un accessoire `class_name` : `class` est un mot-clé Python.
 
 > [!NOTE]
-> une balise d'assistance se ferme toujours automatiquement. Passer du contenu à `Link` passe par son argument `children` (`<Link href="/about" children="About" />`), et non par le contenu de l'élément.
+> une balise d'assistance se ferme toujours automatiquement. La transmission de contenu à `Link` passe par son argument `children` (`<Link href="/about" children="About" />`), et non par le contenu de l'élément.
 
 ## Styles
 

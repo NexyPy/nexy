@@ -34,6 +34,32 @@
 
 ہکس صرف درخواست کے اندر کام کرتے ہیں: دیکھیں [ہکس](../routing/fbr/navigation/hooks.md)۔
 
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/index.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
 ## `nexy.http`
 
 ہینڈلر کی HTTP الفاظ۔ FastAPI کے بجائے یہاں سے درآمد کریں، لہذا آپ کے ہینڈلرز Nexy کے معاہدے پر منحصر ہیں۔
@@ -53,11 +79,48 @@
 | `notFound`، `forbidden`، `unauthorized` | اسی جگہوں سے 404، 403 یا 401 بلند کریں۔ |
 | `FileResponse`، `StreamingResponse` | فائل یا اسٹریم کے ساتھ جواب دیں۔ |
 
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/items/[id].py"
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+async def GET(id: int, key: str = Depends(api_key)):
+    return {"id": id}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
+
 ## `nexy.decorators`
 
 | نام | یہ کیا ہے |
 |---|---|
-| `Action` | فنکشن کو `POST` اختتامی نقطہ میں تبدیل کریں، دیکھیں [ایکشنز](../guides/actions.md) |
+| `Action` | فنکشن کو `POST` اختتامی نقطہ میں تبدیل کریں، [ایکشنز](../guides/actions.md) دیکھیں |
 | `revalidate` | براؤزر کو بتائیں کہ کون سے صفحات کو ایکشن نے باسی بنا دیا ہے۔ |
 | `Module`، `Controller` | [ماڈیولر روٹر](../routing/modular/README.md) میں ایک ماڈیول اور ایک کنٹرولر کا اعلان کریں |
 | `Injectable`، `Container`، `Scope` | [انحصار انجیکشن ](../routing/modular/dependency-injection.md) اور اس کی زندگی بھر |
@@ -67,14 +130,32 @@
 | `HTTP_METHODS` | HTTP طریقے جن کی ایک ہینڈلر فائل وضاحت کر سکتی ہے۔ |
 | `ACTIONS_STORE` | ٹولنگ اور ٹیسٹ کے لیے اعمال کی رجسٹری |
 
+```python filename="src/actions/posts.py"
+from nexy.decorators import Action, revalidate
+
+
+@Action
+async def publish(post_id: int) -> bool:
+    revalidate("/blog")
+    return True
+```
+
 ## `nexy.testing`
 
 | نام | یہ کیا ہے |
 |---|---|
 | `render` | دیئے گئے پرپس کے لیے ایک `.nexy` جزو کا HTML، بغیر سرور کے، دیکھیں [ٹیسٹنگ](../guides/testing.md) |
 
+```python filename="tests/test_button.py"
+from nexy.testing import render
+
+
+def test_the_button_shows_its_label():
+    assert "Save" in render("src/components/button.nexy", label="Save")
+```
+
 ## جہاں اگلا
 
-- [تشکیل](config.md): ان ناموں کے پیچھے `use*` فیلڈز
-- [استثنیات اور غلطیاں](exceptions.md): ہر ناکامی کا کیا جواب ہوتا ہے۔
-- [دستاویزی اشاریہ](../README.md): آپ جو کچھ بنا رہے ہیں اس کا صفحہ
+- [ترتیب ](config.md): ان ناموں کے پیچھے `use*` فیلڈز
+- [مستثنیات اور غلطیاں](exceptions.md): ہر ناکامی کا کیا جواب ہوتا ہے۔
+- [دستاویزی اشاریہ](../README.md): وہ صفحہ جو آپ بنا رہے ہیں۔

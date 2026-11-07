@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -31,15 +31,15 @@ class AdminController:
 
 `@UseRoute(...)` 设置 OpenAPI 元数据。它不会改变路径。
 
-| 参数 | 含义 |
+| 论证 | 含义 |
 |---|---|
 | `name` | 路线名称 |
 | `tags` | OpenAPI 标签 |
-| API 参考中的 `summary`、`description` | 文本 |
-| `deprecated` | 标记该操作已弃用 |
-| `include_in_schema` | 从架构中隐藏路由 |
+| `summary`，`description` | API 参考中的文本 |
+| `deprecated` | 将操作标记为已弃用 |
+| `include_in_schema` | 从架构中隐藏路线 |
 | `operation_id` | 显式操作 ID |
-| `openapi_extra` | 额外 OpenAPI 字段 |
+| `openapi_extra` | 额外的 OpenAPI 字段 |
 
 ## 回应
 
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)

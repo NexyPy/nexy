@@ -6,15 +6,16 @@
 
 | Fichier | Objectif |
 |---|---|
-| `src/configs/db.py` | le moteur (SQLModel, SQLAlchemy) ou les `TORTOISE_ORM` réglages |
+| `src/configs/db.py` | le moteur (SQLModel, SQLAlchemy) ou les réglages `TORTOISE_ORM` |
 | `src/models/` | classes de modèles |
 | `src/services/` | fonctions qui interrogent les modèles |
-| `.env` | `DATABASE_URL`, écrit lorsque vous donnez une URL de base de données pendant `nx new` |
+| `.env` | `DATABASE_URL`, écrit lorsque vous donnez l'URL d'une base de données pendant `nx new` |
 
 La chaîne de connexion provient de la variable d'environnement `DATABASE_URL`. Lorsqu'il n'est pas configuré, le moteur de l'échafaudage revient à un fichier SQLite local, `dev.db`.
 
 ## Utiliser un service dans une page
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,16 +37,53 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Un contrôleur appelle le service et transmet les lignes à sa vue ou les renvoie au format JSON :
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM est asynchrone
 
-Une page s'exécute dans la boucle d'événements du serveur et ne peut pas l'attendre, donc `asyncio.run(...)` échoue avec "ne peut pas être appelée à partir d'une boucle d'événements en cours d'exécution". L'échafaudage `src/configs/db.py` donne à Tortoise une boucle qui lui est propre, dans un seul thread, et deux assistants qui lui envoient une coroutine :
+Une page s'exécute dans la boucle d'événements du serveur et ne peut pas attendre dessus, donc `asyncio.run(...)` échoue avec "ne peut pas être appelée à partir d'une boucle d'événements en cours d'exécution". L'échafaudage `src/configs/db.py` donne à Tortoise une boucle qui lui est propre, dans un seul thread, et deux assistants qui lui envoient une coroutine :
 
-| Où êtes-vous | Appelez | Est-ce que |
+| Où tu es | Appeler | Est-ce que |
 |---|---|---|
-| le code de synchronisation, tel qu'une page | `run(UserService.get_all())` | l'exécute et renvoie le résultat |
-| code asynchrone, tel qu'un gestionnaire ou un contrôleur | `await arun(UserService.get_all())` | le même, sans bloquer le serveur |
+| code de synchronisation, tel qu'une page | `run(UserService.get_all())` | l'exécute et renvoie le résultat |
+| code asynchrone, tel qu'un gestionnaire ou un contrôleur | `await arun(UserService.get_all())` | pareil, sans bloquer le serveur |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -53,6 +91,26 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Un contrôleur est asynchrone : il attend le service via `arun`, et la vue affiche uniquement les lignes :
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise se connecte la première fois que l'un d'eux est appelé. Appelez le modèle depuis un `async def` (`await UserModel.all()` à l'intérieur d'un service), et non au niveau du module : un appel en dehors d'une coroutine s'exécute avant que Tortoise ne se soit connecté.
 
@@ -62,7 +120,7 @@ Répertoriez tous les modules contenant des modèles dans `TORTOISE_ORM` (l'entr
 
 `nx migrate` choisit l'outil pour votre ORM : Alembic pour SQLModel et SQLAlchemy, Aerich pour Tortoise-ORM.
 
-| La commande | fait |
+| Commande | Est-ce que |
 |---|---|
 | `nx migrate --init` | initialiser l'outil de migration du projet |
 | `nx migrate -m "add users"` | créer une migration à partir des modifications de votre modèle |
@@ -98,6 +156,6 @@ Pour Tortoise-ORM, répertoriez plutôt le module dans `TORTOISE_ORM` (voir ci-d
 
 ## Prochaines étapes
 
-- [Tests](testing.md) : tester les gestionnaires sur une base de données temporaire
+- [Tests](testing.md) : tester les gestionnaires par rapport à une base de données temporaire
 - [Configuration](../reference/config.md)
-- [Déploiement](../deployment/README.md) : définir `DATABASE_URL` en production
+- [Déployer](../deployment/README.md) : définir `DATABASE_URL` en production

@@ -2,16 +2,30 @@
 
 Nexy renderiza Svelte 5 componentes no servidor e então Svelte os assume no navegador. Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração e depois as partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | As páginas são | Svelte são |
+<!-- router:fbr,custom -->
+| Modo | `nexyconfig.py` | As páginas são | Svelte é |
 |---|---|---|---|
 | Servidor (padrão) | `useCSR = False` | `.nexy` arquivos | [ilhas](../../rendering/islands.md) dentro dessas páginas |
-| Cliente | `useCSR = True` | `.svelte` arquiva | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
+| Cliente | `useCSR = True` | `.svelte` arquivos | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
+<!-- /router -->
+
+<!-- router:modular -->
+Com o roteador modular, Svelte componentes são [ilhas](../../rendering/islands.md) dentro das `.nexy` visualizações que um controlador retorna: não há arquivo de paginação e nenhum roteador cliente.
+<!-- /router -->
 
 ## Iniciar um projeto
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-svelte
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-svelte
+```
+<!-- /router -->
 
 O modelo é um projeto em modo servidor com Svelte ilhas. Execute `nx new my-app` sem um modelo para responder aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida, a estrutura.
 
@@ -50,9 +64,15 @@ export default defineConfig({
 - **Svelte 5.** Os componentes usam runas: `$props()`, `$state()` e trechos para crianças.
 - **Uma estrutura por projeto.** `useFF` leva exatamente uma estrutura; `useFF = [svelte(), vue()]` interrompe o servidor na inicialização.
 - **Um componente por arquivo.** O nome sob o qual você importa um arquivo `.svelte` é apenas a tag que você escreve.
+<!-- router:fbr,custom -->
 - **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
-- **Um projeto em modo servidor não tem página `.svelte`**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
+- **Um projeto em modo servidor não tem página `.svelte`** e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Veja [modos](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Os componentes residem em `src/components/`**, e uma visualização os importa como ilhas.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Páginas
 
 No modo cliente (`useCSR = True`), uma página é um arquivo `.svelte`.
@@ -101,6 +121,7 @@ O layout raiz define o shell do documento. Os layouts aninhados envolvem o conte
   </body>
 </html>
 ```
+<!-- /router -->
 
 ## Ilhas
 
@@ -110,12 +131,23 @@ No modo servidor, um componente Svelte importado para um arquivo `.nexy` é uma 
 
 Importe componentes no frontmatter do arquivo `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from "@/components/Counter.svelte" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.svelte" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Diretrizes de hidratação
 
@@ -179,4 +211,4 @@ Todos os dados de localização são fornecidos como lojas:
 ## Próximas etapas
 
 - [Visualizações](../README.md): compare os formatos que uma página pode usar
-- [Frontend](../../guides/frontend.md): Vite e a compilação do cliente
+- [Frontend](../../guides/frontend.md): Vite e a construção do cliente

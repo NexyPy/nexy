@@ -24,7 +24,7 @@ doc = document(slug)
   <h2 data-i18n="on_this_page">On this page</h2>
   <ul>
     {% for heading in doc.outline %}
-    <li class="l{{ heading.level }}"><a href="#{{ heading.id }}"{{ isolate(heading.text, doc.page.lang) }}>{{ heading.text | e }}</a></li>
+    <li class="l{{ heading.level }}{% if heading.routers %} router-variant" data-router="{{ heading.routers }}{% endif %}"><a href="#{{ heading.id }}"{{ isolate(heading.text, doc.page.lang) }}>{{ heading.text | e }}</a></li>
     {% endfor %}
   </ul>
   <p class="top-link"><a href="#content" data-i18n="back_to_top">Back to top</a></p>

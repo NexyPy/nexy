@@ -27,6 +27,7 @@ async def add_todo(title: str) -> Todo:
 
 La página lo llama con la entrada Python declarada y obtiene un `Todo` escrito de vuelta:
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/rutas/todos.tsx"
 import { useAction } from "@nexy/client";
 import { add_todo } from "@nexy/actions";
@@ -40,6 +41,32 @@ export default function Todos() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+El componente es una isla de una vista y un controlador devuelve la vista:
+
+```tsx filename="src/components/Todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/todos_view.nexy"
+---
+from "@/components/Todos.tsx" import Todos
+---
+<Todos directive="client:load" />
+```
+<!-- /router -->
 
 ## Navegación del lado del cliente
 
@@ -91,6 +118,7 @@ async def sign_in(email: str, password: str) -> bool:
     return ok
 ```
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/rutas/login.tsx"
 import { useAction, useRouter } from "@nexy/client";
 import { sign_in } from "@nexy/actions";
@@ -105,12 +133,29 @@ export default function Login() {
   return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```tsx filename="src/components/Login.tsx"
+import { useAction } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export function Login() {
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) window.location.assign("/dashboard/");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+<!-- /router -->
 
 `check_password` representa su propio cheque. Consulte [Acciones](../../guides/actions.md) para errores, formularios sin JavaScript y seguridad.
 
 ## Implementación del marco
 
-La API para invocar acciones y navegar varía según el marco. Consulte la guía **Diferencias** para la tecnología elegida:
+La API para invocar acciones y navegar varía según el marco. Consulta la guía de **Diferencias** para la tecnología elegida:
 
 - [React Diferencias](../react/differences.md)
 - [Vue Diferencias](../vue/differences.md)

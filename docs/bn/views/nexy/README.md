@@ -4,6 +4,7 @@
 
 **আপনি শুরু করার আগে:** [দ্রুত শুরু](../../getting-started/quick-start.md) দ্বারা তৈরি একটি প্রকল্প। একটি `.nexy` ফাইলের কোনো বিল্ড কনফিগারেশনের প্রয়োজন হয় না: `nx dev` এটি সংরক্ষণে কম্পাইল করে।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
 from nexy import usePathname
@@ -20,6 +21,39 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+নিয়ামক তার পথ থেকে `slug` পাস করে:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## ফ্রন্টম্যাটার
 
@@ -31,8 +65,8 @@ pathname = usePathname()
 | একটি উপাদান আমদানি করুন | `from "@/components/card.nexy" import Card` |
 | একটি সম্পত্তি ঘোষণা | `title: prop[str] = "Default"` |
 | একটি মান গণনা করুন | `year = datetime.now().year` |
-| অনুরোধটি পড়ুন | `pathname = usePathname()` |
-| পৃষ্ঠা ক্যাশ করুন (ISR) | `revalidate = 60` |
+| অনুরোধ পড়ুন | `pathname = usePathname()` |
+| পৃষ্ঠা ক্যাশে করুন (ISR) | `revalidate = 60` |
 
 ## বৈশিষ্ট্য
 
@@ -54,15 +88,16 @@ pathname = usePathname()
 {% endif %}
 ```
 
-অটোএসকেপিং হল **off**: টেমপ্লেট হল প্রজেক্টের নিজস্ব HTML, তাই `{{ value }}` লিখিত হিসাবে ঢোকানো হয়। `{{ value | e }}` দিয়ে অবিশ্বস্ত মানগুলিকে এড়িয়ে চলুন। `| safe` তাই কিছুই পরিবর্তন করে না।
+অটোএসকেপিং হল **বন্ধ**: টেমপ্লেটগুলি হল প্রজেক্টের নিজস্ব HTML, তাই `{{ value }}` লিখিত হিসাবে সন্নিবেশ করা হয়েছে। `{{ value | e }}` দিয়ে অবিশ্বস্ত মানগুলিকে এড়িয়ে চলুন। `| safe` তাই কিছুই পরিবর্তন করে না।
 
 > [!NOTE]
-> wrap JavaScript যাতে `{% raw %}...{% endraw %}` এ `{{` বা `{%` থাকে। ফ্রেমওয়ার্ক যেমন Vue এবং Svelte একই বন্ধনী ব্যবহার করে।
+> মোড়ানো JavaScript যেটিতে `{{` বা `{%` আছে `{% raw %}...{% endraw %}`। ফ্রেমওয়ার্ক যেমন Vue এবং Svelte একই বন্ধনী ব্যবহার করে।
 
 ## উপাদান
 
 যে কোনো আমদানি করা কলযোগ্য যার নাম একটি বড় হাতের অক্ষর দিয়ে শুরু হয় একটি ট্যাগ হিসাবে ব্যবহার করা যেতে পারে। কম্পাইলার এটিকে একটি Jinja কলে পুনর্লিখন করে: বৈশিষ্ট্যগুলি কীওয়ার্ড আর্গুমেন্টে পরিণত হয়।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -74,15 +109,30 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 শেষ লাইনটি ঠিক `{{ Audio("/theme.mp3", controls=True) }}`। উভয় সিনট্যাক্স অন্তর্নির্মিত `Image`, `Link`, `Audio` এবং `Video` সাহায্যকারীদের জন্য বৈধ - [উপাদানগুলি](components.md#two-syntaxes-one-function) দেখুন।
 
-শিশুরা শিশু উপাদানের ভিতরে `<Slot />` (ক্যাপিটাল এস) এবং একটি বিন্যাসের ভিতরে `{{ children }}` মাধ্যমে রেন্ডার করা হয়।
+শিশুদেরকে শিশু উপাদানের ভিতরে `<Slot />` (ক্যাপিটাল এস) এবং লেআউটের ভিতরে `{{ children }}` মাধ্যমে রেন্ডার করা হয়।
 
 অ্যাট্রিবিউটের ভিতরে Jinja দিয়ে একটি গণনা করা মান পাস করুন: `<Icon path="{{ icon }}" size="{{ size }}" />`। একটি খালি নাম যেমন `path=icon` পাঠ্য `icon`, পরিবর্তনশীল নয়। একটি উপাদানকে একটি CSS ক্লাস দিতে, একটি `class_name` প্রপ ঘোষণা করুন: `class` একটি Python কীওয়ার্ড।
 
 > [!NOTE]
-> একটি সহায়ক ট্যাগ সর্বদা স্ব-বন্ধ হয়। `Link`-এ কন্টেন্ট পাস করা তার `children` আর্গুমেন্ট (`<Link href="/about" children="About" />`) দিয়ে যায়, উপাদান কন্টেন্টের মাধ্যমে নয়।
+> একটি সহায়ক ট্যাগ সর্বদা স্ব-বন্ধ হয়। `Link`-এ কন্টেন্ট পাস করা তার `children` আর্গুমেন্ট (`<Link href="/about" children="About" />`) দিয়ে যায়, উপাদানের বিষয়বস্তুর মাধ্যমে নয়।
 
 ## শৈলী
 

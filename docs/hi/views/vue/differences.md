@@ -2,16 +2,30 @@
 
 नेक्सी सर्वर पर Vue 3 एकल-फ़ाइल घटकों को प्रस्तुत करता है, फिर Vue उन्हें ब्राउज़र में ले लेता है। पेज, लेआउट, द्वीप और क्रियाएं हर ढांचे में समान हैं: यह पेज सेटअप को कवर करता है, फिर वे हिस्से जो [साझा अनुबंध ](../frontend/pages.md) से भिन्न होते हैं।
 
-| मोड | `nexyconfig.py` | पेज हैं | Vue है |
+<!-- router:fbr,custom -->
+| मोड | `nexyconfig.py` | पन्ने हैं | Vue है |
 |---|---|---|---|
-| सर्वर (डिफ़ॉल्ट) | `useCSR = False` | `.nexy` फ़ाइलें | [द्वीप](../../rendering/islands.md) उन पृष्ठों के अंदर |
-| क्लाइंट | `useCSR = True` | `.vue` फ़ाइलें | संपूर्ण पृष्ठ, [लेआउट्स](../frontend/layouts.md) और एक क्लाइंट राउटर के साथ |
+| सर्वर (डिफ़ॉल्ट) | `useCSR = False` | `.nexy` फ़ाइलें | [उन पन्नों के अंदर द्वीप](../../rendering/islands.md) |
+| ग्राहक | `useCSR = True` | `.vue` फ़ाइलें | संपूर्ण पृष्ठ, [लेआउट](../frontend/layouts.md) और एक क्लाइंट राउटर के साथ |
+<!-- /router -->
+
+<!-- router:modular -->
+मॉड्यूलर राउटर के साथ, Vue घटक `.nexy` दृश्यों के अंदर [द्वीप](../../rendering/islands.md) होते हैं, एक नियंत्रक रिटर्न देता है: कोई पेज फ़ाइल नहीं है और कोई क्लाइंट राउटर नहीं है।
+<!-- /router -->
 
 ## एक प्रोजेक्ट प्रारंभ करें
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-vue
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-vue
+```
+<!-- /router -->
 
 टेम्प्लेट Vue द्वीपों वाला एक सर्वर-मोड प्रोजेक्ट है। इसके बजाय संकेतों का उत्तर देने के लिए टेम्पलेट के बिना `nx new my-app` चलाएं: राउटर, प्रोजेक्ट प्रकार, क्लाइंट-साइड रूटिंग का उपयोग करना है या नहीं, फिर फ्रेमवर्क।
 
@@ -49,16 +63,22 @@ export default defineConfig({
 
 - **प्रति परियोजना एक ढाँचा।** `useFF` बिल्कुल एक ढाँचा लेता है; `useFF = [vue(), react()]` स्टार्टअप पर सर्वर को रोक देता है।
 - **प्रति फ़ाइल एक घटक।** एक `.vue` फ़ाइल अपने घटक को डिफ़ॉल्ट के रूप में निर्यात करती है; जिस नाम के अंतर्गत आप इसे आयात करते हैं वह केवल वह टैग है जिसे आप लिखते हैं।
+<!-- router:fbr,custom -->
 - **घटक `src/routes/`** के बाहर रहते हैं, आमतौर पर `src/components/` में, इसलिए वे पृष्ठ नहीं हैं।
 - **सर्वर-मोड प्रोजेक्ट में कोई `.vue` पेज** नहीं है, और क्लाइंट-मोड प्रोजेक्ट में कोई `.nexy` पेज नहीं है: नेक्सी शुरू करने से इंकार कर देता है और फ़ाइल को नाम देता है। [मोड](../../routing/fbr/modes.md) देखें।
+<!-- /router -->
+<!-- router:modular -->
+- **घटक `src/components/`** में रहते हैं, और एक दृश्य उन्हें द्वीपों के रूप में आयात करता है।
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## पन्ने
 
 क्लाइंट मोड (`useCSR = True`) में, एक पेज एक `.vue` फ़ाइल है।
 
 ### पृष्ठ घटक
 
-पेज `<script setup>` ब्लॉक द्वारा परिभाषित घटक है।
+पृष्ठ `<script setup>` ब्लॉक द्वारा परिभाषित घटक है।
 
 ```vue filename="src/routes/index.vue"
 <template>
@@ -68,7 +88,7 @@ export default defineConfig({
 
 ### गतिशील खंड
 
-यूआरएल पैरामीटर पेज पर प्रॉप्स के रूप में पहुंचते हैं। आप उन्हें `defineProps` का उपयोग करके घोषित कर सकते हैं:
+यूआरएल पैरामीटर पेज पर प्रॉप्स के रूप में पहुंचते हैं। आप `defineProps` का उपयोग करके उन्हें घोषित कर सकते हैं:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -98,6 +118,7 @@ defineProps<{ slug: string }>();
   </html>
 </template>
 ```
+<!-- /router -->
 
 ## द्वीप
 
@@ -107,12 +128,23 @@ defineProps<{ slug: string }>();
 
 `.nexy` फ़ाइल के फ्रंटमैटर में घटकों को आयात करें:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.vue" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.vue" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### जलयोजन निर्देश
 

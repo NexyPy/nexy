@@ -47,6 +47,7 @@ async def create_user(name: str, age: int = 0) -> User:
 ### 5. গ্রাস
 ফ্রন্টএন্ড সম্পূর্ণ ধরনের নিরাপত্তা সহ ফলাফল পায়। Nexy আপনার স্বাক্ষর থেকে `__nexy__/src/actions.ts` লিখেছে, এবং `@nexy/actions` এটির সমাধান করেছে।
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,10 +62,37 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+কম্পোনেন্ট হল একটি দ্বীপ যা একটি কন্ট্রোলার ফিরে আসে:
+
+```tsx filename="src/components/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 একটি হুক ছাড়া, একটি কর্ম শুধুমাত্র একটি `async` ফাংশন: `const user = await create_user({ name: "Ada" })`।
 
-| ফ্রেমওয়ার্ক | কি `useAction` ফেরত দেয় |
+| ফ্রেমওয়ার্ক | যা `useAction` ফেরত দেয় |
 |---|---|
 | React, Preact | `{ pending, data, error, run, reset }` |
 | Solid | একই, `pending()`, `data()` এবং `error()` অ্যাক্সেসর হিসাবে |
@@ -81,7 +109,7 @@ export default function NewUser() {
 
 1.  **বৈধতা ত্রুটি (422)**: ইনপুটটি Python স্বাক্ষরের সাথে মেলেনি। `error.fields` প্রতিটি অবৈধ ক্ষেত্রকে তার বার্তায় ম্যাপ করে।
 2.  **ব্যবসায়িক ত্রুটি (`HTTPException`)**: আপনার কোড কলটি প্রত্যাখ্যান করেছে, উদাহরণস্বরূপ `403 Forbidden` বা `409 Conflict`।
-3.  **সার্ভারের ত্রুটি (500)**: আপনার Python কোডে একটি আন-হ্যান্ডেলড ব্যতিক্রম ঘটেছে।
+3.  **সার্ভার ত্রুটি (500)**: আপনার Python কোডে একটি আন-হ্যান্ডেলড ব্যতিক্রম ঘটেছে।
 4.  **নেটওয়ার্ক ত্রুটি**: অনুরোধটি কখনই সার্ভারে পৌঁছায়নি, উদাহরণস্বরূপ একটি সময়সীমা বা হারিয়ে যাওয়া সংযোগ।
 5.  **অনুমোদনের ত্রুটি (401, 403)**: আপনার নিজের চেক কলকারীকে প্রত্যাখ্যান করেছে। Nexy আপনার জন্য এটি সিদ্ধান্ত নেয় না.
 
@@ -89,14 +117,14 @@ export default function NewUser() {
 
 ## একটি কর্মের পরে পৃষ্ঠাটি রিফ্রেশ করুন
 
-একটি অ্যাকশন বলে যে কোন পৃষ্ঠাগুলির পরিবর্তনটি বাসি হয়ে গেছে, যেমনটি Next.js `revalidatePath` এর সাথে করে:
+একটি ক্রিয়া বলে যে কোন পৃষ্ঠাগুলির পরিবর্তনটি বাসি হয়ে গেছে, যেমনটি Next.js `revalidatePath` এর সাথে করে:
 
 ```python
 revalidate()            # the page that is open
 revalidate("/users")    # that page, if it is the one open
 ```
 
-উত্তরটি একটি `x-nexy-revalidate` শিরোনামে পথ বহন করে। ক্লায়েন্ট তারপর রাউটারের মাধ্যমে বর্তমান পৃষ্ঠাটি পুনরায় আনয়ন করে, অথবা ক্লায়েন্ট রাউটার না থাকলে এটি পুনরায় লোড করে।
+উত্তর একটি `x-nexy-revalidate` শিরোনামে পাথ বহন করে। ক্লায়েন্ট তারপর রাউটারের মাধ্যমে বর্তমান পৃষ্ঠাটি পুনরায় আনয়ন করে, বা ক্লায়েন্ট রাউটার না থাকলে এটি পুনরায় লোড করে।
 
 ## ফর্ম ছাড়া JavaScript
 
@@ -116,9 +144,9 @@ revalidate("/users")    # that page, if it is the one open
 ## নিরাপত্তা
 
 ### পথের অস্পষ্টতা অনুমোদন নয়
-অ্যাকশন পাথ হল `/_nx_` এর পরে ফাংশনের মডিউলের একটি হ্যাশ, এর নাম এবং প্রকল্পের একটি গোপনীয়তা। এটি `NEXY_ACTION_SECRET` দ্বারা সেট করা হয়, বা `__nexy__/action.key` এ রাখা হয়, যা `nx build` তৈরি করে যাতে ক্লায়েন্ট বান্ডিল এবং `nx start` সম্মত হয়: সেই ফাইলটিকে বিল্ডের সাথে রাখুন। পথটি নৈমিত্তিক আবিষ্কার থেকে শেষ বিন্দুকে লুকিয়ে রাখে এবং **উত্পন্ন পথটি অনুমোদনের প্রক্রিয়া নয়**।
+অ্যাকশন পাথ হল `/_nx_` এর পরে ফাংশনের মডিউলের একটি হ্যাশ, এর নাম এবং প্রকল্পের একটি গোপনীয়তা। এটি `NEXY_ACTION_SECRET` দ্বারা সেট করা হয়, অথবা `__nexy__/action.key` এ রাখা হয়, যা `nx build` তৈরি করে যাতে ক্লায়েন্ট বান্ডিল এবং `nx start` সম্মত হয়: সেই ফাইলটিকে বিল্ডের সাথে রাখুন। পথটি নৈমিত্তিক আবিষ্কার থেকে শেষ বিন্দুকে লুকিয়ে রাখে এবং **উত্পন্ন পথটি অনুমোদনের প্রক্রিয়া নয়**।
 
-যে কেউ পথ জানেন কর্ম কল করতে পারেন. আপনাকে **অবশ্যই** অ্যাকশনের মধ্যে ব্যবহারকারীর পরিচয় এবং অনুমতি যাচাই করতে হবে:
+যে কেউ পথ জানেন কর্ম কল করতে পারেন. আপনি **অবশ্যই** অ্যাকশনের ভিতরে ব্যবহারকারীর পরিচয় এবং অনুমতি যাচাই করতে হবে:
 ```python
 @Action
 async def delete_user(user_id: str, request: Request):
@@ -128,11 +156,11 @@ async def delete_user(user_id: str, request: Request):
 ```
 
 ### মূল সুরক্ষা
-ক্রস-সাইট অনুরোধ জালিয়াতি (CSRF) প্রতিরোধ করার জন্য, Nexy সেই অনুরোধগুলি প্রত্যাখ্যান করে যার `Origin` অন্য সাইট বা ব্রাউজারটি `Sec-Fetch-Site: cross-site` চিহ্নিত করে `403`। `NEXY_ALLOWED_ORIGINS` এ আপনার ক্রিয়াকলাপগুলিকে কল করতে পারে এমন সাইটগুলির তালিকা করুন৷ একটি `Origin` (যেমন `curl`) ছাড়া কল গ্রহণ করা হয়.
+ক্রস-সাইট অনুরোধ জালিয়াতি (CSRF) প্রতিরোধ করার জন্য, Nexy সেই অনুরোধগুলি প্রত্যাখ্যান করে যার `Origin` অন্য সাইট বা ব্রাউজারটি `Sec-Fetch-Site: cross-site` কে `403` দিয়ে চিহ্নিত করে। `NEXY_ALLOWED_ORIGINS` এ আপনার ক্রিয়াকলাপগুলিকে কল করতে পারে এমন সাইটগুলির তালিকা করুন৷ একটি `Origin` (যেমন `curl`) ছাড়া কল গ্রহণ করা হয়.
 
 ## আমদানি ত্রুটি
 
-স্টার্টআপে নেক্সি অ্যাকশন খোঁজার জন্য `src/` এর প্রতিটি মডিউল আমদানি করে। একটি মডিউল যা আমদানি করতে ব্যর্থ হয় তা রিপোর্ট করা হয় এবং অন্যগুলি এখনও লোড হয়:
+স্টার্টআপে Nexy অ্যাকশন খোঁজার জন্য `src/` এর প্রতিটি মডিউল আমদানি করে। একটি মডিউল যা আমদানি করতে ব্যর্থ হয় তা রিপোর্ট করা হয় এবং অন্যগুলি এখনও লোড হয়:
 
 ```text
   x src.actions.billing: src/actions/billing.py:3  ModuleNotFoundError: No module named 'stripe'
@@ -141,5 +169,5 @@ async def delete_user(user_id: str, request: Request):
 ## পরবর্তী পদক্ষেপ
 
 - [API](../routing/fbr/handlers/README.md): স্পষ্ট হ্যান্ডলার
-- [পরীক্ষা](testing.md#what-to-assert): কিভাবে একটি ক্রিয়া পরীক্ষা করা যায়
-- [কনফিগ](../reference/config.md): মিডলওয়্যার এবং অথ অপশন
+- [টেস্টিং ](testing.md#what-to-assert): কিভাবে একটি ক্রিয়া পরীক্ষা করা যায়
+- [কনফিগারেশন](../reference/config.md): মিডলওয়্যার এবং অথ অপশন

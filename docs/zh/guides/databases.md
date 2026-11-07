@@ -15,6 +15,7 @@
 
 ## 在页面中使用服务
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,6 +37,42 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+控制器调用服务，并将行传递到其视图或将它们作为 JSON 返回：
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM 是异步的
 
@@ -46,6 +83,7 @@ async def GET():
 | 同步代码，例如页面 | `run(UserService.get_all())` | 运行并返回结果 |
 | 异步代码，例如处理程序或控制器 | `await arun(UserService.get_all())` | 一样，不阻塞服务器 |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -53,8 +91,28 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
 
-Tortoise 在第一次调用其中一个时连接。从 `async def`（服务内部的 `await UserModel.all()`）调用模型，而不是在模块级别：协程外部的调用在 Tortoise 连接之前运行。
+<!-- router:modular -->
+控制器是异步的：它通过 `arun` 等待服务，并且视图仅显示行：
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
+
+Tortoise 在第一次调用其中一个时连接。从 `async def`（服务内的 `await UserModel.all()`）调用模型，而不是在模块级别：协程外部的调用在 Tortoise 连接之前运行。
 
 列出 `TORTOISE_ORM` 中保存模型的每个模块（`src/configs/db.py` 的 `models` 条目）。脚手架列出了用户模型和 `aerich.models`；未找到模块中未列出的模型。
 
@@ -76,7 +134,7 @@ Tortoise 在第一次调用其中一个时连接。从 `async def`（服务内�
 
 当您选择 ORM 并提供数据库 URL 时，`nx new` 将设置迁移工具，创建第一个迁移并应用它，因此用户页面会在第一个 `nexy dev` 上进行回答。迁移工具（`alembic` 或 `aerich`）与 ORM 一起安装在项目中。
 
-如果数据库没有响应（PostgreSQL 服务器未运行，缺少驱动程序），`nx new` 会说明原因，跳过迁移并列出准备就绪时要运行的两个命令：
+如果数据库没有回答（PostgreSQL 服务器未运行，缺少驱动程序），`nx new` 会说明原因，跳过迁移并列出准备就绪时要运行的两个命令：
 
 ```bash
 nexy migrate -m "create tables"

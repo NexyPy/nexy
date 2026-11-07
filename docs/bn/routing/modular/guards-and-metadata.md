@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -35,8 +35,8 @@ class AdminController:
 |---|---|
 | `name` | রুটের নাম |
 | `tags` | OpenAPI ট্যাগ |
-| API রেফারেন্সে `summary`, `description` | পাঠ্য |
-| `deprecated` | অপারেশনটিকে অবচ্যুত চিহ্নিত করুন |
+| `summary`, `description` | API রেফারেন্সে পাঠ্য |
+| `deprecated` | অপ্রচলিত অপারেশন চিহ্নিত করুন |
 | `include_in_schema` | স্কিমা থেকে রুট লুকান |
 | `operation_id` | স্পষ্ট অপারেশন আইডি |
 | `openapi_extra` | অতিরিক্ত OpenAPI ক্ষেত্র |
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)
@@ -61,5 +61,5 @@ class UserController:
 
 ## পরবর্তী পদক্ষেপ
 
-- [নির্ভরতা ইনজেকশন](dependency-injection.md)
+- [নির্ভরতা ইনজেকশন ](dependency-injection.md)
 - [API রুট](../fbr/handlers/README.md): ফাইল-ভিত্তিক হ্যান্ডলারদের জন্য একই বিকল্প

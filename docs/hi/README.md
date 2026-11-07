@@ -29,11 +29,6 @@
 | [एक राउटर चुनें](routing/README.md) | फ़ाइल-आधारित, मॉड्यूलर या कस्टम राउटर चुनें |
 | [एक दृश्य प्रारूप चुनें](views/README.md) | किसी पृष्ठ के लिए `.nexy`, Markdown या क्लाइंट फ़्रेमवर्क चुनें |
 
-### कहीं और से आ रहा है
-| पेज | तुम क्या करोगे |
-|---|---|
-| [किसी अन्य ढाँचे से आ रहा है](getting-started/coming-from-other-frameworks.md) | FastAPI, Next.js और एक्सप्रेस आदतों का नेक्सी में अनुवाद करें |
-
 ## रूटिंग
 
 ### फ़ाइल-आधारित {fbr}
@@ -52,10 +47,10 @@
 ### हैंडलर और त्रुटियाँ {fbr}
 | पेज | तुम क्या करोगे |
 |---|---|
-| [मार्ग संचालक](routing/fbr/handlers/README.md) | एक Python समापनबिंदु जोड़ें |
+| [मार्ग संचालक](routing/fbr/handlers/README.md) | एक Python समापन बिंदु जोड़ें |
 | [सत्यापन और त्रुटियाँ](routing/fbr/handlers/validation-and-errors.md) | `422` और `404` का उत्तर दें, और एक `HTTPException` बढ़ाएँ |
 | [WebSocket संचालक](routing/fbr/realtime/websocket.md) | `SOCKET` कनेक्शन संभालें |
-| [निर्भरताएँ और रक्षक](routing/fbr/dependencies/README.md) | हैंडलर से पहले `dependencies.py` चलाएँ और उसे इनहेरिट करें |
+| [निर्भरताएँ और रक्षक](routing/fbr/dependencies/README.md) | हैंडलर से पहले `dependencies.py` चलाएँ और इसे इनहेरिट करें |
 | [मिडलवेयर फ़ाइलें](routing/fbr/middleware/README.md) | अनुरोधों को `middleware.py` के साथ लपेटें, जो निर्देशिका द्वारा विरासत में मिला है |
 | [त्रुटि पृष्ठ](routing/fbr/errors/README.md) | `notfound.nexy`, `errors.nexy` और JSON त्रुटियों के साथ उत्तर दें |
 | [प्रति फ़ोल्डर त्रुटि पृष्ठ](routing/fbr/errors/folder-pages.md) | एज केस: उप-फ़ोल्डर्स से त्रुटियाँ |
@@ -79,8 +74,6 @@
 ### साझा अनुबंध
 | पेज | यह क्या परिभाषित करता है |
 |---|---|
-| [फ्रंटएंड पेज](views/frontend/pages.md) | एक फ़ाइल, एक रूट: प्रॉप्स, रेंडरिंग, मेटाडेटा |
-| [फ्रंटएंड लेआउट](views/frontend/layouts.md) | दस्तावेज़ शेल, नेस्टिंग, और एक लेआउट क्या नहीं कर सकता |
 | [क्रियाएँ और नेविगेशन](views/frontend/actions-and-navigation.md) | टाइप की गई कार्रवाई को कॉल करें, पेज लिंक करें, यूआरएल पढ़ें |
 
 ### नेक्सी विचार
@@ -88,6 +81,12 @@
 |---|---|
 | [.nexy फ़ाइलें](views/nexy/README.md) | Python, Jinja2 और प्रॉप्स के साथ एक पेज लिखें |
 | [घटक](views/nexy/components.md) | `Image`, `Link`, `Audio`, `Video` और `Import` का उपयोग करें |
+
+### फ़ाइलों में पेज और लेआउट {fbr,custom}
+| पेज | यह क्या परिभाषित करता है |
+|---|---|
+| [फ्रंटएंड पेज](views/frontend/pages.md) | एक फ़ाइल, एक रूट: प्रॉप्स, रेंडरिंग, मेटाडेटा |
+| [फ्रंटएंड लेआउट](views/frontend/layouts.md) | दस्तावेज़ शेल, नेस्टिंग, और एक लेआउट क्या नहीं कर सकता |
 | [लेआउट.नेक्सी](views/nexy/layouts.md) | सर्वर-मोड लेआउट लिखें |
 | [Markdown और MDX](views/nexy/markdown.md) | सामग्री पृष्ठ लिखें |
 
@@ -107,9 +106,13 @@
 |---|---|
 | [प्रतिपादन](rendering/README.md) | कौन सा रेंडरिंग मोड एक पेज पर फिट बैठता है |
 | [एसएसआर](rendering/ssr.md) | सर्वर रेंडरिंग, डिफ़ॉल्ट |
+| [द्वीप](rendering/islands.md) | निष्क्रिय, दृश्यमान या मीडिया क्वेरी पर हाइड्रेट करें |
+
+### फ़ाइल पृष्ठों के मोड {fbr,custom}
+| पेज | आप क्या निर्णय लेंगे |
+|---|---|
 | [आईएसआर](rendering/isr.md) | बासी-जबकि-पुनर्वैधीकरण के साथ कैश पेज |
 | [सीएसआर](rendering/csr.md) | क्लाइंट-साइड रूटिंग |
-| [द्वीप](rendering/islands.md) | निष्क्रिय, दृश्यमान या मीडिया क्वेरी पर हाइड्रेट करें |
 
 ## मार्गदर्शक
 
@@ -129,7 +132,7 @@
 ### बनाएं और परीक्षण करें
 | पेज | तुम क्या करोगे |
 |---|---|
-| [Vite और स्टाइल](guides/frontend.md) | Vite, स्टाइलिंग और क्लाइंट बिल्ड सेट करें |
+| [Vite और स्टाइलिंग](guides/frontend.md) | Vite, स्टाइलिंग और क्लाइंट बिल्ड सेट करें |
 | [परीक्षण](guides/testing.md) | pytest, `TestClient` और विटेस्ट के साथ परीक्षण करें |
 
 ### टूलींग और सहायता
@@ -138,6 +141,57 @@
 | [देव टूलबार](guides/devtools.md) | `nexy dev` के टूलबार का उपयोग करें, और इसे बंद करें |
 | [कोडिंग एजेंट](guides/ai-agents.md) | Claude Code, Codex और OpenCode अपने प्रोजेक्ट के नियम बताएं |
 | [समस्या निवारण](guides/troubleshooting.md) | लोगों द्वारा झेली गई पहली समस्याओं को ठीक करें |
+
+## डेटाबेस
+
+### एसक्यूएल डेटाबेस
+| पेज | तुम क्या करोगे |
+|---|---|
+| [SQLite](databases/sqlite.md) | एक फ़ाइल का उपयोग करें, कोई सर्वर नहीं: इंजन, प्राग्मास, माइग्रेशन और परीक्षण |
+| [PostgreSQL](databases/postgresql.md) | psycopg से जुड़ें, JSONB, ऐरे, खोज और upserts का उपयोग करें |
+| [नियॉन](databases/neon.md) | सर्वर रहित PostgreSQL का उपयोग करें: पूल्ड होस्ट, ऑटोसस्पेंड और शाखाएं |
+| [MySQL और MariaDB](databases/mysql-mariadb.md) | pymysql से जुड़ें, utf8mb4, upserts और पूर्ण-पाठ खोज का उपयोग करें |
+
+## से आ रहा है
+
+वही कार्य, जो आप जानते हैं ढांचे में लिखे गए हैं और फिर नेक्सी में।
+
+### सिंहावलोकन
+| पेज | तुम क्या करोगे |
+|---|---|
+| [किसी अन्य ढाँचे से आ रहा है](getting-started/coming-from-other-frameworks.md) | FastAPI, Next.js और एक्सप्रेस आदतों का नेक्सी में अनुवाद करें |
+
+### Python रूपरेखाएँ {fbr}
+| पेज | तुम क्या करोगे |
+|---|---|
+| [से FastAPI](coming-from/fastapi.md) | अपना FastAPI कोड रखें: केवल `@app.get` ही एक फ़ाइल बनती है |
+| [से Flask](coming-from/flask.md) | व्यू, ब्लूप्रिंट, टेम्प्लेट और फॉर्म को नेक्सी रूट में बदलें |
+| [से Django](coming-from/django.md) | नेक्सी पर मानचित्र दृश्य, टेम्पलेट, मॉडल, फॉर्म और सेटिंग्स |
+
+### JavaScript बैकएंड {fbr}
+| पेज | तुम क्या करोगे |
+|---|---|
+| [एक्सप्रेस से](coming-from/express.md) | रूट, मिडलवेयर और `req`/`res` का Python हैंडलर में अनुवाद करें |
+| [फास्टिफाई से](coming-from/fastify.md) | स्कीमा, प्लगइन और हुक को मॉडल, फ़ोल्डर और फ़ाइलों में बदलें |
+| [एलिसिया से](coming-from/elysia.md) | मानचित्र `t` स्कीमा, गार्ड और ईडन से Pydantic और टाइप की गई गतिविधियां |
+| [होनो से](coming-from/hono.md) | नेक्सी के लिए रूट, मिडलवेयर और `hc` क्लाइंट को मैप करें |
+
+### फुलस्टैक फ्रेमवर्क {fbr}
+| पेज | तुम क्या करोगे |
+|---|---|
+| [से Next.js](coming-from/nextjs.md) | अपने React पेज रखें और सर्वर कोड को Python पर ले जाएं |
+| [से Remix](coming-from/remix.md) | लोडर और क्रियाओं को Python हैंडलर और क्रियाओं में बदलें |
+| [अगले से](coming-from/nuxt.md) | अपने Vue पेज रखें और `server/` को Python पर ले जाएं |
+| [SvelteKit से](coming-from/sveltekit.md) | अपने Svelte पेज रखें और लोड, क्रियाएं और हुक को Python पर ले जाएं |
+| [से Astro](coming-from/astro.md) | Astro पृष्ठों को समान द्वीपों के साथ `.nexy` पृष्ठों के रूप में लिखें |
+| [लारवेल से](coming-from/laravel.md) | नेक्सी के लिए मार्ग, नियंत्रक, ब्लेड, एलोक्वेंट और कतारें मैप करें |
+| [रूबी ऑन रेल्स से](coming-from/rails.md) | नेक्सी के लिए मानचित्र मार्ग, नियंत्रक, ईआरबी, सक्रिय रिकॉर्ड और नौकरियां |
+
+### नियंत्रक ढाँचे {modular}
+| पेज | तुम क्या करोगे |
+|---|---|
+| [से NestJS](coming-from/nestjs.md) | नियंत्रकों, मॉड्यूल, प्रदाताओं और गार्डों को मॉड्यूलर राउटर पर ले जाएं |
+| [स्प्रिंग बूट से](coming-from/spring-boot.md) | नियंत्रकों, सेवाओं और फ़िल्टर को मॉड्यूलर राउटर पर ले जाएँ |
 
 ## संदर्भ
 
@@ -153,10 +207,14 @@
 | [Python एपीआई](reference/python-api.md) | प्रत्येक नाम नेक्सी मॉड्यूल द्वारा निर्यात करता है |
 | [अपवाद और त्रुटियाँ](reference/exceptions.md) | प्रत्येक विफलता, उसकी स्थिति, और वह फ़ाइल जो उसका उत्तर देती है |
 
-### परंपराएँ और अवधारणाएँ
+### फ़ाइल कन्वेंशन {fbr,custom}
 | पेज | तुम क्या करोगे |
 |---|---|
 | [फ़ाइल कन्वेंशन](reference/file-conventions.md) | आरक्षित फ़ाइलें और रूटिंग नियम |
+
+### परंपराएँ और अवधारणाएँ
+| पेज | तुम क्या करोगे |
+|---|---|
 | [शब्दावली](reference/glossary.md) | ये दस्तावेज़ जिन शब्दों का उपयोग करते हैं |
 | [सुरक्षा](reference/security.md) | संस्करण फ़्लोर, नेक्सी द्वारा अनुसरण किए जाने वाले नियम, ऑडिट |
 
@@ -166,6 +224,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode
@@ -199,6 +259,6 @@ docs/
 | [नेक्सी कैसे काम करती है](getting-started/how-nexy-works.md) | देखें कि फ़ाइल और पृष्ठ के बीच क्या होता है, और नेक्सी आपके लिए क्या छोड़ता है |
 | [2.2 में अपग्रेड किया जा रहा है](getting-started/upgrading.md) | 2.1 से 2.2 पर माइग्रेट करें |
 | [अंतर्राष्ट्रीयकरण (i18n)](guides/i18n.md) | अपनी पसंद की लाइब्रेरी से अनुवाद जोड़ें |
-| [व्यंजन विधि](guides/recipes.md) | उदाहरण और पैटर्न, ट्यूटोरियल नहीं |
+| [रेसिपी](guides/recipes.md) | उदाहरण और पैटर्न, ट्यूटोरियल नहीं |
 
 *ये पृष्ठ डिफ़ॉल्ट पठन पथ का हिस्सा नहीं हैं। एक "सभी दस्तावेज़" लिंक आपको सब कुछ देखने की अनुमति देता है।*

@@ -21,25 +21,47 @@ Trois façons de décider quel code répond à une URL. Ce sont des alternatives
 - **Routeur modulaire** : contrôleurs et modules sous `src/apps/`, déclarés auprès des décorateurs, pour une base de code de style NestJS.
 - **Routeur personnalisé** : un FastAPI `APIRouter` existant inclus dans l'application.
 
-Le choix est une ligne de `nexyconfig.py`. Le routage basé sur fichiers n'en a besoin : sans `useRouter`, Nexy lit `src/routes/`.
+Le choix est une ligne de la classe `NexyConfig` dans `nexyconfig.py`.
+
+<!-- router:fbr -->
+Le routage basé sur des fichiers ne nécessite aucune ligne : sans `useRouter`, Nexy lit `src/routes/`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+Le routeur modulaire est le module racine de `src/apps/` :
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+Un routeur personnalisé est un `APIRouter` que vous possédez déjà :
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
 Choisir l’un des trois est une décision. Le choix d'un framework frontend en est un autre, distinct : voir [Choisir un routeur](../routing/README.md) et [Vues](../views/README.md).
 
@@ -53,11 +75,12 @@ Cinq notions qu'un lecteur venant de Next.js fusionne habituellement en une seul
 | **Page** | un fichier de route qui restitue une vue : `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | un endpoint : il répond à un document, pas à des données |
 | **Voir** | ce qui produit le corps d'une page : Jinja2 et Python, Markdown, ou un composant client | un itinéraire : une même vue peut servir plusieurs pages |
 | **Composant** | une pièce réutilisable qu'une page importe | une route : en mode serveur un composant n'est jamais servi seul |
-| **Gestionnaire de route** | la fonction d'un fichier de route `.py`, nommé d'après la méthode HTTP (`GET`, `POST`, …) | une page : elle renvoie du JSON, un fichier ou un `Response` |
+| **Gestionnaire de route** | la fonction d'un fichier de route `.py`, nommé d'après la méthode HTTP (`GET`, `POST`, …) | une page : elle renvoie du JSON, un fichier ou un `Response` |
 | **Point de terminaison** | la paire (URL, méthode) à laquelle un gestionnaire répond | un gestionnaire : un fichier peut répondre à plusieurs points de terminaison |
 
 En une phrase : **une page est un fichier de route, une vue est ce qui le restitue, un composant est ce qu'une page réutilise, un gestionnaire répond à un point de terminaison.**
 
+<!-- router:fbr -->
 Les cinq dans un petit projet :
 
 ```text
@@ -90,6 +113,69 @@ async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
 
+<!-- /router -->
+
+<!-- router:modular -->
+Avec le routeur modulaire, une route est le chemin d'un contrôleur, et un gestionnaire est l'une de ses méthodes, nommée d'après le verbe HTTP :
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+Une page est toujours un fichier de `src/routes/`, ou une vue qu'un contrôleur renvoie avec `useViews`.
+<!-- /router -->
+
+<!-- router:custom -->
+Avec un routeur personnalisé, une route est un chemin de votre `APIRouter`, et un gestionnaire est la fonction enregistrée par son décorateur :
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+Les pages sont toujours des fichiers de `src/routes/` : une page de `.nexy` répond à côté des itinéraires inclus.
+<!-- /router -->
+
 Encore deux mots qui reviennent partout :
 
 - **Layout** : un fichier `layout.*` qui enveloppe les pages sous son dossier ; la racine est propriétaire du document HTML. Voir [Mise en page](../routing/fbr/layouts/README.md).
@@ -112,6 +198,7 @@ Deux décisions indépendantes, souvent confondues :
 
 Une page en mode serveur avec un îlot : le serveur restitue la page, le navigateur hydrate le graphique uniquement lorsqu'il défile.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -119,6 +206,30 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+L'île apparaît dans la vue et le contrôleur renvoie la vue :
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## Interaction avec les applications
 
@@ -140,17 +251,29 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/routes/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## Ce que Nexy ne fait pas
 
-L'authentification, l'autorisation, la base de données, l'internationalisation, les tâches en arrière-plan, la messagerie électronique, les paiements et la recherche relèvent de **la responsabilité de votre application**, et non celle du framework. Nexy donne les points d'extension et indique où brancher chacun d'eux : voir [Ce que Nexy vous laisse](how-nexy-works.md#what-nexy-leaves-to-you).
+L'authentification, l'autorisation, la base de données, l'internationalisation, les tâches en arrière-plan, le courrier électronique, les paiements et la recherche sont **la responsabilité de votre application**, et non celle du framework. Nexy donne les points d'extension et indique où brancher chacun d'eux : voir [Ce que Nexy vous laisse](how-nexy-works.md#what-nexy-leaves-to-you).
 
+<!-- router:fbr -->
 L'authentification, par exemple, se connecte à une dépendance du dossier qu'elle protège. Nexy l'exécute avant chaque itinéraire ci-dessous ; qui est l'utilisateur reste votre décision :
 
 ```python filename="src/routes/compte/dependencies.py"
@@ -165,6 +288,48 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+L'authentification, par exemple, se connecte à un garde sur le contrôleur qu'elle protège. Nexy l'exécute avant chaque gestionnaire de la classe ; qui est l'utilisateur reste votre décision :
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+L'authentification, par exemple, se connecte à une dépendance du routeur qu'elle protège, comme dans FastAPI ; qui est l'utilisateur reste votre décision :
+
+```python filename="src/compte.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 La raison n'est pas le minimalisme en soi : un framework qui sélectionne votre ORM ou votre bibliothèque d'authentification a décidé quelque chose que seule votre application peut décider.
 

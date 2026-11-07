@@ -2,16 +2,30 @@
 
 Nexy rendert Solid 1.9-Komponenten auf dem Server, dann Solid übernimmt sie im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
+<!-- router:fbr,custom -->
 | Modus | `nexyconfig.py` | Seiten sind | Solid ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Der Client | `useCSR = True` | `.tsx` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Kunde | `useCSR = True` | `.tsx` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+<!-- /router -->
+
+<!-- router:modular -->
+Beim modularen Router sind Solid Komponenten [Inseln](../../rendering/islands.md) innerhalb der `.nexy` Ansichten, die ein Controller zurückgibt: Es gibt keine Auslagerungsdatei und keinen Client-Router.
+<!-- /router -->
 
 ## Starten Sie ein Projekt
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-solid
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-solid
+```
+<!-- /router -->
 
 Die Vorlage ist ein Servermodus-Projekt mit Solid Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
@@ -65,11 +79,17 @@ export default function Counter(props: { start?: number }) {
 ## Regeln
 
 - **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [solid(), react()]` stoppt den Server beim Start. Mit `useFF = solid()` ist jede `.tsx`-Datei Solid.
+<!-- router:fbr,custom -->
 - **Seiten sind `.tsx`.** Nur eine `.tsx`-Datei unter `src/routes/` wird zu einer Seite; `.jsx` ist für eine Komponente in Ordnung.
 - **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
 - **Ein Servermodus-Projekt hat keine `.tsx` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Komponenten leben in `src/components/`** und eine Ansicht importiert sie als Inseln.
+<!-- /router -->
 - **Nein `.mdx` mit Solid.** MDX kompiliert zu React oder Preact; `.md` Seiten funktionieren.
 
+<!-- router:fbr,custom -->
 ## Seiten
 
 Im Client-Modus (`useCSR = True`) ist eine Seite eine `.tsx`-Datei.
@@ -119,6 +139,7 @@ export default function RootLayout(props: { children: JSX.Element }) {
 ```
 
 Zerstören Sie `props.children` nicht, da Solid es träge liest.
+<!-- /router -->
 
 ## Inseln
 
@@ -128,12 +149,23 @@ Im Servermodus ist eine in eine `.nexy`-Datei importierte Solid-Komponente eine 
 
 Importieren Sie Komponenten in die Frontmatter der Datei `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Trinkrichtlinien
 

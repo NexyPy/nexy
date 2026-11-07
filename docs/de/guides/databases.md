@@ -15,6 +15,7 @@ Die Verbindungszeichenfolge stammt aus der Umgebungsvariablen `DATABASE_URL`. We
 
 ## Verwenden Sie einen Dienst auf einer Seite
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,6 +37,42 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Ein Controller ruft den Dienst auf und übergibt die Zeilen an seine Ansicht oder gibt sie als JSON zurück:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM ist asynchron
 
@@ -46,6 +83,7 @@ Eine Seite läuft in der Ereignisschleife des Servers und kann nicht darauf wart
 | Synchronisierungscode, z. B. eine Seite | `run(UserService.get_all())` | führt es aus und gibt das Ergebnis zurück |
 | asynchroner Code, z. B. ein Handler oder ein Controller | `await arun(UserService.get_all())` | das Gleiche, ohne den Server zu blockieren |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -53,8 +91,28 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
 
-Tortoise verbindet sich, wenn einer von ihnen zum ersten Mal aufgerufen wird. Rufen Sie das Modell von einem `async def` (`await UserModel.all()` innerhalb eines Dienstes auf, nicht auf Modulebene: Ein Aufruf außerhalb einer Coroutine wird ausgeführt, bevor Tortoise eine Verbindung hergestellt hat.
+<!-- router:modular -->
+Ein Controller ist asynchron: Er wartet bis `arun` auf den Dienst und die Ansicht zeigt nur die Zeilen:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
+
+Tortoise stellt eine Verbindung her, wenn einer von ihnen zum ersten Mal aufgerufen wird. Rufen Sie das Modell von einem `async def` (`await UserModel.all()` innerhalb eines Dienstes auf, nicht auf Modulebene: Ein Aufruf außerhalb einer Coroutine wird ausgeführt, bevor Tortoise eine Verbindung hergestellt hat.
 
 Listen Sie jedes Modul auf, das Modelle in `TORTOISE_ORM` enthält (der `models`-Eintrag von `src/configs/db.py`). Das Gerüst listet das Benutzermodell und `aerich.models` auf; Ein Modell in einem Modul, das nicht aufgeführt ist, wurde nicht gefunden.
 
@@ -68,7 +126,7 @@ Listen Sie jedes Modul auf, das Modelle in `TORTOISE_ORM` enthält (der `models`
 | `nx migrate -m "add users"` | Erstellen Sie eine Migration aus Ihren Modelländerungen |
 | `nx migrate --upgrade` | Ausstehende Migrationen anwenden |
 
-Mit Aerich führt der erste `nx migrate` `aerich init-db` aus, wodurch die erste Migration und die Tabellen zusammen erstellt werden; die nächsten laufen `aerich migrate --name "..."` und `--upgrade` läuft `aerich upgrade`.
+Mit Aerich führt der erste `nx migrate` `aerich init-db` aus, wodurch die erste Migration und die Tabellen zusammen erstellt werden; Die nächsten führen `aerich migrate --name "..."` aus, und `--upgrade` führt `aerich upgrade` aus.
 
 `nx migrate` stoppt mit einer eindeutigen Meldung, wenn `DATABASE_URL` fehlt oder die Datenbank nicht erreichbar ist (nur Alembic: Aerich meldet eigene Fehler).
 

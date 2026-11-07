@@ -4,6 +4,7 @@ Nexy exporte un petit ensemble d'assistants qui renvoient des chaînes HTML. Cha
 
 ## Deux syntaxes, une fonction
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Les deux lignes produisent le même balisage :
 
@@ -23,11 +36,11 @@ Le compilateur réécrit `<Audio ... />` en `{{ Audio(...) }}`, donc la forme de
 
 ## Règles du formulaire de balise
 
-| Dans la balise | devient |
+| Dans la balise | Devient |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, un vrai booléen |
-| `width=640` | `width=640`, un nombre |
+| `width=640` | `width=640`, un certain nombre |
 | `src="{{ url }}"` | `src=(url)`, évalué dans Jinja |
 | tout autre `value` | `"value"`, une chaîne |
 
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,6 +117,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` n'a pas de valeur par défaut, la page doit donc la transmettre ; `tone` revient à `"neutral"`. Le balisage entre les balises arrive à l’intérieur de `<Slot />` (S majuscule). Voir [fichiers .nexy](README.md#components) pour les accessoires, les emplacements et les règles du formulaire de balise.
 
@@ -117,7 +143,7 @@ from "@/components/Counter.tsx" import Counter
 <Counter start="0" />
 ```
 
-`Import(path, framework, symbol)` fait la même chose dans Python :
+`Import(path, framework, symbol)` fait de même dans Python :
 
 ```python
 from nexy import Import
@@ -126,7 +152,7 @@ counter = Import("@/components/Counter.tsx", "react", "Counter")
 html = counter(start=0)
 ```
 
-La même syntaxe d'importation résout les fichiers `.json`, `.css` et image en leurs URL.
+La même syntaxe d'importation résout les `.json`, `.css` et les fichiers image en leurs URL.
 
 ## Modèle et Vite
 
@@ -140,6 +166,6 @@ La même syntaxe d'importation résout les fichiers `.json`, `.css` et image en 
 
 ## Prochaines étapes
 
-- [fichiers .nexy](README.md) : où ces assistants sont utilisés
+- [Fichiers .nexy](README.md) : où ces assistants sont utilisés
 - [React](../react/differences.md) : importation de composants `.tsx`
 - [Frontend](../../guides/frontend.md) : comment les composants clients sont regroupés

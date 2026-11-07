@@ -48,6 +48,7 @@ The return value is automatically serialized to JSON. Pydantic models are handle
 ### 5. Consume
 The frontend receives the result with full type safety. Nexy writes `__nexy__/src/actions.ts` from your signatures, and `@nexy/actions` resolves to it.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -62,6 +63,33 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+The component is an island of the view a controller returns:
+
+```tsx filename="src/components/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 Without a hook, an action is just an `async` function: `const user = await create_user({ name: "Ada" })`.
 

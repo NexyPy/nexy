@@ -55,6 +55,7 @@ Browser ──► Middleware ──► Router ──► Page or handler
 
 `redirect`, `permanentRedirect`, `notFound`, `forbidden` et `unauthorized` déclenchent une exception HTTP, donc le même appel fonctionne dans une page `.nexy`, un gestionnaire d'API, un contrôleur modulaire, un garde, un `dependencies.py` et une action.
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/posts/[slug].py"
 from nexy import notFound, redirect
 
@@ -69,6 +70,29 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+Répertoriez le contrôleur dans le `controllers` du module racine.
+<!-- /router -->
 
 | Appeler | Réponse | Quand |
 |---|---|---|
@@ -85,6 +109,7 @@ Construisez la destination à partir de valeurs auxquelles vous faites confiance
 
 Les paramètres du gestionnaire sont validés par FastAPI par rapport à leurs annotations.
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
 
@@ -92,11 +117,27 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+Répertoriez le contrôleur dans le `controllers` du module racine.
+<!-- /router -->
 
 | Problème | Statut | Pourquoi |
 |---|---|---|
 | requête, en-tête, cookie ou champ de corps manquant ou invalide | `422` | la demande a atteint le gestionnaire, les données sont fausses |
-| segment de chemin invalide (`/api/users/abc` pour `id: int`) | `404` | le dossier n'a pas de route pour un non-numéro, donc l'URL n'existe pas |
+| segment de chemin non valide (`/api/users/abc` pour `id: int`) | `404` | le dossier n'a pas de route pour un non-numéro, donc l'URL n'existe pas |
 
 Le corps de `422` est la forme standard de FastAPI, donc les clients et les SDK générés continuent de fonctionner :
 
@@ -111,6 +152,7 @@ Pour un formulaire ou une action, le client reçoit un `ActionError` avec `statu
 
 ## Pages d'erreur personnalisées
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notfound.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -135,6 +177,11 @@ Un fichier quelque part dans les routes installe la réponse à son statut : un
 
 > [!IMPORTANT]
 > Une page `errors.nexy` remplace la page `500` ; il n'intercepte pas l'exception et ne modifie pas la ligne de journal. Si le gestionnaire qui a généré est la page elle-même, la page ne peut pas afficher ses propres détails d'erreur : gardez `errors.nexy` simple et indépendant.
+<!-- /router -->
+
+<!-- router:modular -->
+Le routeur modulaire n'a pas de page d'erreur dans un fichier : un `404`, `500`, `403` ou `401` obtient la page stylisée intégrée. Les pages d'erreur par dossier sont une convention du routeur basé sur des fichiers.
+<!-- /router -->
 
 ## Exceptions non gérées
 
@@ -169,7 +216,7 @@ Une action est un point de terminaison `POST` avec un chemin généré. Ses éch
 | une exception non gérée | `500` | `ActionError`; la référence est dans le journal du serveur |
 | l'en-tête `Origin` est un autre site | `403` | refusé avant le déroulement de l'action |
 
-Un formulaire sans JavaScript est publié dans le chemin d'action ; un succès renvoie `303` à la page, un échec affiche la page d'erreur. Voir [Actions](../guides/actions.md#forms-without-javascript).
+Un formulaire sans JavaScript publié dans le chemin d'action ; un succès répond `303` retour à la page, un échec affiche la page d'erreur. Voir [Actions](../guides/actions.md#forms-without-javascript).
 
 ## Une liste de contrôle lorsqu'une page répond à la mauvaise chose
 

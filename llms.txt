@@ -80,6 +80,32 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Coding agents](docs/guides/ai-agents.md): Give Claude Code, Codex and OpenCode the rules of your project
 - [Troubleshooting](docs/guides/troubleshooting.md): Fix the first problems people hit
 
+### Databases
+
+- [SQLite](docs/databases/sqlite.md): A database in one file, with SQLModel, SQLAlchemy or Tortoise
+- [PostgreSQL](docs/databases/postgresql.md): Connect, query and migrate PostgreSQL from routes and pages
+- [Neon](docs/databases/neon.md): Serverless PostgreSQL, pooled and direct connection URLs
+- [MySQL and MariaDB](docs/databases/mysql-mariadb.md): Drivers, URLs and migrations for MySQL or MariaDB
+
+### Coming from
+
+- [From FastAPI](docs/coming-from/fastapi.md): Move FastAPI endpoints, routers and dependencies into route files
+- [From Flask](docs/coming-from/flask.md): Turn views, blueprints, templates and forms into Nexy routes
+- [From Django](docs/coming-from/django.md): Map views, templates, models, forms and settings to Nexy
+- [From Express](docs/coming-from/express.md): Translate routes, middleware and `req`/`res` into Python handlers
+- [From Fastify](docs/coming-from/fastify.md): Turn schemas, plugins and hooks into models, folders and files
+- [From Elysia](docs/coming-from/elysia.md): Map `t` schemas, guards and Eden to Pydantic and typed actions
+- [From Hono](docs/coming-from/hono.md): Map routes, middleware and the `hc` client to Nexy
+- [From NestJS](docs/coming-from/nestjs.md): Move controllers, modules, providers and guards to the modular router
+- [From Laravel](docs/coming-from/laravel.md): Map routes, controllers, Blade, Eloquent and queues to Nexy
+- [From Spring Boot](docs/coming-from/spring-boot.md): Map controllers, Bean Validation, JPA and filters to Nexy
+- [From Ruby on Rails](docs/coming-from/rails.md): Map routes, controllers, ERB, Active Record and jobs to Nexy
+- [From Next.js](docs/coming-from/nextjs.md): Keep your React pages and move server code to Python
+- [From Remix](docs/coming-from/remix.md): Turn loaders and actions into Python handlers and actions
+- [From Nuxt](docs/coming-from/nuxt.md): Keep your Vue pages and move `server/` to Python
+- [From SvelteKit](docs/coming-from/sveltekit.md): Keep your Svelte pages and move loads, actions and hooks to Python
+- [From Astro](docs/coming-from/astro.md): Write Astro pages as `.nexy` pages, with the same islands
+
 ### Reference
 
 - [CLI](docs/reference/cli.md): Commands, flags, prompts and exit codes

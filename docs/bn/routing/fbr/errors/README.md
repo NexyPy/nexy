@@ -23,7 +23,7 @@ the HTML page
 
 ```nexy filename="src/routes/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -46,16 +46,16 @@ curl -i -H "Accept: text/html" http://localhost:3000/nowhere
 | `errors.nexy` | `500` এর ডিরেক্টরির জন্য |
 | `forbidden.nexy` | `403` এর ডিরেক্টরির জন্য |
 | `unauthorized.nexy` | `401` এর ডিরেক্টরির জন্য |
-| `loading.nexy` | সংরক্ষিত; এখনও রানটাইম প্রভাব নেই |
+| `loading.nexy` | সংরক্ষিত এখনও রানটাইম প্রভাব নেই |
 
 | পরিস্থিতি | উত্তর |
 |---|---|
-| কোন রুট মেলে না | `404` |
-| একটি গতিশীল সেগমেন্টকে তার টীকায় রূপান্তর করা যায় না | `404` |
-| একটি পৃষ্ঠা বা একটি API হ্যান্ডলারে একটি আন-হ্যান্ডেল করা ব্যতিক্রম | `500` |
-| `raise HTTPException(status_code=403)` | আপনি যে স্ট্যাটাস উত্থাপন করেছেন, HTML বা JSON |
+| কোনো রুট মেলে না | `404` |
+| একটি গতিশীল সেগমেন্টকে তার টীকায় রূপান্তর করা যাবে না | `404` |
+| একটি পৃষ্ঠা বা একটি API হ্যান্ডলারে একটি আন-হ্যান্ডেল করা ব্যতিক্রম৷ | `500` |
+| `raise HTTPException(status_code=403)` | HTML বা JSON হিসাবে আপনি যে অবস্থা উত্থাপন করেছেন |
 | `notFound()`, `forbidden()`, `unauthorized()` | `404`, `403`, `401`, যেকোনো জায়গা থেকে অনুরোধে |
-| `redirect()`, `permanentRedirect()` | কোনো ত্রুটি পৃষ্ঠা ছাড়াই একটি বাস্তব পুনঃনির্দেশ |
+| `redirect()`, `permanentRedirect()` | কোন ত্রুটি পৃষ্ঠা ছাড়া একটি বাস্তব পুনঃনির্দেশ |
 
 ## কোড থেকে একটি পৃষ্ঠা বা উত্তর ছেড়ে দিন
 
@@ -79,10 +79,10 @@ if post.moved_to:
 
 | কল | উত্তর |
 |---|---|
-| `redirect(url)` | `307`; `redirect(url, status=303)` একটি পোস্টকে একটি ফর্মের পরে একটি GET এ পরিণত করে |
+| `redirect(url)` | `307`; `redirect(url, status=303)` ফর্মের পরে একটি পোস্টকে একটি GET-এ পরিণত করে |
 | `permanentRedirect(url)` | `308`; ব্রাউজার এবং সার্চ ইঞ্জিন এটি মনে রাখে |
-| `notFound(detail=None)` | `404`: একটি API ক্লায়েন্টের জন্য `notfound` পৃষ্ঠা, বা JSON |
-| `forbidden(detail=None)` | `403`: দর্শনার্থী পরিচিত কিন্তু এটি দেখতে পান না |
+| `notFound(detail=None)` | `404`: একটি API ক্লায়েন্টের জন্য `notfound` পৃষ্ঠা বা JSON |
+| `forbidden(detail=None)` | `403`: দর্শনার্থী পরিচিত কিন্তু এটি দেখতে নাও পারে |
 | `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` যোগ করে `WWW-Authenticate` |
 
 একটি এপিআই ক্লায়েন্টের কাছেও `Location` শিরোনাম এবং কোনো পৃষ্ঠা ছাড়াই একটি পুনঃনির্দেশিত উত্তর। আপনার বিশ্বাসের মানগুলি থেকে গন্তব্য তৈরি করুন: একটি `redirect(request.query_params["next"])` যেখানেই লিঙ্ক বলে সেখানে দর্শকদের পাঠায়। একটি লাইন বিরতি সহ একটি গন্তব্য প্রত্যাখ্যান করা হয়েছে৷
@@ -133,9 +133,9 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| ব্রাউজার | ত্রুটি সহ একটি পৃষ্ঠা, আপনার কোডের লাইন যা এটিকে উত্থাপন করেছে এবং সম্পূর্ণ ট্রেসব্যাক | বিল্ট-ইন `500` পৃষ্ঠা (বা আপনার `errors.nexy`) একটি রেফারেন্স সহ |
+| ব্রাউজার | ত্রুটি সহ একটি পৃষ্ঠা, আপনার কোডের লাইন যা এটিকে উত্থাপন করেছে এবং সম্পূর্ণ ট্রেসব্যাক | একটি রেফারেন্স সহ অন্তর্নির্মিত `500` পৃষ্ঠা (বা আপনার `errors.nexy`) |
 | JSON ক্লায়েন্ট | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| সার্ভার লগ | আপনার কোডের ব্যতিক্রম এবং লাইন | ব্যতিক্রম এবং পুরো ট্রেসব্যাক, একই রেফারেন্স সহ |
+| সার্ভার লগ | ব্যতিক্রম এবং আপনার কোড লাইন | ব্যতিক্রম এবং পুরো ট্রেসব্যাক, একই রেফারেন্স সহ |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
@@ -152,7 +152,7 @@ curl -H "Accept: application/json" http://localhost:3000/api/items/500
 
 ## পরবর্তী পদক্ষেপ
 
-- [ফোল্ডার প্রতি ত্রুটি পৃষ্ঠা](folder-pages.md): একটি ফোল্ডারে আপনার নিজস্ব একটি 404, 403 বা 401
+- [প্রতি ফোল্ডারে ত্রুটি পৃষ্ঠাগুলি](folder-pages.md): একটি ফোল্ডারে আপনার নিজস্ব একটি 404, 403 বা 401
 - [গতিশীল রুট](../pages/dynamic-routes.md)
 - [API রুট](../handlers/README.md)
-- [পরীক্ষা](../../../guides/testing.md)
+- [পরীক্ষা ](../../../guides/testing.md)

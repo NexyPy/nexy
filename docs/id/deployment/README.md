@@ -53,12 +53,30 @@ Pastikan proxy meneruskan WebSocket peningkatan jika Anda menggunakan penangan `
 
 ## Pemeriksaan kesehatan
 
+<!-- router:fbr,custom -->
 Tambahkan file pengendali, `src/routes/api/health.py`, dan selidiki `/api/health` - daripada halaman yang mungkin dirender dengan lambat:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Tambahkan pengontrol, dan selidiki `/health/` - daripada tampilan yang mungkin dirender dengan lambat:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+Cantumkan di `controllers` modul root.
+<!-- /router -->
 
 ## Hosting statis
 
