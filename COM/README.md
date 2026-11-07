@@ -134,6 +134,8 @@ no side effect; publishing is a human pasting into a browser.
   the ladder from 330 to 5 000 installs a month, and the competitors we never name.
 - `BRAND.md` - how it looks: the monogram, the two typefaces, the palette, the card grid, and the
   seven looks we refuse because every generated landing page has them.
+- `REACH.md` - where Nexy is listed: the list PRs, the directories and newsletters, and the two
+  thresholds that decide when a submission is worth opening.
 - `proof/` - one dated file per number. A claim without one is refused by the checker.
 - `posts/`, `blogs/` - the items themselves.
 
