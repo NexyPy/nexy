@@ -98,6 +98,7 @@ def get_session() -> Iterator[Session]:
 
 ## হ্যান্ডলার থেকে পড়ুন এবং লিখুন
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/articles/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -124,11 +125,46 @@ async def POST(body: NewArticle, session: Session = Depends(get_session)):
     session.refresh(article)
     return JSONResponse(article.model_dump(mode="json"), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/articles/articles_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.article_model import Article
+
+
+class NewArticle(BaseModel):
+    slug: str
+    title: str
+    body: str
+
+
+@Controller("/api/articles")
+class ArticlesApiController:
+    async def get(self, session: Session = Depends(get_session)):
+        return session.exec(select(Article).order_by(Article.id.desc()).limit(20)).all()
+
+    async def post(self, body: NewArticle, session: Session = Depends(get_session)):
+        article = Article(**body.model_dump())
+        session.add(article)
+        session.commit()
+        session.refresh(article)
+        return JSONResponse(article.model_dump(mode="json"), status_code=201)
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 ## একটি ডুপ্লিকেট কী একটি `409`
 
 একই স্লাগ সহ একটি দ্বিতীয় নিবন্ধ অনন্য সূচক ভেঙে দেয়। ত্রুটি ধরুন এবং একটি স্ট্যাটাস সহ উত্তর দিন:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/articles/[slug].py"
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
@@ -155,6 +191,41 @@ async def PATCH(slug: str, body: Rename, session: Session = Depends(get_session)
         raise HTTPException(status_code=409, detail="Slug already taken")
     return article
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/articles/articles_by_slug_api_controller.py"
+from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, HTTPException
+from src.configs.session import get_session
+from src.models.article_model import Article
+
+
+class Rename(BaseModel):
+    slug: str
+
+
+@Controller("/api/articles/{slug}")
+class ArticlesBySlugApiController:
+    async def patch(self, slug: str, body: Rename, session: Session = Depends(get_session)):
+        article = session.exec(select(Article).where(Article.slug == slug)).first()
+        if article is None:
+            raise HTTPException(status_code=404, detail="No such article")
+        article.slug = body.slug
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            raise HTTPException(status_code=409, detail="Slug already taken")
+        return article
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 ## একটি পৃষ্ঠা থেকে পড়ুন
 
@@ -170,6 +241,7 @@ def latest_articles() -> list[Article]:
         return list(session.exec(select(Article).order_by(Article.id.desc()).limit(5)))
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/articles.nexy"
 ---
 from src.services.articles import latest_articles
@@ -182,6 +254,33 @@ articles = latest_articles()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/articles/articles_view.nexy"
+---
+from src.services.articles import latest_articles
+
+articles = latest_articles()
+---
+<ul>
+  {% for article in articles %}
+  <li><a href="/articles/{{ article.slug | e }}">{{ article.title | e }}</a></li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/articles/articles_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/articles")
+class ArticlesController:
+    async def get(self):
+        return useViews("src/apps/articles/articles_view.nexy")
+```
+<!-- /router -->
 
 শুধুমাত্র ফ্রন্টম্যাটারের শীর্ষ স্তরে নির্ধারিত নামগুলি টেমপ্লেটে পৌঁছায়, তাই ক্যোয়ারীটি একটি ফাংশনে থাকে।
 
@@ -211,13 +310,14 @@ def count_view(path: str) -> None:
 
 ## পূর্ণ-পাঠ্য অনুসন্ধান
 
-একটি মাইগ্রেশনে একটি `FULLTEXT` সূচক যোগ করুন, তারপর এটি `MATCH ... AGAINST` দিয়ে জিজ্ঞাসা করুন:
+একটি মাইগ্রেশনে একটি `FULLTEXT` সূচক যুক্ত করুন, তারপর এটি `MATCH ... AGAINST` দিয়ে জিজ্ঞাসা করুন:
 
 ```python filename="alembic/versions/xxxx_article_search.py"
 def upgrade() -> None:
     op.execute("CREATE FULLTEXT INDEX article_search ON article (title, body)")
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from sqlalchemy import text
 from sqlmodel import Session, select
@@ -231,6 +331,28 @@ async def GET(q: str, session: Session = Depends(get_session)):
     match = text("MATCH (title, body) AGAINST (:q IN NATURAL LANGUAGE MODE)")
     return session.exec(select(Article).where(match.bindparams(q=q))).all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from sqlalchemy import text
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.article_model import Article
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, session: Session = Depends(get_session)):
+        match = text("MATCH (title, body) AGAINST (:q IN NATURAL LANGUAGE MODE)")
+        return session.exec(select(Article).where(match.bindparams(q=q))).all()
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 ## মাইগ্রেশন
 
@@ -240,7 +362,7 @@ nx migrate -m "create articles"
 nx migrate --upgrade
 ```
 
-MySQL প্রত্যেকটি `CREATE` এবং `ALTER` নিজের থেকে কমিট করে, তাই অর্ধেক পথ ব্যর্থ হওয়া একটি মাইগ্রেশন অর্ধেক প্রযোজ্য থাকে: মাইগ্রেশন ছোট রাখুন, প্রতিটি পরিবর্তন করুন।
+MySQL প্রত্যেকটি `CREATE` এবং `ALTER` নিজের থেকে কমিট করে, তাই একটি মাইগ্রেশন যা অর্ধেকে ব্যর্থ হয় অর্ধেক প্রয়োগ করা হয়: মাইগ্রেশন ছোট রাখুন, প্রতিটি পরিবর্তন করুন।
 
 ## সাথে অ্যাসিঙ্ক করুন `aiomysql`
 
@@ -284,5 +406,5 @@ async def get_async_session():
 ## পরবর্তী পদক্ষেপ
 
 - [ডাটাবেস](../guides/databases.md)
-- [ব্যবহার করুন PostgreSQL নেক্সির সাথে](postgresql.md)
+- [Nexy এর সাথে PostgreSQL ব্যবহার করুন](postgresql.md)
 - [ব্যবহার করুন SQLite নেক্সির সাথে](sqlite.md)

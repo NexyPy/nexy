@@ -98,6 +98,7 @@ def get_session() -> Iterator[Session]:
 
 ## हैंडलर से पढ़ें और लिखें
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/articles/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -124,11 +125,46 @@ async def POST(body: NewArticle, session: Session = Depends(get_session)):
     session.refresh(article)
     return JSONResponse(article.model_dump(mode="json"), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/articles/articles_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.article_model import Article
+
+
+class NewArticle(BaseModel):
+    slug: str
+    title: str
+    body: str
+
+
+@Controller("/api/articles")
+class ArticlesApiController:
+    async def get(self, session: Session = Depends(get_session)):
+        return session.exec(select(Article).order_by(Article.id.desc()).limit(20)).all()
+
+    async def post(self, body: NewArticle, session: Session = Depends(get_session)):
+        article = Article(**body.model_dump())
+        session.add(article)
+        session.commit()
+        session.refresh(article)
+        return JSONResponse(article.model_dump(mode="json"), status_code=201)
+```
+
+नियंत्रक को रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 ## डुप्लिकेट कुंजी एक `409` है
 
 उसी स्लग वाला दूसरा लेख अद्वितीय सूचकांक को तोड़ता है। त्रुटि पकड़ें और स्थिति के साथ उत्तर दें:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/articles/[slug].py"
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
@@ -155,6 +191,41 @@ async def PATCH(slug: str, body: Rename, session: Session = Depends(get_session)
         raise HTTPException(status_code=409, detail="Slug already taken")
     return article
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/articles/articles_by_slug_api_controller.py"
+from pydantic import BaseModel
+from sqlalchemy.exc import IntegrityError
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, HTTPException
+from src.configs.session import get_session
+from src.models.article_model import Article
+
+
+class Rename(BaseModel):
+    slug: str
+
+
+@Controller("/api/articles/{slug}")
+class ArticlesBySlugApiController:
+    async def patch(self, slug: str, body: Rename, session: Session = Depends(get_session)):
+        article = session.exec(select(Article).where(Article.slug == slug)).first()
+        if article is None:
+            raise HTTPException(status_code=404, detail="No such article")
+        article.slug = body.slug
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            raise HTTPException(status_code=409, detail="Slug already taken")
+        return article
+```
+
+नियंत्रक को रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 ## एक पेज से पढ़ें
 
@@ -170,6 +241,7 @@ def latest_articles() -> list[Article]:
         return list(session.exec(select(Article).order_by(Article.id.desc()).limit(5)))
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/articles.nexy"
 ---
 from src.services.articles import latest_articles
@@ -182,12 +254,39 @@ articles = latest_articles()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/articles/articles_view.nexy"
+---
+from src.services.articles import latest_articles
+
+articles = latest_articles()
+---
+<ul>
+  {% for article in articles %}
+  <li><a href="/articles/{{ article.slug | e }}">{{ article.title | e }}</a></li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/articles/articles_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/articles")
+class ArticlesController:
+    async def get(self):
+        return useViews("src/apps/articles/articles_view.nexy")
+```
+<!-- /router -->
 
 केवल फ्रंटमैटर के शीर्ष स्तर पर निर्दिष्ट नाम ही टेम्पलेट तक पहुंचते हैं, इसलिए क्वेरी एक फ़ंक्शन में रहती है।
 
 ## अप्सर्ट्स
 
-MySQL और MariaDB एक अप्सर्ट को `INSERT ... ON DUPLICATE KEY UPDATE` के रूप में लिखते हैं:
+MySQL और MariaDB इस प्रकार एक उत्तर लिखते हैं `INSERT ... ON DUPLICATE KEY UPDATE`:
 
 ```python filename="src/services/counters.py"
 from sqlalchemy.dialects.mysql import insert
@@ -218,6 +317,7 @@ def upgrade() -> None:
     op.execute("CREATE FULLTEXT INDEX article_search ON article (title, body)")
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from sqlalchemy import text
 from sqlmodel import Session, select
@@ -231,6 +331,28 @@ async def GET(q: str, session: Session = Depends(get_session)):
     match = text("MATCH (title, body) AGAINST (:q IN NATURAL LANGUAGE MODE)")
     return session.exec(select(Article).where(match.bindparams(q=q))).all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from sqlalchemy import text
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.article_model import Article
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, session: Session = Depends(get_session)):
+        match = text("MATCH (title, body) AGAINST (:q IN NATURAL LANGUAGE MODE)")
+        return session.exec(select(Article).where(match.bindparams(q=q))).all()
+```
+
+नियंत्रक को रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 ## पलायन
 
