@@ -2,16 +2,30 @@
 
 Nexy restitue Vue 3 composants mono-fichier sur le serveur, puis Vue les reprend dans le navigateur. Les pages, mises en page, îlots et actions sont les mêmes dans tous les frameworks : cette page couvre la configuration, puis les parties qui diffèrent des [contrats partagés](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Mode | `nexyconfig.py` | Les pages sont | Vue est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Le client | `useCSR = True` | `.vue` classe | la page entière, avec des [mises en page](../frontend/layouts.md) et un routeur client |
+| Client | `useCSR = True` | `.vue` fichiers | la page entière, avec [mises en page](../frontend/layouts.md) et un routeur client |
+<!-- /router -->
+
+<!-- router:modular -->
+Avec le routeur modulaire, les composants Vue sont des [îlots](../../rendering/islands.md) à l'intérieur des `.nexy` vues renvoyées par un contrôleur : il n'y a pas de fichier d'échange ni de routeur client.
+<!-- /router -->
 
 ## Démarrer un projet
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-vue
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-vue
+```
+<!-- /router -->
 
 Le modèle est un projet en mode serveur avec Vue îles. Exécutez `nx new my-app` sans modèle pour répondre aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis le framework.
 
@@ -40,25 +54,31 @@ export default defineConfig({
 
 `nx new` écrit ce fichier ; Nexy écrit lui-même `__nexy__/vite.ts`, alors ne le modifiez pas.
 
-| Le package | Version `nx new` écrit |
+| Forfait | La version `nx new` écrit |
 |---|---|
 | `vue` | `^3.5.33` |
 | `@vitejs/plugin-vue` | `^6.0.0` |
 
 ## Règles
 
-- **One framework per project.** `useFF` takes exactly one framework; `useFF = [vue(), react()]` arrête le serveur au démarrage.
+- **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [vue(), react()]` arrête le serveur au démarrage.
 - **Un composant par fichier.** Un fichier `.vue` exporte son composant par défaut ; le nom sous lequel vous l'importez est uniquement la balise que vous écrivez.
+<!-- router:fbr,custom -->
 - **Les composants se trouvent à l'extérieur de `src/routes/`**, généralement dans `src/components/`, ce ne sont donc pas des pages.
-- **A server-mode project has no `.vue` page**, and a client-mode project has no `.nexy` page: Nexy refuses to start and names the file. Voir [modes](../../routing/fbr/modes.md).
+- **Un projet en mode serveur n'a pas de page `.vue`**, et un projet en mode client n'a pas de page `.nexy` : Nexy refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Les composants résident dans `src/components/`** et une vue les importe sous forme d'îlots.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Pages
 
-In client mode (`useCSR = True`), a page is a `.vue` file.
+En mode client (`useCSR = True`), une page est un fichier `.vue`.
 
 ### Composant de page
 
-The page is the component defined by the `<script setup>` block.
+La page est le composant défini par le bloc `<script setup>`.
 
 ```vue filename="src/routes/index.vue"
 <template>
@@ -80,7 +100,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-Alternatively, use the `useParams` hook from `@nexy/client` in any component.
+Vous pouvez également utiliser le hook `useParams` de `@nexy/client` dans n'importe quel composant.
 
 ## Mises en page
 
@@ -98,21 +118,33 @@ La disposition racine définit le shell du document. Les mises en page imbriqué
   </html>
 </template>
 ```
+<!-- /router -->
 
 ## Îles
 
-In server mode, a Vue component imported into a `.nexy` file is an island.
+En mode serveur, un composant Vue importé dans un fichier `.nexy` est un îlot.
 
 ### Importation
 
 Importez des composants dans le frontmatter du fichier `.nexy` :
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.vue" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.vue" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Directives d'hydratation
 
@@ -127,7 +159,7 @@ Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate
 
 ### Appeler des actions
 
-Use the `useAction` hook to manage the state of an action call. In Vue, the returned state (`pending`, `data`, `error`) are computed refs.
+Utilisez le hook `useAction` pour gérer l'état d'un appel à l'action. Dans Vue, les états renvoyés (`pending`, `data`, `error`) sont des références calculées.
 
 ```vue
 <script setup lang="ts">
@@ -151,7 +183,7 @@ const { run, pending, error, data } = useAction(add_todo, {
 
 ### Navigation
 
-Use the `Link` component for client-side transitions:
+Utilisez le composant `Link` pour les transitions côté client :
 
 ```vue
 <template>
@@ -159,7 +191,7 @@ Use the `Link` component for client-side transitions:
 </template>
 ```
 
-For programmatic navigation, use the `useRouter` hook:
+Pour la navigation par programmation, utilisez le hook `useRouter` :
 
 ```ts
 import { useRouter } from "@nexy/client";
@@ -179,5 +211,5 @@ Tous les hooks de localisation renvoient des références calculées :
 
 ## Prochaines étapes
 
-- [Vues](../README.md): compare the formats a page can use
+- [Vues](../README.md) : comparez les formats qu'une page peut utiliser
 - [Frontend](../../guides/frontend.md) : Vite et la build client
