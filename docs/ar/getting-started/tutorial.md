@@ -1,196 +1,60 @@
-# البرنامج التعليمي: إنشاء صفحة ملاحظات في 10 دقائق
+# برنامج Nexy التعليمي: إنشاء تطبيق ملاحظات خطوة بخطوة
 
-ستقوم بإنشاء مشروع وإضافة صفحة وإضافة نقطة نهاية Python ومشاركة البيانات بينهما والإنشاء للإنتاج. تنتهي بقائمة واحدة من الملاحظات التي يتم تقديمها كصفحة وكJSON.
+يقوم البرنامج التعليمي Nexy بإنشاء تطبيق ملاحظات واحد من مجلد فارغ إلى إصدار إنتاجي، جزء واحد في كل مرة، وينتهي كل جزء بتطبيق يتم تشغيله.
 
-هل أنت جديد في نيكسي؟ قم بإجراء [البدء السريع](quick-start.md) أولاً: يستغرق الأمر ثلاث دقائق.
+هل أنت جديد في نيكسي؟ يظهر [البدء السريع](quick-start.md) أنه يعمل خلال ثلاث دقائق؛ أعود هنا لمعرفة كيف يعمل.
 
-```diagram filename="البرنامج التعليمي كله في سطر واحد"
-uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
-```
+## كيف يعمل البرنامج التعليمي
 
-## 1. قم بإنشاء المشروع
+- **تطبيق واحد ينمو.** يضيف كل جزء ميزة واحدة إلى تطبيق الملاحظات الخاص بالجزء السابق.
+- **جهاز التوجيه الخاص بك.** تتبع الأجزاء جهاز التوجيه المختار في أعلى القائمة: قائم على الملفات، أو معياري، أو مخصص. قم بتبديله هناك، وستتغير معه ملفات كل جزء.
+- **الكود الذي يتم تشغيله.** كل ملف يحمل اسمًا فوقه هو ملف كامل، وتقوم مجموعة الاختبار بإعادة تشغيل الأجزاء بالترتيب في مشروع جديد: ما تنسخه هو ما يتم تشغيله.
+- **توقف في أي مكان.** يستغرق كل جزء من 10 إلى 20 دقيقة وينتهي بما يجب التحقق منه في المتصفح.
 
-```bash
-uvx nexy new notes
-cd notes
-.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
-nexy dev
-```
+## الأجزاء
 
-`uvx` يأتي مع [uv](https://docs.astral.sh/uv/) ويقوم فقط بإنشاء المشروع. كل أمر بعد تشغيله داخل البيئة الافتراضية للمشروع (أو كـ `uv run nexy dev`).
+### الوحدة الأولى: الأساسيات
 
-اختر جهاز التوجيه المستند إلى الملف، ومشروع الويب، وأي إطار عمل للعميل (أو لا شيء). مفتوح
-<http://localhost:3000>. الخطوات الطويلة تطبع سطراً واحداً مع مدته، كما يفعل `uv`.
+| جزء | ما تضيفه | ما تتعلمه |
+|---|---|---|
+| [1. إنشاء المشروع](../tutorial/create-the-project.md) | المشروع الذي يعمل | `nexy new`، `nexy dev` |
+| [2. الصفحات والتخطيطات](../tutorial/pages-and-layouts.md) | صفحة الملاحظات | الصفحات، المشاهدات، التخطيط |
+| [3. المسارات الديناميكية وواجهة برمجة التطبيقات](../tutorial/dynamic-routes.md) | `/notes/1` و `/api/notes` | شرائح URL، مسارات JSON، `notFound` |
+| [4. المكونات](../tutorial/components.md) | بطاقة لكل ملاحظة | `.nexy` مكوناتها ودعائمها |
 
-<!-- router:modular -->
-أجب `No` على موجه جهاز التوجيه المستند إلى الملف: `nx new` يدعم جهاز التوجيه المعياري في `src/apps/` بدلاً من `src/routes/`.
-<!-- /router -->
+### الوحدة الثانية: البيانات
 
-<!-- router:custom -->
-أجب `Yes` على موجه التوجيه المستند إلى الملف للصفحات، ثم قم بتثبيت `APIRouter` الموجود لديك في `nexyconfig.py`: يتواجد جهازا التوجيه معًا.
-<!-- /router -->
+| جزء | ما تضيفه | ما تتعلمه |
+|---|---|---|
+| [5. قم بتخزين الملاحظات في SQLite](../tutorial/store-the-notes.md) | نموذج، هجرة، بذرة | SQLModel، `nx migrate` |
+| [6. إنشاء ملاحظة من النموذج](../tutorial/create-a-note.md) | النموذج الذي يحفظ ملاحظة | الأفعال والأشكال بدون JavaScript |
+| [7. إظهار أخطاء التحقق](../tutorial/validation-errors.md) | رسالة فوق النموذج | القواعد في الإجراء، `303`، `useSearchParams` |
+| [8. تحرير وحذف ملاحظة](../tutorial/edit-and-delete.md) | أشكال المذكرة | عدة إجراءات لكل صفحة، الحقول المخفية |
+| [9. ترقيم الملاحظات](../tutorial/paginate-the-notes.md) | خمس ملاحظات في كل صفحة | `offset` و `limit`، روابط بين الصفحات |
 
-## 2. قم بتحرير التخطيط
+### الوحدة 3: المستخدمون
 
-<!-- router:fbr,custom -->
-يمتلك `src/routes/layout.nexy` مستند HTML (مع توجيه العميل React فهو `layout.tsx`). تغيير `<title>`:
+| جزء | ما تضيفه | ما تتعلمه |
+|---|---|---|
+| [10. قم بإنشاء حساب وتسجيل الدخول](../tutorial/accounts.md) | قم بالتسجيل، قم بتسجيل الدخول، قم بتسجيل الخروج | الجلسات، تجزئة كلمة المرور |
+| [11. أعط كل مستخدم ملاحظاته الخاصة](../tutorial/own-notes.md) | الملاحظات التي تخص المستخدم | المفاتيح الخارجية، `redirect`، `401` |
+| [12. إعادة تعيين كلمة المرور المنسية عن طريق البريد الإلكتروني](../tutorial/password-reset.md) | رابط إعادة التعيين المرسل عبر البريد الإلكتروني | `smtplib`، الرموز الموقعة التي تنتهي صلاحيتها |
 
-```nexy
-<title>Notes</title>
-```
+### الوحدة الرابعة: التفاعلية
 
-حفظ: يتم إعادة تحميل المتصفح. انظر [التخطيطات](../routing/fbr/layouts/README.md).
-<!-- /router -->
+| جزء | ما تضيفه | ما تتعلمه |
+|---|---|---|
+| [13. ابحث في الملاحظات أثناء الكتابة](../tutorial/search-the-notes.md) | مربع بحث يقوم بالتصفية أثناء الكتابة | React الجزر، الدعائم من Python |
+| [14. ضع علامة على الملاحظة دون إعادة تحميل الصفحة](../tutorial/tick-a-note.md) | زر "تم" في كل ملاحظة | التعزيز التدريجي، إجراء واحد لنموذج و `fetch` |
 
-<!-- router:modular -->
-تعرض وحدة التحكم `src/apps/layout.nexy` حول العرض، ويمتلك هذا الملف مستند HTML. تغيير `<title>`:
+### القادمة بعد ذلك
 
-```nexy
-<title>Notes</title>
-```
+| وحدة | ما يكسبه التطبيق |
+|---|---|
+| 5. ما وراء الطلب | الملاحظات المشتركة عن طريق البريد الإلكتروني في الخلفية، ملخص يومي، تحديثات حية |
+| 6. السفينة | الاختبارات وصفحات الأخطاء والسجلات ورؤوس الأمان وبناء Docker |
 
-حفظ: يتم إعادة تحميل المتصفح. انظر [المشاهدات من وحدة التحكم](../routing/modular/README.md#views-from-a-controller).
-<!-- /router -->
+## الخطوات التالية
 
-## 3. أضف صفحة
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-فتح <http://localhost:3000/notes>: يجب أن تشاهد رصاصتين. ويتم تقديمه في `/notes`. الجزء الذي بين `---` هو Python، والباقي Jinja2.
-<!-- /router -->
-
-<!-- router:modular -->
-تقوم وحدة التحكم بإرجاع طريقة عرض. إنشاء `src/apps/notes_view.nexy`:
-
-```nexy filename="src/apps/notes_view.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-أعلن المسار في `src/apps/app_controller.py` وأضف وحدة التحكم إلى الوحدة:
-
-```python filename="src/apps/app_controller.py"
-@Controller("/notes")
-class NotesController:
-    async def get(self):
-        return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/notes_view.nexy"),
-        })
-```
-
-```python filename="src/apps/app_module.py"
-from .app_controller import AppController, NotesController
-
-controllers = [AppController, NotesController]
-```
-
-فتح <http://localhost:3000/notes>: يجب أن تشاهد رصاصتين. فما بين `---` هو Python، والباقي Jinja2.
-<!-- /router -->
-
-## 4. أضف نقطة نهاية
-
-<!-- router:fbr,custom -->
-```python filename="src/routes/api/notes.py"
-async def GET():
-    return [{"id": 1, "text": "Buy milk"}]
-```
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-يجب أن تحصل على `[{"id":1,"text":"Buy milk"}]`. اسم الوظيفة هو طريقة HTTP. توجد مستندات API التفاعلية في `/docs`.
-<!-- /router -->
-
-<!-- router:modular -->
-```python filename="src/apps/app_controller.py"
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": 1, "text": "Buy milk"}]
-```
-
-أضف `NotesApiController` إلى `controllers` في `src/apps/app_module.py`، ثم قم بتشغيل:
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-يجب أن تحصل على `[{"id":1,"text":"Buy milk"}]`. اسم الطريقة هو طريقة HTTP. توجد مستندات API التفاعلية في `/docs`.
-<!-- /router -->
-
-## 5. مشاركة البيانات
-
-انقل القائمة إلى وحدة Python واستخدمها في كلا الملفين:
-
-```python filename="src/notes.py"
-NOTES = ["Buy milk", "Ship Nexy"]
-```
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/routes/api/notes.py"
-from src.notes import NOTES
-
-
-async def GET():
-    return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-<!-- router:modular -->
-```nexy filename="src/apps/notes_view.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/apps/app_controller.py"
-from src.notes import NOTES
-
-
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-## 6. البناء والخدمة
-
-```bash
-nx build
-nx start
-```
-
-`nx build` يطبع كل مرحلة مع مدتها. `nx start` يخدم الإخراج المترجم مع Uvicorn: لا توجد عملية عقدة في وقت التشغيل.
-
-## أين التالي
-
-- [التوجيه](../routing/README.md)]: المقاطع والمجموعات الديناميكية
-- [الإجراءات](../guides/actions.md): اتصل بـ Python من النموذج أو من العميل
-- [الاختبار](../guides/testing.md)]: صفحات الاختبار ونقاط النهاية
-- [نشر](../deployment/README.md): الحاويات والوكلاء العكسيين
+- [الجزء الأول: إنشاء المشروع](../tutorial/create-the-project.md)
+- [المفاهيم الأساسية](core-concepts.md): الكلمات التي يستخدمها البرنامج التعليمي

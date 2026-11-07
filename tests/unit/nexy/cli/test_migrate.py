@@ -213,10 +213,27 @@ class TestAlembicEnv:
         alembic.render_env(tmp_path, orm, models)
         return (tmp_path / "env.py").read_text(encoding="utf-8")
 
-    def test_sqlmodel_imports_the_module_that_holds_the_models(self, tmp_path):
-        assert "import src.apps.users.user_model" in self._env(
-            tmp_path, "SQLModel", "src.apps.users.user_model"
-        )
+    def test_sqlmodel_imports_every_model_file_of_the_project(self, tmp_path, monkeypatch):
+        for name in ("src/models/note_model.py", "src/apps/users/user_model.py"):
+            (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
+            (tmp_path / name).write_text("")
+        (tmp_path / "alembic").mkdir()
+        alembic.render_env(tmp_path / "alembic", "SQLModel", "src.apps.users.user_model")
+        head = (tmp_path / "alembic" / "env.py").read_text().split("from src.configs.db")[0]
+        monkeypatch.syspath_prepend(str(tmp_path))
+        for name in ("src.models.note_model", "src.apps.users.user_model"):
+            monkeypatch.delitem(sys.modules, name, raising=False)
+        env = str(tmp_path / "alembic" / "env.py")
+        exec(compile(head, env, "exec"), {"__file__": env})  # noqa: S102
+        assert {"src.models.note_model", "src.apps.users.user_model"} <= set(sys.modules)
+
+    def test_sqlmodel_names_its_constraints_before_the_models_load(self, tmp_path):
+        env = self._env(tmp_path, "SQLModel")
+        assert env.index("naming_convention") < env.index("import_module(")
+
+    @pytest.mark.parametrize("orm", ["SQLModel", "SQLAlchemy"])
+    def test_sqlite_migrates_in_batch_mode(self, tmp_path, orm):
+        assert self._env(tmp_path, orm).count("render_as_batch=") == 2
 
     def test_sqlalchemy_takes_its_base_from_the_module_that_holds_the_models(self, tmp_path):
         env = self._env(tmp_path, "SQLAlchemy", "src.apps.users.user_model")
@@ -231,6 +248,16 @@ class TestAlembicEnv:
 
     def test_a_modular_project_keeps_them_with_the_users_module(self, tmp_path):
         assert alembic.models_module(tmp_path) == "src.apps.users.user_model"
+
+    def test_a_project_without_the_user_model_imports_the_model_it_has(self, tmp_path):
+        (tmp_path / "src" / "models").mkdir(parents=True)
+        (tmp_path / "src" / "models" / "note_model.py").write_text("")
+        assert alembic.models_module(tmp_path) == "src.models.note_model"
+
+    def test_a_modular_project_without_users_imports_its_feature_model(self, tmp_path):
+        (tmp_path / "src" / "apps" / "notes").mkdir(parents=True)
+        (tmp_path / "src" / "apps" / "notes" / "note_model.py").write_text("")
+        assert alembic.models_module(tmp_path) == "src.apps.notes.note_model"
 
 
 class TestMigrationTemplate:

@@ -17,7 +17,7 @@ PAGES = {
     "README": ROOT / "README.md",
     "installation": ROOT / "docs" / "getting-started" / "installation.md",
     "quick-start": ROOT / "docs" / "getting-started" / "quick-start.md",
-    "tutorial": ROOT / "docs" / "getting-started" / "tutorial.md",
+    "tutorial": ROOT / "docs" / "tutorial" / "create-the-project.md",
     "cli": ROOT / "docs" / "reference" / "cli.md",
     "troubleshooting": ROOT / "docs" / "guides" / "troubleshooting.md",
 }
