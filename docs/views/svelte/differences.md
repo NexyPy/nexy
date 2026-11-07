@@ -4,16 +4,31 @@ Nexy renders Svelte 5 components on the server, then Svelte takes them over in t
 layouts, islands and actions are the same in every framework: this page covers setup, then the parts
 that differ from the [shared contracts](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Mode | `nexyconfig.py` | Pages are | Svelte is |
 |---|---|---|---|
 | Server (default) | `useCSR = False` | `.nexy` files | [islands](../../rendering/islands.md) inside those pages |
 | Client | `useCSR = True` | `.svelte` files | the whole page, with [layouts](../frontend/layouts.md) and a client router |
+<!-- /router -->
+
+<!-- router:modular -->
+With the modular router, Svelte components are [islands](../../rendering/islands.md) inside
+the `.nexy` views a controller returns: there is no page file and no client router.
+<!-- /router -->
 
 ## Start a project
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-svelte
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-svelte
+```
+<!-- /router -->
 
 The template is a server-mode project with Svelte islands. Run `nx new my-app` without a template to
 answer the prompts instead: the router, the project type, whether to use client-side routing, then
@@ -55,10 +70,16 @@ export default defineConfig({
 - **One framework per project.** `useFF` takes exactly one framework; `useFF = [svelte(), vue()]`
   stops the server at startup.
 - **One component per file.** The name you import a `.svelte` file under is only the tag you write.
+<!-- router:fbr,custom -->
 - **Components live outside `src/routes/`**, usually in `src/components/`, so they are not pages.
 - **A server-mode project has no `.svelte` page**, and a client-mode project has no `.nexy` page: Nexy
   refuses to start and names the file. See [modes](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Components live in `src/components/`**, and a view imports them as islands.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Pages
 
 In client mode (`useCSR = True`), a page is a `.svelte` file.
@@ -108,6 +129,7 @@ snippet.
   </body>
 </html>
 ```
+<!-- /router -->
 
 ## Islands
 
@@ -117,12 +139,23 @@ In server mode, a Svelte component imported into a `.nexy` file is an island.
 
 Import components in the frontmatter of the `.nexy` file:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.svelte" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.svelte" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Hydration directives
 
