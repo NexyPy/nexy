@@ -7,17 +7,17 @@ Una solicitud puede fallar en cuatro lugares y Nexy responde a cada uno de maner
 
 ## La versión corta
 
-| Qué pasó | Estado | El navegador ve | El cliente API ve |
+| que paso | Estado | El navegador ve | El cliente API ve |
 |---|---|---|---|
 | ninguna ruta coincide con la URL | `404` | `notfound.nexy`; de lo contrario, la página incorporada | `{"detail": "Not Found"}` |
-| un segmento de camino no se ajusta a su anotación | `404` | la misma página | `{"detail": "Not Found"}` |
-| falta una consulta, encabezado, cookie o campo de cuerpo o no es válido | `422` | FastAPI cuerpo JSON de | FastAPI cuerpo JSON |
-| `notFound()` | `404` | la página | `{"detail": ...}` |
+| un segmento de ruta no se ajusta a su anotación | `404` | la misma pagina | `{"detail": "Not Found"}` |
+| falta una consulta, un encabezado, una cookie o un campo de cuerpo o no es válido | `422` | Cuerpo JSON de FastAPI | Cuerpo JSON de FastAPI |
+| `notFound()` | `404` | la pagina | `{"detail": ...}` |
 | `unauthorized()` | `401` | la página incorporada | `{"detail": ...}` |
 | `forbidden()` | `403` | la página incorporada | `{"detail": ...}` |
 | `raise HTTPException(409, ...)` | `409` | la página incorporada | `{"detail": ...}` |
-| una excepción no detectó nada | `500` | `errors.nexy`; de lo contrario, la página incorporada | `{"detail", "reference"}` |
-| `redirect(url)` | `307` | el destino, sin página | el destino, sin cuerpo |
+| una excepción nada atrapado | `500` | `errors.nexy`; de lo contrario, la página incorporada | `{"detail", "reference"}` |
+| `redirect(url)` | `307` | el destino, sin página | el destino, ningún cuerpo |
 | `permanentRedirect(url)` | `308` | el destino, sin página | el destino |
 
 Un cliente API es una solicitud cuyo encabezado `Accept` solicita JSON y no una página:
@@ -42,19 +42,20 @@ Browser ──► Middleware ──► Router ──► Page or handler
                  └─ raises ──────────────────────────────────────► 500
 ```
 
-| Etapa | Qué puede fallar | La respuesta |
+| etapa | que puede fallar | la respuesta |
 |---|---|---|
-| Middleware | su `middleware.py`, CORS, sesiones | el estado de la excepción, de lo contrario `500` |
+| software intermedio | sus `middleware.py`, CORS, sesiones | el estado de la excepción, de lo contrario `500` |
 | Enrutador | la URL no coincide con ningún archivo | `404` |
 | Validación | un segmento de ruta no se puede convertir | `404` |
 | Validación | una consulta, encabezado, cookie o campo de cuerpo | `422` |
-| Página, controlador, acción, guardia | `HTTPException` | su estado |
-| Página, controlador, acción, guardia | cualquier otra cosa | `500` |
+| Página, controlador, acción, guardia. | `HTTPException` | su estado |
+| Página, controlador, acción, guardia. | cualquier otra cosa | `500` |
 
 ## Salir desde cualquier lugar
 
 `redirect`, `permanentRedirect`, `notFound`, `forbidden` y `unauthorized` generan una excepción HTTP, por lo que la misma llamada funciona en una página `.nexy`, un controlador API, un controlador modular, un guardia, un `dependencies.py` y una acción.
 
+<!-- router:fbr,custom -->
 ```python filename="src/rutas/publicaciones/[slug].py"
 from nexy import notFound, redirect
 
@@ -69,15 +70,38 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
 
-| Llamar a | Responder | Cuando |
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+Enumere el controlador en el `controllers` del módulo raíz.
+<!-- /router -->
+
+| llamar | respuesta | cuando |
 |---|---|---|
 | `notFound(detail=None)` | `404` | el recurso no existe |
-| `unauthorized(detail=None, scheme=None)` | `401` | el visitante debe iniciar sesión primero |
-| `forbidden(detail=None)` | `403` | el visitante es conocido pero puede que no lo vea |
-| `redirect(url, status=307)` | `307` | enviarlos a otro lado, manteniendo el método |
+| `unauthorized(detail=None, scheme=None)` | `401` | el visitante debe registrarse primero |
+| `forbidden(detail=None)` | `403` | El visitante es conocido pero puede que no vea esto. |
+| `redirect(url, status=307)` | `307` | enviarlos a otro lugar, manteniendo el método |
 | `redirect(url, status=303)` | `303` | después de un formulario: la siguiente solicitud es un `GET` |
-| `permanentRedirect(url)` | `308` | una página movida que los motores de búsqueda deben recordar |
+| `permanentRedirect(url)` | `308` | Una página movida que los motores de búsqueda deberían recordar. |
 
 Construya el destino a partir de valores en los que confíe. `redirect(request.query_params["next"])` envía visitantes a donde dice el enlace; es una redirección abierta. Se rechaza un destino que contenga un salto de línea.
 
@@ -85,6 +109,7 @@ Construya el destino a partir de valores en los que confíe. `redirect(request.q
 
 Los parámetros del controlador son validados por FastAPI contra sus anotaciones.
 
+<!-- router:fbr,custom -->
 ```python filename="src/rutas/api/search.py"
 from nexy.http import Header
 
@@ -92,10 +117,26 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
 
-| Problema | Estado | Por qué |
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+Enumere el controlador en el `controllers` del módulo raíz.
+<!-- /router -->
+
+| problema | Estado | ¿Por qué? |
 |---|---|---|
-| consulta, encabezado, cookie o campo de cuerpo faltantes o no válidos | `422` | la solicitud llegó al controlador, los datos son incorrectos |
+| Consulta, encabezado, cookie o campo de cuerpo faltantes o no válidos | `422` | la solicitud llegó al controlador, los datos son incorrectos |
 | segmento de ruta no válido (`/api/users/abc` para `id: int`) | `404` | la carpeta no tiene ruta para un no número, por lo que la URL no existe |
 
 El cuerpo de `422` tiene la forma estándar de FastAPI, por lo que los clientes y los SDK generados siguen funcionando:
@@ -111,6 +152,7 @@ Para un formulario o una acción, el cliente recibe un `ActionError` con `status
 
 ## Páginas de error personalizadas
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/notfound.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -127,14 +169,19 @@ Para un formulario o una acción, el cliente recibe un `ActionError` con `status
 | `src/routes/errors.nexy` | `500` | cada ruta del proyecto |
 | `src/routes/forbidden.nexy` | `403` | cada ruta del proyecto |
 | `src/routes/unauthorized.nexy` | `401` | cada ruta del proyecto |
-| `src/routes/blog/notfound.nexy` | `404` | `/blog` y menores |
-| `src/routes/blog/errors.nexy` | `500` | `/blog` y menores |
-| `src/routes/loading.nexy` | - | reservado, aún sin efecto de tiempo de ejecución |
+| `src/routes/blog/notfound.nexy` | `404` | `/blog` y abajo |
+| `src/routes/blog/errors.nexy` | `500` | `/blog` y abajo |
+| `src/routes/loading.nexy` | - | reservado, aún no hay efecto de tiempo de ejecución |
 
 Un archivo en algún lugar de las rutas instala la respuesta para su estado: una copia en la raíz responde a todo el proyecto, una copia en una carpeta responde a esa carpeta y gana el archivo más profundo que coincida con la URL. Una URL fuera de cada copia y un estado sin ningún archivo obtienen las páginas con estilo integradas. Consulte [Páginas de error por carpeta](../routing/fbr/errors/folder-pages.md).
 
 > [!IMPORTANT]
-> Una página `errors.nexy` reemplaza a la página `500`; no detecta la excepción y no cambia la línea de registro. Si el controlador que generó es la página misma, la página no puede mostrar sus propios detalles de error: mantenga `errors.nexy` simple e independiente.
+> Una página `errors.nexy` reemplaza la página `500`; no detecta la excepción y no cambia la línea de registro. Si el controlador que generó es la página misma, la página no puede mostrar sus propios detalles de error: mantenga `errors.nexy` simple e independiente.
+<!-- /router -->
+
+<!-- router:modular -->
+El enrutador modular no tiene una página de error en un archivo: `404`, `500`, `403` o `401` obtiene la página con estilo incorporada. Las páginas de error por carpeta son una convención del enrutador basado en archivos.
+<!-- /router -->
 
 ## Excepciones no controladas
 
@@ -142,9 +189,9 @@ Una excepción en la que no se detecta nada se registra una vez, con su referenc
 
 | | `nexy dev` | `nexy build` luego `nexy start` |
 |---|---|---|
-| Navegador | el error, las líneas de su código y el rastreo | `errors.nexy`, de lo contrario, la página incorporada, con una referencia |
-| Cliente API | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Terminal | la excepción y las líneas de su código | la excepción, el rastreo completo y la referencia |
+| Navegador | el error, las líneas de su código y el rastreo | `errors.nexy`, de lo contrario la página incorporada, con una referencia |
+| cliente API | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| terminales | la excepción y las líneas de tu código | la excepción, el rastreo completo y la referencia |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
@@ -174,7 +221,7 @@ Un formulario sin JavaScript publicaciones en la ruta de acción; un éxito resp
 ## Una lista de verificación cuando una página responde algo incorrecto
 
 1. **Mire el estado**, no la página. Un `notfound.nexy` personalizado todavía responde `404`.
-2. **Lea la terminal.** Una página que no se puede importar no está registrada, por lo que su URL responde `404` mientras el archivo existe. El error de importación está en el registro.
+2. **Lea la terminal.** Una página que no se puede importar no está registrada, por lo que su URL responde `404` mientras el archivo exista. El error de importación está en el registro.
 3. **Verifique la extensión.** Con `useCSR = True`, `.nexy` las páginas pertenecen al modo servidor; una página en el modo incorrecto no es una ruta.
 4. **Verifique la profundidad.** Un `notfound.nexy` o `errors.nexy` solo funciona cuando existe la copia raíz.
 5. **Solicite JSON** con `Accept: application/json` para ver la forma que recibe su cliente API.
@@ -185,4 +232,4 @@ Un formulario sin JavaScript publicaciones en la ruta de acción; un éxito resp
 - [Páginas de error](../routing/fbr/errors/README.md): el comportamiento de la página completa, con ejemplos
 - [Validación y errores](../routing/fbr/handlers/validation-and-errors.md): Controladores de API
 - [Solución de problemas](../guides/troubleshooting.md): los errores que la gente realmente encuentra
-- [Prueba](../guides/testing.md): afirmar un estado y un cuerpo
+- [Pruebas](../guides/testing.md): afirmar un estado y un cuerpo
