@@ -25,7 +25,7 @@ New here? Read [What is Nexy?](getting-started/what-is-nexy.md), then the
 | [What is Nexy?](getting-started/what-is-nexy.md) | Know what Nexy is, what it is built on and what you get |
 | [Installation](getting-started/installation.md) | Install uv and the Nexy CLI, then create your first project |
 | [Quick start](getting-started/quick-start.md) | Create a project, run it with live reload, and build it for production |
-| [Tutorial](getting-started/tutorial.md) | Build a notes page with an endpoint, shared data and a production build in 10 minutes |
+| [Tutorial](getting-started/tutorial.md) | Build a notes app step by step, one runnable part at a time |
 
 ### Understand the model
 | Page | What you will do |
@@ -34,6 +34,38 @@ New here? Read [What is Nexy?](getting-started/what-is-nexy.md), then the
 | [Project structure](getting-started/project-structure.md) | Know what every folder and file in a project is for |
 | [Choose a router](routing/README.md) | Pick the file-based, modular or custom router |
 | [Choose a view format](views/README.md) | Pick `.nexy`, Markdown or a client framework for a page |
+
+## Tutorial
+
+### Unit 1: the basics
+| Page | What you will build |
+|---|---|
+| [1. Create the project](tutorial/create-the-project.md) | Create the notes project and run it in the browser |
+| [2. Pages and layouts](tutorial/pages-and-layouts.md) | Add the notes page and change the layout around it |
+| [3. Dynamic routes and an API](tutorial/dynamic-routes.md) | Give each note a URL and serve the notes as JSON |
+| [4. Components](tutorial/components.md) | Turn each note into a reusable `.nexy` component |
+
+### Unit 2: data
+| Page | What you will build |
+|---|---|
+| [5. Store the notes in SQLite](tutorial/store-the-notes.md) | Add a model, a migration and a seed, and read the notes from the database |
+| [6. Create a note from a form](tutorial/create-a-note.md) | Post a form to an Action that saves the note |
+| [7. Show validation errors](tutorial/validation-errors.md) | Refuse a blank note and say why above the form |
+| [8. Edit and delete a note](tutorial/edit-and-delete.md) | Add the forms that change and remove a note |
+| [9. Paginate the notes](tutorial/paginate-the-notes.md) | Show five notes at a time, with links between the pages |
+
+### Unit 3: users
+| Page | What you will build |
+|---|---|
+| [10. Create an account and sign in](tutorial/accounts.md) | Sign up, sign in and out, with a session cookie |
+| [11. Give each user their own notes](tutorial/own-notes.md) | Tie each note to its user and guard the pages, the Actions and the API |
+| [12. Reset a forgotten password by email](tutorial/password-reset.md) | Send a signed link by email that works once, for an hour |
+
+### Unit 4: interactivity
+| Page | What you will build |
+|---|---|
+| [13. Search the notes as you type](tutorial/search-the-notes.md) | Filter every note in the browser with a React island |
+| [14. Tick a note without reloading the page](tutorial/tick-a-note.md) | Mark a note done with a form that a few lines of JavaScript send in place |
 
 ## Routing
 

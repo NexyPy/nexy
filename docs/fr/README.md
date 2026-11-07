@@ -19,7 +19,7 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md) | Sachez ce qu'est Nexy, sur quoi il est construit et ce que vous obtenez |
 | [Installation](getting-started/installation.md) | Installez uv et la CLI Nexy, puis créez votre premier projet |
 | [Démarrage rapide](getting-started/quick-start.md) | Créez un projet, exécutez-le avec Live Reload et construisez-le pour la production |
-| [Tutoriel](getting-started/tutorial.md) | Créez une page de notes avec un point de terminaison, des données partagées et une version de production en 10 minutes |
+| [Tutoriel](getting-started/tutorial.md) | Créez une application de notes étape par étape, une partie exécutable à la fois |
 
 ### Comprendre le modèle
 | Pages | Ce que tu feras |
@@ -28,6 +28,38 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | [Structure du projet](getting-started/project-structure.md) | Savoir à quoi servent chaque dossier et fichier d'un projet |
 | [Choisissez un routeur](routing/README.md) | Choisissez le routeur basé sur des fichiers, modulaire ou personnalisé |
 | [Choisissez un format d'affichage](views/README.md) | Choisissez `.nexy`, Markdown ou un framework client pour une page |
+
+## Tutoriel
+
+### Unité 1 : les bases
+| Pages | Ce que vous construirez |
+|---|---|
+| [1. Créez le projet](tutorial/create-the-project.md) | Créez le projet de notes et exécutez-le dans le navigateur |
+| [2. Pages et mises en page](tutorial/pages-and-layouts.md) | Ajoutez la page de notes et modifiez la mise en page autour d'elle |
+| [3. Des routes dynamiques et une API](tutorial/dynamic-routes.md) | Donnez à chaque note une URL et diffusez les notes au format JSON |
+| [4. Composants](tutorial/components.md) | Transformez chaque note en un composant `.nexy` réutilisable |
+
+### Unité 2 : données
+| Pages | Ce que vous construirez |
+|---|---|
+| [5. Stockez les notes dans SQLite](tutorial/store-the-notes.md) | Ajoutez un modèle, une migration et une graine, et lisez les notes de la base de données |
+| [6. Créez une note à partir d'un formulaire](tutorial/create-a-note.md) | Publier un formulaire dans une action qui enregistre la note |
+| [7. Afficher les erreurs de validation](tutorial/validation-errors.md) | Refuser une note vierge et indiquer pourquoi au-dessus du formulaire |
+| [8. Modifier et supprimer une note](tutorial/edit-and-delete.md) | Ajouter les formulaires qui changent et supprimer une note |
+| [9. Paginez les notes](tutorial/paginate-the-notes.md) | Afficher cinq notes à la fois, avec des liens entre les pages |
+
+### Unité 3 : utilisateurs
+| Pages | Ce que vous construirez |
+|---|---|
+| [10. Créez un compte et connectez-vous](tutorial/accounts.md) | Inscrivez-vous, connectez-vous et déconnectez-vous, avec un cookie de session |
+| [11. Donnez à chaque utilisateur ses propres notes](tutorial/own-notes.md) | Attachez chaque note à son utilisateur et protégez les pages, les actions et l'API |
+| [12. Réinitialiser un mot de passe oublié par email](tutorial/password-reset.md) | Envoyez par email un lien signé qui fonctionne une fois, pendant une heure |
+
+### Unité 4 : interactivité
+| Pages | Ce que vous construirez |
+|---|---|
+| [13. Recherchez les notes au fur et à mesure que vous tapez](tutorial/search-the-notes.md) | Filtrez chaque note du navigateur avec un îlot React |
+| [14. Cochez une note sans recharger la page](tutorial/tick-a-note.md) | Marquer une note comme terminée avec un formulaire que quelques lignes de JavaScript envoient en place |
 
 ## Routage
 

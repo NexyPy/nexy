@@ -74,41 +74,41 @@ class HealthController:
 <!-- router:fbr,custom -->
 1. Die Anfrage erreicht den dateibasierten Router. Der Pfad wird abgeglichen und dynamische Segmente werden in die von der Komponente deklarierten Typen umgewandelt.
 
-   „nexy filename="src/routes/orders/[id].nexy"
+   ```nexy filename="src/routes/orders/[id].nexy"
    ---
    id: prop[int]
    ---
-   <h1>Bestellnummer{{ id + 1000 }}</h1>
-   „
+   <h1>Order #{{ id + 1000 }}</h1>
+   ```
 
    `/orders/42` rendert `Order #1042`; `/orders/abc` antwortet `404`.
 2. Die Komponente läuft. Eines, das auf Node wartet – ein Clientdokument – ​​wird in einem Thread-Pool ausgeführt, sodass die Ereignisschleife nicht blockiert wird.
 3. Der Körper wird als `text/html` gestreamt. Eine Komponente, die Chunks erzeugt, streamt diese, während sie sie erstellt.
 4. Der Browser empfängt HTML. Inseln hydratisieren gemäß ihrer [Richtlinie](islands.md).
 
-Ein beim Rendern ausgelöster Fehler wird von `errors.nexy` in eine Seite umgewandelt, wenn das Projekt einen hat: siehe [Fehlerseiten](../routing/fbr/errors/README.md).
+Ein beim Rendern ausgelöster Fehler wird von `errors.nexy` in eine Seite umgewandelt, wenn das Projekt einen solchen hat: siehe [Fehlerseiten](../routing/fbr/errors/README.md).
 <!-- /router -->
 
 <!-- router:modular -->
 1. Die Anfrage erreicht den Controller. Seine Pfadparameter werden in die von der Methode deklarierten Typen umgewandelt und an die Ansicht übergeben:
 
-   „python filename="src/apps/order_controller.py"
-   von nexy.decorators Import Controller
-   aus nexy.hooks useViews importieren
+   ```python filename="src/apps/order_controller.py"
+   from nexy.decorators import Controller
+   from nexy.hooks import useViews
 
 
    @Controller("/orders/{id}")
-   Klasse OrderController:
+   class OrderController:
        async def get(self, id: int):
            return useViews("src/apps/order_view.nexy", context={"id": id})
-   „
+   ```
 
-   „nexy filename="src/apps/order_view.nexy"
+   ```nexy filename="src/apps/order_view.nexy"
    ---
    id: prop[int]
    ---
-   <h1>Bestellnummer{{ id + 1000 }}</h1>
-   „
+   <h1>Order #{{ id + 1000 }}</h1>
+   ```
 
    `/orders/42/` rendert `Order #1042`; `/orders/abc/` antwortet `404`.
 2. Die Ansicht wird ausgeführt und `useViews` gibt ihren HTML-Code als Antwort zurück.
@@ -253,7 +253,7 @@ q = useSearchParams().get("q", "")
 <!-- router:fbr,custom -->
 - [ISR](isr.md): Diese Seite pro URL zwischenspeichern
 <!-- /router -->
-- [Inseln](islands.md): Behalten Sie SSR bei und machen Sie ein Widget interaktiv
+- [Inseln](islands.md): SSR beibehalten und ein Widget interaktiv machen
 <!-- router:fbr,custom -->
 - [CSR](csr.md): Handnavigation zum Browser
 <!-- /router -->

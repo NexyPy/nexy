@@ -42,7 +42,7 @@ src/routes/
       └─ index.py               4. handler guards, then the handler
 ```
 
-Для `GET /admin/users` порядок следующий: `root`, `admin`, `users`, функции обработчика `@UseGuard`, его функции `@Middleware`, затем обработчик. Группа маршрутов (`(group)/`) — это каталог, как и любой другой, поэтому его `dependencies.py` принимает участие.
+Для `GET /admin/users` порядок следующий: `root`, `admin`, `users`, функции обработчика `@UseGuard`, его функции `@Middleware`, затем обработчик. Группа маршрутов (`(group)/`) - это каталог, как и любой другой, поэтому его `dependencies.py` принимает участие.
 
 ## За обработчик
 

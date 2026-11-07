@@ -192,7 +192,9 @@ def useSession() -> dict[str, Any]:
     Raises:
         RuntimeError: If called outside an HTTP request context.
     """
-    return getattr(_get_req(), "session", {})
+    request = _get_req()
+    # Starlette asserts, rather than returning nothing, when SessionMiddleware is not installed.
+    return request.session if "session" in request.scope else {}
 
 
 def useCookies() -> dict[str, str]:

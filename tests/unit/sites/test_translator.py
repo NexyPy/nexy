@@ -26,6 +26,11 @@ class TestProtect:
         template, kept = translator.protect(PAGE)
         assert "def GET()" not in template and any("def GET()" in part for part in kept)
 
+    def test_an_indented_fence_never_reaches_the_translator(self):
+        page = '1. Cast it.\n\n   ```nexy filename="a.nexy"\n   id: prop[int]\n   ```\n'
+        template, kept = translator.protect(page)
+        assert "```" not in template and "   id: prop[int]" in kept[1]
+
     def test_an_inline_code_stays_with_its_sentence(self):
         template, _kept = translator.protect(PAGE)
         assert "A route is a file, and [[1]] builds a URL." in template

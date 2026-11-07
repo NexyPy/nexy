@@ -24,9 +24,9 @@ npm ls vite
 ## नेक्सी नियमों का पालन करता है
 
 - **पथों के लिए होस्ट हेडर पर कभी भरोसा न करें।** नेक्सी अपने स्वयं के मिडलवेयर (निर्देशिका मिडलवेयर) में `scope["path"]` पढ़ता है, न कि `request.url.path`। अपने में भी वैसा ही करो.
-- **जो HTML तक पहुंचता है उससे बचें।** क्लाइंट घटकों को दिए गए प्रॉप्स, `Link` विशेषताएँ, `Image`, `Audio` और `Video` विशेषताएँ, सामग्री तालिका एंकर और `HTTPException` विवरण सभी HTML से बच गए हैं। `| safe` टेम्पलेट में इसे बंद कर दिया जाता है: इसे उपयोगकर्ता इनपुट पर कभी भी उपयोग न करें।
+- **जो HTML तक पहुंचता है उससे बचें।** क्लाइंट घटकों को दिए गए प्रॉप्स, `Link` विशेषताएँ, `Image`, `Audio` और `Video` विशेषताएँ, सामग्री तालिका एंकर और `HTTPException` विवरण सभी HTML से बच गए हैं। एक `.nexy` टेम्प्लेट अपने आप नहीं बचता: विज़िटर या डेटाबेस से आने वाले किसी भी मूल्य के लिए `{{ value | e }}` लिखें, और उपयोगकर्ता इनपुट पर कभी भी `| safe` न लिखें।
 - **डेवलपर एंडपॉइंट केवल लूपबैक और संकीर्ण हैं।** डेव रेंडर एंडपॉइंट (`/__nexy__/render`) केवल `src/routes/` के तहत `.tsx` या `.jsx` एक्सटेंशन वाली फाइलों को स्वीकार करता है, और केवल डेव सर्वर के माध्यम से पहुंच योग्य है, जो विदेशी `Host` हेडर को अस्वीकार करता है।
-- **त्रुटि विवरण लीक नहीं होते हैं।** एक त्रुटि पृष्ठ जो स्वयं विफल रहता है वह केवल स्थिति कोड दिखाता है।
+- **त्रुटि विवरण लीक नहीं होते।** एक त्रुटि पृष्ठ जो स्वयं विफल रहता है वह केवल स्थिति कोड दिखाता है।
 - **प्रोडक्शन उत्तरों में सुरक्षित हेडर होते हैं।** `X-Content-Type-Options: nosniff` और `Referrer-Policy: strict-origin-when-cross-origin`, जब तक कि आपका कोड स्वयं सेट न हो जाए। `Server` हेडर नहीं भेजा गया है। अपने प्रॉक्सी या मिडलवेयर में `Strict-Transport-Security` और `Content-Security-Policy` जोड़ें: वे आपके डोमेन पर निर्भर करते हैं।
 - **क्रैश एक संदर्भ दिखाता है, त्रुटि नहीं।** देखें [त्रुटि पृष्ठ](../routing/fbr/errors/README.md#unhandled-exceptions)।
 - **नेक्सी के Python कोड में कोई `eval` और कोई `shell=True` नहीं है।** बाहरी प्रोग्राम एक तर्क सूची के साथ चलते हैं।
@@ -39,7 +39,7 @@ npm audit                                    # in a scaffolded project
 uv run bandit -r nexy -c .bandit             # static analysis of Nexy itself
 ```
 
-नेक्सी का अपना भंडार अपने चेक में पहला और तीसरा चलाता है। ऊपर की मंजिल पर एक नई सलाह को `pyproject.toml` या मचान में `package.json` फर्श को ऊपर उठाकर, फिर ताले को पुनर्जीवित करके नियंत्रित किया जाता है।
+नेक्सी का अपना भंडार अपने चेक में पहला और तीसरा चलाता है। ऊपर की मंजिल पर एक नई सलाह को `pyproject.toml` में या मचान में `package.json` फर्श को ऊपर उठाकर, फिर ताले को पुनर्जीवित करके नियंत्रित किया जाता है।
 
 ## सुरक्षित तैनाती
 
@@ -51,13 +51,13 @@ uv run bandit -r nexy -c .bandit             # static analysis of Nexy itself
 
 ## सूत्र
 
-- [सीवीई-2026-48710 (बैडहोस्ट) Starlette](https://www.penligent.ai/hackinglabs/cve-2026-48710/) में
+- [सीवीई-2026-48710 (बैडहोस्ट) में Starlette](https://www.penligent.ai/hackinglabs/cve-2026-48710/)
 - [Vite सलाहकार GHSA-fx2h-pf6j-xcff](https://github.com/advisories/GHSA-fx2h-pf6j-xcff) और [GHSA-v2wj-q39q-566r](https://github.com/advisories/GHSA-v2wj-q39q-566r)
 - [Jinja2 सीवीई-2025-27516](https://advisories.gitlab.com/pypi/jinja2/CVE-2025-27516/)
 - [React सर्वर पैकेज सीवीई-2026-44907](https://www.wiz.io/vulnerability-database/cve/cve-2026-44907)
 
 ## अगले चरण
 
-- [मिडिलवेयर और सुरक्षा](../guides/middleware-and-security.md)
+- [मिडलवेयर और सुरक्षा](../guides/middleware-and-security.md)
 - [तैनाती](../deployment/README.md)
-- [कॉन्फिग](config.md)
+- [कॉन्फ़िग](config.md)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html
 import importlib.util
 import sys
 import types
@@ -56,23 +57,25 @@ def test_every_card_is_four_by_five(media: types.ModuleType, tmp_path: Path) -> 
         assert (image.width, image.height) == (1080, 1350)
 
 
-def test_cards_alternate_between_paper_and_ink(media: types.ModuleType, tmp_path: Path) -> None:
+def test_the_ground_of_a_card_can_be_chosen(media: types.ModuleType, tmp_path: Path) -> None:
     spec = media.SPECS["2026-11-six-routes"]
-    media.draw(spec, tmp_path)
+    media.draw(spec, tmp_path / "paper", "paper")
+    media.draw(spec, tmp_path / "signal", "signal")
     with (
-        Image.open(tmp_path / "carousel" / "01.png") as first,
-        Image.open(tmp_path / "carousel" / "02.png") as second,
+        Image.open(tmp_path / "paper" / "carousel" / "01.png") as paper,
+        Image.open(tmp_path / "signal" / "carousel" / "01.png") as signal,
     ):
-        assert first.getpixel((0, 0)) != second.getpixel((0, 0))
+        assert paper.getpixel((0, 0)) != signal.getpixel((0, 0))
 
 
-def test_a_headline_wraps_inside_the_card_margin(media: types.ModuleType) -> None:
-    font = media._font("bold", media.HEADLINE)
-    lines = media._wrap("Your React file is an island.", font, media.CARD[0] - 2 * media.MARGIN)
-    assert all(font.getlength(line) <= media.CARD[0] - 2 * media.MARGIN for line in lines)
+def test_a_card_carries_its_headline(media: types.ModuleType) -> None:
+    spec = media.SPECS["2026-11-six-routes"]
+    markup = media._card(spec.cards[0], 0, len(spec.cards), spec, "paper")
+    assert html.escape(spec.cards[0].headline) in markup
 
 
-def test_every_spec_slug_is_a_folder_name_com_accepts(media: types.ModuleType) -> None:
+def test_every_item_slug_is_a_folder_name_com_accepts(media: types.ModuleType) -> None:
     from sites.shared.social import com
 
-    assert all(com.SLUG.match(slug) for slug in media.SPECS)
+    # The repository banner is not a COM item, so it keeps a name of its own.
+    assert all(com.SLUG.match(slug) for slug in media.SPECS if slug != "repo-banner")

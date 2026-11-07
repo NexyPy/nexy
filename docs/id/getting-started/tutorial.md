@@ -1,196 +1,60 @@
-# Tutorial: membuat halaman catatan dalam 10 menit
+# Tutorial Nexy: membuat aplikasi catatan langkah demi langkah
 
-Anda akan membuat proyek, menambahkan halaman, menambahkan titik akhir Python, berbagi data di antara mereka, dan membangun untuk produksi. Anda mengakhirinya dengan satu daftar catatan yang disajikan sebagai halaman dan sebagai JSON.
+Tutorial Nexy membuat satu aplikasi catatan dari folder kosong ke build produksi, satu bagian pada satu waktu, dan setiap bagian diakhiri dengan aplikasi yang berjalan.
 
-Baru mengenal Nexy? Lakukan [Mulai cepat](quick-start.md) terlebih dahulu: dibutuhkan waktu tiga menit.
+Baru mengenal Nexy? [Mulai cepat](quick-start.md) menunjukkannya berjalan dalam tiga menit; kembali ke sini untuk mempelajari cara kerjanya.
 
-```diagram filename="Seluruh tutorial dalam satu baris"
-uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
-```
+## Bagaimana tutorialnya bekerja
 
-## 1. Buat proyek
+- **Satu aplikasi yang berkembang.** Setiap bagian menambahkan satu fitur ke aplikasi catatan bagian sebelumnya.
+- **Router Anda.** Bagian-bagiannya mengikuti router yang dipilih di bagian atas menu: berbasis file, modular, atau khusus. Pindahkan ke sana, dan file dari setiap bagian ikut berubah.
+- **Kode yang berjalan.** Setiap file dengan nama di atasnya adalah keseluruhan file, dan rangkaian pengujian memutar ulang bagian-bagian tersebut secara berurutan pada proyek baru: apa yang Anda salin itulah yang dijalankan.
+- **Berhenti di mana saja.** Setiap bagian membutuhkan waktu 10 hingga 20 menit dan diakhiri dengan apa yang harus diperiksa di browser.
 
-```bash
-uvx nexy new notes
-cd notes
-.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
-nexy dev
-```
+## Bagian-bagiannya
 
-`uvx` hadir dengan [uv](https://docs.astral.sh/uv/) dan hanya membuat proyek. Setiap perintah setelahnya dijalankan di dalam lingkungan virtual proyek (atau sebagai `uv run nexy dev`).
+### Unit 1: dasar-dasarnya
 
-Pilih router berbasis file, proyek web, dan kerangka klien apa pun (atau tidak sama sekali). Buka
-<http://localhost:3000>. Langkah panjang mencetak masing-masing satu baris dengan durasinya, seperti yang dilakukan `uv`.
+| Bagian | Apa yang Anda tambahkan | Apa yang Anda pelajari |
+|---|---|---|
+| [1. Buat proyek](../tutorial/create-the-project.md) | sebuah proyek yang berjalan | `nexy new`, `nexy dev` |
+| [2. Halaman dan tata letak](../tutorial/pages-and-layouts.md) | halaman catatan | halaman, tampilan, tata letak |
+| [3. Rute dinamis dan API](../tutorial/dynamic-routes.md) | `/notes/1` dan `/api/notes` | Segmen URL, rute JSON, `notFound` |
+| [4. Komponen](../tutorial/components.md) | satu kartu per catatan | `.nexy` komponen dan alat peraganya |
 
-<!-- router:modular -->
-Jawab `No` pada prompt router berbasis file: `nx new` merancah router modular di `src/apps/`, bukan `src/routes/`.
-<!-- /router -->
+### Satuan 2: data
 
-<!-- router:custom -->
-Jawab `Yes` ke prompt router berbasis file untuk halaman tersebut, lalu pasang `APIRouter` Anda yang ada di `nexyconfig.py`: kedua router hidup berdampingan.
-<!-- /router -->
+| Bagian | Apa yang Anda tambahkan | Apa yang Anda pelajari |
+|---|---|---|
+| [5. Simpan catatan di SQLite](../tutorial/store-the-notes.md) | sebuah model, sebuah migrasi, sebuah benih | SQLModel, `nx migrate` |
+| [6. Membuat catatan dari formulir](../tutorial/create-a-note.md) | formulir yang menyimpan catatan | Tindakan, bentuk tanpa JavaScript |
+| [7. Tampilkan kesalahan validasi](../tutorial/validation-errors.md) | pesan di atas formulir | aturan dalam suatu Tindakan, `303`, `useSearchParams` |
+| [8. Mengedit dan menghapus catatan](../tutorial/edit-and-delete.md) | bentuk-bentuk catatan | beberapa Tindakan per halaman, bidang tersembunyi |
+| [9. Beri nomor halaman pada catatan](../tutorial/paginate-the-notes.md) | lima catatan per halaman | `offset` dan `limit`, penghubung antar halaman |
 
-## 2. Edit tata letaknya
+### Unit 3: pengguna
 
-<!-- router:fbr,custom -->
-`src/routes/layout.nexy` memiliki dokumen HTML (dengan perutean klien React adalah `layout.tsx`). Ubah `<title>`:
+| Bagian | Apa yang Anda tambahkan | Apa yang Anda pelajari |
+|---|---|---|
+| [10. Buat akun dan masuk](../tutorial/accounts.md) | daftar, masuk, keluar | sesi, hashing kata sandi |
+| [11. Berikan catatannya masing-masing kepada pengguna](../tutorial/own-notes.md) | catatan milik pengguna | kunci asing, `redirect`, `401` |
+| [12. Reset password yang terlupa melalui email](../tutorial/password-reset.md) | tautan reset dikirim melalui email | `smtplib`, token bertanda tangan yang masa berlakunya habis |
 
-```nexy
-<title>Notes</title>
-```
+### Unit 4: interaktivitas
 
-Simpan: browser memuat ulang. Lihat [Tata Letak](../routing/fbr/layouts/README.md).
-<!-- /router -->
+| Bagian | Apa yang Anda tambahkan | Apa yang Anda pelajari |
+|---|---|---|
+| [13. Cari catatan saat Anda mengetik](../tutorial/search-the-notes.md) | kotak pencarian yang memfilter saat Anda mengetik | React pulau, alat peraga dari Python |
+| [14. Centang catatan tanpa memuat ulang halaman](../tutorial/tick-a-note.md) | tombol Selesai di setiap not | peningkatan progresif, satu Tindakan untuk bentuk dan untuk `fetch` |
 
-<!-- router:modular -->
-Pengontrol merender `src/apps/layout.nexy` di sekitar tampilan, dan file tersebut memiliki dokumen HTML. Ubah `<title>`:
+### Berikutnya
 
-```nexy
-<title>Notes</title>
-```
+| Satuan | Apa keuntungan aplikasi |
+|---|---|
+| 5. Melampaui permintaan | catatan dibagikan melalui email di latar belakang, intisari harian, pembaruan langsung |
+| 6. Kirim | pengujian, halaman dan log kesalahan, header keamanan, build Docker |
 
-Simpan: browser memuat ulang. Lihat [Tampilan dari pengontrol](../routing/modular/README.md#views-from-a-controller).
-<!-- /router -->
+## Langkah selanjutnya
 
-## 3. Tambahkan halaman
-
-<!-- router:fbr,custom -->
-```nexy filename="src/rute/catatan.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-Buka <http://localhost:3000/notes>: Anda akan melihat dua peluru. Disajikan di `/notes`. Bagian antara `---` adalah Python, sisanya adalah Jinja2.
-<!-- /router -->
-
-<!-- router:modular -->
-Pengontrol mengembalikan tampilan. Buat `src/apps/notes_view.nexy`:
-
-```nexy filename="src/apps/notes_view.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-Deklarasikan rute di `src/apps/app_controller.py` dan tambahkan pengontrol ke modul:
-
-```python filename="src/apps/app_controller.py"
-@Controller("/notes")
-class NotesController:
-    async def get(self):
-        return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/notes_view.nexy"),
-        })
-```
-
-```python filename="src/apps/app_module.py"
-from .app_controller import AppController, NotesController
-
-controllers = [AppController, NotesController]
-```
-
-Buka <http://localhost:3000/notes>: Anda akan melihat dua peluru. Bagian antara `---` adalah Python, sisanya adalah Jinja2.
-<!-- /router -->
-
-## 4. Tambahkan titik akhir
-
-<!-- router:fbr,custom -->
-```python filename="src/routes/api/notes.py"
-async def GET():
-    return [{"id": 1, "text": "Buy milk"}]
-```
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-Anda harus mendapatkan `[{"id":1,"text":"Buy milk"}]`. Nama fungsinya adalah metode HTTP. Dokumen API interaktif ada di `/docs`.
-<!-- /router -->
-
-<!-- router:modular -->
-```python filename="src/apps/app_controller.py"
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": 1, "text": "Buy milk"}]
-```
-
-Tambahkan `NotesApiController` ke `controllers` di `src/apps/app_module.py`, lalu jalankan:
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-Anda harus mendapatkan `[{"id":1,"text":"Buy milk"}]`. Nama metodenya adalah metode HTTP. Dokumen API interaktif ada di `/docs`.
-<!-- /router -->
-
-## 5. Bagikan datanya
-
-Pindahkan daftar ke modul Python dan gunakan di kedua file:
-
-```python filename="src/catatan.py"
-NOTES = ["Buy milk", "Ship Nexy"]
-```
-
-<!-- router:fbr,custom -->
-```nexy filename="src/rute/catatan.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/routes/api/notes.py"
-from src.notes import NOTES
-
-
-async def GET():
-    return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-<!-- router:modular -->
-```nexy filename="src/apps/notes_view.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/apps/app_controller.py"
-from src.notes import NOTES
-
-
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-## 6. Membangun dan melayani
-
-```bash
-nx build
-nx start
-```
-
-`nx build` mencetak setiap fase beserta durasinya. `nx start` menyajikan output yang dikompilasi dengan Uvicorn: tidak ada proses Node saat runtime.
-
-## Dimana selanjutnya
-
-- [Perutean](../routing/README.md): segmen dan grup dinamis
-- [Aksi](../guides/actions.md): memanggil Python dari formulir atau dari klien
-- [Pengujian](../guides/testing.md): halaman pengujian dan titik akhir
-- [Penerapan](../deployment/README.md): container dan proksi terbalik
+- [Bagian 1: membuat proyek](../tutorial/create-the-project.md)
+- [Konsep inti](core-concepts.md): kata-kata yang digunakan tutorial

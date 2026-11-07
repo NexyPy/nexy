@@ -120,4 +120,6 @@ def migrate(
         return
     _require_initialized(orm, project)
     _require_database(orm, project)
-    _run_tool(orm.tool, _arguments(orm, project, message, upgrade))
+    returncode = _run_tool(orm.tool, _arguments(orm, project, message, upgrade))
+    if returncode:
+        raise typer.Exit(returncode)

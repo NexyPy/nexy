@@ -1,6 +1,6 @@
 # От Элизии до Некси
 
-В Nexy маршрут Elysia становится Python файлом в `src/routes/`: схемы `t.Object` становятся Pydantic моделями, `.group` становится папкой, `beforeHandle` — `dependencies.py`, а типизированный клиент Идена становится типизированными действиями.
+В Nexy маршрут Elysia становится Python файлом в `src/routes/`: схемы `t.Object` становятся Pydantic моделями, `.group` становится папкой, `beforeHandle` - `dependencies.py`, а типизированный клиент Идена становится типизированными действиями.
 
 В каждом разделе ниже показаны привычки Элизии, а затем то же самое в Некси.
 
@@ -12,7 +12,7 @@ import { Elysia } from "elysia";
 new Elysia().get("/api/hello", () => ({ message: "Hello" })).listen(3000);
 ```
 
-Путь к файлу — это URL-адрес, имя функции — это метод:
+Путь к файлу - это URL-адрес, имя функции - это метод:
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -30,7 +30,7 @@ new Elysia().get("/api/users/:id", ({ params, query }) => ({ id: params.id, fiel
 });
 ```
 
-Типы идут по параметрам, а `:id` — это сегмент `[id]`:
+Типы идут по параметрам, а `:id` - это сегмент `[id]`:
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int, fields: str | None = None):
@@ -71,7 +71,7 @@ app.get("/api/me", () => ({ name: "Ada" }), {
 });
 ```
 
-Тип возвращаемого значения — это схема ответа: необъявленные поля исключаются из ответа.
+Тип возвращаемого значения - это схема ответа: необъявленные поля исключаются из ответа.
 
 ```python filename="src/routes/api/me.py"
 from pydantic import BaseModel
@@ -134,7 +134,7 @@ app
   .get("/api/whoami", ({ token }) => ({ token }));
 ```
 
-То, что `derive` добавляет в контекст, — это зависимость, запрошенная обработчиком:
+То, что `derive` добавляет в контекст, - это зависимость, запрошенная обработчиком:
 
 ```python filename="src/routes/api/whoami.py"
 from nexy.http import Depends, Header
@@ -148,7 +148,7 @@ async def GET(token: str = Depends(token)):
     return {"token": token}
 ```
 
-`decorate` и `state` — это простые объекты уровня модуля, импортированные туда, где они необходимы.
+`decorate` и `state` - это простые объекты уровня модуля, импортированные туда, где они необходимы.
 
 ## `onAfterHandle` и `mapResponse`
 
@@ -221,7 +221,7 @@ const api = treaty<App>("localhost:3000");
 const { data } = await api.todos.post({ title: "Write the docs" });
 ```
 
-Действие — это функция Python и ее типизированный клиент одновременно. Nexy генерирует типы TypeScript из сигнатуры Python:
+Действие - это функция Python и ее типизированный клиент одновременно. Nexy генерирует типы TypeScript из сигнатуры Python:
 
 ```python filename="src/actions/todos.py"
 from pydantic import BaseModel

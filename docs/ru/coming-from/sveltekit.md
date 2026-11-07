@@ -30,13 +30,13 @@ class NexyConfig(NexyConfigModel):
 <h1>About</h1>
 ```
 
-Страница — это сам файл, названный по его URL-адресу:
+Страница - это сам файл, названный по его URL-адресу:
 
 ```svelte filename="src/routes/about.svelte"
 <h1>About</h1>
 ```
 
-`src/routes/+page.svelte` — это `src/routes/index.svelte`.
+`src/routes/+page.svelte` - это `src/routes/index.svelte`.
 
 ## Динамические маршруты и `params`
 
@@ -218,7 +218,7 @@ export const actions = {
 </form>
 ```
 
-Действие — это функция Python со сгенерированным типизированным клиентом:
+Действие - это функция Python со сгенерированным типизированным клиентом:
 
 ```python filename="src/actions/todos.py"
 from pydantic import BaseModel
@@ -291,7 +291,7 @@ export async function handle({ event, resolve }) {
 }
 ```
 
-Тест пути — это папка. Корень `middleware.py` охватывает все, а `dashboard/middleware.py` — только маршруты ниже него:
+Тест пути - это папка. Корень `middleware.py` охватывает все, а `dashboard/middleware.py` - только маршруты ниже него:
 
 ```python filename="src/routes/middleware.py"
 from nexy.http import Request

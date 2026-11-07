@@ -1,6 +1,6 @@
 # От экспресса до Nexy
 
-В Nexy экспресс-маршрут становится файлом Python под `src/routes/`: `app.get` — это функция `GET`, `req` превращается в типизированные параметры, `res.json` — в возвращаемое значение, а `app.use` — в поля конфигурации или `middleware.py`.
+В Nexy экспресс-маршрут становится файлом Python под `src/routes/`: `app.get` - это функция `GET`, `req` превращается в типизированные параметры, `res.json` - в возвращаемое значение, а `app.use` - в поля конфигурации или `middleware.py`.
 
 В каждом разделе ниже показаны привычки Express, затем то же самое в Nexy.
 
@@ -18,7 +18,7 @@ app.get("/api/hello", (req, res) => {
 app.listen(3000);
 ```
 
-Путь к файлу — это URL-адрес, имя функции — это метод, а возвращаемое значение — это тело JSON:
+Путь к файлу - это URL-адрес, имя функции - это метод, а возвращаемое значение - это тело JSON:
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -35,14 +35,14 @@ app.get("/api/users/:id", (req, res) => {
 });
 ```
 
-`:id` — это сегмент `[id]`, а аннотация типа выполняет преобразование и `404`:
+`:id` - это сегмент `[id]`, а аннотация типа выполняет преобразование и `404`:
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
 
-Подстановочный знак `*` — это файл `[...rest].py`.
+Подстановочный знак `*` - это файл `[...rest].py`.
 
 ## `req.query`
 
@@ -146,7 +146,7 @@ app.use((req, res, next) => {
 });
 ```
 
-`middleware.py` в корне маршрутов оборачивает каждый запрос; `call_next` — это `next()`:
+`middleware.py` в корне маршрутов оборачивает каждый запрос; `call_next` - это `next()`:
 
 ```python filename="src/routes/middleware.py"
 import time
@@ -196,7 +196,7 @@ app.post("/api/theme", (req, res) => {
 app.get("/api/theme", (req, res) => res.json({ theme: req.cookies.theme ?? "light" }));
 ```
 
-Файл cookie — это параметр для чтения и метод ответа для записи:
+Файл cookie - это параметр для чтения и метод ответа для записи:
 
 ```python filename="src/routes/api/theme.py"
 from nexy.http import Cookie, JSONResponse
@@ -225,7 +225,7 @@ app.post("/api/login", (req, res) => {
 });
 ```
 
-`useSession` в `nexyconfig.py` (выше) включает сеансы; `request.session` — это дикт:
+`useSession` в `nexyconfig.py` (выше) включает сеансы; `request.session` - это дикт:
 
 ```python filename="src/routes/api/login.py"
 from pydantic import BaseModel
@@ -297,7 +297,7 @@ app.get("/users", (req, res) => {
 </ul>
 ```
 
-Страница `.nexy` — это маршрут и просмотр одновременно:
+Страница `.nexy` - это маршрут и просмотр одновременно:
 
 ```nexy filename="src/маршруты/users.nexy"
 ---
@@ -310,7 +310,7 @@ users = [{"name": "Ada"}, {"name": "Alan"}]
 </ul>
 ```
 
-`<%= %>` экранируется, а `{{ }}` — нет: экранируйте то, что посетитель набрал с помощью `{{ value | e }}`.
+`<%= %>` экранируется, а `{{ }}` - нет: экранируйте то, что посетитель набрал с помощью `{{ value | e }}`.
 
 ## `express.static`
 

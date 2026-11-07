@@ -1,118 +1,264 @@
-"""Draw the media of one COM item with type only: a terminal capture, or the cards of a carousel.
+"""Draw the media of a COM item as a page, then photograph it.
 
-    python scripts/make_com_media.py --slug 2026-11-page-in-1-6-ms
     python scripts/make_com_media.py --slug 2026-11-six-routes
-    python scripts/make_com_media.py --check          # every spec, in a temporary folder
+    python scripts/make_com_media.py --slug 2026-11-six-routes --theme signal
+    python scripts/make_com_media.py --check
 
-There is no illustration in `COM/` (see `COM/BRAND.md`): a post shows a terminal, a browser, or a
-card. This script draws the two we can draw from text, at the sizes the brand pins, so a card is
-reproducible instead of hand-made once and never again.
+A card is not painted pixel by pixel: it is HTML and CSS (`COM/design/cards.css`), rendered by
+Chrome at twice the size and reduced to exactly 1080×1350. Type is then set by a browser, the way it
+is on the page a reader will actually open, and a hairline stays one pixel wide on LinkedIn.
 
-The copy lives in `SPECS`, one entry per item slug: the same text a reader sees on the card, and the
-verbatim output of the command a terminal capture shows. Editing a card means editing this file and
-running the command, not opening an image editor.
+Everything a card shows is real: a file path that exists, a command that runs, a number from
+`COM/proof/`. Nothing is generated: a model that has seen ten thousand landing pages would draw a
+plausible `routes/[id].tsx`, and one wrong character in a file name is the only thing a developer
+reads first.
+
+`SPECS` holds one entry per item: the words on each card, and the composition under them. Editing a
+card means editing this file and running the command.
 """
 
 from __future__ import annotations
 
 import argparse
+import html
+import shutil
 import sys
-from dataclasses import dataclass, field
+from collections.abc import Iterator
+from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
+
+if TYPE_CHECKING:
+    from playwright.sync_api import FloatRect, Page
 
 REPO = Path(__file__).resolve().parent.parent
 COM = REPO / "COM"
-
-PAPER = "#fafafa"
-INK = "#0a0a0a"
-MUTED = "#52525b"
-ACCENT = "#0f766e"
-ACCENT_LIT = "#5eead4"
+DESIGN = COM / "design"
 
 CARD = (1080, 1350)
-TERMINAL = (1200, 675)
+FIGURE = (1200, 675)
 COVER = (1200, 630)
-MARGIN = 64
-FOOTER = 40
-HEADLINE = 92
-CODE = 56
-CAPTURE = 24
+SCALE = 2
+PAD_X = 88
+PAD_BOTTOM = 68
 
-FONT_DIRS = (
-    "/usr/share/fonts/truetype/dejavu",
-    "/usr/share/fonts/TTF",
-    "/Library/Fonts",
-    "/System/Library/Fonts/Supplemental",
+THEMES = ("paper", "signal", "field")
+CHROMES = (
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
 )
-FACES = {
-    "sans": "DejaVuSans.ttf",
-    "bold": "DejaVuSans-Bold.ttf",
-    "mono": "DejaVuSansMono.ttf",
-    "mono-bold": "DejaVuSansMono-Bold.ttf",
-}
+
+
+@dataclass(frozen=True)
+class Sheet:
+    """One page to shoot: its name in the item folder, its markup, its size and margins."""
+
+    name: str
+    markup: str
+    size: tuple[int, int]
+    pad_x: int = PAD_X
+    pad_bottom: int = PAD_BOTTOM
 
 
 @dataclass(frozen=True)
 class Card:
-    """One card: a headline, and the one line of code that proves it."""
+    """One card: a headline, and the composition that proves it."""
 
     headline: str
-    code: str = ""
+    eyebrow: str = ""
+    figure: str = ""
 
 
 @dataclass(frozen=True)
 class Spec:
-    """One item's media: a terminal capture, or a numbered set of cards."""
+    """One item's media: a carousel, a figure, or a cover."""
 
     kind: str
-    title: str = ""
-    capture: tuple[str, ...] = ()
-    cards: tuple[Card, ...] = ()
+    theme: str = "paper"
     folder: str = "posts"
-    extras: dict[str, str] = field(default_factory=dict)
+    eyebrow: str = ""
+    cards: tuple[Card, ...] = ()
+    title: str = ""
+    subtitle: str = ""
+    label: str = ""
+    unit: str = ""
+    runs: tuple[float, ...] = ()
+    footnote: str = ""
 
+
+# ---------- compositions: what sits under the headline ----------
+
+
+def chip(path: str, name: str) -> str:
+    """A file, drawn as a page: the path in grey, the name in the accent."""
+    return (
+        '<div class="chip"><span class="page"></span>'
+        f'<span class="dir">{html.escape(path)}</span>'
+        f'<span class="name">{html.escape(name)}</span></div>'
+    )
+
+
+def tree(rows: tuple[tuple[str, int, bool], ...]) -> str:
+    """Folders and the file they become: the connector is the argument."""
+    lines = [
+        f'<div style="margin-left:{level * 38}px">'
+        f'<span class="{"leaf" if leaf else ""}">{html.escape(text)}</span></div>'
+        for text, level, leaf in rows
+    ]
+    return '<div class="tree">' + "".join(lines) + "</div>"
+
+
+def code_panel(path: str, language: str, code: str) -> str:
+    """A source file: the path on a bar, the code under it, unstyled by a highlighter."""
+    return (
+        '<div class="panel"><div class="bar">'
+        f"<b>{html.escape(path)}</b><span>{html.escape(language)}</span></div>"
+        f"<pre>{code}</pre></div>"
+    )
+
+
+def flow(left: str, right: str) -> str:
+    """A request and its answer, one wire between them."""
+    return (
+        f'<div class="flow"><div class="node">{left}</div>'
+        f'<div class="wire"></div><div class="node">{right}</div></div>'
+    )
+
+
+def host(address: str, rows: tuple[tuple[str, str, str], ...]) -> str:
+    """One address, several answers: the claim of the project, as a table of routes."""
+    body = "".join(
+        f'<div class="row"><b>{html.escape(method)}</b>'
+        f'<span class="path" style="color:inherit">{html.escape(path)}</span>'
+        f"<span>{html.escape(source)}</span></div>"
+        for method, path, source in rows
+    )
+    return (
+        '<div class="host"><div class="addr">'
+        f"<b>{html.escape(address)}</b><span>one origin</span></div>{body}</div>"
+    )
+
+
+# ---------- what each item says ----------
 
 SPECS: dict[str, Spec] = {
+    "repo-banner": Spec(
+        kind="banner",
+        theme="paper",
+        folder="design",
+        eyebrow="uvx nexy new",
+        title="One file. One page. One origin.",
+        subtitle="A route is a Python file. FastAPI and Vite run in one process.",
+        label="nexypy.github.io/nexy/docs",
+    ),
     "2026-11-page-in-1-6-ms": Spec(
-        kind="terminal",
-        title="25 compiles of one route, Python 3.13, Ryzen 5 4500U",
-        capture=(
-            "$ uv run python bench.py",
-            "25 compiles of routes/index.nexy, warm-up excluded",
-            "",
-            "median   1.66 ms",
-            "min      1.49 ms",
-            "max      2.34 ms",
-            "",
-            "1.99, 1.86, 2.18, 1.71, 1.91, 1.66, 1.49, 1.51, 1.60, 1.55,",
-            "1.56, 1.58, 1.62, 1.63, 1.60, 1.61, 1.62, 1.71, 1.63, 1.66,",
-            "1.94, 2.16, 1.88, 1.98, 2.34",
+        kind="figure",
+        theme="signal",
+        eyebrow="compile time",
+        label="median of 25 compiles",
+        unit="ms",
+        footnote="routes/index.nexy · Ryzen 5 4500U · Python 3.13.15",
+        runs=(
+            1.99,
+            1.86,
+            2.18,
+            1.71,
+            1.91,
+            1.66,
+            1.49,
+            1.51,
+            1.60,
+            1.55,
+            1.56,
+            1.58,
+            1.62,
+            1.63,
+            1.60,
+            1.61,
+            1.62,
+            1.71,
+            1.63,
+            1.66,
+            1.94,
+            2.16,
+            1.88,
+            1.98,
+            2.34,
         ),
     ),
     "2026-11-six-routes": Spec(
         kind="carousel",
+        theme="paper",
+        eyebrow="file-based routing",
         cards=(
-            Card("A route is a file.", "routes/about.nexy"),
-            Card("The folder is the URL.", "routes/blog/[slug].nexy"),
-            Card("Markdown is a route.", "routes/changelog.md"),
-            Card("React is a route too.", "routes/counter.tsx"),
-            Card("Python is the API.", "routes/api/users.py"),
-            Card("One origin. No CORS.", "nx dev  ->  :3000"),
+            Card(
+                "A route is a file.",
+                "one file, one page",
+                chip("routes/", "about.nexy"),
+            ),
+            Card(
+                "The folder is the URL.",
+                "the path is the address",
+                tree(
+                    (
+                        ("src/routes/", 0, False),
+                        ("blog/", 1, False),
+                        ("[slug].nexy", 2, True),
+                    )
+                ),
+            ),
+            Card(
+                "Markdown is a route.",
+                "a page with no component",
+                code_panel(
+                    "routes/changelog.md",
+                    "markdown",
+                    "# Changelog\n\n- 2.2.2 - 2026-11-05",
+                ),
+            ),
+            Card(
+                "React is a route too.",
+                "client mode, no glue",
+                code_panel(
+                    "routes/counter.tsx",
+                    "tsx",
+                    "export default function Counter() {\n  const [n, setN] = useState(0)",
+                ),
+            ),
+            Card(
+                "Python is the API.",
+                "the file is the endpoint",
+                flow("GET /api/users", '{"users": []}'),
+            ),
+            Card(
+                "One origin. No CORS.",
+                "pages and json, same host",
+                host(
+                    "localhost:3000",
+                    (("GET", "/", "index.nexy"), ("GET", "/api/users", "users.py")),
+                ),
+            ),
         ),
     ),
     "2026-11-why-a-file-is-a-route": Spec(
         kind="cover",
+        theme="field",
         folder="blogs",
+        eyebrow="routing / file-based",
         title="Why a route is a file",
-        capture=("file-based routing, FastAPI and React", "nexypy.github.io/nexy"),
+        subtitle="one file per page, and the URL is its path",
     ),
 }
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Draw the media of one item, or check every spec can be drawn."""
+    """Draw one item, or check that every item can be drawn and fits its margins."""
     args = _parser().parse_args(argv)
     if args.check:
         return _check()
@@ -120,37 +266,44 @@ def main(argv: list[str] | None = None) -> int:
     if spec is None:
         print(f"no spec for {args.slug!r}: add one to SPECS in {Path(__file__).name}")
         return 1
+    theme = args.theme or spec.theme
     folder = COM / spec.folder / args.slug
-    names = draw(spec, folder)
+    names = draw(spec, folder, theme)
     for name in names:
-        print(f"{name}  {_size(folder / name)}")
+        print(f"{name}  {_size(folder / name)}  {theme}")
     return 0
 
 
 def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Draw COM media from its text spec.")
+    parser = argparse.ArgumentParser(description="Render COM media from HTML and CSS.")
     parser.add_argument("--slug", help="the item to draw, e.g. 2026-11-six-routes")
+    parser.add_argument("--theme", choices=THEMES, help="the ground of the card")
     parser.add_argument("--check", action="store_true", help="draw every spec into a temp folder")
     return parser
 
 
-def draw(spec: Spec, folder: Path) -> list[str]:
+def draw(spec: Spec, folder: Path, theme: str | None = None) -> list[str]:
     """Write the media into the item folder and return the names written."""
     folder.mkdir(parents=True, exist_ok=True)
-    if spec.kind == "terminal":
-        _capture(spec).save(folder / "image.png")
-        return ["image.png"]
+    sheets = _sheets(spec, theme or spec.theme)
+    with _session() as page:
+        for sheet in sheets:
+            _shoot(page, sheet.markup, folder / sheet.name, sheet.size)
+            _audit(page, sheet)
+    return [sheet.name for sheet in sheets]
+
+
+def _sheets(spec: Spec, theme: str) -> list[Sheet]:
+    if spec.kind == "figure":
+        return [Sheet("image.png", _figure(spec, theme), FIGURE, pad_x=64, pad_bottom=48)]
     if spec.kind == "cover":
-        _cover(spec).save(folder / "cover.png")
-        return ["cover.png"]
-    cards = folder / "carousel"
-    cards.mkdir(parents=True, exist_ok=True)
-    names = []
-    for index, card in enumerate(spec.cards, start=1):
-        name = f"{index:02d}.png"
-        _card(card, index, len(spec.cards)).save(cards / name)
-        names.append(f"carousel/{name}")
-    return names
+        return [Sheet("cover.png", _cover(spec, theme), COVER, pad_x=64, pad_bottom=48)]
+    if spec.kind == "banner":
+        return [Sheet("banner.png", _banner(spec, theme), COVER, pad_x=64, pad_bottom=48)]
+    return [
+        Sheet(f"carousel/{index:02d}.png", _card(card, index, len(spec.cards), spec, theme), CARD)
+        for index, card in enumerate(spec.cards, start=1)
+    ]
 
 
 def _check() -> int:
@@ -158,116 +311,191 @@ def _check() -> int:
 
     with TemporaryDirectory() as scratch:
         for slug, spec in SPECS.items():
-            try:
-                draw(spec, Path(scratch) / slug)
-            except (OSError, ValueError) as failure:
-                print(f"{slug}: {failure}")
-                return 1
+            for theme in THEMES if spec.kind == "carousel" else (spec.theme,):
+                try:
+                    draw(spec, Path(scratch) / f"{slug}-{theme}", theme)
+                except (OSError, RuntimeError, ValueError) as failure:
+                    print(f"{slug} ({theme}): {failure}")
+                    return 1
             print(f"{slug}: drawn")
     return 0
 
 
-def _font(face: str, size: int) -> ImageFont.FreeTypeFont:
-    name = FACES[face]
-    for directory in FONT_DIRS:
-        path = Path(directory) / name
-        if path.is_file():
-            return ImageFont.truetype(str(path), size)
-    raise ValueError(f"{name} not found: install DejaVu fonts, or add its folder to FONT_DIRS")
+# ---------- markup ----------
 
 
-def _wrap(text: str, font: ImageFont.FreeTypeFont, width: int) -> list[str]:
-    lines: list[str] = []
-    current = ""
-    for word in text.split():
-        candidate = f"{current} {word}".strip()
-        if font.getlength(candidate) <= width or not current:
-            current = candidate
-        else:
-            lines.append(current)
-            current = word
-    return [*lines, current] if current else lines
+def _card(card: Card, index: int, total: int, spec: Spec, theme: str) -> str:
+    """One page of the carousel: eyebrow, headline, composition, footer."""
+    eyebrow = card.eyebrow or spec.eyebrow
+    body = (
+        f'<div class="card-top">{_eyebrow(eyebrow)}'
+        f'<span class="index">{index:02d}<s>/</s>{total:02d}</span></div>'
+        f'<div class="card-body"><h1 class="headline">{html.escape(card.headline)}</h1>'
+        f'<div class="figure">{card.figure}</div></div>'
+        f'<div class="card-foot"><span class="mark">nx</span>'
+        f"<span>nexy · file-based routing</span></div>"
+    )
+    markup = f'<article class="card theme-{theme}"><div class="card-grid"></div>{body}</article>'
+    return _document(theme, markup)
 
 
-def _block(
-    draw_: ImageDraw.ImageDraw,
-    lines: list[str],
-    xy: tuple[int, int],
-    font: ImageFont.FreeTypeFont,
-    fill: str,
-    step: int,
-) -> int:
-    x, y = xy
-    for line in lines:
-        draw_.text((x, y), line, font=font, fill=fill)
-        y += step
-    return y
+def _figure(spec: Spec, theme: str) -> str:
+    """The benchmark: the median as a number, the 25 runs as bars."""
+    median = sorted(spec.runs)[len(spec.runs) // 2]
+    body = (
+        f'<div class="card-top">{_eyebrow(spec.eyebrow)}'
+        f'<span class="index">{len(spec.runs)} runs</span></div>'
+        f'<div class="body"><div class="number"><div class="big">{median:.2f}'
+        f"<small>{html.escape(spec.unit)}</small></div>"
+        f'<div class="big-label">{html.escape(spec.label)}<br>{html.escape(spec.footnote)}</div>'
+        f'</div><div class="bars">{_bars(spec.runs, median)}</div></div>'
+        f'<div class="card-foot"><span class="mark">nx</span>'
+        f"<span>nexy · 2026-11-06</span></div>"
+    )
+    return _document(theme, f'<article class="figure-wide theme-{theme}">{body}</article>')
 
 
-def _card(card: Card, index: int, total: int) -> Image.Image:
-    dark = index % 2 == 0
-    back, front = (INK, PAPER) if dark else (PAPER, INK)
-    accent = ACCENT_LIT if dark else ACCENT
-    image = Image.new("RGB", CARD, back)
-    draw_ = ImageDraw.Draw(image)
-    headline = _wrap(card.headline, _font("bold", HEADLINE), CARD[0] - 2 * MARGIN)
-    y = _block(draw_, headline, (MARGIN, 360), _font("bold", HEADLINE), front, int(HEADLINE * 1.15))
-    if card.code:
-        lines = _wrap(card.code, _font("mono", CODE), CARD[0] - 2 * MARGIN)
-        _block(draw_, lines, (MARGIN, y + 40), _font("mono", CODE), accent, int(CODE * 1.3))
-    _footer(draw_, front, dark, index, total)
-    return image
+def _cover(spec: Spec, theme: str) -> str:
+    """A blog cover: the title, one line under it, the monogram."""
+    body = (
+        f'<div class="card-top">{_eyebrow(spec.eyebrow)}<span class="index">blog</span></div>'
+        f'<h1 class="headline">{html.escape(spec.title)}</h1>'
+        f'<div class="sub">{html.escape(spec.subtitle)}</div>'
+        f'<div class="card-foot"><span class="mark">nx</span>'
+        f"<span>nexypy.github.io/nexy</span></div>"
+    )
+    return _document(theme, f'<article class="cover theme-{theme}">{body}</article>')
 
 
-def _footer(draw_: ImageDraw.ImageDraw, front: str, dark: bool, index: int, total: int) -> None:
-    y = CARD[1] - MARGIN - FOOTER
-    mono = _font("mono", FOOTER)
-    draw_.text((MARGIN, y), "nx", font=mono, fill=front if dark else INK)
-    position = f"{index} / {total}"
-    draw_.text((CARD[0] - MARGIN - mono.getlength(position), y), position, font=mono, fill=MUTED)
+def _banner(spec: Spec, theme: str) -> str:
+    """The repository banner: the template's own logo, the claim, and the command that runs."""
+    logo = (
+        '<img class="logo" alt="Nexy" height="40"'
+        ' src="../../nexy/modules/cli/templates/_shared/web/public/nexy.svg">'
+    )
+    body = (
+        f'<div class="lockup">{logo}</div>'
+        f'<h1 class="headline">{html.escape(spec.title)}</h1>'
+        f'<div class="sub">{html.escape(spec.subtitle)}</div>'
+        f'<div class="card-foot"><span class="mark">{html.escape(spec.eyebrow)}</span>'
+        f"<span>{html.escape(spec.label)}</span></div>"
+    )
+    return _document(theme, f'<article class="cover banner theme-{theme}">{body}</article>')
 
 
-def _capture(spec: Spec) -> Image.Image:
-    image = Image.new("RGB", TERMINAL, INK)
-    draw_ = ImageDraw.Draw(image)
-    mono = _font("mono", CAPTURE)
-    title = _font("sans", 20)
-    draw_.text((MARGIN, 40), spec.title, font=title, fill=MUTED)
-    width = TERMINAL[0] - 2 * MARGIN
-    lines: list[str] = []
-    for line in spec.capture:
-        lines.extend(_wrap(line, mono, width) if line else [""])
-    y = 110
-    for line in lines:
-        draw_.text((MARGIN, y), line, font=mono, fill=_capture_fill(line))
-        y += int(CAPTURE * 1.6)
-    return image
+def _eyebrow(text: str) -> str:
+    return f'<span class="eyebrow"><b></b>{html.escape(text)}</span>'
 
 
-def _capture_fill(line: str) -> str:
-    """The summary lines carry the accent; everything else is plain terminal text."""
-    return ACCENT_LIT if line.split()[:1] in (["median"], ["min"], ["max"]) else PAPER
+def _bars(runs: tuple[float, ...], median: float) -> str:
+    top = max(runs)
+    hot = max(index for index, run in enumerate(runs) if run == median)
+    return "".join(
+        f'<i class="{"hot" if index == hot else ""}" style="height:{round(run / top * 188)}px"></i>'
+        for index, run in enumerate(runs)
+    )
 
 
-def _cover(spec: Spec) -> Image.Image:
-    """A blog cover: the title, the one line under it, and the monogram. Nothing else."""
-    image = Image.new("RGB", COVER, INK)
-    draw_ = ImageDraw.Draw(image)
-    headline = _wrap(spec.title, _font("bold", 72), COVER[0] - 2 * MARGIN)
-    y = _block(draw_, headline, (MARGIN, 150), _font("bold", 72), PAPER, 84)
-    if spec.capture:
-        _block(draw_, [spec.capture[0]], (MARGIN, y + 30), _font("mono", 28), ACCENT_LIT, 38)
-    draw_.text((MARGIN, COVER[1] - MARGIN - FOOTER), "nx", font=_font("mono", FOOTER), fill=PAPER)
-    right = spec.capture[1] if len(spec.capture) > 1 else ""
-    if right:
-        mono = _font("mono", 24)
-        draw_.text(
-            (COVER[0] - MARGIN - mono.getlength(right), COVER[1] - MARGIN - 30),
-            right,
-            font=mono,
-            fill=MUTED,
-        )
-    return image
+def _document(theme: str, body: str) -> str:
+    return (
+        "<!doctype html><html><head><meta charset='utf-8'>"
+        '<link rel="stylesheet" href="cards.css"></head>'
+        f'<body class="theme-{theme}">{body}</body></html>'
+    )
+
+
+# ---------- browser ----------
+
+
+@contextmanager
+def _session() -> Iterator[Page]:
+    """One Chrome, one page, at twice the size: the cards are shot in one run."""
+    from playwright.sync_api import sync_playwright
+
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(executable_path=_chrome(), args=["--no-sandbox"])
+        try:
+            yield browser.new_page(
+                viewport={"width": CARD[0], "height": CARD[1]}, device_scale_factor=SCALE
+            )
+        finally:
+            browser.close()
+
+
+def _chrome() -> str | None:
+    found = next((path for path in CHROMES if Path(path).is_file()), None)
+    return found or shutil.which("google-chrome") or shutil.which("chromium")
+
+
+def _shoot(page: Page, markup: str, target: Path, size: tuple[int, int]) -> None:
+    """Load the page from disk, wait for the fonts, and shoot it at 2x."""
+    source = DESIGN / ".render.html"
+    source.write_text(markup, encoding="utf-8")
+    try:
+        page.goto(source.as_uri())
+        page.evaluate("() => document.fonts.ready.then(() => true)")
+        shot = target.with_suffix(".2x.png")
+        page.screenshot(path=str(shot), clip=_clip(size))
+        with Image.open(shot) as image:
+            resample = Image.Resampling.LANCZOS
+            image.convert("RGB").resize(size, resample).save(target, optimize=True)
+        shot.unlink()
+    finally:
+        source.unlink(missing_ok=True)
+
+
+def _clip(size: tuple[int, int]) -> FloatRect:
+    return {"x": 0, "y": 0, "width": float(size[0]), "height": float(size[1])}
+
+
+def _audit(page: Page, sheet: Sheet) -> None:
+    """Refuse a card whose text leaves the margin, overflows, or lost its typeface."""
+    boxes = page.evaluate(_PROBE)
+    problems = _problems(boxes, sheet) + _missing_fonts(boxes)
+    if problems:
+        raise RuntimeError(f"{sheet.name}: " + "; ".join(problems))
+
+
+_PROBE = """() => {
+  const box = (sel) => {
+    const el = document.querySelector(sel);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return {x: r.x, y: r.y, w: r.width, h: r.height,
+            over: el.scrollWidth - el.clientWidth, tall: el.scrollHeight - el.clientHeight};
+  };
+  return {top: box('.card-top'), body: box('.card-body'), foot: box('.card-foot'),
+          head: box('.headline'), figure: box('.figure') || box('.bars'),
+          fonts: [document.fonts.check('800 118px Archivo'),
+                  document.fonts.check('400 30px "JetBrains Mono"')]};
+}"""
+
+
+def _missing_fonts(boxes: dict[str, object]) -> list[str]:
+    loaded = boxes.get("fonts")
+    if isinstance(loaded, list) and all(loaded):
+        return []
+    return ["Archivo or JetBrains Mono did not load"]
+
+
+def _problems(boxes: dict[str, dict[str, float] | None], sheet: Sheet) -> list[str]:
+    width, height = sheet.size
+    pad_x, pad_bottom = sheet.pad_x, sheet.pad_bottom
+    found: list[str] = []
+    for key in ("top", "body", "foot", "head", "figure"):
+        box = boxes.get(key)
+        if box is None:
+            continue
+        if box["x"] < pad_x - 1 or box["x"] + box["w"] > width - pad_x + 1:
+            found.append(f"{key} leaves the side margin")
+        if box["y"] + box["h"] > height - pad_bottom + 1:
+            found.append(f"{key} runs past the footer")
+        if box["over"] > 1:
+            found.append(f"{key} overflows its box")
+    body, foot = boxes.get("body"), boxes.get("foot")
+    if body and foot and body["y"] + body["h"] > foot["y"] + 1:
+        found.append("the body touches the footer")
+    return found
 
 
 def _size(path: Path) -> str:

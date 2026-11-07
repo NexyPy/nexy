@@ -84,7 +84,7 @@ uv pip install -e . --group dev
 
 - **Branches**: `feature/*`, `fix/*`, `docs/*`, `perf/*`
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `perf:`, `test:`, `chore:`)
-- **One commit, one unit** — a function, a logic, or a structure, never two at once:
+- **One commit, one unit** - a function, a logic, or a structure, never two at once:
   - *a function*: the function, its test and its doc line;
   - *a logic*: one behaviour or bug fix with the test that proves it;
   - *a structure*: one move, rename or split that changes no behaviour.

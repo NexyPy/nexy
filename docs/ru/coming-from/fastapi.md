@@ -1,6 +1,6 @@
 # От FastAPI до Некси
 
-Nexy — это FastAPI с маршрутом, записанным в виде файла: функция, которая отвечает на `@app.get("/x")`, отвечает на `src/routes/x.py` как `GET`, а остальная часть вашего кода остается прежней.
+Nexy - это FastAPI с маршрутом, записанным в виде файла: функция, которая отвечает на `@app.get("/x")`, отвечает на `src/routes/x.py` как `GET`, а остальная часть вашего кода остается прежней.
 
 ## Что остается, что меняется
 
@@ -281,7 +281,7 @@ from fastapi.staticfiles import StaticFiles
 app.mount("/static", StaticFiles(directory="static"), name="static")
 ```
 
-Файлы в `public/` обслуживаются из корня: `public/robots.txt` — это `/robots.txt`.
+Файлы в `public/` обслуживаются из корня: `public/robots.txt` - это `/robots.txt`.
 
 ```text
 public/
