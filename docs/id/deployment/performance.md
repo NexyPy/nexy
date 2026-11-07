@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR adalah mode halaman file: tampilan yang dikembalikan pengontrol diberikan pada setiap permintaan.
+<!-- /router -->
 
 ## Diukur
 
@@ -37,10 +43,26 @@ Pengoperasian lokal, satu pekerja Uvicorn, Windows, Python 3.13, koneksi tetap h
 
 Rute tabel Nexy JSON adalah file ini:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+Angka-angka di bawah ini diukur dengan rute file. Ukur pengontrol dengan cara yang sama sebelum Anda mengandalkannya.
+<!-- /router -->
 
 | Rute | Konkurensi | Permintaan per detik | hal50 | hal99 |
 |---|---|---|---|---|
@@ -59,7 +81,7 @@ Membaca tabel:
 
 1. Tempatkan Nginx, Caddy atau keunggulan platform Anda: TLS, HTTP/2, Brotli, dan caching jangka panjang untuk aset `/__nexy__/client/` adalah kelebihannya. Lihat [Menerapkan](README.md).
 2. Gunakan [ISR](../rendering/isr.md) untuk halaman yang berubah kurang dari sekali dalam satu menit.
-3. Hidrasi dengan malas dengan [pulau](../rendering/islands.md) sehingga muatan pertama dikirimkan lebih sedikit JavaScript.
+3. Hidrasi secara malas dengan [pulau](../rendering/islands.md) sehingga muatan pertama dikirimkan lebih sedikit JavaScript.
 4. Jaga agar jumlah komponen `.nexy` per halaman masuk akal: masing-masing komponen merupakan render template terpisah.
 5. Ukur rute Anda sendiri. Generator beban lokal yang menjaga koneksi tetap hidup sudah cukup untuk membandingkan dua versi halaman.
 
@@ -86,5 +108,5 @@ server {
 ## Langkah selanjutnya
 
 - [Menyebarkan](README.md)
-- [Merender](../rendering/README.md)
+- [Perenderan](../rendering/README.md)
 - [Konfigurasi](../reference/config.md)

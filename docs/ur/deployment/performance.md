@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR فائل صفحات کا ایک موڈ ہے: ہر درخواست پر ایک کنٹرولر کی واپسی کا منظر پیش کیا جاتا ہے۔
+<!-- /router -->
 
 ## ناپا
 
@@ -37,10 +43,26 @@ revalidate = 60
 
 ٹیبل کا Nexy JSON روٹ یہ فائل ہے:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+نیچے دیئے گئے اعداد و شمار کو فائل کے راستے سے ماپا گیا تھا۔ کنٹرولر پر بھروسہ کرنے سے پہلے اسی طرح پیمائش کریں۔
+<!-- /router -->
 
 | راستہ | ہم آہنگی | فی سیکنڈ کی درخواستیں | p50 | p99 |
 |---|---|---|---|---|
@@ -58,8 +80,8 @@ async def GET():
 ## عملی مشورہ
 
 1. Nginx، Caddy یا اپنے پلیٹ فارم کے کنارے کو سامنے رکھیں: TLS، HTTP/2، Brotli اور `/__nexy__/client/` اثاثوں کے لیے طویل المدت کیشنگ ان کی طاقت ہے۔ دیکھیں [تعینات](README.md)۔
-2. ان صفحات کے لیے [ISR](../rendering/isr.md) کا استعمال کریں جو منٹ میں ایک بار سے بھی کم تبدیل ہوتے ہیں۔
-3. [جزیروں](../rendering/islands.md) کے ساتھ سستی سے ہائیڈریٹ کریں تو پہلا بوجھ کم JavaScript۔
+2. ان صفحات کے لیے [ISR](../rendering/isr.md) کا استعمال کریں جو منٹ میں ایک بار سے کم بدلتے ہیں۔
+3. [جزیروں](../rendering/islands.md) کے ساتھ سستی سے ہائیڈریٹ کریں تاکہ پہلا بوجھ کم ہو JavaScript۔
 4. فی صفحہ `.nexy` اجزاء کی تعداد کو مناسب رکھیں: ہر ایک ایک الگ ٹیمپلیٹ رینڈر ہے۔
 5. اپنے راستوں کی پیمائش کریں۔ ایک مقامی لوڈ جنریٹر جو رابطوں کو زندہ رکھتا ہے ایک صفحہ کے دو ورژن کا موازنہ کرنے کے لیے کافی ہے۔
 

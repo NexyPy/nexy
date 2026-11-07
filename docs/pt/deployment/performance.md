@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR é um modo de páginas de arquivo: uma visualização retornada por um controlador é renderizada em cada solicitação.
+<!-- /router -->
 
 ## Medido
 
@@ -37,10 +43,26 @@ Uma execução local, um Uvicorn trabalhador, Windows, Python 3.13, conexões ke
 
 A rota Nexy JSON da tabela é este arquivo:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+As figuras abaixo foram medidas com a rota do arquivo. Meça um controlador da mesma maneira antes de confiar nele.
+<!-- /router -->
 
 | Rota | Simultaneidade | Solicitações por segundo | p50 | p99 |
 |---|---|---|---|---|

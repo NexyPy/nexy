@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR is a mode of file pages: a view a controller returns is rendered on each request.
+<!-- /router -->
 
 ## Measured
 
@@ -39,10 +45,27 @@ benchmark against other frameworks.
 
 The Nexy JSON route of the table is this file:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+The figures below were measured with the file route. Measure a controller the same way before you
+rely on them.
+<!-- /router -->
 
 | Route | Concurrency | Requests per second | p50 | p99 |
 |---|---|---|---|---|

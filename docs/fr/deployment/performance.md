@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR est un mode de pages de fichiers : une vue renvoyée par un contrôleur est restituée à chaque requête.
+<!-- /router -->
 
 ## Mesuré
 
@@ -37,14 +43,30 @@ Une exécution locale, un travailleur Uvicorn, Windows, Python 3.13, des connexi
 
 La route Nexy JSON de la table est ce fichier :
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+Les chiffres ci-dessous ont été mesurés avec le parcours fichier. Mesurez un contrôleur de la même manière avant de vous y fier.
+<!-- /router -->
 
 | Itinéraire | Concurrence | Requêtes par seconde | p50 | p99 |
 |---|---|---|---|---|
-| Route JSON nue FastAPI | 16 | ~4 500 | 3,4 ms | 5,1 ms |
+| Itinéraire JSON nu FastAPI | 16 | ~4 500 | 3,4 ms | 5,1 ms |
 | Itinéraire Nexy JSON (`src/routes/api/ping.py`) | 16 | ~2 900 | 5,2 ms | 9,8 ms |
 | Page Nexy SSR (16 Ko, 16 éléments) | 1 | ~500 | 1,9 ms | 3,0 ms |
 | Page Nexy SSR (16 Ko, 16 éléments) | 64 | ~670 | 94 ms | 126 ms |
@@ -59,7 +81,7 @@ Lecture du tableau :
 
 1. Mettez Nginx, Caddy ou la périphérie de votre plateforme : TLS, HTTP/2, Brotli et la mise en cache de longue durée pour les actifs `/__nexy__/client/` sont leurs points forts. Voir [Déployer](README.md).
 2. Utilisez [ISR](../rendering/isr.md) pour les pages qui changent moins d'une fois par minute.
-3. Hydratez-vous paresseusement avec les [îles](../rendering/islands.md) pour que le premier chargement soit expédié moins JavaScript.
+3. Hydratez-vous paresseusement avec les [îles](../rendering/islands.md) pour que le premier chargement soit moins expédié JavaScript.
 4. Gardez le nombre de `.nexy` composants par page raisonnable : chacun est un rendu de modèle distinct.
 5. Mesurez vos propres itinéraires. Un générateur de charge local qui maintient les connexions actives suffit pour comparer deux versions d’une page.
 

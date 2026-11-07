@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+आईएसआर फ़ाइल पृष्ठों का एक तरीका है: प्रत्येक अनुरोध पर एक नियंत्रक रिटर्न प्रदान किया जाता है।
+<!-- /router -->
 
 ## नापा गया
 
@@ -37,10 +43,26 @@ revalidate = 60
 
 तालिका का नेक्सी JSON मार्ग यह फ़ाइल है:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+नीचे दिए गए आंकड़े फ़ाइल रूट से मापे गए थे। किसी नियंत्रक पर भरोसा करने से पहले उसी तरह उसे मापें।
+<!-- /router -->
 
 | मार्ग | समवर्ती | प्रति सेकंड अनुरोध | p50 | पी99 |
 |---|---|---|---|---|
@@ -57,9 +79,9 @@ async def GET():
 
 ## व्यावहारिक सलाह
 
-1. Nginx, Caddy या अपने प्लेटफ़ॉर्म के किनारे को सामने रखें: टीएलएस, एचटीटीपी/2, ब्रॉटली और `/__nexy__/client/` संपत्तियों के लिए लंबे समय तक चलने वाली कैशिंग उनकी ताकत हैं। [तैनाती](README.md) देखें।
+1. Nginx, Caddy या अपने प्लेटफ़ॉर्म के किनारे को सामने रखें: टीएलएस, HTTP/2, ब्रॉटली और `/__nexy__/client/` संपत्तियों के लिए लंबे समय तक चलने वाली कैशिंग उनकी ताकत हैं। [तैनाती](README.md) देखें।
 2. उन पृष्ठों के लिए [ISR](../rendering/isr.md) का उपयोग करें जो एक मिनट में एक बार से कम बदलते हैं।
-3. [द्वीपों](../rendering/islands.md) के साथ आराम से हाइड्रेट करें ताकि पहले लोड जहाज कम JavaScript हों।
+3. [द्वीपों](../rendering/islands.md) के साथ आराम से हाइड्रेट करें ताकि पहले लोड जहाज कम हों JavaScript।
 4. प्रति पृष्ठ `.nexy` घटकों की संख्या उचित रखें: प्रत्येक एक अलग टेम्पलेट रेंडर है।
 5. अपने स्वयं के मार्ग मापें. एक स्थानीय लोड जनरेटर जो कनेक्शन को जीवित रखता है, एक पृष्ठ के दो संस्करणों की तुलना करने के लिए पर्याप्त है।
 

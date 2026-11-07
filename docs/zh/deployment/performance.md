@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR 是一种文件页面模式：控制器返回的视图在每个请求上呈现。
+<!-- /router -->
 
 ## 测量的
 
@@ -37,10 +43,26 @@ revalidate = 60
 
 表的 Nexy JSON 路由是这个文件：
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+下面的数字是用文件路径测量的。在使用控制器之前，请以相同的方式对其进行测量。
+<!-- /router -->
 
 | 路线 | 并发性 | 每秒请求数 | p50 | p99 |
 |---|---|---|---|---|
@@ -59,11 +81,11 @@ async def GET():
 
 1. 将 Nginx、Caddy 或您平台的优势放在前面：TLS、HTTP/2、Brotli 和 `/__nexy__/client/` 资产的长期缓存是它们的优势。请参阅[部署](README.md)。
 2. 对于每分钟更改次数少于一次的页面，请使用 [ISR](../rendering/isr.md)。
-3. 用[岛屿](../rendering/islands.md) 懒惰地水合，因此第一批货物运送的数量较少 JavaScript。
+3. 使用[岛屿](../rendering/islands.md) 懒惰地水合，因此第一批货物运输较少 JavaScript。
 4. 保持每页的 `.nexy` 组件数量合理：每个组件都是一个单独的模板渲染。
 5. 测量自己的路线。保持连接活动的本地负载生成器足以比较页面的两个版本。
 
-Nginx 的建议 1：散列的客户端包缓存一年，其余的交给 Nexy。
+Nginx 的建议 1：散列客户端包缓存一年，其余的交给 Nexy。
 
 ```nginx filename="/etc/nginx/conf.d/my-app.conf"
 server {

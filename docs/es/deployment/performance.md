@@ -24,23 +24,45 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR es un modo de páginas de archivos: en cada solicitud se representa una vista que devuelve un controlador.
+<!-- /router -->
 
 ## medido
 
-Una ejecución local, un trabajador Uvicorn, Windows, Python 3.13, conexiones de mantenimiento de actividad desde un generador de carga Python en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
+Una ejecución local, un trabajador Uvicorn, Windows, Python 3.13, conexiones de mantenimiento desde un generador de carga Python en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
 
 La ruta Nexy JSON de la tabla es este archivo:
 
+<!-- router:fbr,custom -->
 ```python filename="src/rutas/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+Las cifras siguientes se midieron con la ruta del archivo. Mida un controlador de la misma manera antes de confiar en él.
+<!-- /router -->
 
 | Ruta | concurrencia | Solicitudes por segundo | p50 | p99 |
 |---|---|---|---|---|
@@ -60,7 +82,7 @@ Leyendo la tabla:
 1. Coloque Nginx, Caddy o la ventaja de su plataforma al frente: TLS, HTTP/2, Brotli y el almacenamiento en caché de larga duración para `/__nexy__/client/` activos son sus puntos fuertes. Consulte [Implementar](README.md).
 2. Utilice [ISR](../rendering/isr.md) para páginas que cambian menos de una vez por minuto.
 3. Hidrátate lentamente con [islas](../rendering/islands.md) para que la primera carga envíe menos JavaScript.
-4. Mantenga un número razonable de `.nexy` componentes por página: cada uno es una plantilla de representación independiente.
+4. Mantenga un número razonable de `.nexy` componentes por página: cada uno es una representación de plantilla independiente.
 5. Mide tus propias rutas. Un generador de carga local que mantenga vivas las conexiones es suficiente para comparar dos versiones de una página.
 
 Consejo 1 con Nginx: los paquetes de clientes con hash se almacenan en caché durante un año, el resto va a Nexy.

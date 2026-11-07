@@ -24,12 +24,18 @@ class NexyConfig(NexyConfigModel):
     useDocs = False
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
 ---
 <h1>Rendered at most once per minute</h1>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR ist ein Modus für Dateiseiten: Eine Ansicht, die ein Controller zurückgibt, wird bei jeder Anfrage gerendert.
+<!-- /router -->
 
 ## Gemessen
 
@@ -37,10 +43,26 @@ Eine lokale Ausführung, ein Uvicorn Worker, Windows, Python 3.13, Keep-Alive-Ve
 
 Die Nexy-JSON-Route der Tabelle ist diese Datei:
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/ping.py"
 async def GET():
     return {"ok": True}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+Die folgenden Zahlen wurden mit der Dateiroute gemessen. Messen Sie einen Controller auf die gleiche Weise, bevor Sie sich darauf verlassen.
+<!-- /router -->
 
 | Route | Parallelität | Anfragen pro Sekunde | S. 50 | S. 99 |
 |---|---|---|---|---|
@@ -59,8 +81,8 @@ Lesen der Tabelle:
 
 1. Stellen Sie Nginx, Caddy oder den Edge Ihrer Plattform in den Vordergrund: TLS, HTTP/2, Brotli und langlebiges Caching für `/__nexy__/client/` Assets sind ihre Stärken. Siehe [Bereitstellen](README.md).
 2. Verwenden Sie [ISR](../rendering/isr.md) für Seiten, die sich weniger als einmal pro Minute ändern.
-3. Hydratieren Sie langsam mit [Inseln](../rendering/islands.md), damit die erste Ladung weniger JavaScript verschickt.
-4. Halten Sie die Anzahl der `.nexy` Komponenten pro Seite angemessen: Jede einzelne ist ein separates Vorlagenrendering.
+3. Hydratieren Sie langsam mit [Inseln](../rendering/islands.md), damit die erste Ladung weniger versendet JavaScript.
+4. Halten Sie die Anzahl der `.nexy` Komponenten pro Seite angemessen: Jede davon ist ein separates Vorlagenrendering.
 5. Messen Sie Ihre eigenen Routen. Ein lokaler Lastgenerator, der die Verbindungen aufrechterhält, reicht aus, um zwei Versionen einer Seite zu vergleichen.
 
 Tipp 1 mit Nginx: Die gehashten Client-Bundles werden ein Jahr lang zwischengespeichert, der Rest geht an Nexy.
