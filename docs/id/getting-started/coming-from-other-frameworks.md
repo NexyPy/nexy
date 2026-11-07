@@ -13,6 +13,7 @@ Setiap kerangka kerja di bawah ini juga memiliki halamannya sendiri, tugas demi 
 
 ## Dari FastAPI
 
+<!-- router:fbr,custom -->
 | FastAPI | Nexy |
 |---|---|
 | `@app.get("/users")` dalam modul yang Anda impor | `GET` berfungsi di `src/routes/users.py` |
@@ -41,9 +42,47 @@ async def get_user(id: int):
 async def GET(id: int):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| FastAPI | Nexy |
+|---|---|
+| `@app.get("/users")` dalam modul yang Anda impor | `async def get(self)` di kelas `@Controller("/users")` |
+| `app.include_router(router)` | pengontrol yang terdaftar di `controllers` dari `@Module` |
+| Parameter jalur `/users/{id}` | `@Controller("/users/{id}")`, dengan `async def get(self, id: int)` |
+| `Depends(...)` | still `Depends(...)`: metode pengontrol adalah titik akhir FastAPI |
+| Jinja2 `TemplateResponse` | `useViews("src/apps/....nexy")`, dikembalikan dengan metode |
+| Jalankan dengan `uvicorn main:app` | `nx dev`, lalu `nx build && nx start` |
+
+Dependensi, model Pydantic, middleware, dan `/docs` tetap berfungsi.
+
+Titik akhir yang sama, sebelum dan sesudah:
+
+```python filename="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id}
+```
+<!-- /router -->
 
 ## Dari Next.js
 
+<!-- router:fbr,custom -->
 | Next.js | Nexy |
 |---|---|
 | `app/page.tsx` | `src/routes/index.tsx` atau `index.nexy` |
@@ -56,9 +95,9 @@ async def GET(id: int):
 | Tindakan Server | [`@Action`](../guides/actions.md) fungsi dipanggil dari formulir atau seperti fungsi klien yang diketik |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
-Backendnya adalah Python, sehingga API Anda berbagi kode dengan data dan pekerjaan ML Anda. Komponen klien terhidrasi sebagai pulau, bukan pohon React satu halaman penuh.
+Backendnya adalah Python, jadi API Anda berbagi kode dengan data dan pekerjaan ML Anda. Komponen klien terhidrasi sebagai pulau, bukan pohon React satu halaman penuh.
 
-Halaman Next.js berpindah hampir seperti semula, dan komponen `"use client"` menjadi sebuah pulau di halaman server:
+Halaman Next.js berpindah hampir seperti apa adanya, dan komponen `"use client"` menjadi sebuah pulau di halaman server:
 
 ```tsx filename="src/rute/blog/[siput].tsx"
 import { useParams } from "@nexy/client";
@@ -78,9 +117,48 @@ slug: prop[str]
 <h1>{{ slug }}</h1>
 <Comments post="{{ slug }}" directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| Next.js | Nexy |
+|---|---|
+| `app/page.tsx` | pengontrol yang mengembalikan `useViews("src/apps/home_view.nexy")` |
+| `app/blog/[slug]/page.tsx` | `@Controller("/blog/{slug}")`, dengan `async def get(self, slug: str)` |
+| `app/layout.tsx` (memiliki `<html>`) | tampilan tata letak yang dibungkus pengontrol di sekeliling tampilannya, melalui `children` |
+| `use client` komponen di halaman server | [pulau](../rendering/islands.md) dalam tampilan |
+| Pengendali rute `route.ts` | pengontrol yang mengembalikan dict, ditulis dalam Python |
+| Tindakan Server | [`@Action`](../guides/actions.md) fungsi dipanggil dari formulir atau seperti fungsi klien yang diketik |
+| `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
+
+Backendnya adalah Python, sehingga API Anda berbagi kode dengan data dan pekerjaan ML Anda. Komponen klien terhidrasi sebagai pulau, bukan pohon React satu halaman penuh.
+
+Halaman Next.js menjadi pengontrol dan tampilannya, dan komponen `"use client"` menjadi pulau tampilan:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
+<!-- /router -->
 
 ## Dari backend Express atau Node
 
+<!-- router:fbr,custom -->
 | Ekspres | Nexy |
 |---|---|
 | `app.get("/users/:id", handler)` | `src/routes/users/[id].py` dengan `async def GET(id)` |
@@ -104,6 +182,38 @@ class NexyConfig(NexyConfigModel):
 async def GET(id: int):
     return {"id": id, "name": "Ada"}  # res.json({ id, name })
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| Ekspres | Nexy |
+|---|---|
+| `app.get("/users/:id", handler)` | `@Controller("/users/{id}")`, dengan `async def get(self, id: int)` |
+| `app.use(middleware)` | FastAPI middleware, didaftarkan dari `nexyconfig.py` |
+| `res.json(obj)` | mengembalikan dict atau model Pydantic |
+| Tampilan EJS / Pug | `.nexy` (Jinja2) penayangan, dikembalikan oleh `useViews` |
+| `npm run dev` | `nx dev` |
+
+`app.use(...)` menjadi bidang `nexyconfig.py`, dan `res.json(...)` menjadi nilai kembalian:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+<!-- /router -->
 
 ## Memilih router
 

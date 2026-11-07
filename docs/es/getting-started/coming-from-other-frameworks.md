@@ -13,6 +13,7 @@ Cada marco a continuación también tiene una página propia, tarea por tarea, c
 
 ## Desde FastAPI
 
+<!-- router:fbr,custom -->
 | FastAPI | nexy |
 |---|---|
 | `@app.get("/users")` en un módulo que importas | Función `GET` en `src/routes/users.py` |
@@ -41,9 +42,47 @@ async def get_user(id: int):
 async def GET(id: int):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| FastAPI | nexy |
+|---|---|
+| `@app.get("/users")` en un módulo que importas | `async def get(self)` en una clase `@Controller("/users")` |
+| `app.include_router(router)` | el controlador listado en el `controllers` de un `@Module` |
+| Parámetro de ruta `/users/{id}` | `@Controller("/users/{id}")`, con `async def get(self, id: int)` |
+| `Depends(...)` | todavía `Depends(...)`: un método de controlador es un punto final FastAPI |
+| Jinja2 `TemplateResponse` | `useViews("src/apps/....nexy")`, devuelto por el método |
+| Ejecutar con `uvicorn main:app` | `nx dev`, luego `nx build && nx start` |
+
+Las dependencias, los modelos Pydantic, el middleware y `/docs` siguen funcionando.
+
+El mismo punto final, antes y después:
+
+```python filename="principal.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id}
+```
+<!-- /router -->
 
 ## Desde Next.js
 
+<!-- router:fbr,custom -->
 | Next.js | nexy |
 |---|---|
 | `app/page.tsx` | `src/routes/index.tsx` o `index.nexy` |
@@ -78,9 +117,48 @@ slug: prop[str]
 <h1>{{ slug }}</h1>
 <Comments post="{{ slug }}" directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| Next.js | nexy |
+|---|---|
+| `app/page.tsx` | un controlador que devuelve `useViews("src/apps/home_view.nexy")` |
+| `app/blog/[slug]/page.tsx` | `@Controller("/blog/{slug}")`, con `async def get(self, slug: str)` |
+| `app/layout.tsx` (posee `<html>`) | una vista de diseño que el controlador envuelve alrededor de su vista, a través de `children` |
+| `use client` componentes en una página del servidor | [islas](../rendering/islands.md) en una vista |
+| Controladores de ruta `route.ts` | un controlador que devuelve un dict, escrito en Python |
+| Acciones del servidor | [`@Action`](../guides/actions.md) funciones llamadas desde un formulario o como funciones de cliente escritas |
+| `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
+
+El backend es Python, por lo que su API comparte código con sus datos y su trabajo de ML. Los componentes del cliente se hidratan como islas en lugar de un árbol de página completa React.
+
+Una página Next.js se convierte en un controlador y su vista, y su componente `"use client"` en una isla de la vista:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
+<!-- /router -->
 
 ## Desde backends Express o Node
 
+<!-- router:fbr,custom -->
 | expreso | nexy |
 |---|---|
 | `app.get("/users/:id", handler)` | `src/routes/users/[id].py` con `async def GET(id)` |
@@ -104,6 +182,38 @@ class NexyConfig(NexyConfigModel):
 async def GET(id: int):
     return {"id": id, "name": "Ada"}  # res.json({ id, name })
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| expreso | nexy |
+|---|---|
+| `app.get("/users/:id", handler)` | `@Controller("/users/{id}")`, con `async def get(self, id: int)` |
+| `app.use(middleware)` | FastAPI middleware, registrado desde `nexyconfig.py` |
+| `res.json(obj)` | devolver un dict o un modelo Pydantic |
+| Vistas EJS/Pug | `.nexy` (Jinja2) vistas, devueltas por `useViews` |
+| `npm run dev` | `nx dev` |
+
+`app.use(...)` se convierte en un campo de `nexyconfig.py` y `res.json(...)` se convierte en un valor de retorno:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+<!-- /router -->
 
 ## Elegir un enrutador
 

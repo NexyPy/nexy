@@ -13,6 +13,7 @@ Nexy — это FastAPI плюс маршрутизация на основе ф
 
 ## Из FastAPI
 
+<!-- router:fbr,custom -->
 | FastAPI | Некси |
 |---|---|
 | `@app.get("/users")` в импортируемом модуле | Функция `GET` в `src/routes/users.py` |
@@ -41,9 +42,47 @@ async def get_user(id: int):
 async def GET(id: int):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| FastAPI | Некси |
+|---|---|
+| `@app.get("/users")` в импортируемом модуле | `async def get(self)` в классе `@Controller("/users")` |
+| `app.include_router(router)` | контроллер, указанный в `controllers` из `@Module` |
+| Параметр пути `/users/{id}` | `@Controller("/users/{id}")`, с `async def get(self, id: int)` |
+| `Depends(...)` | еще `Depends(...)`: метод контроллера является конечной точкой FastAPI |
+| Jinja2 `TemplateResponse` | `useViews("src/apps/....nexy")`, возвращаемый методом |
+| Запустите с помощью `uvicorn main:app` | `nx dev`, затем `nx build && nx start` |
+
+Зависимости, Pydantic модели, промежуточное ПО и `/docs` продолжают работать.
+
+Та же конечная точка, до и после:
+
+```python filename="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id}
+```
+<!-- /router -->
 
 ## Из Next.js
 
+<!-- router:fbr,custom -->
 | Next.js | Некси |
 |---|---|
 | `app/page.tsx` | `src/routes/index.tsx` или `index.nexy` |
@@ -56,7 +95,7 @@ async def GET(id: int):
 | Действия сервера | [`@Action`](../guides/actions.md) функции, вызываемые из формы или как типизированные клиентские функции |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
-Бэкэнд – Python, поэтому ваш API использует общий код с вашими данными и работой машинного обучения. Клиентские компоненты объединяются в виде островов, а не в виде полностраничного React дерева.
+Бэкэнд — Python, поэтому ваш API использует общий код с вашими данными и работой машинного обучения. Клиентские компоненты объединяются в виде островов, а не в виде полностраничного React дерева.
 
 Страница Next.js перемещается почти как есть, а ее компонент `"use client"` становится островком серверной страницы:
 
@@ -78,9 +117,48 @@ slug: prop[str]
 <h1>{{ slug }}</h1>
 <Comments post="{{ slug }}" directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| Next.js | Некси |
+|---|---|
+| `app/page.tsx` | контроллер, который возвращает `useViews("src/apps/home_view.nexy")` |
+| `app/blog/[slug]/page.tsx` | `@Controller("/blog/{slug}")`, с `async def get(self, slug: str)` |
+| `app/layout.tsx` (владеет `<html>`) | представление макета, которое контроллер оборачивает вокруг своего представления через `children` |
+| `use client` компоненты на странице сервера | [острова](../rendering/islands.md) на виду |
+| Обработчики маршрутов `route.ts` | контроллер, который возвращает dict, написанный в Python |
+| Действия сервера | [`@Action`](../guides/actions.md) функции, вызываемые из формы или как типизированные клиентские функции |
+| `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
+
+Бэкэнд — Python, поэтому ваш API использует общий код с вашими данными и работой машинного обучения. Клиентские компоненты объединяются в виде островов, а не в виде полностраничного React дерева.
+
+Страница Next.js становится контроллером и его представлением, а ее компонент `"use client"` — островком представления:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+
+```nexy filename="src/apps/блог/post_view.nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
+<!-- /router -->
 
 ## Из серверов Express или Node
 
+<!-- router:fbr,custom -->
 | Экспресс | Некси |
 |---|---|
 | `app.get("/users/:id", handler)` | `src/routes/users/[id].py` с `async def GET(id)` |
@@ -104,6 +182,38 @@ class NexyConfig(NexyConfigModel):
 async def GET(id: int):
     return {"id": id, "name": "Ada"}  # res.json({ id, name })
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| Экспресс | Некси |
+|---|---|
+| `app.get("/users/:id", handler)` | `@Controller("/users/{id}")`, с `async def get(self, id: int)` |
+| `app.use(middleware)` | FastAPI промежуточное программное обеспечение, зарегистрированное из `nexyconfig.py` |
+| `res.json(obj)` | вернуть dict или модель Pydantic |
+| EJS / Просмотры мопсов | `.nexy` (Jinja2) просмотров, возвращено `useViews` |
+| `npm run dev` | `nx dev` |
+
+`app.use(...)` становится полем `nexyconfig.py`, а `res.json(...)` становится возвращаемым значением:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+<!-- /router -->
 
 ## Выбор роутера
 

@@ -13,6 +13,7 @@ Nexy হল FastAPI প্লাস ফাইল-ভিত্তিক রাউ
 
 ## থেকে FastAPI
 
+<!-- router:fbr,custom -->
 | FastAPI | নেক্সি |
 |---|---|
 | `@app.get("/users")` আপনি আমদানি করেন এমন একটি মডিউলে | `GET` ফাংশন `src/routes/users.py` এ |
@@ -41,19 +42,57 @@ async def get_user(id: int):
 async def GET(id: int):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| FastAPI | নেক্সি |
+|---|---|
+| `@app.get("/users")` আপনার আমদানি করা একটি মডিউলে | `async def get(self)` একটি `@Controller("/users")` ক্লাসে |
+| `app.include_router(router)` | একটি `@Module` এর `controllers` তালিকাভুক্ত নিয়ামক |
+| পথ পরম `/users/{id}` | `@Controller("/users/{id}")`, `async def get(self, id: int)` সহ |
+| `Depends(...)` | এখনও `Depends(...)`: একটি নিয়ামক পদ্ধতি একটি FastAPI শেষ বিন্দু |
+| Jinja2 `TemplateResponse` | `useViews("src/apps/....nexy")`, পদ্ধতি দ্বারা ফিরে |
+| সঙ্গে চালান `uvicorn main:app` | `nx dev`, তারপর `nx build && nx start` |
+
+নির্ভরতা, Pydantic মডেল, মিডলওয়্যার এবং `/docs` কাজ করতে থাকে।
+
+একই শেষ বিন্দু, আগে এবং পরে:
+
+```python filename="main.py"
+from fastapi import FastAPI
+
+app = FastAPI()
+
+
+@app.get("/users/{id}")
+async def get_user(id: int):
+    return {"id": id}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id}
+```
+<!-- /router -->
 
 ## থেকে Next.js
 
+<!-- router:fbr,custom -->
 | Next.js | নেক্সি |
 |---|---|
 | `app/page.tsx` | `src/routes/index.tsx` বা `index.nexy` |
 | `app/blog/[slug]/page.tsx` | `src/routes/blog/[slug].tsx` |
 | `app/layout.tsx` (মালিক `<html>`) | `src/routes/layout.tsx` `useCSR = True` (React), অথবা `src/routes/layout.nexy` সার্ভার মোডে |
 | নেস্টেড `layout.tsx` | ক্লায়েন্ট মোডে নেস্টেড `layout.tsx` / `layout.vue` / `layout.svelte`, সার্ভার মোডে নেস্টেড `layout.nexy` |
-| `use client` একটি সার্ভার পৃষ্ঠায় উপাদান | [সার্ভার মোডে দ্বীপসমূহ](../rendering/islands.md) |
+| `use client` একটি সার্ভার পৃষ্ঠায় উপাদান | [সার্ভার মোডে দ্বীপগুলি](../rendering/islands.md) |
 | রুট হ্যান্ডলার `route.ts` | `src/routes/api/x.py`, লেখা Python |
 | `(group)` ফোল্ডার | একই: `(group)/` |
-| সার্ভার অ্যাকশন | [`@Action`](../guides/actions.md) ফাংশনগুলি একটি ফর্ম থেকে বা টাইপ করা ক্লায়েন্ট ফাংশন হিসাবে বলা হয় |
+| সার্ভার অ্যাকশন | [`@Action`](../guides/actions.md) ফাংশনগুলি একটি ফর্ম থেকে বা টাইপ করা ক্লায়েন্ট ফাংশন হিসাবে ডাকা হয় |
 | `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
 
 ব্যাকএন্ড হল Python, তাই আপনার API আপনার ডেটা এবং ML কাজের সাথে কোড শেয়ার করে। ক্লায়েন্ট উপাদানগুলি একটি সম্পূর্ণ-পৃষ্ঠা React গাছের পরিবর্তে দ্বীপ হিসাবে হাইড্রেট করে।
@@ -78,18 +117,57 @@ slug: prop[str]
 <h1>{{ slug }}</h1>
 <Comments post="{{ slug }}" directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| Next.js | নেক্সি |
+|---|---|
+| `app/page.tsx` | একটি নিয়ামক যা `useViews("src/apps/home_view.nexy")` ফেরত দেয় |
+| `app/blog/[slug]/page.tsx` | `@Controller("/blog/{slug}")`, `async def get(self, slug: str)` সহ |
+| `app/layout.tsx` (মালিক `<html>`) | একটি লেআউট ভিউ কন্ট্রোলার তার ভিউকে ঘিরে রাখে, `children` |
+| `use client` একটি সার্ভার পৃষ্ঠায় উপাদান | [একটি দৃশ্যে দ্বীপগুলি](../rendering/islands.md) |
+| রুট হ্যান্ডলার `route.ts` | একটি কন্ট্রোলার যা একটি ডিক্ট ফেরত দেয়, Python এ লেখা |
+| সার্ভার অ্যাকশন | [`@Action`](../guides/actions.md) ফাংশনগুলি একটি ফর্ম থেকে বা টাইপ করা ক্লায়েন্ট ফাংশন হিসাবে বলা হয় |
+| `next dev` / `next build` / `next start` | `nx dev` / `nx build` / `nx start` |
+
+ব্যাকএন্ড হল Python, তাই আপনার API আপনার ডেটা এবং ML কাজের সাথে কোড শেয়ার করে। ক্লায়েন্ট উপাদানগুলি একটি সম্পূর্ণ-পৃষ্ঠা React গাছের পরিবর্তে দ্বীপ হিসাবে হাইড্রেট করে।
+
+একটি Next.js পৃষ্ঠা একটি নিয়ন্ত্রক হয়ে ওঠে এবং এটির দৃশ্য, এবং এর `"use client"` উপাদানটি দৃশ্যের একটি দ্বীপ:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from "@/components/Comments.tsx" import Comments
+
+slug: prop[str]
+---
+<h1>{{ slug }}</h1>
+<Comments post="{{ slug }}" directive="client:visible" />
+```
+<!-- /router -->
 
 ## এক্সপ্রেস বা নোড ব্যাকএন্ড থেকে
 
+<!-- router:fbr,custom -->
 | এক্সপ্রেস | নেক্সি |
 |---|---|
-| `app.get("/users/:id", handler)` | `src/routes/users/[id].py` সাথে `async def GET(id)` |
+| `app.get("/users/:id", handler)` | `src/routes/users/[id].py` সঙ্গে `async def GET(id)` |
 | `app.use(middleware)` | FastAPI মিডলওয়্যার, `nexyconfig.py` থেকে নিবন্ধিত |
 | `res.json(obj)` | একটি dict বা একটি Pydantic মডেল ফেরত দিন |
 | ইজেএস/পগ ভিউ | `.nexy` (Jinja2) পৃষ্ঠা |
 | `npm run dev` | `nx dev` |
 
-`app.use(...)` `nexyconfig.py` এর একটি ক্ষেত্র হয়ে যায় এবং `res.json(...)` একটি রিটার্ন মান হয়ে যায়:
+`app.use(...)` `nexyconfig.py` এর একটি ক্ষেত্র হয়ে যায়, এবং `res.json(...)` একটি রিটার্ন মান হয়ে যায়:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -104,6 +182,38 @@ class NexyConfig(NexyConfigModel):
 async def GET(id: int):
     return {"id": id, "name": "Ada"}  # res.json({ id, name })
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+| এক্সপ্রেস | নেক্সি |
+|---|---|
+| `app.get("/users/:id", handler)` | `@Controller("/users/{id}")`, `async def get(self, id: int)` সহ |
+| `app.use(middleware)` | FastAPI মিডলওয়্যার, `nexyconfig.py` থেকে নিবন্ধিত |
+| `res.json(obj)` | একটি dict বা একটি Pydantic মডেল ফেরত দিন |
+| ইজেএস/পগ ভিউ | `.nexy` (Jinja2) ভিউ, `useViews` দ্বারা প্রত্যাবর্তিত |
+| `npm run dev` | `nx dev` |
+
+`app.use(...)` `nexyconfig.py` এর একটি ক্ষেত্র হয়ে যায়, এবং `res.json(...)` একটি রিটার্ন মান হয়ে যায়:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useCORS = {"allow_origins": ["https://example.com"]}
+    useGZip = {"minimum_size": 1000}
+```
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/users/{id}")
+class UserController:
+    async def get(self, id: int):
+        return {"id": id, "name": "Ada"}  # res.json({ id, name })
+```
+<!-- /router -->
 
 ## একটি রাউটার নির্বাচন করা হচ্ছে
 
@@ -112,7 +222,7 @@ async def GET(id: int):
 | ফাইল-ভিত্তিক রাউটার | ফাইল থেকে ম্যাপ করা পৃষ্ঠা এবং শেষ পয়েন্ট; ডিফল্ট |
 | মডুলার রাউটার | কন্ট্রোলার, মডিউল এবং নির্ভরতা ইনজেকশন, নেস্টজেএস-স্টাইল |
 
-দুটি ফাইলে মডুলার রাউটার: একটি নিয়ামক, এবং মডিউল `nexyconfig.py` পয়েন্টে `useRouter = AppModule`:
+দুটি ফাইলে মডুলার রাউটার: একটি কন্ট্রোলার, এবং মডিউল `nexyconfig.py` পয়েন্টে `useRouter = AppModule`:
 
 ```python filename="src/apps/app_controller.py"
 from nexy.decorators import Controller
