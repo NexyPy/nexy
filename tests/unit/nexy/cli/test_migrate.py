@@ -151,6 +151,14 @@ class TestCommand:
         runner.invoke(CLI, ["migrate", "--upgrade"])
         assert tools == [("alembic", ["upgrade", "head"])]
 
+    def test_a_failing_tool_makes_the_command_fail(self, project, monkeypatch):
+        monkeypatch.setattr(migrate_module, "run_tool", lambda _tool, _args: 255)
+        monkeypatch.setattr(migrate_module, "connection_problem", lambda _url: None)
+        (project / "nexyconfig.py").write_text("sqlmodel", encoding="utf-8")
+        (project / "alembic.ini").write_text("", encoding="utf-8")
+        monkeypatch.setenv("DATABASE_URL", f"sqlite:///{(project / 'ok.db').as_posix()}")
+        assert runner.invoke(CLI, ["migrate", "--upgrade"]).exit_code == 255
+
     def test_a_tool_that_is_not_installed_is_reported(self, project, monkeypatch):
         (project / "nexyconfig.py").write_text("sqlmodel", encoding="utf-8")
         monkeypatch.setattr(migrate_module, "run_tool", lambda _tool, _args: None)
