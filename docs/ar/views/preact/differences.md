@@ -2,16 +2,30 @@
 
 يقوم Nexy بعرض Preact 10 مكونات على الخادم، ثم Preact يتولى إدارتها في المتصفح. الصفحات والتخطيطات والجزر والإجراءات هي نفسها في كل إطار: تغطي هذه الصفحة الإعداد، ثم الأجزاء التي تختلف عن [العقود المشتركة](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | الوضع | `nexyconfig.py` | الصفحات هي | Preact هو |
 |---|---|---|---|
-| الخادم (الافتراضي) | `useCSR = False` | `.nexy` ملفات | [جزر](../../rendering/islands.md) داخل تلك الصفحات |
-| العميل | `useCSR = True` | `.tsx` ملفات | الصفحة بأكملها، مع [التخطيطات](../frontend/layouts.md) وجهاز توجيه العميل |
+| الخادم (الافتراضي) | `useCSR = False` | `.nexy` الملفات | [جزر](../../rendering/islands.md) داخل تلك الصفحات |
+| العميل | `useCSR = True` | `.tsx` الملفات | الصفحة بأكملها، مع [التخطيطات](../frontend/layouts.md) وجهاز توجيه العميل |
+<!-- /router -->
+
+<!-- router:modular -->
+باستخدام جهاز التوجيه المعياري، تكون مكونات Preact هي [جزر](../../rendering/islands.md) داخل طرق العرض `.nexy` التي ترجعها وحدة التحكم: لا يوجد ملف صفحة ولا جهاز توجيه عميل.
+<!-- /router -->
 
 ## ابدأ مشروعًا
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-preact
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-preact
+```
+<!-- /router -->
 
 القالب عبارة عن مشروع في وضع الخادم يحتوي على Preact جزر. قم بتشغيل `nx new my-app` بدون قالب للإجابة على المطالبات بدلاً من ذلك: جهاز التوجيه، ونوع المشروع، وما إذا كان سيتم استخدام التوجيه من جانب العميل، ثم إطار العمل.
 
@@ -64,12 +78,18 @@ export default function Counter({ start = 0 }: { start?: number }) {
 
 ## القواعد
 
-- **إطار واحد لكل مشروع.** `useFF` يأخذ إطارًا واحدًا بالضبط؛ `useFF = [preact(), react()]` يقوم بإيقاف الخادم عند بدء التشغيل. مع `useFF = preact()`، كل `.tsx` ملف هو Preact.
+- **إطار واحد لكل مشروع.** `useFF` يأخذ إطارًا واحدًا بالضبط؛ `useFF = [preact(), react()]` يوقف الخادم عند بدء التشغيل. مع `useFF = preact()`، كل `.tsx` ملف هو Preact.
+<!-- router:fbr,custom -->
 - **الصفحات هي `.tsx`.** فقط ملف `.tsx` ضمن `src/routes/` يصبح صفحة؛ `.jsx` جيد بالنسبة للمكون.
 - **تعيش المكونات خارج `src/routes/`**، عادةً في `src/components/`، لذا فهي ليست صفحات.
 - **لا يحتوي مشروع وضع الخادم على `.tsx` صفحة**، ولا يحتوي مشروع وضع العميل على `.nexy` صفحة: يرفض Nexy البدء ويسمي الملف. انظر [الأوضاع](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **تعيش المكونات في `src/components/`**، ويقوم العرض باستيرادها كجزر.
+<!-- /router -->
 - **يتم استيراد صفحة `.mdx` من `"preact"`.** يقوم Nexy بتجميع ملف `.mdx` مع Preact فقط عندما يرى هذا الاستيراد، على سبيل المثال `import { h } from "preact"`، ومع React بخلاف ذلك. انظر [Markdown و MDX](../nexy/markdown.md).
 
+<!-- router:fbr,custom -->
 ## الصفحات
 
 في وضع العميل (`useCSR = True`)، تكون الصفحة عبارة عن ملف `.tsx`.
@@ -86,7 +106,7 @@ export default function Home() {
 
 ### القطاعات الديناميكية
 
-تتوفر معلمات URL عبر الخطاف `useParams`:
+تتوفر معلمات URL عبر الرابط `useParams`:
 
 ```tsx filename="src/routes/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -117,6 +137,7 @@ export default function RootLayout({ children }: { children: ComponentChildren }
   );
 }
 ```
+<!-- /router -->
 
 ## جزر
 
@@ -124,14 +145,25 @@ export default function RootLayout({ children }: { children: ComponentChildren }
 
 ### استيراد
 
-قم باستيراد المكونات الموجودة في الجزء الأمامي من الملف `.nexy`:
+استيراد المكونات في الجزء الأمامي من الملف `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### توجيهات الترطيب
 
@@ -140,7 +172,7 @@ from "@/components/Counter.tsx" import Counter
 - `client:load` (افتراضي): فورًا
 - `client:idle`: عندما يكون المتصفح خاملاً
 - `client:visible`: عند التمرير إلى العرض
-- `client:media`: عندما يتطابق استعلام الوسائط
+- `client:media`: عند تطابق استعلام الوسائط
 
 ## الإجراءات والملاحة
 
