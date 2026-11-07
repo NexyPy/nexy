@@ -377,7 +377,29 @@ npm run test
 
 For maintainers only:
 
-1. Bump the version in `nexy/__version__.py` and `pyproject.toml`.
+### Which number moves
+
+The commit type already decided, so the version is not a judgement call:
+
+| commits since the last tag | the next tag |
+| --- | --- |
+| only `fix:`, `perf:`, `docs:`, `refactor:`, `test:`, `chore:` | PATCH: `2.2.2` → `2.2.3` |
+| at least one `feat:` | MINOR: `2.2.2` → `2.3.0` |
+| at least one `feat!:` or a `BREAKING CHANGE:` footer | MAJOR: `2.2.2` → `3.0.0` |
+
+A change is breaking when an existing project must edit something to keep working: an imported name,
+a field of `nexyconfig.py`, a CLI command or flag, a `src/routes/` convention, the HTML or JSON a
+route returns, or the minimum Python or FastAPI version. That is the whole list of promises; anything
+outside it can move in a MINOR.
+
+A `fix:` that changes one of those promises is a breaking change written as a fix: mark it `feat!:`
+instead of shipping it as a PATCH. A MAJOR or MINOR that is not ready can be tested as `v3.0.0rc1` or
+`v3.0.0a1`; a pre-release never carries a PATCH number.
+
+Not every merge needs a tag: docs and tests can wait for the next release. When a release is cut,
+the table decides its number.
+
+1. Bump the version in `nexy/__version__.py` and `pyproject.toml` to the number above.
 2. Update the changelog:
    ```bash
    npx git-cliff -o CHANGELOG.md
