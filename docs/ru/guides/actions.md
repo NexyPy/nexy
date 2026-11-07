@@ -47,6 +47,7 @@ async def create_user(name: str, age: int = 0) -> User:
 ### 5. Потребляйте
 Интерфейс получает результат с полной безопасностью типов. Nexy записывает `__nexy__/src/actions.ts` из ваших подписей, а `@nexy/actions` разрешает его.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/маршруты/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,17 +62,44 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Компонент представляет собой остров представления, возвращаемого контроллером:
+
+```tsx filename="источник/компоненты/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 Без хука действие — это просто функция `async`: `const user = await create_user({ name: "Ada" })`.
 
-| Фреймворк | Что `useAction` возвращает |
+| Рамочная основа | Что возвращает `useAction` |
 |---|---|
 | React, Preact | `{ pending, data, error, run, reset }` |
 | Solid | то же самое, с `pending()`, `data()` и `error()` в качестве аксессоров |
-| Vue | то же самое, с `pending`, `data` и `error` в качестве ссылок на |
+| Vue | то же самое, с `pending`, `data` и `error` в качестве ссылок |
 | Svelte | магазин: `$save.pending`, `$save.data`, `$save.error`, плюс `save.run(input)` и `save.reset()` |
 
-`useAction(action, { onSuccess, onError })` также принимает два обратных вызова. `run` никогда не выдает: ошибка возникает в `error` и `run` разрешается с помощью `undefined`.
+`useAction(action, { onSuccess, onError })` также принимает два обратных вызова. `run` никогда не выдает: неудача возникает в `error` и `run` разрешается с помощью `undefined`.
 
 Типы взяты из Python: `str` — это `string`, `int` и `float` — это `number`, `list[T]` — это `T[]`, модель Pydantic или `Enum` — это именованный тип, а поле со значением по умолчанию является необязательным во входных данных. Тип, который Pydantic не может описать, становится `unknown`.
 
@@ -79,7 +107,7 @@ export default function NewUser() {
 
 Действие может потерпеть неудачу на разных этапах. Вы должны различать их в своем пользовательском интерфейсе:
 
-1.  **Ошибки проверки (422)**: введенные данные не соответствуют подписи Python. `error.fields` сопоставляет каждое недопустимое поле с его сообщением.
+1.  **Ошибки проверки (422)**: введенные данные не соответствуют подписи Python. `error.fields` сопоставляет каждое недействительное поле с его сообщением.
 2.  **Бизнес-ошибки (`HTTPException`)**: ваш код отклонил вызов, например `403 Forbidden` или `409 Conflict`.
 3.  **Ошибки сервера (500)**: в вашем коде Python произошло необработанное исключение.
 4.  **Сетевые ошибки**: запрос так и не дошёл до сервера, например таймаут или потеря соединения.
@@ -111,7 +139,7 @@ revalidate("/users")    # that page, if it is the one open
 
 В шаблоне `.nexy` `__actions_path["name"]` — это путь, `__actions["name"]` — функция, и функция также находится в области видимости под своим собственным именем.
 
-В случае успеха посетитель возвращается на страницу, на которой была форма, со статусом `303`. Чтобы ответить по-другому, верните объект `Response` (например, `RedirectResponse("/done", status_code=303)`).
+В случае успеха посетитель возвращается на страницу, на которой находилась форма, со статусом `303`. Чтобы ответить иначе, верните объект `Response` (например, `RedirectResponse("/done", status_code=303)`).
 
 ## Безопасность
 
@@ -142,4 +170,4 @@ async def delete_user(user_id: str, request: Request):
 
 - [API](../routing/fbr/handlers/README.md): явные обработчики
 - [Тестирование](testing.md#what-to-assert): как протестировать действие
-- [Конфигурация](../reference/config.md): промежуточное программное обеспечение и параметры аутентификации
+- [Конфигурация](../reference/config.md): промежуточное программное обеспечение и параметры аутентификации.

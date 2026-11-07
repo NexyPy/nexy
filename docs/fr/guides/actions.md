@@ -47,6 +47,7 @@ La valeur de retour est automatiquement sérialisée en JSON. Les modèles Pydan
 ### 5. Consommer
 Le frontend reçoit le résultat avec une sécurité de type totale. Nexy écrit `__nexy__/src/actions.ts` à partir de vos signatures et `@nexy/actions` le résout.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,14 +62,41 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Le composant est un îlot de la vue renvoyée par un contrôleur :
+
+```tsx filename="src/components/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 Sans hook, une action n'est qu'une fonction `async` : `const user = await create_user({ name: "Ada" })`.
 
-| Framework | Ce que `useAction` renvoie |
+| Cadre | Ce que `useAction` renvoie |
 |---|---|
 | React, Preact | `{ pending, data, error, run, reset }` |
-| Solid | pareil, avec `pending()`, `data()` et `error()` comme accesseurs |
-| Vue | pareil, avec `pending`, `data` et `error` comme références |
+| Solid | la même chose, avec `pending()`, `data()` et `error()` comme accesseurs |
+| Vue | le même, avec `pending`, `data` et `error` comme références |
 | Svelte | un magasin : `$save.pending`, `$save.data`, `$save.error`, plus `save.run(input)` et `save.reset()` |
 
 `useAction(action, { onSuccess, onError })` prend également deux rappels. `run` ne lance jamais : un échec atterrit dans `error` et `run` se résout avec `undefined`.
@@ -82,7 +110,7 @@ Une action peut échouer à différentes étapes. Vous devez les distinguer dans
 1.  **Erreurs de validation (422)** : l'entrée ne correspondait pas à la signature Python. `error.fields` mappe chaque champ invalide à son message.
 2.  **Erreurs commerciales (`HTTPException`)** : votre code a refusé l'appel, par exemple `403 Forbidden` ou `409 Conflict`.
 3.  **Erreurs de serveur (500)** : une exception non gérée s'est produite dans votre code Python.
-4.  **Erreurs réseau** : la requête n'a jamais atteint le serveur, par exemple un timeout ou une perte de connexion.
+4.  **Erreurs réseau** : la requête n'est jamais parvenue au serveur, par exemple un timeout ou une perte de connexion.
 5.  **Erreurs d'autorisation (401, 403)** : votre propre chèque a rejeté l'appelant. Nexy ne décide pas de cela à votre place.
 
 Le contrôle d'origine décrit ci-dessous est une protection CSRF, pas une autorisation : il indique d'où vient l'appel, jamais qui est autorisé à le passer.
