@@ -88,14 +88,26 @@ jobs:
       - name: Install the client test dependencies (locked)
         run: npm ci --no-audit --no-fund --prefix tests/client
 
-      - name: Lint (nexy + tests + sites)
-        run: uv run --no-sync ruff check nexy/ tests/ sites/
+      - name: Lint (nexy + tests + sites + scripts)
+        run: uv run --no-sync ruff check nexy/ tests/ sites/ scripts/
 
       - name: Format
-        run: uv run --no-sync ruff format nexy/ tests/ sites/ --check
+        run: uv run --no-sync ruff format nexy/ tests/ sites/ scripts/ --check
 
       - name: Typecheck
         run: uv run --no-sync python -m mypy nexy --strict
+
+      # sites/ and scripts/ are not part of the package, so they get their own strict
+      # pass; sites/shared/docs_source.py still has findings and stays out of it.
+      - name: Typecheck (sites/shared/social, COM scripts)
+        run: |
+          uv run --no-sync python -m mypy sites/shared/social \
+            scripts/publish_social.py scripts/make_com_media.py --strict
+
+      # The posts of COM/ are checked like code: a number without a dated proof,
+      # a caption over a network's limit, a card that is the wrong shape, all fail.
+      - name: Posts (COM/)
+        run: uv run --no-sync python scripts/publish_social.py --check
 
       - name: Test
         run: uv run --no-sync python -m pytest tests/ --tb=short

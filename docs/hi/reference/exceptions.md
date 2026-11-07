@@ -55,6 +55,7 @@ Browser ──► Middleware ──► Router ──► Page or handler
 
 `redirect`, `permanentRedirect`, `notFound`, `forbidden` और `unauthorized` एक HTTP अपवाद बढ़ाते हैं, इसलिए एक ही कॉल `.nexy` पेज, एक एपीआई हैंडलर, एक मॉड्यूलर नियंत्रक, एक गार्ड, एक `dependencies.py` और एक कार्रवाई में काम करती है।
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/posts/[slug].py"
 from nexy import notFound, redirect
 
@@ -69,6 +70,29 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+नियंत्रक को रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 | बुलाओ | उत्तर | कब |
 |---|---|---|
@@ -79,12 +103,13 @@ async def GET(slug: str):
 | `redirect(url, status=303)` | `303` | एक फॉर्म के बाद: अगला अनुरोध एक `GET` है |
 | `permanentRedirect(url)` | `308` | एक स्थानांतरित पृष्ठ जिसे खोज इंजनों को याद रखना चाहिए |
 
-मंजिल का निर्माण उन मूल्यों से करें जिन पर आप भरोसा करते हैं। `redirect(request.query_params["next"])` लिंक जहां भी कहता है वहां विज़िटर भेजता है; यह एक खुला रीडायरेक्ट है. जिस गंतव्य पर लाइन ब्रेक होता है उसे अस्वीकार कर दिया जाता है।
+मंजिल का निर्माण उन मूल्यों से करें जिन पर आप भरोसा करते हैं। `redirect(request.query_params["next"])` जहां भी लिंक कहा गया है वहां आगंतुकों को भेजता है; यह एक खुला रीडायरेक्ट है. जिस गंतव्य पर लाइन ब्रेक होता है उसे अस्वीकार कर दिया जाता है।
 
 ## सत्यापन: 422, या 404
 
-हैंडलर मापदंडों को उनके एनोटेशन के विरुद्ध FastAPI द्वारा मान्य किया जाता है।
+हैंडलर पैरामीटर्स को उनके एनोटेशन के विरुद्ध FastAPI द्वारा मान्य किया जाता है।
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
 
@@ -92,6 +117,22 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+नियंत्रक को रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 | समस्या | स्थिति | क्यों |
 |---|---|---|
@@ -111,6 +152,7 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 ## कस्टम त्रुटि पृष्ठ
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notfound.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -135,6 +177,11 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 > [!IMPORTANT]
 > एक `errors.nexy` पृष्ठ, `500` पृष्ठ का स्थान ले लेता है; यह अपवाद को नहीं पकड़ता है और यह लॉग लाइन को नहीं बदलता है। यदि उठाया गया हैंडलर स्वयं पृष्ठ है, तो पृष्ठ अपना त्रुटि विवरण नहीं दिखा सकता: `errors.nexy` को सरल और स्वतंत्र रखें।
+<!-- /router -->
+
+<!-- router:modular -->
+मॉड्यूलर राउटर की फ़ाइल में कोई त्रुटि पृष्ठ नहीं है: `404`, `500`, `403` या `401` को अंतर्निहित स्टाइल वाला पृष्ठ मिलता है। प्रति फ़ोल्डर त्रुटि पृष्ठ फ़ाइल-आधारित राउटर का एक सम्मेलन है।
+<!-- /router -->
 
 ## हैंडल न किए गए अपवाद
 
@@ -174,15 +221,15 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 ## जब कोई पृष्ठ गलत उत्तर देता है तो एक चेकलिस्ट
 
 1. **स्थिति देखें**, पृष्ठ नहीं। एक प्रथा `notfound.nexy` अभी भी `404` का उत्तर देती है।
-2. **टर्मिनल पढ़ें।** जो पृष्ठ आयात करने में विफल रहता है वह पंजीकृत नहीं होता है, इसलिए फ़ाइल मौजूद होने पर उसका यूआरएल `404` उत्तर देता है। आयात त्रुटि लॉग में है.
+2. **टर्मिनल पढ़ें।** जो पृष्ठ आयात करने में विफल रहता है वह पंजीकृत नहीं होता है, इसलिए फ़ाइल मौजूद होने पर इसका यूआरएल `404` उत्तर देता है। आयात त्रुटि लॉग में है.
 3. **एक्सटेंशन की जांच करें।** `useCSR = True` के साथ, `.nexy` पेज सर्वर मोड से संबंधित हैं; ग़लत मोड में कोई पेज रूट नहीं है.
 4. **गहराई की जाँच करें।** एक `notfound.nexy` या `errors.nexy` केवल तभी काम करता है जब रूट कॉपी मौजूद हो।
-5. **आपके एपीआई क्लाइंट को प्राप्त आकार देखने के लिए `Accept: application/json` के साथ JSON** मांगें।
+5. **आपके एपीआई क्लाइंट को प्राप्त होने वाले आकार को देखने के लिए `Accept: application/json` के साथ JSON** मांगें।
 6. **जब आप कोई समस्या खोलते हैं या लॉग खोजते हैं तो `500` का संदर्भ** उद्धृत करें।
 
 ## अगले चरण
 
 - [त्रुटि पृष्ठ](../routing/fbr/errors/README.md): संपूर्ण पृष्ठ व्यवहार, उदाहरण सहित
-- [सत्यापन और त्रुटियां](../routing/fbr/handlers/validation-and-errors.md): एपीआई हैंडलर
+- [सत्यापन और त्रुटियाँ](../routing/fbr/handlers/validation-and-errors.md): एपीआई हैंडलर
 - [समस्या निवारण](../guides/troubleshooting.md): वे त्रुटियाँ जो लोग वास्तव में करते हैं
 - [परीक्षण](../guides/testing.md): एक स्थिति और एक निकाय का दावा करें

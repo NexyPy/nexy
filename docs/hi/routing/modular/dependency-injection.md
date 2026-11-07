@@ -19,7 +19,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc
@@ -62,8 +62,8 @@ class CurrentUser: ...
 | दायरा | जीवनकाल |
 |---|---|
 | `Scope.SINGLETON` (डिफ़ॉल्ट) | पूरी प्रक्रिया के लिए एक उदाहरण |
-| `Scope.REQUEST` | प्रति अनुरोध संदर्भ एक उदाहरण |
-| `Scope.TRANSIENT` | प्रत्येक रिज़ॉल्यूशन पर एक नया उदाहरण |
+| `Scope.REQUEST` | प्रति अनुरोध संदर्भ में एक उदाहरण |
+| `Scope.TRANSIENT` | प्रत्येक संकल्प पर एक नया उदाहरण |
 
 ## कंटेनर
 

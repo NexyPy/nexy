@@ -62,6 +62,7 @@ Browser ──► Middleware ──► Router ──► Page or handler
 so the same call works in a `.nexy` page, an API handler, a modular controller, a guard, a
 `dependencies.py` and an action.
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/posts/[slug].py"
 from nexy import notFound, redirect
 
@@ -76,6 +77,29 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+List the controller in the `controllers` of the root module.
+<!-- /router -->
 
 | Call | Answer | When |
 |---|---|---|
@@ -93,6 +117,7 @@ wherever the link says; it is an open redirect. A destination that holds a line 
 
 Handler parameters are validated by FastAPI against their annotations.
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
 
@@ -100,6 +125,22 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+List the controller in the `controllers` of the root module.
+<!-- /router -->
 
 | Problem | Status | Why |
 |---|---|---|
@@ -122,6 +163,7 @@ also fills `error.fields` with one message per field. See [Actions](../guides/ac
 
 ## Custom error pages
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notfound.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -151,6 +193,12 @@ See [Error pages per folder](../routing/fbr/errors/folder-pages.md).
 > An `errors.nexy` page replaces the `500` page; it does not catch the exception and it does not
 > change the log line. If the handler that raised is the page itself, the page cannot show its own
 > error details: keep `errors.nexy` simple and independent.
+<!-- /router -->
+
+<!-- router:modular -->
+The modular router has no error page in a file: a `404`, `500`, `403` or `401` gets the
+built-in styled page. Error pages per folder are a convention of the file-based router.
+<!-- /router -->
 
 ## Unhandled exceptions
 

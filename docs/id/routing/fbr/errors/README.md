@@ -23,7 +23,7 @@ Buat `src/routes/notfound.nexy` dan tulis apa yang harus dibaca pengunjung:
 
 ```nexy filename="src/rute/tidak ditemukan.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -40,7 +40,7 @@ File di root rute menjawab keseluruhan proyek; salinan dalam folder hanya menjaw
 
 ## File mana yang menjawab
 
-| File | Jawaban |
+| Mengajukan | Jawaban |
 |---|---|
 | `notfound.nexy` | `404` untuk direktorinya |
 | `errors.nexy` | `500` untuk direktorinya |
@@ -77,7 +77,7 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| Hubungi | Jawab |
+| Telepon | Jawaban |
 |---|---|
 | `redirect(url)` | `307`; `redirect(url, status=303)` mengubah POST menjadi GET setelah formulir |
 | `permanentRedirect(url)` | `308`; browser dan mesin pencari mengingatnya |
@@ -133,9 +133,9 @@ Pengecualian yang tidak ditangani apa pun dicatat satu kali, dengan pengecualian
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| Browser | halaman dengan kesalahan, baris kode Anda yang memunculkannya dan penelusuran balik lengkap | halaman `500` bawaan (atau `errors.nexy`) Anda dengan referensi |
-| Klien JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Log server | pengecualian dan baris kode Anda | pengecualian dan seluruh penelusuran balik, dengan referensi yang sama |
+| Peramban | halaman dengan kesalahan, baris kode Anda yang memunculkannya, dan penelusuran balik lengkap | halaman `500` bawaan (atau `errors.nexy`) Anda dengan referensi |
+| klien JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| Catatan server | pengecualian dan baris kode Anda | pengecualian dan seluruh penelusuran balik, dengan referensi yang sama |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217

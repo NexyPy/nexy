@@ -53,12 +53,30 @@ nx start --host 127.0.0.1 --port 8000
 
 ## स्वास्थ्य जांच
 
+<!-- router:fbr,custom -->
 एक हैंडलर फ़ाइल जोड़ें, `src/routes/api/health.py`, और जांच करें `/api/health` - एक पृष्ठ के बजाय जो धीरे-धीरे प्रस्तुत हो सकता है:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+एक नियंत्रक जोड़ें, और जांच करें `/health/` - एक दृश्य के बजाय जो धीरे-धीरे प्रस्तुत हो सकता है:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+इसे रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 ## स्थैतिक होस्टिंग
 
@@ -69,7 +87,7 @@ async def GET():
 
 ## चेकलिस्ट
 
-- [ ] `nx build` सीआई में, उन मार्गों के लिए कोई चेतावनी नहीं है जिन्हें आप सर्वर पर प्रस्तुत करने की उम्मीद करते हैं
+- [ ] `nx build` सीआई में, उन मार्गों के लिए कोई चेतावनी नहीं है जिन्हें आप सर्वर पर प्रस्तुत करना चाहते हैं
 - [ ] `nx start` कोड 1 के साथ बाहर निकलता है, और कुछ भी शुरू नहीं करता है, जब कोई रूट फ़ाइल लोड नहीं हो पाती है
 - [ ] `NEXY_ACTION_SECRET` सेट, या `__nexy__/action.key` बिल्ड के साथ रखा गया
 - [ ] `useDocs = False` उत्पादन में यदि एपीआई स्कीमा सार्वजनिक नहीं होनी चाहिए
@@ -78,6 +96,6 @@ async def GET():
 
 ## अगले चरण
 
-- [कॉन्फ़िगर](../reference/config.md): HTTPS, विश्वसनीय होस्ट, सत्र
-- [फ्रंटेंड](../guides/frontend.md): Vite क्या बनाता है
+- [कॉन्फ़िगरेशन](../reference/config.md): HTTPS, विश्वसनीय होस्ट, सत्र
+- [फ्रंटएंड](../guides/frontend.md): Vite क्या बनाता है
 - [परीक्षण](../guides/testing.md): सीआई में चलाने के लिए आदेश

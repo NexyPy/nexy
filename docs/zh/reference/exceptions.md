@@ -55,6 +55,7 @@ Browser ──► Middleware ──► Router ──► Page or handler
 
 `redirect`、`permanentRedirect`、`notFound`、`forbidden` 和 `unauthorized` 引发 HTTP 异常，因此相同的调用在 `.nexy` 页面、API 处理程序、模块化控制器、防护、`dependencies.py` 和操作中工作。
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/posts/[slug].py"
 from nexy import notFound, redirect
 
@@ -69,6 +70,29 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 | 致电 | 回答 | 当 |
 |---|---|---|
@@ -85,6 +109,7 @@ async def GET(slug: str):
 
 处理程序参数由 FastAPI 根据其注释进行验证。
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
 
@@ -92,11 +117,27 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 | 问题 | 状态 | 为什么 |
 |---|---|---|
 | 查询、标头、cookie 或正文字段缺失或无效 | `422` | 请求到达处理程序，数据错误 |
-| 无效路径段（`/api/users/abc` 对于 `id: int`） | `404` | 该文件夹没有非号码的路由，因此该 URL 不存在 |
+| 无效路径段（`id: int` 的 `/api/users/abc`） | `404` | 该文件夹没有非号码的路由，因此该 URL 不存在 |
 
 `422` 主体是 FastAPI 的标准形状，因此客户端和生成的 SDK 可以继续工作：
 
@@ -104,13 +145,14 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 {"detail": [{"loc": ["query", "q"], "msg": "Field required", "type": "missing"}]}
 ```
 
-对于表单或操作，客户端会收到带有 `status` 和 `detail` 的 `ActionError`； `422` 还用每个字段一条消息填充 `error.fields`。请参阅[操作](../guides/actions.md#errors-and-failures)。
+对于表单或操作，客户端会收到带有 `status` 和 `detail` 的 `ActionError`； a `422` 还为每个字段填充一条消息 `error.fields`。请参阅[操作](../guides/actions.md#errors-and-failures)。
 
 > [!TIP]
-> 当规则涉及一个字段 (`limit: int = 10`) 时，在签名中进行验证。当规则需要数据库或其他字段（“此电子邮件已被使用”）时，在正文中进行验证：引发 `HTTPException(409)` 并为客户端保留消息。
+> 当规则涉及一个字段 (`limit: int = 10`) 时，在签名中进行验证。当规则需要数据库或其他字段（“此电子邮件已被使用”）时在正文中进行验证：引发 `HTTPException(409)` 并为客户端保留消息。
 
 ## 自定义错误页面
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notfound.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -135,6 +177,11 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 
 > [!IMPORTANT]
 > `errors.nexy` 页面取代 `500` 页面；它不会捕获异常，也不会更改日志行。如果引发的处理程序是页面本身，则页面无法显示自己的错误详细信息：保持 `errors.nexy` 简单且独立。
+<!-- /router -->
+
+<!-- router:modular -->
+模块化路由器的文件中没有错误页面：`404`、`500`、`403` 或 `401` 获取内置样式页面。每个文件夹的错误页面是基于文件的路由器的约定。
+<!-- /router -->
 
 ## 未处理的异常
 

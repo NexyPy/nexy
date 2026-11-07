@@ -6,6 +6,12 @@ default.
 **Not sure? Keep SSR.** Change a page only when you can name the reason: content that rarely changes
 (ISR), one widget that needs the browser (island), or app-like navigation (CSR).
 
+<!-- router:modular -->
+> [!NOTE]
+> The modular router renders every view on the server, with islands where a view holds them. ISR and
+> CSR are modes of file pages: they need the file-based router.
+<!-- /router -->
+
 ## How it works
 
 ```diagram filename="Who produces the HTML, and when"
@@ -58,6 +64,7 @@ browser takes over navigation. A CSR page is not a blank page waiting for a bund
 
 ## Example
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
@@ -66,6 +73,19 @@ revalidate = 60
 ```
 
 The same page without the frontmatter line is SSR.
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Rendered on every request</h1>
+<Chart directive="client:visible" />
+```
+
+The view is SSR, and the chart is an island that hydrates when it scrolls into view.
+<!-- /router -->
 
 ## Limitations
 

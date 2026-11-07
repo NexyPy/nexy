@@ -27,6 +27,7 @@ async def add_todo(title: str) -> Todo:
 
 পৃষ্ঠাটি ঘোষিত ইনপুট Python সহ এটিকে কল করে এবং একটি টাইপ করা `Todo` ফিরে পায়:
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/todos.tsx"
 import { useAction } from "@nexy/client";
 import { add_todo } from "@nexy/actions";
@@ -40,12 +41,38 @@ export default function Todos() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+উপাদানটি একটি দৃশ্যের একটি দ্বীপ, এবং একটি নিয়ামক দৃশ্যটি ফিরিয়ে দেয়:
+
+```tsx filename="src/components/Todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/todos_view.nexy"
+---
+from "@/components/Todos.tsx" import Todos
+---
+<Todos directive="client:load" />
+```
+<!-- /router -->
 
 ## ক্লায়েন্ট-সাইড নেভিগেশন
 
 নেক্সিতে নেভিগেশন "বুদ্ধিমান।" একটি সম্পূর্ণ ব্রাউজার পুনরায় লোড করার পরিবর্তে, সক্রিয় লেআউটগুলি মাউন্ট করার সময় Nexy বর্তমান পৃষ্ঠার বিষয়বস্তু অদলবদল করে।
 
-- **`Link` কম্পোনেন্ট**: ক্লায়েন্ট-সাইড ট্রানজিশন করতে ফ্রেমওয়ার্ক-নির্দিষ্ট `Link` উপাদান ব্যবহার করুন।
+- **`Link` কম্পোনেন্ট**: ক্লায়েন্ট-সাইড ট্রানজিশন সঞ্চালনের জন্য ফ্রেমওয়ার্ক-নির্দিষ্ট `Link` উপাদান ব্যবহার করুন।
 - **প্রোগ্রাম্যাটিক নেভিগেশন**: যুক্তির প্রতিক্রিয়ায় পৃষ্ঠাগুলি পরিবর্তন করতে `@nexy/client` থেকে `useRouter()` ব্যবহার করুন এবং `push()` কল করুন (যেমন, একটি সফল লগইন করার পরে)।
 
 ```tsx filename="src/components/Nav.tsx"
@@ -91,6 +118,7 @@ async def sign_in(email: str, password: str) -> bool:
     return ok
 ```
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/login.tsx"
 import { useAction, useRouter } from "@nexy/client";
 import { sign_in } from "@nexy/actions";
@@ -105,6 +133,23 @@ export default function Login() {
   return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```tsx filename="src/components/Login.tsx"
+import { useAction } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export function Login() {
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) window.location.assign("/dashboard/");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+<!-- /router -->
 
 `check_password` মানে আপনার নিজের চেক। দেখুন [ত্রুটির জন্য কর্ম](../../guides/actions.md), ফর্ম ছাড়া JavaScript এবং নিরাপত্তা।
 

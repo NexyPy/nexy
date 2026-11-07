@@ -4,6 +4,7 @@
 
 ## تركيبان، وظيفة واحدة
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 ينتج كلا الخطين نفس العلامات:
 
@@ -26,14 +39,14 @@ from nexy import Audio
 | في العلامة | يصبح |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
-| `controls=True` | `controls=True`، منطقية حقيقية |
-| `width=640` | `width=640`، عدد |
+| `controls=True` | `controls=True`، كلام منطقي حقيقي |
+| `width=640` | `width=640`، رقم |
 | `src="{{ url }}"` | `src=(url)`، تم التقييم في Jinja |
-| أي `value` | `"value"`، سلسلة |
+| أي شيء آخر `value` | `"value"`، سلسلة |
 
 - يجب أن تبدأ العلامة بحرف كبير وأن يتم استيرادها في المادة الأمامية؛ وإلا فإن المترجم يرفع `Missing Import: <Name> used but not declared.`
-- نموذج العلامة هو **الإغلاق الذاتي**. `<Audio src="/a.mp3" />` و `{{ Audio("/a.mp3") }}` متساويان؛ كتابة الأطفال داخل علامة المساعدة غير مدعومة.
-- سمة HTML المجردة ليست منطقية هنا: `controls` تصبح `controls=""`، ​​وهذا خطأ. اكتب `controls=True`.
+- نموذج العلامة هو **الإغلاق الذاتي**. `<Audio src="/a.mp3" />` و `{{ Audio("/a.mp3") }}` متساويان؛ كتابة الأطفال داخل علامة مساعد غير مدعومة.
+- سمة HTML المجردة ليست منطقية هنا: `controls` تصبح `controls=""`، وهذا خطأ. اكتب `controls=True`.
 
 > [!NOTE]
 > `class_name` هي الكلمة الأساسية الموثقة لفئات CSS. تصبح وسيطات الكلمات الرئيسية الإضافية سمات HTML، لذلك يصل `class="nav"` أيضًا إلى المخرجات.
@@ -63,7 +76,7 @@ from nexy import Link
 `Link(href, children="", class_name=None, prefetch=True, **attrs)` يعرض `<a data-nexy-link>` تتم معالجته بواسطة جهاز توجيه العميل. مع `prefetch=True`، يؤدي التمرير أو لمس الرابط إلى تسخين الهدف من خلال `window.__nexy_prefetch`.
 
 > [!NOTE]
-> يأخذ نموذج العلامة التسمية كـ `children`، وليس كمحتوى عنصر: `<Link href="/about" children="About" />`. لوضع علامة داخل رابط، استخدم نموذج الاستدعاء مع `children=` أو مكون `.nexy` الذي يعرض `<Slot />`.
+> يأخذ نموذج العلامة التسمية كـ `children`، وليس كمحتوى العنصر: `<Link href="/about" children="About" />`. لوضع علامة داخل رابط، استخدم نموذج الاستدعاء مع `children=` أو مكون `.nexy` الذي يعرض `<Slot />`.
 
 ## الصوت والفيديو
 
@@ -78,7 +91,7 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` و `Video(src, width=None, height=None, ...)` يقدمان لاعبين أصليين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل ملحق.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` و `Video(src, width=None, height=None, ...)` يقدمان لاعبين أصليين. `sources` يضيف `<source>` علامات بنوع MIME المشتق من كل امتداد.
 
 ## مكون تكتبه بنفسك
 
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,6 +117,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` ليس له افتراضي، لذا يجب على الصفحة اجتيازه؛ `tone` يرجع إلى `"neutral"`. تصل العلامات بين العلامات داخل `<Slot />` (الحرف الكبير S). راجع [ملفات .nexy](README.md#components) للتعرف على الدعائم والفتحات وقواعد نموذج العلامة.
 

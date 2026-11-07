@@ -324,7 +324,8 @@
             // Show if page is core or matches the active router
             // Also show if it's a shared page (no router) but not specifically advanced
             const isCore = e.scope === 'core'
-            const matchesRouter = e.router === router
+            // A group of several routers carries them all in its scope: `fbr custom`.
+            const matchesRouter = e.router === router || e.scope.split(' ').includes(router)
             const isAdvanced = e.scope === 'advanced'
             return (isCore || matchesRouter) && !isAdvanced
           })

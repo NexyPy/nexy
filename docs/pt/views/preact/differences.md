@@ -2,16 +2,30 @@
 
 Nexy renderiza Preact 10 componentes no servidor e então Preact os assume no navegador. Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração e depois as partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | As páginas são | Preact são |
+<!-- router:fbr,custom -->
+| Modo | `nexyconfig.py` | As páginas são | Preact é |
 |---|---|---|---|
 | Servidor (padrão) | `useCSR = False` | `.nexy` arquivos | [ilhas](../../rendering/islands.md) dentro dessas páginas |
-| Cliente | `useCSR = True` | `.tsx` arquiva | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
+| Cliente | `useCSR = True` | `.tsx` arquivos | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
+<!-- /router -->
+
+<!-- router:modular -->
+Com o roteador modular, Preact componentes são [ilhas](../../rendering/islands.md) dentro das `.nexy` visualizações que um controlador retorna: não há arquivo de paginação e nenhum roteador cliente.
+<!-- /router -->
 
 ## Iniciar um projeto
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-preact
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-preact
+```
+<!-- /router -->
 
 O modelo é um projeto em modo servidor com Preact ilhas. Execute `nx new my-app` sem um modelo para responder aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida, a estrutura.
 
@@ -64,12 +78,18 @@ export default function Counter({ start = 0 }: { start?: number }) {
 
 ## Regras
 
-- **Uma estrutura por projeto.** `useFF` leva exatamente uma estrutura; `useFF = [preact(), react()]` interrompe o servidor na inicialização. Com `useFF = preact()`, todo arquivo `.tsx` é Preact.
+- **Uma estrutura por projeto.** `useFF` usa exatamente uma estrutura; `useFF = [preact(), react()]` interrompe o servidor na inicialização. Com `useFF = preact()`, todo arquivo `.tsx` é Preact.
+<!-- router:fbr,custom -->
 - **As páginas são `.tsx`.** Somente um arquivo `.tsx` em `src/routes/` se torna uma página; `.jsx` é adequado para um componente.
 - **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
 - **Um projeto em modo servidor não tem página `.tsx`**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Os componentes residem em `src/components/`**, e uma visualização os importa como ilhas.
+<!-- /router -->
 - **Uma página `.mdx` importa de `"preact"`.** Nexy compila um arquivo `.mdx` com Preact somente quando vê essa importação, por exemplo `import { h } from "preact"`, e com React caso contrário. Consulte [Markdown e MDX](../nexy/markdown.md).
 
+<!-- router:fbr,custom -->
 ## Páginas
 
 No modo cliente (`useCSR = True`), uma página é um arquivo `.tsx`.
@@ -117,6 +137,7 @@ export default function RootLayout({ children }: { children: ComponentChildren }
   );
 }
 ```
+<!-- /router -->
 
 ## Ilhas
 
@@ -126,12 +147,23 @@ No modo servidor, um componente Preact importado para um arquivo `.nexy` é uma 
 
 Importe componentes no frontmatter do arquivo `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Diretrizes de hidratação
 
@@ -186,4 +218,4 @@ router.push("/dashboard");
 ## Próximas etapas
 
 - [Visualizações](../README.md): compare os formatos que uma página pode usar
-- [Frontend](../../guides/frontend.md): Vite e a compilação do cliente
+- [Frontend](../../guides/frontend.md): Vite e a construção do cliente

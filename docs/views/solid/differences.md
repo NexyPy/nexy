@@ -4,16 +4,31 @@ Nexy renders Solid 1.9 components on the server, then Solid takes them over in t
 layouts, islands and actions are the same in every framework: this page covers setup, then the parts
 that differ from the [shared contracts](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Mode | `nexyconfig.py` | Pages are | Solid is |
 |---|---|---|---|
 | Server (default) | `useCSR = False` | `.nexy` files | [islands](../../rendering/islands.md) inside those pages |
 | Client | `useCSR = True` | `.tsx` files | the whole page, with [layouts](../frontend/layouts.md) and a client router |
+<!-- /router -->
+
+<!-- router:modular -->
+With the modular router, Solid components are [islands](../../rendering/islands.md) inside
+the `.nexy` views a controller returns: there is no page file and no client router.
+<!-- /router -->
 
 ## Start a project
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-solid
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-solid
+```
+<!-- /router -->
 
 The template is a server-mode project with Solid islands. Run `nx new my-app` without a template to
 answer the prompts instead: the router, the project type, whether to use client-side routing, then
@@ -73,13 +88,19 @@ export default function Counter(props: { start?: number }) {
 
 - **One framework per project.** `useFF` takes exactly one framework; `useFF = [solid(), react()]`
   stops the server at startup. With `useFF = solid()`, every `.tsx` file is Solid.
+<!-- router:fbr,custom -->
 - **Pages are `.tsx`.** Only a `.tsx` file under `src/routes/` becomes a page; `.jsx` is fine for a
   component.
 - **Components live outside `src/routes/`**, usually in `src/components/`, so they are not pages.
 - **A server-mode project has no `.tsx` page**, and a client-mode project has no `.nexy` page: Nexy
   refuses to start and names the file. See [modes](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Components live in `src/components/`**, and a view imports them as islands.
+<!-- /router -->
 - **No `.mdx` with Solid.** MDX compiles to React or Preact; `.md` pages work.
 
+<!-- router:fbr,custom -->
 ## Pages
 
 In client mode (`useCSR = True`), a page is a `.tsx` file.
@@ -130,6 +151,7 @@ export default function RootLayout(props: { children: JSX.Element }) {
 ```
 
 Do not destructure `props.children`, as Solid reads it lazily.
+<!-- /router -->
 
 ## Islands
 
@@ -139,12 +161,23 @@ In server mode, a Solid component imported into a `.nexy` file is an island.
 
 Import components in the frontmatter of the `.nexy` file:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Hydration directives
 

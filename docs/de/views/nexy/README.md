@@ -4,6 +4,7 @@ Eine `.nexy`-Datei ist eine Komponente: Python oben, HTML in der Mitte, CSS unte
 
 **Bevor Sie beginnen:** ein Projekt, das durch den [Schnellstart](../../getting-started/quick-start.md) erstellt wurde. Eine `.nexy`-Datei benötigt keine Build-Konfiguration: `nx dev` kompiliert sie beim Speichern.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/[slug].nexy"
 ---
 from nexy import usePathname
@@ -20,6 +21,39 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+Der Controller übergibt `slug` von seinem Pfad:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## Frontmatter
 
@@ -27,8 +61,8 @@ Alles zwischen den beiden `---`-Zeilen ist Python. Importe werden aufgelöst, we
 
 | Was | Beispiel |
 |---|---|
-| Ein Modul importieren | `import json`, `from datetime import datetime` |
-| Eine Komponente importieren | `from "@/components/card.nexy" import Card` |
+| Importieren Sie ein Modul | `import json`, `from datetime import datetime` |
+| Importieren Sie eine Komponente | `from "@/components/card.nexy" import Card` |
 | Eine Eigenschaft deklarieren | `title: prop[str] = "Default"` |
 | Berechnen Sie einen Wert | `year = datetime.now().year` |
 | Lesen Sie die Anfrage | `pathname = usePathname()` |
@@ -63,6 +97,7 @@ Autoescaping ist **aus**: Vorlagen sind der eigene HTML-Code des Projekts, daher
 
 Jedes importierte Callable, dessen Name mit einem Großbuchstaben beginnt, kann als Tag verwendet werden. Der Compiler schreibt es in einen Jinja-Aufruf um: Attribute werden zu Schlüsselwortargumenten.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -74,6 +109,21 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Die letzte Zeile ist genau `{{ Audio("/theme.mp3", controls=True) }}`. Beide Syntaxen gelten für die integrierten Helfer `Image`, `Link`, `Audio` und `Video` – siehe [Komponenten](components.md#two-syntaxes-one-function).
 
@@ -86,7 +136,7 @@ Untergeordnete Elemente werden durch `<Slot />` (Großbuchstabe S) innerhalb der
 
 ## Stile
 
-`<style>`-Blöcke werden mit der Seite ausgegeben, die sie deklariert. Sie haben keinen Gültigkeitsbereich: Ein Klassenname, der in zwei Komponenten verwendet wird, ist eine Klasse. Setzen Sie Ihren Klassen ein Präfix oder einen Namensraum.
+`<style>` Blöcke werden mit der Seite ausgegeben, die sie deklariert. Sie haben keinen Gültigkeitsbereich: Ein Klassenname, der in zwei Komponenten verwendet wird, ist eine Klasse. Setzen Sie Ihren Klassen ein Präfix oder einen Namensraum.
 
 ## Regeln, die Zeit sparen
 

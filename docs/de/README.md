@@ -29,11 +29,6 @@ Neu hier? Lesen Sie [Was ist Nexy?](getting-started/what-is-nexy.md) und dann de
 | [Wählen Sie einen Router](routing/README.md) | Wählen Sie den dateibasierten, modularen oder benutzerdefinierten Router |
 | [Wählen Sie ein Ansichtsformat](views/README.md) | Wählen Sie `.nexy`, Markdown oder ein Client-Framework für eine Seite |
 
-### Kommt von woanders
-| Seite | Was Sie tun werden |
-|---|---|
-| [Aus einem anderen Rahmen kommend](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
-
 ## Routenführung
 
 ### Dateibasiert {fbr}
@@ -79,8 +74,6 @@ Controller und Module.
 ### Geteilte Verträge
 | Seite | Was es definiert |
 |---|---|
-| [Frontend-Seiten](views/frontend/pages.md) | Eine Datei, eine Route: Requisiten, Rendering, Metadaten |
-| [Frontend-Layouts](views/frontend/layouts.md) | Die Dokumenthülle, die Verschachtelung und was ein Layout nicht leisten kann |
 | [Aktionen und Navigation](views/frontend/actions-and-navigation.md) | Rufen Sie eine eingegebene Aktion auf, verlinken Sie Seiten und lesen Sie die URL |
 
 ### Nexy-Ansichten
@@ -88,6 +81,12 @@ Controller und Module.
 |---|---|
 | [.nexy-Dateien](views/nexy/README.md) | Schreiben Sie eine Seite mit Python, Jinja2 und Requisiten |
 | [Komponenten](views/nexy/components.md) | Verwenden Sie `Image`, `Link`, `Audio`, `Video` und `Import`. |
+
+### Seiten und Layouts in Dateien {fbr,custom}
+| Seite | Was es definiert |
+|---|---|
+| [Frontend-Seiten](views/frontend/pages.md) | Eine Datei, eine Route: Requisiten, Rendering, Metadaten |
+| [Frontend-Layouts](views/frontend/layouts.md) | Die Dokumenthülle, die Verschachtelung und was ein Layout nicht leisten kann |
 | [layout.nexy](views/nexy/layouts.md) | Schreiben Sie das Servermodus-Layout |
 | [Markdown und MDX](views/nexy/markdown.md) | Schreiben Sie Inhaltsseiten |
 
@@ -107,9 +106,13 @@ Controller und Module.
 |---|---|
 | [Rendern](rendering/README.md) | Welcher Rendering-Modus passt zu einer Seite? |
 | [SSR](rendering/ssr.md) | Server-Rendering, die Standardeinstellung |
+| [Inseln](rendering/islands.md) | Hydratisieren bei Leerlauf-, Sichtbarkeits- oder Medienabfrage |
+
+### Modi der Dateiseiten {fbr,custom}
+| Seite | Was Sie entscheiden werden |
+|---|---|
 | [ISR](rendering/isr.md) | Cache-Seiten mit Stale-While-Revalidate |
 | [CSR](rendering/csr.md) | Clientseitiges Routing |
-| [Inseln](rendering/islands.md) | Hydratisieren bei Leerlauf-, Sichtbarkeits- oder Medienabfrage |
 
 ## Führer
 
@@ -135,9 +138,60 @@ Controller und Module.
 ### Werkzeuge und Hilfe
 | Seite | Was Sie tun werden |
 |---|---|
-| [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
+| [Entwickler-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
+
+## Datenbanken
+
+### SQL-Datenbanken
+| Seite | Was Sie tun werden |
+|---|---|
+| [SQLite](databases/sqlite.md) | Verwenden Sie eine Datei, keinen Server: Engine, Pragmas, Migrationen und Tests |
+| [PostgreSQL](databases/postgresql.md) | Verbinden Sie sich mit psycopg, verwenden Sie JSONB, Arrays, Suche und Upserts |
+| [Neon](databases/neon.md) | Verwenden Sie serverlosen PostgreSQL: gepoolten Host, automatische Suspendierung und Verzweigungen |
+| [MySQL und MariaDB](databases/mysql-mariadb.md) | Stellen Sie eine Verbindung mit pymysql her, verwenden Sie utf8mb4, Upserts und die Volltextsuche |
+
+## Kommt von
+
+Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in Nexy.
+
+### Übersicht
+| Seite | Was Sie tun werden |
+|---|---|
+| [Aus einem anderen Rahmen kommend](getting-started/coming-from-other-frameworks.md) | Übersetzen Sie FastAPI, Next.js und drücken Sie Gewohnheiten in Nexy aus |
+
+### Python Frameworks {fbr}
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von FastAPI](coming-from/fastapi.md) | Behalten Sie Ihren FastAPI-Code: Nur `@app.get` wird zu einer Datei |
+| [Von Flask](coming-from/flask.md) | Verwandeln Sie Ansichten, Blaupausen, Vorlagen und Formulare in Nexy-Routen |
+| [Von Django](coming-from/django.md) | Ordnen Sie Ansichten, Vorlagen, Modelle, Formulare und Einstellungen Nexy zu |
+
+### JavaScript Backends {fbr}
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von Express](coming-from/express.md) | Übersetzen Sie Routen, Middleware und `req`/`res` in Python-Handler |
+| [Von Fastify](coming-from/fastify.md) | Verwandeln Sie Schemata, Plugins und Hooks in Modelle, Ordner und Dateien |
+| [Aus Elysia](coming-from/elysia.md) | Ordnen Sie `t` Schemata, Wachen und Eden Pydantic und typisierten Aktionen zu |
+| [Von Hono](coming-from/hono.md) | Ordnen Sie Routen, Middleware und den `hc`-Client Nexy zu |
+
+### Fullstack-Frameworks {fbr}
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von Next.js](coming-from/nextjs.md) | Behalten Sie Ihre React-Seiten und verschieben Sie den Servercode nach Python |
+| [Von Remix](coming-from/remix.md) | Verwandeln Sie Loader und Aktionen in Python Handler und Aktionen |
+| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue-Seiten und verschieben Sie `server/` nach Python |
+| [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte-Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
+| [Von Astro](coming-from/astro.md) | Schreiben Sie Astro Seiten als `.nexy` Seiten mit denselben Inseln |
+| [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
+| [Von Ruby on Rails](coming-from/rails.md) | Ordnen Sie Routen, Controller, ERB, Active Record und Jobs Nexy zu |
+
+### Controller-Frameworks {modular}
+| Seite | Was Sie tun werden |
+|---|---|
+| [Von NestJS](coming-from/nestjs.md) | Verschieben Sie Controller, Module, Provider und Guards auf den modularen Router |
+| [Von Spring Boot](coming-from/spring-boot.md) | Verschieben Sie Controller, Dienste und Filter auf den modularen Router |
 
 ## Referenz
 
@@ -153,10 +207,14 @@ Controller und Module.
 | [Python-API](reference/python-api.md) | Jeder Name, den Nexy exportiert, nach Modul |
 | [Ausnahmen und Fehler](reference/exceptions.md) | Jeder Fehler, sein Status und die Datei, die ihn beantwortet |
 
-### Konventionen und Konzepte
+### Dateikonventionen {fbr,custom}
 | Seite | Was Sie tun werden |
 |---|---|
 | [Dateikonventionen](reference/file-conventions.md) | Reservierte Dateien und Routing-Regeln |
+
+### Konventionen und Konzepte
+| Seite | Was Sie tun werden |
+|---|---|
 | [Glossar](reference/glossary.md) | Die in diesen Dokumenten verwendeten Wörter |
 | [Sicherheit](reference/security.md) | Versionsebenen, Regeln, denen Nexy folgt, Audits |
 
@@ -166,6 +224,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

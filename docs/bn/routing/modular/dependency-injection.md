@@ -19,7 +19,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc
@@ -59,10 +59,10 @@ from nexy.decorators import Injectable, Scope
 class CurrentUser: ...
 ```
 
-| সুযোগ | আজীবন |
+| ব্যাপ্তি | আজীবন |
 |---|---|
 | `Scope.SINGLETON` (ডিফল্ট) | পুরো প্রক্রিয়ার জন্য একটি উদাহরণ |
-| `Scope.REQUEST` | অনুরোধের প্রসঙ্গে একটি উদাহরণ |
+| `Scope.REQUEST` | অনুরোধের প্রসঙ্গ প্রতি এক দৃষ্টান্ত |
 | `Scope.TRANSIENT` | প্রতিটি রেজোলিউশনে একটি নতুন উদাহরণ |
 
 ## ধারক
@@ -94,5 +94,5 @@ def get(self, limit: int = Depends(pagination)) -> list[dict]: ...
 
 ## পরবর্তী পদক্ষেপ
 
-- [রক্ষী এবং মেটাডেটা](guards-and-metadata.md)
-- [পরীক্ষা](../../guides/testing.md)
+- [গার্ড এবং মেটাডেটা](guards-and-metadata.md)
+- [পরীক্ষা ](../../guides/testing.md)

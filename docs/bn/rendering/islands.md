@@ -8,6 +8,7 @@
 
 ## এটা কিভাবে কাজ করে
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy বিল্ড টাইমে কম্পোনেন্ট রেন্ডার করে, এর HTML সঞ্চয় করে এবং পেজের ভিতরে রাখে। পৃষ্ঠার প্রতিক্রিয়া একটি JSON অ্যাট্রিবিউট হিসাবে সেই HTML প্লাস প্রপস বহন করে। ব্রাউজারে, দ্বীপ রানটাইম উপাদানটি লোড করে এবং ধারকটি দখল করে।
 
@@ -40,8 +52,8 @@ Nexy বিল্ড টাইমে কম্পোনেন্ট রেন্
 
 | নির্দেশিকা | হাইড্রেটস |
 |---|---|
-| কোনটিই নয়, বা `client:load` | অবিলম্বে |
-| `client:idle` | যখন ব্রাউজারটি নিষ্ক্রিয় থাকে (`requestIdleCallback`, 2 সেকেন্ড সময় শেষ) |
+| কোনোটিই নয়, বা `client:load` | অবিলম্বে |
+| `client:idle` | যখন ব্রাউজার নিষ্ক্রিয় থাকে (`requestIdleCallback`, 2 সেকেন্ড সময় শেষ) |
 | `client:visible` | যখন দ্বীপটি ভিউপোর্টে প্রবেশ করে, 200 px তাড়াতাড়ি |
 | `client:media` | যখন একটি মিডিয়া কোয়েরি মেলে; এটি `media` প্রপ দিয়ে সেট করুন |
 
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,18 +84,29 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## সীমাবদ্ধতা
 
 - **`client:only` কখনই নয় হাইড্রেট** এটি গৃহীত হয়, কিন্তু রানটাইম এটি এড়িয়ে যায়, তাই সার্ভার এইচটিএমএল নিষ্ক্রিয় থাকে। একটি ক্লায়েন্ট রুট ব্যবহার করুন ([CSR](csr.md)) যখন একটি উপাদান সার্ভারে রেন্ডার করতে পারে না।
 - **`client:manual` কোন পাবলিক নেই ট্রিগার** এটি স্বয়ংক্রিয়ভাবে এড়িয়ে যায় এবং যে হ্যান্ডেলটি এটি পুনরায় শুরু করে সেটি অভ্যন্তরীণ।
-- **প্রপস হতে হবে JSON।** এগুলিকে `json.dumps` দিয়ে সিরিয়াল করা হয়; একটি মান যা ক্রমিক করা যায় না তা বাদ দেওয়া হয়, এবং দ্বীপটি গ্রহণ করে `{}` - নীরবে।
+- **প্রপস হতে হবে JSON** এগুলি `json.dumps` দিয়ে সিরিয়াল করা হয় একটি মান যা সিরিয়াল করা যায় না তা বাদ দেওয়া হয়, এবং দ্বীপটি `{}` পায় - নীরবে।
 - **একটি দ্বীপ শেয়ার করা সঙ্গে একটি ক্লায়েন্ট উপাদান নয় রাষ্ট্র** আপনি নিজেকে যোগ করার ব্যবস্থা ছাড়া দুটি দ্বীপ রাষ্ট্র ভাগ করে না।
 - **দ্বীপটি দ্বারা পুনরায় রেন্ডার করা হয় না সার্ভার** এর এইচটিএমএল হল বিল্ড স্ন্যাপশট, প্লাস কম্পোনেন্টটি একবার হাইড্রেটেড হলে যাই হোক না কেন।
 - **দ্বীপগুলির একটি পৃষ্ঠা হল একটি CSR পৃষ্ঠা ছদ্মবেশ** যদি প্রতিটি ব্লক একে অপরের সাথে কথা বলতে হয়, পরিবর্তে ক্লায়েন্ট মোড বেছে নিন।
 
 ## পরবর্তী পদক্ষেপ
 
-- [রেন্ডারিং](README.md): চারটি মোড
+- [রেন্ডারিং ](README.md): চারটি মোড
 - [উপাদানগুলি](../views/nexy/components.md): কিভাবে একটি `.nexy` পৃষ্ঠা একটি আমদানি করে
 - [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md)

@@ -8,6 +8,7 @@
 
 ## كيف يعمل
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 يعرض Nexy المكون في وقت الإنشاء، ويخزن HTML الخاص به، ويضعه داخل الصفحة. تحمل استجابة الصفحة HTML بالإضافة إلى الدعائم كسمة JSON. في المتصفح، يقوم وقت تشغيل الجزيرة بتحميل المكون ويتولى الحاوية.
 
@@ -42,14 +54,14 @@ from "@/components/Counter.tsx" import Counter
 |---|---|
 | لا شيء، أو `client:load` | على الفور |
 | `client:idle` | عندما يكون المتصفح خاملاً (`requestIdleCallback`، مهلة ثانيتين) |
-| `client:visible` | عندما تدخل الجزيرة إلى منفذ العرض، 200 بكسل مبكرًا |
+| `client:visible` | عندما تدخل الجزيرة إلى إطار العرض، مبكرًا بمقدار 200 بيكسل |
 | `client:media` | عندما يتطابق استعلام الوسائط؛ اضبطه باستخدام الدعامة `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
 ```
 
-`client:media` يستقر على `(min-width: 768px)` عند غياب `media`، ويتم الترطيب مرة واحدة. في المتصفح الذي لا يحتوي على `IntersectionObserver`، يعود `client:visible` إلى وضع الخمول.
+`client:media` يستقر على `(min-width: 768px)` عند غياب `media`، ويرطب مرة واحدة. في المتصفح الذي لا يحتوي على `IntersectionObserver`، يعود `client:visible` إلى وضع الخمول.
 
 يتم استهلاك `directive` و `media` بواسطة Nexy: ولا يتم تمريرهما إلى المكون الخاص بك.
 
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,6 +84,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## القيود
 
@@ -83,6 +107,6 @@ from "@/components/Counter.tsx" import Counter
 
 ## الخطوات التالية
 
-- [الترجيع](README.md): الأوضاع الأربعة
+- [التصيير](README.md): الأوضاع الأربعة
 - [المكونات](../views/nexy/components.md): كيف تستورد صفحة `.nexy` واحدًا
 - [React ](../views/react/differences.md)، [Vue ](../views/vue/differences.md)، [Svelte ](../views/svelte/differences.md)، [Solid ](../views/solid/differences.md)، [Preact ](../views/preact/differences.md)

@@ -47,6 +47,7 @@ async def create_user(name: str, age: int = 0) -> User:
 ### 5. استهلك
 تتلقى الواجهة الأمامية النتيجة بأمان كامل. يكتب نيكي `__nexy__/src/actions.ts` من توقيعاتك، ويقرر `@nexy/actions` ذلك.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,17 +62,44 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+المكون عبارة عن جزيرة للعرض ترجعها وحدة التحكم:
+
+```tsx filename="src/components/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 بدون ربط، الإجراء هو مجرد وظيفة `async`: `const user = await create_user({ name: "Ada" })`.
 
-| الإطار | ما `useAction` يعود |
+| الإطار | ما يعود `useAction` |
 |---|---|
 | React، Preact | `{ pending, data, error, run, reset }` |
-| Solid | نفس الشيء، مع `pending()`، `data()` و `error()` كموصلات |
-| Vue | نفس الشيء، مع `pending`، `data` و `error` كمراجع |
-| Svelte | متجر: `$save.pending`، `$save.data`، `$save.error`، بالإضافة إلى `save.run(input)` و `save.reset()` |
+| Solid | نفس الشيء، مع `pending()`، `data()` و `error()` كموصلين |
+| Vue | نفسه، مع `pending`، `data` و `error` كمراجع |
+| Svelte | متجر: `$save.pending`، `$save.data`، `$save.error`، بالإضافة إلى `save.run(input)`، و `save.reset()` |
 
-`useAction(action, { onSuccess, onError })` يأخذ أيضًا ردين اتصال. `run` لا يرمي أبدًا: الفشل يهبط في `error` و `run` يحل مع `undefined`.
+`useAction(action, { onSuccess, onError })` يأخذ أيضًا ردين. `run` لا يرمي أبدًا: يسقط الفشل في `error` و `run` يحل مع `undefined`.
 
 الأنواع تأتي من Python: `str` هو `string`، `int` و `float` هي `number`، `list[T]` هو `T[]`، نموذج Pydantic أو `Enum` هو نوع مسمى، والحقل الافتراضي اختياري في الإدخال. النوع Pydantic الذي لا يمكن وصفه يصبح `unknown`.
 
@@ -79,7 +107,7 @@ export default function NewUser() {
 
 يمكن أن يفشل الإجراء في مراحل مختلفة. يجب عليك التمييز بينهما في واجهة المستخدم الخاصة بك:
 
-1.  **أخطاء التحقق من الصحة (422)**: الإدخال لم يتطابق مع التوقيع Python. `error.fields` يقوم بتعيين كل حقل غير صالح لرسالته.
+1.  **أخطاء التحقق (422)**: الإدخال لم يتطابق مع التوقيع Python. `error.fields` يقوم بتعيين كل حقل غير صالح لرسالته.
 2.  **أخطاء العمل (`HTTPException`)**: رمزك رفض الاتصال، على سبيل المثال `403 Forbidden` أو `409 Conflict`.
 3.  **أخطاء الخادم (500)**: حدث استثناء غير معالج في كود Python الخاص بك.
 4.  **أخطاء الشبكة**: لم يصل الطلب مطلقًا إلى الخادم، على سبيل المثال انتهاء المهلة أو فقدان الاتصال.
@@ -89,7 +117,7 @@ export default function NewUser() {
 
 ## قم بتحديث الصفحة بعد الإجراء
 
-يوضح الإجراء الصفحات التي أصبح تغييرها قديمًا، كما يفعل Next.js مع `revalidatePath`:
+يوضح الإجراء الصفحات التي أصبح التغيير فيها قديمًا، كما يفعل Next.js مع `revalidatePath`:
 
 ```python
 revalidate()            # the page that is open
@@ -141,5 +169,5 @@ async def delete_user(user_id: str, request: Request):
 ## الخطوات التالية
 
 - [API](../routing/fbr/handlers/README.md): معالجات صريحة
-- [الاختبار](testing.md#what-to-assert): كيفية اختبار الفعل
-- [التكوين](../reference/config.md): خيارات البرامج الوسيطة والمصادقة
+- [الاختبار](testing.md#what-to-assert): كيفية اختبار الإجراء
+- [التكوين ](../reference/config.md): خيارات البرامج الوسيطة والمصادقة

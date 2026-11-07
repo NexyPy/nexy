@@ -4,6 +4,7 @@
 
 ## दो वाक्यविन्यास, एक कार्य
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 दोनों पंक्तियाँ समान मार्कअप उत्पन्न करती हैं:
 
@@ -33,7 +46,7 @@ from nexy import Audio
 
 - टैग को बड़े अक्षर से शुरू होना चाहिए और फ्रंटमैटर में आयात किया जाना चाहिए; अन्यथा संकलक उठाता है `Missing Import: <Name> used but not declared.`
 - टैग फॉर्म **स्वयं-समापन** है। `<Audio src="/a.mp3" />` और `{{ Audio("/a.mp3") }}` समतुल्य हैं; हेल्पर टैग के अंदर बच्चों को लिखना समर्थित नहीं है।
-- एक खाली HTML विशेषता यहां बूलियन नहीं है: `controls` `controls=""` बन जाता है, जो कि ग़लत है। `controls=True` लिखें.
+- एक खाली HTML विशेषता यहां बूलियन नहीं है: `controls` `controls=""` बन जाता है, जो कि गलत है। `controls=True` लिखें.
 
 > [!NOTE]
 > `class_name` सीएसएस कक्षाओं के लिए प्रलेखित कीवर्ड है। अतिरिक्त कीवर्ड तर्क HTML विशेषताएँ बन जाते हैं, इसलिए `class="nav"` भी आउटपुट तक पहुँचता है।
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,6 +117,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` में कोई डिफ़ॉल्ट नहीं है, इसलिए पेज को इसे पास करना होगा; `tone` वापस `"neutral"` पर आ जाता है। टैग के बीच मार्कअप `<Slot />` (कैपिटल एस) के अंदर आता है। प्रॉप्स, स्लॉट और टैग फॉर्म के नियमों के लिए [.nexy फ़ाइलें](README.md#components) देखें।
 
@@ -136,7 +162,7 @@ html = counter(start=0)
 
 ## अभी तक लागू नहीं हुआ
 
-`Form` और `Script` बिना किसी व्यवहार के निर्यात किए गए प्लेसहोल्डर हैं। उन पर भरोसा मत करो.
+`Form` और `Script` बिना किसी व्यवहार के निर्यातित प्लेसहोल्डर हैं। उन पर भरोसा मत करो.
 
 ## अगले चरण
 

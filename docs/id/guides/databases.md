@@ -4,10 +4,10 @@
 
 ## Apa yang ditambahkan perancah
 
-| Berkas | Tujuan |
+| Mengajukan | Tujuan |
 |---|---|
-| `src/configs/db.py` | pengaturan mesin (SQLModel, SQLAlchemy) atau `TORTOISE_ORM` |
-| `src/models/` | kelas model |
+| `src/configs/db.py` | mesin (SQLModel, SQLAlchemy) atau pengaturan `TORTOISE_ORM` |
+| `src/models/` | kelas teladan |
 | `src/services/` | fungsi yang menanyakan model |
 | `.env` | `DATABASE_URL`, ditulis ketika Anda memberikan URL database pada saat `nx new` |
 
@@ -15,6 +15,7 @@ String koneksi berasal dari variabel lingkungan `DATABASE_URL`. Jika tidak diset
 
 ## Gunakan layanan di halaman
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/pengguna/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,16 +37,53 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Pengontrol memanggil layanan, dan meneruskan baris ke tampilannya atau mengembalikannya sebagai JSON:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM tidak sinkron
 
-Sebuah halaman berjalan di loop peristiwa server dan tidak dapat menunggu, jadi `asyncio.run(...)` gagal di sana dengan "tidak dapat dipanggil dari loop peristiwa yang sedang berjalan". Perancah `src/configs/db.py` memberikan Tortoise sebuah perulangan sendiri, dalam satu thread, dan dua pembantu yang mengirimkan coroutine ke sana:
+Sebuah halaman berjalan di loop peristiwa server dan tidak dapat menunggu, jadi `asyncio.run(...)` gagal di sana dengan "tidak dapat dipanggil dari loop peristiwa yang sedang berjalan". Perancah `src/configs/db.py` memberikan Tortoise sebuah loopnya sendiri, dalam satu thread, dan dua pembantu yang mengirimkan coroutine ke sana:
 
-| Lokasi Anda | Hubungi | Apakah |
+| Dimana kamu berada | Telepon | Apakah |
 |---|---|---|
 | kode sinkronisasi, seperti halaman | `run(UserService.get_all())` | menjalankannya dan mengembalikan hasilnya |
-| kode async, seperti handler atau controller | `await arun(UserService.get_all())` | yang sama, tanpa memblokir server |
+| kode async, seperti handler atau pengontrol | `await arun(UserService.get_all())` | sama, tanpa memblokir server |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/pengguna/index.nexy"
 ---
 from src.configs.db import run
@@ -53,6 +91,26 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Pengontrol bersifat asinkron: ia menunggu layanan melalui `arun`, dan tampilan hanya menampilkan baris:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise menghubungkan saat pertama kali salah satunya dipanggil. Panggil model dari `async def` (`await UserModel.all()` di dalam layanan), bukan di tingkat modul: panggilan di luar coroutine dijalankan sebelum Tortoise terhubung.
 
@@ -62,11 +120,11 @@ Cantumkan setiap modul yang menampung model di `TORTOISE_ORM` (entri `models` da
 
 `nx migrate` memilih alat untuk ORM Anda: Alembic untuk SQLModel dan SQLAlchemy, Aerich untuk Tortoise-ORM.
 
-| Perintah | Melakukan |
+| Perintah | Apakah |
 |---|---|
-| `nx migrate --init` | menginisialisasi alat migrasi untuk proyek |
+| `nx migrate --init` | inisialisasi alat migrasi untuk proyek tersebut |
 | `nx migrate -m "add users"` | buat migrasi dari perubahan model Anda |
-| `nx migrate --upgrade` | menerapkan migrasi yang tertunda |
+| `nx migrate --upgrade` | terapkan migrasi yang tertunda |
 
 Dengan Aerich, `nx migrate` pertama dijalankan `aerich init-db`, yang membuat migrasi pertama dan tabel-tabelnya bersamaan; yang berikutnya menjalankan `aerich migrate --name "..."`, dan `--upgrade` menjalankan `aerich upgrade`.
 

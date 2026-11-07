@@ -15,6 +15,7 @@
 
 ## किसी पृष्ठ में किसी सेवा का उपयोग करें
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,16 +37,53 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+एक नियंत्रक सेवा को कॉल करता है, और पंक्तियों को उसके दृश्य में भेजता है या उन्हें JSON के रूप में लौटाता है:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## कछुआ-ओआरएम एसिंक्स है
 
-एक पेज सर्वर के इवेंट लूप में चलता है और उस पर प्रतीक्षा नहीं कर सकता है, इसलिए `asyncio.run(...)` "रनिंग इवेंट लूप से कॉल नहीं किया जा सकता" के साथ वहां विफल हो जाता है। मचान `src/configs/db.py` एक धागे में अपना स्वयं का एक लूप Tortoise देता है, और दो सहायक होते हैं जो इसे एक कोरआउटिन भेजते हैं:
+एक पेज सर्वर के इवेंट लूप में चलता है और उस पर प्रतीक्षा नहीं कर सकता है, इसलिए `asyncio.run(...)` "रनिंग इवेंट लूप से कॉल नहीं किया जा सकता" के साथ वहां विफल हो जाता है। मचान `src/configs/db.py` देता है Tortoise एक धागे में अपना स्वयं का एक लूप, और दो सहायक जो इसे एक कोरआउटिन भेजते हैं:
 
 | आप कहां हैं | बुलाओ | करता है |
 |---|---|---|
 | सिंक कोड, जैसे कोई पेज | `run(UserService.get_all())` | इसे चलाता है और परिणाम लौटाता है |
 | एसिंक कोड, जैसे हैंडलर या कंट्रोलर | `await arun(UserService.get_all())` | वही, सर्वर को ब्लॉक किए बिना |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -53,6 +91,26 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+एक नियंत्रक एसिंक है: यह `arun` के माध्यम से सेवा की प्रतीक्षा करता है, और दृश्य केवल पंक्तियाँ दिखाता है:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise उनमें से किसी एक को पहली बार कॉल करने पर जुड़ जाता है। मॉडल को `async def` (`await UserModel.all()` एक सेवा के अंदर) से कॉल करें, मॉड्यूल स्तर पर नहीं: कोरआउटिन के बाहर एक कॉल Tortoise कनेक्ट होने से पहले चलती है।
 
@@ -99,5 +157,5 @@ import src.models.post_model  # noqa: F401
 ## अगले चरण
 
 - [परीक्षण](testing.md): एक अस्थायी डेटाबेस के विरुद्ध हैंडलर का परीक्षण करें
-- [कॉन्फिग](../reference/config.md)
-- [तैनाती](../deployment/README.md): उत्पादन में `DATABASE_URL` सेट करें
+- [कॉन्फ़िग](../reference/config.md)
+- [परिनियोजन](../deployment/README.md): उत्पादन में `DATABASE_URL` सेट करें

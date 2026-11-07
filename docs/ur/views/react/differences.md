@@ -2,18 +2,32 @@
 
 Nexy سرور پر React 19 اجزاء پیش کرتا ہے، پھر React انہیں براؤزر میں ہائیڈریٹ کرتا ہے۔ صفحات، ترتیب، جزیرے اور اعمال ہر فریم ورک میں ایک جیسے ہیں: یہ صفحہ سیٹ اپ کا احاطہ کرتا ہے، پھر وہ حصے جو [مشترکہ معاہدوں](../frontend/pages.md) سے مختلف ہوتے ہیں۔
 
-| موڈ | `nexyconfig.py` | صفحات ہیں | React ہے |
+<!-- router:fbr,custom -->
+| موڈ | `nexyconfig.py` | صفحات ہیں۔ | React ہے۔ |
 |---|---|---|---|
-| سرور (پہلے سے طے شدہ) | `useCSR = False` | `.nexy` فائلیں | [جزیرے](../../rendering/islands.md) ان صفحات کے اندر |
+| سرور (پہلے سے طے شدہ) | `useCSR = False` | `.nexy` فائلیں | [جزائر](../../rendering/islands.md) ان صفحات کے اندر |
 | کلائنٹ | `useCSR = True` | `.tsx` فائلیں | پورا صفحہ، [لے آؤٹس](../frontend/layouts.md) اور کلائنٹ روٹر کے ساتھ |
+<!-- /router -->
+
+<!-- router:modular -->
+ماڈیولر راؤٹر کے ساتھ، React اجزاء [جزیرے](../../rendering/islands.md) ہوتے ہیں `.nexy` ویوز کے اندر ایک کنٹرولر واپس آتا ہے: کوئی صفحہ فائل نہیں ہے اور کوئی کلائنٹ راؤٹر نہیں ہے۔
+<!-- /router -->
 
 ## ایک پروجیکٹ شروع کریں۔
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-react
 ```
+<!-- /router -->
 
-ٹیمپلیٹ ایک سرور موڈ پروجیکٹ ہے جس میں React جزائر ہیں۔ اس کی بجائے اشارے کا جواب دینے کے لیے بغیر کسی ٹیمپلیٹ کے `nx new my-app` چلائیں: روٹر، پروجیکٹ کی قسم، آیا کلائنٹ سائیڈ روٹنگ استعمال کرنا ہے، پھر فریم ورک۔
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-react
+```
+<!-- /router -->
+
+ٹیمپلیٹ ایک سرور موڈ پروجیکٹ ہے جس میں React جزائر ہیں۔ اس کے بجائے اشارے کا جواب دینے کے لیے بغیر کسی ٹیمپلیٹ کے `nx new my-app` چلائیں: روٹر، پروجیکٹ کی قسم، آیا کلائنٹ سائیڈ روٹنگ استعمال کرنا ہے، پھر فریم ورک۔
 
 ## موجودہ پروجیکٹ میں React کو فعال کریں۔
 
@@ -40,7 +54,7 @@ export default defineConfig({
 
 `nx new` اس فائل کو لکھتے ہیں۔ Nexy خود `__nexy__/vite.ts` لکھتا ہے، اس لیے اس میں ترمیم نہ کریں۔
 
-| پیکیج | ورژن `nx new` لکھتا ہے |
+| پیکج | نسخہ `nx new` لکھتے ہیں۔ |
 |---|---|
 | `react`، `react-dom` | `^19.2.5` |
 | `@vitejs/plugin-react` | `^5.2.0` |
@@ -49,13 +63,19 @@ export default defineConfig({
 ## قواعد
 
 - **فی پروجیکٹ ایک فریم ورک** `useFF` بالکل ایک فریم ورک لیتا ہے۔ `useFF = [react(), vue()]` شروع ہونے پر سرور کو روکتا ہے۔
-- **صفحات `.tsx`[** React کی ملکیت `.tsx` اور `.jsx` اجزاء کے لیے ہیں، لیکن `src/routes/` کے تحت صرف ایک `.tsx` فائل ایک صفحہ بنتی ہے۔
+<!-- router:fbr,custom -->
+- **صفحات ہیں۔ `.tsx`.** React اجزاء کے لیے `.tsx` اور `.jsx` کا مالک ہے، لیکن `src/routes/` کے تحت صرف ایک `.tsx` فائل ہی صفحہ بن جاتی ہے۔
 - **اجزاء باہر رہتے ہیں `src/routes/`**، عام طور پر `src/components/` میں، اس لیے وہ صفحات نہیں ہیں۔
-- **سرور موڈ پروجیکٹ کا کوئی `.tsx` صفحہ** نہیں ہوتا، اور کلائنٹ موڈ پروجیکٹ کا کوئی `.nexy` صفحہ نہیں ہوتا: Nexy شروع کرنے سے انکار کرتا ہے اور فائل کو نام دیتا ہے۔ [طریقوں](../../routing/fbr/modes.md) کو دیکھیں۔
+- **سرور موڈ پروجیکٹ کا کوئی `.tsx` صفحہ** نہیں ہوتا، اور کلائنٹ موڈ پروجیکٹ کا کوئی `.nexy` صفحہ نہیں ہوتا: Nexy شروع کرنے سے انکار کرتا ہے اور فائل کو نام دیتا ہے۔ دیکھیں [موڈز](../../routing/fbr/modes.md)۔
+<!-- /router -->
+<!-- router:modular -->
+- **اجزاء `src/components/`** میں رہتے ہیں، اور ایک منظر انہیں جزیروں کے طور پر درآمد کرتا ہے۔
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## صفحات
 
-کلائنٹ موڈ (`useCSR = True`) میں، صفحہ ایک `.tsx` فائل ہے۔
+کلائنٹ موڈ میں (`useCSR = True`)، صفحہ ایک `.tsx` فائل ہے۔
 
 ### صفحہ کا جزو
 
@@ -97,21 +117,33 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 }
 ```
+<!-- /router -->
 
 ## جزائر
 
-سرور موڈ میں، ایک React جز میں درآمد کیا جاتا ہے۔ `.nexy` فائل ایک جزیرہ ہے۔
+سرور موڈ میں، ایک React جز ایک `.nexy` فائل میں درآمد کیا گیا ایک جزیرہ ہے۔
 
 ### درآمد کرنا
 
 `.nexy` فائل کے فرنٹ میٹر میں اجزاء درآمد کریں:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### ہائیڈریشن کی ہدایات
 
@@ -120,7 +152,7 @@ from "@/components/Counter.tsx" import Counter
 - `client:load` (پہلے سے طے شدہ): فوری طور پر
 - `client:idle`: جب براؤزر بیکار ہو۔
 - `client:visible`: جب یہ منظر میں سکرول کرتا ہے۔
-- `client:media`: جب میڈیا کا سوال مماثل ہو۔
+- `client:media`: جب میڈیا کا استفسار ملتا ہے۔
 
 ## اعمال اور نیویگیشن
 
@@ -156,7 +188,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### یو آر ایل تک رسائی
+### URL تک رسائی
 
 - `usePathname()`: موجودہ راستہ
 - `useParams()`: متحرک طبقات
@@ -165,5 +197,5 @@ router.push("/dashboard");
 
 ## اگلے اقدامات
 
-- [ملاحظات](../README.md): ان فارمیٹس کا موازنہ کریں جو صفحہ استعمال کر سکتا ہے۔
-- [فرنٹ اینڈ](../../guides/frontend.md): Vite اور کلائنٹ کی تعمیر
+- [آراء](../README.md): ان فارمیٹس کا موازنہ کریں جو صفحہ استعمال کر سکتا ہے۔
+- [فرنٹ اینڈ ](../../guides/frontend.md): Vite اور کلائنٹ کی تعمیر

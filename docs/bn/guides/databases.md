@@ -15,6 +15,7 @@
 
 ## একটি পৃষ্ঠায় একটি পরিষেবা ব্যবহার করুন
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,6 +37,42 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+একটি কন্ট্রোলার পরিষেবাটিকে কল করে এবং সারিগুলিকে তার দৃশ্যে পাস করে বা তাদের JSON হিসাবে ফেরত দেয়:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## কচ্ছপ-ORM async হয়
 
@@ -46,6 +83,7 @@ async def GET():
 | সিঙ্ক কোড, যেমন একটি পৃষ্ঠা | `run(UserService.get_all())` | এটি চালায় এবং ফলাফল প্রদান করে |
 | async কোড, যেমন একটি হ্যান্ডলার বা একটি নিয়ামক | `await arun(UserService.get_all())` | একই, সার্ভার ব্লক না করে |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -53,10 +91,30 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
 
-Tortoise প্রথমবার তাদের মধ্যে একজনকে ডাকা হলে সংযোগ করে। একটি `async def` (`await UserModel.all()`] পরিষেবার ভিতরে থেকে মডেলটিকে কল করুন, মডিউল স্তরে নয়: একটি করুটিনের বাইরে একটি কল Tortoise সংযুক্ত হওয়ার আগে চলে।
+<!-- router:modular -->
+একটি কন্ট্রোলার অ্যাসিঙ্ক হয়: এটি `arun` এর মাধ্যমে পরিষেবার জন্য অপেক্ষা করে, এবং দৃশ্যটি শুধুমাত্র সারিগুলি দেখায়:
 
-`TORTOISE_ORM` (`src/configs/db.py`-এর `models` এন্ট্রিতে মডেল ধারণ করে এমন প্রতিটি মডিউলের তালিকা করুন। ভারা ব্যবহারকারী মডেল এবং `aerich.models` তালিকাভুক্ত; তালিকাভুক্ত নয় এমন একটি মডিউলের একটি মডেল পাওয়া যায় না।
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
+
+Tortoise প্রথমবার তাদের মধ্যে একজনকে ডাকা হলে সংযোগ করে। একটি `async def` (`await UserModel.all()`) পরিষেবার ভিতরে থেকে মডেলটিকে কল করুন, মডিউল স্তরে নয়: একটি করটিনের বাইরে একটি কল Tortoise সংযুক্ত হওয়ার আগে চলে।
+
+`TORTOISE_ORM` (`src/configs/db.py`-এর `models` এন্ট্রিতে মডেল ধারণ করে এমন প্রতিটি মডিউলের তালিকা করুন। ভারা ব্যবহারকারী মডেল এবং `aerich.models` তালিকাভুক্ত করে; তালিকাভুক্ত নয় এমন একটি মডিউলের একটি মডেল পাওয়া যায় না।
 
 ## মাইগ্রেশন
 
@@ -70,11 +128,11 @@ Tortoise প্রথমবার তাদের মধ্যে একজন�
 
 Aerich এর সাথে, প্রথম `nx migrate` রান করে `aerich init-db`, যা প্রথম স্থানান্তর এবং টেবিল একসাথে তৈরি করে; পরেরগুলো রান করে `aerich migrate --name "..."`, এবং `--upgrade` রান করে `aerich upgrade`।
 
-`nx migrate` একটি পরিষ্কার বার্তা দিয়ে থামে যখন `DATABASE_URL` অনুপস্থিত থাকে বা ডাটাবেসে পৌঁছানো যায় না (Alembic শুধুমাত্র: Aerich তার নিজস্ব ত্রুটির প্রতিবেদন করে)।
+`nx migrate` একটি স্পষ্ট বার্তা দিয়ে থামে যখন `DATABASE_URL` অনুপস্থিত থাকে বা ডাটাবেসে পৌঁছানো যায় না (Alembic শুধুমাত্র: Aerich তার নিজস্ব ত্রুটির প্রতিবেদন করে)।
 
 ### প্রথম মাইগ্রেশন আপনার জন্য করা হয়
 
-যখন আপনি একটি ORM চয়ন করেন এবং একটি ডাটাবেস URL দেন, `nx new` মাইগ্রেশন টুল সেট আপ করে, প্রথম মাইগ্রেশন তৈরি করে এবং এটি প্রয়োগ করে, তাই ব্যবহারকারীর পৃষ্ঠাটি প্রথম `nexy dev`-এ উত্তর দেয়। মাইগ্রেশন টুল (`alembic` বা `aerich`) ORM-এর সাথে প্রজেক্টে ইনস্টল করা আছে।
+আপনি যখন একটি ORM চয়ন করেন এবং একটি ডাটাবেস URL দেন, `nx new` মাইগ্রেশন টুল সেট আপ করে, প্রথম মাইগ্রেশন তৈরি করে এবং এটি প্রয়োগ করে, তাই ব্যবহারকারী পৃষ্ঠা প্রথম `nexy dev`-এ উত্তর দেয়। মাইগ্রেশন টুল (`alembic` বা `aerich`) ORM-এর সাথে প্রজেক্টে ইনস্টল করা আছে।
 
 যদি ডাটাবেস উত্তর না দেয় (একটি PostgreSQL সার্ভার যেটি চলছে না, একটি অনুপস্থিত ড্রাইভার), `nx new` কেন বলে, মাইগ্রেশন এড়িয়ে যায় এবং এটি প্রস্তুত হলে চালানোর জন্য দুটি কমান্ড তালিকাভুক্ত করে:
 
@@ -99,5 +157,5 @@ Tortoise-ORM-এর জন্য, পরিবর্তে `TORTOISE_ORM`-এ �
 ## পরবর্তী পদক্ষেপ
 
 - [টেস্টিং](testing.md): একটি অস্থায়ী ডাটাবেসের বিরুদ্ধে পরীক্ষা হ্যান্ডলার
-- [কনফিগ](../reference/config.md)
-- [মোতায়েন](../deployment/README.md): উৎপাদনে `DATABASE_URL` সেট করুন
+- [কনফিগারেশন](../reference/config.md)
+- [স্থাপন ](../deployment/README.md): উৎপাদনে `DATABASE_URL` সেট করুন

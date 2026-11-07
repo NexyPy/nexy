@@ -4,6 +4,7 @@ Um arquivo `.nexy` é um componente: Python na parte superior, HTML no meio, CSS
 
 **Antes de começar:** um projeto criado pelo [Início rápido](../../getting-started/quick-start.md). Um arquivo `.nexy` não precisa de configuração de compilação: `nx dev` compila-o ao salvar.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/blog/[slug].nexy"
 ---
 from nexy import usePathname
@@ -20,6 +21,39 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+O controlador passa `slug` de seu caminho:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## Matéria inicial
 
@@ -27,11 +61,11 @@ Tudo entre as duas `---` linhas é Python. As importações são resolvidas quan
 
 | O que | Exemplo |
 |---|---|
-| Importe um módulo | `import json`, `from datetime import datetime` |
-| Importe um componente | `from "@/components/card.nexy" import Card` |
+| Importar um módulo | `import json`, `from datetime import datetime` |
+| Importar um componente | `from "@/components/card.nexy" import Card` |
 | Declarar uma propriedade | `title: prop[str] = "Default"` |
-| Calcule um valor | `year = datetime.now().year` |
-| Leia a solicitação | `pathname = usePathname()` |
+| Calcular um valor | `year = datetime.now().year` |
+| Leia o pedido | `pathname = usePathname()` |
 | Armazenar a página em cache (ISR) | `revalidate = 60` |
 
 ## Propriedades
@@ -61,8 +95,9 @@ O escape automático está **desativado**: os modelos são o próprio HTML do pr
 
 ## Componentes
 
-Qualquer callable importado cujo nome comece com uma letra maiúscula pode ser usado como tag. O compilador o reescreve em uma chamada Jinja: os atributos tornam-se argumentos de palavras-chave.
+Qualquer callable importado cujo nome comece com uma letra maiúscula pode ser usado como tag. O compilador o reescreve em uma chamada Jinja: atributos tornam-se argumentos de palavras-chave.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -74,6 +109,21 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 A última linha é exatamente `{{ Audio("/theme.mp3", controls=True) }}`. Ambas as sintaxes são válidas para os auxiliares integrados `Image`, `Link`, `Audio` e `Video` - consulte [componentes](components.md#two-syntaxes-one-function).
 
@@ -82,7 +132,7 @@ Os filhos são renderizados por meio de `<Slot />` (S maiúsculo) dentro do comp
 Passe um valor calculado com Jinja dentro do atributo: `<Icon path="{{ icon }}" size="{{ size }}" />`. Um nome simples como `path=icon` é o texto `icon`, não a variável. Para dar a um componente uma classe CSS, declare uma prop `class_name`: `class` é uma palavra-chave Python.
 
 > [!NOTE]
-> uma tag auxiliar sempre fecha automaticamente. Passar conteúdo para `Link` passa pelo argumento `children` (`<Link href="/about" children="About" />`), não pelo conteúdo do elemento.
+> uma tag auxiliar sempre fecha automaticamente. Passar conteúdo para `Link` passa por seu argumento `children` (`<Link href="/about" children="About" />`), não por meio do conteúdo do elemento.
 
 ## Estilos
 
@@ -97,5 +147,5 @@ Passe um valor calculado com Jinja dentro do atributo: `<Icon path="{{ icon }}" 
 ## Próximas etapas
 
 - [Markdown e MDX](markdown.md): páginas de conteúdo
-- [ISR](../../rendering/isr.md): armazenar em cache uma página por caminho
+- [ISR](../../rendering/isr.md): armazena em cache uma página por caminho
 - [CSR](../../rendering/csr.md): renderização do lado do cliente

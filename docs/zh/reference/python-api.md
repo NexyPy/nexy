@@ -34,6 +34,32 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试会在两个�
 
 挂钩仅在请求内工作：请参阅[钩子](../routing/fbr/navigation/hooks.md)。
 
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/index.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
 ## `nexy.http`
 
 处理程序的 HTTP 词汇。从这里导入而不是从 FastAPI 导入，因此您的处理程序取决于 Nexy 的合同。
@@ -53,6 +79,43 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试会在两个�
 | `notFound`，`forbidden`，`unauthorized` | 从同一地点提出 404、403 或 401 |
 | `FileResponse`，`StreamingResponse` | 用文件或流回答 |
 
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/items/[id].py"
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+async def GET(id: int, key: str = Depends(api_key)):
+    return {"id": id}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
+
 ## `nexy.decorators`
 
 | 名称 | 它是什么 |
@@ -62,16 +125,34 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试会在两个�
 | `Module`，`Controller` | 在[模块化路由器](../routing/modular/README.md) 中声明一个模块和一个控制器 |
 | `Injectable`，`Container`，`Scope` | [依赖注入](../routing/modular/dependency-injection.md) 及其生命周期 |
 | `UseGuard`，`Middleware` | 保护或包装一个处理程序，请参阅 [守卫](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`，`useRoute`，`RouteMeta` | 命名一条路线并为 OpenAPI 描述它 |
+| `UseRoute`，`useRoute`，`RouteMeta` | 命名一条路线并对其进行描述 OpenAPI |
 | `UseResponse`，`ResponseMeta` | 描述一条路线的答案 |
 | `HTTP_METHODS` | 处理程序文件可以定义的 HTTP 方法 |
 | `ACTIONS_STORE` | 用于工具和测试的操作注册表 |
+
+```python filename="src/actions/posts.py"
+from nexy.decorators import Action, revalidate
+
+
+@Action
+async def publish(post_id: int) -> bool:
+    revalidate("/blog")
+    return True
+```
 
 ## `nexy.testing`
 
 | 名称 | 它是什么 |
 |---|---|
 | `render` | 给定 props 的 `.nexy` 组件的 HTML，没有服务器，请参阅 [测试](../guides/testing.md) |
+
+```python filename="测试/test_button.py"
+from nexy.testing import render
+
+
+def test_the_button_shows_its_label():
+    assert "Save" in render("src/components/button.nexy", label="Save")
+```
 
 ## 下一步去哪里
 

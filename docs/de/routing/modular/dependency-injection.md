@@ -19,7 +19,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc
@@ -59,7 +59,7 @@ from nexy.decorators import Injectable, Scope
 class CurrentUser: ...
 ```
 
-| Geltungsbereich | Lebensdauer |
+| Umfang | Lebenszeit |
 |---|---|
 | `Scope.SINGLETON` (Standard) | eine Instanz für den gesamten Prozess |
 | `Scope.REQUEST` | eine Instanz pro Anforderungskontext |
@@ -94,5 +94,5 @@ Der Container ist prozessweit. Anbieter sind nicht pro Modul isoliert, `exports`
 
 ## Nächste Schritte
 
-- [Schutzmaßnahmen und Metadaten](guards-and-metadata.md)
+- [Guards und Metadaten](guards-and-metadata.md)
 - [Testen](../../guides/testing.md)

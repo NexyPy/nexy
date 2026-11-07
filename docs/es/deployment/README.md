@@ -53,12 +53,30 @@ Asegúrese de que el proxy reenvíe WebSocket actualizaciones si utiliza `SOCKET
 
 ## control de salud
 
+<!-- router:fbr,custom -->
 Agregue un archivo de controlador, `src/routes/api/health.py` y pruebe `/api/health`, en lugar de una página que puede procesarse lentamente:
 
 ```python filename="src/rutas/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Agregue un controlador y pruebe `/health/`, en lugar de una vista que pueda renderizarse lentamente:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+Indíquelo en el `controllers` del módulo raíz.
+<!-- /router -->
 
 ## Alojamiento estático
 
@@ -74,10 +92,10 @@ Cada página es HTML, pero Nexy asume un servidor para el enrutamiento y para lo
 - [ ] `NEXY_ACTION_SECRET` establecido, o `__nexy__/action.key` mantenido con la compilación
 - [ ] `useDocs = False` en producción si el esquema de API no debe ser público
 - [ ] `useTrustedHost` y `useHTTPSRedirect` configurados para implementaciones públicas
-- [ ] `__nexy__/` no comprometido
+- [ ] `__nexy__/` not committed
 
 ## Próximos pasos
 
 - [Configuración](../reference/config.md): HTTPS, hosts confiables, sesiones
 - [Frontend](../guides/frontend.md): qué construye Vite
-- [Prueba](../guides/testing.md): los comandos a ejecutar en CI
+- [Probando](../guides/testing.md): los comandos a ejecutar en CI

@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -39,7 +39,7 @@ class AdminController:
 | `deprecated` | отметить операцию как устаревшую |
 | `include_in_schema` | скрыть маршрут из схемы |
 | `operation_id` | явный идентификатор операции |
-| `openapi_extra` | дополнительные поля OpenAPI |
+| `openapi_extra` | дополнительные OpenAPI поля |
 
 ## Ответы
 
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)

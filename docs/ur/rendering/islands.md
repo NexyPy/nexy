@@ -8,6 +8,7 @@
 
 ## یہ کیسے کام کرتا ہے۔
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy تعمیراتی وقت پر جز کو پیش کرتا ہے، اس کا HTML اسٹور کرتا ہے، اور اسے صفحہ کے اندر رکھتا ہے۔ صفحہ کے جواب میں اس HTML کے علاوہ پرپس کو JSON وصف کے طور پر رکھا جاتا ہے۔ براؤزر میں، جزیرے کا رن ٹائم جزو کو لوڈ کرتا ہے اور کنٹینر پر قبضہ کر لیتا ہے۔
 
@@ -43,7 +55,7 @@ Nexy تعمیراتی وقت پر جز کو پیش کرتا ہے، اس کا HTM
 | کوئی نہیں، یا `client:load` | فوری طور پر |
 | `client:idle` | جب براؤزر بیکار ہو (`requestIdleCallback`، 2 s ٹائم آؤٹ) |
 | `client:visible` | جب جزیرہ ویو پورٹ میں داخل ہوتا ہے، 200 px جلد |
-| `client:media` | جب ایک میڈیا سوال مماثل ہے؛ اسے `media` پروپ کے ساتھ سیٹ کریں۔ |
+| `client:media` | جب ایک میڈیا سوال مماثل ہے؛ اسے `media` سہارے کے ساتھ سیٹ کریں۔ |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,18 +84,29 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## حدود
 
-- **`client:only` کبھی نہیں۔ ہائیڈریٹس** یہ قبول کیا جاتا ہے، لیکن رن ٹائم اسے چھوڑ دیتا ہے، لہذا سرور HTML غیر فعال رہتا ہے۔ کلائنٹ روٹ ([CSR](csr.md)) کا استعمال کریں جب کوئی جزو سرور پر رینڈر نہ ہو سکے۔
+- **`client:only` کبھی نہیں۔ ہائیڈریٹس** یہ قبول کیا جاتا ہے، لیکن رن ٹائم اسے چھوڑ دیتا ہے، لہذا سرور HTML غیر فعال رہتا ہے۔ کلائنٹ روٹ ([CSR](csr.md)) کا استعمال کریں جب کوئی جزو سرور پر رینڈر نہیں کر سکتا۔
 - **`client:manual` کوئی عوامی نہیں ہے۔ محرک** اسے خود بخود بھی چھوڑ دیا جاتا ہے، اور اسے دوبارہ شروع کرنے والا ہینڈل اندرونی ہے۔
-- **سہارے ہونا ضروری ہے۔ JSON** وہ `json.dumps` کے ساتھ سیریلائز کیے گئے ہیں۔ ایک قدر جسے سیریلائز نہیں کیا جا سکتا ہے، گرا دیا جاتا ہے، اور جزیرے کو موصول ہوتا ہے `{}` - خاموشی سے۔
+- **سہارے ہونا ضروری ہے۔ JSON** وہ `json.dumps` کے ساتھ سیریلائز کیے گئے ہیں۔ ایک قدر جو سیریلائز نہیں کی جا سکتی ہے، گرا دیا جاتا ہے، اور جزیرے کو موصول ہوتا ہے `{}` - خاموشی سے۔
 - **ایک جزیرہ مشترکہ کے ساتھ کلائنٹ کا جزو نہیں ہے۔ ریاست** دو جزیرے ریاست کا اشتراک اس طریقہ کار کے بغیر نہیں کرتے جو آپ خود شامل کرتے ہیں۔
 - **جزیرے کی طرف سے دوبارہ پیش نہیں کیا گیا ہے۔ سرور** اس کا ایچ ٹی ایم ایل تعمیر کا اسنیپ شاٹ ہے، اس کے علاوہ جو بھی جزو ہائیڈریٹ ہونے کے بعد کرتا ہے۔
-- **جزیروں کا ایک صفحہ بھیس میں ایک CSR صفحہ ہے۔** اگر ہر بلاک کو ایک دوسرے سے بات کرنے کی ضرورت ہے، تو اس کے بجائے کلائنٹ موڈ کا انتخاب کریں۔
+- **جزائر کا ایک صفحہ اس میں ایک CSR صفحہ ہے۔ بھیس** اگر ہر بلاک کو ایک دوسرے سے بات کرنے کی ضرورت ہے، تو اس کے بجائے کلائنٹ موڈ منتخب کریں۔
 
 ## اگلے اقدامات
 
-- [رینڈرنگ](README.md): چار طریقے
+- [رینڈرنگ ](README.md): چار طریقے
 - [اجزاء](../views/nexy/components.md): ایک `.nexy` صفحہ کیسے درآمد کرتا ہے۔
 - [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md)

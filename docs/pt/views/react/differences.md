@@ -2,16 +2,30 @@
 
 Nexy renderiza React 19 componentes no servidor e, em seguida, React os hidrata no navegador. Páginas, layouts, ilhas e ações são iguais em todos os frameworks: esta página cobre a configuração e depois as partes que diferem dos [contratos compartilhados](../frontend/pages.md).
 
-| Modo | `nexyconfig.py` | As páginas são | React são |
+<!-- router:fbr,custom -->
+| Modo | `nexyconfig.py` | As páginas são | React é |
 |---|---|---|---|
 | Servidor (padrão) | `useCSR = False` | `.nexy` arquivos | [ilhas](../../rendering/islands.md) dentro dessas páginas |
-| Cliente | `useCSR = True` | `.tsx` arquiva | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
+| Cliente | `useCSR = True` | `.tsx` arquivos | a página inteira, com [layouts](../frontend/layouts.md) e um roteador cliente |
+<!-- /router -->
+
+<!-- router:modular -->
+Com o roteador modular, React componentes são [ilhas](../../rendering/islands.md) dentro das `.nexy` visualizações que um controlador retorna: não há arquivo de paginação e nenhum roteador cliente.
+<!-- /router -->
 
 ## Iniciar um projeto
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-react
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-react
+```
+<!-- /router -->
 
 O modelo é um projeto em modo servidor com React ilhas. Execute `nx new my-app` sem um modelo para responder aos prompts: o roteador, o tipo de projeto, se deve usar roteamento do lado do cliente e, em seguida, a estrutura.
 
@@ -49,10 +63,16 @@ export default defineConfig({
 ## Regras
 
 - **Uma estrutura por projeto.** `useFF` leva exatamente uma estrutura; `useFF = [react(), vue()]` interrompe o servidor na inicialização.
+<!-- router:fbr,custom -->
 - **As páginas são `.tsx`.** React possui `.tsx` e `.jsx` para componentes, mas apenas um arquivo `.tsx` em `src/routes/` se torna uma página.
 - **Os componentes ficam fora de `src/routes/`**, geralmente em `src/components/`, portanto não são páginas.
-- **Um projeto em modo servidor não tem `.tsx` página**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
+- **Um projeto em modo servidor não tem página `.tsx`**, e um projeto em modo cliente não tem página `.nexy`: Nexy se recusa a iniciar e nomeia o arquivo. Consulte [modos](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Os componentes residem em `src/components/`**, e uma visualização os importa como ilhas.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Páginas
 
 No modo cliente (`useCSR = True`), uma página é um arquivo `.tsx`.
@@ -97,6 +117,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 }
 ```
+<!-- /router -->
 
 ## Ilhas
 
@@ -106,12 +127,23 @@ No modo servidor, um componente React importado para um arquivo `.nexy` é uma i
 
 Importe componentes no frontmatter do arquivo `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Diretrizes de hidratação
 
@@ -166,4 +198,4 @@ router.push("/dashboard");
 ## Próximas etapas
 
 - [Visualizações](../README.md): compare os formatos que uma página pode usar
-- [Frontend](../../guides/frontend.md): Vite e a compilação do cliente
+- [Frontend](../../guides/frontend.md): Vite e a construção do cliente

@@ -4,12 +4,12 @@
 
 **开始之前：** 一个 Nexy 项目和一个工作页面。模块化路由器取代了基于文件的路由器，因此如果您尚未选择路由器，请先阅读[路由](../README.md)。
 
-| 页 | 涵盖内容 |
+| 页面 | 它涵盖什么 |
 |---|---|
-| 本页 | 安装模块、写入控制器、组控制器 |
-| [依赖注入](dependency-injection.md) | `@Injectable`，作用域，容器 |
+| 本页 | Mount a module, write a controller, group controllers |
+| [依赖注入](dependency-injection.md) | `@Injectable`，范围，容器 |
 | [守卫和元数据](guards-and-metadata.md) | `@UseGuard`、`@Middleware`、`@UseRoute`、`@UseResponse` |
-| [Nexy 和 NestJS](vs-nestjs.md) | 哪些匹配 NestJS，哪些不匹配 |
+| [尼克西和 NestJS](vs-nestjs.md) | 什么匹配 NestJS，什么不匹配 |
 
 ## 设置路由器
 
@@ -40,7 +40,7 @@ class AppController:
 
 方法按名称匹配，不区分大小写：`get`、`post`、`put`、`patch`、`delete`、`options`、`head`、`trace`。
 
-控制器为每个 HTTP 方法声明一个处理程序；启动时重复加注。添加前缀 `@Controller(prefix="/users")` - 每个处理程序都安装在 `prefix/` 上。控制器上的 `async def SOCKET(...)` 在同一路径上注册 WebSocket。
+A controller declares one handler per HTTP method;启动时重复加注。 The first argument of `@Controller("/users")` is the path every handler answers on, `/users/`.控制器上的 `async def SOCKET(...)` 在同一路径上注册 WebSocket。
 
 ## 模块中的组控制器
 
@@ -82,6 +82,6 @@ class AppController:
 ## 后续步骤
 
 - [依赖注入](dependency-injection.md)：服务和范围
-- [守卫和元数据](guards-and-metadata.md)：保护和记录路径
+- [Guards and metadata](guards-and-metadata.md): protect and document routes
 - [路由](../README.md)：基于文件的路由器
 - [配置](../../reference/config.md)：每个选项，包括 `useRouter`

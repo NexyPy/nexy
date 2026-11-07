@@ -2,16 +2,30 @@
 
 Nexy restitue Svelte 5 composants sur le serveur, puis Svelte les reprend dans le navigateur. Les pages, mises en page, îlots et actions sont les mêmes dans tous les frameworks : cette page couvre la configuration, puis les parties qui diffèrent des [contrats partagés](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Mode | `nexyconfig.py` | Les pages sont | Svelte est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Le client | `useCSR = True` | `.svelte` classe | la page entière, avec des [mises en page](../frontend/layouts.md) et un routeur client |
+| Client | `useCSR = True` | `.svelte` fichiers | la page entière, avec [mises en page](../frontend/layouts.md) et un routeur client |
+<!-- /router -->
+
+<!-- router:modular -->
+Avec le routeur modulaire, les composants Svelte sont des [îlots](../../rendering/islands.md) à l'intérieur des `.nexy` vues renvoyées par un contrôleur : il n'y a pas de fichier d'échange ni de routeur client.
+<!-- /router -->
 
 ## Démarrer un projet
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-svelte
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-svelte
+```
+<!-- /router -->
 
 Le modèle est un projet en mode serveur avec Svelte îles. Exécutez `nx new my-app` sans modèle pour répondre aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis le framework.
 
@@ -40,7 +54,7 @@ export default defineConfig({
 
 `nx new` écrit ce fichier ; Nexy écrit lui-même `__nexy__/vite.ts`, alors ne le modifiez pas.
 
-| Le package | Version `nx new` écrit |
+| Forfait | La version `nx new` écrit |
 |---|---|
 | `svelte` | `^5.20.2` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
@@ -50,9 +64,15 @@ export default defineConfig({
 - **Svelte 5.** Les composants utilisent des runes : `$props()`, `$state()` et des extraits pour les enfants.
 - **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [svelte(), vue()]` arrête le serveur au démarrage.
 - **Un composant par fichier.** Le nom sous lequel vous importez un fichier `.svelte` est uniquement la balise que vous écrivez.
+<!-- router:fbr,custom -->
 - **Les composants se trouvent à l'extérieur de `src/routes/`**, généralement dans `src/components/`, ce ne sont donc pas des pages.
 - **Un projet en mode serveur n'a pas de page `.svelte`**, et un projet en mode client n'a pas de page `.nexy` : Nexy refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Les composants résident dans `src/components/`** et une vue les importe sous forme d'îlots.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Pages
 
 En mode client (`useCSR = True`), une page est un fichier `.svelte`.
@@ -101,6 +121,7 @@ La disposition racine définit le shell du document. Les mises en page imbriqué
   </body>
 </html>
 ```
+<!-- /router -->
 
 ## Îles
 
@@ -110,12 +131,23 @@ En mode serveur, un composant Svelte importé dans un fichier `.nexy` est un îl
 
 Importez des composants dans le frontmatter du fichier `.nexy` :
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.svelte" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.svelte" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Directives d'hydratation
 

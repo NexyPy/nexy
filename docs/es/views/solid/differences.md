@@ -2,16 +2,30 @@
 
 Nexy renderiza los componentes Solid 1.9 en el servidor, luego Solid los toma en el navegador. Las páginas, diseños, islas y acciones son las mismas en todos los marcos: esta página cubre la configuración y luego las partes que difieren de los [contratos compartidos](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Modo | `nexyconfig.py` | Las páginas son | Solid es |
 |---|---|---|---|
 | Servidor (predeterminado) | `useCSR = False` | `.nexy` archivos | [islas](../../rendering/islands.md) dentro de esas páginas |
-| El cliente | `useCSR = True` | `.tsx` archiva | la página completa, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+| Cliente | `useCSR = True` | `.tsx` archivos | toda la página, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+<!-- /router -->
+
+<!-- router:modular -->
+Con el enrutador modular, los Solid componentes son [islas](../../rendering/islands.md) dentro de las `.nexy` vistas que devuelve un controlador: no hay ningún archivo de página ni enrutador cliente.
+<!-- /router -->
 
 ## iniciar un proyecto
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-solid
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-solid
+```
+<!-- /router -->
 
 La plantilla es un proyecto en modo servidor con Solid islas. Ejecute `nx new my-app` sin una plantilla para responder a las indicaciones: el enrutador, el tipo de proyecto, si se utilizará el enrutamiento del lado del cliente y luego el marco.
 
@@ -40,7 +54,7 @@ export default defineConfig({
 
 En modo cliente, escriba `solid({ ssr: true })`: Solid compila un componente de manera diferente para el servidor y para el navegador, y el modo cliente necesita ambos. `nx new` escribe este archivo; Nexy escribe `__nexy__/vite.ts` por sí mismo, así que no lo edites.
 
-| Paquete | Versión `nx new` escribe |
+| Paquete | La versión `nx new` escribe |
 |---|---|
 | `solid-js` | `^1.9.12` |
 | `vite-plugin-solid` | `^2.11.0` (dependencia del desarrollador) |
@@ -65,11 +79,17 @@ export default function Counter(props: { start?: number }) {
 ## Reglas
 
 - **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [solid(), react()]` detiene el servidor al inicio. Con `useFF = solid()`, cada archivo `.tsx` es Solid.
+<!-- router:fbr,custom -->
 - **Las páginas son `.tsx`.** Sólo un archivo `.tsx` bajo `src/routes/` se convierte en una página; `.jsx` está bien para un componente.
 - **Los componentes se encuentran fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
 - **Un proyecto en modo servidor no tiene `.tsx` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Los componentes viven en `src/components/`** y una vista los importa como islas.
+<!-- /router -->
 - **No `.mdx` con Solid.** MDX compila en React o Preact; `.md` páginas funcionan.
 
+<!-- router:fbr,custom -->
 ## paginas
 
 En modo cliente (`useCSR = True`), una página es un archivo `.tsx`.
@@ -118,7 +138,8 @@ export default function RootLayout(props: { children: JSX.Element }) {
 }
 ```
 
-No desestructurar `props.children`, como lo lee Solid con pereza.
+No desestructurar `props.children`, como Solid lo lee con pereza.
+<!-- /router -->
 
 ## Islas
 
@@ -128,12 +149,23 @@ En modo servidor, un componente Solid importado a un archivo `.nexy` es una isla
 
 Importe componentes en la portada del archivo `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Directivas de hidratación
 
@@ -148,7 +180,7 @@ Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
 
 ### Llamar a acciones
 
-Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Solid, esto devuelve descriptores de acceso (llámelos como funciones).
+Utilice el gancho `useAction` para administrar el estado de una llamada a la acción. En Solid, esto devuelve accesores (llámelos como funciones).
 
 ```tsx
 import { useAction } from "@nexy/client";

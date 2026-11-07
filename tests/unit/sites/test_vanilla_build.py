@@ -85,8 +85,8 @@ class TestHomePage:
         page = (out / "docs" / "index.html").read_text(encoding="utf-8")
         return page.split('<article class="doc home">', 1)[1].split("</article>", 1)[0]
 
-    def test_the_article_shows_the_nine_cards_of_getting_started(self, article):
-        assert article.count('class="home-card"') == 9
+    def test_the_article_shows_the_eight_cards_of_getting_started(self, article):
+        assert article.count('class="home-card"') == 8
 
     def test_no_other_track_is_listed_as_a_card(self, article):
         slugs = {p.slug for p in docs_source.pages_of(docs_source.read_tracks(DOCS)[0])}
@@ -591,3 +591,15 @@ class TestUntranslatedPage:
 
     def test_it_claims_no_translation(self, page):
         assert 'rel="alternate" hreflang="fr"' not in page
+
+
+class TestOutline:
+    """The outline lists the headings the reader's router shows, as the page draws them."""
+
+    def test_a_heading_of_a_variant_is_listed_under_its_routers(self):
+        heading = docs_source.Heading(2, "apps", "src/apps/", "modular")
+        assert '<li class="l2 router-variant" data-router="modular">' in build.toc_html([heading])
+
+    def test_a_shared_heading_is_listed_for_every_router(self):
+        heading = docs_source.Heading(2, "public", "public/")
+        assert '<li class="l2">' in build.toc_html([heading])

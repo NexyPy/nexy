@@ -4,12 +4,13 @@
 
 **لست متأكدا؟ استخدم التوجيه المستند إلى الملف.** وهو يغطي الصفحات ونقاط نهاية واجهة برمجة التطبيقات (API) بدون أي إعداد. أضف جهاز التوجيه المعياري عندما تحتاج الواجهة الخلفية إلى وحدات تحكم أو خدمات محقونة أو حراس.
 
-| أنت تقوم ببناء | استخدم |
+| أنت تقوم بالبناء | استخدم |
 |---|---|
-| الصفحات، المحتوى، موقع به نقاط نهاية قليلة | مستند إلى الملفات |
-| واجهة برمجة تطبيقات كبيرة مع خدمات مشتركة عبر المسارات | نمطية |
-| كلاهما: صفحات للأشخاص، وواجهة برمجة تطبيقات منظمة للأجهزة | قائمة على الملفات وموحدة معًا |
+| الصفحات والمحتوى والموقع الذي يحتوي على نقاط نهاية قليلة | على أساس الملف |
+| واجهة برمجة تطبيقات كبيرة مع خدمات مشتركة عبر المسارات | وحدات |
+| كلاهما: صفحات للأشخاص، وواجهة برمجة تطبيقات منظمة للآلات | قائم على الملفات ومعياري معًا |
 
+<!-- router:fbr,custom -->
 ```diagram filename="جهاز التوجيه القائم على الملفات، في لمحة"
 src/routes/index.nexy           →  /
 src/routes/about.nexy           →  /about
@@ -18,11 +19,22 @@ src/routes/blog/[slug].nexy     →  /blog/:slug
 src/routes/(app)/dashboard.nexy →  /dashboard
 src/routes/api/users.py         →  /api/users  (GET, POST, …)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```diagram filename="جهاز التوجيه المعياري، في لمحة"
+@Controller()             class AppController   →  /
+@Controller("/about")     class AboutController →  /about/
+@Controller("/api/users") class UserController  →  /api/users/  (get, post, …)
+@Module()                 class AppModule       →  lists the controllers
+useRouter = AppModule     nexyconfig.py         →  mounts the module
+```
+<!-- /router -->
 
 | جهاز التوجيه | المصدر | تم التمكين بواسطة |
 |---|---|---|
-| [يعتمد على الملف (FBR)](fbr/README.md) | كل ملف ضمن `src/routes/` | الدليل موجود |
-| [وحدات](modular/README.md) | وحدات تحكم ووحدات | `useRouter = AppModule` في `nexyconfig.py` |
+| [القائم على الملف (FBR)](fbr/README.md) | كل ملف تحت `src/routes/` | الدليل موجود |
+| [وحدات](modular/README.md) | وحدات التحكم والوحدات | `useRouter = AppModule` في `nexyconfig.py` |
 
 يتم فحص FBR عند وجود `src/routes/`، حتى مع تركيب جهاز توجيه معياري.
 
@@ -32,34 +44,46 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 *ملاحظة: لا يوفر Nexy حاليًا تشخيصًا لتصادمات عناوين URL؛ إن الطريق الأول للمطالبة بمسار ما يؤدي ببساطة إلى تظليل المسارات الأخرى.*
 
+<!-- router:fbr,custom -->
 ## التوجيه القائم على الملف
 
 الطريق هو ملف. عنوان URL هو المسار الخاص به ضمن `src/routes/`، بدون الامتداد. مثل Next.js، يكون المشروع في أحد الوضعين، ويتم اختيارهما باستخدام `useCSR`:
 
 | | `useCSR = False` (افتراضي) | `useCSR = True` |
 |---|---|---|
-| الصفحات | `.nexy`، `.md`، `.mdx` | من ملفات إطار عمل العميل الخاص بك |
+| الصفحات | `.nexy`، `.md`، `.mdx` | ملفات إطار العميل الخاص بك |
 | تخطيط الجذر | `layout.nexy` | `layout.tsx` (React) |
-| مكونات العميل | المسموح بها، كجزر داخل الصفحات | الصفحات نفسها |
-| مسارات API | `.py` | `.py` |
+| مكونات العميل | مسموح به، كجزر داخل الصفحات | الصفحات نفسها |
+| مسارات واجهة برمجة التطبيقات | `.py` | `.py` |
 
 انظر [وضع الخادم ووضع العميل](fbr/modes.md).
 
-| القسم | ما يشمله |
+| القسم | ما يغطيه |
 |---|---|
-| [fbr/pages](fbr/pages/README.md) | الصفحات و[المسارات الديناميكية](fbr/pages/dynamic-routes.md) ومجموعات المسار |
-| [fbr/تخطيطات](fbr/layouts/README.md) | `layout.nexy`، `layout.tsx`، `layout.vue`، `layout.svelte` |
-| [fbr/handlers](fbr/handlers/README.md) | `.py` معالجات المسار، [التحقق من الصحة والأخطاء](fbr/handlers/validation-and-errors.md) |
-| [fbr/dependeency](fbr/dependencies/README.md) | `dependencies.py` والحراس، الموروثة بالدليل |
-| [fbr/البرامج الوسيطة](fbr/middleware/README.md) | `middleware.py`، موروثة بالدليل |
-| [fbr/أخطاء](fbr/errors/README.md) | `notfound.nexy`، `errors.nexy`، أخطاء JSON |
-| [fbr/navigation](fbr/navigation/linking-and-navigating.md) | الارتباط، تنقل العميل، [الخطافات](fbr/navigation/hooks.md) |
-| [fbr/الوقت الحقيقي](fbr/realtime/websocket.md) | WebSocket معالجات |
-| [fbr/inheritance](fbr/inheritance.md) | كيف ترث التخطيطات والتبعيات وصفحات الأخطاء |
+| [فبر/صفحات](fbr/pages/README.md) | الصفحات و[المسارات الديناميكية](fbr/pages/dynamic-routes.md) ومجموعات المسار |
+| [fbr/التخطيطات](fbr/layouts/README.md) | `layout.nexy`، `layout.tsx`، `layout.vue`، `layout.svelte` |
+| [fbr/معالجات](fbr/handlers/README.md) | `.py` معالجات المسار، [التحقق من الصحة والأخطاء](fbr/handlers/validation-and-errors.md) |
+| [fbr/التبعيات](fbr/dependencies/README.md) | `dependencies.py` والحراس، ورثوا بالدليل |
+| [fbr/البرمجيات الوسيطة](fbr/middleware/README.md) | `middleware.py`، ورث بالدليل |
+| [fbr/الأخطاء](fbr/errors/README.md) | `notfound.nexy`، `errors.nexy`، أخطاء JSON |
+| [fbr/الملاحة](fbr/navigation/linking-and-navigating.md) | الارتباط، تنقل العميل، [الخطافات](fbr/navigation/hooks.md) |
+| [fbr/الوقت الحقيقي](fbr/realtime/websocket.md) | WebSocket المعالجون |
+| [فبر / الميراث](fbr/inheritance.md) | كيف ترث التخطيطات والتبعيات وصفحات الخطأ |
+<!-- /router -->
 
 ## التوجيه المعياري
 
-وحدات التحكم والوحدات النمطية وحقن التبعية، بأسلوب NestJS. انظر [[التوجيه المعياري](modular/README.md) و[Nexy و NestJS](modular/vs-nestjs.md).
+وحدات التحكم والوحدات النمطية وحقن التبعية بأسلوب NestJS. انظر [[التوجيه المعياري](modular/README.md) و [Nexy و NestJS](modular/vs-nestjs.md).
+
+<!-- router:modular -->
+| القسم | ما يغطيه |
+|---|---|
+| [وحدات](modular/README.md) | `@Controller`، `@Module`، الواردات والصادرات |
+| [حقن وحدات / التبعية ](modular/dependency-injection.md) | `@Injectable` والمناظير والحاويات |
+| [وحدات/الحراس والبيانات الوصفية](modular/guards-and-metadata.md) | `@UseGuard`، `@UseResponse` والبيانات الوصفية OpenAPI |
+
+تقوم وحدة التحكم بإرجاع عرض `.nexy` مع `useViews`، وتمريره إلى تخطيطها يدويًا: لا يوجد `layout.nexy` يتم تطبيقه بواسطة المجلد.
+<!-- /router -->
 
 ## التكامل المخصص
 
@@ -67,6 +91,11 @@ src/routes/api/users.py         →  /api/users  (GET, POST, …)
 
 ## الخطوات التالية
 
+<!-- router:fbr,custom -->
 - [التوجيه القائم على الملف](fbr/README.md)
+<!-- /router -->
+<!-- router:modular -->
+- [التوجيه المعياري](modular/README.md)
+<!-- /router -->
 - [التقديم](../rendering/README.md)
 - [المشاهدات](../views/README.md): ما يدور داخل الملفات

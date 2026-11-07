@@ -2,16 +2,30 @@
 
 يقوم Nexy بعرض Vue 3 مكونات ذات ملف واحد على الخادم، ثم Vue يتولى تشغيلها في المتصفح. الصفحات والتخطيطات والجزر والإجراءات هي نفسها في كل إطار: تغطي هذه الصفحة الإعداد، ثم الأجزاء التي تختلف عن [العقود المشتركة](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | الوضع | `nexyconfig.py` | الصفحات هي | Vue هو |
 |---|---|---|---|
-| الخادم (الافتراضي) | `useCSR = False` | `.nexy` ملفات | [جزر](../../rendering/islands.md) داخل تلك الصفحات |
-| العميل | `useCSR = True` | `.vue` ملفات | الصفحة بأكملها، مع [التخطيطات](../frontend/layouts.md) وجهاز توجيه العميل |
+| الخادم (الافتراضي) | `useCSR = False` | `.nexy` الملفات | [جزر](../../rendering/islands.md) داخل تلك الصفحات |
+| العميل | `useCSR = True` | `.vue` الملفات | الصفحة بأكملها، مع [التخطيطات](../frontend/layouts.md) وجهاز توجيه العميل |
+<!-- /router -->
+
+<!-- router:modular -->
+باستخدام جهاز التوجيه المعياري، تكون مكونات Vue هي [جزر](../../rendering/islands.md) داخل طرق العرض `.nexy` التي ترجعها وحدة التحكم: لا يوجد ملف صفحة ولا جهاز توجيه عميل.
+<!-- /router -->
 
 ## ابدأ مشروعًا
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-vue
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-vue
+```
+<!-- /router -->
 
 القالب عبارة عن مشروع في وضع الخادم يحتوي على Vue جزر. قم بتشغيل `nx new my-app` بدون قالب للإجابة على المطالبات بدلاً من ذلك: جهاز التوجيه، ونوع المشروع، وما إذا كان سيتم استخدام التوجيه من جانب العميل، ثم إطار العمل.
 
@@ -47,11 +61,17 @@ export default defineConfig({
 
 ## القواعد
 
-- **إطار واحد لكل مشروع.** `useFF` يأخذ إطارًا واحدًا بالضبط؛ `useFF = [vue(), react()]` يقوم بإيقاف الخادم عند بدء التشغيل.
+- **إطار واحد لكل مشروع.** `useFF` يأخذ إطارًا واحدًا بالضبط؛ `useFF = [vue(), react()]` يوقف الخادم عند بدء التشغيل.
 - **مكون واحد لكل ملف.** يقوم الملف `.vue` بتصدير مكونه بشكل افتراضي؛ الاسم الذي تستورده تحته هو فقط العلامة التي تكتبها.
+<!-- router:fbr,custom -->
 - **تعيش المكونات خارج `src/routes/`**، عادةً في `src/components/`، لذا فهي ليست صفحات.
 - **لا يحتوي مشروع وضع الخادم على `.vue` صفحة**، ولا يحتوي مشروع وضع العميل على `.nexy` صفحة: يرفض Nexy البدء ويسمي الملف. انظر [الأوضاع](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **تعيش المكونات في `src/components/`**، ويقوم العرض باستيرادها كجزر.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## الصفحات
 
 في وضع العميل (`useCSR = True`)، تكون الصفحة عبارة عن ملف `.vue`.
@@ -98,6 +118,7 @@ defineProps<{ slug: string }>();
   </html>
 </template>
 ```
+<!-- /router -->
 
 ## جزر
 
@@ -105,14 +126,25 @@ defineProps<{ slug: string }>();
 
 ### استيراد
 
-استيراد المكونات في الجزء الأمامي من الملف `.nexy`:
+قم باستيراد المكونات الموجودة في الجزء الأمامي من الملف `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.vue" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.vue" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### توجيهات الترطيب
 
@@ -121,7 +153,7 @@ from "@/components/Counter.vue" import Counter
 - `client:load` (افتراضي): فورًا
 - `client:idle`: عندما يكون المتصفح خاملاً
 - `client:visible`: عند التمرير إلى العرض
-- `client:media`: عندما يتطابق استعلام الوسائط
+- `client:media`: عند تطابق استعلام الوسائط
 
 ## الإجراءات والملاحة
 

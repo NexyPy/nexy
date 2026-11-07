@@ -13,11 +13,59 @@ What `nx start` does by default, what to switch on, and what was measured.
 | API docs | on | `useDocs = False` in production |
 | Node at runtime | none | `nx build` pre-renders client components |
 
+The two switches of the table in `nexyconfig.py`, and ISR in a page:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useGZip = {"minimum_size": 1000}
+    useDocs = False
+```
+
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/blog/index.nexy"
+---
+revalidate = 60
+---
+<h1>Rendered at most once per minute</h1>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR is a mode of file pages: a view a controller returns is rendered on each request.
+<!-- /router -->
+
 ## Measured
 
 A local run, one Uvicorn worker, Windows, Python 3.13, keep-alive connections from a Python load
 generator on the same machine. Treat the numbers as a baseline for comparing changes, not as a
 benchmark against other frameworks.
+
+The Nexy JSON route of the table is this file:
+
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/ping.py"
+async def GET():
+    return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+The figures below were measured with the file route. Measure a controller the same way before you
+rely on them.
+<!-- /router -->
 
 | Route | Concurrency | Requests per second | p50 | p99 |
 |---|---|---|---|---|
@@ -44,6 +92,26 @@ Reading the table:
    render.
 5. Measure your own routes. A local load generator that keeps connections alive is enough to compare
    two versions of a page.
+
+Advice 1 with Nginx: the hashed client bundles are cached for a year, the rest goes to Nexy.
+
+```nginx filename="/etc/nginx/conf.d/my-app.conf"
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    location /__nexy__/client/ {
+        proxy_pass http://127.0.0.1:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ## Next steps
 

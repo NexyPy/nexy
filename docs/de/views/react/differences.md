@@ -2,16 +2,30 @@
 
 Nexy rendert React 19 Komponenten auf dem Server und React hydratisiert sie dann im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
+<!-- router:fbr,custom -->
 | Modus | `nexyconfig.py` | Seiten sind | React ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Der Client | `useCSR = True` | `.tsx` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Kunde | `useCSR = True` | `.tsx` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+<!-- /router -->
+
+<!-- router:modular -->
+Beim modularen Router sind React Komponenten [Inseln](../../rendering/islands.md) innerhalb der `.nexy` Ansichten, die ein Controller zurückgibt: Es gibt keine Auslagerungsdatei und keinen Client-Router.
+<!-- /router -->
 
 ## Starten Sie ein Projekt
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-react
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-react
+```
+<!-- /router -->
 
 Die Vorlage ist ein Servermodus-Projekt mit React Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
@@ -44,15 +58,21 @@ export default defineConfig({
 |---|---|
 | `react`, `react-dom` | `^19.2.5` |
 | `@vitejs/plugin-react` | `^5.2.0` |
-| `@types/react`, `@types/react-dom` | Entwicklungsabhängigkeiten |
+| `@types/react`, `@types/react-dom` | Entwicklerabhängigkeiten |
 
 ## Regeln
 
 - **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [react(), vue()]` stoppt den Server beim Start.
+<!-- router:fbr,custom -->
 - **Seiten sind `.tsx`.** React besitzt `.tsx` und `.jsx` für Komponenten, aber nur eine `.tsx`-Datei unter `src/routes/` wird zu einer Seite.
 - **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
 - **Ein Servermodus-Projekt hat keine `.tsx` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Komponenten leben in `src/components/`** und eine Ansicht importiert sie als Inseln.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Seiten
 
 Im Client-Modus (`useCSR = True`) ist eine Seite eine `.tsx`-Datei.
@@ -97,6 +117,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 }
 ```
+<!-- /router -->
 
 ## Inseln
 
@@ -104,14 +125,25 @@ Im Servermodus ist eine in eine `.nexy`-Datei importierte React-Komponente eine 
 
 ### Importieren
 
-Importieren Sie Komponenten im Frontmatter der Datei `.nexy`:
+Importieren Sie Komponenten in die Frontmatter der Datei `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Trinkrichtlinien
 

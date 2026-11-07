@@ -4,16 +4,31 @@ Nexy renders React 19 components on the server, then React hydrates them in the 
 layouts, islands and actions are the same in every framework: this page covers setup, then the parts
 that differ from the [shared contracts](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Mode | `nexyconfig.py` | Pages are | React is |
 |---|---|---|---|
 | Server (default) | `useCSR = False` | `.nexy` files | [islands](../../rendering/islands.md) inside those pages |
 | Client | `useCSR = True` | `.tsx` files | the whole page, with [layouts](../frontend/layouts.md) and a client router |
+<!-- /router -->
+
+<!-- router:modular -->
+With the modular router, React components are [islands](../../rendering/islands.md) inside
+the `.nexy` views a controller returns: there is no page file and no client router.
+<!-- /router -->
 
 ## Start a project
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-react
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-react
+```
+<!-- /router -->
 
 The template is a server-mode project with React islands. Run `nx new my-app` without a template to
 answer the prompts instead: the router, the project type, whether to use client-side routing, then
@@ -54,12 +69,18 @@ export default defineConfig({
 
 - **One framework per project.** `useFF` takes exactly one framework; `useFF = [react(), vue()]` stops
   the server at startup.
+<!-- router:fbr,custom -->
 - **Pages are `.tsx`.** React owns `.tsx` and `.jsx` for components, but only a `.tsx` file under
   `src/routes/` becomes a page.
 - **Components live outside `src/routes/`**, usually in `src/components/`, so they are not pages.
 - **A server-mode project has no `.tsx` page**, and a client-mode project has no `.nexy` page: Nexy
   refuses to start and names the file. See [modes](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Components live in `src/components/`**, and a view imports them as islands.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Pages
 
 In client mode (`useCSR = True`), a page is a `.tsx` file.
@@ -105,6 +126,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 }
 ```
+<!-- /router -->
 
 ## Islands
 
@@ -114,12 +136,23 @@ In server mode, a React component imported into a `.nexy` file is an island.
 
 Import components in the frontmatter of the `.nexy` file:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Hydration directives
 

@@ -41,6 +41,8 @@ dev = [
     "pip-audit>=2.8.0",
     # Colours the code of the docs sites (sites/shared/docs_source.py), not used by nexy/.
     "pygments>=2.20.0",
+    # Carousel cards into one LinkedIn PDF without re-encoding them (sites/shared/social/cards.py).
+    "img2pdf>=0.6.3",
     "pytest>=9.0.2",
     "pytest-cov>=6.0.0",
     "pytest-playwright>=0.7.0",

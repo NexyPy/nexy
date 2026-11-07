@@ -47,6 +47,7 @@ El valor de retorno se serializa automáticamente a JSON. Los modelos Pydantic s
 ### 5. Consumir
 La interfaz recibe el resultado con total seguridad de tipo. Nexy escribe `__nexy__/src/actions.ts` a partir de sus firmas y `@nexy/actions` lo resuelve.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/rutas/usuarios.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,10 +62,37 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+El componente es una isla de la vista que devuelve un controlador:
+
+```tsx filename="src/components/NuevoUsuario.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 Sin un gancho, una acción es solo una función `async`: `const user = await create_user({ name: "Ada" })`.
 
-| Marco | Qué `useAction` devuelve |
+| Marco | Lo que `useAction` devuelve |
 |---|---|
 | React, Preact | `{ pending, data, error, run, reset }` |
 | Solid | lo mismo, con `pending()`, `data()` y `error()` como accesores |
@@ -118,7 +146,7 @@ Si tiene éxito, el visitante regresa a la página en la que se encontraba el fo
 ### La oscuridad del camino no es autorización.
 La ruta de acción es `/_nx_` seguida de un hash del módulo de la función, su nombre y un secreto del proyecto. Lo establece `NEXY_ACTION_SECRET`, o lo guarda en `__nexy__/action.key`, que `nx build` crea para que el paquete del cliente y `nx start` acuerden: conservar ese archivo con la compilación. La ruta oculta el punto final del descubrimiento casual y **la ruta generada no es un mecanismo de autorización**.
 
-Cualquiera que conozca el camino puede iniciar la acción. Usted **debe** verificar la identidad y los permisos del usuario dentro de la acción:
+Cualquiera que conozca el camino puede iniciar la acción. Tú **debes** verificar la identidad y los permisos del usuario dentro de la acción:
 ```python
 @Action
 async def delete_user(user_id: str, request: Request):

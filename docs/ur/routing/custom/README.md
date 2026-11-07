@@ -1,123 +1,171 @@
-# حسب ضرورت روٹنگ انضمام
+# Nexy میں ایک موجودہ FastAPI راؤٹر شامل کریں۔
 
-Nexy آپ کو اپنے پروجیکٹ میں ایک موجودہ FastAPI ایپ کو بطور روٹر شامل کرنے دیتا ہے۔ یہ اس وقت مفید ہے جب آپ کسی دوسری سروس سے بیک اینڈ منطق کو دوبارہ استعمال کرنا چاہتے ہیں، فریق ثالث APIs کے ساتھ انضمام کرنا چاہتے ہیں، یا متعدد روٹنگ خدشات کے ساتھ ایک جامع ایپلیکیشن بنانا چاہتے ہیں۔
-
-فائل پر مبنی اور ماڈیولر راؤٹرز کے برعکس، جو Nexy کے اندرونی ہوتے ہیں، ایک حسب ضرورت روٹر صرف ایک `APIRouter` ہے جسے آپ اپنی ایپلیکیشن میں لگاتے ہیں۔
+Nexy میں موجودہ FastAPI راؤٹر کو شامل کرنے کے لیے، `useRouter` کو `APIRouter` کی `NexyConfig` کلاس میں `nexyconfig.py` پر سیٹ کریں: اس کے روٹس `src/routes/` کی فائلوں کے ساتھ ہی پیش کیے جاتے ہیں۔
 
 ## کسٹم راؤٹر کب استعمال کریں۔
 
-- **فریق ثالث کی خدمات**: آپ کے پاس ایک موجودہ FastAPI ایپ ہے جسے آپ Nexy کے کلائنٹ کے ذریعے ظاہر کرنا چاہتے ہیں۔
-- **کوڈ کا دوبارہ استعمال**: کسی دوسرے پروجیکٹ سے بیک اینڈ لاجک کو روٹر میں نکالیں اور اسے ایک نئے میں شامل کریں۔
-- **ملٹی کرایہ دار یا مائیکرو فرنٹ اینڈ پیٹرن**: ہر کرایہ دار یا ماڈیول اپنا راؤٹر فراہم کرتا ہے۔
-- **بتدریج منتقلی**: ایک `APIRouter` سے شروع کریں اور بعد میں اسے مکمل Nexy ماڈیول میں تبدیل کریں۔
+- **بتدریج ہجرت**: ایک FastAPI ایپ بذریعہ راستے Nexy کی طرف جاتی ہے، اور اس کے پرانے راستے اس دوران جواب دیتے رہتے ہیں۔
+- **کوڈ کا دوبارہ استعمال**: ایک پیکج تصدیق یا بلنگ کے لیے پہلے سے ہی ایک `APIRouter` کو ظاہر کرتا ہے۔
+- **ایک بیک اینڈ جو آپ رکھتے ہیں**: API سادہ رہتا ہے FastAPI، اور Nexy صفحات کو شامل کرتا ہے۔
 
-## یہ کیسے کام کرتا ہے۔
+## `nexyconfig.py` میں `useRouter` سیٹ کریں
 
-```python
+راؤٹر کوئی بھی FastAPI `APIRouter` ہے، جس طرح سے آپ پہلے سے لکھتے ہیں:
+
+```python filename="src/legacy/api.py"
 from fastapi import APIRouter
-from nexy import useRouter
 
-# An existing FastAPI router (from another service)
-third_party = APIRouter()
-@third_party.get("/info")
-async def info():
-    return {"name": "Foo"}
+router = APIRouter(prefix="/api")
 
-# In your nexyconfig.py:
-useRouter = third_party
+
+@router.get("/status")
+async def status():
+    return {"status": "ok"}
+
+
+@router.get("/users/{id}")
+async def user(id: int):
+    return {"id": id}
 ```
 
-روٹر کو Nexy کے راؤٹر ریزولور کے ذریعے خود بخود نصب کیا جاتا ہے۔ اس کے روٹس اسی URL پیٹرن کے تحت دستیاب ہیں جیسا کہ اصل ایپ میں ہے۔ کسی اضافی ترتیب کی ضرورت نہیں ہے۔
+`useRouter` پروجیکٹ کی ہر ترتیب کی طرح `NexyConfig` کلاس کا ایک فیلڈ ہے:
 
-## اپنی مرضی کے مطابق روٹر بنانا
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-1. **روٹر بنائیں**
-   `` ازگر
-   فاسٹاپی امپورٹ APIRouter سے
+from src.legacy.api import router
 
-   api = APIRouter()
-   @api.get("/status")
-   async def status():
-       واپسی {"status": "OK"}
-   ``
 
-2. **اس کا حوالہ `nexyconfig.py`**
-   `` ازگر
-   .my_backend امپورٹ API سے
+class NexyConfig(NexyConfigModel):
+    useRouter = router
+```
 
-   useRouter = api
-   ``
+`nx dev` پھر جواب دیتا ہے `GET /api/status` اور `GET /api/users/{id}`، اور `/docs` ان کی فہرست دیتا ہے۔
 
-3. **رسائی کے راستے**
-   - فائل پر مبنی صفحات (`.nexy`، `.md`) اور ماڈیولر ہینڈلرز `/status` کا حوالہ دے سکتے ہیں جیسا کہ وہ کسی دوسرے راستے کا حوالہ دیتے ہیں۔
-   - روٹر اسی عمل میں چلتا ہے، لہذا انحصار، ڈیٹا بیس کنکشن، اور تصدیق بالکل اسی طرح کام کرتی ہے جیسا کہ اصل ایپ میں ہے۔
+> [!NOTE]
+> `useRouter` `nexyconfig.py` میں ایک ترتیب ہے۔ `from nexy import useRouter` ایک اور چیز ہے: ہک ایک `.nexy` صفحہ موجودہ روٹ کو پڑھنے کے لیے استعمال کرتا ہے۔ روٹر کو ترتیب دینے کے لیے اسے درآمد نہ کریں۔
 
-## دوسرے راؤٹرز کے ساتھ انضمام
+## کئی راؤٹرز
 
-ایک Nexy پروجیکٹ یکجا کر سکتا ہے:
+`useRouter` ایک راؤٹر لیتا ہے۔ `include_router` کے ساتھ ایک والدین کے تحت کئی کو جمع کریں:
 
-- **صفحات اور سادہ اینڈ پوائنٹ کے لیے فائل پر مبنی روٹنگ** (`src/routes/`)
-- **ماڈیولر روٹنگ** (`useRouter = AppModule`) ساختی پس منظر کے لیے
-- **فریق ثالث کوڈ کے لیے حسب ضرورت روٹنگ** (`useRouter = APIRouter`)
+```python filename="src/legacy/__init__.py"
+from fastapi import APIRouter
 
-تینوں ایک ساتھ رہتے ہیں۔ ہر راستہ صرف ایک بار رجسٹرڈ ہے۔ فائل پر مبنی روٹر ہمیشہ اسکین کیا جاتا ہے جب `src/routes/` موجود ہو۔
+from .api import router as api
+from .auth import router as auth
 
-## شامل ایپ تک CLI رسائی
+router = APIRouter()
+router.include_router(api)
+router.include_router(auth, prefix="/auth")
+```
 
-`nexy dev` اور `nx` کمانڈز نصب شدہ راؤٹر پر بلٹ ان راؤٹر کی طرح کام کرتی ہیں۔ آپ کو ملتا ہے:
+```python filename="src/legacy/auth.py"
+from fastapi import APIRouter
 
-- کسٹم راؤٹر میں بیان کردہ اینڈ پوائنٹس کے لیے ہاٹ ری لوڈ (اگر یہ `nexy` یا FastAPI کی عام ڈیو سرور خصوصیات کا استعمال کرتا ہے)
-- `nexyconfig.py` میں توثیق (کوئی بھی `APIRouter` کام)
-- شامل راستوں کے لیے خود کار طریقے سے تیار کردہ دستاویزات (اگر آپ انہیں فعال کرتے ہیں)
+router = APIRouter()
 
-## سلامتی اور تنہائی
 
-چونکہ روٹر شامل ہے، `app.mount` کے ذریعے نصب نہیں ہے، کوئی اضافی ASGI پرت نہیں ہے۔ راؤٹر اسی ایپلیکیشن آبجیکٹ میں رہتا ہے جس میں آپ کی فائل پر مبنی اور ماڈیولر روٹس ہیں۔ اس کا مطلب ہے:
-
-- کسٹم راؤٹر کے ذریعہ شامل کردہ مڈل ویئر تمام درخواستوں پر لاگو ہوتا ہے۔
-- کسٹم راؤٹر میں بیان کردہ گارڈز اور انحصار انجیکشن آپ کے اپنے کوڈ کے طور پر اسی کنٹینر تک رسائی حاصل کرسکتے ہیں (اگر آپ ماڈیولر انجیکشن استعمال کرتے ہیں)۔
-- اس کے علاوہ کوئی یو آر ایل کا سابقہ ​​نہیں ہے جو روٹر خود بیان کرتا ہے۔
-
-اگر آپ کو تنہائی کی ضرورت ہے تو، روٹر کو شامل کرنے سے پہلے اسے ذیلی ایپلیکیشن میں لپیٹیں، یا معیاری FastAPI تکنیک استعمال کریں۔
-
-## مثال: ایک موجودہ FastAPI پروجیکٹ کو شامل کرنا
-
-فرض کریں کہ آپ کے پاس ایک اور پیکیج میں `auth.py` ہے:
-
-```python
-from fastapi import FastAPI, APIRouter
-
-auth = FastAPI(title="Auth service")
-api = APIRouter()
-
-@api.get("/login")
+@router.post("/login")
 async def login():
-    return {"msg": "Login"}
-
-auth.include_router(api)
+    return {"token": "demo"}
 ```
 
-میں `nexyconfig.py`:
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-```python
-from other_package.auth import api
+from src.legacy import router
 
-useRouter = api
+
+class NexyConfig(NexyConfigModel):
+    useRouter = router
 ```
 
-`/login` اختتامی نقطہ اب آپ کی Nexy سائٹ سے بغیر کوڈ کی لائن منتقل کیے قابل رسائی ہے۔
+## اس کے ساتھ والے صفحات اور روٹ فائلز
 
-## شروع کرنے کا طریقہ
+`src/routes/` ابھی بھی پڑھا جاتا ہے جب کہ `useRouter` سیٹ ہوتا ہے: ایک `.nexy` صفحہ یا ایک `.py` روٹ فائل شامل راستوں کے ساتھ جواب دیتا ہے۔
 
-1. اپنا `APIRouter` بنائیں (یا موجودہ پیکیج میں تلاش کریں)۔
-2. نقطہ `useRouter` اس پر `nexyconfig.py` میں۔
-3. اپنے صفحات، ہینڈلرز، یا کلائنٹ فریم ورک کے ذریعے اس کے راستوں تک رسائی حاصل کریں۔
-4. اگر آپ کو مزید کنٹرول کی ضرورت ہے تو اپنی مرضی کے روٹر کو `AppModule` کا استعمال کرتے ہوئے ماڈیولر راؤٹر میں تبدیل کریں۔
+```nexy filename="src/routes/index.nexy"
+---
+title = "Home"
+---
+<h1>{{ title }}</h1>
+```
+
+```python filename="src/routes/api/health.py"
+async def GET():
+    return {"ok": True}
+```
+
+دو حدود جبکہ `useRouter` مقرر ہیں:
+
+- صفحات `layout.nexy` سے لپیٹے نہیں جاتے۔
+- `useCSR = True` سے انکار کیا جاتا ہے: `nx dev` اور `nx build` جواب `useCSR requires file-based routing`۔
+
+ایک URL کا جواب ایک بار دیا جاتا ہے۔ شامل روٹر کو یہاں `/api` کا سابقہ ​​دیں، اور `src/routes/` کی فائلوں کو اس کے استعمال کردہ راستوں سے دور رکھیں۔
+
+## ایک پوری FastAPI ایپ
+
+`useRouter` ایک `APIRouter` لیتا ہے، نہ کہ `FastAPI` ایپ۔ کسی ایپ کے روٹس اس کی `router` صفت پر بیٹھتے ہیں:
+
+```python filename="src/legacy/service.py"
+from fastapi import FastAPI
+
+service = FastAPI(title="Billing")
+
+
+@service.get("/billing/invoices")
+async def invoices():
+    return []
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.legacy.service import service
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = service.router
+```
+
+ایپ کے اپنے مڈل ویئر، استثنیٰ ہینڈلرز اور سٹارٹ اپ ایونٹس پیچھے رہتے ہیں: انہیں `useMiddlewares` اور `nexyconfig.py` کے دیگر شعبوں میں منتقل کریں۔
+
+## انحصار، تصنیف اور ڈیٹا بیس
+
+روٹر Nexy کے عمل میں چلتا ہے، لہذا `Depends`، سیکورٹی اسکیمیں اور ڈیٹا بیس سیشن اصل ایپ کی طرح کام کرتے ہیں:
+
+```python filename="src/legacy/secure.py"
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+
+def require_token(x_token: str = Header("")) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=401, detail="Bad token")
+
+
+router = APIRouter(prefix="/secure", dependencies=[Depends(require_token)])
+
+
+@router.get("/data")
+async def data():
+    return {"data": 42}
+```
+
+## اس کی جانچ کریں۔
+
+```python filename="tests/test_legacy.py"
+from fastapi.testclient import TestClient
+
+from nexy.app import app
+
+
+def test_the_included_route_answers():
+    assert TestClient(app).get("/api/status").json() == {"status": "ok"}
+```
 
 ## اگلے اقدامات
 
-- [فائل پر مبنی روٹنگ](../fbr/README.md) – فائلوں سے صفحات اور سادہ ہینڈلرز بنائیں۔
-- [ماڈیولر روٹنگ](../modular/README.md) – انجیکشن اور گارڈز کے ساتھ سٹرکچرڈ بیک اینڈ۔
-- [روٹ ہینڈلرز](../fbr/handlers/README.md) – اختتامی نقطہ Python کی وضاحت کریں۔
-
-کسٹم راؤٹر آپ کو فائل پر مبنی صفحات اور ماڈیولر ڈھانچے کی سادگی کو برقرار رکھتے ہوئے موجودہ FastAPI کوڈ کو دوبارہ استعمال کرنے کی لچک فراہم کرتا ہے۔
+- [سے FastAPI سے Nexy](../../coming-from/fastapi.md): راستوں کو فائلوں میں منتقل کریں، ایک ایک کرکے
+- [فائل پر مبنی روٹنگ](../fbr/README.md)
+- [ماڈیولر روٹنگ](../modular/README.md): `useRouter = AppModule`

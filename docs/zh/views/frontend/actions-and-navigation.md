@@ -27,6 +27,7 @@ async def add_todo(title: str) -> Todo:
 
 该页面使用声明的输入 Python 调用它，并返回一个类型化的 `Todo`：
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/todos.tsx"
 import { useAction } from "@nexy/client";
 import { add_todo } from "@nexy/actions";
@@ -40,6 +41,32 @@ export default function Todos() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+该组件是一个视图岛，控制器返回该视图：
+
+```tsx filename="src/组件/Todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/todos_view.nexy"
+---
+from "@/components/Todos.tsx" import Todos
+---
+<Todos directive="client:load" />
+```
+<!-- /router -->
 
 ## 客户端导航
 
@@ -77,7 +104,7 @@ export function Done() {
 **重新验证流程：**
 1.  客户端调用一个操作。
 2.  该操作在服务器上执行并调用 `revalidate("/path")`。
-3.  服务器返回带有命名过时路径的 `x-nexy-revalidate` 标头的结果。
+3.  服务器返回带有 `x-nexy-revalidate` 标头的结果，该标头命名了过时路径。
 4.  客户端更新页面内容以反映新状态。
 
 ```python filename="src/actions/session.py"
@@ -91,6 +118,7 @@ async def sign_in(email: str, password: str) -> bool:
     return ok
 ```
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/login.tsx"
 import { useAction, useRouter } from "@nexy/client";
 import { sign_in } from "@nexy/actions";
@@ -105,6 +133,23 @@ export default function Login() {
   return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```tsx filename="src/组件/Login.tsx"
+import { useAction } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export function Login() {
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) window.location.assign("/dashboard/");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+<!-- /router -->
 
 `check_password` 代表您自己的支票。有关错误、没有 JavaScript 和安全性的表单，请参阅 [操作 ](../../guides/actions.md)。
 

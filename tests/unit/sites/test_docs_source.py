@@ -86,9 +86,32 @@ class TestGroupScope:
         group = self._tracks(tmp_path, "Forms {fbr}")[0].groups[0]
         assert group.router == "fbr"
 
+    def test_a_page_of_a_marked_group_belongs_to_its_router(self, tmp_path):
+        page = self._tracks(tmp_path, "Forms {modular}")[0].groups[0].pages[0]
+        assert page.router == "modular"
+
+    def test_a_page_of_an_advanced_group_belongs_to_no_router(self, tmp_path):
+        page = self._tracks(tmp_path, "Advanced {advanced}")[0].groups[0].pages[0]
+        assert page.router is None
+
     def test_an_advanced_group_belongs_to_no_router(self, tmp_path):
         group = self._tracks(tmp_path, "Advanced {advanced}")[0].groups[0]
         assert (group.scope, group.router) == ("advanced", None)
+
+    def test_a_marker_can_name_several_routers(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr,custom}")[0].groups[0]
+        assert group.scope == "fbr custom"
+
+    def test_a_group_of_several_routers_belongs_to_none_of_them(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr, custom}")[0].groups[0]
+        assert group.router is None
+
+    def test_a_marker_of_several_routers_is_not_part_of_the_title(self, tmp_path):
+        assert self._tracks(tmp_path, "Forms {fbr,custom}")[0].groups[0].title == "Forms"
+
+    def test_a_marker_mixing_a_router_and_an_unknown_word_stays_in_the_title(self, tmp_path):
+        group = self._tracks(tmp_path, "Forms {fbr,nope}")[0].groups[0]
+        assert (group.title, group.scope) == ("Forms {fbr,nope}", "core")
 
     def test_an_unknown_marker_is_left_visible_in_the_title(self, tmp_path):
         group = self._tracks(tmp_path, "Forms {nope}")[0].groups[0]
@@ -273,6 +296,22 @@ class TestRouterVariants:
         path.write_text("<!-- router:custom -->\n## Install\n<!-- /router -->\n", encoding="utf-8")
         assert [h.text for h in source.render(path, tmp_path, _link).headings] == ["Install"]
 
+    def test_a_heading_inside_a_variant_names_its_routers(self, tmp_path):
+        path = tmp_path / "page.md"
+        path.write_text(
+            "<!-- router:fbr,custom -->\n## Files\n<!-- /router -->\n", encoding="utf-8"
+        )
+        assert source.render(path, tmp_path, _link).headings[0].routers == "fbr custom"
+
+    def test_a_heading_outside_any_variant_names_no_router(self, tmp_path):
+        path = tmp_path / "page.md"
+        path.write_text("## Shared\n", encoding="utf-8")
+        assert source.render(path, tmp_path, _link).headings[0].routers == ""
+
+    def test_a_heading_inside_a_variant_keeps_its_id(self, tmp_path):
+        html = self._html(tmp_path, "<!-- router:modular -->\n## Apps\n<!-- /router -->\n")
+        assert '<h2 id="apps">' in html
+
 
 class TestHighlight:
     @staticmethod
@@ -305,6 +344,34 @@ class TestHighlight:
     def test_the_bars_of_a_nexy_frontmatter_are_kept(self, tmp_path):
         html = self._html(tmp_path, "nexy", "---\nx = 1\n---\n<p>hi</p>")
         assert html.count('<span class="tok-bar">---</span>') == 2
+
+    def test_php_without_an_opening_tag_is_coloured(self, tmp_path):
+        html = self._html(tmp_path, "php", "function run() { return 1; }")
+        assert '<span class="tok-k">function</span>' in html
+
+    def test_a_svelte_file_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "svelte", "<h1>{name}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
+
+    def test_the_script_of_a_svelte_file_is_coloured_as_javascript(self, tmp_path):
+        html = self._html(tmp_path, "svelte", "<script>\nlet count = 0;\n</script>")
+        assert '<span class="tok-kd">let</span>' in html
+
+    def test_the_frontmatter_of_an_astro_file_is_coloured_as_typescript(self, tmp_path):
+        html = self._html(tmp_path, "astro", "---\nconst title = 'About';\n---\n<h1>{title}</h1>")
+        assert '<span class="tok-kd">const</span>' in html
+
+    def test_the_template_of_an_astro_file_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "astro", "---\nconst x = 1;\n---\n<h1>{x}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
+
+    def test_the_bars_of_an_astro_frontmatter_are_kept(self, tmp_path):
+        html = self._html(tmp_path, "astro", "---\nconst x = 1;\n---\n<p>hi</p>")
+        assert html.count('<span class="tok-bar">---</span>') == 2
+
+    def test_a_blade_template_is_coloured_as_html(self, tmp_path):
+        html = self._html(tmp_path, "blade", "<h1>{{ $title }}</h1>")
+        assert '<span class="tok-nt">h1</span>' in html
 
     def test_an_unknown_language_stays_plain(self, tmp_path):
         assert "tok-" not in self._html(tmp_path, "klingon", "qapla")

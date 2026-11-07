@@ -47,6 +47,7 @@ async def create_user(name: str, age: int = 0) -> User:
 ### 5. उपभोग करें
 फ्रंटएंड को पूर्ण प्रकार की सुरक्षा के साथ परिणाम प्राप्त होता है। नेक्सी आपके हस्ताक्षरों से `__nexy__/src/actions.ts` लिखता है, और `@nexy/actions` उसका समाधान करता है।
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,15 +62,42 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+घटक उस दृश्य का एक द्वीप है जिसे नियंत्रक लौटाता है:
+
+```tsx filename="src/components/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 हुक के बिना, एक क्रिया केवल एक `async` फ़ंक्शन है: `const user = await create_user({ name: "Ada" })`।
 
-| फ्रेमवर्क | क्या `useAction` लौटाता है |
+| ढाँचा | क्या `useAction` लौटता है |
 |---|---|
 | React, Preact | `{ pending, data, error, run, reset }` |
-| Solid | वही, `pending()`, `data()` और `error()` एक्सेसर्स के रूप में |
-| Vue | वही, `pending`, `data` और `error` संदर्भ के रूप में |
-| Svelte | एक स्टोर: `$save.pending`, `$save.data`, `$save.error`, प्लस `save.run(input)` और `save.reset()` |
+| Solid | वही, `pending()`, `data()` और `error()` के साथ एक्सेसर्स के रूप में |
+| Vue | वही, `pending`, `data` और `error` के साथ संदर्भ के रूप में |
+| Svelte | एक दुकान: `$save.pending`, `$save.data`, `$save.error`, प्लस `save.run(input)` और `save.reset()` |
 
 `useAction(action, { onSuccess, onError })` भी दो कॉलबैक लेता है। `run` कभी नहीं फेंकता: एक विफलता `error` में आती है और `run` `undefined` के साथ हल हो जाती है।
 
@@ -82,7 +110,7 @@ export default function NewUser() {
 1.  **सत्यापन त्रुटियाँ (422)**: इनपुट Python हस्ताक्षर से मेल नहीं खाता। `error.fields` प्रत्येक अमान्य फ़ील्ड को उसके संदेश में मैप करता है।
 2.  **व्यावसायिक त्रुटियाँ (`HTTPException`)**: आपके कोड ने कॉल अस्वीकार कर दी, उदाहरण के लिए `403 Forbidden` या `409 Conflict`।
 3.  **सर्वर त्रुटियाँ (500)**: आपके Python कोड में एक हैंडल न किया गया अपवाद उत्पन्न हुआ।
-4.  **नेटवर्क त्रुटियाँ**: अनुरोध सर्वर तक कभी नहीं पहुँचा, उदाहरण के लिए टाइमआउट या खोया हुआ कनेक्शन।
+4.  **नेटवर्क त्रुटियाँ**: अनुरोध सर्वर तक कभी नहीं पहुंचा, उदाहरण के लिए टाइमआउट या खोया हुआ कनेक्शन।
 5.  **प्राधिकरण त्रुटियाँ (401, 403)**: आपके स्वयं के चेक ने कॉल करने वाले को अस्वीकार कर दिया। नेक्सी आपके लिए यह निर्णय नहीं लेता.
 
 नीचे वर्णित मूल जांच एक सीएसआरएफ सुरक्षा है, प्राधिकरण नहीं: यह बताता है कि कॉल कहां से आई है, यह नहीं बताता कि इसे करने की अनुमति किसे है।
@@ -118,7 +146,7 @@ revalidate("/users")    # that page, if it is the one open
 ### पथ अस्पष्टता प्राधिकरण नहीं है
 क्रिया पथ `/_nx_` है जिसके बाद फ़ंक्शन के मॉड्यूल का हैश, उसका नाम और प्रोजेक्ट का रहस्य आता है। इसे `NEXY_ACTION_SECRET` द्वारा सेट किया जाता है, या `__nexy__/action.key` में रखा जाता है, जो `nx build` बनाता है ताकि क्लाइंट बंडल और `nx start` सहमत हों: उस फ़ाइल को बिल्ड के साथ रखें। पथ आकस्मिक खोज से समापन बिंदु को छुपाता है, और **उत्पन्न पथ एक प्राधिकरण तंत्र नहीं है**।
 
-जो कोई भी रास्ता जानता है वह कार्रवाई को बुला सकता है। आप **** कार्रवाई के अंदर उपयोगकर्ता की पहचान और अनुमतियों को सत्यापित करना होगा:
+जो कोई भी रास्ता जानता है वह कार्रवाई को बुला सकता है। आपको **कार्रवाई के अंदर उपयोगकर्ता की पहचान और अनुमतियों को सत्यापित** करना होगा:
 ```python
 @Action
 async def delete_user(user_id: str, request: Request):
@@ -142,4 +170,4 @@ async def delete_user(user_id: str, request: Request):
 
 - [एपीआई](../routing/fbr/handlers/README.md): स्पष्ट हैंडलर
 - [परीक्षण](testing.md#what-to-assert): किसी क्रिया का परीक्षण कैसे करें
-- [कॉन्फ़िगर](../reference/config.md): मिडलवेयर और ऑथ विकल्प
+- [कॉन्फ़िग](../reference/config.md): मिडलवेयर और ऑथ विकल्प

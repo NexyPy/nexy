@@ -2,16 +2,30 @@
 
 Nexy rendert Svelte 5 Komponenten auf dem Server, dann Svelte übernimmt sie im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
+<!-- router:fbr,custom -->
 | Modus | `nexyconfig.py` | Seiten sind | Svelte ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Der Client | `useCSR = True` | `.svelte` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Kunde | `useCSR = True` | `.svelte` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+<!-- /router -->
+
+<!-- router:modular -->
+Beim modularen Router sind Svelte Komponenten [Inseln](../../rendering/islands.md) innerhalb der `.nexy` Ansichten, die ein Controller zurückgibt: Es gibt keine Auslagerungsdatei und keinen Client-Router.
+<!-- /router -->
 
 ## Starten Sie ein Projekt
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-svelte
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-svelte
+```
+<!-- /router -->
 
 Die Vorlage ist ein Servermodus-Projekt mit Svelte Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
@@ -50,9 +64,15 @@ export default defineConfig({
 - **Svelte 5.** Komponenten verwenden Runen: `$props()`, `$state()` und Schnipsel für Kinder.
 - **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [svelte(), vue()]` stoppt den Server beim Start.
 - **Eine Komponente pro Datei.** Der Name, unter dem Sie eine `.svelte` Datei importieren, ist nur das Tag, das Sie schreiben.
+<!-- router:fbr,custom -->
 - **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
 - **Ein Servermodus-Projekt hat keine `.svelte` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Komponenten leben in `src/components/`** und eine Ansicht importiert sie als Inseln.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Seiten
 
 Im Client-Modus (`useCSR = True`) ist eine Seite eine `.svelte`-Datei.
@@ -101,6 +121,7 @@ Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließe
   </body>
 </html>
 ```
+<!-- /router -->
 
 ## Inseln
 
@@ -110,12 +131,23 @@ Im Servermodus ist eine in eine `.nexy`-Datei importierte Svelte-Komponente eine
 
 Importieren Sie Komponenten in die Frontmatter der Datei `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.svelte" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.svelte" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Trinkrichtlinien
 

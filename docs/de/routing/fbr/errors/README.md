@@ -23,7 +23,7 @@ Erstellen Sie `src/routes/notfound.nexy` und schreiben Sie, was ein Besucher les
 
 ```nexy filename="src/routes/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>

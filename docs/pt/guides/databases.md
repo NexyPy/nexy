@@ -4,7 +4,7 @@
 
 ## O que o andaime adiciona
 
-| Arquivo | Finalidade |
+| Arquivo | Objetivo |
 |---|---|
 | `src/configs/db.py` | o motor (SQLModel, SQLAlchemy) ou as configurações `TORTOISE_ORM` |
 | `src/models/` | classes de modelo |
@@ -15,6 +15,7 @@ A string de conexão vem da variável de ambiente `DATABASE_URL`. Quando não é
 
 ## Use um serviço em uma página
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/usuários/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,16 +37,53 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Um controlador chama o serviço e passa as linhas para sua visualização ou as retorna como JSON:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM é assíncrono
 
 Uma página é executada no loop de eventos do servidor e não pode esperar por ela, então `asyncio.run(...)` falha lá com "não pode ser chamada a partir de um loop de eventos em execução". O scaffolded `src/configs/db.py` fornece ao Tortoise um loop próprio, em um thread, e dois auxiliares que enviam uma corrotina para ele:
 
-| Onde você está | Liga para | Faz |
+| Onde você está | Ligar | Faz |
 |---|---|---|
-| código de sincronização, como uma página | `run(UserService.get_all())` | executa-o e retorna o resultado |
-| código assíncrono, como um manipulador ou um controlador | `await arun(UserService.get_all())` | o mesmo, sem bloquear o servidor |
+| código de sincronização, como uma página | `run(UserService.get_all())` | executa e retorna o resultado |
+| código assíncrono, como um manipulador ou controlador | `await arun(UserService.get_all())` | o mesmo, sem bloquear o servidor |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/usuários/index.nexy"
 ---
 from src.configs.db import run
@@ -53,6 +91,26 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Um controlador é assíncrono: aguarda o serviço através de `arun` e a visualização mostra apenas as linhas:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise conecta na primeira vez que um deles é chamado. Chame o modelo de um `async def` (`await UserModel.all()` dentro de um serviço), não no nível do módulo: uma chamada fora de uma corrotina é executada antes de Tortoise ser conectado.
 

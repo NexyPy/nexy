@@ -2,18 +2,32 @@
 
 Nexy سرور پر Solid 1.9 اجزاء پیش کرتا ہے، پھر Solid انہیں براؤزر میں لے جاتا ہے۔ صفحات، ترتیب، جزیرے اور اعمال ہر فریم ورک میں ایک جیسے ہیں: یہ صفحہ سیٹ اپ کا احاطہ کرتا ہے، پھر وہ حصے جو [مشترکہ معاہدوں](../frontend/pages.md) سے مختلف ہوتے ہیں۔
 
-| موڈ | `nexyconfig.py` | صفحات ہیں | Solid ہے |
+<!-- router:fbr,custom -->
+| موڈ | `nexyconfig.py` | صفحات ہیں۔ | Solid ہے۔ |
 |---|---|---|---|
-| سرور (پہلے سے طے شدہ) | `useCSR = False` | `.nexy` فائلیں | [جزیرے](../../rendering/islands.md) ان صفحات کے اندر |
+| سرور (پہلے سے طے شدہ) | `useCSR = False` | `.nexy` فائلیں | [جزائر](../../rendering/islands.md) ان صفحات کے اندر |
 | کلائنٹ | `useCSR = True` | `.tsx` فائلیں | پورا صفحہ، [لے آؤٹس](../frontend/layouts.md) اور کلائنٹ روٹر کے ساتھ |
+<!-- /router -->
+
+<!-- router:modular -->
+ماڈیولر راؤٹر کے ساتھ، Solid اجزاء [جزیرے](../../rendering/islands.md) ہوتے ہیں `.nexy` ویوز کے اندر ایک کنٹرولر واپس آتا ہے: کوئی صفحہ فائل نہیں ہے اور کوئی کلائنٹ راؤٹر نہیں ہے۔
+<!-- /router -->
 
 ## ایک پروجیکٹ شروع کریں۔
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-solid
 ```
+<!-- /router -->
 
-ٹیمپلیٹ ایک سرور موڈ پروجیکٹ ہے جس میں Solid جزائر ہیں۔ اس کی بجائے اشارے کا جواب دینے کے لیے بغیر کسی ٹیمپلیٹ کے `nx new my-app` چلائیں: روٹر، پروجیکٹ کی قسم، آیا کلائنٹ سائیڈ روٹنگ استعمال کرنا ہے، پھر فریم ورک۔
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-solid
+```
+<!-- /router -->
+
+ٹیمپلیٹ ایک سرور موڈ پروجیکٹ ہے جس میں Solid جزائر ہیں۔ اس کے بجائے اشارے کا جواب دینے کے لیے بغیر کسی ٹیمپلیٹ کے `nx new my-app` چلائیں: روٹر، پروجیکٹ کی قسم، آیا کلائنٹ سائیڈ روٹنگ استعمال کرنا ہے، پھر فریم ورک۔
 
 ## موجودہ پروجیکٹ میں Solid کو فعال کریں۔
 
@@ -40,7 +54,7 @@ export default defineConfig({
 
 کلائنٹ موڈ میں لکھیں `solid({ ssr: true })`: Solid سرور اور براؤزر کے لیے ایک جزو کو مختلف طریقے سے مرتب کرتا ہے، اور کلائنٹ موڈ کو دونوں کی ضرورت ہوتی ہے۔ `nx new` اس فائل کو لکھتے ہیں۔ Nexy خود `__nexy__/vite.ts` لکھتا ہے، اس لیے اس میں ترمیم نہ کریں۔
 
-| پیکیج | ورژن `nx new` لکھتا ہے |
+| پیکج | نسخہ `nx new` لکھتے ہیں۔ |
 |---|---|
 | `solid-js` | `^1.9.12` |
 | `vite-plugin-solid` | `^2.11.0` (دیو انحصار) |
@@ -59,17 +73,23 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - سگنل کو کال کریں، `count()`، JSX کے اندر، اس کے اوپر متغیر میں نہیں۔
-- پروپس کو بطور `props.start` پڑھیں۔ ڈیسٹرکچرنگ `{ start }` قیمت کو ایک بار پڑھتا ہے اور اپ ڈیٹس کو کھو دیتا ہے۔
-- Solid HTML کی خصوصیات لکھتا ہے: `class`، `for`، `charset`، `className` نہیں۔
+- پروپس کو بطور `props.start` پڑھیں۔ Destructuring `{ start }` قدر کو ایک بار پڑھتا ہے اور اپ ڈیٹس کو کھو دیتا ہے۔
+- Solid HTML اوصاف لکھتا ہے: `class`، `for`، `charset`، `className` نہیں۔
 
 ## قواعد
 
 - **فی پروجیکٹ ایک فریم ورک** `useFF` بالکل ایک فریم ورک لیتا ہے۔ `useFF = [solid(), react()]` شروع ہونے پر سرور کو روکتا ہے۔ `useFF = solid()` کے ساتھ، ہر `.tsx` فائل Solid ہے۔
-- **صفحات ہیں۔ `.tsx`** `src/routes/` کے تحت صرف ایک `.tsx` فائل ایک صفحہ بنتی ہے۔ `.jsx` ایک جز کے لیے ٹھیک ہے۔
+<!-- router:fbr,custom -->
+- **صفحات ہیں۔ `.tsx`** `src/routes/` کے تحت صرف ایک `.tsx` فائل ایک صفحہ بن جاتی ہے۔ `.jsx` ایک جز کے لیے ٹھیک ہے۔
 - **اجزاء باہر رہتے ہیں `src/routes/`**، عام طور پر `src/components/` میں، اس لیے وہ صفحات نہیں ہیں۔
-- **سرور موڈ پروجیکٹ کا کوئی `.tsx` صفحہ** نہیں ہوتا، اور کلائنٹ موڈ پروجیکٹ کا کوئی `.nexy` صفحہ نہیں ہوتا: Nexy شروع کرنے سے انکار کرتا ہے اور فائل کو نام دیتا ہے۔ دیکھیں [موڈز](../../routing/fbr/modes.md)۔
+- **سرور موڈ پراجیکٹ میں کوئی `.tsx` صفحہ** نہیں ہوتا، اور کلائنٹ موڈ پروجیکٹ میں کوئی `.nexy` صفحہ نہیں ہوتا: Nexy شروع کرنے سے انکار کرتا ہے اور فائل کو نام دیتا ہے۔ دیکھیں [موڈز](../../routing/fbr/modes.md)۔
+<!-- /router -->
+<!-- router:modular -->
+- **اجزاء `src/components/`** میں رہتے ہیں، اور ایک نظریہ انہیں جزیروں کے طور پر درآمد کرتا ہے۔
+<!-- /router -->
 - **کوئی `.mdx` Solid کے ساتھ** MDX React یا Preact میں مرتب کرتا ہے؛ `.md` صفحات کام کرتے ہیں۔
 
+<!-- router:fbr,custom -->
 ## صفحات
 
 کلائنٹ موڈ میں (`useCSR = True`)، صفحہ ایک `.tsx` فائل ہے۔
@@ -118,7 +138,8 @@ export default function RootLayout(props: { children: JSX.Element }) {
 }
 ```
 
-تباہ نہ کریں `props.children`، جیسا کہ Solid اسے سستی سے پڑھتا ہے۔
+تباہ نہ کرو `props.children`، جیسا کہ Solid اسے سستی سے پڑھتا ہے۔
+<!-- /router -->
 
 ## جزائر
 
@@ -128,12 +149,23 @@ export default function RootLayout(props: { children: JSX.Element }) {
 
 `.nexy` فائل کے فرنٹ میٹر میں اجزاء درآمد کریں:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### ہائیڈریشن کی ہدایات
 
@@ -141,8 +173,8 @@ from "@/components/Counter.tsx" import Counter
 
 - `client:load` (پہلے سے طے شدہ): فوری طور پر
 - `client:idle`: جب براؤزر بیکار ہو۔
-- `client:visible`: جب یہ منظر میں طومار کرتا ہے۔
-- `client:media`: جب میڈیا کا استفسار ملتا ہے۔
+- `client:visible`: جب یہ منظر میں سکرول کرتا ہے۔
+- `client:media`: جب میڈیا کا سوال مماثل ہو۔
 
 ## اعمال اور نیویگیشن
 
@@ -161,7 +193,7 @@ const save = useAction(add_todo);
 
 ### نیویگیشن
 
-کلائنٹ سائیڈ ٹرانزیشن کے لیے `Link` جز کا استعمال کریں:
+کلائنٹ سائڈ ٹرانزیشن کے لیے `Link` جز کا استعمال کریں:
 
 ```tsx
 import { Link } from "@nexy/client";
@@ -178,7 +210,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### یو آر ایل تک رسائی
+### URL تک رسائی
 
 تمام لوکیشن ہکس واپس آنے والے ایکسیسرز:
 
@@ -189,5 +221,5 @@ router.push("/dashboard");
 
 ## اگلے اقدامات
 
-- [ملاحظات](../README.md): ان فارمیٹس کا موازنہ کریں جو صفحہ استعمال کر سکتا ہے۔
-- [فرنٹ اینڈ](../../guides/frontend.md): Vite اور کلائنٹ کی تعمیر
+- [آراء](../README.md): ان فارمیٹس کا موازنہ کریں جو صفحہ استعمال کر سکتا ہے۔
+- [فرنٹ اینڈ ](../../guides/frontend.md): Vite اور کلائنٹ کی تعمیر
