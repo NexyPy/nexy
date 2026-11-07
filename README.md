@@ -18,7 +18,7 @@ process, so a project keeps one server, one origin, and no CORS block.
   <a href="https://github.com/NexyPy/nexy/commits/main"><img src="https://img.shields.io/github/last-commit/NexyPy/nexy?color=%230F766E" alt="Last commit"></a>
 </p>
 
-<p align="center">
+<p>
   <a href="https://nexypy.github.io/nexy/"><strong>Documentation</strong></a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#coming-from-nextjs">From Next.js</a> ·
