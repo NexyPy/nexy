@@ -24,7 +24,7 @@ npm ls vite
 ## Regeln, denen Nexy folgt
 
 - **Vertrauen Sie niemals dem Host-Header für Pfade.** Nexy liest `scope["path"]`, nicht `request.url.path`, in seiner eigenen Middleware (Verzeichnis-Middleware). Machen Sie dasselbe bei Ihnen.
-- **Escape, was HTML erreicht.** An Client-Komponenten übergebene Requisiten, `Link`-Attribute, `Image`-, `Audio`- und `Video`-Attribute, Inhaltsverzeichnis-Anker und `HTTPException`-Details werden alle HTML-escaped. `| safe` in einer Vorlage deaktiviert dies: Verwenden Sie es niemals für Benutzereingaben.
+- **Escape, was HTML erreicht.** An Client-Komponenten übergebene Requisiten, `Link`-Attribute, `Image`-, `Audio`- und `Video`-Attribute, Inhaltsverzeichnis-Anker und `HTTPException`-Details werden alle HTML-escaped. Eine `.nexy`-Vorlage entkommt nicht von selbst: Schreiben Sie `{{ value | e }}` für jeden Wert, der von einem Besucher oder der Datenbank stammt, und niemals `| safe` für Benutzereingaben.
 - **Entwicklerendpunkte sind nur Loopback und eng.** Der Dev-Renderendpunkt (`/__nexy__/render`) akzeptiert nur Dateien unter `src/routes/` mit der Erweiterung `.tsx` oder `.jsx` und ist nur über den Dev-Server erreichbar, der fremde `Host`-Header ablehnt.
 - **Fehlerdetails gehen nicht verloren.** Eine Fehlerseite, die selbst fehlschlägt, zeigt nur den Statuscode an.
 - **Produktionsantworten tragen sichere Header.** `X-Content-Type-Options: nosniff` und `Referrer-Policy: strict-origin-when-cross-origin`, es sei denn, Ihr Code legt eigene fest. Der `Server`-Header wird nicht gesendet. Fügen Sie `Strict-Transport-Security` und ein `Content-Security-Policy` in Ihrem Proxy oder einer Middleware hinzu: Sie hängen von Ihrer Domain ab.
@@ -39,11 +39,11 @@ npm audit                                    # in a scaffolded project
 uv run bandit -r nexy -c .bandit             # static analysis of Nexy itself
 ```
 
-Nexys eigenes Repository führt bei seinen Prüfungen den ersten und den dritten aus. Eine neue Beratung in einem Stockwerk darüber erfolgt durch Anheben des Bodens in `pyproject.toml` oder im Gerüst `package.json` und anschließendes Regenerieren der Sperre.
+Nexys eigenes Repository führt bei seinen Prüfungen den ersten und den dritten aus. Eine neue Beratung auf einer Etage darüber erfolgt durch Anheben des Bodens in `pyproject.toml` oder im Gerüst `package.json` und anschließendes Regenerieren der Sperre.
 
 ## Sichere Bereitstellung
 
-- Legen Sie `useTrustedHost` auf Ihre Domains fest: Unerwartete `Host`-Header werden vor jeder Route abgelehnt.
+- Legen Sie `useTrustedHost` für Ihre Domains fest: Unerwartete `Host`-Header werden vor jeder Route abgelehnt.
 - Machen Sie den Vite-Entwicklungsserver nicht verfügbar: `nx dev` hält ihn im Loopback hinter dem Nexy-Ursprung.
 - Legen Sie `useDocs = False` fest, wenn das API-Schema nicht öffentlich sein soll.
 

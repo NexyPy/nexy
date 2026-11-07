@@ -33,7 +33,7 @@ export default function About() {
 }
 ```
 
-Страница — это сам файл, а не `page.tsx` внутри папки:
+Страница - это сам файл, а не `page.tsx` внутри папки:
 
 ```tsx filename="src/маршруты/about.tsx"
 export default function About() {
@@ -41,7 +41,7 @@ export default function About() {
 }
 ```
 
-`app/page.tsx` — это `src/routes/index.tsx`, а `app/blog/page.tsx` — это `src/routes/blog/index.tsx`.
+`app/page.tsx` - это `src/routes/index.tsx`, а `app/blog/page.tsx` - это `src/routes/blog/index.tsx`.
 
 ## Маршрутизация файлов, маршрутизатор приложений и маршрутизатор страниц
 
@@ -58,7 +58,7 @@ export default function About() {
 | `pages/api/items/[id].ts` | `src/routes/api/items/[id].py` |
 | `app/api/items/[id]/route.ts` | `src/routes/api/items/[id].py` или `src/routes/api/items/[id]/index.py` |
 
-Файл `.tsx` — это страница, а файл `.py` — это обработчик: расширение указывает, что это такое, поэтому обработчик маршрута теряет свою папку `/route`.
+Файл `.tsx` - это страница, а файл `.py` - это обработчик: расширение указывает, что это такое, поэтому обработчик маршрута теряет свою папку `/route`.
 
 ## Динамические сегменты и `params`
 
@@ -205,7 +205,7 @@ async def GET(id: int):
     return {"id": id}
 ```
 
-Тело — это модель Pydantic, а `/docs` перечисляет все обработчики:
+Тело - это модель Pydantic, а `/docs` перечисляет все обработчики:
 
 ```python filename="src/routes/api/items/index.py"
 from pydantic import BaseModel
@@ -233,7 +233,7 @@ export async function addTodo(title: string) {
 }
 ```
 
-Действие — это функция Python. Nexy генерирует типизированного клиента в `@nexy/actions`:
+Действие - это функция Python. Nexy генерирует типизированного клиента в `@nexy/actions`:
 
 ```python filename="src/actions/todos.py"
 from pydantic import BaseModel
@@ -268,7 +268,7 @@ export default function Todos() {
 
 `useActionState` и `useFormStatus` отображаются на `pending`, `error` и `data` из `useAction`.
 
-## Компоненты сервера — это `.nexy` страниц.
+## Компоненты сервера - это `.nexy` страниц.
 
 ```tsx filename="приложение/пользователи/page.tsx"
 export default async function Users() {
@@ -277,7 +277,7 @@ export default async function Users() {
 }
 ```
 
-Серверный компонент Next.js запускается на сервере, считывает данные и отправляет HTML. Страница `.nexy` — это то же самое в режиме сервера: ее фронтальная часть — это тело асинхронного компонента в Python, а шаблон — это то, что она возвращает.
+Серверный компонент Next.js запускается на сервере, считывает данные и отправляет HTML. Страница `.nexy` - это то же самое в режиме сервера: ее фронтальная часть - это тело асинхронного компонента в Python, а шаблон - это то, что она возвращает.
 
 ```nexy filename="src/маршруты/people.nexy"
 ---
@@ -383,7 +383,7 @@ export function middleware(request: NextRequest) {
 export const config = { matcher: "/dashboard/:path*" };
 ```
 
-`matcher` — это папка: `middleware.py` в `dashboard/` оборачивает каждый маршрут ниже нее.
+`matcher` - это папка: `middleware.py` в `dashboard/` оборачивает каждый маршрут ниже нее.
 
 ```python filename="src/routes/dashboard/middleware.py"
 from nexy.http import RedirectResponse, Request
@@ -422,7 +422,7 @@ async def GET(slug: str):
     return {"title": POSTS[slug]}
 ```
 
-`app/not-found.tsx` — это `src/routes/notfound.tsx` в режиме клиента и `notfound.nexy` в режиме сервера.
+`app/not-found.tsx` - это `src/routes/notfound.tsx` в режиме клиента и `notfound.nexy` в режиме сервера.
 
 ## `next/image`
 

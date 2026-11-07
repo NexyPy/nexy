@@ -36,7 +36,7 @@ _NAME = "|".join(re.escape(name) for name in sorted(NAMES, key=len, reverse=True
 # read before a lone backtick, a comment before a tag, a link target before a bare URL.
 _KEPT = re.compile(
     r"""
-    (?P<fence>^```[^\n]*\n.*?^```[ \t]*$)
+    (?P<fence>^[ \t]*```[^\n]*\n.*?^[ \t]*```[ \t]*$)
   | (?P<alert>\[![A-Z]+\])
   | (?P<comment><!--.*?-->)
   | (?P<tag><[^>]+>)

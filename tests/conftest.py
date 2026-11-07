@@ -1,3 +1,4 @@
+import os
 import sys
 import textwrap
 from pathlib import Path
@@ -5,6 +6,10 @@ from pathlib import Path
 import pytest
 
 from nexy.core.config import Config
+
+# The CLI speaks the language of the shell; the tests read its English messages, whatever the
+# locale of the machine that runs them. Set here so subprocesses inherit it too.
+os.environ["NEXY_LANG"] = "en"
 
 
 @pytest.fixture

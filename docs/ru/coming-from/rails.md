@@ -18,7 +18,7 @@ class HelloController < ApplicationController
 end
 ```
 
-Нет `routes.rb`: путь к файлу — URL-адрес, имя функции — метод HTTP.
+Нет `routes.rb`: путь к файлу - URL-адрес, имя функции - метод HTTP.
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -129,7 +129,7 @@ class Admin::BaseController < ApplicationController
 end
 ```
 
-Пространство имен — это папка, а ее `dependencies.py` — это `before_action` каждого маршрута в ней:
+Пространство имен - это папка, а ее `dependencies.py` - это `before_action` каждого маршрута в ней:
 
 ```python filename="src/routes/admin/stats.py"
 async def GET():
@@ -193,7 +193,7 @@ users = [{"name": "Ada"}, {"name": "Alan"}]
 </ul>
 ```
 
-`<%= %>` экранируется, а `{{ }}` — нет: экранируйте то, что посетитель набрал с помощью `{{ value | e }}`. `<%== %>` и `raw` — это `| safe`.
+`<%= %>` экранируется, а `{{ }}` - нет: экранируйте то, что посетитель набрал с помощью `{{ value | e }}`. `<%== %>` и `raw` - это `| safe`.
 
 ## Макеты и `yield`
 
@@ -245,7 +245,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`@` — это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
+`@` - это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
 
 ## `form_with` и `redirect_to`
 
@@ -263,7 +263,7 @@ def create
 end
 ```
 
-Действие — это `create`, куда отправляется форма. Его параметрами являются поля, и посетитель перенаправляется обратно на страницу с `303`:
+Действие - это `create`, куда отправляется форма. Его параметрами являются поля, и посетитель перенаправляется обратно на страницу с `303`:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action
@@ -350,7 +350,7 @@ if slug not in POSTS:
 <h1>{{ POSTS[slug] }}</h1>
 ```
 
-`notfound.nexy` в корне маршрутов — `public/404.html`, отображается как любая страница:
+`notfound.nexy` в корне маршрутов - `public/404.html`, отображается как любая страница:
 
 ```nexy filename="источник/маршруты/notfound.nexy"
 <h1>Not found</h1>

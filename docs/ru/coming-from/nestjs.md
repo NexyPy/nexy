@@ -1,6 +1,6 @@
 # От NestJS до Некси
 
-Модульный маршрутизатор Nexy сохраняет форму NestJS — контроллеры, модули, внедряемые сервисы и средства защиты — в Python, с Pydantic вместо классов DTO и документацией OpenAPI, созданной для вас.
+Модульный маршрутизатор Nexy сохраняет форму NestJS - контроллеры, модули, внедряемые сервисы и средства защиты - в Python, с Pydantic вместо классов DTO и документацией OpenAPI, созданной для вас.
 
 В каждом разделе ниже показана привычка NestJS, затем то же самое в Nexy. То, что есть в NestJS и чего нет в Nexy, перечислено в [Nexy и NestJS](../routing/modular/vs-nestjs.md).
 
@@ -14,7 +14,7 @@ const app = await NestFactory.create(AppModule);
 await app.listen(3000);
 ```
 
-Корневой модуль — это поле `nexyconfig.py`, а `nx dev` обслуживает его:
+Корневой модуль - это поле `nexyconfig.py`, а `nx dev` обслуживает его:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -40,7 +40,7 @@ export class CatsController {
 }
 ```
 
-Имя метода — это HTTP-глагол:
+Имя метода - это HTTP-глагол:
 
 ```python filename="src/apps/cats/cats_controller.py"
 from nexy.decorators import Controller
@@ -52,7 +52,7 @@ class CatsController:
         return [{"name": "Tom"}]
 ```
 
-Контроллер имеет один обработчик для каждого глагола. `GET /cats` и `GET /cats/:id` — два контроллера.
+Контроллер имеет один обработчик для каждого глагола. `GET /cats` и `GET /cats/:id` - два контроллера.
 
 ## Параметры маршрута
 
@@ -87,7 +87,7 @@ findAll(@Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number) {
 }
 ```
 
-Параметр запроса — это параметр со значением по умолчанию:
+Параметр запроса - это параметр со значением по умолчанию:
 
 ```python filename="src/apps/search/search_controller.py"
 from nexy.decorators import Controller
@@ -121,7 +121,7 @@ create(@Body() dto: CreateCatDto) {
 }
 ```
 
-DTO — это модель Pydantic. Оно всегда проверяется, и плохое тело отвечает `422`:
+DTO - это модель Pydantic. Оно всегда проверяется, и плохое тело отвечает `422`:
 
 ```python filename="src/apps/cats/cats_dto.py"
 from pydantic import BaseModel, Field
@@ -273,7 +273,7 @@ export class TokenGuard implements CanActivate {
 export class AdminController {}
 ```
 
-Guard — это функция, которая вызывается, когда запрос не может быть выполнен:
+Guard - это функция, которая вызывается, когда запрос не может быть выполнен:
 
 ```python filename="src/apps/admin/admin_controller.py"
 from fastapi import Header, HTTPException
@@ -412,7 +412,7 @@ constructor(private config: ConfigService) {}
 this.config.get("DATABASE_URL");
 ```
 
-Настройки — это модель Pydantic или простые переменные среды, внедряемые как любой провайдер:
+Настройки - это модель Pydantic или простые переменные среды, внедряемые как любой провайдер:
 
 ```python filename="src/apps/settings.py"
 import os

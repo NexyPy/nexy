@@ -7,7 +7,15 @@ from starlette.datastructures import URL
 from starlette.requests import Request
 
 import nexy
-from nexy.hooks import useHeaders, useIsActive, useParams, useQuery, useRequest, useUrl
+from nexy.hooks import (
+    useHeaders,
+    useIsActive,
+    useParams,
+    useQuery,
+    useRequest,
+    useSession,
+    useUrl,
+)
 from nexy.modules.routers.context import current_request
 
 
@@ -64,6 +72,16 @@ class TestRequest:
             "/blog",
             "page=2",
         )
+
+
+class TestSession:
+    def test_it_is_empty_when_sessions_are_off(self, in_request):
+        in_request()
+        assert useSession() == {}
+
+    def test_it_is_the_session_of_the_request_when_they_are_on(self, in_request):
+        in_request().scope["session"] = {"user_id": 1}
+        assert useSession() == {"user_id": 1}
 
 
 class TestIsActive:

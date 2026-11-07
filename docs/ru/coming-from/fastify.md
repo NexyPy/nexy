@@ -16,7 +16,7 @@ app.get("/api/hello", async () => ({ message: "Hello" }));
 await app.listen({ port: 3000 });
 ```
 
-Путь к файлу — это URL-адрес, а имя функции — это метод:
+Путь к файлу - это URL-адрес, а имя функции - это метод:
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -143,7 +143,7 @@ export default async function admin(app) {
 }
 ```
 
-Хук, привязанный к плагину, — это `dependencies.py` в его папке:
+Хук, привязанный к плагину, - это `dependencies.py` в его папке:
 
 ```python filename="src/routes/admin/dependents.py"
 from nexy.http import Header, HTTPException
@@ -188,7 +188,7 @@ app.get("/api/users", async function () {
 });
 ```
 
-Общий объект — это функция, которая возвращает его, а обработчик запрашивает его с помощью `Depends`:
+Общий объект - это функция, которая возвращает его, а обработчик запрашивает его с помощью `Depends`:
 
 ```python filename="src/db.py"
 class Db:

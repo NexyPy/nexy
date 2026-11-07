@@ -24,10 +24,10 @@ npm ls vite
 ## Reglas que sigue Nexy
 
 - **Nunca confíes en el encabezado del Host para las rutas.** Nexy lee `scope["path"]`, no `request.url.path`, en su propio middleware (middleware de directorio). Haz lo mismo en el tuyo.
-- **Escape de lo que llega a HTML.** Los accesorios pasados ​​a los componentes del cliente, `Link` atributos, `Image`, `Audio` y `Video` atributos, anclajes de tabla de contenido y `HTTPException` detalles se escapan de HTML. `| safe` en una plantilla desactiva esto: nunca lo uses en la entrada del usuario.
-- **Los puntos finales de desarrollador son de bucle invertido y estrechos.** El punto final de procesamiento de desarrollo (`/__nexy__/render`) solo acepta archivos en `src/routes/` con una extensión `.tsx` o `.jsx`, y solo se puede acceder a él a través del servidor de desarrollo, que rechaza encabezados `Host` externos.
+- **Escape de lo que llega a HTML.** Los accesorios pasados ​​a los componentes del cliente, `Link` atributos, `Image`, `Audio` y `Video` atributos, anclajes de tabla de contenido y `HTTPException` detalles se escapan de HTML. Una plantilla `.nexy` no escapa por sí sola: escriba `{{ value | e }}` para cualquier valor que provenga de un visitante o de la base de datos, y nunca `| safe` en la entrada del usuario.
+- **Los puntos finales de desarrollador son de bucle invertido y estrechos.** El punto final de procesamiento de desarrollo (`/__nexy__/render`) solo acepta archivos bajo `src/routes/` con una extensión `.tsx` o `.jsx`, y solo se puede acceder a él a través del servidor de desarrollo, que rechaza encabezados `Host` externos.
 - **Los detalles del error no se filtran.** Una página de error que falla muestra solo el código de estado.
-- **Las respuestas de producción llevan encabezados seguros.** `X-Content-Type-Options: nosniff` y `Referrer-Policy: strict-origin-when-cross-origin`, a menos que su código establezca el suyo propio. El encabezado `Server` no se envía. Agrega `Strict-Transport-Security` y un `Content-Security-Policy` en tu proxy o middleware: dependen de tu dominio.
+- **Las respuestas de producción llevan encabezados seguros.** `X-Content-Type-Options: nosniff` y `Referrer-Policy: strict-origin-when-cross-origin`, a menos que su código establezca el suyo propio. El encabezado `Server` no se envía. Agrega `Strict-Transport-Security` y un `Content-Security-Policy` en tu proxy o un middleware: dependen de tu dominio.
 - **Un bloqueo muestra una referencia, no el error.** Consulte [Páginas de error](../routing/fbr/errors/README.md#unhandled-exceptions).
 - **No `eval` ni `shell=True` en el código Python de Nexy.** Los programas externos se ejecutan con una lista de argumentos.
 

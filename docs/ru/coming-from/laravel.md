@@ -1,6 +1,6 @@
 # От Laravel до Nexy
 
-В Nexy маршрут Laravel и его метод контроллера становятся одним файлом в `src/routes/`: представление Blade становится страницей `.nexy`, `$request->validate` — моделью Pydantic, а Eloquent — выбранным вами ORM, например SQLModel.
+В Nexy маршрут Laravel и его метод контроллера становятся одним файлом в `src/routes/`: представление Blade становится страницей `.nexy`, `$request->validate` - моделью Pydantic, а Eloquent - выбранным вами ORM, например SQLModel.
 
 В каждом разделе ниже показаны особенности Laravel, а затем то же самое в Nexy.
 
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/hello', fn () => ['message' => 'Hello']);
 ```
 
-Файла маршрутов нет: путь к файлу — это URL-адрес, а имя функции — это метод.
+Файла маршрутов нет: путь к файлу - это URL-адрес, а имя функции - это метод.
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -25,14 +25,14 @@ async def GET():
 Route::get('/users/{id}', fn (int $id) => ['id' => $id])->whereNumber('id');
 ```
 
-`{id}` — это сегмент `[id]`, а аннотация `int` — это ограничение: `/api/users/abc` отвечает `404`.
+`{id}` - это сегмент `[id]`, а аннотация `int` - это ограничение: `/api/users/abc` отвечает `404`.
 
 ```python filename="src/routes/api/users/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
 
-Необязательные `{slug?}` или `{path}` соответствующие косые черты (`->where('path', '.*')`) — это универсальный вариант `[...path].py`.
+Необязательные `{slug?}` или `{path}` соответствующие косые черты (`->where('path', '.*')`) - это универсальный вариант `[...path].py`.
 
 ## Контроллеры
 
@@ -50,7 +50,7 @@ Route::get('/notes/{id}', [NoteController::class, 'show']);
 Route::delete('/notes/{id}', [NoteController::class, 'destroy']);
 ```
 
-Методы контроллера — это функции файла, названного в честь глагола:
+Методы контроллера - это функции файла, названного в честь глагола:
 
 ```python filename="src/routes/api/notes/[id].py"
 async def GET(id: int):
@@ -125,7 +125,7 @@ public function handle(Request $request, Closure $next)
 }
 ```
 
-Папка является префиксом, а ее `dependencies.py` — промежуточным программным обеспечением группы:
+Папка является префиксом, а ее `dependencies.py` - промежуточным программным обеспечением группы:
 
 ```python filename="src/routes/admin/stats.py"
 async def GET():
@@ -261,7 +261,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`@` — это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
+`@` - это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
 
 ## Формы, `@csrf` и перенаправления
 
@@ -282,7 +282,7 @@ public function store(Request $request)
 }
 ```
 
-Действие — это метод контроллера, которому отправляется форма. Его параметрами являются поля, и в случае успеха посетитель переходит к `back()` с сообщением `303`:
+Действие - это метод контроллера, которому отправляется форма. Его параметрами являются поля, и в случае успеха посетитель переходит к `back()` с сообщением `303`:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action
@@ -362,7 +362,7 @@ Route::get('/posts/{slug}', function (string $slug) {
 });
 ```
 
-`notFound()` — это `abort(404)`, а `notfound.nexy` — это `resources/views/errors/404.blade.php`:
+`notFound()` - это `abort(404)`, а `notfound.nexy` - это `resources/views/errors/404.blade.php`:
 
 ```nexy filename="src/маршруты/сообщения/[слизень].nexy"
 ---
