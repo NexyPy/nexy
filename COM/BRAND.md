@@ -118,6 +118,8 @@ Six cards is the default length. Nine is the maximum before the reader's thumb w
 
 ## The banner
 
-`nexy.png` at the root is a 1526 × 711 banner from before this document, with a glow and a drawn
-background. It stays until the repository gets a card rendered on this grid; it must not be used as
-the reference for anything new.
+`nexy.png` at the root is the 1200 × 630 banner rendered from this grid: the `nexy.svg` wordmark the
+template header already ships, the claim, the mechanism it comes from, the command that starts a
+project (`uvx nexy new`) and the docs URL. It is drawn by
+`python scripts/make_com_media.py --slug repo-banner` (`COM/design/repo-banner/banner.png`), and the
+same file serves the README and the social preview. Nothing else may be used as the banner.
