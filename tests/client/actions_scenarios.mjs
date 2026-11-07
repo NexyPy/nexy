@@ -7,6 +7,9 @@ let refreshed = 0;
 let answer;
 
 globalThis.location = { pathname: "/users", reload: () => reloaded++ };
+let announced = 0;
+globalThis.window = new EventTarget();
+window.addEventListener("nexy:revalidate", () => announced++);
 globalThis.fetch = async (url, init) => {
   calls.push({ url, init });
   return answer();
@@ -63,7 +66,7 @@ out.reloadListedPage = reloaded;
 globalThis.__nexy_router = { refresh: async () => void refreshed++ };
 answer = () => json("ok", 200, { "x-nexy-revalidate": "*" });
 await create({});
-out.routerRefresh = { refreshed, reloaded };
+out.routerRefresh = { refreshed, reloaded, announced };
 delete globalThis.__nexy_router;
 
 answer = () => json("ok");

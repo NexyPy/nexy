@@ -11,7 +11,7 @@ def _require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/docs-demo")
+@Controller("/docs-demo")
 class DocumentedController:
     @UseRoute(
         name="list_things",
@@ -27,14 +27,14 @@ class DocumentedController:
         return []
 
 
-@Controller(prefix="/hidden")
+@Controller("/hidden")
 class HiddenController:
     @UseRoute(include_in_schema=False)
     async def get(self) -> dict:
         return {"ok": True}
 
 
-@Controller(prefix="/guarded")
+@Controller("/guarded")
 @UseGuard(_require_token)
 class GuardedController:
     async def get(self) -> dict:

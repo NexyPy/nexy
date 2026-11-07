@@ -17,6 +17,7 @@ export function stage(framework, adapter, extras = []) {
   copy("router.ts", "router.ts");
   copy("shared.ts", "shared.ts");
   copy("actions.ts", "action-runtime.ts");
+  copy("fetch.ts", "fetch-runtime.ts");
   copy(adapter, `client${path.extname(adapter)}`);
   for (const extra of extras) copy(extra, extra);
   return dir;

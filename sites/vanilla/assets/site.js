@@ -18,18 +18,17 @@
   // --- Theme: the choice is kept in this browser -------------------------------------------------
   // The toggle is optional: a page without one still runs the rest of the script.
   // The change is instant: a cross-fade would stack two snapshots of the page on the click.
-  const themeSwitch = $('[data-theme-toggle]')
+  // The bar of the page and the drawer each carry one: both show the same state.
+  const themeSwitches = $$('[data-theme-toggle]')
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (themeSwitch) {
-    const showTheme = (name) => themeSwitch.setAttribute('aria-checked', String(name === 'dark'))
-    showTheme(document.documentElement.dataset.theme)
-    themeSwitch.addEventListener('click', () => {
-      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
-      document.documentElement.dataset.theme = next
-      showTheme(next)
-      try { localStorage.setItem('nexy-docs-theme', next) } catch {}
-    })
-  }
+  const showTheme = (name) => themeSwitches.forEach((one) => one.setAttribute('aria-checked', String(name === 'dark')))
+  showTheme(document.documentElement.dataset.theme)
+  themeSwitches.forEach((one) => one.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.dataset.theme = next
+    showTheme(next)
+    try { localStorage.setItem('nexy-docs-theme', next) } catch {}
+  }))
 
   // --- Copy the page as Markdown, to paste into an editor or an AI assistant -------------------------
   // A confirmation with a check mark that draws itself, then the label comes back.
@@ -66,6 +65,8 @@
   }
   menu.addEventListener('click', () => setMenu(!document.body.classList.contains('open')))
   scrim.addEventListener('click', () => setMenu(false, true))
+  // The button at the top of the drawer closes it, as the one of Fumadocs does.
+  $('.side-close').addEventListener('click', () => setMenu(false, true))
   $('.side').addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false) })
 
   // --- The grid behind the panel follows the pointer by a few pixels -----------------------------
@@ -377,14 +378,14 @@
   }
   // The picker is a list of links to the same page in each language; the choice is remembered,
   // so the root of the site opens the documentation in it next time.
-  const language = $('.lang-select')
-  if (language) {
+  // The bar of the page and the drawer each carry one picker.
+  $$('.lang-select').forEach((language) => {
     addEventListener('click', (e) => { if (!language.contains(e.target)) language.open = false })
     addEventListener('keydown', (e) => { if (e.key === 'Escape') language.open = false })
     $$('[data-lang]', language).forEach((link) => link.addEventListener('click', () => {
       try { localStorage.setItem(LANG_KEY, link.dataset.lang) } catch {}
     }))
-  }
+  })
   const loadLanguage = async () => {
     const url = document.body.dataset.i18n
     if (url) {

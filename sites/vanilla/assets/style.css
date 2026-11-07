@@ -696,6 +696,24 @@ html[data-mode="all"] .side .group[data-scope] { display: block !important; }
 }
 .side-filter input::placeholder { color: var(--muted); }
 .side-filter input::-webkit-search-cancel-button { -webkit-appearance: none; }
+/* The logo of the menu is a mark, not a link of the list: no padding, no hover background. */
+.side .brand, .side .brand:hover { min-height: 0; padding: 0; background: none; }
+/* The top row of the drawer, as in Fumadocs: GitHub, the language, the theme, then close. */
+.sheet-bar { display: none; }
+.side-close {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.side-close svg { width: 18px; height: 18px; }
+.side-close:hover { color: var(--ink); background: var(--soft); }
 .side-foot { margin: 1.25rem 0.2rem 0; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 .side-foot a { display: block; min-height: 0; padding: 0.2rem 0.35rem; color: var(--muted); text-decoration: none; border-radius: 0.25rem; }
 .side-foot a:hover { color: var(--ink); background: var(--soft); }
@@ -1324,7 +1342,7 @@ dialog.search input::placeholder { color: var(--muted); }
   html[data-side="closed"] .bar-open { display: grid; }
 }
 @media (max-width: 900px) {
-  .side-brand .side-toggle, .bar-open { display: none; }
+  .bar-open { display: none; }
 }
 
 /* Narrow screens: the menu becomes a drawer, opened from a thin bar. */
@@ -1356,39 +1374,86 @@ body.open .scrim { opacity: 1; pointer-events: auto; }
   .side-filter, .search-open { height: 2.75rem; }
   .menu, .bar-link { width: 2.75rem; height: 2.75rem; }
   .lang-select summary { height: 2.75rem; }
-  .theme-switch { width: 3.25rem; height: 2rem; }
+  /* The track keeps the size its knob is drawn for; only the tap grows past 44px. */
+  .theme-switch::after { content: ""; position: absolute; inset: -0.5rem -0.25rem; }
+  :root { --top: 3.5rem; }
+  /* The bar of Fumadocs: the logo on the start side, the search and the menu on the end side. */
   .mobilebar {
     position: sticky;
     top: 0;
     z-index: 20;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    height: var(--top);
-    padding: 0 0.75rem;
-    background: color-mix(in srgb, var(--bg-page) 85%, transparent);
+    height: 3.5rem;
+    padding-inline: 1rem 0.625rem;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg-page) 80%, transparent);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
   }
-  .mobilebar .search-open { width: 2rem; padding: 0; justify-content: center; border: 0; background: transparent; }
+  .mobilebar .brand { margin-inline-end: auto; }
+  .mobilebar .search-open { width: 2.75rem; padding: 0; justify-content: center; border: 0; background: transparent; color: var(--muted); }
+  .mobilebar .menu { color: var(--muted); }
+  .mobilebar :is(.search-open, .menu) svg { width: 18px; height: 18px; }
+  .mobilebar :is(.search-open, .menu):hover { color: var(--ink); background: var(--soft); }
   /* A phone carries the search in the mobile bar: the bar above the page would repeat it. */
   .panel-bar .search-open { display: none; }
+  /* The drawer comes in from the end edge, under the thumb that pressed the menu button. */
   .side {
     position: fixed;
     z-index: 30;
-    inset: 0 auto 0 0;
-    width: min(310px, 86vw);
+    inset-block: 0;
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    width: min(380px, 85vw);
     height: 100dvh;
     overflow: hidden;
     background: var(--card);
-    border-right: 1px solid var(--line);
-    transform: translateX(-100%);
+    border-inline-start: 1px solid var(--line);
+    transform: translateX(var(--drawer-out));
     transition: transform 0.3s var(--ease);
   }
-  .side-top { background: var(--card); }
-  body.open .side { transform: none; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.4); }
-  .panel { margin: 0 0.5rem 0.5rem; min-height: calc(100dvh - var(--top) - 0.5rem); }
-  .panel-bar { top: var(--top); }
+  /* A menu folded on a wide screen is still a drawer here: the fold never hides it. */
+  html[data-side="closed"] .side { opacity: 1; pointer-events: auto; transform: translateX(var(--drawer-out)); }
+  .side-top { padding: 1rem 1rem 0.5rem; background: var(--card); }
+  /* The drawer opens on its row of controls: the logo and the search are in the bar above. */
+  .sheet-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+    color: var(--muted);
+  }
+  .side .sheet-bar .bar-link { display: grid; min-height: 0; padding: 0; margin-inline-end: auto; }
+  /* The language list hangs from the row, not from its button: it spans the sheet between its
+     paddings whatever the direction of the page, and is tall enough for every language. */
+  .sheet-bar { position: relative; }
+  .sheet-bar .lang-select { position: static; }
+  .sheet-bar .lang-select ul {
+    inset-inline: 0;
+    min-width: 0;
+    max-height: calc(100dvh - 6rem);
+  }
+  .side-brand, .side-top > .search-open { display: none; }
+  body.open .side,
+  html[data-side="closed"] body.open .side { transform: none; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.4); }
+  /* The page has no frame on a phone: it runs from edge to edge under the bar. */
+  .panel {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    min-height: calc(100dvh - var(--top));
+  }
+  /* The controls of the page bar live in the drawer here: only the reading progress stays. */
+  .panel-bar {
+    top: var(--top);
+    height: 0;
+    padding: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .panel-bar > :not(.progress) { display: none; }
   .page { padding: 1.25rem 1.1rem 4.5rem; }
   .doc h1 { font-size: 2rem; }
   body[data-home] .page::before { display: none; }
@@ -1497,15 +1562,12 @@ body.open { overflow: hidden; }
 [dir="rtl"] .pager-arrow svg { transform: scaleX(-1); }
 [dir="rtl"] .side details:not([open]) .chev { transform: scaleX(-1); }
 [dir="rtl"] .side .chev { transition: none; }
-html[dir="rtl"][data-side="closed"] .side { transform: translateX(1rem); }
-@media (max-width: 900px) {
-  [dir="rtl"] .side {
-    inset: 0 0 0 auto;
-    border-right: 0;
-    border-left: 1px solid var(--line);
-    transform: translateX(100%);
-  }
+@media (min-width: 901px) {
+  html[dir="rtl"][data-side="closed"] .side { transform: translateX(1rem); }
 }
+/* The drawer leaves by the end edge: the right one, the left one in a right-to-left page. */
+:root { --drawer-out: 100%; }
+[dir="rtl"] { --drawer-out: -100%; }
 /* Scripts whose letters join or carry marks never get tracking: spaced letters break the joins of
    Arabic and Urdu and the vowel signs of Hindi and Bengali, and Chinese is set solid. */
 html:is([lang="ar"], [lang="ur"], [lang="hi"], [lang="bn"], [lang="zh"]) body * {

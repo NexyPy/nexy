@@ -25,6 +25,7 @@ import {
   type ActionOptions,
   type ActionState
 } from './action-runtime.ts'
+import { createFetchState, FetchError, type FetchState } from './fetch-runtime.ts'
 
 /** A route of the project, with an optional query or fragment, or a link out of the app. */
 export type Href =
@@ -108,5 +109,21 @@ export function useAction<Input, Output>(action: Action<Input, Output>, options?
     },
     run: store.run,
     reset: store.reset
+  }
+}
+
+export { FetchError }
+export type { FetchState }
+
+/** Read JSON from the server: `const users = useFetch<User[]>('/api/users')`, then `$users.data` and `users.refresh()`. */
+export function useFetch<Data = unknown>(url: string) {
+  const store = createFetchState<Data>(url)
+  return {
+    subscribe(run: (state: FetchState<Data>) => void): () => void {
+      run(store.getState())
+      if (typeof window !== 'undefined') void store.start()
+      return store.subscribe(() => run(store.getState()))
+    },
+    refresh: store.refresh
   }
 }

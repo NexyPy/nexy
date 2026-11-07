@@ -41,6 +41,18 @@ class TestSpecialRouteFilesConfig:
         assert "errors.vue" in names
         assert "error.nexy" not in names
 
+    def test_derive_notfound_names_keep_the_nexy_page(self):
+        assert special_names("notfound", {}) == ["notfound.nexy"]
+
+    def test_derive_forbidden_names_keep_the_nexy_page(self):
+        assert special_names("forbidden", {}) == ["forbidden.nexy"]
+
+    def test_derive_unauthorized_names_keep_the_nexy_page(self):
+        assert special_names("unauthorized", {}) == ["unauthorized.nexy"]
+
+    def test_derive_notfound_names_in_client_mode_drop_the_nexy_page(self):
+        assert special_names("notfound", {}, include_nexy=False) == []
+
     def test_derive_loading_names(self):
         ff = FrontendFramework(name="vue", render="", extension=["vue"])
         names = special_names("loading", {"vue": ff})
