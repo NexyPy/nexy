@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -31,14 +31,14 @@ class AdminController:
 
 `@UseRoute(...)` میٹا ڈیٹا OpenAPI سیٹ کرتا ہے۔ اس سے راستہ نہیں بدلتا۔
 
-| دلیل | معنی |
+| دلیل | مطلب |
 |---|---|
 | `name` | راستے کا نام |
 | `tags` | OpenAPI ٹیگز |
-| API حوالہ میں `summary`، `description` | متن |
-| `deprecated` | آپریشن کو فرسودہ نشان زد کریں |
+| `summary`، `description` | API حوالہ میں متن |
+| `deprecated` | آپریشن کو فرسودہ نشان زد کریں۔ |
 | `include_in_schema` | اسکیما سے راستے کو چھپائیں |
-| `operation_id` | واضح آپریشن کی شناخت |
+| `operation_id` | واضح آپریشن آئی ڈی |
 | `openapi_extra` | اضافی OpenAPI فیلڈز |
 
 ## جوابات
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)

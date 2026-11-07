@@ -55,6 +55,7 @@ Browser ──► Middleware ──► Router ──► Page or handler
 
 `redirect`، `permanentRedirect`، `notFound`، `forbidden` اور `unauthorized` ایک HTTP استثنیٰ کو بڑھاتے ہیں، لہذا وہی کال ایک `.nexy` صفحہ، ایک API ہینڈلر، ایک ماڈیولر کنٹرولر، ایک گارڈ، ایک `dependencies.py` اور ایک کارروائی میں کام کرتی ہے۔
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/posts/[slug].py"
 from nexy import notFound, redirect
 
@@ -69,6 +70,29 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 | کال کریں۔ | جواب دیں۔ | جب |
 |---|---|---|
@@ -85,6 +109,7 @@ async def GET(slug: str):
 
 ہینڈلر پیرامیٹرز کو ان کی تشریحات کے خلاف FastAPI کے ذریعہ توثیق کیا جاتا ہے۔
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
 
@@ -92,6 +117,22 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 | مسئلہ | حیثیت | کیوں |
 |---|---|---|
@@ -104,13 +145,14 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 {"detail": [{"loc": ["query", "q"], "msg": "Field required", "type": "missing"}]}
 ```
 
-کسی فارم یا ایکشن کے لیے، کلائنٹ کو `ActionError` کے ساتھ `status` اور `detail`؛ a `422` بھی `error.fields` کو فی فیلڈ میں ایک پیغام سے بھرتا ہے۔ دیکھیں [اعمال](../guides/actions.md#errors-and-failures)۔
+کسی فارم یا ایکشن کے لیے، کلائنٹ کو `status` اور `detail` کے ساتھ ایک `ActionError` ملتا ہے؛ a `422` بھی `error.fields` کو فی فیلڈ ایک پیغام کے ساتھ بھرتا ہے۔ دیکھیں [اعمال](../guides/actions.md#errors-and-failures)۔
 
 > [!TIP]
-> جب قاعدہ ایک فیلڈ (`limit: int = 10`) کے بارے میں ہو تو دستخط میں تصدیق کریں۔ باڈی میں تصدیق کریں جب قاعدہ کو ڈیٹا بیس یا کسی اور فیلڈ کی ضرورت ہو ("یہ ای میل پہلے ہی استعمال شدہ ہے"): بلند کریں `HTTPException(409)` اور پیغام کو کلائنٹ کے لیے رکھیں۔
+> دستخط میں توثیق کریں جب قاعدہ ایک فیلڈ (`limit: int = 10`) کے بارے میں ہو۔ باڈی میں تصدیق کریں جب قاعدہ کو ڈیٹا بیس یا کسی اور فیلڈ کی ضرورت ہو ("یہ ای میل پہلے ہی استعمال شدہ ہے"): بلند کریں `HTTPException(409)` اور پیغام کو کلائنٹ کے لیے رکھیں۔
 
 ## حسب ضرورت خرابی والے صفحات
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notfound.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -134,7 +176,12 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 روٹس میں کہیں ایک فائل اپنی حیثیت کے لیے جواب انسٹال کرتی ہے: روٹ پر موجود ایک کاپی پورے پروجیکٹ کا جواب دیتی ہے، ایک فولڈر میں موجود ایک کاپی اس فولڈر کا جواب دیتی ہے، اور سب سے گہری فائل جو URL سے میل کھاتی ہے جیت جاتی ہے۔ ہر کاپی کے باہر ایک یو آر ایل، اور ایک اسٹیٹس جس میں کوئی فائل نہیں، بلٹ ان اسٹائل والے صفحات حاصل کریں۔ دیکھیں [خرابی صفحات فی فولڈر](../routing/fbr/errors/folder-pages.md)۔
 
 > [!IMPORTANT]
-> ایک `errors.nexy` صفحہ `500` صفحہ کی جگہ لے لیتا ہے۔ یہ استثناء کو نہیں پکڑتا ہے اور یہ لاگ لائن کو تبدیل نہیں کرتا ہے۔ اگر ہینڈلر جس نے اٹھایا وہ صفحہ ہی ہے، تو صفحہ اپنی غلطی کی تفصیلات نہیں دکھا سکتا: `errors.nexy` سادہ اور آزاد رکھیں۔
+> ایک `errors.nexy` صفحہ `500` صفحہ کی جگہ لے لیتا ہے۔ یہ استثناء کو نہیں پکڑتا ہے اور یہ لاگ لائن کو تبدیل نہیں کرتا ہے۔ اگر ہینڈلر جس نے اٹھایا ہے وہ صفحہ ہی ہے، تو صفحہ اپنی غلطی کی تفصیلات نہیں دکھا سکتا: `errors.nexy` سادہ اور آزاد رکھیں۔
+<!-- /router -->
+
+<!-- router:modular -->
+ماڈیولر راؤٹر میں فائل میں کوئی خامی والا صفحہ نہیں ہے: `404`، `500`، `403` یا `401` کو بلٹ ان اسٹائل والا صفحہ ملتا ہے۔ خامی والے صفحات فی فولڈر فائل پر مبنی روٹر کا کنونشن ہیں۔
+<!-- /router -->
 
 ## غیر ہینڈل شدہ مستثنیات
 
@@ -165,11 +212,11 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 | صورتحال | حیثیت | کلائنٹ |
 |---|---|---|
 | ایک فیلڈ غائب یا غلط ہے۔ | `422` | `ActionError` کے ساتھ `fields` |
-| کارروائی میں اٹھائے گئے `HTTPException(403)` | `403` | `ActionError` `status` اور `detail` کے ساتھ |
+| `HTTPException(403)` کارروائی میں اٹھایا | `403` | `ActionError` `status` اور `detail` کے ساتھ |
 | ایک غیر ہینڈل استثناء | `500` | `ActionError`؛ حوالہ سرور لاگ میں ہے۔ |
 | `Origin` ہیڈر دوسری سائٹ ہے۔ | `403` | کارروائی سے پہلے انکار کر دیا |
 
-ایک فارم بغیر JavaScript ایکشن پاتھ پر پوسٹس کے۔ ایک کامیابی صفحہ پر واپس `303` جواب دیتی ہے، ناکامی غلطی کا صفحہ دکھاتی ہے۔ دیکھیں [اعمال](../guides/actions.md#forms-without-javascript)۔
+ایک فارم بغیر JavaScript ایکشن پاتھ پر پوسٹ کرتا ہے۔ ایک کامیابی صفحہ پر واپس `303` جواب دیتی ہے، ناکامی غلطی کا صفحہ دکھاتی ہے۔ دیکھیں [اعمال](../guides/actions.md#forms-without-javascript)۔
 
 ## ایک چیک لسٹ جب ایک صفحہ غلط چیز کا جواب دیتا ہے۔
 
@@ -177,12 +224,12 @@ async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
 2. **پڑھیں ٹرمینل** ایک صفحہ جو درآمد کرنے میں ناکام ہوتا ہے وہ رجسٹرڈ نہیں ہوتا، اس لیے اس کا URL جواب دیتا ہے `404` جب کہ فائل موجود ہے۔ درآمد کی خرابی لاگ میں ہے۔
 3. **چیک کریں۔ توسیع** `useCSR = True` کے ساتھ، `.nexy` صفحات کا تعلق سرور موڈ سے ہے۔ غلط موڈ میں ایک صفحہ ایک راستہ نہیں ہے.
 4. **چیک کریں۔ گہرائی** A `notfound.nexy` یا `errors.nexy` صرف اس وقت کام کرتا ہے جب روٹ کاپی موجود ہو۔
-5. **آپ کے API کلائنٹ کو جو شکل ملتی ہے اسے دیکھنے کے لیے `Accept: application/json` کے ساتھ JSON** کے لیے پوچھیں۔
+5. **آپ کے API کلائنٹ کو موصول ہونے والی شکل دیکھنے کے لیے `Accept: application/json` کے ساتھ JSON** کے لیے پوچھیں۔
 6. **جب آپ کوئی مسئلہ کھولتے ہیں یا لاگ کو تلاش کرتے ہیں تو `500` کا حوالہ** دیں۔
 
 ## اگلے اقدامات
 
-- [خرابی صفحات](../routing/fbr/errors/README.md): پورے صفحے کا برتاؤ، مثالوں کے ساتھ
-- [تصدیق اور غلطیاں](../routing/fbr/handlers/validation-and-errors.md): API ہینڈلرز
+- [خرابی کے صفحات](../routing/fbr/errors/README.md): پورے صفحے کا برتاؤ، مثالوں کے ساتھ
+- [توثیق اور غلطیاں](../routing/fbr/handlers/validation-and-errors.md): API ہینڈلرز
 - [ٹربل شوٹنگ](../guides/troubleshooting.md): وہ غلطیاں جو لوگ اصل میں مارتے ہیں۔
-- [ٹیسٹنگ](../guides/testing.md): ایک حیثیت اور جسم کا دعوی کریں۔
+- [ٹیسٹنگ ](../guides/testing.md): ایک حیثیت اور جسم پر زور دیں۔

@@ -47,6 +47,7 @@ O valor de retorno é serializado automaticamente para JSON. Os modelos Pydantic
 ### 5. Consumir
 O frontend recebe o resultado com total segurança de tipo. Nexy escreve `__nexy__/src/actions.ts` a partir de suas assinaturas e `@nexy/actions` resolve isso.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,6 +62,33 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+O componente é uma ilha da visão que um controlador retorna:
+
+```tsx filename="src/componentes/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 Sem um gancho, uma ação é apenas uma função `async`: `const user = await create_user({ name: "Ada" })`.
 
@@ -141,5 +169,5 @@ Na inicialização, o Nexy importa todos os módulos de `src/` para encontrar as
 ## Próximas etapas
 
 - [API](../routing/fbr/handlers/README.md): manipuladores explícitos
-- [Teste](testing.md#what-to-assert): como testar uma ação
+- [Testando](testing.md#what-to-assert): como testar uma ação
 - [Configuração](../reference/config.md): opções de middleware e autenticação

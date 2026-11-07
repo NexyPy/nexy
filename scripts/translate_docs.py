@@ -78,6 +78,17 @@ def _keeps(answer: str, indices: list[int]) -> bool:
     return all(found.count(index) == 1 for index in indices)
 
 
+def _rebracket(answer: str, expected: list[int]) -> str:
+    """Give back both brackets of a placeholder the service answers as `[145]` (Urdu does).
+
+    Only the numbers the request carried: a `[1]` of the text itself stays as it is.
+    """
+    for index in expected:
+        if f"[[{index}]]" not in answer:
+            answer = re.sub(rf"(?<!\[)\[{index}\](?!\])", f"[[{index}]]", answer, count=1)
+    return answer
+
+
 def _request(
     chunk: str, target: str, engine: Engine, opening: Collection[int] | None = None
 ) -> str:
@@ -91,7 +102,7 @@ def _request(
     if not translator.has_words(words):
         return chunk
     start = body.index(words)
-    answer = translator.heal(engine(words, target))
+    answer = _rebracket(translator.heal(engine(words, target)), _indices(words))
     whole = body[:start] + answer + body[start + len(words) :]
     return translator.respace(translator.with_leads(whole, openings) or whole, chunk)
 

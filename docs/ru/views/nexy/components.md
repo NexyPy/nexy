@@ -4,6 +4,7 @@ Nexy экспортирует небольшой набор помощников
 
 ## Два синтаксиса, одна функция
 
+<!-- router:fbr,custom -->
 ```nexy filename="источник/маршруты/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Обе строки создают одинаковую разметку:
 
@@ -26,14 +39,14 @@ from nexy import Audio
 | В теге | становится |
 |---|---|
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
-| `controls=True` | `controls=True`, реальное логическое значение |
+| `controls=True` | `controls=True`, настоящее логическое значение |
 | `width=640` | `width=640`, число |
 | `src="{{ url }}"` | `src=(url)`, оценено в Jinja |
 | любой другой `value` | `"value"`, строка |
 
 - Тег должен начинаться с заглавной буквы и быть импортирован во вступительной части; в противном случае компилятор вызывает `Missing Import: <Name> used but not declared.`
 - Форма тега **самозакрывающаяся**. `<Audio src="/a.mp3" />` и `{{ Audio("/a.mp3") }}` эквивалентны; запись дочерних элементов внутри вспомогательного тега не поддерживается.
-- Простой HTML-атрибут здесь не является логическим значением: `controls` становится `controls=""`, что неверно. Напишите `controls=True`.
+- Голый HTML-атрибут здесь не является логическим значением: `controls` становится `controls=""`, что неверно. Напишите `controls=True`.
 
 > [!NOTE]
 > `class_name` — документированное ключевое слово для классов CSS. Дополнительные аргументы ключевого слова становятся атрибутами HTML, поэтому `class="nav"` также достигает вывода.
@@ -60,7 +73,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` отображает `<a data-nexy-link>`, обрабатываемый клиентским маршрутизатором. При использовании `prefetch=True` наведение курсора мыши или прикосновение к ссылке нагревает цель через `window.__nexy_prefetch`.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` отображает `<a data-nexy-link>`, обрабатываемый клиентским маршрутизатором. С помощью `prefetch=True` наведение курсора мыши или прикосновение к ссылке нагревает цель через `window.__nexy_prefetch`.
 
 > [!NOTE]
 > форма тега принимает метку как `children`, а не как содержимое элемента: `<Link href="/about" children="About" />`. Чтобы поместить разметку внутри ссылки, используйте форму вызова с компонентом `children=` или `.nexy`, который отображает `<Slot />`.
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="источник/маршруты/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,6 +117,18 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
 
 `title` не имеет значения по умолчанию, поэтому страница должна передать его; `tone` возвращается к `"neutral"`. Разметка между тегами находится внутри `<Slot />` (заглавная S). См. файлы [.nexy](README.md#components) для реквизитов, слотов и правил формы тегов.
 
@@ -130,9 +156,9 @@ html = counter(start=0)
 
 ## Шаблон и Vite
 
-`Template().render(path, context)` отображает файл шаблона (Jinja2 или Markdown визуализируется в HTML для маршрутов `.md`. `Template().invalidate(path)` удаляет его из кеша.
+`Template().render(path, context)` отображает файл шаблона (Jinja2 или Markdown визуализируется в HTML для маршрутов `.md`). `Template().invalidate(path)` удаляет его из кеша.
 
-`Vite()` возвращает теги клиента для текущего режима: сценарий HMR в разработке, встроенный пакет клиента в производстве. Nexy вызывает его для каждой страницы; вам это редко нужно напрямую.
+`Vite()` возвращает теги клиента для текущего режима: сценарий HMR в разработке, встроенный клиентский пакет в производстве. Nexy вызывает его для каждой страницы; вам это редко нужно напрямую.
 
 ## Еще не реализовано
 
@@ -140,6 +166,6 @@ html = counter(start=0)
 
 ## Следующие шаги
 
-- [.nexy файлы](README.md): где используются эти помощники
+- [Файлы .nexy](README.md): где используются эти помощники
 - [React](../react/differences.md): импорт компонентов `.tsx`
 - [Фронтенд](../../guides/frontend.md): как связаны клиентские компоненты

@@ -21,27 +21,49 @@
 - **मॉड्यूलर राउटर**: `src/apps/` के अंतर्गत नियंत्रक और मॉड्यूल, नेस्टजेएस-शैली कोडबेस के लिए डेकोरेटर के साथ घोषित।
 - **कस्टम राउटर**: एक मौजूदा FastAPI `APIRouter` एप्लिकेशन में शामिल है।
 
-विकल्प `nexyconfig.py` की एक पंक्ति है। फ़ाइल-आधारित रूटिंग के लिए किसी की आवश्यकता नहीं है: `useRouter` के बिना, नेक्सी `src/routes/` पढ़ता है।
+विकल्प `nexyconfig.py` में `NexyConfig` वर्ग की एक पंक्ति है।
+
+<!-- router:fbr -->
+फ़ाइल-आधारित रूटिंग के लिए किसी लाइन की आवश्यकता नहीं है: `useRouter` के बिना, नेक्सी `src/routes/` पढ़ता है।
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+मॉड्यूलर राउटर `src/apps/` का रूट मॉड्यूल है:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+एक कस्टम राउटर एक `APIRouter` है जो आपके पास पहले से है:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
-तीनों में से किसी एक को चुनना एक निर्णय है। फ्रंटएंड फ्रेमवर्क चुनना एक अलग, अलग मामला है: [राउटर चुनें](../routing/README.md) और [व्यूज़](../views/README.md) देखें।
+तीनों में से किसी एक को चुनना एक निर्णय है। फ्रंटएंड फ्रेमवर्क चुनना एक अलग, अलग मामला है: देखें [राउटर चुनें](../routing/README.md) और [व्यूज़](../views/README.md)।
 
 ## अनुप्रयोग संरचना
 
@@ -58,6 +80,7 @@ class NexyConfig(NexyConfigModel):
 
 एक वाक्य में: **एक पृष्ठ एक रूट फ़ाइल है, एक दृश्य वह है जो इसे प्रस्तुत करता है, एक घटक वह है जिसे एक पृष्ठ पुन: उपयोग करता है, एक हैंडलर एक समापन बिंदु का उत्तर देता है।**
 
+<!-- router:fbr -->
 एक छोटे प्रोजेक्ट में सभी पाँच:
 
 ```text
@@ -90,6 +113,69 @@ async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
 
+<!-- /router -->
+
+<!-- router:modular -->
+मॉड्यूलर राउटर के साथ, एक रूट एक नियंत्रक का पथ है, और एक हैंडलर इसके तरीकों में से एक है, जिसका नाम HTTP क्रिया के नाम पर रखा गया है:
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+एक पृष्ठ अभी भी `src/routes/` की एक फ़ाइल है, या एक दृश्य जो नियंत्रक `useViews` के साथ लौटाता है।
+<!-- /router -->
+
+<!-- router:custom -->
+एक कस्टम राउटर के साथ, एक रूट आपके `APIRouter` का एक पथ है, और एक हैंडलर वह फ़ंक्शन है जिसे उसका डेकोरेटर पंजीकृत करता है:
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+पृष्ठ अभी भी `src/routes/` की फ़ाइलें हैं: शामिल मार्गों के बगल में एक `.nexy` पृष्ठ उत्तर है।
+<!-- /router -->
+
 दो और शब्द जो हर जगह वापस आते हैं:
 
 - **लेआउट**: एक `layout.*` फ़ाइल जो अपने फ़ोल्डर के नीचे पृष्ठों को लपेटती है; रूट वाला HTML दस्तावेज़ का स्वामी है। [लेआउट](../routing/fbr/layouts/README.md) देखें।
@@ -106,12 +192,13 @@ async def POST():  # the endpoint POST /api/posts
 |---|---|
 | सर्वर मोड | सर्वर `.nexy` और `.md` पेज प्रस्तुत करता है; घटक द्वीप हैं ([मोड](../routing/fbr/modes.md)) |
 | क्लाइंट मोड | `useCSR = True`: फ्रेमवर्क फ़ाइलें मार्ग हैं, और नेविगेशन ब्राउज़र में होता है |
-| एसएसआर, आईएसआर, सीएसआर, द्वीप समूह | सीएसआर को छोड़कर, प्रति पृष्ठ चार रेंडरिंग मोड तय किए गए हैं, जो प्रति प्रोजेक्ट है ([रेंडरिंग](../rendering/README.md)) |
+| एसएसआर, आईएसआर, सीएसआर, द्वीप समूह | सीएसआर को छोड़कर प्रति पृष्ठ चार रेंडरिंग मोड तय किए गए हैं, जो प्रति प्रोजेक्ट है ([रेंडरिंग](../rendering/README.md)) |
 | जलयोजन | ब्राउज़र HTML में एक फ़्रेमवर्क संलग्न कर रहा है, सर्वर पहले ही भेज चुका है ([द्वीप](../rendering/islands.md)) |
 | सहारा | वे मान जो माता-पिता किसी घटक को देते हैं, `name: prop[type]` को `.nexy` फ़ाइल में घोषित करते हैं ([.nexy फ़ाइलें](../views/nexy/README.md)) |
 
 एक द्वीप के साथ एक सर्वर-मोड पृष्ठ: सर्वर पृष्ठ को प्रस्तुत करता है, ब्राउज़र चार्ट को केवल तभी हाइड्रेट करता है जब वह दृश्य में स्क्रॉल करता है।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -119,6 +206,30 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+द्वीप दृश्य में चला जाता है, और नियंत्रक दृश्य लौटाता है:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## अनुप्रयोग इंटरैक्शन
 
@@ -140,17 +251,29 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="src/routes/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## नेक्सी क्या नहीं करती
 
 प्रमाणीकरण, प्राधिकरण, डेटाबेस, अंतर्राष्ट्रीयकरण, पृष्ठभूमि नौकरियां, ईमेल, भुगतान और खोज **आपके एप्लिकेशन की ज़िम्मेदारी हैं**, फ़्रेमवर्क की नहीं। नेक्सी विस्तार बिंदु देता है और बताता है कि प्रत्येक को कहां प्लग करना है: देखें [नेक्सी आप पर क्या छोड़ती है](how-nexy-works.md#what-nexy-leaves-to-you)।
 
+<!-- router:fbr -->
 उदाहरण के लिए, प्रमाणीकरण उस फ़ोल्डर की निर्भरता में प्लग हो जाता है जिसकी वह सुरक्षा करता है। नेक्सी इसे नीचे दिए गए प्रत्येक मार्ग से पहले चलाता है; उपयोगकर्ता कौन है यह आपका निर्णय है:
 
 ```python filename="src/routes/account/dependents.py"
@@ -165,6 +288,48 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+उदाहरण के लिए, प्रमाणीकरण, नियंत्रक पर लगे एक गार्ड में प्लग हो जाता है जिसकी वह सुरक्षा करता है। नेक्सी इसे क्लास के प्रत्येक हैंडलर से पहले चलाता है; उपयोगकर्ता कौन है यह आपका निर्णय है:
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+उदाहरण के लिए, प्रमाणीकरण, उस राउटर की निर्भरता में प्लग हो जाता है जिसकी वह सुरक्षा करता है, जैसा कि FastAPI में है; उपयोगकर्ता कौन है यह आपका निर्णय है:
+
+```python filename="src/account.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 इसका कारण अपने आप में अतिसूक्ष्मवाद नहीं है: एक ढांचा जो आपके ओआरएम या आपकी ऑथ लाइब्रेरी को चुनता है, उसने कुछ ऐसा तय किया है जो केवल आपका एप्लिकेशन ही तय कर सकता है।
 

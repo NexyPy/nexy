@@ -53,12 +53,30 @@ Assurez-vous que le proxy transfère les mises à niveau de WebSocket si vous ut
 
 ## Bilan de santé
 
+<!-- router:fbr,custom -->
 Ajoutez un fichier de gestionnaire, `src/routes/api/health.py`, et sondez `/api/health` - plutôt qu'une page dont le rendu peut être lent :
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Ajoutez un contrôleur et sondez `/health/` - plutôt qu'une vue dont le rendu peut être lent :
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+Listez-le dans le `controllers` du module racine.
+<!-- /router -->
 
 ## Hébergement statique
 

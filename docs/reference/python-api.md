@@ -35,6 +35,32 @@ Components for `.nexy` templates and the request hooks.
 
 The hooks work inside a request only: see [hooks](../routing/fbr/navigation/hooks.md).
 
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/index.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
 ## `nexy.http`
 
 The HTTP vocabulary of a handler. Import from here rather than from FastAPI, so your handlers depend
@@ -55,6 +81,43 @@ on Nexy's contract.
 | `notFound`, `forbidden`, `unauthorized` | raise a 404, 403 or 401 from the same places |
 | `FileResponse`, `StreamingResponse` | answer with a file or a stream |
 
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/items/[id].py"
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+async def GET(id: int, key: str = Depends(api_key)):
+    return {"id": id}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+List the controller in the `controllers` of the root module.
+<!-- /router -->
+
 ## `nexy.decorators`
 
 | Name | What it is |
@@ -69,11 +132,29 @@ on Nexy's contract.
 | `HTTP_METHODS` | the HTTP methods a handler file may define |
 | `ACTIONS_STORE` | the registry of actions, for tooling and tests |
 
+```python filename="src/actions/posts.py"
+from nexy.decorators import Action, revalidate
+
+
+@Action
+async def publish(post_id: int) -> bool:
+    revalidate("/blog")
+    return True
+```
+
 ## `nexy.testing`
 
 | Name | What it is |
 |---|---|
 | `render` | the HTML of a `.nexy` component for given props, without a server, see [testing](../guides/testing.md) |
+
+```python filename="tests/test_button.py"
+from nexy.testing import render
+
+
+def test_the_button_shows_its_label():
+    assert "Save" in render("src/components/button.nexy", label="Save")
+```
 
 ## Where next
 

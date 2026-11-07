@@ -8,10 +8,22 @@ import subprocess
 import sys
 
 GATES: list[tuple[str, list[str]]] = [
-    ("lint", ["-m", "ruff", "check", "nexy/", "tests/"]),
-    ("format", ["-m", "ruff", "format", "nexy/", "tests/", "--check"]),
+    ("lint", ["-m", "ruff", "check", "nexy/", "tests/", "sites/", "scripts/"]),
+    ("format", ["-m", "ruff", "format", "nexy/", "tests/", "sites/", "scripts/", "--check"]),
     ("typecheck", ["-m", "mypy", "nexy", "--strict"]),
+    (
+        "typecheck-sites",
+        [
+            "-m",
+            "mypy",
+            "sites/shared/social",
+            "scripts/publish_social.py",
+            "scripts/make_com_media.py",
+            "--strict",
+        ],
+    ),
     ("structure", ["scripts/audit_structure.py", "--check"]),
+    ("com", ["scripts/publish_social.py", "--check"]),
     ("test", ["-m", "pytest", "tests/", "-q"]),
 ]
 

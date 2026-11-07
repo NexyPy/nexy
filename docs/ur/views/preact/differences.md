@@ -2,18 +2,32 @@
 
 Nexy سرور پر Preact 10 اجزاء پیش کرتا ہے، پھر Preact انہیں براؤزر میں لے جاتا ہے۔ صفحات، ترتیب، جزیرے اور اعمال ہر فریم ورک میں ایک جیسے ہیں: یہ صفحہ سیٹ اپ کا احاطہ کرتا ہے، پھر وہ حصے جو [مشترکہ معاہدوں](../frontend/pages.md) سے مختلف ہوتے ہیں۔
 
-| موڈ | `nexyconfig.py` | صفحات ہیں | Preact ہے |
+<!-- router:fbr,custom -->
+| موڈ | `nexyconfig.py` | صفحات ہیں۔ | Preact ہے۔ |
 |---|---|---|---|
-| سرور (پہلے سے طے شدہ) | `useCSR = False` | `.nexy` فائلیں | [جزیرے](../../rendering/islands.md) ان صفحات کے اندر |
+| سرور (پہلے سے طے شدہ) | `useCSR = False` | `.nexy` فائلیں | [جزائر](../../rendering/islands.md) ان صفحات کے اندر |
 | کلائنٹ | `useCSR = True` | `.tsx` فائلیں | پورا صفحہ، [لے آؤٹس](../frontend/layouts.md) اور کلائنٹ روٹر کے ساتھ |
+<!-- /router -->
+
+<!-- router:modular -->
+ماڈیولر راؤٹر کے ساتھ، Preact اجزاء [جزیرے](../../rendering/islands.md) ہوتے ہیں `.nexy` ویوز کے اندر ایک کنٹرولر واپس آتا ہے: کوئی صفحہ فائل نہیں ہے اور کوئی کلائنٹ راؤٹر نہیں ہے۔
+<!-- /router -->
 
 ## ایک پروجیکٹ شروع کریں۔
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-preact
 ```
+<!-- /router -->
 
-ٹیمپلیٹ ایک سرور موڈ پروجیکٹ ہے جس میں Preact جزائر ہیں۔ اس کی بجائے اشارے کا جواب دینے کے لیے بغیر کسی ٹیمپلیٹ کے `nx new my-app` چلائیں: روٹر، پروجیکٹ کی قسم، آیا کلائنٹ سائیڈ روٹنگ استعمال کرنا ہے، پھر فریم ورک۔
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-preact
+```
+<!-- /router -->
+
+ٹیمپلیٹ ایک سرور موڈ پروجیکٹ ہے جس میں Preact جزائر ہیں۔ اس کے بجائے اشارے کا جواب دینے کے لیے بغیر کسی ٹیمپلیٹ کے `nx new my-app` چلائیں: روٹر، پروجیکٹ کی قسم، آیا کلائنٹ سائیڈ روٹنگ استعمال کرنا ہے، پھر فریم ورک۔
 
 ## موجودہ پروجیکٹ میں Preact کو فعال کریں۔
 
@@ -40,7 +54,7 @@ export default defineConfig({
 
 `nx new` اس فائل کو لکھتے ہیں۔ Nexy خود `__nexy__/vite.ts` لکھتا ہے، اس لیے اس میں ترمیم نہ کریں۔
 
-| پیکیج | ورژن `nx new` لکھتا ہے |
+| پیکج | نسخہ `nx new` لکھتے ہیں۔ |
 |---|---|
 | `preact` | `^10.25.4` |
 | `@preact/preset-vite` | `^2.10.1` (دیو انحصار) |
@@ -59,17 +73,23 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
-- ہکس `preact/hooks` سے آتے ہیں، قسمیں جیسے `ComponentChildren` `preact` سے۔
+- ہکس `preact/hooks` سے آتے ہیں، جیسے `ComponentChildren` `preact` سے۔
 - HTML اوصاف لکھیں: `class`، `for`، `charset`۔ `Link` اپنی کلاسیں `class` سے پڑھتا ہے۔
 
 ## قواعد
 
 - **فی پروجیکٹ ایک فریم ورک** `useFF` بالکل ایک فریم ورک لیتا ہے۔ `useFF = [preact(), react()]` شروع ہونے پر سرور کو روکتا ہے۔ `useFF = preact()` کے ساتھ، ہر `.tsx` فائل Preact ہے۔
-- **صفحات ہیں۔ `.tsx`۔** `src/routes/` کے تحت صرف ایک `.tsx` فائل ایک صفحہ بنتی ہے۔ `.jsx` ایک جز کے لیے ٹھیک ہے۔
+<!-- router:fbr,custom -->
+- **صفحات ہیں۔ `.tsx`** `src/routes/` کے تحت صرف ایک `.tsx` فائل ایک صفحہ بنتی ہے۔ `.jsx` ایک جز کے لیے ٹھیک ہے۔
 - **اجزاء باہر رہتے ہیں `src/routes/`**، عام طور پر `src/components/` میں، اس لیے وہ صفحات نہیں ہیں۔
-- **سرور موڈ پروجیکٹ میں کوئی `.tsx` صفحہ** نہیں ہوتا، اور کلائنٹ موڈ پروجیکٹ کا کوئی `.nexy` صفحہ نہیں ہوتا: Nexy شروع کرنے سے انکار کرتا ہے اور فائل کو نام دیتا ہے۔ [موڈز](../../routing/fbr/modes.md) دیکھیں۔
-- **ایک `.mdx` صفحہ سے درآمد کرتا ہے۔ `"preact"`** Nexy `.mdx` فائل کو Preact کے ساتھ مرتب کرتا ہے جب وہ اس درآمد کو دیکھتا ہے، مثال کے طور پر `import { h } from "preact"`، اور دوسری صورت میں React کے ساتھ۔ دیکھیں [Markdown اور MDX](../nexy/markdown.md)۔
+- **سرور موڈ پراجیکٹ میں کوئی `.tsx` صفحہ** نہیں ہوتا، اور کلائنٹ موڈ پروجیکٹ میں کوئی `.nexy` صفحہ نہیں ہوتا: Nexy شروع کرنے سے انکار کرتا ہے اور فائل کو نام دیتا ہے۔ دیکھیں [موڈز](../../routing/fbr/modes.md)۔
+<!-- /router -->
+<!-- router:modular -->
+- **اجزاء `src/components/`** میں رہتے ہیں، اور ایک منظر انہیں جزیروں کے طور پر درآمد کرتا ہے۔
+<!-- /router -->
+- **ایک `.mdx` صفحہ سے درآمد کرتا ہے۔ `"preact"`.** Nexy ایک `.mdx` فائل کو Preact کے ساتھ مرتب کرتا ہے جب وہ اس درآمد کو دیکھتا ہے، مثال کے طور پر `import { h } from "preact"`، اور دوسری صورت میں React کے ساتھ۔ دیکھیں [Markdown اور MDX](../nexy/markdown.md)۔
 
+<!-- router:fbr,custom -->
 ## صفحات
 
 کلائنٹ موڈ میں (`useCSR = True`)، صفحہ ایک `.tsx` فائل ہے۔
@@ -117,21 +137,33 @@ export default function RootLayout({ children }: { children: ComponentChildren }
   );
 }
 ```
+<!-- /router -->
 
 ## جزائر
 
-سرور موڈ میں، `.nexy` فائل میں درآمد کردہ ایک Preact جز ایک جزیرہ ہے۔
+سرور موڈ میں، ایک Preact جز میں درآمد کیا جاتا ہے۔ `.nexy` فائل ایک جزیرہ ہے۔
 
 ### درآمد کرنا
 
 `.nexy` فائل کے فرنٹ میٹر میں اجزاء درآمد کریں:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### ہائیڈریشن کی ہدایات
 
@@ -159,7 +191,7 @@ const { run, pending, error, data } = useAction(add_todo);
 
 ### نیویگیشن
 
-کلائنٹ سائڈ ٹرانزیشن کے لیے `Link` جز کا استعمال کریں۔ نوٹ کریں کہ Preact `className` کے بجائے `class` استعمال کرتا ہے:
+کلائنٹ سائڈ ٹرانزیشن کے لیے `Link` جز کا استعمال کریں۔ نوٹ کریں کہ Preact `className` کی بجائے `class` استعمال کرتا ہے:
 
 ```tsx
 import { Link } from "@nexy/client";
@@ -176,7 +208,7 @@ const router = useRouter();
 router.push("/dashboard");
 ```
 
-### یو آر ایل تک رسائی
+### URL تک رسائی
 
 - `usePathname()`: موجودہ راستہ
 - `useParams()`: متحرک طبقات
@@ -185,5 +217,5 @@ router.push("/dashboard");
 
 ## اگلے اقدامات
 
-- [ملاحظات](../README.md): ان فارمیٹس کا موازنہ کریں جو صفحہ استعمال کر سکتا ہے۔
-- [فرنٹ اینڈ](../../guides/frontend.md): Vite اور کلائنٹ کی تعمیر
+- [آراء](../README.md): ان فارمیٹس کا موازنہ کریں جو صفحہ استعمال کر سکتا ہے۔
+- [فرنٹ اینڈ ](../../guides/frontend.md): Vite اور کلائنٹ کی تعمیر

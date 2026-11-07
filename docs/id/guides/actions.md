@@ -47,6 +47,7 @@ Nilai yang dikembalikan secara otomatis diserialkan ke JSON. Model Pydantic dita
 ### 5. Konsumsi
 Frontend menerima hasilnya dengan keamanan tipe penuh. Nexy menulis `__nexy__/src/actions.ts` dari tanda tangan Anda, dan `@nexy/actions` memutuskan untuk itu.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/rute/pengguna.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,6 +62,33 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Komponennya adalah pulau tampilan yang dikembalikan oleh pengontrol:
+
+```tsx filename="src/components/Pengguna Baru.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 Tanpa hook, suatu tindakan hanyalah sebuah fungsi `async`: `const user = await create_user({ name: "Ada" })`.
 
@@ -73,7 +101,7 @@ Tanpa hook, suatu tindakan hanyalah sebuah fungsi `async`: `const user = await c
 
 `useAction(action, { onSuccess, onError })` juga menerima dua panggilan balik. `run` tidak pernah melempar: kegagalan terjadi di `error` dan `run` diselesaikan dengan `undefined`.
 
-Tipe berasal dari Python: `str` adalah `string`, `int` dan `float` adalah `number`, `list[T]` adalah `T[]`, model Pydantic atau `Enum` adalah tipe bernama, dan bidang dengan default adalah opsional dalam input. Tipe Pydantic tidak dapat dideskripsikan menjadi `unknown`.
+Tipe berasal dari Python: `str` adalah `string`, `int` dan `float` adalah `number`, `list[T]` adalah `T[]`, model Pydantic atau `Enum` adalah tipe bernama, dan bidang dengan default adalah opsional dalam input. Tipe Pydantic yang tidak dapat dideskripsikan menjadi `unknown`.
 
 ## Kesalahan dan Kegagalan
 

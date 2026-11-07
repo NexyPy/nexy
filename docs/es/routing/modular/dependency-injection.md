@@ -19,7 +19,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc
@@ -59,7 +59,7 @@ from nexy.decorators import Injectable, Scope
 class CurrentUser: ...
 ```
 
-| Alcance | Vida útil |
+| Alcance | Toda la vida |
 |---|---|
 | `Scope.SINGLETON` (predeterminado) | una instancia para todo el proceso |
 | `Scope.REQUEST` | una instancia por contexto de solicitud |

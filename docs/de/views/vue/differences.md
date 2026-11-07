@@ -2,16 +2,30 @@
 
 Nexy rendert Vue 3 Einzeldateikomponenten auf dem Server und übernimmt sie dann Vue im Browser. Seiten, Layouts, Inseln und Aktionen sind in jedem Framework gleich: Auf dieser Seite geht es um die Einrichtung und dann um die Teile, die sich von den [gemeinsamen Verträgen](../frontend/pages.md) unterscheiden.
 
+<!-- router:fbr,custom -->
 | Modus | `nexyconfig.py` | Seiten sind | Vue ist |
 |---|---|---|---|
 | Server (Standard) | `useCSR = False` | `.nexy` Dateien | [Inseln](../../rendering/islands.md) innerhalb dieser Seiten |
-| Der Client | `useCSR = True` | `.vue` speichert die gesamte Seite | mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+| Kunde | `useCSR = True` | `.vue` Dateien | die gesamte Seite, mit [Layouts](../frontend/layouts.md) und einem Client-Router |
+<!-- /router -->
+
+<!-- router:modular -->
+Beim modularen Router sind Vue Komponenten [Inseln](../../rendering/islands.md) innerhalb der `.nexy` Ansichten, die ein Controller zurückgibt: Es gibt keine Auslagerungsdatei und keinen Client-Router.
+<!-- /router -->
 
 ## Starten Sie ein Projekt
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-vue
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-vue
+```
+<!-- /router -->
 
 Die Vorlage ist ein Servermodus-Projekt mit Vue Inseln. Führen Sie stattdessen `nx new my-app` ohne Vorlage aus, um die Eingabeaufforderungen zu beantworten: den Router, den Projekttyp, ob clientseitiges Routing verwendet werden soll, dann das Framework.
 
@@ -48,10 +62,16 @@ export default defineConfig({
 ## Regeln
 
 - **Ein Framework pro Projekt.** `useFF` benötigt genau ein Framework; `useFF = [vue(), react()]` stoppt den Server beim Start.
-- **Eine Komponente pro Datei.** Eine `.vue`-Datei exportiert ihre Komponente standardmäßig; Der Name, unter dem Sie es importieren, ist nur das Tag, das Sie schreiben.
+- **Eine Komponente pro Datei.** Eine `.vue` Datei exportiert ihre Komponente standardmäßig; Der Name, unter dem Sie es importieren, ist nur das Tag, das Sie schreiben.
+<!-- router:fbr,custom -->
 - **Komponenten befinden sich außerhalb von `src/routes/`**, normalerweise in `src/components/`, daher sind sie keine Seiten.
 - **Ein Servermodus-Projekt hat keine `.vue` Seite**, und ein Clientmodus-Projekt hat keine `.nexy` Seite: Nexy weigert sich zu starten und benennt die Datei. Siehe [Modi](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Komponenten leben in `src/components/`** und eine Ansicht importiert sie als Inseln.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Seiten
 
 Im Client-Modus (`useCSR = True`) ist eine Seite eine `.vue`-Datei.
@@ -86,7 +106,7 @@ Alternativ können Sie den Hook `useParams` von `@nexy/client` in einer beliebig
 
 ### Umsetzung
 
-Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt in ihrem Standard-Slot.
+Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließen den Inhalt in seinem Standard-Slot.
 
 ```vue filename="src/routes/layout.vue"
 <template>
@@ -98,6 +118,7 @@ Das Root-Layout definiert die Dokumenthülle. Verschachtelte Layouts umschließe
   </html>
 </template>
 ```
+<!-- /router -->
 
 ## Inseln
 
@@ -105,14 +126,25 @@ Im Servermodus ist eine in eine `.nexy`-Datei importierte Vue-Komponente eine In
 
 ### Importieren
 
-Importieren Sie Komponenten in die Frontmatter der Datei `.nexy`:
+Importieren Sie Komponenten im Frontmatter der Datei `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.vue" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.vue" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Trinkrichtlinien
 

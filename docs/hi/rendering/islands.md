@@ -8,6 +8,7 @@
 
 ## यह कैसे काम करता है
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 नेक्सी निर्माण के समय घटक को प्रस्तुत करता है, उसका HTML संग्रहीत करता है, और उसे पृष्ठ के अंदर रखता है। पृष्ठ प्रतिक्रिया में HTML प्लस प्रॉप्स को JSON विशेषता के रूप में शामिल किया गया है। ब्राउज़र में, आइलैंड रनटाइम घटक को लोड करता है और कंटेनर को अपने कब्जे में ले लेता है।
 
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,6 +84,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## सीमाएँ
 

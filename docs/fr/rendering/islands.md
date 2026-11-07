@@ -8,6 +8,7 @@ Les îles existent en mode serveur. En mode client les composants *sont* les pag
 
 ## Comment ça marche
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy restitue le composant au moment de la construction, stocke son HTML et le place à l'intérieur de la page. La réponse de la page contient ce code HTML ainsi que les accessoires en tant qu'attribut JSON. Dans le navigateur, le runtime de l'îlot charge le composant et prend en charge le conteneur.
 
@@ -38,12 +50,12 @@ En développement, il n'y a pas d'instantané de construction : le conteneur es
 
 ## Configuration
 
-| Directive | Hydrates |
+| Directive | Hydrate |
 |---|---|
 | aucun, ou `client:load` | immédiatement |
 | `client:idle` | lorsque le navigateur est inactif (`requestIdleCallback`, délai d'attente de 2 s) |
 | `client:visible` | lorsque l'île entre dans la fenêtre, 200 px plus tôt |
-| `client:media` | lorsqu'une requête multimédia correspond ; définissez-le avec le accessoire `media` |
+| `client:media` | lorsqu'une requête multimédia correspond ; réglez-le avec l'accessoire `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,6 +84,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## Limites
 

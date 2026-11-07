@@ -15,7 +15,12 @@ from posixpath import normpath
 
 from pygments import highlight  # type: ignore[import-untyped]
 from pygments.formatters import HtmlFormatter  # type: ignore[import-untyped]
-from pygments.lexers import HtmlDjangoLexer, get_lexer_by_name  # type: ignore[import-untyped]
+from pygments.lexers import (  # type: ignore[import-untyped]
+    HtmlDjangoLexer,
+    HtmlLexer,
+    PhpLexer,
+    get_lexer_by_name,
+)
 from pygments.util import ClassNotFound  # type: ignore[import-untyped]
 
 from nexy.modules.runtime.markdown import render_markdown
@@ -27,7 +32,9 @@ TEXT_LENGTH = 1800
 _ROW_LINK = re.compile(r"\[([^\]]+)\]\(([^)#\s]+\.md)\)")
 _FENCE = re.compile(r'^```(\w*)[ \t]+filename="([^"]+)"[ \t]*$', re.MULTILINE)
 _PRE = re.compile(r'<pre lang="(\w*)__file(\d+)">')
-_HEADING = re.compile(r"<h([2-6])>(.*?)</h\1>", re.DOTALL)
+# A heading inside a router variant carries its routers, for the outline to hide it the same way.
+_HEADING = re.compile(r'<h([2-6])(?: data-router="([a-z ]*)")?>(.*?)</h\1>', re.DOTALL)
+_VARIANT_HEADING = re.compile(r"<h([2-6])>")
 _CODE = re.compile(r'<pre lang="(\w+)"><code>(.*?)</code></pre>', re.DOTALL)
 _TABLE = re.compile(r"<table>.*?</table>", re.DOTALL)
 _HREF = re.compile(r'href="([^"]+)"')
@@ -157,9 +164,23 @@ REDIRECTS = {
 # The scopes a menu group can declare: the three routers, the advanced bucket, and `core` for the
 # groups every reader sees. A marker (`### Routing {fbr}`) is stripped from the title, here and in
 # the rendered page, so it is a navigation instruction and nothing else.
+# A group shared by some routers only names them all: `### Pages {fbr,custom}` gives the scope
+# `fbr custom`, which the stylesheet reads word by word.
 SCOPES = ("core", "fbr", "modular", "custom", "advanced")
-_SCOPE = re.compile(r"\s*\{(" + "|".join(SCOPES) + r")\}\s*$")
+_SCOPE = re.compile(r"\s*\{([a-z, ]+)\}\s*$")
 _ROUTER_KEYS = tuple(key for key, _name, _blurb in ROUTERS)
+
+
+def _scope_of(heading: str) -> tuple[str, str]:
+    """`(title, scope)` of a group heading; the scope is empty when it carries no known marker."""
+    marker = _SCOPE.search(heading)
+    words = [word.strip() for word in marker[1].split(",")] if marker else []
+    single = len(words) == 1 and words[0] in SCOPES
+    several = len(words) > 1 and all(word in _ROUTER_KEYS for word in words)
+    if not (single or several):
+        return heading, ""
+    return heading[: marker.start()].strip() if marker else heading, " ".join(words)
+
 
 # The one badge a menu row can carry: `{new}` at the end of the summary cell, the way a heading
 # carries a scope. It marks the page and is read by nobody else: the token is out of the summary,
@@ -251,6 +272,7 @@ class Heading:
     level: int
     id: str
     text: str
+    routers: str = ""
 
 
 @dataclass(frozen=True)
@@ -369,8 +391,8 @@ def read_tracks(docs: Path, lang: str = i18n.DEFAULT) -> list[Track]:
         if group_title and pages:
             scope = group_scope or _router_of_group(pages) or "core"
             router = scope if scope in _ROUTER_KEYS else None
-            # Update pages with the final resolved scope
-            updated_pages = [replace(p, scope=scope) for p in pages]
+            # A page takes the scope of its group, and the router a marker gives it.
+            updated_pages = [replace(p, scope=scope, router=router or p.router) for p in pages]
             groups.append(Group(group_title, group_blurb, updated_pages, router, scope))
         group_title, group_blurb, group_scope, pages = "", "", "", []
 
@@ -397,9 +419,7 @@ def read_tracks(docs: Path, lang: str = i18n.DEFAULT) -> list[Track]:
             close_group()
             if label:
                 heading = text[4:].strip()
-                marker = _SCOPE.search(heading)
-                group_scope = marker[1] if marker else ""
-                group_title = _SCOPE.sub("", heading).strip()
+                group_title, group_scope = _scope_of(heading)
                 reading = "group"
             continue
         if text.startswith("|"):
@@ -666,12 +686,12 @@ def _identify(html: str) -> Rendered:
     found: list[Heading] = []
 
     def mark(match: re.Match[str]) -> str:
-        level, inner = int(match[1]), _SCOPE.sub("", match[2])
+        level, inner = int(match[1]), _scope_of(match[3])[0]
         base = anchor(inner)
         count = seen.get(base, 0)
         seen[base] = count + 1
         ident = base if count == 0 else f"{base}-{count}"
-        found.append(Heading(level, ident, _TAGS.sub("", inner)))
+        found.append(Heading(level, ident, _TAGS.sub("", inner), match[2] or ""))
         marker = (
             f'<a class="anchor" href="#{ident}" aria-label="Link to this section"'
             ' data-i18n-aria="anchor"></a>'
@@ -706,10 +726,23 @@ def _rewrite(html: str, page: Path, docs: Path, link: Link) -> str:
 _FORMATTER = HtmlFormatter(nowrap=True, classprefix="tok-")
 
 
+# Fence languages Pygments lacks or reads too strictly: a .nexy or Blade view is HTML with `{{ }}`,
+# a .svelte or .astro view is HTML with its scripts, and PHP shows without its `<?php` line.
+_OWN_LEXERS = {
+    "nexy": HtmlDjangoLexer,
+    "blade": HtmlDjangoLexer,
+    "svelte": HtmlLexer,
+    "astro": HtmlLexer,
+    "php": lambda: PhpLexer(startinline=True),
+}
+# A file that opens with a frontmatter between bars: (language of the logic, language of the view).
+_FRAMED = {"nexy": ("python", "nexy"), "astro": ("typescript", "astro")}
+
+
 def _lexer(language: str) -> object | None:
-    """The colouring rules for a fence language; a .nexy file is HTML with Jinja."""
-    if language == "nexy":
-        return HtmlDjangoLexer()
+    """The colouring rules for a fence language, or None when it has none."""
+    if language in _OWN_LEXERS:
+        return _OWN_LEXERS[language]()
     try:
         return get_lexer_by_name(language)
     except ClassNotFound:
@@ -768,16 +801,16 @@ def _paint(text: str, language: str) -> str:
     return text if lexer is None else highlight(text, lexer, _FORMATTER)
 
 
-def _nexy(text: str) -> str:
-    """A .nexy file is Python between its bars, then the template it renders."""
+def _framed(text: str, logic: str, view_language: str) -> str:
+    """A .nexy or .astro file: its logic between the bars, then the template it renders."""
     head = _FRONTMATTER.match(text)
     if head is None:
-        return _paint(text, "nexy").rstrip("\n")
+        return _paint(text, view_language).rstrip("\n")
     bar = '<span class="tok-bar">---</span>'
-    parts = [bar, _paint(head["logic"], "python").rstrip("\n"), bar]
+    parts = [bar, _paint(head["logic"], logic).rstrip("\n"), bar]
     view = text[head.end() :].lstrip("\n")
     if view.strip():
-        parts.append(_paint(view, "nexy").rstrip("\n"))
+        parts.append(_paint(view, view_language).rstrip("\n"))
     return "\n".join(parts)
 
 
@@ -787,7 +820,10 @@ def _colour(found: re.Match[str]) -> str:
     if _lexer(language) is None:
         return found[0]
     text, kinds = _marked(htmllib.unescape(escaped))
-    coloured = _nexy(text) if language == "nexy" else _paint(text, language).rstrip("\n")
+    if language in _FRAMED:
+        coloured = _framed(text, *_FRAMED[language])
+    else:
+        coloured = _paint(text, language).rstrip("\n")
     return f'<pre lang="{language}"><code>{_lines(coloured, kinds)}</code></pre>'
 
 
@@ -844,7 +880,9 @@ def _variants(html: str) -> str:
         routers = _variant_routers(found[1])
         if not routers:
             return found[0]
-        return f'<div class="router-variant" data-router="{" ".join(routers)}">{found[2]}</div>'
+        names = " ".join(routers)
+        inner = _VARIANT_HEADING.sub(rf'<h\1 data-router="{names}">', found[2])
+        return f'<div class="router-variant" data-router="{names}">{inner}</div>'
 
     return _ROUTER_VARIANT.sub(wrap, html)
 

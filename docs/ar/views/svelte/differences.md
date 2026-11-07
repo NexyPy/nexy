@@ -2,16 +2,30 @@
 
 يعرض Nexy Svelte 5 مكونات على الخادم، ثم يتولى Svelte تشغيلها في المتصفح. الصفحات والتخطيطات والجزر والإجراءات هي نفسها في كل إطار: تغطي هذه الصفحة الإعداد، ثم الأجزاء التي تختلف عن [العقود المشتركة](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | الوضع | `nexyconfig.py` | الصفحات هي | Svelte هو |
 |---|---|---|---|
-| الخادم (الافتراضي) | `useCSR = False` | `.nexy` ملفات | [جزر](../../rendering/islands.md) داخل تلك الصفحات |
-| العميل | `useCSR = True` | `.svelte` ملفات | الصفحة بأكملها، مع [التخطيطات](../frontend/layouts.md) وجهاز توجيه العميل |
+| الخادم (الافتراضي) | `useCSR = False` | `.nexy` الملفات | [جزر](../../rendering/islands.md) داخل تلك الصفحات |
+| العميل | `useCSR = True` | `.svelte` الملفات | الصفحة بأكملها، مع [التخطيطات](../frontend/layouts.md) وجهاز توجيه العميل |
+<!-- /router -->
+
+<!-- router:modular -->
+باستخدام جهاز التوجيه المعياري، تكون مكونات Svelte هي [جزر](../../rendering/islands.md) داخل طرق العرض `.nexy` التي ترجعها وحدة التحكم: لا يوجد ملف صفحة ولا جهاز توجيه عميل.
+<!-- /router -->
 
 ## ابدأ مشروعًا
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-svelte
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-svelte
+```
+<!-- /router -->
 
 القالب عبارة عن مشروع في وضع الخادم يحتوي على Svelte جزر. قم بتشغيل `nx new my-app` بدون قالب للإجابة على المطالبات بدلاً من ذلك: جهاز التوجيه، ونوع المشروع، وما إذا كان سيتم استخدام التوجيه من جانب العميل، ثم إطار العمل.
 
@@ -48,11 +62,17 @@ export default defineConfig({
 ## القواعد
 
 - **Svelte 5.** تستخدم المكونات الأحرف الرونية: `$props()`، `$state()`، ومقتطفات للأطفال.
-- **إطار واحد لكل مشروع.** `useFF` يأخذ إطارًا واحدًا بالضبط؛ `useFF = [svelte(), vue()]` يقوم بإيقاف الخادم عند بدء التشغيل.
+- **إطار واحد لكل مشروع.** `useFF` يأخذ إطارًا واحدًا بالضبط؛ `useFF = [svelte(), vue()]` يوقف الخادم عند بدء التشغيل.
 - **مكون واحد لكل ملف.** الاسم الذي تستورد ملف `.svelte` تحته هو فقط العلامة التي تكتبها.
+<!-- router:fbr,custom -->
 - **تعيش المكونات خارج `src/routes/`**، عادةً في `src/components/`، لذا فهي ليست صفحات.
 - **لا يحتوي مشروع وضع الخادم على `.svelte` صفحة**، ولا يحتوي مشروع وضع العميل على `.nexy` صفحة: يرفض Nexy البدء ويسمي الملف. انظر [الأوضاع](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **تعيش المكونات في `src/components/`**، ويقوم العرض باستيرادها كجزر.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## الصفحات
 
 في وضع العميل (`useCSR = True`)، تكون الصفحة عبارة عن ملف `.svelte`.
@@ -70,7 +90,7 @@ export default defineConfig({
 
 ### القطاعات الديناميكية
 
-تصل معلمات URL إلى الصفحة كدعائم عبر الأمر `$props()`:
+تصل معلمات URL إلى الصفحة كدعائم عبر `$props()` rune:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -101,6 +121,7 @@ export default defineConfig({
   </body>
 </html>
 ```
+<!-- /router -->
 
 ## جزر
 
@@ -110,12 +131,23 @@ export default defineConfig({
 
 قم باستيراد المكونات الموجودة في الجزء الأمامي من الملف `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.svelte" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.svelte" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### توجيهات الترطيب
 
@@ -130,7 +162,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### إجراءات الدعوة
 
-استخدم الخطاف `useAction` لإدارة حالة استدعاء الإجراء. في Svelte، يؤدي هذا إلى إرجاع متجر (اقرأ مع `$`).
+استخدم الخطاف `useAction` لإدارة حالة استدعاء الإجراء. في Svelte، يُرجع هذا متجرًا (اقرأ مع `$`).
 
 ```svelte
 <script lang="ts">

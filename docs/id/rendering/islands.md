@@ -8,6 +8,7 @@ Pulau ada dalam mode server. Dalam mode klien, komponen *adalah* halaman: lihat 
 
 ## Bagaimana cara kerjanya
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,10 +16,21 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy merender komponen pada waktu pembuatan, menyimpan HTML-nya, dan menempatkannya di dalam halaman. Respon halaman membawa HTML itu ditambah alat peraga sebagai atribut JSON. Di browser, runtime pulau memuat komponen dan mengambil alih container.
 
-`directive` memutuskan **kapan** hal itu terjadi. Tanpanya, pulau akan terhidrasi segera setelah waktunya siap.
+`directive` memutuskan **kapan** itu terjadi. Tanpanya, pulau akan terhidrasi segera setelah waktunya siap.
 
 ## Siklus hidup rendering
 
@@ -41,15 +53,15 @@ Dalam pengembangan, tidak ada snapshot build: container kosong dan komponen dire
 | Petunjuk | Hidrat |
 |---|---|
 | tidak ada, atau `client:load` | segera |
-| `client:idle` | ketika browser dalam keadaan idle (`requestIdleCallback`, batas waktu 2 detik) |
-| `client:visible` | saat pulau memasuki area pandang, 200 px lebih awal |
+| `client:idle` | saat browser dalam keadaan idle (`requestIdleCallback`, batas waktu 2 detik) |
+| `client:visible` | ketika pulau memasuki viewport, 200 px lebih awal |
 | `client:media` | ketika kueri media cocok; atur dengan prop `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
 ```
 
-`client:media` defaultnya adalah `(min-width: 768px)` ketika `media` tidak ada, dan terhidrasi satu kali. Pada browser tanpa `IntersectionObserver`, `client:visible` kembali ke idle.
+`client:media` defaultnya adalah `(min-width: 768px)` ketika `media` tidak ada, dan terhidrasi satu kali. Pada browser tanpa `IntersectionObserver`, `client:visible` kembali ke siaga.
 
 `directive` dan `media` digunakan oleh Nexy: keduanya tidak diteruskan ke komponen Anda.
 
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,6 +84,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## Keterbatasan
 

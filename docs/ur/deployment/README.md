@@ -53,12 +53,30 @@ nx start --host 127.0.0.1 --port 8000
 
 ## صحت کی جانچ
 
-ایک ہینڈلر فائل شامل کریں، `src/routes/api/health.py`، اور پروب `/api/health` - اس صفحے کے بجائے جو آہستہ سے رینڈر ہو سکتا ہے:
+<!-- router:fbr,custom -->
+ایک ہینڈلر فائل شامل کریں، `src/routes/api/health.py`، اور پروب `/api/health` - اس صفحے کے بجائے جو کہ آہستہ سے رینڈر ہو سکتا ہے:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ایک کنٹرولر شامل کریں، اور پروب `/health/` - اس نظریے کے بجائے جو آہستہ آہستہ پیش کر سکتا ہے:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+اسے روٹ ماڈیول کے `controllers` میں درج کریں۔
+<!-- /router -->
 
 ## جامد ہوسٹنگ
 
@@ -78,6 +96,6 @@ async def GET():
 
 ## اگلے اقدامات
 
-- [کنفیگ](../reference/config.md): HTTPS، قابل اعتماد میزبان، سیشن
-- [فرنٹ اینڈ](../guides/frontend.md): کیا Vite بناتا ہے۔
+- [کنفیگ ](../reference/config.md): HTTPS، قابل اعتماد میزبان، سیشن
+- [فرنٹ اینڈ ](../guides/frontend.md): کیا Vite بناتا ہے۔
 - [ٹیسٹنگ](../guides/testing.md): CI میں چلانے کے لیے کمانڈز

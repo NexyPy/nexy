@@ -4,6 +4,11 @@
 
 **یقین نہیں ہے؟ رکھو ایس ایس آر** کسی صفحہ کو تبھی تبدیل کریں جب آپ وجہ بتا سکیں: مواد جو شاذ و نادر ہی تبدیل ہوتا ہے (ISR)، ایک ویجیٹ جس کو براؤزر (جزیرہ) کی ضرورت ہو، یا ایپ نما نیویگیشن (CSR)۔
 
+<!-- router:modular -->
+> [!NOTE]
+> ماڈیولر راؤٹر سرور پر موجود ہر منظر کو جزیروں کے ساتھ پیش کرتا ہے جہاں ایک منظر انہیں رکھتا ہے۔ ISR اور CSR فائل پیجز کے طریقے ہیں: انہیں فائل پر مبنی روٹر کی ضرورت ہے۔
+<!-- /router -->
+
 ## یہ کیسے کام کرتا ہے۔
 
 ```diagram filename="HTML کون تیار کرتا ہے، اور کب"
@@ -22,7 +27,7 @@ Islands   request ──► server renders the page ──► one widget hydrate
 | JavaScript | صرف جزائر کے لیے | صرف جزائر کے لیے | فریم ورک بنڈل | صرف جزیرہ |
 | ہائیڈریشن | کوئی نہیں | کوئی نہیں | پوری دستاویز | جزیرہ |
 | کیشے | کوئی نہیں | فی یو آر ایل، میموری میں | کوئی نہیں | کوئی نہیں |
-| کی طرف سے فیصلہ کیا | پہلے سے طے شدہ | `revalidate = N` صفحہ میں | منصوبے میں `useCSR = True` | `directive` جزو پر |
+| کی طرف سے فیصلہ کیا | پہلے سے طے شدہ | صفحہ میں `revalidate = N` | منصوبے میں `useCSR = True` | `directive` جزو پر |
 | اناج | صفحہ | صفحہ | **پروجیکٹ** | جزو |
 
 ## رینڈرنگ لائف سائیکل
@@ -43,7 +48,7 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 ## کنفیگریشن
 
-| موڈ | کہاں |
+| موڈ | جہاں |
 |---|---|
 | ایس ایس آر | کہیں نہیں: یہ پہلے سے طے شدہ ہے۔ |
 | آئی ایس آر | `revalidate = 60` صفحہ `.nexy` کے فرنٹ میٹر میں |
@@ -52,6 +57,7 @@ Islands   request ──► server renders the page ──► one widget hydrate
 
 ## مثال
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/blog/index.nexy"
 ---
 revalidate = 60
@@ -60,6 +66,19 @@ revalidate = 60
 ```
 
 فرنٹ میٹر لائن کے بغیر ایک ہی صفحہ SSR ہے۔
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Rendered on every request</h1>
+<Chart directive="client:visible" />
+```
+
+منظر SSR ہے، اور چارٹ ایک جزیرہ ہے جو اسکرول کرتے وقت ہائیڈریٹ ہوتا ہے۔
+<!-- /router -->
 
 ## حدود
 
@@ -73,5 +92,5 @@ revalidate = 60
 - [SSR](ssr.md): پہلے سے طے شدہ
 - [ISR](isr.md): فی یو آر ایل ایک صفحہ کیش کریں۔
 - [CSR](csr.md): براؤزر پر ہینڈ نیویگیشن
-- [جزیرے](islands.md): ہائیڈریٹ ون ویجیٹ
+- [جزائر](islands.md): ہائیڈریٹ ون ویجیٹ
 - [کارکردگی](../deployment/performance.md)

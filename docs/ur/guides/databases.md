@@ -15,6 +15,7 @@
 
 ## کسی صفحہ میں سروس استعمال کریں۔
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,16 +37,53 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ایک کنٹرولر سروس کو کال کرتا ہے، اور قطاروں کو اس کے نظارے میں منتقل کرتا ہے یا انہیں JSON کے طور پر واپس کرتا ہے:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## کچھوا-ORM async ہے۔
 
-ایک صفحہ سرور کے ایونٹ لوپ میں چلتا ہے اور اس پر انتظار نہیں کر سکتا، لہٰذا `asyncio.run(...)` وہاں "رننگ ایونٹ لوپ سے کال نہیں کیا جا سکتا" کے ساتھ ناکام ہو جاتا ہے۔ سہاروں والا `src/configs/db.py` Tortoise کو اپنا ایک لوپ دیتا ہے، ایک دھاگے میں، اور دو مددگار جو اس پر کورٹین بھیجتے ہیں:
+ایک صفحہ سرور کے ایونٹ لوپ میں چلتا ہے اور اس پر انتظار نہیں کر سکتا، اس لیے وہاں `asyncio.run(...)` ناکام ہو جاتا ہے "رننگ ایونٹ لوپ سے کال نہیں کیا جا سکتا"۔ اسکافولڈ `src/configs/db.py` ایک دھاگے میں اپنا ایک لوپ Tortoise دیتا ہے، اور دو مددگار جو اس کو ایک کورٹین بھیجتے ہیں:
 
 | جہاں آپ ہیں | کال کریں۔ | کرتا ہے۔ |
 |---|---|---|
 | مطابقت پذیری کوڈ، جیسے صفحہ | `run(UserService.get_all())` | اسے چلاتا ہے اور نتیجہ واپس کرتا ہے۔ |
 | async کوڈ، جیسے ہینڈلر یا کنٹرولر | `await arun(UserService.get_all())` | اسی طرح، سرور کو بلاک کیے بغیر |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -53,10 +91,30 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+ایک کنٹرولر async ہے: یہ `arun` کے ذریعے سروس کا انتظار کر رہا ہے، اور منظر صرف قطاریں دکھاتا ہے:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise پہلی بار جوڑتا ہے ان میں سے کسی کو بلایا جاتا ہے۔ ماڈل کو کسی سروس کے اندر `async def` (`await UserModel.all()` سے کال کریں، ماڈیول کی سطح پر نہیں: کورٹین کے باہر کال Tortoise کے منسلک ہونے سے پہلے چلتی ہے۔
 
-ہر ماڈیول کی فہرست بنائیں جو ماڈلز کو `TORTOISE_ORM` میں رکھتا ہے (`src/configs/db.py` کی `models` اندراج)۔ سہاروں میں صارف کے ماڈل اور `aerich.models` کی فہرست دی گئی ہے۔ ماڈیول میں ایسا ماڈل نہیں ملا جو درج نہیں ہے۔
+ہر اس ماڈیول کی فہرست بنائیں جو `TORTOISE_ORM` میں ماڈل رکھتا ہے (`src/configs/db.py` کی `models` اندراج)۔ سہاروں میں صارف کے ماڈل اور `aerich.models` کی فہرست دی گئی ہے۔ ماڈیول میں ایسا ماڈل نہیں ملا جو درج نہیں ہے۔
 
 ## ہجرتیں
 
@@ -74,7 +132,7 @@ Aerich کے ساتھ، پہلا `nx migrate` چلتا ہے `aerich init-db`، ج
 
 ### پہلی ہجرت آپ کے لیے کی گئی ہے۔
 
-جب آپ ایک ORM کا انتخاب کرتے ہیں اور ڈیٹا بیس کا URL دیتے ہیں تو، `nx new` منتقلی کے آلے کو ترتیب دیتا ہے، پہلی منتقلی تخلیق کرتا ہے اور اسے لاگو کرتا ہے، تو صارف صفحہ پہلے `nexy dev` پر جواب دیتا ہے۔ ORM کے ساتھ پروجیکٹ میں منتقلی کا آلہ (`alembic` یا `aerich`) نصب ہے۔
+جب آپ ایک ORM کا انتخاب کرتے ہیں اور ڈیٹا بیس یو آر ایل دیتے ہیں تو، `nx new` منتقلی کے آلے کو ترتیب دیتا ہے، پہلی منتقلی بناتا ہے اور اسے لاگو کرتا ہے، لہذا صارف صفحہ پہلے `nexy dev` پر جواب دیتا ہے۔ ORM کے ساتھ پروجیکٹ میں منتقلی کا آلہ (`alembic` یا `aerich`) نصب ہے۔
 
 اگر ڈیٹا بیس جواب نہیں دیتا ہے (ایک PostgreSQL سرور جو نہیں چل رہا ہے، ایک گمشدہ ڈرائیور)، `nx new` کیوں کہتا ہے، منتقلی کو چھوڑ دیتا ہے اور جب یہ تیار ہوتا ہے تو چلانے کے لیے دو کمانڈز کی فہرست دیتا ہے:
 
@@ -98,6 +156,6 @@ Tortoise-ORM کے لیے، ماڈیول کو `TORTOISE_ORM` میں درج کری
 
 ## اگلے اقدامات
 
-- [ٹیسٹنگ](testing.md): ایک عارضی ڈیٹا بیس کے خلاف ٹیسٹ ہینڈلرز
+- [ٹیسٹنگ](testing.md): عارضی ڈیٹا بیس کے خلاف ٹیسٹ ہینڈلرز
 - [ترتیب ](../reference/config.md)
-- [تعینات](../deployment/README.md): پیداوار میں `DATABASE_URL` سیٹ کریں۔
+- [تعینات کریں ](../deployment/README.md): پیداوار میں `DATABASE_URL` سیٹ کریں۔

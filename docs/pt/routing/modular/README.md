@@ -6,10 +6,10 @@ O roteamento modular usa classes com decoradores em vez de arquivos em `src/rout
 
 | Página | O que cobre |
 |---|---|
-| Esta página | Montar um módulo, escrever um controlador, agrupar controladores |
+| Esta página | Monte um módulo, escreva um controlador, agrupe controladores |
 | [Injeção de dependência](dependency-injection.md) | `@Injectable`, escopos, o contêiner |
 | [Guardas e metadados](guards-and-metadata.md) | `@UseGuard`, `@Middleware`, `@UseRoute`, `@UseResponse` |
-| [Nexy e NestJS](vs-nestjs.md) | O que corresponde a NestJS e o que não corresponde a |
+| [Nexy e NestJS](vs-nestjs.md) | O que corresponde a NestJS e o que não corresponde |
 
 ## Configure o roteador
 
@@ -40,7 +40,7 @@ class AppController:
 
 Os métodos são combinados por nome, sem distinção entre maiúsculas e minúsculas: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
 
-Um controlador declara um manipulador por método HTTP; uma duplicata aumenta na inicialização. Adicione um prefixo com `@Controller(prefix="/users")` - cada manipulador é montado em `prefix/`. `async def SOCKET(...)` em um controlador registra um WebSocket no mesmo caminho.
+Um controlador declara um manipulador por método HTTP; uma duplicata aumenta na inicialização. O primeiro argumento de `@Controller("/users")` é o caminho em que cada manipulador responde, `/users/`. `async def SOCKET(...)` em um controlador registra um WebSocket no mesmo caminho.
 
 ## Agrupar controladores em um módulo
 

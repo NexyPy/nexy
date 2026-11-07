@@ -7,17 +7,17 @@ Sebuah permintaan bisa gagal di empat tempat, dan Nexy menjawab masing-masing pe
 
 ## Versi pendek
 
-| Apa yang terjadi | Status | Browser melihat | Klien API melihat |
+| Apa yang terjadi | Status | Peramban melihat | Klien API melihat |
 |---|---|---|---|
-| tidak ada rute yang cocok dengan URL | `404` | `notfound.nexy`, jika tidak, laman bawaan | `{"detail": "Not Found"}` |
+| tidak ada rute yang cocok dengan URL | `404` | `notfound.nexy`, jika tidak, halaman bawaan | `{"detail": "Not Found"}` |
 | segmen jalur tidak sesuai dengan anotasinya | `404` | halaman yang sama | `{"detail": "Not Found"}` |
-| bidang kueri, header, cookie, atau isi tidak ada atau tidak valid | `422` | FastAPI isi JSON | FastAPI isi JSON |
+| bidang kueri, header, cookie, atau isi tidak ada atau tidak valid | `422` | FastAPI badan JSON | FastAPI badan JSON |
 | `notFound()` | `404` | halaman | `{"detail": ...}` |
 | `unauthorized()` | `401` | halaman bawaan | `{"detail": ...}` |
 | `forbidden()` | `403` | halaman bawaan | `{"detail": ...}` |
 | `raise HTTPException(409, ...)` | `409` | halaman bawaan | `{"detail": ...}` |
-| pengecualian tidak ada yang tertangkap | `500` | `errors.nexy`, selain itu halaman bawaan | `{"detail", "reference"}` |
-| `redirect(url)` | `307` | tujuan, tanpa halaman | tujuan, tanpa isi |
+| pengecualian tidak ada yang tertangkap | `500` | `errors.nexy`, jika tidak, halaman bawaan | `{"detail", "reference"}` |
+| `redirect(url)` | `307` | tujuan, tidak ada halaman | tujuannya, tidak ada tubuh |
 | `permanentRedirect(url)` | `308` | tujuan, tidak ada halaman | tujuan |
 
 Klien API adalah permintaan yang header `Accept`-nya meminta JSON dan bukan halaman:
@@ -42,19 +42,20 @@ Browser ──► Middleware ──► Router ──► Page or handler
                  └─ raises ──────────────────────────────────────► 500
 ```
 
-| Tahap | Apa yang bisa gagal | Jawabannya |
+| Panggung | Apa yang bisa gagal | Jawabannya |
 |---|---|---|
-| Middleware | `middleware.py`, CORS, sesi | status pengecualian Anda, yang lain `500` |
-| Router | URL tidak cocok dengan file | `404` |
+| Perangkat Tengah | `middleware.py`, CORS, sesi Anda | status pengecualian, yang lain `500` |
+| Perute | URL tidak cocok dengan file | `404` |
 | Validasi | segmen jalur tidak dapat dikonversi | `404` |
 | Validasi | bidang kueri, header, cookie, atau isi | `422` |
-| Halaman, pengendali, tindakan, penjaga | `HTTPException` | statusnya |
-| Halaman, pengendali, tindakan, penjaga | apa pun yang lain | `500` |
+| Halaman, pawang, aksi, penjaga | `HTTPException` | statusnya |
+| Halaman, pawang, aksi, penjaga | hal lain | `500` |
 
 ## Berangkat dari mana saja
 
 `redirect`, `permanentRedirect`, `notFound`, `forbidden` dan `unauthorized` memunculkan pengecualian HTTP, sehingga panggilan yang sama berfungsi di halaman `.nexy`, penangan API, pengontrol modular, penjaga, `dependencies.py` dan tindakan.
 
+<!-- router:fbr,custom -->
 ```python filename="src/rute/posting/[siput].py"
 from nexy import notFound, redirect
 
@@ -69,13 +70,36 @@ async def GET(slug: str):
         redirect(post.moved_to)
     return post
 ```
+<!-- /router -->
 
-| Panggil | Jawab | Kapan |
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_slug_controller.py"
+from nexy import notFound, redirect
+from nexy.decorators import Controller
+
+from src.posts import find
+
+
+@Controller("/posts/{slug}")
+class PostsBySlugController:
+    async def get(self, slug: str):
+        post = find(slug)
+        if post is None:
+            notFound("No such post")
+        if post.moved_to:
+            redirect(post.moved_to)
+        return post
+```
+
+Cantumkan pengontrol di `controllers` modul root.
+<!-- /router -->
+
+| Telepon | Jawaban | Kapan |
 |---|---|---|
-| `notFound(detail=None)` | `404` | sumber daya tidak ada |
+| `notFound(detail=None)` | `404` | sumber dayanya tidak ada |
 | `unauthorized(detail=None, scheme=None)` | `401` | pengunjung harus login terlebih dahulu |
-| `forbidden(detail=None)` | `403` | pengunjung dikenal tetapi mungkin tidak melihatnya |
-| `redirect(url, status=307)` | `307` | kirim ke tempat lain, pertahankan metodenya |
+| `forbidden(detail=None)` | `403` | pengunjung diketahui tetapi mungkin tidak melihatnya |
+| `redirect(url, status=307)` | `307` | kirim mereka ke tempat lain, pertahankan metodenya |
 | `redirect(url, status=303)` | `303` | setelah formulir: permintaan berikutnya adalah `GET` |
 | `permanentRedirect(url)` | `308` | halaman dipindahkan yang harus diingat oleh mesin pencari |
 
@@ -85,6 +109,7 @@ Bangun tujuan dari nilai-nilai yang Anda percayai. `redirect(request.query_param
 
 Parameter handler divalidasi oleh FastAPI berdasarkan anotasinya.
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from nexy.http import Header
 
@@ -92,11 +117,27 @@ from nexy.http import Header
 async def GET(q: str, limit: int = 10, x_token: str = Header(...)):
     return {"q": q, "limit": limit}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Header
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, limit: int = 10, x_token: str = Header(...)):
+        return {"q": q, "limit": limit}
+```
+
+Cantumkan pengontrol di `controllers` modul root.
+<!-- /router -->
 
 | Masalah | Status | Mengapa |
 |---|---|---|
-| kolom kueri, header, cookie, atau isi hilang atau tidak valid | `422` | permintaan sampai ke handler, data salah |
-| segmen jalur tidak valid (`/api/users/abc` untuk `id: int`) | `404` | folder tidak memiliki rute untuk non-angka, sehingga URL tidak ada |
+| bidang kueri, header, cookie, atau isi tidak ada atau tidak valid | `422` | permintaan sampai ke handler, datanya salah |
+| segmen jalur tidak valid (`/api/users/abc` untuk `id: int`) | `404` | folder tersebut tidak memiliki rute untuk non-angka, jadi URL-nya tidak ada |
 
 Isi `422` adalah bentuk standar FastAPI, sehingga klien dan SDK yang dihasilkan tetap berfungsi:
 
@@ -111,6 +152,7 @@ Untuk formulir atau tindakan, klien menerima `ActionError` dengan `status` dan `
 
 ## Halaman kesalahan khusus
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/tidak ditemukan.nexy"
 <h1>Page not found</h1>
 <p>The link may be old. <a href="/">Start from the home page</a>.</p>
@@ -121,7 +163,7 @@ Untuk formulir atau tindakan, klien menerima `ActionError` dengan `status` dan `
 <p>Try again in a moment.</p>
 ```
 
-| File | Status | Cakupan |
+| Mengajukan | Status | Ruang lingkup |
 |---|---|---|
 | `src/routes/notfound.nexy` | `404` | setiap rute proyek |
 | `src/routes/errors.nexy` | `500` | setiap rute proyek |
@@ -135,6 +177,11 @@ Satu file di suatu tempat di rute menginstal jawaban untuk statusnya: salinan di
 
 > [!IMPORTANT]
 > Halaman `errors.nexy` menggantikan halaman `500`; itu tidak menangkap pengecualian dan tidak mengubah baris log. Jika pengendali yang dimunculkan adalah halaman itu sendiri, halaman tersebut tidak dapat menampilkan detail kesalahannya sendiri: pertahankan `errors.nexy` sederhana dan independen.
+<!-- /router -->
+
+<!-- router:modular -->
+Router modular tidak memiliki halaman kesalahan dalam file: `404`, `500`, `403` atau `401` mendapatkan halaman gaya bawaan. Halaman kesalahan per folder adalah konvensi router berbasis file.
+<!-- /router -->
 
 ## Pengecualian yang tidak tertangani
 
@@ -142,9 +189,9 @@ Pengecualian bahwa tidak ada yang tertangkap dicatat satu kali, dengan referensi
 
 | | `nexy dev` | `nexy build` lalu `nexy start` |
 |---|---|---|
-| Browser | kesalahan, baris kode Anda dan traceback | `errors.nexy`, selain itu halaman bawaan, dengan referensi |
-| Klien API | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Terminal | pengecualian dan baris kode Anda | pengecualian, seluruh penelusuran balik dan referensi |
+| Peramban | kesalahan, baris kode Anda, dan penelusuran balik | `errors.nexy`, jika tidak, halaman bawaan, dengan referensi |
+| klien API | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
+| Terminal | pengecualian dan baris kode Anda | pengecualian, keseluruhan penelusuran balik, dan referensi |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217
@@ -164,17 +211,17 @@ Suatu tindakan adalah titik akhir `POST` dengan jalur yang dihasilkan. Kegagalan
 
 | Situasi | Status | Klien |
 |---|---|---|
-| sebuah field hilang atau tidak valid | `422` | `ActionError` dengan `fields` |
-| `HTTPException(403)` dimunculkan dalam aksi | `403` | `ActionError` dengan `status` dan `detail` |
+| ada bidang yang hilang atau tidak valid | `422` | `ActionError` dengan `fields` |
+| `HTTPException(403)` diangkat dalam aksi | `403` | `ActionError` dengan `status` dan `detail` |
 | pengecualian yang tidak tertangani | `500` | `ActionError`; referensinya ada di log server |
-| header `Origin` adalah situs lain | `403` | ditolak sebelum tindakan berjalan |
+| header `Origin` adalah situs lain | `403` | menolak sebelum aksi berjalan |
 
 Formulir tanpa JavaScript memposting ke jalur tindakan; jika berhasil menjawab `303` kembali ke halaman, jika gagal menampilkan halaman kesalahan. Lihat [Tindakan](../guides/actions.md#forms-without-javascript).
 
 ## Daftar periksa ketika suatu halaman menjawab hal yang salah
 
 1. **Lihat statusnya**, bukan halamannya. Sebuah kebiasaan `notfound.nexy` masih menjawab `404`.
-2. **Baca terminal.** Halaman yang gagal diimpor tidak didaftarkan, jadi URL-nya menjawab `404` selagi file ada. Kesalahan impor ada di log.
+2. **Baca terminal.** Halaman yang gagal diimpor tidak terdaftar, jadi URL-nya menjawab `404` selagi file ada. Kesalahan impor ada di log.
 3. **Periksa ekstensinya.** Dengan `useCSR = True`, `.nexy` halaman termasuk dalam mode server; halaman dalam mode yang salah bukanlah rute.
 4. **Periksa kedalamannya.** `notfound.nexy` atau `errors.nexy` hanya berfungsi jika salinan root ada.
 5. **Minta JSON** dengan `Accept: application/json` untuk melihat bentuk yang diterima klien API Anda.

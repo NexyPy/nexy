@@ -4,17 +4,18 @@
 
 ## Что дает эшафот
 
-| Файл | Назначение |
+| Файл | Цель |
 |---|---|
 | `src/configs/db.py` | двигатель (SQLModel, SQLAlchemy) или настройки `TORTOISE_ORM` |
 | `src/models/` | классы моделей |
-| `src/services/` | функции, опрашивающие модели |
+| `src/services/` | функции, которые опрашивают модели |
 | `.env` | `DATABASE_URL`, пишется, когда вы указываете URL-адрес базы данных во время `nx new` |
 
 Строка подключения берется из переменной среды `DATABASE_URL`. Если он не установлен, механизм формирования шаблонов возвращается к локальному файлу SQLite, `dev.db`.
 
 ## Использовать услугу на странице
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/маршруты/пользователи/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -36,16 +37,53 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Контроллер вызывает службу и передает строки в ее представление или возвращает их в формате JSON:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM является асинхронным
 
-Страница выполняется в цикле событий сервера и не может ее ждать, поэтому `asyncio.run(...)` завершается сбоем с сообщением «невозможно вызвать из работающего цикла событий». Скаффолд `src/configs/db.py` предоставляет Tortoise собственный цикл в одном потоке и двух помощников, которые отправляют ему сопрограмму:
+Страница выполняется в цикле событий сервера и не может ее ожидать, поэтому `asyncio.run(...)` завершается сбоем с сообщением «невозможно вызвать из работающего цикла событий». Скаффолд `src/configs/db.py` дает Tortoise собственный цикл в одном потоке и двух помощников, которые отправляют ему сопрограмму:
 
-| Где вы находитесь | Позвоните | Делает ли |
+| Где ты | Позвонить | Делает |
 |---|---|---|
-| код синхронизации, например страница | `run(UserService.get_all())` | запускает ее и возвращает результат |
+| код синхронизации, например страница | `run(UserService.get_all())` | запускает его и возвращает результат |
 | асинхронный код, например обработчик или контроллер | `await arun(UserService.get_all())` | то же самое, без блокировки сервера |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/маршруты/пользователи/index.nexy"
 ---
 from src.configs.db import run
@@ -53,6 +91,26 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Контроллер является асинхронным: он ожидает обслуживания через `arun`, а представление показывает только строки:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise подключается при первом вызове одного из них. Вызов модели из `async def` (`await UserModel.all()` внутри службы), а не на уровне модуля: вызов вне сопрограммы выполняется до подключения Tortoise.
 
@@ -62,10 +120,10 @@ Tortoise подключается при первом вызове одного 
 
 `nx migrate` выбирает инструмент для вашего ORM: Alembic для SQLModel и SQLAlchemy, Aerich для Tortoise-ORM.
 
-| Команда | Выполняет |
+| Команда | Делает |
 |---|---|
-| `nx migrate --init` | инициализируйте инструмент миграции для проекта |
-| `nx migrate -m "add users"` | создайте миграцию на основе изменений вашей модели |
+| `nx migrate --init` | инициализировать инструмент миграции для проекта |
+| `nx migrate -m "add users"` | создайте миграцию из изменений вашей модели |
 | `nx migrate --upgrade` | применить ожидающие миграции |
 
 При использовании Aerich первый `nx migrate` запускает `aerich init-db`, который создает первую миграцию и таблицы вместе; следующие запускают `aerich migrate --name "..."`, а `--upgrade` запускают `aerich upgrade`.

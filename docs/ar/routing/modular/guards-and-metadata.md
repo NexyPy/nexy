@@ -16,7 +16,7 @@ def require_token(x_token: str = Header(...)) -> None:
         raise HTTPException(status_code=403, detail="Forbidden")
 
 
-@Controller(prefix="/admin")
+@Controller("/admin")
 @UseGuard(require_token)
 class AdminController:
     async def get(self) -> dict:
@@ -31,15 +31,15 @@ class AdminController:
 
 `@UseRoute(...)` يقوم بتعيين OpenAPI البيانات الوصفية. لا يغير المسار.
 
-| الحجة | المعنى |
+| حجة | معنى |
 |---|---|
 | `name` | اسم الطريق |
 | `tags` | OpenAPI العلامات |
-| `summary`، `description` | نص في مرجع واجهة برمجة التطبيقات |
+| `summary`، `description` | النص في مرجع API |
 | `deprecated` | وضع علامة على العملية المهملة |
 | `include_in_schema` | إخفاء المسار من المخطط |
 | `operation_id` | معرف العملية الصريحة |
-| `openapi_extra` | حقول إضافية OpenAPI |
+| `openapi_extra` | حقول OpenAPI إضافية |
 
 ## الردود
 
@@ -49,7 +49,7 @@ class AdminController:
 from nexy.decorators import Controller, UseResponse, UseRoute
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     @UseRoute(summary="List users", tags=["users"])
     @UseResponse(status_code=200)

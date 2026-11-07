@@ -29,11 +29,6 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [选择路由器](routing/README.md) | 选择基于文件的、模块化的或自定义的路由器 |
 | [选择视图格式](views/README.md) | 为页面选择 `.nexy`、Markdown 或客户端框架 |
 
-### 来自其他地方
-| 页面 | 你会做什么 |
-|---|---|
-| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译成 Nexy |
-
 ## 路由
 
 ### 基于文件的 {fbr}
@@ -79,8 +74,6 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### 共享合约
 | 页面 | 它定义了什么 |
 |---|---|
-| [前端页面](views/frontend/pages.md) | 一个文件，一条路线：道具、渲染、元数据 |
-| [前端布局](views/frontend/layouts.md) | 文档外壳、嵌套以及布局不能做的事情 |
 | [操作和导航](views/frontend/actions-and-navigation.md) | 调用键入的操作、链接页面、读取 URL |
 
 ### 邻国意见
@@ -88,6 +81,12 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 |---|---|
 | [.nexy 文件](views/nexy/README.md) | 使用 Python、Jinja2 和 props 编写一个页面 |
 | [组件](views/nexy/components.md) | 使用 `Image`、`Link`、`Audio`、`Video` 和 `Import` |
+
+### 文件中的页面和布局 {fbr,custom}
+| 页面 | 它定义了什么 |
+|---|---|
+| [前端页面](views/frontend/pages.md) | 一个文件，一条路线：道具、渲染、元数据 |
+| [前端布局](views/frontend/layouts.md) | 文档外壳、嵌套以及布局不能做的事情 |
 | [布局.nexy](views/nexy/layouts.md) | 编写服务器模式布局 |
 | [Markdown 和 MDX](views/nexy/markdown.md) | 编写内容页面 |
 
@@ -107,9 +106,13 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 |---|---|
 | [渲染](rendering/README.md) | 哪种渲染模式适合页面 |
 | [苏维埃社会主义共和国](rendering/ssr.md) | 服务器渲染，默认 |
+| [岛屿](rendering/islands.md) | 空闲、可见或媒体查询时进行水合 |
+
+### 文件页面模式 {fbr,custom}
+| 页面 | 你将决定什么 |
+|---|---|
 | [情监侦](rendering/isr.md) | 使用 stale-while-revalidate 缓存页面 |
 | [企业社会责任](rendering/csr.md) | 客户端路由 |
-| [岛屿](rendering/islands.md) | 空闲、可见或媒体查询时进行水合 |
 
 ## 指南
 
@@ -129,7 +132,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### 构建和测试
 | 页面 | 你会做什么 |
 |---|---|
-| [Vite 和造型](guides/frontend.md) | 设置 Vite、样式和客户端构建 |
+| [Vite 和样式](guides/frontend.md) | 设置 Vite、样式和客户端构建 |
 | [测试](guides/testing.md) | 使用 pytest、`TestClient` 和 vitest 进行测试 |
 
 ### 工具和帮助
@@ -138,6 +141,57 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
 | [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 项目的规则 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
+
+## 数据库
+
+### SQL数据库
+| 页面 | 你会做什么 |
+|---|---|
+| [SQLite](databases/sqlite.md) | 使用一个文件，无服务器：引擎、编译指示、迁移和测试 |
+| [PostgreSQL](databases/postgresql.md) | 与 psycopg 连接，使用 JSONB、数组、搜索和更新插入 |
+| [霓虹灯](databases/neon.md) | 使用无服务器 PostgreSQL：池化主机、自动挂起和分支 |
+| [MySQL 和 MariaDB](databases/mysql-mariadb.md) | 与pymysql连接，使用utf8mb4、upserts和全文搜索 |
+
+## 来自
+
+相同的任务，先用您熟悉的框架编写，然后再用 Nexy 编写。
+
+### 概述
+| 页面 | 你会做什么 |
+|---|---|
+| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译成 Nexy |
+
+### Python 框架 {fbr}
+| 页面 | 你会做什么 |
+|---|---|
+| [来自 FastAPI](coming-from/fastapi.md) | 保留您的 FastAPI 代码：只有 `@app.get` 成为文件 |
+| [来自 Flask](coming-from/flask.md) | 将视图、蓝图、模板和表单转变为 Nexy 路线 |
+| [来自 Django](coming-from/django.md) | 将视图、模板、模型、表单和设置映射到 Nexy |
+
+### JavaScript 后端 {fbr}
+| 页面 | 你会做什么 |
+|---|---|
+| [来自快递](coming-from/express.md) | 将路由、中间件和 `req`/`res` 转换为 Python 处理程序 |
+| [来自 Fastify](coming-from/fastify.md) | 将模式、插件和挂钩转换为模型、文件夹和文件 |
+| [来自艾丽西亚](coming-from/elysia.md) | 将 `t` 模式、守卫和 Eden 映射到 Pydantic 并键入操作 |
+| [从霍诺出发](coming-from/hono.md) | 将路由、中间件和 `hc` 客户端映射到 Nexy |
+
+### 全栈框架 {fbr}
+| 页面 | 你会做什么 |
+|---|---|
+| [来自 Next.js](coming-from/nextjs.md) | 保留您的 React 页面并将服务器代码移至 Python |
+| [来自 Remix](coming-from/remix.md) | 将加载程序和操作转换为 Python 处理程序和操作 |
+| [来自 Nuxt](coming-from/nuxt.md) | 保留 Vue 页面并将 `server/` 移至 Python |
+| [来自 SvelteKit](coming-from/sveltekit.md) | 保留您的 Svelte 页面并将负载、操作和挂钩移至 Python |
+| [来自 Astro](coming-from/astro.md) | 将 Astro 页写入 `.nexy` 页，具有相同的岛 |
+| [来自 Laravel](coming-from/laravel.md) | 将路由、控制器、Blade、Eloquent 和队列映射到 Nexy |
+| [来自 Ruby on Rails](coming-from/rails.md) | 将路线、控制器、ERB、Active Record 和作业映射到 Nexy |
+
+### 控制器框架 {modular}
+| 页面 | 你会做什么 |
+|---|---|
+| [来自 NestJS](coming-from/nestjs.md) | 将控制器、模块、提供程序和防护程序移至模块化路由器 |
+| [来自 Spring Boot](coming-from/spring-boot.md) | 将控制器、服务和过滤器移至模块化路由器 |
 
 ## 参考
 
@@ -153,10 +207,14 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [Python API](reference/python-api.md) | Nexy 按模块导出的每个名称 |
 | [异常和错误](reference/exceptions.md) | 每个故障、其状态以及解决该故障的文件 |
 
-### 惯例和概念
+### 文件约定 {fbr,custom}
 | 页面 | 你会做什么 |
 |---|---|
 | [文件约定](reference/file-conventions.md) | 保留文件和路由规则 |
+
+### 惯例和概念
+| 页面 | 你会做什么 |
+|---|---|
 | [术语表](reference/glossary.md) | 这些文档使用的词语 |
 | [安全](reference/security.md) | 版本底线、Nexy 遵循的规则、审核 |
 
@@ -166,6 +224,8 @@ docs/
 ├─ README.md
 ├─ getting-started/     what is Nexy, installation, quick start, tutorial, core concepts,
 │                       project structure, how Nexy works, migration
+├─ coming-from/         one page per framework: FastAPI, Django, Express, Next.js...
+├─ databases/           one page per database: SQLite, PostgreSQL, Neon, MySQL
 ├─ routing/             FBR Router, Modular Router, Custom Router
 │  ├─ fbr/              file-based routing
 │  │  ├─ modes.md       server mode and client mode

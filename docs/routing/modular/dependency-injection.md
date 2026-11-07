@@ -20,7 +20,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc

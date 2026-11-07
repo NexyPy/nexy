@@ -8,6 +8,7 @@
 
 ## Как это работает
 
+<!-- router:fbr,custom -->
 ```nexy filename="источник/маршруты/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy визуализирует компонент во время сборки, сохраняет его HTML и помещает его на страницу. Ответ страницы содержит этот HTML плюс реквизиты в качестве атрибута JSON. В браузере островная среда выполнения загружает компонент и берет на себя управление контейнером.
 
@@ -42,8 +54,8 @@ Nexy визуализирует компонент во время сборки,
 |---|---|
 | нет, или `client:load` | немедленно |
 | `client:idle` | когда браузер бездействует (`requestIdleCallback`, тайм-аут 2 с) |
-| `client:visible` | когда остров появляется в окне просмотра, на 200 пикселей раньше |
-| `client:media` | при совпадении медиа-запроса; установите его с помощью реквизита `media` |
+| `client:visible` | когда остров попадает в область просмотра, на 200 пикселей раньше |
+| `client:media` | когда медиа-запрос соответствует; установите его с помощью реквизита `media` |
 
 ```nexy
 <Chart directive="client:media" media="(min-width: 768px)" />
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="источник/маршруты/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,18 +84,29 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## Ограничения
 
 - **`client:only` никогда не увлажняется.** Это принимается, но среда выполнения пропускает это, поэтому HTML-код сервера остается инертным. Используйте клиентский маршрут ([CSR](csr.md)), если компонент не может отображаться на сервере.
 - **`client:manual` не имеет общедоступного триггера.** Он также пропускается автоматически, а дескриптор, который его возобновляет, является внутренним.
-- **Реквизиты должны быть в формате JSON.** Они сериализуются с помощью `json.dumps`; значение, которое невозможно сериализовать, отбрасывается, и остров получает `{}` — молча.
-- **Остров не является клиентским компонентом с общим состоянием.** Два острова не имеют общего состояния без механизма, который вы добавляете сами.
+- **Реквизиты должны быть в формате JSON.** Они сериализуются с помощью `json.dumps`; значение, которое не может быть сериализовано, отбрасывается, и остров получает `{}` — молча.
+- **Остров не является клиентским компонентом с общим состоянием.** Два острова не имеют общего состояния без механизма, который вы добавляете самостоятельно.
 - **Остров не перерисовывается сервером.** Его HTML — это снимок сборки плюс все, что делает компонент после гидратации.
 - **Страница островов — это замаскированная страница CSR.** Если каждый блок должен взаимодействовать друг с другом, вместо этого выберите режим клиента.
 
 ## Следующие шаги
 
 - [Рендеринг](README.md): четыре режима
-- [Компоненты](../views/nexy/components.md): как страница `.nexy` импортирует один из них
+- [Компоненты](../views/nexy/components.md): как страница `.nexy` импортирует их
 - [React](../views/react/differences.md), [Vue](../views/vue/differences.md), [Svelte](../views/svelte/differences.md), [Solid](../views/solid/differences.md), [Preact](../views/preact/differences.md)

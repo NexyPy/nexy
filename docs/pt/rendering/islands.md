@@ -8,6 +8,7 @@ As ilhas existem no modo servidor. No modo cliente os componentes *são* as pág
 
 ## Como funciona
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -15,6 +16,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Static heading</h1>
 <Counter directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Static heading</h1>
+<Counter directive="client:visible" />
+```
+<!-- /router -->
 
 Nexy renderiza o componente em tempo de construção, armazena seu HTML e o coloca dentro da página. A resposta da página carrega esse HTML mais os adereços como um atributo JSON. No navegador, o tempo de execução da ilha carrega o componente e assume o controle do contêiner.
 
@@ -38,7 +50,7 @@ No desenvolvimento não há build snapshot: o contêiner está vazio e o compone
 
 ## Configuração
 
-| Diretiva | Hidratos |
+| Diretiva | Hidrata |
 |---|---|
 | nenhum, ou `client:load` | imediatamente |
 | `client:idle` | quando o navegador está ocioso (`requestIdleCallback`, tempo limite de 2 s) |
@@ -64,6 +76,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rotas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
@@ -71,6 +84,17 @@ from "@/components/Counter.tsx" import Counter
 <h1>Count</h1>
 <Counter start=3 directive="client:idle" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<h1>Count</h1>
+<Counter start=3 directive="client:idle" />
+```
+<!-- /router -->
 
 ## Limitações
 

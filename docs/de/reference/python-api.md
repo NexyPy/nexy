@@ -34,6 +34,32 @@ Komponenten für `.nexy`-Vorlagen und die Anforderungs-Hooks.
 
 Die Hooks funktionieren nur innerhalb einer Anfrage: siehe [Hooks](../routing/fbr/navigation/hooks.md).
 
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/index.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
+
 ## `nexy.http`
 
 Das HTTP-Vokabular eines Handlers. Importieren Sie von hier und nicht von FastAPI, sodass Ihre Handler auf Nexys Vertrag angewiesen sind.
@@ -45,13 +71,50 @@ Das HTTP-Vokabular eines Handlers. Importieren Sie von hier und nicht von FastAP
 | `status` | benannte Statuscodes, wie zum Beispiel `status.HTTP_404_NOT_FOUND` |
 | `Depends` | Führen Sie zuerst eine Funktion aus und übergeben Sie das Ergebnis |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | woher ein Parameter kommt |
-| `Form`, `File`, `UploadFile` | Formularfelder und Uploads (benötigen `python-multipart`) |
+| `Form`, `File`, `UploadFile` | Formularfelder und Uploads (benötigt `python-multipart`) |
 | `BackgroundTasks` | Arbeit, die ausgeführt wird, nachdem die Antwort gesendet wurde |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | Antworten mit einem festen Inhaltstyp |
 | `RedirectResponse` | eine HTTP-Weiterleitung |
 | `redirect`, `permanentRedirect` | eine Weiterleitung (307, 308) von einer Seite, einem Handler, einem Controller oder einem Guard auslösen |
 | `notFound`, `forbidden`, `unauthorized` | Erhöhen Sie eine 404, 403 oder 401 an denselben Stellen |
 | `FileResponse`, `StreamingResponse` | mit einer Datei oder einem Stream antworten |
+
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/items/[id].py"
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+async def GET(id: int, key: str = Depends(api_key)):
+    return {"id": id}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+Listen Sie den Controller im `controllers` des Root-Moduls auf.
+<!-- /router -->
 
 ## `nexy.decorators`
 
@@ -67,11 +130,29 @@ Das HTTP-Vokabular eines Handlers. Importieren Sie von hier und nicht von FastAP
 | `HTTP_METHODS` | die HTTP-Methoden, die eine Handlerdatei definieren kann |
 | `ACTIONS_STORE` | das Aktionsregister für Werkzeuge und Tests |
 
+```python filename="src/actions/posts.py"
+from nexy.decorators import Action, revalidate
+
+
+@Action
+async def publish(post_id: int) -> bool:
+    revalidate("/blog")
+    return True
+```
+
 ## `nexy.testing`
 
 | Name | Was es ist |
 |---|---|
 | `render` | Der HTML-Code einer `.nexy`-Komponente für bestimmte Requisiten, ohne Server, siehe [Testen](../guides/testing.md) |
+
+```python filename="tests/test_button.py"
+from nexy.testing import render
+
+
+def test_the_button_shows_its_label():
+    assert "Save" in render("src/components/button.nexy", label="Save")
+```
 
 ## Wohin als nächstes
 

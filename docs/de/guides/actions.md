@@ -47,6 +47,7 @@ Der Rückgabewert wird automatisch in JSON serialisiert. Pydantic-Modelle werden
 ### 5. Konsumieren
 Das Frontend erhält das Ergebnis mit voller Typsicherheit. Nexy schreibt `__nexy__/src/actions.ts` aus Ihren Unterschriften, und `@nexy/actions` beschließt, es zu tun.
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/routes/users.tsx"
 import { useAction } from "@nexy/client";
 import { create_user } from "@nexy/actions";
@@ -61,10 +62,37 @@ export default function NewUser() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Die Komponente ist eine Insel der Ansicht, die ein Controller zurückgibt:
+
+```tsx filename="src/components/NewUser.tsx"
+import { useAction } from "@nexy/client";
+import { create_user } from "@nexy/actions";
+
+export function NewUser() {
+  const { run, pending, error, data } = useAction(create_user);
+
+  return (
+    <button disabled={pending} onClick={() => run({ name: "Ada" })}>
+      {error ? error.message : data ? `Created ${data.name}` : "Create"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+from "@/components/NewUser.tsx" import NewUser
+---
+<NewUser directive="client:load" />
+```
+<!-- /router -->
 
 Ohne Hook ist eine Aktion nur eine `async`-Funktion: `const user = await create_user({ name: "Ada" })`.
 
-| Framework | Was `useAction` zurückgibt |
+| Rahmen | Was `useAction` zurückgibt |
 |---|---|
 | React, Preact | `{ pending, data, error, run, reset }` |
 | Solid | das Gleiche, mit `pending()`, `data()` und `error()` als Accessoren |
@@ -83,7 +111,7 @@ Eine Aktion kann in verschiedenen Phasen fehlschlagen. Sie sollten in Ihrer Benu
 2.  **Geschäftsfehler (`HTTPException`)**: Ihr Code hat den Anruf abgelehnt, zum Beispiel `403 Forbidden` oder `409 Conflict`.
 3.  **Serverfehler (500)**: In Ihrem Python-Code ist eine nicht behandelte Ausnahme aufgetreten.
 4.  **Netzwerkfehler**: Die Anfrage hat den Server nie erreicht, z. B. eine Zeitüberschreitung oder ein Verbindungsverlust.
-5.  **Autorisierungsfehler (401, 403)**: Ihre eigene Prüfung hat den Anrufer abgelehnt. Nexy entscheidet dies nicht für Sie.
+5.  **Autorisierungsfehler (401, 403)**: Ihr eigener Scheck hat den Anrufer abgelehnt. Nexy entscheidet dies nicht für Sie.
 
 Bei der unten beschriebenen Ursprungsprüfung handelt es sich um einen CSRF-Schutz, nicht um eine Autorisierung: Sie sagt aus, woher der Anruf kam, niemals, wer ihn tätigen darf.
 
@@ -116,7 +144,7 @@ Bei Erfolg wird der Besucher mit dem Status `303` auf die Seite zurückgeleitet,
 ## Sicherheit
 
 ### Pfadunklarheit ist keine Autorisierung
-Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Funktionsmoduls, seinem Namen und einem Geheimnis des Projekts. Es wird von `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gespeichert, das `nx build` erstellt, sodass das Client-Bundle und `nx start` zustimmen: Behalten Sie diese Datei beim Build. Der Pfad verbirgt den Endpunkt vor zufälliger Entdeckung und **der generierte Pfad ist kein Autorisierungsmechanismus**.
+Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Moduls der Funktion, seinem Namen und einem Geheimnis des Projekts. Es wird von `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gespeichert, das `nx build` erstellt, sodass das Client-Bundle und `nx start` zustimmen: Behalten Sie diese Datei beim Build. Der Pfad verbirgt den Endpunkt vor zufälliger Entdeckung und **der generierte Pfad ist kein Autorisierungsmechanismus**.
 
 Jeder, der den Weg kennt, kann die Aktion aufrufen. Sie **müssen** die Identität und Berechtigungen des Benutzers innerhalb der Aktion überprüfen:
 ```python

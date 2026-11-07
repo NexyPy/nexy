@@ -4,12 +4,12 @@ El enrutamiento modular utiliza clases con decoradores en lugar de archivos en `
 
 **Antes de comenzar:** un proyecto Nexy y una página de trabajo. El enrutador modular reemplaza al basado en archivos, así que lea [Enrutamiento](../README.md) primero si aún no ha elegido un enrutador.
 
-| Página | Qué cubre |
+| Página | lo que cubre |
 |---|---|
-| Esta página | Montar un módulo, escribir un controlador, controladores de grupo |
+| esta pagina | Montar un módulo, escribir un controlador, controladores de grupo |
 | [Inyección de dependencia](dependency-injection.md) | `@Injectable`, ámbitos, el contenedor |
 | [Guardias y metadatos](guards-and-metadata.md) | `@UseGuard`, `@Middleware`, `@UseRoute`, `@UseResponse` |
-| [Nexy y NestJS](vs-nestjs.md) | Qué coincide con NestJS y qué no con |
+| [Nexy y NestJS](vs-nestjs.md) | Qué coincide con NestJS y qué no |
 
 ## Configurar el enrutador
 
@@ -40,7 +40,7 @@ class AppController:
 
 Los métodos se comparan por nombre, sin distinguir entre mayúsculas y minúsculas: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
 
-Un controlador declara un controlador por método HTTP; un duplicado surge al inicio. Agregue un prefijo con `@Controller(prefix="/users")`: cada controlador está montado en `prefix/`. `async def SOCKET(...)` en un controlador registra un WebSocket en la misma ruta.
+Un controlador declara un controlador por método HTTP; un duplicado surge al inicio. El primer argumento de `@Controller("/users")` es la ruta por la que responde cada controlador, `/users/`. `async def SOCKET(...)` en un controlador registra un WebSocket en la misma ruta.
 
 ## Controladores de grupo en un módulo
 

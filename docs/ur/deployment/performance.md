@@ -13,9 +13,56 @@
 | API دستاویزات | پر | پیداوار میں `useDocs = False` |
 | رن ٹائم پر نوڈ | کوئی نہیں | `nx build` کلائنٹ کے اجزاء کو پہلے سے پیش کرتا ہے۔ |
 
+ٹیبل کے دو سوئچز `nexyconfig.py` میں، اور ایک صفحہ میں ISR:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useGZip = {"minimum_size": 1000}
+    useDocs = False
+```
+
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/blog/index.nexy"
+---
+revalidate = 60
+---
+<h1>Rendered at most once per minute</h1>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR فائل صفحات کا ایک موڈ ہے: ہر درخواست پر ایک کنٹرولر کی واپسی کا منظر پیش کیا جاتا ہے۔
+<!-- /router -->
+
 ## ناپا
 
 ایک لوکل رن، ایک Uvicorn ورکر، ونڈوز، Python 3.13، اسی مشین پر Python لوڈ جنریٹر سے کنکشن کو زندہ رکھیں۔ تبدیلیوں کا موازنہ کرنے کے لیے نمبروں کو ایک بنیادی لائن کے طور پر سمجھیں، نہ کہ دوسرے فریم ورک کے خلاف ایک معیار کے طور پر۔
+
+ٹیبل کا Nexy JSON روٹ یہ فائل ہے:
+
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/ping.py"
+async def GET():
+    return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+نیچے دیئے گئے اعداد و شمار کو فائل کے راستے سے ماپا گیا تھا۔ کنٹرولر پر بھروسہ کرنے سے پہلے اسی طرح پیمائش کریں۔
+<!-- /router -->
 
 | راستہ | ہم آہنگی | فی سیکنڈ کی درخواستیں | p50 | p99 |
 |---|---|---|---|---|
@@ -26,7 +73,7 @@
 
 ٹیبل پڑھنا:
 
-- Nexy کی اپنی تہوں (پاتھ سیاق و سباق، مڈل ویئر) کی قیمت ایک ننگے FastAPI راستے کے تھرو پٹ کے تقریباً ایک تہائی ہے۔
+- Nexy کی اپنی تہوں (پاتھ سیاق و سباق، مڈل ویئر) کی قیمت ایک ننگے FastAPI راستے کے تھرو پٹ کا تقریباً ایک تہائی ہے۔
 - سرور کی طرف سے پیش کردہ صفحہ کی قیمت تقریباً 2 ایم ایس سی پی یو ہے، جو تقریباً 16 ٹیمپلیٹ رینڈرز (ایک فی جزو) پر پھیلی ہوئی ہے۔ کم اجزاء والے صفحات متناسب طور پر سستے ہیں۔
 - کارکنوں کے ساتھ تھرو پٹ اسکیل۔ لینکس پر، `nx start` پہلے سے ہی فی سی پی یو شروع ہوتا ہے۔
 
@@ -38,8 +85,28 @@
 4. فی صفحہ `.nexy` اجزاء کی تعداد کو مناسب رکھیں: ہر ایک ایک الگ ٹیمپلیٹ رینڈر ہے۔
 5. اپنے راستوں کی پیمائش کریں۔ ایک مقامی لوڈ جنریٹر جو رابطوں کو زندہ رکھتا ہے ایک صفحہ کے دو ورژن کا موازنہ کرنے کے لیے کافی ہے۔
 
+مشورہ 1 کے ساتھ Nginx: ہیشڈ کلائنٹ کے بنڈل ایک سال کے لیے محفوظ کیے جاتے ہیں، باقی Nexy کو جاتا ہے۔
+
+```nginx filename="/etc/nginx/conf.d/my-app.conf"
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    location /__nexy__/client/ {
+        proxy_pass http://127.0.0.1:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
 ## اگلے اقدامات
 
-- [تعینات کریں](README.md)
-- [رینڈرنگ](../rendering/README.md)
+- [تعیناتی](README.md)
+- [انجام دینا ](../rendering/README.md)
 - [ترتیب ](../reference/config.md)

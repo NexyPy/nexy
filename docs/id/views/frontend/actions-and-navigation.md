@@ -27,6 +27,7 @@ async def add_todo(title: str) -> Todo:
 
 Halaman ini memanggilnya dengan input Python yang dideklarasikan, dan mendapatkan kembali `Todo` yang diketik:
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/rute/todos.tsx"
 import { useAction } from "@nexy/client";
 import { add_todo } from "@nexy/actions";
@@ -40,6 +41,32 @@ export default function Todos() {
   );
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Komponennya adalah pulau tampilan, dan pengontrol mengembalikan tampilan tersebut:
+
+```tsx filename="src/components/Todos.tsx"
+import { useAction } from "@nexy/client";
+import { add_todo } from "@nexy/actions";
+
+export function Todos() {
+  const { run, pending, data } = useAction(add_todo);
+  return (
+    <button disabled={pending} onClick={() => run({ title: "Write the docs" })}>
+      {data ? `Added ${data.title}` : "Add"}
+    </button>
+  );
+}
+```
+
+```nexy filename="src/apps/todos_view.nexy"
+---
+from "@/components/Todos.tsx" import Todos
+---
+<Todos directive="client:load" />
+```
+<!-- /router -->
 
 ## Navigasi Sisi Klien
 
@@ -91,6 +118,7 @@ async def sign_in(email: str, password: str) -> bool:
     return ok
 ```
 
+<!-- router:fbr,custom -->
 ```tsx filename="src/rute/login.tsx"
 import { useAction, useRouter } from "@nexy/client";
 import { sign_in } from "@nexy/actions";
@@ -105,6 +133,23 @@ export default function Login() {
   return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
 }
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```tsx filename="src/components/Login.tsx"
+import { useAction } from "@nexy/client";
+import { sign_in } from "@nexy/actions";
+
+export function Login() {
+  const { run } = useAction(sign_in, {
+    onSuccess: (ok) => {
+      if (ok) window.location.assign("/dashboard/");
+    },
+  });
+  return <button onClick={() => run({ email: "ada@example.com", password: "..." })}>Sign in</button>;
+}
+```
+<!-- /router -->
 
 `check_password` berarti cek Anda sendiri. Lihat [Tindakan](../../guides/actions.md) untuk kesalahan, formulir tanpa JavaScript dan keamanan.
 

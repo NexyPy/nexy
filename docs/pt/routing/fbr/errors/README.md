@@ -23,7 +23,7 @@ Crie `src/routes/notfound.nexy` e escreva o que um visitante deve ler:
 
 ```nexy filename="src/rotas/notfound.nexy"
 ---
-title: Page not found
+metadata = {"title": "Page not found"}
 ---
 <h1>Page not found</h1>
 <p>The page moved or never existed. <a href="/">Back home</a>.</p>
@@ -50,7 +50,7 @@ O arquivo na raiz das rotas responde a todo o projeto; uma cópia em uma pasta r
 
 | Situação | Resposta |
 |---|---|
-| Nenhuma rota corresponde a | `404` |
+| Nenhuma rota corresponde | `404` |
 | Um segmento dinâmico não pode ser convertido em sua anotação | `404` |
 | Uma exceção não tratada, em uma página ou manipulador de API | `500` |
 | `raise HTTPException(status_code=403)` | o status que você levantou, como HTML ou JSON |
@@ -77,10 +77,10 @@ if post.moved_to:
 <h1>{{ post.title }}</h1>
 ```
 
-| Ligue | Atenda |
+| Ligar | Resposta |
 |---|---|
 | `redirect(url)` | `307`; `redirect(url, status=303)` transforma um POST em um GET após um formulário |
-| `permanentRedirect(url)` | `308`; navegadores e motores de busca lembram disso |
+| `permanentRedirect(url)` | `308`; navegadores e mecanismos de pesquisa lembram disso |
 | `notFound(detail=None)` | `404`: a página `notfound` ou JSON para um cliente API |
 | `forbidden(detail=None)` | `403`: o visitante é conhecido, mas pode não ver isso |
 | `unauthorized(detail=None, scheme=None)` | `401`; `scheme="Bearer"` adiciona `WWW-Authenticate` |
@@ -133,9 +133,9 @@ Uma exceção de que nada tratado é registrado uma vez, com exceção de onde v
 
 | | `nx dev` | `nx start` |
 |---|---|---|
-| Navegar | uma página com o erro, as linhas do seu código que o gerou e o rastreamento completo | a página interna `500` (ou sua `errors.nexy`) com uma referência |
+| Navegador | uma página com o erro, as linhas do seu código que o geraram e o traceback completo | a página interna `500` (ou sua `errors.nexy`) com uma referência |
 | Cliente JSON | `{"detail", "reference", "error"}` | `{"detail", "reference"}` |
-| Log do servidor | a exceção e as linhas do seu código | a exceção e todo o traceback, com a mesma referência |
+| Registro do servidor | a exceção e as linhas do seu código | a exceção e todo o traceback, com a mesma referência |
 
 ```text
   x ZeroDivisionError: division by zero  GET /boom  ref fe6a5217

@@ -21,25 +21,47 @@
 - **Модульный маршрутизатор**: контроллеры и модули из `src/apps/`, объявленные с помощью декораторов, для кодовой базы в стиле NestJS.
 - **Пользовательский маршрутизатор**: существующий FastAPI `APIRouter`, включенный в приложение.
 
-Выбор — одна строка из `nexyconfig.py`. Маршрутизация на основе файлов не требуется: без `useRouter` Nexy читает `src/routes/`.
+Выбор — одна строка класса `NexyConfig` в `nexyconfig.py`.
+
+<!-- router:fbr -->
+Маршрутизация на основе файлов не требует строки: без `useRouter` Nexy читает `src/routes/`.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    pass  # file-based: no useRouter, the files of src/routes/ are the routes
+```
+<!-- /router -->
+
+<!-- router:modular -->
+Модульный маршрутизатор является корневым модулем `src/apps/`:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
 from src.apps.app_module import AppModule
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = AppModule  # modular: the root module of src/apps/
 ```
+<!-- /router -->
+
+<!-- router:custom -->
+Пользовательский маршрутизатор — это `APIRouter`, который у вас уже есть:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
+
 from src.legacy import api  # an APIRouter you already have
 
 
 class NexyConfig(NexyConfigModel):
     useRouter = api  # custom: your router, included as it is
 ```
+<!-- /router -->
 
 Выбор одного из трех – это одно решение. Выбор внешнего интерфейса — это еще один отдельный вопрос: см. [Выбор маршрутизатора](../routing/README.md) и [Представления](../views/README.md)].
 
@@ -58,6 +80,7 @@ class NexyConfig(NexyConfigModel):
 
 В одном предложении: **страница — это файл маршрута, представление — это то, что ее отображает, компонент — это то, что страница повторно использует, обработчик отвечает конечной точке.**
 
+<!-- router:fbr -->
 Все пять в одном небольшом проекте:
 
 ```text
@@ -90,6 +113,69 @@ async def POST():  # the endpoint POST /api/posts
     return {"created": True}
 ```
 
+<!-- /router -->
+
+<!-- router:modular -->
+В модульном маршрутизаторе маршрут — это путь контроллера, а обработчик — один из его методов, названный в честь глагола HTTP:
+
+```text
+src/
+├─ apps/
+│  ├─ app_module.py       the root module: lists the controllers
+│  └─ posts_controller.py a route (/api/posts) whose handlers answer two endpoints
+└─ components/
+   └─ Like.tsx            a component: never served on its own
+```
+
+```python filename="src/apps/posts_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/posts")
+class PostsController:
+    async def get(self) -> dict:  # the endpoint GET /api/posts
+        return {"posts": []}
+
+    async def post(self) -> dict:  # the endpoint POST /api/posts
+        return {"created": True}
+```
+
+```python filename="src/apps/app_module.py"
+from nexy.decorators import Module
+
+from .posts_controller import PostsController
+
+
+@Module()
+class AppModule:
+    controllers = [PostsController]
+```
+
+Страница по-прежнему является файлом `src/routes/` или представлением, которое контроллер возвращает с помощью `useViews`.
+<!-- /router -->
+
+<!-- router:custom -->
+В случае пользовательского маршрутизатора маршрут — это путь к вашему `APIRouter`, а обработчик — это функция, которую регистрирует его декоратор:
+
+```python filename="src/legacy.py"
+from fastapi import APIRouter
+
+api = APIRouter()
+
+
+@api.get("/api/posts")  # the endpoint GET /api/posts
+async def list_posts():
+    return {"posts": []}
+
+
+@api.post("/api/posts")  # the endpoint POST /api/posts
+async def create_post():
+    return {"created": True}
+```
+
+Страницы по-прежнему представляют собой файлы `src/routes/`: страница `.nexy` отвечает рядом с включенными маршрутами.
+<!-- /router -->
+
 Еще два слова, которые повторяются повсюду:
 
 - **Layout**: файл `layout.*`, который оборачивает страницы под своей папкой; корневой владеет HTML-документом. См. [Макеты](../routing/fbr/layouts/README.md).
@@ -112,6 +198,7 @@ async def POST():  # the endpoint POST /api/posts
 
 Страница в режиме сервера с одним островом: сервер отображает страницу, браузер увлажняет диаграмму только при ее прокрутке в поле зрения.
 
+<!-- router:fbr,custom -->
 ```nexy filename="источник/маршруты/sales.nexy"
 ---
 from "@/components/Chart.tsx" import Chart
@@ -119,6 +206,30 @@ from "@/components/Chart.tsx" import Chart
 <h1>Sales</h1>
 <Chart directive="client:visible" />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Остров попадает в представление, а контроллер возвращает представление:
+
+```nexy filename="src/apps/sales_view.nexy"
+---
+from "@/components/Chart.tsx" import Chart
+---
+<h1>Sales</h1>
+<Chart directive="client:visible" />
+```
+
+```python filename="src/apps/sales_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/sales")
+class SalesController:
+    async def get(self):
+        return useViews("src/apps/sales_view.nexy")
+```
+<!-- /router -->
 
 ## Взаимодействие с приложением
 
@@ -140,17 +251,29 @@ async def subscribe(email: str) -> bool:
     return True
 ```
 
+<!-- router:fbr,custom -->
 ```html filename="источник/маршруты/index.nexy"
 <form method="post" action="{{ __actions_path['subscribe'] }}">
   <input name="email" type="email">
   <button type="submit">Subscribe</button>
 </form>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```html filename="src/apps/home_view.nexy"
+<form method="post" action="{{ __actions_path['subscribe'] }}">
+  <input name="email" type="email">
+  <button type="submit">Subscribe</button>
+</form>
+```
+<!-- /router -->
 
 ## Чего Nexy не делает
 
 Аутентификация, авторизация, база данных, интернационализация, фоновые задания, электронная почта, платежи и поиск — это **ответственность вашего приложения**, а не фреймворка. Nexy дает точки расширения и говорит, куда подключить каждую: см. [Что Nexy оставляет вам](how-nexy-works.md#what-nexy-leaves-to-you).
 
+<!-- router:fbr -->
 Например, аутентификация подключается к зависимости от папки, которую она защищает. Nexy запускает его перед каждым маршрутом ниже; кто пользователь, остается за вами:
 
 ```python filename="src/routes/account/dependents.py"
@@ -165,6 +288,48 @@ def require_login(request: Request) -> None:
 
 dependencies = [require_login]
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Например, аутентификация подключается к устройству защиты на контроллере, который она защищает. Nexy запускает его перед каждым обработчиком класса; кто пользователь, остается за вами:
+
+```python filename="src/apps/account_controller.py"
+from nexy import unauthorized
+from nexy.decorators import Controller, UseGuard
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+@Controller("/account")
+@UseGuard(require_login)
+class AccountController:
+    async def get(self) -> dict:
+        return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:custom -->
+Аутентификация, например, подключается к зависимости маршрутизатора, который она защищает, как в FastAPI; кто пользователь, остается за вами:
+
+```python filename="src/account.py"
+from fastapi import APIRouter, Depends
+
+from nexy import unauthorized
+from nexy.http import Request
+
+
+def require_login(request: Request) -> None:
+    if not request.session.get("user"):
+        unauthorized(scheme="Bearer")
+
+
+api = APIRouter(prefix="/account", dependencies=[Depends(require_login)])
+```
+<!-- /router -->
 
 Причина не в минимализме как таковом: фреймворк, который выбирает ваш ORM или вашу библиотеку аутентификации, решил что-то, что может решить только ваше приложение.
 

@@ -4,12 +4,12 @@ Perutean modular menggunakan kelas dengan dekorator alih-alih file di bawah `src
 
 **Sebelum Anda memulai:** proyek Nexy dan satu halaman kerja. Router modular menggantikan router berbasis file, jadi bacalah [Perutean](../README.md) terlebih dahulu jika Anda belum memilih router.
 
-| Halaman | Cakupannya |
+| Halaman | Apa yang dicakupnya |
 |---|---|
-| Halaman ini | Pasang modul, tulis pengontrol, grup pengontrol |
+| Halaman ini | Pasang modul, tulis pengontrol, pengontrol grup |
 | [Injeksi ketergantungan](dependency-injection.md) | `@Injectable`, cakupan, wadah |
 | [Penjaga dan metadata](guards-and-metadata.md) | `@UseGuard`, `@Middleware`, `@UseRoute`, `@UseResponse` |
-| [Nexy dan NestJS](vs-nestjs.md) | Apa yang cocok dengan NestJS dan apa yang tidak |
+| [Nexy dan NestJS](vs-nestjs.md) | Mana yang cocok dengan NestJS dan mana yang tidak |
 
 ## Siapkan perute
 
@@ -40,7 +40,7 @@ class AppController:
 
 Metode dicocokkan berdasarkan nama, tidak membedakan huruf besar/kecil: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
 
-Sebuah pengontrol mendeklarasikan satu penangan per metode HTTP; duplikat meningkat saat startup. Tambahkan awalan dengan `@Controller(prefix="/users")` - setiap penangan dipasang di `prefix/`. `async def SOCKET(...)` pada pengontrol mendaftarkan WebSocket di jalur yang sama.
+Sebuah pengontrol mendeklarasikan satu penangan per metode HTTP; duplikat meningkat saat startup. Argumen pertama dari `@Controller("/users")` adalah jalur yang dijawab oleh setiap penangan, `/users/`. `async def SOCKET(...)` pada pengontrol mendaftarkan WebSocket di jalur yang sama.
 
 ## Pengontrol grup dalam sebuah modul
 

@@ -4,6 +4,7 @@ File `.nexy` adalah komponen: Python di atas, HTML di tengah, CSS di bawah.
 
 **Sebelum Anda memulai:** proyek yang dibuat oleh [Mulai cepat](../../getting-started/quick-start.md). File `.nexy` tidak memerlukan konfigurasi build: `nx dev` mengkompilasinya saat disimpan.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/blog/[siput].nexy"
 ---
 from nexy import usePathname
@@ -20,6 +21,39 @@ pathname = usePathname()
   .post { max-width: 60ch; }
 </style>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/blog/post_view.nexy"
+---
+from nexy import usePathname
+
+slug: prop[str] = "untitled"
+pathname = usePathname()
+---
+<article class="post">
+  <h1>{{ slug }}</h1>
+  <p>You are on {{ pathname }}</p>
+</article>
+
+<style>
+  .post { max-width: 60ch; }
+</style>
+```
+
+Pengontrol melewati `slug` dari jalurnya:
+
+```python filename="src/apps/blog/post_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/blog/{slug}")
+class PostController:
+    async def get(self, slug: str):
+        return useViews("src/apps/blog/post_view.nexy", context={"slug": slug})
+```
+<!-- /router -->
 
 ## Masalah depan
 
@@ -29,9 +63,9 @@ Segala sesuatu di antara dua garis `---` adalah Python. Impor diselesaikan saat 
 |---|---|
 | Impor modul | `import json`, `from datetime import datetime` |
 | Impor komponen | `from "@/components/card.nexy" import Card` |
-| Mendeklarasikan properti | `title: prop[str] = "Default"` |
-| Hitung nilai | `year = datetime.now().year` |
-| Baca permintaan | `pathname = usePathname()` |
+| Deklarasikan properti | `title: prop[str] = "Default"` |
+| Hitung suatu nilai | `year = datetime.now().year` |
+| Baca permintaannya | `pathname = usePathname()` |
 | Cache halaman (ISR) | `revalidate = 60` |
 
 ## Properti
@@ -63,6 +97,7 @@ Pelarian otomatis **nonaktif**: templat adalah HTML milik proyek, jadi `{{ value
 
 Setiap callable yang diimpor yang namanya dimulai dengan huruf besar dapat digunakan sebagai tag. Kompilator menulis ulang menjadi panggilan Jinja: atribut menjadi argumen kata kunci.
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/index.nexy"
 ---
 from "@/components/card.nexy" import Card
@@ -74,6 +109,21 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/card.nexy" import Card
+from nexy import Audio
+---
+<Card title="Hello">
+  <p>Child content</p>
+</Card>
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 Baris terakhir tepatnya `{{ Audio("/theme.mp3", controls=True) }}`. Kedua sintaksis tersebut valid untuk pembantu bawaan `Image`, `Link`, `Audio` dan `Video` - lihat [komponen](components.md#two-syntaxes-one-function).
 

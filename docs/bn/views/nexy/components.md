@@ -4,6 +4,7 @@ Nexy সাহায্যকারীর একটি ছোট সেট র�
 
 ## দুটি সিনট্যাক্স, একটি ফাংশন
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import Audio
@@ -12,6 +13,18 @@ from nexy import Audio
 
 <Audio src="/theme.mp3" controls=True />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import Audio
+---
+{{ Audio("/theme.mp3", controls=True) }}
+
+<Audio src="/theme.mp3" controls=True />
+```
+<!-- /router -->
 
 উভয় লাইন একই মার্কআপ উত্পাদন করে:
 
@@ -19,7 +32,7 @@ from nexy import Audio
 <audio preload="metadata" controls><source src="/theme.mp3" type="audio/mp3" /></audio>
 ```
 
-কম্পাইলার `<Audio ... />` থেকে `{{ Audio(...) }}` পুনঃলিখন করে, তাই ট্যাগ ফর্মটি দ্বিতীয় API নয়: বৈশিষ্ট্য হল ফাংশনের কীওয়ার্ড আর্গুমেন্ট।
+কম্পাইলার পুনঃলিখন করে `<Audio ... />` থেকে `{{ Audio(...) }}`, তাই ট্যাগ ফর্মটি দ্বিতীয় API নয়: বৈশিষ্ট্যগুলি হল ফাংশনের কীওয়ার্ড আর্গুমেন্ট।
 
 ## ট্যাগ ফর্মের নিয়ম
 
@@ -28,7 +41,7 @@ from nexy import Audio
 | `<Audio src="/a.mp3" />` | `Audio(src="/a.mp3")` |
 | `controls=True` | `controls=True`, একটি বাস্তব বুলিয়ান |
 | `width=640` | `width=640`, একটি সংখ্যা |
-| `src="{{ url }}"` | `src=(url)`, Jinja এ মূল্যায়ন করা হয়েছে |
+| `src="{{ url }}"` | `src=(url)`, মূল্যায়ন Jinja |
 | অন্য কোন `value` | `"value"`, একটি স্ট্রিং |
 
 - ট্যাগটি একটি বড় হাতের অক্ষর দিয়ে শুরু হতে হবে এবং ফ্রন্ট ম্যাটারে আমদানি করতে হবে; অন্যথায় কম্পাইলার উত্থাপন করে `Missing Import: <Name> used but not declared.`
@@ -95,6 +108,7 @@ tone: prop[str] = "neutral"
 </article>
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Card.nexy" import Card
@@ -103,8 +117,20 @@ from "@/components/Card.nexy" import Card
   <p>Everything published this week.</p>
 </Card>
 ```
+<!-- /router -->
 
-`title` কোন ডিফল্ট নেই, তাই পৃষ্ঠাটি অবশ্যই পাস করতে হবে; `tone` `"neutral"`-এ ফিরে আসে। ট্যাগগুলির মধ্যে মার্কআপটি ভিতরে আসে `<Slot />` (ক্যাপিটাল এস)। প্রপস, স্লট এবং ট্যাগ ফর্মের নিয়মগুলির জন্য [.nexy ফাইলগুলি](README.md#components) দেখুন।
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Card.nexy" import Card
+---
+<Card title="Latest notes" tone="warm">
+  <p>Everything published this week.</p>
+</Card>
+```
+<!-- /router -->
+
+`title` কোন ডিফল্ট নেই, তাই পৃষ্ঠাটি অবশ্যই এটি পাস করতে হবে; `tone` `"neutral"`-এ ফিরে আসে। ট্যাগগুলির মধ্যে মার্কআপটি ভিতরে আসে `<Slot />` (ক্যাপিটাল এস)। প্রপস, স্লট এবং ট্যাগ ফর্মের নিয়মগুলির জন্য [.nexy ফাইলগুলি](README.md#components) দেখুন।
 
 ## একটি ক্লায়েন্ট উপাদান আমদানি করা হচ্ছে
 
@@ -130,9 +156,9 @@ html = counter(start=0)
 
 ## টেমপ্লেট এবং Vite
 
-`Template().render(path, context)` একটি টেমপ্লেট ফাইল (Jinja2, অথবা Markdown `.md` রুটের জন্য HTML-এ রেন্ডার করা হয়। `Template().invalidate(path)` ক্যাশে থেকে এটি ড্রপ করে।
+`Template().render(path, context)` একটি টেমপ্লেট ফাইল (Jinja2, অথবা Markdown `.md` রুটের জন্য HTML-এ রেন্ডার করা হয়। `Template().invalidate(path)` এটি ক্যাশে থেকে ড্রপ করে।
 
-`Vite()` বর্তমান মোডের জন্য ক্লায়েন্ট ট্যাগ প্রদান করে: বিকাশে এইচএমআর স্ক্রিপ্ট, উৎপাদনে নির্মিত ক্লায়েন্ট বান্ডেল। Nexy প্রতিটি পৃষ্ঠার জন্য এটি কল; আপনার খুব কমই সরাসরি এটি প্রয়োজন।
+`Vite()` বর্তমান মোডের জন্য ক্লায়েন্ট ট্যাগ ফেরত দেয়: বিকাশে এইচএমআর স্ক্রিপ্ট, উৎপাদনে নির্মিত ক্লায়েন্ট বান্ডেল। Nexy প্রতিটি পৃষ্ঠার জন্য এটি কল; আপনার খুব কমই সরাসরি এটি প্রয়োজন।
 
 ## এখনো বাস্তবায়ন হয়নি
 
@@ -142,4 +168,4 @@ html = counter(start=0)
 
 - [.nexy ফাইল](README.md): যেখানে এই সাহায্যকারী ব্যবহার করা হয়
 - [React](../react/differences.md): `.tsx` উপাদান আমদানি করা
-- [ফ্রন্টেন্ড](../../guides/frontend.md): কিভাবে ক্লায়েন্ট উপাদানগুলি একত্রিত হয়
+- [ফ্রন্টএন্ড](../../guides/frontend.md): কিভাবে ক্লায়েন্ট উপাদান একত্রিত করা হয়

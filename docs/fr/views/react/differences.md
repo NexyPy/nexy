@@ -2,16 +2,30 @@
 
 Nexy restitue React 19 composants sur le serveur, puis React les hydrate dans le navigateur. Les pages, mises en page, îlots et actions sont les mêmes dans tous les frameworks : cette page couvre la configuration, puis les parties qui diffèrent des [contrats partagés](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Mode | `nexyconfig.py` | Les pages sont | React est |
 |---|---|---|---|
 | Serveur (par défaut) | `useCSR = False` | `.nexy` fichiers | [îles](../../rendering/islands.md) à l'intérieur de ces pages |
-| Le client | `useCSR = True` | `.tsx` classe | la page entière, avec des [mises en page](../frontend/layouts.md) et un routeur client |
+| Client | `useCSR = True` | `.tsx` fichiers | la page entière, avec [mises en page](../frontend/layouts.md) et un routeur client |
+<!-- /router -->
+
+<!-- router:modular -->
+Avec le routeur modulaire, les composants React sont des [îlots](../../rendering/islands.md) à l'intérieur des `.nexy` vues renvoyées par un contrôleur : il n'y a pas de fichier d'échange ni de routeur client.
+<!-- /router -->
 
 ## Démarrer un projet
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-react
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-react
+```
+<!-- /router -->
 
 Le modèle est un projet en mode serveur avec React îles. Exécutez `nx new my-app` sans modèle pour répondre aux invites : le routeur, le type de projet, l'utilisation ou non du routage côté client, puis le framework.
 
@@ -40,7 +54,7 @@ export default defineConfig({
 
 `nx new` écrit ce fichier ; Nexy écrit lui-même `__nexy__/vite.ts`, alors ne le modifiez pas.
 
-| Le package | Version `nx new` écrit |
+| Forfait | La version `nx new` écrit |
 |---|---|
 | `react`, `react-dom` | `^19.2.5` |
 | `@vitejs/plugin-react` | `^5.2.0` |
@@ -49,10 +63,16 @@ export default defineConfig({
 ## Règles
 
 - **Un framework par projet.** `useFF` prend exactement un framework ; `useFF = [react(), vue()]` arrête le serveur au démarrage.
+<!-- router:fbr,custom -->
 - **Les pages sont `.tsx`.** React possède `.tsx` et `.jsx` pour les composants, mais seul un fichier `.tsx` sous `src/routes/` devient une page.
 - **Les composants se trouvent à l'extérieur de `src/routes/`**, généralement dans `src/components/`, ce ne sont donc pas des pages.
 - **Un projet en mode serveur n'a pas de page `.tsx`**, et un projet en mode client n'a pas de page `.nexy` : Nexy refuse de démarrer et nomme le fichier. Voir [modes](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Les composants résident dans `src/components/`** et une vue les importe sous forme d'îlots.
+<!-- /router -->
 
+<!-- router:fbr,custom -->
 ## Pages
 
 En mode client (`useCSR = True`), une page est un fichier `.tsx`.
@@ -97,6 +117,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 }
 ```
+<!-- /router -->
 
 ## Îles
 
@@ -106,12 +127,23 @@ En mode serveur, un composant React importé dans un fichier `.nexy` est un îlo
 
 Importez des composants dans le frontmatter du fichier `.nexy` :
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Directives d'hydratation
 
@@ -120,7 +152,7 @@ Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate
 - `client:load` (par défaut) : immédiatement
 - `client:idle` : lorsque le navigateur est inactif
 - `client:visible` : lorsqu'il défile dans la vue
-- `client:media` : lorsque la requête multimédia correspond
+- `client:media` : lorsque la requête média correspond
 
 ## Actions et navigation
 
@@ -166,4 +198,4 @@ router.push("/dashboard");
 ## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et le build client
+- [Frontend](../../guides/frontend.md) : Vite et la build client

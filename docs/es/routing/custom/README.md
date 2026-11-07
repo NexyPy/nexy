@@ -1,123 +1,171 @@
-# Integración de enrutamiento personalizado
+# Incluir un enrutador FastAPI existente en Nexy
 
-Nexy te permite incluir una aplicación FastAPI existente como enrutador en tu proyecto. Esto resulta útil cuando desea reutilizar la lógica de backend de otro servicio, integrarla con API de terceros o crear una aplicación compuesta con múltiples problemas de enrutamiento.
-
-A diferencia de los enrutadores modulares y basados ​​en archivos, que son intrínsecos a Nexy, un enrutador personalizado es simplemente un `APIRouter` que usted monta en su aplicación.
+Para incluir un enrutador FastAPI existente en Nexy, configure `useRouter` en ese `APIRouter` en la clase `NexyConfig` de `nexyconfig.py`: sus rutas se sirven tal como están, junto a los archivos de `src/routes/`.
 
 ## Cuándo usar un enrutador personalizado
 
-- **Servicios de terceros**: Tienes una aplicación FastAPI existente que deseas exponer a través del cliente de Nexy.
-- **Reutilización de código**: extraiga la lógica de backend de otro proyecto en un enrutador e inclúyala en uno nuevo.
-- **Patrones multiinquilino o microfrontend**: cada inquilino o módulo proporciona su propio enrutador.
-- **Migración gradual**: comience con un `APIRouter` y evolucione a un módulo Nexy completo más adelante.
+- **Migración gradual**: una aplicación FastAPI se mueve a Nexy ruta por ruta, y sus rutas antiguas siguen respondiendo mientras tanto.
+- **Reutilización de código**: un paquete ya expone un `APIRouter`, para autenticación o facturación.
+- **Un backend que conservas**: la API permanece simple FastAPI y Nexy agrega las páginas.
 
-## como funciona
+## Establecer `useRouter` en `nexyconfig.py`
 
-```python
+El enrutador es cualquier FastAPI `APIRouter`, escrito de la forma en que ya escribe uno:
+
+```python filename="src/legacy/api.py"
 from fastapi import APIRouter
-from nexy import useRouter
 
-# An existing FastAPI router (from another service)
-third_party = APIRouter()
-@third_party.get("/info")
-async def info():
-    return {"name": "Foo"}
+router = APIRouter(prefix="/api")
 
-# In your nexyconfig.py:
-useRouter = third_party
+
+@router.get("/status")
+async def status():
+    return {"status": "ok"}
+
+
+@router.get("/users/{id}")
+async def user(id: int):
+    return {"id": id}
 ```
 
-El enrutador lo monta automáticamente el solucionador de enrutadores de Nexy. Sus rutas están disponibles bajo el mismo patrón de URL que en la aplicación original. No se necesita ninguna configuración adicional.
+`useRouter` es un campo de la clase `NexyConfig`, como cada configuración del proyecto:
 
-## Construyendo un enrutador personalizado
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-1. **Crea el enrutador**
-   ```pitón
-   desde fastapi importar APIRouter
+from src.legacy.api import router
 
-   api = APIRouter()
-   @api.get("/estado")
-   estado de definición asíncrono():
-       devolver {"estado": "ok"}
-   ```
 
-2. **Referencia en `nexyconfig.py`**
-   ```pitón
-   desde .my_backend api de importación
+class NexyConfig(NexyConfigModel):
+    useRouter = router
+```
 
-   usar enrutador = api
-   ```
+`nx dev` luego responde a `GET /api/status` y `GET /api/users/{id}`, y `/docs` los enumera.
 
-3. **Vías de acceso**
-   - Las páginas basadas en archivos (`.nexy`, `.md`) y los controladores modulares pueden hacer referencia a `/status` como lo harían con cualquier otra ruta.
-   - El enrutador se ejecuta en el mismo proceso, por lo que las dependencias, las conexiones de la base de datos y la autenticación funcionan exactamente como en la aplicación original.
+> [!NOTE]
+> `useRouter` en `nexyconfig.py` es una configuración. `from nexy import useRouter` es otra cosa: el gancho que usa una página `.nexy` para leer la ruta actual. No lo importe para configurar el enrutador.
 
-## Integración con otros enrutadores
+## Varios enrutadores
 
-Un proyecto Nexy puede combinar:
+`useRouter` toma un enrutador. Reúna varios bajo un solo padre con `include_router`:
 
-- **Enrutamiento basado en archivos** (`src/routes/`) para páginas y puntos finales simples
-- **Enrutamiento modular** (`useRouter = AppModule`) para backends estructurados
-- **Enrutamiento personalizado** (`useRouter = APIRouter`) para código de terceros
+```python filename="src/legacy/__init__.py"
+from fastapi import APIRouter
 
-Los tres coexisten; cada ruta se registra sólo una vez. El enrutador basado en archivos siempre se analiza cuando existe `src/routes/`.
+from .api import router as api
+from .auth import router as auth
 
-## Acceso CLI a la aplicación incluida
+router = APIRouter()
+router.include_router(api)
+router.include_router(auth, prefix="/auth")
+```
 
-Los comandos `nexy dev` y `nx` funcionan en el enrutador montado como un enrutador integrado. Obtienes:
+```python filename="src/legacy/auth.py"
+from fastapi import APIRouter
 
-- Recarga en caliente para los puntos finales definidos en el enrutador personalizado (si utiliza las funciones habituales del servidor de desarrollo de `nexy` o FastAPI)
-- Validación en `nexyconfig.py` (cualquier `APIRouter` trabajo)
-- Documentos generados automáticamente para las rutas incluidas (si las habilita)
+router = APIRouter()
 
-## Seguridad y aislamiento
 
-Debido a que el enrutador está incluido, no montado mediante `app.mount`, no hay una capa ASGI adicional. El enrutador reside en el mismo objeto de aplicación que sus rutas modulares y basadas en archivos. Esto significa:
-
-- El middleware agregado por el enrutador personalizado se aplica a todas las solicitudes.
-- Los guardias y la inyección de dependencia definidos en el enrutador personalizado pueden acceder al mismo contenedor que su propio código (si usa inyección modular).
-- No hay ningún prefijo de URL distinto del que define el propio enrutador.
-
-Si necesita aislamiento, envuelva el enrutador en una subaplicación antes de incluirlo o utilice técnicas FastAPI estándar.
-
-## Ejemplo: incluir un proyecto FastAPI existente
-
-Supongamos que tiene `auth.py` en otro paquete:
-
-```python
-from fastapi import FastAPI, APIRouter
-
-auth = FastAPI(title="Auth service")
-api = APIRouter()
-
-@api.get("/login")
+@router.post("/login")
 async def login():
-    return {"msg": "Login"}
-
-auth.include_router(api)
+    return {"token": "demo"}
 ```
 
-En `nexyconfig.py`:
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-```python
-from other_package.auth import api
+from src.legacy import router
 
-useRouter = api
+
+class NexyConfig(NexyConfigModel):
+    useRouter = router
 ```
 
-Ahora se puede acceder al punto final `/login` desde su sitio Nexy sin mover una línea de código.
+## Páginas y archivos de ruta al lado
 
-## como empezar
+`src/routes/` todavía se lee mientras `useRouter` está configurado: una página `.nexy` o un archivo de ruta `.py` responde junto a las rutas incluidas.
 
-1. Crea tu `APIRouter` (o busca uno en un paquete existente).
-2. Señale `useRouter` en `nexyconfig.py`.
-3. Acceda a sus rutas a través de sus páginas, controladores o marcos de cliente.
-4. Si necesita más control, convierta el enrutador personalizado en un enrutador modular usando `AppModule`.
+```nexy filename="src/rutas/index.nexy"
+---
+title = "Home"
+---
+<h1>{{ title }}</h1>
+```
+
+```python filename="src/rutas/api/health.py"
+async def GET():
+    return {"ok": True}
+```
+
+Dos límites mientras se establece `useRouter`:
+
+- las páginas no están envueltas por `layout.nexy`;
+- `useCSR = True` es rechazado: `nx dev` y `nx build` responden a `useCSR requires file-based routing`.
+
+Una URL se responde una vez. Asigne un prefijo al enrutador incluido, aquí `/api`, y mantenga los archivos de `src/routes/` fuera de las rutas que utiliza.
+
+## Toda una aplicación FastAPI
+
+`useRouter` toma una aplicación `APIRouter`, no una `FastAPI`. Las rutas de una aplicación se ubican en su atributo `router`:
+
+```python filename="src/legacy/servicio.py"
+from fastapi import FastAPI
+
+service = FastAPI(title="Billing")
+
+
+@service.get("/billing/invoices")
+async def invoices():
+    return []
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.legacy.service import service
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = service.router
+```
+
+El middleware, los controladores de excepciones y los eventos de inicio propios de la aplicación se quedan atrás: muévalos a `useMiddlewares` y a los demás campos de `nexyconfig.py`.
+
+## Dependencias, autenticación y base de datos.
+
+El enrutador se ejecuta en el proceso Nexy, por lo que `Depends`, los esquemas de seguridad y las sesiones de la base de datos funcionan como en la aplicación original:
+
+```python filename="src/legacy/secure.py"
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+
+def require_token(x_token: str = Header("")) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=401, detail="Bad token")
+
+
+router = APIRouter(prefix="/secure", dependencies=[Depends(require_token)])
+
+
+@router.get("/data")
+async def data():
+    return {"data": 42}
+```
+
+## Pruébalo
+
+```python filename="pruebas/test_legacy.py"
+from fastapi.testclient import TestClient
+
+from nexy.app import app
+
+
+def test_the_included_route_answers():
+    assert TestClient(app).get("/api/status").json() == {"status": "ok"}
+```
 
 ## Próximos pasos
 
-- [Enrutamiento basado en archivos](../fbr/README.md) – Cree páginas y controladores simples a partir de archivos.
-- [Enrutamiento modular](../modular/README.md) – Backends estructurados con inyección y protecciones.
-- [Manejadores de ruta](../fbr/handlers/README.md): define Python puntos finales.
-
-El enrutador personalizado le brinda la flexibilidad de reutilizar el código FastAPI existente manteniendo la simplicidad de las páginas basadas en archivos y la estructura modular.
+- [De FastAPI a Nexy](../../coming-from/fastapi.md): mueve las rutas a archivos, una por una
+- [Enrutamiento basado en archivos](../fbr/README.md)
+- [Enrutamiento modular](../modular/README.md): `useRouter = AppModule`

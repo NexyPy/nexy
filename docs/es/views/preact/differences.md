@@ -2,16 +2,30 @@
 
 Nexy renderiza Preact 10 componentes en el servidor, luego Preact los toma en el navegador. Las páginas, diseños, islas y acciones son las mismas en todos los marcos: esta página cubre la configuración y luego las partes que difieren de los [contratos compartidos](../frontend/pages.md).
 
+<!-- router:fbr,custom -->
 | Modo | `nexyconfig.py` | Las páginas son | Preact es |
 |---|---|---|---|
 | Servidor (predeterminado) | `useCSR = False` | `.nexy` archivos | [islas](../../rendering/islands.md) dentro de esas páginas |
-| El cliente | `useCSR = True` | `.tsx` archiva | la página completa, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+| Cliente | `useCSR = True` | `.tsx` archivos | toda la página, con [diseños](../frontend/layouts.md) y un enrutador cliente |
+<!-- /router -->
+
+<!-- router:modular -->
+Con el enrutador modular, los Preact componentes son [islas](../../rendering/islands.md) dentro de las `.nexy` vistas que devuelve un controlador: no hay ningún archivo de página ni enrutador cliente.
+<!-- /router -->
 
 ## iniciar un proyecto
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-preact
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-preact
+```
+<!-- /router -->
 
 La plantilla es un proyecto en modo servidor con Preact islas. Ejecute `nx new my-app` sin una plantilla para responder a las indicaciones: el enrutador, el tipo de proyecto, si se utilizará el enrutamiento del lado del cliente y luego el marco.
 
@@ -40,11 +54,11 @@ export default defineConfig({
 
 `nx new` escribe este archivo; Nexy escribe `__nexy__/vite.ts` por sí mismo, así que no lo edites.
 
-| Paquete | Versión `nx new` escribe |
+| Paquete | La versión `nx new` escribe |
 |---|---|
 | `preact` | `^10.25.4` |
 | `@preact/preset-vite` | `^2.10.1` (dependencia del desarrollador) |
-| `preact-render-to-string` | `^6.7.0` (dependencia del desarrollador, renderizado en el servidor) |
+| `preact-render-to-string` | `^6.7.0` (dependencia del desarrollador, renderizaciones en el servidor) |
 
 ## Escribe Preact
 
@@ -65,11 +79,17 @@ export default function Counter({ start = 0 }: { start?: number }) {
 ## Reglas
 
 - **Un marco por proyecto.** `useFF` toma exactamente un marco; `useFF = [preact(), react()]` detiene el servidor al inicio. Con `useFF = preact()`, cada archivo `.tsx` es Preact.
-- **Las páginas son `.tsx`.** Sólo un archivo `.tsx` bajo `src/routes/` se convierte en una página; `.jsx` está bien para un componente.
+<!-- router:fbr,custom -->
+- **Las páginas son `.tsx`.** Sólo un archivo `.tsx` debajo de `src/routes/` se convierte en una página; `.jsx` está bien para un componente.
 - **Los componentes se encuentran fuera de `src/routes/`**, generalmente en `src/components/`, por lo que no son páginas.
 - **Un proyecto en modo servidor no tiene `.tsx` página**, y un proyecto en modo cliente no tiene `.nexy` página: Nexy se niega a iniciar y nombra el archivo. Ver [modos](../../routing/fbr/modes.md).
+<!-- /router -->
+<!-- router:modular -->
+- **Los componentes viven en `src/components/`** y una vista los importa como islas.
+<!-- /router -->
 - **Una página `.mdx` se importa desde `"preact"`.** Nexy compila un archivo `.mdx` con Preact solo cuando ve esa importación, por ejemplo `import { h } from "preact"`, y con React en caso contrario. Ver [Markdown y MDX](../nexy/markdown.md).
 
+<!-- router:fbr,custom -->
 ## paginas
 
 En modo cliente (`useCSR = True`), una página es un archivo `.tsx`.
@@ -86,7 +106,7 @@ export default function Home() {
 
 ### Segmentos dinámicos
 
-Los parámetros de URL están disponibles a través del gancho `useParams`:
+Los parámetros de URL están disponibles a través del enlace `useParams`:
 
 ```tsx filename="src/rutas/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -117,6 +137,7 @@ export default function RootLayout({ children }: { children: ComponentChildren }
   );
 }
 ```
+<!-- /router -->
 
 ## Islas
 
@@ -126,12 +147,23 @@ En modo servidor, un componente Preact importado a un archivo `.nexy` es una isl
 
 Importe componentes en la portada del archivo `.nexy`:
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### Directivas de hidratación
 
@@ -167,7 +199,7 @@ import { Link } from "@nexy/client";
 <Link href="/about" class="nav" activeClassName="active">About</Link>
 ```
 
-Para navegación programática, use el enlace `useRouter`:
+Para navegación programática, use el gancho `useRouter`:
 
 ```tsx
 import { useRouter } from "@nexy/client";

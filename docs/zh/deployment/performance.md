@@ -9,13 +9,60 @@
 | 流程 | Linux 和 macOS 上每个 CPU 一名 Uvicorn 工作人员，Windows 上一名工作人员 | `nx start` 通过 Uvicorn 运行应用程序 |
 | 压缩 | 关闭 | [配置](../reference/config.md) 中的 `useGZip = {"minimum_size": 1000}`，或在反向代理处压缩 |
 | 静态文件 | 与 `ETag` 和 `Last-Modified` 一起食用，没有 `Cache-Control` | 在反向代理或 CDN 上为散列包设置长期缓存 |
-| HTML 页面 | 按请求渲染，无缓存 | [ISR](../rendering/isr.md) 与 `revalidate = N` |
+| HTML 页面 | 按请求渲染，无缓存 | [ISR](../rendering/isr.md) 和 `revalidate = N` |
 | API文档 | 上 | `useDocs = False` 生产中 |
 | 运行时的节点 | 无 | `nx build` 预渲染客户端组件 |
+
+`nexyconfig.py`中的表和页中的ISR的两个开关：
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useGZip = {"minimum_size": 1000}
+    useDocs = False
+```
+
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/blog/index.nexy"
+---
+revalidate = 60
+---
+<h1>Rendered at most once per minute</h1>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+ISR 是一种文件页面模式：控制器返回的视图在每个请求上呈现。
+<!-- /router -->
 
 ## 测量的
 
 本地运行，一个 Uvicorn 工作线程，Windows，Python 3.13，来自同一计算机上的 Python 负载生成器的保持活动连接。将这些数字视为比较变化的基线，而不是作为其他框架的基准。
+
+表的 Nexy JSON 路由是这个文件：
+
+<!-- router:fbr,custom -->
+```python filename="src/routes/api/ping.py"
+async def GET():
+    return {"ok": True}
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/ping_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/api/ping")
+class PingController:
+    async def get(self):
+        return {"ok": True}
+```
+
+下面的数字是用文件路径测量的。在使用控制器之前，请以相同的方式对其进行测量。
+<!-- /router -->
 
 | 路线 | 并发性 | 每秒请求数 | p50 | p99 |
 |---|---|---|---|---|
@@ -34,9 +81,29 @@
 
 1. 将 Nginx、Caddy 或您平台的优势放在前面：TLS、HTTP/2、Brotli 和 `/__nexy__/client/` 资产的长期缓存是它们的优势。请参阅[部署](README.md)。
 2. 对于每分钟更改次数少于一次的页面，请使用 [ISR](../rendering/isr.md)。
-3. 用[岛屿](../rendering/islands.md) 懒惰地水合，因此第一批货物运输较少 JavaScript。
+3. 使用[岛屿](../rendering/islands.md) 懒惰地水合，因此第一批货物运输较少 JavaScript。
 4. 保持每页的 `.nexy` 组件数量合理：每个组件都是一个单独的模板渲染。
 5. 测量自己的路线。保持连接活动的本地负载生成器足以比较页面的两个版本。
+
+Nginx 的建议 1：散列客户端包缓存一年，其余的交给 Nexy。
+
+```nginx filename="/etc/nginx/conf.d/my-app.conf"
+server {
+    listen 443 ssl http2;
+    server_name example.com;
+
+    location /__nexy__/client/ {
+        proxy_pass http://127.0.0.1:3000;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
 
 ## 后续步骤
 

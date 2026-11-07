@@ -1,123 +1,171 @@
-# Intégration de routage personnalisé
+# Inclure un routeur FastAPI existant dans Nexy
 
-Nexy vous permet d'inclure une application FastAPI existante en tant que routeur dans votre projet. Ceci est utile lorsque vous souhaitez réutiliser la logique backend d'un autre service, intégrer des API tierces ou créer une application composite avec plusieurs problèmes de routage.
-
-Contrairement aux routeurs modulaires et basés sur des fichiers, intrinsèques à Nexy, un routeur personnalisé est simplement un `APIRouter` que vous montez dans votre application.
+Pour inclure un routeur FastAPI existant dans Nexy, définissez `useRouter` sur celui `APIRouter` dans la classe `NexyConfig` de `nexyconfig.py` : ses routes sont servies telles quelles, à côté des fichiers de `src/routes/`.
 
 ## Quand utiliser un routeur personnalisé
 
-- **Services tiers** : vous disposez d'une application FastAPI existante que vous souhaitez exposer via le client de Nexy.
-- **Réutilisation du code** : extrayez la logique backend d'un autre projet dans un routeur et incluez-la dans un nouveau.
-- **Modèles multi-locataires ou micro-frontend** : chaque locataire ou module fournit son propre routeur.
-- **Migration progressive** : Commencez avec un `APIRouter` et faites-le évoluer plus tard vers un module Nexy complet.
+- **Migration progressive** : une application FastAPI se déplace vers Nexy route par route, et ses anciennes routes continuent de répondre entre-temps.
+- **Réutilisation du code** : un package expose déjà un `APIRouter`, pour l'authentification ou la facturation.
+- **Un backend que vous conservez** : l'API reste simple FastAPI, et Nexy ajoute les pages.
 
-## Comment ça marche
+## Réglez `useRouter` dans `nexyconfig.py`
 
-```python
+Le routeur est n'importe quel FastAPI `APIRouter`, écrit de la même manière que vous en écrivez déjà un :
+
+```python filename="src/legacy/api.py"
 from fastapi import APIRouter
-from nexy import useRouter
 
-# An existing FastAPI router (from another service)
-third_party = APIRouter()
-@third_party.get("/info")
-async def info():
-    return {"name": "Foo"}
+router = APIRouter(prefix="/api")
 
-# In your nexyconfig.py:
-useRouter = third_party
+
+@router.get("/status")
+async def status():
+    return {"status": "ok"}
+
+
+@router.get("/users/{id}")
+async def user(id: int):
+    return {"id": id}
 ```
 
-Le routeur est monté automatiquement par le résolveur de routeur de Nexy. Ses itinéraires sont disponibles sous le même modèle d'URL que dans l'application d'origine. Aucune configuration supplémentaire n'est nécessaire.
+`useRouter` est un champ de la classe `NexyConfig`, comme chaque paramètre du projet :
 
-## Construire un routeur personnalisé
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-1. **Créer le routeur**
-   ```python
-   à partir de l'importation fastapi APIRouter
+from src.legacy.api import router
 
-   api = APIRouter()
-   @api.get("/statut")
-   statut de définition asynchrone() :
-       return {"status": "ok"}
-   ```
 
-2. **Référencez-le dans `nexyconfig.py`**
-   ```python
-   à partir de l'API d'importation .my_backend
+class NexyConfig(NexyConfigModel):
+    useRouter = router
+```
 
-   utiliserRouter = API
-   ```
+`nx dev` répond ensuite à `GET /api/status` et `GET /api/users/{id}`, et `/docs` les répertorie.
 
-3. **Voies d'accès**
-   - Les pages basées sur des fichiers (`.nexy`, `.md`) et les gestionnaires modulaires peuvent référencer `/status` comme ils le feraient pour n'importe quelle autre route.
-   - Le routeur s'exécute selon le même processus, donc les dépendances, les connexions à la base de données et l'authentification fonctionnent exactement comme dans l'application d'origine.
+> [!NOTE]
+> `useRouter` dans `nexyconfig.py` est un paramètre. `from nexy import useRouter` est une autre chose : le hook qu'une page `.nexy` utilise pour lire l'itinéraire actuel. Ne l'importez pas pour configurer le routeur.
 
-## Intégration avec d'autres routeurs
+## Plusieurs routeurs
 
-Un projet Nexy peut combiner :
+`useRouter` prend un routeur. Rassemblez-en plusieurs sous un même parent avec `include_router` :
 
-- **Routage basé sur des fichiers** (`src/routes/`) pour les pages et les points de terminaison simples
-- **Routage modulaire** (`useRouter = AppModule`) pour les backends structurés
-- **Routage personnalisé** (`useRouter = APIRouter`) pour le code tiers
+```python filename="src/legacy/__init__.py"
+from fastapi import APIRouter
 
-Tous les trois coexistent ; chaque itinéraire n'est enregistré qu'une seule fois. Le routeur basé sur des fichiers est toujours analysé lorsque `src/routes/` existe.
+from .api import router as api
+from .auth import router as auth
 
-## Accès CLI à l'application incluse
+router = APIRouter()
+router.include_router(api)
+router.include_router(auth, prefix="/auth")
+```
 
-Les commandes `nexy dev` et `nx` fonctionnent sur le routeur monté comme un routeur intégré. Vous obtenez :
+```python filename="src/legacy/auth.py"
+from fastapi import APIRouter
 
-- Rechargement à chaud pour les points de terminaison définis dans le routeur personnalisé (s'il utilise les fonctionnalités habituelles du serveur de développement `nexy` ou FastAPI)
-- Validation dans `nexyconfig.py` (tous `APIRouter` travaux)
-- Documents générés automatiquement pour les itinéraires inclus (si vous les activez)
+router = APIRouter()
 
-## Sécurité et isolement
 
-Étant donné que le routeur est inclus et non monté via `app.mount`, il n'y a pas de couche ASGI supplémentaire. Le routeur réside dans le même objet d'application que vos routes modulaires et basées sur des fichiers. Cela signifie :
-
-- Le middleware ajouté par le routeur personnalisé s'applique à toutes les requêtes.
-- Les gardes et l'injection de dépendances définis dans le routeur personnalisé peuvent accéder au même conteneur que votre propre code (si vous utilisez l'injection modulaire).
-- Il n'y a pas de préfixe d'URL autre que celui défini par le routeur lui-même.
-
-Si vous avez besoin d'isolation, enveloppez le routeur dans une sous-application avant de l'inclure, ou utilisez les techniques FastAPI standard.
-
-## Exemple : Inclusion d'un projet FastAPI existant
-
-Supposons que vous ayez `auth.py` dans un autre package :
-
-```python
-from fastapi import FastAPI, APIRouter
-
-auth = FastAPI(title="Auth service")
-api = APIRouter()
-
-@api.get("/login")
+@router.post("/login")
 async def login():
-    return {"msg": "Login"}
-
-auth.include_router(api)
+    return {"token": "demo"}
 ```
 
-Dans `nexyconfig.py` :
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
 
-```python
-from other_package.auth import api
+from src.legacy import router
 
-useRouter = api
+
+class NexyConfig(NexyConfigModel):
+    useRouter = router
 ```
 
-Le point de terminaison `/login` est désormais accessible depuis votre site Nexy sans déplacer une ligne de code.
+## Pages et acheminer les fichiers à côté
 
-## Comment commencer
+`src/routes/` est toujours lu pendant que `useRouter` est défini : une page `.nexy` ou un fichier de route `.py` répond à côté des routes incluses.
 
-1. Créez votre `APIRouter` (ou trouvez-en un dans un package existant).
-2. Pointez `useRouter` dessus dans `nexyconfig.py`.
-3. Accédez à ses itinéraires via vos pages, gestionnaires ou frameworks clients.
-4. Si vous avez besoin de plus de contrôle, convertissez le routeur personnalisé en routeur modulaire à l'aide de `AppModule`.
+```nexy filename="src/routes/index.nexy"
+---
+title = "Home"
+---
+<h1>{{ title }}</h1>
+```
+
+```python filename="src/routes/api/health.py"
+async def GET():
+    return {"ok": True}
+```
+
+Deux limites lorsque `useRouter` est défini :
+
+- les pages ne sont pas enveloppées par `layout.nexy` ;
+- `useCSR = True` est refusé : `nx dev` et `nx build` répondent `useCSR requires file-based routing`.
+
+Une URL reçoit une réponse une fois. Donnez un préfixe au routeur inclus, ici `/api`, et conservez les fichiers de `src/routes/` hors des chemins qu'il utilise.
+
+## Toute une application FastAPI
+
+`useRouter` prend une application `APIRouter`, pas une `FastAPI`. Les itinéraires d'une application reposent sur son attribut `router` :
+
+```python filename="src/legacy/service.py"
+from fastapi import FastAPI
+
+service = FastAPI(title="Billing")
+
+
+@service.get("/billing/invoices")
+async def invoices():
+    return []
+```
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+from src.legacy.service import service
+
+
+class NexyConfig(NexyConfigModel):
+    useRouter = service.router
+```
+
+Le middleware, les gestionnaires d'exceptions et les événements de démarrage de l'application restent en arrière-plan : déplacez-les vers `useMiddlewares` et les autres champs de `nexyconfig.py`.
+
+## Dépendances, authentification et base de données
+
+Le routeur s'exécute dans le processus Nexy, donc `Depends`, les schémas de sécurité et les sessions de base de données fonctionnent comme dans l'application d'origine :
+
+```python filename="src/legacy/secure.py"
+from fastapi import APIRouter, Depends, Header, HTTPException
+
+
+def require_token(x_token: str = Header("")) -> None:
+    if x_token != "secret":
+        raise HTTPException(status_code=401, detail="Bad token")
+
+
+router = APIRouter(prefix="/secure", dependencies=[Depends(require_token)])
+
+
+@router.get("/data")
+async def data():
+    return {"data": 42}
+```
+
+## Testez-le
+
+```python filename="tests/test_legacy.py"
+from fastapi.testclient import TestClient
+
+from nexy.app import app
+
+
+def test_the_included_route_answers():
+    assert TestClient(app).get("/api/status").json() == {"status": "ok"}
+```
 
 ## Prochaines étapes
 
-- [Routage basé sur des fichiers](../fbr/README.md) – Créez des pages et des gestionnaires simples à partir de fichiers.
-- [Routage modulaire](../modular/README.md) – Backends structurés avec injection et gardes.
-- [Gestionnaires d'itinéraires](../fbr/handlers/README.md) – Définir les points de terminaison Python.
-
-Le routeur personnalisé vous offre la flexibilité de réutiliser le code FastAPI existant tout en conservant la simplicité des pages basées sur des fichiers et de la structure modulaire.
+- [De FastAPI vers Nexy](../../coming-from/fastapi.md) : déplacez les routes vers les fichiers, une à une
+- [Routage basé sur des fichiers](../fbr/README.md)
+- [Routage modulaire](../modular/README.md) : `useRouter = AppModule`

@@ -19,7 +19,7 @@ from nexy.decorators import Controller
 from .user_service import UserService
 
 
-@Controller(prefix="/users")
+@Controller("/users")
 class UserController:
     def __init__(self, svc: UserService) -> None:
         self.svc = svc
@@ -62,8 +62,8 @@ class CurrentUser: ...
 | Область применения | Срок службы |
 |---|---|
 | `Scope.SINGLETON` (по умолчанию) | один экземпляр для всего процесса |
-| `Scope.REQUEST` | один экземпляр на каждый контекст запроса |
-| `Scope.TRANSIENT` | новый экземпляр при каждом разрешении |
+| `Scope.REQUEST` | один экземпляр на контекст запроса |
+| `Scope.TRANSIENT` | новый экземпляр в каждом разрешении |
 
 ## Контейнер
 
@@ -94,5 +94,5 @@ def get(self, limit: int = Depends(pagination)) -> list[dict]: ...
 
 ## Следующие шаги
 
-- [Защитники и метаданные](guards-and-metadata.md)
+- [Охранники и метаданные](guards-and-metadata.md)
 - [Тестирование](../../guides/testing.md)
