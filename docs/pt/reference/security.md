@@ -24,7 +24,7 @@ npm ls vite
 ## Regras que Nexy segue
 
 - **Nunca confie no cabeçalho Host para caminhos.** Nexy lê `scope["path"]`, não `request.url.path`, em seu próprio middleware (middleware de diretório). Faça o mesmo no seu.
-- **Escape do que chega ao HTML.** Props passados ​​para componentes do cliente, `Link` atributos, `Image`, `Audio` e `Video` atributos, âncoras de índice e `HTTPException` detalhes são todos escapados de HTML. `| safe` em um modelo desativa isso: nunca use-o na entrada do usuário.
+- **Escape do que chega ao HTML.** Props passados ​​para componentes do cliente, `Link` atributos, `Image`, `Audio` e `Video` atributos, âncoras de índice e `HTTPException` detalhes são todos escapados de HTML. Um modelo `.nexy` não escapa por si só: escreva `{{ value | e }}` para qualquer valor que venha de um visitante ou do banco de dados, e nunca `| safe` na entrada do usuário.
 - **Os endpoints do desenvolvedor são somente loopback e estreitos.** O endpoint de renderização de desenvolvimento (`/__nexy__/render`) aceita apenas arquivos em `src/routes/` com uma extensão `.tsx` ou `.jsx` e é acessível apenas por meio do servidor de desenvolvimento, que recusa cabeçalhos `Host` estrangeiros.
 - **Os detalhes do erro não vazam.** Uma página de erro que falha mostra apenas o código de status.
 - **As respostas de produção carregam cabeçalhos seguros.** `X-Content-Type-Options: nosniff` e `Referrer-Policy: strict-origin-when-cross-origin`, a menos que seu código defina o seu próprio. O cabeçalho `Server` não é enviado. Adicione `Strict-Transport-Security` e um `Content-Security-Policy` em seu proxy ou middleware: eles dependem do seu domínio.

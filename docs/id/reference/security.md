@@ -24,7 +24,7 @@ npm ls vite
 ## Aturan yang diikuti Nexy
 
 - **Jangan pernah mempercayai header Host untuk jalurnya.** Nexy membaca `scope["path"]`, bukan `request.url.path`, di middlewarenya sendiri (direktori middleware). Lakukan hal yang sama pada milik Anda.
-- **Hindari apa yang mencapai HTML.** Props diteruskan ke komponen klien, atribut `Link`, atribut `Image`, `Audio` dan `Video`, jangkar daftar isi, dan detail `HTTPException` semuanya lolos dari HTML. `| safe` dalam templat, nonaktifkan ini: jangan pernah menggunakannya pada input pengguna.
+- **Hindari apa yang mencapai HTML.** Props diteruskan ke komponen klien, atribut `Link`, atribut `Image`, `Audio` dan `Video`, jangkar daftar isi, dan detail `HTTPException` semuanya lolos dari HTML. Templat `.nexy` tidak lolos dengan sendirinya: tulis `{{ value | e }}` untuk nilai apa pun yang berasal dari pengunjung atau database, dan jangan pernah `| safe` pada input pengguna.
 - **Titik akhir pengembang hanya bersifat loopback dan sempit.** Titik akhir render dev (`/__nexy__/render`) hanya menerima file pada `src/routes/` dengan ekstensi `.tsx` atau `.jsx`, dan hanya dapat dijangkau melalui server pengembang, yang menolak header `Host` asing.
 - **Detail kesalahan tidak bocor.** Halaman kesalahan yang gagal hanya menampilkan kode status.
 - **Jawaban produksi membawa header yang aman.** `X-Content-Type-Options: nosniff` dan `Referrer-Policy: strict-origin-when-cross-origin`, kecuali kode Anda menetapkannya sendiri. Header `Server` tidak terkirim. Tambahkan `Strict-Transport-Security` dan `Content-Security-Policy` di proxy atau middleware Anda: keduanya bergantung pada domain Anda.
@@ -58,6 +58,6 @@ Lihat [Middleware dan keamanan](../guides/middleware-and-security.md).
 
 ## Langkah selanjutnya
 
-- [Perangkat tengah dan keamanan](../guides/middleware-and-security.md)
+- [Middleware dan keamanan](../guides/middleware-and-security.md)
 - [Menyebarkan](../deployment/README.md)
 - [Konfigurasi](config.md)
