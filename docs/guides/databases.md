@@ -17,6 +17,7 @@ scaffolded engine falls back to a local SQLite file, `dev.db`.
 
 ## Use a service in a page
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.services.user_service import UserService
@@ -38,6 +39,42 @@ from src.services.user_service import UserService
 async def GET():
     return UserService.get_all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+A controller calls the service, and passes the rows to its view or returns them as JSON:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = UserService.get_all()
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+
+
+@Controller("/api/users")
+class UserApiController:
+    async def get(self):
+        return UserService.get_all()
+```
+
+```nexy filename="src/apps/users/user_view.nexy"
+---
+users: prop[list] = []
+---
+<ul>
+  {% for user in users %}
+  <li>{{ user.name }}</li>
+  {% endfor %}
+</ul>
+```
+<!-- /router -->
 
 ## Tortoise-ORM is async
 
@@ -50,6 +87,7 @@ loop of its own, in one thread, and two helpers that send a coroutine to it:
 | sync code, such as a page | `run(UserService.get_all())` | runs it and returns the result |
 | async code, such as a handler or a controller | `await arun(UserService.get_all())` | the same, without blocking the server |
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/users/index.nexy"
 ---
 from src.configs.db import run
@@ -57,6 +95,26 @@ from src.services.user_service import UserService
 users = run(UserService.get_all())
 ---
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+A controller is async: it awaits the service through `arun`, and the view only shows the rows:
+
+```python filename="src/apps/users/user_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+from src.configs.db import arun
+from src.services.user_service import UserService
+
+
+@Controller("/users")
+class UserController:
+    async def get(self):
+        users = await arun(UserService.get_all())
+        return useViews("src/apps/users/user_view.nexy", context={"users": users})
+```
+<!-- /router -->
 
 Tortoise connects the first time one of them is called. Call the model from an `async def`
 (`await UserModel.all()` inside a service), not at module level: a call outside a coroutine runs
