@@ -53,12 +53,30 @@ Certifique-se de que o proxy encaminhe WebSocket atualizações se você usar ma
 
 ## Verificação de saúde
 
+<!-- router:fbr,custom -->
 Adicione um arquivo manipulador, `src/routes/api/health.py` e teste `/api/health` - em vez de uma página que pode ser renderizada lentamente:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Adicione um controlador e teste `/health/` - em vez de uma visualização que pode renderizar lentamente:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+Liste-o no `controllers` do módulo raiz.
+<!-- /router -->
 
 ## Hospedagem estática
 
@@ -80,4 +98,4 @@ Cada página é HTML, mas Nexy assume um servidor para roteamento e manipuladore
 
 - [Configuração](../reference/config.md): HTTPS, hosts confiáveis, sessões
 - [Frontend](../guides/frontend.md): o que Vite constrói
-- [Testes](../guides/testing.md): os comandos para executar no CI
+- [Testando](../guides/testing.md): os comandos para rodar no CI

@@ -53,12 +53,30 @@ Stellen Sie sicher, dass der Proxy WebSocket Upgrades weiterleitet, wenn Sie `SO
 
 ## Gesundheitscheck
 
+<!-- router:fbr,custom -->
 Fügen Sie eine Handler-Datei, `src/routes/api/health.py`, und prüfen Sie `/api/health` – anstelle einer Seite, die möglicherweise langsam gerendert wird:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+Fügen Sie einen Controller hinzu und prüfen Sie `/health/` – anstelle einer Ansicht, die möglicherweise langsam rendert:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+Listen Sie es im `controllers` des Root-Moduls auf.
+<!-- /router -->
 
 ## Statisches Hosting
 
@@ -69,9 +87,9 @@ Jede Seite ist HTML, aber Nexy geht von einem Server für das Routing und für A
 
 ## Checkliste
 
-- [ ] `nx build` in CI keine Warnungen für Routen, von denen Sie erwarten, dass sie auf dem Server gerendert werden
+- [ ] `nx build` in CI keine Warnungen für Routen, die voraussichtlich auf dem Server gerendert werden
 - [ ] `nx start` wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann
-- [ ] `NEXY_ACTION_SECRET` gesetzt oder `__nexy__/action.key` mit dem Build beibehalten
+- [ ] `NEXY_ACTION_SECRET` festgelegt oder `__nexy__/action.key` mit dem Build beibehalten
 - [ ] `useDocs = False` in der Produktion, wenn das API-Schema nicht öffentlich sein soll
 - [ ] `useTrustedHost` und `useHTTPSRedirect` sind für öffentliche Bereitstellungen festgelegt
 - [ ] `__nexy__/` nicht festgeschrieben

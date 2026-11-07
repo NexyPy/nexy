@@ -53,19 +53,37 @@ nx start --host 127.0.0.1 --port 8000
 
 ## স্বাস্থ্য পরীক্ষা
 
+<!-- router:fbr,custom -->
 একটি হ্যান্ডলার ফাইল যোগ করুন, `src/routes/api/health.py`, এবং প্রোব `/api/health` - ধীরে ধীরে রেন্ডার হতে পারে এমন একটি পৃষ্ঠার পরিবর্তে:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+একটি নিয়ামক যোগ করুন, এবং প্রোব `/health/` - একটি দৃশ্যের পরিবর্তে যা ধীরে ধীরে রেন্ডার হতে পারে:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+এটিকে রুট মডিউলের `controllers` তালিকাভুক্ত করুন।
+<!-- /router -->
 
 ## স্ট্যাটিক হোস্টিং
 
 প্রতিটি পৃষ্ঠা এইচটিএমএল, কিন্তু নেক্সি রাউটিং এবং API হ্যান্ডলারের জন্য একটি সার্ভার ধরে নেয়।
 
 > [!NOTE]
-> কোন `--static` বিল্ড মোড নেই। আপনার পাইপলাইনে `nx build` আউটপুট থেকে একটি সম্পূর্ণরূপে স্থির রপ্তানি তৈরি করতে হবে।
+> কোন `--static` বিল্ড মোড নেই। `nx build` আউটপুট থেকে আপনার পাইপলাইনে একটি বিশুদ্ধভাবে স্থির রপ্তানি তৈরি করতে হবে।
 
 ## চেকলিস্ট
 

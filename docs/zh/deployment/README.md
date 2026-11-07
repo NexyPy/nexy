@@ -53,12 +53,30 @@ nx start --host 127.0.0.1 --port 8000
 
 ## 健康检查
 
-添加处理程序文件 `src/routes/api/health.py` 和探测 `/api/health` - 而不是可能渲染缓慢的页面：
+<!-- router:fbr,custom -->
+添加处理程序文件 `src/routes/api/health.py` 和探针 `/api/health` - 而不是可能渲染缓慢的页面：
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+添加一个控制器，并探测 `/health/` - 而不是可能渲染缓慢的视图：
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+将其列在根模块的 `controllers` 中。
+<!-- /router -->
 
 ## 静态托管
 
@@ -70,14 +88,14 @@ async def GET():
 ## 清单
 
 - [ ] `nx build` 在 CI 中，对于您希望在服务器上呈现的路由没有警告
-- 当路由文件无法加载时，[ ] `nx start` 退出并显示代码 1，并且不启动任何内容
+- 当路径文件无法加载时，[ ] `nx start` 退出并显示代码 1，并且不启动任何内容
 - [ ] `NEXY_ACTION_SECRET` 设置，或 `__nexy__/action.key` 与构建一起保留
-- 如果 API 模式不应公开，则 [ ] `useDocs = False` 在生产中
+- [ ] `useDocs = False` 在生产中如果 API 架构不应公开
 - [ ] `useTrustedHost` 和 `useHTTPSRedirect` 设置为公共部署
 - [ ] `__nexy__/` 未提交
 
 ## 后续步骤
 
-- [配置](../reference/config.md)：HTTPS、受信任的主机、会话
+- [配置](../reference/config.md)：HTTPS、可信主机、会话
 - [前端](../guides/frontend.md)：Vite 构建什么
 - [测试](../guides/testing.md)：在 CI 中运行的命令

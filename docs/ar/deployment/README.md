@@ -53,12 +53,30 @@ nx start --host 127.0.0.1 --port 8000
 
 ## فحص الصحة
 
+<!-- router:fbr,custom -->
 قم بإضافة ملف معالج، `src/routes/api/health.py`، ومسبار `/api/health` - بدلاً من الصفحة التي قد يتم عرضها ببطء:
 
 ```python filename="src/routes/api/health.py"
 async def GET():
     return {"status": "ok"}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+أضف وحدة تحكم، واختبر `/health/` - بدلاً من العرض الذي قد يتم عرضه ببطء:
+
+```python filename="src/apps/health_controller.py"
+from nexy.decorators import Controller
+
+
+@Controller("/health")
+class HealthController:
+    async def get(self):
+        return {"status": "ok"}
+```
+
+أدرجها في `controllers` من الوحدة الجذرية.
+<!-- /router -->
 
 ## استضافة ثابتة
 
@@ -70,7 +88,7 @@ async def GET():
 ## قائمة التحقق
 
 - [ ] `nx build` في CI، لا توجد تحذيرات للمسارات التي تتوقع عرضها على الخادم
-- [ ] `nx start` يخرج بالرمز 1، ولا يبدأ بأي شيء، عندما لا يمكن تحميل ملف المسار
+- [ ] `nx start` يخرج بالكود 1، ولا يبدأ بأي شيء، عندما لا يمكن تحميل ملف المسار
 - [ ] `NEXY_ACTION_SECRET` مجموعة، أو `__nexy__/action.key` محفوظة مع البناء
 - [ ] `useDocs = False` في الإنتاج إذا لم يكن مخطط API عامًا
 - [ ] `useTrustedHost` و `useHTTPSRedirect` تم ضبطهما للنشر العام
@@ -78,6 +96,6 @@ async def GET():
 
 ## الخطوات التالية
 
-- [التكوين](../reference/config.md): HTTPS، المضيفين الموثوقين، الجلسات
-- [الواجهة](../guides/frontend.md): ما يبني Vite
-- [اختبار](../guides/testing.md): الأوامر المطلوب تشغيلها في CI
+- [التكوين ](../reference/config.md): HTTPS، المضيفين الموثوقين، الجلسات
+- [الواجهة](../guides/frontend.md): ما يبنيه Vite
+- [الاختبار](../guides/testing.md): الأوامر التي سيتم تشغيلها في CI
