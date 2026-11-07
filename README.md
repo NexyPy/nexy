@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./nexy.png" alt="Nexy - Next.js, in Python" width="100%" />
+  <img src="https://raw.githubusercontent.com/NexyPy/nexy/main/nexy.png" alt="Nexy: one file, one page, one origin. A route is a Python file, and FastAPI and Vite run in one process." width="100%" />
 </p>
 
 # Nexy
@@ -14,7 +14,7 @@ process, so a project keeps one server, one origin, and no CORS block.
   <a href="https://pypi.org/project/nexy"><img src="https://img.shields.io/pepy/dt/nexy?color=%230F766E&label=downloads" alt="PyPI downloads"></a>
   <a href="https://github.com/NexyPy/nexy/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/NexyPy/nexy/ci.yml?branch=main&color=%230F766E" alt="CI"></a>
   <a href="https://github.com/NexyPy/nexy"><img src="https://img.shields.io/github/stars/NexyPy/nexy?style=flat&color=%230F766E" alt="GitHub stars"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/NexyPy/nexy?color=%230F766E" alt="License"></a>
+  <a href="https://github.com/NexyPy/nexy/blob/main/LICENSE"><img src="https://img.shields.io/github/license/NexyPy/nexy?color=%230F766E" alt="License"></a>
   <a href="https://github.com/NexyPy/nexy/commits/main"><img src="https://img.shields.io/github/last-commit/NexyPy/nexy?color=%230F766E" alt="Last commit"></a>
 </p>
 
@@ -23,7 +23,7 @@ process, so a project keeps one server, one origin, and no CORS block.
   <a href="#quick-start">Quick start</a> ·
   <a href="#coming-from-nextjs">From Next.js</a> ·
   <a href="https://github.com/NexyPy/nexy/discussions">Discussions</a> ·
-  <a href="CONTRIBUTING.md">Contributing</a>
+  <a href="https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md">Contributing</a>
 </p>
 
 ## Quick start
@@ -487,7 +487,7 @@ remember to forward WebSocket upgrade requests.
   hacks, no stale modules. Vite runs on an internal port and Nexy proxies it through the app origin.
 - In production, one Uvicorn process serves the routes, the HTML and the assets from one origin.
 
-Internals, request lifecycle and compiler pipeline: [ARCHITECTURE.md](ARCHITECTURE.md).
+Internals, request lifecycle and compiler pipeline: [ARCHITECTURE.md](https://github.com/NexyPy/nexy/blob/main/ARCHITECTURE.md).
 
 ## How it compares
 
@@ -552,12 +552,12 @@ are written from the code.
 Contributions are welcome - seasoned engineers and first-time PR authors alike.
 
 - [Good first issues](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-- [CONTRIBUTING.md](CONTRIBUTING.md) - setup, quality gates, pull requests
-- [ARCHITECTURE.md](ARCHITECTURE.md) - internals
+- [CONTRIBUTING.md](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md) - setup, quality gates, pull requests
+- [ARCHITECTURE.md](https://github.com/NexyPy/nexy/blob/main/ARCHITECTURE.md) - internals
 - [Discussions](https://github.com/NexyPy/nexy/discussions) for questions, ideas and showing what you built
 - [Issues](https://github.com/NexyPy/nexy/issues) - bugs and feature requests
 
-Security issues: see [SECURITY.md](SECURITY.md). Do not open a public issue for a vulnerability.
+Security issues: see [SECURITY.md](https://github.com/NexyPy/nexy/blob/main/SECURITY.md). Do not open a public issue for a vulnerability.
 
 ## License
 
