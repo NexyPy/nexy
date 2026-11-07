@@ -2,16 +2,30 @@
 
 Nexy 在服务器上呈现 Solid 1.9 组件，然后 Solid 在浏览器中接管它们。每个框架中的页面、布局、岛和操作都是相同的：此页面涵盖设置，然后是与[共享合约](../frontend/pages.md)不同的部分。
 
+<!-- router:fbr,custom -->
 | 模式 | `nexyconfig.py` | 页面是 | Solid 是 |
 |---|---|---|---|
-| 服务器（默认） | `useCSR = False` | `.nexy` 文件 | 这些页面内的[岛屿](../../rendering/islands.md) |
+| 服务器（默认） | `useCSR = False` | `.nexy` 文件 | [这些页面内的岛屿](../../rendering/islands.md) |
 | 客户 | `useCSR = True` | `.tsx` 文件 | 整个页面，带有 [布局](../frontend/layouts.md) 和客户端路由器 |
+<!-- /router -->
+
+<!-- router:modular -->
+对于模块化路由器，Solid 组件是控制器返回的 `.nexy` 视图内的[岛](../../rendering/islands.md)：没有页面文件，也没有客户端路由器。
+<!-- /router -->
 
 ## 开始一个项目
 
+<!-- router:fbr,custom -->
 ```bash
 nx new my-app --template web-fbr-solid
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```bash
+nx new my-app --template web-modular-solid
+```
+<!-- /router -->
 
 该模板是一个带有 Solid 岛屿的服务器模式项目。在没有模板的情况下运行 `nx new my-app` 来回答提示：路由器、项目类型、是否使用客户端路由，然后是框架。
 
@@ -59,17 +73,23 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - 在 JSX 内部调用信号 `count()`，而不是在其上方的变量中。
-- 将 props 读取为 `props.start`。解构 `{ start }` 读取该值一次并丢失更新。
+- 将 props 读为 `props.start`。解构 `{ start }` 读取该值一次并丢失更新。
 - Solid 写入 HTML 属性：`class`、`for`、`charset`，而不是 `className`。
 
 ## 规则
 
 - **每个项目一个框架。** `useFF` 只需要一个框架； `useFF = [solid(), react()]` 在启动时停止服务器。对于 `useFF = solid()`，每个 `.tsx` 文件都是 Solid。
+<!-- router:fbr,custom -->
 - **页面为 `.tsx`.** 只有 `src/routes/` 下的 `.tsx` 文件才成为页面； `.jsx` 对于组件来说很好。
 - **组件位于 `src/routes/`** 之外，通常位于 `src/components/` 中，因此它们不是页面。
 - **服务器模式项目没有 `.tsx` 页面**，客户端模式项目没有 `.nexy` 页面：Nexy 拒绝启动并命名文件。请参阅[模式](../../routing/fbr/modes.md)。
+<!-- /router -->
+<!-- router:modular -->
+- **组件位于 `src/components/`** 中，视图将它们作为岛屿导入。
+<!-- /router -->
 - **没有 `.mdx` 与 Solid.** MDX 编译为 React 或 Preact； `.md` 页面有效。
 
+<!-- router:fbr,custom -->
 ## 页数
 
 在客户端模式（`useCSR = True`）下，页面是一个 `.tsx` 文件。
@@ -119,6 +139,7 @@ export default function RootLayout(props: { children: JSX.Element }) {
 ```
 
 不要解构 `props.children`，因为 Solid 会懒惰地读取它。
+<!-- /router -->
 
 ## 岛屿
 
@@ -128,16 +149,27 @@ export default function RootLayout(props: { children: JSX.Element }) {
 
 在 `.nexy` 文件的 frontmatter 中导入组件：
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from "@/components/Counter.tsx" import Counter
 ---
 <Counter start=3 />
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from "@/components/Counter.tsx" import Counter
+---
+<Counter start=3 />
+```
+<!-- /router -->
 
 ### 补水指令
 
-使用 `directive` 道具来控制岛屿何时水化：
+使用 `directive` 道具来控制岛屿何时水合：
 
 - `client:load`（默认）：立即
 - `client:idle`：当浏览器空闲时
