@@ -19,7 +19,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [Nexy是什么？](getting-started/what-is-nexy.md) | 了解 Nexy 是什么、它的构建基础以及您能获得什么 |
 | [安装](getting-started/installation.md) | 安装 uv 和 Nexy CLI，然后创建您的第一个项目 |
 | [快速启动](getting-started/quick-start.md) | 创建一个项目，通过实时重新加载运行它，并构建它以用于生产 |
-| [教程](getting-started/tutorial.md) | 在 10 分钟内构建一个带有端点、共享数据和生产版本的笔记页面 |
+| [教程](getting-started/tutorial.md) | 一步一步构建一个笔记应用程序，一次一个可运行的部分 |
 
 ### 了解模型
 | 页面 | 你会做什么 |
@@ -28,6 +28,38 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | [项目结构](getting-started/project-structure.md) | 了解项目中每个文件夹和文件的用途 |
 | [选择路由器](routing/README.md) | 选择基于文件的、模块化的或自定义的路由器 |
 | [选择视图格式](views/README.md) | 为页面选择 `.nexy`、Markdown 或客户端框架 |
+
+## 教程
+
+### 第一单元：基础知识
+| 页面 | 你将构建什么 |
+|---|---|
+| [1.创建项目](tutorial/create-the-project.md) | 创建notes项目并在浏览器中运行 |
+| [2. 页面和布局](tutorial/pages-and-layouts.md) | 添加注释页面并更改其周围的布局 |
+| [3.动态路由和API](tutorial/dynamic-routes.md) | 为每个笔记提供一个 URL 并将笔记作为 JSON 提供 |
+| [4. 组件](tutorial/components.md) | 将每个音符变成可重复使用的 `.nexy` 组件 |
+
+### 第二单元：数据
+| 页面 | 你将构建什么 |
+|---|---|
+| [5. 将笔记存储在 SQLite](tutorial/store-the-notes.md) 中 | 添加模型、迁移和种子，并从数据库中读取注释 |
+| [6. 从表单创建注释](tutorial/create-a-note.md) | 将表单发布到保存注释的操作 |
+| [7. 显示验证错误](tutorial/validation-errors.md) | 拒绝空白便条并在表格上方说明原因 |
+| [8.编辑和删除注释](tutorial/edit-and-delete.md) | 添加更改和删除注释的表单 |
+| [9. 对笔记进行分页](tutorial/paginate-the-notes.md) | 一次显示五个注释，并在页面之间提供链接 |
+
+### 第三单元：用户
+| 页面 | 你将构建什么 |
+|---|---|
+| [10. 创建帐户并登录](tutorial/accounts.md) | 使用会话 cookie 进行注册、登录和退出 |
+| [11. 给每个用户自己的注释](tutorial/own-notes.md) | 将每个注释与其用户联系起来并保护页面、操作和 API |
+| [12. 通过电子邮件重置忘记的密码](tutorial/password-reset.md) | 通过电子邮件发送签名链接，一次有效，有效期一小时 |
+
+### 第四单元：互动性
+| 页面 | 你将构建什么 |
+|---|---|
+| [13. 键入时搜索笔记](tutorial/search-the-notes.md) | 使用 React 岛过滤浏览器中的每个注释 |
+| [14. 勾选注释而不重新加载页面](tutorial/tick-a-note.md) | 用几行 JavaScript 发送到位的表格标记已完成的注释 |
 
 ## 路由
 

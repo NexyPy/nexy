@@ -1,196 +1,60 @@
-# سبق: 10 منٹ میں نوٹس کا صفحہ بنائیں
+# Nexy ٹیوٹوریل: قدم بہ قدم نوٹ ایپ بنائیں
 
-آپ ایک پروجیکٹ بنائیں گے، ایک صفحہ شامل کریں گے، ایک Python اختتامی نقطہ شامل کریں گے، ان کے درمیان ڈیٹا کا اشتراک کریں گے، اور پیداوار کے لیے تعمیر کریں گے۔ آپ نوٹوں کی ایک فہرست کے ساتھ ختم کرتے ہیں جو صفحہ کے طور پر اور JSON کے طور پر پیش کیے جاتے ہیں۔
+Nexy ٹیوٹوریل ایک نوٹ ایپ کو خالی فولڈر سے پروڈکشن بلڈ تک بناتا ہے، ایک وقت میں ایک حصہ، اور ہر حصہ چلنے والی ایپ کے ساتھ ختم ہوتا ہے۔
 
-Nexy میں نئے ہیں؟ پہلے [کوئیک اسٹارٹ](quick-start.md) کریں: اس میں تین منٹ لگتے ہیں۔
+Nexy میں نئے ہیں؟ [کوئیک اسٹارٹ](quick-start.md) اسے تین منٹ میں چلتے ہوئے دکھاتا ہے۔ یہ کیسے کام کرتا ہے یہ جاننے کے لیے یہاں واپس آئیں۔
 
-```diagram filename="ایک لائن میں پورا ٹیوٹوریل"
-uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
-```
+## ٹیوٹوریل کیسے کام کرتا ہے۔
 
-## 1. پروجیکٹ بنائیں
+- **ایک ایپ جو بڑھتا ہے** ہر حصہ پہلے والے حصے کے نوٹس ایپ میں ایک خصوصیت شامل کرتا ہے۔
+- **آپ کا راؤٹر** حصے مینو کے اوپری حصے میں منتخب کردہ روٹر کی پیروی کرتے ہیں: فائل پر مبنی، ماڈیولر یا اپنی مرضی کے مطابق۔ اسے وہاں سوئچ کریں، اور ہر حصے کی فائلیں اس کے ساتھ بدل جاتی ہیں۔
+- **اس کو کوڈ کریں۔ چلتا ہے** ہر فائل جس کے اوپر ایک نام ہوتا ہے وہ ایک پوری فائل ہوتی ہے، اور ٹیسٹ سویٹ ایک نئے پروجیکٹ پر پرزوں کو دوبارہ چلاتا ہے: جو آپ کاپی کرتے ہیں وہی چلتا ہے۔
+- **رک جاؤ کہیں بھی** ہر حصے میں 10 سے 20 منٹ لگتے ہیں اور براؤزر میں کیا چیک کرنا ہے اس پر ختم ہوتا ہے۔
 
-```bash
-uvx nexy new notes
-cd notes
-.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
-nexy dev
-```
+## حصے
 
-`uvx` [uv](https://docs.astral.sh/uv/) کے ساتھ آتا ہے اور صرف پروجیکٹ بناتا ہے۔ اس کے بعد ہر کمانڈ پروجیکٹ کے ورچوئل ماحول کے اندر چلتی ہے (یا بطور `uv run nexy dev`)۔
+### یونٹ 1: بنیادی باتیں
 
-فائل پر مبنی روٹر، ایک ویب پروجیکٹ، اور کوئی بھی کلائنٹ فریم ورک (یا کوئی نہیں) چنیں۔ کھولیں۔
-<http://localhost:3000>۔ لمبے قدم ہر ایک لائن کو اپنی مدت کے ساتھ پرنٹ کرتے ہیں، جیسا کہ `uv` کرتا ہے۔
+| حصہ | جو آپ شامل کرتے ہیں۔ | جو آپ سیکھتے ہیں۔ |
+|---|---|---|
+| [1. پروجیکٹ بنائیں](../tutorial/create-the-project.md) | ایک پروجیکٹ جو چلتا ہے۔ | `nexy new`، `nexy dev` |
+| [2. صفحات اور ترتیب](../tutorial/pages-and-layouts.md) | نوٹس کا صفحہ | صفحات، مناظر، ترتیب |
+| [3. متحرک راستے اور ایک API](../tutorial/dynamic-routes.md) | `/notes/1` اور `/api/notes` | یو آر ایل سیگمنٹس، JSON روٹس، `notFound` |
+| [4. اجزاء](../tutorial/components.md) | ایک کارڈ فی نوٹ | `.nexy` اجزاء اور ان کے سہارے |
 
-<!-- router:modular -->
-فائل پر مبنی روٹر پرامپٹ کا جواب `No`: `nx new` ماڈیولر راؤٹر کو `src/routes/` کے بجائے `src/apps/` میں ڈھال دیتا ہے۔
-<!-- /router -->
+### یونٹ 2: ڈیٹا
 
-<!-- router:custom -->
-صفحات کے لیے فائل پر مبنی روٹر پرامپٹ کا جواب `Yes` دیں، پھر اپنے موجودہ `APIRouter` کو `nexyconfig.py` میں ماؤنٹ کریں: دونوں راؤٹرز ایک ساتھ رہتے ہیں۔
-<!-- /router -->
+| حصہ | جو آپ شامل کرتے ہیں۔ | جو آپ سیکھتے ہیں۔ |
+|---|---|---|
+| [5. نوٹوں کو SQLite](../tutorial/store-the-notes.md) میں محفوظ کریں | ایک ماڈل، ایک ہجرت، ایک بیج | SQLModel، `nx migrate` |
+| [6. فارم سے ایک نوٹ بنائیں](../tutorial/create-a-note.md) | ایک فارم جو ایک نوٹ کو محفوظ کرتا ہے۔ | اعمال، شکلوں کے بغیر JavaScript |
+| [7. توثیق کی غلطیاں دکھائیں](../tutorial/validation-errors.md) | فارم کے اوپر ایک پیغام | ایک عمل میں قواعد، `303`، `useSearchParams` |
+| [8. ایک نوٹ میں ترمیم اور حذف کریں](../tutorial/edit-and-delete.md) | ایک نوٹ کی شکلیں | فی صفحہ کئی ایکشنز، پوشیدہ فیلڈز |
+| [9. نوٹوں کو صفحہ بندی کریں](../tutorial/paginate-the-notes.md) | فی صفحہ پانچ نوٹ | `offset` اور `limit`، صفحات کے درمیان روابط |
 
-## 2. ترتیب میں ترمیم کریں۔
+### یونٹ 3: صارفین
 
-<!-- router:fbr,custom -->
-`src/routes/layout.nexy` HTML دستاویز کا مالک ہے (React کلائنٹ کی روٹنگ کے ساتھ یہ `layout.tsx` ہے)۔ تبدیل کریں `<title>`:
+| حصہ | جو آپ شامل کرتے ہیں۔ | جو آپ سیکھتے ہیں۔ |
+|---|---|---|
+| [10. ایک اکاؤنٹ بنائیں اور سائن ان کریں](../tutorial/accounts.md) | سائن اپ کریں، سائن ان کریں، سائن آؤٹ کریں۔ | سیشنز، پاس ورڈ ہیشنگ |
+| [11. ہر صارف کو ان کے اپنے نوٹس دیں](../tutorial/own-notes.md) | نوٹ جو صارف سے تعلق رکھتے ہیں۔ | غیر ملکی چابیاں، `redirect`، `401` |
+| [12. ای میل کے ذریعے بھولے ہوئے پاس ورڈ کو دوبارہ ترتیب دیں](../tutorial/password-reset.md) | ای میل کے ذریعے بھیجا گیا ایک ری سیٹ لنک | `smtplib`، دستخط شدہ ٹوکن جو ختم ہو جاتے ہیں۔ |
 
-```nexy
-<title>Notes</title>
-```
+### یونٹ 4: تعامل
 
-محفوظ کریں: براؤزر دوبارہ لوڈ ہوتا ہے۔ دیکھیں [لے آؤٹس](../routing/fbr/layouts/README.md)۔
-<!-- /router -->
+| حصہ | جو آپ شامل کرتے ہیں۔ | جو آپ سیکھتے ہیں۔ |
+|---|---|---|
+| [13. جیسے جیسے آپ ٹائپ کریں نوٹس تلاش کریں](../tutorial/search-the-notes.md) | ایک سرچ باکس جو آپ کے ٹائپ کرتے ہی فلٹر ہوتا ہے۔ | React جزائر، Python |
+| [14. صفحہ کو دوبارہ لوڈ کیے بغیر نوٹ پر نشان لگائیں](../tutorial/tick-a-note.md) | ہر نوٹ پر ایک ہو گیا بٹن | ترقی پسند اضافہ، فارم کے لیے ایک عمل اور `fetch` |
 
-<!-- router:modular -->
-کنٹرولر منظر کے ارد گرد `src/apps/layout.nexy` رینڈر کرتا ہے، اور وہ فائل HTML دستاویز کی مالک ہے۔ تبدیل کریں `<title>`:
+### اگلا آ رہا ہے۔
 
-```nexy
-<title>Notes</title>
-```
+| یونٹ | ایپ کو کیا فائدہ ہوتا ہے۔ |
+|---|---|
+| 5. درخواست سے آگے | پس منظر میں ای میل کے ذریعے اشتراک کردہ نوٹس، روزانہ ڈائجسٹ، لائیو اپ ڈیٹس |
+| 6. جہاز | ٹیسٹ، ایرر پیجز اور لاگز، سیکیورٹی ہیڈر، ایک Docker تعمیر |
 
-محفوظ کریں: براؤزر دوبارہ لوڈ ہوتا ہے۔ دیکھیں [کنٹرولر سے آراء](../routing/modular/README.md#views-from-a-controller)۔
-<!-- /router -->
+## اگلے اقدامات
 
-## 3. ایک صفحہ شامل کریں۔
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-کھولیں <http://localhost:3000/notes>: آپ کو دو گولیاں نظر آنی چاہئیں۔ یہ `/notes` پر پیش کیا جاتا ہے۔ `---` کے درمیان کا حصہ Python ہے، باقی حصہ Jinja2 ہے۔
-<!-- /router -->
-
-<!-- router:modular -->
-ایک کنٹرولر ایک منظر واپس کرتا ہے۔ بنائیں `src/apps/notes_view.nexy`:
-
-```nexy filename="src/apps/notes_view.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-روٹ کا اعلان `src/apps/app_controller.py` میں کریں اور کنٹرولر کو ماڈیول میں شامل کریں:
-
-```python filename="src/apps/app_controller.py"
-@Controller("/notes")
-class NotesController:
-    async def get(self):
-        return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/notes_view.nexy"),
-        })
-```
-
-```python filename="src/apps/app_module.py"
-from .app_controller import AppController, NotesController
-
-controllers = [AppController, NotesController]
-```
-
-کھولیں <http://localhost:3000/notes>: آپ کو دو گولیاں نظر آنی چاہئیں۔ `---` کے درمیان کا حصہ Python ہے، باقی حصہ Jinja2 ہے۔
-<!-- /router -->
-
-## 4. ایک اختتامی نقطہ شامل کریں۔
-
-<!-- router:fbr,custom -->
-```python filename="src/routes/api/notes.py"
-async def GET():
-    return [{"id": 1, "text": "Buy milk"}]
-```
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-آپ کو `[{"id":1,"text":"Buy milk"}]` ملنا چاہئے۔ فنکشن کا نام HTTP طریقہ ہے۔ انٹرایکٹو API دستاویزات `/docs` پر ہیں۔
-<!-- /router -->
-
-<!-- router:modular -->
-```python filename="src/apps/app_controller.py"
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": 1, "text": "Buy milk"}]
-```
-
-`src/apps/app_module.py` میں `NotesApiController` کو `controllers` میں شامل کریں، پھر چلائیں:
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-آپ کو `[{"id":1,"text":"Buy milk"}]` ملنا چاہئے۔ طریقہ کا نام HTTP طریقہ ہے۔ انٹرایکٹو API دستاویزات `/docs` پر ہیں۔
-<!-- /router -->
-
-## 5. ڈیٹا کا اشتراک کریں۔
-
-فہرست کو Python ماڈیول میں منتقل کریں اور اسے دونوں فائلوں میں استعمال کریں:
-
-```python filename="src/notes.py"
-NOTES = ["Buy milk", "Ship Nexy"]
-```
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/routes/api/notes.py"
-from src.notes import NOTES
-
-
-async def GET():
-    return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-<!-- router:modular -->
-```nexy filename="src/apps/notes_view.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/apps/app_controller.py"
-from src.notes import NOTES
-
-
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-## 6. بنائیں اور پیش کریں۔
-
-```bash
-nx build
-nx start
-```
-
-`nx build` ہر مرحلے کو اس کی مدت کے ساتھ پرنٹ کرتا ہے۔ `nx start` مرتب شدہ آؤٹ پٹ کو Uvicorn کے ساتھ پیش کرتا ہے: رن ٹائم پر نوڈ کا کوئی عمل نہیں۔
-
-## جہاں اگلا
-
-- [روٹنگ](../routing/README.md): متحرک طبقات اور گروپس
-- [اعمال](../guides/actions.md): کسی فارم سے یا کلائنٹ سے Python کال کریں۔
-- [ٹیسٹنگ](../guides/testing.md): جانچ کے صفحات اور اختتامی نکات
-- [تعینات](../deployment/README.md): کنٹینرز اور ریورس پراکسی
+- [حصہ 1: پروجیکٹ بنائیں](../tutorial/create-the-project.md)
+- [بنیادی تصورات](core-concepts.md): وہ الفاظ جو ٹیوٹوریل استعمال کرتا ہے۔

@@ -1,203 +1,64 @@
-# Tutorial: build a notes page in 10 minutes
+# Nexy tutorial: build a notes app step by step
 
-You will create a project, add a page, add a Python endpoint, share data between them, and build
-for production. You end with one list of notes served as a page and as JSON.
+The Nexy tutorial builds one notes app from an empty folder to a production build, one part at a
+time, and every part ends with an app that runs.
 
-New to Nexy? Do the [Quick start](quick-start.md) first: it takes three minutes.
+New to Nexy? The [Quick start](quick-start.md) shows it running in three minutes; come back here to
+learn how it works.
 
-```diagram filename="The whole tutorial in one line"
-uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
-```
+## How the tutorial works
 
-## 1. Create the project
+- **One app that grows.** Each part adds one feature to the notes app of the part before.
+- **Your router.** The parts follow the router chosen at the top of the menu: file-based, modular or
+  custom. Switch it there, and the files of every part change with it.
+- **Code that runs.** Every file with a name above it is a whole file, and the test suite replays
+  the parts in order on a fresh project: what you copy is what runs.
+- **Stop anywhere.** Each part takes 10 to 20 minutes and ends with what to check in the browser.
 
-```bash
-uvx nexy new notes
-cd notes
-.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
-nexy dev
-```
+## The parts
 
-`uvx` comes with [uv](https://docs.astral.sh/uv/) and only creates the project. Every command after
-it runs inside the project's virtual environment (or as `uv run nexy dev`).
+### Unit 1: the basics
 
-Pick the file-based router, a web project, and any client framework (or none). Open
-<http://localhost:3000>. Long steps print one line each with their duration, as `uv` does.
+| Part | What you add | What you learn |
+|---|---|---|
+| [1. Create the project](../tutorial/create-the-project.md) | a project that runs | `nexy new`, `nexy dev` |
+| [2. Pages and layouts](../tutorial/pages-and-layouts.md) | the notes page | pages, views, the layout |
+| [3. Dynamic routes and an API](../tutorial/dynamic-routes.md) | `/notes/1` and `/api/notes` | URL segments, JSON routes, `notFound` |
+| [4. Components](../tutorial/components.md) | a card per note | `.nexy` components and their props |
 
-<!-- router:modular -->
-Answer `No` to the file-based router prompt: `nx new` scaffolds the modular router in `src/apps/`
-instead of `src/routes/`.
-<!-- /router -->
+### Unit 2: data
 
-<!-- router:custom -->
-Answer `Yes` to the file-based router prompt for the pages, then mount your existing `APIRouter`
-in `nexyconfig.py`: the two routers coexist.
-<!-- /router -->
+| Part | What you add | What you learn |
+|---|---|---|
+| [5. Store the notes in SQLite](../tutorial/store-the-notes.md) | a model, a migration, a seed | SQLModel, `nx migrate` |
+| [6. Create a note from a form](../tutorial/create-a-note.md) | a form that saves a note | Actions, forms without JavaScript |
+| [7. Show validation errors](../tutorial/validation-errors.md) | a message above the form | rules in an Action, `303`, `useSearchParams` |
+| [8. Edit and delete a note](../tutorial/edit-and-delete.md) | the forms of a note | several Actions per page, hidden fields |
+| [9. Paginate the notes](../tutorial/paginate-the-notes.md) | five notes per page | `offset` and `limit`, links between pages |
 
-## 2. Edit the layout
+### Unit 3: users
 
-<!-- router:fbr,custom -->
-`src/routes/layout.nexy` owns the HTML document (with React client routing it is `layout.tsx`). Change the `<title>`:
+| Part | What you add | What you learn |
+|---|---|---|
+| [10. Create an account and sign in](../tutorial/accounts.md) | sign up, sign in, sign out | sessions, password hashing |
+| [11. Give each user their own notes](../tutorial/own-notes.md) | notes that belong to a user | foreign keys, `redirect`, `401` |
+| [12. Reset a forgotten password by email](../tutorial/password-reset.md) | a reset link sent by email | `smtplib`, signed tokens that expire |
 
-```nexy
-<title>Notes</title>
-```
+### Unit 4: interactivity
 
-Save: the browser reloads. See [Layouts](../routing/fbr/layouts/README.md).
-<!-- /router -->
+| Part | What you add | What you learn |
+|---|---|---|
+| [13. Search the notes as you type](../tutorial/search-the-notes.md) | a search box that filters as you type | React islands, props from Python |
+| [14. Tick a note without reloading the page](../tutorial/tick-a-note.md) | a Done button on each note | progressive enhancement, one Action for a form and for `fetch` |
 
-<!-- router:modular -->
-The controller renders `src/apps/layout.nexy` around the view, and that file owns the HTML
-document. Change the `<title>`:
+### Coming next
 
-```nexy
-<title>Notes</title>
-```
+| Unit | What the app gains |
+|---|---|
+| 5. Beyond the request | notes shared by email in the background, a daily digest, live updates |
+| 6. Ship | tests, error pages and logs, security headers, a Docker build |
 
-Save: the browser reloads. See [Views from a controller](../routing/modular/README.md#views-from-a-controller).
-<!-- /router -->
+## Next steps
 
-## 3. Add a page
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-Open <http://localhost:3000/notes>: you should see two bullets. It is served at `/notes`. The part between `---` is Python, the rest is Jinja2.
-<!-- /router -->
-
-<!-- router:modular -->
-A controller returns a view. Create `src/apps/notes_view.nexy`:
-
-```nexy filename="src/apps/notes_view.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-Declare the route in `src/apps/app_controller.py` and add the controller to the module:
-
-```python filename="src/apps/app_controller.py"
-@Controller("/notes")
-class NotesController:
-    async def get(self):
-        return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/notes_view.nexy"),
-        })
-```
-
-```python filename="src/apps/app_module.py"
-from .app_controller import AppController, NotesController
-
-controllers = [AppController, NotesController]
-```
-
-Open <http://localhost:3000/notes>: you should see two bullets. The part between `---` is Python,
-the rest is Jinja2.
-<!-- /router -->
-
-## 4. Add an endpoint
-
-<!-- router:fbr,custom -->
-```python filename="src/routes/api/notes.py"
-async def GET():
-    return [{"id": 1, "text": "Buy milk"}]
-```
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-You should get `[{"id":1,"text":"Buy milk"}]`. The function name is the HTTP method. Interactive API docs are at `/docs`.
-<!-- /router -->
-
-<!-- router:modular -->
-```python filename="src/apps/app_controller.py"
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": 1, "text": "Buy milk"}]
-```
-
-Add `NotesApiController` to `controllers` in `src/apps/app_module.py`, then run:
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-You should get `[{"id":1,"text":"Buy milk"}]`. The method name is the HTTP method. Interactive API docs are at `/docs`.
-<!-- /router -->
-
-## 5. Share the data
-
-Move the list to a Python module and use it in both files:
-
-```python filename="src/notes.py"
-NOTES = ["Buy milk", "Ship Nexy"]
-```
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/routes/api/notes.py"
-from src.notes import NOTES
-
-
-async def GET():
-    return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-<!-- router:modular -->
-```nexy filename="src/apps/notes_view.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/apps/app_controller.py"
-from src.notes import NOTES
-
-
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-## 6. Build and serve
-
-```bash
-nx build
-nx start
-```
-
-`nx build` prints each phase with its duration. `nx start` serves the compiled output with
-Uvicorn: no Node process at runtime.
-
-## Where next
-
-- [Routing](../routing/README.md): dynamic segments and groups
-- [Actions](../guides/actions.md): call Python from a form or from the client
-- [Testing](../guides/testing.md): test pages and endpoints
-- [Deploy](../deployment/README.md): containers and reverse proxies
+- [Part 1: create the project](../tutorial/create-the-project.md)
+- [Core concepts](core-concepts.md): the words the tutorial uses
