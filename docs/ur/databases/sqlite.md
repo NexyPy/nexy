@@ -99,6 +99,7 @@ def get_session() -> Iterator[Session]:
 
 ## ہینڈلر سے پڑھیں اور لکھیں۔
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -123,6 +124,38 @@ async def POST(body: NewNote, session: Session = Depends(get_session)):
     session.refresh(note)
     return JSONResponse(note.model_dump(), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.note_model import Note
+
+
+class NewNote(BaseModel):
+    title: str
+
+
+@Controller("/api/notes")
+class NotesApiController:
+    async def get(self, session: Session = Depends(get_session)):
+        return session.exec(select(Note)).all()
+
+    async def post(self, body: NewNote, session: Session = Depends(get_session)):
+        note = Note(title=body.title)
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+        return JSONResponse(note.model_dump(), status_code=201)
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 ## ایک صفحے سے پڑھیں
 
@@ -140,6 +173,7 @@ def open_notes() -> list[Note]:
         return list(session.exec(select(Note).where(Note.done == False)))  # noqa: E712
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notes.nexy"
 ---
 from src.services.notes import open_notes
@@ -152,6 +186,33 @@ notes = open_notes()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/notes/notes_view.nexy"
+---
+from src.services.notes import open_notes
+
+notes = open_notes()
+---
+<ul>
+  {% for note in notes %}
+  <li>{{ note.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/notes/notes_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/notes")
+class NotesController:
+    async def get(self):
+        return useViews("src/apps/notes/notes_view.nexy")
+```
+<!-- /router -->
 
 ## ہجرت کے ساتھ میزیں بنائیں
 
@@ -191,6 +252,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -204,6 +266,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Note))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.note_model import Note
+
+
+@Controller("/api/notes/count")
+class NotesCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Note))).one()
+        return {"count": count}
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 ## ان میموری ڈیٹا بیس پر ٹیسٹ
 
@@ -239,10 +323,10 @@ def test_a_note_is_created():
 
 - **فائل کو مستقل رکھیں ڈسک** ایک کنٹینر کا اپنا فائل سسٹم دوبارہ تعینات کرنے پر کھو جاتا ہے: ایک حجم کو ماؤنٹ کریں اور اس پر ایک مطلق راستے کے ساتھ `DATABASE_URL` پوائنٹ کریں۔
 - **ایک سرور، ایک فائل** SQLite میں ایک وقت میں ایک مصنف ہوتا ہے۔ ایک ہی مشین پر کئی `nx start` ورکرز WAL کے ساتھ ٹھیک ہیں۔ کئی مشینیں نہیں ہیں.
-- **اس کا بیک اپ لیں جب یہ چلتا ہے** کے ساتھ `sqlite3 app.db ".backup backup.db"`، فائل کاپی کے ساتھ نہیں۔
+- **جب یہ چلتا ہے تو اس کا بیک اپ** کے ساتھ `sqlite3 app.db ".backup backup.db"`، فائل کاپی کے ساتھ نہیں۔
 
 ## اگلے اقدامات
 
 - [ڈیٹا بیس ](../guides/databases.md)
 - [Nexy کے ساتھ PostgreSQL استعمال کریں](postgresql.md)
-- [جانچ ](../guides/testing.md)
+- [جانچ](../guides/testing.md)

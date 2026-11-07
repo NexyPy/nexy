@@ -103,6 +103,7 @@ def get_session() -> Iterator[Session]:
 
 ## Read and write from a handler
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -127,6 +128,38 @@ async def POST(body: NewNote, session: Session = Depends(get_session)):
     session.refresh(note)
     return JSONResponse(note.model_dump(), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.note_model import Note
+
+
+class NewNote(BaseModel):
+    title: str
+
+
+@Controller("/api/notes")
+class NotesApiController:
+    async def get(self, session: Session = Depends(get_session)):
+        return session.exec(select(Note)).all()
+
+    async def post(self, body: NewNote, session: Session = Depends(get_session)):
+        note = Note(title=body.title)
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+        return JSONResponse(note.model_dump(), status_code=201)
+```
+
+List the controller in the `controllers` of the root module.
+<!-- /router -->
 
 ## Read from a page
 
@@ -145,6 +178,7 @@ def open_notes() -> list[Note]:
         return list(session.exec(select(Note).where(Note.done == False)))  # noqa: E712
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notes.nexy"
 ---
 from src.services.notes import open_notes
@@ -157,6 +191,33 @@ notes = open_notes()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/notes/notes_view.nexy"
+---
+from src.services.notes import open_notes
+
+notes = open_notes()
+---
+<ul>
+  {% for note in notes %}
+  <li>{{ note.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/notes/notes_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/notes")
+class NotesController:
+    async def get(self):
+        return useViews("src/apps/notes/notes_view.nexy")
+```
+<!-- /router -->
 
 ## Create the tables with migrations
 
@@ -198,6 +259,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -211,6 +273,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Note))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.note_model import Note
+
+
+@Controller("/api/notes/count")
+class NotesCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Note))).one()
+        return {"count": count}
+```
+
+List the controller in the `controllers` of the root module.
+<!-- /router -->
 
 ## Tests on an in-memory database
 

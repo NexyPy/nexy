@@ -99,6 +99,7 @@ def get_session() -> Iterator[Session]:
 
 ## 从处理程序读取和写入
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -123,6 +124,38 @@ async def POST(body: NewNote, session: Session = Depends(get_session)):
     session.refresh(note)
     return JSONResponse(note.model_dump(), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.note_model import Note
+
+
+class NewNote(BaseModel):
+    title: str
+
+
+@Controller("/api/notes")
+class NotesApiController:
+    async def get(self, session: Session = Depends(get_session)):
+        return session.exec(select(Note)).all()
+
+    async def post(self, body: NewNote, session: Session = Depends(get_session)):
+        note = Note(title=body.title)
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+        return JSONResponse(note.model_dump(), status_code=201)
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 ## 从页面读取
 
@@ -140,6 +173,7 @@ def open_notes() -> list[Note]:
         return list(session.exec(select(Note).where(Note.done == False)))  # noqa: E712
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notes.nexy"
 ---
 from src.services.notes import open_notes
@@ -152,6 +186,33 @@ notes = open_notes()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/notes/notes_view.nexy"
+---
+from src.services.notes import open_notes
+
+notes = open_notes()
+---
+<ul>
+  {% for note in notes %}
+  <li>{{ note.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/notes/notes_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/notes")
+class NotesController:
+    async def get(self):
+        return useViews("src/apps/notes/notes_view.nexy")
+```
+<!-- /router -->
 
 ## 创建带有迁移的表
 
@@ -191,6 +252,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -204,6 +266,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Note))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.note_model import Note
+
+
+@Controller("/api/notes/count")
+class NotesCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Note))).one()
+        return {"count": count}
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 ## 在内存数据库上进行测试
 
@@ -237,8 +321,8 @@ def test_a_note_is_created():
 
 ## 生产中
 
-- **将文件保存在永久磁盘上。** 容器自己的文件系统在重新部署时丢失：安装卷并使用绝对路径将 `DATABASE_URL` 指向它。
-- **一台服务器，一个文件。** SQLite 一次只有一位写入者。同一台机器上的多个 `nx start` 工作人员可以使用 WAL；有几台机器不是。
+- **将文件保存在永久磁盘上。** 容器自己的文件系统在重新部署时丢失：安装一个卷并使用绝对路径将 `DATABASE_URL` 指向它。
+- **一台服务器，一个文件。** SQLite 一次只有一名写入者。同一台机器上的多个 `nx start` 工作人员可以使用 WAL；有几台机器不是。
 - **在运行** 时使用 `sqlite3 app.db ".backup backup.db"`备份它，而不是使用文件副本。
 
 ## 后续步骤

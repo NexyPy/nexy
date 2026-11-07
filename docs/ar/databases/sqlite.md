@@ -99,6 +99,7 @@ def get_session() -> Iterator[Session]:
 
 ## القراءة والكتابة من المعالج
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -123,10 +124,42 @@ async def POST(body: NewNote, session: Session = Depends(get_session)):
     session.refresh(note)
     return JSONResponse(note.model_dump(), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.note_model import Note
+
+
+class NewNote(BaseModel):
+    title: str
+
+
+@Controller("/api/notes")
+class NotesApiController:
+    async def get(self, session: Session = Depends(get_session)):
+        return session.exec(select(Note)).all()
+
+    async def post(self, body: NewNote, session: Session = Depends(get_session)):
+        note = Note(title=body.title)
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+        return JSONResponse(note.model_dump(), status_code=201)
+```
+
+قم بإدراج وحدة التحكم في `controllers` من الوحدة الجذرية.
+<!-- /router -->
 
 ## إقرأ من إحدى الصفحات
 
-تقوم صفحة `.nexy` بتشغيل مادتها الأمامية على الخادم، حتى تتمكن من استدعاء نفس الرمز. احتفظ بالاستعلام في دالة: فقط الأسماء المعينة في المستوى الأعلى من المادة الأمامية هي التي تصل إلى القالب.
+تقوم صفحة `.nexy` بتشغيل الجزء الأمامي الخاص بها على الخادم، حتى تتمكن من استدعاء نفس الرمز. احتفظ بالاستعلام في دالة: فقط الأسماء المعينة في المستوى الأعلى من المادة الأمامية هي التي تصل إلى القالب.
 
 ```python filename="src/services/notes.py"
 from sqlmodel import Session, select
@@ -140,6 +173,7 @@ def open_notes() -> list[Note]:
         return list(session.exec(select(Note).where(Note.done == False)))  # noqa: E712
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/notes.nexy"
 ---
 from src.services.notes import open_notes
@@ -152,6 +186,33 @@ notes = open_notes()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/notes/notes_view.nexy"
+---
+from src.services.notes import open_notes
+
+notes = open_notes()
+---
+<ul>
+  {% for note in notes %}
+  <li>{{ note.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/notes/notes_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/notes")
+class NotesController:
+    async def get(self):
+        return useViews("src/apps/notes/notes_view.nexy")
+```
+<!-- /router -->
 
 ## إنشاء الجداول مع الهجرات
 
@@ -167,7 +228,7 @@ nx migrate --upgrade
 import src.models.note_model  # noqa: F401
 ```
 
-SQLite لا يمكن `ALTER` وضع معظم الأعمدة في مكانها. قم بتشغيل الوضع الدفعي لـ Alembic، الذي ينسخ الجدول، في كلا استدعاءات `context.configure(...)` لـ `alembic/env.py`:
+SQLite لا يمكن `ALTER` معظم الأعمدة في مكانها. قم بتشغيل الوضع الدفعي لـ Alembic، الذي ينسخ الجدول، في كلا استدعاءات `context.configure(...)` لـ `alembic/env.py`:
 
 ```python filename="الإنبك/env.py"
 context.configure(connection=connection, target_metadata=target_metadata, render_as_batch=True)
@@ -191,6 +252,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/notes/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -204,6 +266,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Note))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/notes_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.note_model import Note
+
+
+@Controller("/api/notes/count")
+class NotesCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Note))).one()
+        return {"count": count}
+```
+
+قم بإدراج وحدة التحكم في `controllers` من الوحدة الجذرية.
+<!-- /router -->
 
 ## اختبارات على قاعدة بيانات في الذاكرة
 
@@ -238,8 +322,8 @@ def test_a_note_is_created():
 ## في الإنتاج
 
 - **احتفظ بالملف على قرص ثابت.** يتم فقدان نظام الملفات الخاص بالحاوية عند إعادة النشر: قم بتحميل وحدة تخزين وأشر `DATABASE_URL` إليها بمسار مطلق.
-- **خادم واحد، ملف واحد.** SQLite لديه كاتب واحد في كل مرة. العديد من `nx start` العاملين على نفس الجهاز يتعاملون بشكل جيد مع WAL؛ عدة آلات ليست كذلك.
-- **قم بعمل نسخة احتياطية أثناء تشغيله** مع `sqlite3 app.db ".backup backup.db"`، وليس مع نسخة ملف.
+- **خادم واحد، ملف واحد.** SQLite لديه كاتب واحد في كل مرة. العديد من `nx start` العاملين على نفس الجهاز جيدون مع WAL؛ عدة آلات ليست كذلك.
+- **قم بعمل نسخة احتياطية منه أثناء تشغيله** مع `sqlite3 app.db ".backup backup.db"`، وليس مع نسخة ملف.
 
 ## الخطوات التالية
 
