@@ -205,10 +205,19 @@ class TestAlembicEnv:
         alembic.render_env(tmp_path, orm, models)
         return (tmp_path / "env.py").read_text(encoding="utf-8")
 
-    def test_sqlmodel_imports_the_module_that_holds_the_models(self, tmp_path):
-        assert "import src.apps.users.user_model" in self._env(
-            tmp_path, "SQLModel", "src.apps.users.user_model"
-        )
+    def test_sqlmodel_imports_every_model_file_of_the_project(self, tmp_path, monkeypatch):
+        for name in ("src/models/note_model.py", "src/apps/users/user_model.py"):
+            (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
+            (tmp_path / name).write_text("")
+        (tmp_path / "alembic").mkdir()
+        alembic.render_env(tmp_path / "alembic", "SQLModel", "src.apps.users.user_model")
+        head = (tmp_path / "alembic" / "env.py").read_text().split("from src.configs.db")[0]
+        monkeypatch.syspath_prepend(str(tmp_path))
+        for name in ("src.models.note_model", "src.apps.users.user_model"):
+            monkeypatch.delitem(sys.modules, name, raising=False)
+        env = str(tmp_path / "alembic" / "env.py")
+        exec(compile(head, env, "exec"), {"__file__": env})  # noqa: S102
+        assert {"src.models.note_model", "src.apps.users.user_model"} <= set(sys.modules)
 
     def test_sqlalchemy_takes_its_base_from_the_module_that_holds_the_models(self, tmp_path):
         env = self._env(tmp_path, "SQLAlchemy", "src.apps.users.user_model")
