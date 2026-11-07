@@ -105,6 +105,7 @@ def get_session() -> Iterator[Session]:
 
 ## ہینڈلر سے پڑھیں اور لکھیں۔
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -133,11 +134,48 @@ async def POST(body: NewPost, session: Session = Depends(get_session)):
     session.refresh(post)
     return JSONResponse(post.model_dump(mode="json"), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+class NewPost(BaseModel):
+    title: str
+    tags: list[str] = []
+
+
+@Controller("/api/posts")
+class PostsApiController:
+    async def get(self, tag: str | None = None, session: Session = Depends(get_session)):
+        query = select(Post).order_by(Post.published_at.desc())
+        if tag:
+            query = query.where(Post.tags.contains([tag]))
+        return session.exec(query).all()
+
+    async def post(self, body: NewPost, session: Session = Depends(get_session)):
+        post = Post(title=body.title, tags=body.tags)
+        session.add(post)
+        session.commit()
+        session.refresh(post)
+        return JSONResponse(post.model_dump(mode="json"), status_code=201)
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 `Post.tags.contains([tag])` ہے PostgreSQL کا `@>`: وہ پوسٹس جن کے ٹیگ `tag` ہیں۔
 
 ## یو آر ایل میں ایک `uuid`
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/[id].py"
 import uuid
 
@@ -154,6 +192,31 @@ async def GET(id: uuid.UUID, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="No such post")
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_id_api_controller.py"
+import uuid
+
+from sqlmodel import Session
+
+from nexy.decorators import Controller
+from nexy.http import Depends, HTTPException
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/{id}")
+class PostsByIdApiController:
+    async def get(self, id: uuid.UUID, session: Session = Depends(get_session)):
+        post = session.get(Post, id)
+        if post is None:
+            raise HTTPException(status_code=404, detail="No such post")
+        return post
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 ایک سیگمنٹ جو UUID نہیں ہے سوال چلنے سے پہلے `404` جواب دیتا ہے۔
 
@@ -172,6 +235,7 @@ def featured_posts() -> list[Post]:
         return list(session.exec(query))
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/featured.nexy"
 ---
 from src.services.posts import featured_posts
@@ -184,11 +248,39 @@ posts = featured_posts()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/featured/featured_view.nexy"
+---
+from src.services.posts import featured_posts
+
+posts = featured_posts()
+---
+<ul>
+  {% for post in posts %}
+  <li>{{ post.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/featured/featured_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/featured")
+class FeaturedController:
+    async def get(self):
+        return useViews("src/apps/featured/featured_view.nexy")
+```
+<!-- /router -->
 
 سوال کو ایک فنکشن میں رکھیں: صرف فرنٹ میٹر کے اوپری سطح پر تفویض کردہ نام ہی ٹیمپلیٹ تک پہنچتے ہیں۔
 
 ## مکمل متن کی تلاش
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from sqlalchemy import func
 from sqlmodel import Session, select
@@ -205,6 +297,31 @@ async def GET(q: str, session: Session = Depends(get_session)):
     rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
     return rows.all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from sqlalchemy import func
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, session: Session = Depends(get_session)):
+        document = func.to_tsvector("english", Post.title)
+        query = func.websearch_to_tsquery("english", q)
+        rank = func.ts_rank(document, query)
+        rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
+        return rows.all()
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 ایک انڈیکس اسے ایک بڑی میز پر تیزی سے رکھتا ہے۔ اسے منتقلی میں شامل کریں:
 
@@ -247,7 +364,7 @@ nx migrate -m "create posts"
 nx migrate --upgrade
 ```
 
-`nx migrate` پڑھتا ہے `DATABASE_URL`، چیک کرتا ہے کہ ڈرائیور انسٹال ہے اور سرور جواب دیتا ہے، پھر چلتا ہے Alembic۔ ہر ماڈل ماڈیول کو `alembic/env.py` میں درآمد کریں تاکہ خود کار طریقے سے اسے دیکھے۔
+`nx migrate` پڑھتا ہے `DATABASE_URL`، چیک کرتا ہے کہ ڈرائیور انسٹال ہے اور سرور جواب دیتا ہے، پھر چلتا ہے Alembic۔ ہر ماڈل ماڈیول کو `alembic/env.py` میں امپورٹ کریں تاکہ آٹو جنریٹ اسے دیکھ سکے۔
 
 ## `asyncpg` کے ساتھ مطابقت پذیری
 
@@ -267,6 +384,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -280,6 +398,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Post))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/count")
+class PostsCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Post))).one()
+        return {"count": count}
+```
+
+کنٹرولر کی فہرست روٹ ماڈیول کے `controllers` میں، `PostsByIdApiController` سے پہلے: پہلا کنٹرولر جس کا راستہ جوابات سے میل کھاتا ہے، اور اس کے بعد درج، `/api/posts/count/` جوابات `404`۔
+<!-- /router -->
 
 psycopg 3 async بھی چلاتا ہے: `postgresql+psycopg://` `create_async_engine` کے ساتھ بھی کام کرتا ہے۔
 
@@ -316,7 +456,7 @@ def session():
 |---|---|
 | [نیین ](neon.md) | شامل کریں `?sslmode=require`؛ بہت سے مختصر رابطوں کے لیے پولڈ ہوسٹ کا استعمال کریں۔ |
 | سوپا بیس | ایک ہی URL فارم؛ بہت سے کارکنوں کے لیے پولر پورٹ `6543` کا استعمال کریں۔ |
-| Amazon RDS، Cloud SQL، Azure | شامل کریں `?sslmode=require`، اور ایپ کے نیٹ ورک کی اجازت دیں۔ |
+| Amazon RDS، Cloud SQL، Azure | `?sslmode=require` شامل کریں، اور ایپ کے نیٹ ورک کو اجازت دیں۔ |
 
 ## اگلے اقدامات
 

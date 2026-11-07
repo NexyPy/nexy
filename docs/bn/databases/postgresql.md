@@ -39,7 +39,7 @@ DATABASE_URL=postgresql+psycopg://postgres:secret@localhost:5432/app
 
 হোস্টিং প্ল্যাটফর্মগুলি প্রায়ই একটি `postgres://` URL দেয়। ইঞ্জিন যেখানে তৈরি করা হয় সেখানে এটি রূপান্তর করুন:
 
-```python filename=""
+```python filename="src/configs/db.py"
 import os
 
 from dotenv import load_dotenv
@@ -105,6 +105,7 @@ def get_session() -> Iterator[Session]:
 
 ## হ্যান্ডলার থেকে পড়ুন এবং লিখুন
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -133,11 +134,48 @@ async def POST(body: NewPost, session: Session = Depends(get_session)):
     session.refresh(post)
     return JSONResponse(post.model_dump(mode="json"), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+class NewPost(BaseModel):
+    title: str
+    tags: list[str] = []
+
+
+@Controller("/api/posts")
+class PostsApiController:
+    async def get(self, tag: str | None = None, session: Session = Depends(get_session)):
+        query = select(Post).order_by(Post.published_at.desc())
+        if tag:
+            query = query.where(Post.tags.contains([tag]))
+        return session.exec(query).all()
+
+    async def post(self, body: NewPost, session: Session = Depends(get_session)):
+        post = Post(title=body.title, tags=body.tags)
+        session.add(post)
+        session.commit()
+        session.refresh(post)
+        return JSONResponse(post.model_dump(mode="json"), status_code=201)
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 `Post.tags.contains([tag])` হল PostgreSQL এর `@>`: যে পোস্টের ট্যাগগুলি `tag` ধরে।
 
 ## URL এ একটি `uuid`
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/[id].py"
 import uuid
 
@@ -154,6 +192,31 @@ async def GET(id: uuid.UUID, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="No such post")
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_id_api_controller.py"
+import uuid
+
+from sqlmodel import Session
+
+from nexy.decorators import Controller
+from nexy.http import Depends, HTTPException
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/{id}")
+class PostsByIdApiController:
+    async def get(self, id: uuid.UUID, session: Session = Depends(get_session)):
+        post = session.get(Post, id)
+        if post is None:
+            raise HTTPException(status_code=404, detail="No such post")
+        return post
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 একটি সেগমেন্ট যা UUID নয় `404` ক্যোয়ারী চালানোর আগে উত্তর দেয়।
 
@@ -172,6 +235,7 @@ def featured_posts() -> list[Post]:
         return list(session.exec(query))
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/featured.nexy"
 ---
 from src.services.posts import featured_posts
@@ -184,11 +248,39 @@ posts = featured_posts()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/featured/featured_view.nexy"
+---
+from src.services.posts import featured_posts
+
+posts = featured_posts()
+---
+<ul>
+  {% for post in posts %}
+  <li>{{ post.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/featured/featured_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/featured")
+class FeaturedController:
+    async def get(self):
+        return useViews("src/apps/featured/featured_view.nexy")
+```
+<!-- /router -->
 
 ক্যোয়ারীটিকে একটি ফাংশনে রাখুন: শুধুমাত্র ফ্রন্টম্যাটারের শীর্ষ স্তরে নির্ধারিত নামগুলি টেমপ্লেটে পৌঁছায়৷
 
 ## পূর্ণ-পাঠ্য অনুসন্ধান
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from sqlalchemy import func
 from sqlmodel import Session, select
@@ -205,6 +297,31 @@ async def GET(q: str, session: Session = Depends(get_session)):
     rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
     return rows.all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from sqlalchemy import func
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, session: Session = Depends(get_session)):
+        document = func.to_tsvector("english", Post.title)
+        query = func.websearch_to_tsquery("english", q)
+        rank = func.ts_rank(document, query)
+        rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
+        return rows.all()
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 একটি সূচক একটি বড় টেবিলে এটি দ্রুত রাখে। এটি একটি মাইগ্রেশনে যোগ করুন:
 
@@ -247,7 +364,7 @@ nx migrate -m "create posts"
 nx migrate --upgrade
 ```
 
-`nx migrate` পড়ে `DATABASE_URL`, ড্রাইভার ইনস্টল করা আছে কিনা তা পরীক্ষা করে এবং সার্ভার উত্তর দেয়, তারপর Alembic চালায়। প্রতিটি মডেল মডিউল আমদানি করুন `alembic/env.py` যাতে স্বয়ংক্রিয়ভাবে এটি দেখতে পায়।
+`nx migrate` পড়ে `DATABASE_URL`, ড্রাইভার ইন্সটল করা আছে কিনা চেক করে এবং সার্ভার উত্তর দেয়, তারপর Alembic চালায়। প্রতিটি মডেল মডিউল আমদানি করুন `alembic/env.py` যাতে স্বয়ংক্রিয়ভাবে এটি দেখতে পায়।
 
 ## সাথে অ্যাসিঙ্ক করুন `asyncpg`
 
@@ -267,6 +384,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -280,6 +398,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Post))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/count")
+class PostsCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Post))).one()
+        return {"count": count}
+```
+
+রুট মডিউলের `controllers` মধ্যে নিয়ামকের তালিকা করুন, `PostsByIdApiController` এর আগে: প্রথম নিয়ামক যার পাথ উত্তরের সাথে মেলে, এবং তার পরে তালিকাভুক্ত, `/api/posts/count/` উত্তর দেয় `404`।
+<!-- /router -->
 
 psycopg 3 এছাড়াও async চালায়: `postgresql+psycopg://` `create_async_engine` এর সাথেও কাজ করে।
 

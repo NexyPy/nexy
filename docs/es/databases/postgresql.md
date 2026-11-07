@@ -105,6 +105,7 @@ def get_session() -> Iterator[Session]:
 
 ## Leer y escribir desde un controlador.
 
+<!-- router:fbr,custom -->
 ```python filename="src/rutas/api/posts/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -133,11 +134,48 @@ async def POST(body: NewPost, session: Session = Depends(get_session)):
     session.refresh(post)
     return JSONResponse(post.model_dump(mode="json"), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+class NewPost(BaseModel):
+    title: str
+    tags: list[str] = []
+
+
+@Controller("/api/posts")
+class PostsApiController:
+    async def get(self, tag: str | None = None, session: Session = Depends(get_session)):
+        query = select(Post).order_by(Post.published_at.desc())
+        if tag:
+            query = query.where(Post.tags.contains([tag]))
+        return session.exec(query).all()
+
+    async def post(self, body: NewPost, session: Session = Depends(get_session)):
+        post = Post(title=body.title, tags=body.tags)
+        session.add(post)
+        session.commit()
+        session.refresh(post)
+        return JSONResponse(post.model_dump(mode="json"), status_code=201)
+```
+
+Enumere el controlador en el `controllers` del módulo raíz.
+<!-- /router -->
 
 `Post.tags.contains([tag])` es el `@>` de PostgreSQL: las publicaciones cuyas etiquetas contienen `tag`.
 
 ## Un `uuid` en la URL
 
+<!-- router:fbr,custom -->
 ```python filename="src/rutas/api/posts/[id].py"
 import uuid
 
@@ -154,6 +192,31 @@ async def GET(id: uuid.UUID, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="No such post")
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_id_api_controller.py"
+import uuid
+
+from sqlmodel import Session
+
+from nexy.decorators import Controller
+from nexy.http import Depends, HTTPException
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/{id}")
+class PostsByIdApiController:
+    async def get(self, id: uuid.UUID, session: Session = Depends(get_session)):
+        post = session.get(Post, id)
+        if post is None:
+            raise HTTPException(status_code=404, detail="No such post")
+        return post
+```
+
+Enumere el controlador en el `controllers` del módulo raíz.
+<!-- /router -->
 
 Un segmento que no es un UUID responde `404` antes de que se ejecute la consulta.
 
@@ -172,6 +235,7 @@ def featured_posts() -> list[Post]:
         return list(session.exec(query))
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rutas/featured.nexy"
 ---
 from src.services.posts import featured_posts
@@ -184,11 +248,39 @@ posts = featured_posts()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/featured/featured_view.nexy"
+---
+from src.services.posts import featured_posts
+
+posts = featured_posts()
+---
+<ul>
+  {% for post in posts %}
+  <li>{{ post.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/featured/featured_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/featured")
+class FeaturedController:
+    async def get(self):
+        return useViews("src/apps/featured/featured_view.nexy")
+```
+<!-- /router -->
 
 Mantener la consulta en una función: solo los nombres asignados en el nivel superior del frontmatter llegan a la plantilla.
 
 ## Búsqueda de texto completo
 
+<!-- router:fbr,custom -->
 ```python filename="src/rutas/api/search.py"
 from sqlalchemy import func
 from sqlmodel import Session, select
@@ -205,6 +297,31 @@ async def GET(q: str, session: Session = Depends(get_session)):
     rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
     return rows.all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from sqlalchemy import func
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, session: Session = Depends(get_session)):
+        document = func.to_tsvector("english", Post.title)
+        query = func.websearch_to_tsquery("english", q)
+        rank = func.ts_rank(document, query)
+        rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
+        return rows.all()
+```
+
+Enumere el controlador en el `controllers` del módulo raíz.
+<!-- /router -->
 
 Un índice lo mantiene rápido en una mesa grande. Agréguelo en una migración:
 
@@ -267,6 +384,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/rutas/api/posts/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -280,6 +398,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Post))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/count")
+class PostsCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Post))).one()
+        return {"count": count}
+```
+
+Enumere el controlador en el `controllers` del módulo raíz, antes de `PostsByIdApiController`: el primer controlador cuya ruta coincide con las respuestas, y en la lista después de él, `/api/posts/count/` responde a `404`.
+<!-- /router -->
 
 psycopg 3 también se ejecuta asíncrono: `postgresql+psycopg://` también funciona con `create_async_engine`.
 
@@ -287,7 +427,7 @@ psycopg 3 también se ejecuta asíncrono: `postgresql+psycopg://` también funci
 
 Cada prueba se ejecuta dentro de una transacción que se revierte, por lo que la base de datos de prueba permanece vacía:
 
-```python filename=""
+```python filename="pruebas/conftest.py"
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
 
@@ -314,7 +454,7 @@ def session():
 
 | Servicio | que cambia |
 |---|---|
-| [Neón](neon.md) | añadir `?sslmode=require`; use el host agrupado para muchas conexiones cortas |
+| [Neón](neon.md) | agregar `?sslmode=require`; use el host agrupado para muchas conexiones cortas |
 | Supabase | el mismo formulario de URL; utilizar el puerto pooler `6543` para muchos trabajadores |
 | Amazon RDS, Nube SQL, Azure | agregue `?sslmode=require` y permita la red de la aplicación |
 

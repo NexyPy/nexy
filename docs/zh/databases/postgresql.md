@@ -105,6 +105,7 @@ def get_session() -> Iterator[Session]:
 
 ## 从处理程序读取和写入
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/index.py"
 from pydantic import BaseModel
 from sqlmodel import Session, select
@@ -133,11 +134,48 @@ async def POST(body: NewPost, session: Session = Depends(get_session)):
     session.refresh(post)
     return JSONResponse(post.model_dump(mode="json"), status_code=201)
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_api_controller.py"
+from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends, JSONResponse
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+class NewPost(BaseModel):
+    title: str
+    tags: list[str] = []
+
+
+@Controller("/api/posts")
+class PostsApiController:
+    async def get(self, tag: str | None = None, session: Session = Depends(get_session)):
+        query = select(Post).order_by(Post.published_at.desc())
+        if tag:
+            query = query.where(Post.tags.contains([tag]))
+        return session.exec(query).all()
+
+    async def post(self, body: NewPost, session: Session = Depends(get_session)):
+        post = Post(title=body.title, tags=body.tags)
+        session.add(post)
+        session.commit()
+        session.refresh(post)
+        return JSONResponse(post.model_dump(mode="json"), status_code=201)
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 `Post.tags.contains([tag])` 是 PostgreSQL 的 `@>`：标签包含 `tag` 的帖子。
 
 ## URL 中的 `uuid`
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/[id].py"
 import uuid
 
@@ -154,6 +192,31 @@ async def GET(id: uuid.UUID, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="No such post")
     return post
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_by_id_api_controller.py"
+import uuid
+
+from sqlmodel import Session
+
+from nexy.decorators import Controller
+from nexy.http import Depends, HTTPException
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/{id}")
+class PostsByIdApiController:
+    async def get(self, id: uuid.UUID, session: Session = Depends(get_session)):
+        post = session.get(Post, id)
+        if post is None:
+            raise HTTPException(status_code=404, detail="No such post")
+        return post
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 非 UUID 的段在查询运行之前回答 `404`。
 
@@ -172,6 +235,7 @@ def featured_posts() -> list[Post]:
         return list(session.exec(query))
 ```
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/featured.nexy"
 ---
 from src.services.posts import featured_posts
@@ -184,11 +248,39 @@ posts = featured_posts()
   {% endfor %}
 </ul>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/featured/featured_view.nexy"
+---
+from src.services.posts import featured_posts
+
+posts = featured_posts()
+---
+<ul>
+  {% for post in posts %}
+  <li>{{ post.title | e }}</li>
+  {% endfor %}
+</ul>
+```
+
+```python filename="src/apps/featured/featured_controller.py"
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+
+
+@Controller("/featured")
+class FeaturedController:
+    async def get(self):
+        return useViews("src/apps/featured/featured_view.nexy")
+```
+<!-- /router -->
 
 将查询保留在函数中：只有在 frontmatter 顶层分配的名称才能到达模板。
 
 ## 全文检索
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/search.py"
 from sqlalchemy import func
 from sqlmodel import Session, select
@@ -205,6 +297,31 @@ async def GET(q: str, session: Session = Depends(get_session)):
     rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
     return rows.all()
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/search/search_api_controller.py"
+from sqlalchemy import func
+from sqlmodel import Session, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.post_model import Post
+
+
+@Controller("/api/search")
+class SearchApiController:
+    async def get(self, q: str, session: Session = Depends(get_session)):
+        document = func.to_tsvector("english", Post.title)
+        query = func.websearch_to_tsquery("english", q)
+        rank = func.ts_rank(document, query)
+        rows = session.exec(select(Post).where(document.op("@@")(query)).order_by(rank.desc()))
+        return rows.all()
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 索引可以在大表上保持快速。将其添加到迁移中：
 
@@ -247,7 +364,7 @@ nx migrate -m "create posts"
 nx migrate --upgrade
 ```
 
-`nx migrate` 读取 `DATABASE_URL`，检查驱动程序是否已安装以及服务器是否应答，然后运行 Alembic。导入 `alembic/env.py` 中的每个模型模块，以便自动生成看到它。
+`nx migrate` 读取 `DATABASE_URL`，检查驱动程序是否已安装以及服务器是否应答，然后运行 Alembic。导入 `alembic/env.py` 中的每个模型模块，以便自动生成可以看到它。
 
 ## 与 `asyncpg` 异步
 
@@ -267,6 +384,7 @@ async def get_async_session():
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/posts/count.py"
 from sqlmodel import func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -280,6 +398,28 @@ async def GET(session: AsyncSession = Depends(get_async_session)):
     count = (await session.exec(select(func.count()).select_from(Post))).one()
     return {"count": count}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/posts/posts_count_api_controller.py"
+from sqlmodel import func, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.async_db import get_async_session
+from src.models.post_model import Post
+
+
+@Controller("/api/posts/count")
+class PostsCountApiController:
+    async def get(self, session: AsyncSession = Depends(get_async_session)):
+        count = (await session.exec(select(func.count()).select_from(Post))).one()
+        return {"count": count}
+```
+
+列出根模块的 `controllers` 中的控制器，在 `PostsByIdApiController` 之前：路径与答案匹配的第一个控制器，在其后面列出 `/api/posts/count/` 答案 `404`。
+<!-- /router -->
 
 psycopg 3 也运行异步：`postgresql+psycopg://` 也可以与 `create_async_engine` 一起使用。
 
@@ -321,5 +461,5 @@ def session():
 ## 后续步骤
 
 - [数据库](../guides/databases.md)
-- [将 Neon 与 Nexy](neon.md) 一起使用
+- [将 Neon 与 Nexy 结合使用](neon.md)
 - [将 SQLite 与 Nexy](sqlite.md) 一起使用
