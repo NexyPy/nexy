@@ -8,11 +8,11 @@ Nexy dépend de FastAPI, Starlette, Jinja2, Vite et React. Un plancher est la ve
 
 | Forfait | Sol | Pourquoi |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost) : un en-tête `Host` contrefait modifie le chemin que Starlette signale au middleware, qui contourne l'autorisation écrite sur `request.url.path`. Répertorié comme exploité par CISA. |
-| `fastapi` | 0.133.0 | la première version qui accepte un Starlette |
-| `jinja2` | 3.1.6 | évasion du bac à sable via le filtre `attr` (CVE-2025-27516) |
-| `vite` (projets échafaudés) | 6.4.3 | `server.fs.deny` contournement des chemins alternatifs Windows (CVE-2026-53571) ; le contournement antérieur de la chaîne de requête (CVE-2026-39364) affecte uniquement Vite 7.1-7.3.1 et 8.0.0-8.0.4 |
-| `react`, `react-dom` | 19.2.5 | les avis de 2026 React concernent les packages `react-server-dom-*`, que Nexy n'utilise pas ; le sol maintient la ligne raccordée |
+| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost) : un en-tête `Host` contrefait modifie le chemin d'accès Starlette vers le middleware, qui contourne l'autorisation écrite sur `request.url.path`. Répertorié comme exploité par CISA. |
+| `fastapi` | 0.133.0 | la première version qui accepte un Starlette fixe |
+| `jinja2` | 3.1.6 | le bac à sable s'échappe à travers le filtre `attr` (CVE-2025-27516) |
+| `vite` (projets échafaudés) | 6.4.3 | `server.fs.deny` contourner les chemins alternatifs Windows (CVE-2026-53571) ; le contournement de chaîne de requête antérieur (CVE-2026-39364) affecte uniquement Vite 7.1-7.3.1 et 8.0.0-8.0.4 |
+| `react`, `react-dom` | 19.2.5 | les avis 2026 React concernent les packages `react-server-dom-*`, que Nexy n'utilise pas ; le sol maintient la ligne réparée |
 
 Vérifiez vos versions résolues :
 
@@ -24,7 +24,7 @@ npm ls vite
 ## Règles que Nexy suit
 
 - **Ne faites jamais confiance à l'en-tête Host pour les chemins.** Nexy lit `scope["path"]`, et non `request.url.path`, dans son propre middleware (middleware d'annuaire). Faites de même dans le vôtre.
-- **Échappez ce qui atteint HTML.** Les accessoires transmis aux composants clients, les attributs `Link`, les attributs `Image`, `Audio` et `Video`, les ancres de table des matières et les détails `HTTPException` sont tous échappés en HTML. `| safe` dans un modèle désactive cette fonctionnalité : ne l'utilisez jamais lors d'une saisie utilisateur.
+- **Échappez ce qui atteint HTML.** Les accessoires transmis aux composants clients, les attributs `Link`, les attributs `Image`, `Audio` et `Video`, les ancres de table des matières et les détails `HTTPException` sont tous échappés en HTML. Un modèle `.nexy` ne s'échappe pas tout seul : écrivez `{{ value | e }}` pour toute valeur provenant d'un visiteur ou de la base de données, et jamais `| safe` lors d'une saisie utilisateur.
 - **Les points de terminaison du développeur sont uniquement en boucle et étroits.** Le point de terminaison de rendu de développement (`/__nexy__/render`) n'accepte que les fichiers sous `src/routes/` avec une extension `.tsx` ou `.jsx`, et n'est accessible que via le serveur de développement, qui refuse les en-têtes `Host` étrangers.
 - **Les détails de l'erreur ne sont pas divulgués.** Une page d'erreur qui échoue elle-même affiche uniquement le code d'état.
 - **Les réponses de production comportent des en-têtes sécurisés.** `X-Content-Type-Options: nosniff` et `Referrer-Policy: strict-origin-when-cross-origin`, à moins que votre code ne définisse les siens. L'en-tête `Server` n'est pas envoyé. Ajoutez un `Strict-Transport-Security` et un `Content-Security-Policy` dans votre proxy ou middleware : ils dépendent de votre domaine.

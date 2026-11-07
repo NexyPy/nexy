@@ -28,7 +28,8 @@ npm ls vite
   its own middleware (directory middleware). Do the same in yours.
 - **Escape what reaches HTML.** Props passed to client components, `Link` attributes, `Image`,
   `Audio` and `Video` attributes, table-of-contents anchors and `HTTPException` details are all
-  HTML-escaped. `| safe` in a template turns this off: never use it on user input.
+  HTML-escaped. A `.nexy` template does not escape on its own: write `{{ value | e }}` for any
+  value that comes from a visitor or the database, and never `| safe` on user input.
 - **Developer endpoints are loopback-only and narrow.** The dev render endpoint
   (`/__nexy__/render`) only accepts files under `src/routes/` with a `.tsx` or `.jsx` extension, and
   is reachable only through the dev server, which refuses foreign `Host` headers.
