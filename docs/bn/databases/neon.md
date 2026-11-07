@@ -86,6 +86,7 @@ def get_session() -> Iterator[Session]:
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/visits.py"
 from sqlmodel import Session, func, select
 
@@ -99,6 +100,28 @@ async def POST(path: str, session: Session = Depends(get_session)):
     session.commit()
     return {"visits": session.exec(select(func.count()).select_from(Visit)).one()}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/visits/visits_api_controller.py"
+from sqlmodel import Session, func, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.visit_model import Visit
+
+
+@Controller("/api/visits")
+class VisitsApiController:
+    async def post(self, path: str, session: Session = Depends(get_session)):
+        session.add(Visit(path=path))
+        session.commit()
+        return {"visits": session.exec(select(func.count()).select_from(Visit)).one()}
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 ## মাইগ্রেশন সরাসরি URL এর মাধ্যমে যায়
 
@@ -139,10 +162,10 @@ neonctl connection-string dev-ada --pooled
 
 ## টেস্ট
 
-তাদের জন্য তৈরি একটি শাখার বিরুদ্ধে পরীক্ষাগুলি চালান, একটি লেনদেনের ভিতরে যা রোল ব্যাক করা হয়েছে: দেখুন [একটি লেনদেনের পরীক্ষাগুলি](postgresql.md#tests-in-a-transaction)।
+তাদের জন্য তৈরি করা একটি শাখার বিরুদ্ধে পরীক্ষাগুলি চালান, একটি লেনদেনের ভিতরে যা রোল ব্যাক করা হয়েছে: দেখুন [একটি লেনদেনের পরীক্ষাগুলি](postgresql.md#tests-in-a-transaction)।
 
 ## পরবর্তী পদক্ষেপ
 
-- [ব্যবহার করুন PostgreSQL Nexy সহ ](postgresql.md): প্রকার, অনুসন্ধান, আপসার্ট এবং অ্যাসিঙ্ক
+- [ব্যবহার করুন PostgreSQL Nexy সহ](postgresql.md): প্রকার, অনুসন্ধান, আপসার্ট এবং অ্যাসিঙ্ক
 - [ডাটাবেস](../guides/databases.md)
 - [স্থাপন ](../deployment/README.md)

@@ -86,6 +86,7 @@ def get_session() -> Iterator[Session]:
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/visits.py"
 from sqlmodel import Session, func, select
 
@@ -99,6 +100,28 @@ async def POST(path: str, session: Session = Depends(get_session)):
     session.commit()
     return {"visits": session.exec(select(func.count()).select_from(Visit)).one()}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/visits/visits_api_controller.py"
+from sqlmodel import Session, func, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.visit_model import Visit
+
+
+@Controller("/api/visits")
+class VisitsApiController:
+    async def post(self, path: str, session: Session = Depends(get_session)):
+        session.add(Visit(path=path))
+        session.commit()
+        return {"visits": session.exec(select(func.count()).select_from(Visit)).one()}
+```
+
+Перечислите контроллер в `controllers` корневого модуля.
+<!-- /router -->
 
 ## Миграции выполняются через прямой URL-адрес.
 

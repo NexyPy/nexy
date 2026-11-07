@@ -86,6 +86,7 @@ def get_session() -> Iterator[Session]:
         yield session
 ```
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/visits.py"
 from sqlmodel import Session, func, select
 
@@ -99,6 +100,28 @@ async def POST(path: str, session: Session = Depends(get_session)):
     session.commit()
     return {"visits": session.exec(select(func.count()).select_from(Visit)).one()}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/visits/visits_api_controller.py"
+from sqlmodel import Session, func, select
+
+from nexy.decorators import Controller
+from nexy.http import Depends
+from src.configs.session import get_session
+from src.models.visit_model import Visit
+
+
+@Controller("/api/visits")
+class VisitsApiController:
+    async def post(self, path: str, session: Session = Depends(get_session)):
+        session.add(Visit(path=path))
+        session.commit()
+        return {"visits": session.exec(select(func.count()).select_from(Visit)).one()}
+```
+
+नियंत्रक को रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 ## माइग्रेशन सीधे URL से होते हैं
 
@@ -113,7 +136,7 @@ DATABASE_URL="$DIRECT_DATABASE_URL" nx migrate --upgrade
 
 ## पूलर के पीछे तैयार किए गए बयान
 
-psycopg एक क्वेरी तैयार करता है जिसे वह पांच बार चला चुका है। यदि पूल किया गया होस्ट उत्तर देता है `prepared statement "_pg3_0" does not exist`, तो उसे बंद कर दें:
+psycopg एक क्वेरी तैयार करता है जिसे वह पांच बार चला चुका है। यदि पूलित होस्ट उत्तर देता है `prepared statement "_pg3_0" does not exist`, तो उसे बंद कर दें:
 
 ```python filename="src/configs/db.py"
 engine = create_engine(
