@@ -23,6 +23,7 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | bind address |
 | `useSslKeyfile`, `useSslCertfile` | `None` | serve HTTPS directly |
 | `useDevTools` | `True` | the toolbar `nexy dev` adds to every page (page info, routes, errors, config); `False` removes it. Never present in production |
+| `useHealth` | `False` | serve `GET /health/live` and `GET /health/ready` for load balancers and Kubernetes probes; see [Deploy](../deployment/README.md#built-in-endpoints) |
 | `useWorkers` | `0` | processes `nx start` runs; `0` is one per CPU on Linux and macOS, one on Windows |
 | `useCSR` | `False` | client-side routing mode; `.nexy` routes are disabled |
 
