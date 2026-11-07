@@ -46,7 +46,7 @@ date = 2026-11-06
 platforms = ["linkedin"]        # posts only: linkedin, bluesky, mastodon
 link = "https://nexypy.github.io/nexy/docs/"   # the tagged link goes in the first comment
 cta = "comment"                 # link | comment | none
-ask = "report"                  # none | run | report | contribute — never star, never follow
+ask = "report"                  # none | run | report | contribute - never star, never follow
 proof = ["compile-2026-11.md"]  # every number in the body needs one of these
 alt = "A terminal: 1.4 ms median over 25 runs."   # one string per image or card
 title = "1.4 ms"                # optional on a post, shown above a video
@@ -103,7 +103,7 @@ recorded it for a human.
 - a phrase from the banned list in `VOICE.md`, a "this is why" formula, a call for engagement
   before the post has given anything;
 - a `link` that appears in the caption;
-- two `ask` in four posts — one invitation in four at most, or it becomes a campaign;
+- two `ask` in four posts - one invitation in four at most, or it becomes a campaign;
 - a blog without a title, a description, a canonical, one to four tags, or a cover.
 
 It only warns on the ones a machine judges badly: readability above grade 10, two paragraphs of the
@@ -130,12 +130,14 @@ no side effect; publishing is a human pasting into a browser.
 
 ## Where the words and the look live
 
-- `VOICE.md` — how a post reads: five decisions, the open door, what we show instead of claiming,
+- `VOICE.md` - how a post reads: five decisions, the open door, what we show instead of claiming,
   the ladder from 330 to 5 000 installs a month, and the competitors we never name.
-- `BRAND.md` — how it looks: the monogram, the two typefaces, the palette, the card grid, and the
+- `BRAND.md` - how it looks: the monogram, the two typefaces, the palette, the card grid, and the
   seven looks we refuse because every generated landing page has them.
-- `proof/` — one dated file per number. A claim without one is refused by the checker.
-- `posts/`, `blogs/` — the items themselves.
+- `REACH.md` - where Nexy is listed: the list PRs, the directories and newsletters, and the two
+  thresholds that decide when a submission is worth opening.
+- `proof/` - one dated file per number. A claim without one is refused by the checker.
+- `posts/`, `blogs/` - the items themselves.
 
 ## What never ships
 

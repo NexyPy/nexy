@@ -1,196 +1,60 @@
-# 教程：10 分钟构建笔记页面
+# Nexy 教程：逐步构建笔记应用程序
 
-您将创建一个项目、添加一个页面、添加一个 Python 端点、在它们之间共享数据并进行生产构建。最后，您将获得一个作为页面和 JSON 形式的笔记列表。
+Nexy 教程从一个空文件夹构建一个笔记应用程序到生产版本，一次一个部分，每个部分都以一个运行的应用程序结束。
 
-新来内克西？首先执行[快速启动](quick-start.md)：需要三分钟。
+新来内克西？ [快速启动](quick-start.md) 显示它在三分钟内运行；回到这里了解它是如何工作的。
 
-```diagram filename="整个教程在一行"
-uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
-```
+## 本教程如何运作
 
-## 1.创建项目
+- **一个不断增长的应用程序。** 每个部分都为之前部分的笔记应用程序添加了一项功能。
+- **您的路由器。** 这些部件遵循在菜单顶部选择的路由器：基于文件、模块化或自定义。切换到那里，各个部分的文件都会随之改变。
+- **运行的代码。** 每个上面有名称的文件都是一个完整的文件，测试套件会在新项目上按顺序重播各个部分：您复制的就是运行的。
+- **停在任何地方。** 每个部分需要 10 到 20 分钟，并以在浏览器中检查的内容结束。
 
-```bash
-uvx nexy new notes
-cd notes
-.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
-nexy dev
-```
+## 零件
 
-`uvx` 随 [uv](https://docs.astral.sh/uv/) 一起提供，并且仅创建项目。之后的每个命令都在项目的虚拟环境中运行（或作为 `uv run nexy dev`）。
+### 第一单元：基础知识
 
-选择基于文件的路由器、Web 项目和任何客户端框架（或无）。打开
-<http://localhost:3000>。长步骤每行打印一行及其持续时间，如 `uv` 所做的那样。
+| 部分 | 您添加的内容 | 你学到了什么 |
+|---|---|---|
+| [1.创建项目](../tutorial/create-the-project.md) | 一个运行的项目 | `nexy new`，`nexy dev` |
+| [2. 页面和布局](../tutorial/pages-and-layouts.md) | 注释页 | 页面、视图、布局 |
+| [3.动态路由和API](../tutorial/dynamic-routes.md) | `/notes/1` 和 `/api/notes` | URL 段、JSON 路由、`notFound` |
+| [4. 组件](../tutorial/components.md) | 每张笔记一张卡 | `.nexy` 组件及其道具 |
 
-<!-- router:modular -->
-对基于文件的路由器提示回答 `No`：`nx new` 在 `src/apps/` 而不是 `src/routes/` 中搭建模块化路由器。
-<!-- /router -->
+### 第二单元：数据
 
-<!-- router:custom -->
-对页面的基于文件的路由器提示回答 `Yes`，然后将现有的 `APIRouter` 安装在 `nexyconfig.py` 中：两个路由器共存。
-<!-- /router -->
+| 部分 | 您添加的内容 | 你学到了什么 |
+|---|---|---|
+| [5. 将笔记存储在 SQLite](../tutorial/store-the-notes.md) 中 | 模型、迁移、种子 | SQLModel，`nx migrate` |
+| [6. 从表单创建注释](../tutorial/create-a-note.md) | 保存注释的表单 | 没有 JavaScript 的动作、形式 |
+| [7. 显示验证错误](../tutorial/validation-errors.md) | 表格上方的消息 | 操作中的规则，`303`，`useSearchParams` |
+| [8.编辑和删除注释](../tutorial/edit-and-delete.md) | 注释的形式 | 每页多个操作，隐藏字段 |
+| [9. 对笔记进行分页](../tutorial/paginate-the-notes.md) | 每页五个注释 | `offset` 和 `limit`，页面之间的链接 |
 
-## 2. 编辑布局
+### 第三单元：用户
 
-<!-- router:fbr,custom -->
-`src/routes/layout.nexy` 拥有 HTML 文档（使用 React 客户端路由它是 `layout.tsx`）。更改 `<title>`：
+| 部分 | 您添加的内容 | 你学到了什么 |
+|---|---|---|
+| [10. 创建帐户并登录](../tutorial/accounts.md) | 注册、登录、退出 | 会话、密码散列 |
+| [11.给每个用户自己的注释](../tutorial/own-notes.md) | 属于用户的注释 | 外键，`redirect`，`401` |
+| [12. 通过电子邮件重置忘记的密码](../tutorial/password-reset.md) | 通过电子邮件发送的重置链接 | `smtplib`，过期的签名令牌 |
 
-```nexy
-<title>Notes</title>
-```
+### 第四单元：互动性
 
-保存：浏览器重新加载。请参阅[布局](../routing/fbr/layouts/README.md)。
-<!-- /router -->
+| 部分 | 您添加的内容 | 你学到了什么 |
+|---|---|---|
+| [13. 键入时搜索笔记](../tutorial/search-the-notes.md) | 当您键入内容时会进行过滤的搜索框 | React 岛屿，来自 Python 的道具 |
+| [14. 勾选注释而不重新加载页面](../tutorial/tick-a-note.md) | 每个笔记上都有一个“完成”按钮 | 渐进增强，针对表单和 `fetch` 的一个操作 |
 
-<!-- router:modular -->
-控制器在视图周围渲染 `src/apps/layout.nexy`，并且该文件拥有 HTML 文档。更改 `<title>`：
+### 接下来
 
-```nexy
-<title>Notes</title>
-```
+| 单位 | 应用程序获得什么 |
+|---|---|
+| 5. 超出要求 | 通过电子邮件在后台共享的笔记、每日摘要、实时更新 |
+| 6. 船舶 | 测试、错误页面和日志、安全标头、Docker 构建 |
 
-保存：浏览器重新加载。请参阅[来自控制器的视图](../routing/modular/README.md#views-from-a-controller)。
-<!-- /router -->
+## 后续步骤
 
-## 3.添加页面
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-打开 <http://localhost:3000/notes>：您应该看到两颗子弹。供应地点为 `/notes`。 `---` 之间的部分是 Python，其余部分是 Jinja2。
-<!-- /router -->
-
-<!-- router:modular -->
-控制器返回一个视图。创建 `src/apps/notes_view.nexy`：
-
-```nexy filename="src/apps/notes_view.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-在 `src/apps/app_controller.py` 中声明路由并将控制器添加到模块中：
-
-```python filename="src/apps/app_controller.py"
-@Controller("/notes")
-class NotesController:
-    async def get(self):
-        return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/notes_view.nexy"),
-        })
-```
-
-```python filename="src/apps/app_module.py"
-from .app_controller import AppController, NotesController
-
-controllers = [AppController, NotesController]
-```
-
-打开 <http://localhost:3000/notes>：您应该看到两颗子弹。 `---` 之间的部分是 Python，其余部分是 Jinja2。
-<!-- /router -->
-
-## 4. 添加端点
-
-<!-- router:fbr,custom -->
-```python filename="src/routes/api/notes.py"
-async def GET():
-    return [{"id": 1, "text": "Buy milk"}]
-```
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-你应该得到 `[{"id":1,"text":"Buy milk"}]`。函数名称是 HTTP 方法。交互式 API 文档位于 `/docs`。
-<!-- /router -->
-
-<!-- router:modular -->
-```python filename="src/apps/app_controller.py"
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": 1, "text": "Buy milk"}]
-```
-
-将 `NotesApiController` 添加到 `src/apps/app_module.py`中的 `controllers`，然后运行：
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-你应该得到 `[{"id":1,"text":"Buy milk"}]`。方法名称是 HTTP 方法。交互式 API 文档位于 `/docs`。
-<!-- /router -->
-
-## 5. 共享数据
-
-将列表移至 Python 模块并在两个文件中使用它：
-
-```python filename="src/notes.py"
-NOTES = ["Buy milk", "Ship Nexy"]
-```
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/routes/api/notes.py"
-from src.notes import NOTES
-
-
-async def GET():
-    return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-<!-- router:modular -->
-```nexy filename="src/apps/notes_view.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/apps/app_controller.py"
-from src.notes import NOTES
-
-
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-## 6. 构建和服务
-
-```bash
-nx build
-nx start
-```
-
-`nx build` 打印每个阶段及其持续时间。 `nx start` 使用 Uvicorn 提供编译输出：运行时没有 Node 进程。
-
-## 下一步去哪里
-
-- [路由](../routing/README.md)：动态段和组
-- [操作](../guides/actions.md)：从表单或客户端调用 Python
-- [测试](../guides/testing.md)：测试页面和端点
-- [部署](../deployment/README.md)：容器和反向代理
+- [第 1 部分：创建项目](../tutorial/create-the-project.md)
+- [核心概念](core-concepts.md)：教程使用的词语

@@ -1,196 +1,60 @@
-# Tutorial: Erstellen Sie in 10 Minuten eine Notizenseite
+# Nexy-Tutorial: Erstellen Sie Schritt für Schritt eine Notizen-App
 
-Sie erstellen ein Projekt, fügen eine Seite hinzu, fügen einen Python-Endpunkt hinzu, tauschen Daten zwischen ihnen aus und erstellen für die Produktion. Sie enden mit einer Liste von Notizen, die als Seite und als JSON bereitgestellt werden.
+Das Nexy-Tutorial erstellt eine Notizen-App aus einem leeren Ordner zu einem Produktions-Build, einen Teil nach dem anderen, und jeder Teil endet mit einer App, die ausgeführt wird.
 
-Neu bei Nexy? Führen Sie zuerst den [Schnellstart](quick-start.md) durch: Es dauert drei Minuten.
+Neu bei Nexy? Der [Schnellstart](quick-start.md) zeigt, dass es in drei Minuten läuft; Kommen Sie hierher zurück, um zu erfahren, wie es funktioniert.
 
-```diagram filename="Das ganze Tutorial in einer Zeile"
-uvx nexy new notes ──► edit layout ──► add page ──► add endpoint ──► share data ──► nx build ──► nx start
-```
+## So funktioniert das Tutorial
 
-## 1. Erstellen Sie das Projekt
+- **Eine App, die wächst.** Jeder Teil fügt der Notizen-App des vorherigen Teils eine Funktion hinzu.
+- **Ihr Router.** Die Teile folgen dem oben im Menü ausgewählten Router: dateibasiert, modular oder benutzerdefiniert. Schalten Sie es dort um, und die Dateien jedes Teils ändern sich damit.
+- **Code, der ausgeführt wird.** Jede Datei mit einem Namen darüber ist eine ganze Datei, und die Testsuite spielt die Teile der Reihe nach in einem neuen Projekt ab: Was Sie kopieren, wird ausgeführt.
+- **Stoppen Sie irgendwo.** Jeder Teil dauert 10 bis 20 Minuten und endet mit dem, was im Browser überprüft werden muss.
 
-```bash
-uvx nexy new notes
-cd notes
-.venv\Scripts\activate    # Windows; on macOS and Linux: source .venv/bin/activate
-nexy dev
-```
+## Die Teile
 
-`uvx` kommt mit [uv](https://docs.astral.sh/uv/) und erstellt nur das Projekt. Jeder Befehl, nachdem er in der virtuellen Umgebung des Projekts (oder als `uv run nexy dev`) ausgeführt wurde.
+### Einheit 1: Die Grundlagen
 
-Wählen Sie den dateibasierten Router, ein Webprojekt und ein beliebiges Client-Framework (oder keines) aus. Offen
-<http://localhost:3000>. Lange Schritte geben jeweils eine Zeile mit ihrer Dauer aus, wie es `uv` tut.
+| Teil | Was Sie hinzufügen | Was Sie lernen |
+|---|---|---|
+| [1. Erstellen Sie das Projekt](../tutorial/create-the-project.md) | ein Projekt, das läuft | `nexy new`, `nexy dev` |
+| [2. Seiten und Layouts](../tutorial/pages-and-layouts.md) | die Notizenseite | Seiten, Ansichten, das Layout |
+| [3. Dynamische Routen und eine API](../tutorial/dynamic-routes.md) | `/notes/1` und `/api/notes` | URL-Segmente, JSON-Routen, `notFound` |
+| [4. Komponenten](../tutorial/components.md) | eine Karte pro Banknote | `.nexy` Komponenten und ihre Requisiten |
 
-<!-- router:modular -->
-Antworten Sie `No` auf die dateibasierte Router-Eingabeaufforderung: `nx new` baut den modularen Router in `src/apps/` anstelle von `src/routes/` auf.
-<!-- /router -->
+### Einheit 2: Daten
 
-<!-- router:custom -->
-Beantworten Sie `Yes` auf die dateibasierte Router-Eingabeaufforderung für die Seiten und mounten Sie dann Ihre vorhandene `APIRouter` in `nexyconfig.py`: Die beiden Router existieren nebeneinander.
-<!-- /router -->
+| Teil | Was Sie hinzufügen | Was Sie lernen |
+|---|---|---|
+| [5. Speichern Sie die Notizen in SQLite](../tutorial/store-the-notes.md) | ein Modell, eine Migration, ein Samen | SQLModel, `nx migrate` |
+| [6. Erstellen Sie eine Notiz aus einem Formular](../tutorial/create-a-note.md) | ein Formular, das eine Notiz speichert | Aktionen, Formulare ohne JavaScript |
+| [7. Validierungsfehler anzeigen](../tutorial/validation-errors.md) | eine Nachricht über dem Formular | Regeln in einer Aktion, `303`, `useSearchParams` |
+| [8. Bearbeiten und löschen Sie eine Notiz](../tutorial/edit-and-delete.md) | die Formen einer Notiz | mehrere Aktionen pro Seite, versteckte Felder |
+| [9. Paginieren Sie die Notizen](../tutorial/paginate-the-notes.md) | fünf Notizen pro Seite | `offset` und `limit`, Links zwischen Seiten |
 
-## 2. Bearbeiten Sie das Layout
+### Einheit 3: Benutzer
 
-<!-- router:fbr,custom -->
-`src/routes/layout.nexy` besitzt das HTML-Dokument (mit React Client-Routing ist es `layout.tsx`). Ändern Sie `<title>`:
+| Teil | Was Sie hinzufügen | Was Sie lernen |
+|---|---|---|
+| [10. Erstellen Sie ein Konto und melden Sie sich an](../tutorial/accounts.md) | anmelden, anmelden, abmelden | Sitzungen, Passwort-Hashing |
+| [11. Geben Sie jedem Benutzer seine eigenen Notizen](../tutorial/own-notes.md) | Notizen, die einem Benutzer gehören | Fremdschlüssel, `redirect`, `401` |
+| [12. Setzen Sie ein vergessenes Passwort per E-Mail zurück](../tutorial/password-reset.md) | ein per E-Mail verschickter Reset-Link | `smtplib`, signierte Token, die ablaufen |
 
-```nexy
-<title>Notes</title>
-```
+### Einheit 4: Interaktivität
 
-Speichern: Der Browser wird neu geladen. Siehe [Layouts](../routing/fbr/layouts/README.md).
-<!-- /router -->
+| Teil | Was Sie hinzufügen | Was Sie lernen |
+|---|---|---|
+| [13. Durchsuchen Sie die Notizen während der Eingabe](../tutorial/search-the-notes.md) | ein Suchfeld, das während der Eingabe filtert | React Inseln, Requisiten von Python |
+| [14. Markieren Sie eine Notiz, ohne die Seite neu zu laden](../tutorial/tick-a-note.md) | eine Schaltfläche „Fertig“ auf jeder Notiz | progressive Verbesserung, eine Aktion für ein Formular und für `fetch` |
 
-<!-- router:modular -->
-Der Controller rendert `src/apps/layout.nexy` um die Ansicht herum, und diese Datei ist Eigentümer des HTML-Dokuments. Ändern Sie `<title>`:
+### Kommt als nächstes
 
-```nexy
-<title>Notes</title>
-```
+| Einheit | Was die App gewinnt |
+|---|---|
+| 5. Über die Anfrage hinaus | per E-Mail im Hintergrund geteilte Notizen, eine tägliche Übersicht, Live-Updates |
+| 6. Schiff | Tests, Fehlerseiten und Protokolle, Sicherheitsheader, ein Docker Build |
 
-Speichern: Der Browser wird neu geladen. Siehe [Ansichten von einem Controller](../routing/modular/README.md#views-from-a-controller).
-<!-- /router -->
+## Nächste Schritte
 
-## 3. Fügen Sie eine Seite hinzu
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-Öffnen Sie <http://localhost:3000/notes>: Sie sollten zwei Aufzählungszeichen sehen. Es wird bei `/notes` serviert. Der Teil zwischen `---` ist Python, der Rest ist Jinja2.
-<!-- /router -->
-
-<!-- router:modular -->
-Ein Controller gibt eine Ansicht zurück. Erstellen Sie `src/apps/notes_view.nexy`:
-
-```nexy filename="src/apps/notes_view.nexy"
----
-notes = ["Buy milk", "Ship Nexy"]
----
-<h1>Notes</h1>
-<ul>
-  {% for note in notes %}
-  <li>{{ note }}</li>
-  {% endfor %}
-</ul>
-```
-
-Deklarieren Sie die Route in `src/apps/app_controller.py` und fügen Sie den Controller zum Modul hinzu:
-
-```python filename="src/apps/app_controller.py"
-@Controller("/notes")
-class NotesController:
-    async def get(self):
-        return useViews("src/apps/layout.nexy", context={
-            "children": useViews("src/apps/notes_view.nexy"),
-        })
-```
-
-```python filename="src/apps/app_module.py"
-from .app_controller import AppController, NotesController
-
-controllers = [AppController, NotesController]
-```
-
-Öffnen Sie <http://localhost:3000/notes>: Sie sollten zwei Aufzählungszeichen sehen. Der Teil zwischen `---` ist Python, der Rest ist Jinja2.
-<!-- /router -->
-
-## 4. Fügen Sie einen Endpunkt hinzu
-
-<!-- router:fbr,custom -->
-```python filename="src/routes/api/notes.py"
-async def GET():
-    return [{"id": 1, "text": "Buy milk"}]
-```
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-Sie sollten `[{"id":1,"text":"Buy milk"}]` erhalten. Der Funktionsname ist die HTTP-Methode. Interaktive API-Dokumente finden Sie unter `/docs`.
-<!-- /router -->
-
-<!-- router:modular -->
-```python filename="src/apps/app_controller.py"
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": 1, "text": "Buy milk"}]
-```
-
-Fügen Sie `NotesApiController` zu `controllers` in `src/apps/app_module.py` hinzu und führen Sie dann Folgendes aus:
-
-```bash
-curl http://localhost:3000/api/notes
-```
-
-Sie sollten `[{"id":1,"text":"Buy milk"}]` erhalten. Der Methodenname ist die HTTP-Methode. Interaktive API-Dokumente finden Sie unter `/docs`.
-<!-- /router -->
-
-## 5. Teilen Sie die Daten
-
-Verschieben Sie die Liste in ein Python-Modul und verwenden Sie es in beiden Dateien:
-
-```python filename="src/notes.py"
-NOTES = ["Buy milk", "Ship Nexy"]
-```
-
-<!-- router:fbr,custom -->
-```nexy filename="src/routes/notes.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/routes/api/notes.py"
-from src.notes import NOTES
-
-
-async def GET():
-    return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-<!-- router:modular -->
-```nexy filename="src/apps/notes_view.nexy"
----
-from src.notes import NOTES as notes
----
-```
-
-```python filename="src/apps/app_controller.py"
-from src.notes import NOTES
-
-
-@Controller("/api/notes")
-class NotesApiController:
-    async def get(self):
-        return [{"id": i, "text": text} for i, text in enumerate(NOTES, start=1)]
-```
-<!-- /router -->
-
-## 6. Bauen und servieren
-
-```bash
-nx build
-nx start
-```
-
-`nx build` gibt jede Phase mit ihrer Dauer aus. `nx start` stellt die kompilierte Ausgabe mit Uvicorn bereit: kein Knotenprozess zur Laufzeit.
-
-## Wohin als nächstes
-
-- [Routing](../routing/README.md): dynamische Segmente und Gruppen
-- [Aktionen](../guides/actions.md): Rufen Sie Python aus einem Formular oder vom Client auf
-- [Testen](../guides/testing.md): Testseiten und Endpunkte
-- [Bereitstellen](../deployment/README.md): Container und Reverse-Proxys
+- [Teil 1: Projekt erstellen](../tutorial/create-the-project.md)
+- [Kernkonzepte](core-concepts.md): die im Tutorial verwendeten Wörter

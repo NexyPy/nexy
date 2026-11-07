@@ -21,10 +21,11 @@ TEMPLATES = (
 )
 
 
-def _stub_src() -> None:
-    """Fabricate the project-local ``src`` package a template imports."""
-    if "src" in sys.modules:
-        return
+def _stub_src(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Fabricate the project-local ``src`` package a template imports.
+
+    Set even when another test imported a real ``src``: that one has no ``AppModule``.
+    """
     for name in (
         "src",
         "src.apps",
@@ -36,7 +37,7 @@ def _stub_src() -> None:
         module.__path__ = []
         if name.endswith("app_module"):
             module.AppModule = type("AppModule", (), {})
-        sys.modules[name] = module
+        monkeypatch.setitem(sys.modules, name, module)
 
 
 def _load(path: Path, name: str) -> types.ModuleType:
@@ -48,8 +49,10 @@ def _load(path: Path, name: str) -> types.ModuleType:
 
 
 @pytest.mark.parametrize(("template", "framework", "_kind"), TEMPLATES)
-def test_scaffolded_config_imports(tmp_path: Path, template: str, framework: str, _kind: str):
-    _stub_src()
+def test_scaffolded_config_imports(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, template: str, framework: str, _kind: str
+):
+    _stub_src(monkeypatch)
     config = {
         "client_framework": framework,
         "FBRouter": _kind == "FBRouter",

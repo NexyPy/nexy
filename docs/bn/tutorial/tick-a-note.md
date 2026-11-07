@@ -1,0 +1,440 @@
+# Nexy দিয়ে একটি নোট অ্যাপ তৈরি করুন, পার্ট 14: পৃষ্ঠা পুনরায় লোড না করে একটি নোটে টিক দিন
+
+পার্ট 14 প্রতিটি নোটে একটি **সম্পন্ন** বোতাম যোগ করে। এটি এমন একটি ফর্ম যা কোন JavaScript ছাড়াই কাজ করে এবং JavaScript এর কয়েকটি লাইন পৃষ্ঠাটি পুনরায় লোড না করেই এটিকে জায়গায় সংরক্ষণ করে।
+
+**আপনি শুরু করার আগে:** [পার্ট 13](search-the-notes.md) এর অ্যাপ।
+
+## একটি নোট করা হয়, বা না
+
+<!-- router:fbr,custom -->
+```python filename="src/models/note_model.py"
+from sqlmodel import Field, SQLModel
+
+
+class Note(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    text: str
+    user_id: int | None = Field(default=None, foreign_key="user.id", index=True)
+    done: bool = Field(default=False, sa_column_kwargs={"server_default": "0"})
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/notes/note_model.py"
+from sqlmodel import Field, SQLModel
+
+
+class Note(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    text: str
+    user_id: int | None = Field(default=None, foreign_key="user.id", index=True)
+    done: bool = Field(default=False, sa_column_kwargs={"server_default": "0"})
+```
+<!-- /router -->
+
+টেবিলে ইতিমধ্যেই নোট রয়েছে এবং SQLite এমন একটি কলাম যোগ করতে পারে না যার একটি মান থাকতে হবে বিদ্যমান সারিগুলিতে রাখার জন্য। `server_default` এটি দেয়: মাইগ্রেশন লিখে `DEFAULT 0`, এবং প্রতিটি নোট করা হয়নি হিসাবে শুরু হয়।
+
+```bash
+nx migrate -m "notes can be done"
+nx migrate --upgrade
+```
+
+## এটি ডাটাবেসে ফ্লিপ করুন, একটি অ্যাকশনের পিছনে
+
+<!-- router:fbr,custom -->
+```python filename="src/notes.py"
+from sqlmodel import Session, select
+
+from src.configs.db import engine
+from src.models.note_model import Note
+
+PAGE_SIZE = 5
+
+
+def notes_page(user_id: int, number: int) -> tuple[list[Note], bool]:
+    """One page of the notes of *user_id*, oldest first, and whether a page comes after it."""
+    query = select(Note).where(Note.user_id == user_id).order_by(Note.id)
+    with Session(engine) as session:
+        found = list(session.exec(query.offset((number - 1) * PAGE_SIZE).limit(PAGE_SIZE + 1)))
+    return found[:PAGE_SIZE], len(found) > PAGE_SIZE
+
+
+def all_notes(user_id: int) -> list[Note]:
+    with Session(engine) as session:
+        return list(session.exec(select(Note).where(Note.user_id == user_id).order_by(Note.id)))
+
+
+def find(user_id: int, note_id: int) -> Note | None:
+    """The note, when it belongs to *user_id*: someone else's note is not found."""
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+    return note if note is not None and note.user_id == user_id else None
+
+
+def add_note(user_id: int, text: str) -> Note:
+    note = Note(text=text, user_id=user_id)
+    with Session(engine) as session:
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+    return note
+
+
+def change_note(user_id: int, note_id: int, text: str) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None or note.user_id != user_id:
+            return False
+        note.text = text
+        session.commit()
+    return True
+
+
+def remove_note(user_id: int, note_id: int) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None or note.user_id != user_id:
+            return False
+        session.delete(note)
+        session.commit()
+    return True
+
+
+def toggle_done(user_id: int, note_id: int) -> bool | None:
+    """The new state of the note, or None when the user has no such note."""
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None or note.user_id != user_id:
+            return None
+        note.done = not note.done
+        session.commit()
+        return note.done
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/notes.py"
+from sqlmodel import Session, select
+
+from src.apps.notes.note_model import Note
+from src.configs.db import engine
+
+PAGE_SIZE = 5
+
+
+def notes_page(user_id: int, number: int) -> tuple[list[Note], bool]:
+    """One page of the notes of *user_id*, oldest first, and whether a page comes after it."""
+    query = select(Note).where(Note.user_id == user_id).order_by(Note.id)
+    with Session(engine) as session:
+        found = list(session.exec(query.offset((number - 1) * PAGE_SIZE).limit(PAGE_SIZE + 1)))
+    return found[:PAGE_SIZE], len(found) > PAGE_SIZE
+
+
+def all_notes(user_id: int) -> list[Note]:
+    with Session(engine) as session:
+        return list(session.exec(select(Note).where(Note.user_id == user_id).order_by(Note.id)))
+
+
+def find(user_id: int, note_id: int) -> Note | None:
+    """The note, when it belongs to *user_id*: someone else's note is not found."""
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+    return note if note is not None and note.user_id == user_id else None
+
+
+def add_note(user_id: int, text: str) -> Note:
+    note = Note(text=text, user_id=user_id)
+    with Session(engine) as session:
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+    return note
+
+
+def change_note(user_id: int, note_id: int, text: str) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None or note.user_id != user_id:
+            return False
+        note.text = text
+        session.commit()
+    return True
+
+
+def remove_note(user_id: int, note_id: int) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None or note.user_id != user_id:
+            return False
+        session.delete(note)
+        session.commit()
+    return True
+
+
+def toggle_done(user_id: int, note_id: int) -> bool | None:
+    """The new state of the note, or None when the user has no such note."""
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None or note.user_id != user_id:
+            return None
+        note.done = not note.done
+        session.commit()
+        return note.done
+```
+<!-- /router -->
+
+```python filename="src/actions/notes.py"
+from urllib.parse import urlencode
+
+from nexy import notFound
+from nexy.decorators import Action
+from nexy.http import RedirectResponse
+from src.guard import signed_in_user
+from src.notes import add_note, change_note, remove_note, toggle_done
+
+MAX_LENGTH = 200
+
+
+def back(path: str = "/notes", error: str = "") -> RedirectResponse:
+    query = f"?{urlencode({'error': error})}" if error else ""
+    return RedirectResponse(f"{path}{query}", status_code=303)
+
+
+def problem(text: str) -> str:
+    if not text:
+        return "A note cannot be blank."
+    if len(text) > MAX_LENGTH:
+        return f"A note is at most {MAX_LENGTH} characters."
+    return ""
+
+
+@Action
+async def create_note(text: str) -> RedirectResponse:
+    user_id = signed_in_user()
+    text = text.strip()
+    if error := problem(text):
+        return back(error=error)
+    add_note(user_id, text)
+    return back()
+
+
+@Action
+async def update_note(note_id: int, text: str) -> RedirectResponse:
+    user_id = signed_in_user()
+    text = text.strip()
+    if error := problem(text):
+        return back(f"/notes/{note_id}", error)
+    if not change_note(user_id, note_id, text):
+        notFound()
+    return back(f"/notes/{note_id}")
+
+
+@Action
+async def delete_note(note_id: int) -> RedirectResponse:
+    if not remove_note(signed_in_user(), note_id):
+        notFound()
+    return back()
+
+
+@Action
+async def toggle_note(note_id: int) -> bool:
+    done = toggle_done(signed_in_user(), note_id)
+    if done is None:
+        notFound()
+    return done
+```
+
+`toggle_note` নতুন রাষ্ট্র ফিরিয়ে দেয়, একটি `bool`। এটিতে পোস্ট করা একটি ফর্ম স্বাভাবিক `303` পৃষ্ঠায় ফিরে আসে; একটি স্ক্রিপ্ট যা JSON এর জন্য জিজ্ঞাসা করে `true` বা `false` পায়। এক কর্ম উভয় পরিবেশন করে.
+
+## একটি বোতাম যে একটি ফর্ম
+
+কার্ডটি সার্ভারের জানা অবস্থা দেখায় এবং তার নোটের আইডি পোস্ট করে:
+
+```nexy filename="src/components/NoteCard.nexy"
+---
+id: prop[int]
+text: prop[str]
+done: prop[bool]
+---
+<article class="note{% if done %} note-done{% endif %}">
+  <a href="/notes/{{ id }}">{{ text | e }}</a>
+  <form method="post" action="{{ __actions_path['toggle_note'] }}" data-toggle>
+    <input type="hidden" name="note_id" value="{{ id }}">
+    <button type="submit" aria-pressed="{{ 'true' if done else 'false' }}">{{ 'Done' if done else 'To do' }}</button>
+  </form>
+</article>
+
+<style>
+  .note { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 0.5rem; }
+  .note-done a { text-decoration: line-through; opacity: 0.6; }
+</style>
+```
+
+`aria-pressed` একজন স্ক্রিন রিডারকে বলে যে বোতামটি একটি টগল এবং এটি চালু আছে কিনা।
+
+## পুনরায় লোড না করে সংরক্ষণ করুন
+
+তালিকাটি প্রতিটি কার্ডে `done` যায়, এবং পৃষ্ঠার সমস্ত কার্ডের জন্য একটি স্ক্রিপ্ট যোগ করে:
+
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/notes/index.nexy"
+---
+from "@/components/NoteCard.nexy" import NoteCard
+from "@/components/NoteSearch.tsx" import NoteSearch
+from nexy import useSearchParams
+from src.guard import signed_in_user
+from src.notes import all_notes, notes_page
+
+user_id = signed_in_user()
+params = useSearchParams()
+error = params.get("error", "")
+asked = params.get("page", "1")
+number = max(int(asked), 1) if asked.isdigit() else 1
+found = notes_page(user_id, number)
+notes = found[0]
+more = found[1]
+searchable = [{"id": note.id, "text": note.text} for note in all_notes(user_id)]
+---
+<section class="app-page">
+  <h1>Notes</h1>
+
+  <form method="post" action="{{ __actions_path['sign_out'] }}">
+    <button type="submit">Sign out</button>
+  </form>
+
+  {% if error %}
+  <p class="note-error" role="alert">{{ error | e }}</p>
+  {% endif %}
+
+  <NoteSearch notes="{{ searchable }}" directive="client:idle" />
+
+  <form method="post" action="{{ __actions_path['create_note'] }}">
+    <input name="text" placeholder="A new note" maxlength="200" required>
+    <button type="submit">Add</button>
+  </form>
+
+  {% for note in notes %}
+  <NoteCard id="{{ note.id }}" text="{{ note.text }}" done="{{ note.done }}" />
+  {% else %}
+  <p>No notes yet: write the first one above.</p>
+  {% endfor %}
+
+  <nav class="note-pages" aria-label="Pages of notes">
+    {% if number > 1 %}<a href="/notes?page={{ number - 1 }}" rel="prev">Newer</a>{% endif %}
+    {% if more %}<a href="/notes?page={{ number + 1 }}" rel="next">Older</a>{% endif %}
+  </nav>
+
+  <script type="module">
+    // With JavaScript on, the Done buttons save without leaving the page.
+    document.addEventListener("submit", async (event) => {
+      const form = event.target.closest("form[data-toggle]")
+      if (!form) return
+      event.preventDefault()
+      const button = form.querySelector("button")
+      button.disabled = true
+      const answer = await fetch(form.action, {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify({ note_id: Number(form.elements.note_id.value) }),
+      })
+      button.disabled = false
+      if (!answer.ok) return form.submit()
+      const done = await answer.json()
+      button.setAttribute("aria-pressed", String(done))
+      button.textContent = done ? "Done" : "To do"
+      form.closest(".note").classList.toggle("note-done", done)
+    })
+  </script>
+</section>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/notes/notes_view.nexy"
+---
+from "@/components/NoteCard.nexy" import NoteCard
+from "@/components/NoteSearch.tsx" import NoteSearch
+from nexy import useSearchParams
+from src.guard import signed_in_user
+from src.notes import all_notes, notes_page
+
+user_id = signed_in_user()
+params = useSearchParams()
+error = params.get("error", "")
+asked = params.get("page", "1")
+number = max(int(asked), 1) if asked.isdigit() else 1
+found = notes_page(user_id, number)
+notes = found[0]
+more = found[1]
+searchable = [{"id": note.id, "text": note.text} for note in all_notes(user_id)]
+---
+<section class="app-page">
+  <h1>Notes</h1>
+
+  <form method="post" action="{{ __actions_path['sign_out'] }}">
+    <button type="submit">Sign out</button>
+  </form>
+
+  {% if error %}
+  <p class="note-error" role="alert">{{ error | e }}</p>
+  {% endif %}
+
+  <NoteSearch notes="{{ searchable }}" directive="client:idle" />
+
+  <form method="post" action="{{ __actions_path['create_note'] }}">
+    <input name="text" placeholder="A new note" maxlength="200" required>
+    <button type="submit">Add</button>
+  </form>
+
+  {% for note in notes %}
+  <NoteCard id="{{ note.id }}" text="{{ note.text }}" done="{{ note.done }}" />
+  {% else %}
+  <p>No notes yet: write the first one above.</p>
+  {% endfor %}
+
+  <nav class="note-pages" aria-label="Pages of notes">
+    {% if number > 1 %}<a href="/notes?page={{ number - 1 }}" rel="prev">Newer</a>{% endif %}
+    {% if more %}<a href="/notes?page={{ number + 1 }}" rel="next">Older</a>{% endif %}
+  </nav>
+
+  <script type="module">
+    // With JavaScript on, the Done buttons save without leaving the page.
+    document.addEventListener("submit", async (event) => {
+      const form = event.target.closest("form[data-toggle]")
+      if (!form) return
+      event.preventDefault()
+      const button = form.querySelector("button")
+      button.disabled = true
+      const answer = await fetch(form.action, {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json" },
+        body: JSON.stringify({ note_id: Number(form.elements.note_id.value) }),
+      })
+      button.disabled = false
+      if (!answer.ok) return form.submit()
+      const done = await answer.json()
+      button.setAttribute("aria-pressed", String(done))
+      button.textContent = done ? "Done" : "To do"
+      form.closest(".note").classList.toggle("note-done", done)
+    })
+  </script>
+</section>
+```
+<!-- /router -->
+
+স্ক্রিপ্ট পৃষ্ঠার প্রতিটি ফর্ম শোনে, এবং শুধুমাত্র চিহ্নিত ফর্ম গ্রহণ `data-toggle`. এটি JSON হিসাবে একই `note_id` ফর্ম পাঠায় এবং উত্তর সহ বোতাম আপডেট করে। কল ব্যর্থ হলে, এটি ফর্মটিকে স্বাভাবিকভাবে পোস্ট করতে দেয়, তাই ক্লিকটি কখনই হারিয়ে যায় না।
+
+কেন একটি React দ্বীপ নয়, অংশ 13 হিসাবে? প্রতিটি নোটের অবস্থা প্রতিটি অনুরোধে সার্ভার দ্বারা জানা যায়, এবং একটি ফর্ম ইতিমধ্যেই এটি সঠিকভাবে দেখায়, কোনো স্ক্রিপ্ট চালানোর আগে। স্ক্রিপ্ট শুধুমাত্র পরিবর্তন কিভাবে ফর্ম পাঠানো হয়. এটি হল *প্রগতিশীল বর্ধন*: পৃষ্ঠাটি JavaScript ছাড়াই কাজ করে, এবং এটির সাথে আরও ভাল।
+
+<http://localhost:3000/notes> খুলুন এবং একটি নোটে **করতে** টিপুন: এটি **সম্পন্ন**-এ পরিণত হয়, নোটটি ছিটকে যায় এবং পৃষ্ঠাটি পুনরায় লোড হয় না। এটি পুনরায় লোড করুন: নোটটি এখনও সম্পন্ন হয়েছে।
+
+## আপনি যা শিখেছেন
+
+- `server_default` একটি মাইগ্রেশন সারি আছে এমন একটি টেবিলে একটি প্রয়োজনীয় কলাম যোগ করতে দেয়।
+- ওয়ান অ্যাকশন একটি `303` সহ একটি ফর্মের উত্তর দেয় এবং একটি স্ক্রিপ্ট তার রিটার্ন মান সহ JSON এর জন্য জিজ্ঞাসা করে।
+- প্রগতিশীল বর্ধন: একটি ফর্ম যা একা কাজ করে, এবং একটি স্ক্রিপ্ট যা এটিকে জায়গায় পাঠায়।
+
+## পরবর্তী পদক্ষেপ
+
+- ইউনিট 5: অনুরোধের বাইরে (পরবর্তী আসছে)
+- [অ্যাকশন ](../guides/actions.md): ব্রাউজার থেকে টাইপ করা কল, ত্রুটি এবং নিরাপত্তা

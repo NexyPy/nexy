@@ -1,0 +1,278 @@
+# Nexy کے ساتھ ایک نوٹ ایپ بنائیں، حصہ 8: نوٹ میں ترمیم کریں اور اسے حذف کریں۔
+
+حصہ 8 نوٹ کے صفحہ پر دو شکلیں رکھتا ہے: ایک نیا متن محفوظ کرتا ہے، دوسرا نوٹ کو حذف کرتا ہے، اور دونوں ایکشن ہیں جیسے کہ اسے تخلیق کرنے والے۔
+
+**شروع کرنے سے پہلے:** [حصہ 7](validation-errors.md) کی ایپ۔
+
+## ڈیٹا بیس میں ایک نوٹ کو تبدیل اور ہٹا دیں۔
+
+<!-- router:fbr,custom -->
+```python filename="src/notes.py"
+from sqlmodel import Session, select
+
+from src.configs.db import engine
+from src.models.note_model import Note
+
+
+def all_notes() -> list[Note]:
+    with Session(engine) as session:
+        return list(session.exec(select(Note).order_by(Note.id)))
+
+
+def find(note_id: int) -> Note | None:
+    with Session(engine) as session:
+        return session.get(Note, note_id)
+
+
+def add_note(text: str) -> Note:
+    note = Note(text=text)
+    with Session(engine) as session:
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+    return note
+
+
+def change_note(note_id: int, text: str) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None:
+            return False
+        note.text = text
+        session.commit()
+    return True
+
+
+def remove_note(note_id: int) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None:
+            return False
+        session.delete(note)
+        session.commit()
+    return True
+```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/notes.py"
+from sqlmodel import Session, select
+
+from src.apps.notes.note_model import Note
+from src.configs.db import engine
+
+
+def all_notes() -> list[Note]:
+    with Session(engine) as session:
+        return list(session.exec(select(Note).order_by(Note.id)))
+
+
+def find(note_id: int) -> Note | None:
+    with Session(engine) as session:
+        return session.get(Note, note_id)
+
+
+def add_note(text: str) -> Note:
+    note = Note(text=text)
+    with Session(engine) as session:
+        session.add(note)
+        session.commit()
+        session.refresh(note)
+    return note
+
+
+def change_note(note_id: int, text: str) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None:
+            return False
+        note.text = text
+        session.commit()
+    return True
+
+
+def remove_note(note_id: int) -> bool:
+    with Session(engine) as session:
+        note = session.get(Note, note_id)
+        if note is None:
+            return False
+        session.delete(note)
+        session.commit()
+    return True
+```
+<!-- /router -->
+
+## دو مزید ایکشن
+
+`update_note` متن کو انہی اصولوں کے ساتھ چیک کرتا ہے جیسا کہ `create_note`، اور ناکامی کو نوٹ کے صفحہ پر واپس بھیجتا ہے۔ `delete_note` فہرست میں واپس جاتا ہے:
+
+```python filename="src/actions/notes.py"
+from urllib.parse import urlencode
+
+from nexy import notFound
+from nexy.decorators import Action
+from nexy.http import RedirectResponse
+from src.notes import add_note, change_note, remove_note
+
+MAX_LENGTH = 200
+
+
+def back(path: str = "/notes", error: str = "") -> RedirectResponse:
+    query = f"?{urlencode({'error': error})}" if error else ""
+    return RedirectResponse(f"{path}{query}", status_code=303)
+
+
+def problem(text: str) -> str:
+    if not text:
+        return "A note cannot be blank."
+    if len(text) > MAX_LENGTH:
+        return f"A note is at most {MAX_LENGTH} characters."
+    return ""
+
+
+@Action
+async def create_note(text: str) -> RedirectResponse:
+    text = text.strip()
+    if error := problem(text):
+        return back(error=error)
+    add_note(text)
+    return back()
+
+
+@Action
+async def update_note(note_id: int, text: str) -> RedirectResponse:
+    text = text.strip()
+    if error := problem(text):
+        return back(f"/notes/{note_id}", error)
+    if not change_note(note_id, text):
+        notFound()
+    return back(f"/notes/{note_id}")
+
+
+@Action
+async def delete_note(note_id: int) -> RedirectResponse:
+    if not remove_note(note_id):
+        notFound()
+    return back()
+```
+
+`create_note` کے قواعد `problem` میں منتقل ہو گئے، اس لیے متن کو لے جانے والے دو اعمال الگ نہیں ہو سکتے۔ ایک نوٹ جو اب موجود نہیں ہے جوابات `404`، اس کا صفحہ پسند کریں۔
+
+## نوٹ کے صفحے کی شکلیں۔
+
+آئی ڈی `note_id` نامی پوشیدہ فیلڈ میں سفر کرتی ہے، پیرامیٹر کا نام:
+
+<!-- router:fbr,custom -->
+```nexy filename="src/routes/notes/[id].nexy"
+---
+from nexy import notFound, useSearchParams
+from src.notes import find
+
+id: prop[int]
+note = find(id)
+if note is None:
+    notFound()
+error = useSearchParams().get("error", "")
+---
+<section class="app-page">
+  <h1>{{ note.text | e }}</h1>
+
+  {% if error %}
+  <p class="note-error" role="alert">{{ error | e }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ __actions_path['update_note'] }}">
+    <input type="hidden" name="note_id" value="{{ note.id }}">
+    <input name="text" value="{{ note.text | e }}" maxlength="200" required>
+    <button type="submit">Save</button>
+  </form>
+
+  <form method="post" action="{{ __actions_path['delete_note'] }}">
+    <input type="hidden" name="note_id" value="{{ note.id }}">
+    <button type="submit">Delete</button>
+  </form>
+
+  <a href="/notes">All notes</a>
+</section>
+```
+<!-- /router -->
+
+<!-- router:modular -->
+منظر کو اب پورے نوٹ کی ضرورت ہے، نہ صرف اس کے متن:
+
+```nexy filename="src/apps/notes/note_view.nexy"
+---
+from nexy import useSearchParams
+
+note: prop[object]
+error = useSearchParams().get("error", "")
+---
+<section class="app-page">
+  <h1>{{ note.text | e }}</h1>
+
+  {% if error %}
+  <p class="note-error" role="alert">{{ error | e }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ __actions_path['update_note'] }}">
+    <input type="hidden" name="note_id" value="{{ note.id }}">
+    <input name="text" value="{{ note.text | e }}" maxlength="200" required>
+    <button type="submit">Save</button>
+  </form>
+
+  <form method="post" action="{{ __actions_path['delete_note'] }}">
+    <input type="hidden" name="note_id" value="{{ note.id }}">
+    <button type="submit">Delete</button>
+  </form>
+
+  <a href="/notes">All notes</a>
+</section>
+```
+
+```python filename="src/apps/notes/notes_controller.py"
+from nexy import notFound
+from nexy.decorators import Controller
+from nexy.hooks import useViews
+from src.notes import all_notes, find
+
+LAYOUT = "src/apps/layout.nexy"
+
+
+def page(view: str, **context: object):
+    return useViews(LAYOUT, context={"children": useViews(view, context=context)})
+
+
+@Controller("/notes")
+class NotesController:
+    async def get(self):
+        return page("src/apps/notes/notes_view.nexy")
+
+
+@Controller("/notes/{id}")
+class NoteController:
+    async def get(self, id: int):
+        note = find(id)
+        if note is None:
+            notFound()
+        return page("src/apps/notes/note_view.nexy", note=note)
+
+
+@Controller("/api/notes")
+class NotesApiController:
+    async def get(self) -> list[dict]:
+        return [note.model_dump() for note in all_notes()]
+```
+<!-- /router -->
+
+کھولیں <http://localhost:3000/notes/1>، *Buy milk* کو *Buy oat milk* میں تبدیل کریں اور دبائیں **محفوظ کریں**: صفحہ نئے متن کے ساتھ واپس آتا ہے۔ **ڈیلیٹ** کو دبائیں: آپ بغیر نوٹ کے لسٹ پر اترتے ہیں۔
+
+## جو آپ نے سیکھا۔
+
+- ایک صفحہ کئی شکلیں رکھ سکتا ہے، ہر ایک اپنے ایکشن پر پوسٹ کرتا ہے۔
+- ایک پوشیدہ فیلڈ آئی ڈی رکھتا ہے۔ اس کا نام ایکشن کا پیرامیٹر نام ہے۔
+- دو اعمال کے اشتراک کردہ اصول ایک فنکشن میں رہتے ہیں، جسے دونوں کہتے ہیں۔
+
+## اگلے اقدامات
+
+- [حصہ 9: نوٹوں کو صفحہ بندی کریں](paginate-the-notes.md)
+- [بغیر فارم JavaScript](../guides/actions.md#forms-without-javascript): ایک فارم ایک عمل تک کیسے پہنچتا ہے۔

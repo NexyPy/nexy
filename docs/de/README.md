@@ -19,7 +19,7 @@ Neu hier? Lesen Sie [Was ist Nexy?](getting-started/what-is-nexy.md) und dann de
 | [Was ist Nexy?](getting-started/what-is-nexy.md) | Erfahren Sie, was Nexy ist, worauf es aufbaut und was Sie bekommen |
 | [Installation](getting-started/installation.md) | Installieren Sie uv und die Nexy-CLI und erstellen Sie dann Ihr erstes Projekt |
 | [Schnellstart](getting-started/quick-start.md) | Erstellen Sie ein Projekt, führen Sie es per Live-Reload aus und erstellen Sie es für die Produktion |
-| [Anleitung](getting-started/tutorial.md) | Erstellen Sie in 10 Minuten eine Notizenseite mit einem Endpunkt, freigegebenen Daten und einem Produktions-Build |
+| [Anleitung](getting-started/tutorial.md) | Erstellen Sie Schritt für Schritt eine Notizen-App, einen ausführbaren Teil nach dem anderen |
 
 ### Verstehen Sie das Modell
 | Seite | Was Sie tun werden |
@@ -28,6 +28,38 @@ Neu hier? Lesen Sie [Was ist Nexy?](getting-started/what-is-nexy.md) und dann de
 | [Projektstruktur](getting-started/project-structure.md) | Wissen Sie, wozu jeder Ordner und jede Datei in einem Projekt dient |
 | [Wählen Sie einen Router](routing/README.md) | Wählen Sie den dateibasierten, modularen oder benutzerdefinierten Router |
 | [Wählen Sie ein Ansichtsformat](views/README.md) | Wählen Sie `.nexy`, Markdown oder ein Client-Framework für eine Seite |
+
+## Anleitung
+
+### Einheit 1: Die Grundlagen
+| Seite | Was Sie bauen werden |
+|---|---|
+| [1. Erstellen Sie das Projekt](tutorial/create-the-project.md) | Erstellen Sie das Notizenprojekt und führen Sie es im Browser aus |
+| [2. Seiten und Layouts](tutorial/pages-and-layouts.md) | Fügen Sie die Notizenseite hinzu und ändern Sie das Layout um sie herum |
+| [3. Dynamische Routen und eine API](tutorial/dynamic-routes.md) | Geben Sie jeder Notiz eine URL und stellen Sie die Notizen als JSON bereit |
+| [4. Komponenten](tutorial/components.md) | Verwandeln Sie jede Notiz in eine wiederverwendbare `.nexy` Komponente |
+
+### Einheit 2: Daten
+| Seite | Was Sie bauen werden |
+|---|---|
+| [5. Speichern Sie die Notizen in SQLite](tutorial/store-the-notes.md) | Fügen Sie ein Modell, eine Migration und einen Seed hinzu und lesen Sie die Notizen aus der Datenbank |
+| [6. Erstellen Sie eine Notiz aus einem Formular](tutorial/create-a-note.md) | Veröffentlichen Sie ein Formular an eine Aktion, die die Notiz speichert |
+| [7. Validierungsfehler anzeigen](tutorial/validation-errors.md) | Lehnen Sie eine leere Notiz ab und geben Sie über dem Formular den Grund an |
+| [8. Bearbeiten und löschen Sie eine Notiz](tutorial/edit-and-delete.md) | Fügen Sie die sich ändernden Formulare hinzu und entfernen Sie eine Notiz |
+| [9. Paginieren Sie die Notizen](tutorial/paginate-the-notes.md) | Zeigen Sie jeweils fünf Notizen mit Links zwischen den Seiten an |
+
+### Einheit 3: Benutzer
+| Seite | Was Sie bauen werden |
+|---|---|
+| [10. Erstellen Sie ein Konto und melden Sie sich an](tutorial/accounts.md) | Registrieren, an- und abmelden, mit einem Sitzungscookie |
+| [11. Geben Sie jedem Benutzer seine eigenen Notizen](tutorial/own-notes.md) | Verknüpfen Sie jede Notiz mit ihrem Benutzer und schützen Sie die Seiten, die Aktionen und die API |
+| [12. Setzen Sie ein vergessenes Passwort per E-Mail zurück](tutorial/password-reset.md) | Senden Sie einen signierten Link per E-Mail, der einmal für eine Stunde funktioniert |
+
+### Einheit 4: Interaktivität
+| Seite | Was Sie bauen werden |
+|---|---|
+| [13. Durchsuchen Sie die Notizen während der Eingabe](tutorial/search-the-notes.md) | Filtern Sie jede Notiz im Browser mit einer React-Insel |
+| [14. Markieren Sie eine Notiz, ohne die Seite neu zu laden](tutorial/tick-a-note.md) | Markieren Sie eine Notiz mit einem Formular, das ein paar Zeilen von JavaScript an Ort und Stelle sendet |
 
 ## Routenführung
 

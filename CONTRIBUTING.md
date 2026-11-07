@@ -299,12 +299,12 @@ engine three things per page (`sites/shared/seo.py`): the canonical address
 `{site}/docs/{slug}/`, the opening paragraph cut at 200 characters as the description, and the menu
 trail as the breadcrumb. A page therefore has four handles, and all four say the same thing:
 
-- **Title** — the question in the words a person types, not an internal name: "Choose a router", not
+- **Title** - the question in the words a person types, not an internal name: "Choose a router", not
   "Routing: architecture".
-- **Opening paragraph** — the answer, complete in one sentence, before any context: it becomes the
+- **Opening paragraph** - the answer, complete in one sentence, before any context: it becomes the
   search result.
-- **Headings** — the words of the query, one idea per heading, so an excerpt answers on its own.
-- **Slug** — the same words again, so the address says what the page is about without the menu.
+- **Headings** - the words of the query, one idea per heading, so an excerpt answers on its own.
+- **Slug** - the same words again, so the address says what the page is about without the menu.
 
 One question, one page. Two pages on the same words compete with each other, and a search engine
 ranks the pair below either one alone; a page that goes away redirects through
@@ -377,7 +377,29 @@ npm run test
 
 For maintainers only:
 
-1. Bump the version in `nexy/__version__.py` and `pyproject.toml`.
+### Which number moves
+
+The commit type already decided, so the version is not a judgement call:
+
+| commits since the last tag | the next tag |
+| --- | --- |
+| only `fix:`, `perf:`, `docs:`, `refactor:`, `test:`, `chore:` | PATCH: `2.2.2` → `2.2.3` |
+| at least one `feat:` | MINOR: `2.2.2` → `2.3.0` |
+| at least one `feat!:` or a `BREAKING CHANGE:` footer | MAJOR: `2.2.2` → `3.0.0` |
+
+A change is breaking when an existing project must edit something to keep working: an imported name,
+a field of `nexyconfig.py`, a CLI command or flag, a `src/routes/` convention, the HTML or JSON a
+route returns, or the minimum Python or FastAPI version. That is the whole list of promises; anything
+outside it can move in a MINOR.
+
+A `fix:` that changes one of those promises is a breaking change written as a fix: mark it `feat!:`
+instead of shipping it as a PATCH. A MAJOR or MINOR that is not ready can be tested as `v3.0.0rc1` or
+`v3.0.0a1`; a pre-release never carries a PATCH number.
+
+Not every merge needs a tag: docs and tests can wait for the next release. When a release is cut,
+the table decides its number.
+
+1. Bump the version in `nexy/__version__.py` and `pyproject.toml` to the number above.
 2. Update the changelog:
    ```bash
    npx git-cliff -o CHANGELOG.md
@@ -400,9 +422,9 @@ long-lived PyPI token.
 
 ## Getting help
 
-- **Documentation**: <https://nexypy.github.io/nexy/> — every page, with a search.
-- **Questions**: [Discussions Q&A](https://github.com/NexyPy/nexy/discussions/new?category=q-a) — an answer there is findable by the next person.
-- **Ideas**: [Discussions Ideas](https://github.com/NexyPy/nexy/discussions/new?category=ideas) — the shape gets settled before an issue is opened.
+- **Documentation**: <https://nexypy.github.io/nexy/> - every page, with a search.
+- **Questions**: [Discussions Q&A](https://github.com/NexyPy/nexy/discussions/new?category=q-a) - an answer there is findable by the next person.
+- **Ideas**: [Discussions Ideas](https://github.com/NexyPy/nexy/discussions/new?category=ideas) - the shape gets settled before an issue is opened.
 - **What you built**: [Show and tell](https://github.com/NexyPy/nexy/discussions/new?category=show-and-tell).
 - **Bug reports**: open a [GitHub Issue](https://github.com/NexyPy/nexy/issues/new/choose)
 - **Security issues**: see [SECURITY.md](SECURITY.md)

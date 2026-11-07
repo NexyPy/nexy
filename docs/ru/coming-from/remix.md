@@ -1,6 +1,6 @@
 # От Remix до Некси
 
-В Nexy маршрут маршрутизатора Remix или React сохраняет свой компонент React, тогда как его `loader` становится обработчиком Python, его действие `action` — Python, а вложенные маршруты становятся папками с `layout.tsx`.
+В Nexy маршрут маршрутизатора Remix или React сохраняет свой компонент React, тогда как его `loader` становится обработчиком Python, его действие `action` - Python, а вложенные маршруты становятся папками с `layout.tsx`.
 
 В каждом разделе ниже показана Remix привычка, затем то же самое в Nexy. React Маршрутизатор v7 в режиме framework использует те же имена.
 
@@ -90,7 +90,7 @@ export default function Users() {
 }
 ```
 
-В режиме сервера страница `.nexy` — это загрузчик и представление в одном файле, а данные находятся в первом HTML:
+В режиме сервера страница `.nexy` - это загрузчик и представление в одном файле, а данные находятся в первом HTML:
 
 ```nexy filename="src/маршруты/people.nexy"
 ---
@@ -199,7 +199,7 @@ const fetcher = useFetcher();
 fetcher.submit({ title: "Write the docs" }, { method: "post", action: "/todos" });
 ```
 
-`useAction` — это сборщик, привязанный к одному действию: вызывайте его из любого количества компонентов, каждый из которых имеет свои собственные `pending` и `data`.
+`useAction` - это сборщик, привязанный к одному действию: вызывайте его из любого количества компонентов, каждый из которых имеет свои собственные `pending` и `data`.
 
 ## Прогрессивное улучшение
 
@@ -312,7 +312,7 @@ export function Nav() {
 }
 ```
 
-`<NavLink>` — это `Link` с `activeClassName`, а `useNavigate()(path)` — это `router.push(path)`.
+`<NavLink>` - это `Link` с `activeClassName`, а `useNavigate()(path)` - это `router.push(path)`.
 
 ## `redirect` и сеансы
 
@@ -341,7 +341,7 @@ async def GET():
     return {"visits": 12}
 ```
 
-`createCookieSessionStorage` становится одним полем `nexyconfig.py`, а `request.session` — это словарь:
+`createCookieSessionStorage` становится одним полем `nexyconfig.py`, а `request.session` - это словарь:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -368,7 +368,7 @@ async def POST(request: Request, body: Login):
 
 ## Границы ошибок
 
-Экспорт маршрута `ErrorBoundary` не имеет эквивалента в Nexy. Сбой загрузчика — это код состояния: клиенты API получают `{"detail": ...}`, а неизвестный URL-адрес отображает `src/routes/notfound.tsx`. Ошибки, возникающие во время рендеринга компонента, перехватываются вашей собственной границей ошибок React вокруг части, которая может выйти из строя.
+Экспорт маршрута `ErrorBoundary` не имеет эквивалента в Nexy. Сбой загрузчика - это код состояния: клиенты API получают `{"detail": ...}`, а неизвестный URL-адрес отображает `src/routes/notfound.tsx`. Ошибки, возникающие во время рендеринга компонента, перехватываются вашей собственной границей ошибок React вокруг части, которая может выйти из строя.
 
 ## `headers` и кеширование
 

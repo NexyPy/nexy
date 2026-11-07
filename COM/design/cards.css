@@ -1,0 +1,661 @@
+/* The card system of COM/: one grid, three grounds, six compositions.
+ *
+ * Everything is drawn with type, rules and flat colour. No shadow, no glow on a
+ * light card, no illustration: the only image a card may hold is a real file, a
+ * real command or a real number.
+ *
+ * The page is 1080 x 1350 at 1x and is rendered at 2x, then reduced: the type is
+ * crisper and the hairlines stay one physical pixel on LinkedIn.
+ */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/archivo-latin.woff2") format("woff2");
+  font-weight: 400 900;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../fonts/jetbrains-mono-latin.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: block;
+}
+
+:root {
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono", "DejaVu Sans Mono", ui-monospace, monospace;
+
+  --pad-x: 88px;
+  --pad-top: 76px;
+  --pad-bottom: 68px;
+  --hair: 1px;
+
+  --display-size: 118px;
+  --display-leading: 0.94;
+  --display-tracking: -0.048em;
+  --eyebrow-size: 19px;
+  --eyebrow-tracking: 0.18em;
+  --meta-size: 18px;
+  --code-size: 30px;
+}
+
+/* Three grounds. Each one is a single decision: paper, ink, or the accent as a
+ * flat field. Nothing is a gradient between two brands. */
+.theme-paper {
+  --bg: #fbfbfa;
+  --fg: #0b0d0e;
+  --muted: #6b7076;
+  --line: #e2e2df;
+  --accent: #0f766e;
+  --panel: #f3f3f0;
+  --panel-line: #dedddb;
+  --ghost: rgba(11, 13, 14, 0.045);
+  --grain-opacity: 0.035;
+  --grain-blend: multiply;
+}
+
+.theme-signal {
+  --bg: #07090a;
+  --fg: #f1f4f3;
+  --muted: #8b9391;
+  --line: #1d2321;
+  --accent: #5eead4;
+  --panel: #0c1110;
+  --panel-line: #1f2725;
+  --ghost: rgba(241, 244, 243, 0.05);
+  --grain-opacity: 0.06;
+  --grain-blend: overlay;
+}
+
+.theme-field {
+  --bg: #0d6b63;
+  --fg: #ffffff;
+  --muted: rgba(255, 255, 255, 0.74);
+  --line: rgba(255, 255, 255, 0.22);
+  --accent: #d6fff7;
+  --panel: rgba(255, 255, 255, 0.08);
+  --panel-line: rgba(255, 255, 255, 0.28);
+  --ghost: rgba(255, 255, 255, 0.07);
+  --grain-opacity: 0.07;
+  --grain-blend: soft-light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+/* ---------- the card ---------- */
+
+.card {
+  position: relative;
+  width: 1080px;
+  height: 1350px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--display);
+  font-kerning: normal;
+  font-variant-ligatures: none;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+}
+
+/* A light source, only on the dark ground: one soft off-canvas mass, never a
+ * gradient behind the text. */
+.theme-signal::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(46% 38% at 88% 2%, rgba(45, 212, 191, 0.22), transparent 70%),
+    radial-gradient(38% 30% at 4% 96%, rgba(13, 107, 99, 0.5), transparent 72%);
+  pointer-events: none;
+}
+
+/* Film grain: the one texture that separates a rendered card from a slide. */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* On paper only: a 6-column hairline grid, visible when looked for. */
+.theme-paper .card-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--ghost) 0 1px,
+    transparent 1px 150.6px
+  );
+  pointer-events: none;
+}
+
+.card-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: var(--hair) solid var(--line);
+  position: relative;
+  z-index: 1;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--eyebrow-size);
+  font-weight: 500;
+  letter-spacing: var(--eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.eyebrow b {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 13px;
+  background: var(--accent);
+  vertical-align: 1px;
+}
+
+.index {
+  font-family: var(--mono);
+  font-size: var(--eyebrow-size);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+}
+
+.index s {
+  text-decoration: none;
+  color: var(--muted);
+  margin: 0 6px;
+}
+
+.card-body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 52px;
+  padding: 180px 0 40px;
+}
+
+.headline {
+  margin: 0;
+  font-size: var(--display-size);
+  font-weight: 800;
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  text-wrap: balance;
+  max-width: 15ch;
+}
+
+.headline em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.headline--mono {
+  font-family: var(--mono);
+  font-size: 62px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  max-width: 22ch;
+}
+
+.lede {
+  margin: 0;
+  max-width: 32ch;
+  font-size: 27px;
+  line-height: 1.42;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+
+.card-foot {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-top: var(--hair) solid var(--line);
+  padding-top: 16px;
+  font-family: var(--mono);
+  font-size: var(--meta-size);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.mark {
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+}
+
+/* ---------- compositions ---------- */
+
+.figure {
+  position: relative;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* a file, drawn as a page with a folded corner: no icon font, no emoji */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  align-self: flex-start;
+  padding: 22px 30px 22px 26px;
+  border: var(--hair) solid var(--panel-line);
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: 34px;
+  letter-spacing: -0.01em;
+}
+
+.chip .page {
+  width: 26px;
+  height: 32px;
+  border: 1.5px solid var(--fg);
+  border-top-right-radius: 0;
+  clip-path: polygon(0 0, 66% 0, 100% 27%, 100% 100%, 0 100%);
+  opacity: 0.85;
+}
+
+.chip .dir {
+  color: var(--muted);
+}
+
+.chip .name {
+  color: var(--accent);
+}
+
+/* a tree: the folder is the URL, so the connector is the point */
+.tree {
+  font-family: var(--mono);
+  font-size: 36px;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+
+.tree div {
+  position: relative;
+  padding-left: 46px;
+}
+
+.tree div::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: var(--hair);
+  background: var(--line);
+}
+
+.tree div:last-child::before {
+  bottom: 50%;
+}
+
+.tree div::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 26px;
+  height: var(--hair);
+  background: var(--line);
+}
+
+.tree span {
+  color: var(--fg);
+}
+
+.tree .leaf {
+  color: var(--accent);
+}
+
+/* a code panel: one bar, the path on the left, the language on the right */
+.panel {
+  border: var(--hair) solid var(--panel-line);
+  background: var(--panel);
+  align-self: stretch;
+}
+
+.panel .bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 24px;
+  border-bottom: var(--hair) solid var(--panel-line);
+  font-family: var(--mono);
+  font-size: 19px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.panel .bar b {
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.panel pre {
+  margin: 0;
+  padding: 26px 24px 24px;
+  font-family: var(--mono);
+  font-size: var(--code-size);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  white-space: pre;
+  overflow: hidden;
+}
+
+.panel pre .k {
+  color: var(--accent);
+}
+
+.panel pre .c {
+  color: var(--muted);
+}
+
+/* a document: markdown is a page, so the page is the drawing */
+.doc {
+  border: var(--hair) solid var(--panel-line);
+  background: var(--panel);
+  padding: 30px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.doc i {
+  display: block;
+  height: 2px;
+  background: var(--line);
+}
+
+.doc i.w100 {
+  width: 100%;
+}
+
+.doc i.w88 {
+  width: 88%;
+}
+
+.doc i.w64 {
+  width: 64%;
+}
+
+.doc i.head {
+  width: 52%;
+  height: 12px;
+  background: var(--fg);
+  margin-bottom: 6px;
+}
+
+.doc .cap {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 19px;
+  color: var(--muted);
+}
+
+/* two nodes and one wire: a request and its answer */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.node {
+  border: var(--hair) solid var(--panel-line);
+  background: var(--panel);
+  padding: 20px 26px;
+  font-family: var(--mono);
+  font-size: 27px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.node b {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.wire {
+  position: relative;
+  width: 62px;
+  height: var(--hair);
+  background: var(--line);
+  flex: none;
+}
+
+.wire::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -4px;
+  border: 4px solid transparent;
+  border-left: 7px solid var(--line);
+}
+
+/* one host, two answers: the whole claim of the project in one bracket */
+.host {
+  border: var(--hair) solid var(--panel-line);
+  background: var(--panel);
+}
+
+.host .addr {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 15px 24px;
+  border-bottom: var(--hair) solid var(--panel-line);
+  font-family: var(--mono);
+  font-size: 21px;
+  color: var(--muted);
+}
+
+.host .addr b {
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.host .row {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 18px 24px;
+  font-family: var(--mono);
+  font-size: 25px;
+  border-bottom: var(--hair) solid var(--panel-line);
+}
+
+.host .row:last-child {
+  border-bottom: 0;
+}
+
+.host .row b {
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 62px;
+}
+
+.host .row span {
+  color: var(--muted);
+  margin-left: auto;
+}
+
+/* ---------- a benchmark, drawn as a figure ---------- */
+
+.figure-wide {
+  position: relative;
+  width: 1200px;
+  height: 675px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--display);
+  padding: 56px 64px 48px;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+.figure-wide .card-top {
+  padding-bottom: 14px;
+}
+
+.figure-wide .body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 56px;
+  margin-top: 34px;
+}
+
+.big {
+  font-size: 150px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.86;
+  font-variant-numeric: tabular-nums;
+}
+
+.big small {
+  font-size: 46px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-left: 10px;
+  color: var(--muted);
+}
+
+.big-label {
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 190px;
+  padding-bottom: 1px;
+  border-bottom: var(--hair) solid var(--line);
+}
+
+.bars i {
+  display: block;
+  width: 7px;
+  background: var(--fg);
+  opacity: 0.55;
+}
+
+.bars i.hot {
+  background: var(--accent);
+  opacity: 1;
+}
+
+.figure-wide .card-foot {
+  margin-top: auto;
+}
+
+/* ---------- the blog cover ---------- */
+
+.cover {
+  position: relative;
+  width: 1200px;
+  height: 630px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--display);
+  padding: 56px 64px 48px;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+.cover .headline {
+  font-size: 88px;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  max-width: 16ch;
+  margin-top: 40px;
+}
+
+.cover .sub {
+  margin-top: 24px;
+  font-family: var(--mono);
+  font-size: 21px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.cover .card-foot {
+  margin-top: auto;
+}
+
+/* ---------- the repository banner ---------- */
+
+/* 1200 x 630, the same box as the cover and the og:image, so one render serves
+ * the README, PyPI and every link preview without a second composition. */
+.banner {
+  padding-top: 52px;
+}
+
+.banner .lockup {
+  display: flex;
+  align-items: center;
+}
+
+.banner .logo {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+
+.banner .headline {
+  margin-top: 54px;
+  font-size: 96px;
+  max-width: 18ch;
+}
+
+.banner .sub {
+  margin-top: 20px;
+  font-size: 22px;
+}
+
+.banner .card-foot {
+  margin-top: auto;
+}

@@ -19,7 +19,7 @@ Baru di sini? Baca [Apa itu Nexy?](getting-started/what-is-nexy.md), lalu [Mulai
 | [Apa itu Nexy?](getting-started/what-is-nexy.md) | Ketahui apa itu Nexy, apa yang dibangunnya, dan apa yang Anda dapatkan |
 | [Instalasi](getting-started/installation.md) | Instal uv dan Nexy CLI, lalu buat proyek pertama Anda |
 | [Mulai cepat](getting-started/quick-start.md) | Buat proyek, jalankan dengan live reload, dan bangun untuk produksi |
-| [Tutorial](getting-started/tutorial.md) | Buat halaman catatan dengan titik akhir, data bersama, dan build produksi dalam 10 menit |
+| [Tutorial](getting-started/tutorial.md) | Buat aplikasi catatan selangkah demi selangkah, satu bagian yang dapat dijalankan dalam satu waktu |
 
 ### Pahami modelnya
 | Halaman | Apa yang akan kamu lakukan |
@@ -28,6 +28,38 @@ Baru di sini? Baca [Apa itu Nexy?](getting-started/what-is-nexy.md), lalu [Mulai
 | [Struktur proyek](getting-started/project-structure.md) | Ketahui kegunaan setiap folder dan file dalam suatu proyek |
 | [Pilih router](routing/README.md) | Pilih router berbasis file, modular, atau khusus |
 | [Pilih format tampilan](views/README.md) | Pilih `.nexy`, Markdown atau kerangka klien untuk sebuah halaman |
+
+## tutorial
+
+### Unit 1: dasar-dasarnya
+| Halaman | Apa yang akan Anda bangun |
+|---|---|
+| [1. Buat proyek](tutorial/create-the-project.md) | Buat proyek catatan dan jalankan di browser |
+| [2. Halaman dan tata letak](tutorial/pages-and-layouts.md) | Tambahkan halaman catatan dan ubah tata letak di sekitarnya |
+| [3. Rute dinamis dan API](tutorial/dynamic-routes.md) | Berikan URL pada setiap catatan dan sajikan catatan tersebut sebagai JSON |
+| [4. Komponen](tutorial/components.md) | Ubah setiap not menjadi komponen `.nexy` yang dapat digunakan kembali |
+
+### Satuan 2: data
+| Halaman | Apa yang akan Anda bangun |
+|---|---|
+| [5. Simpan catatan di SQLite](tutorial/store-the-notes.md) | Tambahkan model, migrasi dan seed, dan baca catatan dari database |
+| [6. Membuat catatan dari formulir](tutorial/create-a-note.md) | Posting formulir ke Tindakan yang menyimpan catatan |
+| [7. Tampilkan kesalahan validasi](tutorial/validation-errors.md) | Tolak catatan kosong dan katakan alasannya di atas formulir |
+| [8. Mengedit dan menghapus catatan](tutorial/edit-and-delete.md) | Tambahkan formulir yang berubah dan hapus catatan |
+| [9. Beri nomor halaman pada catatan](tutorial/paginate-the-notes.md) | Tampilkan lima catatan sekaligus, dengan tautan antar halaman |
+
+### Unit 3: pengguna
+| Halaman | Apa yang akan Anda bangun |
+|---|---|
+| [10. Buat akun dan masuk](tutorial/accounts.md) | Daftar, masuk dan keluar, dengan cookie sesi |
+| [11. Berikan catatan masing-masing pengguna](tutorial/own-notes.md) | Ikat setiap catatan ke penggunanya dan jaga halaman, Tindakan, dan API |
+| [12. Reset password yang terlupa melalui email](tutorial/password-reset.md) | Kirim tautan yang ditandatangani melalui email yang berfungsi sekali, selama satu jam |
+
+### Unit 4: interaktivitas
+| Halaman | Apa yang akan Anda bangun |
+|---|---|
+| [13. Cari catatan saat Anda mengetik](tutorial/search-the-notes.md) | Filter setiap catatan di browser dengan pulau React. |
+| [14. Centang catatan tanpa memuat ulang halaman](tutorial/tick-a-note.md) | Tandai catatan selesai dengan formulir yang dikirimkan beberapa baris JavaScript pada tempatnya |
 
 ## Perutean
 
