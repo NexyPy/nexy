@@ -1,6 +1,6 @@
 # От Django до Некси
 
-В Nexy представление Django и его строка `urls.py` становятся одним файлом в `src/routes/`, шаблоны остаются похожими на Jinja2, а ORM, формы и администрация — это ваш выбор, а не встроенные.
+В Nexy представление Django и его строка `urls.py` становятся одним файлом в `src/routes/`, шаблоны остаются похожими на Jinja2, а ORM, формы и администрация - это ваш выбор, а не встроенные.
 
 В каждом разделе ниже показана привычка Django, затем то же самое в Nexy.
 
@@ -22,7 +22,7 @@ from . import views
 urlpatterns = [path("api/hello/", views.hello)]
 ```
 
-`urls.py` отсутствует: путь к файлу — это URL-адрес, имя функции — это метод, а возвращаемый `dict` — это JSON.
+`urls.py` отсутствует: путь к файлу - это URL-адрес, имя функции - это метод, а возвращаемый `dict` - это JSON.
 
 ```python filename="src/routes/api/hello.py"
 async def GET():
@@ -53,7 +53,7 @@ def search(request):
     return JsonResponse({"q": q, "page": page})
 ```
 
-Параметр запроса — это параметр функции, преобразованный и проверенный:
+Параметр запроса - это параметр функции, преобразованный и проверенный:
 
 ```python filename="src/routes/api/search.py"
 async def GET(q: str = "", page: int = 1):
@@ -172,7 +172,7 @@ from "@/components/Card.nexy" import Card
 </Card>
 ```
 
-`@` — это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
+`@` - это `src/`: `nx new` записывает `useAliases = {"@": "src"}` в `nexyconfig.py`.
 
 ## Фильтры шаблонов
 
@@ -182,7 +182,7 @@ from "@/components/Card.nexy" import Card
 | `{{ title\|upper }}` | `{{ title \| upper }}` |
 | `{{ body\|safe }}` | `{{ body \| safe }}` |
 | `{{ items\|length }}` | `{{ items \| length }}` |
-| `{% url "post" post.id %}` | `/posts/{{ post.id }}`: URL-адрес — это путь к файлу. |
+| `{% url "post" post.id %}` | `/posts/{{ post.id }}`: URL-адрес - это путь к файлу. |
 
 > [!WARNING]
 > Django по умолчанию экранирует все значения. Шаблоны `.nexy` не позволяют: экранировать то, что посетитель набрал с помощью `| e`.
@@ -261,7 +261,7 @@ def add_note(request):
 </form>
 ```
 
-Действие — это функция, которую отправляет форма. Его параметрами являются поля формы, а посетитель отправляется обратно на страницу с помощью `303`:
+Действие - это функция, которую отправляет форма. Его параметрами являются поля формы, а посетитель отправляется обратно на страницу с помощью `303`:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action

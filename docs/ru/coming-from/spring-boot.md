@@ -1,6 +1,6 @@
 # От Spring Boot до Nexy
 
-Модульный маршрутизатор Nexy сохраняет форму приложения Spring Boot: `@RestController` — это класс `@Controller`, `@Service` — это `@Injectable`, внедренный через `__init__`, а модуль группирует их. Проверка bean-компонента становится Pydantic, и страница Springdoc OpenAPI встроена.
+Модульный маршрутизатор Nexy сохраняет форму приложения Spring Boot: `@RestController` - это класс `@Controller`, `@Service` - это `@Injectable`, внедренный через `__init__`, а модуль группирует их. Проверка bean-компонента становится Pydantic, и страница Springdoc OpenAPI встроена.
 
 В каждом разделе ниже показаны привычки Spring Boot, а затем то же самое в Nexy.
 
@@ -13,7 +13,7 @@ public class DemoApplication {
 }
 ```
 
-Корневой модуль — это поле `nexyconfig.py`, а `nx dev` обслуживает его:
+Корневой модуль - это поле `nexyconfig.py`, а `nx dev` обслуживает его:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -40,7 +40,7 @@ public class HelloController {
 }
 ```
 
-Путь — это первый аргумент `@Controller`, а имя метода — это HTTP-глагол:
+Путь - это первый аргумент `@Controller`, а имя метода - это HTTP-глагол:
 
 ```python filename="src/apps/hello/hello_controller.py"
 from nexy.decorators import Controller
@@ -52,7 +52,7 @@ class HelloController:
         return {"message": "Hello"}
 ```
 
-Контроллер имеет один обработчик для каждой команды, поэтому `@GetMapping` и `@PostMapping` на одном пути являются методами `get` и `post` одного класса. `GET /items` и `GET /items/{id}` — два контроллера.
+Контроллер имеет один обработчик для каждой команды, поэтому `@GetMapping` и `@PostMapping` на одном пути являются методами `get` и `post` одного класса. `GET /items` и `GET /items/{id}` - два контроллера.
 
 ## `@PathVariable` и `@RequestParam`
 
@@ -64,7 +64,7 @@ public Map<String, Object> user(@PathVariable long id,
 }
 ```
 
-`{id}` остается в пути и становится типизированным параметром; параметр запроса — это параметр со значением по умолчанию:
+`{id}` остается в пути и становится типизированным параметром; параметр запроса - это параметр со значением по умолчанию:
 
 ```python filename="src/apps/users/user_controller.py"
 from nexy.decorators import Controller
@@ -134,7 +134,7 @@ public class GreetingController {
 }
 ```
 
-`@Service` — это `@Injectable()`, а аннотация `__init__` сообщает контейнеру, что нужно внедрить:
+`@Service` - это `@Injectable()`, а аннотация `__init__` сообщает контейнеру, что нужно внедрить:
 
 ```python filename="src/apps/greet/greeting_service.py"
 from nexy.decorators import Injectable
@@ -161,7 +161,7 @@ class GreetingController:
         return {"message": self.greetings.greet(name)}
 ```
 
-По умолчанию компонент является синглтоном, как и в Spring. `@RequestScope` — это `@Injectable(scope=Scope.REQUEST)`, а `@Scope("prototype")` — это `Scope.TRANSIENT`. См. [Внедрение зависимостей](../routing/modular/dependency-injection.md).
+По умолчанию компонент является синглтоном, как и в Spring. `@RequestScope` - это `@Injectable(scope=Scope.REQUEST)`, а `@Scope("prototype")` - это `Scope.TRANSIENT`. См. [Внедрение зависимостей](../routing/modular/dependency-injection.md).
 
 ## `@Configuration` классы и модули
 
@@ -228,7 +228,7 @@ public class AdminController {
 }
 ```
 
-Общее сопоставление — это `prefix` модуля, а каждый подпуть является контроллером этого модуля:
+Общее сопоставление - это `prefix` модуля, а каждый подпуть является контроллером этого модуля:
 
 ```python filename="src/apps/admin/admin_controllers.py"
 from nexy.decorators import Controller, UseGuard
@@ -273,7 +273,7 @@ SecurityFilterChain filters(HttpSecurity http) throws Exception {
 }
 ```
 
-Guard — это функция, которая вызывается, когда запрос не может быть выполнен. `@UseGuard` помещает его в контроллер или в один метод, например `@PreAuthorize`:
+Guard - это функция, которая вызывается, когда запрос не может быть выполнен. `@UseGuard` помещает его в контроллер или в один метод, например `@PreAuthorize`:
 
 ```python filename="src/apps/admin/guards.py"
 from nexy.http import Header, HTTPException
@@ -371,7 +371,7 @@ public class UserPageController {
 </ul>
 ```
 
-Контроллер возвращает представление так, как он возвращает `"users"`: `useViews` отображает файл `.nexy`, а его `context` — это `Model`:
+Контроллер возвращает представление так, как он возвращает `"users"`: `useViews` отображает файл `.nexy`, а его `context` - это `Model`:
 
 ```nexy filename="src/apps/users/users_view.nexy"
 ---
@@ -396,7 +396,7 @@ class UsersPageController:
         return useViews("src/apps/users/users_view.nexy", context={"users": users})
 ```
 
-`th:text` экранируется, а `{{ }}` — нет: экранируйте то, что посетитель набрал с помощью `| e`. Страница также может содержать файл `src/routes/`, обслуживаемый рядом с контроллерами.
+`th:text` экранируется, а `{{ }}` - нет: экранируйте то, что посетитель набрал с помощью `| e`. Страница также может содержать файл `src/routes/`, обслуживаемый рядом с контроллерами.
 
 ## Объекты и репозитории JPA
 
@@ -413,7 +413,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 }
 ```
 
-Объект представляет собой класс SQLModel, а репозиторий — внедряемый сервис вокруг сеанса:
+Объект представляет собой класс SQLModel, а репозиторий - внедряемый сервис вокруг сеанса:
 
 ```python filename="src/models/post_model.py"
 from sqlmodel import Field, SQLModel
@@ -500,7 +500,7 @@ class NexyConfig(NexyConfigModel):
 management.endpoints.web.exposure.include=health
 ```
 
-Проверка работоспособности — это такой же контроллер, как и любой другой, здесь `/admin/health` выше. Публичный находится в корневом модуле:
+Проверка работоспособности - это такой же контроллер, как и любой другой, здесь `/admin/health` выше. Публичный находится в корневом модуле:
 
 ```python filename="src/apps/health_controller.py"
 from nexy.decorators import Controller

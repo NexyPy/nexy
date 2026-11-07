@@ -11,7 +11,7 @@
 | `[slug].nexy` | динамический сегмент `{slug}` |
 | `[...path].nexy` | всеобъемлющий `{path:path}` |
 | `(group)/page.nexy` | `/page`: группа не отображается в URL-адресе |
-| `name.py` | обработчик API; имена функций `GET`, `POST`, ... — это методы |
+| `name.py` | обработчик API; имена функций `GET`, `POST`, ... - это методы |
 | `name.tsx`, `.jsx`, `.vue`, `.svelte` | клиентский маршрут, когда платформа включена с помощью `useFF` |
 
 ```text
@@ -43,7 +43,7 @@ async def POST():
 | Файл | Роль | Подробности |
 |---|---|---|
 | `layout.nexy` | режим сервера: оборачивает каждую страницу ниже себя; корневой владеет HTML-документом | [макет.nexy](../views/nexy/layouts.md) |
-| `layout.tsx` | клиентский режим (React): корневой владеет HTML-документом, вложенные — обертывают страницы | [макет.tsx](../views/react/differences.md) |
+| `layout.tsx` | клиентский режим (React): корневой владеет HTML-документом, вложенные - обертывают страницы | [макет.tsx](../views/react/differences.md) |
 | `layout.vue`, `layout.svelte` | клиентский режим: вложенные макеты | [макет.vue](../views/vue/differences.md), [layout.svelte](../views/svelte/differences.md) |
 | `notfound.nexy` | Страница 404 для своего каталога | [Страницы ошибок](../routing/fbr/errors/README.md) |
 | `errors.nexy` | 500 страниц для своего каталога | [Страницы ошибок](../routing/fbr/errors/README.md) |
@@ -119,7 +119,7 @@ src/routes/
 |---|---|
 | `src/components/` | компоненты, импортированные по страницам; никогда не маршрутизирует |
 | `src/apps/` | контроллеры и модули [модульного маршрутизатора](../routing/modular/README.md) |
-| `public/` | статические файлы, обслуживаемые в корне: `public/logo.svg` — это `/logo.svg` (также в `/public/`) |
+| `public/` | статические файлы, обслуживаемые в корне: `public/logo.svg` - это `/logo.svg` (также в `/public/`) |
 | `__nexy__/` | сгенерированный результат; не совершай |
 
 ```text
