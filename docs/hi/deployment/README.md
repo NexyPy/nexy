@@ -78,6 +78,67 @@ class HealthController:
 इसे रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
 <!-- /router -->
 
+### अंतर्निहित समापनबिंदु
+
+एक लोड बैलेंसर या कुबेरनेट्स दो प्रश्न पूछता है: क्या प्रक्रिया सक्रिय है, और क्या इसे ट्रैफ़िक प्राप्त हो सकता है? सेट `useHealth` और नेक्सी दोनों का उत्तर देती है, बिना किसी हैंडलर फ़ाइल और बिना किसी नियंत्रक के:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| समापन बिंदु | उत्तर 200 | उत्तर 503 |
+|---|---|---|
+| `GET /health/live` | जबकि प्रक्रिया उत्तर देती है | कभी नहीं |
+| `GET /health/ready` | एक बार आवेदन शुरू हो गया है | जब यह शुरू होता है, और एक बार सर्वर इसे रुकने के लिए कहता है |
+
+नेक्सी गारंटी देता है कि `/health/ready` सर्वर के स्टार्टअप और शटडाउन का पालन करता है।
+
+नेक्सी गारंटी देता है कि दोनों एंडपॉइंट एक्सेस लॉग से बाहर और OpenAPI स्कीमा से बाहर रहेंगे।
+
+नेक्सी गारंटी देता है कि दोनों समापन बिंदु `useTrustedHost` और `useHTTPSRedirect` से पहले उत्तर देते हैं, इसलिए पॉड के पते पर HTTP पर भेजी गई जांच को अस्वीकार नहीं किया जाता है।
+
+परंपरा के अनुसार आप अपने स्वयं के मार्गों को `/health/live` और `/health/ready` से दूर रखते हैं जबकि `useHealth` चालू है: नेक्सी के अंतिम बिंदु पहले उत्तर देते हैं। `useHealth` डिफ़ॉल्ट रूप से `False` है, इसलिए एक प्रोजेक्ट जो इसे सेट नहीं करता है वह दोनों पथ रखता है।
+
+आपका एप्लिकेशन यह जांचने के लिए ज़िम्मेदार है कि यह किस पर निर्भर करता है: `/health/ready` सर्वर के जीवनचक्र की रिपोर्ट करता है, डेटाबेस की स्थिति की नहीं।
+
+कुबेरनेट्स `Deployment` की जांच को उन पर इंगित करें:
+
+```yaml filename="k8s/तैनाती.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## स्थैतिक होस्टिंग
 
 प्रत्येक पृष्ठ HTML है, लेकिन नेक्सी रूटिंग और एपीआई हैंडलर के लिए एक सर्वर मानता है।
@@ -87,11 +148,12 @@ class HealthController:
 
 ## चेकलिस्ट
 
-- [ ] `nx build` सीआई में, उन मार्गों के लिए कोई चेतावनी नहीं है जिन्हें आप सर्वर पर प्रस्तुत करना चाहते हैं
+- [ ] `nx build` सीआई में, उन मार्गों के लिए कोई चेतावनी नहीं है जिन्हें आप सर्वर पर प्रस्तुत करने की उम्मीद करते हैं
 - [ ] `nx start` कोड 1 के साथ बाहर निकलता है, और कुछ भी शुरू नहीं करता है, जब कोई रूट फ़ाइल लोड नहीं हो पाती है
 - [ ] `NEXY_ACTION_SECRET` सेट, या `__nexy__/action.key` बिल्ड के साथ रखा गया
 - [ ] `useDocs = False` उत्पादन में यदि एपीआई स्कीमा सार्वजनिक नहीं होनी चाहिए
-- [ ] `useTrustedHost` और `useHTTPSRedirect` सार्वजनिक तैनाती के लिए निर्धारित
+- [ ] `useTrustedHost` और `useHTTPSRedirect` सार्वजनिक तैनाती के लिए निर्धारित हैं
+- [ ] `useHealth = True` जब कोई लोड बैलेंसर या कुबेरनेट्स ऐप की जांच करता है
 - [ ] `__nexy__/` प्रतिबद्ध नहीं
 
 ## अगले चरण

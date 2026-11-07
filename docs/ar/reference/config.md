@@ -22,14 +22,15 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | ربط العنوان |
 | `useSslKeyfile`، `useSslCertfile` | `None` | خدمة HTTPS مباشرة |
 | `useDevTools` | `True` | يضيف شريط الأدوات `nexy dev` إلى كل صفحة (معلومات الصفحة، والمسارات، والأخطاء، والتكوين)؛ `False` يزيله. لا يوجد أبدا في الإنتاج |
-| `useWorkers` | `0` | العمليات `nx start` تجري؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
+| `useHealth` | `False` | يخدم `GET /health/live` و `GET /health/ready` لموازنات التحميل وتحقيقات Kubernetes؛ راجع [نشر](../deployment/README.md#built-in-endpoints) |
+| `useWorkers` | `0` | العمليات `nx start` تعمل؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
 | `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
 
 ## الطرق
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useRouter` | `None` | مثيل أو فئة `APIRouter` مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
+| `useRouter` | `None` | `APIRouter` مثيل أو فئة مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
 | `excludeDirs` | `["templates", "extension", "docs"]` | تم تخطي الدلائل عند مسح المسارات |
 | `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، ويتبعه Vite و `tsconfig.json` |
 
@@ -67,9 +68,9 @@ class NexyConfig(NexyConfigModel):
 | `useRedocsUrl` | `"/redocs"` | تم الإعلان عنه ولكن لم يتم تثبيت أي طريق |
 | `useTitle` | `"Nexy App"` | OpenAPI العنوان وعنوان الصفحة (`"Nexy"` في `NexyConfigModel`) |
 
-### مجاناً `/docs` لصفحة من المشروع
+### `/docs` مجانا لصفحة من المشروع
 
-يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
+يجيب مرجع API على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -99,11 +100,11 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useTocDepth` | `"2-6"` | مستويات العناوين المدرجة في جدول المحتويات |
 | `useTocTitle` | `"Table of Contents"` | عنوان جدول المحتويات |
-| `useTocAuto` | `True` | إنشاء جدول محتويات لـ Markdown صفحة |
+| `useTocAuto` | `True` | إنشاء جدول محتويات لصفحات Markdown |
 
 ## الطرق خارج شجرة الملفات
 
-ابنِ FastAPI `APIRouter` وثبته بـ `useRouter`. يتم تقديمه بجوار المسارات المستندة إلى الملف:
+قم ببناء FastAPI `APIRouter` وتركيبه بـ `useRouter`. يتم تقديمه بجوار المسارات المستندة إلى الملف:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter

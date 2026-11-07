@@ -78,20 +78,82 @@ class HealthController:
 اسے روٹ ماڈیول کے `controllers` میں درج کریں۔
 <!-- /router -->
 
+### بلٹ ان اینڈ پوائنٹس
+
+لوڈ بیلنس کرنے والا یا Kubernetes دو سوالات پوچھتا ہے: کیا یہ عمل زندہ ہے، اور کیا اس سے ٹریفک موصول ہو سکتا ہے؟ سیٹ `useHealth` اور Nexy دونوں جواب دیتا ہے، بغیر ہینڈلر فائل کے اور کوئی کنٹرولر نہیں:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| اختتامی نقطہ | جوابات 200 | جوابات 503 |
+|---|---|---|
+| `GET /health/live` | جبکہ عمل جواب دیتا ہے۔ | کبھی نہیں |
+| `GET /health/ready` | درخواست شروع ہونے کے بعد | جب یہ شروع ہوتا ہے، اور ایک بار جب سرور اسے رکنے کو کہتا ہے۔ |
+
+Nexy اس بات کی ضمانت دیتا ہے کہ `/health/ready` سرور کے آغاز اور بند ہونے کی پیروی کرتا ہے۔
+
+Nexy اس بات کی ضمانت دیتا ہے کہ دونوں اینڈ پوائنٹس رسائی لاگ سے باہر اور OpenAPI اسکیما سے باہر رہیں۔
+
+Nexy اس بات کی ضمانت دیتا ہے کہ دونوں اینڈ پوائنٹس `useTrustedHost` اور `useHTTPSRedirect` سے پہلے جواب دیتے ہیں، لہذا پوڈ کے پتے پر HTTP پر بھیجی جانے والی تحقیقات سے انکار نہیں کیا جاتا ہے۔
+
+کنونشن کے مطابق آپ اپنے اپنے راستوں کو بند رکھتے ہیں `/health/live` اور `/health/ready` جبکہ `useHealth` آن ہے: Nexy جواب کے اختتامی نکات پہلے۔ `useHealth` بذریعہ ڈیفالٹ `False` ہے، لہٰذا جو پروجیکٹ اسے سیٹ نہیں کرتا ہے وہ دونوں راستے رکھتا ہے۔
+
+آپ کی درخواست یہ جانچنے کی ذمہ دار ہے کہ یہ کس چیز پر منحصر ہے: `/health/ready` سرور کے لائف سائیکل کی رپورٹ کرتا ہے، نہ کہ ڈیٹا بیس کی حالت۔
+
+ان کی طرف ایک Kubernetes `Deployment` کی تحقیقات کی طرف اشارہ کریں:
+
+```yaml filename="k8s/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## جامد ہوسٹنگ
 
 ہر صفحہ HTML ہے، لیکن Nexy روٹنگ اور API ہینڈلرز کے لیے ایک سرور فرض کرتا ہے۔
 
 > [!NOTE]
-> کوئی `--static` تعمیر کا موڈ نہیں ہے۔ آپ کی پائپ لائن میں `nx build` آؤٹ پٹ سے ایک مکمل طور پر جامد برآمد پیدا کرنا ہوگی۔
+> کوئی `--static` تعمیر کا موڈ نہیں ہے۔ آپ کی پائپ لائن میں `nx build` آؤٹ پٹ سے خالصتاً جامد برآمد پیدا کرنا ہوگی۔
 
 ## چیک لسٹ
 
 - [ ] `nx build` CI میں، ان راستوں کے لیے کوئی انتباہ نہیں جو آپ سرور پر پیش کرنے کی توقع کرتے ہیں
 - [ ] `nx start` کوڈ 1 کے ساتھ باہر نکلتا ہے، اور کچھ بھی شروع نہیں ہوتا ہے، جب روٹ فائل لوڈ نہیں ہو سکتی
-- [ ] `NEXY_ACTION_SECRET` سیٹ، یا `__nexy__/action.key` تعمیر کے ساتھ رکھا
+- [ ] `NEXY_ACTION_SECRET` سیٹ، یا `__nexy__/action.key` تعمیر کے ساتھ رکھا گیا ہے۔
 - [ ] `useDocs = False` پیداوار میں اگر API اسکیما عوامی نہیں ہونا چاہئے۔
 - [] `useTrustedHost` اور `useHTTPSRedirect` عوامی تعیناتیوں کے لیے مقرر
+- [ ] `useHealth = True` جب لوڈ بیلنسر یا کبرنیٹس ایپ کی تحقیقات کرتا ہے۔
 - [ ] `__nexy__/` کا ارتکاب نہیں کیا۔
 
 ## اگلے اقدامات

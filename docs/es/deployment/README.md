@@ -2,7 +2,7 @@
 
 Dos comandos: `nx build` produce los artefactos, `nx start` los sirve.
 
-**Antes de comenzar:** un proyecto que se construye localmente con `nx build` y, para las páginas del cliente, la cadena de herramientas frontend que `nx new` instaló.
+**Antes de comenzar:** un proyecto que se compila localmente con `nx build` y, para las páginas del cliente, la cadena de herramientas frontend que `nx new` instaló.
 
 ```bash
 nx build
@@ -78,6 +78,67 @@ class HealthController:
 Indíquelo en el `controllers` del módulo raíz.
 <!-- /router -->
 
+### Puntos finales integrados
+
+Un equilibrador de carga o Kubernetes plantea dos preguntas: ¿está activo el proceso y puede recibir tráfico? Configure `useHealth` y Nexy responde a ambos, sin archivo de controlador ni controlador:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| Punto final | Respuestas 200 | Respuestas 503 |
+|---|---|---|
+| `GET /health/live` | mientras el proceso responde | nunca |
+| `GET /health/ready` | una vez iniciada la aplicación | mientras se inicia, y una vez que el servidor le pide que se detenga |
+
+Nexy garantiza que `/health/ready` sigue el inicio y el apagado del servidor.
+
+Nexy garantiza que ambos puntos finales permanezcan fuera del registro de acceso y fuera del esquema OpenAPI.
+
+Nexy garantiza que ambos puntos finales respondan antes de `useTrustedHost` y `useHTTPSRedirect`, por lo que no se rechaza una sonda enviada a través de HTTP a la dirección de un pod.
+
+Por convención, mantienes tus propias rutas fuera de `/health/live` y `/health/ready` mientras `useHealth` está activada: los puntos finales de Nexy responden primero. `useHealth` es `False` de forma predeterminada, por lo que un proyecto que no lo establece mantiene ambas rutas.
+
+Tu aplicación es responsable de comprobar de qué depende: `/health/ready` informa el ciclo de vida del servidor, no el estado de una base de datos.
+
+Apunte las sondas de un Kubernetes `Deployment` hacia ellos:
+
+```yaml filename="k8s/despliegue.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## Alojamiento estático
 
 Cada página es HTML, pero Nexy asume un servidor para el enrutamiento y para los controladores API.
@@ -92,7 +153,8 @@ Cada página es HTML, pero Nexy asume un servidor para el enrutamiento y para lo
 - [ ] `NEXY_ACTION_SECRET` establecido, o `__nexy__/action.key` mantenido con la compilación
 - [ ] `useDocs = False` en producción si el esquema de API no debe ser público
 - [ ] `useTrustedHost` y `useHTTPSRedirect` configurados para implementaciones públicas
-- [ ] `__nexy__/` not committed
+- [ ] `useHealth = True` cuando un balanceador de carga o Kubernetes prueba la aplicación
+- [ ] `__nexy__/` no comprometido
 
 ## Próximos pasos
 

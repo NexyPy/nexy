@@ -22,7 +22,8 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | ঠিকানা বাঁধা |
 | `useSslKeyfile`, `useSslCertfile` | `None` | সরাসরি HTTPS পরিবেশন করুন |
 | `useDevTools` | `True` | টুলবার `nexy dev` প্রতিটি পৃষ্ঠায় যোগ করে (পৃষ্ঠার তথ্য, রুট, ত্রুটি, কনফিগার); `False` এটিকে সরিয়ে দেয়। উত্পাদনে উপস্থিত হয় না |
-| `useWorkers` | `0` | প্রক্রিয়াগুলি `nx start` চলে; `0` লিনাক্স এবং ম্যাকওএস-এ প্রতি সিপিইউ একটি, উইন্ডোজে একটি |
+| `useHealth` | `False` | লোড ব্যালেন্সার এবং কুবারনেটস প্রোবের জন্য `GET /health/live` এবং `GET /health/ready` পরিবেশন করুন; দেখুন [মোতায়েন](../deployment/README.md#built-in-endpoints) |
+| `useWorkers` | `0` | প্রক্রিয়াগুলি `nx start` চলে; `0` প্রতি সিপিইউ লিনাক্স এবং ম্যাকোসে একটি, উইন্ডোজে একটি |
 | `useCSR` | `False` | ক্লায়েন্ট-সাইড রাউটিং মোড; `.nexy` রুট নিষ্ক্রিয় করা হয়েছে |
 
 ## রুট
@@ -62,14 +63,14 @@ class NexyConfig(NexyConfigModel):
 
 | মাঠ | ডিফল্ট | অর্থ |
 |---|---|---|
-| `useDocs` | `True` | স্কেলার রেফারেন্স পৃষ্ঠা পরিবেশন করুন; `/openapi.json` যে কোন উপায়ে পরিবেশন করা হয় |
+| `useDocs` | `True` | স্কেলার রেফারেন্স পৃষ্ঠা পরিবেশন করুন; `/openapi.json` উভয় উপায়ে পরিবেশিত হয় |
 | `useDocsUrl` | `"/docs"` | API রেফারেন্স পৃষ্ঠার পথ |
 | `useRedocsUrl` | `"/redocs"` | ঘোষিত কিন্তু কোন রুট মাউন্ট করা হয় না |
 | `useTitle` | `"Nexy App"` | OpenAPI শিরোনাম এবং পৃষ্ঠার শিরোনাম (`"Nexy"` `NexyConfigModel`]) |
 
 ### প্রকল্পের একটি পৃষ্ঠার জন্য বিনামূল্যে `/docs`
 
-এপিআই রেফারেন্স কোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
+API রেফারেন্স যেকোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
