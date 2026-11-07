@@ -34,6 +34,7 @@ Komponen untuk templat `.nexy` dan kait permintaan.
 
 Kait hanya berfungsi di dalam permintaan: lihat [kait](../routing/fbr/navigation/hooks.md).
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/rute/index.nexy"
 ---
 from nexy import useCookies, usePathname, useSearchParams
@@ -44,6 +45,20 @@ theme = useCookies().get("theme", "light")
 ---
 <p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
 
 ## `nexy.http`
 
@@ -64,6 +79,7 @@ Kosakata HTTP dari seorang penangan. Impor dari sini, bukan dari FastAPI, sehing
 | `notFound`, `forbidden`, `unauthorized` | naikkan 404, 403 atau 401 dari tempat yang sama |
 | `FileResponse`, `StreamingResponse` | jawab dengan file atau aliran |
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/item/[id].py"
 from nexy.http import Depends, Header, HTTPException, status
 
@@ -77,6 +93,28 @@ def api_key(x_api_key: str = Header(...)) -> str:
 async def GET(id: int, key: str = Depends(api_key)):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+Cantumkan pengontrol di `controllers` modul root.
+<!-- /router -->
 
 ## `nexy.decorators`
 

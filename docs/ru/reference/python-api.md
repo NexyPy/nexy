@@ -34,6 +34,7 @@
 
 Перехватчики работают только внутри запроса: см. [крючки](../routing/fbr/navigation/hooks.md).
 
+<!-- router:fbr,custom -->
 ```nexy filename="источник/маршруты/index.nexy"
 ---
 from nexy import useCookies, usePathname, useSearchParams
@@ -44,6 +45,20 @@ theme = useCookies().get("theme", "light")
 ---
 <p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
 
 ## `nexy.http`
 
@@ -64,6 +79,7 @@ HTTP-словарь обработчика. Импортируйте отсюд�
 | `notFound`, `forbidden`, `unauthorized` | поднять 404, 403 или 401 из тех же мест |
 | `FileResponse`, `StreamingResponse` | ответьте файлом или потоком |
 
+<!-- router:fbr,custom -->
 ```python filename="src/маршруты/api/items/[id].py"
 from nexy.http import Depends, Header, HTTPException, status
 
@@ -77,6 +93,28 @@ def api_key(x_api_key: str = Header(...)) -> str:
 async def GET(id: int, key: str = Depends(api_key)):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+Перечислите контроллер в `controllers` корневого модуля.
+<!-- /router -->
 
 ## `nexy.decorators`
 
@@ -85,7 +123,7 @@ async def GET(id: int, key: str = Depends(api_key)):
 | `Action` | превратить функцию в конечную точку `POST`, см. [действия](../guides/actions.md) |
 | `revalidate` | сообщить браузеру, на каких страницах действие стало устаревшим |
 | `Module`, `Controller` | объявить модуль и контроллер в [модульном маршрутизаторе](../routing/modular/README.md) |
-| `Injectable`, `Container`, `Scope` | [внедрение зависимостей](../routing/modular/dependency-injection.md) и время его жизни |
+| `Injectable`, `Container`, `Scope` | [внедрение зависимостей](../routing/modular/dependency-injection.md) и время его существования |
 | `UseGuard`, `Middleware` | защитить или обернуть один обработчик, см. [гарды](../routing/modular/guards-and-metadata.md) |
 | `UseRoute`, `useRoute`, `RouteMeta` | назовите маршрут и опишите его для OpenAPI |
 | `UseResponse`, `ResponseMeta` | описать ответ на маршрут |

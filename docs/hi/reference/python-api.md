@@ -34,6 +34,7 @@
 
 हुक केवल अनुरोध के अंदर काम करते हैं: [हुक](../routing/fbr/navigation/hooks.md) देखें।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import useCookies, usePathname, useSearchParams
@@ -44,6 +45,20 @@ theme = useCookies().get("theme", "light")
 ---
 <p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
 
 ## `nexy.http`
 
@@ -64,6 +79,7 @@ theme = useCookies().get("theme", "light")
 | `notFound`, `forbidden`, `unauthorized` | उन्हीं स्थानों से 404, 403 या 401 उठाएँ |
 | `FileResponse`, `StreamingResponse` | किसी फ़ाइल या स्ट्रीम के साथ उत्तर दें |
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/items/[id].py"
 from nexy.http import Depends, Header, HTTPException, status
 
@@ -77,6 +93,28 @@ def api_key(x_api_key: str = Header(...)) -> str:
 async def GET(id: int, key: str = Depends(api_key)):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+नियंत्रक को रूट मॉड्यूल के `controllers` में सूचीबद्ध करें।
+<!-- /router -->
 
 ## `nexy.decorators`
 
@@ -87,7 +125,7 @@ async def GET(id: int, key: str = Depends(api_key)):
 | `Module`, `Controller` | [मॉड्यूलर राउटर](../routing/modular/README.md) में एक मॉड्यूल और एक नियंत्रक घोषित करें |
 | `Injectable`, `Container`, `Scope` | [निर्भरता इंजेक्शन](../routing/modular/dependency-injection.md) और इसका जीवनकाल |
 | `UseGuard`, `Middleware` | एक हैंडलर की रक्षा करें या उसे लपेटें, देखें [रक्षक](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`, `useRoute`, `RouteMeta` | एक मार्ग को नाम दें और उसका वर्णन करें OpenAPI |
+| `UseRoute`, `useRoute`, `RouteMeta` | एक मार्ग का नाम बताएं और उसका वर्णन करें OpenAPI |
 | `UseResponse`, `ResponseMeta` | किसी मार्ग के उत्तर का वर्णन करें |
 | `HTTP_METHODS` | एक हैंडलर फ़ाइल HTTP विधियों को परिभाषित कर सकती है |
 | `ACTIONS_STORE` | टूलींग और परीक्षण के लिए क्रियाओं की रजिस्ट्री |
@@ -120,4 +158,4 @@ def test_the_button_shows_its_label():
 
 - [कॉन्फ़िग](config.md): इन नामों के पीछे `use*` फ़ील्ड
 - [अपवाद और त्रुटियाँ](exceptions.md): प्रत्येक विफलता क्या उत्तर देती है
-- [दस्तावेज़ीकरण सूचकांक](../README.md): आप जो बना रहे हैं उसके लिए पृष्ठ
+- [दस्तावेज़ीकरण सूचकांक](../README.md): आप जो बना रहे हैं उसका पृष्ठ

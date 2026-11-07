@@ -34,6 +34,7 @@
 
 হুকগুলি শুধুমাত্র একটি অনুরোধের ভিতরে কাজ করে: [হুকস](../routing/fbr/navigation/hooks.md) দেখুন।
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import useCookies, usePathname, useSearchParams
@@ -44,6 +45,20 @@ theme = useCookies().get("theme", "light")
 ---
 <p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
 
 ## `nexy.http`
 
@@ -64,6 +79,7 @@ theme = useCookies().get("theme", "light")
 | `notFound`, `forbidden`, `unauthorized` | একই জায়গা থেকে একটি 404, 403 বা 401 বাড়ান |
 | `FileResponse`, `StreamingResponse` | একটি ফাইল বা একটি স্ট্রিম দিয়ে উত্তর দিন |
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/items/[id].py"
 from nexy.http import Depends, Header, HTTPException, status
 
@@ -77,6 +93,28 @@ def api_key(x_api_key: str = Header(...)) -> str:
 async def GET(id: int, key: str = Depends(api_key)):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+রুট মডিউলের `controllers` কন্ট্রোলারের তালিকা করুন।
+<!-- /router -->
 
 ## `nexy.decorators`
 
@@ -106,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | নাম | এটা কি |
 |---|---|
-| `render` | প্রদত্ত প্রপসের জন্য একটি `.nexy` উপাদানের এইচটিএমএল, সার্ভার ছাড়াই, [টেস্টিং](../guides/testing.md) দেখুন |
+| `render` | প্রদত্ত প্রপসের জন্য একটি `.nexy` কম্পোনেন্টের এইচটিএমএল, সার্ভার ছাড়াই, [টেস্টিং](../guides/testing.md) দেখুন |
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render

@@ -34,6 +34,7 @@
 
 ہکس صرف درخواست کے اندر کام کرتے ہیں: دیکھیں [ہکس](../routing/fbr/navigation/hooks.md)۔
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import useCookies, usePathname, useSearchParams
@@ -44,10 +45,24 @@ theme = useCookies().get("theme", "light")
 ---
 <p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
 
 ## `nexy.http`
 
-ہینڈلر کی HTTP الفاظ۔ FastAPI کے بجائے یہاں سے درآمد کریں، لہذا آپ کے ہینڈلر Nexy کے معاہدے پر منحصر ہیں۔
+ہینڈلر کی HTTP الفاظ۔ FastAPI کے بجائے یہاں سے درآمد کریں، لہذا آپ کے ہینڈلرز Nexy کے معاہدے پر منحصر ہیں۔
 
 | نام | یہ کیا ہے |
 |---|---|
@@ -64,6 +79,7 @@ theme = useCookies().get("theme", "light")
 | `notFound`، `forbidden`، `unauthorized` | اسی جگہوں سے 404، 403 یا 401 بلند کریں۔ |
 | `FileResponse`، `StreamingResponse` | فائل یا اسٹریم کے ساتھ جواب دیں۔ |
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/items/[id].py"
 from nexy.http import Depends, Header, HTTPException, status
 
@@ -77,6 +93,28 @@ def api_key(x_api_key: str = Header(...)) -> str:
 async def GET(id: int, key: str = Depends(api_key)):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+روٹ ماڈیول کے `controllers` میں کنٹرولر کی فہرست بنائیں۔
+<!-- /router -->
 
 ## `nexy.decorators`
 

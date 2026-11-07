@@ -34,6 +34,7 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试会在两个�
 
 挂钩仅在请求内工作：请参阅[钩子](../routing/fbr/navigation/hooks.md)。
 
+<!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
 ---
 from nexy import useCookies, usePathname, useSearchParams
@@ -44,6 +45,20 @@ theme = useCookies().get("theme", "light")
 ---
 <p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```nexy filename="src/apps/home_view.nexy"
+---
+from nexy import useCookies, usePathname, useSearchParams
+
+pathname = usePathname()
+page = useSearchParams().get("page", "1")
+theme = useCookies().get("theme", "light")
+---
+<p>{{ pathname }} - page {{ page }} - {{ theme }} theme</p>
+```
+<!-- /router -->
 
 ## `nexy.http`
 
@@ -61,9 +76,10 @@ theme = useCookies().get("theme", "light")
 | `JSONResponse`，`HTMLResponse`，`PlainTextResponse` | 具有固定内容类型的答案 |
 | `RedirectResponse` | HTTP 重定向 |
 | `redirect`，`permanentRedirect` | 从页面、处理程序、控制器或防护程序引发重定向（307、308） |
-| `notFound`、`forbidden`、`unauthorized` | 从同一地点提出 404、403 或 401 |
+| `notFound`，`forbidden`，`unauthorized` | 从同一地点提出 404、403 或 401 |
 | `FileResponse`，`StreamingResponse` | 用文件或流回答 |
 
+<!-- router:fbr,custom -->
 ```python filename="src/routes/api/items/[id].py"
 from nexy.http import Depends, Header, HTTPException, status
 
@@ -77,6 +93,28 @@ def api_key(x_api_key: str = Header(...)) -> str:
 async def GET(id: int, key: str = Depends(api_key)):
     return {"id": id}
 ```
+<!-- /router -->
+
+<!-- router:modular -->
+```python filename="src/apps/items/items_by_id_api_controller.py"
+from nexy.decorators import Controller
+from nexy.http import Depends, Header, HTTPException, status
+
+
+def api_key(x_api_key: str = Header(...)) -> str:
+    if x_api_key != "secret":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bad key")
+    return x_api_key
+
+
+@Controller("/api/items/{id}")
+class ItemsByIdApiController:
+    async def get(self, id: int, key: str = Depends(api_key)):
+        return {"id": id}
+```
+
+在根模块的 `controllers` 中列出控制器。
+<!-- /router -->
 
 ## `nexy.decorators`
 
@@ -87,7 +125,7 @@ async def GET(id: int, key: str = Depends(api_key)):
 | `Module`，`Controller` | 在[模块化路由器](../routing/modular/README.md) 中声明一个模块和一个控制器 |
 | `Injectable`，`Container`，`Scope` | [依赖注入](../routing/modular/dependency-injection.md) 及其生命周期 |
 | `UseGuard`，`Middleware` | 保护或包装一个处理程序，请参阅 [守卫](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`，`useRoute`，`RouteMeta` | 命名一条路线并为 OpenAPI 描述它 |
+| `UseRoute`，`useRoute`，`RouteMeta` | 命名一条路线并对其进行描述 OpenAPI |
 | `UseResponse`，`ResponseMeta` | 描述一条路线的答案 |
 | `HTTP_METHODS` | 处理程序文件可以定义的 HTTP 方法 |
 | `ACTIONS_STORE` | 用于工具和测试的操作注册表 |
