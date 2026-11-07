@@ -219,6 +219,14 @@ class TestAlembicEnv:
         exec(compile(head, env, "exec"), {"__file__": env})  # noqa: S102
         assert {"src.models.note_model", "src.apps.users.user_model"} <= set(sys.modules)
 
+    def test_sqlmodel_names_its_constraints_before_the_models_load(self, tmp_path):
+        env = self._env(tmp_path, "SQLModel")
+        assert env.index("naming_convention") < env.index("import_module(")
+
+    @pytest.mark.parametrize("orm", ["SQLModel", "SQLAlchemy"])
+    def test_sqlite_migrates_in_batch_mode(self, tmp_path, orm):
+        assert self._env(tmp_path, orm).count("render_as_batch=") == 2
+
     def test_sqlalchemy_takes_its_base_from_the_module_that_holds_the_models(self, tmp_path):
         env = self._env(tmp_path, "SQLAlchemy", "src.apps.users.user_model")
         assert "from src.apps.users.user_model import Base" in env
