@@ -1,13 +1,33 @@
 [project]
 name = "nexy"
 version = "2.2.2"
-description = "The Modern Fullstack Python Meta-Framework: Build high-performance web apps ."
+description = "The fullstack Python meta-framework. FastAPI on the server, Vite on the client, one file per page."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Espoir LOEMBA" }]
 requires-python = ">=3.12"
 keywords = [
-    "python", "fastapi", "fullstack", "meta-framework", "vite", "react", "vue", "svelte", "solid", "jinja2", 
-    "ssr", "web-development", "nextjs-alternative", "astro-alternative", "modern-web", "dx", 
-    "frontend-agnostic", "python-ssr", "vite-python", "web-framework"
+    "python", "fastapi", "starlette", "asgi", "fullstack", "meta-framework",
+    "vite", "jinja2", "react", "vue", "svelte", "solid", "preact",
+    "file-based-routing", "layouts", "islands", "ssr", "ssg", "isr",
+    "frontend-agnostic", "python-ssr", "vite-python", "web-framework",
+    "nextjs-alternative",
+]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Typing :: Typed",
 ]
 
 dependencies = [
@@ -32,6 +52,14 @@ dependencies = [
     "watchfiles>=1.0",
     "websockets>=13.0",
 ]
+
+[project.urls]
+Homepage = "https://nexypy.github.io/nexy/"
+Documentation = "https://nexypy.github.io/nexy/docs/"
+Repository = "https://github.com/NexyPy/nexy"
+Changelog = "https://github.com/NexyPy/nexy/blob/main/CHANGELOG.md"
+Issues = "https://github.com/NexyPy/nexy/issues"
+Discussions = "https://github.com/NexyPy/nexy/discussions"
 
 [dependency-groups]
 dev = [
