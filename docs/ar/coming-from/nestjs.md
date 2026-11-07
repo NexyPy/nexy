@@ -457,6 +457,7 @@ def test_cats():
 | `npm test` | `nx test` |
 | `nest generate controller` | `*_controller.py` جديد، يضاف إلى وحدته |
 
+<!-- router:fbr,custom -->
 ## أو الملفات بدلا من الطبقات
 
 يمكن أيضًا أن ينتقل تطبيق NestJS الذي يكون في الغالب CRUD إلى جهاز التوجيه المستند إلى الملف، حيث يكون المجلد هو المسار ولا توجد وحدات نمطية للحفاظ على مزامنتها:
@@ -465,6 +466,8 @@ def test_cats():
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 انظر [اختيار جهاز توجيه](../routing/README.md).
 

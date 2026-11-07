@@ -457,6 +457,7 @@ Para substituir um serviço em um teste, dependa dele através de `Depends` e us
 | `npm test` | `nx test` |
 | `nest generate controller` | um novo `*_controller.py`, adicionado ao seu módulo |
 
+<!-- router:fbr,custom -->
 ## Ou arquivos em vez de classes
 
 Um aplicativo NestJS que é principalmente CRUD também pode ser movido para o roteador baseado em arquivo, onde a pasta é o caminho e não há módulos para manter sincronizados:
@@ -465,6 +466,8 @@ Um aplicativo NestJS que é principalmente CRUD também pode ser movido para o r
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 Consulte [Escolha um roteador](../routing/README.md).
 

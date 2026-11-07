@@ -465,6 +465,7 @@ To replace a service in a test, depend on it through `Depends` and use FastAPI's
 | `npm test` | `nx test` |
 | `nest generate controller` | a new `*_controller.py`, added to its module |
 
+<!-- router:fbr,custom -->
 ## Or files instead of classes
 
 A NestJS app that is mostly CRUD can also move to the file-based router, where the folder is the
@@ -474,6 +475,8 @@ path and there are no modules to keep in sync:
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 See [Choose a router](../routing/README.md).
 

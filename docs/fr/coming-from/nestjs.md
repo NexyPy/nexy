@@ -68,7 +68,7 @@ export class CatController {
 
 `@Param` et `ParseIntPipe` deviennent un `{id}` dans le chemin et une annotation `int` :
 
-```python filename=""
+```python filename="src/apps/cats/cat_controller.py"
 from nexy.decorators import Controller
 
 
@@ -457,6 +457,7 @@ Pour remplacer un service dans un test, dépendez-en via `Depends` et utilisez l
 | `npm test` | `nx test` |
 | `nest generate controller` | un nouveau `*_controller.py`, ajouté à son module |
 
+<!-- router:fbr,custom -->
 ## Ou des fichiers au lieu de classes
 
 Une application NestJS qui est principalement CRUD peut également être déplacée vers le routeur basé sur des fichiers, où le dossier est le chemin et où il n'y a aucun module à synchroniser :
@@ -465,6 +466,8 @@ Une application NestJS qui est principalement CRUD peut également être déplac
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 Voir [Choisir un routeur](../routing/README.md).
 

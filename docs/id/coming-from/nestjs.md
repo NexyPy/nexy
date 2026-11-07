@@ -457,6 +457,7 @@ Untuk mengganti layanan dalam pengujian, bergantung padanya melalui `Depends` da
 | `npm test` | `nx test` |
 | `nest generate controller` | `*_controller.py` baru, ditambahkan ke modulnya |
 
+<!-- router:fbr,custom -->
 ## Atau file, bukan kelas
 
 Aplikasi NestJS yang sebagian besar CRUD juga dapat berpindah ke router berbasis file, dengan folder sebagai jalurnya dan tidak ada modul yang perlu disinkronkan:
@@ -465,6 +466,8 @@ Aplikasi NestJS yang sebagian besar CRUD juga dapat berpindah ke router berbasis
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 Lihat [Memilih router](../routing/README.md).
 

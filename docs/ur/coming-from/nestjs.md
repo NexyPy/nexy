@@ -457,20 +457,23 @@ def test_cats():
 | `npm test` | `nx test` |
 | `nest generate controller` | ایک نیا `*_controller.py`، اس کے ماڈیول میں شامل کیا گیا۔ |
 
+<!-- router:fbr,custom -->
 ## یا کلاسز کے بجائے فائلز
 
-ایک NestJS ایپ جو زیادہ تر CRUD ہے فائل پر مبنی روٹر میں بھی جا سکتی ہے، جہاں فولڈر ہی راستہ ہے اور مطابقت پذیر رکھنے کے لیے کوئی ماڈیول نہیں ہیں:
+ایک NestJS ایپ جو زیادہ تر CRUD ہے فائل پر مبنی راؤٹر میں بھی جا سکتی ہے، جہاں فولڈر راستہ ہے اور مطابقت پذیر رکھنے کے لیے کوئی ماڈیول نہیں ہیں:
 
 ```python filename="src/routes/cats/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
 
+<!-- /router -->
+
 دیکھیں [روٹر کا انتخاب کریں](../routing/README.md)۔
 
 ## اگلے اقدامات
 
-- [ماڈیولر روٹنگ ](../routing/modular/README.md)
+- [ماڈیولر روٹنگ](../routing/modular/README.md)
 - [انحصار انجکشن](../routing/modular/dependency-injection.md)
 - [Nexy اور NestJS](../routing/modular/vs-nestjs.md)
 - [ایکسپریس سے Nexy تک](../getting-started/coming-from-other-frameworks.md#from-express-or-node-backends)

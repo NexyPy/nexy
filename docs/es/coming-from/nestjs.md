@@ -457,6 +457,7 @@ Para reemplazar un servicio en una prueba, dependa de él a través de `Depends`
 | `npm test` | `nx test` |
 | `nest generate controller` | un nuevo `*_controller.py`, agregado a su módulo |
 
+<!-- router:fbr,custom -->
 ## O archivos en lugar de clases.
 
 Una aplicación NestJS que es principalmente CRUD también puede moverse al enrutador basado en archivos, donde la carpeta es la ruta y no hay módulos que mantener sincronizados:
@@ -465,6 +466,8 @@ Una aplicación NestJS que es principalmente CRUD también puede moverse al enru
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 Consulte [Elija un enrutador](../routing/README.md).
 

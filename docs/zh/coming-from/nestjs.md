@@ -457,6 +457,7 @@ def test_cats():
 | `npm test` | `nx test` |
 | `nest generate controller` | 一个新的 `*_controller.py`，添加到其模块中 |
 
+<!-- router:fbr,custom -->
 ## 或者用文件代替类
 
 主要是 CRUD 的 NestJS 应用程序也可以移动到基于文件的路由器，其中文件夹是路径，并且没有需要保持同步的模块：
@@ -465,6 +466,8 @@ def test_cats():
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 请参阅[选择路由器](../routing/README.md)。
 

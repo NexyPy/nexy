@@ -457,6 +457,7 @@ def test_cats():
 | `npm test` | `nx test` |
 | `nest generate controller` | इसके मॉड्यूल में एक नया `*_controller.py` जोड़ा गया |
 
+<!-- router:fbr,custom -->
 ## या कक्षाओं के बजाय फ़ाइलें
 
 एक NestJS ऐप जो अधिकतर सीआरयूडी है, फ़ाइल-आधारित राउटर पर भी जा सकता है, जहां फ़ोल्डर पथ है और सिंक में रखने के लिए कोई मॉड्यूल नहीं हैं:
@@ -465,6 +466,8 @@ def test_cats():
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 देखें [राउटर चुनें](../routing/README.md)।
 

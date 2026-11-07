@@ -457,14 +457,17 @@ Um einen Dienst in einem Test zu ersetzen, verlassen Sie sich über `Depends` au
 | `npm test` | `nx test` |
 | `nest generate controller` | ein neues `*_controller.py`, das zu seinem Modul hinzugefügt wurde |
 
+<!-- router:fbr,custom -->
 ## Oder Dateien statt Klassen
 
-Eine NestJS-App, die größtenteils CRUD ist, kann auch auf den dateibasierten Router verschoben werden, wo der Ordner der Pfad ist und es keine Module gibt, die synchronisiert werden müssen:
+Eine NestJS App, die größtenteils CRUD ist, kann auch auf den dateibasierten Router verschoben werden, wo der Ordner der Pfad ist und es keine Module gibt, die synchronisiert werden müssen:
 
 ```python filename="src/routes/cats/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 Siehe [Wählen Sie einen Router](../routing/README.md).
 

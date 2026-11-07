@@ -447,7 +447,7 @@ def test_cats():
 
 একটি পরীক্ষায় একটি পরিষেবা প্রতিস্থাপন করতে, `Depends` এর মাধ্যমে এটির উপর নির্ভর করুন এবং FastAPI এর `app.dependency_overrides` ব্যবহার করুন: দেখুন [Nexy এবং NestJS](../routing/modular/vs-nestjs.md#what-is-missing)।
 
-## চলছে
+## চলমান
 
 | NestJS | নেক্সি |
 |---|---|
@@ -457,14 +457,17 @@ def test_cats():
 | `npm test` | `nx test` |
 | `nest generate controller` | একটি নতুন `*_controller.py`, এর মডিউলে যোগ করা হয়েছে |
 
+<!-- router:fbr,custom -->
 ## অথবা ক্লাসের পরিবর্তে ফাইল
 
-একটি NestJS অ্যাপ যা বেশিরভাগই CRUD ফাইল-ভিত্তিক রাউটারে যেতে পারে, যেখানে ফোল্ডারটি পাথ এবং সিঙ্কে রাখার জন্য কোনও মডিউল নেই:
+একটি NestJS অ্যাপ যা বেশিরভাগ CRUD হয় ফাইল-ভিত্তিক রাউটারেও যেতে পারে, যেখানে ফোল্ডারটি পাথ এবং সিঙ্কে রাখার জন্য কোনও মডিউল নেই:
 
 ```python filename="src/routes/cats/[id].py"
 async def GET(id: int):
     return {"id": id}
 ```
+
+<!-- /router -->
 
 [একটি রাউটার চয়ন করুন](../routing/README.md) দেখুন।
 
