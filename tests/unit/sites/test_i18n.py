@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from nexy.__version__ import __version__
 from sites.shared import docs_source, i18n, version
 from sites.vanilla import build
 
@@ -108,7 +109,10 @@ class TestVanilla:
     def test_the_version_sits_next_to_the_logo(self, out):
         page = (out / "docs" / "index.html").read_text(encoding="utf-8")
         assert f'<span class="side-version" aria-label="Nexy {version.VERSION}">' in page
-        assert version.VERSION == "V2.2"
+
+    def test_the_version_badge_names_the_package_line(self):
+        major, minor, *_ = __version__.split(".")
+        assert f"V{major}.{minor}" == version.VERSION
 
 
 class TestPreferred:
