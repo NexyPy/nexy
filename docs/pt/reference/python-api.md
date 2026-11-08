@@ -71,7 +71,7 @@ O vocabulário HTTP de um manipulador. Importe daqui em vez de FastAPI, para que
 | `status` | códigos de status nomeados, como `status.HTTP_404_NOT_FOUND` |
 | `Depends` | execute uma função primeiro e passe seu resultado |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | de onde vem um parâmetro |
-| `Form`, `File`, `UploadFile` | campos de formulário e uploads (precisa de `python-multipart`) |
+| `Form`, `File`, `UploadFile` | campos de formulário e uploads (`python-multipart` apenas para `multipart/form-data`) |
 | `BackgroundTasks` | trabalho que é executado após o envio da resposta |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | respostas com um tipo de conteúdo fixo |
 | `RedirectResponse` | um redirecionamento HTTP |
