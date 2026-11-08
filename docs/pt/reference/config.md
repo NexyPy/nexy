@@ -22,6 +22,7 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | endereço de ligação |
 | `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS diretamente |
 | `useDevTools` | `True` | a barra de ferramentas `nexy dev` adiciona informações a cada página (informações da página, rotas, erros, configuração); `False` remove-o. Nunca presente na produção |
+| `useHealth` | `False` | servir `GET /health/live` e `GET /health/ready` para balanceadores de carga e testes do Kubernetes; consulte [Implantar](../deployment/README.md#built-in-endpoints) |
 | `useWorkers` | `0` | processos `nx start` executados; `0` é um por CPU no Linux e macOS, um no Windows |
 | `useCSR` | `False` | modo de roteamento do lado do cliente; `.nexy` rotas estão desativadas |
 
@@ -88,7 +89,7 @@ Ou desligue-o com `useDocs = False`. `/openapi.json` permanece atendido em ambos
 | `useMiddlewares` | `[]` | Classes de middleware ASGI |
 | `useCORS` | `None` | kwargs para `CORSMiddleware` |
 | `useGZip` | `None` | kwargs para `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
+| `useTrustedHost` | `None` | kwargs para `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuração de middleware de autenticação |
 | `useHTTPSRedirect` | `False` | redirecionar HTTP para HTTPS |

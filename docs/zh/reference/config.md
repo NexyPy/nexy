@@ -22,7 +22,8 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | 绑定地址 |
 | `useSslKeyfile`，`useSslCertfile` | `None` | 直接提供HTTPS服务 |
 | `useDevTools` | `True` | 工具栏 `nexy dev` 添加到每个页面（页面信息、路由、错误、配置）； `False` 将其删除。从未出现在生产中 |
-| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 是 Linux 和 macOS 上每个 CPU 一个，Windows 上一个 |
+| `useHealth` | `False` | 为负载均衡器和 Kubernetes 探测器提供 `GET /health/live` 和 `GET /health/ready` 服务；请参阅[部署](../deployment/README.md#built-in-endpoints) |
+| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 在 Linux 和 macOS 上是每个 CPU 一个，在 Windows 上是一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 
 ## 路线
@@ -31,7 +32,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | 安装在基于文件的路由旁边的 `APIRouter` 实例或类； `None` 表示仅基于文件 |
 | `excludeDirs` | `["templates", "extension", "docs"]` | 扫描路由时跳过的目录 |
-| `useAliases` | `None` | 导入别名，例如 `{"@": "src"}`（`@/components/Counter.tsx` 表示 `src/components/Counter.tsx`）； `nx new` 写入您选择的内容，Vite 和 `tsconfig.json` 紧随其后 |
+| `useAliases` | `None` | 导入别名，例如 `{"@": "src"}`（`@/components/Counter.tsx` 表示 `src/components/Counter.tsx`）； `nx new` 写入您选择的那个，然后 Vite 和 `tsconfig.json` 跟随它 |
 
 ## 前端
 
@@ -69,7 +70,7 @@ class NexyConfig(NexyConfigModel):
 
 ### 项目页面的免费 `/docs`
 
-API 参考在任何路由之前回答 `/docs`，因此永远不会在那里提供 `src/routes/docs.nexy` 或 `src/routes/docs/[[...slug]].nexy`。 `nx dev` 和 `nx start` 在启动时命名这样的页面。使用 `useDocsUrl` 移动参考：
+API 参考在任何路由之前回答 `/docs`，因此永远不会在那里提供 `src/routes/docs.nexy` 或 `src/routes/docs/[[...slug]].nexy`。 `nx dev` 和 `nx start` 在启动时命名这样的页面。使用 `useDocsUrl` 移动引用：
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

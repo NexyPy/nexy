@@ -22,6 +22,7 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | बाइंड एड्रेस |
 | `useSslKeyfile`, `useSslCertfile` | `None` | सीधे HTTPS परोसें |
 | `useDevTools` | `True` | टूलबार `nexy dev` प्रत्येक पृष्ठ पर जुड़ता है (पृष्ठ जानकारी, मार्ग, त्रुटियाँ, कॉन्फ़िगरेशन); `False` इसे हटा देता है। उत्पादन में कभी मौजूद नहीं |
+| `useHealth` | `False` | लोड बैलेंसर्स और कुबेरनेट्स जांच के लिए `GET /health/live` और `GET /health/ready` परोसें; देखें [तैनाती](../deployment/README.md#built-in-endpoints) |
 | `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 
@@ -65,7 +66,7 @@ class NexyConfig(NexyConfigModel):
 | `useDocs` | `True` | स्केलर संदर्भ पृष्ठ परोसें; `/openapi.json` किसी भी तरह से परोसा जाता है |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
 | `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
-| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` में `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` `NexyConfigModel` में) |
 
 ### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
 
@@ -79,7 +80,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-या इसे `useDocs = False` से बंद कर दें। `/openapi.json` दोनों ही मामलों में सेवा बरकरार रहेगी: परियोजना के मार्गों को उस पथ से दूर रखें।
+या इसे `useDocs = False` से बंद कर दें। `/openapi.json` दोनों मामलों में सेवा बरकरार रहेगी: परियोजना के मार्गों को उस पथ से दूर रखें।
 
 ## मिडलवेयर
 
@@ -103,7 +104,7 @@ class NexyConfig(NexyConfigModel):
 
 ## फ़ाइल ट्री के बाहर के रूट
 
-एक FastAPI `APIRouter` बनाएं और इसे `useRouter` से माउंट करें। इसे फ़ाइल-आधारित मार्गों के बगल में परोसा जाता है:
+एक FastAPI `APIRouter` बनाएं और इसे `useRouter` के साथ माउंट करें। इसे फ़ाइल-आधारित मार्गों के बगल में परोसा जाता है:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter
@@ -129,7 +130,7 @@ class NexyConfig(NexyConfigModel):
 
 `useViteDevUrl`, `useRTL`।
 
-## अगले कदम
+## अगले चरण
 
 - [i18n](../guides/i18n.md): अंतर्राष्ट्रीयकरण
 - [फ्रंटएंड](../guides/frontend.md): `useFF` और क्लाइंट बिल्ड

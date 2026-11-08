@@ -78,6 +78,67 @@ class HealthController:
 Cantumkan di `controllers` modul root.
 <!-- /router -->
 
+### Titik akhir bawaan
+
+Penyeimbang beban atau Kubernetes menanyakan dua pertanyaan: apakah prosesnya berjalan, dan bolehkah menerima lalu lintas? Setel `useHealth` dan Nexy menjawab keduanya, tanpa file pengendali dan tanpa pengontrol:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| Titik akhir | Jawaban 200 | Jawaban 503 |
+|---|---|---|
+| `GET /health/live` | sementara proses menjawab | tidak pernah |
+| `GET /health/ready` | setelah aplikasi dimulai | saat itu dimulai, dan setelah server memintanya untuk berhenti |
+
+Nexy menjamin bahwa `/health/ready` mengikuti startup dan shutdown server.
+
+Nexy menjamin bahwa kedua titik akhir tetap berada di luar log akses dan skema OpenAPI.
+
+Nexy menjamin bahwa kedua endpoint menjawab sebelum `useTrustedHost` dan `useHTTPSRedirect`, sehingga penyelidikan yang dikirim melalui HTTP ke alamat sebuah pod tidak ditolak.
+
+Berdasarkan konvensi, Anda menonaktifkan rute Anda sendiri `/health/live` dan `/health/ready` saat `useHealth` aktif: titik akhir jawaban Nexy terlebih dahulu. `useHealth` adalah `False` secara default, jadi proyek yang tidak menyetelnya akan mempertahankan kedua jalur.
+
+Aplikasi Anda bertanggung jawab untuk memeriksa hal-hal yang bergantung padanya: `/health/ready` melaporkan siklus hidup server, bukan keadaan database.
+
+Arahkan probe Kubernetes `Deployment` ke mereka:
+
+```yaml filename="k8s/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## Hosting statis
 
 Setiap halaman adalah HTML, tetapi Nexy mengasumsikan server untuk perutean dan penangan API.
@@ -92,6 +153,7 @@ Setiap halaman adalah HTML, tetapi Nexy mengasumsikan server untuk perutean dan 
 - [ ] `NEXY_ACTION_SECRET` disetel, atau `__nexy__/action.key` disimpan dengan build
 - [ ] `useDocs = False` dalam produksi jika skema API tidak boleh bersifat publik
 - [ ] `useTrustedHost` dan `useHTTPSRedirect` ditetapkan untuk penerapan publik
+- [ ] `useHealth = True` ketika penyeimbang beban atau Kubernetes menyelidiki aplikasi
 - [ ] `__nexy__/` tidak dilakukan
 
 ## Langkah selanjutnya

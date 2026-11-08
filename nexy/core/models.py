@@ -171,6 +171,7 @@ class NexyConfigModel:
     useSslCertfile: str | None = None
     useWorkers: int = 0
     useDevTools: bool = True
+    useHealth: bool = False
     useRTL: bool = False
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"

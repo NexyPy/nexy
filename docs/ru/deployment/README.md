@@ -78,6 +78,67 @@ class HealthController:
 Перечислите его в `controllers` корневого модуля.
 <!-- /router -->
 
+### Встроенные конечные точки
+
+Балансировщик нагрузки или Kubernetes задает два вопроса: активен ли процесс и может ли он получать трафик? Установите `useHealth` и Nexy отвечает оба, без файла-обработчика и без контроллера:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| Конечная точка | Ответы 200 | Ответы 503 |
+|---|---|---|
+| `GET /health/live` | пока процесс отвечает | никогда |
+| `GET /health/ready` | как только приложение запустится | пока он запускается, и как только сервер попросит его остановиться |
+
+Nexy гарантирует, что `/health/ready` следует за запуском и завершением работы сервера.
+
+Nexy гарантирует, что обе конечные точки останутся вне журнала доступа и схемы OpenAPI.
+
+Nexy гарантирует, что обе конечные точки ответят до `useTrustedHost` и `useHTTPSRedirect`, поэтому зонд, отправленный по HTTP на адрес модуля, не будет отклонен.
+
+По соглашению вы держите свои собственные маршруты отключенными от `/health/live` и `/health/ready`, пока `useHealth` включен: конечные точки Nexy отвечают первыми. `useHealth` по умолчанию равен `False`, поэтому проект, в котором он не установлен, сохраняет оба пути.
+
+Ваше приложение отвечает за проверку того, от чего оно зависит: `/health/ready` сообщает о жизненном цикле сервера, а не о состоянии базы данных.
+
+Направьте на них зонды Kubernetes `Deployment`:
+
+```yaml filename="k8s/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## Статический хостинг
 
 Каждая страница представляет собой HTML, но Nexy предполагает наличие сервера для маршрутизации и обработчиков API.
@@ -92,6 +153,7 @@ class HealthController:
 - [ ] `NEXY_ACTION_SECRET` установлено или `__nexy__/action.key` сохраняется вместе со сборкой
 - [ ] `useDocs = False` в производстве, если схема API не должна быть общедоступной
 - [ ] `useTrustedHost` и `useHTTPSRedirect` установлены для публичного развертывания.
+- [ ] `useHealth = True` когда балансировщик нагрузки или Kubernetes проверяет приложение
 - [ ] `__nexy__/` не зафиксировано
 
 ## Следующие шаги

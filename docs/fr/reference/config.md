@@ -22,6 +22,7 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | lier l'adresse |
 | `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS directement |
 | `useDevTools` | `True` | la barre d'outils `nexy dev` ajoute à chaque page (informations sur la page, itinéraires, erreurs, configuration) ; `False` le supprime. Jamais présent en production |
+| `useHealth` | `False` | servir `GET /health/live` et `GET /health/ready` pour les équilibreurs de charge et les sondes Kubernetes ; voir [Déployer](../deployment/README.md#built-in-endpoints) |
 | `useWorkers` | `0` | traite les exécutions de `nx start` ; `0` est un par processeur sous Linux et macOS, un sous Windows |
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 
@@ -79,7 +80,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Ou éteignez-le avec `useDocs = False`. `/openapi.json` reste servi dans les deux cas : garder les itinéraires du projet hors de ce chemin.
+Ou désactivez-le avec `useDocs = False`. `/openapi.json` reste servi dans les deux cas : garder les itinéraires du projet hors de ce chemin.
 
 ## Intergiciel
 
