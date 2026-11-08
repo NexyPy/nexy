@@ -78,6 +78,67 @@ class HealthController:
 Listen Sie es im `controllers` des Root-Moduls auf.
 <!-- /router -->
 
+### Integrierte Endpunkte
+
+Ein Load Balancer oder Kubernetes stellt zwei Fragen: Ist der Prozess aktiv und darf er Datenverkehr empfangen? Setze `useHealth` und Nexy antwortet beides, ohne Handler-Datei und ohne Controller:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| Endpunkt | Antworten 200 | Antworten 503 |
+|---|---|---|
+| `GET /health/live` | während der Prozess antwortet | niemals |
+| `GET /health/ready` | sobald die Anwendung gestartet ist | während es startet und sobald der Server es zum Stoppen auffordert |
+
+Nexy garantiert, dass `/health/ready` das Starten und Herunterfahren des Servers verfolgt.
+
+Nexy garantiert, dass beide Endpunkte aus dem Zugriffsprotokoll und dem OpenAPI-Schema fernbleiben.
+
+Nexy garantiert, dass beide Endpunkte vor `useTrustedHost` und `useHTTPSRedirect` antworten, sodass eine über HTTP an die Adresse eines Pods gesendete Probe nicht abgelehnt wird.
+
+Konventionell lassen Sie Ihre eigenen Routen von `/health/live` und `/health/ready` fern, während `useHealth` eingeschaltet ist: Die Endpunkte von Nexy antworten zuerst. `useHealth` ist standardmäßig `False`, sodass ein Projekt, das es nicht festlegt, beide Pfade behält.
+
+Ihre Anwendung ist dafür verantwortlich, zu prüfen, wovon sie abhängt: `/health/ready` meldet den Lebenszyklus des Servers, nicht den Status einer Datenbank.
+
+Richten Sie die Sonden eines Kubernetes `Deployment` auf sie:
+
+```yaml filename="k8s/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## Statisches Hosting
 
 Jede Seite ist HTML, aber Nexy geht von einem Server für das Routing und für API-Handler aus.
@@ -89,9 +150,10 @@ Jede Seite ist HTML, aber Nexy geht von einem Server für das Routing und für A
 
 - [ ] `nx build` in CI keine Warnungen für Routen, die voraussichtlich auf dem Server gerendert werden
 - [ ] `nx start` wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann
-- [ ] `NEXY_ACTION_SECRET` festgelegt oder `__nexy__/action.key` mit dem Build beibehalten
+- [ ] `NEXY_ACTION_SECRET` gesetzt oder `__nexy__/action.key` mit dem Build beibehalten
 - [ ] `useDocs = False` in der Produktion, wenn das API-Schema nicht öffentlich sein soll
 - [ ] `useTrustedHost` und `useHTTPSRedirect` sind für öffentliche Bereitstellungen festgelegt
+- [ ] `useHealth = True` wenn ein Load Balancer oder Kubernetes die App prüft
 - [ ] `__nexy__/` nicht festgeschrieben
 
 ## Nächste Schritte

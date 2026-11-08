@@ -20,6 +20,7 @@ from nexy.helpers.server.access_log import AccessLogMiddleware
 from nexy.helpers.server.devtools import DevToolsMiddleware
 from nexy.helpers.server.devtools.state import setup_devtools
 from nexy.helpers.server.head_requests import HeadRequestsMiddleware
+from nexy.helpers.server.health import HealthMiddleware
 from nexy.helpers.server.proxy import ViteProxyMiddleware, vite_proxy_port
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
@@ -156,6 +157,9 @@ class AppServer:
         server.add_middleware(AccessLogMiddleware)
         if not is_dev():
             server.add_middleware(SecurityHeadersMiddleware)
+        # Outermost of all: a probe is answered before the host check and the HTTPS redirect.
+        if self.config.useHealth:
+            server.add_middleware(HealthMiddleware)
 
     def _add_error_handlers(self, server: FastAPI) -> None:
         server.exception_handler(HTTPException)(handle_http_exception)

@@ -78,6 +78,67 @@ class HealthController:
 将其列在根模块的 `controllers` 中。
 <!-- /router -->
 
+### 内置端点
+
+负载均衡器或 Kubernetes 会问两个问题：进程是否处于活动状态，是否可以接收流量？设置 `useHealth`，Nexy 都会回答这两个问题，没有处理程序文件，也没有控制器：
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| 端点 | 答案 200 | 答案 503 |
+|---|---|---|
+| `GET /health/live` | 当进程回答时 | 从不 |
+| `GET /health/ready` | 一旦应用程序开始 | 当它启动时，一旦服务器要求它停止 |
+
+Nexy 保证 `/health/ready` 跟随服务器的启动和关闭。
+
+Nexy 保证两个端点都不在访问日志和 OpenAPI 模式之外。
+
+Nexy 保证两个端点在 `useTrustedHost` 和 `useHTTPSRedirect` 之前应答，因此通过 HTTP 发送到 pod 地址的探测不会被拒绝。
+
+按照惯例，当 `useHealth` 打开时，您将自己的路由保持在 `/health/live` 和 `/health/ready` 关闭状态：Nexy 的端点首先应答。默认情况下，`useHealth` 为 `False`，因此未设置它的项目将保留这两个路径。
+
+您的应用程序负责检查它所依赖的内容：`/health/ready` 报告服务器的生命周期，而不是数据库的状态。
+
+将 Kubernetes `Deployment` 的探针指向它们：
+
+```yaml filename="k8s/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## 静态托管
 
 每个页面都是 HTML，但 Nexy 假定有一个用于路由和 API 处理程序的服务器。
@@ -88,10 +149,11 @@ class HealthController:
 ## 清单
 
 - [ ] `nx build` 在 CI 中，对于您希望在服务器上呈现的路由没有警告
-- 当路径文件无法加载时，[ ] `nx start` 退出并显示代码 1，并且不启动任何内容
+- 当路由文件无法加载时，[ ] `nx start` 退出并显示代码 1，并且不启动任何内容
 - [ ] `NEXY_ACTION_SECRET` 设置，或 `__nexy__/action.key` 与构建一起保留
 - [ ] `useDocs = False` 在生产中如果 API 架构不应公开
 - [ ] `useTrustedHost` 和 `useHTTPSRedirect` 设置为公共部署
+- [ ] `useHealth = True` 当负载均衡器或 Kubernetes 探测应用程序时
 - [ ] `__nexy__/` 未提交
 
 ## 后续步骤
