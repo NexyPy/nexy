@@ -141,10 +141,14 @@ In einer `.nexy`-Vorlage ist `__actions_path["name"]` der Pfad, `__actions["name
 
 Bei Erfolg wird der Besucher mit dem Status `303` auf die Seite zurückgeleitet, auf der sich das Formular befand. Um anders zu antworten, geben Sie ein `Response`-Objekt zurück (z. B. `RedirectResponse("/done", status_code=303)`).
 
+Ein Formular, das als `application/x-www-form-urlencoded` gesendet wird, was ein Browser standardmäßig tut, benötigt kein zusätzliches Paket. Fügen Sie `enctype="multipart/form-data"` hinzu und der Aufruf benötigt `python-multipart`: Ohne dies antwortet die Aktion `500` mit einer Nachricht, die den Befehl nennt, `uv add python-multipart`.
+
+Eine Aktion liest Felder, keine Dateien: Eine Dateieingabe erreicht sie als Zeichenfolge. Um einen Upload zu erhalten, schreiben Sie eine Route in `src/routes/api/` mit einem `File`- oder `UploadFile`-Parameter.
+
 ## Sicherheit
 
 ### Pfadunklarheit ist keine Autorisierung
-Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Moduls der Funktion, seinem Namen und einem Geheimnis des Projekts. Es wird von `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gespeichert, das `nx build` erstellt, sodass das Client-Bundle und `nx start` zustimmen: Behalten Sie diese Datei beim Build. Der Pfad verbirgt den Endpunkt vor zufälliger Entdeckung und **der generierte Pfad ist kein Autorisierungsmechanismus**.
+Der Aktionspfad ist `/_nx_`, gefolgt von einem Hash des Funktionsmoduls, seinem Namen und einem Geheimnis des Projekts. Es wird von `NEXY_ACTION_SECRET` festgelegt oder in `__nexy__/action.key` gespeichert, das `nx build` erstellt, sodass das Client-Bundle und `nx start` zustimmen: Behalten Sie diese Datei beim Build. Der Pfad verbirgt den Endpunkt vor zufälliger Entdeckung und **der generierte Pfad ist kein Autorisierungsmechanismus**.
 
 Jeder, der den Weg kennt, kann die Aktion aufrufen. Sie **müssen** die Identität und Berechtigungen des Benutzers innerhalb der Aktion überprüfen:
 ```python

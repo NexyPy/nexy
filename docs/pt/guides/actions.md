@@ -141,6 +141,10 @@ Em um modelo `.nexy` `__actions_path["name"]` é o caminho, `__actions["name"]` 
 
 Em caso de sucesso, o visitante é enviado de volta à página em que o formulário estava, com status `303`. Para responder de forma diferente, retorne um objeto `Response` (por exemplo, `RedirectResponse("/done", status_code=303)`).
 
+Um formulário enviado como `application/x-www-form-urlencoded`, que é o que um navegador faz por padrão, não precisa de pacote extra. Adicione `enctype="multipart/form-data"` e a chamada precisa de `python-multipart`: sem ele a ação responde `500` com uma mensagem nomeando o comando, `uv add python-multipart`.
+
+Uma ação lê campos, não arquivos: uma entrada de arquivo chega até ela como uma string. Para receber um upload, escreva uma rota em `src/routes/api/` com um parâmetro `File` ou `UploadFile`.
+
 ## Segurança
 
 ### A obscuridade do caminho não é autorização

@@ -145,6 +145,10 @@ In a `.nexy` template `__actions_path["name"]` is the path, `__actions["name"]` 
 
 On success, the visitor is sent back to the page the form was on, with status `303`. To answer differently, return a `Response` object (e.g., `RedirectResponse("/done", status_code=303)`).
 
+A form sent as `application/x-www-form-urlencoded`, which is what a browser does by default, needs no extra package. Add `enctype="multipart/form-data"` and the call needs `python-multipart`: without it the action answers `500` with a message naming the command, `uv add python-multipart`.
+
+An action reads fields, not files: a file input reaches it as a string. To receive an upload, write a route in `src/routes/api/` with a `File` or `UploadFile` parameter.
+
 ## Security
 
 ### Path obscurity is not authorization

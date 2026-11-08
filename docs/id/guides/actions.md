@@ -1,6 +1,6 @@
 # Tindakan
 
-Sebuah `@Action` mengubah fungsi Python menjadi titik akhir `POST`. Tidak seperti pengendali API standar, ia dirancang sebagai jembatan komunikasi yang diketik: Nexy secara otomatis menghasilkan klien TypeScript, memvalidasi masukan, dan menangani respons.
+Sebuah `@Action` mengubah fungsi Python menjadi titik akhir `POST`. Berbeda dengan pengendali API standar, ia dirancang sebagai jembatan komunikasi yang diketik: Nexy secara otomatis menghasilkan klien TypeScript, memvalidasi masukan, dan menangani respons.
 
 **Sebelum Anda memulai:** proyek yang dibuat oleh [Mulai cepat](../getting-started/quick-start.md). Tindakan ada di sebelah halaman, di `src/actions/`.
 
@@ -141,6 +141,10 @@ Dalam templat `.nexy`, `__actions_path["name"]` adalah jalurnya, `__actions["nam
 
 Jika berhasil, pengunjung akan dikirim kembali ke halaman tempat formulir berada, dengan status `303`. Untuk menjawab berbeda, kembalikan objek `Response` (misalnya, `RedirectResponse("/done", status_code=303)`).
 
+Formulir yang dikirim sebagai `application/x-www-form-urlencoded`, yang dilakukan browser secara default, tidak memerlukan paket tambahan. Tambahkan `enctype="multipart/form-data"` dan panggilan memerlukan `python-multipart`: tanpanya tindakan akan menjawab `500` dengan pesan yang menyebutkan perintah, `uv add python-multipart`.
+
+Suatu tindakan membaca bidang, bukan file: masukan file mencapainya sebagai string. Untuk menerima upload, tulis rute di `src/routes/api/` dengan parameter `File` atau `UploadFile`.
+
 ## Keamanan
 
 ### Ketidakjelasan jalur bukanlah otorisasi
@@ -156,7 +160,7 @@ async def delete_user(user_id: str, request: Request):
 ```
 
 ### Perlindungan asal
-Untuk mencegah Pemalsuan Permintaan Lintas Situs (CSRF), Nexy menolak permintaan yang `Origin` merupakan situs lain atau yang ditandai oleh browser `Sec-Fetch-Site: cross-site` dengan `403`. Cantumkan situs yang mungkin memerlukan tindakan Anda di `NEXY_ALLOWED_ORIGINS`. Panggilan tanpa `Origin` (seperti `curl`) diterima.
+Untuk mencegah Pemalsuan Permintaan Lintas Situs (CSRF), Nexy menolak permintaan yang `Origin` merupakan situs lain atau yang ditandai oleh browser `Sec-Fetch-Site: cross-site` dengan `403`. Cantumkan situs yang mungkin menyerukan tindakan Anda di `NEXY_ALLOWED_ORIGINS`. Panggilan tanpa `Origin` (seperti `curl`) diterima.
 
 ## Kesalahan impor
 
