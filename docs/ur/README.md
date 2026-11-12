@@ -52,7 +52,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | جو آپ تعمیر کریں گے۔ |
 |---|---|
 | [10. ایک اکاؤنٹ بنائیں اور سائن ان کریں](tutorial/accounts.md) | سیشن کوکی کے ساتھ سائن اپ کریں، سائن ان کریں اور آؤٹ کریں۔ |
-| [11. ہر صارف کو ان کے اپنے نوٹس دیں](tutorial/own-notes.md) | ہر ایک نوٹ کو اس کے صارف کے ساتھ باندھیں اور صفحات، ایکشنز اور API کی حفاظت کریں۔ |
+| [11. ہر صارف کو ان کے اپنے نوٹس دیں](tutorial/own-notes.md) | ہر ایک نوٹ کو اس کے صارف سے باندھیں اور صفحات، ایکشنز اور API کی حفاظت کریں۔ |
 | [12. بھولے ہوئے پاس ورڈ کو بذریعہ ای میل دوبارہ ترتیب دیں](tutorial/password-reset.md) | ای میل کے ذریعے ایک دستخط شدہ لنک بھیجیں جو ایک بار، ایک گھنٹے کے لیے کام کرے۔ |
 
 ### یونٹ 4: تعامل
@@ -69,20 +69,20 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [فائل پر مبنی روٹنگ](routing/fbr/README.md) | فائل کے راستے کو URL میں تبدیل کریں۔ |
 | [صفحات](routing/fbr/pages/README.md) | ایک صفحہ لکھیں۔ |
 | [متحرک راستے](routing/fbr/pages/dynamic-routes.md) | `[slug]`، `[...path]` اور روٹ گروپس کا استعمال کریں۔ |
-| [صفحہ میٹا ڈیٹا ](routing/fbr/pages/metadata.md) | صفحہ کا عنوان، تفصیل اور تصویر شیئر کریں {new} |
+| [صفحہ میٹا ڈیٹا ](routing/fbr/pages/metadata.md) | صفحہ کا عنوان، تفصیل اور تصویر کا اشتراک کریں {new} |
 | [لے آؤٹ](routing/fbr/layouts/README.md) | صفحات کے درمیان ایک فریم کا اشتراک کریں |
 | [وراثت](routing/fbr/inheritance.md) | لے آؤٹ، انحصار اور خرابی والے صفحات کا ریزولوشن آرڈر پڑھیں |
-| [سرور موڈ اور کلائنٹ موڈ](routing/fbr/modes.md) | `useCSR`، اور ہر موڈ جس کی اجازت دیتا ہے۔ |
+| [سرور موڈ اور کلائنٹ موڈ](routing/fbr/modes.md) | `useCSR`، اور جس کی ہر موڈ اجازت دیتا ہے۔ |
 | [لنک کرنا اور نیویگیٹ کرنا](routing/fbr/navigation/linking-and-navigating.md) | صفحات کو لنک کریں، کلائنٹ پر نیویگیٹ کریں، پری فیچ کریں۔ |
 | [کانٹے](routing/fbr/navigation/hooks.md) | راستہ، استفسار، کوکیز اور سیشن پڑھیں |
 
 ### ہینڈلر اور غلطیاں {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [روٹ ہینڈلر](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
+| [روٹ سنبھالنے والے](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
 | [توثیق اور غلطیاں](routing/fbr/handlers/validation-and-errors.md) | جواب دیں `422` اور `404`، اور بلند کریں `HTTPException` |
 | [WebSocket ہینڈلر](routing/fbr/realtime/websocket.md) | ایک `SOCKET` کنکشن کو ہینڈل کریں۔ |
-| [انحصار اور محافظ ](routing/fbr/dependencies/README.md) | ہینڈلر سے پہلے `dependencies.py` چلائیں، اور اسے وارث بنائیں |
+| [انحصار اور محافظ](routing/fbr/dependencies/README.md) | ہینڈلر سے پہلے `dependencies.py` چلائیں، اور اسے وارث بنائیں |
 | [مڈل ویئر فائلیں](routing/fbr/middleware/README.md) | درخواستوں کو `middleware.py` کے ساتھ لپیٹیں، جو ڈائرکٹری سے وراثت میں ملی ہیں۔ |
 | [خرابی کے صفحات](routing/fbr/errors/README.md) | `notfound.nexy`، `errors.nexy` اور JSON کی غلطیوں کے ساتھ جواب دیں۔ |
 | [خامی صفحات فی فولڈر](routing/fbr/errors/folder-pages.md) | ایج کیس: ذیلی فولڈرز سے غلطیاں |
@@ -92,7 +92,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [ماڈیولر روٹنگ](routing/modular/README.md) | ماؤنٹ کنٹرولرز اور ماڈیولز |
-| [انحصار کا انجکشن](routing/modular/dependency-injection.md) | خدمات، ان کے دائرہ کار اور کنٹینر کی وضاحت کریں۔ |
+| [انحصار انجکشن](routing/modular/dependency-injection.md) | خدمات، ان کے دائرہ کار اور کنٹینر کی وضاحت کریں۔ |
 | [گارڈز اور میٹا ڈیٹا](routing/modular/guards-and-metadata.md) | راستوں کی حفاظت اور دستاویز کریں۔ |
 | [ماڈیولر روٹر بمقابلہ NestJS](routing/modular/vs-nestjs.md) | کے ساتھ موازنہ NestJS |
 
@@ -107,6 +107,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | جو اس کی تعریف کرتا ہے۔ |
 |---|---|
 | [اعمال اور نیویگیشن](views/frontend/actions-and-navigation.md) | ٹائپ کردہ ایکشن کو کال کریں، صفحات کو لنک کریں، URL پڑھیں |
+| [ایک جزو میں ڈیٹا حاصل کریں](views/frontend/fetch-data.md) | `useFetch`: کسی راستے سے JSON پڑھیں، اس کا اشتراک کریں، اسے تازہ کریں۔ |
 
 ### Nexy نظارے۔
 | صفحہ | آپ کیا کریں گے |
@@ -117,7 +118,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فائلوں میں صفحات اور ترتیب {fbr,custom}
 | صفحہ | جو اس کی تعریف کرتا ہے۔ |
 |---|---|
-| [فرنٹ اینڈ صفحات](views/frontend/pages.md) | ایک فائل، ایک راستہ: پرپس، رینڈرنگ، میٹا ڈیٹا |
+| [فرنٹ اینڈ پیجز](views/frontend/pages.md) | ایک فائل، ایک راستہ: پرپس، رینڈرنگ، میٹا ڈیٹا |
 | [فرنٹ اینڈ لے آؤٹ](views/frontend/layouts.md) | دستاویز کا شیل، گھوںسلا، اور لے آؤٹ کیا نہیں کر سکتا |
 | [layout.nexy](views/nexy/layouts.md) | سرور موڈ لے آؤٹ لکھیں۔ |
 | [Markdown اور MDX](views/nexy/markdown.md) | مواد کے صفحات لکھیں۔ |
@@ -125,7 +126,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فریم ورک کے اختلافات
 | صفحہ | کیا تبدیلیاں |
 |---|---|
-| [React اختلافات](views/react/differences.md) | اجزاء، ہکس اور `layout.tsx` {new} |
+| [React اختلافات](views/react/differences.md) | اجزاء، کانٹے اور `layout.tsx` {new} |
 | [Vue اختلافات](views/vue/differences.md) | SFCs، refs اور `layout.vue` {new} |
 | [Svelte اختلافات](views/svelte/differences.md) | رنز، اسٹورز اور `layout.svelte` {new} |
 | [Solid اختلافات](views/solid/differences.md) | سگنلز، ایکسیسرز اور `layout.tsx` {new} |
@@ -136,8 +137,8 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### موڈز
 | صفحہ | جو آپ فیصلہ کریں گے۔ |
 |---|---|
-| [انجام دینا ](rendering/README.md) | کون سا رینڈرنگ موڈ کسی صفحے پر فٹ بیٹھتا ہے۔ |
-| [SSR](rendering/ssr.md) | سرور رینڈرنگ، ڈیفالٹ |
+| [رینڈرنگ ](rendering/README.md) | کون سا رینڈرنگ موڈ کسی صفحے پر فٹ بیٹھتا ہے۔ |
+| [ایس ایس آر](rendering/ssr.md) | سرور رینڈرنگ، ڈیفالٹ |
 | [جزائر](rendering/islands.md) | غیر فعال، مرئی یا میڈیا کے استفسار پر ہائیڈریٹ کریں۔ |
 
 ### فائل کے صفحات کے طریقوں {fbr,custom}
@@ -196,7 +197,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### Python فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
+| [منجانب FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
 | [منجانب Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
 | [منجانب Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
 
@@ -205,16 +206,16 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 |---|---|
 | [ایکسپریس سے ](coming-from/express.md) | روٹس، مڈل ویئر اور `req`/`res` کو Python ہینڈلرز میں ترجمہ کریں |
 | [فاسٹائف ](coming-from/fastify.md) سے | اسکیموں، پلگ انز اور ہکس کو ماڈلز، فولڈرز اور فائلوں میں تبدیل کریں۔ |
-| [ایلیسیا سے ](coming-from/elysia.md) | نقشہ `t` اسکیماس، گارڈز اور ایڈن سے Pydantic اور ٹائپ کردہ اعمال |
+| [ایلیسیا سے](coming-from/elysia.md) | نقشہ `t` اسکیماس، گارڈز اور ایڈن سے Pydantic اور ٹائپ کردہ اعمال |
 | [ہونو سے ](coming-from/hono.md) | نقشے کے راستوں، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
 
 ### فل اسٹیک فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [منجانب Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں |
+| [منجانب Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
 | [سے Remix](coming-from/remix.md) | لوڈرز اور اعمال کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
-| [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات رکھیں اور `server/` کو Python پر منتقل کریں۔ |
-| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
+| [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات کو رکھیں اور `server/` کو Python پر منتقل کریں۔ |
+| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات کو رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
 | [سے Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
 | [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستوں، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
 | [روبی آن ریلز سے ](coming-from/rails.md) | نقشے کے راستے، کنٹرولرز، ERB، ایکٹو ریکارڈ اور Nexy کے لیے نوکریاں |
@@ -242,7 +243,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فائل کنونشنز {fbr,custom}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [فائل کنونشنز](reference/file-conventions.md) | محفوظ فائلیں اور روٹنگ کے اصول |
+| [فائل کنونشنز ](reference/file-conventions.md) | محفوظ فائلیں اور روٹنگ کے اصول |
 
 ### کنونشنز اور تصورات
 | صفحہ | آپ کیا کریں گے |
@@ -284,7 +285,7 @@ docs/
 
 ## اعلی درجے کی
 
-### اعلیٰ {advanced}
+### اعلی درجے کی {advanced}
 
 | صفحہ | آپ کیا کریں گے |
 |---|---|
