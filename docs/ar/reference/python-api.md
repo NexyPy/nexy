@@ -71,7 +71,7 @@ theme = useCookies().get("theme", "light")
 | `status` | رموز الحالة المسماة، مثل `status.HTTP_404_NOT_FOUND` |
 | `Depends` | قم بتشغيل دالة أولاً وتمرير نتيجتها |
 | `Header`، `Cookie`، `Query`، `Path`، `Body` | من أين تأتي المعلمة |
-| `Form`، `File`، `UploadFile` | حقول النموذج والتحميلات (بحاجة إلى `python-multipart`) |
+| `Form`، `File`، `UploadFile` | حقول النموذج والتحميلات (`python-multipart` فقط لـ `multipart/form-data`) |
 | `BackgroundTasks` | العمل الذي يتم تشغيله بعد إرسال الإجابة |
 | `JSONResponse`، `HTMLResponse`، `PlainTextResponse` | الإجابات بنوع محتوى ثابت |
 | `RedirectResponse` | إعادة توجيه HTTP |

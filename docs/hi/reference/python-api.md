@@ -71,7 +71,7 @@ theme = useCookies().get("theme", "light")
 | `status` | नामित स्थिति कोड, जैसे कि `status.HTTP_404_NOT_FOUND` |
 | `Depends` | पहले एक फ़ंक्शन चलाएं और उसका परिणाम पास करें |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | पैरामीटर कहां से आता है |
-| `Form`, `File`, `UploadFile` | प्रपत्र फ़ील्ड और अपलोड (आवश्यकता है `python-multipart`) |
+| `Form`, `File`, `UploadFile` | प्रपत्र फ़ील्ड और अपलोड (`python-multipart` केवल `multipart/form-data` के लिए) |
 | `BackgroundTasks` | उत्तर भेजे जाने के बाद चलने वाला कार्य |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | एक निश्चित सामग्री प्रकार के साथ उत्तर |
 | `RedirectResponse` | एक HTTP रीडायरेक्ट |
@@ -124,7 +124,7 @@ class ItemsByIdApiController:
 | `revalidate` | ब्राउज़र को बताएं कि किसी कार्रवाई के कारण कौन से पृष्ठ पुराने हो गए हैं |
 | `Module`, `Controller` | [मॉड्यूलर राउटर](../routing/modular/README.md) में एक मॉड्यूल और एक नियंत्रक घोषित करें |
 | `Injectable`, `Container`, `Scope` | [निर्भरता इंजेक्शन](../routing/modular/dependency-injection.md) और इसका जीवनकाल |
-| `UseGuard`, `Middleware` | एक हैंडलर की रक्षा करें या उसे लपेटें, देखें [रक्षक](../routing/modular/guards-and-metadata.md) |
+| `UseGuard`, `Middleware` | एक हैंडलर की रक्षा करें या लपेटें, देखें [रक्षक](../routing/modular/guards-and-metadata.md) |
 | `UseRoute`, `useRoute`, `RouteMeta` | एक मार्ग का नाम बताएं और उसका वर्णन करें OpenAPI |
 | `UseResponse`, `ResponseMeta` | किसी मार्ग के उत्तर का वर्णन करें |
 | `HTTP_METHODS` | एक हैंडलर फ़ाइल HTTP विधियों को परिभाषित कर सकती है |
@@ -158,4 +158,4 @@ def test_the_button_shows_its_label():
 
 - [कॉन्फ़िग](config.md): इन नामों के पीछे `use*` फ़ील्ड
 - [अपवाद और त्रुटियाँ](exceptions.md): प्रत्येक विफलता क्या उत्तर देती है
-- [दस्तावेज़ीकरण सूचकांक](../README.md): आप जो बना रहे हैं उसका पृष्ठ
+- [दस्तावेज़ीकरण सूचकांक](../README.md): आप जो बना रहे हैं उसके लिए पृष्ठ

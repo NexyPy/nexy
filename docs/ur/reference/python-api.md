@@ -22,7 +22,7 @@
 | `useRequest` | موجودہ درخواست، جس کے لیے دوسرے ہکس کا احاطہ نہیں کیا گیا ہے۔ |
 | `useHeaders` | درخواست کے ہیڈر کو کم کیس کے ناموں کے ساتھ ایک ڈکٹ کے طور پر |
 | `useUrl` | مکمل URL: `.scheme`، `.hostname`، `.path`، `.query` |
-| `useIsActive` | چاہے کوئی لنک موجودہ صفحہ پر یا اس کے والدین میں سے ایک پر، نیویگیشن بار کے لیے |
+| `useIsActive` | چاہے کوئی لنک موجودہ صفحہ پر یا اس کے والدین میں سے کسی کو، نیویگیشن بار کے لیے |
 | `useRouter` | موجودہ درخواست کی `path`، `base_url` اور `url_for` |
 | `useSession` | سیشن ڈکٹ، سیشن آف ہونے پر خالی |
 | `useCookies` | ایک ڈکٹ کے طور پر درخواست کوکیز |
@@ -71,7 +71,7 @@ theme = useCookies().get("theme", "light")
 | `status` | نامزد اسٹیٹس کوڈز، جیسے `status.HTTP_404_NOT_FOUND` |
 | `Depends` | پہلے ایک فنکشن چلائیں اور اس کا نتیجہ پاس کریں۔ |
 | `Header`، `Cookie`، `Query`، `Path`، `Body` | جہاں سے ایک پیرامیٹر آتا ہے۔ |
-| `Form`، `File`، `UploadFile` | فارم فیلڈز اور اپ لوڈز (ضرورت `python-multipart`) |
+| `Form`، `File`، `UploadFile` | فارم فیلڈز اور اپ لوڈز (`python-multipart` صرف `multipart/form-data` کے لیے) |
 | `BackgroundTasks` | کام جو جواب بھیجے جانے کے بعد چلتا ہے۔ |
 | `JSONResponse`، `HTMLResponse`، `PlainTextResponse` | ایک مقررہ مواد کی قسم کے ساتھ جوابات |
 | `RedirectResponse` | ایک HTTP ری ڈائریکٹ |
@@ -156,6 +156,6 @@ def test_the_button_shows_its_label():
 
 ## جہاں اگلا
 
-- [ترتیب ](config.md): ان ناموں کے پیچھے `use*` فیلڈز
+- [کنفیگ ](config.md): ان ناموں کے پیچھے `use*` فیلڈز
 - [مستثنیات اور غلطیاں](exceptions.md): ہر ناکامی کا کیا جواب ہوتا ہے۔
 - [دستاویزی اشاریہ](../README.md): وہ صفحہ جو آپ بنا رہے ہیں۔

@@ -71,7 +71,7 @@ Le vocabulaire HTTP d'un gestionnaire. Importez depuis ici plutôt que depuis Fa
 | `status` | codes d'état nommés, tels que `status.HTTP_404_NOT_FOUND` |
 | `Depends` | exécuter d'abord une fonction et transmettre son résultat |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | d'où vient un paramètre |
-| `Form`, `File`, `UploadFile` | champs de formulaire et téléchargements (besoin de `python-multipart`) |
+| `Form`, `File`, `UploadFile` | champs de formulaire et téléchargements (`python-multipart` uniquement pour `multipart/form-data`) |
 | `BackgroundTasks` | travail qui s'exécute après l'envoi de la réponse |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | réponses avec un type de contenu fixe |
 | `RedirectResponse` | une redirection HTTP |

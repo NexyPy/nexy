@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import importlib.util
 import inspect
 import json
 from collections.abc import Awaitable, Callable
+from functools import cache
 from typing import Any
 from urllib.parse import parse_qsl, urlparse
 
@@ -23,6 +25,18 @@ def _is_json(request: Request) -> bool:
     return "json" in request.headers.get("content-type", "")
 
 
+MULTIPART_MISSING = (
+    "A form was sent as multipart/form-data, which needs the python-multipart package. "
+    "Run: uv add python-multipart"
+)
+
+
+@cache
+def _multipart_available() -> bool:
+    """True when Starlette finds the parser it needs for a multipart body."""
+    return importlib.util.find_spec("python_multipart") is not None
+
+
 async def _payload(request: Request) -> dict[str, Any]:
     """The input of the call: a JSON object, or the fields of a form (repeated names are lists)."""
     if _is_json(request):
@@ -32,6 +46,8 @@ async def _payload(request: Request) -> dict[str, Any]:
             raise ValueError("The body must be a JSON object")
         return data
     if "multipart" in request.headers.get("content-type", ""):
+        if not _multipart_available():
+            raise RuntimeError(MULTIPART_MISSING)
         form = await request.form()
         pairs = [(key, str(value)) for key, value in form.multi_items()]
     else:
