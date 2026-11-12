@@ -145,6 +145,17 @@ In a `.nexy` template `__actions_path["name"]` is the path, `__actions["name"]` 
 
 On success, the visitor is sent back to the page the form was on, with status `303`. To answer differently, return a `Response` object (e.g., `RedirectResponse("/done", status_code=303)`).
 
+### Multipart forms (`file` inputs)
+
+A form with `enctype="multipart/form-data"` (for example a file input) needs the `python-multipart` package to parse the body. Nexy does not declare it as a hard dependency, so add it to your project when you use multipart forms:
+
+```bash
+uv add python-multipart
+```
+
+Without it, Nexy answers `400` with a message naming the missing package instead of a bare `500`.
+
+
 ## Security
 
 ### Path obscurity is not authorization

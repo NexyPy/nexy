@@ -164,6 +164,25 @@ class TestFormWithoutJavaScript:
         client = _client(create_user)
         assert client.post(_url(create_user), data={"age": "1"}).status_code == 422
 
+    def test_a_multipart_form_without_python_multipart_is_a_400(self, monkeypatch):
+        import nexy.modules.routers.actions.endpoint as endpoint_module
+
+        monkeypatch.setattr(
+            endpoint_module.importlib.util, "find_spec", lambda name: None
+        )
+        client = _client(create_user)
+        response = client.post(
+            _url(create_user),
+            data={"name": "Ada", "age": "36"},
+            headers={
+                "content-type": "multipart/form-data",
+                "referer": "http://testserver/users",
+            },
+            follow_redirects=False,
+        )
+        assert response.status_code == 400
+        assert "python-multipart" in response.json()["detail"]
+
 
 class TestOrigin:
     def test_a_call_from_another_site_is_refused(self):
