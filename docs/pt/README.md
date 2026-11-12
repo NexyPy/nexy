@@ -2,7 +2,7 @@
 
 **Uma Python estrutura para aplicações web fullstack.**
 
-Nexy coloca suas páginas e sua API em um Python projeto, servido por um servidor. A versão 2.2 é construída em FastAPI: cada rota API é uma rota FastAPI, listada em um esquema OpenAPI que Scalar mostra em `/docs`.
+Nexy coloca suas páginas e sua API em um Python projeto, servido por um servidor. A versão 2.2 é construída em FastAPI: cada rota de API é uma rota FastAPI, listada em um esquema OpenAPI que Scalar mostra em `/docs`.
 
 - **Python primeiro.** Páginas, endpoints, formulários e ações são Python, e uma página não precisa de JavaScript.
 - **Um frontend quando você quiser.** React, Vue, Svelte, Solid ou Preact, para um componente ou para todo o site.
@@ -69,7 +69,7 @@ Novo aqui? Leia [O que é Nexy?](getting-started/what-is-nexy.md), depois o [In�
 | [Roteamento baseado em arquivo](routing/fbr/README.md) | Transforme um caminho de arquivo em um URL |
 | [Páginas](routing/fbr/pages/README.md) | Escreva uma página |
 | [Rotas dinâmicas](routing/fbr/pages/dynamic-routes.md) | Use `[slug]`, `[...path]` e grupos de rotas |
-| [Metadados da página](routing/fbr/pages/metadata.md) | Defina o título, a descrição e a imagem de compartilhamento de uma página {new} |
+| [Metadados da página](routing/fbr/pages/metadata.md) | Defina o título, a descrição e compartilhe a imagem de uma página {new} |
 | [Layouts](routing/fbr/layouts/README.md) | Compartilhe um quadro entre páginas |
 | [Herança](routing/fbr/inheritance.md) | Leia a ordem de resolução de layouts, dependências e páginas de erro |
 | [Modo servidor e modo cliente](routing/fbr/modes.md) | `useCSR`, e o que cada modo permite |
@@ -107,6 +107,7 @@ Controladores e módulos.
 | Página | O que define |
 |---|---|
 | [Ações e navegação](views/frontend/actions-and-navigation.md) | Chame uma ação digitada, vincule páginas, leia o URL |
+| [Buscar dados em um componente](views/frontend/fetch-data.md) | `useFetch`: leia JSON de uma rota, compartilhe-o, atualize-o |
 
 ### Visualizações próximas
 | Página | O que você fará |
@@ -205,13 +206,13 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 |---|---|
 | [Do Expresso](coming-from/express.md) | Traduzir rotas, middleware e `req`/`res` em manipuladores Python |
 | [Do Fastify](coming-from/fastify.md) | Transforme esquemas, plugins e ganchos em modelos, pastas e arquivos |
-| [De Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Eden para Pydantic e ações digitadas |
+| [Da Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Éden para Pydantic e ações digitadas |
 | [De Hono](coming-from/hono.md) | Mapeie rotas, middleware e o cliente `hc` para Nexy |
 
 ### Estruturas Fullstack {fbr}
 | Página | O que você fará |
 |---|---|
-| [De Next.js](coming-from/nextjs.md) | Mantenha suas páginas React e mova o código do servidor para Python |
+| [De Next.js](coming-from/nextjs.md) | Mantenha suas React páginas e mova o código do servidor para Python |
 | [De Remix](coming-from/remix.md) | Transforme carregadores e ações em Python manipuladores e ações |
 | [De Nuxt](coming-from/nuxt.md) | Mantenha suas Vue páginas e mova `server/` para Python |
 | [Do SvelteKit](coming-from/sveltekit.md) | Mantenha suas Svelte páginas e mova cargas, ações e ganchos para Python |

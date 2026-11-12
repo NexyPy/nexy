@@ -79,7 +79,7 @@
 ### المعالجات والأخطاء {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [معالجات الطريق](routing/fbr/handlers/README.md) | أضف Python نقطة نهاية |
+| [معالجات الطريق](routing/fbr/handlers/README.md) | أضف نقطة نهاية Python |
 | [التحقق من الصحة والأخطاء](routing/fbr/handlers/validation-and-errors.md) | أجيب `422` و `404`، وارفع `HTTPException` |
 | [WebSocket معالجات](routing/fbr/realtime/websocket.md) | التعامل مع اتصال `SOCKET` |
 | [التبعيات والحراس](routing/fbr/dependencies/README.md) | قم بتشغيل `dependencies.py` قبل المعالج، ورثه |
@@ -107,6 +107,7 @@
 | الصفحة | ما يحدده |
 |---|---|
 | [الإجراءات والملاحة](views/frontend/actions-and-navigation.md) | قم باستدعاء إجراء مكتوب، وربط الصفحات، وقراءة عنوان URL |
+| [جلب البيانات في مكون](views/frontend/fetch-data.md) | `useFetch`: قراءة JSON من المسار ومشاركته وتحديثه |
 
 ### وجهات نظر نكسي
 | الصفحة | ماذا ستفعل |
@@ -140,7 +141,7 @@
 | [إصلاحية القطاع الخاص](rendering/ssr.md) | تقديم الخادم، الافتراضي |
 | [الجزر](rendering/islands.md) | هيدرات على الاستعلام الخامل أو المرئي أو الوسائط |
 
-### أوضاع صفحات الملفات {fbr,custom}
+### أوضاع صفحات الملف {fbr,custom}
 | الصفحة | ماذا ستقرر |
 |---|---|
 | [الاستخبارات والمراقبة](rendering/isr.md) | صفحات التخزين المؤقت التي لا معنى لها أثناء إعادة التحقق |
@@ -151,7 +152,7 @@
 ### النماذج والبيانات
 | الصفحة | ماذا ستفعل |
 |---|---|
-| [الإجراءات](guides/actions.md) | استدعاء دالة Python من نموذج أو دالة مكتوبة TypeScript |
+| [الإجراءات](guides/actions.md) | قم باستدعاء دالة Python من نموذج أو دالة TypeScript مكتوبة |
 | [قواعد البيانات](guides/databases.md) | اختر ORM وقم بتشغيل عمليات الترحيل |
 
 ### الأمن والنشر
@@ -165,7 +166,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [Vite والتصميم](guides/frontend.md) | إعداد Vite والتصميم وبناء العميل |
-| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتست |
+| [الاختبار](guides/testing.md) | اختبار مع pytest، `TestClient` وفيتيست |
 
 ### الأدوات والمساعدة
 | الصفحة | ماذا ستفعل |
@@ -193,7 +194,7 @@
 |---|---|
 | [قادمة من إطار آخر](getting-started/coming-from-other-frameworks.md) | ترجمة FastAPI، Next.js والتعبير عن العادات إلى Nexy |
 
-### Python أطر {fbr}
+### Python الأطر {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من FastAPI](coming-from/fastapi.md) | احتفظ بكود FastAPI الخاص بك: فقط `@app.get` يصبح ملفًا |
@@ -205,14 +206,14 @@
 |---|---|
 | [من اكسبرس](coming-from/express.md) | ترجمة المسارات والبرامج الوسيطة و `req`/`res` إلى معالجات Python |
 | [من فاستيفاي](coming-from/fastify.md) | تحويل المخططات والمكونات الإضافية والخطافات إلى نماذج ومجلدات وملفات |
-| [من إليسيا](coming-from/elysia.md) | خريطة `t` المخططات والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
+| [من إليسيا](coming-from/elysia.md) | قم بتعيين مخططات `t` والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
 | [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
 
 ### أطر عمل Fullstack {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |
-| [من Remix](coming-from/remix.md) | قم بتحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
+| [من Remix](coming-from/remix.md) | تحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
 | [من نوكست](coming-from/nuxt.md) | احتفظ بصفحاتك Vue وانقل `server/` إلى Python |
 | [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
 | [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |

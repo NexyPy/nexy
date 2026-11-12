@@ -59,7 +59,7 @@ Nouveau ici ? Lisez [Qu'est-ce que Nexy ?](getting-started/what-is-nexy.md), pui
 | Pages | Ce que vous construirez |
 |---|---|
 | [13. Recherchez les notes au fur et à mesure que vous tapez](tutorial/search-the-notes.md) | Filtrez chaque note du navigateur avec un îlot React |
-| [14. Cochez une note sans recharger la page](tutorial/tick-a-note.md) | Marquer une note comme terminée avec un formulaire que quelques lignes de JavaScript envoient en place |
+| [14. Cochez une note sans recharger la page](tutorial/tick-a-note.md) | Marquer une note terminée avec un formulaire que quelques lignes de JavaScript envoient en place |
 
 ## Routage
 
@@ -107,6 +107,7 @@ Contrôleurs et modules.
 | Pages | Ce qu'il définit |
 |---|---|
 | [Actions et navigation](views/frontend/actions-and-navigation.md) | Appeler une action tapée, lier des pages, lire l'URL |
+| [Récupérer des données dans un composant](views/frontend/fetch-data.md) | `useFetch` : lire le JSON depuis une route, le partager, l'actualiser |
 
 ### Vues Nexy
 | Pages | Ce que tu feras |
@@ -164,7 +165,7 @@ Contrôleurs et modules.
 ### Construire et tester
 | Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la build client |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
 | [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
@@ -181,7 +182,7 @@ Contrôleurs et modules.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
 | [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
-| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte poolé, suspension automatique et branches |
+| [Néon](databases/neon.md) | Utiliser un serveur sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
 | [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
 
 ## Venant de
@@ -203,8 +204,8 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 ### JavaScript backends {fbr}
 | Pages | Ce que tu feras |
 |---|---|
-| [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en gestionnaires Python |
-| [De Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
+| [Depuis Express](coming-from/express.md) | Traduire les routes, les middlewares et les `req`/`res` en Python gestionnaires |
+| [Depuis Fastify](coming-from/fastify.md) | Transformez les schémas, plugins et hooks en modèles, dossiers et fichiers |
 | [D'Élysée](coming-from/elysia.md) | Mapper les schémas `t`, les gardes et l'Eden aux Pydantic et aux actions typées |
 | [De Hono](coming-from/hono.md) | Mapper les routes, le middleware et le client `hc` vers Nexy |
 
@@ -215,11 +216,11 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | [De Remix](coming-from/remix.md) | Transformez les chargeurs et les actions en Python gestionnaires et actions |
 | [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos pages Vue et déplacez `server/` vers Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
-| [De Astro](coming-from/astro.md) | Écrivez Astro pages sous forme de `.nexy` pages, avec les mêmes îlots |
+| [De Astro](coming-from/astro.md) | Écrire Astro pages sous forme de `.nexy` pages, avec les mêmes îlots |
 | [Depuis Laravel](coming-from/laravel.md) | Cartographier les itinéraires, les contrôleurs, Blade, Eloquent et les files d'attente vers Nexy |
 | [De Ruby sur Rails](coming-from/rails.md) | Cartographier les itinéraires, les contrôleurs, l'ERB, l'Active Record et les tâches vers Nexy |
 
-### Cadres de contrôleurs {modular}
+### Frameworks de contrôleurs {modular}
 | Pages | Ce que tu feras |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Déplacez les contrôleurs, les modules, les fournisseurs et les gardes vers le routeur modulaire |
