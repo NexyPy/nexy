@@ -27,6 +27,10 @@ _QUIET_PREFIXES = (
 )
 _SLOW_SECONDS = 1.0
 
+# Chrome DevTools asks for this path on every page it inspects. The dev server never serves it, so
+# the answer is a 404 and the line is noise in a log that is meant to stay clean (#82).
+DEVTOOLS_PROBE = "/.well-known/appspecific/com.chrome.devtools.json"
+
 
 def format_duration(seconds: float) -> str:
     """``12ms`` below one second, ``1.2s`` from there."""
@@ -99,12 +103,18 @@ class _Exchange:
 class AccessLogMiddleware:
     """Pure ASGI middleware logging each HTTP request and WebSocket when its answer starts."""
 
-    def __init__(self, app: Any, log: Callable[[str], None] = console.print) -> None:
+    def __init__(
+        self,
+        app: Any,
+        log: Callable[[str], None] = console.print,
+        quiet: tuple[str, ...] = (),
+    ) -> None:
         self.app = app
         self._log = log
+        self._quiet = _QUIET_PREFIXES + quiet
 
     async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
-        if scope["type"] not in ("http", "websocket") or scope["path"].startswith(_QUIET_PREFIXES):
+        if scope["type"] not in ("http", "websocket") or scope["path"].startswith(self._quiet):
             await self.app(scope, receive, send)
             return
 

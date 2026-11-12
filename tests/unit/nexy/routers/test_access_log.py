@@ -10,7 +10,12 @@ from typing import Any
 import pytest
 from rich.text import Text
 
-from nexy.helpers.server.access_log import AccessLogMiddleware, format_duration, format_request
+from nexy.helpers.server.access_log import (
+    DEVTOOLS_PROBE,
+    AccessLogMiddleware,
+    format_duration,
+    format_request,
+)
 
 
 def _plain(markup: str) -> str:
@@ -91,6 +96,22 @@ class TestMiddleware:
         lines: list[str] = []
         asyncio.run(_call(AccessLogMiddleware(_responder(), log=lines.append), path))
         assert lines == []
+
+    def test_a_path_given_as_quiet_is_not_logged(self):
+        lines: list[str] = []
+        app = AccessLogMiddleware(_responder(404), log=lines.append, quiet=(DEVTOOLS_PROBE,))
+        asyncio.run(_call(app, DEVTOOLS_PROBE))
+        assert lines == []
+
+    def test_a_path_given_as_quiet_still_gets_its_answer(self):
+        app = AccessLogMiddleware(_responder(404), log=lambda _l: None, quiet=(DEVTOOLS_PROBE,))
+        sent = asyncio.run(_call(app, DEVTOOLS_PROBE))
+        assert sent[0]["status"] == 404
+
+    def test_the_devtools_probe_is_logged_without_the_quiet_list(self):
+        lines: list[str] = []
+        asyncio.run(_call(AccessLogMiddleware(_responder(404), log=lines.append), DEVTOOLS_PROBE))
+        assert len(lines) == 1
 
     def test_a_crash_is_logged_as_a_500_and_raised(self):
         async def failing(scope, receive, send):
