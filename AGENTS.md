@@ -175,3 +175,54 @@ uv pip install -e . --group dev
 - Added `test_markdown_route.py` (MarkdownRouteCompiler: AST validity, component-name conventions incl. `[slug]` catch-all, locale suffix `about.fr.md` → `about_fr.py` + meta locale, layout wiring, cmarkgfm render + heading ids, TOC publication, determinism) and `test_compiler_dispatch.py` (Compiler.compile dispatch: .tsx → FrontendRouteCompiler, .md → MarkdownRouteCompiler, .nexy → classic pipeline, non-route files raise NexyCompileError).
 - **Bug found & fixed**: `_ssg_static_path` looked up `<name>.default.html` for default-export tsx/mdx routes, but the JS SSG writer (`getEntryId`) emits `<name>.Default.html` (see committed `templates/tests/*/__nexy__/client/snippets.json`) and `ncc.py`/`formatting.py` read `.Default.html`. Prod `__ssr` was always empty for default exports on case-sensitive filesystems (silently masked on Windows). Regression tests assert the exact bytes of the generated lookup path.
 - Gate status (2026-10-26): `ruff check nexy/`, `ruff format --check` and `mypy --strict` pass on the whole tree (203 files), and `scripts/audit_structure.py --check` passes.
+
+## Workflow notes for the next fix (November 2026)
+
+What took time once should not take time again.
+
+### GitHub
+
+- Pull requests target `develop`, and the default branch is `main`: `Fixes #12` in a pull request
+  merged into `develop` does **not** close the issue. Assign yourself, comment with the merged
+  pull request, and close it by hand.
+- A branch can look abandoned and still be merged: compare it with `origin/develop` before
+  rewriting anything (`git for-each-ref --format='%(refname:short)' refs/heads`).
+- Local `master` only holds old `.vscode-test` caches; never push it.
+
+### Adding a documentation page
+
+1. Write the English page under `docs/`.
+2. Add its row to `docs/README.md`, in the group whose scope matches who can follow the examples
+   (`{fbr}`, `{modular}`, `{custom}`, `{fbr,custom}`, or no label for a page every router reads).
+3. Add its line to `llms.txt`.
+4. Let `scripts/translate_docs.py` write the 11 pages and their `TRANSLATIONS.json`; never edit
+   `docs/<code>/` by hand.
+
+`tests/unit/nexy/docs` and `tests/unit/sites` guard the links, the `llms.txt` index, the menus, the
+router variants and the skeleton of every translation.
+
+### Router variants
+
+A page in a group without a label, or in a group whose scope names `modular`, shows a modular
+reader no `filename="src/routes/…"` example: wrap those in
+`<!-- router:fbr,custom --> … <!-- /router -->`, and give the `<!-- router:modular -->` variant
+(controller, `.nexy` view, island under `src/components/`). `docs/views/frontend/fetch-data.md` and
+`docs/views/frontend/actions-and-navigation.md` show the shape;
+`tests/unit/nexy/docs/test_modular_examples.py` is the guard.
+
+### Translating
+
+- One page takes about 40 s per language: 11 languages on one page is roughly 7 minutes.
+- A run without `--limit` translates every page whose English hash drifted, which can be a hundred
+  pages. `--limit` takes the first pages alphabetically, so it cannot target one page: call
+  `refresh(docs, code, [page], google)` from `scripts/translate_docs.py` in a short script instead.
+- "placeholder lost" retries are normal, and the page still lands. `tests/unit/sites/test_translations.py`
+  compares code, links, headings and table rows with the English page: an English edit that changes
+  code or links always needs the translations rerun.
+
+### Running the tests here
+
+`/tmp` is a small tmpfs with a hard user quota (`OSError: [Errno 122] Disk quota exceeded`), so run
+the suite with `TMPDIR=$HOME/work/python/.pytest-tmp` and
+`--basetemp=$HOME/work/python/.pytest-tmp/bt`, and delete the basetemp between runs. The docs suite
+(`tests/unit/nexy/docs` + `tests/unit/sites`, about 15 000 tests) takes four minutes.
