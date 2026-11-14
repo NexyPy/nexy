@@ -32,6 +32,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 - **Every text file is checked out with LF endings** (`.gitattributes`), so a clone edited on
   Windows no longer rewrites the whole tree.
 
+- **The agent rules forbid the characters a person does not type**: em and en dashes, arrows,
+  the ellipsis character, curly quotes, bullets, middle dots, check marks, box drawing and invisible
+  spaces, in text and in design (a menu separator is a CSS border or gap). A test keeps them out of
+  the interfaces of the docs sites and of the starters.
+
+### Security
+
+- **opentelemetry-api 1.45.2 and soupsieve 4.1.1** in the lock, for CVE-2026-126360 and
+  CVE-2026-126190. opentelemetry-api comes with FastAPI; soupsieve only with the translator of the
+  docs, a development tool.
+
 ## [2.3.0] - 2026-11-08
 
 ### Added
