@@ -3,6 +3,35 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.4.0] - 2026-11-14
+
+### Added
+
+- **Health endpoints for load balancers and Kubernetes probes**, with `useHealth = True` in
+  `nexyconfig.py`. `/health/live` answers 200 while the process answers; `/health/ready` answers
+  200 once the application has started, and 503 while it starts or is asked to stop. A probe skips
+  the access log, the trusted host check and the HTTPS redirect, and neither path is in the OpenAPI
+  schema. Off by default: a project that does not set it keeps every path (#86).
+- **A page on fetching data in a component with `useFetch`**, in the views docs.
+
+### Fixed
+
+- **Chrome DevTools no longer floods the dev log.** The 404 it causes on every inspected page
+  (`/.well-known/appspecific/com.chrome.devtools.json`) writes no line in dev; production still logs
+  every path it answers, and the probe still gets its 404 (#82). `AccessLogMiddleware` takes a
+  `quiet` tuple of paths to keep out of the log.
+- **A multipart form without `python-multipart` names the fix.** An action that received
+  `multipart/form-data` answered a bare 500 whose traceback buried the package name; the error now
+  names the package and the command, `uv add python-multipart`. A urlencoded form still needs
+  nothing (#83).
+
+### Changed
+
+- **The docs say when a form needs `python-multipart`**, in the actions guide and the reference.
+- **The health endpoint pages are translated** into every language of the docs.
+- **Every text file is checked out with LF endings** (`.gitattributes`), so a clone edited on
+  Windows no longer rewrites the whole tree.
+
 ## [2.3.0] - 2026-11-08
 
 ### Added
