@@ -82,8 +82,8 @@
 | [मार्ग संचालक](routing/fbr/handlers/README.md) | एक Python समापन बिंदु जोड़ें |
 | [सत्यापन और त्रुटियाँ](routing/fbr/handlers/validation-and-errors.md) | `422` और `404` का उत्तर दें, और एक `HTTPException` बढ़ाएँ |
 | [WebSocket संचालक](routing/fbr/realtime/websocket.md) | `SOCKET` कनेक्शन संभालें |
-| [निर्भरताएँ और रक्षक](routing/fbr/dependencies/README.md) | हैंडलर से पहले `dependencies.py` चलाएँ और इसे इनहेरिट करें |
-| [मिडलवेयर फ़ाइलें](routing/fbr/middleware/README.md) | अनुरोधों को `middleware.py` के साथ लपेटें, जो निर्देशिका द्वारा विरासत में मिला है |
+| [निर्भरताएँ और रक्षक](routing/fbr/dependencies/README.md) | हैंडलर से पहले `dependencies.py` चलाएँ और उसे इनहेरिट करें |
+| [मिडलवेयर फ़ाइलें](routing/fbr/middleware/README.md) | `middleware.py` के साथ अनुरोध लपेटें, जो निर्देशिका द्वारा विरासत में मिला है |
 | [त्रुटि पृष्ठ](routing/fbr/errors/README.md) | `notfound.nexy`, `errors.nexy` और JSON त्रुटियों के साथ उत्तर दें |
 | [प्रति फ़ोल्डर त्रुटि पृष्ठ](routing/fbr/errors/folder-pages.md) | एज केस: उप-फ़ोल्डर्स से त्रुटियाँ |
 
@@ -107,6 +107,7 @@
 | पेज | यह क्या परिभाषित करता है |
 |---|---|
 | [क्रियाएँ और नेविगेशन](views/frontend/actions-and-navigation.md) | टाइप की गई कार्रवाई को कॉल करें, पेज लिंक करें, यूआरएल पढ़ें |
+| [एक घटक में डेटा प्राप्त करें](views/frontend/fetch-data.md) | `useFetch`: किसी रूट से JSON पढ़ें, इसे साझा करें, इसे रीफ्रेश करें |
 
 ### नेक्सी विचार
 | पेज | तुम क्या करोगे |
@@ -164,7 +165,7 @@
 ### बनाएं और परीक्षण करें
 | पेज | तुम क्या करोगे |
 |---|---|
-| [Vite और स्टाइलिंग](guides/frontend.md) | Vite, स्टाइलिंग और क्लाइंट बिल्ड सेट करें |
+| [Vite और स्टाइल](guides/frontend.md) | Vite, स्टाइलिंग और क्लाइंट बिल्ड सेट करें |
 | [परीक्षण](guides/testing.md) | pytest, `TestClient` और विटेस्ट के साथ परीक्षण करें |
 
 ### टूलींग और सहायता
@@ -186,7 +187,7 @@
 
 ## से आ रहा है
 
-वही कार्य, जो आप जानते हैं ढांचे में लिखे गए हैं और फिर नेक्सी में।
+वही कार्य, जो उस फ़्रेमवर्क में लिखे गए हैं जिसे आप जानते हैं और फिर नेक्सी में।
 
 ### सिंहावलोकन
 | पेज | तुम क्या करोगे |
@@ -197,8 +198,8 @@
 | पेज | तुम क्या करोगे |
 |---|---|
 | [से FastAPI](coming-from/fastapi.md) | अपना FastAPI कोड रखें: केवल `@app.get` ही एक फ़ाइल बनती है |
-| [से Flask](coming-from/flask.md) | व्यू, ब्लूप्रिंट, टेम्प्लेट और फॉर्म को नेक्सी रूट में बदलें |
-| [से Django](coming-from/django.md) | नेक्सी पर मानचित्र दृश्य, टेम्पलेट, मॉडल, फॉर्म और सेटिंग्स |
+| [से Flask](coming-from/flask.md) | दृश्य, ब्लूप्रिंट, टेम्प्लेट और फ़ॉर्म को नेक्सी रूट में बदलें |
+| [से Django](coming-from/django.md) | नेक्सी पर मानचित्र दृश्य, टेम्प्लेट, मॉडल, फॉर्म और सेटिंग्स |
 
 ### JavaScript बैकएंड {fbr}
 | पेज | तुम क्या करोगे |
@@ -213,10 +214,10 @@
 |---|---|
 | [से Next.js](coming-from/nextjs.md) | अपने React पेज रखें और सर्वर कोड को Python पर ले जाएं |
 | [से Remix](coming-from/remix.md) | लोडर और क्रियाओं को Python हैंडलर और क्रियाओं में बदलें |
-| [अगले से](coming-from/nuxt.md) | अपने Vue पेज रखें और `server/` को Python पर ले जाएं |
+| [नक्स्ट से](coming-from/nuxt.md) | अपने Vue पेज रखें और `server/` को Python पर ले जाएं |
 | [SvelteKit से](coming-from/sveltekit.md) | अपने Svelte पेज रखें और लोड, क्रियाएं और हुक को Python पर ले जाएं |
 | [से Astro](coming-from/astro.md) | Astro पृष्ठों को समान द्वीपों के साथ `.nexy` पृष्ठों के रूप में लिखें |
-| [लारवेल से](coming-from/laravel.md) | नेक्सी के लिए मार्ग, नियंत्रक, ब्लेड, एलोक्वेंट और कतारें मैप करें |
+| [लारवेल से](coming-from/laravel.md) | नेक्सी के लिए मानचित्र मार्ग, नियंत्रक, ब्लेड, एलोक्वेंट और कतारें |
 | [रूबी ऑन रेल्स से](coming-from/rails.md) | नेक्सी के लिए मानचित्र मार्ग, नियंत्रक, ईआरबी, सक्रिय रिकॉर्ड और नौकरियां |
 
 ### नियंत्रक ढाँचे {modular}

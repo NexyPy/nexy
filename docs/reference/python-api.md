@@ -73,7 +73,7 @@ on Nexy's contract.
 | `status` | named status codes, such as `status.HTTP_404_NOT_FOUND` |
 | `Depends` | run a function first and pass its result in |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | where a parameter comes from |
-| `Form`, `File`, `UploadFile` | form fields and uploads (need `python-multipart`) |
+| `Form`, `File`, `UploadFile` | form fields and uploads (`python-multipart` only for `multipart/form-data`) |
 | `BackgroundTasks` | work that runs after the answer is sent |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | answers with a fixed content type |
 | `RedirectResponse` | an HTTP redirect |

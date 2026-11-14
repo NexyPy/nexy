@@ -2,7 +2,7 @@
 
 **Ein Python Framework für Fullstack-Webanwendungen.**
 
-Nexy fügt Ihre Seiten und Ihre API in einem Python Projekt zusammen, das von einem Server bedient wird. Version 2.2 basiert auf FastAPI: Jede API-Route ist eine FastAPI-Route, aufgeführt in einem OpenAPI-Schema, das Scalar unter `/docs` anzeigt.
+Nexy fügt Ihre Seiten und Ihre API in einem Python Projekt zusammen, das von einem Server bedient wird. Version 2.2 basiert auf FastAPI: Jede API-Route ist eine FastAPI-Route, aufgelistet in einem OpenAPI-Schema, das Scalar unter `/docs` anzeigt.
 
 - **Python zuerst.** Seiten, Endpunkte, Formulare und Aktionen sind Python, und eine Seite benötigt kein JavaScript.
 - **Ein Frontend, wenn Sie eines wollen.** React, Vue, Svelte, Solid oder Preact, für eine Komponente oder für die gesamte Site.
@@ -107,6 +107,7 @@ Controller und Module.
 | Seite | Was es definiert |
 |---|---|
 | [Aktionen und Navigation](views/frontend/actions-and-navigation.md) | Rufen Sie eine eingegebene Aktion auf, verlinken Sie Seiten und lesen Sie die URL |
+| [Daten in einer Komponente abrufen](views/frontend/fetch-data.md) | `useFetch`: JSON von einer Route lesen, teilen, aktualisieren |
 
 ### Nexy-Ansichten
 | Seite | Was Sie tun werden |
@@ -170,7 +171,7 @@ Controller und Module.
 ### Werkzeuge und Hilfe
 | Seite | Was Sie tun werden |
 |---|---|
-| [Entwickler-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
+| [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 

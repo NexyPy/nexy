@@ -71,7 +71,7 @@ El vocabulario HTTP de un controlador. Importe desde aquí en lugar de FastAPI, 
 | `status` | códigos de estado con nombre, como `status.HTTP_404_NOT_FOUND` |
 | `Depends` | ejecutar una función primero y pasar su resultado en |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | de dónde viene un parámetro |
-| `Form`, `File`, `UploadFile` | campos de formulario y cargas (necesita `python-multipart`) |
+| `Form`, `File`, `UploadFile` | campos de formulario y cargas (`python-multipart` solo para `multipart/form-data`) |
 | `BackgroundTasks` | trabajo que se ejecuta después de enviar la respuesta |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | respuestas con un tipo de contenido fijo |
 | `RedirectResponse` | una redirección HTTP |

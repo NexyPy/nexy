@@ -71,7 +71,7 @@ Kosakata HTTP dari seorang penangan. Impor dari sini, bukan dari FastAPI, sehing
 | `status` | diberi nama kode status, seperti `status.HTTP_404_NOT_FOUND` |
 | `Depends` | jalankan fungsi terlebih dahulu dan masukkan hasilnya |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | dari mana suatu parameter berasal |
-| `Form`, `File`, `UploadFile` | kolom formulir dan unggahan (perlu `python-multipart`) |
+| `Form`, `File`, `UploadFile` | kolom formulir dan unggahan (`python-multipart` hanya untuk `multipart/form-data`) |
 | `BackgroundTasks` | pekerjaan yang berjalan setelah jawaban dikirim |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | jawaban dengan tipe konten tetap |
 | `RedirectResponse` | pengalihan HTTP |

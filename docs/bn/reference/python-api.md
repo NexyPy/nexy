@@ -1,6 +1,6 @@
 # Python API
 
-প্রতিটি নাম Nexy মডিউল দ্বারা আপনার Python কোডে রপ্তানি করে। একটি পরীক্ষা এই পৃষ্ঠাটিকে কোডের বিপরীতে উভয় দিক থেকে পরীক্ষা করে: এখানে তালিকাভুক্ত একটি নাম অবশ্যই বিদ্যমান থাকতে হবে এবং কোড রপ্তানি করে এমন একটি নাম এখানে তালিকাভুক্ত করা আবশ্যক৷
+প্রতিটি নাম Nexy মডিউল দ্বারা আপনার Python কোডে রপ্তানি করে। একটি পরীক্ষা এই পৃষ্ঠাটিকে উভয় দিকেই কোডের বিরুদ্ধে পরীক্ষা করে: এখানে তালিকাভুক্ত একটি নাম অবশ্যই বিদ্যমান থাকতে হবে এবং কোড রপ্তানি করে এমন একটি নাম এখানে তালিকাভুক্ত করা আবশ্যক৷
 
 ## `nexy`
 
@@ -71,7 +71,7 @@ theme = useCookies().get("theme", "light")
 | `status` | নাম দেওয়া স্ট্যাটাস কোড, যেমন `status.HTTP_404_NOT_FOUND` |
 | `Depends` | প্রথমে একটি ফাংশন চালান এবং এর ফলাফল পাস করুন |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | যেখান থেকে একটি প্যারামিটার আসে |
-| `Form`, `File`, `UploadFile` | ফর্ম ক্ষেত্র এবং আপলোড (প্রয়োজন `python-multipart`) |
+| `Form`, `File`, `UploadFile` | ফর্ম ক্ষেত্র এবং আপলোড (`python-multipart` শুধুমাত্র `multipart/form-data` এর জন্য) |
 | `BackgroundTasks` | কাজ যা উত্তর পাঠানোর পরে চলে |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | একটি নির্দিষ্ট বিষয়বস্তুর প্রকার সহ উত্তর |
 | `RedirectResponse` | একটি HTTP পুনর্নির্দেশ |
@@ -122,7 +122,7 @@ class ItemsByIdApiController:
 |---|---|
 | `Action` | একটি ফাংশনকে `POST` এন্ডপয়েন্টে পরিণত করুন, [কর্ম](../guides/actions.md) দেখুন |
 | `revalidate` | ব্রাউজারকে বলুন কোন পৃষ্ঠাগুলি একটি অ্যাকশন বাসি হয়ে গেছে |
-| `Module`, `Controller` | [মডুলার রাউটারে](../routing/modular/README.md) একটি মডিউল এবং একটি কন্ট্রোলার ঘোষণা করুন |
+| `Module`, `Controller` | [মডুলার রাউটারে](../routing/modular/README.md) একটি মডিউল এবং একটি নিয়ামক ঘোষণা করুন |
 | `Injectable`, `Container`, `Scope` | [নির্ভরতা ইনজেকশন ](../routing/modular/dependency-injection.md) এবং এর জীবনকাল |
 | `UseGuard`, `Middleware` | একটি হ্যান্ডলার গার্ড বা মোড়ানো, [গার্ডস](../routing/modular/guards-and-metadata.md) দেখুন |
 | `UseRoute`, `useRoute`, `RouteMeta` | একটি পথের নাম দিন এবং OpenAPI এর জন্য এটি বর্ণনা করুন |
@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | নাম | এটা কি |
 |---|---|
-| `render` | প্রদত্ত প্রপসের জন্য একটি `.nexy` কম্পোনেন্টের এইচটিএমএল, সার্ভার ছাড়াই, [টেস্টিং](../guides/testing.md) দেখুন |
+| `render` | প্রদত্ত প্রপসের জন্য একটি `.nexy` উপাদানের HTML, একটি সার্ভার ছাড়াই, [টেস্টিং](../guides/testing.md) দেখুন |
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -157,5 +157,5 @@ def test_the_button_shows_its_label():
 ## যেখানে পরের
 
 - [কনফিগ](config.md): এই নামের পিছনে `use*` ক্ষেত্র
-- [ব্যতিক্রম এবং ত্রুটি](exceptions.md): প্রতিটি ব্যর্থতার উত্তর কি
+- [ব্যতিক্রম এবং ত্রুটি ](exceptions.md): প্রতিটি ব্যর্থতার উত্তর কি
 - [ডকুমেন্টেশন ইনডেক্স](../README.md): আপনি যা তৈরি করছেন তার পৃষ্ঠা

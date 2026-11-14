@@ -32,7 +32,7 @@ Nexy 按模块将每个名称导出到您的 Python 代码。测试会在两个�
 | `redirect`，`permanentRedirect` | 将访问者发送到其他地方（307、308）并停止请求 |
 | `notFound`，`forbidden`，`unauthorized` | 从任何地方接听 404、403 或 401 |
 
-挂钩仅在请求内工作：请参阅[钩子](../routing/fbr/navigation/hooks.md)。
+挂钩仅在请求内工作：请参阅 [钩子](../routing/fbr/navigation/hooks.md)。
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
@@ -71,12 +71,12 @@ theme = useCookies().get("theme", "light")
 | `status` | 命名状态代码，例如 `status.HTTP_404_NOT_FOUND` |
 | `Depends` | 首先运行一个函数并将其结果传递给 |
 | `Header`、`Cookie`、`Query`、`Path`、`Body` | 参数从哪里来 |
-| `Form`，`File`，`UploadFile` | 表单字段和上传（需要 `python-multipart`） |
+| `Form`，`File`，`UploadFile` | 表单字段和上传（`python-multipart` 仅适用于 `multipart/form-data`） |
 | `BackgroundTasks` | 发送答案后运行的工作 |
 | `JSONResponse`，`HTMLResponse`，`PlainTextResponse` | 具有固定内容类型的答案 |
 | `RedirectResponse` | HTTP 重定向 |
 | `redirect`，`permanentRedirect` | 从页面、处理程序、控制器或防护程序引发重定向（307、308） |
-| `notFound`，`forbidden`，`unauthorized` | 从同一地点提出 404、403 或 401 |
+| `notFound`、`forbidden`、`unauthorized` | 从同一地点提出 404、403 或 401 |
 | `FileResponse`，`StreamingResponse` | 用文件或流回答 |
 
 <!-- router:fbr,custom -->
@@ -125,7 +125,7 @@ class ItemsByIdApiController:
 | `Module`，`Controller` | 在[模块化路由器](../routing/modular/README.md) 中声明一个模块和一个控制器 |
 | `Injectable`，`Container`，`Scope` | [依赖注入](../routing/modular/dependency-injection.md) 及其生命周期 |
 | `UseGuard`，`Middleware` | 保护或包装一个处理程序，请参阅 [守卫](../routing/modular/guards-and-metadata.md) |
-| `UseRoute`，`useRoute`，`RouteMeta` | 命名一条路线并对其进行描述 OpenAPI |
+| `UseRoute`，`useRoute`，`RouteMeta` | 命名一条路线并为 OpenAPI 描述它 |
 | `UseResponse`，`ResponseMeta` | 描述一条路线的答案 |
 | `HTTP_METHODS` | 处理程序文件可以定义的 HTTP 方法 |
 | `ACTIONS_STORE` | 用于工具和测试的操作注册表 |
