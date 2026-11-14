@@ -60,18 +60,18 @@ they make a page read as generated. So none of them is written, by an agent or a
 comments, UI text, terminal output, logs, documentation, commit messages, pull requests, issues, or
 in a reply to the user.
 
-| Do not write | Name | Write instead |
+| Do not write (code point) | Name | Write instead |
 | --- | --- | --- |
-| `—` | em dash | a comma, a colon, parentheses, or two sentences |
-| `–` | en dash | a hyphen, or "to" for a range: `1-5`, "Monday to Friday" |
-| `→` `←` `⇒` | arrows | "to", "then", "becomes"; in a UI, an SVG icon |
-| `…` | ellipsis character | three dots `...`, or finish the sentence |
-| `“` `”` `‘` `’` | curly quotes | straight quotes `"` and `'` |
-| `•` `·` | bullet, middle dot | a Markdown list; in a UI, a gap or a border in CSS |
-| `≈` `×` | almost equal, times | "about", "x" or "by": `1080x1350` |
-| `✓` `✔` `✗` `⚠` `★` | symbols as pictures | a word ("ok", "warning"), or an SVG icon |
-| `─` `│` `├` `└` | box drawing | plain text, or a list of paths |
-| no-break space, zero-width space | invisible characters | a normal space, or nothing |
+| U+2014 | em dash | a comma, a colon, parentheses, or two sentences |
+| U+2013 | en dash | a hyphen, or "to" for a range: `1-5`, "Monday to Friday" |
+| U+2192, U+2190, U+21D2 | arrows | "to", "then", "becomes"; in a UI, an SVG icon |
+| U+2026 | ellipsis character | three dots `...`, or finish the sentence |
+| U+201C, U+201D, U+2018, U+2019 | curly quotes | straight quotes `"` and `'` |
+| U+2022, U+00B7 | bullet, middle dot | a Markdown list; in a UI, a gap or a border in CSS |
+| U+2248, U+00D7 | almost equal, times | "about", "x" or "by": `1080x1350` |
+| U+2713, U+2714, U+2717, U+26A0, U+2605 | check marks, ballot x, warning sign, star | a word ("ok", "warning"), or an SVG icon |
+| U+2500, U+2502, U+251C, U+2514 | box drawing | plain text, or a list of paths |
+| U+00A0, U+200B, U+200C, U+200D, U+FEFF | no-break and zero-width spaces | a normal space, or nothing |
 
 **The design follows the same rule.** A separator in a menu, a breadcrumb or a footer is a CSS
 border or a `gap`, never a dash, an arrow or a middle dot in the markup, nor in `content:` of a
