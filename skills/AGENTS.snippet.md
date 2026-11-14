@@ -17,6 +17,11 @@ topic comes up (see `skills/README.md`).
   of related intentions.
 - No emoji anywhere: code, text, logs, commit messages.
 - Icons are real SVG, never emoji or symbol characters.
+- No character a person does not type: no em or en dash, no arrow, no ellipsis character, no
+  curly quotes, no bullet or middle dot, no check mark or warning sign, no box drawing, no
+  invisible space. Not in code, UI, logs, docs, commits or replies, and not as a separator in a
+  menu (mobile included): that is a CSS border or gap. The list is in
+  `skills/nexy-principles/SKILL.md`.
 - Text is written for people: plain verbs, sentence case, errors say what happened and what to do.
 - Match the style mode of the project (Tailwind, UnoCSS or plain CSS) and the idioms of its
   framework. No hand-written DOM scripts in React, Vue, Svelte, Solid or Preact code.
