@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Iterator
 from typing import Any
 
@@ -12,6 +13,7 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse, Response
 
+from nexy.modules.routers.actions import endpoint
 from nexy.modules.routers.actions.engine import ActionEngine
 from nexy.modules.routers.actions.revalidate import revalidate
 from nexy.modules.routers.actions.secret import forget_secret
@@ -40,17 +42,35 @@ def _store(monkeypatch: pytest.MonkeyPatch, tmp_path: Any) -> Iterator[None]:
     forget_secret()
 
 
-def _client(*handlers: Any) -> TestClient:
+def _client(*handlers: Any, raise_server_exceptions: bool = True) -> TestClient:
     for handler in handlers:
         handler.__module__ = "src.actions"
         ACTIONS_STORE.register(handler)
     app = FastAPI()
     ActionEngine().include_router(app)
-    return TestClient(app, base_url="http://testserver")
+    return TestClient(
+        app, base_url="http://testserver", raise_server_exceptions=raise_server_exceptions
+    )
 
 
 def _url(handler: Any) -> str:
     return ACTIONS_STORE.path_map[f"src.actions.{handler.__name__}"]
+
+
+def _multipart_request() -> Request:
+    """A POST that declares a multipart body, so `_payload` takes that branch."""
+
+    async def receive() -> dict[str, Any]:
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    scope = {
+        "type": "http",
+        "method": "POST",
+        "path": "/_nx_x",
+        "headers": [(b"content-type", b"multipart/form-data; boundary=x")],
+        "root_path": "",
+    }
+    return Request(scope, receive)
 
 
 async def create_user(name: str, age: int = 0) -> dict[str, Any]:
@@ -163,6 +183,23 @@ class TestFormWithoutJavaScript:
     def test_an_invalid_form_is_a_422(self):
         client = _client(create_user)
         assert client.post(_url(create_user), data={"age": "1"}).status_code == 422
+
+    def test_a_multipart_form_without_the_package_is_a_500(self, monkeypatch):
+        monkeypatch.setattr(endpoint, "_multipart_available", lambda: False)
+        client = _client(create_user, raise_server_exceptions=False)
+        response = client.post(_url(create_user), files={"name": (None, "Ada")})
+        assert response.status_code == 500
+
+    def test_the_missing_package_error_names_the_uv_command(self, monkeypatch):
+        monkeypatch.setattr(endpoint, "_multipart_available", lambda: False)
+        with pytest.raises(RuntimeError, match="uv add python-multipart"):
+            asyncio.run(endpoint._payload(_multipart_request()))
+
+    def test_a_urlencoded_form_needs_no_multipart_package(self, monkeypatch):
+        monkeypatch.setattr(endpoint, "_multipart_available", lambda: False)
+        client = _client(create_user)
+        response = client.post(_url(create_user), data={"name": "Ada"}, follow_redirects=False)
+        assert response.status_code == 303
 
 
 class TestOrigin:

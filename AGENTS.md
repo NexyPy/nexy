@@ -5,6 +5,10 @@ L'objectif principal de Nexy est de **surpasser les solutions existantes** telle
 - **Sub-second startup** and **Sub-100ms HMR**.
 - **Browser error overlay** for compilation failures.
 - **Clean terminal output** (no emojis, structured timings).
+- **No character a person does not type**, by an agent or a person, in code, UI, logs, docs,
+  commits, PRs, issues or replies: no em/en dash, arrow, ellipsis character, curly quotes, bullet,
+  middle dot, check mark, warning sign, box drawing or invisible space. A menu separator (mobile
+  menu included) is a CSS border or gap. List and exceptions: `skills/nexy-principles/SKILL.md`.
 - **All code in English**: No French comments or variables.
 
 ## Philosophy (KISS · TDD · SOLID)

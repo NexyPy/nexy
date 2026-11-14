@@ -13,7 +13,7 @@ nx start --host 0.0.0.0 --port 8000
 
 ## ما ينتج البناء
 
-`__nexy__/` يحتوي على وحدات المسار المجمعة، وحزمة العميل ضمن `__nexy__/client/`، وHTML المعروض مسبقًا لمسارات إطار العمل. انسخ المشروع - المصدر بالإضافة إلى `__nexy__/` - أو أنشئ داخل الصورة.
+`__nexy__/` يحتوي على وحدات المسار المترجمة، وحزمة العميل ضمن `__nexy__/client/`، وHTML المعروض مسبقًا لمسارات إطار العمل. انسخ المشروع - المصدر بالإضافة إلى `__nexy__/` - أو أنشئ داخل الصورة.
 
 ## Docker
 
@@ -78,6 +78,67 @@ class HealthController:
 أدرجها في `controllers` من الوحدة الجذرية.
 <!-- /router -->
 
+### نقاط النهاية المضمنة
+
+يطرح موازن التحميل أو Kubernetes سؤالين: هل العملية حية، وهل يمكنها تلقي حركة المرور؟ اضبط `useHealth` ويجيب Nexy على كليهما، بدون ملف معالج ولا وحدة تحكم:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| نقطة النهاية | الإجابات 200 | الإجابات 503 |
+|---|---|---|
+| `GET /health/live` | بينما تجيب العملية | أبدا |
+| `GET /health/ready` | بمجرد بدء التطبيق | أثناء بدء التشغيل، وبمجرد أن يطلب الخادم منه التوقف |
+
+يضمن Nexy أن `/health/ready` يتبع بدء تشغيل الخادم وإيقاف تشغيله.
+
+يضمن Nexy بقاء نقطتي النهاية خارج سجل الوصول وخارج مخطط OpenAPI.
+
+يضمن Nexy أن كلا نقطتي النهاية تجيبان قبل `useTrustedHost` و `useHTTPSRedirect`، لذلك لا يتم رفض التحقيق الذي يتم إرساله عبر HTTP إلى عنوان الكبسولة.
+
+وفقًا للاتفاقية، يمكنك إبقاء المسارات الخاصة بك خارج `/health/live` و `/health/ready` أثناء تشغيل `useHealth`: نقاط نهاية Nexy تجيب أولاً. `useHealth` هو `False` افتراضيًا، لذا فإن المشروع الذي لم يتم تعيينه يحتفظ بكلا المسارين.
+
+تطبيقك مسؤول عن التحقق مما يعتمد عليه: `/health/ready` يُبلغ عن دورة حياة الخادم، وليس حالة قاعدة البيانات.
+
+قم بتوجيه مجسات Kubernetes `Deployment` إليهم:
+
+```yaml filename="k8s/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## استضافة ثابتة
 
 كل صفحة هي HTML، ولكن Nexy يفترض وجود خادم للتوجيه ومعالجات API.
@@ -88,14 +149,15 @@ class HealthController:
 ## قائمة التحقق
 
 - [ ] `nx build` في CI، لا توجد تحذيرات للمسارات التي تتوقع عرضها على الخادم
-- [ ] `nx start` يخرج بالكود 1، ولا يبدأ بأي شيء، عندما لا يمكن تحميل ملف المسار
+- [ ] `nx start` يخرج بالرمز 1، ولا يبدأ بأي شيء، عندما لا يمكن تحميل ملف المسار
 - [ ] `NEXY_ACTION_SECRET` مجموعة، أو `__nexy__/action.key` محفوظة مع البناء
 - [ ] `useDocs = False` في الإنتاج إذا لم يكن مخطط API عامًا
 - [ ] `useTrustedHost` و `useHTTPSRedirect` تم ضبطهما للنشر العام
+- [ ] `useHealth = True` عندما يقوم موازن التحميل أو Kubernetes بالتحقق من التطبيق
 - [ ] `__nexy__/` غير ملتزم
 
 ## الخطوات التالية
 
 - [التكوين ](../reference/config.md): HTTPS، المضيفين الموثوقين، الجلسات
 - [الواجهة](../guides/frontend.md): ما يبنيه Vite
-- [الاختبار](../guides/testing.md): الأوامر التي سيتم تشغيلها في CI
+- [الاختبار](../guides/testing.md): الأوامر المطلوب تشغيلها في CI

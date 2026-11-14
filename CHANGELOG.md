@@ -3,34 +3,47 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
-## [2.2.2] - 2026-11-05
-
-### Fixed
-
-- **`uvx nexy` on Python 3.15 and Windows.** `cmarkgfm` has no wheel there, so uv
-  built it from source and demanded Microsoft C++ Build Tools before Nexy was
-  installed at all. `markdown-it-py` replaces it: pure Python, GFM output and
-  heading IDs unchanged.
-- **`mypy --strict` on Python 3.15.** The 3.15 stubs type `spec_from_loader`
-  more strictly than 3.12 to 3.14; the module spec of a compiled module is now
-  built by hand.
-- **`uvicorn` extras** listed one by one, without `pyyaml`, which Nexy never used.
+## [2.4.0] - 2026-11-14
 
 ### Added
 
-- **A GitHub release for every tag**, written after PyPI accepted the files, so
-  a version nobody can install is never announced.
-- **CI on a pushed branch.** `feature/*`, `fix/*`, `docs/*` and `perf/*` run the
-  matrix without waiting for a pull request. When a pull request already covers
-  the branch, its run is the only one.
+- **Health endpoints for load balancers and Kubernetes probes**, with `useHealth = True` in
+  `nexyconfig.py`. `/health/live` answers 200 while the process answers; `/health/ready` answers
+  200 once the application has started, and 503 while it starts or is asked to stop. A probe skips
+  the access log, the trusted host check and the HTTPS redirect, and neither path is in the OpenAPI
+  schema. Off by default: a project that does not set it keeps every path (#86).
+- **A page on fetching data in a component with `useFetch`**, in the views docs.
+
+### Fixed
+
+- **Chrome DevTools no longer floods the dev log.** The 404 it causes on every inspected page
+  (`/.well-known/appspecific/com.chrome.devtools.json`) writes no line in dev; production still logs
+  every path it answers, and the probe still gets its 404 (#82). `AccessLogMiddleware` takes a
+  `quiet` tuple of paths to keep out of the log.
+- **A multipart form without `python-multipart` names the fix.** An action that received
+  `multipart/form-data` answered a bare 500 whose traceback buried the package name; the error now
+  names the package and the command, `uv add python-multipart`. A urlencoded form still needs
+  nothing (#83).
 
 ### Changed
 
-- **The README and the issue templates** link the published documentation
-  instead of raw Markdown files and an unrelated site. Blank issues are closed:
-  a question, an idea and a security report each have their own place.
+- **The docs say when a form needs `python-multipart`**, in the actions guide and the reference.
+- **The health endpoint pages are translated** into every language of the docs.
+- **Every text file is checked out with LF endings** (`.gitattributes`), so a clone edited on
+  Windows no longer rewrites the whole tree.
 
-## [Unreleased]
+- **The agent rules forbid the characters a person does not type**: em and en dashes, arrows,
+  the ellipsis character, curly quotes, bullets, middle dots, check marks, box drawing and invisible
+  spaces, in text and in design (a menu separator is a CSS border or gap). A test keeps them out of
+  the interfaces of the docs sites and of the starters.
+
+### Security
+
+- **opentelemetry-api 1.45.2 and soupsieve 4.1.1** in the lock, for CVE-2026-126360 and
+  CVE-2026-126190. opentelemetry-api comes with FastAPI; soupsieve only with the translator of the
+  docs, a development tool.
+
+## [2.3.0] - 2026-11-08
 
 ### Added
 
@@ -59,6 +72,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   with a session, a JSON API, a file upload) runs in the test suite, and the API page is checked
   against the exports of `nexy`, `nexy.http`, `nexy.decorators` and `nexy.testing`.
 - **`UploadFile`, `File` and `Form`** in `nexy.http`.
+- **`useFetch` in `@nexy/client`**, for React, Preact, Solid, Vue and Svelte. One state per URL:
+  the first reader sends the request and the others reuse the answer, a refresh keeps the data
+  until the new answer arrives, and two refreshes at once send one request. An error status is a
+  `FetchError` with the server's detail; `refreshAll()` fetches every URL of the page again, and
+  an action that revalidates dispatches `nexy:revalidate` so the data is fetched again with the
+  page.
+- **HEAD answers with the body of GET**, on every page and API route. A route that answered GET
+  refused HEAD with 405; a route's own HEAD handler still answers first.
+- **A tutorial that is a course.** Fourteen chapters, each a runnable step of the same notes app,
+  from `nx new` to a React island that ticks a note without a reload; each chapter ends where the
+  next one starts, and the eleven translated trees carry the same chapters.
+- **A "Coming from" section**: sixteen pages mapping Astro, Django, Elysia, Express, FastAPI,
+  Fastify, Flask, Hono, Laravel, NestJS, Next.js, Nuxt, Rails, Remix, Spring Boot and SvelteKit to
+  Nexy.
+- **A "Databases" section**: SQLite, PostgreSQL, Neon, and MySQL or MariaDB.
+- **The COM brand kit and its social pipeline.** `scripts/publish_social.py` lists, checks, packs
+  and rehearses a post; `scripts/make_com_media.py` draws the cards as HTML and CSS, renders them
+  in Chrome at twice the size and reduces them to 1080x1350, and writes the repository banner.
+  A caption that reads like every other caption, a post no network would accept, and a card whose
+  text overflows or whose fonts fall back are refused.
+- **`@Controller("/cats")`**: the argument of a modular controller is `path`, first and
+  positional. `prefix=` still works and warns that it is deprecated; giving both is refused.
 
 ### Changed
 
@@ -78,17 +113,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   framework plus the server-rendered header: a dialog role, a scrim, a close button, Escape, and a
   page that does not scroll behind it. The entry animation lives in the stylesheet rather than in a
   utility class: Tailwind and UnoCSS both read `globale.css`, and no utility carries keyframes.
+- **The README is the front door PyPI shows**: the promise, the three doors and a measured number,
+  with absolute links because PyPI renders the page outside the repository.
+- **The package metadata PyPI shows** now carries a license, an author, the classifiers, the
+  project URLs, and a description and keyword list a search can read (PEP 639
+  `License-Expression: MIT`).
+- **The plain-CSS starter's mobile menu is a sheet from the left edge too**: a modal sheet over a
+  scrim, closed by its button, the scrim or Escape, with focus moved in and back and the page
+  behind not scrolling. A reduced-motion preference turns the slide off.
+- **The docs sites take the mobile bar and drawer of Fumadocs**: the drawer opens on the controls
+  of the page, the theme switch keeps the size its knob is drawn for on a phone, and the language
+  list fits in either direction.
 
 ### Fixed
 
-- **`uvx nexy new` installs on Python 3.15, Windows included.** Markdown was rendered by `cmarkgfm`,
-  a C extension with no wheel for Python 3.15: uv built it from source and failed without Microsoft
-  C++ Build Tools. Markdown is now rendered by `markdown-it-py`, which is pure Python. Raw HTML in a
-  `.md` page is now shown as text instead of being dropped, and a bare `www.` address is no longer
-  turned into a link: write the scheme (`https://`).
-- **Nexy no longer installs PyYAML.** `uvicorn[standard]` pulled it in for YAML log files, which
-  Nexy never uses; its other extras (`httptools`, `uvloop`, `python-dotenv`) are now listed one by
-  one. Every package Nexy installs now has a wheel for Python 3.15 on Windows.
 - **`revalidate` in a `.nexy` page now switches the ISR cache on.** The frontmatter runs inside the
   component, so `revalidate = 60` was a local variable the router never saw and the page answered
   with no cache header. A literal `revalidate` or `metadata` is now an attribute of the module.
@@ -118,6 +156,68 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
   skip, when Node.js 22.18 or the packages are missing.
 - **No test is skipped any more**: `sqlalchemy`, `itsdangerous` and `python-multipart` joined the
   dev dependencies, and the starter and skill checks run for every framework.
+- **`useSession()` answers `{}` when sessions are off.** Starlette's `request.session` asserts
+  instead of raising `AttributeError`, so the `getattr` default never applied and the page
+  answered 500.
+- **`nx migrate` exits with the code of a failing migration tool.** The return code of alembic or
+  aerich was dropped, so a migration that failed ended with exit 0 and CI took it for a success.
+- **A middleware class listed bare in `useMiddlewares` is applied.** `collect_middlewares` kept
+  only `(class, options)` pairs, so `useMiddlewares = [RequestIdMiddleware]`, the form the docs
+  show, installed nothing.
+- **`notfound.nexy`, `forbidden.nexy` and `unauthorized.nexy` stay error pages** in a project with
+  a `nexyconfig.py`: loading the config rebuilt the special file names from a list that knew only
+  `layout`, `errors` and `loading`, so the files were served as `/notfound`, `/forbidden` and
+  `/unauthorized`.
+- **SQLite migrations can add a foreign key to an existing table.** SQLite cannot alter a
+  constraint, so the upgrade failed halfway: the column was added and the revision never recorded.
+  `env.py` migrates SQLite in batch mode and names the SQLModel constraints, which batch mode
+  needs.
+- **The Alembic env imports every `*_model.py`** under `src/` when it runs, so a model added after
+  init is not written as a `drop_table`; it takes the scaffold's user model when present, else the
+  first `*_model.py`.
+- **The translator keeps an indented code fence out of its hands.** The fence pattern was
+  anchored at column zero, so a fence inside a list item travelled as prose: German turned its
+  backticks into a low quote, Urdu lost one and translated the code.
+- **The client bundles are built after `vite build`**, not when `vite dev` stops. Vite calls
+  `closeBundle` on both, so the plugin ran a script `nexy dev` never copies and printed an
+  `ERR_MODULE_NOT_FOUND` stack each time Nexy stopped Vite.
+- **The API reference no longer hides a route in silence.** `nx dev` and `nx start` print, for a
+  page at `/docs` or `/openapi.json`, the file and the setting to change.
+- **The security page says a `.nexy` template does not escape on its own.** It read as if
+  autoescape were on and `| safe` turned it off; `| e` is the author's to add, as `SECURITY.md`
+  says. Translated into the eleven languages.
+- **The test suite runs in English whatever the machine locale.** `NEXY_LANG=en` is set for the
+  test process and the subprocesses it starts; 21 tests that read the English messages failed on
+  a machine with `LANG=fr_FR.UTF-8`.
+
+## [2.2.2] - 2026-11-05
+
+### Fixed
+
+- **`uvx nexy` on Python 3.15 and Windows.** `cmarkgfm` has no wheel there, so uv
+  built it from source and demanded Microsoft C++ Build Tools before Nexy was
+  installed at all. `markdown-it-py` replaces it: pure Python, GFM output and
+  heading IDs unchanged. Raw HTML in a `.md` page is now shown as text instead of
+  being dropped, and a bare `www.` address is no longer turned into a link: write
+  the scheme (`https://`).
+- **`mypy --strict` on Python 3.15.** The 3.15 stubs type `spec_from_loader`
+  more strictly than 3.12 to 3.14; the module spec of a compiled module is now
+  built by hand.
+- **`uvicorn` extras** listed one by one, without `pyyaml`, which Nexy never used.
+
+### Added
+
+- **A GitHub release for every tag**, written after PyPI accepted the files, so
+  a version nobody can install is never announced.
+- **CI on a pushed branch.** `feature/*`, `fix/*`, `docs/*` and `perf/*` run the
+  matrix without waiting for a pull request. When a pull request already covers
+  the branch, its run is the only one.
+
+### Changed
+
+- **The README and the issue templates** link the published documentation
+  instead of raw Markdown files and an unrelated site. Blank issues are closed:
+  a question, an idea and a security report each have their own place.
 
 ## [2.2.0] - 2026-10-27
 

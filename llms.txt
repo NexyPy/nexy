@@ -66,6 +66,7 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Frontend pages](docs/views/frontend/pages.md): One file, one route: props, rendering, metadata
 - [Frontend layouts](docs/views/frontend/layouts.md): The document shell, nesting, and what a layout cannot do
 - [Frontend actions and navigation](docs/views/frontend/actions-and-navigation.md): Call a typed Action, link pages, read the URL
+- [Fetch data in a component](docs/views/frontend/fetch-data.md): `useFetch`: read JSON from a route, share it, refresh it
 - [React differences](docs/views/react/differences.md): Setup, pages, layouts, islands, actions
 - [Vue differences](docs/views/vue/differences.md): Setup, pages, layouts, islands, actions
 - [Svelte differences](docs/views/svelte/differences.md): Setup, pages, layouts, islands, actions

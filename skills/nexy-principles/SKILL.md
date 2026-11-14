@@ -49,6 +49,46 @@ why, never what.
 No emoji in code, comments, UI text, terminal output, logs, documentation or commit messages. Status
 is carried by words and by colour with a text label, not by a pictograph.
 
+## Characters a person does not type
+
+A keyboard has a hyphen, straight quotes and three dots. A language model reaches for characters
+people rarely type, and readers have learned to spot them. Pangram measured some of them hundreds
+of times more often in model text than in human text (box drawing about 940 times, the almost-equal
+sign 241 times, the warning sign 57, the right arrow 48), and the em dash shows up about 17 times per
+10,000 words of model text against 2 for people. None of them is proof on its own, but together
+they make a page read as generated. So none of them is written, by an agent or a person, in code,
+comments, UI text, terminal output, logs, documentation, commit messages, pull requests, issues, or
+in a reply to the user.
+
+| Do not write (code point) | Name | Write instead |
+| --- | --- | --- |
+| U+2014 | em dash | a comma, a colon, parentheses, or two sentences |
+| U+2013 | en dash | a hyphen, or "to" for a range: `1-5`, "Monday to Friday" |
+| U+2192, U+2190, U+21D2 | arrows | "to", "then", "becomes"; in a UI, an SVG icon |
+| U+2026 | ellipsis character | three dots `...`, or finish the sentence |
+| U+201C, U+201D, U+2018, U+2019 | curly quotes | straight quotes `"` and `'` |
+| U+2022, U+00B7 | bullet, middle dot | a Markdown list; in a UI, a gap or a border in CSS |
+| U+2248, U+00D7 | almost equal, times | "about", "x" or "by": `1080x1350` |
+| U+2713, U+2714, U+2717, U+26A0, U+2605 | check marks, ballot x, warning sign, star | a word ("ok", "warning"), or an SVG icon |
+| U+2500, U+2502, U+251C, U+2514 | box drawing | plain text, or a list of paths |
+| U+00A0, U+200B, U+200C, U+200D, U+FEFF | no-break and zero-width spaces | a normal space, or nothing |
+
+**The design follows the same rule.** A separator in a menu, a breadcrumb or a footer is a CSS
+border or a `gap`, never a dash, an arrow or a middle dot in the markup, nor in `content:` of a
+pseudo-element. This holds for the mobile menu and drawer as much as for the desktop: an "open"
+or "back" arrow, a close cross and a check mark are SVG icons with an accessible name.
+
+**Two exceptions only.**
+
+- A code block that reproduces real output keeps it as it is: the output of `tree`, a log line
+  copied from a tool.
+- A translated page follows the typography of its language: the dash of Russian (`Файл — это`),
+  the quotes of French (`« »`), German (`„ “`) or Chinese (`“ ”`). The English source still uses
+  none of these.
+
+`tests/unit/sites/test_human_characters.py` keeps them out of the interfaces of both docs sites
+and of the starters.
+
 ## Icons are real SVG
 
 Every icon is an SVG: an inline component with a `path`, or a file in `public/`. Never an emoji, a

@@ -78,6 +78,67 @@ class HealthController:
 Listez-le dans le `controllers` du module racine.
 <!-- /router -->
 
+### Points de terminaison intégrés
+
+Un équilibreur de charge ou Kubernetes pose deux questions : le processus est-il vivant et peut-il recevoir du trafic ? Set `useHealth` et Nexy répondent aux deux, sans fichier de gestionnaire ni contrôleur :
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useHealth = True
+```
+
+| Point de terminaison | Réponses 200 | Réponses 503 |
+|---|---|---|
+| `GET /health/live` | pendant que le processus répond | jamais |
+| `GET /health/ready` | une fois l'application démarrée | pendant qu'il démarre, et une fois que le serveur lui demande d'arrêter |
+
+Nexy garantit que `/health/ready` suit le démarrage et l'arrêt du serveur.
+
+Nexy garantit que les deux points de terminaison restent en dehors du journal d'accès et du schéma OpenAPI.
+
+Nexy garantit que les deux points de terminaison répondent avant `useTrustedHost` et `useHTTPSRedirect`, donc une sonde envoyée via HTTP à l'adresse d'un pod n'est pas refusée.
+
+Par convention, vous gardez vos propres routes désactivées `/health/live` et `/health/ready` pendant que `useHealth` est activé : les points finaux de Nexy répondent en premier. `useHealth` est `False` par défaut, donc un projet qui ne le définit pas conserve les deux chemins.
+
+Votre application est chargée de vérifier de quoi elle dépend : `/health/ready` rapporte le cycle de vie du serveur, pas l'état d'une base de données.
+
+Pointez vers eux les sondes d'un Kubernetes `Deployment` :
+
+```yaml filename="k8s/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/app:1.0
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8000
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            periodSeconds: 5
+```
+
 ## Hébergement statique
 
 Chaque page est HTML, mais Nexy suppose un serveur pour le routage et pour les gestionnaires d'API.
@@ -92,6 +153,7 @@ Chaque page est HTML, mais Nexy suppose un serveur pour le routage et pour les g
 - [ ] `NEXY_ACTION_SECRET` défini, ou `__nexy__/action.key` conservé avec la build
 - [ ] `useDocs = False` en production si le schéma API ne doit pas être public
 - [ ] `useTrustedHost` et `useHTTPSRedirect` définis pour les déploiements publics
+- [ ] `useHealth = True` lorsqu'un équilibreur de charge ou Kubernetes sonde l'application
 - [ ] `__nexy__/` non engagé
 
 ## Prochaines étapes

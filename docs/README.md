@@ -113,6 +113,7 @@ Controllers and modules.
 | Page | What it defines |
 |---|---|
 | [Actions and navigation](views/frontend/actions-and-navigation.md) | Call a typed Action, link pages, read the URL |
+| [Fetch data in a component](views/frontend/fetch-data.md) | `useFetch`: read JSON from a route, share it, refresh it |
 
 ### Nexy views
 | Page | What you will do |

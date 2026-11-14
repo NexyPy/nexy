@@ -71,7 +71,7 @@ Das HTTP-Vokabular eines Handlers. Importieren Sie von hier und nicht von FastAP
 | `status` | benannte Statuscodes, wie zum Beispiel `status.HTTP_404_NOT_FOUND` |
 | `Depends` | Führen Sie zuerst eine Funktion aus und übergeben Sie das Ergebnis |
 | `Header`, `Cookie`, `Query`, `Path`, `Body` | woher ein Parameter kommt |
-| `Form`, `File`, `UploadFile` | Formularfelder und Uploads (benötigt `python-multipart`) |
+| `Form`, `File`, `UploadFile` | Formularfelder und Uploads (`python-multipart` nur für `multipart/form-data`) |
 | `BackgroundTasks` | Arbeit, die ausgeführt wird, nachdem die Antwort gesendet wurde |
 | `JSONResponse`, `HTMLResponse`, `PlainTextResponse` | Antworten mit einem festen Inhaltstyp |
 | `RedirectResponse` | eine HTTP-Weiterleitung |

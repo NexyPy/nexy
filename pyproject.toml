@@ -1,6 +1,6 @@
 [project]
 name = "nexy"
-version = "2.2.2"
+version = "2.4.0"
 description = "The fullstack Python meta-framework. FastAPI on the server, Vite on the client, one file per page."
 readme = "README.md"
 license = "MIT"

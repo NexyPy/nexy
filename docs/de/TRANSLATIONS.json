@@ -1,8 +1,8 @@
 {
  "provider": "google",
  "pages": {
-  "README.md": "89457c28cc118431d5a60c69957f005e9f2db01f1ed0679392552f913ae7e2ca",
-  "deployment/README.md": "6324705a07d98389813ca25fe788c16e5b7991084485b98be444c254950e3f15",
+  "README.md": "a4c21477df76fee327c61d1ff26709d99289a8094ac595d2413c2a87a183454d",
+  "deployment/README.md": "efbf277c9694bd1c67c6ca3a77c3724137bb477cb1b4cba4772ff5abe40c1f65",
   "deployment/performance.md": "30582390e1ba64d1a6bc1cc297cafc9f7e3ba4b4ceba05e0854f220c790be659",
   "getting-started/coming-from-other-frameworks.md": "cf0a48d0e310b23f8031c761ee449168cdf12e4d035f0df30b6d3e80841d869a",
   "getting-started/core-concepts.md": "4c122e52bd7b896674824ad92faa80f56f32c3543965779141fed944232010a1",
@@ -12,7 +12,7 @@
   "getting-started/quick-start.md": "2200a4fb89a57708ea5ec9d9db75184866288c453cb9e52fbdfdbd81f2fc87ec",
   "getting-started/tutorial.md": "3e44043b698f3bbfb29fd0a759afba796976a9edbdf93a9bb858d2d207c33b4d",
   "getting-started/upgrading.md": "c9d9256a32e697f3b27999c618143aebe90e622a114bc32b1a1777447a0a0589",
-  "guides/actions.md": "ca3dbcc2812e69d8a7f88c55764ffb2ebc9d4c9fa76f9eaa3a292fafc5711edd",
+  "guides/actions.md": "35267d1e32c74d96e4bbe87cbb52ffd76fe2685beeef8034afd4af0ff8864691",
   "guides/ai-agents.md": "0acdc279156cb2867c04cf060e0b390a35afb29a92ee871c37903c3b6b5b1e47",
   "guides/databases.md": "239a45cc9e2b09c0293f831716d329196a960c91e3cbcbde4676d3595c10825d",
   "guides/devtools.md": "d5a3b1d3460c6dc417bd97eec35c4e1c8d4f38641900129ad2327f4a063160e6",
@@ -23,11 +23,11 @@
   "guides/testing.md": "97c4ba553cb1db943c79e9fcc348e640c927366b3081002c8bb12500a95b9791",
   "guides/troubleshooting.md": "b06d8e4208a7662ca7994a7c38a2ad40faffaea57fc10b7cad03594aa7414e01",
   "reference/cli.md": "ea1f8163361b22678de4b237a8fc8508f75779c921584d2fc4765ccfc8c1c912",
-  "reference/config.md": "dc139259d661b49648feaff8a5f505acccc8993c8664bce078cbd8a18e0f9b3c",
+  "reference/config.md": "547f645bda1ff330fdcb588adf38ee132272d8c1ec2be7437eaa04894955ca8f",
   "reference/exceptions.md": "c08cd69458738fa1f2a97d47df879a31e33c5927ecd810a4abcf9e1e4de3c0e2",
   "reference/file-conventions.md": "aa6d2a9080dbe0e8555e1b0900194b45c1a85cf455a49ae239788f53b90f528e",
   "reference/glossary.md": "2132b2a0f9c52c2c5239260ec30eb31c25d6221f3c06efcfa152e1dc222e911f",
-  "reference/python-api.md": "9e17ee11cc113c1508c60c403f8fdcb2a03797bfa3a4234000a0295c18a1d256",
+  "reference/python-api.md": "1886fa35264e70261482d7b995ccce3502d1ef494abbeab3bd3256b73c6f26c3",
   "reference/security.md": "4e6a3e9308d9c74f5bd2bd9b457647e03fb5a53c7d57de3efb5091e14218290f",
   "rendering/README.md": "f3b27058b6b691ecb8dd86d6dad1e88b745cb941595806261bb94ca930cb7623",
   "rendering/csr.md": "847c3cfe6957f6a59e508ed48875652fea31c9525ff3f78e39938d6be9d3eed1",
@@ -89,6 +89,7 @@
   "databases/sqlite.md": "eb15a30d1f063f1287087b3ba4b0b55342eea9a4f0f0a4f4b834e5cd6dbcb5d7",
   "databases/postgresql.md": "2781f799ded31388cef039d362c33b7dbb5cbfa87b957ea86365791237fd7780",
   "databases/neon.md": "5c1a2945a53a00709e154750cdd0409f4fbb5573ceae490646699a8f6933f5e7",
-  "databases/mysql-mariadb.md": "67ddb6491856904cbc8dfbc6052b651a0f3ae75e22547431fdd594fe9738fe4a"
+  "databases/mysql-mariadb.md": "67ddb6491856904cbc8dfbc6052b651a0f3ae75e22547431fdd594fe9738fe4a",
+  "views/frontend/fetch-data.md": "02ae4d26553289ad7737db7eeeebf740affc1ea1f9b3ba5678ffca13802a0a4f"
  }
 }

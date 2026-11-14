@@ -107,6 +107,7 @@ Pengontrol dan modul.
 | Halaman | Apa yang didefinisikannya |
 |---|---|
 | [Tindakan dan navigasi](views/frontend/actions-and-navigation.md) | Panggil Tindakan yang diketik, tautkan halaman, baca URL-nya |
+| [Mengambil data dalam sebuah komponen](views/frontend/fetch-data.md) | `useFetch`: membaca JSON dari suatu rute, membagikannya, menyegarkannya |
 
 ### Tampilan Nexy
 | Halaman | Apa yang akan kamu lakukan |
@@ -136,7 +137,7 @@ Pengontrol dan modul.
 ### Mode
 | Halaman | Apa yang akan Anda putuskan |
 |---|---|
-| [Merender](rendering/README.md) | Mode rendering mana yang sesuai dengan halaman |
+| [Perenderan](rendering/README.md) | Mode rendering mana yang sesuai dengan halaman |
 | [RSK](rendering/ssr.md) | Render server, default |
 | [Kepulauan](rendering/islands.md) | Hidrasi saat idle, terlihat, atau permintaan media |
 
@@ -205,7 +206,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 |---|---|
 | [Dari Ekspres](coming-from/express.md) | Terjemahkan rute, middleware dan `req`/`res` ke dalam Python penangan |
 | [Dari Fastify](coming-from/fastify.md) | Ubah skema, plugin, dan kait menjadi model, folder, dan file |
-| [Dari Elysia](coming-from/elysia.md) | Petakan `t` skema, penjaga, dan Eden ke Pydantic dan ketikkan tindakan |
+| [Dari Elysia](coming-from/elysia.md) | Memetakan `t` skema, penjaga, dan Eden ke Pydantic dan mengetikkan tindakan |
 | [Dari Hono](coming-from/hono.md) | Petakan rute, middleware, dan klien `hc` ke Nexy |
 
 ### Kerangka kerja fullstack {fbr}
@@ -215,11 +216,11 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 | [Dari Remix](coming-from/remix.md) | Ubah pemuat dan tindakan menjadi Python penangan dan tindakan |
 | [Dari Nuxt](coming-from/nuxt.md) | Simpan halaman Vue Anda dan pindahkan `server/` ke Python |
 | [Dari SvelteKit](coming-from/sveltekit.md) | Simpan halaman Svelte Anda dan pindahkan muatan, tindakan, dan pengait ke Python |
-| [Dari Astro](coming-from/astro.md) | Tulis Astro halaman sebagai `.nexy` halaman, dengan pulau yang sama |
+| [Dari Astro](coming-from/astro.md) | Tulis halaman Astro sebagai halaman `.nexy`, dengan pulau yang sama |
 | [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
 | [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
 
-### Kerangka kerja pengontrol {modular}
+### Kerangka pengontrol {modular}
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Dari NestJS](coming-from/nestjs.md) | Pindahkan pengontrol, modul, penyedia, dan penjaga ke router modular |

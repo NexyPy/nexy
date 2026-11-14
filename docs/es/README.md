@@ -83,7 +83,7 @@ Nexy coloca sus páginas y su API en un Python proyecto, atendido por un servido
 | [Validación y errores](routing/fbr/handlers/validation-and-errors.md) | Responda `422` y `404`, y plantee un `HTTPException` |
 | [WebSocket manejadores](routing/fbr/realtime/websocket.md) | Manejar una conexión `SOCKET` |
 | [Dependencias y guardias](routing/fbr/dependencies/README.md) | Ejecute `dependencies.py` antes de un controlador y heredéelo |
-| [Archivos de middleware](routing/fbr/middleware/README.md) | Ajustar solicitudes con `middleware.py`, heredadas por directorio |
+| [Archivos de middleware](routing/fbr/middleware/README.md) | Envolver solicitudes con `middleware.py`, heredadas por directorio |
 | [Páginas de error](routing/fbr/errors/README.md) | Responda con errores `notfound.nexy`, `errors.nexy` y JSON |
 | [Páginas de error por carpeta](routing/fbr/errors/folder-pages.md) | Caso extremo: errores de subcarpetas |
 
@@ -107,6 +107,7 @@ Controladores y módulos.
 | Página | lo que define |
 |---|---|
 | [Acciones y navegación](views/frontend/actions-and-navigation.md) | Llame a una acción escrita, vincule páginas, lea la URL |
+| [Obtener datos en un componente](views/frontend/fetch-data.md) | `useFetch`: lee JSON de una ruta, lo comparte, lo actualiza |
 
 ### Vistas nexy
 | Página | que haras |
@@ -205,7 +206,7 @@ Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
 |---|---|
 | [Desde expreso](coming-from/express.md) | Traducir rutas, middleware y `req`/`res` en Python controladores |
 | [Desde Fastify](coming-from/fastify.md) | Convierta esquemas, complementos y enlaces en modelos, carpetas y archivos |
-| [De Elysia](coming-from/elysia.md) | Asigne `t` esquemas, guardias y Eden a Pydantic y acciones escritas |
+| [De Elysia](coming-from/elysia.md) | Asigne `t` esquemas, guardias y Edén a Pydantic y acciones escritas |
 | [De Hono](coming-from/hono.md) | Mapear rutas, middleware y el cliente `hc` a Nexy |
 
 ### Marcos de trabajo completos {fbr}
@@ -213,7 +214,7 @@ Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
 |---|---|
 | [Desde Next.js](coming-from/nextjs.md) | Conserve sus páginas React y mueva el código del servidor a Python |
 | [Desde Remix](coming-from/remix.md) | Convierta cargadores y acciones en Python controladores y acciones |
-| [De Nuxt](coming-from/nuxt.md) | Mantenga sus Vue páginas y mueva `server/` a Python |
+| [Desde Nuxt](coming-from/nuxt.md) | Conserve sus Vue páginas y mueva `server/` a Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conserva tus Svelte páginas y mueve cargas, acciones y enlaces a Python |
 | [Desde Astro](coming-from/astro.md) | Escribe Astro páginas como `.nexy` páginas, con las mismas islas |
 | [De Laravel](coming-from/laravel.md) | Mapear rutas, controladores, Blade, Eloquent y colas a Nexy |

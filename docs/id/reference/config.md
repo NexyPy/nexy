@@ -22,6 +22,7 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | mengikat alamat |
 | `useSslKeyfile`, `useSslCertfile` | `None` | melayani HTTPS secara langsung |
 | `useDevTools` | `True` | toolbar `nexy dev` ditambahkan ke setiap halaman (info halaman, rute, kesalahan, konfigurasi); `False` menghapusnya. Tidak pernah hadir dalam produksi |
+| `useHealth` | `False` | melayani `GET /health/live` dan `GET /health/ready` untuk penyeimbang beban dan probe Kubernetes; lihat [Menerapkan](../deployment/README.md#built-in-endpoints) |
 | `useWorkers` | `0` | proses `nx start` berjalan; `0` adalah satu per CPU di Linux dan macOS, satu di Windows |
 | `useCSR` | `False` | mode perutean sisi klien; `.nexy` rute dinonaktifkan |
 

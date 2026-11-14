@@ -1,6 +1,6 @@
 # Конфигурация
 
-Конфигурация - это класс в `nexyconfig.py` в корне проекта. Nexy загружает его из каталога, в котором он работает; проект без файла использует значения по умолчанию.
+Конфигурация — это класс в `nexyconfig.py` в корне проекта. Nexy загружает его из каталога, в котором он работает; проект без файла использует значения по умолчанию.
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -22,16 +22,17 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | привязать адрес |
 | `useSslKeyfile`, `useSslCertfile` | `None` | обслуживать HTTPS напрямую |
 | `useDevTools` | `True` | панель инструментов `nexy dev` добавляет на каждую страницу (информацию о странице, маршруты, ошибки, конфиг); `False` удаляет его. Никогда не присутствует в производстве |
-| `useWorkers` | `0` | процессы `nx start` выполняются; `0` - по одному на каждый процессор в Linux и macOS, по одному в Windows. |
+| `useHealth` | `False` | обслуживать `GET /health/live` и `GET /health/ready` для балансировщиков нагрузки и зондов Kubernetes; см. [Развертывание](../deployment/README.md#built-in-endpoints) |
+| `useWorkers` | `0` | процессы `nx start` выполняются; `0` — по одному на каждый процессор в Linux и macOS, по одному в Windows. |
 | `useCSR` | `False` | режим маршрутизации на стороне клиента; `.nexy` маршруты отключены |
 
 ## Маршруты
 
 | Поле | По умолчанию | Значение |
 |---|---|---|
-| `useRouter` | `None` | экземпляр или класс `APIRouter`, смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
+| `useRouter` | `None` | экземпляр или класс `APIRouter` смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
 | `excludeDirs` | `["templates", "extension", "docs"]` | каталоги пропускаются при сканировании маршрутов |
-| `useAliases` | `None` | импортировать псевдонимы, например. `{"@": "src"}` (`@/components/Counter.tsx` означает `src/components/Counter.tsx`); `nx new` записывает тот, который вы выбрали, а Vite и `tsconfig.json` следуют за ним |
+| `useAliases` | `None` | импортировать псевдонимы, например. `{"@": "src"}` (`@/components/Counter.tsx` означает `src/components/Counter.tsx`); `nx new` записывает выбранный вами вариант, а Vite и `tsconfig.json` следуют за ним. |
 
 ## Фронтенд
 
@@ -43,7 +44,7 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | дополнительные расширения, которые наблюдает сервер разработчиков |
 | `useWatchExcludePatterns` | `None` | шаблоны glob, которые сервер разработки игнорирует |
 
-> **Полезно знать**: `NexyConfigModel` объявляет `useVite = False`; значение по умолчанию во время выполнения `Config` - `True`.
+> **Полезно знать**: `NexyConfigModel` объявляет `useVite = False`; значение по умолчанию во время выполнения `Config` — `True`.
 
 ## Зарезервированные имена файлов
 

@@ -22,6 +22,7 @@ class NexyConfig(NexyConfigModel):
 | `useHost` | `"0.0.0.0"` | Bindungsadresse |
 | `useSslKeyfile`, `useSslCertfile` | `None` | HTTPS direkt bereitstellen |
 | `useDevTools` | `True` | die Symbolleiste `nexy dev` fügt zu jeder Seite hinzu (Seiteninformationen, Routen, Fehler, Konfiguration); `False` entfernt es. Niemals in der Produktion vorhanden |
+| `useHealth` | `False` | dienen `GET /health/live` und `GET /health/ready` für Load Balancer und Kubernetes-Probes; siehe [Bereitstellen](../deployment/README.md#built-in-endpoints) |
 | `useWorkers` | `0` | Prozesse `nx start` läuft; `0` ist einer pro CPU unter Linux und macOS, einer unter Windows |
 | `useCSR` | `False` | Client-seitiger Routing-Modus; `.nexy` Routen sind deaktiviert |
 
@@ -29,9 +30,9 @@ class NexyConfig(NexyConfigModel):
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen gemountet ist; `None` bedeutet nur dateibasiert |
+| `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen bereitgestellt wird; `None` bedeutet nur dateibasiert |
 | `excludeDirs` | `["templates", "extension", "docs"]` | Beim Scannen von Routen werden Verzeichnisse übersprungen |
-| `useAliases` | `None` | Aliase importieren, z.B. `{"@": "src"}` (`@/components/Counter.tsx` bedeutet `src/components/Counter.tsx`); `nx new` schreibt die von Ihnen gewählte, und Vite und `tsconfig.json` folgen ihr |
+| `useAliases` | `None` | Aliase importieren, z.B. `{"@": "src"}` (`@/components/Counter.tsx` bedeutet `src/components/Counter.tsx`); `nx new` schreibt das von Ihnen gewählte, und Vite und `tsconfig.json` folgen ihm |
 
 ## Frontend
 
