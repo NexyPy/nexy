@@ -20,6 +20,7 @@ TEMPLATES = [
     ("web-fbr", "src/models/user_model.py"),
     ("api-fbr", "src/models/user_model.py"),
     ("web-modular", "src/apps/users/user_model.py"),
+    ("api-modular", "src/apps/users/user_model.py"),
 ]
 
 
