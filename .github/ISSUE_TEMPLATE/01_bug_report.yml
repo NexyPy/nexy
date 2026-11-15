@@ -1,11 +1,14 @@
 name: Bug Report
-description: Report a bug to help us improve Nexy
+description: Report a reproducible bug or regression in Nexy
+title: "Bug: "
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report. Please provide as much detail as possible.
+        Thanks for taking the time to report a bug. Please check it on the latest Nexy release first:
+        it may already be fixed. A bug we can run gets fixed much faster, so the link to a minimal
+        reproduction is required.
 
   - type: input
     id: version
@@ -53,6 +56,30 @@ body:
         2. Set client framework to React
         3. Run `nx dev`
         4. See error
+    validations:
+      required: true
+
+  - type: input
+    id: reproduction_link
+    attributes:
+      label: Link to a minimal reproduction
+      description: |
+        A public GitHub repository made with `nx new`, holding only what triggers the bug.
+        Not a localhost link, not your whole app. An issue we cannot reproduce may be closed.
+      placeholder: https://github.com/you/nexy-bug
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does it happen?
+      description: Following your steps, how easily does the bug come back?
+      options:
+        - Every time
+        - Often
+        - Sometimes
+        - Only once
     validations:
       required: true
 
