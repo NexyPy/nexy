@@ -99,6 +99,10 @@ class TestTheStylesheet:
         css = _css(tmp_path)
         assert "@keyframes nx-sheet-out" in css and '.nx-sheet[data-state="closed"]' in css
 
+    def test_the_logo_of_the_sheet_turns_light_in_dark_mode(self, tmp_path):
+        _scaffold(tmp_path)
+        assert ":root.dark .nx-sheet-head img" in _css(tmp_path)
+
     def test_every_link_of_the_sheet_fits_a_thumb(self, tmp_path):
         _scaffold(tmp_path)
         css = _css(tmp_path)

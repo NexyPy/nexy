@@ -133,7 +133,8 @@
     height: 1.25rem;
     width: auto;
   }
-  :root.dark .nx-brand img {
+  :root.dark .nx-brand img,
+  :root.dark .nx-sheet-head img {
     filter: brightness(0) invert(1);
   }
   .nx-nav-links {
