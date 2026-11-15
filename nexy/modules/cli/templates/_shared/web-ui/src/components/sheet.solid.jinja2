@@ -1,57 +1,101 @@
-{% if useCSR %}{% raw %}import { createEffect, onCleanup, Show, type JSX } from "solid-js";
+{% if useCSR %}{% raw %}import { createEffect, createSignal, createUniqueId, on, onCleanup, Show, type JSX } from "solid-js";
 
 import Icon from "@/components/icon.tsx";
 
 const CLOSE = "M18 6L6 18M6 6l12 12";
 
 type SheetProps = {
+  id: string;
   open: boolean;
   onClose: () => void;
-  /** Name of the dialog for a screen reader. */
-  label: string;
+  /** The visible title, which also names the dialog for a screen reader. */
+  title: string;
   children: JSX.Element;
 };
 
-// A panel that slides in from the left edge, over a scrim. While it is open the page
-// behind it holds still, and the keyboard belongs to the panel: Escape closes it.
+// Tab and Shift+Tab wrap inside the panel instead of walking out into the page.
+function trap(event: KeyboardEvent, panel: HTMLElement) {
+  const stops = panel.querySelectorAll<HTMLElement>("a[href], button");
+  const first = stops[0];
+  const last = stops[stops.length - 1];
+  const here = document.activeElement;
+  const away = event.shiftKey ? here === first || here === panel : here === last;
+  if (!away) return;
+  event.preventDefault();
+  (event.shiftKey ? last : first).focus();
+}
+
+// A modal panel that slides in from the left edge, over a scrim. While it is open it holds the
+// keyboard (Tab wraps, Escape closes from anywhere), the page behind holds still, and a wide
+// screen closes it. Closing plays the slide back before the panel leaves the page.
 export default function Sheet(props: SheetProps) {
-  let panel!: HTMLDivElement;
+  // A signal, not a plain ref: the panel is created after the effects first run.
+  const [panel, setPanel] = createSignal<HTMLDivElement>();
+  const titleId = createUniqueId();
+  const [shown, setShown] = createSignal(props.open);
+  const state = () => (props.open ? "open" : "closed");
+
+  createEffect(
+    on(
+      () => props.open,
+      (open) => {
+        if (open) return setShown(true);
+        const moves = panel()?.getAnimations().map((move) => move.finished) ?? [];
+        Promise.all(moves).then(() => !props.open && setShown(false));
+      },
+    ),
+  );
 
   createEffect(() => {
-    if (!props.open) return;
-    panel.focus();
-    const previous = document.body.style.overflow;
+    const element = panel();
+    if (!props.open || !element) return;
+    element.focus();
     document.body.style.overflow = "hidden";
+    const wide = window.matchMedia("(min-width: 40rem)");
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") props.onClose();
+      if (event.key === "Tab") trap(event, element);
+    };
+    const onWide = () => wide.matches && props.onClose();
+    document.addEventListener("keydown", onKey);
+    wide.addEventListener("change", onWide);
     onCleanup(() => {
-      document.body.style.overflow = previous;
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
+      wide.removeEventListener("change", onWide);
     });
   });
 
   return (
-    <Show when={props.open}>
-      <div class="fixed inset-0 z-40 sm:hidden">
-        <div class="sheet-scrim absolute inset-0 bg-ink/60" onClick={props.onClose} aria-hidden="true" />
+    <Show when={shown()}>
+      <div class="fixed inset-0 z-50 sm:hidden">
+        <div class="sheet-scrim absolute inset-0 bg-ink/70" data-state={state()} onClick={() => props.onClose()} aria-hidden="true" />
         <div
-          ref={panel}
+          ref={setPanel}
+          id={props.id}
           tabIndex={-1}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") props.onClose();
-          }}
-          class="sheet absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col overflow-y-auto border-r border-paper/10 bg-ink p-5 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] outline-none"
+          class="sheet absolute inset-y-0 left-0 flex w-3/4 max-w-sm flex-col border-r border-paper/10 bg-ink text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] outline-none"
           role="dialog"
           aria-modal="true"
-          aria-label={props.label}
+          aria-labelledby={titleId}
           data-side="left"
+          data-state={state()}
         >
+          <div class="flex items-center gap-3 border-b border-paper/10 py-4 pl-5 pr-16">
+            <img src="/nexy.svg" alt="" class="h-5 invert" />
+            <h2 id={titleId} class="font-mono text-xs uppercase tracking-[0.04em] text-paper/60">
+              {props.title}
+            </h2>
+          </div>
           <button
             type="button"
-            onClick={props.onClose}
+            onClick={() => props.onClose()}
             aria-label="Close menu"
-            class="mb-4 ml-auto grid size-8 place-items-center"
+            class="absolute right-2 top-1.5 grid size-11 place-items-center opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100"
           >
             <Icon path={CLOSE} />
           </button>
-          <nav class="flex flex-col" aria-label={props.label}>
+          <nav class="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
             {props.children}
           </nav>
         </div>
