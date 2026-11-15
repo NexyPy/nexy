@@ -10,7 +10,7 @@ from nexy.modules.cli.init.template_setup import _render_local_template
 
 CSR = [("react", "tsx"), ("preact", "tsx"), ("solid", "tsx"), ("vue", "vue"), ("svelte", "svelte")]
 # The sheets that behave as a modal dialog: focus trap, exit animation, closed by a wide screen.
-DIALOGS = [("react", "tsx"), ("preact", "tsx"), ("solid", "tsx")]
+DIALOGS = [("react", "tsx"), ("preact", "tsx"), ("solid", "tsx"), ("vue", "vue")]
 
 
 def _scaffold(dest: Path, framework: str, use_csr: bool, style: str = "tailwind") -> Path:
