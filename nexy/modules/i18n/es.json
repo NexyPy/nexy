@@ -213,7 +213,8 @@
   },
   "start": {
     "broken": "{count} archivo(s) de ruta no se pudieron cargar: el servidor no se inició.",
-    "exited": "detenido"
+    "exited": "detenido",
+    "no_build": "No hay build de producción: ejecuta `nexy build` y luego `nexy start`."
   },
   "test": {
     "failed": "{count} ejecución(es) de pruebas con error",

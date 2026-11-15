@@ -213,7 +213,8 @@
   },
   "start": {
     "broken": "{count} 个路由文件加载失败：服务器未启动。",
-    "exited": "已退出"
+    "exited": "已退出",
+    "no_build": "没有生产构建：请先运行 `nexy build`，再运行 `nexy start`。"
   },
   "test": {
     "failed": "{count} 次测试运行失败",
