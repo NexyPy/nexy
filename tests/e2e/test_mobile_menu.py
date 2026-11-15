@@ -29,6 +29,7 @@ DIALOG = "[role='dialog'][aria-modal='true']"
 STARTERS = [
     ("tailwind", "none", False),
     ("tailwind", "react", True),
+    ("tailwind", "preact", True),
 ]
 
 
