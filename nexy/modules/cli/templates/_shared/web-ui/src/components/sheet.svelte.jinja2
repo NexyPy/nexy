@@ -16,19 +16,27 @@
   const CLOSE = "M18 6L6 18M6 6l12 12";
 
   let panel = $state<HTMLElement | null>(null);
+  let closer = $state<HTMLButtonElement | null>(null);
+  let links = $state<HTMLElement | null>(null);
   let shown = $state(open);
   let state = $derived(open ? "open" : "closed");
 
-  // Tab and Shift+Tab wrap inside the panel instead of walking out into the page.
-  function trap(event: KeyboardEvent, element: HTMLElement) {
-    const stops = element.querySelectorAll<HTMLElement>("a[href], button");
-    const first = stops[0];
-    const last = stops[stops.length - 1];
+  // Tab and Shift+Tab wrap inside the panel instead of walking out into the page: the close
+  // button comes first, the last link of the menu last.
+  function trap(event: KeyboardEvent) {
+    const first = closer;
+    const last = links?.lastElementChild;
     const here = document.activeElement;
-    const away = event.shiftKey ? here === first || here === element : here === last;
-    if (!away) return;
+    const away = event.shiftKey ? here === first || here === panel : here === last;
+    if (!away || !(last instanceof HTMLElement) || !first) return;
     event.preventDefault();
     (event.shiftKey ? last : first).focus();
+  }
+
+  // The focus never leaves the open panel, so its own key handler sees every key.
+  function onkey(event: KeyboardEvent) {
+    if (event.key === "Escape") onclose();
+    if (event.key === "Tab") trap(event);
   }
 
   // Opening shows the panel; closing plays the slide back before the panel leaves the page.
@@ -51,17 +59,10 @@
     element.focus();
     document.body.style.overflow = "hidden";
     const wide = window.matchMedia("(min-width: 40rem)");
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onclose();
-      if (event.key === "Tab") trap(event, element);
-    };
-    const onWide = () => wide.matches && onclose();
-    document.addEventListener("keydown", onKey);
-    wide.addEventListener("change", onWide);
+    wide.onchange = () => wide.matches && onclose();
     return () => {
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", onKey);
-      wide.removeEventListener("change", onWide);
+      wide.onchange = null;
     };
   });
 </script>
@@ -79,12 +80,14 @@
       aria-labelledby="{id}-title"
       data-side="left"
       data-state={state}
+      onkeydown={onkey}
     >
       <div class="flex items-center gap-3 border-b border-paper/10 py-4 pl-5 pr-16">
         <img src="/nexy.svg" alt="" class="h-5 invert" />
         <h2 id="{id}-title" class="font-mono text-xs uppercase tracking-[0.04em] text-paper/60">{title}</h2>
       </div>
       <button
+        bind:this={closer}
         type="button"
         class="absolute right-2 top-1.5 grid size-11 place-items-center opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100"
         aria-label="Close menu"
@@ -92,7 +95,7 @@
       >
         <Icon path={CLOSE} />
       </button>
-      <nav class="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
+      <nav bind:this={links} class="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
         {@render children?.()}
       </nav>
     </div>
