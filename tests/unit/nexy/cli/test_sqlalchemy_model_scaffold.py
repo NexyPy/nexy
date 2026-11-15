@@ -19,6 +19,7 @@ from nexy.modules.cli.init.template_setup import _render_local_template
 TEMPLATES = [
     ("web-fbr", "src/models/user_model.py"),
     ("api-fbr", "src/models/user_model.py"),
+    ("web-modular", "src/apps/users/user_model.py"),
 ]
 
 
