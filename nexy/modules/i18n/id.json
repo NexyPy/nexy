@@ -213,7 +213,8 @@
   },
   "start": {
     "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",
-    "exited": "berhenti"
+    "exited": "berhenti",
+    "no_build": "Belum ada build produksi: jalankan `nexy build`, lalu `nexy start`."
   },
   "test": {
     "failed": "{count} proses pengujian gagal",

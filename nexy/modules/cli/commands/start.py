@@ -7,10 +7,20 @@ from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.listening import Endpoint, print_listening
+from nexy.helpers.server.markers import has_build
 from nexy.helpers.server.server import Server
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.i18n import t
+
+
+def _refuse_unbuilt_project() -> None:
+    """Production serves what `nexy build` made: without it, pages would lose their layout."""
+    if has_build():
+        return
+    text = t("start.no_build", "No production build: run `nexy build`, then `nexy start`.")
+    console.print(f"\n  [red]x[/red] {text}")
+    sys.exit(1)
 
 
 def _route_failures() -> list[str]:
@@ -60,6 +70,7 @@ def start(port: int | None = None, host: str | None = None) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
+    _refuse_unbuilt_project()
     started = time.perf_counter()
     _refuse_broken_project(_route_failures())
     endpoint = _endpoint(port, host)

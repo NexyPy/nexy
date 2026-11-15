@@ -213,7 +213,8 @@
   },
   "start": {
     "broken": "{count} arquivo(s) de rota não puderam ser carregados: o servidor não foi iniciado.",
-    "exited": "encerrado"
+    "exited": "encerrado",
+    "no_build": "Nenhum build de produção: execute `nexy build` e depois `nexy start`."
   },
   "test": {
     "failed": "{count} execução(ões) de testes com falha",
