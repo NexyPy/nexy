@@ -50,6 +50,19 @@ class TestDetectOrm:
         found = orm.detect_orm(project)
         assert found is not None and (found.name, found.tool) == (name, tool)
 
+    def test_use_orm_names_the_orm_whatever_else_the_config_mentions(self, project):
+        (project / "nexyconfig.py").write_text(
+            'import sqlmodel\n\nclass NexyConfig:\n    useORM = "SQLAlchemy"\n', encoding="utf-8"
+        )
+        found = orm.detect_orm(project)
+        assert found is not None and found.name == "SQLAlchemy"
+
+    def test_use_orm_wins_over_an_installed_orm(self, project, monkeypatch):
+        monkeypatch.setattr(orm.importlib.util, "find_spec", lambda _name: True)
+        (project / "nexyconfig.py").write_text("    useORM = 'Tortoise-ORM'\n", encoding="utf-8")
+        found = orm.detect_orm(project)
+        assert found is not None and found.tool == "aerich"
+
     def test_sqlmodel_wins_over_sqlalchemy_which_it_builds_on(self, project):
         (project / "nexyconfig.py").write_text("sqlmodel sqlalchemy", encoding="utf-8")
         found = orm.detect_orm(project)
