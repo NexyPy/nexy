@@ -3,6 +3,20 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.4.1] - 2026-11-15
+
+### Fixed
+
+- **`nx start` refuses a project that `nx build` has not built.** It used to serve the pages without
+  their layout: a 200 with `<div data-nexy-error="Layout not available"></div>`. `nx build` now
+  writes `__nexy__/build.json` (Nexy version, time) once it succeeds, and a failed build leaves
+  none; without that file `nx start` exits with code 1 and says to run `nx build`, in the twelve
+  languages of the command line (#370).
+
+### Changed
+
+- **The command line reference says that `nx start` needs a build first**, with its translations.
+
 ## [2.4.0] - 2026-11-14
 
 ### Added
