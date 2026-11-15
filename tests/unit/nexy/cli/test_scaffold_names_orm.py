@@ -13,7 +13,7 @@ import pytest
 from nexy.modules.cli.init.template_setup import _render_local_template
 from nexy.modules.cli.migrations.orm import detect_orm
 
-TEMPLATES = ["web-fbr", "web-modular"]
+TEMPLATES = ["web-fbr", "web-modular", "api-fbr", "api-modular"]
 
 
 def _scaffold(dest: Path, template: str, orm: str) -> None:
