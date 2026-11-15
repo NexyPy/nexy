@@ -9,8 +9,6 @@ import pytest
 from nexy.modules.cli.init.template_setup import _render_local_template
 
 CSR = [("react", "tsx"), ("preact", "tsx"), ("solid", "tsx"), ("vue", "vue"), ("svelte", "svelte")]
-# The sheets that behave as a modal dialog: focus trap, exit animation, closed by a wide screen.
-DIALOGS = [("react", "tsx"), ("preact", "tsx"), ("solid", "tsx"), ("vue", "vue")]
 
 
 def _scaffold(dest: Path, framework: str, use_csr: bool, style: str = "tailwind") -> Path:
@@ -71,7 +69,7 @@ class TestClientSheet:
         assert f'{cls}="sheet ' in panel and f'{cls}="sheet-scrim ' in panel
 
 
-@pytest.mark.parametrize(("framework", "ext"), DIALOGS)
+@pytest.mark.parametrize(("framework", "ext"), CSR)
 class TestClientSheetDialog:
     def test_the_sheet_marks_the_state_its_animation_reads(self, tmp_path, framework, ext):
         _scaffold(tmp_path, framework, True)
