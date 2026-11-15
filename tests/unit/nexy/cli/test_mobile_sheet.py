@@ -9,6 +9,8 @@ import pytest
 from nexy.modules.cli.init.template_setup import _render_local_template
 
 CSR = [("react", "tsx"), ("preact", "tsx"), ("solid", "tsx"), ("vue", "vue"), ("svelte", "svelte")]
+# The sheets that behave as a modal dialog: focus trap, exit animation, closed by a wide screen.
+DIALOGS = [("react", "tsx")]
 
 
 def _scaffold(dest: Path, framework: str, use_csr: bool, style: str = "tailwind") -> Path:
@@ -67,6 +69,25 @@ class TestClientSheet:
         cls = "className" if framework == "react" else "class"
         panel = _sheet(tmp_path, ext)
         assert f'{cls}="sheet ' in panel and f'{cls}="sheet-scrim ' in panel
+
+
+@pytest.mark.parametrize(("framework", "ext"), DIALOGS)
+class TestClientSheetDialog:
+    def test_the_sheet_marks_the_state_its_animation_reads(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert "data-state" in _sheet(tmp_path, ext)
+
+    def test_the_sheet_waits_for_its_exit_before_it_leaves(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert "getAnimations()" in _sheet(tmp_path, ext)
+
+    def test_the_sheet_keeps_the_focus_inside(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert '"Tab"' in _sheet(tmp_path, ext)
+
+    def test_a_wide_screen_closes_the_sheet(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert "(min-width: 40rem)" in _sheet(tmp_path, ext)
 
 
 class TestServerRenderedSheet:
