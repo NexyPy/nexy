@@ -98,6 +98,11 @@ class TestTheAnimationIsDefined:
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
         assert "@keyframes sheet-in" in css and ".sheet {" in css and ".sheet-scrim {" in css
 
+    def test_the_stylesheet_holds_the_exit_the_closing_sheet_plays(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        assert '.sheet[data-state="closed"]' in css and "@keyframes sheet-out" in css
+
     def test_a_reduced_motion_preference_turns_the_slide_off(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")

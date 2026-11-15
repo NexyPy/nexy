@@ -116,12 +116,29 @@
     opacity: 0;
   }
 }
+/* Closing plays the way back: the script hides the sheet once these have finished. */
+@keyframes sheet-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes sheet-scrim-out {
+  to {
+    opacity: 0;
+  }
+}
 @layer components {
   .sheet {
     animation: sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
   .sheet-scrim {
     animation: sheet-scrim-in 0.2s ease both;
+  }
+  .sheet[data-state="closed"] {
+    animation: sheet-out 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  .sheet-scrim[data-state="closed"] {
+    animation: sheet-scrim-out 0.2s ease both;
   }
 }
 @media (prefers-reduced-motion: reduce) {
