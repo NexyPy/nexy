@@ -8,31 +8,31 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 |---|---|---|
 | `nx dev` | `nx d` | server pengembangan: kompilasi saat perubahan, Vite, HMR |
 | `nx start` | `nx s` | server produksi pada output yang dikompilasi |
-| `nx build` | `nx b` | pembangunan produksi |
-| `nx new` | `nx n` | merancang proyek |
-| `nx init` | `nx i` | menambahkan Nexy ke proyek yang sudah ada |
-| `nx add` | - | menambahkan komponen UI dari registri atau URL ke `src/components/ui` |
+| `nx build` | `nx b` | membangun produksi |
+| `nx new` | `nx n` | perancah sebuah proyek |
+| `nx init` | `nx i` | tambahkan Nexy ke proyek yang sudah ada |
+| `nx add` | - | tambahkan komponen UI dari registri atau URL ke `src/components/ui` |
 | `nx migrate` | `nx m` | membuat atau menerapkan migrasi database dengan Alembic atau Aerich |
-| `nx check` | `nx c` | pemeriksaan ketik: mypy di Python, `tsc` di TypeScript |
-| `nx format` | `nx f` | format Python (ruff), JS/TS (lebih cantik), `.nexy` file |
-| `nx test` | - | lari pytest; `--client` menambahkan vitest |
+| `nx check` | `nx c` | ketik-periksa: mypy di Python, `tsc` di TypeScript |
+| `nx format` | `nx f` | format file Python (ruff), JS/TS (lebih cantik), `.nexy` |
+| `nx test` | - | jalankan pytest; `--client` menambahkan vitest |
 | `nx skills` | - | menambah atau menyegarkan keterampilan, `AGENTS.md` dan `CLAUDE.md` untuk agen pengkodean |
 
 ## Bendera
 
-| Perintah | Bendera | Default |
+| Perintah | Bendera | Bawaan |
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
 | `build` | `--check` | off - menjalankan ruff dan mypy setelah build |
 | `format` | `--check` | mati - laporkan alih-alih menulis ulang |
-| `test` | `--client` | mati - juga menjalankan vitest alih-alih pytest saja |
-| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya ingin pengujian klien |
-| `new` | `--template`, `-t` | tidak ada - mengkloning templat terdaftar tanpa perintah |
+| `test` | `--client` | off - jalankan juga vitest alih-alih pytest saja |
+| `test` | `--no-server` | aktif - lewati pytest bila Anda hanya menginginkan pengujian klien |
+| `new` | `--template`, `-t` | tidak ada - mengkloning templat terdaftar tanpa diminta |
 | `new` | `--no-agents` | agen aktif - lewati `AGENTS.md` dan keterampilan agen |
-| `add` | `--ui`, `--url` | menonaktifkan - memaksa nama registri atau URL jika ambigu |
-| `add` | `--all`, `-a` | nonaktif - tambahkan setiap komponen registri |
-| `add` | `--sha256` | tidak ada - intisari yang diharapkan dari komponen jarak jauh; ketidakcocokan dibatalkan |
+| `add` | `--ui`, `--url` | off - memaksakan nama registri atau URL jika tidak jelas |
+| `add` | `--all`, `-a` | off - tambahkan setiap komponen registri |
+| `add` | `--sha256` | none - intisari yang diharapkan dari komponen jarak jauh; ketidakcocokan dibatalkan |
 | `migrate` | `--init` | mati - tulis pengaturan Alembic atau Aerich |
 | `migrate` | `--upgrade`, `-u` | mati - terapkan migrasi alih-alih menulis yang baru |
 | `migrate` | `--message`, `-m` | kosong - nama revisi baru |
@@ -59,7 +59,7 @@ Menyimpan file yang rusak tidak pernah menghentikan server. File `.py` dengan ke
   Fix it and save: the server keeps its last working version.
 ```
 
-File yang diurai tetapi gagal ketika aplikasi dimuat (impor hilang, kesalahan pada tingkat modul) dilaporkan dengan cara yang sama dan `nx dev` menunggu penyimpanan Anda berikutnya; tidak ada yang dilayani sampai aplikasi dimuat lagi. Penyimpanan yang valid berbunyi `nexy » update <file>` saat server memuat ulang. File Markdown di luar `src/routes`, seperti `README.md`, bukan halaman dan tidak memicu apa pun. `nx start` lebih ketat: keluar dengan kode 1, dan tidak memulai apa pun, jika file rute tidak dapat dimuat.
+File yang diurai tetapi gagal ketika aplikasi dimuat (impor hilang, kesalahan pada tingkat modul) dilaporkan dengan cara yang sama dan `nx dev` menunggu penyimpanan Anda berikutnya; tidak ada yang dilayani sampai aplikasi dimuat lagi. Penyimpanan yang valid berbunyi `nexy » update <file>` saat server memuat ulang. File Markdown di luar `src/routes`, seperti `README.md`, bukan halaman dan tidak memicu apa pun. `nx start` lebih ketat: keluar dengan kode 1, dan tidak memulai apa pun, jika file rute tidak dapat dimuat atau jika `nx build` belum membangun proyek.
 
 ## Pertanyaan dari `nx new`
 
@@ -68,9 +68,9 @@ File yang diurai tetapi gagal ketika aplikasi dimuat (impor hilang, kesalahan pa
 | Pertanyaan | Pilihan |
 |---|---|
 | Impor alias | `@` (`@/components/...` menunjuk ke `src/`), atau awalan lain seperti `~` atau `#app` |
-| Style | Tailwind CSS, UnoCSS, Vanilla CSS, Lainnya (tanpa alat CSS, stylesheet biasa sama seperti Vanilla) |
-| ORM | SQLModel, SQLAlchemy, Tortoise-ORM, Tanpa basis data |
-| Database (dengan ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Lainnya (Anda mengetikkan URL) |
+| Gaya | Tailwind CSS, UnoCSS, Vanilla CSS, Lainnya (tanpa alat CSS, stylesheet biasa sama seperti Vanilla) |
+| ORM | SQLModel, SQLAlchemy, Kura-kura-ORM, Tidak ada database |
+| Basis Data (dengan ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Lainnya (Anda mengetikkan URL) |
 
 Driver database untuk ORM yang dipilih diinstal dengannya (`psycopg`, `pymysql`, `asyncpg` atau `aiomysql`), dan URL ditulis ke `.env`.
 
@@ -109,5 +109,5 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 ## Langkah selanjutnya
 
 - [Memulai](../getting-started/quick-start.md): proyek pertama
-- [Pengujian](../guides/testing.md): apa yang `nx test` dijalankan
+- [Pengujian](../guides/testing.md): apa yang `nx test` jalankan
 - [Penerapan](../deployment/README.md): `build` dan `start` dalam produksi

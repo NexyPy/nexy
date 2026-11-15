@@ -213,7 +213,8 @@
   },
   "start": {
     "broken": "{count} Routendatei(en) konnten nicht geladen werden: Der Server wurde nicht gestartet.",
-    "exited": "beendet"
+    "exited": "beendet",
+    "no_build": "Kein Produktions-Build: Führen Sie `nexy build` aus, dann `nexy start`."
   },
   "test": {
     "failed": "{count} Testlauf/-läufe fehlgeschlagen",
