@@ -42,3 +42,20 @@ def test_a_bug_report_says_how_often_the_bug_happens():
 
 def test_a_bug_report_title_starts_with_its_kind():
     assert _form("01_bug_report.yml").get("title") == "Bug: "
+
+
+def _pull_request_template() -> str:
+    return (ROOT / ".github" / "PULL_REQUEST_TEMPLATE.md").read_text(encoding="utf-8")
+
+
+def test_a_pull_request_says_how_it_was_tested():
+    assert "## How did you test this change?" in _pull_request_template()
+
+
+def test_a_pull_request_runs_the_gates_the_ci_runs():
+    assert "python scripts/verify.py" in _pull_request_template()
+
+
+def test_a_pull_request_recalls_the_commit_rules():
+    template = _pull_request_template()
+    assert "one file written by hand" in template and "Co-authored-by" in template
