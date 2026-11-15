@@ -27,9 +27,9 @@ FORBIDDEN = frozenset(
     )
 )
 
-# Where a reader sees the interface: the two docs sites, every starter `nx new` writes, and the
-# forms a contributor fills on GitHub.
-AREAS = ("sites/", "nexy/modules/cli/templates/", ".github/ISSUE_TEMPLATE/")
+# Where a reader sees the interface: the two docs sites, every starter `nx new` writes, and what
+# a contributor reads on GitHub.
+AREAS = ("sites/", "nexy/modules/cli/templates/", ".github/ISSUE_TEMPLATE/", "CONTRIBUTING.md")
 SUFFIXES = (".html", ".nexy", ".css", ".js", ".jinja2", ".md", ".svg", ".yml")
 GENERATED = "/__nexy__/"
 
