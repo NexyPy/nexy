@@ -32,6 +32,7 @@ STARTERS = [
     ("tailwind", "preact", True),
     ("tailwind", "solid", True),
     ("tailwind", "vue", True),
+    ("tailwind", "svelte", True),
 ]
 
 
