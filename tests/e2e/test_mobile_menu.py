@@ -28,6 +28,7 @@ DIALOG = "[role='dialog'][aria-modal='true']"
 # (style, client framework, client-side routing)
 STARTERS = [
     ("tailwind", "none", False),
+    ("tailwind", "react", True),
 ]
 
 
