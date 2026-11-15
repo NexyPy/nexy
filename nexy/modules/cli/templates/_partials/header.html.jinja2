@@ -23,8 +23,7 @@
 {% else %}
 {% include "theme_switch.html.jinja2" %}
       <button type="button" {{ cls }}="nx-menu-button" aria-label="Open menu" aria-expanded="false" aria-controls="nx-menu" data-menu-button>
-        <span {{ cls }}="nx-menu-icon" data-menu-open aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16" /></svg></span>
-        <span {{ cls }}="nx-menu-icon" data-menu-close aria-hidden="true" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
+        <span {{ cls }}="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16" /></svg></span>
       </button>
 {% endif %}
     </div>
@@ -32,64 +31,85 @@
 </header>
 {% if not useCSR %}
 <div {{ cls }}="nx-sheet-layer" data-menu-panel hidden>
-  <div {{ cls }}="nx-sheet-scrim" data-menu-scrim aria-hidden="true"></div>
-  <div {{ cls }}="nx-sheet" id="nx-menu" role="dialog" aria-modal="true" aria-label="Menu" tabindex="-1" data-menu-dialog>
+  <div {{ cls }}="nx-sheet-scrim" data-menu-scrim data-state="closed" aria-hidden="true"></div>
+  <div {{ cls }}="nx-sheet" id="nx-menu" role="dialog" aria-modal="true" aria-labelledby="nx-menu-title" tabindex="-1" data-state="closed" data-menu-dialog>
+    <div {{ cls }}="nx-sheet-head">
+      <img src="/nexy.svg" alt="" />
+      <h2 {{ cls }}="nx-sheet-title" id="nx-menu-title">Menu</h2>
+    </div>
     <button type="button" {{ cls }}="nx-menu-button nx-menu-close" aria-label="Close menu" data-menu-dismiss>
       <span {{ cls }}="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
     </button>
-    <nav {{ cls }}="nx-sheet-links" aria-label="Menu">
+    <nav {{ cls }}="nx-sheet-links" aria-label="Pages">
       {{ nav_link("/", "Home", "nx-sheet-link") }}
       {{ nav_link("/about", "About", "nx-sheet-link") }}
-      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-sheet-link">Docs</a>
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-sheet-link">Docs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg></a>
     </nav>
   </div>
 </div>
 <script>
   // Server pages reload on every link: mark the current one.
   const here = location.pathname.replace(/\/$/, "") || "/";
-  for (const link of document.querySelectorAll("header a[href^='/']")) {
+  for (const link of document.querySelectorAll("header a[href^='/'], [data-menu-dialog] a[href^='/']")) {
     if ((link.pathname.replace(/\/$/, "") || "/") === here) link.setAttribute("aria-current", "page");
   }
 
-  // The mobile menu: a sheet from the left edge. The button, the scrim and Escape
-  // all close it, and the page behind it holds still while it is open.
+  // The mobile menu is a modal sheet. While it is open it holds the keyboard (Tab wraps inside it,
+  // Escape closes it from anywhere), the page behind holds still, and a wide screen closes it.
+  // Closing plays the slide back, then hides the sheet and gives the focus back to the button.
   (function () {
     const button = document.querySelector("[data-menu-button]");
     const layer = document.querySelector("[data-menu-panel]");
     if (!button || !layer) return;
     const dialog = layer.querySelector("[data-menu-dialog]");
-    const open_icon = button.querySelector("[data-menu-open]");
-    const close_icon = button.querySelector("[data-menu-close]");
-    let opener = null;
+    const scrim = layer.querySelector("[data-menu-scrim]");
+    const wide = window.matchMedia("(min-width: 48rem)");
 
     function set_open(open) {
+      dialog.dataset.state = open ? "open" : "closed";
+      scrim.dataset.state = dialog.dataset.state;
       button.setAttribute("aria-expanded", String(open));
-      button.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-      layer.hidden = !open;
       document.body.style.overflow = open ? "hidden" : "";
-      open_icon.hidden = open;
-      close_icon.hidden = !open;
-      if (open) {
-        opener = document.activeElement;
-        dialog.focus();
-      } else if (opener) {
-        opener.focus();
-        opener = null;
-      }
     }
 
-    button.addEventListener("click", function () {
-      set_open(button.getAttribute("aria-expanded") !== "true");
-    });
+    function open_menu() {
+      layer.hidden = false;
+      set_open(true);
+      dialog.focus();
+    }
 
-    // The scrim and the close button both dismiss: one listener on the layer reads the target.
+    function close_menu() {
+      if (dialog.dataset.state !== "open") return;
+      set_open(false);
+      button.focus();
+      Promise.all(dialog.getAnimations().map((move) => move.finished)).then(function () {
+        if (dialog.dataset.state === "closed") layer.hidden = true;
+      });
+    }
+
+    // Tab and Shift+Tab wrap inside the sheet instead of walking out into the page.
+    function trap(event) {
+      const stops = dialog.querySelectorAll("a[href], button");
+      const first = stops[0];
+      const last = stops[stops.length - 1];
+      const here = document.activeElement;
+      const away = event.shiftKey ? here === first || here === dialog : here === last;
+      if (!away) return;
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    }
+
+    button.addEventListener("click", open_menu);
     layer.addEventListener("click", function (event) {
-      if (event.target.closest("[data-menu-dismiss],[data-menu-scrim]")) set_open(false);
+      if (event.target.closest("[data-menu-dismiss],[data-menu-scrim]")) close_menu();
     });
-
-    // The panel holds the focus while it is open, so Escape arrives here without a global listener.
-    layer.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") set_open(false);
+    document.addEventListener("keydown", function (event) {
+      if (dialog.dataset.state !== "open") return;
+      if (event.key === "Escape") close_menu();
+      if (event.key === "Tab") trap(event);
+    });
+    wide.addEventListener("change", function () {
+      if (wide.matches) close_menu();
     });
   })();
 </script>
