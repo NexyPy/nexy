@@ -13,24 +13,28 @@ type SheetProps = {
   children: JSX.Element;
 };
 
-// Tab and Shift+Tab wrap inside the panel instead of walking out into the page.
-function trap(event: KeyboardEvent, panel: HTMLElement) {
-  const stops = panel.querySelectorAll<HTMLElement>("a[href], button");
-  const first = stops[0];
-  const last = stops[stops.length - 1];
+// Tab and Shift+Tab wrap inside the panel instead of walking out into the page: the close button
+// comes first, the last link of the menu last.
+function trap(
+  event: KeyboardEvent,
+  panel: HTMLElement | undefined,
+  first: HTMLElement | undefined,
+  last: Element | null | undefined,
+) {
   const here = document.activeElement;
   const away = event.shiftKey ? here === first || here === panel : here === last;
-  if (!away) return;
+  if (!away || !(last instanceof HTMLElement) || !first) return;
   event.preventDefault();
   (event.shiftKey ? last : first).focus();
 }
 
 // A modal panel that slides in from the left edge, over a scrim. While it is open it holds the
-// keyboard (Tab wraps, Escape closes from anywhere), the page behind holds still, and a wide
-// screen closes it. Closing plays the slide back before the panel leaves the page.
+// keyboard (Tab wraps, Escape closes), the page behind holds still, and a wide screen closes it. Closing plays the slide back before the panel leaves the page.
 export default function Sheet(props: SheetProps) {
   // A signal, not a plain ref: the panel is created after the effects first run.
   const [panel, setPanel] = createSignal<HTMLDivElement>();
+  let closer: HTMLButtonElement | undefined;
+  let links: HTMLElement | undefined;
   const titleId = createUniqueId();
   const [shown, setShown] = createSignal(props.open);
   const state = () => (props.open ? "open" : "closed");
@@ -52,19 +56,18 @@ export default function Sheet(props: SheetProps) {
     element.focus();
     document.body.style.overflow = "hidden";
     const wide = window.matchMedia("(min-width: 40rem)");
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") props.onClose();
-      if (event.key === "Tab") trap(event, element);
-    };
-    const onWide = () => wide.matches && props.onClose();
-    document.addEventListener("keydown", onKey);
-    wide.addEventListener("change", onWide);
+    wide.onchange = () => wide.matches && props.onClose();
     onCleanup(() => {
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", onKey);
-      wide.removeEventListener("change", onWide);
+      wide.onchange = null;
     });
   });
+
+  // The focus never leaves the open panel, so its own key handler sees every key.
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === "Escape") props.onClose();
+    if (event.key === "Tab") trap(event, panel(), closer, links?.lastElementChild);
+  };
 
   return (
     <Show when={shown()}>
@@ -80,6 +83,7 @@ export default function Sheet(props: SheetProps) {
           aria-labelledby={titleId}
           data-side="left"
           data-state={state()}
+          onKeyDown={onKey}
         >
           <div class="flex items-center gap-3 border-b border-paper/10 py-4 pl-5 pr-16">
             <img src="/nexy.svg" alt="" class="h-5 invert" />
@@ -88,6 +92,7 @@ export default function Sheet(props: SheetProps) {
             </h2>
           </div>
           <button
+            ref={closer}
             type="button"
             onClick={() => props.onClose()}
             aria-label="Close menu"
@@ -95,7 +100,7 @@ export default function Sheet(props: SheetProps) {
           >
             <Icon path={CLOSE} />
           </button>
-          <nav class="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
+          <nav ref={links} class="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
             {props.children}
           </nav>
         </div>
