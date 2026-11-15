@@ -30,6 +30,7 @@ STARTERS = [
     ("tailwind", "none", False),
     ("tailwind", "react", True),
     ("tailwind", "preact", True),
+    ("tailwind", "solid", True),
 ]
 
 
