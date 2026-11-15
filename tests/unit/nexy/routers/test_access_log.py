@@ -10,11 +10,14 @@ from typing import Any
 import pytest
 from rich.text import Text
 
+from nexy.helpers.server import access_log
 from nexy.helpers.server.access_log import (
     DEVTOOLS_PROBE,
     AccessLogMiddleware,
     format_duration,
     format_request,
+    paint_ansi,
+    paint_plain,
 )
 
 
@@ -178,3 +181,27 @@ class TestSockets:
                 _call(AccessLogMiddleware(failing, log=lines.append), "/c", scope_type="websocket")
             )
         assert _plain(lines[0]).startswith("SOCKET » /c 500 in ")
+
+
+class TestWithoutRich:
+    """The line a terminal shows, written without parsing markup: Rich costs most of a request."""
+
+    def test_the_plain_line_reads_like_the_markup_line(self):
+        line = format_request("GET", "/users", 200, 0.012, paint=paint_plain)
+        assert line == "GET \u00bb /users 200 in 12ms"
+
+    def test_the_ansi_line_colours_the_status(self):
+        line = format_request("GET", "/", 200, 0.012, paint=paint_ansi)
+        assert "\033[32m200\033[0m" in line
+
+    def test_the_ansi_line_keeps_a_path_as_it_is(self):
+        line = format_request("GET", "/[bold]x", 200, 0.012, paint=paint_ansi)
+        assert " /[bold]x " in line
+
+    def test_the_default_log_never_parses_markup(self, monkeypatch, capsys):
+        def refuse(*_args, **_kwargs):
+            raise AssertionError("console.print parses markup on every request")
+
+        monkeypatch.setattr(access_log.console, "print", refuse)
+        asyncio.run(_call(AccessLogMiddleware(_responder()), "/users"))
+        assert "/users 200 in " in capsys.readouterr().out
