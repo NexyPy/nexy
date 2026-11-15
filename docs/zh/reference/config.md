@@ -26,13 +26,19 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | 进程 `nx start` 运行； `0` 在 Linux 和 macOS 上是每个 CPU 一个，在 Windows 上是一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 
+## 数据库
+
+| 领域 | 默认 | 含义 |
+|---|---|---|
+| `useORM` | `None` | 项目的 ORM：`"SQLModel"`、`"SQLAlchemy"` 或 `"Tortoise-ORM"`。 `nx new` 写入它，`nx migrate` 从中选择 Alembic 或 Aerich；如果没有它，`nx migrate` 将采用第一个安装的 ORM。请参阅[数据库](../guides/databases.md#migrations) |
+
 ## 路线
 
 | 领域 | 默认 | 含义 |
 |---|---|---|
 | `useRouter` | `None` | 安装在基于文件的路由旁边的 `APIRouter` 实例或类； `None` 表示仅基于文件 |
 | `excludeDirs` | `["templates", "extension", "docs"]` | 扫描路由时跳过的目录 |
-| `useAliases` | `None` | 导入别名，例如 `{"@": "src"}`（`@/components/Counter.tsx` 表示 `src/components/Counter.tsx`）； `nx new` 写入您选择的那个，然后 Vite 和 `tsconfig.json` 跟随它 |
+| `useAliases` | `None` | 导入别名，例如 `{"@": "src"}`（`@/components/Counter.tsx` 表示 `src/components/Counter.tsx`）； `nx new` 写入您选择的内容，Vite 和 `tsconfig.json` 紧随其后 |
 
 ## 前端
 
@@ -48,7 +54,7 @@ class NexyConfig(NexyConfigModel):
 
 ## 保留文件名
 
-每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 保留 `layout.md`，与 `layout.nexy` 完全相同。
+每个字段都会为保留角色添加扩展。 `useLayoutExtensions = ["md"]` 使 `layout.md` 保留，与 `layout.nexy` 完全相同。
 
 | 领域 | 添加扩展 |
 |---|---|
@@ -63,7 +69,7 @@ class NexyConfig(NexyConfigModel):
 
 | 领域 | 默认 | 含义 |
 |---|---|---|
-| `useDocs` | `True` | 提供标量参考页面； `/openapi.json` 的服务方式有两种 |
+| `useDocs` | `True` | 提供标量参考页面； `/openapi.json` 可以任意方式提供 |
 | `useDocsUrl` | `"/docs"` | API参考页面路径 |
 | `useRedocsUrl` | `"/redocs"` | 已声明但未安装路由 |
 | `useTitle` | `"Nexy App"` | OpenAPI 标题和页面标题（`NexyConfigModel` 中的 `"Nexy"`） |

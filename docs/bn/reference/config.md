@@ -1,6 +1,6 @@
 # কনফিগার
 
-কনফিগারেশন হল প্রোজেক্ট রুটে `nexyconfig.py`-এ একটি ক্লাস। Nexy এটি যে ডিরেক্টরিতে চলে সেখান থেকে এটি লোড করে; ফাইল ছাড়া একটি প্রকল্প ডিফল্ট ব্যবহার করে।
+কনফিগারেশন হল প্রোজেক্ট রুটে `nexyconfig.py`-এর একটি ক্লাস। Nexy এটি যে ডিরেক্টরিতে চলে সেখান থেকে এটি লোড করে; ফাইল ছাড়া একটি প্রকল্প ডিফল্ট ব্যবহার করে।
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -26,6 +26,12 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | প্রক্রিয়াগুলি `nx start` চলে; `0` প্রতি সিপিইউ লিনাক্স এবং ম্যাকোসে একটি, উইন্ডোজে একটি |
 | `useCSR` | `False` | ক্লায়েন্ট-সাইড রাউটিং মোড; `.nexy` রুট নিষ্ক্রিয় করা হয়েছে |
 
+## ডাটাবেস
+
+| মাঠ | ডিফল্ট | অর্থ |
+|---|---|---|
+| `useORM` | `None` | প্রকল্পের ORM: `"SQLModel"`, `"SQLAlchemy"` বা `"Tortoise-ORM"`। `nx new` এটি লেখেন, এবং `nx migrate` এটি থেকে Alembic বা Aerich বেছে নেন; এটি ছাড়া, `nx migrate` প্রথম ORM ইনস্টল করা লাগে। [ডেটাবেস](../guides/databases.md#migrations) দেখুন |
+
 ## রুট
 
 | মাঠ | ডিফল্ট | অর্থ |
@@ -39,7 +45,7 @@ class NexyConfig(NexyConfigModel):
 | মাঠ | ডিফল্ট | অর্থ |
 |---|---|---|
 | `useFF` | `None` | ক্লায়েন্ট ফ্রেমওয়ার্ক কারখানা: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
-| `useVite` | `True` | Vite দিয়ে ক্লায়েন্ট বান্ডিল তৈরি এবং পরিবেশন করা |
+| `useVite` | `True` | ক্লায়েন্ট বান্ডিল তৈরি এবং পরিবেশন Vite |
 | `useMarkdownExtensions` | `[]` | `.md`/`.mdx` রেন্ডারিংয়ের জন্য অতিরিক্ত এক্সটেনশন |
 | `useWatchExtensions` | `None` | অতিরিক্ত এক্সটেনশন dev সার্ভার ঘড়ি |
 | `useWatchExcludePatterns` | `None` | গ্লোব প্যাটার্ন যা ডেভ সার্ভার উপেক্ষা করে |
@@ -48,7 +54,7 @@ class NexyConfig(NexyConfigModel):
 
 ## সংরক্ষিত ফাইলের নাম
 
-প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` `layout.md` সংরক্ষিত করে তোলে, ঠিক `layout.nexy` এর মতো।
+প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` সংরক্ষিত করে তোলে `layout.md`, ঠিক `layout.nexy` এর মতো।
 
 | মাঠ | এ এক্সটেনশন যোগ করে |
 |---|---|

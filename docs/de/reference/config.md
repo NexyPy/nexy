@@ -26,13 +26,19 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | Prozesse `nx start` läuft; `0` ist einer pro CPU unter Linux und macOS, einer unter Windows |
 | `useCSR` | `False` | Client-seitiger Routing-Modus; `.nexy` Routen sind deaktiviert |
 
+## Datenbank
+
+| Feld | Standard | Bedeutung |
+|---|---|---|
+| `useORM` | `None` | das ORM des Projekts: `"SQLModel"`, `"SQLAlchemy"` oder `"Tortoise-ORM"`. `nx new` schreibt es und `nx migrate` wählt Alembic oder Aerich daraus aus; ohne es nimmt `nx migrate` den ersten installierten ORM. Siehe [Datenbanken](../guides/databases.md#migrations) |
+
 ## Routen
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
 | `useRouter` | `None` | eine `APIRouter`-Instanz oder -Klasse, die neben den dateibasierten Routen bereitgestellt wird; `None` bedeutet nur dateibasiert |
 | `excludeDirs` | `["templates", "extension", "docs"]` | Beim Scannen von Routen werden Verzeichnisse übersprungen |
-| `useAliases` | `None` | Aliase importieren, z.B. `{"@": "src"}` (`@/components/Counter.tsx` bedeutet `src/components/Counter.tsx`); `nx new` schreibt das von Ihnen gewählte, und Vite und `tsconfig.json` folgen ihm |
+| `useAliases` | `None` | Aliase importieren, z.B. `{"@": "src"}` (`@/components/Counter.tsx` bedeutet `src/components/Counter.tsx`); `nx new` schreibt die von Ihnen gewählte, und Vite und `tsconfig.json` folgen ihr |
 
 ## Frontend
 
