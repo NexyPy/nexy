@@ -1,6 +1,6 @@
 # Tutorial Nexy: membuat aplikasi catatan langkah demi langkah
 
-Tutorial Nexy membuat satu aplikasi catatan dari folder kosong ke build produksi, satu bagian pada satu waktu, dan setiap bagian diakhiri dengan aplikasi yang berjalan.
+Tutorial Nexy membuat satu aplikasi catatan dari folder kosong ke build produksi, satu bagian dalam satu waktu, dan setiap bagian diakhiri dengan aplikasi yang berjalan.
 
 Baru mengenal Nexy? [Mulai cepat](quick-start.md) menunjukkannya berjalan dalam tiga menit; kembali ke sini untuk mempelajari cara kerjanya.
 

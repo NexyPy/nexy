@@ -18,7 +18,7 @@ El tutorial de Nexy crea una aplicación de notas desde una carpeta vacía hasta
 | parte | lo que agregas | lo que aprendes |
 |---|---|---|
 | [1. Crea el proyecto](../tutorial/create-the-project.md) | un proyecto que se ejecuta | `nexy new`, `nexy dev` |
-| [2. Páginas y diseños](../tutorial/pages-and-layouts.md) | la pagina de notas | páginas, vistas, el diseño |
+| [2. Páginas y diseños](../tutorial/pages-and-layouts.md) | la página de notas | páginas, vistas, el diseño |
 | [3. Rutas dinámicas y una API](../tutorial/dynamic-routes.md) | `/notes/1` y `/api/notes` | Segmentos de URL, rutas JSON, `notFound` |
 | [4. Componentes](../tutorial/components.md) | una tarjeta por nota | `.nexy` componentes y sus accesorios |
 

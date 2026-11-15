@@ -4,17 +4,17 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 
 ## Comandos
 
-| Comando | Alias | Qué hace |
+| Comando | Alias | que hace |
 |---|---|---|
 | `nx dev` | `nx d` | servidor de desarrollo: compilar al cambiar, Vite, HMR |
 | `nx start` | `nx s` | servidor de producción en la salida compilada |
 | `nx build` | `nx b` | construcción de producción |
-| `nx new` | `nx n` | estructurar un proyecto |
+| `nx new` | `nx n` | armar un proyecto |
 | `nx init` | `nx i` | agregar Nexy a un proyecto existente |
 | `nx add` | - | agregue un componente de interfaz de usuario desde el registro o una URL a `src/components/ui` |
 | `nx migrate` | `nx m` | crear o aplicar migraciones de bases de datos con Alembic o Aerich |
 | `nx check` | `nx c` | verificación de tipo: mypy en Python, `tsc` en TypeScript |
-| `nx format` | `nx f` | formato Python (ruff), JS/TS (más bonito), `.nexy` archivos |
+| `nx format` | `nx f` | formato Python (ruff), JS/TS (más bonito), archivos `.nexy` |
 | `nx test` | - | ejecutar pytest; `--client` agrega vitest |
 | `nx skills` | - | agregar o actualizar las habilidades, `AGENTS.md` y `CLAUDE.md` para agentes de codificación |
 
@@ -24,18 +24,18 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
-| `build` | `--check` | off - ejecuta ruff y mypy después de la compilación |
-| `format` | `--check` | desactivado: informe en lugar de reescribir |
-| `test` | `--client` | desactivado: también ejecute vitest en lugar de pytest solo |
-| `test` | `--no-server` | activado: omita pytest cuando solo desee pruebas de cliente |
-| `new` | `--template`, `-t` | ninguno - clonar una plantilla registrada sin indicaciones |
+| `build` | `--check` | off: ejecuta ruff y mypy después de la compilación. |
+| `format` | `--check` | apagado - informar en lugar de reescribir |
+| `test` | `--client` | off - también ejecuta vitest en lugar de pytest solo |
+| `test` | `--no-server` | activado: omita pytest cuando solo desee pruebas de clientes |
+| `new` | `--template`, `-t` | ninguno: clonar una plantilla registrada sin indicaciones |
 | `new` | `--no-agents` | agentes en - omitir `AGENTS.md` y las habilidades del agente |
-| `add` | `--ui`, `--url` | desactivado: fuerza un nombre de registro o una URL cuando es ambiguo |
-| `add` | `--all`, `-a` | desactivado: agregue todos los componentes del registro |
-| `add` | `--sha256` | ninguno: resumen esperado de un componente remoto; una falta de coincidencia aborta |
-| `migrate` | `--init` | desactivado: escribe la configuración Alembic o Aerich |
-| `migrate` | `--upgrade`, `-u` | desactivado - aplicar las migraciones en lugar de escribir una nueva |
-| `migrate` | `--message`, `-m` | vacío - nombre de la nueva revisión |
+| `add` | `--ui`, `--url` | off: fuerza un nombre de registro o una URL cuando es ambiguo |
+| `add` | `--all`, `-a` | desactivado: agrega todos los componentes del registro |
+| `add` | `--sha256` | ninguno: resumen esperado de un componente remoto; un desajuste aborta |
+| `migrate` | `--init` | desactivado: escriba la configuración Alembic o Aerich |
+| `migrate` | `--upgrade`, `-u` | desactivado: aplica las migraciones en lugar de escribir una nueva |
+| `migrate` | `--message`, `-m` | vacío: nombre de la nueva revisión |
 
 ## Salida
 
@@ -59,7 +59,7 @@ Guardar un archivo roto nunca detiene el servidor. Se informa un archivo `.py` c
   Fix it and save: the server keeps its last working version.
 ```
 
-Un archivo que se analiza pero falla cuando se carga la aplicación (una importación faltante, un error a nivel de módulo) se informa de la misma manera y `nx dev` espera su siguiente guardado; no se sirve nada hasta que la aplicación se carga nuevamente. Un guardado válido dice `nexy » update <file>` mientras el servidor se recarga. Los archivos Markdown fuera de `src/routes`, como `README.md`, no son páginas y no activan nada. `nx start` es más estricto: sale con el código 1 y no inicia nada si no se puede cargar un archivo de ruta.
+Un archivo que se analiza pero falla cuando se carga la aplicación (una importación faltante, un error a nivel de módulo) se informa de la misma manera y `nx dev` espera su siguiente guardado; no se sirve nada hasta que la aplicación se carga nuevamente. Un guardado válido dice `nexy » update <file>` mientras el servidor se recarga. Los archivos Markdown fuera de `src/routes`, como `README.md`, no son páginas y no activan nada. `nx start` es más estricto: sale con el código 1 y no comienza nada si no se puede cargar un archivo de ruta o si `nx build` aún no ha creado el proyecto.
 
 ## Preguntas de `nx new`
 
@@ -67,7 +67,7 @@ Un archivo que se analiza pero falla cuando se carga la aplicación (una importa
 
 | Pregunta | Opciones |
 |---|---|
-| Importe el alias | `@` (`@/components/...` apunta a `src/`), u otro prefijo como `~` o `#app` |
+| Importar alias | `@` (`@/components/...` apunta a `src/`), u otro prefijo como `~` o `#app` |
 | Estilo | Tailwind CSS, UnoCSS, Vanilla CSS, Otro (sin herramienta CSS, la misma hoja de estilo simple que Vanilla) |
 | ORM | SQLModel, SQLAlchemy, Tortoise-ORM, Sin base de datos |
 | Base de datos (con un ORM) | SQLite, PostgreSQL, Neon, MySQL/MariaDB, Otros (escribes la URL) |
@@ -108,6 +108,6 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 ## Próximos pasos
 
-- [Comenzando](../getting-started/quick-start.md): primer proyecto
-- [Pruebas](../guides/testing.md): qué `nx test` ejecuta
+- [Empezando](../getting-started/quick-start.md): primer proyecto
+- [Probando](../guides/testing.md): qué `nx test` ejecuta
 - [Implementar](../deployment/README.md): `build` y `start` en producción

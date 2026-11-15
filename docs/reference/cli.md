@@ -72,7 +72,8 @@ A file that parses but fails when the application loads (a missing import, an er
 level) is reported the same way and `nx dev` waits for your next save; nothing is served until the
 application loads again. A valid save reads `nexy » update <file>` while the server reloads. Markdown files outside
 `src/routes`, such as `README.md`, are not pages and do not trigger anything.
-`nx start` is stricter: it exits with code 1, and starts nothing, if a route file cannot load.
+`nx start` is stricter: it exits with code 1, and starts nothing, if a route file cannot load or
+if `nx build` has not built the project yet.
 
 ## Questions of `nx new`
 

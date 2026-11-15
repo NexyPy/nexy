@@ -59,7 +59,7 @@ Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Da
   Fix it and save: the server keeps its last working version.
 ```
 
-Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein fehlender Import, ein Fehler auf Modulebene), wird auf die gleiche Weise gemeldet und `nx dev` wartet auf Ihre nächste Speicherung; Es wird nichts bereitgestellt, bis die Anwendung erneut geladen wird. Ein gültiger Speicher lautet `nexy » update <file>`, während der Server neu lädt. Markdown-Dateien außerhalb von `src/routes`, wie etwa `README.md`, sind keine Seiten und lösen nichts aus. `nx start` ist strenger: Es wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann.
+Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein fehlender Import, ein Fehler auf Modulebene), wird auf die gleiche Weise gemeldet und `nx dev` wartet auf Ihre nächste Speicherung; Es wird nichts bereitgestellt, bis die Anwendung erneut geladen wird. Ein gültiger Speicher lautet `nexy » update <file>`, während der Server neu lädt. Markdown-Dateien außerhalb von `src/routes`, wie etwa `README.md`, sind keine Seiten und lösen nichts aus. `nx start` ist strenger: Es wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann oder wenn `nx build` das Projekt noch nicht erstellt hat.
 
 ## Fragen von `nx new`
 
@@ -72,7 +72,7 @@ Eine Datei, die analysiert wird, aber beim Laden der Anwendung fehlschlägt (ein
 | ORM | SQLModel, SQLAlchemy, Tortoise-ORM, Keine Datenbank |
 | Datenbank (mit einem ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Andere (Sie geben die URL ein) |
 
-Der Datenbanktreiber für das ausgewählte ORM wird mit installiert (`psycopg`, `pymysql`, `asyncpg` oder `aiomysql`) und die URL wird nach `.env` geschrieben.
+Der Datenbanktreiber für das gewählte ORM wird mit installiert (`psycopg`, `pymysql`, `asyncpg` oder `aiomysql`) und die URL wird nach `.env` geschrieben.
 
 Vor der Installation von Paketen prüft `nx new` die Verbindung. Ohne eine werden die Installationen übersprungen und Sie werden aufgefordert, `uv sync` und die Installation Ihres Paketmanagers später auszuführen. Bei einem davon druckt es die Latenz und Download-Geschwindigkeit aus und warnt, wenn die Verbindung langsam ist (über 400 ms oder unter 100 KB/s). Jede Installationszeile benennt das Tool und den Ordner, den es füllt, zum Beispiel `pnpm install node_modules` oder `uv sync .venv`.
 
@@ -110,4 +110,4 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 - [Erste Schritte](../getting-started/quick-start.md): erstes Projekt
 - [Testen](../guides/testing.md): was `nx test` läuft
-- [Bereitstellen](../deployment/README.md): `build` und `start` in der Produktion
+- [Stellen Sie](../deployment/README.md): `build` und `start` in der Produktion bereit
