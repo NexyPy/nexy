@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter
 
@@ -172,6 +172,8 @@ class NexyConfigModel:
     useWorkers: int = 0
     useDevTools: bool = True
     useHealth: bool = False
+    # The ORM `nx new` scaffolded the project with; `nx migrate` picks its migration tool from it.
+    useORM: Literal["SQLModel", "SQLAlchemy", "Tortoise-ORM"] | None = None
     useRTL: bool = False
     useTocDepth: str = "2-6"
     useTocTitle: str = "Table of Contents"
