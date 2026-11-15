@@ -31,6 +31,7 @@ STARTERS = [
     ("tailwind", "react", True),
     ("tailwind", "preact", True),
     ("tailwind", "solid", True),
+    ("tailwind", "vue", True),
 ]
 
 

@@ -11,11 +11,18 @@ import ThemeToggle from "@/components/theme-toggle.vue";
 const LINK =
   "px-3.5 py-2 font-mono text-xs uppercase tracking-[0.04em] transition-opacity hover:opacity-60 aria-[current=page]:underline aria-[current=page]:underline-offset-4";
 const MENU = "M4 7h16M4 12h16M4 17h16";
-const CLOSE = "M18 6L6 18M6 6l12 12";
+const EXTERNAL = "M7 17L17 7M8 7h9v9";
+const SHEET_LINK =
+  "flex min-h-11 items-center gap-2 px-3 text-base transition-colors hover:bg-paper/5 aria-[current=page]:bg-paper/10 aria-[current=page]:font-medium";
 const BOOK = "M2 4h6a4 4 0 014 4v12a3 3 0 00-3-3H2zM22 4h-6a4 4 0 00-4 4v12a3 3 0 013-3h7z";
 
 const open = ref(false);
-const close = () => (open.value = false);
+const opener = ref<HTMLButtonElement | null>(null);
+// Closing gives the focus back to the button that opened the menu.
+function close() {
+  open.value = false;
+  opener.value?.focus();
+}
 </script>
 
 <template>
@@ -25,7 +32,7 @@ const close = () => (open.value = false);
       aria-label="Main"
     >
       <LinePattern side="right" />
-      <a href="/" aria-label="Nexy, home" class="relative" @click="close">
+      <a href="/" aria-label="Nexy, home" class="relative" @click="open = false">
         <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
       </a>
 
@@ -39,22 +46,27 @@ const close = () => (open.value = false);
           <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" size="sm" :icon="BOOK">Docs</Button>
         </span>
         <button
+          ref="opener"
           type="button"
-          :aria-label="open ? 'Close menu' : 'Open menu'"
+          aria-label="Open menu"
           :aria-expanded="open"
-          class="ml-1 grid size-8 place-items-center sm:hidden"
-          @click="open = !open"
+          aria-controls="mobile-menu"
+          class="-my-1.5 -mr-2 ml-1 grid size-11 place-items-center sm:hidden"
+          @click="open = true"
         >
-          <Icon :path="open ? CLOSE : MENU" />
+          <Icon :path="MENU" />
         </button>
       </div>
     </nav>
   </header>
 
-  <Sheet :open="open" label="Menu" @close="close">
-    <Link href="/" :class="LINK" @click="close">Home</Link>
-    <Link href="/about" :class="LINK" @click="close">About</Link>
-    <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" :class="LINK" @click="close">Docs</a>
+  <Sheet id="mobile-menu" :open="open" title="Menu" @close="close">
+    <Link href="/" :class="SHEET_LINK" @click="close">Home</Link>
+    <Link href="/about" :class="SHEET_LINK" @click="close">About</Link>
+    <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" :class="`${SHEET_LINK} justify-between`" @click="close">
+      Docs
+      <Icon :path="EXTERNAL" :size="16" />
+    </a>
   </Sheet>
 </template>
 {% endraw %}{% endif %}
