@@ -1,4 +1,4 @@
-{% if useCSR %}{% raw %}import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+{% if useCSR %}{% raw %}import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import Icon from "@/components/icon.tsx";
 
@@ -13,23 +13,28 @@ type SheetProps = {
   children: ReactNode;
 };
 
-// Tab and Shift+Tab wrap inside the panel instead of walking out into the page.
-function trap(event: KeyboardEvent, panel: HTMLElement) {
-  const stops = panel.querySelectorAll<HTMLElement>("a[href], button");
-  const first = stops[0];
-  const last = stops[stops.length - 1];
+// Tab and Shift+Tab wrap inside the panel instead of walking out into the page: the close button
+// comes first, the last link of the menu last.
+function trap(
+  event: KeyboardEvent,
+  panel: HTMLElement | null,
+  first: HTMLElement | null,
+  last: Element | null,
+) {
   const here = document.activeElement;
   const away = event.shiftKey ? here === first || here === panel : here === last;
-  if (!away) return;
+  if (!away || !(last instanceof HTMLElement) || !first) return;
   event.preventDefault();
   (event.shiftKey ? last : first).focus();
 }
 
 // A modal panel that slides in from the left edge, over a scrim. While it is open it holds the
-// keyboard (Tab wraps, Escape closes from anywhere), the page behind holds still, and a wide
-// screen closes it. Closing plays the slide back before the panel leaves the page.
+// keyboard (Tab wraps, Escape closes), the page behind holds still, and a wide screen closes it.
+// Closing plays the slide back before the panel leaves the page.
 export default function Sheet({ id, open, onClose, title, children }: SheetProps) {
   const panel = useRef<HTMLDivElement>(null);
+  const closer = useRef<HTMLButtonElement>(null);
+  const links = useRef<HTMLElement>(null);
   const titleId = useId();
   const [shown, setShown] = useState(open);
 
@@ -43,17 +48,10 @@ export default function Sheet({ id, open, onClose, title, children }: SheetProps
     element.focus();
     document.body.style.overflow = "hidden";
     const wide = window.matchMedia("(min-width: 40rem)");
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-      if (event.key === "Tab") trap(event, element);
-    };
-    const onWide = () => wide.matches && onClose();
-    document.addEventListener("keydown", onKey);
-    wide.addEventListener("change", onWide);
+    wide.onchange = () => wide.matches && onClose();
     return () => {
       document.body.style.overflow = "";
-      document.removeEventListener("keydown", onKey);
-      wide.removeEventListener("change", onWide);
+      wide.onchange = null;
     };
   }, [open, shown, onClose]);
 
@@ -63,6 +61,13 @@ export default function Sheet({ id, open, onClose, title, children }: SheetProps
     const moves = element.getAnimations().map((move) => move.finished);
     Promise.all(moves).then(() => setShown(false));
   }, [open]);
+
+  // The focus never leaves the open panel, so its own key handler sees every key.
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === "Escape") onClose();
+    const last = links.current?.lastElementChild ?? null;
+    if (event.key === "Tab") trap(event, panel.current, closer.current, last);
+  };
 
   if (!shown) return null;
   const state = open ? "open" : "closed";
@@ -80,6 +85,7 @@ export default function Sheet({ id, open, onClose, title, children }: SheetProps
         aria-labelledby={titleId}
         data-side="left"
         data-state={state}
+        onKeyDown={onKey}
       >
         <div className="flex items-center gap-3 border-b border-paper/10 py-4 pl-5 pr-16">
           <img src="/nexy.svg" alt="" className="h-5 invert" />
@@ -88,6 +94,7 @@ export default function Sheet({ id, open, onClose, title, children }: SheetProps
           </h2>
         </div>
         <button
+          ref={closer}
           type="button"
           onClick={onClose}
           aria-label="Close menu"
@@ -95,7 +102,7 @@ export default function Sheet({ id, open, onClose, title, children }: SheetProps
         >
           <Icon path={CLOSE} />
         </button>
-        <nav className="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
+        <nav ref={links} className="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
           {children}
         </nav>
       </div>
