@@ -76,6 +76,8 @@ def _open(page: Page, url: str) -> None:
     page.goto(url + "/")
     page.locator(TRIGGER).click()
     page.locator(DIALOG).wait_for(state="visible")
+    # Opening moves the focus into the sheet; the keys of a test start from there.
+    page.wait_for_function(f'!!document.activeElement.closest("{DIALOG}")')
 
 
 def _focus_in_dialog(page: Page) -> bool:
@@ -163,5 +165,8 @@ def test_the_menu_is_named_by_a_visible_title(starter, page: Page):
 def test_a_wide_screen_closes_the_menu(starter, page: Page):
     _open(page, starter)
     page.set_viewport_size({"width": 1024, "height": 760})
-    page.locator(DIALOG).wait_for(state="hidden")
+    # The sheet is hidden by CSS at once on a wide screen: wait for the menu itself to close.
+    page.wait_for_function(
+        f'document.querySelector("{TRIGGER}").getAttribute("aria-expanded") === "false"'
+    )
     assert page.evaluate("document.body.style.overflow") == ""
