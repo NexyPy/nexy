@@ -6,6 +6,8 @@ from fastapi import FastAPI, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from nexy.modules.routers.small_files import SmallFiles
+
 FAVICON_SVG = (
     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"'
     ' stroke-width="1.5" stroke="currentColor">'
@@ -16,6 +18,14 @@ FAVICON_SVG = (
     'M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33"'
     " /></svg>"
 )
+
+
+def _stat(file: Path) -> os.stat_result | None:
+    """One system call, as cheap as the lookup before it: not worth a thread pool hop."""
+    try:
+        return file.stat()
+    except OSError:
+        return None
 
 
 class PublicFilesMiddleware:
@@ -29,9 +39,12 @@ class PublicFilesMiddleware:
     def __init__(self, app: Any, directory: str | Path = "public") -> None:
         self.app = app
         self.root = Path(directory).resolve()
+        self.small_files = SmallFiles()
 
     def _file_for(self, path: str) -> Path | None:
         relative = path.lstrip("/")
+        if relative.startswith("public/"):
+            relative = relative[len("public/") :]
         parts = relative.split("/")
         if "." not in parts[-1] or any(part.startswith(".") for part in parts):
             return None
@@ -44,9 +57,25 @@ class PublicFilesMiddleware:
         if scope["type"] == "http" and scope["method"] in ("GET", "HEAD"):
             file = self._file_for(scope["path"])
             if file is not None:
-                await FileResponse(file)(scope, receive, send)
+                await self._send_file(file, scope, receive, send)
                 return
         await self.app(scope, receive, send)
+
+    async def _send_file(self, file: Path, scope: Any, receive: Any, send: Any) -> None:
+        """From memory when the file is small and the whole of it is asked for; else from disk."""
+        stat = _stat(file)
+        if stat is None:
+            # Removed since it was found: the application answers, as for any missing file.
+            await self.app(scope, receive, send)
+            return
+        wants_range = any(name == b"range" for name, _ in scope.get("headers", ()))
+        cached = None if wants_range else self.small_files.get(file, stat)
+        if cached is None:
+            await FileResponse(file, stat_result=stat)(scope, receive, send)
+            return
+        body = b"" if scope["method"] == "HEAD" else cached.body
+        await send({"type": "http.response.start", "status": 200, "headers": cached.headers})
+        await send({"type": "http.response.body", "body": body})
 
 
 def setup_static_files(server: FastAPI) -> None:
