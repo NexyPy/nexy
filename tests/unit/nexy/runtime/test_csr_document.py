@@ -2,6 +2,8 @@
 
 import json
 import re
+import subprocess  # nosec B404
+import sys
 from pathlib import Path
 
 import httpx
@@ -113,7 +115,7 @@ class TestDevelopment:
             return httpx.Response(200, text=DOC, request=httpx.Request("POST", url))
 
         monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
-        monkeypatch.setattr(csr_document.httpx, "post", fake_post)
+        monkeypatch.setattr(httpx, "post", fake_post)
         html = _render(props={"slug": "x"})
         assert calls["url"] == "http://127.0.0.1:5173/__nexy__/render"
         assert calls["body"] == {
@@ -131,7 +133,7 @@ class TestDevelopment:
             return httpx.Response(200, text=DOC, request=httpx.Request("POST", url))
 
         monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
-        monkeypatch.setattr(csr_document.httpx, "post", fake_post)
+        monkeypatch.setattr(httpx, "post", fake_post)
         _render(props={"blob": "x" * 100_000})
         assert "?" not in seen["url"] and seen["size"] > 100_000
 
@@ -140,7 +142,7 @@ class TestDevelopment:
             return httpx.Response(500, text="Error: boom", request=httpx.Request("POST", url))
 
         monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
-        monkeypatch.setattr(csr_document.httpx, "post", failing_post)
+        monkeypatch.setattr(httpx, "post", failing_post)
         assert _boot(_render())["mode"] == "client"
 
     def test_vite_not_reachable_falls_back(self, monkeypatch):
@@ -148,7 +150,7 @@ class TestDevelopment:
             raise httpx.ConnectError("down")
 
         monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
-        monkeypatch.setattr(csr_document.httpx, "post", unreachable)
+        monkeypatch.setattr(httpx, "post", unreachable)
         assert _boot(_render())["mode"] == "client"
 
 
@@ -175,7 +177,7 @@ class TestRequestLocation:
             return httpx.Response(200, text=DOC, request=httpx.Request("POST", url))
 
         monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
-        monkeypatch.setattr(csr_document.httpx, "post", fake_post)
+        monkeypatch.setattr(httpx, "post", fake_post)
         monkeypatch.setattr(
             csr_document, "_request_location", lambda: {"pathname": "/users/7", "search": "?tab=x"}
         )
@@ -190,7 +192,7 @@ class TestRequestLocation:
             return httpx.Response(200, text=DOC, request=httpx.Request("POST", url))
 
         monkeypatch.setattr(csr_document, "vite_proxy_port", lambda: 5173)
-        monkeypatch.setattr(csr_document.httpx, "post", fake_post)
+        monkeypatch.setattr(httpx, "post", fake_post)
         _render()
         assert "location" not in seen
 
@@ -215,3 +217,12 @@ class TestRequestLocation:
 
         monkeypatch.setattr(csr_document, "_get_request", lambda: Request())
         assert csr_document._request_location() == {"pathname": "/about", "search": ""}
+
+
+def test_importing_the_document_renderer_does_not_load_httpx():
+    # Only the dev renderer posts to Vite: a production worker must not pay for httpx.
+    script = "import sys, nexy.modules.runtime.csr_document; print('httpx' in sys.modules)"
+    completed = subprocess.run(  # nosec B603 - sys.executable with a fixed script
+        [sys.executable, "-c", script], capture_output=True, text=True, check=True
+    )
+    assert completed.stdout.strip() == "False"
