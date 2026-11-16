@@ -6,3 +6,6 @@ class NexyConfig(NexyConfigModel):
 {%- if not FBRouter %}
     useRouter = AppModule
 {%- endif %}
+{%- if orm and orm != "None" %}
+    useORM = "{{ orm }}"  # the ORM `nx migrate` migrates
+{%- endif %}

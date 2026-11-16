@@ -118,7 +118,17 @@ Cantumkan setiap modul yang menampung model di `TORTOISE_ORM` (entri `models` da
 
 ## Migrasi
 
-`nx migrate` memilih alat untuk ORM Anda: Alembic untuk SQLModel dan SQLAlchemy, Aerich untuk Tortoise-ORM.
+`nx migrate` memilih alat untuk ORM Anda: Alembic untuk SQLModel dan SQLAlchemy, Aerich untuk Tortoise-ORM. Bunyinya ORM dari `useORM` di `nexyconfig.py`, yang `nx new` menulis:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useORM = "SQLAlchemy"
+```
+
+Sebuah proyek yang dibuat sebelum `useORM` ada tidak memiliki baris seperti itu: `nx migrate` kemudian mengambil ORM pertama yang diinstal di lingkungan. Tambahkan baris ketika lebih dari satu diinstal.
 
 | Perintah | Apakah |
 |---|---|
@@ -129,6 +139,8 @@ Cantumkan setiap modul yang menampung model di `TORTOISE_ORM` (entri `models` da
 Dengan Aerich, `nx migrate` pertama dijalankan `aerich init-db`, yang membuat migrasi pertama dan tabel-tabelnya bersamaan; yang berikutnya menjalankan `aerich migrate --name "..."`, dan `--upgrade` menjalankan `aerich upgrade`.
 
 `nx migrate` berhenti dengan pesan yang jelas ketika `DATABASE_URL` hilang atau database tidak dapat dijangkau (hanya Alembic: Aerich melaporkan kesalahannya sendiri).
+
+Pada SQLite, Aerich tidak dapat menambahkan kunci asing ke tabel yang sudah ada: SQLite tidak memiliki `ALTER TABLE ... ADD CONSTRAINT`, dan kolom ditambahkan sebelum batasan gagal, sehingga menjalankan migrasi kembali berhenti pada `duplicate column name`. Deklarasikan kunci asing saat Anda membuat tabel, atau gunakan PostgreSQL atau MySQL. Alembic tidak memiliki batasan seperti itu: pada SQLite ia membangun kembali tabel (mode batch), dan model scaffold memberi nama setiap batasan sehingga dapat.
 
 ### Migrasi pertama dibuat untuk Anda
 

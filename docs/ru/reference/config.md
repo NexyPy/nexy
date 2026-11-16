@@ -26,13 +26,19 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | процессы `nx start` выполняются; `0` — по одному на каждый процессор в Linux и macOS, по одному в Windows. |
 | `useCSR` | `False` | режим маршрутизации на стороне клиента; `.nexy` маршруты отключены |
 
+## База данных
+
+| Поле | По умолчанию | Значение |
+|---|---|---|
+| `useORM` | `None` | ORM проекта: `"SQLModel"`, `"SQLAlchemy"` или `"Tortoise-ORM"`. `nx new` записывает его, а `nx migrate` выбирает из него Alembic или Aerich; без него `nx migrate` принимает первый установленный ORM. См. [Базы данных](../guides/databases.md#migrations) |
+
 ## Маршруты
 
 | Поле | По умолчанию | Значение |
 |---|---|---|
-| `useRouter` | `None` | экземпляр или класс `APIRouter` смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
+| `useRouter` | `None` | экземпляр или класс `APIRouter`, смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
 | `excludeDirs` | `["templates", "extension", "docs"]` | каталоги пропускаются при сканировании маршрутов |
-| `useAliases` | `None` | импортировать псевдонимы, например. `{"@": "src"}` (`@/components/Counter.tsx` означает `src/components/Counter.tsx`); `nx new` записывает выбранный вами вариант, а Vite и `tsconfig.json` следуют за ним. |
+| `useAliases` | `None` | импортировать псевдонимы, например. `{"@": "src"}` (`@/components/Counter.tsx` означает `src/components/Counter.tsx`); `nx new` записывает тот, который вы выбрали, а Vite и `tsconfig.json` следуют за ним |
 
 ## Фронтенд
 

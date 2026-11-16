@@ -127,7 +127,18 @@ found.
 ## Migrations
 
 `nx migrate` picks the tool for your ORM: Alembic for SQLModel and SQLAlchemy, Aerich for
-Tortoise-ORM.
+Tortoise-ORM. It reads the ORM from `useORM` in `nexyconfig.py`, which `nx new` writes:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useORM = "SQLAlchemy"
+```
+
+A project made before `useORM` existed has no such line: `nx migrate` then takes the first ORM
+installed in the environment. Add the line when more than one is installed.
 
 | Command | Does |
 |---|---|
@@ -141,6 +152,12 @@ tables together; the next ones run `aerich migrate --name "..."`, and `--upgrade
 
 `nx migrate` stops with a clear message when `DATABASE_URL` is missing or the database cannot be
 reached (Alembic only: Aerich reports its own errors).
+
+On SQLite, Aerich cannot add a foreign key to a table that already exists: SQLite has no
+`ALTER TABLE ... ADD CONSTRAINT`, and the column is added before the constraint fails, so running
+the migration again stops on `duplicate column name`. Declare the foreign key when you create the
+table, or use PostgreSQL or MySQL. Alembic has no such limit: on SQLite it rebuilds the table
+(batch mode), and the scaffolded models name every constraint so it can.
 
 ### The first migration is made for you
 

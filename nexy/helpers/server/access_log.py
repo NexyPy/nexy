@@ -12,7 +12,6 @@ from typing import Any
 from rich.markup import escape
 
 from nexy.helpers.common.console import console
-from nexy.helpers.common.log_line import tag
 
 # Framework and Vite URLs are not the application's requests: logging them buries the real ones.
 _QUIET_PREFIXES = (
@@ -39,6 +38,22 @@ def format_duration(seconds: float) -> str:
     return f"{seconds:.1f}s" if seconds >= 1.0 else "1000ms"
 
 
+def _is_control(char: str) -> bool:
+    code = ord(char)
+    return code < 0x20 or 0x7F <= code <= 0x9F
+
+
+def printable_path(path: str) -> str:
+    """*path* with its control characters percent-encoded, as they came in the URL.
+
+    uvicorn hands the path decoded, so `/%1b[2J` or `/%0aGET%20/admin` would write a real escape or
+    a real new line into the log: a cleared terminal, or a forged request line.
+    """
+    if not any(_is_control(char) for char in path):
+        return path
+    return "".join(f"%{ord(char):02X}" if _is_control(char) else char for char in path)
+
+
 def _status_colour(status: int) -> str:
     if status >= 500:
         return "red"
@@ -49,14 +64,52 @@ def _status_colour(status: int) -> str:
     return "green"
 
 
-def format_request(method: str, path: str, status: int, seconds: float) -> str:
-    """Rich markup for one request line; the verb has the colour of the status."""
+Paint = Callable[[str, str | None], str]
+
+_ANSI = {"red": "\033[31m", "yellow": "\033[33m", "cyan": "\033[36m", "green": "\033[32m"}
+_ANSI["dim"] = "\033[2m"
+_RESET = "\033[0m"
+_ARROW = "\u00bb"
+
+
+def paint_markup(text: str, colour: str | None) -> str:
+    """Rich markup, for a log that goes through ``console.print``."""
+    return f"[{colour}]{escape(text)}[/{colour}]" if colour else escape(text)
+
+
+def paint_ansi(text: str, colour: str | None) -> str:
+    """The escape codes Rich would write for *colour*, without parsing any markup."""
+    return f"{_ANSI[colour]}{text}{_RESET}" if colour else text
+
+
+def paint_plain(text: str, colour: str | None) -> str:  # noqa: ARG001 - same shape as a Paint
+    """No colour: what Rich writes when the output is not a terminal."""
+    return text
+
+
+def format_request(
+    method: str, path: str, status: int, seconds: float, paint: Paint = paint_markup
+) -> str:
+    """One request line; the verb has the colour of the status."""
     colour = _status_colour(status)
     duration_colour = "yellow" if seconds >= _SLOW_SECONDS else "dim"
     return (
-        f"{tag(escape(method), colour)} {escape(path)} [{colour}]{status}[/{colour}]"
-        f" [dim]in[/dim] [{duration_colour}]{format_duration(seconds)}[/{duration_colour}]"
+        f"{paint(method, colour)} {paint(_ARROW, 'dim')} {paint(printable_path(path), None)}"
+        f" {paint(str(status), colour)} {paint('in', 'dim')}"
+        f" {paint(format_duration(seconds), duration_colour)}"
     )
+
+
+def _console_paint() -> Paint:
+    """ANSI when the console shows colours, plain text when it does not, as Rich decides."""
+    return paint_ansi if console.color_system else paint_plain
+
+
+def _write_line(line: str) -> None:
+    """One write and one flush per request: the line shows at once, even in a pipe."""
+    stream = console.file
+    stream.write(line + "\n")
+    stream.flush()
 
 
 _SOCKET = "SOCKET"
@@ -68,9 +121,10 @@ _CRASHED = 500
 class _Exchange:
     """One request or socket being timed: it remembers the status and reports exactly once."""
 
-    def __init__(self, scope: Any, log: Callable[[str], None]) -> None:
+    def __init__(self, scope: Any, log: Callable[[str], None], paint: Paint) -> None:
         self._scope = scope
         self._log = log
+        self._paint = paint
         self._started = time.perf_counter()
         self._reported = False
         self.status = _CRASHED
@@ -97,7 +151,8 @@ class _Exchange:
             return
         self._reported = True
         elapsed = time.perf_counter() - self._started
-        self._log(format_request(self.verb, self._scope["path"], self.status, elapsed))
+        path = self._scope["path"]
+        self._log(format_request(self.verb, path, self.status, elapsed, self._paint))
 
 
 class AccessLogMiddleware:
@@ -106,11 +161,13 @@ class AccessLogMiddleware:
     def __init__(
         self,
         app: Any,
-        log: Callable[[str], None] = console.print,
+        log: Callable[[str], None] | None = None,
         quiet: tuple[str, ...] = (),
     ) -> None:
         self.app = app
-        self._log = log
+        # A given log receives markup; the default one writes the finished line itself.
+        self._log = log or _write_line
+        self._paint = paint_markup if log else _console_paint()
         self._quiet = _QUIET_PREFIXES + quiet
 
     async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
@@ -118,7 +175,7 @@ class AccessLogMiddleware:
             await self.app(scope, receive, send)
             return
 
-        exchange = _Exchange(scope, self._log)
+        exchange = _Exchange(scope, self._log, self._paint)
 
         async def observed_send(message: Any) -> None:
             exchange.observe(message)

@@ -26,13 +26,19 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | proses `nx start` berjalan; `0` adalah satu per CPU di Linux dan macOS, satu di Windows |
 | `useCSR` | `False` | mode perutean sisi klien; `.nexy` rute dinonaktifkan |
 
+## Basis data
+
+| Bidang | Bawaan | Artinya |
+|---|---|---|
+| `useORM` | `None` | ORM proyek: `"SQLModel"`, `"SQLAlchemy"` atau `"Tortoise-ORM"`. `nx new` menulisnya, dan `nx migrate` mengambil Alembic atau Aerich darinya; tanpanya, `nx migrate` mengambil ORM pertama yang diinstal. Lihat [Database](../guides/databases.md#migrations) |
+
 ## Rute
 
 | Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useRouter` | `None` | sebuah instance atau kelas `APIRouter` yang dipasang di sebelah rute berbasis file; `None` berarti hanya berbasis file |
 | `excludeDirs` | `["templates", "extension", "docs"]` | direktori dilewati saat memindai rute |
-| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` mengikutinya |
+| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` ikuti |
 
 ## Bagian depan
 

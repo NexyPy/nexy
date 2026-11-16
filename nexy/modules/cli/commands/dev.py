@@ -16,8 +16,8 @@ from nexy.helpers.common.pycheck import describe, report
 from nexy.helpers.common.vite_launch import vite_installed
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
+from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.helpers.server.listening import Endpoint, print_listening
-from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
 from nexy.modules.cli.commands.guard import abort_on_invalid_config

@@ -10,11 +10,14 @@ from typing import Any
 import pytest
 from rich.text import Text
 
+from nexy.helpers.server import access_log
 from nexy.helpers.server.access_log import (
     DEVTOOLS_PROBE,
     AccessLogMiddleware,
     format_duration,
     format_request,
+    paint_ansi,
+    paint_plain,
 )
 
 
@@ -49,6 +52,24 @@ class TestFormat:
     def test_a_slow_request_is_flagged(self):
         assert "[yellow]1.5s[/yellow]" in format_request("GET", "/", 200, 1.5)
         assert "[dim]12ms[/dim]" in format_request("GET", "/", 200, 0.012)
+
+    def test_an_escape_in_a_path_is_written_percent_encoded(self):
+        # uvicorn decodes the path: `/%1b[2J` arrives with a real escape, which clears a terminal.
+        assert "/a%1B[2J" in format_request("GET", "/a\x1b[2J", 200, 0.0, paint_plain)
+
+    def test_a_newline_in_a_path_cannot_start_a_forged_log_line(self):
+        line = format_request("GET", "/a\nGET /admin 200 in 1ms", 200, 0.0, paint_plain)
+        assert "\n" not in line
+
+    def test_a_carriage_return_in_a_path_cannot_overwrite_the_line(self):
+        assert "\r" not in format_request("GET", "/a\rGET /", 200, 0.0, paint_ansi)
+
+    def test_a_c1_control_in_a_path_is_written_percent_encoded(self):
+        assert "/a%9B" in format_request("GET", "/a\x9b", 200, 0.0, paint_plain)
+
+    def test_a_path_in_another_script_is_kept_as_it_is(self):
+        path = "/caf\u00e9/\u4e2d"
+        assert path in format_request("GET", path, 200, 0.0, paint_plain)
 
     def test_markup_in_a_path_is_not_interpreted(self):
         line = format_request("GET", "/[bold]x[/bold]", 200, 0.001)
@@ -178,3 +199,27 @@ class TestSockets:
                 _call(AccessLogMiddleware(failing, log=lines.append), "/c", scope_type="websocket")
             )
         assert _plain(lines[0]).startswith("SOCKET » /c 500 in ")
+
+
+class TestWithoutRich:
+    """The line a terminal shows, written without parsing markup: Rich costs most of a request."""
+
+    def test_the_plain_line_reads_like_the_markup_line(self):
+        line = format_request("GET", "/users", 200, 0.012, paint=paint_plain)
+        assert line == "GET \u00bb /users 200 in 12ms"
+
+    def test_the_ansi_line_colours_the_status(self):
+        line = format_request("GET", "/", 200, 0.012, paint=paint_ansi)
+        assert "\033[32m200\033[0m" in line
+
+    def test_the_ansi_line_keeps_a_path_as_it_is(self):
+        line = format_request("GET", "/[bold]x", 200, 0.012, paint=paint_ansi)
+        assert " /[bold]x " in line
+
+    def test_the_default_log_never_parses_markup(self, monkeypatch, capsys):
+        def refuse(*_args, **_kwargs):
+            raise AssertionError("console.print parses markup on every request")
+
+        monkeypatch.setattr(access_log.console, "print", refuse)
+        asyncio.run(_call(AccessLogMiddleware(_responder()), "/users"))
+        assert "/users 200 in " in capsys.readouterr().out

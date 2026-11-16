@@ -26,6 +26,12 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | traite les exécutions de `nx start` ; `0` est un par processeur sous Linux et macOS, un sous Windows |
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 
+## Base de données
+
+| Champ | Par défaut | Signification |
+|---|---|---|
+| `useORM` | `None` | l'ORM du projet : `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` l'écrit et `nx migrate` en choisit Alembic ou Aerich ; sans cela, `nx migrate` prend le premier ORM installé. Voir [Bases de données](../guides/databases.md#migrations) |
+
 ## Itinéraires
 
 | Champ | Par défaut | Signification |
@@ -70,7 +76,7 @@ Chaque champ ajoute des extensions à un rôle réservé. `useLayoutExtensions =
 
 ### `/docs` gratuit pour une page du projet
 
-La référence de l'API répond à `/docs` avant toute route, donc `src/routes/docs.nexy` ou `src/routes/docs/[[...slug]].nexy` n'y sont jamais servis. `nx dev` et `nx start` nomment une telle page au démarrage. Déplacez la référence avec `useDocsUrl` :
+La référence API répond à `/docs` avant toute route, donc `src/routes/docs.nexy` ou `src/routes/docs/[[...slug]].nexy` n'y sont jamais servis. `nx dev` et `nx start` nomment une telle page au démarrage. Déplacez la référence avec `useDocsUrl` :
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -80,7 +86,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Ou désactivez-le avec `useDocs = False`. `/openapi.json` reste servi dans les deux cas : garder les itinéraires du projet hors de ce chemin.
+Ou éteignez-le avec `useDocs = False`. `/openapi.json` reste servi dans les deux cas : garder les itinéraires du projet hors de ce chemin.
 
 ## Intergiciel
 
