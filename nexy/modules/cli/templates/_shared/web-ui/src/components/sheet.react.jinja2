@@ -1,58 +1,108 @@
-{% if useCSR %}{% raw %}import { useEffect, useRef, type ReactNode } from "react";
+{% if useCSR %}{% raw %}import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 
 import Icon from "@/components/icon.tsx";
 
 const CLOSE = "M18 6L6 18M6 6l12 12";
 
 type SheetProps = {
+  id: string;
   open: boolean;
   onClose: () => void;
-  /** Name of the dialog for a screen reader. */
-  label: string;
+  /** The visible title, which also names the dialog for a screen reader. */
+  title: string;
   children: ReactNode;
 };
 
-// A panel that slides in from the left edge, over a scrim. While it is open the page
-// behind it holds still, and the keyboard belongs to the panel: Escape closes it.
-export default function Sheet({ open, onClose, label, children }: SheetProps) {
+// Tab and Shift+Tab wrap inside the panel instead of walking out into the page: the close button
+// comes first, the last link of the menu last.
+function trap(
+  event: KeyboardEvent,
+  panel: HTMLElement | null,
+  first: HTMLElement | null,
+  last: Element | null,
+) {
+  const here = document.activeElement;
+  const away = event.shiftKey ? here === first || here === panel : here === last;
+  if (!away || !(last instanceof HTMLElement) || !first) return;
+  event.preventDefault();
+  (event.shiftKey ? last : first).focus();
+}
+
+// A modal panel that slides in from the left edge, over a scrim. While it is open it holds the
+// keyboard (Tab wraps, Escape closes), the page behind holds still, and a wide screen closes it.
+// Closing plays the slide back before the panel leaves the page.
+export default function Sheet({ id, open, onClose, title, children }: SheetProps) {
   const panel = useRef<HTMLDivElement>(null);
+  const closer = useRef<HTMLButtonElement>(null);
+  const links = useRef<HTMLElement>(null);
+  const titleId = useId();
+  const [shown, setShown] = useState(open);
 
   useEffect(() => {
-    if (!open) return;
-    panel.current?.focus();
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
+    if (open) setShown(true);
   }, [open]);
 
-  if (!open) return null;
+  useEffect(() => {
+    const element = panel.current;
+    if (!open || !element) return;
+    element.focus();
+    document.body.style.overflow = "hidden";
+    const wide = window.matchMedia("(min-width: 40rem)");
+    wide.onchange = () => wide.matches && onClose();
+    return () => {
+      document.body.style.overflow = "";
+      wide.onchange = null;
+    };
+  }, [open, shown, onClose]);
+
+  useEffect(() => {
+    const element = panel.current;
+    if (open || !element) return;
+    const moves = element.getAnimations().map((move) => move.finished);
+    Promise.all(moves).then(() => setShown(false));
+  }, [open]);
+
+  // The focus never leaves the open panel, so its own key handler sees every key.
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === "Escape") onClose();
+    const last = links.current?.lastElementChild ?? null;
+    if (event.key === "Tab") trap(event, panel.current, closer.current, last);
+  };
+
+  if (!shown) return null;
+  const state = open ? "open" : "closed";
 
   return (
-    <div className="fixed inset-0 z-40 sm:hidden">
-      <div className="sheet-scrim absolute inset-0 bg-ink/60" onClick={onClose} aria-hidden="true" />
+    <div className="fixed inset-0 z-50 sm:hidden">
+      <div className="sheet-scrim absolute inset-0 bg-ink/70" data-state={state} onClick={onClose} aria-hidden="true" />
       <div
         ref={panel}
+        id={id}
         tabIndex={-1}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") onClose();
-        }}
-        className="sheet absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col overflow-y-auto border-r border-paper/10 bg-ink p-5 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] outline-none"
+        className="sheet absolute inset-y-0 left-0 flex w-3/4 max-w-sm flex-col border-r border-paper/10 bg-ink text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] outline-none"
         role="dialog"
         aria-modal="true"
-        aria-label={label}
+        aria-labelledby={titleId}
         data-side="left"
+        data-state={state}
+        onKeyDown={onKey}
       >
+        <div className="flex items-center gap-3 border-b border-paper/10 py-4 pl-5 pr-16">
+          <img src="/nexy.svg" alt="" className="h-5 invert" />
+          <h2 id={titleId} className="font-mono text-xs uppercase tracking-[0.04em] text-paper/60">
+            {title}
+          </h2>
+        </div>
         <button
+          ref={closer}
           type="button"
           onClick={onClose}
           aria-label="Close menu"
-          className="mb-4 ml-auto grid size-8 place-items-center"
+          className="absolute right-2 top-1.5 grid size-11 place-items-center opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100"
         >
           <Icon path={CLOSE} />
         </button>
-        <nav className="flex flex-col" aria-label={label}>
+        <nav ref={links} className="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
           {children}
         </nav>
       </div>
