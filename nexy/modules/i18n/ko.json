@@ -79,7 +79,10 @@
       "done": "{count}개의 스킬을 .agents/skills 및 .claude/skills에 넣었습니다",
       "kept": "작성한 파일을 그대로 두었습니다: {files}."
     },
-    "took": "({duration})"
+    "took": "({duration})",
+    "init": {
+      "failed": "프로젝트를 초기화할 수 없습니다"
+    }
   },
   "dev": {
     "cleaning": "정리하는 중...",

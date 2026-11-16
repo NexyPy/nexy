@@ -79,7 +79,10 @@
       "done": "{count} skills in .agents/skills and .claude/skills",
       "kept": "Kept your {files}."
     },
-    "took": "in {duration}"
+    "took": "in {duration}",
+    "init": {
+      "failed": "Could not initialize the project"
+    }
   },
   "dev": {
     "cleaning": "Cleaning up...",

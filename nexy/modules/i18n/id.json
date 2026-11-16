@@ -79,7 +79,10 @@
       "done": "{count} skill di .agents/skills dan .claude/skills",
       "kept": "File Anda dipertahankan: {files}."
     },
-    "took": "dalam {duration}"
+    "took": "dalam {duration}",
+    "init": {
+      "failed": "Tidak dapat menginisialisasi proyek"
+    }
   },
   "dev": {
     "cleaning": "Membersihkan...",

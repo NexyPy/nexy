@@ -79,7 +79,10 @@
       "done": "{count} مهارات في .agents/skills و .claude/skills",
       "kept": "تم الاحتفاظ بملفاتك: {files}."
     },
-    "took": "في {duration}"
+    "took": "في {duration}",
+    "init": {
+      "failed": "تعذّرت تهيئة المشروع"
+    }
   },
   "dev": {
     "cleaning": "جارٍ التنظيف...",

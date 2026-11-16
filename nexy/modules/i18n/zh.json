@@ -79,7 +79,10 @@
       "done": "{count} 个 skill 已放入 .agents/skills 和 .claude/skills",
       "kept": "已保留你的文件：{files}。"
     },
-    "took": "用时 {duration}"
+    "took": "用时 {duration}",
+    "init": {
+      "failed": "无法初始化项目"
+    }
   },
   "dev": {
     "cleaning": "正在清理...",

@@ -79,7 +79,10 @@
       "done": "Навыков: {count}, в .agents/skills и .claude/skills",
       "kept": "Ваши файлы сохранены: {files}."
     },
-    "took": "за {duration}"
+    "took": "за {duration}",
+    "init": {
+      "failed": "Не удалось инициализировать проект"
+    }
   },
   "dev": {
     "cleaning": "Очистка...",
