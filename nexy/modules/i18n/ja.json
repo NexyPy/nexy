@@ -80,7 +80,8 @@
       "help_path": "プロジェクトのルート（既定：現在のフォルダ）",
       "done": "{count} 個のスキルを .agents/skills と .claude/skills に配置しました",
       "kept": "あなたのファイルは変更していません：{files}。"
-    }
+    },
+    "took": "({duration})"
   },
   "dev": {
     "cleaning": "後片付けをしています...",

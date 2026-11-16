@@ -80,7 +80,8 @@
       "help_path": "Racine du projet (par défaut : le dossier courant)",
       "done": "{count} skills dans .agents/skills et .claude/skills",
       "kept": "Vos fichiers ont été conservés : {files}."
-    }
+    },
+    "took": "en {duration}"
   },
   "dev": {
     "cleaning": "Nettoyage...",

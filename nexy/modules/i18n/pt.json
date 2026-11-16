@@ -80,7 +80,8 @@
       "help_path": "Raiz do projeto (padrão: a pasta atual)",
       "done": "{count} skills em .agents/skills e .claude/skills",
       "kept": "Seus arquivos foram mantidos: {files}."
-    }
+    },
+    "took": "em {duration}"
   },
   "dev": {
     "cleaning": "Limpando...",

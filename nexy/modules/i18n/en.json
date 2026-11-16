@@ -80,7 +80,8 @@
       "help_path": "Root of the project (default: the current folder)",
       "done": "{count} skills in .agents/skills and .claude/skills",
       "kept": "Kept your {files}."
-    }
+    },
+    "took": "in {duration}"
   },
   "dev": {
     "cleaning": "Cleaning up...",

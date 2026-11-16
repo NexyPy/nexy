@@ -80,7 +80,8 @@
       "help_path": "جذر المشروع (الافتراضي: المجلد الحالي)",
       "done": "{count} مهارات في .agents/skills و .claude/skills",
       "kept": "تم الاحتفاظ بملفاتك: {files}."
-    }
+    },
+    "took": "في {duration}"
   },
   "dev": {
     "cleaning": "جارٍ التنظيف...",

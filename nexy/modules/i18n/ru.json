@@ -80,7 +80,8 @@
       "help_path": "Корень проекта (по умолчанию: текущая папка)",
       "done": "Навыков: {count}, в .agents/skills и .claude/skills",
       "kept": "Ваши файлы сохранены: {files}."
-    }
+    },
+    "took": "за {duration}"
   },
   "dev": {
     "cleaning": "Очистка...",

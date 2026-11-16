@@ -80,7 +80,8 @@
       "help_path": "Root proyek (default: folder saat ini)",
       "done": "{count} skill di .agents/skills dan .claude/skills",
       "kept": "File Anda dipertahankan: {files}."
-    }
+    },
+    "took": "dalam {duration}"
   },
   "dev": {
     "cleaning": "Membersihkan...",

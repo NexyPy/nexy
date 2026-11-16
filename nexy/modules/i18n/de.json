@@ -80,7 +80,8 @@
       "help_path": "Stammordner des Projekts (Standard: der aktuelle Ordner)",
       "done": "{count} Skills in .agents/skills und .claude/skills",
       "kept": "Deine Dateien wurden beibehalten: {files}."
-    }
+    },
+    "took": "in {duration}"
   },
   "dev": {
     "cleaning": "Aufräumen...",

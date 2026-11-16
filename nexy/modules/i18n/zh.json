@@ -80,7 +80,8 @@
       "help_path": "项目根目录（默认：当前文件夹）",
       "done": "{count} 个 skill 已放入 .agents/skills 和 .claude/skills",
       "kept": "已保留你的文件：{files}。"
-    }
+    },
+    "took": "用时 {duration}"
   },
   "dev": {
     "cleaning": "正在清理...",

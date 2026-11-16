@@ -80,7 +80,8 @@
       "help_path": "Raíz del proyecto (por defecto: la carpeta actual)",
       "done": "{count} skills en .agents/skills y .claude/skills",
       "kept": "Se conservaron tus archivos: {files}."
-    }
+    },
+    "took": "en {duration}"
   },
   "dev": {
     "cleaning": "Limpiando...",
