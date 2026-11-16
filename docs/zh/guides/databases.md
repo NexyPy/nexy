@@ -118,7 +118,17 @@ Tortoise 在第一次调用其中一个时连接。从 `async def`（服务内�
 
 ## 迁移
 
-`nx migrate` 为您的 ORM 选择工具：Alembic 代表 SQLModel，SQLAlchemy，Aerich 代表 Tortoise-ORM。
+`nx migrate` 为您的 ORM 选择工具：Alembic 代表 SQLModel，SQLAlchemy，Aerich 代表 Tortoise-ORM。它从 `nexyconfig.py` 中的 `useORM` 读取 ORM，其中 `nx new` 写入：
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useORM = "SQLAlchemy"
+```
+
+`useORM` 之前创建的项目没有这样的行： `nx migrate` 然后采用环境中安装的第一个 ORM。当安装多个时添加这一行。
 
 | 命令 | 是否 |
 |---|---|
@@ -130,11 +140,13 @@ Tortoise 在第一次调用其中一个时连接。从 `async def`（服务内�
 
 当 `DATABASE_URL` 丢失或无法访问数据库时，`nx migrate` 停止并显示明确消息（仅 Alembic：Aerich 报告其自身的错误）。
 
+在 SQLite 上，Aerich 无法向已存在的表添加外键：SQLite 没有 `ALTER TABLE ... ADD CONSTRAINT`，并且该列是在约束失败之前添加的，因此再次运行迁移会在 `duplicate column name` 上停止。创建表时声明外键，或者使用 PostgreSQL 或MySQL。 Alembic 没有这样的限制：在 SQLite 上它重建表（批处理模式），并且支架模型命名每个约束，以便它可以。
+
 ### 第一次迁移是为您准备的
 
 当您选择 ORM 并提供数据库 URL 时，`nx new` 将设置迁移工具，创建第一个迁移并应用它，因此用户页面会在第一个 `nexy dev` 上进行回答。迁移工具（`alembic` 或 `aerich`）与 ORM 一起安装在项目中。
 
-如果数据库没有回答（PostgreSQL 服务器未运行，缺少驱动程序），`nx new` 会说明原因，跳过迁移并列出准备就绪时要运行的两个命令：
+如果数据库没有响应（PostgreSQL 服务器未运行，缺少驱动程序），`nx new` 会说明原因，跳过迁移并列出准备就绪时要运行的两个命令：
 
 ```bash
 nexy migrate -m "create tables"

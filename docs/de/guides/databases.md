@@ -118,7 +118,17 @@ Listen Sie jedes Modul auf, das Modelle in `TORTOISE_ORM` enthält (der `models`
 
 ## Migrationen
 
-`nx migrate` wählt das Tool für Ihr ORM aus: Alembic für SQLModel und SQLAlchemy, Aerich für Tortoise-ORM.
+`nx migrate` wählt das Tool für Ihr ORM aus: Alembic für SQLModel und SQLAlchemy, Aerich für Tortoise-ORM. Es liest den ORM von `useORM` in `nexyconfig.py`, der `nx new` schreibt:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useORM = "SQLAlchemy"
+```
+
+Ein Projekt, das vor der Existenz von `useORM` erstellt wurde, hat keine solche Zeile: `nx migrate` verwendet dann den ersten in der Umgebung installierten ORM. Fügen Sie die Zeile hinzu, wenn mehr als eine installiert ist.
 
 | Befehl | Tut |
 |---|---|
@@ -130,11 +140,13 @@ Mit Aerich führt der erste `nx migrate` `aerich init-db` aus, wodurch die erste
 
 `nx migrate` stoppt mit einer eindeutigen Meldung, wenn `DATABASE_URL` fehlt oder die Datenbank nicht erreichbar ist (nur Alembic: Aerich meldet eigene Fehler).
 
+Am SQLite kann Aerich keinen Fremdschlüssel zu einer bereits vorhandenen Tabelle hinzufügen: SQLite hat kein `ALTER TABLE ... ADD CONSTRAINT` und die Spalte wird hinzugefügt, bevor die Einschränkung fehlschlägt, sodass die erneute Ausführung der Migration am `duplicate column name` stoppt. Deklarieren Sie den Fremdschlüssel beim Erstellen der Tabelle oder verwenden Sie PostgreSQL oder MySQL. Alembic hat keine solche Beschränkung: Auf SQLite wird die Tabelle neu erstellt (Stapelmodus), und die Gerüstmodelle benennen jede Einschränkung, damit dies möglich ist.
+
 ### Die erste Migration wird für Sie durchgeführt
 
 Wenn Sie einen ORM auswählen und eine Datenbank-URL angeben, richtet `nx new` das Migrationstool ein, erstellt die erste Migration und wendet sie an, sodass die Benutzerseite auf die erste `nexy dev` antwortet. Das Migrationstool (`alembic` oder `aerich`) wird im Projekt mit dem ORM installiert.
 
-Wenn die Datenbank nicht antwortet (ein PostgreSQL-Server, der nicht läuft, ein fehlender Treiber), sagt `nx new` den Grund, überspringt die Migration und listet die beiden Befehle auf, die ausgeführt werden sollen, wenn sie bereit ist:
+Wenn die Datenbank nicht antwortet (ein PostgreSQL-Server, der nicht läuft, ein fehlender Treiber), sagt `nx new` den Grund dafür, überspringt die Migration und listet die beiden Befehle auf, die ausgeführt werden sollen, wenn sie bereit ist:
 
 ```bash
 nexy migrate -m "create tables"

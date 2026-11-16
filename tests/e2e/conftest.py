@@ -104,7 +104,7 @@ def _start_vite(project: Path, port: int) -> subprocess.Popen[bytes]:
 def _start_uvicorn(project: Path, port: int) -> subprocess.Popen[bytes]:
     launcher = (
         "import os\n"
-        "from nexy.helpers.server.proxy import DEV_ENV_VAR\n"
+        "from nexy.helpers.server.dev_mode import DEV_ENV_VAR\n"
         "os.environ[DEV_ENV_VAR] = '1'\n"
         "import uvicorn\n"
         "from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG\n"

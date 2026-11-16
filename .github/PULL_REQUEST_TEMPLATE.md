@@ -1,28 +1,34 @@
-## Description
+<!--
+  Thanks for the pull request. The three sections below are required: a reviewer reads them before
+  the code. Before you open it:
 
-<!-- Describe the motivation for this change. What problem does it solve?
-     If it fixes an issue, include "Fixes #123". -->
+  1. Branch from `develop`: `feature/*`, `fix/*`, `docs/*` or `perf/*`.
+  2. Write the test first, and watch it fail before the code makes it pass.
+  3. Run the gates the CI runs: `python scripts/verify.py`.
 
-## Type of change
+  Learn more in CONTRIBUTING.md.
+-->
 
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that changes existing behavior)
-- [ ] Documentation update
-- [ ] Refactoring (no functional changes)
-- [ ] Performance improvement
-- [ ] Test addition or improvement
+## Summary
+
+<!--
+  The motivation: what problem does this solve, for whom? If it fixes an issue, write "Fixes #123".
+-->
+
+## How did you test this change?
+
+<!--
+  The commands you ran and what they printed; for a change a person sees, a screenshot or a short
+  video. A pull request with this section empty will very likely be closed.
+-->
 
 ## Checklist
 
-- [ ] Tests pass (`python -m pytest tests/ -v`)
-- [ ] Lint passes (`ruff check nexy/`)
-- [ ] Type checking passes (`python -m mypy nexy --strict`)
-- [ ] Formatting is correct (`ruff format nexy/ --check`)
-- [ ] New tests cover my changes
-- [ ] Documentation is updated (if applicable)
+- [ ] `python scripts/verify.py` passes (lint, format, typecheck, structure, tests)
+- [ ] Each new behaviour has a test that failed before the change
+- [ ] Each commit changes one file written by hand, with its test (a docs page also carries its
+      translations, written by `scripts/translate_docs.py`)
 - [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
-
-## Additional context
-
-<!-- Add any other context about the PR here, including screenshots if relevant. -->
+- [ ] No AI tool appears as author or co-author: no `Co-authored-by` trailer for one, no
+      "Generated with" footer
+- [ ] A new docs page is listed in `docs/README.md` and `llms.txt`

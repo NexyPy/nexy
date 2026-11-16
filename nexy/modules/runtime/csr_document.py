@@ -16,11 +16,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-import httpx
-
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
-from nexy.helpers.server.proxy import vite_proxy_port
+from nexy.helpers.server.dev_mode import vite_proxy_port
 from nexy.hooks import _get_req as _get_request
 from nexy.vite import Vite
 
@@ -106,6 +104,21 @@ def _from_vite(page_file: str, layouts: list[str], props: dict[str, Any], port: 
     }
     if location := _request_location():
         body["location"] = location
+    answer = _post_render(body, port)
+    if answer is None:
+        return None
+    status, text = answer
+    if status != 200:
+        console.print(tagged("nexy", f"rendering {page_file} failed:\n{text[:2000]}", "red"))
+        return None
+    return text
+
+
+def _post_render(body: dict[str, Any], port: int) -> tuple[int, str] | None:
+    """Vite's status and text for *body*, or None when the dev server cannot be reached."""
+    # Imported here: only `nexy dev` renders through Vite, so a production worker skips httpx.
+    import httpx
+
     try:
         response = httpx.post(
             f"http://127.0.0.1:{port}/__nexy__/render", json=body, timeout=_RENDER_TIMEOUT
@@ -113,11 +126,7 @@ def _from_vite(page_file: str, layouts: list[str], props: dict[str, Any], port: 
     except httpx.HTTPError as error:
         console.print(tagged("nexy", f"document render unavailable: {error}", "yellow"))
         return None
-    if response.status_code != 200:
-        failure = f"rendering {page_file} failed:\n{response.text[:2000]}"
-        console.print(tagged("nexy", failure, "red"))
-        return None
-    return response.text
+    return response.status_code, response.text
 
 
 def render_document(

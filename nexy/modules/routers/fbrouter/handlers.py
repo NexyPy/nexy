@@ -11,7 +11,7 @@ from typing import Any
 
 from fastapi import Request
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, Response, StreamingResponse
 
 from nexy.modules.runtime.cache import REVALIDATE_CACHE
 
@@ -64,6 +64,17 @@ def stream_body(result: str | Any) -> Any:
     return (chunk.encode("utf-8") if isinstance(chunk, str) else chunk for chunk in result)
 
 
+def page_response(result: str | Any) -> HTMLResponse | StreamingResponse:
+    """One response for a page made as a string; a stream only for a component that yields.
+
+    A string sent through a streaming body would cross the thread pool once per chunk, which
+    cost more than rendering the page.
+    """
+    if isinstance(result, str):
+        return HTMLResponse(result)
+    return StreamingResponse(stream_body(result), media_type="text/html")
+
+
 def _carry_over(handler: Callable[..., Any], component: Callable[..., Any]) -> None:
     handler.__name__ = component.__name__
     handler.__doc__ = component.__doc__
@@ -77,16 +88,16 @@ def make_request_handler(component: Callable[..., str]) -> Callable[..., Any]:
 
     Compiled components take ``**kwargs`` (props injection); FastAPI would treat ``kwargs`` as a
     required query parameter and answer 422. Reading ``request.path_params`` keeps the route free
-    of signature validation and still forwards ``[slug]`` as ``slug``. The answer is streamed.
+    of signature validation and still forwards ``[slug]`` as ``slug``. See `page_response`.
     """
     signature = inspect.signature(component)
     # A component that waits on I/O (a document rendered by Node) must not stall the event loop.
     blocking = bool(getattr(component, "__nexy_blocking__", False))
 
-    async def handler(request: Request) -> StreamingResponse:
+    async def handler(request: Request) -> Response:
         params = coerce_path_params(signature, request.path_params)
         result = await run_in_threadpool(component, **params) if blocking else component(**params)
-        return StreamingResponse(stream_body(result), media_type="text/html")
+        return page_response(result)
 
     _carry_over(handler, component)
     return handler

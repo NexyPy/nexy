@@ -24,8 +24,8 @@ from nexy.errors import InternalServerError
 from nexy.helpers.common.code_frame import print_frame, rows_of_file
 from nexy.helpers.common.console import console
 from nexy.helpers.common.pycheck import project_path
+from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.helpers.server.devtools.state import record_error
-from nexy.helpers.server.proxy import DEV_ENV_VAR
 from nexy.helpers.server.security_headers import DEFAULT_HEADERS
 
 

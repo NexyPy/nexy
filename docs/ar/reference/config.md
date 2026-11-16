@@ -26,13 +26,19 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | العمليات `nx start` تعمل؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
 | `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
 
+## قاعدة البيانات
+
+| الميدان | الافتراضي | معنى |
+|---|---|---|
+| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، و `nx migrate` ينتقي منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
+
 ## الطرق
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
 | `useRouter` | `None` | `APIRouter` مثيل أو فئة مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
 | `excludeDirs` | `["templates", "extension", "docs"]` | تم تخطي الدلائل عند مسح المسارات |
-| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، ويتبعه Vite و `tsconfig.json` |
+| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، و Vite و `tsconfig.json` يتبعه |
 
 ## الواجهة الأمامية
 
@@ -44,7 +50,7 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | ملحقات إضافية يشاهدها خادم التطوير |
 | `useWatchExcludePatterns` | `None` | أنماط الكرة الأرضية التي يتجاهلها خادم التطوير |
 
-> **من المفيد معرفة**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
+> **من المفيد أن نعرف**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
 
 ## أسماء الملفات المحجوزة
 
@@ -68,9 +74,9 @@ class NexyConfig(NexyConfigModel):
 | `useRedocsUrl` | `"/redocs"` | تم الإعلان عنه ولكن لم يتم تثبيت أي طريق |
 | `useTitle` | `"Nexy App"` | OpenAPI العنوان وعنوان الصفحة (`"Nexy"` في `NexyConfigModel`) |
 
-### `/docs` مجانا لصفحة من المشروع
+### مجاناً `/docs` لصفحة من المشروع
 
-يجيب مرجع API على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
+يجيب مرجع واجهة برمجة التطبيقات (API) على `/docs` قبل أي مسار، لذلك لا يتم عرض `src/routes/docs.nexy` أو `src/routes/docs/[[...slug]].nexy` هناك أبدًا. `nx dev` و `nx start` قم بتسمية هذه الصفحة عند بدء التشغيل. انقل المرجع بـ `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -100,7 +106,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useTocDepth` | `"2-6"` | مستويات العناوين المدرجة في جدول المحتويات |
 | `useTocTitle` | `"Table of Contents"` | عنوان جدول المحتويات |
-| `useTocAuto` | `True` | إنشاء جدول محتويات لصفحات Markdown |
+| `useTocAuto` | `True` | إنشاء جدول محتويات لـ Markdown صفحة |
 
 ## الطرق خارج شجرة الملفات
 

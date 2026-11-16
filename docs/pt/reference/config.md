@@ -26,6 +26,12 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | processos `nx start` executados; `0` é um por CPU no Linux e macOS, um no Windows |
 | `useCSR` | `False` | modo de roteamento do lado do cliente; `.nexy` rotas estão desativadas |
 
+## Banco de dados
+
+| Campo | Padrão | Significado |
+|---|---|---|
+| `useORM` | `None` | o ORM do projeto: `"SQLModel"`, `"SQLAlchemy"` ou `"Tortoise-ORM"`. `nx new` escreve e `nx migrate` escolhe Alembic ou Aerich dele; sem ele, `nx migrate` pega o primeiro ORM instalado. Consulte [Bancos de dados](../guides/databases.md#migrations) |
+
 ## Rotas
 
 | Campo | Padrão | Significado |

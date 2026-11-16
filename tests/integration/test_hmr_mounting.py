@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from nexy.helpers.server.proxy import DEV_ENV_VAR
+from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.modules.routers.app import AppServer
 
 HMR_PATH = "/_nexy/hmr"

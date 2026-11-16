@@ -27,6 +27,12 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | processes `nx start` runs; `0` is one per CPU on Linux and macOS, one on Windows |
 | `useCSR` | `False` | client-side routing mode; `.nexy` routes are disabled |
 
+## Database
+
+| Field | Default | Meaning |
+|---|---|---|
+| `useORM` | `None` | the ORM of the project: `"SQLModel"`, `"SQLAlchemy"` or `"Tortoise-ORM"`. `nx new` writes it, and `nx migrate` picks Alembic or Aerich from it; without it, `nx migrate` takes the first ORM installed. See [Databases](../guides/databases.md#migrations) |
+
 ## Routes
 
 | Field | Default | Meaning |

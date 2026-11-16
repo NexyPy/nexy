@@ -27,7 +27,6 @@ from websockets.http11 import Request, Response
 from nexy.helpers.server.proxy import (
     VITE_ONLY_PREFIXES,
     ViteProxyMiddleware,
-    vite_proxy_port,
 )
 
 Scope = dict[str, Any]
@@ -470,13 +469,6 @@ def test_proxy_relays_binary_upstream_frame() -> None:
     assert {"type": "websocket.send", "bytes": b"\x00\x01"} in replies
 
 
-def test_vite_proxy_port_is_none_when_vite_disabled(nexy_project, tmp_path, monkeypatch) -> None:
-    nexy_project("useVite = False")
-    (tmp_path / "vite.config.ts").write_text("", encoding="utf-8")
-    monkeypatch.setenv("NEXY_DEV_SERVER", "1")
-    assert vite_proxy_port() is None
-
-
 def test_proxy_prefixes_cover_vite_paths() -> None:
     assert "/@vite/" in VITE_ONLY_PREFIXES
 
@@ -514,38 +506,6 @@ def test_hmr_socket_rejects_foreign_host() -> None:
         )
     )
     assert send.messages[0] == {"type": "websocket.close", "code": 1008}
-
-
-def test_vite_proxy_port_is_none_outside_dev_mode(tmp_path, monkeypatch) -> None:
-    (tmp_path / "__nexy__").mkdir()
-    (tmp_path / "vite.config.ts").write_text("", encoding="utf-8")
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.delenv("NEXY_DEV_SERVER", raising=False)
-    assert vite_proxy_port() is None
-
-
-def test_vite_proxy_port_is_none_in_production(tmp_path, monkeypatch) -> None:
-    (tmp_path / "__nexy__").mkdir()
-    (tmp_path / "__nexy__" / "nexy.prod").write_text("", encoding="utf-8")
-    (tmp_path / "vite.config.ts").write_text("", encoding="utf-8")
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("NEXY_DEV_SERVER", "1")
-    assert vite_proxy_port() is None
-
-
-def test_vite_proxy_port_is_none_without_vite_config(tmp_path, monkeypatch) -> None:
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("NEXY_DEV_SERVER", "1")
-    assert vite_proxy_port() is None
-
-
-def test_vite_proxy_port_reads_client_port(tmp_path, monkeypatch) -> None:
-    (tmp_path / "__nexy__").mkdir()
-    (tmp_path / "vite.config.ts").write_text("", encoding="utf-8")
-    (tmp_path / "__nexy__" / "client.port").write_text("5199", encoding="utf-8")
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("NEXY_DEV_SERVER", "1")
-    assert vite_proxy_port() == 5199
 
 
 class TestAppDocumentShortcut:

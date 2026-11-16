@@ -69,6 +69,25 @@ class TestClientSheet:
         assert f'{cls}="sheet ' in panel and f'{cls}="sheet-scrim ' in panel
 
 
+@pytest.mark.parametrize(("framework", "ext"), CSR)
+class TestClientSheetDialog:
+    def test_the_sheet_marks_the_state_its_animation_reads(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert "data-state" in _sheet(tmp_path, ext)
+
+    def test_the_sheet_waits_for_its_exit_before_it_leaves(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert "getAnimations()" in _sheet(tmp_path, ext)
+
+    def test_the_sheet_keeps_the_focus_inside(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert '"Tab"' in _sheet(tmp_path, ext)
+
+    def test_a_wide_screen_closes_the_sheet(self, tmp_path, framework, ext):
+        _scaffold(tmp_path, framework, True)
+        assert "(min-width: 40rem)" in _sheet(tmp_path, ext)
+
+
 class TestServerRenderedSheet:
     def test_the_header_uses_the_same_sheet(self, tmp_path):
         _scaffold(tmp_path, "none", False)
@@ -97,6 +116,11 @@ class TestTheAnimationIsDefined:
         _scaffold(tmp_path, "react", True, style)
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
         assert "@keyframes sheet-in" in css and ".sheet {" in css and ".sheet-scrim {" in css
+
+    def test_the_stylesheet_holds_the_exit_the_closing_sheet_plays(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        assert '.sheet[data-state="closed"]' in css and "@keyframes sheet-out" in css
 
     def test_a_reduced_motion_preference_turns_the_slide_off(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
