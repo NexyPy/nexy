@@ -11,6 +11,7 @@ from nexy.modules.cli.init import dependencies
 from nexy.modules.cli.init.dependencies import DependencyInstaller
 
 positions: list = []
+done_lines: list = []
 
 
 @pytest.fixture
@@ -18,10 +19,12 @@ def calls(monkeypatch):
     """Every task the installer runs: (label, argv)."""
     seen: list[tuple[str, list[str]]] = []
     positions.clear()
+    done_lines.clear()
 
     def fake_run_task(label, argv, cwd=None, done=None, progress=None):
         seen.append((label, list(argv)))
         positions.append(progress)
+        done_lines.append(done)
         return SimpleNamespace(ok=True)
 
     monkeypatch.setattr(dependencies, "run_task", fake_run_task)
@@ -85,6 +88,36 @@ class TestLabels:
 
     def test_a_package_names_uv_the_environment_and_the_package(self, project, calls):
         assert "uv add .venv sqlmodel" in self._labels(project, calls, orm="SQLModel")
+
+
+class TestDoneLines:
+    """The line a finished step leaves says what was done, as uv does."""
+
+    def _done(self, project, calls, orm=None):
+        _installer(project, Connection(True, 30.0, 3000.0), orm=orm).install_all()
+        return done_lines
+
+    def test_node_says_what_it_installed_and_with_what(self, project, calls, monkeypatch):
+        monkeypatch.setattr(dependencies.package_manager, "detect", lambda d: "pnpm")
+        assert "Installed node_modules with pnpm" in self._done(project, calls)
+
+    def test_python_says_it_synced_the_environment(self, project, calls):
+        assert "Synced .venv with uv" in self._done(project, calls)
+
+    def test_a_package_says_it_was_added(self, project, calls):
+        assert "Added sqlmodel to .venv" in self._done(project, calls, orm="SQLModel")
+
+
+class TestWarnings:
+    def test_no_node_manager_is_a_warning(self, project, calls, monkeypatch, capsys):
+        monkeypatch.setattr(dependencies.package_manager, "detect", lambda d: None)
+        _installer(project, Connection(True, 30.0, 3000.0)).install_all()
+        assert "warning: No Node.js package manager found" in capsys.readouterr().out
+
+    def test_adding_a_package_without_a_manager_is_a_warning(self, tmp_path, monkeypatch, capsys):
+        monkeypatch.setattr(dependencies.package_manager, "detect", lambda d: None)
+        dependencies.install_packages(["zod"], tmp_path)
+        assert capsys.readouterr().out.startswith("warning: No package manager found")
 
 
 class TestDatabaseDrivers:

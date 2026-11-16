@@ -12,14 +12,12 @@
     "help_ui": "Forçar o tratamento como componentes de UI",
     "help_url": "Forçar o tratamento como URLs",
     "https_only": "Somente URLs https:// são suportadas.",
-    "install_failed": "Falha ao instalar as dependências",
     "installed": "{names} instalado",
     "installing": "Instalando {names}",
     "no_pm": "Nenhum gerenciador de pacotes encontrado. Instale as dependências manualmente: {names}",
     "not_found": "O componente '{name}' não foi encontrado no registro.",
     "usage": "Uso:",
     "usage_text": "nexy add [NOME_DO_COMPONENTE ou URL]...",
-    "warning": "Aviso:",
     "write_failed": "Não foi possível gravar {path}: {error}"
   },
   "build": {
@@ -191,7 +189,10 @@
     "venv": {
       "created": "Ambiente virtual criado",
       "creating": "Criando o ambiente virtual"
-    }
+    },
+    "node_installed": "node_modules instalado com {manager}",
+    "python_synced": ".venv sincronizado com uv",
+    "package_added": "{package} adicionado a .venv"
   },
   "migrate": {
     "aerich_not_initialized": "O Aerich não foi inicializado. Execute 'nx m --init' primeiro.",

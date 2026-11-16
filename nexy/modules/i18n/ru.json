@@ -12,14 +12,12 @@
     "help_ui": "Принудительно считать UI-компонентами",
     "help_url": "Принудительно считать URL",
     "https_only": "Поддерживаются только URL с https://.",
-    "install_failed": "Не удалось установить зависимости",
     "installed": "Установлено: {names}",
     "installing": "Установка: {names}",
     "no_pm": "Менеджер пакетов не найден. Установите зависимости вручную: {names}",
     "not_found": "Компонент «{name}» не найден в реестре.",
     "usage": "Использование:",
     "usage_text": "nexy add [ИМЯ_КОМПОНЕНТА или URL]...",
-    "warning": "Предупреждение:",
     "write_failed": "Не удалось записать {path}: {error}"
   },
   "build": {
@@ -191,7 +189,10 @@
     "venv": {
       "created": "Виртуальное окружение создано",
       "creating": "Создание виртуального окружения"
-    }
+    },
+    "node_installed": "node_modules установлены с помощью {manager}",
+    "python_synced": ".venv синхронизировано с помощью uv",
+    "package_added": "{package} добавлен в .venv"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich не инициализирован. Сначала выполните «nx m --init».",

@@ -12,14 +12,12 @@
     "help_ui": "فرض التعامل معها كمكوّنات واجهة",
     "help_url": "فرض التعامل معها كعناوين URL",
     "https_only": "عناوين URL التي تبدأ بـ https:// فقط مدعومة.",
-    "install_failed": "تعذّر تثبيت الاعتماديات",
     "installed": "تم تثبيت {names}",
     "installing": "جارٍ تثبيت {names}",
     "no_pm": "لم يتم العثور على مدير حزم. ثبّت الاعتماديات يدويًا: {names}",
     "not_found": "المكوّن '{name}' غير موجود في السجل.",
     "usage": "الاستخدام:",
     "usage_text": "nexy add [اسم_المكوّن أو URL]...",
-    "warning": "تنبيه:",
     "write_failed": "تعذّرت كتابة {path}: {error}"
   },
   "build": {
@@ -191,7 +189,10 @@
     "venv": {
       "created": "تم إنشاء البيئة الافتراضية",
       "creating": "جارٍ إنشاء البيئة الافتراضية"
-    }
+    },
+    "node_installed": "تم تثبيت node_modules باستخدام {manager}",
+    "python_synced": "تمت مزامنة .venv باستخدام uv",
+    "package_added": "تمت إضافة {package} إلى .venv"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich غير مهيّأ. شغّل 'nx m --init' أولًا.",

@@ -12,14 +12,12 @@
     "help_ui": "Paksa diperlakukan sebagai komponen UI",
     "help_url": "Paksa diperlakukan sebagai URL",
     "https_only": "Hanya URL https:// yang didukung.",
-    "install_failed": "Gagal memasang dependensi",
     "installed": "{names} terpasang",
     "installing": "Memasang {names}",
     "no_pm": "Pengelola paket tidak ditemukan. Pasang dependensi secara manual: {names}",
     "not_found": "Komponen '{name}' tidak ditemukan di registri.",
     "usage": "Penggunaan:",
     "usage_text": "nexy add [NAMA_KOMPONEN atau URL]...",
-    "warning": "Peringatan:",
     "write_failed": "Gagal menulis {path}: {error}"
   },
   "build": {
@@ -191,7 +189,10 @@
     "venv": {
       "created": "Lingkungan virtual dibuat",
       "creating": "Membuat lingkungan virtual"
-    }
+    },
+    "node_installed": "node_modules terpasang dengan {manager}",
+    "python_synced": ".venv disinkronkan dengan uv",
+    "package_added": "{package} ditambahkan ke .venv"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich belum diinisialisasi. Jalankan 'nx m --init' terlebih dahulu.",

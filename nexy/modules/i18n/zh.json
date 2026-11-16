@@ -12,14 +12,12 @@
     "help_ui": "强制按 UI 组件处理",
     "help_url": "强制按 URL 处理",
     "https_only": "仅支持 https:// 开头的 URL。",
-    "install_failed": "安装依赖失败",
     "installed": "已安装 {names}",
     "installing": "正在安装 {names}",
     "no_pm": "未找到包管理器。请手动安装依赖：{names}",
     "not_found": "在注册表中找不到组件“{name}”。",
     "usage": "用法：",
     "usage_text": "nexy add [组件名称 或 URL]...",
-    "warning": "警告：",
     "write_failed": "无法写入 {path}：{error}"
   },
   "build": {
@@ -191,7 +189,10 @@
     "venv": {
       "created": "已创建虚拟环境",
       "creating": "正在创建虚拟环境"
-    }
+    },
+    "node_installed": "已使用 {manager} 安装 node_modules",
+    "python_synced": "已使用 uv 同步 .venv",
+    "package_added": "已将 {package} 添加到 .venv"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich 尚未初始化。请先运行“nx m --init”。",

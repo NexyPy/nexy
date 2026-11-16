@@ -12,14 +12,12 @@
     "help_ui": "UIコンポーネントとして扱う",
     "help_url": "URLとして扱う",
     "https_only": "https:// のURLのみ使用できます。",
-    "install_failed": "依存関係をインストールできませんでした",
     "installed": "{names} をインストールしました",
     "installing": "{names} をインストールしています",
     "no_pm": "パッケージマネージャーが見つかりません。依存関係を手動でインストールしてください: {names}",
     "not_found": "コンポーネント '{name}' はレジストリに見つかりません。",
     "usage": "使い方:",
     "usage_text": "nexy add [コンポーネント名 または URL]...",
-    "warning": "警告:",
     "write_failed": "{path} を書き込めませんでした: {error}"
   },
   "build": {
@@ -191,7 +189,10 @@
     "venv": {
       "created": "仮想環境を作成しました",
       "creating": "仮想環境を作成しています"
-    }
+    },
+    "node_installed": "{manager} で node_modules をインストールしました",
+    "python_synced": "uv で .venv を同期しました",
+    "package_added": "{package} を .venv に追加しました"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich が初期化されていません。先に 'nx m --init' を実行してください。",

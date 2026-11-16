@@ -12,14 +12,12 @@
     "help_ui": "इन्हें UI कॉम्पोनेंट मानने के लिए बाध्य करें",
     "help_url": "इन्हें URL मानने के लिए बाध्य करें",
     "https_only": "केवल https:// वाले URL समर्थित हैं।",
-    "install_failed": "डिपेंडेंसी इंस्टॉल नहीं हो सकीं",
     "installed": "{names} इंस्टॉल हो गया",
     "installing": "{names} इंस्टॉल हो रहा है",
     "no_pm": "कोई पैकेज मैनेजर नहीं मिला। डिपेंडेंसी हाथ से इंस्टॉल करें: {names}",
     "not_found": "कॉम्पोनेंट '{name}' रजिस्ट्री में नहीं मिला।",
     "usage": "उपयोग:",
     "usage_text": "nexy add [कॉम्पोनेंट_का_नाम या URL]...",
-    "warning": "चेतावनी:",
     "write_failed": "{path} नहीं लिखा जा सका: {error}"
   },
   "build": {
@@ -191,7 +189,10 @@
     "venv": {
       "created": "वर्चुअल एनवायरनमेंट बन गया",
       "creating": "वर्चुअल एनवायरनमेंट बनाया जा रहा है"
-    }
+    },
+    "node_installed": "{manager} से node_modules इंस्टॉल किया",
+    "python_synced": "uv से .venv सिंक किया",
+    "package_added": "{package} को .venv में जोड़ा"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich शुरू नहीं किया गया है। पहले 'nx m --init' चलाएँ।",
