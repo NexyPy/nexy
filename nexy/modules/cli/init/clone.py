@@ -6,8 +6,7 @@ import shutil
 import subprocess  # nosec B404
 from pathlib import Path
 
-from nexy.helpers.common.console import console
-from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.messages import warning
 from nexy.helpers.fs.tree import remove_path, remove_tree
 from nexy.modules.cli.init.git_backup import GitBackup
 from nexy.modules.i18n import t
@@ -53,9 +52,7 @@ def _extract(dest: Path, path: str, fresh: bool) -> None:
     """Check *path* of the fetched template out; into a folder with files, merge instead."""
     steps = [["checkout", "FETCH_HEAD", "--", path]]
     if not fresh:
-        console.print(
-            tagged("nexy", t("init.merging", "Directory not empty, merging files..."), "yellow")
-        )
+        warning(t("init.merging", "Directory not empty, merging files..."))
         steps += [["merge", "--ff-only", "FETCH_HEAD"], ["reset", "--hard"]]
     try:
         for step in steps:

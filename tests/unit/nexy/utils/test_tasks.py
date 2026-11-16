@@ -1,11 +1,13 @@
 """run_task: one permanent result line, output kept on failure."""
 
+import contextlib
 import io
+import re
 import sys
 
 from rich.console import Console
 
-from nexy.helpers.common.tasks import format_duration, run_task
+from nexy.helpers.common.tasks import _LiveLine, format_duration, run_task, step
 
 
 def _console() -> tuple[Console, io.StringIO]:
@@ -25,33 +27,49 @@ class TestFormatDuration:
 
 
 class TestRunTask:
-    def test_success_prints_one_check_line(self):
+    def test_success_leaves_one_line_with_the_duration(self):
         console, buffer = _console()
-        result = run_task(
-            "Installing x",
-            [sys.executable, "-c", "print('hi')"],
-            done="Installed x",
-            console=console,
-        )
-        assert result.ok and result.returncode == 0
-        text = buffer.getvalue()
-        assert "✔ Installed x" in text
-        assert "hi" not in text
+        argv = [sys.executable, "-c", "print('hi')"]
+        run_task("Installing x", argv, done="Installed x", console=console)
+        assert re.fullmatch(r"Installed x in \d+(ms|\.\ds)\n", buffer.getvalue())
 
-    def test_failure_keeps_the_command_output(self):
+    def test_success_reports_the_exit_code(self):
+        console, _ = _console()
+        result = run_task("x", [sys.executable, "-c", "pass"], console=console)
+        assert result.ok and result.returncode == 0
+
+    def test_success_hides_the_command_output(self):
+        console, buffer = _console()
+        run_task("x", [sys.executable, "-c", "print('hi')"], console=console)
+        assert "hi" not in buffer.getvalue()
+
+    def test_a_task_without_done_reports_its_label(self):
+        console, buffer = _console()
+        run_task("uv sync", [sys.executable, "-c", "pass"], console=console)
+        assert buffer.getvalue().startswith("uv sync in ")
+
+    def test_a_failure_is_an_error_line_naming_the_task(self):
+        console, buffer = _console()
+        code = "import sys; sys.exit(3)"
+        run_task("Installing x", [sys.executable, "-c", code], console=console)
+        assert buffer.getvalue().splitlines()[0] == "error: Installing x"
+
+    def test_a_failure_gives_the_exit_code_as_its_cause(self):
+        console, buffer = _console()
+        code = "import sys; sys.exit(3)"
+        run_task("Installing x", [sys.executable, "-c", code], console=console)
+        assert buffer.getvalue().splitlines()[1].startswith("  cause: exit 3 after ")
+
+    def test_a_failure_keeps_the_command_output(self):
         console, buffer = _console()
         code = "import sys; print('boom: no such package'); sys.exit(3)"
-        result = run_task("Installing x", [sys.executable, "-c", code], console=console)
-        assert not result.ok and result.returncode == 3
-        text = buffer.getvalue()
-        assert "✘ Installing x" in text and "exit 3" in text
-        assert "boom: no such package" in text
+        run_task("Installing x", [sys.executable, "-c", code], console=console)
+        assert "  boom: no such package" in buffer.getvalue()
 
-    def test_missing_executable_is_reported_not_raised(self):
+    def test_a_missing_executable_is_an_error_not_an_exception(self):
         console, buffer = _console()
-        result = run_task("Running", ["definitely-not-a-binary-xyz"], console=console)
-        assert not result.ok
-        assert "✘ Running" in buffer.getvalue()
+        run_task("Running", ["definitely-not-a-binary-xyz"], console=console)
+        assert buffer.getvalue().startswith("error: Running\n  cause: ")
 
     def test_brackets_in_output_are_not_treated_as_markup(self):
         console, buffer = _console()
@@ -60,26 +78,57 @@ class TestRunTask:
         assert "[red]oops[/red]" in buffer.getvalue()
 
 
+class TestStep:
+    def test_a_finished_step_leaves_one_line_with_the_duration(self):
+        console, buffer = _console()
+        with step("Compiling", done="Compiled the routes", console=console):
+            pass
+        assert re.fullmatch(r"Compiled the routes in \d+ms\n", buffer.getvalue())
+
+    def test_a_failed_step_is_an_error_line(self):
+        console, buffer = _console()
+        with contextlib.suppress(RuntimeError), step("Compiling", console=console):
+            raise RuntimeError("boom")
+        assert buffer.getvalue() == "error: Compiling\n"
+
+
 def _render(live) -> str:
     console, buffer = _console()
     console.print(live)
     return buffer.getvalue()
 
 
-class TestProgressBar:
-    def test_a_group_shows_how_many_steps_are_finished(self):
-        from nexy.helpers.common.tasks import _LiveLine
+class TestLiveRow:
+    """The row shown while a task runs is uv's: a spinner and a dim message, or a bar."""
 
-        text = _render(_LiveLine("Installing", progress=(2, 5)))
-        assert "Installing" in text and "2/5" in text
+    def test_a_lone_task_is_a_spinner_then_its_label(self):
+        assert re.fullmatch(r"[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏] Installing\n", _render(_LiveLine("Installing")))
 
-    def test_a_lone_task_shows_a_pulsing_bar_without_a_count(self):
-        from nexy.helpers.common.tasks import _LiveLine
+    def test_a_lone_task_shows_the_last_line_of_its_output(self):
+        live = _LiveLine("pnpm install")
+        live.last = "Progress: resolved 42"
+        assert _render(live)[2:] == "pnpm install  Progress: resolved 42\n"
 
-        text = _render(_LiveLine("Installing"))
-        assert "Installing" in text and "/" not in text
+    def test_a_lone_task_shows_no_elapsed_time(self):
+        assert "ms" not in _render(_LiveLine("Installing"))
+
+    def test_a_group_is_a_bar_of_twenty_cells_then_the_count(self):
+        text = _render(_LiveLine("uv sync", progress=(2, 5)))
+        assert text == "████████░░░░░░░░░░░░ [2/5] uv sync\n"
+
+    def test_an_empty_group_bar_has_no_full_cell(self):
+        assert _render(_LiveLine("x", progress=(0, 3))).startswith("░" * 20 + " [0/3]")
+
+    def test_the_message_is_dim(self):
+        console = Console(file=io.StringIO(), force_terminal=True, color_system="standard")
+        console.print(_LiveLine("Installing"))
+        assert "\x1b[2mInstalling" in console.file.getvalue()
+
+    def test_a_long_message_is_cut_to_the_width(self):
+        live = _LiveLine("x" * 300)
+        assert max(len(line) for line in _render(live).splitlines()) <= 100
 
     def test_run_task_accepts_the_position_in_a_group(self):
-        console, buffer = _console()
+        console, _ = _console()
         result = run_task("x", [sys.executable, "-c", "pass"], progress=(1, 3), console=console)
         assert result.ok

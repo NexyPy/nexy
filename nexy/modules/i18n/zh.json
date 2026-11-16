@@ -12,14 +12,12 @@
     "help_ui": "强制按 UI 组件处理",
     "help_url": "强制按 URL 处理",
     "https_only": "仅支持 https:// 开头的 URL。",
-    "install_failed": "安装依赖失败",
     "installed": "已安装 {names}",
     "installing": "正在安装 {names}",
     "no_pm": "未找到包管理器。请手动安装依赖：{names}",
     "not_found": "在注册表中找不到组件“{name}”。",
     "usage": "用法：",
     "usage_text": "nexy add [组件名称 或 URL]...",
-    "warning": "警告：",
     "write_failed": "无法写入 {path}：{error}"
   },
   "build": {
@@ -80,6 +78,10 @@
       "help_path": "项目根目录（默认：当前文件夹）",
       "done": "{count} 个 skill 已放入 .agents/skills 和 .claude/skills",
       "kept": "已保留你的文件：{files}。"
+    },
+    "took": "用时 {duration}",
+    "init": {
+      "failed": "无法初始化项目"
     }
   },
   "dev": {
@@ -131,7 +133,6 @@
       "web": "Web",
       "yes": "是"
     },
-    "error": "初始化失败：{error}",
     "git_restore": "无法恢复之前的 .git",
     "hint": {
       "alias_custom": "选择其他前缀,如 ~ 或 #",
@@ -190,7 +191,11 @@
     "venv": {
       "created": "已创建虚拟环境",
       "creating": "正在创建虚拟环境"
-    }
+    },
+    "node_installed": "已使用 {manager} 安装 node_modules",
+    "python_synced": "已使用 uv 同步 .venv",
+    "package_added": "已将 {package} 添加到 .venv",
+    "created": "已从 {name} 创建项目"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich 尚未初始化。请先运行“nx m --init”。",

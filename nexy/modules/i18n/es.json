@@ -12,14 +12,12 @@
     "help_ui": "Forzar el tratamiento como componentes de UI",
     "help_url": "Forzar el tratamiento como URL",
     "https_only": "Solo se admiten URL https://.",
-    "install_failed": "No se pudieron instalar las dependencias",
     "installed": "{names} instalado",
     "installing": "Instalando {names}",
     "no_pm": "No se encontró ningún gestor de paquetes. Instale las dependencias manualmente: {names}",
     "not_found": "El componente '{name}' no está en el registro.",
     "usage": "Uso:",
     "usage_text": "nexy add [NOMBRE_DEL_COMPONENTE o URL]...",
-    "warning": "Aviso:",
     "write_failed": "No se pudo escribir {path}: {error}"
   },
   "build": {
@@ -80,6 +78,10 @@
       "help_path": "Raíz del proyecto (por defecto: la carpeta actual)",
       "done": "{count} skills en .agents/skills y .claude/skills",
       "kept": "Se conservaron tus archivos: {files}."
+    },
+    "took": "en {duration}",
+    "init": {
+      "failed": "No se pudo inicializar el proyecto"
     }
   },
   "dev": {
@@ -131,7 +133,6 @@
       "web": "Web",
       "yes": "Sí"
     },
-    "error": "Falló la inicialización: {error}",
     "git_restore": "no se pudo restaurar el .git anterior",
     "hint": {
       "alias_custom": "elige otro prefijo, como ~ o #",
@@ -190,7 +191,11 @@
     "venv": {
       "created": "Entorno virtual creado",
       "creating": "Creando el entorno virtual"
-    }
+    },
+    "node_installed": "node_modules instalado con {manager}",
+    "python_synced": ".venv sincronizado con uv",
+    "package_added": "{package} añadido a .venv",
+    "created": "Proyecto creado a partir de {name}"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich no está inicializado. Ejecute primero 'nx m --init'.",

@@ -160,7 +160,7 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
         return object()
 
     monkeypatch.setattr(dev_module, "create_observer", create_observer)
-    for name in ("banner", "success", "entry"):
+    for name in ("banner", "entry"):
         monkeypatch.setattr(launcher, name, lambda *a, **k: None)
     monkeypatch.setattr("uvicorn.Config", lambda *a, **k: SimpleNamespace(args=a, kwargs=k))
     monkeypatch.setattr("uvicorn.Server", FakeUvicornServer)
