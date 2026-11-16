@@ -6,7 +6,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from nexy.helpers.server.proxy import DEV_ENV_VAR
+from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.modules.routers.crash import handle_crash, inspect_crash
 
 SECRET = "database password is hunter2"

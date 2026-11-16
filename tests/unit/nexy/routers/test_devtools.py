@@ -15,9 +15,9 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.testclient import TestClient
 
 from nexy.helpers.server import devtools
+from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.helpers.server.devtools import DevToolsMiddleware, source_of, toolbar_markup
 from nexy.helpers.server.devtools.state import RECENT, config_of, record_error, routes_of
-from nexy.helpers.server.proxy import DEV_ENV_VAR
 
 
 def _app() -> FastAPI:
