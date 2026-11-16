@@ -82,7 +82,7 @@ pnpm install --frozen-lockfile
 ### Verify your setup
 
 ```bash
-# Lint → Format → Typecheck → Test (in this order)
+# Lint, then format, then typecheck, then test (in this order)
 ruff check nexy/
 ruff format nexy/ --check
 python -m mypy nexy --strict
@@ -96,16 +96,15 @@ changes.
 ## Project structure
 
 ```
-nexy/
-├── nexy/                      # Main Python package
-│   ├── app.py                 # uvicorn target: nexy.app:app
-│   ├── core/                  # config, models, types
-│   ├── helpers/               # transversal layer (fs, imports, server, common)
-│   └── modules/               # cli, compiler, frontend, routers, runtime, i18n, builder
-├── templates/                 # test fixtures (scaffold layouts per framework)
-├── tests/                     # pytest suite
-├── extensions/vscode/         # VS Code extension (LSP)
-└── docs/                      # Documentation - plain Markdown, index in docs/README.md
+nexy/                     # Main Python package
+nexy/app.py               # uvicorn target: nexy.app:app
+nexy/core/                # config, models, types
+nexy/helpers/             # transversal layer (fs, imports, server, common)
+nexy/modules/             # cli, compiler, frontend, routers, runtime, i18n, builder
+templates/                # test fixtures (scaffold layouts per framework)
+tests/                    # pytest suite
+extensions/vscode/        # VS Code extension (LSP)
+docs/                     # Documentation - plain Markdown, index in docs/README.md
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full package layout and a deep dive.
@@ -238,7 +237,7 @@ Pick one shape per page. Never both.
 
 | Page | Answers | Shape |
 |---|---|---|
-| Conceptual | how something works | eight sections, in this order: Definition · How it works · Lifecycle · When to use · Configuration · Example · Limitations · Next steps |
+| Conceptual | how something works | eight sections, in this order: Definition, How it works, Lifecycle, When to use, Configuration, Example, Limitations, Next steps |
 | Reference | what the options of one thing are | one strict table: name, type, default, description, example, constraints, related options. No narrative paragraph. |
 
 The eighth heading is `## Next steps`, not `## Related`: the pages that exist already use it, and
@@ -342,7 +341,7 @@ per module when touching one.
 
 ### Conventions
 
-- **TDD**: test first (red → green → refactor)
+- **TDD**: test first (red, then green, then refactor)
 - one assertion per test
 - Naming: `test_<thing>_<scenario>`
 - Tests in `tests/unit/` mirroring the module path
@@ -383,9 +382,9 @@ The commit type already decided, so the version is not a judgement call:
 
 | commits since the last tag | the next tag |
 | --- | --- |
-| only `fix:`, `perf:`, `docs:`, `refactor:`, `test:`, `chore:` | PATCH: `2.2.2` → `2.2.3` |
-| at least one `feat:` | MINOR: `2.2.2` → `2.3.0` |
-| at least one `feat!:` or a `BREAKING CHANGE:` footer | MAJOR: `2.2.2` → `3.0.0` |
+| only `fix:`, `perf:`, `docs:`, `refactor:`, `test:`, `chore:` | PATCH: `2.2.2` to `2.2.3` |
+| at least one `feat:` | MINOR: `2.2.2` to `2.3.0` |
+| at least one `feat!:` or a `BREAKING CHANGE:` footer | MAJOR: `2.2.2` to `3.0.0` |
 
 A change is breaking when an existing project must edit something to keep working: an imported name,
 a field of `nexyconfig.py`, a CLI command or flag, a `src/routes/` convention, the HTML or JSON a
