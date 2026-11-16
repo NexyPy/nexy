@@ -1,6 +1,6 @@
 # ڈیٹا بیس
 
-`nx new` ماڈل کی پرت کو SQLModel، SQLAlchemy یا ٹورٹوائز-ORM کے ساتھ سہار سکتا ہے۔ Nexy ORM کو لپیٹ نہیں کرتا: آپ اسے براہ راست ہینڈلرز اور صفحات سے استعمال کرتے ہیں۔
+`nx new` ماڈل کی پرت کو SQLModel، SQLAlchemy یا ٹورٹوائز-ORM کے ساتھ سہار سکتا ہے۔ Nexy ORM کو لپیٹ نہیں کرتا ہے: آپ اسے براہ راست ہینڈلرز اور صفحات سے استعمال کرتے ہیں۔
 
 ## پاڑ کیا جوڑتا ہے
 
@@ -118,7 +118,17 @@ Tortoise پہلی بار جوڑتا ہے ان میں سے کسی کو بلایا
 
 ## ہجرتیں
 
-`nx migrate` آپ کے ORM کے لیے ٹول چنتا ہے: Alembic کے لیے SQLModel اور SQLAlchemy، Aerich Tortoise-ORM کے لیے۔
+`nx migrate` آپ کے ORM کے لیے ٹول چنتا ہے: Alembic کے لیے SQLModel اور SQLAlchemy، Aerich Tortoise-ORM کے لیے۔ یہ `nexyconfig.py` میں `useORM` سے ORM پڑھتا ہے، جو `nx new` لکھتا ہے:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useORM = "SQLAlchemy"
+```
+
+`useORM` سے پہلے بنائے گئے پروجیکٹ میں ایسی کوئی لائن نہیں ہے: `nx migrate` پھر ماحول میں نصب پہلا ORM لیتا ہے۔ ایک سے زیادہ انسٹال ہونے پر لائن شامل کریں۔
 
 | حکم | کرتا ہے۔ |
 |---|---|
@@ -129,6 +139,8 @@ Tortoise پہلی بار جوڑتا ہے ان میں سے کسی کو بلایا
 Aerich کے ساتھ، پہلا `nx migrate` چلتا ہے `aerich init-db`، جو پہلی منتقلی اور میزیں ایک ساتھ بناتا ہے؛ اگلے والے دوڑتے ہیں `aerich migrate --name "..."`، اور `--upgrade` رنز `aerich upgrade`۔
 
 `nx migrate` ایک واضح پیغام کے ساتھ رک جاتا ہے جب `DATABASE_URL` غائب ہو یا ڈیٹا بیس تک نہیں پہنچا جا سکتا (Alembic صرف: Aerich اپنی غلطیوں کی اطلاع دیتا ہے)۔
+
+SQLite پر، Aerich پہلے سے موجود ٹیبل میں غیر ملکی کلید شامل نہیں کر سکتا: SQLite میں کوئی `ALTER TABLE ... ADD CONSTRAINT` نہیں ہے، اور کالم کو رکاوٹ کے ناکام ہونے سے پہلے شامل کر دیا جاتا ہے، اس لیے `duplicate column name` پر منتقلی کا عمل دوبارہ رک جاتا ہے۔ جب آپ ٹیبل بناتے ہیں تو غیر ملکی کلید کا اعلان کریں، یا PostgreSQL یا MySQL استعمال کریں۔ Alembic کی ایسی کوئی حد نہیں ہے: SQLite پر یہ ٹیبل (بیچ موڈ) کو دوبارہ بناتا ہے، اور سہاروں والے ماڈل ہر رکاوٹ کا نام دیتے ہیں تاکہ یہ ہو سکے۔
 
 ### پہلی ہجرت آپ کے لیے کی گئی ہے۔
 

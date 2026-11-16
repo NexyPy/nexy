@@ -26,11 +26,17 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
 
+## Base de datos
+
+| campo | Predeterminado | Significado |
+|---|---|---|
+| `useORM` | `None` | el ORM del proyecto: `"SQLModel"`, `"SQLAlchemy"` o `"Tortoise-ORM"`. `nx new` lo escribe y `nx migrate` elige Alembic o Aerich de él; sin él, `nx migrate` toma el primer ORM instalado. Ver [Bases de datos](../guides/databases.md#migrations) |
+
 ## Rutas
 
 | campo | Predeterminado | Significado |
 |---|---|---|
-| `useRouter` | `None` | una `APIRouter` instancia o clase montada junto a las rutas basadas en archivos; `None` significa basado únicamente en archivos |
+| `useRouter` | `None` | una instancia o clase `APIRouter` montada junto a las rutas basadas en archivos; `None` significa basado únicamente en archivos |
 | `excludeDirs` | `["templates", "extension", "docs"]` | directorios omitidos al escanear rutas |
 | `useAliases` | `None` | importar alias, p. `{"@": "src"}` (`@/components/Counter.tsx` significa `src/components/Counter.tsx`); `nx new` escribe el que elegiste, y Vite y `tsconfig.json` lo siguen |
 
@@ -66,11 +72,11 @@ Cada campo agrega extensiones a un rol reservado. `useLayoutExtensions = ["md"]`
 | `useDocs` | `True` | servir la página de referencia de Scalar; `/openapi.json` se sirve de cualquier manera |
 | `useDocsUrl` | `"/docs"` | ruta de la página de referencia de API |
 | `useRedocsUrl` | `"/redocs"` | declarado pero no se monta ninguna ruta |
-| `useTitle` | `"Nexy App"` | OpenAPI título y título de la página (`"Nexy"` en `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI título y título de página (`"Nexy"` en `NexyConfigModel`) |
 
 ### Gratis `/docs` para una página del proyecto
 
-La referencia de API responde `/docs` antes de cualquier ruta, por lo que `src/routes/docs.nexy` o `src/routes/docs/[[...slug]].nexy` nunca se sirven allí. `nx dev` y `nx start` nombran dicha página al inicio. Mueva la referencia con `useDocsUrl`:
+La referencia de API responde `/docs` antes de cualquier ruta, por lo que `src/routes/docs.nexy` o `src/routes/docs/[[...slug]].nexy` nunca se sirven allí. `nx dev` y `nx start` nombran dicha página al inicio. Mover la referencia con `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -87,10 +93,10 @@ O apáguelo con `useDocs = False`. `/openapi.json` permanece atendido en ambos c
 | campo | Predeterminado | Significado |
 |---|---|---|
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
-| `useCORS` | `None` | kwargs por `CORSMiddleware` |
+| `useCORS` | `None` | kwargs para `CORSMiddleware` |
 | `useGZip` | `None` | kwargs por `GZipMiddleware` |
 | `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
-| `useSession` | `None` | kwargs para `SessionMiddleware` |
+| `useSession` | `None` | kwargs por `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
 

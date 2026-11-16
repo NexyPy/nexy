@@ -26,6 +26,12 @@ class NexyConfig(NexyConfigModel):
 | `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 
+## डेटाबेस
+
+| मैदान | डिफ़ॉल्ट | मतलब |
+|---|---|---|
+| `useORM` | `None` | परियोजना का ओआरएम: `"SQLModel"`, `"SQLAlchemy"` या `"Tortoise-ORM"`। `nx new` इसे लिखता है, और `nx migrate` इसमें से Alembic या Aerich चुनता है; इसके बिना, `nx migrate` पहला ORM इंस्टाल करता है। देखें [डेटाबेस](../guides/databases.md#migrations) |
+
 ## मार्ग
 
 | मैदान | डिफ़ॉल्ट | मतलब |
@@ -66,7 +72,7 @@ class NexyConfig(NexyConfigModel):
 | `useDocs` | `True` | स्केलर संदर्भ पृष्ठ परोसें; `/openapi.json` किसी भी तरह से परोसा जाता है |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
 | `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
-| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` `NexyConfigModel` में) |
+| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` में `NexyConfigModel`) |
 
 ### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
 
