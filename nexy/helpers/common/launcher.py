@@ -23,7 +23,12 @@ def entry(label: str, value: str, style: str = "green") -> None:
     console.print(f"  {label.rstrip(':') + ':':<10} [{style}]{value}[/{style}]")
 
 
-def step(command: str, description: str = "") -> None:
-    """Print one next-step command with an optional dim description."""
-    suffix = f"  [dim]{description}[/dim]" if description else ""
-    console.print(f"  [cyan]{command}[/cyan]{suffix}")
+def step(command: str, description: str = "", width: int = 0) -> None:
+    """Print one next-step command with an optional dim description.
+
+    *width* pads the command, so the descriptions of a list line up as uv's help does.
+    """
+    if not description:
+        console.print(f"  [cyan]{command}[/cyan]")
+        return
+    console.print(f"  [cyan]{command:<{width}}[/cyan]  [dim]{description}[/dim]")

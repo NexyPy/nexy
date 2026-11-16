@@ -38,3 +38,13 @@ def test_a_next_step_can_be_a_command_alone(printed):
 def test_the_header_names_the_brand_the_version_and_the_command(printed):
     launcher.banner("new", "2.5.0")
     assert printed.getvalue() == "\nnexy 2.5.0  new\n\n"
+
+
+def test_next_steps_line_up_on_the_longest_command(printed):
+    launcher.step("cd demo", "Go in", 12)
+    assert printed.getvalue() == "  cd demo       Go in\n"
+
+
+def test_a_padded_command_alone_has_no_trailing_spaces(printed):
+    launcher.step("cd demo", "", 12)
+    assert printed.getvalue() == "  cd demo\n"
