@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from starlette.responses import FileResponse
 
 from nexy.modules.routers.static_assets import PublicFilesMiddleware
 
@@ -73,3 +76,50 @@ def test_other_methods_go_to_the_application(client):
 def test_a_path_cannot_leave_the_public_folder(client, path):
     response = client.get(path)
     assert "outside" not in response.text
+
+
+def test_a_file_changed_on_disk_is_served_fresh(client, tmp_path):
+    client.get("/logo.svg")
+    (tmp_path / "public" / "logo.svg").write_text("<svg id='new'/>")
+    os.utime(tmp_path / "public" / "logo.svg", ns=(1, 2_000_000_000))
+    assert client.get("/logo.svg").text == "<svg id='new'/>"
+
+
+def test_a_deleted_file_is_no_longer_served(client, tmp_path):
+    client.get("/logo.svg")
+    (tmp_path / "public" / "logo.svg").unlink()
+    assert client.get("/logo.svg").status_code == 404
+
+
+def test_a_range_request_gets_the_bytes_it_asks_for(client):
+    response = client.get("/logo.svg", headers={"range": "bytes=0-1"})
+    assert (response.status_code, response.content) == (206, b"<s")
+
+
+def test_the_headers_are_those_of_a_file_response(client, tmp_path):
+    path = tmp_path / "public" / "logo.svg"
+    expected = FileResponse(path, stat_result=path.stat()).headers
+    headers = client.get("/logo.svg").headers
+    assert [headers[name] for name in ("etag", "last-modified", "content-length")] == [
+        expected[name] for name in ("etag", "last-modified", "content-length")
+    ]
+
+
+def test_head_sends_no_body(client):
+    response = client.head("/logo.svg")
+    assert (response.content, response.headers["content-length"]) == (b"", "6")
+
+
+def test_a_public_file_is_served_under_public_too(client):
+    assert client.get("/public/logo.svg").text == "<svg/>"
+
+
+def test_a_file_removed_after_it_was_found_is_left_to_the_application(client, monkeypatch):
+    from pathlib import Path
+
+    def gone(self, *_args, **_kwargs):
+        raise FileNotFoundError(self)
+
+    monkeypatch.setattr(Path, "stat", gone)
+    monkeypatch.setattr(PublicFilesMiddleware, "_file_for", lambda _self, _path: Path("x.svg"))
+    assert client.get("/x.svg").status_code == 404

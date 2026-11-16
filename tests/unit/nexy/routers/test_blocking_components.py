@@ -19,6 +19,8 @@ def _handler(component):
 
 
 async def _body(response) -> str:
+    if not hasattr(response, "body_iterator"):
+        return response.body.decode()
     chunks = [chunk async for chunk in response.body_iterator]
     return b"".join(c if isinstance(c, bytes) else c.encode() for c in chunks).decode()
 
