@@ -38,6 +38,22 @@ def format_duration(seconds: float) -> str:
     return f"{seconds:.1f}s" if seconds >= 1.0 else "1000ms"
 
 
+def _is_control(char: str) -> bool:
+    code = ord(char)
+    return code < 0x20 or 0x7F <= code <= 0x9F
+
+
+def printable_path(path: str) -> str:
+    """*path* with its control characters percent-encoded, as they came in the URL.
+
+    uvicorn hands the path decoded, so `/%1b[2J` or `/%0aGET%20/admin` would write a real escape or
+    a real new line into the log: a cleared terminal, or a forged request line.
+    """
+    if not any(_is_control(char) for char in path):
+        return path
+    return "".join(f"%{ord(char):02X}" if _is_control(char) else char for char in path)
+
+
 def _status_colour(status: int) -> str:
     if status >= 500:
         return "red"
@@ -78,7 +94,7 @@ def format_request(
     colour = _status_colour(status)
     duration_colour = "yellow" if seconds >= _SLOW_SECONDS else "dim"
     return (
-        f"{paint(method, colour)} {paint(_ARROW, 'dim')} {paint(path, None)}"
+        f"{paint(method, colour)} {paint(_ARROW, 'dim')} {paint(printable_path(path), None)}"
         f" {paint(str(status), colour)} {paint('in', 'dim')}"
         f" {paint(format_duration(seconds), duration_colour)}"
     )

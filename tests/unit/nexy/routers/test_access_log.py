@@ -53,6 +53,24 @@ class TestFormat:
         assert "[yellow]1.5s[/yellow]" in format_request("GET", "/", 200, 1.5)
         assert "[dim]12ms[/dim]" in format_request("GET", "/", 200, 0.012)
 
+    def test_an_escape_in_a_path_is_written_percent_encoded(self):
+        # uvicorn decodes the path: `/%1b[2J` arrives with a real escape, which clears a terminal.
+        assert "/a%1B[2J" in format_request("GET", "/a\x1b[2J", 200, 0.0, paint_plain)
+
+    def test_a_newline_in_a_path_cannot_start_a_forged_log_line(self):
+        line = format_request("GET", "/a\nGET /admin 200 in 1ms", 200, 0.0, paint_plain)
+        assert "\n" not in line
+
+    def test_a_carriage_return_in_a_path_cannot_overwrite_the_line(self):
+        assert "\r" not in format_request("GET", "/a\rGET /", 200, 0.0, paint_ansi)
+
+    def test_a_c1_control_in_a_path_is_written_percent_encoded(self):
+        assert "/a%9B" in format_request("GET", "/a\x9b", 200, 0.0, paint_plain)
+
+    def test_a_path_in_another_script_is_kept_as_it_is(self):
+        path = "/caf\u00e9/\u4e2d"
+        assert path in format_request("GET", path, 200, 0.0, paint_plain)
+
     def test_markup_in_a_path_is_not_interpreted(self):
         line = format_request("GET", "/[bold]x[/bold]", 200, 0.001)
         assert "/[bold]x[/bold]" in _plain(line)
