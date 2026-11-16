@@ -59,7 +59,7 @@
   Fix it and save: the server keeps its last working version.
 ```
 
-当应用程序加载时解析但失败的文件（缺少导入、模块级别的错误）会以相同的方式报告，并且 `nx dev` 等待您的下一次保存；在应用程序再次加载之前不会提供任何服务。当服务器重新加载时，有效的保存读取 `nexy » update <file>`。 `src/routes` 之外的 Markdown 文件（例如 `README.md`）不是页面，不会触发任何内容。 `nx start` 更严格：如果无法加载路由文件，它会以代码 1 退出，并且不启动任何内容。
+当应用程序加载时解析但失败的文件（缺少导入、模块级别的错误）会以相同的方式报告，并且 `nx dev` 等待您的下一次保存；在应用程序再次加载之前不会提供任何服务。当服务器重新加载时，有效的保存读取 `nexy » update <file>`。 `src/routes` 之外的 Markdown 文件（例如 `README.md`）不是页面，不会触发任何内容。 `nx start` 更严格：如果无法加载路由文件或 `nx build` 尚未构建项目，它会以代码 1 退出，并且不启动任何内容。
 
 ## `nx new` 的问题
 
@@ -92,7 +92,7 @@
 
 ## 建立行为
 
-`nx build` 编译路由，然后在 `useVite` 开启时捆绑客户端。
+`nx build` 编译路由，然后在 `useVite` 打开时捆绑客户端。
 
 > [!NOTE]
 > 没有 `--static` 标志。静态托管是一种部署选择，而不是构建模式 - 请参阅[部署](../deployment/README.md)。
@@ -110,4 +110,4 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 - [入门](../getting-started/quick-start.md)：第一个项目
 - [测试](../guides/testing.md)：`nx test` 运行什么
-- [部署](../deployment/README.md)：生产中的 `build` 和 `start`
+- [在生产中部署](../deployment/README.md)：`build` 和 `start`

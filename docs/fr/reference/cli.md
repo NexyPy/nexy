@@ -4,36 +4,36 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 
 ## Commandes
 
-| Commande | Alias | Ce qu'il fait |
+| Commande | Alias | Ce que ça fait |
 |---|---|---|
-| `nx dev` | `nx d` | serveur de développement : compilation lors du changement, Vite, HMR |
+| `nx dev` | `nx d` | serveur de développement : compiler lors du changement, Vite, HMR |
 | `nx start` | `nx s` | serveur de production sur la sortie compilée |
-| `nx build` | `nx b` | version de production |
+| `nx build` | `nx b` | construction de production |
 | `nx new` | `nx n` | échafauder un projet |
 | `nx init` | `nx i` | ajouter Nexy à un projet existant |
-| `nx add` | - | ajouter un composant d'interface utilisateur du registre ou une URL à `src/components/ui` |
+| `nx add` | - | ajoutez un composant d'interface utilisateur du registre ou une URL à `src/components/ui` |
 | `nx migrate` | `nx m` | créer ou appliquer des migrations de bases de données avec Alembic ou Aerich |
-| `nx check` | `nx c` | vérification du type : mypy sur Python, `tsc` sur TypeScript |
+| `nx check` | `nx c` | type-check : mypy sur Python, `tsc` sur TypeScript |
 | `nx format` | `nx f` | format Python (ruff), JS/TS (plus joli), `.nexy` fichiers |
 | `nx test` | - | exécuter pytest ; `--client` ajoute vitest |
 | `nx skills` | - | ajouter ou rafraîchir les compétences, `AGENTS.md` et `CLAUDE.md` pour les agents de codage |
 
 ## Drapeaux
 
-| Commande | Indicateur | Par défaut |
+| Commande | Drapeau | Par défaut |
 |---|---|---|
 | `dev`, `start` | `--port` | `usePort`, `3000` |
 | `dev`, `start` | `--host` | `useHost`, `0.0.0.0` |
 | `build` | `--check` | off - exécute ruff et mypy après la construction |
-| `format` | `--check` | désactivé - rapport au lieu de réécrire |
-| `test` | `--client` | désactivé - exécutez également Vitest au lieu de pytest seul |
-| `test` | `--no-server` | activé - ignorer pytest lorsque vous souhaitez uniquement des tests clients |
+| `format` | `--check` | off - rapport au lieu de réécrire |
+| `test` | `--client` | off - exécute également Vitest au lieu de pytest seul |
+| `test` | `--no-server` | on - ignorer pytest lorsque vous souhaitez uniquement des tests clients |
 | `new` | `--template`, `-t` | aucun - cloner un modèle enregistré sans invite |
-| `new` | `--no-agents` | agents activés - ignorer `AGENTS.md` et les compétences d'agent |
-| `add` | `--ui`, `--url` | désactivé - force un nom de registre ou une URL lorsqu'il est ambigu |
-| `add` | `--all`, `-a` | désactivé - ajoute chaque composant du registre |
-| `add` | `--sha256` | aucun - résumé attendu d'un composant distant ; un décalage annule |
-| `migrate` | `--init` | désactivé - écriture de la configuration Alembic ou Aerich |
+| `new` | `--no-agents` | agents activés - ignorer `AGENTS.md` et les compétences de l'agent |
+| `add` | `--ui`, `--url` | off - force un nom de registre ou une URL lorsqu'il est ambigu |
+| `add` | `--all`, `-a` | off - ajoute tous les composants du registre |
+| `add` | `--sha256` | none - résumé attendu d'un composant distant ; un décalage est interrompu |
+| `migrate` | `--init` | off - écriture de la configuration Alembic ou Aerich |
 | `migrate` | `--upgrade`, `-u` | off - appliquer les migrations au lieu d'en écrire une nouvelle |
 | `migrate` | `--message`, `-m` | vide - nom de la nouvelle révision |
 
@@ -59,15 +59,15 @@ L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.p
   Fix it and save: the server keeps its last working version.
 ```
 
-Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide lit `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1 et ne démarre rien si un fichier de route ne peut pas se charger.
+Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide lit `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
 
 ## Questions de `nx new`
 
-`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec `←` ou `esc`, quittez avec `ctrl+c`.
+`nx new` demande, dans cet ordre : le routeur basé sur les fichiers, le type de projet (Web ou API), le routage côté client, le framework client, comment styliser l'application, l'alias d'importation, l'ORM, la base de données et l'URL de la base de données. Chaque option a une brève description et celle actuelle est mise en surbrillance. Les questions qui ne s'appliquent pas sont ignorées (un projet API n'a ni cadre ni style ; en choisissant **Aucune base de données** car l'ORM ignore la base de données et l'URL). Déplacez-vous avec les touches fléchées (ou `j`/`k`, ou un chiffre), confirmez avec `enter`, revenez à la question précédente avec `←` ou `esc`, quittez avec `ctrl+c`.
 
 | Question | Choix |
 |---|---|
-| Alias d'importation | `@` (`@/components/...` pointe vers `src/`), ou un autre préfixe tel que `~` ou `#app` |
+| Importer un alias | `@` (`@/components/...` pointe vers `src/`), ou un autre préfixe tel que `~` ou `#app` |
 | Style | Tailwind CSS, UnoCSS, Vanilla CSS, Autre (pas d'outil CSS, même feuille de style simple que Vanilla) |
 | ORM | SQLModel, SQLAlchemy, Tortue-ORM, Aucune base de données |
 | Base de données (avec un ORM) | SQLite, PostgreSQL, Neon, MySQL / MariaDB, Autre (vous tapez l'URL) |
@@ -78,7 +78,7 @@ Avant d'installer les packages, `nx new` vérifie la connexion. Sans cela, il ig
 
 ## Ce que `dev`, `build` et `start` créent
 
-Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier situé en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
+Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
 
 ## Langue
 
@@ -108,6 +108,6 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 
 ## Prochaines étapes
 
-- [Mise en route](../getting-started/quick-start.md) : premier projet
+- [Prise en main](../getting-started/quick-start.md) : premier projet
 - [Tests](../guides/testing.md) : ce que `nx test` exécute
 - [Déployer](../deployment/README.md) : `build` et `start` en production

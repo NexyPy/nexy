@@ -10,11 +10,18 @@
   const LINK =
     "px-3.5 py-2 font-mono text-xs uppercase tracking-[0.04em] transition-opacity hover:opacity-60 aria-[current=page]:underline aria-[current=page]:underline-offset-4";
   const MENU = "M4 7h16M4 12h16M4 17h16";
-  const CLOSE = "M18 6L6 18M6 6l12 12";
+  const EXTERNAL = "M7 17L17 7M8 7h9v9";
+  const SHEET_LINK =
+    "flex min-h-11 items-center gap-2 px-3 text-base transition-colors hover:bg-paper/5 aria-[current=page]:bg-paper/10 aria-[current=page]:font-medium";
   const BOOK = "M2 4h6a4 4 0 014 4v12a3 3 0 00-3-3H2zM22 4h-6a4 4 0 00-4 4v12a3 3 0 013-3h7z";
 
   let open = $state(false);
-  const close = () => (open = false);
+  let opener = $state<HTMLButtonElement | null>(null);
+  // Closing gives the focus back to the button that opened the menu.
+  function close() {
+    open = false;
+    opener?.focus();
+  }
 </script>
 
 <header class="fixed inset-x-0 top-0 z-20 py-4 [view-transition-name:nx-header]">
@@ -23,7 +30,7 @@
     aria-label="Main"
   >
     <LinePattern side="right" />
-    <a href="/" aria-label="Nexy, home" onclick={close} class="relative">
+    <a href="/" aria-label="Nexy, home" onclick={() => (open = false)} class="relative">
       <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
     </a>
 
@@ -37,21 +44,26 @@
         <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" size="sm" icon={BOOK}>Docs</Button>
       </span>
       <button
+        bind:this={opener}
         type="button"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label="Open menu"
         aria-expanded={open}
-        onclick={() => (open = !open)}
-        class="ml-1 grid size-8 place-items-center sm:hidden"
+        aria-controls="mobile-menu"
+        onclick={() => (open = true)}
+        class="-my-1.5 -mr-2 ml-1 grid size-11 place-items-center sm:hidden"
       >
-        <Icon path={open ? CLOSE : MENU} />
+        <Icon path={MENU} />
       </button>
     </div>
   </nav>
 </header>
 
-<Sheet {open} label="Menu" onclose={close}>
-  <Link href="/" class={LINK} onclick={close}>Home</Link>
-  <Link href="/about" class={LINK} onclick={close}>About</Link>
-  <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class={LINK} onclick={close}>Docs</a>
+<Sheet id="mobile-menu" {open} title="Menu" onclose={close}>
+  <Link href="/" class={SHEET_LINK} onclick={close}>Home</Link>
+  <Link href="/about" class={SHEET_LINK} onclick={close}>About</Link>
+  <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="{SHEET_LINK} justify-between" onclick={close}>
+    Docs
+    <Icon path={EXTERNAL} size={16} />
+  </a>
 </Sheet>
 {% endraw %}{% endif %}

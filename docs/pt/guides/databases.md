@@ -118,7 +118,17 @@ Liste todos os módulos que contêm modelos em `TORTOISE_ORM` (a entrada `models
 
 ## Migrações
 
-`nx migrate` escolhe a ferramenta para o seu ORM: Alembic para SQLModel e SQLAlchemy, Aerich para Tortoise-ORM.
+`nx migrate` escolhe a ferramenta para o seu ORM: Alembic para SQLModel e SQLAlchemy, Aerich para Tortoise-ORM. Ele lê o ORM de `useORM` em `nexyconfig.py`, que `nx new` escreve:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useORM = "SQLAlchemy"
+```
+
+Um projeto feito antes da existência de `useORM` não possui essa linha: `nx migrate` então pega o primeiro ORM instalado no ambiente. Adicione a linha quando mais de uma estiver instalada.
 
 | Comando | Faz |
 |---|---|
@@ -129,6 +139,8 @@ Liste todos os módulos que contêm modelos em `TORTOISE_ORM` (a entrada `models
 Com Aerich, o primeiro `nx migrate` executa `aerich init-db`, que cria a primeira migração e as tabelas juntas; os próximos executam `aerich migrate --name "..."` e `--upgrade` executam `aerich upgrade`.
 
 `nx migrate` para com uma mensagem clara quando `DATABASE_URL` está faltando ou o banco de dados não pode ser alcançado (Alembic apenas: Aerich relata seus próprios erros).
+
+Em SQLite, Aerich não pode adicionar uma chave estrangeira a uma tabela que já existe: SQLite não tem `ALTER TABLE ... ADD CONSTRAINT` e a coluna é adicionada antes que a restrição falhe, portanto, a execução da migração novamente para em `duplicate column name`. Declare a chave estrangeira ao criar a tabela ou use PostgreSQL ou MySQL. Alembic não tem esse limite: em SQLite ele reconstrói a tabela (modo em lote) e os modelos de scaffolding nomeiam cada restrição para que possa.
 
 ### A primeira migração é feita para você
 

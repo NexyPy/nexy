@@ -40,6 +40,17 @@
     opacity: 0;
   }
 }
+/* Closing plays the way back: the script hides the sheet once these have finished. */
+@keyframes nx-sheet-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes nx-scrim-out {
+  to {
+    opacity: 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),
@@ -122,7 +133,8 @@
     height: 1.25rem;
     width: auto;
   }
-  :root.dark .nx-brand img {
+  :root.dark .nx-brand img,
+  :root.dark .nx-sheet-head img {
     filter: brightness(0) invert(1);
   }
   .nx-nav-links {
@@ -159,8 +171,9 @@
   .nx-menu-button {
     display: none;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: -0.25rem;
     padding: 0;
     border: 1px solid var(--border-second);
     border-radius: 0.625rem;
@@ -188,32 +201,63 @@
     background: light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.6));
     animation: nx-scrim-in 0.2s ease both;
   }
+  .nx-sheet-scrim[data-state="closed"] {
+    animation: nx-scrim-out 0.2s ease both;
+  }
   .nx-sheet {
     position: absolute;
     inset-block: 0;
     left: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    width: 18rem;
-    max-width: 85%;
-    padding: 1.25rem;
-    overflow-y: auto;
+    width: 75%;
+    max-width: 24rem;
     background: var(--background);
     border-right: 1px solid var(--border);
     box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.55);
     animation: nx-sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
+  .nx-sheet[data-state="closed"] {
+    animation: nx-sheet-out 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+  }
   .nx-sheet:focus {
     outline: none;
   }
+  /* The head of the sheet: the logo and the title that names the dialog. The close button sits
+     over its right end. */
+  .nx-sheet-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 4rem 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nx-sheet-head img {
+    display: block;
+    height: 1.25rem;
+  }
+  .nx-sheet-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--foreground-second);
+  }
   .nx-sheet-links {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: 0.25rem;
+    padding: 0.75rem;
+    overflow-y: auto;
   }
   .nx-sheet-link {
-    padding: 0.6rem 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    padding: 0 0.85rem;
     border-radius: 0.75rem;
     font-size: 1rem;
     font-weight: 500;
@@ -239,8 +283,22 @@
   }
   /* The close button of the sheet is always visible, unlike the one in the bar. */
   .nx-menu-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
     display: grid;
-    margin-left: auto;
+    margin: 0;
+    border-color: transparent;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  .nx-menu-close:hover,
+  .nx-menu-close:focus-visible {
+    opacity: 1;
+  }
+  .nx-sheet-link svg {
+    width: 1rem;
+    height: 1rem;
   }
 
   /* The light/dark switch: the thumb holds the icon of the current mode. */

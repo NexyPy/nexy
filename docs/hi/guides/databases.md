@@ -118,7 +118,17 @@ Tortoise उनमें से किसी एक को पहली बा�
 
 ## पलायन
 
-`nx migrate` आपके ORM के लिए टूल चुनता है: Alembic के लिए SQLModel और SQLAlchemy, Aerich के लिए Tortoise-ORM।
+`nx migrate` आपके ORM के लिए टूल चुनता है: Alembic के लिए SQLModel और SQLAlchemy, Aerich के लिए Tortoise-ORM। यह `nexyconfig.py` में `useORM` से ओआरएम पढ़ता है, जो `nx new` लिखता है:
+
+```python filename="nexyconfig.py"
+from nexy.core.models import NexyConfigModel
+
+
+class NexyConfig(NexyConfigModel):
+    useORM = "SQLAlchemy"
+```
+
+`useORM` के अस्तित्व में आने से पहले बनाए गए एक प्रोजेक्ट में ऐसी कोई लाइन नहीं है: `nx migrate` फिर पर्यावरण में पहला ओआरएम स्थापित करता है। एक से अधिक स्थापित होने पर पंक्ति जोड़ें.
 
 | आदेश | करता है |
 |---|---|
@@ -129,6 +139,8 @@ Tortoise उनमें से किसी एक को पहली बा�
 Aerich के साथ, पहला `nx migrate` चलता है `aerich init-db`, जो पहला माइग्रेशन और तालिकाएँ एक साथ बनाता है; अगले वाले `aerich migrate --name "..."` चलते हैं, और `--upgrade` `aerich upgrade` चलते हैं।
 
 `nx migrate` एक स्पष्ट संदेश के साथ रुकता है जब `DATABASE_URL` गायब होता है या डेटाबेस तक नहीं पहुंचा जा सकता (Alembic केवल: Aerich अपनी त्रुटियों की रिपोर्ट करता है)।
+
+SQLite पर, Aerich पहले से मौजूद तालिका में कोई विदेशी कुंजी नहीं जोड़ सकता: SQLite में कोई `ALTER TABLE ... ADD CONSTRAINT` नहीं है, और बाधा विफल होने से पहले कॉलम जोड़ा जाता है, इसलिए माइग्रेशन फिर से चलाना `duplicate column name` पर रुक जाता है। जब आप तालिका बनाते हैं तो विदेशी कुंजी घोषित करें, या PostgreSQL या MySQL का उपयोग करें। Alembic की ऐसी कोई सीमा नहीं है: SQLite पर यह तालिका (बैच मोड) का पुनर्निर्माण करता है, और मचान वाले मॉडल हर बाधा को नाम देते हैं ताकि यह हो सके।
 
 ### पहला प्रवास आपके लिए बना है
 
