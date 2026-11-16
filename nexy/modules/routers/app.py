@@ -22,7 +22,6 @@ from nexy.helpers.server.devtools import DevToolsMiddleware
 from nexy.helpers.server.devtools.state import setup_devtools
 from nexy.helpers.server.head_requests import HeadRequestsMiddleware
 from nexy.helpers.server.health import HealthMiddleware
-from nexy.helpers.server.proxy import ViteProxyMiddleware
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
 from nexy.modules.routers.crash import handle_crash, is_dev
@@ -198,6 +197,9 @@ class AppServer:
         port = vite_proxy_port()
         if port is None:
             return server
+        # Imported here: httpx and websockets cost a production worker 70 ms and 8 MB for nothing.
+        from nexy.helpers.server.proxy import ViteProxyMiddleware
+
         return ViteProxyMiddleware(server, port=port)
 
 
