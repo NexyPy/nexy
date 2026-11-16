@@ -3,6 +3,41 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.5.0] - 2026-11-16
+
+### Added
+
+- **`useORM` in `nexyconfig.py` names the ORM of a project.** `nx new` writes it for SQLModel,
+  SQLAlchemy and Tortoise-ORM, and `nx migrate` reads it first. Before, `nx migrate` guessed from
+  the installed packages, so a SQLAlchemy project whose environment also held `sqlmodel` got the
+  SQLModel migrations. A project without the field keeps the old guess (#376).
+- **The mobile menu of every starter is a modal sheet.** Tab and Shift+Tab stay inside it, Escape
+  and the scrim close it, the focus goes back to the menu button, and it slides back before it
+  hides. It has one close button, a title that names the dialog, and 44 px links. Widening the
+  screen closes it. The same in the server, React, Preact, Solid, Vue, Svelte and plain-CSS
+  starters (#377).
+- **The bug report form asks for a minimal reproduction and how often the bug happens**, and the
+  pull request template asks how the change was tested (#378).
+
+### Fixed
+
+- **SQLAlchemy migrations.** A model outside `user_model.py` is now migrated: the alembic env
+  imports every `*_model.py`. The scaffolded `Base` names its constraints, so adding a foreign key
+  works on SQLite and a downgrade no longer renders `drop_constraint(None)` (#376).
+- **The access log writes control characters of a path as `%XX`.** A request for `/%1b[2J`
+  cleared the terminal that showed the log, and `/%0aGET%20/admin` wrote a forged request line
+  (#379).
+- **Conduct reports go to the address that exists**: the code of conduct printed `gamil.com`
+  (#378).
+
+### Changed
+
+- **A plain route answers about 52,000 requests per second instead of 6,000**, on 4 workers. The
+  access log no longer parses Rich markup for each request, a page made as a string goes out in
+  one response, and small files of `public/` are served from memory (#371, closes #369).
+- **A production worker no longer loads the Vite dev proxy**, nor httpx and websockets with it:
+  about 8 MB less per worker (#380).
+
 ## [2.4.1] - 2026-11-15
 
 ### Fixed
