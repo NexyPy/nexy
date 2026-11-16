@@ -39,7 +39,7 @@ O binário é `nx` (também instalado como `nexy`). `uvx nexy new` cria um proje
 
 ## Saída
 
-Etapas longas (instalação de pacotes, compilação, empacotamento) mostram um botão giratório com o tempo decorrido e deixam uma linha atrás: `✔ uv sync .venv  1.4s`. Um grupo de etapas (as instalações de `nx new`) mostra uma barra de progresso com o número de etapas concluídas, `━━━━────  2/5`; um único passo (`nx add`) mostra uma barra que pulsa enquanto é executada. Os logs de desenvolvimento são lidos `GET » /about 200 in 12ms` para solicitações e `vite » ...` para Vite. Uma etapa com falha imprime as últimas linhas da saída do comando em vez de ocultá-la. Terminais que não podem renderizar Unicode obtêm `+` e `x`.
+Etapas longas (instalação de pacotes, compilação, empacotamento) mostram um botão giratório com o tempo decorrido e a última linha que o comando imprimiu, depois deixa uma linha para trás, como uv faz: `Synced .venv with uv in 1.4s`. Um grupo de etapas (as instalações de `nx new`) também mostra uma barra de progresso e o número de etapas concluídas, `2/5`. Uma etapa com falha é uma linha `error:` com sua causa, `cause: exit 1 after 2.1s`, seguida pelas últimas linhas da saída do comando em vez de ocultá-la. Algo para olhar diz `warning: ...` e o que fazer a seguir `hint: ...`. Os logs de desenvolvimento são lidos `GET » /about 200 in 12ms` para solicitações e `vite » ...` para Vite.
 
 ## Erros durante a execução de `nx dev`
 
@@ -74,7 +74,7 @@ Um arquivo que analisa, mas falha quando o aplicativo é carregado (uma importa�
 
 O driver de banco de dados para o ORM escolhido é instalado com ele (`psycopg`, `pymysql`, `asyncpg` ou `aiomysql`), e a URL é gravada em `.env`.
 
-Antes de instalar pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
+Antes de instalar os pacotes, `nx new` verifica a conexão. Sem ele, ele ignora as instalações e solicita que você execute `uv sync` e a instalação do seu gerenciador de pacotes mais tarde. Com um, ele imprime a latência e velocidade de download, e avisa quando a conexão está lenta (acima de 400 ms, ou abaixo de 100 KB/s). Cada linha de instalação nomeia a ferramenta e a pasta que ela preenche, por exemplo `pnpm install node_modules` ou `uv sync .venv`.
 
 ## O que `dev`, `build` e `start` criam
 
@@ -109,5 +109,5 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 ## Próximas etapas
 
 - [Primeiros passos](../getting-started/quick-start.md): primeiro projeto
-- [Testando](../guides/testing.md): o que `nx test` executa
+- [Testando](../guides/testing.md): o que `nx test` é executado
 - [Implantar](../deployment/README.md): `build` e `start` em produção

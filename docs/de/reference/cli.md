@@ -39,11 +39,11 @@ Die Binärdatei ist `nx` (auch als `nexy` installiert). `uvx nexy new` erstellt 
 
 ## Ausgabe
 
-Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Kreisel mit der verstrichenen Zeit angezeigt, dann bleibt eine Zeile übrig: `✔ uv sync .venv  1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt einen Fortschrittsbalken mit der Anzahl der abgeschlossenen Schritte an, `━━━━────  2/5`; Ein einzelner Schritt (`nx add`) zeigt einen Balken an, der während der Ausführung pulsiert. Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite. Ein fehlgeschlagener Schritt druckt die letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Terminals, die Unicode nicht rendern können, erhalten `+` und `x`.
+Bei langen Schritten (Pakete installieren, kompilieren, bündeln) wird ein Kreisel mit der verstrichenen Zeit und der letzten Zeile angezeigt, die der Befehl ausgegeben hat. Lassen Sie dann eine Zeile stehen, wie es uv tut: `Synced .venv with uv in 1.4s`. Eine Gruppe von Schritten (die Installationen von `nx new`) zeigt auch einen Fortschrittsbalken und die Anzahl der abgeschlossenen Schritte an, `2/5`. Ein fehlgeschlagener Schritt ist eine `error:`-Zeile mit ihrer Ursache, `cause: exit 1 after 2.1s`, gefolgt von den letzten Zeilen der Befehlsausgabe, anstatt sie auszublenden. Etwas, das Sie sich ansehen sollten, lautet `warning: ...` und was als nächstes zu tun ist `hint: ...`. Entwicklungsprotokolle lauten `GET » /about 200 in 12ms` für Anfragen und `vite » ...` für Vite.
 
 ## Fehler beim Ausführen von `nx dev`
 
-Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
+Das Speichern einer beschädigten Datei stoppt niemals den Server. Eine `.py`-Datei mit einem Syntaxfehler wird mit ihrer Datei und Zeile gemeldet, und der Server stellt weiterhin die letzte funktionierende Version bereit, bis Sie den Fehler beheben:
 
 ```text
   nexy » error  src/routes/users.py:3

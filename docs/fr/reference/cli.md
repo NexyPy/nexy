@@ -39,7 +39,7 @@ Le binaire est `nx` (également installé sous le nom `nexy`). `uvx nexy new` cr
 
 ## Sortie
 
-Les étapes longues (installation des packages, compilation, regroupement) affichent une icône avec le temps écoulé, puis laissent une ligne derrière : `✔ uv sync .venv  1.4s`. Un groupe d'étapes (les installations de `nx new`) affiche une barre de progression avec le nombre d'étapes terminées, `━━━━────  2/5` ; une seule étape (`nx add`) affiche une barre qui clignote pendant son exécution. Les journaux de développement lisent `GET » /about 200 in 12ms` pour les requêtes et `vite » ...` pour Vite. Une étape qui échoue imprime les dernières lignes du résultat de la commande au lieu de le masquer. Les terminaux qui ne peuvent pas restituer Unicode obtiennent `+` et `x`.
+Les étapes longues (installation des packages, compilation, regroupement) affichent une icône avec le temps écoulé et la dernière ligne imprimée par la commande, puis laissent une ligne derrière, comme le fait uv : `Synced .venv with uv in 1.4s`. Un groupe d'étapes (les installations de `nx new`) affiche également une barre de progression et le nombre d'étapes terminées, `2/5`. Une étape défaillante est une ligne `error:` avec sa cause, `cause: exit 1 after 2.1s`, suivie des dernières lignes du résultat de la commande au lieu de la masquer. Quelque chose à regarder se lit `warning: ...`, et que faire ensuite `hint: ...`. Les journaux de développement lisent `GET » /about 200 in 12ms` pour les requêtes et `vite » ...` pour Vite.
 
 ## Erreurs lors de l'exécution de `nx dev`
 
@@ -59,7 +59,7 @@ L'enregistrement d'un fichier cassé n'arrête jamais le serveur. Un fichier `.p
   Fix it and save: the server keeps its last working version.
 ```
 
-Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide lit `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
+Un fichier qui analyse mais échoue au chargement de l'application (une importation manquante, une erreur au niveau du module) est signalé de la même manière et `nx dev` attend votre prochaine sauvegarde ; rien n'est servi jusqu'à ce que l'application se charge à nouveau. Une sauvegarde valide indique `nexy » update <file>` pendant le rechargement du serveur. Les fichiers Markdown en dehors de `src/routes`, tels que `README.md`, ne sont pas des pages et ne déclenchent rien. `nx start` est plus strict : il se termine avec le code 1, et ne démarre rien, si un fichier de route ne peut pas se charger ou si `nx build` n'a pas encore construit le projet.
 
 ## Questions de `nx new`
 
@@ -78,7 +78,7 @@ Avant d'installer les packages, `nx new` vérifie la connexion. Sans cela, il ig
 
 ## Ce que `dev`, `build` et `start` créent
 
-Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
+Avant de s'exécuter, les trois commandes créent un `__init__.py` vide dans `src/` et dans chaque dossier situé en dessous contenant un fichier `.py` ou `.nexy`, donc une route telle que `src/routes/users.py` est importée de la même manière dans chacun d'eux. Les fichiers existants ne sont jamais modifiés et `nx dev` fait de même lorsque vous ajoutez un dossier. Le bytecode Python va à `__nexy__/__pycache__`, donc aucun dossier `__pycache__` n'apparaît à côté de vos sources.
 
 ## Langue
 
@@ -88,7 +88,7 @@ La ligne de commande parle anglais, chinois, hindi, espagnol, portugais, frança
 2. les variables locales de votre shell (`LC_ALL`, `LC_MESSAGES`, `LANG`, puis `LANGUAGE`) ;
 3. la langue de votre système d'exploitation.
 
-Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request à `nexy/modules/i18n/<language>.json`.
+Tout le reste est en anglais, tout comme tout message qu'une langue n'a pas encore. Seul ce que `nx` imprime est traduit : les erreurs du compilateur, les traces et les résultats des outils qu'il exécute restent tels quels. Les traductions n'ont pas encore été révisées par des locuteurs natifs : les corrections sont les bienvenues sous forme de pull request vers `nexy/modules/i18n/<language>.json`.
 
 ## Construire un comportement
 
