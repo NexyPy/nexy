@@ -20,7 +20,7 @@ import httpx
 
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
-from nexy.helpers.server.proxy import vite_proxy_port
+from nexy.helpers.server.dev_mode import vite_proxy_port
 from nexy.hooks import _get_req as _get_request
 from nexy.vite import Vite
 

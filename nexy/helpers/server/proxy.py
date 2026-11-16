@@ -15,17 +15,12 @@ does not know about falls through to the application untouched.
 import asyncio
 import contextlib
 import ipaddress
-import os
-from pathlib import Path
 
 import httpx
 from starlette.types import ASGIApp, Receive, Scope, Send
 from websockets.asyncio.client import ClientConnection, connect
 from websockets.exceptions import ConnectionClosed, WebSocketException
 from websockets.typing import Subprotocol
-
-from nexy.core.config import Config
-from nexy.helpers.server.ports import get_client_port
 
 # Paths that only Vite can serve: its client runtime, id- and fs-resolved
 # modules, the generated Nexy entry, and pre-bundled dependencies. A request
@@ -42,28 +37,6 @@ VITE_SUBPROTOCOLS = (HMR_SUBPROTOCOL, PING_SUBPROTOCOL)
 
 # Methods Vite serves. Anything else is a genuine application request.
 SAFE_METHODS = frozenset({"GET", "HEAD"})
-
-
-# Set by `nexy dev` for the application process it serves. Nothing else sets
-# it, so user test suites and `nexy start` never route through the proxy.
-DEV_ENV_VAR = "NEXY_DEV_SERVER"
-
-
-def vite_proxy_port() -> int | None:
-    """Return the loopback Vite port to proxy, or None when not in dev mode.
-
-    Dev mode is opt-in through the environment so that importing the app in a
-    user's test suite or under ``nexy start`` never touches a Vite port.
-    """
-    if os.environ.get(DEV_ENV_VAR) != "1":
-        return None
-    if not os.path.exists("vite.config.ts"):
-        return None
-    if Path("__nexy__/nexy.prod").is_file():
-        return None
-    if not Config().useVite:
-        return None
-    return get_client_port()
 
 
 class ViteProxyMiddleware:
