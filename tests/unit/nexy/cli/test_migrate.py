@@ -50,6 +50,19 @@ class TestDetectOrm:
         found = orm.detect_orm(project)
         assert found is not None and (found.name, found.tool) == (name, tool)
 
+    def test_use_orm_names_the_orm_whatever_else_the_config_mentions(self, project):
+        (project / "nexyconfig.py").write_text(
+            'import sqlmodel\n\nclass NexyConfig:\n    useORM = "SQLAlchemy"\n', encoding="utf-8"
+        )
+        found = orm.detect_orm(project)
+        assert found is not None and found.name == "SQLAlchemy"
+
+    def test_use_orm_wins_over_an_installed_orm(self, project, monkeypatch):
+        monkeypatch.setattr(orm.importlib.util, "find_spec", lambda _name: True)
+        (project / "nexyconfig.py").write_text("    useORM = 'Tortoise-ORM'\n", encoding="utf-8")
+        found = orm.detect_orm(project)
+        assert found is not None and found.tool == "aerich"
+
     def test_sqlmodel_wins_over_sqlalchemy_which_it_builds_on(self, project):
         (project / "nexyconfig.py").write_text("sqlmodel sqlalchemy", encoding="utf-8")
         found = orm.detect_orm(project)
@@ -213,12 +226,13 @@ class TestAlembicEnv:
         alembic.render_env(tmp_path, orm, models)
         return (tmp_path / "env.py").read_text(encoding="utf-8")
 
-    def test_sqlmodel_imports_every_model_file_of_the_project(self, tmp_path, monkeypatch):
+    @pytest.mark.parametrize("orm", ["SQLModel", "SQLAlchemy"])
+    def test_env_imports_every_model_file_of_the_project(self, tmp_path, monkeypatch, orm):
         for name in ("src/models/note_model.py", "src/apps/users/user_model.py"):
             (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
             (tmp_path / name).write_text("")
         (tmp_path / "alembic").mkdir()
-        alembic.render_env(tmp_path / "alembic", "SQLModel", "src.apps.users.user_model")
+        alembic.render_env(tmp_path / "alembic", orm, "src.apps.users.user_model")
         head = (tmp_path / "alembic" / "env.py").read_text().split("from src.configs.db")[0]
         monkeypatch.syspath_prepend(str(tmp_path))
         for name in ("src.models.note_model", "src.apps.users.user_model"):
