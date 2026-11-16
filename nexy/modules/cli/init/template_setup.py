@@ -340,25 +340,30 @@ def print_success_message(
 
 def _print_next_steps(project_dir_name: str | None, orm: str, migrated: bool) -> None:
     console.print("\n" + t("init.next_steps", "Next steps"))
-
     if project_dir_name:
         launcher.step(f"cd {project_dir_name}")
+    steps = _next_steps(orm, migrated)
+    width = max(len(command) for command, _ in steps)
+    for command, description in steps:
+        launcher.step(command, description, width)
 
-    launcher.step(
-        _activate_command(), t("init.step_activate_venv", "Activate the virtual environment")
-    )
+
+def _next_steps(orm: str, migrated: bool) -> list[tuple[str, str]]:
+    """(command, what it does) of each step, in the order to run them."""
+    activate = t("init.step_activate_venv", "Activate the virtual environment")
+    steps = [(_activate_command(), activate)]
     if orm != "None" and not migrated:
-        _print_migration_steps()
-    launcher.step("nexy dev", t("init.step_run_dev", "Start the development server"))
-    launcher.step("nexy --help", t("init.step_help", "Explore available commands"))
+        steps += _migration_steps()
+    steps.append(("nexy dev", t("init.step_run_dev", "Start the development server")))
+    steps.append(("nexy --help", t("init.step_help", "Explore available commands")))
+    return steps
 
 
-def _print_migration_steps() -> None:
+def _migration_steps() -> list[tuple[str, str]]:
     """A new project has models but no tables: the users page fails until they exist."""
     create = t("init.step_migrate_create", "Create the first migration")
     apply = t("init.step_migrate_apply", "Create the tables in the database")
-    launcher.step('nexy migrate -m "create tables"', create)
-    launcher.step("nexy migrate --upgrade", apply)
+    return [('nexy migrate -m "create tables"', create), ("nexy migrate --upgrade", apply)]
 
 
 def _activate_command() -> str:
