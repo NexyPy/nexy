@@ -7,7 +7,7 @@ import sys
 
 from rich.console import Console
 
-from nexy.helpers.common.tasks import format_duration, run_task, step
+from nexy.helpers.common.tasks import _LiveLine, format_duration, run_task, step
 
 
 def _console() -> tuple[Console, io.StringIO]:
@@ -98,19 +98,37 @@ def _render(live) -> str:
     return buffer.getvalue()
 
 
-class TestProgressBar:
-    def test_a_group_shows_how_many_steps_are_finished(self):
-        from nexy.helpers.common.tasks import _LiveLine
+class TestLiveRow:
+    """The row shown while a task runs is uv's: a spinner and a dim message, or a bar."""
 
-        text = _render(_LiveLine("Installing", progress=(2, 5)))
-        assert "Installing" in text and "2/5" in text
+    def test_a_lone_task_is_a_spinner_then_its_label(self):
+        assert re.fullmatch(r"[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏] Installing\n", _render(_LiveLine("Installing")))
 
-    def test_a_lone_task_shows_no_count(self):
-        from nexy.helpers.common.tasks import _LiveLine
+    def test_a_lone_task_shows_the_last_line_of_its_output(self):
+        live = _LiveLine("pnpm install")
+        live.last = "Progress: resolved 42"
+        assert _render(live)[2:] == "pnpm install  Progress: resolved 42\n"
 
-        assert "/" not in _render(_LiveLine("Installing"))
+    def test_a_lone_task_shows_no_elapsed_time(self):
+        assert "ms" not in _render(_LiveLine("Installing"))
+
+    def test_a_group_is_a_bar_of_twenty_cells_then_the_count(self):
+        text = _render(_LiveLine("uv sync", progress=(2, 5)))
+        assert text == "████████░░░░░░░░░░░░ [2/5] uv sync\n"
+
+    def test_an_empty_group_bar_has_no_full_cell(self):
+        assert _render(_LiveLine("x", progress=(0, 3))).startswith("░" * 20 + " [0/3]")
+
+    def test_the_message_is_dim(self):
+        console = Console(file=io.StringIO(), force_terminal=True, color_system="standard")
+        console.print(_LiveLine("Installing"))
+        assert "\x1b[2mInstalling" in console.file.getvalue()
+
+    def test_a_long_message_is_cut_to_the_width(self):
+        live = _LiveLine("x" * 300)
+        assert max(len(line) for line in _render(live).splitlines()) <= 100
 
     def test_run_task_accepts_the_position_in_a_group(self):
-        console, buffer = _console()
+        console, _ = _console()
         result = run_task("x", [sys.executable, "-c", "pass"], progress=(1, 3), console=console)
         assert result.ok

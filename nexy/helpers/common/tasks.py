@@ -17,19 +17,16 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from rich.console import Console, RenderResult
+from rich.console import Console, ConsoleOptions, RenderResult
 from rich.live import Live
-from rich.progress_bar import ProgressBar
-from rich.spinner import Spinner
-from rich.table import Table
 from rich.text import Text
 
 from nexy.helpers.common.console import console as _console
 from nexy.helpers.common.messages import error, took
 
 _TAIL_LINES = 15
-_LIVE_WIDTH = 78
 _BAR_WIDTH = 20
+_REFRESH = 12
 
 
 def format_duration(seconds: float) -> str:
@@ -50,11 +47,24 @@ class TaskResult:
     output: list[str] = field(default_factory=list)
 
 
-class _LiveLine:
-    """One spinner row, erased when the task ends: label, elapsed time, dim last output line.
+# uv's own spinner: the ten braille frames it gives indicatif, one every 200 ms.
+_FRAMES = "\u280b\u2819\u2839\u2838\u283c\u2834\u2826\u2827\u2807\u280f"
+_FRAME_SECONDS = 0.2
 
-    A step of a group (``progress=(2, 5)``) also shows a bar and its count, as uv does for the
-    packages it installs. A lone step has no count, so it shows the spinner alone.
+
+def _bar(done: int, total: int) -> str:
+    """uv's 20-cell bar: full cells for the finished steps, light ones for the rest."""
+    full = _BAR_WIDTH * done // total if total else 0
+    return "\u2588" * full + "\u2591" * (_BAR_WIDTH - full)
+
+
+class _LiveLine:
+    """The row shown while a task runs, erased when it ends, drawn as uv draws its progress.
+
+    A lone task is ``{spinner:.white} {wide_msg:.dim}``: a white spinner, then the label and the
+    last line the command printed, dim. A step of a group (``progress=(2, 5)``) is
+    ``{bar:20} [{pos}/{len}] {wide_msg:.dim}``, the bar and count that uv shows for the packages
+    it installs.
     """
 
     def __init__(self, label: str, progress: tuple[int, int] | None = None) -> None:
@@ -62,25 +72,19 @@ class _LiveLine:
         self.progress = progress
         self.last = ""
         self.started = time.monotonic()
-        self._spinner = Spinner("dots", style="yellow")
 
-    def __rich_console__(self, *_: object) -> RenderResult:
-        elapsed = format_duration(time.monotonic() - self.started)
-        row = Table.grid(padding=(0, 1))
-        row.add_column()
-        row.add_column(no_wrap=True)
-        row.add_column(no_wrap=True, overflow="ellipsis")
-        text = Text.assemble(self.label, ("  " + elapsed, "dim"))
-        if self.progress:
-            text.append(f"  {self.progress[0]}/{self.progress[1]}", style="dim")
-        if self.last:
-            text.append("  " + self.last[:_LIVE_WIDTH], style="dim")
-        if self.progress:
-            done, total = self.progress
-            row.add_row(self._spinner, ProgressBar(total, done, width=_BAR_WIDTH), text)
-        else:
-            row.add_row(self._spinner, text)
+    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        row = self._head()
+        row.append(self.label + (f"  {self.last}" if self.last else ""), style="dim")
+        row.truncate(options.max_width, overflow="crop")
         yield row
+
+    def _head(self) -> Text:
+        if self.progress is None:
+            frame = int((time.monotonic() - self.started) / _FRAME_SECONDS) % len(_FRAMES)
+            return Text.assemble((_FRAMES[frame], "white"), " ", no_wrap=True)
+        done, total = self.progress
+        return Text(f"{_bar(done, total)} [{done}/{total}] ", no_wrap=True)
 
 
 def _resolve(argv: Sequence[str]) -> list[str]:
@@ -112,14 +116,10 @@ def _spawn(argv: Sequence[str], cwd: Path | str | None) -> subprocess.Popen[str]
 
 def _follow(proc: subprocess.Popen[str], tail: deque[str], live: _LiveLine, out: Console) -> None:
     """Show the task until it ends: a live row on a terminal, nothing otherwise."""
-    if out.is_terminal:
-        with Live(live, console=out, refresh_per_second=12, transient=True):
-            _pump(proc, tail, live)
-            proc.wait()
-        return
-    # Not a terminal: nothing to animate, so only the result line is written, as uv does.
-    _pump(proc, tail, live)
-    proc.wait()
+    # Not a terminal: nothing is drawn, so only the result line is written, as uv does.
+    with _showing(live, out):
+        _pump(proc, tail, live)
+        proc.wait()
 
 
 def _announce(
@@ -174,12 +174,22 @@ def _escape(line: str) -> str:
 
 
 @contextmanager
+def _showing(live: _LiveLine, out: Console) -> Generator[None]:
+    """Draw *live* until the block ends, then erase it; outside a terminal, draw nothing."""
+    if not out.is_terminal:
+        yield
+        return
+    with Live(live, console=out, refresh_per_second=_REFRESH, transient=True):
+        yield
+
+
+@contextmanager
 def step(label: str, *, done: str | None = None, console: Console | None = None) -> Generator[None]:
     """In-process ``run_task``: a spinner while the block runs, then one result line."""
     out = console or _console
     started = time.monotonic()
     try:
-        with out.status(label, spinner="dots"):
+        with _showing(_LiveLine(label), out):
             yield
     except BaseException:
         error(label, console=out)
