@@ -3,7 +3,7 @@ from typing import Any
 
 from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
-from nexy.helpers.common.console import console
+from nexy.helpers.common.messages import error
 from nexy.modules.cli import tui
 from nexy.modules.i18n import t
 
@@ -76,7 +76,5 @@ class InitProject:
             or (dest / "vite.config.ts").exists()
         )
         if already:
-            console.print(
-                "[red]nexy[/red] » " + t("init.already", "Project already initialized here")
-            )
+            error(t("init.already", "Project already initialized here"))
             raise AlreadyInitializedError
