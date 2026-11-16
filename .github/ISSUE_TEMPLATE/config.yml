@@ -7,7 +7,7 @@ contact_links:
     about: Every page, with a search, in eleven languages. Read it before opening an issue.
   - name: Ask a question
     url: https://github.com/NexyPy/nexy/discussions/new?category=q-a
-    about: "\"How do I…?\" goes to Discussions Q&A, where the answer stays findable for the next person."
+    about: "\"How do I...?\" goes to Discussions Q&A, where the answer stays findable for the next person."
   - name: Suggest a feature
     url: https://github.com/NexyPy/nexy/discussions/new?category=ideas
     about: Talk the idea through before it becomes an issue, so the shape is settled first.
