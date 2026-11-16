@@ -130,7 +130,6 @@
       "web": "Web",
       "yes": "نعم"
     },
-    "error": "فشلت التهيئة: {error}",
     "git_restore": "تعذّرت استعادة .git السابق",
     "hint": {
       "alias_custom": "اختر بادئة أخرى مثل ~ أو #",
@@ -192,7 +191,8 @@
     },
     "node_installed": "تم تثبيت node_modules باستخدام {manager}",
     "python_synced": "تمت مزامنة .venv باستخدام uv",
-    "package_added": "تمت إضافة {package} إلى .venv"
+    "package_added": "تمت إضافة {package} إلى .venv",
+    "created": "تم إنشاء المشروع من {name}"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich غير مهيّأ. شغّل 'nx m --init' أولًا.",

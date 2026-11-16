@@ -130,7 +130,6 @@
       "web": "Web",
       "yes": "Yes"
     },
-    "error": "Initialization failed: {error}",
     "git_restore": "could not restore previous .git",
     "hint": {
       "alias_custom": "choose another prefix, such as ~ or #",
@@ -192,7 +191,8 @@
     },
     "node_installed": "Installed node_modules with {manager}",
     "python_synced": "Synced .venv with uv",
-    "package_added": "Added {package} to .venv"
+    "package_added": "Added {package} to .venv",
+    "created": "Created the project from {name}"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich not initialized. Run 'nx m --init' first.",

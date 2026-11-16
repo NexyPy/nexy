@@ -130,7 +130,6 @@
       "web": "Web",
       "yes": "はい"
     },
-    "error": "初期化に失敗しました: {error}",
     "git_restore": "以前の .git を復元できませんでした",
     "hint": {
       "alias_custom": "~ や # など別のプレフィックスを選ぶ",
@@ -192,7 +191,8 @@
     },
     "node_installed": "{manager} で node_modules をインストールしました",
     "python_synced": "uv で .venv を同期しました",
-    "package_added": "{package} を .venv に追加しました"
+    "package_added": "{package} を .venv に追加しました",
+    "created": "{name} からプロジェクトを作成しました"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich が初期化されていません。先に 'nx m --init' を実行してください。",

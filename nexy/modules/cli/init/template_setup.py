@@ -10,7 +10,8 @@ from typing import Any
 from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
-from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.messages import warning
+from nexy.helpers.common.tasks import step
 from nexy.helpers.fs.packages import ensure_packages
 from nexy.modules.cli.agents import install_agent_files, profile_from_context
 from nexy.modules.cli.constants import TEMPLATES_DIR
@@ -39,11 +40,9 @@ venv/
 def _fetch_template(
     template_name: str, dest: Path, config: dict[str, Any], use_github: bool, subdir: str
 ) -> None:
-    with console.status(
-        "[yellow]nexy[/yellow] » "
-        + t("init.initializing", "Initializing {name}...").format(name=template_name),
-        spinner="dots",
-    ):
+    label = t("init.initializing", "Initializing {name}...").format(name=template_name)
+    done = t("init.created", "Created the project from {name}").format(name=template_name)
+    with step(label, done=done):
         if use_github:
             _clone_from_github(dest, subdir)
         else:
@@ -60,15 +59,9 @@ def initialize_from_template(
     """Clone/render the template into *dest*, then run the post-init pipeline."""
     config = config or {}
     project_dir_name = dest.name if dest != Path(".") else None
-    try:
-        _fetch_template(template_name, dest, config, use_github, subdir)
-        _run_post_init_pipeline(dest, config, project_dir_name)
-    except Exception as e:
-        console.print(
-            "\n[red]nexy[/red] » "
-            + t("init.error", "Initialization failed: {error}").format(error=str(e))
-        )
-        raise
+    # A failure is the caller's to report: `nx new` and `nx init` each say it once.
+    _fetch_template(template_name, dest, config, use_github, subdir)
+    _run_post_init_pipeline(dest, config, project_dir_name)
 
 
 def _clone_from_github(dest: Path, subdir: str) -> None:
@@ -316,7 +309,7 @@ def init_migration(
     if tool is None:
         return FirstMigration(False)
     message = t("init.migration_tool", "Initializing {tool}...").format(tool=tool)
-    with console.status(tagged("nexy", message, "yellow"), spinner="dots"):
+    with console.status(message, spinner="dots"):
         if not _scaffold_migration_tool(tool, orm, dest, db_url, run):
             return FirstMigration(False, f"{tool} was not initialised")
         return run_first_migration(tool, dest, db_url, run)
@@ -326,10 +319,10 @@ def _report_migration(migration: FirstMigration) -> None:
     """Say that the tables exist, or why they were not created; nothing when it was not tried."""
     if migration.done:
         done = t("init.migrated", "Created the first migration and the tables")
-        console.print(tagged("nexy", done, "green"))
+        console.print(done)
     elif migration.problem:
         skipped = t("init.migration_skipped", "The tables were not created: {problem}")
-        console.print(tagged("nexy", skipped.format(problem=migration.problem), "yellow"))
+        warning(skipped.format(problem=migration.problem))
 
 
 def cleanup_build_artifacts(dest: Path) -> None:

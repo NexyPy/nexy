@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 from pathlib import Path
 
@@ -71,20 +72,33 @@ def test_a_tool_that_did_not_initialise_is_not_migrated(tmp_path):
 
 
 class TestReport:
-    @pytest.fixture
-    def said(self, monkeypatch):
-        lines: list[str] = []
-        monkeypatch.setattr(template_setup.console, "print", lambda text="": lines.append(text))
-        return lines
-
-    def test_it_says_when_the_tables_exist(self, said):
+    def test_it_says_when_the_tables_exist(self, capsys):
         template_setup._report_migration(first.FirstMigration(True))
-        assert any("tables" in line for line in said)
+        assert capsys.readouterr().out == "Created the first migration and the tables\n"
 
-    def test_it_gives_the_reason_when_it_could_not_run(self, said):
+    def test_it_gives_the_reason_as_a_warning(self, capsys):
         template_setup._report_migration(first.FirstMigration(False, "cannot connect"))
-        assert any("cannot connect" in line for line in said)
+        expected = "warning: The tables were not created: cannot connect\n"
+        assert capsys.readouterr().out == expected
 
-    def test_it_stays_quiet_when_nothing_was_tried(self, said):
+    def test_it_stays_quiet_when_nothing_was_tried(self, capsys):
         template_setup._report_migration(first.FirstMigration(False))
-        assert said == []
+        assert capsys.readouterr().out == ""
+
+
+class TestFetch:
+    def test_the_project_files_leave_one_line_with_the_duration(
+        self, tmp_path, monkeypatch, capsys
+    ):
+        monkeypatch.setattr(template_setup, "_render_local_template", lambda *_args: None)
+        template_setup._fetch_template("web-fbr", tmp_path, {}, False, "")
+        assert re.fullmatch(r"Created the project from web-fbr in \d+ms\n", capsys.readouterr().out)
+
+    def test_a_failure_is_not_reported_twice(self, tmp_path, monkeypatch, capsys):
+        def broken(*_args):
+            raise RuntimeError("no such template")
+
+        monkeypatch.setattr(template_setup, "_fetch_template", broken)
+        with pytest.raises(RuntimeError):
+            template_setup.initialize_from_template("web-fbr", tmp_path)
+        assert capsys.readouterr().out == ""

@@ -130,7 +130,6 @@
       "web": "Web",
       "yes": "Oui"
     },
-    "error": "Échec de l'initialisation : {error}",
     "git_restore": "impossible de restaurer l'ancien dossier .git",
     "hint": {
       "alias_custom": "choisir un autre préfixe, comme ~ ou #",
@@ -192,7 +191,8 @@
     },
     "node_installed": "node_modules installé avec {manager}",
     "python_synced": ".venv synchronisé avec uv",
-    "package_added": "{package} ajouté à .venv"
+    "package_added": "{package} ajouté à .venv",
+    "created": "Projet créé à partir de {name}"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich n'est pas initialisé. Lancez d'abord « nx m --init ».",

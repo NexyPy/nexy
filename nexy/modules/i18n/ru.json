@@ -130,7 +130,6 @@
       "web": "Web",
       "yes": "Да"
     },
-    "error": "Не удалось выполнить инициализацию: {error}",
     "git_restore": "не удалось восстановить прежний .git",
     "hint": {
       "alias_custom": "выберите другой префикс, например ~ или #",
@@ -192,7 +191,8 @@
     },
     "node_installed": "node_modules установлены с помощью {manager}",
     "python_synced": ".venv синхронизировано с помощью uv",
-    "package_added": "{package} добавлен в .venv"
+    "package_added": "{package} добавлен в .venv",
+    "created": "Проект создан из {name}"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich не инициализирован. Сначала выполните «nx m --init».",
