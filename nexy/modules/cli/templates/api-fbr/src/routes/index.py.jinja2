@@ -1,6 +1,6 @@
 {% if orm == "None" %}
 def GET():
-    return [{"A":"a"},{"B"}]
+    return {"status": "ok", "message": "Nexy API ready"}
 {% elif orm == "SQLModel" %}
 from src.services.user_service import UserService
 
