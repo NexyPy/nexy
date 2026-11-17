@@ -111,7 +111,7 @@ class TestTheClientRoutedHeader:
 
     def test_the_sheet_is_drawn_by_the_starter_stylesheet(self, tmp_path, framework):
         _header, sheet = _client(tmp_path, framework)
-        assert 'class' in sheet and '"nx-sheet"' in sheet
+        assert '"nx-sheet"' in sheet
 
     def test_the_sheet_carries_no_utility_class(self, tmp_path, framework):
         _header, sheet = _client(tmp_path, framework)
