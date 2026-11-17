@@ -1,5 +1,6 @@
-{#- The /connection page. The includer sets cls, and in a client-routed page check, pending and
-    status: the bindings of the framework. -#}
+{#- The /connection page. The includer sets cls; a server-rendered page sets ping_url, the URL the
+    button posts to, and a client-routed one check, pending and status, the bindings of its
+    framework. -#}
 {%- if utility_ui -%}
 {%- set c = {
   "section": "flex flex-1 items-center pb-20 pt-36",
@@ -18,14 +19,14 @@
   <div{{ klass("inner") }}>
     <h1{{ klass("title") }}>Connection</h1>
     <p{{ klass("lead") }}>
-      This page calls a server action, <code>src/actions/ping.py</code>, and shows what the Python
-      server answered and how long the round trip took.
+      This page calls {{ ping_source | default('a server action, <code>src/actions/ping.py</code>') }}, and shows
+      what the Python server answered and how long the round trip took.
     </p>
     <div{{ klass("actions") }}>
 {%- if useCSR %}
       <button type="button"{{ klass("button") }} {{ check }} {{ pending }}>Ping the server</button>
 {%- else %}
-      <button type="button"{{ klass("button") }} data-ping="{{ '{{' }} __actions_path['ping'] {{ '}}' }}">Ping the server</button>
+      <button type="button"{{ klass("button") }} data-ping="{{ ping_url }}">Ping the server</button>
 {%- endif %}
     </div>
     <p{{ klass("status") }} role="status" aria-live="polite"{% if not useCSR %} data-ping-status{% endif %}>{{ status if useCSR else "Not checked yet." }}</p>

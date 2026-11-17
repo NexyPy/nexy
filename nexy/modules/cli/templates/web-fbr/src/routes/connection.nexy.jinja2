@@ -1,31 +1,5 @@
 {% if not useCSR %}{%- set cls = "class" -%}
+{%- set ping_url = "{{ __actions_path['ping'] }}" -%}
 {% include "connection.html.jinja2" %}
-{% raw %}<script>
-  // The button posts to the action and times the round trip; the answer is JSON.
-  (function () {
-    const button = document.querySelector("[data-ping]");
-    const status = document.querySelector("[data-ping-status]");
-    if (!button || !status) return;
-    button.addEventListener("click", async function () {
-      button.disabled = true;
-      status.textContent = "Waiting for the server...";
-      const started = performance.now();
-      try {
-        const response = await fetch(button.dataset.ping, {
-          method: "POST",
-          headers: { "content-type": "application/json", accept: "application/json" },
-          body: "{}",
-        });
-        if (!response.ok) throw new Error(response.status + " " + response.statusText);
-        const answer = await response.json();
-        const took = Math.round(performance.now() - started);
-        status.textContent = "Connected in " + took + " ms. Python " + answer.python + " answered at " + answer.time + ".";
-      } catch (error) {
-        status.textContent = "No answer from the server: " + error.message;
-      } finally {
-        button.disabled = false;
-      }
-    });
-  })();
-</script>{% endraw %}
+{% include "connection_script.html.jinja2" %}
 {% endif %}
