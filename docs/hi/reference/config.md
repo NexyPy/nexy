@@ -23,6 +23,7 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | सीधे HTTPS परोसें |
 | `useDevTools` | `True` | टूलबार `nexy dev` प्रत्येक पृष्ठ पर जुड़ता है (पृष्ठ जानकारी, मार्ग, त्रुटियाँ, कॉन्फ़िगरेशन); `False` इसे हटा देता है। उत्पादन में कभी मौजूद नहीं |
 | `useHealth` | `False` | लोड बैलेंसर्स और कुबेरनेट्स जांच के लिए `GET /health/live` और `GET /health/ready` परोसें; देखें [तैनाती](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | एक कार्यकर्ता द्वारा पढ़ा जाने वाला सबसे बड़ा अनुरोध निकाय, बाइट्स में (1 MiB); बड़ा वाला एक `413` है, और `0` सीमा को बंद कर देता है। फ़ाइल अपलोड करने वाले रूट के लिए इसे बढ़ाएं |
 | `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 
@@ -30,7 +31,7 @@ class NexyConfig(NexyConfigModel):
 
 | मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useORM` | `None` | परियोजना का ओआरएम: `"SQLModel"`, `"SQLAlchemy"` या `"Tortoise-ORM"`। `nx new` इसे लिखता है, और `nx migrate` इसमें से Alembic या Aerich चुनता है; इसके बिना, `nx migrate` पहला ORM इंस्टाल करता है। देखें [डेटाबेस](../guides/databases.md#migrations) |
+| `useORM` | `None` | परियोजना का ORM: `"SQLModel"`, `"SQLAlchemy"` या `"Tortoise-ORM"`। `nx new` इसे लिखता है, और `nx migrate` इसमें से Alembic या Aerich चुनता है; इसके बिना, `nx migrate` पहला ORM इंस्टाल करता है। देखें [डेटाबेस](../guides/databases.md#migrations) |
 
 ## मार्ग
 
@@ -72,11 +73,11 @@ class NexyConfig(NexyConfigModel):
 | `useDocs` | `"dev"` | जहां स्केलर संदर्भ पृष्ठ और `/openapi.json` परोसा जाता है: `"dev"` केवल `nx dev` पर, `True` उत्पादन में भी (स्कीमा हर मार्ग और सर्वर कार्रवाई को सूचीबद्ध करता है), `False` कहीं नहीं |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
 | `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
-| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` `NexyConfigModel` में) |
+| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` में `NexyConfigModel`) |
 
 ### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
 
-एपीआई संदर्भ किसी भी मार्ग से पहले `/docs` उत्तर देता है, इसलिए `src/routes/docs.nexy` या `src/routes/docs/[[...slug]].nexy` वहां कभी नहीं परोसा जाता है। `nx dev` और `nx start` स्टार्टअप पर ऐसे पेज को नाम दें। `useDocsUrl` के साथ संदर्भ को स्थानांतरित करें:
+एपीआई संदर्भ किसी भी मार्ग से पहले `/docs` का उत्तर देता है, इसलिए `src/routes/docs.nexy` या `src/routes/docs/[[...slug]].nexy` वहां कभी नहीं परोसा जाता है। `nx dev` और `nx start` स्टार्टअप पर ऐसे पेज को नाम दें। `useDocsUrl` के साथ संदर्भ को स्थानांतरित करें:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

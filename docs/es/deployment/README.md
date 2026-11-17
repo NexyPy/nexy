@@ -103,7 +103,7 @@ Nexy garantiza que ambos puntos finales respondan antes de `useTrustedHost` y `u
 
 Por convención, mantienes tus propias rutas fuera de `/health/live` y `/health/ready` mientras `useHealth` está activada: los puntos finales de Nexy responden primero. `useHealth` es `False` de forma predeterminada, por lo que un proyecto que no lo establece mantiene ambas rutas.
 
-Tu aplicación es responsable de verificar de qué depende: `/health/ready` informa el ciclo de vida del servidor, no el estado de una base de datos.
+Tu aplicación es responsable de comprobar de qué depende: `/health/ready` informa el ciclo de vida del servidor, no el estado de una base de datos.
 
 Apunte las sondas de un Kubernetes `Deployment` hacia ellos:
 

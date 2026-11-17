@@ -23,6 +23,7 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS directamente |
 | `useDevTools` | `True` | la barra de herramientas `nexy dev` agrega a cada página (información de la página, rutas, errores, configuración); `False` lo elimina. Nunca presente en producción. |
 | `useHealth` | `False` | servir `GET /health/live` y `GET /health/ready` para balanceadores de carga y sondas de Kubernetes; consulte [Implementar](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | el cuerpo de solicitud más grande que lee un trabajador, en bytes (1 MiB); uno más grande es `413`, y `0` desactiva el límite. Levántelo para una ruta que requiera carga de archivos. |
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
 
@@ -76,7 +77,7 @@ Cada campo agrega extensiones a un rol reservado. `useLayoutExtensions = ["md"]`
 
 ### Gratis `/docs` para una página del proyecto
 
-La referencia de API responde `/docs` antes de cualquier ruta, por lo que `src/routes/docs.nexy` o `src/routes/docs/[[...slug]].nexy` nunca se sirven allí. `nx dev` y `nx start` nombran dicha página al inicio. Mueve la referencia con `useDocsUrl`:
+La referencia de API responde `/docs` antes de cualquier ruta, por lo que `src/routes/docs.nexy` o `src/routes/docs/[[...slug]].nexy` nunca se sirven allí. `nx dev` y `nx start` nombran dicha página al inicio. Mover la referencia con `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -95,7 +96,7 @@ O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. 
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
 | `useCORS` | `None` | kwargs por `CORSMiddleware` |
 | `useGZip` | `None` | kwargs por `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs para `TrustedHostMiddleware` |
+| `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs por `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |

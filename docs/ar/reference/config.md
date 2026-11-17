@@ -23,22 +23,23 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`، `useSslCertfile` | `None` | خدمة HTTPS مباشرة |
 | `useDevTools` | `True` | يضيف شريط الأدوات `nexy dev` إلى كل صفحة (معلومات الصفحة، والمسارات، والأخطاء، والتكوين)؛ `False` يزيله. لا يوجد أبدا في الإنتاج |
 | `useHealth` | `False` | يخدم `GET /health/live` و `GET /health/ready` لموازنات التحميل وتحقيقات Kubernetes؛ راجع [نشر](../deployment/README.md#built-in-endpoints) |
-| `useWorkers` | `0` | العمليات `nx start` تعمل؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
-| `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
+| `useMaxBodySize` | `1048576` | أكبر نص طلب يقرأه العامل، بالبايت (1 ميجابايت)؛ الأكبر هو `413`، و `0` يطفئ الحد. ارفعه إلى المسار الذي يأخذ تحميلات الملفات |
+| `useWorkers` | `0` | تشغيل العمليات `nx start`؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
+| `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` تم تعطيل الطرق |
 
 ## قاعدة البيانات
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، و `nx migrate` ينتقي منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
+| `useORM` | `None` | ORM للمشروع: `"SQLModel"`، `"SQLAlchemy"` أو `"Tortoise-ORM"`. `nx new` يكتبه، ويلتقط `nx migrate` منه Alembic أو Aerich منه؛ بدونه، `nx migrate` يأخذ أول ORM مثبتًا. انظر [قواعد البيانات](../guides/databases.md#migrations) |
 
 ## الطرق
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useRouter` | `None` | `APIRouter` مثيل أو فئة مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
+| `useRouter` | `None` | مثيل أو فئة `APIRouter` مثبتة بجوار المسارات المستندة إلى الملف؛ `None` يعني المستند إلى الملف فقط |
 | `excludeDirs` | `["templates", "extension", "docs"]` | تم تخطي الدلائل عند مسح المسارات |
-| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، و Vite و `tsconfig.json` يتبعه |
+| `useAliases` | `None` | استيراد الأسماء المستعارة، على سبيل المثال `{"@": "src"}` (`@/components/Counter.tsx` يعني `src/components/Counter.tsx`)؛ `nx new` يكتب الذي اخترته، ويتبعه Vite و `tsconfig.json` |
 
 ## الواجهة الأمامية
 
