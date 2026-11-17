@@ -221,7 +221,7 @@
     "tool_missing": "错误：在 PATH 中找不到 {tool}。请安装后重试。"
   },
   "server": {
-    "launch_failed": "服务器启动失败：",
+    "launch_failed": "无法启动服务器",
     "local": "本地：",
     "network": "网络：",
     "ready": "就绪：",

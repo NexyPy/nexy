@@ -221,7 +221,7 @@
     "tool_missing": "Erro: {tool} não está no PATH. Instale-o e tente novamente."
   },
   "server": {
-    "launch_failed": "Falha ao iniciar o servidor:",
+    "launch_failed": "Não foi possível iniciar o servidor",
     "local": "Local:",
     "network": "Rede:",
     "ready": "Pronto:",

@@ -221,7 +221,7 @@
     "tool_missing": "Kesalahan: {tool} tidak ditemukan di PATH. Pasang lalu coba lagi."
   },
   "server": {
-    "launch_failed": "Server gagal dijalankan:",
+    "launch_failed": "Tidak dapat memulai server",
     "local": "Lokal:",
     "network": "Jaringan:",
     "ready": "Siap:",

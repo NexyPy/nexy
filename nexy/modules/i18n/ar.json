@@ -221,7 +221,7 @@
     "tool_missing": "خطأ: لم يتم العثور على {tool} في PATH. ثبّته ثم حاول مرة أخرى."
   },
   "server": {
-    "launch_failed": "فشل تشغيل الخادم:",
+    "launch_failed": "تعذّر تشغيل الخادم",
     "local": "محلي:",
     "network": "الشبكة:",
     "ready": "جاهز:",

@@ -221,7 +221,7 @@
     "tool_missing": "エラー: {tool} が PATH に見つかりません。インストールしてからもう一度お試しください。"
   },
   "server": {
-    "launch_failed": "サーバーの起動に失敗しました:",
+    "launch_failed": "サーバーを起動できませんでした",
     "local": "ローカル:",
     "network": "ネットワーク:",
     "ready": "準備完了:",
