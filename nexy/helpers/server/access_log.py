@@ -5,6 +5,7 @@ uvicorn's own access log carries no duration, so Nexy measures it here and turns
 
 from __future__ import annotations
 
+import asyncio
 import time
 from collections.abc import Callable
 from typing import Any
@@ -106,11 +107,35 @@ def _console_paint() -> Paint:
     return paint_ansi if console.color_system else paint_plain
 
 
-def _write_line(line: str) -> None:
-    """One write and one flush per request: the line shows at once, even in a pipe."""
+_pending: list[str] = []
+# The loop that will write the waiting lines; None when nothing is waiting for a write.
+_flushing: dict[str, asyncio.AbstractEventLoop | None] = {"loop": None}
+
+
+def _flush_pending() -> None:
+    """Write the waiting lines in one call, then flush: they show at once, even in a pipe."""
+    _flushing["loop"] = None
     stream = console.file
-    stream.write(line + "\n")
+    stream.write("".join(_pending))
+    _pending.clear()
     stream.flush()
+
+
+def _write_line(line: str) -> None:
+    """Write *line* by the next turn of the event loop, with the other lines of this turn.
+
+    A busy server answers many requests in one turn; one write for all of them saves a system
+    call per request. Outside an event loop, the line is written at once.
+    """
+    _pending.append(line + "\n")
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        _flush_pending()
+        return
+    if _flushing["loop"] is not loop:
+        _flushing["loop"] = loop
+        loop.call_soon(_flush_pending)
 
 
 _SOCKET = "SOCKET"
