@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Adicionado: {path}",
     "available": "Componentes de UI disponíveis: {names}",
-    "error": "Erro:",
     "exists": "Ignorado: {path} já existe.",
-    "fetch_failed": "Não foi possível obter o componente de {url}: {error}",
+    "fetch_failed": "Falha ao buscar o componente de {url}",
     "fetching": "Obtendo o componente remoto de {url}...",
     "help_all": "Adicionar todos os componentes disponíveis do registro",
     "help_components": "Componentes a adicionar (nomes do registro ou URLs)",
@@ -12,38 +10,44 @@
     "help_ui": "Forçar o tratamento como componentes de UI",
     "help_url": "Forçar o tratamento como URLs",
     "https_only": "Somente URLs https:// são suportadas.",
-    "install_failed": "Falha ao instalar as dependências",
     "installed": "{names} instalado",
     "installing": "Instalando {names}",
     "no_pm": "Nenhum gerenciador de pacotes encontrado. Instale as dependências manualmente: {names}",
     "not_found": "O componente '{name}' não foi encontrado no registro.",
     "usage": "Uso:",
     "usage_text": "nexy add [NOME_DO_COMPONENTE ou URL]...",
-    "warning": "Aviso:",
-    "write_failed": "Não foi possível gravar {path}: {error}"
+    "write_failed": "Falha ao gravar {path}"
   },
   "build": {
     "building_client": "Pacote do cliente gerado",
-    "checks_failed": "verificações com falha",
-    "checks_passed": "todas as verificações passaram",
-    "client_components": "componentes de cliente",
+    "checks_failed": "Algumas verificações falharam",
+    "client_components": "Componentes do cliente",
     "compiling_routes": "Rotas compiladas",
     "compiling_server": "Componentes de servidor compilados",
     "creating": "Criando um build de produção otimizado",
-    "failed_client": "falha no build do cliente",
+    "failed_client": "Falha ao gerar o pacote do cliente",
     "failed_components": "{count} componente(s) com falha",
-    "failed_label": "Build com falha",
-    "routes": "rotas",
-    "server_components": "componentes de servidor",
-    "skipped_label": "Ignorado (em cache)",
-    "success_build": "build concluído em {time}",
-    "success_label": "Build concluído"
+    "routes": "Rotas",
+    "server_components": "Componentes do servidor",
+    "built": "Projeto gerado",
+    "count_built": "{count} gerados",
+    "count_cached": "{count} em cache",
+    "count_rendered": "{count} renderizados",
+    "count_client_only": "{count} só no cliente",
+    "more": "e mais {count}",
+    "not_rendered": "{path} não tem HTML do servidor: é renderizado só no cliente",
+    "running_check": "Executando {name}",
+    "ran_check": "{name} executado"
   },
   "check": {
-    "compiling": "compilando arquivos .nexy ...",
+    "compiling": "Compilando os arquivos .nexy",
     "failed": "{count} seção(ões) com falha",
-    "passed": "todas as verificações passaram",
-    "skip_tool": "{tool} não encontrado: {scope} ignorado"
+    "passed": "Todas as verificações passaram",
+    "skip_tool": "{tool} não encontrado: {scope} ignorado",
+    "checking": "Verificando {scope} com {tool}",
+    "checked": "{scope} verificado com {tool}",
+    "compiled": "Arquivos .nexy compilados",
+    "not_compiled": "Não foi possível compilar {path}"
   },
   "cli": {
     "cmd": {
@@ -80,6 +84,10 @@
       "help_path": "Raiz do projeto (padrão: a pasta atual)",
       "done": "{count} skills em .agents/skills e .claude/skills",
       "kept": "Seus arquivos foram mantidos: {files}."
+    },
+    "took": "em {duration}",
+    "init": {
+      "failed": "Não foi possível inicializar o projeto"
     }
   },
   "dev": {
@@ -88,11 +96,10 @@
     "deps_hint": "nexy dev não instala dependências; nexy init e nexy new instalam.",
     "deps_missing": "As dependências do Node.js estão ausentes.",
     "deps_run": "Execute: {command}",
-    "error": "Erro: {error}",
     "error_label": "erro",
     "error_waiting": "A aplicação não pode iniciar: aguardando uma correção.",
     "exited": "encerrado",
-    "init_error": "Erro durante a inicialização:",
+    "init_error": "Não foi possível iniciar o servidor de desenvolvimento",
     "routes_failed": "Não foi possível atualizar as rotas do cliente: {error}",
     "starting_vite": "Iniciando o servidor de desenvolvimento...",
     "stopping": "Parando os servidores...",
@@ -103,8 +110,14 @@
   },
   "format": {
     "failed": "{count} arquivo(s) com falha",
-    "passed": "formatação concluída",
-    "skip_tool": "{tool} não encontrado: {scope} ignorado"
+    "passed": "Todos os arquivos formatados",
+    "skip_tool": "{tool} não encontrado: {scope} ignorado",
+    "formatting": "Formatando {scope} com {tool}",
+    "formatted": "{scope} formatado com {tool}",
+    "checking": "Verificando o formato de {scope} com {tool}",
+    "checked": "Formato de {scope} verificado com {tool}",
+    "nexy": "Formatando {count} arquivo(s) .nexy",
+    "nexy_done": "{count} arquivo(s) .nexy formatado(s)"
   },
   "init": {
     "alias_invalid": "Use @, ~, # ou $, seguido opcionalmente de letras (por exemplo ~ ou @app).",
@@ -131,7 +144,6 @@
       "web": "Web",
       "yes": "Sim"
     },
-    "error": "Falha na inicialização: {error}",
     "git_restore": "não foi possível restaurar o .git anterior",
     "hint": {
       "alias_custom": "escolha outro prefixo, como ~ ou #",
@@ -190,7 +202,11 @@
     "venv": {
       "created": "Ambiente virtual criado",
       "creating": "Criando o ambiente virtual"
-    }
+    },
+    "node_installed": "node_modules instalado com {manager}",
+    "python_synced": ".venv sincronizado com uv",
+    "package_added": "{package} adicionado a .venv",
+    "created": "Projeto criado a partir de {name}"
   },
   "migrate": {
     "aerich_not_initialized": "O Aerich não foi inicializado. Execute 'nx m --init' primeiro.",
@@ -205,7 +221,7 @@
     "tool_missing": "Erro: {tool} não está no PATH. Instale-o e tente novamente."
   },
   "server": {
-    "launch_failed": "Falha ao iniciar o servidor:",
+    "launch_failed": "Não foi possível iniciar o servidor",
     "local": "Local:",
     "network": "Rede:",
     "ready": "Pronto:",
@@ -221,9 +237,13 @@
     "help_args": "Argumentos extras repassados ao executor de testes",
     "help_client": "Executar os testes do cliente (vitest)",
     "help_server": "Executar os testes do servidor (pytest)",
-    "passed": "todos os testes passaram",
+    "passed": "Todos os testes passaram",
     "skip_client": "vitest não configurado: testes do cliente ignorados",
-    "skip_tool": "pytest não encontrado: testes do servidor ignorados"
+    "skip_tool": "pytest não encontrado: testes do servidor ignorados",
+    "running_server": "Executando os testes do servidor com pytest",
+    "ran_server": "Testes do servidor executados com pytest",
+    "running_client": "Executando os testes do cliente com vitest",
+    "ran_client": "Testes do cliente executados com vitest"
   },
   "tui": {
     "keys": {
@@ -237,7 +257,7 @@
     "compile_failed": "Falha ao compilar {path}",
     "compiled": "{path} compilado em {time}",
     "error_kept": "Corrija e salve: o servidor mantém a última versão que funcionava.",
-    "restart_failed": "Não foi possível reiniciar o servidor: {error}",
+    "restart_failed": "Falha ao reiniciar o servidor",
     "update": "atualizando"
   }
 }

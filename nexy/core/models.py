@@ -153,7 +153,9 @@ class NexyConfigModel:
     useTitle: str = "Nexy"
     useDocsUrl: str = "/docs"
     useRedocsUrl: str | None = "/redocs"
-    useDocs: bool = True
+    # Where the API reference and /openapi.json are served: "dev" (the dev server only), True
+    # (production too: it lists every route and server action), False (nowhere).
+    useDocs: bool | Literal["dev"] = "dev"
     useVite: bool = False
     useViteDevUrl: str | None = None
     useFF: FrontendFramework | list[FrontendFramework] | None = None
@@ -172,6 +174,8 @@ class NexyConfigModel:
     useWorkers: int = 0
     useDevTools: bool = True
     useHealth: bool = False
+    # The largest request body a worker reads, in bytes (1 MiB); larger is a 413. 0: no limit.
+    useMaxBodySize: int = 1024 * 1024
     # The ORM `nx new` scaffolded the project with; `nx migrate` picks its migration tool from it.
     useORM: Literal["SQLModel", "SQLAlchemy", "Tortoise-ORM"] | None = None
     useRTL: bool = False

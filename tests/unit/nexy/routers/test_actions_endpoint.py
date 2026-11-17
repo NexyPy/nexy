@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import datetime as dt
 from collections.abc import Iterator
 from typing import Any
 
@@ -180,6 +181,17 @@ class TestFormWithoutJavaScript:
         )
         assert response.headers["location"] == "/"
 
+    @pytest.mark.parametrize("path", ["//evil.test/phish", "/\\evil.test/phish"])
+    def test_a_referer_path_that_names_another_site_goes_home(self, path):
+        client = _client(create_user)
+        response = client.post(
+            _url(create_user),
+            data={"name": "Ada"},
+            headers={"referer": f"http://testserver{path}"},
+            follow_redirects=False,
+        )
+        assert response.headers["location"] == "/"
+
     def test_an_invalid_form_is_a_422(self):
         client = _client(create_user)
         assert client.post(_url(create_user), data={"age": "1"}).status_code == 422
@@ -272,3 +284,36 @@ def test_the_secret_is_kept_in_the_project_when_none_is_set(monkeypatch, tmp_pat
     forget_secret()
     assert ACTIONS_STORE._generate_hash("a.b") == first
     assert (tmp_path / "__nexy__" / "action.key").exists()
+
+
+def test_an_action_is_served_by_the_fast_path():
+    from nexy.modules.routers.fastpath import build_table
+
+    _client(double)
+    app = FastAPI()
+    ActionEngine().include_router(app)
+    assert ("POST", _url(double)) in build_table(app.router)
+
+
+async def mixed() -> dict[str, Any]:
+    return {"when": dt.date(2026, 11, 17), "tags": ("a", "b"), "ratio": 0.5, "name": "é"}
+
+
+@pytest.mark.parametrize("handler", [mixed, save_profile])
+def test_the_answer_is_the_json_fastapi_would_write(handler):
+    from fastapi.encoders import jsonable_encoder
+    from fastapi.responses import JSONResponse
+
+    body = {"profile": {"name": "Ada", "age": 36}} if handler is save_profile else {}
+    expected = asyncio.run(handler(Profile(name="Ada", age=36))) if body else asyncio.run(handler())
+    response = _client(handler).post(_url(handler), json=body)
+    assert response.content == JSONResponse(jsonable_encoder(expected)).body
+
+
+def test_a_plain_answer_is_not_walked_by_jsonable_encoder(monkeypatch):
+    def refuse(*_args: Any, **_kwargs: Any) -> None:
+        raise AssertionError("a plain answer went through jsonable_encoder")
+
+    monkeypatch.setattr("fastapi.encoders.jsonable_encoder", refuse)
+    monkeypatch.setattr(endpoint, "jsonable_encoder", refuse, raising=False)
+    assert _client(double).post(_url(double), json={"value": 2}).json() == 4

@@ -15,3 +15,9 @@ class AboutController:
     async def get(self):
         return useViews(LAYOUT, context={"children": useViews("src/apps/about_view.nexy")})
 
+
+@Controller("/connection")
+class ConnectionController:
+    async def get(self):
+        page = useViews("src/apps/connection_view.nexy")
+        return useViews(LAYOUT, context={"children": page})

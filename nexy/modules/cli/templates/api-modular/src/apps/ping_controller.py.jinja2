@@ -1,0 +1,14 @@
+"""The route a client calls to check it reaches the Python server."""
+
+import platform
+from datetime import UTC, datetime
+
+from nexy.decorators import Controller
+
+
+@Controller("/ping")
+class PingController:
+    def get(self) -> dict[str, str]:
+        """The Python version of the server and its clock, to check a client reaches it."""
+        now = datetime.now(UTC).strftime("%H:%M:%S UTC")
+        return {"python": platform.python_version(), "time": now}

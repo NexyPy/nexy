@@ -39,7 +39,7 @@ Binernya adalah `nx` (juga dipasang sebagai `nexy`). `uvx nexy new` membuat proy
 
 ## Keluaran
 
-Langkah-langkah panjang (menginstal paket, kompilasi, bundling) menunjukkan spinner dengan waktu yang telah berlalu, kemudian meninggalkan satu baris di belakang: `✔ uv sync .venv  1.4s`. Sekelompok langkah (penginstalan `nx new`) menunjukkan bilah kemajuan dengan jumlah langkah yang diselesaikan, `━━━━────  2/5`; satu langkah (`nx add`) menunjukkan bilah yang berdenyut saat dijalankan. Log pengembang membaca `GET » /about 200 in 12ms` untuk permintaan dan `vite » ...` untuk Vite. Langkah yang gagal akan mencetak baris terakhir keluaran perintah alih-alih menyembunyikannya. Terminal yang tidak dapat merender Unicode mendapatkan `+` dan `x`.
+Langkah-langkah panjang (menginstal paket, kompilasi, bundling) menunjukkan spinner dengan waktu yang telah berlalu dan baris terakhir perintah dicetak, kemudian meninggalkan satu baris, seperti yang dilakukan uv: `Synced .venv with uv in 1.4s`. Sekelompok langkah (penginstalan `nx new`) juga menunjukkan bilah kemajuan dan jumlah langkah yang diselesaikan, `2/5`. Langkah yang gagal adalah baris `error:` dengan penyebabnya, `cause: exit 1 after 2.1s`, diikuti dengan baris terakhir keluaran perintah alih-alih menyembunyikannya. Sesuatu untuk dilihat berbunyi `warning: ...`, dan apa yang harus dilakukan selanjutnya `hint: ...`. Log pengembang dibaca `GET » /about 200 in 12ms` untuk permintaan dan `vite » ...` untuk Vite.
 
 ## Kesalahan saat `nx dev` berjalan
 
@@ -63,7 +63,7 @@ File yang diurai tetapi gagal ketika aplikasi dimuat (impor hilang, kesalahan pa
 
 ## Pertanyaan dari `nx new`
 
-`nx new` menanyakan, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan `←` atau `esc`, keluar dengan `ctrl+c`.
+`nx new` bertanya, dalam urutan ini: router berbasis file, jenis proyek (web atau API), perutean sisi klien, kerangka klien, cara menata gaya aplikasi, alias impor, ORM, basis data, dan URL basis data. Setiap opsi memiliki deskripsi singkat dan opsi terkini disorot. Pertanyaan yang tidak berlaku akan dilewati (proyek API tidak memiliki kerangka kerja atau gaya; memilih **Tidak ada database** karena ORM melewatkan database dan URL). Bergerak dengan tombol panah (atau `j`/`k`, atau angka), konfirmasi dengan `enter`, kembali ke pertanyaan sebelumnya dengan `←` atau `esc`, keluar dengan `ctrl+c`.
 
 | Pertanyaan | Pilihan |
 |---|---|
@@ -76,7 +76,7 @@ Driver database untuk ORM yang dipilih diinstal dengannya (`psycopg`, `pymysql`,
 
 Sebelum menginstal paket, `nx new` memeriksa koneksi. Tanpa satu pun, ia akan melewatkan instalasi dan meminta Anda untuk menjalankan `uv sync` dan instalasi manajer paket Anda nanti. Dengan satu, ia mencetak latensi dan kecepatan pengunduhan, dan memperingatkan ketika koneksi lambat (lebih dari 400 ms, atau di bawah 100 KB/s). Setiap baris instalasi memberi nama alat dan folder yang diisinya, misalnya `pnpm install node_modules` atau `uv sync .venv`.
 
-## Apa yang `dev`, `build` dan `start` buat
+## Apa yang `dev`, `build` dan `start` ciptakan
 
 Sebelum dijalankan, ketiga perintah tersebut membuat `__init__.py` kosong di `src/` dan di setiap folder di bawahnya yang menyimpan file `.py` atau `.nexy`, sehingga rute seperti `src/routes/users.py` mengimpor dengan cara yang sama ke semuanya. File yang ada tidak pernah disentuh, dan `nx dev` melakukan hal yang sama lagi saat Anda menambahkan folder. Python bytecode masuk ke `__nexy__/__pycache__`, jadi tidak ada folder `__pycache__` yang muncul di sebelah sumber Anda.
 
@@ -109,5 +109,5 @@ python scripts/audit_dependencies.py # supply-chain audit against the lock
 ## Langkah selanjutnya
 
 - [Memulai](../getting-started/quick-start.md): proyek pertama
-- [Pengujian](../guides/testing.md): apa yang `nx test` jalankan
+- [Pengujian](../guides/testing.md): apa yang `nx test` dijalankan
 - [Penerapan](../deployment/README.md): `build` dan `start` dalam produksi

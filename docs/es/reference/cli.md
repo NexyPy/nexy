@@ -39,7 +39,7 @@ El binario es `nx` (también instalado como `nexy`). `uvx nexy new` crea un proy
 
 ## Salida
 
-Los pasos largos (instalar paquetes, compilar, agrupar) muestran una rueda con el tiempo transcurrido y luego dejan una línea detrás: `✔ uv sync .venv  1.4s`. Un grupo de pasos (las instalaciones de `nx new`) muestra una barra de progreso con el número de pasos finalizados, `━━━━────  2/5`; un solo paso (`nx add`) muestra una barra que pulsa mientras se ejecuta. Los registros de desarrollo leen `GET » /about 200 in 12ms` para solicitudes y `vite » ...` para Vite. Un paso fallido imprime las últimas líneas del resultado del comando en lugar de ocultarlo. Los terminales que no pueden representar Unicode obtienen `+` y `x`.
+Los pasos largos (instalar paquetes, compilar, agrupar) muestran una rueda giratoria con el tiempo transcurrido y la última línea que imprimió el comando, luego dejan una línea atrás, como lo hace uv: `Synced .venv with uv in 1.4s`. Un grupo de pasos (las instalaciones de `nx new`) también muestra una barra de progreso y el número de pasos finalizados, `2/5`. Un paso fallido es una línea `error:` con su causa, `cause: exit 1 after 2.1s`, seguida de las últimas líneas de la salida del comando en lugar de ocultarla. Algo para mirar dice `warning: ...` y qué hacer a continuación `hint: ...`. Los registros de desarrollo leen `GET » /about 200 in 12ms` para solicitudes y `vite » ...` para Vite.
 
 ## Errores mientras se ejecuta `nx dev`
 
@@ -59,7 +59,7 @@ Guardar un archivo roto nunca detiene el servidor. Se informa un archivo `.py` c
   Fix it and save: the server keeps its last working version.
 ```
 
-Un archivo que se analiza pero falla cuando se carga la aplicación (una importación faltante, un error a nivel de módulo) se informa de la misma manera y `nx dev` espera su siguiente guardado; no se sirve nada hasta que la aplicación se carga nuevamente. Un guardado válido dice `nexy » update <file>` mientras el servidor se recarga. Los archivos Markdown fuera de `src/routes`, como `README.md`, no son páginas y no activan nada. `nx start` es más estricto: sale con el código 1 y no comienza nada si no se puede cargar un archivo de ruta o si `nx build` aún no ha creado el proyecto.
+Un archivo que se analiza pero falla cuando se carga la aplicación (una importación faltante, un error a nivel de módulo) se informa de la misma manera y `nx dev` espera su siguiente guardado; no se sirve nada hasta que la aplicación se carga nuevamente. Un guardado válido dice `nexy » update <file>` mientras el servidor se recarga. Los archivos Markdown fuera de `src/routes`, como `README.md`, no son páginas y no activan nada. `nx start` es más estricto: sale con el código 1 y no inicia nada si no se puede cargar un archivo de ruta o si `nx build` aún no ha creado el proyecto.
 
 ## Preguntas de `nx new`
 

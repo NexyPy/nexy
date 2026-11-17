@@ -116,3 +116,12 @@ class TestExistingGitHistory:
         _git(project, "init", "-b", "main")
         _clone(remote, project)
         assert not (project / ".git_old").exists()
+
+
+class TestIntoAFolderWithFiles:
+    def test_merging_into_it_is_a_warning(self, tmp_path, monkeypatch, capsys):
+        from nexy.modules.cli.init import clone
+
+        monkeypatch.setattr(clone, "_git", lambda *_args: None)
+        clone._extract(tmp_path, ".", fresh=False)
+        assert capsys.readouterr().out == "warning: Directory not empty, merging files...\n"

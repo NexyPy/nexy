@@ -5,7 +5,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from nexy.helpers.common.console import console
+from nexy.helpers.common.messages import warning
 from nexy.helpers.fs.tree import remove_tree
 from nexy.modules.i18n import t
 
@@ -56,5 +56,4 @@ class GitBackup:
         except (OSError, shutil.Error):
             # Best effort: the destination .git stays untouched, so a failed restore cannot
             # corrupt the project.
-            warning = t("init.git_restore", "could not restore previous .git")
-            console.print(f"  [yellow]⚠[/yellow] {warning}")
+            warning(t("init.git_restore", "could not restore previous .git"))

@@ -55,6 +55,19 @@ class TestFailure:
         result = self._run(tmp_path, monkeypatch, RuntimeError("no network"))
         assert "no network" in result.output
 
+    def test_the_failure_is_an_error_line_with_its_cause(self, tmp_path, monkeypatch):
+        result = self._run(tmp_path, monkeypatch, RuntimeError("no network"))
+        assert "error: Could not create the project\n  cause: no network\n" in result.output
+
+    def test_an_unknown_template_is_an_error(self, tmp_path, monkeypatch):
+        from typer.testing import CliRunner
+
+        from nexy.modules.cli import CLI
+
+        monkeypatch.chdir(tmp_path)
+        result = CliRunner().invoke(CLI, ["new", "demo", "--template", "no-such-template"])
+        assert "error: Unknown template 'no-such-template'." in result.output
+
     def test_no_traceback_is_shown(self, tmp_path, monkeypatch):
         result = self._run(tmp_path, monkeypatch, RuntimeError("no network"))
         assert "Traceback" not in result.output and "site-packages" not in result.output

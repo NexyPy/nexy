@@ -1,0 +1,90 @@
+{% if useCSR %}
+{%- set cls = "className" if client_framework == "react" else "class" -%}
+{%- set measure -%}
+{% raw %}const IDLE = "Not checked yet.";
+const WAITING = "Waiting for the server...";
+
+// Calls the action and times the round trip: what the page says once the server answered.
+async function measure(): Promise<string> {
+  const started = performance.now();
+  try {
+    const answer = await ping();
+    const took = Math.round(performance.now() - started);
+    return `Connected in ${took} ms. Python ${answer.python} answered at ${answer.time}.`;
+  } catch (error) {
+    return `No answer from the server: ${error instanceof Error ? error.message : String(error)}`;
+  }
+}{% endraw %}
+{%- endset -%}
+{%- if client_framework == "vue" -%}
+{%- set check = '@click="check"' -%}{%- set pending = ':disabled="pending"' -%}{%- set status = "{{ status }}" -%}
+<script setup lang="ts">
+import { ref } from "vue";
+import { ping } from "@nexy/actions";
+
+{{ measure }}
+
+const status = ref(IDLE);
+const pending = ref(false);
+
+async function check() {
+  pending.value = true;
+  status.value = WAITING;
+  status.value = await measure();
+  pending.value = false;
+}
+</script>
+
+<template>
+{% include "connection.html.jinja2" %}
+</template>
+{%- elif client_framework == "svelte" -%}
+{%- set check = 'onclick={check}' -%}{%- set pending = 'disabled={pending}' -%}{%- set status = "{status}" -%}
+<script lang="ts">
+  import { ping } from "@nexy/actions";
+
+{{ measure | indent(2, true) }}
+
+  let status = $state(IDLE);
+  let pending = $state(false);
+
+  async function check() {
+    pending = true;
+    status = WAITING;
+    status = await measure();
+    pending = false;
+  }
+</script>
+
+{% include "connection.html.jinja2" %}
+{%- else -%}
+{%- set getter = "()" if client_framework == "solid" else "" -%}
+{%- set check = 'onClick={check}' -%}{%- set pending = 'disabled={pending' ~ getter ~ '}' -%}{%- set status = '{status' ~ getter ~ '}' -%}
+{% if client_framework == "solid" %}import { createSignal } from "solid-js";
+{% elif client_framework == "preact" %}import { useState } from "preact/hooks";
+{% else %}import { useState } from "react";
+{% endif %}import { ping } from "@nexy/actions";
+
+{{ measure }}
+
+export default function Connection() {
+{% if client_framework == "solid" %}  const [status, setStatus] = createSignal(IDLE);
+  const [pending, setPending] = createSignal(false);
+{% else %}  const [status, setStatus] = useState(IDLE);
+  const [pending, setPending] = useState(false);
+{% endif %}
+  async function check() {
+    setPending(true);
+    setStatus(WAITING);
+    setStatus(await measure());
+    setPending(false);
+  }
+
+  return (
+    <>
+{% include "connection.html.jinja2" %}
+    </>
+  );
+}
+{%- endif %}
+{% endif %}

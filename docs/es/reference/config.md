@@ -23,6 +23,7 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS directamente |
 | `useDevTools` | `True` | la barra de herramientas `nexy dev` agrega a cada página (información de la página, rutas, errores, configuración); `False` lo elimina. Nunca presente en producción. |
 | `useHealth` | `False` | servir `GET /health/live` y `GET /health/ready` para balanceadores de carga y sondas de Kubernetes; consulte [Implementar](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | el cuerpo de solicitud más grande que lee un trabajador, en bytes (1 MiB); uno más grande es `413`, y `0` desactiva el límite. Levántelo para una ruta que requiera carga de archivos. |
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
 
@@ -69,7 +70,7 @@ Cada campo agrega extensiones a un rol reservado. `useLayoutExtensions = ["md"]`
 
 | campo | Predeterminado | Significado |
 |---|---|---|
-| `useDocs` | `True` | servir la página de referencia de Scalar; `/openapi.json` se sirve de cualquier manera |
+| `useDocs` | `"dev"` | donde se sirven la página de referencia de Scalar y `/openapi.json`: `"dev"` solo en `nx dev`, `True` en producción también (el esquema enumera todas las rutas y acciones del servidor), `False` en ninguna parte |
 | `useDocsUrl` | `"/docs"` | ruta de la página de referencia de API |
 | `useRedocsUrl` | `"/redocs"` | declarado pero no se monta ninguna ruta |
 | `useTitle` | `"Nexy App"` | OpenAPI título y título de página (`"Nexy"` en `NexyConfigModel`) |
@@ -86,14 +87,14 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-O apáguelo con `useDocs = False`. `/openapi.json` permanece atendido en ambos casos: mantener las rutas del proyecto fuera de ese camino.
+O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. Mientras la referencia esté encendida, mantenga las rutas del proyecto fuera de ese camino.
 
 ## software intermedio
 
 | campo | Predeterminado | Significado |
 |---|---|---|
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
-| `useCORS` | `None` | kwargs para `CORSMiddleware` |
+| `useCORS` | `None` | kwargs por `CORSMiddleware` |
 | `useGZip` | `None` | kwargs por `GZipMiddleware` |
 | `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
 | `useSession` | `None` | kwargs por `SessionMiddleware` |

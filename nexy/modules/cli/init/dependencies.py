@@ -5,6 +5,7 @@ from pathlib import Path
 
 from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
+from nexy.helpers.common.messages import warning
 from nexy.helpers.common.network import Connection, probe
 from nexy.helpers.common.tasks import run_task
 from nexy.modules.cli.init.connection import is_usable
@@ -35,11 +36,10 @@ def node_package_manager(dest: Path = Path(".")) -> str | None:
 
 
 def _no_package_manager(deps: list[str]) -> None:
-    warning = f"[yellow]{t('add.warning', 'Warning:')}[/yellow] "
     message = t(
         "add.no_pm", "No package manager found. Please install dependencies manually: {names}"
     )
-    console.print(warning + message.format(names=", ".join(deps)))
+    warning(message.format(names=", ".join(deps)))
 
 
 def install_packages(deps: list[str], dest: Path | None = None) -> None:
@@ -52,18 +52,13 @@ def install_packages(deps: list[str], dest: Path | None = None) -> None:
         _no_package_manager(deps)
         return
     names = ", ".join(deps)
-    result = run_task(
+    # A failure is already an `error:` line with the cause and the end of the output.
+    run_task(
         t("add.installing", "Installing {names}").format(names=names),
         package_manager.add_argv(manager, deps),
         cwd=dest,
         done=t("add.installed", "Installed {names}").format(names=names),
     )
-    if not result.ok:
-        error, failed = (
-            t("add.error", "Error:"),
-            t("add.install_failed", "Failed to install dependencies"),
-        )
-        console.print(f"[red]{error}[/red] {failed}")
 
 
 def orm_packages(orm: str | None, database: str) -> list[str]:
@@ -165,19 +160,22 @@ class DependencyInstaller:
                 "init.node_manager_not_found",
                 "No Node.js package manager found. Install bun, pnpm or npm.",
             )
-            console.print(f"[yellow]nexy[/yellow] » {missing}")
+            warning(missing)
             return
         command = package_manager.install_argv(manager, allow_builds=("esbuild",))
         label = f"{manager} install node_modules"
-        if not self._run(command, label, label) and manager == "npm":
-            retry = t("init.node_retry", "Retrying with --legacy-peer-deps...")
-            console.print(f"[yellow]![/yellow] {retry}")
-            self._run([*command, "--legacy-peer-deps"], label, label)
+        done = t("init.node_installed", "Installed node_modules with {manager}")
+        done = done.format(manager=manager)
+        if not self._run(command, label, done) and manager == "npm":
+            warning(t("init.node_retry", "Retrying with --legacy-peer-deps..."))
+            self._run([*command, "--legacy-peer-deps"], label, done)
 
     def install_python_dependencies(self) -> None:
         if (self.directory / "pyproject.toml").exists():
-            self._run(["uv", "sync"], "uv sync .venv")
+            synced = t("init.python_synced", "Synced .venv with uv")
+            self._run(["uv", "sync"], "uv sync .venv", synced)
 
     def install_orm(self) -> None:
         for package in orm_packages(self.orm, self.database):
-            self._run(["uv", "add", package], f"uv add .venv {package}")
+            added = t("init.package_added", "Added {package} to .venv").format(package=package)
+            self._run(["uv", "add", package], f"uv add .venv {package}", added)

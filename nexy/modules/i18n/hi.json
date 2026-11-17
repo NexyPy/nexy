@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "जोड़ा गया: {path}",
     "available": "उपलब्ध UI कॉम्पोनेंट: {names}",
-    "error": "त्रुटि:",
     "exists": "छोड़ा गया: {path} पहले से मौजूद है।",
-    "fetch_failed": "{url} से कॉम्पोनेंट नहीं लाया जा सका: {error}",
+    "fetch_failed": "{url} से कंपोनेंट लाने में विफल",
     "fetching": "{url} से रिमोट कॉम्पोनेंट लाया जा रहा है...",
     "help_all": "रजिस्ट्री के सभी उपलब्ध कॉम्पोनेंट जोड़ें",
     "help_components": "जोड़े जाने वाले कॉम्पोनेंट (रजिस्ट्री के नाम या URL)",
@@ -12,38 +10,44 @@
     "help_ui": "इन्हें UI कॉम्पोनेंट मानने के लिए बाध्य करें",
     "help_url": "इन्हें URL मानने के लिए बाध्य करें",
     "https_only": "केवल https:// वाले URL समर्थित हैं।",
-    "install_failed": "डिपेंडेंसी इंस्टॉल नहीं हो सकीं",
     "installed": "{names} इंस्टॉल हो गया",
     "installing": "{names} इंस्टॉल हो रहा है",
     "no_pm": "कोई पैकेज मैनेजर नहीं मिला। डिपेंडेंसी हाथ से इंस्टॉल करें: {names}",
     "not_found": "कॉम्पोनेंट '{name}' रजिस्ट्री में नहीं मिला।",
     "usage": "उपयोग:",
     "usage_text": "nexy add [कॉम्पोनेंट_का_नाम या URL]...",
-    "warning": "चेतावनी:",
-    "write_failed": "{path} नहीं लिखा जा सका: {error}"
+    "write_failed": "{path} लिखने में विफल"
   },
   "build": {
     "building_client": "क्लाइंट बंडल बन गया",
-    "checks_failed": "जाँच विफल रहीं",
-    "checks_passed": "सभी जाँच सफल रहीं",
-    "client_components": "क्लाइंट कॉम्पोनेंट",
+    "checks_failed": "कुछ जाँचें विफल रहीं",
+    "client_components": "क्लाइंट कंपोनेंट",
     "compiling_routes": "रूट कंपाइल हो गए",
     "compiling_server": "सर्वर कॉम्पोनेंट कंपाइल हो गए",
     "creating": "ऑप्टिमाइज़्ड प्रोडक्शन बिल्ड बनाया जा रहा है",
-    "failed_client": "क्लाइंट बिल्ड विफल रहा",
+    "failed_client": "क्लाइंट बंडल बनाने में विफल",
     "failed_components": "{count} कॉम्पोनेंट विफल रहे",
-    "failed_label": "बिल्ड विफल",
     "routes": "रूट",
-    "server_components": "सर्वर कॉम्पोनेंट",
-    "skipped_label": "छोड़ा गया (कैश से)",
-    "success_build": "बिल्ड {time} में पूरा हुआ",
-    "success_label": "बिल्ड सफल"
+    "server_components": "सर्वर कंपोनेंट",
+    "built": "प्रोजेक्ट बन गया",
+    "count_built": "{count} बने",
+    "count_cached": "{count} कैश से",
+    "count_rendered": "{count} रेंडर हुए",
+    "count_client_only": "{count} केवल क्लाइंट",
+    "more": "और {count}",
+    "not_rendered": "{path} का कोई सर्वर HTML नहीं है: यह केवल क्लाइंट पर रेंडर होता है",
+    "running_check": "{name} चल रहा है",
+    "ran_check": "{name} चल गया"
   },
   "check": {
-    "compiling": ".nexy फ़ाइलें कंपाइल हो रही हैं ...",
+    "compiling": ".nexy फ़ाइलें कंपाइल हो रही हैं",
     "failed": "{count} भाग विफल रहे",
-    "passed": "सभी जाँच सफल रहीं",
-    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है"
+    "passed": "सभी जाँचें सफल रहीं",
+    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है",
+    "checking": "{tool} से {scope} की जाँच हो रही है",
+    "checked": "{tool} से {scope} की जाँच हो गई",
+    "compiled": ".nexy फ़ाइलें कंपाइल हो गईं",
+    "not_compiled": "{path} कंपाइल नहीं हो सका"
   },
   "cli": {
     "cmd": {
@@ -80,6 +84,10 @@
       "help_path": "प्रोजेक्ट की रूट (डिफ़ॉल्ट: वर्तमान फ़ोल्डर)",
       "done": "{count} स्किल .agents/skills और .claude/skills में रखे गए",
       "kept": "आपकी फ़ाइलें जस की तस रखी गईं: {files}।"
+    },
+    "took": "{duration} में",
+    "init": {
+      "failed": "प्रोजेक्ट इनिशियलाइज़ नहीं हो सका"
     }
   },
   "dev": {
@@ -88,11 +96,10 @@
     "deps_hint": "nexy dev डिपेंडेंसी इंस्टॉल नहीं करता; nexy init और nexy new करते हैं।",
     "deps_missing": "Node.js की डिपेंडेंसी मौजूद नहीं हैं।",
     "deps_run": "चलाएँ: {command}",
-    "error": "त्रुटि: {error}",
     "error_label": "त्रुटि",
     "error_waiting": "एप्लिकेशन शुरू नहीं हो सकता: सुधार की प्रतीक्षा है।",
     "exited": "बंद हो गया",
-    "init_error": "शुरू करते समय त्रुटि हुई:",
+    "init_error": "डेव सर्वर शुरू नहीं हो सका",
     "routes_failed": "क्लाइंट रूट अपडेट नहीं हो सके: {error}",
     "starting_vite": "डेवलपमेंट सर्वर शुरू हो रहा है...",
     "stopping": "सर्वर रोके जा रहे हैं...",
@@ -103,8 +110,14 @@
   },
   "format": {
     "failed": "{count} फ़ाइलें विफल रहीं",
-    "passed": "फ़ॉर्मैटिंग पूरी हुई",
-    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है"
+    "passed": "सभी फ़ाइलें फ़ॉर्मैट हो गईं",
+    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है",
+    "formatting": "{tool} से {scope} फ़ॉर्मैट हो रहा है",
+    "formatted": "{tool} से {scope} फ़ॉर्मैट हो गया",
+    "checking": "{tool} से {scope} का फ़ॉर्मैट जाँचा जा रहा है",
+    "checked": "{tool} से {scope} का फ़ॉर्मैट जाँचा गया",
+    "nexy": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो रही हैं",
+    "nexy_done": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो गईं"
   },
   "init": {
     "alias_invalid": "@, ~, # या $ का उपयोग करें, उसके बाद वैकल्पिक अक्षर (जैसे ~ या @app)।",
@@ -131,7 +144,6 @@
       "web": "Web",
       "yes": "हाँ"
     },
-    "error": "शुरू करना विफल रहा: {error}",
     "git_restore": "पिछला .git वापस नहीं लाया जा सका",
     "hint": {
       "alias_custom": "कोई और उपसर्ग चुनें, जैसे ~ या #",
@@ -190,7 +202,11 @@
     "venv": {
       "created": "वर्चुअल एनवायरनमेंट बन गया",
       "creating": "वर्चुअल एनवायरनमेंट बनाया जा रहा है"
-    }
+    },
+    "node_installed": "{manager} से node_modules इंस्टॉल किया",
+    "python_synced": "uv से .venv सिंक किया",
+    "package_added": "{package} को .venv में जोड़ा",
+    "created": "{name} से प्रोजेक्ट बनाया"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich शुरू नहीं किया गया है। पहले 'nx m --init' चलाएँ।",
@@ -205,7 +221,7 @@
     "tool_missing": "त्रुटि: PATH में {tool} नहीं मिला। इसे इंस्टॉल करके फिर कोशिश करें।"
   },
   "server": {
-    "launch_failed": "सर्वर शुरू नहीं हो सका:",
+    "launch_failed": "सर्वर शुरू नहीं हो सका",
     "local": "लोकल:",
     "network": "नेटवर्क:",
     "ready": "तैयार:",
@@ -223,7 +239,11 @@
     "help_server": "सर्वर टेस्ट चलाएँ (pytest)",
     "passed": "सभी टेस्ट सफल रहे",
     "skip_client": "vitest कॉन्फ़िगर नहीं है: क्लाइंट टेस्ट छोड़े जा रहे हैं",
-    "skip_tool": "pytest नहीं मिला: सर्वर टेस्ट छोड़े जा रहे हैं"
+    "skip_tool": "pytest नहीं मिला: सर्वर टेस्ट छोड़े जा रहे हैं",
+    "running_server": "pytest से सर्वर टेस्ट चल रहे हैं",
+    "ran_server": "pytest से सर्वर टेस्ट चल गए",
+    "running_client": "vitest से क्लाइंट टेस्ट चल रहे हैं",
+    "ran_client": "vitest से क्लाइंट टेस्ट चल गए"
   },
   "tui": {
     "keys": {
@@ -237,7 +257,7 @@
     "compile_failed": "{path} कंपाइल नहीं हो सका",
     "compiled": "{path} {time} में कंपाइल हुआ",
     "error_kept": "इसे ठीक करके सहेजें: सर्वर अपना आखिरी काम करने वाला संस्करण चलाता रहेगा।",
-    "restart_failed": "सर्वर फिर से शुरू नहीं हो सका: {error}",
+    "restart_failed": "सर्वर फिर से शुरू नहीं हो सका",
     "update": "अपडेट"
   }
 }

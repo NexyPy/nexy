@@ -4,8 +4,18 @@
 // The root layout writes the whole document; the page arrives in the default slot. It declares no
 // props, so the route params are not copied onto <html> as attributes.
 defineOptions({ inheritAttrs: false });
+import { ref } from "vue";
 import { Link } from "@nexy/client";
+import Sheet from "@/components/sheet.vue";
 import ThemeToggle from "@/components/theme-toggle.vue";
+
+const open = ref(false);
+const opener = ref<HTMLButtonElement | null>(null);
+// Closing gives the focus back to the button that opened the menu.
+function close() {
+  open.value = false;
+  opener.value?.focus();
+}
 
 // Set through v-html: Vue escapes the text of a <script> element, which would break `&&`.
 const criticalCss = `{% endraw %}{% include "critical.css" %}{% raw %}`;

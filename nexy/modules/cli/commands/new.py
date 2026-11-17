@@ -8,7 +8,7 @@ from rich.markup import escape
 from nexy.__version__ import __version__
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
-from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.messages import error
 from nexy.modules.cli.init import InitProject, TemplateNotFoundError, template_source
 from nexy.modules.cli.init.prompts import ask_project_name
 from nexy.modules.i18n import t
@@ -20,18 +20,17 @@ def _require_known_template(template: str) -> None:
         template_source(template)
     except TemplateNotFoundError:
         message = t("cli.new.template_unknown", "Unknown template '{template}'.")
-        console.print(tagged("nexy", message.format(template=template), "red"))
+        error(message.format(template=template))
         raise typer.Exit(code=1) from None
 
 
-def _report_failure(error: Exception, created: Path | None) -> typer.Exit:
+def _report_failure(failure: Exception, created: Path | None) -> typer.Exit:
     """Remove the half-made project, say why it failed, and give the exit to raise."""
     if created is not None and created.exists():
         shutil.rmtree(created, ignore_errors=True)
-    reason = escape(str(error)) or type(error).__name__
+    reason = escape(str(failure)) or type(failure).__name__
     console.print()
-    console.print(f"[red]x[/red] {t('cli.new.failed', 'Could not create the project')}")
-    console.print(f"  [dim]{reason}[/dim]")
+    error(t("cli.new.failed", "Could not create the project"), cause=reason)
     return typer.Exit(code=1)
 
 
@@ -80,5 +79,5 @@ def new(
         sys.exit(130)
     except typer.Exit:
         raise
-    except Exception as error:
-        raise _report_failure(error, created) from None
+    except Exception as failure:
+        raise _report_failure(failure, created) from None

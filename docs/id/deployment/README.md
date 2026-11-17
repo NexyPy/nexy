@@ -151,9 +151,9 @@ Setiap halaman adalah HTML, tetapi Nexy mengasumsikan server untuk perutean dan 
 - [ ] `nx build` di CI, tidak ada peringatan untuk rute yang Anda harapkan akan dirender di server
 - [ ] `nx start` keluar dengan kode 1, dan tidak memulai apa pun, ketika file rute tidak dapat dimuat
 - [ ] `NEXY_ACTION_SECRET` disetel, atau `__nexy__/action.key` disimpan dengan build
-- [ ] `useDocs = False` dalam produksi jika skema API tidak boleh bersifat publik
+- [ ] `useDocs` tersisa di `"dev"`, jadi produksi tidak melayani `/docs` maupun `/openapi.json`
 - [ ] `useTrustedHost` dan `useHTTPSRedirect` ditetapkan untuk penerapan publik
-- [ ] `useHealth = True` ketika penyeimbang beban atau Kubernetes menyelidiki aplikasi
+- [ ] `useHealth = True` ketika penyeimbang beban atau Kubernetes memeriksa aplikasi
 - [ ] `__nexy__/` tidak dilakukan
 
 ## Langkah selanjutnya

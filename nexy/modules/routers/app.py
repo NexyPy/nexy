@@ -17,6 +17,7 @@ from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.access_log import DEVTOOLS_PROBE, AccessLogMiddleware
+from nexy.helpers.server.body_limit import BodyLimitMiddleware
 from nexy.helpers.server.dev_mode import vite_proxy_port
 from nexy.helpers.server.devtools import DevToolsMiddleware
 from nexy.helpers.server.devtools.state import setup_devtools
@@ -77,6 +78,11 @@ def _telemetry_options() -> dict[str, Any]:
     }
 
 
+def _docs_served(wanted: bool | str) -> bool:
+    """`useDocs`: True everywhere, False nowhere, "dev" on the dev server only."""
+    return is_dev() if wanted == "dev" else bool(wanted)
+
+
 class AppServer:
     """Assembles the FastAPI application from config, routers, middleware and routes."""
 
@@ -106,17 +112,13 @@ class AppServer:
         )
 
     def _resolve_docs_settings(self) -> tuple[str | None, str | None]:
-        """KISS: Logic extracted to a single specialized method."""
-        conf = self.config
-        if not conf.useDocs:
-            if not AppServer._docs_disabled_printed:
+        """The URLs of the API reference, or None for both when it is not served."""
+        if not _docs_served(self.config.useDocs):
+            if self.config.useDocs is False and not AppServer._docs_disabled_printed:
                 console.print("[yellow]API documentation is disabled[/yellow]")
                 AppServer._docs_disabled_printed = True
             return None, None
-
-        d_url = conf.useDocsUrl
-        r_url = conf.useRedocsUrl
-        return d_url, r_url
+        return self.config.useDocsUrl, self.config.useRedocsUrl
 
     def _warn_shadowed_routes(self, server: FastAPI) -> None:
         """Name each project route that the API reference, served first, keeps from answering."""
@@ -139,6 +141,8 @@ class AppServer:
             version=self.version,
             docs_url=None,
             redoc_url=None,
+            # The schema lists every route and server action: served with the reference only.
+            openapi_url="/openapi.json" if self._docs_url else None,
             **_telemetry_options(),
         )
 
@@ -153,6 +157,9 @@ class AppServer:
         setup_favicon(server, self.config.ROUTER_PATH)
         setup_static_files(server)
         setup_middlewares(server, self.config)
+        # Over the project's middlewares: no one reads a body over the limit. Under the log: it
+        # shows the 413.
+        server.add_middleware(BodyLimitMiddleware, limit=self.config.useMaxBodySize or None)
         # Added last, so outermost: it times everything below it. Chrome DevTools probes a path
         # the dev server never serves, so dev leaves that one out of the log (#82).
         server.add_middleware(AccessLogMiddleware, quiet=(DEVTOOLS_PROBE,) if is_dev() else ())

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from nexy.modules.cli.init import template_setup
@@ -37,3 +39,13 @@ def test_the_old_call_without_an_orm_still_works(commands):
 def test_a_project_whose_tables_exist_is_not_told_to_migrate(commands):
     template_setup.print_success_message("demo", orm="SQLModel", migrated=True)
     assert not any("migrate" in command for command in commands)
+
+
+def test_the_descriptions_line_up_on_the_longest_command(capsys):
+    template_setup.print_success_message("demo", orm="SQLModel")
+    described = [re.match(r"  (\S.*?)\s{2,}(\S.*)$", line) for line in _lines(capsys)]
+    assert len({match.start(2) for match in described if match}) == 1
+
+
+def _lines(capsys) -> list[str]:
+    return [line for line in capsys.readouterr().out.splitlines() if line.startswith("  ")]

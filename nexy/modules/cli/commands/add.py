@@ -5,11 +5,13 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 import typer
+from rich.markup import escape
 
 from nexy.core.config import Config
 from nexy.core.framework_rules import as_list
 from nexy.helpers.common.console import console
-from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.messages import error, warning
+from nexy.helpers.common.tasks import waiting
 from nexy.helpers.fs.path import PathUtil
 from nexy.helpers.imports.component import framework_from_extension, wrap_component_script
 from nexy.modules.cli.init.dependencies import install_packages
@@ -47,18 +49,13 @@ class _SafeRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-def _error(message: str) -> None:
-    console.print(f"[red]{t('add.error', 'Error:')}[/red] {message}")
-
-
 def _download(url: str) -> bytes:
     """The body of *url*, at most `_MAX_REMOTE_BYTES`; redirects are re-checked."""
     fetching = t("add.fetching", "Fetching remote component from {url}...")
-    status = tagged("nexy", fetching.format(url=url), "yellow")
     # Scheme and host validated by _is_allowed_url; redirects re-checked by _SafeRedirect.
     opener = urllib.request.build_opener(_SafeRedirect)
     with (
-        console.status(status, spinner="dots"),
+        waiting(fetching.format(url=url)),
         opener.open(url, timeout=_REMOTE_TIMEOUT) as response,  # nosec B310
     ):
         raw: bytes = response.read(_MAX_REMOTE_BYTES + 1)
@@ -83,15 +80,15 @@ def fetch_remote_component(url: str, expected_sha256: str | None = None) -> str 
     pin. The digest of what was fetched is always printed so it can be pinned.
     """
     if not _is_allowed_url(url):
-        _error(t("add.https_only", "Only https:// URLs are supported."))
+        error(t("add.https_only", "Only https:// URLs are supported."))
         return None
     try:
         raw = _download(url)
         console.print(f"[dim]sha256 {_check_digest(raw, expected_sha256)}[/dim]")
         return raw.decode("utf-8")
     except Exception as failure:
-        failed = t("add.fetch_failed", "Failed to fetch component from {url}: {error}")
-        _error(failed.format(url=url, error=failure))
+        failed = t("add.fetch_failed", "Failed to fetch component from {url}")
+        error(failed.format(url=escape(url)), cause=escape(str(failure)))
         return None
 
 
@@ -165,11 +162,8 @@ def _resolve_remote_component(url: str, sha256: str | None = None) -> Resolved |
 def _resolve_registry_component(item: str, framework: str) -> Resolved | None:
     entry = COMPONENT_REGISTRY.get(item.lower())
     if entry is None:
-        not_found_template = t("add.not_found", "Component '{name}' not found in registry.")
-        not_found_msg = (
-            f"[red]{t('add.error', 'Error:')}[/red] {not_found_template.format(name=item)}"
-        )
-        console.print(not_found_msg)
+        not_found = t("add.not_found", "Component '{name}' not found in registry.")
+        error(not_found.format(name=escape(item)))
         return None
 
     fw = framework if framework in entry.framework_code else next(iter(entry.framework_code))
@@ -181,18 +175,12 @@ def _write_nexy_component(target_dir: Path, name: str, content: str, framework: 
     file_path = target_dir / f"{name}.nexy"
 
     if file_path.exists():
-        exists = t("add.exists", "Skipping: {path} already exists.")
-        skip_msg = f"[yellow]{exists.format(path=file_path)}[/yellow]"
-        console.print(skip_msg)
+        warning(t("add.exists", "Skipping: {path} already exists.").format(path=file_path))
         return
 
     try:
         PathUtil.write_file(file_path, wrap_component_script(content, framework))
-        added = t("add.added", "Added: {path}").format(path=file_path)
-        console.print(f"[green]{added}[/green]")
-    except Exception as e:
-        failed = t("add.write_failed", "Failed to write {path}: {error}")
-        error_msg = (
-            f"[red]{t('add.error', 'Error:')}[/red] {failed.format(path=file_path, error=e)}"
-        )
-        console.print(error_msg)
+        console.print(f" [green]+[/green] {escape(str(file_path))}")
+    except Exception as problem:
+        failed = t("add.write_failed", "Failed to write {path}")
+        error(failed.format(path=file_path), cause=escape(str(problem)))

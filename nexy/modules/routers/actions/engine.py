@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from rich.markup import escape
 
 from nexy.core.config import Config
-from nexy.helpers.common.console import console
+from nexy.helpers.common import messages
 from nexy.helpers.common.pycheck import describe
 from nexy.helpers.fs.path import PathUtil
 from nexy.modules.routers.actions.endpoint import make_endpoint
@@ -63,7 +63,8 @@ class ActionEngine:
         if error is None:
             return
         problem = describe(error)
-        console.print(f"  [red]x[/red] {escape(name)}: {escape(problem.format())}")
+        cause = problem.format().removeprefix("-  ")
+        messages.error(escape(name), cause=escape(cause))
 
     def specs(self) -> list[ActionSpec]:
         return [build_spec(func_id, handler) for func_id, handler in ACTIONS_STORE.registry.items()]

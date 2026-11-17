@@ -1,3 +1,5 @@
+import contextlib
+
 import pytest
 
 from nexy.modules.cli.init.project import AlreadyInitializedError, InitProject
@@ -44,3 +46,10 @@ def test_generate_init_files_skips_asset_only_dirs(tmp_path) -> None:
     generate_init_files(tmp_path / "src")
     assert (tmp_path / "src" / "__init__.py").exists()
     assert not (tmp_path / "src" / "public" / "__init__.py").exists()
+
+
+def test_ensure_ready_says_an_initialized_folder_is_an_error(tmp_path, capsys) -> None:
+    (tmp_path / "nexyconfig.py").write_text("", encoding="utf-8")
+    with contextlib.suppress(AlreadyInitializedError):
+        InitProject()._ensure_ready(tmp_path, None)
+    assert capsys.readouterr().out == "error: Project already initialized here\n"
