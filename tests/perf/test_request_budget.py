@@ -34,11 +34,18 @@ ROUTES = {
 }
 BODY = json.dumps({"a": 1, "b": 2}).encode()
 
-# Measured ratios on 2026-11-17, times about 1.5 for the noise of a shared CI runner.
-BUDGETS = {"fast": 4.3, "typed": 16.0, "action": 4.3}
+# Measured ratios on 2026-11-17, times about 1.5 for the noise of a shared CI runner. The sync
+# route is compared with a sync Starlette route: both hand the request to the thread pool, whose
+# cost varies with the machine (16.7 against an async route on a CI runner, 20 on battery power).
+BUDGETS = {"fast": 4.3, "typed": 2.0, "action": 4.3}
 
 
 async def _json(_request: Request) -> Response:
+    return JSONResponse({"message": "Hello"})
+
+
+def _sync_json(_request: Request) -> Response:
+    """Starlette hands a sync endpoint to its thread pool: the same hop as a Nexy `def` route."""
     return JSONResponse({"message": "Hello"})
 
 
@@ -48,7 +55,11 @@ async def _add(request: Request) -> Response:
 
 
 def _baseline() -> Starlette:
-    routes = [Route("/json", _json), Route("/add", _add, methods=["POST"])]
+    routes = [
+        Route("/json", _json),
+        Route("/sync", _sync_json),
+        Route("/add", _add, methods=["POST"]),
+    ]
     return Starlette(routes=routes)
 
 
@@ -105,7 +116,7 @@ def test_budget_of_an_async_file_route(nexy_app):
 def test_budget_of_a_sync_typed_file_route(nexy_app):
     app, _action = nexy_app
     nexy = seconds_per_request(app, "/typed")
-    ratio = _ratio(nexy, seconds_per_request(_baseline(), "/json"), "typed")
+    ratio = _ratio(nexy, seconds_per_request(_baseline(), "/sync"), "typed")
     assert ratio < BUDGETS["typed"]
 
 
