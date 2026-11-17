@@ -66,6 +66,24 @@ class TestRunTask:
         run_task("Installing x", [sys.executable, "-c", code], console=console)
         assert "  boom: no such package" in buffer.getvalue()
 
+    def test_a_failure_keeps_only_the_end_of_a_long_output(self):
+        console, buffer = _console()
+        code = "import sys; [print(f'line {n}') for n in range(40)]; sys.exit(1)"
+        run_task("x", [sys.executable, "-c", code], console=console)
+        assert "line 0\n" not in buffer.getvalue()
+
+    def test_full_output_keeps_every_line_of_a_failure(self):
+        console, buffer = _console()
+        code = "import sys; [print(f'line {n}') for n in range(40)]; sys.exit(1)"
+        run_task("x", [sys.executable, "-c", code], console=console, full_output=True)
+        assert "  line 0\n" in buffer.getvalue()
+
+    def test_full_output_is_not_dimmed(self):
+        console = Console(file=io.StringIO(), force_terminal=True, width=80)
+        code = "import sys; print('src/app.py:3: error'); sys.exit(1)"
+        run_task("x", [sys.executable, "-c", code], console=console, full_output=True)
+        assert "\x1b[2m  src/app.py" not in console.file.getvalue()
+
     def test_a_missing_executable_is_an_error_not_an_exception(self):
         console, buffer = _console()
         run_task("Running", ["definitely-not-a-binary-xyz"], console=console)
