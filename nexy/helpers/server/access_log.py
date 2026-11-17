@@ -49,7 +49,8 @@ def printable_path(path: str) -> str:
     uvicorn hands the path decoded, so `/%1b[2J` or `/%0aGET%20/admin` would write a real escape or
     a real new line into the log: a cleared terminal, or a forged request line.
     """
-    if not any(_is_control(char) for char in path):
+    # Every control character is unprintable: one check in C for the usual path.
+    if path.isprintable():
         return path
     return "".join(f"%{ord(char):02X}" if _is_control(char) else char for char in path)
 
