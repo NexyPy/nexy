@@ -103,7 +103,7 @@ Nexy garantiza que ambos puntos finales respondan antes de `useTrustedHost` y `u
 
 Por convención, mantienes tus propias rutas fuera de `/health/live` y `/health/ready` mientras `useHealth` está activada: los puntos finales de Nexy responden primero. `useHealth` es `False` de forma predeterminada, por lo que un proyecto que no lo establece mantiene ambas rutas.
 
-Tu aplicación es responsable de comprobar de qué depende: `/health/ready` informa el ciclo de vida del servidor, no el estado de una base de datos.
+Tu aplicación es responsable de verificar de qué depende: `/health/ready` informa el ciclo de vida del servidor, no el estado de una base de datos.
 
 Apunte las sondas de un Kubernetes `Deployment` hacia ellos:
 
@@ -151,7 +151,7 @@ Cada página es HTML, pero Nexy asume un servidor para el enrutamiento y para lo
 - [ ] `nx build` en CI, no hay advertencias para las rutas que espera representar en el servidor
 - [ ] `nx start` sale con el código 1 y no inicia nada cuando un archivo de ruta no se puede cargar
 - [ ] `NEXY_ACTION_SECRET` establecido, o `__nexy__/action.key` mantenido con la compilación
-- [ ] `useDocs = False` en producción si el esquema de API no debe ser público
+- [ ] `useDocs` se fue en `"dev"`, por lo que la producción no sirve ni a `/docs` ni a `/openapi.json`
 - [ ] `useTrustedHost` y `useHTTPSRedirect` configurados para implementaciones públicas
 - [ ] `useHealth = True` cuando un balanceador de carga o Kubernetes prueba la aplicación
 - [ ] `__nexy__/` no comprometido
