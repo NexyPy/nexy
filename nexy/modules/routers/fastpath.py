@@ -126,7 +126,7 @@ def build_table(router: APIRouter) -> dict[tuple[str, str], _Entry]:
     return table
 
 
-def _encode(value: Any) -> bytes:
+def encode_json(value: Any) -> bytes:
     """JSON bytes identical to what FastAPI's ``JSONResponse`` would produce."""
     try:
         return json.dumps(
@@ -178,7 +178,7 @@ class FastPath:
         if isinstance(value, Response):
             await value(scope, receive, send)
             return
-        await _send_json(_encode(value), send)
+        await _send_json(encode_json(value), send)
 
 
 def install(router: APIRouter) -> bool:
