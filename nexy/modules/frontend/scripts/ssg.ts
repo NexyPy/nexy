@@ -64,7 +64,7 @@ async function run() {
         jobs.push(run())
       }
     } else {
-      console.warn(`${c.yellow}⚠ .tsx/.jsx/.mdx files found but no React/Preact/Solid framework detected - treating as client-only bundles${c.reset}`)
+      console.warn(`${c.yellow}warning:${c.reset} .tsx/.jsx/.mdx files found but no React/Preact/Solid framework detected - treating as client-only bundles${c.reset}`)
       const { run } = await import('./ssg.html')
       jobs.push(run())
     }
@@ -93,7 +93,7 @@ async function run() {
 
   const documents = await writeDocuments()
   if (documents) {
-    console.log(`  documents » [reset][dim]${documents} pre-rendered[/dim] [green]✓[/green]`)
+    console.log(`Pre-rendered ${documents} document(s)`)
   }
 
   writeReport(results, Date.now() - startMs)
@@ -103,7 +103,7 @@ async function run() {
   const failed = all.filter(e => e.status === 'failed').length
   const notSupported = all.filter(e => e.status === 'not_supported').length
   if (all.length) {
-    console.log(`  ssg       » [reset][dim]${success} ok, ${failed} failed, ${notSupported} skipped[/dim] [green]✓[/green]`)
+    console.log(`Rendered ${success} component(s): ${failed} failed, ${notSupported} client-only`)
   }
 }
 
