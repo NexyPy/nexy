@@ -3,6 +3,8 @@
 FastAPI resolves every request through route matching, dependency solving and response
 serialization. A handler that takes no parameters, has no dependency and no declared response model
 needs none of that: ``async def GET(): return {"ok": True}`` is just "call it, encode the result".
+An endpoint marked with ``mark_raw`` (a server action) takes the Request and returns a Response:
+it is called with the Request, and FastAPI does nothing for it either.
 
 This wrapper sits at the innermost layer of the router stack, below Starlette's exception handling,
 so errors raised by a handler are processed exactly as on the normal path. Anything that is not a
@@ -21,12 +23,28 @@ from typing import Any
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute, APIRouter
+from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Match
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 _log = logging.getLogger("nexy.fastpath")
-_Entry = tuple[Callable[[], Awaitable[Any]], APIRoute]
+_Entry = tuple[Callable[..., Awaitable[Any]], APIRoute]
+_RAW = "__nexy_raw_endpoint__"
+_Raw = Callable[[Request], Awaitable[Response]]
+
+
+def mark_raw(endpoint: _Raw) -> _Raw:
+    """Say *endpoint* takes the Request and returns a Response, so FastAPI has nothing to do."""
+    setattr(endpoint, _RAW, True)
+    return endpoint
+
+
+def _is_raw(route: APIRoute) -> bool:
+    """A marked endpoint on one method and a fixed path, with no dependency around it."""
+    single = route.methods is not None and len(route.methods) == 1
+    plain = single and "{" not in route.path and not route.dependencies
+    return plain and getattr(route.endpoint, _RAW, False) is True
 
 
 def _is_default_json(route: APIRoute) -> bool:
@@ -99,7 +117,7 @@ def build_table(router: APIRouter) -> dict[tuple[str, str], _Entry]:
     table: dict[tuple[str, str], _Entry] = {}
     earlier: list[Any] = []
     for route in router.routes:
-        if isinstance(route, APIRoute) and route.methods and _is_trivial(route):
+        if isinstance(route, APIRoute) and route.methods and (_is_raw(route) or _is_trivial(route)):
             method = next(iter(route.methods))
             key = (method, route.path)
             if key not in table and not _shadowed(route, method, earlier):
@@ -156,7 +174,7 @@ class FastPath:
         handler, route = entry
         scope.setdefault("router", self.router)
         scope.update({"endpoint": handler, "path_params": {}, "route": route})
-        value = await handler()
+        value = await (handler(Request(scope, receive)) if _is_raw(route) else handler())
         if isinstance(value, Response):
             await value(scope, receive, send)
             return
