@@ -23,6 +23,7 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | सीधे HTTPS परोसें |
 | `useDevTools` | `True` | टूलबार `nexy dev` प्रत्येक पृष्ठ पर जुड़ता है (पृष्ठ जानकारी, मार्ग, त्रुटियाँ, कॉन्फ़िगरेशन); `False` इसे हटा देता है। उत्पादन में कभी मौजूद नहीं |
 | `useHealth` | `False` | लोड बैलेंसर्स और कुबेरनेट्स जांच के लिए `GET /health/live` और `GET /health/ready` परोसें; देखें [तैनाती](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | एक कार्यकर्ता द्वारा पढ़ा जाने वाला सबसे बड़ा अनुरोध निकाय, बाइट्स में (1 MiB); बड़ा वाला एक `413` है, और `0` सीमा को बंद कर देता है। फ़ाइल अपलोड करने वाले रूट के लिए इसे बढ़ाएं |
 | `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 
@@ -30,7 +31,7 @@ class NexyConfig(NexyConfigModel):
 
 | मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useORM` | `None` | परियोजना का ओआरएम: `"SQLModel"`, `"SQLAlchemy"` या `"Tortoise-ORM"`। `nx new` इसे लिखता है, और `nx migrate` इसमें से Alembic या Aerich चुनता है; इसके बिना, `nx migrate` पहला ORM इंस्टाल करता है। देखें [डेटाबेस](../guides/databases.md#migrations) |
+| `useORM` | `None` | परियोजना का ORM: `"SQLModel"`, `"SQLAlchemy"` या `"Tortoise-ORM"`। `nx new` इसे लिखता है, और `nx migrate` इसमें से Alembic या Aerich चुनता है; इसके बिना, `nx migrate` पहला ORM इंस्टाल करता है। देखें [डेटाबेस](../guides/databases.md#migrations) |
 
 ## मार्ग
 
@@ -86,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-या इसे `useDocs = False` से बंद कर दें। `/openapi.json` दोनों मामलों में सेवा बरकरार रहेगी: परियोजना के मार्गों को उस पथ से दूर रखें।
+या इसे `useDocs = False` से बंद कर दें। `/openapi.json` दोनों ही मामलों में सेवा बरकरार रहेगी: परियोजना के मार्गों को उस पथ से दूर रखें।
 
 ## मिडलवेयर
 

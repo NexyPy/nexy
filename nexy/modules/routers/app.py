@@ -17,6 +17,7 @@ from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.access_log import DEVTOOLS_PROBE, AccessLogMiddleware
+from nexy.helpers.server.body_limit import BodyLimitMiddleware
 from nexy.helpers.server.dev_mode import vite_proxy_port
 from nexy.helpers.server.devtools import DevToolsMiddleware
 from nexy.helpers.server.devtools.state import setup_devtools
@@ -153,6 +154,9 @@ class AppServer:
         setup_favicon(server, self.config.ROUTER_PATH)
         setup_static_files(server)
         setup_middlewares(server, self.config)
+        # Over the project's middlewares: no one reads a body over the limit. Under the log: it
+        # shows the 413.
+        server.add_middleware(BodyLimitMiddleware, limit=self.config.useMaxBodySize or None)
         # Added last, so outermost: it times everything below it. Chrome DevTools probes a path
         # the dev server never serves, so dev leaves that one out of the log (#82).
         server.add_middleware(AccessLogMiddleware, quiet=(DEVTOOLS_PROBE,) if is_dev() else ())

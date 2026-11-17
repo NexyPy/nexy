@@ -23,6 +23,7 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`، `useSslCertfile` | `None` | HTTPS کو براہ راست پیش کریں۔ |
 | `useDevTools` | `True` | ٹول بار `nexy dev` ہر صفحہ میں اضافہ کرتا ہے (صفحہ کی معلومات، راستے، غلطیاں، تشکیل)؛ `False` اسے ہٹاتا ہے۔ پروڈکشن میں کبھی موجود نہ ہوں۔ |
 | `useHealth` | `False` | لوڈ بیلنسرز اور کبرنیٹس پروبس کے لیے `GET /health/live` اور `GET /health/ready` کی خدمت کریں۔ دیکھیں [تعینات کریں](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | سب سے بڑی درخواست کا باڈی جسے کارکن پڑھتا ہے، بائٹس میں (1 MiB)؛ ایک بڑا ایک `413` ہے، اور `0` حد کو بند کر دیتا ہے۔ اسے اس راستے کے لیے اٹھائیں جو فائل اپ لوڈ کرتا ہے۔ |
 | `useWorkers` | `0` | عمل `nx start` چلتا ہے؛ `0` لینکس اور میک او ایس پر ایک فی سی پی یو ہے، ونڈوز پر ایک |
 | `useCSR` | `False` | کلائنٹ سائڈ روٹنگ موڈ؛ `.nexy` راستے غیر فعال ہیں۔ |
 
@@ -36,9 +37,9 @@ class NexyConfig(NexyConfigModel):
 
 | میدان | طے شدہ | مطلب |
 |---|---|---|
-| `useRouter` | `None` | ایک `APIRouter` مثال یا کلاس فائل پر مبنی راستوں کے ساتھ لگائی گئی ہے۔ `None` کا مطلب صرف فائل پر مبنی ہے۔ |
+| `useRouter` | `None` | ایک `APIRouter` مثال یا کلاس فائل پر مبنی راستوں کے ساتھ نصب؛ `None` کا مطلب صرف فائل پر مبنی ہے۔ |
 | `excludeDirs` | `["templates", "extension", "docs"]` | راستوں کو اسکین کرتے وقت ڈائریکٹریز کو چھوڑ دیا گیا۔ |
-| `useAliases` | `None` | عرفی نام درآمد کریں، جیسے `{"@": "src"}` (`@/components/Counter.tsx` کا مطلب ہے `src/components/Counter.tsx`)؛ `nx new` لکھتا ہے جسے آپ نے منتخب کیا ہے، اور Vite اور `tsconfig.json` اس کی پیروی کریں |
+| `useAliases` | `None` | عرفی نام درآمد کریں، جیسے `{"@": "src"}` (`@/components/Counter.tsx` کا مطلب ہے `src/components/Counter.tsx`)؛ `nx new` لکھتا ہے جسے آپ نے منتخب کیا ہے، اور Vite اور `tsconfig.json` اس پر عمل کریں |
 
 ## فرنٹ اینڈ
 
@@ -54,7 +55,7 @@ class NexyConfig(NexyConfigModel):
 
 ## محفوظ فائل کے نام
 
-ہر فیلڈ ایک مخصوص کردار میں توسیعات کا اضافہ کرتا ہے۔ `useLayoutExtensions = ["md"]` بناتا ہے۔ `layout.md` محفوظ، بالکل `layout.nexy` کی طرح۔
+ہر فیلڈ ایک مخصوص کردار میں توسیعات کا اضافہ کرتا ہے۔ `useLayoutExtensions = ["md"]` نے `layout.md` کو محفوظ بنایا، بالکل `layout.nexy` کی طرح۔
 
 | میدان | میں توسیعات شامل کرتا ہے۔ |
 |---|---|
@@ -94,8 +95,8 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useMiddlewares` | `[]` | ASGI مڈل ویئر کلاسز |
 | `useCORS` | `None` | `CORSMiddleware` کے لیے kwargs |
-| `useGZip` | `None` | `GZipMiddleware` کے لیے kwargs |
-| `useTrustedHost` | `None` | کوارگز `TrustedHostMiddleware` کے لیے |
+| `useGZip` | `None` | `GZipMiddleware` کے لیے کوارگز |
+| `useTrustedHost` | `None` | `TrustedHostMiddleware` کے لیے کوارگز |
 | `useSession` | `None` | `SessionMiddleware` کے لیے kwargs |
 | `useAuth` | `None` | توثیق مڈل ویئر کی تشکیل |
 | `useHTTPSRedirect` | `False` | HTTP کو HTTPS پر ری ڈائریکٹ کریں۔ |
@@ -140,4 +141,4 @@ class NexyConfig(NexyConfigModel):
 
 - [i18n](../guides/i18n.md): بین الاقوامی کاری
 - [فرنٹ اینڈ ](../guides/frontend.md): `useFF` اور کلائنٹ کی تعمیر
-- [تعینات](../deployment/README.md): پیداوار کے اختیارات
+- [تعیناتی](../deployment/README.md): پیداوار کے اختیارات

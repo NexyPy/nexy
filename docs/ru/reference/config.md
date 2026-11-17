@@ -23,6 +23,7 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | обслуживать HTTPS напрямую |
 | `useDevTools` | `True` | панель инструментов `nexy dev` добавляет на каждую страницу (информацию о странице, маршруты, ошибки, конфиг); `False` удаляет его. Никогда не присутствует в производстве |
 | `useHealth` | `False` | обслуживать `GET /health/live` и `GET /health/ready` для балансировщиков нагрузки и зондов Kubernetes; см. [Развертывание](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | самый большой текст запроса, который читает работник, в байтах (1 МБ); больший — `413`, а `0` отключает ограничение. Поднимите его для маршрута, требующего загрузки файлов. |
 | `useWorkers` | `0` | процессы `nx start` выполняются; `0` — по одному на каждый процессор в Linux и macOS, по одному в Windows. |
 | `useCSR` | `False` | режим маршрутизации на стороне клиента; `.nexy` маршруты отключены |
 
@@ -36,7 +37,7 @@ class NexyConfig(NexyConfigModel):
 
 | Поле | По умолчанию | Значение |
 |---|---|---|
-| `useRouter` | `None` | экземпляр или класс `APIRouter`, смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
+| `useRouter` | `None` | экземпляр или класс `APIRouter` смонтированный рядом с файловыми маршрутами; `None` означает только файловый |
 | `excludeDirs` | `["templates", "extension", "docs"]` | каталоги пропускаются при сканировании маршрутов |
 | `useAliases` | `None` | импортировать псевдонимы, например. `{"@": "src"}` (`@/components/Counter.tsx` означает `src/components/Counter.tsx`); `nx new` записывает тот, который вы выбрали, а Vite и `tsconfig.json` следуют за ним |
 

@@ -172,6 +172,8 @@ class NexyConfigModel:
     useWorkers: int = 0
     useDevTools: bool = True
     useHealth: bool = False
+    # The largest request body a worker reads, in bytes (1 MiB); larger is a 413. 0: no limit.
+    useMaxBodySize: int = 1024 * 1024
     # The ORM `nx new` scaffolded the project with; `nx migrate` picks its migration tool from it.
     useORM: Literal["SQLModel", "SQLAlchemy", "Tortoise-ORM"] | None = None
     useRTL: bool = False
