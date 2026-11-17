@@ -38,7 +38,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useRouter` | `None` | sebuah instance atau kelas `APIRouter` yang dipasang di sebelah rute berbasis file; `None` berarti hanya berbasis file |
 | `excludeDirs` | `["templates", "extension", "docs"]` | direktori dilewati saat memindai rute |
-| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` ikuti |
+| `useAliases` | `None` | alias impor, mis. `{"@": "src"}` (`@/components/Counter.tsx` berarti `src/components/Counter.tsx`); `nx new` tulis yang Anda pilih, dan Vite dan `tsconfig.json` mengikutinya |
 
 ## Bagian depan
 
@@ -69,7 +69,7 @@ Setiap bidang menambahkan ekstensi ke peran yang dicadangkan. `useLayoutExtensio
 
 | Bidang | Bawaan | Artinya |
 |---|---|---|
-| `useDocs` | `True` | melayani halaman referensi Skalar; `/openapi.json` disajikan dengan cara apa pun |
+| `useDocs` | `"dev"` | di mana halaman referensi Skalar dan `/openapi.json` disajikan: `"dev"` hanya di `nx dev`, `True` dalam produksi juga (skema mencantumkan setiap rute dan tindakan server), `False` tidak ada di mana pun |
 | `useDocsUrl` | `"/docs"` | jalur halaman referensi API |
 | `useRedocsUrl` | `"/redocs"` | dideklarasikan tetapi tidak ada rute yang dipasang |
 | `useTitle` | `"Nexy App"` | OpenAPI judul dan judul halaman (`"Nexy"` di `NexyConfigModel`) |
@@ -86,7 +86,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Atau matikan dengan `useDocs = False`. `/openapi.json` tetap dilayani dalam kedua kasus: menjaga rute proyek keluar dari jalur tersebut.
+Atau matikan dengan `useDocs = False`, yang juga berhenti ditayangkan `/openapi.json`. Saat referensi aktif, jauhkan rute proyek dari jalur tersebut.
 
 ## Perangkat Tengah
 
@@ -105,7 +105,7 @@ Atau matikan dengan `useDocs = False`. `/openapi.json` tetap dilayani dalam kedu
 | Bidang | Bawaan | Artinya |
 |---|---|---|
 | `useTocDepth` | `"2-6"` | tingkat judul yang disertakan dalam daftar isi |
-| `useTocTitle` | `"Table of Contents"` | Judul TOC |
+| `useTocTitle` | `"Table of Contents"` | Judul Daftar Isi |
 | `useTocAuto` | `True` | menghasilkan daftar isi untuk Markdown halaman |
 
 ## Rute di luar pohon file

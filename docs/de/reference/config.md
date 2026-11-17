@@ -69,7 +69,7 @@ Jedes Feld fügt einer reservierten Rolle Erweiterungen hinzu. `useLayoutExtensi
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useDocs` | `True` | Bereitstellung der Scalar-Referenzseite; `/openapi.json` wird in beide Richtungen serviert |
+| `useDocs` | `"dev"` | wo die Scalar-Referenzseite und `/openapi.json` bereitgestellt werden: `"dev"` nur auf `nx dev`, `True` auch in der Produktion (das Schema listet jede Route und Serveraktion auf), `False` nirgendwo |
 | `useDocsUrl` | `"/docs"` | Pfad der API-Referenzseite |
 | `useRedocsUrl` | `"/redocs"` | deklariert, aber keine Route gemountet |
 | `useTitle` | `"Nexy App"` | OpenAPI Titel und Seitentitel (`"Nexy"` in `NexyConfigModel`) |
@@ -86,7 +86,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Oder schalten Sie es mit `useDocs = False` aus. `/openapi.json` bleibt in beiden Fällen erhalten: Halten Sie die Routen des Projekts von diesem Pfad fern.
+Oder schalten Sie es mit `useDocs = False` aus, wodurch auch die Bereitstellung von `/openapi.json` beendet wird. Halten Sie die Routen des Projekts bei aktivierter Referenz von diesem Pfad fern.
 
 ## Middleware
 

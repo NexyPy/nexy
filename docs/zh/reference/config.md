@@ -69,7 +69,7 @@ class NexyConfig(NexyConfigModel):
 
 | 领域 | 默认 | 含义 |
 |---|---|---|
-| `useDocs` | `True` | 提供标量参考页面； `/openapi.json` 可以任意方式提供 |
+| `useDocs` | `"dev"` | 其中提供标量参考页面和 `/openapi.json`：`"dev"` 仅在 `nx dev` 上，`True` 也在生产中（架构列出了每个路由和服务器操作），`False` 无处 |
 | `useDocsUrl` | `"/docs"` | API参考页面路径 |
 | `useRedocsUrl` | `"/redocs"` | 已声明但未安装路由 |
 | `useTitle` | `"Nexy App"` | OpenAPI 标题和页面标题（`NexyConfigModel` 中的 `"Nexy"`） |
@@ -86,7 +86,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-或者使用 `useDocs = False` 将其关闭。 `/openapi.json` 在这两种情况下都保持服务：使项目的路线远离该路径。
+或者使用 `useDocs = False` 将其关闭，这也会停止服务 `/openapi.json`。当参考打开时，使项目的路线远离该路径。
 
 ## 中间件
 

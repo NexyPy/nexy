@@ -69,10 +69,10 @@ class NexyConfig(NexyConfigModel):
 
 | मैदान | डिफ़ॉल्ट | मतलब |
 |---|---|---|
-| `useDocs` | `True` | स्केलर संदर्भ पृष्ठ परोसें; `/openapi.json` किसी भी तरह से परोसा जाता है |
+| `useDocs` | `"dev"` | जहां स्केलर संदर्भ पृष्ठ और `/openapi.json` परोसा जाता है: `"dev"` केवल `nx dev` पर, `True` उत्पादन में भी (स्कीमा हर मार्ग और सर्वर कार्रवाई को सूचीबद्ध करता है), `False` कहीं नहीं |
 | `useDocsUrl` | `"/docs"` | एपीआई संदर्भ पृष्ठ का पथ |
 | `useRedocsUrl` | `"/redocs"` | घोषित किया गया है लेकिन कोई रूट तय नहीं किया गया है |
-| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` में `NexyConfigModel`) |
+| `useTitle` | `"Nexy App"` | OpenAPI शीर्षक और पृष्ठ शीर्षक (`"Nexy"` `NexyConfigModel` में) |
 
 ### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
 
@@ -86,7 +86,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-या इसे `useDocs = False` से बंद कर दें। `/openapi.json` दोनों मामलों में सेवा बरकरार रहेगी: परियोजना के मार्गों को उस पथ से दूर रखें।
+या इसे `useDocs = False` से बंद कर दें, जिससे `/openapi.json` की सेवा भी बंद हो जाती है। जब संदर्भ चालू हो, तो प्रोजेक्ट के मार्गों को उस पथ से दूर रखें।
 
 ## मिडलवेयर
 
