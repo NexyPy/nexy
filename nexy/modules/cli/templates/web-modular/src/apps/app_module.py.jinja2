@@ -1,5 +1,10 @@
 from nexy.decorators import Module
-from .app_controller import AboutController, AppController
+from .app_controller import (
+    AboutController,
+    AppController,
+    ConnectionController,
+)
+from .ping_controller import PingController
 {% if orm != "None" %}
 from .users.user_module import UsersModule
 {% endif %}
@@ -7,7 +12,12 @@ from .users.user_module import UsersModule
 
 @Module()
 class AppModule:
-    controllers = [AppController, AboutController]
+    controllers = [
+        AppController,
+        AboutController,
+        ConnectionController,
+        PingController,
+    ]
 {% if orm != "None" %}
     imports = [UsersModule]
 {% endif %}
