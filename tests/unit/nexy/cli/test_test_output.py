@@ -70,3 +70,10 @@ def test_test_a_project_without_vitest_is_a_uv_warning(capsys):
     command.test(server=False, client=True, args=None)
     expected = "warning: vitest not configured - skipping client tests\n"
     assert capsys.readouterr().out.startswith(expected)
+
+
+def test_test_client_runs_vitest(project, monkeypatch, capsys):
+    (project / "vitest.config.ts").write_text("export default {}\n")
+    monkeypatch.setattr(command.shutil, "which", lambda _name: _fake_pytest(project, "1 passed", 0))
+    command._run_client(project, [])
+    assert capsys.readouterr().out.startswith("Ran the client tests with vitest in ")
