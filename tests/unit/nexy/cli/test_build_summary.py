@@ -98,3 +98,37 @@ def test_passing_checks_end_with_the_verdict(monkeypatch, capsys):
     monkeypatch.setattr(build_module, "run_task", lambda *_a, **_k: SimpleNamespace(ok=True))
     build_module._run_checks()
     assert capsys.readouterr().out == "All checks passed\n"
+
+
+class _Vite:
+    def __init__(self, code: int, err: bytes = b"") -> None:
+        self.returncode = code
+        self._err = err
+
+    def communicate(self) -> tuple[bytes, bytes]:
+        return b"", self._err
+
+
+def test_a_project_without_vite_is_a_uv_error_with_the_reason(monkeypatch, capsys):
+    def missing(**_options):
+        raise RuntimeError("Vite is not installed in this project")
+
+    monkeypatch.setattr(build_module.Server, "vite", missing)
+    with pytest.raises(SystemExit):
+        build_module._build_client_bundle()
+    expected = "error: Failed to build the client bundle\n  Vite is not installed in this project\n"
+    assert capsys.readouterr().out == expected
+
+
+def test_a_failed_vite_build_shows_what_vite_said(monkeypatch, capsys):
+    monkeypatch.setattr(build_module.Server, "vite", lambda **_o: _Vite(1, b"[vite] bad import"))
+    with pytest.raises(SystemExit):
+        build_module._build_client_bundle()
+    assert capsys.readouterr().out.endswith("  [vite] bad import\n")
+
+
+def test_a_vite_build_that_passes_returns_the_ssg_report(monkeypatch):
+    entries = [{"file": "a.tsx", "status": "success"}]
+    monkeypatch.setattr(build_module.Server, "vite", lambda **_o: _Vite(0))
+    monkeypatch.setattr(build_module, "_read_ssg_report", lambda: entries)
+    assert build_module._build_client_bundle() == entries

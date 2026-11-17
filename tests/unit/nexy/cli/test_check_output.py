@@ -73,3 +73,44 @@ def test_check_prints_no_mark(project, monkeypatch, capsys):
     monkeypatch.setattr(command, "find_tool", lambda _name: _fake_tool(project, "ok", 0))
     command.check(tsc=False, nexypy=False)
     assert not set(capsys.readouterr().out) & set("✓✘⚠")
+
+
+@pytest.mark.usefixtures("project")
+def test_check_typescript_without_tsc_is_a_uv_warning(monkeypatch, capsys):
+    monkeypatch.setattr(command.shutil, "which", lambda _name: None)
+    command._check_typescript()
+    assert capsys.readouterr().out == "warning: tsc not found - skipping TypeScript\n"
+
+
+def test_check_typescript_runs_tsc(project, monkeypatch):
+    monkeypatch.setattr(command.shutil, "which", lambda _name: _fake_tool(project, "ok", 0))
+    assert command._check_typescript() is True
+
+
+class _Built:
+    def __init__(self, failed: list[str]) -> None:
+        self.failed = failed
+
+    def build(self, **_options: bool) -> _Built:
+        return self
+
+
+def test_check_nexy_a_file_that_does_not_compile_is_a_uv_error(project, monkeypatch, capsys):
+    monkeypatch.setattr(command, "Builder", lambda: _Built(["src/routes/a.nexy"]))
+    monkeypatch.setattr(command, "find_tool", lambda _name: None)
+    command._check_nexy(project)
+    assert "error: Could not compile src/routes/a.nexy\n" in capsys.readouterr().out
+
+
+def test_check_nexy_without_mypy_passes_on_the_compile_alone(project, monkeypatch):
+    monkeypatch.setattr(command, "Builder", lambda: _Built([]))
+    monkeypatch.setattr(command, "find_tool", lambda _name: None)
+    assert command._check_nexy(project) is True
+
+
+def test_check_nexy_runs_mypy_on_the_generated_code(project, monkeypatch, capsys):
+    (project / "__nexy__").mkdir()
+    monkeypatch.setattr(command, "Builder", lambda: _Built([]))
+    monkeypatch.setattr(command, "find_tool", lambda _name: _fake_tool(project, "ok", 0))
+    command._check_nexy(project)
+    assert "Checked __nexy__ with mypy in " in capsys.readouterr().out
