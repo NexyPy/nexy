@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from starlette.datastructures import MutableHeaders
+from collections.abc import Iterable
+
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 DEFAULT_HEADERS = {
@@ -11,6 +12,18 @@ DEFAULT_HEADERS = {
     # Other sites see where the visitor came from only as an origin, and never on a downgrade.
     "referrer-policy": "strict-origin-when-cross-origin",
 }
+
+
+_RAW_DEFAULTS = [
+    (name.encode("latin-1"), value.encode("latin-1")) for name, value in DEFAULT_HEADERS.items()
+]
+
+
+def with_defaults(headers: Iterable[tuple[bytes, bytes]]) -> list[tuple[bytes, bytes]]:
+    """*headers*, then each default header whose name they do not already carry, in any case."""
+    own = list(headers)
+    present = {name.lower() for name, _value in own}
+    return own + [header for header in _RAW_DEFAULTS if header[0] not in present]
 
 
 class SecurityHeadersMiddleware:
@@ -26,9 +39,7 @@ class SecurityHeadersMiddleware:
 
         async def with_headers(message: Message) -> None:
             if message["type"] == "http.response.start":
-                headers = MutableHeaders(scope=message)
-                for name, value in DEFAULT_HEADERS.items():
-                    headers.setdefault(name, value)
+                message = {**message, "headers": with_defaults(message.get("headers", ()))}
             await send(message)
 
         await self.app(scope, receive, with_headers)

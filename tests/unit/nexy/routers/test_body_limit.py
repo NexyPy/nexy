@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Iterator
 
 from starlette.applications import Starlette
@@ -57,3 +58,63 @@ def test_body_limit_none_turns_the_limit_off():
 def test_body_limit_a_bad_content_length_is_a_400():
     response = _client().post("/", content=b"a", headers={"content-length": "x"})
     assert response.status_code == 400
+
+
+def _scope(http_version: str, headers: list[tuple[bytes, bytes]]) -> dict:
+    return {"type": "http", "http_version": http_version, "method": "POST", "headers": headers}
+
+
+def _status(scope: dict, body: bytes) -> int:
+    """The status the middleware answers when the application reads *body* to the end."""
+    sent: list[dict] = []
+    queue = [{"type": "http.request", "body": body, "more_body": False}]
+
+    async def receive() -> dict:
+        return queue.pop(0)
+
+    async def send(message: dict) -> None:
+        sent.append(message)
+
+    async def app(_scope, app_receive, app_send) -> None:
+        await app_receive()
+        await app_send({"type": "http.response.start", "status": 200, "headers": []})
+        await app_send({"type": "http.response.body", "body": b""})
+
+    asyncio.run(BodyLimitMiddleware(app, limit=LIMIT)(scope, receive, send))
+    return sent[0]["status"]
+
+
+def _receive_given(scope: dict) -> tuple[object, object]:
+    """The receive the server gave and the one the application got."""
+    got: list[object] = []
+
+    async def app(_scope, app_receive, _send) -> None:
+        got.append(app_receive)
+
+    async def receive() -> dict:
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    async def send(_message: dict) -> None:
+        return None
+
+    asyncio.run(BodyLimitMiddleware(app, limit=LIMIT)(scope, receive, send))
+    return receive, got[0]
+
+
+def test_body_limit_an_http2_body_without_a_length_is_counted():
+    assert _status(_scope("2", []), b"a" * (LIMIT + 1)) == 413
+
+
+def test_body_limit_a_chunked_body_is_counted():
+    chunked = _scope("1.1", [(b"transfer-encoding", b"chunked")])
+    assert _status(chunked, b"a" * (LIMIT + 1)) == 413
+
+
+def test_body_limit_a_request_without_a_body_is_not_wrapped():
+    given, got = _receive_given(_scope("1.1", []))
+    assert got is given
+
+
+def test_body_limit_a_declared_length_is_not_wrapped():
+    given, got = _receive_given(_scope("1.1", [(b"content-length", b"3")]))
+    assert got is given

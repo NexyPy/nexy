@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from nexy.core.config import Config
 from nexy.testing import render
 
 HELLO = """---
@@ -38,6 +39,8 @@ title: prop[str]
 @pytest.fixture
 def project(tmp_path, monkeypatch) -> Path:
     monkeypatch.chdir(tmp_path)
+    # The root is read once, at import: left as it is, an import under it resolves from there.
+    monkeypatch.setattr(Config, "PROJECT_ROOT", tmp_path)
     (tmp_path / "src").mkdir()
     return tmp_path
 

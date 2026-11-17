@@ -190,7 +190,8 @@ class TestAssembledApp:
         assert client.get("/health/live").status_code == 200
 
     def test_the_endpoints_are_not_in_the_openapi_schema(self, nexy_project):
-        with self._client(nexy_project) as client:
+        # The schema is served by the dev server only unless asked for (#387): ask for it here.
+        with self._client(nexy_project, "useHealth = True\nuseDocs = True") as client:
             paths = client.get("/openapi.json").json()["paths"]
         assert not [path for path in paths if path.startswith("/health")]
 
