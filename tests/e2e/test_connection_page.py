@@ -1,7 +1,7 @@
-"""The /connection page of every web starter reaches the Python server through a server action.
+"""The /connection page of every web starter reaches the Python server.
 
 Each starter is scaffolded, built and served by `nx start`; Chromium opens /connection, presses the
-button and waits for the answer of `src/actions/ping.py`.
+button and waits for the answer: the ping action of web-fbr, the ping controller of web-modular.
 """
 
 from __future__ import annotations
@@ -22,24 +22,24 @@ from tests.e2e.conftest import _free_port, _install_node_modules, _run, _wait_fo
 NX = "import sys; from nexy.modules.cli import CLI; sys.argv[0] = 'nx'; CLI()"
 STATUS = "[role='status']"
 
-# (style, client framework, client-side routing)
+# (template, style, client framework, client-side routing)
 STARTERS = [
-    (style, framework, framework != "none")
+    ("web-fbr", style, framework, framework != "none")
     for style in ("tailwind", "vanilla")
     for framework in ("none", "react", "preact", "solid", "vue", "svelte")
-]
+] + [("web-modular", style, "none", False) for style in ("tailwind", "vanilla")]
 
 
-def _scaffold(project: Path, style: str, framework: str, csr: bool) -> None:
+def _scaffold(project: Path, template: str, style: str, framework: str, csr: bool) -> None:
     config = {
         "client_framework": framework,
-        "FBRouter": True,
+        "FBRouter": template == "web-fbr",
         "project_type": "web",
         "orm": "None",
         "useCSR": csr,
         "style": style,
     }
-    _render_local_template("web-fbr", project, config, "demo")
+    _render_local_template(template, project, config, "demo")
 
 
 @pytest.fixture(scope="module", params=STARTERS, ids=lambda s: "-".join(map(str, s)))

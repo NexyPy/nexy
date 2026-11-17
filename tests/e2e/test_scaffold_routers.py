@@ -28,7 +28,7 @@ from fastapi.testclient import TestClient
 from nexy.modules.routers.app import AppServer
 out = {"failed": list(build.failed), "load_error": Config.get_load_error(), "pages": {}}
 with TestClient(AppServer().run()) as client:
-    for path in ("/", "/about", "/definitely-not-a-route"):
+    for path in ("/", "/about", "/connection", "/ping", "/definitely-not-a-route"):
         r = client.get(path)
         out["pages"][path] = [r.status_code, r.headers.get("content-type", ""), r.text]
 sys.stdout.write("@@" + json.dumps(out) + "@@")
@@ -101,13 +101,21 @@ def test_web_template_serves_a_valid_document(tmp_path, template, framework, use
 # What each starter says on its pages: the file-based one has the new design, the modular one keeps
 # its own.
 STARTER_TEXT = {
-    "web-fbr": {"/about": "One project for the whole web app", "/": "Your app is running"},
-    "web-modular": {"/about": "open source", "/": "Python framework"},
+    "web-fbr": {
+        "/about": "One project for the whole web app",
+        "/": "Your app is running",
+        "/connection": "Ping the server",
+    },
+    "web-modular": {
+        "/about": "open source",
+        "/": "Python framework",
+        "/connection": "Ping the server",
+    },
 }
 
 
 @pytest.mark.parametrize(("template", "framework", "use_csr"), WEB)
-@pytest.mark.parametrize("path", ["/about", "/"])
+@pytest.mark.parametrize("path", ["/about", "/", "/connection"])
 def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path):
     """Every starter links Home and About, so both must exist, in every mode."""
     marker = STARTER_TEXT[template][path]
@@ -132,3 +140,15 @@ def test_api_template_serves_json(tmp_path, template, framework, use_csr):
     assert "json" in content_type
     json.loads(body)
     assert result["pages"]["/definitely-not-a-route"][0] == 404
+
+
+@pytest.mark.parametrize(("template", "framework", "use_csr"), API)
+def test_api_template_answers_ping(tmp_path, template, framework, use_csr):
+    status, _content_type, body = _run(tmp_path, template, framework, use_csr)["pages"]["/ping"]
+    assert (status, sorted(json.loads(body))) == (200, ["python", "time"])
+
+
+@pytest.mark.parametrize(("template", "framework", "use_csr"), API)
+def test_api_template_home_is_a_json_object(tmp_path, template, framework, use_csr):
+    body = _run(tmp_path, template, framework, use_csr)["pages"]["/"][2]
+    assert json.loads(body) == {"status": "ok", "message": "Nexy API ready"}
