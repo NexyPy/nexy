@@ -18,6 +18,27 @@ description: The rules for every task in a Nexy project or in Nexy itself - orde
 
 Skipping step 1 or 2 is the most common way to produce code that works and is still wrong.
 
+## Done means tested, measured and checked
+
+No line ships without a test that runs it. A change is done only when all of this is true:
+
+- **Every added line runs in a test**, and every branch it opens (each side of an `if`, each
+  `except`) is taken by one. The failure paths count: the refused input, the missing tool, the
+  timeout. A total coverage figure is not enough, because it hides the new lines that no test
+  runs.
+- **Security has its own tests.** Each input a person or another site controls has a test that
+  sends the hostile value and asserts the refusal: a path that climbs out of its folder, a body
+  over the limit, a redirect to another site, a call from another origin. The security scanner
+  reports nothing new.
+- **Speed is measured, not assumed.** A change on a hot path (a request, a render, a startup)
+  comes with its number before and after, and a budget test keeps it there. A budget compares
+  with a baseline measured in the same run, so it does not depend on the machine.
+- **Each test runs once and fast.** It sets up its own data and leaves nothing behind for the next
+  one, and it does not sleep while waiting for something. A slow test is a test that gets skipped.
+- **The code is ready to reuse.** It has one job, a name that says it, and no copy of code that
+  already exists.
+- **The gates pass**, and the report quotes what they printed.
+
 ## Code
 
 **KISS.** The simplest code that works wins. No abstraction for a case that does not exist yet, no
