@@ -38,10 +38,14 @@
     "success_label": "बिल्ड सफल"
   },
   "check": {
-    "compiling": ".nexy फ़ाइलें कंपाइल हो रही हैं ...",
+    "compiling": ".nexy फ़ाइलें कंपाइल हो रही हैं",
     "failed": "{count} भाग विफल रहे",
-    "passed": "सभी जाँच सफल रहीं",
-    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है"
+    "passed": "सभी जाँचें सफल रहीं",
+    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है",
+    "checking": "{tool} से {scope} की जाँच हो रही है",
+    "checked": "{tool} से {scope} की जाँच हो गई",
+    "compiled": ".nexy फ़ाइलें कंपाइल हो गईं",
+    "not_compiled": "{path} कंपाइल नहीं हो सका"
   },
   "cli": {
     "cmd": {

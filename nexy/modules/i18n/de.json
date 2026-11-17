@@ -38,10 +38,14 @@
     "success_label": "Build erfolgreich"
   },
   "check": {
-    "compiling": "Dateien .nexy werden kompiliert ...",
+    "compiling": "Kompiliere die .nexy-Dateien",
     "failed": "{count} Abschnitt(e) fehlgeschlagen",
-    "passed": "alle Prüfungen bestanden",
-    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen"
+    "passed": "Alle Prüfungen bestanden",
+    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen",
+    "checking": "Prüfe {scope} mit {tool}",
+    "checked": "{scope} mit {tool} geprüft",
+    "compiled": ".nexy-Dateien kompiliert",
+    "not_compiled": "{path} konnte nicht kompiliert werden"
   },
   "cli": {
     "cmd": {

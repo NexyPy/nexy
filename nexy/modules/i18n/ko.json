@@ -38,10 +38,14 @@
     "success_label": "빌드 성공"
   },
   "check": {
-    "compiling": ".nexy 파일 컴파일 중 ...",
+    "compiling": ".nexy 파일 컴파일 중",
     "failed": "섹션 {count}개 실패",
     "passed": "모든 검사를 통과했습니다",
-    "skip_tool": "{tool}을(를) 찾을 수 없어 {scope}을(를) 건너뜁니다"
+    "skip_tool": "{tool}을(를) 찾을 수 없어 {scope}을(를) 건너뜁니다",
+    "checking": "{tool}(으)로 {scope} 검사 중",
+    "checked": "{tool}(으)로 {scope} 검사 완료",
+    "compiled": ".nexy 파일 컴파일 완료",
+    "not_compiled": "{path}을(를) 컴파일할 수 없습니다"
   },
   "cli": {
     "cmd": {

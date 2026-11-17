@@ -38,10 +38,14 @@
     "success_label": "نجح البناء"
   },
   "check": {
-    "compiling": "جارٍ تجميع ملفات .nexy ...",
+    "compiling": "جارٍ تصريف ملفات .nexy",
     "failed": "فشل {count} قسم",
     "passed": "نجحت جميع الفحوصات",
-    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}"
+    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}",
+    "checking": "جارٍ فحص {scope} باستخدام {tool}",
+    "checked": "تم فحص {scope} باستخدام {tool}",
+    "compiled": "تم تصريف ملفات .nexy",
+    "not_compiled": "تعذّر تصريف {path}"
   },
   "cli": {
     "cmd": {

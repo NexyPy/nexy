@@ -38,10 +38,14 @@
     "success_label": "Сборка успешна"
   },
   "check": {
-    "compiling": "компиляция файлов .nexy ...",
+    "compiling": "Компиляция файлов .nexy",
     "failed": "Разделов с ошибками: {count}",
-    "passed": "все проверки пройдены",
-    "skip_tool": "{tool} не найден: {scope} пропущен"
+    "passed": "Все проверки пройдены",
+    "skip_tool": "{tool} не найден: {scope} пропущен",
+    "checking": "Проверка {scope} с помощью {tool}",
+    "checked": "{scope} проверен с помощью {tool}",
+    "compiled": "Файлы .nexy скомпилированы",
+    "not_compiled": "Не удалось скомпилировать {path}"
   },
   "cli": {
     "cmd": {

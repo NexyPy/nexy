@@ -38,10 +38,14 @@
     "success_label": "Build réussi"
   },
   "check": {
-    "compiling": "compilation des fichiers .nexy ...",
+    "compiling": "Compilation des fichiers .nexy",
     "failed": "{count} section(s) en échec",
-    "passed": "toutes les vérifications ont réussi",
-    "skip_tool": "{tool} est introuvable : {scope} ignoré"
+    "passed": "Toutes les vérifications sont passées",
+    "skip_tool": "{tool} est introuvable : {scope} ignoré",
+    "checking": "Vérification de {scope} avec {tool}",
+    "checked": "{scope} vérifié avec {tool}",
+    "compiled": "Fichiers .nexy compilés",
+    "not_compiled": "Impossible de compiler {path}"
   },
   "cli": {
     "cmd": {

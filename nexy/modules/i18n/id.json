@@ -38,10 +38,14 @@
     "success_label": "Build berhasil"
   },
   "check": {
-    "compiling": "mengompilasi berkas .nexy ...",
+    "compiling": "Mengompilasi berkas .nexy",
     "failed": "{count} bagian gagal",
-    "passed": "semua pemeriksaan lolos",
-    "skip_tool": "{tool} tidak ditemukan: {scope} dilewati"
+    "passed": "Semua pemeriksaan lolos",
+    "skip_tool": "{tool} tidak ditemukan: {scope} dilewati",
+    "checking": "Memeriksa {scope} dengan {tool}",
+    "checked": "{scope} diperiksa dengan {tool}",
+    "compiled": "Berkas .nexy dikompilasi",
+    "not_compiled": "Tidak dapat mengompilasi {path}"
   },
   "cli": {
     "cmd": {

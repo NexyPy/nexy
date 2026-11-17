@@ -38,10 +38,14 @@
     "success_label": "ビルド成功"
   },
   "check": {
-    "compiling": ".nexy ファイルをコンパイルしています ...",
+    "compiling": ".nexy ファイルをコンパイル中",
     "failed": "{count} 件のセクションが失敗しました",
     "passed": "すべてのチェックに合格しました",
-    "skip_tool": "{tool} が見つかりません: {scope} をスキップします"
+    "skip_tool": "{tool} が見つかりません: {scope} をスキップします",
+    "checking": "{tool} で {scope} をチェック中",
+    "checked": "{tool} で {scope} をチェックしました",
+    "compiled": ".nexy ファイルをコンパイルしました",
+    "not_compiled": "{path} をコンパイルできませんでした"
   },
   "cli": {
     "cmd": {

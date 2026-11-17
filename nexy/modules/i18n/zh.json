@@ -38,10 +38,14 @@
     "success_label": "构建成功"
   },
   "check": {
-    "compiling": "正在编译 .nexy 文件 ...",
+    "compiling": "正在编译 .nexy 文件",
     "failed": "{count} 个部分失败",
     "passed": "所有检查均已通过",
-    "skip_tool": "未找到 {tool}：跳过 {scope}"
+    "skip_tool": "未找到 {tool}：跳过 {scope}",
+    "checking": "正在用 {tool} 检查 {scope}",
+    "checked": "已用 {tool} 检查 {scope}",
+    "compiled": "已编译 .nexy 文件",
+    "not_compiled": "无法编译 {path}"
   },
   "cli": {
     "cmd": {

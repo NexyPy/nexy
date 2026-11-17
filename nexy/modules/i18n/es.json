@@ -38,10 +38,14 @@
     "success_label": "Compilación correcta"
   },
   "check": {
-    "compiling": "compilando archivos .nexy ...",
+    "compiling": "Compilando los archivos .nexy",
     "failed": "{count} sección(es) con error",
-    "passed": "todas las comprobaciones han pasado",
-    "skip_tool": "{tool} no encontrado: se omite {scope}"
+    "passed": "Todas las comprobaciones pasaron",
+    "skip_tool": "{tool} no encontrado: se omite {scope}",
+    "checking": "Comprobando {scope} con {tool}",
+    "checked": "{scope} comprobado con {tool}",
+    "compiled": "Archivos .nexy compilados",
+    "not_compiled": "No se pudo compilar {path}"
   },
   "cli": {
     "cmd": {
