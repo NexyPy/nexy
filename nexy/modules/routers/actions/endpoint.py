@@ -19,6 +19,7 @@ from starlette.responses import JSONResponse, RedirectResponse, Response
 from nexy.modules.routers.actions.origin import is_same_origin
 from nexy.modules.routers.actions.revalidate import HEADER, header_value, start_collecting
 from nexy.modules.routers.actions.spec import ActionSpec
+from nexy.modules.routers.fastpath import mark_raw
 
 
 def _is_json(request: Request) -> bool:
@@ -134,4 +135,5 @@ def make_endpoint(spec: ActionSpec) -> Callable[[Request], Awaitable[Response]]:
         answer = _answer(result, request, collected)
         return _with_headers_of(answer, response)
 
-    return endpoint
+    # It reads the Request itself and returns a Response: the fast path serves it without FastAPI.
+    return mark_raw(endpoint)

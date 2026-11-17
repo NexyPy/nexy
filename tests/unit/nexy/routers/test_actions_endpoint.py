@@ -272,3 +272,12 @@ def test_the_secret_is_kept_in_the_project_when_none_is_set(monkeypatch, tmp_pat
     forget_secret()
     assert ACTIONS_STORE._generate_hash("a.b") == first
     assert (tmp_path / "__nexy__" / "action.key").exists()
+
+
+def test_an_action_is_served_by_the_fast_path():
+    from nexy.modules.routers.fastpath import build_table
+
+    _client(double)
+    app = FastAPI()
+    ActionEngine().include_router(app)
+    assert ("POST", _url(double)) in build_table(app.router)
