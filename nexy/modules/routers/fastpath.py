@@ -1,15 +1,17 @@
 """Direct dispatch for trivial file routes.
 
 FastAPI resolves every request through route matching, dependency solving and response
-serialization. A handler that takes no parameters, has no dependency and no declared response model
-needs none of that: ``async def GET(): return {"ok": True}`` is just "call it, encode the result".
+serialization. A handler that takes no parameters and has no dependency needs none of the first two:
+``def GET() -> dict[str, str]`` is just "call it, check the answer against its type, encode it".
+A sync handler runs in Starlette's thread pool, as FastAPI runs it, and a declared type is checked
+and written by FastAPI's own ``serialize_response``, so the bytes and the errors are the same.
 An endpoint marked with ``mark_raw`` (a server action) takes the Request and returns a Response:
 it is called with the Request, and FastAPI does nothing for it either.
 
 This wrapper sits at the innermost layer of the router stack, below Starlette's exception handling,
 so errors raised by a handler are processed exactly as on the normal path. Anything that is not a
 plain match falls through to FastAPI untouched: other methods, dynamic paths, trailing slashes,
-handlers with parameters, dependencies, response models or custom response classes.
+handlers with parameters, dependencies, response model options or custom response classes.
 """
 
 from __future__ import annotations
@@ -22,14 +24,15 @@ from typing import Any
 
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from fastapi.routing import APIRoute, APIRouter
+from fastapi.routing import APIRoute, APIRouter, serialize_response
+from starlette.concurrency import run_in_threadpool
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Match
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 _log = logging.getLogger("nexy.fastpath")
-_Entry = tuple[Callable[..., Awaitable[Any]], APIRoute]
+_Entry = tuple[Callable[..., Any], APIRoute]
 _RAW = "__nexy_raw_endpoint__"
 _Raw = Callable[[Request], Awaitable[Response]]
 
@@ -66,9 +69,21 @@ def _has_no_inputs(route: APIRoute) -> bool:
     )
 
 
+def _has_default_model_options(route: APIRoute) -> bool:
+    """No include, exclude or alias option: the answer is written as its type says."""
+    return (
+        route.response_model_include is None
+        and route.response_model_exclude is None
+        and route.response_model_by_alias
+        and not route.response_model_exclude_unset
+        and not route.response_model_exclude_defaults
+        and not route.response_model_exclude_none
+    )
+
+
 def _has_plain_response(route: APIRoute) -> bool:
     return (
-        route.response_field is None
+        _has_default_model_options(route)
         and not getattr(route, "response_fields", None)
         and route.status_code in (None, 200)
         and _is_default_json(route)
@@ -81,10 +96,26 @@ def _is_trivial(route: APIRoute) -> bool:
     """True when FastAPI would do nothing for this route that the fast path does not do."""
     if route.methods is None or len(route.methods) != 1 or "{" in route.path:
         return False
-    endpoint = route.endpoint
-    if not inspect.iscoroutinefunction(endpoint) or inspect.signature(endpoint).parameters:
+    if inspect.signature(route.endpoint).parameters:
         return False
     return _has_no_inputs(route) and _has_plain_response(route)
+
+
+async def _call(handler: Callable[..., Any]) -> Any:
+    """Run *handler* the way FastAPI does: awaited, or in the thread pool when it is sync."""
+    if inspect.iscoroutinefunction(handler):
+        return await handler()
+    return await run_in_threadpool(handler)
+
+
+async def _encode(route: APIRoute, value: Any) -> bytes:
+    """The JSON FastAPI writes for *value*: checked against the declared type when there is one."""
+    if route.response_field is None:
+        return encode_json(value)
+    content: bytes = await serialize_response(
+        field=route.response_field, response_content=value, dump_json=True
+    )
+    return content
 
 
 async def _send_json(body: bytes, send: Send) -> None:
@@ -174,11 +205,11 @@ class FastPath:
         handler, route = entry
         scope.setdefault("router", self.router)
         scope.update({"endpoint": handler, "path_params": {}, "route": route})
-        value = await (handler(Request(scope, receive)) if _is_raw(route) else handler())
+        value = await (handler(Request(scope, receive)) if _is_raw(route) else _call(handler))
         if isinstance(value, Response):
             await value(scope, receive, send)
             return
-        await _send_json(encode_json(value), send)
+        await _send_json(await _encode(route, value), send)
 
 
 def install(router: APIRouter) -> bool:

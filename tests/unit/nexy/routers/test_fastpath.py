@@ -122,6 +122,26 @@ def _routes(router: APIRouter) -> None:
     async def with_response_model():
         return {"name": "rm", "extra": 1}
 
+    @router.get("/sync-typed")
+    def sync_typed() -> dict[str, str]:
+        return {"message": "é"}
+
+    @router.get("/sync-response")
+    def sync_response():
+        return PlainTextResponse("sync plain", status_code=202)
+
+    @router.get("/sync-boom")
+    def sync_boom():
+        raise HTTPException(status_code=418, detail="teapot")
+
+    @router.get("/bad-typed")
+    async def bad_typed() -> Item:
+        return {"nope": 1}  # type: ignore[return-value]
+
+    @router.get("/exclude-none", response_model=Item, response_model_exclude_none=True)
+    async def exclude_none():
+        return {"name": "x"}
+
 
 PATHS = [
     "/dict",
@@ -147,6 +167,11 @@ PATHS = [
     "/item/x",
     "/sync",
     "/respmodel",
+    "/sync-typed",
+    "/sync-response",
+    "/sync-boom",
+    "/bad-typed",
+    "/exclude-none",
     "/missing",
     "/dict/",
 ]
@@ -188,6 +213,33 @@ def test_nan_fails_the_same_way():
     assert _snapshot(fast, "GET", "/nan")[0] == _snapshot(plain, "GET", "/nan")[0] == 500
 
 
+def test_an_answer_that_breaks_its_type_is_a_500_on_both_paths():
+    plain, fast = _apps()
+    assert (
+        _snapshot(fast, "GET", "/bad-typed")[0] == _snapshot(plain, "GET", "/bad-typed")[0] == 500
+    )
+
+
+def test_a_sync_handler_runs_off_the_event_loop():
+    import asyncio
+
+    seen: list[bool] = []
+    app = FastAPI()
+
+    @app.get("/where")
+    def where():
+        try:
+            asyncio.get_running_loop()
+            seen.append(True)
+        except RuntimeError:
+            seen.append(False)
+        return {}
+
+    install(app.router)
+    TestClient(app).get("/where")
+    assert seen == [False]
+
+
 def test_unhandled_error_is_a_500_on_both_paths():
     plain, fast = _apps()
     assert _snapshot(fast, "GET", "/boom")[0] == _snapshot(plain, "GET", "/boom")[0] == 500
@@ -205,19 +257,19 @@ class TestEligibility:
         for path in ("/dict", "/list", "/none", "/str", "/int", "/response", "/dt", "/forbidden"):
             assert path in eligible
 
-    def test_routes_with_work_for_fastapi_are_left_alone(self):
-        eligible = self._eligible()
-        for path in (
-            "/typed",
-            "/model-typed",
-            "/status",
-            "/dep",
-            "/query",
-            "/item/{item_id}",
-            "/sync",
-            "/respmodel",
-        ):
-            assert path not in eligible
+    @pytest.mark.parametrize("path", ["/sync", "/sync-typed", "/sync-response", "/sync-boom"])
+    def test_a_sync_handler_is_served_directly(self, path):
+        assert path in self._eligible()
+
+    @pytest.mark.parametrize("path", ["/typed", "/model-typed", "/respmodel", "/bad-typed"])
+    def test_a_typed_answer_is_served_directly(self, path):
+        assert path in self._eligible()
+
+    @pytest.mark.parametrize(
+        "path", ["/status", "/dep", "/query", "/item/{item_id}", "/exclude-none"]
+    )
+    def test_routes_with_work_for_fastapi_are_left_alone(self, path):
+        assert path not in self._eligible()
 
     def test_only_the_registered_method_is_served(self):
         router = APIRouter()
