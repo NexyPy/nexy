@@ -109,8 +109,14 @@
   },
   "format": {
     "failed": "{count} फ़ाइलें विफल रहीं",
-    "passed": "फ़ॉर्मैटिंग पूरी हुई",
-    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है"
+    "passed": "सभी फ़ाइलें फ़ॉर्मैट हो गईं",
+    "skip_tool": "{tool} नहीं मिला: {scope} छोड़ा जा रहा है",
+    "formatting": "{tool} से {scope} फ़ॉर्मैट हो रहा है",
+    "formatted": "{tool} से {scope} फ़ॉर्मैट हो गया",
+    "checking": "{tool} से {scope} का फ़ॉर्मैट जाँचा जा रहा है",
+    "checked": "{tool} से {scope} का फ़ॉर्मैट जाँचा गया",
+    "nexy": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो रही हैं",
+    "nexy_done": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो गईं"
   },
   "init": {
     "alias_invalid": "@, ~, # या $ का उपयोग करें, उसके बाद वैकल्पिक अक्षर (जैसे ~ या @app)।",

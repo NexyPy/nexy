@@ -109,8 +109,14 @@
   },
   "format": {
     "failed": "파일 {count}개 실패",
-    "passed": "포맷 완료",
-    "skip_tool": "{tool}을(를) 찾을 수 없어 {scope}을(를) 건너뜁니다"
+    "passed": "모든 파일 포맷 완료",
+    "skip_tool": "{tool}을(를) 찾을 수 없어 {scope}을(를) 건너뜁니다",
+    "formatting": "{tool}(으)로 {scope} 포맷 중",
+    "formatted": "{tool}(으)로 {scope} 포맷 완료",
+    "checking": "{tool}(으)로 {scope} 포맷 검사 중",
+    "checked": "{tool}(으)로 {scope} 포맷 검사 완료",
+    "nexy": ".nexy 파일 {count}개 포맷 중",
+    "nexy_done": ".nexy 파일 {count}개 포맷 완료"
   },
   "init": {
     "alias_invalid": "@, ~, # 또는 $ 뒤에 선택적으로 문자를 붙이세요(예: ~ 또는 @app).",

@@ -109,8 +109,14 @@
   },
   "format": {
     "failed": "فشل {count} ملف",
-    "passed": "اكتمل التنسيق",
-    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}"
+    "passed": "تم تنسيق جميع الملفات",
+    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}",
+    "formatting": "جارٍ تنسيق {scope} باستخدام {tool}",
+    "formatted": "تم تنسيق {scope} باستخدام {tool}",
+    "checking": "جارٍ فحص تنسيق {scope} باستخدام {tool}",
+    "checked": "تم فحص تنسيق {scope} باستخدام {tool}",
+    "nexy": "جارٍ تنسيق {count} من ملفات .nexy",
+    "nexy_done": "تم تنسيق {count} من ملفات .nexy"
   },
   "init": {
     "alias_invalid": "استخدم @ أو ~ أو # أو $ ويمكن أن تتبعها أحرف (مثل ~ أو @app).",

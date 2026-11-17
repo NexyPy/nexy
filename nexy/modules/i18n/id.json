@@ -109,8 +109,14 @@
   },
   "format": {
     "failed": "{count} berkas gagal",
-    "passed": "pemformatan selesai",
-    "skip_tool": "{tool} tidak ditemukan: {scope} dilewati"
+    "passed": "Semua berkas diformat",
+    "skip_tool": "{tool} tidak ditemukan: {scope} dilewati",
+    "formatting": "Memformat {scope} dengan {tool}",
+    "formatted": "{scope} diformat dengan {tool}",
+    "checking": "Memeriksa format {scope} dengan {tool}",
+    "checked": "Format {scope} diperiksa dengan {tool}",
+    "nexy": "Memformat {count} berkas .nexy",
+    "nexy_done": "{count} berkas .nexy diformat"
   },
   "init": {
     "alias_invalid": "Gunakan @, ~, # atau $, boleh diikuti huruf (misalnya ~ atau @app).",

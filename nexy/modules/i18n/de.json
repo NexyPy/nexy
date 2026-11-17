@@ -109,8 +109,14 @@
   },
   "format": {
     "failed": "{count} Datei(en) fehlgeschlagen",
-    "passed": "Formatierung abgeschlossen",
-    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen"
+    "passed": "Alle Dateien formatiert",
+    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen",
+    "formatting": "Formatiere {scope} mit {tool}",
+    "formatted": "{scope} mit {tool} formatiert",
+    "checking": "Prüfe das Format von {scope} mit {tool}",
+    "checked": "Format von {scope} mit {tool} geprüft",
+    "nexy": "Formatiere {count} .nexy-Datei(en)",
+    "nexy_done": "{count} .nexy-Datei(en) formatiert"
   },
   "init": {
     "alias_invalid": "Verwende @, ~, # oder $, optional gefolgt von Buchstaben (zum Beispiel ~ oder @app).",

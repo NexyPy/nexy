@@ -109,8 +109,14 @@
   },
   "format": {
     "failed": "{count} 件のファイルが失敗しました",
-    "passed": "整形が完了しました",
-    "skip_tool": "{tool} が見つかりません: {scope} をスキップします"
+    "passed": "すべてのファイルを整形しました",
+    "skip_tool": "{tool} が見つかりません: {scope} をスキップします",
+    "formatting": "{tool} で {scope} を整形中",
+    "formatted": "{tool} で {scope} を整形しました",
+    "checking": "{tool} で {scope} の書式をチェック中",
+    "checked": "{tool} で {scope} の書式をチェックしました",
+    "nexy": "{count} 個の .nexy ファイルを整形中",
+    "nexy_done": "{count} 個の .nexy ファイルを整形しました"
   },
   "init": {
     "alias_invalid": "@、~、# または $ に続けて任意の文字を使います(例: ~ や @app)。",

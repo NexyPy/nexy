@@ -109,8 +109,14 @@
   },
   "format": {
     "failed": "{count} 个文件失败",
-    "passed": "格式化完成",
-    "skip_tool": "未找到 {tool}：跳过 {scope}"
+    "passed": "所有文件均已格式化",
+    "skip_tool": "未找到 {tool}：跳过 {scope}",
+    "formatting": "正在用 {tool} 格式化 {scope}",
+    "formatted": "已用 {tool} 格式化 {scope}",
+    "checking": "正在用 {tool} 检查 {scope} 的格式",
+    "checked": "已用 {tool} 检查 {scope} 的格式",
+    "nexy": "正在格式化 {count} 个 .nexy 文件",
+    "nexy_done": "已格式化 {count} 个 .nexy 文件"
   },
   "init": {
     "alias_invalid": "使用 @、~、# 或 $,后面可跟字母(例如 ~ 或 @app)。",
