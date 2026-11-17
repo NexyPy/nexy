@@ -1,0 +1,9 @@
+"""GET /ping: the Python version of the server and its clock, to check a client reaches it."""
+
+import platform
+from datetime import UTC, datetime
+
+
+def GET() -> dict[str, str]:
+    now = datetime.now(UTC).strftime("%H:%M:%S UTC")
+    return {"python": platform.python_version(), "time": now}
