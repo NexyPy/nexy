@@ -70,7 +70,7 @@ class NexyConfig(NexyConfigModel):
 
 | میدان | طے شدہ | مطلب |
 |---|---|---|
-| `useDocs` | `True` | اسکیلر حوالہ صفحہ پیش کریں؛ `/openapi.json` ہر طرح سے پیش کیا جاتا ہے۔ |
+| `useDocs` | `"dev"` | جہاں اسکیلر حوالہ صفحہ اور `/openapi.json` پیش کیا جاتا ہے: `"dev"` صرف `nx dev` پر، `True` پروڈکشن میں بھی (اسکیما ہر راستے اور سرور کی کارروائی کی فہرست دیتا ہے)، `False` کہیں نہیں |
 | `useDocsUrl` | `"/docs"` | API حوالہ صفحہ کا راستہ |
 | `useRedocsUrl` | `"/redocs"` | اعلان کیا گیا ہے لیکن کوئی راستہ نہیں لگایا گیا ہے۔ |
 | `useTitle` | `"Nexy App"` | OpenAPI عنوان اور صفحہ کا عنوان (`"Nexy"` `NexyConfigModel` میں) |
@@ -87,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-یا اسے `useDocs = False` کے ساتھ بند کردیں۔ `/openapi.json` دونوں صورتوں میں کام جاری رہتا ہے: منصوبے کے راستوں کو اس راستے سے دور رکھیں۔
+یا اسے `useDocs = False` کے ساتھ بند کر دیں، جس سے سرونگ بھی بند ہو جاتی ہے `/openapi.json`۔ جب حوالہ آن ہو، پروجیکٹ کے راستوں کو اس راستے سے دور رکھیں۔
 
 ## مڈل ویئر
 
@@ -95,7 +95,7 @@ class NexyConfig(NexyConfigModel):
 |---|---|---|
 | `useMiddlewares` | `[]` | ASGI مڈل ویئر کلاسز |
 | `useCORS` | `None` | `CORSMiddleware` کے لیے kwargs |
-| `useGZip` | `None` | `GZipMiddleware` کے لیے کوارگز |
+| `useGZip` | `None` | `GZipMiddleware` کے لیے kwargs |
 | `useTrustedHost` | `None` | `TrustedHostMiddleware` کے لیے کوارگز |
 | `useSession` | `None` | `SessionMiddleware` کے لیے kwargs |
 | `useAuth` | `None` | توثیق مڈل ویئر کی تشکیل |
@@ -111,7 +111,7 @@ class NexyConfig(NexyConfigModel):
 
 ## فائل ٹری سے باہر کے راستے
 
-ایک FastAPI `APIRouter` بنائیں اور اسے `useRouter` کے ساتھ چڑھائیں۔ یہ فائل پر مبنی راستوں کے آگے پیش کیا جاتا ہے:
+ایک FastAPI `APIRouter` بنائیں اور اسے `useRouter` کے ساتھ ماؤنٹ کریں۔ یہ فائل پر مبنی راستوں کے آگے پیش کیا جاتا ہے:
 
 ```python filename="nexyconfig.py"
 from fastapi import APIRouter

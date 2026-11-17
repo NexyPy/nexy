@@ -73,7 +73,7 @@ reserved, exactly like `layout.nexy`.
 
 | Field | Default | Meaning |
 |---|---|---|
-| `useDocs` | `True` | serve the Scalar reference page; `/openapi.json` is served either way |
+| `useDocs` | `"dev"` | where the Scalar reference page and `/openapi.json` are served: `"dev"` on `nx dev` only, `True` in production too (the schema lists every route and server action), `False` nowhere |
 | `useDocsUrl` | `"/docs"` | path of the API reference page |
 | `useRedocsUrl` | `"/redocs"` | declared but no route is mounted |
 | `useTitle` | `"Nexy App"` | OpenAPI title and page title (`"Nexy"` in `NexyConfigModel`) |
@@ -92,8 +92,8 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Or turn it off with `useDocs = False`. `/openapi.json` stays served in both cases: keep the
-routes of the project off that path.
+Or turn it off with `useDocs = False`, which also stops serving `/openapi.json`. While the
+reference is on, keep the routes of the project off that path.
 
 ## Middleware
 

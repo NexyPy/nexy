@@ -151,7 +151,7 @@ Jede Seite ist HTML, aber Nexy geht von einem Server für das Routing und für A
 - [ ] `nx build` in CI keine Warnungen für Routen, die voraussichtlich auf dem Server gerendert werden
 - [ ] `nx start` wird mit Code 1 beendet und startet nichts, wenn eine Routendatei nicht geladen werden kann
 - [ ] `NEXY_ACTION_SECRET` gesetzt oder `__nexy__/action.key` mit dem Build beibehalten
-- [ ] `useDocs = False` in der Produktion, wenn das API-Schema nicht öffentlich sein soll
+- [ ] `useDocs` bleibt bei `"dev"`, daher dient die Produktion weder `/docs` noch `/openapi.json`
 - [ ] `useTrustedHost` und `useHTTPSRedirect` sind für öffentliche Bereitstellungen festgelegt
 - [ ] `useHealth = True` wenn ein Load Balancer oder Kubernetes die App prüft
 - [ ] `__nexy__/` nicht festgeschrieben

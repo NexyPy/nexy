@@ -70,7 +70,7 @@ class NexyConfig(NexyConfigModel):
 
 | الميدان | الافتراضي | معنى |
 |---|---|---|
-| `useDocs` | `True` | خدمة الصفحة المرجعية العددية؛ `/openapi.json` يقدم على الوجهين |
+| `useDocs` | `"dev"` | حيث يتم تقديم الصفحة المرجعية Scalar و `/openapi.json`: `"dev"` على `nx dev` فقط، `True` في الإنتاج أيضًا (يسرد المخطط كل مسار وإجراء خادم)، `False` في أي مكان |
 | `useDocsUrl` | `"/docs"` | مسار الصفحة المرجعية لواجهة برمجة التطبيقات |
 | `useRedocsUrl` | `"/redocs"` | تم الإعلان عنه ولكن لم يتم تثبيت أي طريق |
 | `useTitle` | `"Nexy App"` | OpenAPI العنوان وعنوان الصفحة (`"Nexy"` في `NexyConfigModel`) |
@@ -87,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-أو أطفئه ب `useDocs = False`. `/openapi.json` يبقى مخدومًا في الحالتين: أبعد مسارات المشروع عن ذلك المسار.
+أو قم بإيقاف تشغيله باستخدام `useDocs = False`، والذي يتوقف أيضًا عن الخدمة `/openapi.json`. أثناء تشغيل المرجع، احتفظ بمسارات المشروع بعيدًا عن هذا المسار.
 
 ## الوسيطة
 

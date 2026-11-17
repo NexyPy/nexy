@@ -153,7 +153,9 @@ class NexyConfigModel:
     useTitle: str = "Nexy"
     useDocsUrl: str = "/docs"
     useRedocsUrl: str | None = "/redocs"
-    useDocs: bool = True
+    # Where the API reference and /openapi.json are served: "dev" (the dev server only), True
+    # (production too: it lists every route and server action), False (nowhere).
+    useDocs: bool | Literal["dev"] = "dev"
     useVite: bool = False
     useViteDevUrl: str | None = None
     useFF: FrontendFramework | list[FrontendFramework] | None = None

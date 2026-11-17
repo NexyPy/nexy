@@ -151,7 +151,7 @@ Chaque page est HTML, mais Nexy suppose un serveur pour le routage et pour les g
 - [ ] `nx build` dans CI, aucun avertissement pour les routes que vous prévoyez d'afficher sur le serveur
 - [ ] `nx start` se termine avec le code 1 et ne démarre rien lorsqu'un fichier de route ne peut pas se charger
 - [ ] `NEXY_ACTION_SECRET` défini, ou `__nexy__/action.key` conservé avec la build
-- [ ] `useDocs = False` en production si le schéma API ne doit pas être public
+- [ ] `useDocs` est resté à `"dev"`, la production ne sert donc ni à `/docs` ni à `/openapi.json`
 - [ ] `useTrustedHost` et `useHTTPSRedirect` définis pour les déploiements publics
 - [ ] `useHealth = True` lorsqu'un équilibreur de charge ou Kubernetes sonde l'application
 - [ ] `__nexy__/` non engagé
