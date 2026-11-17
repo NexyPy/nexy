@@ -22,6 +22,17 @@ def _declared_length(scope: Scope) -> int | None:
     return None
 
 
+def _length_unknown(scope: Scope) -> bool:
+    """True for a body read without a declared length: chunked, or HTTP/2 and later.
+
+    An HTTP/1 request with neither Content-Length nor Transfer-Encoding has no body (RFC 9112,
+    6.3), and the server never reads past a declared Content-Length, so only these need counting.
+    """
+    if not str(scope.get("http_version", "1.1")).startswith("1"):
+        return True
+    return any(name == b"transfer-encoding" for name, _value in scope.get("headers", []))
+
+
 class _Guard:
     """The `receive` and `send` of one request: count the body, hold back what follows overflow."""
 
@@ -65,8 +76,10 @@ class BodyLimitMiddleware:
             return
         if declared is not None and declared > self.limit:
             await self._refuse(scope, receive, send)
-            return
-        await self._counted(scope, receive, send)
+        elif declared is None and _length_unknown(scope):
+            await self._counted(scope, receive, send)
+        else:
+            await self.app(scope, receive, send)
 
     async def _counted(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Run the application with a `receive` that stops once the body is over the limit."""
