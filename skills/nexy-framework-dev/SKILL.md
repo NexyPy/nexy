@@ -30,12 +30,23 @@ Run in this order. Each must pass before you say a change is done.
 ruff check nexy/
 ruff format nexy/ --check
 python -m mypy nexy --strict
-python -m pytest tests/ -v
 python scripts/audit_structure.py --check
+python -m pytest tests/ --cov=nexy --cov-report=json:.coverage.json
+python scripts/check_diff_coverage.py      # every line the branch adds to nexy/ runs in a test
+python -m bandit -r nexy/ -c .bandit       # zero findings
 ```
 
 `python scripts/verify.py` runs the same gates and stops at the first failure.
 `python scripts/audit_dependencies.py` audits the dependencies against the lock.
+
+**Diff coverage is 100%.** The floor of `pyproject.toml` guards the package; `check_diff_coverage.py`
+guards the change: an added line no test runs, or a branch no test takes, fails it with its
+`file:line`. Write the missing test, never an exclusion.
+
+**Speed has budgets.** `tests/perf/` fails a change that makes a request through Nexy cost more
+than its budget times the same request through bare Starlette, or that makes an application
+take a second or more to start. A change that moves a number updates the budget in the same
+commit as the measurement that justifies it, and never only to make the test pass.
 
 ## Structure limits
 

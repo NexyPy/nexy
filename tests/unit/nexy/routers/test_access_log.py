@@ -227,3 +227,62 @@ class TestWithoutRich:
         monkeypatch.setattr(access_log.console, "print", refuse)
         asyncio.run(_call(AccessLogMiddleware(_responder()), "/users"))
         assert "/users 200 in " in capsys.readouterr().out
+
+
+class _Stream:
+    """A console file that remembers each write."""
+
+    def __init__(self) -> None:
+        self.writes: list[str] = []
+
+    def write(self, text: str) -> None:
+        self.writes.append(text)
+
+    def flush(self) -> None:
+        return None
+
+
+@pytest.fixture
+def stream(monkeypatch):
+    fake = _Stream()
+    # Rich reads `_file`, else sys.stdout: replacing `file` would pin this test's stdout for good.
+    monkeypatch.setattr(access_log.console, "_file", fake)
+    return fake
+
+
+class TestBatchedWrites:
+    """A busy server writes the lines of one turn of the event loop at once, not one by one."""
+
+    def test_the_lines_of_one_loop_turn_are_one_write(self, stream):
+        async def two_lines() -> None:
+            access_log._write_line("a")
+            access_log._write_line("b")
+            await asyncio.sleep(0)
+
+        asyncio.run(two_lines())
+        assert stream.writes == ["a\nb\n"]
+
+    def test_a_line_is_written_by_the_next_loop_turn(self, stream):
+        async def one_line() -> list[str]:
+            access_log._write_line("a")
+            await asyncio.sleep(0)
+            return list(stream.writes)
+
+        assert asyncio.run(one_line()) == ["a\n"]
+
+    def test_a_line_outside_an_event_loop_is_written_at_once(self, stream):
+        access_log._write_line("a")
+        assert stream.writes == ["a\n"]
+
+    def test_a_line_left_by_a_stopped_loop_is_written_with_the_next(self, stream, monkeypatch):
+        stopped = asyncio.new_event_loop()
+        stopped.close()
+        monkeypatch.setattr(access_log, "_pending", ["a\n"])
+        monkeypatch.setattr(access_log, "_flushing", {"loop": stopped})
+
+        async def one_line() -> None:
+            access_log._write_line("b")
+            await asyncio.sleep(0)
+
+        asyncio.run(one_line())
+        assert stream.writes == ["a\nb\n"]

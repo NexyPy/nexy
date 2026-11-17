@@ -15,16 +15,19 @@ L'objectif principal de Nexy est de **surpasser les solutions existantes** telle
 
 - **KISS**: simplest working code wins. No premature abstraction, no clever one-liners. Functions < 20 lines, classes < 10 methods.
 - **TDD**: write the test first (red), minimal code to pass (green), then refactor. One assertion per test. Name: `test_<thing>_<scenario>`.
+- **No untested line**: every line a change adds to `nexy/` runs in a test and every branch it opens is taken (`scripts/check_diff_coverage.py`, 100%). Security gets tests that send the hostile input; a hot path gets a speed budget in `tests/perf/`. "Done" is defined in `skills/nexy-principles/SKILL.md`.
 - **SOLID**: one responsibility per class/file. `TemplateParser` parses, `Builder` builds, `Router` routes. Depend on abstractions (`Protocol`), inject via the `Container`/`Injectable` API in `nexy/decorators.py`.
 
 ## Commands (Astral toolchain - no Makefile)
 
 ```bash
-# Quality gates (run in this order: lint → format → typecheck → test)
+# Quality gates (run in this order: lint, format, typecheck, test, diff coverage, security)
 ruff check nexy/
 ruff format nexy/ --check
 python -m mypy nexy --strict
-python -m pytest tests/ -v
+python -m pytest tests/ --cov=nexy --cov-report=json:.coverage.json
+python scripts/check_diff_coverage.py   # every added line of nexy/ runs in a test
+python -m bandit -r nexy/ -c .bandit    # zero findings
 
 # Structure rules (functions < 20 lines, classes < 10 methods, no copied code):
 # fails on a new or worse offender; `--write` records the baseline after a refactor

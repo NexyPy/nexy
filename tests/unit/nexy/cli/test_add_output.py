@@ -52,3 +52,16 @@ def test_add_a_failed_download_is_a_uv_error_with_its_cause(monkeypatch, capsys)
         "error: Failed to fetch component from https://example.com/c.tsx",
         "  cause: no route to host",
     )
+
+
+def test_add_a_component_that_cannot_be_written_is_a_uv_error(tmp_path, monkeypatch, capsys):
+    def refuse(*_args):
+        raise OSError("read-only file system")
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(add.PathUtil, "write_file", refuse)
+    add._write_nexy_component(Path("ui"), "Button", "x", "react")
+    assert (
+        capsys.readouterr().out
+        == "error: Failed to write ui/Button.nexy\n  cause: read-only file system\n"
+    )
