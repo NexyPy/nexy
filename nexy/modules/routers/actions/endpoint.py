@@ -68,10 +68,16 @@ def _group(pairs: list[tuple[str, str]]) -> dict[str, Any]:
     return payload
 
 
+def _is_local_path(path: str) -> bool:
+    """True for `/page`; `//site` and `/\\site` are read by browsers as another site."""
+    return path.startswith("/") and not path.startswith(("//", "/\\"))
+
+
 def _back(request: Request) -> str:
     """Where a form without JavaScript returns to: the page it was sent from."""
     referer = urlparse(request.headers.get("referer", ""))
-    if referer.netloc and referer.netloc == request.headers.get("host", ""):
+    same_host = referer.netloc and referer.netloc == request.headers.get("host", "")
+    if same_host and _is_local_path(referer.path):
         return referer.path + (f"?{referer.query}" if referer.query else "")
     return "/"
 

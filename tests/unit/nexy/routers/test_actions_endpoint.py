@@ -181,6 +181,17 @@ class TestFormWithoutJavaScript:
         )
         assert response.headers["location"] == "/"
 
+    @pytest.mark.parametrize("path", ["//evil.test/phish", "/\\evil.test/phish"])
+    def test_a_referer_path_that_names_another_site_goes_home(self, path):
+        client = _client(create_user)
+        response = client.post(
+            _url(create_user),
+            data={"name": "Ada"},
+            headers={"referer": f"http://testserver{path}"},
+            follow_redirects=False,
+        )
+        assert response.headers["location"] == "/"
+
     def test_an_invalid_form_is_a_422(self):
         client = _client(create_user)
         assert client.post(_url(create_user), data={"age": "1"}).status_code == 422

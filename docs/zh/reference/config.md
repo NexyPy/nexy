@@ -23,7 +23,8 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`，`useSslCertfile` | `None` | 直接提供HTTPS服务 |
 | `useDevTools` | `True` | 工具栏 `nexy dev` 添加到每个页面（页面信息、路由、错误、配置）； `False` 将其删除。从未出现在生产中 |
 | `useHealth` | `False` | 为负载均衡器和 Kubernetes 探测器提供 `GET /health/live` 和 `GET /health/ready` 服务；请参阅[部署](../deployment/README.md#built-in-endpoints) |
-| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 在 Linux 和 macOS 上是每个 CPU 一个，在 Windows 上是一个 |
+| `useMaxBodySize` | `1048576` | 工作线程读取的最大请求正文，以字节为单位 (1 MiB)；较大的为 `413`，`0` 则关闭限制。为需要文件上传的路由提高它 |
+| `useWorkers` | `0` | 进程 `nx start` 运行； `0` 是 Linux 和 macOS 上每个 CPU 一个，Windows 上一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 
 ## 数据库
@@ -69,7 +70,7 @@ class NexyConfig(NexyConfigModel):
 
 | 领域 | 默认 | 含义 |
 |---|---|---|
-| `useDocs` | `True` | 提供标量参考页面； `/openapi.json` 可以任意方式提供 |
+| `useDocs` | `"dev"` | 其中提供标量参考页面和 `/openapi.json`：`"dev"` 仅在 `nx dev` 上，`True` 也在生产中（架构列出了每个路由和服务器操作），`False` 无处 |
 | `useDocsUrl` | `"/docs"` | API参考页面路径 |
 | `useRedocsUrl` | `"/redocs"` | 已声明但未安装路由 |
 | `useTitle` | `"Nexy App"` | OpenAPI 标题和页面标题（`NexyConfigModel` 中的 `"Nexy"`） |
@@ -86,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-或者使用 `useDocs = False` 将其关闭。 `/openapi.json` 在这两种情况下都保持服务：使项目的路线远离该路径。
+或者使用 `useDocs = False` 将其关闭，这也会停止服务 `/openapi.json`。当参考打开时，使项目的路线远离该路径。
 
 ## 中间件
 

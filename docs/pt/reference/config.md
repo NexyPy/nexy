@@ -23,7 +23,8 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS diretamente |
 | `useDevTools` | `True` | a barra de ferramentas `nexy dev` adiciona informações a cada página (informações da página, rotas, erros, configuração); `False` remove-o. Nunca presente na produção |
 | `useHealth` | `False` | servir `GET /health/live` e `GET /health/ready` para balanceadores de carga e testes do Kubernetes; consulte [Implantar](../deployment/README.md#built-in-endpoints) |
-| `useWorkers` | `0` | processos `nx start` executados; `0` é um por CPU no Linux e macOS, um no Windows |
+| `useMaxBodySize` | `1048576` | o maior corpo de solicitação que um trabalhador lê, em bytes (1 MiB); um maior é um `413` e `0` desativa o limite. Eleve-o para uma rota que faça upload de arquivos |
+| `useWorkers` | `0` | processa `nx start` execuções; `0` é um por CPU no Linux e macOS, um no Windows |
 | `useCSR` | `False` | modo de roteamento do lado do cliente; `.nexy` rotas estão desativadas |
 
 ## Banco de dados
@@ -69,7 +70,7 @@ Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = 
 
 | Campo | Padrão | Significado |
 |---|---|---|
-| `useDocs` | `True` | servir a página de referência escalar; `/openapi.json` é servido de qualquer maneira |
+| `useDocs` | `"dev"` | onde a página de referência escalar e `/openapi.json` são veiculadas: `"dev"` somente em `nx dev`, `True` em produção também (o esquema lista todas as rotas e ações do servidor), `False` em lugar nenhum |
 | `useDocsUrl` | `"/docs"` | caminho da página de referência da API |
 | `useRedocsUrl` | `"/redocs"` | declarada mas nenhuma rota está montada |
 | `useTitle` | `"Nexy App"` | OpenAPI título e título da página (`"Nexy"` em `NexyConfigModel`) |
@@ -86,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Ou desligue-o com `useDocs = False`. `/openapi.json` permanece atendido em ambos os casos: manter as rotas do projeto fora desse caminho.
+Ou desligue-o com `useDocs = False`, que também para de veicular `/openapi.json`. Enquanto a referência estiver ativada, mantenha as rotas do projeto fora desse caminho.
 
 ## Middleware
 

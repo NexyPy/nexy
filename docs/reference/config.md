@@ -24,6 +24,7 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | serve HTTPS directly |
 | `useDevTools` | `True` | the toolbar `nexy dev` adds to every page (page info, routes, errors, config); `False` removes it. Never present in production |
 | `useHealth` | `False` | serve `GET /health/live` and `GET /health/ready` for load balancers and Kubernetes probes; see [Deploy](../deployment/README.md#built-in-endpoints) |
+| `useMaxBodySize` | `1048576` | the largest request body a worker reads, in bytes (1 MiB); a larger one is a `413`, and `0` turns the limit off. Raise it for a route that takes file uploads |
 | `useWorkers` | `0` | processes `nx start` runs; `0` is one per CPU on Linux and macOS, one on Windows |
 | `useCSR` | `False` | client-side routing mode; `.nexy` routes are disabled |
 
@@ -72,7 +73,7 @@ reserved, exactly like `layout.nexy`.
 
 | Field | Default | Meaning |
 |---|---|---|
-| `useDocs` | `True` | serve the Scalar reference page; `/openapi.json` is served either way |
+| `useDocs` | `"dev"` | where the Scalar reference page and `/openapi.json` are served: `"dev"` on `nx dev` only, `True` in production too (the schema lists every route and server action), `False` nowhere |
 | `useDocsUrl` | `"/docs"` | path of the API reference page |
 | `useRedocsUrl` | `"/redocs"` | declared but no route is mounted |
 | `useTitle` | `"Nexy App"` | OpenAPI title and page title (`"Nexy"` in `NexyConfigModel`) |
@@ -91,8 +92,8 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Or turn it off with `useDocs = False`. `/openapi.json` stays served in both cases: keep the
-routes of the project off that path.
+Or turn it off with `useDocs = False`, which also stops serving `/openapi.json`. While the
+reference is on, keep the routes of the project off that path.
 
 ## Middleware
 
