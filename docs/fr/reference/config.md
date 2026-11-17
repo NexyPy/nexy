@@ -70,7 +70,7 @@ Chaque champ ajoute des extensions à un rôle réservé. `useLayoutExtensions =
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useDocs` | `True` | servir la page de référence Scalar ; `/openapi.json` est servi dans les deux sens |
+| `useDocs` | `"dev"` | où la page de référence Scalar et `/openapi.json` sont servis : `"dev"` sur `nx dev` uniquement, `True` en production également (le schéma répertorie chaque route et action du serveur), `False` nulle part |
 | `useDocsUrl` | `"/docs"` | chemin de la page de référence de l'API |
 | `useRedocsUrl` | `"/redocs"` | déclaré mais aucune route n'est montée |
 | `useTitle` | `"Nexy App"` | Titre de OpenAPI et titre de la page (`"Nexy"` dans `NexyConfigModel`) |
@@ -87,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Ou éteignez-le avec `useDocs = False`. `/openapi.json` reste servi dans les deux cas : garder les itinéraires du projet hors de ce chemin.
+Ou désactivez-le avec `useDocs = False`, qui arrête également de diffuser `/openapi.json`. Pendant que la référence est activée, gardez les itinéraires du projet hors de ce chemin.
 
 ## Intergiciel
 

@@ -1,11 +1,32 @@
 {% if not utility_ui %}{% if useCSR and client_framework in ("react", "solid", "preact") %}
 {%- set cls = "className" if client_framework == "react" else "class" -%}
-import { Link } from "@nexy/client";
+{% if client_framework == "solid" %}import { createSignal } from "solid-js";
+{% elif client_framework == "preact" %}import { useCallback, useRef, useState } from "preact/hooks";
+{% else %}import { useCallback, useRef, useState } from "react";
+{% endif %}import { Link } from "@nexy/client";
+import Sheet from "@/components/sheet.tsx";
 import ThemeToggle from "@/components/theme-toggle.tsx";
 
 export default function Header() {
+{% if client_framework == "solid" %}  const [open, setOpen] = createSignal(false);
+  let opener: HTMLButtonElement | undefined;
+  // Closing gives the focus back to the button that opened the menu.
+  const close = () => {
+    setOpen(false);
+    opener?.focus();
+  };
+{% else %}  const [open, setOpen] = useState(false);
+  const opener = useRef<HTMLButtonElement>(null);
+  // Closing gives the focus back to the button that opened the menu.
+  const close = useCallback(() => {
+    setOpen(false);
+    opener.current?.focus();
+  }, []);
+{% endif %}
   return (
+    <>
 {% include "header.html.jinja2" %}
+    </>
   );
 }
 {% endif %}

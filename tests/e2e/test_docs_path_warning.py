@@ -36,10 +36,23 @@ def _start(project: Path) -> str:
     return done.stdout
 
 
+def _serve_docs_in_production(project: Path) -> None:
+    config = project / "nexyconfig.py"
+    text = config.read_text("utf-8").rstrip("\n")
+    config.write_text(text + "\n    useDocs = True\n", "utf-8")
+
+
 def test_a_page_at_docs_is_named_at_startup(tmp_path):
     scaffold(tmp_path, "web-fbr", "none")
+    _serve_docs_in_production(tmp_path)
     write(tmp_path, "src/routes/docs.nexy", "<h1>Guide</h1>\n")
     assert "src/routes/docs.nexy is never served at /docs" in _start(tmp_path)
+
+
+def test_a_page_at_docs_is_served_while_production_hides_the_reference(tmp_path):
+    scaffold(tmp_path, "web-fbr", "none")
+    write(tmp_path, "src/routes/docs.nexy", "<h1>Guide</h1>\n")
+    assert "is never served" not in _start(tmp_path)
 
 
 def test_a_project_without_one_starts_silently(tmp_path):

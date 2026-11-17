@@ -151,7 +151,7 @@ Cada página es HTML, pero Nexy asume un servidor para el enrutamiento y para lo
 - [ ] `nx build` en CI, no hay advertencias para las rutas que espera representar en el servidor
 - [ ] `nx start` sale con el código 1 y no inicia nada cuando un archivo de ruta no se puede cargar
 - [ ] `NEXY_ACTION_SECRET` establecido, o `__nexy__/action.key` mantenido con la compilación
-- [ ] `useDocs = False` en producción si el esquema de API no debe ser público
+- [ ] `useDocs` se fue en `"dev"`, por lo que la producción no sirve ni a `/docs` ni a `/openapi.json`
 - [ ] `useTrustedHost` y `useHTTPSRedirect` configurados para implementaciones públicas
 - [ ] `useHealth = True` cuando un balanceador de carga o Kubernetes prueba la aplicación
 - [ ] `__nexy__/` no comprometido

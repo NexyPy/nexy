@@ -70,7 +70,7 @@ Cada campo adiciona extensões a uma função reservada. `useLayoutExtensions = 
 
 | Campo | Padrão | Significado |
 |---|---|---|
-| `useDocs` | `True` | servir a página de referência escalar; `/openapi.json` é servido de qualquer maneira |
+| `useDocs` | `"dev"` | onde a página de referência escalar e `/openapi.json` são veiculadas: `"dev"` somente em `nx dev`, `True` em produção também (o esquema lista todas as rotas e ações do servidor), `False` em lugar nenhum |
 | `useDocsUrl` | `"/docs"` | caminho da página de referência da API |
 | `useRedocsUrl` | `"/redocs"` | declarada mas nenhuma rota está montada |
 | `useTitle` | `"Nexy App"` | OpenAPI título e título da página (`"Nexy"` em `NexyConfigModel`) |
@@ -87,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Ou desligue-o com `useDocs = False`. `/openapi.json` permanece atendido em ambos os casos: mantenha as rotas do projeto fora desse caminho.
+Ou desligue-o com `useDocs = False`, que também para de veicular `/openapi.json`. Enquanto a referência estiver ativada, mantenha as rotas do projeto fora desse caminho.
 
 ## Middleware
 
