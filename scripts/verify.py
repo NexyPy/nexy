@@ -19,12 +19,20 @@ GATES: list[tuple[str, list[str]]] = [
             "sites/shared/social",
             "scripts/publish_social.py",
             "scripts/make_com_media.py",
+            "scripts/check_diff_coverage.py",
             "--strict",
         ],
     ),
     ("structure", ["scripts/audit_structure.py", "--check"]),
     ("com", ["scripts/publish_social.py", "--check"]),
-    ("test", ["-m", "pytest", "tests/", "-q"]),
+    # The suite runs once, with coverage: the floor of pyproject.toml guards the package, and
+    # diff-coverage reads the same report to require a test for every line this change adds.
+    (
+        "test",
+        ["-m", "pytest", "tests/", "-q", "--cov=nexy", "--cov-report=json:.coverage.json"],
+    ),
+    ("diff-coverage", ["scripts/check_diff_coverage.py", "--report", ".coverage.json"]),
+    ("security", ["-m", "bandit", "-r", "nexy/", "-c", ".bandit", "-q"]),
 ]
 
 

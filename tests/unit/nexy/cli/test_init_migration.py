@@ -102,3 +102,11 @@ class TestFetch:
         with pytest.raises(RuntimeError):
             template_setup.initialize_from_template("web-fbr", tmp_path)
         assert capsys.readouterr().out == ""
+
+
+def test_a_rendered_template_goes_through_the_post_init_pipeline(tmp_path, monkeypatch):
+    seen: list[tuple[Path, dict, str | None]] = []
+    monkeypatch.setattr(template_setup, "_fetch_template", lambda *_args: None)
+    monkeypatch.setattr(template_setup, "_run_post_init_pipeline", lambda *args: seen.append(args))
+    template_setup.initialize_from_template("web-fbr", tmp_path / "app", {"orm": "None"})
+    assert seen == [(tmp_path / "app", {"orm": "None"}, "app")]

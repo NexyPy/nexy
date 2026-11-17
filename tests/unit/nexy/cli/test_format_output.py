@@ -86,3 +86,16 @@ def test_format_a_nexy_file_that_would_change_is_a_uv_error(project, monkeypatch
     with pytest.raises(SystemExit):
         command.format_(check=True)
     assert "error: page.nexy\n  cause: would be reformatted\n" in capsys.readouterr().out
+
+
+def test_format_ts_files_without_prettier_are_a_uv_warning(project, capsys):
+    (project / "app.ts").write_text("export const x = 1\n")
+    command._format_ts(project, check=False)
+    assert capsys.readouterr().out == "warning: prettier not found - skipping JS/TS\n"
+
+
+def test_format_ts_files_run_prettier(project, monkeypatch, capsys):
+    (project / "app.ts").write_text("export const x = 1\n")
+    monkeypatch.setattr(command.shutil, "which", lambda _name: _fake_tool(project, "ok", 0))
+    command._format_ts(project, check=False)
+    assert capsys.readouterr().out.startswith("Formatted JS/TS with prettier in ")

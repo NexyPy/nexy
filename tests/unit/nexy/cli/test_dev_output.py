@@ -65,3 +65,13 @@ def test_dev_prints_no_cross_mark(monkeypatch, capsys):
     with pytest.raises(SystemExit):
         dev._require_vite_install()
     assert not set(capsys.readouterr().out) & set("✘✗")
+
+
+def test_dev_a_server_that_crashes_is_a_uv_error(monkeypatch, capsys):
+    def crash(*_args):
+        raise RuntimeError("socket closed")
+
+    monkeypatch.setattr(dev, "_watch", crash)
+    monkeypatch.setattr(dev, "_release", lambda *_args: None)
+    dev._serve(SimpleNamespace(), None, dev._Session(), 0.0)
+    assert capsys.readouterr().out == "error: socket closed\n"
