@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from nexy.modules.cli.init.template_setup import _render_local_template
 
 
@@ -74,14 +76,50 @@ class TestTheServerHeader:
         assert "{%" not in _header(tmp_path)
 
 
-class TestTheClientRoutedHeader:
-    def test_it_has_no_button_that_could_not_work(self, tmp_path):
-        _scaffold(tmp_path, "react", True)
-        assert "data-menu-button" not in _header(tmp_path, "header.tsx")
+CLIENT_FILES = {
+    "react": ("src/components/header.tsx", "src/components/sheet.tsx"),
+    "preact": ("src/components/header.tsx", "src/components/sheet.tsx"),
+    "solid": ("src/components/header.tsx", "src/components/sheet.tsx"),
+    "vue": ("src/routes/layout.vue", "src/components/sheet.vue"),
+    "svelte": ("src/routes/layout.svelte", "src/components/sheet.svelte"),
+}
 
-    def test_it_has_no_sheet_script(self, tmp_path):
-        _scaffold(tmp_path, "react", True)
-        assert "addEventListener" not in _header(tmp_path, "header.tsx")
+
+def _client(tmp_path: Path, framework: str) -> tuple[str, str]:
+    _scaffold(tmp_path, framework, True)
+    header, sheet = CLIENT_FILES[framework]
+    return (tmp_path / header).read_text("utf-8"), (tmp_path / sheet).read_text("utf-8")
+
+
+@pytest.mark.parametrize("framework", list(CLIENT_FILES))
+class TestTheClientRoutedHeader:
+    def test_the_bar_offers_a_menu_button(self, tmp_path, framework):
+        header, _sheet = _client(tmp_path, framework)
+        assert 'aria-controls="nx-menu"' in header
+
+    def test_the_menu_is_the_sheet_component(self, tmp_path, framework):
+        header, _sheet = _client(tmp_path, framework)
+        assert '<Sheet id="nx-menu"' in header
+
+    def test_the_sheet_sits_outside_the_blurred_bar(self, tmp_path, framework):
+        header, _sheet = _client(tmp_path, framework)
+        assert header.index("</header>") < header.index("<Sheet")
+
+    def test_the_sheet_is_a_modal_dialog(self, tmp_path, framework):
+        _header, sheet = _client(tmp_path, framework)
+        assert 'role="dialog"' in sheet and 'aria-modal="true"' in sheet
+
+    def test_the_sheet_is_drawn_by_the_starter_stylesheet(self, tmp_path, framework):
+        _header, sheet = _client(tmp_path, framework)
+        assert 'class' in sheet and '"nx-sheet"' in sheet
+
+    def test_the_sheet_carries_no_utility_class(self, tmp_path, framework):
+        _header, sheet = _client(tmp_path, framework)
+        assert "inset-0" not in sheet
+
+    def test_no_jinja_is_left(self, tmp_path, framework):
+        header, sheet = _client(tmp_path, framework)
+        assert "{{" not in header.replace("{{ title }}", "") and "{%" not in sheet + header
 
 
 class TestTheStylesheet:
