@@ -257,7 +257,7 @@
     "compile_failed": "Gagal mengompilasi {path}",
     "compiled": "{path} dikompilasi dalam {time}",
     "error_kept": "Perbaiki lalu simpan: server tetap memakai versi terakhir yang berfungsi.",
-    "restart_failed": "Server gagal dimulai ulang: {error}",
+    "restart_failed": "Gagal memulai ulang server",
     "update": "memperbarui"
   }
 }

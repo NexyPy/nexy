@@ -208,6 +208,17 @@ class TestBrokenFiles:
         reactor.react(FileChange("modified", rel))
         assert "port busy" in capsys.readouterr().out
 
+    def test_a_reload_that_fails_is_a_uv_error_with_its_cause(self, project, capsys, monkeypatch):
+        monkeypatch.setenv("NEXY_LANG", "en")
+
+        def failing() -> None:
+            raise OSError("port busy")
+
+        reactor = ChangeReactor(Compiler(), failing)
+        reactor.react(FileChange("modified", _file(project, "src/services.py", "x = 1\n")))
+        expected = "error: Failed to restart the server\n  cause: port busy\n"
+        assert capsys.readouterr().out.endswith(expected)
+
 
 class TestBatches:
     def test_many_python_files_restart_the_server_once(self, reactor, calls, project):

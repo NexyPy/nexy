@@ -257,7 +257,7 @@
     "compile_failed": "{path} 컴파일에 실패했습니다",
     "compiled": "{path}을(를) {time}에 컴파일함",
     "error_kept": "수정 후 저장하세요. 서버는 마지막으로 동작한 버전을 유지합니다.",
-    "restart_failed": "서버를 다시 시작하지 못했습니다: {error}",
+    "restart_failed": "서버를 다시 시작하지 못했습니다",
     "update": "업데이트"
   }
 }

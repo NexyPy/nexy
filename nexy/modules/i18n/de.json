@@ -257,7 +257,7 @@
     "compile_failed": "{path} konnte nicht kompiliert werden",
     "compiled": "{path} in {time} kompiliert",
     "error_kept": "Beheben und speichern: Der Server behält seine letzte funktionierende Version.",
-    "restart_failed": "Der Server konnte nicht neu gestartet werden: {error}",
+    "restart_failed": "Der Server konnte nicht neu gestartet werden",
     "update": "aktualisiere"
   }
 }

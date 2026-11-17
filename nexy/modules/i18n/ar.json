@@ -257,7 +257,7 @@
     "compile_failed": "فشل تجميع {path}",
     "compiled": "تم تجميع {path} في {time}",
     "error_kept": "أصلح الخطأ واحفظ: يحتفظ الخادم بآخر نسخة كانت تعمل.",
-    "restart_failed": "تعذّرت إعادة تشغيل الخادم: {error}",
+    "restart_failed": "تعذّرت إعادة تشغيل الخادم",
     "update": "تحديث"
   }
 }

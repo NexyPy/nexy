@@ -257,7 +257,7 @@
     "compile_failed": "Falha ao compilar {path}",
     "compiled": "{path} compilado em {time}",
     "error_kept": "Corrija e salve: o servidor mantém a última versão que funcionava.",
-    "restart_failed": "Não foi possível reiniciar o servidor: {error}",
+    "restart_failed": "Falha ao reiniciar o servidor",
     "update": "atualizando"
   }
 }
