@@ -66,7 +66,10 @@ jobs:
       UV_PYTHON: ${{ matrix.python-version }}
 
     steps:
+      # The whole history: the diff coverage gate diffs against the merge base of the PR.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
@@ -102,18 +105,27 @@ jobs:
       - name: Typecheck (sites/shared/social, COM scripts)
         run: |
           uv run --no-sync python -m mypy sites/shared/social \
-            scripts/publish_social.py scripts/make_com_media.py --strict
+            scripts/publish_social.py scripts/make_com_media.py \
+            scripts/check_diff_coverage.py --strict
 
       # The posts of COM/ are checked like code: a number without a dated proof,
       # a caption over a network's limit, a card that is the wrong shape, all fail.
       - name: Posts (COM/)
         run: uv run --no-sync python scripts/publish_social.py --check
 
-      - name: Test
-        run: uv run --no-sync python -m pytest tests/ --tb=short
+      # One run of the suite, with coverage: the floor of pyproject.toml (fail_under) and the
+      # diff coverage gate read the same report.
+      - name: Test and coverage (floor enforced by fail_under)
+        run: |
+          uv run --no-sync python -m pytest tests/ --tb=short --cov=nexy \
+            --cov-report=term-missing:skip-covered --cov-report=json:.coverage.json
 
-      - name: Test coverage (floor enforced by fail_under)
-        run: uv run --no-sync python -m pytest tests/ --cov=nexy --cov-report=term-missing
+      # Every line a PR adds to nexy/ runs in a test, and every branch it opens is taken.
+      - name: Diff coverage (every added line runs in a test)
+        if: github.event_name == 'pull_request'
+        run: |
+          uv run --no-sync python scripts/check_diff_coverage.py \
+            --base "origin/${{ github.base_ref }}" --report .coverage.json
 
       - name: Security (bandit, zero findings)
         run: uv run --no-sync python -m bandit -r nexy/ -c .bandit
