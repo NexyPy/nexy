@@ -1,0 +1,101 @@
+{% if not utility_ui and useCSR %}{% raw %}<script lang="ts">
+  import type { Snippet } from "svelte";
+
+
+  // `title` is visible, and also names the dialog for a screen reader.
+  let {
+    id,
+    open,
+    onclose,
+    title,
+    children,
+  }: { id: string; open: boolean; onclose: () => void; title: string; children?: Snippet } =
+    $props();
+
+  let panel = $state<HTMLElement | null>(null);
+  let closer = $state<HTMLButtonElement | null>(null);
+  let links = $state<HTMLElement | null>(null);
+  let shown = $state(open);
+  let state = $derived(open ? "open" : "closed");
+
+  // Tab and Shift+Tab wrap inside the panel instead of walking out into the page: the close
+  // button comes first, the last link of the menu last.
+  function trap(event: KeyboardEvent) {
+    const first = closer;
+    const last = links?.lastElementChild;
+    const here = document.activeElement;
+    const away = event.shiftKey ? here === first || here === panel : here === last;
+    if (!away || !(last instanceof HTMLElement) || !first) return;
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  }
+
+  // The focus never leaves the open panel, so its own key handler sees every key.
+  function onkey(event: KeyboardEvent) {
+    if (event.key === "Escape") onclose();
+    if (event.key === "Tab") trap(event);
+  }
+
+  // Opening shows the panel; closing plays the slide back before the panel leaves the page.
+  $effect(() => {
+    if (open) {
+      shown = true;
+      return;
+    }
+    const moves = panel?.getAnimations().map((move) => move.finished) ?? [];
+    Promise.all(moves).then(() => {
+      if (!open) shown = false;
+    });
+  });
+
+  // While it is open the panel holds the keyboard, the page behind holds still, and a wide
+  // screen closes it.
+  $effect(() => {
+    const element = panel;
+    if (!open || !element) return;
+    element.focus();
+    document.body.style.overflow = "hidden";
+    const wide = window.matchMedia("(min-width: 48rem)");
+    wide.onchange = () => wide.matches && onclose();
+    return () => {
+      document.body.style.overflow = "";
+      wide.onchange = null;
+    };
+  });
+</script>
+
+{#if shown}
+  <div class="nx-sheet-layer">
+    <div class="nx-sheet-scrim" data-state={state} aria-hidden="true" onclick={onclose}></div>
+    <div
+      bind:this={panel}
+      {id}
+      tabindex="-1"
+      class="nx-sheet"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="{id}-title"
+      data-side="left"
+      data-state={state}
+      onkeydown={onkey}
+    >
+      <div class="nx-sheet-head">
+        <img src="/nexy.svg" alt="" />
+        <h2 id="{id}-title" class="nx-sheet-title">{title}</h2>
+      </div>
+      <button
+        bind:this={closer}
+        type="button"
+        class="nx-menu-button nx-menu-close"
+        aria-label="Close menu"
+        onclick={onclose}
+      >
+        <span class="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
+      </button>
+      <nav bind:this={links} class="nx-sheet-links" aria-label="Pages">
+        {@render children?.()}
+      </nav>
+    </div>
+  </div>
+{/if}
+{% endraw %}{% endif %}
