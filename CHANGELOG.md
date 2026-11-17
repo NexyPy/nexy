@@ -3,6 +3,26 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.6.1] - 2026-11-17
+
+### Changed
+
+- **A request through Nexy costs less.** The security headers, the body limit and the access log
+  are lighter: on one uvicorn worker with the access log on, an `async` route answers about 11%
+  more requests per second. A body whose length is declared is no longer counted byte by byte;
+  a chunked or HTTP/2 body still is, and a body over the limit is still a 413. The access log
+  writes the lines of one turn of the event loop at once, and each line still shows at once
+  (#397).
+- **The agent skills that `nx skills` copies say when a change is done:** every added line runs in
+  a test, security has tests that send the hostile input, and a hot path has a speed budget
+  (#396).
+
+### Fixed
+
+- **A security header the application sets is no longer sent twice.** A `Referrer-Policy` or
+  `X-Content-Type-Options` written in another case than the default went out with the default
+  beside it (#397).
+
 ## [2.6.0] - 2026-11-17
 
 ### Added
