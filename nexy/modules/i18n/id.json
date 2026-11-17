@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Ditambahkan: {path}",
     "available": "Komponen UI yang tersedia: {names}",
-    "error": "Kesalahan:",
     "exists": "Dilewati: {path} sudah ada.",
-    "fetch_failed": "Gagal mengambil komponen dari {url}: {error}",
+    "fetch_failed": "Gagal mengambil komponen dari {url}",
     "fetching": "Mengambil komponen jarak jauh dari {url}...",
     "help_all": "Tambahkan semua komponen yang tersedia dari registri",
     "help_components": "Komponen yang ditambahkan (nama registri atau URL)",
@@ -18,7 +16,7 @@
     "not_found": "Komponen '{name}' tidak ditemukan di registri.",
     "usage": "Penggunaan:",
     "usage_text": "nexy add [NAMA_KOMPONEN atau URL]...",
-    "write_failed": "Gagal menulis {path}: {error}"
+    "write_failed": "Gagal menulis {path}"
   },
   "build": {
     "building_client": "Bundel klien selesai dibuat",

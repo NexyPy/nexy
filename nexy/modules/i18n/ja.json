@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "追加しました: {path}",
     "available": "利用可能なUIコンポーネント: {names}",
-    "error": "エラー:",
     "exists": "スキップ: {path} は既に存在します。",
-    "fetch_failed": "{url} からコンポーネントを取得できませんでした: {error}",
+    "fetch_failed": "{url} からコンポーネントを取得できませんでした",
     "fetching": "{url} からリモートコンポーネントを取得しています...",
     "help_all": "レジストリの利用可能なコンポーネントをすべて追加する",
     "help_components": "追加するコンポーネント（レジストリ名またはURL）",
@@ -18,7 +16,7 @@
     "not_found": "コンポーネント '{name}' はレジストリに見つかりません。",
     "usage": "使い方:",
     "usage_text": "nexy add [コンポーネント名 または URL]...",
-    "write_failed": "{path} を書き込めませんでした: {error}"
+    "write_failed": "{path} を書き込めませんでした"
   },
   "build": {
     "building_client": "クライアントバンドルをビルドしました",

@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "تمت الإضافة: {path}",
     "available": "مكوّنات الواجهة المتاحة: {names}",
-    "error": "خطأ:",
     "exists": "تم التخطي: {path} موجود مسبقًا.",
-    "fetch_failed": "تعذّر جلب المكوّن من {url}: {error}",
+    "fetch_failed": "تعذّر جلب المكوّن من {url}",
     "fetching": "جارٍ جلب المكوّن البعيد من {url}...",
     "help_all": "إضافة كل المكوّنات المتاحة من السجل",
     "help_components": "المكوّنات المراد إضافتها (أسماء من السجل أو عناوين URL)",
@@ -18,7 +16,7 @@
     "not_found": "المكوّن '{name}' غير موجود في السجل.",
     "usage": "الاستخدام:",
     "usage_text": "nexy add [اسم_المكوّن أو URL]...",
-    "write_failed": "تعذّرت كتابة {path}: {error}"
+    "write_failed": "تعذّرت كتابة {path}"
   },
   "build": {
     "building_client": "تم بناء حزمة العميل",

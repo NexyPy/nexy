@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "已添加：{path}",
     "available": "可用的 UI 组件：{names}",
-    "error": "错误：",
     "exists": "已跳过：{path} 已存在。",
-    "fetch_failed": "无法从 {url} 获取组件：{error}",
+    "fetch_failed": "无法从 {url} 获取组件",
     "fetching": "正在从 {url} 获取远程组件...",
     "help_all": "添加注册表中所有可用的组件",
     "help_components": "要添加的组件（注册表名称或 URL）",
@@ -18,7 +16,7 @@
     "not_found": "在注册表中找不到组件“{name}”。",
     "usage": "用法：",
     "usage_text": "nexy add [组件名称 或 URL]...",
-    "write_failed": "无法写入 {path}：{error}"
+    "write_failed": "无法写入 {path}"
   },
   "build": {
     "building_client": "客户端包已构建",

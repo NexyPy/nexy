@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Ajouté : {path}",
     "available": "Composants UI disponibles : {names}",
-    "error": "Erreur :",
     "exists": "Ignoré : {path} existe déjà.",
-    "fetch_failed": "Impossible de récupérer le composant depuis {url} : {error}",
+    "fetch_failed": "Impossible de récupérer le composant depuis {url}",
     "fetching": "Récupération du composant distant depuis {url}...",
     "help_all": "Ajouter tous les composants disponibles du registre",
     "help_components": "Composants à ajouter (noms du registre ou URL)",
@@ -18,7 +16,7 @@
     "not_found": "Composant « {name} » introuvable dans le registre.",
     "usage": "Utilisation :",
     "usage_text": "nexy add [NOM_DU_COMPOSANT ou URL]...",
-    "write_failed": "Impossible d'écrire {path} : {error}"
+    "write_failed": "Impossible d'écrire {path}"
   },
   "build": {
     "building_client": "Bundle client construit",

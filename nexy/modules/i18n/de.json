@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Hinzugefügt: {path}",
     "available": "Verfügbare UI-Komponenten: {names}",
-    "error": "Fehler:",
     "exists": "Übersprungen: {path} existiert bereits.",
-    "fetch_failed": "Die Komponente konnte nicht von {url} abgerufen werden: {error}",
+    "fetch_failed": "Die Komponente konnte nicht von {url} geladen werden",
     "fetching": "Remote-Komponente wird von {url} abgerufen...",
     "help_all": "Alle verfügbaren Komponenten aus der Registry hinzufügen",
     "help_components": "Hinzuzufügende Komponenten (Registry-Namen oder URLs)",
@@ -18,7 +16,7 @@
     "not_found": "Komponente '{name}' wurde in der Registry nicht gefunden.",
     "usage": "Verwendung:",
     "usage_text": "nexy add [KOMPONENTENNAME oder URL]...",
-    "write_failed": "{path} konnte nicht geschrieben werden: {error}"
+    "write_failed": "{path} konnte nicht geschrieben werden"
   },
   "build": {
     "building_client": "Client-Bundle erstellt",

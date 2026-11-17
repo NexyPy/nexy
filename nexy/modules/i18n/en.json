@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Added: {path}",
     "available": "Available UI components: {names}",
-    "error": "Error:",
     "exists": "Skipping: {path} already exists.",
-    "fetch_failed": "Failed to fetch component from {url}: {error}",
+    "fetch_failed": "Failed to fetch component from {url}",
     "fetching": "Fetching remote component from {url}...",
     "help_all": "Add all available components from registry",
     "help_components": "Components to add (registry names or URLs)",
@@ -18,7 +16,7 @@
     "not_found": "Component '{name}' not found in registry.",
     "usage": "Usage:",
     "usage_text": "nexy add [COMPONENT_NAME or URL]...",
-    "write_failed": "Failed to write {path}: {error}"
+    "write_failed": "Failed to write {path}"
   },
   "build": {
     "building_client": "Built client bundle",

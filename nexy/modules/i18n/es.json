@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Añadido: {path}",
     "available": "Componentes de UI disponibles: {names}",
-    "error": "Error:",
     "exists": "Omitido: {path} ya existe.",
-    "fetch_failed": "No se pudo obtener el componente desde {url}: {error}",
+    "fetch_failed": "No se pudo obtener el componente de {url}",
     "fetching": "Obteniendo el componente remoto desde {url}...",
     "help_all": "Añadir todos los componentes disponibles del registro",
     "help_components": "Componentes que añadir (nombres del registro o URL)",
@@ -18,7 +16,7 @@
     "not_found": "El componente '{name}' no está en el registro.",
     "usage": "Uso:",
     "usage_text": "nexy add [NOMBRE_DEL_COMPONENTE o URL]...",
-    "write_failed": "No se pudo escribir {path}: {error}"
+    "write_failed": "No se pudo escribir {path}"
   },
   "build": {
     "building_client": "Paquete de cliente compilado",
