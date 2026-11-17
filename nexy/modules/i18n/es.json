@@ -236,9 +236,13 @@
     "help_args": "Argumentos adicionales para el ejecutor de pruebas",
     "help_client": "Ejecutar las pruebas de cliente (vitest)",
     "help_server": "Ejecutar las pruebas de servidor (pytest)",
-    "passed": "todas las pruebas han pasado",
+    "passed": "Todas las pruebas pasaron",
     "skip_client": "vitest no está configurado: se omiten las pruebas de cliente",
-    "skip_tool": "pytest no encontrado: se omiten las pruebas de servidor"
+    "skip_tool": "pytest no encontrado: se omiten las pruebas de servidor",
+    "running_server": "Ejecutando las pruebas del servidor con pytest",
+    "ran_server": "Pruebas del servidor ejecutadas con pytest",
+    "running_client": "Ejecutando las pruebas del cliente con vitest",
+    "ran_client": "Pruebas del cliente ejecutadas con vitest"
   },
   "tui": {
     "keys": {

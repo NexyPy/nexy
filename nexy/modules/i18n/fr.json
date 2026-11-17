@@ -236,9 +236,13 @@
     "help_args": "Arguments supplémentaires transmis au lanceur de tests",
     "help_client": "Lancer les tests client (vitest)",
     "help_server": "Lancer les tests serveur (pytest)",
-    "passed": "tous les tests ont réussi",
+    "passed": "Tous les tests sont passés",
     "skip_client": "vitest n'est pas configuré : tests client ignorés",
-    "skip_tool": "pytest est introuvable : tests serveur ignorés"
+    "skip_tool": "pytest est introuvable : tests serveur ignorés",
+    "running_server": "Exécution des tests serveur avec pytest",
+    "ran_server": "Tests serveur exécutés avec pytest",
+    "running_client": "Exécution des tests client avec vitest",
+    "ran_client": "Tests client exécutés avec vitest"
   },
   "tui": {
     "keys": {

@@ -238,7 +238,11 @@
     "help_server": "सर्वर टेस्ट चलाएँ (pytest)",
     "passed": "सभी टेस्ट सफल रहे",
     "skip_client": "vitest कॉन्फ़िगर नहीं है: क्लाइंट टेस्ट छोड़े जा रहे हैं",
-    "skip_tool": "pytest नहीं मिला: सर्वर टेस्ट छोड़े जा रहे हैं"
+    "skip_tool": "pytest नहीं मिला: सर्वर टेस्ट छोड़े जा रहे हैं",
+    "running_server": "pytest से सर्वर टेस्ट चल रहे हैं",
+    "ran_server": "pytest से सर्वर टेस्ट चल गए",
+    "running_client": "vitest से क्लाइंट टेस्ट चल रहे हैं",
+    "ran_client": "vitest से क्लाइंट टेस्ट चल गए"
   },
   "tui": {
     "keys": {

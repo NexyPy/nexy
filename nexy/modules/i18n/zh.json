@@ -238,7 +238,11 @@
     "help_server": "运行服务端测试（pytest）",
     "passed": "所有测试均已通过",
     "skip_client": "未配置 vitest：跳过客户端测试",
-    "skip_tool": "未找到 pytest：跳过服务端测试"
+    "skip_tool": "未找到 pytest：跳过服务端测试",
+    "running_server": "正在用 pytest 运行服务端测试",
+    "ran_server": "已用 pytest 运行服务端测试",
+    "running_client": "正在用 vitest 运行客户端测试",
+    "ran_client": "已用 vitest 运行客户端测试"
   },
   "tui": {
     "keys": {

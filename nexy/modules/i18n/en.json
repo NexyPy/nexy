@@ -236,9 +236,13 @@
     "help_args": "Extra arguments forwarded to the test runner",
     "help_client": "Run client tests (vitest)",
     "help_server": "Run server tests (pytest)",
-    "passed": "all tests passed",
+    "passed": "All tests passed",
     "skip_client": "vitest not configured - skipping client tests",
-    "skip_tool": "pytest not found - skipping server tests"
+    "skip_tool": "pytest not found - skipping server tests",
+    "running_server": "Running the server tests with pytest",
+    "ran_server": "Ran the server tests with pytest",
+    "running_client": "Running the client tests with vitest",
+    "ran_client": "Ran the client tests with vitest"
   },
   "tui": {
     "keys": {

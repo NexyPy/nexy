@@ -236,9 +236,13 @@
     "help_args": "Argumentos extras repassados ao executor de testes",
     "help_client": "Executar os testes do cliente (vitest)",
     "help_server": "Executar os testes do servidor (pytest)",
-    "passed": "todos os testes passaram",
+    "passed": "Todos os testes passaram",
     "skip_client": "vitest não configurado: testes do cliente ignorados",
-    "skip_tool": "pytest não encontrado: testes do servidor ignorados"
+    "skip_tool": "pytest não encontrado: testes do servidor ignorados",
+    "running_server": "Executando os testes do servidor com pytest",
+    "ran_server": "Testes do servidor executados com pytest",
+    "running_client": "Executando os testes do cliente com vitest",
+    "ran_client": "Testes do cliente executados com vitest"
   },
   "tui": {
     "keys": {

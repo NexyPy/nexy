@@ -236,9 +236,13 @@
     "help_args": "Zusätzliche Argumente für den Test-Runner",
     "help_client": "Client-Tests ausführen (vitest)",
     "help_server": "Server-Tests ausführen (pytest)",
-    "passed": "alle Tests bestanden",
+    "passed": "Alle Tests bestanden",
     "skip_client": "vitest ist nicht konfiguriert: Client-Tests werden übersprungen",
-    "skip_tool": "pytest nicht gefunden: Server-Tests werden übersprungen"
+    "skip_tool": "pytest nicht gefunden: Server-Tests werden übersprungen",
+    "running_server": "Führe die Servertests mit pytest aus",
+    "ran_server": "Servertests mit pytest ausgeführt",
+    "running_client": "Führe die Clienttests mit vitest aus",
+    "ran_client": "Clienttests mit vitest ausgeführt"
   },
   "tui": {
     "keys": {

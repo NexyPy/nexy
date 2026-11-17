@@ -238,7 +238,11 @@
     "help_server": "サーバーのテストを実行する（pytest）",
     "passed": "すべてのテストに合格しました",
     "skip_client": "vitest が設定されていないため、クライアントのテストをスキップします",
-    "skip_tool": "pytest が見つからないため、サーバーのテストをスキップします"
+    "skip_tool": "pytest が見つからないため、サーバーのテストをスキップします",
+    "running_server": "pytest でサーバーのテストを実行中",
+    "ran_server": "pytest でサーバーのテストを実行しました",
+    "running_client": "vitest でクライアントのテストを実行中",
+    "ran_client": "vitest でクライアントのテストを実行しました"
   },
   "tui": {
     "keys": {

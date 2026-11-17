@@ -236,9 +236,13 @@
     "help_args": "Argumen tambahan yang diteruskan ke penjalan pengujian",
     "help_client": "Jalankan pengujian klien (vitest)",
     "help_server": "Jalankan pengujian server (pytest)",
-    "passed": "semua pengujian lolos",
+    "passed": "Semua tes lolos",
     "skip_client": "vitest belum dikonfigurasi: pengujian klien dilewati",
-    "skip_tool": "pytest tidak ditemukan: pengujian server dilewati"
+    "skip_tool": "pytest tidak ditemukan: pengujian server dilewati",
+    "running_server": "Menjalankan tes server dengan pytest",
+    "ran_server": "Tes server dijalankan dengan pytest",
+    "running_client": "Menjalankan tes klien dengan vitest",
+    "ran_client": "Tes klien dijalankan dengan vitest"
   },
   "tui": {
     "keys": {
