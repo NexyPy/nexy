@@ -199,3 +199,23 @@ class TestWhileTheConnectionIsChecked:
 
         DependencyInstaller(project, orm=None, probe=probe).install_all()
         assert seen_at_probe == [["Checking the connection...", "shown"]] and log[-1] == "hidden"
+
+
+class TestNpmRetry:
+    def test_a_failed_npm_install_is_retried_with_legacy_peer_deps(self, project, monkeypatch):
+        seen: list[list[str]] = []
+
+        def failing(label, argv, cwd=None, done=None, progress=None):
+            seen.append(list(argv))
+            return SimpleNamespace(ok=False)
+
+        monkeypatch.setattr(dependencies, "run_task", failing)
+        monkeypatch.setattr(dependencies.package_manager, "detect", lambda d: "npm")
+        _installer(project, Connection(True, 30.0, 3000.0)).install_node_dependencies()
+        assert seen[-1][-1] == "--legacy-peer-deps"
+
+
+def test_adding_a_package_runs_the_add_command_of_the_manager(tmp_path, calls, monkeypatch):
+    monkeypatch.setattr(dependencies.package_manager, "detect", lambda d: "pnpm")
+    dependencies.install_packages(["zod"], tmp_path)
+    assert calls[-1][1] == dependencies.package_manager.add_argv("pnpm", ["zod"])
