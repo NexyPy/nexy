@@ -1,16 +1,18 @@
 import json
-import subprocess  # nosec B404
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
+
+from rich.markup import escape
 
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common import launcher
 from nexy.helpers.common.console import console
-from nexy.helpers.common.report import print_cmd_result, print_tree_section
-from nexy.helpers.common.tasks import step
+from nexy.helpers.common.messages import error, took, warning
+from nexy.helpers.common.summary import print_summary
+from nexy.helpers.common.tasks import format_duration, run_task, step
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.markers import write_build_marker
 from nexy.helpers.server.server import Server
@@ -28,10 +30,8 @@ def _announce_start() -> None:
 
 
 def _announce_end(started: float) -> None:
-    took = t("build.success_build", "build in {time}").format(
-        time=f"{time.perf_counter() - started:.2f}s"
-    )
-    console.print(f"\n  [green]✓[/green] {took}")
+    built = t("build.built", "Built the project")
+    console.print(took(built, format_duration(time.perf_counter() - started)))
 
 
 def build(check: bool = False) -> None:
@@ -82,28 +82,27 @@ def _exit_on_failed_components(build_result: BuildResult) -> None:
     failed_msg = t("build.failed_components", "{count} component(s) failed").format(
         count=len(build_result.failed)
     )
-    console.print(f"  [red]\u2718[/red] {failed_msg}")
-    for path in build_result.failed:
-        console.print(f"     {path}")
+    error(failed_msg, cause=escape(", ".join(map(str, build_result.failed))))
+    sys.exit(1)
+
+
+def _client_failed(output: str = "") -> NoReturn:
+    """A uv error for the client bundle, followed by what Vite said."""
+    error(t("build.failed_client", "Failed to build the client bundle"))
+    for line in output.splitlines():
+        console.print(f"  {escape(line)}")
     sys.exit(1)
 
 
 def _build_client_bundle() -> list[dict[str, Any]]:
     try:
         vite_proc = Server.vite(build=True, suppress_output=True, capture_stderr=True)
-    except RuntimeError as error:
-        console.print(f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}")
-        console.print(f"    [red]{error}[/red]")
-        sys.exit(1)
-
+    except RuntimeError as problem:
+        _client_failed(str(problem))
     with step(t("build.building_client", "Built client bundle")):
         out, err = vite_proc.communicate()
-        if vite_proc.returncode != 0:
-            console.print(f"  [red]\u2718[/red] {t('build.failed_client', 'client build failed')}")
-            error_output = err or out
-            if error_output:
-                console.print(f"[red]{error_output.decode()}[/red]")
-            sys.exit(1)
+    if vite_proc.returncode != 0:
+        _client_failed((err or out or b"").decode(errors="replace"))
     return _read_ssg_report()
 
 
@@ -120,38 +119,36 @@ def _ssg_by_status(entries: list[dict[str, Any]], status: str) -> list[str]:
     return [e["file"] for e in entries if e["status"] == status]
 
 
-def _summary_labels() -> dict[str, str]:
-    return {
-        "skipped": t("build.skipped_label", "Skipped (cached)"),
-        "success": t("build.success_label", "Build success"),
-        "failed": t("build.failed_label", "Build Failed"),
-    }
-
-
 def _show_summary(build_result: BuildResult, ssg_entries: list[dict[str, Any]]) -> None:
-    labels = _summary_labels()
-    client_routed = Config.useCSR
-    if client_routed:
-        title = t("build.routes", "routes")
-    else:
-        title = t("build.server_components", "server components")
-    success, failed = build_result.success, build_result.failed
-    print_tree_section(title, success, failed, "green", "red", build_result.skipped, labels)
-    if client_routed:
+    more = t("build.more", "and {count} more")
+    counts = [t("build.count_built", "{count} built").format(count=len(build_result.success))]
+    if build_result.skipped:
+        counts.append(
+            t("build.count_cached", "{count} cached").format(count=len(build_result.skipped))
+        )
+    if Config.useCSR:
+        print_summary(t("build.routes", "Routes"), counts, build_result.success, more=more)
         return
-    print_tree_section(
-        t("build.client_components", "client components"),
-        _ssg_by_status(ssg_entries, "success"),
-        _ssg_by_status(ssg_entries, "failed"),
-        "cyan",
-        "red",
-        _ssg_by_status(ssg_entries, "not_supported"),
-        labels,
-    )
+    title = t("build.server_components", "Server components")
+    print_summary(title, counts, build_result.success, more=more)
+    _show_client_summary(ssg_entries, more)
+
+
+def _show_client_summary(entries: list[dict[str, Any]], more: str) -> None:
+    rendered = _ssg_by_status(entries, "success")
+    client_only = _ssg_by_status(entries, "not_supported")
+    counts = [t("build.count_rendered", "{count} rendered").format(count=len(rendered))]
+    if client_only:
+        counts.append(
+            t("build.count_client_only", "{count} client-only").format(count=len(client_only))
+        )
+    print_summary(t("build.client_components", "Client components"), counts, rendered, more=more)
+    for path in _ssg_by_status(entries, "failed"):
+        default = "{path} has no server HTML: it renders on the client only"
+        warning(t("build.not_rendered", default).format(path=escape(path)))
 
 
 def _run_checks() -> None:
-    console.print()
     checks = [
         ("ruff check", [sys.executable, "-m", "ruff", "check", "."]),
         ("ruff format", [sys.executable, "-m", "ruff", "format", ".", "--check"]),
@@ -159,13 +156,12 @@ def _run_checks() -> None:
     ]
     results = [_run_single_check(name, cmd) for name, cmd in checks]
     if not all(results):
-        console.print(f"\n  [red]{t('build.checks_failed', 'checks failed')}[/red]")
+        error(t("build.checks_failed", "Some checks failed"))
         sys.exit(1)
-    console.print(f"\n  [green]\u2713[/green] {t('build.checks_passed', 'all checks passed')}")
+    console.print(t("check.passed", "All checks passed"))
 
 
 def _run_single_check(name: str, cmd: list[str]) -> bool:
-    with console.status(f"  {name} ..."):
-        r = subprocess.run(cmd, capture_output=True, text=True)  # nosec B603 - trusted internal command construction
-    print_cmd_result(name, r)
-    return r.returncode == 0
+    label = t("build.running_check", "Running {name}").format(name=name)
+    done = t("build.ran_check", "Ran {name}").format(name=name)
+    return run_task(label, cmd, done=done, full_output=True).ok

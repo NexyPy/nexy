@@ -7,12 +7,16 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import Any
 
+from rich.markup import escape
+
 from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common import package_manager
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.messages import error, hint, warning
 from nexy.helpers.common.pycheck import describe, report
+from nexy.helpers.common.tasks import waiting
 from nexy.helpers.common.vite_launch import vite_installed
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.fs.vfs import VFS
@@ -47,25 +51,22 @@ def _require_vite_install() -> None:
         return
 
     manager = package_manager.detect() or "npm"
-    console.print(f"\n[red]  ✘[/red] {t('dev.deps_missing', 'Node.js dependencies are missing.')}")
-    command = f"[cyan]{manager} install[/cyan]"
-    console.print("    " + t("dev.deps_run", "Run: {command}").format(command=command))
-    hint = t("dev.deps_hint", "nexy dev does not install dependencies; nexy init and nexy new do.")
-    console.print(f"\n    [dim]{hint}[/dim]")
+    error(t("dev.deps_missing", "Node.js dependencies are missing."))
+    hint(t("dev.deps_run", "Run: {command}").format(command=f"[cyan]{manager} install[/cyan]"))
+    hint(t("dev.deps_hint", "nexy dev does not install dependencies; nexy init and nexy new do."))
     sys.exit(1)
 
 
 def _report_failures(result: BuildResult) -> None:
     for path in result.failed:
-        error = result.errors.get(path)
-        console.print(f"  [red]x {error.format() if error else path}[/red]")
+        problem = result.errors.get(path)
+        error(escape(problem.format() if problem else str(path)))
 
 
 def _await_compile(build: "Future[BuildResult]") -> BuildResult:
-    label = t("dev.compiling_status", "Compiling...")
-    with console.status(f"\n[dim]{label}[/dim]", spinner="dots"):
+    with waiting(t("dev.compiling_status", "Compiling...")):
         result = build.result()
-        _report_failures(result)
+    _report_failures(result)
     return result
 
 
@@ -94,13 +95,11 @@ def _settle_vite(session: _Session, result: BuildResult, client_port: int) -> No
     if result.failed:
         _drop_vite(session)
         return
-    label = t("dev.starting_vite", "Starting the dev server...")
-    with console.status(f"[dim]  {label}[/dim]", spinner="dots"):
+    with waiting(t("dev.starting_vite", "Starting the dev server...")):
         ready = Server.wait_for_vite_ready(client_port, process=session.vite)
     if not ready:
-        console.print(f"[red]  ✘[/red] {t('dev.vite_failed', 'Vite failed to start.')}")
-        cause = t("dev.vite_failed_hint", "Read the Vite output above for the cause.")
-        console.print(f"    [dim]{cause}[/dim]")
+        error(t("dev.vite_failed", "Vite failed to start."))
+        hint(t("dev.vite_failed_hint", "Read the Vite output above for the cause."))
         _drop_vite(session)
         sys.exit(1)
 
@@ -113,8 +112,9 @@ def _initialise(config: Config, client_port: int, ssl: bool) -> _Session:
         result = _generate_and_compile(config, client_port, ssl, session)
         if config.useVite:
             _settle_vite(session, result, client_port)
-    except Exception as error:
-        console.print(f"\n[red]{t('dev.init_error', 'Error during initialization:')}[/red] {error}")
+    except Exception as problem:
+        cause = escape(str(problem) or type(problem).__name__)
+        error(t("dev.init_error", "Could not start the dev server"), cause=cause)
         Server.stop_process(session.vite)
         sys.exit(1)
     return session
@@ -134,9 +134,9 @@ def _regenerate_client_files() -> None:
     """Rebuild the client route list after a page appeared, disappeared or moved."""
     try:
         FrontendGenerator().generate()
-    except Exception as error:
+    except Exception as problem:
         reason = t("dev.routes_failed", "Could not update the client routes: {error}")
-        console.print(f"  [red]x[/red] {reason.format(error=error)}")
+        warning(reason.format(error=escape(str(problem))))
 
 
 def _import_app() -> None:
@@ -195,7 +195,7 @@ class _Reloader:
     @staticmethod
     def _failed(reason: str) -> bool:
         message = t("dev.server_failed", "The server stopped ({reason}): waiting for a fix.")
-        console.print(f"  [red]x[/red] {message.format(reason=reason)}")
+        error(message.format(reason=escape(reason)))
         return False
 
     def _prepare(self) -> None:
@@ -278,8 +278,8 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
         console.print(f"\n  [dim]{t('dev.stopping', 'Stopping servers...')}[/dim]")
     except SystemExit:
         pass
-    except Exception as error:
-        console.print(f"\n  [red]{t('dev.error', 'Error: {error}').format(error=error)}[/red]")
+    except Exception as problem:
+        error(escape(str(problem) or type(problem).__name__))
     finally:
         _release(observer, session)
 

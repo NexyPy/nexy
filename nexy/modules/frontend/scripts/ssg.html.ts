@@ -29,7 +29,7 @@ export async function run(): Promise<SSGResult> {
 
     const { css } = getAssetTags(manifest, fileName)
 
-    console.warn(`${c.yellow}⚠ client-only: ${file} - no server HTML, rendering client placeholder${c.reset}`)
+    console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - no server HTML, rendering client placeholder${c.reset}`)
 
     const entryId = `${fileName}.Default`
     const finalContent = `${css}<div id="${entryId}-root"></div>`

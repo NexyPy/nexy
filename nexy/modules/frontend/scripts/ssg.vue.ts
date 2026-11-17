@@ -98,7 +98,7 @@ export async function run(): Promise<SSGResult> {
       writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
       result.entries.push({ file, component: 'Default', status: 'success' })
     } catch (e) {
-      console.warn(`${c.yellow}⚠ client-only: ${file} - SSR failed, using client placeholder (no server HTML)${c.reset}`)
+      console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - SSR failed, using client placeholder (no server HTML)${c.reset}`)
       const entryId = getEntryId(fileName, 'Default', 'vue')
       const { css } = getAssetTags(manifest, fileName)
       writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)

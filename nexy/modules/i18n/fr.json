@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Ajouté : {path}",
     "available": "Composants UI disponibles : {names}",
-    "error": "Erreur :",
     "exists": "Ignoré : {path} existe déjà.",
-    "fetch_failed": "Impossible de récupérer le composant depuis {url} : {error}",
+    "fetch_failed": "Impossible de récupérer le composant depuis {url}",
     "fetching": "Récupération du composant distant depuis {url}...",
     "help_all": "Ajouter tous les composants disponibles du registre",
     "help_components": "Composants à ajouter (noms du registre ou URL)",
@@ -18,30 +16,38 @@
     "not_found": "Composant « {name} » introuvable dans le registre.",
     "usage": "Utilisation :",
     "usage_text": "nexy add [NOM_DU_COMPOSANT ou URL]...",
-    "write_failed": "Impossible d'écrire {path} : {error}"
+    "write_failed": "Impossible d'écrire {path}"
   },
   "build": {
     "building_client": "Bundle client construit",
-    "checks_failed": "vérifications en échec",
-    "checks_passed": "toutes les vérifications ont réussi",
-    "client_components": "composants client",
+    "checks_failed": "Certaines vérifications ont échoué",
+    "client_components": "Composants client",
     "compiling_routes": "Routes compilées",
     "compiling_server": "Composants serveur compilés",
     "creating": "Création d'un build de production optimisé",
-    "failed_client": "échec du build client",
+    "failed_client": "Impossible de construire le bundle client",
     "failed_components": "{count} composant(s) en échec",
-    "failed_label": "Build en échec",
-    "routes": "routes",
-    "server_components": "composants serveur",
-    "skipped_label": "Ignoré (en cache)",
-    "success_build": "build terminé en {time}",
-    "success_label": "Build réussi"
+    "routes": "Routes",
+    "server_components": "Composants serveur",
+    "built": "Projet construit",
+    "count_built": "{count} construits",
+    "count_cached": "{count} en cache",
+    "count_rendered": "{count} rendus",
+    "count_client_only": "{count} côté client seulement",
+    "more": "et {count} de plus",
+    "not_rendered": "{path} n'a pas de HTML serveur : il est rendu côté client seulement",
+    "running_check": "Exécution de {name}",
+    "ran_check": "{name} exécuté"
   },
   "check": {
-    "compiling": "compilation des fichiers .nexy ...",
+    "compiling": "Compilation des fichiers .nexy",
     "failed": "{count} section(s) en échec",
-    "passed": "toutes les vérifications ont réussi",
-    "skip_tool": "{tool} est introuvable : {scope} ignoré"
+    "passed": "Toutes les vérifications sont passées",
+    "skip_tool": "{tool} est introuvable : {scope} ignoré",
+    "checking": "Vérification de {scope} avec {tool}",
+    "checked": "{scope} vérifié avec {tool}",
+    "compiled": "Fichiers .nexy compilés",
+    "not_compiled": "Impossible de compiler {path}"
   },
   "cli": {
     "cmd": {
@@ -90,11 +96,10 @@
     "deps_hint": "nexy dev n'installe pas les dépendances ; nexy init et nexy new le font.",
     "deps_missing": "Les dépendances Node.js sont manquantes.",
     "deps_run": "Exécutez : {command}",
-    "error": "Erreur : {error}",
     "error_label": "erreur",
     "error_waiting": "L'application ne peut pas démarrer : en attente d'une correction.",
     "exited": "arrêté",
-    "init_error": "Erreur pendant l'initialisation :",
+    "init_error": "Impossible de démarrer le serveur de développement",
     "routes_failed": "Impossible de mettre à jour les routes client : {error}",
     "starting_vite": "Démarrage du serveur de développement...",
     "stopping": "Arrêt des serveurs...",
@@ -105,8 +110,14 @@
   },
   "format": {
     "failed": "{count} fichier(s) en échec",
-    "passed": "formatage terminé",
-    "skip_tool": "{tool} est introuvable : {scope} ignoré"
+    "passed": "Tous les fichiers sont formatés",
+    "skip_tool": "{tool} est introuvable : {scope} ignoré",
+    "formatting": "Formatage de {scope} avec {tool}",
+    "formatted": "{scope} formaté avec {tool}",
+    "checking": "Vérification du format de {scope} avec {tool}",
+    "checked": "Format de {scope} vérifié avec {tool}",
+    "nexy": "Formatage de {count} fichier(s) .nexy",
+    "nexy_done": "{count} fichier(s) .nexy formaté(s)"
   },
   "init": {
     "alias_invalid": "Utilisez @, ~, # ou $, suivi éventuellement de lettres (par exemple ~ ou @app).",
@@ -210,7 +221,7 @@
     "tool_missing": "Erreur : {tool} est introuvable dans le PATH. Installez-le puis réessayez."
   },
   "server": {
-    "launch_failed": "Échec du lancement du serveur :",
+    "launch_failed": "Impossible de démarrer le serveur",
     "local": "Local :",
     "network": "Réseau :",
     "ready": "Prêt :",
@@ -226,9 +237,13 @@
     "help_args": "Arguments supplémentaires transmis au lanceur de tests",
     "help_client": "Lancer les tests client (vitest)",
     "help_server": "Lancer les tests serveur (pytest)",
-    "passed": "tous les tests ont réussi",
+    "passed": "Tous les tests sont passés",
     "skip_client": "vitest n'est pas configuré : tests client ignorés",
-    "skip_tool": "pytest est introuvable : tests serveur ignorés"
+    "skip_tool": "pytest est introuvable : tests serveur ignorés",
+    "running_server": "Exécution des tests serveur avec pytest",
+    "ran_server": "Tests serveur exécutés avec pytest",
+    "running_client": "Exécution des tests client avec vitest",
+    "ran_client": "Tests client exécutés avec vitest"
   },
   "tui": {
     "keys": {
@@ -242,7 +257,7 @@
     "compile_failed": "Échec de la compilation de {path}",
     "compiled": "{path} compilé en {time}",
     "error_kept": "Corrigez et enregistrez : le serveur garde sa dernière version qui fonctionnait.",
-    "restart_failed": "Impossible de redémarrer le serveur : {error}",
+    "restart_failed": "Impossible de redémarrer le serveur",
     "update": "mise à jour de"
   }
 }

@@ -143,7 +143,7 @@ async function generateEntries() {
       if (message.includes("require")) reason = "CommonJS/AMD not supported";
       if (message.includes("is not defined")) reason = "missing browser-only global";
 
-      console.warn(`${c.yellow}⚠ client-only: ${file} - ${reason}, no server HTML (client bundle only)${c.reset}`);
+      console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - ${reason}, no server HTML (client bundle only)${c.reset}`);
 
       continue;
     }

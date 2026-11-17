@@ -54,3 +54,18 @@ def test_it_refuses_a_folder_that_is_not_a_nexy_project(tmp_path):
 def test_it_works_from_the_current_folder(tmp_path, monkeypatch):
     monkeypatch.chdir(_project(tmp_path))
     assert runner.invoke(CLI, ["skills"]).exit_code == 0
+
+
+def test_outside_a_project_is_a_uv_error(tmp_path):
+    result = runner.invoke(CLI, ["skills", str(tmp_path)], env={"NEXY_LANG": "en"})
+    assert result.output.startswith("error: No nexyconfig.py in ")
+
+
+def test_the_result_is_one_plain_line(tmp_path):
+    result = runner.invoke(CLI, ["skills", str(_project(tmp_path))], env={"NEXY_LANG": "en"})
+    assert result.output.splitlines()[0].endswith("skills in .agents/skills and .claude/skills")
+
+
+def test_it_prints_no_nexy_tag(tmp_path):
+    result = runner.invoke(CLI, ["skills", str(_project(tmp_path))], env={"NEXY_LANG": "en"})
+    assert "»" not in result.output

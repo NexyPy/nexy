@@ -70,7 +70,7 @@ async function bundle(framework: JsxFramework, files: string[], tempDir: string)
       outExtension: { '.js': '.mjs' },
     })
   } catch (e) {
-    console.warn(`${c.yellow}⚠ client-only: ${message(e)} - some files may lack server HTML (client bundle only)${c.reset}`)
+    console.warn(`${c.yellow}warning:${c.reset} client-only: ${message(e)} - some files may lack server HTML (client bundle only)${c.reset}`)
   }
 }
 
@@ -83,7 +83,7 @@ async function loadModules(files: string[], tempDir: string) {
         modules.set(file, await import(`${pathToFileURL(outFile).href}?t=${Date.now()}`))
       }
     } catch (e) {
-      console.warn(`${c.yellow}⚠ client-only: ${file} - ${message(e)}, no server HTML (client bundle only)${c.reset}`)
+      console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - ${message(e)}, no server HTML (client bundle only)${c.reset}`)
     }
   }
   return modules
@@ -133,7 +133,7 @@ export async function runJsxFramework(
         writeComponent(relativeDir, entryId, `${css}${restoreJinjaVars(html, propPaths)}`, snippets)
         result.entries.push({ file, component, status: 'success' })
       } catch (e) {
-        console.warn(`${c.yellow}⚠ client-only: ${file} - ${message(e)}, using client placeholder (no server HTML)${c.reset}`)
+        console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - ${message(e)}, using client placeholder (no server HTML)${c.reset}`)
         writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
         result.entries.push({ file, component, status: 'not_supported' })
       }

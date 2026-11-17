@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "追加しました: {path}",
     "available": "利用可能なUIコンポーネント: {names}",
-    "error": "エラー:",
     "exists": "スキップ: {path} は既に存在します。",
-    "fetch_failed": "{url} からコンポーネントを取得できませんでした: {error}",
+    "fetch_failed": "{url} からコンポーネントを取得できませんでした",
     "fetching": "{url} からリモートコンポーネントを取得しています...",
     "help_all": "レジストリの利用可能なコンポーネントをすべて追加する",
     "help_components": "追加するコンポーネント（レジストリ名またはURL）",
@@ -18,30 +16,38 @@
     "not_found": "コンポーネント '{name}' はレジストリに見つかりません。",
     "usage": "使い方:",
     "usage_text": "nexy add [コンポーネント名 または URL]...",
-    "write_failed": "{path} を書き込めませんでした: {error}"
+    "write_failed": "{path} を書き込めませんでした"
   },
   "build": {
     "building_client": "クライアントバンドルをビルドしました",
-    "checks_failed": "チェックに失敗しました",
-    "checks_passed": "すべてのチェックに合格しました",
+    "checks_failed": "一部のチェックに失敗しました",
     "client_components": "クライアントコンポーネント",
     "compiling_routes": "ルートをコンパイルしました",
     "compiling_server": "サーバーコンポーネントをコンパイルしました",
     "creating": "最適化された本番ビルドを作成しています",
-    "failed_client": "クライアントのビルドに失敗しました",
+    "failed_client": "クライアントバンドルのビルドに失敗しました",
     "failed_components": "{count} 件のコンポーネントが失敗しました",
-    "failed_label": "ビルド失敗",
     "routes": "ルート",
     "server_components": "サーバーコンポーネント",
-    "skipped_label": "スキップ（キャッシュ）",
-    "success_build": "{time} でビルドが完了しました",
-    "success_label": "ビルド成功"
+    "built": "プロジェクトをビルドしました",
+    "count_built": "{count} 件ビルド",
+    "count_cached": "{count} 件キャッシュ",
+    "count_rendered": "{count} 件レンダリング",
+    "count_client_only": "{count} 件クライアントのみ",
+    "more": "ほか {count} 件",
+    "not_rendered": "{path} にはサーバー HTML がありません: クライアントでのみレンダリングされます",
+    "running_check": "{name} を実行中",
+    "ran_check": "{name} を実行しました"
   },
   "check": {
-    "compiling": ".nexy ファイルをコンパイルしています ...",
+    "compiling": ".nexy ファイルをコンパイル中",
     "failed": "{count} 件のセクションが失敗しました",
     "passed": "すべてのチェックに合格しました",
-    "skip_tool": "{tool} が見つかりません: {scope} をスキップします"
+    "skip_tool": "{tool} が見つかりません: {scope} をスキップします",
+    "checking": "{tool} で {scope} をチェック中",
+    "checked": "{tool} で {scope} をチェックしました",
+    "compiled": ".nexy ファイルをコンパイルしました",
+    "not_compiled": "{path} をコンパイルできませんでした"
   },
   "cli": {
     "cmd": {
@@ -90,11 +96,10 @@
     "deps_hint": "nexy dev は依存関係をインストールしません。nexy init と nexy new が行います。",
     "deps_missing": "Node.js の依存関係がありません。",
     "deps_run": "次を実行してください: {command}",
-    "error": "エラー: {error}",
     "error_label": "エラー",
     "error_waiting": "アプリケーションを起動できません。修正を待っています。",
     "exited": "終了しました",
-    "init_error": "初期化中にエラーが発生しました:",
+    "init_error": "開発サーバーを起動できませんでした",
     "routes_failed": "クライアントルートを更新できませんでした: {error}",
     "starting_vite": "開発サーバーを起動しています...",
     "stopping": "サーバーを停止しています...",
@@ -105,8 +110,14 @@
   },
   "format": {
     "failed": "{count} 件のファイルが失敗しました",
-    "passed": "整形が完了しました",
-    "skip_tool": "{tool} が見つかりません: {scope} をスキップします"
+    "passed": "すべてのファイルを整形しました",
+    "skip_tool": "{tool} が見つかりません: {scope} をスキップします",
+    "formatting": "{tool} で {scope} を整形中",
+    "formatted": "{tool} で {scope} を整形しました",
+    "checking": "{tool} で {scope} の書式をチェック中",
+    "checked": "{tool} で {scope} の書式をチェックしました",
+    "nexy": "{count} 個の .nexy ファイルを整形中",
+    "nexy_done": "{count} 個の .nexy ファイルを整形しました"
   },
   "init": {
     "alias_invalid": "@、~、# または $ に続けて任意の文字を使います(例: ~ や @app)。",
@@ -210,7 +221,7 @@
     "tool_missing": "エラー: {tool} が PATH に見つかりません。インストールしてからもう一度お試しください。"
   },
   "server": {
-    "launch_failed": "サーバーの起動に失敗しました:",
+    "launch_failed": "サーバーを起動できませんでした",
     "local": "ローカル:",
     "network": "ネットワーク:",
     "ready": "準備完了:",
@@ -228,7 +239,11 @@
     "help_server": "サーバーのテストを実行する（pytest）",
     "passed": "すべてのテストに合格しました",
     "skip_client": "vitest が設定されていないため、クライアントのテストをスキップします",
-    "skip_tool": "pytest が見つからないため、サーバーのテストをスキップします"
+    "skip_tool": "pytest が見つからないため、サーバーのテストをスキップします",
+    "running_server": "pytest でサーバーのテストを実行中",
+    "ran_server": "pytest でサーバーのテストを実行しました",
+    "running_client": "vitest でクライアントのテストを実行中",
+    "ran_client": "vitest でクライアントのテストを実行しました"
   },
   "tui": {
     "keys": {
@@ -242,7 +257,7 @@
     "compile_failed": "{path} のコンパイルに失敗しました",
     "compiled": "{path} を {time} でコンパイルしました",
     "error_kept": "修正して保存してください。サーバーは最後に動いていた版を保ちます。",
-    "restart_failed": "サーバーを再起動できませんでした: {error}",
+    "restart_failed": "サーバーを再起動できませんでした",
     "update": "更新"
   }
 }

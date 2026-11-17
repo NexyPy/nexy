@@ -174,3 +174,8 @@ class TestTemplateContext:
         from nexy.modules.routers.actions.store import ActionsStore
 
         assert ActionsStore().template_context() == {"__actions": {}, "__actions_path": {}}
+
+
+def test_a_module_that_fails_to_import_is_a_uv_error(capsys: pytest.CaptureFixture[str]) -> None:
+    ActionEngine._report("src.actions.broken", ValueError("bad"))
+    assert capsys.readouterr().out == "error: src.actions.broken\n  cause: ValueError: bad\n"

@@ -130,13 +130,14 @@ def _announce(
     proc: subprocess.Popen[str],
     tail: deque[str],
 ) -> None:
-    """The one line a task leaves behind; a failure also keeps the end of its output."""
+    """The one line a task leaves behind; a failure also keeps its output, dim when cut short."""
     if proc.returncode == 0:
         out.print(took(done or label, format_duration(seconds)))
         return
     error(label, f"exit {proc.returncode} after {format_duration(seconds)}", console=out)
+    style = "dim" if tail.maxlen else "none"
     for line in tail:
-        out.print(f"  [dim]{_escape(line)}[/dim]")
+        out.print(f"  [{style}]{_escape(line)}[/{style}]")
 
 
 def run_task(
@@ -147,14 +148,16 @@ def run_task(
     done: str | None = None,
     progress: tuple[int, int] | None = None,
     console: Console | None = None,
+    full_output: bool = False,
 ) -> TaskResult:
     """Run *argv* while showing progress; print one result line when it ends.
 
     *done* replaces *label* on the success line (``"Installed zod"``). *progress* is the position
-    of this task in a group, ``(finished, total)``, drawn as a bar next to the spinner.
+    of this task in a group, ``(finished, total)``, drawn as a bar next to the spinner. A failure
+    keeps the last lines of the output, or with *full_output* every line (a type checker's report).
     """
     out = console or _console
-    tail: deque[str] = deque(maxlen=_TAIL_LINES)
+    tail: deque[str] = deque(maxlen=None if full_output else _TAIL_LINES)
     started = time.monotonic()
     try:
         proc = _spawn(argv, cwd)
@@ -195,3 +198,10 @@ def step(label: str, *, done: str | None = None, console: Console | None = None)
         error(label, console=out)
         raise
     out.print(took(done or label, format_duration(time.monotonic() - started)))
+
+
+@contextmanager
+def waiting(label: str, *, console: Console | None = None) -> Generator[None]:
+    """uv's live row while the block runs, and no line once it ends: what follows says the rest."""
+    with _showing(_LiveLine(label), console or _console):
+        yield

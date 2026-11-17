@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "تمت الإضافة: {path}",
     "available": "مكوّنات الواجهة المتاحة: {names}",
-    "error": "خطأ:",
     "exists": "تم التخطي: {path} موجود مسبقًا.",
-    "fetch_failed": "تعذّر جلب المكوّن من {url}: {error}",
+    "fetch_failed": "تعذّر جلب المكوّن من {url}",
     "fetching": "جارٍ جلب المكوّن البعيد من {url}...",
     "help_all": "إضافة كل المكوّنات المتاحة من السجل",
     "help_components": "المكوّنات المراد إضافتها (أسماء من السجل أو عناوين URL)",
@@ -18,30 +16,38 @@
     "not_found": "المكوّن '{name}' غير موجود في السجل.",
     "usage": "الاستخدام:",
     "usage_text": "nexy add [اسم_المكوّن أو URL]...",
-    "write_failed": "تعذّرت كتابة {path}: {error}"
+    "write_failed": "تعذّرت كتابة {path}"
   },
   "build": {
     "building_client": "تم بناء حزمة العميل",
-    "checks_failed": "فشلت الفحوصات",
-    "checks_passed": "نجحت جميع الفحوصات",
-    "client_components": "مكوّنات العميل",
+    "checks_failed": "فشلت بعض الفحوصات",
+    "client_components": "مكونات العميل",
     "compiling_routes": "تم تجميع المسارات",
     "compiling_server": "تم تجميع مكوّنات الخادم",
     "creating": "جارٍ إنشاء بناء إنتاجي محسّن",
-    "failed_client": "فشل بناء العميل",
+    "failed_client": "تعذّر بناء حزمة العميل",
     "failed_components": "فشل {count} مكوّن",
-    "failed_label": "فشل البناء",
     "routes": "المسارات",
-    "server_components": "مكوّنات الخادم",
-    "skipped_label": "تم التخطي (من الذاكرة المؤقتة)",
-    "success_build": "اكتمل البناء في {time}",
-    "success_label": "نجح البناء"
+    "server_components": "مكونات الخادم",
+    "built": "تم بناء المشروع",
+    "count_built": "تم بناء {count}",
+    "count_cached": "{count} من الذاكرة المؤقتة",
+    "count_rendered": "تم عرض {count}",
+    "count_client_only": "{count} على العميل فقط",
+    "more": "و{count} أخرى",
+    "not_rendered": "لا يحتوي {path} على HTML من الخادم: يُعرض على العميل فقط",
+    "running_check": "جارٍ تشغيل {name}",
+    "ran_check": "تم تشغيل {name}"
   },
   "check": {
-    "compiling": "جارٍ تجميع ملفات .nexy ...",
+    "compiling": "جارٍ تصريف ملفات .nexy",
     "failed": "فشل {count} قسم",
     "passed": "نجحت جميع الفحوصات",
-    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}"
+    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}",
+    "checking": "جارٍ فحص {scope} باستخدام {tool}",
+    "checked": "تم فحص {scope} باستخدام {tool}",
+    "compiled": "تم تصريف ملفات .nexy",
+    "not_compiled": "تعذّر تصريف {path}"
   },
   "cli": {
     "cmd": {
@@ -90,11 +96,10 @@
     "deps_hint": "الأمر nexy dev لا يثبّت الاعتماديات؛ يفعل ذلك nexy init و nexy new.",
     "deps_missing": "اعتماديات Node.js غير موجودة.",
     "deps_run": "شغّل: {command}",
-    "error": "خطأ: {error}",
     "error_label": "خطأ",
     "error_waiting": "لا يمكن تشغيل التطبيق: في انتظار الإصلاح.",
     "exited": "تم الإيقاف",
-    "init_error": "حدث خطأ أثناء التهيئة:",
+    "init_error": "تعذّر تشغيل خادم التطوير",
     "routes_failed": "تعذّر تحديث مسارات العميل: {error}",
     "starting_vite": "جارٍ تشغيل خادم التطوير...",
     "stopping": "جارٍ إيقاف الخوادم...",
@@ -105,8 +110,14 @@
   },
   "format": {
     "failed": "فشل {count} ملف",
-    "passed": "اكتمل التنسيق",
-    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}"
+    "passed": "تم تنسيق جميع الملفات",
+    "skip_tool": "لم يتم العثور على {tool}: تم تخطي {scope}",
+    "formatting": "جارٍ تنسيق {scope} باستخدام {tool}",
+    "formatted": "تم تنسيق {scope} باستخدام {tool}",
+    "checking": "جارٍ فحص تنسيق {scope} باستخدام {tool}",
+    "checked": "تم فحص تنسيق {scope} باستخدام {tool}",
+    "nexy": "جارٍ تنسيق {count} من ملفات .nexy",
+    "nexy_done": "تم تنسيق {count} من ملفات .nexy"
   },
   "init": {
     "alias_invalid": "استخدم @ أو ~ أو # أو $ ويمكن أن تتبعها أحرف (مثل ~ أو @app).",
@@ -210,7 +221,7 @@
     "tool_missing": "خطأ: لم يتم العثور على {tool} في PATH. ثبّته ثم حاول مرة أخرى."
   },
   "server": {
-    "launch_failed": "فشل تشغيل الخادم:",
+    "launch_failed": "تعذّر تشغيل الخادم",
     "local": "محلي:",
     "network": "الشبكة:",
     "ready": "جاهز:",
@@ -228,7 +239,11 @@
     "help_server": "تشغيل اختبارات الخادم (pytest)",
     "passed": "نجحت جميع الاختبارات",
     "skip_client": "لم يتم إعداد vitest: تم تخطي اختبارات العميل",
-    "skip_tool": "لم يتم العثور على pytest: تم تخطي اختبارات الخادم"
+    "skip_tool": "لم يتم العثور على pytest: تم تخطي اختبارات الخادم",
+    "running_server": "جارٍ تشغيل اختبارات الخادم باستخدام pytest",
+    "ran_server": "تم تشغيل اختبارات الخادم باستخدام pytest",
+    "running_client": "جارٍ تشغيل اختبارات العميل باستخدام vitest",
+    "ran_client": "تم تشغيل اختبارات العميل باستخدام vitest"
   },
   "tui": {
     "keys": {
@@ -242,7 +257,7 @@
     "compile_failed": "فشل تجميع {path}",
     "compiled": "تم تجميع {path} في {time}",
     "error_kept": "أصلح الخطأ واحفظ: يحتفظ الخادم بآخر نسخة كانت تعمل.",
-    "restart_failed": "تعذّرت إعادة تشغيل الخادم: {error}",
+    "restart_failed": "تعذّرت إعادة تشغيل الخادم",
     "update": "تحديث"
   }
 }
