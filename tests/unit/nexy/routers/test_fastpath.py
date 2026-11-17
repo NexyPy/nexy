@@ -11,8 +11,10 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from fastapi.testclient import TestClient
 from pydantic import BaseModel
+from starlette.requests import Request
+from starlette.responses import Response
 
-from nexy.modules.routers.fastpath import FastPath, build_table, install
+from nexy.modules.routers.fastpath import FastPath, build_table, install, mark_raw
 
 
 class Item(BaseModel):
@@ -349,3 +351,45 @@ class TestScope:
         install(app.router)
         assert isinstance(app.router.middleware_stack, FastPath)
         assert TestClient(app).get("/x").json() == {"x": 1}
+
+
+class TestRawEndpoints:
+    """An endpoint marked raw takes the Request and returns a Response: no FastAPI work at all."""
+
+    @staticmethod
+    def _app(handler: Any, path: str = "/raw") -> FastAPI:
+        app = FastAPI()
+        app.router.add_api_route(path, mark_raw(handler), methods=["POST"])
+        assert install(app.router)
+        return app
+
+    @staticmethod
+    async def _echo(request: Request) -> Response:
+        return PlainTextResponse((await request.body()).decode())
+
+    def test_a_raw_endpoint_is_served_directly(self):
+        assert ("POST", "/raw") in build_table(self._app(self._echo).router)
+
+    def test_a_raw_endpoint_reads_the_body(self):
+        client = TestClient(self._app(self._echo))
+        assert client.post("/raw", content=b"hi").text == "hi"
+
+    def test_a_raw_endpoint_skips_the_dependency_solver(self, monkeypatch):
+        app = self._app(self._echo)
+
+        def refuse(*_args: Any, **_kwargs: Any) -> None:
+            raise AssertionError("FastAPI solved the dependencies of a raw endpoint")
+
+        monkeypatch.setattr("fastapi.routing.solve_dependencies", refuse)
+        assert TestClient(app).post("/raw", content=b"x").status_code == 200
+
+    def test_an_http_exception_of_a_raw_endpoint_keeps_its_status(self):
+        async def missing(_request: Request) -> Response:
+            raise HTTPException(status_code=404, detail="gone")
+
+        client = TestClient(self._app(missing))
+        assert client.post("/raw").json() == {"detail": "gone"}
+
+    def test_a_raw_endpoint_on_a_dynamic_path_is_left_to_fastapi(self):
+        app = self._app(self._echo, "/raw/{name}")
+        assert not build_table(app.router)
