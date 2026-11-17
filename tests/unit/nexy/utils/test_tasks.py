@@ -7,7 +7,7 @@ import sys
 
 from rich.console import Console
 
-from nexy.helpers.common.tasks import _LiveLine, format_duration, run_task, step
+from nexy.helpers.common.tasks import _LiveLine, format_duration, run_task, step, waiting
 
 
 def _console() -> tuple[Console, io.StringIO]:
@@ -108,6 +108,20 @@ class TestStep:
         with contextlib.suppress(RuntimeError), step("Compiling", console=console):
             raise RuntimeError("boom")
         assert buffer.getvalue() == "error: Compiling\n"
+
+
+class TestWaiting:
+    def test_waiting_leaves_no_line(self):
+        console, buffer = _console()
+        with waiting("Starting the dev server", console=console):
+            pass
+        assert buffer.getvalue() == ""
+
+    def test_waiting_draws_uv_live_row_on_a_terminal(self):
+        console = Console(file=io.StringIO(), force_terminal=True, width=80)
+        with waiting("Starting the dev server", console=console):
+            console.file.write("")
+        assert "Starting the dev server" in console.file.getvalue()
 
 
 def _render(live) -> str:

@@ -198,3 +198,10 @@ def step(label: str, *, done: str | None = None, console: Console | None = None)
         error(label, console=out)
         raise
     out.print(took(done or label, format_duration(time.monotonic() - started)))
+
+
+@contextmanager
+def waiting(label: str, *, console: Console | None = None) -> Generator[None]:
+    """uv's live row while the block runs, and no line once it ends: what follows says the rest."""
+    with _showing(_LiveLine(label), console or _console):
+        yield
