@@ -5,6 +5,7 @@ from nexy.__version__ import __version__
 from nexy.core.config import Config
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.messages import error
 from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.listening import Endpoint, print_listening
 from nexy.helpers.server.markers import has_build
@@ -19,7 +20,7 @@ def _refuse_unbuilt_project() -> None:
     if has_build():
         return
     text = t("start.no_build", "No production build: run `nexy build`, then `nexy start`.")
-    console.print(f"\n  [red]x[/red] {text}")
+    error(text)
     sys.exit(1)
 
 
@@ -36,7 +37,7 @@ def _refuse_broken_project(failures: list[str]) -> None:
     if not failures:
         return
     text = t("start.broken", "{count} route file(s) failed to load: the server was not started.")
-    console.print(f"\n  [red]x[/red] {text.format(count=len(failures))}")
+    error(text.format(count=len(failures)))
     sys.exit(1)
 
 

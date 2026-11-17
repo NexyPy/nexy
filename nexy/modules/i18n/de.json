@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Hinzugefügt: {path}",
     "available": "Verfügbare UI-Komponenten: {names}",
-    "error": "Fehler:",
     "exists": "Übersprungen: {path} existiert bereits.",
-    "fetch_failed": "Die Komponente konnte nicht von {url} abgerufen werden: {error}",
+    "fetch_failed": "Die Komponente konnte nicht von {url} geladen werden",
     "fetching": "Remote-Komponente wird von {url} abgerufen...",
     "help_all": "Alle verfügbaren Komponenten aus der Registry hinzufügen",
     "help_components": "Hinzuzufügende Komponenten (Registry-Namen oder URLs)",
@@ -12,38 +10,44 @@
     "help_ui": "Als UI-Komponenten behandeln erzwingen",
     "help_url": "Als URLs behandeln erzwingen",
     "https_only": "Es werden nur https://-URLs unterstützt.",
-    "install_failed": "Die Abhängigkeiten konnten nicht installiert werden",
     "installed": "{names} installiert",
     "installing": "{names} wird installiert",
     "no_pm": "Kein Paketmanager gefunden. Installieren Sie die Abhängigkeiten manuell: {names}",
     "not_found": "Komponente '{name}' wurde in der Registry nicht gefunden.",
     "usage": "Verwendung:",
     "usage_text": "nexy add [KOMPONENTENNAME oder URL]...",
-    "warning": "Warnung:",
-    "write_failed": "{path} konnte nicht geschrieben werden: {error}"
+    "write_failed": "{path} konnte nicht geschrieben werden"
   },
   "build": {
     "building_client": "Client-Bundle erstellt",
-    "checks_failed": "Prüfungen fehlgeschlagen",
-    "checks_passed": "alle Prüfungen bestanden",
-    "client_components": "Client-Komponenten",
+    "checks_failed": "Einige Prüfungen sind fehlgeschlagen",
+    "client_components": "Clientkomponenten",
     "compiling_routes": "Routen kompiliert",
     "compiling_server": "Server-Komponenten kompiliert",
     "creating": "Optimierter Produktions-Build wird erstellt",
-    "failed_client": "Client-Build fehlgeschlagen",
+    "failed_client": "Das Client-Bundle konnte nicht gebaut werden",
     "failed_components": "{count} Komponente(n) fehlgeschlagen",
-    "failed_label": "Build fehlgeschlagen",
     "routes": "Routen",
-    "server_components": "Server-Komponenten",
-    "skipped_label": "Übersprungen (im Cache)",
-    "success_build": "Build in {time} abgeschlossen",
-    "success_label": "Build erfolgreich"
+    "server_components": "Serverkomponenten",
+    "built": "Projekt gebaut",
+    "count_built": "{count} gebaut",
+    "count_cached": "{count} aus dem Cache",
+    "count_rendered": "{count} gerendert",
+    "count_client_only": "{count} nur im Client",
+    "more": "und {count} weitere",
+    "not_rendered": "{path} hat kein Server-HTML: es wird nur im Client gerendert",
+    "running_check": "Führe {name} aus",
+    "ran_check": "{name} ausgeführt"
   },
   "check": {
-    "compiling": "Dateien .nexy werden kompiliert ...",
+    "compiling": "Kompiliere die .nexy-Dateien",
     "failed": "{count} Abschnitt(e) fehlgeschlagen",
-    "passed": "alle Prüfungen bestanden",
-    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen"
+    "passed": "Alle Prüfungen bestanden",
+    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen",
+    "checking": "Prüfe {scope} mit {tool}",
+    "checked": "{scope} mit {tool} geprüft",
+    "compiled": ".nexy-Dateien kompiliert",
+    "not_compiled": "{path} konnte nicht kompiliert werden"
   },
   "cli": {
     "cmd": {
@@ -80,6 +84,10 @@
       "help_path": "Stammordner des Projekts (Standard: der aktuelle Ordner)",
       "done": "{count} Skills in .agents/skills und .claude/skills",
       "kept": "Deine Dateien wurden beibehalten: {files}."
+    },
+    "took": "in {duration}",
+    "init": {
+      "failed": "Das Projekt konnte nicht initialisiert werden"
     }
   },
   "dev": {
@@ -88,11 +96,10 @@
     "deps_hint": "nexy dev installiert keine Abhängigkeiten; nexy init und nexy new tun das.",
     "deps_missing": "Die Node.js-Abhängigkeiten fehlen.",
     "deps_run": "Führen Sie aus: {command}",
-    "error": "Fehler: {error}",
     "error_label": "Fehler",
     "error_waiting": "Die Anwendung kann nicht starten: warte auf eine Korrektur.",
     "exited": "beendet",
-    "init_error": "Fehler bei der Initialisierung:",
+    "init_error": "Der Entwicklungsserver konnte nicht gestartet werden",
     "routes_failed": "Die Client-Routen konnten nicht aktualisiert werden: {error}",
     "starting_vite": "Entwicklungsserver wird gestartet...",
     "stopping": "Server werden beendet...",
@@ -103,8 +110,14 @@
   },
   "format": {
     "failed": "{count} Datei(en) fehlgeschlagen",
-    "passed": "Formatierung abgeschlossen",
-    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen"
+    "passed": "Alle Dateien formatiert",
+    "skip_tool": "{tool} nicht gefunden: {scope} wird übersprungen",
+    "formatting": "Formatiere {scope} mit {tool}",
+    "formatted": "{scope} mit {tool} formatiert",
+    "checking": "Prüfe das Format von {scope} mit {tool}",
+    "checked": "Format von {scope} mit {tool} geprüft",
+    "nexy": "Formatiere {count} .nexy-Datei(en)",
+    "nexy_done": "{count} .nexy-Datei(en) formatiert"
   },
   "init": {
     "alias_invalid": "Verwende @, ~, # oder $, optional gefolgt von Buchstaben (zum Beispiel ~ oder @app).",
@@ -131,7 +144,6 @@
       "web": "Web",
       "yes": "Ja"
     },
-    "error": "Initialisierung fehlgeschlagen: {error}",
     "git_restore": "das vorherige .git konnte nicht wiederhergestellt werden",
     "hint": {
       "alias_custom": "anderes Präfix wählen, z. B. ~ oder #",
@@ -190,7 +202,11 @@
     "venv": {
       "created": "Virtuelle Umgebung erstellt",
       "creating": "Virtuelle Umgebung wird erstellt"
-    }
+    },
+    "node_installed": "node_modules mit {manager} installiert",
+    "python_synced": ".venv mit uv synchronisiert",
+    "package_added": "{package} zu .venv hinzugefügt",
+    "created": "Projekt aus {name} erstellt"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich ist nicht initialisiert. Führen Sie zuerst 'nx m --init' aus.",
@@ -205,7 +221,7 @@
     "tool_missing": "Fehler: {tool} wurde im PATH nicht gefunden. Installieren Sie es und versuchen Sie es erneut."
   },
   "server": {
-    "launch_failed": "Serverstart fehlgeschlagen:",
+    "launch_failed": "Der Server konnte nicht gestartet werden",
     "local": "Lokal:",
     "network": "Netzwerk:",
     "ready": "Bereit:",
@@ -221,9 +237,13 @@
     "help_args": "Zusätzliche Argumente für den Test-Runner",
     "help_client": "Client-Tests ausführen (vitest)",
     "help_server": "Server-Tests ausführen (pytest)",
-    "passed": "alle Tests bestanden",
+    "passed": "Alle Tests bestanden",
     "skip_client": "vitest ist nicht konfiguriert: Client-Tests werden übersprungen",
-    "skip_tool": "pytest nicht gefunden: Server-Tests werden übersprungen"
+    "skip_tool": "pytest nicht gefunden: Server-Tests werden übersprungen",
+    "running_server": "Führe die Servertests mit pytest aus",
+    "ran_server": "Servertests mit pytest ausgeführt",
+    "running_client": "Führe die Clienttests mit vitest aus",
+    "ran_client": "Clienttests mit vitest ausgeführt"
   },
   "tui": {
     "keys": {
@@ -237,7 +257,7 @@
     "compile_failed": "{path} konnte nicht kompiliert werden",
     "compiled": "{path} in {time} kompiliert",
     "error_kept": "Beheben und speichern: Der Server behält seine letzte funktionierende Version.",
-    "restart_failed": "Der Server konnte nicht neu gestartet werden: {error}",
+    "restart_failed": "Der Server konnte nicht neu gestartet werden",
     "update": "aktualisiere"
   }
 }

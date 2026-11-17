@@ -23,7 +23,8 @@ class NexyConfig(NexyConfigModel):
 | `useSslKeyfile`, `useSslCertfile` | `None` | servir HTTPS directement |
 | `useDevTools` | `True` | la barre d'outils `nexy dev` ajoute à chaque page (informations sur la page, itinéraires, erreurs, configuration) ; `False` le supprime. Jamais présent en production |
 | `useHealth` | `False` | servir `GET /health/live` et `GET /health/ready` pour les équilibreurs de charge et les sondes Kubernetes ; voir [Déployer](../deployment/README.md#built-in-endpoints) |
-| `useWorkers` | `0` | traite les exécutions de `nx start` ; `0` est un par processeur sous Linux et macOS, un sous Windows |
+| `useMaxBodySize` | `1048576` | le plus grand corps de requête lu par un travailleur, en octets (1 Mio) ; un plus grand est un `413`, et `0` désactive la limite. Élevez-le pour un itinéraire qui prend en charge les téléchargements de fichiers |
+| `useWorkers` | `0` | traite `nx start` exécutions ; `0` est un par processeur sous Linux et macOS, un sous Windows |
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 
 ## Base de données
@@ -69,7 +70,7 @@ Chaque champ ajoute des extensions à un rôle réservé. `useLayoutExtensions =
 
 | Champ | Par défaut | Signification |
 |---|---|---|
-| `useDocs` | `True` | servir la page de référence Scalar ; `/openapi.json` est servi dans les deux sens |
+| `useDocs` | `"dev"` | où la page de référence Scalar et `/openapi.json` sont servis : `"dev"` sur `nx dev` uniquement, `True` en production également (le schéma répertorie chaque route et action du serveur), `False` nulle part |
 | `useDocsUrl` | `"/docs"` | chemin de la page de référence de l'API |
 | `useRedocsUrl` | `"/redocs"` | déclaré mais aucune route n'est montée |
 | `useTitle` | `"Nexy App"` | Titre de OpenAPI et titre de la page (`"Nexy"` dans `NexyConfigModel`) |
@@ -86,7 +87,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-Ou éteignez-le avec `useDocs = False`. `/openapi.json` reste servi dans les deux cas : garder les itinéraires du projet hors de ce chemin.
+Ou désactivez-le avec `useDocs = False`, qui arrête également de diffuser `/openapi.json`. Pendant que la référence est activée, gardez les itinéraires du projet hors de ce chemin.
 
 ## Intergiciel
 

@@ -328,11 +328,11 @@ export function getEntryId(
   exportName: string,
   framework: Framework
 ): string {
-  // Vue et Svelte → filename.vue.html / filename.svelte.html
+  // Vue and Svelte: filename.vue.html / filename.svelte.html
   if (framework === 'vue') return `${fileName}.vue`
   if (framework === 'svelte') return `${fileName}.svelte`
 
-  // React, Preact, Solid → filename.Default.html / filename.MyComp.html
+  // React, Preact, Solid: filename.Default.html / filename.MyComp.html
   return `${fileName}.${exportName === 'default' ? 'Default' : exportName}`
 }
 

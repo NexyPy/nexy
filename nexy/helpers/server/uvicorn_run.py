@@ -8,9 +8,10 @@ import traceback
 from typing import Any
 
 import uvicorn
+from rich.markup import escape
 
 from nexy.core.config import Config
-from nexy.helpers.common.console import console
+from nexy.helpers.common import messages
 from nexy.helpers.server.markers import write_port_file
 from nexy.helpers.server.uvicorn_config import NEXY_LOG_CONFIG, SERVE_LIMITS
 from nexy.modules.i18n import t
@@ -59,7 +60,7 @@ def run_uvicorn(
         uvicorn.run(APP, **_options(host or "127.0.0.1", port, ssl_keyfile, ssl_certfile, count))
     except Exception as error:
         traceback.print_exc()
-        failure = t("server.launch_failed", "Server launch failed:")
-        console.print(f"[red]✘ {failure}[/red] {error}")
+        failure = t("server.launch_failed", "Could not start the server")
+        messages.error(failure, cause=escape(str(error) or type(error).__name__))
         return None
     return True

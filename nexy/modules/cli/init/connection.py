@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from nexy.helpers.common.console import console
+from nexy.helpers.common.messages import hint, warning
 from nexy.helpers.common.network import Connection, format_speed, quality
 from nexy.modules.i18n import t
 
@@ -19,13 +20,13 @@ def _summary(connection: Connection) -> str:
 
 def _say_offline() -> None:
     offline = t("init.network.offline", "No connection: packages were not installed.")
-    hint = t(
+    later = t(
         "init.network.offline_hint",
         "When you are online, run uv sync and your package manager's install "
         "in the project folder.",
     )
-    console.print(f"[yellow]![/yellow] {offline}")
-    console.print(hint)
+    warning(offline)
+    hint(later)
 
 
 def is_usable(connection: Connection) -> bool:
@@ -37,5 +38,5 @@ def is_usable(connection: Connection) -> bool:
     console.print(_summary(connection))
     if state == "slow":
         slow = t("init.network.slow", "Slow connection: installing packages may take a while.")
-        console.print(f"[yellow]![/yellow] {slow}")
+        warning(slow)
     return True

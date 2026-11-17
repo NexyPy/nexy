@@ -3,9 +3,10 @@
 from pathlib import Path
 
 import typer
+from rich.markup import escape
 
 from nexy.helpers.common.console import console
-from nexy.helpers.common.log_line import tagged
+from nexy.helpers.common.messages import error
 from nexy.modules.cli.agents import detect_profile, install_agent_files
 from nexy.modules.i18n import t
 
@@ -17,7 +18,7 @@ def _require_project(root: Path) -> None:
         "cli.skills.not_a_project",
         "No nexyconfig.py in {path}: run this at the root of a Nexy project.",
     )
-    console.print(tagged("nexy", message.format(path=root), "red"))
+    error(message.format(path=escape(str(root))))
     raise typer.Exit(code=1)
 
 
@@ -32,7 +33,7 @@ def skills(
     _require_project(root)
     report = install_agent_files(root, detect_profile(root))
     done = t("cli.skills.done", "{count} skills in .agents/skills and .claude/skills")
-    console.print(tagged("nexy", done.format(count=len(report.skills))))
+    console.print(done.format(count=len(report.skills)))
     if report.kept:
         kept = t("cli.skills.kept", "Kept your {files}.")
-        console.print(tagged("nexy", kept.format(files=", ".join(report.kept))))
+        console.print(f"[dim]{kept.format(files=', '.join(report.kept))}[/dim]")

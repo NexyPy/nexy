@@ -1,11 +1,34 @@
-{%- macro nav_link(href, label, extra_class="nx-nav-link") -%}
+{%- macro nav_link(href, label, extra_class="nx-nav-link", on_click="") -%}
 {%- if useCSR -%}
-<Link href="{{ href }}" {{ cls }}="{{ extra_class }}">{{ label }}</Link>
+<Link href="{{ href }}" {{ cls }}="{{ extra_class }}"{% if on_click %} {{ on_click }}{% endif %}>{{ label }}</Link>
 {%- else -%}
 <a href="{{ href }}" {{ cls }}="{{ extra_class }}">{{ label }}</a>
 {%- endif -%}
 {%- endmacro -%}
-<header {{ cls }}="nx-header"{% if not useCSR %} data-menu{% endif %}>
+{#- A client-routed page runs no inline script: its menu is the Sheet component, bound in the syntax
+    of the framework. The layout or the Header component holds `open`, `opener` and `close`. -#}
+{%- set stroke = "strokeWidth" if client_framework == "react" else "stroke-width" -%}
+{%- if useCSR and client_framework == "vue" -%}
+{%- set opens = '@click="open = true"' -%}
+{%- set expanded = ':aria-expanded="open"' -%}
+{%- set opener = 'ref="opener"' -%}
+{%- set closes = '@click="close"' -%}
+{%- set sheet = '<Sheet id="nx-menu" :open="open" title="Menu" @close="close">' -%}
+{%- elif useCSR and client_framework == "svelte" -%}
+{%- set opens = 'onclick={() => (open = true)}' -%}
+{%- set expanded = 'aria-expanded={open}' -%}
+{%- set opener = 'bind:this={opener}' -%}
+{%- set closes = 'onclick={close}' -%}
+{%- set sheet = '<Sheet id="nx-menu" {open} title="Menu" onclose={close}>' -%}
+{%- elif useCSR -%}
+{%- set state = "open()" if client_framework == "solid" else "open" -%}
+{%- set opens = 'onClick={() => setOpen(true)}' -%}
+{%- set expanded = 'aria-expanded={' ~ state ~ '}' -%}
+{%- set opener = 'ref={opener}' -%}
+{%- set closes = 'onClick={close}' -%}
+{%- set sheet = '<Sheet id="nx-menu" open={' ~ state ~ '} onClose={close} title="Menu">' -%}
+{%- endif -%}
+<header {{ cls }}="nx-header" data-menu>
   <nav {{ cls }}="nx-container nx-header-inner" aria-label="Main">
     <div {{ cls }}="nx-nav">
       <a href="/" aria-label="Nexy, home" {{ cls }}="nx-brand">
@@ -20,6 +43,9 @@
     <div {{ cls }}="nx-header-actions">
 {% if useCSR %}
       <ThemeToggle />
+      <button type="button" {{ cls }}="nx-menu-button" aria-label="Open menu" {{ expanded }} aria-controls="nx-menu" {{ opener }} {{ opens }}>
+        <span {{ cls }}="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {{ stroke }}="1.8"><path d="M4 7h16M4 12h16M4 17h16" /></svg></span>
+      </button>
 {% else %}
 {% include "theme_switch.html.jinja2" %}
       <button type="button" {{ cls }}="nx-menu-button" aria-label="Open menu" aria-expanded="false" aria-controls="nx-menu" data-menu-button>
@@ -29,6 +55,13 @@
     </div>
   </nav>
 </header>
+{% if useCSR %}
+{{ sheet }}
+  {{ nav_link("/", "Home", "nx-sheet-link", closes) }}
+  {{ nav_link("/about", "About", "nx-sheet-link", closes) }}
+  <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-sheet-link" {{ closes }}>Docs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {{ stroke }}="1.8" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg></a>
+</Sheet>
+{% endif %}
 {% if not useCSR %}
 <div {{ cls }}="nx-sheet-layer" data-menu-panel hidden>
   <div {{ cls }}="nx-sheet-scrim" data-menu-scrim data-state="closed" aria-hidden="true"></div>

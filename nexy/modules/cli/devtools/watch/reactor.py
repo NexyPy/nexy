@@ -7,6 +7,9 @@ import time
 from collections.abc import Callable, Iterable
 from typing import Any
 
+from rich.markup import escape
+
+from nexy.helpers.common import messages
 from nexy.helpers.common.console import console
 from nexy.helpers.common.log_line import tagged
 from nexy.helpers.common.pycheck import find_syntax_problem, report
@@ -106,5 +109,5 @@ class ChangeReactor:
         try:
             reload_api()
         except Exception as error:
-            reason = t("watch.restart_failed", "Failed to restart the server: {error}")
-            console.print(tagged("hmr", f"[red]{reason.format(error=error)}[/red]", "red"))
+            reason = t("watch.restart_failed", "Failed to restart the server")
+            messages.error(reason, cause=escape(str(error) or type(error).__name__))

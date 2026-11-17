@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "已添加：{path}",
     "available": "可用的 UI 组件：{names}",
-    "error": "错误：",
     "exists": "已跳过：{path} 已存在。",
-    "fetch_failed": "无法从 {url} 获取组件：{error}",
+    "fetch_failed": "无法从 {url} 获取组件",
     "fetching": "正在从 {url} 获取远程组件...",
     "help_all": "添加注册表中所有可用的组件",
     "help_components": "要添加的组件（注册表名称或 URL）",
@@ -12,38 +10,44 @@
     "help_ui": "强制按 UI 组件处理",
     "help_url": "强制按 URL 处理",
     "https_only": "仅支持 https:// 开头的 URL。",
-    "install_failed": "安装依赖失败",
     "installed": "已安装 {names}",
     "installing": "正在安装 {names}",
     "no_pm": "未找到包管理器。请手动安装依赖：{names}",
     "not_found": "在注册表中找不到组件“{name}”。",
     "usage": "用法：",
     "usage_text": "nexy add [组件名称 或 URL]...",
-    "warning": "警告：",
-    "write_failed": "无法写入 {path}：{error}"
+    "write_failed": "无法写入 {path}"
   },
   "build": {
     "building_client": "客户端包已构建",
-    "checks_failed": "检查失败",
-    "checks_passed": "所有检查均已通过",
+    "checks_failed": "部分检查未通过",
     "client_components": "客户端组件",
     "compiling_routes": "路由已编译",
     "compiling_server": "服务端组件已编译",
     "creating": "正在创建优化后的生产构建",
-    "failed_client": "客户端构建失败",
+    "failed_client": "构建客户端包失败",
     "failed_components": "{count} 个组件失败",
-    "failed_label": "构建失败",
     "routes": "路由",
     "server_components": "服务端组件",
-    "skipped_label": "已跳过（缓存）",
-    "success_build": "构建完成，用时 {time}",
-    "success_label": "构建成功"
+    "built": "项目已构建",
+    "count_built": "已构建 {count} 个",
+    "count_cached": "缓存 {count} 个",
+    "count_rendered": "已渲染 {count} 个",
+    "count_client_only": "{count} 个仅客户端",
+    "more": "还有 {count} 个",
+    "not_rendered": "{path} 没有服务端 HTML:它只在客户端渲染",
+    "running_check": "正在运行 {name}",
+    "ran_check": "已运行 {name}"
   },
   "check": {
-    "compiling": "正在编译 .nexy 文件 ...",
+    "compiling": "正在编译 .nexy 文件",
     "failed": "{count} 个部分失败",
     "passed": "所有检查均已通过",
-    "skip_tool": "未找到 {tool}：跳过 {scope}"
+    "skip_tool": "未找到 {tool}：跳过 {scope}",
+    "checking": "正在用 {tool} 检查 {scope}",
+    "checked": "已用 {tool} 检查 {scope}",
+    "compiled": "已编译 .nexy 文件",
+    "not_compiled": "无法编译 {path}"
   },
   "cli": {
     "cmd": {
@@ -80,6 +84,10 @@
       "help_path": "项目根目录（默认：当前文件夹）",
       "done": "{count} 个 skill 已放入 .agents/skills 和 .claude/skills",
       "kept": "已保留你的文件：{files}。"
+    },
+    "took": "用时 {duration}",
+    "init": {
+      "failed": "无法初始化项目"
     }
   },
   "dev": {
@@ -88,11 +96,10 @@
     "deps_hint": "nexy dev 不会安装依赖；nexy init 和 nexy new 会安装。",
     "deps_missing": "缺少 Node.js 依赖。",
     "deps_run": "请运行：{command}",
-    "error": "错误：{error}",
     "error_label": "错误",
     "error_waiting": "应用无法启动：等待修复。",
     "exited": "已退出",
-    "init_error": "初始化时出错：",
+    "init_error": "无法启动开发服务器",
     "routes_failed": "无法更新客户端路由：{error}",
     "starting_vite": "正在启动开发服务器...",
     "stopping": "正在停止服务器...",
@@ -103,8 +110,14 @@
   },
   "format": {
     "failed": "{count} 个文件失败",
-    "passed": "格式化完成",
-    "skip_tool": "未找到 {tool}：跳过 {scope}"
+    "passed": "所有文件均已格式化",
+    "skip_tool": "未找到 {tool}：跳过 {scope}",
+    "formatting": "正在用 {tool} 格式化 {scope}",
+    "formatted": "已用 {tool} 格式化 {scope}",
+    "checking": "正在用 {tool} 检查 {scope} 的格式",
+    "checked": "已用 {tool} 检查 {scope} 的格式",
+    "nexy": "正在格式化 {count} 个 .nexy 文件",
+    "nexy_done": "已格式化 {count} 个 .nexy 文件"
   },
   "init": {
     "alias_invalid": "使用 @、~、# 或 $,后面可跟字母(例如 ~ 或 @app)。",
@@ -131,7 +144,6 @@
       "web": "Web",
       "yes": "是"
     },
-    "error": "初始化失败：{error}",
     "git_restore": "无法恢复之前的 .git",
     "hint": {
       "alias_custom": "选择其他前缀,如 ~ 或 #",
@@ -190,7 +202,11 @@
     "venv": {
       "created": "已创建虚拟环境",
       "creating": "正在创建虚拟环境"
-    }
+    },
+    "node_installed": "已使用 {manager} 安装 node_modules",
+    "python_synced": "已使用 uv 同步 .venv",
+    "package_added": "已将 {package} 添加到 .venv",
+    "created": "已从 {name} 创建项目"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich 尚未初始化。请先运行“nx m --init”。",
@@ -205,7 +221,7 @@
     "tool_missing": "错误：在 PATH 中找不到 {tool}。请安装后重试。"
   },
   "server": {
-    "launch_failed": "服务器启动失败：",
+    "launch_failed": "无法启动服务器",
     "local": "本地：",
     "network": "网络：",
     "ready": "就绪：",
@@ -223,7 +239,11 @@
     "help_server": "运行服务端测试（pytest）",
     "passed": "所有测试均已通过",
     "skip_client": "未配置 vitest：跳过客户端测试",
-    "skip_tool": "未找到 pytest：跳过服务端测试"
+    "skip_tool": "未找到 pytest：跳过服务端测试",
+    "running_server": "正在用 pytest 运行服务端测试",
+    "ran_server": "已用 pytest 运行服务端测试",
+    "running_client": "正在用 vitest 运行客户端测试",
+    "ran_client": "已用 vitest 运行客户端测试"
   },
   "tui": {
     "keys": {
@@ -237,7 +257,7 @@
     "compile_failed": "编译 {path} 失败",
     "compiled": "已编译 {path}，用时 {time}",
     "error_kept": "修复后保存：服务器继续运行上一个可用版本。",
-    "restart_failed": "无法重启服务器：{error}",
+    "restart_failed": "无法重启服务器",
     "update": "更新"
   }
 }

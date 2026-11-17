@@ -4,9 +4,17 @@
   // The root layout writes the whole document; the page arrives as `children`.
   import type { Snippet } from "svelte";
   import Link from "@nexy/Link.svelte";
+  import Sheet from "@/components/sheet.svelte";
   import ThemeToggle from "@/components/theme-toggle.svelte";
 
   let { children }: { children?: Snippet } = $props();
+  let open = $state(false);
+  let opener = $state<HTMLButtonElement | null>(null);
+  // Closing gives the focus back to the button that opened the menu.
+  function close() {
+    open = false;
+    opener?.focus();
+  }
 </script>
 
 <html lang="en">

@@ -71,6 +71,10 @@ class TestFormat:
         path = "/caf\u00e9/\u4e2d"
         assert path in format_request("GET", path, 200, 0.0, paint_plain)
 
+    def test_a_separator_that_is_not_a_control_is_kept_as_it_is(self):
+        path = "/a\u2028b"
+        assert path in format_request("GET", path, 200, 0.0, paint_plain)
+
     def test_markup_in_a_path_is_not_interpreted(self):
         line = format_request("GET", "/[bold]x[/bold]", 200, 0.001)
         assert "/[bold]x[/bold]" in _plain(line)

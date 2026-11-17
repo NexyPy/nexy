@@ -1,8 +1,9 @@
 """Long-running CLI steps with uv-style feedback.
 
 ``run_task`` shows a spinner with the elapsed time and the last line the command
-printed, then leaves one permanent line behind: ``✔ label  1.2s``. A failure keeps
-the command's output instead of hiding it.
+printed, then leaves one permanent line behind, as uv does: ``Installed zod in 1.2s``.
+A failure is an ``error:`` line with its cause, and keeps the end of the command's
+output instead of hiding it.
 """
 
 from __future__ import annotations
@@ -16,25 +17,16 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from rich.console import Console, RenderResult
+from rich.console import Console, ConsoleOptions, RenderResult
 from rich.live import Live
-from rich.progress_bar import ProgressBar
-from rich.spinner import Spinner
-from rich.table import Table
 from rich.text import Text
 
 from nexy.helpers.common.console import console as _console
+from nexy.helpers.common.messages import error, took
 
 _TAIL_LINES = 15
-_LIVE_WIDTH = 78
 _BAR_WIDTH = 20
-
-
-def _symbols(out: Console) -> tuple[str, str, str]:
-    """(ok, fail, pending) marks; ASCII when the console cannot encode Unicode."""
-    if (out.encoding or "").lower().startswith("utf"):
-        return "✔", "✘", "…"
-    return "+", "x", "..."
+_REFRESH = 12
 
 
 def format_duration(seconds: float) -> str:
@@ -55,11 +47,24 @@ class TaskResult:
     output: list[str] = field(default_factory=list)
 
 
-class _LiveLine:
-    """One spinner row: label, a bar, elapsed time, dim last output line.
+# uv's own spinner: the ten braille frames it gives indicatif, one every 200 ms.
+_FRAMES = "\u280b\u2819\u2839\u2838\u283c\u2834\u2826\u2827\u2807\u280f"
+_FRAME_SECONDS = 0.2
 
-    The bar counts the finished steps of a group (``progress=(2, 5)``). A lone step has no count
-    to show, so its bar only pulses to say it is alive.
+
+def _bar(done: int, total: int) -> str:
+    """uv's 20-cell bar: full cells for the finished steps, light ones for the rest."""
+    full = _BAR_WIDTH * done // total if total else 0
+    return "\u2588" * full + "\u2591" * (_BAR_WIDTH - full)
+
+
+class _LiveLine:
+    """The row shown while a task runs, erased when it ends, drawn as uv draws its progress.
+
+    A lone task is ``{spinner:.white} {wide_msg:.dim}``: a white spinner, then the label and the
+    last line the command printed, dim. A step of a group (``progress=(2, 5)``) is
+    ``{bar:20} [{pos}/{len}] {wide_msg:.dim}``, the bar and count that uv shows for the packages
+    it installs.
     """
 
     def __init__(self, label: str, progress: tuple[int, int] | None = None) -> None:
@@ -67,28 +72,19 @@ class _LiveLine:
         self.progress = progress
         self.last = ""
         self.started = time.monotonic()
-        self._spinner = Spinner("dots", style="yellow")
 
-    def __rich_console__(self, *_: object) -> RenderResult:
-        elapsed = format_duration(time.monotonic() - self.started)
-        row = Table.grid(padding=(0, 1))
-        row.add_column()
-        row.add_column(no_wrap=True)
-        row.add_column(no_wrap=True, overflow="ellipsis")
-        text = Text.assemble(self.label, ("  " + elapsed, "dim"))
-        if self.progress:
-            text.append(f"  {self.progress[0]}/{self.progress[1]}", style="dim")
-        if self.last:
-            text.append("  " + self.last[:_LIVE_WIDTH], style="dim")
-        row.add_row(self._spinner, self._bar(), text)
+    def __rich_console__(self, _console: Console, options: ConsoleOptions) -> RenderResult:
+        row = self._head()
+        row.append(self.label + (f"  {self.last}" if self.last else ""), style="dim")
+        row.truncate(options.max_width, overflow="crop")
         yield row
 
-    def _bar(self) -> ProgressBar:
-        if self.progress:
-            done, total = self.progress
-            return ProgressBar(total=total, completed=done, width=_BAR_WIDTH)
-        pulse_time = time.monotonic() - self.started
-        return ProgressBar(pulse=True, animation_time=pulse_time, width=_BAR_WIDTH)
+    def _head(self) -> Text:
+        if self.progress is None:
+            frame = int((time.monotonic() - self.started) / _FRAME_SECONDS) % len(_FRAMES)
+            return Text.assemble((_FRAMES[frame], "white"), " ", no_wrap=True)
+        done, total = self.progress
+        return Text(f"{_bar(done, total)} [{done}/{total}] ", no_wrap=True)
 
 
 def _resolve(argv: Sequence[str]) -> list[str]:
@@ -118,18 +114,12 @@ def _spawn(argv: Sequence[str], cwd: Path | str | None) -> subprocess.Popen[str]
     )
 
 
-def _follow(
-    proc: subprocess.Popen[str], tail: deque[str], live: _LiveLine, out: Console, label: str
-) -> None:
-    """Show the task until it ends: a live row on a terminal, a single line otherwise."""
-    if out.is_terminal:
-        with Live(live, console=out, refresh_per_second=12, transient=True):
-            _pump(proc, tail, live)
-            proc.wait()
-        return
-    out.print(f"[yellow]{_symbols(out)[2]}[/yellow] {label}")
-    _pump(proc, tail, live)
-    proc.wait()
+def _follow(proc: subprocess.Popen[str], tail: deque[str], live: _LiveLine, out: Console) -> None:
+    """Show the task until it ends: a live row on a terminal, nothing otherwise."""
+    # Not a terminal: nothing is drawn, so only the result line is written, as uv does.
+    with _showing(live, out):
+        _pump(proc, tail, live)
+        proc.wait()
 
 
 def _announce(
@@ -140,16 +130,14 @@ def _announce(
     proc: subprocess.Popen[str],
     tail: deque[str],
 ) -> None:
-    """The one line a task leaves behind; a failure also keeps the end of its output."""
-    ok_mark, fail_mark, _ = _symbols(out)
+    """The one line a task leaves behind; a failure also keeps its output, dim when cut short."""
     if proc.returncode == 0:
-        shown = format_duration(seconds)
-        out.print(f"[green]{ok_mark}[/green] {done or label}  [dim]{shown}[/dim]")
+        out.print(took(done or label, format_duration(seconds)))
         return
-    detail = f"exit {proc.returncode}, {format_duration(seconds)}"
-    out.print(f"[red]{fail_mark}[/red] {label}  [dim]{detail}[/dim]")
+    error(label, f"exit {proc.returncode} after {format_duration(seconds)}", console=out)
+    style = "dim" if tail.maxlen else "none"
     for line in tail:
-        out.print(f"  [dim]{_escape(line)}[/dim]")
+        out.print(f"  [{style}]{_escape(line)}[/{style}]")
 
 
 def run_task(
@@ -160,21 +148,23 @@ def run_task(
     done: str | None = None,
     progress: tuple[int, int] | None = None,
     console: Console | None = None,
+    full_output: bool = False,
 ) -> TaskResult:
     """Run *argv* while showing progress; print one result line when it ends.
 
     *done* replaces *label* on the success line (``"Installed zod"``). *progress* is the position
-    of this task in a group, ``(finished, total)``, drawn as a bar next to the spinner.
+    of this task in a group, ``(finished, total)``, drawn as a bar next to the spinner. A failure
+    keeps the last lines of the output, or with *full_output* every line (a type checker's report).
     """
     out = console or _console
-    tail: deque[str] = deque(maxlen=_TAIL_LINES)
+    tail: deque[str] = deque(maxlen=None if full_output else _TAIL_LINES)
     started = time.monotonic()
     try:
         proc = _spawn(argv, cwd)
     except OSError as exc:
-        out.print(f"[red]{_symbols(out)[1]}[/red] {label}  [dim]{exc}[/dim]")
+        error(label, _escape(str(exc)), console=out)
         return TaskResult(ok=False, seconds=0.0, output=[str(exc)])
-    _follow(proc, tail, _LiveLine(label, progress), out, label)
+    _follow(proc, tail, _LiveLine(label, progress), out)
     seconds = time.monotonic() - started
     _announce(out, label, done, seconds, proc, tail)
     return TaskResult(
@@ -187,16 +177,31 @@ def _escape(line: str) -> str:
 
 
 @contextmanager
+def _showing(live: _LiveLine, out: Console) -> Generator[None]:
+    """Draw *live* until the block ends, then erase it; outside a terminal, draw nothing."""
+    if not out.is_terminal:
+        yield
+        return
+    with Live(live, console=out, refresh_per_second=_REFRESH, transient=True):
+        yield
+
+
+@contextmanager
 def step(label: str, *, done: str | None = None, console: Console | None = None) -> Generator[None]:
     """In-process ``run_task``: a spinner while the block runs, then one result line."""
     out = console or _console
-    ok_mark, fail_mark, _ = _symbols(out)
     started = time.monotonic()
     try:
-        with out.status(label, spinner="dots"):
+        with _showing(_LiveLine(label), out):
             yield
     except BaseException:
-        out.print(f"[red]{fail_mark}[/red] {label}")
+        error(label, console=out)
         raise
-    shown = format_duration(time.monotonic() - started)
-    out.print(f"[green]{ok_mark}[/green] {done or label}  [dim]{shown}[/dim]")
+    out.print(took(done or label, format_duration(time.monotonic() - started)))
+
+
+@contextmanager
+def waiting(label: str, *, console: Console | None = None) -> Generator[None]:
+    """uv's live row while the block runs, and no line once it ends: what follows says the rest."""
+    with _showing(_LiveLine(label), console or _console):
+        yield

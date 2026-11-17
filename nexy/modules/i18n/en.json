@@ -1,10 +1,8 @@
 {
   "add": {
-    "added": "Added: {path}",
     "available": "Available UI components: {names}",
-    "error": "Error:",
     "exists": "Skipping: {path} already exists.",
-    "fetch_failed": "Failed to fetch component from {url}: {error}",
+    "fetch_failed": "Failed to fetch component from {url}",
     "fetching": "Fetching remote component from {url}...",
     "help_all": "Add all available components from registry",
     "help_components": "Components to add (registry names or URLs)",
@@ -12,38 +10,44 @@
     "help_ui": "Force treatment as UI components",
     "help_url": "Force treatment as URLs",
     "https_only": "Only https:// URLs are supported.",
-    "install_failed": "Failed to install dependencies",
     "installed": "Installed {names}",
     "installing": "Installing {names}",
     "no_pm": "No package manager found. Please install dependencies manually: {names}",
     "not_found": "Component '{name}' not found in registry.",
     "usage": "Usage:",
     "usage_text": "nexy add [COMPONENT_NAME or URL]...",
-    "warning": "Warning:",
-    "write_failed": "Failed to write {path}: {error}"
+    "write_failed": "Failed to write {path}"
   },
   "build": {
     "building_client": "Built client bundle",
-    "checks_failed": "checks failed",
-    "checks_passed": "all checks passed",
-    "client_components": "client components",
+    "checks_failed": "Some checks failed",
+    "client_components": "Client components",
     "compiling_routes": "Compiled routes",
     "compiling_server": "Compiled server components",
     "creating": "Creating an optimized production build",
-    "failed_client": "client build failed",
+    "failed_client": "Failed to build the client bundle",
     "failed_components": "{count} component(s) failed",
-    "failed_label": "Build Failed",
-    "routes": "routes",
-    "server_components": "server components",
-    "skipped_label": "Skipped (cached)",
-    "success_build": "build in {time}",
-    "success_label": "Build success"
+    "routes": "Routes",
+    "server_components": "Server components",
+    "built": "Built the project",
+    "count_built": "{count} built",
+    "count_cached": "{count} cached",
+    "count_rendered": "{count} rendered",
+    "count_client_only": "{count} client-only",
+    "more": "and {count} more",
+    "not_rendered": "{path} has no server HTML: it renders on the client only",
+    "running_check": "Running {name}",
+    "ran_check": "Ran {name}"
   },
   "check": {
-    "compiling": "compiling .nexy ...",
+    "compiling": "Compiling the .nexy files",
     "failed": "{count} section(s) failed",
-    "passed": "all checks passed",
-    "skip_tool": "{tool} not found - skipping {scope}"
+    "passed": "All checks passed",
+    "skip_tool": "{tool} not found - skipping {scope}",
+    "checking": "Checking {scope} with {tool}",
+    "checked": "Checked {scope} with {tool}",
+    "compiled": "Compiled the .nexy files",
+    "not_compiled": "Could not compile {path}"
   },
   "cli": {
     "cmd": {
@@ -80,6 +84,10 @@
       "help_path": "Root of the project (default: the current folder)",
       "done": "{count} skills in .agents/skills and .claude/skills",
       "kept": "Kept your {files}."
+    },
+    "took": "in {duration}",
+    "init": {
+      "failed": "Could not initialize the project"
     }
   },
   "dev": {
@@ -88,11 +96,10 @@
     "deps_hint": "nexy dev does not install dependencies; nexy init and nexy new do.",
     "deps_missing": "Node.js dependencies are missing.",
     "deps_run": "Run: {command}",
-    "error": "Error: {error}",
     "error_label": "error",
     "error_waiting": "The application cannot start: waiting for a fix.",
     "exited": "exited",
-    "init_error": "Error during initialization:",
+    "init_error": "Could not start the dev server",
     "routes_failed": "Could not update the client routes: {error}",
     "starting_vite": "Starting the dev server...",
     "stopping": "Stopping servers...",
@@ -103,8 +110,14 @@
   },
   "format": {
     "failed": "{count} file(s) failed",
-    "passed": "formatting complete",
-    "skip_tool": "{tool} not found - skipping {scope}"
+    "passed": "All files formatted",
+    "skip_tool": "{tool} not found - skipping {scope}",
+    "formatting": "Formatting {scope} with {tool}",
+    "formatted": "Formatted {scope} with {tool}",
+    "checking": "Checking the format of {scope} with {tool}",
+    "checked": "Checked the format of {scope} with {tool}",
+    "nexy": "Formatting {count} .nexy file(s)",
+    "nexy_done": "Formatted {count} .nexy file(s)"
   },
   "init": {
     "alias_invalid": "Use @, ~, # or $, optionally followed by letters (for example ~ or @app).",
@@ -131,7 +144,6 @@
       "web": "Web",
       "yes": "Yes"
     },
-    "error": "Initialization failed: {error}",
     "git_restore": "could not restore previous .git",
     "hint": {
       "alias_custom": "choose another prefix, such as ~ or #",
@@ -190,7 +202,11 @@
     "venv": {
       "created": "Created virtual environment",
       "creating": "Creating virtual environment"
-    }
+    },
+    "node_installed": "Installed node_modules with {manager}",
+    "python_synced": "Synced .venv with uv",
+    "package_added": "Added {package} to .venv",
+    "created": "Created the project from {name}"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich not initialized. Run 'nx m --init' first.",
@@ -205,7 +221,7 @@
     "tool_missing": "Error: {tool} not found on PATH. Install it and try again."
   },
   "server": {
-    "launch_failed": "Server launch failed:",
+    "launch_failed": "Could not start the server",
     "local": "Local:",
     "network": "Network:",
     "ready": "Ready:",
@@ -221,9 +237,13 @@
     "help_args": "Extra arguments forwarded to the test runner",
     "help_client": "Run client tests (vitest)",
     "help_server": "Run server tests (pytest)",
-    "passed": "all tests passed",
+    "passed": "All tests passed",
     "skip_client": "vitest not configured - skipping client tests",
-    "skip_tool": "pytest not found - skipping server tests"
+    "skip_tool": "pytest not found - skipping server tests",
+    "running_server": "Running the server tests with pytest",
+    "ran_server": "Ran the server tests with pytest",
+    "running_client": "Running the client tests with vitest",
+    "ran_client": "Ran the client tests with vitest"
   },
   "tui": {
     "keys": {
@@ -237,7 +257,7 @@
     "compile_failed": "Failed to compile {path}",
     "compiled": "Compiled {path} in {time}",
     "error_kept": "Fix it and save: the server keeps its last working version.",
-    "restart_failed": "Failed to restart the server: {error}",
+    "restart_failed": "Failed to restart the server",
     "update": "update"
   }
 }

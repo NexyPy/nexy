@@ -1,0 +1,34 @@
+{#- The /connection page. The includer sets cls; a server-rendered page sets ping_url, the URL the
+    button posts to, and a client-routed one check, pending and status, the bindings of its
+    framework. -#}
+{%- if utility_ui -%}
+{%- set c = {
+  "section": "flex flex-1 items-center pb-20 pt-36",
+  "inner": "mx-auto w-full max-w-[72rem] px-6",
+  "title": "text-5xl leading-[1.05] md:text-6xl",
+  "lead": "mt-6 max-w-[46ch] text-lg text-foreground-second",
+  "actions": "mt-10",
+  "button": "inline-flex w-fit items-center gap-2.5 border border-foreground bg-foreground px-6 py-3.5 font-mono text-[0.8rem] font-semibold uppercase tracking-[0.04em] text-background transition-opacity hover:opacity-85 disabled:opacity-60",
+  "status": "mt-6 font-mono text-sm text-foreground-second",
+} -%}
+{%- else -%}
+{%- set c = {"section": "nx-container nx-article", "inner": "", "title": "nx-title", "lead": "", "actions": "nx-actions", "button": "btn-primary", "status": ""} -%}
+{%- endif -%}
+{%- macro klass(name) -%}{% if c[name] %} {{ cls }}="{{ c[name] }}"{% endif %}{%- endmacro -%}
+<section{{ klass("section") }}>
+  <div{{ klass("inner") }}>
+    <h1{{ klass("title") }}>Connection</h1>
+    <p{{ klass("lead") }}>
+      This page calls {{ ping_source | default('a server action, <code>src/actions/ping.py</code>') }}, and shows
+      what the Python server answered and how long the round trip took.
+    </p>
+    <div{{ klass("actions") }}>
+{%- if useCSR %}
+      <button type="button"{{ klass("button") }} {{ check }} {{ pending }}>Ping the server</button>
+{%- else %}
+      <button type="button"{{ klass("button") }} data-ping="{{ ping_url }}">Ping the server</button>
+{%- endif %}
+    </div>
+    <p{{ klass("status") }} role="status" aria-live="polite"{% if not useCSR %} data-ping-status{% endif %}>{{ status if useCSR else "Not checked yet." }}</p>
+  </div>
+</section>

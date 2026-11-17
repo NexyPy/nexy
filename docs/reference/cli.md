@@ -41,13 +41,13 @@ example `uv run nexy dev`: that is where your own packages are.
 
 ## Output
 
-Long steps (installing packages, compiling, bundling) show a spinner with the elapsed time, then
-leave one line behind: `✔ uv sync .venv  1.4s`. A group of steps (the installs of `nx new`) shows a
-progress bar with the number of finished steps, `━━━━────  2/5`; a single step (`nx add`) shows a
-bar that pulses while it runs. Dev logs read `GET » /about 200 in 12ms` for requests and
-`vite » ...` for Vite. A failing step prints the last
-lines of the command's output instead of hiding it. Terminals that cannot render Unicode get
-`+` and `x`.
+Long steps (installing packages, compiling, bundling) show a spinner with the elapsed time and the
+last line the command printed, then leave one line behind, as uv does: `Synced .venv with uv in
+1.4s`. A group of steps (the installs of `nx new`) also shows a progress bar and the number of
+finished steps, `2/5`. A failing step is an `error:` line with its cause, `cause: exit 1 after
+2.1s`, followed by the last lines of the command's output instead of hiding it. Something to look
+at reads `warning: ...`, and what to do next `hint: ...`. Dev logs read `GET » /about 200 in 12ms`
+for requests and `vite » ...` for Vite.
 
 ## Errors while `nx dev` runs
 

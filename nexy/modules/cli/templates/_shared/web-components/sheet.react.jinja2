@@ -1,0 +1,108 @@
+{% if not utility_ui and useCSR %}{% raw %}import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+
+type SheetProps = {
+  id: string;
+  open: boolean;
+  onClose: () => void;
+  /** The visible title, which also names the dialog for a screen reader. */
+  title: string;
+  children: ReactNode;
+};
+
+// Tab and Shift+Tab wrap inside the panel instead of walking out into the page: the close button
+// comes first, the last link of the menu last.
+function trap(
+  event: KeyboardEvent,
+  panel: HTMLElement | null,
+  first: HTMLElement | null,
+  last: Element | null,
+) {
+  const here = document.activeElement;
+  const away = event.shiftKey ? here === first || here === panel : here === last;
+  if (!away || !(last instanceof HTMLElement) || !first) return;
+  event.preventDefault();
+  (event.shiftKey ? last : first).focus();
+}
+
+// A modal panel that slides in from the left edge, over a scrim. While it is open it holds the
+// keyboard (Tab wraps, Escape closes), the page behind holds still, and a wide screen closes it.
+// Closing plays the slide back before the panel leaves the page.
+export default function Sheet({ id, open, onClose, title, children }: SheetProps) {
+  const panel = useRef<HTMLDivElement>(null);
+  const closer = useRef<HTMLButtonElement>(null);
+  const links = useRef<HTMLElement>(null);
+  const titleId = useId();
+  const [shown, setShown] = useState(open);
+
+  useEffect(() => {
+    if (open) setShown(true);
+  }, [open]);
+
+  useEffect(() => {
+    const element = panel.current;
+    if (!open || !element) return;
+    element.focus();
+    document.body.style.overflow = "hidden";
+    const wide = window.matchMedia("(min-width: 48rem)");
+    wide.onchange = () => wide.matches && onClose();
+    return () => {
+      document.body.style.overflow = "";
+      wide.onchange = null;
+    };
+  }, [open, shown, onClose]);
+
+  useEffect(() => {
+    const element = panel.current;
+    if (open || !element) return;
+    const moves = element.getAnimations().map((move) => move.finished);
+    Promise.all(moves).then(() => setShown(false));
+  }, [open]);
+
+  // The focus never leaves the open panel, so its own key handler sees every key.
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === "Escape") onClose();
+    const last = links.current?.lastElementChild ?? null;
+    if (event.key === "Tab") trap(event, panel.current, closer.current, last);
+  };
+
+  if (!shown) return null;
+  const state = open ? "open" : "closed";
+
+  return (
+    <div className="nx-sheet-layer">
+      <div className="nx-sheet-scrim" data-state={state} onClick={onClose} aria-hidden="true" />
+      <div
+        ref={panel}
+        id={id}
+        tabIndex={-1}
+        className="nx-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        data-side="left"
+        data-state={state}
+        onKeyDown={onKey}
+      >
+        <div className="nx-sheet-head">
+          <img src="/nexy.svg" alt="" />
+          <h2 id={titleId} className="nx-sheet-title">
+            {title}
+          </h2>
+        </div>
+        <button
+          ref={closer}
+          type="button"
+          onClick={onClose}
+          aria-label="Close menu"
+          className="nx-menu-button nx-menu-close"
+        >
+          <span className="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
+        </button>
+        <nav ref={links} className="nx-sheet-links" aria-label="Pages">
+          {children}
+        </nav>
+      </div>
+    </div>
+  );
+}
+{% endraw %}{% endif %}

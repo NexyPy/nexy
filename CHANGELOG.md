@@ -3,6 +3,38 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.6.0] - 2026-11-17
+
+### Added
+
+- **Every web starter has a `/connection` page** that calls the Python backend and says what it
+  answered and how long the round trip took; the API starters answer `GET /ping` (#390).
+- **The plain-CSS starters with client-side routing have the mobile sheet** of the other starters,
+  for React, Preact, Solid, Vue and Svelte (#389).
+- **`useMaxBodySize` in `nexyconfig.py`**: the largest request body a worker reads, 1 MiB by
+  default, `0` for no limit (#386).
+
+### Changed
+
+- **The CLI prints the way uv does.** `nx new`, `nx init`, `nx check`, `nx format`, `nx test`,
+  `nx build`, `nx dev`, `nx start`, `nx add` and `nx skills` write one line per finished step with
+  its duration, and `error:`, `warning:`, `hint:` and `cause:` lines. The build summary is a list
+  instead of a tree, and the output has no check marks, arrows or warning signs (#384, #391).
+- **Behaviour change: `/docs` and `/openapi.json` are served by `nx dev` only.** `useDocs` takes a
+  third value, `"dev"`, the new default. A project that uses them in production sets
+  `useDocs = True` (#387).
+- **File routes written as the starters write them are about four times faster.**
+  `def GET() -> dict[str, str]` answers 7,560 requests per second instead of 1,900 on one worker,
+  and its `async` form 15,250 instead of 8,800. The bytes and the errors are the same (#392).
+- **Server actions answer 9,250 requests per second instead of 6,400** on one worker (#388).
+
+### Fixed
+
+- **A request body over the limit is refused with a 413.** A worker read any body whole, so a few
+  large posts filled its memory (#386).
+- **A form posted without JavaScript no longer redirects to another site.** A `Referer` whose path
+  started with `//` or `/\` sent the visitor there after the action (#385).
+
 ## [2.5.0] - 2026-11-16
 
 ### Added

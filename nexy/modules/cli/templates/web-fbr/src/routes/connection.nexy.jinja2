@@ -1,0 +1,5 @@
+{% if not useCSR %}{%- set cls = "class" -%}
+{%- set ping_url = "{{ __actions_path['ping'] }}" -%}
+{% include "connection.html.jinja2" %}
+{% include "connection_script.html.jinja2" %}
+{% endif %}
