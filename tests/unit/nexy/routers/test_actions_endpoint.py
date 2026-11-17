@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import datetime as dt
 from collections.abc import Iterator
 from typing import Any
 
@@ -281,3 +282,27 @@ def test_an_action_is_served_by_the_fast_path():
     app = FastAPI()
     ActionEngine().include_router(app)
     assert ("POST", _url(double)) in build_table(app.router)
+
+
+async def mixed() -> dict[str, Any]:
+    return {"when": dt.date(2026, 11, 17), "tags": ("a", "b"), "ratio": 0.5, "name": "é"}
+
+
+@pytest.mark.parametrize("handler", [mixed, save_profile])
+def test_the_answer_is_the_json_fastapi_would_write(handler):
+    from fastapi.encoders import jsonable_encoder
+    from fastapi.responses import JSONResponse
+
+    body = {"profile": {"name": "Ada", "age": 36}} if handler is save_profile else {}
+    expected = asyncio.run(handler(Profile(name="Ada", age=36))) if body else asyncio.run(handler())
+    response = _client(handler).post(_url(handler), json=body)
+    assert response.content == JSONResponse(jsonable_encoder(expected)).body
+
+
+def test_a_plain_answer_is_not_walked_by_jsonable_encoder(monkeypatch):
+    def refuse(*_args: Any, **_kwargs: Any) -> None:
+        raise AssertionError("a plain answer went through jsonable_encoder")
+
+    monkeypatch.setattr("fastapi.encoders.jsonable_encoder", refuse)
+    monkeypatch.setattr(endpoint, "jsonable_encoder", refuse, raising=False)
+    assert _client(double).post(_url(double), json={"value": 2}).json() == 4

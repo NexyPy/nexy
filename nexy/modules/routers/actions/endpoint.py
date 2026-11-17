@@ -10,7 +10,6 @@ from functools import cache
 from typing import Any
 from urllib.parse import parse_qsl, urlparse
 
-from fastapi.encoders import jsonable_encoder
 from pydantic import ValidationError
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import Request
@@ -19,7 +18,7 @@ from starlette.responses import JSONResponse, RedirectResponse, Response
 from nexy.modules.routers.actions.origin import is_same_origin
 from nexy.modules.routers.actions.revalidate import HEADER, header_value, start_collecting
 from nexy.modules.routers.actions.spec import ActionSpec
-from nexy.modules.routers.fastpath import mark_raw
+from nexy.modules.routers.fastpath import encode_json, mark_raw
 
 
 def _is_json(request: Request) -> bool:
@@ -107,7 +106,8 @@ def _with_headers_of(answer: Response, response: Response) -> Response:
 def _answer(result: Any, request: Request, collected: Any) -> Response:
     """A redirect back for a plain form post, JSON for a script; revalidated paths in a header."""
     if _is_json(request):
-        answer: Response = JSONResponse(jsonable_encoder(result))
+        # Straight to JSON: jsonable_encoder walks only what json cannot write (models, dates).
+        answer: Response = Response(encode_json(result), media_type="application/json")
     else:
         answer = RedirectResponse(_back(request), status_code=303)
     if collected:
