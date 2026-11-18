@@ -12,7 +12,7 @@ Jeder `<a href>` zu einer Seite Ihres Projekts navigiert auf dem Client, ohne Ko
 
 Es wird ein Link zum Browser hinterlassen und die Seite wird normal geladen, wenn:
 
-- eine Sondertaste gedrückt wird oder die Taste nicht die Haupttaste ist;
+- eine Zusatztaste gedrückt wird oder die Taste nicht die Haupttaste ist;
 - es hat `target` (außer `_self`), `download`, `rel="external"` oder `data-nexy-reload`;
 - das `href` ist ein anderer Ursprung, ein `mailto:`- oder `tel:`-Link oder nur ein `#fragment`;
 - Da der Pfad mit keiner Client-Route übereinstimmt, antwortet der Server darauf.
@@ -21,7 +21,7 @@ Es wird ein Link zum Browser hinterlassen und die Seite wird normal geladen, wen
 
 `Link` ist derselbe Anker, den ein einfacher Anker nicht kann: Sein `href` wird mit Ihren Routen verglichen, er wärmt die Zielseite auf und weiß, wann er auf die aktuelle Seite zeigt. Nexy generiert die `Link` Ihres Frameworks in `__nexy__/src`, wenn Sie `nx dev` oder `nx build` ausführen.
 
-| Framework | Importieren |
+| Rahmen | Importieren |
 |---|---|
 | React, Preact, Solid, Vue | `import { Link } from "@nexy/client"` |
 | Svelte | `import Link from "@nexy/Link.svelte"` |
@@ -55,11 +55,13 @@ Der Speicherort ist in jedem Framework in der Sprache dieses Frameworks verfügb
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| Pfad | `usePathname()` | `usePathname()` gibt einen Accessor zurück | `usePathname()` gibt einen Ref zurück | `$pathname` speichert |
-| Route-Parameter | `useParams()` | `useParams()` Accessor | `useParams()` Ref | `$params` Store |
-| Abfrage | `useSearchParams()` | `useSearchParams()` Accessor | `useSearchParams()` Ref | `$searchParams` Store |
-| Alles | `useLocation()` | `useLocation()` Accessor | `useLocation()` Ref | `$location` Store |
+| Pfad | `usePathname()` | `usePathname()` gibt einen Accessor zurück | `usePathname()` gibt eine Referenz zurück | `$pathname` speichern |
+| Routenparameter | `useParams()` | `useParams()`-Accessor | `useParams()` Ref | `$params` speichern |
+| Abfrage | `useSearchParams()` | `useSearchParams()`-Accessor | `useSearchParams()` Ref | `$searchParams` speichern |
+| Alles | `useLocation()` | `useLocation()`-Accessor | `useLocation()` Ref | `$location` speichern |
 | Navigieren | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Navigation im Flug | `useTransition()` | `useTransition()`-Accessor | `useTransition()` Ref | `useTransition()` speichern |
+| Passen Sie einen Pfad an | `useMatch(path?)` | `useMatch(path?)`-Accessor | `useMatch(path?)` Ref | `useMatch(path?)` speichern |
 
 Die Abfrage ist ein `URLSearchParams`. `useRouter()` und `router` ergeben `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` und `prefetch(href)`; `push` und `replace` akzeptieren `{ scroll: false }`.
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## Ladezustand anzeigen mit `useTransition`
+
+`useTransition()` gibt an, ob sich eine Client-Navigation im Flug befindet. `pending` ist `true` vom Klick bis zur Anzeige der nächsten Seite und `next` ist der Ort, an den es geht. Es kehrt zu `{ pending: false, next: null }` zurück, sobald die Seite angezeigt wird, wenn die Navigation stoppt oder wenn eine neuere Seite sie ersetzt.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## Passen Sie einen Pfad an `useMatch`
+
+`useMatch(path)` gibt an, ob `path` mit einer Client-Route übereinstimmt. Es gibt `{ match, found }` zurück, wobei `match` die Route `file`, ihre `layouts` und ihre `params` enthält oder `null` ist. Ohne Pfad entspricht es der aktuellen Seite und folgt jeder Navigation. Während des Serverrenderings gibt es noch keinen Router, also ist `match` `null` und `found` ist `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## Erfassen Sie eine Seite, die mit `ErrorBoundary` fehlschlägt.
+
+`ErrorBoundary` zeigt einen Fallback anstelle seiner untergeordneten Elemente an, wenn eines von ihnen beim Rendern im Browser auslöst. Der Fallback erhält den Fehler und `reset`, wodurch die untergeordneten Elemente erneut gerendert werden.
+
+| Rahmen | Importieren | Rückfall |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | eine `fallback` Funktionsstütze; Die Kinder kommen in den Standard-Slot |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | ein `fallback`-Ausschnitt |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+Es fängt nicht:
+
+- ein später ausgelöster Fehler, in einem Event-Handler, einem Timer oder einem Versprechen: Fangen Sie ihn dort ab, wo er passiert. Vue ist die Ausnahme für seine eigenen Event-Handler, deren Fehler die Grenze erreichen;
+- eine Seite, die der Router nicht laden kann: Der Browser fragt stattdessen den Server danach (siehe [Was der Router macht](#what-the-router-does)).
+
 ## `Image`
 
 `Image` rendert ein `<img>`, das standardmäßig verzögert ist und das Layout nicht verschiebt, wenn seine Größe bekannt ist.
 
-| Framework | Importieren |
+| Rahmen | Importieren |
 |---|---|
 | React, Preact, Solid, Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |
@@ -90,7 +150,7 @@ export default function User() {
 - `alt` ist erforderlich; Verwenden Sie `alt=""` für ein dekoratives Bild. Nexy warnt einmal, wenn es fehlt.
 - Sowohl bei `width` als auch bei `height` geben die Attribute dem Browser das Seitenverhältnis vor und das Bild bleibt flüssig (`height: auto; max-width: 100%`).
 - `priority` lädt das Bild jetzt mit hoher Priorität für das Bild, das bei der Ankunft sichtbar ist.
-- `fill` bewirkt, dass das Bild sein positioniertes übergeordnetes Bild verdeckt, wobei `width` und `height` ignoriert werden.
+- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Bild verdeckt und ignoriert dabei `width` und `height`.
 - `sizes` und `srcSet` gehen durch. Nexy ändert die Größe von Bildern nicht und konvertiert sie nicht.
 
 ## Link von einer `.nexy`-Seite

@@ -14,14 +14,14 @@
 
 - зажата клавиша-модификатор или кнопка не основная;
 - он имеет `target` (кроме `_self`), `download`, `rel="external"` или `data-nexy-reload`;
-- `href` - это другой источник, ссылка `mailto:` или `tel:` или только `#fragment`;
+- `href` — это другой источник, ссылка `mailto:` или `tel:` или только `#fragment`;
 - путь не соответствует ни одному клиентскому маршруту, поэтому сервер отвечает на него.
 
 ## `Link`
 
-`Link` - это тот же якорь, чего не может сделать простой: его `href` проверяется по вашим маршрутам, он нагревает целевую страницу и знает, когда он указывает на текущую страницу. Nexy генерирует `Link` вашего фреймворка в `__nexy__/src` при запуске `nx dev` или `nx build`.
+`Link` — это тот же якорь, чего не может сделать простой: его `href` проверяется по вашим маршрутам, он нагревает целевую страницу и знает, когда он указывает на текущую страницу. Nexy генерирует `Link` вашего фреймворка в `__nexy__/src` при запуске `nx dev` или `nx build`.
 
-| Фреймворк | Импорт |
+| Рамочная основа | Импорт |
 |---|---|
 | React, Preact, Solid, Vue | `import { Link } from "@nexy/client"` |
 | Svelte | `import Link from "@nexy/Link.svelte"` |
@@ -40,12 +40,12 @@ export default function Nav() {
 
 | Опора | Значение |
 |---|---|
-| `href` | Маршрут проекта (опечатка - ошибка типа), опционально с `?query` или `#fragment`, или внешний URL. |
-| `replace` | Заменить запись истории вместо ее добавления. |
-| `scroll` | `false` сохраняет положение прокрутки после навигации. По умолчанию: `true`. |
-| `prefetch` | `'intent'` (по умолчанию) загружает страницу при наведении, фокусировке или касании; `'viewport'` когда ссылка прокручивается в поле зрения; `false` никогда. |
+| `href` | Маршрут проекта (опечатка — это ошибка типа), опционально с `?query` или `#fragment` или внешний URL. |
+| `replace` | Замените запись истории вместо ее добавления. |
+| `scroll` | `false` сохраняет позицию прокрутки после навигации. По умолчанию: `true`. |
+| `prefetch` | `'intent'` (по умолчанию) загружает страницу при наведении, фокусе или касании; `'viewport'` когда ссылка прокручивается в поле зрения; `false` никогда. |
 | `activeClassName` | Добавляется в класс, когда ссылка указывает на текущую страницу или страницу под ней (`activeClass` в Vue и Svelte). |
-| `exact` | Активно только на конкретной странице. |
+| `exact` | Активен только на конкретной странице. |
 
 Ссылка, указывающая на текущую страницу, также получает `aria-current="page"`.
 
@@ -55,11 +55,13 @@ export default function Nav() {
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| Путь | `usePathname()` | `usePathname()` возвращает метод доступа | `usePathname()` возвращает ссылку на | `$pathname` хранилище |
-| Параметры маршрута | `useParams()` | `useParams()` средство доступа | `useParams()` ссылка | `$params` хранилище |
-| Запрос | `useSearchParams()` | `useSearchParams()` аксессор | `useSearchParams()` ссылка | `$searchParams` хранилище |
-| Все | `useLocation()` | `useLocation()` аксессор | `useLocation()` ссылка | `$location` магазин |
-| Перейдите по | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Путь | `usePathname()` | `usePathname()` возвращает метод доступа | `usePathname()` возвращает ссылку | `$pathname` магазин |
+| Параметры маршрута | `useParams()` | `useParams()` аксессор | `useParams()` ссылка | `$params` магазин |
+| Запрос | `useSearchParams()` | `useSearchParams()` аксессор | `useSearchParams()` ссылка | `$searchParams` магазин |
+| все | `useLocation()` | `useLocation()` аксессор | `useLocation()` ссылка | `$location` магазин |
+| Навигация | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Навигация в полете | `useTransition()` | `useTransition()` аксессор | `useTransition()` ссылка | `useTransition()` магазин |
+| Сопоставить путь | `useMatch(path?)` | `useMatch(path?)` аксессор | `useMatch(path?)` ссылка | `useMatch(path?)` магазин |
 
 Запрос представляет собой `URLSearchParams`. `useRouter()` и `router` дают `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` и `prefetch(href)`; `push` и `replace` принимают `{ scroll: false }`.
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## Показать состояние загрузки с помощью `useTransition`
+
+`useTransition()` сообщает, работает ли клиентская навигация. `pending` — это `true` от клика до отображения следующей страницы, а `next` — это место, куда он направляется. Он возвращается к `{ pending: false, next: null }` после отображения страницы, когда навигация прекращается или когда ее заменяет более новая.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## Сопоставить путь с `useMatch`
+
+`useMatch(path)` сообщает, соответствует ли `path` маршруту клиента. Он возвращает `{ match, found }`, где `match` содержит маршрут `file`, его `layouts` и его `params` или является `null`. Без пути он соответствует текущей странице и следует за каждой навигацией. Во время рендеринга сервера маршрутизатор еще не установлен, поэтому `match` — это `null`, а `found` — это `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## Поймайте страницу, которая терпит неудачу с помощью `ErrorBoundary`
+
+`ErrorBoundary` показывает запасной вариант вместо своих дочерних элементов, когда один из них выдает ошибку во время рендеринга в браузере. Резервный вариант получает ошибку и `reset`, который снова отображает дочерние элементы.
+
+| Рамочная основа | Импорт | Резервный вариант |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | функция `fallback`; дети идут в слот по умолчанию |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | фрагмент `fallback` |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+Не ловит:
+
+- ошибка, возникшая позже, в обработчике событий, таймере или обещании: поймайте ее там, где она произойдет. Vue является исключением для собственных обработчиков событий, ошибки которых достигают границы;
+- страница, которую маршрутизатор не может загрузить: вместо этого браузер запрашивает ее у сервера (см. [Что делает маршрутизатор](#what-the-router-does)).
+
 ## `Image`
 
-`Image` отображает `<img>` по умолчанию лениво и не меняет макет, когда его размер известен.
+`Image` отображает `<img>`, который по умолчанию является ленивым и не сдвигает макет, когда его размер известен.
 
-| Фреймворк | Импорт |
+| Рамочная основа | Импорт |
 |---|---|
 | React, Preact, Solid, Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |
@@ -88,7 +148,7 @@ export default function User() {
 ```
 
 - `alt` требуется; используйте `alt=""` для декоративного изображения. Nexy предупреждает один раз, когда он отсутствует.
-- Как для `width`, так и для `height` атрибуты задают браузеру соотношение сторон, и изображение остается плавным (`height: auto; max-width: 100%`).
+- И с `width`, и с `height` атрибуты задают браузеру соотношение сторон, и изображение остается плавным (`height: auto; max-width: 100%`).
 - `priority` теперь загружает изображение с высоким приоритетом, то есть то, которое видно по прибытии.
 - `fill` заставляет изображение перекрывать позиционируемый родительский элемент, игнорируя `width` и `height`.
 - `sizes` и `srcSet` проходят. Nexy не изменяет размер и не конвертирует изображения.
@@ -108,8 +168,8 @@ from nexy import Link
 
 По навигации роутер:
 
-1. сопоставляет путь с маршрутами клиента (`.tsx`, `.jsx`, `.vue`, `.svelte`);
-2. импортирует и отображает страницу и ее [макеты](../layouts/README.md) **сначала** и только затем перемещает URL-адрес с помощью `history.pushState`, поэтому в адресной строке никогда не отображается страница, которая не удалась;
+1. сопоставляет путь с клиентскими маршрутами (`.tsx`, `.jsx`, `.vue`, `.svelte`);
+2. импортирует и отображает страницу и ее [макеты](../layouts/README.md) **сначала** и только затем перемещает URL-адрес с помощью `history.pushState`, поэтому в адресной строке никогда не отображается страница, на которой произошел сбой;
 3. отправляет событие `nexy:navigated` на `document`;
 4. прокручивает вверх или к цели `#fragment`.
 
