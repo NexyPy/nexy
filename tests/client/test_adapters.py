@@ -119,15 +119,6 @@ class TestUseTransition:
         assert story["afterClick"]["pending"] == "false"
 
 
-# The adapters whose ErrorBoundary is checked; each fix of #431 adds its own.
-CATCHING = ("react", "preact", "vue", "solid")
-
-
-@pytest.fixture(scope="module", params=CATCHING)
-def failing(request: pytest.FixtureRequest) -> dict:
-    return _run(request.param)
-
-
 class TestErrorBoundary:
-    def test_a_page_that_throws_shows_the_fallback(self, failing):
-        assert failing["afterPush"]["caught"] == "boom"
+    def test_a_page_that_throws_shows_the_fallback(self, story):
+        assert story["afterPush"]["caught"] == "boom"
