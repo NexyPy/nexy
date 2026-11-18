@@ -90,8 +90,11 @@ export function useBlocker(blocker: Blocker): void {
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
 export function useTransition(): Accessor<TransitionState> {
   const router = getRouter()
-  const location = useLocation()
-  return createMemo(() => router?.transition() ?? { pending: false, next: null })
+  const [state, setState] = createSignal<TransitionState>(router?.transition() ?? { pending: false, next: null })
+  if (!isServer && router) {
+    onCleanup(router.subscribeTransition(() => setState(router.transition())))
+  }
+  return state
 }
 
 /** Catch errors during client rendering and show a fallback instead of crashing the page. */

@@ -8,7 +8,7 @@ const page = openPage("");
 const dir = stage("vue", "vue.ts");
 const { createSSRApp, defineComponent, h } = await import("vue");
 const { renderToString } = await import("vue/server-renderer");
-const { Link, Image, useRouter, usePathname, useParams, useSearchParams } = await load(dir, "client.ts");
+const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition } = await load(dir, "client.ts");
 
 const Probe = defineComponent({
   setup() {
@@ -16,11 +16,13 @@ const Probe = defineComponent({
     const path = usePathname();
     const params = useParams();
     const search = useSearchParams();
+    const transition = useTransition();
     return () =>
       h("div", null, [
         h("p", { id: "path" }, path.value),
         h("p", { id: "params" }, JSON.stringify(params.value)),
         h("p", { id: "tab" }, search.value.get("tab") ?? ""),
+        h("p", { id: "pending" }, String(transition.value.pending)),
         h("button", { id: "push", onClick: () => router.push("/users/7?tab=x") }, "push"),
       ]);
   },

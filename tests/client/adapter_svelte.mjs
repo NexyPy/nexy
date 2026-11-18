@@ -15,7 +15,8 @@ const { render } = await import("svelte/server");
 const APP = `<script lang="ts">
   import Link from './Link.svelte'
   import Image from './Image.svelte'
-  import { router, pathname, params, searchParams } from './client.ts'
+  import { router, pathname, params, searchParams, useTransition } from './client.ts'
+  const transition = useTransition()
 </script>
 <div>
   <Link id="home" href="/" exact activeClass="on" class="nav">Home</Link>
@@ -25,6 +26,7 @@ const APP = `<script lang="ts">
     <p id="path">{$pathname}</p>
     <p id="params">{JSON.stringify($params)}</p>
     <p id="tab">{$searchParams.get('tab') ?? ''}</p>
+    <p id="pending">{String($transition.pending)}</p>
     <button id="push" onclick={() => router.push('/users/7?tab=x')}>push</button>
   </div>
   <Image id="img" src="/a.png" alt="A" width={800} height={600} />

@@ -14,12 +14,13 @@ const folder = dir.pathname.replace(/^\/(\w:)/, "$1");
 const served = path.join(folder, "served.html");
 
 const APP = `
-import { Link, Image, useRouter, usePathname, useParams, useSearchParams } from "./client.tsx";
+import { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition } from "./client.tsx";
 export default function App() {
   const router = useRouter();
   const path = usePathname();
   const params = useParams();
   const search = useSearchParams();
+  const transition = useTransition();
   return (
     <div>
       <Link id="home" href="/" exact activeClassName="on" class="nav">Home</Link>
@@ -29,6 +30,7 @@ export default function App() {
         <p id="path">{path()}</p>
         <p id="params">{JSON.stringify(params())}</p>
         <p id="tab">{search().get("tab") ?? ""}</p>
+        <p id="pending">{String(transition().pending)}</p>
         <button id="push" onClick={() => router.push("/users/7?tab=x")}>push</button>
       </div>
       <Image id="img" src="/a.png" alt="A" width={800} height={600} />

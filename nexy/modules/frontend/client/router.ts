@@ -81,11 +81,20 @@ export function createRouter(options: RouterOptions) {
   const blockers = new Set<Blocker>()
   let navigation = 0
   let location = read()
-  let pending: TransitionState | null = null
+  // One object per state, so `transition()` can serve as a stable snapshot (useSyncExternalStore).
+  const IDLE: TransitionState = { pending: false, next: null }
+  let transitionState: TransitionState = IDLE
+  const transitionListeners = new Set<() => void>()
 
   function read(): RouterLocation {
     const { pathname, search, hash } = win.location
     return { pathname, search, hash, params: options.match(pathname)?.params ?? {} }
+  }
+
+  // Tell the transition subscribers when a navigation starts and when it ends.
+  function setPending(next: TransitionState | null): void {
+    transitionState = next ?? IDLE
+    transitionListeners.forEach(listener => listener())
   }
 
   function commit(next: RouterLocation): void {
@@ -180,16 +189,17 @@ export function createRouter(options: RouterOptions) {
       return true
     }
 
-    pending = { pending: true, next }
+    setPending({ pending: true, next })
     if (!(await show(url, id))) {
-      pending = null
+      // A newer navigation is in flight now: only the latest one may end the transition.
+      if (id === navigation) setPending(null)
       return false
     }
     win.history[opts.replace ? 'replaceState' : 'pushState']({ nexy: true }, '', url.href)
     commit(read())
     announce(location)
     scrollAfter(url.hash, opts.scroll !== false)
-    pending = null
+    setPending(null)
     return true
   }
 
@@ -293,7 +303,12 @@ export function createRouter(options: RouterOptions) {
     },
     /** The in-flight navigation state, shared by every adapter. Read it for a loading boundary. */
     transition(): TransitionState {
-      return { pending: pending !== null, next: pending?.next ?? null }
+      return transitionState
+    },
+    /** Hear each start and end of a navigation; read `transition()` then. Returns an unsubscribe. */
+    subscribeTransition(listener: () => void): () => void {
+      transitionListeners.add(listener)
+      return () => void transitionListeners.delete(listener)
     }
   }
 }

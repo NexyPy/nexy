@@ -171,16 +171,15 @@ export function useBlocker(blocker: Blocker): void {
   }, [router, blocker])
 }
 
+const IDLE: TransitionState = { pending: false, next: null }
+
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
 export function useTransition(): TransitionState {
   const router = getRouter()
   return useSyncExternalStore(
-    () => {
-      if (!router) return () => {}
-      return router.subscribe(() => {})
-    },
-    () => router?.transition() ?? { pending: false, next: null },
-    () => ({ pending: false, next: null })
+    onChange => router?.subscribeTransition(onChange) ?? (() => {}),
+    () => router?.transition() ?? IDLE,
+    () => IDLE
   )
 }
 

@@ -94,7 +94,7 @@ export function useTransition(): Readable<TransitionState> {
     subscribe(run) {
       const update = () => run(router?.transition() ?? { pending: false, next: null })
       update()
-      return router ? router.subscribe(update) : () => {}
+      return router ? router.subscribeTransition(update) : () => {}
     }
   }
 }

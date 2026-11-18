@@ -109,3 +109,11 @@ class TestRouterObject:
 
     def test_the_link_to_the_pushed_page_becomes_current(self, story):
         assert story["afterPush"]["links"]["user"]["current"] == "page"
+
+
+class TestUseTransition:
+    def test_it_is_pending_while_the_next_page_loads(self, story):
+        assert story["duringClick"] == "true"
+
+    def test_it_is_idle_once_the_page_is_shown(self, story):
+        assert story["afterClick"]["pending"] == "false"

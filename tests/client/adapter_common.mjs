@@ -57,7 +57,11 @@ export function openPage(html) {
   const prefetched = [];
   const router = createRouter({
     match,
-    render: async (m) => void rendered.push(m.file),
+    // A page takes a moment to load, so a scenario can read `useTransition` while it does.
+    render: async (m) => {
+      rendered.push(m.file);
+      await sleep(40);
+    },
     prefetch: (m) => void prefetched.push(m.file),
   });
   globalThis.__nexy_router = router;
@@ -82,6 +86,7 @@ export function observe(doc) {
   };
   const img = doc.getElementById("img");
   return {
+    pending: text(doc, "pending"),
     links: { home: link("home"), about: link("about"), user: link("user"), replace: link("replace"), quiet: link("quiet") },
     path: text(doc, "path"),
     params: text(doc, "params"),
@@ -110,6 +115,8 @@ export async function story(page, { click }) {
   const afterHover = [...page.prefetched];
 
   click(doc.getElementById("home"));
+  await sleep(15);
+  const duringClick = text(doc, "pending");
   await sleep(120);
   const afterClick = { ...observe(doc), url: page.dom.window.location.pathname + page.dom.window.location.search, rendered: [...page.rendered] };
 
@@ -117,7 +124,7 @@ export async function story(page, { click }) {
   await sleep(120);
   const afterPush = { ...observe(doc), url: page.dom.window.location.pathname + page.dom.window.location.search };
 
-  return { initial, afterHover, afterClick, afterPush, errors: page.errors };
+  return { initial, afterHover, duringClick, afterClick, afterPush, errors: page.errors };
 }
 
 export function clickWith(window) {
