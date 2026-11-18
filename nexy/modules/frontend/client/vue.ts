@@ -99,8 +99,11 @@ export function useBlocker(blocker: Blocker): void {
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
 export function useTransition(): ComputedRef<TransitionState> {
   const router = getRouter()
-  const location = useLocation()
-  return computed(() => router?.transition() ?? { pending: false, next: null })
+  const state = shallowRef<TransitionState>(router?.transition() ?? { pending: false, next: null })
+  if (router && getCurrentScope()) {
+    onScopeDispose(router.subscribeTransition(() => (state.value = router.transition())))
+  }
+  return computed(() => state.value)
 }
 
 /** Catch errors during client rendering and show a fallback instead of crashing the page. */

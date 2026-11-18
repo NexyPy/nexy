@@ -112,7 +112,7 @@ class TestRouterObject:
 
 
 # The adapters whose useTransition is checked; each fix of #430 adds its own.
-TRANSITION = ("react", "preact")
+TRANSITION = ("react", "preact", "vue")
 
 
 @pytest.fixture(scope="module", params=TRANSITION)
