@@ -126,3 +126,11 @@ class TestClicks:
 class TestPrefetch:
     def test_each_route_is_warmed_once_and_only_when_it_can_be_served(self, seen):
         assert seen["prefetch"] == ["/src/routes/about.tsx"]
+
+
+class TestTransition:
+    def test_subscribers_hear_a_navigation_start_and_end(self, seen):
+        assert seen["transition"]["states"] == [True, False]
+
+    def test_a_superseded_navigation_does_not_stay_pending(self, seen):
+        assert seen["transition"]["superseded"][-1] is False
