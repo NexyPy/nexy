@@ -167,6 +167,10 @@ jobs:
         with:
           node-version: 22
 
+      # The ubuntu image ships the browser the COM media tests draw with; windows-latest does not.
+      - name: Install the headless browser of Playwright
+        run: uv run --no-sync python -m playwright install chromium-headless-shell
+
       - name: Unit tests
         run: uv run --no-sync python -m pytest tests/unit --tb=short -q -p no:cacheprovider
 
