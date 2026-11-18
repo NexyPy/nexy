@@ -190,6 +190,10 @@ git push origin feature/my-feature
 
 Then open a pull request on GitHub. Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md).
 
+Once the PR is merged, GitHub deletes its branch: the repository has "Automatically delete head
+branches" on, so only `main`, `staging` and `develop` stay on the remote. Delete your local copy
+with `git branch -d feature/my-feature`, and drop the stale remote names with `git fetch --prune`.
+
 ### Stay updated
 
 ```bash
