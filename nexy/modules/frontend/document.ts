@@ -384,9 +384,9 @@ export async function writeDocuments(): Promise<number> {
           fs.writeFileSync(out, html)
           written++
         }
-        continue
       }
 
+      // Every dynamic route keeps its shell: the server falls back to it for a path not listed.
       const html = await renderDocument(
         server,
         null,
