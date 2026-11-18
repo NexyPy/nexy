@@ -8,6 +8,7 @@ import {
   defineComponent,
   getCurrentScope,
   h,
+  onErrorCaptured,
   onMounted,
   onScopeDispose,
   ref,
@@ -121,6 +122,11 @@ export const ErrorBoundary = defineComponent({
   setup(props, { slots }) {
     const error = shallowRef<Error | null>(null)
     const reset = () => (error.value = null)
+    // Keep the error here: returning false stops it from reaching the app and breaking the page.
+    onErrorCaptured(caught => {
+      error.value = caught instanceof Error ? caught : new Error(String(caught))
+      return false
+    })
     return () => {
       if (error.value) return props.fallback(error.value, reset)
       return slots.default?.()
