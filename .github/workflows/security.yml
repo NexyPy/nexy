@@ -1,0 +1,70 @@
+name: Security
+
+on:
+  schedule:
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  audit:
+    name: Dependency advisory watch
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: "0.13.9"
+          python-version: "3.13"
+
+      - name: Install dependencies from the lock
+        run: uv sync --frozen --group dev
+
+      - name: Run the dependency audit
+        id: audit
+        run: |
+          set +e
+          uv run --no-sync python scripts/audit_dependencies.py > audit.txt 2>&1
+          code=$?
+          set -e
+          cat audit.txt
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+
+      - name: Publish the finding
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          STATUS: ${{ steps.audit.outputs.code }}
+          TITLE: Dependency advisory found
+        run: |
+          NUMBER=$(gh issue list --repo "$GH_REPO" --state open \
+            --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ "$STATUS" = "0" ]; then
+            if [ -n "$NUMBER" ]; then
+              gh issue close "$NUMBER" --repo "$GH_REPO" \
+                --comment "The dependency audit is clean. Closing this issue."
+            fi
+            exit 0
+          fi
+          {
+            echo "The scheduled dependency audit reported a problem."
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo '```text'
+            cat audit.txt
+            echo '```'
+          } > body.md
+          if [ -n "$NUMBER" ]; then
+            gh issue edit "$NUMBER" --repo "$GH_REPO" --body-file body.md
+          else
+            gh issue create --repo "$GH_REPO" --title "$TITLE" --body-file body.md
+          fi
