@@ -134,11 +134,10 @@ jobs:
       # (attackers reach contributors too); the project itself is excluded
       # because "nexy" is not on PyPI. The one ignore is documented in
       # SECURITY.md ("Dependency audit register").
+      # The script retries a dropped connection to PyPI, never an advisory: the bare pip-audit
+      # step failed a run on a timeout or a reset several times a day.
       - name: Dependency audit (pip-audit)
-        run: |
-          uv export --frozen --no-emit-project --format requirements.txt -o requirements-audit.txt
-          uv run --no-sync pip-audit -r requirements-audit.txt --disable-pip --strict \
-            --ignore-vuln PYSEC-2022-252
+        run: uv run --no-sync python scripts/audit_dependencies.py
 
   # Windows is where users first met #75 (a wheel missing for Windows) and #330 (a fresh Vue
   # project that does not start): one Python version, the unit suite, and that start.
