@@ -119,13 +119,14 @@ class TestGroupRouter:
                 assert {p.router for p in near} <= {None, page.router}, page.slug
 
 
-class TestVanillaMenu:
-    @pytest.fixture(scope="class")
-    def out(self, tmp_path_factory):
-        out = tmp_path_factory.mktemp("site")
-        build.build(out, DOCS)
-        return out
+@pytest.fixture(scope="module")
+def out(tmp_path_factory):
+    out = tmp_path_factory.mktemp("site")
+    build.build(out, DOCS)
+    return out
 
+
+class TestVanillaMenu:
     def _html(self, out, slug):
         return (out / "docs" / slug / "index.html").read_text(encoding="utf-8")
 
