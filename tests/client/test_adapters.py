@@ -117,3 +117,8 @@ class TestUseTransition:
 
     def test_it_is_idle_once_the_page_is_shown(self, story):
         assert story["afterClick"]["pending"] == "false"
+
+
+class TestErrorBoundary:
+    def test_a_page_that_throws_shows_the_fallback(self, story):
+        assert story["afterPush"]["caught"] == "boom"

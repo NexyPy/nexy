@@ -14,7 +14,12 @@ const folder = dir.pathname.replace(/^\/(\w:)/, "$1");
 const served = path.join(folder, "served.html");
 
 const APP = `
-import { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition } from "./client.tsx";
+import { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary } from "./client.tsx";
+// A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
+function Thrower() {
+  const path = usePathname();
+  return <>{(() => { if (path() === "/users/7") throw new Error("boom"); return null; })()}</>;
+}
 export default function App() {
   const router = useRouter();
   const path = usePathname();
@@ -33,6 +38,9 @@ export default function App() {
         <p id="pending">{String(transition().pending)}</p>
         <button id="push" onClick={() => router.push("/users/7?tab=x")}>push</button>
       </div>
+      <ErrorBoundary fallback={(error) => <p id="caught">{error.message}</p>}>
+        <Thrower />
+      </ErrorBoundary>
       <Image id="img" src="/a.png" alt="A" width={800} height={600} />
     </div>
   );

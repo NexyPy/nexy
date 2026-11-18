@@ -3,8 +3,8 @@
 //   import { Link, Image, useRouter, usePathname, useParams, useSearchParams } from '@nexy/client'
 //
 // Written with h (no JSX) so it needs no compiler setting of its own.
-import { h, type JSX, type Ref } from 'preact'
-import { forwardRef, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'preact/compat'
+import { Component, h, type JSX, type Ref } from 'preact'
+import { forwardRef, useEffect, useMemo, useRef, useSyncExternalStore } from 'preact/compat'
 import type { Route } from './routes.auto.ts'
 import {
   getRouter,
@@ -190,11 +190,22 @@ export type ErrorBoundaryProps = {
   children?: JSX.Element
 }
 
-export function ErrorBoundary({ fallback, children }: ErrorBoundaryProps) {
-  const [error, setError] = useState<Error | null>(null)
-  const reset = () => setError(null)
-  if (error) return fallback(error, reset)
-  return children ?? null
+type BoundaryState = { error: Error | null }
+
+// Preact catches a render error only in a class that defines getDerivedStateFromError.
+export class ErrorBoundary extends Component<ErrorBoundaryProps, BoundaryState> {
+  state: BoundaryState = { error: null }
+
+  static getDerivedStateFromError(error: Error): BoundaryState {
+    return { error }
+  }
+
+  reset = (): void => this.setState({ error: null })
+
+  render(): JSX.Element | null {
+    const { error } = this.state
+    return error ? this.props.fallback(error, this.reset) : (this.props.children ?? null)
+  }
 }
 
 export { ActionError }

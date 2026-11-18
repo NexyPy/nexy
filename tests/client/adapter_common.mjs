@@ -87,6 +87,7 @@ export function observe(doc) {
   const img = doc.getElementById("img");
   return {
     pending: text(doc, "pending"),
+    caught: text(doc, "caught"),
     links: { home: link("home"), about: link("about"), user: link("user"), replace: link("replace"), quiet: link("quiet") },
     path: text(doc, "path"),
     params: text(doc, "params"),
@@ -120,11 +121,13 @@ export async function story(page, { click }) {
   await sleep(120);
   const afterClick = { ...observe(doc), url: page.dom.window.location.pathname + page.dom.window.location.search, rendered: [...page.rendered] };
 
+  // The push reaches /users/7, where a page throws on purpose: errors are read before it.
+  const errors = [...page.errors];
   click(doc.getElementById("push"));
   await sleep(120);
   const afterPush = { ...observe(doc), url: page.dom.window.location.pathname + page.dom.window.location.search };
 
-  return { initial, afterHover, duringClick, afterClick, afterPush, errors: page.errors };
+  return { initial, afterHover, duringClick, afterClick, afterPush, errors };
 }
 
 export function clickWith(window) {
