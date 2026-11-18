@@ -3,6 +3,16 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.6.2] - 2026-11-18
+
+### Fixed
+
+- **`nexy new -t <template>` creates the project again.** The twelve framework names, such as
+  `web-fbr-vue` or `web-modular-react`, were fetched from a folder of the repository removed on
+  2026-10-23, so each failed with "Failed to extract files from template" since 2.1.2. A name now
+  renders the starter shipped in the package with the config the prompts would give, offline,
+  like the interactive `nexy new` (#403, #404).
+
 ## [2.6.1] - 2026-11-17
 
 ### Changed
