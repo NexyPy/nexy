@@ -21,7 +21,7 @@ Um link é deixado no navegador e carrega a página normalmente, quando:
 
 `Link` é a mesma âncora que uma simples não pode fazer: seu `href` é verificado em relação às suas rotas, aquece a página de destino e sabe quando aponta para a página atual. Nexy gera o `Link` do seu framework em `__nexy__/src` quando você executa `nx dev` ou `nx build`.
 
-| Estrutura | Importação |
+| Estrutura | Importar |
 |---|---|
 | React, Preact, Solid, Vue | `import { Link } from "@nexy/client"` |
 | Svelte | `import Link from "@nexy/Link.svelte"` |
@@ -44,7 +44,7 @@ export default function Nav() {
 | `replace` | Substitua a entrada do histórico em vez de adicionar uma. |
 | `scroll` | `false` mantém a posição de rolagem após navegar. Padrão: `true`. |
 | `prefetch` | `'intent'` (padrão) carrega a página ao passar o mouse, focar ou tocar; `'viewport'` quando o link aparece; `false` nunca. |
-| `activeClassName` | Adicionado à classe enquanto o link aponta para a página atual ou uma página abaixo dela (`activeClass` em Vue e Svelte). |
+| `activeClassName` | Adicionado à classe enquanto o link aponta para a página atual ou para uma página abaixo dela (`activeClass` em Vue e Svelte). |
 | `exact` | Ativo apenas na página exata. |
 
 O link que aponta para a página atual também recebe `aria-current="page"`.
@@ -56,10 +56,12 @@ A localização está disponível em todas as estruturas, no idioma dessa estrut
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
 | Caminho | `usePathname()` | `usePathname()` retorna um acessador | `usePathname()` retorna uma referência | `$pathname` loja |
-| Parâmetros de rota | `useParams()` | `useParams()` acessador | `useParams()` ref | `$params` loja |
-| Consulta | `useSearchParams()` | `useSearchParams()` acessador | `useSearchParams()` ref | `$searchParams` loja |
-| Tudo | `useLocation()` | `useLocation()` acessador | `useLocation()` ref | `$location` loja |
-| Navegue | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Parâmetros de rota | `useParams()` | `useParams()` acessador | `useParams()` referência | `$params` loja |
+| Consulta | `useSearchParams()` | `useSearchParams()` acessador | `useSearchParams()` referência | `$searchParams` loja |
+| Tudo | `useLocation()` | `useLocation()` acessador | `useLocation()` referência | `$location` loja |
+| Navegar | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Navegação em voo | `useTransition()` | `useTransition()` acessador | `useTransition()` referência | `useTransition()` loja |
+| Combine um caminho | `useMatch(path?)` | `useMatch(path?)` acessador | `useMatch(path?)` referência | `useMatch(path?)` loja |
 
 A consulta é um `URLSearchParams`. `useRouter()` e `router` fornecem `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` e `prefetch(href)`; `push` e `replace` aceitam `{ scroll: false }`.
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## Mostre um estado de carregamento com `useTransition`
+
+`useTransition()` informa se a navegação do cliente está em voo. `pending` é `true` desde o clique até a próxima página ser mostrada, e `next` é o local para onde ela está indo. Volta para `{ pending: false, next: null }` assim que a página é mostrada, quando a navegação para ou quando uma mais nova a substitui.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## Combine um caminho com `useMatch`
+
+`useMatch(path)` informa se `path` corresponde a uma rota do cliente. Ele retorna `{ match, found }`, onde `match` contém a rota `file`, seu `layouts` e seu `params`, ou é `null`. Sem caminho ele corresponde à página atual e segue cada navegação. Durante a renderização do servidor ainda não há roteador, então `match` é `null` e `found` é `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## Capture uma página que falha com `ErrorBoundary`
+
+`ErrorBoundary` mostra um substituto em vez de seus filhos quando um deles é lançado enquanto é renderizado no navegador. O fallback recebe o erro e `reset`, que renderiza os filhos novamente.
+
+| Estrutura | Importar | Alternativa |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | um suporte de função `fallback`; as crianças vão para o slot padrão |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | um trecho `fallback` |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+Não pega:
+
+- um erro lançado posteriormente, em um manipulador de eventos, um cronômetro ou uma promessa: capture-o onde acontecer. Vue é a exceção para seus próprios manipuladores de eventos, cujos erros atingem o limite;
+- uma página que o roteador não pode carregar: em vez disso, o navegador a solicita ao servidor (consulte [O que o roteador faz](#what-the-router-does)).
+
 ## `Image`
 
 `Image` renderiza um `<img>` que é preguiçoso por padrão e não muda o layout quando seu tamanho é conhecido.
 
-| Estrutura | Importação |
+| Estrutura | Importar |
 |---|---|
 | React, Preact, Solid, Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |
@@ -126,5 +186,5 @@ O roteador inicia apenas em um projeto com rotas de cliente, portanto, um projet
 ## Próximas etapas
 
 - [Layouts](../layouts/README.md)
-- [CSR](../../../rendering/csr.md)
+- [RSE](../../../rendering/csr.md)
 - [Componentes](../../../views/nexy/components.md)
