@@ -111,18 +111,9 @@ class TestRouterObject:
         assert story["afterPush"]["links"]["user"]["current"] == "page"
 
 
-# The adapters whose useTransition is checked; each fix of #430 adds its own.
-TRANSITION = ("react", "preact", "vue", "solid")
-
-
-@pytest.fixture(scope="module", params=TRANSITION)
-def moving(request: pytest.FixtureRequest) -> dict:
-    return _run(request.param)
-
-
 class TestUseTransition:
-    def test_it_is_pending_while_the_next_page_loads(self, moving):
-        assert moving["duringClick"] == "true"
+    def test_it_is_pending_while_the_next_page_loads(self, story):
+        assert story["duringClick"] == "true"
 
-    def test_it_is_idle_once_the_page_is_shown(self, moving):
-        assert moving["afterClick"]["pending"] == "false"
+    def test_it_is_idle_once_the_page_is_shown(self, story):
+        assert story["afterClick"]["pending"] == "false"
