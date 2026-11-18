@@ -88,6 +88,7 @@ export function observe(doc) {
   return {
     pending: text(doc, "pending"),
     caught: text(doc, "caught"),
+    matched: text(doc, "matched"),
     links: { home: link("home"), about: link("about"), user: link("user"), replace: link("replace"), quiet: link("quiet") },
     path: text(doc, "path"),
     params: text(doc, "params"),

@@ -9,7 +9,7 @@ const lib = framework === "react"
   ? { h: (await import("react")).createElement, ssr: (await import("react-dom/server")).renderToString }
   : { h: (await import("preact")).h, ssr: (await import("preact-render-to-string")).renderToString };
 const adapter = await load(dir, "client.ts");
-const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary } = adapter;
+const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch } = adapter;
 const { h } = lib;
 const cls = framework === "react" ? "className" : "class";
 
@@ -23,6 +23,7 @@ function Probe() {
     h("p", { id: "params" }, JSON.stringify(useParams())),
     h("p", { id: "tab" }, search.get("tab") ?? ""),
     h("p", { id: "pending" }, String(useTransition().pending)),
+    h("p", { id: "matched" }, useMatch().match?.params.id ?? ""),
     h("button", { id: "push", onClick: () => router.push("/users/7?tab=x") }, "push"),
   );
 }

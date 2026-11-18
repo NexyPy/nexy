@@ -156,9 +156,12 @@ export const Image = forwardRef<HTMLImageElement, ImageComponentProps>(function 
 })
 
 /** Match a pathname against the routes: the route and its params, or null when none matches. */
-export function useMatch(pathname: string): RouteMatchInfo {
+export function useMatch(pathname?: string): RouteMatchInfo {
   const router = getRouter()
-  return useMemo(() => router?.matchPath(pathname) ?? { match: null, found: false }, [router, pathname])
+  // Without a path, match the current page. usePathname() runs on every render (rules of hooks).
+  const current = usePathname()
+  const target = pathname ?? current
+  return useMemo(() => router?.matchPath(target) ?? { match: null, found: false }, [router, target])
 }
 
 /** Block navigation when `blocker` returns a reason (string) or a promise of one. */

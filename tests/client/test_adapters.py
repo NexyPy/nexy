@@ -122,3 +122,8 @@ class TestUseTransition:
 class TestErrorBoundary:
     def test_a_page_that_throws_shows_the_fallback(self, story):
         assert story["afterPush"]["caught"] == "boom"
+
+
+class TestUseMatch:
+    def test_without_a_path_it_follows_the_current_page(self, story):
+        assert story["afterPush"]["matched"] == "7"

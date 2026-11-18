@@ -16,8 +16,9 @@ const APP = `<script lang="ts">
   import Link from './Link.svelte'
   import Image from './Image.svelte'
   import ErrorBoundary from './ErrorBoundary.svelte'
-  import { router, pathname, params, searchParams, useTransition } from './client.ts'
+  import { router, pathname, params, searchParams, useTransition, useMatch } from './client.ts'
   const transition = useTransition()
+  const matched = useMatch()
   // A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
   const boom = (path: string) => { if (path === '/users/7') throw new Error('boom'); return '' }
 </script>
@@ -30,6 +31,7 @@ const APP = `<script lang="ts">
     <p id="params">{JSON.stringify($params)}</p>
     <p id="tab">{$searchParams.get('tab') ?? ''}</p>
     <p id="pending">{String($transition.pending)}</p>
+    <p id="matched">{$matched.match?.params.id ?? ''}</p>
     <button id="push" onclick={() => router.push('/users/7?tab=x')}>push</button>
   </div>
   <ErrorBoundary>
