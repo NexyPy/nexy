@@ -21,7 +21,7 @@
 
 `Link` 与普通锚点无法执行的操作相同：它的 `href` 会根据您的路线进行检查，它会加热目标页面，并且知道它何时指向当前页面。当您运行 `nx dev` 或 `nx build` 时，Nexy 在 `__nexy__/src` 中生成框架的 `Link`。
 
-| 框架 | 导入 |
+| 框架 | 进口 |
 |---|---|
 | React、Preact、Solid、Vue | `import { Link } from "@nexy/client"` |
 | Svelte | `import Link from "@nexy/Link.svelte"` |
@@ -41,11 +41,11 @@ export default function Nav() {
 | 道具 | 含义 |
 |---|---|
 | `href` | 项目的路径（拼写错误是类型错误），可以选择使用 `?query` 或 `#fragment`，或外部 URL。 |
-| `replace` | 替换历史条目而不是添加一个。 |
+| `replace` | 替换历史条目而不是添加历史条目。 |
 | `scroll` | `false` 在导航后保留滚动位置。默认值：`true`。 |
 | `prefetch` | `'intent'`（默认）在悬停、聚焦或触摸时加载页面； `'viewport'` 当链接滚动到视图中时； `false` 从来没有。 |
-| `activeClassName` | 添加到类，同时链接指向当前页面或其下一页（Vue 和 Svelte 中的 `activeClass`。 |
-| `exact` | 仅在特定页面上有效。 |
+| `activeClassName` | 当链接指向当前页面或其下一页（Vue 和 Svelte 中的 `activeClass` 时，添加到类中。 |
+| `exact` | 仅在确切的页面上有效。 |
 
 指向当前页面的链接也会得到 `aria-current="page"`。
 
@@ -55,11 +55,13 @@ export default function Nav() {
 
 | | React，Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| 路径 | `usePathname()` | `usePathname()` 返回一个访问器 | `usePathname()` 返回一个引用 | `$pathname` 存储 |
-| 路由参数 | `useParams()` | `useParams()` 访问器 | `useParams()` ref | `$params` 存储 |
-| 查询 | `useSearchParams()` | `useSearchParams()` 访问器 | `useSearchParams()` 引用 | `$searchParams` 存储 |
-| 一切 | `useLocation()` | `useLocation()` 访问器 | `useLocation()` 引用 | `$location` 存储 |
+| 路径 | `usePathname()` | `usePathname()` 返回一个访问器 | `usePathname()` 返回一个引用 | `$pathname` 商店 |
+| 路由参数 | `useParams()` | `useParams()` 访问器 | `useParams()` 参考 | `$params` 商店 |
+| 查询 | `useSearchParams()` | `useSearchParams()` 访问器 | `useSearchParams()` 参考 | `$searchParams` 商店 |
+| 一切 | `useLocation()` | `useLocation()` 访问器 | `useLocation()` 参考 | `$location` 商店 |
 | 导航 | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| 飞行中导航 | `useTransition()` | `useTransition()` 访问器 | `useTransition()` 参考 | `useTransition()` 商店 |
+| 匹配路径 | `useMatch(path?)` | `useMatch(path?)` 访问器 | `useMatch(path?)` 参考 | `useMatch(path?)` 商店 |
 
 查询是 `URLSearchParams`。 `useRouter()` 和 `router` 给出 `push(href)`、`replace(href)`、`back()`、`forward()`、`refresh()` 和 `prefetch(href)`； `push` 和 `replace` 接受 `{ scroll: false }`。
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## 用 `useTransition` 显示加载状态
+
+`useTransition()` 告知客户端导航是否正在飞行。 `pending` 是从点击到显示下一页的 `true`，`next` 是它要去的位置。一旦页面显示、导航停止或新页面替换它时，它就会返回到 `{ pending: false, next: null }`。
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## 将路径与 `useMatch` 匹配
+
+`useMatch(path)` 告诉 `path` 是否与客户端路由匹配。它返回 `{ match, found }`，其中 `match` 保存路线 `file`、其 `layouts` 及其 `params`，或者是 `null`。如果没有路径，它会匹配当前页面并遵循每个导航。在服务器渲染期间，还没有路由器，因此 `match` 是 `null`，`found` 是 `false`。
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## 捕获失败并显示 `ErrorBoundary` 的页面
+
+`ErrorBoundary` 当其中一个在浏览器中呈现时抛出异常时，将显示后备而不是其子级。后备接收错误和 `reset`，这会再次渲染子级。
+
+| 框架 | 进口 | 回退 |
+|---|---|---|
+| React，Preact，Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | 一个 `fallback` 函数道具；孩子们进入默认插槽 |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | 一个 `fallback` 片段 |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+它没有捕获：
+
+- 稍后在事件处理程序、计时器或承诺中抛出的错误：在发生的地方捕获它。 Vue 是其自身事件处理程序的异常，其错误达到边界；
+- 路由器无法加载的页面：浏览器向服务器请求该页面（请参阅[路由器的作用](#what-the-router-does)）。
+
 ## `Image`
 
 `Image` 渲染默认情况下惰性的 `<img>`，并且在已知其大小时不会移动布局。
 
-| 框架 | 导入 |
+| 框架 | 进口 |
 |---|---|
 | React、Preact、Solid、Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |

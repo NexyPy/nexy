@@ -240,9 +240,16 @@ class TestClientAdapters:
         "preact": {"client.ts"},
         "vue": {"client.ts"},
         "solid": {"client.tsx"},
-        "svelte": {"client.ts", "Link.svelte", "Image.svelte"},
+        "svelte": {"client.ts", "Link.svelte", "Image.svelte", "ErrorBoundary.svelte"},
     }
-    EVERY_ADAPTER_FILE = {"client.ts", "client.tsx", "Link.svelte", "Image.svelte", "Link.tsx"}
+    EVERY_ADAPTER_FILE = {
+        "client.ts",
+        "client.tsx",
+        "Link.svelte",
+        "Image.svelte",
+        "ErrorBoundary.svelte",
+        "Link.tsx",
+    }
 
     def _generate(self, tmp_path, nexy_project, framework: str | None) -> Path:
         if framework:
@@ -297,6 +304,6 @@ class TestClientAdapters:
     @pytest.mark.parametrize("framework", sorted(FILES))
     def test_links_carry_the_router_marker(self, tmp_path, nexy_project, framework):
         src = self._generate(tmp_path, nexy_project, framework)
-        names = sorted(self.FILES[framework] - {"Image.svelte"})
+        names = sorted(self.FILES[framework] - {"Image.svelte", "ErrorBoundary.svelte"})
         text = "".join((src / n).read_text(encoding="utf-8") for n in names)
         assert "data-nexy-link" in text

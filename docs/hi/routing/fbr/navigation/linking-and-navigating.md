@@ -21,7 +21,7 @@
 
 `Link` वही एंकर है जो एक साधारण व्यक्ति नहीं कर सकता: इसका `href` आपके मार्गों के विरुद्ध जांचा जाता है, यह लक्ष्य पृष्ठ को गर्म करता है, और यह जानता है कि यह वर्तमान पृष्ठ पर कब इंगित करता है। जब आप `nx dev` या `nx build` चलाते हैं तो नेक्सी आपके फ्रेमवर्क का `Link` `__nexy__/src` में उत्पन्न करता है।
 
-| फ़्रेमवर्क | आयात |
+| ढाँचा | आयात करें |
 |---|---|
 | React, Preact, Solid, Vue | `import { Link } from "@nexy/client"` |
 | Svelte | `import Link from "@nexy/Link.svelte"` |
@@ -44,8 +44,8 @@ export default function Nav() {
 | `replace` | इतिहास प्रविष्टि को जोड़ने के बजाय बदलें। |
 | `scroll` | `false` नेविगेट करने के बाद स्क्रॉल स्थिति बनाए रखता है। डिफ़ॉल्ट: `true`। |
 | `prefetch` | `'intent'` (डिफ़ॉल्ट) पृष्ठ को होवर, फ़ोकस या स्पर्श पर लोड करता है; `'viewport'` जब लिंक स्क्रॉल होकर दृश्य में आता है; `false` कभी नहीं। |
-| `activeClassName` | जब लिंक वर्तमान पृष्ठ या उसके नीचे एक पृष्ठ (`activeClass` में Vue और Svelte) पर इंगित करता है तो कक्षा में जोड़ा जाता है। |
-| `exact` | केवल सटीक पृष्ठ पर सक्रिय। |
+| `activeClassName` | कक्षा में जोड़ा गया जबकि लिंक वर्तमान पृष्ठ या उसके नीचे एक पृष्ठ (`activeClass` में Vue और Svelte) पर इंगित करता है। |
+| `exact` | केवल सटीक पृष्ठ पर सक्रिय. |
 
 वर्तमान पृष्ठ पर इंगित करने वाला लिंक `aria-current="page"` भी मिलता है।
 
@@ -55,11 +55,13 @@ export default function Nav() {
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| पथ | `usePathname()` | `usePathname()` एक एक्सेसर लौटाता है | `usePathname()` एक रेफरी लौटाता है | `$pathname` स्टोर |
-| रूट पैरामीटर्स | `useParams()` | `useParams()` एक्सेसर | `useParams()` रेफरी | `$params` स्टोर |
-| क्वेरी | `useSearchParams()` | `useSearchParams()` एक्सेसर | `useSearchParams()` रेफरी | `$searchParams` स्टोर |
-| सब कुछ | `useLocation()` | `useLocation()` एक्सेसर | `useLocation()` रेफरी | `$location` स्टोर |
+| पथ | `usePathname()` | `usePathname()` एक एक्सेसर लौटाता है | `usePathname()` एक रेफरी लौटाता है | `$pathname` दुकान |
+| रूट पैरामीटर | `useParams()` | `useParams()` एक्सेसर | `useParams()` रेफरी | `$params` दुकान |
+| प्रश्न | `useSearchParams()` | `useSearchParams()` एक्सेसर | `useSearchParams()` संदर्भ | `$searchParams` स्टोर |
+| हर चीज़ | `useLocation()` | `useLocation()` एक्सेसर | `useLocation()` संदर्भ | `$location` दुकान |
 | नेविगेट करें | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| उड़ान में नेविगेशन | `useTransition()` | `useTransition()` एक्सेसर | `useTransition()` संदर्भ | `useTransition()` दुकान |
+| एक पथ का मिलान करें | `useMatch(path?)` | `useMatch(path?)` एक्सेसर | `useMatch(path?)` संदर्भ | `useMatch(path?)` स्टोर |
 
 क्वेरी एक `URLSearchParams` है। `useRouter()` और `router` दें `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` और `prefetch(href)`; `push` और `replace` `{ scroll: false }` स्वीकार करते हैं।
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## `useTransition` के साथ एक लोडिंग स्थिति दिखाएं
+
+`useTransition()` बताता है कि क्लाइंट नेविगेशन उड़ान में है या नहीं। `pending` क्लिक से लेकर अगला पृष्ठ दिखाए जाने तक `true` है, और `next` वह स्थान है जहां यह जा रहा है। एक बार पृष्ठ दिखाए जाने पर, जब नेविगेशन बंद हो जाता है, या जब कोई नया उसे प्रतिस्थापित कर देता है तो यह वापस `{ pending: false, next: null }` पर चला जाता है।
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## `useMatch` के साथ पथ का मिलान करें
+
+`useMatch(path)` बताता है कि क्या `path` क्लाइंट रूट से मेल खाता है। यह `{ match, found }` लौटाता है, जहां `match` मार्ग `file`, इसका `layouts` और इसका `params`, या `null` रखता है। पथ के बिना यह वर्तमान पृष्ठ से मेल खाता है और प्रत्येक नेविगेशन का अनुसरण करता है। सर्वर रेंडर के दौरान अभी तक कोई राउटर नहीं है, इसलिए `match` है `null` और `found` है `false`।
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## `ErrorBoundary` के साथ विफल होने वाले पृष्ठ को पकड़ें
+
+`ErrorBoundary` जब ब्राउज़र में रेंडर करते समय उनमें से कोई एक थ्रो करता है तो अपने बच्चों के बजाय फ़ॉलबैक दिखाता है। फ़ॉलबैक में त्रुटि प्राप्त होती है और `reset`, जो बच्चों को फिर से प्रस्तुत करता है।
+
+| ढाँचा | आयात करें | फ़ॉलबैक |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | एक `fallback` फ़ंक्शन प्रोप; बच्चे डिफ़ॉल्ट स्लॉट में चले जाते हैं |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | एक `fallback` स्निपेट |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+यह पकड़ में नहीं आता:
+
+- किसी ईवेंट हैंडलर, टाइमर या किसी वादे में बाद में हुई त्रुटि: इसे वहीं पकड़ें जहां ऐसा होता है। Vue अपने स्वयं के इवेंट हैंडलर्स के लिए अपवाद है, जिनकी त्रुटियां सीमा तक पहुंचती हैं;
+- एक पृष्ठ जिसे राउटर लोड नहीं कर सकता: ब्राउज़र इसके बजाय सर्वर से इसके लिए पूछता है (देखें [राउटर क्या करता है](#what-the-router-does))।
+
 ## `Image`
 
 `Image` एक `<img>` प्रस्तुत करता है जो डिफ़ॉल्ट रूप से आलसी है और इसका आकार ज्ञात होने पर लेआउट को स्थानांतरित नहीं करता है।
 
-| फ़्रेमवर्क | आयात |
+| ढाँचा | आयात करें |
 |---|---|
 | React, Preact, Solid, Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |
@@ -93,7 +153,7 @@ export default function User() {
 - `fill` `width` और `height` को नजरअंदाज करते हुए, छवि को उसके स्थित मूल को कवर कर देता है।
 - `sizes` और `srcSet` गुजरते हैं। नेक्सी छवियों का आकार बदलता या परिवर्तित नहीं करता है।
 
-## `.nexy` पेज से लिंक
+## `.nexy` पेज से लिंक करें
 
 ```nexy
 ---
@@ -109,9 +169,9 @@ from nexy import Link
 नेविगेशन पर, राउटर:
 
 1. क्लाइंट मार्गों के विरुद्ध पथ से मेल खाता है (`.tsx`, `.jsx`, `.vue`, `.svelte`);
-2. पृष्ठ और उसके [लेआउट्स](../layouts/README.md) **पहले** को आयात और प्रस्तुत करता है, और उसके बाद ही यूआरएल को `history.pushState` के साथ ले जाता है, इसलिए पता बार कभी भी विफल पृष्ठ नहीं दिखाता है;
-3. `nexy:navigated` इवेंट को `document` पर भेजता है;
-4. शीर्ष पर, या `#fragment` लक्ष्य तक स्क्रॉल करता है।
+2. पृष्ठ और उसके [लेआउट](../layouts/README.md) **पहले** को आयात और प्रस्तुत करता है, और उसके बाद ही यूआरएल को `history.pushState` के साथ ले जाता है, इसलिए पता बार कभी भी विफल पृष्ठ नहीं दिखाता है;
+3. `nexy:navigated` ईवेंट को `document` पर भेजता है;
+4. शीर्ष तक स्क्रॉल करता है, या `#fragment` लक्ष्य तक।
 
 एक नया नेविगेशन पुराने नेविगेशन को रद्द कर देता है जो अभी भी प्रस्तुत हो रहा है। यदि कोई पृष्ठ प्रस्तुत नहीं हो पाता है, तो ब्राउज़र इसके बदले सर्वर से इसके लिए पूछता है। पीछे और आगे के बटन उस प्रविष्टि के पृष्ठ को प्रस्तुत करते हैं और उसकी स्क्रॉल स्थिति को पुनर्स्थापित करते हैं।
 

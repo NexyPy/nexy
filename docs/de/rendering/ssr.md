@@ -223,7 +223,7 @@ slug: prop[str] = "untitled"
 - **Ein Rendering pro Anfrage.** Zwei Besucher in derselben Sekunde zahlen jeweils für das Rendering und die dahinter stehenden Abfragen.
 - **Kein Cache.** Es gibt keinen gemeinsamen Antwort-Cache zum Warmmachen: Bei Dateirouten fügt [ISR](isr.md) einen pro URL hinzu.
 - **Streaming hilft nur einer Komponente, die nachgibt.** Eine langsame Abfrage oben auf der Seite verzögert immer noch das erste Byte.
-- **Keine statische Ausgabe.** Im Servermodus wird beim Erstellen nichts eingefroren: Es gibt keinen SSG-Modus und keinen Exportbefehl. Siehe [Rendering](README.md).
+- **Keine statische Ausgabe.** Im Servermodus wird beim Erstellen nichts eingefroren: Es gibt keinen SSG-Modus und keinen Exportbefehl. Der Client-Modus rendert seine Routen vorab, einschließlich einer dynamischen Route: siehe [Eine dynamische Route vorab rendern](csr.md#pre-render-a-dynamic-route).
 - **Autoescaping ist in `.nexy` Vorlagen deaktiviert**. Entkommen Sie nicht vertrauenswürdigen Werten mit `| e`.
 
 <!-- router:fbr,custom -->

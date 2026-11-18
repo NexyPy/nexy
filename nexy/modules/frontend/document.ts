@@ -293,13 +293,17 @@ function buildPathname(route: ClientRoute, params: Record<string, unknown> | und
   return pathname || '/'
 }
 
-function getStaticParamsForRoute(route: ClientRoute, mod: Record<string, unknown>): Array<Record<string, unknown>> | null {
+// The function may be async, as in Next.js: a Promise is awaited, never taken as an empty list.
+async function getStaticParamsForRoute(
+  route: ClientRoute,
+  mod: Record<string, unknown>
+): Promise<Array<Record<string, unknown>> | null> {
   const fn =
     (mod as any).getStaticPaths ||
     (mod as any).generateStaticParams ||
     (mod as any).getStaticParams
   if (typeof fn !== 'function') return null
-  const result = fn()
+  const result = await fn()
   if (!Array.isArray(result)) return []
   return result.map((item: unknown) => {
     if (item && typeof item === 'object' && !Array.isArray(item)) {
@@ -363,7 +367,7 @@ export async function writeDocuments(): Promise<number> {
       let staticParams: Array<Record<string, unknown>> | null = null
       try {
         const mod = (await server.ssrLoadModule(route.file)) as Record<string, unknown>
-        staticParams = getStaticParamsForRoute(route, mod)
+        staticParams = await getStaticParamsForRoute(route, mod)
       } catch {
         staticParams = null
       }
@@ -380,9 +384,9 @@ export async function writeDocuments(): Promise<number> {
           fs.writeFileSync(out, html)
           written++
         }
-        continue
       }
 
+      // Every dynamic route keeps its shell: the server falls back to it for a path not listed.
       const html = await renderDocument(
         server,
         null,

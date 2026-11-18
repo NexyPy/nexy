@@ -8,6 +8,7 @@ import {
   defineComponent,
   getCurrentScope,
   h,
+  onErrorCaptured,
   onMounted,
   onScopeDispose,
   ref,
@@ -99,8 +100,11 @@ export function useBlocker(blocker: Blocker): void {
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
 export function useTransition(): ComputedRef<TransitionState> {
   const router = getRouter()
-  const location = useLocation()
-  return computed(() => router?.transition() ?? { pending: false, next: null })
+  const state = shallowRef<TransitionState>(router?.transition() ?? { pending: false, next: null })
+  if (router && getCurrentScope()) {
+    onScopeDispose(router.subscribeTransition(() => (state.value = router.transition())))
+  }
+  return computed(() => state.value)
 }
 
 /** Catch errors during client rendering and show a fallback instead of crashing the page. */
@@ -118,6 +122,11 @@ export const ErrorBoundary = defineComponent({
   setup(props, { slots }) {
     const error = shallowRef<Error | null>(null)
     const reset = () => (error.value = null)
+    // Keep the error here: returning false stops it from reaching the app and breaking the page.
+    onErrorCaptured(caught => {
+      error.value = caught instanceof Error ? caught : new Error(String(caught))
+      return false
+    })
     return () => {
       if (error.value) return props.fallback(error.value, reset)
       return slots.default?.()

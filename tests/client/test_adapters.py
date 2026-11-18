@@ -109,3 +109,21 @@ class TestRouterObject:
 
     def test_the_link_to_the_pushed_page_becomes_current(self, story):
         assert story["afterPush"]["links"]["user"]["current"] == "page"
+
+
+class TestUseTransition:
+    def test_it_is_pending_while_the_next_page_loads(self, story):
+        assert story["duringClick"] == "true"
+
+    def test_it_is_idle_once_the_page_is_shown(self, story):
+        assert story["afterClick"]["pending"] == "false"
+
+
+class TestErrorBoundary:
+    def test_a_page_that_throws_shows_the_fallback(self, story):
+        assert story["afterPush"]["caught"] == "boom"
+
+
+class TestUseMatch:
+    def test_without_a_path_it_follows_the_current_page(self, story):
+        assert story["afterPush"]["matched"] == "7"

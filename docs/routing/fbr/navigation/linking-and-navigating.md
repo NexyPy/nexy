@@ -65,6 +65,8 @@ mismatch.
 | Query | `useSearchParams()` | `useSearchParams()` accessor | `useSearchParams()` ref | `$searchParams` store |
 | Everything | `useLocation()` | `useLocation()` accessor | `useLocation()` ref | `$location` store |
 | Navigate | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Navigation in flight | `useTransition()` | `useTransition()` accessor | `useTransition()` ref | `useTransition()` store |
+| Match a path | `useMatch(path?)` | `useMatch(path?)` accessor | `useMatch(path?)` ref | `useMatch(path?)` store |
 
 The query is a `URLSearchParams`. `useRouter()` and `router` give `push(href)`, `replace(href)`,
 `back()`, `forward()`, `refresh()` and `prefetch(href)`; `push` and `replace` accept
@@ -80,6 +82,73 @@ export default function User() {
   return <button onClick={() => router.push(`/users/${id}?tab=posts`)}>{tab}</button>;
 }
 ```
+
+## Show a loading state with `useTransition`
+
+`useTransition()` tells whether a client navigation is in flight. `pending` is `true` from the click
+until the next page is shown, and `next` is the location it is going to. It goes back to
+`{ pending: false, next: null }` once the page is shown, when the navigation stops, or when a newer
+one replaces it.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## Match a path with `useMatch`
+
+`useMatch(path)` tells whether `path` matches a client route. It returns `{ match, found }`, where
+`match` holds the route `file`, its `layouts` and its `params`, or is `null`. Without a path it
+matches the current page and follows each navigation. During the server render there is no router
+yet, so `match` is `null` and `found` is `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## Catch a page that fails with `ErrorBoundary`
+
+`ErrorBoundary` shows a fallback instead of its children when one of them throws while it renders
+in the browser. The fallback receives the error and `reset`, which renders the children again.
+
+| Framework | Import | Fallback |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | a `fallback` function prop; the children go in the default slot |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | a `fallback` snippet |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+It does not catch:
+
+- an error thrown later, in an event handler, a timer or a promise: catch it where it happens. Vue
+  is the exception for its own event handlers, whose errors reach the boundary;
+- a page the router cannot load: the browser asks the server for it instead (see
+  [What the router does](#what-the-router-does)).
 
 ## `Image`
 
