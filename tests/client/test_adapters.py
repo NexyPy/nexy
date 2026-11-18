@@ -124,15 +124,6 @@ class TestErrorBoundary:
         assert story["afterPush"]["caught"] == "boom"
 
 
-# The adapters whose useMatch() is checked; each fix of #434 adds its own.
-MATCHING = ("react", "solid", "vue", "svelte")
-
-
-@pytest.fixture(scope="module", params=MATCHING)
-def matching(request: pytest.FixtureRequest) -> dict:
-    return _run(request.param)
-
-
 class TestUseMatch:
-    def test_without_a_path_it_follows_the_current_page(self, matching):
-        assert matching["afterPush"]["matched"] == "7"
+    def test_without_a_path_it_follows_the_current_page(self, story):
+        assert story["afterPush"]["matched"] == "7"
