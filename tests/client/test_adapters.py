@@ -125,7 +125,7 @@ class TestErrorBoundary:
 
 
 # The adapters whose useMatch() is checked; each fix of #434 adds its own.
-MATCHING = ("solid", "vue", "svelte")
+MATCHING = ("react", "solid", "vue", "svelte")
 
 
 @pytest.fixture(scope="module", params=MATCHING)
