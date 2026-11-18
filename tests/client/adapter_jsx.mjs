@@ -27,7 +27,7 @@ function Probe() {
   );
 }
 // A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
-const CATCHES = ["react"];
+const CATCHES = ["react", "preact"];
 function Thrower() {
   if (usePathname() === "/users/7") throw new Error("boom");
   return null;
