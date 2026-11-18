@@ -70,10 +70,11 @@ export type { Action, ActionOptions, ActionState }
 /** Match a pathname against the routes: reactive when the location changes. */
 export function useMatch(pathname?: string): Readable<RouteMatchInfo> {
   const router = getRouter()
-  const current = pathname ?? '/'
   return {
     subscribe(run) {
-      const update = () => run(router?.matchPath(current) ?? { match: null, found: false })
+      // Without a path, match the current page, read again on every change.
+      const current = () => pathname ?? router?.getLocation().pathname ?? '/'
+      const update = () => run(router?.matchPath(current()) ?? { match: null, found: false })
       update()
       return router ? router.subscribe(update) : () => {}
     }
