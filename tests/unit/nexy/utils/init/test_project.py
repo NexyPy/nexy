@@ -3,6 +3,8 @@ import contextlib
 import pytest
 
 from nexy.modules.cli.init.project import AlreadyInitializedError, InitProject
+from nexy.modules.cli.init.registry import GITHUB_TEMPLATES
+from nexy.modules.cli.init.resolver import TemplateResolver
 from nexy.modules.cli.init.template_setup import generate_init_files
 
 
@@ -53,3 +55,22 @@ def test_ensure_ready_says_an_initialized_folder_is_an_error(tmp_path, capsys) -
     with contextlib.suppress(AlreadyInitializedError):
         InitProject()._ensure_ready(tmp_path, None)
     assert capsys.readouterr().out == "error: Project already initialized here\n"
+
+
+def _rendered_by_name(name: str, tmp_path, monkeypatch) -> list[tuple]:
+    """What `nexy new -t <name>` hands to the template setup, without rendering anything."""
+    from nexy.modules.cli.init import project as project_module
+
+    seen: list[tuple] = []
+    monkeypatch.setattr(
+        project_module, "initialize_from_template", lambda *args, **kw: seen.append((args, kw))
+    )
+    InitProject()._from_template(name, tmp_path, agents=False)
+    return seen
+
+
+@pytest.mark.parametrize("name", sorted(GITHUB_TEMPLATES))
+def test_a_named_template_renders_the_starter_of_the_package(name, tmp_path, monkeypatch) -> None:
+    config = {**TemplateResolver.config_for(name), "agents": False}
+    expected = [((TemplateResolver.resolve(config), tmp_path, config), {})]
+    assert _rendered_by_name(name, tmp_path, monkeypatch) == expected

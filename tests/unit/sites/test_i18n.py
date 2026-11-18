@@ -41,11 +41,12 @@ class TestLanguages:
         assert all(set(block) == keys for block in i18n.UI.values())
 
 
-class TestPayload:
-    @pytest.fixture(scope="class")
-    def payload(self) -> dict[str, object]:
-        return i18n.payload()
+@pytest.fixture(scope="module")
+def payload() -> dict[str, object]:
+    return i18n.payload()
 
+
+class TestPayload:
     def test_the_payload_lists_every_language(self, payload):
         assert [one["code"] for one in payload["languages"]] == CODES
 
