@@ -12,7 +12,7 @@ export default function Home() {
           Edit <code class="rounded bg-background-second px-1.5 py-0.5 font-mono">src/routes/index.tsx</code> to get started.
         </p>
       </header>
-      <!-- The demo card is designed for a dark surface. -->
+      {/* The demo card is designed for a dark surface. */}
       <div class="dark rounded-3xl bg-background p-4">
         <Card />
       </div>
