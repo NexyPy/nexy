@@ -117,3 +117,17 @@ class TestUseTransition:
 
     def test_it_is_idle_once_the_page_is_shown(self, story):
         assert story["afterClick"]["pending"] == "false"
+
+
+# The adapters whose ErrorBoundary is checked; each fix of #431 adds its own.
+CATCHING = ("react",)
+
+
+@pytest.fixture(scope="module", params=CATCHING)
+def failing(request: pytest.FixtureRequest) -> dict:
+    return _run(request.param)
+
+
+class TestErrorBoundary:
+    def test_a_page_that_throws_shows_the_fallback(self, failing):
+        assert failing["afterPush"]["caught"] == "boom"

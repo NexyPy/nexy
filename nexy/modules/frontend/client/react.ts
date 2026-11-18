@@ -5,6 +5,7 @@
 //
 // Written with createElement (no JSX) so it needs no compiler setting of its own.
 import {
+  Component,
   createElement,
   forwardRef,
   useEffect,
@@ -202,11 +203,22 @@ export type ErrorBoundaryProps = {
   children?: React.ReactNode
 }
 
-export function ErrorBoundary({ fallback, children }: ErrorBoundaryProps) {
-  const [error, setError] = useState<Error | null>(null)
-  const reset = () => setError(null)
-  if (error) return fallback(error, reset)
-  return children ?? null
+type BoundaryState = { error: Error | null }
+
+// React catches a render error only in a class that defines getDerivedStateFromError.
+export class ErrorBoundary extends Component<ErrorBoundaryProps, BoundaryState> {
+  state: BoundaryState = { error: null }
+
+  static getDerivedStateFromError(error: Error): BoundaryState {
+    return { error }
+  }
+
+  reset = (): void => this.setState({ error: null })
+
+  render(): React.ReactNode {
+    const { error } = this.state
+    return error ? this.props.fallback(error, this.reset) : (this.props.children ?? null)
+  }
 }
 
 export { ActionError }
