@@ -69,6 +69,8 @@ function isInstalled(name: string): boolean {
 }
 
 let nexySSGDone = false
+// A failed build writes no manifest: the static pages would then replace its error with theirs.
+let bundleWritten = false
 let isSSRBuild = false
 // `vite` dev also calls closeBundle, when the server stops: the static pages are a build's only.
 let isServe = false
@@ -320,9 +322,14 @@ function nexyPlugin(): Plugin {
       }
     },
 
+    writeBundle() {
+      bundleWritten = true
+    },
+
     // --- Static Site Generation (SSG) ---
     closeBundle() {
       if (isServe || isSSRBuild || nexySSGDone || process.env.NEXY_RENDER_ONLY) return
+      if (!bundleWritten) return
       nexySSGDone = true
 
       console.log(`${c.dim}[nexy] Building client bundles...${c.reset}`)

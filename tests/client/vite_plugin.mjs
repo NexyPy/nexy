@@ -1,5 +1,5 @@
 // Runs the hooks of the Nexy Vite plugin the way Vite calls them, with no Vite installed.
-//   node vite_plugin.mjs <serve|build>
+//   node vite_plugin.mjs <serve|build|build-failed>
 // `vite`, `esbuild` and `child_process` are stubs: the scenario prints what the plugin logged
 // and the commands it ran when the server, or the build, closed.
 import fs from "node:fs";
@@ -8,7 +8,9 @@ import path from "node:path";
 import { registerHooks } from "node:module";
 import { pathToFileURL } from "node:url";
 
-const command = process.argv[2];
+// `build-failed` is a build whose bundle was never written: Vite still closes it.
+const scenario = process.argv[2];
+const command = scenario === "serve" ? "serve" : "build";
 const SOURCES = new URL("../../nexy/modules/frontend/", import.meta.url);
 const ran = [];
 globalThis.__nexyRan = ran;
@@ -49,6 +51,7 @@ try {
   const mode = command === "build" ? "production" : "development";
   plugin.config?.({ mode }, { command, mode });
   plugin.configResolved?.({ command, mode, build: {} });
+  if (scenario === "build") plugin.writeBundle?.();
   plugin.closeBundle?.();
 } catch (caught) {
   error = String(caught?.message ?? caught);
