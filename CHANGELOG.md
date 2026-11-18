@@ -3,6 +3,27 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.6.3] - 2026-11-18
+
+### Fixed
+
+- **`nexy build` shows why a client build failed.** When the bundle did not build, an unresolved
+  import for instance, the static pages were built anyway and their "Manifest not found. Run vite
+  build first." took the place of the real error. They are now built only once the bundle is
+  written (#413, #414).
+- **A new file-based project no longer has a `src/src/routes/` folder.** Every `*-fbr` starter got
+  copies of the 403 and 401 pages there, where the router never looks; a styled web starter still
+  has them in `src/routes/` (#415, #416).
+
+### Security
+
+- **New web projects ask for glob 14.0.2**, for CVE-2026-118773 in glob and CVE-2026-118764 in
+  minimatch through it; they asked for glob 13 (#408, #409).
+- **The VS Code extension's lock is refreshed**: nothing it ships carries a known advisory. What is
+  left is in development tools, and picomatch has no fixed release yet (#410).
+- **Every example builds again, on locks with no advisory that has a fix.** Nine lacked the
+  packages the build scripts import, and seven had a bug of their own (#412, #420).
+
 ## [2.6.2] - 2026-11-18
 
 ### Fixed
