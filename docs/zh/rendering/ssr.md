@@ -76,39 +76,39 @@ class HealthController:
 
    ```nexy filename="src/routes/orders/[id].nexy"
    ---
-   id: 属性[int]
+   id: prop[int]
    ---
-   <h1>订单#{{ id + 1000 }}</h1>
-   ````
+   <h1>Order #{{ id + 1000 }}</h1>
+   ```
 
    `/orders/42` 渲染 `Order #1042`； `/orders/abc` 回答 `404`。
 2. 组件运行。等待 Node（客户端文档）的一个在线程池中运行，因此它不会停止事件循环。
 3. 正文作为 `text/html` 进行流式传输。生成块的组件在生成块时对它们进行流式传输。
 4. 浏览器接收 HTML。岛屿根据其[指令](islands.md)进行水合。
 
-当项目有错误时，渲染时出现的错误会被 `errors.nexy` 转换为页面：请参阅 [错误页面 ](../routing/fbr/errors/README.md)。
+当项目有错误时，渲染时引发的错误会被 `errors.nexy` 转换为页面：请参阅 [错误页面 ](../routing/fbr/errors/README.md)。
 <!-- /router -->
 
 <!-- router:modular -->
 1. 请求到达控制器。它的路径参数被转换为方法声明的类型，并传递给视图：
 
    ```python filename="src/apps/order_controller.py"
-   从 nexy.decorators 导入控制器
-   从 nexy.hooks 导入 useViews
+   from nexy.decorators import Controller
+   from nexy.hooks import useViews
 
 
-   @Controller(“/订单/{id}”)
-   订单控制器类：
-       异步 def get(self, id: int):
-           返回 useViews("src/apps/order_view.nexy", context={"id": id})
-   ````
+   @Controller("/orders/{id}")
+   class OrderController:
+       async def get(self, id: int):
+           return useViews("src/apps/order_view.nexy", context={"id": id})
+   ```
 
-   ```nexy 文件名 =“src/apps/order_view.nexy”
+   ```nexy filename="src/apps/order_view.nexy"
    ---
-   id: 属性[int]
+   id: prop[int]
    ---
-   <h1>订单#{{ id + 1000 }}</h1>
-   ````
+   <h1>Order #{{ id + 1000 }}</h1>
+   ```
 
    `/orders/42/` 渲染 `Order #1042`； `/orders/abc/` 回答 `404`。
 2. 视图运行，`useViews` 返回其 HTML 作为响应。
@@ -221,9 +221,9 @@ slug: prop[str] = "untitled"
 ## 局限性
 
 - **每个请求一次渲染。** 同一秒内的两个访问者各自为渲染及其背后的查询付费。
-- **没有缓存。** 没有共享响应缓存来预热：对于文件路由，[ISR](isr.md) 为每个URL添加一个。
+- **无缓存。** 没有可供预热的共享响应缓存：对于文件路由，[ISR](isr.md) 对每个 URL 添加一个。
 - **流式处理仅有助于产生收益的组件。** 页面顶部的缓慢查询仍然会延迟第一个字节。
-- **无静态输出。** 在服务器模式下，构建时不会冻结任何内容：没有 SSG 模式，也没有导出命令。请参阅[渲染](README.md)。
+- **无静态输出。** 在服务器模式下，构建时不会冻结任何内容：没有 SSG 模式，也没有导出命令。客户端模式预渲染其路由，包括动态路由：请参阅[预渲染动态路由](csr.md#pre-render-a-dynamic-route)。
 - **`.nexy` 模板中的自动转义已关闭**。使用 `| e` 转义不受信任的值。
 
 <!-- router:fbr,custom -->
@@ -255,6 +255,6 @@ q = useSearchParams().get("q", "")
 <!-- /router -->
 - [群岛](islands.md)：保持 SSR 并使一个小部件具有交互性
 <!-- router:fbr,custom -->
-- [CSR](csr.md)：浏览器的手动导航
+- [CSR](csr.md)：手动导航到浏览器
 <!-- /router -->
 - [性能](../deployment/performance.md)

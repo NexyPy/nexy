@@ -153,9 +153,17 @@ _ADAPTERS: dict[str, tuple[tuple[str, str], ...]] = {
         ("svelte.ts", "client.ts"),
         ("Link.svelte", "Link.svelte"),
         ("Image.svelte", "Image.svelte"),
+        ("ErrorBoundary.svelte", "ErrorBoundary.svelte"),
     ),
 }
-_ALL_ADAPTER_FILES = ("client.ts", "client.tsx", "Link.svelte", "Image.svelte", "Link.tsx")
+_ALL_ADAPTER_FILES = (
+    "client.ts",
+    "client.tsx",
+    "Link.svelte",
+    "Image.svelte",
+    "ErrorBoundary.svelte",
+    "Link.tsx",
+)
 # The framework-free modules every adapter imports, under the names the adapters import them by.
 _RUNTIME_FILES = (
     ("shared.ts", "shared.ts"),

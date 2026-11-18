@@ -38,13 +38,13 @@ export default function Nav() {
 }
 ```
 
-| Prop | Arti |
+| Prop | Artinya |
 |---|---|
 | `href` | Rute proyek (salah ketik adalah kesalahan ketik), opsional dengan `?query` atau `#fragment`, atau URL eksternal. |
 | `replace` | Ganti entri riwayat alih-alih menambahkannya. |
 | `scroll` | `false` mempertahankan posisi gulir setelah bernavigasi. Bawaan: `true`. |
 | `prefetch` | `'intent'` (default) memuat halaman saat mengarahkan kursor, fokus, atau menyentuh; `'viewport'` ketika tautan bergulir hingga terlihat; `false` tidak pernah. |
-| `activeClassName` | Ditambahkan ke kelas sementara tautan menunjuk ke halaman saat ini atau halaman di bawahnya (`activeClass` di Vue dan Svelte). |
+| `activeClassName` | Ditambahkan ke kelas saat tautan menunjuk ke halaman saat ini atau halaman di bawahnya (`activeClass` di Vue dan Svelte). |
 | `exact` | Aktif hanya pada halaman yang tepat. |
 
 Tautan yang mengarah ke halaman saat ini juga mendapat `aria-current="page"`.
@@ -55,11 +55,13 @@ Lokasi tersedia di setiap framework, dalam idiom framework tersebut. Selama taha
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| Jalur | `usePathname()` | `usePathname()` mengembalikan pengakses | `usePathname()` mengembalikan ref | `$pathname` penyimpanan |
-| Param rute | `useParams()` | `useParams()` pengakses | `useParams()` ref | `$params` penyimpanan |
-| Kueri | `useSearchParams()` | `useSearchParams()` pengakses | `useSearchParams()` ref | `$searchParams` penyimpanan |
-| Semuanya | `useLocation()` | `useLocation()` pengakses | `useLocation()` ref | `$location` menyimpan |
+| Jalan | `usePathname()` | `usePathname()` mengembalikan pengakses | `usePathname()` mengembalikan referensi | `$pathname` toko |
+| Parameter rute | `useParams()` | `useParams()` pengakses | `useParams()` referensi | `$params` toko |
+| Pertanyaan | `useSearchParams()` | `useSearchParams()` pengakses | `useSearchParams()` rujukan | `$searchParams` toko |
+| Semuanya | `useLocation()` | `useLocation()` pengakses | `useLocation()` rujukan | `$location` toko |
 | Navigasi | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Navigasi dalam penerbangan | `useTransition()` | `useTransition()` pengakses | `useTransition()` rujukan | `useTransition()` toko |
+| Cocokkan jalan | `useMatch(path?)` | `useMatch(path?)` pengakses | `useMatch(path?)` rujukan | `useMatch(path?)` toko |
 
 Kuerinya adalah `URLSearchParams`. `useRouter()` dan `router` memberikan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` dan `prefetch(href)`; `push` dan `replace` menerima `{ scroll: false }`.
 
@@ -73,6 +75,64 @@ export default function User() {
   return <button onClick={() => router.push(`/users/${id}?tab=posts`)}>{tab}</button>;
 }
 ```
+
+## Tampilkan status pemuatan dengan `useTransition`
+
+`useTransition()` memberitahukan apakah navigasi klien sedang dalam penerbangan. `pending` adalah `true` dari klik hingga halaman berikutnya ditampilkan, dan `next` adalah lokasi yang dituju. Ini kembali ke `{ pending: false, next: null }` setelah halaman ditampilkan, saat navigasi berhenti, atau saat ada halaman baru yang menggantikannya.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## Cocokkan jalur dengan `useMatch`
+
+`useMatch(path)` memberitahukan apakah `path` cocok dengan rute klien. Ia mengembalikan `{ match, found }`, di mana `match` memegang rute `file`, `layouts` dan `params`, atau `null`. Tanpa jalur, itu cocok dengan halaman saat ini dan mengikuti setiap navigasi. Selama render server belum ada router, jadi `match` adalah `null` dan `found` adalah `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## Tangkap halaman yang gagal dengan `ErrorBoundary`
+
+`ErrorBoundary` menampilkan fallback alih-alih turunannya ketika salah satu dari mereka melempar saat dirender di browser. Fallback menerima kesalahan dan `reset`, yang merender turunan lagi.
+
+| Kerangka | Impor | Penggantian |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | sebuah penyangga fungsi `fallback`; anak-anak masuk ke slot default |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | cuplikan `fallback` |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+Itu tidak menangkap:
+
+- kesalahan yang muncul kemudian, dalam pengendali peristiwa, pengatur waktu, atau janji: tangkap di tempat terjadinya. Vue adalah pengecualian untuk pengendali kejadiannya sendiri, yang kesalahannya mencapai batas;
+- halaman yang tidak dapat dimuat oleh router: browser malah memintanya ke server (lihat [Apa yang dilakukan router](#what-the-router-does)).
 
 ## `Image`
 
@@ -102,7 +162,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` merender `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` lolos dari HTML.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` menerjemahkan `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` lolos dari HTML.
 
 ## Apa yang dilakukan router
 

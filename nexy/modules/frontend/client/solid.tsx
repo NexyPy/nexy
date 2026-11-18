@@ -3,7 +3,16 @@
 //   import { Link, Image, useRouter, usePathname, useParams, useSearchParams } from '@nexy/client'
 //
 // Solid has no hook rules: each `use*` returns an accessor, read it by calling it.
-import { createMemo, createSignal, onCleanup, onMount, splitProps, type Accessor, type JSX } from 'solid-js'
+import {
+  createMemo,
+  createSignal,
+  ErrorBoundary as SolidErrorBoundary,
+  onCleanup,
+  onMount,
+  splitProps,
+  type Accessor,
+  type JSX
+} from 'solid-js'
 import { isServer } from 'solid-js/web'
 import type { Route } from './routes.auto.ts'
 import {
@@ -90,8 +99,11 @@ export function useBlocker(blocker: Blocker): void {
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
 export function useTransition(): Accessor<TransitionState> {
   const router = getRouter()
-  const location = useLocation()
-  return createMemo(() => router?.transition() ?? { pending: false, next: null })
+  const [state, setState] = createSignal<TransitionState>(router?.transition() ?? { pending: false, next: null })
+  if (!isServer && router) {
+    onCleanup(router.subscribeTransition(() => setState(router.transition())))
+  }
+  return state
 }
 
 /** Catch errors during client rendering and show a fallback instead of crashing the page. */
@@ -101,15 +113,16 @@ export type ErrorBoundaryProps = {
   children?: JSX.Element
 }
 
-export function ErrorBoundary({ fallback, children }: ErrorBoundaryProps): JSX.Element {
-  const [error, setError] = createSignal<Error | null>(null)
-  const reset = () => setError(null)
-  return () => {
-    const err = error()
-    if (err) return fallback(err, reset)
-    return children
-  }
+// Solid catches a render error in its own boundary; the props stay whole so they stay reactive.
+export function ErrorBoundary(props: ErrorBoundaryProps): JSX.Element {
+  return (
+    <SolidErrorBoundary fallback={(error: unknown, reset) => props.fallback(asError(error), reset)}>
+      {props.children}
+    </SolidErrorBoundary>
+  )
 }
+
+const asError = (error: unknown): Error => (error instanceof Error ? error : new Error(String(error)))
 
 const router = {
   push: (href: Href, options?: NavigateOptions) => getRouter()?.navigate(href, options),

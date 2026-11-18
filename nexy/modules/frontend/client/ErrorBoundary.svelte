@@ -1,24 +1,27 @@
 <script lang="ts">
-  import type { ErrorBoundaryProps } from './svelte.ts'
-  import { useMatch, useBlocker, useTransition } from './svelte.ts'
+  // Catch errors during client rendering and show a fallback instead of crashing the page.
+  //
+  //   <ErrorBoundary>
+  //     {#snippet fallback(error, reset)}<p>{error.message}</p>{/snippet}
+  //     <Page />
+  //   </ErrorBoundary>
+  import type { Snippet } from 'svelte'
 
-  let { fallback, children }: ErrorBoundaryProps = $props()
-  let error: Error | null = $state(null)
-
-  function reset() {
-    error = null
+  type Props = {
+    /** Rendered when a descendant throws during client navigation. */
+    fallback: Snippet<[Error, () => void]>
+    children?: Snippet
   }
 
-  // Re-throw to Svelte's error boundary if we have one above us.
-  $effect(() => {
-    if (error) {
-      throw error
-    }
-  })
+  let { fallback, children }: Props = $props()
+
+  const asError = (error: unknown): Error =>
+    error instanceof Error ? error : new Error(String(error))
 </script>
 
-{#if error}
-  {@render fallback(error, reset)}
-{:else}
+<svelte:boundary>
   {@render children?.()}
-{/if}
+  {#snippet failed(error, reset)}
+    {@render fallback(asError(error), reset)}
+  {/snippet}
+</svelte:boundary>

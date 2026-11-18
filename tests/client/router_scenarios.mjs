@@ -234,5 +234,22 @@ const out = {};
   out.viewTransition = { calls, rendered: w.rendered, calmCalls, calmRendered: calm.rendered };
 }
 
+// 13. Transition subscribers hear a navigation start and end: `transition()` is pending in between.
+{
+  let release;
+  const w = world({ render: () => new Promise((resolve) => (release = resolve)) });
+  const states = [];
+  w.router.subscribeTransition(() => states.push(w.router.transition().pending));
+  const done = w.router.navigate("/about");
+  await sleep(0);
+  release();
+  await done;
+  const superseded = world({ render: (m) => (m.file.endsWith("slow.tsx") ? sleep(30) : Promise.resolve()) });
+  const after = [];
+  superseded.router.subscribeTransition(() => after.push(superseded.router.transition().pending));
+  await Promise.all([superseded.router.navigate("/slow"), sleep(5).then(() => superseded.router.navigate("/about"))]);
+  out.transition = { states, superseded: after };
+}
+
 console.log("@@" + JSON.stringify(out) + "@@");
 process.exit(0);

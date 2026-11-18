@@ -9,7 +9,7 @@ const lib = framework === "react"
   ? { h: (await import("react")).createElement, ssr: (await import("react-dom/server")).renderToString }
   : { h: (await import("preact")).h, ssr: (await import("preact-render-to-string")).renderToString };
 const adapter = await load(dir, "client.ts");
-const { Link, Image, useRouter, usePathname, useParams, useSearchParams } = adapter;
+const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch } = adapter;
 const { h } = lib;
 const cls = framework === "react" ? "className" : "class";
 
@@ -22,9 +22,21 @@ function Probe() {
     h("p", { id: "path" }, usePathname()),
     h("p", { id: "params" }, JSON.stringify(useParams())),
     h("p", { id: "tab" }, search.get("tab") ?? ""),
+    h("p", { id: "pending" }, String(useTransition().pending)),
+    h("p", { id: "matched" }, useMatch().match?.params.id ?? ""),
     h("button", { id: "push", onClick: () => router.push("/users/7?tab=x") }, "push"),
   );
 }
+// A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
+const CATCHES = ["react", "preact"];
+function Thrower() {
+  if (usePathname() === "/users/7") throw new Error("boom");
+  return null;
+}
+const Guarded = () =>
+  CATCHES.includes(framework)
+    ? h(ErrorBoundary, { fallback: (error) => h("p", { id: "caught" }, error.message) }, h(Thrower))
+    : null;
 const App = () =>
   h(
     "div",
@@ -33,6 +45,7 @@ const App = () =>
     h(Link, { id: "about", href: "/about", activeClassName: "on", [cls]: "nav" }, "About"),
     h(Link, { id: "user", href: "/users/7" }, "User"),
     h(Probe),
+    h(Guarded),
     h(Image, { id: "img", src: "/a.png", alt: "A", width: 800, height: 600 }),
   );
 

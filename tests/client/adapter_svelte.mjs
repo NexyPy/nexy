@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 import { clickWith, openPage, print, sleep, stage, story } from "./adapter_common.mjs";
 
 const page = openPage("");
-const dir = stage("svelte", "svelte.ts", ["Link.svelte", "Image.svelte"]);
+const dir = stage("svelte", "svelte.ts", ["Link.svelte", "Image.svelte", "ErrorBoundary.svelte"]);
 const folder = dir.pathname.replace(/^\/(\w:)/, "$1");
 const { compile } = await import("svelte/compiler");
 const { hydrate } = await import("svelte");
@@ -15,7 +15,12 @@ const { render } = await import("svelte/server");
 const APP = `<script lang="ts">
   import Link from './Link.svelte'
   import Image from './Image.svelte'
-  import { router, pathname, params, searchParams } from './client.ts'
+  import ErrorBoundary from './ErrorBoundary.svelte'
+  import { router, pathname, params, searchParams, useTransition, useMatch } from './client.ts'
+  const transition = useTransition()
+  const matched = useMatch()
+  // A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
+  const boom = (path: string) => { if (path === '/users/7') throw new Error('boom'); return '' }
 </script>
 <div>
   <Link id="home" href="/" exact activeClass="on" class="nav">Home</Link>
@@ -25,8 +30,14 @@ const APP = `<script lang="ts">
     <p id="path">{$pathname}</p>
     <p id="params">{JSON.stringify($params)}</p>
     <p id="tab">{$searchParams.get('tab') ?? ''}</p>
+    <p id="pending">{String($transition.pending)}</p>
+    <p id="matched">{$matched.match?.params.id ?? ''}</p>
     <button id="push" onclick={() => router.push('/users/7?tab=x')}>push</button>
   </div>
+  <ErrorBoundary>
+    {#snippet fallback(error)}<p id="caught">{error.message}</p>{/snippet}
+    {boom($pathname)}
+  </ErrorBoundary>
   <Image id="img" src="/a.png" alt="A" width={800} height={600} />
 </div>
 `;
@@ -34,7 +45,7 @@ const APP = `<script lang="ts">
 /** Compile a component for the server or the browser; its imports of .svelte files follow. */
 function build(name, source, generate) {
   const { js } = compile(source, { generate, filename: `${name}.svelte`, runes: true });
-  const code = js.code.replace(/(['"])\.\/(Link|Image)\.svelte\1/g, `$1./$2.${generate}.mjs$1`);
+  const code = js.code.replace(/(['"])\.\/(Link|Image|ErrorBoundary)\.svelte\1/g, `$1./$2.${generate}.mjs$1`);
   const out = path.join(folder, `${name}.${generate}.mjs`);
   fs.writeFileSync(out, code);
   return pathToFileURL(out).href;
@@ -42,9 +53,10 @@ function build(name, source, generate) {
 const sources = {
   Link: fs.readFileSync(path.join(folder, "Link.svelte"), "utf8"),
   Image: fs.readFileSync(path.join(folder, "Image.svelte"), "utf8"),
+  ErrorBoundary: fs.readFileSync(path.join(folder, "ErrorBoundary.svelte"), "utf8"),
   App: APP,
 };
-for (const name of ["Link", "Image"]) {
+for (const name of ["Link", "Image", "ErrorBoundary"]) {
   build(name, sources[name], "server");
   build(name, sources[name], "client");
 }

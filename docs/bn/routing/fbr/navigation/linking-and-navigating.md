@@ -4,7 +4,7 @@
 
 ## প্লেইন লিঙ্ক ইতিমধ্যে কাজ
 
-আপনার প্রোজেক্টের একটি পৃষ্ঠায় প্রতিটি `<a href>` ক্লায়েন্টে নেভিগেট করে, কোনো উপাদান এবং কোনো মার্কার ছাড়াই:
+প্রতিটি `<a href>` আপনার প্রকল্পের একটি পৃষ্ঠায় ক্লায়েন্টে নেভিগেট করে, কোন উপাদান এবং কোন মার্কার ছাড়াই:
 
 ```html
 <a href="/about">About</a>
@@ -40,26 +40,28 @@ export default function Nav() {
 
 | প্রপ | অর্থ |
 |---|---|
-| `href` | প্রকল্পের একটি রুট (একটি টাইপো একটি টাইপ ত্রুটি), ঐচ্ছিকভাবে `?query` বা `#fragment`, বা একটি বহিরাগত URL সহ। |
+| `href` | প্রকল্পের একটি রুট (একটি টাইপো একটি টাইপ ত্রুটি), ঐচ্ছিকভাবে `?query` বা `#fragment`, অথবা একটি বহিরাগত URL। |
 | `replace` | একটি যোগ করার পরিবর্তে ইতিহাস এন্ট্রি প্রতিস্থাপন করুন। |
 | `scroll` | `false` নেভিগেট করার পরে স্ক্রোল অবস্থান রাখে। ডিফল্ট: `true`। |
 | `prefetch` | `'intent'` (ডিফল্ট) হোভার, ফোকাস বা স্পর্শে পৃষ্ঠা লোড করে; `'viewport'` যখন লিঙ্কটি ভিউতে স্ক্রোল করে; `false` কখনই না। |
 | `activeClassName` | ক্লাসে যোগ করা হয়েছে যখন লিঙ্কটি বর্তমান পৃষ্ঠায় বা এটির নীচের একটি পৃষ্ঠায় নির্দেশ করে (`activeClass` Vue এবং Svelte)। |
-| `exact` | শুধুমাত্র সঠিক পৃষ্ঠায় সক্রিয়। |
+| `exact` | শুধুমাত্র সঠিক পৃষ্ঠায় সক্রিয়. |
 
 বর্তমান পৃষ্ঠায় যে লিঙ্কটি নির্দেশ করে সেটিও `aria-current="page"` পায়।
 
 ## হুকস
 
-অবস্থান প্রতিটি কাঠামোর মধ্যে উপলব্ধ, সেই কাঠামোর বাগধারায়। প্রথম সময়, সার্ভার-সাইড অনুরোধের URL সহ হুক উত্তর রেন্ডার করে, তাই পৃষ্ঠাটি অমিল ছাড়াই হাইড্রেট করে।
+অবস্থান প্রতিটি কাঠামোর মধ্যে উপলব্ধ, সেই কাঠামোর বাগধারায়। প্রথম সময়ে, সার্ভার-সাইড অনুরোধের URL সহ হুক উত্তর রেন্ডার করে, তাই পৃষ্ঠাটি অমিল ছাড়াই হাইড্রেট করে।
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| পথ | `usePathname()` | `usePathname()` একটি অ্যাক্সেসর প্রদান করে | `usePathname()` একটি রেফ প্রদান করে | `$pathname` স্টোর |
-| রুট প্যারামস | `useParams()` | `useParams()` অ্যাক্সেসর | `useParams()` রেফ | `$params` স্টোর |
-| প্রশ্ন | `useSearchParams()` | `useSearchParams()` অ্যাক্সেসর | `useSearchParams()` রেফ | `$searchParams` স্টোর |
-| সবকিছু | `useLocation()` | `useLocation()` অ্যাক্সেসর | `useLocation()` রেফ | `$location` স্টোর |
-| নেভিগেট | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| পথ | `usePathname()` | `usePathname()` একটি অ্যাক্সেসর প্রদান করে | `usePathname()` একটি রেফ প্রদান করে | `$pathname` দোকান |
+| রুট params | `useParams()` | `useParams()` অ্যাক্সেসর | `useParams()` রেফারি | `$params` দোকান |
+| প্রশ্ন | `useSearchParams()` | `useSearchParams()` অ্যাক্সেসর | `useSearchParams()` রেফারি | `$searchParams` দোকান |
+| সবকিছু | `useLocation()` | `useLocation()` অ্যাক্সেসর | `useLocation()` রেফারি | `$location` দোকান |
+| নেভিগেট করুন | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| ফ্লাইটে নেভিগেশন | `useTransition()` | `useTransition()` অ্যাক্সেসর | `useTransition()` রেফারি | `useTransition()` দোকান |
+| একটি পথ মেলে | `useMatch(path?)` | `useMatch(path?)` অ্যাক্সেসর | `useMatch(path?)` রেফারি | `useMatch(path?)` দোকান |
 
 প্রশ্নটি একটি `URLSearchParams`। `useRouter()` এবং `router` দাও `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` এবং `prefetch(href)`; `push` এবং `replace` গ্রহণ `{ scroll: false }`।
 
@@ -73,6 +75,64 @@ export default function User() {
   return <button onClick={() => router.push(`/users/${id}?tab=posts`)}>{tab}</button>;
 }
 ```
+
+## `useTransition` সহ একটি লোডিং অবস্থা দেখান
+
+`useTransition()` ক্লায়েন্ট নেভিগেশন ফ্লাইটে আছে কিনা তা বলে। `pending` হল `true` ক্লিক থেকে পরবর্তী পৃষ্ঠাটি দেখানো পর্যন্ত, এবং `next` হল এটি যে অবস্থানে যাচ্ছে। একবার পৃষ্ঠাটি দেখানো হলে, যখন নেভিগেশন বন্ধ হয়ে যায়, বা যখন একটি নতুন এটি প্রতিস্থাপন করে তখন এটি `{ pending: false, next: null }` এ ফিরে যায়।
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## একটি পথের সাথে মেলান `useMatch`
+
+`useMatch(path)` বলে যে `path` একটি ক্লায়েন্ট রুটের সাথে মেলে কিনা। এটি `{ match, found }` রিটার্ন করে, যেখানে `match` রুট ধরে রাখে `file`, এর `layouts` এবং এর `params`, বা হল `null`। একটি পথ ছাড়া এটি বর্তমান পৃষ্ঠার সাথে মেলে এবং প্রতিটি নেভিগেশন অনুসরণ করে। সার্ভার রেন্ডারের সময় এখনও কোন রাউটার নেই, তাই `match` হল `null` এবং `found` হল `false`।
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## এমন একটি পৃষ্ঠা ধরুন যা `ErrorBoundary` এর সাথে ব্যর্থ হয়
+
+`ErrorBoundary` এর বাচ্চাদের পরিবর্তে একটি ফলব্যাক দেখায় যখন তাদের মধ্যে একটি থ্রো করে যখন এটি ব্রাউজারে রেন্ডার হয়। ফলব্যাক ত্রুটি পায় এবং `reset`, যা শিশুদের আবার রেন্ডার করে।
+
+| ফ্রেমওয়ার্ক | আমদানি | ফলব্যাক |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | একটি `fallback` ফাংশন প্রপ; শিশুরা ডিফল্ট স্লটে যায় |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | একটি `fallback` স্নিপেট |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+এটি ধরা পড়ে না:
+
+- একটি ইভেন্ট হ্যান্ডলারে, একটি টাইমার বা একটি প্রতিশ্রুতিতে একটি ত্রুটি পরে নিক্ষেপ করা হয়েছে: এটি যেখানে ঘটে সেখানে ধরুন৷ Vue তার নিজস্ব ইভেন্ট হ্যান্ডলারদের জন্য ব্যতিক্রম, যাদের ত্রুটি সীমানায় পৌঁছে যায়;
+- একটি পৃষ্ঠা রাউটার লোড করতে পারে না: ব্রাউজার পরিবর্তে এটির জন্য সার্ভারকে জিজ্ঞাসা করে (দেখুন [রাউটারটি কী করে](#what-the-router-does))।
 
 ## `Image`
 
@@ -109,9 +169,9 @@ from nexy import Link
 একটি নেভিগেশন, রাউটার:
 
 1. ক্লায়েন্ট রুটের বিপরীতে পাথ মেলে (`.tsx`, `.jsx`, `.vue`, `.svelte`);
-2. পৃষ্ঠা এবং এর [লেআউটগুলি](../layouts/README.md) **প্রথমে** আমদানি করে এবং রেন্ডার করে, এবং শুধুমাত্র তারপর `history.pushState` এর সাথে ইউআরএল স্থানান্তরিত করে, তাই ঠিকানা বার কখনো ব্যর্থ হয়েছে এমন কোনো পৃষ্ঠা দেখায় না;
+2. পৃষ্ঠা এবং তার [লেআউটগুলি](../layouts/README.md) **প্রথমে** আমদানি করে এবং রেন্ডার করে, এবং শুধুমাত্র তারপরে `history.pushState` দিয়ে ইউআরএল স্থানান্তরিত করে, তাই ঠিকানা বার কখনো ব্যর্থ হয়েছে এমন কোনো পৃষ্ঠা দেখায় না;
 3. একটি `nexy:navigated` ইভেন্ট প্রেরণ করে `document`;
-4. উপরের দিকে স্ক্রোল করে, অথবা `#fragment` লক্ষ্যে।
+4. স্ক্রোল করে শীর্ষে, অথবা লক্ষ্যে `#fragment`।
 
 একটি নতুন নেভিগেশন একটি পুরানোটিকে বাতিল করে যা এখনও রেন্ডার হচ্ছে৷ যদি একটি পৃষ্ঠা রেন্ডার করতে না পারে, ব্রাউজার পরিবর্তে এটির জন্য সার্ভারকে জিজ্ঞাসা করে। পিছনে এবং ফরোয়ার্ড বোতামগুলি সেই এন্ট্রির পৃষ্ঠাটিকে রেন্ডার করে এবং এর স্ক্রোল অবস্থান পুনরুদ্ধার করে।
 
@@ -125,6 +185,6 @@ document.addEventListener("nexy:navigated", (event) => {
 
 ## পরবর্তী পদক্ষেপ
 
-- [লেআউট](../layouts/README.md)
+- [বিন্যাস](../layouts/README.md)
 - [CSR](../../../rendering/csr.md)
-- [উপাদান](../../../views/nexy/components.md)
+- [উপাদান ](../../../views/nexy/components.md)

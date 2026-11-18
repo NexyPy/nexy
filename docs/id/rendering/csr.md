@@ -18,13 +18,13 @@ class NexyConfig(NexyConfigModel):
 
 Proyek kemudian berubah bentuk:
 
-| | Mode server (`False`) | Mode klien (`True`) |
+| | Modus server (`False`) | Mode klien (`True`) |
 |---|---|---|
 | Rute | `.nexy`, `.md`, `.mdx` | `.tsx`, `.jsx`, `.vue`, `.svelte` |
 | Dokumen | `layout.nexy` | root `layout.tsx` / `.vue` / `.svelte` memiliki `<html>`, `<head>`, `<body>` |
-| Komponen klien | pulau-pulau di dalam halaman | halaman itu sendiri |
+| Komponen klien | pulau di dalam halaman | halaman itu sendiri |
 | `.nexy` di bawah `src/routes/` | format halaman | ditolak sebelum `nx dev`, `nx start` dan `nx build` |
-| Navigasi | permintaan lengkap per link | router klien |
+| Navigasi | permintaan lengkap per tautan | router klien |
 
 `.md` dan `.mdx` tetap valid: Nexy merendernya di server di dalam tata letak klien, dan router klien mengambil alih dari sana. `.py` penangan duduk di sebelah rute dan dilayani oleh FastAPI.
 
@@ -50,7 +50,7 @@ Dalam pengembangan, dokumen tersebut dirender sesuai permintaan oleh server peng
 |---|---|
 | `useFF` | diperlukan: `useCSR` tanpa kerangka klien ditolak |
 | `useCSR` | `True` |
-| `useRouter` | harus tetap nonaktif: router modular ditolak dalam mode klien |
+| `useRouter` | harus tetap mati: router modular ditolak dalam mode klien |
 
 File dan folder yang dimulai dengan `_` atau `.` diabaikan oleh pemeriksaan ini.
 
@@ -73,17 +73,41 @@ export default function Home() {
 }
 ```
 
+## Pra-render rute dinamis
+
+Rute dinamis seperti `src/routes/blog/[slug].tsx` cocok dengan nilai apa pun, sehingga build tidak dapat mengetahui halaman mana yang akan dirender. Ekspor `generateStaticParams()` dari halaman untuk mencantumkannya: `nexy build` merender satu dokumen lengkap per entri, dan `nexy start` menyajikannya untuk jalur tersebut. Nama Next.js `getStaticPaths` dan `getStaticParams` juga diterima, dan fungsinya mungkin `async`.
+
+```tsx filename="src/rute/blog/[siput].tsx"
+export async function generateStaticParams() {
+  return [{ slug: "hello" }, { slug: "world" }]
+}
+
+export default function Post({ slug }: { slug: string }) {
+  return <h1>{slug}</h1>
+}
+```
+
+Setiap entri adalah objek params, atau `{ params: {...} }` saat `getStaticPaths` mengembalikannya. Bangunan itu menulis:
+
+| Berkas di `__nexy__/client/static/` | Disajikan untuk |
+|---|---|
+| `src/routes/blog/[slug]/blog/hello.html` | `/blog/hello` |
+| `src/routes/blog/[slug]/blog/world.html` | `/blog/world` |
+| `src/routes/blog/[slug].shell.html` | lainnya `/blog/...` |
+
+Jalur yang tidak diberi nama dalam daftar masih berfungsi: jalur tersebut mendapatkan shell, tata letak di sekitar halaman kosong, dan halaman muncul setelah browser dijalankan. Di `nexy dev` setiap jalur dirender sesuai permintaan, terdaftar atau tidak.
+
 ## Keterbatasan
 
 - **Keseluruhan proyek.** Anda tidak dapat menggabungkan satu halaman CSR ke dalam proyek mode server: pilih mode untuk aplikasi, lalu gunakan [pulau](islands.md) untuk bagian interaktif halaman mode server.
 - **Tidak ada rute `.nexy`.** Apa pun yang Anda tulis di `.nexy` harus menjadi komponen kerangka kerja.
 - **Data server melewati titik akhir.** Rute klien tidak dapat membaca database pada waktu render; ia memanggil pengendali `.py` atau [Aksi](../guides/actions.md).
-- **Rute dinamis memerlukan param statis yang dideklarasikan, atau dimulai dari shell.** Ekspor `getStaticParams()` dari halaman - nama Next.js `getStaticPaths` dan `generateStaticParams` juga diterima - untuk memiliki satu dokumen per nilai. Tanpanya, shell membawa tata letak dan bukan halaman: halaman muncul setelah browser dijalankan.
+- **Rute dinamis dimulai dari shell kecuali shell mencantumkan paramnya.** Lihat [Pra-render rute dinamis](#pre-render-a-dynamic-route).
 - **CSR bukanlah halaman kosong, dan juga bukan SPA.** Dokumen pertama dirender oleh server; itu adalah navigasi yang terjadi di browser.
 
 ## Langkah selanjutnya
 
 - [Mode server dan mode klien](../routing/fbr/modes.md): pemeriksaan dan file yang ditolak
-- [Tata letak](../routing/fbr/layouts/README.md): file mana yang memiliki dokumen
+- [Tata letak](../routing/fbr/layouts/README.md): file mana yang memiliki dokumen tersebut
 - [SSR](ssr.md): default, halaman demi halaman
 - [Frontend](../guides/frontend.md): server pengembang dan build klien

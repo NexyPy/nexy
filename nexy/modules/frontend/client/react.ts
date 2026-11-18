@@ -5,12 +5,12 @@
 //
 // Written with createElement (no JSX) so it needs no compiler setting of its own.
 import {
+  Component,
   createElement,
   forwardRef,
   useEffect,
   useMemo,
   useRef,
-  useState,
   useSyncExternalStore,
   type AnchorHTMLAttributes,
   type ImgHTMLAttributes,
@@ -168,9 +168,12 @@ export const Image = forwardRef<HTMLImageElement, ImageComponentProps>(function 
 })
 
 /** Match a pathname against the routes: the route and its params, or null when none matches. */
-export function useMatch(pathname: string): RouteMatchInfo {
+export function useMatch(pathname?: string): RouteMatchInfo {
   const router = getRouter()
-  return useMemo(() => router?.matchPath(pathname) ?? { match: null, found: false }, [router, pathname])
+  // Without a path, match the current page. usePathname() runs on every render (rules of hooks).
+  const current = usePathname()
+  const target = pathname ?? current
+  return useMemo(() => router?.matchPath(target) ?? { match: null, found: false }, [router, target])
 }
 
 /** Block navigation when `blocker` returns a reason (string) or a promise of one. */
@@ -183,17 +186,15 @@ export function useBlocker(blocker: Blocker): void {
   }, [router, blocker])
 }
 
+const IDLE: TransitionState = { pending: false, next: null }
+
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
 export function useTransition(): TransitionState {
   const router = getRouter()
   return useSyncExternalStore(
-    () => {
-      if (!router) return () => {}
-      // `transition()` returns a fresh object each call; subscribe to location changes instead.
-      return router.subscribe(() => {})
-    },
-    () => router?.transition() ?? { pending: false, next: null },
-    () => ({ pending: false, next: null })
+    onChange => router?.subscribeTransition(onChange) ?? (() => {}),
+    () => router?.transition() ?? IDLE,
+    () => IDLE
   )
 }
 
@@ -204,11 +205,22 @@ export type ErrorBoundaryProps = {
   children?: React.ReactNode
 }
 
-export function ErrorBoundary({ fallback, children }: ErrorBoundaryProps) {
-  const [error, setError] = useState<Error | null>(null)
-  const reset = () => setError(null)
-  if (error) return fallback(error, reset)
-  return children ?? null
+type BoundaryState = { error: Error | null }
+
+// React catches a render error only in a class that defines getDerivedStateFromError.
+export class ErrorBoundary extends Component<ErrorBoundaryProps, BoundaryState> {
+  state: BoundaryState = { error: null }
+
+  static getDerivedStateFromError(error: Error): BoundaryState {
+    return { error }
+  }
+
+  reset = (): void => this.setState({ error: null })
+
+  render(): React.ReactNode {
+    const { error } = this.state
+    return error ? this.props.fallback(error, this.reset) : (this.props.children ?? null)
+  }
 }
 
 export { ActionError }

@@ -14,12 +14,19 @@ const folder = dir.pathname.replace(/^\/(\w:)/, "$1");
 const served = path.join(folder, "served.html");
 
 const APP = `
-import { Link, Image, useRouter, usePathname, useParams, useSearchParams } from "./client.tsx";
+import { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch } from "./client.tsx";
+// A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
+function Thrower() {
+  const path = usePathname();
+  return <>{(() => { if (path() === "/users/7") throw new Error("boom"); return null; })()}</>;
+}
 export default function App() {
   const router = useRouter();
   const path = usePathname();
   const params = useParams();
   const search = useSearchParams();
+  const transition = useTransition();
+  const matched = useMatch();
   return (
     <div>
       <Link id="home" href="/" exact activeClassName="on" class="nav">Home</Link>
@@ -29,8 +36,13 @@ export default function App() {
         <p id="path">{path()}</p>
         <p id="params">{JSON.stringify(params())}</p>
         <p id="tab">{search().get("tab") ?? ""}</p>
+        <p id="pending">{String(transition().pending)}</p>
+        <p id="matched">{matched().match?.params.id ?? ""}</p>
         <button id="push" onClick={() => router.push("/users/7?tab=x")}>push</button>
       </div>
+      <ErrorBoundary fallback={(error) => <p id="caught">{error.message}</p>}>
+        <Thrower />
+      </ErrorBoundary>
       <Image id="img" src="/a.png" alt="A" width={800} height={600} />
     </div>
   );
