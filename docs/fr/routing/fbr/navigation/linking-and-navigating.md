@@ -41,10 +41,10 @@ export default function Nav() {
 | Accessoire | Signification |
 |---|---|
 | `href` | Un itinéraire du projet (une faute de frappe est une erreur de type), éventuellement avec `?query` ou `#fragment`, ou une URL externe. |
-| `replace` | Remplacez l'entrée de l'historique au lieu d'en ajouter une. |
+| `replace` | Remplacez l’entrée de l’historique au lieu d’en ajouter une. |
 | `scroll` | `false` conserve la position de défilement après la navigation. Par défaut : `true`. |
 | `prefetch` | `'intent'` (par défaut) charge la page au survol, au focus ou au toucher ; `'viewport'` lorsque le lien apparaît ; `false` jamais. |
-| `activeClassName` | Ajouté à la classe alors que le lien pointe vers la page actuelle ou une page en dessous (`activeClass` dans Vue et Svelte). |
+| `activeClassName` | Ajouté à la classe lorsque le lien pointe vers la page actuelle ou une page en dessous (`activeClass` dans Vue et Svelte). |
 | `exact` | Actif uniquement sur la page exacte. |
 
 Le lien qui pointe vers la page actuelle obtient également `aria-current="page"`.
@@ -56,10 +56,12 @@ L'emplacement est disponible dans chaque cadre, dans l'idiome de ce cadre. Au co
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
 | Chemin | `usePathname()` | `usePathname()` renvoie un accesseur | `usePathname()` renvoie une référence | `$pathname` magasin |
-| Paramètres de route | `useParams()` | `useParams()` accesseur | `useParams()` ref | `$params` magasin |
-| Requête | `useSearchParams()` | `useSearchParams()` accesseur | `useSearchParams()` ref | `$searchParams` magasin |
-| Tout | `useLocation()` | `useLocation()` accesseur | `useLocation()` ref | `$location` magasin |
+| Paramètres d'itinéraire | `useParams()` | `useParams()` accesseur | `useParams()` réf | `$params` magasin |
+| Requête | `useSearchParams()` | `useSearchParams()` accesseur | `useSearchParams()` réf | `$searchParams` magasin |
+| Tout | `useLocation()` | `useLocation()` accesseur | `useLocation()` réf | `$location` magasin |
 | Naviguer | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Navigation en vol | `useTransition()` | `useTransition()` accesseur | `useTransition()` réf | `useTransition()` magasin |
+| Faire correspondre un chemin | `useMatch(path?)` | `useMatch(path?)` accesseur | `useMatch(path?)` réf | `useMatch(path?)` magasin |
 
 La requête est un `URLSearchParams`. `useRouter()` et `router` donnent `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` et `prefetch(href)` ; `push` et `replace` acceptent `{ scroll: false }`.
 
@@ -73,6 +75,64 @@ export default function User() {
   return <button onClick={() => router.push(`/users/${id}?tab=posts`)}>{tab}</button>;
 }
 ```
+
+## Afficher un état de chargement avec `useTransition`
+
+`useTransition()` indique si un client de navigation est en vol. `pending` est `true` à partir du clic jusqu'à ce que la page suivante soit affichée, et `next` est l'emplacement vers lequel il va. Il revient à `{ pending: false, next: null }` une fois la page affichée, lorsque la navigation s'arrête ou lorsqu'une plus récente la remplace.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## Faites correspondre un chemin avec `useMatch`
+
+`useMatch(path)` indique si `path` correspond à une route client. Il renvoie `{ match, found }`, où `match` contient l'itinéraire `file`, son `layouts` et son `params`, ou est `null`. Sans chemin, il correspond à la page actuelle et suit chaque navigation. Pendant le rendu du serveur, il n'y a pas encore de routeur, donc `match` est `null` et `found` est `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## Attrapez une page qui échoue avec `ErrorBoundary`
+
+`ErrorBoundary` affiche une solution de secours à la place de ses enfants lorsque l'un d'eux lance un lancer pendant le rendu dans le navigateur. La solution de secours reçoit l'erreur et `reset`, ce qui restitue à nouveau les enfants.
+
+| Cadre | Importer | Repli |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | un accessoire de fonction `fallback` ; les enfants vont dans l'emplacement par défaut |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | un extrait de `fallback` |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+Il n'attrape pas :
+
+- une erreur générée plus tard, dans un gestionnaire d'événements, un timer ou une promesse : détectez-la là où elle se produit. Vue est l'exception pour ses propres gestionnaires d'événements, dont les erreurs atteignent la limite ;
+- une page que le routeur ne peut pas charger : le navigateur la demande au serveur (voir [Ce que fait le routeur](#what-the-router-does)).
 
 ## `Image`
 
@@ -102,7 +162,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` restitue `<a href="/about" data-nexy-link="true">`. Chaque attribut et le `href` sont échappés en HTML.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` rend `<a href="/about" data-nexy-link="true">`. Chaque attribut et le `href` sont échappés en HTML.
 
 ## Ce que fait le routeur
 
@@ -125,6 +185,6 @@ Le routeur démarre uniquement dans un projet avec des routes client, donc un pr
 
 ## Prochaines étapes
 
-- [Mise en page](../layouts/README.md)
+- [Mises en page](../layouts/README.md)
 - [RSE](../../../rendering/csr.md)
 - [Composants](../../../views/nexy/components.md)

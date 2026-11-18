@@ -21,7 +21,7 @@
 
 `Link` وہی اینکر ہے جس کے ساتھ کوئی سادہ نہیں کر سکتا: اس کا `href` آپ کے راستوں کے خلاف چیک کیا جاتا ہے، یہ ہدف والے صفحے کو گرم کرتا ہے، اور یہ جانتا ہے کہ یہ کب موجودہ صفحہ پر اشارہ کرتا ہے۔ جب آپ `nx dev` یا `nx build` چلاتے ہیں تو Nexy آپ کے فریم ورک کا `Link` `__nexy__/src` میں تیار کرتا ہے۔
 
-| فریم ورک | درآمد |
+| فریم ورک | درآمد کریں۔ |
 |---|---|
 | React، Preact، Solid، Vue | `import { Link } from "@nexy/client"` |
 | Svelte | `import Link from "@nexy/Link.svelte"` |
@@ -38,10 +38,10 @@ export default function Nav() {
 }
 ```
 
-| پروپ | معنی |
+| سہارا | مطلب |
 |---|---|
 | `href` | پروجیکٹ کا راستہ (ٹائپو ایک قسم کی غلطی ہے)، اختیاری طور پر `?query` یا `#fragment`، یا ایک بیرونی URL کے ساتھ۔ |
-| `replace` | تاریخ کے اندراج کو شامل کرنے کے بجائے بدل دیں۔ |
+| `replace` | تاریخ کے اندراج کو شامل کرنے کے بجائے تبدیل کریں۔ |
 | `scroll` | `false` نیویگیٹ کرنے کے بعد اسکرول پوزیشن کو برقرار رکھتا ہے۔ طے شدہ: `true`۔ |
 | `prefetch` | `'intent'` (پہلے سے طے شدہ) صفحہ کو ہوور، فوکس یا ٹچ پر لوڈ کرتا ہے۔ `'viewport'` جب لنک اسکرول کرتا ہے `false` کبھی نہیں۔ |
 | `activeClassName` | کلاس میں شامل کیا گیا جب کہ لنک موجودہ صفحہ یا اس کے نیچے کسی صفحے پر اشارہ کرتا ہے (`activeClass` Vue اور Svelte میں)۔ |
@@ -55,11 +55,13 @@ export default function Nav() {
 
 | | React، Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| راستہ | `usePathname()` | `usePathname()` ایک رسائیر لوٹاتا ہے | `usePathname()` ریف | `$pathname` اسٹور |
-| روٹ پیرامز | `useParams()` | `useParams()` ایکسیسر | `useParams()` ریف | `$params` اسٹور |
+| راستہ | `usePathname()` | `usePathname()` ایک رسائیر لوٹاتا ہے۔ | `usePathname()` ایک حوالہ دیتا ہے۔ | `$pathname` اسٹور |
+| روٹ پیرامز | `useParams()` | `useParams()` رسائی کنندہ | `useParams()` حوالہ | `$params` اسٹور |
 | استفسار | `useSearchParams()` | `useSearchParams()` رسائی کنندہ | `useSearchParams()` حوالہ | `$searchParams` اسٹور |
-| ہر چیز | `useLocation()` | `useLocation()` ایکسیسر | `useLocation()` ریفری | `$location` اسٹور |
-| تشریف لے جائیں | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| سب کچھ | `useLocation()` | `useLocation()` رسائی کنندہ | `useLocation()` حوالہ | `$location` اسٹور |
+| نیویگیٹ کریں۔ | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| پرواز میں نیویگیشن | `useTransition()` | `useTransition()` رسائی کنندہ | `useTransition()` حوالہ | `useTransition()` اسٹور |
+| ایک راستہ ملائیں | `useMatch(path?)` | `useMatch(path?)` رسائی کنندہ | `useMatch(path?)` حوالہ | `useMatch(path?)` اسٹور |
 
 استفسار ایک `URLSearchParams` ہے۔ `useRouter()` اور `router` دیں `push(href)`، `replace(href)`، `back()`، `forward()`، `refresh()` اور `prefetch(href)`؛ `push` اور `replace` قبول کرتے ہیں `{ scroll: false }`۔
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## لوڈنگ حالت `useTransition` کے ساتھ دکھائیں
+
+`useTransition()` بتاتا ہے کہ آیا کلائنٹ نیویگیشن پرواز میں ہے۔ `pending` کلک سے اگلا صفحہ ظاہر ہونے تک `true` ہے، اور `next` وہ مقام ہے جہاں یہ جا رہا ہے۔ صفحہ کے دکھائے جانے کے بعد، جب نیویگیشن رک جاتی ہے، یا جب کوئی نیا اس کی جگہ لے لیتا ہے تو یہ واپس `{ pending: false, next: null }` پر چلا جاتا ہے۔
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## ایک راستے کو `useMatch` سے ملانا
+
+`useMatch(path)` بتاتا ہے کہ آیا `path` کلائنٹ کے راستے سے میل کھاتا ہے۔ یہ `{ match, found }` لوٹتا ہے، جہاں `match` راستے `file` کو رکھتا ہے، اس کا `layouts` اور اس کا `params`، یا ہے `null`۔ راستے کے بغیر یہ موجودہ صفحہ سے میل کھاتا ہے اور ہر نیویگیشن کی پیروی کرتا ہے۔ سرور رینڈر کے دوران ابھی تک کوئی راؤٹر نہیں ہے، لہذا `match` ہے `null` اور `found` `false` ہے۔
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## ایک صفحہ پکڑو جو `ErrorBoundary` کے ساتھ ناکام ہو
+
+`ErrorBoundary` اپنے بچوں کے بجائے فال بیک دکھاتا ہے جب ان میں سے کوئی پھینکتا ہے جب یہ براؤزر میں رینڈر ہوتا ہے۔ فال بیک کو غلطی اور `reset` موصول ہوتی ہے، جو بچوں کو دوبارہ پیش کرتی ہے۔
+
+| فریم ورک | درآمد کریں۔ | فال بیک |
+|---|---|---|
+| React، Preact، Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | ایک `fallback` فنکشن پروپ؛ بچے پہلے سے طے شدہ سلاٹ میں جاتے ہیں۔ |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | ایک `fallback` کا ٹکڑا |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+یہ نہیں پکڑتا:
+
+- ایک غلطی بعد میں پھینکی گئی، ایونٹ ہینڈلر، ٹائمر یا وعدہ میں: اسے پکڑو جہاں یہ ہوتا ہے۔ Vue اس کے اپنے ایونٹ ہینڈلرز کے لیے مستثنیٰ ہے، جن کی غلطیاں حد تک پہنچ جاتی ہیں۔
+- ایک صفحہ جو روٹر لوڈ نہیں کر سکتا: براؤزر اس کے بجائے سرور سے پوچھتا ہے (دیکھیں [روٹر کیا کرتا ہے](#what-the-router-does))۔
+
 ## `Image`
 
-`Image` ایک `<img>` کو پیش کرتا ہے جو پہلے سے طے شدہ طور پر سست ہے اور جب اس کا سائز معلوم ہوتا ہے تو ترتیب کو تبدیل نہیں کرتا ہے۔
+`Image` ایک `<img>` کو رینڈر کرتا ہے جو ڈیفالٹ کے لحاظ سے سست ہے اور جب اس کا سائز معلوم ہوتا ہے تو ترتیب کو تبدیل نہیں کرتا ہے۔
 
-| فریم ورک | درآمد |
+| فریم ورک | درآمد کریں۔ |
 |---|---|
 | React، Preact، Solid، Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |
@@ -90,7 +150,7 @@ export default function User() {
 - `alt` درکار ہے۔ آرائشی تصویر کے لیے `alt=""` کا استعمال کریں۔ جب یہ غائب ہو تو Nexy ایک بار خبردار کرتا ہے۔
 - `width` اور `height` دونوں کے ساتھ، اوصاف براؤزر کو پہلو کا تناسب دیتے ہیں اور تصویر سیال رہتی ہے (`height: auto; max-width: 100%`)۔
 - `priority` تصویر کو اب اعلی ترجیح پر لوڈ کرتا ہے، اس کے لیے جو آمد پر نظر آتا ہے۔
-- `fill` `width` اور `height` کو نظر انداز کرتے ہوئے، تصویر کو اس کے پوزیشن والے والدین کا احاطہ کرتا ہے۔
+- `fill` `width` اور `height` کو نظر انداز کرتے ہوئے، تصویر کو اس کے پوزیشن شدہ والدین کا احاطہ کرتا ہے۔
 - `sizes` اور `srcSet` سے گزرتے ہیں۔ Nexy تصاویر کا سائز تبدیل یا تبدیل نہیں کرتا ہے۔
 
 ## ایک `.nexy` صفحہ سے لنک
@@ -109,7 +169,7 @@ from nexy import Link
 نیویگیشن پر، راؤٹر:
 
 1. کلائنٹ کے راستوں (`.tsx`، `.jsx`، `.vue`، `.svelte`) کے خلاف راستے سے میل کھاتا ہے؛
-2. صفحہ اور اس کے [لے آؤٹس](../layouts/README.md) **پہلے** کو درآمد اور پیش کرتا ہے، اور تب ہی یو آر ایل کو `history.pushState` کے ساتھ منتقل کرتا ہے، اس لیے ایڈریس بار کبھی بھی ایسا صفحہ نہیں دکھاتا ہے جو ناکام ہوا ہو۔
+2. صفحہ اور اس کے [لے آؤٹس](../layouts/README.md) **پہلے** کو درآمد اور پیش کرتا ہے، اور اس کے بعد ہی یو آر ایل کو `history.pushState` کے ساتھ منتقل کرتا ہے، لہذا ایڈریس بار کبھی بھی ایسا صفحہ نہیں دکھاتا ہے جو ناکام ہوا ہو۔
 3. `document` پر ایک `nexy:navigated` واقعہ بھیجتا ہے۔
 4. سب سے اوپر، یا `#fragment` ہدف تک سکرول کرتا ہے۔
 

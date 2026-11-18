@@ -38,14 +38,14 @@ export default function Nav() {
 }
 ```
 
-| Proposición | Significado |
+| apoyo | Significado |
 |---|---|
 | `href` | Una ruta del proyecto (un error tipográfico es un error tipográfico), opcionalmente con `?query` o `#fragment`, o una URL externa. |
-| `replace` | Reemplazar la entrada del historial en lugar de agregar una. |
+| `replace` | Reemplace la entrada del historial en lugar de agregar una. |
 | `scroll` | `false` mantiene la posición de desplazamiento después de navegar. Valor predeterminado: `true`. |
 | `prefetch` | `'intent'` (predeterminado) carga la página al pasar el cursor, enfocar o tocar; `'viewport'` cuando el enlace aparece en la vista; `false` nunca. |
-| `activeClassName` | Agregado a la clase mientras el enlace apunta a la página actual o a una página debajo de ella (`activeClass` en Vue y Svelte). |
-| `exact` | Activo solo en la página exacta. |
+| `activeClassName` | Se agrega a la clase mientras el enlace apunta a la página actual o a una página debajo de ella (`activeClass` en Vue y Svelte). |
+| `exact` | Activo sólo en la página exacta. |
 
 El enlace que apunta a la página actual también obtiene `aria-current="page"`.
 
@@ -55,11 +55,13 @@ La ubicación está disponible en cada marco, en el idioma de ese marco. Durante
 
 | | React, Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| Ruta | `usePathname()` | `usePathname()` devuelve un descriptor de acceso | `usePathname()` devuelve una referencia | `$pathname` almacena |
-| Parámetros de ruta | `useParams()` | `useParams()` descriptor de acceso | `useParams()` ref | `$params` store |
-| Consulta | `useSearchParams()` | `useSearchParams()` descriptor de acceso | `useSearchParams()` ref | `$searchParams` tienda |
-| Todo | `useLocation()` | `useLocation()` descriptor de acceso | `useLocation()` ref | `$location` tienda |
+| Camino | `usePathname()` | `usePathname()` devuelve un descriptor de acceso | `usePathname()` devuelve una referencia | `$pathname` tienda |
+| Parámetros de ruta | `useParams()` | `useParams()` descriptor de acceso | `useParams()` referencia | `$params` tienda |
+| Consulta | `useSearchParams()` | `useSearchParams()` descriptor de acceso | `useSearchParams()` referencia | `$searchParams` tienda |
+| todo | `useLocation()` | `useLocation()` descriptor de acceso | `useLocation()` referencia | `$location` tienda |
 | Navegar | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| Navegación en vuelo | `useTransition()` | `useTransition()` descriptor de acceso | `useTransition()` referencia | `useTransition()` tienda |
+| Emparejar un camino | `useMatch(path?)` | `useMatch(path?)` descriptor de acceso | `useMatch(path?)` referencia | `useMatch(path?)` tienda |
 
 La consulta es un `URLSearchParams`. `useRouter()` y `router` dan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` y `prefetch(href)`; `push` y `replace` aceptan `{ scroll: false }`.
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## Mostrar un estado de carga con `useTransition`
+
+`useTransition()` indica si la navegación de un cliente está en vuelo. `pending` es `true` desde el clic hasta que se muestra la página siguiente, y `next` es la ubicación a la que se dirige. Vuelve a `{ pending: false, next: null }` una vez que se muestra la página, cuando se detiene la navegación o cuando una nueva la reemplaza.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## Haga coincidir una ruta con `useMatch`
+
+`useMatch(path)` indica si `path` coincide con una ruta de cliente. Devuelve `{ match, found }`, donde `match` contiene la ruta `file`, su `layouts` y su `params`, o es `null`. Sin una ruta, coincide con la página actual y sigue cada navegación. Durante el renderizado del servidor todavía no hay ningún enrutador, por lo que `match` es `null` y `found` es `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## Capte una página que falla con `ErrorBoundary`
+
+`ErrorBoundary` muestra un respaldo en lugar de sus hijos cuando uno de ellos lanza mientras se procesa en el navegador. El respaldo recibe el error y `reset`, lo que muestra a los niños nuevamente.
+
+| Marco | Importar | Respaldo |
+|---|---|---|
+| React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | un accesorio de función `fallback`; los niños van en el espacio predeterminado |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | un fragmento de `fallback` |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+No atrapa:
+
+- un error arrojado más tarde, en un controlador de eventos, un temporizador o una promesa: atraparlo donde sucede. Vue es la excepción para sus propios controladores de eventos, cuyos errores alcanzan el límite;
+- una página que el enrutador no puede cargar: el navegador la solicita al servidor (consulte [Qué hace el enrutador](#what-the-router-does)).
+
 ## `Image`
 
 `Image` representa un `<img>` que es diferido por defecto y no cambia el diseño cuando se conoce su tamaño.
 
-| Marco | Importación |
+| Marco | Importar |
 |---|---|
 | React, Preact, Solid, Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |

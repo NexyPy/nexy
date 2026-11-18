@@ -21,7 +21,7 @@
 
 `Link` هو نفس المرساة مع ما لا يستطيع الشخص العادي فعله: يتم فحص `href` الخاص به مقابل مساراتك، ويقوم بتدفئة الصفحة المستهدفة، ويعرف متى يشير إلى الصفحة الحالية. يقوم Nexy بإنشاء `Link` لإطار العمل الخاص بك في `__nexy__/src` عند تشغيل `nx dev` أو `nx build`.
 
-| الإطار | الاستيراد |
+| الإطار | استيراد |
 |---|---|
 | React، Preact، Solid، Vue | `import { Link } from "@nexy/client"` |
 | Svelte | `import Link from "@nexy/Link.svelte"` |
@@ -38,13 +38,13 @@ export default function Nav() {
 }
 ```
 
-| الدعامة | المعنى |
+| الدعامة | معنى |
 |---|---|
-| `href` | مسار المشروع (الخطأ المطبعي هو خطأ في النوع)، اختياريًا مع `?query` أو `#fragment`، أو عنوان URL خارجي. |
+| `href` | مسار المشروع (الخطأ المطبعي هو خطأ في الكتابة)، اختياريًا مع `?query` أو `#fragment`، أو عنوان URL خارجي. |
 | `replace` | استبدل إدخال السجل بدلاً من إضافة واحد. |
 | `scroll` | `false` يحافظ على موضع التمرير بعد التنقل. الافتراضي: `true`. |
 | `prefetch` | `'intent'` (افتراضي) يقوم بتحميل الصفحة عند التمرير أو التركيز أو اللمس؛ `'viewport'` عندما يتم تمرير الرابط إلى العرض؛ `false` أبدا. |
-| `activeClassName` | يضاف إلى الفصل بينما يشير الرابط إلى الصفحة الحالية أو صفحة أسفلها (`activeClass` في Vue و Svelte). |
+| `activeClassName` | تتم إضافتها إلى الفصل بينما يشير الارتباط إلى الصفحة الحالية أو الصفحة الموجودة أسفلها (`activeClass` في Vue و Svelte). |
 | `exact` | نشط فقط على الصفحة المحددة. |
 
 الرابط الذي يشير إلى الصفحة الحالية يحصل أيضًا على `aria-current="page"`.
@@ -53,13 +53,15 @@ export default function Nav() {
 
 الموقع متاح في كل إطار، في لغة ذلك الإطار. أثناء العملية الأولى، يقوم جانب الخادم بعرض إجابة الخطافات بعنوان URL للطلب، بحيث يتم ترطيب الصفحة دون عدم تطابق.
 
-| | React, Preact | Solid | Vue | Svelte |
+| | React، Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| المسار | `usePathname()` | `usePathname()` يُرجع موصلًا | `usePathname()` يُرجع مرجعًا | `$pathname` مخزن |
-| معلمات المسار | `useParams()` | `useParams()` الوصول | `useParams()` المرجع | `$params` المتجر |
-| الاستعلام | `useSearchParams()` | `useSearchParams()` الولوج | `useSearchParams()` المرجع | `$searchParams` المتجر |
-| كل شيء | `useLocation()` | `useLocation()` ملحق | `useLocation()` المرجع | `$location` المتجر |
-| التنقل | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| المسار | `usePathname()` | `usePathname()` يُرجع ملحقًا | `usePathname()` يرجع مرجعا | `$pathname` مخزن |
+| معلمات الطريق | `useParams()` | `useParams()` الواصل | `useParams()` المرجع | `$params` مخزن |
+| الاستعلام | `useSearchParams()` | `useSearchParams()` الواصل | `useSearchParams()` المرجع | `$searchParams` مخزن |
+| كل شيء | `useLocation()` | `useLocation()` الواصل | `useLocation()` المرجع | `$location` مخزن |
+| انتقل | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
+| الملاحة في الرحلة | `useTransition()` | `useTransition()` الواصل | `useTransition()` المرجع | `useTransition()` مخزن |
+| تطابق المسار | `useMatch(path?)` | `useMatch(path?)` الواصل | `useMatch(path?)` المرجع | `useMatch(path?)` مخزن |
 
 الاستعلام هو `URLSearchParams`. `useRouter()` و `router` يعطي `push(href)`، `replace(href)`، `back()`، `forward()`، `refresh()` و `prefetch(href)`؛ `push` و `replace` يقبل `{ scroll: false }`.
 
@@ -74,11 +76,69 @@ export default function User() {
 }
 ```
 
+## إظهار حالة التحميل مع `useTransition`
+
+`useTransition()` يخبرنا ما إذا كان نظام ملاحة العميل في حالة طيران. `pending` هو `true` من النقر حتى تظهر الصفحة التالية، و `next` هو الموقع الذي ستذهب إليه. ويعود إلى `{ pending: false, next: null }` بمجرد ظهور الصفحة، أو عند توقف التنقل، أو عند استبدالها بصفحة جديدة.
+
+```tsx
+import { useTransition } from "@nexy/client";
+
+export default function Progress() {
+  const { pending, next } = useTransition();
+  return pending ? <p role="status">Loading {next?.pathname}</p> : null;
+}
+```
+
+## مطابقة المسار مع `useMatch`
+
+`useMatch(path)` يخبرنا ما إذا كان `path` يطابق مسار العميل. ترجع `{ match, found }`، حيث يحمل `match` المسار `file`، و `layouts` و `params`، أو هو `null`. بدون مسار، فإنه يطابق الصفحة الحالية ويتبع كل تنقل. أثناء تقديم الخادم، لا يوجد جهاز توجيه حتى الآن، لذا فإن `match` هو `null` و `found` هو `false`.
+
+```tsx
+import { useMatch } from "@nexy/client";
+
+export default function Breadcrumb() {
+  const { match } = useMatch();
+  return match?.params.id ? <span>User {match.params.id}</span> : null;
+}
+```
+
+## قبض على الصفحة التي تفشل مع `ErrorBoundary`
+
+`ErrorBoundary` يظهر احتياطيًا بدلاً من أبنائه عندما يرمي أحدهم أثناء عرضه في المتصفح. يتلقى الإجراء الاحتياطي الخطأ و `reset`، مما يعرض الأطفال مرة أخرى.
+
+| الإطار | استيراد | احتياطي |
+|---|---|---|
+| React، Preact، Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | دعامة الدالة `fallback`؛ يذهب الأطفال إلى الفتحة الافتراضية |
+| Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | `fallback` مقتطف |
+
+```tsx
+import { ErrorBoundary } from "@nexy/client";
+
+<ErrorBoundary fallback={(error, reset) => <button onClick={reset}>{error.message}: retry</button>}>
+  <Dashboard />
+</ErrorBoundary>
+```
+
+```svelte
+<ErrorBoundary>
+  {#snippet fallback(error, reset)}
+    <button onclick={reset}>{error.message}: retry</button>
+  {/snippet}
+  <Dashboard />
+</ErrorBoundary>
+```
+
+لا يمسك:
+
+- خطأ تم طرحه لاحقًا، في معالج الحدث، أو المؤقت، أو الوعد: اكتشفه حيث يحدث. Vue هو الاستثناء لمعالجات الأحداث الخاصة به، والتي تصل أخطائه إلى الحدود؛
+- صفحة لا يستطيع جهاز التوجيه تحميلها: يطلب المتصفح من الخادم بدلاً من ذلك (راجع [ما يفعله جهاز التوجيه](#what-the-router-does)).
+
 ## `Image`
 
 `Image` يعرض `<img>` كسولًا بشكل افتراضي ولا يغير التخطيط عندما يكون حجمه معروفًا.
 
-| الإطار | الاستيراد |
+| الإطار | استيراد |
 |---|---|
 | React، Preact، Solid، Vue | `import { Image } from "@nexy/client"` |
 | Svelte | `import Image from "@nexy/Image.svelte"` |
@@ -110,7 +170,7 @@ from nexy import Link
 
 1. يطابق المسار مع مسارات العميل (`.tsx`، `.jsx`، `.vue`، `.svelte`)؛
 2. يستورد ويعرض الصفحة و[تخطيطاتها](../layouts/README.md) **أولاً**، وبعدها فقط ينقل عنوان URL باستخدام `history.pushState`، بحيث لا يعرض شريط العناوين أبدًا صفحة فاشلة؛
-3. يرسل حدث `nexy:navigated` على `document`؛
+3. يرسل `nexy:navigated` حدثًا على `document`؛
 4. يتم التمرير إلى الأعلى، أو إلى الهدف `#fragment`.
 
 يؤدي التنقل الأحدث إلى إلغاء التنقل الأقدم الذي لا يزال قيد العرض. إذا تعذر عرض الصفحة، يطلب المتصفح من الخادم بدلاً من ذلك. يعرض الزران الخلفي والأمامي صفحة هذا الإدخال ويستعيدان موضع التمرير الخاص به.
