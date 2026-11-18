@@ -78,7 +78,7 @@ class HealthController:
    ---
    id: prop[int]
    ---
-   <h1>Pedido nº{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
    `/orders/42` renderiza `Order #1042`; `/orders/abc` respostas `404`.
@@ -92,22 +92,22 @@ Um erro gerado durante a renderização é transformado em uma página por `erro
 <!-- router:modular -->
 1. A solicitação chega ao controlador. Seus parâmetros de caminho são convertidos para os tipos declarados pelo método e passados para a visualização:
 
-   ```nome do arquivo python="src/apps/order_controller.py"
-   do controlador de importação nexy.decorators
-   de nexy.hooks importar useViews
+   ```python filename="src/apps/order_controller.py"
+   from nexy.decorators import Controller
+   from nexy.hooks import useViews
 
 
-   @Controller("/pedidos/{id}")
-   classe OrderController:
-       assíncrono def get(self, id: int):
-           retornar useViews("src/apps/order_view.nexy", context={"id": id})
+   @Controller("/orders/{id}")
+   class OrderController:
+       async def get(self, id: int):
+           return useViews("src/apps/order_view.nexy", context={"id": id})
    ```
 
    ```nexy filename="src/apps/order_view.nexy"
    ---
    id: prop[int]
    ---
-   <h1>Pedido nº{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
    `/orders/42/` renderiza `Order #1042`; `/orders/abc/` respostas `404`.
@@ -121,7 +121,7 @@ Um erro gerado durante a renderização é respondido com a página de erro padr
 
 - A página mostra algo que o leitor possui: uma sessão, uma conta, um carrinho.
 - Os dados devem ser atualizados em cada carga.
-- O conteúdo deve estar no HTML para crawlers que não executam JavaScript.
+- O conteúdo deve estar no HTML para crawlers que não rodam JavaScript.
 - A página é barata para renderizar: uma consulta, um modelo.
 
 O primeiro caso, uma página que saúda o leitor da sessão. `useSession` lê a sessão de `useSession` em `nexyconfig.py`, sem a qual falha:
@@ -223,7 +223,7 @@ slug: prop[str] = "untitled"
 - **Uma renderização por solicitação.** Dois visitantes no mesmo segundo pagam cada um pela renderização e pelas consultas por trás dela.
 - **Sem cache.** Não há cache de resposta compartilhada para aquecer: com rotas de arquivo, [ISR](isr.md) adiciona um, por URL.
 - **O streaming ajuda apenas um componente que produz.** Uma consulta lenta no topo da página ainda atrasa o primeiro byte.
-- **Nenhuma saída estática.** No modo servidor nada é congelado na construção: não há modo SSG e nenhum comando de exportação. Consulte [Renderização](README.md).
+- **Nenhuma saída estática.** No modo servidor nada é congelado na construção: não há modo SSG e nenhum comando de exportação. O modo cliente pré-renderiza suas rotas, incluindo uma rota dinâmica: veja [Pré-renderizar uma rota dinâmica](csr.md#pre-render-a-dynamic-route).
 - **O escape automático está desativado** em `.nexy` modelos. Escape de valores não confiáveis ​​com `| e`.
 
 <!-- router:fbr,custom -->

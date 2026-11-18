@@ -74,11 +74,11 @@ class HealthController:
 <!-- router:fbr,custom -->
 1. Permintaan tersebut mencapai router berbasis file. Jalurnya cocok, dan segmen dinamis dilemparkan ke tipe yang dideklarasikan oleh komponen.
 
-   ```nama filenexy="src/routes/orders/[id].nexy"
+   ```nexy filename="src/routes/orders/[id].nexy"
    ---
-   id: penyangga[int]
+   id: prop[int]
    ---
-   <h1>Pesanan #{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
    `/orders/42` menerjemahkan `Order #1042`; `/orders/abc` jawaban `404`.
@@ -92,22 +92,22 @@ Kesalahan muncul saat rendering diubah menjadi halaman oleh `errors.nexy` ketika
 <!-- router:modular -->
 1. Permintaan tersebut mencapai pengontrol. Parameter jalurnya dimasukkan ke tipe yang dideklarasikan oleh metode, dan diteruskan ke tampilan:
 
-   ```nama file python="src/apps/order_controller.py"
-   dari pengontrol impor nexy.decorators
-   dari nexy.hooks impor useViews
+   ```python filename="src/apps/order_controller.py"
+   from nexy.decorators import Controller
+   from nexy.hooks import useViews
 
 
-   @Controller("/pesanan/{id}")
-   pengontrol pesanan kelas:
-       async def get(diri, id: int):
-           kembalikan useViews("src/apps/order_view.nexy", konteks={"id": id})
+   @Controller("/orders/{id}")
+   class OrderController:
+       async def get(self, id: int):
+           return useViews("src/apps/order_view.nexy", context={"id": id})
    ```
 
-   ```nama filenexy="src/apps/order_view.nexy"
+   ```nexy filename="src/apps/order_view.nexy"
    ---
-   id: penyangga[int]
+   id: prop[int]
    ---
-   <h1>Pesanan #{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
    `/orders/42/` menerjemahkan `Order #1042`; `/orders/abc/` jawaban `404`.
@@ -223,8 +223,8 @@ slug: prop[str] = "untitled"
 - **Satu render per permintaan.** Dua pengunjung dalam detik yang sama masing-masing membayar untuk render dan pertanyaan di baliknya.
 - **Tidak ada cache.** Tidak ada cache respons bersama untuk menghangatkan: dengan rute file, [ISR](isr.md) menambahkan satu, per URL.
 - **Streaming hanya membantu komponen yang menghasilkan.** Permintaan yang lambat di bagian atas halaman masih menunda byte pertama.
-- **Tidak ada keluaran statis.** Dalam mode server tidak ada yang dibekukan saat build: tidak ada mode SSG, dan tidak ada perintah ekspor. Lihat [Render](README.md).
-- **Pelarian otomatis tidak aktif** di `.nexy` templat. Hindari nilai-nilai yang tidak dipercaya dengan `| e`.
+- **Tidak ada keluaran statis.** Dalam mode server tidak ada yang dibekukan saat build: tidak ada mode SSG, dan tidak ada perintah ekspor. Mode klien melakukan pra-render rutenya, termasuk rute dinamis: lihat [Pra-render rute dinamis](csr.md#pre-render-a-dynamic-route).
+- **Pelarian otomatis tidak aktif** di templat `.nexy`. Hindari nilai-nilai yang tidak dipercaya dengan `| e`.
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/rute/pencarian.nexy"
