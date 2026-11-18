@@ -32,3 +32,7 @@ def test_closing_the_dev_server_builds_nothing():
 
 def test_closing_a_build_builds_the_client_bundles():
     assert BUILDING in _close("build")["logged"]
+
+
+def test_closing_a_failed_build_builds_nothing():
+    assert BUILDING not in _close("build-failed")["logged"]
