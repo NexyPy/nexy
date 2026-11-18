@@ -3,6 +3,36 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.6.4] - 2026-11-18
+
+### Fixed
+
+- **`useTransition` follows a client navigation**, in every adapter. It never saw one start, so
+  a loading indicator stayed hidden; it is now `pending` from the click until the next page is
+  shown, and idle again when the navigation ends, stops or is replaced (#430, #432).
+- **`ErrorBoundary` catches a render error**, in every adapter. Nothing ever set its error, so a
+  page that threw broke the whole page; the fallback now shows, and `reset` renders the children
+  again. A Svelte project now gets `@nexy/ErrorBoundary.svelte` (#431, #433).
+- **`useMatch()` without a path matches the current page**, in every adapter. Svelte matched `/`
+  whatever the page, and React and Preact required the path (#434, #435).
+- **A client route's async static params are pre-rendered.** `getStaticParams` returning a promise
+  was dropped, and a route with static params lost its shell, so a path it did not list got no
+  page (#427, #428).
+
+### Security
+
+- **The Modular React example's lock asks for anyio 4.14.2 and starlette 1.10.0**, for the
+  advisories of anyio 4.13.0 (one critical) and starlette 1.0.0 (#437).
+- **The VS Code extension's development tools carry no advisory that has a fix**: esbuild 0.28.2,
+  vite 8.3.8, and glob 14, minimatch 11 and serialize-javascript 7 through pnpm overrides.
+  picomatch has no fixed release yet (#437).
+
+### Documentation
+
+- How to pre-render a dynamic route from its static params (#303, #429).
+- `useTransition`, `useMatch` and `ErrorBoundary`, with what the boundary does not catch (#305,
+  #436).
+
 ## [2.6.3] - 2026-11-18
 
 ### Fixed
