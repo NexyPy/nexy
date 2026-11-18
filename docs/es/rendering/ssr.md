@@ -74,11 +74,11 @@ class HealthController:
 <!-- router:fbr,custom -->
 1. La solicitud llega al enrutador basado en archivos. La ruta coincide y los segmentos dinámicos se convierten en los tipos que declara el componente.
 
-   ```nexy nombre de archivo="src/routes/orders/[id].nexy"
+   ```nexy filename="src/routes/orders/[id].nexy"
    ---
-   id: propiedad[int]
+   id: prop[int]
    ---
-   <h1>N.º de pedido{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
    `/orders/42` representa `Order #1042`; `/orders/abc` responde `404`.
@@ -92,22 +92,22 @@ Un error generado durante el renderizado se convierte en una página mediante `e
 <!-- router:modular -->
 1. La solicitud llega al controlador. Sus parámetros de ruta se convierten a los tipos que declara el método y se pasan a la vista:
 
-   ```python nombre de archivo="src/apps/order_controller.py"
-   desde nexy.decorators importar controlador
-   desde nexy.hooks importar useViews
+   ```python filename="src/apps/order_controller.py"
+   from nexy.decorators import Controller
+   from nexy.hooks import useViews
 
 
-   @Controller("/pedidos/{id}")
-   clase Controlador de pedidos:
-       asíncrono def get(self, id: int):
-           devolver useViews("src/apps/order_view.nexy", contexto={"id": id})
+   @Controller("/orders/{id}")
+   class OrderController:
+       async def get(self, id: int):
+           return useViews("src/apps/order_view.nexy", context={"id": id})
    ```
 
-   ```nexy nombre de archivo="src/apps/order_view.nexy"
+   ```nexy filename="src/apps/order_view.nexy"
    ---
-   id: propiedad[int]
+   id: prop[int]
    ---
-   <h1>N.º de pedido{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
    `/orders/42/` representa `Order #1042`; `/orders/abc/` responde `404`.
@@ -222,8 +222,8 @@ slug: prop[str] = "untitled"
 
 - **Un render por solicitud.** Dos visitantes en el mismo segundo pagan cada uno por el render y por las consultas detrás de él.
 - **Sin caché.** No hay un caché de respuesta compartido para calentar: con rutas de archivos, [ISR](isr.md) agrega uno por URL.
-- **La transmisión por secuencias solo ayuda a un componente que rinde.** Una consulta lenta en la parte superior de la página aún retrasa el primer byte.
-- **Sin salida estática.** En el modo servidor, nada se congela en la compilación: no hay modo SSG ni comando de exportación. Consulte [Renderizado](README.md).
+- **La transmisión por secuencias solo ayuda a un componente que produce rendimiento.** Una consulta lenta en la parte superior de la página aún retrasa el primer byte.
+- **Sin salida estática.** En el modo servidor, nada se congela en la compilación: no hay modo SSG ni comando de exportación. El modo cliente prerenderiza sus rutas, incluida una dinámica: consulte [Prerenderizar una ruta dinámica](csr.md#pre-render-a-dynamic-route).
 - **El escape automático está desactivado** en `.nexy` plantillas. Escapa de valores que no son de confianza con `| e`.
 
 <!-- router:fbr,custom -->

@@ -76,12 +76,12 @@ class HealthController:
 
    ```nexy filename="src/routes/orders/[id].nexy"
    ---
-   identifiant : prop[int]
+   id: prop[int]
    ---
-   <h1>Commande n°{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
-   `/orders/42` rend `Order #1042`; `/orders/abc` répond à `404`.
+   `/orders/42` rend `Order #1042` ; `/orders/abc` répond à `404`.
 2. Le composant s'exécute. Celui qui attend sur Node - un document client - s'exécute dans un pool de threads, afin de ne pas bloquer la boucle d'événements.
 3. Le corps est diffusé sous la forme `text/html`. Un composant qui génère des morceaux les diffuse au fur et à mesure qu'il les crée.
 4. Le navigateur reçoit du HTML. Les îles s'hydratent conformément à leur [directive](islands.md).
@@ -93,21 +93,21 @@ Une erreur générée lors du rendu est transformée en page par `errors.nexy` l
 1. La demande parvient au contrôleur. Ses paramètres de chemin sont convertis en types déclarés par la méthode et transmis à la vue :
 
    ```python filename="src/apps/order_controller.py"
-   à partir de nexy.decorators import Controller
-   à partir de nexy.hooks, importez useViews
+   from nexy.decorators import Controller
+   from nexy.hooks import useViews
 
 
-   @Controller("/commandes/{id}")
-   classe OrderController :
-       async def get(self, id:int):
+   @Controller("/orders/{id}")
+   class OrderController:
+       async def get(self, id: int):
            return useViews("src/apps/order_view.nexy", context={"id": id})
    ```
 
    ```nexy filename="src/apps/order_view.nexy"
    ---
-   identifiant : prop[int]
+   id: prop[int]
    ---
-   <h1>Commande n°{{ id + 1000 }}</h1>
+   <h1>Order #{{ id + 1000 }}</h1>
    ```
 
    `/orders/42/` rend `Order #1042`; `/orders/abc/` répond à `404`.
@@ -221,9 +221,9 @@ slug: prop[str] = "untitled"
 ## Limites
 
 - **Un rendu par requête.** Deux visiteurs dans la même seconde paient chacun pour le rendu et pour les requêtes qui le sous-tendent.
-- **Pas de cache.** Il n'y a pas de cache de réponses partagé à réchauffer : avec les routes de fichiers, [ISR](isr.md) en ajoute un, par URL.
+- **Pas de cache.** Il n'y a pas de cache de réponses partagées à réchauffer : avec les routes de fichiers, [ISR](isr.md) en ajoute une, par URL.
 - **Le streaming n'aide qu'un composant qui produit.** Une requête lente en haut de la page retarde toujours le premier octet.
-- **Pas de sortie statique.** En mode serveur, rien n'est figé à la construction : il n'y a pas de mode SSG, ni de commande d'exportation. Voir [Rendu](README.md).
+- **Pas de sortie statique.** En mode serveur, rien n'est figé à la construction : il n'y a pas de mode SSG, ni de commande d'exportation. Le mode client pré-rend ses routes, y compris une route dynamique : voir [Pré-rendu d'une route dynamique](csr.md#pre-render-a-dynamic-route).
 - **L'échappement automatique est désactivé** dans les modèles `.nexy`. Échappez aux valeurs non fiables avec `| e`.
 
 <!-- router:fbr,custom -->
@@ -253,7 +253,7 @@ q = useSearchParams().get("q", "")
 <!-- router:fbr,custom -->
 - [ISR](isr.md) : met en cache cette page par URL
 <!-- /router -->
-- [Îles](islands.md) : conservez SSR et rendez un widget interactif
+- [Îles](islands.md) : conserver SSR et rendre un widget interactif
 <!-- router:fbr,custom -->
 - [CSR](csr.md) : navigation manuelle vers le navigateur
 <!-- /router -->

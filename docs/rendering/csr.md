@@ -80,6 +80,36 @@ export default function Home() {
 }
 ```
 
+## Pre-render a dynamic route
+
+A dynamic route such as `src/routes/blog/[slug].tsx` matches any value, so the build cannot know
+which pages to render. Export `generateStaticParams()` from the page to list them: `nexy build`
+renders one complete document per entry, and `nexy start` serves it for that path. The Next.js
+names `getStaticPaths` and `getStaticParams` are accepted too, and the function may be `async`.
+
+```tsx filename="src/routes/blog/[slug].tsx"
+export async function generateStaticParams() {
+  return [{ slug: "hello" }, { slug: "world" }]
+}
+
+export default function Post({ slug }: { slug: string }) {
+  return <h1>{slug}</h1>
+}
+```
+
+Each entry is an object of params, or `{ params: {...} }` as `getStaticPaths` returns them. The
+build writes:
+
+| File in `__nexy__/client/static/` | Served for |
+|---|---|
+| `src/routes/blog/[slug]/blog/hello.html` | `/blog/hello` |
+| `src/routes/blog/[slug]/blog/world.html` | `/blog/world` |
+| `src/routes/blog/[slug].shell.html` | any other `/blog/...` |
+
+A path the list does not name still works: it gets the shell, the layouts around an empty page, and
+the page appears once the browser has run. In `nexy dev` every path is rendered on demand, listed
+or not.
+
 ## Limitations
 
 - **The whole project.** You cannot mix one CSR page into a server-mode project: pick the mode for
@@ -87,10 +117,8 @@ export default function Home() {
 - **No `.nexy` routes.** Anything you wrote in `.nexy` has to become a framework component.
 - **Server data goes through endpoints.** A client route cannot read the database at render time; it
   calls a `.py` handler or an [Action](../guides/actions.md).
-- **A dynamic route needs a declared static param, or it starts from a shell.** Export
-  `getStaticParams()` from the page - the Next.js names `getStaticPaths` and `generateStaticParams`
-  are also accepted - to have one document per value. Without it, the shell carries the layouts and
-  not the page: the page appears once the browser has run.
+- **A dynamic route starts from a shell unless it lists its params.** See
+  [Pre-render a dynamic route](#pre-render-a-dynamic-route).
 - **CSR is not a blank page, and not a SPA either.** The first document is rendered by the server; it
   is the navigation that happens in the browser.
 

@@ -242,7 +242,8 @@ nothing is kept between the two. The query string is not a prop - read it with `
 - **Streaming only helps a component that yields.** A slow query at the top of the page still delays
   the first byte.
 - **No static output.** In server mode nothing is frozen at build: there is no SSG mode, and no
-  export command. See [Rendering](README.md).
+  export command. Client mode pre-renders its routes, a dynamic one included: see
+  [Pre-render a dynamic route](csr.md#pre-render-a-dynamic-route).
 - **Autoescaping is off** in `.nexy` templates. Escape untrusted values with `| e`.
 
 <!-- router:fbr,custom -->
