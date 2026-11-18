@@ -54,7 +54,7 @@ ruff check nexy/ && ruff format nexy/ --check && python -m mypy nexy --strict &&
 ### Prerequisites
 
 - **Python** 3.12+
-- **Node.js** 20+ (for frontend builds and VS Code extension)
+- **Node.js** 22.18+ (for frontend builds, the client tests and the VS Code extension)
 - **uv** package manager (recommended) or pip
 - **bun**, **pnpm**, or **npm** for JavaScript dependencies (Nexy prefers bun, then pnpm, then npm)
 
@@ -70,13 +70,19 @@ uv venv
 uv pip install -e . --group dev
 ```
 
-### JavaScript dependencies (optional)
+### JavaScript dependencies
 
-Only needed for the VS Code extension:
+The client tests (`tests/client`) mount the generated runtimes in jsdom; `python -m pytest tests/`
+fails without their packages:
 
 ```bash
-cd extensions/vscode
-pnpm install --frozen-lockfile
+pnpm install --frozen-lockfile --dir tests/client
+```
+
+The VS Code extension has its own, needed only to work on it:
+
+```bash
+pnpm install --frozen-lockfile --dir extensions/vscode
 ```
 
 ### Verify your setup
