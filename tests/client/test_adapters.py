@@ -120,7 +120,7 @@ class TestUseTransition:
 
 
 # The adapters whose ErrorBoundary is checked; each fix of #431 adds its own.
-CATCHING = ("react", "preact", "vue")
+CATCHING = ("react", "preact", "vue", "solid")
 
 
 @pytest.fixture(scope="module", params=CATCHING)
