@@ -3,20 +3,18 @@
 from __future__ import annotations
 
 import importlib
-import sys
 from pathlib import Path
 
 import pytest
+
+from tests.unit.nexy.cli.fake_tools import fake_tool
 
 # The package re-exports the function under the module's name: import the module by path.
 command = importlib.import_module("nexy.modules.cli.commands.test")
 
 
 def _fake_pytest(tmp_path: Path, output: str, code: int) -> str:
-    tool = tmp_path / "fake-pytest"
-    tool.write_text(f"#!{sys.executable}\nimport sys\nprint({output!r})\nsys.exit({code})\n")
-    tool.chmod(0o755)
-    return str(tool)
+    return fake_tool(tmp_path, "fake-pytest", output, code)
 
 
 @pytest.fixture

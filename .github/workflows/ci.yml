@@ -134,11 +134,73 @@ jobs:
       # (attackers reach contributors too); the project itself is excluded
       # because "nexy" is not on PyPI. The one ignore is documented in
       # SECURITY.md ("Dependency audit register").
+      # The script retries a dropped connection to PyPI, never an advisory: the bare pip-audit
+      # step failed a run on a timeout or a reset several times a day.
       - name: Dependency audit (pip-audit)
+        run: uv run --no-sync python scripts/audit_dependencies.py
+
+  # Windows is where users first met #75 (a wheel missing for Windows) and #330 (a fresh Vue
+  # project that does not start): one Python version, the unit suite, and that start.
+  windows:
+    name: Windows (3.13)
+    needs: gate
+    if: always() && needs.gate.outputs.run != 'false'
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      UV_PYTHON: "3.13"
+      NEXY_LANG: en
+      PYTHONUTF8: "1"
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: "3.13"
+
+      - name: Install deps (locked)
+        run: uv sync --frozen --group dev
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      # The ubuntu image ships the browser the COM media tests draw with; windows-latest does not.
+      - name: Install the headless browser of Playwright
+        run: uv run --no-sync python -m playwright install chromium-headless-shell
+
+      - name: Unit tests
+        run: uv run --no-sync python -m pytest tests/unit --tb=short -q -p no:cacheprovider
+
+      # The path of #330: a new Vue project, started by the nexy of this branch. Vite's own
+      # output is printed whatever happens, since it holds the cause of a failed start.
+      - name: A new Vue project starts
+        if: always()
+        shell: pwsh
         run: |
-          uv export --frozen --no-emit-project --format requirements.txt -o requirements-audit.txt
-          uv run --no-sync pip-audit -r requirements-audit.txt --disable-pip --strict \
-            --ignore-vuln PYSEC-2022-252
+          $nx = Join-Path $PWD ".venv\Scripts\nx.exe"
+          & $nx new demo -t web-fbr-vue --no-agents
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Set-Location demo
+          $out = Join-Path $PWD "dev.out.log"
+          $err = Join-Path $PWD "dev.err.log"
+          $server = Start-Process -FilePath $nx -ArgumentList "dev" -PassThru -NoNewWindow `
+            -RedirectStandardOutput $out -RedirectStandardError $err
+          $status = 0
+          foreach ($i in 1..90) {
+            Start-Sleep -Seconds 1
+            try {
+              $status = (Invoke-WebRequest -Uri "http://localhost:3000/" -UseBasicParsing -TimeoutSec 5).StatusCode
+              break
+            } catch { }
+            if ($server.HasExited) { break }
+          }
+          Write-Output "--- nexy dev output"
+          Get-Content $out, $err -ErrorAction SilentlyContinue
+          Stop-Process -Id $server.Id -Force -ErrorAction SilentlyContinue
+          if ($status -ne 200) { Write-Output "error: GET / answered $status"; exit 1 }
+          Write-Output "GET / answered 200"
 
   attribution:
     name: Commit attribution

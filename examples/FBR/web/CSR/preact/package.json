@@ -12,13 +12,13 @@
     "preact": "^10.25.4"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.2.4",
-    "tailwindcss": "^4.2.4",
     "@preact/preset-vite": "^2.10.1",
-    "preact-render-to-string": "^6.7.0",
+    "@tailwindcss/vite": "^4.2.4",
     "esbuild": "^0.28.0",
-    "glob": "^13.0.6",
+    "glob": "^14.0.2",
     "jsdom": "^29.1.1",
+    "preact-render-to-string": "^6.7.0",
+    "tailwindcss": "^4.2.4",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "vite": "^6.3.5"
