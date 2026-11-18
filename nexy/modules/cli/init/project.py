@@ -53,14 +53,15 @@ class InitProject:
 
     @staticmethod
     def _from_template(template: str, dest: Path, agents: bool = True) -> None:
+        """Render the starter shipped in the package, with the config the prompts would give.
+
+        A framework name such as `web-fbr-vue` is `web-fbr` with Vue: the repository no longer
+        holds a folder per name to fetch, and the starter is the one of the installed version.
+        """
+        template_source(template)  # an unknown name is refused here
         config: dict[str, Any] = TemplateResolver.config_for(template)
         config["agents"] = agents
-        if template_source(template) == "github":
-            initialize_from_template(
-                template, dest, config, use_github=True, subdir=f"templates/{template}"
-            )
-        else:
-            initialize_from_template(template, dest, config)
+        initialize_from_template(TemplateResolver.resolve(config), dest, config)
 
     def _ensure_ready(self, dest: Path, project_dir: str | None) -> None:
         """Guard against initializing inside an existing Nexy project.
