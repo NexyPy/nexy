@@ -9,13 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "preact": "^10.25.4"
+    "preact": "^10.29.8"
   },
   "devDependencies": {
-    "vite": "^8.0.10",
-    "@preact/preset-vite": "^2.10.1",
-    "@tailwindcss/vite": "^4.2.4",
-    "tailwindcss": "^4.2.4",
-    "typescript": "~5.9.3"
+    "@preact/preset-vite": "^2.10.6",
+    "@tailwindcss/vite": "^4.3.5",
+    "esbuild": "^0.28.2",
+    "glob": "^14.0.6",
+    "jsdom": "^29.1.1",
+    "preact-render-to-string": "^6.8.3",
+    "tailwindcss": "^4.3.5",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.8"
   }
 }
