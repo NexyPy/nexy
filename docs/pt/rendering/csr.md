@@ -73,12 +73,36 @@ export default function Home() {
 }
 ```
 
+## Pré-renderizar uma rota dinâmica
+
+Uma rota dinâmica como `src/routes/blog/[slug].tsx` corresponde a qualquer valor, portanto a construção não pode saber quais páginas renderizar. Exporte `generateStaticParams()` da página para listá-los: `nexy build` renderiza um documento completo por entrada e `nexy start` o serve para esse caminho. Os nomes Next.js `getStaticPaths` e `getStaticParams` também são aceitos, e a função pode ser `async`.
+
+```tsx filename="src/rotas/blog/[slug].tsx"
+export async function generateStaticParams() {
+  return [{ slug: "hello" }, { slug: "world" }]
+}
+
+export default function Post({ slug }: { slug: string }) {
+  return <h1>{slug}</h1>
+}
+```
+
+Cada entrada é um objeto de parâmetros, ou `{ params: {...} }` como `getStaticPaths` os retorna. A construção escreve:
+
+| Arquivo em `__nexy__/client/static/` | Servido para |
+|---|---|
+| `src/routes/blog/[slug]/blog/hello.html` | `/blog/hello` |
+| `src/routes/blog/[slug]/blog/world.html` | `/blog/world` |
+| `src/routes/blog/[slug].shell.html` | qualquer outro `/blog/...` |
+
+Um caminho que a lista não nomeia ainda funciona: ele obtém o shell, os layouts em torno de uma página vazia e a página aparece quando o navegador é executado. Em `nexy dev` todo caminho é renderizado sob demanda, listado ou não.
+
 ## Limitações
 
 - **O projeto inteiro.** Você não pode misturar uma página CSR em um projeto em modo servidor: escolha o modo para o aplicativo e use [ilhas](islands.md) para as partes interativas de uma página em modo servidor.
 - **Não há rotas `.nexy`.** Qualquer coisa que você escreveu em `.nexy` deve se tornar um componente do framework.
 - **Os dados do servidor passam pelos endpoints.** Uma rota do cliente não pode ler o banco de dados no momento da renderização; ele chama um manipulador `.py` ou uma [Ação](../guides/actions.md).
-- **Uma rota dinâmica precisa de um parâmetro estático declarado ou começa a partir de um shell.** Exportar `getStaticParams()` da página - os nomes Next.js `getStaticPaths` e `generateStaticParams` também são aceitos - para ter um documento por valor. Sem ele, o shell carrega os layouts e não a página: a página aparece assim que o navegador é executado.
+- **Uma rota dinâmica começa a partir de um shell, a menos que ele liste seus parâmetros.** Consulte [Pré-renderizar uma rota dinâmica](#pre-render-a-dynamic-route).
 - **CSR não é uma página em branco e nem um SPA.** O primeiro documento é renderizado pelo servidor; é a navegação que acontece no navegador.
 
 ## Próximas etapas

@@ -73,12 +73,36 @@ export default function Home() {
 }
 ```
 
+## 预渲染动态路线
+
+诸如 `src/routes/blog/[slug].tsx` 之类的动态路由匹配任何值，因此构建无法知道要渲染哪些页面。从页面导出 `generateStaticParams()` 以列出它们：`nexy build` 为每个条目呈现一个完整文档，`nexy start` 为该路径提供它。 Next.js 名称 `getStaticPaths` 和 `getStaticParams` 也被接受，并且函数可以是 `async`。
+
+```tsx filename="src/routes/blog/[slug].tsx"
+export async function generateStaticParams() {
+  return [{ slug: "hello" }, { slug: "world" }]
+}
+
+export default function Post({ slug }: { slug: string }) {
+  return <h1>{slug}</h1>
+}
+```
+
+每个条目都是 params 的对象，或者 `{ params: {...} }` 作为 `getStaticPaths` 返回它们。构建写道：
+
+| 文件在 `__nexy__/client/static/` | 服务于 |
+|---|---|
+| `src/routes/blog/[slug]/blog/hello.html` | `/blog/hello` |
+| `src/routes/blog/[slug]/blog/world.html` | `/blog/world` |
+| `src/routes/blog/[slug].shell.html` | 任何其他 `/blog/...` |
+
+列表未命名的路径仍然有效：它获取 shell、空页面周围的布局，并且该页面在浏览器运行后出现。在 `nexy dev` 中，每个路径都是按需渲染的，无论是否列出。
+
 ## 局限性
 
 - **整个项目。** 您不能将一个 CSR 页面混合到服务器模式项目中：选择应用程序的模式，然后将 [岛屿](islands.md) 用于服务器模式页面的交互部分。
 - **没有 `.nexy` 路由。** 你在 `.nexy` 中编写的任何内容都必须成为框架组件。
 - **服务器数据通过端点。** 客户端路由无法在渲染时读取数据库；它调用 `.py` 处理程序或 [操作](../guides/actions.md)。
-- **动态路由需要声明的静态参数，或者从 shell 开始。** 从页面导出 `getStaticParams()` - Next.js 名称 `getStaticPaths` 和 `generateStaticParams` 也被接受 - 每个值都有一个文档。如果没有它，外壳将携带布局而不是页面：浏览器运行后页面就会出现。
+- **动态路由从 shell 开始，除非它列出了其参数。** 请参阅[预渲染动态路由](#pre-render-a-dynamic-route)。
 - **CSR不是空白页，也不是SPA。** 第一个文档由服务器渲染；这是在浏览器中发生的导航。
 
 ## 后续步骤
