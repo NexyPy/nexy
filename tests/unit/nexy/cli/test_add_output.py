@@ -16,10 +16,14 @@ def english(monkeypatch):
     monkeypatch.setenv("NEXY_LANG", "en")
 
 
+# The path as the system writes it: `ui\Button.nexy` on Windows, `ui/Button.nexy` elsewhere.
+BUTTON = Path("ui", "Button.nexy")
+
+
 def test_add_an_added_component_is_listed_with_a_plus(tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     add._write_nexy_component(Path("ui"), "Button", "export default () => null", "react")
-    assert capsys.readouterr().out == " + ui/Button.nexy\n"
+    assert capsys.readouterr().out == f" + {BUTTON}\n"
 
 
 def test_add_a_component_that_exists_is_a_uv_warning(tmp_path, monkeypatch, capsys):
@@ -63,5 +67,5 @@ def test_add_a_component_that_cannot_be_written_is_a_uv_error(tmp_path, monkeypa
     add._write_nexy_component(Path("ui"), "Button", "x", "react")
     assert (
         capsys.readouterr().out
-        == "error: Failed to write ui/Button.nexy\n  cause: read-only file system\n"
+        == f"error: Failed to write {BUTTON}\n  cause: read-only file system\n"
     )
