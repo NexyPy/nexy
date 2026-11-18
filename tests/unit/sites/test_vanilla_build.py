@@ -21,6 +21,44 @@ def out(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return target
 
 
+@pytest.fixture(scope="module")
+def html(out: Path) -> str:
+    """The page of a guide, as served: what most of the tests below read."""
+    return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
+
+
+@pytest.fixture(scope="module")
+def article(out: Path) -> str:
+    """The article of the home page, without the menu around it."""
+    page = (out / "docs" / "index.html").read_text(encoding="utf-8")
+    return page.split('<article class="doc home">', 1)[1].split("</article>", 1)[0]
+
+
+@pytest.fixture(scope="module")
+def index(out: Path) -> list[dict[str, str]]:
+    return json.loads((out / "search-index.json").read_text(encoding="utf-8"))
+
+
+def _one_page_docs(root: Path) -> Path:
+    """A docs tree of one page: a build of it takes a blink, not the time of the whole site."""
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "README.md").write_text(
+        "# Docs\n\n## Guides\n\n### Forms\n| Page | Summary |\n|---|---|\n"
+        "| [Only](only.md) | Read this page |\n",
+        encoding="utf-8",
+    )
+    (root / "only.md").write_text("# Only\n\nThe text.\n", encoding="utf-8")
+    return root
+
+
+@pytest.fixture(scope="module")
+def untranslated(tmp_path_factory: pytest.TempPathFactory) -> str:
+    """A page with no French translation, as the French tree serves it."""
+    out = tmp_path_factory.mktemp("site")
+    build.build(out, _one_page_docs(tmp_path_factory.mktemp("docs")))
+    return (out / "docs" / "fr" / "only" / "index.html").read_text(encoding="utf-8")
+
+
 TRANSLATED = {language.code for language in i18n.LANGUAGES} - {i18n.DEFAULT}
 
 
@@ -79,11 +117,6 @@ class TestPages:
 
 class TestHomePage:
     """The home page is a first path: the introduction, then the cards of Getting Started."""
-
-    @pytest.fixture(scope="class")
-    def article(self, out):
-        page = (out / "docs" / "index.html").read_text(encoding="utf-8")
-        return page.split('<article class="doc home">', 1)[1].split("</article>", 1)[0]
 
     def test_the_article_shows_the_eight_cards_of_getting_started(self, article):
         assert article.count('class="home-card"') == 8
@@ -160,10 +193,6 @@ class TestLinks:
 
 
 class TestPageContent:
-    @pytest.fixture(scope="class")
-    def html(self, out):
-        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
-
     def test_the_title_is_the_page_title(self, html):
         assert "<title>Actions - Nexy</title>" in html
 
@@ -271,10 +300,6 @@ class TestProgress:
     def _menu(html: str) -> str:
         """The nav element of a page: the menu, nothing of what follows it."""
         return html.split('<nav class="side"', 1)[1].split("</nav>", 1)[0]
-
-    @pytest.fixture(scope="class")
-    def html(self, out):
-        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
 
     def test_the_button_is_a_hidden_link(self, html):
         assert CONTINUE in html
@@ -417,10 +442,6 @@ class TestNewBadge:
 
 
 class TestUsability:
-    @pytest.fixture(scope="class")
-    def html(self, out):
-        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
-
     def test_the_keyboard_can_skip_the_menu(self, html):
         assert 'class="skip" href="#content"' in html and 'id="content"' in html
 
@@ -430,14 +451,15 @@ class TestUsability:
     def test_code_is_coloured_without_javascript(self, html):
         assert 'class="tok-' in html
 
-    def test_a_wrong_address_gets_a_page_that_still_has_its_style(self, tmp_path):
-        build.build(tmp_path, base="/nexy")
-        page = (tmp_path / "404.html").read_text(encoding="utf-8")
+    def test_the_build_writes_the_wrong_address_page(self, out):
+        assert (out / "404.html").read_text(encoding="utf-8") == build.not_found_html("")
+
+    def test_a_wrong_address_gets_a_page_that_still_has_its_style(self):
+        page = build.not_found_html("/nexy")
         assert 'href="/nexy/assets/style.css"' in page and 'href="/nexy/docs/"' in page
 
-    def test_the_base_may_be_empty_for_a_site_at_the_root_of_a_domain(self, tmp_path):
-        build.build(tmp_path, base="")
-        assert 'href="/assets/style.css"' in (tmp_path / "404.html").read_text(encoding="utf-8")
+    def test_the_base_may_be_empty_for_a_site_at_the_root_of_a_domain(self):
+        assert 'href="/assets/style.css"' in build.not_found_html("")
 
     def test_a_wrong_address_speaks_the_language_of_its_folder(self):
         page = build.not_found_html("")
@@ -458,10 +480,6 @@ class TestUsability:
 
 
 class TestSearch:
-    @pytest.fixture(scope="class")
-    def index(self, out):
-        return json.loads((out / "search-index.json").read_text(encoding="utf-8"))
-
     def test_every_page_is_searchable(self, out, index):
         assert len(index) == len(_pages(out))
 
@@ -476,10 +494,6 @@ class TestSearch:
 class TestCrawlers:
     """What Google reads before a reader does: the sitemap, robots, the head of each page."""
 
-    @pytest.fixture(scope="class")
-    def page(self, out) -> str:
-        return (out / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
-
     def test_the_sitemap_lists_every_page_once(self, out):
         listed = (out / "sitemap.xml").read_text(encoding="utf-8").count("<url>")
         assert listed == _published(DOCS)
@@ -492,16 +506,16 @@ class TestCrawlers:
         robots = (out / "robots.txt").read_text(encoding="utf-8")
         assert f"Sitemap: {seo.DEFAULT_SITE_URL}/sitemap.xml" in robots
 
-    def test_a_page_declares_one_canonical_address(self, page):
-        assert page.count('rel="canonical"') == 1
-        assert f'<link rel="canonical" href="{seo.DEFAULT_SITE_URL}/docs/guides/actions/">' in page
+    def test_a_page_declares_one_canonical_address(self, html):
+        assert html.count('rel="canonical"') == 1
+        assert f'<link rel="canonical" href="{seo.DEFAULT_SITE_URL}/docs/guides/actions/">' in html
 
-    def test_a_page_says_what_it_is_about(self, page):
-        assert re.search(r'<meta name="description" content="[^"]{20,}">', page)
+    def test_a_page_says_what_it_is_about(self, html):
+        assert re.search(r'<meta name="description" content="[^"]{20,}">', html)
 
-    def test_a_page_reads_as_a_card(self, page):
-        assert '<meta property="og:title" content="Actions">' in page
-        assert 'property="og:image"' in page and 'name="twitter:card"' in page
+    def test_a_page_reads_as_a_card(self, html):
+        assert '<meta property="og:title" content="Actions">' in html
+        assert 'property="og:image"' in html and 'name="twitter:card"' in html
 
     def test_the_card_picture_ships_with_the_site(self, out):
         assert (out / "assets" / "og.png").is_file()
@@ -511,9 +525,10 @@ class TestCrawlers:
         assert 'property="og:type" content="website"' in home
 
     def test_the_site_url_given_at_build_time_is_the_one_published(self, tmp_path):
-        build.build(tmp_path, site_url="https://example.test/nexy")
-        page = (tmp_path / "docs" / "guides" / "actions" / "index.html").read_text(encoding="utf-8")
-        assert 'href="https://example.test/nexy/docs/guides/actions/"' in page
+        out = tmp_path / "out"
+        build.build(out, _one_page_docs(tmp_path / "docs"), site_url="https://example.test/nexy")
+        page = (out / "docs" / "only" / "index.html").read_text(encoding="utf-8")
+        assert 'href="https://example.test/nexy/docs/only/"' in page
 
     def test_the_root_sends_the_crawler_to_the_docs(self, out):
         root = (out / "index.html").read_text(encoding="utf-8")
@@ -570,27 +585,14 @@ class TestLanguages:
 class TestUntranslatedPage:
     """A page with no translation yet is served in English under the language, and says so."""
 
-    @pytest.fixture(scope="class")
-    def page(self, tmp_path_factory: pytest.TempPathFactory) -> str:
-        docs = tmp_path_factory.mktemp("docs")
-        (docs / "README.md").write_text(
-            "# Docs\n\n## Guides\n\n### Forms\n| Page | Summary |\n|---|---|\n"
-            "| [Only](only.md) | Read this page |\n",
-            encoding="utf-8",
-        )
-        (docs / "only.md").write_text("# Only\n\nThe text.\n", encoding="utf-8")
-        out = tmp_path_factory.mktemp("site")
-        build.build(out, docs)
-        return (out / "docs" / "fr" / "only" / "index.html").read_text(encoding="utf-8")
+    def test_it_says_it_is_still_in_english(self, untranslated):
+        assert 'class="lang-note"' in untranslated and "encore en anglais" in untranslated
 
-    def test_it_says_it_is_still_in_english(self, page):
-        assert 'class="lang-note"' in page and "encore en anglais" in page
+    def test_its_canonical_is_the_english_page(self, untranslated):
+        assert f'rel="canonical" href="{seo.DEFAULT_SITE_URL}/docs/only/"' in untranslated
 
-    def test_its_canonical_is_the_english_page(self, page):
-        assert f'rel="canonical" href="{seo.DEFAULT_SITE_URL}/docs/only/"' in page
-
-    def test_it_claims_no_translation(self, page):
-        assert 'rel="alternate" hreflang="fr"' not in page
+    def test_it_claims_no_translation(self, untranslated):
+        assert 'rel="alternate" hreflang="fr"' not in untranslated
 
 
 class TestOutline:
