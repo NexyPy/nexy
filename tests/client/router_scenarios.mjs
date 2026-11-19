@@ -1,7 +1,7 @@
 // Drives the framework-neutral client router (nexy/modules/frontend/client/router.ts) in jsdom.
 // Prints one JSON object between @@ markers: scenario name -> observations.
 import { JSDOM } from "jsdom";
-import { createRouter, searchParamsOf } from "../../nexy/modules/frontend/client/router.ts";
+import { createRouter, hold, searchParamsOf } from "../../nexy/modules/frontend/client/router.ts";
 
 const ROUTES = {
   "/": { file: "/src/routes/index.tsx", layouts: [], params: {} },
@@ -281,6 +281,22 @@ const out = {};
   const freed = new w.real.Event("beforeunload", { cancelable: true });
   w.real.dispatchEvent(freed);
   out.guard = { asked, refused, accepted, held: held.defaultPrevented, freed: freed.defaultPrevented };
+}
+
+// 16. hold() is what every useBlocker calls: true guards, false holds nothing, a function blocks.
+{
+  const w = world();
+  w.real.confirm = () => false;
+  const free = hold(w.router, false);
+  const freeOk = await w.router.navigate("/about");
+  free();
+  const guarded = hold(w.router, true);
+  const guardedOk = await w.router.navigate("/");
+  guarded();
+  const blocked = hold(w.router, () => "no");
+  const blockedOk = await w.router.navigate("/");
+  blocked();
+  out.hold = { freeOk, guardedOk, blockedOk };
 }
 
 console.log("@@" + JSON.stringify(out) + "@@");

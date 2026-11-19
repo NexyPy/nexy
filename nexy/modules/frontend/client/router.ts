@@ -370,6 +370,18 @@ export function createRouter(options: RouterOptions) {
   }
 }
 
+/** What a guard asks when the page gives no message of its own. */
+export const LEAVE_MESSAGE = 'You have unsaved changes. Leave this page?'
+
+/**
+ * What every adapter's useBlocker registers: `true` guards (asks `message`, and before a reload),
+ * `false` holds nothing, a function is a blocker. Returns the release.
+ */
+export function hold(router: Router, when: Blocker | boolean, message = LEAVE_MESSAGE): () => void {
+  if (when === false) return () => {}
+  return when === true ? router.guard(message) : router.blocker(when)
+}
+
 /** The router the runtime installed, or null before it starts and during server rendering. */
 export function getRouter(): Router | null {
   const g = globalThis as unknown as { __nexy_router?: Router }

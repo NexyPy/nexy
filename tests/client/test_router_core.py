@@ -160,3 +160,14 @@ class TestBlocker:
 
     def test_a_released_guard_lets_a_reload_go(self, seen):
         assert seen["guard"]["freed"] is False
+
+
+class TestHold:
+    def test_false_holds_nothing(self, seen):
+        assert seen["hold"]["freeOk"] is True
+
+    def test_true_asks_and_stays_on_a_no(self, seen):
+        assert seen["hold"]["guardedOk"] is False
+
+    def test_a_function_is_a_blocker(self, seen):
+        assert seen["hold"]["blockedOk"] is False
