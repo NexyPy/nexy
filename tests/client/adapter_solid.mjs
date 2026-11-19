@@ -14,7 +14,8 @@ const folder = dir.pathname.replace(/^\/(\w:)/, "$1");
 const served = path.join(folder, "served.html");
 
 const APP = `
-import { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch } from "./client.tsx";
+import { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch, useBlocker } from "./client.tsx";
+import { createEffect } from "solid-js";
 // A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
 function Thrower() {
   const path = usePathname();
@@ -27,6 +28,7 @@ export default function App() {
   const search = useSearchParams();
   const transition = useTransition();
   const matched = useMatch();
+  createEffect(() => useBlocker(path() === "/users/7", "Leave?"));
   return (
     <div>
       <Link id="home" href="/" exact activeClassName="on" class="nav">Home</Link>

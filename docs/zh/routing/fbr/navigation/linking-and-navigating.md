@@ -62,6 +62,7 @@ export default function Nav() {
 | 导航 | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | 飞行中导航 | `useTransition()` | `useTransition()` 访问器 | `useTransition()` 参考 | `useTransition()` 商店 |
 | 匹配路径 | `useMatch(path?)` | `useMatch(path?)` 访问器 | `useMatch(path?)` 参考 | `useMatch(path?)` 商店 |
+| 离开前询问 | `useBlocker(dirty)` | `useBlocker(dirty())` 在 `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` 在 `$effect` |
 
 查询是 `URLSearchParams`。 `useRouter()` 和 `router` 给出 `push(href)`、`replace(href)`、`back()`、`forward()`、`refresh()` 和 `prefetch(href)`； `push` 和 `replace` 接受 `{ scroll: false }`。
 
@@ -76,7 +77,7 @@ export default function User() {
 }
 ```
 
-## 用 `useTransition` 显示加载状态
+## 使用 `useTransition` 显示加载状态
 
 `useTransition()` 告知客户端导航是否正在飞行。 `pending` 是从点击到显示下一页的 `true`，`next` 是它要去的位置。一旦页面显示、导航停止或新页面替换它时，它就会返回到 `{ pending: false, next: null }`。
 
@@ -91,7 +92,7 @@ export default function Progress() {
 
 ## 将路径与 `useMatch` 匹配
 
-`useMatch(path)` 告诉 `path` 是否与客户端路由匹配。它返回 `{ match, found }`，其中 `match` 保存路线 `file`、其 `layouts` 及其 `params`，或者是 `null`。如果没有路径，它会匹配当前页面并遵循每个导航。在服务器渲染期间，还没有路由器，因此 `match` 是 `null`，`found` 是 `false`。
+`useMatch(path)` 告知 `path` 是否与客户端路由匹配。它返回 `{ match, found }`，其中 `match` 保存路线 `file`、其 `layouts` 及其 `params`，或者是 `null`。如果没有路径，它会匹配当前页面并遵循每个导航。在服务器渲染期间，还没有路由器，因此 `match` 是 `null`，`found` 是 `false`。
 
 ```tsx
 import { useMatch } from "@nexy/client";
@@ -131,8 +132,46 @@ import { ErrorBoundary } from "@nexy/client";
 
 它没有捕获：
 
-- 稍后在事件处理程序、计时器或承诺中抛出的错误：在发生的地方捕获它。 Vue 是其自身事件处理程序的异常，其错误达到边界；
+- 稍后在事件处理程序、计时器或承诺中抛出的错误：在发生的地方捕获它。 Vue 是其自身事件处理程序的异常，其错误到达边界；
 - 路由器无法加载的页面：浏览器向服务器请求该页面（请参阅[路由器的作用](#what-the-router-does)）。
+
+## 在离开未保存更改的页面之前询问
+
+`useBlocker(dirty, message?)` 在访问者离开前询问，而 `dirty` 为 true：链接、`router.push`、后退和前进按钮、重新加载和关闭选项卡。客户端导航在 `confirm()` 中显示 `message`：yes 继续，no 停留在页面上。重新加载或关闭选项卡会显示浏览器自己的问题，没有页面可以说出该问题。如果没有消息，问题是“您有未保存的更改。离开此页面吗？”。
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+在每个框架的惯用语中，标志在发生变化的地方被读取：
+
+| 框架 | 跟随旗帜 |
+|---|---|
+| React，Preact | `useBlocker(dirty)` 在每个渲染上 |
+| Vue | `useBlocker(dirty)` 和 `dirty` 一个 ref 或一个计算的 |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` 还采用一个函数，根据访问者的去向做出决定。它接收下一个位置和当前位置，并返回停留的原因（字符串），或者不进行任何操作：
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+函数不会自行询问，也不会重新加载；拨打其中的 `confirm()` 询问。
 
 ## `Image`
 

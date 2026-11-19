@@ -17,6 +17,7 @@ import { isServer } from 'solid-js/web'
 import type { Route } from './routes.auto.ts'
 import {
   getRouter,
+  hold,
   serverLocation,
   type Blocker,
   type NavigateOptions,
@@ -87,13 +88,11 @@ export function useMatch(pathname?: string): Accessor<RouteMatchInfo> {
   return createMemo(() => router?.matchPath(pathname ?? location().pathname) ?? { match: null, found: false })
 }
 
-/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
-export function useBlocker(blocker: Blocker): void {
+/** Hold navigation: `true` while there are unsaved changes, or a blocker returning a reason. */
+export function useBlocker(when: Blocker | boolean, message?: string): void {
   const router = getRouter()
-  if (!isServer && router) {
-    const stop = router.blocker(blocker)
-    onCleanup(stop)
-  }
+  // In createEffect(() => useBlocker(dirty())) the hold follows the signal: onCleanup releases it.
+  if (!isServer && router) onCleanup(hold(router, when, message))
 }
 
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */

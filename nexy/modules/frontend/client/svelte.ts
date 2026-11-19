@@ -10,6 +10,7 @@ import type { Readable } from 'svelte/store'
 import type { Route } from './routes.auto.ts'
 import {
   getRouter,
+  hold,
   serverLocation,
   type Blocker,
   type NavigateOptions,
@@ -81,11 +82,11 @@ export function useMatch(pathname?: string): Readable<RouteMatchInfo> {
   }
 }
 
-/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
-export function useBlocker(blocker: Blocker): () => void {
+/** Hold navigation: `true` while there are unsaved changes, or a blocker returning a reason. */
+export function useBlocker(when: Blocker | boolean, message?: string): () => void {
   const router = getRouter()
-  if (!router) return () => {}
-  return router.blocker(blocker)
+  // $effect(() => useBlocker(dirty)) follows the state: the release it returns runs on each change.
+  return router ? hold(router, when, message) : () => {}
 }
 
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
