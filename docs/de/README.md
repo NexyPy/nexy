@@ -2,7 +2,7 @@
 
 **Ein Python Framework für Fullstack-Webanwendungen.**
 
-Nexy fügt Ihre Seiten und Ihre API in einem Python Projekt zusammen, das von einem Server bedient wird. Version 2.2 basiert auf FastAPI: Jede API-Route ist eine FastAPI-Route, aufgelistet in einem OpenAPI-Schema, das Scalar unter `/docs` anzeigt.
+Nexy fügt Ihre Seiten und Ihre API in einem Python Projekt zusammen, das von einem Server bedient wird. Version 2.2 basiert auf FastAPI: Jede API-Route ist eine FastAPI-Route, aufgeführt in einem OpenAPI-Schema, das Scalar unter `/docs` anzeigt.
 
 - **Python zuerst.** Seiten, Endpunkte, Formulare und Aktionen sind Python, und eine Seite benötigt kein JavaScript.
 - **Ein Frontend, wenn Sie eines wollen.** React, Vue, Svelte, Solid oder Preact, für eine Komponente oder für die gesamte Site.
@@ -159,6 +159,7 @@ Controller und Module.
 | Seite | Was Sie tun werden |
 |---|---|
 | [Middleware und Sicherheit](guides/middleware-and-security.md) | Richten Sie CORS, GZip, vertrauenswürdige Hosts und Sitzungen ein |
+| [Sitemap und robots.txt](guides/sitemap.md) | Bedienen Sie `/sitemap.xml` und `/robots.txt` von Ihren Routen aus |
 | [Bereitstellen](deployment/README.md) | Zusammenstellen, in Behälter füllen und servieren |
 | [Leistung](deployment/performance.md) | Messen und optimieren Sie die Standardwerte |
 
@@ -172,7 +173,7 @@ Controller und Module.
 | Seite | Was Sie tun werden |
 |---|---|
 | [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
-| [Debuggen](guides/debugging.md) | Stoppen Sie in Ihrem Servercode mit `breakpoint()` oder VS Code |
+| [Debuggen](guides/debugging.md) | Stoppen Sie Ihren Servercode mit `breakpoint()` oder VS Code |
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 
@@ -183,7 +184,7 @@ Controller und Module.
 |---|---|
 | [SQLite](databases/sqlite.md) | Verwenden Sie eine Datei, keinen Server: Engine, Pragmas, Migrationen und Tests |
 | [PostgreSQL](databases/postgresql.md) | Verbinden Sie sich mit psycopg, verwenden Sie JSONB, Arrays, Suche und Upserts |
-| [Neon](databases/neon.md) | Verwenden Sie serverlosen PostgreSQL: gepoolten Host, automatische Suspendierung und Verzweigungen |
+| [Neon](databases/neon.md) | Verwenden Sie serverloses PostgreSQL: gepoolten Host, automatische Suspendierung und Verzweigungen |
 | [MySQL und MariaDB](databases/mysql-mariadb.md) | Stellen Sie eine Verbindung mit pymysql her, verwenden Sie utf8mb4, Upserts und die Volltextsuche |
 
 ## Kommt von
@@ -215,7 +216,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 |---|---|
 | [Von Next.js](coming-from/nextjs.md) | Behalten Sie Ihre React-Seiten und verschieben Sie den Servercode nach Python |
 | [Von Remix](coming-from/remix.md) | Verwandeln Sie Loader und Aktionen in Python Handler und Aktionen |
-| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue-Seiten und verschieben Sie `server/` nach Python |
+| [Von Nuxt](coming-from/nuxt.md) | Behalten Sie Ihre Vue Seiten und verschieben Sie `server/` nach Python |
 | [Von SvelteKit](coming-from/sveltekit.md) | Behalten Sie Ihre Svelte-Seiten und verschieben Sie Lasten, Aktionen und Hooks nach Python |
 | [Von Astro](coming-from/astro.md) | Schreiben Sie Astro Seiten als `.nexy` Seiten mit denselben Inseln |
 | [Von Laravel](coming-from/laravel.md) | Ordnen Sie Routen, Controller, Blade, Eloquent und Warteschlangen Nexy zu |
@@ -233,7 +234,7 @@ Die gleichen Aufgaben, geschrieben in dem Ihnen bekannten Framework und dann in 
 | Seite | Was darin aufgeführt ist |
 |---|---|
 | [CLI](reference/cli.md) | Befehle, Flags, Eingabeaufforderungen und Exit-Codes |
-| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py`-Feld und seine Standardeinstellung |
+| [Konfiguration](reference/config.md) | Jedes `nexyconfig.py` Feld und seine Standardeinstellung |
 
 ### Python API und Fehler
 | Seite | Was darin aufgeführt ist |

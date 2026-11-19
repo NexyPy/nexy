@@ -24,6 +24,7 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | 工具栏 `nexy dev` 添加到每个页面（页面信息、路由、错误、配置）； `False` 将其删除。从未出现在生产中 |
 | `useHealth` | `False` | 为负载均衡器和 Kubernetes 探测器提供 `GET /health/live` 和 `GET /health/ready` 服务；请参阅[部署](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | 工作线程读取的最大请求正文，以字节为单位 (1 MiB)；较大的为 `413`，`0` 则关闭限制。为需要文件上传的路由提高它 |
+| `useSiteUrl` | `None` | 网站的公共来源，例如 `"https://example.com"`；一旦设置，Nexy 将服务 `/sitemap.xml` 和 `/robots.txt`。请参阅[站点地图和 robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | 进程 `nx start` 运行； `0` 是 Linux 和 macOS 上每个 CPU 一个，Windows 上一个 |
 | `useCSR` | `False` | 客户端路由模式； `.nexy` 路线已禁用 |
 
@@ -96,7 +97,7 @@ class NexyConfig(NexyConfigModel):
 | `useMiddlewares` | `[]` | ASGI中间件类 |
 | `useCORS` | `None` | 夸格斯 `CORSMiddleware` |
 | `useGZip` | `None` | 夸格斯 `GZipMiddleware` |
-| `useTrustedHost` | `None` | 夸格斯 `TrustedHostMiddleware` |
+| `useTrustedHost` | `None` | kwargs 为 `TrustedHostMiddleware` |
 | `useSession` | `None` | 夸格斯 `SessionMiddleware` |
 | `useAuth` | `None` | 身份验证中间件配置 |
 | `useHTTPSRedirect` | `False` | 将 HTTP 重定向到 HTTPS |
