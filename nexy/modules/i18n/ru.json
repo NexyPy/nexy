@@ -206,7 +206,7 @@
     "node_installed": "node_modules установлены с помощью {manager}",
     "python_synced": ".venv синхронизировано с помощью uv",
     "package_added": "{package} добавлен в .venv",
-    "created": "Проект создан из {name}"
+    "created": "Проект {name} создан"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich не инициализирован. Сначала выполните «nx m --init».",

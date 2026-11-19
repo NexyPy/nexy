@@ -206,7 +206,7 @@
     "node_installed": "{manager} से node_modules इंस्टॉल किया",
     "python_synced": "uv से .venv सिंक किया",
     "package_added": "{package} को .venv में जोड़ा",
-    "created": "{name} से प्रोजेक्ट बनाया"
+    "created": "प्रोजेक्ट {name} बनाया गया"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich शुरू नहीं किया गया है। पहले 'nx m --init' चलाएँ।",

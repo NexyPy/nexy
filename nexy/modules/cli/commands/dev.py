@@ -29,6 +29,7 @@ from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.cli.devtools.watch import create_observer, purge_project_modules, stop_observer
 from nexy.modules.frontend import FrontendGenerator
 from nexy.modules.i18n import t
+from nexy.modules.routers.actions.engine import ACTION_ENGINE
 
 _APP_MODULES = ("nexy.modules.routers.app", "nexy.modules.routers.fbrouter")
 _APP = "nexy.modules.routers.app:_server"
@@ -79,6 +80,8 @@ def _generate_and_compile(
         build = pool.submit(Builder().build, showlog=False)
 
         frontend.result()
+        # Before Vite: a page that imports `@nexy/actions` must find it on its first transform.
+        ACTION_ENGINE.refresh_client()
 
         if config.useVite:
             session.vite = Server.vite(port=client_port, ssl=ssl)

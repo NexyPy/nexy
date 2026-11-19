@@ -7,13 +7,12 @@ on:
     branches:
       - main
       - develop
-      - V2
       - "feature/**"
       - "fix/**"
       - "docs/**"
       - "perf/**"
   pull_request:
-    branches: [main, develop, V2]
+    branches: [main, develop]
 
 # A new push to the same ref makes the previous run obsolete. A push and the
 # pull_request it also triggers stay in separate groups: the `gate` job decides
@@ -26,12 +25,12 @@ jobs:
   # A pushed branch that an open pull request already covers must not run the matrix
   # twice. The pull_request run is the one the PR shows, so the push run steps aside;
   # a push without a PR keeps its run. The integration branches always run: a PR from
-  # develop to staging must not silence the CI of develop itself. Empty on a
+  # develop to main must not silence the CI of develop itself. Empty on a
   # pull_request run, where the gate is skipped, and `needs.<skipped job>.outputs` is
   # then an empty string.
   gate:
     name: Decide whether a push runs
-    if: github.event_name == 'push' && !contains(fromJSON('["main","develop","V2"]'), github.ref_name)
+    if: github.event_name == 'push' && !contains(fromJSON('["main","develop"]'), github.ref_name)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

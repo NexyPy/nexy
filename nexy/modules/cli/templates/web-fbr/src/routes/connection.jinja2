@@ -1,85 +1,156 @@
 {% if useCSR %}
 {%- set cls = "className" if client_framework == "react" else "class" -%}
-{%- set measure -%}
-{% raw %}const IDLE = "Not checked yet.";
-const WAITING = "Waiting for the server...";
+{%- set source = "two server actions, <code>team</code> and <code>join_team</code> of <code>src/actions/team.py</code>" -%}
+{%- set calls -%}
+{% raw %}type Member = { name: string; email: string };
+// What the page shows after a call: the team the server answered with (null keeps the list) and a line.
+type Shown = { members: Member[] | null; status: string };
 
-// Calls the action and times the round trip: what the page says once the server answered.
-async function measure(): Promise<string> {
+const LOADING = "Asking the server for the team...";
+
+function since(started: number): number {
+  return Math.round(performance.now() - started);
+}
+
+function failed(error: unknown): Shown {
+  const reason = error instanceof Error ? error.message : String(error);
+  return { members: null, status: `No answer from the server: ${reason}` };
+}
+
+// One call to the `team` action, timed.
+async function loadTeam(): Promise<Shown> {
   const started = performance.now();
   try {
-    const answer = await ping();
-    const took = Math.round(performance.now() - started);
-    return `Connected in ${took} ms. Python ${answer.python} answered at ${answer.time}.`;
+    const answer = await team();
+    return { members: answer.members, status: `Loaded from Python in ${since(started)} ms.` };
   } catch (error) {
-    return `No answer from the server: ${error instanceof Error ? error.message : String(error)}`;
+    return failed(error);
+  }
+}
+
+// Sends the form to the `join_team` action; the server answers with the whole team.
+async function sendForm(form: HTMLFormElement): Promise<Shown> {
+  const fields = new FormData(form);
+  const started = performance.now();
+  try {
+    const answer = await join_team({
+      name: String(fields.get("name") ?? ""),
+      email: String(fields.get("email") ?? ""),
+    });
+    if (!answer.note) form.reset();
+    return { members: answer.members, status: answer.note || `Saved by Python in ${since(started)} ms.` };
+  } catch (error) {
+    return failed(error);
   }
 }{% endraw %}
 {%- endset -%}
 {%- if client_framework == "vue" -%}
-{%- set check = '@click="check"' -%}{%- set pending = ':disabled="pending"' -%}{%- set status = "{{ status }}" -%}
+{%- set each_open = "" -%}{%- set each_close = "" -%}
+{%- set item_key = ' v-for="member in members" :key="member.email"' -%}
+{%- set name = "{{ member.name }}" -%}{%- set email = "{{ member.email }}" -%}
+{%- set submit = '@submit.prevent="add"' -%}{%- set pending = ':disabled="pending"' -%}{%- set status = "{{ status }}" -%}
 <script setup lang="ts">
-import { ref } from "vue";
-import { ping } from "@nexy/actions";
+import { onMounted, ref } from "vue";
+import { join_team, team } from "@nexy/actions";
 
-{{ measure }}
+{{ calls }}
 
-const status = ref(IDLE);
+const members = ref<Member[]>([]);
+const status = ref(LOADING);
 const pending = ref(false);
 
-async function check() {
+function show(shown: Shown) {
+  if (shown.members) members.value = shown.members;
+  status.value = shown.status;
+}
+
+async function add(event: Event) {
   pending.value = true;
-  status.value = WAITING;
-  status.value = await measure();
+  show(await sendForm(event.currentTarget as HTMLFormElement));
   pending.value = false;
 }
+
+onMounted(async () => show(await loadTeam()));
 </script>
 
 <template>
 {% include "connection.html.jinja2" %}
 </template>
 {%- elif client_framework == "svelte" -%}
-{%- set check = 'onclick={check}' -%}{%- set pending = 'disabled={pending}' -%}{%- set status = "{status}" -%}
+{%- set each_open = "{#each members as member (member.email)}" -%}{%- set each_close = "{/each}" -%}
+{%- set item_key = "" -%}
+{%- set name = "{member.name}" -%}{%- set email = "{member.email}" -%}
+{%- set submit = 'onsubmit={add}' -%}{%- set pending = 'disabled={pending}' -%}{%- set status = "{status}" -%}
 <script lang="ts">
-  import { ping } from "@nexy/actions";
+  import { onMount } from "svelte";
+  import { join_team, team } from "@nexy/actions";
 
-{{ measure | indent(2, true) }}
+{{ calls | indent(2, true) }}
 
-  let status = $state(IDLE);
+  let members = $state<Member[]>([]);
+  let status = $state(LOADING);
   let pending = $state(false);
 
-  async function check() {
+  function show(shown: Shown) {
+    if (shown.members) members = shown.members;
+    status = shown.status;
+  }
+
+  async function add(event: SubmitEvent & { currentTarget: HTMLFormElement }) {
+    event.preventDefault();
     pending = true;
-    status = WAITING;
-    status = await measure();
+    show(await sendForm(event.currentTarget));
     pending = false;
   }
+
+  onMount(async () => show(await loadTeam()));
 </script>
 
 {% include "connection.html.jinja2" %}
 {%- else -%}
-{%- set getter = "()" if client_framework == "solid" else "" -%}
-{%- set check = 'onClick={check}' -%}{%- set pending = 'disabled={pending' ~ getter ~ '}' -%}{%- set status = '{status' ~ getter ~ '}' -%}
-{% if client_framework == "solid" %}import { createSignal } from "solid-js";
-{% elif client_framework == "preact" %}import { useState } from "preact/hooks";
-{% else %}import { useState } from "react";
-{% endif %}import { ping } from "@nexy/actions";
+{%- set solid = client_framework == "solid" -%}
+{%- set getter = "()" if solid else "" -%}
+{%- if solid -%}
+{%- set each_open = "<For each={members()}>{(member) => (" -%}{%- set each_close = ")}</For>" -%}
+{%- set item_key = "" -%}
+{%- else -%}
+{%- set each_open = "{members.map((member) => (" -%}{%- set each_close = "))}" -%}
+{%- set item_key = " key={member.email}" -%}
+{%- endif -%}
+{%- set name = "{member.name}" -%}{%- set email = "{member.email}" -%}
+{%- set submit = 'onSubmit={add}' -%}{%- set pending = 'disabled={pending' ~ getter ~ '}' -%}{%- set status = '{status' ~ getter ~ '}' -%}
+{% if solid %}import { For, createSignal, onMount } from "solid-js";
+{% elif client_framework == "preact" %}import { useEffect, useState } from "preact/hooks";
+{% else %}import { useEffect, useState } from "react";
+{% endif %}import { join_team, team } from "@nexy/actions";
 
-{{ measure }}
+{{ calls }}
 
 export default function Connection() {
-{% if client_framework == "solid" %}  const [status, setStatus] = createSignal(IDLE);
+{% if solid %}  const [members, setMembers] = createSignal<Member[]>([]);
+  const [status, setStatus] = createSignal(LOADING);
   const [pending, setPending] = createSignal(false);
-{% else %}  const [status, setStatus] = useState(IDLE);
+{% else %}  const [members, setMembers] = useState<Member[]>([]);
+  const [status, setStatus] = useState(LOADING);
   const [pending, setPending] = useState(false);
 {% endif %}
-  async function check() {
+  function show(shown: Shown) {
+    if (shown.members) setMembers(shown.members);
+    setStatus(shown.status);
+  }
+
+  async function add(event: { preventDefault(): void; currentTarget: HTMLFormElement }) {
+    event.preventDefault();
     setPending(true);
-    setStatus(WAITING);
-    setStatus(await measure());
+    show(await sendForm(event.currentTarget));
     setPending(false);
   }
 
+{% if solid %}  onMount(async () => show(await loadTeam()));
+{% else %}  useEffect(() => {
+    loadTeam().then(show);
+  }, []);
+{% endif %}
   return (
     <>
 {% include "connection.html.jinja2" %}

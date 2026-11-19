@@ -104,12 +104,12 @@ STARTER_TEXT = {
     "web-fbr": {
         "/about": "One project for the whole web app",
         "/": "Your app is running",
-        "/connection": "Ping the server",
+        "/connection": "Add to the team",
     },
     "web-modular": {
         "/about": "open source",
         "/": "Python framework",
-        "/connection": "Ping the server",
+        "/connection": "Add to the team",
     },
 }
 
@@ -117,7 +117,7 @@ STARTER_TEXT = {
 @pytest.mark.parametrize(("template", "framework", "use_csr"), WEB)
 @pytest.mark.parametrize("path", ["/about", "/", "/connection"])
 def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path):
-    """Every starter links Home and About, so both must exist, in every mode."""
+    """Every starter links Home, About and Connection, so all three exist, in every mode."""
     marker = STARTER_TEXT[template][path]
     result = _run(tmp_path, template, framework, use_csr)
     status, content_type, html = result["pages"][path]

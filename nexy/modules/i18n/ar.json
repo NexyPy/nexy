@@ -206,7 +206,7 @@
     "node_installed": "تم تثبيت node_modules باستخدام {manager}",
     "python_synced": "تمت مزامنة .venv باستخدام uv",
     "package_added": "تمت إضافة {package} إلى .venv",
-    "created": "تم إنشاء المشروع من {name}"
+    "created": "تم إنشاء المشروع {name}"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich غير مهيّأ. شغّل 'nx m --init' أولًا.",
