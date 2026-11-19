@@ -109,6 +109,18 @@ class TestMiddleware:
         assert len(lines) == 1
         assert _plain(lines[0]).startswith("GET » /missing 404 in ")
 
+    def test_an_action_is_logged_by_its_name(self):
+        lines: list[str] = []
+        app = AccessLogMiddleware(_responder(), log=lines.append, names={"/_nx_1": "ping"}.get)
+        asyncio.run(_call(app, "/_nx_1", method="POST"))
+        assert _plain(lines[0]).startswith("ACTION » ping 200 in ")
+
+    def test_a_path_with_no_action_keeps_its_verb_and_path(self):
+        lines: list[str] = []
+        app = AccessLogMiddleware(_responder(), log=lines.append, names={"/_nx_1": "ping"}.get)
+        asyncio.run(_call(app, "/users"))
+        assert _plain(lines[0]).startswith("GET » /users 200 in ")
+
     def test_the_response_goes_through_unchanged(self):
         sent = asyncio.run(_call(AccessLogMiddleware(_responder(), log=lambda _l: None)))
         assert [m["type"] for m in sent] == ["http.response.start", "http.response.body"]
