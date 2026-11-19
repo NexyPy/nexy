@@ -251,5 +251,20 @@ const out = {};
   out.transition = { states, superseded: after };
 }
 
+// 14. A blocker holds the back and forward buttons too; once it is gone they move again.
+{
+  const w = world();
+  await w.router.navigate("/about");
+  const stop = w.router.blocker(() => "unsaved");
+  w.real.history.back();
+  await sleep(40);
+  const held = w.real.location.pathname;
+  const heldRendered = [...w.rendered];
+  stop();
+  w.real.history.back();
+  await sleep(40);
+  out.backBlocked = { held, heldRendered, after: w.real.location.pathname, rendered: w.rendered };
+}
+
 console.log("@@" + JSON.stringify(out) + "@@");
 process.exit(0);

@@ -50,7 +50,8 @@ export type RouterOptions = {
   win?: Window & typeof globalThis
 }
 
-type HistoryState = { nexy: true; scroll?: { x: number; y: number } }
+// `index` numbers the entries this router wrote, so a blocked back or forward knows how to return.
+type HistoryState = { nexy: true; index?: number; scroll?: { x: number; y: number } }
 
 export type Router = ReturnType<typeof createRouter>
 
@@ -81,6 +82,9 @@ export function createRouter(options: RouterOptions) {
   const blockers = new Set<Blocker>()
   let navigation = 0
   let location = read()
+  let index = 0
+  // The next popstate is the router returning to where a blocker held it: not a visitor's move.
+  let returning = false
   // One object per state, so `transition()` can serve as a stable snapshot (useSyncExternalStore).
   const IDLE: TransitionState = { pending: false, next: null }
   let transitionState: TransitionState = IDLE
@@ -105,6 +109,30 @@ export function createRouter(options: RouterOptions) {
     if (same) return
     location = next
     listeners.forEach(listener => listener())
+  }
+
+  function entry(): number {
+    return (win.history.state as Partial<HistoryState> | null)?.index ?? 0
+  }
+
+  /** Add (or replace) the history entry of `url`, numbered after the current one. */
+  function write(url: URL, replace: boolean | undefined): void {
+    const at = replace ? index : index + 1
+    win.history[replace ? 'replaceState' : 'pushState']({ nexy: true, index: at }, '', url.href)
+    index = at
+  }
+
+  function locationOf(url: URL): RouterLocation {
+    const params = options.match(url.pathname)?.params ?? {}
+    return { pathname: url.pathname, search: url.search, hash: url.hash, params }
+  }
+
+  /** Ask every blocker: a string (the reason), or a promise of one, refuses the move. */
+  async function allowed(next: RouterLocation): Promise<boolean> {
+    for (const blocker of blockers) {
+      if (typeof (await Promise.resolve(blocker(next, location))) === 'string') return false
+    }
+    return true
   }
 
   function saveScroll(): void {
@@ -169,21 +197,15 @@ export function createRouter(options: RouterOptions) {
     const samePage = url.pathname === current.pathname && url.search === current.search
     if (samePage && url.hash === current.hash) return true
 
-    const next = { pathname: url.pathname, search: url.search, hash: url.hash, params: options.match(url.pathname)?.params ?? {} }
-
-    // Ask every blocker whether this navigation may proceed. A blocker returns a string
-    // (the reason) or a promise of one to abort; anything else allows it.
-    for (const blocker of blockers) {
-      const answer = await Promise.resolve(blocker(next, location))
-      if (typeof answer === 'string') return false
-    }
+    const next = locationOf(url)
+    if (!(await allowed(next))) return false
 
     const id = ++navigation
     saveScroll()
 
     if (samePage) {
       // Only the fragment changes: the browser scrolls, there is nothing to render.
-      win.history[opts.replace ? 'replaceState' : 'pushState']({ nexy: true }, '', url.href)
+      write(url, opts.replace)
       commit(read())
       scrollAfter(url.hash, opts.scroll !== false)
       return true
@@ -195,7 +217,7 @@ export function createRouter(options: RouterOptions) {
       if (id === navigation) setPending(null)
       return false
     }
-    win.history[opts.replace ? 'replaceState' : 'pushState']({ nexy: true }, '', url.href)
+    write(url, opts.replace)
     commit(read())
     announce(location)
     scrollAfter(url.hash, opts.scroll !== false)
@@ -256,13 +278,23 @@ export function createRouter(options: RouterOptions) {
     })
   }
 
-  function onPop(): void {
-    void restore()
+  /** Back or forward: the URL has already moved, so a refusal moves it back where it was. */
+  async function onPop(): Promise<void> {
+    if (returning) return void (returning = false)
+    const target = entry()
+    if (target !== index && !(await allowed(locationOf(new URL(win.location.href))))) {
+      returning = true
+      return win.history.go(index - target)
+    }
+    index = target
+    await restore()
   }
 
   function start(): () => void {
     win.document.addEventListener('click', onClick)
     win.addEventListener('popstate', onPop)
+    index = entry()
+    win.history.replaceState({ ...(win.history.state ?? {}), nexy: true, index }, '')
     // The browser would restore the scroll before the page is rendered: do it ourselves.
     if ('scrollRestoration' in win.history) win.history.scrollRestoration = 'manual'
     return () => {
