@@ -1,6 +1,6 @@
 # Performances
 
-Ce que fait `nx start` par défaut, ce qu'il faut activer et ce qui a été mesuré.
+Ce que fait `nx start` par défaut, quoi activer et à quelle vitesse un projet démarre et répond.
 
 ## Valeurs par défaut
 
@@ -37,7 +37,27 @@ revalidate = 60
 ISR est un mode de pages de fichiers : une vue renvoyée par un contrôleur est restituée à chaque requête.
 <!-- /router -->
 
-## Mesuré
+## Démarrage, première page et recompilation
+
+Combien de temps prend un projet avec une page `.nexy`, en moyenne 5 exécutions, chacune dans un nouveau processus Python :
+
+| Mesurer | Médiane | Ce qu'il couvre |
+|---|---|---|
+| Démarrage | 460 ms | d'un nouveau processus à une application prête à répondre : importations, scan de routes, compilation |
+| Première page | 554 ms | le même, plus la première requête à `/` et son code HTML |
+| Recompiler une page | 1,8 ms | compiler à nouveau la page après une modification, dans un processus déjà en cours d'exécution |
+
+Mesuré sur un AMD Ryzen 5 4500U, Linux, 6 processeurs, Python 3.13.15. La recompilation est ce que `nx dev` fait pour le côté Python d'un changement ; un rechargement du navigateur paie également pour le graphique du module de Vite et le propre rendu du navigateur, ce n'est donc pas un temps de rechargement.
+
+Mesurez votre propre machine avec le script qui a écrit le tableau :
+
+```bash
+python scripts/measure_speed.py --runs 5
+```
+
+Le workflow `Speed` l'exécute à chaque poussée vers `main` et écrit le même tableau dans le résumé de l'exécution, sur un exécuteur Ubuntu hébergé par GitHub.
+
+## Requêtes par seconde
 
 Une exécution locale, un travailleur Uvicorn, Windows, Python 3.13, des connexions persistantes à partir d'un générateur de charge Python sur la même machine. Considérez les chiffres comme une référence pour comparer les changements, et non comme une référence par rapport à d’autres cadres.
 
@@ -66,7 +86,7 @@ Les chiffres ci-dessous ont été mesurés avec le parcours fichier. Mesurez un 
 
 | Itinéraire | Concurrence | Requêtes par seconde | p50 | p99 |
 |---|---|---|---|---|
-| Itinéraire JSON nu FastAPI | 16 | ~4 500 | 3,4 ms | 5,1 ms |
+| Route JSON nue FastAPI | 16 | ~4 500 | 3,4 ms | 5,1 ms |
 | Itinéraire Nexy JSON (`src/routes/api/ping.py`) | 16 | ~2 900 | 5,2 ms | 9,8 ms |
 | Page Nexy SSR (16 Ko, 16 éléments) | 1 | ~500 | 1,9 ms | 3,0 ms |
 | Page Nexy SSR (16 Ko, 16 éléments) | 64 | ~670 | 94 ms | 126 ms |
@@ -79,7 +99,7 @@ Lecture du tableau :
 
 ## Conseils pratiques
 
-1. Mettez Nginx, Caddy ou la périphérie de votre plateforme : TLS, HTTP/2, Brotli et la mise en cache de longue durée pour les actifs `/__nexy__/client/` sont leurs points forts. Voir [Déployer](README.md).
+1. Mettez Nginx, Caddy ou la périphérie de votre plate-forme devant : TLS, HTTP/2, Brotli et la mise en cache de longue durée pour les actifs `/__nexy__/client/` sont leurs points forts. Voir [Déployer](README.md).
 2. Utilisez [ISR](../rendering/isr.md) pour les pages qui changent moins d'une fois par minute.
 3. Hydratez-vous paresseusement avec les [îles](../rendering/islands.md) pour que le premier chargement soit moins expédié JavaScript.
 4. Gardez le nombre de `.nexy` composants par page raisonnable : chacun est un rendu de modèle distinct.
