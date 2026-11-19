@@ -159,6 +159,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | 页面 | 你会做什么 |
 |---|---|
 | [中间件和安全性](guides/middleware-and-security.md) | 设置 CORS、GZip、可信主机和会话 |
+| [站点地图和 robots.txt](guides/sitemap.md) | 从您的路线提供 `/sitemap.xml` 和 `/robots.txt` |
 | [部署](deployment/README.md) | 构建、容器化和服务 |
 | [性能](deployment/performance.md) | 测量和调整默认值 |
 
@@ -173,7 +174,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 |---|---|
 | [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
 | [调试](guides/debugging.md) | 使用 `breakpoint()` 或 VS Code 停止服务器代码 |
-| [编码剂](guides/ai-agents.md) | 为 Claude Code、Codex 和 OpenCode 提供您项目的规则 |
+| [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 项目的规则 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
 ## 数据库
@@ -193,7 +194,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### 概述
 | 页面 | 你会做什么 |
 |---|---|
-| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译成 Nexy |
+| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Expresshabits 翻译为 Nexy |
 
 ### Python 框架 {fbr}
 | 页面 | 你会做什么 |
@@ -215,7 +216,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 |---|---|
 | [来自 Next.js](coming-from/nextjs.md) | 保留您的 React 页面并将服务器代码移至 Python |
 | [来自 Remix](coming-from/remix.md) | 将加载程序和操作转换为 Python 处理程序和操作 |
-| [来自 Nuxt](coming-from/nuxt.md) | 保留您的 Vue 页面并将 `server/` 移至 Python |
+| [来自 Nuxt](coming-from/nuxt.md) | 保留 Vue 页面并将 `server/` 移至 Python |
 | [来自 SvelteKit](coming-from/sveltekit.md) | 保留您的 Svelte 页面并将负载、操作和挂钩移至 Python |
 | [来自 Astro](coming-from/astro.md) | 将 Astro 页写入 `.nexy` 页，具有相同的岛 |
 | [来自 Laravel](coming-from/laravel.md) | 将路由、控制器、Blade、Eloquent 和队列映射到 Nexy |

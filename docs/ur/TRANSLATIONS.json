@@ -1,7 +1,7 @@
 {
  "provider": "google",
  "pages": {
-  "README.md": "9d92c8a6b7cae38cc01504fc1ed23e24d800810008bb25ef7b73da4c1c848411",
+  "README.md": "db203bf8ab2646f1e55672a7df3828a14ebb8af654444599a135989a32465b4a",
   "deployment/README.md": "d1b22804ec642a607327092fbe26f3aa756a26c1f10b74d7979b47ddd17d18eb",
   "deployment/performance.md": "30582390e1ba64d1a6bc1cc297cafc9f7e3ba4b4ceba05e0854f220c790be659",
   "getting-started/coming-from-other-frameworks.md": "cf0a48d0e310b23f8031c761ee449168cdf12e4d035f0df30b6d3e80841d869a",
@@ -91,6 +91,7 @@
   "coming-from/express.md": "3ad60c394ae8908756e8c901a4955ef784f8b9456040b43d3b359eb3c2872783",
   "coming-from/rails.md": "38feadfac74414228ed1c313151b7ade35eda690d21ba13117bfc70ba4eea7e2",
   "views/frontend/fetch-data.md": "02ae4d26553289ad7737db7eeeebf740affc1ea1f9b3ba5678ffca13802a0a4f",
-  "guides/debugging.md": "178ac281b6d742ab3b81b858a4127cd20fa529a1767d0ae2e176fed3c5c44194"
+  "guides/debugging.md": "178ac281b6d742ab3b81b858a4127cd20fa529a1767d0ae2e176fed3c5c44194",
+  "guides/sitemap.md": "ab5b0a47cf9a142891e7c960e533dffbe435f01bd61aa5fca4d359516f6ffe35"
  }
 }

@@ -159,8 +159,9 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 | পাতা | আপনি কি করবেন |
 |---|---|
 | [মিডলওয়্যার এবং নিরাপত্তা ](guides/middleware-and-security.md) | CORS, GZip, বিশ্বস্ত হোস্ট এবং সেশন সেট আপ করুন |
+| [সাইটম্যাপ এবং robots.txt](guides/sitemap.md) | আপনার রুট থেকে `/sitemap.xml` এবং `/robots.txt` পরিবেশন করুন |
 | [স্থাপন ](deployment/README.md) | নির্মাণ, ধারক এবং পরিবেশন |
-| [কর্মক্ষমতা](deployment/performance.md) | ডিফল্টগুলি পরিমাপ করুন এবং সুর করুন |
+| [কর্মক্ষমতা ](deployment/performance.md) | ডিফল্টগুলি পরিমাপ করুন এবং সুর করুন |
 
 ### নির্মাণ এবং পরীক্ষা
 | পাতা | আপনি কি করবেন |
@@ -193,7 +194,7 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 ### ওভারভিউ
 | পাতা | আপনি কি করবেন |
 |---|---|
-| [অন্য কাঠামো থেকে আসছে ](getting-started/coming-from-other-frameworks.md) | অনুবাদ করুন FastAPI, Next.js এবং নেক্সিতে অভ্যাস প্রকাশ করুন |
+| [অন্য কাঠামো থেকে আসছে](getting-started/coming-from-other-frameworks.md) | অনুবাদ করুন FastAPI, Next.js এবং নেক্সিতে অভ্যাস প্রকাশ করুন |
 
 ### Python কাঠামো {fbr}
 | পাতা | আপনি কি করবেন |
@@ -207,7 +208,7 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 |---|---|
 | [এক্সপ্রেস থেকে](coming-from/express.md) | Python হ্যান্ডলারে রুট, মিডলওয়্যার এবং `req`/`res` অনুবাদ করুন |
 | [Fastify](coming-from/fastify.md) থেকে | স্কিমা, প্লাগইন এবং হুকগুলিকে মডেল, ফোল্ডার এবং ফাইলে পরিণত করুন |
-| [এলিসিয়া থেকে ](coming-from/elysia.md) | ম্যাপ `t` স্কিমা, গার্ড এবং ইডেন থেকে Pydantic এবং টাইপ করা অ্যাকশন |
+| [Elysia থেকে](coming-from/elysia.md) | ম্যাপ `t` স্কিমা, গার্ড এবং ইডেন থেকে Pydantic এবং টাইপ করা অ্যাকশন |
 | [হোনো থেকে](coming-from/hono.md) | ম্যাপ রুট, মিডলওয়্যার এবং নেক্সিতে `hc` ক্লায়েন্ট |
 
 ### ফুলস্ট্যাক ফ্রেমওয়ার্ক {fbr}
@@ -215,8 +216,8 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 |---|---|
 | [থেকে Next.js](coming-from/nextjs.md) | আপনার React পৃষ্ঠাগুলি রাখুন এবং সার্ভার কোডকে Python এ সরান |
 | [থেকে Remix](coming-from/remix.md) | লোডার এবং অ্যাকশনকে Python হ্যান্ডলার এবং অ্যাকশনে পরিণত করুন |
-| [Nuxt ](coming-from/nuxt.md) থেকে | আপনার Vue পৃষ্ঠাগুলি রাখুন এবং `server/` থেকে Python এ সরান |
-| [SvelteKit থেকে](coming-from/sveltekit.md) | আপনার Svelte পৃষ্ঠাগুলি রাখুন এবং লোড, অ্যাকশন এবং হুকগুলি Python এ সরান |
+| [Nuxt থেকে](coming-from/nuxt.md) | আপনার Vue পৃষ্ঠাগুলি রাখুন এবং `server/` থেকে Python এ সরান |
+| [SvelteKit থেকে](coming-from/sveltekit.md) | আপনার Svelte পৃষ্ঠাগুলি রাখুন এবং লোড, অ্যাকশন এবং হুকগুলিকে Python এ সরান |
 | [থেকে Astro](coming-from/astro.md) | একই দ্বীপের সাথে Astro পৃষ্ঠাগুলিকে `.nexy` পৃষ্ঠা হিসাবে লিখুন |
 | [লারাভেল থেকে](coming-from/laravel.md) | মানচিত্র রুট, কন্ট্রোলার, ব্লেড, বাগ্মী এবং Nexy এর সারি |
 | [রুবি অন রেল থেকে](coming-from/rails.md) | নেক্সিতে ম্যাপ রুট, কন্ট্রোলার, ERB, অ্যাক্টিভ রেকর্ড এবং চাকরি |
@@ -249,8 +250,8 @@ Nexy আপনার পৃষ্ঠা এবং আপনার API একট�
 ### কনভেনশন এবং ধারণা
 | পাতা | আপনি কি করবেন |
 |---|---|
-| [শব্দকোষ ](reference/glossary.md) | এই ডক্স ব্যবহার করে শব্দ |
-| [নিরাপত্তা](reference/security.md) | সংস্করণ মেঝে, নিয়ম Nexy অনুসরণ করে, অডিট |
+| [শব্দকোষ](reference/glossary.md) | এই ডক্স ব্যবহার করে শব্দ |
+| [নিরাপত্তা ](reference/security.md) | সংস্করণ মেঝে, নিয়ম Nexy অনুসরণ করে, অডিট |
 
 ## লেআউট
 ```text
