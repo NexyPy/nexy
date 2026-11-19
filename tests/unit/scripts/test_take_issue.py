@@ -71,12 +71,21 @@ def test_welcome_fills_the_login_and_the_number(take, tmp_path):
     assert take.welcome(template, "ana", "454") == "Thanks @ana, #454 is yours!"
 
 
+def _pull(number: int, author: str, state: str = "open") -> dict:
+    issue = {"number": number, "state": state, "user": {"login": author}, "pull_request": {}}
+    return {"event": "cross-referenced", "source": {"issue": issue}}
+
+
+TIMELINE = {"9": [_pull(483, "bfs2021")]}
+
+
 def _run(take, monkeypatch, tmp_path, **env) -> list[tuple[str, ...]]:
     calls: list[tuple[str, ...]] = []
     template = tmp_path / "welcome.md"
     template.write_text("Thanks @{{assignee}}", encoding="utf-8")
     monkeypatch.setattr(take, "WELCOME", template)
     monkeypatch.setattr(take, "_gh", lambda *args: calls.append(args))
+    monkeypatch.setattr(take, "_timeline", lambda _number: TIMELINE.get(env.get("NUMBER", "7"), []))
     for name, value in {"NUMBER": "7", "ASSIGNEES": "", "LABELS": OPEN, **env}.items():
         monkeypatch.setenv(name, value)
     take.main()
@@ -98,3 +107,34 @@ def test_main_answers_a_take_on_a_taken_issue(take, monkeypatch, tmp_path):
 
 def test_main_does_nothing_for_another_comment(take, monkeypatch, tmp_path):
     assert _run(take, monkeypatch, tmp_path, LOGIN="ana", BODY="Nice!") == []
+
+
+def test_take_refuses_an_issue_someone_already_opened_a_pull_request_for(take):
+    assert take.decide("ana", "", OPEN, [(483, "bob")]).action == "reply"
+
+
+def test_take_names_the_pull_request_already_open(take):
+    assert "@bob already opened #483" in take.decide("ana", "", OPEN, [(483, "bob")]).message
+
+
+def test_pull_requests_finds_an_open_one_by_someone_else(take):
+    assert take.pull_requests([_pull(483, "bob")], "ana") == [(483, "bob")]
+
+
+def test_pull_requests_leaves_out_a_closed_one(take):
+    assert take.pull_requests([_pull(483, "bob", "closed")], "ana") == []
+
+
+def test_pull_requests_leaves_out_the_commenter_own_one(take):
+    assert take.pull_requests([_pull(483, "ana")], "ana") == []
+
+
+def test_pull_requests_leaves_out_an_issue_that_mentions_it(take):
+    event = _pull(12, "bob")
+    del event["source"]["issue"]["pull_request"]
+    assert take.pull_requests([event], "ana") == []
+
+
+def test_main_answers_a_take_on_an_issue_with_an_open_pull_request(take, monkeypatch, tmp_path):
+    calls = _run(take, monkeypatch, tmp_path, LOGIN="ana", BODY="/take", NUMBER="9")
+    assert "@bfs2021 already opened #483" in calls[0][-1]

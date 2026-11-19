@@ -52,13 +52,15 @@ def _in_project(url: str, dest: Path) -> str:
 
 
 def _unreachable(url: str, dest: Path) -> str:
-    """Why SQLAlchemy cannot use *url*, or an empty string."""
+    """Why the database at *url* does not answer, or an empty string.
+
+    A missing module is not a reason: SQLAlchemy and the driver are in the project's `.venv`, and
+    `uvx nexy new` runs outside it. Alembic runs in the `.venv` and names a driver really missing.
+    """
     problem = connection_problem(_in_project(url, dest))
-    if problem is None:
+    if problem is None or problem[0] == "driver":
         return ""
-    kind, error = problem
-    what = "missing database driver" if kind == "driver" else "cannot connect to the database"
-    return f"{what} - {error}"
+    return f"cannot connect to the database - {problem[1]}"
 
 
 def _said(args: list[str], result: subprocess.CompletedProcess[str]) -> str:

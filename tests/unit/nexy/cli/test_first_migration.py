@@ -76,11 +76,20 @@ def test_an_unreachable_database_runs_nothing_and_says_why(tmp_path, monkeypatch
     assert run.calls == [] and "refused" in result.problem
 
 
-def test_a_missing_driver_is_named(tmp_path, monkeypatch):
+def test_a_driver_missing_from_nexy_itself_still_runs_alembic(tmp_path, monkeypatch):
+    # `uvx nexy new`: SQLAlchemy and the driver are in the project's .venv, not next to nexy.
+    monkeypatch.setattr(
+        first, "connection_problem", lambda _url: ("driver", ImportError("sqlalchemy"))
+    )
+    assert run_first_migration("alembic", tmp_path, URL, Runner()).done is True
+
+
+def test_a_driver_missing_from_the_project_is_named_by_alembic(tmp_path, monkeypatch):
     monkeypatch.setattr(
         first, "connection_problem", lambda _url: ("driver", ImportError("psycopg"))
     )
-    assert "psycopg" in run_first_migration("alembic", tmp_path, URL, Runner()).problem
+    run = Runner({"alembic revision": 1}, output="No module named 'psycopg'")
+    assert "psycopg" in run_first_migration("alembic", tmp_path, URL, run).problem
 
 
 def test_tortoise_urls_are_not_checked_with_sqlalchemy(tmp_path, monkeypatch):
