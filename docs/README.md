@@ -165,6 +165,7 @@ Controllers and modules.
 | Page | What you will do |
 |---|---|
 | [Middleware and security](guides/middleware-and-security.md) | Set up CORS, GZip, trusted hosts and sessions |
+| [Sitemap and robots.txt](guides/sitemap.md) | Serve `/sitemap.xml` and `/robots.txt` from your routes |
 | [Deploy](deployment/README.md) | Build, containerise and serve |
 | [Performance](deployment/performance.md) | Measure and tune the defaults |
 

@@ -159,6 +159,7 @@ Controladores y módulos.
 | Página | que haras |
 |---|---|
 | [Middleware y seguridad](guides/middleware-and-security.md) | Configure CORS, GZip, hosts y sesiones confiables |
+| [Mapa del sitio y robots.txt](guides/sitemap.md) | Sirve `/sitemap.xml` y `/robots.txt` desde tus rutas |
 | [Implementar](deployment/README.md) | Construir, colocar en contenedores y servir |
 | [Rendimiento](deployment/performance.md) | Mida y ajuste los valores predeterminados |
 
@@ -183,7 +184,7 @@ Controladores y módulos.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utilice un archivo, ningún servidor: motor, pragmas, migraciones y pruebas |
 | [PostgreSQL](databases/postgresql.md) | Conéctese con psycopg, use JSONB, matrices, búsqueda y upserts |
-| [Neón](databases/neon.md) | Usar sin servidor PostgreSQL: host agrupado, suspensión automática y sucursales |
+| [Neón](databases/neon.md) | Utilice serverless PostgreSQL: host agrupado, suspensión automática y sucursales |
 | [MySQL y MariaDB](databases/mysql-mariadb.md) | Conéctese con pymysql, use utf8mb4, upserts y búsqueda de texto completo |
 
 ## viniendo de
@@ -207,16 +208,16 @@ Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
 |---|---|
 | [Desde expreso](coming-from/express.md) | Traducir rutas, middleware y `req`/`res` en Python controladores |
 | [Desde Fastify](coming-from/fastify.md) | Convierta esquemas, complementos y enlaces en modelos, carpetas y archivos |
-| [De Elysia](coming-from/elysia.md) | Asigne `t` esquemas, guardias y Edén a Pydantic y acciones escritas |
+| [De Elysia](coming-from/elysia.md) | Asigne `t` esquemas, guardias y Eden a Pydantic y acciones escritas |
 | [De Hono](coming-from/hono.md) | Mapear rutas, middleware y el cliente `hc` a Nexy |
 
 ### Marcos de trabajo completos {fbr}
 | Página | que haras |
 |---|---|
-| [Desde Next.js](coming-from/nextjs.md) | Conserve sus páginas React y mueva el código del servidor a Python |
+| [Desde Next.js](coming-from/nextjs.md) | Mantenga sus páginas React y mueva el código del servidor a Python |
 | [Desde Remix](coming-from/remix.md) | Convierta cargadores y acciones en Python controladores y acciones |
 | [Desde Nuxt](coming-from/nuxt.md) | Conserva tus Vue páginas y mueve `server/` a Python |
-| [De SvelteKit](coming-from/sveltekit.md) | Conserva tus Svelte páginas y mueve cargas, acciones y enlaces a Python |
+| [De SvelteKit](coming-from/sveltekit.md) | Conserva tus páginas Svelte y mueve cargas, acciones y enlaces a Python |
 | [Desde Astro](coming-from/astro.md) | Escribe Astro páginas como `.nexy` páginas, con las mismas islas |
 | [De Laravel](coming-from/laravel.md) | Mapear rutas, controladores, Blade, Eloquent y colas a Nexy |
 | [De Ruby on Rails](coming-from/rails.md) | Asigne rutas, controladores, ERB, Active Record y trabajos a Nexy |

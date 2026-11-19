@@ -159,6 +159,7 @@ Nexy объединяет ваши страницы и ваш API в один Py
 | Страница | Что ты будешь делать |
 |---|---|
 | [Промежуточное ПО и безопасность](guides/middleware-and-security.md) | Настройте CORS, GZip, доверенные хосты и сеансы. |
+| [Карта сайта и robots.txt](guides/sitemap.md) | Обслуживайте `/sitemap.xml` и `/robots.txt` со своих маршрутов. |
 | [Развернуть](deployment/README.md) | Создавайте, контейнеризируйте и обслуживайте |
 | [Производительность](deployment/performance.md) | Измерьте и настройте параметры по умолчанию |
 
@@ -172,7 +173,7 @@ Nexy объединяет ваши страницы и ваш API в один Py
 | Страница | Что ты будешь делать |
 |---|---|
 | [Панель инструментов разработчика](guides/devtools.md) | Используйте панель инструментов `nexy dev` и отключите ее. |
-| [Отладка](guides/debugging.md) | Остановитесь в коде вашего сервера с помощью `breakpoint()` или VS Code. |
+| [Отладка](guides/debugging.md) | Остановитесь в своем серверном коде с помощью `breakpoint()` или VS Code. |
 | [Агенты кодирования](guides/ai-agents.md) | Дайте Claude Code, Codex и OpenCode правила вашего проекта. |
 | [Устранение неполадок](guides/troubleshooting.md) | Исправляйте первые проблемы, с которыми сталкиваются люди |
 
@@ -193,9 +194,9 @@ Nexy объединяет ваши страницы и ваш API в один Py
 ### Обзор
 | Страница | Что ты будешь делать |
 |---|---|
-| [Исходя из другого фреймворка](getting-started/coming-from-other-frameworks.md) | Переведите FastAPI, Next.js и выразите привычки в Nexy |
+| [Исходя из другого фреймворка](getting-started/coming-from-other-frameworks.md) | Переведите FastAPI, Next.js и выразите привычки на Nexy |
 
-### Python рамки {fbr}
+### Python фреймворки {fbr}
 | Страница | Что ты будешь делать |
 |---|---|
 | [От FastAPI](coming-from/fastapi.md) | Сохраните свой код FastAPI: только `@app.get` станет файлом |
@@ -217,7 +218,7 @@ Nexy объединяет ваши страницы и ваш API в один Py
 | [От Remix](coming-from/remix.md) | Превратите загрузчики и действия в обработчики и действия Python |
 | [Из Нукста](coming-from/nuxt.md) | Сохраните свои страницы Vue и переместите `server/` на Python |
 | [Из SvelteKit](coming-from/sveltekit.md) | Сохраните свои страницы Svelte и переместите нагрузки, действия и хуки на Python |
-| [От Astro](coming-from/astro.md) | Напишите Astro страниц как `.nexy` страниц, с теми же островами |
+| [От Astro](coming-from/astro.md) | Запишите Astro страниц как `.nexy` страниц с теми же островами. |
 | [Из Ларавеля](coming-from/laravel.md) | Сопоставление маршрутов, контроллеров, Blade, Eloquent и очередей в Nexy |
 | [Из Ruby on Rails](coming-from/rails.md) | Сопоставление маршрутов, контроллеров, ERB, Active Record и заданий с Nexy |
 
@@ -291,7 +292,7 @@ docs/
 | Страница | Что ты будешь делать |
 |---|---|
 | [Как работает Nexy](getting-started/how-nexy-works.md) | Посмотрите, что происходит между файлом и страницей и что оставляет вам Nexy |
-| [Обновление до версии 2.2](getting-started/upgrading.md) | Миграция с 2.1 на 2.2 |
+| [Обновление до 2.2](getting-started/upgrading.md) | Миграция с 2.1 на 2.2 |
 | [Интернационализация (i18n)](guides/i18n.md) | Добавляйте переводы с помощью библиотеки по вашему выбору |
 | [Рецепты](guides/recipes.md) | Примеры и шаблоны, а не учебник |
 

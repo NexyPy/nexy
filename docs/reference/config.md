@@ -25,6 +25,7 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | the toolbar `nexy dev` adds to every page (page info, routes, errors, config); `False` removes it. Never present in production |
 | `useHealth` | `False` | serve `GET /health/live` and `GET /health/ready` for load balancers and Kubernetes probes; see [Deploy](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | the largest request body a worker reads, in bytes (1 MiB); a larger one is a `413`, and `0` turns the limit off. Raise it for a route that takes file uploads |
+| `useSiteUrl` | `None` | the public origin of the site, such as `"https://example.com"`; once set, Nexy serves `/sitemap.xml` and `/robots.txt`. See [Sitemap and robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | processes `nx start` runs; `0` is one per CPU on Linux and macOS, one on Windows |
 | `useCSR` | `False` | client-side routing mode; `.nexy` routes are disabled |
 

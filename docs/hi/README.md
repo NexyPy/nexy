@@ -159,13 +159,14 @@
 | पेज | तुम क्या करोगे |
 |---|---|
 | [मिडलवेयर और सुरक्षा](guides/middleware-and-security.md) | CORS, GZip, विश्वसनीय होस्ट और सत्र सेट करें |
+| [साइटमैप और robots.txt](guides/sitemap.md) | अपने मार्गों से `/sitemap.xml` और `/robots.txt` परोसें |
 | [तैनाती](deployment/README.md) | बनाएं, कंटेनरीकृत करें और परोसें |
 | [प्रदर्शन](deployment/performance.md) | डिफ़ॉल्ट को मापें और ट्यून करें |
 
 ### बनाएं और परीक्षण करें
 | पेज | तुम क्या करोगे |
 |---|---|
-| [Vite और स्टाइल](guides/frontend.md) | Vite, स्टाइलिंग और क्लाइंट बिल्ड सेट करें |
+| [Vite और स्टाइलिंग](guides/frontend.md) | Vite, स्टाइलिंग और क्लाइंट बिल्ड सेट करें |
 | [परीक्षण](guides/testing.md) | pytest, `TestClient` और विटेस्ट के साथ परीक्षण करें |
 
 ### टूलींग और सहायता
@@ -215,7 +216,7 @@
 |---|---|
 | [से Next.js](coming-from/nextjs.md) | अपने React पेज रखें और सर्वर कोड को Python पर ले जाएं |
 | [से Remix](coming-from/remix.md) | लोडर और क्रियाओं को Python हैंडलर और क्रियाओं में बदलें |
-| [नक्सट से](coming-from/nuxt.md) | अपने Vue पेज रखें और `server/` को Python पर ले जाएं |
+| [अगले से](coming-from/nuxt.md) | अपने Vue पेज रखें और `server/` को Python पर ले जाएं |
 | [SvelteKit से](coming-from/sveltekit.md) | अपने Svelte पेज रखें और लोड, क्रियाएं और हुक को Python पर ले जाएं |
 | [से Astro](coming-from/astro.md) | Astro पृष्ठों को समान द्वीपों के साथ `.nexy` पृष्ठों के रूप में लिखें |
 | [लारवेल से](coming-from/laravel.md) | नेक्सी के लिए मार्ग, नियंत्रक, ब्लेड, एलोक्वेंट और कतारें मैप करें |
@@ -291,7 +292,7 @@ docs/
 | पेज | तुम क्या करोगे |
 |---|---|
 | [नेक्सी कैसे काम करती है](getting-started/how-nexy-works.md) | देखें कि फ़ाइल और पृष्ठ के बीच क्या होता है, और नेक्सी आपके लिए क्या छोड़ता है |
-| [2.2 में अपग्रेड करना](getting-started/upgrading.md) | 2.1 से 2.2 पर माइग्रेट करें |
+| [2.2 में अपग्रेड किया जा रहा है](getting-started/upgrading.md) | 2.1 से 2.2 पर माइग्रेट करें |
 | [अंतर्राष्ट्रीयकरण (i18n)](guides/i18n.md) | अपनी पसंद की लाइब्रेरी से अनुवाद जोड़ें |
 | [रेसिपी](guides/recipes.md) | उदाहरण और पैटर्न, ट्यूटोरियल नहीं |
 
