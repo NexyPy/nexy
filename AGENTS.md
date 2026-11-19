@@ -1,8 +1,25 @@
 # Nexy - Agent Guide
 
-## Vision & Ambition
-L'objectif principal de Nexy est de **surpasser les solutions existantes** telles que Django, Next.js, Remix, Reflect et Astro, tant en matière d'expérience développeur (DX) que de performances en production.
-- **Sub-second startup** and **Sub-100ms HMR**.
+## Vision
+
+Nexy is measured by its own numbers, never by a comparison with another framework. Each goal is a
+budget and a figure that the docs publish with the machine it was measured on
+(`docs/deployment/performance.md`, written by `scripts/measure_speed.py`):
+
+- **Startup under 1 second**, from a new Python process to an application ready to answer
+  (`tests/perf/test_startup_budget.py`; 460 ms measured).
+- **First page under 1 second**, from a new process to the HTML of `/` (554 ms measured; no test
+  yet).
+- **Reload under 100 ms**: recompiling a changed page is 1.8 ms of it today (budget test: #459).
+- **A request costs at most a few times bare Starlette**, the layer Nexy runs on
+  (`tests/perf/test_request_budget.py`).
+
+A claim is a number, its method and its machine. Write "starts in 460 ms on a Ryzen 5 4500U", not
+"faster than X": in code, docs, README, issues and posts. A goal that has no number yet gets a
+test that measures it before it gets a sentence.
+
+What a developer sees:
+
 - **Browser error overlay** for compilation failures.
 - **Clean terminal output** (no emojis, structured timings).
 - **No character a person does not type**, by an agent or a person, in code, UI, logs, docs,
