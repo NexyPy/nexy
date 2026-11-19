@@ -129,18 +129,9 @@ class TestUseMatch:
         assert story["afterPush"]["matched"] == "7"
 
 
-# The adapters whose useBlocker takes a flag; each fix of #87 adds its own.
-GUARDING = ("react", "preact", "vue", "solid")
-
-
-@pytest.fixture(scope="module", params=GUARDING)
-def guarded(request: pytest.FixtureRequest) -> dict:
-    return _run(request.param)["guarded"]
-
-
 class TestUseBlocker:
-    def test_unsaved_changes_ask_before_a_reload(self, guarded):
-        assert guarded["reload"] is True
+    def test_unsaved_changes_ask_before_a_reload(self, story):
+        assert story["guarded"]["reload"] is True
 
-    def test_a_refused_click_stays_on_the_page(self, guarded):
-        assert guarded["stayed"] == "/users/7"
+    def test_a_refused_click_stays_on_the_page(self, story):
+        assert story["guarded"]["stayed"] == "/users/7"

@@ -13,12 +13,9 @@ const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTran
 const { h } = lib;
 const cls = framework === "react" ? "className" : "class";
 
-// The adapters whose useBlocker takes a flag; each fix of #87 adds its own.
-const GUARDS = ["react", "preact"];
-
 function Probe() {
   const router = useRouter();
-  if (GUARDS.includes(framework)) useBlocker(usePathname() === "/users/7", "Leave?");
+  useBlocker(usePathname() === "/users/7", "Leave?");
   const search = useSearchParams();
   return h(
     "div",
