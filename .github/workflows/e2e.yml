@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: "0 4 * * *"
   push:
-    branches: [main, V2]
+    branches: [main]
   # A pull request that can break the dev stack gets the suite before the merge; one that only
   # changes the docs does not boot Chromium.
   pull_request:
