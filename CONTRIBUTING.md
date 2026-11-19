@@ -421,6 +421,12 @@ the table decides its number.
    ```bash
    npx git-cliff -o CHANGELOG.md
    ```
+   Then thank who made the release, under the version and in the GitHub Release:
+   ```bash
+   python scripts/contributors.py v<previous version>
+   ```
+   It prints a `### Thanks` section naming each contributor and their pull requests, or nothing
+   when only the maintainer and bots merged.
 3. Commit the version bump and changelog on `main`, then tag and push. The
    tag must match the package version exactly (for example, `v2.1.1`), and
    its commit must already be on `main`; the workflow rejects tags from
