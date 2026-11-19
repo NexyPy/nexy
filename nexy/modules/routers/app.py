@@ -25,6 +25,7 @@ from nexy.helpers.server.head_requests import HeadRequestsMiddleware
 from nexy.helpers.server.health import HealthMiddleware
 from nexy.helpers.server.security_headers import SecurityHeadersMiddleware
 from nexy.modules.routers.actions.engine import ACTION_ENGINE
+from nexy.modules.routers.actions.store import ACTIONS_STORE
 from nexy.modules.routers.crash import handle_crash, is_dev
 from nexy.modules.routers.error_handlers import (
     handle_http_exception,
@@ -82,6 +83,13 @@ def _telemetry_options() -> dict[str, Any]:
 def _docs_served(wanted: bool | str) -> bool:
     """`useDocs`: True everywhere, False nowhere, "dev" on the dev server only."""
     return is_dev() if wanted == "dev" else bool(wanted)
+
+
+def _add_access_log(server: FastAPI) -> None:
+    """One line per request; an action's line names the action. Chrome DevTools probes a path the
+    dev server never serves, so dev leaves that one out of the log (#82)."""
+    quiet = (DEVTOOLS_PROBE,) if is_dev() else ()
+    server.add_middleware(AccessLogMiddleware, quiet=quiet, names=ACTIONS_STORE.name_of)
 
 
 class AppServer:
@@ -161,9 +169,8 @@ class AppServer:
         # Over the project's middlewares: no one reads a body over the limit. Under the log: it
         # shows the 413.
         server.add_middleware(BodyLimitMiddleware, limit=self.config.useMaxBodySize or None)
-        # Added last, so outermost: it times everything below it. Chrome DevTools probes a path
-        # the dev server never serves, so dev leaves that one out of the log (#82).
-        server.add_middleware(AccessLogMiddleware, quiet=(DEVTOOLS_PROBE,) if is_dev() else ())
+        # Added last, so outermost: it times everything below it.
+        _add_access_log(server)
         if not is_dev():
             server.add_middleware(SecurityHeadersMiddleware)
         # Outermost of all: a probe is answered before the host check and the HTTPS redirect.
