@@ -9,12 +9,16 @@ const lib = framework === "react"
   ? { h: (await import("react")).createElement, ssr: (await import("react-dom/server")).renderToString }
   : { h: (await import("preact")).h, ssr: (await import("preact-render-to-string")).renderToString };
 const adapter = await load(dir, "client.ts");
-const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch } = adapter;
+const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch, useBlocker } = adapter;
 const { h } = lib;
 const cls = framework === "react" ? "className" : "class";
 
+// The adapters whose useBlocker takes a flag; each fix of #87 adds its own.
+const GUARDS = ["react"];
+
 function Probe() {
   const router = useRouter();
+  if (GUARDS.includes(framework)) useBlocker(usePathname() === "/users/7", "Leave?");
   const search = useSearchParams();
   return h(
     "div",
