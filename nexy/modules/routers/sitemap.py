@@ -36,3 +36,8 @@ def sitemap_xml(site_url: str, paths: Iterable[str]) -> str:
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         f'<urlset xmlns="{SITEMAP_NAMESPACE}">{urls}</urlset>\n'
     )
+
+
+def robots_txt(site_url: str) -> str:
+    """Every crawler may read every page; the sitemap tells them which pages there are."""
+    return f"User-agent: *\nAllow: /\n\nSitemap: {site_url.rstrip('/')}/sitemap.xml\n"

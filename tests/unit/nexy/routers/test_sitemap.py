@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from nexy.modules.routers.sitemap import page_paths, sitemap_xml
+from nexy.modules.routers.sitemap import page_paths, robots_txt, sitemap_xml
 
 
 def _page() -> str:
@@ -54,3 +54,11 @@ class TestSitemapXml:
     def test_it_declares_the_sitemap_namespace(self):
         xml = sitemap_xml("https://example.com", [])
         assert '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' in xml
+
+
+class TestRobotsTxt:
+    def test_it_points_to_the_sitemap(self):
+        assert "Sitemap: https://example.com/sitemap.xml" in robots_txt("https://example.com/")
+
+    def test_it_lets_every_crawler_in(self):
+        assert robots_txt("https://example.com").startswith("User-agent: *\nAllow: /\n")
