@@ -21,7 +21,7 @@ from nexy.modules.i18n import t
 
 from .alias import DEFAULT_ALIAS, apply_alias
 from .clone import GitClone
-from .dependencies import DependencyInstaller
+from .dependencies import DependencyInstaller, orm_packages
 from .renderer import TemplateRenderer
 
 _GITIGNORE_CONTENT = """__pycache__/
@@ -40,8 +40,10 @@ venv/
 def _fetch_template(
     template_name: str, dest: Path, config: dict[str, Any], use_github: bool, subdir: str
 ) -> None:
-    label = t("init.initializing", "Initializing {name}...").format(name=template_name)
-    done = t("init.created", "Created the project from {name}").format(name=template_name)
+    # The project's name, not the starter's: `web-fbr` means nothing to the one who answered.
+    project = dest.resolve().name
+    label = t("init.initializing", "Initializing {name}...").format(name=project)
+    done = t("init.created", "Created the project {name}").format(name=project)
     with step(label, done=done):
         if use_github:
             _clone_from_github(dest, subdir)
@@ -83,6 +85,8 @@ def _template_context(config: dict[str, Any], project_name: str) -> dict[str, An
         "client_framework": config.get("client_framework", "none"),
         "nexy_version": __version__,
     }
+    # The ORM, its migration tool, the driver and dotenv go in pyproject.toml: one `uv sync`.
+    context["python_packages"] = orm_packages(context["orm"], context["database"])
     context.update(_markup_context(context["client_framework"], context["useCSR"]))
     context["utility_ui"] = _utility_ui(context)
     return context
@@ -210,7 +214,7 @@ def _run_post_init_pipeline(
     orm = config.get("orm", "None")
     db_url = config.get("db_url")
 
-    installer = DependencyInstaller(dest, orm=orm, database=config.get("database", "none"))
+    installer = DependencyInstaller(dest)
     installer.install_all()
 
     generate_post_init_files(dest, orm, db_url)

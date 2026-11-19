@@ -72,8 +72,7 @@ def _write_action_client() -> None:
     """Generate `@nexy/actions` before the bundle, so the client imports typed actions."""
     from nexy.modules.routers.actions.engine import ACTION_ENGINE
 
-    ACTION_ENGINE.discover()
-    ACTION_ENGINE.generate_client()
+    ACTION_ENGINE.refresh_client()
 
 
 def _exit_on_failed_components(build_result: BuildResult) -> None:

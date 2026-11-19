@@ -17,6 +17,13 @@ class ActionsStore:
         self.registry[func_id] = func
         return func_id
 
+    def name_of(self, path: str) -> str | None:
+        """The function name of the action served at *path*, or None for any other path."""
+        for func_id, served in self.path_map.items():
+            if served == path:
+                return func_id.split(".")[-1]
+        return None
+
     def template_context(self) -> dict[str, object]:
         """What every template can call: each action by name, and the two maps behind them."""
         actions = {func_id.split(".")[-1]: handler for func_id, handler in self.registry.items()}

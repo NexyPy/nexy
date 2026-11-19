@@ -90,6 +90,12 @@ def test_ai_identities_are_still_rejected(checker: types.ModuleType) -> None:
         assert checker.offending_lines(f"fix\n\n{trailer}\n") == [trailer], trailer
 
 
+def test_tool_name_on_lookalike_domain_is_not_an_identity(checker: types.ModuleType) -> None:
+    identity = "Copilot <copilot@evilgithub.com>"
+
+    assert checker.is_ai_identity(identity) is False
+
+
 def test_assisted_by_names_the_tool(checker: types.ModuleType) -> None:
     assert checker.offending_lines("fix\n\nAssisted-by: Cursor\n") == ["Assisted-by: Cursor"]
 

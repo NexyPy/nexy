@@ -1,30 +1,57 @@
-{#- The script of a server-rendered /connection page: the button posts to its data-ping URL and
-    times the round trip. The answer is JSON with `python` and `time`. -#}
+{#- The script of a server-rendered /connection page. It reads the team from data-list (with
+    data-list-method) and posts the form to data-join; both answer `{members, note}` in JSON. A
+    member is written with textContent: a name typed by a visitor is never read as HTML. -#}
 {% raw %}<script>
-  // The button posts to the action and times the round trip; the answer is JSON.
   (function () {
-    const button = document.querySelector("[data-ping]");
-    const status = document.querySelector("[data-ping-status]");
-    if (!button || !status) return;
-    button.addEventListener("click", async function () {
-      button.disabled = true;
-      status.textContent = "Waiting for the server...";
+    const root = document.querySelector("[data-team]");
+    if (!root) return;
+    const list = root.querySelector("[data-team-list]");
+    const row = root.querySelector("[data-team-row]");
+    const form = root.querySelector("[data-team-form]");
+    const status = root.querySelector("[data-team-status]");
+    const button = form.querySelector("button");
+
+    async function call(url, method, body) {
+      const response = await fetch(url, {
+        method: method,
+        headers: { "content-type": "application/json", accept: "application/json" },
+        body: method === "GET" ? undefined : JSON.stringify(body || {}),
+      });
+      if (!response.ok) throw new Error(response.status + " " + response.statusText);
+      return response.json();
+    }
+
+    function show(members) {
+      list.replaceChildren(...members.map(function (member) {
+        const item = row.content.firstElementChild.cloneNode(true);
+        item.children[0].textContent = member.name;
+        item.children[1].textContent = member.email;
+        return item;
+      }));
+    }
+
+    // Runs one call, times it, and shows the team the server answered with.
+    async function timed(run, done) {
       const started = performance.now();
       try {
-        const response = await fetch(button.dataset.ping, {
-          method: "POST",
-          headers: { "content-type": "application/json", accept: "application/json" },
-          body: "{}",
-        });
-        if (!response.ok) throw new Error(response.status + " " + response.statusText);
-        const answer = await response.json();
-        const took = Math.round(performance.now() - started);
-        status.textContent = "Connected in " + took + " ms. Python " + answer.python + " answered at " + answer.time + ".";
+        const answer = await run();
+        show(answer.members);
+        status.textContent = answer.note || done + " in " + Math.round(performance.now() - started) + " ms.";
+        return !answer.note;
       } catch (error) {
         status.textContent = "No answer from the server: " + error.message;
-      } finally {
-        button.disabled = false;
+        return false;
       }
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const fields = Object.fromEntries(new FormData(form));
+      button.disabled = true;
+      if (await timed(() => call(root.dataset.join, "POST", fields), "Saved by Python")) form.reset();
+      button.disabled = false;
     });
+
+    timed(() => call(root.dataset.list, root.dataset.listMethod), "Loaded from Python");
   })();
 </script>{% endraw %}
