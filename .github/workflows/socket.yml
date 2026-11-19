@@ -9,6 +9,15 @@ on:
       - "pyproject.toml"
       - "uv.lock"
       - ".github/workflows/socket.yml"
+  # Before the merge too: a compromised package in a lock update is caught on its pull request.
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/socket.yml"
   schedule:
     - cron: "37 6 * * *"
   workflow_dispatch:
