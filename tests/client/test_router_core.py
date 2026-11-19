@@ -134,3 +134,40 @@ class TestTransition:
 
     def test_a_superseded_navigation_does_not_stay_pending(self, seen):
         assert seen["transition"]["superseded"][-1] is False
+
+
+class TestBlocker:
+    def test_a_blocker_holds_the_back_button(self, seen):
+        assert seen["backBlocked"]["held"] == "/about"
+
+    def test_a_held_back_renders_nothing(self, seen):
+        assert seen["backBlocked"]["heldRendered"] == ["/src/routes/about.tsx"]
+
+    def test_without_the_blocker_back_moves_again(self, seen):
+        assert seen["backBlocked"]["after"] == "/"
+
+    def test_a_guard_asks_its_message(self, seen):
+        assert seen["guard"]["asked"] == ["Leave?", "Leave?"]
+
+    def test_a_refused_guard_stays(self, seen):
+        assert seen["guard"]["refused"] is False
+
+    def test_an_accepted_guard_goes_on(self, seen):
+        assert seen["guard"]["accepted"] is True
+
+    def test_a_guard_asks_before_a_reload(self, seen):
+        assert seen["guard"]["held"] is True
+
+    def test_a_released_guard_lets_a_reload_go(self, seen):
+        assert seen["guard"]["freed"] is False
+
+
+class TestHold:
+    def test_false_holds_nothing(self, seen):
+        assert seen["hold"]["freeOk"] is True
+
+    def test_true_asks_and_stays_on_a_no(self, seen):
+        assert seen["hold"]["guardedOk"] is False
+
+    def test_a_function_is_a_blocker(self, seen):
+        assert seen["hold"]["blockedOk"] is False

@@ -67,6 +67,7 @@ mismatch.
 | Navigate | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | Navigation in flight | `useTransition()` | `useTransition()` accessor | `useTransition()` ref | `useTransition()` store |
 | Match a path | `useMatch(path?)` | `useMatch(path?)` accessor | `useMatch(path?)` ref | `useMatch(path?)` store |
+| Ask before leaving | `useBlocker(dirty)` | `useBlocker(dirty())` in `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` in `$effect` |
 
 The query is a `URLSearchParams`. `useRouter()` and `router` give `push(href)`, `replace(href)`,
 `back()`, `forward()`, `refresh()` and `prefetch(href)`; `push` and `replace` accept
@@ -149,6 +150,50 @@ It does not catch:
   is the exception for its own event handlers, whose errors reach the boundary;
 - a page the router cannot load: the browser asks the server for it instead (see
   [What the router does](#what-the-router-does)).
+
+## Ask before leaving a page with unsaved changes
+
+`useBlocker(dirty, message?)` asks the visitor before they leave while `dirty` is true: a link, a
+`router.push`, the back and forward buttons, a reload and a closed tab. A client navigation shows
+`message` in `confirm()`: yes goes on, no stays on the page. A reload or a closed tab shows the
+browser's own question, which no page can word. Without a message, the question is "You have
+unsaved changes. Leave this page?".
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+The flag is read where it changes, in the idiom of each framework:
+
+| Framework | Follow the flag |
+|---|---|
+| React, Preact | `useBlocker(dirty)` on each render |
+| Vue | `useBlocker(dirty)` with `dirty` a ref or a computed |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` also takes a function, for a decision that depends on where the visitor goes. It
+receives the next location and the current one, and returns a reason (a string) to stay, or nothing
+to go on:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+A function does not ask by itself and does not hold a reload; call `confirm()` in it to ask.
 
 ## `Image`
 

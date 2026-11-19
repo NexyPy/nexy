@@ -1,6 +1,6 @@
 # Rendimiento
 
-Qué hace `nx start` de forma predeterminada, qué activar y qué se midió.
+Qué hace `nx start` de forma predeterminada, qué activar y qué tan rápido comienza y responde un proyecto.
 
 ## Valores predeterminados
 
@@ -37,9 +37,29 @@ revalidate = 60
 ISR es un modo de páginas de archivos: en cada solicitud se representa una vista que devuelve un controlador.
 <!-- /router -->
 
-## medido
+## Inicio, primera página y recompilar.
 
-Una ejecución local, un trabajador Uvicorn, Windows, Python 3.13, conexiones de mantenimiento desde un generador de carga Python en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
+Cuánto tiempo lleva un proyecto con una `.nexy` página, mediana de 5 ejecuciones, cada una en un nuevo proceso Python:
+
+| Medida | mediana | lo que cubre |
+|---|---|---|
+| Inicio | 460 ms | de un nuevo proceso a una aplicación lista para responder: importaciones, escaneo de rutas, compilación |
+| Primera página | 554 ms | lo mismo, más la primera solicitud a `/` y su HTML |
+| Recompilar una página | 1,8 ms | compilar la página nuevamente después de una edición, en un proceso que ya se ejecuta |
+
+Medido en un AMD Ryzen 5 4500U, Linux, 6 CPU, Python 3.13.15. Recompilar es lo que hace `nx dev` para el lado Python de un cambio; una recarga del navegador también paga por el gráfico del módulo de Vite y el propio renderizado del navegador, por lo que no es un tiempo de recarga.
+
+Mide tu propia máquina con el script que escribió la tabla:
+
+```bash
+python scripts/measure_speed.py --runs 5
+```
+
+El flujo de trabajo `Speed` lo ejecuta en cada envío a `main` y escribe la misma tabla en el resumen de la ejecución, en un ejecutor Ubuntu alojado en GitHub.
+
+## Solicitudes por segundo
+
+Una ejecución local, un trabajador Uvicorn, Windows, Python 3.13, conexiones de mantenimiento de actividad desde un generador de carga Python en la misma máquina. Trate las cifras como una base para comparar los cambios, no como un punto de referencia con respecto a otros marcos.
 
 La ruta Nexy JSON de la tabla es este archivo:
 
@@ -81,8 +101,8 @@ Leyendo la tabla:
 
 1. Coloque Nginx, Caddy o la ventaja de su plataforma al frente: TLS, HTTP/2, Brotli y el almacenamiento en caché de larga duración para `/__nexy__/client/` activos son sus puntos fuertes. Consulte [Implementar](README.md).
 2. Utilice [ISR](../rendering/isr.md) para páginas que cambian menos de una vez por minuto.
-3. Hidrátate lentamente con [islas](../rendering/islands.md) para que la primera carga envíe menos JavaScript.
-4. Mantenga un número razonable de `.nexy` componentes por página: cada uno es una representación de plantilla independiente.
+3. Hidrátate perezosamente con [islas](../rendering/islands.md) para que la primera carga envíe menos JavaScript.
+4. Mantenga un número razonable de `.nexy` componentes por página: cada uno es una plantilla de representación independiente.
 5. Mide tus propias rutas. Un generador de carga local que mantenga vivas las conexiones es suficiente para comparar dos versiones de una página.
 
 Consejo 1 con Nginx: los paquetes de clientes con hash se almacenan en caché durante un año, el resto va a Nexy.
