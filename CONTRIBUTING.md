@@ -206,7 +206,7 @@ git push origin feature/my-feature
 Then open a pull request on GitHub. Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md).
 
 Once the PR is merged, GitHub deletes its branch: the repository has "Automatically delete head
-branches" on, so only `main`, `staging` and `develop` stay on the remote. Delete your local copy
+branches" on, so only `main` and `develop` stay on the remote. Delete your local copy
 with `git branch -d feature/my-feature`, and drop the stale remote names with `git fetch --prune`.
 
 ### Stay updated
@@ -441,17 +441,19 @@ the table decides its number.
    ```
    It prints a `### Thanks` section naming each contributor and their pull requests, or nothing
    when only the maintainer and bots merged.
-3. Commit the version bump and changelog on `main`, then tag and push. The
-   tag must match the package version exactly (for example, `v2.1.1`), and
-   its commit must already be on `main`; the workflow rejects tags from
+3. Commit the version bump and changelog on a `chore/release-<version>` branch and merge its pull
+   request into `develop`. Then open a pull request from `develop` into `main` and merge it once
+   CI and the browser suite pass; there is no branch in between.
+4. Tag the merge commit on `main` and push the tag. It must match the package version exactly (for
+   example, `v2.1.1`), and its commit must already be on `main`; the workflow rejects tags from
    other branches:
    ```bash
-   git tag v<version>
+   git tag -a v<version> -m "Nexy <version>" origin/main
    git push origin v<version>
    ```
-4. The `Release` workflow builds the sdist and wheel, smoke-tests both, and
-   publishes to PyPI with trusted publishing.
-5. Create the GitHub Release from the tag.
+5. The `Release` workflow builds the sdist and wheel, smoke-tests both, and
+   publishes to PyPI with trusted publishing, once the `pypi` environment is approved.
+6. Create the GitHub Release from the tag.
 
 The workflow requires a PyPI trusted publisher configured for
 `NexyPy/nexy`, workflow `release.yml`, and environment `pypi`. It stores no
