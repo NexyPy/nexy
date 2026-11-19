@@ -80,6 +80,8 @@ export function createRouter(options: RouterOptions) {
   const listeners = new Set<() => void>()
   const prefetched = new Set<string>()
   const blockers = new Set<Blocker>()
+  // Guards in place: while there is one, a reload or a closed tab asks the browser's question.
+  let guards = 0
   let navigation = 0
   let location = read()
   let index = 0
@@ -278,6 +280,26 @@ export function createRouter(options: RouterOptions) {
     })
   }
 
+  function onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (guards === 0) return
+    event.preventDefault()
+    event.returnValue = ''
+  }
+
+  /** Ask `message` before any move away, and before a reload or a closed tab. Returns a release. */
+  function guard(message: string): () => void {
+    const ask: Blocker = () => (win.confirm(message) ? undefined : message)
+    blockers.add(ask)
+    guards += 1
+    let held = true
+    return () => {
+      if (!held) return
+      held = false
+      blockers.delete(ask)
+      guards -= 1
+    }
+  }
+
   /** Back or forward: the URL has already moved, so a refusal moves it back where it was. */
   async function onPop(): Promise<void> {
     if (returning) return void (returning = false)
@@ -293,6 +315,7 @@ export function createRouter(options: RouterOptions) {
   function start(): () => void {
     win.document.addEventListener('click', onClick)
     win.addEventListener('popstate', onPop)
+    win.addEventListener('beforeunload', onBeforeUnload)
     index = entry()
     win.history.replaceState({ ...(win.history.state ?? {}), nexy: true, index }, '')
     // The browser would restore the scroll before the page is rendered: do it ourselves.
@@ -300,6 +323,7 @@ export function createRouter(options: RouterOptions) {
     return () => {
       win.document.removeEventListener('click', onClick)
       win.removeEventListener('popstate', onPop)
+      win.removeEventListener('beforeunload', onBeforeUnload)
     }
   }
 
@@ -333,6 +357,7 @@ export function createRouter(options: RouterOptions) {
       blockers.add(blocker)
       return () => void blockers.delete(blocker)
     },
+    guard,
     /** The in-flight navigation state, shared by every adapter. Read it for a loading boundary. */
     transition(): TransitionState {
       return transitionState

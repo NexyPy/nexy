@@ -145,3 +145,18 @@ class TestBlocker:
 
     def test_without_the_blocker_back_moves_again(self, seen):
         assert seen["backBlocked"]["after"] == "/"
+
+    def test_a_guard_asks_its_message(self, seen):
+        assert seen["guard"]["asked"] == ["Leave?", "Leave?"]
+
+    def test_a_refused_guard_stays(self, seen):
+        assert seen["guard"]["refused"] is False
+
+    def test_an_accepted_guard_goes_on(self, seen):
+        assert seen["guard"]["accepted"] is True
+
+    def test_a_guard_asks_before_a_reload(self, seen):
+        assert seen["guard"]["held"] is True
+
+    def test_a_released_guard_lets_a_reload_go(self, seen):
+        assert seen["guard"]["freed"] is False

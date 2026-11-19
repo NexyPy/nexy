@@ -266,5 +266,22 @@ const out = {};
   out.backBlocked = { held, heldRendered, after: w.real.location.pathname, rendered: w.rendered };
 }
 
+// 15. A guard asks before leaving: a refusal stays, a yes goes on, and a reload is asked too.
+{
+  const w = world();
+  const answers = [false, true];
+  const asked = [];
+  w.real.confirm = (message) => (asked.push(message), answers.shift());
+  const release = w.router.guard("Leave?");
+  const refused = await w.router.navigate("/about");
+  const accepted = await w.router.navigate("/about");
+  const held = new w.real.Event("beforeunload", { cancelable: true });
+  w.real.dispatchEvent(held);
+  release();
+  const freed = new w.real.Event("beforeunload", { cancelable: true });
+  w.real.dispatchEvent(freed);
+  out.guard = { asked, refused, accepted, held: held.defaultPrevented, freed: freed.defaultPrevented };
+}
+
 console.log("@@" + JSON.stringify(out) + "@@");
 process.exit(0);
