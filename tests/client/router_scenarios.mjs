@@ -1,7 +1,7 @@
 // Drives the framework-neutral client router (nexy/modules/frontend/client/router.ts) in jsdom.
 // Prints one JSON object between @@ markers: scenario name -> observations.
 import { JSDOM } from "jsdom";
-import { createRouter, searchParamsOf } from "../../nexy/modules/frontend/client/router.ts";
+import { createRouter, hold, searchParamsOf } from "../../nexy/modules/frontend/client/router.ts";
 
 const ROUTES = {
   "/": { file: "/src/routes/index.tsx", layouts: [], params: {} },
@@ -14,6 +14,9 @@ const match = (pathname) => {
   const user = /^\/users\/([^/]+)$/.exec(pathname);
   return user ? { file: "/src/routes/users/[id].tsx", layouts: [], params: { id: user[1] } } : null;
 };
+
+// Every window opened, closed before the process exits.
+const windows = [];
 
 function world({ url = "http://localhost/", render } = {}) {
   const dom = new JSDOM(`<!DOCTYPE html><body><main id="m"></main><h2 id="section">S</h2></body>`, {
@@ -62,6 +65,7 @@ function world({ url = "http://localhost/", render } = {}) {
   const events = [];
   real.document.addEventListener("nexy:navigated", (e) => events.push(e.detail.pathname));
   const stop = router.start();
+  windows.push(real);
   return { dom, real, router, assigned, scrolls, rendered, prefetched, events, stop, setScroll: (y) => (scrollY = y) };
 }
 
@@ -251,5 +255,54 @@ const out = {};
   out.transition = { states, superseded: after };
 }
 
+// 14. A blocker holds the back and forward buttons too; once it is gone they move again.
+{
+  const w = world();
+  await w.router.navigate("/about");
+  const stop = w.router.blocker(() => "unsaved");
+  w.real.history.back();
+  await sleep(40);
+  const held = w.real.location.pathname;
+  const heldRendered = [...w.rendered];
+  stop();
+  w.real.history.back();
+  await sleep(40);
+  out.backBlocked = { held, heldRendered, after: w.real.location.pathname, rendered: w.rendered };
+}
+
+// 15. A guard asks before leaving: a refusal stays, a yes goes on, and a reload is asked too.
+{
+  const w = world();
+  const answers = [false, true];
+  const asked = [];
+  w.real.confirm = (message) => (asked.push(message), answers.shift());
+  const release = w.router.guard("Leave?");
+  const refused = await w.router.navigate("/about");
+  const accepted = await w.router.navigate("/about");
+  const held = new w.real.Event("beforeunload", { cancelable: true });
+  w.real.dispatchEvent(held);
+  release();
+  const freed = new w.real.Event("beforeunload", { cancelable: true });
+  w.real.dispatchEvent(freed);
+  out.guard = { asked, refused, accepted, held: held.defaultPrevented, freed: freed.defaultPrevented };
+}
+
+// 16. hold() is what every useBlocker calls: true guards, false holds nothing, a function blocks.
+{
+  const w = world();
+  w.real.confirm = () => false;
+  const free = hold(w.router, false);
+  const freeOk = await w.router.navigate("/about");
+  free();
+  const guarded = hold(w.router, true);
+  const guardedOk = await w.router.navigate("/");
+  guarded();
+  const blocked = hold(w.router, () => "no");
+  const blockedOk = await w.router.navigate("/");
+  blocked();
+  out.hold = { freeOk, guardedOk, blockedOk };
+}
+
+for (const window of windows) window.close();
 console.log("@@" + JSON.stringify(out) + "@@");
 process.exit(0);

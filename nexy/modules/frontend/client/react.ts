@@ -20,6 +20,7 @@ import {
 import type { Route } from './routes.auto.ts'
 import {
   getRouter,
+  hold,
   serverLocation,
   type Blocker,
   type NavigateOptions,
@@ -176,14 +177,11 @@ export function useMatch(pathname?: string): RouteMatchInfo {
   return useMemo(() => router?.matchPath(target) ?? { match: null, found: false }, [router, target])
 }
 
-/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
-export function useBlocker(blocker: Blocker): void {
+/** Hold navigation: `true` while there are unsaved changes, or a blocker returning a reason. */
+export function useBlocker(when: Blocker | boolean, message?: string): void {
   const router = getRouter()
-  useEffect(() => {
-    if (!router) return
-    const stop = router.blocker(blocker)
-    return stop
-  }, [router, blocker])
+  // true asks `message` before leaving and before a reload; false holds nothing.
+  useEffect(() => (router ? hold(router, when, message) : undefined), [router, when, message])
 }
 
 const IDLE: TransitionState = { pending: false, next: null }

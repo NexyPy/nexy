@@ -62,6 +62,7 @@ export default function Nav() {
 | انتقل | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | الملاحة في الرحلة | `useTransition()` | `useTransition()` الواصل | `useTransition()` المرجع | `useTransition()` مخزن |
 | تطابق المسار | `useMatch(path?)` | `useMatch(path?)` الواصل | `useMatch(path?)` المرجع | `useMatch(path?)` مخزن |
+| اسأل قبل المغادرة | `useBlocker(dirty)` | `useBlocker(dirty())` في `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` في `$effect` |
 
 الاستعلام هو `URLSearchParams`. `useRouter()` و `router` يعطي `push(href)`، `replace(href)`، `back()`، `forward()`، `refresh()` و `prefetch(href)`؛ `push` و `replace` يقبل `{ scroll: false }`.
 
@@ -104,7 +105,7 @@ export default function Breadcrumb() {
 
 ## قبض على الصفحة التي تفشل مع `ErrorBoundary`
 
-`ErrorBoundary` يظهر احتياطيًا بدلاً من أبنائه عندما يرمي أحدهم أثناء عرضه في المتصفح. يتلقى الإجراء الاحتياطي الخطأ و `reset`، مما يعرض الأطفال مرة أخرى.
+`ErrorBoundary` يظهر احتياطيًا بدلاً من أطفاله عندما يرمي أحدهم أثناء عرضه في المتصفح. يتلقى الإجراء الاحتياطي الخطأ و `reset`، مما يعرض الأطفال مرة أخرى.
 
 | الإطار | استيراد | احتياطي |
 |---|---|---|
@@ -131,8 +132,46 @@ import { ErrorBoundary } from "@nexy/client";
 
 لا يمسك:
 
-- خطأ تم طرحه لاحقًا، في معالج الحدث، أو المؤقت، أو الوعد: اكتشفه حيث يحدث. Vue هو الاستثناء لمعالجات الأحداث الخاصة به، والتي تصل أخطائه إلى الحدود؛
+- خطأ تم طرحه لاحقًا، في معالج الحدث، أو المؤقت، أو الوعد: اكتشفه حيث يحدث. Vue هو الاستثناء لمعالجات الأحداث الخاصة به، والتي تصل أخطائها إلى الحدود؛
 - صفحة لا يستطيع جهاز التوجيه تحميلها: يطلب المتصفح من الخادم بدلاً من ذلك (راجع [ما يفعله جهاز التوجيه](#what-the-router-does)).
+
+## اسأل قبل مغادرة الصفحة التي تحتوي على تغييرات غير محفوظة
+
+`useBlocker(dirty, message?)` يسأل الزائر قبل مغادرته بينما `dirty` صحيح: رابط، `router.push`، أزرار الرجوع والأمام، إعادة التحميل وعلامة تبويب مغلقة. يظهر تنقل العميل `message` في `confirm()`: نعم يستمر، لا يبقى في الصفحة. تعرض علامة التبويب المغلقة أو إعادة التحميل السؤال الخاص بالمتصفح، والذي لا يمكن لأي صفحة الإجابة عليه. بدون رسالة، يكون السؤال هو "لديك تغييرات غير محفوظة. هل تريد مغادرة هذه الصفحة؟".
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+تتم قراءة العلم حيث يتغير، في لغة كل إطار:
+
+| الإطار | اتبع العلم |
+|---|---|
+| React، Preact | `useBlocker(dirty)` على كل تقديم |
+| Vue | `useBlocker(dirty)` مع `dirty` مرجع أو محسوب |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` يتخذ أيضًا وظيفة، لقرار يعتمد على المكان الذي يذهب إليه الزائر. يتلقى الموقع التالي والموقع الحالي، ويعيد سببًا (سلسلة نصية) للبقاء، أو لا شيء للاستمرار:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+لا تطلب الوظيفة من تلقاء نفسها ولا تقوم بإعادة التحميل؛ اتصل بـ `confirm()` فيه للسؤال.
 
 ## `Image`
 
@@ -170,7 +209,7 @@ from nexy import Link
 
 1. يطابق المسار مع مسارات العميل (`.tsx`، `.jsx`، `.vue`، `.svelte`)؛
 2. يستورد ويعرض الصفحة و[تخطيطاتها](../layouts/README.md) **أولاً**، وبعدها فقط ينقل عنوان URL باستخدام `history.pushState`، بحيث لا يعرض شريط العناوين أبدًا صفحة فاشلة؛
-3. يرسل `nexy:navigated` حدثًا على `document`؛
+3. يرسل حدث `nexy:navigated` على `document`؛
 4. يتم التمرير إلى الأعلى، أو إلى الهدف `#fragment`.
 
 يؤدي التنقل الأحدث إلى إلغاء التنقل الأقدم الذي لا يزال قيد العرض. إذا تعذر عرض الصفحة، يطلب المتصفح من الخادم بدلاً من ذلك. يعرض الزران الخلفي والأمامي صفحة هذا الإدخال ويستعيدان موضع التمرير الخاص به.

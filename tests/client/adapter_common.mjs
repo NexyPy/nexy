@@ -128,7 +128,15 @@ export async function story(page, { click }) {
   await sleep(120);
   const afterPush = { ...observe(doc), url: page.dom.window.location.pathname + page.dom.window.location.search };
 
-  return { initial, afterHover, duringClick, afterClick, afterPush, errors };
+  // /users/7 has unsaved changes: a reload is asked, and a click refused by confirm stays.
+  const reload = new page.dom.window.Event("beforeunload", { cancelable: true });
+  page.dom.window.dispatchEvent(reload);
+  page.dom.window.confirm = () => false;
+  click(doc.getElementById("home"));
+  await sleep(80);
+  const guarded = { reload: reload.defaultPrevented, stayed: page.dom.window.location.pathname };
+
+  return { initial, afterHover, duringClick, afterClick, afterPush, guarded, errors };
 }
 
 export function clickWith(window) {

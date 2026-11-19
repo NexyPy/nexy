@@ -62,8 +62,9 @@ Lokasi tersedia di setiap framework, dalam idiom framework tersebut. Selama taha
 | Navigasi | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | Navigasi dalam penerbangan | `useTransition()` | `useTransition()` pengakses | `useTransition()` rujukan | `useTransition()` toko |
 | Cocokkan jalan | `useMatch(path?)` | `useMatch(path?)` pengakses | `useMatch(path?)` rujukan | `useMatch(path?)` toko |
+| Tanyakan sebelum pergi | `useBlocker(dirty)` | `useBlocker(dirty())` di `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` di `$effect` |
 
-Kuerinya adalah `URLSearchParams`. `useRouter()` dan `router` memberikan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` dan `prefetch(href)`; `push` dan `replace` menerima `{ scroll: false }`.
+Kuerinya adalah `URLSearchParams`. `useRouter()` dan `router` menghasilkan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` dan `prefetch(href)`; `push` dan `replace` menerima `{ scroll: false }`.
 
 ```tsx
 import { useParams, useRouter, useSearchParams } from "@nexy/client";
@@ -91,7 +92,7 @@ export default function Progress() {
 
 ## Cocokkan jalur dengan `useMatch`
 
-`useMatch(path)` memberitahukan apakah `path` cocok dengan rute klien. Ia mengembalikan `{ match, found }`, di mana `match` memegang rute `file`, `layouts` dan `params`, atau `null`. Tanpa jalur, itu cocok dengan halaman saat ini dan mengikuti setiap navigasi. Selama render server belum ada router, jadi `match` adalah `null` dan `found` adalah `false`.
+`useMatch(path)` memberitahukan apakah `path` cocok dengan rute klien. Ia mengembalikan `{ match, found }`, di mana `match` memegang rute `file`, `layouts` dan `params`, atau `null`. Tanpa jalur, itu cocok dengan halaman saat ini dan mengikuti setiap navigasi. Saat server render belum ada router, jadi `match` adalah `null` dan `found` adalah `false`.
 
 ```tsx
 import { useMatch } from "@nexy/client";
@@ -134,6 +135,44 @@ Itu tidak menangkap:
 - kesalahan yang muncul kemudian, dalam pengendali peristiwa, pengatur waktu, atau janji: tangkap di tempat terjadinya. Vue adalah pengecualian untuk pengendali kejadiannya sendiri, yang kesalahannya mencapai batas;
 - halaman yang tidak dapat dimuat oleh router: browser malah memintanya ke server (lihat [Apa yang dilakukan router](#what-the-router-does)).
 
+## Tanyakan sebelum meninggalkan halaman dengan perubahan yang belum disimpan
+
+`useBlocker(dirty, message?)` bertanya kepada pengunjung sebelum mereka pergi sementara `dirty` benar: tautan, `router.push`, tombol mundur dan maju, muat ulang, dan tab tertutup. Navigasi klien menunjukkan `message` di `confirm()`: ya terus, tidak ada yang tetap di halaman. Tab yang dimuat ulang atau ditutup menunjukkan pertanyaan browser itu sendiri, yang tidak dapat diungkapkan oleh halaman mana pun. Tanpa pesan, pertanyaannya adalah "Anda memiliki perubahan yang belum disimpan. Tinggalkan halaman ini?".
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+Bendera dibaca di tempat yang berubah, dalam idiom setiap kerangka:
+
+| Kerangka | Ikuti benderanya |
+|---|---|
+| React, Preact | `useBlocker(dirty)` pada setiap render |
+| Vue | `useBlocker(dirty)` dengan `dirty` ref atau dihitung |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` juga mengambil fungsi, untuk keputusan yang bergantung pada kemana pengunjung pergi. Ia menerima lokasi berikutnya dan lokasi saat ini, dan mengembalikan alasan (string) untuk tetap tinggal, atau tidak melanjutkan apa pun:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+Suatu fungsi tidak bertanya dengan sendirinya dan tidak memuat ulang; panggil `confirm()` di dalamnya untuk bertanya.
+
 ## `Image`
 
 `Image` merender `<img>` yang malas secara default dan tidak mengubah tata letak saat ukurannya diketahui.
@@ -149,11 +188,11 @@ Itu tidak menangkap:
 
 - `alt` diperlukan; gunakan `alt=""` untuk gambar dekoratif. Nexy memperingatkan sekali jika hilang.
 - Dengan `width` dan `height`, atribut memberikan rasio aspek pada browser dan gambar tetap lancar (`height: auto; max-width: 100%`).
-- `priority` memuat gambar sekarang dengan prioritas tinggi, untuk gambar yang terlihat pada saat kedatangan.
-- `fill` membuat gambar menutupi induk posisinya, mengabaikan `width` dan `height`.
+- `priority` sekarang memuat gambar dengan prioritas tinggi, untuk gambar yang terlihat pada saat kedatangan.
+- `fill` membuat gambar menutupi posisi induknya, mengabaikan `width` dan `height`.
 - `sizes` dan `srcSet` melewatinya. Nexy tidak mengubah ukuran atau mengonversi gambar.
 
-## Tautan dari halaman `.nexy`
+## Tautan dari halaman `.nexy`.
 
 ```nexy
 ---
@@ -162,7 +201,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` menerjemahkan `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` lolos dari HTML.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` merender `<a href="/about" data-nexy-link="true">`. Setiap atribut dan `href` di-escape dengan HTML.
 
 ## Apa yang dilakukan router
 

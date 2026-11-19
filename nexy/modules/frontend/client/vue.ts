@@ -8,11 +8,13 @@ import {
   defineComponent,
   getCurrentScope,
   h,
+  isRef,
   onErrorCaptured,
   onMounted,
   onScopeDispose,
   ref,
   shallowRef,
+  watchEffect,
   type ComputedRef,
   type PropType,
   type Ref
@@ -20,6 +22,7 @@ import {
 import type { Route } from './routes.auto.ts'
 import {
   getRouter,
+  hold,
   serverLocation,
   type Blocker,
   type NavigateOptions,
@@ -88,13 +91,13 @@ export function useMatch(pathname?: string): ComputedRef<RouteMatchInfo> {
   return computed(() => router?.matchPath(pathname ?? location.value.pathname) ?? { match: null, found: false })
 }
 
-/** Block navigation when `blocker` returns a reason (string) or a promise of one. */
-export function useBlocker(blocker: Blocker): void {
+/** Hold navigation: `true` (or a ref of it) while there are unsaved changes, or a blocker. */
+export function useBlocker(when: Blocker | boolean | Ref<boolean>, message?: string): void {
   const router = getRouter()
-  if (router && getCurrentScope()) {
-    const stop = router.blocker(blocker)
-    onScopeDispose(stop)
-  }
+  if (!router || !getCurrentScope()) return
+  // A ref is followed: the hold is released and taken again each time it changes.
+  if (isRef(when)) return void watchEffect(onCleanup => onCleanup(hold(router, when.value, message)))
+  onScopeDispose(hold(router, when, message))
 }
 
 /** The in-flight navigation state: `{ pending, next }`. Read it for a loading boundary. */
