@@ -205,7 +205,6 @@
     },
     "node_installed": "{manager}(으)로 node_modules를 설치했습니다",
     "python_synced": "uv로 .venv를 동기화했습니다",
-    "package_added": "{package}을(를) .venv에 추가했습니다",
     "created": "프로젝트 {name}을(를) 만들었습니다"
   },
   "migrate": {

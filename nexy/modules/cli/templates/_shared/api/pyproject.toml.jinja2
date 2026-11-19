@@ -4,5 +4,8 @@ version = "0.1.0"
 description = "A Nexy RESTful API{% if orm != 'None' %} with {{ orm }}{% endif %}"
 dependencies = [
     "nexy>={{ nexy_version }}",
+{%- for package in python_packages | default([]) %}
+    "{{ package }}",
+{%- endfor %}
 ]
 requires-python = ">=3.12"

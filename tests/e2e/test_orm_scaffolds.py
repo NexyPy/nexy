@@ -175,3 +175,38 @@ def test_a_new_project_has_its_tables_without_a_manual_migration(tmp_path, templ
     done = _run(tmp_path, request_code(route[template]))
     assert "@@" in done.stdout, done.stderr[-1500:]
     assert json.loads(done.stdout.split("@@")[1])[0] == 200
+
+
+TEAM = """
+import json, sys
+from nexy.core.config import Config
+Config()
+from nexy.modules.builder import Builder
+Builder().build()
+from fastapi.testclient import TestClient
+from nexy.modules.routers.actions.store import ACTIONS_STORE
+from nexy.modules.routers.app import AppServer
+with TestClient(AppServer().run(), raise_server_exceptions=False) as client:
+    if {fbr!r}:
+        join = ACTIONS_STORE.path_map["src.actions.team.join_team"]
+    else:
+        join = "/api/team"
+    answer = client.post(join, json={{"name": "Grace", "email": "grace@example.com"}})
+sys.stdout.write("@@" + json.dumps([answer.status_code, answer.text]) + "@@")
+"""
+
+
+@pytest.mark.parametrize("orm", ORMS)
+@pytest.mark.parametrize(
+    ("template", "models"),
+    [("web-fbr", "src.models.user_model"), ("web-modular", "src.apps.users.user_model")],
+)
+def test_the_connection_page_adds_a_member_to_the_users_table(tmp_path, template, models, orm):
+    _scaffold(tmp_path, template, orm)
+    prepared = _run(tmp_path, prepare_code(orm, models))
+    assert prepared.returncode == 0, prepared.stderr[-1500:]
+    done = _run(tmp_path, TEAM.format(fbr=template == "web-fbr"))
+    assert "@@" in done.stdout, done.stderr[-1500:]
+    status, body = json.loads(done.stdout.split("@@")[1])
+    names = [member["name"] for member in json.loads(body)["members"]] if status == 200 else body
+    assert names == ["Ada", "Grace"], body[:300]
