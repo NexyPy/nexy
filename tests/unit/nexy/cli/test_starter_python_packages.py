@@ -28,3 +28,7 @@ def test_a_web_project_lists_the_packages_of_its_orm(tmp_path):
 
 def test_a_web_project_without_an_orm_lists_only_nexy(tmp_path):
     assert _dependencies("web", tmp_path, []) == []
+
+
+def test_an_api_project_lists_the_packages_of_its_orm(tmp_path):
+    assert _dependencies("api", tmp_path, PACKAGES) == PACKAGES
