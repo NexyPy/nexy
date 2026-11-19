@@ -206,7 +206,7 @@
     "node_installed": "{manager} で node_modules をインストールしました",
     "python_synced": "uv で .venv を同期しました",
     "package_added": "{package} を .venv に追加しました",
-    "created": "{name} からプロジェクトを作成しました"
+    "created": "プロジェクト {name} を作成しました"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich が初期化されていません。先に 'nx m --init' を実行してください。",
