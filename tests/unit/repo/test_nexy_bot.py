@@ -12,6 +12,7 @@ ACTION = "actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc455
 # workflow file: the permissions its bot token gets
 WORKFLOWS = {
     "take": {"permission-issues": "write"},
+    "welcome": {"permission-issues": "write"},
 }
 
 
