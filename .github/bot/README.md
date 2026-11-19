@@ -1,6 +1,6 @@
 # The Nexy bot
 
-Comments and assignments made by the workflows of this repository come from **nexy**, a
+Comments and assignments made by the workflows of this repository come from **nexy-bot**, a
 GitHub App, instead of `github-actions`. `nexy.png` is its picture and `nexy.svg` the source of it.
 
 A workflow that speaks for the project asks for a token of the app in its first step:
@@ -22,7 +22,8 @@ token answers, so nothing breaks. The token gets the permissions the workflow de
 ## Set it up (maintainer, once)
 
 1. Create the app in the organization: Settings, Developer settings, GitHub Apps, New GitHub App.
-   - Name: `nexy`. Homepage: `https://github.com/NexyPy/nexy`. Webhook: off.
+   - Name: `nexy-bot` (`nexy` is reserved: a GitHub account has it).
+   - Homepage: `https://github.com/NexyPy/nexy`. Webhook: off.
    - Repository permissions: Issues read and write, Pull requests read and write, Metadata read.
    - Where can it be installed: only on this account.
 2. On the page of the app, upload `nexy.png` as its logo and set the badge color to `#0A0A0B`.
@@ -31,4 +32,4 @@ token answers, so nothing breaks. The token gets the permissions the workflow de
    - variable `NEXY_BOT_CLIENT_ID`: the Client ID of the app;
    - secret `NEXY_BOT_PRIVATE_KEY`: the whole `.pem` file.
 
-The next comment of a workflow is signed `nexy[bot]`, with the mascot.
+The next comment of a workflow is signed `nexy-bot[bot]`, with the mascot.
