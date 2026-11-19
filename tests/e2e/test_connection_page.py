@@ -1,12 +1,11 @@
-"""The /connection page of every web starter reaches the Python server.
+"""The /connection page of every web starter lists a team the Python server keeps, and joins it.
 
-Each starter is scaffolded, built and served by `nx start`; Chromium opens /connection, presses the
-button and waits for the answer: the ping action of web-fbr, the ping controller of web-modular.
+Each starter is scaffolded, built and served by `nx start`; Chromium opens /connection, waits for
+the team, then sends the form: the team actions of web-fbr, the team controller of web-modular.
 """
 
 from __future__ import annotations
 
-import platform
 import re
 import subprocess  # nosec B404
 import sys
@@ -64,24 +63,33 @@ def starter(request: pytest.FixtureRequest, tmp_path_factory) -> Iterator[str]:
         server.wait(timeout=10)
 
 
-def _ping(page: Page, url: str) -> None:
+def _join(page: Page, url: str, name: str, email: str) -> None:
     page.goto(url + "/connection")
-    page.get_by_role("button", name="Ping the server").click()
+    expect(page.locator(STATUS)).to_contain_text("Loaded from Python")
+    page.get_by_label("Name").fill(name)
+    page.get_by_label("Email").fill(email)
+    page.get_by_role("button", name="Add to the team").click()
 
 
 @pytest.mark.e2e
-def test_the_page_says_nothing_was_checked_yet(starter, page: Page):
+def test_the_page_lists_the_team_the_server_keeps(starter, page: Page):
     page.goto(starter + "/connection")
-    expect(page.locator(STATUS)).to_have_text("Not checked yet.")
+    expect(page.get_by_role("list", name="Team")).to_contain_text("Ada Lovelace")
 
 
 @pytest.mark.e2e
-def test_the_button_reaches_the_python_server(starter, page: Page):
-    _ping(page, starter)
-    expect(page.locator(STATUS)).to_contain_text(f"Python {platform.python_version()} answered")
+def test_the_page_says_how_long_the_list_took(starter, page: Page):
+    page.goto(starter + "/connection")
+    expect(page.locator(STATUS)).to_have_text(re.compile(r"^Loaded from Python in \d+ ms\.$"))
 
 
 @pytest.mark.e2e
-def test_the_page_says_how_long_the_round_trip_took(starter, page: Page):
-    _ping(page, starter)
-    expect(page.locator(STATUS)).to_have_text(re.compile(r"^Connected in \d+ ms\."))
+def test_a_new_member_comes_back_from_the_server(starter, page: Page):
+    _join(page, starter, "Katherine Johnson", "katherine@example.com")
+    expect(page.get_by_role("list", name="Team")).to_contain_text("Katherine Johnson")
+
+
+@pytest.mark.e2e
+def test_the_server_refuses_a_member_already_on_the_team(starter, page: Page):
+    _join(page, starter, "Ada", "ada@example.com")
+    expect(page.locator(STATUS)).to_have_text("ada@example.com is already on the team.")

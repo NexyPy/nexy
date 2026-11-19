@@ -8,6 +8,7 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
+from nexy.__version__ import __version__
 from nexy.modules.cli.constants import TEMPLATES_DIR
 
 # Markup shared by every framework (header, footer, the starter pages): templates `include` it.
@@ -114,8 +115,12 @@ class TemplateRenderer:
             shutil.copy2(source, destination)
 
     def _render_file(self, environment: Environment, rel: Path, final: Path) -> None:
-        """Render a template; one that renders to nothing writes nothing."""
-        output = environment.get_template(rel.as_posix()).render(**self.context)
+        """Render a template; one that renders to nothing writes nothing.
+
+        `nexy_version` is the release rendering it, so a new project asks for at least that one.
+        """
+        context = {"nexy_version": __version__, **self.context}
+        output = environment.get_template(rel.as_posix()).render(**context)
         if output.strip():
             final.parent.mkdir(parents=True, exist_ok=True)
             final.write_text(output, encoding="utf-8")

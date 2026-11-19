@@ -139,6 +139,14 @@ def _write_line(line: str) -> None:
 
 
 _SOCKET = "SOCKET"
+_ACTION = "ACTION"
+Names = Callable[[str], str | None]
+
+
+def _no_name(_path: str) -> str | None:
+    return None
+
+
 _ACCEPTED = 101
 _REFUSED = 403
 _CRASHED = 500
@@ -147,10 +155,11 @@ _CRASHED = 500
 class _Exchange:
     """One request or socket being timed: it remembers the status and reports exactly once."""
 
-    def __init__(self, scope: Any, log: Callable[[str], None], paint: Paint) -> None:
+    def __init__(self, scope: Any, log: Callable[[str], None], paint: Paint, names: Names) -> None:
         self._scope = scope
         self._log = log
         self._paint = paint
+        self._names = names
         self._started = time.perf_counter()
         self._reported = False
         self.status = _CRASHED
@@ -177,8 +186,14 @@ class _Exchange:
             return
         self._reported = True
         elapsed = time.perf_counter() - self._started
+        verb, shown = self._shown()
+        self._log(format_request(verb, shown, self.status, elapsed, self._paint))
+
+    def _shown(self) -> tuple[str, str]:
+        """An action reads by its function name, not by its hashed URL: `ACTION » ping`."""
         path = self._scope["path"]
-        self._log(format_request(self.verb, path, self.status, elapsed, self._paint))
+        name = self._names(path) if self._scope["type"] == "http" else None
+        return (_ACTION, name) if name else (self.verb, path)
 
 
 class AccessLogMiddleware:
@@ -189,8 +204,11 @@ class AccessLogMiddleware:
         app: Any,
         log: Callable[[str], None] | None = None,
         quiet: tuple[str, ...] = (),
+        names: Names = _no_name,
     ) -> None:
         self.app = app
+        # The action served at a path, so its line names it; no name keeps the path.
+        self._names = names
         # A given log receives markup; the default one writes the finished line itself.
         self._log = log or _write_line
         self._paint = paint_markup if log else _console_paint()
@@ -201,7 +219,7 @@ class AccessLogMiddleware:
             await self.app(scope, receive, send)
             return
 
-        exchange = _Exchange(scope, self._log, self._paint)
+        exchange = _Exchange(scope, self._log, self._paint, self._names)
 
         async def observed_send(message: Any) -> None:
             exchange.observe(message)

@@ -38,6 +38,7 @@
       <div class="hidden items-center sm:flex">
         <Link href="/" class={LINK}>Home</Link>
         <Link href="/about" class={LINK}>About</Link>
+        <Link href="/connection" class={LINK}>Connection</Link>
       </div>
       <ThemeToggle />
       <span class="hidden sm:block">
@@ -61,6 +62,7 @@
 <Sheet id="mobile-menu" {open} title="Menu" onclose={close}>
   <Link href="/" class={SHEET_LINK} onclick={close}>Home</Link>
   <Link href="/about" class={SHEET_LINK} onclick={close}>About</Link>
+  <Link href="/connection" class={SHEET_LINK} onclick={close}>Connection</Link>
   <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="{SHEET_LINK} justify-between" onclick={close}>
     Docs
     <Icon path={EXTERNAL} size={16} />
