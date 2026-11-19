@@ -7,16 +7,16 @@
     "test": "node --conditions=browser --test"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@babel/preset-typescript": "^7.29.7",
-    "babel-preset-solid": "^1.9.16",
-    "jsdom": "^26.1.0",
-    "preact": "^10.26.0",
-    "preact-render-to-string": "^6.8.1",
+    "@babel/core": "^8.1.2",
+    "@babel/preset-typescript": "^8.0.7",
+    "babel-preset-solid": "^1.9.19",
+    "jsdom": "^31.0.1",
+    "preact": "^11.2.0",
+    "preact-render-to-string": "^6.8.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "solid-js": "^1.9.0",
-    "svelte": "^5.30.0",
-    "vue": "^3.5.0"
+    "solid-js": "^1.9.19",
+    "svelte": "^5.57.3",
+    "vue": "^3.5.45"
   }
 }
