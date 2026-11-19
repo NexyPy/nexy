@@ -20,3 +20,7 @@ def _pyproject(kind: str, dest: Path) -> str:
 
 def test_a_web_project_asks_for_the_release_that_made_it(tmp_path):
     assert f'"nexy>={__version__}"' in _pyproject("web", tmp_path)
+
+
+def test_an_api_project_asks_for_the_release_that_made_it(tmp_path):
+    assert f'"nexy>={__version__}"' in _pyproject("api", tmp_path)
