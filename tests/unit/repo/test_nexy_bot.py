@@ -14,6 +14,7 @@ WORKFLOWS = {
     "take": {"permission-issues": "write"},
     "welcome": {"permission-issues": "write"},
     "assign": {"permission-issues": "write", "permission-pull-requests": "write"},
+    "release-stale": {"permission-issues": "write"},
 }
 
 
