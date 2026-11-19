@@ -6,7 +6,7 @@ See #298.
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import pytest
 import yaml
@@ -36,5 +36,7 @@ def test_dependabot_updates_every_pnpm_lock_but_the_examples():
     tracked = subprocess.run(
         ["git", "ls-files", "*pnpm-lock.yaml"], capture_output=True, text=True, check=True, cwd=ROOT
     ).stdout.split()
-    locks = sorted(f"/{Path(lock).parent}" for lock in tracked if not lock.startswith("examples/"))
+    kept = [lock for lock in tracked if not lock.startswith("examples/")]
+    # git gives / on every system; Path would write backslashes on Windows.
+    locks = sorted(f"/{PurePosixPath(lock).parent}" for lock in kept)
     assert _updates()["npm"]["directories"] == locks
