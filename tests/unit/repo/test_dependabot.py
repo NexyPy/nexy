@@ -40,3 +40,7 @@ def test_dependabot_updates_every_pnpm_lock_but_the_examples():
     # git gives / on every system; Path would write backslashes on Windows.
     locks = sorted(f"/{PurePosixPath(lock).parent}" for lock in kept)
     assert _updates()["npm"]["directories"] == locks
+
+
+def test_dependabot_sends_a_javascript_major_release_on_its_own():
+    assert _updates()["npm"]["groups"]["javascript"]["update-types"] == ["minor", "patch"]
