@@ -40,8 +40,8 @@ def project(tmp_path):
     return tmp_path
 
 
-def _installer(project, connection, orm=None):
-    return DependencyInstaller(project, orm=orm, probe=lambda: connection)
+def _installer(project, connection):
+    return DependencyInstaller(project, probe=lambda: connection)
 
 
 class TestOffline:
@@ -75,8 +75,8 @@ class TestOnline:
 
 
 class TestLabels:
-    def _labels(self, project, calls, orm=None):
-        _installer(project, Connection(True, 30.0, 3000.0), orm=orm).install_all()
+    def _labels(self, project, calls):
+        _installer(project, Connection(True, 30.0, 3000.0)).install_all()
         return [label for label, _ in calls]
 
     def test_node_names_the_manager_and_the_folder(self, project, calls, monkeypatch):
@@ -86,15 +86,12 @@ class TestLabels:
     def test_python_names_uv_and_the_environment(self, project, calls):
         assert "uv sync .venv" in self._labels(project, calls)
 
-    def test_a_package_names_uv_the_environment_and_the_package(self, project, calls):
-        assert "uv add .venv sqlmodel" in self._labels(project, calls, orm="SQLModel")
-
 
 class TestDoneLines:
     """The line a finished step leaves says what was done, as uv does."""
 
-    def _done(self, project, calls, orm=None):
-        _installer(project, Connection(True, 30.0, 3000.0), orm=orm).install_all()
+    def _done(self, project, calls):
+        _installer(project, Connection(True, 30.0, 3000.0)).install_all()
         return done_lines
 
     def test_node_says_what_it_installed_and_with_what(self, project, calls, monkeypatch):
@@ -103,9 +100,6 @@ class TestDoneLines:
 
     def test_python_says_it_synced_the_environment(self, project, calls):
         assert "Synced .venv with uv" in self._done(project, calls)
-
-    def test_a_package_says_it_was_added(self, project, calls):
-        assert "Added sqlmodel to .venv" in self._done(project, calls, orm="SQLModel")
 
 
 class TestWarnings:
@@ -120,43 +114,33 @@ class TestWarnings:
         assert capsys.readouterr().out.startswith("warning: No package manager found")
 
 
-class TestDatabaseDrivers:
-    def test_postgresql_adds_its_driver_after_the_orm(self, project, calls):
-        installer = DependencyInstaller(
-            project,
-            orm="SQLModel",
-            database="neon",
-            probe=lambda: Connection(True, 30.0, 3000.0),
-        )
-        installer.install_all()
-        added = [argv[-1] for _, argv in calls if argv[:2] == ["uv", "add"]]
-        assert added == ["sqlmodel", "alembic", "psycopg[binary]", "python-dotenv"]
+class TestOrmPackages:
+    """What an ORM needs, written to pyproject.toml so that `uv sync` installs it."""
 
-
-class TestMigrationTools:
-    """`nx migrate` runs the tool of the project, so the project must have it."""
-
-    @staticmethod
-    def _added(project, calls, orm):
-        _installer(project, Connection(True, 30.0, 3000.0), orm=orm).install_all()
-        return [argv[-1] for _, argv in calls if argv[:2] == ["uv", "add"]]
+    def test_postgresql_adds_its_driver_after_the_orm(self):
+        packages = dependencies.orm_packages("SQLModel", "neon")
+        assert packages == ["sqlmodel", "alembic", "psycopg[binary]", "python-dotenv"]
 
     @pytest.mark.parametrize("orm", ["SQLModel", "SQLAlchemy"])
-    def test_a_sql_orm_brings_alembic(self, project, calls, orm):
-        assert "alembic" in self._added(project, calls, orm)
+    def test_a_sql_orm_brings_alembic(self, orm):
+        assert "alembic" in dependencies.orm_packages(orm, "sqlite")
 
-    def test_tortoise_brings_aerich(self, project, calls):
-        assert "aerich" in self._added(project, calls, "Tortoise-ORM")
+    def test_tortoise_brings_aerich(self):
+        assert "aerich" in dependencies.orm_packages("Tortoise-ORM", "sqlite")
 
-    def test_a_project_without_an_orm_brings_no_migration_tool(self, project, calls):
-        assert self._added(project, calls, "None") == []
+    def test_a_project_without_an_orm_brings_no_package(self):
+        assert dependencies.orm_packages("None", "sqlite") == []
+
+    def test_the_install_adds_no_package_one_by_one(self, project, calls):
+        _installer(project, Connection(True, 30.0, 3000.0)).install_all()
+        assert [argv for _, argv in calls if argv[:2] == ["uv", "add"]] == []
 
 
 class TestProgressBar:
     def test_each_step_knows_its_place_in_the_whole_install(self, project, calls):
-        _installer(project, Connection(True, 30.0, 3000.0), orm="SQLModel").install_all()
-        # venv, node, python, sqlmodel, alembic, python-dotenv
-        assert positions == [(0, 6), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6)]
+        _installer(project, Connection(True, 30.0, 3000.0)).install_all()
+        # venv, node, python: the ORM's packages come with the python step
+        assert positions == [(0, 3), (1, 3), (2, 3)]
 
     def test_a_single_step_has_no_count(self, tmp_path, calls):
         (tmp_path / ".venv").mkdir()
@@ -197,7 +181,7 @@ class TestWhileTheConnectionIsChecked:
             seen_at_probe.append(list(log))
             return Connection(True, 30.0, 3000.0)
 
-        DependencyInstaller(project, orm=None, probe=probe).install_all()
+        DependencyInstaller(project, probe=probe).install_all()
         assert seen_at_probe == [["Checking the connection...", "shown"]] and log[-1] == "hidden"
 
 
