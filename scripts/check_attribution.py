@@ -137,9 +137,17 @@ def _split(identity: str) -> tuple[str, str]:
     return name, ((match.group("email") if match else "") or "").strip().lower()
 
 
+def _in_domain(domain: str, parent: str) -> bool:
+    """Return True for an exact domain or one of its subdomains.
+
+    A suffix test alone would also accept lookalike domains such as evilgithub.com.
+    """
+    return domain == parent or domain.endswith("." + parent)
+
+
 def _vendor(email: str) -> bool:
     domain = email.rpartition("@")[2]
-    return any(domain == vendor or domain.endswith("." + vendor) for vendor in AI_DOMAINS)
+    return any(_in_domain(domain, vendor) for vendor in AI_DOMAINS)
 
 
 def is_ai_author(identity: str) -> bool:
@@ -177,9 +185,9 @@ def is_ai_identity(value: str) -> bool:
 
     if "[bot]" in name.lower() or "[bot]" in local:
         return True
-    if any(domain == vendor or domain.endswith("." + vendor) for vendor in AI_DOMAINS):
+    if _vendor(email):
         return True
-    if name.lower() in AI_TOOLS and domain.endswith("github.com"):
+    if name.lower() in AI_TOOLS and _in_domain(domain, "github.com"):
         return True  # "Copilot <...@users.noreply.github.com>": a bare tool name, not a person
     no_reply = local.startswith("noreply") or local.startswith("no-reply") or not email
     return names_ai(name) and no_reply
