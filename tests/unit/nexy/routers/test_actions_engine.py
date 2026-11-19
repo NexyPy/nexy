@@ -179,3 +179,21 @@ class TestTemplateContext:
 def test_a_module_that_fails_to_import_is_a_uv_error(capsys: pytest.CaptureFixture[str]) -> None:
     ActionEngine._report("src.actions.broken", ValueError("bad"))
     assert capsys.readouterr().out == "error: src.actions.broken\n  cause: ValueError: bad\n"
+
+
+def test_refresh_client_writes_the_actions_it_finds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    actions = tmp_path / "src" / "actions"
+    actions.mkdir(parents=True)
+    (tmp_path / "src" / "__init__.py").write_text("", encoding="utf-8")
+    (actions / "__init__.py").write_text("", encoding="utf-8")
+    (actions / "ping.py").write_text(
+        "from nexy.decorators import Action\n\n\n@Action\nasync def ping() -> str:\n"
+        "    return 'pong'\n",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.syspath_prepend(str(tmp_path))
+    written = ActionEngine(output_dir=str(tmp_path / "out")).refresh_client()
+    assert "export const ping" in written.read_text("utf-8")
