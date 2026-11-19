@@ -24,6 +24,7 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | die Symbolleiste `nexy dev` fügt zu jeder Seite hinzu (Seiteninformationen, Routen, Fehler, Konfiguration); `False` entfernt es. Niemals in der Produktion vorhanden |
 | `useHealth` | `False` | dienen `GET /health/live` und `GET /health/ready` für Load Balancer und Kubernetes-Probes; siehe [Bereitstellen](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | der größte Anforderungstext, den ein Worker liest, in Bytes (1 MiB); ein größerer Wert ist ein `413`, und `0` schaltet die Begrenzung aus. Erhöhen Sie es für eine Route, die Datei-Uploads ermöglicht |
+| `useSiteUrl` | `None` | die öffentliche Herkunft der Website, z. B. `"https://example.com"`; Einmal gesetzt, bedient Nexy `/sitemap.xml` und `/robots.txt`. Siehe [Sitemap und robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | Prozesse `nx start` läuft; `0` ist einer pro CPU unter Linux und macOS, einer unter Windows |
 | `useCSR` | `False` | Client-seitiger Routing-Modus; `.nexy` Routen sind deaktiviert |
 
@@ -31,7 +32,7 @@ class NexyConfig(NexyConfigModel):
 
 | Feld | Standard | Bedeutung |
 |---|---|---|
-| `useORM` | `None` | das ORM des Projekts: `"SQLModel"`, `"SQLAlchemy"` oder `"Tortoise-ORM"`. `nx new` schreibt es und `nx migrate` wählt Alembic oder Aerich daraus aus; ohne es nimmt `nx migrate` das erste installierte ORM. Siehe [Datenbanken](../guides/databases.md#migrations) |
+| `useORM` | `None` | das ORM des Projekts: `"SQLModel"`, `"SQLAlchemy"` oder `"Tortoise-ORM"`. `nx new` schreibt es und `nx migrate` wählt Alembic oder Aerich daraus aus; ohne es nimmt `nx migrate` den ersten installierten ORM. Siehe [Datenbanken](../guides/databases.md#migrations) |
 
 ## Routen
 

@@ -62,8 +62,9 @@ export default function Nav() {
 | नेविगेट करें | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | उड़ान में नेविगेशन | `useTransition()` | `useTransition()` एक्सेसर | `useTransition()` संदर्भ | `useTransition()` दुकान |
 | एक पथ का मिलान करें | `useMatch(path?)` | `useMatch(path?)` एक्सेसर | `useMatch(path?)` संदर्भ | `useMatch(path?)` स्टोर |
+| जाने से पहले पूछ लें | `useBlocker(dirty)` | `useBlocker(dirty())` में `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` में `$effect` |
 
-क्वेरी एक `URLSearchParams` है। `useRouter()` और `router` दें `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` और `prefetch(href)`; `push` और `replace` `{ scroll: false }` स्वीकार करते हैं।
+क्वेरी एक `URLSearchParams` है। `useRouter()` और `router` दें `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` और `prefetch(href)`; `push` और `replace` स्वीकार करते हैं `{ scroll: false }`।
 
 ```tsx
 import { useParams, useRouter, useSearchParams } from "@nexy/client";
@@ -134,6 +135,44 @@ import { ErrorBoundary } from "@nexy/client";
 - किसी ईवेंट हैंडलर, टाइमर या किसी वादे में बाद में हुई त्रुटि: इसे वहीं पकड़ें जहां ऐसा होता है। Vue अपने स्वयं के इवेंट हैंडलर्स के लिए अपवाद है, जिनकी त्रुटियां सीमा तक पहुंचती हैं;
 - एक पृष्ठ जिसे राउटर लोड नहीं कर सकता: ब्राउज़र इसके बजाय सर्वर से इसके लिए पूछता है (देखें [राउटर क्या करता है](#what-the-router-does))।
 
+## सहेजे न गए परिवर्तनों वाला पृष्ठ छोड़ने से पहले पूछें
+
+`useBlocker(dirty, message?)` जाने से पहले आगंतुक से पूछता है जबकि `dirty` सत्य है: एक लिंक, एक `router.push`, पीछे और आगे के बटन, एक पुनः लोड और एक बंद टैब। एक क्लाइंट नेविगेशन `confirm()` में `message` दिखाता है: हाँ चलता है, पृष्ठ पर कोई नहीं रहता है। पुनः लोड या बंद टैब ब्राउज़र का अपना प्रश्न दिखाता है, जिसे कोई भी पृष्ठ नहीं बता सकता। बिना किसी संदेश के, प्रश्न यह है कि "आपके पास सहेजे नहीं गए परिवर्तन हैं। इस पृष्ठ को छोड़ दें?"।
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+ध्वज को वहां पढ़ा जाता है जहां वह बदलता है, प्रत्येक ढांचे के मुहावरे में:
+
+| ढाँचा | झंडे का पालन करें |
+|---|---|
+| React, Preact | `useBlocker(dirty)` प्रत्येक रेंडर पर |
+| Vue | `useBlocker(dirty)` के साथ `dirty` एक रेफरी या एक गणना |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` निर्णय के लिए एक फ़ंक्शन भी लेता है, जो इस बात पर निर्भर करता है कि आगंतुक कहाँ जाता है। यह अगला स्थान और वर्तमान स्थान प्राप्त करता है, और रहने के लिए एक कारण (एक स्ट्रिंग) देता है, या आगे बढ़ने के लिए कुछ भी नहीं देता है:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+कोई फ़ंक्शन स्वयं नहीं पूछता है और पुनः लोड नहीं रखता है; पूछने के लिए इसमें `confirm()` पर कॉल करें।
+
 ## `Image`
 
 `Image` एक `<img>` प्रस्तुत करता है जो डिफ़ॉल्ट रूप से आलसी है और इसका आकार ज्ञात होने पर लेआउट को स्थानांतरित नहीं करता है।
@@ -169,9 +208,9 @@ from nexy import Link
 नेविगेशन पर, राउटर:
 
 1. क्लाइंट मार्गों के विरुद्ध पथ से मेल खाता है (`.tsx`, `.jsx`, `.vue`, `.svelte`);
-2. पृष्ठ और उसके [लेआउट](../layouts/README.md) **पहले** को आयात और प्रस्तुत करता है, और उसके बाद ही यूआरएल को `history.pushState` के साथ ले जाता है, इसलिए पता बार कभी भी विफल पृष्ठ नहीं दिखाता है;
+2. पृष्ठ और उसके [लेआउट्स](../layouts/README.md) **पहले** को आयात और प्रस्तुत करता है, और उसके बाद ही यूआरएल को `history.pushState` के साथ ले जाता है, इसलिए पता बार कभी भी विफल पृष्ठ नहीं दिखाता है;
 3. `nexy:navigated` ईवेंट को `document` पर भेजता है;
-4. शीर्ष तक स्क्रॉल करता है, या `#fragment` लक्ष्य तक।
+4. शीर्ष पर या `#fragment` लक्ष्य तक स्क्रॉल करता है।
 
 एक नया नेविगेशन पुराने नेविगेशन को रद्द कर देता है जो अभी भी प्रस्तुत हो रहा है। यदि कोई पृष्ठ प्रस्तुत नहीं हो पाता है, तो ब्राउज़र इसके बदले सर्वर से इसके लिए पूछता है। पीछे और आगे के बटन उस प्रविष्टि के पृष्ठ को प्रस्तुत करते हैं और उसकी स्क्रॉल स्थिति को पुनर्स्थापित करते हैं।
 

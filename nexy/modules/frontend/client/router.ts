@@ -50,7 +50,8 @@ export type RouterOptions = {
   win?: Window & typeof globalThis
 }
 
-type HistoryState = { nexy: true; scroll?: { x: number; y: number } }
+// `index` numbers the entries this router wrote, so a blocked back or forward knows how to return.
+type HistoryState = { nexy: true; index?: number; scroll?: { x: number; y: number } }
 
 export type Router = ReturnType<typeof createRouter>
 
@@ -79,8 +80,13 @@ export function createRouter(options: RouterOptions) {
   const listeners = new Set<() => void>()
   const prefetched = new Set<string>()
   const blockers = new Set<Blocker>()
+  // Guards in place: while there is one, a reload or a closed tab asks the browser's question.
+  let guards = 0
   let navigation = 0
   let location = read()
+  let index = 0
+  // The next popstate is the router returning to where a blocker held it: not a visitor's move.
+  let returning = false
   // One object per state, so `transition()` can serve as a stable snapshot (useSyncExternalStore).
   const IDLE: TransitionState = { pending: false, next: null }
   let transitionState: TransitionState = IDLE
@@ -105,6 +111,30 @@ export function createRouter(options: RouterOptions) {
     if (same) return
     location = next
     listeners.forEach(listener => listener())
+  }
+
+  function entry(): number {
+    return (win.history.state as Partial<HistoryState> | null)?.index ?? 0
+  }
+
+  /** Add (or replace) the history entry of `url`, numbered after the current one. */
+  function write(url: URL, replace: boolean | undefined): void {
+    const at = replace ? index : index + 1
+    win.history[replace ? 'replaceState' : 'pushState']({ nexy: true, index: at }, '', url.href)
+    index = at
+  }
+
+  function locationOf(url: URL): RouterLocation {
+    const params = options.match(url.pathname)?.params ?? {}
+    return { pathname: url.pathname, search: url.search, hash: url.hash, params }
+  }
+
+  /** Ask every blocker: a string (the reason), or a promise of one, refuses the move. */
+  async function allowed(next: RouterLocation): Promise<boolean> {
+    for (const blocker of blockers) {
+      if (typeof (await Promise.resolve(blocker(next, location))) === 'string') return false
+    }
+    return true
   }
 
   function saveScroll(): void {
@@ -169,21 +199,15 @@ export function createRouter(options: RouterOptions) {
     const samePage = url.pathname === current.pathname && url.search === current.search
     if (samePage && url.hash === current.hash) return true
 
-    const next = { pathname: url.pathname, search: url.search, hash: url.hash, params: options.match(url.pathname)?.params ?? {} }
-
-    // Ask every blocker whether this navigation may proceed. A blocker returns a string
-    // (the reason) or a promise of one to abort; anything else allows it.
-    for (const blocker of blockers) {
-      const answer = await Promise.resolve(blocker(next, location))
-      if (typeof answer === 'string') return false
-    }
+    const next = locationOf(url)
+    if (!(await allowed(next))) return false
 
     const id = ++navigation
     saveScroll()
 
     if (samePage) {
       // Only the fragment changes: the browser scrolls, there is nothing to render.
-      win.history[opts.replace ? 'replaceState' : 'pushState']({ nexy: true }, '', url.href)
+      write(url, opts.replace)
       commit(read())
       scrollAfter(url.hash, opts.scroll !== false)
       return true
@@ -195,7 +219,7 @@ export function createRouter(options: RouterOptions) {
       if (id === navigation) setPending(null)
       return false
     }
-    win.history[opts.replace ? 'replaceState' : 'pushState']({ nexy: true }, '', url.href)
+    write(url, opts.replace)
     commit(read())
     announce(location)
     scrollAfter(url.hash, opts.scroll !== false)
@@ -256,18 +280,50 @@ export function createRouter(options: RouterOptions) {
     })
   }
 
-  function onPop(): void {
-    void restore()
+  function onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (guards === 0) return
+    event.preventDefault()
+    event.returnValue = ''
+  }
+
+  /** Ask `message` before any move away, and before a reload or a closed tab. Returns a release. */
+  function guard(message: string): () => void {
+    const ask: Blocker = () => (win.confirm(message) ? undefined : message)
+    blockers.add(ask)
+    guards += 1
+    let held = true
+    return () => {
+      if (!held) return
+      held = false
+      blockers.delete(ask)
+      guards -= 1
+    }
+  }
+
+  /** Back or forward: the URL has already moved, so a refusal moves it back where it was. */
+  async function onPop(): Promise<void> {
+    if (returning) return void (returning = false)
+    const target = entry()
+    if (target !== index && !(await allowed(locationOf(new URL(win.location.href))))) {
+      returning = true
+      return win.history.go(index - target)
+    }
+    index = target
+    await restore()
   }
 
   function start(): () => void {
     win.document.addEventListener('click', onClick)
     win.addEventListener('popstate', onPop)
+    win.addEventListener('beforeunload', onBeforeUnload)
+    index = entry()
+    win.history.replaceState({ ...(win.history.state ?? {}), nexy: true, index }, '')
     // The browser would restore the scroll before the page is rendered: do it ourselves.
     if ('scrollRestoration' in win.history) win.history.scrollRestoration = 'manual'
     return () => {
       win.document.removeEventListener('click', onClick)
       win.removeEventListener('popstate', onPop)
+      win.removeEventListener('beforeunload', onBeforeUnload)
     }
   }
 
@@ -301,6 +357,7 @@ export function createRouter(options: RouterOptions) {
       blockers.add(blocker)
       return () => void blockers.delete(blocker)
     },
+    guard,
     /** The in-flight navigation state, shared by every adapter. Read it for a loading boundary. */
     transition(): TransitionState {
       return transitionState
@@ -311,6 +368,18 @@ export function createRouter(options: RouterOptions) {
       return () => void transitionListeners.delete(listener)
     }
   }
+}
+
+/** What a guard asks when the page gives no message of its own. */
+export const LEAVE_MESSAGE = 'You have unsaved changes. Leave this page?'
+
+/**
+ * What every adapter's useBlocker registers: `true` guards (asks `message`, and before a reload),
+ * `false` holds nothing, a function is a blocker. Returns the release.
+ */
+export function hold(router: Router, when: Blocker | boolean, message = LEAVE_MESSAGE): () => void {
+  if (when === false) return () => {}
+  return when === true ? router.guard(message) : router.blocker(when)
 }
 
 /** The router the runtime installed, or null before it starts and during server rendering. */

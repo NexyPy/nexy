@@ -1,7 +1,7 @@
 {
  "provider": "google",
  "pages": {
-  "deployment/performance.md": "30582390e1ba64d1a6bc1cc297cafc9f7e3ba4b4ceba05e0854f220c790be659",
+  "deployment/performance.md": "a281b2c565c9b595d8a808b6c5dbd6750bcd490a932cf5b462222f7ad9dcde75",
   "deployment/README.md": "d1b22804ec642a607327092fbe26f3aa756a26c1f10b74d7979b47ddd17d18eb",
   "getting-started/coming-from-other-frameworks.md": "cf0a48d0e310b23f8031c761ee449168cdf12e4d035f0df30b6d3e80841d869a",
   "getting-started/core-concepts.md": "4c122e52bd7b896674824ad92faa80f56f32c3543965779141fed944232010a1",
@@ -21,9 +21,9 @@
   "guides/recipes.md": "922848a3ef71f76c8a95c97b72976a9eca875143116bfe699b87ead3ef7de0cb",
   "guides/testing.md": "97c4ba553cb1db943c79e9fcc348e640c927366b3081002c8bb12500a95b9791",
   "guides/troubleshooting.md": "b06d8e4208a7662ca7994a7c38a2ad40faffaea57fc10b7cad03594aa7414e01",
-  "README.md": "a4c21477df76fee327c61d1ff26709d99289a8094ac595d2413c2a87a183454d",
+  "README.md": "db203bf8ab2646f1e55672a7df3828a14ebb8af654444599a135989a32465b4a",
   "reference/cli.md": "2cdc419edfe52a672a23751dbaef752d5415207073279f3492133a2ee5c20af5",
-  "reference/config.md": "d9c5dc61061be3a33a81be284de35b081bfb2ee41bbfad71096ff332ebee9aa0",
+  "reference/config.md": "c6e377f2d695e1795c4473e134c9f22f695d8327061ecf56c2a004a0de61a8c4",
   "reference/exceptions.md": "c08cd69458738fa1f2a97d47df879a31e33c5927ecd810a4abcf9e1e4de3c0e2",
   "reference/file-conventions.md": "aa6d2a9080dbe0e8555e1b0900194b45c1a85cf455a49ae239788f53b90f528e",
   "reference/glossary.md": "2132b2a0f9c52c2c5239260ec30eb31c25d6221f3c06efcfa152e1dc222e911f",
@@ -45,7 +45,7 @@
   "routing/fbr/middleware/README.md": "74761c53dd88570a3f8f1bbd89fa0488e8b9a420277bc0397495afea5c3b0e67",
   "routing/fbr/modes.md": "ab2764b27bcf3a26fab912feadeb99c9050d5bc595f9bd6ba035f873835024df",
   "routing/fbr/navigation/hooks.md": "73dd58e07f7d1e6301cf15550c9411fbcf6eefd5e3cb781ea1dbd4802962bf4f",
-  "routing/fbr/navigation/linking-and-navigating.md": "ccbe8aa21b3ff3e2f01577d57610c0f5502d6a6e351b0254fa56fb7e3a012cd3",
+  "routing/fbr/navigation/linking-and-navigating.md": "c6831b12fb9f827dbb1fb37cb058fcda0e30a3d2d9454e4ceb66db89530840bb",
   "routing/fbr/pages/dynamic-routes.md": "dff1d6477c57aa217d09937970327f3d8f6ba569a3d8b5597547d125a4ef8e19",
   "routing/fbr/pages/metadata.md": "1e1ba4185717fa3047dd77244e0a7e5471a391b80cb81533a23e6e3c97d4614f",
   "routing/fbr/pages/README.md": "83807f6453ae35c51e80c6c12698455dabf463116029bd712da6169d7a104b6b",
@@ -90,6 +90,8 @@
   "databases/postgresql.md": "2781f799ded31388cef039d362c33b7dbb5cbfa87b957ea86365791237fd7780",
   "databases/neon.md": "5c1a2945a53a00709e154750cdd0409f4fbb5573ceae490646699a8f6933f5e7",
   "databases/mysql-mariadb.md": "67ddb6491856904cbc8dfbc6052b651a0f3ae75e22547431fdd594fe9738fe4a",
-  "views/frontend/fetch-data.md": "02ae4d26553289ad7737db7eeeebf740affc1ea1f9b3ba5678ffca13802a0a4f"
+  "views/frontend/fetch-data.md": "02ae4d26553289ad7737db7eeeebf740affc1ea1f9b3ba5678ffca13802a0a4f",
+  "guides/debugging.md": "178ac281b6d742ab3b81b858a4127cd20fa529a1767d0ae2e176fed3c5c44194",
+  "guides/sitemap.md": "ab5b0a47cf9a142891e7c960e533dffbe435f01bd61aa5fca4d359516f6ffe35"
  }
 }

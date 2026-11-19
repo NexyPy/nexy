@@ -52,7 +52,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | جو آپ تعمیر کریں گے۔ |
 |---|---|
 | [10. ایک اکاؤنٹ بنائیں اور سائن ان کریں](tutorial/accounts.md) | سیشن کوکی کے ساتھ سائن اپ کریں، سائن ان کریں اور آؤٹ کریں۔ |
-| [11. ہر صارف کو ان کے اپنے نوٹس دیں](tutorial/own-notes.md) | ہر ایک نوٹ کو اس کے صارف سے باندھیں اور صفحات، ایکشنز اور API کی حفاظت کریں۔ |
+| [11. ہر صارف کو ان کے اپنے نوٹس دیں](tutorial/own-notes.md) | ہر ایک نوٹ کو اس کے صارف کے ساتھ باندھیں اور صفحات، ایکشنز اور API کی حفاظت کریں۔ |
 | [12. بھولے ہوئے پاس ورڈ کو بذریعہ ای میل دوبارہ ترتیب دیں](tutorial/password-reset.md) | ای میل کے ذریعے ایک دستخط شدہ لنک بھیجیں جو ایک بار، ایک گھنٹے کے لیے کام کرے۔ |
 
 ### یونٹ 4: تعامل
@@ -79,7 +79,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### ہینڈلر اور غلطیاں {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [روٹ سنبھالنے والے](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
+| [روٹ ہینڈلر](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
 | [توثیق اور غلطیاں](routing/fbr/handlers/validation-and-errors.md) | جواب دیں `422` اور `404`، اور بلند کریں `HTTPException` |
 | [WebSocket ہینڈلر](routing/fbr/realtime/websocket.md) | ایک `SOCKET` کنکشن کو ہینڈل کریں۔ |
 | [انحصار اور محافظ](routing/fbr/dependencies/README.md) | ہینڈلر سے پہلے `dependencies.py` چلائیں، اور اسے وارث بنائیں |
@@ -99,7 +99,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### حسب ضرورت روٹر انضمام {custom}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [حسب ضرورت روٹنگ](routing/custom/README.md) | ایک موجودہ FastAPI ایپ شامل کریں۔ |
+| [اپنی مرضی کے مطابق روٹنگ](routing/custom/README.md) | ایک موجودہ FastAPI ایپ شامل کریں۔ |
 
 ## فرنٹ اینڈ
 
@@ -159,6 +159,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [مڈل ویئر اور سیکورٹی](guides/middleware-and-security.md) | CORS، GZip، قابل اعتماد میزبان اور سیشنز ترتیب دیں۔ |
+| [سائٹ کا نقشہ اور robots.txt](guides/sitemap.md) | اپنے راستوں سے `/sitemap.xml` اور `/robots.txt` کی خدمت کریں۔ |
 | [تعیناتی](deployment/README.md) | بنائیں، کنٹینر بنائیں اور سرو کریں۔ |
 | [کارکردگی](deployment/performance.md) | ڈیفالٹس کی پیمائش اور ٹیون کریں۔ |
 
@@ -172,6 +173,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | صفحہ | آپ کیا کریں گے |
 |---|---|
 | [دیو ٹول بار](guides/devtools.md) | `nexy dev` کا ٹول بار استعمال کریں، اور اسے آف کریں۔ |
+| [ڈیبگنگ](guides/debugging.md) | اپنے سرور کوڈ میں `breakpoint()` یا VS کوڈ کے ساتھ رکیں۔ |
 | [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قواعد Claude Code، Codex اور OpenCode بتائیں |
 | [خرابیوں کا سراغ لگانا](guides/troubleshooting.md) | لوگوں کے پہلے مسائل کو حل کریں۔ |
 
@@ -197,9 +199,9 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### Python فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [منجانب FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
+| [منجانب FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` ایک فائل بن جاتی ہے۔ |
 | [منجانب Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
-| [منجانب Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
+| [سے Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
 
 ### JavaScript پسدید {fbr}
 | صفحہ | آپ کیا کریں گے |
@@ -207,15 +209,15 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [ایکسپریس سے ](coming-from/express.md) | روٹس، مڈل ویئر اور `req`/`res` کو Python ہینڈلرز میں ترجمہ کریں |
 | [فاسٹائف ](coming-from/fastify.md) سے | اسکیموں، پلگ انز اور ہکس کو ماڈلز، فولڈرز اور فائلوں میں تبدیل کریں۔ |
 | [ایلیسیا سے](coming-from/elysia.md) | نقشہ `t` اسکیماس، گارڈز اور ایڈن سے Pydantic اور ٹائپ کردہ اعمال |
-| [ہونو سے ](coming-from/hono.md) | نقشے کے راستوں، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
+| [ہونو سے ](coming-from/hono.md) | نقشے کے راستے، مڈل ویئر اور `hc` کلائنٹ کو Nexy تک |
 
 ### فل اسٹیک فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [منجانب Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
-| [سے Remix](coming-from/remix.md) | لوڈرز اور اعمال کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
+| [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں |
+| [سے Remix](coming-from/remix.md) | لوڈرز اور ایکشن کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
 | [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات کو رکھیں اور `server/` کو Python پر منتقل کریں۔ |
-| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات کو رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
+| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
 | [سے Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
 | [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستوں، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
 | [روبی آن ریلز سے ](coming-from/rails.md) | نقشے کے راستے، کنٹرولرز، ERB، ایکٹو ریکارڈ اور Nexy کے لیے نوکریاں |
@@ -248,8 +250,8 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### کنونشنز اور تصورات
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [لغت ](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
-| [سیکورٹی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
+| [لغت](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
+| [سلامتی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
 
 ## لے آؤٹ
 ```text

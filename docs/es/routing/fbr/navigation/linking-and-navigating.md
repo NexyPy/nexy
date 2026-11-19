@@ -62,6 +62,7 @@ La ubicación está disponible en cada marco, en el idioma de ese marco. Durante
 | Navegar | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | Navegación en vuelo | `useTransition()` | `useTransition()` descriptor de acceso | `useTransition()` referencia | `useTransition()` tienda |
 | Emparejar un camino | `useMatch(path?)` | `useMatch(path?)` descriptor de acceso | `useMatch(path?)` referencia | `useMatch(path?)` tienda |
+| Pregunta antes de salir | `useBlocker(dirty)` | `useBlocker(dirty())` en `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` en `$effect` |
 
 La consulta es un `URLSearchParams`. `useRouter()` y `router` dan `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` y `prefetch(href)`; `push` y `replace` aceptan `{ scroll: false }`.
 
@@ -133,6 +134,44 @@ No atrapa:
 
 - un error arrojado más tarde, en un controlador de eventos, un temporizador o una promesa: atraparlo donde sucede. Vue es la excepción para sus propios controladores de eventos, cuyos errores alcanzan el límite;
 - una página que el enrutador no puede cargar: el navegador la solicita al servidor (consulte [Qué hace el enrutador](#what-the-router-does)).
+
+## Preguntar antes de abandonar una página con cambios no guardados
+
+`useBlocker(dirty, message?)` pregunta al visitante antes de irse mientras que `dirty` es cierto: un enlace, un `router.push`, los botones de avance y retroceso, una recarga y una pestaña cerrada. La navegación de un cliente muestra `message` en `confirm()`: sí continúa, no permanece en la página. Una recarga o una pestaña cerrada muestra la propia pregunta del navegador, que ninguna página puede redactar. Sin un mensaje, la pregunta es "Tienes cambios no guardados. ¿Salir de esta página?".
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+La bandera se lee donde cambia, en el idioma de cada marco:
+
+| Marco | Sigue la bandera |
+|---|---|
+| React, Preact | `useBlocker(dirty)` en cada render |
+| Vue | `useBlocker(dirty)` con `dirty` una referencia o un cálculo |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` también toma una función, para una decisión que depende de dónde va el visitante. Recibe la siguiente ubicación y la actual, y devuelve un motivo (una cadena) para quedarse, o nada para continuar:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+Una función no pregunta por sí sola y no retiene una recarga; llame al `confirm()` para preguntar.
 
 ## `Image`
 

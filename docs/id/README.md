@@ -159,6 +159,7 @@ Pengontrol dan modul.
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Middleware dan keamanan](guides/middleware-and-security.md) | Siapkan CORS, GZip, host dan sesi tepercaya |
+| [Peta Situs dan robots.txt](guides/sitemap.md) | Sajikan `/sitemap.xml` dan `/robots.txt` dari rute Anda |
 | [Menyebarkan](deployment/README.md) | Bangun, masukkan ke dalam wadah, dan sajikan |
 | [Pertunjukan](deployment/performance.md) | Ukur dan sesuaikan defaultnya |
 
@@ -172,6 +173,7 @@ Pengontrol dan modul.
 | Halaman | Apa yang akan kamu lakukan |
 |---|---|
 | [Bilah alat pengembang](guides/devtools.md) | Gunakan toolbar `nexy dev`, dan matikan |
+| [Men-debug](guides/debugging.md) | Hentikan kode server Anda dengan `breakpoint()` atau VS Code |
 | [Agen pengkodean](guides/ai-agents.md) | Berikan Claude Code, Codex dan OpenCode aturan proyek Anda |
 | [Pemecahan Masalah](guides/troubleshooting.md) | Perbaiki masalah pertama yang dialami orang |
 
@@ -216,7 +218,7 @@ Tugas yang sama, ditulis dalam kerangka yang Anda tahu dan kemudian di Nexy.
 | [Dari Remix](coming-from/remix.md) | Ubah pemuat dan tindakan menjadi Python penangan dan tindakan |
 | [Dari Nuxt](coming-from/nuxt.md) | Simpan halaman Vue Anda dan pindahkan `server/` ke Python |
 | [Dari SvelteKit](coming-from/sveltekit.md) | Simpan halaman Svelte Anda dan pindahkan muatan, tindakan, dan pengait ke Python |
-| [Dari Astro](coming-from/astro.md) | Tulis halaman Astro sebagai halaman `.nexy`, dengan pulau yang sama |
+| [Dari Astro](coming-from/astro.md) | Tulis Astro halaman sebagai `.nexy` halaman, dengan pulau yang sama |
 | [Dari Laravel](coming-from/laravel.md) | Petakan rute, pengontrol, Blade, Eloquent, dan antrian ke Nexy |
 | [Dari Ruby on Rails](coming-from/rails.md) | Memetakan rute, pengontrol, ERB, Rekaman Aktif, dan pekerjaan ke Nexy |
 

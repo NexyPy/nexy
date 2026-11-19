@@ -43,6 +43,7 @@ from nexy.modules.routers.hmr import setup_hmr
 from nexy.modules.routers.middlewares import PathMiddleware, setup_middlewares
 from nexy.modules.routers.reserved_paths import shadowed_routes
 from nexy.modules.routers.router_resolver import resolve_router
+from nexy.modules.routers.sitemap import setup_sitemap
 from nexy.modules.routers.static_assets import setup_favicon, setup_static_files
 from nexy.modules.runtime.importer import install_vfs_importer
 
@@ -182,6 +183,9 @@ class AppServer:
         ACTION_ENGINE.generate_client()
         self.fb_router = resolve_router(server, self.config, self.scalar_html, self._docs_url)
         self._warn_shadowed_routes(server)
+        if self.config.useSiteUrl:
+            # After the routes: a page or a route of the project at either path keeps it.
+            setup_sitemap(server, self.config.useSiteUrl)
         if is_dev():
             setup_hmr(server)
             if self.config.useDevTools:

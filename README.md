@@ -102,9 +102,11 @@ glue project between the frontend and the backend.
 Change a file, the page reloads: `nx dev` recompiles the routes you touched and proxies Vite through
 its own port, so the browser only ever talks to `3000`.
 
-**Measured, not claimed**: an 87-line page with three component imports compiles in 1.6 ms, median of
-25 runs on a Ryzen 5 4500U. That is the compile step alone: a browser reload also pays for Vite's
-module graph and the browser's own render, so this is not an HMR figure.
+**Measured, not claimed**: a one-page project is ready to answer in 460 ms from a new Python process,
+serves its first page in 554 ms, and compiles a changed page again in 1.8 ms, median of 5 runs on a
+Ryzen 5 4500U. The compile step is not a reload time: a browser reload also pays for Vite's module
+graph and the browser's own render. The method, the machine and the script are in
+[Performance](https://github.com/NexyPy/nexy/blob/main/docs/deployment/performance.md#startup-first-page-and-recompile).
 
 An issue queue that gets answered: 204 issues closed, 92 pull requests merged, latest 2.2.2 on
 2026-11-05.

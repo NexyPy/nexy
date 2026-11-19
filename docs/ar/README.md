@@ -159,6 +159,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [الوسيطة والأمن](guides/middleware-and-security.md) | قم بإعداد CORS وGZip والمضيفين والجلسات الموثوقة |
+| [خريطة الموقع وملف robots.txt](guides/sitemap.md) | خدمة `/sitemap.xml` و `/robots.txt` من مساراتك |
 | [نشر](deployment/README.md) | بناء، حاويات وخدمة |
 | [الأداء](deployment/performance.md) | قياس وضبط الإعدادات الافتراضية |
 
@@ -172,6 +173,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [شريط أدوات التطوير](guides/devtools.md) | استخدم شريط الأدوات `nexy dev`، وقم بإيقاف تشغيله |
+| [تصحيح الأخطاء](guides/debugging.md) | توقف في رمز الخادم الخاص بك باستخدام `breakpoint()` أو VS Code |
 | [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
 | [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
@@ -213,7 +215,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |
-| [من Remix](coming-from/remix.md) | تحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
+| [من Remix](coming-from/remix.md) | قم بتحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
 | [من نوكست](coming-from/nuxt.md) | احتفظ بصفحاتك Vue وانقل `server/` إلى Python |
 | [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
 | [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |
@@ -232,7 +234,7 @@
 | الصفحة | ما يسرد |
 |---|---|
 | [سطر الأوامر](reference/cli.md) | الأوامر والأعلام والمطالبات ورموز الخروج |
-| [التكوين](reference/config.md) | كل `nexyconfig.py` الحقل والافتراضي الخاص به |
+| [التكوين](reference/config.md) | كل حقل `nexyconfig.py` وحقله الافتراضي |
 
 ### Python واجهة برمجة التطبيقات والأخطاء
 | الصفحة | ما يسرد |

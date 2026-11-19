@@ -24,6 +24,7 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | la barre d'outils `nexy dev` ajoute à chaque page (informations sur la page, itinéraires, erreurs, configuration) ; `False` le supprime. Jamais présent en production |
 | `useHealth` | `False` | servir `GET /health/live` et `GET /health/ready` pour les équilibreurs de charge et les sondes Kubernetes ; voir [Déployer](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | le plus grand corps de requête lu par un travailleur, en octets (1 Mio) ; un plus grand est un `413`, et `0` désactive la limite. Élevez-le pour un itinéraire qui prend en charge les téléchargements de fichiers |
+| `useSiteUrl` | `None` | l'origine publique du site, telle que `"https://example.com"` ; une fois réglé, Nexy sert `/sitemap.xml` et `/robots.txt`. Voir [Plan du site et robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | traite `nx start` exécutions ; `0` est un par processeur sous Linux et macOS, un sous Windows |
 | `useCSR` | `False` | mode de routage côté client ; `.nexy` les itinéraires sont désactivés |
 

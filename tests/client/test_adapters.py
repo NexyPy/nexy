@@ -127,3 +127,11 @@ class TestErrorBoundary:
 class TestUseMatch:
     def test_without_a_path_it_follows_the_current_page(self, story):
         assert story["afterPush"]["matched"] == "7"
+
+
+class TestUseBlocker:
+    def test_unsaved_changes_ask_before_a_reload(self, story):
+        assert story["guarded"]["reload"] is True
+
+    def test_a_refused_click_stays_on_the_page(self, story):
+        assert story["guarded"]["stayed"] == "/users/7"
