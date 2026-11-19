@@ -1,0 +1,58 @@
+name: Community
+
+on:
+  schedule:
+    - cron: "43 7 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  report:
+    name: Weekly report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Publish the community report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TITLE: Community report
+        run: |
+          STARS=$(gh api "repos/$GH_REPO" --jq '.stargazers_count')
+          FORKS=$(gh api "repos/$GH_REPO" --jq '.forks_count')
+          NUMBER=$(gh issue list --repo "$GH_REPO" --state open \
+            --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          PREV_STARS=0
+          PREV_FORKS=0
+          if [ -n "$NUMBER" ]; then
+            BODY=$(gh issue view "$NUMBER" --repo "$GH_REPO" --json body --jq '.body')
+            PREV_STARS=$(printf '%s\n' "$BODY" | sed -n 's/^stars: \([0-9][0-9]*\)$/\1/p' | head -1)
+            PREV_FORKS=$(printf '%s\n' "$BODY" | sed -n 's/^forks: \([0-9][0-9]*\)$/\1/p' | head -1)
+            [ -n "$PREV_STARS" ] || PREV_STARS=0
+            [ -n "$PREV_FORKS" ] || PREV_FORKS=0
+          fi
+          NEW_STARS=$((STARS - PREV_STARS))
+          NEW_FORKS=$((FORKS - PREV_FORKS))
+          DATE=$(date -u +%Y-%m-%d)
+          {
+            echo "## Community report"
+            echo
+            echo "Weekly report written by the Community workflow."
+            echo
+            echo "stars: $STARS"
+            echo "forks: $FORKS"
+            echo
+            echo "New stars since the last report: $NEW_STARS"
+            echo "New forks since the last report: $NEW_FORKS"
+            echo
+            echo "Updated: $DATE"
+          } > body.md
+          if [ -n "$NUMBER" ]; then
+            gh issue edit "$NUMBER" --repo "$GH_REPO" --body-file body.md
+          else
+            gh issue create --repo "$GH_REPO" --title "$TITLE" --body-file body.md
+          fi
