@@ -1,0 +1,32 @@
+name: Speed
+
+# Measures what docs/deployment/performance.md publishes: the startup, first page and recompile
+# times of a one-page project. The table lands in the summary of each run on main, so the numbers
+# of the docs can be checked against a fresh measurement on a known machine.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    name: Measure startup, first page and recompile
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: "3.13"
+
+      - name: Install deps (locked)
+        run: uv sync --frozen
+
+      - name: Measure
+        run: uv run --no-sync python scripts/measure_speed.py --runs 5 >> "$GITHUB_STEP_SUMMARY"
