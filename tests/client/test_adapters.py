@@ -130,7 +130,7 @@ class TestUseMatch:
 
 
 # The adapters whose useBlocker takes a flag; each fix of #87 adds its own.
-GUARDING = ("react", "preact")
+GUARDING = ("react", "preact", "vue")
 
 
 @pytest.fixture(scope="module", params=GUARDING)
