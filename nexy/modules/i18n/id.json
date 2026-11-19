@@ -206,7 +206,7 @@
     "node_installed": "node_modules terpasang dengan {manager}",
     "python_synced": ".venv disinkronkan dengan uv",
     "package_added": "{package} ditambahkan ke .venv",
-    "created": "Proyek dibuat dari {name}"
+    "created": "Proyek {name} dibuat"
   },
   "migrate": {
     "aerich_not_initialized": "Aerich belum diinisialisasi. Jalankan 'nx m --init' terlebih dahulu.",

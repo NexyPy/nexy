@@ -91,8 +91,9 @@ class TestFetch:
         self, tmp_path, monkeypatch, capsys
     ):
         monkeypatch.setattr(template_setup, "_render_local_template", lambda *_args: None)
-        template_setup._fetch_template("web-fbr", tmp_path, {}, False, "")
-        assert re.fullmatch(r"Created the project from web-fbr in \d+ms\n", capsys.readouterr().out)
+        dest = tmp_path / "shop"
+        template_setup._fetch_template("web-fbr", dest, {}, False, "")
+        assert re.fullmatch(r"Created the project shop in \d+ms\n", capsys.readouterr().out)
 
     def test_a_failure_is_not_reported_twice(self, tmp_path, monkeypatch, capsys):
         def broken(*_args):
