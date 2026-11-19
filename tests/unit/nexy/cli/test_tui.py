@@ -10,7 +10,7 @@ from prompt_toolkit.output import DummyOutput
 
 from nexy.modules.cli import tui
 from nexy.modules.cli.tui import render
-from nexy.modules.cli.tui.theme import ASCII, UNICODE, glyphs_for
+from nexy.modules.cli.tui.theme import ASCII, glyphs_for
 
 UP, DOWN, LEFT, ENTER, ESC, CTRL_C = "\x1b[A", "\x1b[B", "\x1b[D", "\r", "\x1b", "\x03"
 
@@ -187,33 +187,34 @@ class TestRender:
         return "".join(text for _style, text in fragments)
 
     def test_the_current_option_has_the_selected_style(self):
-        fragments = render.options(CHOICES, 1, UNICODE)
+        fragments = render.options(CHOICES, 1, ASCII)
         styles = {text.strip(): style for style, text in fragments}
         assert styles["Beta"] == "class:label.selected" and styles["Alpha"] == "class:label"
 
     def test_every_option_shows_its_description(self):
-        plain = self._plain(render.options(CHOICES, 0, UNICODE))
+        plain = self._plain(render.options(CHOICES, 0, ASCII))
         assert "the first" in plain and "the second" in plain
 
     def test_the_labels_line_up(self):
-        lines = self._plain(render.options(CHOICES, 0, UNICODE)).splitlines()
+        lines = self._plain(render.options(CHOICES, 0, ASCII)).splitlines()
         assert lines[0].index("the first") == lines[1].index("the second")
 
     def test_the_footer_lists_the_keys(self):
-        plain = self._plain(render.footer(UNICODE, back=True))
-        assert "enter" in plain and "←" in plain and "ctrl+c" in plain
+        plain = self._plain(render.footer(ASCII, back=True))
+        assert "up/down move" in plain and "enter" in plain
+        assert "left back" in plain and "ctrl+c" in plain
 
     def test_without_back_the_footer_has_no_back_key(self):
-        assert "←" not in self._plain(render.footer(UNICODE, back=False))
+        assert "left back" not in self._plain(render.footer(ASCII, back=False))
 
     def test_an_answered_question_shows_the_answer_on_its_own_line(self):
-        plain = self._plain(render.answered("Style", "Tailwind CSS", UNICODE))
+        plain = self._plain(render.answered("Style", "Tailwind CSS", ASCII))
         assert plain.splitlines()[1].endswith("Tailwind CSS")
 
 
 class TestGlyphs:
-    def test_a_utf8_terminal_gets_unicode(self):
-        assert glyphs_for("utf-8") is UNICODE
+    def test_a_utf8_terminal_gets_ascii(self):
+        assert glyphs_for("utf-8") is ASCII
 
     def test_another_encoding_gets_ascii(self):
         assert glyphs_for("cp1252") is ASCII

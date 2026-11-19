@@ -1,4 +1,4 @@
-"""How the prompts look: colours, glyphs, and the plain fallback for terminals without Unicode."""
+"""How the prompts look: colours and the plain glyphs every terminal can print."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ STYLE = Style.from_dict(
 
 @dataclass(frozen=True)
 class Glyphs:
-    """The characters of the prompt frame, in Unicode or plain ASCII."""
+    """The characters of the prompt frame: only ones a person types."""
 
     asking: str
     answered: str
@@ -43,10 +43,10 @@ class Glyphs:
     separator: str
 
 
-UNICODE = Glyphs("◆", "◇", "┌", "└", "│", "●", "○", "›", "·")
 ASCII = Glyphs("*", "o", "+", "+", "|", "(x)", "( )", ">", "-")
 
 
-def glyphs_for(encoding: str | None) -> Glyphs:
-    """Unicode glyphs when the terminal can print them."""
-    return UNICODE if (encoding or "").lower().replace("-", "").startswith("utf") else ASCII
+def glyphs_for(encoding: str | None = None) -> Glyphs:
+    """The plain glyphs, on every terminal, whatever its encoding."""
+    del encoding
+    return ASCII
