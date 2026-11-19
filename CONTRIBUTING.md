@@ -21,6 +21,7 @@
 - [Coding standards](#coding-standards)
 - [Testing](#testing)
 - [Pull request process](#pull-request-process)
+- [Triage](#triage)
 - [Release process](#release-process)
 - [Getting help](#getting-help)
 
@@ -389,6 +390,19 @@ npm run test
 1. At least one maintainer review required
 2. Address feedback with additional commits (no force-push during review)
 3. Maintainers squash-merge approved PRs
+
+## Triage
+
+For maintainers: the issues for contributors come from the real work, not from invented tasks.
+
+- **A small confirmed bug becomes a beginner issue.** When one file and its test can fix it,
+  write the cause, the file and the test to add in the issue, and label it `good first issue`
+  and `difficulty:beginner`, instead of fixing it at once. A bug that blocks users
+  (`priority:1`) or a security advisory is fixed at once.
+- **An issue for contributors can be started alone.** It names the files to start from, says
+  what "done" means, and ends with a "Getting started" paragraph.
+- **Keep the pool full, not big.** About ten beginner issues stay open; when one is taken, write
+  the next one.
 
 ## Release process
 
