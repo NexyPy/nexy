@@ -25,5 +25,4 @@ def test_nexyconfig_template_ends_with_one_newline(starter: str, orm: str | None
         "project_type": starter,
     }
     rendered = env.get_template(f"{starter}/nexyconfig.py.jinja2").render(**context)
-    assert rendered.endswith("\n")
-    assert not rendered.endswith("\n\n")
+    assert len(rendered) - len(rendered.rstrip("\n")) == 1
