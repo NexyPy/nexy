@@ -9,7 +9,7 @@ body:
         Thanks for taking the time to report a bug. Please check it on the latest Nexy release first:
         it may already be fixed. A bug we can run gets fixed much faster, so the link to a minimal
         reproduction is required.
-   - type: textarea
+  - type: textarea
     id: info
     attributes:
       label: Environment (`nx info`)
@@ -25,6 +25,10 @@ body:
       render: text
     validations:
       required: true
+     
+        
+    
+
      
   - type: textarea
     id: description
