@@ -40,8 +40,10 @@ venv/
 def _fetch_template(
     template_name: str, dest: Path, config: dict[str, Any], use_github: bool, subdir: str
 ) -> None:
-    label = t("init.initializing", "Initializing {name}...").format(name=template_name)
-    done = t("init.created", "Created the project from {name}").format(name=template_name)
+    # The project's name, not the starter's: `web-fbr` means nothing to the one who answered.
+    project = dest.resolve().name
+    label = t("init.initializing", "Initializing {name}...").format(name=project)
+    done = t("init.created", "Created the project {name}").format(name=project)
     with step(label, done=done):
         if use_github:
             _clone_from_github(dest, subdir)
