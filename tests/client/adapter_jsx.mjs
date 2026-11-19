@@ -14,7 +14,7 @@ const { h } = lib;
 const cls = framework === "react" ? "className" : "class";
 
 // The adapters whose useBlocker takes a flag; each fix of #87 adds its own.
-const GUARDS = ["react"];
+const GUARDS = ["react", "preact"];
 
 function Probe() {
   const router = useRouter();
