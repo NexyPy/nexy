@@ -172,6 +172,7 @@
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [شريط أدوات التطوير](guides/devtools.md) | استخدم شريط الأدوات `nexy dev`، وقم بإيقاف تشغيله |
+| [تصحيح الأخطاء](guides/debugging.md) | توقف في رمز الخادم الخاص بك باستخدام `breakpoint()` أو VS Code |
 | [وكلاء الترميز](guides/ai-agents.md) | أعط Claude Code، Codex و OpenCode قواعد مشروعك |
 | [استكشاف الأخطاء وإصلاحها](guides/troubleshooting.md) | إصلاح المشاكل الأولى التي يواجهها الناس |
 
@@ -206,14 +207,14 @@
 |---|---|
 | [من اكسبرس](coming-from/express.md) | ترجمة المسارات والبرامج الوسيطة و `req`/`res` إلى معالجات Python |
 | [من فاستيفاي](coming-from/fastify.md) | تحويل المخططات والمكونات الإضافية والخطافات إلى نماذج ومجلدات وملفات |
-| [من إليسيا](coming-from/elysia.md) | قم بتعيين مخططات `t` والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
+| [من إليسيا](coming-from/elysia.md) | خريطة `t` المخططات والحراس وعدن إلى Pydantic والإجراءات المكتوبة |
 | [من هونو](coming-from/hono.md) | قم بتعيين المسارات والبرامج الوسيطة والعميل `hc` إلى Nexy |
 
 ### أطر عمل Fullstack {fbr}
 | الصفحة | ماذا ستفعل |
 |---|---|
 | [من Next.js](coming-from/nextjs.md) | احتفظ بصفحاتك React وانقل رمز الخادم إلى Python |
-| [من Remix](coming-from/remix.md) | تحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
+| [من Remix](coming-from/remix.md) | قم بتحويل أدوات التحميل والإجراءات إلى Python معالجات وإجراءات |
 | [من نوكست](coming-from/nuxt.md) | احتفظ بصفحاتك Vue وانقل `server/` إلى Python |
 | [من سفيلتكيت](coming-from/sveltekit.md) | احتفظ بصفحاتك Svelte وانقل التحميلات والإجراءات والربطات إلى Python |
 | [من Astro](coming-from/astro.md) | اكتب Astro صفحة على شكل `.nexy` صفحة، بنفس الجزر |

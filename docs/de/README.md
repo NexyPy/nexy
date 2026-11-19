@@ -172,6 +172,7 @@ Controller und Module.
 | Seite | Was Sie tun werden |
 |---|---|
 | [Dev-Symbolleiste](guides/devtools.md) | Verwenden Sie die Symbolleiste von `nexy dev` und schalten Sie sie aus |
+| [Debuggen](guides/debugging.md) | Stoppen Sie in Ihrem Servercode mit `breakpoint()` oder VS Code |
 | [Kodiermittel](guides/ai-agents.md) | Geben Sie Claude Code, Codex und OpenCode die Regeln Ihres Projekts an |
 | [Fehlerbehebung](guides/troubleshooting.md) | Beheben Sie die ersten Probleme, auf die Menschen stoßen |
 

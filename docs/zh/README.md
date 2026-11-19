@@ -172,6 +172,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | 页面 | 你会做什么 |
 |---|---|
 | [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
+| [调试](guides/debugging.md) | 使用 `breakpoint()` 或 VS Code 停止服务器代码 |
 | [编码剂](guides/ai-agents.md) | 为 Claude Code、Codex 和 OpenCode 提供您项目的规则 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
@@ -180,10 +181,10 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### SQL数据库
 | 页面 | 你会做什么 |
 |---|---|
-| [SQLite](databases/sqlite.md) | 使用一个文件，无需服务器：引擎、编译指示、迁移和测试 |
+| [SQLite](databases/sqlite.md) | 使用一个文件，无服务器：引擎、编译指示、迁移和测试 |
 | [PostgreSQL](databases/postgresql.md) | 与 psycopg 连接，使用 JSONB、数组、搜索和更新插入 |
 | [霓虹灯](databases/neon.md) | 使用无服务器 PostgreSQL：池化主机、自动挂起和分支 |
-| [MySQL 和 MariaDB](databases/mysql-mariadb.md) | 连接pymysql，使用utf8mb4、upserts和全文搜索 |
+| [MySQL 和 MariaDB](databases/mysql-mariadb.md) | 与pymysql连接，使用utf8mb4、upserts和全文搜索 |
 
 ## 来自
 
@@ -214,7 +215,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 |---|---|
 | [来自 Next.js](coming-from/nextjs.md) | 保留您的 React 页面并将服务器代码移至 Python |
 | [来自 Remix](coming-from/remix.md) | 将加载程序和操作转换为 Python 处理程序和操作 |
-| [来自 Nuxt](coming-from/nuxt.md) | 保留 Vue 页面并将 `server/` 移至 Python |
+| [来自 Nuxt](coming-from/nuxt.md) | 保留您的 Vue 页面并将 `server/` 移至 Python |
 | [来自 SvelteKit](coming-from/sveltekit.md) | 保留您的 Svelte 页面并将负载、操作和挂钩移至 Python |
 | [来自 Astro](coming-from/astro.md) | 将 Astro 页写入 `.nexy` 页，具有相同的岛 |
 | [来自 Laravel](coming-from/laravel.md) | 将路由、控制器、Blade、Eloquent 和队列映射到 Nexy |
