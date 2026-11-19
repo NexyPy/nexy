@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse
+from fastapi.testclient import TestClient
 
-from nexy.modules.routers.sitemap import page_paths, robots_txt, sitemap_xml
+from nexy.modules.routers.sitemap import page_paths, robots_txt, setup_sitemap, sitemap_xml
 
 
 def _page() -> str:
@@ -62,3 +63,43 @@ class TestRobotsTxt:
 
     def test_it_lets_every_crawler_in(self):
         assert robots_txt("https://example.com").startswith("User-agent: *\nAllow: /\n")
+
+
+def _served(app: FastAPI, path: str):
+    setup_sitemap(app, "https://example.com")
+    return TestClient(app).get(path)
+
+
+class TestSetupSitemap:
+    def test_the_sitemap_lists_the_pages(self):
+        assert (
+            "<loc>https://example.com/about</loc>" in _served(_app("/about"), "/sitemap.xml").text
+        )
+
+    def test_the_sitemap_is_xml(self):
+        assert _served(_app(), "/sitemap.xml").headers["content-type"] == "application/xml"
+
+    def test_robots_txt_is_plain_text(self):
+        robots = _served(_app(), "/robots.txt")
+        assert robots.headers["content-type"] == "text/plain; charset=utf-8"
+
+    def test_a_project_route_keeps_its_path(self):
+        app = FastAPI()
+        app.get("/robots.txt", response_class=PlainTextResponse)(lambda: "mine")
+        assert _served(app, "/robots.txt").text == "mine"
+
+    def test_a_project_sitemap_keeps_its_path(self):
+        app = FastAPI()
+        app.get("/sitemap.xml", response_class=PlainTextResponse)(lambda: "mine")
+        assert _served(app, "/sitemap.xml").text == "mine"
+
+    def test_the_two_files_are_not_in_the_schema(self):
+        app = _app()
+        setup_sitemap(app, "https://example.com")
+        assert not [path for path in app.openapi()["paths"] if "." in path]
+
+    def test_a_page_added_later_is_listed(self):
+        app = _app()
+        setup_sitemap(app, "https://example.com")
+        app.get("/late", response_class=HTMLResponse)(_page)
+        assert "/late</loc>" in TestClient(app).get("/sitemap.xml").text
