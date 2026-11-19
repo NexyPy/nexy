@@ -1,0 +1,92 @@
+"""The routes the /connection page calls: the team lives on the Python server.
+
+`GET /api/team` lists it and `POST /api/team` adds a member; both answer with the whole team.
+"""
+
+from pydantic import BaseModel
+
+from nexy.decorators import Controller
+{%- if orm == "Tortoise-ORM" %}
+from src.configs.db import arun
+{%- endif %}
+{%- if orm != "None" %}
+from src.apps.users.user_service import UserService
+{%- endif %}
+
+
+class Member(BaseModel):
+    name: str
+    email: str
+
+
+class Team(BaseModel):
+    members: list[Member]
+    note: str = ""  # why the last member was not added; empty when it was
+
+
+def _problem(member: Member, members: list[Member]) -> str:
+    """What is wrong with a new member, or an empty string."""
+    if not member.name:
+        return "Write a name."
+    if "@" not in member.email:
+        return "Write an email address."
+    if any(known.email == member.email for known in members):
+        return f"{member.email} is already on the team."
+    return ""
+
+
+def _cleaned(member: Member) -> Member:
+    return Member(name=member.name.strip(), email=member.email.strip().lower())
+{% if orm == "None" %}
+
+# No database in this project: the team is a list of dictionaries the server keeps while it runs.
+TEAM: list[dict[str, str]] = [
+    {"name": "Ada Lovelace", "email": "ada@example.com"},
+    {"name": "Grace Hopper", "email": "grace@example.com"},
+    {"name": "Alan Turing", "email": "alan@example.com"},
+]
+
+
+def _members() -> list[Member]:
+    return [Member(**person) for person in TEAM]
+
+
+@Controller("/api/team")
+class TeamController:
+    async def get(self) -> Team:
+        """Everyone on the team."""
+        return Team(members=_members())
+
+    async def post(self, body: Member) -> Team:
+        """Add a member, then answer with the whole team."""
+        member = _cleaned(body)
+        note = _problem(member, _members())
+        if not note:
+            TEAM.append(member.model_dump())
+        return Team(members=_members(), note=note)
+{% else %}
+
+# The team is the `users` table of the database in `.env` (DATABASE_URL).
+
+
+@Controller("/api/team")
+class TeamController:
+    def __init__(self, svc: UserService):
+        self.svc = svc
+
+    async def _members(self) -> list[Member]:
+        users = {% if orm == "Tortoise-ORM" %}await arun(self.svc.get_all()){% else %}self.svc.get_all(){% endif %}
+        return [Member(name=user.name, email=user.email) for user in users]
+
+    async def get(self) -> Team:
+        """Everyone on the team, read from the database."""
+        return Team(members=await self._members())
+
+    async def post(self, body: Member) -> Team:
+        """Add a member to the database, then answer with the whole team."""
+        member = _cleaned(body)
+        note = _problem(member, await self._members())
+        if not note:
+            {% if orm == "Tortoise-ORM" %}await arun(self.svc.create(member.name, member.email)){% else %}self.svc.create(member.name, member.email){% endif %}
+        return Team(members=await self._members(), note=note)
+{% endif %}
