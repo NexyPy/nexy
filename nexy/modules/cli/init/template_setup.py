@@ -214,7 +214,7 @@ def _run_post_init_pipeline(
     orm = config.get("orm", "None")
     db_url = config.get("db_url")
 
-    installer = DependencyInstaller(dest, orm=orm, database=config.get("database", "none"))
+    installer = DependencyInstaller(dest)
     installer.install_all()
 
     generate_post_init_files(dest, orm, db_url)

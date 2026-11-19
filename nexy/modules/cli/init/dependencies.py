@@ -86,13 +86,9 @@ class DependencyInstaller:
     def __init__(
         self,
         directory: Path = Path("."),
-        orm: str | None = None,
-        database: str = "none",
         probe: Callable[[], Connection] = probe,
     ):
         self.directory = directory
-        self.orm = orm
-        self.database = database
         self.probe = probe
         self._finished = 0
         self._total = 0
