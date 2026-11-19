@@ -21,7 +21,7 @@ from nexy.modules.i18n import t
 
 from .alias import DEFAULT_ALIAS, apply_alias
 from .clone import GitClone
-from .dependencies import DependencyInstaller
+from .dependencies import DependencyInstaller, orm_packages
 from .renderer import TemplateRenderer
 
 _GITIGNORE_CONTENT = """__pycache__/
@@ -85,6 +85,8 @@ def _template_context(config: dict[str, Any], project_name: str) -> dict[str, An
         "client_framework": config.get("client_framework", "none"),
         "nexy_version": __version__,
     }
+    # The ORM, its migration tool, the driver and dotenv go in pyproject.toml: one `uv sync`.
+    context["python_packages"] = orm_packages(context["orm"], context["database"])
     context.update(_markup_context(context["client_framework"], context["useCSR"]))
     context["utility_ui"] = _utility_ui(context)
     return context
