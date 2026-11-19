@@ -1,6 +1,6 @@
 # Leistung
 
-Was `nx start` standardmäßig tut, was eingeschaltet werden soll und was gemessen wurde.
+Was `nx start` standardmäßig tut, was aktiviert werden muss und wie schnell ein Projekt startet und antwortet.
 
 ## Standardeinstellungen
 
@@ -37,7 +37,27 @@ revalidate = 60
 ISR ist ein Modus für Dateiseiten: Eine Ansicht, die ein Controller zurückgibt, wird bei jeder Anfrage gerendert.
 <!-- /router -->
 
-## Gemessen
+## Starten, erste Seite und neu kompilieren
+
+Wie lange dauert ein Projekt mit einer `.nexy` Seite, Median von 5 Durchläufen, jeweils in einem neuen Python Prozess:
+
+| Messen | Median | Was es abdeckt |
+|---|---|---|
+| Startup | 460 ms | Von einem neuen Prozess zu einer antwortbereiten Anwendung: Importe, Routenscan, Kompilierung |
+| Erste Seite | 554 ms | das Gleiche, plus die erste Anfrage an `/` und seinen HTML-Code |
+| Kompilieren Sie eine Seite neu | 1,8 ms | Nach einer Bearbeitung die Seite erneut kompilieren, in einem Prozess, der bereits ausgeführt wird |
+
+Gemessen auf einem AMD Ryzen 5 4500U, Linux, 6 CPUs, Python 3.13.15. Neukompilieren ist das, was `nx dev` für die Python-Seite einer Änderung tut; Ein Neuladen des Browsers zahlt auch für das Moduldiagramm von Vite und das eigene Rendering des Browsers, es handelt sich also nicht um eine Neuladezeit.
+
+Messen Sie Ihre eigene Maschine mit dem Skript, das die Tabelle geschrieben hat:
+
+```bash
+python scripts/measure_speed.py --runs 5
+```
+
+Der `Speed`-Workflow führt ihn bei jedem Push an `main` aus und schreibt dieselbe Tabelle in die Zusammenfassung des Laufs auf einem von GitHub gehosteten Ubuntu-Runner.
+
+## Anfragen pro Sekunde
 
 Eine lokale Ausführung, ein Uvicorn Worker, Windows, Python 3.13, Keep-Alive-Verbindungen von einem Python Lastgenerator auf demselben Computer. Behandeln Sie die Zahlen als Grundlage für den Vergleich von Änderungen und nicht als Maßstab für andere Frameworks.
 
@@ -81,8 +101,8 @@ Lesen der Tabelle:
 
 1. Stellen Sie Nginx, Caddy oder den Edge Ihrer Plattform in den Vordergrund: TLS, HTTP/2, Brotli und langlebiges Caching für `/__nexy__/client/` Assets sind ihre Stärken. Siehe [Bereitstellen](README.md).
 2. Verwenden Sie [ISR](../rendering/isr.md) für Seiten, die sich weniger als einmal pro Minute ändern.
-3. Hydratieren Sie langsam mit [Inseln](../rendering/islands.md), damit die erste Ladung weniger versendet JavaScript.
-4. Halten Sie die Anzahl der `.nexy` Komponenten pro Seite angemessen: Jede davon ist ein separates Vorlagenrendering.
+3. Hydratieren Sie träge mit [Inseln](../rendering/islands.md), damit die erste Ladung weniger versendet JavaScript.
+4. Halten Sie die Anzahl der `.nexy` Komponenten pro Seite angemessen: Jede einzelne ist ein separates Vorlagenrendering.
 5. Messen Sie Ihre eigenen Routen. Ein lokaler Lastgenerator, der die Verbindungen aufrechterhält, reicht aus, um zwei Versionen einer Seite zu vergleichen.
 
 Tipp 1 mit Nginx: Die gehashten Client-Bundles werden ein Jahr lang zwischengespeichert, der Rest geht an Nexy.
