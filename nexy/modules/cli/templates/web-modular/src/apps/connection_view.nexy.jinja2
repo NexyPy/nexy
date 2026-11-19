@@ -1,5 +1,7 @@
 {%- set cls = "class" -%}
-{%- set ping_url = "/api/ping" -%}
-{%- set ping_source = "the <code>PingController</code> of <code>src/apps/app_controller.py</code>" -%}
+{%- set source = "the <code>TeamController</code> of <code>src/apps/team_controller.py</code>" -%}
+{%- set list_url = "/api/team" -%}
+{%- set join_url = "/api/team" -%}
+{%- set list_method = "GET" -%}
 {% include "connection.html.jinja2" %}
 {% include "connection_script.html.jinja2" %}
