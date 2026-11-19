@@ -9,34 +9,23 @@ body:
         Thanks for taking the time to report a bug. Please check it on the latest Nexy release first:
         it may already be fixed. A bug we can run gets fixed much faster, so the link to a minimal
         reproduction is required.
-
-  - type: input
-    id: version
+   - type: textarea
+    id: info
     attributes:
-      label: Nexy version
-      description: What version of Nexy are you running? (run `nexy --version` or check `pyproject.toml`)
-      placeholder: e.g. 2.0.9
+      label: Environment (`nx info`)
+      description: Run `nx info` in your project directory and paste the output here.
+      placeholder: |
+        Nexy        2.6.4
+        Python      3.13.1 (CPython)
+        OS          Linux 6.8 x86_64
+        Node        22.18.0
+        Package     pnpm 9.15.9
+        Router      file-based
+        Frameworks  react 19.2.0
+      render: text
     validations:
       required: true
-
-  - type: input
-    id: python_version
-    attributes:
-      label: Python version
-      description: What Python version are you using?
-      placeholder: e.g. 3.12.3
-    validations:
-      required: true
-
-  - type: input
-    id: os
-    attributes:
-      label: Operating system
-      description: What OS are you on?
-      placeholder: e.g. Windows 11, macOS 14.5, Ubuntu 24.04
-    validations:
-      required: true
-
+     
   - type: textarea
     id: description
     attributes:
