@@ -139,6 +139,9 @@ def world(monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
     monkeypatch.setattr(dev_module, "Server", FakeServer)
     monkeypatch.setattr(dev_module, "FrontendGenerator", FakeFrontend)
     monkeypatch.setattr(dev_module, "Builder", FakeBuilder)
+    monkeypatch.setattr(
+        dev_module, "ACTION_ENGINE", SimpleNamespace(refresh_client=lambda: rec("actions"))
+    )
     monkeypatch.setattr(dev_module.VFS, "set_dev_mode", lambda *_: rec("dev_mode"))
     monkeypatch.setattr(dev_module, "_require_vite_install", lambda: rec("require_vite"))
     monkeypatch.setattr(dev_module, "purge_project_modules", lambda: rec("purge"))
@@ -177,6 +180,11 @@ def test_happy_path_runs_in_order_and_cleans_up(world):
     assert events.index("require_vite") < events.index("check_prod") < events.index("build")
     assert events.index("vite_start:5173") < events.index("vite_wait") < events.index("uvicorn_run")
     assert events[-2:] == ["stop_observer", "stop_process"]
+
+
+def test_the_action_client_is_written_before_vite_starts(world):
+    dev_module.dev()
+    assert world.rec.events.index("actions") < world.rec.events.index("vite_start:5173")
 
 
 def test_marks_the_process_as_the_dev_server(world):
