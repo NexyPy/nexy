@@ -53,6 +53,7 @@
     "cmd": {
       "build": "Compile project for production deployment",
       "check": "Run type checking across all project files",
+      "info": "Print environment and project versions in one block",
       "dev": "Start local development server with hot reload",
       "format": "Auto-format all project files",
       "init": "Initialize Nexy in the current directory",
@@ -119,6 +120,20 @@
     "nexy": "Formatting {count} .nexy file(s)",
     "nexy_done": "Formatted {count} .nexy file(s)"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "Use @, ~, # or $, optionally followed by letters (for example ~ or @app).",
     "already": "Project already initialized here",
