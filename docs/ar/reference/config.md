@@ -24,8 +24,9 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | يضيف شريط الأدوات `nexy dev` إلى كل صفحة (معلومات الصفحة، والمسارات، والأخطاء، والتكوين)؛ `False` يزيله. لا يوجد أبدا في الإنتاج |
 | `useHealth` | `False` | يخدم `GET /health/live` و `GET /health/ready` لموازنات التحميل وتحقيقات Kubernetes؛ راجع [نشر](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | أكبر نص طلب يقرأه العامل، بالبايت (1 ميجابايت)؛ الأكبر هو `413`، و `0` يطفئ الحد. ارفعه إلى المسار الذي يأخذ تحميلات الملفات |
+| `useSiteUrl` | `None` | الأصل العام للموقع، مثل `"https://example.com"`؛ بمجرد ضبطه، يخدم Nexy `/sitemap.xml` و `/robots.txt`. راجع [خريطة الموقع وملف robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | تشغيل العمليات `nx start`؛ `0` هو واحد لكل وحدة معالجة مركزية على Linux وmacOS، وواحد على Windows |
-| `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` تم تعطيل الطرق |
+| `useCSR` | `False` | وضع التوجيه من جانب العميل؛ `.nexy` الطرق معطلة |
 
 ## قاعدة البيانات
 
@@ -51,7 +52,7 @@ class NexyConfig(NexyConfigModel):
 | `useWatchExtensions` | `None` | ملحقات إضافية يشاهدها خادم التطوير |
 | `useWatchExcludePatterns` | `None` | أنماط الكرة الأرضية التي يتجاهلها خادم التطوير |
 
-> **من المفيد أن نعرف**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
+> **من المفيد معرفة**: `NexyConfigModel` يعلن `useVite = False`؛ وقت التشغيل `Config` الافتراضي هو `True`.
 
 ## أسماء الملفات المحجوزة
 
@@ -87,7 +88,7 @@ class NexyConfig(NexyConfigModel):
     useDocsUrl = "/api-reference"
 ```
 
-أو قم بإيقاف تشغيله باستخدام `useDocs = False`، والذي يتوقف أيضًا عن الخدمة `/openapi.json`. أثناء تشغيل المرجع، احتفظ بمسارات المشروع بعيدًا عن هذا المسار.
+أو أطفئه بـ `useDocs = False`، والذي يتوقف أيضًا عن الخدمة `/openapi.json`. أثناء تشغيل المرجع، احتفظ بمسارات المشروع بعيدًا عن هذا المسار.
 
 ## الوسيطة
 

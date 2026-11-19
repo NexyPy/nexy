@@ -1,0 +1,31 @@
+name: Release stale issues
+
+# Once a day, a contributor issue whose assignee neither commented nor opened a pull request for
+# 14 days is free again, with a kind note (scripts/release_stale_issues.py). An issue is never
+# held by someone who moved on, and they can `/take` it back.
+on:
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  release:
+    name: Free idle issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/release_stale_issues.py
+          sparse-checkout-cone-mode: false
+
+      - name: Free idle issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 scripts/release_stale_issues.py

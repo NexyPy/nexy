@@ -1,6 +1,6 @@
 # Desempenho
 
-O que `nx start` faz por padrão, o que ligar e o que foi medido.
+O que `nx start` faz por padrão, o que ativar e com que rapidez um projeto inicia e responde.
 
 ## Padrões
 
@@ -37,7 +37,27 @@ revalidate = 60
 ISR é um modo de páginas de arquivo: uma visualização retornada por um controlador é renderizada em cada solicitação.
 <!-- /router -->
 
-## Medido
+## Inicialização, primeira página e recompilação
+
+Quanto tempo leva um projeto com uma `.nexy` página, mediana de 5 execuções, cada uma em um novo processo Python:
+
+| Medir | Mediana | O que cobre |
+|---|---|---|
+| Inicialização | 460ms | de um novo processo para uma aplicação pronta para responder: importações, varredura de rotas, compilação |
+| Primeira página | 554ms | o mesmo, mais a primeira solicitação para `/` e seu HTML |
+| Recompilar uma página | 1,8ms | compilar a página novamente após uma edição, em um processo que já está em execução |
+
+Medido em um AMD Ryzen 5 4500U, Linux, 6 CPUs, Python 3.13.15. Recompilar é o que `nx dev` faz para o Python lado de uma mudança; uma recarga do navegador também paga pelo gráfico do módulo de Vite e pela renderização do próprio navegador, portanto, não é um tempo de recarga.
+
+Meça sua própria máquina com o script que escreveu a tabela:
+
+```bash
+python scripts/measure_speed.py --runs 5
+```
+
+O fluxo de trabalho `Speed` executa-o em cada push para `main` e grava a mesma tabela no resumo da execução, em um executor Ubuntu hospedado no GitHub.
+
+## Solicitações por segundo
 
 Uma execução local, um Uvicorn trabalhador, Windows, Python 3.13, conexões keep-alive de um gerador de carga Python na mesma máquina. Trate os números como uma base para comparar as mudanças, e não como uma referência em relação a outras estruturas.
 
@@ -73,7 +93,7 @@ As figuras abaixo foram medidas com a rota do arquivo. Meça um controlador da m
 
 Lendo a tabela:
 
-- As próprias camadas do Nexy (contexto de caminho, middleware) custam cerca de um terço do rendimento de uma rota simples FastAPI.
+- As próprias camadas do Nexy (contexto de caminho, middleware) custam cerca de um terço do rendimento de uma rota FastAPI simples.
 - Uma página renderizada pelo servidor custa cerca de 2 ms de CPU, distribuídos por aproximadamente 16 renderizações de modelo (uma por componente). Páginas com menos componentes são proporcionalmente mais baratas.
 - O rendimento é escalonado com os trabalhadores. No Linux, `nx start` já inicia um por CPU.
 

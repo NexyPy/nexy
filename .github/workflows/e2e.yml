@@ -10,6 +10,22 @@ on:
     - cron: "0 4 * * *"
   push:
     branches: [main, V2]
+  # A pull request that can break the dev stack gets the suite before the merge; one that only
+  # changes the docs does not boot Chromium.
+  pull_request:
+    paths:
+      - "nexy/**"
+      - "tests/e2e/**"
+      - "tests/conftest.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/e2e.yml"
+
+# A newer push to a pull request makes its older run useless; a push to main and the nightly run
+# each finish.
+concurrency:
+  group: e2e-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   browser:

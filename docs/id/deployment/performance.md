@@ -1,6 +1,6 @@
 # Kinerja
 
-Apa yang dilakukan `nx start` secara default, apa yang harus diaktifkan, dan apa yang diukur.
+Apa yang `nx start` lakukan secara default, apa yang harus diaktifkan, dan seberapa cepat proyek dimulai dan dijawab.
 
 ## Default
 
@@ -37,7 +37,27 @@ revalidate = 60
 ISR adalah mode halaman file: tampilan yang dikembalikan pengontrol diberikan pada setiap permintaan.
 <!-- /router -->
 
-## Diukur
+## Startup, halaman pertama dan kompilasi ulang
+
+Berapa lama waktu yang dibutuhkan proyek dengan satu halaman `.nexy`, rata-rata 5 proses, masing-masing dalam proses Python baru:
+
+| Ukur | median | Apa yang dicakupnya |
+|---|---|---|
+| Memulai | 460 ms | dari proses baru hingga aplikasi yang siap menjawab: impor, pemindaian rute, kompilasi |
+| Halaman pertama | 554 ms | sama, ditambah permintaan pertama ke `/` dan HTML-nya |
+| Kompilasi ulang halaman | 1,8 ms | kompilasi halaman kembali setelah dilakukan edit, dalam proses yang sudah berjalan |
+
+Diukur pada AMD Ryzen 5 4500U, Linux, 6 CPU, Python 3.13.15. Kompilasi ulang adalah apa yang `nx dev` lakukan untuk sisi Python perubahan; memuat ulang browser juga membayar grafik modul Vite dan render browser itu sendiri, jadi ini bukan waktu memuat ulang.
+
+Ukur mesin Anda sendiri dengan skrip yang menulis tabel:
+
+```bash
+python scripts/measure_speed.py --runs 5
+```
+
+Alur kerja `Speed` menjalankannya pada setiap dorongan ke `main` dan menulis tabel yang sama dalam ringkasan proses, pada runner Ubuntu yang dihosting GitHub.
+
+## Permintaan per detik
 
 Pengoperasian lokal, satu pekerja Uvicorn, Windows, Python 3.13, koneksi tetap hidup dari generator beban Python pada mesin yang sama. Perlakukan angka-angka tersebut sebagai dasar untuk membandingkan perubahan, bukan sebagai patokan terhadap kerangka kerja lainnya.
 
@@ -73,7 +93,7 @@ Angka-angka di bawah ini diukur dengan rute file. Ukur pengontrol dengan cara ya
 
 Membaca tabel:
 
-- Lapisan Nexy sendiri (konteks jalur, middleware) menghabiskan biaya sekitar sepertiga dari throughput rute kosong FastAPI.
+- Lapisan Nexy sendiri (konteks jalur, middleware) menghabiskan biaya sekitar sepertiga dari throughput rute kosong FastAPI .
 - Halaman yang dirender di server membutuhkan CPU sekitar 2 ms, tersebar di sekitar 16 rendering template (satu per komponen). Halaman dengan komponen lebih sedikit secara proporsional lebih murah.
 - Skala throughput dengan pekerja. Di Linux, `nx start` sudah memulai satu per CPU.
 

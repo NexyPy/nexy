@@ -21,6 +21,7 @@
 - [Coding standards](#coding-standards)
 - [Testing](#testing)
 - [Pull request process](#pull-request-process)
+- [Triage](#triage)
 - [Release process](#release-process)
 - [Getting help](#getting-help)
 
@@ -54,7 +55,7 @@ ruff check nexy/ && ruff format nexy/ --check && python -m mypy nexy --strict &&
 ### Prerequisites
 
 - **Python** 3.12+
-- **Node.js** 20+ (for frontend builds and VS Code extension)
+- **Node.js** 22.18+ (for frontend builds, the client tests and the VS Code extension)
 - **uv** package manager (recommended) or pip
 - **bun**, **pnpm**, or **npm** for JavaScript dependencies (Nexy prefers bun, then pnpm, then npm)
 
@@ -70,13 +71,19 @@ uv venv
 uv pip install -e . --group dev
 ```
 
-### JavaScript dependencies (optional)
+### JavaScript dependencies
 
-Only needed for the VS Code extension:
+The client tests (`tests/client`) mount the generated runtimes in jsdom; `python -m pytest tests/`
+fails without their packages:
 
 ```bash
-cd extensions/vscode
-pnpm install --frozen-lockfile
+pnpm install --frozen-lockfile --dir tests/client
+```
+
+The VS Code extension has its own, needed only to work on it:
+
+```bash
+pnpm install --frozen-lockfile --dir extensions/vscode
 ```
 
 ### Verify your setup
@@ -116,6 +123,14 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the full package layout and a deep di
 Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 or discuss your idea in [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
 before opening a PR for a new feature.
+
+Every issue open to contributors carries `good first issue` or `help wanted`, and a
+`difficulty:beginner`, `difficulty:intermediate` or `difficulty:advanced` label. The
+[board](https://github.com/orgs/NexyPy/projects/2) shows what is free now.
+
+Comment `/take` on a free one: it is assigned to you at once, with the first steps. A comment or a
+draft pull request keeps it yours; after 14 days with no news it is free again for someone else,
+and `/take` brings it back.
 
 ### 2. Create a branch
 
@@ -189,6 +204,10 @@ git push origin feature/my-feature
 ```
 
 Then open a pull request on GitHub. Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md).
+
+Once the PR is merged, GitHub deletes its branch: the repository has "Automatically delete head
+branches" on, so only `main`, `staging` and `develop` stay on the remote. Delete your local copy
+with `git branch -d feature/my-feature`, and drop the stale remote names with `git fetch --prune`.
 
 ### Stay updated
 
@@ -372,6 +391,19 @@ npm run test
 2. Address feedback with additional commits (no force-push during review)
 3. Maintainers squash-merge approved PRs
 
+## Triage
+
+For maintainers: the issues for contributors come from the real work, not from invented tasks.
+
+- **A small confirmed bug becomes a beginner issue.** When one file and its test can fix it,
+  write the cause, the file and the test to add in the issue, and label it `good first issue`
+  and `difficulty:beginner`, instead of fixing it at once. A bug that blocks users
+  (`priority:1`) or a security advisory is fixed at once.
+- **An issue for contributors can be started alone.** It names the files to start from, says
+  what "done" means, and ends with a "Getting started" paragraph.
+- **Keep the pool full, not big.** About ten beginner issues stay open; when one is taken, write
+  the next one.
+
 ## Release process
 
 For maintainers only:
@@ -403,6 +435,12 @@ the table decides its number.
    ```bash
    npx git-cliff -o CHANGELOG.md
    ```
+   Then thank who made the release, under the version and in the GitHub Release:
+   ```bash
+   python scripts/contributors.py v<previous version>
+   ```
+   It prints a `### Thanks` section naming each contributor and their pull requests, or nothing
+   when only the maintainer and bots merged.
 3. Commit the version bump and changelog on `main`, then tag and push. The
    tag must match the package version exactly (for example, `v2.1.1`), and
    its commit must already be on `main`; the workflow rejects tags from

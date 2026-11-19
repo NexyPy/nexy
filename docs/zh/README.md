@@ -159,6 +159,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | 页面 | 你会做什么 |
 |---|---|
 | [中间件和安全性](guides/middleware-and-security.md) | 设置 CORS、GZip、可信主机和会话 |
+| [站点地图和 robots.txt](guides/sitemap.md) | 从您的路线提供 `/sitemap.xml` 和 `/robots.txt` |
 | [部署](deployment/README.md) | 构建、容器化和服务 |
 | [性能](deployment/performance.md) | 测量和调整默认值 |
 
@@ -172,7 +173,8 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 | 页面 | 你会做什么 |
 |---|---|
 | [开发工具栏](guides/devtools.md) | 使用 `nexy dev`的工具栏，然后将其关闭 |
-| [编码剂](guides/ai-agents.md) | 为 Claude Code、Codex 和 OpenCode 提供您项目的规则 |
+| [调试](guides/debugging.md) | 使用 `breakpoint()` 或 VS Code 停止服务器代码 |
+| [编码剂](guides/ai-agents.md) | 给出 Claude Code、Codex 和 OpenCode 项目的规则 |
 | [故障排除](guides/troubleshooting.md) | 解决人们遇到的第一个问题 |
 
 ## 数据库
@@ -180,10 +182,10 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### SQL数据库
 | 页面 | 你会做什么 |
 |---|---|
-| [SQLite](databases/sqlite.md) | 使用一个文件，无需服务器：引擎、编译指示、迁移和测试 |
+| [SQLite](databases/sqlite.md) | 使用一个文件，无服务器：引擎、编译指示、迁移和测试 |
 | [PostgreSQL](databases/postgresql.md) | 与 psycopg 连接，使用 JSONB、数组、搜索和更新插入 |
 | [霓虹灯](databases/neon.md) | 使用无服务器 PostgreSQL：池化主机、自动挂起和分支 |
-| [MySQL 和 MariaDB](databases/mysql-mariadb.md) | 连接pymysql，使用utf8mb4、upserts和全文搜索 |
+| [MySQL 和 MariaDB](databases/mysql-mariadb.md) | 与pymysql连接，使用utf8mb4、upserts和全文搜索 |
 
 ## 来自
 
@@ -192,7 +194,7 @@ Nexy 将您的页面和 API 放在一个 Python 项目中，由一台服务器�
 ### 概述
 | 页面 | 你会做什么 |
 |---|---|
-| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Express 习惯翻译成 Nexy |
+| [来自另一个框架](getting-started/coming-from-other-frameworks.md) | 将 FastAPI、Next.js 和 Expresshabits 翻译为 Nexy |
 
 ### Python 框架 {fbr}
 | 页面 | 你会做什么 |

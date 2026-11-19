@@ -24,14 +24,15 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | টুলবার `nexy dev` প্রতিটি পৃষ্ঠায় যোগ করে (পৃষ্ঠার তথ্য, রুট, ত্রুটি, কনফিগার); `False` এটিকে সরিয়ে দেয়। উত্পাদনে উপস্থিত হয় না |
 | `useHealth` | `False` | লোড ব্যালেন্সার এবং কুবারনেটস প্রোবের জন্য `GET /health/live` এবং `GET /health/ready` পরিবেশন করুন; দেখুন [মোতায়েন](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | সবচেয়ে বড় রিকোয়েস্ট বডি একজন কর্মী পড়ে, বাইটে (1 MiB); একটি বড় একটি হল একটি `413`, এবং `0` সীমাটি বন্ধ করে দেয়। ফাইল আপলোড লাগে এমন একটি রুটের জন্য এটি বাড়ান |
-| `useWorkers` | `0` | প্রক্রিয়াগুলি `nx start` চলে; `0` লিনাক্স এবং ম্যাকওএস-এ প্রতি সিপিইউ একটি, উইন্ডোজে একটি |
-| `useCSR` | `False` | ক্লায়েন্ট-সাইড রাউটিং মোড; `.nexy` রুট নিষ্ক্রিয় করা হয় |
+| `useSiteUrl` | `None` | সাইটের সর্বজনীন উত্স, যেমন `"https://example.com"`; একবার সেট হয়ে গেলে, নেক্সি `/sitemap.xml` এবং `/robots.txt` পরিবেশন করে। [সাইটম্যাপ এবং robots.txt](../guides/sitemap.md) দেখুন |
+| `useWorkers` | `0` | প্রক্রিয়াগুলি `nx start` চলে; `0` প্রতি সিপিইউ লিনাক্স এবং ম্যাকোসে একটি, উইন্ডোজে একটি |
+| `useCSR` | `False` | ক্লায়েন্ট-সাইড রাউটিং মোড; `.nexy` রুট নিষ্ক্রিয় করা হয়েছে |
 
 ## ডাটাবেস
 
 | মাঠ | ডিফল্ট | অর্থ |
 |---|---|---|
-| `useORM` | `None` | প্রকল্পের ORM: `"SQLModel"`, `"SQLAlchemy"` বা `"Tortoise-ORM"`। `nx new` এটি লেখেন, এবং `nx migrate` এটি থেকে Alembic বা Aerich বেছে নেন; এটি ছাড়া, `nx migrate` প্রথম ORM ইনস্টল করা লাগে। [ডেটাবেস](../guides/databases.md#migrations) দেখুন |
+| `useORM` | `None` | প্রকল্পের ORM: `"SQLModel"`, `"SQLAlchemy"` বা `"Tortoise-ORM"`। `nx new` এটি লেখেন, এবং `nx migrate` এটি থেকে Alembic বা Aerich বেছে নেন; এটি ছাড়া, `nx migrate` প্রথম ORM ইনস্টল করা লাগে। [ডাটাবেস](../guides/databases.md#migrations) দেখুন |
 
 ## রুট
 
@@ -55,7 +56,7 @@ class NexyConfig(NexyConfigModel):
 
 ## সংরক্ষিত ফাইলের নাম
 
-প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` `layout.md` সংরক্ষিত করে তোলে, ঠিক `layout.nexy` এর মতো।
+প্রতিটি ক্ষেত্র একটি সংরক্ষিত ভূমিকায় এক্সটেনশন যোগ করে। `useLayoutExtensions = ["md"]` সংরক্ষিত করে তোলে `layout.md`, ঠিক `layout.nexy` এর মতো।
 
 | মাঠ | এ এক্সটেনশন যোগ করে |
 |---|---|
@@ -77,7 +78,7 @@ class NexyConfig(NexyConfigModel):
 
 ### প্রকল্পের একটি পৃষ্ঠার জন্য বিনামূল্যে `/docs`
 
-API রেফারেন্স কোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
+এপিআই রেফারেন্স কোন রুটের আগে `/docs` উত্তর দেয়, তাই `src/routes/docs.nexy` বা `src/routes/docs/[[...slug]].nexy` সেখানে কখনই পরিবেশন করা হয় না। `nx dev` এবং `nx start` শুরুতে এমন একটি পৃষ্ঠার নাম দিন। এর সাথে রেফারেন্স সরান `useDocsUrl`:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

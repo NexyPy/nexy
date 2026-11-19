@@ -12,7 +12,7 @@ Jeder `<a href>` zu einer Seite Ihres Projekts navigiert auf dem Client, ohne Ko
 
 Es wird ein Link zum Browser hinterlassen und die Seite wird normal geladen, wenn:
 
-- eine Zusatztaste gedrückt wird oder die Taste nicht die Haupttaste ist;
+- eine Sondertaste gedrückt wird oder die Taste nicht die Haupttaste ist;
 - es hat `target` (außer `_self`), `download`, `rel="external"` oder `data-nexy-reload`;
 - das `href` ist ein anderer Ursprung, ein `mailto:`- oder `tel:`-Link oder nur ein `#fragment`;
 - Da der Pfad mit keiner Client-Route übereinstimmt, antwortet der Server darauf.
@@ -62,6 +62,7 @@ Der Speicherort ist in jedem Framework in der Sprache dieses Frameworks verfügb
 | Navigieren | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | Navigation im Flug | `useTransition()` | `useTransition()`-Accessor | `useTransition()` Ref | `useTransition()` speichern |
 | Passen Sie einen Pfad an | `useMatch(path?)` | `useMatch(path?)`-Accessor | `useMatch(path?)` Ref | `useMatch(path?)` speichern |
+| Fragen Sie vor der Abreise | `useBlocker(dirty)` | `useBlocker(dirty())` in `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` in `$effect` |
 
 Die Abfrage ist ein `URLSearchParams`. `useRouter()` und `router` ergeben `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` und `prefetch(href)`; `push` und `replace` akzeptieren `{ scroll: false }`.
 
@@ -89,7 +90,7 @@ export default function Progress() {
 }
 ```
 
-## Passen Sie einen Pfad an `useMatch`
+## Ordnen Sie einen Pfad mit `useMatch` zu.
 
 `useMatch(path)` gibt an, ob `path` mit einer Client-Route übereinstimmt. Es gibt `{ match, found }` zurück, wobei `match` die Route `file`, ihre `layouts` und ihre `params` enthält oder `null` ist. Ohne Pfad entspricht es der aktuellen Seite und folgt jeder Navigation. Während des Serverrenderings gibt es noch keinen Router, also ist `match` `null` und `found` ist `false`.
 
@@ -131,8 +132,46 @@ import { ErrorBoundary } from "@nexy/client";
 
 Es fängt nicht:
 
-- ein später ausgelöster Fehler, in einem Event-Handler, einem Timer oder einem Versprechen: Fangen Sie ihn dort ab, wo er passiert. Vue ist die Ausnahme für seine eigenen Event-Handler, deren Fehler die Grenze erreichen;
+- ein später ausgelöster Fehler, in einem Event-Handler, einem Timer oder einem Versprechen: Fangen Sie ihn dort ab, wo er passiert. Vue ist die Ausnahme für eigene Event-Handler, deren Fehler die Grenze erreichen;
 - eine Seite, die der Router nicht laden kann: Der Browser fragt stattdessen den Server danach (siehe [Was der Router macht](#what-the-router-does)).
+
+## Fragen Sie nach, bevor Sie eine Seite mit nicht gespeicherten Änderungen verlassen
+
+`useBlocker(dirty, message?)` fragt den Besucher, bevor er geht, während `dirty` wahr ist: ein Link, ein `router.push`, die Zurück- und Vorwärts-Buttons, ein Neuladen und ein geschlossener Tab. Eine Client-Navigation zeigt `message` in `confirm()`: „Ja“ geht weiter, „Nein“ bleibt auf der Seite. Ein Neuladen oder ein geschlossener Tab zeigt die eigene Frage des Browsers an, die keine Seite formulieren kann. Ohne Meldung lautet die Frage: „Sie haben nicht gespeicherte Änderungen. Diese Seite verlassen?“.
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+Das Flag wird dort gelesen, wo es sich ändert, in der Sprache jedes Frameworks:
+
+| Rahmen | Folgen Sie der Flagge |
+|---|---|
+| React, Preact | `useBlocker(dirty)` bei jedem Rendern |
+| Vue | `useBlocker(dirty)` mit `dirty` einer Referenz oder einer berechneten |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` übernimmt auch eine Funktion für eine Entscheidung, die davon abhängt, wohin der Besucher geht. Es empfängt den nächsten und den aktuellen Standort und gibt einen Grund (eine Zeichenfolge) zurück, zu bleiben oder nichts weiterzumachen:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+Eine Funktion fragt nicht selbst nach und hält kein Neuladen bereit; Rufen Sie `confirm()` darin an, um zu fragen.
 
 ## `Image`
 
@@ -150,7 +189,7 @@ Es fängt nicht:
 - `alt` ist erforderlich; Verwenden Sie `alt=""` für ein dekoratives Bild. Nexy warnt einmal, wenn es fehlt.
 - Sowohl bei `width` als auch bei `height` geben die Attribute dem Browser das Seitenverhältnis vor und das Bild bleibt flüssig (`height: auto; max-width: 100%`).
 - `priority` lädt das Bild jetzt mit hoher Priorität für das Bild, das bei der Ankunft sichtbar ist.
-- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Bild verdeckt und ignoriert dabei `width` und `height`.
+- `fill` sorgt dafür, dass das Bild sein positioniertes übergeordnetes Element verdeckt und ignoriert dabei `width` und `height`.
 - `sizes` und `srcSet` gehen durch. Nexy ändert die Größe von Bildern nicht und konvertiert sie nicht.
 
 ## Link von einer `.nexy`-Seite

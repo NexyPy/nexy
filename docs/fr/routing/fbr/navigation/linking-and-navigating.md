@@ -62,6 +62,7 @@ L'emplacement est disponible dans chaque cadre, dans l'idiome de ce cadre. Au co
 | Naviguer | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | Navigation en vol | `useTransition()` | `useTransition()` accesseur | `useTransition()` réf | `useTransition()` magasin |
 | Faire correspondre un chemin | `useMatch(path?)` | `useMatch(path?)` accesseur | `useMatch(path?)` réf | `useMatch(path?)` magasin |
+| Demander avant de partir | `useBlocker(dirty)` | `useBlocker(dirty())` dans `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` dans `$effect` |
 
 La requête est un `URLSearchParams`. `useRouter()` et `router` donnent `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` et `prefetch(href)` ; `push` et `replace` acceptent `{ scroll: false }`.
 
@@ -78,7 +79,7 @@ export default function User() {
 
 ## Afficher un état de chargement avec `useTransition`
 
-`useTransition()` indique si un client de navigation est en vol. `pending` est `true` à partir du clic jusqu'à ce que la page suivante soit affichée, et `next` est l'emplacement vers lequel il va. Il revient à `{ pending: false, next: null }` une fois la page affichée, lorsque la navigation s'arrête ou lorsqu'une plus récente la remplace.
+`useTransition()` indique si un client de navigation est en vol. `pending` est `true` à partir du clic jusqu'à ce que la page suivante soit affichée, et `next` est l'emplacement vers lequel il va. Il remonte à `{ pending: false, next: null }` une fois la page affichée, lorsque la navigation s'arrête ou lorsqu'une plus récente la remplace.
 
 ```tsx
 import { useTransition } from "@nexy/client";
@@ -91,7 +92,7 @@ export default function Progress() {
 
 ## Faites correspondre un chemin avec `useMatch`
 
-`useMatch(path)` indique si `path` correspond à une route client. Il renvoie `{ match, found }`, où `match` contient l'itinéraire `file`, son `layouts` et son `params`, ou est `null`. Sans chemin, il correspond à la page actuelle et suit chaque navigation. Pendant le rendu du serveur, il n'y a pas encore de routeur, donc `match` est `null` et `found` est `false`.
+`useMatch(path)` indique si `path` correspond à une route client. Il renvoie `{ match, found }`, où `match` contient la route `file`, son `layouts` et son `params`, ou est `null`. Sans chemin, il correspond à la page actuelle et suit chaque navigation. Pendant le rendu du serveur, il n'y a pas encore de routeur, donc `match` est `null` et `found` est `false`.
 
 ```tsx
 import { useMatch } from "@nexy/client";
@@ -134,6 +135,44 @@ Il n'attrape pas :
 - une erreur générée plus tard, dans un gestionnaire d'événements, un timer ou une promesse : détectez-la là où elle se produit. Vue est l'exception pour ses propres gestionnaires d'événements, dont les erreurs atteignent la limite ;
 - une page que le routeur ne peut pas charger : le navigateur la demande au serveur (voir [Ce que fait le routeur](#what-the-router-does)).
 
+## Demander avant de quitter une page avec des modifications non enregistrées
+
+`useBlocker(dirty, message?)` demande au visiteur avant son départ alors que `dirty` est vrai : un lien, un `router.push`, les boutons Précédent et Suivant, un rechargement et un onglet fermé. Une navigation client affiche `message` dans `confirm()` : oui continue, non reste sur la page. Un rechargement ou un onglet fermé affiche la propre question du navigateur, qu'aucune page ne peut formuler. Sans message, la question est « Vous avez des modifications non enregistrées. Quitter cette page ? ».
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+Le drapeau se lit là où il change, dans le langage de chaque framework :
+
+| Cadre | Suivez le drapeau |
+|---|---|
+| React, Preact | `useBlocker(dirty)` sur chaque rendu |
+| Vue | `useBlocker(dirty)` avec `dirty` une référence ou un calculé |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` assume également une fonction, pour une décision qui dépend de l'endroit où se rend le visiteur. Il reçoit l'emplacement suivant et l'emplacement actuel, et renvoie une raison (une chaîne) pour rester, ou rien pour continuer :
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+Une fonction ne demande pas toute seule et ne tient pas de rechargement ; appelez `confirm()` pour demander.
+
 ## `Image`
 
 `Image` rend un `<img>` qui est paresseux par défaut et ne décale pas la mise en page lorsque sa taille est connue.
@@ -149,7 +188,7 @@ Il n'attrape pas :
 
 - `alt` est requis ; utilisez `alt=""` pour une image décorative. Nexy prévient une fois lorsqu'il manque.
 - Avec `width` et `height`, les attributs donnent au navigateur le rapport hauteur/largeur et l'image reste fluide (`height: auto; max-width: 100%`).
-- `priority` charge désormais l'image en haute priorité, pour celle qui est visible à l'arrivée.
+- `priority` charge désormais l'image en haute priorité, pour celle visible à l'arrivée.
 - `fill` fait que l'image recouvre son parent positionné, en ignorant `width` et `height`.
 - `sizes` et `srcSet` passent. Nexy ne redimensionne ni ne convertit les images.
 
@@ -162,7 +201,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` rend `<a href="/about" data-nexy-link="true">`. Chaque attribut et le `href` sont échappés en HTML.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` restitue `<a href="/about" data-nexy-link="true">`. Chaque attribut et le `href` sont échappés en HTML.
 
 ## Ce que fait le routeur
 
