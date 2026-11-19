@@ -2,7 +2,7 @@
 
 **Uma Python estrutura para aplicações web fullstack.**
 
-Nexy coloca suas páginas e sua API em um Python projeto, servido por um servidor. A versão 2.2 é construída em FastAPI: cada rota de API é uma rota FastAPI, listada em um esquema OpenAPI que Scalar mostra em `/docs`.
+Nexy coloca suas páginas e sua API em um Python projeto, servido por um servidor. A versão 2.2 é construída em FastAPI: cada rota API é uma rota FastAPI, listada em um esquema OpenAPI que Scalar mostra em `/docs`.
 
 - **Python primeiro.** Páginas, endpoints, formulários e ações são Python, e uma página não precisa de JavaScript.
 - **Um frontend quando você quiser.** React, Vue, Svelte, Solid ou Preact, para um componente ou para todo o site.
@@ -172,6 +172,7 @@ Controladores e módulos.
 | Página | O que você fará |
 |---|---|
 | [Barra de ferramentas de desenvolvimento](guides/devtools.md) | Use a barra de ferramentas de `nexy dev` e desligue-a |
+| [Depuração](guides/debugging.md) | Pare no código do seu servidor com `breakpoint()` ou VS Code |
 | [Agentes de codificação](guides/ai-agents.md) | Dê Claude Code, Codex e OpenCode as regras do seu projeto |
 | [Solução de problemas](guides/troubleshooting.md) | Corrija os primeiros problemas que as pessoas enfrentam |
 

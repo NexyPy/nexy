@@ -178,6 +178,7 @@ Controllers and modules.
 | Page | What you will do |
 |---|---|
 | [Dev toolbar](guides/devtools.md) | Use the toolbar of `nexy dev`, and turn it off |
+| [Debugging](guides/debugging.md) | Stop in your server code with `breakpoint()` or VS Code |
 | [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
 | [Troubleshooting](guides/troubleshooting.md) | Fix the first problems people hit |
 

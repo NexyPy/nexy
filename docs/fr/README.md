@@ -165,13 +165,14 @@ Contrôleurs et modules.
 ### Construire et tester
 | Pages | Ce que tu feras |
 |---|---|
-| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la construction du client |
+| [Vite et style](guides/frontend.md) | Configurer Vite, le style et la build client |
 | [Tests](guides/testing.md) | Testez avec pytest, `TestClient` et vitest |
 
 ### Outillage et aide
 | Pages | Ce que tu feras |
 |---|---|
 | [Barre d'outils de développement](guides/devtools.md) | Utilisez la barre d'outils de `nexy dev` et désactivez-la |
+| [Débogage](guides/debugging.md) | Arrêtez-vous dans le code de votre serveur avec `breakpoint()` ou VS Code |
 | [Agents de codage](guides/ai-agents.md) | Donnez à Claude Code, Codex et OpenCode les règles de votre projet |
 | [Dépannage](guides/troubleshooting.md) | Résolvez les premiers problèmes rencontrés par les gens |
 
@@ -182,7 +183,7 @@ Contrôleurs et modules.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utiliser un seul fichier, pas de serveur : moteur, pragmas, migrations et tests |
 | [PostgreSQL](databases/postgresql.md) | Connectez-vous avec psycopg, utilisez JSONB, les tableaux, la recherche et les upserts |
-| [Néon](databases/neon.md) | Utiliser un serveur sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
+| [Néon](databases/neon.md) | Utiliser sans serveur PostgreSQL : hôte mutualisé, suspension automatique et branches |
 | [MySQL et MariaDB](databases/mysql-mariadb.md) | Connectez-vous avec pymysql, utilisez utf8mb4, upserts et recherche en texte intégral |
 
 ## Venant de
@@ -213,7 +214,7 @@ Les mêmes tâches, écrites dans le framework que vous connaissez puis dans Nex
 | Pages | Ce que tu feras |
 |---|---|
 | [De Next.js](coming-from/nextjs.md) | Conservez vos pages React et déplacez le code du serveur vers Python |
-| [De Remix](coming-from/remix.md) | Transformez les chargeurs et les actions en Python gestionnaires et actions |
+| [À partir de Remix](coming-from/remix.md) | Transformez les chargeurs et les actions en Python gestionnaires et actions |
 | [Depuis Nuxt](coming-from/nuxt.md) | Conservez vos pages Vue et déplacez `server/` vers Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conservez vos Svelte pages et déplacez les charges, actions et hooks vers Python |
 | [De Astro](coming-from/astro.md) | Écrire Astro pages sous forme de `.nexy` pages, avec les mêmes îlots |

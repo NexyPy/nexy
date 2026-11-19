@@ -172,6 +172,7 @@ Controladores y módulos.
 | Página | que haras |
 |---|---|
 | [Barra de herramientas de desarrollo](guides/devtools.md) | Utilice la barra de herramientas de `nexy dev` y apáguela. |
+| [Depuración](guides/debugging.md) | Deténgase en el código de su servidor con `breakpoint()` o VS Code |
 | [Agentes codificadores](guides/ai-agents.md) | Dale a Claude Code, Codex y OpenCode las reglas de tu proyecto |
 | [Solución de problemas](guides/troubleshooting.md) | Solucionar los primeros problemas a los que se enfrenta la gente |
 
@@ -182,7 +183,7 @@ Controladores y módulos.
 |---|---|
 | [SQLite](databases/sqlite.md) | Utilice un archivo, ningún servidor: motor, pragmas, migraciones y pruebas |
 | [PostgreSQL](databases/postgresql.md) | Conéctese con psycopg, use JSONB, matrices, búsqueda y upserts |
-| [Neón](databases/neon.md) | Utilice serverless PostgreSQL: host agrupado, suspensión automática y sucursales |
+| [Neón](databases/neon.md) | Usar sin servidor PostgreSQL: host agrupado, suspensión automática y sucursales |
 | [MySQL y MariaDB](databases/mysql-mariadb.md) | Conéctese con pymysql, use utf8mb4, upserts y búsqueda de texto completo |
 
 ## viniendo de
@@ -214,7 +215,7 @@ Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
 |---|---|
 | [Desde Next.js](coming-from/nextjs.md) | Conserve sus páginas React y mueva el código del servidor a Python |
 | [Desde Remix](coming-from/remix.md) | Convierta cargadores y acciones en Python controladores y acciones |
-| [Desde Nuxt](coming-from/nuxt.md) | Conserve sus Vue páginas y mueva `server/` a Python |
+| [Desde Nuxt](coming-from/nuxt.md) | Conserva tus Vue páginas y mueve `server/` a Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conserva tus Svelte páginas y mueve cargas, acciones y enlaces a Python |
 | [Desde Astro](coming-from/astro.md) | Escribe Astro páginas como `.nexy` páginas, con las mismas islas |
 | [De Laravel](coming-from/laravel.md) | Mapear rutas, controladores, Blade, Eloquent y colas a Nexy |
