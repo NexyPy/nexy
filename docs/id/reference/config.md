@@ -24,6 +24,7 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | toolbar `nexy dev` ditambahkan ke setiap halaman (info halaman, rute, kesalahan, konfigurasi); `False` menghapusnya. Tidak pernah hadir dalam produksi |
 | `useHealth` | `False` | melayani `GET /health/live` dan `GET /health/ready` untuk penyeimbang beban dan probe Kubernetes; lihat [Menerapkan](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | isi permintaan terbesar yang dibaca pekerja, dalam byte (1 MiB); yang lebih besar adalah `413`, dan `0` mematikan batasnya. Naikkan untuk rute yang mengambil unggahan file |
+| `useSiteUrl` | `None` | asal mula situs tersebut, seperti `"https://example.com"`; setelah diatur, Nexy melakukan servis `/sitemap.xml` dan `/robots.txt`. Lihat [Peta Situs dan robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | proses `nx start` berjalan; `0` adalah satu per CPU di Linux dan macOS, satu di Windows |
 | `useCSR` | `False` | mode perutean sisi klien; `.nexy` rute dinonaktifkan |
 
