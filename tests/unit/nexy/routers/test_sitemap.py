@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from nexy.modules.routers.sitemap import page_paths
+from nexy.modules.routers.sitemap import page_paths, sitemap_xml
 
 
 def _page() -> str:
@@ -34,3 +34,23 @@ class TestPagePaths:
 
     def test_the_paths_are_sorted_once_each(self):
         assert page_paths(_app("/b", "/a", "/b").routes) == ["/a", "/b"]
+
+
+class TestSitemapXml:
+    def test_each_path_is_an_absolute_url(self):
+        xml = sitemap_xml("https://example.com", ["/", "/about"])
+        assert "<loc>https://example.com/about</loc>" in xml
+
+    def test_a_trailing_slash_of_the_site_url_is_not_doubled(self):
+        assert "<loc>https://example.com/about</loc>" in sitemap_xml(
+            "https://example.com/", ["/about"]
+        )
+
+    def test_a_url_is_escaped(self):
+        assert "<loc>https://example.com/a&amp;b</loc>" in sitemap_xml(
+            "https://example.com", ["/a&b"]
+        )
+
+    def test_it_declares_the_sitemap_namespace(self):
+        xml = sitemap_xml("https://example.com", [])
+        assert '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' in xml
