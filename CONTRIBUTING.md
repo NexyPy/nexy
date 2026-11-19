@@ -123,6 +123,14 @@ Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aiss
 or discuss your idea in [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
 before opening a PR for a new feature.
 
+Every issue open to contributors carries `good first issue` or `help wanted`, and a
+`difficulty:beginner`, `difficulty:intermediate` or `difficulty:advanced` label. The
+[board](https://github.com/orgs/NexyPy/projects/2) shows what is free now.
+
+Comment `/take` on a free one: it is assigned to you at once, with the first steps. A comment or a
+draft pull request keeps it yours; after 14 days with no news it is free again for someone else,
+and `/take` brings it back.
+
 ### 2. Create a branch
 
 | Branch pattern | Purpose |
