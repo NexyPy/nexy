@@ -25,9 +25,20 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      # Speak as the Nexy bot (a GitHub App) once the maintainer has set it up: see
+      # .github/bot/README.md. Until then the workflow token answers, as github-actions.
+      - name: Act as the Nexy bot
+        id: bot
+        if: ${{ vars.NEXY_BOT_CLIENT_ID != '' }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.NEXY_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.NEXY_BOT_PRIVATE_KEY }}
+          permission-issues: write
+          permission-pull-requests: write
       - name: Assign the maintainer
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.bot.outputs.token || github.token }}
           GH_REPO: ${{ github.repository }}
           OWNER: Espoir-Loem
           NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
