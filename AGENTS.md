@@ -28,7 +28,7 @@ What a developer sees:
   menu included) is a CSS border or gap. List and exceptions: `skills/nexy-principles/SKILL.md`.
 - **All code in English**: No French comments or variables.
 
-## Philosophy (KISS · TDD · SOLID)
+## Philosophy (KISS, TDD, SOLID)
 
 - **KISS**: simplest working code wins. No premature abstraction, no clever one-liners. Functions < 20 lines, classes < 10 methods.
 - **TDD**: write the test first (red), minimal code to pass (green), then refactor. One assertion per test. Name: `test_<thing>_<scenario>`.
