@@ -205,7 +205,6 @@
     },
     "node_installed": "node_modules установлены с помощью {manager}",
     "python_synced": ".venv синхронизировано с помощью uv",
-    "package_added": "{package} добавлен в .venv",
     "created": "Проект {name} создан"
   },
   "migrate": {
