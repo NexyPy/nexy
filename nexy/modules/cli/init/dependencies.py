@@ -110,8 +110,7 @@ class DependencyInstaller:
             (self.directory / "package.json").exists()
             and (self.directory / "vite.config.ts").exists()
         )
-        steps += int((self.directory / "pyproject.toml").exists())
-        return steps + len(orm_packages(self.orm, self.database))
+        return steps + int((self.directory / "pyproject.toml").exists())
 
     def _check_connection(self) -> Connection:
         """Look at the connection with a spinner: the probe can take a few seconds."""
@@ -126,8 +125,8 @@ class DependencyInstaller:
         self._install_uv()
         self.create_venv()
         self.install_node_dependencies()
+        # The ORM's packages are in pyproject.toml already: this one sync installs them too.
         self.install_python_dependencies()
-        self.install_orm()
         _remove_egg_info(self.directory)
 
     def _install_uv(self) -> None:
@@ -174,8 +173,3 @@ class DependencyInstaller:
         if (self.directory / "pyproject.toml").exists():
             synced = t("init.python_synced", "Synced .venv with uv")
             self._run(["uv", "sync"], "uv sync .venv", synced)
-
-    def install_orm(self) -> None:
-        for package in orm_packages(self.orm, self.database):
-            added = t("init.package_added", "Added {package} to .venv").format(package=package)
-            self._run(["uv", "add", package], f"uv add .venv {package}", added)
