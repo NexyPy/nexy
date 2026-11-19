@@ -3,6 +3,42 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.7.0] - 2026-11-19
+
+### Added
+
+- **`useBlocker(when, message?)` asks before a visitor leaves a page with unsaved changes**, in
+  every adapter: a link, `router.push`, the back and forward buttons, a reload and a closed tab. A
+  function decides from the next location instead; the router gains `guard()` and `hold()` (#87,
+  #447).
+- **`useSiteUrl` serves `/sitemap.xml` and `/robots.txt`.** The sitemap lists every static page as
+  an absolute URL, read from the routes on each request; a file in `public/` or a route of the
+  project at either path always wins (#84, #449).
+
+### Fixed
+
+- **A navigation blocker holds the back and forward buttons too.** It only held links and
+  `router.push`; the router now walks the history back to the entry it left (#87, #447).
+
+### Documentation
+
+- How to debug server code with `breakpoint()`, VS Code and `debugpy` (#88, #446).
+- The startup, first page and recompile times, with the machine and the script that measures them
+  (#297, #448).
+- The sitemap guide, and `useSiteUrl` in the config reference (#84, #449).
+
+### Repository
+
+- Pull requests get their `area:*` labels from the files they change; issues carry an area, a
+  priority and a difficulty; `CODEOWNERS`; Dependabot opens one grouped update a month (#298,
+  #450).
+- CodeQL scans Python, TypeScript and the workflows on every pull request; OpenSSF Scorecard, a
+  dependency firewall on lock changes and a weekly community report (#462).
+- New contributors: `/take` assigns a free issue, an issue idle for 14 days is free again, every
+  new contributor gets the same welcome, and each release thanks its contributors (#461, #463,
+  #472).
+- `AGENTS.md` sets the goals as Nexy's own measured numbers (#460).
+
 ## [2.6.4] - 2026-11-18
 
 ### Fixed
