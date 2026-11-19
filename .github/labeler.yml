@@ -1,0 +1,30 @@
+# The area labels of a pull request, from the files it changes (.github/workflows/labeler.yml).
+# A pull request that touches two areas gets both labels.
+
+"area:router":
+  - changed-files:
+      - any-glob-to-any-file: ["nexy/modules/routers/**", "nexy/modules/modular/**"]
+
+"area:compiler":
+  - changed-files:
+      - any-glob-to-any-file: ["nexy/modules/compiler/**", "nexy/modules/builder/**"]
+
+"area:frontend":
+  - changed-files:
+      - any-glob-to-any-file: ["nexy/modules/frontend/**", "tests/client/**"]
+
+"area:cli":
+  - changed-files:
+      - any-glob-to-any-file: ["nexy/modules/cli/**"]
+
+"area:docs":
+  - changed-files:
+      - any-glob-to-any-file: ["docs/**", "sites/**", "llms.txt", "README.md"]
+
+"area:ci":
+  - changed-files:
+      - any-glob-to-any-file: [".github/**", "scripts/**"]
+
+"area:vscode":
+  - changed-files:
+      - any-glob-to-any-file: ["extensions/vscode/**"]
