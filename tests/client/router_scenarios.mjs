@@ -15,6 +15,9 @@ const match = (pathname) => {
   return user ? { file: "/src/routes/users/[id].tsx", layouts: [], params: { id: user[1] } } : null;
 };
 
+// Every window opened, closed before the process exits.
+const windows = [];
+
 function world({ url = "http://localhost/", render } = {}) {
   const dom = new JSDOM(`<!DOCTYPE html><body><main id="m"></main><h2 id="section">S</h2></body>`, {
     url,
@@ -62,6 +65,7 @@ function world({ url = "http://localhost/", render } = {}) {
   const events = [];
   real.document.addEventListener("nexy:navigated", (e) => events.push(e.detail.pathname));
   const stop = router.start();
+  windows.push(real);
   return { dom, real, router, assigned, scrolls, rendered, prefetched, events, stop, setScroll: (y) => (scrollY = y) };
 }
 
@@ -299,5 +303,6 @@ const out = {};
   out.hold = { freeOk, guardedOk, blockedOk };
 }
 
+for (const window of windows) window.close();
 console.log("@@" + JSON.stringify(out) + "@@");
 process.exit(0);
