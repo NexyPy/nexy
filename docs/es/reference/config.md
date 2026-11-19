@@ -24,6 +24,7 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | la barra de herramientas `nexy dev` agrega a cada página (información de la página, rutas, errores, configuración); `False` lo elimina. Nunca presente en producción. |
 | `useHealth` | `False` | servir `GET /health/live` y `GET /health/ready` para balanceadores de carga y sondas de Kubernetes; consulte [Implementar](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | el cuerpo de solicitud más grande que lee un trabajador, en bytes (1 MiB); uno más grande es `413`, y `0` desactiva el límite. Levántelo para una ruta que requiera carga de archivos. |
+| `useSiteUrl` | `None` | el origen público del sitio, como `"https://example.com"`; una vez colocada, Nexy sirve a `/sitemap.xml` y `/robots.txt`. Consulte [Mapa del sitio y robots.txt](../guides/sitemap.md) |
 | `useWorkers` | `0` | procesa `nx start` ejecuciones; `0` es uno por CPU en Linux y macOS, uno en Windows |
 | `useCSR` | `False` | modo de enrutamiento del lado del cliente; `.nexy` rutas están deshabilitadas |
 
@@ -45,7 +46,7 @@ class NexyConfig(NexyConfigModel):
 
 | campo | Predeterminado | Significado |
 |---|---|---|
-| `useFF` | `None` | fábrica de marco de cliente: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
+| `useFF` | `None` | fábrica de marcos de clientes: `react()`, `vue()`, `svelte()`, `solid()`, `preact()` |
 | `useVite` | `True` | crear y servir paquetes de clientes con Vite |
 | `useMarkdownExtensions` | `[]` | extensiones adicionales para el renderizado `.md`/`.mdx` |
 | `useWatchExtensions` | `None` | extensiones adicionales que observa el servidor de desarrollo |
@@ -96,8 +97,8 @@ O apáguelo con `useDocs = False`, que también deja de servir `/openapi.json`. 
 | `useMiddlewares` | `[]` | Clases de middleware ASGI |
 | `useCORS` | `None` | kwargs por `CORSMiddleware` |
 | `useGZip` | `None` | kwargs por `GZipMiddleware` |
-| `useTrustedHost` | `None` | kwargs por `TrustedHostMiddleware` |
-| `useSession` | `None` | kwargs por `SessionMiddleware` |
+| `useTrustedHost` | `None` | kwargs para `TrustedHostMiddleware` |
+| `useSession` | `None` | kwargs para `SessionMiddleware` |
 | `useAuth` | `None` | configuración del middleware de autenticación |
 | `useHTTPSRedirect` | `False` | redirigir HTTP a HTTPS |
 

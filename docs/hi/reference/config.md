@@ -24,6 +24,7 @@ class NexyConfig(NexyConfigModel):
 | `useDevTools` | `True` | टूलबार `nexy dev` प्रत्येक पृष्ठ पर जुड़ता है (पृष्ठ जानकारी, मार्ग, त्रुटियाँ, कॉन्फ़िगरेशन); `False` इसे हटा देता है। उत्पादन में कभी मौजूद नहीं |
 | `useHealth` | `False` | लोड बैलेंसर्स और कुबेरनेट्स जांच के लिए `GET /health/live` और `GET /health/ready` परोसें; देखें [तैनाती](../deployment/README.md#built-in-endpoints) |
 | `useMaxBodySize` | `1048576` | एक कार्यकर्ता द्वारा पढ़ा जाने वाला सबसे बड़ा अनुरोध निकाय, बाइट्स में (1 MiB); बड़ा वाला एक `413` है, और `0` सीमा को बंद कर देता है। फ़ाइल अपलोड करने वाले रूट के लिए इसे बढ़ाएं |
+| `useSiteUrl` | `None` | साइट का सार्वजनिक मूल, जैसे कि `"https://example.com"`; एक बार सेट हो जाने पर, नेक्सी `/sitemap.xml` और `/robots.txt` परोसता है। [साइटमैप और robots.txt](../guides/sitemap.md) देखें |
 | `useWorkers` | `0` | प्रक्रियाएँ `nx start` चलती हैं; `0` लिनक्स और मैकओएस पर प्रति सीपीयू एक है, विंडोज़ पर एक |
 | `useCSR` | `False` | क्लाइंट-साइड रूटिंग मोड; `.nexy` मार्ग अक्षम हैं |
 
@@ -77,7 +78,7 @@ class NexyConfig(NexyConfigModel):
 
 ### परियोजना के एक पृष्ठ के लिए निःशुल्क `/docs`
 
-एपीआई संदर्भ किसी भी मार्ग से पहले `/docs` का उत्तर देता है, इसलिए `src/routes/docs.nexy` या `src/routes/docs/[[...slug]].nexy` वहां कभी नहीं परोसा जाता है। `nx dev` और `nx start` स्टार्टअप पर ऐसे पेज को नाम दें। `useDocsUrl` के साथ संदर्भ को स्थानांतरित करें:
+एपीआई संदर्भ किसी भी मार्ग से पहले `/docs` उत्तर देता है, इसलिए `src/routes/docs.nexy` या `src/routes/docs/[[...slug]].nexy` वहां कभी नहीं परोसा जाता है। `nx dev` और `nx start` स्टार्टअप पर ऐसे पेज को नाम दें। `useDocsUrl` के साथ संदर्भ को स्थानांतरित करें:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

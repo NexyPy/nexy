@@ -82,14 +82,18 @@ jobs:
 
       # tests/client mounts the generated runtimes in jsdom with Node.js: without its packages
       # those tests cannot even start.
+      - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
+        with:
+          version: 9
+
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: tests/client/package-lock.json
+          cache: pnpm
+          cache-dependency-path: tests/client/pnpm-lock.yaml
 
       - name: Install the client test dependencies (locked)
-        run: npm ci --no-audit --no-fund --prefix tests/client
+        run: pnpm install --frozen-lockfile --dir tests/client
 
       - name: Lint (nexy + tests + sites + scripts)
         run: uv run --no-sync ruff check nexy/ tests/ sites/ scripts/

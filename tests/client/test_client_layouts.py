@@ -4,7 +4,7 @@ Each generated framework runtime (``nexy.modules.frontend.<fw>``) is mounted on 
 two layouts. The scenario checks the composed DOM, that layouts survive a navigation, and that a
 different layout chain remounts them.
 
-Needs Node.js 22.18+ and ``npm ci`` in this directory (see ``conftest.py``).
+Needs Node.js 22.18+ and ``pnpm install --frozen-lockfile`` in this directory (see ``conftest.py``).
 """
 
 import importlib

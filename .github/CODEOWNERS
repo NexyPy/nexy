@@ -1,0 +1,4 @@
+# Who reviews a pull request: GitHub requests a review from the owner of each file it changes.
+# One maintainer owns every area today; a line per folder goes below this one when an area gets
+# its own owner (the last matching line wins).
+* @Espoir-Loem

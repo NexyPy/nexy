@@ -165,6 +165,7 @@ Controllers and modules.
 | Page | What you will do |
 |---|---|
 | [Middleware and security](guides/middleware-and-security.md) | Set up CORS, GZip, trusted hosts and sessions |
+| [Sitemap and robots.txt](guides/sitemap.md) | Serve `/sitemap.xml` and `/robots.txt` from your routes |
 | [Deploy](deployment/README.md) | Build, containerise and serve |
 | [Performance](deployment/performance.md) | Measure and tune the defaults |
 
@@ -178,6 +179,7 @@ Controllers and modules.
 | Page | What you will do |
 |---|---|
 | [Dev toolbar](guides/devtools.md) | Use the toolbar of `nexy dev`, and turn it off |
+| [Debugging](guides/debugging.md) | Stop in your server code with `breakpoint()` or VS Code |
 | [Coding agents](guides/ai-agents.md) | Give Claude Code, Codex and OpenCode the rules of your project |
 | [Troubleshooting](guides/troubleshooting.md) | Fix the first problems people hit |
 

@@ -1,6 +1,6 @@
 # Performance
 
-What `nx start` does by default, what to switch on, and what was measured.
+What `nx start` does by default, what to switch on, and how fast a project starts and answers.
 
 ## Defaults
 
@@ -37,7 +37,30 @@ revalidate = 60
 ISR is a mode of file pages: a view a controller returns is rendered on each request.
 <!-- /router -->
 
-## Measured
+## Startup, first page and recompile
+
+How long a project with one `.nexy` page takes, median of 5 runs, each in a new Python process:
+
+| Measure | Median | What it covers |
+|---|---|---|
+| Startup | 460 ms | from a new process to an application ready to answer: imports, route scan, compile |
+| First page | 554 ms | the same, plus the first request to `/` and its HTML |
+| Recompile a page | 1.8 ms | compiling the page again after an edit, in a process that already runs |
+
+Measured on an AMD Ryzen 5 4500U, Linux, 6 CPUs, Python 3.13.15. Recompiling is what `nx dev` does
+for the Python side of a change; a browser reload also pays for Vite's module graph and the
+browser's own render, so it is not a reload time.
+
+Measure your own machine with the script that wrote the table:
+
+```bash
+python scripts/measure_speed.py --runs 5
+```
+
+The `Speed` workflow runs it on each push to `main` and writes the same table in the summary of the
+run, on a GitHub-hosted Ubuntu runner.
+
+## Requests per second
 
 A local run, one Uvicorn worker, Windows, Python 3.13, keep-alive connections from a Python load
 generator on the same machine. Treat the numbers as a baseline for comparing changes, not as a

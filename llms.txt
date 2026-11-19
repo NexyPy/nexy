@@ -90,11 +90,13 @@ index, follow the page for the task, and trust the source when the two disagree.
 - [Actions](docs/guides/actions.md): Call a Python function from a form or a typed TypeScript function
 - [Databases](docs/guides/databases.md): Choose an ORM and run migrations
 - [Middleware and security](docs/guides/middleware-and-security.md): Set up CORS, GZip, trusted hosts and sessions
+- [Sitemap and robots.txt](docs/guides/sitemap.md): Serve `/sitemap.xml` and `/robots.txt` from your routes
 - [Deploy](docs/deployment/README.md): Build, containerise and serve
 - [Performance](docs/deployment/performance.md): Measure and tune the defaults
 - [Frontend](docs/guides/frontend.md): Set up Vite, styling and the client build
 - [Testing](docs/guides/testing.md): Test with pytest, `TestClient` and vitest
 - [Dev toolbar](docs/guides/devtools.md): Use the toolbar of `nexy dev`, and turn it off
+- [Debugging](docs/guides/debugging.md): Stop in your server code with `breakpoint()` or VS Code
 - [Coding agents](docs/guides/ai-agents.md): Give Claude Code, Codex and OpenCode the rules of your project
 - [Troubleshooting](docs/guides/troubleshooting.md): Fix the first problems people hit
 

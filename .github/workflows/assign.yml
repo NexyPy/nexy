@@ -19,6 +19,8 @@ permissions:
 jobs:
   assign:
     name: Give it an owner
+    # A good first issue stays unassigned: an assignee reads as "taken" to a newcomer.
+    if: ${{ !contains(github.event.issue.labels.*.name, 'good first issue') }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 

@@ -33,7 +33,10 @@ def missing_prerequisite() -> str | None:
     if version is None or version < MINIMUM_NODE:
         return "Node.js is too old to run TypeScript: install Node.js 22.18 or newer"
     if not (HERE / "node_modules" / "jsdom").is_dir():
-        return "the client test packages are missing: run `npm ci` in tests/client"
+        return (
+            "the client test packages are missing: "
+            "run `pnpm install --frozen-lockfile --dir tests/client`"
+        )
     return None
 
 

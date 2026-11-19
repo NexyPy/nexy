@@ -62,6 +62,7 @@ A localização está disponível em todas as estruturas, no idioma dessa estrut
 | Navegar | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | Navegação em voo | `useTransition()` | `useTransition()` acessador | `useTransition()` referência | `useTransition()` loja |
 | Combine um caminho | `useMatch(path?)` | `useMatch(path?)` acessador | `useMatch(path?)` referência | `useMatch(path?)` loja |
+| Pergunte antes de sair | `useBlocker(dirty)` | `useBlocker(dirty())` em `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` em `$effect` |
 
 A consulta é um `URLSearchParams`. `useRouter()` e `router` fornecem `push(href)`, `replace(href)`, `back()`, `forward()`, `refresh()` e `prefetch(href)`; `push` e `replace` aceitam `{ scroll: false }`.
 
@@ -134,6 +135,44 @@ Não pega:
 - um erro lançado posteriormente, em um manipulador de eventos, um cronômetro ou uma promessa: capture-o onde acontecer. Vue é a exceção para seus próprios manipuladores de eventos, cujos erros atingem o limite;
 - uma página que o roteador não pode carregar: em vez disso, o navegador a solicita ao servidor (consulte [O que o roteador faz](#what-the-router-does)).
 
+## Pergunte antes de sair de uma página com alterações não salvas
+
+`useBlocker(dirty, message?)` pergunta ao visitante antes de sair enquanto `dirty` é verdadeiro: um link, um `router.push`, os botões voltar e avançar, recarregar e uma aba fechada. A navegação do cliente mostra `message` em `confirm()`: sim continua, não permanece na página. Uma aba recarregada ou fechada mostra a pergunta do próprio navegador, que nenhuma página consegue formular. Sem mensagem, a pergunta é "Você tem alterações não salvas. Sair desta página?".
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+A flag é lida onde muda, no idioma de cada framework:
+
+| Estrutura | Siga a bandeira |
+|---|---|
+| React, Preact | `useBlocker(dirty)` em cada renderização |
+| Vue | `useBlocker(dirty)` com `dirty` uma referência ou um cálculo |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` também assume uma função, para uma decisão que depende de onde o visitante vai. Ele recebe o próximo local e o atual e retorna um motivo (uma string) para ficar ou nada para continuar:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+Uma função não solicita por si só e não recarrega; ligue para `confirm()` para perguntar.
+
 ## `Image`
 
 `Image` renderiza um `<img>` que é preguiçoso por padrão e não muda o layout quando seu tamanho é conhecido.
@@ -148,7 +187,7 @@ Não pega:
 ```
 
 - `alt` é obrigatório; use `alt=""` para uma imagem decorativa. Nexy avisa uma vez quando está faltando.
-- Com `width` e `height`, os atributos fornecem ao navegador a proporção de aspecto e a imagem permanece fluida (`height: auto; max-width: 100%`).
+- Com `width` e `height`, os atributos fornecem ao navegador a proporção e a imagem permanece fluida (`height: auto; max-width: 100%`).
 - `priority` carrega a imagem agora em alta prioridade, para aquela que está visível na chegada.
 - `fill` faz a imagem cobrir seu pai posicionado, ignorando `width` e `height`.
 - `sizes` e `srcSet` passam. Nexy não redimensiona nem converte imagens.

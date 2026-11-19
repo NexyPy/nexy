@@ -6,9 +6,9 @@ import { clickWith, load, openPage, print, sleep, stage, story } from "./adapter
 // has the same location the server saw, so the server render below sees /about?tab=a too.
 const page = openPage("");
 const dir = stage("vue", "vue.ts");
-const { createSSRApp, defineComponent, h } = await import("vue");
+const { computed, createSSRApp, defineComponent, h } = await import("vue");
 const { renderToString } = await import("vue/server-renderer");
-const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch } = await load(dir, "client.ts");
+const { Link, Image, useRouter, usePathname, useParams, useSearchParams, useTransition, ErrorBoundary, useMatch, useBlocker } = await load(dir, "client.ts");
 
 const Probe = defineComponent({
   setup() {
@@ -18,6 +18,7 @@ const Probe = defineComponent({
     const search = useSearchParams();
     const transition = useTransition();
     const matched = useMatch();
+    useBlocker(computed(() => path.value === "/users/7"), "Leave?");
     return () =>
       h("div", null, [
         h("p", { id: "path" }, path.value),

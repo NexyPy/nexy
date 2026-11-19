@@ -62,6 +62,7 @@ export default function Nav() {
 | نیویگیٹ کریں۔ | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
 | پرواز میں نیویگیشن | `useTransition()` | `useTransition()` رسائی کنندہ | `useTransition()` حوالہ | `useTransition()` اسٹور |
 | ایک راستہ ملائیں | `useMatch(path?)` | `useMatch(path?)` رسائی کنندہ | `useMatch(path?)` حوالہ | `useMatch(path?)` اسٹور |
+| جانے سے پہلے پوچھ لیں۔ | `useBlocker(dirty)` | `useBlocker(dirty())` میں `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` میں `$effect` |
 
 استفسار ایک `URLSearchParams` ہے۔ `useRouter()` اور `router` دیں `push(href)`، `replace(href)`، `back()`، `forward()`، `refresh()` اور `prefetch(href)`؛ `push` اور `replace` قبول کرتے ہیں `{ scroll: false }`۔
 
@@ -78,7 +79,7 @@ export default function User() {
 
 ## لوڈنگ حالت `useTransition` کے ساتھ دکھائیں
 
-`useTransition()` بتاتا ہے کہ آیا کلائنٹ نیویگیشن پرواز میں ہے۔ `pending` کلک سے اگلا صفحہ ظاہر ہونے تک `true` ہے، اور `next` وہ مقام ہے جہاں یہ جا رہا ہے۔ صفحہ کے دکھائے جانے کے بعد، جب نیویگیشن رک جاتی ہے، یا جب کوئی نیا اس کی جگہ لے لیتا ہے تو یہ واپس `{ pending: false, next: null }` پر چلا جاتا ہے۔
+`useTransition()` بتاتا ہے کہ آیا ایک کلائنٹ نیویگیشن پرواز میں ہے۔ `pending` کلک سے لے کر اگلا صفحہ ظاہر ہونے تک `true` ہے، اور `next` وہ مقام ہے جہاں وہ جا رہا ہے۔ صفحہ کے دکھائے جانے کے بعد، جب نیویگیشن رک جاتی ہے، یا جب کوئی نیا اس کی جگہ لے لیتا ہے تو یہ واپس `{ pending: false, next: null }` پر چلا جاتا ہے۔
 
 ```tsx
 import { useTransition } from "@nexy/client";
@@ -89,9 +90,9 @@ export default function Progress() {
 }
 ```
 
-## ایک راستے کو `useMatch` سے ملانا
+## ایک راستے کو `useMatch` کے ساتھ جوڑیں
 
-`useMatch(path)` بتاتا ہے کہ آیا `path` کلائنٹ کے راستے سے میل کھاتا ہے۔ یہ `{ match, found }` لوٹتا ہے، جہاں `match` راستے `file` کو رکھتا ہے، اس کا `layouts` اور اس کا `params`، یا ہے `null`۔ راستے کے بغیر یہ موجودہ صفحہ سے میل کھاتا ہے اور ہر نیویگیشن کی پیروی کرتا ہے۔ سرور رینڈر کے دوران ابھی تک کوئی راؤٹر نہیں ہے، لہذا `match` ہے `null` اور `found` `false` ہے۔
+`useMatch(path)` بتاتا ہے کہ آیا `path` کلائنٹ کے راستے سے میل کھاتا ہے۔ یہ `{ match, found }` لوٹتا ہے، جہاں `match` راستے `file` کو رکھتا ہے، اس کا `layouts` اور اس کا `params`، یا ہے `null`۔ راستے کے بغیر یہ موجودہ صفحہ سے میل کھاتا ہے اور ہر نیویگیشن کی پیروی کرتا ہے۔ سرور رینڈر کے دوران ابھی تک کوئی روٹر نہیں ہے، لہذا `match` ہے `null` اور `found` `false` ہے۔
 
 ```tsx
 import { useMatch } from "@nexy/client";
@@ -134,9 +135,47 @@ import { ErrorBoundary } from "@nexy/client";
 - ایک غلطی بعد میں پھینکی گئی، ایونٹ ہینڈلر، ٹائمر یا وعدہ میں: اسے پکڑو جہاں یہ ہوتا ہے۔ Vue اس کے اپنے ایونٹ ہینڈلرز کے لیے مستثنیٰ ہے، جن کی غلطیاں حد تک پہنچ جاتی ہیں۔
 - ایک صفحہ جو روٹر لوڈ نہیں کر سکتا: براؤزر اس کے بجائے سرور سے پوچھتا ہے (دیکھیں [روٹر کیا کرتا ہے](#what-the-router-does))۔
 
+## غیر محفوظ شدہ تبدیلیوں کے ساتھ صفحہ چھوڑنے سے پہلے پوچھیں۔
+
+`useBlocker(dirty, message?)` آنے والے سے جانے سے پہلے پوچھتا ہے جب کہ `dirty` سچ ہے: ایک لنک، ایک `router.push`، پیچھے اور آگے کے بٹن، ایک دوبارہ لوڈ اور ایک بند ٹیب۔ ایک کلائنٹ نیویگیشن دکھاتا ہے `message` میں `confirm()`: ہاں جاری ہے، صفحہ پر نہیں رہتا۔ دوبارہ لوڈ یا بند ٹیب براؤزر کا اپنا سوال دکھاتا ہے، جسے کوئی صفحہ لفظ نہیں کرسکتا۔ ایک پیغام کے بغیر، سوال یہ ہے کہ "آپ کے پاس غیر محفوظ شدہ تبدیلیاں ہیں۔ اس صفحہ کو چھوڑ دیں؟"۔
+
+```tsx
+import { useState } from "react";
+import { useBlocker } from "@nexy/client";
+
+export default function Editor() {
+  const [text, setText] = useState("");
+  const [saved, setSaved] = useState("");
+  useBlocker(text !== saved, "Your draft is not saved. Leave anyway?");
+  return (
+    <form onSubmit={(event) => (event.preventDefault(), setSaved(text))}>
+      <textarea value={text} onChange={(event) => setText(event.target.value)} />
+      <button>Save</button>
+    </form>
+  );
+}
+```
+
+ہر فریم ورک کے محاورے میں جھنڈا پڑھا جاتا ہے جہاں یہ تبدیل ہوتا ہے:
+
+| فریم ورک | پرچم کی پیروی کریں۔ |
+|---|---|
+| React، Preact | `useBlocker(dirty)` ہر رینڈر پر |
+| Vue | `useBlocker(dirty)` `dirty` کے ساتھ ایک حوالہ یا ایک کمپیوٹیڈ |
+| Solid | `createEffect(() => useBlocker(dirty()))` |
+| Svelte | `$effect(() => useBlocker(dirty))` |
+
+`useBlocker` اس فیصلے کے لیے ایک فنکشن بھی لیتا ہے جو اس بات پر منحصر ہوتا ہے کہ وزیٹر کہاں جاتا ہے۔ یہ اگلا مقام اور موجودہ مقام حاصل کرتا ہے، اور رہنے کی وجہ (سٹرنگ) واپس کرتا ہے، یا آگے جانے کے لیے کچھ نہیں:
+
+```tsx
+useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
+```
+
+ایک فنکشن خود سے نہیں پوچھتا ہے اور دوبارہ لوڈ نہیں رکھتا ہے۔ پوچھنے کے لیے اس میں `confirm()` کو کال کریں۔
+
 ## `Image`
 
-`Image` ایک `<img>` کو رینڈر کرتا ہے جو ڈیفالٹ کے لحاظ سے سست ہے اور جب اس کا سائز معلوم ہوتا ہے تو ترتیب کو تبدیل نہیں کرتا ہے۔
+`Image` ایک `<img>` رینڈر کرتا ہے جو ڈیفالٹ کے لحاظ سے سست ہے اور جب اس کا سائز معلوم ہوتا ہے تو ترتیب کو تبدیل نہیں کرتا ہے۔
 
 | فریم ورک | درآمد کریں۔ |
 |---|---|
@@ -150,7 +189,7 @@ import { ErrorBoundary } from "@nexy/client";
 - `alt` درکار ہے۔ آرائشی تصویر کے لیے `alt=""` کا استعمال کریں۔ جب یہ غائب ہو تو Nexy ایک بار خبردار کرتا ہے۔
 - `width` اور `height` دونوں کے ساتھ، اوصاف براؤزر کو پہلو کا تناسب دیتے ہیں اور تصویر سیال رہتی ہے (`height: auto; max-width: 100%`)۔
 - `priority` تصویر کو اب اعلی ترجیح پر لوڈ کرتا ہے، اس کے لیے جو آمد پر نظر آتا ہے۔
-- `fill` `width` اور `height` کو نظر انداز کرتے ہوئے، تصویر کو اس کے پوزیشن شدہ والدین کا احاطہ کرتا ہے۔
+- `fill` `width` اور `height` کو نظر انداز کرتے ہوئے، تصویر کو اپنے پوزیشن والے والدین کا احاطہ کرتا ہے۔
 - `sizes` اور `srcSet` سے گزرتے ہیں۔ Nexy تصاویر کا سائز تبدیل یا تبدیل نہیں کرتا ہے۔
 
 ## ایک `.nexy` صفحہ سے لنک
@@ -169,7 +208,7 @@ from nexy import Link
 نیویگیشن پر، راؤٹر:
 
 1. کلائنٹ کے راستوں (`.tsx`، `.jsx`، `.vue`، `.svelte`) کے خلاف راستے سے میل کھاتا ہے؛
-2. صفحہ اور اس کے [لے آؤٹس](../layouts/README.md) **پہلے** کو درآمد اور پیش کرتا ہے، اور اس کے بعد ہی یو آر ایل کو `history.pushState` کے ساتھ منتقل کرتا ہے، لہذا ایڈریس بار کبھی بھی ایسا صفحہ نہیں دکھاتا ہے جو ناکام ہوا ہو۔
+2. صفحہ اور اس کے [لے آؤٹس](../layouts/README.md) **پہلے** کو درآمد اور پیش کرتا ہے، اور تب ہی یو آر ایل کو `history.pushState` کے ساتھ منتقل کرتا ہے، اس لیے ایڈریس بار کبھی بھی ایسا صفحہ نہیں دکھاتا ہے جو ناکام ہوا ہو۔
 3. `document` پر ایک `nexy:navigated` واقعہ بھیجتا ہے۔
 4. سب سے اوپر، یا `#fragment` ہدف تک سکرول کرتا ہے۔
 

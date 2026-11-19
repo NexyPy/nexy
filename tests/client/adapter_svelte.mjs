@@ -16,9 +16,10 @@ const APP = `<script lang="ts">
   import Link from './Link.svelte'
   import Image from './Image.svelte'
   import ErrorBoundary from './ErrorBoundary.svelte'
-  import { router, pathname, params, searchParams, useTransition, useMatch } from './client.ts'
+  import { router, pathname, params, searchParams, useTransition, useMatch, useBlocker } from './client.ts'
   const transition = useTransition()
   const matched = useMatch()
+  $effect(() => useBlocker($pathname === '/users/7', 'Leave?'))
   // A page that fails to render once the visitor reaches /users/7: the boundary shows the fallback.
   const boom = (path: string) => { if (path === '/users/7') throw new Error('boom'); return '' }
 </script>
