@@ -4,6 +4,7 @@ from "@/components/footer.nexy" import Footer
 from nexy import Vite
 
 children:prop[NexyElement]
+title:prop[str] = ""
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -11,8 +12,9 @@ children:prop[NexyElement]
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Built with Nexy">
-    <title>Nexy App</title>
+    <meta name="description" content="The sales of Kiln Coffee: revenue, orders and best sellers by day and channel.">
+    <title>{{ title ~ ', ' if title }}Kiln Coffee</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <style>html{background:#fafafa;color-scheme:light}html.dark{background:#0e0e10;color-scheme:dark}</style>
     <script>(function () {
   var root = document.documentElement;
