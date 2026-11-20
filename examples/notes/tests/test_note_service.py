@@ -71,3 +71,15 @@ def test_a_deleted_note_is_gone():
 
 def test_deleting_a_missing_note_says_so():
     assert run(NoteService.remove(999)) is False
+
+
+def test_a_search_for_a_percent_sign_finds_only_that_sign():
+    write("50% off")
+    write("plain")
+    assert titles("%") == ["50% off"]
+
+
+def test_a_search_for_an_underscore_finds_only_that_sign():
+    write("snake_case")
+    write("plain")
+    assert titles("_") == ["snake_case"]
