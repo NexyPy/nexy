@@ -40,7 +40,7 @@ export default function Header() {
             <div class="hidden items-center sm:flex">
               <Link href="/" class={LINK}>Home</Link>
               <Link href="/about" class={LINK}>About</Link>
-              <Link href="/connection" class={LINK}>Connection</Link>
+              <Link href="/todos" class={LINK}>Todos</Link>
             </div>
             <ThemeToggle />
             <span class="hidden sm:block">
@@ -66,7 +66,7 @@ export default function Header() {
       <Sheet id="mobile-menu" open={open()} onClose={close} title="Menu">
         <Link href="/" class={SHEET_LINK} onClick={close}>Home</Link>
         <Link href="/about" class={SHEET_LINK} onClick={close}>About</Link>
-        <Link href="/connection" class={SHEET_LINK} onClick={close}>Connection</Link>
+        <Link href="/todos" class={SHEET_LINK} onClick={close}>Todos</Link>
         <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class={`${SHEET_LINK} justify-between`} onClick={close}>
           Docs
           <Icon path={EXTERNAL} size={16} />
