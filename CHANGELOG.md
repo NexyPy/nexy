@@ -3,6 +3,46 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [2.8.0] - 2026-11-20
+
+### Added
+
+- **The `/connection` page of every web starter talks to Python for real.** It lists a team the
+  server keeps and adds a member with a form, and says how long each round trip took. Without an
+  ORM the team is a list of dictionaries; with one it is the `users` table of the database. The
+  page is linked in the header, the mobile menu and the footer (#487).
+- **The access log names an action** (`ACTION join_team`) instead of its hashed URL
+  (`POST /_nx_6a20e9479679`) (#484).
+
+### Changed
+
+- **`nx new` installs the ORM with the one `uv sync` of the project.** The ORM, its migration tool,
+  the database driver and `python-dotenv` are written to `pyproject.toml`, instead of one `uv add`
+  each after the sync (#488).
+- A new project asks for the release that created it (`nexy>=2.8.0`) (#481).
+- `nx new` names the project it created, not the starter it came from (#485).
+
+### Fixed
+
+- A new project with SQLAlchemy creates its first tables when `nx new` runs outside the project's
+  virtual environment, and `nx dev` writes `@nexy/actions` before Vite starts (#481).
+- With Tortoise ORM 1, a second query in the same process failed with "No TortoiseContext is
+  currently active"; the starter now shares its connections across calls (#487).
+- A new project's `nexyconfig.py` ends with a newline (#482, #483).
+
+### Repository
+
+- `/take` does not give an issue away when someone already opened a pull request for it (#486).
+- The contributor workflows can speak as the Nexy bot, a GitHub App with its own mascot, once it is
+  set up (#489).
+- Dependabot sends each JavaScript major release in its own pull request (#492); actions and Python
+  dependencies updated (#478, #480).
+- Releases go from `develop` straight to `main`: the `staging` branch is gone (#475).
+
+### Thanks
+
+- @bfs2021: the trailing newline of `nexyconfig.py` (#483), a first contribution.
+
 ## [2.7.0] - 2026-11-19
 
 ### Added
