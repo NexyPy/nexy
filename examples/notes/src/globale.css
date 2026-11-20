@@ -16,6 +16,8 @@
   --foreground-second: light-dark(#5c5c5c, #a3a3a3);
   --border: light-dark(#e5e5e5, #262626);
   --border-second: light-dark(#d4d4d4, #3a3a3a);
+  /* What was refused: a field too long, a save that did not reach the server. */
+  --danger: light-dark(#b42318, #ff8a7a);
 }
 
 .dark {
@@ -130,5 +132,75 @@
   .sheet,
   .sheet-scrim {
     animation: none !important;
+  }
+}
+
+/* A note in the Preview tab. The HTML comes from the server, which never lets raw HTML through. */
+@layer components {
+  .prose {
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+  .prose > * + * {
+    margin-top: 0.9em;
+  }
+  .prose h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+  .prose h2 {
+    font-size: 1.35rem;
+    margin-top: 1.6em;
+  }
+  .prose h3 {
+    font-size: 1.1rem;
+    margin-top: 1.4em;
+  }
+  .prose ul {
+    list-style: disc;
+    padding-left: 1.4em;
+  }
+  .prose ol {
+    list-style: decimal;
+    padding-left: 1.4em;
+  }
+  .prose a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose blockquote {
+    border-left: 3px solid var(--signal);
+    padding-left: 1em;
+    color: var(--foreground-second);
+    font-style: italic;
+  }
+  .prose code {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.9em;
+    background: var(--background-second);
+    padding: 0.1em 0.35em;
+  }
+  .prose pre {
+    background: var(--background-second);
+    padding: 1em;
+    overflow-x: auto;
+  }
+  .prose pre code {
+    padding: 0;
+  }
+  .prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+  .prose th,
+  .prose td {
+    border: 1px solid var(--border);
+    padding: 0.4em 0.8em;
+    text-align: left;
+  }
+  .prose hr {
+    border-color: var(--border);
   }
 }
