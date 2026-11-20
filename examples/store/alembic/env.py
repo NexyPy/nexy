@@ -14,7 +14,7 @@ for model in sorted((PROJECT / "src").glob("**/*_model.py")):
     importlib.import_module(".".join(model.relative_to(PROJECT).with_suffix("").parts))
 
 from src.configs.db import engine  # noqa: E402
-from src.models.todo_model import Base  # noqa: E402
+from src.models import Base  # noqa: E402
 
 config = context.config
 if config.config_file_name is not None:
