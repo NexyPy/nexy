@@ -1,7 +1,7 @@
 [project]
-name = "dashboard"
+name = "sales-report"
 version = "0.1.0"
-description = "Kiln Coffee, a sales dashboard: Nexy controllers, React charts, SQLModel and Tailwind"
+description = "Kiln Coffee, a sales report: modular Nexy controllers, a React chart, SQLModel and Tailwind"
 dependencies = [
     "nexy>=2.8.0",
     "sqlmodel",
