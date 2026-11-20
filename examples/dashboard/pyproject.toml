@@ -1,0 +1,14 @@
+[project]
+name = "dashboard"
+version = "0.1.0"
+description = "An example dashboard: invoices kept in SQLite, signed-in pages, a Vue chart"
+dependencies = [
+    "nexy>=2.8.0",
+    "sqlmodel",
+    "python-dotenv",
+    "itsdangerous",
+]
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = ["pytest"]
