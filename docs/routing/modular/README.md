@@ -87,7 +87,8 @@ See [Layouts](../fbr/layouts/README.md).
 
 ## Example
 
-See `examples/Modular/api/minimal/`.
+`nexy new my-app` writes a project with this router: choose modular at its first question,
+the router.
 
 ## Next steps
 

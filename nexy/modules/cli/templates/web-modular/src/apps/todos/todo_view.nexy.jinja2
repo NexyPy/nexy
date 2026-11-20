@@ -1,0 +1,5 @@
+{%- set actions = {} -%}
+{%- for name in ["todos", "add_todo", "toggle_todo", "rename_todo", "delete_todo", "clear_done"] -%}
+{%- set _ = actions.update({name: "{{ __actions_path['" ~ name ~ "'] }}"}) -%}
+{%- endfor -%}
+{% include "todos_page.html.jinja2" %}

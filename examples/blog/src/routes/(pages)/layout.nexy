@@ -1,0 +1,15 @@
+---
+import re
+from html import unescape
+
+from nexy import setMetadata
+
+children:prop[NexyElement]
+# A Markdown page has no Python of its own: its first heading names the tab.
+heading = re.search(r"<h1[^>]*>(.*?)</h1>", str(children), re.DOTALL)
+if heading:
+    setMetadata(title=unescape(re.sub(r"<[^>]+>", "", heading.group(1))))
+---
+<article class="nx-container blog-page blog-prose">
+  {{ children }}
+</article>

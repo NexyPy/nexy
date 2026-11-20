@@ -60,7 +60,10 @@
       "new": "إنشاء مشروع جديد في مجلد جديد",
       "start": "تشغيل خادم الإنتاج",
       "test": "تشغيل الاختبارات (--server / --client)",
-      "skills": "إضافة المهارات وAGENTS.md لوكلاء البرمجة"
+      "skills": "إضافة المهارات وAGENTS.md لوكلاء البرمجة",
+      "info": "Print environment and project versions in one block"
+
+      
     },
     "commands_header": "الأوامر المتاحة:",
     "help": "أداة سطر أوامر Nexy",
@@ -106,7 +109,8 @@
     "updating": "تحديث الخادم",
     "vite_failed": "تعذّر تشغيل Vite.",
     "vite_failed_hint": "راجع مخرجات Vite أعلاه لمعرفة السبب.",
-    "server_failed": "توقف الخادم ({reason}): في انتظار الإصلاح."
+    "server_failed": "توقف الخادم ({reason}): في انتظار الإصلاح.",
+    "port_in_use": "المنفذ {asked} مستخدم، يتم استخدام {port} بدلاً منه."
   },
   "format": {
     "failed": "فشل {count} ملف",
@@ -119,6 +123,20 @@
     "nexy": "جارٍ تنسيق {count} من ملفات .nexy",
     "nexy_done": "تم تنسيق {count} من ملفات .nexy"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "استخدم @ أو ~ أو # أو $ ويمكن أن تتبعها أحرف (مثل ~ أو @app).",
     "already": "المشروع مهيّأ هنا مسبقًا",

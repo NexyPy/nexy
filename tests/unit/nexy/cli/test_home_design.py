@@ -112,6 +112,16 @@ class TestStylesheet:
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
         assert ".dark {" in css and ":root.dark .nx-switch-thumb" in css
 
+    def test_on_a_phone_no_dot_ends_a_line_of_the_strip(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        assert "@media (max-width: 40rem) {\n    .nx-sep-dot {\n      display: none;" in css
+
+    def test_the_pattern_of_the_band_never_runs_under_its_text(self, tmp_path, style):
+        _scaffold(tmp_path, "react", True, style)
+        css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")
+        assert "@media (max-width: 60rem) {\n    .nx-band::before {\n      display: none;" in css
+
     def test_motion_is_switched_off_for_people_who_ask(self, tmp_path, style):
         _scaffold(tmp_path, "react", True, style)
         css = (tmp_path / "src" / "globale.css").read_text(encoding="utf-8")

@@ -60,7 +60,9 @@
       "new": "새 디렉터리에 새 프로젝트 만들기",
       "start": "프로덕션 서버 시작",
       "test": "테스트 실행(--server / --client)",
-      "skills": "코딩 에이전트용 스킬과 AGENTS.md를 추가합니다"
+      "skills": "코딩 에이전트용 스킬과 AGENTS.md를 추가합니다",
+      "info": "Print environment and project versions in one block"
+
     },
     "commands_header": "사용 가능한 명령:",
     "help": "Nexy CLI",
@@ -106,7 +108,8 @@
     "updating": "서버 업데이트",
     "vite_failed": "Vite를 시작하지 못했습니다.",
     "vite_failed_hint": "원인은 위의 Vite 출력을 확인하세요.",
-    "server_failed": "서버가 중지되었습니다({reason}): 수정을 기다리는 중입니다."
+    "server_failed": "서버가 중지되었습니다({reason}): 수정을 기다리는 중입니다.",
+    "port_in_use": "포트 {asked}은(는) 사용 중입니다. {port}을(를) 사용합니다."
   },
   "format": {
     "failed": "파일 {count}개 실패",
@@ -119,6 +122,20 @@
     "nexy": ".nexy 파일 {count}개 포맷 중",
     "nexy_done": ".nexy 파일 {count}개 포맷 완료"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "@, ~, # 또는 $ 뒤에 선택적으로 문자를 붙이세요(예: ~ 또는 @app).",
     "already": "이 위치는 이미 초기화되어 있습니다",

@@ -122,6 +122,17 @@ def _unparse(nodes: Sequence[ast.stmt]) -> str:
     return ast.unparse(ast.Module(body=list(nodes), type_ignores=[]))
 
 
+def _assigned(target: ast.expr) -> list[str]:
+    """The names one assignment target binds: `x`, and each name of `a, (b, *rest)`."""
+    if isinstance(target, ast.Name):
+        return [target.id]
+    if isinstance(target, ast.Starred):
+        return _assigned(target.value)
+    if isinstance(target, ast.Tuple | ast.List):
+        return [name for element in target.elts for name in _assigned(element)]
+    return []
+
+
 def _names_of(node: ast.stmt) -> list[str]:
     """The names a top-level statement makes available to the template."""
     if isinstance(node, ast.ImportFrom):
@@ -129,7 +140,7 @@ def _names_of(node: ast.stmt) -> list[str]:
     if isinstance(node, ast.Import):
         return [alias.asname or alias.name.split(".")[0] for alias in node.names]
     if isinstance(node, ast.Assign):
-        return [target.id for target in node.targets if isinstance(target, ast.Name)]
+        return [name for target in node.targets for name in _assigned(target)]
     if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
         return [node.name]
     return []

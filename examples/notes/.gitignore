@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.env
+.nexy/
+__nexy__/
+nexy.db
+*.db
+*.db-shm
+*.db-wal
+node_modules/
+dist/
+.venv/
+venv/

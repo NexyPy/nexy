@@ -16,8 +16,8 @@ class AboutController:
         return useViews(LAYOUT, context={"children": useViews("src/apps/about_view.nexy")})
 
 
-@Controller("/connection")
-class ConnectionController:
+@Controller("/todos")
+class TodosController:
     async def get(self):
-        page = useViews("src/apps/connection_view.nexy")
+        page = useViews("src/apps/todos/todo_view.nexy")
         return useViews(LAYOUT, context={"children": page})

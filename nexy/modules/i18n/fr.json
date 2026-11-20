@@ -60,7 +60,9 @@
       "new": "Créer un nouveau projet dans un nouveau dossier",
       "start": "Lancer le serveur de production",
       "test": "Lancer les tests (--server / --client)",
-      "skills": "Ajouter les skills et AGENTS.md pour les agents de code"
+      "skills": "Ajouter les skills et AGENTS.md pour les agents de code",
+      "info": "Print environment and project versions in one block"
+    
     },
     "commands_header": "Commandes disponibles :",
     "help": "CLI de Nexy",
@@ -106,7 +108,8 @@
     "updating": "mise à jour du serveur",
     "vite_failed": "Vite n'a pas pu démarrer.",
     "vite_failed_hint": "Consultez la sortie de Vite ci-dessus pour en connaître la cause.",
-    "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction."
+    "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction.",
+    "port_in_use": "Le port {asked} est pris, utilisation du port {port}."
   },
   "format": {
     "failed": "{count} fichier(s) en échec",
@@ -119,6 +122,20 @@
     "nexy": "Formatage de {count} fichier(s) .nexy",
     "nexy_done": "{count} fichier(s) .nexy formaté(s)"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "Utilisez @, ~, # ou $, suivi éventuellement de lettres (par exemple ~ ou @app).",
     "already": "Le projet est déjà initialisé ici",
