@@ -6,8 +6,6 @@
       </a>
       <div class="nx-nav-links">
         <a href="/" class="nx-nav-link">Home</a>
-        <a href="/about" class="nx-nav-link">About</a>
-        <a href="/todos" class="nx-nav-link">Todos</a>
         <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="nx-nav-link">Docs</a>
       </div>
     </div>
@@ -45,8 +43,6 @@
     </button>
     <nav class="nx-sheet-links" aria-label="Pages">
       <a href="/" class="nx-sheet-link">Home</a>
-      <a href="/about" class="nx-sheet-link">About</a>
-      <a href="/todos" class="nx-sheet-link">Todos</a>
       <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="nx-sheet-link">Docs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg></a>
     </nav>
   </div>

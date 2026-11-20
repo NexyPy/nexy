@@ -1,15 +1,8 @@
 from nexy.decorators import Module
-from .app_controller import (
-    AboutController,
-    AppController,
-    TodosController,
-)
+
+from .app_controller import AppController
 
 
 @Module()
 class AppModule:
-    controllers = [
-        AppController,
-        AboutController,
-        TodosController,
-    ]
+    controllers = [AppController]
