@@ -101,7 +101,7 @@ uv pip install -e . --group dev
 - **MDX is compiled by Vite only.** Python writes the thin wrapper module of an `.mdx` route and
   nothing else: no MDX parsing or rendering in `nexy/modules/compiler/` or `nexy/template.py`.
 - There is no "Built with Nexy" badge any more (`useBadge` is gone). The dev toolbar stays.
-- `nexyconfig.py` is the user-facing config of a **user project** (loaded at runtime from the project root by `nexy/core/config.py`; runnable example in `examples/FBR/web/basics/minimal/nexyconfig.py`). The framework repo itself has none.
+- `nexyconfig.py` is the user-facing config of a **user project** (loaded at runtime from the project root by `nexy/core/config.py`; `nexy new` writes a runnable one). The framework repo itself has none.
 - `.nexy` files use `---` frontmatter delimiter for Python logic.
 
 ## Conventions
