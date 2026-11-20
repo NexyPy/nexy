@@ -1,13 +1,17 @@
 {% if orm == "SQLModel" %}
-from sqlmodel import SQLModel, Field
+from sqlmodel import Field, SQLModel
 
-class UserModel(SQLModel, table=True):
+
+class TodoModel(SQLModel, table=True):
+    __tablename__ = "todos"
+
     id: int | None = Field(default=None, primary_key=True)
-    name: str
-    email: str = Field(unique=True)
+    title: str = Field(max_length=200)
+    done: bool = False
 {% elif orm == "SQLAlchemy" %}
-from sqlalchemy import Column, Integer, MetaData, String
+from sqlalchemy import Boolean, Column, Integer, MetaData, String
 from sqlalchemy.orm import DeclarativeBase
+
 
 class Base(DeclarativeBase):
     # Migrations can only drop or rebuild a constraint that has a name: SQLite batch mode refuses
@@ -21,17 +25,23 @@ class Base(DeclarativeBase):
         }
     )
 
-class UserModel(Base):
-    __tablename__ = "users"
+
+class TodoModel(Base):
+    __tablename__ = "todos"
+
     id = Column(Integer, primary_key=True)
-    name = Column(String(100))
-    email = Column(String(100), unique=True)
+    title = Column(String(200), nullable=False)
+    done = Column(Boolean, nullable=False, default=False)
 {% elif orm == "Tortoise-ORM" %}
 from tortoise import fields
 from tortoise.models import Model
 
-class UserModel(Model):
+
+class TodoModel(Model):
     id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=100)
-    email = fields.CharField(max_length=100, unique=True)
+    title = fields.CharField(max_length=200)
+    done = fields.BooleanField(default=False)
+
+    class Meta:
+        table = "todos"
 {% endif %}
