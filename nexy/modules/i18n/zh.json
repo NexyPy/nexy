@@ -241,7 +241,8 @@
     "local": "本地：",
     "network": "网络：",
     "ready": "就绪：",
-    "stop": "按 Ctrl+C 停止"
+    "stop": "按 Ctrl+C 停止",
+    "missing_table": "缺少一个表：请运行 nexy migrate --upgrade。"
   },
   "start": {
     "broken": "{count} 个路由文件加载失败：服务器未启动。",

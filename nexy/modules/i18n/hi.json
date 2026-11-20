@@ -241,7 +241,8 @@
     "local": "लोकल:",
     "network": "नेटवर्क:",
     "ready": "तैयार:",
-    "stop": "रोकने के लिए Ctrl+C दबाएँ"
+    "stop": "रोकने के लिए Ctrl+C दबाएँ",
+    "missing_table": "एक टेबल नहीं है: nexy migrate --upgrade चलाएँ।"
   },
   "start": {
     "broken": "{count} रूट फ़ाइल लोड नहीं हो सकीं: सर्वर शुरू नहीं किया गया।",

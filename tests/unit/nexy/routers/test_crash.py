@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import sqlite3
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from nexy.helpers.server.dev_mode import DEV_ENV_VAR
-from nexy.modules.routers.crash import handle_crash, inspect_crash
+from nexy.modules.routers.crash import handle_crash, inspect_crash, missing_table
 
 SECRET = "database password is hunter2"
 
@@ -23,6 +25,10 @@ def _app() -> TestClient:
     @app.get("/markup")
     def markup() -> None:
         raise ValueError("<script>alert(1)</script>")
+
+    @app.get("/no-table")
+    def no_table() -> None:
+        raise sqlite3.OperationalError("no such table: products")
 
     return TestClient(app, raise_server_exceptions=False)
 
@@ -124,3 +130,31 @@ def test_a_handler_that_fails_still_answers(monkeypatch):
 
     monkeypatch.setattr("nexy.modules.routers.crash.inspect_crash", broken)
     assert _app().get("/boom", headers={"accept": "text/html"}).status_code == 500
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "(sqlite3.OperationalError) no such table: products",
+        '(psycopg.errors.UndefinedTable) relation "products" does not exist',
+        "(pymysql.err.ProgrammingError) (1146, \"Table 'shop.products' doesn't exist\")",
+    ],
+)
+def test_missing_table_knows_the_words_of_each_database(message):
+    assert missing_table(message)
+
+
+def test_missing_table_ignores_other_errors():
+    assert not missing_table("UNIQUE constraint failed: products.slug")
+
+
+@pytest.mark.usefixtures("dev")
+def test_a_missing_table_points_at_the_migrations(capsys):
+    _app().get("/no-table", headers={"accept": "application/json"})
+    assert "nexy migrate --upgrade" in capsys.readouterr().out
+
+
+@pytest.mark.usefixtures("dev")
+def test_another_error_says_nothing_about_migrations(capsys):
+    _app().get("/boom", headers={"accept": "application/json"})
+    assert "nexy migrate" not in capsys.readouterr().out

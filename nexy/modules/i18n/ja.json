@@ -241,7 +241,8 @@
     "local": "ローカル:",
     "network": "ネットワーク:",
     "ready": "準備完了:",
-    "stop": "Ctrl+C で停止"
+    "stop": "Ctrl+C で停止",
+    "missing_table": "テーブルがありません：nexy migrate --upgrade を実行してください。"
   },
   "start": {
     "broken": "{count} 個のルートファイルを読み込めませんでした。サーバーは起動していません。",
