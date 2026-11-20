@@ -190,8 +190,8 @@ onMounted(() => run(server.load()));
 {%- set call_dd = '{last' ~ g ~ '?.call ?? "none"}' -%}{%- set took_dd = "{took(last" ~ g ~ ")}" -%}
 {%- set typed = "onChange" if react else "onInput" -%}
 {% if solid %}import { For, Show, createSignal, onMount } from "solid-js";
-{% elif react %}import { useEffect, useState } from "react";
-{% else %}import { useEffect, useState } from "preact/hooks";
+{% elif react %}import { useEffect, useRef, useState } from "react";
+{% else %}import { useEffect, useRef, useState } from "preact/hooks";
 {% endif %}import { EMPTY, FILTERS, LOADING, count, server, shown, took } from "../lib/todos";
 import type { Answer, Filter, Todo } from "../lib/todos";
 
@@ -213,6 +213,9 @@ export default function Todos() {
   const [note, setNote] = useState("");
   const [last, setLast] = useState<Answer | null>(null);
   const [pending, setPending] = useState(false);
+  // The task whose field is open, read when the field closes: a field taken out of the page can
+  // still send blur after Enter or Escape closed it, and the state it sees is the old one.
+  const open = useRef<number | null>(null);
   const visible = shown(items, filter);
 {% endif %}
   async function run(call: Promise<Answer>): Promise<Answer> {
@@ -233,19 +236,30 @@ export default function Todos() {
   }
 
   function edit(todo: Todo) {
+{%- if not solid %}
+    open.current = todo.id;
+{%- endif %}
     setEditing(todo.id);
     setDraft(todo.title);
   }
 
-  async function save(todo: Todo) {
-    if (editing{{ g }} !== todo.id) return;
+  // Closes the field; true when it was still open on this task.
+  function close(todo: Todo): boolean {
+    const wasOpen = {{ "editing()" if solid else "open.current" }} === todo.id;
+{%- if not solid %}
+    open.current = null;
+{%- endif %}
     setEditing(null);
-    if (draft{{ g }}.trim() !== todo.title) await run(server.rename(todo.id, draft{{ g }}));
+    return wasOpen;
   }
 
-  function key(event: { key: string }, todo: Todo) {
-    if (event.key === "Enter") save(todo);
-    if (event.key === "Escape") setEditing(null);
+  async function save(todo: Todo, title: string) {
+    if (close(todo) && title.trim() !== todo.title) await run(server.rename(todo.id, title));
+  }
+
+  function key(event: { key: string; currentTarget: HTMLInputElement }, todo: Todo) {
+    if (event.key === "Enter") save(todo, event.currentTarget.value);
+    if (event.key === "Escape") close(todo);
   }
 
 {% if solid %}  onMount(() => run(server.load()));
@@ -258,11 +272,11 @@ export default function Todos() {
   <input type="checkbox"{{ k("check") }} checked={todo.done} aria-label={`Done: ${todo.title}`} onChange={() => run(server.toggle(todo.id))} />
 {%- if solid %}
   <Show when={editing() === todo.id} fallback={<span class={todo.done ? "{{ c.task_done }}" : "{{ c.task }}"} onDblClick={() => edit(todo)}>{todo.title}</span>}>
-    <input value={draft()} ref={(element) => queueMicrotask(() => element.focus())}{{ k("edit") }} aria-label="Rename the task" onInput={(event: Typed) => setDraft(event.currentTarget.value)} onKeyDown={(event) => key(event, todo)} onBlur={() => save(todo)} />
+    <input value={draft()} ref={(element) => queueMicrotask(() => element.focus())}{{ k("edit") }} aria-label="Rename the task" onInput={(event: Typed) => setDraft(event.currentTarget.value)} onKeyDown={(event) => key(event, todo)} onBlur={(event) => save(todo, event.currentTarget.value)} />
   </Show>
 {%- else %}
   {editing === todo.id ? (
-    <input value={draft} {% if react %}autoFocus{% else %}ref={(element) => element?.focus()}{% endif %}{{ k("edit") }} aria-label="Rename the task" {{ typed }}={(event: Typed) => setDraft(event.currentTarget.value)} onKeyDown={(event) => key(event, todo)} onBlur={() => save(todo)} />
+    <input value={draft} {% if react %}autoFocus{% else %}ref={(element) => element?.focus()}{% endif %}{{ k("edit") }} aria-label="Rename the task" {{ typed }}={(event: Typed) => setDraft(event.currentTarget.value)} onKeyDown={(event) => key(event, todo)} onBlur={(event) => save(todo, event.currentTarget.value)} />
   ) : (
     <span {{ cls }}={todo.done ? "{{ c.task_done }}" : "{{ c.task }}"} onDoubleClick={() => edit(todo)}>{todo.title}</span>
   )}

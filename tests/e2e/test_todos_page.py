@@ -141,6 +141,9 @@ def test_escape_keeps_the_old_title(starter, page: Page):
     _task(page, "Read a book").get_by_role("button", name="Rename").click()
     page.get_by_label("Rename the task").fill("Something else")
     page.get_by_label("Rename the task").press("Escape")
+    # The answer to a later change is the whole list: a title saved by mistake would be in it.
+    _add(page, "Close the window")
+    _task(page, "Close the window").wait_for()
     expect(_task(page, "Read a book")).to_be_visible()
 
 
