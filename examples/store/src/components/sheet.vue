@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 
+import Brand from "@/components/brand.vue";
 import Icon from "@/components/icon.vue";
 
 // `title` is visible, and also names the dialog for a screen reader.
@@ -83,7 +84,7 @@ onBeforeUnmount(release);
       @keydown="onKey"
     >
       <div class="flex items-center gap-3 border-b border-paper/10 py-4 pl-5 pr-16">
-        <img src="/nexy.svg" alt="" class="h-5 invert" />
+        <Brand />
         <h2 :id="`${id}-title`" class="font-mono text-xs uppercase tracking-[0.04em] text-paper/60">{{ title }}</h2>
       </div>
       <button
