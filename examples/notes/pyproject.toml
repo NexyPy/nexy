@@ -9,3 +9,8 @@ dependencies = [
     "python-dotenv",
 ]
 requires-python = ">=3.12"
+
+[tool.tortoise]
+tortoise_orm = "src.configs.db.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
