@@ -1,0 +1,14 @@
+[project]
+name = "store"
+version = "0.1.0"
+description = "An example shop: a catalog, a cart kept in a cookie, a checkout that saves the order"
+dependencies = [
+    "nexy>=2.8.0",
+    "sqlmodel",
+    "python-dotenv",
+    "itsdangerous",
+]
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = ["pytest"]
