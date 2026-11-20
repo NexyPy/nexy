@@ -12,6 +12,8 @@
   --paper: #fafafa;
   /* The one colour: a green that leans towards sky blue. Used for status, never for text blocks. */
   --signal: light-dark(#0a9d8f, #3fe0c8);
+  /* What the shop refused: a field to fix, a product gone. */
+  --danger: light-dark(#b42318, #ff8a7a);
   --background: light-dark(#ffffff, #0a0a0a);
   --background-second: light-dark(#f5f5f5, #141414);
   --foreground: light-dark(#0a0a0a, #fafafa);
@@ -35,6 +37,7 @@
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-signal: var(--signal);
+  --color-danger: var(--danger);
 
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
