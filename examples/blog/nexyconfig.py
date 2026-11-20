@@ -1,9 +1,10 @@
 from nexy.core.models import NexyConfigModel
 
 
-
 class NexyConfig(NexyConfigModel):
-    useTitle = "Nexy Web (FBR)"
+    useTitle = "Plain Text"
     useAliases = {"@": "src"}
     useVite = True
-    useDevTools = True  # the toolbar of `nexy dev` on every page; False removes it
+    useDevTools = True  # the toolbar of `nx dev` on every page; False removes it
+    # Where the blog is published: the links of the feed, then /sitemap.xml and /robots.txt.
+    useSiteUrl = "https://plaintext.example"
