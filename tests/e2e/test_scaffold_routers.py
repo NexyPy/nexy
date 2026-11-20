@@ -28,7 +28,7 @@ from fastapi.testclient import TestClient
 from nexy.modules.routers.app import AppServer
 out = {"failed": list(build.failed), "load_error": Config.get_load_error(), "pages": {}}
 with TestClient(AppServer().run()) as client:
-    for path in ("/", "/about", "/connection", "/ping", "/definitely-not-a-route"):
+    for path in ("/", "/about", "/todos", "/ping", "/definitely-not-a-route"):
         r = client.get(path)
         out["pages"][path] = [r.status_code, r.headers.get("content-type", ""), r.text]
 sys.stdout.write("@@" + json.dumps(out) + "@@")
@@ -104,20 +104,20 @@ STARTER_TEXT = {
     "web-fbr": {
         "/about": "One project for the whole web app",
         "/": "Your app is running",
-        "/connection": "Add to the team",
+        "/todos": "What needs to be done?",
     },
     "web-modular": {
         "/about": "open source",
         "/": "Python framework",
-        "/connection": "Add to the team",
+        "/todos": "What needs to be done?",
     },
 }
 
 
 @pytest.mark.parametrize(("template", "framework", "use_csr"), WEB)
-@pytest.mark.parametrize("path", ["/about", "/", "/connection"])
+@pytest.mark.parametrize("path", ["/about", "/", "/todos"])
 def test_web_template_has_the_starter_pages(tmp_path, template, framework, use_csr, path):
-    """Every starter links Home, About and Connection, so all three exist, in every mode."""
+    """Every starter links Home, About and Todos, so all three exist, in every mode."""
     marker = STARTER_TEXT[template][path]
     result = _run(tmp_path, template, framework, use_csr)
     status, content_type, html = result["pages"][path]

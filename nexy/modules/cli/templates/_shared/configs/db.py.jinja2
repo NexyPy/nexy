@@ -1,3 +1,4 @@
+{%- set starter_models = ("src.models." if FBRouter else "src.apps.") ~ ("todo_model" if project_type == "web" and FBRouter else "todos.todo_model" if project_type == "web" else "user_model" if FBRouter else "users.user_model") -%}
 {% if orm == "SQLModel" %}
 from sqlmodel import create_engine
 from dotenv import load_dotenv
@@ -25,12 +26,12 @@ from tortoise import Tortoise
 
 load_dotenv()
 
-# Every module that holds models goes in this list: add yours next to the user model.
+# Every module that holds models goes in this list: add yours next to the one of the starter.
 TORTOISE_ORM = {
     "connections": {"default": os.getenv("DATABASE_URL", "sqlite://dev.db")},
     "apps": {
         "models": {
-            "models": ["{% if FBRouter %}src.models.user_model{% else %}src.apps.users.user_model{% endif %}", "aerich.models"],
+            "models": ["{{ starter_models }}", "aerich.models"],
             "default_connection": "default",
         }
     },

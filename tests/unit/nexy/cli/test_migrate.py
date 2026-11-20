@@ -268,6 +268,12 @@ class TestAlembicEnv:
         (tmp_path / "src" / "models" / "note_model.py").write_text("")
         assert alembic.models_module(tmp_path) == "src.models.note_model"
 
+    def test_a_web_project_imports_the_todo_model_of_its_starter(self, tmp_path):
+        (tmp_path / "src" / "models").mkdir(parents=True)
+        (tmp_path / "src" / "models" / "label_model.py").write_text("")
+        (tmp_path / "src" / "models" / "todo_model.py").write_text("")
+        assert alembic.models_module(tmp_path) == "src.models.todo_model"
+
     def test_a_modular_project_without_users_imports_its_feature_model(self, tmp_path):
         (tmp_path / "src" / "apps" / "notes").mkdir(parents=True)
         (tmp_path / "src" / "apps" / "notes" / "note_model.py").write_text("")
