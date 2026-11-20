@@ -77,7 +77,7 @@ Voir [Mise en page](../fbr/layouts/README.md).
 
 ## Exemple
 
-Voir `examples/Modular/api/minimal/`.
+`nexy new my-app` écrit un projet avec ce routeur : choisissez modulaire dès sa première question, le routeur.
 
 ## Prochaines étapes
 

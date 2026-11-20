@@ -1,8 +1,0 @@
-
-from nexy.decorators import Module
-from .user_controller import UserController
-
-
-@Module(prefix="/users")
-class UsersModule:
-    controllers = [UserController]
