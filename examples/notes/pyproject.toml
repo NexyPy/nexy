@@ -1,14 +1,37 @@
 [project]
 name = "notes"
 version = "0.1.0"
-description = "A Nexy web application with svelte components"
+description = "Margin, a notebook in Svelte whose notes live in SQLite through Tortoise and Nexy actions"
 dependencies = [
     "nexy>=2.8.0",
     "tortoise-orm",
     "aerich",
     "python-dotenv",
+    "markdown-it-py>=3.0.0",
 ]
 requires-python = ">=3.12"
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "httpx>=0.28.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.per-file-ignores]
+# Nexy reads its settings as attributes of the class, dicts included.
+"nexyconfig.py" = ["RUF012"]
+# The database URL is set before the application is imported.
+"tests/conftest.py" = ["E402"]
 
 [tool.tortoise]
 tortoise_orm = "src.configs.db.TORTOISE_ORM"
