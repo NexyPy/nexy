@@ -5,6 +5,8 @@ __pycache__/
 __nexy__/
 nexy.db
 *.db
+*.db-shm
+*.db-wal
 node_modules/
 dist/
 .venv/
