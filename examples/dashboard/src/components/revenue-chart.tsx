@@ -143,8 +143,9 @@ function Plot({ points, measure }: { points: Point[]; measure: Measure }) {
   );
 }
 
-export function RevenueChart({ days, channel }: { days: string; channel: string }) {
-  const query = new URLSearchParams(channel ? { days, channel } : { days });
+// The view passes `days` as a number and `channel` as text: they arrive as JSON props.
+export function RevenueChart({ days, channel }: { days: number; channel: string }) {
+  const query = new URLSearchParams(channel ? { days: String(days), channel } : { days: String(days) });
   const { data, error, pending, refresh } = useFetch<Series>(`/api/revenue/?${query}`);
   const [measure, setMeasure] = useState<Measure>("revenue");
   const points = data?.series ?? [];
