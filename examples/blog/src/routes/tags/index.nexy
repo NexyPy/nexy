@@ -1,0 +1,16 @@
+---
+from "@/components/Container.nexy" import Container
+from src.blog.posts import tags
+
+counted = tags()
+---
+<section class="pb-20 pt-36">
+  <Container class_name="max-w-[44rem]">
+    <h1 class="text-5xl leading-[1.05]">Tags</h1>
+    <ul class="mt-10 flex flex-wrap gap-3" aria-label="Tags">
+      {% for tag, count in counted %}
+      <li><a href="/tags/{{ tag }}" class="inline-flex gap-2 border border-border px-3 py-2 font-mono text-sm hover:border-foreground">{{ tag }} <span class="text-foreground-second">{{ count }}</span></a></li>
+      {% endfor %}
+    </ul>
+  </Container>
+</section>
