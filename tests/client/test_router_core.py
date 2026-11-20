@@ -40,6 +40,12 @@ class TestViewTransition:
         assert seen["viewTransition"]["calmCalls"] == []
         assert seen["viewTransition"]["calmRendered"] == ["/src/routes/about.tsx"]
 
+    def test_a_skipped_transition_leaves_no_unhandled_rejection(self, seen):
+        assert seen["skippedTransition"]["unhandled"] == []
+
+    def test_a_skipped_transition_still_renders_the_page(self, seen):
+        assert seen["skippedTransition"]["rendered"] == ["/src/routes/about.tsx"]
+
 
 class TestNavigation:
     def test_it_renders_then_moves_the_url_and_announces_itself(self, seen):
