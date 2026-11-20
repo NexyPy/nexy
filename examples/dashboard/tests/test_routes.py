@@ -56,3 +56,19 @@ def test_a_page_that_is_not_a_number_shows_the_first(client):
 
 def test_no_order_shows_an_empty_table(client, empty):
     assert "No order yet." in client.get("/orders/").text
+
+
+def test_a_superscript_period_still_answers_the_overview(client):
+    assert client.get("/?days=²").status_code == 200
+
+
+def test_a_superscript_period_still_answers_the_api(client):
+    assert client.get("/api/revenue/?days=²").status_code == 200
+
+
+def test_a_superscript_page_still_answers_the_orders(client):
+    assert client.get("/orders/?page=²").status_code == 200
+
+
+def test_a_page_of_5000_digits_still_answers_the_orders(client):
+    assert client.get("/orders/?page=" + "9" * 5000).status_code == 200

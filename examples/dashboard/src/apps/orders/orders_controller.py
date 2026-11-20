@@ -16,7 +16,8 @@ class OrdersController:
         self.orders = orders
 
     def get(self, channel: str = "", page: str = "1"):
-        number = int(page) if page.isdigit() else 1
+        # Six ASCII digits at most: int() refuses "\u00b2", and a longer number is past the last page.
+        number = int(page) if page.isascii() and page.isdigit() and len(page) <= 6 else 1
         shown = orders_page(self.orders.page(channel, number), channel)
         view = useViews(VIEW, context={"page": shown})
         return useViews(LAYOUT, context={"children": view, "title": "Orders"})
