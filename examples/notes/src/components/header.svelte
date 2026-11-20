@@ -1,70 +1,24 @@
 <script lang="ts">
   import Link from "@nexy/Link.svelte";
 
-  import Button from "@/components/button.svelte";
-  import Icon from "@/components/icon.svelte";
   import LinePattern from "@/components/line-pattern.svelte";
-  import Sheet from "@/components/sheet.svelte";
+  import Brand from "@/components/brand.svelte";
+  import NewNote from "@/components/new-note.svelte";
   import ThemeToggle from "@/components/theme-toggle.svelte";
-
-  const LINK =
-    "px-3.5 py-2 font-mono text-xs uppercase tracking-[0.04em] transition-opacity hover:opacity-60 aria-[current=page]:underline aria-[current=page]:underline-offset-4";
-  const MENU = "M4 7h16M4 12h16M4 17h16";
-  const EXTERNAL = "M7 17L17 7M8 7h9v9";
-  const SHEET_LINK =
-    "flex min-h-11 items-center gap-2 px-3 text-base transition-colors hover:bg-paper/5 aria-[current=page]:bg-paper/10 aria-[current=page]:font-medium";
-  const BOOK = "M2 4h6a4 4 0 014 4v12a3 3 0 00-3-3H2zM22 4h-6a4 4 0 00-4 4v12a3 3 0 013-3h7z";
-
-  let open = $state(false);
-  let opener = $state<HTMLButtonElement | null>(null);
-  // Closing gives the focus back to the button that opened the menu.
-  function close() {
-    open = false;
-    opener?.focus();
-  }
 </script>
 
-<header class="fixed inset-x-0 top-0 z-20 py-4 [view-transition-name:nx-header]">
+<header class="shrink-0 pt-4 [view-transition-name:nx-header]">
   <nav
-    class="relative mx-auto flex w-[72rem] max-w-[calc(100%-2rem)] items-center justify-between border border-paper/10 bg-ink/85 px-5 py-3 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.4)] backdrop-blur-[4px]"
+    class="relative mx-auto flex w-[72rem] max-w-[calc(100%-2rem)] items-center justify-between border border-paper/10 bg-ink px-5 py-3 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.4)]"
     aria-label="Main"
   >
     <LinePattern side="right" />
-    <a href="/" aria-label="Nexy, home" onclick={() => (open = false)} class="relative">
-      <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
-    </a>
-
-    <div class="relative flex items-center gap-2">
-      <div class="hidden items-center sm:flex">
-        <Link href="/" class={LINK}>Home</Link>
-        <Link href="/about" class={LINK}>About</Link>
-        <Link href="/todos" class={LINK}>Todos</Link>
-      </div>
+    <Link href="/" aria-label="Margin, all notes" class="relative">
+      <Brand />
+    </Link>
+    <div class="relative flex items-center gap-3">
       <ThemeToggle />
-      <span class="hidden sm:block">
-        <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" size="sm" icon={BOOK}>Docs</Button>
-      </span>
-      <button
-        bind:this={opener}
-        type="button"
-        aria-label="Open menu"
-        aria-expanded={open}
-        aria-controls="mobile-menu"
-        onclick={() => (open = true)}
-        class="-my-1.5 -mr-2 ml-1 grid size-11 place-items-center sm:hidden"
-      >
-        <Icon path={MENU} />
-      </button>
+      <NewNote tone="on-ink" />
     </div>
   </nav>
 </header>
-
-<Sheet id="mobile-menu" {open} title="Menu" onclose={close}>
-  <Link href="/" class={SHEET_LINK} onclick={close}>Home</Link>
-  <Link href="/about" class={SHEET_LINK} onclick={close}>About</Link>
-  <Link href="/todos" class={SHEET_LINK} onclick={close}>Todos</Link>
-  <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="{SHEET_LINK} justify-between" onclick={close}>
-    Docs
-    <Icon path={EXTERNAL} size={16} />
-  </a>
-</Sheet>
