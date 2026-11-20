@@ -5,7 +5,7 @@ from nexy.frontend import svelte
 class NexyConfig(NexyConfigModel):
     useFF = svelte()
     useCSR = True
-    useTitle = "Nexy Web (FBR + Svelte)"
+    useTitle = "Margin"
     useAliases = {"@": "src"}
     useVite = True
     useDevTools = True  # the toolbar of `nexy dev` on every page; False removes it
