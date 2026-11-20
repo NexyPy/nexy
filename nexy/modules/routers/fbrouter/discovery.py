@@ -33,6 +33,12 @@ class RouteDiscovery:
             valid.append(f)
         return sorted(valid)
 
+    def layouts(self) -> list[Path]:
+        """The `.nexy` layouts of the router; client routing has none, its views are components."""
+        if self.config.useCSR:
+            return []
+        return sorted(self.router_path.glob("**/layout.nexy"))
+
     def _warn_csr_ignored(self, path: Path) -> None:
         rel = path.relative_to(self.router_path)
         console.print(

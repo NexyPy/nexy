@@ -63,3 +63,16 @@ class TestDiscoveryCsrWarning:
         Config()
         RouteDiscovery().scan()
         assert "useCSR=True" in capsys.readouterr().out
+
+
+class TestLayouts:
+    def test_the_nexy_layouts_of_the_router_are_listed(self, nexy_project, tmp_path):
+        nexy_project()
+        _write(tmp_path, "layout.nexy", "<html></html>")
+        _write(tmp_path, "blog/layout.nexy", "<div></div>")
+        assert [path.parent.name for path in RouteDiscovery().layouts()] == ["blog", "routes"]
+
+    def test_client_routing_lists_no_nexy_layout(self, nexy_project, tmp_path):
+        nexy_project("useCSR = True\nuseFF = react()", imports=_REACT)
+        _write(tmp_path, "layout.nexy", "<html></html>")
+        assert RouteDiscovery().layouts() == []
