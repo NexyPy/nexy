@@ -124,6 +124,18 @@ class TestPieces:
         names = logic_module.template_names("from a import *\n_x = 1\n", [])
         assert names == []
 
+    def test_names_assigned_by_unpacking_reach_the_template(self):
+        names = logic_module.template_names("newer, older = pair()\n", [])
+        assert names == ["newer", "older"]
+
+    def test_names_unpacked_in_brackets_and_starred_reach_the_template(self):
+        names = logic_module.template_names("[a, (b, *rest)] = items\n", [])
+        assert names == ["a", "b", "rest"]
+
+    def test_an_attribute_or_an_item_set_binds_no_name(self):
+        names = logic_module.template_names("box.size = 1\nitems[0] = 2\n", [])
+        assert names == []
+
     def test_a_prop_that_is_also_defined_is_listed_once(self):
         names = logic_module.template_names("name = 1\n", [NexyProp("name", "str", "''")])
         assert names == ["name"]
