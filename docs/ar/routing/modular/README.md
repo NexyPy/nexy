@@ -77,7 +77,7 @@ class AppController:
 
 ## مثال
 
-انظر `examples/Modular/api/minimal/`.
+`nexy new my-app` يكتب مشروعًا باستخدام جهاز التوجيه هذا: اختر نمطيًا عند سؤاله الأول، جهاز التوجيه.
 
 ## الخطوات التالية
 

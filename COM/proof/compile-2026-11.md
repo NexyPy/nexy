@@ -12,10 +12,11 @@ loop compiles in 1.6 ms (median of 25 runs, Ryzen 5 4500U).**
 
 ## The command
 
-From a clean clone, in the example that has no frontend framework at all:
+From a clean clone, in the example that has no frontend framework at all. The example was removed
+from `examples/` on 2026-11-20; git still has it at commit `0a70de44f8`:
 
 ```bash
-cd examples/FBR/web/basics/none
+git worktree add ../proof 0a70de44f8 && cd ../proof/examples/FBR/web/basics/none
 uv run python - <<'PY'
 import statistics, time
 from nexy.modules.compiler import Compiler

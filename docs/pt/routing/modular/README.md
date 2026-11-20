@@ -77,7 +77,7 @@ Consulte [Layouts](../fbr/layouts/README.md).
 
 ## Exemplo
 
-Veja `examples/Modular/api/minimal/`.
+`nexy new my-app` escreve um projeto com este roteador: escolha modular em sua primeira pergunta, o roteador.
 
 ## Próximas etapas
 
