@@ -1,0 +1,27 @@
+---
+from nexy import notFound
+from src.store.catalog import money
+from src.store.checkout import receipt
+from src.store.session import placed
+
+number: prop[str]
+
+found = receipt(number) if placed(number) else None
+if found is None:
+    notFound()
+order = found[0]
+lines = found[1]
+---
+<section class="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10 sm:px-6">
+  <p class="font-mono text-sm text-foreground-second">Order {{ order.number }}</p>
+  <h1 class="font-display text-4xl">Thank you, {{ order.name }}.</h1>
+  <p class="text-lg text-foreground-second">Your order is saved. In a real shop a confirmation would now go to {{ order.email }}.</p>
+  <ul class="border-y border-border">
+    {% for line in lines %}
+    <li class="flex justify-between gap-4 border-b border-border py-3 last:border-b-0"><span>{{ line.quantity }} x {{ line.name }}</span><span class="tabular-nums">{{ money(line.price_cents * line.quantity) }}</span></li>
+    {% endfor %}
+  </ul>
+  <p class="flex justify-between font-medium"><span>Total, shipping included</span><span class="tabular-nums">{{ money(order.subtotal_cents + order.shipping_cents) }}</span></p>
+  <p class="text-foreground-second">Ships to {{ order.address }}, {{ order.postal_code }} {{ order.city }}.</p>
+  <a href="/" class="flex min-h-11 w-fit items-center border border-border-second px-5 hover:border-foreground">Back to the shop</a>
+</section>

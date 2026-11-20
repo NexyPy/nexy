@@ -1,0 +1,51 @@
+---
+from nexy import redirect, useSession
+from src.store.cart import summary
+from src.store.catalog import money
+from src.store.session import cart
+
+order = summary(cart())
+if not order.lines:
+    redirect("/cart")
+sent = useSession().pop("checkout", {})
+values = sent.get("values", {})
+errors = sent.get("errors", {})
+fields = [
+    ("name", "Full name", "text", "name"),
+    ("email", "Email", "email", "email"),
+    ("address", "Address", "text", "street-address"),
+    ("city", "City", "text", "address-level2"),
+    ("postal_code", "Postal code", "text", "postal-code"),
+]
+---
+<section class="mx-auto grid w-full max-w-[72rem] gap-10 px-4 py-10 sm:px-6 md:grid-cols-[1fr_20rem]">
+  <div class="flex flex-col gap-6">
+    <h1 class="font-display text-4xl">Checkout</h1>
+    {% if errors %}
+    <p class="border border-red-500/50 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">Some fields need a change before the order can be placed.</p>
+    {% endif %}
+    <form method="post" action="{{ __actions_path['place_order'] }}" class="flex flex-col gap-4" novalidate>
+      {% for name, label, kind, autocomplete in fields %}
+      <div class="flex flex-col gap-1.5">
+        <label for="{{ name }}" class="text-sm">{{ label }}</label>
+        <input id="{{ name }}" name="{{ name }}" type="{{ kind }}" autocomplete="{{ autocomplete }}" value="{{ values.get(name, '') }}" required maxlength="200"
+          class="min-h-11 border bg-background px-3 text-base outline-none focus:border-foreground {{ 'border-red-500' if name in errors else 'border-border-second' }}"
+          {% if name in errors %}aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}>
+        {% if name in errors %}<p id="{{ name }}-error" class="text-sm text-red-600 dark:text-red-400">{{ errors[name] }}</p>{% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="mt-2 min-h-11 bg-foreground px-6 font-medium text-background hover:opacity-85">Place the order, {{ money(order.total) }}</button>
+      <p class="text-sm text-foreground-second">This is an example shop: nothing is charged and nothing is sent.</p>
+    </form>
+  </div>
+  <aside class="flex h-fit flex-col gap-4 border border-border bg-background-second p-5" aria-label="Order summary">
+    <h2 class="font-display text-xl">Your order</h2>
+    <ul class="flex flex-col gap-2 text-sm">
+      {% for line in order.lines %}
+      <li class="flex justify-between gap-4"><span>{{ line.quantity }} x {{ line.product.name }}</span><span class="tabular-nums">{{ money(line.total) }}</span></li>
+      {% endfor %}
+    </ul>
+    <p class="flex justify-between border-t border-border pt-3 text-sm"><span>Shipping</span><span class="tabular-nums">{{ "Free" if order.shipping == 0 else money(order.shipping) }}</span></p>
+    <p class="flex justify-between font-medium"><span>Total</span><span class="tabular-nums">{{ money(order.total) }}</span></p>
+  </aside>
+</section>
