@@ -1,34 +1,52 @@
-{#- The /connection page. The includer sets cls; a server-rendered page sets ping_url, the URL the
-    button posts to, and a client-routed one check, pending and status, the bindings of its
-    framework. -#}
+{#- The /connection page: a team the Python server keeps, listed and joined through two calls.
+    The includer sets cls and source (where the two calls live). A client-routed page sets the
+    bindings of its framework: each_open and each_close around one member `member`, name and email
+    (how a field of it is written), submit, pending and status. A server-rendered page sets
+    list_url, join_url and list_method, and its script fills the list from the template below. -#}
 {%- if utility_ui -%}
 {%- set c = {
   "section": "flex flex-1 items-center pb-20 pt-36",
   "inner": "mx-auto w-full max-w-[72rem] px-6",
   "title": "text-5xl leading-[1.05] md:text-6xl",
-  "lead": "mt-6 max-w-[46ch] text-lg text-foreground-second",
-  "actions": "mt-10",
-  "button": "inline-flex w-fit items-center gap-2.5 border border-foreground bg-foreground px-6 py-3.5 font-mono text-[0.8rem] font-semibold uppercase tracking-[0.04em] text-background transition-opacity hover:opacity-85 disabled:opacity-60",
+  "lead": "mt-6 max-w-[52ch] text-lg text-foreground-second",
+  "list": "mt-10 grid max-w-[36rem] gap-2",
+  "row": "flex justify-between gap-4 border border-border bg-background-second px-4 py-3.5",
+  "email": "text-sm text-foreground-second",
+  "form": "mt-8 grid max-w-[36rem] gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end",
+  "field": "grid gap-1.5 font-mono text-[0.75rem] uppercase tracking-[0.04em] text-foreground-second",
+  "input": "border border-border bg-background px-3 py-2.5 font-sans text-base normal-case tracking-normal text-foreground",
+  "button": "inline-flex w-fit items-center gap-2.5 border border-foreground bg-foreground px-6 py-3 font-mono text-[0.8rem] font-semibold uppercase tracking-[0.04em] text-background transition-opacity hover:opacity-85 disabled:opacity-60",
   "status": "mt-6 font-mono text-sm text-foreground-second",
 } -%}
 {%- else -%}
-{%- set c = {"section": "nx-container nx-article", "inner": "", "title": "nx-title", "lead": "", "actions": "nx-actions", "button": "btn-primary", "status": ""} -%}
+{%- set c = {"section": "nx-container nx-article", "inner": "", "title": "nx-title", "lead": "", "list": "nx-list", "row": "nx-row", "email": "", "form": "nx-form", "field": "nx-field", "input": "nx-input", "button": "btn-primary", "status": "nx-status"} -%}
 {%- endif -%}
 {%- macro klass(name) -%}{% if c[name] %} {{ cls }}="{{ c[name] }}"{% endif %}{%- endmacro -%}
+{%- macro row(name_value, email_value, key="") -%}
+<li{{ klass("row") }}{{ key }}><span>{{ name_value }}</span><span{{ klass("email") }}>{{ email_value }}</span></li>
+{%- endmacro -%}
 <section{{ klass("section") }}>
-  <div{{ klass("inner") }}>
+  <div{{ klass("inner") }}{% if not useCSR %} data-team data-list="{{ list_url }}" data-list-method="{{ list_method }}" data-join="{{ join_url }}"{% endif %}>
     <h1{{ klass("title") }}>Connection</h1>
     <p{{ klass("lead") }}>
-      This page calls {{ ping_source | default('a server action, <code>src/actions/ping.py</code>') }}, and shows
-      what the Python server answered and how long the round trip took.
+      A team that lives on the Python server, {% if orm != "None" %}in the <code>users</code> table of your database{% else %}as a list of dictionaries{% endif %}.
+      The page lists it and adds to it through {{ source }}, and says how long each round trip took.
     </p>
-    <div{{ klass("actions") }}>
+    <ul{{ klass("list") }} aria-label="Team"{% if not useCSR %} data-team-list{% endif %}>
 {%- if useCSR %}
-      <button type="button"{{ klass("button") }} {{ check }} {{ pending }}>Ping the server</button>
-{%- else %}
-      <button type="button"{{ klass("button") }} data-ping="{{ ping_url }}">Ping the server</button>
+      {{ each_open }}
+        {{ row(name, email, item_key) }}
+      {{ each_close }}
 {%- endif %}
-    </div>
-    <p{{ klass("status") }} role="status" aria-live="polite"{% if not useCSR %} data-ping-status{% endif %}>{{ status if useCSR else "Not checked yet." }}</p>
+    </ul>
+{%- if not useCSR %}
+    <template data-team-row>{{ row("", "") }}</template>
+{%- endif %}
+    <form{{ klass("form") }} {% if useCSR %}{{ submit }}{% else %}data-team-form{% endif %}>
+      <label{{ klass("field") }}>Name<input{{ klass("input") }} name="name" required /></label>
+      <label{{ klass("field") }}>Email<input{{ klass("input") }} name="email" type="email" required /></label>
+      <button type="submit"{{ klass("button") }}{% if useCSR %} {{ pending }}{% endif %}>Add to the team</button>
+    </form>
+    <p{{ klass("status") }} role="status" aria-live="polite"{% if not useCSR %} data-team-status{% endif %}>{{ status if useCSR else "Asking the server for the team..." }}</p>
   </div>
 </section>

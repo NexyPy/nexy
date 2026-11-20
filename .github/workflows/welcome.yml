@@ -1,0 +1,51 @@
+name: Welcome
+
+# A good first issue assigned to someone other than the maintainer gets the welcome of
+# .github/CONTRIBUTOR_WELCOME.md, so every new contributor reads the same first steps.
+#
+# The login and the number reach the script through env, never pasted into it: a login is
+# [A-Za-z0-9-] only, but nothing from the event is trusted as shell code.
+on:
+  issues:
+    types: [assigned]
+
+permissions:
+  issues: write
+
+jobs:
+  welcome:
+    name: Welcome the contributor
+    if: >-
+      ${{ contains(github.event.issue.labels.*.name, 'good first issue')
+      && github.event.assignee.login != 'Espoir-Loem'
+      && github.event.sender.type != 'Bot' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # Speak as the Nexy bot (a GitHub App) once the maintainer has set it up: see
+      # .github/bot/README.md. Until then the workflow token answers, as github-actions.
+      - name: Act as the Nexy bot
+        id: bot
+        if: ${{ vars.NEXY_BOT_CLIENT_ID != '' }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.NEXY_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.NEXY_BOT_PRIVATE_KEY }}
+          permission-issues: write
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/CONTRIBUTOR_WELCOME.md
+          sparse-checkout-cone-mode: false
+
+      - name: Post the welcome
+        env:
+          GH_TOKEN: ${{ steps.bot.outputs.token || github.token }}
+          GH_REPO: ${{ github.repository }}
+          ASSIGNEE: ${{ github.event.assignee.login }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          sed -e "s/{{assignee}}/$ASSIGNEE/g" -e "s/{{number}}/$NUMBER/g" \
+            .github/CONTRIBUTOR_WELCOME.md > body.md
+          gh issue comment "$NUMBER" --body-file body.md

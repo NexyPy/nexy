@@ -21,6 +21,7 @@
 - [Coding standards](#coding-standards)
 - [Testing](#testing)
 - [Pull request process](#pull-request-process)
+- [Triage](#triage)
 - [Release process](#release-process)
 - [Getting help](#getting-help)
 
@@ -123,6 +124,14 @@ Start with a [good first issue](https://github.com/NexyPy/nexy/issues?q=is%3Aiss
 or discuss your idea in [GitHub Discussions](https://github.com/NexyPy/nexy/discussions)
 before opening a PR for a new feature.
 
+Every issue open to contributors carries `good first issue` or `help wanted`, and a
+`difficulty:beginner`, `difficulty:intermediate` or `difficulty:advanced` label. The
+[board](https://github.com/orgs/NexyPy/projects/2) shows what is free now.
+
+Comment `/take` on a free one: it is assigned to you at once, with the first steps. A comment or a
+draft pull request keeps it yours; after 14 days with no news it is free again for someone else,
+and `/take` brings it back.
+
 ### 2. Create a branch
 
 | Branch pattern | Purpose |
@@ -197,7 +206,7 @@ git push origin feature/my-feature
 Then open a pull request on GitHub. Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md).
 
 Once the PR is merged, GitHub deletes its branch: the repository has "Automatically delete head
-branches" on, so only `main`, `staging` and `develop` stay on the remote. Delete your local copy
+branches" on, so only `main` and `develop` stay on the remote. Delete your local copy
 with `git branch -d feature/my-feature`, and drop the stale remote names with `git fetch --prune`.
 
 ### Stay updated
@@ -382,6 +391,19 @@ npm run test
 2. Address feedback with additional commits (no force-push during review)
 3. Maintainers squash-merge approved PRs
 
+## Triage
+
+For maintainers: the issues for contributors come from the real work, not from invented tasks.
+
+- **A small confirmed bug becomes a beginner issue.** When one file and its test can fix it,
+  write the cause, the file and the test to add in the issue, and label it `good first issue`
+  and `difficulty:beginner`, instead of fixing it at once. A bug that blocks users
+  (`priority:1`) or a security advisory is fixed at once.
+- **An issue for contributors can be started alone.** It names the files to start from, says
+  what "done" means, and ends with a "Getting started" paragraph.
+- **Keep the pool full, not big.** About ten beginner issues stay open; when one is taken, write
+  the next one.
+
 ## Release process
 
 For maintainers only:
@@ -413,17 +435,25 @@ the table decides its number.
    ```bash
    npx git-cliff -o CHANGELOG.md
    ```
-3. Commit the version bump and changelog on `main`, then tag and push. The
-   tag must match the package version exactly (for example, `v2.1.1`), and
-   its commit must already be on `main`; the workflow rejects tags from
+   Then thank who made the release, under the version and in the GitHub Release:
+   ```bash
+   python scripts/contributors.py v<previous version>
+   ```
+   It prints a `### Thanks` section naming each contributor and their pull requests, or nothing
+   when only the maintainer and bots merged.
+3. Commit the version bump and changelog on a `chore/release-<version>` branch and merge its pull
+   request into `develop`. Then open a pull request from `develop` into `main` and merge it once
+   CI and the browser suite pass; there is no branch in between.
+4. Tag the merge commit on `main` and push the tag. It must match the package version exactly (for
+   example, `v2.1.1`), and its commit must already be on `main`; the workflow rejects tags from
    other branches:
    ```bash
-   git tag v<version>
+   git tag -a v<version> -m "Nexy <version>" origin/main
    git push origin v<version>
    ```
-4. The `Release` workflow builds the sdist and wheel, smoke-tests both, and
-   publishes to PyPI with trusted publishing.
-5. Create the GitHub Release from the tag.
+5. The `Release` workflow builds the sdist and wheel, smoke-tests both, and
+   publishes to PyPI with trusted publishing, once the `pypi` environment is approved.
+6. Create the GitHub Release from the tag.
 
 The workflow requires a PyPI trusted publisher configured for
 `NexyPy/nexy`, workflow `release.yml`, and environment `pypi`. It stores no

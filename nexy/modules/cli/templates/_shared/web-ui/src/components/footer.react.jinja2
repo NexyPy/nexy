@@ -17,6 +17,7 @@ export default function Footer() {
           <p className="text-sm text-paper/65">Open source under the MIT license.</p>
         </div>
         <ul className="flex flex-wrap gap-6 font-mono text-xs uppercase tracking-[0.04em]">
+          <li><a href="/connection" className="text-paper/65 transition-colors hover:text-paper">Connection</a></li>
           {LINKS.map(([label, href]) => (
             <li key={href}>
               <a href={href} target="_blank" rel="noopener noreferrer" className="text-paper/65 transition-colors hover:text-paper">

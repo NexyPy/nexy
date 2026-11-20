@@ -59,3 +59,7 @@ def test_a_newer_push_to_the_pull_request_cancels_the_older_run():
     # Only a pull request: a push to main and the nightly run each finish.
     cancel = str(workflow.get("concurrency", {}).get("cancel-in-progress", ""))
     assert cancel == "${{ github.event_name == 'pull_request' }}"
+
+
+def test_e2e_runs_on_a_push_to_main():
+    assert _triggers()["push"]["branches"] == ["main"]

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from nexy.__version__ import __version__
 from nexy.modules.cli.init.renderer import PARTIALS_DIR, TemplateRenderer, resolve_target
 
 
@@ -95,3 +96,11 @@ class TestRender:
         context = {"client_framework": "react", "cls": "class", "nexy_version": "1"}
         TemplateRenderer(src, tmp_path / "out", context).render()
         assert "<footer" in (tmp_path / "out" / "page.html").read_text(encoding="utf-8")
+
+
+def test_a_template_knows_the_release_that_renders_it(tmp_path: Path) -> None:
+    src, dest = tmp_path / "src", tmp_path / "dest"
+    src.mkdir()
+    (src / "pyproject.toml.jinja2").write_text('"nexy>={{ nexy_version }}"', encoding="utf-8")
+    TemplateRenderer(src, dest).render()
+    assert (dest / "pyproject.toml").read_text("utf-8") == f'"nexy>={__version__}"'

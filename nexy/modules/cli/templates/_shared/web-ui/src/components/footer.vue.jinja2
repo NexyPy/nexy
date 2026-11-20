@@ -18,6 +18,7 @@ const LINKS = [
         <p class="text-sm text-paper/65">Open source under the MIT license.</p>
       </div>
       <ul class="flex flex-wrap gap-6 font-mono text-xs uppercase tracking-[0.04em]">
+        <li><a href="/connection" class="text-paper/65 transition-colors hover:text-paper">Connection</a></li>
         <li v-for="[label, href] in LINKS" :key="href">
           <a :href="href" target="_blank" rel="noopener noreferrer" class="text-paper/65 transition-colors hover:text-paper">
             {{ label }}

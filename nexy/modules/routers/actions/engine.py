@@ -124,5 +124,10 @@ class ActionEngine:
         PathUtil.write_if_changed(target / "actions.ts", self.render_client())
         return target / "actions.ts"
 
+    def refresh_client(self) -> Path | None:
+        """Find the project's actions, then write `@nexy/actions`: what a bundle imports."""
+        self.discover()
+        return self.generate_client()
+
 
 ACTION_ENGINE = ActionEngine(output_dir="__nexy__/src")

@@ -1,0 +1,41 @@
+name: Release stale issues
+
+# Once a day, a contributor issue whose assignee neither commented nor opened a pull request for
+# 14 days is free again, with a kind note (scripts/release_stale_issues.py). An issue is never
+# held by someone who moved on, and they can `/take` it back.
+on:
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  release:
+    name: Free idle issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # Speak as the Nexy bot (a GitHub App) once the maintainer has set it up: see
+      # .github/bot/README.md. Until then the workflow token answers, as github-actions.
+      - name: Act as the Nexy bot
+        id: bot
+        if: ${{ vars.NEXY_BOT_CLIENT_ID != '' }}
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          client-id: ${{ vars.NEXY_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.NEXY_BOT_PRIVATE_KEY }}
+          permission-issues: write
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/release_stale_issues.py
+          sparse-checkout-cone-mode: false
+
+      - name: Free idle issues
+        env:
+          GH_TOKEN: ${{ steps.bot.outputs.token || github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: python3 scripts/release_stale_issues.py

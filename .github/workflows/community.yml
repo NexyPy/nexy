@@ -1,0 +1,66 @@
+name: Community
+
+on:
+  schedule:
+    - cron: "43 7 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  report:
+    name: Weekly report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Publish the community report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TITLE: Community report
+        run: |
+          STARS=$(gh api "repos/$GH_REPO" --jq '.stargazers_count')
+          FORKS=$(gh api "repos/$GH_REPO" --jq '.forks_count')
+          # Only an issue this workflow wrote, with this exact title: the search alone also finds a
+          # person's "Community report is missing forks", whose text the edit below would replace.
+          # A closed report still gives last week's counts.
+          LAST=$(gh issue list --repo "$GH_REPO" --state all --author "app/github-actions" \
+            --search "\"$TITLE\" in:title" --json number,state,title,body \
+            --jq 'map(select(.title == env.TITLE)) | .[0] // empty')
+          NUMBER=""
+          PREV_STARS=0
+          PREV_FORKS=0
+          if [ -n "$LAST" ]; then
+            if [ "$(printf '%s' "$LAST" | jq -r '.state')" = "OPEN" ]; then
+              NUMBER=$(printf '%s' "$LAST" | jq -r '.number')
+            fi
+            BODY=$(printf '%s' "$LAST" | jq -r '.body')
+            PREV_STARS=$(printf '%s\n' "$BODY" | sed -n 's/^stars: \([0-9][0-9]*\)$/\1/p' | head -1)
+            PREV_FORKS=$(printf '%s\n' "$BODY" | sed -n 's/^forks: \([0-9][0-9]*\)$/\1/p' | head -1)
+            [ -n "$PREV_STARS" ] || PREV_STARS=0
+            [ -n "$PREV_FORKS" ] || PREV_FORKS=0
+          fi
+          NEW_STARS=$((STARS - PREV_STARS))
+          NEW_FORKS=$((FORKS - PREV_FORKS))
+          DATE=$(date -u +%Y-%m-%d)
+          {
+            echo "## Community report"
+            echo
+            echo "Weekly report written by the Community workflow."
+            echo
+            echo "stars: $STARS"
+            echo "forks: $FORKS"
+            echo
+            echo "New stars since the last report: $NEW_STARS"
+            echo "New forks since the last report: $NEW_FORKS"
+            echo
+            echo "Updated: $DATE"
+          } > body.md
+          if [ -n "$NUMBER" ]; then
+            gh issue edit "$NUMBER" --repo "$GH_REPO" --body-file body.md
+          else
+            gh issue create --repo "$GH_REPO" --title "$TITLE" --body-file body.md
+          fi
