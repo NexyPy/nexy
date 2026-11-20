@@ -225,7 +225,8 @@
     "local": "Local :",
     "network": "Réseau :",
     "ready": "Prêt :",
-    "stop": "Ctrl+C pour arrêter"
+    "stop": "Ctrl+C pour arrêter",
+    "missing_table": "Une table manque : lancez nexy migrate --upgrade."
   },
   "start": {
     "broken": "{count} fichier(s) de route n'ont pas pu être chargés : le serveur n'a pas démarré.",

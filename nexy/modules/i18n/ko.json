@@ -225,7 +225,8 @@
     "local": "로컬:",
     "network": "네트워크:",
     "ready": "준비됨:",
-    "stop": "중지하려면 Ctrl+C"
+    "stop": "중지하려면 Ctrl+C",
+    "missing_table": "테이블이 없습니다: nexy migrate --upgrade을(를) 실행하세요."
   },
   "start": {
     "broken": "라우트 파일 {count}개를 불러오지 못했습니다. 서버를 시작하지 않았습니다.",

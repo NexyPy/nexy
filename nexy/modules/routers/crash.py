@@ -9,6 +9,7 @@ code or the exception reaches the visitor.
 from __future__ import annotations
 
 import os
+import re
 import secrets
 import traceback
 from dataclasses import dataclass
@@ -23,10 +24,12 @@ from starlette.responses import HTMLResponse, Response
 from nexy.errors import InternalServerError
 from nexy.helpers.common.code_frame import print_frame, rows_of_file
 from nexy.helpers.common.console import console
+from nexy.helpers.common.messages import hint
 from nexy.helpers.common.pycheck import project_path
 from nexy.helpers.server.dev_mode import DEV_ENV_VAR
 from nexy.helpers.server.devtools.state import record_error
 from nexy.helpers.server.security_headers import DEFAULT_HEADERS
+from nexy.modules.i18n import t
 
 
 @dataclass(frozen=True)
@@ -59,6 +62,17 @@ class Crash:
         return next((frame for frame in reversed(self.frames) if frame.in_project), None)
 
 
+# How SQLite, PostgreSQL and MySQL say that a table is not there.
+_MISSING_TABLE = re.compile(
+    r"no such table|relation \".+\" does not exist|table '.+' doesn't exist", re.IGNORECASE
+)
+
+
+def missing_table(message: str) -> bool:
+    """True when *message* says that a table does not exist: the migrations have not run."""
+    return _MISSING_TABLE.search(message) is not None
+
+
 def is_dev() -> bool:
     return os.environ.get(DEV_ENV_VAR) == "1"
 
@@ -83,6 +97,8 @@ def log_crash(request: Request, crash: Crash, dev: bool | None = None) -> None:
     where = f"{request.method} {request.url.path}"
     head = f"  [red]x[/red] [bold]{markup(crash.kind)}[/bold]: {markup(crash.message)}"
     console.print(f"{head}  [dim]{markup(where)}  ref {crash.reference}[/dim]")
+    if missing_table(crash.message):
+        hint(t("server.missing_table", "A table is missing: run nexy migrate --upgrade."))
     if not dev:
         console.print(crash.text.rstrip(), markup=False, highlight=False, soft_wrap=True)
         return

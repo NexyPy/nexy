@@ -225,7 +225,8 @@
     "local": "Lokal:",
     "network": "Jaringan:",
     "ready": "Siap:",
-    "stop": "tekan Ctrl+C untuk berhenti"
+    "stop": "tekan Ctrl+C untuk berhenti",
+    "missing_table": "Sebuah tabel tidak ada: jalankan nexy migrate --upgrade."
   },
   "start": {
     "broken": "{count} file rute gagal dimuat: server tidak dijalankan.",

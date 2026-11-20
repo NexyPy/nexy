@@ -225,7 +225,8 @@
     "local": "Local:",
     "network": "Rede:",
     "ready": "Pronto:",
-    "stop": "pressione Ctrl+C para parar"
+    "stop": "pressione Ctrl+C para parar",
+    "missing_table": "Falta uma tabela: execute nexy migrate --upgrade."
   },
   "start": {
     "broken": "{count} arquivo(s) de rota não puderam ser carregados: o servidor não foi iniciado.",
