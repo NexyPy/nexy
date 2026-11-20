@@ -235,6 +235,7 @@ def generate_post_init_files(dest: Path, orm: str, db_url: str | None) -> None:
         for model_dir in [
             dest / "src" / "models",
             dest / "src" / "apps",
+            dest / "src" / "apps" / "todos",
             dest / "src" / "apps" / "users",
         ]:
             if model_dir.exists() and any(f.suffix == ".py" for f in model_dir.iterdir()):
@@ -364,7 +365,7 @@ def _next_steps(orm: str, migrated: bool) -> list[tuple[str, str]]:
 
 
 def _migration_steps() -> list[tuple[str, str]]:
-    """A new project has models but no tables: the users page fails until they exist."""
+    """A new project has models but no tables: its pages fail until they exist."""
     create = t("init.step_migrate_create", "Create the first migration")
     apply = t("init.step_migrate_apply", "Create the tables in the database")
     return [('nexy migrate -m "create tables"', create), ("nexy migrate --upgrade", apply)]
