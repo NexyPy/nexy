@@ -60,7 +60,9 @@
       "new": "Neues Projekt in einem neuen Verzeichnis erstellen",
       "start": "Produktionsserver starten",
       "test": "Tests ausführen (--server / --client)",
-      "skills": "Skills und AGENTS.md für Code-Agenten hinzufügen"
+      "skills": "Skills und AGENTS.md für Code-Agenten hinzufügen",
+      "info": "Print environment and project versions in one block"
+      
     },
     "commands_header": "Verfügbare Befehle:",
     "help": "Nexy-CLI",
@@ -120,6 +122,20 @@
     "nexy": "Formatiere {count} .nexy-Datei(en)",
     "nexy_done": "{count} .nexy-Datei(en) formatiert"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "Verwende @, ~, # oder $, optional gefolgt von Buchstaben (zum Beispiel ~ oder @app).",
     "already": "Das Projekt ist hier bereits initialisiert",

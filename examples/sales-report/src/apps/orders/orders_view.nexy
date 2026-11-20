@@ -1,0 +1,54 @@
+---
+page:prop[dict]
+---
+<div class="nx-container py-8 sm:py-10">
+  <header class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="font-mono text-xs uppercase tracking-[0.08em] text-foreground-second">{{ page.total }} orders</p>
+      <h1 class="mt-1 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Orders</h1>
+    </div>
+    <ul class="flex w-fit flex-wrap rounded-lg border border-border bg-background-second p-0.5" aria-label="Channel">
+      {% for item in page.channel_links %}
+      <li><a href="{{ item.href }}" {% if item.current %}aria-current="true"{% endif %} class="inline-flex min-h-9 items-center rounded-md px-3 text-sm text-foreground-second transition-colors hover:text-foreground aria-[current=true]:bg-foreground aria-[current=true]:text-background">{{ item.label }}</a></li>
+      {% endfor %}
+    </ul>
+  </header>
+
+  <div class="mt-8 overflow-x-auto rounded-xl border border-border bg-background-second">
+    <table class="w-full min-w-[40rem] text-sm">
+      <caption class="sr-only">Orders, newest first, page {{ page.number }} of {{ page.pages }}</caption>
+      <thead class="text-left text-xs text-foreground-second">
+        <tr>
+          <th scope="col" class="px-4 py-3 font-normal">Order</th>
+          <th scope="col" class="px-4 py-3 font-normal">Day</th>
+          <th scope="col" class="px-4 py-3 font-normal">Channel</th>
+          <th scope="col" class="px-4 py-3 font-normal">Region</th>
+          <th scope="col" class="px-4 py-3 font-normal">Product</th>
+          <th scope="col" class="px-4 py-3 text-right font-normal">Units</th>
+          <th scope="col" class="px-4 py-3 text-right font-normal">Revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.rows %}
+        <tr class="border-t border-border">
+          <td class="px-4 py-2.5 font-mono text-xs text-foreground-second">{{ row.number }}</td>
+          <td class="whitespace-nowrap px-4 py-2.5">{{ row.day }}</td>
+          <td class="px-4 py-2.5">{{ row.channel }}</td>
+          <td class="px-4 py-2.5 text-foreground-second">{{ row.region }}</td>
+          <td class="px-4 py-2.5">{{ row.product }}</td>
+          <td class="px-4 py-2.5 text-right tabular-nums">{{ row.units }}</td>
+          <td class="px-4 py-2.5 text-right font-medium tabular-nums">{{ row.revenue }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="px-4 py-10 text-center text-foreground-second">No order yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="Pages" class="mt-4 flex items-center justify-between gap-3 text-sm">
+    {% if page.previous %}<a href="{{ page.previous }}" class="inline-flex min-h-10 items-center rounded-lg border border-border px-4 hover:border-foreground">Newer</a>{% else %}<span></span>{% endif %}
+    <span class="text-foreground-second">Page {{ page.number }} of {{ page.pages }}</span>
+    {% if page.next %}<a href="{{ page.next }}" class="inline-flex min-h-10 items-center rounded-lg border border-border px-4 hover:border-foreground">Older</a>{% else %}<span></span>{% endif %}
+  </nav>
+</div>
