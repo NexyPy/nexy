@@ -13,3 +13,6 @@ def test_the_header_links_each_section(client):
     html = client.get("/").text
     assert all(f'href="{path}" class="nx-nav-link"' in html for path in ("/", "/tags", "/about"))
 
+
+def test_the_footer_links_the_feed(client):
+    assert '<a href="/rss">RSS</a>' in client.get("/").text
