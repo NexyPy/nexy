@@ -1,0 +1,86 @@
+---
+from "@/components/StatusBadge.nexy" import StatusBadge
+from nexy import useSearchParams
+from src.services.accounts import signed_in
+from src.services.invoices import STATUSES, search
+from src.services.money import money
+from urllib.parse import urlencode
+
+signed_in()
+params = useSearchParams()
+text = params.get("q", "")
+wanted = params.get("status", "")
+wanted = wanted if wanted in STATUSES else ""
+asked = params.get("page", "1")
+page = search(text, wanted, int(asked) if asked.isdigit() else 1)
+
+
+def at(number):
+    kept = {key: value for key, value in (("q", text), ("status", wanted)) if value}
+    return "/invoices?" + urlencode({**kept, "page": number})
+
+
+field = "min-h-11 border border-border-second bg-background px-3 text-base outline-none focus:border-foreground"
+pager = "flex min-h-11 items-center border border-border-second bg-background px-4 text-sm hover:border-foreground"
+---
+<section class="mx-auto flex w-full max-w-[72rem] flex-col gap-6 px-4 py-10 sm:px-6">
+  <h1 class="font-display text-4xl">Invoices</h1>
+
+  <form method="get" action="/invoices" role="search" class="flex flex-wrap gap-2">
+    <label class="sr-only" for="q">Search by number or customer</label>
+    <input id="q" type="search" name="q" value="{{ text }}" placeholder="Number or customer" class="{{ field }} min-w-0 flex-1 basis-56">
+    <label class="sr-only" for="status">Status</label>
+    <select id="status" name="status" class="{{ field }}">
+      <option value="">Every status</option>
+      {% for option in STATUSES %}
+      <option value="{{ option }}"{% if option == wanted %} selected{% endif %}>{{ option | capitalize }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="min-h-11 bg-foreground px-5 font-medium text-background hover:opacity-85">Search</button>
+  </form>
+
+  <p class="text-sm text-foreground-second" role="status">
+    {{ page.total }} invoice{{ "" if page.total == 1 else "s" }}{% if text %} matching "{{ text }}"{% endif %}{% if wanted %}, {{ wanted }}{% endif %}
+  </p>
+
+  {% if page.rows %}
+  <div class="overflow-x-auto border border-border bg-background">
+    <table class="w-full min-w-[40rem] text-left text-sm">
+      <thead class="border-b border-border font-mono text-xs uppercase tracking-[0.04em] text-foreground-second">
+        <tr>
+          <th scope="col" class="px-5 py-3 font-normal">Number</th>
+          <th scope="col" class="px-5 py-3 font-normal">Customer</th>
+          <th scope="col" class="px-5 py-3 font-normal">Issued</th>
+          <th scope="col" class="px-5 py-3 font-normal">Due</th>
+          <th scope="col" class="px-5 py-3 font-normal">Status</th>
+          <th scope="col" class="px-5 py-3 text-right font-normal">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in page.rows %}
+        <tr class="border-b border-border last:border-b-0 hover:bg-background-second">
+          <td class="px-5 py-3 font-mono"><a href="/invoices/{{ row.id }}" class="underline underline-offset-4">{{ row.number }}</a></td>
+          <td class="px-5 py-3">{{ row.customer }}</td>
+          <td class="px-5 py-3 tabular-nums">{{ row.issued.isoformat() }}</td>
+          <td class="px-5 py-3 tabular-nums">{{ row.due.isoformat() }}</td>
+          <td class="px-5 py-3"><StatusBadge status="{{ row.status }}" /></td>
+          <td class="px-5 py-3 text-right tabular-nums">{{ money(row.amount_cents) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="border border-dashed border-border-second p-8 text-center text-foreground-second">
+    No invoice matches. <a href="/invoices" class="underline underline-offset-4">Show every invoice</a>
+  </p>
+  {% endif %}
+
+  {% if page.pages > 1 %}
+  <nav class="flex items-center justify-between gap-2" aria-label="Pages">
+    {% if page.number > 1 %}<a href="{{ at(page.number - 1) }}" class="{{ pager }}" rel="prev">Previous</a>{% else %}<span></span>{% endif %}
+    <span class="text-sm text-foreground-second">Page {{ page.number }} of {{ page.pages }}</span>
+    {% if page.number < page.pages %}<a href="{{ at(page.number + 1) }}" class="{{ pager }}" rel="next">Next</a>{% else %}<span></span>{% endif %}
+  </nav>
+  {% endif %}
+</section>

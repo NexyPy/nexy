@@ -1,0 +1,10 @@
+---
+status: prop[str]
+
+tones = {
+    "paid": "border-signal/40 text-signal",
+    "pending": "border-border-second text-foreground-second",
+    "overdue": "border-red-500/50 text-red-600 dark:text-red-400",
+}
+---
+<span class="inline-flex border px-2 py-0.5 font-mono text-[0.7rem] uppercase tracking-[0.04em] {{ tones[status] }}">{{ status }}</span>
