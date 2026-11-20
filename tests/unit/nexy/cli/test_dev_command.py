@@ -347,6 +347,16 @@ def test_dev_gives_back_the_sigterm_handler_it_found(world):
     assert signal.getsignal(signal.SIGTERM) is before
 
 
+def test_a_taken_port_is_named_with_the_one_used(world, monkeypatch, capsys):
+    monkeypatch.setattr(dev_module.Server, "resolve_ports", staticmethod(lambda h, p: (p + 1, 1)))
+    dev_module.dev()
+    assert "Port 3000 is in use, using 3001 instead." in capsys.readouterr().out
+
+
+def test_a_free_port_says_nothing_about_ports(world, capsys):
+    dev_module.dev()
+    assert "is in use" not in capsys.readouterr().out
+
 
 def test_the_observer_watches_what_the_config_says(world, monkeypatch):
     captured = {}

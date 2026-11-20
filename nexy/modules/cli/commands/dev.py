@@ -293,6 +293,12 @@ def _interrupt(_signum: int, _frame: Any) -> None:
     raise KeyboardInterrupt
 
 
+def _announce_port(asked: int, used: int) -> None:
+    if used != asked:
+        message = t("dev.port_in_use", "Port {asked} is in use, using {port} instead.")
+        warning(message.format(asked=asked, port=used))
+
+
 def dev(port: int | None = None, host: str | None = None) -> None:
     # uvicorn raises a SIGTERM again once it has stopped: without this, the process would end
     # there, before the clean-up that stops Vite.
@@ -314,7 +320,9 @@ def _dev(port: int | None, host: str | None) -> None:
     if config.useVite:
         _require_vite_install()
     run_host = host or config.useHost
-    run_port, client_port = Server.resolve_ports(run_host, port or config.usePort)
+    asked = port or config.usePort
+    run_port, client_port = Server.resolve_ports(run_host, asked)
+    _announce_port(asked, run_port)
     Server.check_nexy_prod(delete=True)
 
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)
