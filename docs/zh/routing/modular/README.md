@@ -6,7 +6,7 @@
 
 | 页面 | 它涵盖什么 |
 |---|---|
-| 本页 | Mount a module, write a controller, group controllers |
+| 本页 | 安装模块、编写控制器、组控制器 |
 | [依赖注入](dependency-injection.md) | `@Injectable`，范围，容器 |
 | [守卫和元数据](guards-and-metadata.md) | `@UseGuard`、`@Middleware`、`@UseRoute`、`@UseResponse` |
 | [尼克西和 NestJS](vs-nestjs.md) | 什么匹配 NestJS，什么不匹配 |
@@ -23,7 +23,7 @@ class NexyConfig(NexyConfigModel):
 ```
 
 > [!NOTE]
-> 基于文件的路由继续工作。如果存在 `src/routes/`，即使设置了 `useRouter` 也会扫描。
+> 基于文件的路由继续工作。如果存在 `src/routes/`，则即使设置了 `useRouter` 也会扫描。
 
 ## 写一个控制器
 
@@ -40,7 +40,7 @@ class AppController:
 
 方法按名称匹配，不区分大小写：`get`、`post`、`put`、`patch`、`delete`、`options`、`head`、`trace`。
 
-A controller declares one handler per HTTP method;启动时重复加注。 The first argument of `@Controller("/users")` is the path every handler answers on, `/users/`.控制器上的 `async def SOCKET(...)` 在同一路径上注册 WebSocket。
+控制器为每个 HTTP 方法声明一个处理程序；启动时重复加注。 `@Controller("/users")` 的第一个参数是每个处理程序应答的路径 `/users/`。控制器上的 `async def SOCKET(...)` 在同一路径上注册 WebSocket。
 
 ## 模块中的组控制器
 
@@ -77,11 +77,11 @@ class AppController:
 
 ## 示例
 
-参见 `examples/Modular/api/minimal/`。
+`nexy new my-app` 用这个路由器写了一个项目：在第一个问题中选择模块化，路由器。
 
 ## 后续步骤
 
 - [依赖注入](dependency-injection.md)：服务和范围
-- [Guards and metadata](guards-and-metadata.md): protect and document routes
+- [守卫和元数据](guards-and-metadata.md)：保护和记录路径
 - [路由](../README.md)：基于文件的路由器
 - [配置](../../reference/config.md)：每个选项，包括 `useRouter`
