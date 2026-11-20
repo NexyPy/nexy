@@ -1,0 +1,25 @@
+---
+from "@/components/PostList.nexy" import PostList
+from nexy import notFound, setMetadata
+from src.blog.posts import tagged
+
+tag: prop[str]
+name = tag.lower()
+found = tagged(name) or notFound()
+setMetadata(title=f"Posts tagged {name}", description=f"The posts of Plain Text tagged {name}.")
+---
+<section class="nx-container blog-intro">
+  <a class="blog-back" href="/tags">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+    All tags
+  </a>
+  <p class="blog-eyebrow">Tag</p>
+  <h1 class="blog-title">{{ name | e }}</h1>
+</section>
+
+<section class="nx-container blog-section">
+  <div class="blog-section-head">
+    <h2 class="blog-section-title">{{ found | length }} {{ 'post' if found | length == 1 else 'posts' }}</h2>
+  </div>
+  <PostList posts="{{ found }}" />
+</section>

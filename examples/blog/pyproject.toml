@@ -1,0 +1,28 @@
+[project]
+name = "blog"
+version = "0.1.0"
+description = "Plain Text, a blog written in Markdown files and rendered by Nexy on the server"
+dependencies = [
+    "nexy>=2.8.0",
+    "markdown-it-py>=3.0.0",
+]
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "httpx>=0.28.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# Nexy reads its settings as attributes of the class, dicts included.
+"nexyconfig.py" = ["RUF012"]
