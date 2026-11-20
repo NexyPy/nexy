@@ -21,8 +21,9 @@ const themeScript = `try {
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="description" content="Pages, an API and interactive parts in one project." />
-      <title>Nexy App</title>
+      <meta name="description" content="Good Stock sells things for the kitchen, the desk and the road. Free delivery from $50." />
+      <title>Good Stock</title>
+      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
       <link
