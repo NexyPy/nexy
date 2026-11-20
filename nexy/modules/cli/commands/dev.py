@@ -1,4 +1,5 @@
 import os
+import signal
 import subprocess  # nosec B404
 import sys
 import threading
@@ -287,7 +288,22 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
         _release(observer, session)
 
 
+def _interrupt(_signum: int, _frame: Any) -> None:
+    """A SIGTERM stops `nx dev` the way Ctrl+C does, so Vite is stopped with it."""
+    raise KeyboardInterrupt
+
+
 def dev(port: int | None = None, host: str | None = None) -> None:
+    # uvicorn raises a SIGTERM again once it has stopped: without this, the process would end
+    # there, before the clean-up that stops Vite.
+    previous = signal.signal(signal.SIGTERM, _interrupt)
+    try:
+        _dev(port, host)
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def _dev(port: int | None, host: str | None) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
