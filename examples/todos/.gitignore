@@ -1,6 +1,0 @@
-.venv/
-node_modules/
-__nexy__/
-*.db
-.env
-__pycache__/
