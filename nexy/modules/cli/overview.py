@@ -19,6 +19,10 @@ def _commands() -> list[tuple[str, str]]:
         ("start", t("cli.cmd.start", "Start production server")),
         ("build", t("cli.cmd.build", "Compile project for production deployment")),
         ("check", t("cli.cmd.check", "Run type checking across all project files")),
+        (
+            "info",
+            t("cli.cmd.info", "Print environment and project versions in one block"),
+        ),
         ("format", t("cli.cmd.format", "Auto-format all project files")),
         ("test", t("cli.cmd.test", "Run tests (--server / --client)")),
         ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
