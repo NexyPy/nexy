@@ -1,9 +1,11 @@
 ---
 from "@/components/header.nexy" import Header
 from "@/components/footer.nexy" import Footer
-from nexy import Vite
+from nexy import Vite, setMetadata, useMetadata
 
 children:prop[NexyElement]
+# A page that names its title gets "Its title | Plain Text"; the home page keeps "Plain Text".
+setMetadata(title_template="%s | Plain Text")
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -11,8 +13,8 @@ children:prop[NexyElement]
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Built with Nexy">
-    <title>Nexy App</title>
+    {{ useMetadata().html() }}
+    <link rel="alternate" type="application/rss+xml" title="Plain Text" href="/rss">
     <style>html{background:#fafafa;color-scheme:light}html.dark{background:#0e0e10;color-scheme:dark}</style>
     <script>(function () {
   var root = document.documentElement;
