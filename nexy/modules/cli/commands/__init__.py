@@ -3,6 +3,7 @@ from nexy.modules.cli.commands.build import build
 from nexy.modules.cli.commands.check import check
 from nexy.modules.cli.commands.dev import dev
 from nexy.modules.cli.commands.format import format_
+from nexy.modules.cli.commands.info import info
 from nexy.modules.cli.commands.init import init
 from nexy.modules.cli.commands.migrate import migrate
 from nexy.modules.cli.commands.new import new
@@ -18,6 +19,7 @@ __all__ = [
     "migrate",
     "new",
     "check",
+    "info",
     "format_",
     "test",
 ]
