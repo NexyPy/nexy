@@ -8,9 +8,7 @@ RUN_IN_TRANSACTION = True
 async def upgrade(db: BaseDBAsyncClient) -> str:
     return """
         INSERT INTO "notes" ("title", "body", "pinned", "created_at", "updated_at") VALUES
-    ('Welcome to Margin', '# Welcome to Margin
-
-Margin keeps your notes in SQLite and saves them while you type: there is no save button.
+    ('Welcome to Margin', 'Margin keeps your notes in SQLite and saves them while you type: there is no save button.
 
 ## Write in Markdown
 
