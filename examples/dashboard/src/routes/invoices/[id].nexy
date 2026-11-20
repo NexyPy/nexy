@@ -1,0 +1,44 @@
+---
+from "@/components/StatusBadge.nexy" import StatusBadge
+from nexy import notFound, useSearchParams
+from src.services.accounts import signed_in
+from src.services.invoices import find
+from src.services.money import money
+
+id: prop[str]
+
+signed_in()
+found = find(int(id)) if id.isdigit() else None
+if found is None:
+    notFound()
+invoice = found[0]
+email = found[1]
+error = useSearchParams().get("error", "")
+---
+<section class="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-10 sm:px-6">
+  <p class="text-sm"><a href="/invoices" class="text-foreground-second underline underline-offset-4 hover:text-foreground">Invoices</a></p>
+  <div class="flex flex-wrap items-center gap-3">
+    <h1 class="font-mono text-3xl">{{ invoice.number }}</h1>
+    <StatusBadge status="{{ invoice.status }}" />
+  </div>
+
+  {% if error %}
+  <p class="border border-red-500/50 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <dl class="grid gap-px border border-border bg-border sm:grid-cols-2">
+    {% for label, value in [("Customer", invoice.customer), ("Email", email), ("Amount", money(invoice.amount_cents)), ("Issued", invoice.issued.isoformat()), ("Due", invoice.due.isoformat()), ("Paid", invoice.paid_on.isoformat() if invoice.paid_on else "Not yet")] %}
+    <div class="bg-background p-4">
+      <dt class="font-mono text-xs uppercase tracking-[0.04em] text-foreground-second">{{ label }}</dt>
+      <dd class="mt-1 tabular-nums">{{ value }}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+
+  {% if invoice.status != "paid" %}
+  <form method="post" action="{{ __actions_path['pay_invoice'] }}">
+    <input type="hidden" name="invoice_id" value="{{ invoice.id }}">
+    <button type="submit" class="min-h-11 bg-foreground px-5 font-medium text-background hover:opacity-85">Mark as paid today</button>
+  </form>
+  {% endif %}
+</section>
