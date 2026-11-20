@@ -205,7 +205,6 @@
     },
     "node_installed": "已使用 {manager} 安装 node_modules",
     "python_synced": "已使用 uv 同步 .venv",
-    "package_added": "已将 {package} 添加到 .venv",
     "created": "已创建项目 {name}"
   },
   "migrate": {

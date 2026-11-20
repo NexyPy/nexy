@@ -205,7 +205,6 @@
     },
     "node_installed": "{manager} で node_modules をインストールしました",
     "python_synced": "uv で .venv を同期しました",
-    "package_added": "{package} を .venv に追加しました",
     "created": "プロジェクト {name} を作成しました"
   },
   "migrate": {
