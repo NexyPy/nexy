@@ -2,12 +2,8 @@ from nexy.decorators import Module
 from .app_controller import (
     AboutController,
     AppController,
-    ConnectionController,
+    TodosController,
 )
-from .team_controller import TeamController
-{% if orm != "None" %}
-from .users.user_module import UsersModule
-{% endif %}
 
 
 @Module()
@@ -15,9 +11,5 @@ class AppModule:
     controllers = [
         AppController,
         AboutController,
-        ConnectionController,
-        TeamController,
+        TodosController,
     ]
-{% if orm != "None" %}
-    imports = [UsersModule]
-{% endif %}

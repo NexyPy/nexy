@@ -15,16 +15,16 @@ import pytest
 
 from nexy.modules.cli.init.template_setup import _render_local_template
 
-# (template, the model file it writes)
+# (template, the model file it writes, the class of the model)
 TEMPLATES = [
-    ("web-fbr", "src/models/user_model.py"),
-    ("api-fbr", "src/models/user_model.py"),
-    ("web-modular", "src/apps/users/user_model.py"),
-    ("api-modular", "src/apps/users/user_model.py"),
+    ("web-fbr", "src/models/todo_model.py", "TodoModel"),
+    ("api-fbr", "src/models/user_model.py", "UserModel"),
+    ("web-modular", "src/apps/todos/todo_model.py", "TodoModel"),
+    ("api-modular", "src/apps/users/user_model.py", "UserModel"),
 ]
 
 
-def _users_table(tmp_path: Path, template: str, model: str):
+def _table(tmp_path: Path, template: str, model: str, name: str):
     config = {
         "project_type": template.split("-")[0],
         "FBRouter": template.endswith("fbr"),
@@ -38,10 +38,10 @@ def _users_table(tmp_path: Path, template: str, model: str):
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module.UserModel.__table__
+    return getattr(module, name).__table__
 
 
-@pytest.mark.parametrize(("template", "model"), TEMPLATES)
-def test_sqlalchemy_model_names_every_constraint(tmp_path, template, model):
-    table = _users_table(tmp_path, template, model)
+@pytest.mark.parametrize(("template", "model", "name"), TEMPLATES)
+def test_sqlalchemy_model_names_every_constraint(tmp_path, template, model, name):
+    table = _table(tmp_path, template, model, name)
     assert [c.name for c in table.constraints if c.name is None] == []

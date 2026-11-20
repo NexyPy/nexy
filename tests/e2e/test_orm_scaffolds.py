@@ -1,8 +1,9 @@
-"""A project scaffolded with an ORM works: its users route shows what the database holds.
+"""A project scaffolded with an ORM works: it shows what the database holds.
 
 The scaffold tests elsewhere build every template with no ORM. Each case here scaffolds a project
-with one, creates its table the way its own configuration describes, adds a user through the
-model and asks for the users route, in the project's interpreter as `nx dev` would run it.
+with one, creates its table the way its own configuration describes, adds a row through the model,
+then asks for it, in the project's interpreter as `nx dev` would run it: an API lists its users on
+a route, a web project lists its tasks through the `todos` action of its /todos page.
 """
 
 from __future__ import annotations
@@ -26,53 +27,71 @@ from nexy.modules.cli.init.template_setup import (
 REPO = Path(__file__).resolve().parents[2]
 ORMS = ["SQLModel", "SQLAlchemy", "Tortoise-ORM"]
 
-# (template, route that lists the users, module that holds the model)
-TEMPLATES = [
-    ("web-fbr", "/users", "src.models.user_model"),
-    ("web-modular", "/users", "src.apps.users.user_model"),
-    ("api-fbr", "/", "src.models.user_model"),
-    ("api-modular", "/users", "src.apps.users.user_model"),
-]
+# template: (module that holds the model, its class, the fields of one row, the text it shows)
+MODELS = {
+    "web-fbr": ("src.models.todo_model", "TodoModel", 'title="Water the plants"', "Water"),
+    "web-modular": ("src.apps.todos.todo_model", "TodoModel", 'title="Water the plants"', "Water"),
+    "api-fbr": ("src.models.user_model", "UserModel", 'name="Ada", email="ada@example.com"', "Ada"),
+    "api-modular": (
+        "src.apps.users.user_model",
+        "UserModel",
+        'name="Ada", email="ada@example.com"',
+        "Ada",
+    ),
+}
+# How each template is asked for its rows: an API route, or the action of the /todos page.
+ASK = {
+    "web-fbr": ("action", "src.actions.todos.todos"),
+    "web-modular": ("action", "src.apps.todos.todo_actions.todos"),
+    "api-fbr": ("route", "/"),
+    "api-modular": ("route", "/users"),
+}
 
 
-def prepare_code(orm: str, models: str) -> str:
-    """Create the table and one user with the ORM, using what the scaffold wrote."""
+def prepare_code(orm: str, template: str) -> str:
+    """Create the table and one row with the ORM, using what the scaffold wrote."""
+    models, model, fields, _ = MODELS[template]
     if orm == "SQLModel":
         return f"""
 from sqlmodel import Session, SQLModel
 from src.configs.db import engine
-from {models} import UserModel
+from {models} import {model}
 SQLModel.metadata.create_all(engine)
 with Session(engine) as session:
-    session.add(UserModel(name="Ada", email="ada@example.com"))
+    session.add({model}({fields}))
     session.commit()
 """
     if orm == "SQLAlchemy":
         return f"""
 from sqlalchemy.orm import Session
 from src.configs.db import engine
-from {models} import Base, UserModel
+from {models} import Base, {model}
 Base.metadata.create_all(engine)
 with Session(engine) as session:
-    session.add(UserModel(name="Ada", email="ada@example.com"))
+    session.add({model}({fields}))
     session.commit()
 """
     return f"""
 from tortoise import Tortoise
 from src.configs.db import run
-from {models} import UserModel
+from {models} import {model}
 
 
 async def seed():
     await Tortoise.generate_schemas()
-    await UserModel.create(name="Ada", email="ada@example.com")
+    await {model}.create({fields})
 
 
 run(seed())
 """
 
 
-def request_code(route: str) -> str:
+def request_code(template: str) -> str:
+    kind, target = ASK[template]
+    if kind == "route":
+        call = f"client.get({target!r})"
+    else:
+        call = f"client.post(ACTIONS_STORE.path_map[{target!r}], json={{}})"
     return f"""
 import json, sys
 from nexy.core.config import Config
@@ -80,9 +99,10 @@ Config()
 from nexy.modules.builder import Builder
 Builder().build()
 from fastapi.testclient import TestClient
+from nexy.modules.routers.actions.store import ACTIONS_STORE
 from nexy.modules.routers.app import AppServer
 with TestClient(AppServer().run(), raise_server_exceptions=False) as client:
-    answer = client.get({route!r})
+    answer = {call}
 sys.stdout.write("@@" + json.dumps([answer.status_code, answer.text]) + "@@")
 """
 
@@ -112,15 +132,15 @@ def _run(project: Path, code: str) -> subprocess.CompletedProcess[str]:
 
 
 @pytest.mark.parametrize("orm", ORMS)
-@pytest.mark.parametrize(("template", "route", "models"), TEMPLATES)
-def test_the_users_route_shows_the_user_of_the_database(tmp_path, template, route, models, orm):
+@pytest.mark.parametrize("template", list(MODELS))
+def test_the_project_shows_the_row_of_the_database(tmp_path, template, orm):
     _scaffold(tmp_path, template, orm)
-    prepared = _run(tmp_path, prepare_code(orm, models))
+    prepared = _run(tmp_path, prepare_code(orm, template))
     assert prepared.returncode == 0, prepared.stderr[-1500:]
-    done = _run(tmp_path, request_code(route))
+    done = _run(tmp_path, request_code(template))
     assert "@@" in done.stdout, done.stderr[-1500:]
     status, body = json.loads(done.stdout.split("@@")[1])
-    assert (status, "Ada" in body) == (200, True), body[:300]
+    assert (status, MODELS[template][3] in body) == (200, True), body[:300]
 
 
 RELOAD = """
@@ -129,8 +149,8 @@ from nexy.modules.cli.devtools.watch.purge import purge_project_modules
 
 def names():
     from src.configs.db import run
-    from src.services.user_service import UserService
-    return [user.name for user in run(UserService.get_all())]
+    from src.services.todo_service import TodoService
+    return [todo.title for todo in run(TodoService.all())]
 
 before = names()
 purge_project_modules()
@@ -141,11 +161,12 @@ sys.stdout.write("@@" + json.dumps([before, after]) + "@@")
 
 def test_tortoise_still_answers_after_nexy_dev_imports_the_project_again(tmp_path):
     _scaffold(tmp_path, "web-fbr", "Tortoise-ORM")
-    prepared = _run(tmp_path, prepare_code("Tortoise-ORM", "src.models.user_model"))
+    prepared = _run(tmp_path, prepare_code("Tortoise-ORM", "web-fbr"))
     assert prepared.returncode == 0, prepared.stderr[-1500:]
     done = _run(tmp_path, RELOAD)
     assert "@@" in done.stdout, done.stderr[-1500:]
-    assert json.loads(done.stdout.split("@@")[1]) == [["Ada"], ["Ada"]]
+    titles = ["Water the plants"]
+    assert json.loads(done.stdout.split("@@")[1]) == [titles, titles]
 
 
 def _real_tools(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -166,18 +187,21 @@ def _real_tools(args: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
 @pytest.mark.parametrize("orm", ORMS)
 @pytest.mark.parametrize("template", ["web-fbr", "web-modular", "api-fbr", "api-modular"])
 def test_a_new_project_has_its_tables_without_a_manual_migration(tmp_path, template, orm):
-    route = {"web-fbr": "/users", "web-modular": "/users", "api-fbr": "/", "api-modular": "/users"}
     _scaffold(tmp_path, template, orm)
     url = default_url("sqlite", orm)
     generate_post_init_files(tmp_path, orm, url)
     migration = init_migration(orm, tmp_path, url, _real_tools)
     assert migration.done, migration.problem
-    done = _run(tmp_path, request_code(route[template]))
+    done = _run(tmp_path, request_code(template))
     assert "@@" in done.stdout, done.stderr[-1500:]
     assert json.loads(done.stdout.split("@@")[1])[0] == 200
 
 
-TEAM = """
+ADD_ACTION = {
+    "web-fbr": "src.actions.todos.add_todo",
+    "web-modular": "src.apps.todos.todo_actions.add_todo",
+}
+ADD = """
 import json, sys
 from nexy.core.config import Config
 Config()
@@ -187,26 +211,20 @@ from fastapi.testclient import TestClient
 from nexy.modules.routers.actions.store import ACTIONS_STORE
 from nexy.modules.routers.app import AppServer
 with TestClient(AppServer().run(), raise_server_exceptions=False) as client:
-    if {fbr!r}:
-        join = ACTIONS_STORE.path_map["src.actions.team.join_team"]
-    else:
-        join = "/api/team"
-    answer = client.post(join, json={{"name": "Grace", "email": "grace@example.com"}})
+    add = ACTIONS_STORE.path_map[{action!r}]
+    answer = client.post(add, json={{"title": "Call the plumber"}})
 sys.stdout.write("@@" + json.dumps([answer.status_code, answer.text]) + "@@")
 """
 
 
 @pytest.mark.parametrize("orm", ORMS)
-@pytest.mark.parametrize(
-    ("template", "models"),
-    [("web-fbr", "src.models.user_model"), ("web-modular", "src.apps.users.user_model")],
-)
-def test_the_connection_page_adds_a_member_to_the_users_table(tmp_path, template, models, orm):
+@pytest.mark.parametrize("template", ["web-fbr", "web-modular"])
+def test_the_todos_page_adds_a_task_to_the_todos_table(tmp_path, template, orm):
     _scaffold(tmp_path, template, orm)
-    prepared = _run(tmp_path, prepare_code(orm, models))
+    prepared = _run(tmp_path, prepare_code(orm, template))
     assert prepared.returncode == 0, prepared.stderr[-1500:]
-    done = _run(tmp_path, TEAM.format(fbr=template == "web-fbr"))
+    done = _run(tmp_path, ADD.format(action=ADD_ACTION[template]))
     assert "@@" in done.stdout, done.stderr[-1500:]
     status, body = json.loads(done.stdout.split("@@")[1])
-    names = [member["name"] for member in json.loads(body)["members"]] if status == 200 else body
-    assert names == ["Ada", "Grace"], body[:300]
+    titles = [todo["title"] for todo in json.loads(body)["items"]] if status == 200 else body
+    assert titles == ["Water the plants", "Call the plumber"], body[:300]

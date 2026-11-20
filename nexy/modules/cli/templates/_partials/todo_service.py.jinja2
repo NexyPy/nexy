@@ -1,0 +1,134 @@
+"""Every read and write of the tasks. The actions of `{{ "src/actions/todos.py" if FBRouter else "src/apps/todos/todo_actions.py" }}` call
+nothing else."""
+{% if orm == "None" %}
+
+from dataclasses import dataclass
+
+
+@dataclass
+class TodoModel:
+    id: int
+    title: str
+    done: bool = False
+
+
+# No database in this project: the tasks are a list the server keeps while it runs.
+TODOS = [
+    TodoModel(1, "Read {{ "src/actions/todos.py" if FBRouter else "src/apps/todos/todo_actions.py" }}: the page calls them"),
+    TodoModel(2, "Add a task with the field above"),
+    TodoModel(3, "Tick a task to mark it done", done=True),
+]
+
+
+def _find(todo_id: int) -> TodoModel | None:
+    return next((todo for todo in TODOS if todo.id == todo_id), None)
+
+
+class TodoService:
+    @staticmethod
+    def all() -> list[TodoModel]:
+        return list(TODOS)
+
+    @staticmethod
+    def add(title: str) -> None:
+        TODOS.append(TodoModel(max((todo.id for todo in TODOS), default=0) + 1, title))
+
+    @staticmethod
+    def toggle(todo_id: int) -> None:
+        if todo := _find(todo_id):
+            todo.done = not todo.done
+
+    @staticmethod
+    def rename(todo_id: int, title: str) -> None:
+        if todo := _find(todo_id):
+            todo.title = title
+
+    @staticmethod
+    def remove(todo_id: int) -> None:
+        TODOS[:] = [todo for todo in TODOS if todo.id != todo_id]
+
+    @staticmethod
+    def clear_done() -> None:
+        TODOS[:] = [todo for todo in TODOS if not todo.done]
+{% elif orm == "Tortoise-ORM" %}
+
+from {{ "src.models" if FBRouter else "src.apps.todos" }}.todo_model import TodoModel
+
+
+class TodoService:
+    @staticmethod
+    async def all() -> list[TodoModel]:
+        return await TodoModel.all().order_by("id")
+
+    @staticmethod
+    async def add(title: str) -> None:
+        await TodoModel.create(title=title)
+
+    @staticmethod
+    async def toggle(todo_id: int) -> None:
+        todo = await TodoModel.get_or_none(id=todo_id)
+        if todo:
+            todo.done = not todo.done
+            await todo.save()
+
+    @staticmethod
+    async def rename(todo_id: int, title: str) -> None:
+        await TodoModel.filter(id=todo_id).update(title=title)
+
+    @staticmethod
+    async def remove(todo_id: int) -> None:
+        await TodoModel.filter(id=todo_id).delete()
+
+    @staticmethod
+    async def clear_done() -> None:
+        await TodoModel.filter(done=True).delete()
+{% else %}
+
+{% if orm == "SQLModel" %}from sqlmodel import Session, delete, select
+{% else %}from sqlalchemy import delete, select
+from sqlalchemy.orm import Session
+{% endif %}
+from src.configs.db import engine
+from {{ "src.models" if FBRouter else "src.apps.todos" }}.todo_model import TodoModel
+
+
+class TodoService:
+    @staticmethod
+    def all() -> list[TodoModel]:
+        with Session(engine) as session:
+            return list(session.{{ "exec" if orm == "SQLModel" else "scalars" }}(select(TodoModel).order_by(TodoModel.id)).all())
+
+    @staticmethod
+    def add(title: str) -> None:
+        with Session(engine) as session:
+            session.add(TodoModel(title=title, done=False))
+            session.commit()
+
+    @staticmethod
+    def toggle(todo_id: int) -> None:
+        with Session(engine) as session:
+            todo = session.get(TodoModel, todo_id)
+            if todo:
+                todo.done = not todo.done
+                session.commit()
+
+    @staticmethod
+    def rename(todo_id: int, title: str) -> None:
+        with Session(engine) as session:
+            todo = session.get(TodoModel, todo_id)
+            if todo:
+                todo.title = title
+                session.commit()
+
+    @staticmethod
+    def remove(todo_id: int) -> None:
+        with Session(engine) as session:
+            session.execute(delete(TodoModel).where(TodoModel.id == todo_id))
+            session.commit()
+
+    @staticmethod
+    def clear_done() -> None:
+        with Session(engine) as session:
+            session.execute(delete(TodoModel).where(TodoModel.done))
+            session.commit()
+{% endif %}
