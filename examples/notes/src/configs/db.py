@@ -14,7 +14,7 @@ TORTOISE_ORM = {
     "connections": {"default": os.getenv("DATABASE_URL", "sqlite://dev.db")},
     "apps": {
         "models": {
-            "models": ["src.models.todo_model", "aerich.models"],
+            "models": ["aerich.models"],
             "default_connection": "default",
         }
     },
