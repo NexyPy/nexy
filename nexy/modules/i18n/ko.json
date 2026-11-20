@@ -108,7 +108,8 @@
     "updating": "서버 업데이트",
     "vite_failed": "Vite를 시작하지 못했습니다.",
     "vite_failed_hint": "원인은 위의 Vite 출력을 확인하세요.",
-    "server_failed": "서버가 중지되었습니다({reason}): 수정을 기다리는 중입니다."
+    "server_failed": "서버가 중지되었습니다({reason}): 수정을 기다리는 중입니다.",
+    "port_in_use": "포트 {asked}은(는) 사용 중입니다. {port}을(를) 사용합니다."
   },
   "format": {
     "failed": "파일 {count}개 실패",
