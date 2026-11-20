@@ -3,6 +3,17 @@
 All notable changes to Nexy are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/); versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- **The `/connection` page of every web starter is now a Todos app at `/todos`.** Add a task, tick
+  it, rename it (double-click, Enter saves, Escape gives up), delete it, filter All, To do and
+  Done, clear the done ones; each change is an action of `src/actions/todos.py` and the page shows
+  how long the server took. Without an ORM the tasks are a list the server keeps; with one they are
+  the `todos` table, which the first migration creates. A web project no longer ships the `users`
+  page; an API project keeps its users.
+
 ## [2.8.0] - 2026-11-20
 
 ### Added

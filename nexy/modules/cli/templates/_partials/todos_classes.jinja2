@@ -1,0 +1,50 @@
+{#- The classes of the /todos page. A utility project (Tailwind or UnoCSS) styles it with utility
+    classes; a plain CSS project with the nx-todos classes of todos.css. `k(name)` writes the class
+    attribute of one element, or nothing. -#}
+{%- set cls = "className" if useCSR and client_framework == "react" else "class" -%}
+{%- if utility_ui -%}
+{%- set c = {
+  "section": "mx-auto grid w-full max-w-[72rem] grid-cols-[minmax(0,1fr)] gap-12 px-6 pb-20 pt-[8.5rem] lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start lg:gap-[4.5rem]",
+  "intro": "min-w-0",
+  "eyebrow": "flex items-center gap-2.5 font-mono text-[0.72rem] uppercase tracking-[0.08em] text-foreground-second before:h-1.5 before:w-1.5 before:bg-current before:content-['']",
+  "title": "mt-4 text-[clamp(2.6rem,6vw,3.6rem)] leading-[1.02] tracking-[-0.02em]",
+  "lead": "mt-5 max-w-[40ch] leading-relaxed text-foreground-second",
+  "code": "font-mono text-[0.85em] text-foreground",
+  "trip": "mt-8 divide-y divide-border border border-border bg-background-second",
+  "trip_row": "flex justify-between gap-4 px-4 py-3 text-sm",
+  "dt": "font-mono text-foreground-second",
+  "dd": "text-right font-mono tabular-nums",
+  "card": "border border-border bg-background shadow-[0_24px_60px_-32px_rgb(0_0_0/0.25)]",
+  "form": "flex gap-2 border-b border-border p-4",
+  "input": "min-h-12 min-w-0 flex-1 border border-border-second bg-background px-4 text-base text-foreground placeholder:text-foreground-second focus:border-foreground focus:outline-none",
+  "add": "min-h-12 whitespace-nowrap border border-foreground bg-foreground px-6 font-mono text-[0.8rem] font-semibold uppercase tracking-[0.05em] text-background transition-opacity hover:opacity-85 disabled:cursor-progress disabled:opacity-50",
+  "note": "px-4 pt-3 text-sm text-foreground empty:hidden",
+  "bar": "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-4 py-2.5",
+  "filters": "flex gap-1",
+  "filter": "inline-flex min-h-10 items-center gap-2 border border-transparent px-3 text-[0.9rem] text-foreground-second hover:text-foreground aria-pressed:border-border-second aria-pressed:text-foreground",
+  "count": "font-mono text-xs text-foreground-second",
+  "clear": "min-h-10 px-2 text-[0.9rem] text-foreground-second underline underline-offset-4 hover:text-foreground disabled:hidden",
+  "list": "divide-y divide-border",
+  "row": "flex min-h-14 items-center gap-3.5 py-1.5 pl-4 pr-2.5",
+  "check": "grid h-[1.4rem] w-[1.4rem] flex-none cursor-pointer appearance-none place-content-center border-[1.5px] border-border-second bg-background transition-colors hover:border-foreground checked:border-signal checked:bg-signal after:-mt-0.5 after:h-[0.8rem] after:w-[0.45rem] after:rotate-45 after:scale-0 after:border-b-2 after:border-r-2 after:border-background after:content-[''] after:transition-transform checked:after:scale-100",
+  "task": "min-w-0 flex-1 cursor-text leading-snug [overflow-wrap:anywhere]",
+  "task_done": "min-w-0 flex-1 cursor-text leading-snug [overflow-wrap:anywhere] text-foreground-second line-through decoration-border-second",
+  "edit": "min-h-10 min-w-0 flex-1 border border-foreground bg-background px-3 text-foreground focus:outline-none",
+  "actions": "flex flex-none gap-0.5",
+  "action": "grid h-10 w-10 place-items-center text-foreground-second transition-colors hover:bg-background-second hover:text-foreground",
+  "empty": "px-6 py-12 text-center text-foreground-second",
+  "foot": "flex justify-between gap-4 border-t border-border px-4 py-3 font-mono text-xs uppercase tracking-[0.04em] text-foreground-second",
+} -%}
+{%- else -%}
+{%- set c = {
+  "section": "nx-todos", "intro": "", "eyebrow": "nx-todos-eyebrow", "title": "nx-todos-title",
+  "lead": "nx-todos-lead", "code": "", "trip": "nx-todos-trip", "trip_row": "", "dt": "", "dd": "",
+  "card": "nx-todos-card", "form": "nx-todos-new", "input": "", "add": "nx-todos-add",
+  "note": "nx-todos-note", "bar": "nx-todos-bar", "filters": "nx-todos-filters",
+  "filter": "nx-todos-filter", "count": "nx-todos-count", "clear": "nx-todos-clear",
+  "list": "nx-todos-list", "row": "nx-todo", "check": "nx-todo-check", "task": "nx-todo-title",
+  "task_done": "nx-todo-title nx-todo-done", "edit": "nx-todo-edit", "actions": "nx-todo-actions",
+  "action": "nx-todo-action", "empty": "nx-todos-empty", "foot": "nx-todos-foot",
+} -%}
+{%- endif -%}
+{%- macro k(name) -%}{% if c[name] %} {{ cls }}="{{ c[name] }}"{% endif %}{%- endmacro -%}

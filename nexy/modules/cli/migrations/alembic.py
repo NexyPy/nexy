@@ -9,11 +9,13 @@ from jinja2 import Environment, FileSystemLoader
 
 from nexy.modules.cli.constants import TEMPLATES_DIR
 
+# The model each starter writes: the tasks of a web project, the users of an API.
+_SCAFFOLDED = ("todo_model.py", "user_model.py")
 _URL_LINE = re.compile(r"^sqlalchemy\.url\s*=.*", re.MULTILINE)
 
 
 def models_module(project: Path) -> str:
-    """The module that holds the models: the scaffold's user model, else the first `*_model.py`.
+    """The module that holds the models: the scaffold's model, else the first `*_model.py`.
 
     Without any model file yet, the module the scaffold would write: `src/models`, or the users
     module of a modular project.
@@ -22,7 +24,7 @@ def models_module(project: Path) -> str:
     found = sorted(flat.glob("*_model.py")) or sorted(
         (project / "src" / "apps").glob("**/*_model.py")
     )
-    scaffolded = [path for path in found if path.name == "user_model.py"]
+    scaffolded = [path for path in found if path.name in _SCAFFOLDED]
     if scaffolded or found:
         relative = (scaffolded or found)[0].relative_to(project).with_suffix("")
         return ".".join(relative.parts)
