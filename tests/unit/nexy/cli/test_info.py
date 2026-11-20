@@ -161,7 +161,6 @@ def test_info_prints_non_fbr_router(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "Router      modular" in result.stdout
 
 
-@pytest.mark.usefixtures("project_env")
 def test_info_says_frameworks_are_not_found_on_invalid_json(
     project_env: Path,
 ) -> None:
