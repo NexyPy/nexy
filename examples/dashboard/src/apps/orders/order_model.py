@@ -1,4 +1,4 @@
-"""The orders of the shop: one row per product in an order, which is what the charts add up."""
+"""The orders of the shop. An order holds one product, in one or more units."""
 
 from datetime import date
 
