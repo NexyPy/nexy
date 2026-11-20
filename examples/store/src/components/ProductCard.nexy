@@ -1,0 +1,15 @@
+---
+from src.store.catalog import money
+
+product: prop[object]
+---
+<li>
+  <a href="/products/{{ product.slug }}" class="group flex flex-col gap-3">
+    <img src="/products/{{ product.slug }}.svg" alt="" width="400" height="400" loading="lazy" class="aspect-square w-full border border-border transition-opacity group-hover:opacity-90">
+    <span class="flex items-baseline justify-between gap-3">
+      <span class="font-medium group-hover:underline group-hover:underline-offset-4">{{ product.name }}</span>
+      <span class="tabular-nums">{{ money(product.price_cents) }}</span>
+    </span>
+    <span class="-mt-2 text-sm text-foreground-second">{{ product.summary }}</span>
+  </a>
+</li>

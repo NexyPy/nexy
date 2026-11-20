@@ -1,0 +1,54 @@
+---
+from "@/components/ProductCard.nexy" import ProductCard
+from nexy import useSearchParams
+from src.store.catalog import CATEGORIES, browse
+from urllib.parse import urlencode
+
+params = useSearchParams()
+text = params.get("q", "")
+category = params.get("category", "")
+category = category if category in CATEGORIES else ""
+products = browse(text, category)
+
+
+def at(name):
+    kept = {key: value for key, value in (("q", text), ("category", name)) if value}
+    return "/?" + urlencode(kept) if kept else "/"
+
+
+chip = "flex min-h-11 items-center border px-4 text-sm"
+---
+<section class="mx-auto flex w-full max-w-[72rem] flex-col gap-8 px-4 py-10 sm:px-6">
+  <div class="flex flex-col gap-2">
+    <h1 class="font-display text-5xl leading-[1.05]">Things for the desk, the kitchen and the road</h1>
+    <p class="text-lg text-foreground-second">An example shop: a catalog, a cart kept in a cookie, a checkout that saves the order.</p>
+  </div>
+
+  <form method="get" action="/" role="search" class="flex gap-2">
+    {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+    <label class="sr-only" for="q">Search the shop</label>
+    <input id="q" type="search" name="q" value="{{ text }}" placeholder="Search the shop" class="min-h-11 min-w-0 flex-1 border border-border-second bg-background px-3 text-base outline-none focus:border-foreground">
+    <button type="submit" class="min-h-11 bg-foreground px-5 font-medium text-background hover:opacity-85">Search</button>
+  </form>
+
+  <nav aria-label="Categories" class="-mt-4">
+    <ul class="flex flex-wrap gap-2">
+      <li><a href="{{ at('') }}" class="{{ chip }} {{ 'border-foreground bg-foreground text-background' if not category else 'border-border-second hover:border-foreground' }}"{% if not category %} aria-current="page"{% endif %}>All</a></li>
+      {% for name in CATEGORIES %}
+      <li><a href="{{ at(name) }}" class="{{ chip }} {{ 'border-foreground bg-foreground text-background' if name == category else 'border-border-second hover:border-foreground' }}"{% if name == category %} aria-current="page"{% endif %}>{{ name }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  {% if products %}
+  <ul class="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4" aria-label="Products">
+    {% for product in products %}
+    <ProductCard product="{{ product }}" />
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="border border-dashed border-border-second p-8 text-center text-foreground-second" role="status">
+    Nothing matches "{{ text }}". <a href="/" class="underline underline-offset-4">See every product</a>
+  </p>
+  {% endif %}
+</section>
