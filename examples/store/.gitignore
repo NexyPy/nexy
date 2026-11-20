@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.nexy/
+nexy.db
+*.db
+node_modules/
+dist/
+.venv/
+venv/

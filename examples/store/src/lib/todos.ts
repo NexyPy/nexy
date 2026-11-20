@@ -1,0 +1,58 @@
+// The /todos page talks to the Python server through six actions of src/actions/todos.py. This file
+// calls them, times each round trip, and holds what every framework version of the page shares.
+import { add_todo, clear_done, delete_todo, rename_todo, todos, toggle_todo } from "@nexy/actions";
+
+export type Todo = { id: number; title: string; done: boolean };
+export type Filter = "all" | "todo" | "done";
+
+export const FILTERS: { key: Filter; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "todo", label: "To do" },
+  { key: "done", label: "Done" },
+];
+
+export const EMPTY: Record<Filter, string> = {
+  all: "Nothing to do. Add a first task above.",
+  todo: "Nothing left to do.",
+  done: "Nothing done yet.",
+};
+
+export const LOADING = "Asking the server for the tasks...";
+
+export function shown(items: Todo[], filter: Filter): Todo[] {
+  return items.filter((todo) => filter === "all" || todo.done === (filter === "done"));
+}
+
+export function count(items: Todo[], filter: Filter): number {
+  return shown(items, filter).length;
+}
+
+// What a call leaves on the page: the list the server answered with (null keeps the one shown),
+// why a change was refused, and which action answered in how long.
+export type Answer = { items: Todo[] | null; note: string; call: string; ms: number | null };
+
+async function timed(call: string, run: () => Promise<{ items: Todo[]; note: string }>): Promise<Answer> {
+  const started = performance.now();
+  try {
+    const board = await run();
+    return { items: board.items, note: board.note, call, ms: Math.round(performance.now() - started) };
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    return { items: null, note: `No answer from the server: ${reason}`, call, ms: null };
+  }
+}
+
+export const server = {
+  load: () => timed("todos", () => todos()),
+  add: (title: string) => timed("add_todo", () => add_todo({ title })),
+  toggle: (todo_id: number) => timed("toggle_todo", () => toggle_todo({ todo_id })),
+  rename: (todo_id: number, title: string) => timed("rename_todo", () => rename_todo({ todo_id, title })),
+  remove: (todo_id: number) => timed("delete_todo", () => delete_todo({ todo_id })),
+  clear: () => timed("clear_done", () => clear_done()),
+};
+
+// The text of the "Answered in" line.
+export function took(answer: Answer | null): string {
+  if (!answer) return "...";
+  return answer.ms === null ? "no answer" : `${answer.ms} ms`;
+}
