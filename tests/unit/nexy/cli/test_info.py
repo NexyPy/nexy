@@ -1,56 +1,53 @@
-"""Tests for the `nx info` command."""
+"""What `nx` prints when it is run without a command: the version and the commands."""
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-from types import SimpleNamespace
-
-from typer.testing import CliRunner
-
 from nexy.__version__ import __version__
-from nexy.helpers.common import package_manager
-from nexy.modules.cli import CLI
-
-runner = CliRunner()
+from nexy.helpers.common.console import console
+from nexy.modules.i18n import t
 
 
-def test_info_inside_project(monkeypatch, tmp_path: Path) -> None:
-    (tmp_path / "nexyconfig.py").write_text("useFF = react()\n", encoding="utf-8")
-    (tmp_path / "package.json").write_text(
-        json.dumps({"dependencies": {"react": "^19.2.0", "vue": "~3.5.13"}}),
-        encoding="utf-8",
-    )
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(package_manager, "resolve", lambda name: f"/usr/bin/{name}")
-    monkeypatch.setattr(package_manager, "detect", lambda root=None: "pnpm")
-    monkeypatch.setattr(package_manager, "version", lambda manager: (9, 15, 9))
-    monkeypatch.setattr(
-        "nexy.modules.cli.commands.info.subprocess.run",
-        lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout="v22.18.0\n"),
-    )
-
-    result = runner.invoke(CLI, ["info"])
-
-    assert result.exit_code == 0
-    assert f"Nexy        {__version__}" in result.stdout
-    assert "Python      " in result.stdout
-    assert "OS          " in result.stdout
-    assert "Node        22.18.0" in result.stdout
-    assert "Package     pnpm 9.15.9" in result.stdout
-    assert "Router      file-based" in result.stdout
-    assert "Frameworks  react 19.2.0, vue 3.5.13" in result.stdout
+def _commands() -> list[tuple[str, str]]:
+    """(usage, description) of each command, in the order they are shown."""
+    return [
+        (
+            "new [dim]<project-name>[/dim]",
+            t("cli.cmd.new", "Create a new project in a new directory"),
+        ),
+        ("init", t("cli.cmd.init", "Initialize Nexy in the current directory")),
+        ("dev", t("cli.cmd.dev", "Start local development server with hot reload")),
+        ("start", t("cli.cmd.start", "Start production server")),
+        ("build", t("cli.cmd.build", "Compile project for production deployment")),
+        ("check", t("cli.cmd.check", "Run type checking across all project files")),
+        (
+            "info",
+            t("cli.cmd.info", "Print environment and project versions in one block"),
+        ),
+        ("format", t("cli.cmd.format", "Auto-format all project files")),
+        ("test", t("cli.cmd.test", "Run tests (--server / --client)")),
+        ("migrate", t("cli.cmd.migrate", "Run ORM migrations (auto-detects ORM)")),
+        ("skills", t("cli.cmd.skills", "Add skills and AGENTS.md for coding agents")),
+    ]
 
 
-def test_info_outside_project_and_missing_node(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(package_manager, "resolve", lambda name: None)
-    monkeypatch.setattr(package_manager, "detect", lambda root=None: None)
+def _print_commands() -> None:
+    commands = _commands()
+    width = max(len(usage) for usage, _ in commands)
+    for usage, description in commands:
+        console.print(f"  [yellow]{usage.ljust(width)}[/yellow]  {description}")
 
-    result = runner.invoke(CLI, ["info"])
 
-    assert result.exit_code == 0
-    assert "Node        not found" in result.stdout
-    assert "Package     not found" in result.stdout
-    assert "Router      not found" in result.stdout
-    assert "Frameworks  not found" in result.stdout
+def print_overview() -> None:
+    tagline = t("cli.tagline", "The modern full-stack framework that just works")
+    header = t("cli.commands_header", "Available Commands:")
+    usage = t("cli.usage", "Run nx or nexy <command> --help for detailed usage")
+    console.print()
+    console.print(f"[bold green]nexy[/bold green] [dim]{__version__}[/dim]")
+    console.print()
+    console.print(f"[italic]{tagline}[/italic]")
+    console.print()
+    console.print(f"[bold cyan]{header}[/bold cyan]")
+    _print_commands()
+    console.print()
+    console.print(f"[dim]{usage}[/dim]")
+    console.print()
