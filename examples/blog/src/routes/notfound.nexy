@@ -1,0 +1,19 @@
+---
+from "@/components/PostList.nexy" import PostList
+from src.blog.posts import all_posts
+
+metadata = {"title": "Page not found", "robots": "noindex"}
+latest = all_posts()[:3]
+---
+<section class="nx-container blog-intro">
+  <p class="blog-eyebrow">404</p>
+  <h1 class="blog-title">This page is not here</h1>
+  <p class="blog-lead">The address may be mistyped, or the post has a new name. The latest posts are below, and <a href="/">every post</a> is one click away.</p>
+</section>
+
+<section class="nx-container blog-section">
+  <div class="blog-section-head">
+    <h2 class="blog-section-title">Latest posts</h2>
+  </div>
+  <PostList posts="{{ latest }}" />
+</section>

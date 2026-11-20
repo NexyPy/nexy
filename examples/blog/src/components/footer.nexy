@@ -1,0 +1,11 @@
+<footer class="nx-footer">
+  <div class="nx-container nx-footer-inner">
+    <p>Plain Text is written in Markdown and served by <a class="blog-footer-link" href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer">Nexy</a>.</p>
+    <nav class="nx-footer-links" aria-label="Footer">
+      <a href="/">Posts</a>
+      <a href="/tags">Tags</a>
+      <a href="/about">About</a>
+      <a href="/rss">RSS</a>
+    </nav>
+  </div>
+</footer>
