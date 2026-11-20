@@ -73,7 +73,7 @@ def test_a_period_the_page_does_not_offer_falls_back_to_30_days(call, hostile):
     assert call("overview", days=hostile).json()["period"]["days"] == 30
 
 
-def test_a_period_sent_as_a_huge_json_number_is_refused_not_a_crash(app):
+def test_a_period_sent_as_a_huge_json_number_is_a_bad_request(app):
     from fastapi.testclient import TestClient
     from nexy.decorators import ACTIONS_STORE
 
@@ -84,4 +84,4 @@ def test_a_period_sent_as_a_huge_json_number_is_refused_not_a_crash(app):
             content='{"days": ' + "9" * 5000 + "}",
             headers={"content-type": "application/json"},
         )
-    assert answer.status_code < 500
+    assert answer.status_code == 400
