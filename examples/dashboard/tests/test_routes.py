@@ -23,7 +23,8 @@ def test_a_hostile_channel_is_never_written_into_the_page(client):
 
 
 def test_the_overview_mounts_the_chart_with_its_window(client):
-    assert "RevenueChart" in client.get("/?days=7").text
+    props = 'data-nexy-props="{&quot;days&quot;: 7, &quot;channel&quot;: &quot;Cafe&quot;}"'
+    assert props in client.get("/?days=7&channel=Cafe").text
 
 
 def test_the_api_gives_one_point_per_day(client):
