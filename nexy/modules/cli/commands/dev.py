@@ -1,4 +1,5 @@
 import os
+import signal
 import subprocess  # nosec B404
 import sys
 import threading
@@ -287,7 +288,28 @@ def _serve(config: Config, endpoint: Endpoint, session: _Session, started: float
         _release(observer, session)
 
 
+def _interrupt(_signum: int, _frame: Any) -> None:
+    """A SIGTERM stops `nx dev` the way Ctrl+C does, so Vite is stopped with it."""
+    raise KeyboardInterrupt
+
+
+def _announce_port(asked: int, used: int) -> None:
+    if used != asked:
+        message = t("dev.port_in_use", "Port {asked} is in use, using {port} instead.")
+        warning(message.format(asked=asked, port=used))
+
+
 def dev(port: int | None = None, host: str | None = None) -> None:
+    # uvicorn raises a SIGTERM again once it has stopped: without this, the process would end
+    # there, before the clean-up that stops Vite.
+    previous = signal.signal(signal.SIGTERM, _interrupt)
+    try:
+        _dev(port, host)
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def _dev(port: int | None, host: str | None) -> None:
     pycache()
     ensure_project_packages()
     abort_on_invalid_config()
@@ -298,7 +320,9 @@ def dev(port: int | None = None, host: str | None = None) -> None:
     if config.useVite:
         _require_vite_install()
     run_host = host or config.useHost
-    run_port, client_port = Server.resolve_ports(run_host, port or config.usePort)
+    asked = port or config.usePort
+    run_port, client_port = Server.resolve_ports(run_host, asked)
+    _announce_port(asked, run_port)
     Server.check_nexy_prod(delete=True)
 
     ssl_keyfile, ssl_certfile = Server.get_ssl_config(config)

@@ -1,0 +1,473 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+
+
+
+:root {
+  color-scheme: light;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  --accent: light-dark(#b45309, #f59e0b);
+  /* Black and white: paper and ink, with greys between. */
+  --background: light-dark(#fafafa, #0e0e10);
+  --background-second: light-dark(#ffffff, #17171a);
+  --foreground: light-dark(#0a0a0b, #f4f4f5);
+  --foreground-second: light-dark(#5c5c63, #a1a1aa);
+  --border: light-dark(#e4e4e7, #26262b);
+  --border-second: light-dark(#d1d1d6, #3a3a41);
+  --brand: var(--foreground);
+  /* The one colour of the charts: roasted amber. Green and red only say which way a number went. */
+  --chart: light-dark(#c2410c, #fb923c);
+  --up: light-dark(#15803d, #4ade80);
+  --down: light-dark(#b91c1c, #f87171);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-border-second: var(--border-second);
+  --color-accent: var(--accent);
+  --color-brand: var(--brand);
+  --color-chart: var(--chart);
+  --color-up: var(--up);
+  --color-down: var(--down);
+
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+}
+
+
+
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  ::selection {
+    background-color: color-mix(in oklab, var(--brand) 30%, transparent);
+  }
+}
+
+
+/* The look of the starter pages, in the colours of Nexy: deep emerald in the dark, mint mist in the
+   light. Plain CSS on the design tokens above, so the same file serves Tailwind, UnoCSS and
+   plain-CSS projects. In a layer, so a utility class still wins. */
+
+/* Moving between two pages feels like switching a tab: the header stays, the content slides. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: nx-leave 0.16s ease-in both;
+}
+::view-transition-new(root) {
+  animation: nx-enter 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+::view-transition-group(nx-header),
+::view-transition-group(nx-current) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+@keyframes nx-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes nx-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+/* The mobile menu is a sheet: the scrim fades and the panel comes in from the left edge. */
+@keyframes nx-sheet-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes nx-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Closing plays the way back: the script hides the sheet once these have finished. */
+@keyframes nx-sheet-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes nx-scrim-out {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .nx-sheet,
+  .nx-sheet-scrim {
+    animation: none !important;
+  }
+}
+
+@layer components {
+  .nx-page {
+    --btn-bg: var(--foreground);
+    --btn-bg-hover: light-dark(#27272a, #ffffff);
+    --btn-fg: var(--background);
+    --grid: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.05));
+    --ring: light-dark(rgb(0 0 0 / 0.45), rgb(255 255 255 / 0.55));
+    --glow-a: light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.08));
+    --glow-b: light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.04));
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: "Geist", "Inter", system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .nx-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .nx-container {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+  :where(.nx-page) :where(a, button, summary):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+  .nx-page code {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 0.875em;
+  }
+  .nx-page :where(p code, li code) {
+    padding: 0.1em 0.4em;
+    border-radius: 0.375rem;
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+
+  /* Header */
+  .nx-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    view-transition-name: nx-header;
+    background: color-mix(in oklab, var(--background) 80%, transparent);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+  }
+  .nx-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    height: 4rem;
+  }
+  .nx-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+  }
+  .nx-brand img {
+    display: block;
+    height: 1.25rem;
+    width: auto;
+  }
+  :root.dark .nx-brand img,
+  :root.dark .nx-sheet-head img {
+    filter: brightness(0) invert(1);
+  }
+  .nx-nav-links {
+    display: flex;
+    gap: 0.25rem;
+  }
+  .nx-nav-link {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--foreground-second);
+    text-decoration: none;
+    transition: color 0.15s, background-color 0.15s;
+  }
+  .nx-nav-link:hover {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 6%, transparent);
+  }
+  .nx-nav-link[aria-current="page"] {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 10%, transparent);
+    view-transition-name: nx-current;
+  }
+  .nx-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* The mobile menu: a sheet from the left edge, so the thumb reaches it. It is a
+     layer of its own, outside the header, because the header blurs its backdrop and
+     that would anchor a fixed panel to the bar instead of the screen. */
+  .nx-menu-button {
+    display: none;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: -0.25rem;
+    padding: 0;
+    border: 1px solid var(--border-second);
+    border-radius: 0.625rem;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+  }
+  .nx-menu-icon {
+    display: grid;
+    place-items: center;
+  }
+  .nx-menu-icon svg {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .nx-sheet-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+  }
+  .nx-sheet-scrim {
+    position: absolute;
+    inset: 0;
+    background: light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.6));
+    animation: nx-scrim-in 0.2s ease both;
+  }
+  .nx-sheet-scrim[data-state="closed"] {
+    animation: nx-scrim-out 0.2s ease both;
+  }
+  .nx-sheet {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    max-width: 24rem;
+    background: var(--background);
+    border-right: 1px solid var(--border);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.55);
+    animation: nx-sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .nx-sheet[data-state="closed"] {
+    animation: nx-sheet-out 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  .nx-sheet:focus {
+    outline: none;
+  }
+  /* The head of the sheet: the logo and the title that names the dialog. The close button sits
+     over its right end. */
+  .nx-sheet-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 4rem 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nx-sheet-head img {
+    display: block;
+    height: 1.25rem;
+  }
+  .nx-sheet-title {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--foreground-second);
+  }
+  .nx-sheet-links {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    overflow-y: auto;
+  }
+  .nx-sheet-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    padding: 0 0.85rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--foreground-second);
+    text-decoration: none;
+    transition: color 0.15s, background-color 0.15s;
+  }
+  .nx-sheet-link:hover,
+  .nx-sheet-link[aria-current="page"] {
+    color: var(--foreground);
+    background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+  /* The bar keeps its links on a wide screen and trades them for the button on a phone.
+     Only a header that carries a sheet does this, so a client-routed page, where no
+     script runs, keeps the links it has always shown. */
+  @media (max-width: 47.99rem) {
+    .nx-header[data-menu] .nx-nav-links {
+      display: none;
+    }
+    .nx-header[data-menu] .nx-menu-button {
+      display: grid;
+    }
+  }
+  /* The close button of the sheet is always visible, unlike the one in the bar. */
+  .nx-menu-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: grid;
+    margin: 0;
+    border-color: transparent;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  .nx-menu-close:hover,
+  .nx-menu-close:focus-visible {
+    opacity: 1;
+  }
+  .nx-sheet-link svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* The light/dark switch: the thumb holds the icon of the current mode. */
+  .nx-switch {
+    position: relative;
+    flex: none;
+    width: 3.25rem;
+    height: 1.875rem;
+    padding: 0;
+    border: 1px solid var(--border-second);
+    border-radius: 999px;
+    background: var(--background-second);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .nx-switch:hover {
+    border-color: var(--brand);
+  }
+  .nx-switch-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(1.875rem - 6px);
+    height: calc(1.875rem - 6px);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    transition: transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  :root.dark .nx-switch-thumb {
+    transform: translateX(1.375rem);
+  }
+  .nx-switch-thumb svg {
+    grid-area: 1 / 1;
+    transition: opacity 0.2s, transform 0.3s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .nx-switch-moon,
+  :root.dark .nx-switch-sun {
+    opacity: 0;
+    transform: rotate(-60deg) scale(0.6);
+  }
+  :root.dark .nx-switch-moon {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding-inline: 1.25rem;
+    border-radius: 0.875rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.18s, border-color 0.18s, transform 0.12s;
+  }
+  .btn-primary {
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    border: 1px solid transparent;
+  }
+  .btn-primary:hover {
+    background: var(--btn-bg-hover);
+  }
+  .btn-ghost {
+    color: var(--foreground);
+    border: 1px solid var(--border-second);
+    background: color-mix(in oklab, var(--background-second) 70%, transparent);
+  }
+  .btn-ghost:hover {
+    border-color: var(--brand);
+  }
+  .btn-primary:active,
+  .btn-ghost:active {
+    transform: translateY(1px);
+  }
+
+  /* Footer */
+  .nx-footer {
+    border-top: 1px solid var(--border);
+  }
+  .nx-footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 2rem;
+    font-size: 0.9375rem;
+    color: var(--foreground-second);
+  }
+  .nx-footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .nx-footer-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nx-footer-links a:hover {
+    color: var(--foreground);
+  }
+}
