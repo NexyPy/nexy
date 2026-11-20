@@ -1,0 +1,19 @@
+---
+from src.blog.posts import tags
+
+metadata = {"title": "Tags", "description": "Every tag of Plain Text, with its number of posts."}
+counted = tags()
+---
+<section class="nx-container blog-intro">
+  <p class="blog-eyebrow">{{ counted | length }} tags</p>
+  <h1 class="blog-title">Tags</h1>
+  <p class="blog-lead">Each post carries a few tags. Pick one to read the posts that share it.</p>
+</section>
+
+<section class="nx-container blog-section">
+  <ul class="blog-cloud">
+    {% for tag, count in counted %}
+    <li><a class="blog-tag" href="/tags/{{ tag }}" aria-label="{{ tag }}, {{ count }} {{ 'post' if count == 1 else 'posts' }}">{{ tag }}<span class="blog-tag-count" aria-hidden="true">{{ count }}</span></a></li>
+    {% endfor %}
+  </ul>
+</section>

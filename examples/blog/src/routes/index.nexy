@@ -1,0 +1,38 @@
+---
+from "@/components/PostList.nexy" import PostList
+from src.blog.posts import all_posts
+
+metadata = {
+    "description": "Notes on building for the web with Python: pages, feeds and small tools, "
+    "written in Markdown and served as HTML.",
+}
+posts = all_posts()
+latest = posts[0]
+---
+<section class="nx-container blog-intro">
+  <p class="blog-eyebrow">A blog in Markdown files</p>
+  <h1 class="blog-title">Plain Text</h1>
+  <p class="blog-lead">Notes on building for the web with Python: pages, feeds and small tools, written in Markdown and served as HTML.</p>
+</section>
+
+<section class="nx-container" aria-labelledby="latest">
+  <article class="blog-feature">
+    <p class="blog-eyebrow" id="latest">Latest post</p>
+    <h2 class="blog-feature-title"><a href="/posts/{{ latest.slug }}">{{ latest.title | e }}</a></h2>
+    <p class="blog-feature-summary">{{ latest.summary | e }}</p>
+    <div class="blog-feature-foot">
+      <p class="blog-meta"><time datetime="{{ latest.date }}">{{ latest.day }}</time><span>{{ latest.minutes }} min read</span></p>
+      <ul class="blog-tags" aria-label="Tags">
+        {% for tag in latest.tags %}<li><a class="blog-tag" href="/tags/{{ tag }}">{{ tag }}</a></li>{% endfor %}
+      </ul>
+    </div>
+  </article>
+</section>
+
+<section class="nx-container blog-section" aria-labelledby="earlier">
+  <div class="blog-section-head">
+    <h2 class="blog-section-title" id="earlier">Earlier posts</h2>
+    <a class="blog-section-link" href="/tags">Browse by tag</a>
+  </div>
+  <PostList posts="{{ posts[1:] }}" />
+</section>

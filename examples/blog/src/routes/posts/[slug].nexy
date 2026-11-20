@@ -1,0 +1,44 @@
+---
+from nexy import notFound, setMetadata
+from src.blog.posts import find, neighbours
+
+slug: prop[str]
+post = find(slug) or notFound()
+newer, older = neighbours(post)
+setMetadata(title=post.title, description=post.summary, og={"type": "article"})
+---
+<article class="nx-container blog-post">
+  <header class="blog-post-head">
+    <a class="blog-back" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+      All posts
+    </a>
+    <p class="blog-meta"><time datetime="{{ post.date }}">{{ post.day }}</time><span>{{ post.minutes }} min read</span></p>
+    <h1 class="blog-post-title">{{ post.title | e }}</h1>
+    <p class="blog-post-summary">{{ post.summary | e }}</p>
+    {% if post.tags %}
+    <ul class="blog-tags" aria-label="Tags">
+      {% for tag in post.tags %}<li><a class="blog-tag" href="/tags/{{ tag }}">{{ tag }}</a></li>{% endfor %}
+    </ul>
+    {% endif %}
+  </header>
+
+  <div class="blog-post-body">
+    {% if post.headings %}
+    <nav class="blog-toc" aria-labelledby="toc-title">
+      <p class="blog-toc-title" id="toc-title">On this page</p>
+      <ol>
+        {% for heading in post.headings %}<li><a href="#{{ heading.anchor }}">{{ heading.text | e }}</a></li>{% endfor %}
+      </ol>
+    </nav>
+    {% endif %}
+    <div class="blog-prose">{{ post.html }}</div>
+  </div>
+
+  {% if newer or older %}
+  <nav class="blog-pager" aria-label="More posts">
+    {% if newer %}<a href="/posts/{{ newer.slug }}"><span>Newer post</span><strong>{{ newer.title | e }}</strong></a>{% endif %}
+    {% if older %}<a class="blog-older" href="/posts/{{ older.slug }}"><span>Older post</span><strong>{{ older.title | e }}</strong></a>{% endif %}
+  </nav>
+  {% endif %}
+</article>

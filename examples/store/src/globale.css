@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Black and white. `ink` and `paper` never change: the header, the hero and the dark cards stay
+   dark in both themes. The other tokens follow the theme. */
+:root {
+  color-scheme: light;
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  --accent: #42B883;
+  --ink: #0a0a0a;
+  --paper: #fafafa;
+  /* The one colour: a green that leans towards sky blue. Used for status, never for text blocks. */
+  --signal: light-dark(#0a9d8f, #3fe0c8);
+  /* What the shop refused: a field to fix, a product gone. */
+  --danger: light-dark(#b42318, #ff8a7a);
+  --background: light-dark(#ffffff, #0a0a0a);
+  --background-second: light-dark(#f5f5f5, #141414);
+  --foreground: light-dark(#0a0a0a, #fafafa);
+  --foreground-second: light-dark(#5c5c5c, #a3a3a3);
+  --border: light-dark(#e5e5e5, #262626);
+  --border-second: light-dark(#d4d4d4, #3a3a3a);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-border-second: var(--border-second);
+  --color-accent: var(--accent);
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-signal: var(--signal);
+  --color-danger: var(--danger);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: "Geist", "Inter", system-ui, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: "Fraunces", ui-serif, Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background-color: var(--foreground);
+    color: var(--background);
+  }
+}
+
+/* Moving between two pages feels like switching a tab: the header stays, the content slides. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation: nx-leave 0.16s ease-in both;
+}
+::view-transition-new(root) {
+  animation: nx-enter 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+::view-transition-group(nx-header) {
+  animation-duration: 0.3s;
+}
+@keyframes nx-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@keyframes nx-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes nx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* The mobile menu is a sheet: the scrim fades and the panel comes in from the left edge.
+   Written here rather than as a utility class because an entry animation needs keyframes,
+   and this file is the one both Tailwind and UnoCSS read. */
+@keyframes sheet-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes sheet-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Closing plays the way back: the script hides the sheet once these have finished. */
+@keyframes sheet-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes sheet-scrim-out {
+  to {
+    opacity: 0;
+  }
+}
+@layer components {
+  .sheet {
+    animation: sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .sheet-scrim {
+    animation: sheet-scrim-in 0.2s ease both;
+  }
+  .sheet[data-state="closed"] {
+    animation: sheet-out 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  .sheet-scrim[data-state="closed"] {
+    animation: sheet-scrim-out 0.2s ease both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  .sheet,
+  .sheet-scrim {
+    animation: none !important;
+  }
+}
