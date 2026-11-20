@@ -60,7 +60,9 @@
       "new": "नई डायरेक्टरी में नया प्रोजेक्ट बनाएँ",
       "start": "प्रोडक्शन सर्वर शुरू करें",
       "test": "टेस्ट चलाएँ (--server / --client)",
-      "skills": "कोडिंग एजेंटों के लिए स्किल और AGENTS.md जोड़ें"
+      "skills": "कोडिंग एजेंटों के लिए स्किल और AGENTS.md जोड़ें",
+      "info": "Print environment and project versions in one block"
+    
     },
     "commands_header": "उपलब्ध कमांड:",
     "help": "Nexy CLI",
@@ -119,6 +121,20 @@
     "nexy": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो रही हैं",
     "nexy_done": "{count} .nexy फ़ाइलें फ़ॉर्मैट हो गईं"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "@, ~, # या $ का उपयोग करें, उसके बाद वैकल्पिक अक्षर (जैसे ~ या @app)।",
     "already": "प्रोजेक्ट यहाँ पहले से शुरू किया जा चुका है",
