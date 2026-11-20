@@ -18,6 +18,10 @@ runner = CliRunner()
 info_module = importlib.import_module("nexy.modules.cli.commands.info")
 
 
+def _raise_os_error(*_args: object, **_kwargs: object) -> object:
+    raise OSError("boom")
+
+
 @pytest.fixture
 def project_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     (tmp_path / "nexyconfig.py").write_text("useFF = react()\n", encoding="utf-8")
@@ -113,5 +117,54 @@ def test_info_says_router_is_not_found() -> None:
 
 @pytest.mark.usefixtures("empty_env")
 def test_info_says_frameworks_are_not_found() -> None:
+    result = runner.invoke(CLI, ["info"])
+    assert "Frameworks  not found" in result.stdout
+
+
+@pytest.mark.usefixtures("project_env")
+def test_info_says_node_is_not_found_on_os_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(info_module.subprocess, "run", _raise_os_error)
+    result = runner.invoke(CLI, ["info"])
+    assert "Node        not found" in result.stdout
+
+
+@pytest.mark.usefixtures("project_env")
+def test_info_says_node_is_not_found_on_nonzero_exit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        info_module.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(returncode=1, stdout="v22.0.0\n"),
+    )
+    result = runner.invoke(CLI, ["info"])
+    assert "Node        not found" in result.stdout
+
+
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_package_manager_name_without_version(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(package_manager, "version", lambda _manager: None)
+    result = runner.invoke(CLI, ["info"])
+    assert "Package     pnpm\n" in result.stdout
+
+
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_non_fbr_router(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        info_module,
+        "detect_profile",
+        lambda _root: SimpleNamespace(router="modular"),
+    )
+    result = runner.invoke(CLI, ["info"])
+    assert "Router      modular" in result.stdout
+
+
+@pytest.mark.usefixtures("project_env")
+def test_info_says_frameworks_are_not_found_on_invalid_json(
+    project_env: Path,
+) -> None:
+    (project_env / "package.json").write_text("{", encoding="utf-8")
     result = runner.invoke(CLI, ["info"])
     assert "Frameworks  not found" in result.stdout
