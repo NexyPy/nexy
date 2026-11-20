@@ -1,17 +1,17 @@
 <header class="nx-header" data-menu>
   <nav class="nx-container nx-header-inner" aria-label="Main">
     <div class="nx-nav">
-      <a href="/" aria-label="Nexy, home" class="nx-brand">
-        <img src="/nexy.svg" alt="Nexy" />
-      </a>
+      <a href="/" class="blog-brand">Plain Text</a>
       <div class="nx-nav-links">
-        <a href="/" class="nx-nav-link">Home</a>
+        <a href="/" class="nx-nav-link">Posts</a>
+        <a href="/tags" class="nx-nav-link">Tags</a>
         <a href="/about" class="nx-nav-link">About</a>
-        <a href="/todos" class="nx-nav-link">Todos</a>
-        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="nx-nav-link">Docs</a>
       </div>
     </div>
     <div class="nx-header-actions">
+      <a href="/rss" class="blog-icon-link" aria-label="RSS feed">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" /><circle cx="5" cy="19" r="1" /></svg>
+      </a>
 
 <button type="button" role="switch" aria-checked="false" aria-label="Dark mode" data-theme-toggle class="nx-switch">
   <span class="nx-switch-thumb">
@@ -37,25 +37,27 @@
   <div class="nx-sheet-scrim" data-menu-scrim data-state="closed" aria-hidden="true"></div>
   <div class="nx-sheet" id="nx-menu" role="dialog" aria-modal="true" aria-labelledby="nx-menu-title" tabindex="-1" data-state="closed" data-menu-dialog>
     <div class="nx-sheet-head">
-      <img src="/nexy.svg" alt="" />
+      <span class="blog-brand">Plain Text</span>
       <h2 class="nx-sheet-title" id="nx-menu-title">Menu</h2>
     </div>
     <button type="button" class="nx-menu-button nx-menu-close" aria-label="Close menu" data-menu-dismiss>
       <span class="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
     </button>
     <nav class="nx-sheet-links" aria-label="Pages">
-      <a href="/" class="nx-sheet-link">Home</a>
+      <a href="/" class="nx-sheet-link">Posts</a>
+      <a href="/tags" class="nx-sheet-link">Tags</a>
       <a href="/about" class="nx-sheet-link">About</a>
-      <a href="/todos" class="nx-sheet-link">Todos</a>
-      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="nx-sheet-link">Docs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg></a>
+      <a href="/rss" class="nx-sheet-link">RSS feed</a>
     </nav>
   </div>
 </div>
 <script>
-  // Server pages reload on every link: mark the current one.
+  // Server pages reload on every link: mark the section of the current one. A post belongs to
+  // Posts, a tag to Tags.
   const here = location.pathname.replace(/\/$/, "") || "/";
-  for (const link of document.querySelectorAll("header a[href^='/'], [data-menu-dialog] a[href^='/']")) {
-    if ((link.pathname.replace(/\/$/, "") || "/") === here) link.setAttribute("aria-current", "page");
+  const section = here.startsWith("/posts/") ? "/" : here.startsWith("/tags/") ? "/tags" : here;
+  for (const link of document.querySelectorAll("header .nx-nav-link, [data-menu-dialog] .nx-sheet-link")) {
+    if ((link.pathname.replace(/\/$/, "") || "/") === section) link.setAttribute("aria-current", "page");
   }
 
   // The mobile menu is a modal sheet. While it is open it holds the keyboard (Tab wraps inside it,
