@@ -1,0 +1,15 @@
+---
+posts: prop[tuple] = ()
+---
+<ol class="blog-list">
+  {% for post in posts %}
+  <li class="blog-row">
+    <time class="blog-row-date" datetime="{{ post.date }}">{{ post.day }}</time>
+    <div>
+      <h3 class="blog-row-title"><a href="/posts/{{ post.slug }}">{{ post.title | e }}</a></h3>
+      <p>{{ post.summary | e }}</p>
+    </div>
+    <span class="blog-row-time">{{ post.minutes }} min read</span>
+  </li>
+  {% endfor %}
+</ol>
