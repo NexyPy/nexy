@@ -1,0 +1,33 @@
+---
+from nexy import redirect, useSearchParams, useSession
+from src.services.demo import DEMO_EMAIL, DEMO_PASSWORD
+
+if useSession().get("user_id"):
+    redirect("/")
+error = useSearchParams().get("error", "")
+
+field = "min-h-11 w-full border border-border-second bg-background px-3 text-base outline-none focus:border-foreground"
+---
+<section class="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-16">
+  <h1 class="font-display text-4xl">Sign in</h1>
+  <p class="mt-2 text-foreground-second">To see the invoices of the studio.</p>
+
+  {% if error %}
+  <p class="mt-6 border border-red-500/50 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ __actions_path['sign_in'] }}" class="mt-6 flex flex-col gap-4">
+    <label class="flex flex-col gap-1.5 text-sm">Email
+      <input type="email" name="email" autocomplete="email" required class="{{ field }}" value="{{ DEMO_EMAIL }}">
+    </label>
+    <label class="flex flex-col gap-1.5 text-sm">Password
+      <input type="password" name="password" autocomplete="current-password" required class="{{ field }}">
+    </label>
+    <button type="submit" class="min-h-11 bg-foreground px-4 font-medium text-background transition-opacity hover:opacity-85">Sign in</button>
+  </form>
+
+  <p class="mt-6 border border-border bg-background p-3 text-sm text-foreground-second">
+    Demo account: <code class="font-mono text-foreground">{{ DEMO_EMAIL }}</code>, password
+    <code class="font-mono text-foreground">{{ DEMO_PASSWORD }}</code>.
+  </p>
+</section>

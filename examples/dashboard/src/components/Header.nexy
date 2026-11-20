@@ -1,0 +1,33 @@
+---
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+from nexy import usePathname, useSession
+
+pathname = usePathname()
+signed = bool(useSession().get("user_id"))
+
+link = "flex min-h-11 items-center px-3 font-mono text-xs uppercase tracking-[0.04em] text-paper/70 transition-colors hover:text-paper aria-[current=page]:text-paper aria-[current=page]:underline aria-[current=page]:underline-offset-4"
+pages = [("/", "Overview"), ("/invoices", "Invoices"), ("/customers", "Customers")]
+---
+<header class="sticky top-0 z-20 border-b border-paper/10 bg-ink text-paper">
+  <nav class="mx-auto flex max-w-[72rem] flex-wrap items-center gap-x-4 px-4 sm:px-6" aria-label="Main">
+    <a href="/" class="flex min-h-14 items-center gap-2.5">
+      <img src="/nexy-mark.svg" alt="" class="h-5 invert" />
+      <span class="font-display text-lg">Ledger</span>
+    </a>
+    {% if signed %}
+    <div class="order-last -mx-3 flex w-full overflow-x-auto sm:order-none sm:mx-0 sm:w-auto">
+      {% for href, label in pages %}
+      <a href="{{ href }}" class="{{ link }}"{% if pathname == href or (href != '/' and pathname.startswith(href)) %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="ml-auto flex items-center gap-2">
+      {% if signed %}
+      <form method="post" action="{{ __actions_path['sign_out'] }}">
+        <button type="submit" class="{{ link }}">Sign out</button>
+      </form>
+      {% endif %}
+      <ThemeToggle />
+    </div>
+  </nav>
+</header>
