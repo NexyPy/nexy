@@ -78,6 +78,8 @@ dev = [
     "sqlalchemy>=2.0",
     "sqlmodel>=0.0.22",
     "tortoise-orm>=0.21",
+    # Tortoise asks for the UTC zone; Windows ships no zone data, so the Notes example needs this.
+    "tzdata>=2025.2; sys_platform == 'win32'",
     "aerich>=0.8",
     "alembic>=1.13",
     "itsdangerous>=2.2",

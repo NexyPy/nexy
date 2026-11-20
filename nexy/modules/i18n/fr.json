@@ -106,7 +106,8 @@
     "updating": "mise à jour du serveur",
     "vite_failed": "Vite n'a pas pu démarrer.",
     "vite_failed_hint": "Consultez la sortie de Vite ci-dessus pour en connaître la cause.",
-    "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction."
+    "server_failed": "Le serveur s'est arrêté ({reason}) : en attente d'une correction.",
+    "port_in_use": "Le port {asked} est pris, utilisation du port {port}."
   },
   "format": {
     "failed": "{count} fichier(s) en échec",

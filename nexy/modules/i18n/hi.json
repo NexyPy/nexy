@@ -106,7 +106,8 @@
     "updating": "सर्वर अपडेट",
     "vite_failed": "Vite शुरू नहीं हो सका।",
     "vite_failed_hint": "कारण जानने के लिए ऊपर Vite का आउटपुट देखें।",
-    "server_failed": "सर्वर रुक गया ({reason}): सुधार की प्रतीक्षा है।"
+    "server_failed": "सर्वर रुक गया ({reason}): सुधार की प्रतीक्षा है।",
+    "port_in_use": "पोर्ट {asked} उपयोग में है, इसके बजाय {port} का उपयोग हो रहा है।"
   },
   "format": {
     "failed": "{count} फ़ाइलें विफल रहीं",
