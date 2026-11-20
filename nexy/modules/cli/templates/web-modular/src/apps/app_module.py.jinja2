@@ -4,7 +4,7 @@ from .app_controller import (
     AppController,
     ConnectionController,
 )
-from .ping_controller import PingController
+from .team_controller import TeamController
 {% if orm != "None" %}
 from .users.user_module import UsersModule
 {% endif %}
@@ -16,7 +16,7 @@ class AppModule:
         AppController,
         AboutController,
         ConnectionController,
-        PingController,
+        TeamController,
     ]
 {% if orm != "None" %}
     imports = [UsersModule]

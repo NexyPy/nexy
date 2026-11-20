@@ -36,3 +36,8 @@ def test_welcome_workflow_posts_the_shared_welcome():
 
 def test_welcome_workflow_never_pastes_the_login_into_the_script():
     assert "${{" not in _job()["steps"][-1]["run"]
+
+
+def test_welcome_workflow_leaves_a_take_to_the_bot_that_already_welcomed():
+    # `/take` assigns as the Nexy bot and posts the welcome itself.
+    assert "github.event.sender.type != 'Bot'" in _job()["if"]

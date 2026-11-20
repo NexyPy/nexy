@@ -37,6 +37,7 @@
       <div {{ cls }}="nx-nav-links">
         {{ nav_link("/", "Home") }}
         {{ nav_link("/about", "About") }}
+        {{ nav_link("/connection", "Connection") }}
         <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-nav-link">Docs</a>
       </div>
     </div>
@@ -59,6 +60,7 @@
 {{ sheet }}
   {{ nav_link("/", "Home", "nx-sheet-link", closes) }}
   {{ nav_link("/about", "About", "nx-sheet-link", closes) }}
+  {{ nav_link("/connection", "Connection", "nx-sheet-link", closes) }}
   <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-sheet-link" {{ closes }}>Docs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {{ stroke }}="1.8" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg></a>
 </Sheet>
 {% endif %}
@@ -76,6 +78,7 @@
     <nav {{ cls }}="nx-sheet-links" aria-label="Pages">
       {{ nav_link("/", "Home", "nx-sheet-link") }}
       {{ nav_link("/about", "About", "nx-sheet-link") }}
+      {{ nav_link("/connection", "Connection", "nx-sheet-link") }}
       <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" {{ cls }}="nx-sheet-link">Docs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg></a>
     </nav>
   </div>
