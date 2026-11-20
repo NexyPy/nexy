@@ -88,7 +88,7 @@ def order(empty):
 
 @pytest.fixture(scope="session")
 def client():
-    """The dashboard, asked for its pages the way a browser asks, with no server to start.
+    """The sales report, asked for its pages the way a browser asks, with no server to start.
 
     The views are compiled first, as `nx dev` and `nx build` do: a controller renders the
     compiled `.nexy` view, not its source.
