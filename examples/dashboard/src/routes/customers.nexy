@@ -1,0 +1,39 @@
+---
+from src.services.accounts import signed_in
+from src.services.money import money
+from src.services.reports import customers
+
+signed_in()
+lines = customers()
+---
+<section class="mx-auto flex w-full max-w-[72rem] flex-col gap-6 px-4 py-10 sm:px-6">
+  <div>
+    <h1 class="font-display text-4xl">Customers</h1>
+    <p class="mt-1 text-foreground-second">Who owes the most comes first.</p>
+  </div>
+  <div class="overflow-x-auto border border-border bg-background">
+    <table class="w-full min-w-[36rem] text-left text-sm">
+      <thead class="border-b border-border font-mono text-xs uppercase tracking-[0.04em] text-foreground-second">
+        <tr>
+          <th scope="col" class="px-5 py-3 font-normal">Customer</th>
+          <th scope="col" class="px-5 py-3 text-right font-normal">Invoices</th>
+          <th scope="col" class="px-5 py-3 text-right font-normal">Paid</th>
+          <th scope="col" class="px-5 py-3 text-right font-normal">Outstanding</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for line in lines %}
+        <tr class="border-b border-border last:border-b-0">
+          <td class="px-5 py-3">
+            <a href="/invoices?q={{ line.name | urlencode }}" class="underline underline-offset-4">{{ line.name }}</a>
+            <span class="block text-foreground-second">{{ line.email }}</span>
+          </td>
+          <td class="px-5 py-3 text-right tabular-nums">{{ line.invoices }}</td>
+          <td class="px-5 py-3 text-right tabular-nums">{{ money(line.paid) }}</td>
+          <td class="px-5 py-3 text-right tabular-nums">{{ money(line.outstanding) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,0 +1,10 @@
+---
+label: prop[str]
+value: prop[str]
+note: prop[str] = ""
+---
+<div class="flex flex-col gap-2 border border-border bg-background p-5">
+  <dt class="font-mono text-xs uppercase tracking-[0.04em] text-foreground-second">{{ label }}</dt>
+  <dd class="text-3xl tabular-nums">{{ value }}</dd>
+  {% if note %}<dd class="text-sm text-foreground-second">{{ note }}</dd>{% endif %}
+</div>

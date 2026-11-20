@@ -1,0 +1,50 @@
+---
+from "@/components/RevenueChart.vue" import RevenueChart
+from "@/components/Stat.nexy" import Stat
+from "@/components/StatusBadge.nexy" import StatusBadge
+from src.services.accounts import signed_in
+from src.services.invoices import search
+from src.services.money import money
+from src.services.reports import revenue, totals
+
+user = signed_in()
+sums = totals()
+months = revenue()
+latest = search().rows[:5]
+---
+<section class="mx-auto flex w-full max-w-[72rem] flex-col gap-8 px-4 py-10 sm:px-6">
+  <div>
+    <h1 class="font-display text-4xl">Overview</h1>
+    <p class="mt-1 text-foreground-second">Hello {{ user.name }}. Where the money of the studio stands today.</p>
+  </div>
+
+  <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <Stat label="Collected this month" value="{{ money(sums.collected_this_month) }}" />
+    <Stat label="Outstanding" value="{{ money(sums.outstanding) }}" note="Every unpaid invoice" />
+    <Stat label="Overdue" value="{{ money(sums.overdue) }}" note="{{ sums.overdue_count }} invoices past their due date" />
+    <Stat label="Customers" value="{{ sums.customers }}" />
+  </dl>
+
+  <div class="border border-border bg-background p-5">
+    <RevenueChart months="{{ months }}" />
+  </div>
+
+  <div class="border border-border bg-background">
+    <div class="flex items-center justify-between border-b border-border px-5 py-4">
+      <h2 class="font-display text-xl">Latest invoices</h2>
+      <a href="/invoices" class="text-sm underline underline-offset-4">All invoices</a>
+    </div>
+    <ul>
+      {% for row in latest %}
+      <li class="border-b border-border last:border-b-0">
+        <a href="/invoices/{{ row.id }}" class="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 px-5 py-3 hover:bg-background-second sm:grid-cols-[6rem_1fr_auto_8rem]">
+          <span class="font-mono text-sm text-foreground-second sm:text-foreground">{{ row.number }}</span>
+          <span class="col-start-1 row-start-2 sm:col-start-auto sm:row-start-auto">{{ row.customer }}</span>
+          <span class="justify-self-end"><StatusBadge status="{{ row.status }}" /></span>
+          <span class="text-right tabular-nums">{{ money(row.amount_cents) }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
