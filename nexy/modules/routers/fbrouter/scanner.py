@@ -104,6 +104,9 @@ class RouteScanner:
     def scan(self) -> ScanResult:
         LOAD_FAILURES.clear()
         result = ScanResult()
+        # A page imports its compiled layout: without `nx dev` first, nothing else compiles it.
+        for layout in self._discovery.layouts():
+            self._compile(layout)
         for path in self._discovery.scan():
             self._take(path, result)
         return result
@@ -135,7 +138,7 @@ class RouteScanner:
         try:
             from nexy.modules.compiler import Compiler
 
-            Compiler().compile(input=str(path))
+            Compiler().compile_with_deps(input=str(path))
         except Exception as error:
             console.print(f"  [red]ERROR[/red] {path.name} ({path}): compile failed - {error}")
             LOAD_FAILURES.append(f"{path}: compile failed - {error}")
