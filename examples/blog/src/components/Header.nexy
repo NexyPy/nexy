@@ -1,0 +1,28 @@
+---
+from "@/components/LinePattern.nexy" import LinePattern
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+from nexy import usePathname
+
+pathname = usePathname()
+
+link = "px-2.5 py-2 font-mono text-xs uppercase tracking-[0.04em] transition-opacity hover:opacity-60 aria-[current=page]:underline aria-[current=page]:underline-offset-4"
+pages = [("/", "Notes"), ("/tags", "Tags"), ("/about", "About"), ("/rss", "RSS")]
+---
+<header class="fixed inset-x-0 top-0 z-20 py-4 [view-transition-name:nx-header]">
+  <nav
+    class="relative mx-auto flex w-[72rem] max-w-[calc(100%-2rem)] items-center justify-between gap-2 border border-paper/10 bg-ink/85 px-4 py-2.5 text-paper backdrop-blur-[4px]"
+    aria-label="Main"
+  >
+    <LinePattern side="right" />
+    <a href="/" class="relative flex shrink-0 items-center gap-2.5">
+      <img src="/nexy-mark.svg" alt="" class="h-5 invert" />
+      <span class="hidden font-serif text-lg sm:inline">Notes</span>
+    </a>
+    <div class="relative flex items-center">
+      {% for href, label in pages %}
+      <a href="{{ href }}" class="{{ link }}"{% if pathname == href %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+      <span class="ml-1"><ThemeToggle /></span>
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,12 @@
+[project]
+name = "blog"
+version = "0.1.0"
+description = "An example blog: Markdown files rendered by Python on the server"
+dependencies = [
+    "nexy>=2.8.0",
+    "markdown-it-py",
+]
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = ["pytest"]
