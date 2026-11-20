@@ -4,9 +4,9 @@ The `Take` workflow runs it on each new issue comment, with the event in the env
 LOGIN (who commented), BODY (the comment), NUMBER, ASSIGNEES (space-separated logins) and LABELS
 (comma-separated names). An issue labelled `good first issue` or `help wanted`, assigned to nobody
 and with no open pull request by someone else, goes to the commenter, who gets
-`.github/CONTRIBUTOR_WELCOME.md`. Any other issue gets a short answer instead. An assignment made
-with the workflow token starts no other workflow, so the welcome is posted here and not by the
-`Welcome` workflow.
+`.github/CONTRIBUTOR_WELCOME.md`. Any other issue gets a short answer instead. The welcome is
+posted here: the `Welcome` workflow leaves an assignment made by a bot alone, and one made with the
+workflow token starts no workflow at all.
 """
 
 from __future__ import annotations
