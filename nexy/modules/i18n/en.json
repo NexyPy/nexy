@@ -120,7 +120,7 @@
     "nexy": "Formatting {count} .nexy file(s)",
     "nexy_done": "Formatted {count} .nexy file(s)"
   },
-    "info": {
+  "info": {
     "label": {
       "frameworks": "Frameworks",
       "nexy": "Nexy",
@@ -133,7 +133,6 @@
     "not_found": "not found",
     "router_file_based": "file-based"
   },
-
   "init": {
     "alias_invalid": "Use @, ~, # or $, optionally followed by letters (for example ~ or @app).",
     "already": "Project already initialized here",
