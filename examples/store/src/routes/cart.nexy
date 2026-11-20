@@ -1,0 +1,54 @@
+---
+from src.store.cart import FREE_SHIPPING, MAX_QUANTITY, summary
+from src.store.catalog import money
+from src.store.session import cart
+
+order = summary(cart())
+---
+<section class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6">
+  <h1 class="font-display text-4xl">Your cart</h1>
+
+  {% if order.lines %}
+  <ul class="border-y border-border" aria-label="Products in the cart">
+    {% for line in order.lines %}
+    <li class="grid grid-cols-[4.5rem_1fr] gap-4 border-b border-border py-4 last:border-b-0 sm:grid-cols-[5rem_1fr_auto]">
+      <img src="/products/{{ line.product.slug }}.svg" alt="" width="80" height="80" class="aspect-square w-full border border-border">
+      <div class="flex flex-col gap-2">
+        <a href="/products/{{ line.product.slug }}" class="font-medium underline-offset-4 hover:underline">{{ line.product.name }}</a>
+        <span class="text-sm text-foreground-second">{{ money(line.product.price_cents) }} each</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <form method="post" action="{{ __actions_path['set_quantity'] }}" class="flex items-center gap-2">
+            <input type="hidden" name="slug" value="{{ line.product.slug }}">
+            <label class="sr-only" for="qty-{{ line.product.slug }}">Quantity of {{ line.product.name }}</label>
+            <select id="qty-{{ line.product.slug }}" name="quantity" class="min-h-11 border border-border-second bg-background px-2">
+              {% for n in range(1, MAX_QUANTITY + 1) %}<option value="{{ n }}"{% if n == line.quantity %} selected{% endif %}>{{ n }}</option>{% endfor %}
+            </select>
+            <button type="submit" class="min-h-11 border border-border-second px-3 text-sm hover:border-foreground">Update</button>
+          </form>
+          <form method="post" action="{{ __actions_path['set_quantity'] }}">
+            <input type="hidden" name="slug" value="{{ line.product.slug }}">
+            <input type="hidden" name="quantity" value="0">
+            <button type="submit" class="min-h-11 px-3 text-sm text-foreground-second underline underline-offset-4 hover:text-foreground" aria-label="Remove {{ line.product.name }}">Remove</button>
+          </form>
+        </div>
+      </div>
+      <span class="col-start-2 tabular-nums sm:col-start-auto sm:text-right">{{ money(line.total) }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <dl class="ml-auto grid w-full max-w-xs grid-cols-[1fr_auto] gap-y-2 tabular-nums [&_dd]:pl-6">
+    <dt class="text-foreground-second">Subtotal</dt><dd class="text-right">{{ money(order.subtotal) }}</dd>
+    <dt class="text-foreground-second">Shipping</dt><dd class="text-right">{{ "Free" if order.shipping == 0 else money(order.shipping) }}</dd>
+    <dt class="border-t border-border pt-2 font-medium">Total</dt><dd class="border-t border-border pt-2 text-right font-medium">{{ money(order.total) }}</dd>
+  </dl>
+  {% if order.shipping %}
+  <p class="-mt-4 text-right text-sm text-foreground-second">Shipping is free from {{ money(FREE_SHIPPING) }}.</p>
+  {% endif %}
+  <a href="/checkout" class="flex min-h-11 items-center justify-center bg-foreground px-6 font-medium text-background hover:opacity-85 sm:ml-auto sm:w-fit">Go to checkout</a>
+  {% else %}
+  <p class="border border-dashed border-border-second p-8 text-center text-foreground-second">
+    Your cart is empty. <a href="/" class="underline underline-offset-4">Find something in the shop</a>
+  </p>
+  {% endif %}
+</section>

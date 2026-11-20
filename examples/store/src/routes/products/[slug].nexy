@@ -1,0 +1,28 @@
+---
+from "@/components/AddToCart.svelte" import AddToCart
+from nexy import notFound
+from src.store.catalog import find, money
+
+slug: prop[str]
+
+product = find(slug)
+if product is None:
+    notFound()
+---
+<section class="mx-auto grid w-full max-w-[72rem] gap-10 px-4 py-10 sm:px-6 md:grid-cols-2">
+  <img src="/products/{{ product.slug }}.svg" alt="" width="400" height="400" class="aspect-square w-full border border-border">
+  <div class="flex flex-col gap-6">
+    <p class="text-sm"><a href="/?category={{ product.category }}" class="text-foreground-second underline underline-offset-4 hover:text-foreground">{{ product.category }}</a></p>
+    <div>
+      <h1 class="font-display text-4xl leading-tight">{{ product.name }}</h1>
+      <p class="mt-2 text-2xl tabular-nums">{{ money(product.price_cents) }}</p>
+    </div>
+    <p class="text-lg text-foreground-second">{{ product.summary }}</p>
+    <AddToCart slug="{{ product.slug }}" name="{{ product.name }}" />
+    <ul class="flex flex-col gap-2 border-t border-border pt-6 text-sm">
+      {% for detail in product.details %}
+      <li class="flex gap-3"><span class="text-foreground-second" aria-hidden="true">-</span>{{ detail }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

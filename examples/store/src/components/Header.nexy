@@ -1,0 +1,18 @@
+---
+from "@/components/CartBadge.svelte" import CartBadge
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+from src.store.cart import summary
+from src.store.session import cart
+
+count = summary(cart()).count
+---
+<header class="sticky top-0 z-20 border-b border-paper/10 bg-ink text-paper">
+  <nav class="mx-auto flex max-w-[72rem] items-center gap-2 px-4 sm:px-6" aria-label="Main">
+    <a href="/" class="mr-auto flex min-h-14 items-center gap-2.5">
+      <img src="/nexy-mark.svg" alt="" class="h-5 invert" />
+      <span class="font-display text-lg">Field Supply</span>
+    </a>
+    <CartBadge count="{{ count }}" />
+    <ThemeToggle />
+  </nav>
+</header>
