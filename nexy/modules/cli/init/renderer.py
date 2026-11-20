@@ -123,7 +123,8 @@ class TemplateRenderer:
         output = environment.get_template(rel.as_posix()).render(**context)
         if output.strip():
             final.parent.mkdir(parents=True, exist_ok=True)
-            final.write_text(output, encoding="utf-8")
+            # Jinja2 drops the last newline of a template: every file ends with exactly one.
+            final.write_text(output.rstrip("\n") + "\n", encoding="utf-8")
 
     def _remove_empty_directories(self) -> None:
         """Deepest first, so a folder that only held empty folders goes too."""
