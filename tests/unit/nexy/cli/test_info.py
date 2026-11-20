@@ -45,61 +45,73 @@ def empty_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     return tmp_path
 
 
-def test_info_exits_cleanly_inside_project(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_exits_cleanly_inside_project() -> None:
     result = runner.invoke(CLI, ["info"])
     assert result.exit_code == 0
 
 
-def test_info_prints_the_nexy_version(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_the_nexy_version() -> None:
     result = runner.invoke(CLI, ["info"])
     assert f"Nexy        {__version__}" in result.stdout
 
 
-def test_info_prints_the_python_version(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_the_python_version() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Python      " in result.stdout
 
 
-def test_info_prints_the_os(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_the_os() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "OS          " in result.stdout
 
 
-def test_info_prints_the_node_version(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_the_node_version() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Node        22.18.0" in result.stdout
 
 
-def test_info_prints_the_package_manager(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_the_package_manager() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Package     pnpm 9.15.9" in result.stdout
 
 
-def test_info_prints_the_router(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_the_router() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Router      file-based" in result.stdout
 
 
-def test_info_prints_the_frameworks(project_env: Path) -> None:
+@pytest.mark.usefixtures("project_env")
+def test_info_prints_the_frameworks() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Frameworks  react 19.2.0, vue 3.5.13" in result.stdout
 
 
-def test_info_says_node_is_not_found(empty_env: Path) -> None:
+@pytest.mark.usefixtures("empty_env")
+def test_info_says_node_is_not_found() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Node        not found" in result.stdout
 
 
-def test_info_says_package_is_not_found(empty_env: Path) -> None:
+@pytest.mark.usefixtures("empty_env")
+def test_info_says_package_is_not_found() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Package     not found" in result.stdout
 
 
-def test_info_says_router_is_not_found(empty_env: Path) -> None:
+@pytest.mark.usefixtures("empty_env")
+def test_info_says_router_is_not_found() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Router      not found" in result.stdout
 
 
-def test_info_says_frameworks_are_not_found(empty_env: Path) -> None:
+@pytest.mark.usefixtures("empty_env")
+def test_info_says_frameworks_are_not_found() -> None:
     result = runner.invoke(CLI, ["info"])
     assert "Frameworks  not found" in result.stdout
