@@ -1,4 +1,4 @@
-"""Every test starts from an empty `notes` table in a database of its own, never dev.db."""
+"""Every test starts from an empty `notes` table, in a database the migrations made, never dev.db."""
 
 import os
 import sys
@@ -15,17 +15,24 @@ os.environ["DATABASE_URL"] = f"sqlite://{DATABASE.as_posix()}"
 os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
+from aerich import Command
 from fastapi.testclient import TestClient
-from tortoise import Tortoise
 
-from src.configs.db import run
+from src.configs.db import TORTOISE_ORM, run
 from src.models.note_model import NoteModel
 
 
 @pytest.fixture(scope="session", autouse=True)
 def tables() -> None:
-    """The tables of the models; the migrations in migrations/ make the same ones for nx dev."""
-    run(Tortoise.generate_schemas())
+    """The migrations of migrations/, as `nx migrate --upgrade` runs them: a model that drifts
+    from them fails here."""
+    run(migrate())
+
+
+async def migrate() -> None:
+    command = Command(tortoise_config=TORTOISE_ORM, app="models", location="./migrations")
+    await command.init()
+    await command.upgrade(run_in_transaction=True)
 
 
 @pytest.fixture(autouse=True)
