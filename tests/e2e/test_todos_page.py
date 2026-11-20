@@ -78,6 +78,11 @@ def _tasks(page: Page):
     return page.get_by_role("list", name="Tasks").get_by_role("listitem")
 
 
+def _task(page: Page, title: str):
+    """The row of one task: a click on it waits until the server has sent it."""
+    return _tasks(page).filter(has_text=title)
+
+
 @pytest.mark.e2e
 def test_the_page_lists_the_tasks_the_server_keeps(starter, page: Page):
     _open(page, starter)
@@ -133,10 +138,10 @@ def test_enter_saves_a_new_title(starter, page: Page):
 def test_escape_keeps_the_old_title(starter, page: Page):
     _open(page, starter)
     _add(page, "Read a book")
-    _tasks(page).last.get_by_role("button", name="Rename").click()
+    _task(page, "Read a book").get_by_role("button", name="Rename").click()
     page.get_by_label("Rename the task").fill("Something else")
     page.get_by_label("Rename the task").press("Escape")
-    expect(_tasks(page).last).to_contain_text("Read a book")
+    expect(_task(page, "Read a book")).to_be_visible()
 
 
 @pytest.mark.e2e
@@ -150,5 +155,5 @@ def test_the_done_filter_shows_only_done_tasks(starter, page: Page):
 def test_delete_removes_the_task(starter, page: Page):
     _open(page, starter)
     _add(page, "Short lived")
-    _tasks(page).last.get_by_role("button", name="Delete").click()
+    _task(page, "Short lived").get_by_role("button", name="Delete").click()
     expect(page.get_by_text("Short lived")).to_have_count(0)
