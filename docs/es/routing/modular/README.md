@@ -77,7 +77,7 @@ Consulte [Diseños](../fbr/layouts/README.md).
 
 ## Ejemplo
 
-Véase `examples/Modular/api/minimal/`.
+`nexy new my-app` escribe un proyecto con este enrutador: elija modular en su primera pregunta, el enrutador.
 
 ## Próximos pasos
 

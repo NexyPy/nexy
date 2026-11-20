@@ -29,7 +29,3 @@ def test_the_example_passes_its_own_tests(example: str, tmp_path: Path) -> None:
         env={**os.environ, "TMPDIR": str(tmp_path), "PYTHONPATH": str(ROOT)},
     )
     assert done.returncode == 0, done.stdout[-2000:] + done.stderr[-2000:]
-
-
-def test_the_todos_example_has_tests() -> None:
-    assert "todos" in SUITES

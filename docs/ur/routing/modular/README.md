@@ -54,7 +54,7 @@ class AppModule:
     controllers = [AppController]
 ```
 
-`@Module(prefix="/api")` ایک `APIRouter` لوٹاتا ہے۔ `controllers` درکار ہے۔ `providers`، `imports` اور `exports` اختیاری ہیں۔ درآمد شدہ ماڈیولز کو سب روٹرز کے طور پر نصب کیا جاتا ہے، اور ان کے برآمد شدہ فراہم کنندگان کو آغاز پر حل کیا جاتا ہے۔
+`@Module(prefix="/api")` ایک `APIRouter` لوٹاتا ہے۔ `controllers` درکار ہے؛ `providers`، `imports` اور `exports` اختیاری ہیں۔ درآمد شدہ ماڈیولز کو سب روٹرز کے طور پر نصب کیا جاتا ہے، اور ان کے برآمد شدہ فراہم کنندگان کو آغاز پر حل کیا جاتا ہے۔
 
 ## ایک کنٹرولر سے ملاحظات
 
@@ -73,11 +73,11 @@ class AppController:
         })
 ```
 
-دیکھیں [لے آؤٹس](../fbr/layouts/README.md)۔
+دیکھیں [لے آؤٹ](../fbr/layouts/README.md)۔
 
 ## مثال
 
-دیکھئے `examples/Modular/api/minimal/`۔
+`nexy new my-app` اس روٹر کے ساتھ ایک پروجیکٹ لکھتے ہیں: اس کے پہلے سوال میں ماڈیولر کا انتخاب کریں، راؤٹر۔
 
 ## اگلے اقدامات
 
