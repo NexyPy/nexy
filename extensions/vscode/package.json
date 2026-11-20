@@ -247,7 +247,7 @@
     "vscode-languageserver-textdocument": "^1.0.16"
   },
   "devDependencies": {
-    "@types/node": "~22.19.21",
+    "@types/node": "~26.6.6",
     "@types/vscode": "^1.109.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
