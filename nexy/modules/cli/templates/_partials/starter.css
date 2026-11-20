@@ -568,6 +568,12 @@
     background: var(--brand);
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 12%, transparent);
   }
+  /* On a phone the strip wraps: space alone parts the names, so no dot ends a line. */
+  @media (max-width: 40rem) {
+    .nx-sep-dot {
+      display: none;
+    }
+  }
 
   /* What you get: tiles of different sizes */
   .nx-bento {
@@ -692,6 +698,12 @@
     z-index: -1;
     background: currentColor;
     mask: url("/pattern.svg") right center / auto 100% no-repeat;
+  }
+  /* The pattern is as tall as the band: below this width it would run under the text. */
+  @media (max-width: 60rem) {
+    .nx-band::before {
+      display: none;
+    }
   }
   .nx-band .nx-h2 {
     max-width: 24rem;
