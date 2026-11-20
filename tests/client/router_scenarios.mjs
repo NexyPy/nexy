@@ -238,6 +238,25 @@ const out = {};
   out.viewTransition = { calls, rendered: w.rendered, calmCalls, calmRendered: calm.rendered };
 }
 
+// 12b. A transition the browser skips rejects `ready` and `finished`: the router handles both, so
+// going back twice quickly logs nothing.
+{
+  const unhandled = [];
+  const listen = (reason) => unhandled.push(String(reason));
+  process.on("unhandledRejection", listen);
+  const w = world();
+  w.real.document.startViewTransition = (update) => ({
+    updateCallbackDone: update(),
+    ready: Promise.reject(new Error("Transition was skipped")),
+    finished: Promise.reject(new Error("Transition was skipped")),
+  });
+  w.real.matchMedia = () => ({ matches: false });
+  await w.router.navigate("/about");
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  process.off("unhandledRejection", listen);
+  out.skippedTransition = { unhandled, rendered: w.rendered };
+}
+
 // 13. Transition subscribers hear a navigation start and end: `transition()` is pending in between.
 {
   let release;
