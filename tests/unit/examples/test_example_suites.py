@@ -6,6 +6,7 @@ fails here, before a person who copies the example finds out.
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -24,7 +25,8 @@ def test_the_example_passes_its_own_tests(example: str, tmp_path: Path) -> None:
         capture_output=True,
         text=True,
         check=False,
-        env={"PATH": "", "TMPDIR": str(tmp_path), "PYTHONPATH": str(ROOT)},
+        # The whole environment: Windows needs SYSTEMROOT to open a socket at all.
+        env={**os.environ, "TMPDIR": str(tmp_path), "PYTHONPATH": str(ROOT)},
     )
     assert done.returncode == 0, done.stdout[-2000:] + done.stderr[-2000:]
 
