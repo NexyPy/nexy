@@ -20,6 +20,7 @@ export default defineConfig({
       ink: 'var(--ink)',
       paper: 'var(--paper)',
       signal: 'var(--signal)',
+      danger: 'var(--danger)',
     },
     font: {
       display: '"Fraunces", ui-serif, Georgia, serif',
