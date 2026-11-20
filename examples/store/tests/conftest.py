@@ -19,11 +19,11 @@ os.environ["DATABASE_URL"] = f"sqlite:///{DATABASE.as_posix()}"
 os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
-from alembic import command  # noqa: E402
-from alembic.config import Config  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
+from alembic import command
+from alembic.config import Config
+from fastapi.testclient import TestClient
 
-from src.configs.db import engine  # noqa: E402
+from src.configs.db import engine
 
 
 def copy(source: Path, target: Path) -> None:

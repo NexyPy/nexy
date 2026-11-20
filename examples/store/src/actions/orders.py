@@ -3,11 +3,11 @@
 import re
 from datetime import UTC, datetime
 
-from pydantic import BaseModel
-
 from nexy import notFound
 from nexy.decorators import Action
 from nexy.http import Request
+from pydantic import BaseModel
+
 from src.actions.cart import COOKIE
 from src.models.order_model import OrderModel
 from src.services.order_service import Delivery, OrderService

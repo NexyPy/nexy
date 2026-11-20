@@ -1,9 +1,9 @@
 """The actions the shop pages call to read the shelves."""
 
-from pydantic import BaseModel, ConfigDict
-
 from nexy import notFound
 from nexy.decorators import Action
+from pydantic import BaseModel, ConfigDict
+
 from src.services.catalog_service import CatalogService
 
 RELATED = 3

@@ -3,10 +3,10 @@ browser holds: no account, and the server always knows what the cart contains.""
 
 import secrets
 
-from pydantic import BaseModel
-
 from nexy.decorators import Action
 from nexy.http import Request, Response
+from pydantic import BaseModel
+
 from src.models.cart_model import CartLineModel
 from src.services.cart_service import CartService, shipping_for
 
