@@ -106,7 +106,8 @@
     "updating": "update server",
     "vite_failed": "Vite failed to start.",
     "vite_failed_hint": "Read the Vite output above for the cause.",
-    "server_failed": "The server stopped ({reason}): waiting for a fix."
+    "server_failed": "The server stopped ({reason}): waiting for a fix.",
+    "port_in_use": "Port {asked} is in use, using {port} instead."
   },
   "format": {
     "failed": "{count} file(s) failed",
