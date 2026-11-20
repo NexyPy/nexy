@@ -63,7 +63,7 @@ def _render(src: Path, dest: Path, framework: str = "react", exclude=None) -> Pa
 class TestRender:
     def test_a_template_is_rendered_with_the_context(self, template, tmp_path):
         dest = _render(template, tmp_path / "out")
-        assert (dest / "src" / "page.tsx").read_text(encoding="utf-8") == "name=x"
+        assert (dest / "src" / "page.tsx").read_text(encoding="utf-8") == "name=x\n"
 
     def test_a_plain_file_is_copied(self, template, tmp_path):
         assert (_render(template, tmp_path / "out") / "src" / "raw.txt").read_text() == "copied"
@@ -103,4 +103,4 @@ def test_a_template_knows_the_release_that_renders_it(tmp_path: Path) -> None:
     src.mkdir()
     (src / "pyproject.toml.jinja2").write_text('"nexy>={{ nexy_version }}"', encoding="utf-8")
     TemplateRenderer(src, dest).render()
-    assert (dest / "pyproject.toml").read_text("utf-8") == f'"nexy>={__version__}"'
+    assert (dest / "pyproject.toml").read_text("utf-8") == f'"nexy>={__version__}"\n'

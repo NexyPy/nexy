@@ -272,8 +272,12 @@
     render()
   }
   addEventListener('error', (e) => report(e.error ? e.error.name : 'Error', e.error ? e.error.message : e.message, e.error && e.error.stack, `${e.filename}:${e.lineno}`))
+  // The browser rejects a view transition it aborted (a document without the CSS opt-in yet, as
+  // under Vite): that is no error of the app, and showing it would cover the page on every click.
+  const browserOwn = (r) => r instanceof DOMException && /transition/i.test(r.message)
   addEventListener('unhandledrejection', (e) => {
     const r = e.reason
+    if (browserOwn(r)) return
     report(r && r.name ? r.name : 'UnhandledRejection', r && r.message ? r.message : String(r), r && r.stack, '')
   })
 
