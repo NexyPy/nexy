@@ -77,7 +77,7 @@ class AppController:
 
 ## उदाहरण
 
-`examples/Modular/api/minimal/` देखें।
+`nexy new my-app` इस राउटर के साथ एक प्रोजेक्ट लिखते हैं: इसके पहले प्रश्न, राउटर पर मॉड्यूलर चुनें।
 
 ## अगले चरण
 
