@@ -26,5 +26,6 @@ class Window:
 
 def window_of(days: str, channel: str, last: date) -> Window:
     """A window from the query string. A value the page does not offer falls back to its default."""
-    period = int(days) if days.isdigit() and int(days) in PERIODS else DEFAULT_PERIOD
+    # Compared as text: int() would refuse a digit such as "\u00b2" and a number 5000 digits long.
+    period = int(days) if days in {str(offered) for offered in PERIODS} else DEFAULT_PERIOD
     return Window(period, channel if channel in CHANNELS else "", last)

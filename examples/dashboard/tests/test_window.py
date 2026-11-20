@@ -31,3 +31,11 @@ def test_a_known_channel_is_kept():
 
 def test_an_unknown_channel_means_every_channel():
     assert window_of("30", "' OR 1=1 --", LAST).channel == ""
+
+
+def test_a_period_written_with_a_superscript_digit_falls_back_to_30_days():
+    assert window_of("²", "", LAST).days == 30
+
+
+def test_a_period_of_5000_digits_falls_back_to_30_days():
+    assert window_of("9" * 5000, "", LAST).days == 30
