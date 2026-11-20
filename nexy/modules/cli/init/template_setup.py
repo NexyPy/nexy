@@ -28,6 +28,7 @@ _GITIGNORE_CONTENT = """__pycache__/
 *.pyc
 .env
 .nexy/
+__nexy__/
 nexy.db
 *.db
 node_modules/
