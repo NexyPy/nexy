@@ -60,7 +60,9 @@
       "new": "Создать новый проект в новом каталоге",
       "start": "Запустить production-сервер",
       "test": "Запустить тесты (--server / --client)",
-      "skills": "Добавить навыки и AGENTS.md для кодирующих агентов"
+      "skills": "Добавить навыки и AGENTS.md для кодирующих агентов",
+      "info": "Print environment and project versions in one block"
+
     },
     "commands_header": "Доступные команды:",
     "help": "CLI Nexy",
@@ -119,6 +121,20 @@
     "nexy": "Форматирование файлов .nexy: {count}",
     "nexy_done": "Отформатировано файлов .nexy: {count}"
   },
+    "info": {
+    "label": {
+      "frameworks": "Frameworks",
+      "nexy": "Nexy",
+      "node": "Node",
+      "os": "OS",
+      "package": "Package",
+      "python": "Python",
+      "router": "Router"
+    },
+    "not_found": "not found",
+    "router_file_based": "file-based"
+  },
+
   "init": {
     "alias_invalid": "Используйте @, ~, # или $, при желании с буквами (например, ~ или @app).",
     "already": "Проект здесь уже инициализирован",
