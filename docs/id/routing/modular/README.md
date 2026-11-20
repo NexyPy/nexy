@@ -38,7 +38,7 @@ class AppController:
         return {"message": "Welcome to Nexy Modular API"}
 ```
 
-Metode dicocokkan berdasarkan nama, tidak membedakan huruf besar/kecil: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
+Metode dicocokkan berdasarkan nama, tanpa membedakan huruf besar-kecil: `get`, `post`, `put`, `patch`, `delete`, `options`, `head`, `trace`.
 
 Sebuah pengontrol mendeklarasikan satu penangan per metode HTTP; duplikat meningkat saat startup. Argumen pertama dari `@Controller("/users")` adalah jalur yang dijawab oleh setiap penangan, `/users/`. `async def SOCKET(...)` pada pengontrol mendaftarkan WebSocket di jalur yang sama.
 
@@ -77,7 +77,7 @@ Lihat [Tata Letak](../fbr/layouts/README.md).
 
 ## Contoh
 
-Lihat `examples/Modular/api/minimal/`.
+`nexy new my-app` menulis sebuah proyek dengan router ini: pilih modular pada pertanyaan pertamanya, router.
 
 ## Langkah selanjutnya
 

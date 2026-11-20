@@ -16,6 +16,5 @@ class NexyConfig(NexyConfigModel):
     useAliases = {"@": "src"}
     useVite = True
     useDevTools = True  # the toolbar of `nexy dev` on every page; False removes it
-{%- if orm and orm != "None" %}
-    useORM = "{{ orm }}"  # the ORM `nx migrate` migrates
-{%- endif %}
+{% if orm and orm != "None" %}    useORM = "{{ orm }}"  # the ORM `nx migrate` migrates
+{% endif %}

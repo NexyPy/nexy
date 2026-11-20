@@ -28,5 +28,8 @@ updates:
     schedule:
       interval: monthly
     groups:
+      # A major release of a JavaScript tool (TypeScript, ESLint, Babel) changes how the code
+      # builds: each one comes in its own pull request, and the rest stays in one.
       javascript:
         patterns: ["*"]
+        update-types: [minor, patch]
