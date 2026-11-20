@@ -1,12 +1,12 @@
 <header class="nx-header" data-menu>
   <nav class="nx-container nx-header-inner" aria-label="Main">
     <div class="nx-nav">
-      <a href="/" aria-label="Nexy, home" class="nx-brand">
-        <img src="/nexy.svg" alt="Nexy" />
+      <a href="/" aria-label="Kiln Coffee, overview" class="nx-brand inline-flex items-center gap-2 font-display text-lg font-semibold tracking-tight">
+        <span aria-hidden="true" class="size-3 rounded-full bg-chart"></span>Kiln Coffee
       </a>
       <div class="nx-nav-links">
-        <a href="/" class="nx-nav-link">Home</a>
-        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="nx-nav-link">Docs</a>
+        <a href="/" class="nx-nav-link">Overview</a>
+        <a href="/orders/" class="nx-nav-link">Orders</a>
       </div>
     </div>
     <div class="nx-header-actions">
@@ -35,15 +35,15 @@
   <div class="nx-sheet-scrim" data-menu-scrim data-state="closed" aria-hidden="true"></div>
   <div class="nx-sheet" id="nx-menu" role="dialog" aria-modal="true" aria-labelledby="nx-menu-title" tabindex="-1" data-state="closed" data-menu-dialog>
     <div class="nx-sheet-head">
-      <img src="/nexy.svg" alt="" />
+      <span aria-hidden="true" class="size-3 rounded-full bg-chart"></span>
       <h2 class="nx-sheet-title" id="nx-menu-title">Menu</h2>
     </div>
     <button type="button" class="nx-menu-button nx-menu-close" aria-label="Close menu" data-menu-dismiss>
       <span class="nx-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 6L6 18M6 6l12 12" /></svg></span>
     </button>
     <nav class="nx-sheet-links" aria-label="Pages">
-      <a href="/" class="nx-sheet-link">Home</a>
-      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="nx-sheet-link">Docs<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9" /></svg></a>
+      <a href="/" class="nx-sheet-link">Overview</a>
+      <a href="/orders/" class="nx-sheet-link">Orders</a>
     </nav>
   </div>
 </div>
