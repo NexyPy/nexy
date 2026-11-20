@@ -8,6 +8,8 @@ dependencies = [
     "aerich",
     "python-dotenv",
     "markdown-it-py>=3.0.0",
+    # Tortoise asks for the UTC zone, and Windows ships no zone data of its own.
+    "tzdata>=2025.2; sys_platform == 'win32'",
 ]
 requires-python = ">=3.12"
 
