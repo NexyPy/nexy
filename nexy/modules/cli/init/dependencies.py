@@ -19,11 +19,12 @@ _ORM_PACKAGES: dict[str, str] = {
     "Tortoise-ORM": "tortoise-orm",
 }
 
-# The migration tool of the ORM: `nx migrate` runs it, so the project must have it.
+# The migration tool of the ORM: `nx migrate` runs it, so the project must have it. Tortoise also
+# asks for the UTC zone, and Windows ships no zone data: tzdata gives it there.
 _ORM_EXTRA_PACKAGES: dict[str, list[str]] = {
     "SQLModel": ["alembic"],
     "SQLAlchemy": ["alembic"],
-    "Tortoise-ORM": ["aerich"],
+    "Tortoise-ORM": ["aerich", "tzdata; sys_platform == 'win32'"],
 }
 
 
