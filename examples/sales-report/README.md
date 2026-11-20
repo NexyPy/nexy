@@ -1,11 +1,11 @@
-# Dashboard: a sales dashboard with Nexy controllers and React charts
+# Sales report: server pages from a modular Nexy app, with a React chart
 
-Kiln Coffee is the sales dashboard of a small coffee roaster: revenue, orders, channels and best
+Kiln Coffee is the sales report of a small coffee roaster: revenue, orders, channels and best
 sellers over 7, 30 or 90 days. The pages are `.nexy` views rendered on the server by modular
 controllers, and the chart is a React component that reads a JSON route of the same project. The
 orders are a SQLite table of SQLModel, made by Alembic migrations.
 
-![The overview of the dashboard, a day of the chart under the pointer](../../docs/assets/examples/dashboard.png)
+![The overview of the sales report, a day of the chart under the pointer](../../docs/assets/examples/sales-report.png)
 
 ## What it shows
 
@@ -28,7 +28,7 @@ bun.
 
 ```bash
 git clone https://github.com/NexyPy/nexy
-cd nexy/examples/dashboard
+cd nexy/examples/sales-report
 cp .env.example .env
 uv sync
 npm install                     # or pnpm install, bun install
@@ -54,7 +54,7 @@ the component asks `/api/revenue/` for one value per day with `useFetch`. Point 
 the chart and press the arrows, to read it.
 
 The orders are made up by the second migration, from a fixed formula and a seeded generator, so
-every copy of the example shows the same numbers. The dashboard ends its windows on the last day
+every copy of the example shows the same numbers. The report ends its windows on the last day
 with an order, not on today, so the data does not age out of the page.
 
 ## Test it
