@@ -23,6 +23,11 @@ def _expand_alias(path: str) -> str:
     return path
 
 
+def snapshot_key(props_json: str) -> str:
+    """The name of the snapshot of an island given these props: the same at build and request."""
+    return hashlib.md5(props_json.encode("utf-8"), usedforsecurity=False).hexdigest()[:12]
+
+
 def _island_attributes(directive: str | None, media: str | None) -> str:
     """The attributes of an island that hydrates later (``client:idle``, ``client:media``...)."""
     if not directive:
@@ -94,10 +99,21 @@ class NexyClientComponent:
             f'data-nexy-symbol="{escape(self.symbol)}"',
             f'data-nexy-props="{escape(props_json)}"',
         ]
-        content = self._get_static_content(escape(url), escape(self.symbol))
+        content = self._get_static_content(escape(url), escape(self.symbol), props_json)
         return f"<ncc {' '.join(filter(None, attributes))}>{content}</ncc>"
 
-    def _get_static_content(self, url: str, symbol: str) -> str:
+    def _get_static_content(self, url: str, symbol: str, props_json: str = "{}") -> str:
+        snapshot = self._snapshot_path(url, symbol)
+        if snapshot is None:
+            return ""
+        if props_json != "{}":
+            variant = snapshot.with_name(f"{snapshot.name[:-5]}.{snapshot_key(props_json)}.html")
+            if variant.is_file():
+                return variant.read_text(encoding="utf-8")
+        return snapshot.read_text(encoding="utf-8")
+
+    def _snapshot_path(self, url: str, symbol: str) -> Path | None:
+        """The default build snapshot of this island: its named export, else its default one."""
         clean_url = url.replace(".tsx", "")
         if self.framework in ["vue", "svelte"]:
             default_path = Path(f"__nexy__/client/static{url}.html")
@@ -107,7 +123,7 @@ class NexyClientComponent:
         export_path = Path(f"__nexy__/client/static{clean_url}.{symbol}.html")
 
         if export_path.is_file():
-            return export_path.read_text(encoding="utf-8")
+            return export_path
         if default_path.is_file():
-            return default_path.read_text(encoding="utf-8")
-        return ""
+            return default_path
+        return None
