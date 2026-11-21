@@ -4,6 +4,7 @@ import path from 'path'
 import { pathToFileURL } from 'node:url'
 import esbuild, { type Plugin } from 'esbuild'
 import { renderSnapshot } from './ssg.snapshot'
+import { propsFor, readIslandProps, renderVariants } from './ssg.variants'
 import {
   detectTsxFramework,
   resolveMdxFramework,
@@ -111,6 +112,7 @@ export async function runJsxFramework(
   fs.rmSync(tempDir, { recursive: true, force: true })
 
   const snippets: Record<string, string> = {}
+  const islandProps = readIslandProps()
 
   const processFile = async (file: string) => {
     const relativeDir = path.dirname(file)
@@ -135,6 +137,12 @@ export async function runJsxFramework(
       try {
         const html = await renderSnapshot(framework.render, Component)
         writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
+        const picked = propsFor(islandProps, file, exportName, Object.keys(mod))
+        const render = (props: Record<string, unknown>) =>
+          renderSnapshot(framework.render, Component, props)
+        for (const [key, variant] of await renderVariants(file, render, picked)) {
+          writeComponent(relativeDir, `${entryId}.${key}`, `${css}${variant}`, snippets)
+        }
         result.entries.push({ file, component, status: 'success' })
       } catch (e) {
         console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - ${message(e)}, using client placeholder (no server HTML)${c.reset}`)
