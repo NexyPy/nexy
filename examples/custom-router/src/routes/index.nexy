@@ -1,0 +1,35 @@
+---
+from nexy import Vite
+from src.library.catalogue import BOOKS
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library</title>
+    <meta name="description" content="A FastAPI service plugged into Nexy with useRouter, and a Nexy page that reads the same books.">
+    <Vite />
+</head>
+<!-- A page of a project with useRouter is not wrapped by layout.nexy: it is a whole document. -->
+<body class="mx-auto max-w-2xl px-4 py-10">
+<main>
+  <h1 class="text-3xl font-semibold">Library</h1>
+  <p class="mt-3 text-foreground-second">This page is <code>src/routes/index.nexy</code>. The API next to it is a FastAPI app written before Nexy, plugged in with <code>useRouter</code>.</p>
+  <ul class="mt-6 divide-y divide-border border-y border-border">
+    {% for book in BOOKS %}
+    <li class="flex flex-wrap items-baseline justify-between gap-2 py-3">
+      <span><span class="font-medium">{{ book.title }}</span> <span class="text-foreground-second">by {{ book.author }}</span></span>
+      <span class="text-sm">{{ "On loan" if book.on_loan else "On the shelf" }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <h2 class="mt-10 text-xl font-semibold">The API</h2>
+  <ul class="mt-3 text-sm">
+    <li><a href="/api/v1/books" class="inline-flex min-h-11 items-center"><code>GET /api/v1/books</code></a>, from the FastAPI service</li>
+    <li><a href="/api/v2/books" class="inline-flex min-h-11 items-center"><code>GET /api/v2/books</code></a>, moved to <code>src/routes/api/v2/books.py</code></li>
+    <li class="py-3"><code>POST /api/v1/books/{id}/loan</code>, with an <code>X-Staff-Token</code> header</li>
+  </ul>
+</main>
+</body>
+</html>
