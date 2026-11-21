@@ -71,3 +71,9 @@ class TestASTTemplateParser:
         result = parser.parse(html, known_components={"Button"})
         # Should be: {{ Button(link="/user/" ~ (id) ~ "") }}
         assert 'link="/user/" ~ (id)' in result
+
+
+def test_a_block_right_after_a_tag_name_compiles_like_one_after_a_space():
+    glued = TemplateParser().parse('<div{% if on %} class="x"{% endif %}>y</div>')
+    spaced = TemplateParser().parse('<div {% if on %} class="x"{% endif %}>y</div>')
+    assert glued == spaced
