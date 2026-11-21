@@ -519,6 +519,39 @@ on another machine, against another project, and are not comparable.
 | Preact | ✓ | ✓ | ✓ |
 | None (vanilla) | ✓ | - | ✓ |
 
+## Examples
+
+Each example in [`examples/`](examples) is a project of its own, with its tests: `uv sync`,
+`npm install`, then `uv run nexy dev`. The CI runs the tests of every one of them.
+
+Applications:
+
+| Example | What it is | Client | Router |
+|---|---|---|---|
+| [auth](examples/auth) | sign up, sign in, a protected page, sign out, with sessions | Vue island | file-based |
+| [blog](examples/blog) | Markdown posts, tags, an RSS feed and a sitemap | none | file-based |
+| [chat](examples/chat) | rooms that work without JavaScript, live with an island | Preact island | file-based |
+| [dashboard](examples/dashboard) | a sales dashboard with shadcn/ui, routed in the browser | React | client |
+| [docs](examples/docs) | a documentation site from Markdown files, with search | React islands | file-based |
+| [kanban](examples/kanban) | a team board with drag and drop over server actions | Solid island | file-based |
+| [landing](examples/landing) | a product page with a pricing switch and a waitlist | Preact islands | file-based |
+| [notes](examples/notes) | a notebook that saves while you type | Svelte | client |
+| [portfolio](examples/portfolio) | a designer's site with case studies and a gallery | Svelte islands | file-based |
+| [sales-report](examples/sales-report) | server pages from controllers, with a chart | React island | modular |
+| [store](examples/store) | a shop whose cart lives on the server | Vue | client |
+
+Short samples, one feature each:
+
+| Sample | What it shows |
+|---|---|
+| [fbr-basics](examples/fbr-basics) | which file answers which address: layouts, `[slug]`, a JSON route, the 404 page |
+| [with-isr](examples/with-isr) | `revalidate`: a page rendered once, then served from memory |
+| [with-sitemap](examples/with-sitemap) | `useSiteUrl`: `sitemap.xml` and `robots.txt` |
+| [with-i18n](examples/with-i18n) | two languages: the language in the address, `hreflang`, plurals |
+| [modular-guards](examples/modular-guards) | `@UseGuard` on a controller and on a method: public, a key, an editor |
+| [custom-router](examples/custom-router) | an existing FastAPI app plugged in with `useRouter` |
+| [with-postgresql](examples/with-postgresql) | SQLModel, with the database chosen by `DATABASE_URL` |
+
 ## Documentation
 
 This README is the front door. The pages below go deeper on one topic each, in plain Markdown, and
