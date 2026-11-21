@@ -1,0 +1,13 @@
+---
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+---
+<header class="border-b border-border">
+  <div class="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-4">
+    <a href="/" class="flex h-11 items-center gap-2 font-semibold">
+      <svg viewBox="0 0 32 32" class="size-7" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor" /><path d="M9 11h14M9 16h10M9 21h6" stroke="var(--background)" stroke-width="2.5" stroke-linecap="round" /></svg>
+      Fernhill <span class="font-normal text-foreground-second">chat</span>
+    </a>
+    <a href="https://github.com/NexyPy/nexy/tree/main/examples/chat" class="ml-auto hidden min-h-11 items-center text-sm text-foreground-second underline underline-offset-4 hover:text-foreground sm:flex">Made up: the chat example of Nexy</a>
+    <div class="ml-auto sm:ml-0"><ThemeToggle /></div>
+  </div>
+</header>
