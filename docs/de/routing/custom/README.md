@@ -152,6 +152,23 @@ async def data():
     return {"data": 42}
 ```
 
+## Was unterscheidet sich von FastAPI
+
+Zwei Dinge reagieren unterschiedlich, sobald der Router in Nexy läuft:
+
+| Fall | FastAPI | In Nexy |
+|---|---|---|
+| `raise HTTPException(404, "No such user.")` | `{"detail": "No such user."}` an jeden Kunden | dass JSON nur, wenn die Anfrage `Accept: application/json` ohne `text/html` sendet; Jeder andere Client, Curl mit seiner Standardeinstellung `Accept: */*`, erhält die HTML-Fehlerseite |
+| `/api/users/one` für `id: int` | `422` mit den Validierungsfehlern | `404`: Eine Adresse, deren Pfadwert den falschen Typ hat, existiert nicht |
+
+Ein API-Client sendet also `Accept: application/json`:
+
+```bash
+curl -H "Accept: application/json" localhost:3000/api/users/one
+```
+
+Ein Textkörper oder Abfragewert des falschen Typs antwortet `422` immer noch mit den Fehlern, wie in FastAPI.
+
 ## Testen Sie es
 
 ```python filename="tests/test_legacy.py"

@@ -152,6 +152,23 @@ async def data():
     return {"data": 42}
 ```
 
+## سے کیا فرق ہے۔ FastAPI
+
+Nexy کے اندر روٹر چلنے کے بعد دو چیزیں مختلف جواب دیتی ہیں:
+
+| کیس | FastAPI | Nexy کے اندر |
+|---|---|---|
+| `raise HTTPException(404, "No such user.")` | `{"detail": "No such user."}` ہر کلائنٹ کو | کہ JSON صرف اس وقت جب درخواست بھیجے `Accept: application/json` بغیر `text/html` کے؛ کسی بھی دوسرے کلائنٹ کو، اس کے پہلے سے طے شدہ `Accept: */*` کے ساتھ curl، HTML غلطی کا صفحہ حاصل کرتا ہے۔ |
+| `/api/users/one` `id: int` کے لیے | `422` توثیق کی غلطیوں کے ساتھ | `404`: ایک ایڈریس جس کی پاتھ ویلیو غلط قسم کا موجود نہیں ہے۔ |
+
+تو ایک API کلائنٹ `Accept: application/json` بھیجتا ہے:
+
+```bash
+curl -H "Accept: application/json" localhost:3000/api/users/one
+```
+
+غلط قسم کی باڈی یا سوال کی قدر اب بھی `422` غلطیوں کے ساتھ جواب دیتی ہے، جیسا کہ FastAPI میں ہے۔
+
 ## اس کی جانچ کریں۔
 
 ```python filename="tests/test_legacy.py"

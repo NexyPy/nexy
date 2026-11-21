@@ -10,7 +10,7 @@
 
 ## Установите `useRouter` в `nexyconfig.py`
 
-Маршрутизатор - это любой FastAPI `APIRouter`, написанный так, как вы его уже пишете:
+Маршрутизатор — это любой FastAPI `APIRouter`, написанный так, как вы его уже пишете:
 
 ```python filename="src/legacy/api.py"
 from fastapi import APIRouter
@@ -28,7 +28,7 @@ async def user(id: int):
     return {"id": id}
 ```
 
-`useRouter` - поле класса `NexyConfig`, как и все настройки проекта:
+`useRouter` — поле класса `NexyConfig`, как и все настройки проекта:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel
@@ -43,7 +43,7 @@ class NexyConfig(NexyConfigModel):
 Затем `nx dev` отвечает на `GET /api/status` и `GET /api/users/{id}`, а `/docs` перечисляет их.
 
 > [!NOTE]
-> `useRouter` в `nexyconfig.py` - это настройка. `from nexy import useRouter` - это еще одна вещь: перехватчик, который страница `.nexy` использует для чтения текущего маршрута. Не импортируйте его для настройки маршрутизатора.
+> `useRouter` в `nexyconfig.py` — это настройка. `from nexy import useRouter` — это еще одна вещь: перехватчик, который страница `.nexy` использует для чтения текущего маршрута. Не импортируйте его для настройки маршрутизатора.
 
 ## Несколько роутеров
 
@@ -152,6 +152,23 @@ async def data():
     return {"data": 42}
 ```
 
+## Чем отличается от FastAPI
+
+Две вещи отвечают по-разному, когда маршрутизатор работает внутри Nexy:
+
+| Дело | FastAPI | Внутри Некси |
+|---|---|---|
+| `raise HTTPException(404, "No such user.")` | `{"detail": "No such user."}` каждому клиенту | этот JSON только тогда, когда запрос отправляет `Accept: application/json` без `text/html`; любой другой клиент, включая Curl с включенным по умолчанию `Accept: */*`, получает страницу ошибки HTML |
+| `/api/users/one` для `id: int` | `422` с ошибками проверки | `404`: адрес, значение пути которого имеет неверный тип, не существует. |
+
+Итак, клиент API отправляет `Accept: application/json`:
+
+```bash
+curl -H "Accept: application/json" localhost:3000/api/users/one
+```
+
+Тело или значение запроса неправильного типа по-прежнему отвечают на `422` с ошибками, как в FastAPI.
+
 ## Проверьте это
 
 ```python filename="тесты/test_legacy.py"
@@ -166,6 +183,6 @@ def test_the_included_route_answers():
 
 ## Следующие шаги
 
-- [От FastAPI до Nexy](../../coming-from/fastapi.md): переместите маршруты в файлы один за другим.
+- [От FastAPI до Nexy](../../coming-from/fastapi.md): переместите маршруты в файлы по одному
 - [Маршрутизация на основе файлов](../fbr/README.md)
 - [Модульная маршрутизация](../modular/README.md): `useRouter = AppModule`

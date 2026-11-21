@@ -83,7 +83,7 @@ class NexyConfig(NexyConfigModel):
 
 ## इसके आगे वाले पेज और रूट फ़ाइलें
 
-`src/routes/` अभी भी पढ़ा जाता है जबकि `useRouter` सेट है: एक `.nexy` पृष्ठ या एक `.py` रूट फ़ाइल शामिल मार्गों के बगल में उत्तर देती है।
+`src/routes/` अभी भी पढ़ा जाता है जबकि `useRouter` सेट है: एक `.nexy` पेज या एक `.py` रूट फ़ाइल शामिल मार्गों के बगल में उत्तर देती है।
 
 ```nexy filename="src/routes/index.nexy"
 ---
@@ -129,7 +129,7 @@ class NexyConfig(NexyConfigModel):
     useRouter = service.router
 ```
 
-ऐप के स्वयं के मिडलवेयर, अपवाद हैंडलर और स्टार्टअप इवेंट पीछे रहते हैं: उन्हें `useMiddlewares` और `nexyconfig.py` के अन्य क्षेत्रों में ले जाएं।
+ऐप के स्वयं के मिडलवेयर, अपवाद हैंडलर और स्टार्टअप ईवेंट पीछे रहते हैं: उन्हें `useMiddlewares` और `nexyconfig.py` के अन्य फ़ील्ड में ले जाएं।
 
 ## निर्भरताएँ, प्रमाणीकरण और डेटाबेस
 
@@ -152,6 +152,23 @@ async def data():
     return {"data": 42}
 ```
 
+## FastAPI से क्या भिन्न है
+
+एक बार जब राउटर नेक्सी के अंदर चलता है तो दो चीजें अलग-अलग उत्तर देती हैं:
+
+| मामला | FastAPI | नेक्सी के अंदर |
+|---|---|---|
+| `raise HTTPException(404, "No such user.")` | `{"detail": "No such user."}` प्रत्येक ग्राहक के लिए | वह JSON केवल तभी जब अनुरोध `text/html` के बिना `Accept: application/json` भेजता है; कोई भी अन्य क्लाइंट, जिसमें डिफ़ॉल्ट `Accept: */*` शामिल है, कर्ल को HTML त्रुटि पृष्ठ मिलता है |
+| `/api/users/one` के लिए `id: int` | `422` सत्यापन त्रुटियों के साथ | `404`: वह पता जिसका पथ मान गलत प्रकार का है, मौजूद नहीं है |
+
+तो एक एपीआई क्लाइंट `Accept: application/json` भेजता है:
+
+```bash
+curl -H "Accept: application/json" localhost:3000/api/users/one
+```
+
+गलत प्रकार का मुख्य भाग या क्वेरी मान अभी भी त्रुटियों के साथ `422` का उत्तर देता है, जैसा कि FastAPI में है।
+
 ## इसका परीक्षण करें
 
 ```python filename="परीक्षण/test_legacy.py"
@@ -166,6 +183,6 @@ def test_the_included_route_answers():
 
 ## अगले चरण
 
-- [से FastAPI से नेक्सी](../../coming-from/fastapi.md): रूटों को फ़ाइलों तक एक-एक करके ले जाएं
+- [से FastAPI से नेक्सी](../../coming-from/fastapi.md): रूटों को एक-एक करके फाइलों में ले जाएं
 - [फ़ाइल-आधारित रूटिंग](../fbr/README.md)
 - [मॉड्यूलर रूटिंग](../modular/README.md): `useRouter = AppModule`
