@@ -1,0 +1,144 @@
+---
+from "@/components/Button.nexy" import Button
+from "@/components/Icon.nexy" import Icon
+from "@/components/LinePattern.nexy" import LinePattern
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+from nexy import usePathname
+
+pathname = usePathname()
+
+link = "px-3.5 py-2 font-mono text-xs uppercase tracking-[0.04em] transition-opacity hover:opacity-60 aria-[current=page]:underline aria-[current=page]:underline-offset-4"
+menu = "M4 7h16M4 12h16M4 17h16"
+close = "M18 6L6 18M6 6l12 12"
+external = "M7 17L17 7M8 7h9v9"
+sheet_link = "flex min-h-11 items-center gap-2 px-3 text-base transition-colors hover:bg-paper/5 aria-[current=page]:bg-paper/10 aria-[current=page]:font-medium"
+book = "M2 4h6a4 4 0 014 4v12a3 3 0 00-3-3H2zM22 4h-6a4 4 0 00-4 4v12a3 3 0 013-3h7z"
+pages = [("/", "Home"), ("/about", "About"), ("/todos", "Todos")]
+---
+<header class="fixed inset-x-0 top-0 z-20 py-4 [view-transition-name:nx-header]">
+  <nav
+    class="relative mx-auto flex w-[72rem] max-w-[calc(100%-2rem)] items-center justify-between border border-paper/10 bg-ink/85 px-5 py-3 text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.4)] backdrop-blur-[4px]"
+    aria-label="Main"
+  >
+    <LinePattern side="right" />
+    <a href="/" aria-label="Nexy, home" class="relative">
+      <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
+    </a>
+
+    <div class="relative flex items-center gap-2">
+      <div class="hidden items-center sm:flex">
+        {% for href, label in pages %}
+        <a href="{{ href }}" class="{{ link }}"{% if pathname == href %} aria-current="page"{% endif %}>{{ label }}</a>
+        {% endfor %}
+      </div>
+      <ThemeToggle />
+      <span class="hidden sm:block">
+        <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" size="sm" icon="{{ book }}">Docs</Button>
+      </span>
+      <button
+        type="button"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-sheet-button
+        class="-my-1.5 -mr-2 ml-1 grid size-11 place-items-center sm:hidden"
+      >
+        <Icon path="{{ menu }}" />
+      </button>
+    </div>
+  </nav>
+</header>
+
+<div class="fixed inset-0 z-50 sm:hidden" data-sheet hidden>
+  <div class="sheet-scrim absolute inset-0 bg-ink/70" data-sheet-scrim data-state="closed" aria-hidden="true"></div>
+  <div
+    id="mobile-menu"
+    class="sheet absolute inset-y-0 left-0 flex w-3/4 max-w-sm flex-col border-r border-paper/10 bg-ink text-paper shadow-[0_10px_30px_-12px_rgb(0_0_0/0.6)] outline-none"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="mobile-menu-title"
+    tabindex="-1"
+    data-side="left"
+    data-state="closed"
+    data-sheet-panel
+  >
+    <div class="flex items-center gap-3 border-b border-paper/10 py-4 pl-5 pr-16">
+      <img src="/nexy.svg" alt="" class="h-5 invert" />
+      <h2 id="mobile-menu-title" class="font-mono text-xs uppercase tracking-[0.04em] text-paper/60">Menu</h2>
+    </div>
+    <button
+      type="button"
+      aria-label="Close menu"
+      data-sheet-dismiss
+      class="absolute right-2 top-1.5 grid size-11 place-items-center opacity-70 transition-opacity hover:opacity-100 focus-visible:opacity-100"
+    >
+      <Icon path="{{ close }}" />
+    </button>
+    <nav class="flex flex-1 flex-col overflow-y-auto p-3" aria-label="Pages">
+      {% for href, label in pages %}
+      <a href="{{ href }}" class="{{ sheet_link }}"{% if pathname == href %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="{{ sheet_link }} justify-between">Docs<Icon path="{{ external }}" size="16" /></a>
+    </nav>
+  </div>
+</div>
+<script>
+  // The mobile menu is a modal sheet. While it is open it holds the keyboard (Tab wraps inside it,
+  // Escape closes it from anywhere), the page behind holds still, and a wide screen closes it.
+  // Closing plays the slide back, then hides the sheet and gives the focus back to the button.
+  (function () {
+    var button = document.querySelector("[data-sheet-button]");
+    var sheet = document.querySelector("[data-sheet]");
+    if (!button || !sheet) return;
+    var panel = sheet.querySelector("[data-sheet-panel]");
+    var scrim = sheet.querySelector("[data-sheet-scrim]");
+    var wide = window.matchMedia("(min-width: 40rem)");
+
+    function setState(state) {
+      panel.dataset.state = state;
+      scrim.dataset.state = state;
+      button.setAttribute("aria-expanded", String(state === "open"));
+    }
+
+    function open() {
+      sheet.hidden = false;
+      setState("open");
+      document.body.style.overflow = "hidden";
+      panel.focus();
+    }
+
+    function close() {
+      if (panel.dataset.state !== "open") return;
+      setState("closed");
+      document.body.style.overflow = "";
+      button.focus();
+      var moves = panel.getAnimations().map(function (move) { return move.finished; });
+      Promise.all(moves).then(function () {
+        if (panel.dataset.state === "closed") sheet.hidden = true;
+      });
+    }
+
+    function trap(event) {
+      var stops = panel.querySelectorAll("a[href], button");
+      var first = stops[0];
+      var last = stops[stops.length - 1];
+      var away = event.shiftKey ? document.activeElement === first || document.activeElement === panel : document.activeElement === last;
+      if (!away) return;
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+    }
+
+    button.addEventListener("click", open);
+    sheet.addEventListener("click", function (event) {
+      if (event.target.closest("[data-sheet-dismiss],[data-sheet-scrim]")) close();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (panel.dataset.state !== "open") return;
+      if (event.key === "Escape") close();
+      if (event.key === "Tab") trap(event);
+    });
+    wide.addEventListener("change", function () {
+      if (wide.matches) close();
+    });
+  })();
+</script>
