@@ -1,0 +1,25 @@
+---
+from nexy import useSearchParams
+from src.accounts.messages import DONE
+from src.accounts.session import current
+
+metadata = {
+    "title": "Keep track of what you read",
+    "description": "Kestrel keeps the books you read, the ones you want to, and what you thought of them.",
+}
+account = current()
+done = DONE.get(useSearchParams().get("done", ""), "")
+---
+<section class="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-4 py-20 sm:px-6">
+  {% if done %}<p role="status" class="mb-8 w-fit rounded-lg bg-accent-soft px-4 py-2 text-sm">{{ done }}</p>{% endif %}
+  <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">Keep track of what you read.</h1>
+  <p class="mt-5 max-w-xl text-lg text-foreground-second">Kestrel keeps the books you read, the ones you want to, and what you thought of them. This example is its account pages: sign up, sign in, your account, sign out.</p>
+  <div class="mt-8 flex flex-wrap gap-3">
+    {% if account %}
+    <a href="/account" class="inline-flex h-11 items-center rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Go to your account</a>
+    {% else %}
+    <a href="/signup" class="inline-flex h-11 items-center rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Create an account</a>
+    <a href="/signin" class="inline-flex h-11 items-center rounded-lg border border-border px-5 text-sm font-medium hover:border-foreground">Sign in</a>
+    {% endif %}
+  </div>
+</section>
