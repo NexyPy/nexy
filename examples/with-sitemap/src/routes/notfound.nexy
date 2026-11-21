@@ -1,0 +1,5 @@
+---
+metadata = {"title": "Not found", "robots": "noindex"}
+---
+<h1 class="text-3xl font-semibold">No page here</h1>
+<p class="mt-4"><a href="/" class="inline-flex min-h-11 items-center">Back to Crumb</a></p>
