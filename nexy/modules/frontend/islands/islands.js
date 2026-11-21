@@ -17,7 +17,9 @@ const nexyIslands = (() => {
                 }
             }
         }, { rootMargin: "200px" });
-        io.observe(el);
+        // The container is `display: contents`: it has no box and never intersects. Its first
+        // child stands in for it, or its parent while it is still empty.
+        io.observe(el.firstElementChild || el.parentElement || el);
     }
     function whenMedia(query, cb) {
         const mql = window.matchMedia(query);
