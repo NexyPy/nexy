@@ -1,0 +1,12 @@
+---
+from src.bakes import BAKES
+
+metadata = {"title": "Menu", "description": "Bread and buns, baked every morning."}
+---
+<h1 class="text-3xl font-semibold">Menu</h1>
+<ul class="mt-6">
+  {% for slug, (name, note) in BAKES.items() %}
+  <li><a href="/menu/{{ slug }}" class="flex min-h-11 items-center">{{ name }}</a></li>
+  {% endfor %}
+</ul>
+<p class="mt-6 text-sm text-foreground-second">Each bake is <code>src/routes/menu/[slug].nexy</code>: a dynamic page, so it is not in the sitemap.</p>
