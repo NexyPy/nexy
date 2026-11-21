@@ -65,3 +65,10 @@ def test_a_vue_island_serves_the_snapshot_of_its_props():
 def test_an_island_without_any_snapshot_is_empty():
     island = NexyClientComponent("src/components/none.tsx", "react", "None")
     assert "></ncc>" in island.generate({"label": "clicks"})
+
+
+def test_a_named_export_serves_the_snapshot_of_its_props():
+    (STATIC / "spike.Badge.html").write_text("<u>new</u>", encoding="utf-8")
+    _plant("spike.Badge", {"label": "hot"}, "<u>hot</u>")
+    badge = NexyClientComponent("src/components/spike.tsx", "react", "Badge")
+    assert "<u>hot</u>" in badge.generate({"label": "hot"})
