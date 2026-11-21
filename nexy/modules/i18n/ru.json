@@ -36,6 +36,7 @@
     "count_client_only": "только на клиенте: {count}",
     "more": "и ещё {count}",
     "not_rendered": "У {path} нет серверного HTML: он отрисовывается только на клиенте",
+    "not_rendered_because": "У {path} нет серверного HTML: {reason}",
     "running_check": "Запуск {name}",
     "ran_check": "{name} выполнен"
   },

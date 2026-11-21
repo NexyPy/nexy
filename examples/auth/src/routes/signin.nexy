@@ -1,0 +1,33 @@
+---
+from "@/components/password-help.vue" import PasswordHelp
+from nexy import redirect, useSearchParams
+from src.accounts.messages import ERRORS
+from src.accounts.session import current, safe_then
+
+metadata = {"title": "Sign in", "robots": "noindex"}
+query = useSearchParams()
+then = safe_then(query.get("then", ""))
+if current():
+    redirect(then)
+error = ERRORS.get(query.get("error", ""), "")
+email = query.get("email", "")[:254]
+---
+<section class="mx-auto w-full max-w-sm flex-1 px-4 py-16">
+  <h1 class="text-2xl font-semibold tracking-tight">Sign in to Kestrel</h1>
+  <p class="mt-2 text-sm text-foreground-second">No account yet? <a href="/signup?then={{ then | urlencode }}" class="inline-flex min-h-11 items-center font-medium text-accent underline underline-offset-4">Create one</a>.</p>
+
+  <form method="post" action="{{ __actions_path['sign_in'] }}" class="mt-8 flex flex-col gap-5">
+    <input type="hidden" name="then" value="{{ then | e }}">
+    {% if error %}<p id="form-error" role="alert" class="rounded-lg border border-down/40 bg-down/10 px-4 py-3 text-sm">{{ error }}</p>{% endif %}
+    <div>
+      <label for="email" class="mb-1.5 block text-sm font-medium">Email</label>
+      <input id="email" name="email" type="email" required autocomplete="username" value="{{ email | e }}" class="field"{% if error %} aria-invalid="true" aria-describedby="form-error"{% endif %}>
+    </div>
+    <div>
+      <label for="password" class="mb-1.5 block text-sm font-medium">Password</label>
+      <input id="password" name="password" type="password" required maxlength="256" autocomplete="current-password" class="field" data-password{% if error %} aria-invalid="true" aria-describedby="form-error"{% endif %}>
+      <PasswordHelp directive="client:load" />
+    </div>
+    <button type="submit" class="h-11 rounded-lg bg-accent text-sm font-medium text-on-accent hover:opacity-90">Sign in</button>
+  </form>
+</section>

@@ -36,6 +36,7 @@
     "count_client_only": "{count} على العميل فقط",
     "more": "و{count} أخرى",
     "not_rendered": "لا يحتوي {path} على HTML من الخادم: يُعرض على العميل فقط",
+    "not_rendered_because": "لا يحتوي {path} على HTML من الخادم: {reason}",
     "running_check": "جارٍ تشغيل {name}",
     "ran_check": "تم تشغيل {name}"
   },
