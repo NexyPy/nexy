@@ -1,0 +1,78 @@
+---
+from "@/components/live-room.tsx" import LiveRoom
+from nexy import notFound, setMetadata, useCookies, useSearchParams
+from src.chat.store import LONGEST_NAME, LONGEST_TEXT, NOTES, ROOMS, messages
+
+room: prop[str]
+about = ROOMS.get(room) or notFound()
+history = messages(room)
+name = useCookies().get("chat_name", "")
+note = NOTES.get(useSearchParams().get("note", ""), "")
+setMetadata(title=f"#{room}", description=about)
+---
+<div class="mx-auto flex h-[calc(100dvh-4rem)] w-full max-w-6xl flex-col md:flex-row">
+  <nav aria-label="Rooms" class="shrink-0 border-b border-border md:w-56 md:border-b-0 md:border-r md:py-4">
+    <p class="hidden px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-foreground-second md:block">Rooms</p>
+    <ul class="flex gap-1 overflow-x-auto px-2 py-2 md:flex-col md:py-0">
+      {% for key in ROOMS %}
+      <li>
+        <a href="/rooms/{{ key }}" class="flex min-h-11 items-center rounded-md px-3 text-sm {% if key == room %}bg-accent-soft font-medium text-accent{% else %}text-foreground-second hover:bg-background-second hover:text-foreground{% endif %}"{% if key == room %} aria-current="page"{% endif %}>#{{ key }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <section aria-labelledby="room-name" class="flex min-h-0 min-w-0 flex-1 flex-col">
+    <header class="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+      <div class="min-w-0">
+        <h1 id="room-name" class="font-semibold">#{{ room }}</h1>
+        <p class="truncate text-sm text-foreground-second">{{ about }}</p>
+      </div>
+      <LiveRoom directive="client:load" />
+    </header>
+
+    <!-- column-reverse: the list opens scrolled to its end, newest messages in view, with no script. -->
+    <div class="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto">
+      <ol role="log" aria-label="Messages in #{{ room }}" class="flex flex-col gap-4 px-4 py-4" data-messages data-room="{{ room }}">
+        {% for message in history %}
+        <li class="flex gap-3" data-message="{{ message.id }}">
+          <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-accent-soft text-sm font-semibold text-accent" data-initial>{{ message.author[:1] | upper | e }}</span>
+          <div class="min-w-0">
+            <p class="text-sm"><span class="font-semibold" data-author>{{ message.author | e }}</span> <time datetime="{{ message.sent_at }}" class="ml-1 text-xs text-foreground-second" data-time>{{ message.sent_at[11:16] }} UTC</time></p>
+            <p class="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed [overflow-wrap:anywhere]" data-text>{{ message.text | e }}</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      {% if not history %}<p class="px-4 py-8 text-center text-sm text-foreground-second">No messages yet. Say hello.</p>{% endif %}
+    </div>
+
+    <template data-message-template>
+      <li class="flex gap-3">
+        <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-accent-soft text-sm font-semibold text-accent" data-initial></span>
+        <div class="min-w-0">
+          <p class="text-sm"><span class="font-semibold" data-author></span> <time class="ml-1 text-xs text-foreground-second" data-time></time></p>
+          <p class="mt-0.5 whitespace-pre-wrap text-sm leading-relaxed [overflow-wrap:anywhere]" data-text></p>
+        </div>
+      </li>
+    </template>
+
+    <form id="send" method="post" action="/send" class="border-t border-border p-3" data-send>
+      <input type="hidden" name="room" value="{{ room }}">
+      <p role="alert" class="mb-2 text-sm text-down empty:hidden" data-note>{{ note }}</p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <div class="flex min-w-0 flex-1 items-end gap-2">
+        <div class="w-28 shrink-0 sm:w-40">
+          <label for="name" class="mb-1 block text-xs font-medium text-foreground-second">Your name</label>
+          <input id="name" name="name" required maxlength="{{ LONGEST_NAME }}" autocomplete="nickname" value="{{ name | e }}" class="h-11 w-full rounded-md border border-border bg-background px-3 text-sm focus:border-accent focus:outline-none">
+        </div>
+        <div class="min-w-0 flex-1">
+          <label for="text" class="mb-1 block text-xs font-medium text-foreground-second">Message to #{{ room }}</label>
+          <textarea id="text" name="text" required maxlength="{{ LONGEST_TEXT }}" rows="1" class="block min-h-11 w-full resize-y rounded-md border border-border bg-background px-3 py-2.5 text-sm focus:border-accent focus:outline-none"></textarea>
+        </div>
+        </div>
+        <button type="submit" class="h-11 rounded-md bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Send</button>
+      </div>
+    </form>
+  </section>
+</div>
