@@ -1,0 +1,12 @@
+---
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+---
+<header class="border-b border-border">
+  <div class="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+    <a href="/" class="flex h-11 items-center gap-2 font-semibold">
+      <svg viewBox="0 0 32 32" class="size-7" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor" /><path d="M9 8v16M16 8v10M23 8v6" stroke="var(--background)" stroke-width="3" stroke-linecap="round" /></svg>
+      Quill <span class="font-normal text-foreground-second">board</span>
+    </a>
+    <ThemeToggle />
+  </div>
+</header>

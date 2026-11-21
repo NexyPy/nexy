@@ -1,0 +1,27 @@
+[project]
+name = "kanban"
+version = "0.1.0"
+description = "A team board: server HTML in SQLite, cards moved by actions, Solid drag and drop"
+dependencies = [
+    "nexy>=2.8.0",
+]
+requires-python = ">=3.12"
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "httpx>=0.28.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.ruff.lint.per-file-ignores]
+# Nexy reads its settings as attributes of the class.
+"nexyconfig.py" = ["RUF012"]
