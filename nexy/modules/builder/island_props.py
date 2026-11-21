@@ -23,7 +23,8 @@ from nexy.modules.compiler.parser.nodes import ElementNode, Node
 from nexy.modules.compiler.parser.scanner import Scanner
 from nexy.modules.compiler.parser.template import TemplateFormatter
 
-MANIFEST = Path("__nexy__/client/island-props.json")
+# Outside __nexy__/client, which the client build empties before it reads this file.
+MANIFEST = Path("__nexy__/island-props.json")
 Manifest = dict[str, dict[str, dict[str, dict[str, Any]]]]
 
 _ISLANDS = {
