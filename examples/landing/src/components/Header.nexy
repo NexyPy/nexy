@@ -1,0 +1,24 @@
+---
+from "@/components/Logo.nexy" import Logo
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+
+# The sections are links to the home page, so they work from the changelog too.
+links = [("/#features", "Features"), ("/#pricing", "Pricing"), ("/#faq", "FAQ"), ("/changelog", "Changelog")]
+---
+<header class="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-md">
+  <nav aria-label="Main" class="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
+    <a href="/" class="flex h-11 items-center gap-2.5 text-[1.05rem] font-semibold tracking-tight">
+      <Logo size="26" />
+      Beacon
+    </a>
+    <div class="hidden items-center gap-1 text-sm md:flex">
+      {% for href, label in links %}
+      <a href="{{ href }}" class="rounded-md px-3 py-2 text-foreground-second transition-colors hover:text-foreground">{{ label }}</a>
+      {% endfor %}
+    </div>
+    <div class="ml-auto flex items-center gap-1.5">
+      <ThemeToggle />
+      <a href="/#join" class="inline-flex h-11 items-center rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-opacity hover:opacity-85">Join the waitlist</a>
+    </div>
+  </nav>
+</header>
