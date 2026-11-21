@@ -220,6 +220,14 @@
     "no_orm": "対応するORMが見つかりません。次のいずれかをインストールしてください: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "エラー: {tool} が PATH に見つかりません。インストールしてからもう一度お試しください。"
   },
+  "routes": {
+    "title": "ルート",
+    "methods": "メソッド",
+    "path": "パス",
+    "source": "ソースファイル",
+    "unknown": "不明",
+    "empty": "ルートが見つかりません。"
+  },
   "server": {
     "launch_failed": "サーバーを起動できませんでした",
     "local": "ローカル:",

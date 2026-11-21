@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/); versioning f
 
 ## [2.6.4] - 2026-11-18
 
+### Added
+
+- **`nx routes` lists the application's routes**, their HTTP methods, paths and source files,
+  sorted by path (#455).
+
 ### Fixed
 
 - **`useTransition` follows a client navigation**, in every adapter. It never saw one start, so

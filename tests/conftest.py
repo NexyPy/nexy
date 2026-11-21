@@ -24,20 +24,31 @@ def nexy_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     - the Config singleton is reset on configure and after the test, so every
       user config stays local to its test;
     - class attributes mutated by Config._load are restored from a snapshot;
-    - the synthetic ``nexyconfig`` module is dropped from sys.modules.
+    - the synthetic ``nexyconfig`` module is dropped from sys.modules;
+    - cached ``src`` project modules are cleared between temporary projects.
     """
     class_snapshot = {k: v for k, v in vars(Config).items() if not k.startswith("__")}
     monkeypatch.chdir(tmp_path)
 
+    def clear_project_modules() -> None:
+        """Remove cached modules belonging to temporary ``src`` projects."""
+        for name in list(sys.modules):
+            if name == "src" or name.startswith("src."):
+                sys.modules.pop(name, None)
+
     def configure(attrs: str = "", imports: str = "") -> None:
+        clear_project_modules()
+
         Config._instance = None
         Config._loaded = False
         Config._load_error = None
         sys.modules.pop("nexyconfig", None)
+
         body = textwrap.indent(textwrap.dedent(attrs).strip(), "    ") or "    pass"
         extra_imports = ""
         if imports.strip():
             extra_imports = textwrap.dedent(imports).strip() + "\n"
+
         (tmp_path / "nexyconfig.py").write_text(
             "from nexy.core.models import NexyConfigModel\n"
             f"{extra_imports}"
@@ -50,7 +61,9 @@ def nexy_project(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
     yield configure
 
+    clear_project_modules()
     sys.modules.pop("nexyconfig", None)
+
     current_keys = {k for k in vars(Config) if not k.startswith("__")}
     for key, value in class_snapshot.items():
         setattr(Config, key, value)

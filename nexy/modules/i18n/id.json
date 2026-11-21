@@ -220,6 +220,14 @@
     "no_orm": "Tidak ada ORM yang didukung. Pasang salah satunya: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "Kesalahan: {tool} tidak ditemukan di PATH. Pasang lalu coba lagi."
   },
+  "routes": {
+    "title": "Rute",
+    "methods": "Metode",
+    "path": "Jalur",
+    "source": "File sumber",
+    "unknown": "Tidak diketahui",
+    "empty": "Tidak ada rute ditemukan."
+  },
   "server": {
     "launch_failed": "Tidak dapat memulai server",
     "local": "Lokal:",
