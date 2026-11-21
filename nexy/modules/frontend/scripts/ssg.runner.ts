@@ -51,7 +51,8 @@ function listFiles(framework: JsxFramework, primary?: boolean): string[] {
   return primary ? all : all.filter(file => belongsTo(framework, file))
 }
 
-async function bundle(framework: JsxFramework, files: string[], tempDir: string) {
+/** The bundle of every file; on failure, the message of esbuild, for the files it left out. */
+async function bundle(framework: JsxFramework, files: string[], tempDir: string): Promise<string> {
   const entryPoints: Record<string, string> = {}
   for (const [i, file] of files.entries()) {
     entryPoints[`_c${i}`] = path.resolve(process.cwd(), file)
@@ -72,12 +73,14 @@ async function bundle(framework: JsxFramework, files: string[], tempDir: string)
       logLevel: 'silent',
       outExtension: { '.js': '.mjs' },
     })
+    return ''
   } catch (e) {
     console.warn(`${c.yellow}warning:${c.reset} client-only: ${message(e)} - some files may lack server HTML (client bundle only)${c.reset}`)
+    return message(e)
   }
 }
 
-async function loadModules(files: string[], tempDir: string) {
+async function loadModules(files: string[], tempDir: string, reasons: Map<string, string>) {
   const modules = new Map<string, Record<string, any>>()
   for (const [i, file] of files.entries()) {
     const outFile = path.join(tempDir, `_c${i}.mjs`)
@@ -87,6 +90,7 @@ async function loadModules(files: string[], tempDir: string) {
       }
     } catch (e) {
       console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - ${message(e)}, no server HTML (client bundle only)${c.reset}`)
+      reasons.set(file, message(e))
     }
   }
   return modules
@@ -103,8 +107,9 @@ export async function runJsxFramework(
 
   const tempDir = path.resolve(process.cwd(), 'node_modules/.nexy-temp-ssg')
   fs.mkdirSync(tempDir, { recursive: true })
-  await bundle(framework, files, tempDir)
-  const modules = await loadModules(files, tempDir)
+  const reasons = new Map<string, string>()
+  const bundleError = await bundle(framework, files, tempDir)
+  const modules = await loadModules(files, tempDir, reasons)
   fs.rmSync(tempDir, { recursive: true, force: true })
 
   const snippets: Record<string, string> = {}
@@ -118,7 +123,8 @@ export async function runJsxFramework(
 
     const mod = modules.get(file)
     if (!mod) {
-      result.entries.push({ file, component: '*', status: 'not_supported' })
+      const reason = reasons.get(file) || bundleError || 'the module could not be built'
+      result.entries.push({ file, component: '*', status: 'not_supported', reason })
       return
     }
 
@@ -138,11 +144,12 @@ export async function runJsxFramework(
       } catch (e) {
         console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - ${message(e)}, using client placeholder (no server HTML)${c.reset}`)
         writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
-        result.entries.push({ file, component, status: 'not_supported' })
+        result.entries.push({ file, component, status: 'not_supported', reason: message(e) })
       }
     }
     if (!hasComponent) {
-      result.entries.push({ file, component: '*', status: 'not_supported' })
+      const reason = 'it exports no component (a function whose name starts with a capital)'
+      result.entries.push({ file, component: '*', status: 'not_supported', reason })
     }
   }
 

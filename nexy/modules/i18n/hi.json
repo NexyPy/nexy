@@ -36,6 +36,7 @@
     "count_client_only": "{count} केवल क्लाइंट",
     "more": "और {count}",
     "not_rendered": "{path} का कोई सर्वर HTML नहीं है: यह केवल क्लाइंट पर रेंडर होता है",
+    "not_rendered_because": "{path} का कोई सर्वर HTML नहीं है: {reason}",
     "running_check": "{name} चल रहा है",
     "ran_check": "{name} चल गया"
   },
