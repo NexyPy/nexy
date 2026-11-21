@@ -53,7 +53,7 @@ class NexyClientComponent:
         directive = props.pop("directive", None)
         media = props.pop("media", None)
         props_json = self._serialize_props(props)
-        url = self._resolve_path()
+        url = self.resolve_path()
 
         return self._render_tag(url, mount_id, props_json, directive, media)
 
@@ -68,7 +68,8 @@ class NexyClientComponent:
         except Exception:
             return "{}"
 
-    def _resolve_path(self) -> str:
+    def resolve_path(self) -> str:
+        """The address of the island file in the project, the one its build snapshots are under."""
         resolved = _expand_alias(self.path)
         if not resolved.startswith(("/", "./", "../")):
             stripped = resolved.lstrip("./")
