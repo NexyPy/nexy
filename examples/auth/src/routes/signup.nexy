@@ -1,0 +1,35 @@
+---
+from "@/components/password-help.vue" import PasswordHelp
+from nexy import redirect, useSearchParams
+from src.accounts.messages import ERRORS
+from src.accounts.session import current, safe_then
+from src.accounts.store import LONGEST_PASSWORD, SHORTEST_PASSWORD
+
+metadata = {"title": "Create an account", "robots": "noindex"}
+query = useSearchParams()
+then = safe_then(query.get("then", ""))
+if current():
+    redirect(then)
+error = ERRORS.get(query.get("error", ""), "")
+email = query.get("email", "")[:254]
+---
+<section class="mx-auto w-full max-w-sm flex-1 px-4 py-16">
+  <h1 class="text-2xl font-semibold tracking-tight">Create your Kestrel account</h1>
+  <p class="mt-2 text-sm text-foreground-second">Already have one? <a href="/signin?then={{ then | urlencode }}" class="inline-flex min-h-11 items-center font-medium text-accent underline underline-offset-4">Sign in</a>.</p>
+
+  <form method="post" action="{{ __actions_path['sign_up'] }}" class="mt-8 flex flex-col gap-5">
+    <input type="hidden" name="then" value="{{ then | e }}">
+    {% if error %}<p id="form-error" role="alert" class="rounded-lg border border-down/40 bg-down/10 px-4 py-3 text-sm">{{ error }}</p>{% endif %}
+    <div>
+      <label for="email" class="mb-1.5 block text-sm font-medium">Email</label>
+      <input id="email" name="email" type="email" required autocomplete="username" value="{{ email | e }}" class="field"{% if error %} aria-describedby="form-error"{% endif %}>
+    </div>
+    <div>
+      <label for="password" class="mb-1.5 block text-sm font-medium">Password</label>
+      <input id="password" name="password" type="password" required minlength="{{ SHORTEST_PASSWORD }}" maxlength="{{ LONGEST_PASSWORD }}" autocomplete="new-password" aria-describedby="password-hint" class="field" data-password data-strength>
+      <p id="password-hint" class="mt-1.5 text-xs text-foreground-second">{{ SHORTEST_PASSWORD }} characters or more. A few words you remember are better than one odd word.</p>
+      <PasswordHelp directive="client:load" />
+    </div>
+    <button type="submit" class="h-11 rounded-lg bg-accent text-sm font-medium text-on-accent hover:opacity-90">Create the account</button>
+  </form>
+</section>

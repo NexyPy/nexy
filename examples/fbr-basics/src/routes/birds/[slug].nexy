@@ -1,0 +1,13 @@
+---
+from nexy import notFound, setMetadata
+from src.birds import find
+
+# [slug] in the file name: /birds/robin gives slug = "robin". An unknown bird is a 404.
+slug: prop[str]
+bird = find(slug) or notFound()
+setMetadata(title=bird.name, description=bird.note)
+---
+<h1 class="text-3xl font-semibold">{{ bird.name }}</h1>
+<p class="mt-1 italic text-foreground-second">{{ bird.latin }}</p>
+<p class="mt-4">{{ bird.note }}</p>
+<p class="mt-6 text-sm text-foreground-second">Drawn by <code>src/routes/birds/[slug].nexy</code>, with <code>slug = "{{ slug | e }}"</code>.</p>

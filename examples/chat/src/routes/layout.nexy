@@ -1,0 +1,35 @@
+---
+from "@/components/Header.nexy" import Header
+from nexy import Vite, setMetadata, useMetadata
+
+children: prop[NexyElement]
+setMetadata(title_template="%s | Fernhill chat")
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ useMetadata().html() }}
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+    <!-- Applied before the first paint, so a dark page never flashes white. -->
+    <style>html{background:#ffffff;color-scheme:light}html.dark{background:#0f1115;color-scheme:dark}</style>
+    <script>
+        try {
+            var saved = localStorage.getItem("nexy-theme");
+            var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+            document.documentElement.classList.toggle("dark", dark);
+        } catch (error) {}
+    </script>
+    <Vite />
+</head>
+<body class="flex min-h-dvh flex-col">
+    <a href="#send" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-foreground focus:px-4 focus:py-2 focus:text-background">Skip to the message form</a>
+    <Header />
+    <main class="flex flex-1 flex-col">{{ children }}</main>
+</body>
+</html>
