@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Quiet greys for reading, one blue for links and the current page. Code blocks are dark in both
+   themes, so a command reads the same as in a terminal. */
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --background-second: #f6f8fa;
+  --foreground: #1f2328;
+  --foreground-second: #59636e;
+  --border: #d1d9e0;
+  --accent: #2f5bd3;
+  --accent-soft: #eef3fd;
+  --on-accent: #ffffff;
+  --code: #0d1117;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #0d1117;
+  --background-second: #151b23;
+  --foreground: #e6edf3;
+  --foreground-second: #9198a1;
+  --border: #2a313c;
+  --accent: #7aa2f7;
+  --accent-soft: #172036;
+  --on-accent: #0d1117;
+  --code: #161b22;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-code: var(--code);
+  --color-code-text: #e6edf3;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+/* The pages are Markdown: their HTML has no classes, so it is styled here. */
+@layer components {
+  .prose {
+    @apply max-w-3xl leading-7 text-foreground;
+  }
+  .prose h1 {
+    @apply text-4xl font-semibold tracking-tight;
+  }
+  .prose h2 {
+    @apply mt-12 border-t border-border pt-8 text-2xl font-semibold tracking-tight;
+  }
+  .prose h3 {
+    @apply mt-8 text-lg font-semibold;
+  }
+  .prose p,
+  .prose ul,
+  .prose ol,
+  .prose table,
+  .prose pre,
+  .prose blockquote {
+    @apply mt-5;
+  }
+  .prose h1 + p {
+    @apply text-lg text-foreground-second;
+  }
+  .prose ul {
+    @apply list-disc space-y-1.5 pl-6;
+  }
+  .prose ol {
+    @apply list-decimal space-y-1.5 pl-6;
+  }
+  .prose a {
+    @apply font-medium text-accent underline underline-offset-4;
+  }
+  .prose :not(pre) > code {
+    @apply rounded bg-background-second px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+  .prose pre {
+    @apply overflow-x-auto rounded-xl border border-border bg-code p-5 pr-20 font-mono text-sm leading-6 text-code-text;
+  }
+  .prose table {
+    @apply block w-full overflow-x-auto text-sm;
+  }
+  .prose th {
+    @apply border-b border-border px-3 py-2 text-left font-semibold;
+  }
+  .prose td {
+    @apply border-b border-border px-3 py-2 align-top;
+  }
+  .prose blockquote {
+    @apply rounded-lg border-l-4 border-accent bg-accent-soft px-4 py-3 text-sm;
+  }
+  .prose blockquote p {
+    @apply mt-0;
+  }
+
+  /* The outline of the page, from useToc. */
+  .outline-list ul ul {
+    @apply ml-3;
+  }
+  .outline-list a {
+    @apply flex min-h-8 items-center text-foreground-second hover:text-foreground;
+  }
+}
