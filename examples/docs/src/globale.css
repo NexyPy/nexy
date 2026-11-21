@@ -2,26 +2,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Black and white. `ink` and `paper` never change: the header, the hero and the dark cards stay
-   dark in both themes. The other tokens follow the theme. */
+/* Quiet greys for reading, one blue for links and the current page. Code blocks are dark in both
+   themes, so a command reads the same as in a terminal. */
 :root {
   color-scheme: light;
-  font-family: "Geist", "Inter", system-ui, sans-serif;
-  --accent: #61DAFB;
-  --ink: #0a0a0a;
-  --paper: #fafafa;
-  /* The one colour: a green that leans towards sky blue. Used for status, never for text blocks. */
-  --signal: light-dark(#0a9d8f, #3fe0c8);
-  --background: light-dark(#ffffff, #0a0a0a);
-  --background-second: light-dark(#f5f5f5, #141414);
-  --foreground: light-dark(#0a0a0a, #fafafa);
-  --foreground-second: light-dark(#5c5c5c, #a3a3a3);
-  --border: light-dark(#e5e5e5, #262626);
-  --border-second: light-dark(#d4d4d4, #3a3a3a);
+  --background: #ffffff;
+  --background-second: #f6f8fa;
+  --foreground: #1f2328;
+  --foreground-second: #59636e;
+  --border: #d1d9e0;
+  --accent: #2f5bd3;
+  --accent-soft: #eef3fd;
+  --on-accent: #ffffff;
+  --code: #0d1117;
 }
 
 .dark {
   color-scheme: dark;
+  --background: #0d1117;
+  --background-second: #151b23;
+  --foreground: #e6edf3;
+  --foreground-second: #9198a1;
+  --border: #2a313c;
+  --accent: #7aa2f7;
+  --accent-soft: #172036;
+  --on-accent: #0d1117;
+  --code: #161b22;
 }
 
 @theme {
@@ -30,123 +36,90 @@
   --color-foreground: var(--foreground);
   --color-foreground-second: var(--foreground-second);
   --color-border: var(--border);
-  --color-border-second: var(--border-second);
   --color-accent: var(--accent);
-  --color-ink: var(--ink);
-  --color-paper: var(--paper);
-  --color-signal: var(--signal);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-code: var(--code);
+  --color-code-text: #e6edf3;
 
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
   }
   body {
-    background-color: var(--background);
-    color: var(--foreground);
-    font-family: "Geist", "Inter", system-ui, sans-serif;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  h1,
-  h2,
-  h3 {
-    font-family: "Fraunces", ui-serif, Georgia, serif;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    @apply bg-background font-sans text-foreground antialiased;
   }
   :focus-visible {
-    outline: 2px solid var(--signal);
-    outline-offset: 3px;
-  }
-  ::selection {
-    background-color: var(--foreground);
-    color: var(--background);
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
-/* Moving between two pages feels like switching a tab: the header stays, the content slides. */
-@view-transition {
-  navigation: auto;
-}
-::view-transition-old(root) {
-  animation: nx-leave 0.16s ease-in both;
-}
-::view-transition-new(root) {
-  animation: nx-enter 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-::view-transition-group(nx-header) {
-  animation-duration: 0.3s;
-}
-@keyframes nx-leave {
-  to {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-}
-@keyframes nx-enter {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-}
-@keyframes nx-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-/* The mobile menu is a sheet: the scrim fades and the panel comes in from the left edge.
-   Written here rather than as a utility class because an entry animation needs keyframes,
-   and this file is the one both Tailwind and UnoCSS read. */
-@keyframes sheet-in {
-  from {
-    transform: translateX(-100%);
-  }
-}
-@keyframes sheet-scrim-in {
-  from {
-    opacity: 0;
-  }
-}
-/* Closing plays the way back: the script hides the sheet once these have finished. */
-@keyframes sheet-out {
-  to {
-    transform: translateX(-100%);
-  }
-}
-@keyframes sheet-scrim-out {
-  to {
-    opacity: 0;
-  }
-}
+/* The pages are Markdown: their HTML has no classes, so it is styled here. */
 @layer components {
-  .sheet {
-    animation: sheet-in 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  .prose {
+    @apply max-w-3xl leading-7 text-foreground;
   }
-  .sheet-scrim {
-    animation: sheet-scrim-in 0.2s ease both;
+  .prose h1 {
+    @apply text-4xl font-semibold tracking-tight;
   }
-  .sheet[data-state="closed"] {
-    animation: sheet-out 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+  .prose h2 {
+    @apply mt-12 border-t border-border pt-8 text-2xl font-semibold tracking-tight;
   }
-  .sheet-scrim[data-state="closed"] {
-    animation: sheet-scrim-out 0.2s ease both;
+  .prose h3 {
+    @apply mt-8 text-lg font-semibold;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+  .prose p,
+  .prose ul,
+  .prose ol,
+  .prose table,
+  .prose pre,
+  .prose blockquote {
+    @apply mt-5;
   }
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
+  .prose h1 + p {
+    @apply text-lg text-foreground-second;
   }
-  .sheet,
-  .sheet-scrim {
-    animation: none !important;
+  .prose ul {
+    @apply list-disc space-y-1.5 pl-6;
+  }
+  .prose ol {
+    @apply list-decimal space-y-1.5 pl-6;
+  }
+  .prose a {
+    @apply font-medium text-accent underline underline-offset-4;
+  }
+  .prose :not(pre) > code {
+    @apply rounded bg-background-second px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+  .prose pre {
+    @apply overflow-x-auto rounded-xl border border-border bg-code p-5 pr-20 font-mono text-sm leading-6 text-code-text;
+  }
+  .prose table {
+    @apply block w-full overflow-x-auto text-sm;
+  }
+  .prose th {
+    @apply border-b border-border px-3 py-2 text-left font-semibold;
+  }
+  .prose td {
+    @apply border-b border-border px-3 py-2 align-top;
+  }
+  .prose blockquote {
+    @apply rounded-lg border-l-4 border-accent bg-accent-soft px-4 py-3 text-sm;
+  }
+  .prose blockquote p {
+    @apply mt-0;
+  }
+
+  /* The outline of the page, from useToc. */
+  .outline-list ul ul {
+    @apply ml-3;
+  }
+  .outline-list a {
+    @apply flex min-h-8 items-center text-foreground-second hover:text-foreground;
   }
 }
