@@ -8,7 +8,10 @@ metadata = {
     "description": "Noor Halvorsen designs the screens people use when something matters: their money, their health, their train home.",
 }
 
-first, *others = featured()
+# Plain names: nexy 2.8.0 does not pass a name made by unpacking to the HTML.
+selected = featured()
+first = selected[0]
+others = selected[1:]
 clients = [project.client.split(",")[0] for project in PROJECTS]
 
 principles = [
