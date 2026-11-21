@@ -1,0 +1,11 @@
+---
+from nexy import notFound, setMetadata
+from src.i18n import LANGUAGES, t
+
+lang: prop[str]
+if lang not in LANGUAGES:
+    notFound()
+setMetadata(title=t(lang, "about.title"), description=t(lang, "about.body"))
+---
+<h1 class="text-3xl font-semibold">{{ t(lang, "about.title") }}</h1>
+<p class="mt-3">{{ t(lang, "about.body") }}</p>
