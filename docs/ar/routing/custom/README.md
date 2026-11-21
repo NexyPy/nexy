@@ -152,6 +152,23 @@ async def data():
     return {"data": 42}
 ```
 
+## ما يختلف عن FastAPI
+
+هناك شيئان يجيبان بشكل مختلف بمجرد تشغيل جهاز التوجيه داخل Nexy:
+
+| القضية | FastAPI | داخل نيكسى |
+|---|---|---|
+| `raise HTTPException(404, "No such user.")` | `{"detail": "No such user."}` إلى كل عميل | أن JSON فقط عندما يرسل الطلب `Accept: application/json` بدون `text/html`؛ أي عميل آخر، مع تضمينه الافتراضي `Accept: */*`، يحصل على صفحة خطأ HTML |
+| `/api/users/one` لـ `id: int` | `422` مع وجود أخطاء في التحقق | `404`: العنوان الذي تحتوي قيمة مساره على النوع الخاطئ غير موجود |
+
+لذلك يرسل عميل API `Accept: application/json`:
+
+```bash
+curl -H "Accept: application/json" localhost:3000/api/users/one
+```
+
+لا تزال قيمة النص أو الاستعلام من النوع الخاطئ تجيب على `422` مع الأخطاء، كما في FastAPI.
+
 ## اختبره
 
 ```python filename="الاختبارات/test_legacy.py"
