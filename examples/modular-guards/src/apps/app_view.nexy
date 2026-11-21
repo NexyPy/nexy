@@ -1,0 +1,92 @@
+<div class="nx-hero-wrap">
+  <section class="nx-container nx-hero">
+    <div class="nx-hero-copy">
+      <a href="https://github.com/NexyPy/nexy/releases" target="_blank" rel="noopener noreferrer" class="nx-pill"><b>v2.8.0</b>See what is new</a>
+      <h1 class="nx-title">The Python framework for the whole web app.</h1>
+      <p class="nx-lead">
+        Ship pages, an API and interactive parts from one project. Your team keeps Python, and
+        your frontend keeps the tools it likes.
+      </p>
+      <div class="nx-actions">
+        <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="btn-primary">Read the docs</a>
+        <a href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" class="btn-ghost">View on GitHub</a>
+      </div>
+    </div>
+    <div class="nx-art">
+      <img src="/hero-light.svg" alt="The Nexy mark above three stacked pages" class="nx-art-light" width="640" height="560" />
+      <img src="/hero-dark.svg" alt="The Nexy mark above three stacked pages" class="nx-art-dark" width="640" height="560" />
+    </div>
+  </section>
+</div>
+
+<div class="nx-sep-wrap">
+  <section class="nx-container nx-sep">
+    <div class="nx-sep-inner">
+      <span>Nexy</span>
+      <span class="nx-sep-dot" aria-hidden="true"></span>
+      <span>FastAPI</span>
+      <span class="nx-sep-dot" aria-hidden="true"></span>
+      <span>Vite</span>
+      <span class="nx-sep-dot" aria-hidden="true"></span>
+      <span>Python</span>
+      <span class="nx-sep-dot" aria-hidden="true"></span>
+      <span>TypeScript</span>
+    </div>
+  </section>
+</div>
+
+<section class="nx-container nx-section">
+  <h2 class="nx-h2">Less glue, more product.</h2>
+  <p class="nx-sub">A web app is a server, a router, a frontend and the work of connecting them. Nexy ships them already connected.</p>
+  <div class="nx-bento">
+    <article class="nx-tile nx-tile-wide">
+      <span class="nx-icon nx-icon-server" aria-hidden="true"></span>
+      <h3>Python on the server, all the way</h3>
+      <p>Routes, validation, data and background work stay in the language your team already knows. There is no second backend to build, host and keep in sync.</p>
+      <div class="nx-tile-visual">
+        <div class="nx-chips">
+          <span class="nx-chip">Pages</span>
+          <span class="nx-chip">API</span>
+          <span class="nx-chip">Validation</span>
+          <span class="nx-chip">Database</span>
+          <span class="nx-chip">Background work</span>
+        </div>
+      </div>
+    </article>
+    <article class="nx-tile nx-tile-narrow">
+      <span class="nx-icon nx-icon-frontend" aria-hidden="true"></span>
+      <h3>Any frontend, only where it helps</h3>
+      <p>Pages are plain HTML and ship no framework. Add the one you like when a screen needs it.</p>
+      <div class="nx-tile-visual">
+        <div class="nx-chips">
+          <span class="nx-chip">React</span>
+          <span class="nx-chip">Vue</span>
+          <span class="nx-chip">Svelte</span>
+          <span class="nx-chip">Solid</span>
+          <span class="nx-chip">Preact</span>
+        </div>
+      </div>
+    </article>
+    <article class="nx-tile nx-tile-narrow">
+      <span class="nx-icon nx-icon-bolt" aria-hidden="true"></span>
+      <h3>Fast from the first save</h3>
+      <p>The page updates as you type. A mistake shows up in the page, with the code around it, not buried in a log.</p>
+    </article>
+    <article class="nx-tile nx-tile-wide">
+      <span class="nx-icon nx-icon-shield" aria-hidden="true"></span>
+      <h3>Ready for production</h3>
+      <p>Security headers are on, server actions check where a request comes from, and one build runs anywhere Python runs.</p>
+    </article>
+  </div>
+</section>
+
+<div class="nx-container nx-band-wrap">
+  <section class="nx-band">
+    <h2 class="nx-h2">Build your next product on Nexy.</h2>
+    <p class="nx-sub">Free, open source and MIT licensed.</p>
+    <div class="nx-actions">
+      <a href="https://github.com/NexyPy/nexy#readme" target="_blank" rel="noopener noreferrer" class="btn-primary">Read the docs</a>
+      <a href="https://github.com/NexyPy/nexy" target="_blank" rel="noopener noreferrer" class="btn-ghost">View on GitHub</a>
+    </div>
+  </section>
+</div>
