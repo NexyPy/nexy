@@ -39,8 +39,9 @@ uv run nexy dev
 The tables are created at the first start. Once a table changes, move to migrations:
 `nx new` sets up Alembic for that, see the guide.
 
-**MySQL or MariaDB** is the same code with another URL and driver: `uv add pymysql`, then
-`DATABASE_URL=mysql+pymysql://user:password@localhost:3306/bookmarks`.
+**MySQL or MariaDB**: SQLModel reaches them with another URL and driver, `uv add pymysql`, then
+`DATABASE_URL=mysql+pymysql://user:password@localhost:3306/bookmarks`. This sample is tested on
+SQLite and PostgreSQL only.
 
 ## Safe by default
 
