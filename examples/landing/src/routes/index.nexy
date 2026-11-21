@@ -1,0 +1,130 @@
+---
+from "@/components/Icon.nexy" import Icon
+from "@/components/StatusPreview.nexy" import StatusPreview
+from "@/components/pricing.tsx" import Pricing
+from "@/components/waitlist-form.tsx" import WaitlistForm
+from nexy import useSearchParams
+from src.services.waitlist import MESSAGES
+
+metadata = {
+    "title": "Know your site is down before your users do",
+    "description": "Beacon checks your sites every 30 seconds and tells the right person when one goes down.",
+}
+
+# Without JavaScript the form comes back here with its outcome in the address.
+outcome = useSearchParams().get("waitlist", "")
+note = MESSAGES.get(outcome, "")
+
+features = [
+    ("M22 12h-4l-3 9L9 3l-3 9H2", "Checks every 30 seconds", "HTTP, keyword and port checks, so a page that answers with an error counts as down."),
+    ("M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 003.4 0", "Alerts where you already are", "Email, chat or SMS, to the person on call, and only once per incident."),
+    ("M3 3h18v18H3zM3 9h18M9 21V9", "A status page in one click", "Your customers see what is up and what is being fixed, on your own domain."),
+    ("M12 2a10 10 0 100 20 10 10 0 000-20zM2 12h20M12 2a15 15 0 014 10 15 15 0 01-4 10 15 15 0 01-4-10 15 15 0 014-10z", "Checked from six regions", "A site is only down when several regions agree, so a bad route never wakes you up."),
+    ("M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2", "An incident timeline", "When it went down, who was told, who looked, and when it came back."),
+    ("M5 11h14v10H5zM7 11V7a5 5 0 0110 0v4", "Certificates and domains", "A warning weeks before a certificate or a domain name runs out."),
+]
+
+steps = [
+    ("Add a URL", "Paste the address of a site, an API or a port. Beacon checks it within the minute."),
+    ("Choose who hears about it", "Pick a person, a channel or the on-call rotation, and how loud each alert is."),
+    ("Share a status page", "Turn on the page your customers see, and stop answering the same question."),
+]
+
+questions = [
+    ("When does Beacon open?", "Early next year. Everyone on the waitlist gets one email that day, and nothing before."),
+    ("Is it really free during the beta?", "Yes. Every plan is free until Beacon opens, and the Hobby plan stays free after."),
+    ("What counts as down?", "A check that times out, answers with an error, or misses the keyword you chose, seen from at least two regions."),
+    ("Can I check a site behind a login?", "Yes: a check can send headers and a body, so it can call an endpoint with a token."),
+    ("What do you do with my email?", "Nothing but that one email. This page is an example: the address stays in a local SQLite file."),
+]
+---
+<section id="join" class="relative overflow-hidden">
+  <div class="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(60%_60%_at_70%_20%,var(--signal-soft),transparent)]"></div>
+  <div class="mx-auto grid max-w-6xl gap-14 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:pt-24">
+    <div>
+      <p class="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-foreground-second">
+        <span class="size-1.5 rounded-full bg-signal"></span>
+        Uptime monitoring for small teams
+      </p>
+      <h1 class="mt-6 text-[clamp(2.5rem,6vw,4.2rem)] font-semibold leading-[1.02] tracking-[-0.035em]">Know your site is down before your users do.</h1>
+      <p class="mt-6 max-w-[46ch] text-lg leading-relaxed text-foreground-second">
+        Beacon checks your sites every 30 seconds from six regions, and tells the right person the moment one stops answering.
+      </p>
+      <div class="mt-8">
+        <WaitlistForm directive="client:load" />
+        {% if note %}
+        <p role="status" class="mt-3 max-w-md text-sm font-medium{% if outcome == 'joined' %} text-signal{% else %} text-down{% endif %}">{{ note }}</p>
+        {% endif %}
+      </div>
+    </div>
+    <StatusPreview />
+  </div>
+</section>
+
+<section id="features" class="border-t border-border bg-background-second">
+  <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
+    <p class="text-sm font-medium text-signal">What Beacon watches</p>
+    <h2 class="mt-3 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Everything that can go down, checked before anyone notices.</h2>
+    <div class="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+      {% for icon, title, text in features %}
+      <article class="bg-background p-6">
+        <span class="grid size-10 place-items-center rounded-lg bg-signal-soft text-signal"><Icon path="{{ icon }}" size="20" /></span>
+        <h3 class="mt-5 font-semibold">{{ title }}</h3>
+        <p class="mt-2 text-sm leading-relaxed text-foreground-second">{{ text }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
+  <p class="text-sm font-medium text-signal">How it works</p>
+  <h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Watching in under a minute.</h2>
+  <ol class="mt-12 grid gap-8 md:grid-cols-3">
+    {% for title, text in steps %}
+    <li class="border-t border-border pt-6">
+      <span class="font-mono text-sm text-foreground-second">0{{ loop.index }}</span>
+      <h3 class="mt-3 text-lg font-semibold">{{ title }}</h3>
+      <p class="mt-2 text-sm leading-relaxed text-foreground-second">{{ text }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section id="pricing" class="border-t border-border bg-background-second">
+  <div class="mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:py-24">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="text-sm font-medium text-signal">Pricing</p>
+      <h2 class="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Free while in beta. Simple after.</h2>
+      <p class="mt-4 text-foreground-second">Pick a plan now and keep its price when Beacon opens.</p>
+    </div>
+    <div class="mt-10">
+      <Pricing directive="client:visible" />
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="mx-auto w-full max-w-3xl px-4 py-20 sm:px-6 lg:py-24">
+  <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">Questions</h2>
+  <div class="mt-10 divide-y divide-border border-y border-border">
+    {% for question, answer in questions %}
+    <details class="group">
+      <summary class="flex min-h-11 cursor-pointer list-none items-center py-4 justify-between gap-4 font-medium [&::-webkit-details-marker]:hidden">
+        {{ question }}
+        <span class="text-foreground-second transition-transform group-open:rotate-45"><Icon path="M12 5v14M5 12h14" size="18" /></span>
+      </summary>
+      <p class="pb-5 leading-relaxed text-foreground-second">{{ answer }}</p>
+    </details>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="px-4 pb-20 sm:px-6">
+  <div class="mx-auto flex max-w-6xl flex-col items-start gap-6 rounded-3xl bg-foreground px-8 py-12 text-background sm:px-12 md:flex-row md:items-center md:justify-between">
+    <div>
+      <h2 class="text-3xl font-semibold tracking-tight">Be there when Beacon opens.</h2>
+      <p class="mt-2 opacity-75">One email, the day it opens. Nothing else.</p>
+    </div>
+    <a href="#join" class="inline-flex h-12 items-center rounded-xl bg-background px-6 text-sm font-medium text-foreground transition-opacity hover:opacity-90">Join the waitlist</a>
+  </div>
+</section>
