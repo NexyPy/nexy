@@ -92,7 +92,7 @@ export async function run(): Promise<SSGResult> {
     }
 
     try {
-      const { renderToString } = await import('@vue/server-renderer')
+      const { renderToString } = await import('vue/server-renderer')
       const { createSSRApp } = await import('vue')
       const html = await renderToString(createSSRApp(Component))
       const entryId = getEntryId(fileName, 'Default', 'vue')
