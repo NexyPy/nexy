@@ -8,7 +8,7 @@ moon = "M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"
   type="button"
   aria-label="Switch between light and dark"
   data-theme-toggle
-  class="grid size-10 place-items-center rounded-lg text-foreground-second transition-colors hover:bg-background-second hover:text-foreground"
+  class="grid size-11 place-items-center rounded-lg text-foreground-second transition-colors hover:bg-background-second hover:text-foreground"
 >
   <span class="dark:hidden"><Icon path="{{ sun }}" size="18" /></span>
   <span class="hidden dark:block"><Icon path="{{ moon }}" size="18" /></span>
