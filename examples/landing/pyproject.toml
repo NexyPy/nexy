@@ -1,7 +1,7 @@
 [project]
 name = "landing"
 version = "0.1.0"
-description = "A Nexy web application with preact components"
+description = "Beacon, the site of an uptime monitor: server pages, Preact islands, a waitlist in SQLite"
 dependencies = [
     "nexy>=2.8.0",
     "sqlmodel",
@@ -9,3 +9,26 @@ dependencies = [
     "python-dotenv",
 ]
 requires-python = ">=3.12"
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "httpx>=0.28.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["alembic"]
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+# Nexy reads its settings as attributes of the class.
+"nexyconfig.py" = ["RUF012"]
+# The database URL is set before the application is imported.
+"tests/conftest.py" = ["E402"]
