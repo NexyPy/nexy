@@ -84,7 +84,7 @@ function Card({ plan, yearly }: { plan: Plan; yearly: boolean }) {
 export default function Pricing() {
   const [yearly, setYearly] = useState(false);
   const option = (on: boolean) =>
-    `h-9 rounded-md px-4 text-sm font-medium transition-colors ${
+    `h-11 rounded-md px-4 text-sm font-medium transition-colors ${
       yearly === on ? "bg-background text-foreground shadow-sm" : "text-foreground-second hover:text-foreground"
     }`;
 
