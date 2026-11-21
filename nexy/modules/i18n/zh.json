@@ -237,6 +237,14 @@
     "no_orm": "未找到受支持的 ORM。请安装其中一个：sqlmodel、tortoise-orm、sqlalchemy",
     "tool_missing": "错误：在 PATH 中找不到 {tool}。请安装后重试。"
   },
+  "routes": {
+    "title": "路由",
+    "methods": "方法",
+    "path": "路径",
+    "source": "源文件",
+    "unknown": "未知",
+    "empty": "未找到路由。"
+  },
   "server": {
     "launch_failed": "无法启动服务器",
     "local": "本地：",
