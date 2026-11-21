@@ -1,0 +1,7 @@
+---
+from nexy import redirect, useHeaders
+from src.i18n import best
+
+# The address with no language sends to the one the browser asks for.
+redirect(f"/{best(useHeaders().get('accept-language', ''))}")
+---
