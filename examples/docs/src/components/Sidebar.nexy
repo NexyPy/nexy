@@ -1,0 +1,17 @@
+---
+from src.docs.nav import SECTIONS
+
+current: prop[str] = ""
+---
+<nav aria-label="Docs" class="text-sm">
+  {% for section in SECTIONS %}
+  <p class="mb-1 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-foreground-second first:mt-0">{{ section.title }}</p>
+  <ul>
+    {% for page in section.pages %}
+    <li>
+      <a href="{{ page.url }}" class="flex min-h-11 items-center rounded-md px-3 {% if page.url == current %}bg-accent-soft font-medium text-accent{% else %}text-foreground-second hover:bg-background-second hover:text-foreground{% endif %}"{% if page.url == current %} aria-current="page"{% endif %}>{{ page.title }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+</nav>

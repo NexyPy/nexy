@@ -66,3 +66,19 @@ class TestTree:
         parser = NexyHTMLParser()
         parser.parse("<div>")
         assert len(parser.parse("<p>x</p>")) == 1
+
+
+class TestJinjaRightAfterTheTagName:
+    """`<div{% if on %} class="x"{% endif %}>`: the block is protected as NXYPJ0Z before parsing."""
+
+    def test_the_tag_name_stops_before_the_block(self):
+        name, _, _ = _read_start_tag("divnxypj0z", [], '<divNXYPJ0Z class="on"NXYPJ1Z>')
+        assert name == "div"
+
+    def test_the_block_stays_with_the_attributes(self):
+        _, attributes, _ = _read_start_tag("divnxypj0z", [], '<divNXYPJ0Z class="on"NXYPJ1Z>')
+        assert list(attributes) == ["NXYPJ0Z", "class", "NXYPJ1Z"]
+
+    def test_a_dynamic_tag_keeps_its_block_as_its_name(self):
+        name, _, _ = _read_start_tag("nxypj0z", [], "<NXYPJ0Z />")
+        assert name == "NXYPJ0Z"

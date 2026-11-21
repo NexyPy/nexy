@@ -1,0 +1,35 @@
+---
+from nexy import useSearchParams
+from src.docs.search import search
+
+metadata = {"title": "Search", "robots": "noindex"}
+
+# The search box sends its form here when JavaScript is off, or when Enter is pressed with no
+# result chosen. The query is printed escaped: it comes from the address.
+query = useSearchParams().get("q", "")[:100].strip()
+hits = search(query, limit=30)
+---
+<section class="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
+  <h1 class="text-3xl font-semibold tracking-tight">Search</h1>
+  <form action="/search" method="get" role="search" class="mt-6 flex gap-2">
+    <label for="search-page-query" class="sr-only">Search the docs</label>
+    <input id="search-page-query" name="q" type="search" value="{{ query | e }}" placeholder="A command, an option, a word" class="h-11 min-w-0 flex-1 rounded-lg border border-border bg-background-second px-4 text-sm focus:border-accent focus:outline-none">
+    <button type="submit" class="h-11 rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Search</button>
+  </form>
+
+  {% if query %}
+  <p role="status" class="mt-6 text-sm text-foreground-second">
+    {% if hits %}{{ hits | length }} {% if hits | length == 1 %}result{% else %}results{% endif %} for "{{ query | e }}"{% else %}No page has every word of "{{ query | e }}". Try fewer words, or the name of a command.{% endif %}
+  </p>
+  <ol class="mt-4 divide-y divide-border">
+    {% for hit in hits %}
+    <li>
+      <a href="{{ hit.url }}" class="block py-4 hover:text-accent">
+        <span class="font-medium">{{ hit.title }}{% if hit.heading != hit.title %}<span class="text-foreground-second"> / {{ hit.heading }}</span>{% endif %}</span>
+        <span class="mt-1 block text-sm text-foreground-second">{{ hit.snippet | e }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+</section>
