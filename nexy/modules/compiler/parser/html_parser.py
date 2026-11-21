@@ -3,7 +3,10 @@ from html.parser import HTMLParser
 
 from nexy.modules.compiler.parser.nodes import ElementNode, Node, TextNode
 
-_TAG_NAME_RE = re.compile(r"<([a-zA-Z0-9_:.-]+)")
+# A Jinja block is protected as NXYPJ<n>Z before parsing. Written right after the name
+# (`<div{% if x %} ...>`), it is not part of the name: the name stops where it starts, unless
+# the whole name is the block (`<{{ tag }}>`).
+_TAG_NAME_RE = re.compile(r"<(NXYPJ\d+Z|[a-zA-Z0-9_:.-]+?)(?=NXYPJ\d+Z|[^a-zA-Z0-9_:.-]|$)")
 _ATTR_PATTERN_RE = re.compile(
     r"(?P<name>[a-zA-Z0-9_:.-]+)"
     r"(?:\s*=\s*"
