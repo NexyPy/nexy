@@ -34,7 +34,7 @@ Nexy merender komponen pada waktu pembuatan, menyimpan HTML-nya, dan menempatkan
 
 ## Siklus hidup rendering
 
-1. Saat dibangun, setiap komponen klien dirender ke HTML dan ditulis di bawah `__nexy__/client/static/`.
+1. Saat dibangun, setiap komponen klien dirender ke HTML dan ditulis di bawah `__nexy__/client/static/`: satu kali dengan defaultnya sendiri, dan satu kali per set props literal, file `.nexy` memberikannya.
 2. Permintaan merender halaman `.nexy`; HTML pulau disisipkan sebagai pengganti tag.
 3. Responsnya membawa HTML, props, dan direktif sebagai atribut.
 4. Di browser, runtime menjadwalkan hidrasi sesuai dengan arahan.
@@ -103,7 +103,8 @@ from "@/components/Counter.tsx" import Counter
 - **Props harus berupa JSON.** Props tersebut diserialkan dengan `json.dumps`; nilai yang tidak dapat diserialkan akan dihilangkan, dan pulau menerima `{}` - secara diam-diam.
 - **Sebuah pulau bukanlah komponen klien dengan negara bersama.** Dua pulau tidak berbagi negara tanpa mekanisme yang Anda tambahkan sendiri.
 - **Pulau ini tidak dirender ulang oleh server.** HTML-nya adalah snapshot build, ditambah apa pun yang dilakukan komponen setelah terhidrasi.
-- **Halaman pulau adalah halaman CSR yang menyamar.** Jika setiap blok perlu berkomunikasi satu sama lain, pilih mode klien saja.
+- **Hanya props literal yang mencapai server HTML.** `<Counter label="clicks" step="2" />` mendapatkan snapshot yang dirender dengan props tersebut. Prop yang dihitung pada waktu permintaan (`label="{{ name }}"`), spread (`{{ ...props }}`) atau turunan di antara tag tidak dapat diketahui saat build: pulau tersebut menampilkan snapshot dengan default komponen sendiri hingga terhidrasi.
+- **Halaman pulau adalah halaman CSR yang menyamar.** Jika setiap blok perlu berkomunikasi satu sama lain, pilih mode klien sebagai gantinya.
 
 ## Langkah selanjutnya
 

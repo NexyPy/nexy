@@ -17,6 +17,7 @@ from nexy.helpers.fs.packages import ensure_project_packages
 from nexy.helpers.server.markers import write_build_marker
 from nexy.helpers.server.server import Server
 from nexy.modules.builder import Builder, BuildResult
+from nexy.modules.builder.island_props import write_manifest
 from nexy.modules.cli.commands.guard import abort_on_invalid_config
 from nexy.modules.cli.devtools.pycache import pycache
 from nexy.modules.frontend import FrontendGenerator
@@ -42,6 +43,7 @@ def build(check: bool = False) -> None:
     _announce_start()
     build_result = _compile_server_components()
     _exit_on_failed_components(build_result)
+    write_manifest(Path("src").rglob("*.nexy"))
     ssg_entries = _build_client_bundle() if Config().useVite else []
     if check:
         _run_checks()
