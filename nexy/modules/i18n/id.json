@@ -36,6 +36,7 @@
     "count_client_only": "{count} hanya klien",
     "more": "dan {count} lainnya",
     "not_rendered": "{path} tidak punya HTML server: hanya dirender di klien",
+    "not_rendered_because": "{path} tidak punya HTML server: {reason}",
     "running_check": "Menjalankan {name}",
     "ran_check": "{name} dijalankan"
   },

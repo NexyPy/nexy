@@ -36,6 +36,7 @@
     "count_client_only": "{count} 件クライアントのみ",
     "more": "ほか {count} 件",
     "not_rendered": "{path} にはサーバー HTML がありません: クライアントでのみレンダリングされます",
+    "not_rendered_because": "{path} にはサーバー HTML がありません: {reason}",
     "running_check": "{name} を実行中",
     "ran_check": "{name} を実行しました"
   },
