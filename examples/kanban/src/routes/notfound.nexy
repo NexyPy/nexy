@@ -1,0 +1,8 @@
+---
+metadata = {"title": "Page not found", "robots": "noindex"}
+---
+<section class="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-4 py-24 sm:px-6">
+  <p class="text-sm font-medium text-accent">404</p>
+  <h1 class="mt-2 text-3xl font-semibold tracking-tight">There is no board at this address.</h1>
+  <a href="/" class="mt-6 inline-flex h-11 w-fit items-center rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Back to the board</a>
+</section>
