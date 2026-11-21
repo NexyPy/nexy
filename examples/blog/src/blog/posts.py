@@ -120,15 +120,18 @@ def parse(text: str, slug: str) -> Post:
 
 
 @lru_cache(maxsize=1)
-def _read(files: tuple[tuple[Path, int], ...]) -> tuple[Post, ...]:
-    found = (parse(path.read_text(encoding="utf-8"), path.stem) for path, _ in files)
+def _read(files: tuple[tuple[Path, int, int], ...]) -> tuple[Post, ...]:
+    found = (parse(path.read_text(encoding="utf-8"), path.stem) for path, *_ in files)
     return tuple(sorted(found, key=lambda post: post.date, reverse=True))
 
 
 def all_posts() -> tuple[Post, ...]:
-    """Every post, newest first. A file is read again once it changed: an edit shows on reload."""
-    files = sorted(POSTS.glob("*.md"))
-    return _read(tuple((path, path.stat().st_mtime_ns) for path in files))
+    """Every post, newest first. A file is read again once it changed: an edit shows on reload.
+
+    A change is a new modification time or a new size: on a coarse clock (Windows), a file written
+    right after it was read can keep its time."""
+    stats = [(path, path.stat()) for path in sorted(POSTS.glob("*.md"))]
+    return _read(tuple((path, stat.st_mtime_ns, stat.st_size) for path, stat in stats))
 
 
 def find(slug: str) -> Post | None:
