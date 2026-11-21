@@ -2,7 +2,7 @@ import { glob } from 'glob'
 import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
-import esbuild from 'esbuild'
+import esbuild, { type Plugin } from 'esbuild'
 import {
   detectTsxFramework,
   resolveMdxFramework,
@@ -29,6 +29,8 @@ export interface JsxFramework {
   mdx: boolean
   jsxImportSource: string
   external: string[]
+  /** esbuild plugins that compile this framework's JSX, when esbuild's own transform does not. */
+  plugins?: () => Plugin[]
   /** The server-rendered HTML of one component. */
   render: (Component: unknown, props: Record<string, unknown>) => Promise<string>
 }
@@ -54,7 +56,8 @@ async function bundle(framework: JsxFramework, files: string[], tempDir: string)
   for (const [i, file] of files.entries()) {
     entryPoints[`_c${i}`] = path.resolve(process.cwd(), file)
   }
-  const plugins = framework.mdx ? await loadMdxPlugin(files, framework.name) : undefined
+  const mdx = framework.mdx ? await loadMdxPlugin(files, framework.name) : undefined
+  const plugins = [...(framework.plugins?.() ?? []), ...(mdx ?? [])]
   try {
     await esbuild.build({
       entryPoints,
