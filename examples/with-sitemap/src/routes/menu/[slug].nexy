@@ -1,0 +1,11 @@
+---
+from nexy import notFound, setMetadata
+from src.bakes import BAKES
+
+slug: prop[str]
+name, note = BAKES.get(slug) or notFound()
+setMetadata(title=name, description=note)
+---
+<h1 class="text-3xl font-semibold">{{ name }}</h1>
+<p class="mt-3">{{ note }}</p>
+<p class="mt-6"><a href="/menu" class="inline-flex min-h-11 items-center">The whole menu</a></p>
