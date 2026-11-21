@@ -1,0 +1,70 @@
+---
+import re
+from html import unescape
+
+from "@/components/Sidebar.nexy" import Sidebar
+from "@/components/code-copy.tsx" import CodeCopy
+from nexy import setMetadata, usePathname, useToc
+from src.docs.nav import neighbours
+
+children: prop[NexyElement]
+
+current = usePathname().rstrip("/") or "/docs"
+pair = neighbours(current)
+before = pair[0]
+after = pair[1]
+outline = useToc("2-3")
+
+
+def plain(html):
+    return unescape(re.sub(r"<[^>]+>", "", html)).strip()
+
+
+# A Markdown page has no Python of its own: its first heading names the tab, and its first
+# paragraph is the description search engines show.
+page = str(children)
+heading = re.search(r"<h1[^>]*>(.*?)</h1>", page, re.DOTALL)
+summary = re.search(r"<p>(.*?)</p>", page, re.DOTALL)
+if heading:
+    setMetadata(title=plain(heading.group(1)), description=plain(summary.group(1)) if summary else "")
+---
+<div class="mx-auto grid w-full max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[15rem_minmax(0,1fr)_13rem]">
+  <details class="group mt-4 rounded-lg border border-border lg:hidden">
+    <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between px-4 text-sm font-medium [&::-webkit-details-marker]:hidden">
+      Menu
+      <svg viewBox="0 0 24 24" class="size-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+    </summary>
+    <div class="border-t border-border p-2"><Sidebar current="{{ current }}" /></div>
+  </details>
+
+  <aside class="sticky top-16 hidden max-h-[calc(100dvh-4rem)] overflow-y-auto py-10 lg:block">
+    <Sidebar current="{{ current }}" />
+  </aside>
+
+  <div class="min-w-0 py-8 lg:py-10">
+    <article class="prose">{{ children }}</article>
+    <CodeCopy directive="client:idle" />
+
+    <nav aria-label="Previous and next" class="mt-14 grid gap-4 border-t border-border pt-8 sm:grid-cols-2">
+      {% if before %}
+      <a href="{{ before.url }}" class="rounded-lg border border-border p-4 hover:border-accent">
+        <span class="block text-xs text-foreground-second">Previous</span>
+        <span class="mt-1 block font-medium">{{ before.title }}</span>
+      </a>
+      {% else %}<span></span>{% endif %}
+      {% if after %}
+      <a href="{{ after.url }}" class="rounded-lg border border-border p-4 text-right hover:border-accent">
+        <span class="block text-xs text-foreground-second">Next</span>
+        <span class="mt-1 block font-medium">{{ after.title }}</span>
+      </a>
+      {% endif %}
+    </nav>
+  </div>
+
+  <aside class="sticky top-16 hidden max-h-[calc(100dvh-4rem)] overflow-y-auto py-10 text-sm xl:block">
+    {% if outline %}
+    <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground-second">On this page</p>
+    <div class="outline-list">{{ outline }}</div>
+    {% endif %}
+  </aside>
+</div>
