@@ -1,46 +1,64 @@
 ---
-from "@/components/Button.nexy" import Button
-from "@/components/Container.nexy" import Container
-from "@/components/Frame.nexy" import Frame
-from "@/components/FrameworkLogo.nexy" import FrameworkLogo
-from "@/components/LinePattern.nexy" import LinePattern
-from "@/components/LivePanel.nexy" import LivePanel
-from "@/components/SectionHead.nexy" import SectionHead
-from "@/components/Steps.nexy" import Steps
+from "@/components/ProjectCard.nexy" import ProjectCard
+from "@/components/copy-email.svelte" import CopyEmail
+from src.content.work import PROJECTS, featured
 
-arrow_down = "M12 5v14M5 12l7 7 7-7"
-glow = "bg-[image:radial-gradient(60%_60%_at_85%_15%,rgb(63_224_200/0.14),transparent_70%)]"
+metadata = {
+    "title": "Product designer in Lisbon",
+    "description": "Noor Halvorsen designs the screens people use when something matters: their money, their health, their train home.",
+}
+
+first, *others = featured()
+clients = [project.client.split(",")[0] for project in PROJECTS]
+
+principles = [
+    ("Watch before drawing", "I start where the product is used: at the desk, at the station, in the rain. The first sketch comes after."),
+    ("One screen, one answer", "A screen answers the question people came with, in their words. Everything else waits one tap further."),
+    ("Ship it with the team", "I design in the components the engineers build with, and stay until the work is in people's hands."),
+]
 ---
-<section class="relative flex min-h-dvh items-end overflow-hidden bg-ink pb-16 pt-34 text-paper">
-  <LinePattern side="right" />
-  <div class="absolute inset-0 {{ glow }}" aria-hidden="true"></div>
-  <Container class_name="relative grid items-end gap-12 md:grid-cols-[1.3fr_1fr]">
-    <div class="flex flex-col gap-6">
-      <h1 class="max-w-[12ch] text-6xl leading-[1.02] md:text-8xl">Your app is running.</h1>
-      <p class="max-w-[42ch] text-lg text-paper/65">
-        Change a word on this page and save. It updates before you look back.
-      </p>
-      <div class="mt-2 flex flex-wrap gap-4">
-        <Button href="#first-steps" tone="on-ink" icon="{{ arrow_down }}">Make your first change</Button>
-        <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" variant="outline">Read the docs</Button>
-      </div>
-    </div>
-    <LivePanel />
-  </Container>
+<section class="mx-auto w-full max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
+  <p class="flex items-center gap-2 text-sm text-foreground-second">
+    <span class="size-2 rounded-full bg-[#2f9e6b]"></span>
+    Independent product designer, booking from March 2027
+  </p>
+  <h1 class="mt-6 max-w-5xl font-display text-[clamp(2.6rem,7vw,5.6rem)] leading-[1.02] tracking-[-0.01em]">
+    I design the screens people use when something matters: <em class="text-accent">their money, their health, their train home.</em>
+  </h1>
+  <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+    <CopyEmail directive="client:load" />
+  </div>
 </section>
 
-<section id="first-steps" class="scroll-mt-4 py-24">
-  <Container class_name="grid gap-12 md:grid-cols-[1fr_1.4fr]">
-    <div class="self-start md:sticky md:top-28">
-      <SectionHead
-        label="Your first minutes"
-        title="Make it yours in three steps."
-        description="Each one takes a minute or less."
-      />
-      <Frame class_name="grid aspect-[4/3] place-items-center border border-border bg-ink text-paper dark:bg-background-second">
-        <FrameworkLogo class_name="size-32 text-accent" />
-      </Frame>
-    </div>
-    <Steps />
-  </Container>
+<section aria-labelledby="work-title" class="mx-auto w-full max-w-6xl px-4 sm:px-6">
+  <div class="flex items-end justify-between gap-4 border-t border-border pt-6">
+    <h2 id="work-title" class="font-display text-4xl">Selected work</h2>
+    <a href="/work" class="flex h-11 items-center text-sm underline underline-offset-4 hover:text-accent">All {{ PROJECTS | length }} projects</a>
+  </div>
+  <div class="mt-10 grid gap-x-8 gap-y-16 md:grid-cols-2">
+    <div class="md:col-span-2"><ProjectCard project="{{ first }}" wide="{{ True }}" /></div>
+    {% for project in others %}
+    <ProjectCard project="{{ project }}" />
+    {% endfor %}
+  </div>
+</section>
+
+<section aria-labelledby="how-title" class="mx-auto mt-28 w-full max-w-6xl px-4 sm:px-6">
+  <h2 id="how-title" class="border-t border-border pt-6 font-display text-4xl">How I work</h2>
+  <ol class="mt-10 grid gap-10 md:grid-cols-3">
+    {% for title, text in principles %}
+    <li>
+      <span class="font-display text-2xl italic text-accent">{{ loop.index }}.</span>
+      <h3 class="mt-2 text-lg font-semibold">{{ title }}</h3>
+      <p class="mt-2 leading-relaxed text-foreground-second">{{ text }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+
+<section aria-labelledby="clients-title" class="mx-auto mt-28 w-full max-w-6xl px-4 sm:px-6">
+  <h2 id="clients-title" class="border-t border-border pt-6 text-sm uppercase tracking-[0.14em] text-foreground-second">Recent clients</h2>
+  <ul class="mt-6 flex flex-wrap gap-x-10 gap-y-3 font-display text-3xl">
+    {% for client in clients %}<li>{{ client }}</li>{% endfor %}
+  </ul>
 </section>
