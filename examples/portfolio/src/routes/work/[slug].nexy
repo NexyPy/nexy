@@ -1,0 +1,98 @@
+---
+from "@/components/lightbox.svelte" import Lightbox
+from nexy import notFound, setMetadata
+from src.content.work import find, following
+
+# A case study is the same for every visitor: rendered once, then served from memory for five
+# minutes per address, and rendered again in the background after that.
+revalidate = 300
+
+slug: prop[str]
+project = find(slug) or notFound()
+after = following(project)
+setMetadata(title=project.title, description=project.summary)
+
+facts = [
+    ("Client", project.client),
+    ("Year", project.year),
+    ("Role", project.role),
+    ("Team", project.team),
+    ("Length", project.duration),
+]
+---
+<article class="mx-auto w-full max-w-6xl px-4 pt-12 sm:px-6 sm:pt-16">
+  <a href="/work" class="inline-flex h-11 items-center gap-2 text-sm text-foreground-second hover:text-foreground">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+    All work
+  </a>
+  <header class="mt-6 grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-end">
+    <div>
+      <p class="text-xs uppercase tracking-[0.14em] text-foreground-second">{{ project.disciplines | join(", ") }}</p>
+      <h1 class="mt-3 font-display text-[clamp(3rem,8vw,6.5rem)] leading-[0.95]">{{ project.title }}</h1>
+      <p class="mt-6 max-w-xl text-xl leading-relaxed text-foreground-second">{{ project.summary }}</p>
+    </div>
+    <dl class="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-border pt-6 text-sm">
+      {% for label, value in facts %}
+      <div class="{% if loop.first %}col-span-2{% endif %}">
+        <dt class="text-foreground-second">{{ label }}</dt>
+        <dd class="mt-0.5">{{ value }}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+  </header>
+
+  <img src="{{ project.cover }}" alt="" width="1600" height="1000" class="mt-14 aspect-[16/9] w-full rounded-2xl object-cover">
+
+  <div class="mx-auto mt-20 max-w-3xl">
+    <section>
+      <h2 class="font-display text-4xl">The problem</h2>
+      <p class="mt-4 text-lg leading-relaxed text-foreground-second">{{ project.challenge }}</p>
+    </section>
+    <section class="mt-16">
+      <h2 class="font-display text-4xl">What I did</h2>
+      <ol class="mt-6 space-y-5">
+        {% for step in project.approach %}
+        <li class="grid grid-cols-[2rem_1fr] gap-2 text-lg leading-relaxed">
+          <span class="font-display text-xl italic text-accent">{{ loop.index }}.</span>
+          <span class="text-foreground-second">{{ step }}</span>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+  </div>
+
+  <section aria-labelledby="pictures-title" class="mt-20">
+    <h2 id="pictures-title" class="sr-only">Pictures</h2>
+    <ul data-gallery class="grid gap-4 md:grid-cols-3">
+      {% for picture in project.pictures %}
+      <li>
+        <a href="{{ picture.file }}" data-lightbox data-caption="{{ picture.caption }}" class="group block">
+          <img src="{{ picture.file }}" alt="{{ picture.caption }}" width="1600" height="1000" loading="lazy" class="aspect-[16/10] w-full rounded-xl object-cover transition-opacity group-hover:opacity-90">
+        </a>
+        <p class="mt-2 text-sm text-foreground-second">{{ picture.caption }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    <Lightbox directive="client:idle" />
+  </section>
+
+  <div class="mx-auto mt-20 max-w-3xl">
+    <section>
+      <h2 class="font-display text-4xl">What changed</h2>
+      <p class="mt-4 text-lg leading-relaxed text-foreground-second">{{ project.outcome }}</p>
+      <dl class="mt-10 grid gap-8 border-t border-border pt-8 sm:grid-cols-3">
+        {% for number, label in project.results %}
+        <div class="flex flex-col">
+          <dt class="order-2 mt-2 text-sm text-foreground-second">{{ label }}</dt>
+          <dd class="font-display text-5xl leading-none">{{ number }}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+    </section>
+  </div>
+
+  <a href="/work/{{ after.slug }}" class="group mt-24 flex flex-col gap-2 border-t border-border pt-8">
+    <span class="text-sm text-foreground-second">Next project</span>
+    <span class="font-display text-5xl group-hover:text-accent sm:text-6xl">{{ after.title }}</span>
+  </a>
+</article>

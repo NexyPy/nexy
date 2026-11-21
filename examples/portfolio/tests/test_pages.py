@@ -28,3 +28,19 @@ def test_an_unknown_discipline_says_so(client):
 def test_an_unknown_discipline_is_escaped(client):
     page = client.get("/work?discipline=<b>bold</b>").text
     assert "&lt;b&gt;bold&lt;/b&gt;" in page
+
+
+def test_a_case_study_names_its_tab(client):
+    assert "<title>Tidepool | Noor Halvorsen</title>" in client.get("/work/tidepool").text
+
+
+def test_a_case_study_links_every_picture_for_the_lightbox(client):
+    assert client.get("/work/grove").text.count("data-lightbox") == 3
+
+
+def test_a_case_study_links_to_the_next_one(client):
+    assert 'href="/work/grove" class="group mt-24' in client.get("/work/tidepool").text
+
+
+def test_an_unknown_case_study_answers_404(client):
+    assert client.get("/work/nothing-here").status_code == 404
