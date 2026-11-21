@@ -36,6 +36,7 @@
     "count_client_only": "{count} 个仅客户端",
     "more": "还有 {count} 个",
     "not_rendered": "{path} 没有服务端 HTML:它只在客户端渲染",
+    "not_rendered_because": "{path} 没有服务端 HTML:{reason}",
     "running_check": "正在运行 {name}",
     "ran_check": "已运行 {name}"
   },

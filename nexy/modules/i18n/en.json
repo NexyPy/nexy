@@ -36,6 +36,7 @@
     "count_client_only": "{count} client-only",
     "more": "and {count} more",
     "not_rendered": "{path} has no server HTML: it renders on the client only",
+    "not_rendered_because": "{path} has no server HTML: {reason}",
     "running_check": "Running {name}",
     "ran_check": "Ran {name}"
   },
