@@ -9,3 +9,4 @@ node_modules/
 dist/
 .venv/
 venv/
+session.key
