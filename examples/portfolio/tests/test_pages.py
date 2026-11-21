@@ -44,3 +44,7 @@ def test_a_case_study_links_to_the_next_one(client):
 
 def test_an_unknown_case_study_answers_404(client):
     assert client.get("/work/nothing-here").status_code == 404
+
+
+def test_the_about_page_names_its_tab(client):
+    assert "<title>About | Noor Halvorsen</title>" in client.get("/about").text
