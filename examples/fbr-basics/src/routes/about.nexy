@@ -1,0 +1,5 @@
+---
+metadata = {"title": "About", "description": "A page is a .nexy file: Python first, HTML after."}
+---
+<h1 class="text-3xl font-semibold">About</h1>
+<p class="mt-3 text-foreground-second">This page is <code>src/routes/about.nexy</code>, so its address is <code>/about</code>. The Python between the <code>---</code> lines runs on the server for each visit; the HTML after it is the page.</p>
