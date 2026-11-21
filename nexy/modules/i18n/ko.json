@@ -36,6 +36,7 @@
     "count_client_only": "{count}개 클라이언트 전용",
     "more": "외 {count}개",
     "not_rendered": "{path}에는 서버 HTML이 없습니다: 클라이언트에서만 렌더링됩니다",
+    "not_rendered_because": "{path}에는 서버 HTML이 없습니다: {reason}",
     "running_check": "{name} 실행 중",
     "ran_check": "{name} 실행 완료"
   },
