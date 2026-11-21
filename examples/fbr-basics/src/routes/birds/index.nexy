@@ -1,0 +1,8 @@
+---
+from src.birds import BIRDS
+
+metadata = {"title": "Birds", "description": "Every bird of the field guide."}
+---
+<h1 class="text-3xl font-semibold">Birds</h1>
+<p class="mt-3 text-foreground-second"><code>src/routes/birds/index.nexy</code> answers <code>/birds</code>. The menu on the side is <code>src/routes/birds/layout.nexy</code>.</p>
+<p class="mt-3">{{ BIRDS | length }} birds so far.</p>
