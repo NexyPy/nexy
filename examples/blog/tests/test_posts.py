@@ -1,5 +1,6 @@
 """The posts: a header, Markdown, an anchor per section, and the order the blog shows them in."""
 
+import os
 from datetime import date
 
 import pytest
@@ -104,6 +105,15 @@ def test_a_date_that_is_not_one_says_so():
 def test_an_edited_post_is_read_again(folder):
     posts.all_posts()
     _write(folder, "middle", "2026-09-01", "edited")
+    assert posts.find("middle").tags == ("edited",)
+
+
+def test_an_edit_that_keeps_the_modification_time_is_read_again(folder):
+    # A coarse clock (Windows) can give the edited file the time it had when it was last read.
+    posts.all_posts()
+    before = (folder / "middle.md").stat().st_mtime_ns
+    _write(folder, "middle", "2026-09-01", "edited")
+    os.utime(folder / "middle.md", ns=(before, before))
     assert posts.find("middle").tags == ("edited",)
 
 
