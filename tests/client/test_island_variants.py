@@ -35,7 +35,7 @@ def _checked(root: str) -> dict:
 
 def _result(tmp_path_factory) -> dict:
     root = tmp_path_factory.getbasetemp() / "island-variants"
-    manifest = root / "__nexy__" / "client" / "island-props.json"
+    manifest = root / "__nexy__" / "island-props.json"
     if not manifest.is_file():
         manifest.parent.mkdir(parents=True)
         manifest.write_text(json.dumps(PROPS), encoding="utf-8")

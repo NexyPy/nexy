@@ -1,5 +1,5 @@
 // The snapshots of an island rendered with the literal props the pages give it (#554).
-// `nx build` lists those props in __nexy__/client/island-props.json, by island file, imported
+// `nx build` lists those props in __nexy__/island-props.json, by island file, imported
 // symbol and key. Each snapshot is written next to the default one as <entry>.<key>.html: the
 // name the server looks up for those props, falling back to the default snapshot.
 import fs from 'fs'
@@ -11,7 +11,7 @@ export type IslandProps = Record<string, Record<string, Record<string, Props>>>
 /** The props the pages give each island, or none when the build listed nothing. */
 export function readIslandProps(root: string = process.cwd()): IslandProps {
   try {
-    const file = path.join(root, '__nexy__/client/island-props.json')
+    const file = path.join(root, '__nexy__/island-props.json')
     return JSON.parse(fs.readFileSync(file, 'utf-8')) as IslandProps
   } catch {
     return {}
