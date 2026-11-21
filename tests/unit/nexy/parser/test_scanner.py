@@ -114,3 +114,26 @@ def test_scanner_frontmatter_not_at_start():
     result = scanner.process(source_invalid_4)
     assert result.frontmatter == ""
     assert 'title = "Nexy"' in result.template
+
+
+source_dashes_in_a_string = """
+---
+note = "Python between the --- lines"
+---
+<p>{{ note }}</p>
+"""
+
+
+def test_scanner_dashes_inside_a_line_stay_logic():
+    result = Scanner().process(source_dashes_in_a_string)
+    assert result.frontmatter == 'note = "Python between the --- lines"'
+
+
+def test_scanner_closing_line_with_spaces_and_crlf():
+    result = Scanner().process("---\r\nx = 1\r\n  ---  \r\n<p>{{ x }}</p>")
+    assert result.template == "<p>{{ x }}</p>"
+
+
+def test_scanner_empty_logic_block():
+    result = Scanner().process("---\n---\n<p>hi</p>")
+    assert result.template == "<p>hi</p>"
