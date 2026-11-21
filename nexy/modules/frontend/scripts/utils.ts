@@ -340,6 +340,8 @@ export interface SSGEntry {
   file: string;
   component: string;
   status: 'success' | 'failed' | 'not_supported';
+  /** Why a component has no server HTML; `nx build` prints it next to the file. */
+  reason?: string;
 }
 
 export interface SSGResult {
