@@ -1,0 +1,15 @@
+---
+from src.birds import BIRDS
+
+children: prop[NexyElement]
+---
+<!-- src/routes/birds/layout.nexy: inside the root layout, around every page of /birds. -->
+<div class="grid gap-8 sm:grid-cols-[10rem_1fr]">
+  <nav aria-label="Birds" class="text-sm">
+    <p class="font-semibold">Birds</p>
+    <ul class="mt-2">
+      {% for bird in BIRDS %}<li><a href="/birds/{{ bird.slug }}" class="flex min-h-11 items-center">{{ bird.name }}</a></li>{% endfor %}
+    </ul>
+  </nav>
+  <div>{{ children }}</div>
+</div>
