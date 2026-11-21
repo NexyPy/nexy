@@ -219,6 +219,14 @@
     "no_orm": "कोई समर्थित ORM नहीं मिला। इनमें से एक इंस्टॉल करें: sqlmodel, tortoise-orm, sqlalchemy",
     "tool_missing": "त्रुटि: PATH में {tool} नहीं मिला। इसे इंस्टॉल करके फिर कोशिश करें।"
   },
+  "routes": {
+    "title": "मार्ग",
+    "methods": "विधियाँ",
+    "path": "पथ",
+    "source": "स्रोत फ़ाइल",
+    "unknown": "अज्ञात",
+    "empty": "कोई मार्ग नहीं मिला।"
+  },
   "server": {
     "launch_failed": "सर्वर शुरू नहीं हो सका",
     "local": "लोकल:",
