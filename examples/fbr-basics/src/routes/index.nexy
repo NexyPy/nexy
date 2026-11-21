@@ -1,0 +1,22 @@
+---
+metadata = {"title": "Home", "description": "How the files of src/routes become the addresses of a Nexy site."}
+
+routes = [
+    ("src/routes/index.nexy", "/"),
+    ("src/routes/about.nexy", "/about"),
+    ("src/routes/birds/index.nexy", "/birds"),
+    ("src/routes/birds/[slug].nexy", "/birds/robin"),
+    ("src/routes/api/birds.py", "/api/birds"),
+    ("src/routes/notfound.nexy", "/no-such-page"),
+]
+---
+<h1 class="text-3xl font-semibold">Six files, six addresses</h1>
+<p class="mt-3 text-foreground-second">Each file under <code>src/routes</code> is an address. This page is <code>src/routes/index.nexy</code>.</p>
+<ul class="mt-8 divide-y divide-border border-y border-border text-sm">
+  {% for file, address in routes %}
+  <li class="flex flex-col gap-1 py-2 sm:flex-row sm:items-center sm:justify-between">
+    <code class="w-fit [overflow-wrap:anywhere]">{{ file }}</code>
+    <a href="{{ address }}" class="flex min-h-11 items-center">{{ address }}</a>
+  </li>
+  {% endfor %}
+</ul>

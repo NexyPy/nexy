@@ -1,0 +1,24 @@
+---
+from nexy import Vite, setMetadata, useMetadata
+
+children: prop[NexyElement]
+setMetadata(title_template="%s | Field guide")
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ useMetadata().html() }}
+    <Vite />
+</head>
+<body class="mx-auto max-w-2xl px-4 py-10">
+    <!-- src/routes/layout.nexy: around every page of the site. -->
+    <nav aria-label="Site" class="flex gap-4 text-sm">
+        <a href="/" class="flex min-h-11 items-center">Home</a>
+        <a href="/birds" class="flex min-h-11 items-center">Birds</a>
+        <a href="/about" class="flex min-h-11 items-center">About</a>
+    </nav>
+    <main class="mt-8">{{ children }}</main>
+</body>
+</html>
