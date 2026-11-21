@@ -1,46 +1,37 @@
 ---
-from "@/components/Button.nexy" import Button
-from "@/components/Container.nexy" import Container
-from "@/components/Frame.nexy" import Frame
-from "@/components/FrameworkLogo.nexy" import FrameworkLogo
-from "@/components/LinePattern.nexy" import LinePattern
-from "@/components/LivePanel.nexy" import LivePanel
-from "@/components/SectionHead.nexy" import SectionHead
-from "@/components/Steps.nexy" import Steps
+from src.docs.nav import SECTIONS
 
-arrow_down = "M12 5v14M5 12l7 7 7-7"
-glow = "bg-[image:radial-gradient(60%_60%_at_85%_15%,rgb(63_224_200/0.14),transparent_70%)]"
+metadata = {
+    "title": "Back up a folder to object storage",
+    "description": "The documentation of Cairn: install it, make a first backup in five minutes, and look up every command and setting.",
+}
+
+blurbs = {
+    "Get started": "Install Cairn and make a first backup in five minutes.",
+    "Commands": "Every command, its options, and an example of each.",
+    "Guides": "Run backups on a schedule, and keep them encrypted.",
+    "Reference": "Exit codes for scripts, and the questions people ask.",
+}
 ---
-<section class="relative flex min-h-dvh items-end overflow-hidden bg-ink pb-16 pt-34 text-paper">
-  <LinePattern side="right" />
-  <div class="absolute inset-0 {{ glow }}" aria-hidden="true"></div>
-  <Container class_name="relative grid items-end gap-12 md:grid-cols-[1.3fr_1fr]">
-    <div class="flex flex-col gap-6">
-      <h1 class="max-w-[12ch] text-6xl leading-[1.02] md:text-8xl">Your app is running.</h1>
-      <p class="max-w-[42ch] text-lg text-paper/65">
-        Change a word on this page and save. It updates before you look back.
-      </p>
-      <div class="mt-2 flex flex-wrap gap-4">
-        <Button href="#first-steps" tone="on-ink" icon="{{ arrow_down }}">Make your first change</Button>
-        <Button href="https://github.com/NexyPy/nexy#readme" tone="on-ink" variant="outline">Read the docs</Button>
-      </div>
-    </div>
-    <LivePanel />
-  </Container>
-</section>
+<section class="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
+  <p class="text-sm font-medium text-accent">Cairn 1.4 documentation</p>
+  <h1 class="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">Back up a folder to object storage, and get any version back.</h1>
+  <p class="mt-5 max-w-2xl text-lg text-foreground-second">Cairn is one command that encrypts on your machine, sends only what changed, and keeps the versions you ask for.</p>
+  <div class="mt-8 flex flex-wrap gap-3">
+    <a href="/docs/quick-start" class="inline-flex h-11 items-center rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Quick start</a>
+    <a href="/docs/installation" class="inline-flex h-11 items-center rounded-lg border border-border px-5 text-sm font-medium hover:border-foreground">Install</a>
+  </div>
+  <pre class="mt-10 overflow-x-auto rounded-xl border border-border bg-code p-5 font-mono text-sm text-code-text"><code>cairn init s3://my-backups/laptop
+cairn backup ~/Documents
+cairn restore latest --path Documents/notes.md</code></pre>
 
-<section id="first-steps" class="scroll-mt-4 py-24">
-  <Container class_name="grid gap-12 md:grid-cols-[1fr_1.4fr]">
-    <div class="self-start md:sticky md:top-28">
-      <SectionHead
-        label="Your first minutes"
-        title="Make it yours in three steps."
-        description="Each one takes a minute or less."
-      />
-      <Frame class_name="grid aspect-[4/3] place-items-center border border-border bg-ink text-paper dark:bg-background-second">
-        <FrameworkLogo class_name="size-32 text-accent" />
-      </Frame>
-    </div>
-    <Steps />
-  </Container>
+  <div class="mt-16 grid gap-4 sm:grid-cols-2">
+    {% for section in SECTIONS %}
+    <a href="{{ section.pages[0].url }}" class="group rounded-xl border border-border p-6 transition-colors hover:border-accent">
+      <h2 class="font-semibold group-hover:text-accent">{{ section.title }}</h2>
+      <p class="mt-1 text-sm text-foreground-second">{{ blurbs[section.title] }}</p>
+      <p class="mt-4 text-xs text-foreground-second">{{ section.pages | map(attribute="title") | join(", ") }}</p>
+    </a>
+    {% endfor %}
+  </div>
 </section>
