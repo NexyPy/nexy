@@ -10,7 +10,14 @@ export const normalizeClassWhitespace = (html: string): string =>
     (_, prefix, classes, suffix) => `${prefix}${classes.trim().replace(/\s+/g, ' ')}${suffix}`
   )
 
-/** The snapshot of one component: rendered with no props, so it shows its own defaults (#591). */
-export async function renderSnapshot(render: Render, Component: unknown): Promise<string> {
-  return normalizeClassWhitespace(await render(Component, {}))
+/**
+ * The snapshot of one component. With no props it shows its own defaults (#591); with the literal
+ * props a page gives it, what that page shows before hydration (#554).
+ */
+export async function renderSnapshot(
+  render: Render,
+  Component: unknown,
+  props: Record<string, unknown> = {}
+): Promise<string> {
+  return normalizeClassWhitespace(await render(Component, props))
 }

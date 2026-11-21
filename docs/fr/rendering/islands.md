@@ -34,7 +34,7 @@ Nexy restitue le composant au moment de la construction, stocke son HTML et le p
 
 ## Cycle de vie du rendu
 
-1. Lors de la construction, chaque composant client est rendu au format HTML et écrit sous `__nexy__/client/static/`.
+1. Lors de la construction, chaque composant client est rendu au format HTML et écrit sous `__nexy__/client/static/` : une fois avec ses propres valeurs par défaut, et une fois par ensemble d'accessoires littéraux, un fichier `.nexy` le donne.
 2. Une requête affiche la page `.nexy` ; le HTML de l'île est inséré à la place de la balise.
 3. La réponse contient le code HTML, les accessoires et la directive comme attributs.
 4. Dans le navigateur, le runtime planifie l'hydratation selon la directive.
@@ -103,6 +103,7 @@ from "@/components/Counter.tsx" import Counter
 - **Les accessoires doivent être JSON.** Ils sont sérialisés avec `json.dumps`; une valeur qui ne peut pas être sérialisée est supprimée et l'îlot reçoit `{}` - silencieusement.
 - **Une île n'est pas un composant client avec un état partagé.** Deux îles ne partagent pas d'état sans un mécanisme que vous ajoutez vous-même.
 - **L'île n'est pas restituée par le serveur.** Son HTML est l'instantané de construction, plus tout ce que fait le composant une fois hydraté.
+- **Seuls les accessoires littéraux atteignent le serveur HTML.** `<Counter label="clicks" step="2" />` obtient un instantané rendu avec ces accessoires. Un accessoire calculé au moment de la requête (`label="{{ name }}"`), un écart (`{{ ...props }}`) ou des enfants entre les balises ne peuvent pas être connus lors de la construction : cet îlot affiche l'instantané avec les propres valeurs par défaut du composant jusqu'à ce qu'il s'hydrate.
 - **Une page d'îles est une page CSR déguisée.** Si chaque bloc doit communiquer entre eux, choisissez plutôt le mode client.
 
 ## Prochaines étapes

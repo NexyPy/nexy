@@ -13,6 +13,7 @@ import {
   type SSGResult,
   c
 } from './utils'
+import { propsFor, readIslandProps, renderVariants } from './ssg.variants'
 
 async function loadModule(file: string): Promise<Record<string, any>> {
   const tempDir = path.resolve(process.cwd(), 'node_modules/.nexy-temp')
@@ -66,6 +67,7 @@ export async function run(): Promise<SSGResult> {
   if (!files.length) return result
 
   const snippets: Record<string, string> = {}
+  const islandProps = readIslandProps()
 
   for (const file of files) {
     const relativeDir = path.dirname(file)
@@ -102,6 +104,12 @@ export async function run(): Promise<SSGResult> {
       const entryId = getEntryId(fileName, "Default", 'svelte')
       const { css } = getAssetTags(manifest, fileName)
       writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
+      const picked = propsFor(islandProps, file, 'default', ['default'])
+      const render = async (props: Record<string, unknown>) =>
+        svelte.render(Component, { props: { ...props, children: emptySnippet } }).html
+      for (const [key, variant] of await renderVariants(file, render, picked)) {
+        writeComponent(relativeDir, `${entryId}.${key}`, `${css}${variant}`, snippets)
+      }
       result.entries.push({ file, component: 'Default', status: 'success' })
     } catch (e) {
       console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - SSR failed, using client placeholder (no server HTML)${c.reset}`)

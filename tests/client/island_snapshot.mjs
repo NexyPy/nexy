@@ -1,6 +1,6 @@
 // Renders an island's build snapshot the way the static build does, with React and Preact.
 //   node island_snapshot.mjs
-// Prints each HTML between @@ markers: react, then preact.
+// Prints each HTML between @@ markers: react, preact, then react given props.
 import { createElement } from "react";
 import { renderToString as reactToString } from "react-dom/server";
 import { h } from "preact";
@@ -15,4 +15,5 @@ const PreactSpike = ({ label = "count" }) => h("button", { type: "button" }, `${
 
 const react = await renderSnapshot(async (C, props) => reactToString(createElement(C, props)), Spike);
 const preact = await renderSnapshot(async (C, props) => preactToString(h(C, props)), PreactSpike);
-console.log(`@@${react}@@${preact}@@`);
+const given = await renderSnapshot(async (C, props) => reactToString(createElement(C, props)), Spike, { label: "clicks", open: true });
+console.log(`@@${react}@@${preact}@@${given}@@`);

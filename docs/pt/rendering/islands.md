@@ -34,7 +34,7 @@ Nexy renderiza o componente em tempo de construção, armazena seu HTML e o colo
 
 ## Ciclo de vida de renderização
 
-1. Na construção, cada componente do cliente é renderizado em HTML e escrito em `__nexy__/client/static/`.
+1. Na construção, cada componente do cliente é renderizado em HTML e escrito em `__nexy__/client/static/`: uma vez com seus próprios padrões e uma vez por conjunto de adereços literais que um arquivo `.nexy` fornece.
 2. Uma solicitação renderiza a página `.nexy`; o HTML da ilha é inserido no lugar da tag.
 3. A resposta carrega o HTML, os adereços e a diretiva como atributos.
 4. No navegador, o runtime agenda a hidratação de acordo com a diretiva.
@@ -103,6 +103,7 @@ from "@/components/Counter.tsx" import Counter
 - **Props devem ser JSON.** Eles são serializados com `json.dumps`; um valor que não pode ser serializado é eliminado e a ilha recebe `{}` - silenciosamente.
 - **Uma ilha não é um componente cliente com estado compartilhado.** Duas ilhas não compartilham estado sem um mecanismo que você mesmo adiciona.
 - **A ilha não é renderizada novamente pelo servidor.** Seu HTML é o instantâneo da construção, além de tudo o que o componente faz depois de hidratado.
+- **Apenas adereços literais alcançam o HTML do servidor.** `<Counter label="clicks" step="2" />` obtém um instantâneo renderizado com esses adereços. Uma prop calculada no momento da solicitação (`label="{{ name }}"`), um spread (`{{ ...props }}`) ou filhos entre as tags não podem ser conhecidos na construção: essa ilha mostra o snapshot com os próprios padrões do componente até que ele seja hidratado.
 - **Uma página de ilhas é uma página CSR disfarçada.** Se cada bloco precisar se comunicar entre si, escolha o modo cliente.
 
 ## Próximas etapas
