@@ -39,7 +39,8 @@ is ready.
 
 ## Rendering lifecycle
 
-1. At build, every client component is rendered to HTML and written under `__nexy__/client/static/`.
+1. At build, every client component is rendered to HTML and written under `__nexy__/client/static/`:
+   once with its own defaults, and once per set of literal props a `.nexy` file gives it.
 2. A request renders the `.nexy` page; the island's HTML is inserted in place of the tag.
 3. The response carries the HTML, the props, and the directive as attributes.
 4. In the browser, the runtime schedules hydration according to the directive.
@@ -115,6 +116,10 @@ from "@/components/Counter.tsx" import Counter
   mechanism you add yourself.
 - **The island is not re-rendered by the server.** Its HTML is the build snapshot, plus whatever the
   component does once hydrated.
+- **Only literal props reach the server HTML.** `<Counter label="clicks" step="2" />` gets a snapshot
+  rendered with those props. A prop computed at request time (`label="{{ name }}"`), a spread
+  (`{{ ...props }}`) or children between the tags cannot be known at build: that island shows the
+  snapshot with the component's own defaults until it hydrates.
 - **A page of islands is a CSR page in disguise.** If every block needs to talk to every other, pick
   client mode instead.
 
