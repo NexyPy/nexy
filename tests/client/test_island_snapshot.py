@@ -21,7 +21,7 @@ def _rendered() -> list[str]:
         cwd=HERE,
     )
     assert "@@" in done.stdout, (done.stdout + done.stderr)[-1500:]
-    return done.stdout.split("@@")[1:3]
+    return done.stdout.split("@@")[1:4]
 
 
 def test_a_react_snapshot_shows_the_defaults_of_the_component():
@@ -30,3 +30,7 @@ def test_a_react_snapshot_shows_the_defaults_of_the_component():
 
 def test_a_preact_snapshot_shows_the_defaults_of_the_component():
     assert _rendered()[1] == '<button type="button">count: 0</button>'
+
+
+def test_a_snapshot_given_props_shows_them():
+    assert _rendered()[2] == '<button type="button" class="a b">clicks: 1</button>'
