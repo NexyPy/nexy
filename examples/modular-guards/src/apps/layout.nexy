@@ -1,65 +1,18 @@
 ---
-from "@/components/header.nexy" import Header
-from "@/components/footer.nexy" import Footer
 from nexy import Vite
 
-children:prop[NexyElement]
+children: prop[NexyElement]
 ---
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Built with Nexy">
-    <title>Nexy App</title>
-    <style>html{background:#fafafa;color-scheme:light}html.dark{background:#0e0e10;color-scheme:dark}</style>
-    <script>(function () {
-  var root = document.documentElement;
-  var KEY = "nexy-theme";
-  function stored() {
-    try { return localStorage.getItem(KEY); } catch (e) { return null; }
-  }
-  function apply() {
-    var saved = stored();
-    var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-    root.classList.toggle("dark", dark);
-  }
-  function sync() {
-    var on = String(root.classList.contains("dark"));
-    document.querySelectorAll("[data-theme-toggle]").forEach(function (button) {
-      if (button.getAttribute("aria-checked") !== on) button.setAttribute("aria-checked", on);
-    });
-  }
-  apply();
-  document.addEventListener("click", function (event) {
-    var button = event.target.closest && event.target.closest("[data-theme-toggle]");
-    if (!button) return;
-    var dark = root.classList.toggle("dark");
-    try { localStorage.setItem(KEY, dark ? "dark" : "light"); } catch (e) {}
-    sync();
-  });
-  addEventListener("storage", function (event) {
-    if (event.key === KEY) { apply(); sync(); }
-  });
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
-    if (!stored()) { apply(); sync(); }
-  });
-  document.addEventListener("DOMContentLoaded", sync);
-  new MutationObserver(sync).observe(root, { childList: true, subtree: true });
-})();</script>
+    <title>Newsroom</title>
+    <meta name="description" content="A newsroom API with guards: anyone reads, a key writes, an editor publishes.">
     <Vite />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Geist:wght@400..600&family=Geist+Mono:wght@400..500&display=swap" rel="stylesheet">
 </head>
-
-<body class="nx-page">
-    <Header />
-    <main class="nx-main">
-        {{children | safe}}
-    </main>
-    <Footer />
+<body class="mx-auto max-w-2xl px-4 py-10">
+    <main>{{ children }}</main>
 </body>
-
 </html>
