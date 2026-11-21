@@ -1,15 +1,10 @@
 from nexy.decorators import Module
-from .app_controller import (
-    AboutController,
-    AppController,
-    TodosController,
-)
+
+from src.apps.app_controller import AppController
+from src.apps.stories.stories_module import StoriesModule
 
 
 @Module()
 class AppModule:
-    controllers = [
-        AppController,
-        AboutController,
-        TodosController,
-    ]
+    controllers = (AppController,)
+    imports = (StoriesModule,)  # mounted as a sub-router, with its own /api prefix
