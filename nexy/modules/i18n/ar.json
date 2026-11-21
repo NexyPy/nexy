@@ -242,7 +242,8 @@
     "local": "محلي:",
     "network": "الشبكة:",
     "ready": "جاهز:",
-    "stop": "اضغط Ctrl+C للإيقاف"
+    "stop": "اضغط Ctrl+C للإيقاف",
+    "missing_table": "جدول مفقود: شغّل nexy migrate --upgrade."
   },
   "start": {
     "broken": "تعذر تحميل {count} من ملفات المسارات: لم يبدأ الخادم.",

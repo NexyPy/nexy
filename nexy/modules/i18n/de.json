@@ -241,7 +241,8 @@
     "local": "Lokal:",
     "network": "Netzwerk:",
     "ready": "Bereit:",
-    "stop": "Zum Beenden Strg+C drücken"
+    "stop": "Zum Beenden Strg+C drücken",
+    "missing_table": "Eine Tabelle fehlt: führen Sie nexy migrate --upgrade aus."
   },
   "start": {
     "broken": "{count} Routendatei(en) konnten nicht geladen werden: Der Server wurde nicht gestartet.",
