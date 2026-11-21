@@ -1,0 +1,14 @@
+---
+metadata = {"title": "Page not found", "robots": "noindex"}
+---
+<section class="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center px-4 py-24 sm:px-6">
+  <p class="font-mono text-sm text-accent">404</p>
+  <h1 class="mt-2 text-4xl font-semibold tracking-tight">This page is not in the docs.</h1>
+  <p class="mt-4 text-foreground-second">The page may have moved, or the address is mistyped. Search for what you were looking for:</p>
+  <form action="/search" method="get" role="search" class="mt-6 flex gap-2">
+    <label for="lost-query" class="sr-only">Search the docs</label>
+    <input id="lost-query" name="q" type="search" class="h-11 min-w-0 flex-1 rounded-lg border border-border bg-background-second px-4 text-sm focus:border-accent focus:outline-none">
+    <button type="submit" class="h-11 rounded-lg bg-accent px-5 text-sm font-medium text-on-accent hover:opacity-90">Search</button>
+  </form>
+  <a href="/docs" class="mt-6 flex min-h-11 w-fit items-center text-sm underline underline-offset-4">Or start from the introduction</a>
+</section>
