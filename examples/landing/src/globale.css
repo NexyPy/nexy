@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Beacon: ink on white, or white on night blue. One colour, `signal`, means "up"; `down` and
+   `slow` only colour the status preview. Every token follows the theme. */
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --background-second: #f5f7fa;
+  --foreground: #0b1220;
+  --foreground-second: #536072;
+  --border: #e3e7ee;
+  --border-second: #cdd4df;
+  --signal: #0b7d56;
+  --signal-soft: #e3f6ee;
+  --down: #c92a2a;
+  --slow: #c98207;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #070b14;
+  --background-second: #0e1421;
+  --foreground: #eef2f8;
+  --foreground-second: #97a3b6;
+  --border: #1c2433;
+  --border-second: #2a3446;
+  --signal: #3ddc97;
+  --signal-soft: #0f2a20;
+  --down: #f26b6b;
+  --slow: #f0b44c;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-border-second: var(--border-second);
+  --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
+  --color-down: var(--down);
+  --color-slow: var(--slow);
+
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* The header stays at the top: a section reached by its link starts below it. */
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background-color: var(--signal-soft);
+  }
+}
+
+/* The changelog is Markdown: its HTML has no classes, so it is styled here. */
+@layer components {
+  .prose {
+    @apply leading-relaxed text-foreground-second;
+  }
+  .prose h1 {
+    @apply text-4xl font-semibold tracking-tight text-foreground sm:text-5xl;
+  }
+  .prose h2 {
+    @apply mt-14 border-t border-border pt-8 text-xl font-semibold text-foreground;
+  }
+  .prose h3 {
+    @apply mt-6 text-base font-semibold text-foreground;
+  }
+  .prose p,
+  .prose ul {
+    @apply mt-4;
+  }
+  .prose ul {
+    @apply list-disc space-y-2 pl-5 marker:text-border-second;
+  }
+  .prose code {
+    @apply rounded bg-background-second px-1.5 py-0.5 font-mono text-[0.85em] text-foreground;
+  }
+  .prose a {
+    @apply text-foreground underline underline-offset-4 hover:text-signal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

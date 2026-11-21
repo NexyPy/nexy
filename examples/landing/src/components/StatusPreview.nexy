@@ -1,0 +1,43 @@
+---
+from src.content.preview import RESPONSE_MS, average, monitors, sparkline
+
+colour = {"up": "bg-signal", "slow": "bg-slow", "down": "bg-down"}
+said = {"up": "up", "slow": "slow", "down": "down"}
+line = sparkline(RESPONSE_MS)
+---
+<figure class="relative overflow-hidden rounded-2xl border border-border bg-background shadow-[0_30px_80px_-40px_rgb(11_18_32/0.45)]">
+  <figcaption class="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+    <span class="flex items-center gap-2.5 text-sm font-medium">
+      <span class="relative flex size-2.5">
+        <span class="absolute inline-flex size-full animate-ping rounded-full bg-signal opacity-60 motion-reduce:animate-none"></span>
+        <span class="relative inline-flex size-2.5 rounded-full bg-signal"></span>
+      </span>
+      All systems operational
+    </span>
+    <span class="font-mono text-xs text-foreground-second">Last 45 days</span>
+  </figcaption>
+  <ul class="divide-y divide-border">
+    {% for monitor in monitors() %}
+    <li class="px-5 py-3.5">
+      <div class="flex items-baseline justify-between gap-3">
+        <span class="text-sm font-medium">{{ monitor.name }} <span class="ml-1.5 hidden font-mono text-xs font-normal text-foreground-second sm:inline">{{ monitor.host }}</span></span>
+        <span class="font-mono text-xs tabular-nums text-foreground-second">{{ monitor.uptime }}</span>
+      </div>
+      <div class="mt-2 flex h-7 gap-[2px]" role="img" aria-label="{{ monitor.name }}: {{ monitor.uptime }} up over the last 45 days">
+        {% for state in monitor.days %}
+        <span class="flex-1 rounded-[2px] {{ colour[state] }}{% if state == 'up' %} opacity-80{% endif %}" title="{{ said[state] }}"></span>
+        {% endfor %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="flex items-end justify-between gap-4 border-t border-border bg-background-second px-5 py-4">
+    <div>
+      <p class="text-xs text-foreground-second">Response time, last 24 hours</p>
+      <p class="mt-1 font-mono text-lg font-medium tabular-nums">{{ average(RESPONSE_MS) }} ms <span class="text-xs font-normal text-foreground-second">average</span></p>
+    </div>
+    <svg viewBox="-2 -2 244 52" class="h-12 w-40 sm:w-60" fill="none" aria-hidden="true" preserveAspectRatio="none">
+      <path d="{{ line }}" class="stroke-signal" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" />
+    </svg>
+  </div>
+</figure>
