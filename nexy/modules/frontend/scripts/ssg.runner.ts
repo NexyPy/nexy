@@ -3,12 +3,10 @@ import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'node:url'
 import esbuild, { type Plugin } from 'esbuild'
+import { renderSnapshot } from './ssg.snapshot'
 import {
   detectTsxFramework,
   resolveMdxFramework,
-  createPropExtractor,
-  createJinjaProps,
-  restoreJinjaVars,
   isComponent,
   getManifest,
   getAssetTags,
@@ -113,13 +111,10 @@ export async function runJsxFramework(
   fs.rmSync(tempDir, { recursive: true, force: true })
 
   const snippets: Record<string, string> = {}
-  const getPropPaths = createPropExtractor(files.map(f => path.resolve(process.cwd(), f)))
 
   const processFile = async (file: string) => {
     const relativeDir = path.dirname(file)
     const fileName = path.basename(file, path.extname(file))
-    const propPaths = getPropPaths(path.resolve(process.cwd(), file))
-    const jinjaProps = createJinjaProps(propPaths)
 
     const mod = modules.get(file)
     if (!mod) {
@@ -138,8 +133,8 @@ export async function runJsxFramework(
       const { css } = getAssetTags(manifest, fileName)
 
       try {
-        const html = await framework.render(Component, jinjaProps)
-        writeComponent(relativeDir, entryId, `${css}${restoreJinjaVars(html, propPaths)}`, snippets)
+        const html = await renderSnapshot(framework.render, Component)
+        writeComponent(relativeDir, entryId, `${css}${html}`, snippets)
         result.entries.push({ file, component, status: 'success' })
       } catch (e) {
         console.warn(`${c.yellow}warning:${c.reset} client-only: ${file} - ${message(e)}, using client placeholder (no server HTML)${c.reset}`)
