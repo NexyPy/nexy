@@ -1,0 +1,8 @@
+---
+size: prop[int] = 24
+---
+<svg width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <rect width="24" height="24" rx="6" class="fill-foreground" />
+  <circle cx="12" cy="13" r="2.2" class="fill-signal" />
+  <path d="M8.2 9.2a5.4 5.4 0 0 0 0 7.6M15.8 9.2a5.4 5.4 0 0 1 0 7.6M5.6 6.6a9 9 0 0 0 0 12.8M18.4 6.6a9 9 0 0 1 0 12.8" class="stroke-background" stroke-width="1.6" stroke-linecap="round" />
+</svg>
