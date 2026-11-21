@@ -132,3 +132,23 @@ def test_a_vite_build_that_passes_returns_the_ssg_report(monkeypatch):
     monkeypatch.setattr(build_module.Server, "vite", lambda **_o: _Vite(0))
     monkeypatch.setattr(build_module, "_read_ssg_report", lambda: entries)
     assert build_module._build_client_bundle() == entries
+
+
+def test_a_client_only_component_is_named_with_its_reason(monkeypatch, capsys):
+    monkeypatch.setattr(build_module.Config, "useCSR", False)
+    entry = {"file": "board.tsx", "status": "not_supported", "reason": "Fragment is not exported"}
+    build_module._show_summary(_result(), [entry])
+    expected = "warning: board.tsx has no server HTML: Fragment is not exported"
+    assert expected in capsys.readouterr().out
+
+
+def test_a_client_only_component_without_a_reason_is_still_named(monkeypatch, capsys):
+    monkeypatch.setattr(build_module.Config, "useCSR", False)
+    build_module._show_summary(_result(), _entries("not_supported"))
+    assert "warning: c0.tsx has no server HTML" in capsys.readouterr().out
+
+
+def test_a_rendered_component_gives_no_warning(monkeypatch, capsys):
+    monkeypatch.setattr(build_module.Config, "useCSR", False)
+    build_module._show_summary(_result(), _entries("success"))
+    assert "warning" not in capsys.readouterr().out
