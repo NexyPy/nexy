@@ -1,0 +1,64 @@
+---
+metadata = {
+    "title": "About",
+    "description": "Noor Halvorsen, independent product designer in Lisbon: ten years of banking, health, transport and retail products.",
+}
+
+experience = [
+    ("2023 to now", "Independent product designer", "Lisbon"),
+    ("2019 to 2023", "Lead designer, payments", "Kestrel Bank, Oslo"),
+    ("2016 to 2019", "Product designer", "Northline Transit, Bergen"),
+    ("2014 to 2016", "Interaction designer", "Studio Fjell, Oslo"),
+]
+
+services = [
+    ("Product design", "From the first interview to the shipped screen, for apps and services people rely on."),
+    ("Design systems", "Components and tokens your engineers build with, written down so the next team can use them."),
+    ("Research", "Interviews, field visits and usability tests, reported as decisions, not as decks."),
+]
+---
+<section class="mx-auto grid w-full max-w-6xl gap-12 px-4 pt-16 sm:px-6 sm:pt-24 lg:grid-cols-[1fr_1.3fr]">
+  <div>
+    <svg viewBox="0 0 400 500" role="img" aria-label="A drawn portrait of Noor" class="w-full max-w-sm rounded-2xl">
+      <rect width="400" height="500" fill="#e9dfcf" />
+      <circle cx="200" cy="200" r="92" fill="#3a2a20" />
+      <circle cx="200" cy="218" r="70" fill="#c98f6b" />
+      <path d="M110 200 C 120 110, 280 110, 290 200 C 270 150, 130 150, 110 200 Z" fill="#3a2a20" />
+      <rect x="182" y="282" width="36" height="96" fill="#c98f6b" />
+      <path d="M70 500 C 80 360, 320 360, 330 500 Z" fill="#a63d12" />
+    </svg>
+  </div>
+  <div>
+    <h1 class="font-display text-[clamp(3rem,8vw,6rem)] leading-none">About</h1>
+    <div class="mt-8 space-y-5 text-lg leading-relaxed text-foreground-second">
+      <p>I am Noor, a product designer in Lisbon. For ten years I have designed the products people open when something matters: their pay, their test results, the last train home.</p>
+      <p>I started in transport, drawing ticket machines and departure boards, and learned there that a design is finished when a stranger in a hurry gets it right. Banking taught me to write before I draw. Since 2023 I work with one or two teams at a time, from the first interview to the release.</p>
+      <p>I work best with small teams who ship: a product manager, a few engineers, and a problem real people have.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="services-title" class="mx-auto mt-24 w-full max-w-6xl px-4 sm:px-6">
+  <h2 id="services-title" class="border-t border-border pt-6 font-display text-4xl">What I can do for you</h2>
+  <div class="mt-10 grid gap-10 md:grid-cols-3">
+    {% for title, text in services %}
+    <div>
+      <h3 class="text-lg font-semibold">{{ title }}</h3>
+      <p class="mt-2 leading-relaxed text-foreground-second">{{ text }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section aria-labelledby="experience-title" class="mx-auto mt-24 w-full max-w-6xl px-4 sm:px-6">
+  <h2 id="experience-title" class="border-t border-border pt-6 font-display text-4xl">Experience</h2>
+  <ol class="mt-8 divide-y divide-border">
+    {% for years, role, place in experience %}
+    <li class="grid gap-1 py-5 sm:grid-cols-[12rem_1fr_auto] sm:gap-6">
+      <span class="text-sm tabular-nums text-foreground-second">{{ years }}</span>
+      <span class="font-medium">{{ role }}</span>
+      <span class="text-foreground-second">{{ place }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+</section>

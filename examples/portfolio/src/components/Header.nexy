@@ -1,0 +1,16 @@
+---
+from "@/components/ThemeToggle.nexy" import ThemeToggle
+from nexy import useIsActive
+
+links = [("/work", "Work"), ("/about", "About")]
+---
+<header class="mx-auto flex w-full max-w-6xl items-center gap-1 px-4 pt-5 sm:px-6">
+  <a href="/" class="mr-auto flex h-11 items-center font-display text-xl leading-none sm:text-2xl">Noor Halvorsen</a>
+  <nav aria-label="Main" class="flex items-center text-sm">
+    {% for href, label in links %}
+    <a href="{{ href }}" class="flex h-11 items-center px-2 text-foreground-second sm:px-3 transition-colors hover:text-foreground aria-[current=page]:text-foreground aria-[current=page]:underline aria-[current=page]:underline-offset-8"{% if useIsActive(href) %} aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+    <a href="#contact" class="flex h-11 items-center px-2 text-foreground-second sm:px-3 transition-colors hover:text-foreground">Contact</a>
+  </nav>
+  <ThemeToggle />
+</header>

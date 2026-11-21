@@ -1,0 +1,38 @@
+---
+from "@/components/ProjectCard.nexy" import ProjectCard
+from nexy import useSearchParams
+from src.content.work import DISCIPLINES, with_discipline
+
+metadata = {
+    "title": "Work",
+    "description": "Case studies in product design, design systems, research and brand, by Noor Halvorsen.",
+}
+
+# The filter is a link, read on the server: it works without JavaScript and can be shared. This
+# page has no `revalidate`: its cache would key on the path alone and serve one filter to all.
+chosen = useSearchParams().get("discipline", "")
+projects = with_discipline(chosen)
+unknown = chosen and chosen not in DISCIPLINES
+filters = [("", "All")] + list(DISCIPLINES.items())
+---
+<section class="mx-auto w-full max-w-6xl px-4 pt-16 sm:px-6 sm:pt-24">
+  <h1 class="font-display text-[clamp(3rem,8vw,6rem)] leading-none">Work</h1>
+  <p class="mt-6 max-w-xl text-lg text-foreground-second">Six projects from the last four years, each with the problem, what I did, and what changed.</p>
+
+  <nav aria-label="Filter by discipline" class="mt-10 flex flex-wrap gap-2">
+    {% for slug, label in filters %}
+    {% set active = (slug == chosen) or (slug == "" and unknown) %}
+    <a href="/work{% if slug %}?discipline={{ slug }}{% endif %}"{% if active %} aria-current="page"{% endif %} class="inline-flex h-11 items-center rounded-full border px-5 text-sm transition-colors {% if active %}border-foreground bg-foreground text-background{% else %}border-border hover:border-foreground{% endif %}">{{ label }}</a>
+    {% endfor %}
+  </nav>
+  {% if unknown %}
+  <p role="status" class="mt-4 text-sm text-foreground-second">There is no discipline called "{{ chosen | e }}", so here is every project.</p>
+  {% endif %}
+
+  <p class="mt-10 border-t border-border pt-6 text-sm text-foreground-second">{{ projects | length }} {% if projects | length == 1 %}project{% else %}projects{% endif %}</p>
+  <div class="mt-8 grid gap-x-8 gap-y-16 md:grid-cols-2">
+    {% for project in projects %}
+    <ProjectCard project="{{ project }}" />
+    {% endfor %}
+  </div>
+</section>

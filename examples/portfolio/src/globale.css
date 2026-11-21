@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Paper and ink: a warm white, a near black, and one rust colour for links and the few things
+   that ask to be pressed. The work brings its own colours; the site stays quiet around it. */
+:root {
+  color-scheme: light;
+  --background: #f7f4ee;
+  --background-second: #efeae0;
+  --foreground: #1c1a16;
+  --foreground-second: #655f55;
+  --border: #e2dccf;
+  --accent: #a63d12;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #13120f;
+  --background-second: #1c1a16;
+  --foreground: #f2eee6;
+  --foreground-second: #a8a194;
+  --border: #2d2a24;
+  --accent: #f08a5d;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-background-second: var(--background-second);
+  --color-foreground: var(--foreground);
+  --color-foreground-second: var(--foreground-second);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background-color: var(--accent);
+    color: var(--background);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+  }
+}

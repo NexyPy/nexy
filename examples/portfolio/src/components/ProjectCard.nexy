@@ -1,0 +1,16 @@
+---
+project: prop[object]
+# The first card of the home page is wide; the others share a row.
+wide: prop[bool] = False
+---
+<a href="/work/{{ project.slug }}" class="group block">
+  <div class="overflow-hidden rounded-2xl bg-background-second">
+    <img src="{{ project.cover }}" alt="" width="1600" height="1000" loading="lazy" class="w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] {% if wide %}aspect-[16/9]{% else %}aspect-[16/10]{% endif %}">
+  </div>
+  <div class="mt-4 flex items-baseline justify-between gap-4">
+    <h3 class="font-display text-3xl leading-tight {% if wide %}sm:text-4xl{% endif %}">{{ project.title }}</h3>
+    <span class="shrink-0 text-sm tabular-nums text-foreground-second">{{ project.year }}</span>
+  </div>
+  <p class="mt-1 max-w-xl text-foreground-second">{{ project.summary }}</p>
+  <p class="mt-3 text-xs uppercase tracking-[0.14em] text-foreground-second">{{ project.disciplines | join(", ") }}</p>
+</a>

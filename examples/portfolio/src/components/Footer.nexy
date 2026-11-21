@@ -1,0 +1,21 @@
+---
+from "@/components/copy-email.svelte" import CopyEmail
+from "@/components/local-time.svelte" import LocalTime
+---
+<footer id="contact" class="mt-24 border-t border-border">
+  <div class="mx-auto grid w-full max-w-6xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1.4fr_1fr] md:items-end">
+    <div>
+      <h2 class="font-display text-5xl leading-[1.05] sm:text-6xl">Have a project in mind?</h2>
+      <p class="mt-4 max-w-md text-foreground-second">Write a few lines about it. I answer every email within two working days.</p>
+      <div class="mt-8"><CopyEmail directive="client:visible" /></div>
+    </div>
+    <div class="flex flex-col gap-3 md:items-end md:text-right">
+      <LocalTime directive="client:visible" />
+      <p class="text-sm text-foreground-second">Booking projects from March 2027.</p>
+    </div>
+  </div>
+  <div class="mx-auto flex w-full max-w-6xl flex-col gap-2 border-t border-border px-4 py-6 text-sm text-foreground-second sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <p>Noor, her clients and their numbers are made up: this is the portfolio example of Nexy.</p>
+    <a href="https://github.com/NexyPy/nexy/tree/main/examples/portfolio" class="flex min-h-11 items-center text-foreground underline underline-offset-4 hover:text-accent">The code of this site</a>
+  </div>
+</footer>
