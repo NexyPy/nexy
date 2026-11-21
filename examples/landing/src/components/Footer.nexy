@@ -1,27 +1,23 @@
 ---
-from "@/components/Container.nexy" import Container
-from "@/components/LinePattern.nexy" import LinePattern
+from "@/components/Logo.nexy" import Logo
 
-links = [
-    ("Docs", "https://github.com/NexyPy/nexy#readme"),
-    ("GitHub", "https://github.com/NexyPy/nexy"),
-    ("Releases", "https://github.com/NexyPy/nexy/releases"),
-]
+links = [("/#features", "Features"), ("/#pricing", "Pricing"), ("/#faq", "FAQ"), ("/changelog", "Changelog")]
 ---
-<footer class="relative overflow-hidden border-t border-paper/10 bg-ink py-14 text-paper">
-  <LinePattern side="left" />
-  <Container class_name="relative flex flex-wrap items-center justify-between gap-6">
-    <div class="flex items-center gap-5">
-      <img src="/nexy.svg" alt="Nexy" class="h-5 invert" />
-      <p class="text-sm text-paper/65">Open source under the MIT license.</p>
+<footer class="border-t border-border">
+  <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-start md:justify-between">
+    <div class="max-w-sm">
+      <a href="/" class="flex items-center gap-2.5 font-semibold tracking-tight"><Logo size="22" /> Beacon</a>
+      <p class="mt-3 text-sm leading-relaxed text-foreground-second">
+        Beacon is a made-up product: the landing example of
+        <a href="https://github.com/NexyPy/nexy" class="text-foreground underline underline-offset-4 hover:text-signal">Nexy</a>.
+        The form keeps your email in a local SQLite file and sends nothing.
+      </p>
     </div>
-    <ul class="flex flex-wrap gap-6 font-mono text-xs uppercase tracking-[0.04em]">
-      <li><a href="/todos" class="text-paper/65 transition-colors hover:text-paper">Todos</a></li>
-      {% for label, href in links %}
-      <li>
-        <a href="{{ href }}" target="_blank" rel="noopener noreferrer" class="text-paper/65 transition-colors hover:text-paper">{{ label }}</a>
-      </li>
+    <nav aria-label="Footer" class="grid grid-cols-2 gap-x-10 gap-y-2 text-sm sm:grid-cols-3">
+      {% for href, label in links %}
+      <a href="{{ href }}" class="py-1 text-foreground-second hover:text-foreground">{{ label }}</a>
       {% endfor %}
-    </ul>
-  </Container>
+      <a href="https://github.com/NexyPy/nexy/tree/main/examples/landing" class="py-1 text-foreground-second hover:text-foreground">The code</a>
+    </nav>
+  </div>
 </footer>
