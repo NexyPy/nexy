@@ -75,13 +75,15 @@ export async function run(): Promise<SSGResult> {
     try {
       mod = await loadModule(file)
     } catch (err) {
-      result.entries.push({ file, component: '*', status: 'not_supported' })
+      const reason = err instanceof Error ? err.message : String(err)
+      result.entries.push({ file, component: '*', status: 'not_supported', reason })
       continue
     }
 
     const Component = mod.default
     if (!Component) {
-      result.entries.push({ file, component: '*', status: 'not_supported' })
+      const reason = 'it has no default export'
+      result.entries.push({ file, component: '*', status: 'not_supported', reason })
       continue
     }
 
@@ -106,7 +108,8 @@ export async function run(): Promise<SSGResult> {
       const entryId = getEntryId(fileName, 'Default', 'svelte')
       const { css } = getAssetTags(manifest, fileName)
       writeComponent(relativeDir, entryId, `${css}<div id="${entryId}-root"></div>`, snippets)
-      result.entries.push({ file, component: 'Default', status: 'not_supported' })
+      const reason = e instanceof Error ? e.message : String(e)
+      result.entries.push({ file, component: 'Default', status: 'not_supported', reason })
     }
   }
 
