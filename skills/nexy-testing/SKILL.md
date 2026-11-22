@@ -21,10 +21,10 @@ One assertion per test. Name it `test_<thing>_<scenario>`. A test that cannot fa
 | A fresh configuration | `TestClient(AppServer().run())` from `nexy.modules.routers.app` |
 | An action | call the function directly; read the generated path from the page for the HTTP test |
 
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 A `.nexy` component renders in a test with `nexy.testing.render("src/components/button.nexy",
 label="Save")`.
-<!-- /nexy:server -->
+<!-- /nexy:nexy -->
 <!-- nexy:web -->
 A client component is tested with vitest and the testing library of the framework (`nx test
 --client`).
