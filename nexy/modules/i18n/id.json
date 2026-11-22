@@ -241,6 +241,7 @@
     "launch_failed": "Tidak dapat memulai server",
     "local": "Lokal:",
     "network": "Jaringan:",
+    "docs": "Docs API:",
     "ready": "Siap:",
     "stop": "tekan Ctrl+C untuk berhenti",
     "missing_table": "Sebuah tabel tidak ada: jalankan nexy migrate --upgrade."
