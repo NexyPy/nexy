@@ -265,3 +265,23 @@ class TestDetectKind:
     def test_a_framework_in_the_config_means_views(self, tmp_path):
         (tmp_path / "nexyconfig.py").write_text("    useFF = vue()\n", encoding="utf-8")
         assert detect_profile(tmp_path).kind == "web"
+
+
+class TestDetectNexyFiles:
+    """`nx skills` reads `src/`: only a project that has a `.nexy` file is told about them."""
+
+    def _project(self, root: Path, *pages: str) -> Path:
+        (root / "nexyconfig.py").write_text("    useFF = react()\n", encoding="utf-8")
+        for page in pages:
+            (root / "src/routes" / page).parent.mkdir(parents=True, exist_ok=True)
+            (root / "src/routes" / page).write_text("x", encoding="utf-8")
+        return root
+
+    def test_a_project_without_nexy_files_is_detected(self, tmp_path):
+        assert detect_profile(self._project(tmp_path, "index.md", "layout.tsx")).nexy_files is False
+
+    def test_one_nexy_file_anywhere_in_src_is_enough(self, tmp_path):
+        assert detect_profile(self._project(tmp_path, "index.md", "docs/page.nexy")).nexy_files
+
+    def test_a_project_without_src_falls_back_to_its_mode(self, tmp_path):
+        assert detect_profile(self._project(tmp_path)).nexy_files
