@@ -82,8 +82,8 @@ export function getDocumentRegions(document: vscode.TextDocument): RegionInfo[] 
   const tmplText = getTemplate(fullText);
   const templateStart = fullText.indexOf(tmplText);
   if (templateStart !== -1) {
-    const styleRegex = /<style\b(?:\s+lang\s*=\s*["'](?<lang>scss|sass|less|postcss)["'])?[^>]*>(?<content>[\s\S]*?)<\/style>/gi;
-    const scriptRegex = /<script\b(?:\s+lang\s*=\s*["'](?<lang>ts|tsx|jsx|rust)["'])?[^>]*>(?<content>[\s\S]*?)<\/script>/gi;
+    const styleRegex = /<style\b(?:\s+lang\s*=\s*["'](?<lang>scss|sass|less|postcss)["'])?[^>]*>(?<content>[\s\S]*?)<\/style\s*>/gi;
+    const scriptRegex = /<script\b(?:\s+lang\s*=\s*["'](?<lang>ts|tsx|jsx|rust)["'])?[^>]*>(?<content>[\s\S]*?)<\/script\s*>/gi;
 
     let m: RegExpExecArray | null;
     while ((m = styleRegex.exec(tmplText)) !== null) {
