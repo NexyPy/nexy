@@ -9,7 +9,7 @@
 <!-- router:fbr,custom -->
 एक पृष्ठ `src/routes/` के अंतर्गत एक फ़ाइल है, और इसका पथ इसका यूआरएल है। नोट्स पेज बनाएं:
 
-```nexy filename="src/routes/notes/index.nexy"
+```nexy filename=""
 ---
 notes = ["Buy milk", "Ship Nexy"]
 ---
@@ -163,4 +163,4 @@ Tailwind, जिसे स्टार्टर उपयोग करता ह
 ## अगले चरण
 
 - [भाग 3: गतिशील मार्ग और एक एपीआई](dynamic-routes.md)
-- [.nexy फ़ाइलें](../views/nexy/README.md): प्रॉप्स, घटक और शैलियाँ
+- [.nexy फ़ाइलें](../views/nexy/README.md): props, घटक और शैलियाँ

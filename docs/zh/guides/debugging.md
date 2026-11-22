@@ -112,4 +112,4 @@ debugpy 可能会警告“正在使用冻结的模块”。如果错过了标准
 
 - [故障排除](troubleshooting.md)：人们遇到的第一个问题
 - [测试](testing.md)：发现错误后在测试中重现该错误
-- [.nexy 文件](../views/nexy/README.md)：frontmatter、道具和模板
+- [.nexy 文件](../views/nexy/README.md)：frontmatter、props 和模板

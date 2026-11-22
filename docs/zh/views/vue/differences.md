@@ -88,7 +88,7 @@ export default defineConfig({
 
 ### 动态细分
 
-URL 参数作为 props 到达页面。您可以使用 `defineProps` 声明它们：
+URL 参数到达页面时为 props。您可以使用 `defineProps` 声明它们：
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -148,7 +148,7 @@ from "@/components/Counter.vue" import Counter
 
 ### 补水指令
 
-使用 `directive` 道具来控制岛屿何时水合：
+使用 `directive` prop 来控制岛屿何时水合：
 
 - `client:load`（默认）：立即
 - `client:idle`：当浏览器空闲时
@@ -159,7 +159,7 @@ from "@/components/Counter.vue" import Counter
 
 ### 调用动作
 
-使用 `useAction` 挂钩来管理操作调用的状态。在 Vue 中，返回的状态（`pending`、`data`、`error`）是计算的引用。
+使用 `useAction` 挂钩来管理操作调用的状态。在 Vue中，返回的状态（`pending`、`data`、`error`）是计算的引用。
 
 ```vue
 <script setup lang="ts">

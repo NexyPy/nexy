@@ -135,7 +135,7 @@ users = [{"name": "Ada"}, {"name": "Alan"}]
 
 ## Eine Basisvorlage
 
-```html filename="templates/base.html"
+```html filename=""
 <!DOCTYPE html>
 <html>
   <body>{% block content %}{% endblock %}</body>
@@ -162,9 +162,9 @@ children: prop[NexyElement]
 {% endmacro %}
 ```
 
-Eine Komponente ist eine `.nexy`-Datei mit Requisiten, die in die Frontmatter importiert wird:
+Eine Komponente ist eine `.nexy`-Datei mit props, importiert in die Frontmatter:
 
-```nexy filename="src/components/Card.nexy"
+```nexy filename=""
 ---
 title: prop[str]
 ---

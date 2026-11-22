@@ -11,9 +11,9 @@ nx test --no-server --client  # vitest only
 
 ## Qu'est-ce qui court
 
-| Partie | Commande | Condition |
+| Partie | Commande | État |
 |---|---|---|
-| Le serveur | `pytest` | s'exécute sur `tests/` lorsqu'il existe, sinon à la racine du projet ; ignoré avec un avertissement lorsque pytest n'est pas installé |
+| Serveur | `pytest` | s'exécute sur `tests/` lorsqu'il existe, sinon à la racine du projet ; ignoré avec un avertissement lorsque pytest n'est pas installé |
 | Client | `npx vitest run` | uniquement avec `--client`, et uniquement lorsque `vitest.config.ts` existe ou que `vitest` apparaît dans `package.json` |
 
 Il n’y a pas d’exécuteur de bout en bout intégré. Pilotez le serveur avec `TestClient` et ajoutez vous-même Playwright ou Cypress pour le comportement du navigateur.
@@ -93,7 +93,7 @@ Un appel avec JSON répond avec le résultat, et `422` avec les champs invalides
 
 ## Tester un composant `.nexy`
 
-`nexy.testing.render` compile un composant, avec les composants qu'il importe, et renvoie son code HTML. Les accessoires sont des arguments de mots-clés et `children=` remplit l'emplacement :
+`nexy.testing.render` compile un composant, avec les composants qu'il importe, et renvoie son code HTML. Props sont des arguments de mots-clés et `children=` remplit l'espace :
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -142,4 +142,4 @@ Travailler sur Nexy lui-même utilise différentes commandes : voir [CONTRIBUTIN
 
 - [CLI](../reference/cli.md) : chaque indicateur de `nx test`
 - [API](../routing/fbr/handlers/README.md) : ce que renvoie un point de terminaison
-- [Déployer](../deployment/README.md) : compilez avant de tester dans CI
+- [Déployer](../deployment/README.md) : construire avant de tester dans CI

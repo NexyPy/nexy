@@ -48,7 +48,7 @@ Uma página é o próprio arquivo, nomeado de acordo com sua URL:
 <h1>{page.params.slug}</h1>
 ```
 
-Os segmentos chegam à página como adereços:
+Os segmentos chegam à página como props:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">

@@ -54,7 +54,7 @@ def search():
     return {"q": q, "page": page}
 ```
 
-لا يوجد `request` عالمي: معلمة الاستعلام هي معلمة دالة، تم تحويلها والتحقق من صحتها:
+لا يوجد `request` عمومي: معلمة الاستعلام هي معلمة دالة، تم تحويلها والتحقق من صحتها:
 
 ```python filename="src/routes/api/search.py"
 async def GET(q: str = "", page: int = 1):
@@ -162,7 +162,7 @@ children: prop[NexyElement]
 {% endmacro %}
 ```
 
-المكون هو ملف `.nexy` مع الدعائم، المستوردة في المادة الأمامية:
+المكون هو ملف `.nexy` مع props، مستورد في المادة الأمامية:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -243,7 +243,7 @@ def add_header(response):
     return response
 ```
 
-أ `middleware.py` يرى الطلب قبل المسار والاستجابة بعده:
+`middleware.py` يرى الطلب قبل المسار والاستجابة بعده:
 
 ```python filename="src/routes/middleware.py"
 from nexy.http import Request
@@ -267,7 +267,7 @@ def add_note():
     return redirect(url_for("notes"))
 ```
 
-الإجراء هو وظيفة Python يتم إرسال النموذج إليها. يمنحها Nexy مسارًا، ويقرأ حقول النموذج كمعلمات لها، ويرسل الزائر مرة أخرى إلى الصفحة مع `303`:
+الإجراء هو وظيفة Python يتم نشر النموذج إليها. يمنحها Nexy مسارًا، ويقرأ حقول النموذج كمعلمات لها، ويرسل الزائر مرة أخرى إلى الصفحة مع `303`:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action

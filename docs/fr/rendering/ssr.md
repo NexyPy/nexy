@@ -193,7 +193,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` exécute ce modèle une fois, avec `slug` défini sur `hello`. Une seconde requête le relance : rien n'est conservé entre les deux. La chaîne de requête n'est pas un accessoire - lisez-la avec les hooks dans [navigation](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` exécute ce modèle une fois, avec `slug` défini sur `hello`. Une seconde requête le relance : rien n'est conservé entre les deux. La chaîne de requête n'est pas un prop - lisez-la avec les hooks dans [navigation](../routing/fbr/navigation/hooks.md).
 <!-- /router -->
 
 <!-- router:modular -->
@@ -215,13 +215,13 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello/` exécute cette vue une fois, avec `slug` défini sur `hello`. Une seconde requête le relance : rien n'est conservé entre les deux. La chaîne de requête n'est pas un accessoire - lisez-la avec `useSearchParams`.
+`GET /blog/hello/` exécute cette vue une fois, avec `slug` défini sur `hello`. Une seconde requête le relance : rien n'est conservé entre les deux. La chaîne de requête n'est pas un prop - lisez-la avec `useSearchParams`.
 <!-- /router -->
 
 ## Limites
 
 - **Un rendu par requête.** Deux visiteurs dans la même seconde paient chacun pour le rendu et pour les requêtes qui le sous-tendent.
-- **Pas de cache.** Il n'y a pas de cache de réponses partagées à réchauffer : avec les routes de fichiers, [ISR](isr.md) en ajoute une, par URL.
+- **Pas de cache.** Il n'y a pas de cache de réponses partagé à réchauffer : avec les routes de fichiers, [ISR](isr.md) en ajoute un, par URL.
 - **Le streaming n'aide qu'un composant qui produit.** Une requête lente en haut de la page retarde toujours le premier octet.
 - **Pas de sortie statique.** En mode serveur, rien n'est figé à la construction : il n'y a pas de mode SSG, ni de commande d'exportation. Le mode client pré-rend ses routes, y compris une route dynamique : voir [Pré-rendu d'une route dynamique](csr.md#pre-render-a-dynamic-route).
 - **L'échappement automatique est désactivé** dans les modèles `.nexy`. Échappez aux valeurs non fiables avec `| e`.
@@ -253,7 +253,7 @@ q = useSearchParams().get("q", "")
 <!-- router:fbr,custom -->
 - [ISR](isr.md) : met en cache cette page par URL
 <!-- /router -->
-- [Îles](islands.md) : conserver SSR et rendre un widget interactif
+- [Îles](islands.md) : conservez SSR et rendez un widget interactif
 <!-- router:fbr,custom -->
 - [CSR](csr.md) : navigation manuelle vers le navigateur
 <!-- /router -->

@@ -162,7 +162,7 @@ children: prop[NexyElement]
 {% endmacro %}
 ```
 
-एक घटक प्रॉप्स के साथ एक `.nexy` फ़ाइल है, जिसे फ्रंटमैटर में आयात किया जाता है:
+एक घटक एक `.nexy` फ़ाइल है जिसमें props है, जो फ्रंटमैटर में आयातित है:
 
 ```nexy filename="src/components/Card.nexy"
 ---

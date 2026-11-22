@@ -194,7 +194,7 @@ Dos decisiones independientes, a menudo confundidas:
 | Modo cliente | `useCSR = True`: los archivos framework son las rutas y la navegación se realiza en el navegador |
 | RSS, ISR, RSC, islas | cuatro modos de renderizado, decididos por página excepto CSR, que es por proyecto ([renderizado](../rendering/README.md)) |
 | Hidratación | el navegador adjunta un marco al HTML que el servidor ya envió ([islas](../rendering/islands.md)) |
-| Accesorios | los valores que un padre pasa a un componente, declarados `name: prop[type]` en un archivo `.nexy` (archivos [.nexy](../views/nexy/README.md)) |
+| Props | los valores que un padre pasa a un componente, declarados `name: prop[type]` en un archivo `.nexy` (archivos [.nexy](../views/nexy/README.md)) |
 
 Una página en modo servidor con una isla: el servidor representa la página, el navegador hidrata el gráfico solo cuando se desplaza a la vista.
 

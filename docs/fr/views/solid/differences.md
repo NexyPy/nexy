@@ -73,7 +73,7 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - Appelez le signal, `count()`, à l'intérieur du JSX, pas dans une variable au-dessus.
-- Lisez les accessoires comme `props.start`. La déstructuration `{ start }` lit la valeur une fois et perd les mises à jour.
+- Lisez props comme `props.start`. La déstructuration `{ start }` lit la valeur une fois et perd les mises à jour.
 - Solid écrit les attributs HTML : `class`, `for`, `charset`, et non `className`.
 
 ## Règles
@@ -169,7 +169,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Directives d'hydratation
 
-Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate :
+Utilisez les `directive` prop pour contrôler quand l'île s'hydrate :
 
 - `client:load` (par défaut) : immédiatement
 - `client:idle` : lorsque le navigateur est inactif
@@ -222,4 +222,4 @@ Tous les hooks de localisation renvoient des accesseurs :
 ## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et la build client
+- [Frontend](../../guides/frontend.md) : Vite et la version client

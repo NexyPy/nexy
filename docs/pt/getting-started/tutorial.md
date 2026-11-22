@@ -2,7 +2,7 @@
 
 O tutorial Nexy cria um aplicativo de notas a partir de uma pasta vazia para uma construção de produção, uma parte de cada vez, e cada parte termina com um aplicativo em execução.
 
-Novo no Nexy? O [Início rápido](quick-start.md) mostra ele funcionando em três minutos; volte aqui para saber como funciona.
+Novo no Nexy? O [Quick start](quick-start.md) mostra-o funcionando em três minutos; volte aqui para saber como funciona.
 
 ## Como funciona o tutorial
 
@@ -20,7 +20,7 @@ Novo no Nexy? O [Início rápido](quick-start.md) mostra ele funcionando em trê
 | [1. Crie o projeto](../tutorial/create-the-project.md) | um projeto que funciona | `nexy new`, `nexy dev` |
 | [2. Páginas e layouts](../tutorial/pages-and-layouts.md) | a página de notas | páginas, visualizações, o layout |
 | [3. Rotas dinâmicas e uma API](../tutorial/dynamic-routes.md) | `/notes/1` e `/api/notes` | Segmentos de URL, rotas JSON, `notFound` |
-| [4. Componentes](../tutorial/components.md) | um cartão por nota | `.nexy` componentes e seus adereços |
+| [4. Componentes](../tutorial/components.md) | um cartão por nota | `.nexy` componentes e seus props |
 
 ### Unidade 2: dados
 
@@ -44,7 +44,7 @@ Novo no Nexy? O [Início rápido](quick-start.md) mostra ele funcionando em trê
 
 | Parte | O que você adiciona | O que você aprende |
 |---|---|---|
-| [13. Pesquise as notas enquanto você digita](../tutorial/search-the-notes.md) | uma caixa de pesquisa que filtra conforme você digita | React ilhas, adereços de Python |
+| [13. Pesquise as notas enquanto você digita](../tutorial/search-the-notes.md) | uma caixa de pesquisa que filtra conforme você digita | React ilhas, props de Python |
 | [14. Marque uma nota sem recarregar a página](../tutorial/tick-a-note.md) | um botão Concluído em cada nota | aprimoramento progressivo, uma ação para uma forma e para `fetch` |
 
 ### Em seguida

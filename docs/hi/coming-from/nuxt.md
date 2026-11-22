@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-खंड पृष्ठ पर प्रॉप्स के रूप में पहुंचते हैं:
+खंड पृष्ठ पर props के रूप में पहुंचते हैं:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -422,7 +422,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
 | `npx nuxi init` | `nx new`, टेम्पलेट `web-fbr-vue` |
 | `nuxt dev` | `nx dev` |
 | `nuxt build`, फिर `node .output/server/index.mjs` | `nx build`, फिर `nx start` |
-| `nuxt generate` | कोई स्थिर निर्यात नहीं: `nx start` पृष्ठों पर काम करता है |
+| `nuxt generate` | कोई स्थैतिक निर्यात नहीं: `nx start` पृष्ठों पर कार्य करता है |
 | `public/` | `public/`, `/` में सेवा दी गई |
 
 ## अगले चरण

@@ -194,7 +194,7 @@ Deux décisions indépendantes, souvent confondues :
 | Mode client | `useCSR = True` : les fichiers framework sont les itinéraires et la navigation se fait dans le navigateur |
 | SSR, ISR, CSR, îles | quatre modes de rendu, décidés par page sauf CSR, qui est par projet ([rendu](../rendering/README.md)) |
 | Hydratation | le navigateur attachant un framework au HTML que le serveur a déjà envoyé ([îlots](../rendering/islands.md)) |
-| Accessoires | les valeurs qu'un parent transmet à un composant, déclarées `name: prop[type]` dans un fichier `.nexy` ([fichiers .nexy](../views/nexy/README.md)) |
+| Props | les valeurs qu'un parent transmet à un composant, déclarées `name: prop[type]` dans un fichier `.nexy` ([fichiers .nexy](../views/nexy/README.md)) |
 
 Une page en mode serveur avec un îlot : le serveur restitue la page, le navigateur hydrate le graphique uniquement lorsqu'il défile.
 

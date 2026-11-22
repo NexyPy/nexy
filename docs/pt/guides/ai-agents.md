@@ -4,7 +4,7 @@ Um projeto feito com `nx new` carrega as regras que um agente de codificação p
 
 ## O que `nx new` adiciona
 
-| Arquivo | Lido por | Retém |
+| Arquivo | Leia por | Detém |
 |---|---|---|
 | `AGENTS.md` | Codex, OpenCode | a pilha do projeto, a ordem de trabalho, as regras, a lista de habilidades |
 | `CLAUDE.md` | Claude Code | uma linha, `@AGENTS.md`, então ambos leem o mesmo texto |
@@ -19,10 +19,10 @@ Para pular tudo isso, crie o projeto com `nx new --no-agents`.
 
 | Habilidade | Capas |
 |---|---|
-| `nexy-principles` | ordem de trabalho, regras de código, regras de redação |
-| `nexy-ux-audit` | a experiência e a auditoria de arquitetura de informação a serem executadas antes de qualquer visão |
+| `nexy-principles` | ordem de trabalho, regras de código, regras de escrita |
+| `nexy-ux-audit` | a auditoria de experiência e arquitetura de informação a ser executada antes de qualquer visão |
 | `nexy-project` | modos, pastas, convenções de arquivos, configuração, comandos |
-| `nexy-file` | `.nexy` páginas, adereços, ganchos, ilhas |
+| `nexy-file` | `.nexy` páginas, props, ganchos, ilhas |
 | `nexy-markdown` | `.md` e `.mdx` conteúdo |
 | `nexy-react`, `nexy-preact`, `nexy-solid`, `nexy-vue`, `nexy-svelte` | código idiomático para a estrutura do cliente |
 | `nexy-styling` | Tailwind, UnoCSS ou CSS simples e os tokens de design |
@@ -61,32 +61,32 @@ As habilidades dizem ao agente como trabalhar; eles não tornam sua saída corre
 - Execute `nx check`, `nx test` e `nx build`. As competências exigem isso e que os resultados sejam relatados, e não resumidos.
 - Dependências de auditoria que o agente adiciona (`nexy-security` explica como).
 
-Os exemplos nas habilidades são verificados pelos próprios testes do Nexy: as importações existem, os campos de configuração existem, os comandos existem, as análises Python. Isso detecta desvios, não erros de julgamento.
+Os exemplos nas habilidades são verificados pelos próprios testes do Nexy: as importações existem, os campos de configuração existem, os comandos existem, as Python análises. Isso detecta desvios, não erros de julgamento.
 
 ## Mapa
 
 Um agente responde mais rápido quando sabe qual página contém a resposta.
 
-| Você precisa de | Leia |
+| Você precisa | Leia |
 |---|---|
-| o produto, em uma página | [README](../README.md) |
+| o produto, em uma página | [LEIA-ME](../README.md) |
 | para executar um projeto | [primeiros passos](../getting-started/quick-start.md) |
 | URL de um arquivo | [roteamento](../routing/README.md) |
 | segmentos dinâmicos, layouts, páginas de erro | [páginas](../routing/fbr/pages/README.md) |
-| o caminho atual, consulta, cookies, sessão | [hooks](../routing/fbr/navigation/hooks.md) |
-| para editar uma página | [arquivos .nexy](../views/nexy/README.md) ou [visualizações](../views/README.md) |
+| o caminho atual, consulta, cookies, sessão | [ganchos](../routing/fbr/navigation/hooks.md) |
+| para editar uma página | [Arquivos .nexy](../views/nexy/README.md) ou [visualizações](../views/README.md) |
 | Markdown ou MDX | [redução](../views/nexy/markdown.md) |
 | ajudantes HTML integrados | [componentes](../views/nexy/components.md) |
 | modo de renderização | [SSR](../rendering/ssr.md), [CSR](../rendering/csr.md), [ISR](../rendering/isr.md) |
-| um WebSocket | [websocket](../routing/fbr/realtime/websocket.md) |
+| um WebSocket | [soquete da web](../routing/fbr/realtime/websocket.md) |
 | controladores e módulos | [modular](../routing/modular/README.md) |
-| para adicionar um endpoint | [API](../routing/fbr/handlers/README.md) |
+| para adicionar um ponto final | [API](../routing/fbr/handlers/README.md) |
 | um formulário postado em uma página | [ações](actions.md) |
 | por que uma solicitação falhou e qual página a responde | [exceções](../reference/exceptions.md) |
 | traduções | [i18n](i18n.md) |
 | um campo de configuração | [configuração](../reference/config.md) |
 | para testar o aplicativo | [testando](testing.md) |
-| a compilação do cliente | [frontend](frontend.md) |
+| a construção do cliente | [interface](frontend.md) |
 
 ## Invariantes do projeto
 
@@ -105,11 +105,11 @@ nx start    # production server
 nx test     # pytest, --client adds vitest
 ```
 
-Quando os documentos e o código discordam, confie no código e diga o seguinte: `nexy/core/config.py` contém todas as opções, `nexy/modules/routers/fbrouter/` as regras de roteamento, `nexy/modules/compiler/` como `.nexy` arquivos se tornam módulos.
+Quando os documentos e o código discordam, confie no código e diga o seguinte: `nexy/core/config.py` contém todas as opções, `nexy/modules/routers/fbrouter/` as regras de roteamento, `nexy/modules/compiler/` como `.nexy` os arquivos se tornam módulos.
 
 ## Próximas etapas
 
 - [CLI](../reference/cli.md): `nx new` e `nx skills`
 - [Convenções de arquivo](../reference/file-conventions.md): nomes reservados e regras de roteamento
 - [Glossário](../reference/glossary.md): as palavras nas quais essas regras se baseiam
-- [Segurança](../reference/security.md): a versão atinge os pontos da habilidade de segurança
+- [Segurança](../reference/security.md): a versão leva os pontos de habilidade de segurança para

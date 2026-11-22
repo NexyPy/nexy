@@ -158,7 +158,7 @@ Un composant Vue, Svelte ou Solid est monté de la même manière, avec la synta
 - Un état par URL : deux composants qui lisent `/api/users` envoient une requête et affichent les mêmes données.
 - `refresh()` conserve le `data` actuel jusqu'à ce que la nouvelle réponse arrive, et deux actualisations simultanées envoient une demande.
 - Une réponse `204` donne `data` comme `undefined`.
-- La requête est envoyée dans le navigateur, après le montage du composant. Les données que le premier HTML doit contenir appartiennent aux accessoires de page, rendus sur le serveur.
+- La requête est envoyée dans le navigateur, après le montage du composant. Les données que le premier HTML doit contenir appartiennent à la page props, rendue sur le serveur.
 
 ## Erreurs de l'itinéraire
 

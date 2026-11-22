@@ -112,13 +112,13 @@ Controladores y módulos.
 ### Vistas nexy
 | Página | que haras |
 |---|---|
-| [Archivos .nexy](views/nexy/README.md) | Escribe una página con Python, Jinja2 y accesorios. |
+| [Archivos .nexy](views/nexy/README.md) | Escribe una página con Python, Jinja2 y props |
 | [Componentes](views/nexy/components.md) | Utilice `Image`, `Link`, `Audio`, `Video` y `Import` |
 
 ### Páginas y diseños en archivos {fbr,custom}
 | Página | lo que define |
 |---|---|
-| [Páginas frontales](views/frontend/pages.md) | Un archivo, una ruta: accesorios, renderizado, metadatos |
+| [Páginas frontales](views/frontend/pages.md) | Un archivo, una ruta: props, renderizado, metadatos |
 | [Diseños de interfaz](views/frontend/layouts.md) | La estructura del documento, el anidamiento y lo que un diseño no puede hacer |
 | [diseño.nexy](views/nexy/layouts.md) | Escribir el diseño en modo servidor |
 | [Markdown y MDX](views/nexy/markdown.md) | Escribir páginas de contenido |
@@ -214,7 +214,7 @@ Las mismas tareas, escritas en el framework que conoces y luego en Nexy.
 ### Marcos de trabajo completos {fbr}
 | Página | que haras |
 |---|---|
-| [Desde Next.js](coming-from/nextjs.md) | Mantenga sus páginas React y mueva el código del servidor a Python |
+| [Desde Next.js](coming-from/nextjs.md) | Conserve sus páginas React y mueva el código del servidor a Python |
 | [Desde Remix](coming-from/remix.md) | Convierta cargadores y acciones en Python controladores y acciones |
 | [Desde Nuxt](coming-from/nuxt.md) | Conserva tus Vue páginas y mueve `server/` a Python |
 | [De SvelteKit](coming-from/sveltekit.md) | Conserva tus páginas Svelte y mueve cargas, acciones y enlaces a Python |

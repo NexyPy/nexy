@@ -44,13 +44,13 @@ export default function NoteSearch({ notes }: { notes: Note[] }) {
 
 React menulis `{note.text}` sebagai teks: catatan `<b>x</b>` menunjukkan tanda kurung, tanpa `| e` untuk ditambahkan.
 
-`found` hanya dihitung setelah sesuatu diketik, dan itu penting untuk pembangunan: `nx build` merender setiap pulau satu kali ke HTML, dengan placeholder, bukan propsnya. Komponen yang membaca prop daftar selama render pertama tersebut mendapatkan placeholder alih-alih daftar, dan tidak mengirimkan HTML. Yang ini membaca `notes` hanya setelah tombol ditekan, sehingga build merender kotak pencariannya dan halaman menampilkannya sebelum JavaScript dijalankan.
+`found` hanya dihitung setelah sesuatu diketik, dan itu penting untuk pembangunan: `nx build` merender setiap pulau satu kali ke HTML, dengan placeholder alih-alih props. Komponen yang membaca daftar prop selama render pertama tersebut mendapatkan placeholder alih-alih daftar, dan tidak mengirimkan HTML. Yang ini membaca `notes` hanya setelah tombol ditekan, sehingga build merender kotak pencariannya dan halaman menampilkannya sebelum JavaScript dijalankan.
 
 `aria-live="polite"` membuat pembaca layar membaca hasilnya saat berubah, tanpa menyela.
 
 ## Letakkan pulau di halaman
 
-Halaman tersebut meneruskan catatan sebagai penyangga: daftar kamus, yang diubah Nexy menjadi JSON untuk browser. Setiap catatan masuk, tidak hanya lima halaman saat ini, jadi pencarian mencakup semuanya:
+Halaman tersebut meneruskan catatan sebagai prop: daftar kamus, yang Nexy ubah menjadi JSON untuk browser. Setiap catatan masuk, tidak hanya lima halaman saat ini, jadi pencarian mencakup semuanya:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/rute/catatan/index.nexy"
@@ -156,18 +156,18 @@ searchable = [{"id": note.id, "text": note.text} for note in all_notes(user_id)]
 
 `from "@/components/NoteSearch.tsx" import NoteSearch` mengimpor komponen React ke halaman `.nexy`; tag meneruskan atributnya sebagai props. `notes="{{ searchable }}"` meneruskan daftar Python itu sendiri, bukan string. `directive="client:idle"` membuat pulau menjadi interaktif ketika browser tidak melakukan hal lain yang mendesak.
 
-Buka <http://localhost:3000/notes> dan ketik beberapa huruf catatan: catatan yang cocok akan muncul di bawah kotak setiap kali tombol ditekan. Kosongkan kotaknya, dan hasilnya akan hilang.
+Buka <http://localhost:3000/notes> dan ketikkan beberapa huruf catatan: catatan yang cocok akan muncul di bawah kotak setiap kali tombol ditekan. Kosongkan kotaknya, dan hasilnya akan hilang.
 
 > [!NOTE]
-> Alat peraga perjalanan pulau di halaman, sebagai JSON. Mengirim setiap catatan cocok untuk beberapa ratus catatan; untuk ribuan, cari di server saja, dengan kueri dan filter `LIKE`.
+> props perjalanan pulau di halaman, sebagai JSON. Mengirim setiap catatan cocok untuk beberapa ratus catatan; untuk ribuan, cari di server saja, dengan kueri dan filter `LIKE`.
 
 ## Apa yang Anda pelajari
 
 - Pulau adalah komponen klien di dalam halaman server: di sini, React hanya untuk kotak pencarian.
 - Halaman `.nexy` mengimpornya berdasarkan jalur dan meneruskan nilai Python sebagai props, diserialkan ke JSON.
-- Build tersebut merender sebuah pulau satu kali, dengan placeholder untuk propsnya: props daftar baca setelah render pertama, dan pulau tersebut mengirimkan HTML.
+- Pembangunan merender sebuah pulau satu kali, dengan placeholder untuk props: daftar baca props setelah render pertama, dan pulau tersebut mengirimkan HTML.
 
 ## Langkah selanjutnya
 
 - [Bagian 14: centang catatan tanpa memuat ulang halaman](tick-a-note.md)
-- [Pulau dan hidrasi](../rendering/islands.md): arahan, alat peraga dan batasan
+- [Pulau dan hidrasi](../rendering/islands.md): arahan, props dan batasan

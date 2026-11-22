@@ -193,7 +193,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` 运行此模板一次，并将 `slug` 设置为 `hello`。第二个请求再次运行它：两者之间没有任何保留。查询字符串不是道具 - 使用 [导航](../routing/fbr/navigation/hooks.md) 中的钩子读取它。
+`GET /blog/hello` 运行此模板一次，并将 `slug` 设置为 `hello`。第二个请求再次运行它：两者之间没有任何保留。查询字符串不是 prop - 使用 [导航](../routing/fbr/navigation/hooks.md) 中的钩子读取它。
 <!-- /router -->
 
 <!-- router:modular -->
@@ -215,14 +215,14 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello/` 运行此视图一次，并将 `slug` 设置为 `hello`。第二个请求再次运行它：两者之间没有任何保留。查询字符串不是一个 prop - 使用 `useSearchParams` 读取它。
+`GET /blog/hello/` 运行此视图一次，并将 `slug` 设置为 `hello`。第二个请求再次运行它：两者之间没有任何保留。查询字符串不是 prop - 使用 `useSearchParams` 读取。
 <!-- /router -->
 
 ## 局限性
 
 - **每个请求一次渲染。** 同一秒内的两个访问者各自为渲染及其背后的查询付费。
-- **无缓存。** 没有可供预热的共享响应缓存：对于文件路由，[ISR](isr.md) 对每个 URL 添加一个。
-- **流式处理仅有助于产生收益的组件。** 页面顶部的缓慢查询仍然会延迟第一个字节。
+- **没有缓存。** 没有共享响应缓存来预热：对于文件路由，[ISR](isr.md) 为每个URL添加一个。
+- **流式传输仅有助于产生收益的组件。** 页面顶部的缓慢查询仍然会延迟第一个字节。
 - **无静态输出。** 在服务器模式下，构建时不会冻结任何内容：没有 SSG 模式，也没有导出命令。客户端模式预渲染其路由，包括动态路由：请参阅[预渲染动态路由](csr.md#pre-render-a-dynamic-route)。
 - **`.nexy` 模板中的自动转义已关闭**。使用 `| e` 转义不受信任的值。
 

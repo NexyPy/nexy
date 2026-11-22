@@ -90,7 +90,7 @@ export default defineConfig({
 
 ### متحرک طبقات
 
-یو آر ایل پیرامیٹرز `$props()` رن کے ذریعے پرپس کے طور پر صفحہ تک پہنچتے ہیں:
+URL پیرامیٹرز صفحہ تک props کے طور پر `$props()` رن کے ذریعے پہنچتے ہیں:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -125,7 +125,7 @@ export default defineConfig({
 
 ## جزائر
 
-سرور موڈ میں، `.nexy` فائل میں درآمد کردہ ایک Svelte جز ایک جزیرہ ہے۔
+سرور موڈ میں، ایک Svelte جز ایک `.nexy` فائل میں درآمد کیا گیا ایک جزیرہ ہے۔
 
 ### درآمد کرنا
 
@@ -151,7 +151,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### ہائیڈریشن کی ہدایات
 
-جزیرہ ہائیڈریٹ ہونے پر کنٹرول کرنے کے لیے `directive` سہارے کا استعمال کریں:
+جزیرہ ہائیڈریٹ ہونے پر کنٹرول کرنے کے لیے `directive` prop کا استعمال کریں:
 
 - `client:load` (پہلے سے طے شدہ): فوری طور پر
 - `client:idle`: جب براؤزر بیکار ہو۔

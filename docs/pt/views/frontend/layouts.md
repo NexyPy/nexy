@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 Os layouts são projetados para serem estáveis. No modo cliente, ao navegar entre duas páginas que compartilham o mesmo layout, o layout **não** é renderizado novamente; apenas o conteúdo filho muda. No modo servidor cada navegação é um novo documento.
 
-- **Slots**: Layouts fornecem um slot onde a página aninhada é injetada: `children` em JSX, e a propriedade `children` em um layout `.nexy`.
+- **Slots**: Layouts fornecem um slot onde a página aninhada é injetada: `children` em JSX, e `children` prop em um layout `.nexy`.
 - **Preservação de Estado**: Como o layout permanece montado, qualquer estado contido nele (por exemplo, uma consulta de pesquisa em um cabeçalho) é preservado durante a navegação.
 
 O mesmo slot em um layout `.nexy`:

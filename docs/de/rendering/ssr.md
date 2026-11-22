@@ -86,7 +86,7 @@ class HealthController:
 3. Der Körper wird als `text/html` gestreamt. Eine Komponente, die Chunks erzeugt, streamt diese, während sie sie erstellt.
 4. Der Browser empfängt HTML. Inseln hydratisieren gemäß ihrer [Richtlinie](islands.md).
 
-Ein beim Rendern ausgelöster Fehler wird von `errors.nexy` in eine Seite umgewandelt, wenn das Projekt einen solchen hat: siehe [Fehlerseiten](../routing/fbr/errors/README.md).
+Ein beim Rendern ausgelöster Fehler wird von `errors.nexy` in eine Seite umgewandelt, wenn das Projekt einen hat: siehe [Fehlerseiten](../routing/fbr/errors/README.md).
 <!-- /router -->
 
 <!-- router:modular -->
@@ -193,7 +193,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` führt diese Vorlage einmal aus, wobei `slug` auf `hello` gesetzt ist. Eine zweite Anfrage führt es erneut aus: Zwischen den beiden bleibt nichts bestehen. Die Abfragezeichenfolge ist keine Requisite – lesen Sie sie mit den Hooks in [Navigation](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` führt diese Vorlage einmal aus, wobei `slug` auf `hello` gesetzt ist. Eine zweite Anfrage führt es erneut aus: Zwischen den beiden bleibt nichts bestehen. Die Abfragezeichenfolge ist kein prop – lesen Sie sie mit den Hooks in [Navigation](../routing/fbr/navigation/hooks.md).
 <!-- /router -->
 
 <!-- router:modular -->
@@ -215,7 +215,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello/` führt diese Ansicht einmal aus, wobei `slug` auf `hello` gesetzt ist. Eine zweite Anfrage führt es erneut aus: Zwischen den beiden bleibt nichts bestehen. Die Abfragezeichenfolge ist keine Requisite – lesen Sie sie mit `useSearchParams`.
+`GET /blog/hello/` führt diese Ansicht einmal aus, wobei `slug` auf `hello` gesetzt ist. Eine zweite Anfrage führt es erneut aus: Zwischen den beiden bleibt nichts bestehen. Die Abfragezeichenfolge ist kein prop – lesen Sie sie mit `useSearchParams`.
 <!-- /router -->
 
 ## Einschränkungen

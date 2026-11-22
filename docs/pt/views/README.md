@@ -63,6 +63,6 @@ Um `layout.*` em um diretório agrupa as páginas abaixo dele. Consulte [layouts
 
 ## Próximas etapas
 
-- [Arquivos .nexy](nexy/README.md): Python + Jinja2 + adereços
+- [Arquivos .nexy](nexy/README.md): Python + Jinja2 + props
 - [Markdown e MDX](nexy/markdown.md): páginas de conteúdo
 - [Componentes](nexy/components.md): auxiliares HTML integrados

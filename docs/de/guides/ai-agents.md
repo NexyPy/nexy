@@ -22,7 +22,7 @@ Um alles zu überspringen, erstellen Sie das Projekt mit `nx new --no-agents`.
 | `nexy-principles` | Arbeitsreihenfolge, Coderegeln, Schreibregeln |
 | `nexy-ux-audit` | Das Erlebnis- und Informationsarchitektur-Audit muss vor jeder Ansicht durchgeführt werden |
 | `nexy-project` | Modi, Ordner, Dateikonventionen, Konfiguration, Befehle |
-| `nexy-file` | `.nexy` Seiten, Requisiten, Haken, Inseln |
+| `nexy-file` | `.nexy` Seiten, props, Haken, Inseln |
 | `nexy-markdown` | `.md` und `.mdx` Inhalt |
 | `nexy-react`, `nexy-preact`, `nexy-solid`, `nexy-vue`, `nexy-svelte` | Idiomatischer Code für das Client-Framework |
 | `nexy-styling` | Tailwind, UnoCSS oder einfaches CSS und die Design-Tokens |
@@ -51,7 +51,7 @@ Führen Sie `nx skills` erneut aus, nachdem Sie Nexy aktualisiert haben, um die 
 - `AGENTS.md` (oder `CLAUDE.md`, das es importiert) wird zu Beginn jeder Sitzung gelesen. Es benennt die Fähigkeiten.
 - Jeder Skill beginnt mit einem Namen und einer Beschreibung, die angeben, was er abdeckt und wann er geladen werden muss. Der Agent liest diese zuerst und öffnet einen Skill erst, wenn die Aufgabe übereinstimmt.
 
-Die Fertigkeiten folgen dem offenen [Agent-Fähigkeitenformat](https://agentskills.io/specification), sodass andere Agenten, die `SKILL.md`-Ordner lesen, sie auch verwenden können.
+Die Fertigkeiten folgen dem offenen [Agent Skills-Format](https://agentskills.io/specification), sodass andere Agenten, die `SKILL.md` Ordner lesen, sie auch verwenden können.
 
 ## Was sie nicht tun
 
@@ -71,7 +71,7 @@ Ein Agent antwortet schneller, wenn er weiß, auf welcher Seite sich die Antwort
 |---|---|
 | das Produkt auf einer Seite | [README](../README.md) |
 | ein Projekt ausführen | [Erste Schritte](../getting-started/quick-start.md) |
-| die URL einer Datei | [Weiterleitung](../routing/README.md) |
+| die URL einer Datei | [Routing](../routing/README.md) |
 | dynamische Segmente, Layouts, Fehlerseiten | [Seiten](../routing/fbr/pages/README.md) |
 | der aktuelle Pfad, die Abfrage, die Cookies, die Sitzung | [Haken](../routing/fbr/navigation/hooks.md) |
 | um eine Seite zu bearbeiten | [.nexy-Dateien](../views/nexy/README.md) oder [Ansichten](../views/README.md) |
@@ -85,7 +85,7 @@ Ein Agent antwortet schneller, wenn er weiß, auf welcher Seite sich die Antwort
 | warum eine Anfrage fehlgeschlagen ist und welche Seite darauf antwortet | [Ausnahmen](../reference/exceptions.md) |
 | Übersetzungen | [i18n](i18n.md) |
 | ein Konfigurationsfeld | [Konfiguration](../reference/config.md) |
-| um die App zu testen | [Testen](testing.md) |
+| um die App zu testen | [testen](testing.md) |
 | der Client-Build | [Frontend](frontend.md) |
 
 ## Projektinvarianten
@@ -93,7 +93,7 @@ Ein Agent antwortet schneller, wenn er weiß, auf welcher Seite sich die Antwort
 1. `__nexy__/` wird generiert. Bearbeiten Sie es niemals, schreiben Sie es niemals fest. Löschen Sie es, um einen sauberen Build zu erzwingen.
 2. Eine Datei pro URL. `index.nexy` und `index.py` für denselben Pfad ist ein Fehler, keine Prioritätsregel.
 3. Reservierte Namen in `src/routes/`: `layout.nexy`, `loading.nexy`, `errors.nexy`, `notfound.nexy`, `dependencies.py`, `__init__.py`. Verwenden Sie sie nicht für Inhalte.
-4. `.nexy` Frontmatter ist Python, das pro Anfrage ausgeführt wird. Keine Nebenwirkungen auf Modulebene: keine Datei-Handles, keine Datenbankverbindungen, keine Netzwerkaufrufe beim Import.
+4. `.nexy` frontmatter ist Python, das pro Anfrage ausgeführt wird. Keine Nebenwirkungen auf Modulebene: keine Datei-Handles, keine Datenbankverbindungen, keine Netzwerkaufrufe beim Import.
 5. `.py` in `src/routes/` ist ein API-Handler. Methoden sind Funktionsnamen (`GET`, `POST`, ...).
 6. Die Konfiguration lebt in `nexyconfig.py`, nicht in Umgebungsvariablen und nicht in verstreuten Konstanten.
 7. Autoescaping ist in `.nexy`-Vorlagen deaktiviert: Nicht vertrauenswürdige Werte mit `| e` maskieren.
@@ -112,4 +112,4 @@ Wenn die Dokumente und der Code nicht übereinstimmen, vertrauen Sie dem Code un
 - [CLI](../reference/cli.md): `nx new` und `nx skills`
 - [Dateikonventionen](../reference/file-conventions.md): reservierte Namen und Routing-Regeln
 - [Glossar](../reference/glossary.md): die Wörter, auf denen diese Regeln basieren
-- [Sicherheit](../reference/security.md): Die Version legt die Sicherheitsfähigkeitspunkte fest
+- [Sicherheit](../reference/security.md): Die Versionsebenen, auf die der Sicherheits-Skill verweist

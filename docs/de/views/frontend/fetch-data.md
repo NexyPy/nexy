@@ -158,7 +158,7 @@ Eine Vue-, Svelte- oder Solid-Komponente wird auf die gleiche Weise mit der Impo
 - Ein Status pro URL: Zwei Komponenten, die `/api/users` lesen, senden eine Anfrage und zeigen dieselben Daten an.
 - `refresh()` behält den aktuellen `data` bei, bis die neue Antwort eintrifft, und zwei Aktualisierungen gleichzeitig senden eine Anfrage.
 - Eine `204`-Antwort ergibt `data` als `undefined`.
-- Die Anfrage wird im Browser gesendet, nachdem die Komponente bereitgestellt wurde. Daten, die der erste HTML-Code enthalten muss, gehören zu den Seiten-Requisiten und werden auf dem Server gerendert.
+- Die Anfrage wird im Browser gesendet, nachdem die Komponente bereitgestellt wurde. Daten, die der erste HTML-Code enthalten muss, gehören zur Seite props und werden auf dem Server gerendert.
 
 ## Fehler von der Route
 

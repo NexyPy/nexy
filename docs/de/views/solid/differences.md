@@ -61,7 +61,7 @@ Im Client-Modus kompiliert `solid({ ssr: true })`: Solid eine Komponente untersc
 
 ## Denken Sie in Signalen
 
-Eine Solid Komponentenfunktion wird **einmal** ausgeführt. Was sich später ändert, wird über ein Signal gelesen und nur die Ausdrücke, die es lesen, werden aktualisiert:
+Eine Solid Komponentenfunktion wird **einmal** ausgeführt. Was sich später ändert, wird über ein Signal gelesen, und nur die Ausdrücke, die es lesen, werden aktualisiert:
 
 ```tsx filename="src/components/Counter.tsx"
 import { createSignal } from "solid-js";
@@ -73,7 +73,7 @@ export default function Counter(props: { start?: number }) {
 ```
 
 - Rufen Sie das Signal `count()` innerhalb des JSX auf, nicht in einer Variablen darüber.
-- Lesen Sie Requisiten als `props.start`. Durch die Destrukturierung `{ start }` wird der Wert einmal gelesen und die Aktualisierungen gehen verloren.
+- Lesen Sie props als `props.start`. Durch die Destrukturierung `{ start }` wird der Wert einmal gelesen und die Aktualisierungen gehen verloren.
 - Solid schreibt HTML-Attribute: `class`, `for`, `charset`, nicht `className`.
 
 ## Regeln
@@ -143,7 +143,7 @@ Zerstören Sie `props.children` nicht, da Solid es träge liest.
 
 ## Inseln
 
-Im Servermodus ist eine in eine `.nexy`-Datei importierte Solid-Komponente eine Insel.
+Im Servermodus ist eine Solid-Komponente, die in eine `.nexy`-Datei importiert wird, eine Insel.
 
 ### Importieren
 
@@ -169,7 +169,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Trinkrichtlinien
 
-Verwenden Sie die Requisite `directive`, um zu steuern, wann die Insel hydratisiert:
+Verwenden Sie `directive` prop, um zu steuern, wann die Insel hydratisiert:
 
 - `client:load` (Standard): sofort
 - `client:idle`: wenn der Browser inaktiv ist

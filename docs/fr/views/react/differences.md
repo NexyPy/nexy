@@ -147,12 +147,12 @@ from "@/components/Counter.tsx" import Counter
 
 ### Directives d'hydratation
 
-Utilisez l'accessoire `directive` pour contrôler le moment où l'île s'hydrate :
+Utilisez les `directive` prop pour contrôler quand l'île s'hydrate :
 
 - `client:load` (par défaut) : immédiatement
 - `client:idle` : lorsque le navigateur est inactif
 - `client:visible` : lorsqu'il défile dans la vue
-- `client:media` : lorsque la requête média correspond
+- `client:media` : lorsque la requête multimédia correspond
 
 ## Actions et navigation
 
@@ -198,4 +198,4 @@ router.push("/dashboard");
 ## Prochaines étapes
 
 - [Vues](../README.md) : comparez les formats qu'une page peut utiliser
-- [Frontend](../../guides/frontend.md) : Vite et la build client
+- [Frontend](../../guides/frontend.md) : Vite et le build client

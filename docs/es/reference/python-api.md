@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | Nombre | que es |
 |---|---|
-| `render` | el HTML de un componente `.nexy` para accesorios determinados, sin un servidor, consulte [pruebas](../guides/testing.md) |
+| `render` | el HTML de un componente `.nexy` para props dado, sin un servidor, consulte [pruebas](../guides/testing.md) |
 
 ```python filename="pruebas/test_button.py"
 from nexy.testing import render

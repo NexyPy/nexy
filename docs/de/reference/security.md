@@ -24,8 +24,8 @@ npm ls vite
 ## Regeln, denen Nexy folgt
 
 - **Vertrauen Sie niemals dem Host-Header für Pfade.** Nexy liest `scope["path"]`, nicht `request.url.path`, in seiner eigenen Middleware (Verzeichnis-Middleware). Machen Sie dasselbe bei Ihnen.
-- **Escape, was HTML erreicht.** An Client-Komponenten übergebene Requisiten, `Link`-Attribute, `Image`-, `Audio`- und `Video`-Attribute, Inhaltsverzeichnis-Anker und `HTTPException`-Details werden alle HTML-escaped. Eine `.nexy`-Vorlage entkommt nicht von selbst: Schreiben Sie `{{ value | e }}` für jeden Wert, der von einem Besucher oder der Datenbank stammt, und niemals `| safe` für Benutzereingaben.
-- **Entwicklerendpunkte sind nur Loopback und eng.** Der Dev-Renderendpunkt (`/__nexy__/render`) akzeptiert nur Dateien unter `src/routes/` mit der Erweiterung `.tsx` oder `.jsx` und ist nur über den Dev-Server erreichbar, der fremde `Host`-Header ablehnt.
+- **Escape, was HTML erreicht.** Props an Client-Komponenten übergeben, `Link`-Attribute, `Image`-, `Audio`- und `Video`-Attribute, Inhaltsverzeichnis-Anker und `HTTPException`-Details sind alle HTML-escaped. Eine `.nexy`-Vorlage entkommt nicht von selbst: Schreiben Sie `{{ value | e }}` für jeden Wert, der von einem Besucher oder der Datenbank stammt, und niemals `| safe` für Benutzereingaben.
+- **Entwicklerendpunkte sind nur Loopback und schmal.** Der Dev-Renderendpunkt (`/__nexy__/render`) akzeptiert nur Dateien unter `src/routes/` mit der Erweiterung `.tsx` oder `.jsx` und ist nur über den Dev-Server erreichbar, der fremde `Host`-Header ablehnt.
 - **Fehlerdetails gehen nicht verloren.** Eine Fehlerseite, die selbst fehlschlägt, zeigt nur den Statuscode an.
 - **Produktionsantworten tragen sichere Header.** `X-Content-Type-Options: nosniff` und `Referrer-Policy: strict-origin-when-cross-origin`, es sei denn, Ihr Code legt eigene fest. Der `Server`-Header wird nicht gesendet. Fügen Sie `Strict-Transport-Security` und ein `Content-Security-Policy` in Ihrem Proxy oder einer Middleware hinzu: Sie hängen von Ihrer Domain ab.
 - **Ein Absturz zeigt eine Referenz, nicht den Fehler.** Siehe [Fehlerseiten](../routing/fbr/errors/README.md#unhandled-exceptions).
@@ -43,7 +43,7 @@ Nexys eigenes Repository führt bei seinen Prüfungen den ersten und den dritten
 
 ## Sichere Bereitstellung
 
-- Legen Sie `useTrustedHost` für Ihre Domains fest: Unerwartete `Host`-Header werden vor jeder Route abgelehnt.
+- Legen Sie `useTrustedHost` auf Ihre Domains fest: Unerwartete `Host`-Header werden vor jeder Route abgelehnt.
 - Machen Sie den Vite-Entwicklungsserver nicht verfügbar: `nx dev` hält ihn im Loopback hinter dem Nexy-Ursprung.
 - Legen Sie `useDocs = False` fest, wenn das API-Schema nicht öffentlich sein soll.
 
@@ -60,4 +60,4 @@ Siehe [Middleware und Sicherheit](../guides/middleware-and-security.md).
 
 - [Middleware und Sicherheit](../guides/middleware-and-security.md)
 - [Bereitstellen](../deployment/README.md)
-- [Konfiguration](config.md)
+- [Konfig](config.md)

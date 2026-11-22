@@ -48,7 +48,7 @@ class NexyConfig(NexyConfigModel):
 <h1>{page.params.slug}</h1>
 ```
 
-这些段作为 props 到达页面：
+这些段到达页面时为 props：
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -71,7 +71,7 @@ class NexyConfig(NexyConfigModel):
 <main>{@render children()}</main>
 ```
 
-不存在 `app.html`：根 `layout.svelte` 拥有该文档。
+没有 `app.html`：根 `layout.svelte` 拥有该文档。
 
 ```svelte filename="src/routes/layout.svelte"
 <script lang="ts">
@@ -196,7 +196,7 @@ users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
 </ul>
 ```
 
-## 表单操作和 `use:enhance`
+## 形成动作和 `use:enhance`
 
 ```ts filename="src/routes/todos/+page.server.ts"
 export const actions = {
@@ -328,7 +328,7 @@ export function entries() {
 }
 ```
 
-从页面导出 `getStaticParams`，为每个值提供一个预渲染文档：
+从页面导出 `getStaticParams`，以获取每个值一个预渲染文档：
 
 ```svelte filename="src/routes/posts/[slug].svelte"
 <script lang="ts" module>
@@ -370,7 +370,7 @@ metadata = {"title": "Blog", "description": "Posts about Nexy"}
 <h1>Blog</h1>
 ```
 
-## Svelte 服务器页面中的组件
+## 服务器页面中的 Svelte 组件
 
 ```svelte filename="src/components/Counter.svelte"
 <script lang="ts">

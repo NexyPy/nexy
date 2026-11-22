@@ -14,7 +14,7 @@ SSR adalah defaultnya: server merender halaman ke HTML untuk setiap permintaan. 
 | `.mdx`, `.tsx`, `.vue`, `.svelte` | kerangka kerja, dirender di Node | di build ketika rute tidak memiliki tata letak, sebaliknya di browser |
 | `.py` | tidak ada: ia mengembalikan JSON atau `Response` | - |
 
-Halaman Markdown dan pengendali, berdampingan dalam proyek yang sama:
+Halaman Markdown dan handler, berdampingan dalam proyek yang sama:
 
 ```md filename="src/rute/changelog.md"
 # Changelog
@@ -82,7 +82,7 @@ class HealthController:
    ```
 
    `/orders/42` menerjemahkan `Order #1042`; `/orders/abc` jawaban `404`.
-2. Komponen berjalan. Yang menunggu di Node - dokumen klien - berjalan di kumpulan thread, sehingga tidak menghentikan perulangan peristiwa.
+2. Komponen berjalan. Salah satu yang menunggu di Node - dokumen klien - berjalan di kumpulan thread, sehingga tidak menghentikan perulangan peristiwa.
 3. Tubuh dialirkan sebagai `text/html`. Komponen yang menghasilkan potongan akan mengalirkannya saat membuatnya.
 4. Browser menerima HTML. Pulau-pulau tersebut terhidrasi menurut [arahan](islands.md) mereka.
 
@@ -193,7 +193,7 @@ slug: prop[str] = "untitled"
 <h1>{{ slug }}</h1>
 ```
 
-`GET /blog/hello` menjalankan templat ini satu kali, dengan `slug` disetel ke `hello`. Permintaan kedua menjalankannya lagi: tidak ada yang disimpan di antara keduanya. String kueri bukan penyangga - bacalah dengan kait di [navigasi](../routing/fbr/navigation/hooks.md).
+`GET /blog/hello` menjalankan templat ini satu kali, dengan `slug` disetel ke `hello`. Permintaan kedua menjalankannya lagi: tidak ada yang disimpan di antara keduanya. String kueri bukan prop - bacalah dengan kait di [navigasi](../routing/fbr/navigation/hooks.md).
 <!-- /router -->
 
 <!-- router:modular -->
@@ -224,7 +224,7 @@ slug: prop[str] = "untitled"
 - **Tidak ada cache.** Tidak ada cache respons bersama untuk menghangatkan: dengan rute file, [ISR](isr.md) menambahkan satu, per URL.
 - **Streaming hanya membantu komponen yang menghasilkan.** Permintaan yang lambat di bagian atas halaman masih menunda byte pertama.
 - **Tidak ada keluaran statis.** Dalam mode server tidak ada yang dibekukan saat build: tidak ada mode SSG, dan tidak ada perintah ekspor. Mode klien melakukan pra-render rutenya, termasuk rute dinamis: lihat [Pra-render rute dinamis](csr.md#pre-render-a-dynamic-route).
-- **Pelarian otomatis tidak aktif** di templat `.nexy`. Hindari nilai-nilai yang tidak dipercaya dengan `| e`.
+- **Pelarian otomatis tidak aktif** di `.nexy` templat. Hindari nilai-nilai yang tidak dipercaya dengan `| e`.
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/rute/pencarian.nexy"

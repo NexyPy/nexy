@@ -92,6 +92,10 @@
   "databases/mysql-mariadb.md": "67ddb6491856904cbc8dfbc6052b651a0f3ae75e22547431fdd594fe9738fe4a",
   "views/frontend/fetch-data.md": "02ae4d26553289ad7737db7eeeebf740affc1ea1f9b3ba5678ffca13802a0a4f",
   "guides/debugging.md": "178ac281b6d742ab3b81b858a4127cd20fa529a1767d0ae2e176fed3c5c44194",
-  "guides/sitemap.md": "ab5b0a47cf9a142891e7c960e533dffbe435f01bd61aa5fca4d359516f6ffe35"
+  "guides/sitemap.md": "ab5b0a47cf9a142891e7c960e533dffbe435f01bd61aa5fca4d359516f6ffe35",
+  "tutorial/components.md": "817ebd5a8f520a03bf6f983c6e9d1e1fc4a8c8f66e8d4ce1e49856e6684ea985",
+  "tutorial/dynamic-routes.md": "c14625792c3674f778bb8f1013bbfd391d6b40602407f94a81174bc766fa2c25",
+  "tutorial/pages-and-layouts.md": "87bd93917e2b885c6d1a3ed4b591e5704ea8ef78d99732d11cca481484b87342",
+  "tutorial/search-the-notes.md": "79d8c1bb6d6b512aa93f2824013ca3c9a473639aba865201731e2929c1e5d6b9"
  }
 }

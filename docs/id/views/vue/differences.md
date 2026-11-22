@@ -10,7 +10,7 @@ Nexy merender Vue 3 komponen file tunggal di server, lalu Vue mengambil alihnya 
 <!-- /router -->
 
 <!-- router:modular -->
-Dengan router modular, komponen Vue adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan oleh pengontrol: tidak ada file halaman dan tidak ada router klien.
+Dengan router modular, komponen Vue adalah [pulau](../../rendering/islands.md) di dalam tampilan `.nexy` yang dikembalikan pengontrol: tidak ada file halaman dan tidak ada router klien.
 <!-- /router -->
 
 ## Mulai sebuah proyek
@@ -88,7 +88,7 @@ Halaman adalah komponen yang ditentukan oleh blok `<script setup>`.
 
 ### Segmen dinamis
 
-Parameter URL mencapai halaman sebagai alat peraga. Anda dapat mendeklarasikannya menggunakan `defineProps`:
+Parameter URL mencapai halaman sebagai props. Anda dapat mendeklarasikannya menggunakan `defineProps`:
 
 ```vue filename="src/rute/blog/[siput].vue"
 <script setup lang="ts">
@@ -100,7 +100,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-Alternatifnya, gunakan kait `useParams` dari `@nexy/client` di komponen mana pun.
+Alternatifnya, gunakan hook `useParams` dari `@nexy/client` di komponen mana pun.
 
 ## Tata Letak
 
@@ -108,7 +108,7 @@ Alternatifnya, gunakan kait `useParams` dari `@nexy/client` di komponen mana pun
 
 Tata letak root mendefinisikan shell dokumen. Tata letak bersarang membungkus konten dalam slot defaultnya.
 
-```vue filename="src/routes/layout.vue"
+```vue filename="src/route/layout.vue"
 <template>
   <html>
     <body>
@@ -148,7 +148,7 @@ from "@/components/Counter.vue" import Counter
 
 ### Arahan hidrasi
 
-Gunakan prop `directive` untuk mengontrol kapan pulau terhidrasi:
+Gunakan `directive` prop untuk mengontrol kapan pulau terhidrasi:
 
 - `client:load` (default): segera
 - `client:idle`: saat browser dalam keadaan idle

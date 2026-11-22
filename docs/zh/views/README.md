@@ -63,6 +63,6 @@ class NexyConfig(NexyConfigModel):
 
 ## 后续步骤
 
-- [.nexy 文件](nexy/README.md)：Python + Jinja2 + 道具
+- [.nexy 文件](nexy/README.md)：Python + Jinja2 + props
 - [Markdown 和 MDX](nexy/markdown.md)：内容页面
 - [组件](nexy/components.md)：内置 HTML 帮助器

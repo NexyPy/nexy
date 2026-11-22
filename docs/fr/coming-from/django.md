@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-Un composant est un fichier `.nexy` avec des accessoires typés et un emplacement pour ses enfants :
+Un composant est un fichier `.nexy` avec un props tapé et un emplacement pour ses enfants :
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -185,7 +185,7 @@ from "@/components/Card.nexy" import Card
 | `{% url "post" post.id %}` | `/posts/{{ post.id }}` : l'URL est le chemin du fichier |
 
 > [!WARNING]
-> Django échappe à chaque valeur par défaut. Les modèles `.nexy` ne permettent pas : d'échapper à ce qu'un visiteur a tapé avec `| e`.
+> Django échappe à chaque valeur par défaut. Les modèles `.nexy` n'échappent pas à ce qu'un visiteur a tapé avec `| e`.
 
 ## Les modèles et l'ORM
 

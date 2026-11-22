@@ -98,9 +98,9 @@ No modo servidor, o servidor renderiza cada página, `revalidate` armazena em ca
 
 **Vite não substitui Nexy.** Vite agrupa e fornece código do cliente. Ele não roteia uma solicitação, renderiza uma página `.nexy`, executa uma ação ou possui a origem. O navegador se comunica com uma origem - Nexy's - e em desenvolvimento Nexy proxies Vite endpoints de através dele, então não há CORS para configurar.
 
-**Nexy não substitui React.** Nexy decide qual componente será renderizado, quando e com quais adereços; a estrutura possui o modelo de componentes, a reatividade e o ecossistema. Uma página `.nexy` importa um componente como uma ilha; no modo cliente, uma rota *é* um componente.
+**Nexy não substitui React.** Nexy decide qual componente será renderizado, quando e com qual props; a estrutura possui o modelo de componentes, a reatividade e o ecossistema. Uma página `.nexy` importa um componente como uma ilha; no modo cliente, uma rota *é* um componente.
 
-Para uma rota de componente, Python escreve apenas um módulo wrapper fino que aponta para o arquivo. A compilação e a renderização do lado do servidor são trabalho de Vite.
+Para uma rota de componente, Python escreve apenas um módulo wrapper fino que aponta para o arquivo. A compilação e a renderização no lado do servidor são trabalho de Vite.
 
 ## Desenvolvimento e produção
 

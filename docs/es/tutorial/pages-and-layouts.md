@@ -94,7 +94,7 @@ Guardar: la pestaña del navegador ahora dice *Notas*, en cada página.
 
 ## Dale espacio a las páginas debajo del encabezado.
 
-El encabezado del diseño es fijo: permanece en la parte superior de la ventana, encima de la página. Las páginas del inicio establecen su propio espacio debajo; las páginas de la aplicación de notas comparten una clase para eso, `app-page`, que cada página del tutorial incluye su contenido. Agréguelo al final de `src/globale.css`, la hoja de estilo ya se carga en cada página:
+El encabezado del diseño es fijo: permanece en la parte superior de la ventana, encima de la página. Las páginas del inicio establecen su propio espacio debajo; las páginas de la aplicación de notas comparten una clase para eso, `app-page`, que cada página del tutorial incluye en torno a su contenido. Agréguelo al final de `src/globale.css`, la hoja de estilo ya se carga en cada página:
 
 ```css
 /* The pages of the notes app: one readable column below the fixed header. */
@@ -163,4 +163,4 @@ Tailwind, que utiliza el iniciador, elimina los bordes de los campos del formula
 ## Próximos pasos
 
 - [Parte 3: rutas dinámicas y una API](dynamic-routes.md)
-- [Archivos .nexy](../views/nexy/README.md): accesorios, componentes y estilos
+- [Archivos .nexy](../views/nexy/README.md): props, componentes y estilos

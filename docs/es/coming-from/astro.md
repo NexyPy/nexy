@@ -1,6 +1,6 @@
 # De Astro a Nexy
 
-Una página Nexy `.nexy` es una página Astro con Python en su `---` portada en lugar de TypeScript: el mismo HTML primero en el servidor, las mismas islas y directivas `client:*`, renderizadas en cada solicitud.
+Una página Nexy `.nexy` es una página Astro con Python en su `---` frontmatter en lugar de TypeScript: el mismo HTML primero en el servidor, las mismas islas y directivas `client:*`, representadas en cada solicitud.
 
 Cada sección a continuación muestra un hábito Astro, luego lo mismo en Nexy.
 
@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-Los accesorios se declaran con `prop[...]`, un valor predeterminado es un valor predeterminado Python y `<slot />` es `<Slot />`:
+Props se declaran con `prop[...]`, un valor predeterminado es un valor predeterminado Python y `<slot />` es `<Slot />`:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## El título y las metaetiquetas.
 
-El accesorio `title` del diseño se convierte en `metadata` en la página, que `useMetadata().html()` escribe en el `<head>` del diseño anterior:
+El `title` prop del diseño se convierte en `metadata` en la página, que `useMetadata().html()` escribe en el `<head>` del diseño anterior:
 
 ```nexy filename="src/rutas/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-Una página dinámica `.nexy` se representa a pedido, por lo que no hay una lista de rutas: el segmento es un accesorio y uno desconocido es un `404`.
+Una página dinámica `.nexy` se representa a pedido, por lo que no hay una lista de rutas: el segmento es un prop y uno desconocido es un `404`.
 
 ```nexy filename="src/rutas/publicaciones/[slug].nexy"
 ---
@@ -189,7 +189,7 @@ from "@/components/Counter.tsx" import Counter
 | `client:idle` | `directive="client:idle"` |
 | `client:visible` | `directive="client:visible"` |
 | `client:media="(min-width: 768px)"` | `directive="client:media" media="(min-width: 768px)"` |
-| `client:only="react"` | aceptado, pero nunca hidrata: usar `client:load` |
+| `client:only="react"` | aceptado, pero nunca hidrata: utilizar `client:load` |
 
 El marco se establece una vez en `nexyconfig.py` y un proyecto usa uno:
 
@@ -386,7 +386,7 @@ Los clientes de API aún obtienen `{"detail": "Not Found"}`.
 
 ## Salida estática y renderizado bajo demanda
 
-Astro construye HTML estático de forma predeterminada y lo renderiza bajo demanda con `output: "server"` o `export const prerender = false`. Nexy procesa cada página a pedido y almacena en caché las que usted elige por URL:
+Astro crea HTML estático de forma predeterminada y lo renderiza bajo demanda con `output: "server"` o `export const prerender = false`. Nexy procesa cada página a pedido y almacena en caché las que usted elige por URL:
 
 ```nexy filename="src/rutas/noticias.nexy"
 ---

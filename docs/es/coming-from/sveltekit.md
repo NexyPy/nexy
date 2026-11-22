@@ -48,7 +48,7 @@ Una página es el archivo en sí, llamado así por su URL:
 <h1>{page.params.slug}</h1>
 ```
 
-Los segmentos llegan a la página como accesorios:
+Los segmentos llegan a la página como props:
 
 ```svelte filename="src/routes/blog/[slug].esbelto"
 <script lang="ts">
@@ -361,7 +361,7 @@ revalidate = 60
 </svelte:head>
 ```
 
-En modo cliente, escriba las etiquetas en la raíz `layout.svelte`. En modo servidor una página `.nexy` los establece, y su diseño los escribe con `{{ useMetadata().html() }}`:
+En modo cliente, escriba las etiquetas en la raíz `layout.svelte`. En modo servidor una página `.nexy` los configura, y su diseño los escribe con `{{ useMetadata().html() }}`:
 
 ```nexy filename="src/rutas/blog.nexy"
 ---

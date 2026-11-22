@@ -38,7 +38,7 @@ export default function Nav() {
 }
 ```
 
-| الدعامة | معنى |
+| Prop | معنى |
 |---|---|
 | `href` | مسار المشروع (الخطأ المطبعي هو خطأ في الكتابة)، اختياريًا مع `?query` أو `#fragment`، أو عنوان URL خارجي. |
 | `replace` | استبدل إدخال السجل بدلاً من إضافة واحد. |
@@ -55,13 +55,13 @@ export default function Nav() {
 
 | | React، Preact | Solid | Vue | Svelte |
 |---|---|---|---|---|
-| المسار | `usePathname()` | `usePathname()` يُرجع ملحقًا | `usePathname()` يرجع مرجعا | `$pathname` مخزن |
+| المسار | `usePathname()` | `usePathname()` إرجاع ملحق | `usePathname()` يرجع مرجعا | `$pathname` مخزن |
 | معلمات الطريق | `useParams()` | `useParams()` الواصل | `useParams()` المرجع | `$params` مخزن |
 | الاستعلام | `useSearchParams()` | `useSearchParams()` الواصل | `useSearchParams()` المرجع | `$searchParams` مخزن |
-| كل شيء | `useLocation()` | `useLocation()` الواصل | `useLocation()` المرجع | `$location` مخزن |
+| كل شيء | `useLocation()` | `useLocation()` الملحق | `useLocation()` المرجع | `$location` مخزن |
 | انتقل | `useRouter()` | `useRouter()` | `useRouter()` | `router` |
-| الملاحة في الرحلة | `useTransition()` | `useTransition()` الواصل | `useTransition()` المرجع | `useTransition()` مخزن |
-| تطابق المسار | `useMatch(path?)` | `useMatch(path?)` الواصل | `useMatch(path?)` المرجع | `useMatch(path?)` مخزن |
+| الملاحة في الرحلة | `useTransition()` | `useTransition()` الملحق | `useTransition()` المرجع | `useTransition()` مخزن |
+| تطابق المسار | `useMatch(path?)` | `useMatch(path?)` الملحق | `useMatch(path?)` المرجع | `useMatch(path?)` مخزن |
 | اسأل قبل المغادرة | `useBlocker(dirty)` | `useBlocker(dirty())` في `createEffect` | `useBlocker(dirtyRef)` | `useBlocker(dirty)` في `$effect` |
 
 الاستعلام هو `URLSearchParams`. `useRouter()` و `router` يعطي `push(href)`، `replace(href)`، `back()`، `forward()`، `refresh()` و `prefetch(href)`؛ `push` و `replace` يقبل `{ scroll: false }`.
@@ -105,12 +105,12 @@ export default function Breadcrumb() {
 
 ## قبض على الصفحة التي تفشل مع `ErrorBoundary`
 
-`ErrorBoundary` يظهر احتياطيًا بدلاً من أطفاله عندما يرمي أحدهم أثناء عرضه في المتصفح. يتلقى الإجراء الاحتياطي الخطأ و `reset`، مما يعرض الأطفال مرة أخرى.
+`ErrorBoundary` يُظهر احتياطيًا بدلاً من أطفاله عندما يرمي أحدهم أثناء عرضه في المتصفح. يتلقى الإجراء الاحتياطي الخطأ و `reset`، مما يعرض الأطفال مرة أخرى.
 
 | الإطار | استيراد | احتياطي |
 |---|---|---|
 | React، Preact، Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | دعامة الدالة `fallback`؛ يذهب الأطفال إلى الفتحة الافتراضية |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | `fallback` دالة prop؛ يذهب الأطفال إلى الفتحة الافتراضية |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | `fallback` مقتطف |
 
 ```tsx
@@ -132,7 +132,7 @@ import { ErrorBoundary } from "@nexy/client";
 
 لا يمسك:
 
-- خطأ تم طرحه لاحقًا، في معالج الحدث، أو المؤقت، أو الوعد: اكتشفه حيث يحدث. Vue هو الاستثناء لمعالجات الأحداث الخاصة به، والتي تصل أخطائها إلى الحدود؛
+- خطأ يتم طرحه لاحقًا، في معالج الحدث، أو المؤقت، أو الوعد: اكتشفه حيث يحدث. Vue هو الاستثناء لمعالجات الأحداث الخاصة به، والتي تصل أخطائها إلى الحدود؛
 - صفحة لا يستطيع جهاز التوجيه تحميلها: يطلب المتصفح من الخادم بدلاً من ذلك (راجع [ما يفعله جهاز التوجيه](#what-the-router-does)).
 
 ## اسأل قبل مغادرة الصفحة التي تحتوي على تغييرات غير محفوظة
@@ -171,7 +171,7 @@ export default function Editor() {
 useBlocker((next) => (next.pathname.startsWith("/admin") ? "Admins only" : undefined));
 ```
 
-لا تطلب الوظيفة من تلقاء نفسها ولا تقوم بإعادة التحميل؛ اتصل بـ `confirm()` فيه للسؤال.
+الوظيفة لا تسأل من تلقاء نفسها ولا تقوم بإعادة التحميل؛ اتصل بـ `confirm()` فيه للسؤال.
 
 ## `Image`
 

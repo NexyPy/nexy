@@ -163,4 +163,4 @@ class AppModule:
 ## 后续步骤
 
 - [第 3 部分：动态路由和 API](dynamic-routes.md)
-- [.nexy 文件](../views/nexy/README.md)：道具、组件和样式
+- [.nexy 文件](../views/nexy/README.md)：props，组件和样式

@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 Les mises en page sont conçues pour être stables. En mode client, lors de la navigation entre deux pages partageant la même mise en page, la mise en page n'est **pas** restituée ; seul le contenu enfant change. En mode serveur, chaque navigation est un nouveau document.
 
-- **Slots** : les mises en page fournissent un emplacement dans lequel la page imbriquée est injectée : `children` dans JSX et le prop `children` dans une mise en page `.nexy`.
+- **Slots** : les mises en page fournissent un emplacement dans lequel la page imbriquée est injectée : `children` dans JSX, et le `children` prop dans une mise en page `.nexy`.
 - **Préservation de l'état** : étant donné que la mise en page reste montée, tout état qu'elle contient (par exemple, une requête de recherche dans un en-tête) est préservé pendant la navigation.
 
 Le même emplacement dans une disposition `.nexy` :

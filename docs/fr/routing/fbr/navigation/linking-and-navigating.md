@@ -38,12 +38,12 @@ export default function Nav() {
 }
 ```
 
-| Accessoire | Signification |
+| Prop | Signification |
 |---|---|
 | `href` | Un itinéraire du projet (une faute de frappe est une erreur de type), éventuellement avec `?query` ou `#fragment`, ou une URL externe. |
 | `replace` | Remplacez l’entrée de l’historique au lieu d’en ajouter une. |
 | `scroll` | `false` conserve la position de défilement après la navigation. Par défaut : `true`. |
-| `prefetch` | `'intent'` (par défaut) charge la page au survol, au focus ou au toucher ; `'viewport'` lorsque le lien apparaît ; `false` jamais. |
+| `prefetch` | `'intent'` (par défaut) charge la page au survol, au focus ou au toucher ; `'viewport'` lorsque le lien défile vers l'écran ; `false` jamais. |
 | `activeClassName` | Ajouté à la classe lorsque le lien pointe vers la page actuelle ou une page en dessous (`activeClass` dans Vue et Svelte). |
 | `exact` | Actif uniquement sur la page exacte. |
 
@@ -105,12 +105,12 @@ export default function Breadcrumb() {
 
 ## Attrapez une page qui échoue avec `ErrorBoundary`
 
-`ErrorBoundary` affiche une solution de secours à la place de ses enfants lorsque l'un d'eux lance un lancer pendant le rendu dans le navigateur. La solution de secours reçoit l'erreur et `reset`, ce qui restitue à nouveau les enfants.
+`ErrorBoundary` affiche une solution de repli à la place de ses enfants lorsque l'un d'eux lance un lancer pendant le rendu dans le navigateur. La solution de secours reçoit l'erreur et `reset`, ce qui restitue à nouveau les enfants.
 
 | Cadre | Importer | Repli |
 |---|---|---|
 | React, Preact, Solid | `import { ErrorBoundary } from "@nexy/client"` | `fallback={(error, reset) => ...}` |
-| Vue | `import { ErrorBoundary } from "@nexy/client"` | un accessoire de fonction `fallback` ; les enfants vont dans l'emplacement par défaut |
+| Vue | `import { ErrorBoundary } from "@nexy/client"` | une fonction `fallback` prop ; les enfants vont dans l'emplacement par défaut |
 | Svelte | `import ErrorBoundary from "@nexy/ErrorBoundary.svelte"` | un extrait de `fallback` |
 
 ```tsx
@@ -161,7 +161,7 @@ Le drapeau se lit là où il change, dans le langage de chaque framework :
 | Cadre | Suivez le drapeau |
 |---|---|
 | React, Preact | `useBlocker(dirty)` sur chaque rendu |
-| Vue | `useBlocker(dirty)` avec `dirty` une référence ou un calculé |
+| Vue | `useBlocker(dirty)` avec `dirty` une référence ou un calcul |
 | Solid | `createEffect(() => useBlocker(dirty()))` |
 | Svelte | `$effect(() => useBlocker(dirty))` |
 
@@ -188,7 +188,7 @@ Une fonction ne demande pas toute seule et ne tient pas de rechargement ; appele
 
 - `alt` est requis ; utilisez `alt=""` pour une image décorative. Nexy prévient une fois lorsqu'il manque.
 - Avec `width` et `height`, les attributs donnent au navigateur le rapport hauteur/largeur et l'image reste fluide (`height: auto; max-width: 100%`).
-- `priority` charge désormais l'image en haute priorité, pour celle visible à l'arrivée.
+- `priority` charge désormais l'image en haute priorité, pour celle qui est visible à l'arrivée.
 - `fill` fait que l'image recouvre son parent positionné, en ignorant `width` et `height`.
 - `sizes` et `srcSet` passent. Nexy ne redimensionne ni ne convertit les images.
 
@@ -201,7 +201,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` restitue `<a href="/about" data-nexy-link="true">`. Chaque attribut et le `href` sont échappés en HTML.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` rend `<a href="/about" data-nexy-link="true">`. Chaque attribut et le `href` sont échappés en HTML.
 
 ## Ce que fait le routeur
 

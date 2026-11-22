@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-Les accessoires sont déclarés avec `prop[...]`, une valeur par défaut est une valeur par défaut de Python et `<slot />` est `<Slot />` :
+Props sont déclarés avec `prop[...]`, une valeur par défaut est une valeur par défaut de Python et `<slot />` est `<Slot />` :
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## Le titre et les balises méta
 
-Le accessoire `title` de la mise en page devient `metadata` dans la page, que `useMetadata().html()` écrit dans le `<head>` de la mise en page ci-dessus :
+Le `title` prop de la mise en page devient `metadata` dans la page, que `useMetadata().html()` écrit dans le `<head>` de la mise en page ci-dessus :
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-Une page `.nexy` dynamique s'affiche sur demande, il n'y a donc pas de liste de chemins : le segment est un accessoire et un segment inconnu est un `404`.
+Une page `.nexy` dynamique s'affiche sur demande, il n'y a donc pas de liste de chemins : le segment est un prop et un segment inconnu est un `404`.
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---

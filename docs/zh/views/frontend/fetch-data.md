@@ -199,7 +199,7 @@ class UserByIdController:
 
 该组件在两个路由器中以相同的方式读取错误：
 
-```tsx filename="src/组件/用户名.tsx"
+```tsx filename=""
 import { useFetch, FetchError } from "@nexy/client";
 
 export function UserName({ id }: { id: number }) {

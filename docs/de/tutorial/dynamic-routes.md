@@ -1,6 +1,6 @@
 # Erstellen Sie eine Notizen-App mit Nexy, Teil 3: dynamische Routen und eine API
 
-Teil 3 gibt jeder Notiz eine eigene URL, `/notes/1`, und stellt dieselben Notizen als JSON unter `/api/notes` bereit, die beide aus einem Python-Modul gelesen werden.
+Teil 3 gibt jeder Notiz eine eigene URL, `/notes/1`, und stellt dieselben Notizen als JSON unter `/api/notes` bereit, beide werden aus einem Python-Modul gelesen.
 
 **Bevor Sie beginnen:** die App von [Teil 2](pages-and-layouts.md).
 
@@ -57,7 +57,7 @@ notes = NOTES.items()
 ## Fügen Sie eine Seite pro Notiz hinzu
 
 <!-- router:fbr,custom -->
-Ein Ordner- oder Dateiname in Klammern ist ein Segment der URL: `[id].nexy` antwortet auf `/notes/1`, `/notes/2` und übergibt das Segment als Requisite an die Seite. `id: prop[int]` wandelt es in eine Zahl um, sodass `/notes/abc` `404` antwortet, bevor die Seite ausgeführt wird.
+Ein Ordner- oder Dateiname in Klammern ist ein Segment der URL: `[id].nexy` antwortet auf `/notes/1`, `/notes/2` und übergibt das Segment als prop an die Seite. `id: prop[int]` wandelt es in eine Zahl um, sodass `/notes/abc` `404` antwortet, bevor die Seite ausgeführt wird.
 
 ```nexy filename="src/routes/notes/[id].nexy"
 ---
@@ -77,7 +77,7 @@ if text is None:
 <!-- /router -->
 
 <!-- router:modular -->
-Ein `{id}` im Pfad eines Controllers ist ein Segment der URL, das unter diesem Namen an die Methode übergeben wird. `id: int` wandelt es in eine Zahl um, sodass `/notes/abc` `404` antwortet, bevor die Methode ausgeführt wird.
+Ein `{id}` im Pfad eines Controllers ist ein Segment der URL, das unter diesem Namen an die Methode übergeben wird. `id: int` wandelt es in eine Zahl um, also antwortet `/notes/abc` mit `404`, bevor die Methode ausgeführt wird.
 
 ```nexy filename="src/apps/notes/note_view.nexy"
 ---

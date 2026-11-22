@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-يتم الإعلان عن الخاصيات باستخدام `prop[...]`، والافتراضي هو Python الافتراضي، و `<slot />` هو `<Slot />`:
+تم الإعلان عن Props بـ `prop[...]`، والافتراضي هو Python الافتراضي، و `<slot />` هو `<Slot />`:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## العنوان والعلامات الوصفية
 
-تصبح الدعامة `title` للتخطيط `metadata` في الصفحة، والتي يكتبها `useMetadata().html()` في `<head>` للتخطيط أعلاه:
+يصبح `title` prop من التخطيط `metadata` في الصفحة، والذي يكتب `useMetadata().html()` في `<head>` من التخطيط أعلاه:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-يتم عرض صفحة `.nexy` ديناميكية عند الطلب، لذلك لا توجد قائمة بالمسارات: المقطع هو دعامة، والجزء غير المعروف هو `404`.
+يتم عرض صفحة `.nexy` ديناميكية عند الطلب، لذلك لا توجد قائمة بالمسارات: المقطع هو prop، والجزء غير المعروف هو `404`.
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -203,7 +203,7 @@ class NexyConfig(NexyConfigModel):
     useAliases = {"@": "src"}
 ```
 
-## Markdown صفحة
+## Markdown صفحات
 
 ```md filename="src/pages/changelog.md"
 ---
@@ -220,7 +220,7 @@ layout: ../layouts/Base.astro
 Version 2.2 is out.
 ```
 
-`.mdx` تعمل الصفحات أيضًا، مع React أو Preact كإطار عمل. انظر [Markdown و MDX](../views/nexy/markdown.md).
+تعمل صفحات `.mdx` أيضًا، مع React أو Preact كإطار عمل. انظر [Markdown و MDX](../views/nexy/markdown.md).
 
 ## نقاط نهاية API
 
@@ -251,7 +251,7 @@ async def POST(item: NewItem):
     return JSONResponse({"created": item.name}, status_code=201)
 ```
 
-## `Astro.redirect` و `Astro.cookies` و `Astro.url`
+## `Astro.redirect`، `Astro.cookies` و `Astro.url`
 
 ```astro filename="src/pages/account.astro"
 ---

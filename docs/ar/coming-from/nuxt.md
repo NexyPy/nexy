@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-تصل المقاطع إلى الصفحة كدعائم:
+تصل المقاطع إلى الصفحة كـ props:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -75,7 +75,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-لا يوجد `<NuxtLayout>` ولا `app.vue`: الجذر `layout.vue` يملك الوثيقة ويغلف كل صفحة، و `layout.vue` في مجلد فرعي يعشش بداخلها.
+لا يوجد `<NuxtLayout>` ولا `app.vue`: يمتلك الجذر `layout.vue` المستند ويغلف كل صفحة، و `layout.vue` في مجلد فرعي يعشش بداخله.
 
 ```vue filename="src/routes/layout.vue"
 <template>
@@ -334,7 +334,7 @@ useSeoMeta({ title: "Blog", description: "Posts about Nexy" });
 </script>
 ```
 
-لا تحتوي الصفحة `.vue` على واجهة برمجة تطبيقات للبيانات الوصفية في Nexy: ضع العلامات في تخطيط الجذر. في وضع الخادم، تقوم صفحة `.nexy` بتعيينها، ويكتبها تخطيطها بـ `{{ useMetadata().html() }}`:
+لا تحتوي صفحة `.vue` على واجهة برمجة تطبيقات للبيانات الوصفية في Nexy: ضع العلامات في تخطيط الجذر. في وضع الخادم، تقوم صفحة `.nexy` بتعيينها، ويكتبها تخطيطها باستخدام `{{ useMetadata().html() }}`:
 
 ```nexy filename="src/routes/blog.nexy"
 ---

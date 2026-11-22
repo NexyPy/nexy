@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-प्रॉप्स को `prop[...]` के साथ घोषित किया जाता है, डिफॉल्ट को Python डिफॉल्ट के साथ घोषित किया जाता है, और `<slot />` को `<Slot />` के साथ घोषित किया जाता है:
+Props को `prop[...]` के साथ घोषित किया जाता है, डिफ़ॉल्ट को Python डिफ़ॉल्ट के साथ घोषित किया जाता है, और `<slot />` को `<Slot />` के साथ घोषित किया जाता है:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## शीर्षक और मेटा टैग
 
-पृष्ठ में लेआउट का `title` प्रोप `metadata` बन जाता है, जिसे `useMetadata().html()` उपरोक्त लेआउट के `<head>` में लिखता है:
+पृष्ठ में लेआउट का `title` prop `metadata` बन जाता है, जिसे `useMetadata().html()` उपरोक्त लेआउट के `<head>` में लिखता है:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-एक गतिशील `.nexy` पृष्ठ अनुरोध पर प्रस्तुत होता है, इसलिए पथों की कोई सूची नहीं है: खंड एक प्रोप है, और एक अज्ञात एक `404` है।
+एक गतिशील `.nexy` पृष्ठ अनुरोध पर प्रस्तुत होता है, इसलिए पथों की कोई सूची नहीं है: खंड एक prop है, और एक अज्ञात एक `404` है।
 
 ```nexy filename="src/routes/posts/[स्लग].nexy"
 ---
@@ -161,7 +161,7 @@ title = POSTS[slug]
 <h1>{{ title }}</h1>
 ```
 
-`[...path].astro` `[...path].nexy` है।
+`[...path].astro` है `[...path].nexy`।
 
 ## द्वीप और `client:*`
 
@@ -235,7 +235,7 @@ async def GET(id: int):
     return {"id": id}
 ```
 
-बॉडी एक Pydantic मॉडल है, जिसे फ़ंक्शन चलने से पहले मान्य किया जाता है:
+एक बॉडी एक Pydantic मॉडल है, जिसे फ़ंक्शन चलने से पहले मान्य किया जाता है:
 
 ```python filename="src/routes/api/items/index.py"
 from pydantic import BaseModel

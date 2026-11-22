@@ -88,7 +88,7 @@ Sous le thème se trouve du HTML avec Jinja2. Les variables du frontmatter et le
 {% endif %}
 ```
 
-L'échappement automatique est **désactivé** : les modèles sont le propre HTML du projet, donc `{{ value }}` est inséré tel qu'écrit. Échappez-vous aux valeurs non fiables avec `{{ value | e }}`. `| safe` ne change donc rien.
+L'échappement automatique est **désactivé** : les modèles sont le propre code HTML du projet, donc `{{ value }}` est inséré tel qu'écrit. Échappez-vous aux valeurs non fiables avec `{{ value | e }}`. `| safe` ne change donc rien.
 
 > [!NOTE]
 > enveloppez JavaScript qui contient `{{` ou `{%` dans `{% raw %}...{% endraw %}`. Les frameworks tels que Vue et Svelte utilisent les mêmes accolades.
@@ -129,7 +129,7 @@ La dernière ligne est exactement `{{ Audio("/theme.mp3", controls=True) }}`. Le
 
 Les enfants sont rendus via `<Slot />` (S majuscule) à l'intérieur du composant enfant et via `{{ children }}` à l'intérieur d'une mise en page.
 
-Passez une valeur calculée avec Jinja à l'intérieur de l'attribut : `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nom simple tel que `path=icon` est le texte `icon`, pas la variable. Pour donner à un composant une classe CSS, déclarez un accessoire `class_name` : `class` est un mot-clé Python.
+Passez une valeur calculée avec Jinja à l'intérieur de l'attribut : `<Icon path="{{ icon }}" size="{{ size }}" />`. Un nom simple tel que `path=icon` est le texte `icon`, pas la variable. Pour donner à un composant une classe CSS, déclarez un `class_name` prop : `class` est un mot-clé Python.
 
 > [!NOTE]
 > une balise d'assistance se ferme toujours automatiquement. La transmission de contenu à `Link` passe par son argument `children` (`<Link href="/about" children="About" />`), et non par le contenu de l'élément.
@@ -141,7 +141,7 @@ Les blocs `<style>` sont émis avec la page qui les déclare. Ils n'ont pas de p
 ## Des règles qui font gagner du temps
 
 - Un composant par fichier. Le nom du fichier est le nom du composant, en PascalCase (`CopyChip.nexy`). Un composant `.nexy` est importé en tant que module Python : un trait d'union dans le nom (`copy-chip.nexy`) ne compile pas.
-- Déclarez les accessoires avant de les utiliser : une variable non déclarée s'affiche sous la forme d'une chaîne vide, car l'indéfini de Jinja2 est silencieux ici.
+- Déclarez props avant de les utiliser : une variable non déclarée s'affiche sous la forme d'une chaîne vide, car l'indéfini de Jinja2 est silencieux ici.
 - Gardez les effets secondaires dans les fonctions - le frontmatter s'exécute à nouveau à chaque demande.
 
 ## Prochaines étapes

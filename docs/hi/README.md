@@ -112,13 +112,13 @@
 ### नेक्सी विचार
 | पेज | तुम क्या करोगे |
 |---|---|
-| [.nexy फ़ाइलें](views/nexy/README.md) | Python, Jinja2 और प्रॉप्स के साथ एक पेज लिखें |
+| [.nexy फ़ाइलें](views/nexy/README.md) | Python, Jinja2 और props के साथ एक पेज लिखें |
 | [घटक](views/nexy/components.md) | `Image`, `Link`, `Audio`, `Video` और `Import` का उपयोग करें |
 
 ### फ़ाइलों में पेज और लेआउट {fbr,custom}
 | पेज | यह क्या परिभाषित करता है |
 |---|---|
-| [फ्रंटएंड पेज](views/frontend/pages.md) | एक फ़ाइल, एक रूट: प्रॉप्स, रेंडरिंग, मेटाडेटा |
+| [फ्रंटएंड पेज](views/frontend/pages.md) | एक फ़ाइल, एक मार्ग: props, प्रतिपादन, मेटाडेटा |
 | [फ्रंटएंड लेआउट](views/frontend/layouts.md) | दस्तावेज़ शेल, नेस्टिंग, और एक लेआउट क्या नहीं कर सकता |
 | [लेआउट.नेक्सी](views/nexy/layouts.md) | सर्वर-मोड लेआउट लिखें |
 | [Markdown और MDX](views/nexy/markdown.md) | सामग्री पृष्ठ लिखें |

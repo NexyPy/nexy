@@ -52,7 +52,7 @@ const route = useRoute();
 </template>
 ```
 
-طبقات صفحہ پر بطور پروپس پہنچتے ہیں:
+طبقات صفحہ پر اس طرح پہنچتے ہیں props:
 
 ```vue filename="src/routes/blog/[slug].vue"
 <script setup lang="ts">
@@ -75,7 +75,7 @@ defineProps<{ slug: string }>();
 </template>
 ```
 
-کوئی `<NuxtLayout>` اور کوئی `app.vue` نہیں ہے: جڑ `layout.vue` دستاویز کا مالک ہے اور ہر صفحے کو لپیٹتا ہے، اور اس کے اندر ایک ذیلی فولڈر میں ایک `layout.vue` گھوںسلا ہے۔
+کوئی `<NuxtLayout>` اور کوئی `app.vue` نہیں ہے: جڑ `layout.vue` دستاویز کا مالک ہے اور ہر صفحے کو لپیٹتا ہے، اور اس کے اندر ایک ذیلی فولڈر میں ایک `layout.vue` گھونسلا ہے۔
 
 ```vue filename="src/routes/layout.vue"
 <template>
@@ -116,7 +116,7 @@ const router = useRouter();
 </template>
 ```
 
-اجزاء خودکار درآمد نہیں ہوتے ہیں: جہاں آپ انہیں استعمال کرتے ہیں انہیں درآمد کریں۔
+اجزاء خود بخود درآمد نہیں ہوتے ہیں: جہاں آپ انہیں استعمال کرتے ہیں انہیں درآمد کریں۔
 
 ## `server/api`
 
@@ -235,7 +235,7 @@ users = [{"id": 1, "name": "Ada"}, {"id": 2, "name": "Alan"}]
 </ul>
 ```
 
-## اتپریورتن: سرور کے راستے میں `$fetch`
+## اتپریورتنوں: سرور کے راستے میں `$fetch`
 
 ```vue filename="اجزاء/AddTodo.vue"
 <script setup lang="ts">
@@ -334,7 +334,7 @@ useSeoMeta({ title: "Blog", description: "Posts about Nexy" });
 </script>
 ```
 
-ایک `.vue` صفحہ کا Nexy میں کوئی میٹا ڈیٹا API نہیں ہے: ٹیگز کو روٹ لے آؤٹ میں ڈالیں۔ سرور موڈ میں ایک `.nexy` صفحہ انہیں ترتیب دیتا ہے، اور اس کی ترتیب انہیں `{{ useMetadata().html() }}` کے ساتھ لکھتی ہے:
+Nexy میں ایک `.vue` صفحہ کا کوئی میٹا ڈیٹا API نہیں ہے: ٹیگز کو روٹ لے آؤٹ میں ڈالیں۔ سرور موڈ میں ایک `.nexy` صفحہ انہیں سیٹ کرتا ہے، اور اس کی ترتیب انہیں `{{ useMetadata().html() }}` کے ساتھ لکھتی ہے:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -360,7 +360,7 @@ revalidate = 60
 <h1>News</h1>
 ```
 
-## Vue سرور کے صفحات میں اجزاء
+## سرور کے صفحات میں Vue اجزاء
 
 ```vue filename="components/Counter.vue"
 <script setup lang="ts">
@@ -375,7 +375,7 @@ const count = ref(props.start ?? 0);
 </template>
 ```
 
-سرور موڈ میں جزو ایک `.nexy` صفحہ کا ایک جزیرہ ہے، جیسا کہ سرور کی طرف سے پیش کردہ Nuxt صفحہ کا ایک `<ClientOnly>` حصہ، اس کے لیے ہدایت کے ساتھ کہ یہ کب ہائیڈریٹ ہوتا ہے:
+سرور موڈ میں جزو ایک `.nexy` صفحہ کا ایک جزیرہ ہے، جیسا کہ سرور کی طرف سے پیش کردہ Nuxt صفحہ کا `<ClientOnly>` حصہ، اس کے لیے ہدایت کے ساتھ کہ یہ کب ہائیڈریٹ ہوتا ہے:
 
 ```nexy filename="src/routes/home.nexy"
 ---

@@ -93,7 +93,7 @@ Ein Anruf mit JSON antwortet mit dem Ergebnis und `422` mit den ungültigen Feld
 
 ## Testen Sie eine `.nexy`-Komponente
 
-`nexy.testing.render` kompiliert eine Komponente mit den importierten Komponenten und gibt deren HTML zurück. Requisiten sind Schlüsselwortargumente und `children=` füllt den Platz:
+`nexy.testing.render` kompiliert eine Komponente mit den importierten Komponenten und gibt deren HTML zurück. Props sind Schlüsselwortargumente und `children=` füllt den Platz:
 
 ```python filename="tests/test_button.py"
 from nexy.testing import render
@@ -134,7 +134,7 @@ nx build
 nx test
 ```
 
-`nx build` schlägt aufgrund eines Kompilierungsfehlers fehl; `nx test` schlägt bei einer fehlerhaften Behauptung fehl und wird mit einem Wert ungleich Null beendet. `nx check` fügt mypy und `tsc` zum Lauf hinzu.
+`nx build` schlägt aufgrund eines Kompilierungsfehlers fehl; `nx test` schlägt bei einer fehlgeschlagenen Behauptung fehl und wird mit einem Wert ungleich Null beendet. `nx check` fügt mypy und `tsc` zum Lauf hinzu.
 
 Die Arbeit an Nexy selbst verwendet verschiedene Befehle: siehe [CONTRIBUTING](https://github.com/NexyPy/nexy/blob/main/CONTRIBUTING.md).
 

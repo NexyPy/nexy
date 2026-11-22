@@ -11,7 +11,7 @@ Die in diesen Dokumenten verwendeten Wörter, jeweils eine Zeile, in alphabetisc
 | Client-Modus | `useCSR = True`: Framework-Dateien sind die Routen und der Browser navigiert ([Modi](../routing/fbr/modes.md)) |
 | Komponente | ein wiederverwendbarer UI-Baustein, der zum Erstellen einer Ansicht verwendet wird ([Ansichten](../views/README.md)) |
 | CSR | Clientseitiges Rendering: Der Browser rendert Seiten nach dem ersten Dokument ([CSR](../rendering/csr.md)) |
-| Abhängigkeit | Eine Funktion FastAPI wird vor einem Handler, pro Route oder pro Ordner ausgeführt ([Abhängigkeiten](../routing/fbr/dependencies/README.md)) |
+| Abhängigkeit | Eine Funktion FastAPI wird vor einem Handler ausgeführt, pro Route oder pro Ordner ([Abhängigkeiten](../routing/fbr/dependencies/README.md)) |
 | Dokumentenhülle | die `<html>`, `<head>` und `<body>` um eine Seite herum, Eigentum des nächstgelegenen Layouts oder von Nexy ([Layouts](../routing/fbr/layouts/README.md)) |
 | Endpunkt | die einzigartige Kombination einer URL und einer HTTP-Methode ([Ansichten](../views/README.md)) |
 | FBR | Dateibasiertes Routing: Eine Datei unter `src/routes/` ist eine Route ([Routing](../routing/fbr/README.md)) |
@@ -26,7 +26,7 @@ Die in diesen Dokumenten verwendeten Wörter, jeweils eine Zeile, in alphabetisc
 | Modularer Router | Routen deklariert mit `@Module` und `@Controller` unter `src/apps/` ([modular](../routing/modular/README.md)) |
 | Seite | eine über eine URL adressierbare Ressource, die durch eine Datei unter `src/routes/` definiert wird ([Ansichten](../views/README.md)) |
 | Vorabholen | Laden der Seite hinter einem Link, bevor der Leser darauf klickt ([Verlinkung](../routing/fbr/navigation/linking-and-navigating.md)) |
-| Requisiten | die Werte, die ein übergeordnetes Element an eine Komponente übergibt ([.nexy-Dateien](../views/nexy/README.md)) |
+| Props | die Werte, die ein übergeordnetes Element an eine Komponente übergibt ([.nexy-Dateien](../views/nexy/README.md)) |
 | Erneut validieren | die Anzahl der Sekunden, nach denen eine ISR-Seite im Hintergrund neu erstellt wird ([ISR](../rendering/isr.md)) |
 | Route | ein URL-Muster, erzeugt durch den Pfad einer Routendatei ([Routing](../routing/README.md)) |
 | Routengruppe | ein Ordner in Klammern, der Routen gruppiert, ohne ein Segment hinzuzufügen ([dynamische Routen](../routing/fbr/pages/dynamic-routes.md)) |
@@ -35,7 +35,7 @@ Die in diesen Dokumenten verwendeten Wörter, jeweils eine Zeile, in alphabetisc
 | Geschicklichkeit | ein Ordner mit einem `SKILL.md`, der einem Codierungsagenten einen Teil von Nexy beibringt ([Codierungsagenten](../guides/ai-agents.md)) |
 | SSG | statische Site-Generierung; **kein Nexy-Modus**: Der im Voraus erstellte HTML-Code wird immer vom Server zurückgelesen ([Rendering](../rendering/README.md)) |
 | SSR | serverseitiges Rendering: Der Server rendert jede Seite für seine Anfrage, und dies ist die Standardeinstellung ([SSR](../rendering/ssr.md)) |
-| Ansicht | der Prozess der Erstellung des Antworttextes für eine Seite ([Ansichten](../views/README.md)) |
+| Ansicht | der Prozess der Erstellung des Antworttexts für eine Seite ([Ansichten](../views/README.md)) |
 
 ## Dateien und Ordner
 

@@ -112,4 +112,4 @@ debugpy peut avertir que "des modules gelés sont utilisés". Commencez Python p
 
 - [Dépannage](troubleshooting.md) : les premiers problèmes rencontrés par les gens
 - [Tests](testing.md) : reproduire le bug dans un test une fois que vous l'avez trouvé
-- [Fichiers .nexy](../views/nexy/README.md) : présentation, accessoires et modèles
+- [Fichiers .nexy](../views/nexy/README.md) : frontmatter, props et modèles

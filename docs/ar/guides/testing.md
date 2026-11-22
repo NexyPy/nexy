@@ -11,9 +11,9 @@ nx test --no-server --client  # vitest only
 
 ## ما يدير
 
-| الجزء | الأمر | الشرط |
+| جزء | القيادة | الحالة |
 |---|---|---|
-| الخادم | `pytest` | يعمل على `tests/` عندما يكون موجودًا، وإلا على جذر المشروع؛ تم تخطيه مع تحذير عند عدم تثبيت pytest |
+| الخادم | `pytest` | يعمل على `tests/` عندما يكون موجودا، وإلا على جذر المشروع؛ تم تخطيه مع تحذير عند عدم تثبيت pytest |
 | العميل | `npx vitest run` | فقط مع `--client`، وفقط عند وجود `vitest.config.ts` أو ظهور `vitest` في `package.json` |
 
 لا يوجد عداء مدمج من النهاية إلى النهاية. قم بقيادة الخادم باستخدام `TestClient` وأضف Playwright أو Cypress بنفسك لسلوك المتصفح.
@@ -93,7 +93,7 @@ def test_form_posts_to_action(client):
 
 ## اختبار مكون `.nexy`
 
-`nexy.testing.render` يقوم بتجميع مكون، مع المكونات التي يستوردها، وإرجاع HTML الخاص به. الدعائم هي وسيطات للكلمات الرئيسية و `children=` تملأ الفتحة:
+`nexy.testing.render` يقوم بتجميع مكون، مع المكونات التي يستوردها، وإرجاع HTML الخاص به. Props عبارة عن وسيطات للكلمات الرئيسية و `children=` تملأ الفتحة:
 
 ```python filename="الاختبارات/test_button.py"
 from nexy.testing import render
@@ -103,7 +103,7 @@ def test_button_shows_its_label():
     assert "Save" in render("src/components/button.nexy", label="Save")
 ```
 
-قم بتشغيل pytest من جذر المشروع: تذهب الملفات المترجمة إلى `__nexy__/`، كما هو الحال مع `nx dev`. يحتاج المكون الذي يقرأ الطلب (`usePathname`، `useSession`) إلى اختبار الصفحة باستخدام `TestClient` بدلاً من ذلك.
+قم بتشغيل pytest من جذر المشروع: تذهب الملفات المترجمة إلى `__nexy__/`، كما هو الحال مع `nx dev`. يحتاج المكون الذي يقرأ الطلب (`usePathname`، `useSession`) إلى اختبار صفحة باستخدام `TestClient` بدلاً من ذلك.
 
 ## اختبر العميل
 
@@ -142,4 +142,4 @@ nx test
 
 - [CLI](../reference/cli.md): كل علم `nx test`
 - [API](../routing/fbr/handlers/README.md): ما ترجعه نقطة النهاية
-- [نشر](../deployment/README.md): قم بالإنشاء قبل الاختبار في CI
+- [النشر](../deployment/README.md): قم بالإنشاء قبل الاختبار في CI

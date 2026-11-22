@@ -48,7 +48,7 @@ class NexyConfig(NexyConfigModel):
 <h1>{page.params.slug}</h1>
 ```
 
-অংশগুলি প্রপ হিসাবে পৃষ্ঠায় পৌঁছায়:
+অংশগুলি পৃষ্ঠায় props হিসাবে পৌঁছায়:
 
 ```svelte filename="src/routes/blog/[slug].svelte"
 <script lang="ts">
@@ -58,7 +58,7 @@ class NexyConfig(NexyConfigModel):
 <h1>{slug}</h1>
 ```
 
-অন্য কোনো উপাদানে, `@nexy/client` এর `params` স্টোরটি তাদের ধরে রাখে: `$params.slug`। `[...rest]` এবং `(group)` ফোল্ডারগুলি SvelteKit-এর মতো কাজ করে।
+অন্য কোনো উপাদানে, `params` স্টোরের `@nexy/client` তাদের ধরে রাখে: `$params.slug`। `[...rest]` এবং `(group)` ফোল্ডারগুলি SvelteKit-এর মতো কাজ করে।
 
 ## `+layout.svelte`
 
@@ -328,7 +328,7 @@ export function entries() {
 }
 ```
 
-প্রতি মান প্রতি একটি প্রাক-রেন্ডার করা নথির জন্য পৃষ্ঠা থেকে `getStaticParams` রপ্তানি করুন:
+প্রতি মান প্রতি একটি প্রাক-প্রস্তুত নথির জন্য পৃষ্ঠা থেকে `getStaticParams` রপ্তানি করুন:
 
 ```svelte filename="src/routes/posts/[slug].svelte"
 <script lang="ts" module>
@@ -407,13 +407,13 @@ import os
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
 ```
 
-## চলছে
+## চলমান
 
 | SvelteKit | নেক্সি |
 |---|---|
 | `npx sv create` | `nx new`, টেমপ্লেট `web-fbr-svelte` |
 | `vite dev` | `nx dev` |
-| `vite build` একটি অ্যাডাপ্টার সহ, তারপর `node build` | `nx build`, তারপর `nx start` |
+| `vite build` একটি অ্যাডাপ্টারের সাথে, তারপর `node build` | `nx build`, তারপর `nx start` |
 | `static/` | `public/`, `/` এ পরিবেশিত |
 | `src/lib/` এবং `$lib` | `src/components/` এবং `@` |
 

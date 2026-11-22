@@ -112,13 +112,13 @@ Controladores e módulos.
 ### Visualizações próximas
 | Página | O que você fará |
 |---|---|
-| [Arquivos .nexy](views/nexy/README.md) | Escreva uma página com Python, Jinja2 e adereços |
+| [Arquivos .nexy](views/nexy/README.md) | Escreva uma página com Python, Jinja2 e props |
 | [Componentes](views/nexy/components.md) | Use `Image`, `Link`, `Audio`, `Video` e `Import` |
 
 ### Páginas e layouts em arquivos {fbr,custom}
 | Página | O que define |
 |---|---|
-| [Páginas de front-end](views/frontend/pages.md) | Um arquivo, uma rota: adereços, renderização, metadados |
+| [Páginas de front-end](views/frontend/pages.md) | Um arquivo, uma rota: props, renderização, metadados |
 | [Layouts de front-end](views/frontend/layouts.md) | O shell do documento, o aninhamento e o que um layout não pode fazer |
 | [layout.nexy](views/nexy/layouts.md) | Escreva o layout do modo servidor |
 | [Markdown e MDX](views/nexy/markdown.md) | Escreva páginas de conteúdo |
@@ -208,7 +208,7 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 |---|---|
 | [Do Expresso](coming-from/express.md) | Traduzir rotas, middleware e `req`/`res` em manipuladores Python |
 | [Do Fastify](coming-from/fastify.md) | Transforme esquemas, plugins e ganchos em modelos, pastas e arquivos |
-| [De Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Eden para Pydantic e ações digitadas |
+| [De Elísia](coming-from/elysia.md) | Mapeie `t` esquemas, guardas e Éden para Pydantic e ações digitadas |
 | [De Hono](coming-from/hono.md) | Mapeie rotas, middleware e o cliente `hc` para Nexy |
 
 ### Estruturas Fullstack {fbr}
@@ -226,7 +226,7 @@ As mesmas tarefas, escritas no framework que você conhece e depois no Nexy.
 | Página | O que você fará |
 |---|---|
 | [De NestJS](coming-from/nestjs.md) | Mova controladores, módulos, provedores e proteções para o roteador modular |
-| [Da inicialização Spring](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
+| [Da inicialização do Spring](coming-from/spring-boot.md) | Mova controladores, serviços e filtros para o roteador modular |
 
 ## Referência
 

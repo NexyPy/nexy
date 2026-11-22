@@ -98,13 +98,13 @@ En el modo servidor, el servidor representa cada página, `revalidate` almacena 
 
 **Vite no reemplaza a Nexy.** Vite agrupa y sirve código de cliente. No enruta una solicitud, no muestra una página `.nexy`, no ejecuta una acción ni posee el origen. El navegador se comunica con un origen, el de Nexy, y en el desarrollo, los servidores proxy de Nexy Vite se comunican a través de él, por lo que no hay CORS que configurar.
 
-**Nexy no reemplaza a React.** Nexy decide qué componente se renderiza, cuándo y con qué accesorios; el marco posee el modelo de componente, la reactividad y el ecosistema. Una página `.nexy` importa un componente como una isla; en modo cliente una ruta *es* un componente.
+**Nexy no reemplaza a React.** Nexy decide qué componente se renderiza, cuándo y con qué props; el marco posee el modelo de componente, la reactividad y el ecosistema. Una página `.nexy` importa un componente como una isla; en modo cliente una ruta *es* un componente.
 
-Para una ruta de componente, Python escribe solo un módulo contenedor delgado que apunta al archivo. La compilación y el renderizado del lado del servidor son trabajo de Vite.
+Para la ruta de un componente, Python escribe solo un módulo contenedor delgado que apunta al archivo. La compilación y el renderizado del lado del servidor son trabajo de Vite.
 
 ## Desarrollo y producción
 
-`nx dev` verifica `nexyconfig.py`, compila las páginas, inicia Vite cuando el proyecto tiene un marco frontend y reinicia el servidor cuando guarda. `nx build` hace el mismo trabajo una vez, antes de tiempo, y `nx start` sirve el resultado.
+`nx dev` verifica `nexyconfig.py`, compila las páginas, inicia Vite cuando el proyecto tiene un marco de interfaz y reinicia el servidor cuando guarda. `nx build` hace el mismo trabajo una vez, antes de tiempo, y `nx start` sirve el resultado.
 
 | | `nx dev` | `nx build` luego `nx start` |
 |---|---|---|

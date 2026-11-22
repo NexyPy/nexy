@@ -162,7 +162,7 @@ children: prop[NexyElement]
 {% endmacro %}
 ```
 
-ایک جزو ایک `.nexy` فائل ہے جس میں پروپس ہے، جو فرنٹ میٹر میں درآمد کی جاتی ہے:
+ایک جزو ایک `.nexy` فائل ہے جس میں props، فرنٹ میٹر میں درآمد کیا گیا ہے:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -267,7 +267,7 @@ def add_note():
     return redirect(url_for("notes"))
 ```
 
-ایک ایکشن ایک Python فنکشن ہے جو فارم پوسٹ کرتا ہے۔ Nexy اسے ایک راستہ دیتا ہے، فارم کی فیلڈز کو اس کے پیرامیٹرز کے طور پر پڑھتا ہے، اور وزیٹر کو صفحہ پر واپس بھیجتا ہے `303`:
+ایک ایکشن ایک Python فنکشن ہے جس پر فارم پوسٹ کیا جاتا ہے۔ Nexy اسے ایک راستہ دیتا ہے، فارم فیلڈز کو اس کے پیرامیٹرز کے طور پر پڑھتا ہے، اور وزیٹر کو صفحہ پر واپس بھیجتا ہے `303`:
 
 ```python filename="src/actions/notes.py"
 from nexy.decorators import Action
@@ -434,7 +434,7 @@ def test_hello():
 
 ## اگلے اقدامات
 
-- [سے FastAPI سے Nexy](fastapi.md): Nexy ہینڈلرز FastAPI ہینڈلر ہیں
-- [اعمال ](../guides/actions.md)
+- [سے FastAPI سے Nexy](fastapi.md): Nexy ہینڈلر FastAPI ہینڈلر ہیں
+- [اعمال](../guides/actions.md)
 - [.nexy فائلیں](../views/nexy/README.md)
 - [ترکیبیں](../guides/recipes.md): سائن ان، CRUD اور اپ لوڈز

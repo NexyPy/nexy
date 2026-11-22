@@ -79,11 +79,11 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### ہینڈلر اور غلطیاں {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [روٹ ہینڈلر](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
+| [روٹ سنبھالنے والے](routing/fbr/handlers/README.md) | ایک Python اختتامی نقطہ شامل کریں۔ |
 | [توثیق اور غلطیاں](routing/fbr/handlers/validation-and-errors.md) | جواب دیں `422` اور `404`، اور بلند کریں `HTTPException` |
 | [WebSocket ہینڈلر](routing/fbr/realtime/websocket.md) | ایک `SOCKET` کنکشن کو ہینڈل کریں۔ |
 | [انحصار اور محافظ](routing/fbr/dependencies/README.md) | ہینڈلر سے پہلے `dependencies.py` چلائیں، اور اسے وارث بنائیں |
-| [مڈل ویئر فائلیں](routing/fbr/middleware/README.md) | درخواستوں کو `middleware.py` کے ساتھ لپیٹیں، جو ڈائرکٹری سے وراثت میں ملی ہیں۔ |
+| [مڈل ویئر فائلیں](routing/fbr/middleware/README.md) | درخواستوں کو `middleware.py` کے ساتھ لپیٹنا، ڈائرکٹری سے وراثت میں ملا |
 | [خرابی کے صفحات](routing/fbr/errors/README.md) | `notfound.nexy`، `errors.nexy` اور JSON کی غلطیوں کے ساتھ جواب دیں۔ |
 | [خامی صفحات فی فولڈر](routing/fbr/errors/folder-pages.md) | ایج کیس: ذیلی فولڈرز سے غلطیاں |
 
@@ -112,13 +112,13 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### Nexy نظارے۔
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [.nexy فائلیں](views/nexy/README.md) | Python، Jinja2 اور پرپس کے ساتھ ایک صفحہ لکھیں۔ |
+| [.nexy فائلیں](views/nexy/README.md) | Python، Jinja2 اور props کے ساتھ ایک صفحہ لکھیں۔ |
 | [اجزاء](views/nexy/components.md) | `Image`، `Link`، `Audio`، `Video` اور `Import` کا استعمال کریں۔ |
 
 ### فائلوں میں صفحات اور ترتیب {fbr,custom}
 | صفحہ | جو اس کی تعریف کرتا ہے۔ |
 |---|---|
-| [فرنٹ اینڈ پیجز](views/frontend/pages.md) | ایک فائل، ایک راستہ: پرپس، رینڈرنگ، میٹا ڈیٹا |
+| [فرنٹ اینڈ صفحات](views/frontend/pages.md) | ایک فائل، ایک راستہ: props، رینڈرنگ، میٹا ڈیٹا |
 | [فرنٹ اینڈ لے آؤٹ](views/frontend/layouts.md) | دستاویز کا شیل، گھوںسلا، اور لے آؤٹ کیا نہیں کر سکتا |
 | [layout.nexy](views/nexy/layouts.md) | سرور موڈ لے آؤٹ لکھیں۔ |
 | [Markdown اور MDX](views/nexy/markdown.md) | مواد کے صفحات لکھیں۔ |
@@ -137,8 +137,8 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### موڈز
 | صفحہ | جو آپ فیصلہ کریں گے۔ |
 |---|---|
-| [رینڈرنگ ](rendering/README.md) | کون سا رینڈرنگ موڈ کسی صفحے پر فٹ بیٹھتا ہے۔ |
-| [ایس ایس آر](rendering/ssr.md) | سرور رینڈرنگ، ڈیفالٹ |
+| [انجام دینا](rendering/README.md) | کون سا رینڈرنگ موڈ کسی صفحے پر فٹ بیٹھتا ہے۔ |
+| [SSR](rendering/ssr.md) | سرور رینڈرنگ، ڈیفالٹ |
 | [جزائر](rendering/islands.md) | غیر فعال، مرئی یا میڈیا کے استفسار پر ہائیڈریٹ کریں۔ |
 
 ### فائل کے صفحات کے طریقوں {fbr,custom}
@@ -147,7 +147,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 | [آئی ایس آر](rendering/isr.md) | stale-while-revalidate کے ساتھ صفحات کیش کریں۔ |
 | [CSR](rendering/csr.md) | کلائنٹ سائیڈ روٹنگ |
 
-## رہنما
+## گائیڈز
 
 ### فارم اور ڈیٹا
 | صفحہ | آپ کیا کریں گے |
@@ -174,7 +174,7 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 |---|---|
 | [دیو ٹول بار](guides/devtools.md) | `nexy dev` کا ٹول بار استعمال کریں، اور اسے آف کریں۔ |
 | [ڈیبگنگ](guides/debugging.md) | اپنے سرور کوڈ میں `breakpoint()` یا VS کوڈ کے ساتھ رکیں۔ |
-| [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قواعد Claude Code، Codex اور OpenCode بتائیں |
+| [کوڈنگ ایجنٹ](guides/ai-agents.md) | اپنے پروجیکٹ کے قواعد Claude Code، Codex اور OpenCode کو بتائیں |
 | [خرابیوں کا سراغ لگانا](guides/troubleshooting.md) | لوگوں کے پہلے مسائل کو حل کریں۔ |
 
 ## ڈیٹا بیس
@@ -199,8 +199,8 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### Python فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [منجانب FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` ایک فائل بن جاتی ہے۔ |
-| [منجانب Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
+| [سے FastAPI](coming-from/fastapi.md) | اپنا FastAPI کوڈ رکھیں: صرف `@app.get` فائل بن جاتی ہے۔ |
+| [سے Flask](coming-from/flask.md) | نظارے، بلیو پرنٹس، ٹیمپلیٹس اور فارمز کو Nexy روٹس میں تبدیل کریں۔ |
 | [سے Django](coming-from/django.md) | نقشہ کے نظارے، ٹیمپلیٹس، ماڈل، فارم اور ترتیبات Nexy پر |
 
 ### JavaScript پسدید {fbr}
@@ -214,18 +214,18 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### فل اسٹیک فریم ورک {fbr}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں |
+| [سے Next.js](coming-from/nextjs.md) | اپنے React صفحات رکھیں اور سرور کوڈ کو Python پر منتقل کریں۔ |
 | [سے Remix](coming-from/remix.md) | لوڈرز اور ایکشن کو Python ہینڈلرز اور ایکشنز میں تبدیل کریں۔ |
 | [Nuxt ](coming-from/nuxt.md) سے | اپنے Vue صفحات کو رکھیں اور `server/` کو Python پر منتقل کریں۔ |
-| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
+| [SvelteKit ](coming-from/sveltekit.md) سے | اپنے Svelte صفحات کو رکھیں اور بوجھ، اعمال اور ہکس کو Python پر منتقل کریں۔ |
 | [سے Astro](coming-from/astro.md) | اسی جزیرے کے ساتھ Astro صفحات کو `.nexy` صفحات کے طور پر لکھیں |
-| [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستوں، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
+| [لاراویل سے ](coming-from/laravel.md) | نقشے کے راستے، کنٹرولرز، بلیڈ، فصاحت اور Nexy کے لیے قطاریں۔ |
 | [روبی آن ریلز سے ](coming-from/rails.md) | نقشے کے راستے، کنٹرولرز، ERB، ایکٹو ریکارڈ اور Nexy کے لیے نوکریاں |
 
 ### کنٹرولر فریم ورک {modular}
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [سے NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، پرووائیڈرز اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
+| [سے NestJS](coming-from/nestjs.md) | کنٹرولرز، ماڈیولز، فراہم کنندگان اور گارڈز کو ماڈیولر راؤٹر میں منتقل کریں۔ |
 | [اسپرنگ بوٹ سے ](coming-from/spring-boot.md) | کنٹرولرز، سروسز اور فلٹرز کو ماڈیولر روٹر میں منتقل کریں۔ |
 
 ## حوالہ
@@ -250,8 +250,8 @@ Nexy آپ کے صفحات اور آپ کے API کو ایک Python پروجیکٹ
 ### کنونشنز اور تصورات
 | صفحہ | آپ کیا کریں گے |
 |---|---|
-| [لغت](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
-| [سلامتی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
+| [لغت ](reference/glossary.md) | الفاظ جو یہ دستاویزات استعمال کرتے ہیں۔ |
+| [سیکورٹی](reference/security.md) | ورژن فرش، قواعد Nexy کی پیروی کرتا ہے، آڈٹ |
 
 ## لے آؤٹ
 ```text
@@ -287,7 +287,7 @@ docs/
 
 ## اعلی درجے کی
 
-### اعلی درجے کی {advanced}
+### اعلیٰ {advanced}
 
 | صفحہ | آپ کیا کریں گے |
 |---|---|

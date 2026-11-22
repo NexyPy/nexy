@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-Props são declarados com `prop[...]`, um padrão é um Python padrão e `<slot />` é `<Slot />`:
+Props são declarados com `prop[...]`, um padrão é um padrão Python e `<slot />` é `<Slot />`:
 
 ```nexy filename="src/componentes/Card.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## O título e meta tags
 
-A propriedade `title` do layout se torna `metadata` na página, que `useMetadata().html()` escreve no `<head>` do layout acima:
+O `title` prop do layout se torna `metadata` na página, que `useMetadata().html()` escreve no `<head>` do layout acima:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-Uma página dinâmica `.nexy` é renderizada mediante solicitação, portanto não há lista de caminhos: o segmento é um suporte e um segmento desconhecido é um `404`.
+Uma página `.nexy` dinâmica é renderizada mediante solicitação, portanto não há lista de caminhos: o segmento é um prop, e um segmento desconhecido é um `404`.
 
 ```nexy filename="src/rotas/posts/[slug].nexy"
 ---
@@ -298,7 +298,7 @@ async def middleware(request: Request, call_next):
     return response
 ```
 
-Um `middleware.py` em uma subpasta envolve apenas as rotas abaixo dele, o que substitui as verificações de caminho dentro de `onRequest`.
+Um `middleware.py` em uma subpasta apenas envolve as rotas abaixo dele, o que substitui as verificações de caminho dentro de `onRequest`.
 
 ## Astro Ações
 

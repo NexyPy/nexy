@@ -20,7 +20,7 @@ Neu bei Nexy? Der [Schnellstart](quick-start.md) zeigt, dass es in drei Minuten 
 | [1. Erstellen Sie das Projekt](../tutorial/create-the-project.md) | ein Projekt, das läuft | `nexy new`, `nexy dev` |
 | [2. Seiten und Layouts](../tutorial/pages-and-layouts.md) | die Notizenseite | Seiten, Ansichten, das Layout |
 | [3. Dynamische Routen und eine API](../tutorial/dynamic-routes.md) | `/notes/1` und `/api/notes` | URL-Segmente, JSON-Routen, `notFound` |
-| [4. Komponenten](../tutorial/components.md) | eine Karte pro Banknote | `.nexy` Komponenten und ihre Requisiten |
+| [4. Komponenten](../tutorial/components.md) | eine Karte pro Banknote | `.nexy` Komponenten und ihre props |
 
 ### Einheit 2: Daten
 
@@ -44,7 +44,7 @@ Neu bei Nexy? Der [Schnellstart](quick-start.md) zeigt, dass es in drei Minuten 
 
 | Teil | Was Sie hinzufügen | Was Sie lernen |
 |---|---|---|
-| [13. Durchsuchen Sie die Notizen während der Eingabe](../tutorial/search-the-notes.md) | ein Suchfeld, das während der Eingabe filtert | React Inseln, Requisiten von Python |
+| [13. Durchsuchen Sie die Notizen während der Eingabe](../tutorial/search-the-notes.md) | ein Suchfeld, das während der Eingabe filtert | React Inseln, props von Python |
 | [14. Markieren Sie eine Notiz, ohne die Seite neu zu laden](../tutorial/tick-a-note.md) | eine Schaltfläche „Fertig“ auf jeder Notiz | progressive Verbesserung, eine Aktion für ein Formular und für `fetch` |
 
 ### Kommt als nächstes

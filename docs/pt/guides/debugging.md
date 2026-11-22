@@ -66,7 +66,7 @@ class UserController:
 Abra `/users`. A solicitação espera e o terminal de `nx dev` mostra pdb nessa linha. No frontmatter de uma view, pdb mostra o módulo compilado em `__nexy__/src/apps/`.
 <!-- /router -->
 
-Digite `p page` para imprimir um valor, `n` para a próxima linha, `c` para deixar a solicitação continuar. Remova a linha quando terminar: a próxima solicitação para lá novamente.
+Digite `p page` para imprimir um valor, `n` para a próxima linha, `c` para deixar a solicitação continuar. Remova a linha quando terminar: a próxima solicitação para ali novamente.
 
 ## Depurar com código VS
 
@@ -112,4 +112,4 @@ debugpy pode avisar que "módulos congelados estão sendo usados". Inicie Python
 
 - [Solução de problemas](troubleshooting.md): os primeiros problemas que as pessoas enfrentam
 - [Teste](testing.md): reproduza o bug em um teste depois de encontrá-lo
-- [Arquivos .nexy](../views/nexy/README.md): frontmatter, adereços e modelos
+- [Arquivos .nexy](../views/nexy/README.md): frontmatter, props e modelos

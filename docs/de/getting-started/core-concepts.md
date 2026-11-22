@@ -11,7 +11,7 @@ Die Wörter, die in den übrigen Dokumenten verwendet werden – Route, Seite, A
 | Präsentation und Rendering | was der Leser sieht und wer den HTML-Code erstellt | [Ansichten](../views/README.md), [Rendering](../rendering/README.md) |
 | Anwendungsinteraktion | was der Leser tut und was als Reaktion darauf ausgeführt wird | [Aktionen](../guides/actions.md) |
 
-Die Level werden in dieser Reihenfolge einmal gelesen. Danach handelt es sich bei der Seite, die Sie benötigen, um eine Nachschlageseite und nicht um einen Kurs.
+Die Level werden in dieser Reihenfolge einmal gelesen. Danach handelt es sich bei der von Ihnen benötigten Seite um eine Nachschlageseite und nicht um einen Kurs.
 
 ## Anwendungsarchitektur
 
@@ -71,7 +71,7 @@ Fünf Vorstellungen, die ein Leser aus Next.js normalerweise zu einer einzigen v
 
 | Vorstellung | Was es ist | Was es nicht ist |
 |---|---|---|
-| **Route** | ein URL-Muster, das durch den Pfad einer Datei erzeugt wird | eine Datei: Eine Datei kann auf mehrere URLs antworten (`[slug]`) |
+| **Route** | ein URL-Muster, das durch den Pfad einer Datei erzeugt wird | eine Datei: Eine Datei kann mehrere URLs beantworten (`[slug]`) |
 | **Seite** | eine Routendatei, die eine Ansicht rendert: `.nexy`, `.md`, `.mdx`, `.tsx`, `.vue`, `.svelte` | ein Endpunkt: Er antwortet auf ein Dokument, nicht auf Daten |
 | **Anzeigen** | Was erzeugt den Hauptteil einer Seite: Jinja2 und Python, Markdown oder eine Client-Komponente | eine Route: Die gleiche Ansicht kann mehrere Seiten bedienen |
 | **Komponente** | ein wiederverwendbarer Teil, den eine Seite importiert | eine Route: Im Servermodus wird eine Komponente niemals alleine bedient |
@@ -194,7 +194,7 @@ Zwei unabhängige Entscheidungen, oft verwechselt:
 | Client-Modus | `useCSR = True`: Framework-Dateien sind die Routen, und die Navigation erfolgt im Browser |
 | SSR, ISR, CSR, Inseln | vier Rendering-Modi, die pro Seite festgelegt werden, mit Ausnahme von CSR, das pro Projekt gilt ([Rendering](../rendering/README.md)) |
 | Flüssigkeitszufuhr | Der Browser fügt ein Framework an HTML an, das der Server bereits gesendet hat ([Inseln](../rendering/islands.md)) |
-| Requisiten | die Werte, die ein übergeordnetes Element an eine Komponente übergibt, deklariert als `name: prop[type]` in einer `.nexy`-Datei ([.nexy-Dateien](../views/nexy/README.md)) |
+| Props | die Werte, die ein übergeordnetes Element an eine Komponente übergibt, deklariert `name: prop[type]` in einer `.nexy`-Datei ([.nexy-Dateien](../views/nexy/README.md)) |
 
 Eine Seite im Servermodus mit einer Insel: Der Server rendert die Seite, der Browser hydriert das Diagramm nur, wenn es in die Ansicht scrollt.
 

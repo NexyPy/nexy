@@ -89,7 +89,7 @@ export default function Home() {
 
 ### Segmentos dinámicos
 
-Los parámetros de URL están disponibles a través del enlace `useParams`:
+Los parámetros de URL están disponibles a través del gancho `useParams`:
 
 ```tsx filename="src/rutas/blog/[slug].tsx"
 import { useParams } from "@nexy/client";
@@ -147,7 +147,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### Directivas de hidratación
 
-Utilice el accesorio `directive` para controlar cuándo se hidrata la isla:
+Utilice el `directive` prop para controlar cuándo se hidrata la isla:
 
 - `client:load` (predeterminado): inmediatamente
 - `client:idle`: cuando el navegador está inactivo

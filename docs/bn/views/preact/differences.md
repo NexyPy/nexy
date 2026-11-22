@@ -73,7 +73,7 @@ export default function Counter({ start = 0 }: { start?: number }) {
 }
 ```
 
-- হুকগুলি `preact/hooks` থেকে এসেছে, যেমন `ComponentChildren` থেকে `preact`।
+- হুকগুলি `preact/hooks` থেকে এসেছে, যেমন `ComponentChildren` `preact` থেকে।
 - HTML গুণাবলী লিখুন: `class`, `for`, `charset`। `Link` তার ক্লাসগুলি `class` থেকে পড়ে।
 
 ## নিয়ম
@@ -145,7 +145,7 @@ export default function RootLayout({ children }: { children: ComponentChildren }
 
 ### আমদানি করা হচ্ছে
 
-`.nexy` ফাইলের ফ্রন্ট ম্যাটারে উপাদান আমদানি করুন:
+`.nexy` ফাইলের ফ্রন্টম্যাটারে উপাদান আমদানি করুন:
 
 <!-- router:fbr,custom -->
 ```nexy filename="src/routes/index.nexy"
@@ -167,7 +167,7 @@ from "@/components/Counter.tsx" import Counter
 
 ### হাইড্রেশন নির্দেশাবলী
 
-দ্বীপ হাইড্রেট করার সময় নিয়ন্ত্রণ করতে `directive` প্রপ ব্যবহার করুন:
+দ্বীপ হাইড্রেট করার সময় নিয়ন্ত্রণ করতে `directive` prop ব্যবহার করুন:
 
 - `client:load` (ডিফল্ট): অবিলম্বে
 - `client:idle`: যখন ব্রাউজার নিষ্ক্রিয় থাকে
@@ -217,5 +217,5 @@ router.push("/dashboard");
 
 ## পরবর্তী পদক্ষেপ
 
-- [ভিউ](../README.md): একটি পৃষ্ঠা ব্যবহার করতে পারে এমন বিন্যাসের তুলনা করুন
+- [ভিউ ](../README.md): একটি পৃষ্ঠা ব্যবহার করতে পারে এমন বিন্যাসের তুলনা করুন
 - [ফ্রন্টএন্ড](../../guides/frontend.md): Vite এবং ক্লায়েন্ট বিল্ড

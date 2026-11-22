@@ -309,7 +309,7 @@ def login():
     return {"user": session["user"]}
 ```
 
-O segredo passa para `nexyconfig.py` e a sessão interrompe a solicitação:
+O segredo é movido para `nexyconfig.py` e a sessão interrompe a solicitação:
 
 ```python filename="nexyconfig.py"
 from nexy.core.models import NexyConfigModel

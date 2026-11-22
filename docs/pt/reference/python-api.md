@@ -8,7 +8,7 @@ Componentes para modelos `.nexy` e ganchos de solicitação.
 
 | Nome | O que é isso |
 |---|---|
-| `Audio`, `Video` | players nativos `<audio>` e `<video>`, consulte [componentes](../views/nexy/components.md) |
+| `Audio`, `Video` | jogadores nativos `<audio>` e `<video>`, consulte [componentes](../views/nexy/components.md) |
 | `Image` | um `<img>` que carrega lentamente por padrão |
 | `Link` | um lado do cliente `<a>` com pré-busca opcional |
 | `Import` | importar um componente cliente para uma página `.nexy` |
@@ -144,7 +144,7 @@ async def publish(post_id: int) -> bool:
 
 | Nome | O que é isso |
 |---|---|
-| `render` | o HTML de um componente `.nexy` para determinados adereços, sem servidor, consulte [testes](../guides/testing.md) |
+| `render` | o HTML de um componente `.nexy` para determinado props, sem servidor, consulte [testes](../guides/testing.md) |
 
 ```python filename="testes/test_button.py"
 from nexy.testing import render

@@ -47,7 +47,7 @@ users = [{"name": "Ada", "admin": True}, {"name": "Alan", "admin": False}]
 ```
 
 > [!WARNING]
-> Astro entkommt alle `{value}`. `.nexy`-Vorlagen entkommen nicht: dem, was ein Besucher mit `{{ value | e }}` eingegeben hat.
+> Astro entkommt alle `{value}`. `.nexy`-Vorlagen entkommen nicht, was ein Besucher mit `{{ value | e }}` eingegeben hat.
 
 ## Komponenten und `Astro.props`
 
@@ -61,7 +61,7 @@ const { title, tone = "neutral" } = Astro.props;
 </article>
 ```
 
-Requisiten werden mit `prop[...]` deklariert, ein Standard ist ein Python-Standard und `<slot />` ist `<Slot />`:
+Props werden mit `prop[...]` deklariert, ein Standard ist ein Python-Standard und `<slot />` ist `<Slot />`:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -104,7 +104,7 @@ import Base from "../layouts/Base.astro";
 <Base title="About"><h1>About</h1></Base>
 ```
 
-Eine Seite importiert ihr Layout nicht: Das nächstgelegene `layout.nexy` über ihr umschließt sie und die Stammseite ist Eigentümer des Dokuments.
+Eine Seite importiert ihr Layout nicht: Die nächstgelegene `layout.nexy` darüber umschließt sie, und die Stammseite ist Eigentümer des Dokuments.
 
 ```nexy filename="src/routes/layout.nexy"
 ---
@@ -121,7 +121,7 @@ children: prop[NexyElement]
 
 ## Der Titel und die Meta-Tags
 
-Die `title`-Requisite des Layouts wird zu `metadata` auf der Seite, die `useMetadata().html()` in die `<head>` des obigen Layouts schreibt:
+Das `title` prop des Layouts wird zu `metadata` auf der Seite, die `useMetadata().html()` in das `<head>` des obigen Layouts schreibt:
 
 ```nexy filename="src/routes/blog.nexy"
 ---
@@ -145,7 +145,7 @@ const { title } = Astro.props;
 <h1>{title}</h1>
 ```
 
-Eine dynamische `.nexy`-Seite wird auf Anfrage gerendert, daher gibt es keine Liste von Pfaden: Das Segment ist eine Requisite und ein unbekanntes ist ein `404`.
+Eine dynamische `.nexy`-Seite wird auf Anfrage gerendert, daher gibt es keine Liste von Pfaden: Das Segment ist ein prop und ein unbekanntes ist ein `404`.
 
 ```nexy filename="src/routes/posts/[slug].nexy"
 ---
@@ -395,7 +395,7 @@ revalidate = 60
 <h1>News</h1>
 ```
 
-Es gibt keinen statischen Export: `nx start` bedient die Site. Siehe [Rendering](../rendering/README.md).
+Es gibt keinen statischen Export: `nx start` dient der Site. Siehe [Rendering](../rendering/README.md).
 
 ## Laufen
 
@@ -404,7 +404,7 @@ Es gibt keinen statischen Export: `nx start` bedient die Site. Siehe [Rendering]
 | `npm create astro@latest` | `nx new` |
 | `astro dev` | `nx dev` |
 | `astro build` und `astro preview` | `nx build`, dann `nx start` |
-| `public/` | `public/`, serviert am `/` |
+| `public/` | `public/`, zugestellt in `/` |
 | `astro add react` | `nx new` mit einem Framework, oder `useFF = react()` |
 
 ## Nächste Schritte

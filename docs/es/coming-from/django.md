@@ -151,7 +151,7 @@ children: prop[NexyElement]
 {% include "card.html" with title="Latest" body="This week" %}
 ```
 
-Un componente es un archivo `.nexy` con accesorios escritos y una ranura para sus hijos:
+Un componente es un archivo `.nexy` con props escrito y una ranura para sus hijos:
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -328,7 +328,7 @@ def dashboard(request):
     return render(request, "dashboard.html")
 ```
 
-Un `dependencies.py` guarda una carpeta completa:
+Un `dependencies.py` protege una carpeta completa:
 
 ```python filename="src/rutas/dashboard/dependencies.py"
 from nexy import unauthorized

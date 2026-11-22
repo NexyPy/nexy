@@ -62,7 +62,7 @@ Ketika dua hal dapat menjawab URL yang sama, **yang pertama terdaftar menang**, 
 3. modular `APIRouter` (`useRouter`);
 4. rute file, yang paling spesifik terlebih dahulu: jalur statis, lalu jalur dinamis dengan segmen paling tetap, lalu jalur umum.
 
-Dua rute file dengan spesifisitas yang sama didaftarkan dalam urutan jalur berdasarkan abjad, jadi `[id].nexy` menjawab sebelum `[slug].nexy`. Oleh karena itu, rute modular mengalahkan halaman dengan jalur yang sama. Ini adalah urutan prioritas yang dapat Anda andalkan, bukan aturan yang mengikat: berikan satu URL satu file.
+Dua rute file dengan spesifisitas yang sama didaftarkan dalam urutan jalur abjad, jadi `[id].nexy` menjawab sebelum `[slug].nexy`. Oleh karena itu, rute modular mengalahkan halaman dengan jalur yang sama. Ini adalah urutan prioritas yang dapat Anda andalkan, bukan aturan yang mengikat: berikan satu URL satu file.
 
 ## Sistem tampilan
 
@@ -70,7 +70,7 @@ Ekstensi file menentukan jenis filenya, dan konfigurasi proyek menentukan eksten
 
 | Ekstensi | Aktif kapan | Disusun oleh | Berfungsi sebagai |
 |---|---|---|---|
-| `.nexy` | modus server | Nexy: frontmatter menjadi Python, markupnya menjadi Jinja2 | sebuah halaman |
+| `.nexy` | modus server | Nexy: materi depan menjadi Python, markupnya menjadi Jinja2 | sebuah halaman |
 | `.md` | selalu | Nexy: rasa GitHub Markdown, id judul, daftar isi | sebuah halaman, di dalam tata letak terdekat |
 | `.mdx` | selalu | Vite, dengan React atau Preact | rute komponen |
 | `.tsx` | `useFF` adalah React, Solid atau Preact | Vite dan kerangkanya | rute komponen |
@@ -122,7 +122,7 @@ Nexy berhenti di tepi aplikasi Anda, dengan sengaja:
 
 | Kekhawatiran | Apa yang Nexy sediakan | Apa yang Anda tulis |
 |---|---|---|
-| Otentikasi | middleware sesi, `AuthenticationMiddleware` ketika diaktifkan | login, pencarian pengguna, kebijakan cookie |
+| Otentikasi | middleware sesi, `AuthenticationMiddleware` bila diaktifkan | login, pencarian pengguna, kebijakan cookie |
 | Otorisasi | `dependencies.py`, penjaga, warisan per folder | aturan itu sendiri |
 | Basis data | tidak ada ORM sendiri; `nx new` dapat menjalankan scaffold SQLModel, SQLAlchemy atau Tortoise, `nx migrate` menjalankan Alembic atau Aerich | model dan kueri ([Database](../guides/databases.md)) |
 | Internasionalisasi | tidak ada apa pun untuk halaman Anda; hanya CLI yang diterjemahkan | perpustakaan dan pesan ([i18n](../guides/i18n.md)) |

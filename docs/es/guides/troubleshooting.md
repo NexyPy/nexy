@@ -28,7 +28,7 @@ from "@/components/LivePanel.nexy" import LivePanel
 
 Un componente `.nexy` coloca a sus hijos con `<Slot />`, con una S mayúscula. Una `<slot />` minúscula se deja en la página tal como está. Vue, que tiene su propio `<slot />`, no se ve afectado.
 
-## Un accesorio muestra el nombre de la variable.
+## Un prop muestra el nombre de la variable.
 
 ```nexy
 <Icon path=icon />          renders: icon
@@ -94,5 +94,5 @@ El tema guardado debe aplicarse antes de la primera pintura. Mantenga el pequeñ
 
 ## Todavía estancado
 
-- Lea la página de la característica en [el índice de documentación](../README.md).
+- Lea la página de la función en [el índice de documentación](../README.md).
 - Si los documentos y el código no están de acuerdo, el código es correcto: abra un [problema](https://github.com/NexyPy/nexy/issues) nombrando la página.

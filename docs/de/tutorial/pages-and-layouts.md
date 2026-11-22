@@ -163,4 +163,4 @@ Tailwind, das der Starter verwendet, entfernt die Ränder von Formularfeldern: D
 ## Nächste Schritte
 
 - [Teil 3: Dynamische Routen und eine API](dynamic-routes.md)
-- [.nexy-Dateien](../views/nexy/README.md): Requisiten, Komponenten und Stile
+- [.nexy-Dateien](../views/nexy/README.md): props, Komponenten und Stile

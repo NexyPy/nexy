@@ -73,7 +73,7 @@ from nexy import Link
 {{ Link("/about", "About", class_name="nav-link") }}
 ```
 
-`Link(href, children="", class_name=None, prefetch=True, **attrs)` rendert ein `<a data-nexy-link>`, das vom Client-Router verarbeitet wird. Mit `prefetch=True` wird das Ziel durch Schweben oder Berühren des Links durch `window.__nexy_prefetch` erwärmt.
+`Link(href, children="", class_name=None, prefetch=True, **attrs)` rendert ein `<a data-nexy-link>`, das vom Client-Router verarbeitet wird. Bei `prefetch=True` wird das Ziel durch Bewegen des Mauszeigers oder durch Berühren des Links durch `window.__nexy_prefetch` erwärmt.
 
 > [!NOTE]
 > Die Tag-Form nimmt die Bezeichnung als `children` an, nicht als Elementinhalt: `<Link href="/about" children="About" />`. Um Markup in einen Link einzufügen, verwenden Sie das Aufrufformular mit `children=` oder eine `.nexy`-Komponente, die ein `<Slot />` rendert.
@@ -91,11 +91,11 @@ from nexy import Audio, Video
 <Video src="/demo.mp4" width=640 height=360 muted=True />
 ```
 
-`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` und `Video(src, width=None, height=None, ...)` rendern native Player. `sources` fügt `<source>` Tags mit dem von jeder Erweiterung abgeleiteten MIME-Typ hinzu.
+`Audio(src, controls=True, autoplay=False, loop=False, muted=False, preload="metadata", class_name=None, sources=None, **attrs)` und `Video(src, width=None, height=None, ...)` rendern native Player. `sources` fügt `<source>`-Tags mit dem von jeder Erweiterung abgeleiteten MIME-Typ hinzu.
 
 ## Eine Komponente, die Sie selbst schreiben
 
-Eine wiederverwendbare `.nexy`-Komponente ist eine Datei unter `src/components/`: Python Requisiten oben, HTML unten. Es wird wie jedes andere Python-Modul importiert.
+Eine wiederverwendbare `.nexy`-Komponente ist eine Datei unter `src/components/`: Python props oben, HTML unten. Es wird wie jedes andere Python-Modul importiert.
 
 ```nexy filename="src/components/Card.nexy"
 ---
@@ -130,11 +130,11 @@ from "@/components/Card.nexy" import Card
 ```
 <!-- /router -->
 
-`title` hat keinen Standardwert, daher muss die Seite ihn übergeben; `tone` fällt auf `"neutral"` zurück. Der Markup zwischen den Tags kommt innerhalb von `<Slot />` (Großbuchstabe S) an. Siehe [.nexy-Dateien](README.md#components) für Requisiten, Slots und die Regeln der Tag-Form.
+`title` hat keinen Standardwert, daher muss die Seite ihn übergeben; `tone` fällt auf `"neutral"` zurück. Der Markup zwischen den Tags kommt innerhalb von `<Slot />` (Großbuchstabe S) an. Siehe [.nexy-Dateien](README.md#components) für props, Slots und die Regeln der Tag-Form.
 
 ## Importieren einer Client-Komponente
 
-Importieren Sie aus einer `.nexy`-Datei eine Framework-Komponente nach Pfad. Der Compiler mountet es auf dem Client und übergibt die Attribute als Requisiten:
+Importieren Sie aus einer `.nexy`-Datei eine Framework-Komponente nach Pfad. Der Compiler mountet es auf dem Client und übergibt die Attribute als props:
 
 ```nexy
 ---

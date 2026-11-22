@@ -57,7 +57,7 @@ notes = NOTES.items()
 ## Adicione uma página por nota
 
 <!-- router:fbr,custom -->
-Um nome de pasta ou arquivo entre colchetes é um segmento da URL: `[id].nexy` responde `/notes/1`, `/notes/2` e passa o segmento para a página como um adereço. `id: prop[int]` transforma-o em um número, então `/notes/abc` responde `404` antes da página ser executada.
+Um nome de pasta ou arquivo entre colchetes é um segmento da URL: `[id].nexy` responde `/notes/1`, `/notes/2`, e passa o segmento para a página como um prop. `id: prop[int]` transforma-o em um número, então `/notes/abc` responde `404` antes da página ser executada.
 
 ```nexy filename="src/rotas/notas/[id].nexy"
 ---
