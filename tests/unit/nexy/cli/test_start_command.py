@@ -42,3 +42,33 @@ def test_the_stop_says_to_run_nexy_build(monkeypatch, capsys):
     with pytest.raises(SystemExit):
         start_module._refuse_unbuilt_project()
     assert "nexy build" in capsys.readouterr().out
+
+
+def _start_shows(monkeypatch, use_docs: bool | str) -> list[str]:
+    """What `nx start` lists once ready, with the steps around it stubbed."""
+    from types import SimpleNamespace
+
+    from nexy.helpers.common import launcher
+    from nexy.helpers.server.listening import Endpoint
+
+    shown: list[str] = []
+    for step in ("pycache", "ensure_project_packages", "abort_on_invalid_config"):
+        monkeypatch.setattr(start_module, step, lambda: None)
+    monkeypatch.setattr(start_module, "_refuse_unbuilt_project", lambda: None)
+    monkeypatch.setattr(start_module, "_route_failures", list)
+    monkeypatch.setattr(start_module, "_endpoint", lambda *_: Endpoint("127.0.0.1", 8000))
+    monkeypatch.setattr(start_module, "_serve", lambda _endpoint: None)
+    config = SimpleNamespace(useDocs=use_docs, useDocsUrl="/docs")
+    monkeypatch.setattr(start_module, "Config", lambda: config)
+    monkeypatch.setattr(launcher, "banner", lambda *_: None)
+    monkeypatch.setattr(launcher, "entry", lambda _label, value: shown.append(value))
+    start_module.start()
+    return shown
+
+
+def test_start_says_where_the_api_reference_answers(monkeypatch):
+    assert "http://localhost:8000/docs" in _start_shows(monkeypatch, True)
+
+
+def test_start_names_no_reference_that_only_dev_serves(monkeypatch):
+    assert "http://localhost:8000/docs" not in _start_shows(monkeypatch, "dev")
