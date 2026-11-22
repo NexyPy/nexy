@@ -56,7 +56,7 @@ export default defineConfig({
 
 | Пакет | Версия `nx new` пишет |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## Правила
@@ -162,7 +162,7 @@ from "@/components/Counter.svelte" import Counter
 
 ### Вызов действий
 
-Используйте перехватчик `useAction` для управления состоянием вызова действия. В Svelte возвращается хранилище (читается с помощью `$`).
+Используйте хук `useAction` для управления состоянием вызова действия. В Svelte возвращается хранилище (читается с помощью `$`).
 
 ```svelte
 <script lang="ts">
