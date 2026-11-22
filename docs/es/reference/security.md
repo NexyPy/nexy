@@ -8,11 +8,16 @@ Nexy depende de FastAPI, Starlette, Jinja2, Vite y React. Un piso es la versión
 
 | Paquete | piso | ¿Por qué? |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): un encabezado `Host` modificado cambia la ruta Starlette informa al middleware, lo que omite la autorización escrita en `request.url.path`. Catalogado como explotado por CISA. |
+| `starlette` | 1.3.1 | CVE-2026-48710 (BadHost, corregido en 1.0.1): un encabezado `Host` modificado cambia la ruta Starlette informa al middleware, lo que omite la autorización escrita en `request.url.path`; catalogado como explotado por CISA. CVE-2026-48817 y CVE-2026-48818 (despacho de solicitudes, `StaticFiles` en Windows, corregido en 1.1.0), CVE-2026-54282 (ruta de solicitud no validada, 1.3.0) y CVE-2026-54283 (límites de `request.form()`, 1.3.1). |
+| `python-dotenv` | 1.2.2 | CVE-2026-28684, en el lector del `.env` se carga el archivo `nx migrate` |
 | `fastapi` | 0.133.0 | la primera versión que acepta un Starlette fijo |
 | `jinja2` | 3.1.6 | escape del sandbox a través del filtro `attr` (CVE-2025-27516) |
-| `vite` (proyectos estructurados) | 6.4.3 | `server.fs.deny` omitir rutas alternativas de Windows (CVE-2026-53571); la omisión de cadena de consulta anterior (CVE-2026-39364) afecta solo a Vite 7.1-7.3.1 y 8.0.0-8.0.4 |
+| `vite` (proyectos estructurados) | 6.4.5 | `server.fs.deny` omisiones (CVE-2026-53571 en rutas alternativas de Windows; GHSA-rq7h-c2jc-7f22, corregido en 6.4.4; GHSA-8g5g-mxqh-grgj, una omisión de consultas incorporada en 6.4.4, corregida en 6.4.5), y los avisos `launch-editor` corregidos en 6.4.4 |
+| `svelte` (proyectos estructurados) | 5.55.7 | seis avisos XSS de procesamiento de servidor a través de atributos de extensión, nombres de etiquetas dinámicas y `bind:innerText` |
+| `esbuild` (proyectos estructurados) | 0.28.1 | archivo arbitrario leído a través del servidor de desarrollo (GHSA-g7r4-m6w7-qqqr) |
 | `react`, `react-dom` | 19.2.5 | los avisos de 2026 React se refieren a los paquetes `react-server-dom-*`, que Nexy no utiliza; el piso mantiene la línea parchada |
+
+`python scripts/audit_dependencies.py` verifica cada piso con OSV después del bloqueo, también en CI: un nuevo aviso en un piso no pasa la auditoría.
 
 Comprueba tus versiones resueltas:
 
