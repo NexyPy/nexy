@@ -1,6 +1,6 @@
 ---
 name: nexy-backend
-description: Writing the Python side of a Nexy project - API handlers in src/routes, @Action functions, WebSocket SOCKET handlers, ISR, middleware.py, dependencies.py and error pages. Load it for any .py file in a project built with Nexy.
+description: Writing the Python side of a Nexy project - API handlers in src/routes, @Action functions, WebSocket SOCKET handlers, page caching, middleware.py, dependencies.py and errors. Load it for any .py file in a project built with Nexy.
 ---
 
 # Backend
