@@ -12,8 +12,8 @@ interface ScriptTag {
   end: number;
 }
 
-const STYLE_RE = /<style\b(?:\s+lang\s*=\s*["'](?<lang>[^"']+)["'])?[^>]*>(?<content>[\s\S]*?)<\/style\s*>/gi;
-const SCRIPT_RE = /<script\b(?:\s+lang\s*=\s*["'](?<lang>[^"']+)["'])?[^>]*>(?<content>[\s\S]*?)<\/script\s*>/gi;
+const STYLE_RE = /<style\b(?:\s+lang\s*=\s*["'](?<lang>[^"']+)["'])?[^>]*>(?<content>[\s\S]*?)<\/style\b[^>]*>/gi;
+const SCRIPT_RE = /<script\b(?:\s+lang\s*=\s*["'](?<lang>[^"']+)["'])?[^>]*>(?<content>[\s\S]*?)<\/script\b[^>]*>/gi;
 
 export function extractStyleTags(template: string): StyleTag[] {
   const tags: StyleTag[] = [];

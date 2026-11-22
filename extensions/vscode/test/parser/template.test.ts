@@ -49,3 +49,9 @@ describe("a block closed the other ways HTML allows (#615)", () => {
     expect(extractStyleTags("<style>h1 {}</style >")[0].content).toBe("h1 {}");
   });
 });
+
+describe("a block closed with text before the bracket", () => {
+  it("ends a script block at </script foo>, as a browser does", () => {
+    expect(extractScriptTags("<script>let a = 1;</script\t\n foo>")[0].content).toBe("let a = 1;");
+  });
+});
