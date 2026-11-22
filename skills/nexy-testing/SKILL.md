@@ -1,6 +1,6 @@
 ---
 name: nexy-testing
-description: Test-first workflow for Nexy projects - red, green, refactor with nx test, TestClient, nexy.testing.render and vitest - and the quality gates to run before reporting done. Load it before writing code.
+description: Test-first workflow for Nexy projects - red, green, refactor with nx test, TestClient and the test helpers of the project - and the quality gates to run before reporting done. Load it before writing code.
 ---
 
 # Testing, test first
@@ -48,9 +48,11 @@ around it.
 
 ## Test the experience, not only the code
 
+<!-- nexy:web -->
 For a view, the audit brief (`nexy-ux-audit`) gives the tests: the
 empty state, the error message, the primary action, the label of the button. If the brief says an
 error explains what to do, assert that sentence.
+<!-- /nexy:web -->
 
 ## Gates
 
