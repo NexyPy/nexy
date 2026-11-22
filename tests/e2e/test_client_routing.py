@@ -5,6 +5,8 @@ navigation contract the generated ``__nexy__/src/runtime.ts`` promises:
 intercepted in-page navigation, no full reload, and history integration.
 """
 
+from urllib.parse import urlparse
+
 import pytest
 from playwright.sync_api import Page, expect
 
@@ -83,7 +85,7 @@ def test_external_link_is_not_intercepted(dev_stack, page: Page):
 
     with page.expect_navigation():
         page.click("a[href='https://example.com']")
-    assert "example.com" in page.url
+    assert urlparse(page.url).hostname == "example.com"
 
 
 @pytest.mark.e2e
