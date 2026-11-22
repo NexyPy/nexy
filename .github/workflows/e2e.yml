@@ -21,6 +21,10 @@ on:
       - "uv.lock"
       - ".github/workflows/e2e.yml"
 
+# Every job reads the repository and writes nothing with the token; a job that needs more says so.
+permissions:
+  contents: read
+
 # A newer push to a pull request makes its older run useless; a push to main and the nightly run
 # each finish.
 concurrency:
