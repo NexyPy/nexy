@@ -35,7 +35,9 @@ def _wanted(profile: Profile) -> set[str]:
         return base
     wanted = base | {"nexy-ux-audit", "nexy-styling"}
     if not profile.client_routed:
-        wanted |= {"nexy-file", "nexy-markdown"}
+        wanted |= {"nexy-markdown"}
+    if profile.writes_nexy:
+        wanted |= {"nexy-file"}
     framework = FRAMEWORK_SKILLS.get(profile.framework)
     return wanted | {framework} if framework else wanted
 

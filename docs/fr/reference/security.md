@@ -8,11 +8,16 @@ Nexy dépend de FastAPI, Starlette, Jinja2, Vite et React. Un plancher est la ve
 
 | Forfait | Sol | Pourquoi |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost) : un en-tête `Host` contrefait modifie le chemin d'accès Starlette vers le middleware, qui contourne l'autorisation écrite sur `request.url.path`. Répertorié comme exploité par CISA. |
+| `starlette` | 1.3.1 | CVE-2026-48710 (BadHost, corrigé dans la version 1.0.1) : un en-tête `Host` contrefait modifie le chemin d'accès Starlette vers le middleware, qui contourne l'autorisation écrite sur `request.url.path` ; répertorié comme exploité par CISA. CVE-2026-48817 et CVE-2026-48818 (envoi de requêtes, `StaticFiles` sous Windows, corrigé dans 1.1.0), CVE-2026-54282 (chemin de requête non validé, 1.3.0) et CVE-2026-54283 (limites de `request.form()`, 1.3.1). |
+| `python-dotenv` | 1.2.2 | CVE-2026-28684, dans le lecteur du fichier `.env` `nx migrate` se charge |
 | `fastapi` | 0.133.0 | la première version qui accepte un Starlette fixe |
 | `jinja2` | 3.1.6 | le bac à sable s'échappe à travers le filtre `attr` (CVE-2025-27516) |
-| `vite` (projets échafaudés) | 6.4.3 | `server.fs.deny` contourner les chemins alternatifs Windows (CVE-2026-53571) ; le contournement de chaîne de requête antérieur (CVE-2026-39364) affecte uniquement Vite 7.1-7.3.1 et 8.0.0-8.0.4 |
-| `react`, `react-dom` | 19.2.5 | les avis 2026 React concernent les packages `react-server-dom-*`, que Nexy n'utilise pas ; le sol maintient la ligne réparée |
+| `vite` (projets échafaudés) | 6.4.5 | `server.fs.deny` contournements (CVE-2026-53571 sur les chemins alternatifs Windows ; GHSA-rq7h-c2jc-7f22, corrigé dans la version 6.4.4 ; GHSA-8g5g-mxqh-grgj, un contournement de requête 6.4.4 lui-même apporté, corrigé dans la version 6.4.5), et les `launch-editor` avis corrigés dans la version 6.4.4. |
+| `svelte` (projets échafaudés) | 5.55.7 | six avis XSS rendus par le serveur via des attributs de diffusion, des noms de balises dynamiques et `bind:innerText` |
+| `esbuild` (projets échafaudés) | 0.28.1 | fichier arbitraire lu via le serveur de développement (GHSA-g7r4-m6w7-qqqr) |
+| `react`, `react-dom` | 19.2.5 | les avis de 2026 React concernent les packages `react-server-dom-*`, que Nexy n'utilise pas ; le sol maintient la ligne réparée |
+
+`python scripts/audit_dependencies.py` vérifie chaque étage par rapport à l'OSV après le verrouillage, également en CI : un nouvel avis sur un étage échoue à l'audit.
 
 Vérifiez vos versions résolues :
 
@@ -39,7 +44,7 @@ npm audit                                    # in a scaffolded project
 uv run bandit -r nexy -c .bandit             # static analysis of Nexy itself
 ```
 
-Le propre référentiel de Nexy exécute le premier et le troisième lors de ses vérifications. Un nouvel avis sur un étage supérieur est traité en surélevant l'étage dans `pyproject.toml` ou dans l'échafaudage `package.json`, puis en régénérant le verrou.
+Le propre référentiel de Nexy exécute le premier et le troisième lors de ses vérifications. Un nouvel avis sur un étage supérieur est traité en surélevant l'étage dans `pyproject.toml` ou dans l'échafaudage `package.json`, puis en régénérant la serrure.
 
 ## Déployer en toute sécurité
 

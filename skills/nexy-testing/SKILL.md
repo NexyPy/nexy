@@ -1,6 +1,6 @@
 ---
 name: nexy-testing
-description: Test-first workflow for Nexy projects - red, green, refactor with nx test, TestClient, nexy.testing.render and vitest - and the quality gates to run before reporting done. Load it before writing code.
+description: Test-first workflow for Nexy projects - red, green, refactor with nx test, TestClient and the test helpers of the project - and the quality gates to run before reporting done. Load it before writing code.
 ---
 
 # Testing, test first
@@ -19,9 +19,16 @@ One assertion per test. Name it `test_<thing>_<scenario>`. A test that cannot fa
 |---|---|
 | A page or an API route | `TestClient(app)` from `fastapi.testclient`, `from nexy.app import app` |
 | A fresh configuration | `TestClient(AppServer().run())` from `nexy.modules.routers.app` |
-| A `.nexy` component | `nexy.testing.render("src/components/button.nexy", label="Save")` |
 | An action | call the function directly; read the generated path from the page for the HTTP test |
-| A client component | vitest with the testing library of the framework |
+
+<!-- nexy:nexy -->
+A `.nexy` component renders in a test with `nexy.testing.render("src/components/button.nexy",
+label="Save")`.
+<!-- /nexy:nexy -->
+<!-- nexy:web -->
+A client component is tested with vitest and the testing library of the framework (`nx test
+--client`).
+<!-- /nexy:web -->
 
 Run pytest from the project root: `nexyconfig.py` is read from the working directory.
 
@@ -41,9 +48,11 @@ around it.
 
 ## Test the experience, not only the code
 
+<!-- nexy:web -->
 For a view, the audit brief (`nexy-ux-audit`) gives the tests: the
 empty state, the error message, the primary action, the label of the button. If the brief says an
 error explains what to do, assert that sentence.
+<!-- /nexy:web -->
 
 ## Gates
 

@@ -56,7 +56,7 @@ export default defineConfig({
 
 | Paket | Version `nx new` schreibt |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## Regeln
@@ -191,7 +191,7 @@ Verwenden Sie die Komponente `Link` für clientseitige Übergänge:
 <Link href="/about" activeClass="active">About</Link>
 ```
 
-Verwenden Sie für die programmatische Navigation das `router`-Objekt von `@nexy/client`:
+Für die programmatische Navigation verwenden Sie das `router`-Objekt von `@nexy/client`:
 
 ```ts
 import { router } from "@nexy/client";

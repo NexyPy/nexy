@@ -9,11 +9,16 @@ allows; each one answers a published advisory.
 
 | Package | Floor | Why |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): a crafted `Host` header changes the path Starlette reports to middleware, which bypasses authorization written on `request.url.path`. Listed as exploited by CISA. |
+| `starlette` | 1.3.1 | CVE-2026-48710 (BadHost, fixed in 1.0.1): a crafted `Host` header changes the path Starlette reports to middleware, which bypasses authorization written on `request.url.path`; listed as exploited by CISA. CVE-2026-48817 and CVE-2026-48818 (request dispatch, `StaticFiles` on Windows, fixed in 1.1.0), CVE-2026-54282 (request path not validated, 1.3.0) and CVE-2026-54283 (`request.form()` limits, 1.3.1). |
+| `python-dotenv` | 1.2.2 | CVE-2026-28684, in the reader of the `.env` file `nx migrate` loads |
 | `fastapi` | 0.133.0 | the first release that accepts a fixed Starlette |
 | `jinja2` | 3.1.6 | sandbox escape through the `attr` filter (CVE-2025-27516) |
-| `vite` (scaffolded projects) | 6.4.3 | `server.fs.deny` bypass on Windows alternate paths (CVE-2026-53571); the earlier query-string bypass (CVE-2026-39364) affects only Vite 7.1-7.3.1 and 8.0.0-8.0.4 |
+| `vite` (scaffolded projects) | 6.4.5 | `server.fs.deny` bypasses (CVE-2026-53571 on Windows alternate paths; GHSA-rq7h-c2jc-7f22, fixed in 6.4.4; GHSA-8g5g-mxqh-grgj, a query bypass 6.4.4 itself brought, fixed in 6.4.5), and the `launch-editor` advisories fixed in 6.4.4 |
+| `svelte` (scaffolded projects) | 5.55.7 | six server-rendering XSS advisories through spread attributes, dynamic tag names and `bind:innerText` |
+| `esbuild` (scaffolded projects) | 0.28.1 | arbitrary file read through the development server (GHSA-g7r4-m6w7-qqqr) |
 | `react`, `react-dom` | 19.2.5 | the 2026 React advisories concern the `react-server-dom-*` packages, which Nexy does not use; the floor keeps the line patched |
+
+`python scripts/audit_dependencies.py` checks every floor against OSV after the lock, in CI too: a new advisory on a floor fails the audit.
 
 Check your resolved versions:
 

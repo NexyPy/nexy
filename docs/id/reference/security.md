@@ -8,11 +8,16 @@ Nexy bergantung pada FastAPI, Starlette, Jinja2, Vite dan React. Lantai adalah v
 
 | Paket | Lantai | Mengapa |
 |---|---|---|
-| `starlette` | 1.0.1 | CVE-2026-48710 (BadHost): header `Host` yang dibuat mengubah jalur Starlette laporan ke middleware, yang melewati otorisasi yang tertulis di `request.url.path`. Terdaftar sebagai dieksploitasi oleh CISA. |
+| `starlette` | 1.3.1 | CVE-2026-48710 (BadHost, diperbaiki di 1.0.1): header `Host` yang dibuat mengubah jalur laporan Starlette ke middleware, yang melewati otorisasi yang tertulis di `request.url.path`; terdaftar sebagai dieksploitasi oleh CISA. CVE-2026-48817 dan CVE-2026-48818 (pengiriman permintaan, `StaticFiles` pada Windows, diperbaiki di 1.1.0), CVE-2026-54282 (jalur permintaan tidak divalidasi, 1.3.0) dan CVE-2026-54283 (batas `request.form()`, 1.3.1). |
+| `python-dotenv` | 1.2.2 | CVE-2026-28684, di pembaca file `.env` `nx migrate` memuat |
 | `fastapi` | 0.133.0 | rilis pertama yang menerima Starlette tetap |
 | `jinja2` | 3.1.6 | pelarian sandbox melalui filter `attr` (CVE-2025-27516) |
-| `vite` (proyek perancah) | 6.4.3 | `server.fs.deny` melewati jalur alternatif Windows (CVE-2026-53571); bypass string kueri sebelumnya (CVE-2026-39364) hanya memengaruhi Vite 7.1-7.3.1 dan 8.0.0-8.0.4 |
+| `vite` (proyek perancah) | 6.4.5 | `server.fs.deny` bypass (CVE-2026-53571 pada jalur alternatif Windows; GHSA-rq7h-c2jc-7f22, diperbaiki di 6.4.4; GHSA-8g5g-mxqh-grgj, bypass kueri yang dibawa sendiri oleh 6.4.4, diperbaiki di 6.4.5), dan nasihat `launch-editor` diperbaiki di 6.4.4 |
+| `svelte` (proyek perancah) | 5.55.7 | enam nasihat XSS rendering server melalui atribut penyebaran, nama tag dinamis dan `bind:innerText` |
+| `esbuild` (proyek perancah) | 0.28.1 | file sewenang-wenang dibaca melalui server pengembangan (GHSA-g7r4-m6w7-qqqr) |
 | `react`, `react-dom` | 19.2.5 | nasihat tahun 2026 React berkaitan dengan paket `react-server-dom-*`, yang tidak digunakan Nexy; lantai membuat garis tetap ditambal |
+
+`python scripts/audit_dependencies.py` memeriksa setiap lantai terhadap OSV setelah kuncian, di CI juga: penasehat baru di lantai gagal dalam audit.
 
 Periksa versi penyelesaian Anda:
 
@@ -24,8 +29,8 @@ npm ls vite
 ## Aturan yang diikuti Nexy
 
 - **Jangan pernah mempercayai header Host untuk jalurnya.** Nexy membaca `scope["path"]`, bukan `request.url.path`, di middlewarenya sendiri (direktori middleware). Lakukan hal yang sama pada milik Anda.
-- **Hindari apa yang mencapai HTML.** Props diteruskan ke komponen klien, atribut `Link`, `Image`, `Audio` dan `Video` atribut, jangkar daftar isi, dan detail `HTTPException` semuanya lolos HTML. Templat `.nexy` tidak lolos dengan sendirinya: tulis `{{ value | e }}` untuk nilai apa pun yang berasal dari pengunjung atau database, dan jangan pernah `| safe` pada input pengguna.
-- **Titik akhir pengembang hanya bersifat loopback dan sempit.** Titik akhir render dev (`/__nexy__/render`) hanya menerima file di bawah `src/routes/` dengan ekstensi `.tsx` atau `.jsx`, dan hanya dapat dijangkau melalui server pengembang, yang menolak header `Host` asing.
+- **Hindari apa yang mencapai HTML.** Props diteruskan ke komponen klien, atribut `Link`, atribut `Image`, `Audio` dan `Video`, jangkar daftar isi, dan detail `HTTPException` semuanya lolos dari HTML. Templat `.nexy` tidak lolos dengan sendirinya: tulis `{{ value | e }}` untuk nilai apa pun yang berasal dari pengunjung atau database, dan jangan pernah `| safe` pada input pengguna.
+- **Titik akhir pengembang hanya bersifat loopback dan sempit.** Titik akhir render dev (`/__nexy__/render`) hanya menerima file pada `src/routes/` dengan ekstensi `.tsx` atau `.jsx`, dan hanya dapat dijangkau melalui server pengembang, yang menolak header `Host` asing.
 - **Detail kesalahan tidak bocor.** Halaman kesalahan yang gagal hanya menampilkan kode status.
 - **Jawaban produksi membawa header yang aman.** `X-Content-Type-Options: nosniff` dan `Referrer-Policy: strict-origin-when-cross-origin`, kecuali kode Anda menetapkannya sendiri. Header `Server` tidak terkirim. Tambahkan `Strict-Transport-Security` dan `Content-Security-Policy` di proxy atau middleware Anda: keduanya bergantung pada domain Anda.
 - **Kecelakaan menunjukkan referensi, bukan kesalahannya.** Lihat [Halaman kesalahan](../routing/fbr/errors/README.md#unhandled-exceptions).

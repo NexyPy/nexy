@@ -43,7 +43,9 @@ The one allowed script is a short one in the layout head that sets the saved the
 - `useFetch('/api/x')` from `@nexy/client` reads JSON from a handler as a store: `$users.data`,
   `$users.pending`, `$users.error`, `users.refresh()`.
 - Icons are SVG components. No emoji.
+<!-- nexy:nexy -->
 - Inside a `.nexy` template, wrap Svelte's `{ }` blocks in `{% raw %}...{% endraw %}`.
+<!-- /nexy:nexy -->
 
 Run `nexy-ux-audit` before building a view, and test first
 (`nexy-testing`).

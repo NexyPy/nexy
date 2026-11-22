@@ -56,7 +56,7 @@ export default defineConfig({
 
 | 套餐 | 版本 `nx new` 写道 |
 |---|---|
-| `svelte` | `^5.20.2` |
+| `svelte` | `^5.55.7` |
 | `@sveltejs/vite-plugin-svelte` | `^5.0.0` |
 
 ## 规则

@@ -237,3 +237,51 @@ class TestDetect:
         config = "class NexyConfig(NexyConfigModel):\n    useFF = svelte()\n"
         package = '{"devDependencies":{"tailwindcss":"4"}}'
         assert detect_profile(self._project(tmp_path, config, package)).style == "tailwind"
+
+
+class TestDetectKind:
+    """`nx skills` on an existing project tells an API project from one with views."""
+
+    def _scaffold(self, root: Path, template: str) -> Path:
+        config = {
+            "client_framework": "none",
+            "FBRouter": template.endswith("fbr"),
+            "project_type": template.split("-")[0],
+            "orm": "None",
+            "useCSR": False,
+            "style": "tailwind",
+            "agents": False,
+        }
+        _render_local_template(template, root, config, "demo")
+        return root
+
+    @pytest.mark.parametrize("template", ["api-fbr", "api-modular"])
+    def test_a_scaffolded_api_project_is_detected_as_one(self, tmp_path, template):
+        assert detect_profile(self._scaffold(tmp_path, template)).kind == "api"
+
+    def test_a_web_project_without_a_framework_has_views(self, tmp_path):
+        assert detect_profile(self._scaffold(tmp_path, "web-fbr")).kind == "web"
+
+    def test_a_framework_in_the_config_means_views(self, tmp_path):
+        (tmp_path / "nexyconfig.py").write_text("    useFF = vue()\n", encoding="utf-8")
+        assert detect_profile(tmp_path).kind == "web"
+
+
+class TestDetectNexyFiles:
+    """`nx skills` reads `src/`: only a project that has a `.nexy` file is told about them."""
+
+    def _project(self, root: Path, *pages: str) -> Path:
+        (root / "nexyconfig.py").write_text("    useFF = react()\n", encoding="utf-8")
+        for page in pages:
+            (root / "src/routes" / page).parent.mkdir(parents=True, exist_ok=True)
+            (root / "src/routes" / page).write_text("x", encoding="utf-8")
+        return root
+
+    def test_a_project_without_nexy_files_is_detected(self, tmp_path):
+        assert detect_profile(self._project(tmp_path, "index.md", "layout.tsx")).nexy_files is False
+
+    def test_one_nexy_file_anywhere_in_src_is_enough(self, tmp_path):
+        assert detect_profile(self._project(tmp_path, "index.md", "docs/page.nexy")).nexy_files
+
+    def test_a_project_without_src_falls_back_to_its_mode(self, tmp_path):
+        assert detect_profile(self._project(tmp_path)).nexy_files
