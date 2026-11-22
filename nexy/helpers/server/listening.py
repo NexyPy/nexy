@@ -30,18 +30,28 @@ class Endpoint:
         return f"{self.protocol}://{host}:{self.port}"
 
 
+def served_docs_path(use_docs: bool | str, docs_url: str, *, dev: bool) -> str | None:
+    """Where the API reference answers under this command; `useDocs = "dev"` serves it in dev."""
+    served = dev if use_docs == "dev" else bool(use_docs)
+    return docs_url if served else None
+
+
 def print_listening(
     command: str,
     version: str,
     endpoint: Endpoint,
     seconds: float,
     network_ip: Callable[[], str],
+    docs_path: str | None = None,
 ) -> None:
-    """The header, the addresses (the network one only when it is not loopback), the time."""
+    """The header, the addresses (the network one only when it is not loopback), the API
+    reference when it is served, and the time."""
     address = network_ip() if endpoint.host == _ALL_INTERFACES else endpoint.host
     launcher.banner(command, version)
     launcher.entry(t("server.local", "Local:"), endpoint.url("localhost"))
     if address not in _LOOPBACK:
         launcher.entry(t("server.network", "Network:"), endpoint.url(address))
+    if docs_path:
+        launcher.entry(t("server.docs", "API docs:"), endpoint.url("localhost") + docs_path)
     launcher.entry(t("server.ready", "Ready:"), f"{seconds:.2f}s")
     console.print(f"  [dim]{t('server.stop', 'press Ctrl+C to stop')}[/dim]")
