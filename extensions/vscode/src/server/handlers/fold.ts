@@ -58,28 +58,23 @@ export class FoldHandler {
   }
 
   private addStyleFolding(text: string, ranges: FoldingRange[]): void {
-    const re = /<style[\s\S]*?>/g;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(text)) !== null) {
-      const closeIdx = text.indexOf("</style>", m.index);
-      if (closeIdx === -1) continue;
-      ranges.push({
-        startLine: text.slice(0, m.index).split("\n").length - 1,
-        endLine: text.slice(0, closeIdx + 8).split("\n").length - 1,
-        kind: FoldingRangeKind.Region,
-      });
-    }
+    this.addBlockFolding(text, ranges, "style");
   }
 
   private addScriptFolding(text: string, ranges: FoldingRange[]): void {
-    const re = /<script[\s\S]*?>/g;
+    this.addBlockFolding(text, ranges, "script");
+  }
+
+  private addBlockFolding(text: string, ranges: FoldingRange[], tag: string): void {
+    const re = new RegExp(`<${tag}[\\s\\S]*?>`, "g");
+    const close = `</${tag}>`;
     let m: RegExpExecArray | null;
     while ((m = re.exec(text)) !== null) {
-      const closeIdx = text.indexOf("</script>", m.index);
+      const closeIdx = text.indexOf(close, m.index);
       if (closeIdx === -1) continue;
       ranges.push({
         startLine: text.slice(0, m.index).split("\n").length - 1,
-        endLine: text.slice(0, closeIdx + 9).split("\n").length - 1,
+        endLine: text.slice(0, closeIdx + close.length).split("\n").length - 1,
         kind: FoldingRangeKind.Region,
       });
     }
