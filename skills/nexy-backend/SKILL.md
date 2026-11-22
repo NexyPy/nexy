@@ -62,12 +62,12 @@ async def create_user(name: str, age: int = 0) -> dict[str, str | int]:
 
 Define `async def SOCKET(websocket: WebSocket)` in a `.py` route file. The path is the file path.
 
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 ## Caching a page (ISR)
 
 In a `.nexy` page, `revalidate = 60` caches it per path with stale-while-revalidate. API handlers
 are not cached this way.
-<!-- /nexy:server -->
+<!-- /nexy:nexy -->
 
 ## Middleware and dependencies
 
@@ -76,13 +76,13 @@ are not cached this way.
 
 ## Error pages
 
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 `notfound.nexy` renders 404 and `errors.nexy` renders 500, each scoped to its directory.
-<!-- /nexy:server -->
-<!-- nexy:client -->
-`notfound.tsx` renders 404 and `errors.tsx` renders 500 (`.jsx`, `.vue` or `.svelte`: the
-extension of the framework), each scoped to its directory.
-<!-- /nexy:client -->
+<!-- /nexy:nexy -->
+<!-- nexy:web -->
+With a client framework, `notfound.tsx` renders 404 and `errors.tsx` renders 500 (`.jsx`, `.vue`
+or `.svelte`: the extension of the framework), each scoped to its directory.
+<!-- /nexy:web -->
 A client that sends `Accept: application/json` receives `{"detail": "..."}`. Error text follows
 `nexy-principles`: what happened, what to do.
 
