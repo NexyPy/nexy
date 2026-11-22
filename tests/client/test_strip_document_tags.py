@@ -74,3 +74,9 @@ def test_a_svelte_layout_whose_script_ends_with_a_space_loses_its_document_tags(
 
 def test_the_script_of_that_layout_is_left_as_written():
     assert 'const tag = "<body>";' in _strip("svelte", SPACED)
+
+
+def test_a_svelte_script_closed_with_text_before_the_bracket_is_set_apart_too():
+    # A browser ends the block at `</script foo>` as well: anything up to `>`.
+    source = '<script>const tag = "<body>";</script\t\n foo>\n<html><body></body></html>\n'
+    assert "<html>" not in _strip("svelte", source)

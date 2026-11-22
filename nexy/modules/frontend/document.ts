@@ -465,8 +465,9 @@ function stripMarkup(markup: string): string {
 export function stripDocumentTags(source: string, kind: Kind): string {
   if (kind === 'svelte') {
     // The component script and style blocks stay; only the markup around them is rewritten.
-    // Svelte ends a block at `</script\s*>`, so `</script >` closes one too.
-    const parts = removeTags(source, 'head', true).split(/(<script[\s\S]*?<\/script\s*>|<style[\s\S]*?<\/style\s*>)/gi)
+    // A block ends at `</script >`, or `</script foo>`, too: anything up to the `>`.
+    const blocks = /(<script[\s\S]*?<\/script\b[^>]*>|<style[\s\S]*?<\/style\b[^>]*>)/gi
+    const parts = removeTags(source, 'head', true).split(blocks)
     return parts.map(part => (/^<(script|style)[\s>]/i.test(part) ? part : stripMarkup(part))).join('')
   }
   const start = source.indexOf('<template')
