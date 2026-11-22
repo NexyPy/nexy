@@ -101,11 +101,22 @@ async function until(predicate, label, timeout = 3000) {
   await sleep(60);
 }
 
+// The markers a framework leaves in the HTML, removed until none is left: one removal can join
+// the halves of another, as in `<!-<!-- -->- -->`.
+function withoutComments(html) {
+  let previous;
+  do {
+    previous = html;
+    html = html.replace(/<!--[\s\S]*?-->/g, "");
+  } while (html !== previous);
+  return html;
+}
+
 const report = { framework };
 await until(() => main.querySelector("#a"), "initial mount");
 report.initial = {
   nested: Boolean(main.querySelector(".l1 .l2 #a")),
-  html: main.innerHTML.replace(/<!--[\s\S]*?-->/g, ""),
+  html: withoutComments(main.innerHTML),
 };
 const l1 = main.querySelector(".l1");
 const l2 = main.querySelector(".l2");
