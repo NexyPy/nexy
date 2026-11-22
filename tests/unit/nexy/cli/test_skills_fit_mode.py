@@ -21,10 +21,12 @@ PROFILES = {
     "api-fbr": Profile("demo", "none", False, "vanilla", kind="api"),
     "api-modular": Profile("demo", "none", False, "vanilla", kind="api", router="modular"),
 }
+FRAMEWORKS = ("react", "vue", "svelte", "solid", "preact")
+STYLES = ("tailwind", "unocss", "vanilla")
 
 
-def _installed_text(root: Path, name: str) -> str:
-    install_agent_files(root, PROFILES[name])
+def _installed_text(root: Path, name: str | Profile) -> str:
+    install_agent_files(root, PROFILES[name] if isinstance(name, str) else name)
     files = [root / "AGENTS.md", *root.glob(".agents/skills/**/*.md")]
     files += root.glob(".claude/skills/**/*.md")
     return "\n".join(path.read_text(encoding="utf-8") for path in files)
@@ -38,6 +40,20 @@ def test_a_project_without_nexy_files_is_never_told_about_them(tmp_path, name):
 @pytest.mark.parametrize("name", ["api-fbr", "api-modular"])
 def test_an_api_project_is_never_told_about_islands(tmp_path, name):
     assert re.findall(r"(?i)\bislands?\b", _installed_text(tmp_path, name)) == []
+
+
+@pytest.mark.parametrize("style", STYLES)
+@pytest.mark.parametrize("framework", FRAMEWORKS)
+def test_a_client_routed_project_of_any_stack_is_never_told_about_nexy_files(
+    tmp_path, framework, style
+):
+    profile = Profile("demo", framework, True, style)
+    assert re.findall(r"\.nexy\b", _installed_text(tmp_path, profile)) == []
+
+
+@pytest.mark.parametrize("name", ["server", "server-react"])
+def test_a_server_project_is_never_told_to_route_in_the_browser(tmp_path, name):
+    assert "useCSR = True" not in _installed_text(tmp_path, name)
 
 
 def test_a_server_project_still_learns_the_nexy_files(tmp_path):
@@ -57,6 +73,8 @@ def _markers(path: Path) -> list[tuple[str, str]]:
 @pytest.mark.parametrize("path", sorted(skills_source().rglob("*.md")), ids=lambda p: p.parent.name)
 def test_every_marker_of_a_skill_is_known_and_closed(path):
     markers = _markers(path)
-    opened = [tag for slash, tag in markers[0::2] if not slash]
-    closed = [tag for slash, tag in markers[1::2] if slash]
-    assert (opened == closed and set(opened) <= set(TAGS)) and len(markers) % 2 == 0
+    pairs = list(zip(markers[0::2], markers[1::2], strict=False))
+    assert len(markers) % 2 == 0 and all(
+        not opening[0] and closing == ("/", opening[1]) and opening[1] in TAGS
+        for opening, closing in pairs
+    )
