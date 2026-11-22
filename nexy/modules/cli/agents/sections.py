@@ -21,7 +21,6 @@ from nexy.modules.cli.agents.profile import Profile
 
 TAGS = ("server", "client", "web", "api")
 MARKER = re.compile(r"^<!-- (/?)nexy:(\w+) -->$")
-_BLANK_RUN = re.compile(r"\n{3,}")
 
 
 def modes_of(profile: Profile) -> set[str]:
@@ -31,8 +30,8 @@ def modes_of(profile: Profile) -> set[str]:
     return {"web", "client" if profile.client_routed else "server"}
 
 
-def fit(text: str, modes: set[str]) -> str:
-    """*text* without its parts for other modes, and without any marker line."""
+def _kept(text: str, modes: set[str]) -> list[str]:
+    """The lines of *text* that fit *modes*, without the marker lines."""
     kept: list[str] = []
     current: str | None = None
     for line in text.splitlines(keepends=True):
@@ -41,7 +40,18 @@ def fit(text: str, modes: set[str]) -> str:
             current = None if marker[1] else marker[2]
         elif current is None or current in modes:
             kept.append(line)
-    return _BLANK_RUN.sub("\n\n", "".join(kept))
+    return kept
+
+
+def fit(text: str, modes: set[str]) -> str:
+    """*text* without its parts for other modes, without any marker line and its blank gap."""
+    lines: list[str] = []
+    in_code = False
+    for line in _kept(text, modes):
+        in_code ^= line.lstrip().startswith("```")
+        if in_code or line.strip() or (lines and lines[-1].strip()):
+            lines.append(line)
+    return "".join(lines)
 
 
 def fit_tree(folder: Path, modes: set[str]) -> None:

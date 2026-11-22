@@ -78,3 +78,14 @@ def test_every_markdown_file_of_a_skill_is_fitted(tmp_path: Path):
     (tmp_path / "nested" / "guide.md").write_text(SKILL, encoding="utf-8")
     fit_tree(tmp_path, CLIENT)
     assert "Server line." not in (tmp_path / "nested" / "guide.md").read_text(encoding="utf-8")
+
+
+def test_blank_lines_inside_a_code_block_are_kept():
+    code = "```python\nimport os\n\n\nclass A:\n    pass\n```\n"
+    assert fit(code, SERVER) == code
+
+
+def test_a_dropped_section_leaves_one_blank_line():
+    assert "Shared line.\n\nLast line." in fit(
+        "Shared line.\n\n<!-- nexy:api -->\nx\n<!-- /nexy:api -->\n\nLast line.\n", SERVER
+    )
