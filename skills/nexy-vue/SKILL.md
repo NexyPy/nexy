@@ -48,9 +48,9 @@ const count = ref(0);
 - `useFetch('/api/x')` from `@nexy/client` reads JSON from a handler: refs `data`, `error`,
   `pending`, and `refresh()`.
 - Icons are SVG components. No emoji.
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 - Inside a `.nexy` template, wrap Vue's `{{ }}` in `{% raw %}...{% endraw %}`.
-<!-- /nexy:server -->
+<!-- /nexy:nexy -->
 
 Run `nexy-ux-audit` before building a view, follow
 `nexy-styling`, and test first (`nexy-testing`).
