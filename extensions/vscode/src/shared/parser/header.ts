@@ -2,7 +2,7 @@ import { NexyImport, NexyProp, NexyFramework, frameworkFromExt } from "../types"
 
 const HEADER_RE = /^[ \t]*---[ \t]*\r?\n([\s\S]*?)\r?\n[ \t]*---[ \t]*(?=\r?\n|$)/m;
 const FROM_IMPORT_RE = /^\s*from\s+["'](?<path>[^"']+)["']\s+import\s+(?<targets>.+?)(?=\r?\n\S|$)/gms;
-const FROM_PYMOD_RE = /^\s*from\s+(?!["'])(?<path>[A-Za-z_][\w.]*(?:\.[A-Za-z_][\w.]*)*)\s+import\s+(?<targets>.+?)(?=\r?\n\S|$)/gms;
+const FROM_PYMOD_RE = /^\s*from\s+(?!["'])(?<path>[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s+import\s+(?<targets>.+?)(?=\r?\n\S|$)/gms;
 const LOADER_RE = /^\s*(?<alias>\w+)\s*=\s*(?:__Import|__nexy_loader__\.import_component)\s*\(\s*path\s*=\s*["'](?<path>[^"']+)["']\s*,\s*symbol\s*=\s*["'](?<symbol>[^"']+)["'](?:\s*,\s*framework\s*=\s*["'](?<fw>[^"']+)["'])?\s*\)/gm;
 const PROP_RE = /^([A-Za-z_][A-Za-z0-9_]*)\s*:\s*prop\[([^\]]*)\](?:\s*=\s*(.+))?/gm;
 

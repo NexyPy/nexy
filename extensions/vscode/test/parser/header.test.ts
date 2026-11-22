@@ -120,3 +120,17 @@ describe("extractRegionAtOffset", () => {
     expect(extractRegionAtOffset("<div>text</div>", 3)).toBe("template");
   });
 });
+
+describe("extractImports on a hostile module path (#610)", () => {
+  it("reads a long dotted line that never imports in linear time", () => {
+    const header = "from " + "a.".repeat(28) + "!";
+    const start = performance.now();
+    extractImports(header);
+    expect(performance.now() - start).toBeLessThan(100);
+  });
+
+  it("still reads a dotted module path", () => {
+    const imports = extractImports("from app.components.ui import Button");
+    expect(imports.map(i => i.path)).toContain("app.components.ui");
+  });
+});
