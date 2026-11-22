@@ -105,7 +105,7 @@ const report = { framework };
 await until(() => main.querySelector("#a"), "initial mount");
 report.initial = {
   nested: Boolean(main.querySelector(".l1 .l2 #a")),
-  html: main.innerHTML.replace(/<!--.*?-->/g, ""),
+  html: main.innerHTML.replace(/<!--[\s\S]*?-->/g, ""),
 };
 const l1 = main.querySelector(".l1");
 const l2 = main.querySelector(".l2");
