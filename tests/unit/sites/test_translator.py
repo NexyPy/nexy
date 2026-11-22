@@ -58,6 +58,14 @@ class TestNames:
         template, kept = translator.protect("Python serves, Vite builds.")
         assert "Python" not in template and "Python" in kept and "Vite" in kept
 
+    def test_props_never_reach_the_translator(self):
+        _template, kept = translator.protect("Props are JSON, and a prop is a value.")
+        assert kept == ["Props", "prop"]
+
+    def test_a_word_that_starts_with_prop_is_translated(self):
+        _template, kept = translator.protect("A property is not a proposal.")
+        assert kept == []
+
     def test_a_longer_name_wins_over_its_prefix(self):
         _template, kept = translator.protect("Read Jinja2 and Next.js docs.")
         assert kept == ["Jinja2", "Next.js"]
