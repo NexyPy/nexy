@@ -62,3 +62,15 @@ def test_vue_only_touches_the_template_block():
 def test_a_layout_without_document_tags_is_unchanged():
     source = "<template><div><slot /></div></template>\n"
     assert _strip("vue", source) == source
+
+
+SPACED = '<script>const tag = "<body>";</script >\n<html><body><main></main></body></html>\n'
+
+
+def test_a_svelte_layout_whose_script_ends_with_a_space_loses_its_document_tags():
+    # Svelte reads `</script\s*>`, so `</script >` ends the block too (#614).
+    assert "<html>" not in _strip("svelte", SPACED)
+
+
+def test_the_script_of_that_layout_is_left_as_written():
+    assert 'const tag = "<body>";' in _strip("svelte", SPACED)
