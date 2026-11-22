@@ -15,15 +15,14 @@ before `nx dev`, `nx start` and `nx build` run. One client framework per project
 <!-- /nexy:web -->
 
 <!-- nexy:server -->
-This project is server-rendered (`useCSR = False`):
-
-| | |
-|---|---|
-| Pages | `.nexy`, `.md`, `.mdx` |
-| Document owner | root `layout.nexy` |
-| Client components | islands imported from a `.nexy` page |
-| Navigation | full page loads |
+This project is server-rendered (`useCSR = False`): every page is rendered on the server, and
+navigation is a full page load. Pages are `.md`, `.mdx` and, with `useFF`, the files of its
+framework (`.tsx`, `.jsx`, `.vue` or `.svelte`). The root `layout.*` owns the document.
 <!-- /nexy:server -->
+<!-- nexy:nexy -->
+Pages and layouts can also be `.nexy` files, and a `.nexy` page imports client components as
+islands.
+<!-- /nexy:nexy -->
 
 <!-- nexy:client -->
 This project is client-routed (`useCSR = True`):
@@ -81,13 +80,13 @@ __nexy__/              generated; never edit, never commit
 <!-- nexy:web -->
 `layout.*` wraps every page below it, and the root one owns the document.
 <!-- /nexy:web -->
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 `notfound.nexy` and `errors.nexy` are the 404 and 500 pages of their directory.
-<!-- /nexy:server -->
-<!-- nexy:client -->
-`notfound.tsx` and `errors.tsx` (`.jsx`, `.vue` or `.svelte`: the extension of the framework) are
-the 404 and 500 pages of their directory.
-<!-- /nexy:client -->
+<!-- /nexy:nexy -->
+<!-- nexy:web -->
+With a client framework, `notfound.tsx` and `errors.tsx` (`.jsx`, `.vue` or `.svelte`: the
+extension of the framework) are the 404 and 500 pages of their directory.
+<!-- /nexy:web -->
 
 Names starting with `_` or `.` are ignored: use them for partials and drafts. Two files that
 resolve to the same URL both register: never put `blog.*` next to `blog/index.*`.
@@ -163,6 +162,6 @@ creates a project (`new`, `init`): a command that imports `nexyconfig.py` fails 
 <!-- nexy:web -->
 - Only the root layout writes `<html>`, `<head>` and `<body>`.
 <!-- /nexy:web -->
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 - Frontmatter of a `.nexy` file runs on every request: no module-level side effects.
-<!-- /nexy:server -->
+<!-- /nexy:nexy -->
