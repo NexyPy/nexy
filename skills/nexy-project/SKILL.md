@@ -100,7 +100,20 @@ Components never live in `src/routes/`, or they become pages.
 
 Only in `nexyconfig.py`. Never in scattered constants or ad-hoc environment variables.
 
-<!-- nexy:web -->
+<!-- nexy:server -->
+```python
+from nexy.core.models import NexyConfigModel
+from nexy.frontend import react
+
+
+class NexyConfig(NexyConfigModel):
+    useFF = react()           # optional: the framework of the islands
+    useAliases = {"@": "src"}
+    useVite = True
+    useDevTools = True        # the nx dev toolbar
+```
+<!-- /nexy:server -->
+<!-- nexy:client -->
 ```python
 from nexy.core.models import NexyConfigModel
 from nexy.frontend import react
@@ -113,7 +126,7 @@ class NexyConfig(NexyConfigModel):
     useVite = True
     useDevTools = True        # the nx dev toolbar
 ```
-<!-- /nexy:web -->
+<!-- /nexy:client -->
 
 <!-- nexy:api -->
 ```python
