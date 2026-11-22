@@ -66,9 +66,9 @@ export class FoldHandler {
   }
 
   private addBlockFolding(text: string, ranges: FoldingRange[], tag: string): void {
-    // HTML reads tag names in any case and ends a block at `</script >` too.
+    // HTML reads tag names in any case and ends a block at `</script >` or `</script foo>` too.
     const re = new RegExp(`<${tag}\\b[^>]*>`, "gi");
-    const close = new RegExp(`</${tag}\\s*>`, "gi");
+    const close = new RegExp(`</${tag}\\b[^>]*>`, "gi");
     let m: RegExpExecArray | null;
     while ((m = re.exec(text)) !== null) {
       close.lastIndex = m.index;

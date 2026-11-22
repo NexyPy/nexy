@@ -30,3 +30,9 @@ describe("folding a block written the other ways HTML allows (#615)", () => {
     expect(blockLines("<scripts>\n\n</script>\n")).not.toContainEqual([0, 2]);
   });
 });
+
+describe("folding a block closed with text before the bracket", () => {
+  it("ends a script block at </script foo>, as a browser does", () => {
+    expect(blockLines("<script>\nlet a = 1;\n</script foo>\n")).toContainEqual([0, 2]);
+  });
+});
