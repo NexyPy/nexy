@@ -50,6 +50,12 @@ def _style_of(project: Path) -> str:
     return "vanilla"
 
 
+def _kind_of(project: Path, config: str) -> str:
+    """A project with views has a client framework or a package.json; an API project has neither."""
+    has_views = _FRAMEWORK.search(config) or (project / "package.json").is_file()
+    return "web" if has_views else "api"
+
+
 def detect_profile(project: Path) -> Profile:
     """The profile of an existing project, read from its files without running its code."""
     try:
@@ -62,5 +68,6 @@ def detect_profile(project: Path) -> Profile:
         framework=found.group(1) if found else "none",
         client_routed=bool(_CLIENT_ROUTED.search(config)),
         style=_style_of(project),
+        kind=_kind_of(project, config),
         router="modular" if _MODULAR.search(config) else "fbr",
     )

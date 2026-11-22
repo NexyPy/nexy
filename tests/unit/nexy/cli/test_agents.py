@@ -237,3 +237,31 @@ class TestDetect:
         config = "class NexyConfig(NexyConfigModel):\n    useFF = svelte()\n"
         package = '{"devDependencies":{"tailwindcss":"4"}}'
         assert detect_profile(self._project(tmp_path, config, package)).style == "tailwind"
+
+
+class TestDetectKind:
+    """`nx skills` on an existing project tells an API project from one with views."""
+
+    def _scaffold(self, root: Path, template: str) -> Path:
+        config = {
+            "client_framework": "none",
+            "FBRouter": template.endswith("fbr"),
+            "project_type": template.split("-")[0],
+            "orm": "None",
+            "useCSR": False,
+            "style": "tailwind",
+            "agents": False,
+        }
+        _render_local_template(template, root, config, "demo")
+        return root
+
+    @pytest.mark.parametrize("template", ["api-fbr", "api-modular"])
+    def test_a_scaffolded_api_project_is_detected_as_one(self, tmp_path, template):
+        assert detect_profile(self._scaffold(tmp_path, template)).kind == "api"
+
+    def test_a_web_project_without_a_framework_has_views(self, tmp_path):
+        assert detect_profile(self._scaffold(tmp_path, "web-fbr")).kind == "web"
+
+    def test_a_framework_in_the_config_means_views(self, tmp_path):
+        (tmp_path / "nexyconfig.py").write_text("    useFF = vue()\n", encoding="utf-8")
+        assert detect_profile(tmp_path).kind == "web"
