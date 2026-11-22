@@ -241,6 +241,7 @@
     "launch_failed": "Не удалось запустить сервер",
     "local": "Локально:",
     "network": "Сеть:",
+    "docs": "Доки API:",
     "ready": "Готово:",
     "stop": "нажмите Ctrl+C для остановки",
     "missing_table": "Не хватает таблицы: выполните nexy migrate --upgrade."
