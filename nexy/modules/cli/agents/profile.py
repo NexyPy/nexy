@@ -23,6 +23,12 @@ class Profile:
     style: str
     kind: str = "web"
     router: str = "fbr"
+    nexy_files: bool = True
+
+    @property
+    def writes_nexy(self) -> bool:
+        """Whether the project has `.nexy` files: a server-rendered web project that keeps them."""
+        return self.kind == "web" and not self.client_routed and self.nexy_files
 
 
 def profile_from_context(context: dict[str, Any]) -> Profile:
@@ -56,6 +62,12 @@ def _kind_of(project: Path, config: str) -> str:
     return "web" if has_views else "api"
 
 
+def _has_nexy_files(project: Path) -> bool:
+    """A `.nexy` file anywhere in `src/`; a project without `src/` is taken at its mode."""
+    src = project / "src"
+    return not src.is_dir() or next(src.rglob("*.nexy"), None) is not None
+
+
 def detect_profile(project: Path) -> Profile:
     """The profile of an existing project, read from its files without running its code."""
     try:
@@ -70,4 +82,5 @@ def detect_profile(project: Path) -> Profile:
         style=_style_of(project),
         kind=_kind_of(project, config),
         router="modular" if _MODULAR.search(config) else "fbr",
+        nexy_files=_has_nexy_files(project),
     )

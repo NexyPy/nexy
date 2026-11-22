@@ -7,7 +7,8 @@ A skill marks such a part between two lines of its own::
     <!-- /nexy:server -->
 
 ``server`` is a server-rendered project, ``client`` a client-routed one (``useCSR = True``),
-``web`` either of them and ``api`` a project without views. Text without a marker reaches every
+``web`` either of them, ``api`` a project without views and ``nexy`` a server-rendered project
+that has `.nexy` files. Text without a marker reaches every
 project. The markers are HTML comments, so a skill reads the same in the repository; they never
 reach a project.
 """
@@ -19,7 +20,7 @@ from pathlib import Path
 
 from nexy.modules.cli.agents.profile import Profile
 
-TAGS = ("server", "client", "web", "api")
+TAGS = ("server", "client", "web", "api", "nexy")
 MARKER = re.compile(r"^<!-- (/?)nexy:(\w+) -->$")
 
 
@@ -27,7 +28,8 @@ def modes_of(profile: Profile) -> set[str]:
     """The modes whose parts a project keeps."""
     if profile.kind == "api":
         return {"api"}
-    return {"web", "client" if profile.client_routed else "server"}
+    modes = {"web", "client" if profile.client_routed else "server"}
+    return modes | {"nexy"} if profile.writes_nexy else modes
 
 
 def _kept(text: str, modes: set[str]) -> list[str]:

@@ -1,4 +1,4 @@
-"""The agent files a project gets speak only of its own mode (#605).
+"""The agent files a project gets speak only of its own mode (#605, #607).
 
 A client-routed project has no `.nexy` file and an API project has no view at all: neither is
 told about them. The check reads what is installed, not the sources in `skills/`.
@@ -18,6 +18,8 @@ PROFILES = {
     "server": Profile("demo", "none", False, "tailwind"),
     "server-react": Profile("demo", "react", False, "tailwind"),
     "client-react": Profile("demo", "react", True, "tailwind"),
+    "server-md": Profile("demo", "none", False, "tailwind", nexy_files=False),
+    "server-react-tsx": Profile("demo", "react", False, "tailwind", nexy_files=False),
     "api-fbr": Profile("demo", "none", False, "vanilla", kind="api"),
     "api-modular": Profile("demo", "none", False, "vanilla", kind="api", router="modular"),
 }
@@ -32,7 +34,9 @@ def _installed_text(root: Path, name: str | Profile) -> str:
     return "\n".join(path.read_text(encoding="utf-8") for path in files)
 
 
-@pytest.mark.parametrize("name", ["client-react", "api-fbr", "api-modular"])
+@pytest.mark.parametrize(
+    "name", ["client-react", "api-fbr", "api-modular", "server-md", "server-react-tsx"]
+)
 def test_a_project_without_nexy_files_is_never_told_about_them(tmp_path, name):
     assert re.findall(r"\.nexy\b", _installed_text(tmp_path, name)) == []
 
@@ -78,3 +82,12 @@ def test_every_marker_of_a_skill_is_known_and_closed(path):
         not opening[0] and closing == ("/", opening[1]) and opening[1] in TAGS
         for opening, closing in pairs
     )
+
+
+def test_a_project_without_nexy_files_gets_no_nexy_file_skill(tmp_path):
+    _installed_text(tmp_path, "server-react-tsx")
+    assert not (tmp_path / ".agents/skills/nexy-file").exists()
+
+
+def test_a_server_project_without_nexy_files_still_learns_its_error_pages(tmp_path):
+    assert "notfound.tsx" in _installed_text(tmp_path, "server-react-tsx")

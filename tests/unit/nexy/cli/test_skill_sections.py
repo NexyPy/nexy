@@ -29,7 +29,7 @@ Api line.
 
 Last line.
 """
-SERVER = {"web", "server"}
+SERVER = {"web", "server", "nexy"}
 CLIENT = {"web", "client"}
 
 
@@ -89,3 +89,15 @@ def test_a_dropped_section_leaves_one_blank_line():
     assert "Shared line.\n\nLast line." in fit(
         "Shared line.\n\n<!-- nexy:api -->\nx\n<!-- /nexy:api -->\n\nLast line.\n", SERVER
     )
+
+
+def test_a_server_project_with_nexy_files_has_the_nexy_mode():
+    assert "nexy" in modes_of(Profile("demo", "none", False, "tailwind"))
+
+
+def test_a_server_project_without_nexy_files_has_no_nexy_mode():
+    assert "nexy" not in modes_of(Profile("demo", "react", False, "tailwind", nexy_files=False))
+
+
+def test_a_client_routed_project_never_has_the_nexy_mode():
+    assert "nexy" not in modes_of(Profile("demo", "react", True, "tailwind", nexy_files=True))

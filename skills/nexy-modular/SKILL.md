@@ -111,12 +111,12 @@ class AdminController:
   the OpenAPI description; they do not change the path.
 - The reference is served at `/docs` unless `useDocs = False`.
 
-<!-- nexy:server -->
+<!-- nexy:nexy -->
 ## Views from a controller
 
 `useViews("src/apps/app_view.nexy")` from `nexy.hooks` renders a `.nexy` view; nest one inside
 another to wrap it in a layout. For `.nexy` syntax load `nexy-file`.
-<!-- /nexy:server -->
+<!-- /nexy:nexy -->
 
 ## Rules
 
